@@ -674,17 +674,14 @@ class KateDocument : public Kate::Document
     float maxLength;
 
     // stores the current selection
-    int selectStartLine;
-    int selectStartCol;
-    int selectEndLine;
-    int selectEndCol;
+    KateTextCursor selectStart;
+    KateTextCursor selectEnd;
 
     // do we select normal or blockwise ?
     bool blockSelect;
     
     // only to make the selection from the view easier
-    int selectAnchorLine;
-    int selectAnchorCol;
+    KateTextCursor selectAnchor;
 
     bool readOnly;
     bool newDoc;          // True if the file is a new document (used to determine whether

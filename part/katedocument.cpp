@@ -272,12 +272,12 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
 
   printer = new KPrinter();
 
-  selectStartLine = -1;
-  selectStartCol = -1;
-  selectEndLine = -1;
-  selectEndCol = -1;
-  selectAnchorLine = -1;
-  selectAnchorCol = -1;
+  selectStart.line = -1;
+  selectStart.col = -1;
+  selectEnd.line = -1;
+  selectEnd.col = -1;
+  selectAnchor.line = -1;
+  selectAnchor.col = -1;
 
   // some defaults
   _configFlags = KateDocument::cfAutoIndent | KateDocument::cfBackspaceIndents
@@ -1060,48 +1060,48 @@ bool KateDocument::setSelection ( uint startLine, uint startCol, uint endLine, u
 {
   int oldStartL, oldEndL;
 
-  oldStartL = selectStartLine;
-  oldEndL = selectEndLine;
+  oldStartL = selectStart.line;
+  oldEndL = selectEnd.line;
 
   if (startLine < endLine)
   {
-    selectStartLine = startLine;
-    selectStartCol = startCol;
-    selectEndLine = endLine;
-    selectEndCol = endCol;
+    selectStart.line = startLine;
+    selectStart.col = startCol;
+    selectEnd.line = endLine;
+    selectEnd.col = endCol;
   }
   else if (startLine > endLine)
   {
-    selectStartLine = endLine;
-    selectStartCol = endCol;
-    selectEndLine = startLine;
-    selectEndCol = startCol;
+    selectStart.line = endLine;
+    selectStart.col = endCol;
+    selectEnd.line = startLine;
+    selectEnd.col = startCol;
   }
   else if (startCol < endCol)
   {
-    selectStartLine = startLine;
-    selectStartCol = startCol;
-    selectEndLine = endLine;
-    selectEndCol = endCol;
+    selectStart.line = startLine;
+    selectStart.col = startCol;
+    selectEnd.line = endLine;
+    selectEnd.col = endCol;
   }
   else if (startCol >= endCol)
   {
-    selectStartLine = endLine;
-    selectStartCol = endCol;
-    selectEndLine = startLine;
-    selectEndCol = startCol;
+    selectStart.line = endLine;
+    selectStart.col = endCol;
+    selectEnd.line = startLine;
+    selectEnd.col = startCol;
   }
 
   int endL, startL;
-  if (oldEndL > selectEndLine)
+  if (oldEndL > selectEnd.line)
     endL = oldEndL;
   else
-    endL = selectEndLine;
+    endL = selectEnd.line;
 
-  if (oldStartL < selectStartLine)
+  if (oldStartL < selectStart.line)
     startL = oldStartL;
   else
-    startL = selectStartLine;
+    startL = selectStart.line;
 
   tagLines (startL, endL);
   updateViews ();
@@ -1113,14 +1113,14 @@ bool KateDocument::setSelection ( uint startLine, uint startCol, uint endLine, u
 
 bool KateDocument::clearSelection ()
 {
-  tagLines(selectStartLine,selectEndLine);
+  tagLines(selectStart.line,selectEnd.line);
 
-  selectStartLine = -1;
-  selectStartCol = -1;
-  selectEndLine = -1;
-  selectEndCol = -1;
-  selectAnchorLine = -1;
-  selectAnchorCol = -1;
+  selectStart.line = -1;
+  selectStart.col = -1;
+  selectEnd.line = -1;
+  selectEnd.col = -1;
+  selectAnchor.line = -1;
+  selectAnchor.col = -1;
 
   updateViews ();
 
@@ -1131,7 +1131,7 @@ bool KateDocument::clearSelection ()
 
 bool KateDocument::hasSelection() const
 {
-  return ((selectStartCol != selectEndCol) || (selectEndLine != selectStartLine));
+  return ((selectStart.col != selectEnd.col) || (selectEnd.line != selectStart.line));
 }
 
 QString KateDocument::selection() const
@@ -1139,7 +1139,7 @@ QString KateDocument::selection() const
   TextLine::Ptr textLine;
   QString s;
 
-  for (int z=selectStartLine; z <= selectEndLine; z++)
+  for (int z=selectStart.line; z <= selectEnd.line; z++)
   {
       textLine = getTextLine(z);
       if (!textLine)
@@ -1147,24 +1147,24 @@ QString KateDocument::selection() const
 
       if (!blockSelect)
       {
-        if ((z > selectStartLine) && (z < selectEndLine))
+        if ((z > selectStart.line) && (z < selectEnd.line))
           s.append (textLine->getString());
   else
   {
-    if ((z == selectStartLine) && (z == selectEndLine))
-      s.append (textLine->getString().mid(selectStartCol, selectEndCol-selectStartCol));
-    else if ((z == selectStartLine))
-      s.append (textLine->getString().mid(selectStartCol, textLine->length()-selectStartCol));
-    else if ((z == selectEndLine))
-      s.append (textLine->getString().mid(0, selectEndCol));
+    if ((z == selectStart.line) && (z == selectEnd.line))
+      s.append (textLine->getString().mid(selectStart.col, selectEnd.col-selectStart.col));
+    else if ((z == selectStart.line))
+      s.append (textLine->getString().mid(selectStart.col, textLine->length()-selectStart.col));
+    else if ((z == selectEnd.line))
+      s.append (textLine->getString().mid(0, selectEnd.col));
   }
       }
       else
       {
-        s.append (textLine->getString().mid(selectStartCol, selectEndCol-selectStartCol));
+        s.append (textLine->getString().mid(selectStart.col, selectEnd.col-selectStart.col));
       }
 
-      if (z < selectEndLine)
+      if (z < selectEnd.line)
   s.append (QChar('\n'));
     }
 
@@ -1184,18 +1184,18 @@ bool KateDocument::removeSelectedText ()
   for (uint z = 0; z < myViews.count(); z++)
   {
     KateView *v = myViews.at(z);
-    if (selectStartLine <= v->cursorCache.line <= selectEndLine)
+    if (selectStart.line <= v->cursorCache.line <= selectEnd.line)
     {
-      v->cursorCache.line = selectStartLine;
-      v->cursorCache.col = selectStartCol;
+      v->cursorCache.line = selectStart.line;
+      v->cursorCache.col = selectStart.col;
       v->cursorCacheChanged = true;
     }
   }
 
-  int sl = selectStartLine;
-  int el = selectEndLine;
-  int sc = selectStartCol;
-  int ec = selectEndCol;
+  int sl = selectStart.line;
+  int el = selectEnd.line;
+  int sc = selectStart.col;
+  int ec = selectEnd.col;
 
   for (int z=el; z >= sl; z--)
   {
@@ -1286,7 +1286,7 @@ bool KateDocument::setBlockSelectionMode (bool on)
   if (on != blockSelect)
   {
     blockSelect = on;
-    setSelection (selectStartLine, selectStartCol, selectEndLine, selectEndCol);
+    setSelection (selectStart.line, selectStart.col, selectEnd.line, selectEnd.col);
   }
   
   return true;
@@ -2833,13 +2833,13 @@ void KateDocument::paste (VConfig &c)
 
 void KateDocument::selectTo(VConfig &c, KateTextCursor &cursor, int )
 {
-  if (selectAnchorLine == -1)
+  if (selectAnchor.line == -1)
   {
-    selectAnchorLine = c.cursor.line;
-    selectAnchorCol = c.cursor.col;
+    selectAnchor.line = c.cursor.line;
+    selectAnchor.col = c.cursor.col;
   }
 
-  setSelection (selectAnchorLine, selectAnchorCol, cursor.line, cursor.col);
+  setSelection (selectAnchor.line, selectAnchor.col, cursor.line, cursor.col);
 }
 
 void KateDocument::selectWord(KateTextCursor &cursor, int flags) {
@@ -2884,7 +2884,7 @@ void KateDocument::doIndent(VConfig &c, int change)
     if (_configFlags & KateDocument::cfKeepIndentProfile && change < 0) {
       // unindent so that the existing indent profile doesnt get screwed
       // if any line we may unindent is already full left, don't do anything
-      for (line = selectStartLine; line <= selectEndLine; line++) {
+      for (line = selectStart.line; line <= selectEnd.line; line++) {
         textLine = getTextLine(line);
         if (lineSelected(line) || lineHasSelected(line)) {
           for (z = 0; z < tabChars; z++) {
@@ -2900,7 +2900,7 @@ void KateDocument::doIndent(VConfig &c, int change)
       jumpOut:;
     }
 
-    for (line = selectStartLine; line <= selectEndLine; line++) {
+    for (line = selectStart.line; line <= selectEnd.line; line++) {
       if (lineSelected(line) || lineHasSelected(line)) {
         optimizeLeadingSpace(line, _configFlags, change);
       }
@@ -3091,10 +3091,10 @@ void KateDocument::addStartStopCommentToSelection()
   QString startComment = m_highlight->getCommentStart();
   QString endComment = m_highlight->getCommentEnd();
 
-  int sl = selectStartLine;
-  int el = selectEndLine;
-  int sc = selectStartCol;
-  int ec = selectEndCol;
+  int sl = selectStart.line;
+  int el = selectEnd.line;
+  int sc = selectStart.col;
+  int ec = selectEnd.col;
 
   insertText (el, ec, endComment);
   insertText (sl, sc, startComment);
@@ -3108,8 +3108,8 @@ void KateDocument::addStartLineCommentToSelection()
 {
   QString commentLineMark = m_highlight->getCommentSingleLineStart() + " ";
 
-  int sl = selectStartLine;
-  int el = selectEndLine;
+  int sl = selectStart.line;
+  int el = selectEnd.line;
 
   // For each line of the selection
   for (int z = el; z >= sl; z--)
@@ -3125,10 +3125,10 @@ bool KateDocument::removeStartStopCommentFromSelection()
   QString startComment = m_highlight->getCommentStart();
   QString endComment = m_highlight->getCommentEnd();
 
-  int sl = selectStartLine;
-  int el = selectEndLine;
-  int sc = selectStartCol;
-  int ec = selectEndCol;
+  int sl = selectStart.line;
+  int el = selectEnd.line;
+  int sc = selectStart.col;
+  int ec = selectEnd.col;
 
   int startCommentLen = startComment.length();
   int endCommentLen = endComment.length();
@@ -3151,8 +3151,8 @@ bool KateDocument::removeStartLineCommentFromSelection()
   QString shortCommentMark = m_highlight->getCommentSingleLineStart();
   QString longCommentMark = shortCommentMark + " ";
 
-  int sl = selectStartLine;
-  int el = selectEndLine;
+  int sl = selectStart.line;
+  int el = selectEnd.line;
 
   bool removed = false;
 
@@ -3415,24 +3415,24 @@ bool KateDocument::lineColSelected (int line, int col)
 {
   if (!blockSelect)
   {
-    if ((line > selectStartLine) && (line < selectEndLine))
+    if ((line > selectStart.line) && (line < selectEnd.line))
       return true;
 
-    if ((line == selectStartLine) && (col >= selectStartCol) && (line < selectEndLine))
+    if ((line == selectStart.line) && (col >= selectStart.col) && (line < selectEnd.line))
       return true;
 
-    if ((line == selectEndLine) && (col < selectEndCol) && (line > selectStartLine))
+    if ((line == selectEnd.line) && (col < selectEnd.col) && (line > selectStart.line))
       return true;
 
-    if ((line == selectEndLine) && (col < selectEndCol) && (line == selectStartLine) && (col >= selectStartCol))
+    if ((line == selectEnd.line) && (col < selectEnd.col) && (line == selectStart.line) && (col >= selectStart.col))
       return true;
 
-    if ((line == selectStartLine) && (selectStartCol == 0) && (col < 0))
+    if ((line == selectStart.line) && (selectStart.col == 0) && (col < 0))
       return true;
   }
   else
   {
-    if ((line >= selectStartLine) && (line <= selectEndLine) && (col >= selectStartCol) && (col < selectEndCol))
+    if ((line >= selectStart.line) && (line <= selectEnd.line) && (col >= selectStart.col) && (col < selectEnd.col))
       return true;
   }
 
@@ -3443,10 +3443,10 @@ bool KateDocument::lineSelected (int line)
 {
   if (!blockSelect)
   {
-    if ((line > selectStartLine) && (line < selectEndLine))
+    if ((line > selectStart.line) && (line < selectEnd.line))
       return true;
 
-    if ((line == selectStartLine) && (line < selectEndLine) && (selectStartCol == 0))
+    if ((line == selectStart.line) && (line < selectEnd.line) && (selectStart.col == 0))
       return true;
   }
 
@@ -3457,7 +3457,7 @@ bool KateDocument::lineEndSelected (int line)
 {
   if (!blockSelect)
   {
-    if ((line >= selectStartLine) && (line < selectEndLine))
+    if ((line >= selectStart.line) && (line < selectEnd.line))
       return true;
   }
 
@@ -3468,21 +3468,21 @@ bool KateDocument::lineHasSelected (int line)
 {
   if (!blockSelect)
   {
-    if ((line > selectStartLine) && (line < selectEndLine))
+    if ((line > selectStart.line) && (line < selectEnd.line))
       return true;
 
-    if ((line == selectStartLine) && (line < selectEndLine))
+    if ((line == selectStart.line) && (line < selectEnd.line))
       return true;
 
-    if ((line == selectEndLine) && (line > selectStartLine))
+    if ((line == selectEnd.line) && (line > selectStart.line))
       return true;
 
-    if ((line == selectEndLine) && (line == selectStartLine) && (selectEndCol > selectStartCol))
+    if ((line == selectEnd.line) && (line == selectStart.line) && (selectEnd.col > selectStart.col))
       return true;
   }
   else
   {
-    if ((line <= selectEndLine) && (line >= selectStartLine) && (selectEndCol > selectStartCol))
+    if ((line <= selectEnd.line) && (line >= selectStart.line) && (selectEnd.col > selectStart.col))
       return true;
   }
 
@@ -3730,11 +3730,11 @@ bool KateDocument::doSearch(SConfig &sc, const QString &searchFor) {
   if (!(sc.flags & KateDocument::sfBackward)) {
     //forward search
     if (sc.flags & KateDocument::sfSelected) {
-      if (line < selectStartLine) {
-        line = selectStartLine;
+      if (line < selectStart.line) {
+        line = selectStart.line;
         col = 0;
       }
-      searchEnd = selectEndLine;
+      searchEnd = selectEnd.line;
     } else searchEnd = lastLine();
 
     while (line <= searchEnd) {
@@ -3791,11 +3791,11 @@ bool KateDocument::doSearch(SConfig &sc, const QString &searchFor) {
   } else {
     // backward search
     if (sc.flags & KateDocument::sfSelected) {
-      if (line > selectEndLine) {
-        line = selectEndLine;
+      if (line > selectEnd.line) {
+        line = selectEnd.line;
         col = -1;
       }
-      searchEnd = selectStartLine;
+      searchEnd = selectStart.line;
     } else searchEnd = 0;
 
     while (line >= searchEnd) {
