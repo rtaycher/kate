@@ -195,6 +195,8 @@ class KantViewManager : public KantPluginIface
     void setBookmark();
     void clearBookmarks();
 
+    void setEol(int);
+
   signals:
     void statusChanged (KantView *, int, int, int, int, QString);
     void statChanged ();

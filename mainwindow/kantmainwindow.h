@@ -163,6 +163,7 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     KAction *goNext;
     KAction *goPrev;
 
+    KSelectAction* setEndOfLine;
     KAction* documentReload;
 
     KAction *setHighlightConf;
@@ -217,6 +218,7 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     void slotWindowActivated ();
     void slotCurrentDocChanged();
     void docListMenuAboutToShow();
+    void setEOLAboutToShow();
     void bookmarkMenuAboutToShow();
     void projectMenuAboutToShow();
     void settingsMenuAboutToShow();

@@ -75,6 +75,7 @@
         <Action name="edit_bookmarkList" />
     </menu>
     <Action name="set_highlight"/>
+    <Action name="set_eol"/>
     <Separator />
     <Action name="document_reload" />
   </Menu>

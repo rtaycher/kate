@@ -775,6 +775,11 @@ void KantViewManager::slotHlDlg ()
   KWriteFactory::instance()->config()->sync();
 }
 
+void KantViewManager::setEol(int which)
+{
+  activeView()->setEol( which );
+}
+
 void KantViewManager::slotSetHl (int n)
 {
   if (activeView() == 0) return;

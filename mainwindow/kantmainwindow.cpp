@@ -219,6 +219,15 @@ void KantMainWindow::setupActions()
   docListMenu = new KActionMenu(i18n("&Document List"), actionCollection(), "doc_list");
   connect(docListMenu->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(docListMenuAboutToShow()));
 
+  setEndOfLine = new KSelectAction(i18n("&End Of Line"), 0, actionCollection(), "set_eol");
+  connect(setEndOfLine, SIGNAL(activated(int)), viewManager, SLOT(setEol(int)));
+  connect(setEndOfLine->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(setEOLMenuAboutToShow()));
+  QStringList list;
+  list.append("&Unix");
+  list.append("&Macintosh");
+  list.append("&Windows/Dos");
+  setEndOfLine->setItems(list);
+
   documentReload = new KAction(i18n("&Reload"), "reload", Key_F4, viewManager, SLOT(reloadCurrentDoc()), actionCollection(), "document_reload");
 
   setHighlightConf = new KAction(i18n("Configure Highlighti&ng..."), 0, viewManager, SLOT(slotHlDlg()),actionCollection(), "set_confHighlight");
@@ -227,7 +236,7 @@ void KantMainWindow::setupActions()
   connect(setHighlight, SIGNAL(activated(int)), viewManager, SLOT(slotSetHl(int)));
   connect(setHighlight->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(setHighlightMenuAboutToShow()));
 
-  QStringList list;
+  list.clear();
   for (int z = 0; z < HlManager::self()->highlights(); z++)
        list.append(i18n(HlManager::self()->hlName(z)));
   setHighlight->setItems(list);
@@ -824,6 +833,11 @@ void KantMainWindow::settingsMenuAboutToShow()
 {
   settingsShowSidebar->setChecked( sidebarDock->isVisible() );
   settingsShowConsole->setChecked( consoleDock->isVisible() );
+}
+
+void KantMainWindow::setEOLAboutToShow()
+{
+  setEndOfLine->setCurrentItem( viewManager->activeView()->getEol() );
 }
 
 void KantMainWindow::openURL (const QString &name)
