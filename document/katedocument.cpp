@@ -358,18 +358,15 @@ void KateDocument::setTabWidth(int chars) {
   updateFontData();
 
   maxLength = -1;
-  for (TextLine::List::ConstIterator it = contents.begin();
-       it != contents.end();
-       ++it)
+  for (int i=0; i < buffer->count(); i++)
   {
-    TextLine::Ptr textLine = *it;
+    TextLine::Ptr textLine = buffer->line(i);
     int len = textWidth(textLine,textLine->length());
     if (len > maxLength) {
       maxLength = len;
       longestLine = textLine;
     }
   }
-//  tagAll();
 }
 
 void KateDocument::setReadWrite( bool rw )
@@ -1547,16 +1544,15 @@ void KateDocument::doComment(VConfig &c, int change) {
 }
 
 
-QString KateDocument::text() const {
-  TextLine::List::ConstIterator it = contents.begin();
+QString KateDocument::text() const
+{
   QString s;
 
-  for (; it != contents.end(); )
+  for (int i=0; i < buffer->count(); i++)
   {
-    TextLine::Ptr textLine = *it;
+    TextLine::Ptr textLine = buffer->line(i);
     s.insert(s.length(), textLine->getText(), textLine->length());
-    ++it;
-    if ( it != contents.end())
+    if ( (i < (buffer->count()-1)) )
       s.append('\n');
   }
 
