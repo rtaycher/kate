@@ -739,7 +739,8 @@ void KateViewManager::openURLReal (KURL url)
       ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
     }
 
-    docManager->docList.at(0)->setDocName (docManager->docList.at(0)->url().filename());
+    if (docManager->docList.at(0)->url().filename() != "")
+      docManager->docList.at(0)->setDocName (docManager->docList.at(0)->url().filename());
 
     setWindowCaption();
 
@@ -761,6 +762,7 @@ void KateViewManager::openURLReal (KURL url)
         ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
       }
 
+      if (cv->getDoc()->url().filename() != "")
       cv->getDoc()->setDocName (cv->getDoc()->url().filename());
 
       setWindowCaption();
