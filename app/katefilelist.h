@@ -76,6 +76,10 @@ class KateFileList : public KListBox
       sortByID = 0,
       sortByName = 1
     };
+    
+  public slots:
+    void slotNextDocument();
+    void slotPrevDocument();
 
   private:
     KateDocManager *docManager;

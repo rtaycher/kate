@@ -133,9 +133,6 @@ class KateViewManager : public QWidget
     void slotDocumentCloseAll ();
     void slotDocumentSaveAll();
 
-    void slotWindowNext();
-    void slotWindowPrev();
-
     void slotDocumentNew ();
     void slotDocumentOpen ();
     void slotDocumentClose ();

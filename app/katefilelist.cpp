@@ -72,6 +72,33 @@ KateFileList::~KateFileList ()
   delete tooltip;
 }
 
+void KateFileList::slotNextDocument()
+{
+  int c = currentItem ();
+
+  if ((c == -1) || (count() == 0))
+    return;
+  
+  if (uint(c+1) < count())
+    viewManager->activateView( ((KateFileListItem *)item(c+1))->documentNumber() );
+  else
+    viewManager->activateView( ((KateFileListItem *)item(0))->documentNumber() );
+}
+
+void KateFileList::slotPrevDocument()
+{
+  int c = currentItem ();
+
+  if ((c == -1) || (count() == 0))
+    return;
+  
+  if ((c-1) >= 0)
+    viewManager->activateView( ((KateFileListItem *)item(c-1))->documentNumber() );
+  else
+    viewManager->activateView( ((KateFileListItem *)item(count()-1))->documentNumber() );
+
+}
+
 void KateFileList::slotDocumentCreated (Kate::Document *doc)
 {
   insertItem (new KateFileListItem (docManager, doc, doc->documentNumber(), doc->docName()) );

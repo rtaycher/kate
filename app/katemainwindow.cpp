@@ -264,8 +264,8 @@ void KateMainWindow::setupActions()
   goPrev=new KAction(i18n("Previous View"),SHIFT+Key_F8,m_viewManager, SLOT(activatePrevView()),actionCollection(),"go_prev");
   goPrev->setWhatsThis(i18n("Make the previous split view the active one."));
 
-  windowNext = KStdAction::back(m_viewManager, SLOT(slotWindowNext()), actionCollection());
-  windowPrev = KStdAction::forward(m_viewManager, SLOT(slotWindowPrev()), actionCollection());
+  windowNext = KStdAction::back(filelist, SLOT(slotPrevDocument()), actionCollection());
+  windowPrev = KStdAction::forward(filelist, SLOT(slotNextDocument()), actionCollection());
 
   documentOpenWith = new KActionMenu(i18n("Open W&ith"), actionCollection(), "file_open_with");
   documentOpenWith->setWhatsThis(i18n("Open the current document using another application registered for its file type, or an application of your choice."));

@@ -432,26 +432,6 @@ void KateViewManager::statusMsg ()
   emit statChanged ();
 }
 
-void KateViewManager::slotWindowNext()
-{
-  int id = m_docManager->findDocument (activeView ()->getDoc()) - 1;
-
-  if (id < 0)
-    id =  m_docManager->documents () - 1;
-
-  activateView (m_docManager->document(id)->documentNumber());
-}
-
-void KateViewManager::slotWindowPrev()
-{
-  uint id = m_docManager->findDocument (activeView ()->getDoc()) + 1;
-
-  if (id >= m_docManager->documents () )
-    id = 0;
-
-  activateView (m_docManager->document(id)->documentNumber());
-}
-
 void KateViewManager::slotDocumentNew ()
 {
   createView ();
