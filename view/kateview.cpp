@@ -1500,9 +1500,9 @@ void KateView::setupActions()
                                 actionCollection(), "tools_unindent");
     new KAction(i18n("&Clean Indentation"), 0, this, SLOT(cleanIndent()),
                                    actionCollection(), "tools_cleanIndent");
-    new KAction(i18n("C&omment"), 0, this, SLOT(comment()),
+    new KAction(i18n("C&omment"), CTRL+Qt::Key_NumberSign, this, SLOT(comment()),
                                actionCollection(), "tools_comment");
-    new KAction(i18n("Unco&mment"), 0, this, SLOT(uncomment()),
+    new KAction(i18n("Unco&mment"), CTRL+SHIFT+Qt::Key_NumberSign, this, SLOT(uncomment()),
                                  actionCollection(), "tools_uncomment");
 
     setVerticalSelection = new KToggleAction(i18n("&Vertical Selection"), Key_F4, this, SLOT(toggleVertical()),
