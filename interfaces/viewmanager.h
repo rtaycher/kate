@@ -53,6 +53,12 @@ class ViewManager : public QObject
     class View *activeView ();
 
     /**
+     * Activates the view with the corresponding documentNumber
+     * @param documentNumber the document's number
+     */
+    void activateView ( uint documentNumber );
+
+    /**
      * Opens the file pointed to by URL
      * @param url url to the file
      */

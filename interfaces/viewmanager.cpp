@@ -59,6 +59,11 @@ View *ViewManager::activeView()
   return d->viewMan->activeView();
 }
 
+void ViewManager::activateView ( uint documentNumber )
+{
+  d->viewMan->activateView( documentNumber );
+}
+
 void ViewManager::openURL (const KURL &url)
 {
   d->viewMan->openURL (url, QString::null, true);
