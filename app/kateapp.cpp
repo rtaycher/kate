@@ -60,7 +60,6 @@ KateApp::KateApp () : Kate::Application (),DCOPObject ("KateApp" )
     for (int z=0; z<args->count(); z++)
     {
       mainWindows.first()->viewManager->openURL( args->url(z) );
-      processEvents();
     }
   }
 

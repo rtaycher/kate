@@ -1015,8 +1015,6 @@ void KateViewManager::saveAllDocsAtCloseDown()
   scfg->setGroup("open files");
   scfg->writeEntry( "list", list );
   scfg->sync();
-
-  kapp->processEvents();
 }
 
 void KateViewManager::reopenDocuments(bool isRestore)
@@ -1039,7 +1037,6 @@ void KateViewManager::reopenDocuments(bool isRestore)
 
     for ( int i = list.count() - 1; i > -1; i-- )
     {
-      kapp->processEvents();
       scfg->setGroup("open files");
       QString fn = scfg->readEntry(list[i]);
       openURL( KURL( fn ) );
