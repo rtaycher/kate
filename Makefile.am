@@ -5,9 +5,9 @@ bin_PROGRAMS = kant
 
 kant_SOURCES = kantmain.cpp
 kant_LDADD   = ./part/libkantpart.la ./app/libkantapp.la ./view/libkantviewinternal.la \
-		./view/libkantview.la ./mainwindow/libkantmainwindow.la \
+		./mainwindow/libkantmainwindow.la \
 		./sidebar/libkantsidebar.la ./project/libkantproject.la \
-		./fileselector/libkantfileselector.la ./document/libkantdocument.la ./document/libkantdocumentinternal.la \
+		./fileselector/libkantfileselector.la ./document/libkantdocumentinternal.la \
 		./console/libkantconsole.la ./filelist/libkantfilelist.la \
 		./pluginmanager/libkantpluginmanager.la ./interfaces/libkantpluginIface.la
 kant_LDFLAGS = $(all_libraries) $(KDE_RPATH)
