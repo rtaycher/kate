@@ -1,3 +1,5 @@
+EXTRA_DIST = builder.sh TODO
+
 noinst_LTLIBRARIES = libpiper.la
 bin_PROGRAMS = testor dcop_kant
 
