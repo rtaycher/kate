@@ -224,14 +224,6 @@ class View : public KTextEditor::View, public KTextEditor::ClipboardInterface,
     */
     virtual void configDialog () { ; };
     /**
-      Gets the highlight number.
-    */
-    virtual int getHl() { return 0L; };
-    /**
-      Sets the highlight number n.
-    */
-    virtual void setHl(int ) { ; };
-    /**
       Get the end of line mode (Unix, Macintosh or Dos).
     */
     virtual int getEol() { return 0L; };
@@ -296,18 +288,6 @@ class View : public KTextEditor::View, public KTextEditor::ClipboardInterface,
     virtual Document *getDoc () { return 0L; };
 
   public slots:
-    /**
-      Returns highlight count.
-    */
-    virtual int getHlCount () { return 0; };
-    /**
-      Returns highlight name.
-    */
-    virtual QString getHlName (int) { return 0L; };
-    /**
-      Returns highlight selection.
-    */
-    virtual QString getHlSection (int) { return 0L; };
     /**
       Increase font size.
     */

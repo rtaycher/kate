@@ -52,6 +52,9 @@ private:
 
 public  slots:
 	void slotAboutToShow();
+
+private slots:
+  void setHl (int mode);
 };
 
 #endif

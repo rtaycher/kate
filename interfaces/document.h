@@ -26,8 +26,6 @@
 #ifndef _KATE_DOCUMENT_INCLUDE_
 #define _KATE_DOCUMENT_INCLUDE_
 
-#include <qglobal.h> /* Only for 2.X and 3.X compatibility */
-
 #include <qptrlist.h>
 #include <ktexteditor/document.h>
 #include <ktexteditor/view.h>
@@ -36,6 +34,7 @@
 #include <ktexteditor/cursorinterface.h>
 #include <ktexteditor/selectioninterface.h>
 #include <ktexteditor/searchinterface.h>
+#include <ktexteditor/highlightinginterface.h>
 
 class KConfig;
 
@@ -63,7 +62,8 @@ class Cursor : public KTextEditor::Cursor
 */
 class Document : public KTextEditor::Document, public KTextEditor::EditInterface,
                  public KTextEditor::UndoInterface, public KTextEditor::CursorInterface,
-								 public KTextEditor::SelectionInterface, public KTextEditor::SearchInterface
+								 public KTextEditor::SelectionInterface, public KTextEditor::SearchInterface,
+								 public KTextEditor::HighlightingInterface
 {
   Q_OBJECT
 

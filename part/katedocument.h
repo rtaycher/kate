@@ -117,7 +117,7 @@ class KateDocument : public Kate::Document
 	signals:
 		void textChanged ();
 
-  protected:
+  private:
 	  //
 		// 6 internal functions (mostly to enable undo/redo atomic )
 		//
@@ -169,16 +169,33 @@ class KateDocument : public Kate::Document
   //
   // KTextEditor::CursorInterface stuff
   //
-  public:
+  public slots:
     KTextEditor::Cursor *createCursor ();
     QPtrList<KTextEditor::Cursor> cursors () const;
 
   //
   // KTextEditor::SearchInterface stuff
   //
-	public:
+	public slots:
 		bool searchText (unsigned int startLine, unsigned int startCol, const QString &text, unsigned int *foundAtLine, unsigned int *foundAtCol, unsigned int *matchLen, bool casesensitive = true, bool backwards = false);
 	  bool searchText (unsigned int startLine, unsigned int startCol, const QRegExp &regexp, unsigned int *foundAtLine, unsigned int *foundAtCol, unsigned int *matchLen, bool backwards = false);
+  
+	//
+  // KTextEditor::HighlightingInterface stuff
+  //
+	public slots:
+		uint hlMode ();
+		bool setHlMode (uint mode);
+    uint hlModeCount ();
+	  QString hlModeName (uint mode);
+    QString hlModeSectionName (uint mode);
+		
+	private:
+	  bool internalSetHlMode (uint mode);
+		void setDontChangeHlOnSave();
+
+	signals:
+	  void hlChanged ();
 
 	//
   // KParts::ReadWrite stuff
@@ -249,7 +266,6 @@ class KateDocument : public Kate::Document
     bool m_bBrowserView;
 
   signals:
-    void highlightChanged();
     void modifiedChanged ();
     void preHighlightChanged(long);
 
@@ -268,16 +284,13 @@ class KateDocument : public Kate::Document
 
 	public:
     Highlight *highlight() { return m_highlight; }
-    int highlightNum() { return hlManager->findHl(m_highlight); }
-		void setDontChangeHlOnSave();
 
   protected:
-    void setHighlight(int n);
     void makeAttribs();
     void updateFontData();
 
   protected slots:
-    void hlChanged();
+    void internalHlChanged();
 
 	public:
     void addView(KTextEditor::View *);

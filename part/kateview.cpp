@@ -1328,7 +1328,7 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate
   connect( this, SIGNAL( newStatus() ), this, SLOT( slotUpdate() ) );
   connect( doc, SIGNAL( undoChanged() ), this, SLOT( slotNewUndo() ) );
   connect( doc, SIGNAL( fileNameChanged() ), this, SLOT( slotFileStatusChanged() ) );
-  connect( doc, SIGNAL( highlightChanged() ), this, SLOT( slotHighlightChanged() ) );
+  connect( doc, SIGNAL( hlChanged() ), this, SLOT( slotHighlightChanged() ) );
 
   if ( doc->hasBrowserExtension() )
   {
@@ -2368,21 +2368,6 @@ void KateView::configDialog()
   }
 
   delete kd;
-}
-
-int KateView::getHl() {
-  return myDoc->highlightNum();
-}
-
-void KateView::setDontChangeHlOnSave()
-{
-    myDoc->setDontChangeHlOnSave();
-}
-
-void KateView::setHl(int n) {
-  myDoc->setHighlight(n);
-  myDoc->setDontChangeHlOnSave();
-  myDoc->updateViews();
 }
 
 int KateView::getEol() {

@@ -666,12 +666,11 @@ void KateViewManager::setEol(int which)
     activeView()->setEol( which );
 }
 
-void KateViewManager::slotSetHl (int n)
+void KateViewManager::slotSetHl (uint n)
 {
   if (activeView() == 0) return;
 
-  activeView()->setHl(n);
-  activeView()->setDontChangeHlOnSave();
+  activeView()->doc()->setHlMode(n);
 }
 
 void KateViewManager::toggleBookmark ()

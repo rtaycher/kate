@@ -577,9 +577,6 @@ class KateView : public Kate::View
     */
     void writeSessionConfig(KConfig *);
 
-
-  public:
-	void setDontChangeHlOnSave();
   // printing
   public slots:
     void printDlg ();
@@ -593,14 +590,6 @@ class KateView : public Kate::View
       Presents the setup dialog to the user
     */
     void configDialog ();
-    /**
-      Gets the highlight number
-    */
-    int getHl();
-    /**
-      Sets the highlight number n
-    */
-    void setHl(int n);
     /**
       Get the end of line mode (Unix, Macintosh or Dos)
     */

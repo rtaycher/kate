@@ -19,6 +19,7 @@
 #include "kateviewhighlightaction.h"
 #include "kateviewhighlightaction.moc"
 #include "kateview.h"
+#include "katedocument.h"
 #include "katehighlight.h"
 #include <kpopupmenu.h>
 #include "../interfaces/viewmanager.h"
@@ -54,26 +55,12 @@ void KateViewHighlightAction::slotAboutToShow()
 
       int m = subMenusName.findIndex (hlSection);
       names << hlName;
-      if (dynamic_cast<KateView*>(related))
-         subMenus.at(m)->insertItem ( hlName, related, SLOT(setHl(int)), 0,  z);
-      else
-	{
-	  if (dynamic_cast<Kate::ViewManager*>(related))
-            subMenus.at(m)->insertItem ( hlName, related, SLOT(slotSetHl(int)), 0,  z);
-		else kdDebug()<<"Ohoh, related must be a Kate::ViewManager or a KateView"<<endl;
-	}
+      subMenus.at(m)->insertItem ( hlName, this, SLOT(setHl(int)), 0,  z);
     }
     else if (names.contains(hlName) < 1)
     {
       names << hlName;
-      if (dynamic_cast<KateView*>(related))
-        popupMenu()->insertItem ( hlName, related, SLOT(setHl(int)), 0,  z);
-      else
-	{
-	  if (dynamic_cast<Kate::ViewManager*>(related))
-            popupMenu()->insertItem ( hlName, related, SLOT(slotSetHl(int)), 0,  z);
-		else kdDebug()<<"Ohoh, related must be a Kate::ViewManager or a KateView"<<endl;
-	}
+      popupMenu()->insertItem ( hlName, this, SLOT(setHl(int)), 0,  z);
     }
   }
 
@@ -91,16 +78,26 @@ void KateViewHighlightAction::slotAboutToShow()
     popupMenu()->setItemChecked (0, false);
 
     int i = subMenusName.findIndex (HlManager::self()->hlSection
-	(view?view->getHl():viewManager->getActiveView()->getHl()));
+	(view?view->doc()->hlMode():viewManager->getActiveView()->getDoc()->hlMode()));
     if (subMenus.at(i))
       subMenus.at(i)->setItemChecked (
-	(view?view->getHl():viewManager->getActiveView()->getHl()), true);
+	(view?view->doc()->hlMode():viewManager->getActiveView()->getDoc()->hlMode()), true);
     else
       popupMenu()->setItemChecked (0, true);
 
     oldActiveSec = HlManager::self()->hlSection (
-	view?view->getHl():viewManager->getActiveView()->getHl());
-    oldActiveID = (view?view->getHl():viewManager->getActiveView()->getHl());
+	view?view->doc()->hlMode():viewManager->getActiveView()->getDoc()->hlMode());
+    oldActiveID = (view?view->doc()->hlMode():viewManager->getActiveView()->getDoc()->hlMode());
   }
+
+}
+
+void KateViewHighlightAction::setHl (int mode)
+{
+  if (dynamic_cast<KateView*>(related))
+    dynamic_cast<KateView*>(related)->doc()->setHlMode((uint)mode);
+  else
+	  if (dynamic_cast<Kate::ViewManager*>(related))
+      dynamic_cast<Kate::ViewManager*>(related)->getActiveView()->getDoc()->setHlMode((uint)mode);
 
 }

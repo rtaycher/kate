@@ -162,7 +162,7 @@ class KateViewManager : public Kate::ViewManager
 
     void slotEditCommand ();
 
-    void slotSetHl (int n);
+    void slotSetHl (uint n);
 
     void slotSpellcheck ();
     void slotGotoLine ();

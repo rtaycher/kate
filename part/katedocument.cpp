@@ -248,7 +248,7 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
      
   myEncoding = QString::fromLatin1(QTextCodec::codecForLocale()->name());     
   maxLength = -1;     
-     
+
   setFont (KGlobalSettings::fixedFont());     
      
   myDocID = uniqueID;     
@@ -279,10 +279,10 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   modified = false;     
      
 	clear();     
-     
-  setHighlight(0); //calls updateFontData()     
-  // if the user changes the highlight with the dialog, notify the doc     
-  connect(hlManager,SIGNAL(changed()),SLOT(hlChanged()));     
+
+  internalSetHlMode(0); //calls updateFontData()
+  // if the user changes the highlight with the dialog, notify the doc
+  connect(hlManager,SIGNAL(changed()),SLOT(internalHlChanged()));     
      
   newDocGeometry = false;     
 	_autoUpdate = true;     
@@ -1004,9 +1004,9 @@ struct DeleteSelection {
      
 bool KateDocument::removeSelectedText ()
 {     
-  int end = 0;     
+  int end = 0;
   int line = 0;     
-  TextLine::Ptr textLine = 0L;     
+  TextLine::Ptr textLine = 0L;
   QPtrStack<DeleteSelection> selectedLines;     
 
   if (selectEnd < selectStart)
@@ -1112,12 +1112,12 @@ bool KateDocument::selectAll()
 	return true;     
 }     
      
-bool KateDocument::invertSelection()     
+bool KateDocument::invertSelection()
 {     
-  TextLine::Ptr textLine;     
+  TextLine::Ptr textLine;
      
   select.col = -1;     
-     
+
 //  if (selectStart != 0 || selectEnd != lastLine()) recordReset();     
      
   selectStart = 0;     
@@ -1148,12 +1148,12 @@ uint KateDocument::undoCount () const
   return undoItems.count ();     
 }     
      
-uint KateDocument::redoCount () const     
+uint KateDocument::redoCount () const
 {     
-  return redoItems.count ();     
+  return redoItems.count ();
 }     
      
-uint KateDocument::undoSteps () const     
+uint KateDocument::undoSteps () const
 {     
   return myUndoSteps;     
 }     
@@ -1184,12 +1184,12 @@ void KateDocument::undo()
      
 void KateDocument::redo()     
 {     
-  redoItems.last()->redo();     
+  redoItems.last()->redo();
 	undoItems.append (redoItems.last());     
-	redoItems.removeLast ();     
+	redoItems.removeLast ();
      
   if (tagStart <= tagEnd) {     
-    optimizeSelection();     
+    optimizeSelection();
     updateLines(tagStart, tagEnd);     
     setModified(true);     
   }     
@@ -1220,9 +1220,9 @@ void KateDocument::clearRedo()
 //     
 // KTextEditor::CursorInterface stuff     
 //     
-     
+
 KTextEditor::Cursor *KateDocument::createCursor ( )     
-{     
+{
   return new KateCursor (this);     
 }
 
@@ -1370,6 +1370,72 @@ bool KateDocument::searchText (unsigned int startLine, unsigned int startCol, co
 }
 
 //
+// KTextEditor::HighlightingInterface stuff
+//
+
+
+uint KateDocument::hlMode ()
+{
+  return hlManager->findHl(m_highlight);
+}
+
+bool KateDocument::setHlMode (uint mode)
+{
+  if (internalSetHlMode (mode))
+	{
+	  setDontChangeHlOnSave();
+    updateViews();
+		return true;
+  }
+
+	return false;
+}
+
+bool KateDocument::internalSetHlMode (uint mode)
+{
+  Highlight *h;
+
+//  hlNumber = n;
+
+  h = hlManager->getHl(mode);
+  if (h == m_highlight) {
+    updateLines();
+  } else {
+    if (m_highlight != 0L) m_highlight->release();
+    h->use();
+    m_highlight = h;
+    makeAttribs();
+  }
+  PreHighlightedTill=0;
+  RequestPreHighlightTill=0;
+
+  emit(hlChanged());
+
+	return true;
+}
+
+
+uint KateDocument::hlModeCount ()
+{
+  return HlManager::self()->highlights();
+}
+
+QString KateDocument::hlModeName (uint mode)
+{
+  return HlManager::self()->hlName (mode);
+}
+
+QString KateDocument::hlModeSectionName (uint mode)
+{
+  return HlManager::self()->hlSection (mode);
+}
+
+void KateDocument::setDontChangeHlOnSave()
+{
+  hlSetByUser = true;
+}
+
+//
 // KParts::ReadWrite stuff
 //
 
@@ -1392,7 +1458,7 @@ bool KateDocument::openFile()
   int hl = hlManager->wildcardFind( m_file );
 
   if (hl == -1)     
-  {     
+  {
     // fill the detection buffer with the contents of the text     
     const int HOWMANY = 1024;     
     QByteArray buf(HOWMANY);     
@@ -1409,78 +1475,78 @@ bool KateDocument::openFile()
      
     hl = hlManager->mimeFind( buf, m_file );     
   }     
-     
-  setHighlight(hl);     
-     
-  updateLines();     
-  updateViews();     
-     
-  emit fileNameChanged();     
-     
-  return true;     
-}     
-     
-bool KateDocument::saveFile()     
-{     
-  QFile f( m_file );     
-  if ( !f.open( IO_WriteOnly ) )     
-    return false; // Error     
-     
-  QTextStream stream(&f);     
-     
-  stream.setEncoding(QTextStream::RawUnicode); // disable Unicode headers     
-  stream.setCodec(KGlobal::charsets()->codecForName(myEncoding)); // this line sets the mapper to the correct codec     
-     
-  int maxLine = numLines();     
-  int line = 0;     
-  while(true)     
-  {     
-    stream << getTextLine(line)->getString();     
-    line++;     
-    if (line >= maxLine) break;     
-     
-    if (eolMode == KateDocument::eolUnix) stream << "\n";     
-    else if (eolMode == KateDocument::eolDos) stream << "\r\n";     
-    else if (eolMode == KateDocument::eolMacintosh) stream << '\r';     
-  };     
-  f.close();     
-     
-  fileInfo->setFile (m_file);     
-  setMTime();     
-     
-  if (!hlSetByUser)     
-  {     
-  int hl = hlManager->wildcardFind( m_file );     
-     
-  if (hl == -1)     
-  {     
-    // fill the detection buffer with the contents of the text     
-    const int HOWMANY = 1024;     
-    QByteArray buf(HOWMANY);     
-    int bufpos = 0, len;     
-    for (int i=0; i < buffer->count(); i++)     
-    {     
-      TextLine::Ptr textLine = buffer->line(i);     
-      len = textLine->length();     
-      if (bufpos + len > HOWMANY) len = HOWMANY - bufpos;     
-      memcpy(&buf[bufpos], textLine->getText(), len);     
-      bufpos += len;     
-      if (bufpos >= HOWMANY) break;     
-    }     
-     
-    hl = hlManager->mimeFind( buf, m_file );     
-  }     
-     
-  setHighlight(hl);     
-  }     
-  emit fileNameChanged ();     
-     
-  return (f.status() == IO_Ok);     
-}     
-     
-void KateDocument::setReadWrite( bool rw )     
-{     
-  KTextEditor::View *view;     
+
+  internalSetHlMode(hl);
+
+  updateLines();
+  updateViews();
+
+  emit fileNameChanged();
+
+  return true;
+}
+
+bool KateDocument::saveFile()
+{
+  QFile f( m_file );
+  if ( !f.open( IO_WriteOnly ) )
+    return false; // Error
+
+  QTextStream stream(&f);
+
+  stream.setEncoding(QTextStream::RawUnicode); // disable Unicode headers
+  stream.setCodec(KGlobal::charsets()->codecForName(myEncoding)); // this line sets the mapper to the correct codec
+
+  int maxLine = numLines();
+  int line = 0;
+  while(true)
+  {
+    stream << getTextLine(line)->getString();
+    line++;
+    if (line >= maxLine) break;
+
+    if (eolMode == KateDocument::eolUnix) stream << "\n";
+    else if (eolMode == KateDocument::eolDos) stream << "\r\n";
+    else if (eolMode == KateDocument::eolMacintosh) stream << '\r';
+  };
+  f.close();
+
+  fileInfo->setFile (m_file);
+  setMTime();
+
+  if (!hlSetByUser)
+  {
+  int hl = hlManager->wildcardFind( m_file );
+
+  if (hl == -1)
+  {
+    // fill the detection buffer with the contents of the text
+    const int HOWMANY = 1024;
+    QByteArray buf(HOWMANY);
+    int bufpos = 0, len;
+    for (int i=0; i < buffer->count(); i++)
+    {
+      TextLine::Ptr textLine = buffer->line(i);
+      len = textLine->length();
+      if (bufpos + len > HOWMANY) len = HOWMANY - bufpos;
+      memcpy(&buf[bufpos], textLine->getText(), len);
+      bufpos += len;
+      if (bufpos >= HOWMANY) break;
+    }
+
+    hl = hlManager->mimeFind( buf, m_file );
+  }
+
+  internalSetHlMode(hl);
+  }
+  emit fileNameChanged ();
+
+  return (f.status() == IO_Ok);
+}
+
+void KateDocument::setReadWrite( bool rw )
+{
+  KTextEditor::View *view;
      
   if (rw == readOnly)     
 	{     
@@ -1500,7 +1566,7 @@ void KateDocument::setModified(bool m) {
   KTextEditor::View *view;     
      
   if (m != modified) {     
-    modified = m;     
+    modified = m;
     for (view = myViews.first(); view != 0L; view = myViews.next() ) {     
       emit static_cast<KateView *>( view )->newStatus();     
     }     
@@ -1515,12 +1581,7 @@ bool KateDocument::isModified() const {
 //     
 // Kate specific stuff ;)     
 //     
-     
-void KateDocument::setDontChangeHlOnSave()     
-{     
-  hlSetByUser = true;     
-}     
-     
+
 void KateDocument::setFont (QFont font)     
 {     
   //kdDebug()<<"Kate:: setFont"<<endl;     
@@ -1536,7 +1597,7 @@ void KateDocument::setFont (QFont font)
   myFontBI.setBold (true);     
   myFontBI.setItalic (true);     
      
-  myFontMetrics = QFontMetrics (myFont);     
+  myFontMetrics = QFontMetrics (myFont);
   myFontMetricsBold = QFontMetrics (myFontBold);     
   myFontMetricsItalic = QFontMetrics (myFontItalic);     
   myFontMetricsBI = QFontMetrics (myFontBI);     
@@ -1572,7 +1633,7 @@ void KateDocument::doPreHighlight()
   int max = numLines()-1;     
   if (till > max)     
     {     
-      till = max;     
+      till = max;
     }     
   PreHighlightedTill = till;     
   updateLines(from,till);     
@@ -1608,7 +1669,7 @@ void KateDocument::setTabWidth(int chars) {
     if (len > maxLength) {     
       maxLength = len;     
       longestLine = textLine;     
-    }     
+    }
   }     
 }     
      
@@ -1644,7 +1705,7 @@ void KateDocument::readConfig()
   colors[0] = config->readColorEntry("Color Background", &colors[0]);     
   colors[1] = config->readColorEntry("Color Selected", &colors[1]);     
      
-  config->sync();     
+  config->sync();
 }     
      
 void KateDocument::writeConfig()     
@@ -1667,68 +1728,48 @@ void KateDocument::writeConfig()
      
 void KateDocument::readSessionConfig(KConfig *config)     
 {     
-  m_url = config->readEntry("URL"); // ### doesn't this break the encoding? (Simon)     
-  setHighlight(hlManager->nameFind(config->readEntry("Highlight")));     
-  // anders: restore bookmarks if possible     
-  QValueList<int> l = config->readIntListEntry("Bookmarks");     
-  if ( l.count() ) {     
-    for (uint i=0; i < l.count(); i++) {     
-      if ( numLines() < l[i] ) break;     
-      getTextLine( l[i] )->addMark( Bookmark );     
-    }     
-  }     
-}     
-     
-void KateDocument::writeSessionConfig(KConfig *config)     
-{     
-  config->writeEntry("URL", m_url.url() ); // ### encoding?? (Simon)     
-  config->writeEntry("Highlight", m_highlight->name());     
-  // anders: save bookmarks     
-  QPtrList<Kate::Mark> l = marks();     
-  QValueList<int> ml;     
-  for (uint i=0; i < l.count(); i++) {     
-    if ( l.at(i)->type == 1) // only save bookmarks     
-     ml << l.at(i)->line;     
-  }     
-  if ( ml.count() )     
-    config->writeEntry("Bookmarks", ml);     
-}     
-     
-     
-void KateDocument::setHighlight(int n) {     
-  Highlight *h;     
-     
-//  hlNumber = n;     
-     
-  h = hlManager->getHl(n);     
-  if (h == m_highlight) {     
-    updateLines();     
-  } else {     
-    if (m_highlight != 0L) m_highlight->release();     
-    h->use();     
-    m_highlight = h;     
-    makeAttribs();     
-  }     
-  PreHighlightedTill=0;     
-  RequestPreHighlightTill=0;     
-  emit(highlightChanged());     
-}     
-     
-void KateDocument::makeAttribs()     
-{     
-  hlManager->makeAttribs(this, m_highlight);     
-  updateFontData();     
-  updateLines();     
-}     
-     
-void KateDocument::updateFontData() {     
-  int maxAscent, maxDescent;     
-  int tabWidth;     
-  KateView *view;     
-     
-  maxAscent = myFontMetrics.ascent();     
-  maxDescent = myFontMetrics.descent();     
-  tabWidth = myFontMetrics.width(' ');     
+  m_url = config->readEntry("URL"); // ### doesn't this break the encoding? (Simon)
+  internalSetHlMode(hlManager->nameFind(config->readEntry("Highlight")));
+  // anders: restore bookmarks if possible
+  QValueList<int> l = config->readIntListEntry("Bookmarks");
+  if ( l.count() ) {
+    for (uint i=0; i < l.count(); i++) {
+      if ( numLines() < l[i] ) break;
+      getTextLine( l[i] )->addMark( Bookmark );
+    }
+  }
+}
+
+void KateDocument::writeSessionConfig(KConfig *config)
+{
+  config->writeEntry("URL", m_url.url() ); // ### encoding?? (Simon)
+  config->writeEntry("Highlight", m_highlight->name());
+  // anders: save bookmarks
+  QPtrList<Kate::Mark> l = marks();
+  QValueList<int> ml;
+  for (uint i=0; i < l.count(); i++) {
+    if ( l.at(i)->type == 1) // only save bookmarks
+     ml << l.at(i)->line;
+  }
+  if ( ml.count() )
+    config->writeEntry("Bookmarks", ml);
+}
+
+void KateDocument::makeAttribs()
+{
+  hlManager->makeAttribs(this, m_highlight);
+  updateFontData();
+  updateLines();
+}
+
+void KateDocument::updateFontData() {
+  int maxAscent, maxDescent;
+  int tabWidth;
+  KateView *view;
+
+  maxAscent = myFontMetrics.ascent();
+  maxDescent = myFontMetrics.descent();
+  tabWidth = myFontMetrics.width(' ');
      
   fontHeight = maxAscent + maxDescent + 1;     
   fontAscent = maxAscent;     
@@ -1741,7 +1782,7 @@ void KateDocument::updateFontData() {
   }     
 }     
      
-void KateDocument::hlChanged() { //slot     
+void KateDocument::internalHlChanged() { //slot     
   makeAttribs();     
   updateViews();     
 }     
@@ -1750,7 +1791,7 @@ void KateDocument::addView(KTextEditor::View *view) {
   myViews.append( static_cast<KateView *>( view ) );     
   _views.append( view );     
 }     
-     
+
 void KateDocument::removeView(KTextEditor::View *view) {     
   myViews.removeRef( static_cast<KateView *>( view ) );     
   _views.removeRef( view  );     
@@ -1764,7 +1805,7 @@ void KateDocument::removeCursor(KTextEditor::Cursor *cursor) {
   myCursors.removeRef( cursor  );     
 }     
      
-bool KateDocument::ownedView(KateView *view) {     
+bool KateDocument::ownedView(KateView *view) {
   // do we own the given view?     
   return (myViews.containsRef(view) > 0);     
 }     
@@ -1800,7 +1841,7 @@ uint KateDocument::textWidth(const TextLine::Ptr &textLine, int cursorX) {
      
 uint KateDocument::textWidth(KateViewCursor &cursor) {     
   if (cursor.col < 0)     
-     cursor.col = 0;     
+     cursor.col = 0;
   if (cursor.line < 0)     
      cursor.line = 0;     
   if (cursor.line >= numLines())     
