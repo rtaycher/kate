@@ -106,7 +106,7 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     KAction* windowPrev;
 
     QPopupMenu *bookmarkMenu, *documentMenu;
-    QPtrList<Kate::Mark> list;
+    QPtrList<KTextEditor::Mark> list;
 
     KToggleAction* settingsShowFilelist;
     KToggleAction* settingsShowFileselector;

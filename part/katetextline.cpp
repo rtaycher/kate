@@ -1,4 +1,4 @@
-/*************************************************************************** 
+/***************************************************************************
                           katetextline.cpp  -  description       
                              -------------------       
     begin                : Mon Feb 5 2001       
@@ -21,8 +21,7 @@
 TextLine::TextLine() 
   : text(0L), attributes(0L), textLen(0), ctx(0L), ctxLen(0) 
 { 
-  attr = 0; 
-  myMark = 0; 
+  attr = 0;
 } 
  
 TextLine::~TextLine() 
@@ -34,7 +33,7 @@ TextLine::~TextLine()
  
 void TextLine::replace(uint pos, uint delLen, const QChar *insText, uint insLen, uchar *insAttribs) 
 { 
-  uint newLen, z; 
+  uint newLen, z;
   int i, z2; 
   uchar newAttr; 
  
@@ -252,20 +251,10 @@ void TextLine::setContext(signed char *newctx, uint len)
  
   for (uint z=0; z < len; z++) ctx[z] = newctx[z]; 
 } 
- 
-void TextLine::addMark (uint m) 
-{       
-  myMark = myMark | m;       
-}       
-       
-void TextLine::delMark (uint m)       
-{       
-  myMark = myMark & ~m;       
-}       
        
 bool TextLine::searchText (unsigned int startCol, const QString &text, unsigned int *foundAtCol, unsigned int *matchLen, bool casesensitive, bool backwards) 
 { 
-  int index; 
+  int index;
  
   if (backwards) 
     index = QString (this->text, textLen).findRev (text, startCol, casesensitive); 

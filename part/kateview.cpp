@@ -2515,7 +2515,7 @@ void KateView::toggleIconBorder ()
   setIconBorder (!myIconBorder);
 }
 
-void KateView::gotoMark (Kate::Mark *mark)
+void KateView::gotoMark (KTextEditor::Mark *mark)
 {
   KateViewCursor cursor;
 
@@ -2530,19 +2530,19 @@ void KateView::gotoMark (Kate::Mark *mark)
 
 void KateView::toggleBookmark ()
 {
-  TextLine::Ptr line = myDoc->getTextLine (currentLine());
+  /*TextLine::Ptr line = myDoc->getTextLine (currentLine());
 
-  if (line->mark()&KateDocument::Bookmark)
-    line->delMark(KateDocument::Bookmark);
+  if (line->mark()&KateDocument::markType01)
+    line->delMark(KateDocument::markType01));
   else
     line->addMark(KateDocument::Bookmark);
 
   myDoc->tagLines (currentLine(), currentLine());
-  myDoc->updateViews();
+  myDoc->updateViews();*/
 }
 
 void KateView::clearBookmarks()
-{
+{/*
   QPtrList<Kate::Mark> list = myDoc->marks();
 
   for (int i=0; (uint) i < list.count(); i++)
@@ -2554,7 +2554,7 @@ void KateView::clearBookmarks()
     }
   }
 
-  myDoc->updateViews();
+  myDoc->updateViews();*/
 }
 
 void KateView::bookmarkMenuAboutToShow()
@@ -2567,7 +2567,7 @@ void KateView::bookmarkMenuAboutToShow()
   list = myDoc->marks();
   for (int i=0; (uint) i < list.count(); i++)
   {
-    if (list.at(i)->type&KateDocument::Bookmark)
+    if (list.at(i)->type&KateDocument::markType01)
     {
       QString bText = myDoc->textLine(list.at(i)->line);
       bText.truncate(32);

@@ -513,7 +513,7 @@ void KateMainWindow::bookmarkMenuAboutToShow()
   list = viewManager->activeView()->doc()->marks();
   for (int i=0; (uint) i < list.count(); i++)
   {
-    if (list.at(i)->type&KateDocument::Bookmark)
+    if (list.at(i)->type&KateDocument::markType01)
     {
       QString bText = viewManager->activeView()->doc()->textLine(list.at(i)->line);
       bText.truncate(32);
@@ -522,8 +522,6 @@ void KateMainWindow::bookmarkMenuAboutToShow()
     }
   }
 }
-
-
 
 void KateMainWindow::slotFindInFiles ()
 {

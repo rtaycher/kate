@@ -119,7 +119,7 @@ class KateUndo
       internalWrapLine,     
       internalUnWrapLine,     
       internalInsertLine,     
-      internalRemoveLine     
+      internalRemoveLine
     };     
      
   private:     
@@ -130,7 +130,7 @@ class KateUndo
     uint len;     
     QString text;     
 };     
-     
+
 class KateUndoGroup     
 {     
   public:     
@@ -163,7 +163,7 @@ KateUndo::KateUndo (KateDocument *doc, uint type, uint line, uint col, uint len,
 }     
      
 KateUndo::~KateUndo ()     
-{     
+{
 }     
      
 void KateUndo::undo ()     
@@ -174,7 +174,7 @@ void KateUndo::undo ()
   }     
   else if (type == KateUndo::internalRemoveText)     
   {     
-    myDoc->internalInsertText (line, col, text);     
+    myDoc->internalInsertText (line, col, text);
   }     
   else if (type == KateUndo::internalWrapLine)     
   {     
@@ -207,7 +207,7 @@ void KateUndo::redo ()
   else if (type == KateUndo::internalUnWrapLine)     
   {     
     myDoc->internalUnWrapLine (line, col);     
-  }     
+  }
   else if (type == KateUndo::internalWrapLine)     
   {     
     myDoc->internalWrapLine (line, col);     
@@ -218,7 +218,7 @@ void KateUndo::redo ()
   }     
   else if (type == KateUndo::internalInsertLine)     
   {     
-    myDoc->internalInsertLine (line, text);     
+    myDoc->internalInsertLine (line, text);
   }     
 }     
      
@@ -262,7 +262,7 @@ void KateUndoGroup::addItem (KateUndo *undo)
 // KateDocument Constructor     
 //     
 KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,     
-                                           QWidget *parentWidget, const char *widgetName,     
+                                           QWidget *parentWidget, const char *widgetName,
                                            QObject *, const char *)     
   : Kate::Document (),     
     myFont(KGlobalSettings::fixedFont()), myFontBold(KGlobalSettings::fixedFont()), myFontItalic(KGlobalSettings::fixedFont()), myFontBI(KGlobalSettings::fixedFont()),     
@@ -282,7 +282,9 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   myAttribsLen = 0;     
      
   m_bSingleViewMode=bSingleViewMode;     
-  m_bBrowserView = bBrowserView;     
+  m_bBrowserView = bBrowserView;    
+  
+  myMarks.setAutoDelete (true);
   
   selectStartLine = -1;
   selectStartCol = -1;
@@ -295,7 +297,7 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   _configFlags = KateDocument::cfAutoIndent | KateDocument::cfBackspaceIndents     
     | KateDocument::cfTabIndents | KateDocument::cfKeepIndentProfile     
     | KateDocument::cfRemoveSpaces     
-    | KateDocument::cfDelOnInput | KateDocument::cfMouseAutoCopy | KateDocument::cfWrapCursor     
+    | KateDocument::cfDelOnInput | KateDocument::cfMouseAutoCopy | KateDocument::cfWrapCursor
     | KateDocument::cfShowTabs | KateDocument::cfSmartHome;     
      
   _searchFlags = 0;     
@@ -324,8 +326,7 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
      
   buffer = new KateBuffer;     
   connect(buffer, SIGNAL(linesChanged(int)), this, SLOT(slotBufferChanged()));     
-//  connect(buffer, SIGNAL(textChanged()), this, SIGNAL(textChanged()));     
-  connect(buffer, SIGNAL(needHighlight(uint,uint)),this,SLOT(slotBufferHighlight(uint,uint)));     
+  connect(buffer, SIGNAL(needHighlight(uint,uint)),this,SLOT(slotBufferHighlight(uint,uint)));
 
   colors[0] = KGlobalSettings::baseColor();     
   colors[1] = KGlobalSettings::highlightColor();     
@@ -378,6 +379,7 @@ KateDocument::~KateDocument()
   delete kspell.ksc;
 
   m_highlight->release();
+  myMarks.clear ();
 
   delete [] myAttribs;
 }
@@ -469,6 +471,7 @@ bool KateDocument::clear()
   eolMode = KateDocument::eolUnix;
 
   buffer->clear();
+  clearMarks ();
   longestLine = buffer->line(0);
 
   clearUndo();
@@ -1215,7 +1218,7 @@ void KateDocument::setUndoSteps(uint steps)
 void KateDocument::undo()     
 {     
   undoItems.last()->undo();     
-  redoItems.append (undoItems.last());     
+  redoItems.append (undoItems.last());
   undoItems.removeLast ();     
      
   if (tagStart <= tagEnd) {
@@ -1536,7 +1539,7 @@ void KateDocument::readSessionConfig(KConfig *config)
   if ( l.count() ) {
     for (uint i=0; i < l.count(); i++) {
       if ( (int)numLines() < l[i] ) break;
-      getTextLine( l[i] )->addMark( Bookmark );
+      setMark( l[i], KateDocument::markType01 );
     }
   }
 }
@@ -1546,13 +1549,12 @@ void KateDocument::writeSessionConfig(KConfig *config)
   config->writeEntry("URL", m_url.url() ); // ### encoding?? (Simon)
   config->writeEntry("Highlight", m_highlight->name());
   // anders: save bookmarks
-  QPtrList<Kate::Mark> l = marks();
   QValueList<int> ml;
-  for (uint i=0; i < l.count(); i++) {
-    if ( l.at(i)->type == 1) // only save bookmarks
-     ml << l.at(i)->line;
+  for (uint i=0; i < myMarks.count(); i++) {
+    if ( myMarks.at(i)->type == 1) // only save bookmarks
+     ml << myMarks.at(i)->line;
   }
-  if ( ml.count() )
+  if (ml.count() )
     config->writeEntry("Bookmarks", ml);
 }
 
@@ -1642,6 +1644,110 @@ void KateDocument::configDialog()
   }
 
   delete kd;
+}
+
+uint KateDocument::mark (uint line)
+{
+  if (line > lastLine())
+    return 0;
+
+  for (uint z=0; z<myMarks.count(); z++)
+    if (myMarks.at(z)->line == line)
+      return myMarks.at(z)->type;
+
+  return 0;
+}
+
+void KateDocument::setMark (uint line, uint markType)
+{
+  if (line > lastLine())
+    return;
+
+  bool b = false;
+
+  for (uint z=0; z<myMarks.count(); z++)
+    if (myMarks.at(z)->line == line)
+    {
+      myMarks.at(z)->type=markType;
+      b = true;
+    }
+
+  if (!b)
+  {
+    KTextEditor::Mark *mark = new KTextEditor::Mark;
+    mark->line = line;
+    mark->type = markType;
+    myMarks.append (mark);
+  }
+
+  tagLines (line, line);
+  updateViews ();
+}
+
+void KateDocument::clearMark (uint line)
+{
+  for (uint z=0; z<myMarks.count(); z++)
+    if (myMarks.at(z)->line == line)
+      myMarks.remove(z);
+}
+
+void KateDocument::addMark (uint line, uint markType)
+{
+  if (line > lastLine())
+    return;
+
+  bool b = false;
+
+  for (uint z=0; z<myMarks.count(); z++)
+    if (myMarks.at(z)->line == line)
+    {
+      myMarks.at(z)->type=myMarks.at(z)->type | markType;
+      b = true;
+    }
+
+  if (!b)
+  {
+    KTextEditor::Mark *mark = new KTextEditor::Mark;
+    mark->line = line;
+    mark->type = markType;
+    myMarks.append (mark);
+  }
+
+  tagLines (line, line);
+  updateViews ();
+}
+
+void KateDocument::removeMark (uint line, uint markType)
+{
+  if (line > lastLine())
+    return;
+
+  for (uint z=0; z<myMarks.count(); z++)
+    if (myMarks.at(z)->line == line)
+    {
+      myMarks.at(z)->type=myMarks.at(z)->type & ~markType;
+      if (myMarks.at(z)->type == 0)
+        myMarks.remove(z);
+    }
+
+  tagLines (line, line);
+  updateViews ();
+}
+
+QPtrList<KTextEditor::Mark> KateDocument::marks ()
+{
+  return myMarks;
+}
+
+void KateDocument::clearMarks ()
+{
+  while (myMarks.count() > 0)
+  {
+    tagLines (myMarks.at (0)->line, myMarks.at (0)->line);
+    myMarks.remove((uint)0);
+  }
+  
+  updateViews ();
 }
 
 //
@@ -1792,7 +1898,7 @@ bool KateDocument::isModified() const {
 //
 
 void KateDocument::setFont (QFont font)     
-{     
+{
   //kdDebug()<<"Kate:: setFont"<<endl;     
   int oldwidth=myFontMetrics.width('W');  //Quick & Dirty Hack (by JoWenn) //Remove in KDE 3.0     
   myFont = font;     
@@ -1805,7 +1911,7 @@ void KateDocument::setFont (QFont font)
   myFontBI = QFont (font);     
   myFontBI.setBold (true);     
   myFontBI.setItalic (true);     
-     
+
   myFontMetrics = QFontMetrics (myFont);
   myFontMetricsBold = QFontMetrics (myFontBold);
   myFontMetricsItalic = QFontMetrics (myFontItalic);     
@@ -1836,7 +1942,7 @@ uint  KateDocument::needPreHighlight(uint till)
     }     
   return RequestPreHighlightTill;
 }
-     
+
 void KateDocument::doPreHighlight()     
 {     
   uint from = PreHighlightedTill;
@@ -2100,7 +2206,7 @@ void KateDocument::internalHlChanged() { //slot
 void KateDocument::addView(KTextEditor::View *view) {     
   myViews.append( static_cast<KateView *>( view ) );     
   _views.append( view );     
-}     
+}
 
 void KateDocument::removeView(KTextEditor::View *view) {     
   myViews.removeRef( static_cast<KateView *>( view ) );     
@@ -3741,27 +3847,7 @@ void KateDocument::slotModChanged()
 {     
   emit modStateChanged (this);     
 }     
-     
-QPtrList<Kate::Mark> KateDocument::marks ()     
-{     
-  QPtrList<Kate::Mark> list;     
-  TextLine::Ptr line;     
-     
-  for (uint i=0; i < numLines(); i++)
-  {
-    line = getTextLine(i);
-    if (line->mark() != 0)
-    {
-      Kate::Mark *mark=new Kate::Mark;     
-      mark->line = i;     
-      mark->type = line->mark();     
-      list.append (mark);     
-    }     
-  }     
-     
-  return list;     
-}     
-     
+
 void KateDocument::flush ()     
 {     
   if (!isReadWrite())     

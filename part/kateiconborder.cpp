@@ -161,7 +161,7 @@ void KateIconBorder::paintLine(int i)
 
   QPainter p(this);
 
-    int fontHeight = myView->doc()->fontHeight;
+    int fontHeight = myView->myDoc->fontHeight;
     int y = i*fontHeight - myInternalView->yPos;
     p.fillRect(0, y, myInternalView->iconBorderWidth-2, fontHeight, colorGroup().background());
     p.setPen(white);
@@ -169,13 +169,18 @@ void KateIconBorder::paintLine(int i)
     p.setPen(QColor(colorGroup().background()).dark());
     p.drawLine(myInternalView->iconBorderWidth-1, y, myInternalView->iconBorderWidth-1, y + fontHeight);
 
-    TextLine *line = myView->doc()->getTextLine(i);
-    if (!line)
-        return;
+    if (i > myView->myDoc->lastLine())
+      return;
 
-    if (line->mark()&KateDocument::Bookmark)
-        p.drawPixmap(2, y, QPixmap(bookmark_xpm));      /*
-    if (line && (line->breakpointId() != -1)) {
+    uint mark = myView->myDoc->mark (i);
+    if (mark == 0)
+      return;
+
+    if (mark&KateDocument::markType01)
+        p.drawPixmap(2, y, QPixmap(bookmark_xpm));
+
+         /*
+    if ((line->breakpointId() != -1)) {
         if (!line->breakpointEnabled())
             p.drawPixmap(2, y, QPixmap(breakpoint_gr_xpm));
         else if (line->breakpointPending())
@@ -190,23 +195,26 @@ void KateIconBorder::paintLine(int i)
 
 void KateIconBorder::paintEvent(QPaintEvent* e)
 {
-  if (!myView->myIconBorder) return;
+  if (!myView->myIconBorder)
+    return;
 
-    int lineStart = 0;
-    int lineEnd = 0;
+  int lineStart = 0;
+  int lineEnd = 0;
 
-    QRect updateR = e->rect();
+  QRect updateR = e->rect();
 
-    KateDocument *doc = myView->doc();
-    int h = doc->fontHeight;
-    int yPos = myInternalView->yPos;
-    if (h) {
+  KateDocument *doc = myView->doc();
+  int h = doc->fontHeight;
+  int yPos = myInternalView->yPos;
+
+  if (h)
+  {
       lineStart = (yPos + updateR.y()) / h;
         lineEnd = QMAX((yPos + updateR.y() + updateR.height()) / h, (int)doc->numLines());
     }
 
-    for(int i = lineStart; i <= lineEnd; ++i)
-        paintLine(i);
+  for(int i = lineStart; i <= lineEnd; ++i)
+    paintLine(i);
 }
 
 
@@ -214,24 +222,22 @@ void KateIconBorder::mousePressEvent(QMouseEvent* e)
 {
     myInternalView->placeCursor( 0, e->y(), 0 );
 
-    KateDocument *doc = myView->doc();
-    int cursorOnLine = (e->y() + myInternalView->yPos) / doc->fontHeight;
-    TextLine *line = doc->getTextLine(cursorOnLine);
+    int cursorOnLine = (e->y() + myInternalView->yPos) / myView->myDoc->fontHeight;
+
+    if (cursorOnLine > myView->myDoc->lastLine())
+      return;
+
+    uint mark = myView->myDoc->mark (cursorOnLine);
 
     switch (e->button()) {
     case LeftButton:
-        if (!line)
-            break;
-        else
-        {
-            if (line->mark()&KateDocument::Bookmark)
-              line->delMark (KateDocument::Bookmark);
+            if (mark&KateDocument::markType01)
+              myView->myDoc->removeMark (cursorOnLine, KateDocument::markType01);
             else
-              line->addMark (KateDocument::Bookmark);
+              myView->myDoc->addMark (cursorOnLine, KateDocument::markType01);
 
-            doc->tagLines(cursorOnLine, cursorOnLine);
-            doc->updateViews();
-        }
+            myView->myDoc->tagLines(cursorOnLine, cursorOnLine);
+            myView->myDoc->updateViews();
         break;
  /*   case RightButton:
         {

@@ -37,21 +37,12 @@
 #include <ktexteditor/searchinterface.h>
 #include <ktexteditor/highlightinginterface.h>
 #include <ktexteditor/configinterface.h>
-
-class KConfig;
+#include <ktexteditor/markinterface.h>
 
 namespace Kate
 {
 
 class View;
-
-/** internal class for document bookmarks. */
-class Mark
-{
-  public:
-    uint line;
-    uint type;
-};
 
 class Cursor : public KTextEditor::Cursor
 {
@@ -66,7 +57,7 @@ class Document : public KTextEditor::Document, public KTextEditor::EditInterface
                      public KTextEditor::UndoInterface, public KTextEditor::CursorInterface,
                      public KTextEditor::SelectionInterface, public KTextEditor::SearchInterface,
                      public KTextEditor::HighlightingInterface, public KTextEditor::BlockSelectionInterface,
-                          public KTextEditor::ConfigInterface
+                     public KTextEditor::ConfigInterface, public KTextEditor::MarkInterface
 {
   Q_OBJECT
 
@@ -91,27 +82,6 @@ class Document : public KTextEditor::Document, public KTextEditor::EditInterface
     /** Sets the document name.
     */
     virtual void setDocName (QString ) { ; };
-
-    /** Defines possible mark types. A line can have marks of different types.
-    */
-    enum marks
-    {
-    Bookmark = 1,
-    Breakpoint = 2,
-    markType0 = 4,
-    markType1 = 8,
-    markType2 = 16,
-    markType3 = 32,
-    markType4 = 64,
-    markType5 = 128,
-    markType6 = 256,
-    markType7 = 512,
-    markType8 = 1024
-    };
-
-    /** A list of all marks in a document. Use binary comparing to find marks of a specific type.
-    */
-    virtual QPtrList<Mark> marks() {QPtrList<Mark> l; return l;};
 
   public slots:
     // clear buffer/filename - update the views

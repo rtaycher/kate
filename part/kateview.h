@@ -675,7 +675,7 @@ class KateView : public Kate::View
   private:
     bool active;
     bool myIconBorder;
-    QPtrList<Kate::Mark> list;
+    QPtrList<KTextEditor::Mark> list;
 
   public slots:
     void setFocus ();
@@ -693,7 +693,7 @@ class KateView : public Kate::View
     void slotEditCommand ();
     void setIconBorder (bool enable);
     void toggleIconBorder ();
-    void gotoMark (Kate::Mark *mark);
+    void gotoMark (KTextEditor::Mark *mark);
     void toggleBookmark ();
     void clearBookmarks ();
 

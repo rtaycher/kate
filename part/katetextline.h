@@ -149,11 +149,6 @@ public:
     bool searchText (unsigned int startCol, const QString &text, unsigned int *foundAtCol, unsigned int *matchLen, bool casesensitive = true, bool backwards = false);
     bool searchText (unsigned int startCol, const QRegExp &regexp, unsigned int *foundAtCol, unsigned int *matchLen, bool backwards = false);
 
-    void clearMark () { myMark = 0; };
-    void addMark ( uint m );
-    void delMark ( uint m );
-    uint mark() { return myMark; };
-
     uchar *getAttribs() { return attributes; }
  
   protected: 
@@ -174,11 +169,6 @@ public:
     */
     signed char *ctx;
     uint ctxLen;
-
-    /**
-      The marks of the current line
-    */
-    uint myMark;
 };
 
 #endif

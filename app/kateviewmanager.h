@@ -192,7 +192,7 @@ class KateViewManager : public Kate::ViewManager
 
     void toggleVertical();
 
-    void gotoMark (Kate::Mark *mark);
+    void gotoMark (KTextEditor::Mark *mark);
 
     void slotApplyWordWrap ();
 

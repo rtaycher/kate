@@ -40,7 +40,6 @@ namespace Kate
 {
 
 class Document;
-class Mark;
 
 /**
   The Kate::View text editor interface.
@@ -262,18 +261,6 @@ class View : public KTextEditor::View, public KTextEditor::ClipboardInterface,
       Toggles icon border.
     */
     virtual void toggleIconBorder () { ; };
-    /**
-      Goto bookmark.
-    */
-    virtual void gotoMark (Mark *) { ; };
-    /**
-      Toggle current line bookmark.
-    */
-    virtual void toggleBookmark () { ; };
-    /**
-      Clear all bookmarks
-    */
-    virtual void clearBookmarks () { ; };
 
   public:
     /**

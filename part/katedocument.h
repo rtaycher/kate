@@ -218,6 +218,24 @@ class KateDocument : public Kate::Document
     void configDialog ();
 
   //
+  // KTextEditor::MarkInterface stuff
+  //
+  public slots:
+    uint mark (uint line);
+
+    void setMark (uint line, uint markType);
+    void clearMark (uint line);
+
+    void addMark (uint line, uint markType);
+    void removeMark (uint line, uint markType);
+
+    QPtrList<KTextEditor::Mark> marks ();
+    void clearMarks ();
+
+  private:
+    QPtrList<KTextEditor::Mark> myMarks;
+
+  //
   // KParts::ReadWrite stuff
   //
   public:
@@ -557,9 +575,6 @@ class KateDocument : public Kate::Document
   signals:
     void modStateChanged (KateDocument *doc);
     void nameChanged (KateDocument *doc);
-
-  public:
-    QPtrList<Kate::Mark> marks ();
 
   public slots:
     // clear buffer/filename - update the views
