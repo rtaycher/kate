@@ -294,10 +294,6 @@ void KateMainWindow::setupActions()
   settingsShowToolbar = KStdAction::showToolbar(this, SLOT(slotSettingsShowToolbar()), actionCollection(), "settings_show_toolbar");
   settingsConfigure = KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
 
-  // help menu
-// Don't call this, KMainWindow does it for us.
-//  new KHelpMenu(this, instance()->aboutData(), true, actionCollection());
-
   // tip of the day :-)
   KStdAction::tipOfDay( this, SLOT( tipOfTheDay() ), actionCollection() );
 
@@ -388,10 +384,8 @@ void KateMainWindow::readOptions(KConfig *config)
   fileOpenRecent->loadEntries(config, "Recent Files");
 
   fileselector->readConfig(config, "fileselector");
-  //fileselector->setView(KFile::Default); grr - the file selector reads the config and does this!!
 
-//  if (m_dockStyle!=IDEAlStyle)
-    readDockConfig();
+  readDockConfig();
 }
 
 void KateMainWindow::saveOptions(KConfig *config)
@@ -414,8 +408,7 @@ void KateMainWindow::saveOptions(KConfig *config)
 
   fileselector->writeConfig(config, "fileselector");
     
-  //if (m_dockStyle!=IDEAlStyle)
-    writeDockConfig();
+  writeDockConfig();
 
   if (m_viewManager->activeView())
     m_viewManager->activeView()->getDoc()->writeConfig();
