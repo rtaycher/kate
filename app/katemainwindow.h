@@ -151,6 +151,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
 
     KToggleAction* settingsShowFilelist;
     KToggleAction* settingsShowFileselector;
+    KToggleAction* showFullScreenAction;
 
     KAction* settingsConfigure;
 
@@ -213,6 +214,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     void openURL (const QString &name=0L);
 
   protected:
+    virtual bool event(QEvent*);
     static uint uniqueID;
     Kate::MainWindow *m_mainWindow;
     Kate::ToolViewManager *m_toolViewManager;
