@@ -309,6 +309,9 @@ class KateDocument : public Kate::Document
     bool ownedView(KateView *);
     bool isLastView(int numViews);
 
+    int charWidth(const TextLine::Ptr &textLine, int cursorX);
+    int charWidth(KateViewCursor &cursor);
+
     uint textWidth(const TextLine::Ptr &, int cursorX);
     uint textWidth(KateViewCursor &cursor);
     uint textWidth(bool wrapCursor, KateViewCursor &cursor, int xPos);
@@ -355,6 +358,7 @@ class KateDocument : public Kate::Document
     void updateMaxLength(TextLine::Ptr &);
     void updateViews(KateView *exclude = 0L);
 
+    QColor &backCol(int x, int y);
     QColor &cursorCol(int x, int y);
     void paintTextLine(QPainter &, int line, int xStart, int xEnd, bool showTabs);
     void paintTextLine(QPainter &, int line, int y, int xStart, int xEnd, bool showTabs);

@@ -1800,6 +1800,38 @@ bool KateDocument::ownedView(KateView *view) {
 bool KateDocument::isLastView(int numViews) {     
   return ((int) myViews.count() == numViews);     
 }     
+
+
+int KateDocument::charWidth(const TextLine::Ptr &textLine, int cursorX) {
+  QChar ch = textLine->getChar(cursorX);
+  Attribute *a = attribute(textLine->getAttr(cursorX));
+  int x;
+
+  if (ch == '\t')
+    x = m_tabWidth - (textWidth(textLine, cursorX) % m_tabWidth);
+  else if (a->bold && a->italic)
+    x = myFontMetricsBI.width(ch);
+  else if (a->bold)
+    x = myFontMetricsBold.width(ch);
+  else if (a->italic)
+    x = myFontMetricsItalic.width(ch);
+  else
+    x = myFontMetrics.width(ch);
+
+  return x;
+}
+
+int KateDocument::charWidth(KateViewCursor &cursor) {
+  if (cursor.col < 0)
+     cursor.col = 0;
+  if (cursor.line < 0)
+     cursor.line = 0;
+  if (cursor.line >= numLines())
+     cursor.line = lastLine();
+  return charWidth(getTextLine(cursor.line),cursor.col);
+}
+
+
      
 uint KateDocument::textWidth(const TextLine::Ptr &textLine, int cursorX)
 {
@@ -2761,6 +2793,10 @@ void KateDocument::updateViews(KateView *exclude) {
   }
   newDocGeometry = false;
 }
+
+QColor &KateDocument::backCol(int x, int y) {
+  return (lineColSelected(x,y)) ? colors[1] : colors[0];
+ }
 
 QColor &KateDocument::cursorCol(int x, int y)
 {

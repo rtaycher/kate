@@ -4,26 +4,34 @@
   <highlighting>
     <contexts>
        <context attribute="0" lineEndContext="#stay">
+	 <StringDetect attribute="Comment" context="6" String="&lt;!--"/>
          <RegExpr attribute="1" context="1" String="&lt;\s*\/?\s*[a-zA-Z0-9_]*" />
        </context>
 
        <context attribute="2" lineEndContext="#stay">
+	 <StringDetect attribute="Comment" context="6" String="&lt;!--"/>
          <DetectChar attribute="1" context="#pop" char="&gt;"/>
          <RegExpr attribute="0" context="2" String="\s*=\s*"/>
        </context>
 
        <context attribute="8" lineEndContext="#stay">
+	 <StringDetect attribute="Comment" context="6" String="&lt;!--"/>
          <RegExpr attribute="3" context="#pop" String="\s*#?[a-zA-Z0-9]*" />
          <DetectChar attribute="3" context="3" char="&quot;" />
        </context>
 
        <context attribute="3" lineEndContext="#stay">
-         <DetectChar attribute="3" context="1" char="&quot;" />
+         <DetectChar attribute="3" context="#pop#pop" char="&quot;" />
        </context>
 
        <context attribute="5" lineEndContext="#pop"/>
        <context attribute="4" lineEndContext="#pop">
          <DetectChar attribute="4" context="#pop" char="'"/>
+       </context>
+
+       <context attribute="Comment" lineEndContext="#stay">
+	 <StringDetect attribute="Comment" context="6" String="&lt;!--"/>
+	 <StringDetect attribute="Comment" context="#pop" String="--&gt;"/>
        </context>
     </contexts>
     <itemDatas>

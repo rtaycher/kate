@@ -31,7 +31,7 @@
 #include <kstddirs.h>
  
 #include "katehighlight.h" 
-#include "katehighlight.moc" 
+#include "katehighlight.moc"
  
 #include "katetextline.h" 
 #include "katedocument.h" 
@@ -130,7 +130,7 @@ const QChar *HlStringDetect::checkHgl(const QChar *s, int, bool) {
 HlRangeDetect::HlRangeDetect(int attribute, int context, QChar ch1, QChar ch2) 
   : HlItem(attribute,context) { 
   sChar1 = ch1; 
-  sChar2 = ch2; 
+  sChar2 = ch2;
 } 
  
 const QChar *HlRangeDetect::checkHgl(const QChar *s, int len, bool) { 
@@ -163,7 +163,7 @@ HlKeyword::~HlKeyword() {
 bool HlKeyword::startEnable(QChar c) 
 { 
   return ustrchr(deliminatorChars, deliminatorLen, c); 
-} 
+}
  
 // If we use a dictionary for lookup we don't really need 
 // an item as such we are using the key to lookup 
@@ -196,7 +196,7 @@ const QChar *HlKeyword::checkHgl(const QChar *s, int len, bool )
   if ( dict.find(lookup) ) return s2; 
   return 0L; 
 }
- 
+
 HlInt::HlInt(int attribute, int context) 
   : HlItem(attribute,context) { 
 }
@@ -229,7 +229,7 @@ const QChar *HlFloat::checkHgl(const QChar *s, int len, bool) {
   bool b, p; 
   const QChar *s1; 
  
-  b = false; 
+  b = false;
   while (s->isDigit()){ 
     s++; 
     b = true; 
@@ -262,7 +262,7 @@ const QChar *HlFloat::checkHgl(const QChar *s, int len, bool) {
   while (s->isDigit()) { 
     s++; 
     b = true; 
-  } 
+  }
   if (b) 
     { 
       if (subItems) 
@@ -295,7 +295,7 @@ const QChar *HlCInt::checkHgl(const QChar *s, int len, bool lineStart) {
     do { 
       str = s; 
       if ((*s&0xdf) == 'L' ) { 
-        l++; 
+        l++;
         if (l > 2) return 0L; 
         s++; 
       } 
@@ -361,7 +361,7 @@ const QChar *HlCHex::checkHgl(const QChar *str, int , bool) {
 HlCFloat::HlCFloat(int attribute, int context)
   : HlFloat(attribute,context) {
 } 
- 
+
 const QChar *HlCFloat::checkHgl(const QChar *s, int len, bool lineStart) { 
  
   s = HlFloat::checkHgl(s, len, lineStart); 
@@ -427,7 +427,7 @@ const QChar *checkCharHexOct(const QChar *str) {
   if (*s == 'x') { 
     n = 0; 
     do { 
-      s++; 
+      s++;
       n *= 16; 
       if (s->isDigit()) n += *s - '0'; 
       else if ((*s&0xdf) >= 'A' && (*s&0xdf) <= 'F') n += (*s&0xdf) - 'A' + 10; 
@@ -460,7 +460,7 @@ const QChar *checkEscapedChar(const QChar *s, int len) {
                 case  'f': 
  
                 case  'n': 
-                case  'r': 
+                case  'r':
                 case  't': 
                 case  'v': 
                 case '\'': 
@@ -493,7 +493,7 @@ const QChar *HlCStringChar::checkHgl(const QChar *str, int len, bool) {
   return checkEscapedChar(str, len); 
 } 
  
- 
+
 HlCChar::HlCChar(int attribute, int context) 
   : HlItem(attribute,context) { 
 } 
@@ -526,7 +526,7 @@ ItemData::ItemData(const QString  name, int defStyleNum)
  
 ItemData::ItemData(const QString name, int defStyleNum, 
   const QColor &col, const QColor &selCol, bool bold, bool italic) 
-  : ItemStyle(col,selCol,bold,italic), name(name), defStyleNum(defStyleNum), 
+  : ItemStyle(col,selCol,bold,italic), name(name), defStyleNum(defStyleNum),
   defStyle(false) { 
 } 
  
@@ -559,7 +559,7 @@ Highlight::Highlight(syntaxModeListItem *def) : refCount(0)
   } 
   else 
   { 
-    iName = def->name; 
+    iName = def->name;
     iSection = def->section; 
     iWildcards = def->extension;
     iMimetypes = def->mimetype;
@@ -574,65 +574,84 @@ Highlight::~Highlight()
 {
 }
 
+
+
+
+
 signed char *Highlight::generateContextStack(int *ctxNum, int ctx,signed char *ctxs, uint *ctxsLen, int *prevLine)
 {
   if (ctx>=0)
   {
-	//  kdDebug()<<"test1-2-1-1"<<endl;
+        //  kdDebug()<<"test1-2-1-1"<<endl;
 
     (*ctxNum) = ctx;
 
-		if (ctxs == 0L)
-			ctxs = (signed char *) malloc ((*ctxsLen)+1);
-		else
+                if (ctxs == 0L)
+                        ctxs = (signed char *) malloc ((*ctxsLen)+1);
+                else
       ctxs = (signed char *) realloc (ctxs, (*ctxsLen)+1);
 
-	  (*ctxsLen)++;
+          (*ctxsLen)++;
     ctxs[(*ctxsLen)-1]=(*ctxNum);
 
-	///	kdDebug()<<"test1-2-1-2"<<endl;
+        ///     kdDebug()<<"test1-2-1-2"<<endl;
   }
   else
-	{
-    if (ctx==-1)
+        {
+    if (ctx<-1)
     {
-		//  kdDebug()<<"test1-2-1-3"<<endl;
-
-      if ((*ctxsLen)==0)
-		    (*ctxNum)=0;
-      else
-      {
-        // kdDebug()<<"Truncating 'stack'"<<endl;
-        ctxs = (signed char *) realloc (ctxs, (*ctxsLen)-1);
-			  (*ctxsLen)--;
-        (*ctxNum) = (((*ctxsLen)==0)?0:ctxs[(*ctxsLen)-1]);
-      }
-
-		//	kdDebug()<<"test1-2-1-4"<<endl;
-		}
-
-	  if ((*prevLine)>=(int)(*ctxsLen)-1)
-		{
-		//  kdDebug()<<"test1-2-1-5"<<endl;
-
-		  *prevLine=(*ctxsLen)-1;
-		  if ((*ctxsLen)==0) return ctxs;
-
-			if (contextList[ctxs[(*ctxsLen)-1]] && (contextList[ctxs[(*ctxsLen)-1]]->ctx!=-2))
-			  return generateContextStack(ctxNum, contextList[ctxs[(*ctxsLen)-1]]->ctx,ctxs,ctxsLen, prevLine);
-
-		//	kdDebug()<<"test1-2-1-6"<<endl;
-		}
-	  else
-   	{
-	    if (ctx==-2) (*ctxNum)=(((*ctxsLen)==0)?0:ctxs[(*ctxsLen)-1]);
+                //  kdDebug()<<"test1-2-1-3"<<endl;
+	while (ctx<-1)
+	{
+	      if ((*ctxsLen)==0)
+                    (*ctxNum)=0;
+	      else
+	      {
+	        // kdDebug()<<"Truncating 'stack'"<<endl;
+	        ctxs = (signed char *) realloc (ctxs, (*ctxsLen)-1);
+	                          (*ctxsLen)--;
+	        (*ctxNum) = (((*ctxsLen)==0)?0:ctxs[(*ctxsLen)-1]);
+	      }
+		ctx++;
+	}
+	ctx=0;
+	                //      kdDebug()<<"test1-2-1-4"<<endl;
     }
-  }
 
-	//kdDebug()<<"test1-2-1-end"<<endl;
+          if ((*prevLine)>=(int)(*ctxsLen)-1)
+                {
+                //  kdDebug()<<"test1-2-1-5"<<endl;
 
-	return ctxs;
+                  *prevLine=(*ctxsLen)-1;
+                  if ((*ctxsLen)==0) return ctxs;
+
+                        if (contextList[ctxs[(*ctxsLen)-1]] && (contextList[ctxs[(*ctxsLen)-1]]->ctx!=-1))
+                          return generateContextStack(ctxNum, contextList[ctxs[(*ctxsLen)-1]]->ctx,ctxs,ctxsLen, prevLine);
+
+                //      kdDebug()<<"test1-2-1-6"<<endl;
+                }
+
+          else
+	{
+            if (ctx==-1) (*ctxNum)=(((*ctxsLen)==0)?0:ctxs[(*ctxsLen)-1]);
+    }
+
 }
+        //kdDebug()<<"test1-2-1-end"<<endl;
+
+        return ctxs;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 /*******************************************************************************************
         Highlight - doHighlight
@@ -1094,8 +1113,16 @@ HlItem *Highlight::createHlItem(syntaxContextData *data, ItemDataList &iDl)
                 // Info about context switch
 		int context;
 		QString tmpcontext=HlManager::self()->syntax->groupItemData(data,QString("context"));
-		if (tmpcontext=="#stay") context=-2;
-		else if (tmpcontext=="#pop") context=-1;
+		if (tmpcontext=="#stay") context=-1;
+		else if (tmpcontext.startsWith("#pop"))
+		{
+			 context=-1;
+			 for(;tmpcontext.startsWith("#pop");context--)
+				{
+					tmpcontext.remove(0,4);
+					kdDebug()<<"#pop found"<<endl;
+				}
+		}
 		else context=tmpcontext.toInt();
 
                 // Get the char parameter (eg DetectChar)
@@ -1313,9 +1340,18 @@ void Highlight::makeContextList()
  
 	  QString tmpLineEndContext=HlManager::self()->syntax->groupData(data,QString("lineEndContext")); 
 	  int context; 
-	  if (tmpLineEndContext=="#stay") context=-2; 
-	  	else if (tmpLineEndContext=="#pop") context=-1; 
-			else context=tmpLineEndContext.toInt(); 
+
+          if (tmpLineEndContext=="#stay") context=-1;
+                else if (tmpLineEndContext.startsWith("#pop"))
+                {
+                         context=-1;
+                         for(;tmpLineEndContext.startsWith("#pop");context--)
+                                {
+                                        tmpLineEndContext.remove(0,4);
+                                        kdDebug()<<"#pop found"<<endl;
+                                }
+                }
+		else context=tmpLineEndContext.toInt(); 
  
           contextList[i]=new HlContext( 
             attr, 
