@@ -76,6 +76,7 @@
 #include <ktrader.h>
 #include <kuniqueapp.h>
 #include <kurldrag.h>
+#include <kdesktopfile.h>
 
 #include "kategrepdialog.h"
 
@@ -727,5 +728,25 @@ void KateMainWindow::pluginHelp()
 
 void KateMainWindow::setupScripts()
 {
+	// scan $KDEDIR/share/applications/kate/scripts/ for desktop files
+	// and populate the list
+	QString localpath = QString(kapp->name()) + "/scripts/";
+	QDir d(locate("data", localpath));
+	const QFileInfoList *fileList = d.entryInfoList("*.desktop");
+	QFileInfoListIterator it (*fileList);
+	QFileInfo *fi;
+	while (( fi=it.current()))
+	{
+		if (KDesktopFile::isDesktopFile(fi->absFilePath()))
+		{
+			kscript->addScript(fi->absFilePath());
+		}
+		++it;
+	}
+}
 
+void KateMainWindow::runScript()
+{
+	kdDebug(13000) << "Starting script engine..." << endl;
+	kscript->runScript(scriptMenu->currentText());
 }

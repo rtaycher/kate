@@ -1,7 +1,7 @@
 kde_services_DATA = katepart.desktop
 
 katescriptsdir = $(kde_datadir)/kate/scripts
-katescripts_DATA = sample.desktop
+katescripts_DATA = sample.desktop sample.sh
 
 kdelnk_DATA = kate.desktop kwrite.desktop
 kdelnkdir = $(kde_appsdir)/Editors

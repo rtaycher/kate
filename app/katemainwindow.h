@@ -134,6 +134,7 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
   public slots:
     void slotGrepDialogItemSelected ( QString filename, int linenumber );
     void slotFindInFiles ();
+    void runScript();
 
   private:
     void setupMainWindow();
