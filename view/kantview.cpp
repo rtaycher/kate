@@ -1630,7 +1630,6 @@ void KantView::slotHighlightChanged()
 
 void KantView::slotDropEventPass( QDropEvent * ev )
 {
-    qDebug("KantView::slotDropEventPass");
     KURL::List lstDragURLs;
     bool ok = KURLDrag::decode( ev, lstDragURLs );
 
