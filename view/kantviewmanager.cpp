@@ -725,21 +725,6 @@ void KantViewManager::slotGotoLine ()
   activeView()->gotoLine();
 }
 
-void KantViewManager::slotHlDlg ()
-{
-  if (activeView() == 0) return;
-
-  activeView()->hlDlg();
-
-// KWriteFactory::instance()->config()->sync();
-
-  KConfig *config = new KConfig("kwriterc");
-  activeView()->writeConfig(config);
-  activeView()->doc()->writeConfig(config);
-
-//  KWriteFactory::instance()->config()->sync();
-}
-
 void KantViewManager::setEol(int which)
 {
   if (activeView())

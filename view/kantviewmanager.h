@@ -157,7 +157,6 @@ class KantViewManager : public KantViewManagerIface
 
     void slotInsertFile ();
 
-    void slotHlDlg ();
     void slotSetHl (int n);
 
     void slotSpellcheck ();

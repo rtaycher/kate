@@ -277,7 +277,7 @@ void KantMainWindow::setupActions()
 
   documentReload = new KAction(i18n("&Reload"), "reload", Key_F4, viewManager, SLOT(reloadCurrentDoc()), actionCollection(), "document_reload");
 
-  setHighlightConf = new KAction(i18n("Configure Highlighti&ng..."), 0, viewManager, SLOT(slotHlDlg()),actionCollection(), "set_confHighlight");
+  setHighlightConf = new KAction(i18n("Configure Highlighti&ng..."), 0, this, SLOT(slotHlConfigure()),actionCollection(), "set_confHighlight");
 
   setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, actionCollection(), "set_highlight");
   connect(setHighlight, SIGNAL(activated(int)), viewManager, SLOT(slotSetHl(int)));
@@ -1025,6 +1025,16 @@ void KantMainWindow::slotConfigure()
 
   delete dlg;
   dlg = 0;
+}
+
+void KantMainWindow::slotHlConfigure()
+{
+  KantView* v = 0L;
+  v = viewManager->activeView();
+
+  if (!v) return;
+
+  v->hlDlg();
 }
 
 

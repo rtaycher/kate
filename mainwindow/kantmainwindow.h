@@ -170,6 +170,7 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     void slotSettingsShowToolbar();
 
     void slotConfigure();
+    void slotHlConfigure();
 
     void slotSidebarFocusNext();
 
