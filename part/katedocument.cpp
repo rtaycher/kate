@@ -712,7 +712,10 @@ bool KateDocument::internalRemoveText ( uint line, uint col, uint len )
     view->getCursorPosition (&cLine, &cCol);
 
 	  if ( (cLine == line) && (cCol > col) )
-      cCol = col;
+      cCol = cCol-len;
+			
+		if (cCol < 0)
+		  cCol = 0;
 
     c.line = line;
     c.col = cCol;
