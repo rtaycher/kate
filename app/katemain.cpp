@@ -101,22 +101,23 @@ int main( int argc, char **argv )
 
         QByteArray ba,da;
         QCString replyType;
+
         if (!(client->call(appID,"KateApp","isSingleInstance()",da,replyType,ba,true)))
-	        running = false;
-        if (client->call(appID,"KateApp","isSDI()",da,replyType,ba,true))
-	        running = false;
+          running = false;
         else
+        {
+          if (replyType!="QString")
+            running=false;
+          else
           {
-            if (replyType!="QString") running=false;
-              else
-                {
-		   QDataStream reply(ba, IO_ReadOnly);
-                   QString result;
-                   reply>>result;
-		   running=(result=="true");
-                }
+            QDataStream reply(ba, IO_ReadOnly);
+            QString result;
+            reply>>result;
+            running=(result=="true");
           }
-	break;
+        }
+
+        break;
       }
     }
   }
