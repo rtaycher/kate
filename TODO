@@ -1,4 +1,5 @@
 TODO:
+ - dynamic word wrap
  - Check docs for change on hd when focused, warning dialog: reload? yes/no[/view diff]
  - Fix remaining bugs ;)
  - exhaustive testing of the new highlighting structure
