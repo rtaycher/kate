@@ -356,7 +356,7 @@ bool KateViewManager::closeDocWithAllViews ( Kate::View *view )
 {
   if (!view) return false;
 
-  if (!view->canDiscard()) return false;
+  if (!view->document()->closeURL()) return false;
 
   Kate::Document *doc = view->getDoc();
   QPtrList<Kate::View> closeList;
