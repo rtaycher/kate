@@ -18,13 +18,10 @@
 #include "katedocmanager.h"
 #include "katedocmanager.moc"
 
-#include <klibloader.h>
-
 KateDocManager::KateDocManager () : Kate::DocManager ()
 {
   docList.setAutoDelete(true);
   myCurrentDoc = 0L;
-  partLib = KLibLoader::self()->library( "katepart" );
 
   createDoc ();
   myfirstDoc = true;
@@ -32,12 +29,11 @@ KateDocManager::KateDocManager () : Kate::DocManager ()
 
 KateDocManager::~KateDocManager ()
 {
-  partLib->unload();
 }
 
 Kate::Document *KateDocManager::createDoc ()
 {
-  KTextEditor::Document *doc = (KTextEditor::Document *) partLib->factory()->create (0L, "kate", "KTextEditor::Document");
+  KTextEditor::Document *doc = KTextEditor::createDocument ("katepart");
   docList.append((Kate::Document *)doc);
 
   emit documentCreated ((Kate::Document *)doc);
