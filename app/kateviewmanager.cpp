@@ -489,6 +489,8 @@ void KateViewManager::restoreViewConfiguration (KConfig *config, const QString& 
 
   if (activeOne != m_mainWindow->tabWidget()->currentPageIndex())
     m_mainWindow->tabWidget()->setCurrentPage (activeOne);
+
+  updateViewSpaceActions();
 }
 
 KateMainWindow *KateViewManager::mainWindow() {
