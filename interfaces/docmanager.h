@@ -44,7 +44,7 @@ class DocManager : public QObject
   public:
     /** Returns a pointer to the document indexed by n in the managers internal list.
     */
-    virtual class Document *getNthDoc (uint n) { return 0L; };
+    virtual class Document *getNthDoc (uint ) { return 0L; };
     /** Returns a pointer to the currently active document or NULL if no document is open.
     */
     virtual class Document *getCurrentDoc () { return 0L; };
@@ -56,14 +56,14 @@ class DocManager : public QObject
     virtual class Document *getNextDoc () { return 0L; };
     /** Returns a pointer to the document with the given ID or NULL if no such document exists.
     */
-    virtual class Document *getDocWithID (uint ID) { return 0L; };
+    virtual class Document *getDocWithID (uint ) { return 0L; };
 
     /** Returns the ID of the document located at url if such a document is known by the manager.
      */
-    virtual int findDoc (KURL url) { return 0L; };
+    virtual int findDoc (KURL ) { return 0L; };
     /** Returns true if the document located at url is open, otherwise false.
      */
-    virtual bool isOpen (KURL url) { return 0L; };
+    virtual bool isOpen (KURL ) { return 0L; };
 
     /** returns the number of documents managed by this manager.
     */

@@ -32,6 +32,7 @@
 #include <ktexteditor/clipboardinterface.h>
 #include <ktexteditor/popupmenuinterface.h>
 #include <ktexteditor/viewcursorinterface.h>
+#include <ktexteditor/codecompletioninterface.h>
 
 class KConfig;
 
@@ -46,7 +47,8 @@ class Mark;
   @author Cullmann Christoph, modified by rokrau (6/21/01)
 */
 class View : public KTextEditor::View, public KTextEditor::ClipboardInterface,
-             public KTextEditor::PopupMenuInterface, public KTextEditor::ViewCursorInterface
+             public KTextEditor::PopupMenuInterface, public KTextEditor::ViewCursorInterface,
+	     public KTextEditor::CodeCompletionInterface
 {
   Q_OBJECT
 

@@ -41,6 +41,7 @@ class QTextDrag;
 class KPrinter;
 class KateDocument;
 class Highlight;
+class KateIconBorder;
 
 /*
 //dialog results
@@ -110,25 +111,6 @@ struct BracketMark {
   int eXPos;
 };
 
-
-class KateIconBorder : public QWidget
-{
-public:
-    KateIconBorder(KateView *view, class KateViewInternal *internalView);
-    ~KateIconBorder();
-
-    void paintLine(int i);
-
-protected:
-    void paintEvent(QPaintEvent* e);
-    void mousePressEvent(QMouseEvent* e);
-
-private:
-
-    KateView *myView;
-    class KateViewInternal *myInternalView;
-    bool lmbSetsBreakpoints;
-};
 
 class KateViewInternal : public QWidget {
     Q_OBJECT
@@ -569,6 +551,21 @@ class KateView : public Kate::View
   signals:
     void bookAddChanged(bool enabled);
     void bookClearChanged(bool enabled);
+
+
+//code completion
+  private:
+    void initCodeCompletionImplementation();
+  public:
+    virtual void showArgHint(QStringList, const QString &, const QString &);
+    virtual void showCompletionBox(QValueList<KTextEditor::CompletionEntry>, int = 0);
+
+  signals:
+    void completionAborted();
+    void completionDone(); 
+    void argHintHided();
+
+
 
 //config file / session management functions
   public:
