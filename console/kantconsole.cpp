@@ -57,8 +57,8 @@ KantConsole::~KantConsole ()
 
 void KantConsole::slotDestroyed ()
 {
-  if (!topLevelWidget()) return;
-    /*
+  if (!topLevelWidget() || !parentWidget()->isVisible()) return;
+
  KLibFactory *factory = 0;
     factory = KLibLoader::self()->factory("libkonsolepart");
     KParts::ReadOnlyPart *part=0;
@@ -75,5 +75,5 @@ void KantConsole::slotDestroyed ()
         }
     if (part==0)
 	lo->addWidget(new QLabel(i18n("You'll need kdebase - konsole to use this feature"),this));
-                   */
+
 }
