@@ -168,7 +168,7 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc, bool Handl
 
   QWidget::setCursor(ibeamCursor);
   setBackgroundMode(NoBackground);
-  KCursor::setAutoHideCursor( this, true );
+  KCursor::setAutoHideCursor( this, true, true );
 
   setFocusPolicy(StrongFocus);
   move(2,2);
@@ -709,7 +709,7 @@ void KateViewInternal::updateCursor(PointStruc &newCursor) {
 void KateViewInternal::updateCursor(PointStruc &newCursor, int flags) {
 
   if (!(flags & KateView::cfPersistent)) myDoc->deselectAll();
- 
+
   exposeCursor = true;
   if (cursorOn) {
     tagLines(cursor.y, cursor.y, cXPos -2, cXPos +3);
@@ -3448,12 +3448,16 @@ void KateView::setFocus ()
 
 bool KateView::eventFilter (QObject *object, QEvent *event)
 {
-  if ( (event->type() == 8) )
+  if ( object == myViewInternal )
+    KCursor::autoHideEventFilter( object, event );
+
+  if ( (event->type() == QEvent::FocusIn) )
     emit gotFocus (this);
 
-  if ( (event->type() == 6) )
+  if ( (event->type() == QEvent::KeyPress) )
     {
         QKeyEvent * ke=(QKeyEvent *)event;
+
         if ((ke->key()==Qt::Key_Tab) || (ke->key()==Qt::Key_BackTab))
           {
             myViewInternal->keyPressEvent(ke);
