@@ -218,7 +218,7 @@ void KateMainWindow::setupActions()
   KStdAction::findPrev(viewManager, SLOT(slotFindAgainB()), actionCollection(), "edit_find_prev");
   KStdAction::replace(viewManager, SLOT(slotReplace()), actionCollection());
 
-  new KAction(i18n("Find in Files"), CTRL+SHIFT+Qt::Key_F, this, SLOT(slotFindInFiles()), actionCollection(),"edit_find_in_files" );
+  new KAction(i18n("Find in Files..."), CTRL+SHIFT+Qt::Key_F, this, SLOT(slotFindInFiles()), actionCollection(),"edit_find_in_files" );
 
   new KAction(i18n("&Indent"), "indent", CTRL+Key_I, viewManager, SLOT(slotIndent()), actionCollection(), "edit_indent");
   new KAction(i18n("&Unindent"), "unindent", CTRL+SHIFT+Key_I, viewManager, SLOT(slotUnIndent()), actionCollection(), "edit_unindent");
@@ -228,7 +228,7 @@ void KateMainWindow::setupActions()
 
   new KAction(i18n("Apply Word Wrap"), "", 0, viewManager, SLOT(slotApplyWordWrap()), actionCollection(), "edit_apply_wordwrap");
 
-  new KAction(i18n("Editing Co&mmand"), Qt::CTRL+Qt::Key_M, viewManager, SLOT(slotEditCommand()),
+  new KAction(i18n("Editing Co&mmand..."), Qt::CTRL+Qt::Key_M, viewManager, SLOT(slotEditCommand()),
                                   actionCollection(), "edit_cmd");
 
   KStdAction::gotoLine(viewManager, SLOT(slotGotoLine()), actionCollection());
