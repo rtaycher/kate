@@ -132,13 +132,12 @@ void KMultiTabBarInternal::showActiveTabTexts(bool show)
 }
 
 
-KMultiTabBarTab* KMultiTabBarInternal::tab(int id)
+KMultiTabBarTab* KMultiTabBarInternal::tab(int id) const
 {
-        for (uint pos=0;pos<m_tabs.count();pos++)
-        {
-                if (m_tabs.at(pos)->id()==id)
-                        return m_tabs.at(pos);
-        }
+
+	for (QPtrList<KMultiTabBarTab>::ConstIterator it=m_tabs.constBegin();it!=m_tabs.constEnd();++it){
+		if ((*it)->id()==id) return (*it);
+	}
         return 0;
 }
 
@@ -580,17 +579,16 @@ int KMultiTabBar::appendTab(const QPixmap &pic ,int id ,const QString& text)
  return 0;
 }
 
-KMultiTabBarButton* KMultiTabBar::button(int id)
+KMultiTabBarButton* KMultiTabBar::button(int id) const
 {
-	for (uint pos=0;pos<m_buttons.count();pos++)
-	{
-		if (m_buttons.at(pos)->id()==id)
-			return m_buttons.at(pos);
+
+	for (QPtrList<KMultiTabBarButton>::ConstIterator it=m_buttons.constBegin();it!=m_buttons.constEnd();++it) {
+		if ((*it)->id()==id) return (*it);
 	}
 	return 0;
 }
 
-KMultiTabBarTab* KMultiTabBar::tab(int id)
+KMultiTabBarTab* KMultiTabBar::tab(int id) const
 {
 	return m_internal->tab(id);
 }
@@ -624,7 +622,7 @@ void KMultiTabBar::setTab(int id,bool state)
 	}
 }
 
-bool KMultiTabBar::isTabRaised(int id)
+bool KMultiTabBar::isTabRaised(int id) const
 {
 	KMultiTabBarTab *ttab=tab(id);
 	if (ttab)

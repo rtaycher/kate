@@ -101,17 +101,16 @@ public:
 	/**
 	 * return the state of a tab, identified by it's ID
 	 */
-	bool isTabRaised(int id); /* no const, because of tab */
+	bool isTabRaised(int id) const;
 	/**
 	 * get a pointer to a button within the button area identified by its ID
 	 */
-	class KMultiTabBarButton *button(int id); /* no const, since QPtrList::at(uint) can't be called 
-						 from a const method */;
+	class KMultiTabBarButton *button(int id) const;
+
 	/**
 	 * get a pointer to a tab within the tab area, identiifed by its ID
 	 */
-	class KMultiTabBarTab *tab(int id); /* no const, since QPtrList::at(uint) can't be called
-                                                 from a const method */;
+	class KMultiTabBarTab *tab(int id) const;
 	/**
 	 * set the real position of the widget.
 	 * @param pos if the mode is horizontal, only use top, bottom, if it is vertical use left or right
