@@ -354,6 +354,7 @@ HlEditDialog::HlEditDialog(HlManager *,QWidget *parent, const char *name, bool m
   QHBox *wid=new QHBox(this);
   QVBox *lbox=new QVBox(wid);
     contextList=new KListView(lbox);
+    contextList->setRootIsDecorated(true);
     contextList->addColumn(i18n("Syntax structure"));
     contextList->setSorting(-1);
     QPushButton *addContext=new QPushButton(i18n("New Context"),lbox);
@@ -416,29 +417,28 @@ void HlEditDialog::loadFromDocument(HlData *hl)
   int i=0;
   if (data)
     {
-      while (HlManager::self()->syntax->nextGroup(data))
+      while (HlManager::self()->syntax->nextGroup(data)) //<context tags>
         {
         kdDebug(13010)<< "Adding context to list"<<endl;
-//	  contextList->insertItem(
           last= new QListViewItem(contextList,last,
                  HlManager::self()->syntax->groupData(data,QString("name")),
                  QString("%1").arg(i),
                  HlManager::self()->syntax->groupData(data,QString("attribute")),
-                 HlManager::self()->syntax->groupData(data,QString("lineEndContext"))); //);
+                 HlManager::self()->syntax->groupData(data,QString("lineEndContext")));
           i++;
           int iitem=0;
-          lastsub=0;//last;
+          lastsub=0;
           bool tmpbool;
           while (HlManager::self()->syntax->nextItem(data))
               {
                 kdDebug(13010)<< "Adding item to list"<<endl;
-                datasub=HlManager::self()->syntax->getSubItems(data);
-                if (tmpbool=HlManager::self()->syntax->nextItem(datasub))
-                  {
-                    for (;tmpbool;tmpbool=HlManager::self()->syntax->nextItem(datasub))
+//                datasub=HlManager::self()->syntax->getSubItems(data);
+//                if (tmpbool=HlManager::self()->syntax->nextItem(datasub))
+//                  {
+//                    for (;tmpbool;tmpbool=HlManager::self()->syntax->nextItem(datasub))
                         lastsub=addContextItem(contextList,last,lastsub,data);
-                  }
-                 HlManager::self()->syntax->freeGroupInfo(datasub);
+//                  }
+//                 HlManager::self()->syntax->freeGroupInfo(datasub);
               }
 
 
@@ -449,6 +449,8 @@ void HlEditDialog::loadFromDocument(HlData *hl)
 
 QListViewItem *HlEditDialog::addContextItem(KListView *cL,QListViewItem *_parent,QListViewItem *prev,struct syntaxContextData *data)
   {
+
+                kdDebug(13010)<<HlManager::self()->syntax->groupItemData(data,QString("name")) << endl;
 
                 QString dataname=HlManager::self()->syntax->groupItemData(data,QString("name"));
                 QString attr=(HlManager::self()->syntax->groupItemData(data,QString("attribute")));
@@ -468,10 +470,10 @@ QListViewItem *HlEditDialog::addContextItem(KListView *cL,QListViewItem *_parent
                 QString param("");
                 if ((dataname=="keyword") || (dataname=="dataType")) param=dataname;
                   else if (dataname=="CharDetect") param=chr;
-                    else if ((dataname=="2CharDetect") || (dataname=="RangeDetect")) param=chr+chr1;
+                    else if ((dataname=="2CharDetect") || (dataname=="RangeDetect")) param=QString("%1%2").arg(chr).arg(chr1);
                       else if ((dataname=="StringDetect") || (dataname=="AnyChar") || (dataname=="RegExpr")) param=stringdata;
                         else                     kdDebug(13010)<<"***********************************"<<endl<<"Unknown entry for Context:"<<dataname<<endl;
                 kdDebug(13010)<<dataname << endl;
-                return new QListViewItem(_parent,prev,i18n(dataname.latin1())+param,dataname,param,attr,context);
+                return new QListViewItem(_parent,prev,i18n(dataname.latin1())+" "+param,dataname,param,attr,context);
  }
 
