@@ -66,9 +66,11 @@
 #include <klocale.h>
 #include <kmimetype.h>
 #include <kopenwith.h>
+#include <kpopupmenu.h>
 #include <kparts/event.h>
 #include <kparts/part.h>
 #include <ksimpleconfig.h>
+#include <kstatusbar.h>
 #include <kstdaction.h>
 #include <kstddirs.h>
 #include <ktrader.h>

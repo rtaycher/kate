@@ -25,6 +25,7 @@
 #include <kfiledialog.h>
 #include <kiconloader.h>
 #include <kaboutdata.h>
+#include <kstatusbar.h>
 #include <kstdaction.h>
 #include <kaction.h>
 #include <kdebug.h>

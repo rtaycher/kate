@@ -52,6 +52,7 @@
 #include <kdebug.h>
 #include <kprinter.h>
 #include <kapp.h>
+#include <kiconloader.h>
 #include <qscrollbar.h>
 #include <qiodevice.h>
 #include <qclipboard.h>
