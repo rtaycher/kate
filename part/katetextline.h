@@ -1,35 +1,32 @@
-/* 
-   Copyright (C) 1998, 1999 Jochen Wilhelmy 
-                            digisnap@cs.tu-berlin.de 
- 
-    This library is free software; you can redistribute it and/or 
-    modify it under the terms of the GNU Library General Public 
-    License as published by the Free Software Foundation; either 
-    version 2 of the License, or (at your option) any later version. 
- 
-    This library is distributed in the hope that it will be useful, 
-    but WITHOUT ANY WARRANTY; without even the implied warranty of 
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
-    Library General Public License for more details. 
- 
-    You should have received a copy of the GNU Library General Public License 
-    along with this library; see the file COPYING.LIB.  If not, write to 
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
-    Boston, MA 02111-1307, USA. 
-*/ 
- 
-#ifndef _KWTEXTLINE_H_ 
-#define _KWTEXTLINE_H_ 
- 
-#include <stdlib.h> 
- 
-#include <qstring.h> 
-#include <qmemarray.h> 
-#include <qvaluelist.h> 
-#include <qvaluevector.h> 
-#include <ksharedptr.h> 
- 
-/** 
+/***************************************************************************
+                          katetextline.h  -  description
+                             -------------------
+    begin                : Mon Feb 5 2001
+    copyright            : (C) 2001 by Christoph Cullmann
+    email                : crossfire@babylon2k.de
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#ifndef _KWTEXTLINE_H_
+#define _KWTEXTLINE_H_
+
+#include <stdlib.h>
+
+#include <qstring.h>
+#include <qmemarray.h>
+#include <qvaluelist.h>
+#include <qvaluevector.h>
+#include <ksharedptr.h>
+
+/**
   The TextLine represents a line of text. A text line that contains the 
   text, an attribute for each character, an attribute for the free space 
   behind the last character and a context number for the syntax highlight. 
