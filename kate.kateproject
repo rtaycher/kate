@@ -32,7 +32,7 @@ Files=.cvsignore/dockviewbase.cpp/dockviewbase.h/filedialog.cpp/filedialog.h/lis
 
 [Project Dir]
 Dirs=data/utils/plugins/interfaces/app/pics
-Files=.cvsignore/AUTHORS/ChangeLog/COPYING.LIB/DESIGN/kate.kateproject/Makefile.am/NEWS/README/TODO
+Files=.cvsignore/AUTHORS/kate.kateproject/Makefile.am/NEWS/README/TODO
 
 [Project File]
 Name=Kate Application

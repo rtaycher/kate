@@ -26,6 +26,7 @@
 #include "katedocmanager.h"
 #include "katepluginmanager.h"
 #include "kateviewmanager.h"
+#include "kateappIface.h"
 
 #include <kcmdlineargs.h>
 #include <dcopclient.h>
@@ -46,6 +47,8 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
 {
   m_application = new Kate::Application (this);
   m_initPluginManager = new Kate::InitPluginManager (this);
+
+  m_obj = new KateAppDCOPIface (this);
 
   KGlobal::locale()->insertCatalogue("katepart");
 
@@ -128,6 +131,8 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
 KateApp::~KateApp ()
 {
   m_pluginManager->writeConfig ();
+
+  delete m_obj;
 }
 
 void KateApp::callOnEventLoopEnter()
@@ -285,3 +290,12 @@ Kate::MainWindow *KateApp::activeMainWindow ()
   return m_mainWindows.at(n)->mainWindow();
 }
 
+KateMainWindow *KateApp::activeKateMainWindow ()
+{
+  int n = m_mainWindows.find ((KateMainWindow *)activeWindow());
+
+  if (n < 0)
+    n=0;
+
+  return m_mainWindows.at(n);
+}

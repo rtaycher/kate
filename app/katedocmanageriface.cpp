@@ -16,39 +16,48 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef _katedocmanager_Iface_h_
-#define _katedocmanager_Iface_h_
+#include "katedocmanageriface.h"
 
-#include <dcopobject.h>
-#include <dcopref.h>
+#include "katedocmanager.h"
 
-#include <kurl.h>
-
-class KateDocManager;
-
-class KateDocManagerDCOPIface : public DCOPObject
+KateDocManagerDCOPIface::KateDocManagerDCOPIface (KateDocManager *dm) : DCOPObject ("KateDocumentManager"), m_dm (dm)
 {
-  K_DCOP
 
-  public:
-    KateDocManagerDCOPIface (KateDocManager *dm);
+}
 
-  k_dcop:
-  //  DCOPRef document (uint n = 0);
+/*DCOPRef KateDocManagerDCOPIface::document (uint n)
+{
+  return DCOPRef (m_dm->document(n));
+}*/
 
-    bool closeDocument(uint n = 0);
+bool KateDocManagerDCOPIface::closeDocument(uint n)
+{
+  return m_dm->closeDocument(n);
+}
 
-    bool closeDocumentWithID(uint);
+bool KateDocManagerDCOPIface::closeDocumentWithID(uint n)
+{
+  return m_dm->closeDocumentWithID (n);
+}
 
-    bool closeAllDocuments();
+bool KateDocManagerDCOPIface::closeAllDocuments()
+{
+  return m_dm->closeAllDocuments();
+}
 
-    bool isOpen(KURL);
+bool KateDocManagerDCOPIface::isOpen(KURL u)
+{
+  return m_dm->isOpen (u);
+}
 
-    uint documents ();
+uint KateDocManagerDCOPIface::documents ()
+{
+  return m_dm->documents();
+}
 
-    int findDocument (KURL);
+int KateDocManagerDCOPIface::findDocument (KURL u)
+{
+  return m_dm->findDocument (u);
+}
 
-  private:
-    KateDocManager *m_dm;
-};
-#endif
+

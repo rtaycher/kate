@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (C) 2003 Ian Reinhart Geiser <geiseri@kde.org>
+   Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -16,39 +16,30 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef _katedocmanager_Iface_h_
-#define _katedocmanager_Iface_h_
+#ifndef _kateapp_Iface_h_
+#define _kateapp_Iface_h_
 
 #include <dcopobject.h>
 #include <dcopref.h>
 
-#include <kurl.h>
+class KateApp;
 
-class KateDocManager;
-
-class KateDocManagerDCOPIface : public DCOPObject
+class KateAppDCOPIface : public DCOPObject
 {
   K_DCOP
 
   public:
-    KateDocManagerDCOPIface (KateDocManager *dm);
+    KateAppDCOPIface (KateApp *app);
 
   k_dcop:
-  //  DCOPRef document (uint n = 0);
+    DCOPRef documentManager ();
 
-    bool closeDocument(uint n = 0);
+    DCOPRef activeMainWindow ();
 
-    bool closeDocumentWithID(uint);
-
-    bool closeAllDocuments();
-
-    bool isOpen(KURL);
-
-    uint documents ();
-
-    int findDocument (KURL);
+    uint mainWindows ();
+    DCOPRef mainWindow (uint n = 0);
 
   private:
-    KateDocManager *m_dm;
+    KateApp *m_app;
 };
 #endif

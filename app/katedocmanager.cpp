@@ -35,7 +35,7 @@
 #include <qtextcodec.h>
 #include <qprogressdialog.h>
 
-KateDocManager::KateDocManager (QObject *parent) : DCOPObject ("KateDocumentManager"), QObject (parent)
+KateDocManager::KateDocManager (QObject *parent) : QObject (parent)
 {
   m_documentManager = new Kate::DocumentManager (this);
   m_docList.setAutoDelete(true);
@@ -43,11 +43,15 @@ KateDocManager::KateDocManager (QObject *parent) : DCOPObject ("KateDocumentMana
   m_docInfos.setAutoDelete(true);
   m_currentDoc = 0L;
 
+  m_dcop = new KateDocManagerDCOPIface (this);
+
   createDoc ();
 }
 
 KateDocManager::~KateDocManager ()
 {
+  delete m_dcop;
+
   m_docList.setAutoDelete(false);
 }
 
@@ -94,10 +98,6 @@ Kate::Document *KateDocManager::activeDocument ()
   return m_currentDoc;
 }
 
-KURL KateDocManager::activeDocumentURL()
-{
-  return m_currentDoc->url();
-}
 void KateDocManager::setActiveDocument (Kate::Document *doc)
 {
   if (m_currentDoc != doc)

@@ -41,39 +41,43 @@ class KateApp : public KUniqueApplication
 
   public:
     KateApp (bool forcedNewProcess, bool oldState);
-    ~KateApp ();    
-    
+    ~KateApp ();
+
     Kate::Application *application () { return m_application; };
-      
+
   public:
     int newInstance();
-    
+
     KatePluginManager *katePluginManager() { return m_pluginManager; };
     KateDocManager *kateDocumentManager () { return m_docManager; };
-    
+
     class KateMainWindow *newMainWindow ();
     void removeMainWindow (KateMainWindow *mainWindow);
-    
-    void raiseCurrentMainWindow ();   
-    
+
+    void raiseCurrentMainWindow ();
+
     Kate::DocumentManager *documentManager () { return m_docManager->documentManager(); };
     Kate::ProjectManager *projectManager () { return m_projectManager->projectManager(); };
     Kate::PluginManager *pluginManager () { return m_pluginManager->pluginManager(); };
     Kate::InitPluginManager *initPluginManager () { return m_initPluginManager; };
     Kate::MainWindow *activeMainWindow ();
-    
+    KateMainWindow *activeKateMainWindow ();
+
     uint mainWindows () { return m_mainWindows.count(); };
     Kate::MainWindow *mainWindow (uint n) { return m_mainWindows.at(n)->mainWindow(); };
-    
+
     KateMainWindow *kateMainWindow (uint n) { return m_mainWindows.at(n); };
-                 
-    void openURL (const QString &name=0L);  
-    
+
+    void openURL (const QString &name=0L);
+
     virtual void performInit(const QString &, const KURL &);
     virtual Kate::InitPlugin *initPlugin() const;
     virtual KURL initScript() const;
-    
+
     int doNotInitialize(){return m_doNotInitialize;}
+
+  signals:
+    void onEventLoopEnter();
 
   private:
     Kate::Application *m_application;
@@ -82,15 +86,13 @@ class KateApp : public KUniqueApplication
     KateProjectManager *m_projectManager;
     KatePluginManager *m_pluginManager;
     QPtrList<class KateMainWindow> m_mainWindows;
-    bool m_firstStart;  
+    bool m_firstStart;
     Kate::InitPlugin *m_initPlugin;
     int m_doNotInitialize;
     KURL m_initURL;
     QString m_initLib;
     QString m_oldInitLib;
-
-    signals:
-	void onEventLoopEnter();
+    class KateAppDCOPIface *m_obj;
 
   protected slots:
     void performInit();

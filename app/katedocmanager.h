@@ -46,7 +46,7 @@ class KateDocumentInfo
     unsigned char modifiedOnDiscReason;
 };
 
-class KateDocManager : public QObject, virtual public KateDocManagerDCOPIface
+class KateDocManager : public QObject
 {
   Q_OBJECT
 
@@ -62,7 +62,6 @@ class KateDocManager : public QObject, virtual public KateDocManagerDCOPIface
     Kate::Document *document (uint n);
 
     Kate::Document *activeDocument ();
-    KURL activeDocumentURL();
     void setActiveDocument (Kate::Document *doc);
 
     Kate::Document *firstDocument ();
@@ -79,6 +78,7 @@ class KateDocManager : public QObject, virtual public KateDocManagerDCOPIface
     int findDocument (KURL url);
     // Anders: The above is not currently stable ?
     Kate::Document *findDocumentByUrl( KURL url );
+
     bool isOpen(KURL url);
 
     uint documents ();
@@ -94,6 +94,8 @@ class KateDocManager : public QObject, virtual public KateDocManagerDCOPIface
     void saveDocumentList (class KConfig *config);
     void restoreDocumentList (class KConfig *config);
 
+    DCOPObject *dcopObject () { return m_dcop; };
+
   signals:
     void documentCreated (Kate::Document *doc);
     void documentDeleted (uint documentNumber);
@@ -108,6 +110,8 @@ class KateDocManager : public QObject, virtual public KateDocManagerDCOPIface
     QIntDict<Kate::Document> m_docDict;
     QPtrDict<KateDocumentInfo> m_docInfos;
     Kate::Document *m_currentDoc;
+
+    KateDocManagerDCOPIface *m_dcop;
 };
 
 #endif

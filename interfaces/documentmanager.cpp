@@ -108,7 +108,7 @@ bool DocumentManager::closeDocumentWithID(uint id)
   return d->docMan->closeDocument (id);
 }
 
-bool DocumentManager::closeAllDocuments()  const
+bool DocumentManager::closeAllDocuments()
 {
   return d->docMan->closeAllDocuments ();
 }

@@ -73,7 +73,7 @@ class DocumentManager : public QObject
     bool closeDocumentWithID(uint id);
     /** close all documents
      */
-    bool closeAllDocuments() const;
+    bool closeAllDocuments();
 
   #undef signals
   #define signals public
