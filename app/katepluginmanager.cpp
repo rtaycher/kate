@@ -27,7 +27,6 @@
 #include "katemainwindow.h"
 
 #include <kconfig.h>
-#include <ksimpleconfig.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <qstringlist.h>
@@ -67,29 +66,23 @@ void KatePluginManager::setupPluginList ()
 
 void KatePluginManager::loadConfig ()
 {
-  KSimpleConfig *config = new KSimpleConfig("katepluginrc", false);
-  config->setGroup("Plugins");
+  kapp->config()->setGroup("Kate Plugins");
 
   for (uint i=0; i<m_pluginList.count(); i++)
   {
-    if  (config->readBoolEntry(m_pluginList.at(i)->name, false))
+    if  (kapp->config()->readBoolEntry(m_pluginList.at(i)->name, false))
       m_pluginList.at(i)->load = true;
   }
-  delete config;
 }
 
 void KatePluginManager::writeConfig ()
 {
-  KSimpleConfig *config = new KSimpleConfig("katepluginrc", false);
-  config->setGroup("Plugins");
+  kapp->config()->setGroup("Kate Plugins");
 
   for (uint i=0; i<m_pluginList.count(); i++)
   {
-    config->writeEntry(m_pluginList.at(i)->name, m_pluginList.at(i)->load);
+    kapp->config()->writeEntry(m_pluginList.at(i)->name, m_pluginList.at(i)->load);
   }
-
-  config->sync();
-  delete config;
 }
 
 
