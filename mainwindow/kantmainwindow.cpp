@@ -430,6 +430,9 @@ void KantMainWindow::slotWindowActivated ()
 
   if (viewManager->activeView() != 0)
   {
+    if (console)
+      console->cd (viewManager->activeView()->doc()->url());
+
     fileSave->setEnabled(viewManager->activeView()->doc()->isModified());
     fileSaveAs->setEnabled(true);
     filePrint->setEnabled(true);
