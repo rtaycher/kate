@@ -165,6 +165,8 @@ class KateViewManager : public QWidget
     QGridLayout *m_grid;
     bool m_blockViewCreationAndActivation;
     bool m_reopening;
+
+    bool m_activeViewRunning;
 };
 
 #endif

@@ -134,6 +134,8 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   connect(m_projectManager->projectManager(),SIGNAL(projectDeleted(uint)),this,SLOT(projectDeleted(uint)));
 
+  connect(m_docManager,SIGNAL(documentCreated(Kate::Document *)),this,SLOT(slotDocumentCreated(Kate::Document *)));
+
   readOptions(config);
 
   mainDock->setDockSite( KDockWidget::DockNone );
@@ -447,6 +449,8 @@ void KateMainWindow::slotWindowActivated ()
         console->cd (path);
       }
     }
+
+    updateCaption (m_viewManager->activeView()->getDoc());
   }
 
   if (m_viewManager->viewSpaceCount() == 1)
@@ -940,4 +944,44 @@ void KateMainWindow::projectDeleted (uint projectNumber)
     else
       activateProject (0);
   }
+}
+
+void KateMainWindow::slotDocumentCreated (Kate::Document *doc)
+{
+  connect(doc,SIGNAL(modStateChanged(Kate::Document *)),this,SLOT(updateCaption(Kate::Document *)));
+  connect(doc,SIGNAL(nameChanged(Kate::Document *)),this,SLOT(updateCaption(Kate::Document *)));
+
+  updateCaption (doc);
+}
+
+void KateMainWindow::updateCaption (Kate::Document *doc)
+{
+  if (!m_viewManager->activeView())
+  {
+    ((KateMainWindow*)topLevelWidget())->setCaption ("", false);
+    return;
+  }
+
+  if (!(m_viewManager->activeView()->getDoc() == doc))
+    return;
+
+  QString c;
+  if (m_viewManager->activeView()->getDoc()->url().isEmpty() || (!m_viewManager->getShowFullPath()))
+  {
+    c = m_viewManager->activeView()->getDoc()->docName();
+
+    //File name shouldn't be too long - Maciek
+    if (c.length() > 64)
+      c = c.left(64) + "...";
+  }
+  else
+  {
+    c = m_viewManager->activeView()->getDoc()->url().prettyURL();
+
+    //File name shouldn't be too long - Maciek
+    if (c.length() > 64)
+      c = "..." + c.right(64);
+  }
+
+  setCaption( c, m_viewManager->activeView()->getDoc()->isModified());
 }

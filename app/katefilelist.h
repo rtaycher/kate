@@ -72,8 +72,6 @@ class KateFileList : public KListBox
     int sortType () const { return m_sort; };
     void updateSort ();
 
-    void updateCaption ();
-
     enum sorting {
       sortByID = 0,
       sortByName = 1

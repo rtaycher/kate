@@ -202,6 +202,10 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
 
     void tipOfTheDay();
 
+    /* to update the caption */
+    void slotDocumentCreated (Kate::Document *doc);
+    void updateCaption (Kate::Document *doc);
+
   public:
     void openURL (const QString &name=0L);
 

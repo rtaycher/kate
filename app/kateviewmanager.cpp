@@ -60,7 +60,9 @@
 #include "katesplitter.h"
 //END Includes
 
-KateViewManager::KateViewManager (QWidget *parent, KateDocManager *m_docManager) : QWidget  (parent)
+KateViewManager::KateViewManager (QWidget *parent, KateDocManager *m_docManager)
+ : QWidget  (parent),
+   m_activeViewRunning (false)
 {
   m_viewManager = new Kate::ViewManager (this);
 
@@ -206,19 +208,16 @@ KateViewSpace* KateViewManager::activeViewSpace ()
 
 Kate::View* KateViewManager::activeView ()
 {
-  static bool allreadyrunning = false;
-
-  if (allreadyrunning)
+  if (m_activeViewRunning)
     return 0L;
 
-  allreadyrunning = true;
+  m_activeViewRunning = true;
 
   for (QPtrListIterator<Kate::View> it(m_viewList); it.current(); ++it)
   {
     if ( it.current()->isActive() )
     {
-      allreadyrunning = false;
-
+      m_activeViewRunning = false;
       return it.current();
     }
   }
@@ -232,7 +231,7 @@ Kate::View* KateViewManager::activeView ()
     {
       activateView (vs->currentView());
 
-      allreadyrunning = false;
+      m_activeViewRunning = false;
       return vs->currentView();
     }
   }
@@ -242,11 +241,11 @@ Kate::View* KateViewManager::activeView ()
   {
     activateView (m_viewList.first());
 
-    allreadyrunning = false;
+    m_activeViewRunning = false;
     return m_viewList.first();
   }
 
-  allreadyrunning = false;
+  m_activeViewRunning = false;
 
   // no views exists!
   return 0L;

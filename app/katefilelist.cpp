@@ -108,9 +108,6 @@ void KateFileList::slotModChanged (Kate::Document *doc)
       break;
     }
   }
-
-
-  updateCaption ();
 }
 
 void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool, unsigned char)
@@ -145,38 +142,7 @@ void KateFileList::slotNameChanged (Kate::Document *doc)
     }
   }
 
-  updateCaption ();
-
   updateSort ();
-}
-
-void KateFileList::updateCaption ()
-{
-  if (!viewManager->activeView())
-  {
-    ((KateMainWindow*)topLevelWidget())->setCaption ("", false);
-    return;
-  }
-
-  QString c;
-  if (viewManager->activeView()->getDoc()->url().isEmpty() || (!viewManager->getShowFullPath()))
-  {
-    c = viewManager->activeView()->getDoc()->docName();
-
-    //File name shouldn't be too long - Maciek
-    if (c.length() > 64)
-      c = c.left(64) + "...";
-  }
-  else
-  {
-    c = viewManager->activeView()->getDoc()->url().prettyURL();
-
-    //File name shouldn't be too long - Maciek
-    if (c.length() > 64)
-      c = "..." + c.right(64);
-  }
-
-  ((KateMainWindow*)topLevelWidget())->setCaption( c, viewManager->activeView()->getDoc()->isModified());
 }
 
 void KateFileList::slotViewChanged ()
@@ -195,8 +161,6 @@ void KateFileList::slotViewChanged ()
       break;
     }
   }
-
-  updateCaption ();
 }
 
 void KateFileList::slotMenu ( QListBoxItem *item, const QPoint &p )
