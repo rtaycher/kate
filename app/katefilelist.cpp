@@ -34,6 +34,7 @@
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kglobalsettings.h>
+#include <kdebug.h>
 
 KateFileList::KateFileList (KateDocManager *_docManager, KateViewManager *_viewManager, QWidget * parent, const char * name ):  KListBox (parent, name)
 , m_sort( KateFileList::sortByName )
