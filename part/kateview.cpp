@@ -1858,19 +1858,17 @@ int KateView::checkOverwrite( KURL u )
 
 KateView::saveResult KateView::saveAs() {
   int query;
-	KateFileDialog *dialog;
-	KateFileDialogData data;
+  KateFileDialog *dialog;
+  KateFileDialogData data;
 
   do {
     query = KMessageBox::Yes;
 
-		dialog = new KateFileDialog (myDoc->url().url(),doc()->encoding(), this, i18n ("Save File"), KateFileDialog::saveDialog);
-	  data = dialog->exec ();
-	  delete dialog;
-
-	  if (data.url.isEmpty())
-	    return SAVE_CANCEL;
-
+    dialog = new KateFileDialog (myDoc->url().url(),doc()->encoding(), this, i18n ("Save File"), KateFileDialog::saveDialog);
+    data = dialog->exec ();
+    delete dialog;
+    if (data.url.isEmpty())
+      return SAVE_CANCEL;
     query = checkOverwrite( data.url );
   }
   while (query != KMessageBox::Yes);
@@ -1878,8 +1876,13 @@ KateView::saveResult KateView::saveAs() {
   if( query == KMessageBox::Cancel )
     return SAVE_CANCEL;
 
-	myDoc->setEncoding (data.encoding);
-  myDoc->saveAs(data.url);
+  myDoc->setEncoding (data.encoding);
+  if( !myDoc->saveAs(data.url) ) {
+    KMessageBox::sorry(this,
+      i18n("The file could not be saved. Please check if you have write permission."));
+    return SAVE_ERROR;
+  }
+  
   return SAVE_OK;
 }
 

@@ -37,6 +37,7 @@
 #include <kfiledialog.h>
 #include <kiconloader.h>
 #include <klocale.h>
+#include <kmessagebox.h>
 #include <ksimpleconfig.h>
 #include <kstdaction.h>
 #include <kstddirs.h>
@@ -501,9 +502,10 @@ void KateViewManager::slotDocumentSaveAs ()
   if( !data.url.isEmpty() )
   {
 	  current->doc()->setEncoding (data.encoding);
-    current->doc()->saveAs( data.url );
+    if( !current->doc()->saveAs( data.url ) ) {
+        KMessageBox::sorry(this, i18n("The file could not be saved. Please check if you have write permission."));
+    }
     ((KateDocument *)current->doc())->setDocName (data.url.filename());
-
     setWindowCaption();
   }
 }
