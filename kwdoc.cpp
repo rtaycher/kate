@@ -2147,14 +2147,12 @@ void KWriteDoc::clearFileName() {
 bool KWriteDoc::doSearch(SConfig &sc, const QString &searchFor) {
   int line, col;
   int searchEnd;
-  QString str;
   int bufLen, tlen;
   QChar *t;
   TextLine::Ptr textLine;
-  int z, pos, newPos;
+  int pos, newPos;
 
   if (searchFor.isEmpty()) return false;
-  str = (sc.flags & KWriteView::sfCaseSensitive) ? searchFor : searchFor.lower();
 
   bufLen = 0;
   t = 0L;
@@ -2189,7 +2187,6 @@ bool KWriteDoc::doSearch(SConfig &sc, const QString &searchFor) {
           pos = newPos;
         } while (pos < tlen);
       }
-      if (!(sc.flags & KWriteView::sfCaseSensitive)) for (z = 0; z < tlen; z++) t[z] = t[z].lower();
 
       QString text(t, tlen);
       if (sc.flags & KWriteView::sfWholeWords) {
@@ -2251,7 +2248,6 @@ bool KWriteDoc::doSearch(SConfig &sc, const QString &searchFor) {
           pos = newPos;
         } while (pos < tlen);
       }
-      if (!(sc.flags & KWriteView::sfCaseSensitive)) for (z = 0; z < tlen; z++) t[z] = t[z].lower();
 
       if (col < 0 || col > tlen) col = tlen;
 
