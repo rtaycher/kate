@@ -584,7 +584,9 @@ KantMainWindow::slotEditFilter ()  //  PCP
 
 void KantMainWindow::slotFileQuit()
 {
+
   viewManager->saveAllDocsAtCloseDown( config );
+
   close();
 }
 
@@ -626,6 +628,12 @@ void KantMainWindow::saveProperties(KConfig *config)
   fileselector->saveConfig(config, "fileselector");
   sidebar->saveConfig( config );
   writeDockConfig();
+
+  // Do not uncomment this unless you wish to see
+  // a lot of debug output at close down.
+  // It does not crash :) but it isn't close to finished.
+  //viewManager->saveViewSpaceConfig();
+
 }
 
 void KantMainWindow::slotWindowActivated ()

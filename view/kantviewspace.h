@@ -69,6 +69,11 @@ class KantViewSpace : public QVBox
     bool showView(int docID);
     KantView* currentView();
     int viewCount() { return mViewList.count(); }
+    /** Saves the list of documents represented in this viewspace.
+     * Documents with an invalid URL is discarded.
+     * myIndex is used as identifyer for a config group.
+     */
+    void saveFileList(int myIndex);
   protected:
     bool eventFilter(QObject* o, QEvent* e);
   private:

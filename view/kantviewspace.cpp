@@ -166,6 +166,20 @@ void KantViewSpace::slotStatusChanged (KantView *view, int r, int c, int ovr, in
   mStatusBar->slotDisplayStatusText (" " + s1 + " " + s2 + " " + ovrstr + " " + modstr + " " + msg);
 }
 
+void KantViewSpace::saveFileList( int myIndex )
+{
+  //
+  kdDebug()<<QString("[viewspace%1]").arg( myIndex )<<endl;
+  QListIterator<KantView> it(mViewList);
+  for(; it.current(); ++it)  // FIXME: SHOULD BE REVERSE!!!
+    kdDebug()<<it.current()->doc()->url().prettyURL()<<endl;
+}
+
+
+///////////////////////////////////////////////////////////
+// KantVSStatusBar implementation
+///////////////////////////////////////////////////////////
+
 KantVSStatusBar::KantVSStatusBar ( KantViewSpace *parent, const char *name ) : QWidget( parent, name )
 ,m_yOffset(0)
 ,m_showLed(true)

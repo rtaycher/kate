@@ -21,6 +21,8 @@
 #include "../interfaces/kantviewmanagerIface.h"
 #include "kantview.h"
 
+class KantSplitter;
+
 class KantViewManager : public KantViewManagerIface
 {
   Q_OBJECT
@@ -35,6 +37,8 @@ class KantViewManager : public KantViewManagerIface
     bool useOpaqueResize;
     QList<KantView> viewList;
     void saveAllDocsAtCloseDown(KConfig* config);
+    /** This will save the splitter configuration */
+    void saveViewSpaceConfig();
 
   public slots:
     void openURL (KURL url=0L);
@@ -53,6 +57,12 @@ class KantViewManager : public KantViewManagerIface
 
     void moveViewtoSplit (KantView *view);
     void moveViewtoStack (KantView *view);
+
+    /** This will save the configuration of a single splitter.
+     * If child splitters are found, it calls it self with those as the argument.
+     * If a viewspace child is found, it is asked to save its filelist.
+     */
+    void saveSplitterConfig(KantSplitter* s, int idx=0);
 
     void removeViewSpace (KantViewSpace *viewspace);
 

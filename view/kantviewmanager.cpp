@@ -1052,3 +1052,46 @@ void KantViewManager::reloadCurrentDoc()
     v->setCursorPosition( cl, cc );
 }
 
+void KantViewManager::saveViewSpaceConfig()
+{
+   if (viewSpaceCount() == 1) {
+     kdDebug()<<"saveViewSpaceConfig(): only one vs, aborting"<<endl;
+     return;
+   }
+
+   KantSplitter* s = (KantSplitter*)viewSpaceList.first()->parentWidget();
+   saveSplitterConfig( s );
+}
+
+void KantViewManager::saveSplitterConfig( KantSplitter* s, int idx )
+{
+   //
+   kdDebug()<<QString("[splitter%1]").arg(idx)<<endl;
+   // Save sizes, children for this splitter
+   QValueList<int> sizes = s->sizes();
+   //
+   kdDebug()<<"sizes="<<QString("%1,%2").arg(sizes[0]).arg(sizes[1])<<endl;
+   QStringList childList;
+   // a kantsplitter has two children, of which one may be a KantSplitter.
+   const QObjectList* l = s->children();
+   QObjectListIt it( *l );
+   QObject* obj;
+   for (; it.current(); ++it) {
+     //++it;
+     obj = it.current();
+     // For KantViewSpaces, ask them to save the file list.
+     if ( obj->isA("KantViewSpace") ) {
+       childList.append( QString("viewspace%1").arg( viewSpaceList.find((KantViewSpace*)obj) ) );
+       ((KantViewSpace*)obj)->saveFileList( viewSpaceList.find((KantViewSpace*)obj) );
+     }
+     // For KantSplitters, recurse
+     else if ( obj->isA("KantSplitter") ) {
+       saveSplitterConfig( (KantSplitter*)obj, idx++);
+       childList.append( QString("splitter%1").arg( idx ) );
+     }
+   }
+   //delete l;
+   //
+   kdDebug()<<"children="<<childList.join(",")<<endl;
+}
+
