@@ -169,7 +169,12 @@ class KWriteDoc : public KTextEditor::Document {
     void highlightChanged();
     void modifiedChanged ();
 
-// highlight
+  // search stuff
+  protected:
+    QStringList searchForList;
+    QStringList replaceWithList;
+
+  // highlight stuff
   public:
     Highlight *highlight() {return m_highlight;}
     int highlightNum() {return hlManager->findHl(m_highlight);}

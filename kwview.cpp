@@ -2656,12 +2656,12 @@ void KWrite::find() {
   SearchDialog *searchDialog;
 
   if (!kWriteDoc->hasMarkedText()) searchFlags &= ~KWrite::sfSelected;
-  searchDialog = new SearchDialog(this, searchForList, replaceWithList,
+  searchDialog = new SearchDialog(this, kWriteDoc->searchForList, kWriteDoc->replaceWithList,
     searchFlags & ~KWrite::sfReplace);
 
   kWriteView->focusOutEvent(0L);// QT bug ?
   if (searchDialog->exec() == QDialog::Accepted) {
-    kwview_addToStrList(searchForList, searchDialog->getSearchFor());
+    kwview_addToStrList(kWriteDoc->searchForList, searchDialog->getSearchFor());
     searchFlags = searchDialog->getFlags() | (searchFlags & KWrite::sfPrompt);
     initSearch(s, searchFlags);
     searchAgain(s);
@@ -2675,14 +2675,14 @@ void KWrite::replace() {
   if (isReadOnly()) return;
 
   if (!kWriteDoc->hasMarkedText()) searchFlags &= ~KWrite::sfSelected;
-  searchDialog = new SearchDialog(this, searchForList, replaceWithList,
+  searchDialog = new SearchDialog(this, kWriteDoc->searchForList, kWriteDoc->replaceWithList,
     searchFlags | KWrite::sfReplace);
 
   kWriteView->focusOutEvent(0L);// QT bug ?
   if (searchDialog->exec() == QDialog::Accepted) {
 //    kWriteDoc->recordReset();
-    kwview_addToStrList(searchForList, searchDialog->getSearchFor());
-    kwview_addToStrList(replaceWithList, searchDialog->getReplaceWith());
+    kwview_addToStrList(kWriteDoc->searchForList, searchDialog->getSearchFor());
+    kwview_addToStrList(kWriteDoc->replaceWithList, searchDialog->getReplaceWith());
     searchFlags = searchDialog->getFlags();
     initSearch(s, searchFlags);
     replaceAgain();
@@ -2725,7 +2725,7 @@ void KWrite::gotoLine() {
 void KWrite::initSearch(SConfig &s, int flags) {
 
   s.flags = flags;
-  s.setPattern(searchForList.first());
+  s.setPattern(kWriteDoc->searchForList.first());
 
   if (s.flags & KWrite::sfFromCursor) {
     // If we are continuing a backward search, make sure we do not get stuck
@@ -2774,7 +2774,7 @@ void KWrite::searchAgain(SConfig &s) {
   PointStruc cursor;
   QString str;
 
-  QString searchFor = searchForList.first();
+  QString searchFor = kWriteDoc->searchForList.first();
 
   do {
     query = KMessageBox::Cancel;
@@ -2831,8 +2831,8 @@ void KWrite::doReplaceAction(int result, bool found) {
   PointStruc cursor;
   bool started;
 
-  QString searchFor = searchForList.first();
-  QString replaceWith = replaceWithList.first();
+  QString searchFor = kWriteDoc->searchForList.first();
+  QString replaceWith = kWriteDoc->replaceWithList.first();
   rlen = replaceWith.length();
 
   switch (result) {

@@ -744,8 +744,6 @@ class KWrite : public KTextEditor::View, virtual public KWriteIface {
   protected slots:
     void replaceSlot();
   protected:
-    QStringList searchForList;
-    QStringList replaceWithList;
     int searchFlags;
     int replaces;
     SConfig s;
