@@ -52,7 +52,7 @@ class KateViewManager : public QWidget
     void reopenDocuments(bool isRestore);
   
   public slots:
-    void openURL (KURL url=0L);
+    void openURL (KURL url=0L, const QString& encoding=QString::null);
     void openConstURL (const KURL&url=0L);
 
   private:
@@ -165,7 +165,6 @@ class KateViewManager : public QWidget
 
     KateDocManager *m_docManager;
     QGridLayout *m_grid;
-    QString m_encoding;
     bool m_blockViewCreationAndActivation;
     bool m_reopening;
 };

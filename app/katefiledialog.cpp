@@ -62,7 +62,7 @@ KateFileDialog::KateFileDialog (const QString& startDir,
         for (it = availableEncodingNames.begin(); it != availableEncodingNames.end(); ++it) {
           ++iIndex;
           codecForEnc = KGlobal::charsets()->codecForName(*it);
-          if (codecForEnc->name() == sEncoding)
+          if ( (codecForEnc->name() == sEncoding) || (*it == sEncoding) )
              break;
         }
 

@@ -65,8 +65,6 @@ KateViewManager::KateViewManager (QWidget *parent, KateDocManager *m_docManager)
 
   this->m_docManager = m_docManager;
 
-	m_encoding = QString::fromLatin1(QTextCodec::codecForLocale()->name());
-
   // sizemanagment
   m_grid = new QGridLayout( this, 1, 1 );
 
@@ -476,20 +474,21 @@ void KateViewManager::slotDocumentOpen ()
 {
   Kate::View *cv = activeView();
 	KateFileDialog *dialog;
-
+	
+	//TODO: move to kdelibs
+	QString DEFAULT_ENCODING = QString::fromLatin1(QTextCodec::codecForLocale()->name());
+	
   if (cv)
 	  dialog = new KateFileDialog (cv->getDoc()->url().url(),cv->getDoc()->encoding(), this, i18n ("Open File"));
 	else
-	  dialog = new KateFileDialog (QString::null,m_encoding, this, i18n ("Open File"));
+	  dialog = new KateFileDialog (QString::null, DEFAULT_ENCODING, this, i18n ("Open File"));
 
 	KateFileDialogData data = dialog->exec ();
 	delete dialog;
 
   for (KURL::List::Iterator i=data.urls.begin(); i != data.urls.end(); ++i)
-  {
-    m_encoding = data.encoding;
-    openURL( *i );
-  }
+    openURL( *i, data.encoding );
+		
 }
 
 void KateViewManager::slotDocumentSaveAll()
@@ -520,54 +519,37 @@ void KateViewManager::slotDocumentCloseAll ()
   openNewIfEmpty();
 }
 
-void KateViewManager::openURL (KURL url)
+void KateViewManager::openURL (KURL url=0L, const QString& encoding)
 {
-  // special handling if still only the first initial doc is there
-  if (m_docManager->isFirstDocument())
-  {
-    createView (false, KURL(), 0L, (Kate::Document *)m_docManager->documentList().at(0));
-    m_docManager->documentList().at(0)->setEncoding(m_encoding);
-
-    if (m_docManager->documentList().at(0)->openURL (url))
-    {
-      ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
-    }
-
-    if (m_docManager->documentList().at(0)->url().filename() != "")
-      m_docManager->documentList().at(0)->setDocName (m_docManager->documentList().at(0)->url().filename());
-
-    setWindowCaption();
-
-    m_docManager->setIsFirstDocument (false);
-
-    return;
-  }
-
-  if ( !m_docManager->isOpen( url ) )
+  
+	if ( !m_docManager->isOpen( url ) )
   {
     Kate::View *cv = activeView();
+		Kate::Document *open_into = 0L;
 
     if (cv && !cv->getDoc()->isModified() && cv->getDoc()->url().isEmpty())
-    {
-      cv->getDoc()->setEncoding(m_encoding);
-
-      if (cv->getDoc()->openURL (url))
-      {
-        ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
-      }
-
-      if (cv->getDoc()->url().filename() != "")
-      cv->getDoc()->setDocName (cv->getDoc()->url().filename());
-
-      setWindowCaption();
+      open_into = cv->getDoc(); // replace empty "Untitled" doc
+    else {
+			open_into = (Kate::Document *)m_docManager->createDoc ();
+      createView (true, KURL(), 0L, open_into);
+    	m_docManager->setIsFirstDocument (false);
     }
-    else
-    {
-      createView (true, url, 0L);
-    }
-  }
-  else
+  
+    if (encoding!=QString::null)	// default==locale there
+			open_into->setEncoding( encoding );  
+			
+    if (open_into->openURL (url))
+    	((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
+
+    if (open_into->url().filename() != "")
+      open_into->setDocName (open_into->url().filename());
+
+    setWindowCaption();
+		
+	}
+	else
     activateView( m_docManager->findDocument( url ) );
+
 }
 
 void KateViewManager::openConstURL (const KURL& url)
