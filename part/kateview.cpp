@@ -2427,6 +2427,7 @@ void KateView::setFocus ()
 {
   QWidget::setFocus ();
 
+  emit gotFocus ((Kate::View *) this);
   emit gotFocus (this);
 }
 

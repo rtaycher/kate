@@ -96,6 +96,16 @@ class View : public KTextEditor::View, public KTextEditor::ClipboardInterface,
       to save it. On "cancel" the function returns false.
     */
     virtual bool canDiscard() { return false; };
+    
+  public:
+    virtual int tabWidth() = 0L;
+    virtual void setTabWidth(int) = 0L;
+    virtual void setEncoding (QString e) = 0L;
+
+    /**
+      Returns true if this editor is the only owner of its document
+    */
+    virtual bool isLastView() = 0L;
 
   public slots:
     /**
@@ -258,6 +268,13 @@ class View : public KTextEditor::View, public KTextEditor::ClipboardInterface,
       Decrease font size.
     */
     virtual void slotDecFontSizes () { ; };
+    
+  signals:
+    void gotFocus (View *);
+
+  public:
+    virtual void setActive (bool b) = 0L;
+    virtual bool isActive () = 0L;
 };
 };
 

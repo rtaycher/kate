@@ -654,6 +654,7 @@ class KateView : public Kate::View
 
   signals:
     void gotFocus (KateView *);
+    void gotFocus (Kate::View *);
 
   public slots:
     void slotEditCommand ();

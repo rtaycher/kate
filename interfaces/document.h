@@ -87,6 +87,10 @@ class Document : public KTextEditor::Document, public KTextEditor::EditInterface
 
     /** Reloads the current document from disk if possible */
     virtual void reloadFile() = 0;
+    
+  public:
+    virtual void setEncoding (QString e) = 0L;
+    virtual QString encoding() = 0L;
 };
 
 };
