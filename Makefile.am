@@ -6,7 +6,7 @@ KDE_CXXFLAGS = $(USE_RTTI) -DNO_NEW_CODE
 
 bin_PROGRAMS = kwrite
 
-lib_LTLIBRARIES = kwrite.la libkwritepart.la
+lib_LTLIBRARIES = libkwritepart.la kwrite.la
 # libkwritepart is a part, but kwrite.la links directly to it, so we can't
 # install it under kde_module
 
