@@ -14,21 +14,23 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef _KANT_PLUGIN_IFACE_
-#define _KANT_PLUGIN_IFACE_
+#ifndef _KANT_VIEWMANAGER_IFACE_
+#define _KANT_VIEWMANAGER_IFACE_
 
 #include "../kantmain.h"
 #include "../kwrite/kwview.h"
 
 #include <qwidget.h>
 
-class KantPluginIface : public QWidget
-  {
-    Q_OBJECT
-    public:
-      KantPluginIface(QWidget *parent):QWidget(parent){;};
-      ~KantPluginIface(){;};
-      virtual KWrite *getActiveView()=0;
-  };  
+class KantViewManagerIface : public QWidget
+{
+  Q_OBJECT
+
+  public:
+    KantViewManagerIface (QWidget *parent) : QWidget(parent) {;};
+    ~KantViewManagerIface () {;};
+
+    virtual KWrite *getActiveView()=0;
+};
 
 #endif

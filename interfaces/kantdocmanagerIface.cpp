@@ -1,5 +1,5 @@
  /***************************************************************************
-                          kantpluginiface.h  -  description
+                          plugin_kantpluginiface.cpp  -  description
                              -------------------
     begin                : FRE Feb 23 2001
     copyright            : (C) 2001 by Joseph Wenninger
@@ -14,23 +14,5 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef _KANT_DOCMANAGER_IFACE_
-#define _KANT_DOCMANAGER_IFACE_
-
-#include "../kantmain.h"
-#include "../kwrite/kwview.h"
-
-#include <qobject.h>
-
-class KantDocManagerIface : public QObject
-{
-  Q_OBJECT
-
-  public:
-    KantDocManagerIface () : QObject () {;};
-    ~KantDocManagerIface () {;};
-
-    //virtual KWrite *getActiveView()=0;
-};
-
-#endif
+#include "kantdocmanagerIface.h"
+#include "kantdocmanagerIface.moc"

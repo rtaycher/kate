@@ -1,5 +1,5 @@
-SUBDIRS = app console data document filelist fileselector kwrite mainwindow pics project sidebar view pluginmanager plugins
-EXTRA_DIST = interfaces piper AUTHORS COPYING ChangeLog NEWS README TODO 
+SUBDIRS = app console data document filelist fileselector kwrite mainwindow pics project sidebar view interfaces pluginmanager plugins
+EXTRA_DIST = piper AUTHORS COPYING ChangeLog NEWS README TODO
 
 bin_PROGRAMS = kant
 
