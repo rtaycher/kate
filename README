@@ -20,7 +20,7 @@ The current KWrite app is based on the KWrite of kde 2.0 written by Jochen Wilhe
 but now it uses the kate part (which is based on the old kwrite doc/view stuff
 written by Jochen, too).
 
-Homepage: http://kate.sf.net (is shipping with kate/kdebase)
+Homepage: http://kate.kde.org (is shipping with kate/kdebase)
 
 Licensing:
 The Kate app and KWrite app are licensed under the GPL.
