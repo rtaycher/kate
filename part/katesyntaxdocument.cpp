@@ -29,6 +29,7 @@ SyntaxDocument::SyntaxDocument() : QDomDocument()
 {
   currentFile="";
   setupModeList();
+  myModeList.setAutoDelete( true );
 }
 
 void SyntaxDocument::setIdentifier(const QString& identifier)
@@ -155,7 +156,7 @@ bool SyntaxDocument::nextItem( syntaxContextData* data)
     return true;
 }
 
-QString SyntaxDocument::groupItemData( syntaxContextData* data,QString name)
+QString SyntaxDocument::groupItemData( const syntaxContextData* data,const QString& name)
 {
   if(!data)
     return QString::null;
@@ -169,7 +170,7 @@ QString SyntaxDocument::groupItemData( syntaxContextData* data,QString name)
     return QString();
 }
 
-QString SyntaxDocument::groupData( syntaxContextData* data,QString name)
+QString SyntaxDocument::groupData( const syntaxContextData* data,const QString& name)
 {
   if(!data)
     return QString::null;
@@ -177,7 +178,7 @@ QString SyntaxDocument::groupData( syntaxContextData* data,QString name)
   if (!data->currentGroup.isNull())
     return data->currentGroup.attribute(name);
   else
-    return QString();
+    return QString::null;
 }
 
 void SyntaxDocument::freeGroupInfo( syntaxContextData* data)

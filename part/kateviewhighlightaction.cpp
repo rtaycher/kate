@@ -26,6 +26,7 @@
 
 void KateViewHighlightAction::init(QObject *related_)
 {
+	subMenus.setAutoDelete( true );
 	related=related_;
 	connect(popupMenu(),SIGNAL(aboutToShow()),this,SLOT(slotAboutToShow()));
 }

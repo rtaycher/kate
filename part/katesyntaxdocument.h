@@ -59,8 +59,8 @@ class SyntaxDocument : public QDomDocument
     bool nextItem(syntaxContextData* data);
     bool nextGroup(syntaxContextData* data);
     syntaxContextData* getSubItems(syntaxContextData* data);
-    QString groupItemData(syntaxContextData* data,QString name);
-    QString groupData(syntaxContextData* data,QString name);
+    QString groupItemData(const syntaxContextData* data,const QString& name);
+    QString groupData(const syntaxContextData* data,const QString& name);
     void setIdentifier(const QString& identifier);
 
   private:

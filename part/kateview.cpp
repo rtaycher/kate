@@ -96,7 +96,7 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc) : QWidget(
 
   xPos = 0;
   yPos = 0;
-  
+
   xCoord = 0;
   yCoord = 0;
 
@@ -910,7 +910,7 @@ void KateViewInternal::paintCursor() {
     QColor &bg = myDoc->backCol(cursor.col, cursor.line);
     QColor xor_fg (qRgb(fg.red()^bg.red(), fg.green()^bg.green(), fg.blue()^bg.blue()),
                    fg.pixel()^bg.pixel());
- 
+
     paint.begin(this);
     paint.setClipping(false);
     paint.setPen(myDoc->cursorCol(cursor.col,cursor.line));
@@ -1291,7 +1291,7 @@ void KateViewInternal::dropEvent( QDropEvent *event )
 KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate::View (doc, parent, name)
 {
   setInstance( KateFactory::instance() );
-  
+
   initCodeCompletionImplementation();
 
   active = false;
@@ -1348,6 +1348,7 @@ KateView::~KateView()
     myDoc->removeView( this );
 
   delete myViewInternal;
+  delete myCC_impl;
 }
 
 void KateView::initCodeCompletionImplementation()
@@ -1882,7 +1883,7 @@ KateView::saveResult KateView::saveAs() {
       i18n("The file could not be saved. Please check if you have write permission."));
     return SAVE_ERROR;
   }
-  
+
   return SAVE_OK;
 }
 
@@ -2000,7 +2001,7 @@ void KateView::gotoLine()
   delete dlg;
 }
 
-void KateView::gotoLineNumber( int linenumber ) 
+void KateView::gotoLineNumber( int linenumber )
 {
   KateTextCursor cursor;
 
