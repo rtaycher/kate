@@ -647,7 +647,7 @@ void KateMainWindow::settingsMenuAboutToShow()
 
 void KateMainWindow::setEOLMenuAboutToShow()
 {
-  int eol = viewManager->activeView()->getEol()-1;
+  int eol = viewManager->activeView()->getEol();
   eol = eol>=0? eol: 0;
   setEndOfLine->setCurrentItem( eol );
 }
