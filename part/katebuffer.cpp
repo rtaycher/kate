@@ -572,9 +572,10 @@ KateBufBlock::blockFill(int dataStart, QByteArray data1, QByteArray data2, bool 
    const char *l = 0;     
    while(p < e)     
    {     
-      if (*p == '\n')     
+      if ((*p == '\n') || (*p=='\r'))
       {     
-         lineNr++;     
+         lineNr++;
+	 if ((*p=='\r') &&((p+1)<e)) if (*(p+1)=='\n') p++;     
          l = p+1;     
       }     
       p++;     
