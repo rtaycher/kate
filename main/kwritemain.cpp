@@ -274,7 +274,7 @@ void TopLevel::configure()
 
   page=kd->addVBoxPage(i18n("Highlighting"),i18n("Highlighting configuration"),
                         BarIcon("edit",KIcon::SizeMedium));
-  hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &defaultFont, &hlDataList,
+  hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &defaultFont, &hlDataList,
     /*myDoc->highlightNum()*/0, page);
 
  if (kd->exec()) {
