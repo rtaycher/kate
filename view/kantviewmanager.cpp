@@ -765,6 +765,14 @@ void KantViewManager::slotHlDlg ()
   if (activeView() == 0) return;
 
   activeView()->hlDlg();
+
+  KWriteFactory::instance()->config()->sync();
+
+  KConfig *config = KWriteFactory::instance()->config();
+  activeView()->writeConfig(config);
+  activeView()->doc()->writeConfig(config);
+
+  KWriteFactory::instance()->config()->sync();
 }
 
 void KantViewManager::slotSetHl (int n)
