@@ -26,7 +26,6 @@
 #include "../interfaces/toolviewmanager.h"
 
 #include "kateviewmanager.h"
-
 #include "kateprojectmanager.h"
 
 #include <kate/view.h>
@@ -150,13 +149,15 @@ class KateMainWindow : public KMdiMainFrm, virtual public KParts::PartBase
     KActionMenu *scriptMenu;
     KScriptManager* kscript;
 
+    class KateExternalToolsMenuAction *externalTools;
+
   public slots:
     void newWindow ();
 
     void slotConfigure();
 
     void slotOpenWithMenuAction(int idx);
-    
+
     void slotPipeToConsole ();
 
  private:
@@ -221,13 +222,13 @@ class KateMainWindow : public KMdiMainFrm, virtual public KParts::PartBase
 
   public: //ToolViewManager stuff
     KMdiToolViewAccessor *addToolView(KDockWidget::DockPosition position, QWidget *widget, const QPixmap &icon, const QString &sname, const QString &tabToolTip = 0, const QString &tabCaption = 0);
-    
+
     bool removeToolView(QWidget *);
     bool removeToolView(KMdiToolViewAccessor *);
 
     bool showToolView(QWidget *);
     bool showToolView(KMdiToolViewAccessor *);
-    
+
     bool hideToolView(QWidget *);
     bool hideToolView(KMdiToolViewAccessor *);
 

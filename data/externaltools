@@ -1,0 +1,53 @@
+[Global]
+tools=externaltool_CVSLogforCurrentDocument,externaltool_CervisiaDirectoryofCurrentDocument,externaltool_CompareCurrentDocumenttoCVS,externaltool_CompareDirectoryofCurrentDocumenttoCVS,externaltool_EmailCVSDiffforCurrentDocument,---,externaltool_GoogleSelection
+
+[Shortcuts]
+externaltool_CompareCurrentDocumenttoCVS=Shift+F11
+
+[externaltool_CVSLogforCurrentDocument]
+acname=externaltool_CVSLogforCurrentDocument
+command=cd %directory && cervisia -log %filename
+executable=cervisia
+icon=cervisia
+mimetypes=
+name=CVS Log for Current Document
+
+[externaltool_CervisiaDirectoryofCurrentDocument]
+acname=externaltool_Cervisiadirectoryofcurrentdocument
+command=cervisia %directory
+executable=cervisia
+icon=cervisia
+mimetypes=
+name=Cervisia (Directory of Current Document)
+
+[externaltool_CompareCurrentDocumenttoCVS]
+acname=externaltool_CompareCurrentDocumenttoCVS
+command=cd %directory && cvs diff %filename|kompare -o -
+executable=kompare
+icon=kompare
+mimetypes=
+name=Compare Current Document to CVS
+
+[externaltool_EmailCVSDiffforCurrentDocument]
+acname=externaltool_EmailCVSDiffforCurrentDocument
+command=cd %directory && cvs diff -ubB %filename > $(kde-config --path tmp)%filename.diff ; kmail --composer --attach $(kde-config --path tmp)%filename.diff
+executable=kmail
+icon=kmail
+mimetypes=
+name=Email CVS Diff for Current Document
+
+[externaltool_GoogleSelection]
+acname=externaltool_GoogleSelection
+command=kfmclient openURL "gg:%selection"
+executable=kfmclient
+icon=globe
+mimetypes=
+name=Google Selection
+
+[externaltool_CompareDirectoryofCurrentDocumenttoCVS]
+acname=externaltool_comparedirectoryofcurrentdocumenttoCVS
+command=cd %directory && cvs diff -ub |kompare -o -
+executable=kompare
+icon=kompare
+mimetypes=
+name=Compare Directory of Current Document to CVS

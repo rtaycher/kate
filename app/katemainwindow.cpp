@@ -36,6 +36,7 @@
 #include "kategrepdialog.h"
 #include "katemailfilesdialog.h"
 #include "katemainwindowiface.h"
+#include "kateexternaltools.h"
 
 #include <kmdichildview.h>
 #include <dcopclient.h>
@@ -258,6 +259,9 @@ void KateMainWindow::setupActions()
 
   a=closeCurrentViewSpace = new KAction( i18n("Close &Current View"), "view_remove", CTRL+SHIFT+Key_R, m_viewManager, SLOT( slotCloseCurrentViewSpace() ), actionCollection(), "view_close_current_space");
   a->setWhatsThis(i18n("Close the currently active splitted view"));
+
+  externalTools = new KateExternalToolsMenuAction( i18n("External Tools"), actionCollection(), "tools_external", this );
+  externalTools->setWhatsThis( i18n("Launch external helper applications") );
 
   showFullScreenAction = KStdAction::fullScreen( 0, 0, actionCollection(),this);
   connect( showFullScreenAction,SIGNAL(toggled(bool)), this,SLOT(slotFullScreen(bool)));
@@ -525,6 +529,8 @@ void KateMainWindow::editKeys()
   for( QPtrListIterator<KXMLGUIClient> it( clients ); it.current(); ++it )
     dlg.insert ( (*it)->actionCollection(), (*it)->instance()->aboutData()->programName() );
 
+  dlg.insert( externalTools->actionCollection(), i18n("External Tools") );
+
   dlg.configure();
 
   QPtrList<Kate::Document>  l=m_docManager->documentList();
@@ -539,6 +545,8 @@ void KateMainWindow::editKeys()
 	}
 
   }
+
+  externalTools->actionCollection()->writeShortcutSettings( "Shortcuts", new KConfig("kateexternaltoolsrc") );
 }
 
 void KateMainWindow::openURL (const QString &name)
@@ -772,7 +780,7 @@ bool KateMainWindow::eventFilter( QObject *o, QEvent *e )
       for ( uint i=0; i < cnt; i++ )
       {
         Kate::DocumentExt *ext = Kate::documentExt (list.at( i ));
-        
+
         if (ext)
           ext->slotModifiedOnDisk( activeView );
       }

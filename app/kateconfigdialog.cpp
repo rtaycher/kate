@@ -30,6 +30,7 @@
 #include "kateapp.h"
 #include "katefileselector.h"
 #include "katefilelist.h"
+#include "kateexternaltools.h"
 
 #include <qbuttongroup.h>
 #include <qcheckbox.h>
@@ -137,17 +138,17 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   // GROUP with the one below: "Appearance"
   bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("Appearance"), frGeneral );
   lo->addWidget( bgStartup );
-  
+
   QHBox *hbGM=new QHBox(bgStartup);
 	QLabel *lGM=new QLabel(i18n("Default GUI mode for new windows:"),hbGM);
   	combo_guiMode = new QComboBox(hbGM);
-	
+
         QStringList allgml;
 	allgml<<i18n("Toplevel Mode")<<i18n("Childframe Mode")<<i18n("Tab Page Mode")<<i18n("IDEAL Mode");
-	
+
         QStringList gml;
         gml<<i18n("IDEAL Mode")<<i18n("Tab Page Mode");
-	
+
         combo_guiMode->insertStringList(gml);
 	lGM->setBuddy(combo_guiMode);
   	switch (KateMainWindow::defaultMode)
@@ -167,7 +168,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   cb_fullPath->setChecked( viewManager->getShowFullPath() );
   QWhatsThis::add(cb_fullPath,i18n("If this option is checked, the full document path will be shown in the window caption."));
   connect( cb_fullPath, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
-  
+
   // sort filelist ?
   cb_sortFiles = new QCheckBox(bgStartup);
   cb_sortFiles->setText(i18n("Sort &files alphabetically in the file list."));
@@ -175,11 +176,11 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   QWhatsThis::add( cb_sortFiles, i18n(
         "If this is checked, the files in the file list will be sorted alphabetically.") );
   connect( cb_sortFiles, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
-  
+
   // GROUP with the one below: "Behavior"
   bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("Behavior"), frGeneral );
   lo->addWidget( bgStartup );
-  
+
   // number of recent files
   QHBox *hbNrf = new QHBox( bgStartup );
   QLabel *lNrf = new QLabel( i18n("&Number of recent files:"), hbNrf );
@@ -193,7 +194,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   QWhatsThis::add( lNrf, youwouldnotbelieveit );
   QWhatsThis::add( sb_numRecentFiles, youwouldnotbelieveit );
   connect( sb_numRecentFiles, SIGNAL( valueChanged ( int ) ), this, SLOT( slotChanged() ) );
-  
+
   // How instances should be handled
   cb_singleInstance = new QCheckBox(bgStartup);
   cb_singleInstance->setText(i18n("Allow Kate to use more than one UN&IX process"));
@@ -245,6 +246,14 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
                           BarIcon("connect_established",KIcon::SizeSmall));
   KateConfigPluginPage *configPluginPage = new KateConfigPluginPage(page, this);
   connect( configPluginPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
+
+  // Tools->External Tools menu
+  path.clear();
+  path << i18n("Application") << i18n("External Tools");
+  page = addVBoxPage( path, i18n("External Tools"),
+      BarIcon("configure", KIcon::SizeSmall) );
+  configExternalToolsPage = new KateExternalToolsConfigWidget(page, "external tools config page");
+  connect( configExternalToolsPage, SIGNAL(changed()), this, SLOT(slotChanged()) );
 
   // editor widgets from kwrite/kwdialog
   path.clear();
@@ -329,13 +338,13 @@ void KateConfigDialog::slotOk()
     config->writeEntry("Restore Projects", cb_reopenProjects->isChecked());
     config->writeEntry("Restore Documents", cb_reopenFiles->isChecked());
     config->writeEntry("Restore Window Configuration", cb_restoreVC->isChecked());
-  
+
     config->writeEntry("Modified Notification", cb_modNotifications->isChecked());
     mainWindow->modNotification = cb_modNotifications->isChecked();
-  
+
     KMdi::MdiMode tmpMode;
     switch (combo_guiMode->currentItem()) {
-          case 1: 
+          case 1:
                   tmpMode=KMdi::TabPageMode;
                   break;
           case 0:
@@ -345,37 +354,40 @@ void KateConfigDialog::slotOk()
     }
     config->writeEntry("DefaultGUIMode",tmpMode);
     mainWindow->defaultMode=tmpMode;
-    
+
     for (uint i=0; i < ((KateApp *)kapp)->mainWindows(); i++)
     {
       KateMainWindow *win = ((KateApp *)kapp)->kateMainWindow (i);
-      
+
       if (tmpMode != win->mdiMode())
       {
         if (tmpMode == KMdi::TabPageMode)
           win->switchToTabPageMode();
         else
-          win->switchToIDEAlMode();      
+          win->switchToIDEAlMode();
       }
     }
-    
+
     mainWindow->syncKonsole = cb_syncKonsole->isChecked();
-  
+
     mainWindow->filelist->setSortType(cb_sortFiles->isChecked() ? KateFileList::sortByName : KateFileList::sortByID);
-  
+
     config->writeEntry( "Number of recent files", sb_numRecentFiles->value() );
     mainWindow->fileOpenRecent->setMaxItems( sb_numRecentFiles->value() );
-  
+
     fileSelConfigPage->apply();
-    
+
+    configExternalToolsPage->apply();
+    mainWindow->externalTools->reload();
+
     viewManager->setShowFullPath( cb_fullPath->isChecked() ); // hm, stored 2 places :(
 
     mainWindow->saveOptions (config);
-    
+
     // save plugin config !!
     ((KateApp *)kapp)->katePluginManager()->writeConfig ();
   }
-  
+
   //
   // editor config ! (the apply() methode will check the changed state internally)
   //
@@ -393,9 +405,9 @@ void KateConfigDialog::slotOk()
   {
     pluginPages.at(i)->page->apply();
   }
-  
+
   config->sync();
-  
+
   dataChanged = false;
   accept();
 }

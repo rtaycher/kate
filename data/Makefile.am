@@ -8,7 +8,7 @@ katescripts_SCRIPTS = sample.sh
 xdg_apps_DATA = kate.desktop kwrite.desktop
 
 rckatedir = $(kde_datadir)/kate
-rckate_DATA = kateui.rc
+rckate_DATA = kateui.rc externaltools
 
 rckwritedir = $(kde_datadir)/kwrite
 rckwrite_DATA = kwriteui.rc

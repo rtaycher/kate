@@ -73,7 +73,7 @@ class KateConfigDialog : public KDialogBase
     class QCheckBox *cb_modNotifications;
     class QComboBox *combo_guiMode;
     Kate::ConfigPage *fileSelConfigPage;
-
+    Kate::ConfigPage *configExternalToolsPage;
     QPtrList<PluginPageListItem> pluginPages;
     QPtrList<KTextEditor::ConfigPage> editorPages;
 };
