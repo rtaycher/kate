@@ -25,8 +25,8 @@
 namespace Kate
 {
 
-/** An interface to the kate viewmanager.
-
+/**
+ * Interface to the viewmanager
  */
 class ViewManager : public QObject
 {
@@ -35,26 +35,44 @@ class ViewManager : public QObject
   Q_OBJECT
 
   public:
-    ViewManager ( void *viewManager );
+    /**
+     * Construtor, should not interest, internal usage
+     */
+    ViewManager (void *viewManager);
+    
+    /**
+     * Desctructor
+     */
     virtual ~ViewManager ();
       
   public:
-    /** Returns a pointer to the currently active Kate::View */
-    class View *activeView();
+    /**
+     * Returns a pointer to the currently active view
+     * @return View active view
+     */
+    class View *activeView ();
 
-    /** Opens the file pointed to by URL */
+    /**
+     * Opens the file pointed to by URL
+     * @param url url to the file
+     */
     void openURL (const KURL &url);     
  
-  //invention of public signals, like in kparts/browserextension.h
   #undef signals
   #define signals public
   signals:
   #undef signals
   #define signals protected   
 
+    /**
+     * Active view has changed
+     */
     void viewChanged ();
     
   private:
+    /**
+     * REALLY PRIVATE ;)
+     */
     class PrivateViewManager *d;
 };
 

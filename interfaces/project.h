@@ -24,8 +24,10 @@
 
 namespace Kate
 {
-/** This interface provides access to the Kate Project .
-*/
+
+/**
+ * Interface to the project
+ */
 class Project : public QObject
 {
   friend class PrivateProject;
@@ -33,18 +35,44 @@ class Project : public QObject
   Q_OBJECT   
   
   public:
-    Project ( void *project  );
+    /**
+     * Construtor, should not interest, internal usage
+     */
+    Project (void *project);
+    
+    /**
+     * Desctructor
+     */
     virtual ~Project ();
     
+    /**
+     * Returns the project plugin of this project object
+     * @return ProjectPlugin project plugin of this project
+     */
     class ProjectPlugin *plugin ();
    
+    /**
+     * Return the project type
+     * @return QString project type
+     */
     QString type () const;
     
+    /**
+     * Saves the project
+     * @return bool success
+     */
     bool save ();
     
+    /**
+     * Closes the project
+     * @return bool success
+     */
     bool close ();
     
   private:
+    /**
+     * REALLY PRIVATE ;)
+     */
     class PrivateProject *d;
 };
 

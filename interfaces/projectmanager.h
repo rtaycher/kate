@@ -24,8 +24,10 @@
 
 namespace Kate
 {
-/** This interface provides access to the Kate Project Manager.
-*/
+
+/**
+ * Interface to the projectmanager
+ */
 class ProjectManager : public QObject
 {
   friend class PrivateProjectManager;
@@ -33,14 +35,34 @@ class ProjectManager : public QObject
   Q_OBJECT   
   
   public:
-    ProjectManager ( void *projectManager  );
+    /**
+     * Construtor, should not interest, internal usage
+     */
+    ProjectManager (void *projectManager);
+    
+    /**
+     * Desctructor
+     */
     virtual ~ProjectManager ();
     
+    /**
+     * Creates a new project file at give url of given type + opens it
+     * @param type projecttype
+     * @param url url of the new project file
+     * @return Project new created project object
+     */
     class Project *create (const QString &type, const KURL &url);
     
+    /**
+     * @param url url of the project file
+     * @return Project opened project
+     */
     class Project *open (const KURL &url);
        
   private:
+    /**
+     * REALLY PRIVATE ;)
+     */
     class PrivateProjectManager *d;
 };
 

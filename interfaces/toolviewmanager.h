@@ -1,5 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 2002 Joseph Wenninger <jowenn@kde.org>
+   Copyright (C) 2002 Christoph Cullmann <cullmann@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -24,8 +25,8 @@
 namespace Kate
 {
 
-/** An interface to the kate toolviewmanager.
-
+/**
+  Interface to the toolviewmanager
  */
 class ToolViewManager : public QObject
 {
@@ -34,33 +35,83 @@ class ToolViewManager : public QObject
   Q_OBJECT
   
   public:
-    ToolViewManager ( void *toolViewManager );
+    /**
+     * Construtor, should not interest, internal usage
+     */
+    ToolViewManager (void *toolViewManager);
+    
+    /**
+     * Desctructor
+     */
     virtual ~ToolViewManager ();
       
   public:
-
-	// The removeToolView* methods take care of the dockwidget and the widget deletion
-	// This makes it possible to let the widget inherit KXMLGUIClient without crashes
-        // After Kate has returned to the main event loop the widget is going to be destroyed.
-	// Don't use any pointers still referencing it and NEVER delete it yourself !!!!!!!!!
-
-	//The dockwidgets name is "DOCK"+widget->name() Please make sure that this is unique
-	//IMPORTANT: YOU MUST SPECIFY A PIXMAP
-    KDockWidget *addToolViewWidget(KDockWidget::DockPosition position,QWidget *widget, const class QPixmap&icon, const class QString&sname);
-    bool removeToolViewWidget(QWidget *widget);
-
-	//Please make sure that the name is unique
-	//IMPORTANT: YOU MUST SPECIFY A PIXMAP
-    KDockWidget *addToolView(KDockWidget::DockPosition position,const char *name,const QPixmap &icon,const QString&sname);
-    bool removeToolView(KDockWidget *dockwidget);
-
-    /* the following methods aren't used yet */
-    bool hideToolView(KDockWidget*dockwidget);
-    bool showToolView(KDockWidget*dockwidget);
-    bool hideToolView(const QString& sname);
-    bool showToolView(const QString& sname);
+    /**
+     * Add a toolview
+     * @param position position where to dock
+     * @param widget widget to add
+     * @param icon icon for the dock button
+     * @param sname unique name (used for example for hide/show)
+     * @return KDockWidget * generated dockwidget
+     */
+    KDockWidget *addToolViewWidget (KDockWidget::DockPosition position,QWidget *widget, const class QPixmap&icon, const class QString&sname);
     
+    /**
+     * Add a toolview
+     * @param position position where to dock
+     * @param name name
+     * @param icon icon for the dock button
+     * @param sname unique name (used for example for hide/show)
+     * @return KDockWidget * generated dockwidget
+     */
+    KDockWidget *addToolView (KDockWidget::DockPosition position,const char *name,const QPixmap &icon,const QString&sname);
+    
+    /**
+     * Remove a toolview
+     * @param widget widget to remove
+     * @return bool success
+     */
+    bool removeToolViewWidget (QWidget *widget);
+    
+    /**
+     * Remove a toolview
+     * @param dockwidget widget to remove
+     * @return bool success
+     */
+    bool removeToolView (KDockWidget *dockwidget);
+
+    /**
+     * Show the toolview
+     * @parm dockwidget widget to show
+     * @return bool success
+     */
+    bool showToolView (KDockWidget*dockwidget);
+    
+    /**
+     * Show the toolview
+     * @parm sname name of the widget to show
+     * @return bool success
+     */
+    bool showToolView (const QString& sname);
+    
+    /**
+     * Hide the toolview
+     * @parm dockwidget widget to hide
+     * @return bool success
+     */
+    bool hideToolView (KDockWidget*dockwidget);
+    
+    /**
+     * Hide the toolview
+     * @parm sname name of the widget to hide
+     * @return bool success
+     */
+    bool hideToolView (const QString& sname);
+
   private:
+    /**
+     * REALLY PRIVATE ;)
+     */
     class PrivateToolViewManager *d;  
 };
 
