@@ -1589,12 +1589,9 @@ void KantView::setupActions()
     toolsUncomment = new KAction(i18n("Unco&mment"), 0, this, SLOT(uncomment()),
                                  actionCollection(), "tools_uncomment");
 
-    new KAction(i18n("Configure Highlighti&ng..."), 0, this, SLOT(hlDlg()),actionCollection(), "set_confHighlight");
-
     setVerticalSelection = new KToggleAction(i18n("&Vertical Selection"), 0, this, SLOT(toggleVertical()),
                                              actionCollection(), "set_verticalSelect");
 
-    setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, actionCollection(), "set_highlight");
     connect(setHighlight, SIGNAL(activated(int)), this, SLOT(setHl(int)));
     QStringList list;
     for (int z = 0; z < HlManager::self()->highlights(); z++)
