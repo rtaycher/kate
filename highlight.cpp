@@ -324,7 +324,7 @@ const QChar *HlInt::checkHgl(const QChar *str) {
   const QChar *s;
 
   s = str;
-	while (s->isDigit()) s++;
+        while (s->isDigit()) s++;
   if (s > str) return s;
   return 0L;
 }
@@ -466,8 +466,8 @@ HlCStringChar::HlCStringChar(int attribute, int context)
 //checks for hex and oct (for example \x1b or \033)
 const QChar *checkCharHexOct(const QChar *str) {
   const QChar *s;
-	s=str;
-	int n;
+        s=str;
+        int n;
   if (*s == 'x') {
     n = 0;
     do {
@@ -538,37 +538,37 @@ const QChar *checkEscapedChar(const QChar *s) {
 const QChar *checkEscapedChar(const QChar *s) {
   int i;
   if (s[0] == '\\' && s[1] != '\0' ) {
-  	s++;
-	switch(*s){
-  		case  'a': // checks for control chars
-		case  'b': // we want to fall through
-		case  'e':
-		case  'f':
-		case  'n':
-		case  'r':
-		case  't':
-		case  'v':
-		case '\'':
-		case '\"':
-		case '?' : // added ? ANSI C classifies this as an escaped char
-		case '\\': s++;
-       		           break;
-		case 'x': // if it's like \xff
-			s++; // eat the x
-			// these for loops can probably be
-			// replaced with something else but
-			// for right now they work
-			// check for hexdigits
+        s++;
+        switch(*s){
+                case  'a': // checks for control chars
+                case  'b': // we want to fall through
+                case  'e':
+                case  'f':
+                case  'n':
+                case  'r':
+                case  't':
+                case  'v':
+                case '\'':
+                case '\"':
+                case '?' : // added ? ANSI C classifies this as an escaped char
+                case '\\': s++;
+                           break;
+                case 'x': // if it's like \xff
+                        s++; // eat the x
+                        // these for loops can probably be
+                        // replaced with something else but
+                        // for right now they work
+                        // check for hexdigits
                         for(i=0;i<2&&(*s>='0' && *s<='9'|| *s >= 'a' && *s <='f'|| *s>='A' && *s<='F');i++,s++);
-                        if(i==0) return 0L; // takes care of case '\x'                        	
-			break;
-			
-		case '0': case '1': case '2': case '3' :
-		case '4': case '5': case '6': case '7' :
-     	  		for(i=0;i < 3 &&(*s >='0'&& *s<='7');i++,s++);
-			break;
-			default: return 0L;
-	}
+                        if(i==0) return 0L; // takes care of case '\x'
+                        break;
+
+                case '0': case '1': case '2': case '3' :
+                case '4': case '5': case '6': case '7' :
+                        for(i=0;i < 3 &&(*s >='0'&& *s<='7');i++,s++);
+                        break;
+                        default: return 0L;
+        }
   return s;
   }
   return 0L;
@@ -768,7 +768,7 @@ HlSatherIdent::HlSatherIdent(int attribute, int context)
 const QChar *HlSatherIdent::checkHgl(const QChar *s) {
   if (s->isLetter()) {
     s++;
-		while(isInWord(*s)) s++;
+                while(isInWord(*s)) s++;
     if (*s == '!') s++;
     return s;
   }
@@ -839,7 +839,7 @@ const QChar *HlSatherFloat::checkHgl(const QChar *s) {
       if (*s == 'i') return s+1;
       if (*s == 'd') s++;
       if (*s == 'x') s++;
-		// "dx" is allowed too
+                // "dx" is allowed too
       return s;
     }
   }
@@ -1065,12 +1065,12 @@ void Highlight::getItemDataList(ItemDataList &list, KConfig *config) {
 
 void Highlight::setItemDataList(ItemDataList &list, KConfig *config) {
   ItemData *p;
-  char s[200];
+  QString s;
 
   for (p = list.first(); p != 0L; p = list.next()) {
-    sprintf(s,"%d,%X,%X,%d,%d,%d,%1.95s,%d,%1.47s",
+    s.sprintf("%d,%X,%X,%d,%d,%d,%1.95s,%d,%1.47s",
       p->defStyle,p->col.rgb(),p->selCol.rgb(),p->bold,p->italic,
-      p->defFont,p->family.data(),p->size,p->charset.data());
+      p->defFont,p->family.utf8().data(),p->size,p->charset.utf8().data());
     config->writeEntry(p->name,s);
   }
 }
@@ -1208,38 +1208,38 @@ void CHighlight::makeContextList() {
 
   //normal context
   contextList[0] = c = new HlContext(0,0);
-    c->items.append(keyword = new HlKeyword(1,0));
-    c->items.append(dataType = new HlKeyword(2,0));
-    c->items.append(new HlCFloat(6,0));
-    c->items.append(new HlCOct(4,0));
-    c->items.append(new HlCHex(5,0));
-    c->items.append(new HlCInt(3,0));
-    c->items.append(new HlCChar(7,0));
-    c->items.append(new HlCharDetect(8,1,'"'));
-    c->items.append(new Hl2CharDetect(10,2, '/', '/'));
-    c->items.append(new Hl2CharDetect(10,3, '/', '*'));
-    c->items.append(new HlCSymbol(11,0));
-    c->items.append(new HlCPrep(12,4));
+  c->items.append(keyword = new HlKeyword(1,0));
+  c->items.append(dataType = new HlKeyword(2,0));
+  c->items.append(new HlCFloat(6,0));
+  c->items.append(new HlCOct(4,0));
+  c->items.append(new HlCHex(5,0));
+  c->items.append(new HlCInt(3,0));
+  c->items.append(new HlCChar(7,0));
+  c->items.append(new HlCharDetect(8,1,'"'));
+  c->items.append(new Hl2CharDetect(10,2, '/', '/'));
+  c->items.append(new Hl2CharDetect(10,3, '/', '*'));
+  c->items.append(new HlCSymbol(11,0));
+  c->items.append(new HlCPrep(12,4));
   //string context
   contextList[1] = c = new HlContext(8,0);
-    c->items.append(new HlLineContinue(8,6));
-    c->items.append(new HlCStringChar(9,1));
-    c->items.append(new HlCharDetect(8,0,'"'));
+  c->items.append(new HlLineContinue(8,6));
+  c->items.append(new HlCStringChar(9,1));
+  c->items.append(new HlCharDetect(8,0,'"'));
   //one line comment context
   contextList[2] = new HlContext(10,0);
   //multi line comment context
   contextList[3] = c = new HlContext(10,3);
-    c->items.append(new Hl2CharDetect(10,0, '*', '/'));
+  c->items.append(new Hl2CharDetect(10,0, '*', '/'));
   //preprocessor context
   contextList[4] = c = new HlContext(12,0);
-    c->items.append(new HlLineContinue(12,7));
-    c->items.append(new HlRangeDetect(13,4, '\"', '\"'));
-    c->items.append(new HlRangeDetect(13,4, '<', '>'));
-    c->items.append(new Hl2CharDetect(10,2, '/', '/'));
-    c->items.append(new Hl2CharDetect(10,5, '/', '*'));
+  c->items.append(new HlLineContinue(12,7));
+  c->items.append(new HlRangeDetect(13,4, '\"', '\"'));
+  c->items.append(new HlRangeDetect(13,4, '<', '>'));
+  c->items.append(new Hl2CharDetect(10,2, '/', '/'));
+  c->items.append(new Hl2CharDetect(10,5, '/', '*'));
   //preprocessor multiline comment context
   contextList[5] = c = new HlContext(10,5);
-    c->items.append(new Hl2CharDetect(10,4, '*', '/'));
+  c->items.append(new Hl2CharDetect(10,4, '*', '/'));
   //string line continue
   contextList[6] = new HlContext(0,1);
   //preprocessor string line continue
@@ -2332,7 +2332,7 @@ FontChanger::FontChanger( QWidget *parent )
   vlay->addWidget(label);
   vlay->addWidget(familyCombo);
   connect( familyCombo, SIGNAL(activated(const QString&)),
-	   this, SLOT(familyChanged(const QString&)));
+           this, SLOT(familyChanged(const QString&)));
   getFontList(fontList);
   familyCombo->insertStringList(fontList);
 
@@ -2344,7 +2344,7 @@ FontChanger::FontChanger( QWidget *parent )
   vlay->addWidget(label);
   vlay->addWidget(sizeCombo);
   connect( sizeCombo, SIGNAL(activated(int)),
-	   this, SLOT(sizeChanged(int)) );
+           this, SLOT(sizeChanged(int)) );
   for( int i=0; fontSizes[i] != 0; i++ ){
     sizeCombo->insertItem(QString().setNum(fontSizes[i]));
   }
@@ -2357,7 +2357,7 @@ FontChanger::FontChanger( QWidget *parent )
   vlay->addWidget(label);
   vlay->addWidget(charsetCombo);
   connect( charsetCombo, SIGNAL(activated(const QString&)),
-	   this, SLOT(charsetChanged(const QString&)) );
+           this, SLOT(charsetChanged(const QString&)) );
 }
 
 
@@ -2423,10 +2423,10 @@ void FontChanger::displayCharsets() {
 
 
 HighlightDialog::HighlightDialog( HlManager *hlManager, ItemStyleList *styleList,
-				  ItemFont *font,
-				  HlDataList *highlightDataList,
-				  int hlNumber, QWidget *parent,
-				  const char *name, bool modal )
+                                  ItemFont *font,
+                                  HlDataList *highlightDataList,
+                                  int hlNumber, QWidget *parent,
+                                  const char *name, bool modal )
   :KDialogBase(KDialogBase::Tabbed, i18n("Highlight Settings"), Ok|Cancel, Ok, parent, name, modal),
    defaultItemStyleList(styleList), hlData(0L)
 {
@@ -2476,7 +2476,7 @@ HighlightDialog::HighlightDialog( HlManager *hlManager, ItemStyleList *styleList
   QLabel *label = new QLabel( i18n("Highlight:"), vbox1 );
   hlCombo = new QComboBox( false, vbox1 );
   connect( hlCombo, SIGNAL(activated(int)),
-	   this, SLOT(hlChanged(int)) );
+           this, SLOT(hlChanged(int)) );
   for( int i = 0; i < hlManager->highlights(); i++) {
     hlCombo->insertItem(hlManager->hlName(i));
   }
