@@ -110,6 +110,8 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   setupActions();
 
+  setStandardToolBarMenuEnabled( true );
+
   setXMLFile( "kateui.rc" );
   createShellGUI ( true );
   
