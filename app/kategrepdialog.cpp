@@ -283,50 +283,51 @@ void GrepTool::processOutput()
 
 void GrepTool::slotSearch()
 {
-  slotClear ();
-
-  if (pattern_combo->currentText().isEmpty())
-    return;
-
-//   search_button->setEnabled(false);
   if ( childproc && childproc->isRunning() )
   {
     childproc->kill();
     return;
   }
+  
+  if (pattern_combo->currentText().isEmpty())
+    return;
+
+  slotClear ();
 
   QString files;
   QString files_temp = files_combo->currentText();
   if (files_temp.right(1) != ",")
-  files_temp = files_temp + ",";
+      files_temp = files_temp + ",";
 
   QStringList tokens = QStringList::split ( ",", files_temp, FALSE );
   QStringList::Iterator it = tokens.begin();
   if (it != tokens.end())
-  files = " '"+(*it++)+"'" ;
+      files = " '"+(*it++)+"'" ;
 
   for ( ; it != tokens.end(); it++ )
-  files = files + " -o -name " + "'"+(*it)+ "'";
+      files = files + " -o -name " + "'"+(*it)+ "'";
 
   QString pattern = template_edit->text();
   pattern.replace("%s", pattern_combo->currentText());
   pattern.replace("'", "'\\''");
 
-  QString filepattern = "`find ";
-  filepattern += KProcess::quote(dir_combo->url());
+  QString filepattern = "find ";
+  filepattern += KProcess::quote(dir_combo->/*currentText*/url());
   if (!recursive_box->isChecked())
-  filepattern += " -maxdepth 1";
+      filepattern += " -maxdepth 1";
   filepattern += " \\( -name ";
   filepattern += files;
-  filepattern += " \\) -print";
-  filepattern += "`";
+  filepattern += " \\) -exec ";
 
   childproc = new KShellProcess();
+  *childproc << filepattern;
   *childproc << "grep";
   *childproc << "-n";
+  *childproc << "-H";
   *childproc << (QString("-e ") + KProcess::quote(pattern));
-  *childproc << filepattern;
-   *childproc << "/dev/null";
+  *childproc << "{}";
+  *childproc << "/dev/null";
+  *childproc << "';'";
 
   connect( childproc, SIGNAL(processExited(KProcess *)),
            SLOT(childExited()) );
@@ -334,7 +335,7 @@ void GrepTool::slotSearch()
            SLOT(receivedOutput(KProcess *, char *, int)) );
   connect( childproc, SIGNAL(receivedStderr(KProcess *, char *, int)),
            SLOT(receivedErrOutput(KProcess *, char *, int)) );
-
+  
   // actually it should be checked whether the process was started successfully
   resultbox->setCursor( QCursor(Qt::WaitCursor) );
   clear_button->setEnabled( false );
@@ -342,7 +343,8 @@ void GrepTool::slotSearch()
   childproc->start(KProcess::NotifyOnExit, KProcess::AllOutput);
 }
 
-void GrepTool::slotSearchFor(const QString &pattern){
+void GrepTool::slotSearchFor(const QString &pattern)
+{
   slotClear();
   pattern_combo->setEditText(pattern);
   slotSearch();
