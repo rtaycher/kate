@@ -29,6 +29,7 @@
 
 #include <qtooltip.h>
 #include <qcolor.h>
+#include <qptrlist.h>
 
 #define RTTI_KateFileListItem 1001
 
@@ -50,6 +51,15 @@ class KateFileListItem : public QListViewItem
     int width( const QFontMetrics &fm, const QListView* lv, int column ) const;
     int rtti() const { return RTTI_KateFileListItem; }
 
+    /**
+     * Sets the view history position.
+     */
+    void setViewHistPos( int p ) {  m_viewhistpos = p; }
+    /**
+     * Sets the edit history position.
+     */
+    void setEditHistPos( int p ) { m_edithistpos = p; }
+
   protected:
     void paintCell( QPainter *painter, const QColorGroup & cg, int column, int width, int align );
     /**
@@ -59,12 +69,15 @@ class KateFileListItem : public QListViewItem
 
   private:
     Kate::Document *doc;
-//     uint myDocID;
+    int m_viewhistpos; ///< this gets set by the list as needed
+    int m_edithistpos; ///< this gets set by the list as needed
 };
 
 class KateFileList : public KListView
 {
   Q_OBJECT
+
+  friend class KFLConfigPage;
 
   public:
     KateFileList (KateMainWindow *main, KateViewManager *_viewManager, QWidget * parent = 0, const char * name = 0 );
@@ -81,6 +94,14 @@ class KateFileList : public KListView
 
     QString tooltip( QListViewItem *item, int );
 
+    uint histCount() const { return m_viewHistory.count(); }
+    uint editHistCount() const { return m_editHistory.count(); }
+    QColor editShade() const { return m_editShade; }
+    QColor viewShade() const { return m_viewShade; }
+    bool shadingEnabled() { return m_enableBgShading; }
+
+    void readConfig( class KConfig *config, const QString &group );
+    void writeConfig( class KConfig *config, const QString &group );
 
   public slots:
     void setSortType (int s);
@@ -124,8 +145,30 @@ class KateFileList : public KListView
     KAction* windowNext;
     KAction* windowPrev;
 
+    QPtrList<KateFileListItem> m_viewHistory;
+    QPtrList<KateFileListItem> m_editHistory;
+
+    QColor m_viewShade, m_editShade;
+    bool m_enableBgShading;
+
     class ToolTip *m_tooltip;
 };
+
+class KFLConfigPage : public Kate::ConfigPage {
+  Q_OBJECT
+  public:
+    KFLConfigPage( QWidget* parent=0, const char *name=0, KateFileList *fl=0 );
+    virtual ~KFLConfigPage() {};
+
+    virtual void apply();
+    virtual void reload();
+
+  private:
+    class QCheckBox *cbEnableShading;
+    class KColorButton *kcbViewShade, *kcbEditShade;
+    KateFileList *m_filelist;
+};
+
 
 #endif
 // kate: space-indent on; indent-width 2; replace-tabs on;

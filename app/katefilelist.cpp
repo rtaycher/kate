@@ -30,14 +30,23 @@
 #include <qpainter.h>
 #include <qpopupmenu.h>
 #include <qheader.h>
+#include <qcolor.h>
+#include <qcheckbox.h>
+#include <qlayout.h>
+#include <qgroupbox.h>
+#include <qlabel.h>
+#include <qwhatsthis.h>
 
 #include <kiconloader.h>
+#include <kconfig.h>
 #include <klocale.h>
 #include <kglobalsettings.h>
 #include <kpassivepopup.h>
 #include <kdebug.h>
 #include <kapplication.h>
 #include <kstringhandler.h>
+#include <kcolorbutton.h>
+#include <kdialog.h>
 //END Includes
 
 //BEGIN ToolTip
@@ -78,6 +87,11 @@ KateFileList::KateFileList (KateMainWindow *main,
 {
   m_main = main;
   m_tooltip = new ToolTip( viewport(), this );
+
+  // default colors
+  m_viewShade = Qt::blue;
+  m_editShade = Qt::red;
+  m_enableBgShading = true;
 
   setFocusPolicy ( QWidget::NoFocus  );
 
@@ -153,7 +167,7 @@ void KateFileList::keyPressEvent(QKeyEvent *e) {
 // returning
 void KateFileList::contentsMousePressEvent( QMouseEvent *e )
 {
-  if ( (e->button() == LeftButton) && ! itemAt(  e->pos() ) )
+  if ( ! itemAt( e->pos() ) )
     return;
 
   KListView::contentsMousePressEvent( e );
@@ -216,7 +230,9 @@ void KateFileList::slotDocumentDeleted (uint documentNumber)
   while( item ) {
     if ( ((KateFileListItem *)item)->documentNumber() == documentNumber )
     {
-      delete item;
+      m_viewHistory.removeRef( (KateFileListItem *)item );
+      m_editHistory.removeRef( (KateFileListItem *)item );
+      delete (KateFileListItem *)item;
       break;
     }
     item = item->nextSibling();
@@ -238,14 +254,26 @@ void KateFileList::slotModChanged (Kate::Document *doc)
   if (!doc) return;
 
   QListViewItem * item = firstChild();
-  while( item ) {
+  while( item )
+  {
     if ( ((KateFileListItem *)item)->documentNumber() == doc->documentNumber() )
-    {
-      repaintItem( item );
       break;
-    }
+
     item = item->nextSibling();
   }
+
+  if ( ((KateFileListItem *)item)->document()->isModified() )
+  {
+    m_editHistory.removeRef( (KateFileListItem *)item );
+    m_editHistory.prepend( (KateFileListItem *)item );
+
+    for ( uint i=0; i <  m_editHistory.count(); i++ )
+    {
+      m_editHistory.at( i )->setEditHistPos( i+1 );
+      repaintItem(  m_editHistory.at( i ) );
+    }
+  }
+  repaintItem( item );
 }
 
 void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool, unsigned char r)
@@ -296,16 +324,32 @@ void KateFileList::slotViewChanged ()
   Kate::View *view = viewManager->activeView();
   uint dn = view->getDoc()->documentNumber();
 
-  QListViewItem * item = firstChild();
-  while( item ) {
-    if ( ((KateFileListItem *)item)->documentNumber() == dn )
+  QListViewItem * i = firstChild();
+  while( i ) {
+    if ( ((KateFileListItem *)i)->documentNumber() == dn )
     {
-      setCurrentItem( item );
-      item->setSelected( true );
       break;
     }
-    item = item->nextSibling();
+    i = i->nextSibling();
   }
+
+  KateFileListItem *item = (KateFileListItem*)i;
+
+//   int p = 0;
+//   if (  m_viewHistory.count() )
+//   {
+//     int p =  m_viewHistory.findRef( item ); // only repaint items that needs it
+//   }
+  m_viewHistory.removeRef( item );
+  m_viewHistory.prepend( item );
+
+  for ( uint i=0; i <  m_viewHistory.count(); i++ )
+  {
+    m_viewHistory.at( i )->setViewHistPos( i+1 );
+    repaintItem(  m_viewHistory.at( i ) );
+  }
+
+  setCurrentItem( item );
 }
 
 void KateFileList::slotMenu ( QListViewItem *item, const QPoint &p, int /*col*/ )
@@ -353,13 +397,40 @@ void KateFileList::updateSort ()
   sort ();
 }
 
+void KateFileList::readConfig( KConfig *config, const QString &group )
+{
+  QString oldgroup = config->group();
+  config->setGroup( group );
+
+  setSortType( config->readNumEntry( "Sort Type", sortByID ) );
+  m_viewShade = config->readColorEntry( "View Shade", &m_viewShade );
+  m_editShade = config->readColorEntry( "Edit Shade", &m_editShade );
+  m_enableBgShading = config->readBoolEntry( "Shading Enabled", &m_enableBgShading );
+
+  config->setGroup( oldgroup );
+}
+
+void KateFileList::writeConfig( KConfig *config, const QString &group )
+{
+  QString oldgroup = config->group();
+  config->setGroup( group );
+
+  config->writeEntry( "Sort Type", m_sort );
+  config->writeEntry( "View Shade", m_viewShade );
+  config->writeEntry( "Edit Shade", m_editShade );
+  config->writeEntry( "Shading Enabled", m_enableBgShading );
+
+  config->setGroup( oldgroup );
+}
 //END KateFileList
 
 //BEGIN KateFileListItem
 KateFileListItem::KateFileListItem( QListView* lv,
 				    Kate::Document *_doc )
   : QListViewItem( lv, _doc->docName() ),
-    doc( _doc )
+    doc( _doc ),
+    m_viewhistpos( 0 ),
+    m_edithistpos( 0 )
 {
 }
 
@@ -370,11 +441,11 @@ KateFileListItem::~KateFileListItem()
 int KateFileListItem::height() const
 {
   int h;
-
+  static int iSize = IconSize( KIcon::Small );
   if ( text( 0 ).isEmpty() )
-    h = 16;
+    h = iSize;
   else
-    h = QMAX( 16, listView()->fontMetrics().lineSpacing() + 1 );
+    h = QMAX( iSize, listView()->fontMetrics().lineSpacing() + 1 );
 
   return QMAX( h, QApplication::globalStrut().height() );
 }
@@ -397,9 +468,41 @@ void KateFileListItem::paintCell( QPainter *painter, const QColorGroup & cg, int
       static QPixmap discPm = SmallIcon("modonhd");
       static QPixmap modmodPm = SmallIcon("modmod");
 
-      const KateDocumentInfo *info = KateDocManager::self()->documentInfo (doc);
+      const KateDocumentInfo *info = KateDocManager::self()->documentInfo(doc);
+      KateFileList *fl = (KateFileList*)listView();
 
-      painter->fillRect( 0, 0, width, height(), isSelected() ? cg.highlight() : cg.base()  );
+      QColor b( cg.base() );
+      if ( m_viewhistpos > 1 )
+      {
+        QColor shade = fl->viewShade();
+        QColor eshade = fl->editShade();
+        int hc = fl->histCount();
+        // If this file is in the edit history, blend in the eshade
+        // color. The blend is weighted by the position in the editing history
+        if ( fl->shadingEnabled() && m_edithistpos > 0 )
+        {
+          int ec = fl->editHistCount();
+          int v = hc-m_viewhistpos;
+          int e = ec-m_edithistpos+1;
+          e = e*e;
+          int n = v + e;
+          shade.setRgb(
+              ((shade.red()*v) + (eshade.red()*e))/n,
+              ((shade.green()*v) + (eshade.green()*e))/n,
+              ((shade.blue()*v) + (eshade.blue()*e))/n
+                      );
+        }
+        // blend in the shade color.
+        // max transperancy < .5, latest is most colored.
+        float t = (0.5/hc)*(hc-m_viewhistpos+1);
+        b.setRgb(
+            (int)((b.red()*(1-t)) + (shade.red()*t)),
+            (int)((b.green()*(1-t)) + (shade.green()*t)),
+            (int)((b.blue()*(1-t)) + (shade.blue()*t))
+                );
+      }
+
+      painter->fillRect( 0, 0, width, height(), isSelected() ? cg.highlight() : b  );
 
       if (info && info->modifiedOnDisc)
 	painter->drawPixmap( 3, 0, doc->isModified() ? modmodPm : discPm );
@@ -411,14 +514,15 @@ void KateFileListItem::paintCell( QPainter *painter, const QColorGroup & cg, int
 	QFontMetrics fm = painter->fontMetrics();
 	painter->setPen( isSelected() ? cg.highlightedText() : cg.text() );
 
+        static int iSize = IconSize( KIcon::Small );
 	int yPos;                       // vertical text position
 
-	if ( 16 < fm.height() )
+	if ( iSize < fm.height() )
 	  yPos = fm.ascent() + fm.leading()/2;
 	else
-	  yPos = 16/2 - fm.height()/2 + fm.ascent();
+	  yPos = iSize/2 - fm.height()/2 + fm.ascent();
 
-	painter->drawText( 16 + 4, yPos,
+	painter->drawText( iSize + 4, yPos,
 			   KStringHandler::rPixelSqueeze( text(0), painter->fontMetrics(), width - 20 ) );
       }
       break;
@@ -451,6 +555,75 @@ int KateFileListItem::compare ( QListViewItem * i, int col, bool ascending ) con
   return 0;
 }
 //END KateFileListItem
+
+//BEGIN KFLConfigPage
+KFLConfigPage::KFLConfigPage( QWidget* parent, const char *name, KateFileList *fl )
+  :  Kate::ConfigPage( parent, name ),
+    m_filelist( fl )
+{
+  QVBoxLayout *lo1 = new QVBoxLayout( this );
+  int spacing = KDialog::spacingHint();
+  lo1->setSpacing( spacing );
+
+  QGroupBox *gb = new QGroupBox( 1, Qt::Horizontal, i18n("Background Shading"), this );
+  lo1->addWidget( gb );
+
+  QWidget *g = new QWidget( gb );
+  QGridLayout *lo = new QGridLayout( g, 3, 2 );
+  cbEnableShading = new QCheckBox( i18n("&Enable Background Shading"), g );
+  lo->addMultiCellWidget( cbEnableShading, 1, 1, 1, 2 );
+
+  kcbViewShade = new KColorButton( g );
+  QLabel *l = new QLabel( kcbViewShade, i18n("&Viewed documents"), g );
+  lo->addWidget( l, 2, 1 );
+  lo->addWidget( kcbViewShade, 2, 2 );
+
+  kcbEditShade = new KColorButton( g );
+  l = new QLabel( kcbEditShade, i18n("&Edited documents"), g );
+  lo->addWidget( l, 3, 1 );
+  lo->addWidget( kcbEditShade, 3, 2 );
+
+  QWhatsThis::add( cbEnableShading, i18n(
+      "When background shading is enabled, documents that was recently viewed "
+      "or edited will have a shaded background. The most recent documents have "
+      "the strongest shade.") );
+  QWhatsThis::add( kcbViewShade, i18n(
+      "Set the color for shading recently viewed documents.") );
+  QWhatsThis::add( kcbEditShade, i18n(
+      "Set the color for recently edited documents. This color is blended into "
+      "the color for viewed files. The most recently edited documents gets "
+      "most of this color.") );
+
+  reload();
+
+  connect( cbEnableShading, SIGNAL(toggled(bool)), this, SLOT(slotChanged()) );
+  connect( kcbViewShade, SIGNAL(changed(const QColor&)), this, SLOT(slotChanged()) );
+  connect( kcbEditShade, SIGNAL(changed(const QColor&)), this, SLOT(slotChanged()) );
+
+  //### disable the enabling, to force people to try for a while
+//   cbEnableShading->setEnabled( false );
+}
+
+void KFLConfigPage::apply()
+{
+  // Change settings in the filelist
+  m_filelist->m_viewShade = kcbViewShade->color();
+  m_filelist->m_editShade = kcbEditShade->color();
+  m_filelist->m_enableBgShading = cbEnableShading->isChecked();
+  // repaint the affected items
+  m_filelist->triggerUpdate();
+}
+
+void KFLConfigPage::reload()
+{
+  // read in from config file
+  KConfig *config = kapp->config();
+  config->setGroup( "Filelist" );
+  cbEnableShading->setChecked( config->readBoolEntry("Shading Enabled", &m_filelist->m_enableBgShading ) );
+  kcbViewShade->setColor( config->readColorEntry("View Shade", &m_filelist->m_viewShade ) );
+  kcbEditShade->setColor( config->readColorEntry("Edit Shade", &m_filelist->m_editShade ) );
+}
+//END KFLConfigPage
 
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

@@ -66,12 +66,13 @@ class KateConfigDialog : public KDialogBase
     class QCheckBox *cb_singleInstance;
     class QCheckBox *cb_fullPath;
     class QCheckBox *cb_syncKonsole;
-    class QCheckBox *cb_sortFiles;
+//     class QCheckBox *cb_sortFiles;
     class QSpinBox *sb_numRecentFiles;
     class QCheckBox *cb_modNotifications;
     class QCheckBox *cb_saveMetaInfos;
     class QSpinBox *sb_daysMetaInfos;
     Kate::ConfigPage *fileSelConfigPage;
+    Kate::ConfigPage *filelistConfigPage;
     Kate::ConfigPage *configExternalToolsPage;
     QPtrList<PluginPageListItem> pluginPages;
     QPtrList<KTextEditor::ConfigPage> editorPages;

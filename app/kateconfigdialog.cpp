@@ -144,13 +144,13 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   QWhatsThis::add(cb_fullPath,i18n("If this option is checked, the full document path will be shown in the window caption."));
   connect( cb_fullPath, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
-  // sort filelist ?
-  cb_sortFiles = new QCheckBox(bgStartup);
-  cb_sortFiles->setText(i18n("Sort &files alphabetically in the file list"));
-  cb_sortFiles->setChecked(parent->filelist->sortType() == KateFileList::sortByName);
-  QWhatsThis::add( cb_sortFiles, i18n(
-        "If this is checked, the files in the file list will be sorted alphabetically.") );
-  connect( cb_sortFiles, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
+  // sort filelist ? ### remove
+//   cb_sortFiles = new QCheckBox(bgStartup);
+//   cb_sortFiles->setText(i18n("Sort &files alphabetically in the file list"));
+//   cb_sortFiles->setChecked(parent->filelist->sortType() == KateFileList::sortByName);
+//   QWhatsThis::add( cb_sortFiles, i18n(
+//         "If this is checked, the files in the file list will be sorted alphabetically.") );
+//   connect( cb_sortFiles, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
   // GROUP with the one below: "Behavior"
   bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("&Behavior"), frGeneral );
@@ -240,6 +240,14 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   fileSelConfigPage = new KFSConfigPage( page, "file selector config page",
                                          mainWindow->fileselector );
   connect( fileSelConfigPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
+
+  path.clear();
+  path << i18n("Application") << i18n("Document List");
+  page = addVBoxPage( path, i18n("Document List Settings"),
+		      BarIcon("documents", KIcon::SizeSmall) );
+  filelistConfigPage = new KFLConfigPage( page, "file list config page",
+					  mainWindow->filelist );
+  connect( filelistConfigPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
 
   path.clear();
   path << i18n("Application") << i18n("Plugins");
@@ -358,12 +366,14 @@ void KateConfigDialog::slotApply()
 
     mainWindow->syncKonsole = cb_syncKonsole->isChecked();
 
-    mainWindow->filelist->setSortType(cb_sortFiles->isChecked() ? KateFileList::sortByName : KateFileList::sortByID);
+//     mainWindow->filelist->setSortType(cb_sortFiles->isChecked() ? KateFileList::sortByName : KateFileList::sortByID);
 
     config->writeEntry( "Number of recent files", sb_numRecentFiles->value() );
     mainWindow->fileOpenRecent->setMaxItems( sb_numRecentFiles->value() );
 
     fileSelConfigPage->apply();
+
+    filelistConfigPage->apply();
 
     configExternalToolsPage->apply();
     for (uint i=0; i < ((KateApp *)kapp)->mainWindows(); i++)
