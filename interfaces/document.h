@@ -84,6 +84,9 @@ class Document : public KTextEditor::Document, public KTextEditor::EditInterface
   public slots:
     // clear buffer/filename - update the views
     virtual void flush () { ; };
+
+    /** Reloads the current document from disk if possible */
+    virtual void reloadFile() = 0;
 };
 
 };
