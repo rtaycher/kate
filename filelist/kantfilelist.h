@@ -21,6 +21,8 @@
 #include "../kantmain.h"
 
 #include <klistbox.h>
+#include <qtooltip.h>
+
 
 class KantFileListItem : public QListBoxItem
 {
@@ -58,6 +60,13 @@ class KantFileList : public KListBox
     KantFileList (KantDocManager *_docManager, KantViewManager *_viewManager, QWidget * parent = 0, const char * name = 0 );
     ~KantFileList ();
 
+    /** called by KFLToolTip::maybeTip() to get a string
+     * and a rect based on the point.
+     * Returns the URL for the doc which item is under p
+     * if any.
+     */
+    void tip( const QPoint &p, QRect &r, QString &str );
+
   private:
     KantDocManager *docManager;
     KantViewManager *viewManager;
@@ -69,6 +78,21 @@ class KantFileList : public KListBox
       void slotModChanged (KantDocument *doc);
       void slotNameChanged (KantDocument *doc);
       void slotViewChanged ();
+
+  private:
+    /////////////////////////////////////////////////////////////////////
+    // A private tooltip class to display the URL of a document in the
+    // tooltip.
+    // Thanks to KDevelop team for the code:)
+    /////////////////////////////////////////////////////////////////////
+    class KFLToolTip : public QToolTip
+    {
+      public:
+        KFLToolTip(QWidget *parent);
+      protected:
+        void maybeTip( const QPoint & );
+    };
+    KFLToolTip* tooltip;
 };
 
 #endif

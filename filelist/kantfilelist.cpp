@@ -34,6 +34,8 @@ KantFileList::KantFileList (KantDocManager *_docManager, KantViewManager *_viewM
   docManager = _docManager;
   viewManager = _viewManager;
 
+  tooltip = new KFLToolTip( this );
+
   for (uint i = 0; i < docManager->docCount(); i++)
   {
     slotDocumentCreated (docManager->nthDoc(i));
@@ -151,6 +153,18 @@ void KantFileList::slotViewChanged ()
   }
 }
 
+void KantFileList::tip( const QPoint &p, QRect &r, QString &str )
+{
+  KantFileListItem *i = (KantFileListItem*)itemAt( p );
+  r = itemRect( i );
+
+  if( i != NULL && r.isValid() )
+    str = docManager->docWithID(i->docID())->url().prettyURL();
+  else
+    str = "";
+}
+
+
 KantFileListItem::KantFileListItem( long docID, const QPixmap &pix, const QString& text): QListBoxItem()
 {
   _bold=false;
@@ -224,3 +238,23 @@ void KantFileListItem::paint( QPainter *painter )
     painter->drawText( pm.width() + 5, yPos, text() );
   }
 }
+
+/////////////////////////////////////////////////////////////////////
+// KantFileList::KFLToolTip implementation
+
+KantFileList::KFLToolTip::KFLToolTip( QWidget *parent )
+  : QToolTip( parent )
+{
+}
+
+void KantFileList::KFLToolTip::maybeTip( const QPoint &p )
+{
+  QString str;
+  QRect r;
+
+  ((KantFileList*)parentWidget())->tip( p, r, str );
+
+  if( !str.isEmpty() && r.isValid() )
+    tip( r, str );
+}
+
