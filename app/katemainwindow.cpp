@@ -192,7 +192,6 @@ void KateMainWindow::setupActions()
   KStdAction::open( viewManager, SLOT( slotDocumentOpen() ), actionCollection(), "file_open" );
 
   fileOpenRecent = KStdAction::openRecent (viewManager, SLOT(openConstURL (const KURL&)), actionCollection());
-
   KStdAction::save( viewManager, SLOT( slotDocumentSave() ), actionCollection(), "file_save" );
   new KAction( i18n("Save A&ll"),"save_all", CTRL+Key_L, viewManager, SLOT( slotDocumentSaveAll() ), actionCollection(), "file_save_all" );
   KStdAction::saveAs( viewManager, SLOT( slotDocumentSaveAs() ), actionCollection(), "file_save_as" );
@@ -369,6 +368,7 @@ void KateMainWindow::readOptions(KConfig *config)
   slotSettingsShowToolbar();
   viewManager->setUseOpaqueResize(config->readBoolEntry("Opaque Resize", true));
 
+  fileOpenRecent->setMaxItems( config->readNumEntry("Number of recent files", fileOpenRecent->maxItems() ) );
   fileOpenRecent->loadEntries(config, "Recent Files");
 
   fileselector->readConfig(config, "fileselector");

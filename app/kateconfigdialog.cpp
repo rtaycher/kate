@@ -1,9 +1,10 @@
 /***************************************************************************
-                          katemainwindow.cpp  -  description
+                          kateconfigdialog.cpp
+                          Configuration dialog for Kate
                              -------------------
     begin                : Wed Jan 3 2001
-    copyright            : (C) 2001 by Christoph Cullmann
-    email                : cullmann@kde.org
+    copyright            : (C) 2001 by Christoph Cullmann, 2001, 2002 by Anders Lund
+    email                : cullmann@kde.org anders@alweb.dk
  ***************************************************************************/
 
 /***************************************************************************
@@ -30,9 +31,14 @@
 #include "katefilelist.h"
 
 #include <qabstractlayout.h>
+#include <qbuttongroup.h>
 #include <qcheckbox.h>
+#include <qhbox.h>
 #include <qinputdialog.h>
+#include <qlabel.h>
 #include <qlayout.h>
+#include <qradiobutton.h>
+#include <qspinbox.h>
 #include <qvbox.h>
 #include <qwhatsthis.h>
 
@@ -81,58 +87,98 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   setFolderIcon (path, SmallIcon("kate", KIcon::SizeSmall));
 
   path.clear();
+
+  // General page
   path << i18n("Kate") << i18n("General");
   QFrame* frGeneral = addPage(path, i18n("General Options"), BarIcon("misc", KIcon::SizeSmall));
-  QGridLayout* gridFrG = new QGridLayout(frGeneral);
-  gridFrG->setSpacing( 6 );
-  
+
+  QVBoxLayout *lo = new QVBoxLayout( frGeneral );
+  lo->setAutoAdd( true );
+  config->setGroup("General");
+
+  // sdi or mdi?
+  QButtonGroup *bgMode = new QButtonGroup( 1, Qt::Horizontal, i18n("Application Mode"), frGeneral );
+  bgMode->setRadioButtonExclusive( true );
+  rb_modeMDI = new QRadioButton( i18n("Kate &MDI"), bgMode );
+  rb_modeSDI = new QRadioButton( i18n("Kate &SDI"), bgMode );
+  if ( config->readBoolEntry( "sdi", false ) )
+    rb_modeSDI->setChecked( true );
+  else
+    rb_modeMDI->setChecked( true );
+  QWhatsThis::add( bgMode, i18n(
+        "<qt>Choose what interface you like the best.<p><strong>Kate MDI</strong> (default):"
+        "<br>All documents are kept within one main window, and you must choose the document "
+        "to edit from the &quot;Document&quor; menu, or from the File List."
+        "<p><strong>Kate SDI</strong>:<br>A Single Document Interface opens only one document "
+        "in each window. The File List/File Selector will have it's own window pr default. "
+        "You can <code>ALT + TAB</code> your way to the desired document."
+        "<p><strong>Note:</strong> You need to restart Kate for this setting to take effect.</qt>") );
+
+  // GROUP with the one below: "At Startup"
+  QButtonGroup *bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("At Startup"), frGeneral );
+  // reopen files
+  cb_reopenFiles = new QCheckBox( bgStartup );
+  cb_reopenFiles->setText(i18n("Reopen &Files"));
+  config->setGroup("open files");
+  cb_reopenFiles->setChecked( config->readBoolEntry("reopen at startup", true) );
+  QWhatsThis::add(cb_reopenFiles, i18n(
+        "If this is enabled Kate will attempt to reopen files that were open when you closed "
+        "last time. Cursor position will be recovered if possible. Non-existent files will "
+        "not be opened."));
+
+  config->setGroup("General");
+  // restore view  config
+  cb_restoreVC = new QCheckBox( bgStartup );
+  cb_restoreVC->setText(i18n("Restore &View Configuration"));
+  cb_restoreVC->setChecked( config->readBoolEntry("restore views", false) );
+  QWhatsThis::add(cb_restoreVC, i18n(
+        "Check this if you want all your views and frames restored each time you open Kate"));
+
   // How instances should be handled
   cb_singleInstance = new QCheckBox(frGeneral);
-  cb_singleInstance->setText(i18n("Restrict to single process"));
-  gridFrG->addMultiCellWidget(cb_singleInstance,0,0,0,1);
+  cb_singleInstance->setText(i18n("&Restrict to single process"));
   config->setGroup("startup");
   cb_singleInstance->setChecked(config->readBoolEntry("singleinstance",true));
-
-  // sdi mode
-  cb_sdi = new QCheckBox(frGeneral);
-  cb_sdi->setText(i18n("SDI Mode enabled"));
-  gridFrG->addMultiCellWidget(cb_sdi,1,1,0,1);
-  config->setGroup("startup");
-  cb_sdi->setChecked(config->readBoolEntry("sdi",false));
+  QWhatsThis::add( cb_singleInstance, i18n(
+        "If this is checked, you can only start one instance of Kate. If you try, the current "
+        "instance will get the focus, and open any files you requested opened.") );
 
   // opaque resize of view splitters
   cb_opaqueResize = new QCheckBox( frGeneral );
-  cb_opaqueResize->setText(i18n("Show &Content when resizing views"));
-  gridFrG->addMultiCellWidget( cb_opaqueResize, 2, 2, 0, 1 );
-  cb_opaqueResize->setChecked(viewManager->useOpaqueResize);
-  QWhatsThis::add(cb_opaqueResize, i18n("If this is disabled, resizing views will display a <i>rubberband</i> to show the new sizes untill you release the mouse button."));
-
-  // reopen files
-  cb_reopenFiles = new QCheckBox( frGeneral );
-  cb_reopenFiles->setText(i18n("Reopen &Files at startup"));
-  gridFrG->addMultiCellWidget( cb_reopenFiles, 3, 3, 0, 1 );
-  config->setGroup("open files");
-  cb_reopenFiles->setChecked( config->readBoolEntry("reopen at startup", true) );
-  QWhatsThis::add(cb_reopenFiles, i18n("If this is enabled Kate will attempt to reopen files that were open when you closed last time. Cursor position will be recovered if possible. Non-existent files will not be opened."));
-
-  // restore view  config
-  cb_restoreVC = new QCheckBox( frGeneral );
-  cb_restoreVC->setText(i18n("Restore &View Configuration"));
-  gridFrG->addMultiCellWidget( cb_restoreVC, 4, 4, 0, 1 );
-  config->setGroup("General");
-  cb_restoreVC->setChecked( config->readBoolEntry("restore views", false) );
-  QWhatsThis::add(cb_restoreVC, i18n("Check this if you want all your views restored each time you open Kate"));
+  cb_opaqueResize->setText(i18n("&Show Content when resizing views"));
+  cb_opaqueResize->setChecked( viewManager->useOpaqueResize );
+  QWhatsThis::add( cb_opaqueResize, i18n(
+        "If this is disabled, resizing views will display a <i>rubberband</i> to show the "
+        "new sizes untill you release the mouse button.") );
 
   // sync the konsole ?
   cb_syncKonsole = new QCheckBox(frGeneral);
-  cb_syncKonsole->setText(i18n("Sync Konsole with active Document"));
-  gridFrG->addMultiCellWidget(cb_syncKonsole,5,5,0,1);
+  cb_syncKonsole->setText(i18n("Sync &Konsole with active Document"));
   cb_syncKonsole->setChecked(parent->syncKonsole);
+  QWhatsThis::add( cb_syncKonsole, i18n(
+        "If this is checked, the built in Konsole will <code>cd</code> to the directory "
+        "of the active document when started and when ever the active document changes, "
+        "if the document is a local file.") );
 
-  //QSpacerItem *sp = new QSpacerItem(frGeneral);
-  gridFrG->addMultiCell( new QSpacerItem(0,0), 6,6,0,1);
-  gridFrG->setRowStretch(6,1);
+  // number of recent files
+  QHBox *hbNrf = new QHBox( frGeneral );
+  QLabel *lNrf = new QLabel( i18n("&Number of recent files"), hbNrf );
+  sb_numRecentFiles = new QSpinBox( 0, 1000, 1, hbNrf );
+  sb_numRecentFiles->setValue( mainWindow->fileOpenRecent->maxItems() );
+  lNrf->setBuddy( sb_numRecentFiles );
+  QString youwouldnotbelieveit ( i18n(
+        "<qt>Sets the number of recent files remembered by Kate.<p><strong>NOTE:</strong>"
+        "If you change this to a lower value than present, the list will be truncated and "
+        "some items forgotten.</qt>") );
+  QWhatsThis::add( lNrf, youwouldnotbelieveit );
+  QWhatsThis::add( sb_numRecentFiles, youwouldnotbelieveit );
 
+  // FIXME - TrollTech? BORKED!!!!!!!! gets added to TOP :(((((((((((((((((
+  //lo->addItem( new QSpacerItem( 0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding ) );
+  QWidget *qLayoutSeemsBroken = new QWidget( frGeneral, "a working spacer" );
+  lo->setStretchFactor( qLayoutSeemsBroken, 100 );
+
+  // END General page
   config->setGroup("General");
 
   // editor widgets from kwrite/kwdialog
@@ -175,7 +221,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   page=addVBoxPage(path, i18n("Editing Options"),
                        BarIcon("edit", KIcon::SizeSmall ) );
   editConfigPage = v->getDoc()->editConfigPage (page);
-  
+
   path.clear();
   path << i18n("Editor") << i18n("Keyboard");
   page=addVBoxPage(path,i18n("Keyboard configuration"),
@@ -257,7 +303,7 @@ void KateConfigDialog::slotApply()
   viewManager->setUseOpaqueResize(cb_opaqueResize->isChecked());
   config->setGroup("startup");
   config->writeEntry("singleinstance",cb_singleInstance->isChecked());
-  config->writeEntry("sdi",cb_sdi->isChecked());
+  config->writeEntry("sdi",/*cb_sdi->isChecked()*/rb_modeSDI->isChecked() );
   config->setGroup("open files");
   config->writeEntry("reopen at startup", cb_reopenFiles->isChecked());
 
@@ -265,6 +311,10 @@ void KateConfigDialog::slotApply()
 
   config->setGroup("General");
   config->writeEntry("restore views", cb_restoreVC->isChecked());
+
+  config->writeEntry( "Number of recent files", sb_numRecentFiles->value() );
+  mainWindow->fileOpenRecent->setMaxItems( sb_numRecentFiles->value() );
+
 
   colorConfigPage->apply();
   fontConfigPage->apply();
