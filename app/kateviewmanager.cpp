@@ -52,7 +52,7 @@
 //END Includes
 
 KateViewManager::KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWidget, KateDocManager *docManager)
- : QWidget  (parent),
+ : QObject  (parent),
   showFullPath(false), m_docManager (docManager), m_mainWindow(parent), m_tabWidget(tabWidget)
 {
   // while init
@@ -360,7 +360,7 @@ void KateViewManager::slotDocumentOpen ()
     KEncodingFileDialog::Result r=KEncodingFileDialog::getOpenURLsAndEncoding(
       (cv ? KTextEditor::encodingInterface(cv->document())->encoding() : Kate::Document::defaultEncoding()),
        (cv ? cv->document()->url().url() : QString::null),
-       QString::null,this,i18n("Open File"));
+       QString::null,m_mainWindow,i18n("Open File"));
 
     uint lastID = 0;
     for (KURL::List::Iterator i=r.URLs.begin(); i != r.URLs.end(); ++i)

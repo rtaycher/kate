@@ -37,7 +37,7 @@ class KateMainWindow;
 class KConfig;
 class KAction;
 
-class KateViewManager : public QWidget
+class KateViewManager : public QObject
 {
   Q_OBJECT
 
