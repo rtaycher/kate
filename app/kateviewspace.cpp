@@ -73,7 +73,7 @@ protected:
 KateViewSpace::KateViewSpace(QWidget* parent, const char* name)
   : QVBox(parent, name)
 {
-   mViewList.setAutoDelete(false);
+  mViewList.setAutoDelete(false);
 
   stack = new QWidgetStack( this );
   setStretchFactor(stack, 1);
@@ -83,6 +83,8 @@ KateViewSpace::KateViewSpace(QWidget* parent, const char* name)
   mStatusBar = new KateVSStatusBar(this);
   mIsActiveSpace = false;
   mViewCount = 0;
+
+  setMinimumWidth (mStatusBar->minimumWidth());
 }
 
 KateViewSpace::~KateViewSpace()
@@ -266,9 +268,9 @@ KateVSStatusBar::KateVSStatusBar ( KateViewSpace *parent, const char *name )
    m_selectModeLabel->installEventFilter( this );
 
    m_fileNameLabel=new QLabel("",this);
-   addWidget( m_fileNameLabel,/*0,true*/1, true );
-   m_selectModeLabel->setAlignment( /*Qt::AlignRight*/Qt::AlignLeft );
-   m_selectModeLabel->installEventFilter( this );
+   addWidget( m_fileNameLabel, 1, true );
+   m_fileNameLabel->setAlignment( /*Qt::AlignRight*/Qt::AlignLeft );
+   m_fileNameLabel->installEventFilter( this );
 
    installEventFilter( this );
 }
