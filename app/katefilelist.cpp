@@ -163,7 +163,7 @@ void KateFileList::slotMenu ( QListBoxItem *item, const QPoint &p )
   if (!item)
     return;
 
-  QPopupMenu *menu = (QPopupMenu*) ((KMainWindow *)topLevelWidget ())->factory()->container("filelist_popup", (KMainWindow *)topLevelWidget ());
+  QPopupMenu *menu = (QPopupMenu*) ((KMainWindow *)(viewManager->topLevelWidget)())->factory()->container("filelist_popup", (KMainWindow *)(viewManager->topLevelWidget ()));
   menu->exec(p);
 }
 
