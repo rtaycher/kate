@@ -1427,7 +1427,7 @@ void KateView::setupActions()
 
     // setup bookmark menu
     bookmarkToggle = new KAction(i18n("Toggle &Bookmark"), Qt::CTRL+Qt::Key_B, this, SLOT(toggleBookmark()), actionCollection(), "edit_bookmarkToggle");
-    bookmarkClear = new KAction(i18n("Clear Bookmarks"), 0, this, SLOT(clearBookmarks()), actionCollection(), "edit_bookmarksClear");
+    bookmarkClear = new KAction(i18n("Clear Bookmarks"), 0, myDoc, SLOT(clearMarks()), actionCollection(), "edit_bookmarksClear");
 
     // connect settings menu aboutToshow
     bookmarkMenu = new KActionMenu(i18n("&Bookmarks"), actionCollection(), "bookmarks");
