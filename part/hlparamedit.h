@@ -11,7 +11,7 @@ public:
 	~HLParamEdit();
 	void ListParameter(QString listname);
 	void TextParameter(int length, QString text,bool regExp=false);
-	const QString &text();
+	QString text();
 private:
 	class QLineEdit *textEdit;
 	class QLabel *listLabel;
