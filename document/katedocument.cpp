@@ -322,6 +322,8 @@ bool KateDocument::openFile()
   updateLines();
   updateViews();
 
+  emit fileNameChanged();
+  
   return true;
 }
 
