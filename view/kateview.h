@@ -543,46 +543,16 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
      */
      QString markedText();
 
-//url aware file functions
   public:
-//    enum fileAction{GET, PUT}; //tells us what kind of job kwrite is waiting for
     enum fileResult { OK, CANCEL, RETRY, ERROR };
 
-    /**
-     * Loads a file @p file
-     * If insert = false the old contents will be deleted.
-     */
-//    void loadFile(const QString &file, bool insert);
-
-    /**
-      Loads the file given in name into the editor
-    */
-//    bool loadFile(const QString &name, int flags = 0);
-    /**
-      Saves the file as given in name
-    */
-//    bool writeFile(const QString &name);
-    /**
-      Loads the file given in url into the editor.
-      See the lfXXX constants in the .h file.
-    */
-//    void loadURL(const KURL &url, int flags = 0);
-    /**
-      Saves the file as given in url
-    */
-//    void writeURL(const KURL &url, int flags = 0);
-
-/*  protected slots:
-    void slotJobReadResult( KIO::Job *job );
-    void slotJobData( KIO::Job *, const QByteArray &data );
-*/
-  public:
     /**
       Mainly for internal use. Returns true if the current document can be
       discarded. If the document is modified, the user is asked if he wants
       to save it. On "cancel" the function returns false.
     */
     bool canDiscard();
+
   public slots:
     /**
       Opens a new untitled document in the text widget. The user is given
@@ -1055,6 +1025,7 @@ class KateBrowserExtension : public KParts::BrowserExtension
 };
 
 #endif
+
 
 
 

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          katedocument.cpp  -  description
+                          kateview.cpp  -  description
                              -------------------
     begin                : Mon Jan 15 2001
     copyright            : (C) 2001 by Christoph "Crossfire" Cullmann
@@ -3239,6 +3239,7 @@ void KateBrowserExtension::slotSelectionChanged()
 {
   emit enableAction( "copy", m_doc->hasMarkedText() );
 }
+
 
 
 
