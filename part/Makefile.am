@@ -6,7 +6,7 @@ libkatepart_la_SOURCES = katebuffer.cpp katecmd.cpp katecmds.cpp katedialogs.cpp
   			 kateviewdialog.cpp kateviewhighlightaction.cpp \
 			 katevmallocator.cpp katehighlightdownload.cpp katefiledialog.cpp \
 			 kateiconborder.cpp katecodecompletion_arghint.cpp \
-			 katecodecompletion_iface_impl.cpp kateeditor.cpp
+			 katecodecompletion_iface_impl.cpp
 
 
 libkatepart_la_LIBADD   = ../interfaces/libkateinterfaces.la -lkspell -lkdeprint
