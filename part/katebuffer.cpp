@@ -827,6 +827,7 @@ KWBufBlock::buildStringListFast()
 				memcpy((signed char *)textLine->ctx, buf, lctx);
         buf += lctx;
       }
+			textLine->ctxLen = lctx;
 
       m_stringList.push_back (textLine);
    }

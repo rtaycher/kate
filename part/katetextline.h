@@ -50,7 +50,7 @@ public:
       Creates an empty text line with given attribute and syntax highlight 
       context 
     */ 
-    TextLine(uchar attribute = 0);
+    TextLine();
     ~TextLine(); 
  
     /** 

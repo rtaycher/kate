@@ -1,4 +1,4 @@
-/*************************************************************************** 
+/***************************************************************************
                           katetextline.cpp  -  description 
                              ------------------- 
     begin                : Mon Feb 5 2001 
@@ -18,8 +18,8 @@
 #include "katetextline.h"    
 #include <kdebug.h>    
     
-TextLine::TextLine(uchar attribute) 
-  : text(0L), attributes(0L), ctx(0L), ctxLen(0), attr(attribute), myMark (0) 
+TextLine::TextLine()
+  : text(0L), attributes(0L), ctx(0L), ctxLen(0), attr(0), myMark (0) 
 { 
 } 
  
