@@ -76,7 +76,6 @@
 #include "../view/kateview.h"
 #include "katebuffer.h"
 #include "katetextline.h"
-#include "kateattribute.h"
 
 #include "katecmd.h"
 

@@ -57,7 +57,15 @@ class KateCmd;
 #include "../interfaces/katedocumentIface.h"
 #include "./katedocumentIface.h"
 
-class Attribute;
+class Attribute {
+  public:
+    Attribute() { ; };
+
+    QColor col;
+    QColor selCol;
+    bool bold;
+    bool italic;
+};
 
 class KateAction {
   public:

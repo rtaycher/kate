@@ -53,7 +53,7 @@
 #include <qwidgetstack.h>
 
 #include "katetextline.h"
-#include "kateattribute.h"
+#include "katedocument.h"
 #include "katehighlight.h"
 #include "katesyntaxdocument.h"
 #include "../factory/katefactory.h"
