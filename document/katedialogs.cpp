@@ -16,10 +16,10 @@
 #include <kfontdialog.h>
 #include <kcharsets.h>
 #include <kglobal.h>
-
+#include <qmap.h>
 
 #include "katedialogs.moc"
- /*******************************************************************************************************************
+/*******************************************************************************************************************
 *                                        Context Editor                                                            *
 *******************************************************************************************************************/
 
@@ -269,9 +269,8 @@ HighlightDialogPage::HighlightDialogPage(HlManager *hlManager, ItemStyleList *st
   QLabel *label = new QLabel( i18n("Highlight:"), vbox1 );
   hlCombo = new QComboBox( false, vbox1 );
   QHBox *modHl = new QHBox(vbox1);
-  QPushButton *createHl=new QPushButton(i18n("New"),modHl);
-  QPushButton *editHl=new QPushButton(i18n("Edit"),modHl);
-  connect(editHl,SIGNAL(clicked()),this,SLOT(hlEdit()));
+  (void) new QPushButton(i18n("New"),modHl);
+  connect(new QPushButton(i18n("Edit"),modHl),SIGNAL(clicked()),this,SLOT(hlEdit()));
   connect( hlCombo, SIGNAL(activated(int)),
            this, SLOT(hlChanged(int)) );
   for( int i = 0; i < hlManager->highlights(); i++) {
@@ -369,6 +368,8 @@ void HighlightDialogPage::hlEdit() {
 HlEditDialog::HlEditDialog(HlManager *,QWidget *parent, const char *name, bool modal,HlData *data)
   :KDialogBase(KDialogBase::Swallow, i18n("Highlight Conditions"), Ok|Cancel, Ok, parent, name, modal)
 {
+  currentItem=0;
+    transTableCnt=0;
   QHBox *wid=new QHBox(this);
   QVBox *lbox=new QVBox(wid);
     contextList=new KListView(lbox);
@@ -401,10 +402,22 @@ void HlEditDialog::initContextOptions(QVBox *co)
         tmp= new QHBox(co);
         (void) new QLabel(i18n("LineEnd:"),tmp);
         ContextLineEnd = new QComboBox(tmp);
+        connect(ContextDescr,SIGNAL(textChanged(const QString&)),this,SLOT(contextDescrChanged(const QString&)));
     }
    else
      kdDebug()<<"initContextOptions: Widget is 0"<<endl;
 }
+
+
+void HlEditDialog::insertTranslationList(QString tag, QString trans,int length)
+  {
+    ItemInfo data(trans,length);
+    id2tag.insert(transTableCnt,tag);
+    id2info.insert(transTableCnt,data);
+    tag2id.insert(tag,transTableCnt);
+    transTableCnt++;
+  }
+
 
 void HlEditDialog::initItemOptions(QVBox *co)
 {
@@ -415,12 +428,26 @@ void HlEditDialog::initItemOptions(QVBox *co)
         ItemType = new QComboBox(tmp);
         tmp= new QHBox(co);
         (void) new QLabel(i18n("Parameter:"),tmp);
-        (void) new QLineEdit(tmp);
+        ItemParameter=  new QLineEdit(tmp);
         tmp= new QHBox(co);
         (void) new QLabel(i18n("Attribute:"),tmp);
         (void) new QComboBox(tmp);
         (void) new QLabel(i18n("Context switch:"),tmp);
         ItemContext = new QComboBox(tmp);
+
+	/* init translation lists */
+	insertTranslationList("CharDetect",i18n("CharDetect"),1);
+        insertTranslationList("2CharDetect",i18n("2CharDetect"),2);
+	insertTranslationList("RangeDetect",i18n("RangeDetect"),2);
+	insertTranslationList("StringDetect",i18n("StringDetect"),-1);
+	insertTranslationList("AnyChar",i18n("AnyChar"),-1);
+	insertTranslationList("RegExpr",i18n("RegExpr"),-1);
+	insertTranslationList("Int",i18n("Int"),0);
+	insertTranslationList("Float",i18n("Float"),0);
+	insertTranslationList("keyword",i18n("keyword"),0);
+	insertTranslationList("dataType",i18n("dataType"),0);
+        ItemType->clear();
+        for (int i=0; i<transTableCnt; i++) ItemType->insertItem(id2info[i].trans_i18n);
     }
   else
     kdDebug()<<"initItemOptions: Widget is 0"<<endl;
@@ -428,7 +455,7 @@ void HlEditDialog::initItemOptions(QVBox *co)
 
 void HlEditDialog::loadFromDocument(HlData *hl)
 {
-  struct syntaxContextData *data,*datasub;
+  struct syntaxContextData *data;
   QListViewItem *last=0,*lastsub=0;
 
   HlManager::self()->syntax->setIdentifier(hl->identifier);
@@ -445,19 +472,11 @@ void HlEditDialog::loadFromDocument(HlData *hl)
                  HlManager::self()->syntax->groupData(data,QString("attribute")),
                  HlManager::self()->syntax->groupData(data,QString("lineEndContext")));
           i++;
-          int iitem=0;
           lastsub=0;
-          bool tmpbool;
           while (HlManager::self()->syntax->nextItem(data))
               {
                 kdDebug(13010)<< "Adding item to list"<<endl;
-//                datasub=HlManager::self()->syntax->getSubItems(data);
-//                if (tmpbool=HlManager::self()->syntax->nextItem(datasub))
-//                  {
-//                    for (;tmpbool;tmpbool=HlManager::self()->syntax->nextItem(datasub))
-                        lastsub=addContextItem(contextList,last,lastsub,data);
-//                  }
-//                 HlManager::self()->syntax->freeGroupInfo(datasub);
+                lastsub=addContextItem(last,lastsub,data);
               }
 
 
@@ -466,7 +485,7 @@ void HlEditDialog::loadFromDocument(HlData *hl)
    }
 }
 
-QListViewItem *HlEditDialog::addContextItem(KListView *cL,QListViewItem *_parent,QListViewItem *prev,struct syntaxContextData *data)
+QListViewItem *HlEditDialog::addContextItem(QListViewItem *_parent,QListViewItem *prev,struct syntaxContextData *data)
   {
 
                 kdDebug(13010)<<HlManager::self()->syntax->groupItemData(data,QString("name")) << endl;
@@ -517,6 +536,15 @@ void HlEditDialog::showContext()
 //    ContextLineEnd->setText(currentItem->text(2));
   }
 
+void HlEditDialog::contextDescrChanged(const QString& name)
+  {
+    if (currentItem)
+      {
+        currentItem->setText(0,name);
+        ContextLineEnd->changeItem(name,currentItem->text(3).toInt());
+      }
+  }
+
 void HlEditDialog::showItem()
   {
     stack->raiseWidget(HlEItem);
@@ -524,4 +552,19 @@ void HlEditDialog::showItem()
     for (QListViewItem *it=contextList->firstChild();it;it=it->nextSibling())
         ItemContext->insertItem(it->text(0));
     ItemContext->setCurrentItem(currentItem->text(4).toInt());
+    QMap<QString,int>::Iterator iter=tag2id.find(currentItem->text(1));
+    if (iter==tag2id.end())
+      kdDebug(13010)<<"Oops, unknown itemtype in showItem: "<<currentItem->text(1)<<endl;
+    else
+      {
+        ItemType->setCurrentItem(*iter);
+        if (id2info[*iter].length==0) ItemParameter->hide();
+          else
+           {
+             ItemParameter->setMaxLength(id2info[*iter].length);
+             ItemParameter->show();
+             ItemParameter->setText(currentItem->text(2));
+           }
+      }
+
   }

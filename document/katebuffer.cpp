@@ -558,7 +558,7 @@ KWBufBlock::blockFill(int dataStart, QByteArray data1, QByteArray data2, bool la
 
    m_rawData2End = l - m_rawData2.data();
    m_endState.lineNr = lineNr;
-qWarning("blockFill(%x) beginState = %d endState = %d", this, 
+qWarning("blockFill(%p) beginState = %ld endState = %ld", this,
    m_beginState.lineNr, m_endState.lineNr);
    m_rawSize = m_rawData1.count() - m_rawData1Start + m_rawData2End;
    b_rawDataValid = true;
@@ -770,7 +770,7 @@ qWarning("KWBufBlock: buildStringListFast this = %p", this);
       buf += sizeof(QChar)*l;
       m_stringList.append(textLine);
    }
-qWarning("stringList.count = %d should be %d", m_stringList.count(), m_endState.lineNr - m_beginState.lineNr);
+qWarning("stringList.count = %d should be %ld", m_stringList.count(), m_endState.lineNr - m_beginState.lineNr);
    assert((int) m_stringList.count() == (m_endState.lineNr - m_beginState.lineNr));
    m_stringListIt = m_stringList.begin();
    m_stringListCurrent = 0;

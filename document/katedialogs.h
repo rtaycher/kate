@@ -91,6 +91,15 @@ class HighlightDialogPage : public QTabWidget
     ItemData *itemData;
 };
 
+class ItemInfo
+{
+  public:
+    ItemInfo():trans_i18n(),length(0){};
+    ItemInfo(QString _trans,int _length):trans_i18n(_trans),length(_length){};
+    QString trans_i18n;
+    int length;
+};
+
 //--------
 class HighlightDialog : public KDialogBase
 {
@@ -106,7 +115,6 @@ class HighlightDialog : public KDialogBase
   protected:
     virtual void done(int r);
 };
-
 
 class HlEditDialog : public KDialogBase
 {
@@ -124,7 +132,8 @@ class HlEditDialog : public KDialogBase
     void showContext();
     void showItem();
 
-    QListViewItem *addContextItem(KListView *cL,QListViewItem *_parent,QListViewItem *prev,struct syntaxContextData *data);
+    QListViewItem *addContextItem(QListViewItem *_parent,QListViewItem *prev,struct syntaxContextData *data);
+    void insertTranslationList(QString tag, QString trans,int length);
 
     class QLineEdit *ContextDescr;
     class QComboBox *ContextAttribute;
@@ -132,9 +141,15 @@ class HlEditDialog : public KDialogBase
 
     class QComboBox *ItemType;
     class QComboBox *ItemContext;
+    class QLineEdit *ItemParameter;
 
+    class QMap<int,QString> id2tag;
+    class QMap<int,ItemInfo> id2info;
+    class QMap<QString,int> tag2id;
+    int transTableCnt;
   protected slots:
     void currentSelectionChanged ( QListViewItem * );
+    void contextDescrChanged(const QString&);
 };
 
 
