@@ -315,7 +315,7 @@ KateProjectDialogNew::~KateProjectDialogNew ()
 
 void KateProjectDialogNew::slotTextChanged()
 {
-    enableButtonOK( !m_urlRequester->lineEdit()->text().isEmpty() && !m_nameEdit->text().isEmpty());
+  enableButtonOK( !m_urlRequester->lineEdit()->text().isEmpty() && !m_nameEdit->text().isEmpty());
 }
 
 int KateProjectDialogNew::exec()
@@ -333,6 +333,9 @@ int KateProjectDialogNew::exec()
     else
       KMessageBox::sorry (this, i18n ("You must enter a project name and file"));
   }
+  
+  if (!fileName.endsWith (".kateproject"))
+    fileName.append (".kateproject");
 
   return n;
 }
