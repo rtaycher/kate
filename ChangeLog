@@ -1,3 +1,6 @@
+2001-04-03 Joseph Wenninger <jowenn@bigfoot.com>
+	* Cristi Dumitrescu's PHP keyword / type list added
+
 2001-04-01 Joseph Wenninger <jowenn@bigfoot.com>
          * Added a new widget KateStackTabWidget
            Now you can chose between tabbed or an

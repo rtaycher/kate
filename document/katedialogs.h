@@ -100,10 +100,24 @@ class HlEditDialog : public KDialogBase
     class QWidgetStack *stack;
     class QVBox *contextOptions, *itemOptions;
     class KListView *contextList;
+    class QListViewItem *currentItem;
     void initContextOptions(class QVBox *co);
     void initItemOptions(class QVBox *co);
     void loadFromDocument(HlData *hl);
+    void showContext();
+    void showItem();
+
     QListViewItem *addContextItem(KListView *cL,QListViewItem *_parent,QListViewItem *prev,struct syntaxContextData *data);
+
+    class QLineEdit *ContextDescr;
+    class QComboBox *ContextAttribute;
+    class QComboBox *ContextLineEnd;
+
+    class QComboBox *ItemType;
+    class QComboBox *ItemContext;
+
+  protected slots:
+    void currentSelectionChanged ( QListViewItem * );
 };
 
 

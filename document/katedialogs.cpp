@@ -367,6 +367,7 @@ HlEditDialog::HlEditDialog(HlManager *,QWidget *parent, const char *name, bool m
     stack->raiseWidget(HlEContext);
     setMainWidget(wid);
     if (data!=0) loadFromDocument(data);
+    connect(contextList,SIGNAL(currentChanged( QListViewItem*)),this,SLOT(currentSelectionChanged ( QListViewItem * )));
 }
 
 void HlEditDialog::initContextOptions(QVBox *co)
@@ -375,13 +376,13 @@ void HlEditDialog::initContextOptions(QVBox *co)
     {
         QHBox *tmp = new QHBox(co);
         (void) new QLabel(i18n("Description:"),tmp);
-        (void) new QLineEdit(tmp);
+        ContextDescr=new QLineEdit(tmp);
         tmp= new QHBox(co);
         (void) new QLabel(i18n("Attribute:"),tmp);
-        (void) new QComboBox(tmp);
+        ContextAttribute=new QComboBox(tmp);
         tmp= new QHBox(co);
         (void) new QLabel(i18n("LineEnd:"),tmp);
-        (void) new QComboBox(tmp);
+        ContextLineEnd = new QComboBox(tmp);
     }
    else
      kdDebug()<<"initContextOptions: Widget is 0"<<endl;
@@ -393,7 +394,7 @@ void HlEditDialog::initItemOptions(QVBox *co)
     {
         QHBox *tmp = new QHBox(co);
         (void) new QLabel(i18n("Type:"),tmp);
-        (void) new QComboBox(tmp);
+        ItemType = new QComboBox(tmp);
         tmp= new QHBox(co);
         (void) new QLabel(i18n("Parameter:"),tmp);
         (void) new QLineEdit(tmp);
@@ -401,7 +402,7 @@ void HlEditDialog::initItemOptions(QVBox *co)
         (void) new QLabel(i18n("Attribute:"),tmp);
         (void) new QComboBox(tmp);
         (void) new QLabel(i18n("Context switch:"),tmp);
-        (void) new QComboBox(tmp);
+        ItemContext = new QComboBox(tmp);
     }
   else
     kdDebug()<<"initItemOptions: Widget is 0"<<endl;
@@ -477,3 +478,32 @@ QListViewItem *HlEditDialog::addContextItem(KListView *cL,QListViewItem *_parent
                 return new QListViewItem(_parent,prev,i18n(dataname.latin1())+" "+param,dataname,param,attr,context);
  }
 
+
+void HlEditDialog::currentSelectionChanged ( QListViewItem *it)
+  {
+     kdDebug(13010)<<"Update data view"<<endl<<"Depth:"<<it->depth()<<endl;
+     currentItem=it;
+     if (it->depth()==0) showContext();
+        else showItem();
+  }
+
+void HlEditDialog::showContext()
+  {
+    stack->raiseWidget(HlEContext);
+    ContextDescr->setText(currentItem->text(0));
+    ContextLineEnd->clear();
+    for (QListViewItem *it=contextList->firstChild();it;it=it->nextSibling())
+        ContextLineEnd->insertItem(it->text(0));
+    ContextLineEnd->setCurrentItem(currentItem->text(3).toInt());
+//    ContextAttribute->setText(currentItem->text(1));
+//    ContextLineEnd->setText(currentItem->text(2));
+  }
+
+void HlEditDialog::showItem()
+  {
+    stack->raiseWidget(HlEItem);
+    ItemContext->clear();
+    for (QListViewItem *it=contextList->firstChild();it;it=it->nextSibling())
+        ItemContext->insertItem(it->text(0));
+    ItemContext->setCurrentItem(currentItem->text(4).toInt());
+  }
