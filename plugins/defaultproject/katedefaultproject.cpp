@@ -49,10 +49,6 @@ void PluginKateDefaultProject::addView(Kate::MainWindow *win)
 {
     // TODO: doesn't this have to be deleted?
     PluginView *view = new PluginView ();
-               
-    (void) new KAction( i18n("Compile Project"), Key_F12,
-      this, SLOT( slotOpenHeader() ),
-      view->actionCollection(), "project_compile" );
              
     view->setInstance (new KInstance("kate"));
     view->setXMLFile( "plugins/katedefaultproject/ui.rc" );
@@ -72,40 +68,4 @@ void PluginKateDefaultProject::removeView(Kate::MainWindow *win)
       win->guiFactory()->removeClient (view);
       delete view;
     }  
-}
-
-void PluginKateDefaultProject::slotOpenHeader ()
-{
-  Kate::View * kv (application()->activeMainWindow()->viewManager()->activeView());
-  if (!kv) return;
-  
-  KURL url=kv->document()->url();
-  if ((!url.isValid()) || (url.isEmpty())) return;
-  
-  QFileInfo info( url.path() );
-  QString extension = info.extension().lower();
-  
-  QStringList headers( QStringList() << "h" );
-  QStringList sources( QStringList() << "c" << "cpp" << "cc" << "cp" );
-  
-  if( sources.find( extension ) != sources.end() ) {
-    tryOpen( url, headers );
-  } else if ( headers.find( extension ) != headers.end() ) {
-    tryOpen( url, sources );
-  }
-}
-
-void PluginKateDefaultProject::tryOpen( const KURL& url, const QStringList& extensions )
-{
-  kdDebug() << "Trying to open " << url.prettyURL() << " with extensions " << extensions.join(" ") << endl;
-  QString basename = QFileInfo( url.path() ).baseName();
-  KURL newURL( url );
-  for( QStringList::ConstIterator it = extensions.begin(); it != extensions.end(); ++it ) {
-    newURL.setFileName( basename + "." + *it );
-    if( KIO::NetAccess::exists( newURL ) )
-      application()->activeMainWindow()->viewManager()->openURL( newURL );
-    newURL.setFileName( basename + "." + (*it).upper() );
-    if( KIO::NetAccess::exists( newURL ) )
-      application()->activeMainWindow()->viewManager()->openURL( newURL );
-  }
 }
