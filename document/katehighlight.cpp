@@ -80,21 +80,9 @@ int getDefStyleNum(QString name)
 	return dsNormal;
   }
 
-bool isInWord(QChar ch) {
-  return ch.isLetter() || ch.isDigit() || ch == '_';
-/*  static unsigned char data[] = {0,0,0,0,0,0,255,3,254,255,255,135,254,255,255,7};
-  if (c & 128) return false;
-  return !(data[c >> 3] & (1 << (c & 7)));*/
-}
-
-bool ucmp(const QChar *u, const char *s, int len) {
-  while (len > 0) {
-    if (*u != *s) return false;
-    u++;
-    s++;
-    len--;
-  }
-  return true;
+bool isInWord(QChar ch)
+{
+  return ch.isLetterOrNumber() || ch == '_';
 }
 
 bool ustrchr(const char *s, QChar c) {
@@ -104,10 +92,6 @@ bool ustrchr(const char *s, QChar c) {
   }
   return false;
 }
-
-
-
-
 
 HlItem::HlItem(int attribute, int context)
   : attr(attribute), ctx(context)  {subItems=0;
