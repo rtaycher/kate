@@ -526,15 +526,15 @@ void KateViewManager::openURL (KURL url, const QString& encoding)
 {
   uint id;
   Kate::Document *doc=m_docManager->openURL(url,encoding,&id);
-  
+
   if (!doc->url().isEmpty())
     ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( doc->url() );
-  
+
   Kate::View *cv = activeView();
-  
+
   if (!cv)
     createView(false,url,0L,doc);
-  
+
   activateView( id );
 
   setWindowCaption();
@@ -556,7 +556,7 @@ void KateViewManager::splitViewSpace( KateViewSpace* vs,
   if (!vs) vs = activeViewSpace();
 
   bool isFirstTime = vs->parentWidget() == this;
-  
+
   QValueList<int> psizes;
   if ( ! isFirstTime )
     if ( QSplitter *ps = static_cast<QSplitter*>(vs->parentWidget()->qt_cast("QSplitter")) )
@@ -583,10 +583,10 @@ void KateViewManager::splitViewSpace( KateViewSpace* vs,
     m_grid->addWidget(s, 0, 0);
   else if ( QSplitter *ps = static_cast<QSplitter*>(s->parentWidget()->qt_cast("QSplitter")) )
     ps->setSizes( psizes );
-    
+
 
   s->show();
-  
+
   QValueList<int> sizes;
   int space = 50;//isHoriz ? s->parentWidget()->height()/2 : s->parentWidget()->width()/2;
   sizes << space << space;
@@ -784,7 +784,7 @@ void KateViewManager::reopenDocuments(bool isRestore)
   KConfig* config = kapp->config();
   config->setGroup("General");
   bool restoreViews = config->readBoolEntry("restore views", false);
-  bool reopenAtStart = config->readBoolEntry("reopen at startup", true);
+  bool reopenAtStart = config->readBoolEntry("reopen at startup", false);
 
   if (  (reopenAtStart &&  (!(((KateApp*)kapp)->doNotInitialize() & 0x1))) || isRestore )
   {
@@ -815,11 +815,11 @@ void KateViewManager::reopenDocuments(bool isRestore)
       if ( !fn.isEmpty() ) {
         kdDebug(13001)<<"reopenDocuments(): opening file : "<<fn<<endl;
         scfg->setGroup( fn );
-	
+
         Kate::Document *doc = m_docManager->openURL( KURL( fn ) );
 	if (doc)
 	  doc->readSessionConfig(scfg);
-	  
+
 	scfg->setGroup("open files");
       }
       i++;

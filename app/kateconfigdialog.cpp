@@ -74,8 +74,8 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
 
   v = viewManager->activeView();
 
-  if (!v) return;       
-  
+  if (!v) return;
+
   pluginPages.setAutoDelete (false);
   editorPages.setAutoDelete (false);
 
@@ -107,7 +107,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   cb_reopenFiles = new QCheckBox( bgStartup );
   cb_reopenFiles->setText(i18n("Reopen &files at startup"));
   //config->setGroup("General");
-  cb_reopenFiles->setChecked( config->readBoolEntry("reopen at startup", true) );
+  cb_reopenFiles->setChecked( config->readBoolEntry("reopen at startup", false) );
   QWhatsThis::add(cb_reopenFiles, i18n(
         "If this is enabled Kate will attempt to reopen files that were open when you closed "
         "last time. Cursor position will be recovered if possible. Non-existent files will "
@@ -131,7 +131,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
         "If this is unchecked, Kate will only use one UNIX process. If you try running it again, the current "
         "process will get the focus, and open any files you requested to be opened. If it is checked, each time "
         "you start Kate, a new UNIX process will be started.") );
-  
+
   // show full path in title
   config->setGroup("General");
   cb_fullPath = new QCheckBox( i18n("Show full &path in title"), frGeneral);
@@ -189,7 +189,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
 
   lo->addStretch(1); // :-] works correct without autoadd
   // END General page
-  
+
 
   path.clear();
 
@@ -198,30 +198,30 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
 
   QVBox *page = addVBoxPage( path, i18n("File Selector Settings"),
                               BarIcon("fileopen", KIcon::SizeSmall) );
-  fileSelConfigPage = new KFSConfigPage( page, "file selector config page", 
+  fileSelConfigPage = new KFSConfigPage( page, "file selector config page",
                                          mainWindow->fileselector );
-                                      
+
   path.clear();
   path << i18n("Application") << i18n("Plugins");
   /*QVBox **/page=addVBoxPage(path,i18n("Plugin Manager"),
                           BarIcon("misc",KIcon::SizeSmall));
   (void)new KateConfigPluginPage(page, this);
-  
+
   // editor widgets from kwrite/kwdialog
   path.clear();
   path << i18n("Editor");
-  setFolderIcon (path, SmallIcon("edit", KIcon::SizeSmall));    
-    
+  setFolderIcon (path, SmallIcon("edit", KIcon::SizeSmall));
+
   for (uint i = 0; i < KTextEditor::configInterfaceExtension (v->document())->configPages (); i++)
   {
     path.clear();
     path << i18n("Editor") << KTextEditor::configInterfaceExtension (v->document())->configPageName (i);
     /*QVBox **/page = addVBoxPage(path, KTextEditor::configInterfaceExtension (v->document())->configPageFullName (i),
                               KTextEditor::configInterfaceExtension (v->document())->configPagePixmap(i, KIcon::SizeSmall) );
-  
+
     editorPages.append (KTextEditor::configInterfaceExtension (v->document())->configPage(i, page));
-  }              
-  
+  }
+
   #if 0
   path.clear();
   path << i18n("Plugins");
@@ -232,7 +232,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
     if  ( pluginManager->pluginList().at(i)->load && Kate::pluginConfigInterfaceExtension(pluginManager->pluginList().at(i)->plugin) )
       addPluginPage (pluginManager->pluginList().at(i)->plugin);
   }
- 
+
   enableButtonSeparator(true);
 }
 
@@ -241,10 +241,10 @@ KateConfigDialog::~KateConfigDialog()
 }
 
 void KateConfigDialog::addPluginPage (Kate::Plugin *plugin)
-{      
+{
   if (!Kate::pluginConfigInterfaceExtension(plugin))
-    return;               
-    
+    return;
+
   for (uint i=0; i<Kate::pluginConfigInterfaceExtension(plugin)->configPages(); i++)
   {
     QStringList path;
@@ -255,7 +255,7 @@ void KateConfigDialog::addPluginPage (Kate::Plugin *plugin)
     PluginPageListItem *info=new PluginPageListItem;
     info->plugin = plugin;
     info->page = Kate::pluginConfigInterfaceExtension(plugin)->configPage (i, page);
-    pluginPages.append(info);  
+    pluginPages.append(info);
   }
 }
 
@@ -263,7 +263,7 @@ void KateConfigDialog::removePluginPage (Kate::Plugin *plugin)
 {
    if (!Kate::pluginConfigInterfaceExtension(plugin))
     return;
-    
+
   for (uint i=0; i<pluginPages.count(); i++)
   {
     if  ( pluginPages.at(i)->plugin == plugin )
@@ -292,7 +292,7 @@ void KateConfigDialog::slotApply()
   config->writeEntry("MultipleInstances",cb_singleInstance->isChecked());
   config->setGroup("General");
   config->writeEntry("reopen at startup", cb_reopenFiles->isChecked());
-  
+
   if (((config->readEntry("viewMode",DEFAULT_STYLE)=="Modern")? 0 : 1)!=cb_mode->currentItem())
   {
     config->writeEntry("viewMode",(cb_mode->currentItem()==0)?"Modern":"Classic");
@@ -308,7 +308,7 @@ void KateConfigDialog::slotApply()
   mainWindow->fileOpenRecent->setMaxItems( sb_numRecentFiles->value() );
 
   fileSelConfigPage->apply();
-  
+
   for (uint i=0; i<editorPages.count(); i++)
   {
     editorPages.at(i)->apply();
