@@ -1819,10 +1819,26 @@ void KWrite::keyPressEvent( QKeyEvent *ev )
             keyReturn();
             break;
         case Key_Delete:
-            keyDelete();
+            if ( ev->state() & ControlButton )
+            {
+               VConfig c;
+               shiftWordRight();
+               kWriteView->getVConfig(c);
+               kWriteDoc->delMarkedText(c);
+               kWriteView->update();
+            }
+            else keyDelete();
             break;
         case Key_Backspace:
-            backspace();
+            if ( ev->state() & ControlButton )
+            {
+               VConfig c;
+               shiftWordLeft();
+               kWriteView->getVConfig(c);
+               kWriteDoc->delMarkedText(c);
+               kWriteView->update();
+            }
+            else backspace();
             break;
         case Key_Insert:
             toggleInsert();
