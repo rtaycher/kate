@@ -97,12 +97,12 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   lo->setSpacing(KDialog::spacingHint());
   config->setGroup("General");
 
-  // GROUP with the one below: "At Startup"
-  QButtonGroup *bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("At Startup"), frGeneral );
+  // GROUP with the one below: "Startup"
+  QButtonGroup *bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("Startup"), frGeneral );
   lo->addWidget( bgStartup );
   // reopen files
   cb_reopenFiles = new QCheckBox( bgStartup );
-  cb_reopenFiles->setText(i18n("Reopen &files"));
+  cb_reopenFiles->setText(i18n("Reopen &files at startup"));
   //config->setGroup("General");
   cb_reopenFiles->setChecked( config->readBoolEntry("reopen at startup", true) );
   QWhatsThis::add(cb_reopenFiles, i18n(
