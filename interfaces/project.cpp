@@ -72,6 +72,7 @@ class PrivateProjectDirFile
     
     PrivateProjectDirFileData *m_data;
     KConfig *m_config;
+    QString m_dir;
   };
 
             
@@ -174,6 +175,7 @@ ProjectDirFile::ProjectDirFile (void *projectDirFile) : QObject ()
   d->m_data = (PrivateProjectDirFileData *) projectDirFile;
   
   d->m_config = new KConfig (d->m_data->fileName);
+  d->m_dir = d->m_data->fileName.left (d->m_data->fileName.findRev (QChar ('/')));
 }
 
 ProjectDirFile::~ProjectDirFile ()
@@ -194,13 +196,60 @@ KConfig *ProjectDirFile::data ()
 QStringList ProjectDirFile::dirs () const
 {
   d->m_config->setGroup("General");
-  return d->m_config->readListEntry ("Dirs");
+  return d->m_config->readListEntry ("Dirs", '/');
 }
      
 QStringList ProjectDirFile::files () const
 {
   d->m_config->setGroup("General");
-  return d->m_config->readListEntry ("Files");
+  return d->m_config->readListEntry ("Files", '/');
+}
+
+QString ProjectDirFile::fileName () const
+{
+  return d->m_data->fileName;
+}
+
+QString ProjectDirFile::dir () const
+{
+  return d->m_dir;
+}
+
+ProjectDirFile::Ptr ProjectDirFile::dirFile (const QString &dir)
+{
+  QString fname = d->m_dir + QString ("/");
+  
+  if (!dir.isNull ())
+    fname += dir + QString ("/") + d->m_data->project->dirFilesName ();
+   else
+    fname += d->m_data->project->dirFilesName ();
+    
+  if (!QFile::exists (fname))
+    return 0;
+    
+  PrivateProjectDirFileData *data = new PrivateProjectDirFileData ();
+  data->fileName = fname;
+  data->project = d->m_data->project;
+  
+  ProjectDirFile::Ptr p = new ProjectDirFile ((void *)data);
+  
+  return p;
+}
+
+ProjectDirFile::List ProjectDirFile::dirFiles ()
+{
+  QStringList d = dirs ();
+  ProjectDirFile::List list;
+  
+  for (uint i=0; i < d.count(); i++)
+  {
+    ProjectDirFile::Ptr p = dirFile (d[i]);
+    
+    if (p)
+      list.push_back (p);
+  }
+  
+  return list;
 }
 
 };

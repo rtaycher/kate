@@ -23,6 +23,7 @@
 #include <qobject.h>
 #include <kurl.h>
 #include <qstringlist.h>
+#include <qvaluelist.h>
 
 class KConfig;
 
@@ -42,6 +43,7 @@ class ProjectDirFile : public QObject, public KShared
  
   public:
     typedef KSharedPtr<ProjectDirFile> Ptr;
+    typedef QValueList<Ptr> List;
    
   public:
     /**
@@ -57,14 +59,39 @@ class ProjectDirFile : public QObject, public KShared
     Project *project ();
     
     /**
+     * Return the filename of the project file
+     * @return QString project filename
+     */
+    QString fileName () const;
+    
+    /**
+     * Return the dir of the project
+     * @return QString project dir
+     */
+    QString dir () const;
+    
+    /**
      * Raw access to config file
      * @return KConfig config data
      */
-     KConfig *data ();
+    KConfig *data ();
      
-     QStringList dirs () const;
+    QStringList dirs () const;
      
-     QStringList files () const;
+    QStringList files () const;
+     
+    /**
+     * ProjectDirFile object for the dir dir file in the given dir, QString::null for this dir !
+     * @param dir dir name
+     * @return ProjectDirFile for given dir
+     */
+    ProjectDirFile::Ptr dirFile (const QString &dir = QString::null);
+    
+    /**
+     * ProjectDirFile objects for all direct subdirs
+     * @return ProjectDirFile::List for all direct subdirs
+     */
+    ProjectDirFile::List dirFiles ();
 
   private:
     /**
@@ -138,7 +165,8 @@ class Project : public QObject
     bool save ();
     
     /**
-     * ProjectDirFile object for the dir project file in the given dir, QString::null for toplevel dir !
+     * ProjectDirFile object for the dir dir file in the given dir, QString::null for toplevel dir !
+     * @param dir dir name
      * @return ProjectDirFile for given dir
      */
     ProjectDirFile::Ptr dirFile (const QString &dir = QString::null);
@@ -147,7 +175,7 @@ class Project : public QObject
      * Raw access to config file
      * @return KConfig config data
      */
-     KConfig *data ();
+    KConfig *data ();
     
   #undef signals
   #define signals public
