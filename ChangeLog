@@ -1,3 +1,7 @@
+2001-03-04 Christoph Cullmann <crossfire@babylon2k.de>
+        * mutiple mainwindows
+        * fileist, sync for all mainwindows, all open docs listed
+
 2001-03-03 Christoph Cullmann <crossfire@babylon2k.de>
         * session managment (Anders Lund)
         * removed some debug stuff
