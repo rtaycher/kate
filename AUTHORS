@@ -1,7 +1,26 @@
-Christoph "Crossfire" Cullmann <crossfire@babylon2k.de>
-Michael Bartl <michael.bartl1@chello.at>
-Phlip <phlip_cpp@my-deja.com>
-Anders Lund <anders@alweb.dk>
-Matt Newell <newellm@proaxis.com>
-Joseph Wenninger <jowenn@bigfoot.com>
-Michael McCallum <gholam@xtra.co.nz>
+Kant Team:
+- Christoph "Crossfire" Cullmann <crossfire@babylon2k.de>
+
+- Michael Bartl <michael.bartl1@chello.at>
+
+- Phlip <phlip_cpp@my-deja.com>
+
+- Anders Lund <anders@alweb.dk>
+
+- Matt Newell <newellm@proaxis.com>
+
+- Joseph Wenninger <jowenn@bigfoot.com>
+
+- Michael McCallum <gholam@xtra.co.nz>
+
+KWrite Team:
+- Jochen Wilhelmy <digisnap@cs.tu-berlin.de>
+
+- Glen Parker <glenebob@nwlink.com>
+  (undo history, kspell-integration)
+
+-Michael Koch <koch@kde.org>
+  (port to KParts)
+
+-Waldo Bastian <bastian@kde.org>
+  (improved buffer handling)
