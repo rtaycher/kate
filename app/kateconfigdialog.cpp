@@ -84,13 +84,13 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   setShowIconsInTreeList(true);
 
   path.clear();
-  path << i18n("Kate");
+  path << i18n("Application");
   setFolderIcon (path, SmallIcon("kate", KIcon::SizeSmall));
 
   path.clear();
 
   // General page
-  path << i18n("Kate") << i18n("General");
+  path << i18n("Application") << i18n("General");
   QFrame* frGeneral = addPage(path, i18n("General Options"), BarIcon("misc", KIcon::SizeSmall));
 
   QVBoxLayout *lo = new QVBoxLayout( frGeneral );
@@ -175,7 +175,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   path.clear();
 
   // file selector page
-  path << i18n("Kate") << i18n("File Selector");
+  path << i18n("Application") << i18n("File Selector");
 
   QVBox *page = addVBoxPage( path, i18n("File Selector Settings"),
                               BarIcon("fileopen", KIcon::SizeSmall) );
@@ -183,7 +183,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
                                          mainWindow->fileselector );
                                       
   path.clear();
-  path << i18n("Kate") << i18n("Plugins");
+  path << i18n("Application") << i18n("Plugins");
   /*QVBox **/page=addVBoxPage(path,i18n("Plugin Manager"),
                           BarIcon("misc",KIcon::SizeSmall));
   (void)new KateConfigPluginPage(page, this);
@@ -201,7 +201,11 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
                               KTextEditor::configInterfaceExtension (v->document())->configPagePixmap(i, KIcon::SizeSmall) );
   
     editorPages.append (KTextEditor::configInterfaceExtension (v->document())->configPage(i, page));
-  }           
+  }              
+  
+  path.clear();
+  path << i18n("Plugins");
+  setFolderIcon (path, SmallIcon("kate", KIcon::SizeSmall));
   
   for (uint i=0; i<pluginManager->myPluginList.count(); i++)
   {
