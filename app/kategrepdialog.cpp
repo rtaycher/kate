@@ -349,8 +349,8 @@ void GrepDialog::slotSearch()
     status_label->setText(i18n("Searching..."));
 
     QString pattern = template_edit->text();
-    pattern.replace(QRegExp("%s"), pattern_combo->currentText());
-    pattern.replace(QRegExp("'"), "'\\''");
+    pattern.replace("%s", pattern_combo->currentText());
+    pattern.replace("'", "'\\''");
 
     QString filepattern = "`find ";
     filepattern += KProcess::quote(dir_combo->/*currentText*/url());
