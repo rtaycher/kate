@@ -57,6 +57,7 @@
 #include <kuniqueapplication.h>
 #include <kurldrag.h>
 #include <kdesktopfile.h>
+#include <khelpmenu.h>
 
 #include "kategrepdialog.h"
 
@@ -85,7 +86,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_
   setupActions();
 
   setXMLFile( "kateui.rc" );
-
+  
   guiFactory()->addClient (this);
   
   pluginManager->enableAllPluginsGUI (this);
@@ -239,6 +240,9 @@ void KateMainWindow::setupActions()
   settingsShowToolbar = KStdAction::showToolbar(this, SLOT(slotSettingsShowToolbar()), actionCollection(), "settings_show_toolbar");
   settingsConfigure = KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
 
+  // help menu
+  new KHelpMenu(this, instance()->aboutData(), true, actionCollection());
+  
   connect(viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
 
   slotWindowActivated ();
