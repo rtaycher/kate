@@ -19,26 +19,63 @@
 #include "kantprojectmanager.moc"
 
 #include "kantprojectdialog.h"
-#include "../document/kantdocmanager.h"
-#include "../document/kantdocument.h"
-#include "../view/kantviewmanager.h"
+#include "../../document/kantdocmanager.h"
+#include "../../document/kantdocument.h"
+#include "../../view/kantviewmanager.h"
 
 #include <kfiledialog.h>
 #include <iostream.h>
 #include <qtextstream.h>
 #include <kstatusbar.h>
 #include <klocale.h>
-#include "../piper/piper.cpp"  //  PCP I feel not a scrap of guilt...
+#include "../../piper/piper.cpp"  //  PCP I feel not a scrap of guilt...
 
-KantProjectManager::KantProjectManager (KantDocManager *docManager, KantViewManager *viewManager, KStatusBar *statusBar) : QObject()
+extern "C"
 {
-  this->docManager = docManager;
+  void* init_libkantprojectmanagerplugin()
+  {
+    return new KantPluginFactory;
+  }
+}
+
+KantPluginFactory::KantPluginFactory()
+{
+  s_instance = new KInstance( "kant" );
+}
+
+KantPluginFactory::~KantPluginFactory()
+{
+  delete s_instance;
+}
+
+QObject* KantPluginFactory::createObject( QObject* parent, const char* name, const char*, const QStringList & )
+{
+  return new KantProjectManager( parent, name );
+}
+
+KInstance* KantPluginFactory::s_instance = 0L;
+
+KantProjectManager::KantProjectManager (QObject* parent, const char* name) : KantPlugin(parent, name)
+{
+/* this->docManager = docManager;
   this->viewManager = viewManager;
-  this->statusBar = statusBar;
+  this->statusBar = statusBar;    */
 }
 
 KantProjectManager::~KantProjectManager ()
 {
+}
+
+KantPluginView *KantProjectManager::createView ()
+{
+   KantPluginView *view = new KantPluginView ();
+
+(void)  new KAction ( i18n("HT&ML Tag..."), "edit_HTML_tag", ALT + Key_Minus, this,
+                                SLOT( slotEditHTMLtag() ), view->actionCollection(), "edit_HTML_tag" );
+
+   view->setXML( "plugins/kanthtmltools/ui.rc" );
+   viewList.append (view);
+   return view;
 }
 
 /*

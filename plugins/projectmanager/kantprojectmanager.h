@@ -18,18 +18,38 @@
 #ifndef kant_projectmanager_h
 #define kant_projectmanager_h
 
-#include "../main/kantmain.h"
+#include "../../main/kantmain.h"
 
-#include <qobject.h>
+#include "../../pluginmanager/kantplugin.h"
+
+#include <klibloader.h>
+#include <kantpluginIface.h>
 #include <kurl.h>
 
-class KantProjectManager : public QObject
+class KantPluginFactory : public KLibFactory
 {
   Q_OBJECT
 
   public:
-    KantProjectManager (KantDocManager *docManager=0, KantViewManager *viewManager=0, KStatusBar *statusBar=0);
+    KantPluginFactory();
+    virtual ~KantPluginFactory();
+
+    virtual QObject* createObject( QObject* parent = 0, const char* pname = 0, const char* name = "QObject", const QStringList &args = QStringList() );
+
+  private:
+    static KInstance* s_instance;
+};
+
+
+class KantProjectManager : public KantPlugin
+{
+  Q_OBJECT
+
+  public:
+    KantProjectManager (QObject* parent = 0, const char* name = 0);
     ~KantProjectManager ();
+
+    KantPluginView *createView ();
 
     KURL projectFile;
 

@@ -59,12 +59,9 @@ void KantPluginManager::setupPluginList ()
 
     info->load = false;
     info->libname = confFile->readEntry("libname","");
-    info->config = (*it);
-
     info->name = confFile->readEntry("name","");
     info->description = confFile->readEntry("description","");
     info->author = confFile->readEntry("author","");
-
     info->plugin = 0L;
 
     myPluginList.append(info);
@@ -126,6 +123,8 @@ void KantPluginManager::loadPlugin (PluginListItem *item)
 
 void KantPluginManager::unloadPlugin (PluginListItem *item)
 {
+  disablePluginGUI (item);
+
   delete item->plugin;
   item->plugin = 0L;
   item->load = false;
@@ -162,4 +161,7 @@ void KantPluginManager::disablePluginGUI (PluginListItem *item)
       ((KantApp*)parent())->mainWindows.at(i)->guiFactory()->removeClient( item->plugin->viewList.at (z) );
     }
   }
+
+  item->plugin->viewList.setAutoDelete (true);
+  item->plugin->viewList.clear ();
 }

@@ -125,7 +125,6 @@ void KantConfigPluginPage::unloadPlugin ()
   {
     if  (myPluginMan->myPluginList.at(i)->name == text)
     {
-      myPluginMan->disablePluginGUI (myPluginMan->myPluginList.at(i));
       myPluginMan->unloadPlugin (myPluginMan->myPluginList.at(i));
     }
   }

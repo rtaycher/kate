@@ -29,7 +29,6 @@ struct PluginListItem
 {
   bool load;
   QString libname;
-  QString config;
   QString name;
   QString description;
   QString author;
