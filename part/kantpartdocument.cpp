@@ -72,8 +72,7 @@ KantPartBrowserExtension::KantPartBrowserExtension( KantPartDocument *doc )
 : KParts::BrowserExtension( doc, "kantpartbrowserextension" )
 {
   m_doc = doc;
-  connect( m_doc, SIGNAL( selectionChanged() ),
-           this, SLOT( slotSelectionChanged() ) );
+  connect( m_doc, SIGNAL( selectionChanged() ), this, SLOT( slotSelectionChanged() ) );
 }
 
 void KantPartBrowserExtension::copy()

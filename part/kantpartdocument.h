@@ -30,7 +30,7 @@ class KantPartDocument : public KantDocument
     KantPartDocument (bool bSingleViewMode = false, bool bBrowserView = false, QWidget *parentWidget = 0, const char *widgetName = 0, QObject *parent = 0, const char *name = 0);
     ~KantPartDocument ();
 
-    KTextEditor::View *createView( QWidget *parent, const char *name );
+    virtual KTextEditor::View *createView( QWidget *parent, const char *name );
 };
 
 class KantPartBrowserExtension : public KParts::BrowserExtension

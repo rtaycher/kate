@@ -22,13 +22,37 @@
 
 #include "../view/kantview.h"
 
+class KAction;
+class KToggleAction;
+class KRecentFilesAction;
+class KSelectAction;
+
 class KantPartView : public KantView
 {
+  Q_OBJECT
+
   friend class KantPartDocument;
 
   public:
     KantPartView (KantPartDocument *doc=0L, QWidget *parent = 0L, const char * name = 0, bool HandleOwnURIDrops = true);
     ~KantPartView ();
+
+    void setupActions();
+
+    KAction *fileSave, *editInsert, *editCut, *editPaste,
+            *editReplace, *editUndo, *editRedo, *editUndoHist,
+            *toolsIndent, *toolsUnindent, *toolsCleanIndent,
+            *toolsComment, *toolsUncomment, *toolsSpell;
+
+    KToggleAction *setVerticalSelection;
+    KRecentFilesAction *fileRecent;
+    KSelectAction *setHighlight, *setEndOfLine;
+
+  public slots:
+    void slotUpdate();
+    void slotFileStatusChanged();
+    void slotNewUndo();
+    void slotHighlightChanged();
 };
 
 #endif
