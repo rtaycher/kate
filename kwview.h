@@ -387,10 +387,6 @@ class KWrite : public KTextEditor::View {
     virtual void setCursorPosition( int line, int col, bool mark = false );
     virtual void getCursorPosition( int *line, int *col );
 
-    virtual void setSelection( int row_from, int col_from, int row_to, int col_t );
-    virtual bool hasSelection() const;
-    virtual QString selection() const;
-
     virtual bool isOverwriteMode() const;
     virtual void setOverwriteMode( bool b );
 

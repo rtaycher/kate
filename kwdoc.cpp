@@ -451,7 +451,7 @@ KWriteDoc::KWriteDoc(HlManager *hlManager, const QString &path,
     view->show();
     setWidget( view );
   }
-  
+
   if ( bBrowserView )
     (void)new KWriteBrowserExtension( this );
 }
@@ -537,6 +537,18 @@ int KWriteDoc::length() const
   return text().length();
 }
 
+void KWriteDoc::setSelection( int row_from, int col_from, int row_to, int col_t )
+{
+}
+
+bool KWriteDoc::hasSelection() const
+{
+}
+
+QString KWriteDoc::selection() const
+{
+} 
+
 TextLine *KWriteDoc::getTextLine(int line) const {
 //  if (line < 0) line = 0;
   if (line >= (int)contents.count())
@@ -584,7 +596,7 @@ void KWriteDoc::setReadWrite( bool rw )
   KTextEditor::Document::setReadWrite( rw );
 }
 
-bool KWriteDoc::isReadWrite()
+bool KWriteDoc::isReadWrite() const
 {
   return !isReadOnly();
 }
@@ -601,7 +613,7 @@ void KWriteDoc::setReadOnly(bool m) {
   }
 }
 
-bool KWriteDoc::isReadOnly() {
+bool KWriteDoc::isReadOnly() const {
   return readOnly;
 }
 
@@ -3080,26 +3092,26 @@ void KWriteDoc::clipboardChanged() { //slot
 
 void KWriteDoc::guiActivateEvent( KParts::GUIActivateEvent *ev )
 {
-  KParts::ReadWritePart::guiActivateEvent( ev ); 
+  KParts::ReadWritePart::guiActivateEvent( ev );
   if ( ev->activated() )
     emit selectionChanged();
-} 
+}
 
 KWriteBrowserExtension::KWriteBrowserExtension( KWriteDoc *doc )
 : KParts::BrowserExtension( doc, "kwritebrowserextension" )
 {
-  m_doc = doc; 
+  m_doc = doc;
   connect( m_doc, SIGNAL( selectionChanged() ),
 	   this, SLOT( slotSelectionChanged() ) );
 }
 
 void KWriteBrowserExtension::copy()
 {
-  m_doc->copy( 0 ); 
-} 
+  m_doc->copy( 0 );
+}
 
 void KWriteBrowserExtension::slotSelectionChanged()
 {
-  emit enableAction( "copy", m_doc->hasMarkedText() ); 
+  emit enableAction( "copy", m_doc->hasMarkedText() );
 }
 

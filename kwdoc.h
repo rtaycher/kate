@@ -324,6 +324,10 @@ class KWriteDoc : public KTextEditor::Document {
     virtual void removeLine( int line );
     virtual int length() const;
 
+    virtual void setSelection( int row_from, int col_from, int row_to, int col_t );
+    virtual bool hasSelection() const;
+    virtual QString selection() const;
+
     bool isSingleViewMode() const { return m_bSingleViewMode; }
 
     public:
@@ -351,9 +355,9 @@ class KWriteDoc : public KTextEditor::Document {
     void setTabWidth(int);
     int tabWidth() {return tabChars;}
     void setReadOnly(bool);
-    bool isReadOnly();
+    bool isReadOnly() const;
     virtual void setReadWrite( bool );
-    virtual bool isReadWrite();
+    virtual bool isReadWrite() const;
     virtual void setModified(bool);
     virtual bool isModified();
     void setSingleSelection(bool ss) {m_singleSelection = ss;}

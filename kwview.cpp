@@ -1536,18 +1536,6 @@ void KWrite::getCursorPosition( int *line, int *col )
     *col = currentColumn();
 }
 
-void KWrite::setSelection( int row_from, int col_from, int row_to, int col_t )
-{
-}
-
-bool KWrite::hasSelection() const
-{
-}
-
-QString KWrite::selection() const
-{
-}
-
 void KWrite::addCursorCommands(KGuiCmdManager &cmdMngr) {
   cmdMngr.addCategory(ctCursorCommands, i18nop("Cursor Movement"));
   cmdMngr.setSelectModifiers(Qt::SHIFT, selectFlag, Qt::ALT, multiSelectFlag);
