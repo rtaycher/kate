@@ -1,3 +1,7 @@
+2001-11-26 Christoph Cullmann <cullmann@kde.org>
+  * backspace bug fixed
+  * more cleanups in doc/view
+
 2001-11-24 Christoph Cullmann <cullmann@kde.org>
   * the docID is now called documentNumber and is in the KTextEditor lib ;)
   * new print and mark interfaces ;)
