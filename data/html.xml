@@ -3,27 +3,27 @@
 <language name="HTML" section="Markup" extensions="*.html;*.htm;*.shtml;*.shtm" mimetype="text/html">
   <highlighting>
     <contexts>
-       <context attribute="0" lineEndContext="0">
+       <context attribute="0" lineEndContext="#stay">
          <RegExpr attribute="1" context="1" String="&lt;\s*\/?\s*[a-zA-Z0-9_]*" />
        </context>
 
-       <context attribute="2" lineEndContext="1">
-         <DetectChar attribute="1" context="0" char="&gt;"/>
+       <context attribute="2" lineEndContext="#stay">
+         <DetectChar attribute="1" context="#pop" char="&gt;"/>
          <RegExpr attribute="0" context="2" String="\s*=\s*"/>
        </context>
 
-       <context attribute="8" lineEndContext="2">
-         <RegExpr attribute="3" context="1" String="\s*#?[a-zA-Z0-9]*" />
+       <context attribute="8" lineEndContext="#stay">
+         <RegExpr attribute="3" context="#pop" String="\s*#?[a-zA-Z0-9]*" />
          <DetectChar attribute="3" context="3" char="&quot;" />
        </context>
 
-       <context attribute="3" lineEndContext="3">
+       <context attribute="3" lineEndContext="#stay">
          <DetectChar attribute="3" context="1" char="&quot;" />
        </context>
 
-       <context attribute="5" lineEndContext="0"/>
-       <context attribute="4" lineEndContext="0">
-         <DetectChar attribute="4" context="0" char="'"/>
+       <context attribute="5" lineEndContext="#pop"/>
+       <context attribute="4" lineEndContext="#pop">
+         <DetectChar attribute="4" context="#pop" char="'"/>
        </context>
     </contexts>
     <itemDatas>
