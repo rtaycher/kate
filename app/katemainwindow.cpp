@@ -345,11 +345,12 @@ bool KateMainWindow::queryClose()
 
   // last one: check if we can close all projects/document, try run
   // and save projects/docs if we really close down !
-
-
   if ( KateProjectManager::self()->queryCloseAll () &&
        queryClose_internal() )
   {
+    // first: we detach the dcopclient
+    ((KUniqueApplication *)kapp)->dcopClient()->detach();
+
     KConfig scfg("katesessionrc", false);
 
     KConfig *config = kapp->config();

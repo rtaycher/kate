@@ -370,12 +370,14 @@ void KateVSStatusBar::updateMod( bool mod )
     const KateDocumentInfo *info
       = KateDocManager::self()->documentInfo ( v->getDoc() );
 
+    bool modOnHD = info && info->modifiedOnDisc;
+
     m_modifiedLabel->setPixmap(
         mod ?
-          info && info->modifiedOnDisc ?
+          info && modOnHD ?
             m_modmodPm :
             m_modPm :
-          info && info->modifiedOnDisc ?
+          info && modOnHD ?
             m_modDiscPm :
         m_noPm
         );
