@@ -217,9 +217,6 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     void openURL (const QString &name=0L);
 
   protected:
-     bool eventFilter (QObject* o, QEvent* e);
-
-  protected:
     static uint uniqueID;
     Kate::MainWindow *m_mainWindow;
     Kate::ToolViewManager *m_toolViewManager;

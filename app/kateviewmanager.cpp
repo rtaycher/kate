@@ -268,13 +268,9 @@ void KateViewManager::activateSpace (Kate::View* v)
   }
 }
 
-void KateViewManager::activateView ( Kate::View *view, bool checkModified /*=false*/ )
+void KateViewManager::activateView ( Kate::View *view )
 {
   if (!view) return;
-
-  if( checkModified )
-    view->getDoc()->isModOnHD();
-
 
   if (!view->isActive())
   {
@@ -310,16 +306,10 @@ void KateViewManager::activateView ( Kate::View *view, bool checkModified /*=fal
   m_docManager->setActiveDocument(view->getDoc());
 }
 
-// Don't combine, this is a slot
 void KateViewManager::activateView( uint documentNumber )
 {
-  activateView( documentNumber, true );
-}
-
-void KateViewManager::activateView( uint documentNumber, bool checkModified )
-{
   if ( activeViewSpace()->showView(documentNumber) ) {
-    activateView( activeViewSpace()->currentView(), checkModified );
+    activateView( activeViewSpace()->currentView() );
   }
   else
   {

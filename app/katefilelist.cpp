@@ -33,6 +33,7 @@
 
 #include <kiconloader.h>
 #include <klocale.h>
+#include <kglobalsettings.h>
 
 KateFileList::KateFileList (KateDocManager *_docManager, KateViewManager *_viewManager, QWidget * parent, const char * name ):  KListBox (parent, name)
 , m_sort( KateFileList::sortByName )
@@ -67,9 +68,10 @@ KateFileList::~KateFileList ()
 
 void KateFileList::slotDocumentCreated (Kate::Document *doc)
 {
-  insertItem (new KateFileListItem (doc->documentNumber(), SmallIcon("null"), doc->docName()) );
+  insertItem (new KateFileListItem (doc->documentNumber(), SmallIcon("null"), doc->docName(), KGlobalSettings::textColor()) );
   connect(doc,SIGNAL(modStateChanged(Kate::Document *)),this,SLOT(slotModChanged(Kate::Document *)));
   connect(doc,SIGNAL(nameChanged(Kate::Document *)),this,SLOT(slotNameChanged(Kate::Document *)));
+  connect(doc,SIGNAL(modifiedOnDisc(Kate::Document *, bool)),this,SLOT(slotModifiedOnDisc(Kate::Document *, bool)));
 
   updateSort ();
 }
@@ -125,6 +127,22 @@ void KateFileList::slotModChanged (Kate::Document *doc)
         triggerUpdate(false);
         break;
       }
+    }
+  }
+}
+
+void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool b)
+{
+  for (uint i = 0; i < count(); i++)
+  {
+    if (((KateFileListItem *) item (i)) ->documentNumber() == doc->documentNumber())
+    {
+     ((KateFileListItem *)item(i))->setColor (b ? QColor ("red") : KGlobalSettings::textColor());
+
+      kdDebug() << "testing mod works" << endl;
+
+      triggerUpdate(false);
+      break;
     }
   }
 }
@@ -210,9 +228,10 @@ void KateFileList::tip( const QPoint &p, QRect &r, QString &str )
     str = "";
 }
 
-KateFileListItem::KateFileListItem( uint documentNumber, const QPixmap &pix, const QString& text): QListBoxItem()
+KateFileListItem::KateFileListItem( uint documentNumber, const QPixmap &pix, const QString& text, const QColor &col): QListBoxItem()
 {
   _bold=false;
+  _color = col;
   myDocID = documentNumber;
   setPixmap(pix);
   setText( text );
@@ -231,6 +250,11 @@ uint KateFileListItem::documentNumber ()
 void KateFileListItem::setText(const QString &text)
 {
   QListBoxItem::setText(text);
+}
+
+void KateFileListItem::setColor (const QColor &col)
+{
+  _color = col;
 }
 
 void KateFileListItem::setPixmap(const QPixmap &pixmap)
@@ -280,6 +304,7 @@ void KateFileListItem::paint( QPainter *painter )
     else
       yPos = pm.height()/2 - fm.height()/2 + fm.ascent();
 
+    painter->setPen (_color);
     painter->drawText( pm.width() + 5, yPos, text() );
   }
 }

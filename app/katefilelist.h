@@ -26,12 +26,14 @@
 #include <kate/document.h>
 
 #include <klistbox.h>
+
 #include <qtooltip.h>
+#include <qcolor.h>
 
 class KateFileListItem : public QListBoxItem
 {
   public:
-    KateFileListItem( uint documentNumber, const QPixmap &pix, const QString& text);
+    KateFileListItem( uint documentNumber, const QPixmap &pix, const QString& text, const QColor &col);
     ~KateFileListItem();
 
     uint documentNumber ();
@@ -42,6 +44,8 @@ class KateFileListItem : public QListBoxItem
     void setPixmap(const QPixmap &pixmap);
 
     void setBold(bool bold);
+
+    void setColor (const QColor &col);
 
     int height( const QListBox* lb ) const;
 
@@ -54,6 +58,7 @@ class KateFileListItem : public QListBoxItem
     uint myDocID;
     QPixmap pm;
     bool _bold;
+    QColor _color;
 };
 
 class KateFileList : public KListBox
@@ -90,6 +95,7 @@ class KateFileList : public KListBox
     void slotDocumentDeleted (uint documentNumber);
     void slotActivateView( QListBoxItem *item );
     void slotModChanged (Kate::Document *doc);
+    void slotModifiedOnDisc (Kate::Document *doc, bool b);
     void slotNameChanged (Kate::Document *doc);
     void slotViewChanged ();
     void slotMenu ( QListBoxItem *item, const QPoint &p );

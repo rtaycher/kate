@@ -37,7 +37,7 @@ class KateDocManager : public QObject
   public:
     KateDocManager (QObject *parent);
     ~KateDocManager ();
-    
+
     Kate::DocumentManager *documentManager () { return m_documentManager; };
 
     Kate::Document *createDoc ();
@@ -62,8 +62,8 @@ class KateDocManager : public QObject
     Kate::Document *findDocumentByUrl( KURL url );
     bool isOpen(KURL url);
 
-    uint documents ();                  
-    
+    uint documents ();
+
     QPtrList<Kate::Document> &documentList () { return m_docList; };
 
     virtual class Kate::Document *openURL(const KURL&,const QString &encoding=QString::null,uint *id =0);
@@ -71,16 +71,13 @@ class KateDocManager : public QObject
     virtual bool closeDocument(uint);
     virtual bool closeDocumentWithID(uint);
     virtual bool closeAllDocuments();
-    virtual void saveDocumentList(KConfig*);    
+    virtual void saveDocumentList(KConfig*);
 
-  public slots:
-    void checkAllModOnHD(bool forceReload=false);
-                 
   signals:
     void documentCreated (Kate::Document *doc);
-    void documentDeleted (uint documentNumber);  
+    void documentDeleted (uint documentNumber);
     void documentChanged ();
-    
+
   private:
     Kate::DocumentManager *m_documentManager;
     QPtrList<Kate::Document> m_docList;

@@ -98,7 +98,7 @@ class KateViewManager : public QWidget
     void closeViews(uint documentNumber);
 
   private slots:
-    void activateView ( Kate::View *view, bool checkModified = true );
+    void activateView ( Kate::View *view );
     void activateSpace ( Kate::View* v );
     void slotViewChanged();
     void openNewIfEmpty();
@@ -123,7 +123,6 @@ class KateViewManager : public QWidget
     void setUseOpaqueResize( bool enable );
 
     void activateView ( uint documentNumber );
-    void activateView ( uint documentNumber, bool checkModified );
     void activateView ( int documentNumber ) { activateView((uint) documentNumber); };
 
     void slotDocumentCloseAll ();

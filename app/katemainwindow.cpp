@@ -238,40 +238,6 @@ void KateMainWindow::setupMainWindow ()
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileItem*)),this,SLOT(fileSelected(const KFileItem*)));
 }
 
-bool KateMainWindow::eventFilter(QObject* o, QEvent* e)
-{
-  if ( e->type() == QEvent::WindowActivate && o == this ) {
-    //kdDebug()<<"YAY!!! this KateMainWindow was activated!"<<endl;
-    Kate::Document *doc;
-    for( doc = m_docManager->firstDocument(); doc; doc = m_docManager->nextDocument() ) {
-      doc->isModOnHD();
-    }
-  }
-  /* FIXME this never worked - can i delete it?
-  if (e->type() == QEvent::KeyPress)
-  {
-    QKeyEvent *ke = (QKeyEvent*)e;
-
-    if (ke->key()==goNext->accel())
-    {
-      kdDebug(13000)<<"Jump next view  registered in Konsole";
-      slotGoNext();
-      return true;
-    }
-    else
-
-    if (ke->key()==goPrev->accel())
-    {
-      kdDebug(13000)<<"Jump prev view  registered in Konsole";
-      slotGoPrev();
-      return true;
-    }
-  }
-  */
-
-  return QWidget::eventFilter(o,e);
-}
-
 void KateMainWindow::setupActions()
 {
   KAction *a;

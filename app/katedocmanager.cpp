@@ -42,7 +42,7 @@ KateDocManager::KateDocManager (QObject *parent) : QObject (parent)
 }
 
 KateDocManager::~KateDocManager ()
-{                                
+{
   m_docList.setAutoDelete(false);
 }
 
@@ -53,7 +53,7 @@ Kate::Document *KateDocManager::createDoc ()
 
   emit documentCreated ((Kate::Document *)doc);
   emit m_documentManager->documentCreated ((Kate::Document *)doc);
-  
+
   return (Kate::Document *)doc;
 }
 
@@ -85,7 +85,7 @@ void KateDocManager::setActiveDocument (Kate::Document *doc)
     emit documentChanged ();
     emit m_documentManager->documentChanged ();
   }
-  
+
   m_currentDoc = doc;
 }
 
@@ -160,15 +160,6 @@ bool KateDocManager::isOpen(KURL url)
       return true;
   }
   return false;
-}
-
-void KateDocManager::checkAllModOnHD(bool forceReload)
-{
-  QPtrListIterator<Kate::Document> it(m_docList);
-
-  for (; it.current(); ++it) {
-    it.current()->isModOnHD(forceReload);
-  }
 }
 
 Kate::Document *KateDocManager::openURL (const KURL& url,const QString &encoding, uint *id)
@@ -277,14 +268,14 @@ void KateDocManager::saveDocumentList(KConfig* cfg)
 {
   QString grp=cfg->group();
   int i=0;
-  
+
   for ( Kate::Document *doc = m_docList.first(); doc; doc = m_docList.next() )
   {
     cfg->writePathEntry( QString("File%1").arg(i), doc->url().prettyURL() );
     cfg->setGroup(doc->url().prettyURL() );
     doc->writeSessionConfig(cfg);
     cfg->setGroup(grp);
-    
+
     i++;
   }
 }
