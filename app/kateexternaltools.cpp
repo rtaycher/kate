@@ -667,6 +667,7 @@ void KateExternalToolsConfigWidget::slotEdit()
 void KateExternalToolsConfigWidget::slotInsertSeparator()
 {
   lbTools->insertItem( "---", lbTools->currentItem()+1 );
+  slotChanged();
 }
 
 void KateExternalToolsConfigWidget::slotMoveUp()
@@ -693,6 +694,7 @@ void KateExternalToolsConfigWidget::slotMoveUp()
 
   lbTools->setCurrentItem( idx - 1 );
   slotSelectionChanged();
+  slotChanged();
 }
 
 void KateExternalToolsConfigWidget::slotMoveDown()
@@ -719,5 +721,6 @@ void KateExternalToolsConfigWidget::slotMoveDown()
 
   lbTools->setCurrentItem( idx+1 );
   slotSelectionChanged();
+  slotChanged();
 }
 //END KateExternalToolsConfigWidget
