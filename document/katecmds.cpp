@@ -161,7 +161,7 @@ QString SedReplace::sedMagic(QString textLine, QString find, QString rep, bool n
 	
 static void setLineText(KateView *view, int line, const QString &text)
 {
-	kdDebug()<<"setLineText"<<endl;
+	kdDebug(13010)<<"setLineText"<<endl;
 //	view->doc()->removeLine(line);
 //	view->doc()->insertLine(text, line);
 	view->doc()->replaceLine(text,line);
@@ -169,7 +169,7 @@ static void setLineText(KateView *view, int line, const QString &text)
 
 bool SedReplace::execCmd(QString cmd, KateView *view)
 {
-	kdDebug()<<"SedReplace::execCmd()"<<endl;
+	kdDebug(13010)<<"SedReplace::execCmd()"<<endl;
 	if (QRegExp("[$%]?s/.+/.*/[ig]*").find(cmd, 0)==-1)
 		return false;
 	
@@ -182,10 +182,11 @@ bool SedReplace::execCmd(QString cmd, KateView *view)
 	splitter.search(cmd);
 	
 	QString find=splitter.cap(1);
-	kdDebug()<< "SedReplace: find=" << find.latin1() <<endl;
+	kdDebug(13010)<< "SedReplace: find=" << find.latin1() <<endl;
+
 	QString replace=splitter.cap(2);
 	exchangeAbbrevs(replace);
-	kdDebug()<< "SedReplace: replace=" << replace.latin1() <<endl;
+	kdDebug(13010)<< "SedReplace: replace=" << replace.latin1() <<endl;
 	
 	
 	if (fullFile)

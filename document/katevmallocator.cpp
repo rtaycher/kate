@@ -114,7 +114,7 @@ KVMAllocator::free(Block *block)
 void
 KVMAllocator::copy(void *dest, Block *src, int _offset, size_t length)
 {
-    kdDebug()<<"VM read: seek "<<(long)src->start<<" +"<<_offset<<endl;
+    kdDebug(13020)<<"VM read: seek "<<(long)src->start<<" +"<<_offset<<endl;
    lseek(d->tempfile->handle(), src->start+_offset, SEEK_SET);
    if (length == 0)
       length = src->length - _offset;
@@ -137,7 +137,7 @@ KVMAllocator::copy(void *dest, Block *src, int _offset, size_t length)
 void
 KVMAllocator::copy(Block *dest, void *src, int _offset, size_t length)
 {
-    kdDebug()<<"VM write: seek "<<(long)dest->start<<" "<<_offset<<endl;
+    kdDebug(13020)<<"VM write: seek "<<(long)dest->start<<" "<<_offset<<endl;
    lseek(d->tempfile->handle(), dest->start+_offset, SEEK_SET);
    if (length == 0)
       length = dest->length - _offset;

@@ -932,7 +932,7 @@ int  Highlight::lookupAttrName(const QString& name, ItemDataList &iDl)
 		{
 			if (iDl.at(i)->name==name) return i;
 		}
-	kdDebug()<<"Couldn't resolve itemDataName"<<endl;
+	kdDebug(13010)<<"Couldn't resolve itemDataName"<<endl;
 	return 0;
 }
 
@@ -1067,7 +1067,7 @@ void Highlight::readCommentConfig()
   syntaxContextData *data=HlManager::self()->syntax->getGroupInfo("general","comment");
   if (data)
     {
-//      kdDebug()<<"COMMENT DATA FOUND"<<endl;
+//      kdDebug(13010)<<"COMMENT DATA FOUND"<<endl;
     while  (HlManager::self()->syntax->nextGroup(data))
       {
 
@@ -1107,10 +1107,10 @@ void Highlight::readGlobalKeywordConfig()
   syntaxContextData * data=HlManager::self()->syntax->getConfig("general","keywords");
   if (data)
     {
-	kdDebug()<<"Found global keyword config"<<endl;
+	kdDebug(13010)<<"Found global keyword config"<<endl;
 
         if (HlManager::self()->syntax->groupItemData(data,QString("casesensitive"))!="0")
-		casesensitive=true; else {casesensitive=false; kdDebug()<<"Turning on case insensitiveness"<<endl;}
+		casesensitive=true; else {casesensitive=false; kdDebug(13010)<<"Turning on case insensitiveness"<<endl;}
      //get the weak deliminators
      weakDeliminator=(!HlManager::self()->syntax->groupItemData(data,QString("weakDeliminator")));
 

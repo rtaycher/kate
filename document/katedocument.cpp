@@ -134,7 +134,7 @@ uint KateDocument::uniqueID = 0;
 
 KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
                                            QWidget *parentWidget, const char *widgetName,
-                                           QObject *, const char *name)
+                                           QObject *, const char *)
   : Kate::Document (), DCOPObject ((QString("KateDocument%1").arg(uniqueID)).latin1()),
     myFont(KGlobalSettings::fixedFont()), myFontBold(KGlobalSettings::fixedFont()), myFontItalic(KGlobalSettings::fixedFont()), myFontBI(KGlobalSettings::fixedFont()),
     myFontMetrics (myFont), myFontMetricsBold (myFontBold), myFontMetricsItalic (myFontItalic), myFontMetricsBI (myFontBI),
@@ -402,7 +402,7 @@ void KateDocument::insertLine( const QString &str, int l ) {
 
 void KateDocument::insert_Line(const QString& s,int line, bool update)
 {
-  kdDebug()<<"KateDocument::insertLine "<<s<<QString("	%1").arg(line)<<endl;
+  kdDebug(13020)<<"KateDocument::insertLine "<<s<<QString("	%1").arg(line)<<endl;
   TextLine::Ptr TL=new TextLine();
   TL->append(s.unicode(),s.length());
   buffer->insertLine(line,TL);
@@ -431,7 +431,7 @@ void KateDocument::removeLine( int line ) {
 
 void KateDocument::remove_Line(int line,bool update)
 {
-  kdDebug()<<"KateDocument::removeLine "<<QString("%1").arg(line)<<endl;
+  kdDebug(13020)<<"KateDocument::removeLine "<<QString("%1").arg(line)<<endl;
   buffer->removeLine(line);
 //  newDocGeometry=true;
 //  if line==0)
@@ -1925,9 +1925,9 @@ void KateDocument::updateLines(int startLine, int endLine, int flags, int cursor
   TextLine::Ptr textLine;
   int line, last_line;
   int ctxNum, endCtx;
-//  kdDebug()<<"******************KateDocument::updateLines Checkpoint 1"<<endl;
-  if (buffer->line(startLine)==0) {kdDebug()<<"********************No buffer for line " << startLine << " found**************"<<endl; return;};
-//  kdDebug()<<"KateDocument::updateLines Checkpoint 2"<<endl;
+//  kdDebug(13020)<<"******************KateDocument::updateLines Checkpoint 1"<<endl;
+  if (buffer->line(startLine)==0) {kdDebug(13020)<<"********************No buffer for line " << startLine << " found**************"<<endl; return;};
+//  kdDebug(13020)<<"KateDocument::updateLines Checkpoint 2"<<endl;
   last_line = lastLine();
 //  if (endLine >= last_line) endLine = last_line;
 
@@ -1935,9 +1935,9 @@ void KateDocument::updateLines(int startLine, int endLine, int flags, int cursor
   ctxNum = 0;
   if (line > 0) ctxNum = getTextLine(line - 1)->getContext();
   do {
-//    kdDebug()<<QString("**************Working on line: %1").arg(line)<<endl;
+//    kdDebug(13020)<<QString("**************Working on line: %1").arg(line)<<endl;
     textLine = getTextLine(line);
-    if (textLine==0) kdDebug()<<"****updateLines()>> error textLine==0"<<endl;
+    if (textLine==0) kdDebug(13020)<<"****updateLines()>> error textLine==0"<<endl;
     if (line <= endLine && line != cursorY) {
       if (flags & KateView::cfRemoveSpaces) textLine->removeSpaces();
       updateMaxLength(textLine);
@@ -1947,7 +1947,7 @@ void KateDocument::updateLines(int startLine, int endLine, int flags, int cursor
     textLine->setContext(ctxNum);
     line++;
   } while ((buffer->line(line)!=0) && (line <= endLine || endCtx != ctxNum));
-//  kdDebug()<<"updateLines :: while loop left"<<endl;
+//  kdDebug(13020)<<"updateLines :: while loop left"<<endl;
   tagLines(startLine, line - 1);
 }
 
@@ -1984,7 +1984,7 @@ void KateDocument::slotBufferChanged() {
 }
 
 void KateDocument::slotBufferHighlight(long start,long stop) {
-  kdDebug()<<"KateDocument::slotBufferHighlight"<<QString("%1-%2").arg(start).arg(stop)<<endl;
+  kdDebug(13020)<<"KateDocument::slotBufferHighlight"<<QString("%1-%2").arg(start).arg(stop)<<endl;
   updateLines(start,stop);
 //  buffer->startLoadTimer();
 }

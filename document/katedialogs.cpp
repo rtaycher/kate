@@ -198,7 +198,7 @@ void HighlightDialogPage::hlChanged(int z)
   itemCombo->clear();
   for (ItemData *itemData = hlData->itemDataList.first(); itemData != 0L;
     itemData = hlData->itemDataList.next()) {
-    kdDebug() << itemData->name << endl;
+    kdDebug(13010) << itemData->name << endl;
     itemCombo->insertItem(i18n(itemData->name.latin1()));
   }
 
@@ -303,7 +303,7 @@ void HlEditDialog::initContextOptions(QVBox *co)
         connect(ContextAttribute,SIGNAL(activated(int)),this,SLOT(contextAttributeChanged(int)));
     }
    else
-     kdDebug()<<"initContextOptions: Widget is 0"<<endl;
+     kdDebug(13010)<<"initContextOptions: Widget is 0"<<endl;
 }
 
 
@@ -354,7 +354,7 @@ void HlEditDialog::initItemOptions(QVBox *co)
         connect(ItemContext,SIGNAL(activated(int)),this,SLOT(ItemContextChanged(int)));
     }
   else
-    kdDebug()<<"initItemOptions: Widget is 0"<<endl;
+    kdDebug(13010)<<"initItemOptions: Widget is 0"<<endl;
 }
 
 void HlEditDialog::loadFromDocument(HlData *hl)
@@ -475,7 +475,7 @@ void HlEditDialog::contextAttributeChanged(int id)
 
 void HlEditDialog::contextLineEndChanged(int id)
 {
-  kdDebug()<<"contextLineEndChanged"<<endl;
+  kdDebug(13010)<<"contextLineEndChanged"<<endl;
   if (currentItem)
      {
      currentItem->setText(3,QString("%1").arg(id));
