@@ -368,21 +368,6 @@ void KateViewManager::deleteLastView ()
   deleteView (activeView (), true);
 }
 
-bool KateViewManager::closeDocWithAllViews ( Kate::View *view )
-{
-  if (!view) return false;
-
-  if (!view->canDiscard()) return false;
-
-  if (m_docManager->closeDocument(view->getDoc()))
-  {
-    emit viewChanged (); // I think I don't need that anymore
-    m_viewManager->emitViewChanged ();
-    return true;
-  }
-  return false;
-}
-
 void KateViewManager::closeViews(uint documentNumber)
 {
     QPtrList<Kate::View> closeList;
@@ -518,7 +503,7 @@ void KateViewManager::slotDocumentClose ()
 {
   if (!activeView()) return;
 
-  closeDocWithAllViews (activeView());
+  m_docManager->closeDocument (activeView()->getDoc());
   
   openNewIfEmpty();
 }
@@ -529,29 +514,10 @@ void KateViewManager::slotDocumentCloseAll ()
 
   kdDebug()<<"CLOSE ALL DOCUMENTS *****************"<<endl;
 
-#if 0
-  QPtrList<Kate::Document> closeList;
-
-  for (uint i=0; i < m_docManager->documents(); i++ )
-    closeList.append (m_docManager->document (i));
-
-  bool done = false;
-  while (closeList.count() > 0)
-  {
-    activateView (closeList.at(0)->documentNumber(), false);
-    done = closeDocWithAllViews (activeView());
-
-    if (!done) break;
-
-    closeList.remove (closeList.at(0));
-  }
-
-#endif
   m_blockViewCreationAndActivation=true;
   m_docManager->closeAllDocuments();  
   m_blockViewCreationAndActivation=false;
   
-
   openNewIfEmpty();
 }
 

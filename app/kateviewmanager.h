@@ -99,7 +99,6 @@ class KateViewManager : public QWidget
     void activateView ( Kate::View *view, bool checkModified = true );
     void activateSpace ( Kate::View* v );
     void slotViewChanged();
-    bool closeDocWithAllViews ( Kate::View *view );
     void openNewIfEmpty();
 
   public slots:
