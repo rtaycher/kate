@@ -25,6 +25,8 @@
 #include "../interfaces/plugin.h"
 #include <qptrlist.h>
 
+#include "katemainwindow.h"
+
 #include <kuniqueapplication.h>
 
 class KateApp : public KUniqueApplication, Kate::InitPluginManager
@@ -53,7 +55,7 @@ class KateApp : public KUniqueApplication, Kate::InitPluginManager
     Kate::MainWindow *activeMainWindow ();
     
     uint mainWindows () { return m_mainWindows.count(); };
-    Kate::MainWindow *mainWindow (uint n) { return (Kate::MainWindow *)m_mainWindows.at(n); };
+    Kate::MainWindow *mainWindow (uint n) { return m_mainWindows.at(n)->mainWindow(); };
     
     KateMainWindow *kateMainWindow (uint n) { return m_mainWindows.at(n); };
                  

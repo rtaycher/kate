@@ -63,6 +63,7 @@ Application::Application (void *application) : QObject ((KateApp *) application)
 
 Application::~Application ()
 {
+  delete d;
 }
 
 DocumentManager *Application::documentManager ()

@@ -29,6 +29,8 @@
 #include <qwidget.h>
 #include <kurl.h>
 
+#include <kdockwidget.h>
+
 namespace Kate
 {
 

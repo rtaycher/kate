@@ -104,7 +104,7 @@ void KatePluginManager::enableAllPluginsGUI (KateMainWindow *win)
 
 void KatePluginManager::loadPlugin (PluginInfo *item)
 {               
-  item->load = (item->plugin = Kate::createPlugin (QFile::encodeName(item->service->library()), (Kate::Application *)kapp));
+  item->load = (item->plugin = Kate::createPlugin (QFile::encodeName(item->service->library()), Kate::application()));
 }
 
 void KatePluginManager::unloadPlugin (PluginInfo *item)
@@ -120,7 +120,7 @@ void KatePluginManager::enablePluginGUI (PluginInfo *item, KateMainWindow *win)
   if (!item->plugin) return;
   if (!Kate::pluginViewInterface(item->plugin)) return;
 
-  Kate::pluginViewInterface(item->plugin)->addView(win);
+  Kate::pluginViewInterface(item->plugin)->addView(win->mainWindow());
 }
 
 void KatePluginManager::enablePluginGUI (PluginInfo *item)

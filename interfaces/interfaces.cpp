@@ -28,9 +28,6 @@
 #include "documentmanager.h"
 #include "documentmanager.moc"
 
-#include "mainwindow.h"
-#include "mainwindow.moc"
-
 #include "plugin.h"
 #include "plugin.moc"
 
@@ -52,15 +49,6 @@ DocumentManager::DocumentManager (QObject *parent, const char *name) : QObject (
 }
 
 DocumentManager::~DocumentManager ()
-{
-}
-
-
-MainWindow::MainWindow () : KParts::DockMainWindow ()
-{
-}
-
-MainWindow::~MainWindow ()
 {
 }
 

@@ -21,7 +21,6 @@
 #include "kateIface.h"
 #include "katedocmanager.h"
 #include "katepluginmanager.h"
-#include "katemainwindow.h"
 #include "kateviewmanager.h"
 
 #include <kcmdlineargs.h>
@@ -227,6 +226,6 @@ Kate::MainWindow *KateApp::activeMainWindow ()
   if (n < 0)
     n=0;
 
-  return (Kate::MainWindow*)m_mainWindows.at(n);
+  return m_mainWindows.at(n)->mainWindow();
 }
 

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mainwindow.h -  description
+                          interfaces.cpp  -  description
                              -------------------
     begin                : Mon Jan 15 2001
     copyright            : (C) 2001 by Christoph Cullmann
@@ -23,40 +23,62 @@
     Boston, MA 02111-1307, USA.
  ***************************************************************************/
 
-#ifndef _KATE_MAINWINDOW_INCLUDE_
-#define _KATE_MAINWINDOW_INCLUDE_
+#include "mainwindow.h"
+#include "mainwindow.moc"
 
-#include <qobject.h>
-#include <kxmlguifactory.h>
+#include "documentmanager.h"
+#include "plugin.h"
+#include "viewmanager.h"
+#include "toolviewmanager.h"
+#include "pluginmanager.h"
+
+#include "../app/katemainwindow.h"
+
+#include <kapplication.h>
 
 namespace Kate
 {
 
-/**
- I want to stay source compatible, so I don't remove the KParts::DockMainWindow. This will happen in KDE 4.0 though
- NEVER CALL A KParts::DockMainWindow method directly. Use the ToolViewManager !!!!!
- **/
-class MainWindow : public QObject
+class PrivateMainWindow
+  {
+  public:
+    PrivateMainWindow ()
+    {
+    }
+
+    ~PrivateMainWindow ()
+    {
+      
+    }          
+    
+    KateMainWindow *win; 
+  };
+            
+MainWindow::MainWindow (void *mainWindow) : QObject ((KateMainWindow*) mainWindow)
 {
-  friend class PrivateMainWindow;
+  d = new PrivateMainWindow;
+  d->win = (KateMainWindow*) mainWindow;
+}
 
-  Q_OBJECT
+MainWindow::~MainWindow ()
+{
+  delete d;
+}
 
-  public:
-    MainWindow (void *mainWindow);
-    ~MainWindow ();    
-    
-  public:
-    KXMLGUIFactory *guiFactory();
-    
-    class ViewManager *viewManager ();
-    
-    class ToolViewManager *toolViewManager();
-    
-  private:
-    class PrivateMainWindow *d;  
+KXMLGUIFactory *MainWindow::guiFactory()
+{
+  return d->win->guiFactory();
+}
+
+ViewManager *MainWindow::viewManager ()
+{
+  return d->win->viewManager ();
+}
+
+ToolViewManager *MainWindow::toolViewManager ()
+{
+  return d->win->toolViewManager ();
+}
+  
 };
 
-};
-
-#endif

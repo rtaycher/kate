@@ -73,9 +73,10 @@ uint KateMainWindow::uniqueID = 0;
 
 
 KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager *_m_pluginManager) :
-	Kate::MainWindow (),
+	KParts::DockMainWindow (),
              DCOPObject ((QString("KateMainWindow%1").arg(uniqueID)).latin1()),ToolViewManager()
 {
+  m_mainWindow = new Kate::MainWindow (this);
   m_leftDock=m_rightDock=m_topDock=m_bottomDock=0;
 
   m_docManager =  _m_docManager;

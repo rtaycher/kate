@@ -27,6 +27,7 @@
 #include <kate/document.h>
 
 #include <kparts/part.h>
+#include <kparts/dockmainwindow.h>
 
 #include <qguardedptr.h>
 
@@ -36,7 +37,7 @@
 class GrepDialog;
 class KFileItem;
 
-class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCOPIface, virtual public KParts::PartBase, virtual public Kate::ToolViewManager
+class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWindowDCOPIface, virtual public KParts::PartBase, virtual public Kate::ToolViewManager
 {
   Q_OBJECT
 
@@ -49,6 +50,10 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
   public:
     KateMainWindow(KateDocManager *_docManager, KatePluginManager *_pluginManager);
     ~KateMainWindow();
+    
+    enum DockWidgetMode {ClassicStyle,IDEAlStyle};
+    
+    Kate::MainWindow *mainWindow () { return m_mainWindow; };
 
     /** Returns the URL of the current document.
      * anders: I add this for use from the file selector. */
@@ -177,6 +182,7 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
 
   protected:
     static uint uniqueID;
+    Kate::MainWindow *m_mainWindow;
 
   public:      
     Kate::ViewManager *viewManager () {return (Kate::ViewManager *)m_viewManager; }; 
