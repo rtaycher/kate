@@ -49,13 +49,6 @@
 #include "kwdoc.h"
 #include "kwdoc.moc"
 
-//text attribute constants
-const int taSelected = 0x40;
-const int taFound = 0x80;
-const int taSelectMask = taSelected | taFound;
-const int taAttrMask = ~taSelectMask & 0xFF;
-const int taShift = 6;
-
 KWAction::KWAction(Action a, PointStruc &cursor, int len, const QString &text)
   : action(a), cursor(cursor), len(len), text(text) {
 }
@@ -224,7 +217,7 @@ bool KWriteDoc::openFile()
 
     int hl = hlManager->wildcardFind( fn );
 
-#ifndef NEW_CODE 
+#ifndef NEW_CODE
     if (hl == -1)
     {
       // fill the detection buffer with the contents of the text
@@ -573,11 +566,11 @@ int KWriteDoc::textWidth(const TextLine::Ptr &textLine, int cursorX) {
 }
 
 int KWriteDoc::textWidth(PointStruc &cursor) {
-  if (cursor.x < 0) 
+  if (cursor.x < 0)
      cursor.x = 0;
-  if (cursor.y < 0) 
+  if (cursor.y < 0)
      cursor.y = 0;
-  if (cursor.y >= numLines()) 
+  if (cursor.y >= numLines())
      cursor.y = lastLine();
   return textWidth(getTextLine(cursor.y),cursor.x);
 }

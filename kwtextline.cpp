@@ -22,13 +22,6 @@
 
 #include "kwtextline.h"
 
-//text attribute constants
-const int taSelected = 0x40;
-const int taFound = 0x80;
-const int taSelectMask = taSelected | taFound;
-const int taAttrMask = ~taSelectMask & 0xFF;
-const int taShift = 6;
-
 TextLine::TextLine(int attribute, int context)
   : len(0), size(0), text(0L), attribs(0L), attr(attribute), ctx(context) {
 }
