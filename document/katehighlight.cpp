@@ -49,9 +49,12 @@
 #include <klistview.h>
 #include <qwidgetstack.h>
 
+#include "katehighlight.h"
+#include "katehighlight.moc"
+
 #include "katetextline.h"
 #include "katedocument.h"
-#include "katehighlight.h"
+
 #include "katesyntaxdocument.h"
 #include "../factory/katefactory.h"
 #include "katedialogs.h"
@@ -61,8 +64,8 @@ HlManager *HlManager::s_pSelf = 0;
 
 enum Item_styles { dsNormal,dsKeyword,dsDataType,dsDecVal,dsBaseN,dsFloat,dsChar,dsString,dsComment,dsOthers};
 
-static const QChar nullChr = QChar ('\0');
 static bool trueBool = true;
+static QString stdDeliminator = QString ("!%&()*+,-./:;<=>?[]^{|}~ \t");
 
 int getDefStyleNum(QString name)
 {
@@ -80,16 +83,14 @@ int getDefStyleNum(QString name)
   return dsNormal;
 }
 
-bool ustrchr(const QChar *s, QChar c)
+bool ustrchr(const QChar *s, uint len, QChar c)
 {
-  if (s == 0)
-    return false;
-
-  while (*s != '\0')
+  for (int z=0; z < len; z++)
   {
     if (*s == c) return true;
     s++;
   }
+
   return false;
 }
 
@@ -168,10 +169,11 @@ const QChar *HlRangeDetect::checkHgl(const QChar *s, int len, bool) {
   return 0L;
 }
 
-HlKeyword::HlKeyword(int attribute, int context,bool casesensitive,QString weakSep)
+HlKeyword::HlKeyword (int attribute, int context,bool casesensitive, const QChar *deliminator, uint deliLen)
   : HlItem(attribute,context), dict (113, casesensitive)
 {
-  _weakSep=weakSep;
+  deliminatorChars = deliminator;
+  deliminatorLen = deliLen;
   _caseSensitive=casesensitive;
 }
 
@@ -180,9 +182,7 @@ HlKeyword::~HlKeyword() {
 
 bool HlKeyword::startEnable(QChar c)
 {
-  const QChar *wk = _weakSep.unicode();
-
-  return !(ustrchr(wk,c) || c.isLetterOrNumber());
+  return ustrchr(deliminatorChars, deliminatorLen, c);
 }
 
 // If we use a dictionary for lookup we don't really need
@@ -205,9 +205,8 @@ const QChar *HlKeyword::checkHgl(const QChar *s, int len, bool b)
   if (len == 0) return 0L;
 
   const QChar *s2 = s;
-  const QChar *wk = _weakSep.unicode();
 
-  while ( (len > 0) && ((ustrchr(wk,*s2)) || ( s2->isLetterOrNumber())) )
+  while ( (len > 0) && (!ustrchr(deliminatorChars, deliminatorLen, *s2)) )
   {
     s2++;
     len--;
@@ -393,14 +392,15 @@ const QChar *HlCFloat::checkHgl(const QChar *s, int len, bool lineStart) {
   return s;
 }
 
-HlAnyChar::HlAnyChar(int attribute, int context, const QChar* charList)
+HlAnyChar::HlAnyChar(int attribute, int context, const QChar* charList, uint len)
   : HlItem(attribute, context) {
   _charList=charList;
+  _charListLen=len;
 }
 
 const QChar *HlAnyChar::checkHgl(const QChar *s, int len, bool)
 {
-  if (ustrchr(_charList, *s)) return s +1;
+  if (ustrchr(_charList, _charListLen, *s)) return s +1;
   return 0L;
 }
 
@@ -594,6 +594,9 @@ Highlight::Highlight(syntaxModeListItem *def) : refCount(0)
     iWildcards = def->extension;
     iMimetypes = def->mimetype;
     identifier = def->identifier;
+    deliminator = stdDeliminator;
+    deliminatorChars = deliminator.unicode();
+    deliminatorLen = deliminator.length();
   }
 }
 
@@ -621,7 +624,7 @@ int Highlight::doHighlight(int ctxNum, TextLine *textLine)
     context=contextList[ctxNum];
   }
 
-  QChar lastChar = '\0';
+  QChar lastChar = ' ';
 
   // first char
   const QChar *str = textLine->getText();
@@ -877,7 +880,7 @@ HlItem *Highlight::createHlItem(syntaxContextData *data, int *res)
                 if (dataname=="keyword")
 		{
 	           HlKeyword *keyword=new HlKeyword(attr,context,casesensitive=="1",
-                        weakDeliminator);
+                        deliminatorChars, deliminatorLen);
 		   keyword->addList(HlManager::self()->syntax->finddata("highlighting",stringdata));
 		   return keyword;
 		} else
@@ -889,7 +892,7 @@ HlItem *Highlight::createHlItem(syntaxContextData *data, int *res)
                 if (dataname=="RangeDetect") return(new HlRangeDetect(attr,context, chr, chr1)); else
 		if (dataname=="LineContinue") return(new HlLineContinue(attr,context)); else
                 if (dataname=="StringDetect") return(new HlStringDetect(attr,context,stringdata,insensitive)); else
-                if (dataname=="AnyChar") return(new HlAnyChar(attr,context,stringdata.unicode())); else
+                if (dataname=="AnyChar") return(new HlAnyChar(attr,context,stringdata.unicode(), stringdata.length())); else
                 if (dataname=="RegExpr") return(new HlRegExpr(attr,context,stringdata)); else
 // apparently these were left out
 	   if(dataname=="HlCChar") return ( new HlCChar(attr,context));else
@@ -907,7 +910,7 @@ HlItem *Highlight::createHlItem(syntaxContextData *data, int *res)
 
 bool Highlight::isInWord(QChar c)
 {
-  return c.isLetterOrNumber();
+  return !ustrchr(deliminatorChars, deliminatorLen, c);
 }
 
 void Highlight::makeContextList()
@@ -949,7 +952,21 @@ void Highlight::makeContextList()
     {
     	if (HlManager::self()->syntax->groupData(data,QString("casesensitive"))!="0")
 		casesensitive="1"; else casesensitive="0";
-    	weakDeliminator=(!HlManager::self()->syntax->groupData(data,QString("weakDeliminator")));
+     weakDeliminator=(!HlManager::self()->syntax->groupData(data,QString("weakDeliminator")));
+
+     int f;
+     for (int s=0; s < weakDeliminator.length(); s++)
+     {
+        f = 0;
+        f = deliminator.find (weakDeliminator[s]);
+
+        if (f > -1)
+          deliminator.remove (f, 1);
+     }
+
+     deliminatorChars = deliminator.unicode();
+     deliminatorLen = deliminator.length();
+
 	HlManager::self()->syntax->freeGroupInfo(data);
     }
   else
@@ -1250,6 +1267,3 @@ void HlManager::setHlDataList(HlDataList &list) {
   //notify documents about changes in highlight configuration
   emit changed();
 }
-
-
-#include "katehighlight.moc"

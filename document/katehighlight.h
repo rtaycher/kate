@@ -91,21 +91,24 @@ class HlRangeDetect : public HlItem {
     QChar sChar2;
 };
 
-class HlKeyword : public HlItem {
+class HlKeyword : public HlItem
+{
   public:
-    HlKeyword(int attribute, int context,bool casesensitive,QString weakSep);
+    HlKeyword(int attribute, int context,bool casesensitive, const QChar *deliminator, uint deliLen);
     virtual ~HlKeyword();
+
     virtual void addWord(const QString &);
-		virtual void addList(const QStringList &);
+    virtual void addList(const QStringList &);
     virtual const QChar *checkHgl(const QChar *, int len, bool);
-		QStringList getList() { return words;};
+    QStringList getList() { return words;};
+    virtual bool startEnable(QChar c);
 
   protected:
     QStringList words;
     QDict<bool> dict;
     bool _caseSensitive;
-    QString _weakSep;
-    virtual bool startEnable(QChar c);
+    const QChar *deliminatorChars;
+    uint deliminatorLen;
 };
 
 class HlPHex : public HlItem {
@@ -170,9 +173,10 @@ class HlCChar : public HlItem {
 
 class HlAnyChar : public HlItem {
   public:
-    HlAnyChar(int attribute, int context, const QChar* charList);
+    HlAnyChar(int attribute, int context, const QChar* charList, uint len);
     virtual const QChar *checkHgl(const QChar *, int len, bool);
     const QChar* _charList;
+    uint _charListLen;
 };
 
 class HlRegExpr : public HlItem {
@@ -285,6 +289,9 @@ class Highlight
     bool noHl;
     QString casesensitive;
     QString weakDeliminator;
+    QString deliminator;
+    const QChar *deliminatorChars;
+    uint deliminatorLen;
     QString cmlStart;
     QString cmlEnd;
     QString cslStart;
