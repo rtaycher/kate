@@ -30,7 +30,7 @@ namespace Kate
 class Project;
 class ViewManager;
 
-class MainWindow : public QObject
+class KDE_EXPORT MainWindow : public QObject
 {
   friend class PrivateMainWindow;
 

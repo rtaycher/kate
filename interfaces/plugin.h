@@ -34,7 +34,7 @@ class Project;
 class MainWindow;
 
 
-class Plugin : public QObject
+class KDE_EXPORT Plugin : public QObject
 {
   friend class PrivatePlugin;
 
@@ -54,7 +54,7 @@ class Plugin : public QObject
     unsigned int myPluginNumber;
 };
 
-class ProjectPlugin : public Plugin
+class KDE_EXPORT ProjectPlugin : public Plugin
 {
   friend class PrivateProjectPlugin;
 
@@ -88,7 +88,7 @@ class ProjectPlugin : public Plugin
     unsigned int myProjectPluginNumber;
 };
 
-class InitPlugin : public Plugin
+class KDE_EXPORT InitPlugin : public Plugin
 {
   friend class PrivateInitPlugin;
 
@@ -143,7 +143,7 @@ ProjectPlugin *createProjectPlugin ( const char* libname, Project *project = 0, 
  * view plugin class
  * this plugin will be bound to a ktexteditor::view
  */
-class PluginViewInterface
+class KDE_EXPORT PluginViewInterface
 {
   friend class PrivatePluginViewInterface;
 

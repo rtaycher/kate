@@ -35,7 +35,7 @@
 
 #include <kuniqueapplication.h>
 
-class KateApp : public KUniqueApplication
+class KDE_EXPORT KateApp : public KUniqueApplication
 {
   Q_OBJECT
 
