@@ -22,7 +22,6 @@
 #include "../document/kantdocument.h"
 
 #include "../kwrite/kwview.h"
-#include "../kwrite/ktextprint.h"
 #include "../kwrite/kwattribute.h"
 #include "../kwrite/kwdoc.h"
 #include "../kwrite/kwdialog.h"
