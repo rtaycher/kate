@@ -275,7 +275,8 @@ void KateFileList::slotModChanged (Kate::Document *doc)
       repaintItem(  m_editHistory.at( i ) );
     }
   }
-  repaintItem( item );
+  else
+    repaintItem( item );
 }
 
 void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool, unsigned char r)
@@ -308,8 +309,7 @@ void KateFileList::slotNameChanged (Kate::Document *doc)
   // child items could be marks for example
   QListViewItem * item = firstChild();
   while( item ) {
-    KateFileListItem *i = ((KateFileListItem *)item);
-    if ( i && i->document() == doc )
+    if ( ((KateFileListItem*)item)->document() == doc )
     {
       item->setText( 0, doc->docName() );
       repaintItem( item );
@@ -337,6 +337,7 @@ void KateFileList::slotViewChanged ()
   }
 
   KateFileListItem *item = (KateFileListItem*)i;
+  setCurrentItem( item );
 
 //   int p = 0;
 //   if (  m_viewHistory.count() )
@@ -352,7 +353,6 @@ void KateFileList::slotViewChanged ()
     repaintItem(  m_viewHistory.at( i ) );
   }
 
-  setCurrentItem( item );
 }
 
 void KateFileList::slotMenu ( QListViewItem *item, const QPoint &p, int /*col*/ )
@@ -510,25 +510,25 @@ void KateFileListItem::paintCell( QPainter *painter, const QColorGroup & cg, int
       painter->fillRect( 0, 0, width, height(), isSelected() ? cg.highlight() : b  );
 
       if (info && info->modifiedOnDisc)
-	painter->drawPixmap( 3, 0, doc->isModified() ? modmodPm : discPm );
+        painter->drawPixmap( 3, 0, doc->isModified() ? modmodPm : discPm );
       else
-	painter->drawPixmap( 3, 0, doc->isModified() ? modPm : noPm );
+        painter->drawPixmap( 3, 0, doc->isModified() ? modPm : noPm );
 
       if ( !text( 0 ).isEmpty() )
       {
-	QFontMetrics fm = painter->fontMetrics();
-	painter->setPen( isSelected() ? cg.highlightedText() : cg.text() );
+        QFontMetrics fm = painter->fontMetrics();
+        painter->setPen( isSelected() ? cg.highlightedText() : cg.text() );
 
         static int iSize = IconSize( KIcon::Small );
-	int yPos;                       // vertical text position
+        int yPos;                       // vertical text position
 
-	if ( iSize < fm.height() )
-	  yPos = fm.ascent() + fm.leading()/2;
-	else
-	  yPos = iSize/2 - fm.height()/2 + fm.ascent();
+        if ( iSize < fm.height() )
+          yPos = fm.ascent() + fm.leading()/2;
+        else
+          yPos = iSize/2 - fm.height()/2 + fm.ascent();
 
-	painter->drawText( iSize + 4, yPos,
-			   KStringHandler::rPixelSqueeze( text(0), painter->fontMetrics(), width - 20 ) );
+        painter->drawText( iSize + 4, yPos,
+                           KStringHandler::rPixelSqueeze( text(0), painter->fontMetrics(), width - 20 ) );
       }
       break;
     }
@@ -608,9 +608,6 @@ KFLConfigPage::KFLConfigPage( QWidget* parent, const char *name, KateFileList *f
   connect( cbEnableShading, SIGNAL(toggled(bool)), this, SLOT(slotEnableChanged()) );
   connect( kcbViewShade, SIGNAL(changed(const QColor&)), this, SLOT(slotChanged()) );
   connect( kcbEditShade, SIGNAL(changed(const QColor&)), this, SLOT(slotChanged()) );
-
-  //### disable the enabling, to force people to try for a while
-//   cbEnableShading->setEnabled( false );
 }
 
 void KFLConfigPage::apply()
