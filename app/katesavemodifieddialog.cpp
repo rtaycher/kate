@@ -138,7 +138,7 @@ KateSaveModifiedDialog::KateSaveModifiedDialog(QWidget *parent, QPtrList<Kate::D
 	setButtonGuiItem(KDialogBase::Cancel,cancelItem);
 
 	QVBox *box=makeVBoxMainWidget();
-	new QLabel(i18n("<qt>Some of the objects  you intend to close contain modifications, which are not yet saved to disc. Please choose what you want do do about this</qt>"),box);
+	new QLabel(i18n("<qt>Some of the documents you intend to close contain modifications which have not yet been saved to disc. Please choose how you want to proceed.</qt>"),box);
 	m_list=new KListView(box);
 	m_list->addColumn(i18n("Title"));
 	m_list->addColumn(i18n("Location"));
