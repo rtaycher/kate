@@ -1139,7 +1139,7 @@ void KateViewInternal::mouseMoveEvent(QMouseEvent *e) {
     flags = KateDocument::cfMark;
     if (e->state() & ControlButton) flags |= KateDocument::cfKeepSelection;
     placeCursor(mouseX, mouseY, flags);
-    myDoc->updateViews(/*ufNoScroll*/);
+    myDoc->updateViews();
   }
 }
 
@@ -1209,7 +1209,7 @@ void KateViewInternal::timerEvent(QTimerEvent *e) {
     yScroll->setValue(yPos + scrollY);
 
     placeCursor(mouseX, mouseY, KateDocument::cfMark);
-    myDoc->updateViews(/*ufNoScroll*/);
+    myDoc->updateViews();
   }
 }
 
@@ -1713,8 +1713,6 @@ void KateView::setCursorPositionInternal(int line, int col, int tabwidth) {
   cursor.line = line;
   myViewInternal->updateCursor(cursor);
   myViewInternal->center();
-//  myViewInternal->updateView(ufPos, 0, line*myDoc->viewFont.fontHeight - height()/2);
-//  myDoc->updateViews(myViewInternal); //uptade all other views except this one
   myDoc->updateViews();
 }
 
@@ -2010,7 +2008,7 @@ void KateView::gotoLineNumber( int linenumber )
   myViewInternal->updateCursor(cursor);
   myViewInternal->center();
   myViewInternal->updateView(KateView::ufUpdateOnScroll);
-  myDoc->updateViews(this); //uptade all other views except this one
+  myDoc->updateViews();
  }
 
 void KateView::initSearch(SConfig &, int flags) {
@@ -2217,7 +2215,7 @@ void KateView::exposeFound(KateTextCursor &cursor, int slen, int flags, bool rep
   }
   myViewInternal->setPos(xPos, yPos);
   myViewInternal->updateView(flags);// | ufPos,xPos,yPos);
-  myDoc->updateViews(this);
+  myDoc->updateViews();
 }
 
 void KateView::deleteReplacePrompt() {
@@ -2498,7 +2496,7 @@ void KateView::gotoMark (KTextEditor::Mark *mark)
   myViewInternal->updateCursor(cursor);
   myViewInternal->center();
   myViewInternal->updateView(KateView::ufUpdateOnScroll);
-  myDoc->updateViews(this);
+  myDoc->updateViews();
 }
 
 void KateView::toggleBookmark ()

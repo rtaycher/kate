@@ -2777,7 +2777,7 @@ void KateDocument::backspace(uint line, uint col)
   else
   {
     // col == 0: wrap to previous line
-    if ((line - 1) >= 0)
+    if (line >= 1)
       removeText (line-1, getTextLine(line-1)->length(), line, 0);
   }
 }
@@ -3381,7 +3381,7 @@ void KateDocument::slotBufferHighlight(uint start,uint stop) {
 //  buffer->startLoadTimer();
 }
 
-void KateDocument::updateViews(KateView *exclude)
+void KateDocument::updateViews()
 {
   KateView *view;
   int flags;
