@@ -401,8 +401,8 @@ void KateMainWindow::readOptions(KConfig *config)
 
   recentProjects->loadEntries (config, "Recent Projects");
   
-  if (config->hasGroup("dock_setting_default"))
-	  readDockConfig();
+  if (config->hasGroup("MainWindow0-Docking"))
+	  readDockConfig(config,"MainWindow0-Docking");
 }
 
 void KateMainWindow::saveOptions(KConfig *config)
@@ -410,7 +410,7 @@ void KateMainWindow::saveOptions(KConfig *config)
   config->setGroup("General");
   if (config->readNumEntry("GUIMode",KMdi::UndefinedMode)!=mdiMode()) {
 	config->writeEntry("GUIMode",mdiMode());
-	config->deleteGroup("dock_setting_default");
+	config->deleteGroup("MainWindow0-Docking");
   }
 
   if (consoleDock && console)
@@ -431,7 +431,7 @@ void KateMainWindow::saveOptions(KConfig *config)
 
   recentProjects->saveEntries (config, "Recent Projects");
 
-  writeDockConfig();
+  writeDockConfig(config,"MainWindow0-Docking");
 }
 
 void KateMainWindow::slotDocumentChanged()
