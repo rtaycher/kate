@@ -63,6 +63,7 @@ class KantDocument;
 class KantFileList;
 class KantFileSelector;
 class KantMainWindow;
+class KantPluginIface;
 class KantPluginManager;
 class KantProject;
 class KantProjectManager;

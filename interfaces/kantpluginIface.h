@@ -20,7 +20,8 @@
 #include "../kantmain.h"
 #include "../kwrite/kwview.h"
 
-#include <qobject.h>
+#include "kantdocmanagerIface.h"
+#include "kantviewmanagerIface.h"
 
 class KantPluginIface : public QObject
   {
@@ -28,7 +29,7 @@ class KantPluginIface : public QObject
     public:
       KantPluginIface(QObject *parent):QObject(parent){;};
       ~KantPluginIface(){;};
-     // virtual KWrite *getActiveView()=0;
+     virtual KWrite *getActiveView()=0;
   };  
 
 #endif

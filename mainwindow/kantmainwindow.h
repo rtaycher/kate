@@ -19,12 +19,12 @@
 
 #include "../kantmain.h"
 #include "kantIface.h"
-#include "../interfaces/kantmainwindowIface.h"
 
+#include <kdockwidget.h>
 #include <kparts/part.h>
 #include <kxmlgui.h>
 
-class KantMainWindow : public KantMainWindowIface, virtual public KantIface , virtual public KParts::PartBase
+class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtual public KParts::PartBase
 {
   Q_OBJECT
 
@@ -61,6 +61,8 @@ class KantMainWindow : public KantMainWindowIface, virtual public KantIface , vi
 
     KantFileList *filelist;
     KantFileSelector *fileselector;
+
+    KantPluginIface *pluginIface;
 
   protected:
     /** reopens documents that was open last time kant was shut down*/

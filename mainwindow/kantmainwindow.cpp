@@ -31,6 +31,8 @@
 #include "../filelist/kantfilelist.h"
 #include "kantmenuitem.h"
 
+#include "../interfaces/kantpluginIface.h"
+
 #include "../kwrite/kwview.h"
 #include "../kwrite/kwattribute.h"
 #include "../kwrite/kwdoc.h"
@@ -84,7 +86,7 @@
 #define POP_(x) kdDebug() << #x " = " << flush << x << endl
 
 KantMainWindow::KantMainWindow(KantDocManager *_docManager, KantPluginManager *_pluginManager) :
-	KantMainWindowIface (0, "Main Window"),
+	KDockMainWindow (0, "Main Window"),
              DCOPObject ("KantIface" ),
 	m_pFilterShellProcess (NULL)
 {
@@ -110,21 +112,6 @@ KantMainWindow::KantMainWindow(KantDocManager *_docManager, KantPluginManager *_
   // connect settings menu aboutToshow
   QPopupMenu* pm_set = (QPopupMenu*)factory()->container("settings", this);
   connect(pm_set, SIGNAL(aboutToShow()), this, SLOT(settingsMenuAboutToShow()));
-
-  setUpdatesEnabled(false);
-//  QObject *jw1=new QObject(this);
-//  KXMLGUIClient *gui=new KXMLGUIClient(this);
-  KParts::Plugin::loadPlugins(viewManager,pluginManager->plugins);
-        KParts::GUIActivateEvent ev( true );
-        QApplication::sendEvent( viewManager, &ev );
-
-//        guiFactory()->addClient( gui );
-
-        QList<KParts::Plugin> plugins =KParts:: Plugin::pluginObjects( viewManager );
-        QListIterator<KParts::Plugin> pIt( plugins );
-        for (; pIt.current(); ++pIt )
-            guiFactory()->addClient( pIt.current() );
-  setUpdatesEnabled(true);
 }
 
 KantMainWindow::~KantMainWindow()
@@ -169,6 +156,23 @@ void KantMainWindow::setupMainWindow ()
   fileselector->dirOperator()->setView(KFile::Simple);
   sidebar->addWidget (fileselector, i18n("Fileselector"));
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileViewItem*)),this,SLOT(fileSelected(const KFileViewItem*)));
+
+  pluginIface = new KantPluginIface (this);
+
+  setUpdatesEnabled(false);
+//  QObject *jw1=new QObject(this);
+//  KXMLGUIClient *gui=new KXMLGUIClient(this);
+  KParts::Plugin::loadPlugins(viewManager,pluginManager->plugins);
+        KParts::GUIActivateEvent ev( true );
+        QApplication::sendEvent( viewManager, &ev );
+
+//        guiFactory()->addClient( gui );
+
+        QList<KParts::Plugin> plugins =KParts:: Plugin::pluginObjects( pluginIface );
+        QListIterator<KParts::Plugin> pIt( plugins );
+        for (; pIt.current(); ++pIt )
+            guiFactory()->addClient( pIt.current() );
+  setUpdatesEnabled(true);
 
   statusBar()->hide();
 }

@@ -22,7 +22,7 @@
 
 #include <kparts/plugin.h>
 #include <klibloader.h>
-#include <kantpluginiface.h>
+#include <kantpluginIface.h>
 
 class PluginKantHtmlTools : public KParts::Plugin
 {

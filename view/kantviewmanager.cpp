@@ -53,7 +53,7 @@
 
 #include "kantsplitter.h"
 
-KantViewManager::KantViewManager (QWidget *parent, KantDocManager *docManager) : KantPluginIface  (parent)
+KantViewManager::KantViewManager (QWidget *parent, KantDocManager *docManager) : KantViewManagerIface  (parent)
 {
   // no memleaks
   viewList.setAutoDelete(true);

@@ -18,10 +18,10 @@
 #define kant_viewmanager_h__
 
 #include "../kantmain.h"
-#include "../pluginmanager/kantpluginiface.h"
+#include "../interfaces/kantviewmanagerIface.h"
 #include "kantview.h"
 
-class KantViewManager : public KantPluginIface
+class KantViewManager : public KantViewManagerIface
 {
   Q_OBJECT
 
