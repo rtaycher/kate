@@ -157,7 +157,7 @@ void SearchDialog::setSearchText( const QString &searchstr )
  {
    m_search->insertItem( searchstr, 0 );
    m_search->setCurrentItem( 0 );
-   ((QLineEdit *) (m_search->children()->getFirst()))->selectAll();
+   m_search->lineEdit()->selectAll();
  }
 
 // this dialog is not modal
