@@ -118,6 +118,7 @@ bool TopLevel::queryClose()
 bool TopLevel::queryExit()
 {
   writeConfig();
+  kapp->config()->sync();
   KantFactory::instance()->config()->sync();
 
   return true;
@@ -423,7 +424,7 @@ void TopLevel::readConfig() {
   KConfig *config;
   int w, h;
 
-  config = KantFactory::instance()->config();
+  config = kapp->config();
 
   config->setGroup("General Options");
   w = config->readNumEntry("Width", 550);
@@ -432,6 +433,9 @@ void TopLevel::readConfig() {
 
   readConfig(config);
 
+  config = KantFactory::instance()->config();
+
+  config->setGroup("General Options");
   kWrite->readConfig(config);
   kWrite->doc()->readConfig(config);
 }
@@ -441,7 +445,7 @@ void TopLevel::writeConfig()
 {
   KConfig *config;
 
-  config = KantFactory::instance()->config();
+  config = kapp->config();
 
   config->setGroup("General Options");
   config->writeEntry("Width", width());
@@ -449,6 +453,9 @@ void TopLevel::writeConfig()
 
   writeConfig(config);
 
+  config = KantFactory::instance()->config();
+
+  config->setGroup("General Options");
   kWrite->writeConfig(config);
   kWrite->doc()->writeConfig(config);
 }
