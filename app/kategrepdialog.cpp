@@ -260,8 +260,7 @@ GrepDialog::GrepDialog(QString dirname, QWidget *parent, const char *name)
 
 GrepDialog::~GrepDialog()
 {
-    if (childproc)
-      delete childproc;
+    delete childproc;
 }
 
 void GrepDialog::patternTextChanged( const QString & _text)
@@ -385,8 +384,7 @@ void GrepDialog::finish()
 
     buf += '\n';
     processOutput();
-    if (childproc)
-        delete childproc;
+    delete childproc;
     childproc = 0;
 
     config->setGroup("GrepDialog");
