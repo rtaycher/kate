@@ -74,12 +74,11 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
   m_pluginManager->loadAllEnabledPlugins ();
 
   // first be sure we have at least one window
-#warning Session management ?
+  // #warning Session management ? needs to be fixed
   config()->setGroup("General");
-  m_restoreGUIMode=(KMdi::MdiMode)config()->readNumEntry("GUIMode",KMdi::UndefinedMode);
+  //m_restoreGUIMode=(KMdi::MdiMode)config()->readNumEntry("GUIMode",KMdi::UndefinedMode);
   KateMainWindow *win; // = newMainWindow ();
-  m_restoreGUIMode=KMdi::UndefinedMode;
-
+  
   // we restore our great stuff here now ;) super
   if ( isRestored() )
   {
@@ -275,7 +274,11 @@ KateMainWindow *KateApp::newMainWindow (bool visible)
     QString grp=cfg->group();
     
     cfg->setGroup("General");
-    KateMainWindow::defaultMode=(KMdi::MdiMode)cfg->readNumEntry("DefaultGUIMode",KMdi::IDEAlMode);
+    KateMainWindow::defaultMode = (KMdi::MdiMode) cfg->readNumEntry("DefaultGUIMode", KMdi::IDEAlMode);
+    
+    // only allow ideal or tabpage mode, others don't work right atm
+    if ((KateMainWindow::defaultMode != KMdi::IDEAlMode) && (KateMainWindow::defaultMode != KMdi::TabPageMode))
+      KateMainWindow::defaultMode = KMdi::IDEAlMode;
     
     cfg->setGroup(grp);
   }
