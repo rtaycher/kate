@@ -310,7 +310,7 @@ void KateMainWindow::setupActions()
   a=new KAction( i18n("Split &Horizontal"), "view_top_bottom", CTRL+SHIFT+Key_T, m_viewManager, SLOT( slotSplitViewSpaceHoriz() ), actionCollection(), "view_split_horiz");
   a->setWhatsThis(i18n("Split the currently active view horizontally into two views."));
 
-  a=closeCurrentViewSpace = new KAction( i18n("Close &Current"), "view_remove", CTRL+SHIFT+Key_R, m_viewManager, SLOT( slotCloseCurrentViewSpace() ), actionCollection(), "view_close_current_space");
+  a=closeCurrentViewSpace = new KAction( i18n("Close &Current View"), "view_remove", CTRL+SHIFT+Key_R, m_viewManager, SLOT( slotCloseCurrentViewSpace() ), actionCollection(), "view_close_current_space");
   a->setWhatsThis(i18n("Close the currently active splitted view"));
 
   connect(new KToggleAction(i18n("Show &Full-Screen"), QString::fromLatin1("window_fullscreen"),0, actionCollection(),

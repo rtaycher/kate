@@ -59,12 +59,12 @@
     <Action name="view_new_view" />
     <Action name="view_split_vert"/>
     <Action name="view_split_horiz"/>
-    <Separator />
-    <DefineGroup name="view_operations" />
-    <Separator />
     <Action name="view_close_current_space" />
+    <Separator />
     <Action name="go_next"/>
     <Action name="go_prev"/>
+    <Separator />
+    <DefineGroup name="view_operations" />
     <Separator />
     <Action name="view_fullscreen_view" /> 
   </Menu>
