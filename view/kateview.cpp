@@ -1489,8 +1489,16 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name, bool H
   connect( this, SIGNAL( newUndo() ), this, SLOT( slotNewUndo() ) );
   connect( this, SIGNAL( fileChanged() ), this, SLOT( slotFileStatusChanged() ) );
   connect( doc, SIGNAL( highlightChanged() ), this, SLOT( slotHighlightChanged() ) );
+
   if ( doc->hasBrowserExtension() )
+  {
     connect( this, SIGNAL( dropEventPass(QDropEvent*) ), this, SLOT( slotDropEventPass(QDropEvent*) ) );
+
+    KConfig *config = KateFactory::instance()->config();
+    config->setGroup("kwrite");
+    this->readConfig( config );
+    myDoc->readConfig( config );
+  }
 
   setHighlight->setCurrentItem(getHl());
   slotUpdate();
@@ -3468,6 +3476,7 @@ void KateBrowserExtension::slotSelectionChanged()
 {
   emit enableAction( "copy", m_doc->hasMarkedText() );
 }
+
 
 
 
