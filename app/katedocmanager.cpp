@@ -232,12 +232,12 @@ bool KateDocManager::closeDocument(class Kate::Document *doc)
 
 bool KateDocManager::closeDocument(uint n)
 {
-	closeDocument(document(n));
+	return closeDocument(document(n));
 }
 
 bool KateDocManager::closeDocumentWithID(uint id)
 {
-	closeDocument(documentWithID(id));
+	return closeDocument(documentWithID(id));
 }
 
 bool KateDocManager::closeAllDocuments()
