@@ -253,6 +253,7 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
 
     KateExternalToolsMenuAction *externalTools;
     GrepTool * greptool;
+    bool m_modignore;
 };
 
 #endif
