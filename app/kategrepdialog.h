@@ -76,6 +76,7 @@ private:
     QComboBox *files_combo, *pattern_combo;
     KURLRequester *dir_combo;
     QCheckBox *recursive_box;
+    QCheckBox *ignorecase_box;
     QListBox *resultbox;
     QPushButton *search_button, *clear_button;
     KProcess *childproc;

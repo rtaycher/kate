@@ -142,18 +142,24 @@ GrepTool::GrepTool(KateMainWindow *parent, const char *name)
   QBoxLayout *dir_layout = new QHBoxLayout(3);
   input_layout->addLayout(dir_layout, 3, 1);
 
-  dir_combo = new KURLRequester( new KComboBox(true, this), this, "dir combo" );
+  KComboBox* url_combo = new KComboBox(true, this);
+  url_combo->setMinimumWidth(80); // make sure that 800x600 res works
+  dir_combo = new KURLRequester( url_combo, this, "dir combo" );
   dir_combo->completionObject()->setMode(KURLCompletion::DirCompletion);
   dir_combo->comboBox()->insertStringList(lastSearchPaths);
   dir_combo->setMode( KFile::Directory|KFile::LocalOnly );
-  dir_layout->addWidget(dir_combo);
+  dir_layout->addWidget(dir_combo, 1);
   dir_label->setBuddy(dir_combo);
 
   recursive_box = new QCheckBox(i18n("Recursive"), this);
   recursive_box->setMinimumWidth(recursive_box->sizeHint().width());
-  recursive_box->setChecked(true);
-  dir_layout->addSpacing(10);
+  recursive_box->setChecked(config->readBoolEntry("Recursive", true));
   dir_layout->addWidget(recursive_box);
+
+  ignorecase_box = new QCheckBox(i18n("Ignore case"), this);
+  ignorecase_box->setMinimumWidth(ignorecase_box->sizeHint().width());
+  ignorecase_box->setChecked(config->readBoolEntry("IgnoreCase", true));
+  dir_layout->addWidget(ignorecase_box);
 
   KButtonBox *actionbox = new KButtonBox(this, Qt::Vertical);
   layout->addWidget(actionbox, 0, 2);
@@ -206,6 +212,8 @@ GrepTool::GrepTool(KateMainWindow *parent, const char *name)
     i18n("Enter the directory which contains the files you want to search in."));
   QWhatsThis::add(recursive_box,
     i18n("Check this box to search in all subdirectories."));
+  QWhatsThis::add(ignorecase_box,
+    i18n("Check this box to ignore case."));
   QWhatsThis::add(resultbox,
     i18n("The results of the grep run are listed here. Select a\n"
      "filename/line number combination and press Enter or doubleclick\n"
@@ -320,6 +328,8 @@ void GrepTool::slotSearch()
   childproc = new KShellProcess();
   *childproc << filepattern;
   *childproc << "grep";
+  if (ignorecase_box->isChecked())
+    *childproc << "-i";
   *childproc << "-n";
   *childproc << "-H";
   *childproc << (QString("-e ") + KProcess::quote(pattern));
@@ -381,6 +391,8 @@ void GrepTool::finish()
     }
     config->writeEntry("LastSearchPaths", lastSearchPaths);
   }
+  config->writeEntry("Recursive", recursive_box->isChecked());
+  config->writeEntry("IgnoreCase", ignorecase_box->isChecked());
 }
 
 void GrepTool::slotCancel()
