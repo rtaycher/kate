@@ -113,7 +113,7 @@ void KateDockContainer::insertWidget (KDockWidget *w, QPixmap pixmap, const QStr
 		m_tb->appendTab(pixmap.isNull()?SmallIcon("misc"):pixmap,tab,w->tabPageLabel());
 		kdDebug()<<"NAMENAMENAMENAME:===========================:"<<w->tabPageLabel()<<endl;
 		m_tb->setTab(tab,true);
-		connect(m_tb->getTab(tab),SIGNAL(clicked(int)),this,SLOT(tabClicked(int)));
+		connect(m_tb->tab(tab),SIGNAL(clicked(int)),this,SLOT(tabClicked(int)));
 		kdDebug()<<"KateDockContainer::insertWidget()"<<endl;
 		m_tb->setTab(oldtab,false);
 		mTabCnt++;
