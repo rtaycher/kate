@@ -2112,7 +2112,7 @@ void AutoHighlight::makeContextList()
                 if (! HlManager::self()->syntax->groupItemData(data,QString("char")).isEmpty())
 		  chr= (HlManager::self()->syntax->groupItemData(data,QString("char")).latin1())[0];
 		else
-                  chr="\0";
+                  chr=0;
 		kdDebug()<<"Char"<<chr<<endl;
                 if (dataname=="keyword") contextList[i]->items.append(keyword=new HlKeyword(attr,context));
                 if (dataname=="dataType") contextList[i]->items.append(dataType=new HlKeyword(attr,context));
