@@ -2669,12 +2669,12 @@ void KWrite::gotoLine() {
 void KWrite::initSearch(SConfig &s, int flags) {
 
   s.flags = flags;
-  s.pattern = searchForList.first();
-  if (!(s.flags & KWriteView::sfCaseSensitive))
-    s.pattern = s.pattern.lower();
-  s.regExp.setPattern(s.pattern);
+  s.setPattern(searchForList.first());
 
-  if (s.flags & KWriteView::sfFromCursor) {
+  if (s.flags & KWriteView::sfAgain) {
+    if (s.flags & KWriteView::sfBackward)
+      s.cursor.x--;
+  } else if (s.flags & KWriteView::sfFromCursor) {
     s.cursor = kWriteView->cursor;
   } else {
     if (!(s.flags & KWriteView::sfBackward)) {
@@ -2689,8 +2689,6 @@ void KWrite::initSearch(SConfig &s, int flags) {
   if (!(s.flags & KWriteView::sfBackward)) {
     if (!(s.cursor.x || s.cursor.y))
       s.flags |= KWriteView::sfFinished;
-  } else {
-    s.cursor.x -= s.matchedLength;
   }
   s.startCursor = s.cursor;
 }
@@ -2719,7 +2717,8 @@ void KWrite::searchAgain(SConfig &s) {
     query = KMessageBox::Cancel;
     if (kWriteDoc->doSearch(s,searchFor)) {
       cursor = s.cursor;
-      if (!(s.flags & KWriteView::sfBackward)) s.cursor.x += s.matchedLength;
+      if (!(s.flags & KWriteView::sfBackward))
+        s.cursor.x += s.matchedLength;
       kWriteView->updateCursor(s.cursor); //does deselectAll()
       exposeFound(cursor,s.matchedLength,(s.flags & KWriteView::sfAgain) ? 0 : KWriteView::ufUpdateOnScroll,false);
     } else {
@@ -3534,4 +3533,51 @@ void KWrite::slotNewUndo()
 void KWrite::slotHighlightChanged()
 {
     setHighlight->setCurrentItem(getHl());
+}
+
+// Applies a new pattern to the search context.
+void SConfig::setPattern(QString &newPattern) {
+  bool regExp = (flags & KWriteView::sfRegularExpression);
+
+  m_pattern = newPattern;
+  if (regExp) {
+    m_regExp.setCaseSensitive(flags & KWriteView::sfCaseSensitive);
+    m_regExp.setPattern(m_pattern);
+  }
+}
+
+// Applies the search context to the given string, and returns whether a match was found. If one is,
+// the length of the string matched is also returned.
+int SConfig::search(QString &text, int index) {
+  bool regExp = (flags & KWriteView::sfRegularExpression);
+  bool caseSensitive = (flags & KWriteView::sfCaseSensitive);
+
+  if (flags & KWriteView::sfBackward) {
+    if (regExp) {
+      index = text.findRev(m_regExp, index);
+    }
+    else {
+      index = text.findRev(m_pattern, index, caseSensitive);
+    }
+  }
+  else {
+    if (regExp) {
+      index = text.find(m_regExp, index);
+    }
+    else {
+      index = text.find(m_pattern, index, caseSensitive);
+    }
+  }
+
+  // Work out the matched length.
+  if (index != -1)
+  {
+    if (regExp) {
+      m_regExp.match(text, index, &matchedLength, false);
+    }
+    else {
+      matchedLength = m_pattern.length();
+    }
+  }
+  return index;
 }

@@ -2173,37 +2173,34 @@ bool KWriteDoc::doSearch(SConfig &sc, const QString &searchFor) {
       }
       if (!(sc.flags & KWriteView::sfCaseSensitive)) for (z = 0; z < tlen; z++) t[z] = t[z].lower();
 
-      if (sc.flags & KWriteView::sfWholeWords && tlen > 0) {
-        //whole word search
-        if (col == 0) {
-          if (match(t, sc)) {
-            // Got a match. Is the terminator an end of word?
-            if ((col + sc.matchedLength) == tlen)
-              goto found;
-            if (!m_highlight->isInWord(t[col + sc.matchedLength]))
-              goto found;
-          }
-          col++;
-        }
+      QString text(t, tlen);
+      if (sc.flags & KWriteView::sfWholeWords) {
+        // Until the end of the line...
         while (col < tlen) {
-          if (!m_highlight->isInWord(t[col - 1]) && match(&t[col], sc)) {
-            // Got a match. Is the terminator an end of word?
-            if ((col + sc.matchedLength) == tlen)
+          // ...find the next match.
+          col = sc.search(text, col);
+          if (col != -1) {
+            // Is the match delimited correctly?
+            if (((col == 0) || (!m_highlight->isInWord(t[col]))) &&
+              ((col + sc.matchedLength == tlen) || (!m_highlight->isInWord(t[col + sc.matchedLength])))) {
               goto found;
-            if (!m_highlight->isInWord(t[col + sc.matchedLength]))
-              goto found;
+            }
+            else {
+              // Start again from the next character.
+              col++;
+            }
           }
-          col++;
+          else {
+            // No match.
+            break;
+          }
         }
-        if (!m_highlight->isInWord(t[col - 1]) &&
-          match(&t[col], sc))
+      }
+      else {
+        // Non-whole-word search.
+        col = sc.search(text, col);
+        if (col != -1)
           goto found;
-      } else {
-        //normal search
-        while (col <= tlen) {
-          if (match(&t[col], sc)) goto found;
-          col++;
-        }
       }
       col = 0;
       line++;
@@ -2216,7 +2213,7 @@ bool KWriteDoc::doSearch(SConfig &sc, const QString &searchFor) {
         col = -1;
       }
       searchEnd = selectStart;
-    } else searchEnd = 0;;
+    } else searchEnd = 0;
 
     while (line >= searchEnd) {
       textLine = getTextLine(line);
@@ -2240,32 +2237,36 @@ bool KWriteDoc::doSearch(SConfig &sc, const QString &searchFor) {
 
       if (col < 0 || col > tlen) col = tlen;
 
+      QString text(t, tlen);
       if (sc.flags & KWriteView::sfWholeWords) {
-        //whole word search
-        while (col > 0) {
-          if (!m_highlight->isInWord(t[col - 1]) && match(&t[col], sc)) {
-            // Got a match. Is the terminator an end of word?
-            if ((col + sc.matchedLength) == tlen)
-              goto found;
-            if (!m_highlight->isInWord(t[col + sc.matchedLength]))
-              goto found;
-          }
-          col--;
-        }
-        if (match(t, sc)) {
-          // Got a match. Is the terminator an end of word?
-          if ((col + sc.matchedLength) == tlen)
-            goto found;
-          if (!m_highlight->isInWord(t[col + sc.matchedLength]))
-            goto found;
-        }
-      } else {
-        //normal search
+        // Until the beginning of the line...
         while (col >= 0) {
-          if (match(&t[col], sc)) goto found;
-          col--;
+          // ...find the next match.
+          col = sc.search(text, col);
+          if (col != -1) {
+            // Is the match delimited correctly?
+            if (((col == 0) || (!m_highlight->isInWord(t[col]))) &&
+              ((col + sc.matchedLength == tlen) || (!m_highlight->isInWord(t[col + sc.matchedLength])))) {
+              goto found;
+            }
+            else {
+              // Start again from the previous character.
+              col--;
+            }
+          }
+          else {
+            // No match.
+            break;
+          }
         }
       }
+      else {
+        // Non-whole-word search.
+        col = sc.search(text, col);
+        if (col != -1)
+          goto found;
+      }
+      col = -1;
       line--;
     }
   }
@@ -2279,24 +2280,6 @@ found:
   sc.cursor.x = col;
   sc.cursor.y = line;
   return true;
-}
-
-// Applies the search context to the given string, and returns whether a match was found. If one is,
-// the length of the string matched is also returned.
-bool KWriteDoc::match(const QChar *text, SConfig &sc)
-{
-  bool regExp = (sc.flags & KWriteView::sfRegularExpression) != 0;
-  int length = sc.pattern.length();
-  QString tmp(text, length);
-
-  if (regExp) {
-    return sc.regExp.match(tmp, 0, &sc.matchedLength) == 0;
-  }
-  else
-  {
-    sc.matchedLength = length;
-    return sc.pattern == tmp;
-  }
 }
 
 void KWriteDoc::unmarkFound() {
