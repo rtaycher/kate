@@ -301,14 +301,7 @@ KateExternalToolsMenuAction::KateExternalToolsMenuAction( const QString &text,
 
 void KateExternalToolsMenuAction::reload()
 {
-  // m_actionCollection->clear();
-  // clear() is KDE_NO_COMPAT, should it have been?
-  KAction *it = m_actionCollection->action(0);
-  while ( it ){
-    m_actionCollection->remove( it );
-    it = m_actionCollection->action(0);
-  }
-
+  m_actionCollection->clear();
   popupMenu()->clear();
 
   // load all the tools, and create a action for each of them
