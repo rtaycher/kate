@@ -29,6 +29,7 @@
 #include <qpopupmenu.h>
 #include <ktexteditor/document.h>
 #include <ktexteditor/view.h>
+#include <ktexteditor/clipboardinterface.h>
 
 class KConfig;
 
@@ -43,7 +44,7 @@ class Mark;
   The Kate::View text editor interface.
   @author Jochen Wilhelmy, modified by rokrau (6/21/01)
 */
-class View : public KTextEditor::View
+class View : public KTextEditor::View, virtual KTextEditor::ClipboardInterface
 {
   Q_OBJECT
 
@@ -132,18 +133,6 @@ class View : public KTextEditor::View
       Allows the user to save the file under a new name.
     */
     virtual saveResult saveAs() { return SAVE_CANCEL; };
-    /**
-      Moves the marked text into the clipboard.
-    */
-    virtual void cut() { ; };
-    /**
-     Copies the marked text into the clipboard.
-    */
-    virtual void copy() { ; };
-    /**
-     Inserts text from the clipboard at the actual cursor position.
-    */
-    virtual void paste() { ; };
     /**
       Moves the current line or the selection one position to the right.
     */

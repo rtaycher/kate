@@ -1354,6 +1354,11 @@ KateView::~KateView()
   delete printer;
 }
 
+void KateView::copy () const
+{
+  myDoc->copy(myDoc->_configFlags);
+}
+
 void KateView::setupActions()
 {
     KStdAction::close( this, SLOT(flush()), actionCollection(), "file_close" );

@@ -280,6 +280,27 @@ class KateView : public Kate::View
     KateView(KateDocument *doc=0L, QWidget *parent = 0L, const char * name = 0);
     ~KateView();
 
+  //
+  // KTextEditor::ClipboardInterface stuff
+  //
+  public slots:
+	  /**
+      Moves the marked text into the clipboard
+    */
+    void cut() {doEditCommand(KateView::cmCut);}
+    /**
+      Copies the marked text into the clipboard
+    */
+    void copy() const;
+    /**
+      Inserts text from the clipboard at the actual cursor position
+    */
+    void paste() {doEditCommand(KateView::cmPaste);}
+
+  //
+  // internal KateView stuff
+  //
+	public:
     virtual void setCursorPosition( int line, int col, bool mark = false );
     virtual void getCursorPosition( int *line, int *col );
 
@@ -429,18 +450,6 @@ class KateView : public Kate::View
       automatic highlight selection.
     */
     saveResult saveAs();
-    /**
-      Moves the marked text into the clipboard
-    */
-    void cut() {doEditCommand(KateView::cmCut);}
-    /**
-      Copies the marked text into the clipboard
-    */
-    void copy() {doEditCommand(KateView::cmCopy);}
-    /**
-      Inserts text from the clipboard at the actual cursor position
-    */
-    void paste() {doEditCommand(KateView::cmPaste);}
     /**
       Moves the current line or the selection one position to the right
     */

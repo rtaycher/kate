@@ -626,7 +626,7 @@ int KateDocument::lineLength ( uint line ) const
 // KTextEditor::SelectionInterface stuff
 //
 
-bool KateDocument::setSelection ( int , int , int , int )
+bool KateDocument::setSelection ( uint , uint , uint , uint )
 {
   return true;
 }

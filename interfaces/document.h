@@ -60,7 +60,9 @@ class Cursor : public KTextEditor::Cursor
 
 /** This interface provides access to the Kate Document class.
 */
-class Document : public KTextEditor::Document, KTextEditor::EditInterface, KTextEditor::UndoInterface, KTextEditor::CursorInterface, KTextEditor::SelectionInterface
+class Document : public KTextEditor::Document, virtual KTextEditor::EditInterface,
+                 virtual KTextEditor::UndoInterface, virtual KTextEditor::CursorInterface,
+								 virtual KTextEditor::SelectionInterface
 {
   Q_OBJECT
 

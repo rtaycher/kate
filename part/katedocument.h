@@ -146,7 +146,7 @@ class KateDocument : public Kate::Document
 	// KTextEditor::SelectionInterface stuff
   //
   public slots:
-    bool setSelection ( int line_start, int col_start, int line_end, int col_end );
+    bool setSelection ( uint startLine, uint startCol, uint endLine, uint endCol );
     bool clearSelection ();
 
     bool hasSelection () const;
