@@ -18,7 +18,6 @@
 
 // $Id$
 
-#include "pluginmanager.h"
 #include "pluginmanager.moc"
 
 #include "plugin.h"
@@ -40,12 +39,12 @@ class PrivatePluginManager
     }
 
     ~PrivatePluginManager ()
-    {    
-    }          
-        
-    KatePluginManager *pluginMan; 
+    {
+    }
+
+    KatePluginManager *pluginMan;
   };
-            
+
 PluginManager::PluginManager (void *pluginManager) : QObject ((KatePluginManager*) pluginManager)
 {
   d = new PrivatePluginManager ();
@@ -85,12 +84,12 @@ class PrivateInitPluginManager
     }
 
     ~PrivateInitPluginManager ()
-    {    
-    }          
-        
-    KateApp *initPluginMan; 
+    {
+    }
+
+    KateApp *initPluginMan;
   };
-            
+
 InitPluginManager::InitPluginManager (void *initPluginManager) : QObject ((KateApp*) initPluginManager)
 {
   d = new PrivateInitPluginManager ();
@@ -106,7 +105,7 @@ void InitPluginManager::performInit(const QString &libname, const KURL &initScri
 {
   d->initPluginMan->performInit (libname, initScript);
 }
-    
+
 InitPlugin *InitPluginManager::initPlugin() const
 {
   return d->initPluginMan->initPlugin();
