@@ -17,7 +17,7 @@
 */
 
 // $Id$
-    
+
 #include "filedialog.h"
 #include "filedialog.moc"
 
@@ -38,7 +38,7 @@ namespace Kate
       KComboBox *encoding;
   };
 };
-    
+
 Kate::FileDialog::FileDialog (const QString& startDir,
                     const QString& encoding,
                     QWidget *parent,
@@ -48,19 +48,26 @@ Kate::FileDialog::FileDialog (const QString& startDir,
   d = new Kate::PrivateFileDialog ();
 
   QString sEncoding (encoding);
-  
+
   setCaption (caption);
-  
+
   QStringList availableEncodingNames(KGlobal::charsets()->availableEncodingNames());
 
   toolBar()->insertCombo(availableEncodingNames, 33333, false, 0L,
           0L, 0L, true);
 
-  if (type == Kate::FileDialog::openDialog)
+  QStringList filter;
+  filter << "all/allfiles";
+  filter << "text/plain";
+
+  if (type == Kate::FileDialog::openDialog) {
     setMode(KFile::Files);
+    setMimeFilter (filter, "all/allfiles");
+    }
   else {
     setMode(KFile::File);
     setOperationMode( Saving );
+    setMimeFilter (filter, "text/plain");
     }
 
   d->encoding = toolBar()->getCombo(33333);
@@ -96,7 +103,7 @@ Kate::FileDialogData Kate::FileDialog::exec()
   int n = KDialogBase::exec();
 
   Kate::FileDialogData data = Kate::FileDialogData ();
-  
+
   if (n)
   {
     data.encoding = d->encoding->currentText();
