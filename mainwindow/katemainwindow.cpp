@@ -108,6 +108,10 @@ KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_
   connect(pm_set, SIGNAL(aboutToShow()), this, SLOT(settingsMenuAboutToShow()));
 
   // connect settings menu aboutToshow
+  documentMenu = (QPopupMenu*)factory()->container("documents", this);
+  connect(documentMenu, SIGNAL(aboutToShow()), this, SLOT(documentMenuAboutToShow()));
+
+  // connect settings menu aboutToshow
   bookmarkMenu = (QPopupMenu*)factory()->container("bookmarks", this);
   connect(bookmarkMenu, SIGNAL(aboutToShow()), this, SLOT(bookmarkMenuAboutToShow()));
 
@@ -227,9 +231,6 @@ void KateMainWindow::setupActions()
 
   windowNext = KStdAction::back(viewManager, SLOT(slotWindowNext()), actionCollection());
   windowPrev = KStdAction::forward(viewManager, SLOT(slotWindowPrev()), actionCollection());
-
-  docListMenu = new KActionMenu(i18n("&Document List"), actionCollection(), "doc_list");
-  connect(docListMenu->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(docListMenuAboutToShow()));
 
   setEndOfLine = new KSelectAction(i18n("&End Of Line"), 0, actionCollection(), "set_eol");
   connect(setEndOfLine, SIGNAL(activated(int)), viewManager, SLOT(setEol(int)));
@@ -449,12 +450,10 @@ void KateMainWindow::slotWindowActivated ()
     windowPrev->setEnabled(false);
     viewSplitVert->setEnabled(false);
     viewSplitHoriz->setEnabled(false);
-    docListMenu->setEnabled(false);
   }
   else
   {
     fileCloseAll->setEnabled(true);
-    docListMenu->setEnabled(true);
 
     if (viewManager->viewCount ()  > 1)
     {
@@ -512,19 +511,24 @@ void KateMainWindow::slotCurrentDocChanged()
   }
 }
 
-void KateMainWindow::docListMenuAboutToShow()
+ void KateMainWindow::documentMenuAboutToShow()
 {
-  docListMenu->popupMenu()->clear();
+  documentMenu->clear ();
+  windowNext->plug (documentMenu);
+  windowPrev->plug (documentMenu);
+  documentMenu->insertSeparator ();
+
 
   if (docManager->docCount() == 0) return;
 
   uint z=0;
   int i=1;
   uint id = 0;
-  docListMenu->popupMenu()->polish(); // adjust system settings
-  QFont fMod = docListMenu->popupMenu()->font();
+
+//  ->polish(); // adjust system settings
+  QFont fMod = documentMenu->font();
   fMod.setBold( TRUE );
-  QFont fUnMod = docListMenu->popupMenu()->font();
+  QFont fUnMod = documentMenu->font();
 
   QString Entry;
   while ( z<docManager->docCount() )
@@ -537,19 +541,25 @@ void KateMainWindow::docListMenuAboutToShow()
 	{
 		Entry=QString("&%1 ").arg(i)+i18n("Untitled %1").arg(docManager->nthDoc(z)->docID());
 	}
-    id=docListMenu->popupMenu()->insertItem(new KateMenuItem(Entry,
+    id=documentMenu->insertItem(new KateMenuItem(Entry,
 			docManager->nthDoc(z)->isModified() ? fMod : fUnMod,
                         docManager->nthDoc(z)->isModified() ? SmallIcon("modified") : SmallIcon("null")) );
-    docListMenu->popupMenu()->connectItem(id, viewManager, SLOT( activateView ( uint ) ) );
+    documentMenu->connectItem(id, viewManager, SLOT( activateView ( uint ) ) );
 
-    docListMenu->popupMenu()->setItemParameter( id, docManager->nthDoc(z)->docID() );
+    documentMenu->setItemParameter( id, docManager->nthDoc(z)->docID() );
 
     if (viewManager->activeView())
-      docListMenu->popupMenu()->setItemChecked( id, ((KateDocument *)viewManager->activeView()->doc())->docID() == docManager->nthDoc(z)->docID() );
+      documentMenu->setItemChecked( id, ((KateDocument *)viewManager->activeView()->doc())->docID() == docManager->nthDoc(z)->docID() );
 
     z++;
     i++;
   }
+
+  documentMenu->insertSeparator ();
+  setHighlight->plug (documentMenu);
+  setEndOfLine->plug (documentMenu);
+  documentMenu->insertSeparator ();
+  documentReload->plug (documentMenu);
 }
 
 void KateMainWindow::bookmarkMenuAboutToShow()

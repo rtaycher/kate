@@ -127,9 +127,8 @@ class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOP
     KAction *gotoLine;
     KAction* windowNext;
     KAction* windowPrev;
-    KActionMenu *docListMenu;
 
-    QPopupMenu *bookmarkMenu;
+    QPopupMenu *bookmarkMenu, *documentMenu;
     QList<KateMark> list;
 
     KToggleAction* settingsShowSidebar;
@@ -175,7 +174,7 @@ class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOP
     void slotEditToolbars();
     void slotWindowActivated ();
     void slotCurrentDocChanged();
-    void docListMenuAboutToShow();
+    void documentMenuAboutToShow();
     void setEOLMenuAboutToShow();
     void bookmarkMenuAboutToShow();
     void settingsMenuAboutToShow();
