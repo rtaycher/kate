@@ -198,7 +198,7 @@ void KantMainWindow::setupActions()
   editIndent = new KAction(i18n("&Indent"), "indent", CTRL+Key_I, viewManager, SLOT(slotIndent()), actionCollection(), "edit_indent");
   editUnIndent = new KAction(i18n("&Unindent"), "unindent", CTRL+SHIFT+Key_I, viewManager, SLOT(slotUnIndent()), actionCollection(), "edit_unindent");
 
-  editCmd = new KAction(i18n("&Editing Command"), Qt::CTRL+Qt::Key_M, viewManager, SLOT(slotEditCommand()),
+  editCmd = new KAction(i18n("&Editing Command"), Qt::CTRL+Qt::Key_D, viewManager, SLOT(slotEditCommand()),
                                   actionCollection(), "edit_cmd");
 
   editInsert = new KAction(i18n("I&nsert File..."), 0, viewManager, SLOT(slotInsertFile()), actionCollection(), "edit_insertFile");

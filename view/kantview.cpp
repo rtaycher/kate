@@ -1543,7 +1543,7 @@ void KantView::setupActions()
     editInsert = new KAction(i18n("&Insert File..."), 0, this, SLOT(insertFile()),
                              actionCollection(), "edit_insertFile");
 
-   KAction *editCmd = new KAction(i18n("&Editing Command"), Qt::CTRL+Qt::Key_M, this, SLOT(slotEditCommand()),
+   KAction *editCmd = new KAction(i18n("&Editing Command"), Qt::CTRL+Qt::Key_D, this, SLOT(slotEditCommand()),
                                   actionCollection(), "edit_cmd");
 
     // setup Go menu
