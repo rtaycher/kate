@@ -1561,6 +1561,8 @@ void KateView::setupActions()
     bookmarkMenu = new KActionMenu(i18n("&Bookmarks"), actionCollection(), "bookmarks");
     connect(bookmarkMenu->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(bookmarkMenuAboutToShow()));
 
+    viewBorder = new KToggleAction(i18n("Show &IconBorder"), Key_F6, this, SLOT(toggleIconBorder()), actionCollection(), "view_border");
+
     // setup Tools menu
     toolsSpell = KStdAction::spelling(this, SLOT(spellcheck()), actionCollection());
     toolsIndent = new KAction(i18n("&Indent"), Qt::CTRL+Qt::Key_I, this, SLOT(indent()),

@@ -430,7 +430,7 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
             *bookmarkToggle, *bookmarkClear;
 
     KActionMenu *bookmarkMenu;
-    KToggleAction *setVerticalSelection;
+    KToggleAction *setVerticalSelection, *viewBorder;
     KRecentFilesAction *fileRecent;
     KSelectAction *setHighlight, *setEndOfLine;
 
@@ -950,11 +950,6 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
         cmUncomment};
 //find commands
     enum Find_commands { cmFind=1,cmReplace,cmFindAgain,cmGotoLine};
-
-//bookmark commands
-    enum Bookmark_commands {
-        cmSetBookmark=1,cmAddBookmark,cmClearBookmarks,
-        cmSetBookmarks=10,cmGotoBookmarks=20 };
 
   public:
     void setActive (bool b);
