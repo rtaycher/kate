@@ -156,8 +156,8 @@ HighlightDialogPage::HighlightDialogPage(HlManager *hlManager, ItemStyleList *st
   QLabel *label = new QLabel( i18n("Highlight:"), vbox1 );
   hlCombo = new QComboBox( false, vbox1 );
   QHBox *modHl = new QHBox(vbox1);
-//  connect(new QPushButton(i18n("New"),modHl),SIGNAL(clicked()),this,SLOT(hlNew()));
-//  connect(new QPushButton(i18n("Edit"),modHl),SIGNAL(clicked()),this,SLOT(hlEdit()));
+  connect(new QPushButton(i18n("New"),modHl),SIGNAL(clicked()),this,SLOT(hlNew()));
+  connect(new QPushButton(i18n("Edit"),modHl),SIGNAL(clicked()),this,SLOT(hlEdit()));
   connect( hlCombo, SIGNAL(activated(int)),
            this, SLOT(hlChanged(int)) );
   for( int i = 0; i < hlManager->highlights(); i++) {
@@ -237,13 +237,13 @@ void HighlightDialogPage::saveData() {
 
 
 void HighlightDialogPage::hlEdit() {
-  HlEditDialog diag(0,0,"hlEdit", true,hlData);
-  diag.show();
+  HlEditDialog diag(0,this,"hlEdit", true,hlData);
+  diag.exec();
 }
 
 void HighlightDialogPage::hlNew() {
-  HlEditDialog diag(0,0,"hlEdit",true,0);
-  diag.show();
+  HlEditDialog diag(0,this,"hlEdit",true,0);
+  diag.exec();
 }
 
 
@@ -341,8 +341,8 @@ void HlEditDialog::initItemOptions(QVBox *co)
         QPushButton *delItem=new QPushButton(i18n("Delete this item"),co);
 
 	/* init translation lists */
-	insertTranslationList("CharDetect","CharDetect",1);
-        insertTranslationList("2CharDetect","2CharDetect",2);
+	insertTranslationList("DetectChar","DetectChar",1);
+        insertTranslationList("Detect2Chars","Detect2Chars",2);
 	insertTranslationList("RangeDetect","RangeDetect",2);
 	insertTranslationList("StringDetect","StringDetect",-1);
 	insertTranslationList("AnyChar","AnyChar",-1);
@@ -350,7 +350,6 @@ void HlEditDialog::initItemOptions(QVBox *co)
 	insertTranslationList("Int","Int",0);
 	insertTranslationList("Float","Float",0);
 	insertTranslationList("keyword","keyword",0);
-	insertTranslationList("dataType","dataType",0);
         ItemType->clear();
         for (int i=0; i<transTableCnt; i++) ItemType->insertItem(id2info[i].trans_i18n);
         connect(ItemType,SIGNAL(activated(int)),this,SLOT(ItemTypeChanged(int)));
@@ -425,8 +424,8 @@ QListViewItem *HlEditDialog::addContextItem(QListViewItem *_parent,QListViewItem
 		bool insensitive=(HlManager::self()->syntax->groupItemData(data,QString("insensitive"))==QString("TRUE"));
                 QString param("");
                 if ((dataname=="keyword") || (dataname=="dataType")) param=dataname;
-                  else if (dataname=="CharDetect") param=chr;
-                    else if ((dataname=="2CharDetect") || (dataname=="RangeDetect")) param=QString("%1%2").arg(chr).arg(chr1);
+                  else if (dataname=="DetectChar") param=chr;
+                    else if ((dataname=="Detect2Chars") || (dataname=="RangeDetect")) param=QString("%1%2").arg(chr).arg(chr1);
                       else if ((dataname=="StringDetect") || (dataname=="AnyChar") || (dataname=="RegExpr")) param=stringdata;
                         else                     kdDebug(13010)<<"***********************************"<<endl<<"Unknown entry for Context:"<<dataname<<endl;
                 kdDebug(13010)<<dataname << endl;

@@ -286,8 +286,9 @@ void KateMainWindow::setupActions()
   connect(viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
   connect(viewManager,SIGNAL(statChanged()),this,SLOT(slotCurrentDocChanged()));
 
-  setHighlight = new KActionMenu (i18n("&Highlight Mode"), actionCollection(), "set_highlight");
-  connect(setHighlight->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(setHighlightMenuAboutToShow()));
+  //  setHighlight = new KActionMenu (i18n("&Highlight Mode"), actionCollection(), "set_highlight");
+  setHighlight = new KateViewHighlightAction (viewManager,i18n("&Highlight Mode"), actionCollection(), "set_highlight");
+  //connect(setHighlight->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(setHighlightMenuAboutToShow()));
 
   slotWindowActivated ();
 }
@@ -529,6 +530,7 @@ void KateMainWindow::gotoBookmark (int n)
   viewManager->gotoMark (list.at(n));
 }
 
+#if 0
 void KateMainWindow::setHighlightMenuAboutToShow()
 {
   static QStringList subMenusName;
@@ -586,6 +588,7 @@ void KateMainWindow::setHighlightMenuAboutToShow()
     oldActiveID = viewManager->activeView()->getHl();
   }
 }
+#endif
 
 void KateMainWindow::dragEnterEvent( QDragEnterEvent *event )
 {

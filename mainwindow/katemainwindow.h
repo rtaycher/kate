@@ -20,6 +20,7 @@
 #include "../main/katemain.h"
 #include "../interfaces/mainwindow.h"
 #include "../interfaces/document.h"
+#include "../view/kateviewhighlightaction.h"
 #include "kateIface.h"
 
 #include <kparts/part.h>
@@ -92,7 +93,8 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     KSelectAction* setEndOfLine;
     KAction* documentReload;
     KActionMenu* documentOpenWith;
-    KActionMenu *setHighlight;
+    KateViewHighlightAction *setHighlight;
+    //KActionMenu *setHighlight;
 
     KAction *gotoLine;
     KAction* windowNext;
@@ -147,7 +149,7 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     void setEOLMenuAboutToShow();
     void bookmarkMenuAboutToShow();
     void settingsMenuAboutToShow();
-    void setHighlightMenuAboutToShow();
+    //void setHighlightMenuAboutToShow();
     void slotSettingsShowFullPath();
     void slotDropEvent(QDropEvent *);
     void editKeys();

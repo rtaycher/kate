@@ -1444,7 +1444,7 @@ void KateView::setupActions()
       KStdAction::gotoLine(this, SLOT(gotoLine()), myDoc->actionCollection(), "goto_line" );
       new KAction(i18n("&Configure Editor..."), 0, this, SLOT(configDialog()),myDoc->actionCollection(), "set_confdlg");
 //      setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, myDoc->actionCollection(), "set_highlight");
-	setHighlight = new KateViewHighlightAction(this,i18n("&Highlight Mode"),0,myDoc->actionCollection(),"set_highlight");
+	setHighlight = new KateViewHighlightAction(this,i18n("&Highlight Mode"),myDoc->actionCollection(),"set_highlight");
       KStdAction::selectAll(this, SLOT(selectAll()), myDoc->actionCollection(), "select_all");
       new KAction(i18n("&Deselect All"), 0, this, SLOT(deselectAll()),
                 myDoc->actionCollection(), "unselect_all");
@@ -1465,7 +1465,7 @@ void KateView::setupActions()
       KStdAction::gotoLine(this, SLOT(gotoLine()), actionCollection());
       new KAction(i18n("&Configure Editor..."), 0, this, SLOT(configDialog()),actionCollection(), "set_confdlg");
 //      setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, actionCollection(), "set_highlight");
-      setHighlight = new KateViewHighlightAction(this,i18n("&Highlight Mode"), 0, actionCollection(), "set_highlight");
+      setHighlight = new KateViewHighlightAction(this,i18n("&Highlight Mode"), actionCollection(), "set_highlight");
       KStdAction::selectAll(this, SLOT(selectAll()), actionCollection());
       new KAction(i18n("&Deselect All"), 0, this, SLOT(deselectAll()),
                 actionCollection(), "edit_deselectAll");
