@@ -504,6 +504,7 @@ void KWriteView::bottomOfView(VConfig &c) {
 
   cursor.y = (yPos + height())/kWriteDoc->fontHeight -1;
   if (cursor.y < 0) cursor.y = 0;
+  if (cursor.y > kWriteDoc->lastLine()) cursor.y = kWriteDoc->lastLine();
   cursor.x = 0;
   cOldXPos = cXPos = 0;
   changeState(c);
