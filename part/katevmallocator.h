@@ -25,6 +25,8 @@
 #ifndef KVMALLOCATOR_H
 #define KVMALLOCATOR_H
 
+#include "kateglobal.h"
+
 #include <sys/types.h>
 
 class KVMAllocatorPrivate;

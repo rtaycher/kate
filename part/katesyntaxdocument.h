@@ -18,6 +18,8 @@
 #ifndef _KATE_SYNTAXDOCUMENT_H_
 #define _KATE_SYNTAXDOCUMENT_H_
 
+#include "kateglobal.h"
+
 #include <qdom.h>
 #include <qptrlist.h>
 #include <qstringlist.h>

@@ -18,11 +18,8 @@
 #include <kstandarddirs.h>
 #include <klocale.h>
 #include <kcmdlineargs.h>
-#include <kstdaction.h>
 #include <kaboutdata.h>
 #include <kglobal.h>
-#include <kglobalaccel.h>
-#include <kglobalsettings.h>
 #include <kstartupinfo.h>
 #include <dcopclient.h>
 #include <kurl.h>

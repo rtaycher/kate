@@ -28,7 +28,6 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <qstringlist.h>
-#include <qfileinfo.h>
 #include <qfile.h>
 
 KatePluginManager::KatePluginManager(QObject *parent) : QObject(parent)

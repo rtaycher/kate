@@ -20,6 +20,9 @@
 #ifndef _KATE_HIGHLIGHT_H_
 #define _KATE_HIGHLIGHT_H_
 
+#include "kateglobal.h"
+#include "katetextline.h"
+
 #include <qptrlist.h>
 #include <qdialog.h>
 #include <kcolorbtn.h>
@@ -27,8 +30,6 @@
 #include <kdebug.h>
 #include <qdict.h>
 #include <qintdict.h>
-
-#include "katetextline.h"
 
 class SyntaxDocument;
 struct syntaxModeListItem;

@@ -20,14 +20,15 @@
 #ifndef _KATE_BUFFER_H_
 #define _KATE_BUFFER_H_
 
+#include "kateglobal.h"
+#include "katetextline.h"
+#include "katevmallocator.h"
+
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qptrlist.h>
 #include <qobject.h>
 #include <qtimer.h>
-
-#include "katetextline.h"
-#include "katevmallocator.h"
 
 class KateBufBlock;
 class KateBufFileLoader;

@@ -18,7 +18,7 @@
 #ifndef _KATE_CMD_H
 #define _KATE_CMD_H
 
-#include <config.h>
+#include "kateglobal.h"
 
 #include <qobject.h>
 #include <qstring.h>

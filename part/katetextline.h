@@ -17,6 +17,8 @@
  
 #ifndef _KATE_TEXTLINE_H_
 #define _KATE_TEXTLINE_H_ 
+
+#include "kateglobal.h"
  
 #include <stdlib.h> 
 #include <qstring.h> 

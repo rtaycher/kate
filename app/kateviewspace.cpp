@@ -22,11 +22,10 @@
 
 #include <kiconloader.h>
 #include <klocale.h>
-#include <kstatusbar.h>
 #include <qwidgetstack.h>
-#include <kdebug.h>
 #include <ksimpleconfig.h>
 #include <qpainter.h>
+#include <qlabel.h>
 #include <qcursor.h>
 
 KateViewSpace::KateViewSpace(QWidget* parent, const char* name)
@@ -58,7 +57,6 @@ void KateViewSpace::addView(Kate::View* v, bool show)
   }
   else {
     Kate::View* c = mViewList.current();
-    //kdDebug(13030)<<"KateViewSpace::addView(): showing current view "<< c->getDoc()->url().path()<<endl;
     mViewList.prepend( v );
     showView( c );
   }
@@ -70,7 +68,6 @@ void KateViewSpace::removeView(Kate::View* v)
   mViewList.remove (v);
   stack->removeWidget (v);
 
-//  if (mViewList.current() != 0L)
   if (currentView() != 0L)
     stack->raiseWidget(mViewList.current());
   else if (mViewList.count() > 0)
@@ -117,10 +114,9 @@ bool KateViewSpace::showView(uint documentNumber)
 
 Kate::View* KateViewSpace::currentView()
 {
-  if (mViewList.count() > 0) {
-    //kdDebug(13030)<<"KateViewSpace::currentView(): "<<((KateView*)stack->visibleWidget())->getDoc()->url().filename()<<endl;
+  if (mViewList.count() > 0)
     return (Kate::View*)stack->visibleWidget();
-  }
+
   return 0L;
 }
 
@@ -183,8 +179,8 @@ void KateViewSpace::saveFileList( KSimpleConfig* config, int myIndex )
   int idx = 0;
   for (; it.current(); ++it) {
     l.clear();
-    if ( !it.current()->getDoc()->url().isEmpty() ) {
-    kdDebug(13030)<<"saving vs data for "<<it.current()->getDoc()->url().prettyURL()<<endl;
+    if ( !it.current()->getDoc()->url().isEmpty() )
+    {
       l << it.current()->getDoc()->url().prettyURL();
       l << QString("%1").arg( it.current()->cursorLine());
       l << QString("%1").arg( it.current()->cursorColumn() );

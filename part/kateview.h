@@ -18,12 +18,12 @@
 #ifndef kate_view_h
 #define kate_view_h
 
-#include <config.h>
+#include "kateglobal.h"
+#include "kateviewhighlightaction.h"
+#include "katecodecompletion_iface_impl.h"
 
 #include "../interfaces/view.h"
 #include "../interfaces/document.h"
-
-#include "kateglobal.h"
 
 #include <kparts/browserextension.h>
 #include <qptrlist.h>
@@ -31,10 +31,6 @@
 #include <qstring.h>
 #include <qdialog.h>
 #include <kspell.h>
-
-#include "kateviewhighlightaction.h"
-#include "katecodecompletion_iface_impl.h"
-
 
 class KToggleAction;
 class KActionMenu;

@@ -18,6 +18,8 @@
 #ifndef _KATEVIEW_HIGHLIGHTACTION_H_
 #define _KATEVIEW_HIGHLIGHTACTION_H_
 
+#include "kateglobal.h"
+
 #include <kaction.h>
 #include <qstringlist.h>
 #include <qptrlist.h>

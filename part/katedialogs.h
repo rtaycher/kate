@@ -18,11 +18,13 @@
 #ifndef KATE_DIALOGS_H
 #define KATE_DIALOGS_H
 
+#include "kateglobal.h"
+#include "katesyntaxdocument.h"
+#include "katehighlight.h"
+#include "katedocument.h"
+
 #include <kdialog.h>
 #include <kdialogbase.h>
-#include "katesyntaxdocument.h"
-#include  "katehighlight.h"
-#include "katedocument.h"
 #include <klistview.h>
 #include <qtabwidget.h>
 #include <kcolorbutton.h>

@@ -29,16 +29,6 @@
 #include "katefileselector.h"
 #include "katefilelist.h"
 
-#include <qcheckbox.h>
-#include <qiconview.h>
-#include <qinputdialog.h>
-#include <qlayout.h>
-#include <qptrlist.h>
-#include <qsplitter.h>
-#include <qvbox.h>
-#include <qwhatsthis.h>
-#include <qwidgetstack.h>
-
 #include <dcopclient.h>
 #include <kinstance.h>
 #include <kaction.h>
@@ -54,15 +44,11 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kiconloader.h>
-#include <kio/netaccess.h>
 #include <kkeydialog.h>
-#include <klistbox.h>
 #include <klocale.h>
 #include <kmimetype.h>
 #include <kopenwith.h>
 #include <kpopupmenu.h>
-#include <kparts/event.h>
-#include <kparts/part.h>
 #include <ksimpleconfig.h>
 #include <kstatusbar.h>
 #include <kstdaction.h>

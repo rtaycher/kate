@@ -18,6 +18,8 @@
 #ifndef _KATE_VIEWDIALOG_H_
 #define _KATE_VIEWDIALOG_H_
 
+#include "kateglobal.h"
+
 class QCheckBox;
 class QLineEdit;
 class QPushButton;

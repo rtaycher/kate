@@ -18,6 +18,8 @@
 #ifndef __kate_factory_h__
 #define __kate_factory_h__
 
+#include "kateglobal.h"
+
 #include <kparts/factory.h>
 
 class KInstance;

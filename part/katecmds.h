@@ -20,6 +20,7 @@
 #ifndef _KATE_CMDS_H
 #define _KATE_CMDS_H
 
+#include "kateglobal.h"
 #include "katecmd.h"
 
 /**

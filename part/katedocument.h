@@ -18,7 +18,13 @@
 #ifndef kate_document_h
 #define kate_document_h
 
-#include <config.h>
+#include "kateglobal.h"
+#include "kateview.h"
+#include "katehighlight.h"
+#include "katebuffer.h"
+#include "katetextline.h"
+
+#include "../interfaces/document.h"
 
 #include <qobject.h>
 #include <qptrlist.h>
@@ -29,14 +35,7 @@
 #include <qdatetime.h>
 #include <kglobalsettings.h>
 
-#include "kateview.h"
-#include "katehighlight.h"
-#include "katebuffer.h"
-#include "katetextline.h"
-
 class KateCmd;
-
-#include "../interfaces/document.h"
 
 class Attribute {
   public:

@@ -22,6 +22,7 @@
 
 #include <qwidget.h>
 #include <kfile.h>
+#include <kurl.h>
 
 class KateFileSelector : public QWidget
 {

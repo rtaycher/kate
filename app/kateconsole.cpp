@@ -20,11 +20,8 @@
 
 #include <kurl.h>
 #include <qlayout.h>
-#include <stdlib.h>
 #include <klibloader.h>
 #include <klocale.h>
-#include <kglobal.h>
-#include <qlabel.h>
 
 KateConsole::KateConsole (QWidget* parent, const char* name) : QWidget (parent, name)
 {

@@ -19,7 +19,6 @@
 #define __KATE_MAIN_H__
 
 #include <config.h>
-#include <kurl.h>
 
 class QComboBox;
 class QDateTime;
@@ -57,16 +56,12 @@ class KateApp;
 class KateConfigDlg;
 class KateConsole;
 class KateDocManager;
-class KateDocument;
 class KateFileList;
 class KateFileSelector;
 class KateMainWindow;
 class KatePluginIface;
 class KatePluginManager;
-class KateProject;
-class KateProjectManager;
 class KateSidebar;
-class KateView;
 class KateViewManager;
 class KateViewSpace;
 

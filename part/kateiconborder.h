@@ -18,6 +18,8 @@
 #ifndef _KateIconBorder_H_
 #define _KateIconBorder_H_
 
+#include "kateglobal.h"
+
 #include <qwidget.h>
 
 class KateView;
