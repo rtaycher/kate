@@ -706,7 +706,7 @@ void KateViewInternal::updateView(int flags) {
 
 //debug("upView %d %d %d %d %d", exposeCursor, updateState, flags, newXPos, newYPos);
   if (exposeCursor || flags & KateView::ufDocGeometry) {
-    emit myView->newCurPos();
+    emit myView->cursorPositionChanged();
   } else {
     if (updateState == 0 && newXPos < 0 && newYPos < 0) return;
   }

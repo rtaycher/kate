@@ -148,8 +148,8 @@ class KateViewInternal : public QWidget {
     KateViewInternal(KateView *view, KateDocument *doc);
     ~KateViewInternal();
 
-    virtual void doCursorCommand(VConfig &, int cmdNum);
-    virtual void doEditCommand(VConfig &, int cmdNum);
+    void doCursorCommand(VConfig &, int cmdNum);
+    void doEditCommand(VConfig &, int cmdNum);
 
     void cursorLeft(VConfig &);
     void cursorRight(VConfig &);
@@ -200,20 +200,20 @@ class KateViewInternal : public QWidget {
 
     void doDrag();
 
-    virtual void focusInEvent(QFocusEvent *);
-    virtual void focusOutEvent(QFocusEvent *);
-    virtual void keyPressEvent(QKeyEvent *e);
-    virtual void mousePressEvent(QMouseEvent *);
-    virtual void mouseDoubleClickEvent(QMouseEvent *);
-    virtual void mouseReleaseEvent(QMouseEvent *);
-    virtual void mouseMoveEvent(QMouseEvent *);
-    virtual void wheelEvent( QWheelEvent *e );
-    virtual void paintEvent(QPaintEvent *);
-    virtual void resizeEvent(QResizeEvent *);
-    virtual void timerEvent(QTimerEvent *);
+    void focusInEvent(QFocusEvent *);
+    void focusOutEvent(QFocusEvent *);
+    void keyPressEvent(QKeyEvent *e);
+    void mousePressEvent(QMouseEvent *);
+    void mouseDoubleClickEvent(QMouseEvent *);
+    void mouseReleaseEvent(QMouseEvent *);
+    void mouseMoveEvent(QMouseEvent *);
+    void wheelEvent( QWheelEvent *e );
+    void paintEvent(QPaintEvent *);
+    void resizeEvent(QResizeEvent *);
+    void timerEvent(QTimerEvent *);
 
-    virtual void dragEnterEvent( QDragEnterEvent * );
-    virtual void dropEvent( QDropEvent * );
+    void dragEnterEvent( QDragEnterEvent * );
+    void dropEvent( QDropEvent * );
 
     KateView *myView;
     KateDocument *myDoc;
@@ -298,11 +298,14 @@ class KateView : public Kate::View
   // internal KateView stuff
   //
 	public:
-    virtual void setCursorPosition( int line, int col, bool mark = false );
-    virtual void getCursorPosition( int *line, int *col );
+    void setCursorPosition( int line, int col, bool mark = false );
+    void getCursorPosition( int *line, int *col );
 
-    virtual bool isOverwriteMode() const;
-    virtual void setOverwriteMode( bool b );
+		void cursorPosition( uint *line, uint *col ) { getCursorPosition ((int*)line, (int*)col); } ;
+		bool setCursorPosition( uint line, uint col ) { setCursorPosition ((int)line, (int)col, false); } ;
+
+    bool isOverwriteMode() const;
+    void setOverwriteMode( bool b );
 
 //status and config functions
     /**
@@ -373,7 +376,7 @@ class KateView : public Kate::View
       The cursor position has changed. Get the values with currentLine()
       and currentColumn()
     */
-    void newCurPos();
+    void cursorPositionChanged();
     /**
       Modified flag or config flags have changed
     */
@@ -388,8 +391,8 @@ class KateView : public Kate::View
     void enableUI( bool enable );
 
   protected:
-    virtual void keyPressEvent( QKeyEvent *ev );
-    virtual void customEvent( QCustomEvent *ev );
+    void keyPressEvent( QKeyEvent *ev );
+    void customEvent( QCustomEvent *ev );
 
     /*
      * Check if the given URL already exists. Currently used by both save() and saveAs()
@@ -418,7 +421,7 @@ class KateView : public Kate::View
        Insert text at the current cursor position.
        The parameter @param mark is unused.
      */
-     virtual void insertText(const QString &, bool = false );
+     void insertText(const QString &, bool = false );
 
   public:
 
@@ -606,8 +609,8 @@ class KateView : public Kate::View
 
 //internal
   protected:
-    virtual void paintEvent(QPaintEvent *);
-    virtual void resizeEvent(QResizeEvent *);
+    void paintEvent(QPaintEvent *);
+    void resizeEvent(QResizeEvent *);
 
     void doCursorCommand(int cmdNum);
     void doEditCommand(int cmdNum);
@@ -739,7 +742,7 @@ class KateView : public Kate::View
     QPtrList<Kate::Mark> list;
 
   public slots:
-    virtual void setFocus ();
+    void setFocus ();
     void findAgain(bool back=false);
 //    void findAgain () { findAgain(false); };
     void findPrev () { findAgain(true); };

@@ -31,6 +31,7 @@
 #include <ktexteditor/view.h>
 #include <ktexteditor/clipboardinterface.h>
 #include <ktexteditor/popupmenuinterface.h>
+#include <ktexteditor/viewcursorinterface.h>
 
 class KConfig;
 
@@ -40,13 +41,12 @@ namespace Kate
 class Document;
 class Mark;
 
-
 /**
   The Kate::View text editor interface.
-  @author Jochen Wilhelmy, modified by rokrau (6/21/01)
+  @author Cullmann Christoph, modified by rokrau (6/21/01)
 */
 class View : public KTextEditor::View, virtual KTextEditor::ClipboardInterface,
-             virtual KTextEditor::PopupMenuInterface
+             virtual KTextEditor::PopupMenuInterface, virtual KTextEditor::ViewCursorInterface
 {
   Q_OBJECT
 
@@ -63,14 +63,6 @@ class View : public KTextEditor::View, virtual KTextEditor::ClipboardInterface,
      Destructor, you need a destructor if Scott Meyers says so.
     */
     virtual ~View ();
-    /**
-     Set cursor position
-    */
-    virtual void setCursorPosition( int , int , bool = false ) { ; };
-    /**
-     Get cursor position
-    */
-    virtual void getCursorPosition( int * , int * ) { ; };
     /**
      Set editor mode
     */
