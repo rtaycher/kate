@@ -691,20 +691,6 @@ void KateViewManager::exportAs(const QString& filter)
   activeView()->getDoc()->exportAs(filter);
 }
 
-void KateViewManager::toggleBookmark ()
-{
-  if (activeView() == 0) return;
-
-  activeView()->toggleBookmark();
-}
-
-void KateViewManager::clearBookmarks ()
-{
-  if (activeView() == 0) return;
-
-  activeView()->getDoc()->clearMarks();
-}
-
 void KateViewManager::slotComment ()
 {
   if (activeView() == 0) return;
@@ -1325,13 +1311,6 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
    s->setSizes( config->readIntListEntry("sizes") );
    s->show();
    kdDebug(13030)<<"Bye from KateViewManager::restoreSplitter() ("<<group<<")"<<endl;
-}
-
-void KateViewManager::gotoMark (KTextEditor::Mark *mark)
-{
-  if (!activeView()) return;
-
-  activeView()->gotoMark (mark);
 }
 
 void KateViewManager::slotApplyWordWrap ()

@@ -189,9 +189,6 @@ class KateViewManager : public Kate::ViewManager
     void activateNextView();
     void activatePrevView();
 
-    void toggleBookmark();
-    void clearBookmarks();
-
     void slotComment ();
     void slotUnComment ();
 
@@ -202,17 +199,15 @@ class KateViewManager : public Kate::ViewManager
 
     void toggleVertical();
 
-    void gotoMark (KTextEditor::Mark *mark);
-
     void slotApplyWordWrap ();
 
   signals:
     void statusChanged (Kate::View *, int, int, int, bool, int, QString);
     void statChanged ();
     void viewChanged ();
-		
-	private:
-	  QString myEncoding;
+
+  private:
+    QString myEncoding;
 
   public:  //KatePluginIface
     virtual Kate::View *getActiveView(){return (Kate::View *)activeView();};
