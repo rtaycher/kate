@@ -24,7 +24,7 @@
 #include <kmessagebox.h>
 #include <klocale.h>
 #include "../../view/kantview.h"
-#include <cassert>  
+#include <cassert>
 #include <kdebug.h>
 #include <qstring.h>
 
@@ -54,21 +54,25 @@ QObject* KantPluginFactory::createObject( QObject* parent, const char* name, con
 KInstance* KantPluginFactory::s_instance = 0L;
 
 PluginKantHtmlTools::PluginKantHtmlTools( QObject* parent, const char* name )
-    : KParts::Part ( parent, name )
+    : KantPlugin ( parent, name )
 {
-    // Instantiate all of your actions here.  These will appear in
-    // Konqueror's menu and toolbars.
-
-(void)  new KAction ( i18n("HT&ML Tag..."), "edit_HTML_tag", ALT + Key_Minus, this,
-                                SLOT( slotEditHTMLtag() ), actionCollection(), "edit_HTML_tag" );
-
-   setXMLFile( "plugins/kanthtmltools/ui.rc" );
-
    myParent=(KantPluginIface *)parent;
 }
 
 PluginKantHtmlTools::~PluginKantHtmlTools()
 {
+}
+
+KantPluginView *PluginKantHtmlTools::createView ()
+{
+   KantPluginView *view = new KantPluginView (this);
+
+(void)  new KAction ( i18n("HT&ML Tag..."), "edit_HTML_tag", ALT + Key_Minus, view,
+                                SLOT( slotEditHTMLtag() ), view->actionCollection(), "edit_HTML_tag" );
+
+   view->setXML( "plugins/kanthtmltools/ui.rc" );
+   viewList.append (view);
+   return view;
 }
 
 void PluginKantHtmlTools::slotEditHTMLtag()

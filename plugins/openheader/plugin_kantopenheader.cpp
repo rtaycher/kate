@@ -58,21 +58,25 @@ QObject* KantPluginFactory::createObject( QObject* parent, const char* name, con
 KInstance* KantPluginFactory::s_instance = 0L;
 
 PluginKantOpenHeader::PluginKantOpenHeader( QObject* parent, const char* name )
-    : Part ( parent, name )
+    : KantPlugin ( parent, name )
 {
-    // Instantiate all of your actions here.  These will appear in
-    // Konqueror's menu and toolbars.
-
-(void)  new KAction ( i18n("Open .h/[.cpp.c]"), "file_openheader", 0, this,
-  SLOT( slotOpenHeader() ), actionCollection(), "file_openheader" );
-
-      setXMLFile( "plugins/kantopenheader/ui.rc" );
-
    myParent=(KantPluginIface *)parent;
 }
 
 PluginKantOpenHeader::~PluginKantOpenHeader()
 {
+}
+
+KantPluginView *PluginKantOpenHeader::createView ()
+{
+   KantPluginView *view = new KantPluginView (this);
+
+   (void)  new KAction ( i18n("Open .h/[.cpp.c]"), "file_openheader", 0, view,
+  SLOT( slotOpenHeader() ), view->actionCollection(), "file_openheader" );
+
+   view->setXML( "plugins/kantopenheader/ui.rc" );
+   viewList.append (view);
+   return view;
 }
 
 

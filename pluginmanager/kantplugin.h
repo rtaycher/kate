@@ -22,6 +22,21 @@
 #include <qobject.h>
 #include <kparts/part.h>
 #include <qlist.h>
+#include <qstring.h>
+
+ class KantPluginView : public KParts::Part
+{
+  Q_OBJECT
+
+  friend class KantPluginManager;
+
+  public:
+    KantPluginView (QObject* parent = 0) : KParts::Part (parent) {;};
+    ~KantPluginView () {;};
+
+    void setXML (QString filename)
+      { setXMLFile( filename ); };
+};
 
 class KantPlugin : public QObject
 {
@@ -33,9 +48,9 @@ class KantPlugin : public QObject
     KantPlugin (QObject* parent = 0, const char* name = 0) : QObject (parent, name) {;};
     ~KantPlugin () {;};
 
-    virtual KParts::Part *createView (KantMainWindow *win);
+    virtual KantPluginView *createView ()=0;
 
-    QList<KParts::Part> viewList;
+    QList<KantPluginView> viewList;
 };
 
 #endif

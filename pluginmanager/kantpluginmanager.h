@@ -19,10 +19,11 @@
 
 #include "../main/kantmain.h"
 
+class KantPlugin;
+
 #include <qobject.h>
 #include <qvaluelist.h>
 #include <qlist.h>
-#include <kparts/part.h>
 
 struct PluginListItem
 {
@@ -55,7 +56,7 @@ class KantPluginManager : public QObject
     void loadPlugin (PluginListItem *item);
 
     PluginList myPluginList;
-    QList<KParts::Part> loadedPlugins;
+    QList<KantPlugin> loadedPlugins;
 };
 
 #endif

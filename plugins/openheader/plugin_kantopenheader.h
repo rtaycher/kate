@@ -20,7 +20,8 @@
 
 #include <qstring.h>
 
-#include <kparts/part.h>
+#include "../../pluginmanager/kantplugin.h"
+
 #include <klibloader.h>
 #include <kantpluginIface.h>
 
@@ -38,13 +39,15 @@ class KantPluginFactory : public KLibFactory
     static KInstance* s_instance;
 };
 
-class PluginKantOpenHeader : public KParts::Part
+class PluginKantOpenHeader : public KantPlugin
 {
   Q_OBJECT
 
   public:
     PluginKantOpenHeader( QObject* parent = 0, const char* name = 0 );
     virtual ~PluginKantOpenHeader();
+
+    KantPluginView *createView ();
 
   private:
     KantPluginIface *myParent;

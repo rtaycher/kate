@@ -57,23 +57,27 @@ KInstance* KantPluginFactory::s_instance = 0L;
 
 
 PluginKantTextFilter::PluginKantTextFilter( QObject* parent, const char* name )
-    : Part( parent, name ),
+    : KantPlugin ( parent, name ),
   m_pFilterShellProcess (NULL)
 {
-    // Instantiate all of your actions here.  These will appear in
-    // Konqueror's menu and toolbars.
-
-(void)  new KAction ( i18n("Fi&lter Text..."), "edit_filter", CTRL + Key_Backslash, this,
-  SLOT( slotEditFilter() ), actionCollection(), "edit_filter" );
-
-   setXMLFile( "plugins/kanttextfilter/ui.rc" );
-
    myParent=(KantPluginIface *)parent;
 }
 
 PluginKantTextFilter::~PluginKantTextFilter()
 {
   delete m_pFilterShellProcess;
+}
+
+KantPluginView *PluginKantTextFilter::createView ()
+{
+   KantPluginView *view = new KantPluginView (this);
+
+  (void)  new KAction ( i18n("Fi&lter Text..."), "edit_filter", CTRL + Key_Backslash, view,
+  SLOT( slotEditFilter() ), view->actionCollection(), "edit_filter" );
+
+   view->setXML( "plugins/kanttextfilter/ui.rc" );
+   viewList.append (view);
+   return view;
 }
 
         void

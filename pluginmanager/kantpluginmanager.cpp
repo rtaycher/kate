@@ -18,6 +18,8 @@
 #include "kantpluginmanager.h"
 #include "kantpluginmanager.moc"
 
+#include "kantplugin.h"
+
 #include "../app/kantapp.h"
 #include "../mainwindow/kantmainwindow.h"
 
@@ -82,13 +84,13 @@ void KantPluginManager::enabledAllPluginsGUI (KantMainWindow *win)
 
   for (int i=0; i<loadedPlugins.count(); i++)
   {
-    win->guiFactory()->addClient( loadedPlugins.at(i) );
+    win->guiFactory()->addClient( loadedPlugins.at(i)->createView() );
   }
 }
 
 void KantPluginManager::loadPlugin (PluginListItem *item)
 {
   KLibFactory *factory = KLibLoader::self()->factory( item->libname.latin1() );
-  KParts::Part *plugin = (KParts::Part *)factory->create( ((KantApp*)parent())->pluginIface, "", "KParts::Part" );
+  KantPlugin *plugin = (KantPlugin *)factory->create( ((KantApp*)parent())->pluginIface, "", "KantPlugin" );
   loadedPlugins.append (plugin);
 }
