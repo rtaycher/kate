@@ -31,6 +31,7 @@
 #include <klocale.h>
 #include <ksqueezedtextlabel.h>
 #include <kconfig.h>
+#include <kdebug.h>
 
 #include <qwidgetstack.h>
 #include <qpainter.h>

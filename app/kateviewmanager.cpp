@@ -798,22 +798,20 @@ void KateViewManager::restoreViewConfiguration (KConfig *config)
 {
   config->setGroup ("View Configuration");
 
-  // send all views + their gui to **** ;)
-  for (uint i=0; i < m_viewList.count(); i++)
-    ((KMainWindow *)topLevelWidget ())->guiFactory ()->removeClient (m_viewList.at(i));
-
-  m_viewList.clear ();
-
   // no splitters around, ohhh :()
   if (!config->readBoolEntry ("Splitters"))
   {
-    // all views in this list are away, remove them
-    m_viewSpaceList.first()->mViewList.clear();
-
-    m_viewSpaceList.first ()->restoreConfig (this, config, 0);
+    // only add the new views needed, let the old stay, won't hurt if one around
+    m_viewSpaceList.first ()->restoreConfig (this, config, QString("ViewSpace 0"));
   }
   else
   {
+    // send all views + their gui to **** ;)
+    for (uint i=0; i < m_viewList.count(); i++)
+      ((KMainWindow *)topLevelWidget ())->guiFactory ()->removeClient (m_viewList.at(i));
+
+    m_viewList.clear ();
+
     // cu viewspaces
     m_viewSpaceList.clear();
 
