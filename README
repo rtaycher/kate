@@ -5,6 +5,11 @@ textfiles. ;-)
 Out new buffer managment will allow it to open 50MB files ++ in less than 5 seconds
 (at least on my 400Mhz P2 ;)
 
+Other programs which want to use the kate part should use it through the common
+KTextEditor interfaces in kdelibs.
+For Kate Plugins, Kate provides the Kate Interfaces, which allow deeper access
+to the Kate app and its features.
+
 Homepage: http://kate.sourceforge.net
 
 The Kate team
