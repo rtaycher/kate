@@ -1,8 +1,7 @@
                 *** Kate version 2.0 ***
 Kate is a fast texteditor for the KDE destop with an Emacs-style document interface.
-I hope it works well and improve workspeed on many little
-textfiles. ;-)
-Out new buffer managment will allow it to open 50MB files ++ in less than 5 seconds
+I hope it works well and improves workspeed on many little textfiles. ;-)
+Our new buffer managment will allow it to open 50MB files ++ in less than 5 seconds
 (at least on my 400Mhz P2 ;)
 
 Other programs which want to use the kate part should use it through the common
