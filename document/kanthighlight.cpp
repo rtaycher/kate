@@ -3042,3 +3042,4 @@ QListViewItem *HlEditDialog::addContextItem(KListView *cL,QListViewItem *parent,
                 return new QListViewItem(parent,prev,i18n(dataname.latin1())+param,dataname,param,attr,context);
   }
 
+#include "kanthighlight.moc"

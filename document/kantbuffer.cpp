@@ -871,3 +871,4 @@ KWBufBlock::removeLine(int i)
    m_endState.lineNr--;
 }
 
+#include "kantbuffer.moc"

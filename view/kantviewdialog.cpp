@@ -501,3 +501,4 @@ void ColorConfig::getColors(QColor *colors)
   colors[3] = m_selFound->color();
 }
 
+#include "kantviewdialog.moc"
