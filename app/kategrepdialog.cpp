@@ -384,7 +384,7 @@ void GrepDialog::slotSearchFor(QString pattern){
 
 void GrepDialog::finish()
 {
-    search_button->setEnabled(true);
+    search_button->setEnabled( !pattern_combo->lineEdit()->text().isEmpty() );
     cancel_button->setEnabled(false);
 
     buf += '\n';
