@@ -29,7 +29,7 @@ class KantPartDocument : public KantDocument
     ~KantPartDocument ();
 
   private:
-    m_bSingleViewMode;
+    bool m_bSingleViewMode;
 };
 
 class KantPartBrowserExtension : public KParts::BrowserExtension
