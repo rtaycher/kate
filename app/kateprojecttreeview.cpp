@@ -103,62 +103,7 @@ int KateProjectTreeViewItem::compare ( QListViewItem *i, int, bool ) const
       return 1;
   }
 }
-/*
-void KateProjectTreeViewItem::dirsAdded (const QStringList &dirs)
-{
-  QString fullname = m_fullName;
-  if (!m_fullName.isNull())
-    fullname += QString ("/");
 
-  for (uint z=0; z < dirs.size(); z++)
-  {
-    KateProjectTreeViewItem *item = new KateProjectTreeViewItem (this, m_project, dirs[z], fullname + dirs[z], true);
-    ((KateProjectTreeView *)listView())->addDir (item, fullname + dirs[z]);
-  }
-}
-
-void KateProjectTreeViewItem::dirsRemoved (const QStringList &dirs)
-{
-  for (KateProjectTreeViewItem *item = (KateProjectTreeViewItem *) firstChild(); item; item = (KateProjectTreeViewItem *) nextSibling())
-  {
-    for (uint z=0; z < dirs.size(); z++)
-    {
-      if (dirs[z] == item->name())
-      {
-        delete item;
-        break;
-      }
-    }
-  }
-}
-
-void KateProjectTreeViewItem::filesAdded (const QStringList &files)
-{
-  QString fullname = m_fullName;
-  if (!m_fullName.isNull())
-    fullname += QString ("/");
-
-  for (uint z=0; z < files.size(); z++)
-  {
-    new KateProjectTreeViewItem (this, m_project, files[z], fullname + files[z], false);
-  }
-}
-
-void KateProjectTreeViewItem::filesRemoved (const QStringList &files)
-{
-  for (KateProjectTreeViewItem *item = (KateProjectTreeViewItem *) firstChild(); item; item = (KateProjectTreeViewItem *) nextSibling())
-  {
-    for (uint z=0; z < files.size(); z++)
-    {
-      if (files[z] == item->name())
-      {
-        delete item;
-        break;
-      }
-    }
-  }
-}
-*/
 KateProjectTreeView::KateProjectTreeView (Kate::Project *project, KateMainWindow *mainwin, QWidget *parent) : KListView (parent)
 {
   m_project = project;
@@ -232,18 +177,75 @@ void KateProjectTreeView::slotDoubleClicked( QListViewItem *i, const QPoint &, i
 
 void KateProjectTreeView::dirsAdded (const QString &dir, const QStringList &dirs)
 {
+  KateProjectTreeViewItem *item = m_dirDict [QString("/")+dir];
+
+  if (!item)
+    return;
+
+  QString fullname = dir;
+  if (!fullname.isNull())
+    fullname += QString ("/");
+
+  for (uint z=0; z < dirs.size(); z++)
+  {
+    new KateProjectTreeViewItem (&m_dirDict, item, m_project, dirs[z], fullname + dirs[z], true);
+  }
 }
 
 void KateProjectTreeView::dirsRemoved (const QString &dir, const QStringList &dirs)
 {
+  KateProjectTreeViewItem *item = m_dirDict [QString("/")+dir];
+
+  if (!item)
+    return;
+
+  for (KateProjectTreeViewItem *i = (KateProjectTreeViewItem *) item->firstChild(); i; i = (KateProjectTreeViewItem *) item->nextSibling())
+  {
+    for (uint z=0; z < dirs.size(); z++)
+    {
+      if (dirs[z] == i->name())
+      {
+        delete item;
+        break;
+      }
+    }
+  }
 }
 
 void KateProjectTreeView::filesAdded (const QString &dir, const QStringList &files)
 {
+  KateProjectTreeViewItem *item = m_dirDict [QString("/")+dir];
+
+  if (!item)
+    return;
+
+  QString fullname = dir;
+  if (!fullname.isNull())
+    fullname += QString ("/");
+
+  for (uint z=0; z < files.size(); z++)
+  {
+    new KateProjectTreeViewItem (&m_dirDict, item, m_project, files[z], fullname + files[z], false);
+  }
 }
 
 void KateProjectTreeView::filesRemoved (const QString &dir, const QStringList &files)
 {
+  KateProjectTreeViewItem *item = m_dirDict [QString("/")+dir];
 
+  if (!item)
+    return;
+
+  for (KateProjectTreeViewItem *i = (KateProjectTreeViewItem *) item->firstChild(); i; i = (KateProjectTreeViewItem *) item->nextSibling())
+  {
+    for (uint z=0; z < files.size(); z++)
+    {
+      if (files[z] == i->name())
+      {
+        delete item;
+        break;
+      }
+    }
+  }
 }
 

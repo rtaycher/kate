@@ -1,4 +1,7 @@
 [General]
+Name=Kate Application
 Type=Default
-Name=Kate
-DirFilesName=.kate.katedir
+
+[Project Dir]
+Dirs=app/data/interfaces/pics/plugins/utils
+Files=.cvsignore/AUTHORS/ChangeLog/COPYING.LIB/DESIGN/Makefile.am/NEWS/README/TODO
