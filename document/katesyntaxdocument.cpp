@@ -73,8 +73,6 @@ void SyntaxDocument::setupModeList(bool force)
       mli->section = config->readEntry("section","");
       mli->mimetype = config->readEntry("mimetype","");
       mli->extension = config->readEntry("extension","");
-      mli->casesensitive = config->readEntry("casesensitive","");
-
       mli->identifier = *it;
       myModeList.append(mli);
     }
@@ -102,13 +100,9 @@ void SyntaxDocument::setupModeList(bool force)
             mli->section = e.attribute("section");
             mli->mimetype = e.attribute("mimetype");
             mli->extension = e.attribute("extensions");
-            mli->casesensitive = e.attribute("casesensitive");
 
             if (mli->section.isEmpty())
               mli->section="Other";
-
-            if (mli->casesensitive.isEmpty())
-              mli->casesensitive="1";
 
             mli->identifier = *it;
 
@@ -117,7 +111,6 @@ void SyntaxDocument::setupModeList(bool force)
             config->writeEntry("section",mli->section);
             config->writeEntry("mimetype",mli->mimetype);
             config->writeEntry("extension",mli->extension);
-            config->writeEntry("casesensitive",mli->casesensitive);
 
             myModeList.append(mli);
           }

@@ -594,7 +594,6 @@ Highlight::Highlight(syntaxModeListItem *def) : refCount(0)
     iWildcards = def->extension;
     iMimetypes = def->mimetype;
     identifier = def->identifier;
-    casesensitive = def->casesensitive;
   }
 }
 
@@ -878,7 +877,7 @@ HlItem *Highlight::createHlItem(syntaxContextData *data, int *res)
                 if (dataname=="keyword")
 		{
 	           HlKeyword *keyword=new HlKeyword(attr,context,casesensitive=="1",
-                        HlManager::self()->syntax->groupItemData(data,QString("weakDelimiter")));
+                        weakDeliminator);
 		   keyword->addList(HlManager::self()->syntax->finddata("highlighting",stringdata));
 		   return keyword;
 		} else
@@ -945,6 +944,21 @@ void Highlight::makeContextList()
   if (data) HlManager::self()->syntax->freeGroupInfo(data);
   data=0;
 
+  data=HlManager::self()->syntax->getGroupInfo("general","keyword");
+  if (data)
+    {
+    	if (HlManager::self()->syntax->groupData(data,QString("casesensitive"))!="0")
+		casesensitive="1"; else casesensitive="0";
+    	weakDeliminator=(!HlManager::self()->syntax->groupData(data,QString("weakDeliminator")));
+	HlManager::self()->syntax->freeGroupInfo(data);
+    }
+  else
+    {
+       casesensitive="1";
+       weakDeliminator=QString("");
+    }
+
+  data=0;
   data=HlManager::self()->syntax->getGroupInfo("highlighting","context");
   int i=0;
   if (data)

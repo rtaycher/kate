@@ -30,7 +30,6 @@ class syntaxModeListItem
     QString section;
     QString mimetype;
     QString extension;
-    QString casesensitive;
     QString identifier;
 };
 

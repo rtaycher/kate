@@ -284,6 +284,7 @@ class Highlight
 
     bool noHl;
     QString casesensitive;
+    QString weakDeliminator;
     QString cmlStart;
     QString cmlEnd;
     QString cslStart;
