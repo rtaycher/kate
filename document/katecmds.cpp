@@ -56,6 +56,56 @@ static void replace(QString &s, QRegExp3 &rx, const QString &with)
 	}
 }
 
+
+
+static int backslashString(const QString &haystack, const QString &needle, int index)
+{
+	int len=haystack.length();
+	int searchlen=needle.length();
+	bool evenCount=true;
+	while (index<len)
+	{
+		if (haystack[index]=='\\')
+		{
+			evenCount=!evenCount;
+		}
+		else
+		{  // isn't a slash
+			if (!evenCount)
+			{
+				if (haystack.mid(index, searchlen)==needle)
+					return index-1;
+			}
+			evenCount=true;
+		}
+		index++;
+
+	}
+	
+	return -1;
+}
+
+
+// exchange "\t" for the actual tab character, for example
+static void exchangeAbbrevs(QString &str)
+{
+	// the format is (findreplace)*[nullzero]
+	char *magic="a\x07t\t";
+
+	while (*magic)
+	{
+		int index=0;
+		char replace=magic[1];
+		while ((index=backslashString(str, QChar(*magic), index))!=-1)
+		{
+			str.replace(index, 2, QChar(replace));
+			index++;
+		}
+		magic++;
+		magic++;
+	}
+}
+
 QString SedReplace::sedMagic(QString textLine, QString find, QString rep, bool noCase, bool repeat)
 {
 	QRegExp3 matcher(find, noCase);
@@ -80,33 +130,30 @@ QString SedReplace::sedMagic(QString textLine, QString find, QString rep, bool n
 		for (; i!=backrefs.end(); ++i)
 		{
 			// I need to match "\\" or "", but not "\"
-			QString regex;
+			QString number=QString::number(refnum);
 
-			// make sure we match the backref if it's at the front
-			if (refnum==1 && rep.left(2)=="\\1")
+			int index=0;
+			while (index!=-1)
 			{
-				regex="^\\\\1";
+				index=backslashString(rep, number, index);
+				if (index>=0)
+				{
+					rep.replace(index, 2, *i);
+					index+=(*i).length();
+				}
 			}
-			else
-			{
-				regex="(?:\\\\\\\\|)\\\\";
-				regex+=QString::number(refnum);
-			}
-
-			QRegExp3 re(regex);
-			QString old;
-			replace(rep, re, *i);
-
+			
 			refnum++;
 		}
 
 		textLine.replace(start, length, rep);
-		replace(textLine, "\\\\", "\\");
-		replace(textLine, "\\/", "/");
 	
 		if (!repeat) break;
 		start+=length;
 	}
+
+	replace(textLine, "\\\\", "\\");
+	replace(textLine, "\\/", "/");
 	
 	return textLine;
 }
@@ -137,6 +184,7 @@ bool SedReplace::execCmd(QString cmd, KateView *view)
 	QString find=splitter.cap(1);
 	kdDebug()<< "SedReplace: find=" << find.latin1() <<endl;
 	QString replace=splitter.cap(2);
+	exchangeAbbrevs(replace);
 	kdDebug()<< "SedReplace: replace=" << replace.latin1() <<endl;
 	
 	
