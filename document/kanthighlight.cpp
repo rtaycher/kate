@@ -428,7 +428,7 @@ HlRegExpr::HlRegExpr(int attribute, int context,QString regexp)
 const QChar *HlRegExpr::checkHgl(const QChar *s,bool lineStart)
 {
   if ((!lineStart) && handlesLinestart) return 0;
-  kdDebug()<<"Trying to match:"<<Expr->pattern()<<endl;
+  //kdDebug()<<"Trying to match:"<<Expr->pattern()<<endl;
   QChar *chtmp=s;
   int i;
   for (i=0;(*chtmp)!='\0';chtmp++,i++);
