@@ -94,7 +94,7 @@ bool KateProject::save ()
 QStringList KateProject::subdirs (const QString &dir) const
 {
   if (dir.isNull())
-    m_data->setGroup("General");
+    m_data->setGroup("Dir");
   else
   {
     QString groupname = QString ("Dir ") + dir;
@@ -111,7 +111,7 @@ QStringList KateProject::subdirs (const QString &dir) const
 QStringList KateProject::files (const QString &dir) const
 {
   if (dir.isNull())
-    m_data->setGroup("General");
+    m_data->setGroup("Dir");
   else
   {
     QString groupname = QString ("Dir ") + dir;

@@ -1,6 +1,8 @@
 [General]
 Type=Default
 Name=Test Project
+
+[Dir]
 Subdirs=testit,testmore
 Files=hallo.txt,text.ext
 
