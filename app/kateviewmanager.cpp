@@ -59,8 +59,10 @@
 
 KateViewManager::KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWidget, KateDocManager *docManager)
  : QWidget  (parent),
-   m_activeViewRunning (false),m_mainWindow(parent),m_tabWidget(tabWidget),showFullPath(false)
+  showFullPath(false), m_activeViewRunning (false),m_mainWindow(parent),m_tabWidget(tabWidget)
 {
+  setupActions ();
+  
   guiMergedView=0;
   m_init=true;
   m_docManager = docManager;
@@ -96,8 +98,8 @@ void KateViewManager::setupActions ()
   a=new KAction ( i18n("New Tab"),"tab_new", 0, this, SLOT(slotNewTab()),
                   m_mainWindow->actionCollection(), "view_new_tab" );
 
-  a=new KAction ( i18n("Close Current Tab"),"tab_remove",0,m_viewManager,SLOT(slotCloseTab()),
-                  m_mainWindow->actionCollection(),"view_close_tab");
+  m_closeTab = new KAction ( i18n("Close Current Tab"),"tab_remove",0,this,SLOT(slotCloseTab()),
+                             m_mainWindow->actionCollection(),"view_close_tab");
   
   m_activateNextTab
       = new KAction( i18n( "Activate Next Tab" ), "tab_next",
@@ -122,21 +124,26 @@ void KateViewManager::setupActions ()
 
   a->setWhatsThis(i18n("Split the currently active view horizontally into two views."));
 
-  a = new KAction ( i18n("Cl&ose Current View"), "view_remove", CTRL+SHIFT+Key_R, this,
+  m_closeView = new KAction ( i18n("Cl&ose Current View"), "view_remove", CTRL+SHIFT+Key_R, this,
                     SLOT( slotCloseCurrentViewSpace() ), m_mainWindow->actionCollection(),
                     "view_close_current_space" );
 
-  a->setWhatsThis(i18n("Close the currently active splitted view"));
+  m_closeView->setWhatsThis(i18n("Close the currently active splitted view"));
 }
 
 void KateViewManager::tabChanged(QWidget* widget) {
   KateViewSpaceContainer *container=static_cast<KateViewSpaceContainer*>(widget->qt_cast("KateViewSpaceContainer"));
   Q_ASSERT(container);
   m_currentContainer=container;
+  
   if (container) {
     container->reactivateActiveView();
 
   }
+  
+  m_closeTab->setEnabled(m_tabWidget->count() > 1);
+  m_activateNextTab->setEnabled(m_tabWidget->count() > 1);
+  m_activatePrevTab->setEnabled(m_tabWidget->count() > 1);
 }
 
 void KateViewManager::slotNewTab() {

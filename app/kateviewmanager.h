@@ -49,6 +49,7 @@ class KateViewManager : public QWidget
 
     inline QPtrList<Kate::View> &viewList () { return m_viewList; };
 
+  private:
     /**
      * create all actions needed for the view manager
      */
@@ -164,6 +165,8 @@ class KateViewManager : public QWidget
     QGuardedPtr<KMDI::TabWidget> m_tabWidget;
     bool m_init;
     
+    KAction *m_closeView;
+    KAction *m_closeTab;
     KAction *m_activateNextTab;
     KAction *m_activatePrevTab;
     

@@ -306,7 +306,6 @@ void KateMainWindow::setupActions()
   slotDocumentChanged();
  
   projectlist->setupActions();
-  m_viewManager->setupActions ();
 }
 
 void KateMainWindow::slotDocumentCloseAll() {
