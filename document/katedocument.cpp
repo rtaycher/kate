@@ -870,9 +870,7 @@ bool KateDocument::writeFile(const QString &file)
   int line = 0;
   while(true)
   {
-    TextLine::Ptr textLine = getTextLine(line);
-    QConstString str((QChar *) textLine->getText(), textLine->length());
-    stream << str.string();
+    stream << getTextLine(line)->getString();
     line++;
     if (line >= maxLine) break;
     if (eolMode != KateView::eolUnix) stream << QChar('\r');
@@ -2151,7 +2149,7 @@ void KateDocument::setURL( const KURL &url, bool updateHighlight )
         return;
 
     hl = hlManager->wildcardFind( fn );
-/*
+
     if (hl == -1) {
       // fill the detection buffer with the contents of the text
       const int HOWMANY = 1024;
@@ -2168,7 +2166,7 @@ void KateDocument::setURL( const KURL &url, bool updateHighlight )
       }
 
       hl = hlManager->mimeFind( buf, fn );
-    }*/
+    }
     setHighlight(hl);
   }
   updateViews();
