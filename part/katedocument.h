@@ -53,15 +53,15 @@ class KateCursor : public Kate::Cursor
     KateCursor (KateDocument *doc);
     ~KateCursor ();
 
-    virtual void position ( uint *line, uint *col ) const;
+    void position ( uint *line, uint *col ) const;
 
-    virtual bool setPosition ( uint line, uint col );
+    bool setPosition ( uint line, uint col );
 
-    virtual bool insertText ( const QString& text );
+    bool insertText ( const QString& text );
+    
+		bool removeText ( uint numberOfCharacters );
 
-    virtual bool removeText ( uint numberOfCharacters );
-
-    virtual QChar currentChar () const;
+    QChar currentChar () const;
 
   private:
     class KateDocument *myDoc;
