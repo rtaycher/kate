@@ -95,11 +95,11 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
 
   QVBoxLayout *lo = new QVBoxLayout( frGeneral );
   lo->setSpacing(KDialog::spacingHint());
-  lo->setAutoAdd( true );
   config->setGroup("General");
 
   // GROUP with the one below: "At Startup"
   QButtonGroup *bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("At Startup"), frGeneral );
+  lo->addWidget( bgStartup );
   // reopen files
   cb_reopenFiles = new QCheckBox( bgStartup );
   cb_reopenFiles->setText(i18n("Reopen &files"));
@@ -120,6 +120,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
 
   // How instances should be handled
   cb_singleInstance = new QCheckBox(frGeneral);
+  lo->addWidget( cb_singleInstance );
   cb_singleInstance->setText(i18n("Allow Kate to only use one UN&IX process"));
   config->setGroup("KDE");
   cb_singleInstance->setChecked(!config->readBoolEntry("MultipleInstances",false));
@@ -130,10 +131,12 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   // show full path in title
   config->setGroup("General");
   cb_fullPath = new QCheckBox( i18n("Show full &path in title"), frGeneral);
+  lo->addWidget( cb_fullPath );
   cb_fullPath->setChecked( config->readBoolEntry("Show Full Path in Title", false ) );
 
   // opaque resize of view splitters
   cb_opaqueResize = new QCheckBox( frGeneral );
+  lo->addWidget( cb_opaqueResize );
   cb_opaqueResize->setText(i18n("&Show content when resizing views"));
   cb_opaqueResize->setChecked( viewManager->useOpaqueResize );
   QWhatsThis::add( cb_opaqueResize, i18n(
@@ -142,6 +145,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
 
   // sync the konsole ?
   cb_syncKonsole = new QCheckBox(frGeneral);
+  lo->addWidget( cb_syncKonsole );
   cb_syncKonsole->setText(i18n("Sync &terminal emulator with active document"));
   cb_syncKonsole->setChecked(parent->syncKonsole);
   QWhatsThis::add( cb_syncKonsole, i18n(
@@ -151,6 +155,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
 
   // number of recent files
   QHBox *hbNrf = new QHBox( frGeneral );
+  lo->addWidget( hbNrf );
   QLabel *lNrf = new QLabel( i18n("&Number of recent files"), hbNrf );
   sb_numRecentFiles = new QSpinBox( 0, 1000, 1, hbNrf );
   sb_numRecentFiles->setValue( mainWindow->fileOpenRecent->maxItems() );
@@ -162,20 +167,27 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   QWhatsThis::add( lNrf, youwouldnotbelieveit );
   QWhatsThis::add( sb_numRecentFiles, youwouldnotbelieveit );
 
-  // FIXME - TrollTech? BORKED!!!!!!!! gets added to TOP :(((((((((((((((((
-  //lo->addItem( new QSpacerItem( 0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding ) );
-  QWidget *qLayoutSeemsBroken = new QWidget( frGeneral, "a working spacer" );
-  lo->setStretchFactor( qLayoutSeemsBroken, 100 );
+  lo->addStretch(1); // :-] works correct without autoadd
+  // END General page
+  
+  config->setGroup("General");
+
+  path.clear();
+
+  // file selector page
+  path << i18n("Kate") << i18n("File Selector");
+
+  QVBox *page = addVBoxPage( path, i18n("File Selector Settings"),
+                              BarIcon("fileopen", KIcon::SizeSmall) );
+  fileSelConfigPage = new KFSConfigPage( page, "file selector config page", 
+                                         mainWindow->fileselector );
                                       
   path.clear();
   path << i18n("Kate") << i18n("Plugins");
-  QVBox *page=addVBoxPage(path,i18n("Plugin Manager"),
+  /*QVBox **/page=addVBoxPage(path,i18n("Plugin Manager"),
                           BarIcon("misc",KIcon::SizeSmall));
   (void)new KateConfigPluginPage(page, this);
-
-  // END General page
-  config->setGroup("General");
-
+  
   // editor widgets from kwrite/kwdialog
   path.clear();
   path << i18n("Editor");
@@ -185,7 +197,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   {
     path.clear();
     path << i18n("Editor") << KTextEditor::configInterfaceExtension (v->document())->configPageName (i);
-    QVBox *page = addVBoxPage(path, KTextEditor::configInterfaceExtension (v->document())->configPageFullName (i),
+    /*QVBox **/page = addVBoxPage(path, KTextEditor::configInterfaceExtension (v->document())->configPageFullName (i),
                               KTextEditor::configInterfaceExtension (v->document())->configPagePixmap(i, KIcon::SizeSmall) );
   
     editorPages.append (KTextEditor::configInterfaceExtension (v->document())->configPage(i, page));
@@ -264,6 +276,8 @@ void KateConfigDialog::slotApply()
 
   config->writeEntry( "Number of recent files", sb_numRecentFiles->value() );
   mainWindow->fileOpenRecent->setMaxItems( sb_numRecentFiles->value() );
+  
+  fileSelConfigPage->apply();
   
   for (uint i=0; i<editorPages.count(); i++)
   {
