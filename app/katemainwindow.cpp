@@ -38,7 +38,7 @@
 #include "katemainwindowiface.h"
 #include "kateexternaltools.h"
 #include "katesavemodifieddialog.h"
-#include "katemwmodonhddialog.h"
+//#include "katemwmodonhddialog.h"
 
 #include <kmdi/tabwidget.h>
 
