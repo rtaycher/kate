@@ -21,12 +21,9 @@
 #include "katemainwindow.h"
 #include "kateIface.h"
 #include "katedocmanager.h"
-#include "../part/katedocument.h"
 #include "kateapp.h"
-#include "../part/kateview.h"
-#include "../part/katefiledialog.h"
+#include "katefiledialog.h"
 #include "kateviewspace.h"
-
 
 #include <dcopclient.h>
 #include <kaction.h>
@@ -63,7 +60,7 @@ KateViewManager::KateViewManager (QWidget *parent, KateDocManager *docManager) :
   grid = new QGridLayout( this, 1, 1 );
 
   KateViewSpace* vs = new KateViewSpace( this );
-  connect(this, SIGNAL(statusChanged(KateView *, int, int, int, bool, int, QString)), vs, SLOT(slotStatusChanged(KateView *, int, int, int, bool, int, QString)));
+  connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, QString)), vs, SLOT(slotStatusChanged(Kate::View *, int, int, int, bool, int, QString)));
   vs->setActive( true );
   vs->installEventFilter( this );
   grid->addWidget( vs, 0, 0);
@@ -78,17 +75,17 @@ KateViewManager::~KateViewManager ()
   viewSpaceList.setAutoDelete(false);
 }
 
-bool KateViewManager::createView ( bool newDoc, KURL url, KateView *origView, KateDocument *doc )
+bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, Kate::Document *doc )
 {
   // create doc
   if (newDoc && !doc)
-    doc = (KateDocument *)docManager->createDoc ();
+    doc = (Kate::Document *)docManager->createDoc ();
   else
     if (!doc)
-      doc = (KateDocument *)origView->doc();
+      doc = (Kate::Document *)origView->getDoc();
 
   // create view
-  KateView *view = new KateView (doc, this, 0L);
+  Kate::View *view = (Kate::View *)doc->createView (this, 0L);
   connect(view,SIGNAL(newStatus()),this,SLOT(setWindowCaption()));
   viewList.append (view);
 	
@@ -98,42 +95,42 @@ bool KateViewManager::createView ( bool newDoc, KURL url, KateView *origView, Ka
   {
     if (!url.isEmpty())
     {
-      if (view->doc()->openURL ( url ))
+      if (view->getDoc()->openURL ( url ))
         ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
 
       QString name = url.filename();
 
       // anders avoid two views w/ same caption
-      QPtrListIterator<KateView> it (viewList);
+      QPtrListIterator<Kate::View> it (viewList);
 
       int hassamename = 0;
       for (; it.current(); ++it)
       {
-        if ( it.current()->doc()->url().filename().compare( name ) == 0 )
+        if ( it.current()->getDoc()->url().filename().compare( name ) == 0 )
           hassamename++;
       }
 
       if (hassamename > 1)
         name = QString(name+"<%1>").arg(hassamename);
 
-      view->doc()->setDocName (name);
+      view->getDoc()->setDocName (name);
     }
     else
     {
-      view->doc()->setDocName (i18n("Untitled %1").arg(doc->documentNumber()));
+      view->getDoc()->setDocName (i18n("Untitled %1").arg(doc->documentNumber()));
     }
   }
   else
   {
-    view->doc()->setDocName (doc->docName ());
+    view->getDoc()->setDocName (doc->docName ());
   }
 
   view->installPopup ((QPopupMenu*)((KMainWindow *)topLevelWidget ())->factory()->container("view_popup", (KMainWindow *)topLevelWidget ()) );
   connect(view,SIGNAL(cursorPositionChanged()),this,SLOT(statusMsg()));
   connect(view,SIGNAL(newStatus()),this,SLOT(statusMsg()));
-  connect(view->doc(), SIGNAL(undoChanged()), this, SLOT(statusMsg()));
+  connect(view->getDoc(), SIGNAL(undoChanged()), this, SLOT(statusMsg()));
   connect(view,SIGNAL(dropEventPass(QDropEvent *)), (KMainWindow *)topLevelWidget (),SLOT(slotDropEvent(QDropEvent *)));
-  connect(view,SIGNAL(gotFocus(KateView *)),this,SLOT(activateSpace(KateView *)));
+  connect(view,SIGNAL(gotFocus(Kate::View *)),this,SLOT(activateSpace(Kate::View *)));
 
   activeViewSpace()->addView( view );
   activateView( view );
@@ -141,7 +138,7 @@ bool KateViewManager::createView ( bool newDoc, KURL url, KateView *origView, Ka
   return true;
 }
 
-bool KateViewManager::deleteView (KateView *view, bool delViewSpace)
+bool KateViewManager::deleteView (Kate::View *view, bool delViewSpace)
 {
   if (!view) return true;
 
@@ -182,9 +179,9 @@ KateViewSpace* KateViewManager::activeViewSpace ()
   return 0L;
 }
 
-KateView* KateViewManager::activeView ()
+Kate::View* KateViewManager::activeView ()
 {
-  QPtrListIterator<KateView> it(viewList);
+  QPtrListIterator<Kate::View> it(viewList);
 
   for (; it.current(); ++it)
   {
@@ -221,7 +218,7 @@ void KateViewManager::setActiveSpace ( KateViewSpace* vs )
    vs->setActive( true, viewSpaceCount() > 1 );
 }
 
-void KateViewManager::setActiveView ( KateView* view )
+void KateViewManager::setActiveView ( Kate::View* view )
 {
   if (activeView())
     activeView()->setActive( false );
@@ -229,7 +226,7 @@ void KateViewManager::setActiveView ( KateView* view )
   view->setActive( true );
 }
 
-void KateViewManager::activateSpace (KateView* v)
+void KateViewManager::activateSpace (Kate::View* v)
 {
   if (!v) return;
 
@@ -241,11 +238,11 @@ void KateViewManager::activateSpace (KateView* v)
   }
 }
 
-void KateViewManager::activateView ( KateView *view )
+void KateViewManager::activateView ( Kate::View *view )
 {
   if (!view) return;
 
-  view->doc()->isModOnHD();
+  // FIX IT view->getDoc()->isModOnHD();
   if (!view->isActive())
   {
     if ( !activeViewSpace()->showView (view) )
@@ -272,17 +269,17 @@ void KateViewManager::activateView( uint documentNumber )
   }
   else
   {
-    QPtrListIterator<KateView> it(viewList);
+    QPtrListIterator<Kate::View> it(viewList);
     for ( ;it.current(); ++it)
     {
-      if ( it.current()->doc()->documentNumber() == documentNumber  )
+      if ( it.current()->getDoc()->documentNumber() == documentNumber  )
       {
         createView( false, KURL(), it.current() );
         return;
       }
     }
 
-    createView (false, KURL(), 0L, (KateDocument *)docManager->docWithID(documentNumber));
+    createView (false, KURL(), 0L, (Kate::Document *)docManager->docWithID(documentNumber));
   }
 }
 
@@ -329,22 +326,22 @@ void KateViewManager::deleteLastView ()
   deleteView (activeView (), true);
 }
 
-bool KateViewManager::closeDocWithAllViews ( KateView *view )
+bool KateViewManager::closeDocWithAllViews ( Kate::View *view )
 {
   if (!view) return false;
 
   if (!view->canDiscard()) return false;
 
-  KateDocument *doc = view->doc();
-  QPtrList<KateView> closeList;
-  uint documentNumber = view->doc()->documentNumber();
+  Kate::Document *doc = view->getDoc();
+  QPtrList<Kate::View> closeList;
+  uint documentNumber = view->getDoc()->documentNumber();
 
   for (uint i=0; i < ((KateApp *)kapp)->mainWindowsCount (); i++ )
   {
     for (uint z=0 ; z < ((KateApp *)kapp)->mainWindows.at(i)->viewManager->viewList.count(); z++)
     {
-      KateView* current = ((KateApp *)kapp)->mainWindows.at(i)->viewManager->viewList.at(z);
-      if ( current->doc()->documentNumber() == documentNumber )
+      Kate::View* current = ((KateApp *)kapp)->mainWindows.at(i)->viewManager->viewList.at(z);
+      if ( current->getDoc()->documentNumber() == documentNumber )
       {
         closeList.append (current);
       }
@@ -352,7 +349,7 @@ bool KateViewManager::closeDocWithAllViews ( KateView *view )
 
     while ( closeList.at(0) )
     {
-      KateView *view = closeList.at(0);
+      Kate::View *view = closeList.at(0);
       ((KateApp *)kapp)->mainWindows.at(i)->viewManager->deleteView (view, true);
       closeList.remove (view);
     }
@@ -367,7 +364,7 @@ bool KateViewManager::closeDocWithAllViews ( KateView *view )
       if ((viewList.count() < 1) && (docManager->docCount() < 1) )
         ((KateApp *)kapp)->mainWindows.at(i2)->viewManager->createView (true, KURL(), 0L);
       else if ((viewList.count() < 1) && (docManager->docCount() > 0) )
-        ((KateApp *)kapp)->mainWindows.at(i2)->viewManager->createView (false, KURL(), 0L, (KateDocument *)docManager->nthDoc(docManager->docCount()-1));
+        ((KateApp *)kapp)->mainWindows.at(i2)->viewManager->createView (false, KURL(), 0L, (Kate::Document *)docManager->nthDoc(docManager->docCount()-1));
     }
   }
 
@@ -379,17 +376,17 @@ void KateViewManager::statusMsg ()
 {
   if (!activeView()) return;
 
-  KateView* v = activeView();
+  Kate::View* v = activeView();
 
-  bool readOnly =  !v->doc()->isReadWrite();
-  uint config =  v->doc()->configFlags();
+  bool readOnly =  !v->getDoc()->isReadWrite();
+  uint config =  v->getDoc()->configFlags();
 
   int ovr = 0;
   if (readOnly)
     ovr = 0;
   else
   {
-    if (config & KateDocument::cfOvr)
+    if (config & Kate::Document::cfOvr)
     {
       ovr=1;
     }
@@ -399,10 +396,10 @@ void KateViewManager::statusMsg ()
     }
   }
 
-  int mod = (int)v->doc()->isModified();
-  bool block=v->doc()->blockSelectionMode();
+  int mod = (int)v->getDoc()->isModified();
+  bool block=v->getDoc()->blockSelectionMode();
   
-  QString c = v -> doc()->docName();
+  QString c = v -> getDoc()->docName();
    //File name shouldn't be too long - Maciek
    if (c.length() > 200)
      c = "..." + c.right(197);
@@ -413,7 +410,7 @@ void KateViewManager::statusMsg ()
 
 void KateViewManager::slotWindowNext()
 {
-  int id = docManager->findDoc (activeView ()->doc()) - 1;
+  int id = docManager->findDoc (activeView ()->getDoc()) - 1;
 
   if (id < 0)
     id =  docManager->docCount () - 1;
@@ -423,7 +420,7 @@ void KateViewManager::slotWindowNext()
 
 void KateViewManager::slotWindowPrev()
 {
-  uint id = docManager->findDoc (activeView ()->doc()) + 1;
+  uint id = docManager->findDoc (activeView ()->getDoc()) + 1;
 
   if (id >= docManager->docCount () )
     id = 0;
@@ -440,11 +437,11 @@ void KateViewManager::slotDocumentOpen ()
 {
   kapp->processEvents();
 
-  KateView *cv = activeView();
+  Kate::View *cv = activeView();
 	KateFileDialog *dialog;
 
   if (cv)
-	  dialog = new KateFileDialog (cv->doc()->url().url(),cv->doc()->encoding(), this, i18n ("Open File"));
+	  dialog = new KateFileDialog (cv->getDoc()->url().url(),cv->getDoc()->encoding(), this, i18n ("Open File"));
 	else
 	  dialog = new KateFileDialog (QString::null,myEncoding, this, i18n ("Open File"));
 
@@ -464,12 +461,12 @@ void KateViewManager::slotDocumentSave ()
 
   kapp->processEvents();
 
-  KateView *current = activeView();
+  Kate::View *current = activeView();
 
-  if( current->doc()->isModified() || current->doc()->url().isEmpty() )
+  if( current->getDoc()->isModified() || current->getDoc()->url().isEmpty() )
   {
-    if( !current->doc()->url().isEmpty() && current->doc()->isReadWrite() )
-      current->doc()->save();
+    if( !current->getDoc()->url().isEmpty() && current->getDoc()->isReadWrite() )
+      current->getDoc()->save();
     else
       slotDocumentSaveAs();
   }
@@ -479,15 +476,15 @@ void KateViewManager::slotDocumentSaveAll ()
 {
   kapp->processEvents();
 
-  QPtrListIterator<KateView> it(viewList);
+  QPtrListIterator<Kate::View> it(viewList);
 
   for ( ;it.current(); ++it)
   {
-    KateView* current = it.current();
-    if( current->doc()->isModified() ) {
-      if( !current->doc()->url().isEmpty() && current->doc()->isReadWrite() )
+    Kate::View* current = it.current();
+    if( current->getDoc()->isModified() ) {
+      if( !current->getDoc()->url().isEmpty() && current->getDoc()->isReadWrite() )
         {
-          current->doc()->save();
+          current->getDoc()->save();
         }
       else
         slotDocumentSaveAs();
@@ -499,19 +496,19 @@ void KateViewManager::slotDocumentSaveAs ()
 {
   if (activeView() == 0) return;
 
-  KateView *current = activeView();
+  Kate::View *current = activeView();
 
-	KateFileDialog *dialog = new KateFileDialog (current->doc()->url().url(),current->doc()->encoding(), this, i18n ("Save File"), KateFileDialog::saveDialog);
+	KateFileDialog *dialog = new KateFileDialog (current->getDoc()->url().url(),current->getDoc()->encoding(), this, i18n ("Save File"), KateFileDialog::saveDialog);
 	KateFileDialogData data = dialog->exec ();
 	delete dialog;
 
   if( !data.url.isEmpty() )
   {
-	  current->doc()->setEncoding (data.encoding);
-    if( !current->doc()->saveAs( data.url ) ) {
+	  current->getDoc()->setEncoding (data.encoding);
+    if( !current->getDoc()->saveAs( data.url ) ) {
         KMessageBox::sorry(this, i18n("The file could not be saved. Please check if you have write permission."));
     }
-    ((KateDocument *)current->doc())->setDocName (data.url.filename());
+    ((Kate::Document *)current->getDoc())->setDocName (data.url.filename());
     setWindowCaption();
   }
 }
@@ -552,14 +549,14 @@ void KateViewManager::slotUndo ()
 {
   if (activeView() == 0) return;
 
-  activeView()->doc()->undo();
+  activeView()->getDoc()->undo();
 }
 
 void KateViewManager::slotRedo ()
 {
   if (activeView() == 0) return;
 
-  activeView()->doc()->redo();
+  activeView()->getDoc()->redo();
 }
 
 void KateViewManager::slotCut ()
@@ -587,14 +584,14 @@ void KateViewManager::slotSelectAll ()
 {
   if (activeView() == 0) return;
 
-  activeView()->doc()->selectAll();
+  activeView()->getDoc()->selectAll();
 }
 
 void KateViewManager::slotDeselectAll ()
 {
   if (activeView() == 0) return;
 
-  activeView()->doc()->clearSelection ();
+  activeView()->getDoc()->clearSelection ();
 }
 
 void KateViewManager::slotFind ()
@@ -634,7 +631,7 @@ void KateViewManager::slotEditCommand ()
 
 void KateViewManager::slotIndent()
 {
-  KateView* v = activeView();
+  Kate::View* v = activeView();
   if (v)
     v->indent();
 
@@ -642,7 +639,7 @@ void KateViewManager::slotIndent()
 
 void KateViewManager::slotUnIndent()
 {
-  KateView* v = activeView();
+  Kate::View* v = activeView();
   if (v)
     v->unIndent();
 
@@ -652,7 +649,7 @@ void KateViewManager::slotSpellcheck ()
 {
   if (activeView() == 0) return;
 
-  activeView()->doc()->spellcheck();
+  // FIX ME activeView()->getDoc()->spellcheck();
 }
 
 void KateViewManager::slotGotoLine ()
@@ -672,28 +669,28 @@ void KateViewManager::slotSetHl (uint n)
 {
   if (activeView() == 0) return;
 
-  activeView()->doc()->setHlMode(n);
+  activeView()->getDoc()->setHlMode(n);
 }
 
 
 void KateViewManager::exportAs(const QString& filter)
 {
   if (activeView() == 0) return;
-  activeView()->doc()->exportAs(filter);
+  // FIX ME ;) activeView()->getDoc()->exportAs(filter);
 }
 
 void KateViewManager::toggleBookmark ()
 {
   if (activeView() == 0) return;
 
-  activeView()->toggleBookmark();
+ //  activeView()->toggleBookmark();
 }
 
 void KateViewManager::clearBookmarks ()
 {
   if (activeView() == 0) return;
 
-  activeView()->document()->clearMarks();
+//  activeView()->document()->clearMarks();
 }
 
 void KateViewManager::slotComment ()
@@ -712,16 +709,16 @@ void KateViewManager::slotUnComment ()
 
 void KateViewManager::openURL (KURL url)
 {
-  KateView *cv = activeView();
+  Kate::View *cv = activeView();
 
   if ( !docManager->isOpen( url ) )
   {
-    if (cv && !cv->doc()->isModified() && cv->doc()->url().isEmpty())
+    if (cv && !cv->getDoc()->isModified() && cv->getDoc()->url().isEmpty())
     {
-		  cv->doc()->setEncoding(myEncoding);
-      if (cv->doc()->openURL (url))
+		  cv->getDoc()->setEncoding(myEncoding);
+      if (cv->getDoc()->openURL (url))
         ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
-      cv->doc()->setDocName (cv->doc()->url().filename());
+      cv->getDoc()->setDocName (cv->getDoc()->url().filename());
       setWindowCaption();
     }
     else
@@ -739,13 +736,13 @@ void KateViewManager::openConstURL (const KURL& url)
 void KateViewManager::printNow()
 {
   if (!activeView()) return;
-  activeView()->doc()->print ();
+  activeView()->getDoc()->print ();
 }
 
 void KateViewManager::printDlg()
 {
   if (!activeView()) return;
-  activeView()->doc()->printDialog ();
+  activeView()->getDoc()->printDialog ();
 }
 
 void KateViewManager::toggleIconBorder ()
@@ -757,7 +754,7 @@ void KateViewManager::toggleIconBorder ()
 void KateViewManager::toggleVertical()
 {
   if (!activeView()) return;
-  activeView()->doc()->toggleBlockSelectionMode();
+  activeView()->getDoc()->toggleBlockSelectionMode();
 }
 
 void KateViewManager::splitViewSpace( KateViewSpace* vs,
@@ -804,19 +801,19 @@ void KateViewManager::splitViewSpace( KateViewSpace* vs,
 
   s->show();
 
-  connect(this, SIGNAL(statusChanged(KateView *, int, int, int, bool, int, QString)), vsNew, SLOT(slotStatusChanged(KateView *, int, int,int, bool, int, QString)));
+  connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, QString)), vsNew, SLOT(slotStatusChanged(Kate::View *, int, int,int, bool, int, QString)));
   viewSpaceList.append( vsNew );
   vsNew->installEventFilter( this );
   activeViewSpace()->setActive( false );
   vsNew->setActive( true, true );
   vsNew->show();
   if (!newViewUrl.isValid())
-    createView (false, KURL(), (KateView *)activeView());
+    createView (false, KURL(), (Kate::View *)activeView());
   else {
     // tjeck if doc is allready open
     uint aDocId;
     if ( (aDocId = docManager->findDoc( newViewUrl )) )
-      createView (false, KURL(), 0L, (KateDocument *)docManager->docWithID( aDocId) );
+      createView (false, KURL(), 0L, (Kate::Document *)docManager->docWithID( aDocId) );
     else
       createView( true, newViewUrl );
   }
@@ -859,7 +856,7 @@ void KateViewManager::removeViewSpace (KateViewSpace *viewspace)
   {
     if (viewspace->currentView())
     {
-      KateView* v = viewspace->currentView();
+      Kate::View* v = viewspace->currentView();
 
       if (v->isLastView())
       {
@@ -906,7 +903,7 @@ void KateViewManager::removeViewSpace (KateViewSpace *viewspace)
     pp->setSizes( ppsizes );
 
   // find the view that is now active.
-  KateView* v = activeViewSpace()->currentView();
+  Kate::View* v = activeViewSpace()->currentView();
   if ( v )
     activateView( v );
 
@@ -923,22 +920,22 @@ void KateViewManager::setWindowCaption()
   if (activeView())
   {
     QString c;
-    if (activeView()->doc()->url().isEmpty() || (! showFullPath))
+    if (activeView()->getDoc()->url().isEmpty() || (! showFullPath))
      {
-        c = ((KateDocument *)activeView()->doc())->docName();
+        c = ((Kate::Document *)activeView()->getDoc())->docName();
        //File name shouldn't be too long - Maciek
        if (c.length() > 200)
          c = "..." + c.right(197);
      }
       else
      {
-        c = activeView()->doc()->url().prettyURL();
+        c = activeView()->getDoc()->url().prettyURL();
        //File name shouldn't be too long - Maciek
        if (c.length() > 200)
          c = c.left(197) + "...";
      }
 
-    ((KateMainWindow*)topLevelWidget())->setCaption( c,activeView()->doc()->isModified());
+    ((KateMainWindow*)topLevelWidget())->setCaption( c,activeView()->getDoc()->isModified());
   }
 }
 
@@ -960,13 +957,13 @@ void KateViewManager::reloadCurrentDoc()
     return;
   if (! activeView()->canDiscard())
     return;
-  KateView* v = activeView();
+  Kate::View* v = activeView();
   // save cursor position
   uint cl = v->cursorLine();
   uint cc = v->cursorColumn();
   // save bookmarks
-  ((KateDocument*)v->doc())->reloadFile();
-  if (v->doc()->numLines() >= cl)
+  ((Kate::Document*)v->getDoc())->reloadFile();
+  if (v->getDoc()->numLines() >= cl)
     v->setCursorPosition( cl, cc );
 }
 
@@ -983,7 +980,7 @@ void KateViewManager::saveAllDocsAtCloseDown()
   for (uint i=0; i < docManager->docCount(); i++ )
     closeList.append (docManager->nthDoc (i));
 
-  KateView *v = 0L;
+  Kate::View *v = 0L;
   uint id = 0;
   QStringList list;
 
@@ -995,14 +992,14 @@ void KateViewManager::saveAllDocsAtCloseDown()
     v = activeView();
     id = closeList.at(0)->documentNumber();
 
-    if ( !v->doc()->url().isEmpty() )
+    if ( !v->getDoc()->url().isEmpty() )
     {
-      scfg->setGroup( v->doc()->url().prettyURL() );
+      scfg->setGroup( v->getDoc()->url().prettyURL() );
       v->writeSessionConfig(scfg);
-      v->doc()->writeSessionConfig(scfg);
+      v->getDoc()->writeSessionConfig(scfg);
 
       scfg->setGroup("open files");
-      scfg->writeEntry( QString("File%1").arg(id), v->doc()->url().prettyURL() );
+      scfg->writeEntry( QString("File%1").arg(id), v->getDoc()->url().prettyURL() );
       list.append( QString("File%1").arg(id) );
     }
 
@@ -1044,11 +1041,11 @@ void KateViewManager::reopenDocuments(bool isRestore)
       QString fn = scfg->readEntry(list[i]);
       openURL( KURL( fn ) );
       scfg->setGroup( fn );
-      KateView* v = activeView();
+      Kate::View* v = activeView();
       if (v)
       {
         v->readSessionConfig( scfg );
-        v->doc()->readSessionConfig( scfg );
+        v->getDoc()->readSessionConfig( scfg );
       }
       scfg->deleteGroup( fn );
     }
@@ -1172,7 +1169,7 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
        KateViewSpace* vs;
        kdDebug(13030)<<"creating a viewspace for "<<(*it)<<endl;
        vs = new KateViewSpace( s );
-       connect(this, SIGNAL(statusChanged(KateView *, int, int, int, int, QString)), vs, SLOT(slotStatusChanged(KateView *, int, int, int, int, QString)));
+       connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, int, QString)), vs, SLOT(slotStatusChanged(Kate::View *, int, int, int, int, QString)));
        vs->installEventFilter( this );
        viewSpaceList.append( vs );
        vs->show();
@@ -1186,11 +1183,11 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
          if ( ! docManager->isOpen( KURL(data[0]) ) ) {
            openURL( KURL( data[0] ) );
            config->setGroup( data[0] );
-           KateView* v = activeView();
+           Kate::View* v = activeView();
            if (v)
            {
              v->readSessionConfig( config );
-             v->doc()->readSessionConfig( config );
+             v->getDoc()->readSessionConfig( config );
            }
            else
            {
@@ -1203,10 +1200,10 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
            // ahem, tjeck if this document actually exists.
            int documentNumber = docManager->findDoc( KURL(data[0]) );
            if (documentNumber >= 0)
-             createView( false, KURL(), 0L, (KateDocument *)docManager->nthDoc( documentNumber ) );
+             createView( false, KURL(), 0L, (Kate::Document *)docManager->nthDoc( documentNumber ) );
          }
          // cursor pos
-         KateView* v = activeView();
+         Kate::View* v = activeView();
          v->setCursorPosition( data[1].toInt(), data[2].toInt() );
          idx++;
          key = QString("file%1").arg( idx );
@@ -1233,12 +1230,12 @@ void KateViewManager::gotoMark (KTextEditor::Mark *mark)
 {
   if (!activeView()) return;
 
-  activeView()->gotoMark (mark);
+ // activeView()->gotoMark (mark);
 }
 
 void KateViewManager::slotApplyWordWrap ()
 {
   if (!activeView()) return;
 
-  activeView()->doc()->applyWordWrap();
+//  activeView()->getDoc()->applyWordWrap();
 }

@@ -28,7 +28,6 @@
 #include "kateapp.h"
 #include "katefileselector.h"
 #include "katefilelist.h"
-#include "../part/katefactory.h"
 
 #include <qabstractlayout.h>
 #include <qcheckbox.h>

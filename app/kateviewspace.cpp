@@ -19,7 +19,6 @@
 #include "kateviewspace.moc"
 
 #include "katemainwindow.h"
-#include "../part/katedocument.h"
 
 #include <kiconloader.h>
 #include <klocale.h>
@@ -49,7 +48,7 @@ KateViewSpace::~KateViewSpace()
 {
 }
 
-void KateViewSpace::addView(KateView* v, bool show)
+void KateViewSpace::addView(Kate::View* v, bool show)
 {
   uint id = mViewList.count();
   stack->addWidget(v, id);
@@ -58,14 +57,14 @@ void KateViewSpace::addView(KateView* v, bool show)
     showView( v );
   }
   else {
-    KateView* c = mViewList.current();
-    //kdDebug(13030)<<"KateViewSpace::addView(): showing current view "<< c->doc()->url().path()<<endl;
+    Kate::View* c = mViewList.current();
+    //kdDebug(13030)<<"KateViewSpace::addView(): showing current view "<< c->getDoc()->url().path()<<endl;
     mViewList.prepend( v );
     showView( c );
   }
 }
 
-void KateViewSpace::removeView(KateView* v)
+void KateViewSpace::removeView(Kate::View* v)
 {
   mStatusBar->slotClear ();
   mViewList.remove (v);
@@ -78,15 +77,15 @@ void KateViewSpace::removeView(KateView* v)
     stack->raiseWidget(mViewList.last());
 }
 
-bool KateViewSpace::showView(KateView* v)
+bool KateViewSpace::showView(Kate::View* v)
 {
-  KateDocument* d = v->doc();
-  QPtrListIterator<KateView> it (mViewList);
+  Kate::Document* d = v->getDoc();
+  QPtrListIterator<Kate::View> it (mViewList);
 
   it.toLast();
   for( ; it.current(); --it ) {
-    if (it.current()->doc() == d) {
-      KateView* kv = it.current();
+    if (it.current()->getDoc() == d) {
+      Kate::View* kv = it.current();
       mViewList.removeRef( kv );
       mViewList.append( kv );
       kv->show();
@@ -99,12 +98,12 @@ bool KateViewSpace::showView(KateView* v)
 
 bool KateViewSpace::showView(uint documentNumber)
 {
-  QPtrListIterator<KateView> it (mViewList);
+  QPtrListIterator<Kate::View> it (mViewList);
 
   it.toLast();
   for( ; it.current(); --it ) {
-    if (((KateDocument*)it.current()->doc())->documentNumber() == documentNumber) {
-      KateView* kv = it.current();
+    if (((Kate::Document*)it.current()->getDoc())->documentNumber() == documentNumber) {
+      Kate::View* kv = it.current();
       mViewList.removeRef( kv );
       mViewList.append( kv );
       kv->show();
@@ -116,11 +115,11 @@ bool KateViewSpace::showView(uint documentNumber)
 }
 
 
-KateView* KateViewSpace::currentView()
+Kate::View* KateViewSpace::currentView()
 {
   if (mViewList.count() > 0) {
-    //kdDebug(13030)<<"KateViewSpace::currentView(): "<<((KateView*)stack->visibleWidget())->doc()->url().filename()<<endl;
-    return (KateView*)stack->visibleWidget();
+    //kdDebug(13030)<<"KateViewSpace::currentView(): "<<((KateView*)stack->visibleWidget())->getDoc()->url().filename()<<endl;
+    return (Kate::View*)stack->visibleWidget();
   }
   return 0L;
 }
@@ -147,7 +146,7 @@ bool KateViewSpace::eventFilter(QObject* o, QEvent* e)
   return QWidget::eventFilter(o, e);
 }
 
-void KateViewSpace::slotStatusChanged (KateView *view, int r, int c, int ovr, bool block, int mod, QString msg)
+void KateViewSpace::slotStatusChanged (Kate::View *view, int r, int c, int ovr, bool block, int mod, QString msg)
 {
   if ((QWidgetStack *)view->parentWidget() != stack)
     return;
@@ -178,15 +177,15 @@ void KateViewSpace::saveFileList( KSimpleConfig* config, int myIndex )
   config->setGroup( QString("viewspace%1").arg( myIndex ) );
 
   // Save file list, includeing cursor position in this instance.
-  QPtrListIterator<KateView> it(mViewList);
+  QPtrListIterator<Kate::View> it(mViewList);
 
   QStringList l;
   int idx = 0;
   for (; it.current(); ++it) {
     l.clear();
-    if ( !it.current()->doc()->url().isEmpty() ) {
-    kdDebug(13030)<<"saving vs data for "<<it.current()->doc()->url().prettyURL()<<endl;
-      l << it.current()->doc()->url().prettyURL();
+    if ( !it.current()->getDoc()->url().isEmpty() ) {
+    kdDebug(13030)<<"saving vs data for "<<it.current()->getDoc()->url().prettyURL()<<endl;
+      l << it.current()->getDoc()->url().prettyURL();
       l << QString("%1").arg( it.current()->cursorLine());
       l << QString("%1").arg( it.current()->cursorColumn() );
       config->writeEntry(QString("file%1").arg( idx ), l);

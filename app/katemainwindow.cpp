@@ -21,7 +21,6 @@
 #include "kateconfigdialog.h"
 
 #include "kateconsole.h"
-#include "../part/katedocument.h"
 #include "katedocmanager.h"
 #include "katepluginmanager.h"
 #include "kateconfigplugindialogpage.h"
@@ -29,12 +28,6 @@
 #include "kateapp.h"
 #include "katefileselector.h"
 #include "katefilelist.h"
-#include "../part/katefactory.h"
-
-#include "../part/kateviewdialog.h"
-#include "../part/katedialogs.h"
-#include "../part/katehighlight.h"
-#include "../part/kateexportaction.h"
 
 #include <qcheckbox.h>
 #include <qiconview.h>
@@ -89,7 +82,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_
 {
   docManager =  _docManager;
   pluginManager =_pluginManager;
-  config = KateFactory::instance()->config();
+  config = kapp->config();
 
   myID = uniqueID;
   uniqueID++;
@@ -121,8 +114,6 @@ KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_
   connect(bookmarkMenu, SIGNAL(aboutToShow()), this, SLOT(bookmarkMenuAboutToShow()));
 
   readOptions(config);
-
-
 }
 
 KateMainWindow::~KateMainWindow()
@@ -301,9 +292,9 @@ void KateMainWindow::setupActions()
   connect(viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
   connect(viewManager,SIGNAL(statChanged()),this,SLOT(slotCurrentDocChanged()));
 
-  setHighlight = new KateViewHighlightAction (viewManager,i18n("&Highlight Mode"), actionCollection(), "set_highlight");
-  connect (new KateExportAction(viewManager,i18n("&Export"),actionCollection(),"file_export"),
-	SIGNAL(exportAs(const QString&)),viewManager,SLOT(exportAs(const QString&)));
+  //setHighlight = new KateViewHighlightAction (viewManager,i18n("&Highlight Mode"), actionCollection(), "set_highlight");
+//  connect (new KateExportAction(viewManager,i18n("&Export"),actionCollection(),"file_export"),
+//	SIGNAL(exportAs(const QString&)),viewManager,SLOT(exportAs(const QString&)));
 
   slotWindowActivated ();
 }
@@ -318,7 +309,7 @@ bool KateMainWindow::queryClose()
 
     viewManager->saveAllDocsAtCloseDown(  );
 
-    if ( (!docManager->currentDoc()) || ((!viewManager->activeView()->doc()->isModified()) && (docManager->docCount() == 1)))
+    if ( (!docManager->currentDoc()) || ((!viewManager->activeView()->getDoc()->isModified()) && (docManager->docCount() == 1)))
     {
       if (viewManager->activeView()) viewManager->deleteLastView ();
       val = true;
@@ -409,7 +400,7 @@ void KateMainWindow::saveOptions(KConfig *config)
   writeDockConfig();
 
   if (viewManager->activeView())
-    KateFactory::instance()->config()->sync();
+    viewManager->activeView()->getDoc()->writeConfig();
 
   viewManager->saveViewSpaceConfig();
 }
@@ -422,7 +413,7 @@ void KateMainWindow::slotWindowActivated ()
   {
     if (console && syncKonsole)
     {
-      QString newPath = viewManager->activeView()->doc()->url().directory();
+      QString newPath = viewManager->activeView()->getDoc()->url().directory();
 
       if ( newPath != path )
       {
@@ -456,7 +447,7 @@ void KateMainWindow::slotCurrentDocChanged()
   if (!viewManager->activeView())
     return;
 
-  if (viewManager->activeView()->doc()->undoCount() == 0)
+  if (viewManager->activeView()->getDoc()->undoCount() == 0)
   {
     editUndo->setEnabled(false);
   }
@@ -465,7 +456,7 @@ void KateMainWindow::slotCurrentDocChanged()
     editUndo->setEnabled(true);
   }
 
-  if (viewManager->activeView()->doc()->redoCount() == 0)
+  if (viewManager->activeView()->getDoc()->redoCount() == 0)
   {
     editRedo->setEnabled(false);
   }
@@ -482,7 +473,7 @@ void KateMainWindow::slotCurrentDocChanged()
   windowPrev->plug (documentMenu);
   documentMenu->insertSeparator ();
   scriptMenu->plug (documentMenu);
-  setHighlight->plug (documentMenu);
+  //setHighlight->plug (documentMenu);
   setEndOfLine->plug (documentMenu);
   documentMenu->insertSeparator ();
 
@@ -509,7 +500,7 @@ void KateMainWindow::slotCurrentDocChanged()
     documentMenu->insertItem ( entry, viewManager, SLOT (activateView (int)), 0,  docManager->nthDoc(z)->documentNumber());
 
     if (viewManager->activeView())
-      documentMenu->setItemChecked( docManager->nthDoc(z)->documentNumber(), ((KateDocument *)viewManager->activeView()->doc())->documentNumber() == docManager->nthDoc(z)->documentNumber() );
+      documentMenu->setItemChecked( docManager->nthDoc(z)->documentNumber(), ((Kate::Document *)viewManager->activeView()->getDoc())->documentNumber() == docManager->nthDoc(z)->documentNumber() );
 
     z++;
     i++;
@@ -523,12 +514,12 @@ void KateMainWindow::bookmarkMenuAboutToShow()
   bookmarkClear->plug (bookmarkMenu);
   bookmarkMenu->insertSeparator ();
 
-  list = viewManager->activeView()->doc()->marks();
+  list = viewManager->activeView()->getDoc()->marks();
   for (int i=0; (uint) i < list.count(); i++)
   {
-    if (list.at(i)->type&KateDocument::markType01)
+    if (list.at(i)->type&Kate::Document::markType01)
     {
-      QString bText = viewManager->activeView()->doc()->textLine(list.at(i)->line);
+      QString bText = viewManager->activeView()->getDoc()->textLine(list.at(i)->line);
       bText.truncate(32);
       bText.append ("...");
       bookmarkMenu->insertItem ( QString("%1 - \"%2\"").arg(list.at(i)->line).arg(bText), this, SLOT (gotoBookmark(int)), 0, i );
@@ -548,7 +539,7 @@ void KateMainWindow::slotGrepDialogItemSelected(QString filename,int linenumber)
   fileURL.setPath( filename );
   viewManager->openURL( fileURL );
   if ( viewManager->activeView() == 0 ) return;
-  viewManager->activeView()->gotoLineNumber( linenumber );
+  //viewManager->activeView()->gotoLineNumber( linenumber );
   this->raise();
   this->setActiveWindow();
 }
@@ -667,7 +658,7 @@ void KateMainWindow::slotGoPrev()
 
 KURL KateMainWindow::currentDocUrl()
 {
-  return viewManager->activeView()->doc()->url();
+  return viewManager->activeView()->getDoc()->url();
 }
 
 void KateMainWindow::fileSelected(const KFileItem *file)
@@ -683,8 +674,8 @@ void KateMainWindow::mSlotFixOpenWithMenu()
   //kdDebug()<<"13000"<<"fixing open with menu"<<endl;
   documentOpenWith->popupMenu()->clear();
   // get a list of appropriate services.
-  KMimeType::Ptr mime = KMimeType::findByURL( viewManager->activeView()->doc()->url() );
-  //kdDebug()<<"13000"<<"url: "<<viewManager->activeView()->doc()->url().prettyURL()<<"mime type: "<<mime->name()<<endl;
+  KMimeType::Ptr mime = KMimeType::findByURL( viewManager->activeView()->getDoc()->url() );
+  //kdDebug()<<"13000"<<"url: "<<viewManager->activeView()->getDoc()->url().prettyURL()<<"mime type: "<<mime->name()<<endl;
   // some checking goes here...
   KTrader::OfferList offers = KTrader::self()->query(mime->name(), "Type == 'Application'");
   // for each one, insert a menu item...
@@ -699,7 +690,7 @@ void KateMainWindow::mSlotFixOpenWithMenu()
 void KateMainWindow::slotOpenWithMenuAction(int idx)
 {
   KURL::List list;
-  list.append( viewManager->activeView()->doc()->url() );
+  list.append( viewManager->activeView()->getDoc()->url() );
   QString* appname = new QString( documentOpenWith->popupMenu()->text(idx) );
   if ( appname->compare(i18n("&Other...")) == 0 ) {
     // display "open with" dialog
@@ -709,7 +700,7 @@ void KateMainWindow::slotOpenWithMenuAction(int idx)
     return;
   }
   QString qry = QString("((Type == 'Application') and (Name == '%1'))").arg( appname->latin1() );
-  KMimeType::Ptr mime = KMimeType::findByURL( viewManager->activeView()->doc()->url() );
+  KMimeType::Ptr mime = KMimeType::findByURL( viewManager->activeView()->getDoc()->url() );
   KTrader::OfferList offers = KTrader::self()->query(mime->name(), qry);
   KService::Ptr app = offers.first();
   // some checking here: pop a wacko message it the app wasn't found.

@@ -19,7 +19,8 @@
 #define __KATE_VIEWSPACE_H__
 
 #include "katemain.h"
-#include "../part/kateview.h"
+#include "../interfaces/view.h"
+#include "../interfaces/document.h"
 
 #include <qptrlist.h>
 #include <qwidget.h>
@@ -64,11 +65,11 @@ class KateViewSpace : public QVBox
     bool isActiveSpace();
     void setActive(bool b, bool showled=false);
     QWidgetStack* stack;
-    void addView(KateView* v, bool show=true);
-    void removeView(KateView* v);
-    bool showView(KateView* v);
+    void addView(Kate::View* v, bool show=true);
+    void removeView(Kate::View* v);
+    bool showView(Kate::View* v);
     bool showView(uint docID);
-    KateView* currentView();
+    Kate::View* currentView();
     int viewCount() { return mViewList.count(); }
     /** Saves the list of documents represented in this viewspace.
      * Documents with an invalid URL is discarded.
@@ -85,11 +86,11 @@ class KateViewSpace : public QVBox
     QLabel* l;
     QPixmap i_active;
     QPixmap i_empty;
-    QPtrList<KateView> mViewList;
+    QPtrList<Kate::View> mViewList;
     int mViewCount;
 
   private slots:
-    void slotStatusChanged (KateView *view, int r, int c, int ovr, bool block, int mod, QString msg);
+    void slotStatusChanged (Kate::View *view, int r, int c, int ovr, bool block, int mod, QString msg);
 };
 
 #endif

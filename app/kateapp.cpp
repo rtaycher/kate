@@ -20,7 +20,6 @@
 
 #include "kateIface.h"
 #include "katedocmanager.h"
-#include "../part/katedocument.h"
 #include "katepluginmanager.h"
 #include "katemainwindow.h"
 #include "kateviewmanager.h"
@@ -80,7 +79,7 @@ void KateApp::newMainWindow ()
   mainWindows.append (mainWindow);
 
   if ((mainWindowsCount() > 1) && mainWindows.at(mainWindows.count()-2)->viewManager->activeView())
-    mainWindow->viewManager->activateView ( mainWindows.at(mainWindows.count()-2)->viewManager->activeView()->doc()->documentNumber() );
+    mainWindow->viewManager->activateView ( mainWindows.at(mainWindows.count()-2)->viewManager->activeView()->getDoc()->documentNumber() );
   else if ((mainWindowsCount() > 1) && (docManager->docCount() > 0))
     mainWindow->viewManager->activateView ( (docManager->nthDoc(docManager->docCount()-1))->documentNumber() );
   else if ((mainWindowsCount() > 1) && (docManager->docCount() < 1))

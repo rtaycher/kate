@@ -21,7 +21,7 @@
 #include "katemain.h"
 #include "../interfaces/mainwindow.h"
 #include "../interfaces/document.h"
-#include "../part/kateviewhighlightaction.h"
+#include "../interfaces/view.h"
 #include "kateIface.h"
 
 #include <kparts/part.h>
@@ -98,7 +98,7 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     KSelectAction* setEndOfLine;
     KAction* documentReload;
     KActionMenu* documentOpenWith;
-    KateViewHighlightAction *setHighlight;
+    //KateViewHighlightAction *setHighlight;
 
     KAction *gotoLine;
     KAction* windowNext;

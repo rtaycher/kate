@@ -18,9 +18,7 @@
 #include "katefilelist.h"
 #include "katefilelist.moc"
 
-#include "../part/katedocument.h"
 #include "katedocmanager.h"
-#include "../part/kateview.h"
 #include "kateviewmanager.h"
 #include "katemainwindow.h"
 
@@ -144,11 +142,11 @@ void KateFileList::slotViewChanged ()
 {
   if (!viewManager->activeView()) return;
 
-  KateView *view = viewManager->activeView();
+  Kate::View *view = viewManager->activeView();
 
   for (uint i = 0; i < count(); i++)
   {
-    if (((KateFileListItem *) item (i)) ->documentNumber() == ((Kate::Document *)view->doc())->documentNumber())
+    if (((KateFileListItem *) item (i)) ->documentNumber() == ((Kate::Document *)view->getDoc())->documentNumber())
     {
       setCurrentItem (i);
       if ( !isSelected( item(i) ) )

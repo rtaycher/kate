@@ -22,7 +22,6 @@
 #include "../interfaces/viewmanager.h"
 #include "../interfaces/view.h"
 #include "../interfaces/document.h"
-#include "../part/kateview.h"
 
 class KateSplitter;
 class KSimpleConfig;
@@ -40,7 +39,7 @@ class KateViewManager : public Kate::ViewManager
 
   protected:
     bool useOpaqueResize;
-    QPtrList<KateView> viewList;
+    QPtrList<Kate::View> viewList;
 
     void saveAllDocsAtCloseDown();
     /** This will save the splitter configuration */
@@ -60,11 +59,11 @@ class KateViewManager : public Kate::ViewManager
     KateDocManager *docManager;
     QGridLayout *grid;
 
-    bool createView ( bool newDoc=true, KURL url=0L, KateView *origView=0L, KateDocument *doc=0L );
-    bool deleteView ( KateView *view, bool delViewSpace = true);
+    bool createView ( bool newDoc=true, KURL url=0L, Kate::View *origView=0L, Kate::Document *doc=0L );
+    bool deleteView ( Kate::View *view, bool delViewSpace = true);
 
-    void moveViewtoSplit (KateView *view);
-    void moveViewtoStack (KateView *view);
+    void moveViewtoSplit (Kate::View *view);
+    void moveViewtoStack (Kate::View *view);
 
     /** Save the configuration of a single splitter.
      * If child splitters are found, it calls it self with those as the argument.
@@ -89,17 +88,17 @@ class KateViewManager : public Kate::ViewManager
     bool showFullPath;
 
   public:
-    virtual KateView* activeView ();
+    virtual Kate::View* activeView ();
     KateViewSpace* activeViewSpace ();
 
     uint viewCount ();
     uint viewSpaceCount ();
 
   private slots:
-    void activateView ( KateView *view );
-    void activateSpace ( KateView* v );
+    void activateView ( Kate::View *view );
+    void activateSpace ( Kate::View* v );
     void slotViewChanged();
-    bool closeDocWithAllViews ( KateView *view );
+    bool closeDocWithAllViews ( Kate::View *view );
 
   public slots:
     void deleteLastView ();
@@ -172,7 +171,7 @@ class KateViewManager : public Kate::ViewManager
     void printDlg();
 
     void setActiveSpace ( KateViewSpace* vs );
-    void setActiveView ( KateView* view );
+    void setActiveView ( Kate::View* view );
 
     void setShowFullPath(bool enable);
 
@@ -197,7 +196,7 @@ class KateViewManager : public Kate::ViewManager
     void slotApplyWordWrap ();
 
   signals:
-    void statusChanged (KateView *, int, int, int, bool, int, QString);
+    void statusChanged (Kate::View *, int, int, int, bool, int, QString);
     void statChanged ();
     void viewChanged ();
 		

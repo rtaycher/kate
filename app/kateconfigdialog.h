@@ -56,7 +56,7 @@ class KateConfigDialog : public KDialogBase
     KatePluginManager *pluginManager;
     KateMainWindow *mainWindow;
 
-    KateView* v;
+    Kate::View* v;
 
     class QCheckBox* cb_opaqueResize;
     class QCheckBox* cb_reopenFiles;
