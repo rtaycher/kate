@@ -185,7 +185,7 @@ class KWriteDoc : public KTextEditor::Document {
   public:
     virtual void addView(KTextEditor::View *);
     virtual void removeView(KTextEditor::View *);
-    bool ownedView(KWriteView *);
+    bool ownedView(KWrite *);
     bool isLastView(int numViews);
 
     int textWidth(const TextLine::Ptr &, int cursorX);
@@ -258,7 +258,7 @@ class KWriteDoc : public KTextEditor::Document {
     void updateLines(int startLine = 0, int endLine = 0xffffff, int flags = 0,
       int cursorY = -1);
     void updateMaxLength(TextLine::Ptr &);
-    void updateViews(KWriteView *exclude = 0L);
+    void updateViews(KWrite *exclude = 0L);
 
     QColor &cursorCol(int x, int y);
     QFont &getTextFont(int x, int y);
@@ -289,7 +289,7 @@ class KWriteDoc : public KTextEditor::Document {
     void newUndo();
 
     void recordStart(VConfig &, int newUndoType);
-    void recordStart(KWriteView *, PointStruc &, int flags, int newUndoType,
+    void recordStart(KWrite *, PointStruc &, int flags, int newUndoType,
       bool keepModal = false, bool mergeUndo = false);
     void recordAction(KWAction::Action, PointStruc &);
     void recordInsert(VConfig &, const QString &text);
@@ -298,7 +298,7 @@ class KWriteDoc : public KTextEditor::Document {
     void recordDelete(PointStruc &, int len);
     void recordReplace(PointStruc &, int len, const QString &text);
     void recordEnd(VConfig &);
-    void recordEnd(KWriteView *, PointStruc &, int flags);
+    void recordEnd(KWrite *, PointStruc &, int flags);
 //  void recordReset();
     void doActionGroup(KWActionGroup *, int flags, bool undo = false);
 
@@ -343,7 +343,7 @@ class KWriteDoc : public KTextEditor::Document {
     int fontHeight;
     int fontAscent;
 
-    QList<KWriteView> views;
+    QList<KWrite> views;
     bool newDocGeometry;
 
     TextLine::Ptr longestLine;
@@ -374,7 +374,7 @@ class KWriteDoc : public KTextEditor::Document {
 //    int undoType;           // what kind of undo is active
     int undoCount;          //counts merged undo steps
 //    bool undoReported;      // true if the current undo has been reported to the views
-//    KWriteView* undoView;   // the KWriteView that owns the undo group
+//    KWrite* undoView;   // the KWrite that owns the undo group
 
     QWidget *pseudoModal;   //the replace prompt is pseudo modal
 

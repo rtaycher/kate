@@ -84,7 +84,7 @@ struct PointStruc {
 };
 
 struct VConfig {
-  KWriteView *view;
+  KWrite *view;
   PointStruc cursor;
   int cXPos;
   int flags;
@@ -158,88 +158,6 @@ class KWriteView : public QWidget {
     void bottom(VConfig &);
     void top_home(VConfig &c);
     void bottom_end(VConfig &c);
-//
-    enum Config_flags {
-      cfAutoIndent= 0x1,
-      cfBackspaceIndents= 0x2,
-      cfWordWrap= 0x4,
-      cfReplaceTabs= 0x8,
-      cfRemoveSpaces = 0x10,
-      cfWrapCursor= 0x20,
-      cfAutoBrackets= 0x40,
-      cfPersistent= 0x80,
-      cfKeepSelection= 0x100,
-      cfVerticalSelect= 0x200,
-      cfDelOnInput= 0x400,
-      cfXorSelect= 0x800,
-      cfOvr= 0x1000,
-      cfMark= 0x2000,
-      cfGroupUndo= 0x4000,
-      cfKeepIndentProfile= 0x8000,
-      cfKeepExtraSpaces= 0x10000,
-      cfMouseAutoCopy= 0x20000,
-      cfSingleSelection= 0x40000,
-      cfTabIndents= 0x80000,
-      cfPageUDMovesCursor= 0x100000,
-      cfShowTabs= 0x200000,
-      cfSpaceIndent= 0x400000,
-      cfSmartHome = 0x800000};
-
-    enum Dialog_results { 
-      srYes=QDialog::Accepted,
-      srNo=10,
-      srAll,
-      srCancel=QDialog::Rejected};
-      
-//search flags
-    enum Search_flags {
-     sfCaseSensitive=1,
-     sfWholeWords=2,
-     sfFromCursor=4,
-     sfBackward=8,
-     sfSelected=16,
-     sfPrompt=32,
-     sfReplace=64,
-     sfAgain=128,
-     sfWrapped=256,
-     sfFinished=512,
-     sfRegularExpression=1024};
-
-//update flags
-    enum Update_flags {
-     ufDocGeometry=1,
-     ufUpdateOnScroll=2,
-     ufPos=4};
-
-//load flags
-    enum Load_flags {
-     lfInsert=1,
-     lfNewFile=2,
-     lfNoAutoHl=4};
-
-//end of line settings
-    enum Eol_settings {eolUnknown,eolUnix,eolMacintosh,eolDos};
-
-//cursor movement commands
-    enum Cursor_commands
-	   { cmLeft,cmRight,cmWordLeft,cmWordRight,
-       cmHome,cmEnd,cmUp,cmDown,
-       cmScrollUp,cmScrollDown,cmTopOfView,cmBottomOfView,
-       cmPageUp,cmPageDown,cmCursorPageUp,cmCursorPageDown,
-       cmTop,cmBottom};
-//edit commands
-    enum Edit_commands {
-		    cmReturn=1,cmDelete,cmBackspace,cmKillLine,cmUndo,
-        cmRedo,cmCut,cmCopy,cmPaste,cmIndent,cmUnindent,cmCleanIndent,
-        cmSelectAll,cmDeselectAll,cmInvertSelection,cmComment,
-        cmUncomment};
-//find commands
-    enum Find_commands { cmFind=1,cmReplace,cmFindAgain,cmGotoLine};
-
-//bookmark commands
-    enum Bookmark_commands {
-        cmSetBookmark=1,cmAddBookmark,cmClearBookmarks,
-        cmSetBookmarks=10,cmGotoBookmarks=20 };
 
   protected slots:
     void changeXPos(int);
@@ -437,11 +355,8 @@ class KWrite : public KTextEditor::View, virtual public KWriteIface {
       Returns the document object
     */
     KWriteDoc *doc();
-    /**
-      Returns the view object
-    */
-    KWriteView *view();
-    /**
+
+    /*
       Bit 0 : undo possible, Bit 1 : redo possible.
       Used to enable/disable undo/redo menu items and toolbar buttons
     */
@@ -698,23 +613,23 @@ class KWrite : public KTextEditor::View, virtual public KWriteIface {
     /**
       Moves the marked text into the clipboard
     */
-    void cut() {doEditCommand(KWriteView::cmCut);}
+    void cut() {doEditCommand(KWrite::cmCut);}
     /**
       Copies the marked text into the clipboard
     */
-    void copy() {doEditCommand(KWriteView::cmCopy);}
+    void copy() {doEditCommand(KWrite::cmCopy);}
     /**
       Inserts text from the clipboard at the actual cursor position
     */
-    void paste() {doEditCommand(KWriteView::cmPaste);}
+    void paste() {doEditCommand(KWrite::cmPaste);}
     /**
       Undoes the last operation. The number of undo steps is configurable
     */
-    void undo() {doEditCommand(KWriteView::cmUndo);}
+    void undo() {doEditCommand(KWrite::cmUndo);}
     /**
       Repeats an operation which has been undone before.
     */
-    void redo() {doEditCommand(KWriteView::cmRedo);}
+    void redo() {doEditCommand(KWrite::cmRedo);}
     /**
       Undoes <count> operations.
       Called by slot undo().
@@ -732,71 +647,71 @@ class KWrite : public KTextEditor::View, virtual public KWriteIface {
     /**
       Moves the current line or the selection one position to the right
     */
-    void indent() {doEditCommand(KWriteView::cmIndent);};
+    void indent() {doEditCommand(KWrite::cmIndent);};
     /**
       Moves the current line or the selection one position to the left
     */
-    void unIndent() {doEditCommand(KWriteView::cmUnindent);};
+    void unIndent() {doEditCommand(KWrite::cmUnindent);};
     /**
       Optimizes the selected indentation, replacing tabs and spaces as needed
     */
-    void cleanIndent() {doEditCommand(KWriteView::cmCleanIndent);};
+    void cleanIndent() {doEditCommand(KWrite::cmCleanIndent);};
     /**
       Selects all text
     */
-    void selectAll() {doEditCommand(KWriteView::cmSelectAll);}
+    void selectAll() {doEditCommand(KWrite::cmSelectAll);}
     /**
       Deselects all text
     */
-    void deselectAll() {doEditCommand(KWriteView::cmDeselectAll);}
+    void deselectAll() {doEditCommand(KWrite::cmDeselectAll);}
     /**
       Inverts the current selection
     */
-    void invertSelection() {doEditCommand(KWriteView::cmInvertSelection);}
+    void invertSelection() {doEditCommand(KWrite::cmInvertSelection);}
     /**
       comments out current line
     */
-    void comment() {doEditCommand(KWriteView::cmComment);};
+    void comment() {doEditCommand(KWrite::cmComment);};
     /**
       removes comment signs in the current line
     */
-    void uncomment() {doEditCommand(KWriteView::cmUncomment);};
+    void uncomment() {doEditCommand(KWrite::cmUncomment);};
 
-    void keyReturn() {doEditCommand(KWriteView::cmReturn);};
-    void keyDelete() {doEditCommand(KWriteView::cmDelete);};
-    void backspace() {doEditCommand(KWriteView::cmBackspace);};
-    void killLine() {doEditCommand(KWriteView::cmKillLine);};
+    void keyReturn() {doEditCommand(KWrite::cmReturn);};
+    void keyDelete() {doEditCommand(KWrite::cmDelete);};
+    void backspace() {doEditCommand(KWrite::cmBackspace);};
+    void killLine() {doEditCommand(KWrite::cmKillLine);};
 
 // cursor commands...
 
-    void cursorLeft() {doCursorCommand(KWriteView::cmLeft);};
-    void shiftCursorLeft() {doCursorCommand(KWriteView::cmLeft | selectFlag);};
-    void cursorRight() {doCursorCommand(KWriteView::cmRight);}
-    void shiftCursorRight() {doCursorCommand(KWriteView::cmRight | selectFlag);}
-    void wordLeft() {doCursorCommand(KWriteView::cmWordLeft);};
-    void shiftWordLeft() {doCursorCommand(KWriteView::cmWordLeft | selectFlag);};
-    void wordRight() {doCursorCommand(KWriteView::cmWordRight);};
-    void shiftWordRight() {doCursorCommand(KWriteView::cmWordRight | selectFlag);};
-    void home() {doCursorCommand(KWriteView::cmHome);};
-    void shiftHome() {doCursorCommand(KWriteView::cmHome | selectFlag);};
-    void end() {doCursorCommand(KWriteView::cmEnd);};
-    void shiftEnd() {doCursorCommand(KWriteView::cmEnd | selectFlag);};
-    void up() {doCursorCommand(KWriteView::cmUp);};
-    void shiftUp() {doCursorCommand(KWriteView::cmUp | selectFlag);};
-    void down() {doCursorCommand(KWriteView::cmDown);};
-    void shiftDown() {doCursorCommand(KWriteView::cmDown | selectFlag);};
-    void scrollUp() {doCursorCommand(KWriteView::cmScrollUp);};
-    void scrollDown() {doCursorCommand(KWriteView::cmScrollDown);};
-    void topOfView() {doCursorCommand(KWriteView::cmTopOfView);};
-    void bottomOfView() {doCursorCommand(KWriteView::cmBottomOfView);};
-    void pageUp() {doCursorCommand(KWriteView::cmPageUp);};
-    void shiftPageUp() {doCursorCommand(KWriteView::cmPageUp | selectFlag);};
-    void pageDown() {doCursorCommand(KWriteView::cmPageDown);};
-    void shiftPageDown() {doCursorCommand(KWriteView::cmPageDown | selectFlag);};
-    void top() {doCursorCommand(KWriteView::cmTop);};
-    void shiftTop() {doCursorCommand(KWriteView::cmTop | selectFlag);};
-    void bottom() {doCursorCommand(KWriteView::cmBottom);};
-    void shiftBottom() {doCursorCommand(KWriteView::cmBottom | selectFlag);};
+    void cursorLeft() {doCursorCommand(KWrite::cmLeft);};
+    void shiftCursorLeft() {doCursorCommand(KWrite::cmLeft | selectFlag);};
+    void cursorRight() {doCursorCommand(KWrite::cmRight);}
+    void shiftCursorRight() {doCursorCommand(KWrite::cmRight | selectFlag);}
+    void wordLeft() {doCursorCommand(KWrite::cmWordLeft);};
+    void shiftWordLeft() {doCursorCommand(KWrite::cmWordLeft | selectFlag);};
+    void wordRight() {doCursorCommand(KWrite::cmWordRight);};
+    void shiftWordRight() {doCursorCommand(KWrite::cmWordRight | selectFlag);};
+    void home() {doCursorCommand(KWrite::cmHome);};
+    void shiftHome() {doCursorCommand(KWrite::cmHome | selectFlag);};
+    void end() {doCursorCommand(KWrite::cmEnd);};
+    void shiftEnd() {doCursorCommand(KWrite::cmEnd | selectFlag);};
+    void up() {doCursorCommand(KWrite::cmUp);};
+    void shiftUp() {doCursorCommand(KWrite::cmUp | selectFlag);};
+    void down() {doCursorCommand(KWrite::cmDown);};
+    void shiftDown() {doCursorCommand(KWrite::cmDown | selectFlag);};
+    void scrollUp() {doCursorCommand(KWrite::cmScrollUp);};
+    void scrollDown() {doCursorCommand(KWrite::cmScrollDown);};
+    void topOfView() {doCursorCommand(KWrite::cmTopOfView);};
+    void bottomOfView() {doCursorCommand(KWrite::cmBottomOfView);};
+    void pageUp() {doCursorCommand(KWrite::cmPageUp);};
+    void shiftPageUp() {doCursorCommand(KWrite::cmPageUp | selectFlag);};
+    void pageDown() {doCursorCommand(KWrite::cmPageDown);};
+    void shiftPageDown() {doCursorCommand(KWrite::cmPageDown | selectFlag);};
+    void top() {doCursorCommand(KWrite::cmTop);};
+    void shiftTop() {doCursorCommand(KWrite::cmTop | selectFlag);};
+    void bottom() {doCursorCommand(KWrite::cmBottom);};
+    void shiftBottom() {doCursorCommand(KWrite::cmBottom | selectFlag);};
 
 //search/replace functions
   public slots:
@@ -982,6 +897,117 @@ class KWrite : public KTextEditor::View, virtual public KWriteIface {
     KRecentFilesAction *fileRecent;
     KSelectAction *setHighlight, *setEndOfLine;
     bool m_singleViewMode;
+
+
+    // some kwriteview stuff
+  protected:
+    void insLine(int line) { kWriteView->insLine(line); };
+    void delLine(int line) { kWriteView->delLine(line); };
+    void updateCursor() { kWriteView->updateCursor(); };
+    void updateCursor(PointStruc &newCursor) { kWriteView->updateCursor(newCursor); };
+    void updateCursor(PointStruc &newCursor, int flags) { kWriteView->updateCursor(newCursor, flags); };
+
+    void clearDirtyCache(int height) { kWriteView->clearDirtyCache(height); };
+    void tagLines(int start, int end, int x1, int x2) { kWriteView->tagLines(start, end, x1, x2); };
+    void tagAll() { kWriteView->tagAll(); };
+    void setPos(int x, int y) { kWriteView->setPos(x, y); };
+    void center() { kWriteView->center(); };
+
+    void updateView(int flags) { kWriteView->updateView(flags); };
+
+  protected slots:
+    // to send dropEventPass
+    void dropEventPassEmited (QDropEvent* e);
+
+
+   signals:
+    // emitted when KWriteView is not handling its own URI drops
+    void dropEventPass(QDropEvent*);
+  // end of kwriteview stuff
+
+
+  public:
+    enum Config_flags {
+      cfAutoIndent= 0x1,
+      cfBackspaceIndents= 0x2,
+      cfWordWrap= 0x4,
+      cfReplaceTabs= 0x8,
+      cfRemoveSpaces = 0x10,
+      cfWrapCursor= 0x20,
+      cfAutoBrackets= 0x40,
+      cfPersistent= 0x80,
+      cfKeepSelection= 0x100,
+      cfVerticalSelect= 0x200,
+      cfDelOnInput= 0x400,
+      cfXorSelect= 0x800,
+      cfOvr= 0x1000,
+      cfMark= 0x2000,
+      cfGroupUndo= 0x4000,
+      cfKeepIndentProfile= 0x8000,
+      cfKeepExtraSpaces= 0x10000,
+      cfMouseAutoCopy= 0x20000,
+      cfSingleSelection= 0x40000,
+      cfTabIndents= 0x80000,
+      cfPageUDMovesCursor= 0x100000,
+      cfShowTabs= 0x200000,
+      cfSpaceIndent= 0x400000,
+      cfSmartHome = 0x800000};
+
+    enum Dialog_results {
+      srYes=QDialog::Accepted,
+      srNo=10,
+      srAll,
+      srCancel=QDialog::Rejected};
+
+//search flags
+    enum Search_flags {
+     sfCaseSensitive=1,
+     sfWholeWords=2,
+     sfFromCursor=4,
+     sfBackward=8,
+     sfSelected=16,
+     sfPrompt=32,
+     sfReplace=64,
+     sfAgain=128,
+     sfWrapped=256,
+     sfFinished=512,
+     sfRegularExpression=1024};
+
+//update flags
+    enum Update_flags {
+     ufDocGeometry=1,
+     ufUpdateOnScroll=2,
+     ufPos=4};
+
+//load flags
+    enum Load_flags {
+     lfInsert=1,
+     lfNewFile=2,
+     lfNoAutoHl=4};
+
+//end of line settings
+    enum Eol_settings {eolUnknown,eolUnix,eolMacintosh,eolDos};
+
+//cursor movement commands
+    enum Cursor_commands
+	   { cmLeft,cmRight,cmWordLeft,cmWordRight,
+       cmHome,cmEnd,cmUp,cmDown,
+       cmScrollUp,cmScrollDown,cmTopOfView,cmBottomOfView,
+       cmPageUp,cmPageDown,cmCursorPageUp,cmCursorPageDown,
+       cmTop,cmBottom};
+//edit commands
+    enum Edit_commands {
+		    cmReturn=1,cmDelete,cmBackspace,cmKillLine,cmUndo,
+        cmRedo,cmCut,cmCopy,cmPaste,cmIndent,cmUnindent,cmCleanIndent,
+        cmSelectAll,cmDeselectAll,cmInvertSelection,cmComment,
+        cmUncomment};
+//find commands
+    enum Find_commands { cmFind=1,cmReplace,cmFindAgain,cmGotoLine};
+
+//bookmark commands
+    enum Bookmark_commands {
+        cmSetBookmark=1,cmAddBookmark,cmClearBookmarks,
+        cmSetBookmarks=10,cmGotoBookmarks=20 };
 };
 
 

@@ -139,7 +139,7 @@ void TopLevel::setupEditWidget(KWriteDoc *doc)
   connect(kWrite,SIGNAL(newStatus()),this,SLOT(newStatus()));
   connect(kWrite,SIGNAL(statusMsg(const QString &)),this,SLOT(statusMsg(const QString &)));
   connect(kWrite,SIGNAL(fileChanged()),this,SLOT(newCaption()));
-  connect(kWrite->view(),SIGNAL(dropEventPass(QDropEvent *)),this,SLOT(slotDropEvent(QDropEvent *)));
+  connect(kWrite,SIGNAL(dropEventPass(QDropEvent *)),this,SLOT(slotDropEvent(QDropEvent *)));
   connect(kWrite, SIGNAL( enableUI( bool ) ), this, SLOT( slotEnableActions( bool ) ) );
 
   setCentralWidget(kWrite);
@@ -402,7 +402,7 @@ void TopLevel::newStatus()
   if (readOnly)
     statusBar()->changeItem(i18n(" R/O "),ID_INS_OVR);
   else
-    statusBar()->changeItem(config & KWriteView::cfOvr ? i18n(" OVR ") : i18n(" INS "),ID_INS_OVR);
+    statusBar()->changeItem(config & KWrite::cfOvr ? i18n(" OVR ") : i18n(" INS "),ID_INS_OVR);
 
   statusBar()->changeItem(kWrite->isModified() ? " * " : "",ID_MODIFIED);
 }
@@ -535,7 +535,7 @@ void TopLevel::writeConfig()
 void TopLevel::restore(KConfig *config, int n)
 {
   if (kWrite->isLastView() && !kWrite->doc()->url().isEmpty()) { //in this case first view
-    loadURL(kWrite->doc()->url(), KWriteView::lfNewFile );
+    loadURL(kWrite->doc()->url(), KWrite::lfNewFile );
   }
   readPropertiesInternal(config, n);
   init();
