@@ -35,6 +35,7 @@ class KVSSBSep;
 
 class KConfig;
 class KSqueezedTextLabel;
+class KateViewSpaceContainer;
 
 class KateVSStatusBar : public KStatusBar
 {
