@@ -41,7 +41,7 @@
 #include <kcharsets.h>
 #include <kmimemagic.h>
 #include <klocale.h>
-
+#include <kregexp.h>
 #include <X11/Xlib.h> //used in getXFontList()
 
 #include "highlight.h"
@@ -463,12 +463,20 @@ HlCStringChar::HlCStringChar(int attribute, int context)
 }
 
 //checks for hex and oct (for example \x1b or \033)
-// seems inefficient at present would a regex
-// be faster or less complicated?
 const QChar *checkCharHexOct(const QChar *str) {
   const QChar *s;
-  int n;
 	s=str;
+#if 1 // to revert to earlier version change 1 to 0
+	KRegExp hexoct("(\\x[A-Fa-f0-9]{1,2}|\\0[0-7]{1,3})");
+// this regexp checks for 1 or 2 hexdigits or 1,2 or 3 octal digits
+  QString tmpstr=QString(str,132); // should be long enough
+	if(hexoct.match(tmpstr)) {
+  s+=hexoct.groupEnd(1);
+	return s;
+	} else
+	return 0L;
+#else
+	int n;
   if (*s == 'x') {
     n = 0;
     do {
@@ -492,6 +500,7 @@ const QChar *checkCharHexOct(const QChar *str) {
     } while (s - str < 3);
   }
   return s;
+#endif
 }
 
 //checks for C escape chars like \n
