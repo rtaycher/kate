@@ -123,9 +123,6 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
   protected:
     KatePluginManager *m_pluginManager;
 
-    /** just calls viewmanager */
-    void restore(bool isRestored);
-
     // Anders: I moved the config object to protected, because
     // other objects needs access.
     KConfig* config;
@@ -174,6 +171,10 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     void slotGrepDialogItemSelected ( const QString &filename, int linenumber );
     void runScript( int menuItemId);
     void slotMail();
+
+  public:
+    void saveWindowConfiguration (KConfig *config);
+    void restoreWindowConfiguration (KConfig *config);
 
   private:
     void setupMainWindow();

@@ -336,11 +336,33 @@ bool KateMainWindow::queryClose()
 
   if ( ((KateApp *)kapp)->mainWindows () < 2 )
   {
+    // store the stuff
+    KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
+
+    if (kapp->sessionSaving())
+      m_projectManager->saveProjectList (kapp->sessionConfig());
+    else
+      m_projectManager->saveProjectList (scfg);
+
+    saveOptions(config);
+
     if (m_projectManager->closeAll ())
     {
-      saveOptions(config);
-
+      // first ask if something has changed
       m_viewManager->saveAllDocsAtCloseDown();
+
+      if (kapp->sessionSaving())
+      {
+        m_docManager->saveDocumentList (kapp->sessionConfig());
+        saveWindowConfiguration (kapp->sessionConfig());
+      }
+      else
+      {
+        m_docManager->saveDocumentList (scfg);
+        saveWindowConfiguration (scfg);
+      }
+
+      m_docManager->closeAllDocuments();
 
       if ( !m_docManager->activeDocument() || !m_viewManager->activeView() ||
          ( !m_viewManager->activeView()->getDoc()->isModified() && m_docManager->documents() == 1 ) )
@@ -350,6 +372,13 @@ bool KateMainWindow::queryClose()
         val = true;
       }
     }
+
+    if (kapp->sessionSaving())
+      kapp->sessionConfig()->sync();
+    else
+      scfg->sync();
+
+    delete scfg;
   }
   else
     val = true;
@@ -367,7 +396,6 @@ bool KateMainWindow::queryClose()
 
 void KateMainWindow::saveProperties( KConfig * )
 {
-  // This gets called in case of a crash. TODO: have a file list saved
   kdDebug(13000)<<"KateMainWindow::saveProperties()"<<endl;
 }
 
@@ -600,9 +628,6 @@ void KateMainWindow::fileSelected(const KFileItem *file)
 {
   m_viewManager->openURL( file->url() );
 }
-
-void KateMainWindow::restore(bool isRestored)
-{ m_viewManager->reopenDocuments(isRestored); }
 
 void KateMainWindow::mSlotFixOpenWithMenu()
 {
@@ -1011,5 +1036,12 @@ void KateMainWindow::updateCaption (Kate::Document *doc)
 void KateMainWindow::openConstURLProject (const KURL&url)
 {
   openProject (url.path());
-  kdDebug() << "got it muhhhh" << endl;
+}
+
+void KateMainWindow::saveWindowConfiguration (KConfig *config)
+{
+}
+
+void KateMainWindow::restoreWindowConfiguration (KConfig *config)
+{
 }

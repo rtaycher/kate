@@ -55,7 +55,6 @@
 #include <qstringlist.h>
 #include <qvbox.h>
 #include <qtimer.h>
-#include <qprogressdialog.h>
 
 #include "katesplitter.h"
 //END Includes
@@ -792,9 +791,8 @@ void KateViewManager::setUseOpaqueResize( bool enable )
 ///////////////////////////////////////////////////////////
 // session config functions
 ///////////////////////////////////////////////////////////
-void KateViewManager::saveAllDocsAtCloseDown(  )
+void KateViewManager::saveAllDocsAtCloseDown()
 {
-  kdDebug(13001)<<"saveAllDocsAtCloseDown()"<<endl;
   if (m_docManager->documents () == 0) return;
 
   // Make sure all documents have a URL
@@ -835,108 +833,6 @@ void KateViewManager::saveAllDocsAtCloseDown(  )
 
     d = m_docManager->nextDocument();
   }
-
-  if ( ! m_docManager->documents() ) return;
-
-  KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
-
-  // save current document, since if we just reopens documents
-  // when restarted, we want that in front.
-
-  scfg->setGroup("open files");
-  scfg->writeEntry("count",m_docManager->documents());
-  scfg->writeEntry("current file", activeView()->getDoc()->url().prettyURL());
-  m_docManager->saveDocumentList(scfg);
-
-  scfg->sync();
-
-  m_blockViewCreationAndActivation=true;
-  m_docManager->closeAllDocuments();
-  m_blockViewCreationAndActivation=false;
-
-  kdDebug(13001)<<">>>> saveAllDocsAtCloseDown() DONE"<<endl;
-  delete scfg;
-}
-
-void KateViewManager::reopenDocuments(bool isRestore)
-{
-  m_reopening=true;
-  //kdDebug(13001)<<"reopenDocuments()"<<endl;
-  KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
-  KConfig* config = kapp->config();
-  config->setGroup("General");
-  bool restoreViews = config->readBoolEntry("restore views", false);
-  bool reopenAtStart = config->readBoolEntry("reopen at startup", false);
-
-  if (  (reopenAtStart &&  (!(((KateApp*)kapp)->doNotInitialize() & 0x1))) || isRestore )
-  {
-    scfg->setGroup("open files");
-    // try to focus the file that had focus at close down
-    QString curfile = scfg->readEntry("current file");
-
-    if (curfile.isEmpty()) {
-        delete scfg;
-        m_reopening=false;
-        return;
-    }
-
-    QString fileCountStr=scfg->readEntry("count");
-    int fileCount=fileCountStr.isEmpty() ? 100 : fileCountStr.toInt();
-
-    QProgressDialog *pd=new QProgressDialog(
-        i18n("Reopening files from the last session..."),
-        QString::null,
-        fileCount,
-        this,
-        "openprog");
-
-    m_blockViewCreationAndActivation=true;
-    m_docManager->closeAllDocuments();
-    m_blockViewCreationAndActivation=false;
-
-    int i = 0;
-    QString fn;
-    // check all remote files for existence in a synchronous way
-    // so that the password dialog only appears ones for every remote source
-    while (scfg->hasKey(QString("File%1").arg(i)))
-    {
-      fn = scfg->readEntry( QString("File%1").arg( i ) );
-      if ( !fn.isEmpty() && !KURL( fn ).isLocalFile() )
-          KIO::NetAccess::exists(KURL( fn ), true, this);
-      i++;
-    }
-    i = 0;
-    while (scfg->hasKey(QString("File%1").arg(i)))
-    {
-      fn = scfg->readEntry( QString("File%1").arg( i ) );
-      if ( !fn.isEmpty() ) {
-        //kdDebug(13001)<<"reopenDocuments(): opening file : "<<fn<<endl;
-        scfg->setGroup( fn );
-
-        Kate::Document *doc = m_docManager->createDoc ();
-        doc->readSessionConfig(scfg);
-
-        scfg->setGroup("open files");
-      }
-      i++;
-
-      pd->setProgress(pd->progress()+1);
-      kapp->processEvents();
-
-    }
-    delete pd;
-
-    if ( scfg->hasGroup("splitter0") && ( isRestore || restoreViews ) )
-    {
-      //kdDebug(13001)<<"calling restoreViewConfig()"<<endl;
-      restoreViewConfig();
-    }
-    else  openURL(KURL(curfile));
-
-  }
-  m_reopening=false;
-  //kdDebug(13001)<<">>>> reopenDocuments() DONE"<<endl;
-  delete scfg;
 }
 
 void KateViewManager::saveViewSpaceConfig()

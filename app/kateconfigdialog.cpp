@@ -102,11 +102,20 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   // GROUP with the one below: "Startup"
   QButtonGroup *bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("Startup"), frGeneral );
   lo->addWidget( bgStartup );
+
+  // reopen projects
+  cb_reopenProjects = new QCheckBox( bgStartup );
+  cb_reopenProjects->setText(i18n("Reopen &projects at startup"));
+  //config->setGroup("General");
+  cb_reopenProjects->setChecked( config->readBoolEntry("Restore Projects", false) );
+  connect( cb_reopenProjects, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
+
+
   // reopen files
   cb_reopenFiles = new QCheckBox( bgStartup );
   cb_reopenFiles->setText(i18n("Reopen &files at startup"));
   //config->setGroup("General");
-  cb_reopenFiles->setChecked( config->readBoolEntry("reopen at startup", false) );
+  cb_reopenFiles->setChecked( config->readBoolEntry("Restore Documents", false) );
   QWhatsThis::add(cb_reopenFiles, i18n(
         "If this is enabled Kate will attempt to reopen files that were open when you closed "
         "last time. Cursor position will be recovered if possible. Non-existent files will "
@@ -116,8 +125,8 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   //config->setGroup("General");
   // restore view  config
   cb_restoreVC = new QCheckBox( bgStartup );
-  cb_restoreVC->setText(i18n("Restore &view configuration"));
-  cb_restoreVC->setChecked( config->readBoolEntry("restore views", false) );
+  cb_restoreVC->setText(i18n("Restore &window configuration"));
+  cb_restoreVC->setChecked( config->readBoolEntry("Restore Window Configuration", false) );
   QWhatsThis::add(cb_restoreVC, i18n(
         "Check this if you want all your views and frames restored each time you open Kate"));
   connect( cb_restoreVC, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
@@ -291,14 +300,13 @@ void KateConfigDialog::slotApply()
   config->setGroup("KDE");
   config->writeEntry("MultipleInstances",cb_singleInstance->isChecked());
   config->setGroup("General");
-  config->writeEntry("reopen at startup", cb_reopenFiles->isChecked());
+  config->writeEntry("Restore Projects", cb_reopenProjects->isChecked());
+  config->writeEntry("Restore Documents", cb_reopenFiles->isChecked());
+  config->writeEntry("Restore Window Configuration", cb_restoreVC->isChecked());
 
   mainWindow->syncKonsole = cb_syncKonsole->isChecked();
 
   mainWindow->filelist->setSortType(cb_sortFiles->isChecked() ? KateFileList::sortByName : KateFileList::sortByID);
-
-  //config->setGroup("General");
-  config->writeEntry("restore views", cb_restoreVC->isChecked());
 
   config->writeEntry( "Number of recent files", sb_numRecentFiles->value() );
   mainWindow->fileOpenRecent->setMaxItems( sb_numRecentFiles->value() );

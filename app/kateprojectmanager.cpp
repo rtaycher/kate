@@ -233,6 +233,32 @@ bool KateProjectManager::closeAll ()
   return true;
 }
 
+void KateProjectManager::saveProjectList (class KConfig *config)
+{
+  config->setGroup ("Open Projects");
+
+  config->writeEntry ("Count", m_projects.count());
+
+  for (uint z=0; z < m_projects.count(); z++)
+    config->writeEntry( QString("Project %1").arg(z), m_projects.at(z)->fileName() );
+}
+
+void KateProjectManager::restoreProjectList (class KConfig *config)
+{
+  config->setGroup ("Open Projects");
+
+  int i = 0;
+  while (config->hasKey(QString("Project %1").arg(i)))
+  {
+    QString fn = config->readEntry( QString("Project %1").arg( i ) );
+
+    if ( !fn.isEmpty() )
+      open (fn);
+
+    i++;
+  }
+}
+
 //
 // "New Project" Dialog
 //

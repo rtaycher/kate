@@ -25,12 +25,15 @@
 #include "katemainwindow.h"
 #include "kateviewmanager.h"
 
+#include <kate/view.h>
+
+#include <klocale.h>
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kapplication.h>
-#include <kate/view.h>
 
 #include <qtextcodec.h>
+#include <qprogressdialog.h>
 
 KateDocManager::KateDocManager (QObject *parent) : QObject (parent)
 {
@@ -268,20 +271,70 @@ bool KateDocManager::closeAllDocuments()
   return res;
 }
 
-void KateDocManager::saveDocumentList(KConfig* cfg)
+void KateDocManager::saveDocumentList (KConfig* config)
 {
-  QString grp=cfg->group();
-  int i=0;
+  config->setGroup ("Open Documents");
+  QString grp = config->group();
 
+  config->writeEntry ("Count", m_docList.count());
+
+  int i=0;
   for ( Kate::Document *doc = m_docList.first(); doc; doc = m_docList.next() )
   {
-    cfg->writeEntry( QString("File%1").arg(i), doc->url().prettyURL() );
-    cfg->setGroup(doc->url().prettyURL() );
-    doc->writeSessionConfig(cfg);
-    cfg->setGroup(grp);
+    config->writeEntry( QString("Document %1").arg(i), doc->url().prettyURL() );
+
+    config->setGroup(QString ("Document ")+doc->url().prettyURL() );
+    doc->writeSessionConfig(config);
+    config->setGroup(grp);
 
     i++;
   }
+}
+
+void KateDocManager::restoreDocumentList (KConfig* config)
+{
+  config->setGroup ("Open Documents");
+  QString grp = config->group();
+
+  int fileCount = config->readNumEntry("Count");
+
+  QProgressDialog *pd=new QProgressDialog(
+        i18n("Reopening files from the last session..."),
+        QString::null,
+        fileCount,
+        0,
+        "openprog");
+
+  int i = 0;
+  bool first = true;
+  while (config->hasKey(QString("Document %1").arg(i)))
+  {
+    QString fn = config->readEntry( QString("Document %1").arg( i ) );
+
+    if ( !fn.isEmpty() )
+    {
+      config->setGroup( QString ("Document ")+fn );
+      Kate::Document *doc = 0;
+
+      if (first)
+      {
+        first = false;
+        doc = document (0);
+      }
+      else
+        doc = createDoc ();
+
+      doc->readSessionConfig(config);
+      config->setGroup (grp);
+    }
+
+    i++;
+
+    pd->setProgress(pd->progress()+1);
+    kapp->processEvents();
+  }
+
+  delete pd;
 }
 
 void KateDocManager::slotModifiedOnDisc (Kate::Document *doc, bool b, unsigned char reason)

@@ -93,6 +93,9 @@ class KateProjectManager : public QObject
 
     bool closeAll ();
 
+    void saveProjectList (class KConfig *config);
+    void restoreProjectList (class KConfig *config);
+
   private:
     Kate::ProjectManager *m_projectManager;
 

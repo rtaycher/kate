@@ -35,6 +35,7 @@
 #include <kdebug.h>
 #include <klibloader.h>
 #include <klocale.h>
+#include <ksimpleconfig.h>
 
 #include <kio/netaccess.h>
 
@@ -67,9 +68,39 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
   m_pluginManager = new KatePluginManager (this);
   m_pluginManager->loadAllEnabledPlugins ();
 
-  newMainWindow ();
+  // first be sure we have at least one window
+  KateMainWindow *win = newMainWindow ();
 
-//  connect(this, SIGNAL(lastWindowClosed()), SLOT(deref()));
+  // we restore our great stuff here now ;) super
+  if ( isRestored() )
+  {
+    // restore the nice projects & files ;) we need it
+    m_projectManager->restoreProjectList (sessionConfig());
+    m_docManager->restoreDocumentList (sessionConfig());
+
+    // window config
+    win->restoreWindowConfiguration (sessionConfig());
+  }
+  else
+  {
+    config()->setGroup("General");
+
+    KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
+
+    // restore our nice projects if wanted
+    if (config()->readBoolEntry("Restore Projects", false))
+      m_projectManager->restoreProjectList (scfg);
+
+    // reopen our nice files if wanted
+    if (config()->readBoolEntry("Restore Documents", false))
+      m_docManager->restoreDocumentList (scfg);
+
+    // window config
+    if (config()->readBoolEntry("Restore Window Configuration", false))
+      win->restoreWindowConfiguration (scfg);
+
+    delete scfg;
+  }
 
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 
@@ -143,16 +174,8 @@ int KateApp::newInstance()
   if (!m_firstStart && args->isSet ("w"))
     newMainWindow ();
 
-  raiseCurrentMainWindow ();
-
-  if (m_firstStart)
-  {
-    if ( isRestored() && KMainWindow::canBeRestored(1) )
-      m_mainWindows.first()->restore( true );
-    else
-      m_mainWindows.first()->restore( false );
-  }
-
+  if (!m_firstStart)
+    raiseCurrentMainWindow ();
 
   kdDebug()<<"******************************************** loop depth"<<kapp->loopLevel()<<endl;
 

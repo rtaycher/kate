@@ -49,9 +49,6 @@ class KateViewManager : public QWidget
     /* This will save the splitter configuration */
     void saveViewSpaceConfig();
 
-    /* reopens documents that was open last time kate was shut down*/
-    void reopenDocuments(bool isRestore);
-
   public slots:
     void openURL (KURL url=0L, const QString& encoding=QString::null);
     void openConstURLCheck (const KURL&url=0L);
