@@ -85,8 +85,6 @@ syntaxModeList SyntaxDocument::modeList()
 
 QStringList& SyntaxDocument::finddata(const QString& langName,const QString& type)
 {
-  modeList ();
-
   QDomElement docElem = documentElement();
   QDomNode n = docElem.firstChild();
 
