@@ -1,1 +1,1 @@
-SUBDIRS = defaultproject
+SUBDIRS = defaultproject katepartktts ktts
