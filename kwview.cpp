@@ -1471,7 +1471,7 @@ KWBookmark::KWBookmark() {
   cursor.y = -1; //mark bookmark as invalid
 }
 
-KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const QString &name, bool HandleOwnDND)
+KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const char * name, bool HandleOwnDND)
   : KTextEditor::View(doc, parent, name) {
   kWriteDoc = doc;
   kWriteView = new KWriteView(this,doc,HandleOwnDND);
@@ -1751,7 +1751,7 @@ void KWrite::redoTypeList(std::list<int> &lst)
   kWriteDoc->redoTypeList(lst);
 }
 
-QString KWrite::undoTypeName(int type) {
+const char * KWrite::undoTypeName(int type) {
   return KWActionGroup::typeName(type);
 }
 
@@ -2792,7 +2792,7 @@ void KWrite::doBookmarkCommand(int cmdNum) {
 void KWrite::updateBMPopup() {
   KGuiCmdPopup *p;
   KWBookmark *b;
-  char buf[64];
+  QString buf;
   int z, id;
 
   p = (KGuiCmdPopup *) sender();
@@ -2806,7 +2806,8 @@ void KWrite::updateBMPopup() {
     if (b->cursor.y >= 0) {
       if (p->count() == 3) p->insertSeparator();
       id = p->addCommand(ctBookmarkCommands, cmGotoBookmarks + z);
-      sprintf(buf,i18n("Line %d"), b->cursor.y +1);
+      buf = i18n("Line: %1")
+	.arg(KGlobal::locale()->formatNumber(b->cursor.y + 1, 0));
       p->setText(buf, id);
 //      p->insertItem(buf,z);
 //      if (z < 9) p->setAccel(ALT+keys[z],z);
@@ -2936,7 +2937,7 @@ void KWrite::readSessionConfig(KConfig *config) {
     sprintf(s1,"Bookmark%d",z+1);
     s2 = config->readEntry(s1);
     if (!s2.isEmpty()) {
-      sscanf(s2,"%d,%d,%d,%d",&b->xPos,&b->yPos,&b->cursor.x,&b->cursor.y);
+      sscanf(s2.ascii(),"%d,%d,%d,%d",&b->xPos,&b->yPos,&b->cursor.x,&b->cursor.y);
     }
   }
 }

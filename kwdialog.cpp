@@ -129,11 +129,7 @@ int SearchDialog::getFlags()
 
 void SearchDialog::slotOk()
 {
-  const char *text;
-
-  text = m_search->currentText();
-
-  if( text && *text )
+  if ( !m_search->currentText().isEmpty() )
     accept();
 }
 

@@ -1,5 +1,7 @@
 # $Id$
 
+AM_CPPFLAGS = -DQT_NO_ASCII_CAST
+
 INCLUDES = $(all_includes)
 
 KDE_CXXFLAGS = $(USE_RTTI)

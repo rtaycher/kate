@@ -293,7 +293,7 @@ class KWActionGroup {
     ~KWActionGroup();
     void insertAction(KWAction *);
 
-    static QString typeName(int type);
+    static const char * typeName(int type);
 
     PointStruc start;
     PointStruc end;

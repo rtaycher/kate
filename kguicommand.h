@@ -54,7 +54,7 @@ class KGuiCmd : public QObject {
     friend KGuiCmdActivator;
     friend KGuiCmdCategoryActivator;
   public:
-    KGuiCmd(int cmdNum, const QString &name, KGuiCmdCategory *);
+    KGuiCmd(int cmdNum, const char * name, KGuiCmdCategory *);
 //    int getCommand() {return cmdNum;}
     int accelCount();
     void addAccel(int keyCode1, int keyCode2);
@@ -80,7 +80,7 @@ class KGuiCmd : public QObject {
     static const int nAccels = 4;
 
     int cmdNum;
-    QString name;
+    QCString name;
     KGuiCmdCategory *category;
 
     KGuiCmdAccel accels[nAccels];
@@ -95,7 +95,7 @@ class KGuiCmdCategory {
     friend KGuiCmdCategoryActivator;
     friend KGuiCmdDispatcher;
   public:
-    KGuiCmdCategory(int catNum, const QString &name);
+    KGuiCmdCategory(int catNum, const char * name);
     ~KGuiCmdCategory() {}
     void setSelectModifiers(int selectModifiers, int selectFlag,
       int mSelectModifiers, int mSelectFlag);
@@ -122,7 +122,7 @@ class KGuiCmdCategory {
     void getCommands(KGuiCmdCategoryActivator *);
 
     int catNum;
-    QString name;
+    QCString name;
     int selectModifiers, selectFlag;
     int mSelectModifiers, mSelectFlag;
     QList<KGuiCmd> commandList;
@@ -142,11 +142,11 @@ class KGuiCmdManager {
     /** Inserts a new command category and returns a category number (id).
         The name must not be translated (i18n()-ed)
     */
-    int addCategory(const QString &name);
+    int addCategory(const char * name);
     /** Inserts a new command category with given category number.
         The name must not be translated (i18n()-ed)
     */
-    int addCategory(int catNum, const QString &name);
+    int addCategory(int catNum, const char * name);
     KGuiCmdCategory *setCurrentCategory(int catNum);
     void setSelectModifiers(int selectModifiers, int selectFlag,
       int mSelectModifiers, int mSelectFlag);
@@ -158,12 +158,12 @@ class KGuiCmdManager {
         insert a default accelerator with two keys use addAccel() after this call.
         The name must not be translated (i18n()-ed)
     */
-    int addCommand(const QString &name, int keyCode01 = 0,
+    int addCommand(const char * name, int keyCode01 = 0,
       int keyCode11 = 0, int keyCode21 = 0);
     /** Inserts a new Command with the given command number into the current
         category. The name must not be translated (i18n()-ed)
     */
-    int addCommand(int cmdNum, const QString &name, int keyCode01 = 0,
+    int addCommand(int cmdNum, const char * name, int keyCode01 = 0,
       int keyCode11 = 0, int keyCode21 = 0);
     /** Adds a default accelerator to the most recently added command
     */

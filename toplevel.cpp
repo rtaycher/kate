@@ -148,8 +148,7 @@ void TopLevel::loadURL(const KURL &url, int flags) {
 
 
 void TopLevel::setupEditWidget(KWriteDoc *doc) {
-
-  kWrite = new KWrite(doc,this,QString::null,false);
+  kWrite = new KWrite(doc, this, 0, false);
 
   connect(kWrite,SIGNAL(newCurPos()),this,SLOT(newCurPos()));
   connect(kWrite,SIGNAL(newStatus()),this,SLOT(newStatus()));
@@ -696,11 +695,9 @@ void TopLevel::helpSelected() {
 }
 
 void TopLevel::newCurPos() {
-  statusBar()->changeItem(QString("%1: %2 %3: %4")
-    .arg(i18n("Line"))
-    .arg(kWrite->currentLine() +1)
-    .arg(i18n("Col"))
-    .arg(kWrite->currentColumn() +1),
+  statusBar()->changeItem(i18n("Line: %1 Col: %2")
+    .arg(KGlobal::locale()->formatNumber(kWrite->currentLine() + 1, 0))
+    .arg(KGlobal::locale()->formatNumber(kWrite->currentColumn() + 1, 0)),
     ID_LINE_COLUMN);
 }
 
@@ -716,9 +713,9 @@ void TopLevel::newStatus() {
   options->setItemChecked(menuVertical,config & cfVerticalSelect);
 
   if (readOnly)
-    statusBar()->changeItem("R/O",ID_INS_OVR);
+    statusBar()->changeItem(i18n("R/O"),ID_INS_OVR);
   else
-    statusBar()->changeItem(config & cfOvr ? "OVR" : "INS",ID_INS_OVR);
+    statusBar()->changeItem(config & cfOvr ? i18n("OVR") : i18n("INS"),ID_INS_OVR);
 
   statusBar()->changeItem(kWrite->isModified() ? "*" : "",ID_MODIFIED);
 

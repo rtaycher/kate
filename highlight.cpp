@@ -902,11 +902,11 @@ ItemStyle::ItemStyle(const QColor &col, const QColor &selCol,
 ItemFont::ItemFont() : family("courier"), size(12), charset("") {
 }
 
-ItemData::ItemData(const QString &name, int defStyleNum)
+ItemData::ItemData(const char * name, int defStyleNum)
   : name(name), defStyleNum(defStyleNum), defStyle(true), defFont(true) {
 }
 
-ItemData::ItemData(const QString &name, int defStyleNum,
+ItemData::ItemData(const char * name, int defStyleNum,
   const QColor &col, const QColor &selCol, bool bold, bool italic)
   : ItemStyle(col,selCol,bold,italic), name(name), defStyleNum(defStyleNum),
   defStyle(false), defFont(true) {
@@ -918,7 +918,7 @@ HlData::HlData(const QString &wildcards, const QString &mimetypes)
   itemDataList.setAutoDelete(true);
 }
 
-Highlight::Highlight(const QString &name) : iName(name), refCount(0) {
+Highlight::Highlight(const char * name) : iName(name), refCount(0) {
 }
 
 Highlight::~Highlight() {
@@ -928,7 +928,7 @@ KConfig *Highlight::getKConfig() {
   KConfig *config;
 
   config = kapp->config();
-  config->setGroup(iName + " Highlight");
+  config->setGroup(QString::fromUtf8(iName) + QString::fromUtf8(" Highlight"));
   return config;
 }
 
@@ -1002,7 +1002,7 @@ void Highlight::getItemDataList(ItemDataList &list, KConfig *config) {
   for (p = list.first(); p != 0L; p = list.next()) {
     s = config->readEntry(p->name);
     if (!s.isEmpty()) {
-      sscanf(s,"%d,%X,%X,%d,%d,%d,%95[^,],%d,%47[^,]",
+      sscanf(s.ascii(),"%d,%X,%X,%d,%d,%d,%95[^,],%d,%47[^,]",
         &p->defStyle,&col,&selCol,&p->bold,&p->italic,
         &p->defFont,family,&p->size,charset);
       p->col.setRgb(col);
@@ -1068,7 +1068,7 @@ HlContext::HlContext(int attribute, int lineEndContext)
 }
 
 
-GenHighlight::GenHighlight(const QString &name) : Highlight(name) {
+GenHighlight::GenHighlight(const char * name) : Highlight(name) {
 }
 
 
@@ -1125,7 +1125,7 @@ void GenHighlight::done() {
 }
 
 
-CHighlight::CHighlight(const QString &name) : GenHighlight(name) {
+CHighlight::CHighlight(const char * name) : GenHighlight(name) {
   iWildcards = "*.c";
   iMimetypes = "text/x-c-src";
 }
@@ -1205,7 +1205,7 @@ void CHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
 }
 
 
-CppHighlight::CppHighlight(const QString &name) : CHighlight(name) {
+CppHighlight::CppHighlight(const char * name) : CHighlight(name) {
 
   iWildcards = "*.cpp;*.cc;*.C;*.h";
   iMimetypes = "text/x-c++-src;text/x-c++-hdr;text/x-c-hdr;text/x-c++-src";
@@ -1222,7 +1222,7 @@ void CppHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
   dataType->addList(cppTypes);
 }
 
-ObjcHighlight::ObjcHighlight(const QString &name) : CHighlight(name) {
+ObjcHighlight::ObjcHighlight(const char * name) : CHighlight(name) {
   iWildcards = "*.m;*.h";
   iMimetypes = "text/x-objc-src;text/x-c-hdr";
 }
@@ -1245,7 +1245,7 @@ void ObjcHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
   dataType->addList(objcTypes);
 }
 
-IdlHighlight::IdlHighlight(const QString &name) : CHighlight(name) {
+IdlHighlight::IdlHighlight(const char * name) : CHighlight(name) {
   iWildcards = "*.idl";
   iMimetypes = "text/x-idl-src";
 }
@@ -1258,7 +1258,7 @@ void IdlHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
   dataType->addList(idlTypes);
 }
 
-JavaHighlight::JavaHighlight(const QString &name) : CHighlight(name) {
+JavaHighlight::JavaHighlight(const char * name) : CHighlight(name) {
   iWildcards = "*.java";
   iMimetypes = "text/x-java-src";
 }
@@ -1273,7 +1273,7 @@ void JavaHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
 }
 
 
-HtmlHighlight::HtmlHighlight(const QString &name) : GenHighlight(name) {
+HtmlHighlight::HtmlHighlight(const char * name) : GenHighlight(name) {
   iWildcards = "*.html;*.htm";
   iMimetypes = "text/html";
 }
@@ -1310,7 +1310,7 @@ void HtmlHighlight::makeContextList() {
 }
 
 
-BashHighlight::BashHighlight(const QString &name) : GenHighlight(name) {
+BashHighlight::BashHighlight(const char * name) : GenHighlight(name) {
 //  iWildcards = "";
   iMimetypes = "text/x-shellscript";
 }
@@ -1349,7 +1349,7 @@ void BashHighlight::makeContextList() {
 }
 
 
-ModulaHighlight::ModulaHighlight(const QString &name) : GenHighlight(name) {
+ModulaHighlight::ModulaHighlight(const char * name) : GenHighlight(name) {
   iWildcards = "*.md;*.mi";
   iMimetypes = "text/x-modula-2-src";
 }
@@ -1388,7 +1388,7 @@ void ModulaHighlight::makeContextList() {
 }
 
 
-AdaHighlight::AdaHighlight(const QString &name) : GenHighlight(name) {
+AdaHighlight::AdaHighlight(const char * name) : GenHighlight(name) {
   iWildcards = "*.a";
   iMimetypes = "text/x-ada-src";
 }
@@ -1428,7 +1428,7 @@ void AdaHighlight::makeContextList() {
 }
 
 
-PythonHighlight::PythonHighlight(const QString &name) : GenHighlight(name) {
+PythonHighlight::PythonHighlight(const char * name) : GenHighlight(name) {
   iWildcards = "*.py";
   iMimetypes = "text/x-python-src";
 }
@@ -1486,7 +1486,7 @@ void PythonHighlight::makeContextList() {
   keyword->addList(pythonKeywords);
 }
 
-PerlHighlight::PerlHighlight(const QString &name) : Highlight(name) {
+PerlHighlight::PerlHighlight(const char * name) : Highlight(name) {
   iWildcards = "";
   iMimetypes = "application/x-perl";
 }
@@ -1738,7 +1738,7 @@ void PerlHighlight::done() {
   delete keyword;
 }
 
-SatherHighlight::SatherHighlight(const QString &name) : GenHighlight(name) {
+SatherHighlight::SatherHighlight(const char * name) : GenHighlight(name) {
   iWildcards = "*.sa";
   iMimetypes = "text/x-sather-src";
 }
@@ -1787,7 +1787,7 @@ void SatherHighlight::makeContextList() {
   spec_feat->addList(satherSpecFeatureNames);
 }
 
-LatexHighlight::LatexHighlight(const QString &name) : GenHighlight(name) {
+LatexHighlight::LatexHighlight(const char * name) : GenHighlight(name) {
   iWildcards = "*.tex;*.sty";
   iMimetypes = "text/x-tex";
 }
@@ -2035,7 +2035,7 @@ int HlManager::defaultStyles() {
   return 10;
 }
 
-QString HlManager::defaultStyleName(int n) {
+const char * HlManager::defaultStyleName(int n) {
   static const char *names[] = {
     I18N_NOOP("Normal"),
     I18N_NOOP("Keyword"),
@@ -2048,7 +2048,7 @@ QString HlManager::defaultStyleName(int n) {
     I18N_NOOP("Comment"),
     I18N_NOOP("Others")};
 
-  return QString(names[n]);
+  return names[n];
 }
 
 void HlManager::getDefaults(ItemStyleList &list, ItemFont &font) {
@@ -2077,7 +2077,7 @@ void HlManager::getDefaults(ItemStyleList &list, ItemFont &font) {
     i = list.at(z);
     s = config->readEntry(defaultStyleName(z));
     if (!s.isEmpty()) {
-      sscanf(s,"%X,%X,%d,%d",&col,&selCol,&i->bold,&i->italic);
+      sscanf(s.ascii(),"%X,%X,%d,%d",&col,&selCol,&i->bold,&i->italic);
       i->col.setRgb(col);
       i->selCol.setRgb(selCol);
     }
@@ -2116,7 +2116,7 @@ int HlManager::highlights() {
   return (int) hlList.count();
 }
 
-QString HlManager::hlName(int n) {
+const char * HlManager::hlName(int n) {
   return hlList.at(n)->iName;
 }
 

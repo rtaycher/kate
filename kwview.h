@@ -370,7 +370,7 @@ class KWrite : public KTextEditor::View {
       HandleOwnURIDrops should be set to false for a container that can handle URI drops
       better than KWriteView does.
     */
-    KWrite(KWriteDoc *, QWidget *parent = 0L, const QString &name = QString::null, bool HandleOwnURIDrops = true);
+    KWrite(KWriteDoc *, QWidget *parent = 0L, const char * name = 0, bool HandleOwnURIDrops = true);
     /**
       The destructor does not delete the document
     */
@@ -482,7 +482,7 @@ class KWrite : public KTextEditor::View {
       suitable for display in a menu entry.  It is not translated;
       use i18n() before displaying this string.
     */
-    QString undoTypeName(int undoType);
+    const char * undoTypeName(int undoType);
 
     void copySettings(KWrite *);
 

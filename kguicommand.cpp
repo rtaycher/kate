@@ -215,7 +215,7 @@ bool KGuiCmdAccel::equals(int kc1, int kc2) {
   return (keyCode1 == kc1 && (keyCode2 == kc2 || keyCode1 == 0));
 }
 
-KGuiCmd::KGuiCmd(int cmdNum, const QString &name, KGuiCmdCategory *c)
+KGuiCmd::KGuiCmd(int cmdNum, const char * name, KGuiCmdCategory *c)
   : cmdNum(cmdNum), name(name), category(c) {
 
   int z;
@@ -402,7 +402,7 @@ void KGuiCmd::emitAccelString() {
   emit changed(getAccelString());
 }
 
-KGuiCmdCategory::KGuiCmdCategory(int catNum, const QString &name)
+KGuiCmdCategory::KGuiCmdCategory(int catNum, const char * name)
   : catNum(catNum), name(name), selectModifiers(0), selectFlag(0),
   mSelectModifiers(0), mSelectFlag(0) {
 
@@ -542,13 +542,13 @@ KGuiCmdManager *KGuiCmdManager::self()
   return s_pSelf;
 }
 
-int KGuiCmdManager::addCategory(const QString &name) {
+int KGuiCmdManager::addCategory(const char * name) {
   nextId--;
   categoryList.append(new KGuiCmdCategory(nextId, name));
   return nextId;
 }
 
-int KGuiCmdManager::addCategory(int catNum, const QString &name) {
+int KGuiCmdManager::addCategory(int catNum, const char * name) {
   categoryList.append(new KGuiCmdCategory(catNum, name));
   return catNum;
 }
@@ -581,7 +581,7 @@ void KGuiCmdManager::disconnectCategory(const QObject *receiver, const char *mem
 }
 */
 
-int KGuiCmdManager::addCommand(const QString &name, int keyCode01,
+int KGuiCmdManager::addCommand(const char * name, int keyCode01,
   int keyCode11, int keyCode21) {
 
   nextId--;
@@ -589,7 +589,7 @@ int KGuiCmdManager::addCommand(const QString &name, int keyCode01,
   return nextId;
 }
 
-int KGuiCmdManager::addCommand(int cmdNum, const QString &name, int keyCode01,
+int KGuiCmdManager::addCommand(int cmdNum, const char * name, int keyCode01,
   int keyCode11, int keyCode21) {
 
   KGuiCmd *command;

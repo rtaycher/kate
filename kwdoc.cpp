@@ -403,7 +403,7 @@ void KWActionGroup::insertAction(KWAction *a) {
   action = a;
 }
 
-QString KWActionGroup::typeName(int type)
+const char * KWActionGroup::typeName(int type)
 {
   // return a short text description of the given undo group type suitable for a menu
   // not the lack of i18n's, the caller is expected to handle translation

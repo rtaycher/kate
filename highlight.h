@@ -327,11 +327,11 @@ class ItemFont {
 //Item Properties: name, Item Style, Item Font
 class ItemData : public ItemStyle, public ItemFont {
   public:
-    ItemData(const QString &name, int defStyleNum);
-    ItemData(const QString &name, int defStyleNum,
+    ItemData(const char * name, int defStyleNum);
+    ItemData(const char * name, int defStyleNum,
       const QColor&, const QColor&, bool bold, bool italic);
 
-    QString name;
+    const char * name;
     int defStyleNum;
     int defStyle; //boolean value
     int defFont;  //boolean value
@@ -355,7 +355,7 @@ class KConfig;
 class Highlight {
     friend HlManager;
   public:
-    Highlight(const QString &name);
+    Highlight(const char * name);
     virtual ~Highlight();
     KConfig *getKConfig();
     QString getWildcards();
@@ -365,7 +365,7 @@ class Highlight {
     void getItemDataList(ItemDataList &);
     virtual void getItemDataList(ItemDataList &, KConfig *);
     virtual void setItemDataList(ItemDataList &, KConfig *);
-    QString name() {return iName;}
+    const char * name() {return iName;}
 //    QString extensions();
 //    QString mimetypes();
     void use();
@@ -379,7 +379,7 @@ class Highlight {
     virtual void init();
     virtual void done();
 
-    QString iName;
+    const char * iName;
     QString iWildcards;
     QString iMimetypes;
     int refCount;
@@ -397,7 +397,7 @@ class HlContext {
 
 class GenHighlight : public Highlight {
   public:
-    GenHighlight(const QString &name);
+    GenHighlight(const char * name);
 
     virtual int doHighlight(int ctxNum, TextLine *);
   protected:
@@ -413,7 +413,7 @@ class GenHighlight : public Highlight {
 
 class CHighlight : public GenHighlight {
   public:
-    CHighlight(const QString &name);
+    CHighlight(const char * name);
     virtual ~CHighlight();
     virtual QString getCommentStart() { return QString("/*"); };
     virtual QString getCommentEnd() { return QString("*/"); };
@@ -425,7 +425,7 @@ class CHighlight : public GenHighlight {
 
 class CppHighlight : public CHighlight {
   public:
-    CppHighlight(const QString &name);
+    CppHighlight(const char * name);
     virtual ~CppHighlight();
     virtual QString getCommentStart() { return QString("//"); };
     virtual QString getCommentEnd() { return QString(""); };
@@ -435,7 +435,7 @@ class CppHighlight : public CHighlight {
 
 class ObjcHighlight : public CHighlight {
   public:
-    ObjcHighlight(const QString &name);
+    ObjcHighlight(const char * name);
     virtual ~ObjcHighlight();
     virtual QString getCommentStart() { return QString("//"); };
     virtual QString getCommentEnd() { return QString(""); };
@@ -446,7 +446,7 @@ class ObjcHighlight : public CHighlight {
 
 class IdlHighlight : public CHighlight {
   public:
-    IdlHighlight(const QString &name);
+    IdlHighlight(const char * name);
     virtual ~IdlHighlight();
     virtual QString getCommentStart() { return QString("//"); };
     virtual QString getCommentEnd() { return QString(""); };
@@ -456,7 +456,7 @@ class IdlHighlight : public CHighlight {
 
 class JavaHighlight : public CHighlight {
   public:
-    JavaHighlight(const QString &name);
+    JavaHighlight(const char * name);
     virtual ~JavaHighlight();
     virtual QString getCommentStart() { return QString("//"); };
     virtual QString getCommentEnd() { return QString(""); };
@@ -466,7 +466,7 @@ class JavaHighlight : public CHighlight {
 
 class HtmlHighlight : public GenHighlight {
   public:
-    HtmlHighlight(const QString &name);
+    HtmlHighlight(const char * name);
     virtual ~HtmlHighlight();
     virtual QString getCommentStart() { return QString("<!--"); };
     virtual QString getCommentEnd() { return QString("-->"); };
@@ -477,7 +477,7 @@ class HtmlHighlight : public GenHighlight {
 
 class BashHighlight : public GenHighlight {
   public:
-    BashHighlight(const QString &name);
+    BashHighlight(const char * name);
     virtual ~BashHighlight();
     virtual QString getCommentStart() { return QString("#"); };
   protected:
@@ -487,7 +487,7 @@ class BashHighlight : public GenHighlight {
 
 class ModulaHighlight : public GenHighlight {
   public:
-    ModulaHighlight(const QString &name);
+    ModulaHighlight(const char * name);
     virtual ~ModulaHighlight();
     virtual QString getCommentStart() { return QString("(*"); };
     virtual QString getCommentEnd() { return QString("*)"); };
@@ -498,7 +498,7 @@ class ModulaHighlight : public GenHighlight {
 
 class AdaHighlight : public GenHighlight {
   public:
-    AdaHighlight(const QString &name);
+    AdaHighlight(const char * name);
     virtual ~AdaHighlight();
     virtual QString getCommentStart() { return QString("--"); };
   protected:
@@ -508,7 +508,7 @@ class AdaHighlight : public GenHighlight {
 
 class PythonHighlight : public GenHighlight {
   public:
-    PythonHighlight(const QString &name);
+    PythonHighlight(const char * name);
     virtual ~PythonHighlight();
     virtual QString getCommentStart() { return QString("#"); };
   protected:
@@ -518,7 +518,7 @@ class PythonHighlight : public GenHighlight {
 
 class PerlHighlight : public Highlight {
   public:
-    PerlHighlight(const QString &name);
+    PerlHighlight(const char * name);
 
     virtual int doHighlight(int ctxNum, TextLine *);
     virtual QString getCommentStart() { return QString("#"); };
@@ -531,7 +531,7 @@ class PerlHighlight : public Highlight {
 
 class SatherHighlight : public GenHighlight {
   public:
-    SatherHighlight(const QString &name);
+    SatherHighlight(const char * name);
     virtual ~SatherHighlight();
     virtual QString getCommentStart() { return QString("--"); };
   protected:
@@ -541,7 +541,7 @@ class SatherHighlight : public GenHighlight {
 
 class LatexHighlight : public GenHighlight {
   public:
-    LatexHighlight(const QString &name);
+    LatexHighlight(const char * name);
     virtual ~LatexHighlight();
     virtual QString getCommentStart() { return QString("%"); };
   protected:
@@ -570,12 +570,12 @@ class HlManager : public QObject {
     int makeAttribs(Highlight *, Attribute *, int maxAttribs);
 
     int defaultStyles();
-    QString defaultStyleName(int n);
+    const char * defaultStyleName(int n);
     void getDefaults(ItemStyleList &, ItemFont &);
     void setDefaults(ItemStyleList &, ItemFont &);
 
     int highlights();
-    QString hlName(int n);
+    const char * hlName(int n);
     void getHlDataList(HlDataList &);
     void setHlDataList(HlDataList &);
   signals:
