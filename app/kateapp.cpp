@@ -36,7 +36,7 @@ KateApp::KateApp () : Kate::Application (),DCOPObject ("KateApp" )
   config()->setGroup("startup");
   _singleInstance=config()->readBoolEntry("singleinstance",true);
   _isSDI=config()->readBoolEntry("sdi",false);
-  
+
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 
   if (args->isSet ("s"))
@@ -56,8 +56,8 @@ KateApp::KateApp () : Kate::Application (),DCOPObject ("KateApp" )
   connect(this, SIGNAL(lastWindowClosed()), SLOT(quit()));
 
   processEvents();
-  
-  if ( KMainWindow::canBeRestored(1) )
+
+  if ( isRestored() && KMainWindow::canBeRestored(1) )
     mainWindows.first()->restore( true );
   else
     mainWindows.first()->restore( false );
