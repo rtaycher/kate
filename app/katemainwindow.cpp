@@ -355,7 +355,9 @@ void KateMainWindow::readOptions(KConfig *config)
     slotSettingsShowConsole();
   }
 
-  resize( config->readSizeEntry( "size", new QSize(600, 400) ) );
+  if (!((KateApp *)kapp)->_isSDI)
+    resize( config->readSizeEntry( "size", new QSize(600, 400) ) );
+
   viewManager->setShowFullPath(config->readBoolEntry("Show Full Path in Title", false));
   settingsShowFullPath->setChecked(viewManager->getShowFullPath());
   settingsShowToolbar->setChecked(config->readBoolEntry("Show Toolbar", true));
@@ -367,7 +369,8 @@ void KateMainWindow::readOptions(KConfig *config)
   fileselector->readConfig(config, "fileselector");
   fileselector->setView(KFile::Default);
 
-  readDockConfig();
+  if (!((KateApp *)kapp)->_isSDI)
+    readDockConfig();
 }
 
 void KateMainWindow::saveOptions(KConfig *config)
@@ -379,7 +382,9 @@ void KateMainWindow::saveOptions(KConfig *config)
   else
     config->writeEntry("Show Console", false);
 
-  config->writeEntry("size", size());
+  if (!((KateApp *)kapp)->_isSDI)
+    config->writeEntry("size", size());
+
   config->writeEntry("Show Full Path in Title", viewManager->getShowFullPath());
   config->writeEntry("Show Toolbar", settingsShowToolbar->isChecked());
   config->writeEntry("Opaque Resize", viewManager->useOpaqueResize);
