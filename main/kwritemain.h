@@ -55,10 +55,9 @@ class TopLevel : public KParts::MainWindow
     virtual void dragEnterEvent( QDragEnterEvent * );
     virtual void dropEvent( QDropEvent * );
 
-    KateView *kWrite;
+    KateView *kateView;
 
     KToggleAction * m_paShowPath;
-    KToggleAction * m_paShowMenuBar;
     KToggleAction * m_paShowToolBar;
     KToggleAction * m_paShowStatusBar;
 
@@ -69,7 +68,6 @@ class TopLevel : public KParts::MainWindow
     void slotOpen ();
     void newView();
     void configure();
-    void toggleMenuBar();
     void toggleToolBar();
     void toggleStatusBar();
     void editKeys();

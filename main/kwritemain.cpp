@@ -76,9 +76,9 @@ TopLevel::TopLevel (KateDocument *doc)
 
   setXMLFile( "kwriteui.rc" );
   createShellGUI( true );
-  guiFactory()->addClient( kWrite );
+  guiFactory()->addClient( kateView );
   KParts::GUIActivateEvent ev( true );
-  QApplication::sendEvent( kWrite, &ev );
+  QApplication::sendEvent( kateView, &ev );
 
   // Read basic main-view settings, and set to autosave
   setAutoSaveSettings( "General Options" );
@@ -90,16 +90,15 @@ TopLevel::~TopLevel()
 {
     // ### FIXME
 //  KParts::GUIActivateEvent ev( false );
-//  QApplication::sendEvent( kWrite, &ev );
-//  guiFactory()->removeClient( kWrite );
+//  QApplication::sendEvent( kateView, &ev );
+//  guiFactory()->removeClient( kateView );
 //  createShellGUI( false );
-  if (kWrite->isLastView()) docList.remove((KateDocument*)kWrite->doc());
+  if (kateView->isLastView()) docList.remove((KateDocument*)kateView->doc());
 }
 
 
 void TopLevel::init()
 {
-  m_paShowMenuBar->setChecked( !menuBar()->isHidden() );
   KToolBar *tb = toolBar("mainToolBar");
   if (tb) m_paShowToolBar->setChecked( !tb->isHidden() );
     else m_paShowToolBar->setEnabled(false);
@@ -116,14 +115,14 @@ void TopLevel::init()
 
 void TopLevel::loadURL(const KURL &url, int flags)
 {
-  kWrite->loadURL(url,flags);
+  kateView->loadURL(url,flags);
 }
 
 
 bool TopLevel::queryClose()
 {
-  if (!kWrite->isLastView()) return true;
-  return kWrite->canDiscard();
+  if (!kateView->isLastView()) return true;
+  return kateView->canDiscard();
 //  writeConfig();
 }
 
@@ -140,16 +139,16 @@ bool TopLevel::queryExit()
 
 void TopLevel::setupEditWidget(KateDocument *doc)
 {
-  kWrite = new KateView(doc, this, 0, false);
+  kateView = new KateView(doc, this, 0, false);
 
-  connect(kWrite,SIGNAL(newCurPos()),this,SLOT(newCurPos()));
-  connect(kWrite,SIGNAL(newStatus()),this,SLOT(newStatus()));
-  connect(kWrite,SIGNAL(statusMsg(const QString &)),this,SLOT(statusMsg(const QString &)));
-  connect(kWrite,SIGNAL(fileChanged()),this,SLOT(newCaption()));
-  connect(kWrite,SIGNAL(dropEventPass(QDropEvent *)),this,SLOT(slotDropEvent(QDropEvent *)));
-  connect(kWrite, SIGNAL( enableUI( bool ) ), this, SLOT( slotEnableActions( bool ) ) );
+  connect(kateView,SIGNAL(newCurPos()),this,SLOT(newCurPos()));
+  connect(kateView,SIGNAL(newStatus()),this,SLOT(newStatus()));
+  connect(kateView,SIGNAL(statusMsg(const QString &)),this,SLOT(statusMsg(const QString &)));
+  connect(kateView,SIGNAL(fileChanged()),this,SLOT(newCaption()));
+  connect(kateView,SIGNAL(dropEventPass(QDropEvent *)),this,SLOT(slotDropEvent(QDropEvent *)));
+  connect(kateView, SIGNAL( enableUI( bool ) ), this, SLOT( slotEnableActions( bool ) ) );
 
-  setCentralWidget(kWrite);
+  setCentralWidget(kateView);
 }
 
 
@@ -166,7 +165,6 @@ void TopLevel::setupActions()
 
 
   // setup Settings menu
-  m_paShowMenuBar = KStdAction::showMenubar( this, SLOT( toggleMenuBar() ), actionCollection() );
   m_paShowToolBar = KStdAction::showToolbar( this, SLOT( toggleToolBar() ), actionCollection() );
   m_paShowStatusBar = KStdAction::showStatusbar(this, SLOT(toggleStatusBar()), actionCollection());
   m_paShowPath = new KToggleAction(i18n("Sho&w Path"), 0, this, SLOT(newCaption()),
@@ -189,34 +187,34 @@ void TopLevel::setupStatusBar()
 
 void TopLevel::slotNew()
 {
-  if (kWrite->isModified() || !kWrite->doc()->url().isEmpty())
+  if (kateView->isModified() || !kateView->doc()->url().isEmpty())
   {
    TopLevel*t = new TopLevel();
     t->readConfig();
     t->init();
   }
   else
-    kWrite->newDoc();
+    kateView->newDoc();
 }
 
 void TopLevel::slotOpen()
 {
-  if (kWrite->isModified() || !kWrite->doc()->url().isEmpty())
+  if (kateView->isModified() || !kateView->doc()->url().isEmpty())
   {
     TopLevel *t = new TopLevel();
     t->readConfig();
     t->init();
-    t->kWrite->open();
+    t->kateView->open();
   }
   else
-    kWrite->open();
+    kateView->open();
 }
 
 void TopLevel::newView()
 {
-  TopLevel *t = new TopLevel((KateDocument *)kWrite->doc());
+  TopLevel *t = new TopLevel((KateDocument *)kateView->doc());
   t->readConfig();
-  t->kWrite->copySettings(kWrite);
+  t->kateView->copySettings(kateView);
   t->init();
 }
 
@@ -234,28 +232,28 @@ void TopLevel::configure()
   QVBox *page=kd->addVBoxPage(i18n("Colors"), QString::null,
                               BarIcon("colorize", KIcon::SizeMedium) );
   ColorConfig *colorConfig = new ColorConfig(page);
-  QColor* colors = kWrite->getColors();
+  QColor* colors = kateView->getColors();
   colorConfig->setColors(colors);
 
   // indent options
   page=kd->addVBoxPage(i18n("Indent"), QString::null,
                        BarIcon("rightjust", KIcon::SizeMedium) );
-  IndentConfigTab *indentConfig = new IndentConfigTab(page, kWrite);
+  IndentConfigTab *indentConfig = new IndentConfigTab(page, kateView);
 
   // select options
   page=kd->addVBoxPage(i18n("Select"), QString::null,
                        BarIcon("misc") );
-  SelectConfigTab *selectConfig = new SelectConfigTab(page, kWrite);
+  SelectConfigTab *selectConfig = new SelectConfigTab(page, kateView);
 
   // edit options
   page=kd->addVBoxPage(i18n("Edit"), QString::null,
                        BarIcon("edit", KIcon::SizeMedium ) );
-  EditConfigTab *editConfig = new EditConfigTab(page, kWrite);
+  EditConfigTab *editConfig = new EditConfigTab(page, kateView);
 
   // spell checker
   page = kd->addVBoxPage( i18n("Spelling"), i18n("Spell checker behavior"),
                           BarIcon("spellcheck", KIcon::SizeMedium) );
-  KSpellConfig *ksc = new KSpellConfig(page, 0L, kWrite->ksConfig(), false );
+  KSpellConfig *ksc = new KSpellConfig(page, 0L, kateView->ksConfig(), false );
 
   kwin.setIcons(kd->winId(), kapp->icon(), kapp->miniIcon());
 
@@ -282,30 +280,22 @@ void TopLevel::configure()
  if (kd->exec()) {
     // color options
     colorConfig->getColors(colors);
-    kWrite->applyColors();
+    kateView->applyColors();
     // indent options
-    indentConfig->getData(kWrite);
+    indentConfig->getData(kateView);
     // select options
-    selectConfig->getData(kWrite);
+    selectConfig->getData(kateView);
     // edit options
-    editConfig->getData(kWrite);
+    editConfig->getData(kateView);
     // spell checker
     ksc->writeGlobalSettings();
-    kWrite->setKSConfig(*ksc);
+    kateView->setKSConfig(*ksc);
     hlManager->setHlDataList(hlDataList);
     hlManager->setDefaults(defaultStyleList,defaultFont);
     hlPage->saveData();
   }
 
   delete kd;
-}
-
-void TopLevel::toggleMenuBar()
-{
-  if( m_paShowMenuBar->isChecked() )
-    menuBar()->show();
-  else
-    menuBar()->hide();
 }
 
 void TopLevel::toggleToolBar()
@@ -315,7 +305,6 @@ void TopLevel::toggleToolBar()
   else
     toolBar("mainToolBar")->hide();
 }
-
 
 void TopLevel::toggleStatusBar()
 {
@@ -339,32 +328,32 @@ void TopLevel::editToolbars()
   if (dlg->exec())
   {
       KParts::GUIActivateEvent ev1( false );
-      QApplication::sendEvent( kWrite, &ev1 );
-      guiFactory()->removeClient( kWrite );
+      QApplication::sendEvent( kateView, &ev1 );
+      guiFactory()->removeClient( kateView );
       createShellGUI( false );
       createShellGUI( true );
-      guiFactory()->addClient( kWrite );
+      guiFactory()->addClient( kateView );
       KParts::GUIActivateEvent ev2( true );
-      QApplication::sendEvent( kWrite, &ev2 );
+      QApplication::sendEvent( kateView, &ev2 );
   }
   delete dlg;
 }
 
 void TopLevel::printNow()
 {
-  kWrite->printDlg ();
+  kateView->printDlg ();
 }
 
 void TopLevel::printDlg()
 {
-  kWrite->printDlg ();
+  kateView->printDlg ();
 }
 
 void TopLevel::newCurPos()
 {
   statusBar()->changeItem(i18n(" Line: %1 Col: %2 ")
-    .arg(KGlobal::locale()->formatNumber(kWrite->currentLine() + 1, 0))
-    .arg(KGlobal::locale()->formatNumber(kWrite->currentColumn() + 1, 0)),
+    .arg(KGlobal::locale()->formatNumber(kateView->currentLine() + 1, 0))
+    .arg(KGlobal::locale()->formatNumber(kateView->currentColumn() + 1, 0)),
     ID_LINE_COLUMN);
 }
 
@@ -372,15 +361,15 @@ void TopLevel::newStatus()
 {
   newCaption();
 
-  bool readOnly = kWrite->isReadOnly();
-  int config = kWrite->config();
+  bool readOnly = kateView->isReadOnly();
+  int config = kateView->config();
 
   if (readOnly)
     statusBar()->changeItem(i18n(" R/O "),ID_INS_OVR);
   else
     statusBar()->changeItem(config & KateView::cfOvr ? i18n(" OVR ") : i18n(" INS "),ID_INS_OVR);
 
-  statusBar()->changeItem(kWrite->isModified() ? " * " : "",ID_MODIFIED);
+  statusBar()->changeItem(kateView->isModified() ? " * " : "",ID_MODIFIED);
 }
 
 
@@ -399,14 +388,14 @@ void TopLevel::timeout() {
 
 void TopLevel::newCaption()
 {
-  if (kWrite->doc()->url().isEmpty()) {
-    setCaption(i18n("Untitled"),kWrite->isModified());
+  if (kateView->doc()->url().isEmpty()) {
+    setCaption(i18n("Untitled"),kateView->isModified());
   } else {
     //set caption
     if ( m_paShowPath->isChecked() )
-      setCaption(kWrite->doc()->url().prettyURL(),kWrite->isModified());
+      setCaption(kateView->doc()->url().prettyURL(),kateView->isModified());
     else
-      setCaption(kWrite->doc()->url().fileName(),kWrite->isModified());
+      setCaption(kateView->doc()->url().fileName(),kateView->isModified());
   }
 }
 
@@ -431,7 +420,7 @@ void TopLevel::slotDropEvent( QDropEvent *event )
     char *s;
     for (s = urls.first(); s != 0L; s = urls.next()) {
       // Load the first file in this window
-      if (s == urls.getFirst() && !kWrite->isModified() && !kWrite->isReadOnly()) {
+      if (s == urls.getFirst() && !kateView->isModified() && !kateView->isReadOnly()) {
         loadURL(s);
       } else {
         TopLevel *t = new TopLevel();
@@ -451,7 +440,7 @@ void TopLevel::slotEnableActions( bool enable )
     for (; it != end; ++it )
         (*it)->setEnabled( enable );
 
-    actions = kWrite->actionCollection()->actions();
+    actions = kateView->actionCollection()->actions();
     it = actions.begin();
     end = actions.end();
     for (; it != end; ++it )
@@ -484,8 +473,8 @@ void TopLevel::readConfig() {
   config = KateFactory::instance()->config();
 
   config->setGroup("General Options");
-  kWrite->readConfig(config);
-  kWrite->doc()->readConfig(config);
+  kateView->readConfig(config);
+  kateView->doc()->readConfig(config);
 }
 
 
@@ -501,15 +490,15 @@ void TopLevel::writeConfig()
   config = KateFactory::instance()->config();
 
   config->setGroup("General Options");
-  kWrite->writeConfig(config);
-  kWrite->doc()->writeConfig(config);
+  kateView->writeConfig(config);
+  kateView->doc()->writeConfig(config);
 }
 
 // session management
 void TopLevel::restore(KConfig *config, int n)
 {
-  if (kWrite->isLastView() && !kWrite->doc()->url().isEmpty()) { //in this case first view
-    loadURL(kWrite->doc()->url(), KateView::lfNewFile );
+  if (kateView->isLastView() && !kateView->doc()->url().isEmpty()) { //in this case first view
+    loadURL(kateView->doc()->url(), KateView::lfNewFile );
   }
   readPropertiesInternal(config, n);
   init();
@@ -520,15 +509,15 @@ void TopLevel::restore(KConfig *config, int n)
 void TopLevel::readProperties(KConfig *config)
 {
   readConfig(config);
-  kWrite->readSessionConfig(config);
+  kateView->readSessionConfig(config);
 }
 
 
 void TopLevel::saveProperties(KConfig *config)
 {
   writeConfig(config);
-  config->writeEntry("DocumentNumber",docList.find((KateDocument *)kWrite->doc()) + 1);
-  kWrite->writeSessionConfig(config);
+  config->writeEntry("DocumentNumber",docList.find((KateDocument *)kateView->doc()) + 1);
+  kateView->writeSessionConfig(config);
 }
 
 
