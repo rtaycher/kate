@@ -71,12 +71,7 @@ void KateProjectViews::projectChanged ()
   if (!(p = m_mainWindow->mainWindow()->activeProject()))
     return;
 
-  int n = m_numList.findIndex (p->projectNumber());
-  
-  if (n >= 0)
-  {
-    m_stack->raiseWidget (n);
-  }
+  m_stack->raiseWidget (m_wMap[p->projectNumber()]);
 }
 
 void KateProjectViews::projectCreated (Kate::Project *project)
@@ -84,23 +79,17 @@ void KateProjectViews::projectCreated (Kate::Project *project)
   if (!project)
     return;
 
-  m_numList.append (project->projectNumber());
-  
   KateProjectTreeView *tree = new KateProjectTreeView (project, this);
+  m_wMap[project->projectNumber()] = tree;
+  
   m_stack->addWidget (tree);
   m_stack->raiseWidget (tree);
 }
 
 void KateProjectViews::projectDeleted (uint projectNumber)
 {
-  int n = m_numList.findIndex (projectNumber);
-  
-  if (n >= 0)
-  {
-    m_numList.remove (projectNumber);
-    
-    QWidget *w = m_stack->widget (n);
-    m_stack->removeWidget (w);
-    delete w;
-  }
+  QWidget *w = m_wMap[projectNumber];
+  m_stack->removeWidget (w);
+  delete w;
+  m_wMap.remove (projectNumber);
 }

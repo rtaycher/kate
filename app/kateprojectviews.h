@@ -26,7 +26,7 @@
 #include "../interfaces/project.h"
 
 #include <qwidget.h>
-#include <qvaluelist.h>
+#include <qmap.h>
 #include <qframe.h>
 #include <qwidgetstack.h>
 
@@ -50,7 +50,7 @@ class KateProjectViews : public QWidget
     class KateProjectManager *m_projectManager;
     class KateMainWindow *m_mainWindow;
 
-    QValueList<uint> m_numList;
+    QMap<uint, QWidget*> m_wMap;
 };
 
 #endif
