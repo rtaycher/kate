@@ -170,6 +170,7 @@ void KantViewSpace::saveFileList( int myIndex )
 {
   //
   kdDebug()<<QString("[viewspace%1]").arg( myIndex )<<endl;
+  // Save file list, includeing cursor position in this instance.
   QListIterator<KantView> it(mViewList);
   for(; it.current(); ++it)  // FIXME: SHOULD BE REVERSE!!!
     kdDebug()<<it.current()->doc()->url().prettyURL()<<endl;

@@ -38,48 +38,46 @@
 #include "../kwrite/highlight.h"
 #include "../kwrite/kwrite_factory.h"
 
+
 #include <cassert>
 #include <qcheckbox.h>
 #include <qiconview.h>
 #include <qinputdialog.h>
+#include <qlayout.h>
+#include <qlayout.h>
 #include <qlist.h>
+#include <qsplitter.h>
+#include <qsplitter.h>
+#include <qvbox.h>
 #include <qwhatsthis.h>
+#include <qwidgetstack.h>
 
+#include <dcopclient.h>
+#include <kaction.h>
 #include <kapp.h>
+#include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <kdialogbase.h>
+#include <kdiroperator.h>
+#include <kdockwidget.h>
 #include <kedittoolbar.h>
+#include <kfiledialog.h>
+#include <kglobalaccel.h>
+#include <kglobal.h>
+#include <kglobalsettings.h>
 #include <kiconloader.h>
+#include <kio/netaccess.h>
 #include <kkeydialog.h>
+#include <klistbox.h>
+#include <klocale.h>
 #include <kparts/event.h>
 #include <kparts/part.h>
-#include <kurldrag.h>
+#include <ksimpleconfig.h>
 #include <kstdaction.h>
-#include <qwidgetstack.h>
-#include <qlayout.h>
-#include <kdiroperator.h>
-#include <kfiledialog.h>
-#include <kapp.h>
-#include <kdockwidget.h>
-#include <kuniqueapp.h>
-#include <qsplitter.h>
-#include <kiconloader.h>
 #include <kstddirs.h>
-#include <kaction.h>
-#include <klocale.h>
-#include <kdiroperator.h>
-#include <kcmdlineargs.h>
-#include <kstdaction.h>
-#include <qvbox.h>
-#include <qlayout.h>
-#include <qsplitter.h>
-#include <dcopclient.h>
-#include <klistbox.h>
-#include <kedittoolbar.h>
-#include <kglobal.h>
-#include <kglobalaccel.h>
-#include <kglobalsettings.h>
+#include <kuniqueapp.h>
 #include <kurldrag.h>
+
 
 #define POP_(x) kdDebug() << #x " = " << flush << x << endl
 
@@ -1050,15 +1048,16 @@ void KantMainWindow::slotSettingsShowFullScreen()
 
 void KantMainWindow::reopenDocuments(bool isRestore)
 {
+  KSimpleConfig* scfg = new KSimpleConfig("kantsessionrc", false);
   // read the list and loop around it.
-  config->setGroup("open files");
+  /*config*/scfg->setGroup("open files");
   if (config->readBoolEntry("reopen at startup", true) || isRestore )
   {
-    QStringList list = config->readListEntry("list");
+    QStringList list = /*config*/scfg->readListEntry("list");
 
     for ( int i = list.count() - 1; i > -1; i-- ) {
-      config->setGroup("open files");
-      QStringList data = config->readListEntry( list[i] );
+      /*config*/scfg->setGroup("open files");
+      QStringList data = /*config*/scfg->readListEntry( list[i] );
       // open file
       viewManager->openURL( KURL(data[0]) );
       // restore cursor position
@@ -1069,9 +1068,10 @@ void KantMainWindow::reopenDocuments(bool isRestore)
       if (viewManager->activeView()->numLines() >= line) // HACK--
         viewManager->activeView()->setCursorPosition(line, col);
     }
-    config->writeEntry("list", "");
-    config->sync();
   }
+  // truncate sessionconfig file.
+  scfg->deleteGroup("open files");
+  scfg->sync();
 }
 
 void KantMainWindow::slotSidebarFocusNext()

@@ -33,23 +33,24 @@
 #include "../kwrite/highlight.h"
 #include "../kwrite/kwrite_factory.h"
 
-#include <qlayout.h>
-#include <kdiroperator.h>
-#include <kfiledialog.h>
-#include <kdockwidget.h>
-#include <kiconloader.h>
-#include <kstddirs.h>
-#include <kaction.h>
-#include <klocale.h>
-#include <kcmdlineargs.h>
-#include <kstdaction.h>
-#include <qvbox.h>
-#include <qlayout.h>
 #include <dcopclient.h>
-#include <qobjectlist.h>
+#include <kaction.h>
+#include <kcmdlineargs.h>
 #include <kdebug.h>
-#include <qstringlist.h>
+#include <kdiroperator.h>
+#include <kdockwidget.h>
+#include <kfiledialog.h>
+#include <kiconloader.h>
+#include <klocale.h>
+#include <ksimpleconfig.h>
+#include <kstdaction.h>
+#include <kstddirs.h>
 #include <qfileinfo.h>
+#include <qlayout.h>
+#include <qobjectlist.h>
+#include <qstringlist.h>
+#include <qvbox.h>
+
 
 #include "kantsplitter.h"
 
@@ -1010,6 +1011,7 @@ void KantViewManager::saveAllDocsAtCloseDown(KConfig* config)
   QStringList list;
   int vc = viewCount();
   uint i = 0;
+  KSimpleConfig* scfg = new KSimpleConfig("kantsessionrc", false);
   while ( i <= vc )
   {
     v = activeView();
@@ -1024,16 +1026,17 @@ void KantViewManager::saveAllDocsAtCloseDown(KConfig* config)
       data.append( QString("%1.%2").arg(v->currentLine()).arg(v->currentColumn()) );// CURSOR
       //data.append();// LASTMOD
       // write entry
-      config->setGroup("open files");
-      config->writeEntry( QString("File%1").arg(id), data );
+      /*config*/scfg->setGroup("open files");
+      /*config*/scfg->writeEntry( QString("File%1").arg(id), data );
       list.append( QString("File%1").arg(id) );
     }
     if( ! deleteView( v ) )
-      return;
+      return;  // this will hopefully never happen, since - WHAT THEN???
     i++;
   }
-  config->setGroup("open files");
-  config->writeEntry( "list", list );
+  /*config*/scfg->setGroup("open files");
+  /*config*/scfg->writeEntry( "list", list );
+  scfg->sync();
 }
 
 void KantViewManager::reloadCurrentDoc()
@@ -1063,14 +1066,17 @@ void KantViewManager::saveViewSpaceConfig()
    saveSplitterConfig( s );
 }
 
-void KantViewManager::saveSplitterConfig( KantSplitter* s, int idx )
+void KantViewManager::saveSplitterConfig( KantSplitter* s, int idx/*, KSimplecvs Config* config*/ )
 {
-   //
-   kdDebug()<<QString("[splitter%1]").arg(idx)<<endl;
+   QString grp = QString("[splitter%1]").arg(idx);
+   //config->setGroup(grp);
+   kdDebug()<<grp<<endl;
+
    // Save sizes, children for this splitter
    QValueList<int> sizes = s->sizes();
-   //
+   //config->writeEntry("sizes", sizes);
    kdDebug()<<"sizes="<<QString("%1,%2").arg(sizes[0]).arg(sizes[1])<<endl;
+
    QStringList childList;
    // a kantsplitter has two children, of which one may be a KantSplitter.
    const QObjectList* l = s->children();
@@ -1079,19 +1085,22 @@ void KantViewManager::saveSplitterConfig( KantSplitter* s, int idx )
    for (; it.current(); ++it) {
      //++it;
      obj = it.current();
+     // TODO: make sure the childList gets the order right!!
      // For KantViewSpaces, ask them to save the file list.
      if ( obj->isA("KantViewSpace") ) {
        childList.append( QString("viewspace%1").arg( viewSpaceList.find((KantViewSpace*)obj) ) );
-       ((KantViewSpace*)obj)->saveFileList( viewSpaceList.find((KantViewSpace*)obj) );
+       ((KantViewSpace*)obj)->saveFileList( /*config,*/ viewSpaceList.find((KantViewSpace*)obj) );
      }
      // For KantSplitters, recurse
      else if ( obj->isA("KantSplitter") ) {
-       saveSplitterConfig( (KantSplitter*)obj, idx++);
+       saveSplitterConfig( (KantSplitter*)obj, idx++/*, config*/);
        childList.append( QString("splitter%1").arg( idx ) );
      }
    }
-   //delete l;
-   //
+
+   // reset config group.
+   //config->setGroup(grp);
+   //config->writeEntry("children", childList);
    kdDebug()<<"children="<<childList.join(",")<<endl;
 }
 
