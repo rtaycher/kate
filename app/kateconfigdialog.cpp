@@ -174,15 +174,15 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   lo->addWidget(sep);
   lo->addWidget(new QLabel(i18n("Toolview mode:"),frGeneral));
   cb_mode=new QComboBox(frGeneral);
-  cb_mode->insertItem(i18n("Classic Mode"));
-  cb_mode->insertItem(i18n("IDEAl Mode"));
+  cb_mode->insertItem(i18n("Modern Style"));
+  cb_mode->insertItem(i18n("Classic Style"));
   lo->addWidget(cb_mode);
   QWhatsThis::add(cb_mode,i18n("Choose how you want the toolviews managed.<BR><ul>"
-	"<li><b>Classic Mode</b> The toolviews (filelist, fileselector, ...) can be docked anywhere and made floating</li>"
-	"<li><b>IDEAl Mode</b> The toolviews will behave similiar to the views in konquerors sidebar</li></ul>"));
+	"<li><b>Modern Style</b> The toolviews will behave similiar to the views in konquerors sidebar</li></ul>"
+	"<li><b>Classic Style</b> The toolviews (filelist, fileselector, ...) can be docked anywhere and made floating</li>"));
 
   config->setGroup("General");
-  cb_mode->setCurrentItem((config->readEntry("viewMode","")=="IDEAl")?1:0);
+  cb_mode->setCurrentItem((config->readEntry("viewMode","")=="Modern")?0:1);
 
   lo->addStretch(1); // :-] works correct without autoadd
   // END General page
@@ -288,10 +288,11 @@ void KateConfigDialog::slotApply()
   config->writeEntry("MultipleInstances",cb_singleInstance->isChecked());
   config->setGroup("General");
   config->writeEntry("reopen at startup", cb_reopenFiles->isChecked());
-  if (((config->readEntry("viewMode","")=="IDEAl")?1:0)!=cb_mode->currentItem())
+  
+  if (((config->readEntry("viewMode","")=="Modern")? 0 : 1)!=cb_mode->currentItem())
   {
-	config->writeEntry("viewMode",(cb_mode->currentItem()==1)?"IDEAl":"Classic");
-	config->writeEntry("deleteKDockWidgetConfig",true);
+    config->writeEntry("viewMode",(cb_mode->currentItem()==0)?"Modern":"Classic");
+    config->writeEntry("deleteKDockWidgetConfig",true);
   }
 
   mainWindow->syncKonsole = cb_syncKonsole->isChecked();

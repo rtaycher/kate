@@ -87,7 +87,8 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   QString grp=config->group();
   config->setGroup("General");
-  m_dockStyle=(config->readEntry("viewMode","")=="IDEAl")?IDEAlStyle:ClassicStyle;
+  m_dockStyle= (config->readEntry("viewMode","")=="Modern") ? ModernStyle : ClassicStyle;
+  
   if (config->readBoolEntry("deleteKDockWidgetConfig",false))
   {
 	config->writeEntry("deleteKDockWidgetConfig",false);
@@ -100,8 +101,6 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   }
 
   config->setGroup(grp);
-  //m_dockStyle=IDEAlStyle;
-  //m_dockStyle=ClassicStyle;
 
   myID = uniqueID;
   uniqueID++;
@@ -153,7 +152,7 @@ void KateMainWindow::setupMainWindow ()
   mainDock = createDockWidget( "mainDock", 0L );
 
 
-  if (m_dockStyle==IDEAlStyle)
+  if (m_dockStyle==ModernStyle)
   {
     m_leftDock = createDockWidget("leftDock",SmallIcon("misc"),0L,"Left Dock");
     m_rightDock = createDockWidget("rightDock",SmallIcon("misc"),0L,"Right Dock");
@@ -171,7 +170,7 @@ void KateMainWindow::setupMainWindow ()
   mainDock->setEnableDocking ( KDockWidget::DockNone );
   mainDock->setDockSite( KDockWidget::DockCorner );
 
-  if (m_dockStyle==IDEAlStyle)
+  if (m_dockStyle==ModernStyle)
   {
     KateDockContainer *tmpDC;
     m_leftDock->setWidget(tmpDC=new KateDockContainer(m_leftDock, this, KDockWidget::DockLeft));
@@ -185,7 +184,7 @@ void KateMainWindow::setupMainWindow ()
 
   }
 
-  if (m_dockStyle==IDEAlStyle)
+  if (m_dockStyle==ModernStyle)
   {
      m_leftDock->manualDock(mainDock, KDockWidget::DockLeft,20);
      m_rightDock->manualDock(mainDock, KDockWidget::DockRight,20);
@@ -317,7 +316,7 @@ void KateMainWindow::setupActions()
   m_settingsShowToolViews->insert(settingsShowConsole);
 
 
-  if (m_dockStyle==IDEAlStyle)
+  if (m_dockStyle==ModernStyle)
   {
 	  KActionMenu *settingsShowToolDocks=new KActionMenu( i18n("Tool Docks"), actionCollection(),"settings_show_tooldocks");
           settingsShowToolDocks->setWhatsThis(i18n("This allows you to show/hide certain tool view dock areas"));

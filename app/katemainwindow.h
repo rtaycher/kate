@@ -53,7 +53,11 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     KateMainWindow(KateDocManager *_docManager, KatePluginManager *_pluginManager);
     ~KateMainWindow();
     
-    enum DockWidgetMode {ClassicStyle,IDEAlStyle};
+    enum DockWidgetMode
+    {
+      ModernStyle,
+      ClassicStyle
+    };
     
     Kate::MainWindow *mainWindow () { return m_mainWindow; };
     Kate::ToolViewManager *toolViewManager () { return m_toolViewManager; };
