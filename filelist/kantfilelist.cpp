@@ -58,6 +58,7 @@ void KantFileList::slotDocumentCreated (KantDocument *doc)
   insertItem (new KantFileListItem (doc->docID(), SmallIcon("null"), doc->docName()) );
   connect(doc,SIGNAL(modStateChanged(KantDocument *)),this,SLOT(slotModChanged(KantDocument *)));
   connect(doc,SIGNAL(nameChanged(KantDocument *)),this,SLOT(slotNameChanged(KantDocument *)));
+  sort();
 }
 
 void KantFileList::slotDocumentDeleted (long docID)
@@ -128,6 +129,7 @@ void KantFileList::slotNameChanged (KantDocument *doc)
       break;
     }
   }
+  sort();
 }
 
 void KantFileList::slotViewChanged ()
