@@ -1,8 +1,13 @@
+2001-12-01 Christoph Cullmann <cullmann@kde.org>
+  * speedup for insert/removeText/Line
+  * new editStart/editEnd/editAddUndo functions to make the undo/redo + update
+     after edit function calls easier to understand an use in katedocument.*
+
 2001-11-30 Joseph Wenninger <jowenn@kde.org>
   * I hopefully fixed the CSS highlighting finally. It used
-	deprecated syntax and there was a bug in the highlighting code, 
- 	for handling weakDeliminiators. Who renamed them, once they where 
-	called weakDelimiters, which I think is the correct pronounciation.
+     deprecated syntax and there was a bug in the highlighting code,
+     for handling weakDeliminiators. Who renamed them, once they where
+     called weakDelimiters, which I think is the correct pronounciation.
 
 2001-11-29 Joseph Wenninger <jowenn@kde.org>
   * KWrite/Kate use different font settings for printing and viewing now

@@ -10,12 +10,12 @@ KTextEditor interfaces in kdelibs.
 For Kate Plugins, Kate provides the Kate Interfaces, which allow deeper access
 to the Kate app and its features.
 
-Homepage: http://kate.sourceforge.net
+Homepage: http://kate.sf.net
 
 The Kate team
 
                 *** KWrite ***
-New KWrite app is using the Kate part ! ;-)
+New KWrite app is using the Kate part ;-)
 
 Licensing:
 The Kate app + part and KWrite app are licensed under the GPL.

@@ -1,6 +1,15 @@
 Kate Team:
 - Christoph Cullmann <cullmann@kde.org>
   (Maintainer)
+  
+- Joseph Wenninger <jowenn@kde.org>
+  (highlight guy + big bug hunter)
+
+- Anders Lund <anders@alweb.dk>
+  (very cool split view + much more)
+  
+- Waldo Bastian <bastian@kde.org>
+  (improved buffer handling)
 
 - Michael Bartl <michael.bartl1@chello.at>
   (first one who really helped out :)
@@ -8,20 +17,11 @@ Kate Team:
 - Phlip <phlip_cpp@my-deja.com>
   (project stuff)
 
-- Anders Lund <anders@alweb.dk>
-  (very cool split view + much more)
-
 - Matt Newell <newellm@proaxis.com>
-
-- Joseph Wenninger <jowenn@kde.org>
-  (highlight guy + big bug hunter)
 
 - Michael McCallum <gholam@xtra.co.nz>
 
 - John Firebaugh <jfire@uclink.berkeley.edu>
-
-- Waldo Bastian <bastian@kde.org>
-  (improved buffer handling)
 
 KWrite Team:
 - Jochen Wilhelmy <digisnap@cs.tu-berlin.de>
