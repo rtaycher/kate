@@ -124,8 +124,6 @@ class EditConfigTab : public QWidget
     static const int numFlags = 9;
     static const int flags[numFlags];
     QCheckBox *opt[numFlags];
-    KComboBox *encoding;
-
 
     KIntNumInput *e1;
     KIntNumInput *e2;

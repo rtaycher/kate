@@ -200,9 +200,12 @@ class KateViewManager : public Kate::ViewManager
     void statusChanged (KateView *, int, int, int, int, QString);
     void statChanged ();
     void viewChanged ();
+		
+	private:
+	  QString myEncoding;
 
   public:  //KatePluginIface
-  virtual Kate::View *getActiveView(){return (Kate::View *)activeView();};
+    virtual Kate::View *getActiveView(){return (Kate::View *)activeView();};
 };
 
 #endif

@@ -24,6 +24,7 @@
 #include "katehighlight.h"
 #include "kateviewdialog.h"
 #include "katedialogs.h"
+#include "katefiledialog.h"
 
 #include <kurldrag.h>
 #include <qfocusdata.h>
@@ -1854,23 +1855,28 @@ int KateView::checkOverwrite( KURL u )
 }
 
 KateView::saveResult KateView::saveAs() {
-  KURL url;
   int query;
+	KateFileDialog *dialog;
+	KateFileDialogData *data;
 
   do {
     query = KMessageBox::Yes;
 
-    url = KFileDialog::getSaveURL(myDoc->url().url(), QString::null,this);
-    if (url.isEmpty()) return SAVE_CANCEL;
+		dialog = new KateFileDialog (myDoc->url().url(),doc()->encoding(), this, i18n ("Save File"), KateFileDialog::saveDialog);
+	  data = dialog->exec ();
 
-    query = checkOverwrite( url );
+	  if ((data == 0L) || (data->url.isEmpty()))
+	    return SAVE_CANCEL;
+
+    query = checkOverwrite( data->url );
   }
   while (query != KMessageBox::Yes);
 
   if( query == KMessageBox::Cancel )
     return SAVE_CANCEL;
 
-  myDoc->saveAs(url);
+	myDoc->setEncoding (data->encoding);
+  myDoc->saveAs(data->url);
   return SAVE_OK;
 }
 

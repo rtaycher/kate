@@ -417,16 +417,6 @@ EditConfigTab::EditConfigTab(QWidget *parent, KateView *view)
   leLayout->addWidget(e2, 0, AlignLeft);
   leLayout->addWidget(e3, 0, AlignLeft);
 
-
-  QVBox *box = new QVBox (this);
-  leLayout->addWidget (box, 0, AlignLeft);
-
-  new QLabel (i18n("Encoding:"), box);
-
-  encoding = new KComboBox(box);
-  encoding->insertStringList (KGlobal::charsets()->availableEncodingNames());
-  encoding->setCurrentItem (KGlobal::charsets()->availableEncodingNames().findIndex(view->doc()->encoding()));
-
   leLayout->addStretch();
 
   // What is this? help
@@ -455,7 +445,6 @@ void EditConfigTab::getData(KateView *view)
   }
   view->doc()->setConfigFlags(configFlags);
 
-  view->setEncoding (encoding->currentText());
   view->doc()->setWordWrapAt(e1->value());
   view->doc()->setWordWrap (opt[0]->isChecked());
   view->setTabWidth(e2->value());
