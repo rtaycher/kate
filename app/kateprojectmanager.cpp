@@ -31,6 +31,7 @@
 #include <klineedit.h>
 #include <klocale.h>
 #include <kmessagebox.h>
+#include <kfiledialog.h>
 
 #include <qfile.h>
 #include <qlayout.h>
@@ -249,6 +250,7 @@ KateProjectDialogNew::KateProjectDialogNew (QWidget *parent, KateProjectManager 
   grid->addWidget (m_urlRequester, 2, 1);
 
   m_urlRequester->setMode (KFile::LocalOnly);
+  m_urlRequester->fileDialog()->setOperationMode (KFileDialog::Saving);
   m_urlRequester->setFilter (QString ("*.kateproject|") + i18n("Kate Project Files"));
   connect( m_urlRequester->lineEdit(), SIGNAL( textChanged ( const QString & )),this,SLOT(slotTextChanged()));
   slotTextChanged();
