@@ -41,14 +41,14 @@ KatePluginManager::~KatePluginManager()
 }
 
 void KatePluginManager::setupPluginList ()
-{    
+{
   QValueList<KService::Ptr> traderList= KTrader::self()->query("Kate/Plugin");
-                                        
+
   KTrader::OfferList::Iterator it(traderList.begin());
   for( ; it != traderList.end(); ++it)
   {
-    KService::Ptr ptr = (*it);        
-        
+    KService::Ptr ptr = (*it);
+
     PluginInfo *info=new PluginInfo;
 
     info->load = false;
@@ -69,6 +69,7 @@ void KatePluginManager::loadConfig ()
     if  (config->readBoolEntry(m_pluginList.at(i)->service->library(), false))
       m_pluginList.at(i)->load = true;
   }
+  delete config;
 }
 
 void KatePluginManager::writeConfig ()
@@ -82,6 +83,7 @@ void KatePluginManager::writeConfig ()
   }
 
   config->sync();
+  delete config;
 }
 
 
@@ -104,7 +106,7 @@ void KatePluginManager::enableAllPluginsGUI (KateMainWindow *win)
 }
 
 void KatePluginManager::loadPlugin (PluginInfo *item)
-{               
+{
   item->load = (item->plugin = Kate::createPlugin (QFile::encodeName(item->service->library()), Kate::application()));
 }
 
@@ -139,10 +141,10 @@ void KatePluginManager::disablePluginGUI (PluginInfo *item)
 {
   if (!item->plugin) return;
   if (!Kate::pluginViewInterface(item->plugin)) return;
-  
+
   for (uint i=0; i< ((KateApp*)parent())->mainWindows(); i++)
   {
-    Kate::pluginViewInterface(item->plugin)->removeView(((KateApp*)parent())->mainWindow(i));       
+    Kate::pluginViewInterface(item->plugin)->removeView(((KateApp*)parent())->mainWindow(i));
   }
 }
 
