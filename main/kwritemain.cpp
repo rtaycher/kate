@@ -466,7 +466,7 @@ void restore()
   }
 
   for (z = 1; z <= windows; z++) {
-    buf = QString("Document%1").arg(z);
+    buf = QString("%1").arg(z);
     config->setGroup(buf);
     t = new TopLevel(docList.at(config->readNumEntry("DocumentNumber") - 1));
     t->restore(config,z);
