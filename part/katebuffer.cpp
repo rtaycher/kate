@@ -738,7 +738,7 @@ KWBufBlock::flushStringList()
        it != m_stringList.end(); ++it)
    {
       int l = (*it)->length();
-      size += (l+1)*sizeof(QChar)+l+1 + sizeof(uint)*2;
+      size += (l+1)*sizeof(QChar)+l+1 + sizeof(uint)*2+sizeof(TContexts*);
    }
    //kdDebug(13020)<<"Size = "<< size<<endl;
    m_rawData2 = QByteArray(size);
@@ -766,6 +766,9 @@ KWBufBlock::flushStringList()
       b[1] = tl->myMark;
       memcpy(buf, (char *)b, sizeof(uint)*2);
       buf += sizeof(uint)*2;
+      memcpy(buf,&(tl->ctx),sizeof(TContexts*));
+	tl->ctx=0;
+      buf +=sizeof(TContexts*);
    }
    assert(buf-m_rawData2.data() == size);
    m_codec = 0; // No codec
@@ -797,6 +800,8 @@ KWBufBlock::buildStringListFast()
       buf += sizeof(uint)*2;
 #warning FIXME      textLine->ctx = b[0];
       textLine->myMark = b[1];
+	memcpy((TContexts*)textLine->ctx,buf,sizeof(TContexts*));
+	buf+=sizeof(TContexts*);
       m_stringList.push_back (textLine);
    }
    //kdDebug(13020)<<"stringList.count = "<< m_stringList.count()<<" should be %ld"<< m_endState.lineNr - m_beginState.lineNr<<endl;
