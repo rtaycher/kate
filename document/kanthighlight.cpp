@@ -1,3 +1,4 @@
+
 /*
    Copyright (C) 1998, 1999 Jochen Wilhelmy
                             digisnap@cs.tu-berlin.de
@@ -401,14 +402,45 @@ const QChar *HlCFloat::checkHgl(const QChar *s,bool lineStart) {
 
 HlAnyChar::HlAnyChar(int attribute, int context, char* charList)
   : HlItem(attribute, context) {
-  _charList=charList;  
+  _charList=charList;
 }
 
 const QChar *HlAnyChar::checkHgl(const QChar *s,bool) {
-  kdDebug()<<"in AnyChar::checkHgl: _charList: "<<_charList<<endl;
+  //kdDebug()<<"in AnyChar::checkHgl: _charList: "<<_charList<<endl;
   if (ustrchr(_charList, *s)) return s +1;
   return 0L;
 }
+
+HlRegExpr::HlRegExpr(int attribute, int context,QString regexp)
+  : HlItem(attribute, context) {
+
+   {
+    handlesLinestart=false;
+     if (regexp.at(0)!=QChar::null)
+       {
+         if (regexp.at(0)=='^') handlesLinestart=true;
+           else regexp='^'+regexp;
+       }
+     Expr=new QRegExp(regexp);
+   }
+}
+
+const QChar *HlRegExpr::checkHgl(const QChar *s,bool lineStart)
+{
+  if ((!lineStart) && handlesLinestart) return 0;
+  kdDebug()<<"Trying to match:"<<Expr->pattern()<<endl;
+  QChar *chtmp=s;
+  int i;
+  for (i=0;(*chtmp)!='\0';chtmp++,i++);
+  QString line(s,i);
+  int len;
+  if (Expr->match(line,0,&len)!=-1)
+   {
+     return s+len;
+   }
+  return 0L;
+};
+
 
 HlCSymbol::HlCSymbol(int attribute, int context)
   : HlItem(attribute, context) {
@@ -2123,8 +2155,8 @@ void AutoHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
 {
   if (casesensitive=="1")
   {
-    keyword->addList(HlManager::self()->syntax->finddata(iName,"keyword"));
-    dataType->addList(HlManager::self()->syntax->finddata(iName,"type"));
+   if (keyword) keyword->addList(HlManager::self()->syntax->finddata(iName,"keyword"));
+   if (dataType) dataType->addList(HlManager::self()->syntax->finddata(iName,"type"));
   }
 }
 
@@ -2174,7 +2206,8 @@ HlItem *AutoHighlight::createHlItem(struct syntaxContextData *data, int *res)
 		if (dataname=="LineContinue") return(new HlLineContinue(attr,context)); else
                 if (dataname=="StringDetect") return(new HlStringDetect(attr,context,stringdata,insensitive)); else
                 if (dataname=="AnyChar") return(new HlAnyChar(attr,context,(char*)stringdata.latin1())); else
-		  {
+                if (dataname=="RegExpr") return(new HlRegExpr(attr,context,stringdata)); else
+                  {
                     kdDebug()<<"***********************************"<<endl<<"Unknown entry for Context:"<<dataname<<endl;
                     return 0;
                   }
@@ -2184,7 +2217,7 @@ HlItem *AutoHighlight::createHlItem(struct syntaxContextData *data, int *res)
 
 void AutoHighlight::makeContextList()
 {
-  HlKeyword *keyword, *dataType;
+  HlKeyword *keyword=0, *dataType=0;
   struct syntaxContextData *data, *datasub;
   HlItem *c;
 
@@ -2251,7 +2284,7 @@ HlManager::HlManager() : QObject(0L)
   hlList.setAutoDelete(true);
   hlList.append(new Highlight(I18N_NOOP("Normal")));
 
-   /* new stuff
+   /* new stuff*/
  uint i=0;
   while (i < modeList.count())
   {
@@ -2259,7 +2292,7 @@ HlManager::HlManager() : QObject(0L)
     i++;
   }
 
-*/
+/*
   kdDebug()<<"Creating HlList"<<endl;
   hlList.append(new CHighlight(     "C"        ));
   hlList.append(new CppHighlight(   "C++"      ));
@@ -2278,7 +2311,7 @@ HlManager::HlManager() : QObject(0L)
   hlList.append(new LatexHighlight( "Latex"    ));
   hlList.append(new IdlHighlight("IDL"));
   kdDebug()<<"HlList created"<<endl;
-
+ */
 }
 
 HlManager::~HlManager() {

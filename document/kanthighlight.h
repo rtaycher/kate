@@ -27,7 +27,7 @@
 #include <kcolorbtn.h>
 #include <qstrvec.h>
 #include <qdict.h>
-
+#include <qregexp.h>
 
 class SyntaxDocument;
 struct syntaxModeListItem;
@@ -334,6 +334,14 @@ class HlAnyChar : public HlItem {
     char* _charList;
 };
 
+class HlRegExpr : public HlItem {
+  public:
+  HlRegExpr(int attribute, int context,QString expr);
+  ~HlRegExpr(){delete Expr;};
+  virtual const QChar *checkHgl(const QChar *,bool);
+  QRegExp *Expr;
+  bool handlesLinestart;
+};
 
 //--------
 

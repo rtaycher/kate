@@ -167,11 +167,12 @@ struct syntaxContextData* SyntaxDocument::getGroupInfo(const QString& langName, 
 }
 
 
-QStringList& SyntaxDocument::finddata(const QString& langName,const QString& type)
+QStringList& SyntaxDocument::finddata(const QString& langName,const QString& type,bool clearList)
 {
   QDomElement docElem = documentElement();
   QDomNode n = docElem.firstChild();
 
+  if (clearList) m_data.clear();
   while ( !n.isNull() )
   {
     if ( n.isElement())
@@ -191,7 +192,10 @@ QStringList& SyntaxDocument::finddata(const QString& langName,const QString& typ
 
         for(uint i=0; i< grandchildlist.count();i++)
           m_data+=grandchildlist.item(i).toElement().text().stripWhiteSpace();
-
+	if (!(e.attribute("extends").isEmpty()))
+	  {
+	     m_data+=finddata(e.attribute("extends"),type,FALSE);
+          }
         return m_data;
       }
     }

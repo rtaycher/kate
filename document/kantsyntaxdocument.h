@@ -48,7 +48,7 @@ class SyntaxDocument : public QDomDocument
     SyntaxDocument();
     ~SyntaxDocument();
 
-    QStringList& finddata(const QString& langName,const QString& type);
+    QStringList& finddata(const QString& langName,const QString& type,bool clearList=true);
     SyntaxModeList modeList();
 
     struct syntaxContextData* getGroupInfo(const QString& langName, const QString &group);
