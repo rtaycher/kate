@@ -84,7 +84,7 @@ void KateProjectDirView::addDialog (Kate::ProjectDirFile::Ptr dirFile, QWidget *
   delete dlg;
 }
 
-KateProjectDirViewDialog::KateProjectDirViewDialog (Kate::ProjectDirFile::Ptr dirFile, QWidget *parent) : KDialogBase (parent, "dirviewdialog", true, i18n ("Add directories/files to project"), KDialogBase::Ok|KDialogBase::Cancel)
+KateProjectDirViewDialog::KateProjectDirViewDialog (Kate::ProjectDirFile::Ptr dirFile, QWidget *parent) : KDialogBase (parent, "dirviewdialog", true, i18n ("Add Directories/Files to Project"), KDialogBase::Ok|KDialogBase::Cancel)
 {
   m_dirFile = dirFile;
   

@@ -46,7 +46,7 @@ class KateDocCheckItem : public QCheckListItem {
 // KateMailDialog implementation
 ///////////////////////////////////////////////////////////////////////////
 KateMailDialog::KateMailDialog( QWidget *parent, KateMainWindow  *mainwin )
-  : KDialogBase( parent, "kate mail dialog", true, i18n("Email File(s)"),
+  : KDialogBase( parent, "kate mail dialog", true, i18n("Email Files"),
                 Ok|Cancel|User1, Ok, false,
                 KGuiItem( i18n("&Show All Documents >>") ) ),
     mainWindow( mainwin )

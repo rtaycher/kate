@@ -328,12 +328,12 @@ void KateFileSelector::slotFilterChange( const QString & nf )
     dir->clearFilter();
     filter->lineEdit()->setText( QString::null );
     QToolTip::add( btnFilter,
-        QString( i18n("Apply Last Filter (\"%1\")") ).arg( lastFilter ) );
+        QString( i18n("Apply last filter (\"%1\")") ).arg( lastFilter ) );
   }
   else {
     dir->setNameFilter( f );
     lastFilter = f;
-    QToolTip::add( btnFilter, i18n("Clear Filter") );
+    QToolTip::add( btnFilter, i18n("Clear filter") );
   }
   btnFilter->setOn( !empty );
   dir->updateDir();
