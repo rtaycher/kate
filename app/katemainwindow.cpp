@@ -196,6 +196,9 @@ void KateMainWindow::setupMainWindow ()
   projectlist = new KateProjectList (m_projectManager, this, prBox/*filelistDock*/, "projectlist");
   projectviews = new KateProjectViews (m_projectManager, this, prBox/*filelistDock*/, "projectviews");
   prBox->setStretchFactor(projectviews, 2);
+  prBox->show ();
+  projectlist->show ();
+  projectviews->show ();
 
   fileselector = new KateFileSelector( this, m_viewManager, /*fileselectorDock*/ this, "operator");
   fileselectorDock=addToolViewWidget(KDockWidget::DockLeft,fileselector, SmallIcon("fileopen"), i18n("Selector"));
