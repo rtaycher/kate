@@ -133,7 +133,10 @@ QStringList KateDocument::replaceWithList = QStringList();
 KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool bBrowserView, bool deleteDoc,
                                            QWidget *parentWidget, const char *widgetName,
                                            QObject *, const char *name)
-  : Kate::Document (), DCOPObject(name), myFont (KGlobalSettings::fixedFont()), myFontMetrics (myFont), hlManager(HlManager::self ())
+  : Kate::Document (), DCOPObject(name),
+    myFont(KGlobalSettings::fixedFont()), myFontBold(KGlobalSettings::fixedFont()), myFontItalic(KGlobalSettings::fixedFont()), myFontBI(KGlobalSettings::fixedFont()),
+    myFontMetrics (myFont), myFontMetricsBold (myFontBold), myFontMetricsItalic (myFontItalic), myFontMetricsBI (myFontBI),
+    hlManager(HlManager::self ())
 {
   PreHighlightedTill=0;
   RequestPreHighlightTill=0;
@@ -147,6 +150,8 @@ KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool
   m_url.setPath( 0L );
 
   myEncoding = KGlobal::charsets()->name(KGlobal::charsets()->charsetForLocale());
+
+  setFont (KGlobalSettings::fixedFont());
 
   myDocID = docID;
   myDocName = QString ("");
@@ -209,7 +214,22 @@ KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool
 void KateDocument::setFont (QFont font)
 {
   myFont = font;
+
+  myFontBold = QFont (font);
+  myFontBold.setBold (true);
+
+  myFontItalic = QFont (font);
+  myFontItalic.setItalic (true);
+
+  myFontBI = QFont (font);
+  myFontBI.setBold (true);
+  myFontBI.setItalic (true);
+
   myFontMetrics = CachedFontMetrics (myFont);
+  myFontMetricsBold = CachedFontMetrics (myFontBold);
+  myFontMetricsItalic = CachedFontMetrics (myFontItalic);
+  myFontMetricsBI = CachedFontMetrics (myFontBI);
+
   updateFontData();
 }
 
@@ -635,11 +655,23 @@ int KateDocument::textWidth(const TextLine::Ptr &textLine, int cursorX) {
   int x;
   int z;
   QChar ch;
+  Attribute *a;
 
   x = 0;
   for (z = 0; z < cursorX; z++) {
     ch = textLine->getChar(z);
-    x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : myFontMetrics.width(ch);//a->width(ch);
+    a = &m_attribs[textLine->getAttr(z)];
+
+    if (ch == '\t')
+      x += m_tabWidth - (x % m_tabWidth);
+    else if (a->bold && a->italic)
+      x += myFontMetricsBI.width(ch);
+    else if (a->bold)
+      x += myFontMetricsBold.width(ch);
+    else if (a->italic)
+      x += myFontMetricsItalic.width(ch);
+    else
+      x += myFontMetrics.width(ch);
   }
   return x;
 }
@@ -659,6 +691,7 @@ int KateDocument::textWidth(bool wrapCursor, PointStruc &cursor, int xPos) {
   int x, oldX;
   int z;
   QChar ch;
+  Attribute *a;
 
   if (cursor.y < 0) cursor.y = 0;
   if (cursor.y > lastLine()) cursor.y = lastLine();
@@ -669,7 +702,19 @@ int KateDocument::textWidth(bool wrapCursor, PointStruc &cursor, int xPos) {
   while (x < xPos && (!wrapCursor || z < len)) {
     oldX = x;
     ch = textLine->getChar(z);
-    x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : myFontMetrics.width(ch);//a->width(ch);
+    a = &m_attribs[textLine->getAttr(z)];
+
+    if (ch == '\t')
+      x += m_tabWidth - (x % m_tabWidth);
+    else if (a->bold && a->italic)
+      x += myFontMetricsBI.width(ch);
+    else if (a->bold)
+      x += myFontMetricsBold.width(ch);
+    else if (a->italic)
+      x += myFontMetricsItalic.width(ch);
+    else
+      x += myFontMetrics.width(ch);
+
     z++;
   }
   if (xPos - oldX < x - xPos && z > 0) {
@@ -682,25 +727,28 @@ int KateDocument::textWidth(bool wrapCursor, PointStruc &cursor, int xPos) {
 
 
 int KateDocument::textPos(const TextLine::Ptr &textLine, int xPos) {
-/*  int newXPos;
-
-  return textPos(textLine, xPos, newXPos);
-}
-
-int KateDocument::textPos(const TextLine::Ptr &textLine, int xPos, int &newXPos) {
-*/
-//  int len;
   int x, oldX;
   int z;
   QChar ch;
-
-//  len = textLine->length();
+  Attribute *a;
 
   x = oldX = z = 0;
   while (x < xPos) { // && z < len) {
     oldX = x;
     ch = textLine->getChar(z);
-    x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : myFontMetrics.width(ch);//a->width(ch);
+    a = &m_attribs[textLine->getAttr(z)];
+
+    if (ch == '\t')
+      x += m_tabWidth - (x % m_tabWidth);
+    else if (a->bold && a->italic)
+      x += myFontMetricsBI.width(ch);
+    else if (a->bold)
+      x += myFontMetricsBold.width(ch);
+    else if (a->italic)
+      x += myFontMetricsItalic.width(ch);
+    else
+      x += myFontMetrics.width(ch);
+
     z++;
   }
   if (xPos - oldX < x - xPos && z > 0) {
@@ -1146,6 +1194,7 @@ void KateDocument::toggleRect(int start, int end, int x1, int x2) {
   for (line = start; line < end; line++) {
     int x, oldX, s, e, newX1, newX2;
     QChar ch;
+    Attribute *a;
 
     TextLine::Ptr textLine = getTextLine(line);
 
@@ -1155,7 +1204,19 @@ void KateDocument::toggleRect(int start, int end, int x1, int x2) {
     while (x < x1) { // && z < len) {
       oldX = x;
       ch = textLine->getChar(z);
-      x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : myFontMetrics.width(ch);//a->width(ch);
+      a = &m_attribs[textLine->getAttr(z)];
+
+    if (ch == '\t')
+      x += m_tabWidth - (x % m_tabWidth);
+    else if (a->bold && a->italic)
+      x += myFontMetricsBI.width(ch);
+    else if (a->bold)
+      x += myFontMetricsBold.width(ch);
+    else if (a->italic)
+      x += myFontMetricsItalic.width(ch);
+    else
+      x += myFontMetrics.width(ch);
+
       z++;
     }
     s = z;
@@ -1167,7 +1228,19 @@ void KateDocument::toggleRect(int start, int end, int x1, int x2) {
     while (x < x2) { // && z < len) {
       oldX = x;
       ch = textLine->getChar(z);
-      x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : myFontMetrics.width(ch);//a->width(ch);
+      a = &m_attribs[textLine->getAttr(z)];
+
+    if (ch == '\t')
+      x += m_tabWidth - (x % m_tabWidth);
+    else if (a->bold && a->italic)
+      x += myFontMetricsBI.width(ch);
+    else if (a->bold)
+      x += myFontMetricsBold.width(ch);
+    else if (a->italic)
+      x += myFontMetricsItalic.width(ch);
+    else
+      x += myFontMetrics.width(ch);
+
       z++;
     }
     e = z;
@@ -1901,7 +1974,16 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
     if (ch == '\t') {
       x += m_tabWidth - (x % m_tabWidth);
     } else {
-      x += myFontMetrics.width(ch);//a->width(ch);
+     a = &m_attribs[textLine->getAttr(z)];
+
+   if (a->bold && a->italic)
+      x += myFontMetricsBI.width(ch);
+    else if (a->bold)
+      x += myFontMetricsBold.width(ch);
+    else if (a->italic)
+      x += myFontMetricsItalic.width(ch);
+    else
+      x += myFontMetrics.width(ch);
     }
     z++;
   } while (x <= xStart);
@@ -1921,7 +2003,16 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
     if (ch == '\t') {
       x += m_tabWidth - (x % m_tabWidth);
     } else {
-      x += myFontMetrics.width(ch);//a->width(ch);
+a = &m_attribs[textLine->getAttr(z)];
+
+    if (a->bold && a->italic)
+      x += myFontMetricsBI.width(ch);
+    else if (a->bold)
+      x += myFontMetricsBold.width(ch);
+    else if (a->italic)
+      x += myFontMetricsItalic.width(ch);
+    else
+      x += myFontMetrics.width(ch);
     }
     z++;
   }
@@ -1941,7 +2032,15 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
         QConstString str((QChar *) &s[zc], z - zc /*+1*/);
         QString s = str.string();
         paint.drawText(x - xStart, y, s);
-        x += myFontMetrics.width(s);//a->width(s);//&s[zc], z - zc);
+
+   if (a->bold && a->italic)
+      x += myFontMetricsBI.width(s);
+    else if (a->bold)
+      x += myFontMetricsBold.width(s);
+    else if (a->italic)
+      x += myFontMetricsItalic.width(s);
+    else
+      x += myFontMetrics.width(s);
       }
       zc = z +1;
 
@@ -1973,7 +2072,15 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
           QConstString str((QChar *) &s[zc], z - zc /*+1*/);
           QString s = str.string();
           paint.drawText(x - xStart, y, s);
-          x += myFontMetrics.width(s);//a->width(s);//&s[zc], z - zc);
+
+   if (a->bold && a->italic)
+      x += myFontMetricsBI.width(s);
+    else if (a->bold)
+      x += myFontMetricsBold.width(s);
+    else if (a->italic)
+      x += myFontMetricsItalic.width(s);
+    else
+      x += myFontMetrics.width(s);
           zc = z;
         }
         attr = nextAttr;
@@ -2848,7 +2955,16 @@ found:
   bm.cursor.y = line;
   //x position (start and end) of related bracket
   bm.sXPos = textWidth(textLine, x);
-  bm.eXPos = bm.sXPos + myFontMetrics.width(bracket);//a->width(bracket);
+  a = &m_attribs[attr];
+
+   if (a->bold && a->italic)
+      bm.eXPos = bm.sXPos + myFontMetricsBI.width(bracket);
+    else if (a->bold)
+      bm.eXPos = bm.sXPos + myFontMetricsBold.width(bracket);
+    else if (a->italic)
+      bm.eXPos = bm.sXPos + myFontMetricsItalic.width(bracket);
+    else
+      bm.eXPos = bm.sXPos + myFontMetrics.width(bracket);
 }
 
 void KateDocument::clipboardChanged() { //slot

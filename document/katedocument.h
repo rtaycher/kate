@@ -165,8 +165,8 @@ class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
     ~KateDocument();
 
   protected:
-    QFont myFont;
-    CachedFontMetrics myFontMetrics;
+    QFont myFont, myFontBold, myFontItalic, myFontBI;
+    CachedFontMetrics myFontMetrics, myFontMetricsBold, myFontMetricsItalic, myFontMetricsBI;
     bool myDeleteDoc;
 
   public:
