@@ -23,12 +23,14 @@
 #include "kategrepdialog.h"
 #include "katemainwindow.h"
 
+#include <qobject.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <qcombobox.h>
 #include <qcheckbox.h>
+#include <qevent.h>
 #include <qlistbox.h>
 #include <qregexp.h>
 #include <qwhatsthis.h>
@@ -43,6 +45,7 @@
 #include <kurlrequester.h>
 #include <kurlcompletion.h>
 #include <kcombobox.h>
+#include <klineedit.h>
 
 const char *template_desc[] = {
     "normal",
@@ -206,6 +209,13 @@ GrepDialog::GrepDialog(const QString &dirname, KateMainWindow *parent, const cha
 		    i18n("The results of the grep run are listed here. Select a\n"
 			 "filename/line number combination and press Enter or doubleclick\n"
 			 "on the item to show the respective line in the editor."));
+
+    // event filter, do something relevant for RETURN
+    pattern_combo->installEventFilter( this );
+    template_edit->installEventFilter( this );
+    pattern_combo->installEventFilter( this );
+    files_combo->installEventFilter( this );
+//    dir_combo->lineEdit()->installEventFilter( this );
 
     connect( template_combo, SIGNAL(activated(int)),
 	     SLOT(templateActivated(int)) );
@@ -417,4 +427,18 @@ void  GrepDialog::setDirName(const QString &dir){
 //    dir_combo->setEditText(dir);
     dir_combo->setURL(dir);
 }
+
+bool GrepDialog::eventFilter( QObject *o, QEvent *e )
+{
+  if ( e->type() == QEvent::KeyPress && (
+      ((QKeyEvent*)e)->key() == Qt::Key_Return ||
+      ((QKeyEvent*)e)->key() == Qt::Key_Enter ) )
+  { // FIXME just go to the next input that is missing data if any
+    slotSearch();
+    return true;
+  }
+
+  return QWidget::eventFilter( o, e );
+}
+
 #include "kategrepdialog.moc"

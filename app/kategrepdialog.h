@@ -33,6 +33,7 @@ class QLabel;
 class KProcess;
 class KConfig;
 class KURLRequester;
+class QEvent;
 
 class GrepDialog : public QWidget
 {
@@ -40,14 +41,18 @@ class GrepDialog : public QWidget
 
 public:
     GrepDialog(const QString &dirname, class KateMainWindow *parent=0, const char *name=0);
-  ~GrepDialog();
-  void  setDirName(const QString &);
+    ~GrepDialog();
+    void  setDirName(const QString &);
+
 
 signals:
     void itemSelected(const QString &abs_filename, int line);
 
 public slots:
-		void slotSearchFor(const QString &pattern);
+    void slotSearchFor(const QString &pattern);
+
+protected:
+    bool eventFilter( QObject *, QEvent * );
 
 private slots:
     void templateActivated(int index);
@@ -77,8 +82,3 @@ private:
 
 
 #endif
-
-
-
-
-

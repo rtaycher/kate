@@ -162,7 +162,7 @@ class KateMainWindow : public KMdiMainFrm, virtual public KateMainWindowDCOPIfac
     void slotOpenWithMenuAction(int idx);
 
  private:
-     GrepDialog* grep_dlg;
+     GrepDialog * grep_dlg;
 
   public slots:
     void slotGrepDialogItemSelected ( const QString &filename, int linenumber );
@@ -211,6 +211,7 @@ class KateMainWindow : public KMdiMainFrm, virtual public KateMainWindowDCOPIfac
 
   protected:
     virtual bool event(QEvent*);
+    bool eventFilter( QObject*, QEvent * );
     static uint uniqueID;
     Kate::MainWindow *m_mainWindow;
     Kate::ToolViewManager *m_toolViewManager;

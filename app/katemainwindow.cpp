@@ -163,6 +163,7 @@ KateMainWindow::~KateMainWindow()
 void KateMainWindow::setupMainWindow ()
 {
   grep_dlg = new GrepDialog( QDir::homeDirPath(), this, "grepdialog" );
+  grep_dlg->installEventFilter( this );
   connect(grep_dlg, SIGNAL(itemSelected(const QString &,int)), this, SLOT(slotGrepDialogItemSelected(const QString &,int)));
 
     KMdiChildView* pMDICover = new KMdiChildView("MainDock");
@@ -753,6 +754,20 @@ bool KateMainWindow::event(QEvent* e)
   if( e->type() == QEvent::ShowFullScreen || e->type() == QEvent::ShowNormal )
       showFullScreenAction->setChecked( isFullScreen());
   return KParts::DockMainWindow::event( e );
+}
+
+bool KateMainWindow::eventFilter( QObject *o, QEvent *e )
+{
+  if ( o == grep_dlg && e->type() == QEvent::Show && activeView )
+  {
+    if ( activeView->getDoc()->url().isLocalFile() )
+    {
+      QString dir ( activeView->getDoc()->url().directory() );
+      grep_dlg->setDirName( dir );
+         return true;
+    }
+  }
+  return KMdiMainFrm::eventFilter( o, e );
 }
 
 KDockWidget *KateMainWindow::addToolView(KDockWidget::DockPosition pos,const char* name, const QPixmap &icon,const QString& caption)
