@@ -20,15 +20,28 @@
 
 #include "katedocmanager.h"
 
+#include <kdebug.h>
+
 KateDocManagerDCOPIface::KateDocManagerDCOPIface (KateDocManager *dm) : DCOPObject ("KateDocumentManager"), m_dm (dm)
 {
 
 }
 
-/*DCOPRef KateDocManagerDCOPIface::document (uint n)
+// bit more error save than the forcing c cast ;()
+DCOPRef KateDocManagerDCOPIface::document (uint n)
 {
-  return DCOPRef (m_dm->document(n));
-}*/
+  Kate::Document *doc = m_dm->document(n);
+
+  if (!doc)
+    return DCOPRef ();
+
+  DCOPObject *obj = static_cast<DCOPObject*>(doc->qt_cast("DCOPObject"));
+
+  if (!obj)
+    return DCOPRef ();
+
+  return DCOPRef (obj);
+}
 
 bool KateDocManagerDCOPIface::closeDocument(uint n)
 {

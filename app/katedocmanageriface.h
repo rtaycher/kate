@@ -34,7 +34,7 @@ class KateDocManagerDCOPIface : public DCOPObject
     KateDocManagerDCOPIface (KateDocManager *dm);
 
   k_dcop:
-  //  DCOPRef document (uint n = 0);
+    DCOPRef document (uint n = 0);
 
     bool closeDocument(uint n = 0);
 
