@@ -1,3 +1,6 @@
+2001-04-14 Christoph Cullmann <crossfire@babylon2k.de>
+             * now kateview has in iconborder too (without real function at the moment)
+
 2001-04-10 Christoph Cullmann <crossfire@babylon2k.de>
              * bugfixes for drawBuffer stuff, next/prev viewspace, restoreView
 
