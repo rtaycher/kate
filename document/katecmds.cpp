@@ -20,6 +20,19 @@ bool InsertTime::execCmd(QString cmd, KateView *view)
 	return false;
 }
 
+static void replace(QString &s, const QString &needle, const QString &with)
+{
+	int pos=0;
+	while (1)
+	{
+		pos=s.find(needle, pos);
+		if (pos==-1) break;
+		s.replace(pos, needle.length(), with);
+		pos+=with.length();
+	}
+
+}
+
 // stolen from QString::replace
 static void replace(QString &s, QRegExp3 &rx, const QString &with)
 {
@@ -80,10 +93,13 @@ QString SedReplace::sedMagic(QString textLine, QString find, QString rep, bool n
 	}
 
 	textLine.replace(start, length, rep);
-
+	replace(textLine, "\\\\", "\\");
+	replace(textLine, "\\/", "/");
+	
 	return textLine;
 }
-
+	
+	
 static void setLineText(KateView *view, int line, const QString &text)
 {
 	kdDebug()<<"setLineText"<<endl;
@@ -94,18 +110,20 @@ static void setLineText(KateView *view, int line, const QString &text)
 bool SedReplace::execCmd(QString cmd, KateView *view)
 {
 	kdDebug()<<"SedReplace::execCmd()"<<endl;
-	if (QRegExp("[$%]?s/.+/.*/n?").find(cmd, 0)==-1)
+	if (QRegExp("[$%]?s/.+/.*/i?").find(cmd, 0)==-1)
 		return false;
 	
 	bool fullFile=cmd[0]=='%';
-	bool noCase=cmd[cmd.length()-1]=='n';
+	bool noCase=cmd[cmd.length()-1]=='i';
 	bool onlySelect=cmd[0]=='$';
 
-	QRegExp3 splitter("^[$%]?s/(.+(?:\\\\|))/(.*(?:\\\\|))/[n]?$");
+	QRegExp3 splitter("^[$%]?s/([^\\\\]*(?:(?:\\\\\\\\)+|[^\\\\\\\\]))/(.*(?:(?:\\\\\\\\)+|[^\\\\\\\\]))/[i]?$");
 	splitter.search(cmd);
 	
 	QString find=splitter.cap(1);
+	kdDebug()<< "SedReplace: find=" << find.latin1() <<endl;
 	QString replace=splitter.cap(2);
+	kdDebug()<< "SedReplace: replace=" << replace.latin1() <<endl;
 	
 	
 	if (fullFile)

@@ -30,7 +30,7 @@ public:
  * Support vim/sed find and replace
  * s/search/replace/ find search, replace with replace on this line
  * %s/search/replace/ do the same to the whole file
- * s/search/replace/n do the S. and R., but case insensitively
+ * s/search/replace/i do the S. and R., but case insensitively
  * $s/search/replace/ do the search are replacement to the selection only
  *
  * $s/// is currently unsupported
