@@ -68,6 +68,11 @@ DocumentManager *Application::documentManager ()
   return d->app->documentManager ();
 }
 
+ProjectManager *Application::projectManager ()
+{
+  return d->app->projectManager ();
+}
+
 PluginManager *Application::pluginManager ()
 {
   return d->app->pluginManager ();

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          application.h -  description
+                          interfaces.cpp  -  description
                              -------------------
     begin                : Mon Jan 15 2001
     copyright            : (C) 2001 by Christoph Cullmann
@@ -23,57 +23,38 @@
     Boston, MA 02111-1307, USA.
  ***************************************************************************/
 
-#ifndef _KATE_APPLICATION_INCLUDE_
-#define _KATE_APPLICATION_INCLUDE_
+#include "project.h"
+#include "project.moc"
 
-#include <qobject.h>
-#include <kurl.h>
+#include "../app/kateproject.h"
 
 namespace Kate
 {
 
-/** This interface provides access to the central Kate objects */
-class Application : public QObject
+class PrivateProject
+  {
+  public:
+    PrivateProject ()
+    {
+    }
+
+    ~PrivateProject ()
+    {    
+    }          
+        
+    KateProject *project; 
+  };
+            
+Project::Project (void *project) : QObject ((KateProject*) project)
 {
-  friend class PrivateApplication;
+  d = new PrivateProject ();
+  d->project = (KateProject*) project;
+}
 
-  Q_OBJECT
-
-  public:
-    Application (void *application);
-    virtual ~Application ();
-    
-  public:
-    /** Returns a pointer to the document manager
-    */
-    class DocumentManager *documentManager ();
-
-    class ProjectManager *projectManager ();
-    
-    class PluginManager *pluginManager ();
-    
-    class InitPluginManager *initPluginManager ();
-    
-    class MainWindow *activeMainWindow ();
-    
-    uint mainWindows ();
-    class MainWindow *mainWindow (uint n = 0);
-
-  //invention of public signals, like in kparts/browserextension.h
-  #undef signals
-  #define signals public
-  signals:
-  #undef signals
-  #define signals protected
-  
-    void onEventLoopEnter();  
-    
-  private:
-    class PrivateApplication *d;
-};
-
-Application *application ();
+Project::~Project ()
+{
+  delete d;
+}
 
 };
 
-#endif

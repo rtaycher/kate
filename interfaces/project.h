@@ -1,9 +1,9 @@
 /***************************************************************************
-                          application.h -  description
+                          pluginmanager.h -  description
                              -------------------
-    begin                : Mon Jan 15 2001
-    copyright            : (C) 2001 by Christoph Cullmann
-    email                : cullmann@kde.org
+    begin                : Mon July 14 2002
+    copyright            : (C) 2002 by Joseph Wenninger
+    email                : jowenn@kde.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -23,56 +23,29 @@
     Boston, MA 02111-1307, USA.
  ***************************************************************************/
 
-#ifndef _KATE_APPLICATION_INCLUDE_
-#define _KATE_APPLICATION_INCLUDE_
+#ifndef _KATE_PROJECT_INCLUDE_
+#define _KATE_PROJECT_INCLUDE_
 
 #include <qobject.h>
 #include <kurl.h>
 
 namespace Kate
 {
-
-/** This interface provides access to the central Kate objects */
-class Application : public QObject
+/** This interface provides access to the Kate Project .
+*/
+class Project : public QObject
 {
-  friend class PrivateApplication;
+  friend class PrivateProject;
 
-  Q_OBJECT
-
-  public:
-    Application (void *application);
-    virtual ~Application ();
-    
-  public:
-    /** Returns a pointer to the document manager
-    */
-    class DocumentManager *documentManager ();
-
-    class ProjectManager *projectManager ();
-    
-    class PluginManager *pluginManager ();
-    
-    class InitPluginManager *initPluginManager ();
-    
-    class MainWindow *activeMainWindow ();
-    
-    uint mainWindows ();
-    class MainWindow *mainWindow (uint n = 0);
-
-  //invention of public signals, like in kparts/browserextension.h
-  #undef signals
-  #define signals public
-  signals:
-  #undef signals
-  #define signals protected
+  Q_OBJECT   
   
-    void onEventLoopEnter();  
-    
+  public:
+    Project ( void *project  );
+    virtual ~Project ();
+   
   private:
-    class PrivateApplication *d;
+    class PrivateProject *d;
 };
-
-Application *application ();
 
 };
 

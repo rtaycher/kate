@@ -55,6 +55,8 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
   m_mainWindows.setAutoDelete (false);
   
   m_docManager = new KateDocManager (this);
+  
+  m_projectManager = new KateProjectManager (this);
 
   m_pluginManager = new KatePluginManager (this);
   m_pluginManager->loadAllEnabledPlugins ();
