@@ -67,7 +67,6 @@ class PluginManager : public QObject
      */
     void unloadPlugin(const QString &name,bool permanent=true);
    
-    
   private:
     class PrivatePluginManager *d;
 };

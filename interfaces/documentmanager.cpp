@@ -116,10 +116,5 @@ bool DocumentManager::closeAllDocuments()
   return d->docMan->closeAllDocuments ();
 }  
 
-void DocumentManager::emitDocumentChanged ()
-{
-  emit documentChanged ();
-}
-
 };
 

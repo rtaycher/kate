@@ -51,12 +51,15 @@ class ViewManager : public QObject
 
     /** Opens the file pointed to by URL */
     void openURL (const KURL &url);     
-    
+ 
+  //invention of public signals, like in kparts/browserextension.h
+  #undef signals
+  #define signals public
   signals:
+  #undef signals
+  #define signals protected   
+
     void viewChanged ();
-    
-  public slots:
-    void emitViewChanged ();
     
   private:
     class PrivateViewManager *d;

@@ -57,17 +57,17 @@ class Application : public QObject
     uint mainWindows ();
     class MainWindow *mainWindow (uint n = 0);
 
+  //invention of public signals, like in kparts/browserextension.h
+  #undef signals
+  #define signals public
+  signals:
+  #undef signals
+  #define signals protected
+  
+    void onEventLoopEnter();  
+    
   private:
     class PrivateApplication *d;
-
-//invention of public signals, like in kparts/browserextension.h
-#undef signals
-#define signals public
-signals:
-#undef signals
-#define signals protected
-
-	void onEventLoopEnter();  
 };
 
 Application *application ();

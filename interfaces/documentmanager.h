@@ -81,12 +81,15 @@ class DocumentManager : public QObject
     /** close all documents
      */
     bool closeAllDocuments();
-
-  signals:
-    void documentChanged ();
     
-  public slots:
-    void emitDocumentChanged ();
+  //invention of public signals, like in kparts/browserextension.h
+  #undef signals
+  #define signals public
+  signals:
+  #undef signals
+  #define signals protected
+  
+    void documentChanged ();
     
   private:
     class PrivateDocumentManager *d;

@@ -77,7 +77,7 @@ void KateDocManager::setActiveDocument (Kate::Document *doc)
   if (m_currentDoc != doc)
   {
     emit documentChanged ();
-    m_documentManager->emitDocumentChanged ();
+    emit m_documentManager->documentChanged ();
   }
   
   m_currentDoc = doc;

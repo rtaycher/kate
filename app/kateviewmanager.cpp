@@ -293,7 +293,7 @@ void KateViewManager::activateView ( Kate::View *view, bool checkModified /*=fal
     statusMsg();
 
     emit viewChanged ();
-    m_viewManager->emitViewChanged ();
+    emit m_viewManager->viewChanged ();
   }
 
   m_docManager->setActiveDocument(view->getDoc());
@@ -391,7 +391,7 @@ void KateViewManager::closeViews(uint documentNumber)
 
   if (m_blockViewCreationAndActivation) return;
   QTimer::singleShot(0,this,SIGNAL(viewChanged()));
-  m_viewManager->emitViewChanged ();
+  emit m_viewManager->viewChanged ();
 }
 
 
@@ -410,7 +410,7 @@ void KateViewManager::openNewIfEmpty()
     }
   }
   emit viewChanged ();
-  m_viewManager->emitViewChanged ();
+  emit m_viewManager->viewChanged ();
 }
 
 void KateViewManager::statusMsg ()
@@ -723,7 +723,7 @@ void KateViewManager::removeViewSpace (KateViewSpace *viewspace)
     activateView( v );
 
   emit viewChanged();
-  m_viewManager->emitViewChanged ();
+  emit m_viewManager->viewChanged ();
 }
 
 void KateViewManager::slotCloseCurrentViewSpace()
