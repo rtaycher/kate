@@ -93,6 +93,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   QFrame* frGeneral = addPage(path, i18n("General Options"), BarIcon("misc", KIcon::SizeSmall));
 
   QVBoxLayout *lo = new QVBoxLayout( frGeneral );
+  lo->setSpacing(KDialog::spacingHint());
   lo->setAutoAdd( true );
   config->setGroup("General");
 
