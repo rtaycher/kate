@@ -42,6 +42,8 @@ static KCmdLineOptions options[] =
 
 extern "C" int kdemain( int argc, char **argv )
 {
+  Kate::Document::setFileChangedDialogsActivated (true);
+
   KAboutData *s_about = new KAboutData  ("kate", I18N_NOOP("Kate"), "2.2",
                                                            I18N_NOOP( "Kate - Advanced Text Editor" ), KAboutData::License_LGPL_V2,
                                                            I18N_NOOP( "(c) 2000-2003 The Kate Authors" ), 0, "http://kate.kde.org");
