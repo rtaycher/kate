@@ -1,4 +1,3 @@
-
 /*
    Copyright (C) 1998, 1999 Jochen Wilhelmy
                             digisnap@cs.tu-berlin.de
@@ -203,10 +202,9 @@ void HlKeyword::addList(const QStringList& list)
 
 const QChar *HlKeyword::checkHgl(const QChar *s, int len, bool b)
 {
-  if(len==0) return 0L;
+  if (len == 0) return 0L;
 
-  int origLen = len;
-  const QChar *s2=s;
+  const QChar *s2 = s;
   const QChar *wk = _weakSep.unicode();
 
   while ( (len > 0) && ((ustrchr(wk,*s2)) || ( s2->isLetterOrNumber())) )
@@ -217,9 +215,9 @@ const QChar *HlKeyword::checkHgl(const QChar *s, int len, bool b)
 
   if (s2 == s) return 0L;
 
-  QString lookup=QString(s,origLen-len);
-  if (dict.find(lookup)) return s2;
+  QString lookup = QString(s,s2-s);
 
+  if ( dict.find(lookup) ) return s2;
   return 0L;
 }
 
