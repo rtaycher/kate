@@ -4,7 +4,7 @@
   <highlighting>
     <contexts>
        <context attribute="0" lineEndContext="0">
-         <RegExpr attribute="1" context="1" String="&lt;\s*\/?\s*[a-zA-Z0-9_]*" />
+         <RegExpr attribute="1" context="1" String="&lt;\s*\/?\s*[a-zA-Z_:][a-zA-Z0-9._:-]*" />
        </context>
 
        <context attribute="2" lineEndContext="1">
