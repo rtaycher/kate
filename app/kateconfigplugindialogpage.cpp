@@ -116,8 +116,8 @@ void KateConfigPluginPage::loadPlugin ()
       myDialog->addPluginPage (myPluginMan->myPluginList.at(i)->plugin);
     }
   }
-
   slotUpdate();
+  loadButton->setEnabled(availableBox->count()>0);
 }
 
 void KateConfigPluginPage::unloadPlugin ()
@@ -132,6 +132,6 @@ void KateConfigPluginPage::unloadPlugin ()
       myPluginMan->unloadPlugin (myPluginMan->myPluginList.at(i));
     }
   }
-
   slotUpdate();
+  unloadButton->setEnabled(loadedBox->count()>0);
 }
