@@ -276,8 +276,8 @@ void KateMainWindow::setupActions()
   KStdAction::configureToolbars(this, SLOT(slotEditToolbars()), actionCollection(), "set_configure_toolbars");
 
   // toggle dockwidgets
-  settingsShowFilelist = new KToggleAction(i18n("Show Filelist"), 0, filelistDock, SLOT(changeHideShowState()), actionCollection(), "settings_show_filelist");
-  settingsShowFileselector = new KToggleAction(i18n("Show Fileselector"), 0, fileselectorDock, SLOT(changeHideShowState()), actionCollection(), "settings_show_fileselector");
+  settingsShowFilelist = new KToggleAction(i18n("Show File List"), 0, filelistDock, SLOT(changeHideShowState()), actionCollection(), "settings_show_filelist");
+  settingsShowFileselector = new KToggleAction(i18n("Show File Selector"), 0, fileselectorDock, SLOT(changeHideShowState()), actionCollection(), "settings_show_fileselector");
   settingsShowConsole = new KToggleAction(i18n("Show Terminal Emulator"), QString::fromLatin1("konsole"), Qt::Key_F7, this, SLOT(slotSettingsShowConsole()), actionCollection(), "settings_show_console");
 
   // allow full path in title -anders
