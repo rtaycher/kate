@@ -279,9 +279,10 @@ void GrepTool::itemSelected(const QString& item)
   if ( (pos = str.find(':')) != -1)
   {
     filename = str.left(pos);
-    str = str.right(str.length()-1-pos);
+    str = str.mid(pos+1);
     if ( (pos = str.find(':')) != -1)
     {
+      filename = m_workingDir + "/" + filename;
       linenumber = str.left(pos);
       emit itemSelected(filename,linenumber.toInt()-1);
     }
@@ -293,10 +294,10 @@ void GrepTool::processOutput()
   int pos;
   while ( (pos = buf.find('\n')) != -1)
   {
-    QString item = buf.left(pos);
+    QString item = buf.mid(2,pos-2);
     if (!item.isEmpty())
       lbResult->insertItem(item);
-    buf = buf.right(buf.length()-pos-1);
+    buf = buf.mid(pos+1);
   }
   kapp->processEvents();
 }
@@ -314,18 +315,7 @@ void GrepTool::slotSearch()
 
   slotClear ();
 
-  QString files;
-  QString files_temp = cmbFiles->currentText();
-  if (files_temp.right(1) != ",")
-      files_temp = files_temp + ",";
-
-  QStringList tokens = QStringList::split ( ",", files_temp, FALSE );
-  QStringList::Iterator it = tokens.begin();
-  if (it != tokens.end())
-      files = " '"+(*it++)+"'" ;
-
-  for ( ; it != tokens.end(); it++ )
-      files = files + " -o -name " + "'"+(*it)+ "'";
+  m_workingDir = cmbDir->url();
 
   QString s = cmbPattern->currentText();
   if ( ! cbRegex->isChecked() )
@@ -334,22 +324,32 @@ void GrepTool::slotSearch()
   pattern.replace( "%s", s );
 //   pattern.replace("'", "'\\''"); ### what?
 
-  QString filepattern = "find ";
-  filepattern += KProcess::quote(cmbDir->/*currentText*/url());
+  childproc = new KProcess();
+  childproc->setUseShell( true );
+  childproc->setWorkingDirectory( m_workingDir );
+  *childproc << "find" << ".";
   if (!cbRecursive->isChecked())
-      filepattern += " -maxdepth 1";
-  filepattern += " \\( -name ";
-  filepattern += files;
-  filepattern += " \\) -exec ";
-
-  childproc = new KShellProcess();
-  *childproc << filepattern;
-  *childproc << "grep";
+    *childproc << "-maxdepth" << "1";
+  if ( cmbFiles->currentText() != "" )
+  {
+    QStringList files = QStringList::split ( ",", cmbFiles->currentText(), FALSE );
+    *childproc << "'('";
+    for ( QStringList::Iterator it = files.begin();
+          it != files.end();
+          it++ )
+    {
+      if ( it != files.begin() )
+        *childproc << "-o";
+      *childproc << "-name" << KProcess::quote(*it);
+    }
+    *childproc << "')'";
+  }
+  *childproc << "-exec" << "grep";
   if (!cbCasesensitive->isChecked())
     *childproc << "-i";
   *childproc << "-n";
   *childproc << "-H";
-  *childproc << (QString("-e ") + KProcess::quote(pattern));
+  *childproc << "-e" << KProcess::quote(pattern);
   *childproc << "{}";
   *childproc << "/dev/null";
   *childproc << "';'";

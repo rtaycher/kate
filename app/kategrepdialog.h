@@ -86,6 +86,7 @@ private:
     QStringList lastSearchItems;
     QStringList lastSearchPaths;
     QString m_lastUpdatedDir;
+    QString m_workingDir;
 };
 
 
