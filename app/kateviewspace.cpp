@@ -170,7 +170,7 @@ bool KateViewSpace::isActiveSpace()
 void KateViewSpace::setActive( bool b, bool )
 {
   mIsActiveSpace = b;
-  
+
   // change the statusbar palette and make sure it gets updated
   QPalette pal( palette() );
   if ( ! b )
@@ -230,7 +230,7 @@ void KateViewSpace::saveFileList( KSimpleConfig* config, int myIndex )
       QString vgroup = QString("%1:file%2").arg(group).arg( idx );
       config->setGroup( vgroup );
       it.current()->writeSessionConfig( config );
-      // put the view group in group "<filename>", 
+      // put the view group in group "<filename>",
       // if user don't want viewconfig restored the config of the last view for doc will be used
       config->setGroup( it.current()->getDoc()->url().prettyURL() );
       config->writeEntry( "viewconfig", vgroup );
@@ -239,7 +239,7 @@ void KateViewSpace::saveFileList( KSimpleConfig* config, int myIndex )
   }
 }
 
- 
+
 //END KateViewSpace
 
 //BEGIN KateVSStatusBar
@@ -254,12 +254,12 @@ KateVSStatusBar::KateVSStatusBar ( KateViewSpace *parent, const char *name )
    addWidget( m_lineColLabel, 0, false );
    m_lineColLabel->setAlignment( Qt::AlignCenter );
    m_lineColLabel->installEventFilter( this );
-      
+
    m_modifiedLabel = new QLabel( QString("   "), this );
    addWidget( m_modifiedLabel, 0, false );
    m_modifiedLabel->setAlignment( Qt::AlignCenter );
    m_modifiedLabel->installEventFilter( this );
-   
+
    m_insertModeLabel = new QLabel( i18n(" INS "), this );
    addWidget( m_insertModeLabel, 0, false );
    m_insertModeLabel->setAlignment( Qt::AlignCenter );
@@ -269,12 +269,12 @@ KateVSStatusBar::KateVSStatusBar ( KateViewSpace *parent, const char *name )
    addWidget( m_selectModeLabel, 0, false );
    m_selectModeLabel->setAlignment( Qt::AlignCenter );
    m_selectModeLabel->installEventFilter( this );
-   
+
    m_fileNameLabel=new QLabel("",this);
    addWidget( m_fileNameLabel,/*0,true*/1, true );
    m_selectModeLabel->setAlignment( /*Qt::AlignRight*/Qt::AlignLeft );
    m_selectModeLabel->installEventFilter( this );
-   
+
    installEventFilter( this );
 }
 
@@ -285,7 +285,7 @@ KateVSStatusBar::~KateVSStatusBar ()
 void KateVSStatusBar::setStatus( int r, int c, int ovr, bool block, int mod, QString msg )
 {
   m_lineColLabel->setText(
-    i18n(" Line: %1 Col: %1 ").arg(KGlobal::locale()->formatNumber(r+1, 0))
+    i18n(" Line: %1 Col: %2 ").arg(KGlobal::locale()->formatNumber(r+1, 0))
                               .arg(KGlobal::locale()->formatNumber(c, 0)) );
 
   if (ovr == 0)
@@ -299,9 +299,9 @@ void KateVSStatusBar::setStatus( int r, int c, int ovr, bool block, int mod, QSt
     m_modifiedLabel->setText( QString(" * ") );
   else
     m_modifiedLabel->setText( QString("   ") );
-  
+
   m_selectModeLabel->setText( block ? i18n(" BLK ") : i18n(" NORM ") );
-  
+
   m_fileNameLabel->setText( msg );
 }
 
