@@ -73,6 +73,12 @@ class Project : public QObject
     KURL url () const;
     
     /**
+     * Return the url of the project dir
+     * @return KURL project dir url
+     */
+    KURL baseurl (bool _strip_trailing_slash_from_result = true) const;
+    
+    /**
      * Saves the project
      * @return bool success
      */
@@ -82,13 +88,13 @@ class Project : public QObject
      * subdirs of given dir
      * @return QStringList list with subdirs
      */
-    QStringList subdirs (const QString &dir = QString::null) const;
+    QStringList subdirs (const QString &dir = QString (".")) const;
     
     /**
      * files of given dir
      * @return QStringList list with files
      */
-    QStringList files (const QString &dir = QString::null) const;
+    QStringList files (const QString &dir = QString (".")) const;
     
   #undef signals
   #define signals public

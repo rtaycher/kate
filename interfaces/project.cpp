@@ -82,6 +82,11 @@ KURL Project::url () const
   return d->project->url ();
 }
 
+KURL Project::baseurl (bool _strip_trailing_slash_from_result) const
+{
+  return d->project->baseurl (_strip_trailing_slash_from_result);
+}
+
 bool Project::save ()
 {
   return d->project->save ();

@@ -47,6 +47,9 @@ KateProject::KateProject (KateProjectManager *proMan, QObject *parent, const KUR
     m_data = new KConfig (m_tmpFile->name());
   }
   
+  m_baseurl = KURL (m_url.directory (false));
+  m_baseurlWithoutSlash  = KURL (m_url.directory (true));
+  
   m_project = new Kate::Project (this);
   m_plugin = m_projectMan->createPlugin (m_project);
 }
@@ -76,6 +79,14 @@ KURL KateProject::url () const
   return m_url;
 }
 
+KURL KateProject::baseurl (bool _strip_trailing_slash_from_result) const
+{
+  if (_strip_trailing_slash_from_result)
+    return m_baseurlWithoutSlash;
+
+  return m_baseurl;
+}
+
 bool KateProject::save ()
 {
   m_data->sync();
@@ -93,34 +104,24 @@ bool KateProject::save ()
 
 QStringList KateProject::subdirs (const QString &dir) const
 {
-  if (dir.isNull())
-    m_data->setGroup("Dir");
-  else
-  {
-    QString groupname = QString ("Dir ") + dir;
+  QString groupname = QString ("Dir ") + dir;
 
-    if (!m_data->hasGroup(groupname))
-      return QStringList ();
+  if (!m_data->hasGroup(groupname))
+    return QStringList ();
 
-    m_data->setGroup(groupname);
-  }
+  m_data->setGroup(groupname);
   
   return m_data->readListEntry ("Subdirs");
 }
 
 QStringList KateProject::files (const QString &dir) const
 {
-  if (dir.isNull())
-    m_data->setGroup("Dir");
-  else
-  {
-    QString groupname = QString ("Dir ") + dir;
+  QString groupname = QString ("Dir ") + dir;
 
-    if (!m_data->hasGroup(groupname))
-      return QStringList ();
+  if (!m_data->hasGroup(groupname))
+    return QStringList ();
 
-    m_data->setGroup(groupname);
-  }
-  
+  m_data->setGroup(groupname);
+
   return m_data->readListEntry ("Files");
 }

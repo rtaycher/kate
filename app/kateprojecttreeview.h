@@ -55,13 +55,17 @@ class KateProjectTreeView : public KListView
   Q_OBJECT
 
   public:
-    KateProjectTreeView (Kate::Project *project, QWidget *parent);
+    KateProjectTreeView (Kate::Project *project, class KateMainWindow *mainwin, QWidget *parent);
     ~KateProjectTreeView ();
     
     void addDir (KateProjectTreeViewItem *parent, const QString &dir);
     
+  private slots:
+    void slotExecuted ( QListViewItem *i );
+    
   private:
     Kate::Project *m_project;
+    class KateMainWindow *m_mainWin;
 };
 
 #endif

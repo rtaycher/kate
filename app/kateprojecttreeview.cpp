@@ -23,6 +23,8 @@
 #include "kateprojecttreeview.h"
 #include "kateprojecttreeview.moc"
 
+#include "katemainwindow.h"
+
 #include <klocale.h>
 
 #include <qheader.h>
@@ -76,16 +78,19 @@ int KateProjectTreeViewItem::compare ( QListViewItem *i, int, bool ) const
   }
 }
 
-KateProjectTreeView::KateProjectTreeView (Kate::Project *project, QWidget *parent) : KListView (parent)
+KateProjectTreeView::KateProjectTreeView (Kate::Project *project, KateMainWindow *mainwin, QWidget *parent) : KListView (parent)
 {
   m_project = project;
+  m_mainWin = mainwin;
   
   setRootIsDecorated (true);
   
   header()->setStretchEnabled (true);
-  addColumn(i18n("Project Tree"));
+  addColumn(i18n("Project: ") + m_project->name());
 
-  addDir (0, QString::null);
+  addDir (0, QString ("."));
+  
+  connect(this,SIGNAL(executed (QListViewItem*)),this,SLOT(slotExecuted (QListViewItem*)));
 }
 
 KateProjectTreeView::~KateProjectTreeView ()
@@ -94,17 +99,19 @@ KateProjectTreeView::~KateProjectTreeView ()
 
 void KateProjectTreeView::addDir (KateProjectTreeViewItem *parent, const QString &dir)
 {
+  QString base = dir + QString ("/");
+
   QStringList dirs = m_project->subdirs (dir);
   
   for (uint z=0; z < dirs.count(); z++)
   {
     KateProjectTreeViewItem *item = 0;
     if (parent)
-      item = new KateProjectTreeViewItem (parent, dirs[z], dir + QString ("/") + dirs[z], true);
+      item = new KateProjectTreeViewItem (parent, dirs[z], base + dirs[z], true);
     else
-      item = new KateProjectTreeViewItem (this, dirs[z], dir + QString ("/") + dirs[z], true);
+      item = new KateProjectTreeViewItem (this, dirs[z], base + dirs[z], true);
       
-    addDir (item, dir + QString ("/") + dirs[z]);
+    addDir (item, base + dirs[z]);
   }
   
   QStringList files = m_project->files (dir);
@@ -112,8 +119,19 @@ void KateProjectTreeView::addDir (KateProjectTreeViewItem *parent, const QString
   for (uint z=0; z < files.count(); z++)
   {
     if (parent)
-      new KateProjectTreeViewItem (parent, files[z], dir + QString ("/") + files[z], false);
+      new KateProjectTreeViewItem (parent, files[z], base + files[z], false);
     else
-      new KateProjectTreeViewItem (this, files[z], dir + QString ("/") + files[z], false);
+      new KateProjectTreeViewItem (this, files[z], base + files[z], false);
   }
 }
+
+void KateProjectTreeView::slotExecuted ( QListViewItem *i )
+{
+  KateProjectTreeViewItem *item = (KateProjectTreeViewItem *) i;
+  
+  if (item)
+  {
+    m_mainWin->viewManager()->openURL (KURL (m_project->baseurl(false), item->fullName()));
+  }
+}
+

@@ -2,21 +2,23 @@
 Type=Default
 Name=Test Project
 
-[Dir]
+[Dir .]
 Subdirs=testit,testmore
 Files=hallo.txt,text.ext
 
-[Dir /testit]
+[Dir ./testit]
 Subdirs=evenmore,test
 Files=testitout.txt
 
-[Dir /testmore]
+[Dir ./testmore]
 Files=hsf.txt,test.sdf
 
-[Dir /testit/evenmore]
+[Dir ./testit/evenmore]
 Subdirs=hallo
 
-[Dir /testit/test]
+[Dir ./testit/test]
 
-[Dir /testit/evenmore/hallo]
+[Dir ./testit/evenmore/hallo]
 Files=MUHHHHHHHHHHHHHHH.pas
+
+[File ./testmore/test.sdf]

@@ -45,7 +45,7 @@ class KateProject : public QObject
      * Returns the project plugin of this project object
      * @return ProjectPlugin project plugin of this project
      */
-    Kate::ProjectPlugin *plugin () { return m_plugin; } const;
+    Kate::ProjectPlugin *plugin () const { return m_plugin; };
    
     /**
      * Return the project type
@@ -66,6 +66,12 @@ class KateProject : public QObject
     KURL url () const;
     
     /**
+     * Return the url of the project dir
+     * @return KURL project dir url
+     */
+    KURL baseurl (bool _strip_trailing_slash_from_result = true) const;
+    
+    /**
      * Saves the project
      * @return bool success
      */
@@ -75,13 +81,13 @@ class KateProject : public QObject
      * subdirs of given dir
      * @return QStringList list with subdirs
      */
-    QStringList subdirs (const QString &dir = QString::null) const;
+    QStringList subdirs (const QString &dir = QString (".")) const;
     
     /**
      * files of given dir
      * @return QStringList list with files
      */
-    QStringList files (const QString &dir = QString::null) const;
+    QStringList files (const QString &dir = QString (".")) const;
 
   private:
     class KateProjectManager *m_projectMan;
@@ -89,6 +95,8 @@ class KateProject : public QObject
     Kate::ProjectPlugin *m_plugin;
     KConfig *m_data;
     KURL m_url;
+    KURL m_baseurl;
+    KURL m_baseurlWithoutSlash;
     KTempFile *m_tmpFile;
 };
 

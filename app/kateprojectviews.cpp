@@ -79,7 +79,7 @@ void KateProjectViews::projectCreated (Kate::Project *project)
   if (!project)
     return;
 
-  KateProjectTreeView *tree = new KateProjectTreeView (project, this);
+  KateProjectTreeView *tree = new KateProjectTreeView (project, m_mainWindow, this);
   m_wMap[project->projectNumber()] = tree;
   
   m_stack->addWidget (tree);
