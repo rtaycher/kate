@@ -990,11 +990,11 @@ void KantDocument::newLine(VConfig &c) {
     c.cursor.x = 0;
     if (pos > 0) {
       pos = textLine->cursorX(pos, tabChars);
-      if (getTextLine(c.cursor.y)->length() > 0) {
+//      if (getTextLine(c.cursor.y)->length() > 0) {
         QString s = tabString(pos, (c.flags & KantView::cfSpaceIndent) ? 0xffffff : tabChars);
         recordInsert(c.cursor, s);
         pos = s.length();
-      }
+//      }
 //      recordInsert(c.cursor, QString(textLine->getText(), pos));
       c.cursor.x = pos;
     }
