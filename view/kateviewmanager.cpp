@@ -1245,4 +1245,11 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
    config->deleteGroup( group );
 }
 
+void KateViewManager::gotoMark (KateMark *mark)
+{
+  if (!activeView()) return;
+
+  activeView()->gotoMark (mark);
+}
+
 

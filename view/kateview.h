@@ -963,6 +963,7 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
   private:
     bool active;
     bool myIconBorder;
+    QList<class KateMark> list;
 
   public slots:
     virtual void setFocus ();
@@ -988,6 +989,7 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
 
   private slots:
     void bookmarkMenuAboutToShow();
+    void gotoBookmark (int n);
 };
 
 class KateBrowserExtension : public KParts::BrowserExtension

@@ -3090,12 +3090,17 @@ void KateView::bookmarkMenuAboutToShow()
   bookmarkClear->plug (bookmarkMenu->popupMenu());
   bookmarkMenu->popupMenu()->insertSeparator ();
 
-  QList<KateMark> list = myDoc->marks();
+  list = myDoc->marks();
   for (int i=0; (uint) i < list.count(); i++)
   {
     if (list.at(i)->type == 1)
-      bookmarkMenu->popupMenu()->insertItem ( QString("Bookmark %1 - Line %2").arg(i).arg(list.at(i)->line), i );
+      bookmarkMenu->popupMenu()->insertItem ( QString("Bookmark %1 - Line %2").arg(i).arg(list.at(i)->line), this, SLOT (gotoBookmark(int)), 0, i );
   }
+}
+
+void KateView::gotoBookmark (int n)
+{
+  gotoMark (list.at(n));
 }
 
 KateBrowserExtension::KateBrowserExtension( KateDocument *doc, KateView *view )

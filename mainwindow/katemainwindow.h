@@ -24,6 +24,8 @@
 #include <kparts/part.h>
 #include <kxmlgui.h>
 
+class KateMark;
+
 class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOPIface, virtual public KParts::PartBase
 {
   Q_OBJECT
@@ -126,7 +128,9 @@ class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOP
     KAction* windowNext;
     KAction* windowPrev;
     KActionMenu *docListMenu;
+
     QPopupMenu *bookmarkMenu;
+    QList<KateMark> list;
 
     KToggleAction* settingsShowSidebar;
     KToggleAction* settingsShowFullPath;
@@ -182,6 +186,8 @@ class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOP
 
     void slotGoNext();
     void slotGoPrev();
+
+    void gotoBookmark (int n);
 
     void fileSelected(const KFileViewItem *file);
 

@@ -559,12 +559,17 @@ void KateMainWindow::bookmarkMenuAboutToShow()
   bookmarkClear->plug (bookmarkMenu);
   bookmarkMenu->insertSeparator ();
 
-  QList<KateMark> list = viewManager->activeView()->doc()->marks();
+  list = viewManager->activeView()->doc()->marks();
   for (int i=0; (uint) i < list.count(); i++)
   {
     if (list.at(i)->type == 1)
-      bookmarkMenu->insertItem ( QString("Bookmark %1 - Line %2").arg(i).arg(list.at(i)->line), i );
+      bookmarkMenu->insertItem ( QString("Bookmark %1 - Line %2").arg(i).arg(list.at(i)->line), this, SLOT (gotoBookmark(int)), 0, i );
   }
+}
+
+void KateMainWindow::gotoBookmark (int n)
+{
+  viewManager->gotoMark (list.at(n));
 }
 
 void KateMainWindow::setHighlightMenuAboutToShow()

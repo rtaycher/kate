@@ -187,6 +187,8 @@ class KateViewManager : public KateViewManagerIface
 
     void toggleVertical();
 
+    void gotoMark (class KateMark *mark);
+
   signals:
     void statusChanged (KateView *, int, int, int, int, QString);
     void statChanged ();
