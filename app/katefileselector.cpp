@@ -364,10 +364,12 @@ void KateFileSelector::autoSync( Kate::Document *doc )
     waitingUrl = u.directory();
   }
 }
-
+//FIXME crash on shutdown
 void KateFileSelector::setActiveDocumentDir()
 {
+kdDebug()<<"KateFileSelector::setActiveDocumentDir()"<<endl;
   KURL u = mainwin->activeDocumentUrl();
+kdDebug()<<"KateFileSelector::setActiveDocumentDir(): URL is "<<u.url()<<endl;
   if (!u.isEmpty())
     setDir( u.directory() );
 }
@@ -461,10 +463,12 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
   // Toolbar - a lot for a little...
   QGroupBox *gbToolbar = new QGroupBox( 1, Qt::Vertical, i18n("&Toolbar"), this );
   acSel = new KActionSelector( gbToolbar );
+  acSel->setAvailableLabel( i18n("A&vailable Actions") );
+  acSel->setSelectedLabel( i18n("S&elected Actions") );
   lo->addWidget( gbToolbar );
   // Sync
   QGroupBox *gbSync = new QGroupBox( 1, Qt::Horizontal, i18n("Auto Syncronization"), this );
-  cbSyncActive = new QCheckBox( i18n("When a document becomes &active"), gbSync );
+  cbSyncActive = new QCheckBox( i18n("When a docu&ment becomes active"), gbSync );
   cbSyncOpen = new QCheckBox( i18n("When a document is &opened"), gbSync );
   cbSyncShow = new QCheckBox( i18n("When the File Selector becomes visible"), gbSync );
   lo->addWidget( gbSync );
@@ -484,8 +488,8 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
 
   // Session
   QGroupBox *gbSession = new QGroupBox( 1, Qt::Horizontal, i18n("Session"), this );
-  cbSesLocation = new QCheckBox( i18n("Remember L&ocation"), gbSession );
-  cbSesFilter = new QCheckBox( i18n("Remember Last F&ilter"), gbSession );
+  cbSesLocation = new QCheckBox( i18n("Restore L&ocation"), gbSession );
+  cbSesFilter = new QCheckBox( i18n("Restore Last F&ilter"), gbSession );
   lo->addWidget( gbSession );
 
   // make it look nice
