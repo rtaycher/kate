@@ -192,7 +192,7 @@ GrepDialog::GrepDialog(QString dirname, QWidget *parent, const char *name)
     QWhatsThis::add(pattern_combo,
 		    i18n("Enter the regular expression you want to search for here.<br>"
 			 "Possible meta characters are:<br>"
-			 "<b>.</b> - Matches any character\n"
+			 "<b>.</b> - Matches any character<br>"
 			 "<b>^</b> - Matches the beginning of a line<br>"
 			 "<b>$</b> - Matches the end of a line<br>"
 	                 "<b>\\\\\\&lt;</b> - Matches the beginning of a word<br>"
