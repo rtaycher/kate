@@ -17,6 +17,8 @@
 #ifndef __kant_main_h__
 #define __kant_main_h__
 
+#include <config.h>
+
 class KantSidebar;
 class KantDocument;
 class KantView;
