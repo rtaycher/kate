@@ -494,6 +494,8 @@ int main(int argc, char **argv)
   aboutData.addCredit ("Carsten Pfeiffer", I18N_NOOP("Very nice help"), "");
   aboutData.addCredit ("Mr. Doerr", I18N_NOOP("For absolutely nothing"), "");
 
+  aboutData.setTranslator(I18N_NOOP("_: NAME OF TRANSLATORS\nYour names"), I18N_NOOP("_: EMAIL OF TRANSLATORS\nYour emails"));
+
   KCmdLineArgs::init( argc, argv, &aboutData );
   KCmdLineArgs::addCmdLineOptions( options );
 

@@ -163,22 +163,25 @@ void KateMainWindow::setupMainWindow ()
 bool KateMainWindow::eventFilter(QObject* o, QEvent* e)
 {
   if (e->type() == QEvent::KeyPress)
-        {
-                QKeyEvent *ke=(QKeyEvent*)e;
-                if (ke->key()==goNext->accel())
-                        {
-                                kdDebug(13000)<<"Jump next view  registered in Konsole";
-				slotGoNext();
-                                return true;
-                        }
-		else
-	                if (ke->key()==goPrev->accel())
-        	                {
-                	                kdDebug(13000)<<"Jump prev view  registered in Konsole";
-                        	        slotGoPrev();
-                                	return true;
-	                        }
-        }
+  {
+    QKeyEvent *ke = (QKeyEvent*)e;
+
+    if (ke->key()==goNext->accel())
+    {
+      kdDebug(13000)<<"Jump next view  registered in Konsole";
+      slotGoNext();
+      return true;
+    }
+    else
+
+    if (ke->key()==goPrev->accel())
+    {
+      kdDebug(13000)<<"Jump prev view  registered in Konsole";
+      slotGoPrev();
+      return true;
+    }
+  }
+
   return QWidget::eventFilter(o,e);
 }
 
@@ -284,9 +287,7 @@ void KateMainWindow::setupActions()
   connect(viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
   connect(viewManager,SIGNAL(statChanged()),this,SLOT(slotCurrentDocChanged()));
 
-  //  setHighlight = new KActionMenu (i18n("&Highlight Mode"), actionCollection(), "set_highlight");
   setHighlight = new KateViewHighlightAction (viewManager,i18n("&Highlight Mode"), actionCollection(), "set_highlight");
-  //connect(setHighlight->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(setHighlightMenuAboutToShow()));
 
   slotWindowActivated ();
 }
@@ -320,6 +321,7 @@ bool KateMainWindow::queryClose()
 
   return val;
 }
+
 // anders: attempt to get session manager to restore kate.
 void KateMainWindow::saveProperties(KConfig* cfg)
 {
@@ -527,63 +529,6 @@ void KateMainWindow::gotoBookmark (int n)
 {
   viewManager->gotoMark (list.at(n));
 }
-
-#if 0
-void KateMainWindow::setHighlightMenuAboutToShow()
-{
-  static QStringList subMenusName;
-  static QStringList names;
-  static QPtrList<QPopupMenu> subMenus;
-
-	int count = HlManager::self()->highlights();
-  static QString oldActiveSec;
-  static int oldActiveID;
-
-  for (int z=0; z<count; z++)
-  {
-    QString hlName = HlManager::self()->hlName (z);
-    QString hlSection = HlManager::self()->hlSection (z);
-
-    if ((hlSection != "") && (names.contains(hlName) < 1))
-    {
-      if (subMenusName.contains(hlSection) < 1)
-      {
-        subMenusName << hlSection;
-        QPopupMenu *menu = new QPopupMenu ();
-        subMenus.append(menu);
-        setHighlight->popupMenu()->insertItem (hlSection, menu);
-      }
-
-      int m = subMenusName.findIndex (hlSection);
-      names << hlName;
-      subMenus.at(m)->insertItem ( hlName, viewManager, SLOT(slotSetHl(int)), 0,  z);
-    }
-    else if (names.contains(hlName) < 1)
-    {
-      names << hlName;
-      setHighlight->popupMenu()->insertItem ( hlName, viewManager, SLOT(slotSetHl(int)), 0,  z);
-    }
-  }
-
-  if (viewManager->activeView())
-  {
-    int s = subMenusName.findIndex (oldActiveSec);
-    if (subMenus.at(s))
-      subMenus.at(s)->setItemChecked (oldActiveID, false);
-    else
-      setHighlight->popupMenu()->setItemChecked (0, false);
-
-    int i = subMenusName.findIndex (HlManager::self()->hlSection (viewManager->activeView()->getHl()));
-    if (subMenus.at(i))
-      subMenus.at(i)->setItemChecked (viewManager->activeView()->getHl(), true);
-    else
-      setHighlight->popupMenu()->setItemChecked (0, true);
-
-    oldActiveSec = HlManager::self()->hlSection (viewManager->activeView()->getHl());
-    oldActiveID = viewManager->activeView()->getHl();
-  }
-}
-#endif
 
 void KateMainWindow::dragEnterEvent( QDragEnterEvent *event )
 {

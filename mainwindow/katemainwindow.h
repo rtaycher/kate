@@ -94,7 +94,6 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     KAction* documentReload;
     KActionMenu* documentOpenWith;
     KateViewHighlightAction *setHighlight;
-    //KActionMenu *setHighlight;
 
     KAction *gotoLine;
     KAction* windowNext;
@@ -145,7 +144,6 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     void setEOLMenuAboutToShow();
     void bookmarkMenuAboutToShow();
     void settingsMenuAboutToShow();
-    //void setHighlightMenuAboutToShow();
     void slotSettingsShowFullPath();
     void slotDropEvent(QDropEvent *);
     void editKeys();
