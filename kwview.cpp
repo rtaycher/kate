@@ -2042,17 +2042,29 @@ void KWrite::loadURL(const KURL &url, int flags) {
     connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotJobReadResult( KIO::Job * ) ) );
     connect( job, SIGNAL( data( KIO::Job *, const QByteArray & ) ), this, SLOT( slotJobData( KIO::Job *, const QByteArray & ) ) );
   }
-  else if ( loadFile( url.path(), flags ) )
-  {
-    if ( flags & lfInsert )
+  else {
+    if ( flags & lfInsert ) {
+      if ( loadFile( url.path(), flags ) )
         emit statusMsg( i18n( "Inserted : %1" ).arg( url.fileName() ) );
-    else {
-        kWriteDoc->setURL( url, !(flags & lfNoAutoHl ) );        
-        emit statusMsg( i18n( "Read : %1" ).arg( url.fileName() ) );
+      else
+        emit statusMsg( QString::null );
+    } else {
+      if (QFileInfo(url.path()).exists()) {
+        if ( loadFile( url.path(), flags ) ) {
+          kWriteDoc->setURL( url, !(flags & lfNoAutoHl ) );
+          emit statusMsg( i18n( "Read : %1" ).arg( url.fileName() ) );
+        } else
+          emit statusMsg( QString::null );
+      } else {           // don't start whining, just make a new document
+        kWriteDoc->clear();
+        kWriteDoc->setURL( url, !(flags & lfNoAutoHl ) );
+        kWriteDoc->updateViews();
+        emit statusMsg( QString::null );
+        // !!!! replace with this when the string freeze is over: !!!
+        // emit statusMsg( i18n( "New File : %1" ).arg( url.fileName() ) );
+      }
     }
   }
-  else
-      emit statusMsg( QString::null );
 }
 
 
