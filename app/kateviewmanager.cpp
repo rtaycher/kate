@@ -27,7 +27,7 @@
 #include "katemainwindow.h"
 #include "katedocmanager.h"
 #include "kateapp.h"
-#include "../utils/filedialog.h"
+
 #include "kateviewspace.h"
 
 #include <dcopclient.h>
@@ -36,7 +36,9 @@
 #include <kdebug.h>
 #include <kdiroperator.h>
 #include <kdockwidget.h>
+#define protected public
 #include <kfiledialog.h>
+#undef protected
 #include <kiconloader.h>
 #include <kglobal.h>
 #include <klocale.h>
@@ -45,9 +47,11 @@
 #include <ksimpleconfig.h>
 #include <kstdaction.h>
 #include <kstandarddirs.h>
+#include <kfiledialog.h>
 #include <qfileinfo.h>
 
 #include <kio/netaccess.h>
+#include <ktexteditor/encodinginterface.h>
 
 #include <qlayout.h>
 #include <qobjectlist.h>
@@ -458,25 +462,24 @@ void KateViewManager::slotDocumentNew ()
 void KateViewManager::slotDocumentOpen ()
 {
   Kate::View *cv = activeView();
-        Kate::FileDialog *dialog;
+        //Kate::FileDialog *dialog;
 
         //TODO: move to kdelibs
         QString DEFAULT_ENCODING = QString::fromLatin1(KGlobal::locale()->encoding());
 
-  if (cv)
-          dialog = new Kate::FileDialog (cv->getDoc()->url().url(),cv->getDoc()->encoding(), this, i18n ("Open File"));
-        else
-          dialog = new Kate::FileDialog (QString::null, DEFAULT_ENCODING, this, i18n ("Open File"));
-
-        Kate::FileDialogData data = dialog->exec ();
-        delete dialog;
-
-  for (KURL::List::Iterator i=data.urls.begin(); i != data.urls.end(); ++i)
+        KFileDialog dlg(QString::null,
+        (cv?KTextEditor::encodingInterface(cv->document())->encoding():QString::null),
+                i18n("Open File"),KFileDialog::Opening,this,"",true);
+        dlg.setMode(KFile::Files);
+        dlg.ops->clearHistory();
+            dlg.exec();
+        KURL::List urls=dlg.selectedURLs();
+  for (KURL::List::Iterator i=urls.begin(); i != urls.end(); ++i)
   {
     if (!KIO::NetAccess::exists(*i, true, this))
       KMessageBox::error (this, i18n("The given file could not be read, check if it exists or if it is readable for the current user."));
     else
-      openURL( *i, data.encoding );
+      openURL( *i, dlg.selectedEncoding() );
   }
 }
 
@@ -715,15 +718,16 @@ void KateViewManager::queryModified()
               i18n("<p>The document '%1' has been modified, but not saved."
                    "<p>Do you want to keep it?").arg( d->docName() ),
               i18n("Unsaved Document") ) == KMessageBox::Yes )
-      { // FIXME add some nicer constructors to the file dialog
-        Kate::FileDialogData fdd = (new Kate::FileDialog( QString::null,
-                                       d->encoding(),
-                                       this,
-                                       i18n("Save As"),
-                                       Kate::FileDialog::saveDialog ))->exec();
-        d->setEncoding( fdd.encoding );
+      {
+               KFileDialog dlg (QString::null,
+                KTextEditor::encodingInterface(d)->encoding(),
+                i18n("Save As"),KFileDialog::Saving,this,"",true);
+        dlg.setMode(KFile::File);
+        //dlg.ops->clearHistory();
+            dlg.exec();
+        d->setEncoding( dlg.selectedEncoding() );
 
-        if ( d->saveAs( fdd.url ) )
+        if ( d->saveAs( dlg.selectedURL() ) )
           keep = true;
         else
           return;

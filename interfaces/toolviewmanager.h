@@ -64,7 +64,7 @@ class ToolViewManager : public QObject
      * @param sname unique name (used for example for hide/show)
      * @return KDockWidget * generated dockwidget
      */
-    KDockWidget *addToolView (KDockWidget::DockPosition position,const char *name,const QPixmap &icon,const QString&sname);
+    KDockWidget *addToolView (KDockWidget::DockPosition position,const char *name,const QPixmap &icon,const QString&sname) KDE_DEPRECATED;
     
     /**
      * Remove a toolview
