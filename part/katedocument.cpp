@@ -753,7 +753,6 @@ bool KateDocument::internalWrapLine ( uint line, uint col )
   tagLine(line);     
   tagLine(line+1);     
 
-  if (selectStartLine > line) clearSelection();
   if (tagStart > line) tagStart++;     
   if (tagEnd > line) tagEnd++;     
      
@@ -795,7 +794,6 @@ bool KateDocument::internalUnWrapLine ( uint line, uint col)
   updateMaxLength(l);     
   tagLine(line);     
 
-  if (selectStartLine > line) clearSelection();
   if (tagStart > line && tagStart > 0) tagStart--;
   if (tagEnd > line) tagEnd--;
 
@@ -836,7 +834,6 @@ bool KateDocument::internalInsertLine ( uint line, const QString &s )
 
   tagLine(line);
 
-  if (selectStartLine >= line) clearSelection();
   if (tagStart >= line) tagStart++;
   if (tagEnd >= line) tagEnd++;
 
@@ -867,7 +864,6 @@ bool KateDocument::internalRemoveLine ( uint line )
 
   buffer->removeLine(line);
 
-  if (selectStartLine >= line) clearSelection();
   if (tagStart >= line && tagStart > 0) tagStart--;
   if (tagEnd >= line) tagEnd--;
 
@@ -1068,10 +1064,8 @@ bool KateDocument::removeSelectedText ()
       removeText (curLine->line, curLine->deleteStart, curLine->line, curLine->deleteStart+curLine->len);
   }
 
-  clearSelection();
-
   _autoUpdate = true;
-  updateViews ();
+  clearSelection();
 
   undoItems.append (currentUndo);
   currentUndo = 0L;
