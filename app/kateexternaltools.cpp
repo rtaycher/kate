@@ -301,7 +301,9 @@ KateExternalToolsMenuAction::KateExternalToolsMenuAction( const QString &text,
 
 void KateExternalToolsMenuAction::reload()
 {
-  m_actionCollection->clear();
+  // HACK - clear() causes crashs here on apply or ok of config dialog
+  delete m_actionCollection;
+  m_actionCollection = new KActionCollection( this );
 
   popupMenu()->clear();
 
