@@ -22,6 +22,13 @@ print FILE "<?xml version=\"1.01\" encoding=\"UTF-8\"?><!DOCTYPE language>\n";
 @field = split /\"/, $file[0];
 $hlname = @field[1];
 
+# casesensitive ?
+$case = 1;
+if ( $file[0] =~ /Nocase/ )
+{
+  $case = 0;
+}
+
 # get the extensions of the hl
 @field = split /File Extensions =/, $file[0];
 @field = split / /, @field[1];
@@ -55,7 +62,7 @@ $commentstart = @field[1];
 @field = split / /, @field[1];
 $commentend = @field[1];
 
-print FILE "<language name=\"$hlname\" extensions=\"$ext\" mimetype=\"\" casesensitive=\"0\">\n";
+print FILE "<language name=\"$hlname\" extensions=\"$ext\" mimetype=\"\" casesensitive=\"$case\">\n";
 print FILE "  <highlighting>\n";
 
 $i=0;
