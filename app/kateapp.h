@@ -17,7 +17,7 @@
 #ifndef __kate_app_h__
 #define __kate_app_h__
 
-#include "../main/katemain.h"
+#include "katemain.h"
 #include "kateappIface.h"
 #include "../interfaces/application.h"
 #include "../interfaces/mainwindow.h"

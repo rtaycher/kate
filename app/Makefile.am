@@ -1,7 +1,29 @@
+lib_LTLIBRARIES = kate.la kwrite.la
+bin_PROGRAMS = kate kwrite
 
-noinst_LTLIBRARIES = libkateapp.la
-libkateapp_la_SOURCES = kateapp.cpp kateappIface.skel
-libkateapp_la_METASOURCES = AUTO
+kate_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugindialogpage.cpp \
+												kateconsole.cpp katedocmanager.cpp katefilelist.cpp katefileselector.cpp \
+												katemainwindow.cpp katepluginmanager.cpp katesplitter.cpp \
+												kateviewmanager.cpp kateviewspace.cpp katemain.cpp \
+												kateappIface.skel kateIface.skel
+
+kate_la_LIBADD   = ../interfaces/libkateinterfaces.la ../part/libkatepart.la
+kate_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
+
+kwrite_la_SOURCES = kwritemain.cpp
+kwrite_la_LIBADD   = ../interfaces/libkateinterfaces.la ../part/libkatepart.la
+kwrite_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
+
+kate_SOURCES = dummy.cpp
+kate_LDADD = kate.la
+kate_LDFLAGS = $(KDE_RPATH) $(all_libraries)
+
+kwrite_SOURCES = dummy.cpp
+kwrite_LDADD = kwrite.la
+kwrite_LDFLAGS = $(KDE_RPATH) $(all_libraries)
+
+dummy.cpp:
+	echo > dummy.cpp
 
 INCLUDES= $(all_includes)
 

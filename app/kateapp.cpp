@@ -18,12 +18,12 @@
 #include "kateapp.h"
 #include "kateapp.moc"
 
-#include "../mainwindow/kateIface.h"
-#include "../document/katedocmanager.h"
-#include "../document/katedocument.h"
-#include "../pluginmanager/katepluginmanager.h"
-#include "../mainwindow/katemainwindow.h"
-#include "../view/kateviewmanager.h"
+#include "kateIface.h"
+#include "katedocmanager.h"
+#include "../part/katedocument.h"
+#include "katepluginmanager.h"
+#include "katemainwindow.h"
+#include "kateviewmanager.h"
 
 #include <kcmdlineargs.h>
 #include <dcopclient.h>
