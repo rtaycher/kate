@@ -58,6 +58,12 @@ QString KateProject::fileName () const
   return m_filename;
 }
 
+QString KateProject::dir () const
+{
+  m_data->setGroup("General");
+  return m_data->readEntry ("Dir", "");
+}
+
 bool KateProject::save ()
 {
   m_data->sync();

@@ -27,18 +27,6 @@ namespace Kate
 {
 
 /**
- * Class to capsule the data for a file of an project
- */
-class ProjectFile
-{
-  public:
-    QString section;
-    QString name;
-    QStringList keys;
-    QStringList values;
-};
-
-/**
  * Interface to the project
  */
 class Project : public QObject
@@ -85,6 +73,12 @@ class Project : public QObject
     QString fileName () const;
     
     /**
+     * Return the project dir
+     * @return QString project dir
+     */
+    QString dir () const;
+    
+    /**
      * Saves the project
      * @return bool success
      */
@@ -97,8 +91,8 @@ class Project : public QObject
     QStringList sections () const;
     
     /**
-     * Names of the files in the section
-     * @return QStringList list with names (NOT FILE NAMES) of known files in this section
+     * Names of the files in the section, filename is relative to the project dir
+     * @return QStringList list with file names of known files in this section
      */
     QStringList files (const QString &section) const;
     

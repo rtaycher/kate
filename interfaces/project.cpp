@@ -82,6 +82,11 @@ QString Project::fileName () const
   return d->project->fileName ();
 }
 
+QString Project::dir () const
+{
+  return d->project->dir ();
+}
+
 bool Project::save ()
 {
   return d->project->save ();

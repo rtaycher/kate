@@ -47,6 +47,8 @@ class KateProject : public QObject
     
     QString fileName () const;
     
+    QString dir () const;
+    
     bool save ();
     
     QStringList sections () const;
