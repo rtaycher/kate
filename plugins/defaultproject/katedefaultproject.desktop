@@ -5,3 +5,4 @@ X-KDE-Library=katedefaultprojectplugin
 Name=Kate Default Project Plugin
 Comment=Default Plugin for Projects
 author=Christoph Cullmann
+X-KATE-ProjectType=Default
