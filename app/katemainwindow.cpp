@@ -155,7 +155,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
  if (console)
     console->loadConsoleIfNeeded();
 
-  // call it as last thing, must be sure everything is allready set up ;)
+  // call it as last thing, must be sure everything is already set up ;)
   setAutoSaveSettings( QString::fromLatin1("MainWindow"), true );
 }
 

@@ -586,7 +586,7 @@ void KateViewManager::splitViewSpace( KateViewSpace* vs,
   s->setOpaqueResize( useOpaqueResize );
 
   if (! isFirstTime) {
-    // anders: make sure the split' viewspace is allways
+    // anders: make sure the split' viewspace is always
     // correctly positioned.
     // If viewSpace is the first child, the new splitter must be moveToFirst'd
     if ( !((KateSplitter*)vs->parentWidget())->isLastChild( vs ) )
@@ -619,7 +619,7 @@ void KateViewManager::splitViewSpace( KateViewSpace* vs,
   if (!newViewUrl.isValid())
     createView (false, KURL(), (Kate::View *)activeView());
   else {
-    // tjeck if doc is allready open
+    // tjeck if doc is already open
     uint aDocId;
     if ( (aDocId = m_docManager->findDocument( newViewUrl )) )
       createView (false, KURL(), 0L, (Kate::Document *)m_docManager->documentWithID( aDocId) );
