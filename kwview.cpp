@@ -2382,7 +2382,6 @@ void KWrite::open() {
 
   url = KFileDialog::getOpenURL(kWriteDoc->url().url(), QString::null, this);
   if (url.isEmpty()) return;
-//  kapp->processEvents();
   loadURL(url);
 }
 
@@ -2392,7 +2391,6 @@ void KWrite::insertFile() {
 
   KURL  url = KFileDialog::getOpenURL(kWriteDoc->url().url(), QString::null, this);
   if (url.isEmpty()) return;
-//  kapp->processEvents();
   loadURL(url,KWriteView::lfInsert);
 }
 
@@ -2427,7 +2425,6 @@ KWrite::fileResult KWrite::saveAs() {
     }
   } while (query == KMessageBox::No);
 
-//  kapp->processEvents();
   writeURL(url);
   kWriteDoc->setURL( url, false );
   return OK;
@@ -2628,7 +2625,6 @@ void KWrite::replace() {
 //XSync(qt_xdisplay(),true);
 //kapp->syncX();
 //debug("xpending %d",XPending(qt_xdisplay()));
-//kapp->processEvents();
 //    kWriteView->tagAll();
 //    searchAgain();
 

@@ -18,7 +18,6 @@
 #include <qobjectlist.h>
 #include <qradiobutton.h>
 
-#include <kapp.h>
 #include <klocale.h>
 #include <kcolorbtn.h>
 #include <knuminput.h>
@@ -162,8 +161,6 @@ void ReplacePrompt::slotUser3( void ) { // Yes
 void ReplacePrompt::done(int r) {
   setResult(r);
   emit clicked();
-//  qt_leave_modal(this);
-//  kapp->exit_loop();
 }
 
 void ReplacePrompt::closeEvent(QCloseEvent *) {

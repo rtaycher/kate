@@ -35,8 +35,8 @@
 #include <qhbox.h>
 #include <qvgroupbox.h>
 
-#include <kapp.h>
 #include <kconfig.h>
+#include <kinstance.h>
 #include <kglobal.h>
 #include <kfontdialog.h>
 #include <kcharsets.h>
@@ -49,6 +49,7 @@
 
 #include "kwtextline.h"
 #include "kwattribute.h"
+#include "kwrite_factory.h"
 #include "highlight.h"
 
 
@@ -997,7 +998,7 @@ Highlight::~Highlight() {
 KConfig *Highlight::getKConfig() {
   KConfig *config;
 
-  config = kapp->config();
+  config = KWriteFactory::instance()->config();
   config->setGroup(QString::fromUtf8(iName) + QString::fromUtf8(" Highlight"));
   return config;
 }
@@ -1269,13 +1270,13 @@ void CHighlight::makeContextList() {
 }
 
 void getKeywords(QStringList& configlist,QString name) {
-	KConfig *config = kapp->config();
+	KConfig *config = KWriteFactory::instance()->config();
 	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name) );
 	configlist = config->readListEntry(QString::fromUtf8("%1Keywords").arg(name) );
 }
 
 void getTypes(QStringList& configlist,QString name) {
-	KConfig *config = kapp->config();
+	KConfig *config = KWriteFactory::instance()->config();
 	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name));
 	configlist = config->readListEntry(QString::fromUtf8("%1Type").arg(name) );
 }
@@ -1283,9 +1284,9 @@ void getTypes(QStringList& configlist,QString name) {
 
 void CHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
 
-	KConfig *config = kapp->config();
+   KConfig *config = KWriteFactory::instance()->config();
    QStringList configlist;
-	 getKeywords(configlist,this->name());
+   getKeywords(configlist,this->name());
 // read config file for list of keywords/data types
 // if there is none isEmpty() == True  then process normally and save it in config file
 // if there is a list already in config file use that instead
@@ -1321,7 +1322,7 @@ CppHighlight::~CppHighlight() {
 
 void CppHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
 
-  KConfig *config = kapp->config();
+  KConfig *config = KWriteFactory::instance()->config();
   config->setGroup(QString("%1 Highlight").arg(name()));
 
 
@@ -1388,7 +1389,7 @@ void ObjcHighlight::makeContextList() {
 // UNTESTED
 void ObjcHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
 
-  KConfig *config = kapp->config();
+  KConfig *config = KWriteFactory::instance()->config();
 // config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
   QStringList configlist;
 //  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
@@ -1516,7 +1517,7 @@ void PascalHighlight::makeContextList() {
   contextList[6] = c = new HlContext(6,0);
 
   QStringList configlist;
-  KConfig *config=kapp->config();
+  KConfig *config=KWriteFactory::instance()->config();
   getKeywords(configlist,name());
   if(configlist.isEmpty()) {
     keyword->addList(pascalKeywords);
@@ -1548,7 +1549,7 @@ IdlHighlight::~IdlHighlight() {
 
 void IdlHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
 
-  KConfig *config = kapp->config();
+  KConfig *config = KWriteFactory::instance()->config();
   //config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
   QStringList configlist;
   //configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
@@ -1584,7 +1585,7 @@ JavaHighlight::~JavaHighlight() {
 // UNTESTED
 void JavaHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
 {
-  KConfig *config = kapp->config();
+  KConfig *config = KWriteFactory::instance()->config();
 //	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
   QStringList configlist;
 //  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
@@ -1683,7 +1684,7 @@ void BashHighlight::makeContextList() {
     c->items.append(new HlCharDetect(4,0,'`'));
   contextList[3] = new HlContext(5,0);
 
-  KConfig *config = kapp->config();
+  KConfig *config = KWriteFactory::instance()->config();
 //config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
   QStringList configlist;
 //  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
@@ -1733,7 +1734,7 @@ void ModulaHighlight::makeContextList() {
   contextList[2] = c = new HlContext(6,2);
     c->items.append(new Hl2CharDetect(6,0, '*', ')'));
 
-  KConfig *config = kapp->config();
+  KConfig *config = KWriteFactory::instance()->config();
 //config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
   QStringList configlist;
 //  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
@@ -1784,7 +1785,7 @@ void AdaHighlight::makeContextList() {
     c->items.append(new HlCharDetect(6,0,'"'));
   contextList[2] = c = new HlContext(7,0);
 
-  KConfig *config = kapp->config();
+  KConfig *config = KWriteFactory::instance()->config();
 //config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
   QStringList configlist;
 //  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
@@ -1854,7 +1855,7 @@ void PythonHighlight::makeContextList() {
   contextList[6] = new HlContext(0,1);
   contextList[7] = new HlContext(0,2);
 
-  KConfig *config = kapp->config();
+  KConfig *config = KWriteFactory::instance()->config();
 //	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
   QStringList configlist;
 //  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
@@ -2114,7 +2115,7 @@ int PerlHighlight::doHighlight(int ctxNum, TextLine *textLine) {
 void PerlHighlight::init() {
   keyword = new HlKeyword(0,0);
 
-  KConfig *config = kapp->config();
+  KConfig *config = KWriteFactory::instance()->config();
 //config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
   QStringList configlist;
 //  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
@@ -2177,7 +2178,7 @@ void SatherHighlight::makeContextList() {
   //Comment Context
   contextList[1] = c = new HlContext(11,0);
 
-  KConfig *config = kapp->config();
+  KConfig *config = KWriteFactory::instance()->config();
 //	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
   QStringList configlist;
 //  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
@@ -2331,7 +2332,7 @@ Highlight *HlManager::getHl(int n) {
 int HlManager::defaultHl() {
   KConfig *config;
 
-  config = kapp->config();
+  config = KWriteFactory::instance()->config();
   config->setGroup("General Options");
   return nameFind(config->readEntry("Highlight"));
 }
@@ -2502,7 +2503,7 @@ void HlManager::getDefaults(ItemStyleList &list, ItemFont &font) {
   list.append(new ItemStyle(darkGray,gray,false,true));    //comment
   list.append(new ItemStyle(darkGreen,green,false,false)); //others
 
-  config = kapp->config();
+  config = KWriteFactory::instance()->config();
   config->setGroup("Default Item Styles");
   for (z = 0; z < defaultStyles(); z++) {
     i = list.at(z);
@@ -2529,7 +2530,7 @@ void HlManager::setDefaults(ItemStyleList &list, ItemFont &font) {
   ItemStyle *i;
   char s[64];
 
-  config = kapp->config();
+  config = KWriteFactory::instance()->config();
   config->setGroup("Default Item Styles");
   for (z = 0; z < defaultStyles(); z++) {
     i = list.at(z);
