@@ -678,14 +678,15 @@ KateBufBlock::buildStringList()
       l = p;     
       while(p < e)     
       {     
-         if (*p == '\n')     
+         if ((*p == '\n') || (*p == 'r'))
          {
-            // TODO: Use codec     
+            // TODO: Use codec
             QString line = m_codec->toUnicode(l, (p-l-1)+1);     
             TextLine::Ptr textLine = new TextLine();     
             textLine->append(line.unicode(), line.length());     
             m_stringList.push_back(textLine);     
-            l = p+1;     
+	    if ((*p=='\r') && ((p+1)<e))  if ((*p+1)=='\n') {p++;}
+            l = p+1;
          }     
          p++;     
       }
@@ -700,7 +701,7 @@ KateBufBlock::buildStringList()
       l = p;     
       while(p < e)     
       {     
-         if (*p == '\n')     
+         if ((*p == '\n') || (*p == '\r'))
          {     
             QString line = m_codec->toUnicode(l, (p-l-1)+1);     
             if (!lastLine.isEmpty())     
@@ -711,6 +712,7 @@ KateBufBlock::buildStringList()
             TextLine::Ptr textLine = new TextLine();     
             textLine->append(line.unicode(), line.length());
             m_stringList.push_back(textLine);
+	    if ((*p=='\r') && ((p+1)<e)) if (*(p+1)=='\n') {p++;}
             l = p+1;
          }
          p++;

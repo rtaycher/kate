@@ -691,6 +691,12 @@ class KateDocument : public Kate::Document
   //
   // Much internal data ;)
   //
+
+
+  protected:
+    // stores the current selection
+    KateTextCursor selectStart;
+    KateTextCursor selectEnd;
   private:
     uint PreHighlightedTill;
     uint RequestPreHighlightTill;
@@ -710,9 +716,6 @@ class KateDocument : public Kate::Document
     TextLine::Ptr longestLine;
     float maxLength;
 
-    // stores the current selection
-    KateTextCursor selectStart;
-    KateTextCursor selectEnd;
 
     // do we select normal or blockwise ?
     bool blockSelect;
