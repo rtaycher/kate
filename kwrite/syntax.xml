@@ -93,7 +93,7 @@
 </itemDatas>
 </language>
 
-<language name="C" extensions="*.cpp;*.cc;*.C;*.h" mimetype="text/x-c++-src;text/x-c++-hdr;text/x-c-hdr;text/x-c++-src" casesensitive="1"">
+<language name="C" extensions="*.cpp;*.cc;*.C;*.h" mimetype="text/x-c++-src;text/x-c++-hdr;text/x-c-hdr;text/x-c++-src" casesensitive="1">
 <keywords>
    <keyword> break </keyword>
    <keyword> case </keyword>
