@@ -2,7 +2,7 @@
 
 extern "C"
 {
-  void *init_libkwritepart()
+  void *init_libkantpart()
   {
     return new KantFactory();
   }
