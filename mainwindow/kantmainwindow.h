@@ -59,6 +59,7 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     // should be protected, and kantviewmanager a friend class.
     KRecentFilesAction *fileOpenRecent;
 
+    KantFileList *filelist;
     KantFileSelector *fileselector;
 
   protected:

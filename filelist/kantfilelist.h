@@ -21,14 +21,49 @@
 #include "../kantmain.h"
 
 #include <klistbox.h>
+#include <qapplication.h>
+
+class KantFileListItem : public QListBoxItem
+{
+  public:
+    KantFileListItem( long docID, const QPixmap &pix, const QString& text);
+    ~KantFileListItem();
+
+    long docID ();
+
+    const QPixmap *pixmap() const { return &pm; };
+
+    void setText(const QString &text);
+    void setPixmap(const QPixmap &pixmap);
+
+    void setBold(bool bold);
+
+    int height( const QListBox* lb ) const;
+
+    int width( const QListBox* lb ) const;
+
+  protected:
+    void paint( QPainter *painter );
+
+   private:
+   long myDocID;
+    QPixmap pm;
+    bool _bold;
+};
 
 class KantFileList : public KListBox
 {
   Q_OBJECT
 
   public:
-    KantFileList (QWidget * parent = 0, const char * name = 0 );
+    KantFileList (KantDocManager *_docManager, QWidget * parent = 0, const char * name = 0 );
     ~KantFileList ();
+
+  private:
+    KantDocManager *docManager;
+
+  private slots:
+      void slotDocumentCreated (KantDocument *doc);
 };
 
 #endif

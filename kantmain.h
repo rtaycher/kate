@@ -60,6 +60,7 @@ class KantConfigDlg;
 class KantConsole;
 class KantDocManager;
 class KantDocument;
+class KantFileList;
 class KantFileSelector;
 class KantMainWindow;
 class KantPluginManager;

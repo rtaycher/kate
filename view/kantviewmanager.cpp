@@ -96,20 +96,11 @@ KantViewManager::KantViewManager (QWidget *parent, KantDocManager *docManager, K
   connect(listbox,SIGNAL(highlighted(QListBoxItem *)),this,SLOT(activateView(QListBoxItem *)));
   connect(listbox,SIGNAL(selected(QListBoxItem *)),this,SLOT(activateView(QListBoxItem *)));
 
-
-   connect(docManager,SIGNAL(documentCreated(KantDocument *)),this,SLOT(newDoc(KantDocument *)));
-
-
   connect( this, SIGNAL(viewChanged()), this, SLOT(slotViewChanged()) );
 }
 
 KantViewManager::~KantViewManager ()
 {
-}
-
-void KantViewManager::newDoc (KantDocument *doc)
-{
- listbox->insertItem (new KantVMListBoxItem (SmallIcon("null"), QString ("test"), doc->docID()) );
 }
 
 bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView )

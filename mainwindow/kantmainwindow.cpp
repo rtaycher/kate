@@ -29,6 +29,7 @@
 #include "../app/kantapp.h"
 #include "../sidebar/kantsidebar.h"
 #include "../fileselector/kantfileselector.h"
+#include "../filelist/kantfilelist.h"
 #include "kantmenuitem.h"
 
 #include "../kwrite/kwview.h"
@@ -162,6 +163,9 @@ void KantMainWindow::setupMainWindow ()
   consoleDock->setFocusPolicy(QWidget::ClickFocus);
 
   projectManager = new KantProjectManager (docManager, viewManager, statusBar());
+
+  filelist = new KantFileList (docManager, 0, "filelist");
+  sidebar->addWidget (filelist, i18n("Filelist"));
 
   fileselector = new KantFileSelector(0, "operator");
   fileselector->dirOperator()->setView(KFile::Simple);
