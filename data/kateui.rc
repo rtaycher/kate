@@ -35,6 +35,7 @@
     <DefineGroup name="edit_select_merge"/>
     <Separator/>
     <DefineGroup name="edit_find_merge"/>
+    <Action name="edit_find_in_files"/> 
     <Separator/>
     <Merge/>
   </Menu>
@@ -44,6 +45,8 @@
     <Action name="go_forward"/>
     <Separator />
   </Menu>
+
+  <Merge/>
 
   <Menu name="view"><text>&amp;View</text>
     <Action name="view_split_vert"/>
@@ -61,8 +64,6 @@
     <Separator />
     <Action name="scripts"/>
   </Menu>
-
-  <Merge/>
 
   <Menu name="settings"><text>&amp;Settings</text>
     <Action name="settings_show_toolbar" />
