@@ -96,8 +96,6 @@ public:
    void clear();
 
 signals:
-
-   void textChanged();
    /**
     * Emitted during loading.
     */

@@ -172,23 +172,28 @@ class KateDocument : public Kate::Document
     bool editStart (bool withUndo = true);
     void editEnd ();
     void editAddUndo (KateUndo *undo);
-    
+    void editTagLine (uint line);
+    void editRemoveTagLine (uint line);
+    void editInsertTagLine (uint line);
+
     bool editIsRunning;
     bool editWithUndo;
+    uint editTagLineStart;
+    uint editTagLineEnd;
     KateUndoGroup *editCurrentUndo;
     QPtrList<KateViewCursorCache> editCursorCache;
 
     //
-    // 6 internal functions for insert/remove stuff
+    // functions for insert/remove stuff (atomic)
     //
-    bool internalInsertText ( uint line, uint col, const QString &s );
-    bool internalRemoveText ( uint line, uint col, uint len );
+    bool editInsertText ( uint line, uint col, const QString &s );
+    bool editRemoveText ( uint line, uint col, uint len );
 
-    bool internalWrapLine ( uint line, uint col );
-    bool internalUnWrapLine ( uint line, uint col);
+    bool editWrapLine ( uint line, uint col );
+    bool editUnWrapLine ( uint line, uint col);
 
-    bool internalInsertLine ( uint line, const QString &s );
-    bool internalRemoveLine ( uint line );
+    bool editInsertLine ( uint line, const QString &s );
+    bool editRemoveLine ( uint line );
 
   //
   // KTextEditor::SelectionInterface stuff
@@ -504,8 +509,6 @@ class KateDocument : public Kate::Document
 
     bool doSearch(SConfig &s, const QString &searchFor);
 
-    void tagLine(int line);
-
   public:
     void setPseudoModal(QWidget *);
 
@@ -704,9 +707,6 @@ class KateDocument : public Kate::Document
     uint myWordWrapAt;
 
     bool hlSetByUser;
-
-    int tagStart;
-    int tagEnd;
 
     QString myEncoding;
 

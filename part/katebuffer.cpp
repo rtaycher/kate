@@ -410,13 +410,12 @@ KateBuffer::changeLine(uint i)
 {     
     ////kdDebug(13020)<<"changeLine "<< i<<endl;     
    KateBufBlock *buf = findBlock(i);     
-   assert(buf);     
+   assert(buf);
    assert(buf->b_stringListValid);
-   if (buf->b_rawDataValid)     
-   {     
-      dirtyBlock(buf);     
-   }     
-   emit textChanged();     
+   if (buf->b_rawDataValid)
+   {
+      dirtyBlock(buf);
+   }
 }     
      
 void     
