@@ -30,6 +30,7 @@
 #include <ktip.h>
 #include <kdebug.h>
 #include <klibloader.h>
+#include <klocale.h>
 
 #include <qfile.h>
 #include <qtimer.h>
@@ -38,7 +39,9 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
 {       
   m_application = new Kate::Application (this);
   m_initPluginManager = new Kate::InitPluginManager (this);
-              
+
+  KGlobal::locale()->insertCatalogue("katepart");
+
   if (forcedNewProcess)
   {
     config()->setGroup("KDE");
