@@ -471,7 +471,7 @@ QListViewItem *HlEditDialog::addContextItem(KListView *cL,QListViewItem *_parent
                     else if ((dataname=="2CharDetect") || (dataname=="RangeDetect")) param=chr+chr1;
                       else if ((dataname=="StringDetect") || (dataname=="AnyChar") || (dataname=="RegExpr")) param=stringdata;
                         else                     kdDebug(13010)<<"***********************************"<<endl<<"Unknown entry for Context:"<<dataname<<endl;
-                kdDebug(13010)<<dataname;
+                kdDebug(13010)<<dataname << endl;
                 return new QListViewItem(_parent,prev,i18n(dataname.latin1())+param,dataname,param,attr,context);
  }
 
