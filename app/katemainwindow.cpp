@@ -338,19 +338,19 @@ bool KateMainWindow::queryClose()
   if ( m_projectManager->queryCloseAll () &&
        m_docManager->queryCloseDocuments (this) )
   {
-    KConfig *scfg = KateApp::kateSessionConfig();
+    KConfig scfg("katesessionrc");
 
     KConfig *config = kapp->config();
     config->setGroup("General");
 
     if (config->readBoolEntry("Restore Projects", false))
-      m_projectManager->saveProjectList (scfg);
+      m_projectManager->saveProjectList (&scfg);
 
     if (config->readBoolEntry("Restore Documents", false))
-      m_docManager->saveDocumentList (scfg);
+      m_docManager->saveDocumentList (&scfg);
 
     if (config->readBoolEntry("Restore Window Configuration", false))
-      saveProperties (scfg);
+      saveProperties (&scfg);
 
     return true;
   }
@@ -927,9 +927,9 @@ void KateMainWindow::openConstURLProject (const KURL&url)
 }
 
 void KateMainWindow::saveProperties(KConfig *config) {
-	kdDebug(13000)<<"KateMainWindow::saveProperties()********************************************"<<endl
-		      <<config->group()<<endl
-		      <<"****************************************************************************"<<endl;
+  kdDebug(13000)<<"KateMainWindow::saveProperties()**********************"<<endl
+  <<config->group()<<endl
+  <<"******************************************************"<<endl;
   assert(config);
 
   kdDebug(13000)<<"preparing session saving"<<endl;
