@@ -56,7 +56,7 @@ KateFileList::KateFileList (KateDocManager *_docManager, KateViewManager *_viewM
 KateFileList::~KateFileList ()
 {
 }
-
+  
 void KateFileList::slotDocumentCreated (Kate::Document *doc)
 {
   insertItem (new KateFileListItem (doc->documentNumber(), SmallIcon("null"), doc->docName()) );

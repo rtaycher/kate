@@ -68,7 +68,6 @@ KateViewManager::KateViewManager (QWidget *parent, KateDocManager *docManager) :
   vs->installEventFilter( this );
   grid->addWidget( vs, 0, 0);
   viewSpaceList.append(vs);
-
   connect( this, SIGNAL(viewChanged()), this, SLOT(slotViewChanged()) );
 }
 

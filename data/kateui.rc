@@ -16,6 +16,7 @@
     <DefineGroup name="revert_merge" append="revert_merge"/>
     <Action name="file_revert_all"/>
     <Separator/>
+    <Action name="file_mail" />
     <DefineGroup name="print_merge" append="print_merge"/>
     <Merge/>
     <Separator/>
