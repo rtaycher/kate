@@ -133,7 +133,12 @@ bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, 
   if (docManager->myfirstDoc)
     view->getDoc()->setDocName (i18n("Untitled %1").arg(doc->documentNumber()));
 
+  // disable settings dialog action
+  view->actionCollection()->remove (view->actionCollection()->action( "set_confdlg" ));
+    
+  // popup menu
   view->installPopup ((QPopupMenu*)((KMainWindow *)topLevelWidget ())->factory()->container("katepart_popup", (KMainWindow *)topLevelWidget ()) );
+  
   connect(view,SIGNAL(cursorPositionChanged()),this,SLOT(statusMsg()));
   connect(view,SIGNAL(newStatus()),this,SLOT(statusMsg()));
   connect(view->getDoc(), SIGNAL(undoChanged()), this, SLOT(statusMsg()));
