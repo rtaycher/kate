@@ -556,6 +556,9 @@ void KateMainWindow::docListMenuAboutToShow()
 void KateMainWindow::bookmarkMenuAboutToShow()
 {
   bookmarkMenu->clear ();
+  bookmarkToggle->plug (bookmarkMenu);
+  bookmarkClear->plug (bookmarkMenu);
+  bookmarkMenu->insertSeparator ();
 
   QList<KateMark> list = viewManager->activeView()->doc()->marks();
   for (int i=0; (uint) i < list.count(); i++)
