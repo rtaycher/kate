@@ -210,7 +210,7 @@ class KateViewInternal : public QWidget {
     void updateCursor();
     void updateCursor(PointStruc &newCursor);
     void updateCursor(PointStruc &newCursor, int flags);
-
+    void scroll(int, int);
     void clearDirtyCache(int height);
     void tagLines(int start, int end, int x1, int x2);
     void tagAll();
@@ -274,6 +274,7 @@ class KateViewInternal : public QWidget {
     LineRange *lineRanges;
     int newXPos;
     int newYPos;
+    bool bIsPainting;
 
     QPixmap *drawBuffer;
 
