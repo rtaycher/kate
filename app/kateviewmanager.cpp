@@ -110,7 +110,7 @@ bool KateViewManager::createView ( Kate::Document *doc )
   view->actionCollection()->remove (view->actionCollection()->action( "set_confdlg" ));
 
   // popup menu
-  view->installPopup ((QPopupMenu*)(m_mainWindow->factory()->container("ktexteditor_popup", m_mainWindow)) );
+  view->installPopup ((QPopupMenu*)(m_mainWindow->factory()->container("ktexteditor_popup", view)) );
 
   connect(view,SIGNAL(cursorPositionChanged()),this,SLOT(statusMsg()));
   connect(view,SIGNAL(newStatus()),this,SLOT(statusMsg()));

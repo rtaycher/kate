@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="kate" version="25">
+<kpartgui name="kate" version="26">
 
 <MenuBar noMerge="1">
   <Menu name="file"><text>&amp;File</text>
@@ -126,7 +126,6 @@
 
 <Menu name="ktexteditor_popup" noMerge="1">
   <DefineGroup name="popup_operations" />
-  <Separator />
   <Action name="go_back"/>
   <Action name="go_forward"/>
 </Menu>
