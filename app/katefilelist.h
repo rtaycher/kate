@@ -97,6 +97,9 @@ class KateFileList : public KListBox
     void slotViewChanged ();
     void slotMenu ( QListBoxItem *item, const QPoint &p );
 
+  protected:
+  	virtual void keyPressEvent(QKeyEvent *e); 
+    
   private:
     /////////////////////////////////////////////////////////////////////
     // A private tooltip class to display the URL of a document in the

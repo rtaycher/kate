@@ -60,7 +60,7 @@ KateFileList::KateFileList (KateDocManager *_docManager,
 
   // Honour KDE single/double click setting
   connect(this,SIGNAL(executed(QListBoxItem *)),this,SLOT(slotActivateView(QListBoxItem *)));
-  connect(this,SIGNAL(highlighted(QListBoxItem *)),this,SLOT(slotActivateView(QListBoxItem *)));
+//  connect(this,SIGNAL(highlighted(QListBoxItem *)),this,SLOT(slotActivateView(QListBoxItem *)));
 
   connect(viewManager,SIGNAL(viewChanged()), this,SLOT(slotViewChanged()));
 
@@ -70,6 +70,18 @@ KateFileList::KateFileList (KateDocManager *_docManager,
 KateFileList::~KateFileList ()
 {
   delete tooltip;
+}
+
+void KateFileList::keyPressEvent(QKeyEvent *e) {
+  if ( ( e->key() == Key_Return ) || ( e->key() == Key_Enter ) )
+  {
+    e->accept();
+    slotActivateView(item(currentItem()));
+  }
+  else
+  {
+    KListBox::keyPressEvent(e);
+  }
 }
 
 void KateFileList::slotNextDocument()
@@ -84,7 +96,7 @@ void KateFileList::slotNextDocument()
   else
     viewManager->activateView( ((KateFileListItem *)item(0))->documentNumber() );
 }
-
+	
 void KateFileList::slotPrevDocument()
 {
   int c = currentItem ();
