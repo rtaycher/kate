@@ -463,6 +463,7 @@ class KWriteDoc : public KTextEditor::Document {
     void updateViews(KWriteView *exclude = 0L);
 
     QColor &cursorCol(int x, int y);
+    QFont &getTextFont(int x, int y);
     void paintTextLine(QPainter &, int line, int xStart, int xEnd, bool showTabs);
 //    void printTextLine(QPainter &, int line, int xEnd, int y);
 

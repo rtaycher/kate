@@ -1035,10 +1035,20 @@ void KWriteView::paintTextLines(int xPos, int yPos) {
 
 void KWriteView::paintCursor() {
   int h, y, x;
+  static int cx = 0, cy = 0, ch = 0;
 
   h = kWriteDoc->fontHeight;
   y = h*cursor.y - yPos;
   x = cXPos - (xPos-2);
+
+  QFont f = kWriteDoc->getTextFont(cursor.x, cursor.y);
+  if(f != font()) setFont(f);
+  if(cx != x || cy != y || ch != h){
+    cx = x;
+    cy = y;
+    ch = h;
+    setMicroFocusHint(cx, cy, 0, ch - 2);
+  }
 
   QPainter paint;
   if (cursorOn) {

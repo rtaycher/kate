@@ -808,14 +808,14 @@ bool KWriteDoc::isLastView(int numViews) {
 int KWriteDoc::textWidth(TextLine *textLine, int cursorX) {
   int x;
   int z;
-  char ch;
+  QChar ch;
   Attribute *a;
 
   x = 0;
   for (z = 0; z < cursorX; z++) {
     ch = textLine->getChar(z);
     a = &m_attribs[textLine->getAttr(z)];
-    x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : a->width(ch);//a->fm.width(ch);
+    x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : a->fm.width(ch);//a->width(ch);
   }
   return x;
 }
@@ -832,7 +832,7 @@ int KWriteDoc::textWidth(bool wrapCursor, PointStruc &cursor, int xPos) {
   int len;
   int x, oldX;
   int z;
-  char ch;
+  QChar ch;
   Attribute *a;
 
   if (cursor.y < 0) cursor.y = 0;
@@ -845,7 +845,7 @@ int KWriteDoc::textWidth(bool wrapCursor, PointStruc &cursor, int xPos) {
     oldX = x;
     ch = textLine->getChar(z);
     a = &m_attribs[textLine->getAttr(z)];
-    x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : a->width(ch);//a->fm.width(ch);
+    x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : a->fm.width(ch);//a->width(ch);
     z++;
   }
   if (xPos - oldX < x - xPos && z > 0) {
@@ -868,7 +868,7 @@ int KWriteDoc::textPos(TextLine *textLine, int xPos, int &newXPos) {
 //  int len;
   int x, oldX;
   int z;
-  char ch;
+  QChar ch;
   Attribute *a;
 
 //  len = textLine->length();
@@ -878,7 +878,7 @@ int KWriteDoc::textPos(TextLine *textLine, int xPos, int &newXPos) {
     oldX = x;
     ch = textLine->getChar(z);
     a = &m_attribs[textLine->getAttr(z)];
-    x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : a->width(ch);//a->fm.width(ch);
+    x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : a->fm.width(ch);//a->width(ch);
     z++;
   }
   if (xPos - oldX < x - xPos && z > 0) {
@@ -1409,7 +1409,7 @@ void KWriteDoc::toggleRect(int start, int end, int x1, int x2) {
   for (line = start; line < end; line++) {
     int x, oldX, s, e, newX1, newX2;
     TextLine *textLine;
-    char ch;
+    QChar ch;
     Attribute *a;
 
     textLine = contents.at(line);
@@ -1421,7 +1421,7 @@ void KWriteDoc::toggleRect(int start, int end, int x1, int x2) {
       oldX = x;
       ch = textLine->getChar(z);
       a = &m_attribs[textLine->getAttr(z)];
-      x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : a->width(ch);//a->fm.width(ch);
+      x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : a->fm.width(ch);//a->width(ch);
       z++;
     }
     s = z;
@@ -1434,7 +1434,7 @@ void KWriteDoc::toggleRect(int start, int end, int x1, int x2) {
       oldX = x;
       ch = textLine->getChar(z);
       a = &m_attribs[textLine->getAttr(z)];
-      x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : a->width(ch);//a->fm.width(ch);
+      x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : a->fm.width(ch);//a->width(ch);
       z++;
     }
     e = z;
@@ -2114,6 +2114,17 @@ QColor &KWriteDoc::cursorCol(int x, int y) {
   if (attr & taSelectMask) return a->selCol; else return a->col;
 }
 
+QFont &KWriteDoc::getTextFont(int x, int y) {
+  TextLine *textLine;
+  int attr;
+  Attribute *a;
+
+  textLine = contents.at(y);
+  attr = textLine->getRawAttr(x);
+  a = &m_attribs[attr & taAttrMask];
+  return a->font;
+}
+
 
 void KWriteDoc::paintTextLine(QPainter &paint, int line, int xStart, int xEnd,
   bool showTabs) {
@@ -2123,7 +2134,7 @@ void KWriteDoc::paintTextLine(QPainter &paint, int line, int xStart, int xEnd,
   int len;
   const QChar *s;
   int z, x;
-  char ch;
+  QChar ch;
   Attribute *a = 0L;
   int attr, nextAttr;
   int xs;
@@ -2154,7 +2165,7 @@ void KWriteDoc::paintTextLine(QPainter &paint, int line, int xStart, int xEnd,
       x += m_tabWidth - (x % m_tabWidth);
     } else {
       a = &m_attribs[textLine->getAttr(z)];
-      x += a->width(ch);//a->fm.width(ch);
+      x += a->fm.width(ch);//a->width(ch);
     }
     z++;
   } while (x <= xStart);
@@ -2177,7 +2188,7 @@ void KWriteDoc::paintTextLine(QPainter &paint, int line, int xStart, int xEnd,
       x += m_tabWidth - (x % m_tabWidth);
     } else {
       a = &m_attribs[attr & taAttrMask];
-      x += a->width(ch);//a->fm.width(ch);
+      x += a->fm.width(ch);//a->width(ch);
     }
     z++;
   }
@@ -2189,7 +2200,7 @@ void KWriteDoc::paintTextLine(QPainter &paint, int line, int xStart, int xEnd,
   // draw text
   x = xc;
   z = zc;
-  y += fontAscent -1;
+  y += fontAscent;// -1;
   attr = -1;
   while (z < len) {
     ch = s[z];//textLine->getChar(z);
@@ -2199,7 +2210,7 @@ void KWriteDoc::paintTextLine(QPainter &paint, int line, int xStart, int xEnd,
         QConstString str((QChar *) &s[zc], z - zc /*+1*/);
         QString s = str.string();
         paint.drawText(x - xStart, y, s);
-        x += a->width(s);//a->fm.width(str);//&s[zc], z - zc);
+        x += a->fm.width(s);//a->width(s);//&s[zc], z - zc);
       }
       zc = z +1;
 
@@ -2228,7 +2239,7 @@ void KWriteDoc::paintTextLine(QPainter &paint, int line, int xStart, int xEnd,
           QConstString str((QChar *) &s[zc], z - zc /*+1*/);
           QString s = str.string();
           paint.drawText(x - xStart, y, s);
-          x += a->width(s);//a->fm.width(str);//&s[zc], z - zc);
+          x += a->fm.width(s);//a->width(s);//&s[zc], z - zc);
           zc = z;
         }
         attr = nextAttr;
@@ -3086,7 +3097,7 @@ void KWriteDoc::setPseudoModal(QWidget *w) {
 void KWriteDoc::newBracketMark(PointStruc &cursor, BracketMark &bm) {
   TextLine *textLine;
   int x, line, count, attr;
-  char bracket, opposite, ch;
+  QChar bracket, opposite, ch;
   Attribute *a;
 
   bm.eXPos = -1; //mark bracked mark as invalid
@@ -3157,7 +3168,7 @@ found:
   //x position (start and end) of related bracket
   bm.sXPos = textWidth(textLine, x);
   a = &m_attribs[attr];
-  bm.eXPos = bm.sXPos + a->width(bracket);//a->fm.width(bracket);
+  bm.eXPos = bm.sXPos + a->fm.width(bracket);//a->width(bracket);
 }
 
 void KWriteDoc::clipboardChanged() { //slot
