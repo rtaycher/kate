@@ -75,7 +75,7 @@ public:
 		if (m_document->url().isEmpty() ) {
 		        KEncodingFileDialog::Result r=KEncodingFileDialog::getSaveURLAndEncoding(
         	      	KTextEditor::encodingInterface(m_document)->encoding(),QString::null,QString::null,dialogParent,i18n("Save As (%1)").arg(m_document->docName()));
-		        
+
 			m_document->setEncoding( r.encoding );
 			if (!r.URLs.isEmpty()) {
 				KURL tmp = r.URLs.first();
@@ -116,7 +116,7 @@ public:
 			}
 
 		}
-	
+
 		return false;
 
 	}
@@ -130,7 +130,7 @@ KateSaveModifiedDialog::KateSaveModifiedDialog(QWidget *parent, QPtrList<Kate::D
 	KGuiItem yesItem=KStdGuiItem::yes();
 	yesItem.setText(i18n("&Save selected"));
 	setButtonGuiItem(KDialogBase::Yes,yesItem);
-	
+
 	KGuiItem noItem=KStdGuiItem::dontSave();
 	setButtonGuiItem(KDialogBase::No,noItem);
 
@@ -139,7 +139,7 @@ KateSaveModifiedDialog::KateSaveModifiedDialog(QWidget *parent, QPtrList<Kate::D
 	setButtonGuiItem(KDialogBase::Cancel,cancelItem);
 
 	QVBox *box=makeVBoxMainWidget();
-	new KActiveLabel(i18n("<qt>The following document has been modified. Do you want to save it before closing?</qt>","<qt>The following documents have been modified. Do you want to save them before closing?</qt>", documents.count()),box);
+	new KActiveLabel(i18n("<qt>The following documents have been modified. Do you want to save them before closing?</qt>"),box);
 	m_list=new KListView(box);
 	m_list->addColumn(i18n("Title"));
 	m_list->addColumn(i18n("Location"));
@@ -163,7 +163,7 @@ KateSaveModifiedDialog::KateSaveModifiedDialog(QWidget *parent, QPtrList<Kate::D
 	if(documents.count()>3) { //For 3 or less, it would be quicker just to tick or untick them yourself, so don't clutter the gui.
 		connect(new QPushButton(i18n("Se&lect All"),box),SIGNAL(clicked()),this,SLOT(slotSelectAll()));
 	}
-}	
+}
 
 KateSaveModifiedDialog::~KateSaveModifiedDialog() {
 }
