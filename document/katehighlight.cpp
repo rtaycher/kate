@@ -62,7 +62,6 @@ HlManager *HlManager::s_pSelf = 0;
 
 enum Item_styles { dsNormal,dsKeyword,dsDataType,dsDecVal,dsBaseN,dsFloat,dsChar,dsString,dsComment,dsOthers};
 
-static const QChar *stdWeakSep = QString("!%&()*+,-./:;<=>?[]^{|}~ 	").unicode();
 static const QChar nullChr = QChar ('\0');
 
 int getDefStyleNum(QString name)
@@ -88,7 +87,10 @@ bool isInWord(QChar ch)
 
 bool ustrchr(const QChar *s, QChar c)
 {
-  while (*s != nullChr)
+  if (s == 0)
+    return false;
+
+  while (*s != '\0')
   {
     if (*s == c) return true;
     s++;
@@ -239,12 +241,10 @@ const QChar *HlKeyword::inSensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw) {
   QStack<QChar> stack;
   stack.setAutoDelete(false);
 
-  const QChar *wk = &nullChr;
-  if (!kw->_weakSep.isEmpty())
-    wk = kw->_weakSep.unicode();
+  const QChar *wk = kw->_weakSep.unicode();
 
   if(*s2=='\0') return 0L;
-  while( ((ws=ustrchr(wk,*s2)) || (!ustrchr(stdWeakSep, *s2))) && *s2 != '\0')
+  while( ((ws=ustrchr(wk,*s2)) || ( s2->isLetterOrNumber()) ) && *s2 != '\0')
         {
            if (ws) stack.push(s2);
            s2++;
@@ -268,12 +268,10 @@ const QChar *HlKeyword::sensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw) {
   QStack<QChar> stack;
   stack.setAutoDelete(false);
 
-  const QChar *wk = &nullChr;
-  if (!kw->_weakSep.isEmpty())
-    wk = kw->_weakSep.unicode();
+  const QChar *wk = kw->_weakSep.unicode();
 
   if(*s2=='\0') return 0L;
-  while( ((ws=ustrchr(wk,*s2)) || (!ustrchr(stdWeakSep, *s2))) && *s2 != '\0')
+  while( ((ws=ustrchr(wk,*s2)) || ( s2->isLetterOrNumber()) ) && *s2 != '\0')
         {
            if (ws) stack.push(s2);
            s2++;
