@@ -147,9 +147,8 @@ QString SedReplace::sedMagic(QString textLine, QString find, QString rep, bool n
 		}
 
 		textLine.replace(start, length, rep);
-	
 		if (!repeat) break;
-		start+=length;
+		start+=rep.length();
 	}
 
 	replace(textLine, "\\\\", "\\");
@@ -161,7 +160,6 @@ QString SedReplace::sedMagic(QString textLine, QString find, QString rep, bool n
 	
 static void setLineText(KateView *view, int line, const QString &text)
 {
-	kdDebug(13010)<<"setLineText"<<endl;
 //	view->doc()->removeLine(line);
 //	view->doc()->insertLine(text, line);
 	view->doc()->replaceLine(text,line);
@@ -178,8 +176,8 @@ bool SedReplace::execCmd(QString cmd, KateView *view)
 	bool repeat=cmd[cmd.length()-1]=='g' || cmd[cmd.length()-2]=='g';
 	bool onlySelect=cmd[0]=='$';
 
-	QRegExp3 splitter("^[$%]?s/(.*(?:(?:\\\\\\\\)+|[^\\\\\\\\]))/(.*(?:(?:\\\\\\\\)*|[^\\\\\\\\]))/[ig]*$");
-	splitter.search(cmd);
+	QRegExp3 splitter("^[$%]?s/((?:[^\\\\/]|\\\\[\\\\/\\$0-9tadDsSwW])*)/((?:[^\\\\/]|\\\\[\\\\/\\$0-9tadDsSwW])*)/[ig]*$");
+	if (splitter.search(cmd)<0) return false;
 	
 	QString find=splitter.cap(1);
 	kdDebug(13010)<< "SedReplace: find=" << find.latin1() <<endl;
