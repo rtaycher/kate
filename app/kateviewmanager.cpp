@@ -851,9 +851,8 @@ void KateViewManager::reopenDocuments(bool isRestore)
         i18n("Reopening files from the last session..."),
         QString::null,
         fileCount,
-        0,
-        "openprog",
-        true);
+        this,
+        "openprog");
 
     m_blockViewCreationAndActivation=true;
     m_docManager->closeAllDocuments();
