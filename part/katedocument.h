@@ -418,6 +418,7 @@ class KateDocument : public Kate::Document
     int selectStartCol;
     int selectEndLine;
     int selectEndCol;
+    bool invertedSelection;
 
     bool lineColSelected (int line, int col);
     bool lineSelected (int line);
