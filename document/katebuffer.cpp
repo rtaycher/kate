@@ -1,6 +1,8 @@
-;/*
+/*
    This file is part of KWrite
    Copyright (c) 2000 Waldo Bastian <bastian@kde.org>
+
+   $Id$
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -737,7 +739,7 @@ KWBufBlock::flushStringList()
    m_rawSize = size;
    char *buf = m_rawData2.data();
    // Copy data
-   for(TextLine::List::ConstIterator it = m_stringList.begin();
+   for(TextLine::List::Iterator it = m_stringList.begin();
        it != m_stringList.end(); ++it)
    {
       TextLine *tl = (*it).data();
