@@ -74,6 +74,7 @@
       <item>dotfill</item>
       <item>doublerulesep</item>
       <item>em</item>
+      <item>emph</item>
       <item>encl</item>
       <item>end</item>
       <item>enumerate</item>
@@ -254,8 +255,14 @@
       <item>textfraction</item>
       <item>textfloatsep</item>
       <item>textheight</item>
+      <item>textmd</item>
+      <item>textrm</item>
+      <item>textsc</item>
+      <item>textsf</item>
+      <item>textsl</item>
       <item>textstyle</item>
       <item>texttt</item>
+      <item>textup</item>
       <item>textwidth</item>
       <item>thanks</item>
       <item>thebibliography</item>
