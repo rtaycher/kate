@@ -12,6 +12,7 @@ class QPixmap;
 class QPainter;
 class QFrame;
 
+
 class KMultiVertTabBar: public QWidget
 {
 	Q_OBJECT
@@ -31,6 +32,7 @@ public:
 	class KMultiVertTabBarTab *getTab(int);
 	QPtrList<class KMultiVertTabBarButton> buttons;
 	void setPosition(KMultiVertTabBarPosition pos);
+        QPtrList<KMultiVertTabBarTab>* tabs();
 private:
 	class KMultiVertTabBarInternal *internal;
 	QVBoxLayout *l;
@@ -78,9 +80,10 @@ public:
 	KMultiVertTabBarTab *getTab(int);
 	void removeTab(int);
 	void setPosition(enum KMultiVertTabBar::KMultiVertTabBarPosition pos);
+	QPtrList<KMultiVertTabBarTab>* tabs(){return &m_tabs;}
 private:
 	QVBox *box;
-	QPtrList<KMultiVertTabBarTab> tabs;
+	QPtrList<KMultiVertTabBarTab> m_tabs;
 	enum KMultiVertTabBar::KMultiVertTabBarPosition position;
 protected:
 	virtual void drawContents ( QPainter *, int, int, int, int);

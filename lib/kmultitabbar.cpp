@@ -9,7 +9,7 @@
 
 KMultiVertTabBarInternal::KMultiVertTabBarInternal(QWidget *parent):QScrollView(parent)
 	{
-		tabs.setAutoDelete(true);
+		m_tabs.setAutoDelete(true);
 		setHScrollBarMode(AlwaysOff);
 		setVScrollBarMode(AlwaysOff);
 		box=new QVBox(viewport());
@@ -60,10 +60,10 @@ void KMultiVertTabBarInternal::mousePressEvent(QMouseEvent *ev)
 
 KMultiVertTabBarTab* KMultiVertTabBarInternal::getTab(int id)
 {
-        for (uint pos=0;pos<tabs.count();pos++)
+        for (uint pos=0;pos<m_tabs.count();pos++)
         {
-                if (tabs.at(pos)->id()==id)
-                        return tabs.at(pos);
+                if (m_tabs.at(pos)->id()==id)
+                        return m_tabs.at(pos);
         }
         return 0;
 }
@@ -72,18 +72,18 @@ KMultiVertTabBarTab* KMultiVertTabBarInternal::getTab(int id)
 int KMultiVertTabBarInternal::insertTab(QPixmap pic ,int id,const QString& text)
 {
 	KMultiVertTabBarTab  *tab;
-	tabs.append(tab= new KMultiVertTabBarTab(pic,text,id,box,position));
+	m_tabs.append(tab= new KMultiVertTabBarTab(pic,text,id,box,position));
 	tab->show();
 	return 0;
 }
 
 void KMultiVertTabBarInternal::removeTab(int id)
 {
-	for (uint pos=0;pos<tabs.count();pos++)
+	for (uint pos=0;pos<m_tabs.count();pos++)
 	{
-		if (tabs.at(pos)->id()==id)
+		if (m_tabs.at(pos)->id()==id)
 		{
-			tabs.remove(pos);
+			m_tabs.remove(pos);
 			break;
 		}
 	}
@@ -92,8 +92,8 @@ void KMultiVertTabBarInternal::removeTab(int id)
 void KMultiVertTabBarInternal::setPosition(enum KMultiVertTabBar::KMultiVertTabBarPosition pos)
 {
 	position=pos;
-	for (uint i=0;i<tabs.count();i++)
-		tabs.at(i)->setPosition(position);
+	for (uint i=0;i<m_tabs.count();i++)
+		m_tabs.at(i)->setPosition(position);
 	viewport()->repaint();
 }
 
@@ -316,3 +316,6 @@ void KMultiVertTabBar::setPosition(KMultiVertTabBarPosition pos)
 	for (uint i=0;i<buttons.count();i++)
 		buttons.at(i)->setPosition(pos);
 }
+
+QPtrList<KMultiVertTabBarTab>* KMultiVertTabBar::tabs(){return internal->tabs();}
+

@@ -147,10 +147,16 @@ void KateMainWindow::setupMainWindow ()
 
   if (m_dockStyle==IDEAlStyle)
   {
-    m_leftDock->setWidget(new KateDockContainer(m_leftDock, this, KDockWidget::DockLeft));
-    m_rightDock->setWidget(new KateDockContainer(m_rightDock, this, KDockWidget::DockRight));
-    m_topDock->setWidget(new KateDockContainer(m_topDock, this, KDockWidget::DockTop));
-    m_bottomDock->setWidget(new KateDockContainer(m_bottomDock, this, KDockWidget::DockBottom));
+    KateDockContainer *tmpDC;
+    m_leftDock->setWidget(tmpDC=new KateDockContainer(m_leftDock, this, KDockWidget::DockLeft));
+    tmpDC->init();
+    m_rightDock->setWidget(tmpDC=new KateDockContainer(m_rightDock, this, KDockWidget::DockRight));
+    tmpDC->init();
+    m_topDock->setWidget(tmpDC=new KateDockContainer(m_topDock, this, KDockWidget::DockTop));
+    tmpDC->init();
+    m_bottomDock->setWidget(tmpDC=new KateDockContainer(m_bottomDock, this, KDockWidget::DockBottom));
+    tmpDC->init();
+    
   }
 
   if (m_dockStyle==IDEAlStyle)
@@ -362,7 +368,7 @@ void KateMainWindow::readOptions(KConfig *config)
   fileselector->readConfig(config, "fileselector");
   //fileselector->setView(KFile::Default); grr - the file selector reads the config and does this!!
 
-  if (m_dockStyle!=IDEAlStyle)
+//  if (m_dockStyle!=IDEAlStyle)
     readDockConfig();
 }
 
@@ -386,7 +392,7 @@ void KateMainWindow::saveOptions(KConfig *config)
 
   fileselector->writeConfig(config, "fileselector");
     
-  if (m_dockStyle!=IDEAlStyle)
+  //if (m_dockStyle!=IDEAlStyle)
     writeDockConfig();
 
   if (m_viewManager->activeView())
@@ -761,7 +767,10 @@ KDockWidget *KateMainWindow::addToolView(KDockWidget::DockPosition pos,const cha
         dw->setDockWindowType (NET::Tool);
         dw->setDockWindowTransient (this, true);
 	if (m_dockStyle==ClassicStyle)
-		dw->manualDock ( mainDock, pos, 20 );
+	{			
+			//KDockWidget=mainDock->
+			dw->manualDock ( mainDock, pos, 20 );
+	}
 	else
 	{
 		switch (pos)

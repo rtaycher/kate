@@ -4,7 +4,8 @@
 #include <kmultiverttabbar.h>
 #include <kdebug.h>
 #include <kiconloader.h>                       
-
+#include <kapplication.h>
+#include <kconfig.h>
 #include "katemainwindow.h"
 
 KateDockContainer::KateDockContainer(QWidget *parent, class KateMainWindow *win, int position):QWidget(parent),KDockContainer()
@@ -46,14 +47,23 @@ KateDockContainer::~KateDockContainer()
 }
 
 
+void KateDockContainer::init()
+{
+	parentDockWidget()->setForcedFixedWidth(m_tb->width());	
+}
+
+
 KDockWidget *KateDockContainer::parentDockWidget(){return ((KDockWidget*)parent());}
     
 void KateDockContainer::insertWidget (KDockWidget *w, QPixmap pixmap, const QString &text, int &)
 {
 	int tab;
+	bool alreadyThere=m_map.contains(w);
 	tab=m_ws->addWidget(w);
         m_ws->raiseWidget(tab);
 	m_map.insert(w,tab);
+	if (!alreadyThere)
+	{
 	m_tb->insertTab(pixmap.isNull()?SmallIcon("misc"):pixmap,tab);
 	m_tb->setTab(tab,true);
 	connect(m_tb->getTab(tab),SIGNAL(clicked(int)),this,SLOT(tabClicked(int)));
@@ -61,6 +71,9 @@ void KateDockContainer::insertWidget (KDockWidget *w, QPixmap pixmap, const QStr
 	m_tb->setTab(oldtab,false);
 	oldtab=tab;
 	mTabCnt++;
+	int dummy=0;
+	KDockContainer::insertWidget(w,pixmap,text,dummy);
+	}
 }
 
 void KateDockContainer::removeWidget(KDockWidget* w)
@@ -69,6 +82,8 @@ void KateDockContainer::removeWidget(KDockWidget* w)
 	m_tb->setTab(id,false);
 	tabClicked(id);
 	m_tb->removeTab(id);
+	m_map.remove(w);
+	KDockContainer::removeWidget(w);
 //	m_ws->removeWidget(w);
 }
 
@@ -106,13 +121,50 @@ void KateDockContainer::setToolTip (KDockWidget *, QString &)
 	;
 }
 
-void KateDockContainer::save()
+void KateDockContainer::save(KConfig*)
 {
+	KConfig *cfg=kapp->config();
+	QString grp=cfg->group();
+	cfg->deleteGroup(QString("BLAH::%1").arg(parent()->name()));
+	cfg->setGroup(QString("BLAH::%1").arg(parent()->name()));
+	
+	QPtrList<KMultiVertTabBarTab>* tl=m_tb->tabs();
+	QPtrListIterator<KMultiVertTabBarTab> it(*tl);
+	int i=0;
+	for (;it.current()!=0;++it)
+	{
+		cfg->writeEntry(QString("widget%1").arg(i),m_ws->widget(it.current()->id())->name());	
+		kdDebug()<<"****************************************Saving: "<<m_ws->widget(it.current()->id())->name()<<endl;
+	++i;
+	}	
+	cfg->sync();
+	cfg->setGroup(grp);
+
 }
   
-void KateDockContainer::load()
+void KateDockContainer::load(KConfig*)
 {
-;
+	//m_map.clear();
+	//m_tb->
+	KConfig *cfg=kapp->config();
+	QString grp=cfg->group();	
+	cfg->setGroup(QString("BLAH::%1").arg(parent()->name()));
+	int i=0;
+	while (true)
+	{
+		QString dwn=cfg->readEntry(QString("widget%1").arg(i));
+		if (dwn.isEmpty()) break;
+		
+		kdDebug()<<"*************************************************************Configuring dockwidget :"<<dwn<<endl;
+		KDockWidget *dw=((KDockWidget*)parent())->dockManager()->getDockWidgetFromName(dwn);
+		if (dw)
+			dw->manualDock((KDockWidget*)parent(),KDockWidget::DockCenter);
+		i++;
+		
+	}
+
+	cfg->setGroup(grp);
+	
 }
 
 #include "katedockcontainer.moc"

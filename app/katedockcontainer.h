@@ -20,8 +20,9 @@ public:
         virtual void setToolTip (KDockWidget *, QString &);
 //	virtual void undockWidget(KDockWidget*);
 	virtual void removeWidget(KDockWidget*);	
-	virtual void save();
-	virtual void load();
+	virtual void save(KConfig *);
+	virtual void load(KConfig *);
+	void init();
 private:                    
   class KateMainWindow *m_mainWin;
 	QWidgetStack *m_ws;
