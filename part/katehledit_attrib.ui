@@ -1,5 +1,9 @@
 <!DOCTYPE UI><UI version="3.0" stdsetdef="1">
 <class>AttribEditor</class>
+<include>klistview.h</include>
+<include>kcolorcombo.h</include>
+<include>klineedit.h</include>
+
 <widget class="QWidget">
     <property name="name">
         <cstring>AttribEditor</cstring>

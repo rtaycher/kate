@@ -93,11 +93,20 @@ const KAboutData *KateFactory::aboutData()
   data->addCredit ("Matteo Merli",I18N_NOOP("Highlighting for RPM Spec-Files, Perl, Diff and more"), "merlim@libero.it");
   data->addCredit ("Rocky Scaletta",I18N_NOOP("Highlighting for VHDL"), "rocky@purdue.edu");
   data->addCredit ("Yury Lebedev",I18N_NOOP("Highlighting for SQL"),"");
+  data->addCredit ("Chris Ross",I18N_NOOP("Highlighting for Ferite"),"");
+  data->addCredit ("Nick Roux",I18N_NOOP("Highlighting for ILERPG"),"");
+  data->addCredit ("John Firebaugh",I18N_NOOP("Highlighting for Java, and much more"),"");
+  data->addCredit ("Carsten Niehaus", I18N_NOOP("Highlighing for LaTeX"),"");
+  data->addCredit ("Per Wigren", I18N_NOOP("Highlighting for Makefiles, Python"),"");
+  data->addCredit ("Jan Fritz", I18N_NOOP("Highlighting for Python"),"");
+  data->addCredit ("Daniel Naber","","");
+  data->addCredit ("Roland Pabel",I18N_NOOP("Highlighting for Scheme"),"");
   data->addCredit ("Cristi Dumitrescu",I18N_NOOP("PHP Keyword/Datatype list"),"");
   data->addCredit ("Carsten Presser", I18N_NOOP("Betatest"), "mord-slime@gmx.de");
   data->addCredit ("Jens Haupert", I18N_NOOP("Betatest"), "al_all@gmx.de");
   data->addCredit ("Carsten Pfeiffer", I18N_NOOP("Very nice help"), "");
   data->addCredit ("Mr. Doerr", I18N_NOOP("For absolutely nothing"), "");
+  data->addCredit (I18N_NOOP("All people, who have contributed and I have forgotten to mention"),"","");
 
   data->setTranslator(I18N_NOOP("_: NAME OF TRANSLATORS\nYour names"), I18N_NOOP("_: EMAIL OF TRANSLATORS\nYour emails"));
 
