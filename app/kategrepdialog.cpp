@@ -67,7 +67,7 @@ const char *template_str[] = {
 };
 
 
-GrepTool::GrepTool(const QString &dirname, KateMainWindow *parent, const char *name)
+GrepTool::GrepTool(KateMainWindow *parent, const char *name)
   : QWidget(parent, name/*, false*/), childproc(0)
 {
   setCaption(i18n("Find in Files"));
@@ -421,7 +421,16 @@ void GrepTool::slotClear()
   resultbox->clear();
 }
 
-void  GrepTool::setDirName(const QString &dir){
+void GrepTool::updateDirName(const QString &dir)
+{
+  if (m_lastUpdatedDir != dir)
+  {
+    setDirName (dir);
+    m_lastUpdatedDir = dir;
+  }
+}
+
+void GrepTool::setDirName(const QString &dir){
   dir_combo->setURL(dir);
 }
 

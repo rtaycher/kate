@@ -173,7 +173,7 @@ KateMainWindow::~KateMainWindow()
 
 void KateMainWindow::setupMainWindow ()
 {
-  greptool = new GrepTool( QDir::homeDirPath(), this, "greptool" );
+  greptool = new GrepTool( this, "greptool" );
   greptool->installEventFilter( this );
   connect(greptool, SIGNAL(itemSelected(const QString &,int)), this, SLOT(slotGrepToolItemSelected(const QString &,int)));
 
@@ -754,9 +754,8 @@ bool KateMainWindow::eventFilter( QObject *o, QEvent *e )
   {
     if ( activeView->getDoc()->url().isLocalFile() )
     {
-      QString dir ( activeView->getDoc()->url().directory() );
-      greptool->setDirName( dir );
-         return true;
+      greptool->updateDirName( activeView->getDoc()->url().directory() );
+      return true;
     }
   }
   if ( ( o == greptool || o == console ) &&

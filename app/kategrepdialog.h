@@ -40,9 +40,13 @@ class GrepTool : public QWidget
     Q_OBJECT
 
 public:
-    GrepTool(const QString &dirname, class KateMainWindow *parent=0, const char *name=0);
+    GrepTool(class KateMainWindow *parent=0, const char *name=0);
     ~GrepTool();
-    void  setDirName(const QString &);
+    
+    // only updates if the dir you give to it differs from the last one given to it !
+    void updateDirName(const QString &);
+    
+    void setDirName(const QString &);
 
 
 signals:
@@ -80,6 +84,7 @@ private:
     KConfig* config;
     QStringList lastSearchItems;
     QStringList lastSearchPaths;
+    QString m_lastUpdatedDir;
 };
 
 
