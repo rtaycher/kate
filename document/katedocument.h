@@ -147,7 +147,7 @@ class KateActionGroup {
   @see TextLine
   @author Jochen Wilhelmy
 */
-class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
+class KateDocument : public Kate::Document, public KateDocumentDCOPIface
 {
     Q_OBJECT
     friend class KateViewInternal;
