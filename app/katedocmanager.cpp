@@ -25,6 +25,8 @@
 #include "katemainwindow.h"
 #include "kateviewmanager.h"
 
+#include "katedocmanageriface.h"
+
 #include <kate/view.h>
 
 #include <klocale.h>

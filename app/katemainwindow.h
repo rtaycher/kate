@@ -24,7 +24,6 @@
 #include "katemain.h"
 #include "../interfaces/mainwindow.h"
 #include "../interfaces/toolviewmanager.h"
-#include "kateIface.h"
 
 #include "kateviewmanager.h"
 
@@ -48,8 +47,9 @@ class GrepTool;
 
 class KFileItem;
 class KRecentFilesAction;
+class DCOPObject;
 
-class KateMainWindow : public KMdiMainFrm, virtual public KateMainWindowDCOPIface, virtual public KParts::PartBase
+class KateMainWindow : public KMdiMainFrm, virtual public KParts::PartBase
 {
   Q_OBJECT
 
@@ -88,6 +88,8 @@ class KateMainWindow : public KMdiMainFrm, virtual public KateMainWindowDCOPIfac
      * anders: I add this for use from the file selector. */
     KURL activeDocumentUrl();
 
+    DCOPObject *dcopObject () { return m_dcop; };
+
     // dockwidgets
     KDockWidget *mainDock;
     KDockWidget *consoleDock;
@@ -95,6 +97,8 @@ class KateMainWindow : public KMdiMainFrm, virtual public KateMainWindowDCOPIfac
     KDockWidget *projectsDock;
     KDockWidget *fileselectorDock;
     KDockWidget *grepWidgetDock;
+
+    DCOPObject *m_dcop;
 
     // console
     KateConsole *console;
@@ -116,8 +120,10 @@ class KateMainWindow : public KMdiMainFrm, virtual public KateMainWindowDCOPIfac
     uint myID;
     bool syncKonsole;
     bool modNotification;
+
   public:
     bool notifyMod() const { return modNotification; };
+    uint mainWindowNumber () const { return myID; };
 
   protected:
     KatePluginManager *m_pluginManager;

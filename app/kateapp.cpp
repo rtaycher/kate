@@ -22,7 +22,6 @@
 #include "kateapp.h"
 #include "kateapp.moc"
 
-#include "kateIface.h"
 #include "katedocmanager.h"
 #include "katepluginmanager.h"
 #include "kateviewmanager.h"

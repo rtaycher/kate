@@ -1,4 +1,3 @@
-
 /* This file is part of the KDE project
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
@@ -26,7 +25,6 @@
 #include "kateviewmanager.moc"
 
 #include "katemainwindow.h"
-#include "kateIface.h"
 #include "katedocmanager.h"
 #include "kateapp.h"
 #include "../utils/filedialog.h"

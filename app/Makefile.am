@@ -6,7 +6,8 @@ libkateinterfaces_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugin
 	kateconsole.cpp katedocmanager.cpp katefilelist.cpp katefileselector.cpp \
 	katemainwindow.cpp katepluginmanager.cpp katesplitter.cpp \
 	kateviewmanager.cpp kateviewspace.cpp kateprojectmanager.cpp \
-	kateIface.skel kategrepdialog.cpp katemailfilesdialog.cpp \
+	katemainwindowiface.skel katemainwindowiface.cpp kategrepdialog.cpp \
+	katemailfilesdialog.cpp \
 	kbookmarkhandler.cpp kactionselector.cpp kateprojectlist.cpp \
 	kateprojecttreeview.cpp kateprojectviews.cpp kateprojectdirview.cpp \
 	katedocmanageriface.skel kateappIface.cpp kateappIface.skel katedocmanageriface.cpp

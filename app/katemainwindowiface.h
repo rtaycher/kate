@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
+   Copyright (C) 2003 Ian Reinhart Geiser <geiseri@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -16,37 +16,26 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include "kateappIface.h"
+#ifndef _katemainwindow_Iface_h_
+#define _katemainwindow_Iface_h_
 
-#include "kateapp.h"
+#include <dcopobject.h>
+#include <dcopref.h>
 
-KateAppDCOPIface::KateAppDCOPIface (KateApp *app) : DCOPObject ("KateApplication")
-     , m_app (app)
+#include <kurl.h>
+
+class KateMainWindow;
+
+class KateMainWindowDCOPIface : public DCOPObject
 {
-}
+  K_DCOP
 
-DCOPRef KateAppDCOPIface::documentManager ()
-{
-  return DCOPRef (m_app->kateDocumentManager()->dcopObject ());
-}
+  public:
+    KateMainWindowDCOPIface (KateMainWindow *w);
 
-DCOPRef KateAppDCOPIface::activeMainWindow ()
-{
-  if (m_app->activeKateMainWindow())
-    return DCOPRef (m_app->activeKateMainWindow()->dcopObject ());
+  k_dcop:
 
-  return DCOPRef ();
-}
-
-uint KateAppDCOPIface::mainWindows ()
-{
-  return m_app->mainWindows ();
-}
-
-DCOPRef KateAppDCOPIface::mainWindow (uint n)
-{
-  if (m_app->kateMainWindow(n))
-    return DCOPRef (m_app->kateMainWindow(n)->dcopObject ());
-
-  return DCOPRef ();
-}
+  private:
+    KateMainWindow *m_w;
+};
+#endif

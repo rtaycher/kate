@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
+   Copyright (C) 2003 Ian Reinhart Geiser <geiseri@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -16,16 +16,16 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef _katemainwindow_Iface_h_
-#define _katemainwindow_Iface_h_
+#include "katemainwindowiface.h"
 
-#include <dcopobject.h>
-#include <kurl.h>
-class KateMainWindowDCOPIface : virtual public DCOPObject
+#include "katemainwindow.h"
+
+#include <kdebug.h>
+
+KateMainWindowDCOPIface::KateMainWindowDCOPIface (KateMainWindow *w) : DCOPObject ((QString("KateMainWindow#%1").arg(w->mainWindowNumber())).latin1()), m_w (w)
 {
-  K_DCOP
 
-  k_dcop:
+}
 
-};
-#endif
+
+

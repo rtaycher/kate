@@ -21,7 +21,6 @@
 #define __KATE_DOCMANAGER_H__
 
 #include "katemain.h"
-#include "katedocmanageriface.h"
 #include "../interfaces/documentmanager.h"
 
 #include <kate/document.h>
@@ -32,6 +31,7 @@
 #include <qintdict.h>
 
 class KConfig;
+class DCOPObject;
 
 class KateDocumentInfo
 {
@@ -111,7 +111,7 @@ class KateDocManager : public QObject
     QPtrDict<KateDocumentInfo> m_docInfos;
     Kate::Document *m_currentDoc;
 
-    KateDocManagerDCOPIface *m_dcop;
+    DCOPObject *m_dcop;
 };
 
 #endif

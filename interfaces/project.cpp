@@ -30,8 +30,8 @@
 #include <kconfig.h>
 
 KateProjectDCOPIface::KateProjectDCOPIface (Kate::Project *p)
- : m_p (p)
-{ 
+ : DCOPObject ((QString("KateProject#%1").arg(p->projectNumber())).latin1()), m_p (p)
+{
 }
 
 namespace Kate

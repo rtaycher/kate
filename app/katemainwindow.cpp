@@ -37,6 +37,7 @@
 #include "katefileselector.h"
 #include "katefilelist.h"
 #include "katemailfilesdialog.h"
+#include "katemainwindowiface.h"
 
 #include <kmdichildview.h>
 #include <dcopclient.h>
@@ -82,14 +83,17 @@
 
 uint KateMainWindow::uniqueID = 1;
 
-KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager *_m_pluginManager, KateProjectManager *projectMan) :
-	DCOPObject ((QString("KateMainWindow#%1").arg(uniqueID)).latin1()),
-	KMdiMainFrm (0)
+KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager *_m_pluginManager, KateProjectManager *projectMan) : KMdiMainFrm (0)
 {
+  myID = uniqueID;
+  uniqueID++;
+
   m_mainWindow = new Kate::MainWindow (this);
   m_toolViewManager = new Kate::ToolViewManager (this);
   setStandardMDIMenuEnabled();
   setManagedDockPositionModeEnabled(true);
+
+  m_dcop = new KateMainWindowDCOPIface (this);
 
   m_docManager =  _m_docManager;
   m_pluginManager =_m_pluginManager;
@@ -103,9 +107,6 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   config->setGroup("General");
   manager()->setSplitterOpaqueResize(config->readBoolEntry("Opaque Resize", true));
   config->setGroup(grp);
-
-  myID = uniqueID;
-  uniqueID++;
 
   activeView = 0;
 
@@ -156,7 +157,8 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
 KateMainWindow::~KateMainWindow()
 {
-    delete kscript;
+  delete m_dcop;
+  delete kscript;
 }
 
 void KateMainWindow::setupMainWindow ()
