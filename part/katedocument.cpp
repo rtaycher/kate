@@ -199,7 +199,7 @@ void KateUndoGroup::redo ()
   if (items.count() == 0)
 	  return;
 
-  for (int pos=items.count()-1; pos >= 0; pos--)
+  for (int pos=0; pos < items.count(); pos++)
 	{
     items.at(pos)->redo();
 	}
@@ -385,10 +385,11 @@ bool KateDocument::setText(const QString &s) {
   return insertText (0, 0, s);
 }
 
-bool KateDocument::clear() {
+bool KateDocument::clear()
+{
   KateViewCursor cursor;
   KateView *view;
-	
+
 	setPseudoModal(0L);
 
   cursor.col = cursor.line = 0;
@@ -401,6 +402,9 @@ bool KateDocument::clear() {
 
   buffer->clear();
   longestLine = buffer->line(0);
+	
+	clearUndo();
+	clearRedo();
 
   maxLength = 0;
 
@@ -1224,7 +1228,7 @@ bool KateDocument::openFile()
   if (!fileInfo->exists() || !fileInfo->isReadable())
     return false;
 
-  buffer->clear();
+  clear();
   buffer->insertFile(0, m_file, KGlobal::charsets()->codecForName(myEncoding));
 
   setMTime();
