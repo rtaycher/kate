@@ -470,7 +470,8 @@ const QChar *checkCharHexOct(const QChar *str) {
 	KRegExp hexoct("(\\x[A-Fa-f0-9]{1,2}|\\0[0-7]{1,3})");
 // this regexp checks for 1 or 2 hexdigits or 1,2 or 3 octal digits
   QString tmpstr=QString(str,132); // should be long enough
-	if(hexoct.match(tmpstr)) {
+#warning FIXME how is this supposed to work? KRegExp unfortunately does not support unicode
+	if(hexoct.match(tmpstr.latin1())) {
   s+=hexoct.groupEnd(1);
 	return s;
 	} else
