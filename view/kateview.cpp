@@ -677,15 +677,6 @@ void KateViewInternal::insLine(int line) {
   } else if (line <= endLine) {
     tagAll();
   }
-
-  //bookmarks
-  KWBookmark *b;
-  for (b = myView->bookmarks.first(); b != 0L; b = myView->bookmarks.next()) {
-    if (b->cursor.y >= line) {
-      b->cursor.y++;
-      b->yPos += myDoc->fontHeight;
-    }
-  }
 }
 
 void KateViewInternal::delLine(int line) {
@@ -699,16 +690,6 @@ void KateViewInternal::delLine(int line) {
     yPos -= myDoc->fontHeight;
   } else if (line <= endLine) {
     tagAll();
-  }
-
-  //bookmarks
-  KWBookmark *b;
-  for (b = myView->bookmarks.first(); b != 0L; b = myView->bookmarks.next()) {
-    if (b->cursor.y > line) {
-      b->cursor.y--;
-      b->yPos -= myDoc->fontHeight;
-//      if (b->yPos < 0) b->yPos = 0;
-    }
   }
 }
 
@@ -1425,11 +1406,6 @@ void KateViewInternal::dropEvent( QDropEvent *event )
   }
 }
 
-
-KWBookmark::KWBookmark() {
-  cursor.y = -1; //mark bookmark as invalid
-}
-
 KateView::KateView(KateDocument *doc, QWidget *parent, const char * name, bool HandleOwnDND, bool deleteDoc) : KateViewIface (doc, parent, name), DCOPObject(name)
 {
   setInstance( KateFactory::instance() );
@@ -1459,7 +1435,6 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name, bool H
   searchFlags = 0;
   replacePrompt = 0L;
   rmbMenu = 0L;
-  bookmarks.setAutoDelete(true);
 
   //KSpell initial values
   kspell.kspell = 0;
@@ -1577,16 +1552,13 @@ void KateView::setupActions()
    new KAction(i18n("E&diting Command"), Qt::Key_F2, this, SLOT(slotEditCommand()),
                                   actionCollection(), "edit_cmd");
 
-    // setup Go menu
-    KAction *addAct = new KAction(i18n("&Add Marker"), Qt::CTRL+Qt::Key_M, this, SLOT(addBookmark()),
-                                  actionCollection(), "go_addMarker");
-    connect(this, SIGNAL(bookAddChanged(bool)),addAct,SLOT(setEnabled(bool)));
-    new KAction(i18n("&Set Marker..."), 0, this, SLOT(setBookmark()),
-                actionCollection(), "go_setMarker");
-    KAction *clearAct = new KAction(i18n("&Clear Markers"), 0, this, SLOT(clearBookmarks()),
-                                    actionCollection(), "go_clearMarkers");
-    connect(this, SIGNAL(bookClearChanged(bool)),clearAct,SLOT(setEnabled(bool)));
-    clearAct->setEnabled(false);
+    // setup bookmark menu
+    bookmarkToggle = new KAction(i18n("&Toggle Bookmark"), Qt::CTRL+Qt::Key_M, this, SLOT(toggleBookmark()), actionCollection(), "edit_bookmarkToggle");
+    bookmarkClear = new KAction(i18n("&Clear Bookmarks"), 0, this, SLOT(clearBookmarks()), actionCollection(), "edit_bookmarksClear");
+
+    // connect settings menu aboutToshow
+  //  bookmarkMenu = (QPopupMenu*)factory()->container("bookmarks", this);
+   // connect(bookmarkMenu, SIGNAL(aboutToShow()), this, SLOT(bookmarkMenuAboutToShow()));
 
     // setup Tools menu
     toolsSpell = KStdAction::spelling(this, SLOT(spellcheck()), actionCollection());
@@ -2626,10 +2598,6 @@ void KateView::writeConfig(KConfig *config)
 
 void KateView::readSessionConfig(KConfig *config) {
   PointStruc cursor;
-  int count, z;
-  char s1[16];
-  QString s2;
-  KWBookmark *b;
 
   readConfig(config);
 
@@ -2638,41 +2606,15 @@ void KateView::readSessionConfig(KConfig *config) {
   cursor.x = config->readNumEntry("CursorX");
   cursor.y = config->readNumEntry("CursorY");
   myViewInternal->updateCursor(cursor);
-
-  count = config->readNumEntry("Bookmarks");
-  for (z = 0; z < count; z++) {
-    b = new KWBookmark();
-    bookmarks.append(b);
-    sprintf(s1,"Bookmark%d",z+1);
-    s2 = config->readEntry(s1);
-    if (!s2.isEmpty()) {
-      sscanf(s2.ascii(),"%d,%d,%d,%d",&b->xPos,&b->yPos,&b->cursor.x,&b->cursor.y);
-    }
-  }
 }
 
 void KateView::writeSessionConfig(KConfig *config) {
-  int z;
-  char s1[16];
-  char s2[64];
-  KWBookmark *b;
-
   writeConfig(config);
 
   config->writeEntry("XPos",myViewInternal->xPos);
   config->writeEntry("YPos",myViewInternal->yPos);
   config->writeEntry("CursorX",myViewInternal->cursor.x);
   config->writeEntry("CursorY",myViewInternal->cursor.y);
-
-  config->writeEntry("Bookmarks",bookmarks.count());
-  for (z = 0; z < (int) bookmarks.count(); z++) {
-    b = bookmarks.at(z);
-    if (b->cursor.y != -1) {
-      sprintf(s1,"Bookmark%d",z+1);
-      sprintf(s2,"%d,%d,%d,%d",b->xPos,b->yPos,b->cursor.x,b->cursor.y);
-      config->writeEntry(s1,s2);
-    }
-  }
 }
 
 void KateView::hlDlg() {
@@ -3140,6 +3082,21 @@ void KateView::clearBookmarks()
   myDoc->updateViews();
 }
 
+void KateView::bookmarkMenuAboutToShow()
+{
+  bookmarkMenu->clear ();
+  bookmarkToggle->plug (bookmarkMenu);
+  bookmarkClear->plug (bookmarkMenu);
+  bookmarkMenu->insertSeparator ();
+
+  QList<KateMark> list = myDoc->marks();
+  for (int i=0; (uint) i < list.count(); i++)
+  {
+    if (list.at(i)->type == 1)
+      bookmarkMenu->insertItem ( QString("Bookmark %1 - Line %2").arg(i).arg(list.at(i)->line), i );
+  }
+}
+
 KateBrowserExtension::KateBrowserExtension( KateDocument *doc, KateView *view )
 : KParts::BrowserExtension( doc, "katepartbrowserextension" )
 {
@@ -3425,4 +3382,5 @@ void KateIconBorder::mousePressEvent(QMouseEvent* e)
         break;
     }
 }
+
 

@@ -1,6 +1,6 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
 <kpartgui name="KatePartView" version="6">
-<MenuBar>
+<MenuBar noMerge="1">
   <Menu name="file" noMerge="1"><text>&amp;File</text>
     <Action name="file_open_recent" />
     <Separator/>
@@ -20,21 +20,21 @@
     <Action name="edit_deselectAll"/>
     <Action name="edit_invertSelection" />
     <Separator />
+    <Action name="go_goto_line" />
+    <Separator />
     <Action name="edit_find" />
     <Action name="edit_find_next" />
     <Action name="edit_replace" />
     <Separator />
     <Action name="edit_cmd"/>
   </Menu>
-  <Menu name="go_document"><text>&amp;Go</text>
-    <Action name="go_goto_line" />
+
+  <Menu name="bookmarks"><text>&amp;Bookmarks</text>
+    <Action name="edit_bookmarkToggle" />
+    <Action name="edit_bookmarksClear" />
     <Separator />
-    <Action name="go_addMarker"/>
-    <Action name="go_setMarker"/>
-    <Action name="go_clearMarkers"/>
-    <Separator />
-    <ActionList name="bookmarks" />
   </Menu>
+
   <Menu name="tools"><text>&amp;Tools</text>
     <Action name="tools_spelling" />
     <Separator/>
@@ -58,9 +58,7 @@
   <Action name="edit_cut"/>
   <Action name="edit_copy"/>
   <Action name="edit_paste"/>
-  <Action name="go_addMarker"/>
-  <Separator />
-  <ActionList name="bookmarks" />
+  <Action name="edit_bookmarkToggle" />
 </Menu>
 
 <ToolBar name="mainToolBar"><text>Main Toolbar</text>

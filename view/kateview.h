@@ -292,15 +292,6 @@ class KateViewInternal : public QWidget {
     void dropEventPass(QDropEvent*);
 };
 
-class KWBookmark {
-  public:
-    KWBookmark();
-    int xPos;
-    int yPos;
-    PointStruc cursor;
-    QString Name;
-};
-
 /**
   The KateView text editor widget. It has many options, document/view
   architecture and syntax highlight.
@@ -434,8 +425,10 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
     KAction *fileSave, *editCut, *editPaste,
             *editReplace, *editUndo, *editRedo, *editUndoHist,
             *toolsIndent, *toolsUnindent, *toolsCleanIndent,
-            *toolsComment, *toolsUncomment, *toolsSpell;
+            *toolsComment, *toolsUncomment, *toolsSpell,
+            *bookmarkToggle, *bookmarkClear;
 
+    class QPopupMenu *bookmarkMenu;
     KToggleAction *setVerticalSelection;
     KRecentFilesAction *fileRecent;
     KSelectAction *setHighlight, *setEndOfLine;
@@ -746,9 +739,7 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
     void installPopup(QPopupMenu *rmb_Menu);
 
   protected:
-    QList<KWBookmark> bookmarks;
     QPopupMenu *rmbMenu;
-    QList<KAction> bookmarkActionList;
 
   signals:
     void bookAddChanged(bool enabled);
@@ -967,7 +958,6 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
   public:
     void setActive (bool b);
     bool isActive ();
-    QList<KAction> bmActions() { return bookmarkActionList; }
 
   private:
     bool active;
@@ -994,6 +984,9 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
 
   public:
     bool iconBorder() { return myIconBorder; } ;
+
+  private slots:
+    void bookmarkMenuAboutToShow();
 };
 
 class KateBrowserExtension : public KParts::BrowserExtension
