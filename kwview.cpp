@@ -1521,6 +1521,7 @@ KWrite::~KWrite() {
     kspell.kspell->setAutoDelete(true);
     kspell.kspell->cleanUp(); // need a way to wait for this to complete
   }
+  delete kspell.ksc;
 
   //  kWriteDoc->removeView( this );
 
