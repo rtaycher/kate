@@ -105,7 +105,7 @@ bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, 
     if (!url.isEmpty())
     {
       if (view->getDoc()->openURL ( url ))
-        ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
+        ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL ( view->getDoc()->url() );
 
       QString name = url.filename();
 
@@ -525,7 +525,7 @@ void KateViewManager::openURL (KURL url, const QString& encoding)
   Kate::Document *doc=m_docManager->openURL(url,encoding,&id);
   
   if (!doc->url().isEmpty())
-    ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( doc->url().prettyURL() ) );
+    ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( doc->url() );
   
   Kate::View *cv = activeView();
   
