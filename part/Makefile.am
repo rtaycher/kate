@@ -1,7 +1,7 @@
 lib_LTLIBRARIES = libkatepart.la
 
-libkatepart_la_SOURCES = katebuffer.cpp katecmd.cpp katecmds.cpp katedialogs.cpp \
-			 katedocument.cpp katefactory.cpp katehighlight.cpp \
+libkatepart_la_SOURCES = katebuffer.cpp katecmd.cpp katecmds.cpp katehledit_attrib.ui \
+			 katedialogs.cpp katedocument.cpp katefactory.cpp katehighlight.cpp \
 			 katesyntaxdocument.cpp katetextline.cpp kateview.cpp \
   			 kateviewdialog.cpp kateviewhighlightaction.cpp \
 			 katevmallocator.cpp katehighlightdownload.cpp katefiledialog.cpp \

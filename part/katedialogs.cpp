@@ -42,6 +42,7 @@
 
 #include "katedialogs.moc"
 #include "katehighlightdownload.h"
+#include "katehledit_attrib.h"
 
 #define TAG_DETECTCHAR "DetectChar"
 #define TAG_DETECT2CHARS "Detect2Chars"
@@ -286,9 +287,16 @@ void HighlightDialogPage::hlDownload()
 HlEditDialog::HlEditDialog(HlManager *,QWidget *parent, const char *name, bool modal,HlData *data)
   :KDialogBase(KDialogBase::Swallow, i18n("Highlight Conditions"), Ok|Cancel, Ok, parent, name, modal)
 {
+  QTabWidget *tabWid=new QTabWidget(this);
+
+/* attributes */
+  tabWid->addTab(attrEd=new AttribEditor(tabWid),i18n("Attributes"));
+  attrEd->attributes->setSorting(-1);
+
+/*Contextstructure */
   currentItem=0;
     transTableCnt=0;
-  QHBox *wid=new QHBox(this);
+  QHBox *wid=new QHBox(tabWid);
   QVBox *lbox=new QVBox(wid);
     contextList=new KListView(lbox);
     contextList->setRootIsDecorated(true);
@@ -304,12 +312,18 @@ HlEditDialog::HlEditDialog(HlManager *,QWidget *parent, const char *name, bool m
     initItemOptions(itemOptions=new QVBox(stack));
     stack->addWidget(itemOptions,HlEItem);
     stack->raiseWidget(HlEContext);
-    setMainWidget(wid);
+    tabWid->addTab(wid,i18n("Structure"));
+    setMainWidget(tabWid);
     if (data!=0) loadFromDocument(data);
     else newDocument();
+
+/* context structure connects */
     connect(contextList,SIGNAL(currentChanged( QListViewItem*)),this,SLOT(currentSelectionChanged ( QListViewItem * )));
     connect(addContext,SIGNAL(clicked()),this,SLOT(contextAddNew()));
     connect(addItem,SIGNAL(clicked()),this,SLOT(ItemAddNew()));
+
+/* attribute setting - connects */
+    connect(attrEd->addAttribute,SIGNAL(clicked()),this,SLOT(addAttribute()));
     }
 
 void HlEditDialog::newDocument()
@@ -436,12 +450,30 @@ void HlEditDialog::loadFromDocument(HlData *hl)
   ContextAttribute->clear();
   ItemAttribute->clear();
   data=HlManager::self()->syntax->getGroupInfo("highlighting","itemData");
+  int cnt=0;
+  QListViewItem *prev=0;
   while (HlManager::self()->syntax->nextGroup(data))
     {
         ContextAttribute->insertItem(HlManager::self()->syntax->groupData(data,QString("name")));
         ItemAttribute->insertItem(HlManager::self()->syntax->groupData(data,QString("name")));
+	attrEd->attributes->insertItem(prev=new QListViewItem(attrEd->attributes,prev,
+		HlManager::self()->syntax->groupData(data,QString("name")),
+		HlManager::self()->syntax->groupData(data,QString("defStyleNum")),
+		HlManager::self()->syntax->groupData(data,QString("color")),
+		HlManager::self()->syntax->groupData(data,QString("selColor")),
+		HlManager::self()->syntax->groupData(data,QString("bold")),
+		HlManager::self()->syntax->groupData(data,QString("italic")),
+		QString("%1").arg(cnt)));
+	cnt++;
     }
   if (data) HlManager::self()->syntax->freeGroupInfo(data);
+}
+
+void HlEditDialog::addAttribute()
+{
+	attrEd->attributes->insertItem(new QListViewItem(attrEd->attributes,attrEd->attributes->lastItem(),
+		i18n("New attribute"),"dsNormal","#000000","#ffffff","0","0",
+		QString("%1").arg(attrEd->attributes->childCount())));
 }
 
 QListViewItem *HlEditDialog::addContextItem(QListViewItem *_parent,QListViewItem *prev,struct syntaxContextData *data)

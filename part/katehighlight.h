@@ -151,7 +151,7 @@ class HlCFloat : public HlFloat {
   public:
     HlCFloat(int attribute, int context);
     virtual const QChar *checkHgl(const QChar *, int len, bool);
-
+    const QChar *checkIntHgl(const QChar *, int, bool);
 };
 
 class HlLineContinue : public HlItem {

@@ -381,11 +381,42 @@ HlCFloat::HlCFloat(int attribute, int context)
   : HlFloat(attribute,context) {
 }
 
+
+
+const QChar *HlCFloat::checkIntHgl(const QChar *str, int, bool)
+{
+  const QChar *s,*s1;
+
+  s = str;
+  while (s->isDigit()) s++;
+  if (s > str)
+   {
+     return s;
+  }
+  return 0L;
+}
+
 const QChar *HlCFloat::checkHgl(const QChar *s, int len, bool lineStart) {
+  const QChar *tmp;
+  tmp=s;
 
   s = HlFloat::checkHgl(s, len, lineStart);
-  if (s && ((*s&0xdf) == 'F' )) s++;
-  return s;
+  if (s)
+  {
+     if (s && ((*s&0xdf) == 'F' )) s++;
+     return s;
+  }
+  else
+  {
+     tmp=checkIntHgl(tmp,len,lineStart);
+     if (tmp && ((*tmp&0xdf) == 'F' ))
+     {
+	 tmp++;
+     	return tmp;
+     }
+     else 
+        return 0;     
+  }
 }
 
 HlAnyChar::HlAnyChar(int attribute, int context, const QChar* charList, uint len)

@@ -143,13 +143,17 @@ class HlEditDialog : public KDialogBase
     class QMap<int,QString> id2tag;
     class QMap<int,ItemInfo> id2info;
     class QMap<QString,int> tag2id;
+    
+    class AttribEditor *attrEd;
     int transTableCnt;
   protected slots:
+    void addAttribute();
+
     void currentSelectionChanged ( QListViewItem * );
     void contextDescrChanged(const QString&);
     void contextLineEndChanged(int);
     void contextAttributeChanged(int);
-    void ContextPopCountChanged(int count);        
+    void ContextPopCountChanged(int count);
     void contextAddNew();
 
     void ItemTypeChanged(int id);
