@@ -78,6 +78,9 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
 
     KantMyPluginIface *pluginIface;
 
+    virtual QStringList containerTags() const;
+    virtual QWidget *createContainer( QWidget *parent, int index,
+      const QDomElement &element, int &id );
   protected:
     /** reopens documents that was open last time kant was shut down*/
     void reopenDocuments(bool isRestore=false);
@@ -155,6 +158,8 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
 
     QString  m_strFilterOutput;
     KShellProcess * m_pFilterShellProcess;
+   
+    QString tagSidebar;
 
   public slots:
     void newWindow ();

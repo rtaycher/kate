@@ -28,7 +28,6 @@
 
 KantConsole::KantConsole (QWidget* parent, const char* name) : QWidget (parent, name)
 {
-  setFocusPolicy(QWidget::ClickFocus);
 
   lo = new QVBoxLayout(this);
     KLibFactory *factory = 0;

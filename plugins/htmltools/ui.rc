@@ -6,6 +6,10 @@
  </Menu>
 </MenuBar>
 <!--
+<SideBar>
+</SideBar>
+-->
+<!--
 <ToolBar name="extraToolBar">
   <Action name="plugin_action"/>
 </ToolBar>

@@ -21,7 +21,10 @@
 
 #include "../document/kantdocument.h"
 
+#define protected public
 #include "../kwrite/kwview.h"
+#undef protected
+
 #include "../kwrite/kwattribute.h"
 #include "../kwrite/kwdoc.h"
 #include "../kwrite/kwdialog.h"
@@ -39,7 +42,7 @@ KantView::KantView(QWidget *parent, KantDocument *doc, const char * name, bool H
 {
   active = false;
 
-  setFocusPolicy(QWidget::ClickFocus);
+  //setFocusPolicy(QWidget::ClickFocus);
 
   kWriteView->installEventFilter( this );
 }
@@ -69,7 +72,15 @@ bool KantView::eventFilter(QObject* o, QEvent* e)
 {
   if (e->type() == QEvent::FocusIn)
     emit gotFocus (this);
-
+  if (e->type()==QEvent::KeyPress)
+    {
+	QKeyEvent * ke=(QKeyEvent *)e;
+	if ((ke->key()==Key_Tab) || (ke->key()==Key_BackTab))
+          {
+            kWriteView->keyPressEvent(ke);
+	    return true;
+          }
+    }
   return QWidget::eventFilter(o, e);
 }
 

@@ -24,15 +24,12 @@
 
 KantSidebar::KantSidebar(QWidget* parent, const char* name) : QWidget(parent, name)
 {
-  setFocusPolicy(QWidget::ClickFocus);
 
   QVBoxLayout* lo = new QVBoxLayout(this);
   cmb = new QComboBox( this );
-  cmb->setFocusPolicy(QWidget::ClickFocus);
   lo->addWidget( cmb );
   stack = new QWidgetStack(this);
   lo->addWidget( stack );
-  stack->setFocusPolicy(QWidget::ClickFocus);
   connect(cmb, SIGNAL( activated( int ) ), stack, SLOT( raiseWidget( int ) ) );
 }
 
@@ -49,7 +46,7 @@ void KantSidebar::addWidget(QWidget* widget, const QString & label )
   stack->raiseWidget( id );
   cmb->setFocus();
   widget->setFocus();
-  widget->setFocusPolicy(QWidget::ClickFocus);
+//  widget->setFocusPolicy(QWidget::ClickFocus);
 }
 
 void KantSidebar::removeWidget(QWidget* widget)

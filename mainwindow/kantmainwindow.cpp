@@ -98,6 +98,7 @@ KantMainWindow::KantMainWindow(KantDocManager *_docManager, KantPluginManager *_
              DCOPObject ("KantIface" ),
 	m_pFilterShellProcess (NULL)
 {
+  tagSidebar=QString("sidebar");
   docManager =  _docManager;
   pluginManager =_pluginManager;
   config = kapp->config();
@@ -154,8 +155,6 @@ void KantMainWindow::setupMainWindow ()
   sidebarDock->manualDock ( mainDock, KDockWidget::DockLeft, 20 );
   consoleDock->manualDock ( mainDock, KDockWidget::DockBottom, 20 );
 
-  sidebarDock->setFocusPolicy(QWidget::ClickFocus);
-  consoleDock->setFocusPolicy(QWidget::ClickFocus);
 
   projectManager = new KantProjectManager (docManager, viewManager, statusBar());
 
@@ -1100,3 +1099,26 @@ void KantMainWindow::fileSelected(const KFileViewItem *file)
   KURL u(file->urlString());
   viewManager->openURL( u );
 }
+
+QStringList KantMainWindow::containerTags() const
+{
+  kdDebug()<<"This is KanMainWindow::containerTags()"<<endl;
+  QStringList tmp = KDockMainWindow::containerTags();
+  tmp<<tagSidebar;
+  return tmp;
+}    
+
+QWidget *KantMainWindow::createContainer( QWidget *parent, int index,
+          const QDomElement &element, int &id )
+  {
+    kdDebug()<<"************************This is KantMainWindow::createContainer"<<endl;
+    if (element.tagName().lower()==tagSidebar)
+      {
+        kdDebug()<<"****** A sidebar should be created";
+        KDockWidget *tmp=createDockWidget("TMPDOCK",0);
+        tmp->manualDock ( mainDock, KDockWidget::DockRight, 20 );
+	tmp->setWidget(new KListBox(tmp));
+	return tmp;
+      }
+    return KDockMainWindow::createContainer(parent,index,element,id);
+  }

@@ -20,7 +20,9 @@
 
 #include "../kantmain.h"
 
+#define protected public
 #include "../kwrite/kwview.h"
+#undef protected
 #include <qlist.h>
 
 class KantView : public KWrite
