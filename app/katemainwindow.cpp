@@ -338,7 +338,7 @@ bool KateMainWindow::queryClose()
   if ( m_projectManager->queryCloseAll () &&
        m_docManager->queryCloseDocuments (this) )
   {
-    KConfig scfg("katesessionrc");
+    KConfig scfg("katesessionrc", false);
 
     KConfig *config = kapp->config();
     config->setGroup("General");
