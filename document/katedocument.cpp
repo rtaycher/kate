@@ -130,10 +130,12 @@ const int KateDocument::maxAttribs = 32;
 QStringList KateDocument::searchForList = QStringList();
 QStringList KateDocument::replaceWithList = QStringList();
 
-KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool bBrowserView,
+uint KateDocument::uniqueID = 0;
+
+KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
                                            QWidget *parentWidget, const char *widgetName,
                                            QObject *, const char *name)
-  : Kate::Document (), DCOPObject(name),
+  : Kate::Document (), DCOPObject ((QString("KateDocument%1").arg(uniqueID)).latin1()),
     myFont(KGlobalSettings::fixedFont()), myFontBold(KGlobalSettings::fixedFont()), myFontItalic(KGlobalSettings::fixedFont()), myFontBI(KGlobalSettings::fixedFont()),
     myFontMetrics (myFont), myFontMetricsBold (myFontBold), myFontMetricsItalic (myFontItalic), myFontMetricsBI (myFontBI),
     hlManager(HlManager::self ())
@@ -151,10 +153,11 @@ KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool
 
   setFont (KGlobalSettings::fixedFont());
 
-  myDocID = docID;
+  myDocID = uniqueID;
+  uniqueID++;
+
   myDocName = QString ("");
-  fileinfo = fi;
-  setMTime();
+  fileInfo = new QFileInfo ();
 
   myCmd = new KateCmd (this);
 
@@ -831,12 +834,9 @@ void KateDocument::loadFile(const QString &file)
 {
   buffer->clear();
   buffer->insertFile(0, file, KGlobal::charsets()->codecForName(myEncoding));
-}
 
-void KateDocument::appendData(const QByteArray &data)
-{
-  buffer->insertData(buffer->count(), data, KGlobal::charsets()->codecForName(myEncoding));
-  slotBufferChanged();
+  fileInfo->setFile (file);
+  setMTime();
 }
 
 bool KateDocument::writeFile(const QString &file)
@@ -861,6 +861,10 @@ bool KateDocument::writeFile(const QString &file)
     if (eolMode != KateView::eolMacintosh) stream << QChar('\n');
   };
   f.close();
+
+  fileInfo->setFile (file);
+  setMTime();
+
   return (f.status() == IO_Ok);
 }
 
@@ -3008,17 +3012,17 @@ void KateDocument::setDocName (QString docName)
 
 void KateDocument::setMTime()
 {
-    if (fileinfo && !fileinfo->fileName().isEmpty()) {
-      fileinfo->refresh();
-      mTime = fileinfo->lastModified();
+    if (fileInfo && !fileInfo->fileName().isEmpty()) {
+      fileInfo->refresh();
+      mTime = fileInfo->lastModified();
     }
 }
 
 void KateDocument::isModOnHD(bool forceReload)
 {
-  if (fileinfo && !fileinfo->fileName().isEmpty()) {
-    fileinfo->refresh();
-    if (fileinfo->lastModified() > mTime) {
+  if (fileInfo && !fileInfo->fileName().isEmpty()) {
+    fileInfo->refresh();
+    if (fileInfo->lastModified() > mTime) {
       if ( forceReload ||
            (KMessageBox::warningContinueCancel(0,
                (i18n("The file %1 has changed on disk.\nDo you want to reload it?\n\nIf you cancel you will lose these changes next time you save this file")).arg(url().filename()),
@@ -3034,7 +3038,7 @@ void KateDocument::isModOnHD(bool forceReload)
 
 void KateDocument::reloadFile()
 {
-  if (fileinfo && !fileinfo->fileName().isEmpty()) {
+  if (fileInfo && !fileInfo->fileName().isEmpty()) {
     KateDocument::openFile();
     setMTime();
   }

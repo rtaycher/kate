@@ -20,10 +20,6 @@
 
 #include "katedocument.h"
 
-#include <qfileinfo.h>
-
-uint KateDocManager::myDocID = 0;
-
 KateDocManager::KateDocManager () : Kate::DocManager ()
 {
   docList.setAutoDelete(true);
@@ -33,11 +29,10 @@ KateDocManager::~KateDocManager ()
 {
 }
 
-KateDocument *KateDocManager::createDoc (QFileInfo* fi)
+KateDocument *KateDocManager::createDoc ()
 {
-  KateDocument *doc = new KateDocument (myDocID, fi, false, false, 0L, 0L, 0L, (QString("KateDocument%1").arg(myDocID)).latin1());
+  KateDocument *doc = new KateDocument ();
   docList.append(doc);
-  myDocID++;
 
   emit documentCreated (doc);
   return doc;

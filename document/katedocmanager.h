@@ -36,7 +36,7 @@ class KateDocManager : public Kate::DocManager
     KateDocManager ();
     ~KateDocManager ();
 
-    KateDocument *createDoc (QFileInfo* fi=0L);
+    KateDocument *createDoc ();
     void deleteDoc (KateDocument *doc);
 
     KateDocument *nthDoc (uint n);
@@ -58,9 +58,6 @@ class KateDocManager : public Kate::DocManager
 
   protected:
     QList<KateDocument> docList;
-
-  private:
-    static uint myDocID;
 
   signals:
     void documentCreated (KateDocument *doc);

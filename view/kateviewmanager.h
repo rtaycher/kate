@@ -52,7 +52,6 @@ class KateViewManager : public Kate::ViewManager
 
   private:
     QList<KateViewSpace> viewSpaceList;
-    static uint myViewID;
 
     KateDocManager *docManager;
     QGridLayout *grid;

@@ -161,7 +161,7 @@ class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
     friend class KateIconBorder;
 
   public:
-    KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode=false, bool bBrowserView=false, QWidget *parentWidget = 0, const char *widgetName = 0, QObject * = 0, const char * = 0);
+    KateDocument(bool bSingleViewMode=false, bool bBrowserView=false, QWidget *parentWidget = 0, const char *widgetName = 0, QObject * = 0, const char * = 0);
     ~KateDocument();
 
   protected:
@@ -251,6 +251,7 @@ class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
   protected:
     static QStringList searchForList;
     static QStringList replaceWithList;
+    static uint uniqueID;
 
   // highlight stuff
   public:
@@ -287,7 +288,6 @@ class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
 
     void loadFile(const QString &file);
     bool writeFile(const QString &file);
-    void appendData(const QByteArray &data);
 
     int currentColumn(PointStruc &cursor);
     bool insertChars(VConfig &, const QString &chars);
@@ -475,7 +475,7 @@ class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
      called from constructor and from saveFile. */
     void setMTime();
     uint myDocID;
-    QFileInfo* fileinfo;
+    QFileInfo* fileInfo;
     QDateTime mTime;
     QString myDocName;
 

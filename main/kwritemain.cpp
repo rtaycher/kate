@@ -59,7 +59,7 @@ TopLevel::TopLevel (KateDocument *doc)
   connect(statusbarTimer,SIGNAL(timeout()),this,SLOT(timeout()));
 
   if (!doc) {
-    doc = new KateDocument (0L, 0L, false, false); //new doc with default path
+    doc = new KateDocument (); //new doc with default path
     docList.append(doc);
   }
   setupEditWidget(doc);
@@ -463,7 +463,7 @@ void restore()
   for (z = 1; z <= docs; z++) {
      buf = QString("Document%1").arg(z);
      config->setGroup(buf);
-     doc = new KateDocument (0L,0L);
+     doc = new KateDocument ();
      doc->readSessionConfig(config);
      docList.append(doc);
   }

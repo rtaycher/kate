@@ -1412,9 +1412,14 @@ void KateViewInternal::dropEvent( QDropEvent *event )
   }
 }
 
-KateView::KateView(KateDocument *doc, QWidget *parent, const char * name, bool HandleOwnDND) : Kate::View (doc, parent, name), DCOPObject(name)
+uint KateView::uniqueID = 0;
+
+KateView::KateView(KateDocument *doc, QWidget *parent, const char * name, bool HandleOwnDND) : Kate::View (doc, parent, name), DCOPObject( (QString("KateView%1-%2").arg(doc->docID()).arg(uniqueID)).latin1())
 {
   setInstance( KateFactory::instance() );
+
+  myViewID = uniqueID;
+  uniqueID++;
 
   active = false;
   myIconBorder = false;

@@ -44,10 +44,7 @@
 #include <qstringlist.h>
 #include <qvbox.h>
 
-
 #include "katesplitter.h"
-
-uint KateViewManager::myViewID = 0;
 
 KateViewManager::KateViewManager (QWidget *parent, KateDocManager *docManager) : Kate::ViewManager  (parent)
 {
@@ -94,7 +91,7 @@ bool KateViewManager::createView ( bool newDoc, KURL url, KateView *origView, Ka
       }
       ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
     }
-    doc = docManager->createDoc ();//fi);
+    doc = docManager->createDoc ();
   }
   else
   {
@@ -103,9 +100,8 @@ bool KateViewManager::createView ( bool newDoc, KURL url, KateView *origView, Ka
   }
 
   // create view
-  KateView *view = new KateView (doc, this, (QString("KateView%1-%2").arg(doc->docID()).arg(myViewID)).latin1(), false);
+  KateView *view = new KateView (doc, this, 0L, false);
   connect(view,SIGNAL(newStatus()),this,SLOT(setWindowCaption()));
-  myViewID++;
   viewList.append (view);
 
   if (!newDoc && origView)

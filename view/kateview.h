@@ -989,6 +989,10 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
   public slots:
     int getHlCount ();
     QString getHlName (int);
+
+  protected:
+    uint myViewID;
+    static uint uniqueID;
 };
 
 class KateBrowserExtension : public KParts::BrowserExtension
