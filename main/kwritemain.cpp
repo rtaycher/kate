@@ -188,7 +188,7 @@ void TopLevel::setupStatusBar()
 
 void TopLevel::slotNew()
 {
-  if (kWrite->isModified())
+  if (kWrite->isModified() || !kWrite->doc()->url().isEmpty())
   {
    TopLevel*t = new TopLevel();
     t->readConfig();
@@ -200,7 +200,7 @@ void TopLevel::slotNew()
 
 void TopLevel::slotOpen()
 {
-  if (kWrite->isModified())
+  if (kWrite->isModified() || !kWrite->doc()->url().isEmpty())
   {
     TopLevel *t = new TopLevel();
     t->readConfig();
