@@ -1,4 +1,8 @@
-2001-04-24 Christoph Cullmann <crossfire@babylon2k.de>
+2001-04-05 Joseph Wenninger <jowenn@bigfoot.com>
+	* Highlighting Configuration is now in kate/kwrite settings too
+	* Made a cleanup of no longer used classes
+
+2001-04-04 Christoph Cullmann <crossfire@babylon2k.de>
              * sidebar now again restores config
 
 2001-04-03 Joseph Wenninger <jowenn@bigfoot.com>

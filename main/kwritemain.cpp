@@ -46,6 +46,7 @@
 
 #include "../document/katehighlight.h"
 #include "../view/kateviewdialog.h"
+#include "../document/katedialogs.h"
 
 // StatusBar field IDs
 #define ID_LINE_COLUMN 1
@@ -258,6 +259,26 @@ void TopLevel::configure()
 
   kwin.setIcons(kd->winId(), kapp->icon(), kapp->miniIcon());
 
+  HighlightDialogPage *hlPage;
+  HlManager *hlManager;
+  HlDataList hlDataList;
+  ItemStyleList defaultStyleList;
+  ItemFont defaultFont;
+
+  hlManager = HlManager::self();
+
+  defaultStyleList.setAutoDelete(true);
+  hlManager->getDefaults(defaultStyleList,defaultFont);
+
+  hlDataList.setAutoDelete(true);
+  //this gets the data from the KConfig object
+  hlManager->getHlDataList(hlDataList);
+
+  page=kd->addVBoxPage(i18n("Highlighting"),i18n("Highlighting configuration"),
+                        BarIcon("highlighing",KIcon::SizeMedium));
+  hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &defaultFont, &hlDataList,
+    /*myDoc->highlightNum()*/0, page);
+
  if (kd->exec()) {
     // color options
     colorConfig->getColors(colors);
@@ -271,6 +292,7 @@ void TopLevel::configure()
     // spell checker
     ksc->writeGlobalSettings();
     kWrite->setKSConfig(*ksc);
+    hlPage->saveData();
   }
 
   delete kd;

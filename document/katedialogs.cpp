@@ -203,14 +203,31 @@ HighlightDialog::HighlightDialog( HlManager *hlManager, ItemStyleList *styleList
                                   HlDataList *highlightDataList,
                                   int hlNumber, QWidget *parent,
                                   const char *name, bool modal )
-  :KDialogBase(KDialogBase::Tabbed, i18n("Highlight Settings"), Ok|Cancel, Ok, parent, name, modal),
-   defaultItemStyleList(styleList), hlData(0L)
+  :KDialogBase(parent,name,modal,i18n("Highlight Settings"), Ok|Cancel, Ok)
+{
+  QVBox *page = makeVBoxMainWidget();
+  content=new HighlightDialogPage(hlManager,styleList,font,highlightDataList,hlNumber,page);
+}
+
+void HighlightDialog::done(int r)
+{
+  kdDebug(13010)<<"HighlightDialod done"<<endl;
+  content->saveData();
+  KDialogBase::done(r);
+}
+
+HighlightDialogPage::HighlightDialogPage(HlManager *hlManager, ItemStyleList *styleList,
+                              ItemFont *font, HlDataList* highlightDataList,
+                              int hlNumber,QWidget *parent, const char *name)
+   :QTabWidget(parent,name),defaultItemStyleList(styleList),hlData(0L)
+
 {
 
   // defaults =========================================================
 
-  QFrame *page1 = addPage(i18n("&Defaults"));
-  QGridLayout *grid = new QGridLayout(page1,2,2,0,spacingHint());
+  QFrame *page1 = new QFrame(this);
+  addTab(page1,i18n("&Defaults"));
+  QGridLayout *grid = new QGridLayout(page1,2,2,0,KDialog::spacingHint());
 
   QVGroupBox *dvbox1 = new QVGroupBox( i18n("Default Item Styles"), page1 );
   /*QLabel *label = */new QLabel( i18n("Item:"), dvbox1 );
@@ -234,8 +251,9 @@ HighlightDialog::HighlightDialog( HlManager *hlManager, ItemStyleList *styleList
 
   // highlight modes =====================================================
 
-  QFrame *page2 = addPage(i18n("&Highlight Modes"));
-  grid = new QGridLayout(page2,3,2,0,spacingHint());
+  QFrame *page2 = new QFrame(this);
+  addTab(page2,i18n("&Highlight Modes"));
+  grid = new QGridLayout(page2,3,2,0,KDialog::spacingHint());
 
   QVGroupBox *vbox1 = new QVGroupBox( i18n("Config Select"), page2 );
   grid->addWidget(vbox1,0,0);
@@ -286,13 +304,13 @@ HighlightDialog::HighlightDialog( HlManager *hlManager, ItemStyleList *styleList
 }
 
 
-void HighlightDialog::defaultChanged(int z)
+void HighlightDialogPage::defaultChanged(int z)
 {
   defaultStyleChanger->setRef(defaultItemStyleList->at(z));
 }
 
 
-void HighlightDialog::hlChanged(int z)
+void HighlightDialogPage::hlChanged(int z)
 {
   writeback();
 
@@ -311,7 +329,7 @@ void HighlightDialog::hlChanged(int z)
   itemChanged(0);
 }
 
-void HighlightDialog::itemChanged(int z)
+void HighlightDialogPage::itemChanged(int z)
 {
   itemData = hlData->itemDataList.at(z);
 
@@ -322,26 +340,26 @@ void HighlightDialog::itemChanged(int z)
   fontChanger->setRef(itemData);
 }
 
-void HighlightDialog::changed()
+void HighlightDialogPage::changed()
 {
   itemData->defStyle = styleDefault->isChecked();
   itemData->defFont = fontDefault->isChecked();
 }
 
-void HighlightDialog::writeback() {
+void HighlightDialogPage::writeback() {
   if (hlData) {
     hlData->wildcards = wildcards->text();
     hlData->mimetypes = mimetypes->text();
   }
 }
 
-void HighlightDialog::done(int r) {
+void HighlightDialogPage::saveData() {
+  kdDebug(13010)<<"HighlightDialogPage::saveData()"<<endl;
   writeback();
-  QDialog::done(r);
 }
 
 
-void HighlightDialog::hlEdit() {
+void HighlightDialogPage::hlEdit() {
   HlEditDialog diag(0,0,"hlEdit", true,hlData);
   diag.show();
 }

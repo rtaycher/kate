@@ -32,6 +32,8 @@
 #include "katemenuitem.h"
 
 #include "../view/kateviewdialog.h"
+#include "../document/katedialogs.h"
+#include "../document/katehighlight.h"
 
 #include <cassert>
 #include <qcheckbox.h>
@@ -746,6 +748,26 @@ void KateMainWindow::slotConfigure()
                           BarIcon("misc",KIcon::SizeMedium));
   (void)new KateConfigPluginPage(page);
 
+  HighlightDialogPage *hlPage;
+  HlManager *hlManager;
+  HlDataList hlDataList;
+  ItemStyleList defaultStyleList;
+  ItemFont defaultFont;
+
+  hlManager = HlManager::self();
+
+  defaultStyleList.setAutoDelete(true);
+  hlManager->getDefaults(defaultStyleList,defaultFont);
+
+  hlDataList.setAutoDelete(true);
+  //this gets the data from the KConfig object
+  hlManager->getHlDataList(hlDataList);
+
+  page=dlg->addVBoxPage(i18n("Highlighting"),i18n("Highlighting configuration"),
+                        BarIcon("highlighing",KIcon::SizeMedium));
+  hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &defaultFont, &hlDataList,
+    /*myDoc->highlightNum()*/0, page);
+
   if (dlg->exec())
   {
     viewManager->setUseOpaqueResize(cb_opaqueResize->isChecked());
@@ -790,6 +812,7 @@ void KateMainWindow::slotConfigure()
     config->setGroup("kwrite");
     v->writeConfig( config );
     v->doc()->writeConfig( config );
+    hlPage->saveData();    
     config->sync();
   }
 

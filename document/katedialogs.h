@@ -5,6 +5,7 @@
 #include "katesyntaxdocument.h"
 #include  "katehighlight.h"
 #include <klistview.h>
+#include <qtabwidget.h>
 #include <kcolorbutton.h>
 
 class QWidgetStack;
@@ -55,12 +56,14 @@ class FontChanger : public QWidget {
 
 //--------
 
-class HighlightDialog : public KDialogBase
+
+class HighlightDialogPage : public QTabWidget
 {
     Q_OBJECT
   public:
-    HighlightDialog(HlManager *, ItemStyleList *, ItemFont *, HlDataList *, int hlNumber,
-                    QWidget *parent=0, const char *name=0, bool modal=true);
+    HighlightDialogPage(HlManager *, ItemStyleList *, ItemFont *, HlDataList *, int hlNumber,
+                    QWidget *parent=0, const char *name=0);
+    void saveData();
 
   protected slots:
     void defaultChanged(int);
@@ -75,7 +78,6 @@ class HighlightDialog : public KDialogBase
     FontChanger *defaultFontChanger;
 
     void writeback();
-    virtual void done(int r);
     QComboBox *itemCombo, *hlCombo;
     QLineEdit *wildcards;
     QLineEdit *mimetypes;
@@ -89,6 +91,21 @@ class HighlightDialog : public KDialogBase
     ItemData *itemData;
 };
 
+//--------
+class HighlightDialog : public KDialogBase
+{
+  Q_OBJECT
+  public:
+    HighlightDialog( HlManager *hlManager, ItemStyleList *styleList,
+                                  ItemFont *font,
+                                  HlDataList *highlightDataList,
+                                  int hlNumber, QWidget *parent,
+                                  const char *name=0, bool modal=true );
+  private:
+    HighlightDialogPage *content;
+  protected:
+    virtual void done(int r);
+};
 
 
 class HlEditDialog : public KDialogBase
@@ -119,7 +136,6 @@ class HlEditDialog : public KDialogBase
   protected slots:
     void currentSelectionChanged ( QListViewItem * );
 };
-
 
 
 #endif
