@@ -313,6 +313,9 @@ void GrepTool::slotSearch()
   if ( cmbPattern->currentText().isEmpty() )
     return;
 
+  if ( ! QDir(cmbDir->url()).exists() )
+    return;
+
   slotClear ();
 
   m_workingDir = cmbDir->url();
