@@ -35,6 +35,7 @@
 #include <ktexteditor/undointerface.h>
 #include <ktexteditor/cursorinterface.h>
 #include <ktexteditor/selectioninterface.h>
+#include <ktexteditor/searchinterface.h>
 
 class KConfig;
 
@@ -62,7 +63,7 @@ class Cursor : public KTextEditor::Cursor
 */
 class Document : public KTextEditor::Document, public KTextEditor::EditInterface,
                  public KTextEditor::UndoInterface, public KTextEditor::CursorInterface,
-								 public KTextEditor::SelectionInterface
+								 public KTextEditor::SelectionInterface, public KTextEditor::SearchInterface
 {
   Q_OBJECT
 

@@ -22,6 +22,7 @@
 #include <qstring.h> 
 #include <qvaluevector.h> 
 #include <ksharedptr.h> 
+#include <qregexp.h>
  
 /** 
   The TextLine represents a line of text. A text line that contains the  
@@ -97,7 +98,7 @@ public:
     /**  
       Gets a C-like null terminated string  
     */  
-    const QString getString() { return QString (text, textLen); }; 
+    const QString getString() { return QString (text, textLen); };
   
     /*  
       Gets a null terminated pointer to first non space char  
@@ -199,14 +200,17 @@ public:
     */ 
     int findRevSelected(uint pos) const; 
     /** 
-      Finds the previous unselected character, starting at the given position 
+      Finds the previous unselected character, starting at the given position
     */ 
-    int findRevUnselected(uint pos) const; 
- 
+    int findRevUnselected(uint pos) const;
+
+		bool searchText (unsigned int startCol, const QString &text, unsigned int *foundAtCol, unsigned int *matchLen, bool casesensitive = true, bool backwards = false);
+		bool searchText (unsigned int startCol, const QRegExp &regexp, unsigned int *foundAtCol, unsigned int *matchLen, bool backwards = false);
+
     void clearMark () { myMark = 0; }; 
-    void addMark ( uint m ); 
-    void delMark ( uint m ); 
-    uint mark() { return myMark; }; 
+    void addMark ( uint m );
+    void delMark ( uint m );
+    uint mark() { return myMark; };
  
     uchar *getAttribs() { return attributes; } 
  

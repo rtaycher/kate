@@ -343,6 +343,40 @@ void TextLine::delMark (uint m)
   myMark = myMark & ~m;      
 }      
       
-      
-     
- 
+bool TextLine::searchText (unsigned int startCol, const QString &text, unsigned int *foundAtCol, unsigned int *matchLen, bool casesensitive, bool backwards)
+{
+  int index;
+
+  if (backwards)
+    index = QString (this->text, textLen).findRev (text, startCol, casesensitive);
+  else
+    index = QString (this->text, textLen).find (text, startCol, casesensitive);
+
+   if (index > -1)
+	{
+	  (*foundAtCol) = index;
+		(*matchLen)=text.length();
+		return true;
+  }
+
+  return false;
+}
+
+bool TextLine::searchText (unsigned int startCol, const QRegExp &regexp, unsigned int *foundAtCol, unsigned int *matchLen, bool backwards)
+{
+  int index;
+
+  if (backwards)
+    index = regexp.searchRev (QString (this->text, textLen), startCol);
+  else
+    index = regexp.search (QString (this->text, textLen), startCol);
+
+   if (index > -1)
+	{
+	  (*foundAtCol) = index;
+		(*matchLen)=regexp.matchedLength();
+		return true;
+  }
+
+  return false;
+}

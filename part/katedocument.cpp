@@ -1224,35 +1224,173 @@ void KateDocument::clearRedo()
 KTextEditor::Cursor *KateDocument::createCursor ( )     
 {     
   return new KateCursor (this);     
-}     
-     
-QPtrList<KTextEditor::Cursor> KateDocument::cursors () const     
-{     
-  return myCursors;     
-}     
-     
-//     
-// KParts::ReadWrite stuff     
-//     
-     
-bool KateDocument::openFile()     
-{     
-  fileInfo->setFile (m_file);     
-  setMTime();     
-     
-  if (!fileInfo->exists() || !fileInfo->isReadable())     
-    return false;     
-     
-  clear();     
-  buffer->insertFile(0, m_file, KGlobal::charsets()->codecForName(myEncoding));     
-     
-  setMTime();     
-     
-  if (myWordWrap)     
-    wrapText (myWordWrapAt);     
-     
-  int hl = hlManager->wildcardFind( m_file );     
-     
+}
+
+QPtrList<KTextEditor::Cursor> KateDocument::cursors () const
+{
+  return myCursors;
+}
+
+//
+// KTextEditor::SearchInterface stuff
+//
+
+bool KateDocument::searchText (unsigned int startLine, unsigned int startCol, const QString &text, unsigned int *foundAtLine, unsigned int *foundAtCol, unsigned int *matchLen, bool casesensitive, bool backwards)
+{
+  uint line, col, pos;
+  uint searchEnd;
+  TextLine::Ptr textLine;
+	uint foundAt, myMatchLen;
+  bool found;
+
+  if (text.isEmpty())
+	  return false;
+
+	line = startLine;
+	col = startCol;
+
+	if (!backwards)
+	{
+    searchEnd = lastLine();
+
+    while (line <= searchEnd)
+		{
+      textLine = getTextLine(line);
+
+			found = false;
+			found = textLine->searchText (col, text, &foundAt, &myMatchLen, casesensitive, false);
+
+      if (found)
+			{
+        (*foundAtLine) = line;
+				(*foundAtCol) = foundAt;
+				(*matchLen) = myMatchLen;
+				return true;
+      }
+
+      col = 0;
+      line++;
+    }
+  }
+	else
+	{
+    // backward search
+    searchEnd = 0;
+
+    while (line >= searchEnd)
+		{
+      textLine = getTextLine(line);
+
+			found = false;
+			found = textLine->searchText (col, text, &foundAt, &myMatchLen, casesensitive, true);
+
+        if (found)
+			{
+			  (*foundAtLine) = line;
+				(*foundAtCol) = foundAt;
+				(*matchLen) = myMatchLen;
+				return true;
+      }
+
+			if (line-1 >= 0)
+        col = getTextLine(line-1)->length();
+
+      line--;
+    }
+  }
+
+  return false;
+}
+
+bool KateDocument::searchText (unsigned int startLine, unsigned int startCol, const QRegExp &regexp, unsigned int *foundAtLine, unsigned int *foundAtCol, unsigned int *matchLen, bool backwards)
+{
+  uint line, col, pos;
+  uint searchEnd;
+  TextLine::Ptr textLine;
+	uint foundAt, myMatchLen;
+  bool found;
+
+  if (regexp.isEmpty() || !regexp.isValid())
+	  return false;
+
+	line = startLine;
+	col = startCol;
+
+	if (!backwards)
+	{
+    searchEnd = lastLine();
+
+    while (line <= searchEnd)
+		{
+      textLine = getTextLine(line);
+
+			found = false;
+			found = textLine->searchText (col, regexp, &foundAt, &myMatchLen, false);
+
+      if (found)
+			{
+        (*foundAtLine) = line;
+				(*foundAtCol) = foundAt;
+				(*matchLen) = myMatchLen;
+				return true;
+      }
+
+      col = 0;
+      line++;
+    }
+  }
+	else
+	{
+    // backward search
+    searchEnd = 0;
+
+    while (line >= searchEnd)
+		{
+      textLine = getTextLine(line);
+
+			found = false;
+			found = textLine->searchText (col, regexp, &foundAt, &myMatchLen, true);
+
+        if (found)
+			{
+			  (*foundAtLine) = line;
+				(*foundAtCol) = foundAt;
+				(*matchLen) = myMatchLen;
+				return true;
+      }
+
+			if (line-1 >= 0)
+        col = getTextLine(line-1)->length();
+
+      line--;
+    }
+  }
+
+  return false;
+}
+
+//
+// KParts::ReadWrite stuff
+//
+
+bool KateDocument::openFile()
+{
+  fileInfo->setFile (m_file);
+  setMTime();
+
+  if (!fileInfo->exists() || !fileInfo->isReadable())
+    return false;
+
+  clear();
+  buffer->insertFile(0, m_file, KGlobal::charsets()->codecForName(myEncoding));
+
+  setMTime();
+
+  if (myWordWrap)
+    wrapText (myWordWrapAt);
+
+  int hl = hlManager->wildcardFind( m_file );
+
   if (hl == -1)     
   {     
     // fill the detection buffer with the contents of the text     

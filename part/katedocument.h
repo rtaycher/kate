@@ -173,6 +173,13 @@ class KateDocument : public Kate::Document
     KTextEditor::Cursor *createCursor ();
     QPtrList<KTextEditor::Cursor> cursors () const;
 
+  //
+  // KTextEditor::SearchInterface stuff
+  //
+	public:
+		bool searchText (unsigned int startLine, unsigned int startCol, const QString &text, unsigned int *foundAtLine, unsigned int *foundAtCol, unsigned int *matchLen, bool casesensitive = true, bool backwards = false);
+	  bool searchText (unsigned int startLine, unsigned int startCol, const QRegExp &regexp, unsigned int *foundAtLine, unsigned int *foundAtCol, unsigned int *matchLen, bool backwards = false);
+
 	//
   // KParts::ReadWrite stuff
   //
