@@ -58,7 +58,7 @@ const char *template_str[] = {
 GrepDialog::GrepDialog(QString dirname, QWidget *parent, const char *name)
     : KDialog(parent, name, false), childproc(0)
 {
-    setCaption(i18n("Search in Files..."));
+    setCaption(i18n("Search in Files"));
     KWin::setType(winId(),NET::Tool);
     config = KGlobal::config();
     config->setGroup("GrepDialog");
