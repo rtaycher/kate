@@ -71,9 +71,19 @@ class KateFileList : public KListBox
      */
     void tip( const QPoint &p, QRect &r, QString &str );
 
+    void setSortType (int s);
+    int sortType () { return m_sort; };
+    void updateSort ();
+
+    enum sorting {
+      sortByID = 0,
+      sortByName = 1
+    };
+
   private:
     KateDocManager *docManager;
     KateViewManager *viewManager;
+    int m_sort;
 
   private slots:
     void slotDocumentCreated (Kate::Document *doc);

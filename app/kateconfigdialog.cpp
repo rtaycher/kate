@@ -157,6 +157,14 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
         "of the active document when started and whenever the active document changes, "
         "if the document is a local file.") );
 
+  // sync the konsole ?
+  cb_sortFiles = new QCheckBox(frGeneral);
+  lo->addWidget( cb_sortFiles );
+  cb_sortFiles->setText(i18n("Sort &files alpabetically in the file list."));
+  cb_sortFiles->setChecked(parent->filelist->sortType() == KateFileList::sortByName);
+  QWhatsThis::add( cb_sortFiles, i18n(
+        "If this is checked, the files in the file list will be sorted alphabetically.") );
+
   // number of recent files
   QHBox *hbNrf = new QHBox( frGeneral );
   lo->addWidget( hbNrf );
@@ -299,6 +307,8 @@ void KateConfigDialog::slotApply()
   }
 
   mainWindow->syncKonsole = cb_syncKonsole->isChecked();
+
+  mainWindow->filelist->setSortType(cb_sortFiles->isChecked() ? KateFileList::sortByName : KateFileList::sortByID);
 
   //config->setGroup("General");
   config->writeEntry("restore views", cb_restoreVC->isChecked());

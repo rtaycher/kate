@@ -439,6 +439,8 @@ void KateMainWindow::readOptions(KConfig *config)
 
   fileselector->readConfig(config, "fileselector");
 
+  filelist->setSortType(config->readNumEntry("Sort Type of File List", KateFileList::sortByID));
+
   readDockConfig();
 }
 
@@ -459,6 +461,8 @@ void KateMainWindow::saveOptions(KConfig *config)
   fileOpenRecent->saveEntries(config, "Recent Files");
 
   fileselector->writeConfig(config, "fileselector");
+
+  config->writeEntry("Sort Type of File List", filelist->sortType());
 
   writeDockConfig();
 

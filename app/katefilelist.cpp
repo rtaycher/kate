@@ -34,8 +34,8 @@
 #include <klocale.h>
 
 KateFileList::KateFileList (KateDocManager *_docManager, KateViewManager *_viewManager, QWidget * parent, const char * name ):  KListBox (parent, name)
-{                              
-  setFocusPolicy ((QWidget::FocusPolicy)0);       
+{
+  setFocusPolicy ((QWidget::FocusPolicy)0);
 
   docManager = _docManager;
   viewManager = _viewManager;
@@ -62,12 +62,14 @@ KateFileList::KateFileList (KateDocManager *_docManager, KateViewManager *_viewM
 KateFileList::~KateFileList ()
 {
 }
-  
+
 void KateFileList::slotDocumentCreated (Kate::Document *doc)
 {
   insertItem (new KateFileListItem (doc->documentNumber(), SmallIcon("null"), doc->docName()) );
   connect(doc,SIGNAL(modStateChanged(Kate::Document *)),this,SLOT(slotModChanged(Kate::Document *)));
   connect(doc,SIGNAL(nameChanged(Kate::Document *)),this,SLOT(slotNameChanged(Kate::Document *)));
+
+  updateSort ();
 }
 
 void KateFileList::slotDocumentDeleted (uint documentNumber)
@@ -144,7 +146,7 @@ void KateFileList::slotNameChanged (Kate::Document *doc)
       break;
     }
   }
-  
+
   QString c;
   if (doc->url().isEmpty() || (! viewManager->getShowFullPath()))
   {
@@ -162,6 +164,8 @@ void KateFileList::slotNameChanged (Kate::Document *doc)
      }
 
    ((KateMainWindow*)topLevelWidget())->setCaption( c,doc->isModified());
+
+   updateSort ();
 }
 
 void KateFileList::slotViewChanged ()
@@ -295,3 +299,14 @@ void KateFileList::KFLToolTip::maybeTip( const QPoint &p )
     tip( r, str );
 }
 
+void KateFileList::setSortType (int s)
+{
+  m_sort = s;
+  updateSort ();
+}
+
+void KateFileList::updateSort ()
+{
+  if (m_sort == KateFileList::sortByName)
+    sort ();
+}

@@ -24,7 +24,7 @@
 
 #include "../interfaces/plugin.h"
 #include "../interfaces/pluginconfiginterface.h"
-#include "../interfaces/pluginconfiginterfaceextension.h"         
+#include "../interfaces/pluginconfiginterfaceextension.h"
 
 #include <kate/document.h>
 #include <ktexteditor/configinterfaceextension.h>
@@ -40,7 +40,7 @@ struct PluginPageListItem
 class KateConfigDialog : public KDialogBase
 {
   Q_OBJECT
-  
+
   public:
     KateConfigDialog (KateMainWindow *parent, const char * = 0);
     ~KateConfigDialog ();
@@ -69,6 +69,7 @@ class KateConfigDialog : public KDialogBase
     class QCheckBox *cb_singleInstance;
     class QCheckBox *cb_fullPath;
     class QCheckBox *cb_syncKonsole;
+    class QCheckBox *cb_sortFiles;
     class QSpinBox *sb_numRecentFiles;
     class QComboBox *cb_mode;
     Kate::ConfigPage *fileSelConfigPage;
