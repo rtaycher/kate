@@ -814,6 +814,16 @@ void KateViewManager::reopenDocuments(bool isRestore)
 
     int i = 0;
     QString fn;
+    // check all remote files for existance in a syncrounous way
+    // so that the password dialog only appears ones for every remote source
+    while (scfg->hasKey(QString("File%1").arg(i)))
+    {
+      fn = scfg->readEntry( QString("File%1").arg( i ) );
+      if ( !fn.isEmpty() && !KURL( fn ).isLocalFile() )
+          KIO::NetAccess::exists(KURL( fn ), true, this);
+      i++;
+    }    
+    i = 0;
     while (scfg->hasKey(QString("File%1").arg(i)))
     {
       fn = scfg->readEntry( QString("File%1").arg( i ) );
