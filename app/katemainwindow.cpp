@@ -222,9 +222,6 @@ void KateMainWindow::setupActions()
   connect(documentOpenWith->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(mSlotFixOpenWithMenu()));
   connect(documentOpenWith->popupMenu(), SIGNAL(activated(int)), this, SLOT(slotOpenWithMenuAction(int)));
 
-  if (pluginManager->myPluginList.count() > 0)
-    new KAction(i18n("Contents &Plugins"), 0, this, SLOT(pluginHelp()), actionCollection(), "help_plugins_contents");
-
   KStdAction::keyBindings(this, SLOT(editKeys()), actionCollection());
   KStdAction::configureToolbars(this, SLOT(slotEditToolbars()), actionCollection(), "set_configure_toolbars");
 
@@ -237,8 +234,12 @@ void KateMainWindow::setupActions()
   settingsConfigure = KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
 
   // help menu
-  new KHelpMenu(this, instance()->aboutData(), true, actionCollection());
+// Don't call this, KMainWindow does it for us.
+//  new KHelpMenu(this, instance()->aboutData(), true, actionCollection());
   
+  if (pluginManager->myPluginList.count() > 0)
+    new KAction(i18n("Contents &Plugins"), 0, this, SLOT(pluginHelp()), actionCollection(), "help_plugins_contents");
+
   connect(viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
 
   slotWindowActivated ();
