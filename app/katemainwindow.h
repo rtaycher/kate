@@ -31,6 +31,7 @@
 #include <qguardedptr.h>
 
 #include <scriptmanager.h>
+#include <kaction.h>
 
 class GrepDialog;
 class KFileItem;
@@ -192,6 +193,20 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     
   private slots:
     void pluginHelp ();
+};
+
+class KateToggleToolViewAction:public KToggleAction
+{
+Q_OBJECT
+public:
+	KateToggleToolViewAction( const QString& text, const KShortcut& cut = KShortcut(),KDockWidget *dw=0, QObject* parent = 0, KateMainWindow* mw=0, const char* name = 0 );
+	virtual ~KateToggleToolViewAction();
+private:
+	KDockWidget *m_dw;
+	KateMainWindow *m_mw;
+protected slots:
+	void slotToggled(bool);
+	void anDWChanged();
 };
 
 #endif

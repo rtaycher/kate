@@ -68,6 +68,8 @@
 
 uint KateMainWindow::uniqueID = 0;
 
+
+
 KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager *_m_pluginManager) :
 	Kate::MainWindow (),
              DCOPObject ((QString("KateMainWindow%1").arg(uniqueID)).latin1()),ToolViewManager()
@@ -276,6 +278,11 @@ void KateMainWindow::setupActions()
   if (m_dockStyle==IDEAlStyle)
   {
 	  KActionMenu *settingsShowToolDocks=new KActionMenu( i18n("Tool Docks"), actionCollection(),"settings_show_tooldocks");
+    	  
+	  settingsShowToolDocks->insert(new KateToggleToolViewAction(i18n("Bottom"),0,m_bottomDock,actionCollection(),this,"settings_show_bottomdock"));	  
+	  settingsShowToolDocks->insert(new KateToggleToolViewAction(i18n("Left"),0,m_leftDock,actionCollection(),this,"settings_show_leftdock"));
+  	  settingsShowToolDocks->insert(new KateToggleToolViewAction(i18n("Right"),0,m_rightDock,actionCollection(),this,"settings_show_rightdock"));	  
+    	  settingsShowToolDocks->insert(new KateToggleToolViewAction(i18n("Top"),0,m_topDock,actionCollection(),this,"settings_show_topdock"));
   }
 
   settingsShowToolbar = KStdAction::showToolbar(this, SLOT(slotSettingsShowToolbar()), actionCollection(), "settings_show_toolbar");
@@ -797,7 +804,7 @@ KDockWidget *KateMainWindow::addToolView(KDockWidget::DockPosition pos,const cha
 		}
 	}
 	
-	KToggleAction *showaction= new KToggleAction(i18n("Show %1").arg(caption), 0, dw, SLOT(changeHideShowState()), actionCollection(), name);
+	KToggleAction *showaction= new KateToggleToolViewAction(i18n("Show %1").arg(caption), 0, dw, actionCollection(),this, name);
 	m_settingsShowToolViews->insert(showaction);
 
 	return dw;
@@ -811,4 +818,32 @@ KDockWidget *KateMainWindow::addToolViewWidget(KDockWidget::DockPosition pos,QWi
         dw->setWidget (widget);
 	return dw;
 
+}
+
+//-------------------------------------
+
+KateToggleToolViewAction::KateToggleToolViewAction( const QString& text, const KShortcut& cut, KDockWidget *dw,QObject* parent,KateMainWindow *mw, const char* name )
+	:KToggleAction(text,cut,parent,name),m_dw(dw),m_mw(mw)
+{
+	connect(this,SIGNAL(toggled(bool)),this,SLOT(slotToggled(bool)));
+	connect(m_dw->dockManager(),SIGNAL(change()),this,SLOT(anDWChanged()));
+	setChecked(m_dw->mayBeHide());
+}
+
+
+KateToggleToolViewAction::~KateToggleToolViewAction(){;}
+
+void KateToggleToolViewAction::anDWChanged()
+{
+	if (isChecked() && m_dw->mayBeShow()) setChecked(false);
+	else if ((!isChecked()) && m_dw->mayBeHide()) setChecked(true);
+}
+
+
+void KateToggleToolViewAction::slotToggled(bool t)
+{
+
+	if ((!t) && m_dw->mayBeHide() ) m_dw->undock();
+    	else
+  	if ( t && m_dw->mayBeShow() ) m_mw->makeDockVisible(m_dw);
 }
