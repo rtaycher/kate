@@ -29,10 +29,10 @@ static KCmdLineOptions options[] =
 {
     { "n", I18N_NOOP("start a new Kate process (off by default)"), 0 },
     { "w", I18N_NOOP("opens a new Kate window"), 0 },
-    { "initplugin <argument>",	I18N_NOOP("let a plugin initialize kate. You most probably have to specify a file too"),0},
+    { "initplugin <argument>",	I18N_NOOP("allow Kate to be initialized by a plugin. You most probably have to specify a file too"),0},
     { "line <argument>",      I18N_NOOP("navigate to this line"), 0 },
     { "column <argument>",      I18N_NOOP("navigate to this column"), 0 },
-    { "+file(s)",          I18N_NOOP("Files to load"), 0 },
+    { "+file(s)",          I18N_NOOP("files to load"), 0 },
     { 0,0,0 }
 };
 
