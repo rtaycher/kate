@@ -910,9 +910,6 @@ void KateMainWindow::updateCaption (Kate::Document *doc)
   if (!(m_viewManager->activeView()->getDoc() == doc))
     return;
 
-  // update the sync action
-  fileselector->kateViewChanged();
-
   QString c;
   if (m_viewManager->activeView()->getDoc()->url().isEmpty() || (!m_viewManager->getShowFullPath()))
   {

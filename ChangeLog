@@ -1,3 +1,13 @@
+2004-10-06 Christoph Cullmann <cullmann@kde.org>
+  * kate switched over to kmdi2, a slim version of old kmdi
+    which allows only IDEA mode, but should be much less buggy
+    beside this, we now allow tabbing thx to the new kmdi stuff
+    and therefor should now be really feature complete at least mdi
+    wise, having the features to allow multiple main windows,
+    tabbing, splitters, widget stacks for the views, now only missing thingy
+    would be to allow non kate view's to be embeded, like a khtml widget for
+    documentation browsing or something like that
+
 2003-08-28 Christoph Cullmann <cullmann@kde.org>
   * jowenn switch kate over to use kmdi, seems to work well
     for the first port, but still needs some fixes ;)
@@ -14,7 +24,7 @@
   * kate app and kwrite app now use the katepart via libloader and link only
     to the kateinterfaces (which will soon be splitted into katepartinterfaces
     and kateinterfaces
-  * new framework for the configpages of the katepart accessible through the 
+  * new framework for the configpages of the katepart accessible through the
     interfaces
   * KSpell works again ;) my god, what a buggy thingy
 

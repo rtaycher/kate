@@ -79,11 +79,11 @@ class KateFileList : public KListBox
       sortByID = 0,
       sortByName = 1
     };
-    
+
   private:
     void setupActions ();
     void updateActions ();
-    
+
   public slots:
     void slotNextDocument();
     void slotPrevDocument();
@@ -93,7 +93,7 @@ class KateFileList : public KListBox
     KateViewManager *viewManager;
     int m_sort;
     bool notify;
-    
+
     KAction* windowNext;
     KAction* windowPrev;
 
@@ -108,8 +108,8 @@ class KateFileList : public KListBox
     void slotMenu ( QListBoxItem *item, const QPoint &p );
 
   protected:
-  	virtual void keyPressEvent(QKeyEvent *e); 
-    
+  	virtual void keyPressEvent(QKeyEvent *e);
+
   private:
     /////////////////////////////////////////////////////////////////////
     // A private tooltip class to display the URL of a document in the
@@ -120,7 +120,7 @@ class KateFileList : public KListBox
     {
       public:
         KFLToolTip(QWidget *parent);
-        
+
       protected:
         void maybeTip( const QPoint & );
     };

@@ -47,6 +47,8 @@ class KRecentFilesAction;
 class DCOPObject;
 
 class KateExternalToolsMenuAction;
+class KateProjectList;
+class KateProjectViews;
 
 class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
 {
@@ -54,7 +56,7 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
 
   friend class KateConfigDialog;
   friend class KateViewManager;
-  
+
   public:
     KateMainWindow ();
     ~KateMainWindow();
@@ -87,13 +89,13 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
     bool hideToolView(KMDI::ToolViewAccessor *);
 
   /**
-   * Project section 
+   * Project section
    */
   public:
     /**
      * current active project
      * @return active project
-     */ 
+     */
     Kate::Project *activeProject () { return m_project; }
 
     /**
@@ -126,7 +128,7 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
     KURL activeDocumentUrl();
 
     bool notifyMod() const { return modNotification; }
-    
+
     uint mainWindowNumber () const { return myID; }
 
   public:
@@ -163,7 +165,7 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
     void slotGrepToolItemSelected ( const QString &filename, int linenumber );
     void runScript( int menuItemId);
     void slotMail();
-    
+
     void slotFileQuit();
     void slotEditToolbars();
     void slotWindowActivated ();
@@ -203,11 +205,11 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
   private slots:
     void projectDeleted (uint projectNumber);
     void slotDocumentCloseAll();
-    
+
   private:
     static uint uniqueID;
     uint myID;
-    
+
     Kate::MainWindow *m_mainWindow;
     Kate::ToolViewManager *m_toolViewManager;
 
@@ -222,14 +224,13 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
     // management items
     KateViewManager *m_viewManager;
 
-    // should be protected, and kateviewmanager a friend class.
     KRecentFilesAction *fileOpenRecent;
 
     KateFileList *filelist;
-    class KateProjectList *projectlist;
-    class KateProjectViews *projectviews;
+    KateProjectList *projectlist;
+    KateProjectViews *projectviews;
     KateFileSelector *fileselector;
-   
+
     QGuardedPtr<Kate::Project> m_project;
     uint m_projectNumber;
 
@@ -239,8 +240,6 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
 
     KActionMenu* documentOpenWith;
 
-    KAction *gotoLine;
-    
     QPopupMenu *documentMenu;
 
     KToggleAction* settingsShowFilelist;
