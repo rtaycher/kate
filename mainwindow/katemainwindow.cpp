@@ -125,9 +125,9 @@ KateMainWindow::~KateMainWindow()
 
 void KateMainWindow::setupMainWindow ()
 {
-  mainDock = createDockWidget( "mainDock", 0 );
-  filelistDock =  createDockWidget( "Open Files",  UserIcon("openfiles"));
-  fileselectorDock = createDockWidget( "Selector",  UserIcon("fileselector"));
+  mainDock = createDockWidget( "mainDock", 0L );
+  filelistDock =  createDockWidget( "filelistDock",  UserIcon("openfiles"), 0L, "Open Files", "");
+  fileselectorDock = createDockWidget( "fileselectorDock",  UserIcon("fileselector"), 0L, "Selector", "");
 
   mainDock->setGeometry(100, 100, 100, 100);
   viewManager = new KateViewManager (mainDock, docManager);
@@ -613,7 +613,7 @@ void KateMainWindow::slotSettingsShowConsole()
 {
   if (!consoleDock && !console)
   {
-    consoleDock = createDockWidget( "consoleDock", 0 );
+    consoleDock = createDockWidget( "consoleDock", 0, 0L, "Console", "" );
     console = new KateConsole (consoleDock, "console");
     console->installEventFilter( this );
     console->setMinimumSize(50,50);
