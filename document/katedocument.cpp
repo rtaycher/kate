@@ -1950,9 +1950,6 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
   int attr, nextAttr;
   int xs;
   int xc, zc;
-  QFont font;
-
-  font = QFont(myFont);
 
   if (line > lastLine()) {
     paint.fillRect(0, y, xEnd - xStart,fontHeight, colors[4]);
@@ -2053,9 +2050,14 @@ a = &m_attribs[textLine->getAttr(z)];
           if (attr & taSelectMask) paint.setPen(a->selCol);
             else paint.setPen(a->col);
 
-          font.setBold (a->bold);
-          font.setItalic (a->italic);
-          paint.setFont(font);
+   if (a->bold && a->italic)
+     paint.setFont(myFontBI);
+    else if (a->bold)
+      paint.setFont(myFontBold);
+    else if (a->italic)
+      paint.setFont(myFontItalic);
+    else
+      paint.setFont(myFont);
         }
 
 //        paint.drawLine(x - xStart, y -2, x - xStart, y);
@@ -2089,9 +2091,14 @@ a = &m_attribs[textLine->getAttr(z)];
         if (attr & taSelectMask) paint.setPen(a->selCol);
           else paint.setPen(a->col);
 
-        font.setBold (a->bold);
-        font.setItalic (a->italic);
-        paint.setFont(font);
+   if (a->bold && a->italic)
+     paint.setFont(myFontBI);
+    else if (a->bold)
+      paint.setFont(myFontBold);
+    else if (a->italic)
+      paint.setFont(myFontItalic);
+    else
+      paint.setFont(myFont);
       }
     }
     z++;
