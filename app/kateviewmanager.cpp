@@ -55,10 +55,17 @@ KateViewManager::KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWi
  : QWidget  (parent),
   showFullPath(false), m_docManager (docManager), m_mainWindow(parent), m_tabWidget(tabWidget)
 {
+  // while init
+  m_init=true;
+  
+  // some stuff for the tabwidget
+  m_tabWidget->setTabReorderingEnabled( true );
+  
+  // important, set them up, as we use them in other methodes
   setupActions ();
 
   guiMergedView=0;
-  m_init=true;
+  
   m_viewManager = new Kate::ViewManager (this);
   m_currentContainer=0;
  connect(m_tabWidget,SIGNAL(currentChanged(QWidget*)),this,SLOT(tabChanged(QWidget*)));
@@ -68,6 +75,7 @@ KateViewManager::KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWi
   // no memleaks
   m_viewSpaceContainerList.setAutoDelete(true);
 
+  // init done
   m_init=false;
 }
 
@@ -154,8 +162,8 @@ void KateViewManager::tabChanged(QWidget* widget) {
   updateViewSpaceActions ();
 }
 
-void KateViewManager::slotNewTab() {
-  if (!m_tabWidget) return;
+void KateViewManager::slotNewTab()
+{
   uint documentNumber=0;
   if (m_currentContainer) {
     if (m_currentContainer->activeView()) documentNumber=m_currentContainer->activeView()->getDoc()->documentNumber();
@@ -174,8 +182,8 @@ void KateViewManager::slotNewTab() {
   }
 }
 
-void KateViewManager::slotCloseTab() {
-  if (!m_tabWidget) return;
+void KateViewManager::slotCloseTab()
+{
   if (m_viewSpaceContainerList.count() <= 1) return;
   if (!m_currentContainer) return;
 
@@ -197,7 +205,6 @@ void KateViewManager::slotCloseTab() {
 
 void KateViewManager::activateNextTab()
 {
-  if (!m_tabWidget) return;
   if( m_tabWidget->count() <= 1 ) return;
 
   int iTab = m_tabWidget->currentPageIndex();
@@ -212,7 +219,6 @@ void KateViewManager::activateNextTab()
 
 void KateViewManager::activatePrevTab()
 {
-  if (!m_tabWidget) return;
   if( m_tabWidget->count() <= 1 ) return;
 
   int iTab = m_tabWidget->currentPageIndex();

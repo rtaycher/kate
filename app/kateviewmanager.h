@@ -142,7 +142,7 @@ class KateViewManager : public QWidget
 
     KateDocManager *m_docManager;
     KateMainWindow *m_mainWindow;
-    QGuardedPtr<KMDI::TabWidget> m_tabWidget;
+    KMDI::TabWidget *m_tabWidget;
     bool m_init;
 
     KAction *m_closeView;
