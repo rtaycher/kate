@@ -175,5 +175,7 @@ KVMAllocator::map(Block *block)
 void
 KVMAllocator::unmap(Block *block)
 {
-   munmap(block->mmap, block->length);
+   // The following cast is necassery for Solaris.
+   // (touch it and die). --Waba
+   munmap((char *)block->mmap, block->length);
 }
