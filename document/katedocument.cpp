@@ -147,7 +147,7 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   m_bSingleViewMode=bSingleViewMode;
   m_bBrowserView = bBrowserView;
 
-  m_url.setPath( 0L );
+  m_url = KURL();
 
   myEncoding = KGlobal::charsets()->name(KGlobal::charsets()->charsetForLocale());
 
@@ -1153,7 +1153,6 @@ void KateDocument::clear() {
 
   undoList.clear();
   currentUndo = 0;
-//  recordReset();
   newUndo();
 }
 

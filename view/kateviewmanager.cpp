@@ -80,7 +80,7 @@ bool KateViewManager::createView ( bool newDoc, KURL url, KateView *origView, Ka
     doc = docManager->createDoc ();
   else
     if (!doc)
-      doc = (KateDocument *)origView->doc();
+      doc = origView->doc();
 
   // create view
   KateView *view = new KateView (doc, this, 0L);
@@ -94,36 +94,30 @@ bool KateViewManager::createView ( bool newDoc, KURL url, KateView *origView, Ka
       if (view->doc()->openURL ( url ))
         ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
 
-      if (url.filename() != 0) {
-        QString name = url.filename();
+      QString name = url.filename();
 
-        // anders avoid two views w/ same caption
-        QListIterator<KateView> it (viewList);
-        int hassamename = 0;
-        for (; it.current(); ++it)
-        {
-           if ( it.current()->doc()->url().filename().compare( name ) == 0 )
-             hassamename++;
-        }
-
-        if (hassamename > 1)
-          name = QString(name+"<%1>").arg(hassamename);
-
-        ((KateDocument *)view->doc())->setDocName (name);
-      }
-      else
+      // anders avoid two views w/ same caption
+      QListIterator<KateView> it (viewList);
+      int hassamename = 0;
+      for (; it.current(); ++it)
       {
-        ((KateDocument *)view->doc())->setDocName (i18n("Untitled %1").arg(doc->docID()));
+        if ( it.current()->doc()->url().filename().compare( name ) == 0 )
+          hassamename++;
       }
+
+      if (hassamename > 1)
+        name = QString(name+"<%1>").arg(hassamename);
+
+      view->doc()->setDocName (name);
     }
     else
     {
-      ((KateDocument *)view->doc())->setDocName (i18n("Untitled %1").arg(doc->docID()));
+      view->doc()->setDocName (i18n("Untitled %1").arg(doc->docID()));
     }
   }
   else
   {
-    ((KateDocument *)view->doc())->setDocName (doc->docName ());
+    view->doc()->setDocName (doc->docName ());
   }
 
   view->installPopup ((QPopupMenu*)((KMainWindow *)topLevelWidget ())->factory()->container("view_popup", (KMainWindow *)topLevelWidget ()) );
@@ -241,13 +235,13 @@ void KateViewManager::activateView ( KateView *view )
 {
   if (!view) return;
 
-  ((KateDocument*)view->doc())->isModOnHD();
+  view->doc()->isModOnHD();
   if (!view->isActive())
   {
     if ( !activeViewSpace()->showView (view) )
     {
       // since it wasn't found, give'em a new one
-      createView (false, 0L, view );
+      createView (false, KURL(), view );
       return;
     }
 
@@ -271,15 +265,14 @@ void KateViewManager::activateView( uint docID )
     QListIterator<KateView> it(viewList);
     for ( ;it.current(); ++it)
     {
-      if ( ( (KateDocument *)it.current()->doc() )->docID() == docID  )
+      if ( it.current()->doc()->docID() == docID  )
       {
-        createView( false, 0L, it.current() );
-        //activateView( current );
+        createView( false, KURL(), it.current() );
         return;
       }
     }
 
-    createView (false, 0L, 0L, docManager->docWithID(docID));
+    createView (false, KURL(), 0L, docManager->docWithID(docID));
   }
 }
 
@@ -302,7 +295,7 @@ void KateViewManager::slotViewChanged()
 void KateViewManager::activateNextView()
 {
   uint i = viewSpaceList.find (activeViewSpace())+1;
- 
+
   if (i >= viewSpaceList.count())
     i=0;
 
@@ -313,12 +306,12 @@ void KateViewManager::activateNextView()
 void KateViewManager::activatePrevView()
 {
   int i = viewSpaceList.find (activeViewSpace())-1;
- 
+
   if (i < 0)
     i=viewSpaceList.count()-1;
 
   setActiveSpace (viewSpaceList.at(i));
-  activateView(viewSpaceList.at(i)->currentView());  
+  activateView(viewSpaceList.at(i)->currentView());
 }
 
 void KateViewManager::deleteLastView ()
@@ -335,14 +328,14 @@ bool KateViewManager::closeDocWithAllViews ( KateView *view )
   KateDocument *doc = view->doc();
 
   QList<KateView> closeList;
-  uint docID = ((KateDocument *)view->doc())->docID();
+  uint docID = view->doc()->docID();
 
   for (uint i=0; i < ((KateApp *)kapp)->mainWindowsCount (); i++ )
   {
     for (uint z=0 ; z < ((KateApp *)kapp)->mainWindows.at(i)->viewManager->viewList.count(); z++)
     {
       KateView* current = ((KateApp *)kapp)->mainWindows.at(i)->viewManager->viewList.at(z);
-      if ( ((KateDocument *)current->doc())->docID() == docID )
+      if ( current->doc()->docID() == docID )
       {
         closeList.append (current);
       }
@@ -363,9 +356,9 @@ bool KateViewManager::closeDocWithAllViews ( KateView *view )
     if (((KateApp *)kapp)->mainWindows.at(i2)->viewManager->viewCount() == 0)
     {
       if ((viewList.count() < 1) && (docManager->docCount() < 1) )
-        ((KateApp *)kapp)->mainWindows.at(i2)->viewManager->createView (true, 0L, 0L);
+        ((KateApp *)kapp)->mainWindows.at(i2)->viewManager->createView (true, KURL(), 0L);
       else if ((viewList.count() < 1) && (docManager->docCount() > 0) )
-        ((KateApp *)kapp)->mainWindows.at(i2)->viewManager->createView (false, 0L, 0L, docManager->nthDoc(docManager->docCount()-1));
+        ((KateApp *)kapp)->mainWindows.at(i2)->viewManager->createView (false, KURL(), 0L, docManager->nthDoc(docManager->docCount()-1));
     }
   }
 
@@ -405,7 +398,7 @@ void KateViewManager::statusMsg ()
 
 void KateViewManager::slotWindowNext()
 {
-  int id = docManager->findDoc ((KateDocument *) activeView ()->doc()) - 1;
+  int id = docManager->findDoc (activeView ()->doc()) - 1;
 
   if (id < 0)
     id =  docManager->docCount () - 1;
@@ -415,7 +408,7 @@ void KateViewManager::slotWindowNext()
 
 void KateViewManager::slotWindowPrev()
 {
-  uint id = docManager->findDoc ((KateDocument *) activeView ()->doc()) + 1;
+  uint id = docManager->findDoc (activeView ()->doc()) + 1;
 
   if (id >= docManager->docCount () )
     id = 0;
@@ -425,20 +418,34 @@ void KateViewManager::slotWindowPrev()
 
 void KateViewManager::slotDocumentNew ()
 {
-  createView (true, 0L, 0L);
+  createView (true, KURL(), 0L);
 }
 
 void KateViewManager::slotDocumentOpen ()
 {
+  KateView *cv = activeView();
+
   QString path = QString::null;
-  if (activeView())
-    path = activeView()->doc()->url().url();
+  if (cv)
+    path = cv->doc()->url().url();
 
   KURL::List urls = KFileDialog::getOpenURLs(path, QString::null, 0L, i18n("Open File..."));
 
   for (KURL::List::Iterator i=urls.begin(); i != urls.end(); ++i)
   {
-    openURL( *i );
+    kdDebug()<<cv->doc()->url().isEmpty()<<endl;
+    kdDebug()<<cv->doc()->isModified()<<endl;
+
+
+    if (!cv->doc()->isModified() && cv->doc()->url().isEmpty())
+    {
+      cv->doc()->openURL (*i);
+      cv->doc()->setDocName (cv->doc()->url().filename());
+      setWindowCaption();
+    }
+    else
+      openURL( *i );
+
   }
 }
 
@@ -780,12 +787,12 @@ void KateViewManager::splitViewSpace( KateViewSpace* vs,
   vsNew->setActive( true, true );
   vsNew->show();
   if (!newViewUrl.isValid())
-    createView (false, 0L, (KateView *)activeView());
+    createView (false, KURL(), (KateView *)activeView());
   else {
     // tjeck if doc is allready open
     uint aDocId;
     if ( (aDocId = docManager->findDoc( newViewUrl )) )
-      createView (false, 0L, 0L, docManager->docWithID( aDocId) );
+      createView (false, KURL(), 0L, docManager->docWithID( aDocId) );
     else
       createView( true, newViewUrl );
   }
@@ -1144,7 +1151,7 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
            }
            else
            {
-             createView (true, 0L, 0L);
+             createView (true, KURL(), 0L);
            }
            config->deleteGroup( data[0] );
          }
@@ -1153,7 +1160,7 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
            // ahem, tjeck if this document actually exists.
            int docID = docManager->findDoc( KURL(data[0]) );
            if (docID >= 0)
-             createView( false, 0L, 0L, docManager->nthDoc( docID ) );
+             createView( false, KURL(), 0L, docManager->nthDoc( docID ) );
          }
          // cursor pos
          KateView* v = activeView();
@@ -1165,7 +1172,7 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
        config->deleteGroup( (*it) );
        // If the viewspace have no documents due to bad luck, create a blank.
        if ( vs->viewCount() < 1)
-         createView( true );
+         createView( true, KURL() );
      }
      // for a splitter, recurse.
      else if ( (*it).startsWith("splitter") )
