@@ -25,29 +25,90 @@
 
 #include "kateprojectmanager.h"
 #include "katemainwindow.h"
+#include "kactionselector.h"
 
 #include <qapplication.h>
-#include <qpainter.h>
+#include <qlayout.h>
+#include <qstringlist.h>
 
 #include <kiconloader.h>
 #include <klocale.h>
+#include <ktoolbarbutton.h>
+#include <qtoolbar.h>
 
-KateProjectList::KateProjectList (KateProjectManager *_projectManager, KateMainWindow *_mainWindow, QWidget * parent, const char * name ):  QVBox (parent, name)
+ // from kfiledialog.cpp - avoid qt warning in STDERR (~/.xsessionerrors)
+static void silenceQToolBar(QtMsgType, const char *){}
+
+
+KateProjectListToolBar::KateProjectListToolBar(QWidget *parent):KToolBar( parent, "Kate ProjectList Toolbar", true )
+{
+	setMinimumWidth(10);
+}
+
+KateProjectListToolBar::~KateProjectListToolBar(){}
+
+void KateProjectListToolBar::setMovingEnabled( bool)
+{
+	//kdDebug()<<"JoWenn's setMovingEnabled called ******************************"<<endl;
+	KToolBar::setMovingEnabled(false);
+}
+
+
+KateProjectListToolBarParent::KateProjectListToolBarParent(QWidget *parent)
+	:QFrame(parent),m_tb(0){}
+KateProjectListToolBarParent::~KateProjectListToolBarParent(){}
+void KateProjectListToolBarParent::setToolBar(KateProjectListToolBar *tb)
+{
+	m_tb=tb;
+}
+
+void KateProjectListToolBarParent::resizeEvent ( QResizeEvent * )
+{
+	if (m_tb)
+	{
+		setMinimumHeight(m_tb->sizeHint().height());
+		m_tb->resize(width(),height());
+	}
+}
+
+KateProjectList::KateProjectList (KateProjectManager *_projectManager, KateMainWindow *_mainWindow, QWidget * parent, const char * name ):  QWidget (parent, name)
 {                              
   setFocusPolicy ((QWidget::FocusPolicy)0);
 
+  QVBoxLayout* lo = new QVBoxLayout(this);
+  
+  mActionCollection = _mainWindow->actionCollection();
+  
   m_projectManager = _projectManager;
   m_mainWindow = _mainWindow;
   
+  QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar );
+  
+  KateProjectListToolBarParent *tbp=new KateProjectListToolBarParent(this);
+  toolbar = new KateProjectListToolBar(tbp);
+  tbp->setToolBar(toolbar);
+  lo->addWidget(tbp);
+  toolbar->setMovingEnabled(false);
+  toolbar->setFlat(true);
+  qInstallMsgHandler( oldHandler );
+  toolbar->setIconText( KToolBar::IconOnly );
+  toolbar->setIconSize( 16 );
+  toolbar->setEnableContextMenu( false );
+  
   m_projectCombo = new KComboBox (this);
+  lo->addWidget(m_projectCombo);
   
   m_freeArea = new QWidget (this);
+  lo->addWidget(m_freeArea);
+  lo->setStretchFactor(m_freeArea, 2);
   
+  // init of the combo box
   for (uint i = 0; i < m_projectManager->projects(); i++)
     projectCreated (m_projectManager->project(i));
     
   projectChanged ();
     
+  // connecting
   connect(m_projectManager->projectManager(),SIGNAL(projectCreated(Kate::Project *)),this,SLOT(projectCreated(Kate::Project *)));
   connect(m_projectManager->projectManager(),SIGNAL(projectDeleted(uint)),this,SLOT(projectDeleted(uint)));
   connect(m_mainWindow->mainWindow(),SIGNAL(projectChanged()),this,SLOT(projectChanged()));
@@ -55,6 +116,21 @@ KateProjectList::KateProjectList (KateProjectManager *_projectManager, KateMainW
 
 KateProjectList::~KateProjectList ()
 {
+}
+
+void KateProjectList::setupActions ()
+{
+  toolbar->clear();
+  
+  QStringList tbactions;
+   tbactions << "project_new" << "project_open" << "project_save" << "project_close";
+
+  KAction *ac;
+  for ( QStringList::Iterator it=tbactions.begin(); it != tbactions.end(); ++it ) {
+    ac = mActionCollection->action( (*it).latin1() );
+    if ( ac )
+      ac->plug( toolbar );
+  }
 }
 
 void KateProjectList::projectChanged ()

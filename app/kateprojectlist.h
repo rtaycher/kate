@@ -25,18 +25,51 @@
 
 #include "../interfaces/project.h"
 
+#include <ktoolbar.h>
 #include <kcombobox.h>
 
-#include <qvbox.h>
+#include <qwidget.h>
 #include <qvaluelist.h>
+#include <qframe.h>
 
-class KateProjectList : public QVBox
+class KateMainWindow;
+class KActionCollection;
+class KActionSelector;
+
+/* I think this fix for not moving toolbars is better */
+class KateProjectListToolBar: public KToolBar
+{
+	Q_OBJECT
+public:
+	KateProjectListToolBar(QWidget *parent);
+	virtual ~KateProjectListToolBar();
+
+	 virtual void setMovingEnabled( bool b );
+};
+
+class KateProjectListToolBarParent: public QFrame
+{
+	Q_OBJECT
+public:
+	KateProjectListToolBarParent(QWidget *parent);
+	~KateProjectListToolBarParent();
+	void setToolBar(KateProjectListToolBar *tb);
+private:
+	KateProjectListToolBar *m_tb;
+protected:
+	virtual void resizeEvent ( QResizeEvent * );
+};
+
+
+class KateProjectList : public QWidget
 {
   Q_OBJECT
 
   public:
     KateProjectList (class KateProjectManager *_projectManager, class KateMainWindow *_mainWindow, QWidget * parent = 0, const char * name = 0 );
     ~KateProjectList ();
+    
+    void setupActions();
     
   private slots:
     void projectChanged ();
@@ -48,6 +81,8 @@ class KateProjectList : public QVBox
     QWidget *m_freeArea;
     class KateProjectManager *m_projectManager;
     class KateMainWindow *m_mainWindow;
+    class KateProjectListToolBar *toolbar;
+    KActionCollection *mActionCollection;
     
     QValueList<uint> m_numList;
 };

@@ -115,21 +115,14 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow, KateViewManager 
   
   QVBoxLayout* lo = new QVBoxLayout(this);
 
- // tbparent = new TBContainer( this );
-//  lo->addWidget( tbparent );
-//    QDockArea *tbParentDock=new QDockArea(Horizontal,QDockArea::Reverse,this);
-//    lo->addWidget (tbParentDock);
   QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar );
  
   KateFileSelectorToolBarParent *tbp=new KateFileSelectorToolBarParent(this);
   toolbar = new KateFileSelectorToolBar(tbp);
   tbp->setToolBar(toolbar);
   lo->addWidget(tbp);
-//  lo->addWidget(toolbar);
-//  lo->addWidget(toolbar);
   toolbar->setMovingEnabled(false);
   toolbar->setFlat(true);
-//  tbparent->setTb( toolbar );
   qInstallMsgHandler( oldHandler );
 
   cmbPath = new KURLComboBox( KURLComboBox::Directories, true, this, "path combo" );
@@ -180,7 +173,7 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow, KateViewManager 
   toolbar->setIconText( KToolBar::IconOnly );
   toolbar->setIconSize( 16 );
   toolbar->setEnableContextMenu( false );
-//  toolbar->setMovingEnabled( FALSE ); DOES NOT WORK: GRRRRRRRRRRRRRRRRRRRR
+
   connect( cmbPath, SIGNAL( urlActivated( const KURL&  )),
              this,  SLOT( cmbPathActivated( const KURL& ) ));
   connect( cmbPath, SIGNAL( returnPressed( const QString&  )),

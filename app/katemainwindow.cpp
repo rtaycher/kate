@@ -130,6 +130,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   setupMainWindow();
 
   setupActions();
+  projectlist->setupActions();
 
   setStandardToolBarMenuEnabled( true );
 

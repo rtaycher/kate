@@ -44,7 +44,6 @@ class KActionSelector;
     allowing to filter the displayed files using a name filter.
 */
 
-
 /* I think this fix for not moving toolbars is better */
 class KateFileSelectorToolBar: public KToolBar
 {
@@ -68,7 +67,6 @@ private:
 protected:
 	virtual void resizeEvent ( QResizeEvent * );
 };
-
 
 class KateFileSelector : public QWidget
 {
@@ -112,13 +110,12 @@ class KateFileSelector : public QWidget
     bool eventFilter( QObject *, QEvent * );
 
   private:
-    /*class */KateFileSelectorToolBar *toolbar;
+    class KateFileSelectorToolBar *toolbar;
     KActionCollection *mActionCollection;
     class KBookmarkHandler *bookmarkHandler;
     KURLComboBox *cmbPath;
     KDirOperator * dir;
     class KAction *acSyncDir;
-    class TBContainer *tbparent;
     KHistoryCombo * filter;
     class QToolButton *btnFilter;
 
