@@ -42,7 +42,7 @@ public:
 
 	bool execCmd(QString cmd=0, KateView *view=0);
 private:
-	static QString sedMagic(QString textLine, QString find, QString replace, bool noCase, bool repeat);
+	static QString sedMagic(QString textLine, const QString &find, const QString &replace, bool noCase, bool repeat);
 };
 
 /**

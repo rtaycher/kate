@@ -107,7 +107,7 @@ static void exchangeAbbrevs(QString &str)
 	}
 }
 
-QString SedReplace::sedMagic(QString textLine, QString find, QString rep, bool noCase, bool repeat)
+QString SedReplace::sedMagic(QString textLine, const QString &find, const QString &repOld, bool noCase, bool repeat)
 {
 
 	QRegExp matcher(find, noCase);
@@ -120,7 +120,9 @@ QString SedReplace::sedMagic(QString textLine, QString find, QString rep, bool n
 		if (start==-1) break;
 		
 		int length=matcher.matchedLength();
+		
 
+		QString rep=repOld;
 
 		// now set the backreferences in the replacement
 		QStringList backrefs=matcher.capturedTexts();
@@ -148,13 +150,14 @@ QString SedReplace::sedMagic(QString textLine, QString find, QString rep, bool n
 			refnum++;
 		}
 
+		replace(rep, "\\\\", "\\");
+		replace(rep, "\\/", "/");
+
 		textLine.replace(start, length, rep);
 		if (!repeat) break;
 		start+=rep.length();
 	}
 
-	replace(textLine, "\\\\", "\\");
-	replace(textLine, "\\/", "/");
 	
 	return textLine;
 }
