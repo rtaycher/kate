@@ -189,6 +189,7 @@ class KateDocument : public KateDocumentIface
     void selectionChanged();
     void highlightChanged();
     void modifiedChanged ();
+    void preHighlightChanged(long);
 
   // search stuff
   protected:
@@ -277,7 +278,7 @@ class KateDocument : public KateDocumentIface
     virtual void setText(const QString &);
 
   public:
-    void needPreHighlight(long till);
+    bool needPreHighlight(long till);
     bool hasMarkedText() {return (selectEnd >= selectStart);}
     QString markedText(int flags);
     void delMarkedText(VConfig &/*, bool undo = true*/);
@@ -349,6 +350,7 @@ class KateDocument : public KateDocumentIface
     void clipboardChanged();
     void slotBufferChanged();
     void slotBufferHighlight(long,long);
+    void doPreHighlight();
 
   private slots:
     void slotViewDestroyed();
@@ -356,6 +358,7 @@ class KateDocument : public KateDocumentIface
 // member variables
   protected:
     long PreHighlightedTill;
+    long RequestPreHighlightTill;
     TextLine::List contents;
     KWBuffer *buffer;
     QColor colors[5];

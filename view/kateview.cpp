@@ -35,7 +35,6 @@
     Boston, MA 02111-1307, USA.
 */
 
-#define NEW_CODE
 
 
 #include "kateview.h"
@@ -166,6 +165,7 @@ void releaseBuffer(void *user) {
 
 KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc, bool HandleOwnDND) : QWidget(view)
 {
+  waitForPreHighlight=-1;
   myView = view;
   myDoc = doc;
 
@@ -181,6 +181,7 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc, bool Handl
   connect(xScroll,SIGNAL(valueChanged(int)),SLOT(changeXPos(int)));
   connect(yScroll,SIGNAL(valueChanged(int)),SLOT(changeYPos(int)));
   connect(yScroll,SIGNAL(valueChanged(int)),myView,SIGNAL(scrollValueChanged(int)));
+  connect( doc, SIGNAL (preHighlightChanged(long)),this,SLOT(slotPreHighlightUpdate(long)));
 
   xPos = 0;
   yPos = 0;
@@ -214,10 +215,25 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc, bool Handl
   dragInfo.state = diNone;
 }
 
+
 KateViewInternal::~KateViewInternal()
 {
   delete [] lineRanges;
   releaseBuffer(this);
+}
+
+
+void KateViewInternal::slotPreHighlightUpdate(long line)
+{
+  kdDebug()<<QString("slotPreHighlightUpdate - Wait for: %1, line: %2").arg(waitForPreHighlight).arg(line)<<endl;
+  if (waitForPreHighlight!=-1)
+    {
+       if (line>=waitForPreHighlight)
+         {
+           waitForPreHighlight=-1;
+           repaint();
+         }
+    }
 }
 
 void KateViewInternal::doCursorCommand(VConfig &c, int cmdNum) {
@@ -1266,14 +1282,15 @@ void KateViewInternal::paintEvent(QPaintEvent *e) {
   line = (yPos + updateR.y()) / h;
   y = line*h - yPos;
   yEnd = updateR.y() + updateR.height();
-  myDoc->needPreHighlight(line);
+  bool pre=myDoc->needPreHighlight(waitForPreHighlight=line+((long)(yEnd-y)/h)+5);
+  if (!pre) waitForPreHighlight=-1; 
   while (y < yEnd)
   {
     TextLine *textLine;
     int ctxNum = 0;
 
 //    kdDebug()<<QString("KateViewInternal::paintEvent: line:%1.count%2").arg(line).arg(myDoc->getTextLineCount()-1)<<endl;
-
+    if (!pre)
     if ((myDoc->getTextLineCount()-1)>line)
     {
       textLine = myDoc->getTextLine(line);
@@ -1462,7 +1479,6 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name, bool H
   connect( this, SIGNAL( newUndo() ), this, SLOT( slotNewUndo() ) );
   connect( this, SIGNAL( fileChanged() ), this, SLOT( slotFileStatusChanged() ) );
   connect( doc, SIGNAL( highlightChanged() ), this, SLOT( slotHighlightChanged() ) );
-
   if ( doc->hasBrowserExtension() )
     connect( this, SIGNAL( dropEventPass(QDropEvent*) ), this, SLOT( slotDropEventPass(QDropEvent*) ) );
 

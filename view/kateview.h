@@ -149,6 +149,14 @@ class KateViewInternal : public QWidget {
     Q_OBJECT
     friend class KateDocument;
     friend class KateView;
+
+
+  private:
+    long waitForPreHighlight;
+
+  protected slots:
+    void slotPreHighlightUpdate(long line);
+
   public:
     // a drop-aware container should set HandleOwnURIDrops = false and handle all URI drops
     // KateViewInternal will otherwise handle URI drops, but is slightly limited

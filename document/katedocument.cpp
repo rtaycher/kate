@@ -35,7 +35,6 @@
     Boston, MA 02111-1307, USA.
 */
 
-#define NEW_CODE
 
 #include "katedocument.h"
 #include "katedocument.moc"
@@ -55,6 +54,7 @@
 
 #include <stdio.h>
 
+#include <qtimer.h>
 #include <qobject.h>
 #include <qapplication.h>
 #include <qclipboard.h>
@@ -132,6 +132,7 @@ KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool
   : KateDocumentIface (), hlManager(HlManager::self ())
 {
   PreHighlightedTill=0;
+  RequestPreHighlightTill=0; 
   setInstance( KateFactory::instance() );
 
   m_bSingleViewMode=bSingleViewMode;
@@ -197,15 +198,28 @@ KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool
   }
 }
 
-void KateDocument::needPreHighlight(long till)
+bool KateDocument::needPreHighlight(long till)
 {
-  kdDebug()<<QString("Already Highlighted: %1, requested: %2").arg(PreHighlightedTill).arg(till);
-  if (PreHighlightedTill<till)
+//  kdDebug()<<QString("Already Highlighted: %1, requested: %2").arg(PreHighlightedTill).arg(till);
+  if (PreHighlightedTill>=till) return false;
+  long tmp=RequestPreHighlightTill;
+  if (RequestPreHighlightTill<till)
     {
-      kdDebug()<<"Prehighlighting"<<endl;
-      updateLines(PreHighlightedTill,till);
-      PreHighlightedTill=till;
+//      kdDebug()<<"Prehighlighting"<<endl;
+//      updateLines(PreHighlightedTill,till);
+      RequestPreHighlightTill=till;
+      if (tmp<=PreHighlightedTill) QTimer::singleShot(10,this,SLOT(doPreHighlight()));
+//      return true;
     }
+  return true;
+}
+
+void KateDocument::doPreHighlight()
+{
+  PreHighlightedTill=PreHighlightedTill+200;
+  updateLines(PreHighlightedTill,PreHighlightedTill+200);
+  emit preHighlightChanged(PreHighlightedTill); 
+  if (PreHighlightedTill<RequestPreHighlightTill) QTimer::singleShot(10,this,SLOT(doPreHighlight()));
 }
 
 KateDocument::~KateDocument()
@@ -529,6 +543,8 @@ void KateDocument::setHighlight(int n) {
     m_highlight = h;
     makeAttribs();
   }
+  PreHighlightedTill=0;
+  RequestPreHighlightTill=0;
   emit(highlightChanged());
 }
 
@@ -1881,9 +1897,9 @@ void KateDocument::updateLines(int startLine, int endLine, int flags, int cursor
   TextLine::Ptr textLine;
   int line, last_line;
   int ctxNum, endCtx;
-  kdDebug()<<"******************KateDocument::updateLines Checkpoint 1"<<endl;
+//  kdDebug()<<"******************KateDocument::updateLines Checkpoint 1"<<endl;
   if (buffer->line(startLine)==0) {kdDebug()<<"********************No buffer for line found**************"<<endl; return;};
-  kdDebug()<<"KateDocument::updateLines Checkpoint 2"<<endl;
+//  kdDebug()<<"KateDocument::updateLines Checkpoint 2"<<endl;
   last_line = lastLine();
 //  if (endLine >= last_line) endLine = last_line;
 
@@ -1891,7 +1907,7 @@ void KateDocument::updateLines(int startLine, int endLine, int flags, int cursor
   ctxNum = 0;
   if (line > 0) ctxNum = getTextLine(line - 1)->getContext();
   do {
-    kdDebug()<<QString("**************Working on line: %1").arg(line)<<endl;
+//    kdDebug()<<QString("**************Working on line: %1").arg(line)<<endl;
     textLine = getTextLine(line);
     if (textLine==0) kdDebug()<<"****updateLines()>> error textLine==0"<<endl;
     if (line <= endLine && line != cursorY) {
@@ -1903,7 +1919,7 @@ void KateDocument::updateLines(int startLine, int endLine, int flags, int cursor
     textLine->setContext(ctxNum);
     line++;
   } while ((buffer->line(line)!=0) && (line <= endLine || endCtx != ctxNum));
-  kdDebug()<<"updateLines :: while loop left"<<endl;
+//  kdDebug()<<"updateLines :: while loop left"<<endl;
   tagLines(startLine, line - 1);
 }
 
