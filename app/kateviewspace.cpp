@@ -28,6 +28,7 @@
 #include <kdebug.h>
 #include <ksimpleconfig.h>
 #include <qpainter.h>
+#include <qcursor.h>
 
 KateViewSpace::KateViewSpace(QWidget* parent, const char* name)
   : QVBox(parent, name)
