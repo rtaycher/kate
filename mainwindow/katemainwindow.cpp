@@ -126,8 +126,8 @@ KateMainWindow::~KateMainWindow()
 void KateMainWindow::setupMainWindow ()
 {
   mainDock = createDockWidget( "mainDock", 0L );
-  filelistDock =  createDockWidget( "filelistDock",  UserIcon("openfiles"), 0L, "Open Files", "");
-  fileselectorDock = createDockWidget( "fileselectorDock",  UserIcon("fileselector"), 0L, "Selector", "");
+  filelistDock =  createDockWidget( "filelistDock",  SmallIcon("kmultiple"), 0L, "Open Files", "");
+  fileselectorDock = createDockWidget( "fileselectorDock", SmallIcon("fileopen"), 0L, "Selector", "");
 
   mainDock->setGeometry(100, 100, 100, 100);
   viewManager = new KateViewManager (mainDock, docManager);
