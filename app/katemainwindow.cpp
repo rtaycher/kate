@@ -38,6 +38,8 @@
 #include "katemainwindowiface.h"
 #include "kateexternaltools.h"
 
+#include <kmdi/tabwidget.h>
+
 #include <dcopclient.h>
 #include <kinstance.h>
 #include <kaboutdata.h>
@@ -187,9 +189,8 @@ void KateMainWindow::setupMainWindow ()
   //mainDock->setGeometry(100, 100, 100, 100);
  /* QBoxLayout *ml=new QHBoxLayout(centralWidget());
   ml->setAutoAdd(true);*/
-  m_viewManager = new KateViewManager (getMainDockWidget(), m_docManager,this);
-  getMainDockWidget()->setWidget (m_viewManager);
-  m_viewManager->show();
+  m_viewManager = new KateViewManager (tabWidget(), m_docManager,this);
+  tabWidget()->addTab (m_viewManager, "viewmanager");
 
   filelist = new KateFileList (m_docManager, m_viewManager, this/*filelistDock*/, "filelist");
   addToolView(KDockWidget::DockLeft,filelist,SmallIcon("kmultiple"), i18n("Files"));
