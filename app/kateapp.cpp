@@ -109,7 +109,7 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState)
 
     m_doNotInitialize=m_initPlugin->actionsKateShouldNotPerformOnRealStartup();
 
-    kdDebug(13001)<<"********************loading init plugin in app constructor"<<endl;
+     kdDebug(13001)<<"********************loading init plugin in app constructor"<<endl;
   }
 
   // Ok. We are ready for DCOP requests.
@@ -193,8 +193,12 @@ int KateApp::newInstance()
     if ( restoringSession() )
     {
       // restore the nice projects & files ;) we need it
+      Kate::Document::setOpenErrorDialogsActivated (false);
+
       m_projectManager->restoreProjectList (sessionConfig());
       m_docManager->restoreDocumentList (sessionConfig());
+
+      Kate::Document::setOpenErrorDialogsActivated (true);
 
       for (int n=1; KMainWindow::canBeRestored(n); n++)
       {
@@ -204,6 +208,7 @@ int KateApp::newInstance()
     }
     else
     {
+      Kate::Document::setOpenErrorDialogsActivated (false);
       config()->setGroup("General");
 
       // restore our nice projects if wanted
@@ -221,6 +226,7 @@ int KateApp::newInstance()
       if (config()->readBoolEntry("Restore Window Configuration", false))
         win->readProperties (kateSessionConfig ());
 
+      Kate::Document::setOpenErrorDialogsActivated (true);
       win->show ();
     }
   }
@@ -393,8 +399,11 @@ void KateApp::openURL (const QString &name)
 
   m_mainWindows.at(n)->kateViewManager()->openURL (KURL(name));
 
-  m_mainWindows.at(n)->raise();
-  KWin::activateWindow (m_mainWindows.at(n)->winId());
+  if ( ! m_firstStart )
+  {
+    m_mainWindows.at(n)->raise();
+    KWin::activateWindow (m_mainWindows.at(n)->winId());
+  }
 }
 
 KateMainWindow *KateApp::activeKateMainWindow ()
