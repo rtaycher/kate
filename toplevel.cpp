@@ -401,7 +401,7 @@ void TopLevel::newStatus()
   if (readOnly)
     statusBar()->changeItem(i18n(" R/O "),ID_INS_OVR);
   else
-    statusBar()->changeItem(config & cfOvr ? i18n(" OVR ") : i18n(" INS "),ID_INS_OVR);
+    statusBar()->changeItem(config & KWriteView::cfOvr ? i18n(" OVR ") : i18n(" INS "),ID_INS_OVR);
 
   statusBar()->changeItem(kWrite->isModified() ? " * " : "",ID_MODIFIED);
 }
@@ -534,7 +534,7 @@ void TopLevel::writeConfig()
 void TopLevel::restore(KConfig *config, int n)
 {
   if (kWrite->isLastView() && !kWrite->doc()->url().isEmpty()) { //in this case first view
-    loadURL(kWrite->doc()->url(), lfNewFile );
+    loadURL(kWrite->doc()->url(), KWriteView::lfNewFile );
   }
   readPropertiesInternal(config, n);
   init();
