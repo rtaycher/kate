@@ -30,7 +30,7 @@
        </context>
 
        <context attribute="Comment" lineEndContext="#stay">
-	 <StringDetect attribute="Comment" context="6" String="&lt;!--"/>
+	 <String---Detect attribute="Comment" context="6" String="&lt;!--"/>
 	 <StringDetect attribute="Comment" context="#pop" String="--&gt;"/>
        </context>
     </contexts>

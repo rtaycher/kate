@@ -3,23 +3,31 @@
 <language name="XML/SGML" section="Markup" extensions="*.docbook;*.xml;*.rc;*.sgml" mimetype="text/sgml;text/xml;text/book">
   <highlighting>
     <contexts>
-       <context attribute="0" lineEndContext="0">
+       <context attribute="0" lineEndContext="#stay">
+         <StringDetect attribute="Comment" context="4" String="&lt;!--"/>
          <RegExpr attribute="1" context="1" String="&lt;\s*\/?\s*[a-zA-Z_:][a-zA-Z0-9._:-]*" />
        </context>
 
-       <context attribute="2" lineEndContext="1">
-		 <Detect2Chars attribute="1" context="0" char="/" char1="&gt;" />
-		 <DetectChar attribute="1" context="0" char="&gt;" />
+       <context attribute="2" lineEndContext="#stay">
+         <StringDetect attribute="Comment" context="4" String="&lt;!--"/>
+	 <Detect2Chars attribute="1" context="#push" char="/" char1="&gt;" />
+	 <DetectChar attribute="1" context="#push" char="&gt;" />
          <RegExpr attribute="0" context="2" String="\s*=\s*" />
        </context>
 
-       <context attribute="3" lineEndContext="2">
-		 <RegExpr attribute="3" context="1" String="[A-Za-z0-9.-]*" />
+       <context attribute="3" lineEndContext="#stay">
+         <StringDetect attribute="Comment" context="4" String="&lt;!--"/>
+	 <RegExpr attribute="3" context="#push" String="[A-Za-z0-9.-]*" />
          <DetectChar attribute="3" context="3" char="&quot;" />
        </context>
 
-       <context attribute="3" lineEndContext="3">
-         <DetectChar attribute="3" context="1" char="&quot;" />
+       <context attribute="3" lineEndContext="#stay">
+         <DetectChar attribute="3" context="#pop#pop" char="&quot;" />
+       </context>
+
+       <context attribute="Comment" lineEndContext="#stay">
+         <String---Detect attribute="Comment" context="4" String="&lt;!--"/>
+         <StringDetect attribute="Comment" context="#pop" String="--&gt;"/>
        </context>
 
     </contexts>
