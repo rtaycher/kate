@@ -80,11 +80,6 @@ int getDefStyleNum(QString name)
   return dsNormal;
 }
 
-bool isInWord(QChar ch)
-{
-  return ch.isLetterOrNumber() || ch == '_';
-}
-
 bool ustrchr(const QChar *s, QChar c)
 {
   if (s == 0)
@@ -108,10 +103,10 @@ HlItem::~HlItem()
   if (subItems!=0) {subItems->setAutoDelete(true); subItems->clear(); delete subItems;}
 }
 
-HlItemWw::HlItemWw(int attribute, int context)
-  : HlItem(attribute,context) {
+bool HlItem::startEnable(QChar c)
+{
+  return !(c.isLetterOrNumber());
 }
-
 
 HlCharDetect::HlCharDetect(int attribute, int context, QChar c)
   : HlItem(attribute,context), sChar(c) {
@@ -169,7 +164,7 @@ const QChar *HlRangeDetect::checkHgl(const QChar *s,bool) {
 }
 
 HlKeyword::HlKeyword(int attribute, int context,bool casesensitive,QString weakSep)
-  : HlItemWw(attribute,context) {
+  : HlItem(attribute,context) {
 //  words.setAutoDelete(true);
 // after reading over the docs for Dict
 // 23 is probably too small when we can have > 100 items
@@ -189,6 +184,13 @@ HlKeyword::HlKeyword(int attribute, int context,bool casesensitive,QString weakS
 }
 
 HlKeyword::~HlKeyword() {
+}
+
+bool HlKeyword::startEnable(QChar c)
+{
+  const QChar *wk = _weakSep.unicode();
+
+  return !(ustrchr(wk,c) || c.isLetterOrNumber());
 }
 
 // If we use a dictionary for lookup we don't really need
@@ -291,7 +293,7 @@ const QChar *HlKeyword::sensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw) {
 
 
 HlInt::HlInt(int attribute, int context)
-  : HlItemWw(attribute,context) {
+  : HlItem(attribute,context) {
 }
 
 const QChar *HlInt::checkHgl(const QChar *str,bool) {
@@ -315,7 +317,7 @@ const QChar *HlInt::checkHgl(const QChar *str,bool) {
 }
 
 HlFloat::HlFloat(int attribute, int context)
-  : HlItemWw(attribute,context) {
+  : HlItem(attribute,context) {
 }
 
 const QChar *HlFloat::checkHgl(const QChar *s,bool) {
@@ -403,7 +405,7 @@ const QChar *HlCInt::checkHgl(const QChar *s,bool lineStart) {
 }
 
 HlCOct::HlCOct(int attribute, int context)
-  : HlItemWw(attribute,context) {
+  : HlItem(attribute,context) {
 }
 
 const QChar *HlCOct::checkHgl(const QChar *str,bool) {
@@ -422,7 +424,7 @@ const QChar *HlCOct::checkHgl(const QChar *str,bool) {
 }
 
 HlCHex::HlCHex(int attribute, int context)
-  : HlItemWw(attribute,context) {
+  : HlItem(attribute,context) {
 }
 
 const QChar *HlCHex::checkHgl(const QChar *str,bool) {
@@ -592,7 +594,7 @@ const QChar *HlCStringChar::checkHgl(const QChar *str,bool) {
 
 
 HlCChar::HlCChar(int attribute, int context)
-  : HlItemWw(attribute,context) {
+  : HlItem(attribute,context) {
 }
 
 const QChar *HlCChar::checkHgl(const QChar *str,bool) {
@@ -701,8 +703,8 @@ int Highlight::doHighlight(int ctxNum, TextLine *textLine)
 
     for (item = context->items.first(); item != 0L; item = context->items.next())
     {
-      if (item->startEnable(lastChar))
-      {
+  //    if (item->startEnable(lastChar))
+     // {
         s2 = item->checkHgl(s1,s1==str);
         if (s2 > s1)
         {
@@ -713,7 +715,7 @@ int Highlight::doHighlight(int ctxNum, TextLine *textLine)
             found = true;
             break;
         }
-      }
+   //   }
     }
 
     // nothing found: set attribute of one char
@@ -962,6 +964,11 @@ HlItem *Highlight::createHlItem(syntaxContextData *data, int *res)
                   }
 
 
+}
+
+bool Highlight::isInWord(QChar c)
+{
+  return c.isLetterOrNumber();
 }
 
 void Highlight::makeContextList()

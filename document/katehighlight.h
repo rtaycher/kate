@@ -42,26 +42,16 @@ class QLineEdit;
 class TextLine;
 class Attribute;
 
-
-bool isInWord(QChar); //true for '_','0'-'9','A'-'Z','a'-'z'
-
 class HlItem {
   public:
     HlItem(int attribute, int context);
     virtual ~HlItem();
-    virtual bool startEnable(QChar) {return true;}
+    virtual bool startEnable(QChar);
     virtual const QChar *checkHgl(const QChar *,bool) = 0;
     QList<HlItem> *subItems;
     int attr;
-    int ctx;    
+    int ctx;
 };
-
-class HlItemWw : public HlItem {
-  public:
-    HlItemWw(int attribute, int context);
-    virtual bool startEnable(QChar c) {return !isInWord(c);};
-};
-
 
 class HlCharDetect : public HlItem {
   public:
@@ -101,7 +91,7 @@ class HlRangeDetect : public HlItem {
     QChar sChar2;
 };
 
-class HlKeyword : public HlItemWw {
+class HlKeyword : public HlItem {
   public:
     HlKeyword(int attribute, int context,bool casesensitive,QString weakSep);
     virtual ~HlKeyword();
@@ -119,22 +109,23 @@ class HlKeyword : public HlItemWw {
     bool _caseSensitive;
     QString _weakSep;
     const QChar*  (*doCheckHgl)(const QChar* ,bool,HlKeyword*);
+    virtual bool startEnable(QChar c);
     static const QChar* sensitiveCheckHgl(const QChar*,bool,HlKeyword *kw);
     static const QChar *inSensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw);
 };
 
-class HlPHex : public HlItemWw {
+class HlPHex : public HlItem {
   public:
     HlPHex(int attribute,int context);
     virtual const QChar *checkHgl(const QChar *,bool);
 };
-class HlInt : public HlItemWw {
+class HlInt : public HlItem {
   public:
     HlInt(int attribute, int context);
     virtual const QChar *checkHgl(const QChar *,bool);
 };
 
-class HlFloat : public HlItemWw {
+class HlFloat : public HlItem {
   public:
     HlFloat(int attribute, int context);
     virtual const QChar *checkHgl(const QChar *,bool);
@@ -146,13 +137,13 @@ class HlCInt : public HlInt {
     virtual const QChar *checkHgl(const QChar *,bool);
 };
 
-class HlCOct : public HlItemWw {
+class HlCOct : public HlItem {
   public:
     HlCOct(int attribute, int context);
     virtual const QChar *checkHgl(const QChar *,bool);
 };
 
-class HlCHex : public HlItemWw {
+class HlCHex : public HlItem {
   public:
     HlCHex(int attribute, int context);
     virtual const QChar *checkHgl(const QChar *,bool);
@@ -177,17 +168,11 @@ class HlCStringChar : public HlItem {
     virtual const QChar *checkHgl(const QChar *,bool);
 };
 
-class HlCChar : public HlItemWw {
+class HlCChar : public HlItem {
   public:
     HlCChar(int attribute, int context);
     virtual const QChar *checkHgl(const QChar *,bool);
 };
-
-
-
-
-
-
 
 class HlAnyChar : public HlItem {
   public:
@@ -284,7 +269,7 @@ class Highlight
     QString section() {return iSection;}
     void use();
     void release();
-    bool isInWord(QChar c) {return ::isInWord(c);}
+    bool isInWord(QChar c);
 
     QString getCommentStart() {return cmlStart;};
     QString getCommentEnd()  {return cmlEnd;};
