@@ -228,7 +228,7 @@ void KateMainWindow::setupMainWindow ()
   fileselectorDock=addToolViewWidget(KDockWidget::DockLeft,fileselector, SmallIcon("fileopen"), i18n("Selector"));
 
   // TEST
-  grepWidgetDock = addToolViewWidget( KDockWidget::DockBottom, grep_dlg, SmallIcon("filefind"), i18n("Find in files") );
+  grepWidgetDock = addToolViewWidget( KDockWidget::DockBottom, grep_dlg, SmallIcon("filefind"), i18n("Find in Files") );
   if (kapp->authorize("shell_access"))
   {
      console = new KateConsole (this, "console",viewManager());
