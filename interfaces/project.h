@@ -29,6 +29,33 @@ namespace Kate
 /**
  * Interface to the project
  */
+class ProjectFile : public QObject
+{
+  friend class PrivateProjectFile;
+
+  Q_OBJECT   
+  
+  public:
+    /**
+     * Construtor, should not interest, internal usage
+     */
+    ProjectFile (void *projectFile);
+    
+    /**
+     * Desctructor
+     */
+    virtual ~ProjectFile ();
+
+  private:
+    /**
+     * REALLY PRIVATE ;)
+     */
+    class PrivateProjectFile *d;
+};
+
+/**
+ * Interface to the project
+ */
 class Project : public QObject
 {
   friend class PrivateProject;
@@ -65,6 +92,12 @@ class Project : public QObject
      * @return QString project name
      */
     QString name () const;
+    
+    /**
+     * Return the project name
+     * @return QString project name
+     */
+    QString fileName () const;
     
     /**
      * Return the url of the project file

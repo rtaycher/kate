@@ -47,6 +47,19 @@ class PrivateProject
     Kate::ProjectPlugin *m_plugin;
     KConfig *m_data;
   };
+  
+class PrivateProjectFile
+  {
+  public:
+    PrivateProjectFile ()
+    {
+    }
+
+    ~PrivateProjectFile ()
+    {    
+    }
+  };
+
             
 unsigned int Project::globalProjectNumber = 0;
   
@@ -88,6 +101,11 @@ QString Project::name () const
   return d->m_data->readEntry ("Name", "");
 }
 
+QString Project::fileName () const
+{
+  d->data->fileName;
+}
+
 KURL Project::url () const
 {
   return KURL ();
@@ -113,6 +131,16 @@ QStringList Project::subdirs (const QString &dir) const
 QStringList Project::files (const QString &dir) const
 {
   return QStringList ();
+}
+
+ProjectFile::ProjectFile (void *projectFile) : QObject ()
+{
+  d = new PrivateProjectFile ();
+}
+
+ProjectFile::~ProjectFile ()
+{
+  delete d;
 }
 
 };
