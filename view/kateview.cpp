@@ -1526,6 +1526,7 @@ void KateView::setupActions()
     {
       KStdAction::find(this, SLOT(find()), myDoc->actionCollection(), "find");
       KStdAction::findNext(this, SLOT(findAgain()), myDoc->actionCollection(), "find_again");
+      KStdAction::findPrev(this, SLOT(findPrev()), myDoc->actionCollection(), "find_prev");
       KStdAction::gotoLine(this, SLOT(gotoLine()), myDoc->actionCollection(), "goto_line" );
       new KAction(i18n("Configure Highlighti&ng..."), 0, this, SLOT(hlDlg()),myDoc->actionCollection(), "set_confHighlight");
       setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, myDoc->actionCollection(), "set_highlight");
@@ -1539,6 +1540,7 @@ void KateView::setupActions()
     {
       KStdAction::find(this, SLOT(find()), actionCollection());
       KStdAction::findNext(this, SLOT(findAgain()), actionCollection());
+      KStdAction::findPrev(this, SLOT(findPrev()), actionCollection(), "edit_find_prev");
       KStdAction::gotoLine(this, SLOT(gotoLine()), actionCollection());
       setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, actionCollection(), "set_highlight");
       KStdAction::selectAll(this, SLOT(selectAll()), actionCollection());

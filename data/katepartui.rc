@@ -25,6 +25,7 @@
     <Separator />
     <Action name="edit_find" />
     <Action name="edit_find_next" />
+    <Action name="edit_find_prev" />
     <Action name="edit_replace" />
     <Separator />
     <Action name="edit_cmd"/>

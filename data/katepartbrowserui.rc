@@ -8,6 +8,7 @@
   <Separator/>
   <Action name="find" />
   <Action name="find_again" />
+  <Action name="find_prev" />
   <Separator/>
   <Action name="goto_line"/>
  </Menu>
