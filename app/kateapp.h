@@ -64,17 +64,15 @@ class KateApp : public KUniqueApplication
     KateMainWindow *activeKateMainWindow ();
 
     uint mainWindows () { return m_mainWindows.count(); };
-    Kate::MainWindow *mainWindow (uint n) { return m_mainWindows.at(n)->mainWindow(); };
+    Kate::MainWindow *mainWindow (uint n) { if (m_mainWindows.at(n)) return m_mainWindows.at(n)->mainWindow(); else return 0; }
 
-    KateMainWindow *kateMainWindow (uint n) { return m_mainWindows.at(n); };
+    KateMainWindow *kateMainWindow (uint n) { return m_mainWindows.at(n); }
 
     void openURL (const QString &name=0L);
 
     virtual void performInit(const QString &, const KURL &);
     virtual Kate::InitPlugin *initPlugin() const;
     virtual KURL initScript() const;
-
-    int doNotInitialize(){return m_doNotInitialize;}
 
   signals:
     void onEventLoopEnter();
