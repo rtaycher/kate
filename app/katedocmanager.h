@@ -101,6 +101,12 @@ class KateDocManager : public QObject
 
     DCOPObject *dcopObject () { return m_dcop; };
 
+    inline bool getSaveMetaInfos() { return m_saveMetaInfos; };
+    inline void setSaveMetaInfos(bool b) { m_saveMetaInfos = b; };
+
+    inline int getDaysMetaInfos() { return m_daysMetaInfos; };
+    inline void setDaysMetaInfos(int i) { m_daysMetaInfos = i; };
+
   signals:
     void documentCreated (Kate::Document *doc);
     void documentDeleted (uint documentNumber);
@@ -108,13 +114,21 @@ class KateDocManager : public QObject
 
   private slots:
     void slotModifiedOnDisc (Kate::Document *doc, bool b, unsigned char reason);
+    void slotModChanged(Kate::Document *doc);
 
   private:
+    bool loadMetaInfos(Kate::Document *doc, const KURL &url);
+    void saveMetaInfos(Kate::Document *doc);
+    bool computeUrlMD5(const KURL &url, QCString &result);
+
     Kate::DocumentManager *m_documentManager;
     QPtrList<Kate::Document> m_docList;
     QIntDict<Kate::Document> m_docDict;
     QPtrDict<KateDocumentInfo> m_docInfos;
     QGuardedPtr<Kate::Document> m_currentDoc;
+    KConfig *m_metaInfos;
+    bool m_saveMetaInfos;
+    int m_daysMetaInfos;
 
     DCOPObject *m_dcop;
     

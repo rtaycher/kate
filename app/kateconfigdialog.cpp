@@ -226,6 +226,30 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   connect( cb_modNotifications, SIGNAL( toggled( bool ) ),
            this, SLOT( slotChanged() ) );
 
+  // GROUP with the one below: "Meta-informations"
+  bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("Meta-informations"), frGeneral );
+  lo->addWidget( bgStartup );
+
+  // save meta infos
+  cb_saveMetaInfos = new QCheckBox( bgStartup );
+  cb_saveMetaInfos->setText(i18n("Save &meta-informations on edited files"));
+  cb_saveMetaInfos->setChecked(docManager->getSaveMetaInfos());
+  QWhatsThis::add(cb_saveMetaInfos, i18n(
+        "Check this if you want to see things like bookmarks to be saved then restored"));
+  connect( cb_saveMetaInfos, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
+
+  // meta infos days
+  QHBox *hbDmf = new QHBox( bgStartup );
+  hbDmf->setEnabled(docManager->getSaveMetaInfos());
+  QLabel *lDmf = new QLabel( i18n("&Delete unused meta-informations after:"), hbDmf );
+  sb_daysMetaInfos = new QSpinBox( 0, 180, 1, hbDmf );
+  sb_daysMetaInfos->setSpecialValueText(i18n("(never)"));
+  sb_daysMetaInfos->setSuffix(i18n(" day(s)"));
+  sb_daysMetaInfos->setValue( docManager->getDaysMetaInfos() );
+  lDmf->setBuddy( sb_daysMetaInfos );
+  connect( cb_saveMetaInfos, SIGNAL( toggled( bool ) ), hbDmf, SLOT( setEnabled( bool ) ) );
+  connect( sb_daysMetaInfos, SIGNAL( valueChanged ( int ) ), this, SLOT( slotChanged() ) );
+
   lo->addStretch(1); // :-] works correct without autoadd
   // END General page
 
@@ -338,6 +362,12 @@ void KateConfigDialog::slotOk()
     config->writeEntry("Restore Projects", cb_reopenProjects->isChecked());
     config->writeEntry("Restore Documents", cb_reopenFiles->isChecked());
     config->writeEntry("Restore Window Configuration", cb_restoreVC->isChecked());
+
+    config->writeEntry("Save Meta Infos", cb_saveMetaInfos->isChecked());
+    docManager->setSaveMetaInfos(cb_saveMetaInfos->isChecked());
+
+    config->writeEntry("Days Meta Infos", sb_daysMetaInfos->value() );
+    docManager->setDaysMetaInfos(sb_daysMetaInfos->value());
 
     config->writeEntry("Modified Notification", cb_modNotifications->isChecked());
     mainWindow->modNotification = cb_modNotifications->isChecked();

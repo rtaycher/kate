@@ -33,14 +33,19 @@
 #include <kconfig.h>
 #include <kapplication.h>
 #include <klibloader.h>
+#include <kmdcodec.h>
 
+#include <qdatetime.h>
 #include <qtextcodec.h>
 #include <qprogressdialog.h>
 #include <kmessagebox.h>
 #include <kencodingfiledialog.h>
 #include <ktexteditor/encodinginterface.h>
 
-KateDocManager::KateDocManager (QObject *parent) : QObject (parent)
+KateDocManager::KateDocManager (QObject *parent)
+ : QObject (parent)
+ , m_saveMetaInfos(true)
+ , m_daysMetaInfos(0)
 {
   m_factory = (KParts::Factory *) KLibLoader::self()->factory ("libkatepart");
 
@@ -51,12 +56,37 @@ KateDocManager::KateDocManager (QObject *parent) : QObject (parent)
 
   m_dcop = new KateDocManagerDCOPIface (this);
 
+  m_metaInfos = new KConfig("metainfos", false, false, "appdata");
+
   createDoc ();
 }
 
 KateDocManager::~KateDocManager ()
 {
+  if (m_saveMetaInfos)
+  {
+    // saving meta-infos when file is saved is not enough, we need to do it once more at the end
+    for (Kate::Document *doc = m_docList.first(); doc; doc = m_docList.next())
+      saveMetaInfos(doc);
+
+    // purge saved filesessions
+    if (m_daysMetaInfos > 0)
+    {
+      QStringList groups = m_metaInfos->groupList();
+      QDateTime *def = new QDateTime(QDate(1970, 1, 1));
+      for (QStringList::Iterator it = groups.begin(); it != groups.end(); ++it)
+      {
+        m_metaInfos->setGroup(*it);
+        QDateTime last = m_metaInfos->readDateTimeEntry("Time", def);
+        if (last.daysTo(QDateTime::currentDateTime()) > m_daysMetaInfos)
+          m_metaInfos->deleteGroup(*it);
+      }
+      delete def;
+    }
+  }
+
   delete m_dcop;
+  delete m_metaInfos;
 }
 
 Kate::Document *KateDocManager::createDoc ()
@@ -198,10 +228,13 @@ Kate::Document *KateDocManager::openURL (const KURL& url,const QString &encoding
 
     doc->setEncoding(encoding.isNull() ? Kate::Document::defaultEncoding() : encoding);
 
-    doc->openURL (url);
+    if (!loadMetaInfos(doc, url))
+      doc->openURL (url);
 
     if (id)
       *id=doc->documentNumber();
+
+    connect(doc, SIGNAL(modStateChanged(Kate::Document *)), this, SLOT(slotModChanged(Kate::Document *)));
 
     return doc;
  }
@@ -213,7 +246,8 @@ Kate::Document *KateDocManager::openURL (const KURL& url,const QString &encoding
 
     doc->setEncoding(encoding.isNull() ? Kate::Document::defaultEncoding() : encoding);
 
-    doc->openURL(url);
+    if (!loadMetaInfos(doc, url))
+      doc->openURL (url);
   }
   
   if (id)
@@ -225,6 +259,8 @@ Kate::Document *KateDocManager::openURL (const KURL& url,const QString &encoding
 bool KateDocManager::closeDocument(class Kate::Document *doc)
 {
   if (!doc) return false;
+
+  saveMetaInfos(doc);
 
   if (!doc->closeURL()) return false;
 
@@ -375,4 +411,88 @@ void KateDocManager::slotModifiedOnDisc (Kate::Document *doc, bool b, unsigned c
     m_docInfos[doc]->modifiedOnDisc = b;
     m_docInfos[doc]->modifiedOnDiscReason = reason;
   }
+}
+
+void KateDocManager::slotModChanged(Kate::Document *doc)
+{
+  saveMetaInfos(doc);
+}
+
+/**
+ * Load file and file' meta-informations iif the MD5 didn't change since last time.
+ */
+bool KateDocManager::loadMetaInfos(Kate::Document *doc, const KURL &url)
+{
+  if (!m_saveMetaInfos)
+    return false;
+
+  if (!m_metaInfos->hasGroup(url.prettyURL()))
+    return false;
+
+  QCString md5;
+  bool ok = true;
+
+  if (computeUrlMD5(url, md5))
+  {
+    m_metaInfos->setGroup(url.prettyURL());
+    QString old_md5 = m_metaInfos->readEntry("MD5");
+
+    if ((const char *)md5 == old_md5)
+      doc->readSessionConfig(m_metaInfos);
+    else
+    {
+      m_metaInfos->deleteGroup(url.prettyURL());
+      ok = false;
+    }
+
+    m_metaInfos->sync();
+  }
+
+  return ok && doc->url() == url;
+}
+
+/**
+ * Save file' meta-informations iif doc is in 'unmodified' state
+ */
+void KateDocManager::saveMetaInfos(Kate::Document *doc)
+{
+  QCString md5;
+
+  if (!m_saveMetaInfos)
+    return;
+
+  if (doc->isModified())
+  {
+    kdDebug () << "DOC MODIFIED: no meta data saved" << endl;
+    return;
+  }
+
+  if (computeUrlMD5(doc->url(), md5))
+  {
+    m_metaInfos->setGroup(doc->url().prettyURL());
+    doc->writeSessionConfig(m_metaInfos);
+    m_metaInfos->writeEntry("MD5", (const char *)md5);
+    m_metaInfos->writeEntry("Time", QDateTime::currentDateTime());
+    m_metaInfos->sync();
+  }
+}
+
+bool KateDocManager::computeUrlMD5(const KURL &url, QCString &result)
+{
+  QFile f(url.path());
+
+  if (f.open(IO_ReadOnly))
+  {
+    KMD5 md5;
+
+    if (!md5.update(f))
+      return false;
+
+    md5.hexDigest(result);
+    f.close();
+  }
+  else
+    return false;
+
+  return true;
 }

@@ -387,6 +387,8 @@ void KateMainWindow::readOptions(KConfig *config)
   config->setGroup("General");
   syncKonsole =  config->readBoolEntry("Sync Konsole", true);
   modNotification = config->readBoolEntry("Modified Notification", false);
+  m_docManager->setSaveMetaInfos(config->readBoolEntry("Save Meta Infos", true));
+  m_docManager->setDaysMetaInfos(config->readBoolEntry("Days Meta Infos", 0));
 
   m_viewManager->setShowFullPath(config->readBoolEntry("Show Full Path in Title", false));
 
@@ -410,6 +412,10 @@ void KateMainWindow::saveOptions(KConfig *config)
     config->writeEntry("Show Console", console->isVisible());
   else
     config->writeEntry("Show Console", false);
+
+  config->writeEntry("Save Meta Infos", m_docManager->getSaveMetaInfos());
+
+  config->writeEntry("Days Meta Infos", m_docManager->getDaysMetaInfos());
 
   config->writeEntry("Show Full Path in Title", m_viewManager->getShowFullPath());
 
