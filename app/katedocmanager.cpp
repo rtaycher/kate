@@ -171,7 +171,7 @@ void KateDocManager::checkAllModOnHD(bool forceReload)
 Kate::Document *KateDocManager::openURL(const KURL& url,const QString &encoding,uint *id )
 {
   // special handling if still only the first initial doc is there
-  if (isFirstDocument())
+  if (isFirstDocument() && documentList().at(0))
   {
       documentList().at(0)->setEncoding(encoding==QString::null?
 			QString::fromLatin1(QTextCodec::codecForLocale()->name()):
@@ -190,7 +190,7 @@ Kate::Document *KateDocManager::openURL(const KURL& url,const QString &encoding,
  }
 
   if ( !isOpen( url ) )
-  {
+  {  
     Kate::Document *doc = (Kate::Document *)createDoc ();
 
 
@@ -227,7 +227,6 @@ Kate::Document *KateDocManager::openURL(const KURL& url,const QString &encoding,
 	if (id) *id=documentID(doc1);
 	return doc1;
   }
-
 }
 
 bool KateDocManager::closeDocument(class Kate::Document *doc)

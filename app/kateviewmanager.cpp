@@ -824,7 +824,11 @@ void KateViewManager::reopenDocuments(bool isRestore)
       if ( !fn.isEmpty() ) {
         kdDebug(13001)<<"reopenDocuments(): opening file : "<<fn<<endl;
         scfg->setGroup( fn );
-        m_docManager->openURL( KURL( fn ) )->readSessionConfig(scfg);
+	
+        Kate::Document *doc = m_docManager->openURL( KURL( fn ) );
+	if (doc)
+	  doc->readSessionConfig(scfg);
+	  
 	scfg->setGroup("open files");
       }
       i++;
