@@ -733,29 +733,6 @@ void KateMainWindow::tipOfTheDay()
   KTipDialog::showTip( /*0*/this, QString::null, true );
 }
 
-int KateMainWindow::currentDocumentIfaceNumber()
-{
-  Kate::View *v = m_viewManager->activeView();
-  if ( v )
-  {
-  kdDebug()<<"currentDocumentIfaceNumber(): returning "<<v->getDoc()->documentNumber()<<endl;
-    return v->getDoc()->documentNumber();
-  }
-  return 0;
-}
-int KateMainWindow::newDocument()
-{
-
-}
-bool KateMainWindow::activateDocument(int)
-{
-
-}
-void KateMainWindow::closeActiveDocument()
-{
-
-}
-
 void KateMainWindow::slotFullScreen(bool t)
 {
 	if (t) showFullScreen(); else showNormal();
@@ -979,6 +956,9 @@ void KateMainWindow::updateCaption (Kate::Document *doc)
 
   if (!(m_viewManager->activeView()->getDoc() == doc))
     return;
+
+  // update the sync action
+  fileselector->kateViewChanged();
 
   QString c;
   if (m_viewManager->activeView()->getDoc()->url().isEmpty() || (!m_viewManager->getShowFullPath()))

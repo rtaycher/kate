@@ -93,6 +93,7 @@ class KateFileSelector : public QWidget
     void slotFilterChange(const QString&);
     void setDir(KURL);
     void setDir( const QString& url ) { setDir( KURL( url ) ); };
+    void kateViewChanged();
 
   private slots:
     void cmbPathActivated( const KURL& u );
@@ -100,15 +101,16 @@ class KateFileSelector : public QWidget
     void dirUrlEntered( const KURL& u );
     void dirFinishedLoading();
     void setActiveDocumentDir();
-    void kateViewChanged();
     void btnFilterClick();
     void autoSync();
     void autoSync( Kate::Document * );
+
   protected:
     void focusInEvent( QFocusEvent * );
     void showEvent( QShowEvent * );
     bool eventFilter( QObject *, QEvent * );
     void initialDirChangeHack();
+
   private:
     class KateFileSelectorToolBar *toolbar;
     KActionCollection *mActionCollection;
