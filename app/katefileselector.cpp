@@ -234,18 +234,24 @@ void KateFileSelector::readConfig(KConfig *config, const QString & name)
 
   cmbPath->setMaxItems( config->readNumEntry( "pathcombo history len", 9 ) );
   cmbPath->setURLs( config->readPathListEntry( "dir history" ) );
-
-  // restore history
-  QString loc( config->readPathEntry( "location" ) );
-  if ( ! loc.isEmpty() ) {
-	  setDir( loc );
+  // if we restore history
+  if ( config->readBoolEntry( "restore location", true ) || kapp->isRestored() ) {
+    QString loc( config->readPathEntry( "location" ) );
+    if ( ! loc.isEmpty() ) {
+//       waitingDir = loc;
+//       QTimer::singleShot(0, this, SLOT(initialDirChangeHack()));
+      setDir( loc );
+    }
   }
 
   // else is automatic, as cmpPath->setURL is called when a location is entered.
 
+  filter->setMaxCount( config->readNumEntry( "filter history len", 9 ) );
   filter->setHistoryItems( config->readListEntry("filter history"), true );
   lastFilter = config->readEntry( "last filter" );
-  QString flt = config->readEntry("current filter");
+  QString flt("");
+  if ( config->readBoolEntry( "restore last filter", true ) || kapp->isRestored() )
+    flt = config->readEntry("current filter");
   filter->lineEdit()->setText( flt );
   slotFilterChange( flt );
 
@@ -283,6 +289,7 @@ void KateFileSelector::writeConfig(KConfig *config, const QString & name)
   dir->writeConfig(config,name + ":dir");
 
   config->setGroup( name );
+  config->writeEntry( "pathcombo history len", cmbPath->maxItems() );
   QStringList l;
   for (int i = 0; i < cmbPath->count(); i++) {
     l.append( cmbPath->text( i ) );
@@ -290,6 +297,7 @@ void KateFileSelector::writeConfig(KConfig *config, const QString & name)
   config->writePathEntry( "dir history", l );
   config->writePathEntry( "location", cmbPath->currentText() );
 
+  config->writeEntry( "filter history len", filter->maxCount() );
   config->writeEntry( "filter history", filter->historyItems() );
   config->writeEntry( "current filter", filter->currentText() );
   config->writeEntry( "last filter", lastFilter );
@@ -520,6 +528,16 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
   int spacing = KDialog::spacingHint();
   lo->setSpacing( spacing );
 
+  // Toolbar - a lot for a little...
+  QGroupBox *gbToolbar = new QGroupBox( 1, Qt::Vertical, i18n("Toolbar"), this );
+  acSel = new KActionSelector( gbToolbar );
+  acSel->setAvailableLabel( i18n("A&vailable actions:") );
+  acSel->setSelectedLabel( i18n("S&elected actions:") );
+  lo->addWidget( gbToolbar );
+  connect( acSel, SIGNAL( added( QListBoxItem * ) ), this, SLOT( slotChanged() ) );
+  connect( acSel, SIGNAL( removed( QListBoxItem * ) ), this, SLOT( slotChanged() ) );
+  connect( acSel, SIGNAL( movedUp( QListBoxItem * ) ), this, SLOT( slotChanged() ) );
+  connect( acSel, SIGNAL( movedDown( QListBoxItem * ) ), this, SLOT( slotChanged() ) );
 
   // Sync
   QGroupBox *gbSync = new QGroupBox( 1, Qt::Horizontal, i18n("Auto Synchronization"), this );
@@ -529,10 +547,53 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
   connect( cbSyncActive, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
   connect( cbSyncShow, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
+  // Histories
+  QHBox *hbPathHist = new QHBox ( this );
+  QLabel *lbPathHist = new QLabel( i18n("Remember &locations:"), hbPathHist );
+  sbPathHistLength = new QSpinBox( hbPathHist );
+  lbPathHist->setBuddy( sbPathHistLength );
+  lo->addWidget( hbPathHist );
+  connect( sbPathHistLength, SIGNAL( valueChanged ( int ) ), this, SLOT( slotChanged() ) );
+
+  QHBox *hbFilterHist = new QHBox ( this );
+  QLabel *lbFilterHist = new QLabel( i18n("Remember &filters:"), hbFilterHist );
+  sbFilterHistLength = new QSpinBox( hbFilterHist );
+  lbFilterHist->setBuddy( sbFilterHistLength );
+  lo->addWidget( hbFilterHist );
+  connect( sbFilterHistLength, SIGNAL( valueChanged ( int ) ), this, SLOT( slotChanged() ) );
+
+  // Session
+  QGroupBox *gbSession = new QGroupBox( 1, Qt::Horizontal, i18n("Session"), this );
+  cbSesLocation = new QCheckBox( i18n("Restore loca&tion"), gbSession );
+  cbSesFilter = new QCheckBox( i18n("Restore last f&ilter"), gbSession );
+  lo->addWidget( gbSession );
+  connect( cbSesLocation, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
+  connect( cbSesFilter, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
+
   // make it look nice
   lo->addStretch( 1 );
 
   // be helpfull
+  /*
+  QWhatsThis::add( lbAvailableActions, i18n(
+        "<p>Available actions for the toolbar. To add an action, select it here "
+        "and press the add (<strong>-&gt;</strong>) button" ) );
+  QWhatsThis::add( lbUsedActions, i18n(
+        "<p>Actions used in the toolbar. To remove an action, select it and "
+        "press the remove (<strong>&lt;-</strong>) button."
+        "<p>To change the order of the actions, use the Up and Down buttons to "
+        "move the selected action.") );
+  */
+  QString lhwt( i18n(
+        "<p>Decides how many locations to keep in the history of the location "
+        "combo box.") );
+  QWhatsThis::add( lbPathHist, lhwt );
+  QWhatsThis::add( sbPathHistLength, lhwt );
+  QString fhwt( i18n(
+        "<p>Decides how many filters to keep in the history of the filter "
+        "combo box.") );
+  QWhatsThis::add( lbFilterHist, fhwt );
+  QWhatsThis::add( sbFilterHistLength, fhwt );
   QString synwt( i18n(
         "<p>These options allow you to have the File Selector automatically "
         "change location to the folder of the active document on certain "
@@ -542,6 +603,17 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
         "<p>None of these are enabled by default, but you can always sync the "
         "location by pressing the sync button in the toolbar.") );
   QWhatsThis::add( gbSync, synwt );
+  QWhatsThis::add( cbSesLocation, i18n(
+        "<p>If this option is enabled (default), the location will be restored "
+        "when you start Kate.<p><strong>Note</strong> that if the session is "
+        "handled by the KDE session manager, the location is always restored.") );
+  QWhatsThis::add( cbSesFilter, i18n(
+        "<p>If this option is enabled (default), the current filter will be "
+        "restored when you start Kate.<p><strong>Note</strong> that if the "
+        "session is handled by the KDE session manager, the filter is always "
+        "restored."
+        "<p><strong>Note</strong> that some of the autosync settings may "
+        "override the restored location if on.") );
 
   init();
 
@@ -551,6 +623,21 @@ void KFSConfigPage::apply()
 {
   KConfig *config = kapp->config();
   config->setGroup( "fileselector" );
+  // toolbar
+  QStringList l;
+  QListBoxItem *item = acSel->selectedListBox()->firstItem();
+  ActionLBItem *aItem;
+  while ( item )
+  {
+    aItem = (ActionLBItem*)item;
+    if ( aItem )
+    {
+      l << aItem->idstring();
+    }
+    item = item->next();
+  }
+  config->writeEntry( "toolbar actions", l );
+  fileSelector->setupToolbar( config );
   // sync
   int s = 0;
   if ( cbSyncActive->isChecked() )
@@ -558,6 +645,14 @@ void KFSConfigPage::apply()
   if ( cbSyncShow->isChecked() )
     s |= KateFileSelector::GotVisible;
   fileSelector->autoSyncEvents = s;
+
+  // histories
+  fileSelector->cmbPath->setMaxItems( sbPathHistLength->value() );
+  fileSelector->filter->setMaxCount( sbFilterHistLength->value() );
+  // session - theese are read/written directly to the app config,
+  //           as they are not needed during operation.
+  config->writeEntry( "restore location", cbSesLocation->isChecked() );
+  config->writeEntry( "restore last filter", cbSesFilter->isChecked() );
 }
 
 void KFSConfigPage::reload()
@@ -569,10 +664,42 @@ void KFSConfigPage::init()
 {
   KConfig *config = kapp->config();
   config->setGroup( "fileselector" );
+  // toolbar
+  QStringList l = config->readListEntry( "toolbar actions", ',' );
+  if ( l.isEmpty() ) // default toolbar
+    l << "up" << "back" << "forward" << "home" <<
+                "short view" << "detailed view" <<
+                "bookmarks" << "sync_dir";
+
+  // actions from diroperator + two of our own
+  QStringList allActions;
+  allActions << "up" << "back" << "forward" << "home" <<
+                "reload" << "mkdir" << "delete" <<
+                "short view" << "detailed view" /*<< "view menu" <<
+                "show hidden" << "properties"*/ <<
+                "bookmarks" << "sync_dir";
+  QRegExp re("&(?=[^&])");
+  KAction *ac;
+  QListBox *lb;
+  for ( QStringList::Iterator it=allActions.begin(); it != allActions.end(); ++it ) {
+    lb = l.contains( *it ) ? acSel->selectedListBox() : acSel->availableListBox();
+    if ( *it == "bookmarks" || *it == "sync_dir" )
+      ac = fileSelector->actionCollection()->action( (*it).latin1() );
+    else
+      ac = fileSelector->dirOperator()->actionCollection()->action( (*it).latin1() );
+    if ( ac )
+      new ActionLBItem( lb, SmallIcon( ac->icon() ), ac->text().replace( re, "" ), *it );
+  }
 
   // sync
   int s = fileSelector->autoSyncEvents;
   cbSyncActive->setChecked( s & KateFileSelector::DocumentChanged );
   cbSyncShow->setChecked( s & KateFileSelector::GotVisible );
+  // histories
+  sbPathHistLength->setValue( fileSelector->cmbPath->maxItems() );
+  sbFilterHistLength->setValue( fileSelector->filter->maxCount() );
+  // session
+  cbSesLocation->setChecked( config->readBoolEntry( "restore location", true ) );
+  cbSesFilter->setChecked( config->readBoolEntry( "restore last filter", true ) );
 }
 //END KFSConfigPage

@@ -155,7 +155,10 @@ class KFSConfigPage : public Kate::ConfigPage {
 
     KateFileSelector *fileSelector;
     bool bDirty;
+    KActionSelector *acSel;
+    class QSpinBox *sbPathHistLength, *sbFilterHistLength;
     class QCheckBox *cbSyncActive, *cbSyncShow;
+    class QCheckBox *cbSesLocation, *cbSesFilter;
 };
 
 
