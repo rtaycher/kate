@@ -66,10 +66,11 @@ class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOP
 
     virtual QStringList containerTags() const;
     virtual QWidget *createContainer( QWidget *parent, int index,
-      const QDomElement &element, int &id );
+    const QDomElement &element, int &id );
 
   private:
     uint myID;
+    bool syncKonsole;
 
   protected:
 

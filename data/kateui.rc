@@ -55,11 +55,11 @@
     <Action name="go_back"/>
     <Action name="go_forward"/>
     <Separator />
-    <Separator />
     <Action name="set_highlight"/>
     <Action name="set_eol"/>
     <Separator />
     <Action name="document_reload" />
+    <Separator />
   </Menu>
 
   <Menu name="view"><text>&amp;View</text>

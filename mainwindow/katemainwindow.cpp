@@ -357,6 +357,8 @@ void KateMainWindow::readOptions(KConfig *config)
 
   sidebar->readConfig( config );
 
+  syncKonsole =  config->readBoolEntry("Sync Konsole", true);
+
   readDockConfig();
 }
 
@@ -374,6 +376,7 @@ void KateMainWindow::saveOptions(KConfig *config)
   config->writeEntry("Show Full Path in Title", viewManager->getShowFullPath());
   config->writeEntry("Show Toolbar", settingsShowToolbar->isChecked());
   config->writeEntry("Opaque Resize", viewManager->useOpaqueResize);
+  config->writeEntry("Sync Konsole", syncKonsole);
 
   fileOpenRecent->saveEntries(config, "Recent Files");
 
@@ -417,7 +420,7 @@ void KateMainWindow::slotWindowActivated ()
 
   if (viewManager->activeView() != 0)
   {
-    if (console)
+    if (console && syncKonsole)
       console->cd (viewManager->activeView()->doc()->url());
 
     fileSave->setEnabled(viewManager->activeView()->doc()->isModified());
@@ -516,6 +519,11 @@ void KateMainWindow::slotCurrentDocChanged()
   windowNext->plug (documentMenu);
   windowPrev->plug (documentMenu);
   documentMenu->insertSeparator ();
+  setHighlight->plug (documentMenu);
+  setEndOfLine->plug (documentMenu);
+  documentMenu->insertSeparator ();
+  documentReload->plug (documentMenu);
+  documentMenu->insertSeparator ();
 
   uint z=0;
   int i=1;
@@ -539,12 +547,6 @@ void KateMainWindow::slotCurrentDocChanged()
     z++;
     i++;
   }
-
-  documentMenu->insertSeparator ();
-  setHighlight->plug (documentMenu);
-  setEndOfLine->plug (documentMenu);
-  documentMenu->insertSeparator ();
-  documentReload->plug (documentMenu);
 }
 
 void KateMainWindow::bookmarkMenuAboutToShow()
@@ -717,6 +719,12 @@ void KateMainWindow::slotConfigure()
   config->setGroup("Sidebar");
   cb_fileSidebarStyle->setChecked(config->readBoolEntry("KOWStyle",true));
 
+  // sync the konsole ?
+  QCheckBox *cb_syncKonsole = new QCheckBox(frGeneral);
+  cb_syncKonsole->setText(i18n("Sync Konsole with active Document"));
+  gridFrG->addMultiCellWidget(cb_syncKonsole,5,5,0,1);
+  cb_syncKonsole->setChecked(syncKonsole);
+
   config->setGroup("General");
 
   // editor widgets from kwrite/kwdialog
@@ -791,6 +799,8 @@ void KateMainWindow::slotConfigure()
     config->setGroup("Sidebar");
     config->writeEntry("KOWStyle",cb_fileSidebarStyle->isChecked());
     sidebar->setMode(cb_fileSidebarStyle->isChecked());
+
+    syncKonsole = cb_syncKonsole->isChecked();
 
     config->setGroup("General");
     config->writeEntry("restore views", cb_restoreVC->isChecked());
