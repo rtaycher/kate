@@ -274,8 +274,8 @@ void KateExternalToolAction::slotRun()
   if ( ! expandMacrosShellQuote( cmd ) )
   {
     KMessageBox::sorry( (KateMainWindow*)parent()->parent(),
-                         i18n("Failed expanding the command '%1'."),
-                         i18n( "Kate External Tools").arg( cmd ) );
+                         i18n("Failed to expand the command '%1'.").arg( cmd ),
+                         i18n( "Kate External Tools") );
     return;
   }
   kdDebug(13001)<<"externaltools: Running command: "<<cmd<<endl;
