@@ -42,7 +42,7 @@ KateFileList::KateFileList (KateDocManager *_docManager, KateViewManager *_viewM
     slotModChanged (docManager->nthDoc(i));
   }
 
-  connect(docManager,SIGNAL(documentCreated(KateDocument *)),this,SLOT(slotDocumentCreated(KateDocument *)));
+  connect(docManager,SIGNAL(documentCreated(Kate::Document *)),this,SLOT(slotDocumentCreated(Kate::Document *)));
   connect(docManager,SIGNAL(documentDeleted(uint)),this,SLOT(slotDocumentDeleted(uint)));
 
   connect(this,SIGNAL(highlighted(QListBoxItem *)),this,SLOT(slotActivateView(QListBoxItem *)));
@@ -57,11 +57,11 @@ KateFileList::~KateFileList ()
 {
 }
 
-void KateFileList::slotDocumentCreated (KateDocument *doc)
+void KateFileList::slotDocumentCreated (Kate::Document *doc)
 {
   insertItem (new KateFileListItem (doc->documentNumber(), SmallIcon("null"), doc->docName()) );
-  connect(doc,SIGNAL(modStateChanged(KateDocument *)),this,SLOT(slotModChanged(KateDocument *)));
-  connect(doc,SIGNAL(nameChanged(KateDocument *)),this,SLOT(slotNameChanged(KateDocument *)));
+  connect(doc,SIGNAL(modStateChanged(Kate::Document *)),this,SLOT(slotModChanged(Kate::Document *)));
+  connect(doc,SIGNAL(nameChanged(Kate::Document *)),this,SLOT(slotNameChanged(Kate::Document *)));
 }
 
 void KateFileList::slotDocumentDeleted (uint documentNumber)
@@ -83,7 +83,7 @@ void KateFileList::slotActivateView( QListBoxItem *item )
   viewManager->activateView( ((KateFileListItem *)item)->documentNumber() );
 }
 
-void KateFileList::slotModChanged (KateDocument *doc)
+void KateFileList::slotModChanged (Kate::Document *doc)
 {
   if (!doc) return;
 
@@ -119,7 +119,7 @@ void KateFileList::slotModChanged (KateDocument *doc)
   }
 }
 
-void KateFileList::slotNameChanged (KateDocument *doc)
+void KateFileList::slotNameChanged (Kate::Document *doc)
 {
   if (!doc) return;
 
@@ -148,7 +148,7 @@ void KateFileList::slotViewChanged ()
 
   for (uint i = 0; i < count(); i++)
   {
-    if (((KateFileListItem *) item (i)) ->documentNumber() == ((KateDocument *)view->doc())->documentNumber())
+    if (((KateFileListItem *) item (i)) ->documentNumber() == ((Kate::Document *)view->doc())->documentNumber())
     {
       setCurrentItem (i);
       if ( !isSelected( item(i) ) )

@@ -19,10 +19,10 @@
 #define __KATE_FILELIST_H__
 
 #include "katemain.h"
+#include "../interfaces/document.h"
 
 #include <klistbox.h>
 #include <qtooltip.h>
-
 
 class KateFileListItem : public QListBoxItem
 {
@@ -72,11 +72,11 @@ class KateFileList : public KListBox
     KateViewManager *viewManager;
 
   private slots:
-    void slotDocumentCreated (KateDocument *doc);
+    void slotDocumentCreated (Kate::Document *doc);
     void slotDocumentDeleted (uint documentNumber);
     void slotActivateView( QListBoxItem *item );
-    void slotModChanged (KateDocument *doc);
-    void slotNameChanged (KateDocument *doc);
+    void slotModChanged (Kate::Document *doc);
+    void slotNameChanged (Kate::Document *doc);
     void slotViewChanged ();
     void slotMenu ( QListBoxItem *item, const QPoint &p );
 

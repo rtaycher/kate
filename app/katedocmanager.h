@@ -36,17 +36,17 @@ class KateDocManager : public Kate::DocManager
     KateDocManager ();
     ~KateDocManager ();
 
-    KateDocument *createDoc ();
-    void deleteDoc (KateDocument *doc);
+    Kate::Document *createDoc ();
+    void deleteDoc (Kate::Document *doc);
 
-    KateDocument *nthDoc (uint n);
-    KateDocument *currentDoc ();
-    KateDocument *firstDoc ();
-    KateDocument *nextDoc ();
+    Kate::Document *nthDoc (uint n);
+    Kate::Document *currentDoc ();
+    Kate::Document *firstDoc ();
+    Kate::Document *nextDoc ();
 
-    KateDocument *docWithID (uint id);
+    Kate::Document *docWithID (uint id);
 
-    int findDoc (KateDocument *doc);
+    int findDoc (Kate::Document *doc);
     /** Returns the documentNumber of the doc with url URL or -1 if no such doc is found */
     int findDoc (KURL url);
     bool isOpen(KURL url);
@@ -56,11 +56,12 @@ class KateDocManager : public Kate::DocManager
   public slots:
     void checkAllModOnHD(bool forceReload=false);
 
-  protected:
-    QPtrList<KateDocument> docList;
+  private:
+    QPtrList<Kate::Document> docList;
+    class KLibFactory *factory;
 
   signals:
-    void documentCreated (KateDocument *doc);
+    void documentCreated (Kate::Document *doc);
     void documentDeleted (uint documentNumber);
 
   public:

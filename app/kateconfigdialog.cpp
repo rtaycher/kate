@@ -21,7 +21,6 @@
 #include "katemainwindow.h"
 
 #include "kateconsole.h"
-#include "../part/katedocument.h"
 #include "katedocmanager.h"
 #include "katepluginmanager.h"
 #include "kateconfigplugindialogpage.h"
@@ -62,7 +61,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   viewManager = parent->viewManager;
   pluginManager = parent->pluginManager;
   mainWindow = parent;
-  
+
   setMinimumSize(600,400);
 
   v = viewManager->activeView();
@@ -142,54 +141,54 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   path << i18n("Editor") << i18n("Colors");
   QVBox *page = addVBoxPage(path, i18n("Colors"),
                               BarIcon("colorize", KIcon::SizeSmall) );
-  colorConfigPage = v->doc()->colorConfigPage(page);
+  colorConfigPage = v->getDoc()->colorConfigPage(page);
 
   // font options
   path.clear();
   path << i18n("Editor") << i18n("Fonts");
   page = addVBoxPage(path, i18n("Fonts Settings"),
                               BarIcon("fonts", KIcon::SizeSmall) );
-  fontConfigPage = v->doc()->fontConfigPage(page);
+  fontConfigPage = v->getDoc()->fontConfigPage(page);
 
   // indent options
   path.clear();
   path << i18n("Editor") << i18n("Indent");
   page=addVBoxPage(path, i18n("Indent Options"),
                        BarIcon("rightjust", KIcon::SizeSmall) );
-  indentConfigPage = v->doc()->indentConfigPage(page);
+  indentConfigPage = v->getDoc()->indentConfigPage(page);
 
   // select options
   path.clear();
   path << i18n("Editor") << i18n("Select");
   page=addVBoxPage(path, i18n("Selection behavior"),
                        BarIcon("misc") );
-  selectConfigPage = v->doc()->selectConfigPage(page);
+  selectConfigPage = v->getDoc()->selectConfigPage(page);
 
   // edit options
   path.clear();
   path << i18n("Editor") << i18n("Edit");
   page=addVBoxPage(path, i18n("Editing Options"),
                        BarIcon("edit", KIcon::SizeSmall ) );
-  editConfigPage = v->doc()->editConfigPage (page);
+  editConfigPage = v->getDoc()->editConfigPage (page);
 
   // spell checker
   path.clear();
   path << i18n("Editor") << i18n("Spelling");
   page = addVBoxPage( path, i18n("Spell checker behavior"),
                           BarIcon("spellcheck", KIcon::SizeSmall) );
-  kSpellConfigPage = v->doc()->kSpellConfigPage (page);
+  kSpellConfigPage = v->getDoc()->kSpellConfigPage (page);
 
   path.clear();
   path << i18n("Editor") << i18n("Highlighting");
   page=addVBoxPage(path,i18n("Highlighting configuration"),
                         SmallIcon("highlighting", KIcon::SizeSmall));
-  hlConfigPage = v->doc()->hlConfigPage (page);
+  hlConfigPage = v->getDoc()->hlConfigPage (page);
   
   path.clear();
   path << i18n("Editor") << i18n("Keyboard");
   page=addVBoxPage(path,i18n("Keyboard configuration"),
                         SmallIcon("edit", KIcon::SizeSmall));
-  keysConfigPage = v->doc()->keysConfigPage (page);
+  keysConfigPage = v->getDoc()->keysConfigPage (page);
 
   path.clear();
   path << i18n("Plugins") << i18n("Manager");
@@ -270,24 +269,16 @@ void KateConfigDialog::slotApply()
   kSpellConfigPage->apply();
   hlConfigPage->apply();
 
-  v->doc()->writeConfig();
-  v->doc()->tagAll();
-  v->doc()->updateViews ();
+  v->getDoc()->writeConfig();
+  v->getDoc()->readConfig();
 
   config->sync();
 
   // all docs need to reread config.
-  QPtrListIterator<KateDocument> dit (docManager->docList);
+  QPtrListIterator<Kate::Document> dit (docManager->docList);
   for (; dit.current(); ++dit)
   {
     dit.current()->readConfig(  );
-  }
-
-  QPtrListIterator<KateView> it (viewManager->viewList);
-  for (; it.current(); ++it)
-  {
-    v = it.current();
-    v->doc()->readConfig();
   }
 
   for (uint i=0; i<pluginPages.count(); i++)

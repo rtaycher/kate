@@ -18,27 +18,29 @@
 #include "katedocmanager.h"
 #include "katedocmanager.moc"
 
-#include "../part/katedocument.h"
+#include <klibloader.h>
 
 KateDocManager::KateDocManager () : Kate::DocManager ()
 {
   docList.setAutoDelete(true);
+  factory = KLibLoader::self()->factory( "libkatepart" );
 }
 
 KateDocManager::~KateDocManager ()
 {
+  delete factory;
 }
 
-KateDocument *KateDocManager::createDoc ()
+Kate::Document *KateDocManager::createDoc ()
 {
-  KateDocument *doc = new KateDocument ();
-  docList.append(doc);
+  KTextEditor::Document *doc = (KTextEditor::Document *) factory->create (this, "kate", "KTextEditor::Document");
+  docList.append((Kate::Document *)doc);
 
-  emit documentCreated (doc);
-  return doc;
+  emit documentCreated ((Kate::Document *)doc);
+  return (Kate::Document *)doc;
 }
 
-void KateDocManager::deleteDoc (KateDocument *doc)
+void KateDocManager::deleteDoc (Kate::Document *doc)
 {
   uint id = doc->documentNumber();
 
@@ -48,29 +50,29 @@ void KateDocManager::deleteDoc (KateDocument *doc)
  emit documentDeleted (id);
 }
 
-KateDocument *KateDocManager::nthDoc (uint n)
+Kate::Document *KateDocManager::nthDoc (uint n)
 {
   return docList.at(n);
 }
 
-KateDocument *KateDocManager::currentDoc ()
+Kate::Document *KateDocManager::currentDoc ()
 {
   return docList.current();
 }
 
-KateDocument *KateDocManager::firstDoc ()
+Kate::Document *KateDocManager::firstDoc ()
 {
   return docList.first();
 }
 
-KateDocument *KateDocManager::nextDoc ()
+Kate::Document *KateDocManager::nextDoc ()
 {
   return docList.next();
 }
 
-KateDocument *KateDocManager::docWithID (uint id)
+Kate::Document *KateDocManager::docWithID (uint id)
 {
-  QPtrListIterator<KateDocument> it(docList);
+  QPtrListIterator<Kate::Document> it(docList);
 
   for (; it.current(); ++it)
   {
@@ -81,7 +83,7 @@ KateDocument *KateDocManager::docWithID (uint id)
   return 0L;
 }
 
-int KateDocManager::findDoc (KateDocument *doc)
+int KateDocManager::findDoc (Kate::Document *doc)
 {
   return docList.find (doc);
 }
@@ -93,7 +95,7 @@ uint KateDocManager::docCount ()
 
 int KateDocManager::findDoc( KURL url )
 {
-  QPtrListIterator<KateDocument> it(docList);
+  QPtrListIterator<Kate::Document> it(docList);
 
   for (; it.current(); ++it)
   {
@@ -105,7 +107,7 @@ int KateDocManager::findDoc( KURL url )
 
 bool KateDocManager::isOpen(KURL url)
 {
-  QPtrListIterator<KateDocument> it(docList);
+  QPtrListIterator<Kate::Document> it(docList);
 
   for (; it.current(); ++it)
   {
@@ -117,7 +119,7 @@ bool KateDocManager::isOpen(KURL url)
 
 void KateDocManager::checkAllModOnHD(bool forceReload)
 {
-  QPtrListIterator<KateDocument> it(docList);
+  QPtrListIterator<Kate::Document> it(docList);
 
   for (; it.current(); ++it) {
     it.current()->isModOnHD(forceReload);

@@ -617,9 +617,9 @@ class KateDocument : public Kate::Document
     void setWordWrapAt (uint col);
     uint wordWrapAt () { return myWordWrapAt; };
 
-  signals:
-    void modStateChanged (KateDocument *doc);
-    void nameChanged (KateDocument *doc);
+  signals:    
+    void modStateChanged (Kate::Document *doc);
+    void nameChanged (Kate::Document *doc);
 
   public slots:
     // clear buffer/filename - update the views
