@@ -149,6 +149,7 @@ bool SyntaxDocument::nextItem(struct syntaxContextData* data)
 QString SyntaxDocument::groupItemData(struct syntaxContextData* data,QString name)
 {
   if(!data) return QString::null;
+  if ( (!data->item.isNull()) && (name.isEmpty())) return data->item.tagName();
   if (!data->item.isNull()) return data->item.attribute(name); else return QString();
 }
 

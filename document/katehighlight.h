@@ -295,6 +295,7 @@ class Highlight {
     virtual int doHighlight(int ctxNum, TextLine *textLine);
     virtual QString getCommentStart() { return QString(""); };
     virtual QString getCommentEnd() { return QString(""); };
+    virtual QString getCommentSingleLineStart() { return QString("");};
   protected:
     virtual void createItemData(ItemDataList &);
     virtual void init();
@@ -336,12 +337,16 @@ class AutoHighlight : public GenHighlight
   public:
     AutoHighlight(syntaxModeListItem *def);
     virtual ~AutoHighlight();
-    virtual QString getCommentStart() {return QString("\"");};
-    virtual QString getCommentEnd()  {return QString("");};
+    virtual QString getCommentStart() {return cmlStart;};
+    virtual QString getCommentEnd()  {return cmlEnd;};
+    virtual QString getCommentSingleLineStart() { return cslStart;};
 
   protected:
     QString iName;
     QString casesensitive;
+    QString cmlStart;
+    QString cmlEnd;
+    QString cslStart;
     virtual void makeContextList ();
     virtual void setKeywords (HlKeyword *keyword,HlKeyword *dataType);
     virtual void createItemData (ItemDataList &list);

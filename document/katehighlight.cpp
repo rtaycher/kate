@@ -884,6 +884,7 @@ const char *HlCaseInsensitiveKeyword::checkHgl(const char *s,bool) {
 
 AutoHighlight::AutoHighlight(syntaxModeListItem *def):GenHighlight(def->name.latin1())
 {
+//  syntaxContextData *data;
   iName = def->name;
   iWildcards = def->extension;
   iMimetypes = def->mimetype;
@@ -979,6 +980,23 @@ void AutoHighlight::makeContextList()
 
   kdDebug(13010)<< "AutoHighlight makeContextList()"<<endl;
   HlManager::self()->syntax->setIdentifier(identifier);
+
+  data=HlManager::self()->syntax->getGroupInfo("general","comment");
+  if (data)
+    while (HlManager::self()->syntax->nextGroup(data)) 
+      {
+        if (HlManager::self()->syntax->groupItemData(data,"name")=="singleLine")
+		cslStart=HlManager::self()->syntax->groupItemData(data,"start");
+	if (HlManager::self()->syntax->groupItemData(data,"name")=="multiLine")
+           {
+		cmlStart=HlManager::self()->syntax->groupItemData(data,"start");
+		cmlEnd=HlManager::self()->syntax->groupItemData(data,"end");
+           }
+      }
+
+  if (data) HlManager::self()->syntax->freeGroupInfo(data);
+  data=0;
+
   data=HlManager::self()->syntax->getGroupInfo("highlighting","context");
   int i=0;
   if (data)

@@ -542,6 +542,6 @@ void HlEditDialog::ItemAddNew()
         else
           it=currentItem;
       if (it) for (;it->nextSibling();it=it->nextSibling());
-      (void) new QListViewItem(it ? it->parent() : currentItem,it,"","","","",0,it ? it->parent()->text(1) : currentItem->text(1));
+      (void) new QListViewItem(it ? it->parent() : currentItem,it,i18n("StringDetect")+" "+i18n("New Item"),"StringDetect",i18n("New Item"),0,it ? it->parent()->text(1) : currentItem->text(1));
     }
 }
