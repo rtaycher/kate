@@ -682,7 +682,7 @@ void EditKeyConfiguration::setupEditKeys()
 
   m_editAccels->insertAction("KATE_CURSOR_UP",i18n("Cursor up"),"","Up",this,SLOT(dummy()));
   m_editAccels->insertAction("KATE_CURSOR_UP_SELECT",i18n("Cursor up + SELECT"),"","Shift+Up",this,SLOT(dummy()));
-  m_editAccels->insertAction("KATE_SCROLL_UP",i18n("Scroll one line  up"),"","Ctrl+Up",this,SLOT(dummy()));
+  m_editAccels->insertAction("KATE_SCROLL_UP",i18n("Scroll one line up"),"","Ctrl+Up",this,SLOT(dummy()));
 
   m_editAccels->insertAction("KATE_CURSOR_DOWN",i18n("Cursor down"),"","Down",this,SLOT(dummy()));
   m_editAccels->insertAction("KATE_CURSOR_DOWN_SELECT",i18n("Cursor down + SELECT"),"","Shift+Down",this,SLOT(dummy()));
