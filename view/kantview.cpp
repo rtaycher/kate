@@ -1271,9 +1271,7 @@ void KantViewInternal::paintEvent(QPaintEvent *e) {
 
 void KantViewInternal::resizeEvent(QResizeEvent *)
 {
-//  debug("KantViewInternal::resize");
   resizeBuffer(this, width(), myDoc->fontHeight);
-  QWidget::update();
 }
 
 void KantViewInternal::timerEvent(QTimerEvent *e) {
