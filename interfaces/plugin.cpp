@@ -97,6 +97,16 @@ Plugin::~Plugin()
 {
 }
 
+unsigned int Plugin::pluginNumber () const
+{
+  return myPluginNumber;
+}
+
+Application *Plugin::application () const
+{
+  return Kate::application();
+}
+
 ProjectPlugin::ProjectPlugin( Project *project, const char *name ) : Plugin (Kate::application(), name )
 {
   globalProjectPluginNumber++;
@@ -109,6 +119,16 @@ ProjectPlugin::ProjectPlugin( Project *project, const char *name ) : Plugin (Kat
 ProjectPlugin::~ProjectPlugin()
 {
   delete d;
+}
+
+unsigned int ProjectPlugin::projectPluginNumber () const
+{
+  return myProjectPluginNumber;
+}
+
+ Project *ProjectPlugin::project () const
+{
+  return d->m_project;
 }
 
 bool ProjectPlugin::save ()
@@ -175,26 +195,6 @@ const KURL InitPlugin::configScript() const
 int InitPlugin::initKate()
 {
 return 0;
-}
-
-unsigned int Plugin::pluginNumber () const
-{
-  return myPluginNumber;
-}
-
- Application *Plugin::application () const
-{
-  return Kate::application();
-}
-
-unsigned int ProjectPlugin::projectPluginNumber () const
-{
-  return myProjectPluginNumber;
-}
-
- Project *ProjectPlugin::project () const
-{
-  return d->m_project;
 }
 
 PluginViewInterface::PluginViewInterface()
