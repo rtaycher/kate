@@ -17,7 +17,7 @@
 #include <qobjectlist.h>
 #include <qradiobutton.h>
 #include <qwhatsthis.h>
-
+#include <qstringlist.h> 
 #include <klocale.h>
 #include <kcolorbtn.h>
 #include <kcombobox.h>
@@ -410,6 +410,7 @@ EditConfigTab::EditConfigTab(QWidget *parent, KateView *view)
 
   encoding = new KComboBox(box);
   encoding->insertStringList (KGlobal::charsets()->availableEncodingNames());
+  encoding->setCurrentItem (KGlobal::charsets()->availableEncodingNames().findIndex(view->doc()->encoding()));
 
   leLayout->addStretch();
 
@@ -439,7 +440,7 @@ void EditConfigTab::getData(KateView *view)
   }
   view->setConfig(configFlags);
 
-  view->setEncoding (encoding->currentText ());
+  view->setEncoding (encoding->currentText());
   view->setWordWrapAt(e1->value());
   view->setTabWidth(e2->value());
   view->setUndoSteps(e3->value());
@@ -517,3 +518,4 @@ void ColorConfig::getColors(QColor *colors)
 }
 
 #include "kateviewdialog.moc"
+
