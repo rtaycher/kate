@@ -84,8 +84,6 @@ class TopLevel : public KParts::MainWindow {
     void statusMsg(const QString &);
     void timeout();
     void newCaption();
-    void newUndo();
-    void slotHighlightChanged();
 
     void slotDropEvent(QDropEvent *);
 

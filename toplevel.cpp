@@ -138,9 +138,7 @@ void TopLevel::setupEditWidget(KWriteDoc *doc)
   connect(kWrite,SIGNAL(newStatus()),this,SLOT(newStatus()));
   connect(kWrite,SIGNAL(statusMsg(const QString &)),this,SLOT(statusMsg(const QString &)));
   connect(kWrite,SIGNAL(fileChanged()),this,SLOT(newCaption()));
-  connect(kWrite,SIGNAL(newUndo()),this,SLOT(newUndo()));
   connect(kWrite->view(),SIGNAL(dropEventPass(QDropEvent *)),this,SLOT(slotDropEvent(QDropEvent *)));
-  connect(kWrite->doc(),SIGNAL(highlightChanged()),this,SLOT(slotHighlightChanged()));
   connect(kWrite, SIGNAL( enableUI( bool ) ), this, SLOT( slotEnableActions( bool ) ) );
 
   setCentralWidget(kWrite);
@@ -406,8 +404,6 @@ void TopLevel::newStatus()
     statusBar()->changeItem(config & cfOvr ? i18n(" OVR ") : i18n(" INS "),ID_INS_OVR);
 
   statusBar()->changeItem(kWrite->isModified() ? " * " : "",ID_MODIFIED);
-
-  newUndo();
 }
 
 
@@ -436,17 +432,6 @@ void TopLevel::newCaption()
       setCaption(kWrite->doc()->url().fileName(),kWrite->isModified());
   }
 }
-
-
-void TopLevel::newUndo()
-{
-}
-
-
-void TopLevel::slotHighlightChanged()
-{
-}
-
 
 void TopLevel::dragEnterEvent( QDragEnterEvent *event )
 {
