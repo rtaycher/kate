@@ -124,7 +124,13 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc) : QWidget(
   yScroll = new QScrollBar(QScrollBar::Vertical,myView);
   connect(xScroll,SIGNAL(valueChanged(int)),SLOT(changeXPos(int)));
   connect(yScroll,SIGNAL(valueChanged(int)),SLOT(changeYPos(int)));
-  connect(yScroll,SIGNAL(valueChanged(int)),myView,SIGNAL(scrollValueChanged(int)));
+
+#if QT_VERSION < 300
+    connect(yScroll,SIGNAL(valueChanged(int)),myView,SIGNAL(scrollValueChanged(int)));
+#else
+#warning "I haven't found out (yet), why it breaks wit QT3. The second signal doesn't seam to be connected somewhere within the code "
+#endif
+
   connect( doc, SIGNAL (preHighlightChanged(long)),this,SLOT(slotPreHighlightUpdate(long)));
 
   xPos = 0;
