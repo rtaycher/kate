@@ -3,7 +3,7 @@ EXTRA_DIST = AUTHORS COPYING ChangeLog NEWS README TODO
 
 messages: rc.cpp
 	$(EXTRACTRC) */*.rc */*.ui */*/*.rc */*/*.ui >> rc.cpp
-#	perl ./preparesyntax >kantsyntax.cc
-	$(XGETTEXT) `find . -name "*.cpp"` -o $(podir)/kant.pot
-#	rm -f kantsyntax.cc
+#	perl ./preparesyntax >katesyntax.cc
+	$(XGETTEXT) `find . -name "*.cpp"` -o $(podir)/kate.pot
+#	rm -f katesyntax.cc
 
