@@ -34,7 +34,6 @@
 #include <qbuttongroup.h>
 #include <qcheckbox.h>
 #include <qhbox.h>
-#include <qinputdialog.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qradiobutton.h>
