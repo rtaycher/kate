@@ -53,6 +53,7 @@ class HighlightDialogPage : public QTabWidget
     void changed();
     void hlEdit();
     void hlNew();
+    void hlDownload();
   protected:
     StyleChanger *defaultStyleChanger;
     ItemStyleList *defaultItemStyleList;

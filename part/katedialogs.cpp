@@ -21,6 +21,7 @@
 #include <kstddirs.h>
 
 #include "katedialogs.moc"
+#include "katehighlightdownload.h"
 
 /*******************************************************************************************************************
 *                                        Context Editor                                                            *
@@ -154,6 +155,7 @@ HighlightDialogPage::HighlightDialogPage(HlManager *hlManager, ItemStyleList *st
   QHBox *modHl = new QHBox(vbox1);
   connect(new QPushButton(i18n("New"),modHl),SIGNAL(clicked()),this,SLOT(hlNew()));
   connect(new QPushButton(i18n("Edit"),modHl),SIGNAL(clicked()),this,SLOT(hlEdit()));
+  connect(new QPushButton(i18n("Download"),vbox1),SIGNAL(clicked()),this,SLOT(hlDownload()));
   connect( hlCombo, SIGNAL(activated(int)),
            this, SLOT(hlChanged(int)) );
   for( int i = 0; i < hlManager->highlights(); i++) {
@@ -240,6 +242,13 @@ void HighlightDialogPage::hlEdit() {
 void HighlightDialogPage::hlNew() {
   HlEditDialog diag(0,this,"hlEdit",true,0);
   diag.exec();
+}
+
+
+void HighlightDialogPage::hlDownload()
+{
+	HlDownloadDialog diag(this,"hlDownload",true);
+	diag.exec();
 }
 
 

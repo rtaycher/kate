@@ -1,10 +1,10 @@
 lib_LTLIBRARIES = libkatepart.la
 
 libkatepart_la_SOURCES = katebuffer.cpp katecmd.cpp katecmds.cpp katedialogs.cpp \
- 												 katedocument.cpp katefactory.cpp katehighlight.cpp \
-												 katesyntaxdocument.cpp katetextline.cpp kateview.cpp \
-  											 kateviewdialog.cpp kateviewhighlightaction.cpp \
-												 katevmallocator.cpp
+			 katedocument.cpp katefactory.cpp katehighlight.cpp \
+			 katesyntaxdocument.cpp katetextline.cpp kateview.cpp \
+  			 kateviewdialog.cpp kateviewhighlightaction.cpp \
+			 katevmallocator.cpp katehighlightdownload.cpp
 
 libkatepart_la_LIBADD   = ../interfaces/libkateinterfaces.la -lktexteditor -lkspell -lkdeprint
 libkatepart_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) $(KDE_PLUGIN) -module -avoid-version
