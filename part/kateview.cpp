@@ -1676,7 +1676,12 @@ void KateView::customEvent( QCustomEvent *ev )
 
 void KateView::setCursorPosition( int line, int col, bool /*mark*/ )
 {
-  setCursorPositionInternal( line, col );
+  setCursorPositionInternal( line, col, tabWidth() );
+}
+
+void KateView::setCursorPositionReal( int line, int col, bool /*mark*/ )
+{
+  setCursorPositionInternal( line, col, 1 );
 }
 
 void KateView::getCursorPosition( int *line, int *col )
@@ -1686,6 +1691,15 @@ void KateView::getCursorPosition( int *line, int *col )
 
   if ( col )
     *col = currentColumn();
+}
+
+void KateView::getCursorPositionReal( int *line, int *col )
+{
+  if ( line )
+    *line = currentLine();
+
+  if ( col )
+    *col = currentCharNum();
 }
 
 
@@ -1701,10 +1715,18 @@ int KateView::currentCharNum() {
   return myViewInternal->cursor.col;
 }
 
-void KateView::setCursorPositionInternal(int line, int col) {
+void KateView::setCursorPositionInternal(int line, int col, int tabwidth) {
   KateViewCursor cursor;
 
-  cursor.col = col;
+  TextLine::Ptr textLine = myDoc->getTextLine(line);
+  QString line_str = QString(textLine->getText(), textLine->length());
+
+  int z;
+  int x = 0;
+  for (z = 0; z < line_str.length() && z <= col; z++) {
+    if (line_str[z] == QChar('\t')) x += tabwidth - (x % tabwidth); else x++;
+  }
+  cursor.col = x;
   cursor.line = line;
   myViewInternal->updateCursor(cursor);
   myViewInternal->center();

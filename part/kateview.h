@@ -305,10 +305,18 @@ class KateView : public Kate::View
   public:
     QPoint cursorCoordinates();
     void setCursorPosition( int line, int col, bool mark = false );
+    void setCursorPositionReal( int line, int col, bool mark = false );
+
     void getCursorPosition( int *line, int *col );
 
+    /** Gets the cursor position with tabwidth=1 */
+    void getCursorPositionReal( int *line, int *col );
+
 		void cursorPosition( uint *line, uint *col ) { getCursorPosition ((int*)line, (int*)col); } ;
+		void cursorPositionReal( uint *line, uint *col ) { getCursorPositionReal((int*)line, (int*)col); } ;
+
 		bool setCursorPosition( uint line, uint col ) { setCursorPosition ((int)line, (int)col, false); } ;
+		bool setCursorPositionReal( uint line, uint col ) { setCursorPositionReal ((int)line, (int)col, false); } ;
 
 		uint cursorLine () {return (uint) currentLine (); };
 		uint cursorColumn () {return (uint) currentColumn (); };
@@ -335,7 +343,7 @@ class KateView : public Kate::View
     /**
       Sets the current cursor position
     */
-    void setCursorPositionInternal(int line, int col);
+    void setCursorPositionInternal(int line, int col, int tabwidth);
 
     int tabWidth();
     void setTabWidth(int);
