@@ -21,7 +21,6 @@
 #include "../kantmain.h"
 
 #include <klistbox.h>
-#include <qapplication.h>
 
 class KantFileListItem : public QListBoxItem
 {

@@ -48,7 +48,7 @@ class KantViewManager : public KantPluginIface
     KantDocManager *docManager;
     QGridLayout *grid;
 
-    bool createView ( bool newDoc=true, KURL url=0L, KantView *origView=0L );
+    bool createView ( bool newDoc=true, KURL url=0L, KantView *origView=0L, KantDocument *doc=0L );
     bool deleteView ( KantView *view, bool force=false, bool delViewSpace = true, bool createNew = true );
 
     void moveViewtoSplit (KantView *view);

@@ -79,13 +79,10 @@ KantViewManager::~KantViewManager ()
 {
 }
 
-bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView )
+bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView, KantDocument *doc )
 {
-  //kdDebug()<<"createView()"<<endl;
-  KantDocument *doc;
-
   // create doc
-  if (newDoc)
+  if (newDoc && !doc)
   {
     QFileInfo* fi;
     if ( (!url.isEmpty()) && (url.filename() != 0) ) {
@@ -103,9 +100,11 @@ bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView )
     doc = docManager->createDoc ();//fi);
   }
   else
-    doc = (KantDocument *)origView->doc();
+  {
+    if (!doc)
+      doc = (KantDocument *)origView->doc();
+  }
 
-  //kdDebug()<<">> doc created"<<endl;
   // create view
   KantView *view = new KantView (this, doc, (QString("KantViewIface%1").arg(myViewID)).latin1());
   connect(view,SIGNAL(newStatus()),this,SLOT(setWindowCaption()));
@@ -117,7 +116,7 @@ bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView )
   doc->readConfig( config );
   view->readConfig( config );
 
-  if (!newDoc)
+  if (!newDoc && origView)
     view->copySettings(origView);
 
   view->init();
@@ -158,8 +157,8 @@ bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView )
   }
   else
   {
-    view->setCaption (origView->caption());
-    ((KantDocument *)view->doc())->setDocName (((KantDocument *)origView->doc())->docName ());
+    if (origView) view->setCaption (origView->caption());
+    ((KantDocument *)view->doc())->setDocName (doc->docName ());
   }
 
   view->installPopup ((QPopupMenu*)((KMainWindow *)topLevelWidget ())->factory()->container("view_popup", (KMainWindow *)topLevelWidget ()) );
@@ -319,7 +318,8 @@ void KantViewManager::activateView( int docID )
   if ( activeViewSpace()->showView(docID) ) {
     activateView( activeViewSpace()->currentView() );
   }
-  else {
+  else
+  {
     QListIterator<KantView> it(viewList);
     for ( ;it.current(); ++it)
     {
@@ -330,6 +330,8 @@ void KantViewManager::activateView( int docID )
         return;
       }
     }
+
+    createView (false, 0L, 0L, docManager->docWithID(docID));
   }
 }
 

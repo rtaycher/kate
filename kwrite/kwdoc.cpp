@@ -271,9 +271,9 @@ bool KWriteDoc::saveFile()
 #endif
 }
 
-KTextEditor::View *KWriteDoc::createView( QWidget *parent, const char * )
+KTextEditor::View *KWriteDoc::createView( QWidget *parent, const char *name )
 {
-  return new KWrite( this, parent );
+  return new KWrite( this, parent, name, true, true );
 }
 
 QString KWriteDoc::textLine( int line ) const

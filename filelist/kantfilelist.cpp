@@ -23,6 +23,8 @@
 #include "../view/kantview.h"
 #include "../view/kantviewmanager.h"
 
+#include <qapplication.h>
+
 #include <kiconloader.h>
 #include <klocale.h>
 
@@ -84,31 +86,30 @@ void KantFileList::slotModChanged (KantDocument *doc)
   if( doc->isModified() )
   {
     for (i = 0; i < count(); i++)
-    	     {
-	       if (((KantFileListItem *) item (i)) ->docID() == doc->docID())
-		 {
-           	   ((KantFileListItem *)item(i))->setPixmap(SmallIcon("modified"));
-           	   ((KantFileListItem *)item(i))->setBold(true);
+    {
+      if (((KantFileListItem *) item (i)) ->docID() == doc->docID())
+      {
+        ((KantFileListItem *)item(i))->setPixmap(SmallIcon("modified"));
+        ((KantFileListItem *)item(i))->setBold(true);
 
-           	   triggerUpdate(false);
-		   break;
-		 }
-             }
-
+        triggerUpdate(false);
+        break;
+      }
+    }
   }
   else
   {
-   	   for (i = 0; i < count(); i++)
-    	     {
-	       if (((KantFileListItem *) item (i)) ->docID() == doc->docID())
-		 {
-           	   ((KantFileListItem *)item(i))->setPixmap(SmallIcon("null"));
-           	   ((KantFileListItem *)item(i))->setBold(false);
+    for (i = 0; i < count(); i++)
+    {
+      if (((KantFileListItem *) item (i)) ->docID() == doc->docID())
+      {
+        ((KantFileListItem *)item(i))->setPixmap(SmallIcon("null"));
+        ((KantFileListItem *)item(i))->setBold(false);
 
-           	   triggerUpdate(false);
-		   break;
-		 }
-             }
+        triggerUpdate(false);
+        break;
+      }
+    }
   }
 }
 
@@ -146,51 +147,57 @@ long KantFileListItem::docID ()
 
 
 void KantFileListItem::setText(const QString &text)
-    {
-      QListBoxItem::setText(text);
-    }
+{
+  QListBoxItem::setText(text);
+}
 
-  void KantFileListItem::setPixmap(const QPixmap &pixmap)
-    {
-      pm=pixmap;
-    }
+void KantFileListItem::setPixmap(const QPixmap &pixmap)
+{
+  pm=pixmap;
+}
 
-  void KantFileListItem::setBold(bool bold)
-    {
-	_bold=bold;
-    }
+void KantFileListItem::setBold(bool bold)
+{
+  bold=bold;
+}
 
-  int KantFileListItem::height( const QListBox* lb ) const
-    {
-      int h;
-      if ( text().isEmpty() )
-        h = pm.height();
-      else
-        h = QMAX( pm.height(), lb->fontMetrics().lineSpacing() + 1 );
-      return QMAX( h, QApplication::globalStrut().height() );
-    }
+int KantFileListItem::height( const QListBox* lb ) const
+{
+  int h;
 
-  int KantFileListItem::width( const QListBox* lb ) const
-    {
-      if ( text().isEmpty() )
-        return QMAX( pm.width() + 6, QApplication::globalStrut().width() );
-      return QMAX( pm.width() + lb->fontMetrics().width( text() ) + 6,
-		   QApplication::globalStrut().width() );
-    }
+  if ( text().isEmpty() )
+    h = pm.height();
+  else
+    h = QMAX( pm.height(), lb->fontMetrics().lineSpacing() + 1 );
+
+  return QMAX( h, QApplication::globalStrut().height() );
+}
+
+int KantFileListItem::width( const QListBox* lb ) const
+{
+  if ( text().isEmpty() )
+    return QMAX( pm.width() + 6, QApplication::globalStrut().width() );
+
+  return QMAX( pm.width() + lb->fontMetrics().width( text() ) + 6, QApplication::globalStrut().width() );
+}
 
 void KantFileListItem::paint( QPainter *painter )
-    {
-      painter->drawPixmap( 3, 0, pm );
-      QFont f=painter->font();
-	f.setBold(_bold);
-      painter->setFont(f);
-      if ( !text().isEmpty() ) {
-        QFontMetrics fm = painter->fontMetrics();
-        int yPos;                       // vertical text position
-        if ( pm.height() < fm.height() )
-	  yPos = fm.ascent() + fm.leading()/2;
-        else
-	  yPos = pm.height()/2 - fm.height()/2 + fm.ascent();
-        painter->drawText( pm.width() + 5, yPos, text() );
-      }
+{
+  painter->drawPixmap( 3, 0, pm );
+  QFont f=painter->font();
+  f.setBold(_bold);
+  painter->setFont(f);
+
+  if ( !text().isEmpty() )
+  {
+    QFontMetrics fm = painter->fontMetrics();
+    int yPos;                       // vertical text position
+
+    if ( pm.height() < fm.height() )
+      yPos = fm.ascent() + fm.leading()/2;
+    else
+      yPos = pm.height()/2 - fm.height()/2 + fm.ascent();
+
+    painter->drawText( pm.width() + 5, yPos, text() );
+  }
 }
