@@ -4050,9 +4050,8 @@ void KateDocument::wrapText (uint col)
         if (text[z].isSpace()) break;
       }
 
-      if (z < 1) z=col;
-
-      l->wrap (tl, z);
+      if (!(z < 1))
+        l->wrap (tl, z);
     }
 
     line++;
