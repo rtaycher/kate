@@ -47,7 +47,7 @@ int main( int argc, char **argv )
 
   bool running = false;
 
-  DCOPClient *client=0L;
+  DCOPClient *client=0L, *client2=0L;
   QCString appID = "";
 
   if (!args->isSet ("n"))
@@ -95,6 +95,10 @@ int main( int argc, char **argv )
 
     QByteArray data;
     client->send (appID, "KateApp", "raiseCurrentMainWindow()", data);
+
+    // only to let klauncher not fail on a second instance of kate ;)
+    client2  = new DCOPClient ();
+    client2->registerAs("kate");
 
     KStartupInfo::appStarted();
   }
