@@ -3,6 +3,7 @@
 #include <kdebug.h>
 #include <qgroupbox.h>
 #include <qvgroupbox.h>
+#include <qhgroupbox.h>
 #include <qhbox.h>
 #include <qvbox.h>
 #include <qlayout.h>
@@ -133,14 +134,16 @@ HighlightDialogPage::HighlightDialogPage(HlManager *hlManager, ItemStyleList *st
 
   QFrame *page2 = new QFrame(this);
   addTab(page2,i18n("&Highlight Modes"));
-  grid = new QGridLayout(page2,2,2);
-
-  QVGroupBox *vbox1 = new QVGroupBox( i18n("Config Select"), page2 );
-  grid->addMultiCellWidget(vbox1,0,0,0,1);
+  //grid = new QGridLayout(page2,2,2);
+  QVBoxLayout *bl=new QVBoxLayout(page2);
+  bl->setAutoAdd(true);
+  QHGroupBox *hbox1 = new QHGroupBox( i18n("Config Select"), page2 );
+  QVBox *vbox1=new QVBox(hbox1);
+//  grid->addMultiCellWidget(vbox1,0,0,0,1);
   QVGroupBox *vbox2 = new QVGroupBox( i18n("Item Style"), page2 );
-  grid->addWidget(vbox2,1,0);
-  QVGroupBox *vbox3 = new QVGroupBox( i18n("Highlight Auto Select"), page2 );
-  grid->addWidget(vbox3,1,1);
+//  grid->addWidget(vbox2,1,0);
+  QVGroupBox *vbox3 = new QVGroupBox( i18n("Highlight Auto Select"), hbox1 );
+  //grid->addWidget(vbox3,1,1);
 
   QLabel *label = new QLabel( i18n("Highlight:"), vbox1 );
   hlCombo = new QComboBox( false, vbox1 );
@@ -155,8 +158,8 @@ HighlightDialogPage::HighlightDialogPage(HlManager *hlManager, ItemStyleList *st
   hlCombo->setCurrentItem(hlNumber);
 
 
-  label = new QLabel( i18n("Item:"), vbox1 );
-  itemCombo = new QComboBox( false, vbox1 );
+  label = new QLabel( i18n("Item:"), vbox2 );
+  itemCombo = new QComboBox( false, vbox2 );
   connect( itemCombo, SIGNAL(activated(int)), this, SLOT(itemChanged(int)) );
 
   label = new QLabel( i18n("File Extensions:"), vbox3 );
