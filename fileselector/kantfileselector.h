@@ -52,6 +52,7 @@ class KantFileSelector : public QWidget
     void cmbPathActivated( const KURL& u );
     void cmbPathReturnPressed( const QString& u );
     void dirUrlEntered( const KURL& u );
+    void cmplMatch(const QStringList &);
 
   protected:
     void focusInEvent(QFocusEvent*);

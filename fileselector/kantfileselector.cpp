@@ -33,6 +33,8 @@
 #include <klocale.h>
 #include <kcombobox.h>
 
+#include <kdebug.h>
+
 KantFileSelector::KantFileSelector( QWidget * parent, const char * name ): QWidget(parent, name)
 {
   QVBoxLayout* lo = new QVBoxLayout(this);
@@ -49,6 +51,7 @@ KantFileSelector::KantFileSelector( QWidget * parent, const char * name ): QWidg
   cmbPath = new KURLComboBox( KURLComboBox::Directories, true, this, "path combo" );
   cmbPath->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
   KURLCompletion* cmpl = new KURLCompletion();
+  connect ( cmpl, SIGNAL(matches(const QStringList &)), this, SLOT(cmplMatch(const QStringList &)) );
   cmbPath->setCompletionObject( cmpl );
   lo->addWidget(cmbPath);
 
@@ -141,10 +144,21 @@ void KantFileSelector::cmbPathReturnPressed( const QString& u )
 
 void KantFileSelector::dirUrlEntered( const KURL& u )
 {
+kdDebug()<<"dirUrlEneterd(): "<<u.url()<<endl;
+kdDebug()<<QString("max items: %1").arg(cmbPath->maxItems())<<endl;
    cmbPath->removeURL( u );
    QStringList urls = cmbPath->urls();
    urls.prepend( u.url() );
+   while ( urls.count() >= cmbPath->maxItems() )
+      urls.remove( urls.last() );
    cmbPath->setURLs( urls );
+
+}
+
+void KantFileSelector::cmplMatch( const QStringList & s )
+{
+  //if (KURL(s).isLocalFile())
+    kdDebug()<<"matches: "<<s.join(",")<<endl;
 }
 
 void KantFileSelector::focusInEvent(QFocusEvent*)
