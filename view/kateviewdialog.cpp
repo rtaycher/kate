@@ -244,7 +244,9 @@ IndentConfigTab::IndentConfigTab(QWidget *parent, KateView *view)
 
   opt[4] = new QCheckBox(i18n("Keep Indent &Profile"), this);
   layout->addWidget(opt[4], 0, AlignLeft);
-  opt[4]->setChecked(configFlags & flags[4]);
+//  opt[4]->setChecked(configFlags & flags[4]);
+  opt[4]->setChecked(true);
+  opt[4]->hide();
 
   opt[5] = new QCheckBox(i18n("&Keep Extra Spaces"), this);
   layout->addWidget(opt[5], 0, AlignLeft);
