@@ -345,8 +345,8 @@ void KateMainWindow::setupActions()
   }
 
   // project menu
-  a = new KAction(i18n("&New Project"), "filenew", 0, this, SLOT(slotProjectNew()), actionCollection(), "project_new");
-  a = new KAction(i18n("&Open Project"), "fileopen", 0, this, SLOT(slotProjectOpen()), actionCollection(), "project_open");
+  a = new KAction(i18n("&New Project..."), "filenew", 0, this, SLOT(slotProjectNew()), actionCollection(), "project_new");
+  a = new KAction(i18n("&Open Project..."), "fileopen", 0, this, SLOT(slotProjectOpen()), actionCollection(), "project_open");
   saveProject = new KAction(i18n("&Save Project"), "filesave", 0, this, SLOT(slotProjectSave()), actionCollection(), "project_save");
   closeProject = new KAction(i18n("&Close Project"), "fileclose", 0, this, SLOT(slotProjectClose()), actionCollection(), "project_close");
   
