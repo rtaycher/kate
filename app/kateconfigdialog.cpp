@@ -66,6 +66,8 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   viewManager = parent->viewManager;
   pluginManager = parent->pluginManager;
   mainWindow = parent;
+  
+  setMinimumSize(600,400);
 
   v = viewManager->activeView();
 
