@@ -141,9 +141,7 @@ KateConfigPluginPage::KateConfigPluginPage(QWidget *parent, KateConfigDialog *di
   
   PluginListView* listView = new PluginListView(0, this);
   listView->addColumn(i18n("Name"));
-  listView->addColumn(i18n("Description"));
-  listView->addColumn(i18n("Author"));
-  listView->addColumn(i18n("License"));
+  listView->addColumn(i18n("Comment"));
   QWhatsThis::add(listView,i18n("Here you can see all available Kate plugins. Those with a check mark are loaded, and will be loaded again the next time Kate is started."));
 
   connect(listView, SIGNAL(stateChange(PluginListItem *, bool)), this, SLOT(stateChange(PluginListItem *, bool)));
@@ -153,8 +151,6 @@ KateConfigPluginPage::KateConfigPluginPage(QWidget *parent, KateConfigDialog *di
     PluginListItem *item = new PluginListItem(false, myPluginMan->pluginList().at(i)->load, myPluginMan->pluginList().at(i), listView);
     item->setText(0, myPluginMan->pluginList().at(i)->service->name());
     item->setText(1, myPluginMan->pluginList().at(i)->service->comment());
-    item->setText(2, "");
-    item->setText(3, "");
   }
 }
 
