@@ -38,7 +38,7 @@
 #include "katemainwindowiface.h"
 #include "kateexternaltools.h"
 #include "katesavemodifieddialog.h"
-//#include "katemwmodonhddialog.h"
+#include "katemwmodonhddialog.h"
 
 #include <kmdi/tabwidget.h>
 
@@ -298,24 +298,30 @@ void KateMainWindow::setupActions()
 }
 
 void KateMainWindow::slotDocumentCloseAll() {
-	if (queryClose_internal())
+  if (queryClose_internal())
     KateDocManager::self()->closeAllDocuments(false);
 }
 
 bool KateMainWindow::queryClose_internal() {
-  uint documentCount=KateDocManager::self()->documents();
+   uint documentCount=KateDocManager::self()->documents();
+
+  if ( ! showModOnDiskPrompt() )
+    return false;
+
   QPtrList<Kate::Document> modifiedDocuments=KateDocManager::self()->modifiedDocumentList();
   bool shutdown=(modifiedDocuments.count()==0);
-  if (shutdown) kdDebug(13000)<<"there are no modified documents"<<endl;
+
   if (!shutdown) {
-	shutdown=KateSaveModifiedDialog::queryClose(this,modifiedDocuments);
+    shutdown=KateSaveModifiedDialog::queryClose(this,modifiedDocuments);
   }
-  if (KateDocManager::self()->documents()>documentCount) {
-    			  KMessageBox::information (this,
-                          i18n ("New file opened while trying to close Kate, closing aborted."),
-                          i18n ("Closing Aborted"));
-	shutdown=false;
+
+  if ( KateDocManager::self()->documents() > documentCount ) {
+    KMessageBox::information (this,
+                              i18n ("New file opened while trying to close Kate, closing aborted."),
+                              i18n ("Closing Aborted"));
+    shutdown=false;
   }
+
   return shutdown;
 }
 
@@ -424,8 +430,6 @@ void KateMainWindow::saveOptions(KConfig *config)
   fileselector->writeConfig(config, "fileselector");
 
   filelist->writeConfig(config, "Filelist");
-
-//   config->writeEntry("Sort Type of File List", filelist->sortType());
 
   recentProjects->saveEntries (config, "Recent Projects");
 }
@@ -726,34 +730,6 @@ void KateMainWindow::slotFullScreen(bool t)
 
 bool KateMainWindow::eventFilter( QObject *o, QEvent *e )
 {
-  if ( e->type() == QEvent::WindowActivate && o == this ) {
-    if ( m_modignore )
-    {
-      m_modignore = false;
-      return false;
-    }
-    Kate::Document *doc;
-    typedef QPtrVector<Kate::Document> docvector;
-    docvector list( KateDocManager::self()->documents() );
-    uint cnt = 0;
-    for( doc = KateDocManager::self()->firstDocument(); doc; doc = KateDocManager::self()->nextDocument() )
-    {
-      if ( KateDocManager::self()->documentInfo( doc )->modifiedOnDisc )
-      {
-        list.insert( cnt, doc );
-        cnt++;
-      }
-    }
-
-//     if ( cnt )
-//     {
-//       list.resize( cnt );
-//       KateMwModOnHdDialog *mhdlg = new KateMwModOnHdDialog( list, this );
-//       if ( dlg->exec() == KDialogBase::Cancel )
-//         m_modignore = true;
-//       delete mhdlg;
-//     }
-  }
 
   if ( o == greptool && e->type() == QEvent::Show && m_viewManager->activeView() )
   {
@@ -771,6 +747,52 @@ bool KateMainWindow::eventFilter( QObject *o, QEvent *e )
   }
 
   return KMDI::MainWindow::eventFilter( o, e );
+}
+
+bool KateMainWindow::event( QEvent *e )
+{
+  uint type = e->type();
+  if ( type == QEvent::WindowActivate && modNotification )
+  {
+    if ( m_modignore )
+    {
+      m_modignore = false;
+      return KMDI::MainWindow::event( e );
+    }
+    showModOnDiskPrompt();
+  }
+  // Try to disable the modonhd prompt from showing after internal dialogs.
+  // TODO make this work better.
+  else if ( (type == QEvent::WindowUnblocked || type == QEvent::WindowBlocked) && modNotification)
+    m_modignore = true;
+
+  return KMDI::MainWindow::event( e );
+}
+
+bool KateMainWindow::showModOnDiskPrompt()
+{
+  Kate::Document *doc;
+
+  DocVector list( KateDocManager::self()->documents() );
+  uint cnt = 0;
+  for( doc = KateDocManager::self()->firstDocument(); doc; doc = KateDocManager::self()->nextDocument() )
+  {
+    if ( KateDocManager::self()->documentInfo( doc )->modifiedOnDisc )
+    {
+      list.insert( cnt, doc );
+      cnt++;
+    }
+  }
+
+  if ( cnt )
+  {
+    list.resize( cnt );
+    KateMwModOnHdDialog mhdlg( list, this );
+    bool res = mhdlg.exec();
+
+    return res;
+  }
+  return true;
 }
 
 KMDI::ToolViewAccessor *KateMainWindow::addToolView(KDockWidget::DockPosition position, QWidget *widget, const QPixmap &icon, const QString &sname, const QString &tabToolTip, const QString &tabCaption)
@@ -999,3 +1021,4 @@ void KateMainWindow::slotPipeToConsole ()
   else
     console->sendInput (v->getDoc()->text());
 }
+// kate: space-indent on; indent-width 2; replace-tabs on;
