@@ -55,15 +55,11 @@ class KantApp : public KApplication, public KantAppIface
     long mainWindowsCount ();
     virtual QString  isSingleInstance(){if (_singleInstance) return "true"; else return "false";};
 
-    KantMyPluginIface *pluginIface;
-
-    KantViewManagerIface *viewManagerIface ();
-    KantDocManagerIface *docManagerIface ();
-
   private:
     bool _singleInstance;
     KantDocManager *docManager;
     KantPluginManager *pluginManager;
+    KantMyPluginIface *pluginIface;
 
     QList<KantMainWindow> mainWindows;
 };

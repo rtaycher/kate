@@ -24,7 +24,7 @@
 #include <qlist.h>
 #include <qstring.h>
 
- class KantPluginView : public KParts::Part
+class KantPluginView : public KParts::Part
 {
   Q_OBJECT
 

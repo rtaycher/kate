@@ -62,6 +62,7 @@ class KantPluginManager : public QObject
     void unloadPlugin (PluginListItem *item);
     void enablePluginGUI (PluginListItem *item, KantMainWindow *win);
     void enablePluginGUI (PluginListItem *item);
+    void disablePluginGUI (PluginListItem *item);
 
     PluginList myPluginList;
 };

@@ -150,19 +150,16 @@ void KantPluginManager::enablePluginGUI (PluginListItem *item)
   }
 }
 
-
-    /*
-void KantPluginManager::disablePluginGUI (PluginListItem *item, KantMainWindow *win)
+void KantPluginManager::disablePluginGUI (PluginListItem *item)
 {
   KParts::GUIActivateEvent ev( true );
   QApplication::sendEvent( ((KantApp*)parent())->pluginIface, &ev );
 
   for (int i=0; i< ((KantApp*)parent())->mainWindows.count(); i++)
   {
-    ((KantApp*)parent())->mainWindows.at(i)->guiFactory()->addClient( item->plugin->createView() );
+    for (int z=0; i< item->plugin->viewList.count(); i++)
+    {
+      ((KantApp*)parent())->mainWindows.at(i)->guiFactory()->removeClient( item->plugin->viewList.at (z) );
+    }
   }
-
-  KParts::GUIActivateEvent ev( true );
-  QApplication::sendEvent( ((KantApp*)parent())->pluginIface, &ev );
-  win->guiFactory()->addClient( item->plugin->createView() );
-}   */
+}
