@@ -450,8 +450,10 @@ void KateMainWindow::slotWindowActivated ()
 {
   static QString path;
 
-  if (m_viewManager->activeView() != 0)
+  if (m_viewManager->activeView())
   {
+    documentOpenWith->setEnabled (!m_viewManager->activeView()->document()->url().isEmpty());
+
     if (console && syncKonsole)
     {
       QString newPath = m_viewManager->activeView()->getDoc()->url().directory();
@@ -464,6 +466,10 @@ void KateMainWindow::slotWindowActivated ()
     }
 
     updateCaption (m_viewManager->activeView()->getDoc());
+  }
+  else
+  {
+    documentOpenWith->setEnabled (false);
   }
 
   if (m_viewManager->viewSpaceCount() == 1)
