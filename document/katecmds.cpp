@@ -56,45 +56,57 @@ static void replace(QString &s, QRegExp3 &rx, const QString &with)
 	}
 }
 
-QString SedReplace::sedMagic(QString textLine, QString find, QString rep, bool noCase)
+QString SedReplace::sedMagic(QString textLine, QString find, QString rep, bool noCase, bool repeat)
 {
 	QRegExp3 matcher(find, noCase);
-	int start=matcher.search(textLine, 0);
-	int length=matcher.matchedLength();
-	
-	if (start==-1) return textLine;
 
-	// now set the backreferences in the replacement
-	QStringList backrefs=matcher.capturedTexts();
-	int refnum=1;
-	
-	QStringList::Iterator i = backrefs.begin();
-	++i;
-
-	for (; i!=backrefs.end(); ++i)
+	int start=0;
+	while (start!=-1)
 	{
-		// I need to match "\\" or "", but not "\"
-		QString regex;
-
-		// make sure we match the backref if it's at the front
-		if (refnum==1 && rep.left(2)=="\\1")
-		{
-			regex="^\\\\1";
-		}
-		else
-		{
-			regex="(?:\\\\\\\\|)\\\\";
-			regex+=QString::number(refnum);
-		}
+		start=matcher.search(textLine, start);
 		
-		QRegExp3 re(regex);
-		replace(rep, re, *i);
-		refnum++;
-	}
+		if (start==-1) break;
+		
+		int length=matcher.matchedLength();
 
-	textLine.replace(start, length, rep);
-	replace(textLine, "\\\\", "\\");
-	replace(textLine, "\\/", "/");
+
+		// now set the backreferences in the replacement
+		QStringList backrefs=matcher.capturedTexts();
+		int refnum=1;
+
+		QStringList::Iterator i = backrefs.begin();
+		++i;
+
+		for (; i!=backrefs.end(); ++i)
+		{
+			// I need to match "\\" or "", but not "\"
+			QString regex;
+
+			// make sure we match the backref if it's at the front
+			if (refnum==1 && rep.left(2)=="\\1")
+			{
+				regex="^\\\\1";
+			}
+			else
+			{
+				regex="(?:\\\\\\\\|)\\\\";
+				regex+=QString::number(refnum);
+			}
+
+			QRegExp3 re(regex);
+			QString old;
+			replace(rep, re, *i);
+
+			refnum++;
+		}
+
+		textLine.replace(start, length, rep);
+		replace(textLine, "\\\\", "\\");
+		replace(textLine, "\\/", "/");
+	
+		if (!repeat) break;
+		start+=length;
+	}
 	
 	return textLine;
 }
@@ -111,14 +123,15 @@ static void setLineText(KateView *view, int line, const QString &text)
 bool SedReplace::execCmd(QString cmd, KateView *view)
 {
 	kdDebug()<<"SedReplace::execCmd()"<<endl;
-	if (QRegExp("[$%]?s/.+/.*/i?").find(cmd, 0)==-1)
+	if (QRegExp("[$%]?s/.+/.*/[ig]*").find(cmd, 0)==-1)
 		return false;
 	
 	bool fullFile=cmd[0]=='%';
-	bool noCase=cmd[cmd.length()-1]=='i';
+	bool noCase=cmd[cmd.length()-1]=='i' || cmd[cmd.length()-2]=='i';
+	bool repeat=cmd[cmd.length()-1]=='g' || cmd[cmd.length()-2]=='g';
 	bool onlySelect=cmd[0]=='$';
 
-	QRegExp3 splitter("^[$%]?s/(.*(?:(?:\\\\\\\\)+|[^\\\\\\\\]))/(.*(?:(?:\\\\\\\\)*|[^\\\\\\\\]))/[i]?$");
+	QRegExp3 splitter("^[$%]?s/(.*(?:(?:\\\\\\\\)+|[^\\\\\\\\]))/(.*(?:(?:\\\\\\\\)*|[^\\\\\\\\]))/[ig]*$");
 	splitter.search(cmd);
 	
 	QString find=splitter.cap(1);
@@ -133,7 +146,7 @@ bool SedReplace::execCmd(QString cmd, KateView *view)
 		for (int line=0; line < numLines; line++)
 		{
 			QString text=view->textLine(line);
-			text=sedMagic(text, find, replace, noCase);
+			text=sedMagic(text, find, replace, noCase, repeat);
 			setLineText(view, line, text);
 		}
 	}
@@ -145,7 +158,7 @@ bool SedReplace::execCmd(QString cmd, KateView *view)
 	{ // just this line
 		QString textLine=view->currentTextLine();
 		int line=view->currentLine();
-		textLine=sedMagic(textLine, find, replace, noCase);
+		textLine=sedMagic(textLine, find, replace, noCase, repeat);
 		setLineText(view, line, textLine);
 	}
 	return true;
