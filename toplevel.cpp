@@ -206,7 +206,7 @@ void TopLevel::configure()
 
   // color options
   QVBox *page=kd->addVBoxPage(i18n("Colors"), QString::null,
-                              BarIcon("colors", KIcon::SizeMedium) );
+                              BarIcon("colorize", KIcon::SizeMedium) );
   ColorConfig *colorConfig = new ColorConfig(page);
   QColor* colors = kWrite->getColors();
   colorConfig->setColors(colors);
@@ -223,7 +223,7 @@ void TopLevel::configure()
 
   // edit options
   page=kd->addVBoxPage(i18n("Edit"), QString::null,
-                       BarIcon("kwrite", KIcon::SizeMedium ) );
+                       BarIcon("edit", KIcon::SizeMedium ) );
   EditConfigTab *editConfig = new EditConfigTab(page, kWrite);
 
   // spell checker
