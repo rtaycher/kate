@@ -27,13 +27,9 @@ class QStringList;
 struct syntaxModeList
 {
   QStringList name;
-  QStringList mimeTyp;
+  QStringList mimetype;
   QStringList extensions;
 };
-
-/**
-  *@author Maniac
-  */
 
 class SyntaxDocument : public QDomDocument
 {
@@ -41,10 +37,12 @@ class SyntaxDocument : public QDomDocument
     SyntaxDocument();
     ~SyntaxDocument();
 
-    syntaxModeList modeList();
     QStringList& finddata(const QString& langName,const QString& type);
 
   private:
+    syntaxModeList modeList();
+
+    syntaxModeList myModeList;
     QStringList m_data;
 };
 

@@ -29,34 +29,28 @@
 
 SyntaxDocument::SyntaxDocument() : QDomDocument()
 {
-    QString syntaxPath = locate("data", "kwrite/syntax.xml");
-    if( !syntaxPath.isEmpty() )
+  QString syntaxPath = locate("data", "kwrite/syntax.xml");
+
+  if( !syntaxPath.isEmpty() )
+  {
+    QFile f( syntaxPath );
+    if ( f.open(IO_ReadOnly) )
     {
-        QFile f( syntaxPath );
-        if ( f.open(IO_ReadOnly) )
-            setContent(&f);
-        else
-            KMessageBox::error( 0L, i18n("Can't open %1").arg(syntaxPath) );
-        f.close();
-    } else
-        KMessageBox::error( 0L, i18n("File share/apps/kwrite/syntax.xml not found ! Check your installation!") );
+      setContent(&f);
+      myModeList = modeList();
+    }
+    else
+      KMessageBox::error( 0L, i18n("Can't open %1").arg(syntaxPath) );
+
+    f.close();
+  }
+  else
+    KMessageBox::error( 0L, i18n("File share/apps/kwrite/syntax.xml not found ! Check your installation!") );
 }
 
 SyntaxDocument::~SyntaxDocument()
 {
-
 }
-/*syntax of xml file whitespace is optional
- <language name=XXX>
-  <keywords>
-   <keyword> XXX </keyword>
-  </keywords>
-  <types>
-  <type XXX </type>
-  </types>
-</language>
-
-*/
 
 syntaxModeList SyntaxDocument::modeList()
 {
@@ -70,10 +64,10 @@ syntaxModeList SyntaxDocument::modeList()
     if ( n.isElement())
     {
       QDomElement e = n.toElement();
-      kdDebug() << e.attribute("name") << endl;
+      //kdDebug() << e.attribute("name") << endl;
       modeList.name += e.attribute("name");
-      modeList.name += e.attribute("mimetype");
-      modeList.name += e.attribute("extensions");
+      modeList.mimetype += e.attribute("mimetype");
+      modeList.extensions += e.attribute("extensions");
     }
 
     n = n.nextSibling();
