@@ -32,6 +32,7 @@
 #include <qpainter.h>
 #include <qlabel.h>
 #include <qcursor.h>
+#include <qpopupmenu.h>
 
 //BEGIN KVSSBSep
 /*
