@@ -78,6 +78,8 @@ KantViewManager::KantViewManager (QWidget *parent, KantDocManager *docManager) :
 
 KantViewManager::~KantViewManager ()
 {
+  viewList.setAutoDelete(false);
+  viewSpaceList.setAutoDelete(false);
 }
 
 bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView, KantDocument *doc )

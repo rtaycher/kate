@@ -111,6 +111,8 @@ KantMainWindow::KantMainWindow(KantDocManager *_docManager, KantPluginManager *_
   QPopupMenu* pm_set = (QPopupMenu*)factory()->container("settings", this);
   connect(pm_set, SIGNAL(aboutToShow()), this, SLOT(settingsMenuAboutToShow()));
 
+  if ( ((KantApp *)kapp)->mainWindowsCount () < 1 )
+{
   setUpdatesEnabled(false);
 //  QObject *jw1=new QObject(this);
 //  KXMLGUIClient *gui=new KXMLGUIClient(this);
@@ -125,7 +127,7 @@ KantMainWindow::KantMainWindow(KantDocManager *_docManager, KantPluginManager *_
         for (; pIt.current(); ++pIt )
             guiFactory()->addClient( pIt.current() );
   setUpdatesEnabled(true);
-
+ }
 }
 
 KantMainWindow::~KantMainWindow()
