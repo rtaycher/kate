@@ -29,8 +29,10 @@
 
 #include <kiconloader.h>
 #include <klocale.h>
-#include <qwidgetstack.h>
+#include <ksqueezedtextlabel.h>
 #include <kconfig.h>
+
+#include <qwidgetstack.h>
 #include <qpainter.h>
 #include <qlabel.h>
 #include <qcursor.h>
@@ -302,8 +304,10 @@ KateVSStatusBar::KateVSStatusBar ( KateViewSpace *parent, const char *name )
    m_selectModeLabel->setAlignment( Qt::AlignCenter );
    m_selectModeLabel->installEventFilter( this );
 
-   m_fileNameLabel=new QLabel("",this);
+   m_fileNameLabel=new KSqueezedTextLabel( this );
    addWidget( m_fileNameLabel, 1, true );
+   m_fileNameLabel->setMinimumSize( 0, 0 );
+   m_fileNameLabel->setSizePolicy(QSizePolicy( QSizePolicy::Ignored, QSizePolicy::Fixed ));
    m_fileNameLabel->setAlignment( /*Qt::AlignRight*/Qt::AlignLeft );
    m_fileNameLabel->installEventFilter( this );
 
