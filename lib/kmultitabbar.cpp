@@ -654,6 +654,6 @@ void KMultiTabBar::setPosition(KMultiTabBarPosition pos)
 		m_buttons.at(i)->setPosition(pos);
 }
 
-QPtrList<KMultiTabBarTab>* KMultiTabBar::tabs() const {return m_internal->tabs();}
-QPtrList<KMultiTabBarButton>* KMultiTabBar::buttons() const {return &m_buttons;}
+QPtrList<KMultiTabBarTab>* KMultiTabBar::tabs() {return m_internal->tabs();}
+QPtrList<KMultiTabBarButton>* KMultiTabBar::buttons() {return &m_buttons;}
 

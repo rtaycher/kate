@@ -124,11 +124,11 @@ public:
 	/**
 	 * be carefull, don't delete tabs yourself and don't delete the list itself
 	 */
-        QPtrList<KMultiTabBarTab>* tabs() const;
+        QPtrList<KMultiTabBarTab>* tabs();
 	/**
 	 * be carefull, don't delete buttons yourself and don't delete the list itself
 	 */
-	QPtrList<KMultiTabBarButton>* buttons() const;
+	QPtrList<KMultiTabBarButton>* buttons();
 
 	/**
 	 * might vanish, not sure yet
