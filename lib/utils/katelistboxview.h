@@ -26,14 +26,14 @@
 
 #include "katedockviewbase.h"
 
-class KateListBoxView {
+class KateListboxView : public KateDockViewBase {
   Q_OBJECT
   public:
     KateListboxView( QWidget *parent=0, const char *name=0 );
-    KateListboxView( const QString &titlePrefix, const QString &title, QWidget *parent=0, const char name=0 );
+    KateListboxView( const QString &titlePrefix, const QString &title, QWidget *parent=0, const char *name=0 );
     ~KateListboxView();
     
-    KListbox * listbox();
+    class KListBox * listbox();
   
   private:
     class KateListboxViewPrivate *d;

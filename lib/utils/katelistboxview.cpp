@@ -27,7 +27,7 @@
 // private storage
 class KateListboxViewPrivate {
   public:
-    KListbox *listbox;
+    KListBox *listbox;
 };
 
 
@@ -35,14 +35,14 @@ KateListboxView::KateListboxView( QWidget *parent, const char *name )
   : KateDockViewBase( parent, name),
     d( new KateListboxViewPrivate)
 {
-  d->listbox = new KListbox( this );
+  d->listbox = new KListBox( this );
 }
 
 KateListboxView::KateListboxView( const QString &titlePrefix, const QString &title, QWidget *parent, const char *name )
   : KateDockViewBase( titlePrefix, title, parent, name),
     d( new KateListboxViewPrivate)
 {
-  d->listbox = new KListbox( this );
+  d->listbox = new KListBox( this );
 }
 
 KateListboxView::~KateListboxView()
@@ -50,7 +50,8 @@ KateListboxView::~KateListboxView()
   delete d;
 }
 
-KListbox *KateListboxView::listbox()
+KListBox *KateListboxView::listbox()
 {
   return d->listbox;
 }
+
