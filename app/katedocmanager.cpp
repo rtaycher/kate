@@ -24,7 +24,7 @@ KateDocManager::KateDocManager () : Kate::DocManager ()
 {
   docList.setAutoDelete(true);
   myCurrentDoc = 0L;
-  partLib = KLibLoader::self()->library( "libkatepart" );
+  partLib = KLibLoader::self()->library( "katepart" );
 
   createDoc ();
   myfirstDoc = true;
