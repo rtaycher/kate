@@ -4,14 +4,13 @@ bin_PROGRAMS = kate kwrite
 libkateinterfaces_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugindialogpage.cpp \
 	kateconsole.cpp katedocmanager.cpp katefilelist.cpp katefileselector.cpp \
 	katemainwindow.cpp katepluginmanager.cpp katesplitter.cpp \
-	kateviewmanager.cpp kateviewspace.cpp katemain.cpp \
+	kateviewmanager.cpp kateviewspace.cpp \
 	kateIface.skel kategrepdialog.cpp katefiledialog.cpp katemailfilesdialog.cpp \
         kbookmarkhandler.cpp kactionselector.cpp katedockcontainer.cpp
 
 libkateinterfaces_la_LIBADD   = ../interfaces/libkateinterfacesprivate.la -lkscript ../lib/libkmultitabbar.la
 libkateinterfaces_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
-
-kate_la_SOURCES = dummy_kate_la.cpp
+kate_la_SOURCES = katemain.cpp
 kate_la_LIBADD = libkateinterfaces.la
 kate_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version 
 
