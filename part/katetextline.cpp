@@ -222,11 +222,13 @@ uchar TextLine::getRawAttr() const {
 void TextLine::setContext(signed char *newctx, uint len) 
 { 
   ctxLen = len; 
-  ctx = (signed char*)realloc (ctx, len); 
-  //delete [] ctx; 
-	//ctx = newctx; 
- 
-  for (uint z=0; z < len; z++) ctx[z] = newctx[z]; 
+	
+	if (ctx == 0L)
+    ctx = (signed char*)malloc (len);
+  else
+    ctx = (signed char*)realloc (ctx, len);
+
+  for (uint z=0; z < len; z++) ctx[z] = newctx[z];
 } 
  
 void TextLine::select(bool sel, uint start, uint end) { 
