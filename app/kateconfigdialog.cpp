@@ -182,7 +182,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
 	"<li><b>Classic Style</b> The toolviews (filelist, fileselector, ...) can be docked anywhere and made floating</li>"));
 
   config->setGroup("General");
-  cb_mode->setCurrentItem((config->readEntry("viewMode","")=="Modern")?0:1);
+  cb_mode->setCurrentItem((config->readEntry("viewMode","Modern")=="Modern")?0:1);
 
   lo->addStretch(1); // :-] works correct without autoadd
   // END General page
@@ -289,7 +289,7 @@ void KateConfigDialog::slotApply()
   config->setGroup("General");
   config->writeEntry("reopen at startup", cb_reopenFiles->isChecked());
   
-  if (((config->readEntry("viewMode","")=="Modern")? 0 : 1)!=cb_mode->currentItem())
+  if (((config->readEntry("viewMode","Modern")=="Modern")? 0 : 1)!=cb_mode->currentItem())
   {
     config->writeEntry("viewMode",(cb_mode->currentItem()==0)?"Modern":"Classic");
     config->writeEntry("deleteKDockWidgetConfig",true);
