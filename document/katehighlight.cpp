@@ -374,8 +374,18 @@ HlCHex::HlCHex(int attribute, int context)
 }
 
 const QChar *HlCHex::checkHgl(const QChar *str,bool) {
-  const QChar *s;
+  const QChar *s=str;
+#if 0
+  int i;
+  for (i=0;(*s)!='\0';s++,i++);
+  QString line(str,i);
+  QRegExp3 rx("0[xX][a-fA-F\\d]+[UuLl]?"); // this matches but is also matching parenthesis
+  int pos=rx.search(line,0);
+  if(pos > -1) return str+rx.matchedLength();
+  else
+	return 0L;
 
+#else
   if (str[0] == '0' && ((str[1]&0xdf) == 'X' )) {
     str += 2;
     s = str;
@@ -386,6 +396,7 @@ const QChar *HlCHex::checkHgl(const QChar *str,bool) {
     }
   }
   return 0L;
+#endif
 }
 
 HlCFloat::HlCFloat(int attribute, int context)
@@ -413,15 +424,9 @@ const QChar *HlAnyChar::checkHgl(const QChar *s,bool) {
 HlRegExpr::HlRegExpr(int attribute, int context,QString regexp)
   : HlItem(attribute, context) {
 
-   {
-    handlesLinestart=false;
-     if (regexp.at(0)!=QChar::null)
-       {
-         if (regexp.at(0)=='^') handlesLinestart=true;
-           else regexp='^'+regexp;
-       }
-     Expr=new QRegExp3(regexp);
-   }
+    handlesLinestart=regexp.startsWith("^");
+    if(!handlesLinestart) regexp.prepend("^");
+    Expr=new QRegExp3(regexp);
 }
 
 const QChar *HlRegExpr::checkHgl(const QChar *s,bool lineStart)
@@ -2201,8 +2206,14 @@ HlItem *AutoHighlight::createHlItem(struct syntaxContextData *data, int *res)
                 if (dataname=="StringDetect") return(new HlStringDetect(attr,context,stringdata,insensitive)); else
                 if (dataname=="AnyChar") return(new HlAnyChar(attr,context,(char*)stringdata.latin1())); else
                 if (dataname=="RegExpr") return(new HlRegExpr(attr,context,stringdata)); else
+// apparently these were left out
+	   if(dataname=="HlCChar") return ( new HlCChar(attr,context));else
+      if(dataname=="HlCHex") return (new HlCHex(attr,context));else
+	  if(dataname=="HlCOct") return (new HlCOct(attr,context)); else
+	  if(dataname=="HlCStringChar") return (new HlCStringChar(attr,context)); else
+
                   {
-                    kdDebug(13010)<<"***********************************"<<endl<<"Unknown entry for Context:"<<dataname<<endl;
+                    kdDebug(13010)<< k_lineinfo "****************** "<<endl<<"Unknown entry for Context:"<<dataname<<endl;
                     return 0;
                   }
 
