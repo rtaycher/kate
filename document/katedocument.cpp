@@ -220,8 +220,13 @@ bool KateDocument::needPreHighlight(long till)
 
 void KateDocument::doPreHighlight()
 {
-  PreHighlightedTill=PreHighlightedTill+200;
-  updateLines(PreHighlightedTill,PreHighlightedTill+200);
+  int from = PreHighlightedTill;
+  int till = PreHighlightedTill+200;
+  int max = numLines()-1;
+  if (till > max)
+     till = max;
+  PreHighlightedTill = till;
+  updateLines(from,till);
   emit preHighlightChanged(PreHighlightedTill); 
   if (PreHighlightedTill<RequestPreHighlightTill) QTimer::singleShot(10,this,SLOT(doPreHighlight()));
 }
@@ -1722,7 +1727,7 @@ void KateDocument::updateLines(int startLine, int endLine, int flags, int cursor
   int line, last_line;
   int ctxNum, endCtx;
 //  kdDebug()<<"******************KateDocument::updateLines Checkpoint 1"<<endl;
-  if (buffer->line(startLine)==0) {kdDebug()<<"********************No buffer for line found**************"<<endl; return;};
+  if (buffer->line(startLine)==0) {kdDebug()<<"********************No buffer for line " << startLine << " found**************"<<endl; return;};
 //  kdDebug()<<"KateDocument::updateLines Checkpoint 2"<<endl;
   last_line = lastLine();
 //  if (endLine >= last_line) endLine = last_line;
