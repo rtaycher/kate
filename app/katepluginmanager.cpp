@@ -54,7 +54,8 @@ void KatePluginManager::setupPluginList ()
     info->load = false;
     info->service = ptr;
     info->plugin = 0L;
-
+    info->name=info->service->property("X-KATE-InternalName").toString();
+    if (info->name.isEmpty()) info->name=info->service->library();
     m_pluginList.append(info);
   }
 }
@@ -66,7 +67,7 @@ void KatePluginManager::loadConfig ()
 
   for (uint i=0; i<m_pluginList.count(); i++)
   {
-    if  (config->readBoolEntry(m_pluginList.at(i)->service->library(), false))
+    if  (config->readBoolEntry(m_pluginList.at(i)->name, false))
       m_pluginList.at(i)->load = true;
   }
   delete config;
@@ -79,7 +80,7 @@ void KatePluginManager::writeConfig ()
 
   for (uint i=0; i<m_pluginList.count(); i++)
   {
-    config->writeEntry(m_pluginList.at(i)->service->library(), m_pluginList.at(i)->load);
+    config->writeEntry(m_pluginList.at(i)->name, m_pluginList.at(i)->load);
   }
 
   config->sync();
@@ -152,7 +153,7 @@ Kate::Plugin *KatePluginManager::plugin(const QString &name)
 {
  for (uint i=0; i<m_pluginList.count(); i++)
   {
-    if  (m_pluginList.at(i)->service->library()==name)
+    if  (m_pluginList.at(i)->name==name)
     {
 	if (m_pluginList.at(i)->plugin) return m_pluginList.at(i)->plugin; else break;
     }

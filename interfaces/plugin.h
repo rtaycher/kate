@@ -106,7 +106,7 @@ class InitPlugin : public Plugin
     unsigned int myInitPluginNumber;    
 };
 
-Plugin *createPlugin ( const char* libname, Application *application = 0, const char *name = 0 );
+Plugin *createPlugin ( const char* libname, Application *application = 0, const char *name = 0,const QStringList &args = QStringList() );
 
 /*
  * view plugin class
