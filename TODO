@@ -43,6 +43,3 @@ TODO:
       definition of the end of a word was putting the caret between it and any spaces or
       punctuation that followed.  Word|. Doing it like that put the caret where you needed
       it most often.
-
-    - [internal] promote the things supporting both HTML Tag and Filter to a shared area
-        so they don't dupe between two modules.
