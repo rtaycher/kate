@@ -191,7 +191,7 @@ void TopLevel::setupMenuBar() {
   file->insertItem(i18n("Open &Recent"), recentPopup);
   connect(recentPopup, SIGNAL(activated(int)), SLOT(openRecent(int)));
   file->insertSeparator ();
-  pixmap = BarIcon("filefloppy");
+  pixmap = BarIcon("filesave");
   menuSave = file->addCommand(ctFileCommands, cmSave, pixmap, kWrite, SLOT(save()));
   file->addCommand(ctFileCommands, cmSaveAs, kWrite, SLOT(saveAs()));
   file->insertSeparator ();
@@ -392,7 +392,7 @@ void TopLevel::setupToolBar(){
   toolbar->insertButton(pixmap,0,SIGNAL(clicked()),
     kWrite,SLOT(open()),TRUE,i18n("Open"));
 
-  pixmap = BarIcon("filefloppy");
+  pixmap = BarIcon("filesave");
   toolbar->insertButton(pixmap,0,SIGNAL(clicked()),
     kWrite,SLOT(save()),TRUE,i18n("Save"));
 
