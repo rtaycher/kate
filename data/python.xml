@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
+<language name="Python" section="Sources" extensions="*.py" mimetype="text/x-python">
+<highlighting>
+	<list name="prep">
+		<item> import </item>
+		<item> from </item>
+		<item> as </item>
+	</list>
+	<list name="exceptions">
+		<item>ArithmeticError</item>
+		<item>AssertionError</item>
+		<item>AttributeError</item>
+		<item>DeprecationWarning</item>
+		<item>EOFError</item>
+		<item>Ellipsis</item>
+		<item>EnvironmentError</item>
+		<item>Exception</item>
+		<item>FloatingPointError</item>
+		<item>IOError</item>
+		<item>ImportError</item>
+		<item>IndentationError</item>
+		<item>IndexError</item>
+		<item>KeyError</item>
+		<item>KeyboardInterrupt</item>
+		<item>LookupError</item>
+		<item>MemoryError</item>
+		<item>NameError</item>
+		<item>NotImplemented</item>
+		<item>NotImplementedError</item>
+		<item>OSError</item>
+		<item>OverflowError</item>
+		<item>RuntimeError</item>
+		<item>RuntimeWarning</item>
+		<item>StandardError</item>
+		<item>SyntaxError</item>
+		<item>SyntaxWarning</item>
+		<item>SystemError</item>
+		<item>SystemExit</item>
+		<item>TabError</item>
+		<item>TypeError</item>
+		<item>UnboundLocalError</item>
+		<item>UnicodeError</item>
+		<item>UserWarning</item>
+		<item>ValueError</item>
+		<item>Warning</item>
+		<item>ZeroDivisionError</item>
+	</list>
+	<list name="keywords">
+		<item> and </item>
+		<item> assert </item>
+		<item> break </item>
+		<item> class </item>
+		<item> continue </item>
+		<item> def </item>
+		<item> del </item>
+		<item> elif </item>
+		<item> else </item>
+		<item> except </item>
+		<item> exec </item>
+		<item> finally </item>
+		<item> for </item>
+		<item> from </item>
+		<item> global </item>
+		<item> if </item>
+		<item> in </item>
+		<item> is </item>
+		<item> lambda </item>
+		<item> not </item>
+		<item> or </item>
+		<item> pass </item>
+		<item> print </item>
+		<item> raise </item>
+		<item> return </item>
+		<item> try </item>
+		<item> while </item>
+	</list>
+
+	<contexts>
+      <context name = "Normal" attribute = "Normal Text" lineEndContext="0">
+	<keyword attribute="Keyword"  String = "keywords" context="0"/>
+	<keyword attribute="Preprocessor" String="prep" context="0"/>
+	<keyword attribute="Exceptions" String="exceptions" context="0"/>
+	<StringDetect attribute="Operator" String="None" context="0"/>
+	<RegExpr attribute="Operator" String = "[&lt;&gt;!^&#61;&#37;+*~/-]+" context="0"/>
+	<HlCOct  attribute="Octal"    context="0"/>
+	<HlCHex  attribute="Hex"      context="0"/>
+	<Float   attribute="Float"    context="0"/>
+	<Int     attribute="Decimal"  context="0"/>
+
+        <StringDetect attribute="String" String="&quot;&quot;&quot;" context="3"/>
+	<DetectChar attribute="String" char="&quot;" context="1"/>
+	<DetectChar attribute="String" char="'" context="2"/>
+	<RegExpr String = "#.*$" attribute = "Comment" context="0"/>
+      </context>
+
+      <context name = "Quoted String" attribute = "String" lineEndContext="0">
+        <HlCStringChar attribute="String Char" context="1"/>
+        <DetectChar attribute="String"  char="&quot;" context="0"/>
+      </context>
+
+      <context name = "Apostrophed String" attribute = "String" lineEndContext="0">
+	<HlCStringChar attribute="String Char" context = "2"/>
+	<DetectChar attribute = "String" char = "'" context = "0"/>
+      </context>
+
+      <context name = "Quoted String1" attribute = "String" lineEndContext="3">
+	<HlCStringChar attribute="String Char" context = "3"/>
+	<DetectChar attribute = "String" char = "&quot;&quot;&quot;" context = "0"/>
+      </context>
+	</contexts>
+
+	<itemDatas>
+		<itemData name="Normal Text" defStyleNum="dsNormal"/>
+		<itemData name="Decimal"  defStyleNum="dsDecVal"/>
+		<itemData name="Octal"  defStyleNum="dsBaseN"/>
+		<itemData name="Hex"  defStyleNum="dsBaseN"/>
+		<itemData name="Float"  defStyleNum="dsFloat"/>
+		<itemData name="Char"  defStyleNum="dsChar"/>
+		<itemData name="String Char"  defStyleNum="dsChar"/>
+
+		<itemData name="Keyword"  defStyleNum="dsKeyword"/>
+      		<itemData name="Operator" defStyleNum="dsChar"/>
+      		<itemData name="Comment" defStyleNum="dsComment"/>
+		<itemData name="String"  defStyleNum="dsString"/>
+		<itemData name="String"  defStyleNum="dsString"/>
+      		<itemData name="Preprocessor"  defStyleNum="dsOthers"/>
+      		<itemData name="Exceptions"  defStyleNum="dsNormal" color="#0000FF" selColor="#ffffff" italic="0" bold="1"/>
+	</itemDatas>
+</highlighting>
+ <general>
+    <comments>
+      <comment name="singleLine" start="#" />
+    </comments>
+    <keywords casesensitive="1" />
+  </general>
+</language>
