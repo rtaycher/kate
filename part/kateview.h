@@ -507,6 +507,8 @@ class KateView : public Kate::View
     void bottom() {doCursorCommand(KateView::cmBottom);};
     void shiftBottom() {doCursorCommand(KateView::cmBottom | selectFlag);};
 
+		void slotNewUndo ();
+
 //search/replace functions
   public slots:
     /**

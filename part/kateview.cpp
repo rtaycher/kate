@@ -1325,7 +1325,7 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate
   setupActions();
 
   connect( this, SIGNAL( newStatus() ), this, SLOT( slotUpdate() ) );
-  //connect( this, SIGNAL( newUndo() ), this, SLOT( slotNewUndo() ) );
+  connect( doc, SIGNAL( undoChanged() ), this, SLOT( slotNewUndo() ) );
   connect( doc, SIGNAL( fileNameChanged() ), this, SLOT( slotFileStatusChanged() ) );
   connect( doc, SIGNAL( highlightChanged() ), this, SLOT( slotHighlightChanged() ) );
 
@@ -1471,7 +1471,7 @@ void KateView::slotUpdate()
 
     setVerticalSelection->setChecked(cfg & KateDocument::cfVerticalSelect);
 
-   // slotNewUndo();
+  slotNewUndo();
 }
 void KateView::slotFileStatusChanged()
 {
@@ -1481,31 +1481,26 @@ void KateView::slotFileStatusChanged()
     setEndOfLine->setCurrentItem(eol);
 }
 
-/*void KateView::slotNewUndo()
+void KateView::slotNewUndo()
 {
+  if (doc()->undoCount() == 0)
+  {
+    editUndo->setEnabled(false);
+  }
+  else
+  {
+    editUndo->setEnabled(true);
+  }
 
-    int state = 0; //undoState();
-
-    QString t = i18n("Und&o");   // it would be nicer to fetch the original string
-    if (state & 1) {
-        editUndo->setEnabled(true);
-        t += ' ';
-        t += i18n(undoTypeName(nextUndoType()));
-    } else {
-        editUndo->setEnabled(false);
-    }
-    editUndo->setText(t);
-
-    t = i18n("Re&do");   // it would be nicer to fetch the original string
-    if (state & 2) {
-        editRedo->setEnabled(true);
-        t += ' ';
-        t += i18n(undoTypeName(nextRedoType()));
-    } else {
-        editRedo->setEnabled(false);
-    }
-    editRedo->setText(t);
-}*/
+  if (doc()->redoCount() == 0)
+  {
+    editRedo->setEnabled(false);
+  }
+  else
+  {
+    editRedo->setEnabled(true);
+  }
+}
 
 void KateView::slotHighlightChanged()
 {
