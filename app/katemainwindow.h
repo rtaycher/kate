@@ -64,8 +64,7 @@ class KateMainWindow : public KMdiMainFrm, virtual public KParts::PartBase
 
     Kate::MainWindow *mainWindow () { return m_mainWindow; }
     Kate::ToolViewManager *toolViewManager () { return m_toolViewManager; }
-// #warning FIXME
-    //Kate::Project *activeProject () { return 0; }
+
     Kate::Project *activeProject () { return m_project; }
 
     /**
