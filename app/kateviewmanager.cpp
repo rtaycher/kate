@@ -462,10 +462,20 @@ void KateViewManager::slotDocumentSaveAll()
 
 void KateViewManager::slotDocumentClose ()
 {
+  // no active view, do nothing
   if (!activeView()) return;
+  
+  // prevent close document if only one view alive and the document of
+  // it is not modified and empty !!!
+  if ( (m_viewList.count() == 1)
+       && !activeView()->getDoc()->isModified()
+       && (activeView()->getDoc()->length() == 0) )
+    return;
 
+  // close document
   m_docManager->closeDocument (activeView()->getDoc());
 
+  // create new one, if none alive
   openNewIfEmpty();
 }
 
