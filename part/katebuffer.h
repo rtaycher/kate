@@ -102,7 +102,7 @@ signals:
     * Emitted during loading.
     */
    void linesChanged(int lines);
-   void needHighlight(long,long);
+   void needHighlight(uint,uint);
 
 protected:
    /**
@@ -275,7 +275,7 @@ protected:
    int m_rawData1Start;
    QByteArray m_rawData2;
    int m_rawData2End;
-   long m_rawSize;
+   uint m_rawSize;
    bool b_stringListValid;
    bool b_rawDataValid;
    bool b_vmDataValid;

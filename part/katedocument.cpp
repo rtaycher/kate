@@ -66,7 +66,7 @@ class KateUndo
      
     enum types     
     {
-      internalInsertText,     
+      internalInsertText,
       internalRemoveText,     
       internalWrapLine,     
       internalUnWrapLine,     
@@ -110,7 +110,7 @@ KateUndo::KateUndo (KateDocument *doc, uint type, uint line, uint col, uint len,
   this->type = type;     
   this->line = line;     
   this->col = col;
-  this->len = len;     
+  this->len = len;
   this->text = text;     
 }     
      
@@ -154,7 +154,7 @@ void KateUndo::redo ()
   }     
   else if (type == KateUndo::internalInsertText)     
   {
-    myDoc->internalInsertText (line, col, text);     
+    myDoc->internalInsertText (line, col, text);
   }     
   else if (type == KateUndo::internalUnWrapLine)     
   {     
@@ -242,7 +242,7 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   selectEndCol = -1;
   selectAnchorLine = -1;
   selectAnchorCol = -1;
-     
+
   // some defaults
   _configFlags = KateDocument::cfAutoIndent | KateDocument::cfBackspaceIndents     
     | KateDocument::cfTabIndents | KateDocument::cfKeepIndentProfile     
@@ -272,7 +272,7 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   buffer = new KateBuffer;     
   connect(buffer, SIGNAL(linesChanged(int)), this, SLOT(slotBufferChanged()));     
 //  connect(buffer, SIGNAL(textChanged()), this, SIGNAL(textChanged()));     
-  connect(buffer, SIGNAL(needHighlight(long,long)),this,SLOT(slotBufferHighlight(long,long)));     
+  connect(buffer, SIGNAL(needHighlight(uint,uint)),this,SLOT(slotBufferHighlight(uint,uint)));     
 
   colors[0] = KGlobalSettings::baseColor();     
   colors[1] = KGlobalSettings::highlightColor();     
@@ -286,7 +286,7 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
 
   modified = false;     
 
-  clear();     
+  clear();
 
   internalSetHlMode(0); //calls updateFontData()
   // if the user changes the highlight with the dialog, notify the doc
@@ -330,7 +330,7 @@ KTextEditor::View *KateDocument::createView( QWidget *parent, const char *name )
 {
   return new KateView( this, parent, name);     
 }     
-     
+
 QPtrList<KTextEditor::View> KateDocument::views () const
 {
   return _views;
@@ -374,7 +374,7 @@ QString KateDocument::text ( uint startLine, uint startCol, uint endLine, uint e
       s.append('\n');
   }     
      
-  return s;     
+  return s;
 }
      
 QString KateDocument::textLine( uint line ) const     
@@ -1593,46 +1593,48 @@ void KateDocument::setFont (QFont font)
   updateViews(); //Quick & Dirty Hack (by JoWenn) //Remove in KDE 3.0     
 }     
      
-long  KateDocument::needPreHighlight(long till)     
+uint  KateDocument::needPreHighlight(uint till)     
 {     
-  int max=numLines()-1;     
-  if (till>max)     
-    {     
-      till=max;     
-    }     
-  if (PreHighlightedTill>=till) return -1;     
-     
-  long tmp=RequestPreHighlightTill;     
-  if (RequestPreHighlightTill<till)     
-    {     
-      RequestPreHighlightTill=till;     
-      if (tmp<=PreHighlightedTill) QTimer::singleShot(10,this,SLOT(doPreHighlight()));     
+  uint max=numLines()-1;
+
+  if (till>max)
+    {
+      till=max;
+    }
+  if (PreHighlightedTill>=till)
+    return 0;
+
+  uint tmp=RequestPreHighlightTill;
+  if (RequestPreHighlightTill<till)
+    {
+      RequestPreHighlightTill=till;
+      if (tmp<=PreHighlightedTill) QTimer::singleShot(10,this,SLOT(doPreHighlight()));
     }     
   return RequestPreHighlightTill;
 }
      
 void KateDocument::doPreHighlight()     
 {     
-  int from = PreHighlightedTill;     
-  int till = PreHighlightedTill+200;     
-  int max = numLines()-1;     
-  if (till > max)     
-    {     
+  uint from = PreHighlightedTill;
+  uint till = PreHighlightedTill+200;
+  uint max = numLines()-1;
+  if (till > max)
+    {
       till = max;
-    }     
-  PreHighlightedTill = till;     
-  updateLines(from,till);     
-  emit preHighlightChanged(PreHighlightedTill);     
-  if (PreHighlightedTill<RequestPreHighlightTill)     
-    QTimer::singleShot(10,this,SLOT(doPreHighlight()));     
-}     
-     
-TextLine::Ptr KateDocument::getTextLine(int line) const     
-{     
-  // This is a hack to get this stuff working.     
-  return buffer->line(line);     
-}     
-     
+    }
+  PreHighlightedTill = till;
+  updateLines(from,till);
+  emit preHighlightChanged(PreHighlightedTill);
+  if (PreHighlightedTill<RequestPreHighlightTill)
+    QTimer::singleShot(10,this,SLOT(doPreHighlight()));
+}
+
+TextLine::Ptr KateDocument::getTextLine(int line) const
+{
+  // This is a hack to get this stuff working.
+  return buffer->line(line);
+}
+
 int KateDocument::textLength(int line) {     
   TextLine::Ptr textLine = getTextLine(line);     
   if (!textLine) return 0;     
@@ -2742,7 +2744,7 @@ void KateDocument::slotBufferChanged() {
   updateViews();
 }     
 
-void KateDocument::slotBufferHighlight(long start,long stop) {     
+void KateDocument::slotBufferHighlight(uint start,uint stop) {     
   //kdDebug(13020)<<"KateDocument::slotBufferHighlight"<<QString("%1-%2").arg(start).arg(stop)<<endl;     
   updateLines(start,stop);     
 //  buffer->startLoadTimer();     

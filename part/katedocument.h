@@ -274,7 +274,7 @@ class KateDocument : public Kate::Document
 
   signals:
     void modifiedChanged ();
-    void preHighlightChanged(long);
+    void preHighlightChanged(uint);
 
   // search stuff
   protected:
@@ -346,7 +346,7 @@ class KateDocument : public Kate::Document
     QString getWord(KateViewCursor &cursor);
 
   public:
-    long needPreHighlight(long till);
+    uint needPreHighlight(uint till);
 
     void tagLineRange(int line, int x1, int x2);
     void tagLines(int start, int end);
@@ -394,14 +394,14 @@ class KateDocument : public Kate::Document
   protected slots:
     void clipboardChanged();
     void slotBufferChanged();
-    void slotBufferHighlight(long,long);
+    void slotBufferHighlight(uint,uint);
     void doPreHighlight();
 
 
 // member variables
   protected:
-    long PreHighlightedTill;
-    long RequestPreHighlightTill;
+    uint PreHighlightedTill;
+    uint RequestPreHighlightTill;
     KateBuffer *buffer;
     QColor colors[2];
     HlManager *hlManager;

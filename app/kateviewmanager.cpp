@@ -939,7 +939,7 @@ void KateViewManager::reloadCurrentDoc()
   int cc = v->currentColumn();
   // save bookmarks
   ((KateDocument*)v->doc())->reloadFile();
-  if (v->doc()->numLines() >= cl)
+  if (v->doc()->numLines() >= (uint)cl)
     v->setCursorPosition( cl, cc );
 }
 

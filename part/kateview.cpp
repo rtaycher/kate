@@ -96,7 +96,7 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc) : QWidget(
   connect(xScroll,SIGNAL(valueChanged(int)),SLOT(changeXPos(int)));
   connect(yScroll,SIGNAL(valueChanged(int)),SLOT(changeYPos(int)));
 
-  connect( doc, SIGNAL (preHighlightChanged(long)),this,SLOT(slotPreHighlightUpdate(long)));
+  connect( doc, SIGNAL (preHighlightChanged(uint)),this,SLOT(slotPreHighlightUpdate(uint)));
 
   xPos = 0;
   yPos = 0;
@@ -141,14 +141,14 @@ KateViewInternal::~KateViewInternal()
 }
 
 
-void KateViewInternal::slotPreHighlightUpdate(long line)
+void KateViewInternal::slotPreHighlightUpdate(uint line)
 {
   //kdDebug()<<QString("slotPreHighlightUpdate - Wait for: %1, line:  %2").arg(waitForPreHighlight).arg(line)<<endl;
-  if (waitForPreHighlight!=-1)
+  if (waitForPreHighlight !=0)
     {
        if (line>=waitForPreHighlight)
          {
-           waitForPreHighlight=-1;
+           waitForPreHighlight=0;
            repaint();
          }
     }
@@ -1165,7 +1165,7 @@ void KateViewInternal::paintEvent(QPaintEvent *e) {
   line = (yPos + updateR.y()) / h;
   y = line*h - yPos;
   yEnd = updateR.y() + updateR.height();
-  waitForPreHighlight=myDoc->needPreHighlight(waitForPreHighlight=line+((long)(yEnd-y)/h)+5);
+  waitForPreHighlight=myDoc->needPreHighlight(waitForPreHighlight=line+((uint)(yEnd-y)/h)+5);
 
   while (y < yEnd)
   {

@@ -119,12 +119,12 @@ class KateViewInternal : public QWidget {
     friend class KateIconBorder;
 
   private:
-    long waitForPreHighlight;
-    int iconBorderWidth;
-    int iconBorderHeight;
+    uint waitForPreHighlight;
+    uint iconBorderWidth;
+    uint iconBorderHeight;
 
   protected slots:
-    void slotPreHighlightUpdate(long line);
+    void slotPreHighlightUpdate(uint line);
 
   public:
     KateViewInternal(KateView *view, KateDocument *doc);
