@@ -21,7 +21,6 @@
 //----------------------------------------------------------------------------
 //
 // Virtual Memory Allocator
-// $Id$
 
 #include <unistd.h>
 #include <sys/mman.h>

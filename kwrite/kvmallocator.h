@@ -1,4 +1,4 @@
-/* 
+/*
     This file is part of the KDE libraries
 
     Copyright (C) 2000 Waldo Bastian (bastian@kde.org)
@@ -21,7 +21,6 @@
 //----------------------------------------------------------------------------
 //
 // KDE Virtual Memory Allocator
-// $Id$
 
 #ifndef KVMALLOCATOR_H
 #define KVMALLOCATOR_H
