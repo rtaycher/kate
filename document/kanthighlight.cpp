@@ -911,7 +911,7 @@ Highlight::~Highlight() {
 KConfig *Highlight::getKConfig() {
   KConfig *config;
 
-  config = new KConfig("kwriterc");
+  config = new KConfig("kantrc");
   config->setGroup(QString::fromUtf8(iName) + QString::fromUtf8(" Highlight"));
   return config;
 }
@@ -1331,7 +1331,7 @@ void PascalHighlight::createItemData(ItemDataList &list) {
   list.append(new ItemData("Keyword",dsKeyword));      // 1
   list.append(new ItemData("Data Type",dsDataType));   // 2
   list.append(new ItemData("Number",dsDecVal));        // 3
-	list.append(new ItemData("Hex",dsBaseN));				     // 4			
+	list.append(new ItemData("Hex",dsBaseN));				     // 4
   list.append(new ItemData("String",dsString));        // 5
   list.append(new ItemData("Directive",dsOthers));     // 6
   list.append(new ItemData("Comment",dsComment));      // 7
@@ -1387,7 +1387,7 @@ PovrayHighlight::PovrayHighlight(const char *name) : CHighlight(name) {
   iWildcards = "*.pov;*.inc";
   iMimetypes = "text/x-povray";
 }
- 
+
 PovrayHighlight::~PovrayHighlight() {
 }
 
@@ -1403,7 +1403,7 @@ PovrayHighlight::~PovrayHighlight() {
 void PovrayHighlight::makeContextList() {
   HlContext *c;
   HlKeyword *keyword, *dataType;
- 
+
   // normal context
   contextList[0] = c = new HlContext(dsNormal,0);
   c->items.append(keyword = new HlKeyword(dsKeyword,0));
@@ -1426,10 +1426,10 @@ void PovrayHighlight::makeContextList() {
   c->items.append(new Hl2CharDetect(4,0, '*', '/'));
   //string line continue
   contextList[4] = new HlContext(0,1);
- 
+
   setKeywords(keyword,dataType);
 }
- 
+
 void PovrayHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
 {
   keyword->addList(HlManager::self()->syntax->finddata("Povray","keyword"));
@@ -2257,7 +2257,7 @@ HlManager::HlManager() : QObject(0L)
   {
     hlList.append(new AutoHighlight(modeList.at(i)));
     i++;
-  }              
+  }
 
 */
   kdDebug()<<"Creating HlList"<<endl;
@@ -2300,7 +2300,7 @@ Highlight *HlManager::getHl(int n) {
 int HlManager::defaultHl() {
   KConfig *config;
 
-  config = new KConfig("kwriterc");
+  config = new KConfig("kantrc");
   config->setGroup("General Options");
   return nameFind(config->readEntry("Highlight"));
 }
@@ -2471,7 +2471,7 @@ void HlManager::getDefaults(ItemStyleList &list, ItemFont &font) {
   list.append(new ItemStyle(darkGray,gray,false,true));    //comment
   list.append(new ItemStyle(darkGreen,green,false,false)); //others
 
-  config = new KConfig("kwriterc");
+  config = new KConfig("kantrc");
   config->setGroup("Default Item Styles");
   for (z = 0; z < defaultStyles(); z++) {
     i = list.at(z);
@@ -2498,7 +2498,7 @@ void HlManager::setDefaults(ItemStyleList &list, ItemFont &font) {
   ItemStyle *i;
   char s[64];
 
-  config = new KConfig("kwriterc");
+  config = new KConfig("kantrc");
   config->setGroup("Default Item Styles");
   for (z = 0; z < defaultStyles(); z++) {
     i = list.at(z);
