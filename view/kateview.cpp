@@ -1204,27 +1204,14 @@ void KateViewInternal::paintEvent(QPaintEvent *e) {
   y = line*h - yPos;
   yEnd = updateR.y() + updateR.height();
   waitForPreHighlight=myDoc->needPreHighlight(waitForPreHighlight=line+((long)(yEnd-y)/h)+5);
-  bool pre=(waitForPreHighlight!=-1); 
+
   while (y < yEnd)
   {
     TextLine *textLine;
     int ctxNum = 0;
-
-    /* Should be removed if Waldo fixes the buffer management -BEGIN */
-    if (!pre)
-    if ((myDoc->getTextLineCount()-1)>line)
-    {
-      textLine = myDoc->getTextLine(line);
-      if (line > 0)
-        ctxNum = myDoc->getTextLine(line - 1)->getContext();
-
-      ctxNum = myDoc->highlight()->doHighlight(ctxNum,textLine);
-      textLine->setContext(ctxNum);
-    } /* Should be removed if Waldo fixes the buffer managment -END*/
-
     myDoc->paintTextLine(paint, line, xStart, xEnd, myView->configFlags & KateView::cfShowTabs);
     bitBlt(this, updateR.x(), y, drawBuffer, 0, 0, updateR.width(), h);
-     leftBorder->paintLine(line);
+    leftBorder->paintLine(line);
     line++;
     y += h;
   }
