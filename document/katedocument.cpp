@@ -662,7 +662,7 @@ void KateDocument::updateFontData() {
 
   maxAscent = myFontMetrics.ascent();
   maxDescent = myFontMetrics.descent();
-  tabWidth = myFontMetrics.width('x');
+  tabWidth = myFontMetrics.width(' ');
 
   fontHeight = maxAscent + maxDescent + 1;
   fontAscent = maxAscent;
