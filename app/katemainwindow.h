@@ -108,7 +108,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     // console
     KateConsole *console;
 
-    // managment items
+    // management items
     KateDocManager *m_docManager;
     KateViewManager *m_viewManager;
     KateProjectManager *m_projectManager;

@@ -738,7 +738,7 @@ void KateMainWindow::slotMail()
         continue;
     }
     if ( doc->isModified() ) {
-      // warn that document is modified and offer to save it before preceeding.
+      // warn that document is modified and offer to save it before proceeding.
       int r = KMessageBox::warningYesNoCancel( this,
                 i18n("<p>The current file:<br><strong>%1</strong><br>has been "
                 "modified. Modifications will not be available in the attachment."

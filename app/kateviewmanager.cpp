@@ -72,7 +72,7 @@ KateViewManager::KateViewManager (QWidget *parent, KateDocManager *m_docManager)
 
   this->m_docManager = m_docManager;
 
-  // sizemanagment
+  // sizemanagement
   m_grid = new QGridLayout( this, 1, 1 );
 
   KateViewSpace* vs = new KateViewSpace( this );
@@ -864,7 +864,7 @@ void KateViewManager::reopenDocuments(bool isRestore)
 
     int i = 0;
     QString fn;
-    // check all remote files for existance in a syncrounous way
+    // check all remote files for existence in a synchronous way
     // so that the password dialog only appears ones for every remote source
     while (scfg->hasKey(QString("File%1").arg(i)))
     {

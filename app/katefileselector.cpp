@@ -277,7 +277,7 @@ void KateFileSelector::setupToolbar( KConfig *config )
   toolbar->clear();
   QStringList tbactions = config->readListEntry( "toolbar actions", ',' );
   if ( tbactions.isEmpty() ) {
-    // resonable collection for default toolbar
+    // reasonable collection for default toolbar
     tbactions << "up" << "back" << "forward" << "home" <<
                 "short view" << "detailed view" <<
                 "bookmarks" << "sync_dir";
@@ -474,7 +474,7 @@ bool KateFileSelector::eventFilter( QObject* o, QEvent *e )
   /*
       This is rather unfortunate, but:
       QComboBox does not support setting the size of the listbox to something
-      resonable. Even using listbox->setVariableWidth() does not yeld a
+      reasonable. Even using listbox->setVariableWidth() does not yield a
       satisfying result, something is wrong with the handling of the sizehint.
       And the popup is rather useless, if the paths are only partly visible.
   */
