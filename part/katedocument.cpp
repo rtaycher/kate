@@ -652,7 +652,7 @@ uint KateDocument::numLines() const
      
 int KateDocument::lineLength ( uint line ) const     
 {     
-  TextLine::Ptr l = getTextLine( line );     
+  TextLine::Ptr l = getTextLine( line );
 
 	if ( !l )
     return -1;
@@ -765,7 +765,7 @@ bool KateDocument::internalWrapLine ( uint line, uint col )
   newDocGeometry = true;     
   for (view = myViews.first(); view != 0L; view = myViews.next() )     
   {     
-    view->insLine(line+1);     
+    view->insLine(line+1);
   }     
      
 	emit textChanged ();     
@@ -808,7 +808,8 @@ bool KateDocument::internalUnWrapLine ( uint line, uint col)
   newDocGeometry = true;     
   for (view = myViews.first(); view != 0L; view = myViews.next() )     
   {     
-    view->getCursorPosition (&cLine, &cCol);     
+    view->getCursorPosition (&cLine, &cCol);
+		cCol = view->myViewInternal->cursor.col;
      
     view->delLine(line+1);     
      
@@ -881,11 +882,12 @@ bool KateDocument::internalRemoveLine ( uint line )
   newDocGeometry = true;     
   for (view = myViews.first(); view != 0L; view = myViews.next() )     
   {     
-    view->getCursorPosition (&cLine, &cCol);     
-    view->delLine(line);     
+    view->getCursorPosition (&cLine, &cCol);
+		cCol = view->myViewInternal->cursor.col;        
+    view->delLine(line);
      
     if ( (cLine == line) )     
-      cCol = 0;     
+      cCol = 0;
      
     c.line = line;     
     c.col = cCol;     
@@ -2673,84 +2675,86 @@ void KateDocument::tagAll() {
   int z;     
      
   for (z = 0; z < (int) myViews.count(); z++) {     
-    myViews.at(z)->tagAll();     
-  }     
-}     
-     
-void KateDocument::updateLines(int startLine, int endLine)     
-{     
-  TextLine::Ptr textLine;     
-  uint line, last_line, ctxNumLen, endCtxLen;     
-  signed char *ctxNum, *endCtx;     
-     
-  if (!buffer->line(startLine))     
-	  return;     
-     
-	last_line = lastLine();     
-     
-  line = startLine;     
-     
-	if (line > 0)     
-	{     
-	  ctxNum = getTextLine(line - 1)->getContext();     
-		ctxNumLen = getTextLine(line - 1)->getContextLength();     
-  }     
-	else     
-	{     
-		ctxNumLen = 0;     
-	}     
-     
-	bool stillcontinue=false;     
-     
-	// have changed here some stuff, there was a endless loop (mostly on bigger files)     
-     
-	do     
-	{     
-    textLine = getTextLine(line);     
-     
-		if (!textLine)     
-		  break;     
-     
-    endCtx = textLine->getContext();     
-		endCtxLen = textLine->getContextLength();     
-	  ctxNum = m_highlight->doHighlight(ctxNum, &ctxNumLen, textLine);     
-		//textLine->setContext(ctxNum, ctxNumLen);     
-     
-		if (endCtxLen != ctxNumLen)     
-		  stillcontinue = false;     
-		else     
-		{     
-		  stillcontinue = true;     
-		  for (uint z=0; z < ctxNumLen; z++)     
-			{     
-			  if (ctxNum[z] != endCtx[z])     
-				{     
-				  stillcontinue = false;     
-					break;     
-				}     
-			}     
-    }     
-     
-		line++;     
-  }     
-  while ((line <= last_line) && ((line <= endLine) || stillcontinue)); //|| (!(endCtx == ctxNum)));     
-     
-  tagLines(startLine, line - 1);     
-}     
-     
-     
-void KateDocument::updateMaxLength(TextLine::Ptr &textLine) {     
-  int len;     
-     
-  len = textWidth(textLine,textLine->length());     
-     
-  if (len > maxLength) {     
-    longestLine = textLine;     
-    maxLength = len;     
-    newDocGeometry = true;     
-  } else {     
-    if (!longestLine || (textLine == longestLine && len <= maxLength*3/4)) {     
-      maxLength = -1;     
+    myViews.at(z)->tagAll();
+  }
+}
+
+void KateDocument::updateLines(int startLine, int endLine)
+{
+  TextLine::Ptr textLine;
+  uint line, last_line, ctxNumLen, endCtxLen;
+  signed char *ctxNum, *endCtx;
+	
+	ctxNum = 0L;
+	endCtx = 0L;
+
+  ctxNumLen = 0;
+	endCtxLen = 0;
+
+  if (!buffer->line(startLine))
+	  return;
+
+	last_line = lastLine();
+
+  line = startLine;
+
+	if (line > 0)
+	{
+	  ctxNum = getTextLine(line - 1)->getContext();
+		ctxNumLen = getTextLine(line - 1)->getContextLength();
+  }
+	
+	bool stillcontinue=false;
+
+	// have changed here some stuff, there was a endless loop (mostly on bigger files)
+
+	do
+	{
+    textLine = getTextLine(line);
+
+		if (!textLine)
+		  break;
+
+    endCtx = textLine->getContext();
+		endCtxLen = textLine->getContextLength();
+	  ctxNum = m_highlight->doHighlight(ctxNum, &ctxNumLen, textLine);
+		//textLine->setContext(ctxNum, ctxNumLen);
+
+		if (endCtxLen != ctxNumLen)
+		  stillcontinue = false;
+		else
+		{
+		  stillcontinue = true;
+		  for (uint z=0; z < ctxNumLen; z++)
+			{
+			  if (ctxNum[z] != endCtx[z])
+				{
+				  stillcontinue = false;
+					break;
+				}
+			}
+    }
+
+		line++;
+  }
+  while ((line <= last_line) && ((line <= endLine) || stillcontinue)); //|| (!(endCtx == ctxNum)));
+
+  tagLines(startLine, line - 1);
+}
+
+
+void KateDocument::updateMaxLength(TextLine::Ptr &textLine) {
+  int len;
+
+  len = textWidth(textLine,textLine->length());
+
+  if (len > maxLength) {
+    longestLine = textLine;
+    maxLength = len;
+    newDocGeometry = true;
+  } else {
+    if (!longestLine || (textLine == longestLine && len <= maxLength*3/4)) {
+      maxLength = -1;
       for (int i = 0; i < numLines();i++) {     
         textLine = getTextLine(i);     
         len = textWidth(textLine,textLine->length());     
