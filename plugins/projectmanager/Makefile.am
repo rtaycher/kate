@@ -1,3 +1,5 @@
+EXTRA_DIST = piper
+
 INCLUDES    =  -I$(srcdir)/../../interfaces $(all_includes)
 METASOURCES = AUTO
 

@@ -1,5 +1,5 @@
 SUBDIRS = document view app console data filelist fileselector mainwindow pics sidebar interfaces pluginmanager factory main part plugins
-EXTRA_DIST = piper AUTHORS COPYING ChangeLog NEWS README TODO
+EXTRA_DIST = AUTHORS COPYING ChangeLog NEWS README TODO
 
 messages: rc.cpp
 	$(EXTRACTRC) */*.rc */*.ui */*/*.rc */*/*.ui >> rc.cpp
