@@ -29,7 +29,6 @@
 #include "../fileselector/katefileselector.h"
 #include "../filelist/katefilelist.h"
 #include "../factory/katefactory.h"
-#include "katemenuitem.h"
 
 #include "../view/kateviewdialog.h"
 #include "../document/katedialogs.h"
@@ -518,38 +517,24 @@ void KateMainWindow::slotCurrentDocChanged()
   windowPrev->plug (documentMenu);
   documentMenu->insertSeparator ();
 
-
-  if (docManager->docCount() == 0) return;
-
   uint z=0;
   int i=1;
-  uint id = 0;
 
-//  ->polish(); // adjust system settings
-  QFont fMod = documentMenu->font();
-  fMod.setBold( TRUE );
-  QFont fUnMod = documentMenu->font();
-
-  QString Entry;
+  QString entry;
   while ( z<docManager->docCount() )
   {
     if ( (!docManager->nthDoc(z)->url().isEmpty()) && (docManager->nthDoc(z)->url().filename() != 0) )
-	{
-		Entry=QString("&%1 ").arg(i)+docManager->nthDoc(z)->url().filename();
-	}
-	else
-	{
-		Entry=QString("&%1 ").arg(i)+i18n("Untitled %1").arg(docManager->nthDoc(z)->docID());
-	}
-    id=documentMenu->insertItem(new KateMenuItem(Entry,
-			docManager->nthDoc(z)->isModified() ? fMod : fUnMod,
-                        docManager->nthDoc(z)->isModified() ? SmallIcon("modified") : SmallIcon("null")) );
-    documentMenu->connectItem(id, viewManager, SLOT( activateView ( uint ) ) );
+      entry=QString("&%1 ").arg(i)+docManager->nthDoc(z)->url().filename();
+    else
+      entry=QString("&%1 ").arg(i)+i18n("Untitled %1").arg(docManager->nthDoc(z)->docID());
 
-    documentMenu->setItemParameter( id, docManager->nthDoc(z)->docID() );
+    if (docManager->nthDoc(z)->isModified())
+      entry.append (i18n(" - Modified"));
+
+    documentMenu->insertItem ( entry, viewManager, SLOT (activateView (uint)), 0,  docManager->nthDoc(z)->docID());
 
     if (viewManager->activeView())
-      documentMenu->setItemChecked( id, ((KateDocument *)viewManager->activeView()->doc())->docID() == docManager->nthDoc(z)->docID() );
+      documentMenu->setItemChecked( docManager->nthDoc(z)->docID(), ((KateDocument *)viewManager->activeView()->doc())->docID() == docManager->nthDoc(z)->docID() );
 
     z++;
     i++;
