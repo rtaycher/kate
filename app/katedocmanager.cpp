@@ -201,7 +201,23 @@ Kate::Document *KateDocManager::openURL(const KURL& url,const QString &encoding,
 	doc->openURL(url);
 
       if (doc->url().filename() != "")
-      doc->setDocName (doc->url().filename());
+      {
+  	      QString name=doc->url().filename();
+	      int hassamename = 0;
+
+                 QPtrListIterator<Kate::Document> it(m_docList);
+
+                 for (; it.current(); ++it)
+                 {
+		        if ( it.current()->url().filename().compare( name ) == 0 )
+		        hassamename++;
+   		 }
+ 
+              if (hassamename > 1)
+                  name = QString(name+"<%1>").arg(hassamename);
+
+              doc->setDocName (name);
+      }
       if (id) *id=documentID(doc);
       return doc;
   }
