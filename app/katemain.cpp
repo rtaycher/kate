@@ -87,7 +87,7 @@ int main( int argc, char **argv )
   DCOPClient *client=0L, *client2=0L;
   QCString appID = "";
 
-  if (!args->isSet ("n") && !args->isSet ("s"))
+  if (!args->isSet ("n"))
   {
     client  = new DCOPClient ();
     client->attach();
