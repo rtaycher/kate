@@ -115,7 +115,7 @@ void TopLevel::init()
 
 void TopLevel::loadURL(const KURL &url, int flags)
 {
-  kateView->loadURL(url,flags);
+  kateView->doc()->openURL(url);
 }
 
 
@@ -643,3 +643,5 @@ int main(int argc, char **argv)
   args->clear();
 	return r;
 }
+
+

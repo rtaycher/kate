@@ -1372,7 +1372,7 @@ void KateViewInternal::dropEvent( QDropEvent *event )
       KURL::List textlist;
       if (!KURLDrag::decode(event, textlist)) return;
       KURL::List::Iterator i=textlist.begin();
-      if (myView->canDiscard()) myView->loadURL(*i);
+      if (myView->canDiscard()) myDoc->openURL(*i);
     }
   } else if ( QTextDrag::canDecode(event) && ! myView->isReadOnly() ) {
 
@@ -1849,7 +1849,7 @@ void KateView::customEvent( QCustomEvent *ev )
 void KateView::slotOpenRecent( const KURL &url )
 {
     if ( canDiscard() )
-        loadURL( url );
+        myDoc->openURL( url );
 }
 
 void KateView::setCursorPosition( int line, int col, bool /*mark*/ )
@@ -2083,195 +2083,6 @@ QString KateView::markedText() {
   return myDoc->markedText(configFlags);
 }
 
-void KateView::loadFile(const QString &file, bool insert)
-{
-  VConfig c;
-
-  if (!insert) {
-    myDoc->clear();
-    myDoc->loadFile(file);
-  } else {
-    // TODO: Not yet supported.
-#if 0
-    myViewInternal->getVConfig(c);
-    if (c.flags & cfDelOnInput) myDoc->delMarkedText(c);
-    myDoc->insertFile(c, dev);
-    myDoc->updateViews();
-#endif
-  }
-}
-
-bool KateView::loadFile(const QString &name, int flags) {
-  QFileInfo info(name);
-  if (!info.exists()) {
-    if (flags & KateView::lfNewFile) return true;
-    KMessageBox::sorry(this, i18n("The specified File does not exist"));
-    return false;
-  }
-  if (info.isDir()) {
-    KMessageBox::sorry(this, i18n("You have specified a directory"));
-    return false;
-  }
-  if (!info.isReadable()) {
-    KMessageBox::sorry(this, i18n("You do not have read permission to this file"));
-    return false;
-  }
-
-  // TODO: Select a proper codec.
-  loadFile(name, flags & KateView::lfInsert);
-  return true;
-
-  KMessageBox::sorry(this, i18n("An error occured while trying to open this document"));
-  return false;
-}
-
-bool KateView::writeFile(const QString &name) {
-
-  QFileInfo info(name);
-  if(info.exists() && !info.isWritable()) {
-    KMessageBox::sorry(this, i18n("You do not have write permission to this file"));
-    return false;
-  }
-
-  if (myDoc->writeFile(name))
-     return true; // Success
-
-  KMessageBox::sorry(this, i18n("An error occured while trying to write this document"));
-  return false;
-}
-
-
-void KateView::loadURL(const KURL &url, int flags) {
-/*
-    TODO: Add newDoc code for non-local files. Currently this is not supported there
-          - Martijn Klingens
-*/
-  KURL u(url);
-
-  if (u.isMalformed()) {
-      QString s = i18n("Malformed URL\n%1").arg(url.prettyURL());
-      KMessageBox::sorry(this, s);
-      return;
-  }
-
-  if ( !url.isLocalFile() )
-  {
-    emit statusMsg(i18n("Loading..."));
-
-    NetData d;
-    d.m_url = url;
-    d.m_flags = flags;
-
-    KIO::Job *job = KIO::get( url );
-    m_mapNetData.insert( job, d );
-
-    myDoc->clear();
-
-    connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotJobReadResult( KIO::Job * ) ) );
-    connect( job, SIGNAL( data( KIO::Job *, const QByteArray & ) ), this, SLOT( slotJobData( KIO::Job *, const QByteArray & ) ) );
-  }
-  else {
-    if ( flags & KateView::lfInsert ) {
-      if ( loadFile( url.path(), flags ) )
-        emit statusMsg( i18n( "Inserted : %1" ).arg( url.fileName() ) );
-      else
-        emit statusMsg( QString::null );
-    } else {
-      if (QFileInfo(url.path()).exists()) {
-        if ( loadFile( url.path(), flags ) ) {
-          myDoc->setURL( url, !(flags & KateView::lfNoAutoHl ) );
-          emit statusMsg( i18n( "Read : %1" ).arg( url.fileName() ) );
-        } else
-          emit statusMsg( QString::null );
-      } else {           // don't start whining, just make a new document
-        myDoc->clear();
-        myDoc->setURL( url, !(flags & KateView::lfNoAutoHl ) );
-        myDoc->updateViews();
-        emit statusMsg( i18n( "New File : %1" ).arg( url.fileName() ) );
-        myDoc->setNewDoc( true ); // File is new, check for overwrite!
-      }
-    }
-  }
-}
-
-
-void KateView::writeURL(const KURL &url, int )
-{
-  emit statusMsg(i18n("Saving..."));
-
-  QString path;
-
-  delete m_tempSaveFile;
-  if ( !url.isLocalFile() )
-  {
-    m_tempSaveFile = new KTempFile;
-    path = m_tempSaveFile->name();
-  }
-  else
-  {
-    m_tempSaveFile = 0;
-    path = url.path();
-  }
-
-  if ( !writeFile( path ) )
-     return;
-
-  if ( !url.isLocalFile() )
-  {
-    emit enableUI( false );
-
-    if ( KIO::NetAccess::upload( m_tempSaveFile->name(), url ) )
-    {
-      myDoc->setModified( false );
-      emit statusMsg( i18n( "Wrote %1" ).arg( url.fileName() ) );
-    }
-    else
-    {
-      emit statusMsg( QString::null );
-      KMessageBox::error( this, KIO::NetAccess::lastErrorString() );
-    }
-
-    delete m_tempSaveFile;
-    m_tempSaveFile = 0;
-
-    emit enableUI( true );
-  }
-  else
-  {
-      myDoc->setModified( false );
-      emit statusMsg( i18n( "Wrote %1" ).arg( url.fileName() ) );
-      myDoc->setNewDoc( false ); // File is not new anymore
-  }
-}
-
-void KateView::slotJobReadResult( KIO::Job *job )
-{
-    QMap<KIO::Job *, NetData>::Iterator it = m_mapNetData.find( job );
-    assert( it != m_mapNetData.end() );
-    QByteArray data = (*it).m_data;
-    int flags = (*it).m_flags;
-    KURL url = (*it).m_url;
-    m_mapNetData.remove( it );
-
-    if ( job->error() )
-        job->showErrorDialog();
-
-    QString msg;
-
-    if ( flags & KateView::lfInsert )
-        msg = i18n( "Inserted : %1" ).arg( url.fileName() );
-    else
-        msg = i18n( "Read : %1" ).arg( url.fileName() );
-
-    emit statusMsg( msg );
-    // Something else todo?
-}
-
-void KateView::slotJobData( KIO::Job *, const QByteArray &data )
-{
-  myDoc->appendData(data);
-}
-
 bool KateView::canDiscard() {
   int query;
 
@@ -2309,7 +2120,7 @@ void KateView::open() {
 
   url = KFileDialog::getOpenURL(myDoc->url().url(), QString::null, this);
   if (url.isEmpty()) return;
-  loadURL(url);
+  myDoc->openURL(url);
 }
 
 void KateView::insertFile() {
@@ -2318,7 +2129,7 @@ void KateView::insertFile() {
 
   KURL  url = KFileDialog::getOpenURL(myDoc->url().url(), QString::null, this);
   if (url.isEmpty()) return;
-  loadURL(url,KateView::lfInsert);
+//loadURL  (url,KateView::lfInsert);
 }
 
 KateView::fileResult KateView::save() {
@@ -2335,7 +2146,7 @@ KateView::fileResult KateView::save() {
           return CANCEL;
       }
       if( query == KMessageBox::Yes )
-      writeURL(myDoc->url(),!(KateView::lfNoAutoHl));
+      myDoc->saveAs(myDoc->url());
       else  // Do not overwrite already existing document:
         return saveAs();
     } // New, unnamed document:
@@ -2384,7 +2195,7 @@ KateView::fileResult KateView::saveAs() {
   if( query == KMessageBox::Cancel )
     return CANCEL;
 
-  writeURL(url);
+  myDoc->saveAs(url);
   myDoc->setURL( url, false );
   return OK;
 }
@@ -3449,6 +3260,8 @@ void KateBrowserExtension::slotSelectionChanged()
 {
   emit enableAction( "copy", m_doc->hasMarkedText() );
 }
+
+
 
 
 

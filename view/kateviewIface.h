@@ -52,8 +52,6 @@ k_dcop:
  
    virtual int currentLine()=0;
    virtual int currentColumn()=0;
-
-   virtual bool loadFile(const QString &name, int flags = 0)=0;
-   virtual bool writeFile(const QString &name)=0;
 };
 #endif
+
