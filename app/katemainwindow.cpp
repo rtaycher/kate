@@ -778,11 +778,11 @@ void KateMainWindow::tipOfTheDay()
 KDockWidget *KateMainWindow::addToolView(KDockWidget::DockPosition pos,const char* name, const QPixmap &icon,const QString& caption)
 {
 	KDockWidget *dw=createDockWidget( name,  icon, 0L, caption, "");
-        dw->setEnableDocking(dw->enableDocking() & ~KDockWidget::DockDesktop);
-        dw->setDockWindowType (NET::Tool);
-        dw->setDockWindowTransient (this, true);
 	if (m_dockStyle==ClassicStyle)
 	{			
+	        	dw->setDockWindowType (NET::Tool);
+        		dw->setDockWindowTransient (this, true);
+
 			//KDockWidget=mainDock->
 			KDockWidget *dw1=mainDock->findNearestDockWidget(pos);
 			if (dw1)
@@ -792,6 +792,7 @@ KDockWidget *KateMainWindow::addToolView(KDockWidget::DockPosition pos,const cha
 	}
 	else
 	{
+	        dw->setEnableDocking(dw->enableDocking() & ~KDockWidget::DockDesktop);
 		switch (pos)
 		{
 			case KDockWidget::DockLeft:  dw->manualDock(m_leftDock,KDockWidget::DockCenter,20);
@@ -831,12 +832,14 @@ bool KateMainWindow::removeToolViewWidget(QWidget *w)
 	if (w->parent()->qt_cast("KDockWidget"))
 	{
 		KDockWidget *dw=static_cast<KDockWidget*>(w->parent()->qt_cast("KDockWidget"));
-		if (dw->dockManager()==this)
+//		if (dw->dockManager()==this)
 		{
-			delete w;
-			delete dw;
+
+			dw->undock();
+//			dw->hide();
+			dw->deleteLater();
 			return true;
-		} else return false;
+		} //else return false;
 		
 	}
 	else

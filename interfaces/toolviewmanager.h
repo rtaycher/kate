@@ -43,6 +43,12 @@ class ToolViewManager /* You can assume that the implementation is always at lea
     virtual ~ToolViewManager ();
       
   public:
+
+	// The removeToolView* methods take care of the dockwidget and the widget deletion
+	// This makes it possible to let the widget inherit KXMLGUIClient without crashes
+        // After Kate has returned to the main event loop the widget is going to be destroyed.
+	// Don't use any pointers still referencing it and NEVER delete it yourself !!!!!!!!!
+
 	//The dockwidgets name is "DOCK"+widget->name() Please make sure that this is unique
 	//IMPORTANT: YOU MUST SPECIFY A PIXMAP
     virtual class KDockWidget *addToolViewWidget(KDockWidget::DockPosition,QWidget *widget,const class QPixmap&, const class QString&)=0;
