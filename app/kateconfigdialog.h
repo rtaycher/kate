@@ -51,6 +51,7 @@ class KateConfigDialog : public KDialogBase
 
   protected slots:
     void slotOk();
+    void slotApply();
     void slotChanged();
 
   private:

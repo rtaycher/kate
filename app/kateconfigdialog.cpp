@@ -37,6 +37,7 @@
 #include <qhbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
+#include <qpushbutton.h>
 #include <qradiobutton.h>
 #include <qspinbox.h>
 #include <qvbox.h>
@@ -62,7 +63,7 @@
 KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
  : KDialogBase ( KDialogBase::TreeList,
                  i18n("Configure"),
-                 KDialogBase::Ok | KDialogBase::Cancel | KDialogBase::Help,
+                 KDialogBase::Ok | KDialogBase::Apply|KDialogBase::Cancel | KDialogBase::Help,
                  KDialogBase::Ok,
                  parent,
                  "configdialog" )
@@ -70,6 +71,8 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   KConfig *config = kapp->config();
 
   KWin::setIcons( winId(), kapp->icon(), kapp->miniIcon() );
+
+  actionButton( KDialogBase::Apply)->setEnabled( false );
 
   docManager = ((KateApp *)kapp)->kateDocumentManager();
   viewManager = parent->kateViewManager();
@@ -328,6 +331,12 @@ void KateConfigDialog::removePluginPage (Kate::Plugin *plugin)
 
 void KateConfigDialog::slotOk()
 {
+  slotApply();
+  accept();
+}
+
+void KateConfigDialog::slotApply()
+{
   KConfig *config = kapp->config();
 
   // if data changed apply the kate app stuff
@@ -396,10 +405,11 @@ void KateConfigDialog::slotOk()
   config->sync();
 
   dataChanged = false;
-  accept();
+  actionButton( KDialogBase::Apply)->setEnabled( false );
 }
 
 void KateConfigDialog::slotChanged()
 {
   dataChanged = true;
+  actionButton( KDialogBase::Apply)->setEnabled( true );
 }
