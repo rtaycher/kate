@@ -1,26 +1,7 @@
-*** main-developer (KWrite 1.0.0) ***
-
--Jochen Wilhelmy <digisnap@cs.tu-berlin.de>
-
-*** co-developers ***
-
--Glen Parker <glenebob@nwlink.com>
-  (undo history, kspell-integration)
-
--Michael Koch <koch@kde.org>
-  (port to KParts)
-
--Waldo Bastian <bastian@kde.org>
-  (improved buffer handling)
-
--Christoph Cullmann <crossfire@babylon2k.de>
-  (bugfixes + improvements)
-
-*** patches and bugfixes ***
-
--you? (please tell me :) )
-
-*** translators ***
-
--you?
-
+Christoph "Crossfire" Cullmann <crossfire@babylon2k.de>
+Michael Bartl <michael.bartl1@chello.at>
+Phlip <phlip_cpp@my-deja.com>
+Anders Lund <anders@alweb.dk>
+Matt Newell <newellm@proaxis.com>
+Joseph Wenninger <jowenn@bigfoot.com>
+Michael McCallum <gholam@xtra.co.nz>

@@ -1,5 +1,112 @@
-- implement all KTextEditor methods (on the way)
-- extend the KTextEditor interfaces to let it have stuff like VConfig?
-- obey the mark boolean arguments in all the insert* methods
-   -- or --
-  discuss if we should get rid of them :-)
+Might Be Done:
+    - reopen files as option
+    - put absolute, not relative, paths in the Most Recently Used list under the File menu
+    - [internal] remove the leftover HTML Tag stuff from kantmainwindow.*
+
+TODO:
+    - session managment     [anders:partly done]
+    - make configure dialog work
+    - Tjeck docs for change on hd when focused, warning dialog: reload? yes/no[/view diff]
+  --------- RELEASE 0.2.0 -----------------------------------------------------------------
+
+    - Find Text dialog needs ability to hit all documents.
+
+    - Find Text dialog should persist settings. If you go to a new window it forgets the
+       search string from the prior one
+
+    - Select text, and tap <Ctrl+F>. The Find Text dialog pops up blank. It should pop up
+       with the selected text in it.
+
+    - Put the cursor anywhere on a "word". Don't select it, and tap <Ctrl+F>. The Find Text
+       dialog should pop up with the word in it. The definition of "word" is the same as what
+       a mouse double click would select.
+
+    - Put the cursor anywhere on blank space or punctuation. Tap <Ctrl+F>. The Find Text dialog
+       should pop up with whatever it had before in it
+
+    - The Find Text dialog should support linefeeds; a "regular expressions" option would be best.
+
+    - project managemenet
+    - files that are untitled have to be saved before they can be used in a project
+    - implement configure, compile, run
+    - think about how to implement new! (close all opened files?)
+    - plugin architecture: discuss and decide, then write
+    - context menu for file list [close, close all, new view top/btm/left/right, others?)
+    - feature to open a clicked-on filename in the text
+    - <Ctrl+Backspace> should zilch the prior word
+
+    - <Ctrl+Delete> should zilch the next word
+        yes, Virginia, there is a Delete key
+
+    - <Ctrl+Insert> should copy selected text (same as <Shift+Insert> currently pastes)
+    - <Alt+Backspace> should undo
+    - <Ctrl+Insert> on a blank line should copy the line to the clipboard
+    - <Ctrl+U> should lowercase the next letter or a selection
+    - <Shift+Ctrl+U> should uppercase the next letter or a selection
+
+    - Plug-in to open the H file for a given C or CPP file or vice versa
+      -  that's a plug-in because (shocked gasp) not everyone's a C++ programmer ;-)
+
+    - Store filenames in the File MRU list with their complete paths.
+      - EVEN if the user entered ../filename at the Open dialog to get them.
+
+    - <Shift+Left> should follow text, not go into virtual blank space
+            KWrite uses "virtual blank space". When you click beyond where a
+         programmer knows the \n is on a line, the text insertion caret
+         appears under the mouse location. It is poised to insert enough
+         spaces to hold text there if the user starts typing.
+            The <Left> key flies over a \n into virtual space, instead of wrapping like
+         on nearly all editors (except 'vi'). It's debatable whether the users "intent"
+         is to roam out to a blank area and then type there, or to speed into the
+            However, if the user moves <Shift+Left> over a \n, their only conceivable
+         intent is to select words in the next line, and they should not have to use
+         extra keystrokes, or (heaven forbid) grab the mouse, just to get there.
+
+    - <Right> at the first column should wrap to the previous column. The user's
+      "intent" is not to stare at the wall. Unlike 'vi', real editors understand
+      that even casual users view characters as a string of beads, not as a rack
+      of lines. Keystrokes that work within a line should also work across lines
+      as if \n were just another bead. And editors should not /sometimes/ behave
+      like text is a string of beads, but then /sometimes/ behave like it's a rack
+      of lines
+
+    - <Shift+Right> at the first column should wrap the selection end around to the prior line
+        Fixing these issues will correct a minor display bug in the HTML Tag and
+        Filter Text features. We could adjust those features to use deeper KWrite
+        interfaces, but we should fix the bugs anyway
+
+    - a Mode (for only the hardcore) in which <Left> and <Right> skip an entire word,
+      and <Ctrl+Left> and <Ctrl+Right> skip only one character (reversing
+      the standard keybindings). If we carefully tune the
+      definition of a word, proficient users will use <Left> and <Right> far more often
+      than <Alt+Left> and <Alt+Right>. The Amiga shareware editor UEdit's default
+      key bindings did this. The definition of a word was a C language identifier. The
+      definition of the end of a word was putting the caret between it and any spaces or
+      punctuation that followed.  Word|. Doing it like that put the caret where you needed
+      it most often.
+
+    - open kant. it goes into a small window, with a small Konsole in the bottom. Maximize this
+      window. The Konsole gets very big, and the text area remains the same height.
+      The text area should get big and the Konsole remain the same height.
+
+    - [internal] fix how HTML Tag and Filter re-select your text if it is multi-line.
+      As far as we could tell, KWrite exposed no interface to do this cleanly.
+
+    - [internal] promote the things supporting both HTML Tag and Filter to a shared area
+        so they don't dupe between two modules.
+
+    - The Un*x "standard" concept of drag-selecting text with a mouse, and seeing this
+        text appear in the copy buffer, is inexcusable. The user should be offered a way to
+        confirm their intent to copy text between the mousestroke and the text goes into the
+        copy buffer. I understand the origin of this feature in hacks added to the console
+        text drivers to provide a primitive copy system, but in real copy-n-paste situations
+        the user should be allowed to
+                - drag select the text they want
+                - commit the text with (say) <Ctrl+Insert>
+                - drag select text to be replaced
+                - paste in the replacing text with <Shift+Insert>
+        This is the correct behavior in the face of dialog boxes that appeor with
+        text already in them, but you want to replace it. The alternative is to push the old
+        text over, insert the new text, and delete the old.
+
+
