@@ -192,7 +192,6 @@ KateView* KateViewManager::activeView ()
   // first, try to get one from activeViewSpace()
   KateViewSpace* vs;
   if ( (vs = activeViewSpace()) ) {
-    //kdDebug(13030)<<"Attempting to pick a view from activeViewSpace()"<<endl;
     if ( vs->currentView() ) {
       vs->currentView()->setActive( true );
       return vs->currentView();
@@ -202,8 +201,7 @@ KateView* KateViewManager::activeView ()
   // last attempt: just pick first
   if (viewList.count() > 0)
   {
-   //kdDebug(13030)<<"desperately choosing first view!"<<endl;
-   viewList.first()->setActive( true );
+    viewList.first()->setActive( true );
     return viewList.first();
   }
 
@@ -221,11 +219,10 @@ void KateViewManager::setActiveSpace ( KateViewSpace* vs )
 
 void KateViewManager::setActiveView ( KateView* view )
 {
-//kdDebug(13030)<<QString("setActiveView(): " + view->doc()->url().filename())<<endl;
-   if (activeView())
-     activeView()->setActive( false );
+  if (activeView())
+    activeView()->setActive( false );
 
-   view->setActive( true );
+  view->setActive( true );
 }
 
 void KateViewManager::activateSpace (KateView* v)
@@ -243,18 +240,17 @@ void KateViewManager::activateSpace (KateView* v)
 void KateViewManager::activateView ( KateView *view )
 {
   if (!view) return;
-//kdDebug(13030)<<"activateView"<<endl;
+
   ((KateDocument*)view->doc())->isModOnHD();
   if (!view->isActive())
   {
     if ( !activeViewSpace()->showView (view) )
     {
       // since it wasn't found, give'em a new one
-      kdDebug(13030)<<"Sometimes things aren't what they seem..."<<endl;
       createView (false, 0L, view );
       return;
     }
-//kdDebug(13030)<<"setting view as active"<<endl;
+
     setActiveView (view);
     viewList.findRef (view);
 
@@ -832,7 +828,6 @@ void KateViewManager::removeViewSpace (KateViewSpace *viewspace)
   {
     if (viewspace->currentView())
     {
-      //kdDebug(13030)<<QString("removeViewSpace(): %1 views left").arg(vsvc)<<endl;
       KateView* v = viewspace->currentView();
 
       if (v->isLastView())
@@ -843,7 +838,6 @@ void KateViewManager::removeViewSpace (KateViewSpace *viewspace)
       else
       {
         deleteView( v, false );
-        //kdDebug(13030)<<"KateViewManager::removeViewSpace(): deleting a view: "<<v->doc()->url().filename()<<endl;
       }
     }
     vsvc = viewspace->viewCount();
@@ -854,7 +848,6 @@ void KateViewManager::removeViewSpace (KateViewSpace *viewspace)
   // reparent the other sibling of the parent.
   while (p->children ())
   {
-    //kdDebug(13030)<<"KateViewManager::removeViewSpace(): reparenting something"<<endl;
     QWidget* other = ((QWidget *)(( QList<QObject>*)p->children())->first());
     other->reparent( p->parentWidget(), 0, QPoint(), true );
     // We also need to find the right viewspace to become active,
@@ -882,10 +875,8 @@ void KateViewManager::removeViewSpace (KateViewSpace *viewspace)
 
   // find the view that is now active.
   KateView* v = activeViewSpace()->currentView();
-  if ( v ) {
-    //kdDebug(13030)<<"removeViewSpace(): setting active view: "<<v->doc()->url().filename()<<endl;
+  if ( v )
     activateView( v );
-  }
 
   emit viewChanged();
 }
@@ -992,8 +983,6 @@ void KateViewManager::reopenDocuments(bool isRestore)
 
   if ( scfg->hasGroup("splitter0") && (isRestore || config->readBoolEntry("restore views", false)) )
   {
-    kdDebug(13030)<<"reopenDocumentw(): calling restoreViewConfig()"<<endl;
-
     restoreViewConfig();
     return;
   }
@@ -1025,10 +1014,7 @@ void KateViewManager::reopenDocuments(bool isRestore)
 
 void KateViewManager::saveViewSpaceConfig()
 {
-   if (viewSpaceCount() == 1) {
-     kdDebug(13030)<<"saveViewSpaceConfig(): only one vs, aborting"<<endl;
-     return;
-   }
+   if (viewSpaceCount() == 1) return;
 
    KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
 
@@ -1038,8 +1024,7 @@ void KateViewManager::saveViewSpaceConfig()
    QObjectListIt it( *l );
    if ( (s = (KateSplitter*)it.current()) != 0 )
      saveSplitterConfig( s, 0, scfg );
-   else
-     kdDebug(13030)<<"saveViewSpaceConfig(): PANIC! can't find starting point!"<<endl;
+
    delete l;
 
    scfg->sync();
