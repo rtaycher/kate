@@ -304,6 +304,8 @@ void KateMainWindow::setupActions()
   saveProject = new KAction(i18n("&Save Project"), "filesave", 0, this, SLOT(slotProjectSave()), actionCollection(), "project_save");
   closeProject = new KAction(i18n("&Close Project"), "fileclose", 0, this, SLOT(slotProjectClose()), actionCollection(), "project_close");
 
+  recentProjects = new KRecentFilesAction (i18n("Open &Recent"), KShortcut(), this, SLOT(openConstURLProject (const KURL&)),actionCollection(), "project_open_recent");
+
   settingsConfigure = KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
   settingsConfigure->setWhatsThis(i18n("Configure various aspects of this application and the editing component."));
 
@@ -395,6 +397,8 @@ void KateMainWindow::readOptions(KConfig *config)
 
   filelist->setSortType(config->readNumEntry("Sort Type of File List", KateFileList::sortByID));
 
+  recentProjects->loadEntries (config, "Recent Projects");
+
   readDockConfig();
 }
 
@@ -417,6 +421,8 @@ void KateMainWindow::saveOptions(KConfig *config)
   fileselector->writeConfig(config, "fileselector");
 
   config->writeEntry("Sort Type of File List", filelist->sortType());
+
+  recentProjects->saveEntries (config, "Recent Projects");
 
   writeDockConfig();
 
@@ -937,7 +943,10 @@ Kate::Project *KateMainWindow::openProject (const QString &filename)
   Kate::Project *project = m_projectManager->open (filename);
 
   if (project)
+  {
+    recentProjects->addURL ( KURL(filename) );
     activateProject (project);
+  }
 
   return project;
 }
@@ -991,4 +1000,10 @@ void KateMainWindow::updateCaption (Kate::Document *doc)
   }
 
   setCaption( c, m_viewManager->activeView()->getDoc()->isModified());
+}
+
+void KateMainWindow::openConstURLProject (const KURL&url)
+{
+  openProject (url.path());
+  kdDebug() << "got it muhhhh" << endl;
 }

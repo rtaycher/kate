@@ -44,7 +44,9 @@
 #define DEFAULT_STYLE "Modern"
 
 class GrepDialog;
+
 class KFileItem;
+class KRecentFilesAction;
 
 class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWindowDCOPIface, virtual public KParts::PartBase
 {
@@ -141,6 +143,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
 
     KAction *saveProject;
     KAction *closeProject;
+    KRecentFilesAction *recentProjects;
 
     KActionMenu* documentOpenWith;
 
@@ -246,6 +249,9 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     void slotProjectOpen ();
     void slotProjectSave ();
     void slotProjectClose ();
+
+    // recent files
+    void openConstURLProject (const KURL&);
 
   private slots:
     void projectDeleted (uint projectNumber);

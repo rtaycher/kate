@@ -36,24 +36,24 @@
 
 
 KateProjectViews::KateProjectViews (KateProjectManager *_projectManager, KateMainWindow *_mainWindow, QWidget * parent, const char * name ):  QWidget (parent, name)
-{                              
+{
   setFocusPolicy ((QWidget::FocusPolicy)0);
 
   QVBoxLayout* lo = new QVBoxLayout(this);
-  
+
   m_projectManager = _projectManager;
   m_mainWindow = _mainWindow;
- 
+
   m_stack = new QWidgetStack (this);
   lo->addWidget(m_stack);
   lo->setStretchFactor(m_stack, 2);
-  
+
   // init of the combo box
   for (uint i = 0; i < m_projectManager->projects(); i++)
     projectCreated (m_projectManager->project(i));
-    
+
   projectChanged ();
-    
+
   // connecting
   connect(m_projectManager->projectManager(),SIGNAL(projectCreated(Kate::Project *)),this,SLOT(projectCreated(Kate::Project *)));
   connect(m_projectManager->projectManager(),SIGNAL(projectDeleted(uint)),this,SLOT(projectDeleted(uint)));
@@ -81,7 +81,7 @@ void KateProjectViews::projectCreated (Kate::Project *project)
 
   KateProjectTreeView *tree = new KateProjectTreeView (project, m_mainWindow, this);
   m_wMap[project->projectNumber()] = tree;
-  
+
   m_stack->addWidget (tree);
   m_stack->raiseWidget (tree);
 }
@@ -89,7 +89,11 @@ void KateProjectViews::projectCreated (Kate::Project *project)
 void KateProjectViews::projectDeleted (uint projectNumber)
 {
   QWidget *w = m_wMap[projectNumber];
+
+  if (!w)
+    return;
+
+  m_wMap.remove (projectNumber);
   m_stack->removeWidget (w);
   delete w;
-  m_wMap.remove (projectNumber);
 }

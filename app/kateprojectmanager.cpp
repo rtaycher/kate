@@ -91,6 +91,11 @@ Kate::Project *KateProjectManager::create (const QString &type, const QString &n
 
 Kate::Project *KateProjectManager::open (const QString &filename)
 {
+  // don't open a project 2 times
+  for (uint z=0; z < m_projects.count(); z++)
+    if (m_projects.at(z)->fileName() == filename)
+      return 0;
+
   KateInternalProjectData *data = new KateInternalProjectData ();
   data->proMan = this;
   data->fileName = filename;
