@@ -626,6 +626,7 @@ KFLConfigPage::KFLConfigPage( QWidget* parent, const char *name, KateFileList *f
 
   reload();
 
+  slotEnableChanged();
   connect( cbEnableShading, SIGNAL(toggled(bool)), this, SLOT(slotMyChanged()) );
   connect( cbEnableShading, SIGNAL(toggled(bool)), this, SLOT(slotEnableChanged()) );
   connect( kcbViewShade, SIGNAL(changed(const QColor&)), this, SLOT(slotMyChanged()) );
