@@ -1495,6 +1495,7 @@ KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const char * name, bool HandleOw
   : KTextEditor::View(doc, parent, name), DCOPObject("KWriteIface") {
   setInstance( KWriteFactory::instance() );
   kWriteDoc = doc;
+  m_singleViewMode = doc->isSingleViewMode();
   kWriteView = new KWriteView(this,doc,HandleOwnDND);
 
   doc->addView( this );
@@ -1541,7 +1542,6 @@ KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const char * name, bool HandleOw
 }
 
 KWrite::~KWrite() {
-   kdDebug() << "KWrite::~KWrite" << endl;
   QMap<KIO::Job *, NetData>::Iterator it = m_mapNetData.begin();
   while ( it != m_mapNetData.end() )
   {
@@ -1557,10 +1557,14 @@ KWrite::~KWrite() {
   }
   delete kspell.ksc;
 
-  kWriteDoc->removeView( this );
+  // KParts has already deleted the doc, if in single-view mode
+  if ( !m_singleViewMode )
+  {
+    kWriteDoc->removeView( this );
 
-  if ( kWriteDoc->isLastView(0) && !kWriteDoc->isSingleViewMode() )
-    delete kWriteDoc;
+    if ( kWriteDoc->isLastView(0) )
+      delete kWriteDoc;
+  }
 
   delete kWriteView;
 

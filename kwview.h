@@ -981,6 +981,7 @@ class KWrite : public KTextEditor::View, virtual public KWriteIface {
     KToggleAction *setVerticalSelection;
     KRecentFilesAction *fileRecent;
     KSelectAction *setHighlight, *setEndOfLine;
+    bool m_singleViewMode;
 };
 
 
