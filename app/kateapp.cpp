@@ -29,23 +29,13 @@
 #include <kconfig.h>
 #include <kwin.h>
 
-KateApp::KateApp () : Kate::Application (),DCOPObject ("KateApp" )
-{
+KateApp::KateApp () : Kate::Application ()
+{        
+  config()->setGroup("General");                 
+  _isSDI = config()->readBoolEntry( "sdi", false );
+
   mainWindows.setAutoDelete (false);
-
-  config()->setGroup("startup");
-  _singleInstance=config()->readBoolEntry("singleinstance",true);
-  _isSDI=config()->readBoolEntry("sdi",false);
-
-  KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
-
-  if (args->isSet ("s"))
-    _isSDI = true;
-
-  DCOPClient *client = dcopClient();
-  client->attach();
-  client->registerAs("kate");
-
+  
   docManager = new KateDocManager ();
 
   pluginManager = new KatePluginManager (this);
@@ -61,22 +51,31 @@ KateApp::KateApp () : Kate::Application (),DCOPObject ("KateApp" )
     mainWindows.first()->restore( true );
   else
     mainWindows.first()->restore( false );
-
-  if (!isRestored())
-  {
-    for (int z=0; z<args->count(); z++)
-    {
-      mainWindows.first()->viewManager->openURL( args->url(z) );
-    }
-  }
-
-  if ( mainWindows.first()->viewManager->viewCount () == 0 )
-    mainWindows.first()->viewManager->openURL( KURL() );
 }
 
 KateApp::~KateApp ()
 {
   pluginManager->writeConfig ();
+}          
+
+int KateApp::newInstance()
+{
+  KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
+
+  if (args->isSet ("s"))
+    _isSDI = true; 
+ 
+  raiseCurrentMainWindow ();
+  
+  for (int z=0; z<args->count(); z++)
+  {
+    mainWindows.first()->viewManager->openURL( args->url(z) );
+  }
+ 
+  if ( mainWindows.first()->viewManager->viewCount () == 0 )
+    mainWindows.first()->viewManager->openURL( KURL() );
+    
+  return 0;
 }
 
 KateMainWindow *KateApp::newMainWindow ()

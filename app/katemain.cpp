@@ -20,17 +20,11 @@
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <kglobal.h>
-#include <kstartupinfo.h>
-#include <dcopclient.h>
-#include <kurl.h>
 
 #include "kateapp.h"
 
-#include <stdio.h>
-
 static KCmdLineOptions options[] =
 {
-    { "n", I18N_NOOP("start a new Kate (off by default)"), 0 },
     { "s", I18N_NOOP("start Kate in SDI mode (off by default)"), 0 },
     { "+file(s)",          I18N_NOOP("Files to load"), 0 },
     { 0,0,0 }
@@ -80,74 +74,8 @@ int main( int argc, char **argv )
 
   KCmdLineArgs::init (argc, argv, data);
   KCmdLineArgs::addCmdLineOptions (options);
-  KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
-
-  bool running = false;
-
-  DCOPClient *client=0L, *client2=0L;
-  QCString appID = "";
-
-  if (!args->isSet ("n"))
-  {
-    client  = new DCOPClient ();
-    client->attach();
-
-    QCStringList apps = client->registeredApplications();
-    for ( QCStringList::Iterator it = apps.begin(); it != apps.end(); ++it )
-    {
-      if  ((*it).contains ("kate") > 0)
-      {
-        appID = (*it);
-
-        QByteArray ba,da;
-        QCString replyType;
-
-        if (!(client->call(appID,"KateApp","isSingleInstance()",da,replyType,ba,true)))
-          running = false;
-        else
-        {
-          if (replyType!="QString")
-            running=false;
-          else
-          {
-            QDataStream reply(ba, IO_ReadOnly);
-            QString result;
-            reply>>result;
-            running=(result=="true");
-          }
-        }
-
-        break;
-      }
-    }
-  }
-
-  if (running)
-  {
-    for (int z=0; z<args->count(); z++)
-    {
-      QByteArray data;
-      QDataStream arg(data, IO_WriteOnly);
-
-      arg << args->url(z).url();
-      client->send (appID, "KateApp", "openURL(QString)", data);
-    }
-
-    QByteArray data;
-    client->send (appID, "KateApp", "raiseCurrentMainWindow()", data);
-
-    // only to let klauncher not fail on a second instance of kate ;)
-    client2  = new DCOPClient ();
-    client2->registerAs("kate");
-
-    KStartupInfo::appStarted();
-  }
-  else
-  {
-    KateApp::addCmdLineOptions ();
-    KateApp app;
-    return app.exec();
-  }
-
-  return 0;
+    
+  KateApp::addCmdLineOptions ();  
+  KateApp app;
+  return app.exec();
 }

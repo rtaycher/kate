@@ -18,7 +18,6 @@
 #define __kate_app_h__
 
 #include "katemain.h"
-#include "kateappIface.h"
 #include "../interfaces/application.h"
 #include "../interfaces/mainwindow.h"
 #include "../interfaces/docmanager.h"
@@ -26,7 +25,7 @@
 
 #include <qptrlist.h>
 
-class KateApp : public Kate::Application, public KateAppDCOPIface
+class KateApp : public Kate::Application
 {
   Q_OBJECT
 
@@ -35,16 +34,16 @@ class KateApp : public Kate::Application, public KateAppDCOPIface
 
   public:
     KateApp ();
-    ~KateApp ();
-
+    ~KateApp ();         
+    
+    int newInstance();
+    
     KatePluginManager *getPluginManager(){return pluginManager;};
 
     class KateMainWindow *newMainWindow ();
     void removeMainWindow (KateMainWindow *mainWindow);
     uint mainWindowsCount ();
-    virtual QString  isSingleInstance(){if (_singleInstance) return "true"; else return "false";};
-    virtual QString  isSDI(){if (_isSDI) return "true"; else return "false";};
-
+    
     void raiseCurrentMainWindow ();
 
     Kate::ViewManager *getViewManager ();
@@ -52,7 +51,6 @@ class KateApp : public Kate::Application, public KateAppDCOPIface
     Kate::MainWindow *getMainWindow ();
 
   public:
-    bool _singleInstance;
     bool _isSDI;
 
   private:

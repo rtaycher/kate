@@ -139,8 +139,8 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   // How instances should be handled
   cb_singleInstance = new QCheckBox(frGeneral);
   cb_singleInstance->setText(i18n("Allow Kate to only use one UN&IX process"));
-  config->setGroup("startup");
-  cb_singleInstance->setChecked(config->readBoolEntry("singleinstance",true));
+  config->setGroup("KDE");
+  cb_singleInstance->setChecked(!config->readBoolEntry("MultipleInstances",false));
   QWhatsThis::add( cb_singleInstance, i18n(
         "If this is checked, Kate will only use one UNIX process. If you try running it again, the current "
         "process will get the focus, and open any files you requested to be opened.") );
@@ -265,8 +265,9 @@ int KateConfigDialog::exec()
 void KateConfigDialog::slotApply()
 {
   viewManager->setUseOpaqueResize(cb_opaqueResize->isChecked());
+  config->setGroup("KDE");
+  config->writeEntry("MultipleInstances",!cb_singleInstance->isChecked());
   config->setGroup("startup");
-  config->writeEntry("singleinstance",cb_singleInstance->isChecked());
   config->writeEntry("sdi",/*cb_sdi->isChecked()*/rb_modeSDI->isChecked() );
   config->setGroup("General");
   config->writeEntry("reopen at startup", cb_reopenFiles->isChecked());

@@ -24,7 +24,6 @@ class KateAppDCOPIface : virtual public DCOPObject
   K_DCOP
 
   k_dcop:
-    virtual QString isSingleInstance()=0;
     virtual QString isSDI()=0;
     virtual void openURL (const QString &name=0)=0;
     virtual void raiseCurrentMainWindow ()=0;

@@ -41,7 +41,7 @@
 namespace Kate
 {
 
-Application::Application () : KApplication ()
+Application::Application () : KUniqueApplication (true,true,true)
 {
 }
 

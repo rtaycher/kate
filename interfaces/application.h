@@ -26,12 +26,12 @@
 #ifndef _KATE_APPLICATION_INCLUDE_
 #define _KATE_APPLICATION_INCLUDE_
 
-#include <kapplication.h>
+#include <kuniqueapplication.h>
 
 namespace Kate
 {
 /** This interface provides access to the central Kate objects */
-class Application : public KApplication
+class Application : public KUniqueApplication
 {
   Q_OBJECT
 
