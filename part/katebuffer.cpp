@@ -1,4 +1,4 @@
-/*    
+/*
    This file is part of KWrite    
    Copyright (c) 2000 Waldo Bastian <bastian@kde.org>    
     
@@ -723,21 +723,21 @@ KWBufBlock::buildStringList()
  * Copies a string list back to the raw buffer.    
  */    
 void    
-KWBufBlock::flushStringList()    
-{    
-    //kdDebug(13020)<<"KWBufBlock: flushStringList this ="<< this<<endl;    
-   assert(b_stringListValid);    
-   assert(!b_rawDataValid);    
-    
-   // Stores the data as lines of <lenght><length characters>    
-   // both <length> as well as <character> have size of sizeof(QChar)    
-    
-   // Calculate size.    
-   int size = 0;    
-   for(TextLine::List::const_iterator it = m_stringList.begin();    
-       it != m_stringList.end(); ++it)    
-   {    
-      uint l = (*it)->length();    
+KWBufBlock::flushStringList()
+{
+    //kdDebug(13020)<<"KWBufBlock: flushStringList this ="<< this<<endl;
+   assert(b_stringListValid);
+   assert(!b_rawDataValid);
+
+   // Stores the data as lines of <lenght><length characters>
+   // both <length> as well as <character> have size of sizeof(QChar)
+
+   // Calculate size.
+   int size = 0;
+   for(TextLine::List::const_iterator it = m_stringList.begin();
+       it != m_stringList.end(); ++it)
+   {
+      uint l = (*it)->length();
       uint lctx = (*it)->ctx.size();    
       size += (2*sizeof(uint)) + (l*sizeof(QChar)) + l + 1 + sizeof(uint) + (lctx * sizeof(signed char));    
    }    
@@ -767,7 +767,7 @@ KWBufBlock::flushStringList()
       buf += l;    
     
       memcpy(buf, (char *)&tl->attr, 1);    
-      buf += 1;    
+      buf += 1;
      
       memcpy(buf, &tl->myMark, sizeof(uint));    
       buf += sizeof(uint);    
@@ -797,7 +797,7 @@ KWBufBlock::buildStringListFast()
       memcpy((char *) &l, buf, sizeof(uint)); 
       buf += sizeof(uint); 
       memcpy((char *) &lctx, buf, sizeof(uint)); 
-      buf += sizeof(uint); 
+      buf += sizeof(uint);
     
       TextLine::Ptr textLine = new TextLine(); 
        
@@ -806,28 +806,30 @@ KWBufBlock::buildStringListFast()
         textLine->text.setUnicode ((QChar *) buf, l); 
         buf += (sizeof(QChar)*l); 
  
-        textLine->attributes.duplicate((uchar *)buf, l);    
-        buf += l;    
-      } 
- 
-      uchar a = 0;    
-      memcpy((char *)&a, buf, sizeof(uchar));    
-      buf += sizeof(uchar); 
-      textLine->attr = a;    
- 
-      uint mark = 0;    
-      memcpy((char *)&mark, buf, sizeof(uint));    
-      buf += sizeof(uint);    
-      textLine->myMark = mark;    
-   
-      if (lctx > 0) 
-      { 
-        textLine->ctx.duplicate ((signed char*)buf, lctx);  
-        buf += lctx;  
-      }    
-    
-      m_stringList.push_back (textLine);    
-   }    
+        textLine->attributes.duplicate((uchar *)buf, l);
+				textLine->attributes.detach ();
+        buf += l;
+      }
+
+      uchar a = 0;
+      memcpy((char *)&a, buf, sizeof(uchar));
+      buf += sizeof(uchar);
+      textLine->attr = a;
+
+      uint mark = 0;
+      memcpy((char *)&mark, buf, sizeof(uint));
+      buf += sizeof(uint);
+      textLine->myMark = mark;
+
+      if (lctx > 0)
+      {
+        textLine->ctx.duplicate ((signed char*)buf, lctx);
+				textLine->ctx.detach ();
+        buf += lctx;
+      }
+
+      m_stringList.push_back (textLine);
+   }
    //kdDebug(13020)<<"stringList.count = "<< m_stringList.count()<<" should be %ld"<< m_endState.lineNr - m_beginState.lineNr<<endl;    
    assert((int) m_stringList.size() == (m_endState.lineNr - m_beginState.lineNr));    
    m_stringListIt = m_stringList.begin();    
