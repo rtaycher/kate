@@ -34,6 +34,7 @@
 #include <klistbox.h>
 #include <klocale.h>
 #include <kiconloader.h>
+#include <kmacroexpander.h>
 #include <kmessagebox.h>
 #include <kconfig.h>
 #include <krun.h>
@@ -46,6 +47,7 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qlistbox.h>
+#include <qmap.h>
 #include <qregexp.h>
 #include <qwhatsthis.h>
 
@@ -141,34 +143,43 @@ void KateExternalToolAction::slotRun()
 
   QRegExp re("[^%]%(\\w+)"); // never at the start of the string
   int pos = 0;
+  QMap<QString, QString> m;
   while( (pos = re.search( cmd, pos )) > -1 )
   {
-    QString exp;
     if ( re.cap(1) == "URL" )
-      exp = mw->activeDocumentUrl().url();
-    else if ( re.cap(1) == "URLs" ) // all open docs URLS if available
-      for( Kate::Document *doc = mw->m_docManager->firstDocument(); doc; doc = mw->m_docManager->nextDocument() )
-      {
-        if ( ! doc->url().isEmpty() )
-          exp += " " + doc->url().url();
-      }
+      m.insert( "URL", mw->activeDocumentUrl().url());
     else if ( re.cap(1) == "directory" ) // directory of current doc
-      exp = mw->activeDocumentUrl().directory();
+      m.insert( "directory", mw->activeDocumentUrl().directory() );
     else if ( re.cap(1) == "filename" )
-      exp = mw->activeDocumentUrl().filename();
+      m.insert( "filename", mw->activeDocumentUrl().filename());
     else if ( re.cap(1) == "line" ) // cursor line of current doc
-      exp = QString::number( view->cursorLine() );
+      m.insert( "line", QString::number( view->cursorLine() ));
     else if ( re.cap(1) == "col" ) // cursor col of current doc
-      exp = QString::number( view->cursorColumn() );
+      m.insert( "col", QString::number( view->cursorColumn() ));
     else if ( re.cap(1) == "selection" ) // selection of current doc if any
-      exp = view->getDoc()->selection();
+      m.insert( "selection", view->getDoc()->selection());
     else if ( re.cap(1) == "text" ) // text of current doc
-      exp = view->getDoc()->text();
-    else
-      exp = "";
+      m.insert( "text", view->getDoc()->text());
 
-    cmd.replace( pos+1, re.cap(1).length()+1, exp );
-    pos += exp.length()+1;
+    pos += re.matchedLength();
+  }
+
+  cmd.replace( QRegExp("[^%]%URLs"), "%%URLs" );
+
+  cmd = KMacroExpander::expandMacrosShellQuote( cmd, m );
+
+  if ( cmd.contains("%URLs") )
+  {
+    QStringList l;
+    for( Kate::Document *doc = mw->m_docManager->firstDocument(); doc; doc = mw->m_docManager->nextDocument() )
+    {
+      if ( ! doc->url().isEmpty() )
+        l << doc->url().url();
+    }
+    QMap<QString, QStringList> m1;
+    m1.insert( "URLs", l );
+
+    cmd = KMacroExpander::expandMacrosShellQuote( cmd, m1 );
   }
 
   kdDebug()<<"=== Running command: "<<cmd<<endl;
