@@ -44,6 +44,8 @@ class KToggleAction;
 class KRecentFilesAction;
 class KSelectAction;
 
+class QPrinter;
+
 namespace KIO { class FileCopyJob; }
 
 class KTempFile;
@@ -813,7 +815,14 @@ class KWrite : public KTextEditor::View, virtual public KWriteIface {
     */
     void writeSessionConfig(KConfig *);
 
-//syntax highlight
+  // printing
+  public slots:
+    void printDlg ();
+
+  protected:
+    QPrinter *printer;
+
+  // syntax highlight
   public slots:
     /**
       Presents the highlight setup dialog to the user

@@ -1530,6 +1530,8 @@ KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const char * name, bool HandleOw
 
   m_tempSaveFile = 0;
 
+  printer = new QPrinter();
+
   // something is wrong with the design here! the signals belong to the doc!
   connect( this, SIGNAL( newStatus() ), this, SLOT( slotUpdate() ) );
   connect( this, SIGNAL( newUndo() ), this, SLOT( slotNewUndo() ) );
@@ -1572,6 +1574,7 @@ KWrite::~KWrite() {
   delete kWriteView;
 
   delete m_tempSaveFile;
+  delete printer;
 }
 
 void KWrite::setupActions()
@@ -3596,15 +3599,57 @@ void KWrite::slotNewUndo()
     }
     editRedo->setText(t);
 }
+
 void KWrite::slotHighlightChanged()
 {
     setHighlight->setCurrentItem(getHl());
 }
 
-
 void KWrite::dropEventPassEmited (QDropEvent* e)
 {
   emit dropEventPass(e);
+}
+
+void KWrite::printDlg ()
+{
+  if ( printer->setup( this ) )
+  {
+    QPainter paint( printer );
+
+    int y = 0;
+
+
+    QPaintDeviceMetrics pdm( printer );
+    int max = pdm.height();
+
+
+     QFont font( "Helvetica", 8 );
+     paint.setFont( font );
+     QFontMetrics fm = paint.fontMetrics();
+
+    int lineCount = 0;
+    while (  lineCount <= kWriteDoc->lastLine()  )
+    {
+
+
+
+       if (y+fm.ascent()+fm.descent() >= max )
+      {
+        printer->newPage();
+        y=0;
+      }
+
+     y += fm.ascent();
+     paint.drawText( 10, y, kWriteDoc-> textLine(lineCount) );
+     y += fm.descent();
+
+
+
+
+
+      lineCount++;
+    }
+    }
 }
 
 // Applies a new pattern to the search context.
