@@ -1,4 +1,4 @@
-[Desktop Entry]     
+[Desktop Entry]
 Type=Service
 ServiceTypes=Kate/ProjectPlugin
 X-KDE-Library=katedefaultprojectplugin
@@ -24,13 +24,14 @@ Name[fi]=Katen oletusprojektiliitännäinen
 Name[fr]=Module de projet par défaut de Kate
 Name[gl]=Plugin do Proxecto por Defecto de Kate
 Name[he]=תוסף פרויקט ברירת מחדל ל-Kate
-Name[hi]=केएटीई डिफ़ॉल्ट परियोजना प्लगइन
+Name[hi]=के-एटीई डिफ़ॉल्ट परियोजना प्लगइन
 Name[hr]=Kate umetak za uobičajene projekte
 Name[hu]=Kate alapértelmezett projekt-bővítőmodul
 Name[is]=Sjálfgefna verkíforritið fyrir Kate
 Name[it]=Plugin predefinito progetti di Kate
 Name[ja]=Kateデフォルトプロジェクトプラグイン
 Name[lo]=ປັກອິນຂອງKate
+Name[mk]=Приклучок за стандарден проект на Kate 
 Name[mn]=Kate стандарт проект плугин
 Name[mt]=Proġett Impliċitu Kate
 Name[nb]=Standard prosjekt-tilleggsprogram for Kate
@@ -76,13 +77,14 @@ Comment[fi]=Projektien oletusliitännäinen
 Comment[fr]=Module par défaut pour les projets
 Comment[gl]=Plugin por Defecto para os Proxectos
 Comment[he]=תוסף ברירת מחדל לפרויקטים
-Comment[hi]= परियोजना हेतु डिफ़ॉल्ट प्लगइन
+Comment[hi]= परियोजना के लिए डिफ़ॉल्ट प्लगइन
 Comment[hr]=Uobičajeni umetak za projekte
 Comment[hu]=Alapértelmezett bővítőmodul projektekhez
 Comment[is]=Sjálfgefna Kate íforritið
 Comment[it]=Plugin predefinito per i progetti
 Comment[ja]=プロジェクト用標準プラグイン
 Comment[lo]=ປັກອິນສຳຫລັບກ່ອງຄຸນສົມບັດ
+Comment[mk]=Стандарден приклучок за проекти
 Comment[mn]=Проектын стандарт плугин
 Comment[nb]=Standard tilleggsprogram for prosjekter
 Comment[nl]=Standaard-plugin voor projecten
