@@ -348,33 +348,32 @@ void KateApp::openURL (const QString &name)
   KWin::activateWindow (m_mainWindows.at(n)->winId());
 }
 
-void KateApp::raiseCurrentMainWindow ()
-{
-  int n = m_mainWindows.find ((KateMainWindow *)activeWindow());
-
-  if (n < 0)
-    n=0;
-
-  m_mainWindows.at(n)->raise();
-  KWin::activateWindow (m_mainWindows.at(n)->winId());
-}
-
-Kate::MainWindow *KateApp::activeMainWindow ()
-{
-  int n = m_mainWindows.find ((KateMainWindow *)activeWindow());
-
-  if (n < 0)
-    n=0;
-
-  return m_mainWindows.at(n)->mainWindow();
-}
-
 KateMainWindow *KateApp::activeKateMainWindow ()
 {
+  if (m_mainWindows.isEmpty())
+    return 0;
+
   int n = m_mainWindows.find ((KateMainWindow *)activeWindow());
 
   if (n < 0)
     n=0;
 
   return m_mainWindows.at(n);
+}
+
+Kate::MainWindow *KateApp::activeMainWindow ()
+{
+  if (!activeKateMainWindow())
+    return 0;
+    
+  return activeKateMainWindow()->mainWindow();
+}
+
+void KateApp::raiseCurrentMainWindow ()
+{
+  if (!activeKateMainWindow())
+    return;
+
+  activeKateMainWindow()->raise();
+  KWin::activateWindow (activeKateMainWindow()->winId());
 }

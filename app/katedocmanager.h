@@ -25,6 +25,7 @@
 
 #include <kate/document.h>
 
+#include <qguardedptr.h>
 #include <qptrlist.h>
 #include <qobject.h>
 #include <qptrdict.h>
@@ -113,7 +114,7 @@ class KateDocManager : public QObject
     QPtrList<Kate::Document> m_docList;
     QIntDict<Kate::Document> m_docDict;
     QPtrDict<KateDocumentInfo> m_docInfos;
-    Kate::Document *m_currentDoc;
+    QGuardedPtr<Kate::Document> m_currentDoc;
 
     DCOPObject *m_dcop;
     

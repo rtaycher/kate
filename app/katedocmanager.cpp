@@ -50,7 +50,6 @@ KateDocManager::KateDocManager (QObject *parent) : QObject (parent)
   m_docList.setAutoDelete(true);
   m_docDict.setAutoDelete(false);
   m_docInfos.setAutoDelete(true);
-  m_currentDoc = 0L;
 
   m_dcop = new KateDocManagerDCOPIface (this);
 
@@ -108,7 +107,8 @@ Kate::Document *KateDocManager::activeDocument ()
 
 void KateDocManager::setActiveDocument (Kate::Document *doc)
 {
-  if (m_currentDoc != doc)
+  if ( (m_currentDoc && !doc) || (!m_currentDoc && doc)
+       || (m_currentDoc->documentNumber() != doc->documentNumber()) )
   {
     emit documentChanged ();
     emit m_documentManager->documentChanged ();
