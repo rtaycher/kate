@@ -48,7 +48,7 @@
 <!ATTLIST context
   attribute CDATA #REQUIRED
   lineEndContext CDATA #REQUIRED
-  name CDATA #REQUIRED
+  name CDATA #IMPLIED
 >
 
 <!ENTITY keyword (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
@@ -117,4 +117,34 @@
   attribute CDATA #REQUIRED
   context CDATA #REQUIRED
   String CDATA #REQUIRED
+>
+
+<!ENTITY LineContinue (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ATTLIST LineContinue
+  attribute CDATA #REQUIRED
+  context CDATA #REQUIRED
+>
+
+<!ENTITY HlCStringChar (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ATTLIST HlCStringChar
+  attribute CDATA #REQUIRED
+  context CDATA #REQUIRED
+>
+
+<!ENTITY RangeDetect (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ATTLIST RangeDetect
+  attribute CDATA #REQUIRED
+  context CDATA #REQUIRED
+  char CDATA #REQUIRED
+  char1 CDATA #REQUIRED
+>
+
+<!ENTITY itemDatas (itemData)>
+<!ATTLIST itemDatas
+>
+
+<!ENTITY itemData EMPTY>
+<!ATTLIST itemData
+  name CDATA #REQUIRED
+  defStyleNum CDATA #REQUIRED
 >
