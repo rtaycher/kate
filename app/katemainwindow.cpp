@@ -128,7 +128,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   // setup the most important widgets
   setupMainWindow();
-  
+
   // setup the actions
   setupActions();
   projectlist->setupActions();
@@ -176,6 +176,9 @@ void KateMainWindow::setupMainWindow ()
   greptool = new GrepTool( this, "greptool" );
   greptool->installEventFilter( this );
   connect(greptool, SIGNAL(itemSelected(const QString &,int)), this, SLOT(slotGrepToolItemSelected(const QString &,int)));
+  // WARNING HACK - anders: showing the greptool seems to make the menu accels work
+  greptool->show();
+  greptool->hide();
 
   KMdiChildView* pMDICover = new KMdiChildView("MainDock");
   pMDICover->setName("MainDock");
@@ -316,39 +319,39 @@ void KateMainWindow::setupActions()
 bool KateMainWindow::queryClose()
 {
   kdDebug(13000)<<"QUERY CLOSE ********************"<<endl;
-  
+
   // session saving, can we close all projects & views ?
   // just test, not close them actually
   if (kapp->sessionSaving())
-  {    
+  {
     return ( m_projectManager->queryCloseAll () &&
              m_docManager->queryCloseDocuments (this) );
   }
-  
+
   // normal closing of window
   // allow to close all windows until the last without restrictions
   if ( ((KateApp *)kapp)->mainWindows () > 1 )
     return true;
-    
+
   // last one: check if we can close all projects/document, try run
   // and save projects/docs if we really close down !
   if ( m_projectManager->queryCloseAll () &&
        m_docManager->queryCloseDocuments (this) )
   {
     KSimpleConfig scfg ("katesessionrc", false);
-    
+
     KConfig *config = kapp->config();
     config->setGroup("General");
-  
+
     if (config->readBoolEntry("Restore Projects", false))
       m_projectManager->saveProjectList (&scfg);
-  
+
     if (config->readBoolEntry("Restore Documents", false))
       m_docManager->saveDocumentList (&scfg);
-    
+
     if (config->readBoolEntry("Restore Window Configuration", false))
       saveProperties (&scfg);
-  
+
     return true;
   }
 
@@ -546,10 +549,10 @@ void KateMainWindow::slotConfigure()
 {
   if (!m_viewManager->activeView())
     return;
-    
+
   KateConfigDialog* dlg = new KateConfigDialog (this, m_viewManager->activeView());
   dlg->exec();
-  
+
   delete dlg;
 }
 
@@ -754,7 +757,7 @@ KMdiToolViewAccessor *KateMainWindow::addToolView(KDockWidget::DockPosition posi
 {
   widget->setIcon(icon);
   widget->setCaption(sname);
-  
+
   return addToolWindow(widget, position, getMainDockWidget(), 25, tabToolTip, tabCaption);
 }
 
