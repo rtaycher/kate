@@ -83,7 +83,8 @@
 
 uint KateMainWindow::uniqueID = 1;
 
-KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager *_m_pluginManager, KateProjectManager *projectMan) : KMdiMainFrm (0)
+KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager *_m_pluginManager, KateProjectManager *projectMan) :
+	KMdiMainFrm (0,(QString("__KateMainWindow#%1").arg(uniqueID)).latin1(),KMdi::IDEAlMode)
 {
   myID = uniqueID;
   uniqueID++;
@@ -151,7 +152,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   // call it as last thing, must be sure everything is already set up ;)
   setAutoSaveSettings( QString::fromLatin1("MainWindow"), true );
 
-  switchToIDEAlMode();
+//  switchToIDEAlMode();
 
 }
 
@@ -775,7 +776,7 @@ KDockWidget *KateMainWindow::addToolView(KDockWidget::DockPosition pos,const cha
 //	KDockWidget *dw=createDockWidget( name,  icon, 0L, caption, caption);
 
 	tmp->wrapperWidget();
-	tmp->show(pos,m_pMdi,20);
+	tmp->show(pos,getMainDockWidget(),20);
 	return dynamic_cast<KDockWidget*>(tmp->wrapperWidget());
 #if 0
 //        	dw->setDockWindowTransient (this, true);
