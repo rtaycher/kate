@@ -20,7 +20,6 @@
 
 #include "katemainwindow.h"
 
-#include "../sidebar/katesidebar.h"
 #include "../console/kateconsole.h"
 #include "../document/katedocument.h"
 #include "../document/katedocmanager.h"
@@ -121,13 +120,6 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   gridFrG->addMultiCellWidget(cb_singleInstance,3,3,0,1);
   config->setGroup("startup");
   cb_singleInstance->setChecked(config->readBoolEntry("singleinstance",true));
-
-  // FileSidebar style
-  cb_fileSidebarStyle = new QCheckBox(frGeneral);
-  cb_fileSidebarStyle->setText(i18n("Show Filebar in KOffice Workspace style"));
-  gridFrG->addMultiCellWidget(cb_fileSidebarStyle,4,4,0,1);
-  config->setGroup("Sidebar");
-  cb_fileSidebarStyle->setChecked(config->readBoolEntry("KOWStyle",true));
 
   // sync the konsole ?
   cb_syncKonsole = new QCheckBox(frGeneral);
@@ -271,10 +263,6 @@ void KateConfigDialog::slotApply()
   config->writeEntry("singleinstance",cb_singleInstance->isChecked());
   config->setGroup("open files");
   config->writeEntry("reopen at startup", cb_reopenFiles->isChecked());
-
-  config->setGroup("Sidebar");
-  config->writeEntry("KOWStyle",cb_fileSidebarStyle->isChecked());
-  mainWindow->sidebar->setMode(cb_fileSidebarStyle->isChecked());
 
   mainWindow->syncKonsole = cb_syncKonsole->isChecked();
 

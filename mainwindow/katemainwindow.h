@@ -44,11 +44,9 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
 
     // dockwidgets
     KDockWidget *mainDock;
-    KDockWidget *sidebarDock;
     KDockWidget *consoleDock;
-
-    // sidebar
-    KateSidebar *sidebar;
+    KDockWidget *filelistDock;
+    KDockWidget *fileselectorDock;
 
     // console
     KateConsole *console;
@@ -104,7 +102,8 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     QPopupMenu *bookmarkMenu, *documentMenu;
     QList<Kate::Mark> list;
 
-    KToggleAction* settingsShowSidebar;
+    KToggleAction* settingsShowFilelist;
+    KToggleAction* settingsShowFileselector;
     KToggleAction* settingsShowFullPath;
     KToggleAction* settingsShowToolbar;
     KToggleAction* settingsShowConsole;
@@ -112,18 +111,13 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
  
     KAction* settingsConfigure;
 
-    KAction* sidebarFocusNext;
-
   public slots:
     void newWindow ();
 
-    void slotSettingsShowSidebar();
     void slotSettingsShowConsole();
     void slotSettingsShowToolbar();
 
     void slotConfigure();
-
-    void slotSidebarFocusNext();
     
     void slotOpenWithMenuAction(int idx);
 

@@ -62,7 +62,6 @@ class KateConfigDialog : public KDialogBase
     class QCheckBox* cb_reopenFiles;
     class QCheckBox* cb_restoreVC;
     class QCheckBox *cb_singleInstance;
-    class QCheckBox *cb_fileSidebarStyle;
     class QCheckBox *cb_syncKonsole;
 
     class ColorConfig *colorConfig;

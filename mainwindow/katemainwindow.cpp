@@ -20,7 +20,6 @@
 
 #include "kateconfigdialog.h"
 
-#include "../sidebar/katesidebar.h"
 #include "../console/kateconsole.h"
 #include "../document/katedocument.h"
 #include "../document/katedocmanager.h"
@@ -126,29 +125,31 @@ KateMainWindow::~KateMainWindow()
 
 void KateMainWindow::setupMainWindow ()
 {
-  sidebarDock =  createDockWidget( "sidebarDock", 0 );
-  sidebar = new KateSidebar (sidebarDock);
-  sidebar->setMinimumSize(100,100);
-  sidebarDock->setWidget( sidebar );
-
   mainDock = createDockWidget( "mainDock", 0 );
+  filelistDock =  createDockWidget( "Open Files",  UserIcon("openfiles"),     0L, "" );
+  fileselectorDock = createDockWidget( "Selector",  UserIcon("fileselector"),     0L, "");
+
   mainDock->setGeometry(100, 100, 100, 100);
   viewManager = new KateViewManager (mainDock, docManager);
   viewManager->setMinimumSize(200,200);
   mainDock->setWidget(viewManager);
-  setView( mainDock );
+
   setMainDockWidget( mainDock );
+  setView( mainDock );
+
+  filelist = new KateFileList (docManager, viewManager, filelistDock, "filelist");
+  filelistDock->setWidget (filelist);
+
+  fileselector = new KateFileSelector(fileselectorDock, "operator");
+  fileselector->dirOperator()->setView(KFile::Simple);
+  fileselectorDock->setWidget (fileselector);
+
+  connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileViewItem*)),this,SLOT(fileSelected(const KFileViewItem*)));
 
   mainDock->setEnableDocking ( KDockWidget::DockNone );
-  sidebarDock->manualDock ( mainDock, KDockWidget::DockLeft, 20 );
 
-  filelist = new KateFileList (docManager, viewManager, 0L, "filelist");
-  sidebar->addWidget (filelist, i18n("Filelist"));
-
-  fileselector = new KateFileSelector(0L, "operator");
-  fileselector->dirOperator()->setView(KFile::Simple);
-  sidebar->addWidget (fileselector, i18n("Fileselector"));
-  connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileViewItem*)),this,SLOT(fileSelected(const KFileViewItem*)));
+  filelistDock->manualDock ( mainDock, KDockWidget::DockLeft, 20 );
+  fileselectorDock ->manualDock(filelistDock, KDockWidget::DockCenter);
 
   statusBar()->hide();
 }
@@ -264,9 +265,11 @@ void KateMainWindow::setupActions()
   KStdAction::keyBindings(this, SLOT(editKeys()), actionCollection());
   KStdAction::configureToolbars(this, SLOT(slotEditToolbars()), actionCollection(), "set_configure_toolbars");
 
-  // toggle sidebar -anders
-  settingsShowSidebar = new KToggleAction(i18n("Show Side&bar"), Qt::Key_F7, this, SLOT(slotSettingsShowSidebar()), actionCollection(), "settings_show_sidebar");
-  settingsShowConsole = new KToggleAction(i18n("Show &Console"), CTRL+Key_T, this, SLOT(slotSettingsShowConsole()), actionCollection(), "settings_show_console");
+  // toggle dockwidgets
+  settingsShowFilelist = new KToggleAction(i18n("Show Filelist"), 0, filelistDock, SLOT(changeHideShowState()), actionCollection(), "settings_show_filelist");
+  settingsShowFileselector = new KToggleAction(i18n("Show Fileselector"), 0, fileselectorDock, SLOT(changeHideShowState()), actionCollection(), "settings_show_fileselector");
+  settingsShowConsole = new KToggleAction(i18n("Show &Console"), Qt::Key_F7, this, SLOT(slotSettingsShowConsole()), actionCollection(), "settings_show_console");
+
   // allow full path in title -anders
   settingsShowFullPath = new KToggleAction(i18n("Show Full &Path in Title"), 0, this, SLOT(slotSettingsShowFullPath()), actionCollection(), "settings_show_full_path");
   settingsShowToolbar = KStdAction::showToolbar(this, SLOT(slotSettingsShowToolbar()), actionCollection(), "settings_show_toolbar");
@@ -274,8 +277,6 @@ void KateMainWindow::setupActions()
 
   connect(viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
   connect(viewManager,SIGNAL(statChanged()),this,SLOT(slotCurrentDocChanged()));
-
-  sidebarFocusNext = new KAction(i18n("Next Sidebar &Widget"), CTRL+SHIFT+Key_B, this, SLOT(slotSidebarFocusNext()), actionCollection(), "sidebar_focus_next");
 
   setHighlight = new KActionMenu (i18n("&Highlight Mode"), actionCollection(), "set_highlight");
   connect(setHighlight->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(setHighlightMenuAboutToShow()));
@@ -342,8 +343,6 @@ void KateMainWindow::slotFileQuit()
 void KateMainWindow::readOptions(KConfig *config)
 {
   config->setGroup("General");
-  sidebarDock->resize( config->readSizeEntry("Sidebar:size", new QSize(150, height())) );
-  settingsShowSidebar->setChecked( config->readBoolEntry("Show Sidebar", false) );
   syncKonsole =  config->readBoolEntry("Sync Konsole", true);
 
   if (config->readBoolEntry("Show Console", false))
@@ -363,15 +362,12 @@ void KateMainWindow::readOptions(KConfig *config)
   fileselector->readConfig(config, "fileselector");
   fileselector->setView(KFile::Default);
 
-  sidebar->readConfig( config );
-
   readDockConfig();
 }
 
 void KateMainWindow::saveOptions(KConfig *config)
 {
   config->setGroup("General");
-  config->writeEntry("Show Sidebar", sidebar->isVisible());
 
   if (consoleDock && console)
     config->writeEntry("Show Console", console->isVisible());
@@ -387,7 +383,7 @@ void KateMainWindow::saveOptions(KConfig *config)
   fileOpenRecent->saveEntries(config, "Recent Files");
 
   fileselector->saveConfig(config, "fileselector");
-  sidebar->saveConfig( config );
+
   writeDockConfig();
 
   if (viewManager->activeView())
@@ -605,11 +601,6 @@ void KateMainWindow::editKeys()
   KKeyDialog::configureKeys(actionCollection(), xmlFile());
 }
 
-void KateMainWindow::slotSettingsShowSidebar()
-{
-  sidebarDock->changeHideShowState();
-}
-
 void KateMainWindow::slotSettingsShowConsole()
 {
   if (!consoleDock && !console)
@@ -634,10 +625,11 @@ void KateMainWindow::slotSettingsShowConsole()
 
 void KateMainWindow::settingsMenuAboutToShow()
 {
-  settingsShowSidebar->setChecked( sidebarDock->isVisible() );
+  settingsShowFilelist->setChecked( filelistDock->isVisible() );
+  settingsShowFileselector->setChecked( fileselectorDock->isVisible() );
 
   if (consoleDock)
-  settingsShowConsole->setChecked( consoleDock->isVisible() );
+    settingsShowConsole->setChecked( consoleDock->isVisible() );
 }
 
 void KateMainWindow::setEOLMenuAboutToShow()
@@ -686,15 +678,6 @@ void KateMainWindow::slotGoPrev()
   QFocusEvent::setReason(QFocusEvent::Tab);
   /*res= */focusNextPrevChild(false); //TRUE == NEXT , FALSE = PREV
   QFocusEvent::resetReason();
-}
-
-void KateMainWindow::slotSidebarFocusNext()
-{
-   if (! sidebarDock->isVisible()) {
-     slotSettingsShowSidebar();
-     return;
-   }
-   sidebar->focusNextWidget();
 }
 
 void KateMainWindow::focusInEvent(QFocusEvent*  /* e */)
@@ -767,12 +750,12 @@ Kate::DocManager *KateMainWindow::getDocManager ()
 
 void KateMainWindow::addSidebarWidget (QWidget* widget, const QString & label)
 {
-  sidebar->addWidget (widget, label);
+ // sidebar->addWidget (widget, label);
 }
 
 void KateMainWindow::removeSidebarWidget (QWidget* widget)
 {
-  sidebar->removeWidget (widget);
+ // sidebar->removeWidget (widget);
 }
 
 void KateMainWindow::pluginHelp()

@@ -90,7 +90,8 @@
 
   <Menu name="settings" noMerge="1"><text>&amp;Settings</text>
     <Action name="settings_show_toolbar" />
-    <Action name="settings_show_sidebar" />
+    <Action name="settings_show_filelist" />
+    <Action name="settings_show_fileselector" />
     <Action name="settings_show_console" />
     <Separator />
     <Action name="settings_show_full_path" />
