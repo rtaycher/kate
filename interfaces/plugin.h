@@ -56,12 +56,6 @@ class PluginView : public QObject, virtual public KXMLGUIClient
 
     void setXML (QString filename);
 
-    virtual QWidget *createSidebarPage () { return 0L; };
-    virtual bool hasSidebarPage () { return false; };
-
-    virtual QWidget *createDockWidget () { return 0L; };
-    virtual bool hasDockWidget () { return false; };
-
     class Plugin *myPlugin;
     class MainWindow *myMainWindow;
 };

@@ -25,6 +25,5 @@ class KateMainWindowDCOPIface : virtual public DCOPObject
 
   k_dcop:
     virtual void openURL (const QString &name=0)=0;
-    virtual void ShowErrorMessage (const QString & strFileName = 0, int nLine = 1, const QString & strMessage=0)=0;
 };
 #endif

@@ -657,16 +657,6 @@ void KateMainWindow::openURL (const QString &name)
   viewManager->openURL (KURL(name));
 }
 
-#define POP_(x) kdDebug(13000) << #x " = " << flush << x << endl
-
-void KateMainWindow::ShowErrorMessage (const QString & strFileName, int nLine, const QString & strMessage)
-{
-  // TODO put the error delivery stuff here instead of after the piper
-  POP_(strFileName.latin1());
-  POP_(nLine);
-  POP_(strMessage.latin1());
-}
-
 void KateMainWindow::slotSettingsShowFullPath()
 {
   viewManager->setShowFullPath( settingsShowFullPath->isChecked() );
@@ -778,4 +768,14 @@ Kate::ViewManager *KateMainWindow::getViewManager ()
 Kate::DocManager *KateMainWindow::getDocManager ()
 {
   return ((Kate::DocManager *)docManager);
+}
+
+void KateMainWindow::addSidebarWidget (QWidget* widget, const QString & label)
+{
+  sidebar->addWidget (widget, label);
+}
+
+void KateMainWindow::removeSidebarWidget (QWidget* widget)
+{
+  sidebar->removeWidget (widget);
 }

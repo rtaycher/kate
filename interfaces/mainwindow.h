@@ -33,6 +33,9 @@ class MainWindow : public KDockMainWindow
 
     virtual class ViewManager *getViewManager () { return 0L; };
     virtual class DocManager *getDocManager () { return 0L; };
+
+    virtual void addSidebarWidget (class QWidget *, const class QString &) { ; };
+    virtual void removeSidebarWidget (class QWidget *) { ; };
 };
 
 };

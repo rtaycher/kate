@@ -189,7 +189,8 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
 
   public:
     void openURL (const QString &name=0L);
-    void ShowErrorMessage (const QString & strFileName = 0, int nLine = 1, const QString & strMessage=0);
+    void addSidebarWidget(QWidget* widget, const QString & label);
+    void removeSidebarWidget(QWidget* widget);
 
   protected:
      bool eventFilter (QObject* o, QEvent* e);
