@@ -161,7 +161,7 @@ void KateIconBorder::paintLine(int i)
 
   QPainter p(this);
 
-    int fontHeight = myView->myDoc->fontHeight;
+    int fontHeight = myView->myDoc->viewFont.fontHeight;
     int y = i*fontHeight - myInternalView->yPos;
     p.fillRect(0, y, myInternalView->iconBorderWidth-2, fontHeight, colorGroup().background());
     p.setPen(white);
@@ -204,7 +204,7 @@ void KateIconBorder::paintEvent(QPaintEvent* e)
   QRect updateR = e->rect();
 
   KateDocument *doc = myView->doc();
-  int h = doc->fontHeight;
+  int h = doc->viewFont.fontHeight;
   int yPos = myInternalView->yPos;
 
   if (h)
@@ -222,7 +222,7 @@ void KateIconBorder::mousePressEvent(QMouseEvent* e)
 {
     myInternalView->placeCursor( 0, e->y(), 0 );
 
-    uint cursorOnLine = (e->y() + myInternalView->yPos) / myView->myDoc->fontHeight;
+    uint cursorOnLine = (e->y() + myInternalView->yPos) / myView->myDoc->viewFont.fontHeight;
 
     if (cursorOnLine > myView->myDoc->lastLine())
       return;

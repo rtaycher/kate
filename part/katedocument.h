@@ -27,6 +27,7 @@
 #include <qfontmetrics.h>
 #include <qintdict.h>
 #include <qdatetime.h>
+#include <kglobalsettings.h>
 
 #include "kateview.h"
 #include "katehighlight.h"
@@ -46,6 +47,7 @@ class Attribute {
     bool bold;
     bool italic;
 };
+
 
 class KateCursor : public Kate::Cursor
 {
@@ -70,6 +72,35 @@ class KateCursor : public Kate::Cursor
 class KateUndo;
 class KateUndoGroup;
 
+class FontStruct
+{
+    public:
+    FontStruct():myFont(KGlobalSettings::fixedFont()), myFontBold(KGlobalSettings::fixedFont()),
+                 myFontItalic(KGlobalSettings::fixedFont()), myFontBI(KGlobalSettings::fixedFont()),
+    		myFontMetrics (myFont), myFontMetricsBold (myFontBold), myFontMetricsItalic (myFontItalic), myFontMetricsBI 
+                (myFontBI){;}
+    ~FontStruct(){;}
+    void updateFontData(int tabChars)
+	{
+  		int maxAscent, maxDescent;
+  		int tabWidth;
+  		maxAscent = myFontMetrics.ascent();
+		maxDescent = myFontMetrics.descent();
+                tabWidth = myFontMetrics.width(' ');
+
+               fontHeight = maxAscent + maxDescent + 1;
+               fontAscent = maxAscent;
+               m_tabWidth = tabChars*tabWidth;
+	};
+
+              QFont myFont, myFontBold, myFontItalic, myFontBI;
+              QFontMetrics myFontMetrics, myFontMetricsBold, myFontMetricsItalic, myFontMetricsBI;
+    	      int m_tabWidth;
+              int fontHeight;
+              int fontAscent;
+
+};
+
 //
 // Kate KTextEditor::Document class (and even KTextEditor::Editor ;)
 //
@@ -87,6 +118,12 @@ class KateDocument : public Kate::Document
   public:
     KateDocument (bool bSingleViewMode=false, bool bBrowserView=false, QWidget *parentWidget = 0, const char *widgetName = 0, QObject * = 0, const char * = 0);
     ~KateDocument ();
+
+
+  // use different fonts for screen and printing
+  public:
+	enum WhichFont {ViewFont,PrintFont};
+
 
   //
   // KTextEditor::Document stuff
@@ -289,13 +326,13 @@ class KateDocument : public Kate::Document
     bool _autoUpdate;
 
   protected:
-    QFont myFont, myFontBold, myFontItalic, myFontBI;
-    QFontMetrics myFontMetrics, myFontMetricsBold, myFontMetricsItalic, myFontMetricsBI;
+    FontStruct viewFont;
+    FontStruct printFont;
 
   public:
-    void setFont (QFont font);
-    QFont getFont () { return myFont; };
-    QFontMetrics getFontMetrics () { return myFontMetrics; };
+    void setFont (WhichFont wf,QFont font);
+    QFont getFont (WhichFont wf) { if(wf==ViewFont) return viewFont.myFont; else return printFont.myFont;};
+    QFontMetrics getFontMetrics (WhichFont wf) { if (wf==ViewFont) return viewFont.myFontMetrics; else return printFont.myFontMetrics;};
 
     QPtrList<KTextEditor::Cursor> myCursors;
 
@@ -393,15 +430,15 @@ class KateDocument : public Kate::Document
     bool ownedView(KateView *);
     bool isLastView(int numViews);
 
-    int charWidth(const TextLine::Ptr &textLine, int cursorX);
+    int charWidth(const TextLine::Ptr &textLine, int cursorX,WhichFont wf=ViewFont);
     int charWidth(KateViewCursor &cursor);
 
-    uint textWidth(const TextLine::Ptr &, int cursorX);
+    uint textWidth(const TextLine::Ptr &, int cursorX,WhichFont wf=ViewFont);
     uint textWidth(KateViewCursor &cursor);
-    uint textWidth(bool wrapCursor, KateViewCursor &cursor, int xPos);
-    uint textPos(const TextLine::Ptr &, int xPos);
+    uint textWidth(bool wrapCursor, KateViewCursor &cursor, int xPos,WhichFont wf=ViewFont);
+    uint textPos(const TextLine::Ptr &, int xPos,WhichFont wf=ViewFont);
     uint textWidth();
-    uint textHeight();
+    uint textHeight(WhichFont wf=ViewFont);
 
     uint currentColumn(KateViewCursor &cursor);
     void newLine(VConfig &);
@@ -445,7 +482,7 @@ class KateDocument : public Kate::Document
     QColor &backCol(int x, int y);
     QColor &cursorCol(int x, int y);
     void paintTextLine(QPainter &, uint line, int xStart, int xEnd, bool showTabs);
-    void paintTextLine(QPainter &, uint line, int y, int xStart, int xEnd, bool showTabs);
+    void paintTextLine(QPainter &, uint line, int y, int xStart, int xEnd, bool showTabs,WhichFont wf=ViewFont);
 
     bool doSearch(SConfig &s, const QString &searchFor);
 
@@ -618,9 +655,6 @@ class KateDocument : public Kate::Document
 
     int eolMode;
     int tabChars;
-    int m_tabWidth;
-    int fontHeight;
-    int fontAscent;
 
     QPtrList<KateView> myViews;
     QPtrList<KTextEditor::View> _views;

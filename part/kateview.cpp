@@ -383,8 +383,8 @@ void KateViewInternal::scrollUp(VConfig &c) {
 
   if (! yPos) return;
 
-  newYPos = yPos - myDoc->fontHeight;
-  if (cursor.line == (yPos + height())/myDoc->fontHeight -1) {
+  newYPos = yPos - myDoc->viewFont.fontHeight;
+  if (cursor.line == (yPos + height())/myDoc->viewFont.fontHeight -1) {
     cursor.line--;
     cXPos = myDoc->textWidth(c.flags & KateDocument::cfWrapCursor,cursor,cOldXPos);
 
@@ -396,8 +396,8 @@ void KateViewInternal::scrollDown(VConfig &c) {
 
   if (endLine >= myDoc->lastLine()) return;
 
-  newYPos = yPos + myDoc->fontHeight;
-  if (cursor.line == (yPos + myDoc->fontHeight -1)/myDoc->fontHeight) {
+  newYPos = yPos + myDoc->viewFont.fontHeight;
+  if (cursor.line == (yPos + myDoc->viewFont.fontHeight -1)/myDoc->viewFont.fontHeight) {
     cursor.line++;
     cXPos = myDoc->textWidth(c.flags & KateDocument::cfWrapCursor,cursor,cOldXPos);
     changeState(c);
@@ -406,7 +406,7 @@ void KateViewInternal::scrollDown(VConfig &c) {
 
 void KateViewInternal::topOfView(VConfig &c) {
 
-  cursor.line = (yPos + myDoc->fontHeight -1)/myDoc->fontHeight;
+  cursor.line = (yPos + myDoc->viewFont.fontHeight -1)/myDoc->viewFont.fontHeight;
   cursor.col = 0;
   cOldXPos = cXPos = 0;
   changeState(c);
@@ -414,7 +414,7 @@ void KateViewInternal::topOfView(VConfig &c) {
 
 void KateViewInternal::bottomOfView(VConfig &c) {
 
-  cursor.line = (yPos + height())/myDoc->fontHeight -1;
+  cursor.line = (yPos + height())/myDoc->viewFont.fontHeight -1;
   if (cursor.line < 0) cursor.line = 0;
   if (cursor.line > myDoc->lastLine()) cursor.line = myDoc->lastLine();
   cursor.col = 0;
@@ -428,7 +428,7 @@ void KateViewInternal::pageUp(VConfig &c) {
   if (lines <= 0) lines = 1;
 
   if (!(c.flags & KateDocument::cfPageUDMovesCursor) && yPos > 0) {
-    newYPos = yPos - lines * myDoc->fontHeight;
+    newYPos = yPos - lines * myDoc->viewFont.fontHeight;
     if (newYPos < 0) newYPos = 0;
   }
   cursor.line -= lines;
@@ -443,9 +443,9 @@ void KateViewInternal::pageDown(VConfig &c) {
 
   if (!(c.flags & KateDocument::cfPageUDMovesCursor) && endLine < myDoc->lastLine()) {
     if (lines < myDoc->lastLine() - endLine)
-      newYPos = yPos + lines * myDoc->fontHeight;
+      newYPos = yPos + lines * myDoc->viewFont.fontHeight;
     else
-      newYPos = yPos + (myDoc->lastLine() - endLine) * myDoc->fontHeight;
+      newYPos = yPos + (myDoc->lastLine() - endLine) * myDoc->viewFont.fontHeight;
   }
   cursor.line += lines;
   cXPos = myDoc->textWidth(c.flags & KateDocument::cfWrapCursor,cursor,cOldXPos);
@@ -584,7 +584,7 @@ void KateViewInternal::insLine(int line) {
   if (line < startLine) {
     startLine++;
     endLine++;
-    yPos += myDoc->fontHeight;
+    yPos += myDoc->viewFont.fontHeight;
   } else if (line <= endLine) {
     tagAll();
   }
@@ -598,7 +598,7 @@ void KateViewInternal::delLine(int line) {
   if (line < startLine) {
     startLine--;
     endLine--;
-    yPos -= myDoc->fontHeight;
+    yPos -= myDoc->viewFont.fontHeight;
   } else if (line <= endLine) {
     tagAll();
   }
@@ -634,8 +634,8 @@ void KateViewInternal::clearDirtyCache(int height) {
   int lines, z;
 
   // calc start and end line of visible part
-  startLine = yPos/myDoc->fontHeight;
-  endLine = (yPos + height -1)/myDoc->fontHeight;
+  startLine = yPos/myDoc->viewFont.fontHeight;
+  endLine = (yPos + height -1)/myDoc->viewFont.fontHeight;
 
   updateState = 0;
 
@@ -687,7 +687,7 @@ void KateViewInternal::setPos(int x, int y) {
 
 void KateViewInternal::center() {
   newXPos = 0;
-  newYPos = cursor.line*myDoc->fontHeight - height()/2;
+  newYPos = cursor.line*myDoc->viewFont.fontHeight - height()/2;
   if (newYPos < 0) newYPos = 0;
 }
 
@@ -727,7 +727,7 @@ void KateViewInternal::updateView(int flags) {
   if (newXPos >= 0) xPos = newXPos;
   if (newYPos >= 0) yPos = newYPos;
 
-  fontHeight = myDoc->fontHeight;
+  fontHeight = myDoc->viewFont.fontHeight;
   cYPos = cursor.line*fontHeight;
 
   z = 0;
@@ -862,7 +862,7 @@ void KateViewInternal::paintTextLines(int xPos, int yPos) {
   QPainter paint;
   paint.begin(drawBuffer);
 
-  h = myDoc->fontHeight;
+  h = myDoc->viewFont.fontHeight;
   r = lineRanges;
   for (line = startLine; line <= endLine; line++) {
     if (r->start < r->end) {
@@ -882,11 +882,11 @@ void KateViewInternal::paintCursor() {
   int h, w,w2,y, x;
   static int cx = 0, cy = 0, ch = 0;
 
-  h = myDoc->fontHeight;
+  h = myDoc->viewFont.fontHeight;
   y = h*cursor.line - yPos;
   x = cXPos - (xPos-2);
 
-  if(myDoc->myFont != font()) setFont(myDoc->myFont);
+  if(myDoc->viewFont.myFont != font()) setFont(myDoc->viewFont.myFont);
   if(cx != x || cy != y || ch != h){
     cx = x;
     cy = y;
@@ -929,7 +929,7 @@ void KateViewInternal::paintCursor() {
 void KateViewInternal::paintBracketMark() {
   int y;
 
-  y = myDoc->fontHeight*(bm.cursor.line +1) - yPos -1;
+  y = myDoc->viewFont.fontHeight*(bm.cursor.line +1) - yPos -1;
 
   QPainter paint;
   paint.begin(this);
@@ -944,7 +944,7 @@ void KateViewInternal::placeCursor(int x, int y, int flags) {
 
   getVConfig(c);
   c.flags |= flags;
-  cursor.line = (yPos + y)/myDoc->fontHeight;
+  cursor.line = (yPos + y)/myDoc->viewFont.fontHeight;
   cXPos = cOldXPos = myDoc->textWidth(c.flags & KateDocument::cfWrapCursor, cursor,xPos-2 + x);
   changeState(c);
 }
@@ -952,7 +952,7 @@ void KateViewInternal::placeCursor(int x, int y, int flags) {
 // given physical coordinates, report whether the text there is selected
 bool KateViewInternal::isTargetSelected(int x, int y) {
 
-  y = (yPos + y) / myDoc->fontHeight;
+  y = (yPos + y) / myDoc->viewFont.fontHeight;
 
   TextLine::Ptr line = myDoc->getTextLine(y);
   if (!line)
@@ -1114,7 +1114,7 @@ void KateViewInternal::mouseMoveEvent(QMouseEvent *e) {
     mouseY = e->y();
     scrollX = 0;
     scrollY = 0;
-    d = myDoc->fontHeight;
+    d = myDoc->viewFont.fontHeight;
     if (mouseX < 0) {
       mouseX = 0;
       scrollX = -d;
@@ -1167,7 +1167,7 @@ void KateViewInternal::paintEvent(QPaintEvent *e) {
   xStart = xPos-2 + updateR.x();
   xEnd = xStart + updateR.width();
 
-  h = myDoc->fontHeight;
+  h = myDoc->viewFont.fontHeight;
   line = (yPos + updateR.y()) / h;
   y = line*h - yPos;
   yEnd = updateR.y() + updateR.height();
@@ -1191,7 +1191,7 @@ void KateViewInternal::paintEvent(QPaintEvent *e) {
 
 void KateViewInternal::resizeEvent(QResizeEvent *)
 {
-  drawBuffer->resize (width(), myDoc->fontHeight);
+  drawBuffer->resize (width(), myDoc->viewFont.fontHeight);
   leftBorder->resize(iconBorderWidth, height());
 }
 
@@ -1709,7 +1709,7 @@ void KateView::setCursorPositionInternal(int line, int col, int tabwidth) {
   cursor.line = line;
   myViewInternal->updateCursor(cursor);
   myViewInternal->center();
-//  myViewInternal->updateView(ufPos, 0, line*myDoc->fontHeight - height()/2);
+//  myViewInternal->updateView(ufPos, 0, line*myDoc->viewFont.fontHeight - height()/2);
 //  myDoc->updateViews(myViewInternal); //uptade all other views except this one
   myDoc->updateViews();
 }
@@ -1764,7 +1764,7 @@ QString KateView::currentWord() {
 
 QString KateView::word(int x, int y) {
   KateViewCursor cursor;
-  cursor.line = (myViewInternal->yPos + y)/myDoc->fontHeight;
+  cursor.line = (myViewInternal->yPos + y)/myDoc->viewFont.fontHeight;
   if (cursor.line < 0 || cursor.line > myDoc->lastLine()) return QString();
   cursor.col = myDoc->textPos(myDoc->getTextLine(cursor.line), myViewInternal->xPos-2 + x);
   return myDoc->getWord(cursor);
@@ -2192,8 +2192,8 @@ void KateView::exposeFound(KateViewCursor &cursor, int slen, int flags, bool rep
   TextLine::Ptr textLine = myDoc->getTextLine(cursor.line);
   x1 = myDoc->textWidth(textLine,cursor.col)        -10;
   x2 = myDoc->textWidth(textLine,cursor.col + slen) +20;
-  y1 = myDoc->fontHeight*cursor.line                 -10;
-  y2 = y1 + myDoc->fontHeight                     +30;
+  y1 = myDoc->viewFont.fontHeight*cursor.line                 -10;
+  y2 = y1 + myDoc->viewFont.fontHeight                     +30;
 
   xPos = myViewInternal->xPos;
   yPos = myViewInternal->yPos;
@@ -2206,7 +2206,7 @@ void KateView::exposeFound(KateViewCursor &cursor, int slen, int flags, bool rep
   }
   if (y1 < yPos || y2 > yPos + myViewInternal->height()) {
     xPos = x2 - myViewInternal->width();
-    yPos = myDoc->fontHeight*cursor.line - height()/3;
+    yPos = myDoc->viewFont.fontHeight*cursor.line - height()/3;
   }
   myViewInternal->setPos(xPos, yPos);
   myViewInternal->updateView(flags);// | ufPos,xPos,yPos);
@@ -2531,16 +2531,16 @@ void KateView::gotoBookmark (int n)
 
 void KateView::slotIncFontSizes ()
 {
-  QFont font = myDoc->getFont();
+  QFont font = myDoc->getFont(KateDocument::ViewFont);
   font.setPointSize (font.pointSize()+1);
-  myDoc->setFont (font);
+  myDoc->setFont (KateDocument::ViewFont,font);
 }
 
 void KateView::slotDecFontSizes ()
 {
-  QFont font = myDoc->getFont();
+  QFont font = myDoc->getFont(KateDocument::ViewFont);
   font.setPointSize (font.pointSize()-1);
-  myDoc->setFont (font);
+  myDoc->setFont (KateDocument::ViewFont,font);
 }
 
 KateDocument *KateView::document()

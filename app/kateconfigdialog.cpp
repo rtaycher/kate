@@ -154,7 +154,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   page = addVBoxPage(path, i18n("Fonts Settings"),
                               BarIcon("fonts", KIcon::SizeSmall) );
   fontConfig = new FontConfig(page);
-  fontConfig->setFont (v->doc()->getFont());
+  fontConfig->setFont (v->doc()->getFont(KateDocument::ViewFont));
 
   // indent options
   path.clear();
@@ -271,7 +271,7 @@ void KateConfigDialog::slotApply()
   config->setGroup("General");
   config->writeEntry("restore views", cb_restoreVC->isChecked());
 
-  v->doc()->setFont (fontConfig->getFont());
+  v->doc()->setFont (KateDocument::ViewFont,fontConfig->getFont());
 
   ksc->writeGlobalSettings();
   v->doc()->setKSConfig(*ksc);
