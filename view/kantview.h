@@ -131,7 +131,7 @@ class KantViewInternal : public QWidget {
     // a drop-aware container should set HandleOwnURIDrops = false and handle all URI drops
     // KantViewInternal will otherwise handle URI drops, but is slightly limited
     // KantViewInternal always handles text drops
-    KantViewInternal(KantView *write, KantDocument *doc, bool HandleOwnURIDrops);
+    KantViewInternal(KantView *view, KantDocument *doc, bool HandleOwnURIDrops);
     ~KantViewInternal();
 
     virtual void doCursorCommand(VConfig &, int cmdNum);
@@ -201,12 +201,10 @@ class KantViewInternal : public QWidget {
     virtual void timerEvent(QTimerEvent *);
 
     virtual void dragEnterEvent( QDragEnterEvent * );
-//  virtual void dragMoveEvent( QDragMoveEvent * );
-//  virtual void dragLeaveEvent( QDragLeaveEvent * );
     virtual void dropEvent( QDropEvent * );
 
-    KantView *kWrite;
-    KantDocument *kWriteDoc;
+    KantView *myView;
+    KantDocument *myDoc;
     QScrollBar *xScroll;
     QScrollBar *yScroll;
 
@@ -270,7 +268,8 @@ class KWBookmark {
   @author Jochen Wilhelmy
 */
 
-class KantView : public KTextEditor::View, virtual public KantViewIface {
+class KantView : public KTextEditor::View, virtual public KantViewIface
+{
     Q_OBJECT
     friend class KantViewInternal;
     friend class KantDocument;
@@ -280,7 +279,7 @@ class KantView : public KTextEditor::View, virtual public KantViewIface {
       HandleOwnURIDrops should be set to false for a container that can handle URI drops
       better than KantViewInternal does.
     */
-    KantView(QWidget *parent = 0L, KantDocument *doc=0L, const char * name = 0, bool HandleOwnURIDrops = true, bool deleteDoc = true);
+    KantView(KantDocument *doc=0L, QWidget *parent = 0L, const char * name = 0, bool HandleOwnURIDrops = true);
     /**
       The destructor does not delete the document
     */
@@ -548,7 +547,6 @@ class KantView : public KTextEditor::View, virtual public KantViewIface {
     void slotJobData( KIO::Job *job, const QByteArray &data );
 
   public:
-    void init();
     /**
       Mainly for internal use. Returns true if the current document can be
       discarded. If the document is modified, the user is asked if he wants
@@ -844,8 +842,8 @@ class KantView : public KTextEditor::View, virtual public KantViewIface {
     void doCursorCommand(int cmdNum);
     void doEditCommand(int cmdNum);
 
-    KantViewInternal *kWriteView;
-    KantDocument *kWriteDoc;
+    KantViewInternal *myViewInternal;
+    KantDocument *myDoc;
 
 //spell checker
   public:
@@ -886,25 +884,21 @@ class KantView : public KTextEditor::View, virtual public KantViewIface {
       bool kspellPristine;        // doing spell check on a clean document?
     } kspell;
 
-    bool m_singleViewMode;
-    bool myDeleteDoc;
-
-
     // some kwriteview stuff
   protected:
-    void insLine(int line) { kWriteView->insLine(line); };
-    void delLine(int line) { kWriteView->delLine(line); };
-    void updateCursor() { kWriteView->updateCursor(); };
-    void updateCursor(PointStruc &newCursor) { kWriteView->updateCursor(newCursor); };
-    void updateCursor(PointStruc &newCursor, int flags) { kWriteView->updateCursor(newCursor, flags); };
+    void insLine(int line) { myViewInternal->insLine(line); };
+    void delLine(int line) { myViewInternal->delLine(line); };
+    void updateCursor() { myViewInternal->updateCursor(); };
+    void updateCursor(PointStruc &newCursor) { myViewInternal->updateCursor(newCursor); };
+    void updateCursor(PointStruc &newCursor, int flags) { myViewInternal->updateCursor(newCursor, flags); };
 
-    void clearDirtyCache(int height) { kWriteView->clearDirtyCache(height); };
-    void tagLines(int start, int end, int x1, int x2) { kWriteView->tagLines(start, end, x1, x2); };
-    void tagAll() { kWriteView->tagAll(); };
-    void setPos(int x, int y) { kWriteView->setPos(x, y); };
-    void center() { kWriteView->center(); };
+    void clearDirtyCache(int height) { myViewInternal->clearDirtyCache(height); };
+    void tagLines(int start, int end, int x1, int x2) { myViewInternal->tagLines(start, end, x1, x2); };
+    void tagAll() { myViewInternal->tagAll(); };
+    void setPos(int x, int y) { myViewInternal->setPos(x, y); };
+    void center() { myViewInternal->center(); };
 
-    void updateView(int flags) { kWriteView->updateView(flags); };
+    void updateView(int flags) { myViewInternal->updateView(flags); };
 
   protected slots:
     // to send dropEventPass
@@ -1005,6 +999,7 @@ class KantView : public KTextEditor::View, virtual public KantViewIface {
     bool isActive ();
     QList<KAction> bmActions() { return bookmarkActionList; }
     void doUpdateBookmarks() { updateBookmarks(); }
+
   private:
     bool active;
 

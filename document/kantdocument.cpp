@@ -53,29 +53,16 @@
 #include "kanttextline.h"
 #include "kantattribute.h"
 
-KWAction::KWAction(Action a, PointStruc &cursor, int len, const QString &text)
+KantAction::KantAction(Action a, PointStruc &cursor, int len, const QString &text)
   : action(a), cursor(cursor), len(len), text(text) {
 }
-/*
-void KWAction ::setData(int aLen, const QChar *aText, int aTextLen) {
 
-  len = aLen;
-  if (aTextLen > 0) {
-    text = new QChar[aTextLen];
-    memcpy((QChar *) text, aText, aTextLen*sizeof(QChar));
-    textLen = aTextLen;
-  } else {
-    text = 0L;
-    textLen = 0;
-  }
-} */
-
-KWActionGroup::KWActionGroup(PointStruc &aStart, int type)
+KantActionGroup::KantActionGroup(PointStruc &aStart, int type)
   : start(aStart), action(0L), undoType(type) {
 }
 
-KWActionGroup::~KWActionGroup() {
-  KWAction *current, *next;
+KantActionGroup::~KantActionGroup() {
+  KantAction *current, *next;
 
   current = action;
   while (current) {
@@ -85,12 +72,12 @@ KWActionGroup::~KWActionGroup() {
   }
 }
 
-void KWActionGroup::insertAction(KWAction *a) {
+void KantActionGroup::insertAction(KantAction *a) {
   a->next = action;
   action = a;
 }
 
-const char * KWActionGroup::typeName(int type)
+const char * KantActionGroup::typeName(int type)
 {
   // return a short text description of the given undo group type suitable for a menu
   // not the lack of i18n's, the caller is expected to handle translation
@@ -115,12 +102,6 @@ const int KantDocument::maxAttribs = 32;
 
 KantDocument::KantDocument(long docID, QFileInfo* fi) : KTextEditor::Document(0L, 0L), hlManager(HlManager::self ())
 {
- // const QString &path;
-  bool bSingleViewMode = false;
-  bool bBrowserView = false;
-
- // setInstance( KantViewFactory::instance() );
-
   m_url.setPath( 0L );
 
   myDocID = docID;
@@ -129,8 +110,6 @@ KantDocument::KantDocument(long docID, QFileInfo* fi) : KTextEditor::Document(0L
   setMTime();
 
   connect(this,SIGNAL(modifiedChanged ()),this,SLOT(slotModChanged ()));
-
-  m_bSingleViewMode = bSingleViewMode;
 
   buffer = new KWBuffer;
   connect(buffer, SIGNAL(linesChanged(int)), this, SLOT(slotBufferChanged()));
@@ -169,41 +148,16 @@ KantDocument::KantDocument(long docID, QFileInfo* fi) : KTextEditor::Document(0L
   connect(hlManager,SIGNAL(changed()),SLOT(hlChanged()));
 
   newDocGeometry = false;
-
-/*  if ( m_bSingleViewMode )
-  {
-    KTextEditor::View *view = createView( parentWidget, widgetName );
-    view->show();
-    setWidget( view );
-
-    if ( bBrowserView )
-    {
-      // We are embedded in konqueror, let's provide an XML file and actions.
-      (void)new KantViewBrowserExtension( this );
-      setXMLFile( "kwrite_browser.rc" );
-
-      KStdAction::selectAll( view, SLOT( selectAll() ), actionCollection(), "select_all" );
-      (void)new KAction( i18n( "Unselect all" ), 0, view, SLOT( deselectAll() ), actionCollection(), "unselect_all" );
-      //(void)new KAction( i18n( "Invert selection" ), 0, view, SLOT( invertSelection() ), actionCollection(), "invert_select" );
-      KStdAction::find( view, SLOT( find() ), actionCollection(), "find" );
-      KStdAction::findNext( view, SLOT( findAgain() ), actionCollection(), "find_again" );
-      KStdAction::gotoLine( view, SLOT( gotoLine() ), actionCollection(), "goto_line" );
-
-      // TODO highlight select submenu
-    }
-  } */
 }
 
-KantDocument::~KantDocument() {
+KantDocument::~KantDocument()
+{
   m_highlight->release();
   kdDebug() << "KantDocument::~KantDocument" << endl;
 
-  if ( !m_bSingleViewMode )
-  {
-    m_views.setAutoDelete( true );
-    m_views.clear();
-    m_views.setAutoDelete( false );
-  }
+  m_views.setAutoDelete( true );
+  m_views.clear();
+  m_views.setAutoDelete( false );
 }
 
 bool KantDocument::openFile()
@@ -285,7 +239,7 @@ bool KantDocument::saveFile()
 
 KTextEditor::View *KantDocument::createView( QWidget *parent, const char *name )
 {
-  return new KantView( parent, this, name, true, false );
+  return new KantView( this, parent, name );
 }
 
 QString KantDocument::textLine( int line ) const
@@ -678,7 +632,7 @@ void KantDocument::insert(VConfig &c, const QString &s) {
 
   if (s.isEmpty()) return;
 
-  recordStart(c, KWActionGroup::ugPaste);
+  recordStart(c, KantActionGroup::ugPaste);
 
   pos = 0;
   if (!(c.flags & KantView::cfVerticalSelect)) {
@@ -687,7 +641,7 @@ void KantDocument::insert(VConfig &c, const QString &s) {
       if (ch.isPrint() || ch == '\t') {
         buf += ch; // append char to buffer
       } else if (ch == '\n') {
-        recordAction(KWAction::newLine, c.cursor); // wrap contents behind cursor to new line
+        recordAction(KantAction::newLine, c.cursor); // wrap contents behind cursor to new line
         recordInsert(c, buf); // append to old line
 //        c.cursor.x += buf.length();
         buf.truncate(0); // clear buffer
@@ -710,7 +664,7 @@ void KantDocument::insert(VConfig &c, const QString &s) {
         buf.truncate(0);
         c.cursor.y++;
         if (c.cursor.y >= numLines())
-          recordAction(KWAction::insLine, c.cursor);
+          recordAction(KantAction::insLine, c.cursor);
         c.cursor.x = textPos(getTextLine(c.cursor.y), xPos);
       }
       pos++;
@@ -723,7 +677,7 @@ void KantDocument::insert(VConfig &c, const QString &s) {
 
 void KantDocument::insertFile(VConfig &c, QIODevice &dev)
 {
-  recordStart(c, KWActionGroup::ugPaste);
+  recordStart(c, KantActionGroup::ugPaste);
 
   QString buf;
   QChar ch, last;
@@ -736,7 +690,7 @@ void KantDocument::insertFile(VConfig &c, QIODevice &dev)
         buf += ch;
     } else if (ch == '\n' || ch == '\r') {
         if (last != '\r' || ch != '\n') {
-          recordAction(KWAction::newLine, c.cursor);
+          recordAction(KantAction::newLine, c.cursor);
           recordInsert(c, buf);
           buf.truncate(0);
           c.cursor.y++;
@@ -933,8 +887,8 @@ bool KantDocument::insertChars(VConfig &c, const QString &chars) {
 
     if (c.flags & cfGroupUndo) {
       //modify last undo step that it includes the cursor motion
-      KWActionGroup *g = undoList.getLast();
-      if (undoCount < 1024 && g != 0L && g->undoType == KWActionGroup::ugInsChar
+      KantActionGroup *g = undoList.getLast();
+      if (undoCount < 1024 && g != 0L && g->undoType == KantActionGroup::ugInsChar
         && g->end.x == c.cursor.x && g->end.y == c.cursor.y) {
 
         g->end.x += pos;
@@ -946,7 +900,7 @@ bool KantDocument::insertChars(VConfig &c, const QString &chars) {
     return true;
   }*/
 
-  recordStart(c, KWActionGroup::ugInsChar);
+  recordStart(c, KantActionGroup::ugInsChar);
   recordReplace(c/*.cursor*/, (c.flags & KantView::cfOvr) ? buf.length() : 0, buf);
   c.cursor.x += pos;
 
@@ -982,7 +936,7 @@ bool KantDocument::insertChars(VConfig &c, const QString &chars) {
         //at end of doc: create new line
         actionCursor.x = pos;
         actionCursor.y = line;
-        recordAction(KWAction::newLine,actionCursor);
+        recordAction(KantAction::newLine,actionCursor);
       } else {
         //wrap
         actionCursor.y = line + 1;
@@ -991,7 +945,7 @@ bool KantDocument::insertChars(VConfig &c, const QString &chars) {
           recordInsert(actionCursor, " ");
         }
         actionCursor.x = textLine->length() - pos;
-        recordAction(KWAction::wordWrap, actionCursor);
+        recordAction(KantAction::wordWrap, actionCursor);
       }
       line++;
     } while (true);
@@ -1017,10 +971,10 @@ void KantDocument::newLine(VConfig &c) {
 
   //auto deletion of marked text is done by the view to have a more
   // "low level" KantDocument::newLine method
-  recordStart(c, KWActionGroup::ugInsLine);
+  recordStart(c, KantActionGroup::ugInsLine);
 
   if (!(c.flags & KantView::cfAutoIndent)) {
-    recordAction(KWAction::newLine,c.cursor);
+    recordAction(KantAction::newLine,c.cursor);
     c.cursor.y++;
     c.cursor.x = 0;
   } else {
@@ -1033,7 +987,7 @@ void KantDocument::newLine(VConfig &c) {
       textLine = getTextLine(--y);
       pos = textLine->firstChar();
     }
-    recordAction(KWAction::newLine, c.cursor);
+    recordAction(KantAction::newLine, c.cursor);
     c.cursor.y++;
     c.cursor.x = 0;
     if (pos > 0) {
@@ -1053,11 +1007,11 @@ void KantDocument::newLine(VConfig &c) {
 
 void KantDocument::killLine(VConfig &c) {
 
-  recordStart(c, KWActionGroup::ugDelLine);
+  recordStart(c, KantActionGroup::ugDelLine);
   c.cursor.x = 0;
   recordDelete(c.cursor, 0xffffff);
   if (c.cursor.y < lastLine()) {
-    recordAction(KWAction::killLine, c.cursor);
+    recordAction(KantAction::killLine, c.cursor);
   }
   recordEnd(c);
 }
@@ -1067,7 +1021,7 @@ void KantDocument::backspace(VConfig &c) {
   if (c.cursor.x <= 0 && c.cursor.y <= 0) return;
 
   if (c.cursor.x > 0) {
-    recordStart(c, KWActionGroup::ugDelChar);
+    recordStart(c, KantActionGroup::ugDelChar);
     if (!(c.flags & KantView::cfBackspaceIndents)) {
       // ordinary backspace
       c.cursor.x--;
@@ -1097,10 +1051,10 @@ void KantDocument::backspace(VConfig &c) {
     }
   } else {
     // c.cursor.x == 0: wrap to previous line
-    recordStart(c, KWActionGroup::ugDelLine);
+    recordStart(c, KantActionGroup::ugDelLine);
     c.cursor.y--;
     c.cursor.x = getTextLine(c.cursor.y)->length();
-    recordAction(KWAction::delLine,c.cursor);
+    recordAction(KantAction::delLine,c.cursor);
   }
   recordEnd(c);
 }
@@ -1111,15 +1065,15 @@ void KantDocument::del(VConfig &c) {
   int len =  (c.flags & KantView::cfRemoveSpaces) ? textLine->lastChar() : textLine->length();
   if (c.cursor.x < len/*getTextLine(c.cursor.y)->length()*/) {
     // delete one character
-    recordStart(c, KWActionGroup::ugDelChar);
+    recordStart(c, KantActionGroup::ugDelChar);
     recordDelete(c.cursor, 1);
     recordEnd(c);
   } else {
     if (c.cursor.y < lastLine()) {
       // wrap next line to this line
       textLine->truncate(c.cursor.x); // truncate spaces
-      recordStart(c, KWActionGroup::ugDelLine);
-      recordAction(KWAction::delLine,c.cursor);
+      recordStart(c, KantActionGroup::ugDelLine);
+      recordAction(KantAction::delLine,c.cursor);
       recordEnd(c);
     }
   }
@@ -1463,8 +1417,8 @@ void KantDocument::doIndent(VConfig &c, int change) {
 
   c.cursor.x = 0;
 
-  recordStart(c, (change < 0) ? KWActionGroup::ugUnindent
-    : KWActionGroup::ugIndent);
+  recordStart(c, (change < 0) ? KantActionGroup::ugUnindent
+    : KantActionGroup::ugIndent);
 
   if (selectEnd < selectStart) {
     // single line
@@ -1630,8 +1584,8 @@ void KantDocument::doComment(VConfig &c, int change) {
 
   c.flags |=KantView:: cfPersistent;
 
-  recordStart(c, (change < 0) ? KWActionGroup::ugUncomment
-    : KWActionGroup::ugComment);
+  recordStart(c, (change < 0) ? KantActionGroup::ugUncomment
+    : KantActionGroup::ugComment);
 
   if (selectEnd < selectStart) {
     if(change > 0) {
@@ -1776,7 +1730,7 @@ void KantDocument::delMarkedText(VConfig &c/*, bool undo*/) {
 
   //auto deletion of the marked text occurs not very often and can therefore
   //  be recorded separately
-  recordStart(c, KWActionGroup::ugDelBlock);
+  recordStart(c, KantActionGroup::ugDelBlock);
 
   for (c.cursor.y = selectEnd; c.cursor.y >= selectStart; c.cursor.y--) {
     TextLine::Ptr textLine = getTextLine(c.cursor.y);
@@ -1790,7 +1744,7 @@ void KantDocument::delMarkedText(VConfig &c/*, bool undo*/) {
     } while (true);
     end = c.cursor.x;
     c.cursor.x = textLine->length();
-    if (textLine->isSelected()) recordAction(KWAction::delLine,c.cursor);
+    if (textLine->isSelected()) recordAction(KantAction::delLine,c.cursor);
   }
   c.cursor.y++;
   /*if (end < c.cursor.x)*/ c.cursor.x = end;
@@ -2051,54 +2005,6 @@ void KantDocument::paintTextLine(QPainter &paint, int line, int xStart, int xEnd
 //gettimeofday(&tv3, &tz);
 //printf(" %d %d\n", tv2.tv_usec - tv1.tv_usec, tv3.tv_usec - tv2.tv_usec);
 }
-
-/*
-void KantDocument::printTextLine(QPainter &paint, int line, int xEnd, int y) {
-  TextLine::Ptr textLine;
-  int z, x;
-  Attribute *a = 0L;
-  int attr, nextAttr;
-  char ch;
-  char buf[256];
-  int bufp;
-
-  if (line > lastLine()) return;
-  textLine = getTextLine(line);
-
-  z = 0;
-  x = 0;
-  y += fontAscent -1;
-  attr = -1;
-  bufp = 0;
-  while (x < xEnd && z < textLine->length()) {
-    ch = textLine->getChar(z);
-    if (ch == '\t') {
-      if (bufp > 0) {
-        paint.drawText(x, y, buf, bufp);
-        x += paint.fontMetrics().width(buf, bufp);
-        bufp = 0;
-      }
-      x += tabWidth - (x % tabWidth);
-    } else {
-      nextAttr = textLine->getAttr(z);
-      if (nextAttr != attr || bufp >= 256) {
-        if (bufp > 0) {
-          paint.drawText(x, y, buf, bufp);
-          x += paint.fontMetrics().width(buf,bufp);
-          bufp = 0;
-        }
-        attr = nextAttr;
-        a = &attribs[attr];
-        paint.setFont(a->font);
-      }
-      buf[bufp] = ch;
-      bufp++;
-    }
-    z++;
-  }
-  if (bufp > 0) paint.drawText(x, y, buf, bufp);
-}
-*/
 
 void KantDocument::setURL( const KURL &url, bool updateHighlight )
 {
@@ -2384,42 +2290,42 @@ void KantDocument::optimizeSelection() {
   }
 }
 
-void KantDocument::doAction(KWAction *a) {
+void KantDocument::doAction(KantAction *a) {
 
   switch (a->action) {
-    case KWAction::replace:
+    case KantAction::replace:
       doReplace(a);
       break;
-    case KWAction::wordWrap:
+    case KantAction::wordWrap:
       doWordWrap(a);
       break;
-    case KWAction::wordUnWrap:
+    case KantAction::wordUnWrap:
       doWordUnWrap(a);
       break;
-    case KWAction::newLine:
+    case KantAction::newLine:
       doNewLine(a);
       break;
-    case KWAction::delLine:
+    case KantAction::delLine:
       doDelLine(a);
       break;
-    case KWAction::insLine:
+    case KantAction::insLine:
       doInsLine(a);
       break;
-    case KWAction::killLine:
+    case KantAction::killLine:
       doKillLine(a);
       break;
-/*    case KWAction::doubleLine:
+/*    case KantAction::doubleLine:
       break;
-    case KWAction::removeLine:
+    case KantAction::removeLine:
       break;*/
   }
 }
 
-void KantDocument::doReplace(KWAction *a) {
+void KantDocument::doReplace(KantAction *a) {
   TextLine::Ptr textLine;
   int l;
 
-  //exchange current text with stored text in KWAction *a
+  //exchange current text with stored text in KantAction *a
 
   textLine = getTextLine(a->cursor.y);
   l = textLine->length() - a->cursor.x;
@@ -2437,7 +2343,7 @@ void KantDocument::doReplace(KWAction *a) {
   tagLine(a->cursor.y);
 }
 
-void KantDocument::doWordWrap(KWAction *a) {
+void KantDocument::doWordWrap(KantAction *a) {
   TextLine::Ptr textLine;
 
   textLine = getTextLine(a->cursor.y - 1);
@@ -2453,10 +2359,10 @@ void KantDocument::doWordWrap(KWAction *a) {
   tagLine(a->cursor.y);
   if (selectEnd == a->cursor.y - 1) selectEnd++;
 
-  a->action = KWAction::wordUnWrap;
+  a->action = KantAction::wordUnWrap;
 }
 
-void KantDocument::doWordUnWrap(KWAction *a) {
+void KantDocument::doWordUnWrap(KantAction *a) {
   TextLine::Ptr textLine;
 
   textLine = getTextLine(a->cursor.y - 1);
@@ -2471,10 +2377,10 @@ void KantDocument::doWordUnWrap(KWAction *a) {
   tagLine(a->cursor.y - 1);
   tagLine(a->cursor.y);
 
-  a->action = KWAction::wordWrap;
+  a->action = KantAction::wordWrap;
 }
 
-void KantDocument::doNewLine(KWAction *a) {
+void KantDocument::doNewLine(KantAction *a) {
   TextLine::Ptr textLine, newLine;
 
   textLine = getTextLine(a->cursor.y);
@@ -2492,10 +2398,10 @@ void KantDocument::doNewLine(KWAction *a) {
   tagLine(a->cursor.y + 1);
   if (selectEnd == a->cursor.y) selectEnd++;//addSelection(a->cursor.y + 1);
 
-  a->action = KWAction::delLine;
+  a->action = KantAction::delLine;
 }
 
-void KantDocument::doDelLine(KWAction *a) {
+void KantDocument::doDelLine(KantAction *a) {
   TextLine::Ptr textLine, nextLine;
 
   textLine = getTextLine(a->cursor.y);
@@ -2514,10 +2420,10 @@ void KantDocument::doDelLine(KWAction *a) {
   tagLine(a->cursor.y);
   delLine(a->cursor.y + 1);
 
-  a->action = KWAction::newLine;
+  a->action = KantAction::newLine;
 }
 
-void KantDocument::doInsLine(KWAction *a) {
+void KantDocument::doInsLine(KantAction *a) {
 
 #ifdef NEW_CODE
   buffer->insertLine(a->cursor.y, new TextLine());
@@ -2527,10 +2433,10 @@ void KantDocument::doInsLine(KWAction *a) {
 
   insLine(a->cursor.y);
 
-  a->action = KWAction::killLine;
+  a->action = KantAction::killLine;
 }
 
-void KantDocument::doKillLine(KWAction *a) {
+void KantDocument::doKillLine(KantAction *a) {
   TextLine::Ptr textLine = getTextLine(a->cursor.y);
   if (longestLine == textLine) longestLine = 0L;
 #ifdef NEW_CODE
@@ -2542,7 +2448,7 @@ void KantDocument::doKillLine(KWAction *a) {
   delLine(a->cursor.y);
   tagLine(a->cursor.y);
 
-  a->action = KWAction::insLine;
+  a->action = KantAction::insLine;
 }
 
 void KantDocument::newUndo() {
@@ -2565,9 +2471,9 @@ void KantDocument::recordStart(VConfig &c, int newUndoType) {
 void KantDocument::recordStart(KantView *, PointStruc &cursor, int flags,
   int newUndoType, bool keepModal, bool mergeUndo) {
 
-  KWActionGroup *g;
+  KantActionGroup *g;
 
-//  if (newUndoType == KWActionGroup::ugNone) {
+//  if (newUndoType == KantActionGroup::ugNone) {
     // only a bug would cause this
 //why should someone do this? we can't prevent all programming errors :) (jochen whilhelmy)
 //    debug("KantDocument::recordStart() called with no undo group type!");
@@ -2585,10 +2491,10 @@ void KantDocument::recordStart(KantView *, PointStruc &cursor, int flags,
     //undo grouping : same actions are put into one undo step
     //precondition : new action starts where old stops or mergeUndo flag
     if (g->undoType == newUndoType
-      || (g->undoType == KWActionGroup::ugInsChar
-        && newUndoType == KWActionGroup::ugInsLine)
-      || (g->undoType == KWActionGroup::ugDelChar
-        && newUndoType == KWActionGroup::ugDelLine)) {
+      || (g->undoType == KantActionGroup::ugInsChar
+        && newUndoType == KantActionGroup::ugInsLine)
+      || (g->undoType == KantActionGroup::ugDelChar
+        && newUndoType == KantActionGroup::ugDelLine)) {
 
       undoCount++;
       if (g->undoType != newUndoType) undoCount = 0xffffff;
@@ -2605,8 +2511,8 @@ void KantDocument::recordStart(KantView *, PointStruc &cursor, int flags,
 printf("bla!!!\n");
     // same as current type, keep using it
     return;
-  } else if  ( (undoType == KWActionGroup::ugInsChar && newUndoType == KWActionGroup::ugInsLine) ||
-               (undoType == KWActionGroup::ugDelChar && newUndoType == KWActionGroup::ugDelLine) ) {
+  } else if  ( (undoType == KantActionGroup::ugInsChar && newUndoType == KantActionGroup::ugInsLine) ||
+               (undoType == KantActionGroup::ugDelChar && newUndoType == KantActionGroup::ugDelLine) ) {
     // some type combinations can run together...
     undoType += 1000;
     return;
@@ -2623,7 +2529,7 @@ printf("bla!!!\n");
     currentUndo--;
   }
 
-  g = new KWActionGroup(cursor, newUndoType);
+  g = new KantActionGroup(cursor, newUndoType);
   undoList.append(g);
 //  currentUndo++;
 
@@ -2632,10 +2538,10 @@ printf("bla!!!\n");
   tagStart = 0xffffff;
 }
 
-void KantDocument::recordAction(KWAction::Action action, PointStruc &cursor) {
-  KWAction *a;
+void KantDocument::recordAction(KantAction::Action action, PointStruc &cursor) {
+  KantAction *a;
 
-  a = new KWAction(action, cursor);
+  a = new KantAction(action, cursor);
   doAction(a);
   undoList.getLast()->insertAction(a);
 }
@@ -2669,7 +2575,7 @@ void KantDocument::recordDelete(PointStruc &cursor, int len) {
 }
 
 void KantDocument::recordReplace(PointStruc &cursor, int len, const QString &text) {
-  KWAction *a;
+  KantAction *a;
   TextLine::Ptr textLine;
   int l;
 
@@ -2677,11 +2583,11 @@ void KantDocument::recordReplace(PointStruc &cursor, int len, const QString &tex
 
   //try to append to last replace action
   a = undoList.getLast()->action;
-  if (a == 0L || a->action != KWAction::replace
+  if (a == 0L || a->action != KantAction::replace
     || a->cursor.x + a->len != cursor.x || a->cursor.y != cursor.y) {
 
 //if (a != 0L) printf("new %d %d\n", a->cursor.x + a->len, cursor.x);
-    a = new KWAction(KWAction::replace, cursor);
+    a = new KantAction(KantAction::replace, cursor);
     undoList.getLast()->insertAction(a);
   }
 
@@ -2705,7 +2611,7 @@ void KantDocument::recordEnd(VConfig &c) {
 }
 
 void KantDocument::recordEnd(KantView *view, PointStruc &cursor, int flags) {
-  KWActionGroup *g;
+  KantActionGroup *g;
 
   // clear selection if option "persistent selections" is off
 //  if (!(flags & cfPersistent)) deselectAll();
@@ -2734,8 +2640,8 @@ void KantDocument::recordEnd(KantView *view, PointStruc &cursor, int flags) {
   // we limit the number of individual undo operations for sanity - is 1K reasonable?
   // this is also where we handle non-group undo preference
   // if the undo type is singlular, we always finish it now
-  if ( undoType == KWActionGroup::ugPaste ||
-       undoType == KWActionGroup::ugDelBlock ||
+  if ( undoType == KantActionGroup::ugPaste ||
+       undoType == KantActionGroup::ugDelBlock ||
        undoType > 1000 ||
        undoCount > 1024 || !(flags & cfGroupUndo) ) {
 printf("recordend %d %d\n", undoType, undoCount);
@@ -2754,7 +2660,7 @@ void KantDocument::recordReset()
 
   // forces the next call of recordStart() to begin a new undo group
   // not used in normal editing, but used by markFound(), etc.
-  undoType = KWActionGroup::ugNone;
+  undoType = KantActionGroup::ugNone;
   undoCount = 0;
   undoView = NULL;
   undoReported = false;
@@ -2769,14 +2675,14 @@ void KantDocument::recordDel(PointStruc &cursor, TextLine::Ptr &textLine, int l)
   len = textLine->length() - cursor.x;
   if (len > l) len = l;
   if (len > 0) {
-    insertUndo(new KWAction(KWAction::replace,cursor,&textLine->getText()[cursor.x],len));
+    insertUndo(new KantAction(KantAction::replace,cursor,&textLine->getText()[cursor.x],len));
   }
 }
 */
 
 
-void KantDocument::doActionGroup(KWActionGroup *g, int flags, bool undo) {
-  KWAction *a, *next;
+void KantDocument::doActionGroup(KantActionGroup *g, int flags, bool undo) {
+  KantAction *a, *next;
 
   setPseudoModal(0L);
   if (!(flags & KantView::cfPersistent)) deselectAll();
@@ -2805,20 +2711,20 @@ void KantDocument::doActionGroup(KWActionGroup *g, int flags, bool undo) {
 
 int KantDocument::nextUndoType()
 {
-  KWActionGroup *g;
+  KantActionGroup *g;
 
-  if (currentUndo <= 0) return KWActionGroup::ugNone;
+  if (currentUndo <= 0) return KantActionGroup::ugNone;
   g = undoList.at(currentUndo - 1);
   return g->undoType;
 }
 
 int KantDocument::nextRedoType()
 {
-  KWActionGroup *g;
+  KantActionGroup *g;
 
-  if (currentUndo >= (int) undoList.count()) return KWActionGroup::ugNone;
+  if (currentUndo >= (int) undoList.count()) return KantActionGroup::ugNone;
   g = undoList.at(currentUndo);
-//  if (!g) return KWActionGroup::ugNone;
+//  if (!g) return KantActionGroup::ugNone;
   return g->undoType;
 }
 
@@ -2837,7 +2743,7 @@ void KantDocument::redoTypeList(QValueList<int> &lst)
 }
 
 void KantDocument::undo(VConfig &c, int count) {
-  KWActionGroup *g = 0L;
+  KantActionGroup *g = 0L;
   int num;
   bool needUpdate = false; // don't update the cursor until completely done
 
@@ -2862,7 +2768,7 @@ void KantDocument::undo(VConfig &c, int count) {
 }
 
 void KantDocument::redo(VConfig &c, int count) {
-  KWActionGroup *g = 0L;
+  KantActionGroup *g = 0L;
   int num;
   bool needUpdate = false; // don't update the cursor until completely done
 
@@ -3069,23 +2975,4 @@ void KantDocument::reloadFile()
 void KantDocument::slotModChanged()
 {
   emit modStateChanged (this);
-}
-
-
-KantViewBrowserExtension::KantViewBrowserExtension( KantDocument *doc )
-: KParts::BrowserExtension( doc, "kwritebrowserextension" )
-{
-  m_doc = doc;
-  connect( m_doc, SIGNAL( selectionChanged() ),
-           this, SLOT( slotSelectionChanged() ) );
-}
-
-void KantViewBrowserExtension::copy()
-{
-  m_doc->copy( 0 );
-}
-
-void KantViewBrowserExtension::slotSelectionChanged()
-{
-  emit enableAction( "copy", m_doc->hasMarkedText() );
 }

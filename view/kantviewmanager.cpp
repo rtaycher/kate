@@ -103,7 +103,7 @@ bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView, Ka
   }
 
   // create view
-  KantView *view = new KantView (this, doc, (QString("KantViewIface%1").arg(myViewID)).latin1());
+  KantView *view = new KantView (doc, this, (QString("KantViewIface%1").arg(myViewID)).latin1());
   connect(view,SIGNAL(newStatus()),this,SLOT(setWindowCaption()));
   myViewID++;
   viewList.append (view);
@@ -115,8 +115,6 @@ bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView, Ka
 
   if (!newDoc && origView)
     view->copySettings(origView);
-
-  view->init();
 
   if (newDoc)
   {

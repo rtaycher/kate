@@ -36,22 +36,22 @@
 
 class Attribute;
 
-class KWAction {
+class KantAction {
   public:
     enum Action {replace, wordWrap, wordUnWrap, newLine, delLine,
       insLine, killLine};//, doubleLine, removeLine};
 
-    KWAction(Action, PointStruc &cursor, int len = 0,
+    KantAction(Action, PointStruc &cursor, int len = 0,
       const QString &text = QString::null);
 
     Action action;
     PointStruc cursor;
     int len;
     QString text;
-    KWAction *next;
+    KantAction *next;
 };
 
-class KWActionGroup {
+class KantActionGroup {
   public:
     // the undo group types
     enum {  ugNone,         //
@@ -69,15 +69,15 @@ class KWActionGroup {
             ugDelLine       // ''  ''
          };
 
-    KWActionGroup(PointStruc &aStart, int type = ugNone);
-    ~KWActionGroup();
-    void insertAction(KWAction *);
+    KantActionGroup(PointStruc &aStart, int type = ugNone);
+    ~KantActionGroup();
+    void insertAction(KantAction *);
 
     static const char * typeName(int type);
 
     PointStruc start;
     PointStruc end;
-    KWAction *action;
+    KantAction *action;
     int undoType;
 };
 
@@ -90,7 +90,8 @@ class KWActionGroup {
   @see TextLine
   @author Jochen Wilhelmy
 */
-class KantDocument : public KTextEditor::Document {
+class KantDocument : public KTextEditor::Document
+{
     Q_OBJECT
     friend class KantViewInternal;
     friend class KantView;
@@ -113,8 +114,6 @@ class KantDocument : public KTextEditor::Document {
     virtual void setSelection( int row_from, int col_from, int row_to, int col_t );
     virtual bool hasSelection() const;
     virtual QString selection() const;
-
-    bool isSingleViewMode() const { return m_bSingleViewMode; }
 
     public:
 
@@ -233,7 +232,6 @@ class KantDocument : public KTextEditor::Document {
     // just does some setup and then calls optimizeLeadingSpace()
     void doIndent(VConfig &, int change);
     // optimize leading whitespace on a single line - see kwdoc.cpp for full description
-//    bool optimizeLeadingSpace(VConfig &, const TextLine::Ptr &, int, bool);
     void optimizeLeadingSpace(int line, int flags, int change);
 
     void comment(VConfig &c) {doComment(c, 1);}
@@ -264,7 +262,6 @@ class KantDocument : public KTextEditor::Document {
     QColor &cursorCol(int x, int y);
     QFont &getTextFont(int x, int y);
     void paintTextLine(QPainter &, int line, int xStart, int xEnd, bool showTabs);
-//    void printTextLine(QPainter &, int line, int xEnd, int y);
 
     void setURL( const KURL &url, bool updateHighlight );
     void clearFileName();
@@ -279,20 +276,20 @@ class KantDocument : public KTextEditor::Document {
     void delLine(int line);
     void optimizeSelection();
 
-    void doAction(KWAction *);
-    void doReplace(KWAction *);
-    void doWordWrap(KWAction *);
-    void doWordUnWrap(KWAction *);
-    void doNewLine(KWAction *);
-    void doDelLine(KWAction *);
-    void doInsLine(KWAction *);
-    void doKillLine(KWAction *);
+    void doAction(KantAction *);
+    void doReplace(KantAction *);
+    void doWordWrap(KantAction *);
+    void doWordUnWrap(KantAction *);
+    void doNewLine(KantAction *);
+    void doDelLine(KantAction *);
+    void doInsLine(KantAction *);
+    void doKillLine(KantAction *);
     void newUndo();
 
     void recordStart(VConfig &, int newUndoType);
     void recordStart(KantView *, PointStruc &, int flags, int newUndoType,
       bool keepModal = false, bool mergeUndo = false);
-    void recordAction(KWAction::Action, PointStruc &);
+    void recordAction(KantAction::Action, PointStruc &);
     void recordInsert(VConfig &, const QString &text);
     void recordReplace(VConfig &, int len, const QString &text);
     void recordInsert(PointStruc &, const QString &text);
@@ -301,7 +298,7 @@ class KantDocument : public KTextEditor::Document {
     void recordEnd(VConfig &);
     void recordEnd(KantView *, PointStruc &, int flags);
 //  void recordReset();
-    void doActionGroup(KWActionGroup *, int flags, bool undo = false);
+    void doActionGroup(KantActionGroup *, int flags, bool undo = false);
 
     int nextUndoType();
     int nextRedoType();
@@ -365,7 +362,7 @@ class KantDocument : public KTextEditor::Document {
 
     int foundLine;
 
-    QList<KWActionGroup> undoList;
+    QList<KantActionGroup> undoList;
     int currentUndo;
     int undoState;
     int undoSteps;
@@ -378,8 +375,6 @@ class KantDocument : public KTextEditor::Document {
 //    KantView* undoView;   // the KantView that owns the undo group
 
     QWidget *pseudoModal;   //the replace prompt is pseudo modal
-
-    bool m_bSingleViewMode;
 
     public:
     /** anders: reimplemented from kwdoc to update mTime */
@@ -413,20 +408,6 @@ class KantDocument : public KTextEditor::Document {
   signals:
     void modStateChanged (KantDocument *doc);
     void nameChanged (KantDocument *doc);
-};
-
-class KantViewBrowserExtension : public KParts::BrowserExtension
-{
-  Q_OBJECT
-public:
-  KantViewBrowserExtension( KantDocument *doc );
-
-private slots:
-  void copy();
-  void slotSelectionChanged();
-
-private:
-  KantDocument *m_doc;
 };
 
 #endif

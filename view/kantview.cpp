@@ -137,11 +137,10 @@ void releaseBuffer(void *user) {
 }
 
 
-KantViewInternal::KantViewInternal(KantView *write, KantDocument *doc, bool HandleOwnDND)
-  : QWidget(write) {
-
-  kWrite = write;
-  kWriteDoc = doc;
+KantViewInternal::KantViewInternal(KantView *view, KantDocument *doc, bool HandleOwnDND) : QWidget(view)
+{
+  myView = view;
+  myDoc = doc;
 
   QWidget::setCursor(ibeamCursor);
   setBackgroundMode(NoBackground);
@@ -150,11 +149,11 @@ KantViewInternal::KantViewInternal(KantView *write, KantDocument *doc, bool Hand
   setFocusPolicy(StrongFocus);
   move(2,2);
 
-  xScroll = new QScrollBar(QScrollBar::Horizontal,write);
-  yScroll = new QScrollBar(QScrollBar::Vertical,write);
+  xScroll = new QScrollBar(QScrollBar::Horizontal,myView);
+  yScroll = new QScrollBar(QScrollBar::Vertical,myView);
   connect(xScroll,SIGNAL(valueChanged(int)),SLOT(changeXPos(int)));
   connect(yScroll,SIGNAL(valueChanged(int)),SLOT(changeYPos(int)));
-  connect(yScroll,SIGNAL(valueChanged(int)),kWrite,SIGNAL(scrollValueChanged(int)));
+  connect(yScroll,SIGNAL(valueChanged(int)),myView,SIGNAL(scrollValueChanged(int)));
 
   xPos = 0;
   yPos = 0;
@@ -188,11 +187,11 @@ KantViewInternal::KantViewInternal(KantView *write, KantDocument *doc, bool Hand
   dragInfo.state = diNone;
 }
 
-KantViewInternal::~KantViewInternal() {
+KantViewInternal::~KantViewInternal()
+{
   delete [] lineRanges;
   releaseBuffer(this);
 }
-
 
 void KantViewInternal::doCursorCommand(VConfig &c, int cmdNum) {
 
@@ -252,102 +251,100 @@ void KantViewInternal::doEditCommand(VConfig &c, int cmdNum) {
 
   switch (cmdNum) {
     case KantView::cmCopy:
-      kWriteDoc->copy(c.flags);
+      myDoc->copy(c.flags);
       return;
     case KantView::cmSelectAll:
-      kWriteDoc->selectAll();
+      myDoc->selectAll();
       return;
     case KantView::cmDeselectAll:
-      kWriteDoc->deselectAll();
+      myDoc->deselectAll();
       return;
     case KantView::cmInvertSelection:
-      kWriteDoc->invertSelection();
+      myDoc->invertSelection();
       return;
   }
-  if (kWrite->isReadOnly()) return;
+  if (myView->isReadOnly()) return;
   switch (cmdNum) {
     case KantView::cmReturn:
-      if (c.flags & KantView::cfDelOnInput) kWriteDoc->delMarkedText(c);
-      kWriteDoc->newLine(c);
+      if (c.flags & KantView::cfDelOnInput) myDoc->delMarkedText(c);
+      myDoc->newLine(c);
       //emit returnPressed();
       //e->ignore();
       return;
     case KantView::cmDelete:
-      if ((c.flags & KantView::cfDelOnInput) && kWriteDoc->hasMarkedText())
-        kWriteDoc->delMarkedText(c);
-      else kWriteDoc->del(c);
+      if ((c.flags & KantView::cfDelOnInput) && myDoc->hasMarkedText())
+        myDoc->delMarkedText(c);
+      else myDoc->del(c);
       return;
     case KantView::cmBackspace:
-      if ((c.flags & KantView::cfDelOnInput) && kWriteDoc->hasMarkedText())
-        kWriteDoc->delMarkedText(c);
-      else kWriteDoc->backspace(c);
+      if ((c.flags & KantView::cfDelOnInput) && myDoc->hasMarkedText())
+        myDoc->delMarkedText(c);
+      else myDoc->backspace(c);
       return;
     case KantView::cmKillLine:
-      kWriteDoc->killLine(c);
+      myDoc->killLine(c);
       return;
     case KantView::cmCut:
-      kWriteDoc->cut(c);
+      myDoc->cut(c);
       return;
     case KantView::cmPaste:
-      if (c.flags & KantView::cfDelOnInput) kWriteDoc->delMarkedText(c);
-      kWriteDoc->paste(c);
+      if (c.flags & KantView::cfDelOnInput) myDoc->delMarkedText(c);
+      myDoc->paste(c);
       return;
     case KantView::cmUndo:
-      kWriteDoc->undo(c);
+      myDoc->undo(c);
       return;
     case KantView::cmRedo:
-      kWriteDoc->redo(c);
+      myDoc->redo(c);
       return;
     case KantView::cmIndent:
-      kWriteDoc->indent(c);
+      myDoc->indent(c);
       return;
     case KantView::cmUnindent:
-      kWriteDoc->unIndent(c);
+      myDoc->unIndent(c);
       return;
     case KantView::cmCleanIndent:
-      kWriteDoc->cleanIndent(c);
+      myDoc->cleanIndent(c);
       return;
     case KantView::cmComment:
-      kWriteDoc->comment(c);
+      myDoc->comment(c);
       return;
     case KantView::cmUncomment:
-      kWriteDoc->unComment(c);
+      myDoc->unComment(c);
       return;
   }
 }
-
-
 
 void KantViewInternal::cursorLeft(VConfig &c) {
 
   cursor.x--;
   if (c.flags & KantView::cfWrapCursor && cursor.x < 0 && cursor.y > 0) {
     cursor.y--;
-    cursor.x = kWriteDoc->textLength(cursor.y);
+    cursor.x = myDoc->textLength(cursor.y);
   }
-  cOldXPos = cXPos = kWriteDoc->textWidth(cursor);
+  cOldXPos = cXPos = myDoc->textWidth(cursor);
   changeState(c);
 }
 
 void KantViewInternal::cursorRight(VConfig &c) {
 
   if (c.flags & KantView::cfWrapCursor) {
-    if (cursor.x >= kWriteDoc->textLength(cursor.y)) {
-      if (cursor.y == kWriteDoc->lastLine()) return;
+    if (cursor.x >= myDoc->textLength(cursor.y)) {
+      if (cursor.y == myDoc->lastLine()) return;
       cursor.y++;
       cursor.x = -1;
     }
   }
   cursor.x++;
-  cOldXPos = cXPos = kWriteDoc->textWidth(cursor);
+  cOldXPos = cXPos = myDoc->textWidth(cursor);
   changeState(c);
 }
 
 void KantViewInternal::wordLeft(VConfig &c) {
   Highlight *highlight;
 
-  highlight = kWriteDoc->highlight();
-  TextLine::Ptr textLine = kWriteDoc->getTextLine(cursor.y);
+  highlight = myDoc->highlight();
+  TextLine::Ptr textLine = myDoc->getTextLine(cursor.y);
 
   if (cursor.x > 0) {
     do {
@@ -358,7 +355,7 @@ void KantViewInternal::wordLeft(VConfig &c) {
   } else {
     if (cursor.y > 0) {
       cursor.y--;
-      textLine = kWriteDoc->getTextLine(cursor.y);
+      textLine = myDoc->getTextLine(cursor.y);
       cursor.x = textLine->length();
     }
   }
@@ -368,7 +365,7 @@ void KantViewInternal::wordLeft(VConfig &c) {
     if (cursor.x <= 0) {
       if (cursor.y > 0) {
         cursor.y--;
-        textLine = kWriteDoc->textLine(cursor.y);
+        textLine = myDoc->textLine(cursor.y);
         cursor.x = textLine->length() -1;
       } else break;
     } else cursor.x--;
@@ -376,7 +373,7 @@ void KantViewInternal::wordLeft(VConfig &c) {
   while (cursor.x > 0 && highlight->isInWord(textLine->getChar(cursor.x -1)))
     cursor.x--;
 */
-  cOldXPos = cXPos = kWriteDoc->textWidth(cursor);
+  cOldXPos = cXPos = myDoc->textWidth(cursor);
   changeState(c);
 }
 
@@ -384,8 +381,8 @@ void KantViewInternal::wordRight(VConfig &c) {
   Highlight *highlight;
   int len;
 
-  highlight = kWriteDoc->highlight();
-  TextLine::Ptr textLine = kWriteDoc->getTextLine(cursor.y);
+  highlight = myDoc->highlight();
+  TextLine::Ptr textLine = myDoc->getTextLine(cursor.y);
   len = textLine->length();
 
   if (cursor.x < len) {
@@ -395,9 +392,9 @@ void KantViewInternal::wordRight(VConfig &c) {
     while (cursor.x < len && !highlight->isInWord(textLine->getChar(cursor.x)))
       cursor.x++;
   } else {
-    if (cursor.y < kWriteDoc->lastLine()) {
+    if (cursor.y < myDoc->lastLine()) {
       cursor.y++;
-      textLine = kWriteDoc->getTextLine(cursor.y);
+      textLine = myDoc->getTextLine(cursor.y);
       cursor.x = 0;
     }
   }
@@ -406,29 +403,29 @@ void KantViewInternal::wordRight(VConfig &c) {
     cursor.x++;
   do {
     if (cursor.x >= len) {
-      if (cursor.y < kWriteDoc->lastLine()) {
+      if (cursor.y < myDoc->lastLine()) {
         cursor.y++;
-        textLine = kWriteDoc->textLine(cursor.y);
+        textLine = myDoc->textLine(cursor.y);
         len = textLine->length();
         cursor.x = 0;
       } else break;
     } else cursor.x++;
   } while (cursor.x >= len || !highlight->isInWord(textLine->getChar(cursor.x)));
 */
-  cOldXPos = cXPos = kWriteDoc->textWidth(cursor);
+  cOldXPos = cXPos = myDoc->textWidth(cursor);
   changeState(c);
 }
 
 void KantViewInternal::home(VConfig &c) {
   int lc;
 
-  lc = (c.flags & KantView::cfSmartHome) ? kWriteDoc->getTextLine(cursor.y)->firstChar() : 0;
+  lc = (c.flags & KantView::cfSmartHome) ? myDoc->getTextLine(cursor.y)->firstChar() : 0;
   if (lc <= 0 || cursor.x == lc) {
     cursor.x = 0;
     cOldXPos = cXPos = 0;
   } else {
     cursor.x = lc;
-    cOldXPos = cXPos = kWriteDoc->textWidth(cursor);
+    cOldXPos = cXPos = myDoc->textWidth(cursor);
   }
 
   changeState(c);
@@ -436,14 +433,14 @@ void KantViewInternal::home(VConfig &c) {
 
 void KantViewInternal::end(VConfig &c) {
 /*
-  TextLine::Ptr textLine = kWriteDoc->textLine(cursor.y);
+  TextLine::Ptr textLine = myDoc->textLine(cursor.y);
   if (c.flags & KantView::cfRemoveSpaces) { // ignore trailing spaces
     cursor.x = textLine->lastChar();
   } else {
     cursor.x = textLine->length();
   }*/
-  cursor.x = kWriteDoc->textLength(cursor.y);
-  cOldXPos = cXPos = kWriteDoc->textWidth(cursor);
+  cursor.x = myDoc->textLength(cursor.y);
+  cOldXPos = cXPos = myDoc->textWidth(cursor);
   changeState(c);
 }
 
@@ -451,7 +448,7 @@ void KantViewInternal::end(VConfig &c) {
 void KantViewInternal::cursorUp(VConfig &c) {
 
   cursor.y--;
-  cXPos = kWriteDoc->textWidth(c.flags & KantView::cfWrapCursor,cursor,cOldXPos);
+  cXPos = myDoc->textWidth(c.flags & KantView::cfWrapCursor,cursor,cOldXPos);
   changeState(c);
 }
 
@@ -459,14 +456,14 @@ void KantViewInternal::cursorUp(VConfig &c) {
 void KantViewInternal::cursorDown(VConfig &c) {
   int x;
 
-  if (cursor.y == kWriteDoc->lastLine()) {
-    x = kWriteDoc->textLength(cursor.y);
+  if (cursor.y == myDoc->lastLine()) {
+    x = myDoc->textLength(cursor.y);
     if (cursor.x >= x) return;
     cursor.x = x;
-    cXPos = kWriteDoc->textWidth(cursor);
+    cXPos = myDoc->textWidth(cursor);
   } else {
     cursor.y++;
-    cXPos = kWriteDoc->textWidth(c.flags & KantView::cfWrapCursor, cursor, cOldXPos);
+    cXPos = myDoc->textWidth(c.flags & KantView::cfWrapCursor, cursor, cOldXPos);
   }
   changeState(c);
 }
@@ -475,10 +472,10 @@ void KantViewInternal::scrollUp(VConfig &c) {
 
   if (! yPos) return;
 
-  newYPos = yPos - kWriteDoc->fontHeight;
-  if (cursor.y == (yPos + height())/kWriteDoc->fontHeight -1) {
+  newYPos = yPos - myDoc->fontHeight;
+  if (cursor.y == (yPos + height())/myDoc->fontHeight -1) {
     cursor.y--;
-    cXPos = kWriteDoc->textWidth(c.flags & KantView::cfWrapCursor,cursor,cOldXPos);
+    cXPos = myDoc->textWidth(c.flags & KantView::cfWrapCursor,cursor,cOldXPos);
 
     changeState(c);
   }
@@ -486,19 +483,19 @@ void KantViewInternal::scrollUp(VConfig &c) {
 
 void KantViewInternal::scrollDown(VConfig &c) {
 
-  if (endLine >= kWriteDoc->lastLine()) return;
+  if (endLine >= myDoc->lastLine()) return;
 
-  newYPos = yPos + kWriteDoc->fontHeight;
-  if (cursor.y == (yPos + kWriteDoc->fontHeight -1)/kWriteDoc->fontHeight) {
+  newYPos = yPos + myDoc->fontHeight;
+  if (cursor.y == (yPos + myDoc->fontHeight -1)/myDoc->fontHeight) {
     cursor.y++;
-    cXPos = kWriteDoc->textWidth(c.flags & KantView::cfWrapCursor,cursor,cOldXPos);
+    cXPos = myDoc->textWidth(c.flags & KantView::cfWrapCursor,cursor,cOldXPos);
     changeState(c);
   }
 }
 
 void KantViewInternal::topOfView(VConfig &c) {
 
-  cursor.y = (yPos + kWriteDoc->fontHeight -1)/kWriteDoc->fontHeight;
+  cursor.y = (yPos + myDoc->fontHeight -1)/myDoc->fontHeight;
   cursor.x = 0;
   cOldXPos = cXPos = 0;
   changeState(c);
@@ -506,9 +503,9 @@ void KantViewInternal::topOfView(VConfig &c) {
 
 void KantViewInternal::bottomOfView(VConfig &c) {
 
-  cursor.y = (yPos + height())/kWriteDoc->fontHeight -1;
+  cursor.y = (yPos + height())/myDoc->fontHeight -1;
   if (cursor.y < 0) cursor.y = 0;
-  if (cursor.y > kWriteDoc->lastLine()) cursor.y = kWriteDoc->lastLine();
+  if (cursor.y > myDoc->lastLine()) cursor.y = myDoc->lastLine();
   cursor.x = 0;
   cOldXPos = cXPos = 0;
   changeState(c);
@@ -520,11 +517,11 @@ void KantViewInternal::pageUp(VConfig &c) {
   if (lines <= 0) lines = 1;
 
   if (!(c.flags & KantView::cfPageUDMovesCursor) && yPos > 0) {
-    newYPos = yPos - lines * kWriteDoc->fontHeight;
+    newYPos = yPos - lines * myDoc->fontHeight;
     if (newYPos < 0) newYPos = 0;
   }
   cursor.y -= lines;
-  cXPos = kWriteDoc->textWidth(c.flags & KantView::cfWrapCursor, cursor, cOldXPos);
+  cXPos = myDoc->textWidth(c.flags & KantView::cfWrapCursor, cursor, cOldXPos);
   changeState(c);
 //  cursorPageUp(c);
 }
@@ -533,14 +530,14 @@ void KantViewInternal::pageDown(VConfig &c) {
 
   int lines = (endLine - startLine - 1);
 
-  if (!(c.flags & KantView::cfPageUDMovesCursor) && endLine < kWriteDoc->lastLine()) {
-    if (lines < kWriteDoc->lastLine() - endLine)
-      newYPos = yPos + lines * kWriteDoc->fontHeight;
+  if (!(c.flags & KantView::cfPageUDMovesCursor) && endLine < myDoc->lastLine()) {
+    if (lines < myDoc->lastLine() - endLine)
+      newYPos = yPos + lines * myDoc->fontHeight;
     else
-      newYPos = yPos + (kWriteDoc->lastLine() - endLine) * kWriteDoc->fontHeight;
+      newYPos = yPos + (myDoc->lastLine() - endLine) * myDoc->fontHeight;
   }
   cursor.y += lines;
-  cXPos = kWriteDoc->textWidth(c.flags & KantView::cfWrapCursor,cursor,cOldXPos);
+  cXPos = myDoc->textWidth(c.flags & KantView::cfWrapCursor,cursor,cOldXPos);
   changeState(c);
 //  cursorPageDown(c);
 }
@@ -550,7 +547,7 @@ void KantViewInternal::top(VConfig &c) {
 
 //  cursor.x = 0;
   cursor.y = 0;
-  cXPos = kWriteDoc->textWidth(c.flags & KantView::cfWrapCursor,cursor,cOldXPos);
+  cXPos = myDoc->textWidth(c.flags & KantView::cfWrapCursor,cursor,cOldXPos);
 //  cOldXPos = cXPos = 0;
   changeState(c);
 }
@@ -559,8 +556,8 @@ void KantViewInternal::top(VConfig &c) {
 void KantViewInternal::bottom(VConfig &c) {
 
 //  cursor.x = 0;
-  cursor.y = kWriteDoc->lastLine();
-  cXPos = kWriteDoc->textWidth(c.flags & KantView::cfWrapCursor,cursor,cOldXPos);
+  cursor.y = myDoc->lastLine();
+  cXPos = myDoc->textWidth(c.flags & KantView::cfWrapCursor,cursor,cOldXPos);
 //  cOldXPos = cXPos = 0;
   changeState(c);
 }
@@ -577,9 +574,9 @@ void KantViewInternal::top_home(VConfig &c)
 // go to the bottom right corner
 void KantViewInternal::bottom_end(VConfig &c) {
 
-  cursor.y = kWriteDoc->lastLine();
-  cursor.x = kWriteDoc->textLength(cursor.y);
-  cOldXPos = cXPos = kWriteDoc->textWidth(cursor);
+  cursor.y = myDoc->lastLine();
+  cursor.x = myDoc->textLength(cursor.y);
+  cOldXPos = cXPos = myDoc->textWidth(cursor);
   changeState(c);
 }
 
@@ -604,11 +601,11 @@ void KantViewInternal::changeYPos(int p) {
 
 void KantViewInternal::getVConfig(VConfig &c) {
 
-  c.view = kWrite;
+  c.view = myView;
   c.cursor = cursor;
   c.cXPos = cXPos;
-  c.flags = kWrite->configFlags;
-  c.wrapAt = kWrite->wrapAt;
+  c.flags = myView->configFlags;
+  c.wrapAt = myView->wrapAt;
 }
 
 void KantViewInternal::changeState(VConfig &c) {
@@ -622,10 +619,10 @@ void KantViewInternal::changeState(VConfig &c) {
 //  if (cursor.x == c.cursor.x && cursor.y == c.cursor.y) return;
   bool nullMove = (cursor.x == c.cursor.x && cursor.y == c.cursor.y);
 
-//  if (cursor.y != c.cursor.y || c.flags & KantView::cfMark) kWriteDoc->recordReset();
+//  if (cursor.y != c.cursor.y || c.flags & KantView::cfMark) myDoc->recordReset();
 
   if (! nullMove) {
-    kWriteDoc->unmarkFound();
+    myDoc->unmarkFound();
 
     exposeCursor = true;
 
@@ -640,26 +637,26 @@ void KantViewInternal::changeState(VConfig &c) {
       tagLines(bm.cursor.y, bm.cursor.y, bm.sXPos, bm.eXPos);
     }
     // make new bracket mark
-    kWriteDoc->newBracketMark(cursor, bm);
+    myDoc->newBracketMark(cursor, bm);
 
     // remove trailing spaces when leaving a line
     if (c.flags & KantView::cfRemoveSpaces && cursor.y != c.cursor.y) {
-      TextLine::Ptr textLine = kWriteDoc->getTextLine(c.cursor.y);
+      TextLine::Ptr textLine = myDoc->getTextLine(c.cursor.y);
       int newLen = textLine->lastChar();
       if (newLen != textLine->length()) {
         textLine->truncate(newLen);
         // if some spaces are removed, tag the line as dirty
-        kWriteDoc->tagLines(c.cursor.y, c.cursor.y);
+        myDoc->tagLines(c.cursor.y, c.cursor.y);
       }
     }
   }
 
   if (c.flags & KantView::cfMark) {
     if (! nullMove)
-      kWriteDoc->selectTo(c, cursor, cXPos);
+      myDoc->selectTo(c, cursor, cXPos);
   } else {
     if (!(c.flags & KantView::cfPersistent))
-      kWriteDoc->deselectAll();
+      myDoc->deselectAll();
   }
 }
 
@@ -669,7 +666,7 @@ void KantViewInternal::insLine(int line) {
     if (start.y < startLine && end.y < startLine) {
       startLine += dy;
       endLine += dy;
-      yPos += dy*kWriteDoc->fontHeight;
+      yPos += dy*myDoc->fontHeight;
     } else if (start.y <= endLine || end.y <= endLine) {
       if (dy == 0) {
         if (start.y == cursor.y) cursorOn = false;
@@ -690,17 +687,17 @@ void KantViewInternal::insLine(int line) {
   if (line < startLine) {
     startLine++;
     endLine++;
-    yPos += kWriteDoc->fontHeight;
+    yPos += myDoc->fontHeight;
   } else if (line <= endLine) {
     tagAll();
   }
 
   //bookmarks
   KWBookmark *b;
-  for (b = kWrite->bookmarks.first(); b != 0L; b = kWrite->bookmarks.next()) {
+  for (b = myView->bookmarks.first(); b != 0L; b = myView->bookmarks.next()) {
     if (b->cursor.y >= line) {
       b->cursor.y++;
-      b->yPos += kWriteDoc->fontHeight;
+      b->yPos += myDoc->fontHeight;
     }
   }
 }
@@ -713,35 +710,35 @@ void KantViewInternal::delLine(int line) {
   if (line < startLine) {
     startLine--;
     endLine--;
-    yPos -= kWriteDoc->fontHeight;
+    yPos -= myDoc->fontHeight;
   } else if (line <= endLine) {
     tagAll();
   }
 
   //bookmarks
   KWBookmark *b;
-  for (b = kWrite->bookmarks.first(); b != 0L; b = kWrite->bookmarks.next()) {
+  for (b = myView->bookmarks.first(); b != 0L; b = myView->bookmarks.next()) {
     if (b->cursor.y > line) {
       b->cursor.y--;
-      b->yPos -= kWriteDoc->fontHeight;
+      b->yPos -= myDoc->fontHeight;
 //      if (b->yPos < 0) b->yPos = 0;
     }
   }
 }
 
 void KantViewInternal::updateCursor() {
-  cOldXPos = cXPos = kWriteDoc->textWidth(cursor);
+  cOldXPos = cXPos = myDoc->textWidth(cursor);
 }
 
 
 void KantViewInternal::updateCursor(PointStruc &newCursor) {
-  updateCursor(newCursor, kWrite->config());
+  updateCursor(newCursor, myView->config());
 }
 
 void KantViewInternal::updateCursor(PointStruc &newCursor, int flags) {
 
-  if (!(flags & KantView::cfPersistent)) kWriteDoc->deselectAll();
-  kWriteDoc->unmarkFound();
+  if (!(flags & KantView::cfPersistent)) myDoc->deselectAll();
+  myDoc->unmarkFound();
 
   exposeCursor = true;
   if (cursorOn) {
@@ -752,10 +749,10 @@ void KantViewInternal::updateCursor(PointStruc &newCursor, int flags) {
   if (bm.sXPos < bm.eXPos) {
     tagLines(bm.cursor.y, bm.cursor.y, bm.sXPos, bm.eXPos);
   }
-  kWriteDoc->newBracketMark(newCursor, bm);
+  myDoc->newBracketMark(newCursor, bm);
 
   cursor = newCursor;
-  cOldXPos = cXPos = kWriteDoc->textWidth(cursor);
+  cOldXPos = cXPos = myDoc->textWidth(cursor);
 }
 
 // init the line dirty cache
@@ -763,8 +760,8 @@ void KantViewInternal::clearDirtyCache(int height) {
   int lines, z;
 
   // calc start and end line of visible part
-  startLine = yPos/kWriteDoc->fontHeight;
-  endLine = (yPos + height -1)/kWriteDoc->fontHeight;
+  startLine = yPos/myDoc->fontHeight;
+  endLine = (yPos + height -1)/myDoc->fontHeight;
 
   updateState = 0;
 
@@ -816,7 +813,7 @@ void KantViewInternal::setPos(int x, int y) {
 
 void KantViewInternal::center() {
   newXPos = 0;
-  newYPos = cursor.y*kWriteDoc->fontHeight - height()/2;
+  newYPos = cursor.y*myDoc->fontHeight - height()/2;
   if (newYPos < 0) newYPos = 0;
 }
 
@@ -834,7 +831,7 @@ void KantViewInternal::updateView(int flags) {
 
 //debug("upView %d %d %d %d %d", exposeCursor, updateState, flags, newXPos, newYPos);
   if (exposeCursor || flags & KantView::ufDocGeometry) {
-    emit kWrite->newCurPos();
+    emit myView->newCurPos();
   } else {
     if (updateState == 0 && newXPos < 0 && newYPos < 0) return;
   }
@@ -855,18 +852,18 @@ void KantViewInternal::updateView(int flags) {
   if (newXPos >= 0) xPos = newXPos;
   if (newYPos >= 0) yPos = newYPos;
 
-  fontHeight = kWriteDoc->fontHeight;
+  fontHeight = myDoc->fontHeight;
   cYPos = cursor.y*fontHeight;
 
   z = 0;
   do {
-    w = kWrite->width() - 4;
-    h = kWrite->height() - 4;
+    w = myView->width() - 4;
+    h = myView->height() - 4;
 
-    xMax = kWriteDoc->textWidth() - w;
+    xMax = myDoc->textWidth() - w;
     b = (xPos > 0 || xMax > 0);
     if (b) h -= 16;
-    yMax = kWriteDoc->textHeight() - h;
+    yMax = myDoc->textHeight() - h;
     if (yPos > 0 || yMax > 0) {
       w -= 16;
       xMax += 16;
@@ -1012,12 +1009,12 @@ void KantViewInternal::paintTextLines(int xPos, int yPos) {
   QPainter paint;
   paint.begin(drawBuffer);
 
-  h = kWriteDoc->fontHeight;
+  h = myDoc->fontHeight;
   r = lineRanges;
   for (line = startLine; line <= endLine; line++) {
     if (r->start < r->end) {
 //debug("painttextline %d %d %d", line, r->start, r->end);
-      kWriteDoc->paintTextLine(paint, line, r->start, r->end, kWrite->configFlags & KantView::cfShowTabs);
+      myDoc->paintTextLine(paint, line, r->start, r->end, myView->configFlags & KantView::cfShowTabs);
       bitBlt(this, r->start - (xPos-2), line*h - yPos, drawBuffer, 0, 0,
         r->end - r->start, h);
     }
@@ -1026,10 +1023,10 @@ void KantViewInternal::paintTextLines(int xPos, int yPos) {
 /*
   xStart = xPos-2;
   xEnd = xStart + width();
-  h = kWriteDoc->fontHeight;
+  h = myDoc->fontHeight;
   for (z = 0; z < updateState; z++) {
     line = updateLines[z];
-    kWriteDoc->paintTextLine(paint,line,xStart,xEnd);
+    myDoc->paintTextLine(paint,line,xStart,xEnd);
     bitBlt(this,0,line*h - yPos,drawBuffer,0,0,width(),h);
   }*/
   paint.end();
@@ -1039,11 +1036,11 @@ void KantViewInternal::paintCursor() {
   int h, y, x;
   static int cx = 0, cy = 0, ch = 0;
 
-  h = kWriteDoc->fontHeight;
+  h = myDoc->fontHeight;
   y = h*cursor.y - yPos;
   x = cXPos - (xPos-2);
 
-  QFont f = kWriteDoc->getTextFont(cursor.x, cursor.y);
+  QFont f = myDoc->getTextFont(cursor.x, cursor.y);
   if(f != font()) setFont(f);
   if(cx != x || cy != y || ch != h){
     cx = x;
@@ -1056,7 +1053,7 @@ void KantViewInternal::paintCursor() {
   if (cursorOn) {
     paint.begin(this);
     paint.setClipping(false);
-    paint.setPen(kWriteDoc->cursorCol(cursor.x,cursor.y));
+    paint.setPen(myDoc->cursorCol(cursor.x,cursor.y));
 
     h += y - 1;
     paint.drawLine(x, y, x, h);
@@ -1064,7 +1061,7 @@ void KantViewInternal::paintCursor() {
     paint.drawLine(x-2, h, x+2, h);
   } else {
     paint.begin(drawBuffer);
-    kWriteDoc->paintTextLine(paint, cursor.y, cXPos - 2, cXPos + 3, kWrite->configFlags & KantView::cfShowTabs);
+    myDoc->paintTextLine(paint, cursor.y, cXPos - 2, cXPos + 3, myView->configFlags & KantView::cfShowTabs);
     bitBlt(this,x - 2,y, drawBuffer, 0, 0, 5, h);
   }
   paint.end();
@@ -1073,11 +1070,11 @@ void KantViewInternal::paintCursor() {
 void KantViewInternal::paintBracketMark() {
   int y;
 
-  y = kWriteDoc->fontHeight*(bm.cursor.y +1) - yPos -1;
+  y = myDoc->fontHeight*(bm.cursor.y +1) - yPos -1;
 
   QPainter paint;
   paint.begin(this);
-  paint.setPen(kWriteDoc->cursorCol(bm.cursor.x, bm.cursor.y));
+  paint.setPen(myDoc->cursorCol(bm.cursor.x, bm.cursor.y));
 
   paint.drawLine(bm.sXPos - (xPos-2), y, bm.eXPos - (xPos-2) -1, y);
   paint.end();
@@ -1088,8 +1085,8 @@ void KantViewInternal::placeCursor(int x, int y, int flags) {
 
   getVConfig(c);
   c.flags |= flags;
-  cursor.y = (yPos + y)/kWriteDoc->fontHeight;
-  cXPos = cOldXPos = kWriteDoc->textWidth(c.flags & KantView::cfWrapCursor, cursor,xPos-2 + x);
+  cursor.y = (yPos + y)/myDoc->fontHeight;
+  cXPos = cOldXPos = myDoc->textWidth(c.flags & KantView::cfWrapCursor, cursor,xPos-2 + x);
   changeState(c);
 }
 
@@ -1099,23 +1096,23 @@ void KantViewInternal::calcLogicalPosition(int &x, int &y) {
 
   TextLine   line;
 
-  y = (yPos + y)/kWriteDoc->fontHeight;
+  y = (yPos + y)/myDoc->fontHeight;
 
-  line = kWriteDoc->textLine(y);
+  line = myDoc->textLine(y);
 
-  x = kWriteDoc->textPos(kWriteDoc->textLine(y), x);
+  x = myDoc->textPos(myDoc->textLine(y), x);
 }
 */
 // given physical coordinates, report whether the text there is selected
 bool KantViewInternal::isTargetSelected(int x, int y) {
 
-  y = (yPos + y) / kWriteDoc->fontHeight;
+  y = (yPos + y) / myDoc->fontHeight;
 
-  TextLine::Ptr line = kWriteDoc->getTextLine(y);
+  TextLine::Ptr line = myDoc->getTextLine(y);
   if (!line)
     return false;
 
-  x = kWriteDoc->textPos(line, x);
+  x = myDoc->textPos(line, x);
 
   return line->isSelected(x);
 }
@@ -1157,21 +1154,21 @@ void KantViewInternal::keyPressEvent(QKeyEvent *e) {
   getVConfig(c);
 //  ascii = e->ascii();
 
-  if (!kWrite->isReadOnly()) {
-    if (c.flags & KantView::cfTabIndents && kWriteDoc->hasMarkedText()) {
+  if (!myView->isReadOnly()) {
+    if (c.flags & KantView::cfTabIndents && myDoc->hasMarkedText()) {
       if (e->key() == Qt::Key_Tab) {
-        kWriteDoc->indent(c);
-        kWriteDoc->updateViews();
+        myDoc->indent(c);
+        myDoc->updateViews();
         return;
       }
       if (e->key() == Qt::Key_Backtab) {
-        kWriteDoc->unIndent(c);
-        kWriteDoc->updateViews();
+        myDoc->unIndent(c);
+        myDoc->updateViews();
         return;
       }
     }
-    if ( !(e->state() & ControlButton ) && kWriteDoc->insertChars(c, e->text())) {
-      kWriteDoc->updateViews();
+    if ( !(e->state() & ControlButton ) && myDoc->insertChars(c, e->text())) {
+      myDoc->updateViews();
       e->accept();
       return;
     }
@@ -1205,18 +1202,18 @@ void KantViewInternal::mousePressEvent(QMouseEvent *e) {
       scrollX = 0;
       scrollY = 0;
       if (!scrollTimer) scrollTimer = startTimer(50);
-      kWriteDoc->updateViews();
+      myDoc->updateViews();
     }
   }
   if (e->button() == MidButton) {
     placeCursor(e->x(), e->y());
-    if (! kWrite->isReadOnly())
-      kWrite->paste();
+    if (! myView->isReadOnly())
+      myView->paste();
   }
-  if (kWrite->rmbMenu && e->button() == RightButton) {
-    kWrite->rmbMenu->popup(mapToGlobal(e->pos()));
+  if (myView->rmbMenu && e->button() == RightButton) {
+    myView->rmbMenu->popup(mapToGlobal(e->pos()));
   }
-  kWrite->mousePressEvent(e); // this doesn't do anything, does it?
+  myView->mousePressEvent(e); // this doesn't do anything, does it?
   // it does :-), we need this for KDevelop, so please don't uncomment it again -Sandy
 }
 
@@ -1225,8 +1222,8 @@ void KantViewInternal::mouseDoubleClickEvent(QMouseEvent *e) {
   if (e->button() == LeftButton) {
     VConfig c;
     getVConfig(c);
-    kWriteDoc->selectWord(c.cursor, c.flags);
-    kWriteDoc->updateViews();
+    myDoc->selectWord(c.cursor, c.flags);
+    myDoc->updateViews();
   }
 }
 
@@ -1237,9 +1234,9 @@ void KantViewInternal::mouseReleaseEvent(QMouseEvent *e) {
       // we had a mouse down in selected area, but never started a drag
       // so now we kill the selection
       placeCursor(e->x(), e->y(), 0);
-      kWriteDoc->updateViews();
+      myDoc->updateViews();
     } else if (dragInfo.state == diNone) {
-      if (kWrite->config() & KantView::cfMouseAutoCopy) kWrite->copy();
+      if (myView->config() & KantView::cfMouseAutoCopy) myView->copy();
       killTimer(scrollTimer);
       scrollTimer = 0;
     }
@@ -1275,7 +1272,7 @@ void KantViewInternal::mouseMoveEvent(QMouseEvent *e) {
     mouseY = e->y();
     scrollX = 0;
     scrollY = 0;
-    d = kWriteDoc->fontHeight;
+    d = myDoc->fontHeight;
     if (mouseX < 0) {
       mouseX = 0;
       scrollX = -d;
@@ -1296,7 +1293,7 @@ void KantViewInternal::mouseMoveEvent(QMouseEvent *e) {
     flags = KantView::cfMark;
     if (e->state() & ControlButton) flags |= KantView::cfKeepSelection;
     placeCursor(mouseX, mouseY, flags);
-    kWriteDoc->updateViews(/*ufNoScroll*/);
+    myDoc->updateViews(/*ufNoScroll*/);
   }
 }
 
@@ -1327,13 +1324,13 @@ void KantViewInternal::paintEvent(QPaintEvent *e) {
   xStart = xPos-2 + updateR.x();
   xEnd = xStart + updateR.width();
 
-  h = kWriteDoc->fontHeight;
+  h = myDoc->fontHeight;
   line = (yPos + updateR.y()) / h;
   y = line*h - yPos;
   yEnd = updateR.y() + updateR.height();
 
   while (y < yEnd) {
-    kWriteDoc->paintTextLine(paint, line, xStart, xEnd, kWrite->configFlags & KantView::cfShowTabs);
+    myDoc->paintTextLine(paint, line, xStart, xEnd, myView->configFlags & KantView::cfShowTabs);
 //    if (cursorOn && line == cursor.y) paintCursor(paint,cXPos - xStart,h);
     bitBlt(this, updateR.x(), y, drawBuffer, 0, 0, updateR.width(), h);
 
@@ -1348,7 +1345,7 @@ void KantViewInternal::paintEvent(QPaintEvent *e) {
 
 void KantViewInternal::resizeEvent(QResizeEvent *) {
 //  debug("KantViewInternal::resize");
-  resizeBuffer(this, width(), kWriteDoc->fontHeight);
+  resizeBuffer(this, width(), myDoc->fontHeight);
 //  update();
 
 }
@@ -1363,7 +1360,7 @@ void KantViewInternal::timerEvent(QTimerEvent *e) {
     yScroll->setValue(yPos + scrollY);
 
     placeCursor(mouseX, mouseY, KantView::cfMark);
-    kWriteDoc->updateViews(/*ufNoScroll*/);
+    myDoc->updateViews(/*ufNoScroll*/);
   }
 }
 
@@ -1375,8 +1372,8 @@ void KantViewInternal::timerEvent(QTimerEvent *e) {
 void KantViewInternal::doDrag()
 {
   dragInfo.state = diDragging;
-  dragInfo.dragObject = new QTextDrag(kWriteDoc->markedText(0), this);
-  if (kWrite->isReadOnly()) {
+  dragInfo.dragObject = new QTextDrag(myDoc->markedText(0), this);
+  if (myView->isReadOnly()) {
     dragInfo.dragObject->dragCopy();
   } else {
 
@@ -1386,12 +1383,12 @@ void KantViewInternal::doDrag()
 
     if (dragInfo.dragObject->drag()) {
       // the drag has completed and it turned out to be a move operation
-      if (! kWriteDoc->ownedView((KantViewInternal*)(QDragObject::target()))) {
+      if (! myDoc->ownedView((KantViewInternal*)(QDragObject::target()))) {
         // the target is not me - we need to delete our selection
         VConfig c;
         getVConfig(c);
-        kWriteDoc->delMarkedText(c);
-        kWriteDoc->updateViews();
+        myDoc->delMarkedText(c);
+        myDoc->updateViews();
       }
     }
 */
@@ -1402,18 +1399,8 @@ void KantViewInternal::doDrag()
 
 void KantViewInternal::dragEnterEvent( QDragEnterEvent *event )
 {
-  event->accept( (QTextDrag::canDecode(event) && ! kWrite->isReadOnly()) || QUriDrag::canDecode(event) );
+  event->accept( (QTextDrag::canDecode(event) && ! myView->isReadOnly()) || QUriDrag::canDecode(event) );
 }
-
-/*
-void KantViewInternal::dragMoveEvent( QDragMoveEvent * )
-{
-}
-void KantViewInternal::dragLeaveEvent( QDragLeaveEvent * )
-{
-  // we should implement a shadow cursor here
-}
-*/
 
 void KantViewInternal::dropEvent( QDropEvent *event )
 {
@@ -1432,12 +1419,12 @@ void KantViewInternal::dropEvent( QDropEvent *event )
         if (s) {
           // Load the first file in this window
           if (s == urls.getFirst()) {
-            if (kWrite->canDiscard()) kWrite->loadURL(s);
+            if (myView->canDiscard()) myView->loadURL(s);
           }
         }
       }
     }
-  } else if ( QTextDrag::canDecode(event) && ! kWrite->isReadOnly() ) {
+  } else if ( QTextDrag::canDecode(event) && ! myView->isReadOnly() ) {
 
     QString   text;
 
@@ -1445,7 +1432,7 @@ void KantViewInternal::dropEvent( QDropEvent *event )
       bool      priv, selected;
 
       // is the source our own document?
-      priv = kWriteDoc->ownedView((KantView*)(event->source()));
+      priv = myDoc->ownedView((KantView*)(event->source()));
       // dropped on a text selection area?
       selected = isTargetSelected(event->pos().x(), event->pos().y());
 
@@ -1464,7 +1451,7 @@ void KantViewInternal::dropEvent( QDropEvent *event )
       if (priv) {
         // this is one of mine (this document), not dropped on the selection
         if (event->action() == QDropEvent::Move) {
-          kWriteDoc->delMarkedText(c);
+          myDoc->delMarkedText(c);
           getVConfig(c);
           cursor = c.cursor;
         } else {
@@ -1480,11 +1467,11 @@ void KantViewInternal::dropEvent( QDropEvent *event )
           cursor = c.cursor;
         }
       }
-      kWriteDoc->insert(c, text);
+      myDoc->insert(c, text);
       cursor = c.cursor;
 
       updateCursor(cursor);
-      kWriteDoc->updateViews();
+      myDoc->updateViews();
     }
   }
 }
@@ -1494,23 +1481,16 @@ KWBookmark::KWBookmark() {
   cursor.y = -1; //mark bookmark as invalid
 }
 
-KantView::KantView(QWidget *parent, KantDocument *doc, const char * name, bool HandleOwnDND, bool deleteDoc)
-  : KTextEditor::View(doc, parent, name), DCOPObject(name) {
-  //setInstance( KantViewFactory::instance() );
-
+KantView::KantView(KantDocument *doc, QWidget *parent, const char * name, bool HandleOwnDND) : KTextEditor::View(doc, parent, name), DCOPObject(name)
+{
   active = false;
-  deleteDoc = false;
 
-  kWriteDoc = doc;
-  m_singleViewMode = doc->isSingleViewMode();
-  myDeleteDoc = deleteDoc;
-  kWriteView = new KantViewInternal(this,doc,HandleOwnDND);
+  myDoc = doc;
+  myViewInternal = new KantViewInternal(this,doc,HandleOwnDND);
 
   doc->addView( this );
 
-  connect(kWriteView,SIGNAL(dropEventPass(QDropEvent *)),this,SLOT(dropEventPassEmited(QDropEvent *)));
-
-  setXMLFile( "kwriteui.rc" );
+  connect(myViewInternal,SIGNAL(dropEventPass(QDropEvent *)),this,SLOT(dropEventPassEmited(QDropEvent *)));
 
   // some defaults
   configFlags = KantView::cfAutoIndent | KantView::cfSpaceIndent | KantView::cfBackspaceIndents
@@ -1529,18 +1509,19 @@ KantView::KantView(QWidget *parent, KantDocument *doc, const char * name, bool H
   kspell.ksc = new KSpellConfig; //default KSpellConfig to start
   kspell.kspellon = FALSE;
 
-  setFocusProxy( kWriteView );
-  kWriteView->setFocus();
+  setFocusProxy( myViewInternal );
+  myViewInternal->setFocus();
   resize(parent->width() -4, parent->height() -4);
 
   m_tempSaveFile = 0;
 
   printer = new QPrinter();
 
-  kWriteView->installEventFilter( this );
+  myViewInternal->installEventFilter( this );
 }
 
-KantView::~KantView() {
+KantView::~KantView()
+{
   QMap<KIO::Job *, NetData>::Iterator it = m_mapNetData.begin();
   while ( it != m_mapNetData.end() )
   {
@@ -1556,16 +1537,10 @@ KantView::~KantView() {
   }
   delete kspell.ksc;
 
-  // KParts has already deleted the doc, if in single-view mode
-  if ( !m_singleViewMode )
-  {
-    kWriteDoc->removeView( this );
+  if (myDoc)
+    myDoc->removeView( this );
 
-    if ( kWriteDoc->isLastView(0) && myDeleteDoc )
-      delete kWriteDoc;
-  }
-
-  delete kWriteView;
+  delete myViewInternal;
 
   delete m_tempSaveFile;
   delete printer;
@@ -1668,9 +1643,9 @@ void KantView::keyPressEvent( QKeyEvent *ev )
             {
                VConfig c;
                shiftWordRight();
-               kWriteView->getVConfig(c);
-               kWriteDoc->delMarkedText(c);
-               kWriteView->update();
+               myViewInternal->getVConfig(c);
+               myDoc->delMarkedText(c);
+               myViewInternal->update();
             }
             else keyDelete();
             break;
@@ -1679,9 +1654,9 @@ void KantView::keyPressEvent( QKeyEvent *ev )
             {
                VConfig c;
                shiftWordLeft();
-               kWriteView->getVConfig(c);
-               kWriteDoc->delMarkedText(c);
-               kWriteView->update();
+               myViewInternal->getVConfig(c);
+               myDoc->delMarkedText(c);
+               myViewInternal->update();
             }
             else backspace();
             break;
@@ -1736,15 +1711,15 @@ void KantView::getCursorPosition( int *line, int *col )
 
 
 int KantView::currentLine() {
-  return kWriteView->cursor.y;
+  return myViewInternal->cursor.y;
 }
 
 int KantView::currentColumn() {
-  return kWriteDoc->currentColumn(kWriteView->cursor);
+  return myDoc->currentColumn(myViewInternal->cursor);
 }
 
 int KantView::currentCharNum() {
-  return kWriteView->cursor.x;
+  return myViewInternal->cursor.x;
 }
 
 void KantView::setCursorPositionInternal(int line, int col) {
@@ -1752,19 +1727,19 @@ void KantView::setCursorPositionInternal(int line, int col) {
 
   cursor.x = col;
   cursor.y = line;
-  kWriteView->updateCursor(cursor);
-  kWriteView->center();
-//  kWriteDoc->unmarkFound();
-//  kWriteView->updateView(ufPos, 0, line*kWriteDoc->fontHeight - height()/2);
-//  kWriteDoc->updateViews(kWriteView); //uptade all other views except this one
-  kWriteDoc->updateViews();
+  myViewInternal->updateCursor(cursor);
+  myViewInternal->center();
+//  myDoc->unmarkFound();
+//  myViewInternal->updateView(ufPos, 0, line*myDoc->fontHeight - height()/2);
+//  myDoc->updateViews(myViewInternal); //uptade all other views except this one
+  myDoc->updateViews();
 }
 
 int KantView::config() {
   int flags;
 
   flags = configFlags;
-  if (kWriteDoc->singleSelection()) flags |= KantView::cfSingleSelection;
+  if (myDoc->singleSelection()) flags |= KantView::cfSingleSelection;
   return flags;
 }
 
@@ -1772,7 +1747,7 @@ void KantView::setConfig(int flags) {
   bool updateView;
 
   // cfSingleSelection is a doc-property
-  kWriteDoc->setSingleSelection(flags & KantView::cfSingleSelection);
+  myDoc->setSingleSelection(flags & KantView::cfSingleSelection);
   flags &= ~KantView::cfSingleSelection;
 
   if (flags != configFlags) {
@@ -1780,83 +1755,78 @@ void KantView::setConfig(int flags) {
     updateView = (flags ^ configFlags) & KantView::cfShowTabs;
     configFlags = flags;
     emit newStatus();
-    if (updateView) kWriteView->update();
+    if (updateView) myViewInternal->update();
   }
 }
 
 int KantView::tabWidth() {
-  return kWriteDoc->tabChars;
+  return myDoc->tabChars;
 }
 
 void KantView::setTabWidth(int w) {
-  kWriteDoc->setTabWidth(w);
-  kWriteDoc->updateViews();
+  myDoc->setTabWidth(w);
+  myDoc->updateViews();
 }
 
 int KantView::undoSteps() {
-  return kWriteDoc->undoSteps;
+  return myDoc->undoSteps;
 }
 
 void KantView::setUndoSteps(int s) {
-  kWriteDoc->setUndoSteps(s);
+  myDoc->setUndoSteps(s);
 }
 
-/*
-bool KantView::isOverwriteMode() {
-  return (configFlags & cfOvr);
-} */
-
 bool KantView::isReadOnly() {
-  return kWriteDoc->readOnly;
+  return myDoc->readOnly;
 }
 
 bool KantView::isModified() {
-  return kWriteDoc->modified;
+  return myDoc->modified;
 }
 
 void KantView::setReadOnly(bool m) {
-  kWriteDoc->setReadOnly(m);
+  myDoc->setReadOnly(m);
 }
 
 void KantView::setModified(bool m) {
-  kWriteDoc->setModified(m);
+  myDoc->setModified(m);
 }
 
 bool KantView::isLastView() {
-  return kWriteDoc->isLastView(1);
+  return myDoc->isLastView(1);
 }
 
 KantDocument *KantView::doc() {
-  return kWriteDoc;
+  return myDoc;
 }
 
 int KantView::undoState() {
   if (isReadOnly())
     return 0;
   else
-    return kWriteDoc->undoState;
+    return myDoc->undoState;
 }
 
 int KantView::nextUndoType() {
-  return kWriteDoc->nextUndoType();
+  return myDoc->nextUndoType();
 }
 
 int KantView::nextRedoType() {
-  return kWriteDoc->nextRedoType();
+  return myDoc->nextRedoType();
 }
 
 void KantView::undoTypeList(QValueList<int> &lst)
 {
-  kWriteDoc->undoTypeList(lst);
+  myDoc->undoTypeList(lst);
 }
 
 void KantView::redoTypeList(QValueList<int> &lst)
 {
-  kWriteDoc->redoTypeList(lst);
+  myDoc->redoTypeList(lst);
 }
 
 const char * KantView::undoTypeName(int type) {
-  return KWActionGroup::typeName(type);
+  return KantActionGroup::typeName(type);
 }
 
 void KantView::copySettings(KantView *w) {
@@ -1868,14 +1838,14 @@ void KantView::copySettings(KantView *w) {
 
 QColor* KantView::getColors()
 {
-  return kWriteDoc->colors;
+  return myDoc->colors;
 }
 
 
 void KantView::applyColors()
 {
-   kWriteDoc->tagAll();
-   kWriteDoc->updateViews();
+   myDoc->tagAll();
+   myDoc->updateViews();
 }
 
 
@@ -1903,53 +1873,53 @@ void KantView::toggleVertical() {
 
 
 int KantView::numLines() {
-  return kWriteDoc->numLines();
+  return myDoc->numLines();
 }
 
 QString KantView::text() {
-  return kWriteDoc->text();
+  return myDoc->text();
 }
 
 QString KantView::currentTextLine() {
-  TextLine::Ptr textLine = kWriteDoc->getTextLine(kWriteView->cursor.y);
+  TextLine::Ptr textLine = myDoc->getTextLine(myViewInternal->cursor.y);
   return QString(textLine->getText(), textLine->length());
 }
 
 QString KantView::textLine(int num) {
-  TextLine::Ptr textLine = kWriteDoc->getTextLine(num);
+  TextLine::Ptr textLine = myDoc->getTextLine(num);
   return QString(textLine->getText(), textLine->length());
 }
 
 QString KantView::currentWord() {
-  return kWriteDoc->getWord(kWriteView->cursor);
+  return myDoc->getWord(myViewInternal->cursor);
 }
 
 QString KantView::word(int x, int y) {
   PointStruc cursor;
-  cursor.y = (kWriteView->yPos + y)/kWriteDoc->fontHeight;
-  if (cursor.y < 0 || cursor.y > kWriteDoc->lastLine()) return QString();
-  cursor.x = kWriteDoc->textPos(kWriteDoc->getTextLine(cursor.y), kWriteView->xPos-2 + x);
-  return kWriteDoc->getWord(cursor);
+  cursor.y = (myViewInternal->yPos + y)/myDoc->fontHeight;
+  if (cursor.y < 0 || cursor.y > myDoc->lastLine()) return QString();
+  cursor.x = myDoc->textPos(myDoc->getTextLine(cursor.y), myViewInternal->xPos-2 + x);
+  return myDoc->getWord(cursor);
 }
 
 void KantView::setText(const QString &s) {
-  kWriteDoc->setText(s);
-  kWriteDoc->updateViews();
+  myDoc->setText(s);
+  myDoc->updateViews();
 }
 
 void KantView::insertText(const QString &s, bool /*mark*/) {
   VConfig c;
-  kWriteView->getVConfig(c);
-  kWriteDoc->insert(c, s);
-  kWriteDoc->updateViews();
+  myViewInternal->getVConfig(c);
+  myDoc->insert(c, s);
+  myDoc->updateViews();
 }
 
 bool KantView::hasMarkedText() {
-  return kWriteDoc->hasMarkedText();
+  return myDoc->hasMarkedText();
 }
 
 QString KantView::markedText() {
-  return kWriteDoc->markedText(configFlags);
+  return myDoc->markedText(configFlags);
 }
 
 #ifdef NEW_CODE
@@ -1958,15 +1928,15 @@ void KantView::loadFile(const QString &file, QTextCodec *codec, bool insert)
   VConfig c;
 
   if (!insert) {
-    kWriteDoc->clear();
-    kWriteDoc->loadFile(file, codec);
+    myDoc->clear();
+    myDoc->loadFile(file, codec);
   } else {
     // TODO: Not yet supported.
 #if 0
-    kWriteView->getVConfig(c);
-    if (c.flags & cfDelOnInput) kWriteDoc->delMarkedText(c);
-    kWriteDoc->insertFile(c, dev);
-    kWriteDoc->updateViews();
+    myViewInternal->getVConfig(c);
+    if (c.flags & cfDelOnInput) myDoc->delMarkedText(c);
+    myDoc->insertFile(c, dev);
+    myDoc->updateViews();
 #endif
   }
 }
@@ -1975,12 +1945,12 @@ void KantView::loadFile(QIODevice &dev, bool insert) {
   VConfig c;
 
   if (!insert) {
-    kWriteDoc->loadFile(dev);
+    myDoc->loadFile(dev);
   } else {
-    kWriteView->getVConfig(c);
-    if (c.flags & KantView::cfDelOnInput) kWriteDoc->delMarkedText(c);
-    kWriteDoc->insertFile(c, dev);
-    kWriteDoc->updateViews();
+    myViewInternal->getVConfig(c);
+    if (c.flags & KantView::cfDelOnInput) myDoc->delMarkedText(c);
+    myDoc->insertFile(c, dev);
+    myDoc->updateViews();
   }
 }
 #endif
@@ -1989,8 +1959,8 @@ void KantView::writeFile(QIODevice &dev) {
 #ifdef NEW_CODE
   // TODO: Not yet implemented.
 #else
-  kWriteDoc->writeFile(dev);
-  kWriteDoc->updateViews();
+  myDoc->writeFile(dev);
+  myDoc->updateViews();
 #endif
 }
 
@@ -2035,14 +2005,14 @@ bool KantView::writeFile(const QString &name) {
     return false;
   }
 #ifdef NEW_CODE
-  if (kWriteDoc->writeFile(name, QTextCodec::codecForLocale()))
+  if (myDoc->writeFile(name, QTextCodec::codecForLocale()))
      return true; // Success
 #else
   QFile f(name);
   if (f.open(IO_WriteOnly | IO_Truncate)) {
     writeFile(f);
     f.close();
-    return true;//kWriteDoc->setFileName(name);
+    return true;//myDoc->setFileName(name);
   }
 #endif
   KMessageBox::sorry(this, i18n("An error occured while trying to write this document"));
@@ -2075,7 +2045,7 @@ void KantView::loadURL(const KURL &url, int flags) {
     m_mapNetData.insert( job, d );
 
 #ifdef NEW_CODE
-    kWriteDoc->clear();
+    myDoc->clear();
 #endif
     connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotJobReadResult( KIO::Job * ) ) );
     connect( job, SIGNAL( data( KIO::Job *, const QByteArray & ) ), this, SLOT( slotJobData( KIO::Job *, const QByteArray & ) ) );
@@ -2089,16 +2059,16 @@ void KantView::loadURL(const KURL &url, int flags) {
     } else {
       if (QFileInfo(url.path()).exists()) {
         if ( loadFile( url.path(), flags ) ) {
-          kWriteDoc->setURL( url, !(flags & KantView::lfNoAutoHl ) );
+          myDoc->setURL( url, !(flags & KantView::lfNoAutoHl ) );
           emit statusMsg( i18n( "Read : %1" ).arg( url.fileName() ) );
         } else
           emit statusMsg( QString::null );
       } else {           // don't start whining, just make a new document
-        kWriteDoc->clear();
-        kWriteDoc->setURL( url, !(flags & KantView::lfNoAutoHl ) );
-        kWriteDoc->updateViews();
+        myDoc->clear();
+        myDoc->setURL( url, !(flags & KantView::lfNoAutoHl ) );
+        myDoc->updateViews();
         emit statusMsg( i18n( "New File : %1" ).arg( url.fileName() ) );
-        kWriteDoc->setNewDoc( true ); // File is new, check for overwrite!
+        myDoc->setNewDoc( true ); // File is new, check for overwrite!
       }
     }
   }
@@ -2153,7 +2123,7 @@ void KantView::writeURL(const KURL &url, int ) {
 
     if ( KIO::NetAccess::upload( m_tempSaveFile->name(), url ) )
     {
-      kWriteDoc->setModified( false );
+      myDoc->setModified( false );
       emit statusMsg( i18n( "Wrote %1" ).arg( url.fileName() ) );
     }
     else
@@ -2169,9 +2139,9 @@ void KantView::writeURL(const KURL &url, int ) {
   }
   else
   {
-      kWriteDoc->setModified( false );
+      myDoc->setModified( false );
       emit statusMsg( i18n( "Wrote %1" ).arg( url.fileName() ) );
-      kWriteDoc->setNewDoc( false ); // File is not new anymore
+      myDoc->setNewDoc( false ); // File is not new anymore
   }
 }
 
@@ -2217,9 +2187,9 @@ void KantView::loadInternal( const QByteArray &data, const KURL &url, int flags 
         msg = i18n( "Inserted : %1" ).arg( url.fileName() );
     else
     {
-        kWriteDoc->setURL( url, !(flags & KantView::lfNoAutoHl ) );
-        kWriteDoc->updateLines();
-        kWriteDoc->updateViews();
+        myDoc->setURL( url, !(flags & KantView::lfNoAutoHl ) );
+        myDoc->updateLines();
+        myDoc->updateViews();
 
         msg = i18n( "Read : %1" ).arg( url.fileName() );
     }
@@ -2227,14 +2197,14 @@ void KantView::loadInternal( const QByteArray &data, const KURL &url, int flags 
     emit statusMsg( msg );
 
     if ( flags & KantView::lfNewFile )
-        kWriteDoc->setModified( false );
+        myDoc->setModified( false );
 #endif
 }
 
 void KantView::slotJobData( KIO::Job *job, const QByteArray &data )
 {
 #ifdef NEW_CODE
-    kWriteDoc->appendData(data, QTextCodec::codecForLocale());
+    myDoc->appendData(data, QTextCodec::codecForLocale());
 #else
     QMap<KIO::Job *, NetData>::Iterator it = m_mapNetData.find( job );
     assert( it != m_mapNetData.end() );
@@ -2277,10 +2247,10 @@ void KantView::open() {
   KURL url;
 
   if (!canDiscard()) return;
-//  if (kWriteDoc->hasFileName()) s = QFileInfo(kWriteDoc->fileName()).dirPath();
+//  if (myDoc->hasFileName()) s = QFileInfo(myDoc->fileName()).dirPath();
 //    else s = QDir::currentDirPath();
 
-  url = KFileDialog::getOpenURL(kWriteDoc->url().url(), QString::null, this);
+  url = KFileDialog::getOpenURL(myDoc->url().url(), QString::null, this);
   if (url.isEmpty()) return;
   loadURL(url);
 }
@@ -2289,7 +2259,7 @@ void KantView::insertFile() {
   if (isReadOnly())
     return;
 
-  KURL  url = KFileDialog::getOpenURL(kWriteDoc->url().url(), QString::null, this);
+  KURL  url = KFileDialog::getOpenURL(myDoc->url().url(), QString::null, this);
   if (url.isEmpty()) return;
   loadURL(url,KantView::lfInsert);
 }
@@ -2297,18 +2267,18 @@ void KantView::insertFile() {
 KantView::fileResult KantView::save() {
   int query = KMessageBox::Yes;
   if (isModified()) {
-    if (!kWriteDoc->url().fileName().isEmpty() && ! isReadOnly()) {
+    if (!myDoc->url().fileName().isEmpty() && ! isReadOnly()) {
       // If document is new but has a name, check if saving it would
       // overwrite a file that has been created since the new doc
       // was created:
-      if( kWriteDoc->isNewDoc() )
+      if( myDoc->isNewDoc() )
       {
-        query = checkOverwrite( kWriteDoc->url() );
+        query = checkOverwrite( myDoc->url() );
         if( query == KMessageBox::Cancel )
           return CANCEL;
       }
       if( query == KMessageBox::Yes )
-      writeURL(kWriteDoc->url(),!(KantView::lfNoAutoHl));
+      writeURL(myDoc->url(),!(KantView::lfNoAutoHl));
       else  // Do not overwrite already existing document:
         return saveAs();
     } // New, unnamed document:
@@ -2347,7 +2317,7 @@ KantView::fileResult KantView::saveAs() {
   do {
     query = KMessageBox::Yes;
 
-    url = KFileDialog::getSaveURL(kWriteDoc->url().url(), QString::null,this);
+    url = KFileDialog::getSaveURL(myDoc->url().url(), QString::null,this);
     if (url.isEmpty()) return CANCEL;
 
     query = checkOverwrite( url );
@@ -2358,25 +2328,25 @@ KantView::fileResult KantView::saveAs() {
     return CANCEL;
 
   writeURL(url);
-  kWriteDoc->setURL( url, false );
+  myDoc->setURL( url, false );
   return OK;
 }
 
 void KantView::doCursorCommand(int cmdNum) {
   VConfig c;
-  kWriteView->getVConfig(c);
+  myViewInternal->getVConfig(c);
   if (cmdNum & selectFlag) c.flags |= KantView::cfMark;
   if (cmdNum & multiSelectFlag) c.flags |= KantView::cfMark | KantView::cfKeepSelection;
   cmdNum &= ~(selectFlag | multiSelectFlag);
-  kWriteView->doCursorCommand(c, cmdNum);
-  kWriteDoc->updateViews();
+  myViewInternal->doCursorCommand(c, cmdNum);
+  myDoc->updateViews();
 }
 
 void KantView::doEditCommand(int cmdNum) {
   VConfig c;
-  kWriteView->getVConfig(c);
-  kWriteView->doEditCommand(c, cmdNum);
-  kWriteDoc->updateViews();
+  myViewInternal->getVConfig(c);
+  myViewInternal->doEditCommand(c, cmdNum);
+  myDoc->updateViews();
 }
 
 
@@ -2384,51 +2354,19 @@ void KantView::clear() {
   if (isReadOnly())
     return;
 
-  kWriteDoc->clear();
-  kWriteDoc->clearFileName();
-  kWriteDoc->updateViews();
-}
-/*
-void KantView::cut() {
-  if (isReadOnly())
-    return;
-
-  VConfig c;
-  kWriteView->getVConfig(c);
-  kWriteDoc->cut(kWriteView,c);
-  kWriteDoc->updateViews();
+  myDoc->clear();
+  myDoc->clearFileName();
+  myDoc->updateViews();
 }
 
-void KantView::copy() {
-  kWriteDoc->copy(configFlags);
-}
-
-void KantView::paste() {
-  if (isReadOnly())
-    return;
-
-  VConfig c;
-  kWriteView->getVConfig(c);
-  kWriteDoc->paste(kWriteView, c);
-  kWriteDoc->updateViews();
-}
-
-void KantView::undo() {
-  undoMultiple(1);
-}
-
-void KantView::redo() {
-  redoMultiple(1);
-}
-*/
 void KantView::undoMultiple(int count) {
   if (isReadOnly())
     return;
 
   VConfig c;
-  kWriteView->getVConfig(c);
-  kWriteDoc->undo(c, count);
-  kWriteDoc->updateViews();
+  myViewInternal->getVConfig(c);
+  myDoc->undo(c, count);
+  myDoc->updateViews();
 }
 
 void KantView::redoMultiple(int count) {
@@ -2436,9 +2374,9 @@ void KantView::redoMultiple(int count) {
     return;
 
   VConfig c;
-  kWriteView->getVConfig(c);
-  kWriteDoc->redo(c, count);
-  kWriteDoc->updateViews();
+  myViewInternal->getVConfig(c);
+  myDoc->redo(c, count);
+  myDoc->updateViews();
 }
 
 void KantView::undoHistory()
@@ -2457,52 +2395,6 @@ void KantView::undoHistory()
 
   delete undoH;
 }
-/*
-void KantView::indent() {
-  if (isReadOnly())
-    return;
-
-  VConfig c;
-  kWriteView->getVConfig(c);
-  kWriteDoc->indent(kWriteView,c);
-  kWriteDoc->updateViews();
-}
-
-void KantView::unIndent() {
-  if (isReadOnly())
-    return;
-
-  VConfig c;
-  kWriteView->getVConfig(c);
-  kWriteDoc->unIndent(kWriteView,c);
-  kWriteDoc->updateViews();
-}
-
-void KantView::cleanIndent() {
-  if (isReadOnly())
-    return;
-
-  VConfig c;
-  kWriteView->getVConfig(c);
-  kWriteDoc->cleanIndent(kWriteView,c);
-  kWriteDoc->updateViews();
-}
-
-void KantView::selectAll() {
-  kWriteDoc->selectAll();
-  kWriteDoc->updateViews();
-}
-
-void KantView::deselectAll() {
-  kWriteDoc->deselectAll();
-  kWriteDoc->updateViews();
-}
-
-void KantView::invertSelection() {
-  kWriteDoc->invertSelection();
-  kWriteDoc->updateViews();
-}
-*/
 
 static void kwview_addToStrList(QStringList &list, const QString &str) {
   if (list.count() > 0) {
@@ -2518,13 +2410,13 @@ static void kwview_addToStrList(QStringList &list, const QString &str) {
 void KantView::find() {
   SearchDialog *searchDialog;
 
-  if (!kWriteDoc->hasMarkedText()) searchFlags &= ~KantView::sfSelected;
-  searchDialog = new SearchDialog(this, kWriteDoc->searchForList, kWriteDoc->replaceWithList,
+  if (!myDoc->hasMarkedText()) searchFlags &= ~KantView::sfSelected;
+  searchDialog = new SearchDialog(this, myDoc->searchForList, myDoc->replaceWithList,
     searchFlags & ~KantView::sfReplace);
 
-  kWriteView->focusOutEvent(0L);// QT bug ?
+  myViewInternal->focusOutEvent(0L);// QT bug ?
   if (searchDialog->exec() == QDialog::Accepted) {
-    kwview_addToStrList(kWriteDoc->searchForList, searchDialog->getSearchFor());
+    kwview_addToStrList(myDoc->searchForList, searchDialog->getSearchFor());
     searchFlags = searchDialog->getFlags() | (searchFlags & KantView::sfPrompt);
     initSearch(s, searchFlags);
     searchAgain(s);
@@ -2537,15 +2429,15 @@ void KantView::replace() {
 
   if (isReadOnly()) return;
 
-  if (!kWriteDoc->hasMarkedText()) searchFlags &= ~KantView::sfSelected;
-  searchDialog = new SearchDialog(this, kWriteDoc->searchForList, kWriteDoc->replaceWithList,
+  if (!myDoc->hasMarkedText()) searchFlags &= ~KantView::sfSelected;
+  searchDialog = new SearchDialog(this, myDoc->searchForList, myDoc->replaceWithList,
     searchFlags | KantView::sfReplace);
 
-  kWriteView->focusOutEvent(0L);// QT bug ?
+  myViewInternal->focusOutEvent(0L);// QT bug ?
   if (searchDialog->exec() == QDialog::Accepted) {
-//    kWriteDoc->recordReset();
-    kwview_addToStrList(kWriteDoc->searchForList, searchDialog->getSearchFor());
-    kwview_addToStrList(kWriteDoc->replaceWithList, searchDialog->getReplaceWith());
+//    myDoc->recordReset();
+    kwview_addToStrList(myDoc->searchForList, searchDialog->getSearchFor());
+    kwview_addToStrList(myDoc->replaceWithList, searchDialog->getReplaceWith());
     searchFlags = searchDialog->getFlags();
     initSearch(s, searchFlags);
     replaceAgain();
@@ -2557,7 +2449,7 @@ void KantView::replace() {
 //XSync(qt_xdisplay(),true);
 //kapp->syncX();
 //debug("xpending %d",XPending(qt_xdisplay()));
-//    kWriteView->tagAll();
+//    myViewInternal->tagAll();
 //    searchAgain();
 
 void KantView::findAgain() {
@@ -2569,17 +2461,17 @@ void KantView::gotoLine() {
   GotoLineDialog *dlg;
   PointStruc cursor;
 
-  dlg = new GotoLineDialog(this, kWriteView->cursor.y + 1, kWriteDoc->numLines());
-//  dlg = new GotoLineDialog(kWriteView->cursor.y + 1, this);
+  dlg = new GotoLineDialog(this, myViewInternal->cursor.y + 1, myDoc->numLines());
+//  dlg = new GotoLineDialog(myViewInternal->cursor.y + 1, this);
 
   if (dlg->exec() == QDialog::Accepted) {
-//    kWriteDoc->recordReset();
+//    myDoc->recordReset();
     cursor.x = 0;
     cursor.y = dlg->getLine() - 1;
-    kWriteView->updateCursor(cursor);
-    kWriteView->center();
-    kWriteView->updateView(KantView::ufUpdateOnScroll);
-    kWriteDoc->updateViews(this); //uptade all other views except this one
+    myViewInternal->updateCursor(cursor);
+    myViewInternal->center();
+    myViewInternal->updateView(KantView::ufUpdateOnScroll);
+    myDoc->updateViews(this); //uptade all other views except this one
   }
   delete dlg;
 }
@@ -2588,19 +2480,19 @@ void KantView::gotoLine() {
 void KantView::initSearch(SConfig &s, int flags) {
 
   s.flags = flags;
-  s.setPattern(kWriteDoc->searchForList.first());
+  s.setPattern(myDoc->searchForList.first());
 
   if (s.flags & KantView::sfFromCursor) {
     // If we are continuing a backward search, make sure we do not get stuck
     // at an existing match.
     if ((s.flags & KantView::sfAgain) &&
       (s.flags & KantView::sfBackward) &&
-      (s.cursor.x == kWriteView->cursor.x) &&
-      (s.cursor.y == kWriteView->cursor.y)) {
+      (s.cursor.x == myViewInternal->cursor.x) &&
+      (s.cursor.y == myViewInternal->cursor.y)) {
       s.cursor.x--;
     }
     else {
-      s.cursor = kWriteView->cursor;
+      s.cursor = myViewInternal->cursor;
     }
   } else {
     if (!(s.flags & KantView::sfBackward)) {
@@ -2608,7 +2500,7 @@ void KantView::initSearch(SConfig &s, int flags) {
       s.cursor.y = 0;
     } else {
       s.cursor.x = -1;
-      s.cursor.y = kWriteDoc->lastLine();
+      s.cursor.y = myDoc->lastLine();
     }
     s.flags |= KantView::sfFinished;
   }
@@ -2626,7 +2518,7 @@ void KantView::continueSearch(SConfig &s) {
     s.cursor.y = 0;
   } else {
     s.cursor.x = -1;
-    s.cursor.y = kWriteDoc->lastLine();
+    s.cursor.y = myDoc->lastLine();
   }
   s.flags |= KantView::sfFinished;
   s.flags &= ~KantView::sfAgain;
@@ -2637,7 +2529,7 @@ void KantView::searchAgain(SConfig &s) {
   PointStruc cursor;
   QString str;
 
-  QString searchFor = kWriteDoc->searchForList.first();
+  QString searchFor = myDoc->searchForList.first();
 
   if( searchFor.isEmpty() ) {
     find();
@@ -2646,11 +2538,11 @@ void KantView::searchAgain(SConfig &s) {
 
   do {
     query = KMessageBox::Cancel;
-    if (kWriteDoc->doSearch(s,searchFor)) {
+    if (myDoc->doSearch(s,searchFor)) {
       cursor = s.cursor;
       if (!(s.flags & KantView::sfBackward))
         s.cursor.x += s.matchedLength;
-      kWriteView->updateCursor(s.cursor); //does deselectAll()
+      myViewInternal->updateCursor(s.cursor); //does deselectAll()
       exposeFound(cursor,s.matchedLength,(s.flags & KantView::sfAgain) ? 0 : KantView::ufUpdateOnScroll,false);
     } else {
       if (!(s.flags & KantView::sfFinished)) {
@@ -2699,20 +2591,20 @@ void KantView::doReplaceAction(int result, bool found) {
   PointStruc cursor;
   bool started;
 
-  QString searchFor = kWriteDoc->searchForList.first();
-  QString replaceWith = kWriteDoc->replaceWithList.first();
+  QString searchFor = myDoc->searchForList.first();
+  QString replaceWith = myDoc->replaceWithList.first();
   rlen = replaceWith.length();
 
   switch (result) {
     case KantView::srYes: //yes
-      kWriteDoc->recordStart(this, s.cursor, configFlags,
-        KWActionGroup::ugReplace, true);
-      kWriteDoc->recordReplace(s.cursor, s.matchedLength, replaceWith);
+      myDoc->recordStart(this, s.cursor, configFlags,
+        KantActionGroup::ugReplace, true);
+      myDoc->recordReplace(s.cursor, s.matchedLength, replaceWith);
       replaces++;
       if (s.cursor.y == s.startCursor.y && s.cursor.x < s.startCursor.x)
         s.startCursor.x += rlen - s.matchedLength;
       if (!(s.flags & KantView::sfBackward)) s.cursor.x += rlen;
-      kWriteDoc->recordEnd(this, s.cursor, configFlags | KantView::cfPersistent);
+      myDoc->recordEnd(this, s.cursor, configFlags | KantView::cfPersistent);
       break;
     case KantView::srNo: //no
       if (!(s.flags & KantView::sfBackward)) s.cursor.x += s.matchedLength;
@@ -2721,20 +2613,20 @@ void KantView::doReplaceAction(int result, bool found) {
       deleteReplacePrompt();
       do {
         started = false;
-        while (found || kWriteDoc->doSearch(s,searchFor)) {
+        while (found || myDoc->doSearch(s,searchFor)) {
           if (!started) {
             found = false;
-            kWriteDoc->recordStart(this, s.cursor, configFlags,
-              KWActionGroup::ugReplace);
+            myDoc->recordStart(this, s.cursor, configFlags,
+              KantActionGroup::ugReplace);
             started = true;
           }
-          kWriteDoc->recordReplace(s.cursor, s.matchedLength, replaceWith);
+          myDoc->recordReplace(s.cursor, s.matchedLength, replaceWith);
           replaces++;
           if (s.cursor.y == s.startCursor.y && s.cursor.x < s.startCursor.x)
             s.startCursor.x += rlen - s.matchedLength;
           if (!(s.flags & KantView::sfBackward)) s.cursor.x += rlen;
         }
-        if (started) kWriteDoc->recordEnd(this, s.cursor,
+        if (started) myDoc->recordEnd(this, s.cursor,
           configFlags | KantView::cfPersistent);
       } while (!askReplaceEnd());
       return;
@@ -2746,16 +2638,16 @@ void KantView::doReplaceAction(int result, bool found) {
   }
 
   do {
-    if (kWriteDoc->doSearch(s,searchFor)) {
+    if (myDoc->doSearch(s,searchFor)) {
       //text found: highlight it, show replace prompt if needed and exit
       cursor = s.cursor;
       if (!(s.flags & KantView::sfBackward)) cursor.x += s.matchedLength;
-      kWriteView->updateCursor(cursor); //does deselectAll()
+      myViewInternal->updateCursor(cursor); //does deselectAll()
       exposeFound(s.cursor,s.matchedLength,(s.flags & KantView::sfAgain) ? 0 : KantView::ufUpdateOnScroll,true);
       if (replacePrompt == 0L) {
         replacePrompt = new ReplacePrompt(this);
         XSetTransientForHint(qt_xdisplay(),replacePrompt->winId(),topLevelWidget()->winId());
-        kWriteDoc->setPseudoModal(replacePrompt);//disable();
+        myDoc->setPseudoModal(replacePrompt);//disable();
         connect(replacePrompt,SIGNAL(clicked()),this,SLOT(replaceSlot()));
         replacePrompt->show(); //this is not modal
       }
@@ -2769,42 +2661,42 @@ void KantView::doReplaceAction(int result, bool found) {
 void KantView::exposeFound(PointStruc &cursor, int slen, int flags, bool replace) {
   int x1, x2, y1, y2, xPos, yPos;
 
-  kWriteDoc->markFound(cursor,slen);
+  myDoc->markFound(cursor,slen);
 
-  TextLine::Ptr textLine = kWriteDoc->getTextLine(cursor.y);
-  x1 = kWriteDoc->textWidth(textLine,cursor.x)        -10;
-  x2 = kWriteDoc->textWidth(textLine,cursor.x + slen) +20;
-  y1 = kWriteDoc->fontHeight*cursor.y                 -10;
-  y2 = y1 + kWriteDoc->fontHeight                     +30;
+  TextLine::Ptr textLine = myDoc->getTextLine(cursor.y);
+  x1 = myDoc->textWidth(textLine,cursor.x)        -10;
+  x2 = myDoc->textWidth(textLine,cursor.x + slen) +20;
+  y1 = myDoc->fontHeight*cursor.y                 -10;
+  y2 = y1 + myDoc->fontHeight                     +30;
 
-  xPos = kWriteView->xPos;
-  yPos = kWriteView->yPos;
+  xPos = myViewInternal->xPos;
+  yPos = myViewInternal->yPos;
 
   if (x1 < 0) x1 = 0;
   if (replace) y2 += 90;
 
-  if (x1 < xPos || x2 > xPos + kWriteView->width()) {
-    xPos = x2 - kWriteView->width();
+  if (x1 < xPos || x2 > xPos + myViewInternal->width()) {
+    xPos = x2 - myViewInternal->width();
   }
-  if (y1 < yPos || y2 > yPos + kWriteView->height()) {
-    xPos = x2 - kWriteView->width();
-    yPos = kWriteDoc->fontHeight*cursor.y - height()/3;
+  if (y1 < yPos || y2 > yPos + myViewInternal->height()) {
+    xPos = x2 - myViewInternal->width();
+    yPos = myDoc->fontHeight*cursor.y - height()/3;
   }
-  kWriteView->setPos(xPos, yPos);
-  kWriteView->updateView(flags);// | ufPos,xPos,yPos);
-  kWriteDoc->updateViews(this);
-//  kWriteDoc->updateViews();
+  myViewInternal->setPos(xPos, yPos);
+  myViewInternal->updateView(flags);// | ufPos,xPos,yPos);
+  myDoc->updateViews(this);
+//  myDoc->updateViews();
 }
 
 void KantView::deleteReplacePrompt() {
-  kWriteDoc->setPseudoModal(0L);
+  myDoc->setPseudoModal(0L);
 }
 
 bool KantView::askReplaceEnd() {
   QString str;
   int query;
 
-  kWriteDoc->updateViews();
+  myDoc->updateViews();
   if (s.flags & KantView::sfFinished) {
     // replace finished
     str = i18n("%1 replace(s) made").arg(replaces);
@@ -2836,15 +2728,6 @@ bool KantView::askReplaceEnd() {
 void KantView::replaceSlot() {
   doReplaceAction(replacePrompt->result(),true);
 }
-
-
-/*void KantView::format() {
-  dlg = new FormatDialog()
-  if (dlg->exec() == QDialog::Accepted) {
-
-  }
-  delete dlg;
-}            */
 
 void KantView::installPopup(QPopupMenu *rmb_Menu)
 {
@@ -2908,9 +2791,9 @@ void KantView::setBookmark(int n)
   if (n >= 10) return;
   while ((int) bookmarks.count() <= n) bookmarks.append(new KWBookmark());
   b = bookmarks.at(n);
-  b->xPos = kWriteView->xPos;
-  b->yPos = kWriteView->yPos;
-  b->cursor = kWriteView->cursor;
+  b->xPos = myViewInternal->xPos;
+  b->yPos = myViewInternal->yPos;
+  b->cursor = myViewInternal->cursor;
 
   updateBookmarks();
 }
@@ -2928,12 +2811,12 @@ void KantView::gotoBookmark(int n)
   if (n-666 < 0 || n-666 >= (int) bookmarks.count()) return;
   b = bookmarks.at(n-666);
   if (b->cursor.y == -1) return;
-//  kWriteDoc->recordReset();
-  kWriteView->updateCursor(b->cursor);
-  kWriteView->setPos(b->xPos, b->yPos);
-//  kWriteView->updateView(ufPos, b->xPos, b->yPos);
-//  kWriteDoc->updateViews(kWriteView); //uptade all other views except this one
-  kWriteDoc->updateViews();
+//  myDoc->recordReset();
+  myViewInternal->updateCursor(b->cursor);
+  myViewInternal->setPos(b->xPos, b->yPos);
+//  myViewInternal->updateView(ufPos, b->xPos, b->yPos);
+//  myDoc->updateViews(myViewInternal); //uptade all other views except this one
+  myDoc->updateViews();
 }
 
 
@@ -2998,11 +2881,11 @@ void KantView::readSessionConfig(KConfig *config) {
 */
   readConfig(config);
 
-  kWriteView->xPos = config->readNumEntry("XPos");
-  kWriteView->yPos = config->readNumEntry("YPos");
+  myViewInternal->xPos = config->readNumEntry("XPos");
+  myViewInternal->yPos = config->readNumEntry("YPos");
   cursor.x = config->readNumEntry("CursorX");
   cursor.y = config->readNumEntry("CursorY");
-  kWriteView->updateCursor(cursor);
+  myViewInternal->updateCursor(cursor);
 
   count = config->readNumEntry("Bookmarks");
   for (z = 0; z < count; z++) {
@@ -3029,10 +2912,10 @@ void KantView::writeSessionConfig(KConfig *config) {
 */
   writeConfig(config);
 
-  config->writeEntry("XPos",kWriteView->xPos);
-  config->writeEntry("YPos",kWriteView->yPos);
-  config->writeEntry("CursorX",kWriteView->cursor.x);
-  config->writeEntry("CursorY",kWriteView->cursor.y);
+  config->writeEntry("XPos",myViewInternal->xPos);
+  config->writeEntry("YPos",myViewInternal->yPos);
+  config->writeEntry("CursorX",myViewInternal->cursor.x);
+  config->writeEntry("CursorY",myViewInternal->cursor.y);
 
   config->writeEntry("Bookmarks",bookmarks.count());
   for (z = 0; z < (int) bookmarks.count(); z++) {
@@ -3052,7 +2935,7 @@ void KantView::hlDlg() {
   ItemStyleList defaultStyleList;
   ItemFont defaultFont;
 
-  hlManager = kWriteDoc->hlManager;
+  hlManager = myDoc->hlManager;
 
   defaultStyleList.setAutoDelete(true);
   hlManager->getDefaults(defaultStyleList,defaultFont);
@@ -3062,8 +2945,8 @@ void KantView::hlDlg() {
   hlManager->getHlDataList(hlDataList);
 
   dlg = new HighlightDialog(hlManager, &defaultStyleList, &defaultFont, &hlDataList,
-    kWriteDoc->highlightNum(), this);
-//  dlg->hlChanged(kWriteDoc->highlightNum());
+    myDoc->highlightNum(), this);
+//  dlg->hlChanged(myDoc->highlightNum());
   if (dlg->exec() == QDialog::Accepted) {
     //this stores the data into the KConfig object
     hlManager->setHlDataList(hlDataList);
@@ -3073,24 +2956,24 @@ void KantView::hlDlg() {
 }
 
 int KantView::getHl() {
-  return kWriteDoc->highlightNum();
+  return myDoc->highlightNum();
 }
 
 void KantView::setHl(int n) {
-  kWriteDoc->setHighlight(n);
-  kWriteDoc->updateViews();
+  myDoc->setHighlight(n);
+  myDoc->updateViews();
 }
 
 int KantView::getEol() {
-  return kWriteDoc->eolMode;
+  return myDoc->eolMode;
 }
 
 void KantView::setEol(int eol) {
   if (isReadOnly())
     return;
 
-  kWriteDoc->eolMode = eol;
-  kWriteDoc->setModified(true);
+  myDoc->eolMode = eol;
+  myDoc->setModified(true);
 }
 
 
@@ -3142,9 +3025,9 @@ void KantView::resizeEvent(QResizeEvent *) {
 
 //  debug("Resize %d, %d",e->size().width(),e->size().height());
 
-//kWriteView->resize(width() -20, height() -20);
-  kWriteView->tagAll();
-  kWriteView->updateView(0/*ufNoScroll*/);
+//myViewInternal->resize(width() -20, height() -20);
+  myViewInternal->tagAll();
+  myViewInternal->updateView(0/*ufNoScroll*/);
 }
 
 
@@ -3174,13 +3057,13 @@ void KantView::spellcheck()
 
 void KantView::spellcheck2(KSpell *)
 {
-  kWriteDoc->setReadOnly (TRUE);
+  myDoc->setReadOnly (TRUE);
 
   // this is a hack, setPseudoModal() has been hacked to recognize 0x01
   // as special (never tries to delete it)
   // this should either get improved (with a #define or something),
   // or kspell should provide access to the spell widget.
-  kWriteDoc->setPseudoModal((QWidget*)0x01);
+  myDoc->setPseudoModal((QWidget*)0x01);
 
   kspell.spell_tmptext = text();
 
@@ -3188,7 +3071,7 @@ void KantView::spellcheck2(KSpell *)
   kspell.kspellon = TRUE;
   kspell.kspellMispellCount = 0;
   kspell.kspellReplaceCount = 0;
-  kspell.kspellPristine = ! kWriteDoc->isModified();
+  kspell.kspellPristine = ! myDoc->isModified();
 
   kspell.kspell->setProgressResolution (1);
 
@@ -3204,19 +3087,19 @@ void KantView::misspelling (QString origword, QStringList *, unsigned pos)
   //   and do these searched relative to that to
   //   (significantly) increase the speed of the spellcheck
 
-  for (cnt = 0, line = 0 ; line <= kWriteDoc->lastLine() && cnt <= pos ; line++)
-    cnt += kWriteDoc->getTextLine(line)->length()+1;
+  for (cnt = 0, line = 0 ; line <= myDoc->lastLine() && cnt <= pos ; line++)
+    cnt += myDoc->getTextLine(line)->length()+1;
 
   // Highlight the mispelled word
   PointStruc cursor;
   line--;
-  cursor.x = pos - (cnt - kWriteDoc->getTextLine(line)->length()) + 1;
+  cursor.x = pos - (cnt - myDoc->getTextLine(line)->length()) + 1;
   cursor.y = line;
 //  deselectAll(); // shouldn't the spell check be allowed within selected text?
   kspell.kspellMispellCount++;
-  kWriteView->updateCursor(cursor); //this does deselectAll() if no persistent selections
-  kWriteDoc->markFound(cursor,origword.length());
-  kWriteDoc->updateViews();
+  myViewInternal->updateCursor(cursor); //this does deselectAll() if no persistent selections
+  myDoc->markFound(cursor,origword.length());
+  myDoc->updateViews();
 }
 
 void KantView::corrected (QString originalword, QString newword, unsigned pos)
@@ -3231,21 +3114,21 @@ void KantView::corrected (QString originalword, QString newword, unsigned pos)
     {
 
       // Find pos
-      for (line = 0 ; line <= kWriteDoc->lastLine() && cnt <= pos ; line++)
-        cnt += kWriteDoc->getTextLine(line)->length() + 1;
+      for (line = 0 ; line <= myDoc->lastLine() && cnt <= pos ; line++)
+        cnt += myDoc->getTextLine(line)->length() + 1;
 
       // Highlight the mispelled word
       PointStruc cursor;
       line--;
-      cursor.x = pos - (cnt-kWriteDoc->getTextLine(line)->length()) + 1;
+      cursor.x = pos - (cnt-myDoc->getTextLine(line)->length()) + 1;
       cursor.y = line;
-      kWriteView->updateCursor(cursor);
-      kWriteDoc->markFound(cursor, newword.length());
+      myViewInternal->updateCursor(cursor);
+      myDoc->markFound(cursor, newword.length());
 
-      kWriteDoc->recordStart(this, cursor, configFlags,
-        KWActionGroup::ugSpell, true, kspell.kspellReplaceCount > 0);
-      kWriteDoc->recordReplace(cursor, originalword.length(), newword);
-      kWriteDoc->recordEnd(this, cursor, configFlags | KantView::cfGroupUndo);
+      myDoc->recordStart(this, cursor, configFlags,
+        KantActionGroup::ugSpell, true, kspell.kspellReplaceCount > 0);
+      myDoc->recordReplace(cursor, originalword.length(), newword);
+      myDoc->recordEnd(this, cursor, configFlags | KantView::cfGroupUndo);
 
       kspell.kspellReplaceCount++;
     }
@@ -3256,7 +3139,7 @@ void KantView::spellResult (const QString &)
 {
   deselectAll(); //!!! this should not be done with persistent selections
 
-//  if (kspellReplaceCount) kWriteDoc->recordReset();
+//  if (kspellReplaceCount) myDoc->recordReset();
 
   // we know if the check was cancelled
   // we can safely use the undo mechanism to backout changes
@@ -3266,25 +3149,25 @@ void KantView::spellResult (const QString &)
     if (kspell.kspellReplaceCount) {
       // backout the spell check
       VConfig c;
-      kWriteView->getVConfig(c);
-      kWriteDoc->undo(c);
+      myViewInternal->getVConfig(c);
+      myDoc->undo(c);
       // clear the redo list, so the cancelled spell check can't be redo'ed <- say that word ;-)
-      kWriteDoc->clearRedo();
+      myDoc->clearRedo();
       // make sure the modified flag is turned back off
       // if we started with a clean buffer
       if (kspell.kspellPristine)
-        kWriteDoc->setModified(false);
+        myDoc->setModified(false);
     }
   }
 
-  kWriteDoc->setPseudoModal(0L);
-  kWriteDoc->setReadOnly (FALSE);
+  myDoc->setPseudoModal(0L);
+  myDoc->setReadOnly (FALSE);
 
   // if we marked up the text, clear it now
   if (kspell.kspellMispellCount)
-    kWriteDoc->unmarkFound();
+    myDoc->unmarkFound();
 
-  kWriteDoc->updateViews();
+  myDoc->updateViews();
 
   kspell.kspell->cleanUp();
 }
@@ -3305,24 +3188,20 @@ void KantView::spellCleanDone ()
   }
   else if (status == KSpell::Crashed)
   {
-     kWriteDoc->setPseudoModal(0L);
-     kWriteDoc->setReadOnly (FALSE);
+     myDoc->setPseudoModal(0L);
+     myDoc->setReadOnly (FALSE);
 
      // if we marked up the text, clear it now
      if (kspell.kspellMispellCount)
-        kWriteDoc->unmarkFound();
+        myDoc->unmarkFound();
 
-     kWriteDoc->updateViews();
+     myDoc->updateViews();
      KMessageBox::sorry(this, i18n("ISpell seems to have crashed."));
   }
   else
   {
      emit spellcheck_done();
   }
-}
-
-void KantView::init()
-{
 }
 
 void KantView::dropEventPassEmited (QDropEvent* e)
@@ -3348,7 +3227,7 @@ void KantView::printDlg ()
      QFontMetrics fm = paint.fontMetrics();
 
     int lineCount = 0;
-    while (  lineCount <= kWriteDoc->lastLine()  )
+    while (  lineCount <= myDoc->lastLine()  )
     {
 
 
@@ -3360,7 +3239,7 @@ void KantView::printDlg ()
       }
 
      y += fm.ascent();
-     paint.drawText( 10, y, kWriteDoc-> textLine(lineCount) );
+     paint.drawText( 10, y, myDoc-> textLine(lineCount) );
      y += fm.descent();
 
 
