@@ -1037,7 +1037,7 @@ void KantViewManager::reopenDocuments(bool isRestore)
   bool resVC = config->readBoolEntry("restore views", true);
   ////////////////////////////////////////////////////////////////////////
   // RESTORE VIEW CONFIG TEST
-  if ( scfg->hasGroup("splitter0") && (isRestore || resVC) ) {
+  if ( scfg->hasGroup("splitter0") && (isRestore && resVC) ) {
     kdDebug(13030)<<"reopenDocumentw(): calling restoreViewConfig()"<<endl;
     restoreViewConfig();
     return;
@@ -1045,7 +1045,7 @@ void KantViewManager::reopenDocuments(bool isRestore)
   ////////////////////////////////////////////////////////////////////////
   // read the list and loop around it.
   scfg->setGroup("open files");
-  if (config->readBoolEntry("reopen at startup", true) || isRestore )
+  if (config->readBoolEntry("reopen at startup", true) && isRestore )
   {
     QStringList list = /*config*/scfg->readListEntry("list");
 
@@ -1196,8 +1196,15 @@ void KantViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
            openURL( KURL( data[0] ) );
            config->setGroup( data[0] );
            KantView* v = activeView();
-           v->readSessionConfig( config );
-           v->doc()->readSessionConfig( config );
+           if (v)
+           {
+             v->readSessionConfig( config );
+             v->doc()->readSessionConfig( config );
+           }
+           else
+           {
+             createView (true, 0L, 0L);
+           }
            config->deleteGroup( data[0] );
          }
          else { // if the group has been deleted, we can find a document
