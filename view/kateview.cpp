@@ -1903,8 +1903,8 @@ void KateView::setTabWidth(int w) {
   myDoc->updateViews();
 }
 
-void KateView::setUseUTF8 (bool b) {
-  myDoc->setUseUTF8 (b);
+void KateView::setEncoding (QString e) {
+  myDoc->setEncoding (e);
   myDoc->updateViews();
 }
 
@@ -3525,3 +3525,4 @@ void KateBrowserExtension::slotSelectionChanged()
 {
   emit enableAction( "copy", m_doc->hasMarkedText() );
 }
+

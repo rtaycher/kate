@@ -311,7 +311,7 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
     */
     KateView(KateDocument *doc=0L, QWidget *parent = 0L, const char * name = 0, bool HandleOwnURIDrops = true, bool deleteDoc = true);
     /**
-      The destructor does not delete the document
+      The destructor does not delete the document
     */
     ~KateView();
 
@@ -354,7 +354,7 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
     void setWordWrapAt(int at) {wrapAt = at;}
     int tabWidth();
     void setTabWidth(int);
-   void setUseUTF8(bool);
+    void setEncoding (QString e);
     int undoSteps();
     void setUndoSteps(int);
 

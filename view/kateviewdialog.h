@@ -11,6 +11,7 @@ class QRadioButton;
 class QSpinBox;
 class KColorButton;
 class KIntNumInput;
+class KComboBox;
 
 #include <kdialogbase.h>
 #include "kateview.h"
@@ -126,7 +127,8 @@ class EditConfigTab : public QWidget
     static const int numFlags = 9;
     static const int flags[numFlags];
     QCheckBox *opt[numFlags];
-    QCheckBox *useUTF;
+    KComboBox *encoding;
+
 
     KIntNumInput *e1;
     KIntNumInput *e2;

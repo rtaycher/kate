@@ -20,7 +20,10 @@
 
 #include <klocale.h>
 #include <kcolorbtn.h>
+#include <kcombobox.h>
 #include <knuminput.h>
+#include <kglobal.h>
+#include <kcharsets.h>
 
 #include "../document/katedocument.h"
 #include "kateviewdialog.h"
@@ -261,7 +264,7 @@ void IndentConfigTab::getData(KateView *view) {
   int configFlags, z;
 
   configFlags = view->config();
-  for (z = 0; z < numFlags; z++) {
+  for (z = 0; z < numFlags; z++) {
     configFlags &= ~flags[z];
     if (opt[z]->isChecked()) configFlags |= flags[z];
   }
@@ -376,9 +379,9 @@ EditConfigTab::EditConfigTab(QWidget *parent, KateView *view)
   cbLayout->addWidget(opt[8], 0, AlignLeft);
   opt[8]->setChecked(configFlags & flags[8]);
 
-  useUTF = new QCheckBox(i18n("&Use UTF8 Encoding for Files"), this);
-  cbLayout->addWidget(useUTF, 0, AlignLeft);
-  useUTF->setChecked(view->doc()->useUTF8());
+  encoding = new KComboBox(this);
+  cbLayout->addWidget(encoding, 0, AlignLeft);
+  encoding->insertStringList (KGlobal::charsets()->availableEncodingNames());
 
   cbLayout->addStretch();
 
@@ -429,7 +432,7 @@ void EditConfigTab::getData(KateView *view)
   }
   view->setConfig(configFlags);
 
-  view->setUseUTF8 (useUTF->isChecked());
+  view->setEncoding (encoding->currentText ());
   view->setWordWrapAt(e1->value());
   view->setTabWidth(e2->value());
   view->setUndoSteps(e3->value());

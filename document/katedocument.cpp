@@ -63,6 +63,7 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtextcodec.h>
+#include <kglobal.h>
 
 #include <klocale.h>
 #include <kcharsets.h>
@@ -140,7 +141,7 @@ KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool
 
   m_url.setPath( 0L );
 
-  myUseUTF8 = false;
+  myEncoding = QString::fromLatin1(QTextCodec::locale());
 
   myDocID = docID;
   myDocName = QString ("");
@@ -237,11 +238,8 @@ KateDocument::~KateDocument()
 bool KateDocument::openFile()
 {
 #ifdef NEW_CODE
-  // TODO: Pass codec around.
-/*  if (myUseUTF8)
-    loadFile( m_file, QTextStream::UnicodeUTF8);
-  else  */
-    loadFile( m_file, QTextCodec::codecForLocale());
+
+  loadFile( m_file, KGlobal::charsets()->codecForName(myEncoding));
 
 #else
   QFile f( m_file );
@@ -284,7 +282,7 @@ bool KateDocument::openFile()
       }
       //    hl = hlManager->mimeFind(buf, s.right( s.length() - pos));
       hl = hlManager->mimeFind( buf, fn );
-    }
+    }
 #endif
     setHighlight(hl);
   }
@@ -302,10 +300,7 @@ bool KateDocument::openFile()
 bool KateDocument::saveFile()
 {
 #ifdef NEW_CODE
- /* if (myUseUTF8)
-    return writeFile( m_file, QTextStream::UnicodeUTF8);
-  else       */
-    return writeFile( m_file, QTextCodec::codecForLocale());
+  return writeFile( m_file, KGlobal::charsets()->codecForName(myEncoding));
 #else
   QFile f( m_file );
   if ( !f.open( IO_WriteOnly | IO_Truncate ) )
@@ -492,7 +487,7 @@ void KateDocument::readConfig(KConfig *config) {
   setTabWidth(config->readNumEntry("TabWidth", 8));
   setUndoSteps(config->readNumEntry("UndoSteps", 50));
   m_singleSelection = config->readBoolEntry("SingleSelection", false);
-  myUseUTF8 = config->readBoolEntry("useUTF8", false);
+  myEncoding = config->readEntry("Encoding", QString::fromLatin1(QTextCodec::locale()));
 
   for (z = 0; z < 5; z++) {
     sprintf(s, "Color%d", z);
@@ -507,7 +502,7 @@ void KateDocument::writeConfig(KConfig *config) {
   config->writeEntry("TabWidth", tabChars);
   config->writeEntry("UndoSteps", undoSteps);
   config->writeEntry("SingleSelection", m_singleSelection);
-  config->writeEntry("useUTF8", myUseUTF8);
+  config->writeEntry("Encoding", myEncoding);
 
   for (z = 0; z < 5; z++) {
     sprintf(s, "Color%d", z);
@@ -772,9 +767,6 @@ void KateDocument::insertFile(VConfig &c, QIODevice &dev)
 
   QTextStream stream( &dev );
 
-  if (myUseUTF8)
-    stream.setEncoding( QTextStream::UnicodeUTF8 );
-
   while ( !stream.eof() ) {
     stream >> ch;
 
@@ -846,8 +838,6 @@ void KateDocument::loadFile(QIODevice &dev) {
   TextLine::Ptr textLine = contents.first();
   QTextStream stream( &dev );
 
-  if (myUseUTF8)
-    stream.setEncoding( QTextStream::UnicodeUTF8 );
 
   while ( !stream.eof() ) {
       stream >> ch;
@@ -870,8 +860,6 @@ void KateDocument::writeFile(QIODevice &dev) {
   TextLine::List::ConstIterator it = contents.begin();
   QTextStream stream(&dev);
 
-  if (myUseUTF8)
-    stream.setEncoding( QTextStream::UnicodeUTF8 );
 
   do {
     TextLine::Ptr textLine = *it;

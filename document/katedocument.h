@@ -438,11 +438,11 @@ class KateDocument : public KateDocumentIface
     KateCmd *cmd () { return myCmd; };
 
   private:
-    bool myUseUTF8;
+    QString myEncoding;
 
   public:
-    void setUseUTF8 (bool b) { myUseUTF8 = b; };
-    bool useUTF8() { return myUseUTF8; };
+    void setEncoding (QString e) { myEncoding = e; };
+    QString encoding() { return myEncoding; };
 
   signals:
     void modStateChanged (KateDocument *doc);
