@@ -106,7 +106,8 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   activeView = 0;
 
-  console = 0L;
+  console = 0;
+  greptool = 0;
 
   // now the config
   KConfig *config = kapp->config();
