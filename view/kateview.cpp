@@ -41,6 +41,8 @@
 #include "../document/katedocument.h"
 #include "../factory/katefactory.h"
 
+#include "../document/katedialogs.h"
+
 #include <kurldrag.h>
 #include <qfocusdata.h>
 #include <kdebug.h>
