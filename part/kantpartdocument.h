@@ -31,6 +31,9 @@ class KantPartDocument : public KantDocument
     ~KantPartDocument ();
 
     virtual KTextEditor::View *createView( QWidget *parent, const char *name );
+    bool hasBrowserExtension() const { return m_bBrowserView; }
+  protected:
+    bool m_bBrowserView;
 };
 
 class KantPartBrowserExtension : public KParts::BrowserExtension

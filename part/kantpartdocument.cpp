@@ -33,6 +33,7 @@ KantPartDocument::KantPartDocument (bool bSingleViewMode, bool bBrowserView,
                                                        QObject *parent, const char *name) :  KantDocument (0L, 0L)
 {
   m_bSingleViewMode = bSingleViewMode;
+  m_bBrowserView = bBrowserView;
 
   if ( m_bSingleViewMode )
   {
@@ -40,7 +41,7 @@ KantPartDocument::KantPartDocument (bool bSingleViewMode, bool bBrowserView,
     view->show();
     setWidget( view );
 
-    if ( bBrowserView )
+    if ( m_bBrowserView )
     {
       // We are embedded in konqueror, let's provide an XML file and actions.
       (void)new KantPartBrowserExtension( this );
@@ -67,7 +68,7 @@ KantPartDocument::~KantPartDocument ()
 
 KTextEditor::View *KantPartDocument::createView( QWidget *parent, const char *name )
 {
-  return new KantPartView( this, parent, name );
+  return new KantPartView( this, parent, name, false /*we handle URI drops*/ );
 }
 
 KantPartBrowserExtension::KantPartBrowserExtension( KantPartDocument *doc )

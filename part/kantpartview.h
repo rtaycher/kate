@@ -48,6 +48,9 @@ class KantPartView : public KantView
     KRecentFilesAction *fileRecent;
     KSelectAction *setHighlight, *setEndOfLine;
 
+  protected slots:
+    void slotDropEventPass( QDropEvent * ev );
+
   public slots:
     void slotUpdate();
     void slotFileStatusChanged();

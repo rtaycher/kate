@@ -24,6 +24,7 @@
 #include <kstdaction.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <kurldrag.h>
 
 KantPartView::KantPartView (KantPartDocument *doc, QWidget *parent, const char * name, bool HandleOwnURIDrops):  KantView (doc, parent, name, HandleOwnURIDrops)
 {
@@ -35,6 +36,8 @@ KantPartView::KantPartView (KantPartDocument *doc, QWidget *parent, const char *
   connect( this, SIGNAL( newUndo() ), this, SLOT( slotNewUndo() ) );
   connect( this, SIGNAL( fileChanged() ), this, SLOT( slotFileStatusChanged() ) );
   connect( doc, SIGNAL( highlightChanged() ), this, SLOT( slotHighlightChanged() ) );
+  if ( doc->hasBrowserExtension() )
+    connect( this, SIGNAL( dropEventPass(QDropEvent*) ), this, SLOT( slotDropEventPass(QDropEvent*) ) );
 
   setHighlight->setCurrentItem(getHl());
   slotUpdate();
@@ -188,3 +191,15 @@ void KantPartView::slotHighlightChanged()
 {
     setHighlight->setCurrentItem(getHl());
 }
+
+void KantPartView::slotDropEventPass( QDropEvent * ev )
+{
+    qDebug("KantPartView::slotDropEventPass");
+    KURL::List lstDragURLs;
+    bool ok = KURLDrag::decode( ev, lstDragURLs );
+ 
+    KParts::BrowserExtension * ext = KParts::BrowserExtension::childObject( doc() );
+    if ( ok && ext )
+        emit ext->openURLRequest( lstDragURLs.first() );
+}
+
