@@ -99,6 +99,9 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc) : QWidget(
 
   xPos = 0;
   yPos = 0;
+  
+  xCoord = 0;
+  yCoord = 0;
 
   scrollTimer = 0;
 
@@ -894,6 +897,9 @@ void KateViewInternal::paintCursor() {
     setMicroFocusHint(cx, cy, 0, ch - 2);
   }
 
+  xCoord = x;
+  yCoord = y+h;
+
   QPainter paint;
   if (cursorOn) {
     paint.begin(this);
@@ -1353,6 +1359,11 @@ KateView::~KateView()
   delete myViewInternal;
 
   delete printer;
+}
+
+QPoint KateView::cursorCoordinates()
+{
+  return QPoint(myViewInternal->xCoord, myViewInternal->yCoord);
 }
 
 void KateView::copy () const

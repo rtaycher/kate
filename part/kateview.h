@@ -221,6 +221,10 @@ class KateViewInternal : public QWidget {
     QScrollBar *yScroll;
     KateIconBorder *leftBorder;
 
+    // cursor position in pixels:
+    int xCoord;
+    int yCoord;
+
     int xPos;
     int yPos;
 
@@ -276,7 +280,8 @@ class KateView : public Kate::View
   public:
     KateView(KateDocument *doc=0L, QWidget *parent = 0L, const char * name = 0);
     ~KateView();
-
+    /** get the real CursorCoodinates in pixels: */
+	
   //
   // KTextEditor::ClipboardInterface stuff
   //
@@ -297,7 +302,8 @@ class KateView : public Kate::View
   //
   // internal KateView stuff
   //
-	public:
+  public:
+    QPoint cursorCoordinates();
     void setCursorPosition( int line, int col, bool mark = false );
     void getCursorPosition( int *line, int *col );
 
@@ -715,6 +721,7 @@ class KateView : public Kate::View
        cmScrollUp,cmScrollDown,cmTopOfView,cmBottomOfView,
        cmPageUp,cmPageDown,cmCursorPageUp,cmCursorPageDown,
        cmTop,cmBottom};
+
 //edit commands
     enum Edit_commands {
 		    cmReturn=1,cmDelete,cmBackspace,cmKillLine,
