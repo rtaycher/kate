@@ -129,6 +129,8 @@ void KateFileList::slotModChanged (Kate::Document *doc)
       }
     }
   }
+
+  updateCaption ();
 }
 
 void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool b, unsigned char reason)
@@ -167,10 +169,23 @@ void KateFileList::slotNameChanged (Kate::Document *doc)
     }
   }
 
-  QString c;
-  if (doc->url().isEmpty() || (!viewManager->getShowFullPath()))
+  updateCaption ();
+
+  updateSort ();
+}
+
+void KateFileList::updateCaption ()
+{
+  if (!viewManager->activeView())
   {
-    c = doc->docName();
+    ((KateMainWindow*)topLevelWidget())->setCaption ("", false);
+    return;
+  }
+
+  QString c;
+  if (viewManager->activeView()->getDoc()->url().isEmpty() || (!viewManager->getShowFullPath()))
+  {
+    c = viewManager->activeView()->getDoc()->docName();
 
     //File name shouldn't be too long - Maciek
     if (c.length() > 64)
@@ -178,16 +193,14 @@ void KateFileList::slotNameChanged (Kate::Document *doc)
   }
   else
   {
-    c = doc->url().prettyURL();
+    c = viewManager->activeView()->getDoc()->url().prettyURL();
 
     //File name shouldn't be too long - Maciek
     if (c.length() > 64)
       c = "..." + c.right(64);
   }
 
-  ((KateMainWindow*)topLevelWidget())->setCaption( c, doc->isModified());
-
-  updateSort ();
+  ((KateMainWindow*)topLevelWidget())->setCaption( c, viewManager->activeView()->getDoc()->isModified());
 }
 
 void KateFileList::slotViewChanged ()
@@ -206,6 +219,8 @@ void KateFileList::slotViewChanged ()
       break;
     }
   }
+
+  updateCaption ();
 }
 
 void KateFileList::slotMenu ( QListBoxItem *item, const QPoint &p )

@@ -148,8 +148,6 @@ class KateViewManager : public QWidget
 
     void setShowFullPath(bool enable);
 
-    void setWindowCaption();
-
     void activateNextView();
     void activatePrevView();
 

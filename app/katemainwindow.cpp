@@ -691,7 +691,6 @@ void KateMainWindow::slotMail()
         int sr = v->saveAs();
         if ( sr == Kate::View::SAVE_OK ) {
           doc->setDocName( doc->url().fileName() );
-          m_viewManager->setWindowCaption();
         }
         else {
           if ( sr != Kate::View::SAVE_CANCEL ) // ERROR or RETRY(?)

@@ -52,8 +52,7 @@ Kate::FileDialog::FileDialog (const QString& startDir,
 
   setCaption (caption);
 
-  toolBar()->insertCombo(QStringList(), 33333, false, 0L,
-          0L, 0L, true);
+  toolBar()->insertCombo(QStringList(), 33333, false, 0L, 0L, 0L, true);
 
   QStringList filter;
   filter << "all/allfiles";
@@ -116,5 +115,4 @@ Kate::FileDialogData Kate::FileDialog::exec()
 
 void Kate::FileDialog::slotApply()
 {
-
 }

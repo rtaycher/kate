@@ -104,7 +104,6 @@ bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, 
 
   // create view
   Kate::View *view = (Kate::View *)doc->createView (this, 0L);
-  connect(view,SIGNAL(newStatus()),this,SLOT(setWindowCaption()));
   m_viewList.append (view);
 
   if (newDoc)
@@ -171,10 +170,6 @@ bool KateViewManager::deleteView (Kate::View *view, bool delViewSpace)
   if (!view) return true;
 
   KateViewSpace *viewspace = (KateViewSpace *)view->parentWidget()->parentWidget();
-
-  // clear caption of mainwindow if this is the current view ;-)
-  if ( view == activeView() )
-    topLevelWidget()->setCaption ( "" );
 
   viewspace->removeView (view);
 
@@ -296,7 +291,6 @@ void KateViewManager::activateView ( Kate::View *view )
 
     ((KMainWindow *)topLevelWidget ())->toolBar ()->setUpdatesEnabled (true);
 
-    setWindowCaption();
     statusMsg();
 
     emit viewChanged ();
@@ -555,8 +549,6 @@ void KateViewManager::openURL (KURL url, const QString& encoding)
     createView(false,url,0L,doc);
 
   activateView( id );
-
-  setWindowCaption();
 }
 
 void KateViewManager::openConstURLCheck (const KURL& url)
@@ -734,36 +726,9 @@ void KateViewManager::slotCloseCurrentViewSpace()
   removeViewSpace(activeViewSpace());
 }
 
-void KateViewManager::setWindowCaption()
-{
-  if (activeView())
-  {
-    QString c;
-    if (activeView()->getDoc()->url().isEmpty() || (!showFullPath))
-    {
-      c = activeView()->getDoc()->docName();
-
-      //File name shouldn't be too long - Maciek
-      if (c.length() > 64)
-        c = c.left(64) + "...";
-    }
-    else
-    {
-      c = activeView()->getDoc()->url().prettyURL();
-
-      //File name shouldn't be too long - Maciek
-      if (c.length() > 64)
-        c = "..." + c.right(64);
-    }
-
-    ((KateMainWindow*)topLevelWidget())->setCaption( c,activeView()->getDoc()->isModified());
-  }
-}
-
 void KateViewManager::setShowFullPath( bool enable )
 {
   showFullPath = enable;
-  setWindowCaption();
 }
 
 void KateViewManager::setUseOpaqueResize( bool enable )
