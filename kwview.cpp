@@ -1885,8 +1885,12 @@ void KWrite::loadURL(const KURL &url, int flags) {
   {
     if ( flags & lfInsert )
         emit statusMsg( i18n( "Inserted : %1" ).arg( url.fileName() ) );
-    else
+    else {
+        kWriteDoc->setURL( url, !(flags & lfNoAutoHl ) );
+        kWriteDoc->updateLines();
+        kWriteDoc->updateViews();
         emit statusMsg( i18n( "Read : %1" ).arg( url.fileName() ) );
+    }
   }
   else
       emit statusMsg( QString::null );
