@@ -21,6 +21,8 @@
 #include "kateprojectmanager.h"
 #include "kateprojectmanager.moc"
 
+#include "kateproject.h"
+
 #include "katemainwindow.h"
 
 #include <kconfig.h>
@@ -59,6 +61,7 @@ class KateProjectDialogNew : public KDialogBase
 KateProjectManager::KateProjectManager (QObject *parent) : QObject (parent)
 {
   m_projects.setAutoDelete (true);
+  m_projectsR.setAutoDelete (false);
   m_projectManager = new Kate::ProjectManager (this);
   setupPluginList ();
 }
@@ -105,8 +108,9 @@ Kate::Project *KateProjectManager::open (const QString &filename)
   KateProject *project = new KateProject (this, this, filename);
   
   m_projects.append (project);
+  m_projectsR.append (project->project());
   
-  emit m_projectManager->projectCreated ((Kate::Project *)project);
+  emit m_projectManager->projectCreated (project->project ());
   
   return project->project();
 }
@@ -118,13 +122,34 @@ bool KateProjectManager::close (Kate::Project *project)
     if (project->plugin()->close())
     {
       uint id = project->projectNumber ();
-      m_projects.removeRef ((KateProject *)project);
+      int n = m_projectsR.findRef (project);
       
-      emit m_projectManager->projectDeleted (id);
+      if (n >= 0)
+      {
+        m_projectsR.remove (n);
+        m_projects.remove (n);
+        
+        emit m_projectManager->projectDeleted (id);
+      
+        return true;
+      }
     }
   }
 
   return false;
+}
+
+Kate::Project *KateProjectManager::project (uint n = 0)
+{
+  if (n >= m_projectsR.count())
+    return 0;
+    
+  return m_projectsR.at(n);
+}
+    
+uint KateProjectManager::projects ()
+{
+  return m_projectsR.count ();
 }
 
 Kate::ProjectPlugin *KateProjectManager::createPlugin (Kate::Project *project)

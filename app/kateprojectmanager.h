@@ -20,7 +20,6 @@
 #define __KATE_PROJECTMANAGER_H__
 
 #include "katemain.h"
-#include "kateproject.h"
 #include "../interfaces/project.h"
 #include "../interfaces/projectmanager.h"
 
@@ -64,6 +63,10 @@ class KateProjectManager : public QObject
     
     bool close (Kate::Project *project);
     
+    Kate::Project *project (uint n = 0);
+    
+    uint projects ();
+    
     Kate::ProjectPlugin *createPlugin (Kate::Project *project);
     
     void enableProjectGUI (Kate::Project *project, class KateMainWindow *win);
@@ -79,7 +82,10 @@ class KateProjectManager : public QObject
     void setupPluginList ();
     
     ProjectPluginList m_pluginList;
-    QPtrList<KateProject> m_projects;
+    
+    // INTERNAL USE OF KateProject !!!
+    QPtrList<class KateProject> m_projects;
+    QPtrList<Kate::Project> m_projectsR;
 };
 
 #endif

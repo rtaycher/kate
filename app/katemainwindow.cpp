@@ -82,8 +82,6 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 	KParts::DockMainWindow (),
              DCOPObject ((QString("KateMainWindow%1").arg(uniqueID)).latin1())
 {
-  m_activeProject = 0;
-
   m_mainWindow = new Kate::MainWindow (this);
   m_toolViewManager = new Kate::ToolViewManager (this);
   
@@ -941,17 +939,17 @@ void KateMainWindow::slotProjectOpen ()
 
 void KateMainWindow::slotProjectSave ()
 {
-  if (m_activeProject)
-    m_activeProject->save ();
+  if (m_project)
+    m_project->save ();
 }
 
 void KateMainWindow::slotProjectClose ()
 {
-  if (m_activeProject)
+  if (m_project)
   {
-    if (m_projectManager->close ((Kate::Project *)m_activeProject));
+    if (m_projectManager->close ((Kate::Project *)m_project));
     {
-      m_activeProject = 0;
+      m_project = 0;
       activateProject (0);
     }
   }  
@@ -959,13 +957,13 @@ void KateMainWindow::slotProjectClose ()
 
 void KateMainWindow::activateProject (Kate::Project *project)
 {
-  if (m_activeProject)
-    m_projectManager->disableProjectGUI ((Kate::Project *)m_activeProject, this);
+  if (m_project)
+    m_projectManager->disableProjectGUI (m_project, this);
     
   if (project)
     m_projectManager->enableProjectGUI (project, this);
   
-  m_activeProject = (KateProject *) project;
+  m_project = project;
   
   emit m_mainWindow->projectChanged ();
 }

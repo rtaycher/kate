@@ -69,6 +69,16 @@ bool ProjectManager::close (Kate::Project *project)
   d->projectMan->close (project);
 }
 
+Project *ProjectManager::project (uint n)
+{
+  return d->projectMan->project (n);
+}
+
+uint ProjectManager::projects ()
+{
+  return d->projectMan->projects ();
+}
+
 ProjectManager *projectManager ()
 {
   return application()->projectManager ();

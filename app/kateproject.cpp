@@ -23,6 +23,10 @@
 
 #include "kateprojectmanager.h"
 
+//
+// INTERNAL CLASS FOR PROJECT MANAGER ONLY !!!!!!!!!!!!!
+//
+
 KateProject::KateProject (KateProjectManager *proMan, QObject *parent, const QString &filename) : QObject (parent)
 {
   m_projectMan = proMan;

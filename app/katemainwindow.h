@@ -29,7 +29,6 @@
 #include "kateviewmanager.h"
 
 #include "kateprojectmanager.h"
-#include "kateproject.h"
 
 #include <kate/view.h>
 #include <kate/document.h>
@@ -70,7 +69,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     Kate::MainWindow *mainWindow () { return m_mainWindow; };
     Kate::ToolViewManager *toolViewManager () { return m_toolViewManager; };
     
-    Kate::Project *project () { return m_project->project(); };
+    Kate::Project *activeProject () { return m_project; };
     
     /**
      * Creates a new project file at give url of given type + opens it
@@ -118,8 +117,6 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     KateFileList *filelist;
     class KateProjectList *projectlist;
     KateFileSelector *fileselector;
-    
-    KateProject *m_project;
 
   private:
     uint myID;
@@ -141,7 +138,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     KConfig* config;
 
   private:
-    KateProject *m_activeProject;
+    Kate::Project *m_project;
     QGuardedPtr<Kate::View> activeView;
   
     KAction *closeCurrentViewSpace;

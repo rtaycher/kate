@@ -61,6 +61,10 @@ class ProjectManager : public QObject
     
     bool close (Kate::Project *project);
     
+    class Project *project (uint n = 0);
+    
+    uint projects ();
+    
   #undef signals
   #define signals public
   signals:

@@ -46,7 +46,7 @@ class MainWindow : public QObject
      * Returns the active project of this main window
      * @return Project current active project
      */
-    class Project *project ();
+    class Project *activeProject ();
     
     /**
      * Creates a new project file at give url of given type + opens it

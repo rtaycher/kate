@@ -26,6 +26,9 @@
 #include <qobject.h>
 #include <kconfig.h>
 
+//
+// INTERNAL CLASS FOR PROJECT MANAGER ONLY !!!!!!!!!!!!!
+//
 class KateProject : public QObject
 {
   Q_OBJECT

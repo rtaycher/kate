@@ -23,19 +23,33 @@
 
 #include "katemain.h"
 
-#include <qwidget.h>
+#include "../interfaces/project.h"
 
-class KateProjectList : public QWidget
+#include <kcombobox.h>
+
+#include <qvbox.h>
+#include <qmap.h>
+
+class KateProjectList : public QVBox
 {
   Q_OBJECT
 
   public:
     KateProjectList (class KateProjectManager *_projectManager, class KateMainWindow *_mainWindow, QWidget * parent = 0, const char * name = 0 );
     ~KateProjectList ();
+    
+  private slots:
+    void projectChanged ();
+    void projectCreated (Kate::Project *project);
+    void projectDeleted (uint projectNumber);
 
   private:
+    KComboBox *m_projectCombo;
+    QWidget *m_freeArea;
     class KateProjectManager *m_projectManager;
     class KateMainWindow *m_mainWindow;
+    
+    QMap<uint, QString> m_prNumToName;
 };
 
 #endif
