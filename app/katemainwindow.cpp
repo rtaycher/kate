@@ -132,6 +132,8 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   readOptions(config);
 
+  mainDock->setDockSite( KDockWidget::DockNone );
+  
   setAutoSaveSettings( QString::fromLatin1("MainWindow"), false );
 }
 
@@ -146,7 +148,6 @@ void KateMainWindow::setupMainWindow ()
   connect(grep_dlg, SIGNAL(itemSelected(QString,int)), this, SLOT(slotGrepDialogItemSelected(QString,int)));
 
   mainDock = createDockWidget( "mainDock", 0L );
-
 
   if (m_dockStyle==ModernStyle)
   {
@@ -178,14 +179,15 @@ void KateMainWindow::setupMainWindow ()
     m_bottomDock->setWidget(tmpDC=new KateDockContainer(m_bottomDock, this, KDockWidget::DockBottom));
     tmpDC->init();
 
-  }
-
-  if (m_dockStyle==ModernStyle)
-  {
      m_leftDock->manualDock(mainDock, KDockWidget::DockLeft,20);
      m_rightDock->manualDock(mainDock, KDockWidget::DockRight,20);
      m_topDock->manualDock(mainDock, KDockWidget::DockTop,20);
      m_bottomDock->manualDock(mainDock, KDockWidget::DockBottom,20);
+     
+     m_leftDock->setDockSite( KDockWidget::DockCenter );
+     m_rightDock->setDockSite( KDockWidget::DockCenter );
+     m_topDock->setDockSite( KDockWidget::DockCenter );
+     m_bottomDock->setDockSite( KDockWidget::DockCenter );
      
      m_topDock->undock();
      m_rightDock->undock();
@@ -877,10 +879,13 @@ void KateToggleToolViewAction::anDWChanged()
 
 void KateToggleToolViewAction::slotToggled(bool t)
 {
-
-	if ((!t) && m_dw->mayBeHide() ) m_dw->undock();
-    	else
-  	if ( t && m_dw->mayBeShow() ) m_mw->makeDockVisible(m_dw);
+  m_mw->mainDock->setDockSite( KDockWidget::DockCorner );
+  
+  if ((!t) && m_dw->mayBeHide() ) m_dw->undock();
+  else
+    if ( t && m_dw->mayBeShow() ) m_mw->makeDockVisible(m_dw);
+    
+  m_mw->mainDock->setDockSite( KDockWidget::DockNone );
 }
 
 void KateToggleToolViewAction::slotWidgetDestroyed()
