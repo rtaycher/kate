@@ -20,19 +20,7 @@
 
 #include <string.h>
 
-#include <qcheckbox.h>
-#include <qcombobox.h>
-#include <qgroupbox.h>
 #include <qtextstream.h>
-#include <qregexp.h>
-#include <qfile.h>
-#include <qlabel.h>
-
-#include <qlayout.h>
-#include <qgrid.h>
-#include <qhbox.h>
-#include <qvgroupbox.h>
-
 #include <kconfig.h>
 #include <kglobal.h>
 #include <kinstance.h>
@@ -43,22 +31,14 @@
 #include <kdebug.h>
 #include <kstddirs.h>
 
-#include <qpushbutton.h>
-#include <qhbox.h>
-#include <qvbox.h>
-#include <klistview.h>
-#include <qwidgetstack.h>
-
 #include "katehighlight.h"
 #include "katehighlight.moc"
 
 #include "katetextline.h"
 #include "katedocument.h"
-
 #include "katesyntaxdocument.h"
+
 #include "../factory/katefactory.h"
-#include "katedialogs.h"
-#include <qstack.h>
 
 HlManager *HlManager::s_pSelf = 0;
 
