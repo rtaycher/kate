@@ -1,5 +1,9 @@
+2001-04-27 Christoph Cullmann <crossfire@babylon2k.de>
+  * now the pluginconfig pages work ;)
+
 2001-04-24 Joseph Wenninger <jowenn@bigfoot.com>
   *  now <keywords> and <types> is replaced by <list name="XXXX">
+
 2001-04-20 Christoph Cullmann <crossfire@babylon2k.de>
   * new configdialog
   * enhanced pluginIface to supports configdialogpages
