@@ -694,6 +694,14 @@ void KantMainWindow::slotConfigure()
   cb_restoreVC->setChecked( config->readBoolEntry("restore views", true) );
   QWhatsThis::add(cb_restoreVC, i18n("Check this if you want all your views restored each time you open Kant"));
 
+  QCheckBox *cb_singleInstance = new QCheckBox(frGeneral);
+  cb_singleInstance->setText(i18n("Restrict to single instance"));
+  gridFrG->addMultiCellWidget(cb_singleInstance,3,3,0,1);
+  config->setGroup("startup");
+  cb_singleInstance->setChecked(config->readBoolEntry("singleinstance",true));
+
+  config->setGroup("General");
+
   // editor widgets from kwrite/kwdialog
   // color options
   QStringList path;
@@ -738,6 +746,8 @@ void KantMainWindow::slotConfigure()
   if (dlg->exec())
   {
     viewManager->setUseOpaqueResize(cb_opaqueResize->isChecked());
+    config->setGroup("startup");
+    config->writeEntry("singleinstance",cb_singleInstance->isChecked());
     config->setGroup("open files");
     config->writeEntry("reopen at startup", cb_reopenFiles->isChecked());
 

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          kantapp.h  -  description
+                          kantIface.h  -  description
                              -------------------
     begin                : Wed Jan 3 2001
     copyright            : (C) 2001 by Christoph "Crossfire" Cullmann
@@ -14,37 +14,16 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef __kant_app_h__
-#define __kant_app_h__
+#ifndef _kant_App_Iface_h_
+#define _kant_App_Iface_h_
 
-#include "../main/kantmain.h"
-#include "kantappIface.h"
+#include <dcopobject.h>
 
-#include <kapp.h>
-#include <qlist.h>
-
-class KantApp : public KApplication, public KantAppIface
+class KantAppIface : virtual public DCOPObject
 {
-  Q_OBJECT
+  K_DCOP
 
-  friend class KantViewManager;
-
-  public:
-    KantApp ();
-    ~KantApp ();
-
-    KantPluginManager *getPluginManager(){return pluginManager;};
-
-    void newMainWindow ();
-    void removeMainWindow (KantMainWindow *mainWindow);
-    long mainWindowsCount ();
-    virtual QString  isSingleInstance(){if (_singleInstance) return "true"; else return "false";};
-  private:
-    bool _singleInstance;
-    KantDocManager *docManager;
-    KantPluginManager *pluginManager;
-
-    QList<KantMainWindow> mainWindows;
+  k_dcop:
+    virtual QString isSingleInstance()=0;
 };
-
 #endif

@@ -28,9 +28,12 @@
 #include <kdebug.h>
 #include <dcopclient.h>
 
-KantApp::KantApp () : KApplication ()
+KantApp::KantApp () : KApplication (),DCOPObject ("KantappIface" ) 
 {
   mainWindows.setAutoDelete (false);
+
+  config()->setGroup("startup");
+  _singleInstance=config()->readBoolEntry("singleinstance",true);
 
   DCOPClient *client = dcopClient();
   client->attach();

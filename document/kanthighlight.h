@@ -742,6 +742,7 @@ class HighlightDialog : public KDialogBase
     void hlChanged(int);
     void itemChanged(int);
     void changed();
+    void hlEdit();
   protected:
     StyleChanger *defaultStyleChanger;
     ItemStyleList *defaultItemStyleList;
@@ -760,6 +761,13 @@ class HighlightDialog : public KDialogBase
     HlDataList *hlDataList;
     HlData *hlData;
     ItemData *itemData;
+};
+
+class HlEditDialog : public KDialogBase
+{
+    Q_OBJECT
+  public:
+    HlEditDialog(HlManager *,QWidget *parent=0, const char *name=0, bool modal=true);
 };
 
 #endif //_HIGHLIGHT_H_

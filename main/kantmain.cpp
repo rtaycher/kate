@@ -58,10 +58,27 @@ int main( int argc, char **argv )
     QCStringList apps = client->registeredApplications();
     for ( QCStringList::Iterator it = apps.begin(); it != apps.end(); ++it )
     {
-      if ( ((*it).contains ("kant") > 0) )
+      if  ((*it).contains ("kant") > 0)
       {
         appID = (*it);
-        running = true;
+        kdDebug()<<appID;
+        QByteArray ba,da;
+        QCString replyType;
+        if (!(client->call(appID,"KantappIface","isSingleInstance()",da,replyType,ba,true)))
+	  running = false;
+        else
+          {
+            if (replyType!="QString") running=false;
+              else
+                {
+		   QDataStream reply(ba, IO_ReadOnly);
+                   QString result;
+                   reply>>result;
+		   kdDebug()<<"Result was: "<<result<<endl;
+		   running=(result=="true");
+                }
+          }
+	break;
       }
     }
   }

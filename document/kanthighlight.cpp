@@ -46,6 +46,12 @@
 #include <kdebug.h>
 #include <kstddirs.h>
 
+#include <qpushbutton.h>
+#include <qhbox.h>
+#include <qvbox.h>
+#include <klistview.h>
+#include <qwidgetstack.h>
+
 #include "kanttextline.h"
 #include "kantattribute.h"
 #include "kanthighlight.h"
@@ -2809,9 +2815,12 @@ HighlightDialog::HighlightDialog( HlManager *hlManager, ItemStyleList *styleList
 
   grid->setRowStretch(2,1);
   grid->setColStretch(1,1);
-
   QLabel *label = new QLabel( i18n("Highlight:"), vbox1 );
   hlCombo = new QComboBox( false, vbox1 );
+  QHBox *modHl = new QHBox(vbox1);
+/*  QPushButton *createHl=new QPushButton(i18n("New"),modHl);
+  QPushButton *editHl=new QPushButton(i18n("Edit"),modHl);
+  connect(editHl,SIGNAL(clicked()),this,SLOT(hlEdit()));*/
   connect( hlCombo, SIGNAL(activated(int)),
            this, SLOT(hlChanged(int)) );
   for( int i = 0; i < hlManager->highlights(); i++) {
@@ -2898,3 +2907,28 @@ void HighlightDialog::done(int r) {
   QDialog::done(r);
 }
 
+
+void HighlightDialog::hlEdit() {
+  HlEditDialog diag(0,0,"hlEdit", true);
+  diag.show();
+}
+
+
+/*******************************************************************************************************************
+*                                        Context Editor                                                            *
+*******************************************************************************************************************/
+
+
+
+HlEditDialog::HlEditDialog(HlManager *,QWidget *parent, const char *name, bool modal)
+  :KDialogBase(KDialogBase::Swallow, i18n("Highlight Conditions"), Ok|Cancel, Ok, parent, name, modal)
+{
+  QHBox *wid=new QHBox(this);
+  QVBox *lbox=new QVBox(wid);  
+    KListView *contextlist=new KListView(lbox);
+    QPushButton *addContext=new QPushButton(i18n("New Context"),lbox);
+    QVGroupBox *opt  = new QVGroupBox( i18n("Options"), wid);
+    QWidgetStack *stack=new QWidgetStack(opt);     
+  
+  setMainWidget(wid);
+}
