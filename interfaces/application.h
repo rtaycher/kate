@@ -49,9 +49,20 @@ class Application : public KUniqueApplication
     virtual uint mainWindows () = 0;
     virtual class MainWindow *mainWindow (uint n) = 0;
   
+};
+
+class InitPluginManager
+{
+   public:
+    InitPluginManager();
+    virtual ~InitPluginManager();
     virtual void performInit(const QString &libname, const KURL &initScript)=0;
+    virtual class InitPlugin *initPlugin() const =0;
+    virtual class KURL  initScript() const =0;
 
 };
+
+InitPluginManager *initPluginManager(Application *app);
 
 };
 

@@ -65,9 +65,12 @@ class InitPlugin : public Plugin
 
     /**
      * Please never instanciate this class yourself from a plugin. Use the Applications performInit(pluginname,configscript) method instead
+     * You must neither  assume that theol init  object still exist after control returned to the main event loop after a call to performInit nor that the init library is still loaded
      */
     InitPlugin(Application *application=0, const char *name = 0);
     virtual ~InitPlugin();
+
+    /* This is called whenever a new config script should be opened */
     virtual void activate( const KURL &configScript=KURL());
 
     /**
@@ -87,7 +90,6 @@ class InitPlugin : public Plugin
      *This should initiate the real kate initialisation. Please always return "0". The return value
      *is for later extenstion
      * 
-     * Be aware, that the plugin is deleted again after the initKate call
      */
     virtual int initKate();
 

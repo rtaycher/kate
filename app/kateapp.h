@@ -22,14 +22,10 @@
 #include "../interfaces/mainwindow.h"
 #include "../interfaces/documentmanager.h"
 #include "../interfaces/viewmanager.h"
-
+#include "../interfaces/plugin.h"
 #include <qptrlist.h>
 
-namespace Kate {
-class InitPlugin;
-}
-
-class KateApp : public Kate::Application
+class KateApp : public Kate::Application, Kate::InitPluginManager
 {
   Q_OBJECT
 
@@ -57,8 +53,9 @@ class KateApp : public Kate::Application
                  
     void openURL (const QString &name=0L);  
     
-    void performInit(const QString &, const KURL &);
-
+    virtual void performInit(const QString &, const KURL &);
+    virtual Kate::InitPlugin *initPlugin() const;
+    virtual KURL initScript() const;
   private:
     KateDocManager *m_docManager;
     KatePluginManager *m_pluginManager;
@@ -66,6 +63,12 @@ class KateApp : public Kate::Application
     bool m_firstStart;  
     Kate::InitPlugin *m_initPlugin;
     bool m_doNotInitialize;
+    KURL m_initURL;
+    QString m_initLib;
+    QString m_oldInitLib;
+
+  protected slots:
+    void performInit();
 };
 
 #endif

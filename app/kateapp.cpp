@@ -30,10 +30,12 @@
 #include <kwin.h>
 #include <ktip.h>
 #include <kdebug.h>
+#include <klibloader.h>
 
 #include <qfile.h>
+#include <qtimer.h>
 
-KateApp::KateApp (bool forcedNewProcess, bool oldState) : Kate::Application (),m_initPlugin(0),m_doNotInitialize(0)
+KateApp::KateApp (bool forcedNewProcess, bool oldState) : Kate::Application (),Kate::InitPluginManager(),m_initPlugin(0),m_doNotInitialize(0)
 {                       
   if (forcedNewProcess)
   {
@@ -60,6 +62,7 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : Kate::Application (),m
   if (args->isSet("initplugin"))
   {
 	QString pluginName=args->getOption("initplugin");
+	m_initURL=args->url(0);
 	m_initPlugin= static_cast<Kate::InitPlugin*>(Kate::createPlugin (QFile::encodeName(pluginName),
 				 (Kate::Application *)kapp)->qt_cast("Kate::InitPlugin"));
 	m_initPlugin->activate(args->url(0));
@@ -84,14 +87,30 @@ KateApp::~KateApp ()
 
 void KateApp::performInit(const QString &libname, const KURL &url)
 {
-        m_initPlugin= static_cast<Kate::InitPlugin*>(Kate::createPlugin (QFile::encodeName(libname),
-                                 (Kate::Application *)kapp)->qt_cast("Kate::InitPlugin"));
-        m_initPlugin->activate(url);
-	m_initPlugin->initKate();
-	m_initPlugin->deleteLater();
-	m_initPlugin=0;
-	
+	if (m_initPlugin) m_oldInitLib=m_initLib; else m_oldInitLib=QString::null;
+	m_initURL=url;
+	m_initLib=libname;
+	QTimer::singleShot(0,this,SLOT(performInit()));
 }
+
+void KateApp::performInit()
+{
+	if (( m_oldInitLib==QString::null) || (m_oldInitLib!=m_initLib))
+	{
+		if (m_initPlugin) delete m_initPlugin;
+		m_initPlugin=0;
+		if (m_oldInitLib!=QString::null) KLibLoader::self()->unloadLibrary(m_oldInitLib.latin1());
+
+        	m_initPlugin= static_cast<Kate::InitPlugin*>(Kate::createPlugin (QFile::encodeName(m_initLib),
+                                 (Kate::Application *)kapp)->qt_cast("Kate::InitPlugin"));
+	}
+        m_initPlugin->activate(m_initURL);
+	m_initPlugin->initKate();
+}
+
+Kate::InitPlugin *KateApp::initPlugin() const {return m_initPlugin;}
+
+KURL KateApp::initScript() const {return m_initURL;}
 
 int KateApp::newInstance()
 {
@@ -105,9 +124,7 @@ int KateApp::newInstance()
   if (m_firstStart && m_initPlugin)
   {
 	m_initPlugin->initKate();
-	delete m_initPlugin;
         kdDebug()<<"***************************** INIT PLUGIN ON FIRST START"<<endl;
-	m_initPlugin=0;
   }
   else if (args->isSet("initplugin"))
   {	

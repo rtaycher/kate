@@ -193,4 +193,16 @@ PluginViewInterface *pluginViewInterface (Plugin *plugin)
   return static_cast<PluginViewInterface*>(plugin->qt_cast("Kate::PluginViewInterface"));
 }
 
+InitPluginManager::InitPluginManager(){;}
+InitPluginManager::~InitPluginManager(){;}
+
+
+InitPluginManager *initPluginManager(Application *app)
+{
+	if (!app) return 0;
+	return static_cast<InitPluginManager*>(app->qt_cast("Kate::InitPluginManager"));
+}
+
+
 };
+
