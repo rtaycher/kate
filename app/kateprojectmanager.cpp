@@ -21,8 +21,27 @@
 KateProjectManager::KateProjectManager (QObject *parent) : QObject (parent)
 {
   m_projectManager = new Kate::ProjectManager (this);
+  setupPluginList ();
 }
 
 KateProjectManager::~KateProjectManager()
 {
+}
+
+void KateProjectManager::setupPluginList ()
+{
+  QValueList<KService::Ptr> traderList= KTrader::self()->query("Kate/ProjectPlugin");
+
+  KTrader::OfferList::Iterator it(traderList.begin());
+  for( ; it != traderList.end(); ++it)
+  {
+    KService::Ptr ptr = (*it);
+
+    ProjectPluginInfo *info=new ProjectPluginInfo;
+
+    info->service = ptr;
+    info->name=info->service->property("X-KATE-InternalName").toString();
+    if (info->name.isEmpty()) info->name=info->service->library();
+    m_pluginList.append(info);
+  }
 }

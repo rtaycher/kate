@@ -23,6 +23,18 @@
 #include "../interfaces/projectmanager.h"
 
 #include <qobject.h>
+#include <qvaluelist.h>
+#include <qptrlist.h>
+#include <ktrader.h>
+
+class ProjectPluginInfo
+{
+  public:
+    KService::Ptr service;
+    QString name;
+};
+
+typedef QPtrList<ProjectPluginInfo> ProjectPluginList;
 
 class KateProjectManager : public QObject
 {
@@ -35,7 +47,11 @@ class KateProjectManager : public QObject
     Kate::ProjectManager *projectManager () { return m_projectManager; };
 
   private:
-    Kate::ProjectManager *m_projectManager;  
+    Kate::ProjectManager *m_projectManager;
+    
+    void setupPluginList ();
+    
+    ProjectPluginList m_pluginList;
 };
 
 #endif

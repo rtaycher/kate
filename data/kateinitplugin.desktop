@@ -1,0 +1,53 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=ServiceType
+X-KDE-ServiceType=Kate/InitPlugin
+X-KDE-Derived=Kate/Plugin
+Comment=Kate Init Plugin
+Comment[af]=Kate Inplak
+Comment[be]=Дапаўненьне Kate
+Comment[bg]=Plugin за Kate
+Comment[bs]=Kate dodatak
+Comment[ca]=Connector Kate
+Comment[cs]=Modul aplikace Kate
+Comment[da]=Kate-plugin
+Comment[de]=Kate-Plugin
+Comment[el]=Πρόσθετο Kate
+Comment[eo]=Kodredaktila kromaĵo
+Comment[es]=Plugin de Kate
+Comment[et]=Kate'i plugin
+Comment[eu]=Kate Plugina
+Comment[fa]=متصل کننده‌ی Kate
+Comment[fi]=Kate sovelma
+Comment[fo]=Kate-ístingur
+Comment[fr]=Module de Kate
+Comment[he]=תוסף ל-Kate
+Comment[hu]=Kate bővítőmodul
+Comment[it]=Plugin di Kate
+Comment[ja]=Kateプラグイン
+Comment[lt]=Kate priedas
+Comment[mt]=Plagin ta' Kate
+Comment[nb]=Kate-tilleggsprogram
+Comment[nl]=Kate-plugin
+Comment[nn]=Kate-tilleggsmodul
+Comment[nso]=Tsenyo ya Kate
+Comment[pl]=Wtyczka Kate
+Comment[pt]='Plugin' do Kate
+Comment[pt_BR]=Plugin do Kate
+Comment[ru]=Плагин Kate
+Comment[sk]=Modul Kate
+Comment[sl]=Vstavek za Kate
+Comment[ss]=I-plugin ye Kate 
+Comment[sv]=Kate-insticksprogram
+Comment[ta]=KÀ¾¢ôÀ¡ý ¦ºÕ¸ø
+Comment[th]=ปลั๊กอินของ Kate
+Comment[tr]=Kate Eklentisi
+Comment[uk]=Втулок Kate
+Comment[xh]=Iplagi efakiweyo ye Kate
+Comment[zh_CN]=Kate 插件
+Comment[zh_TW]=Kate 外掛程式
+Comment[zu]=I-Plugin ye-Kate
+
+[PropertyDef::X-KATE-InternalName]
+Type=QString
+

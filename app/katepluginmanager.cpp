@@ -42,7 +42,7 @@ KatePluginManager::~KatePluginManager()
 
 void KatePluginManager::setupPluginList ()
 {
-  QValueList<KService::Ptr> traderList= KTrader::self()->query("Kate/Plugin");
+  QValueList<KService::Ptr> traderList= KTrader::self()->query("Kate/Plugin", "(not ('Kate/ProjectPlugin' in ServiceTypes)) and (not ('Kate/InitPlugin' in ServiceTypes))");
 
   KTrader::OfferList::Iterator it(traderList.begin());
   for( ; it != traderList.end(); ++it)
