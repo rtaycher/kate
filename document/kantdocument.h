@@ -396,17 +396,11 @@ class KantDocument : public KTextEditor::Document
     int undoSteps;
     int tagStart;
     int tagEnd;
-
-//    int undoType;           // what kind of undo is active
     int undoCount;          //counts merged undo steps
-//    bool undoReported;      // true if the current undo has been reported to the views
-//    KantView* undoView;   // the KantView that owns the undo group
 
     QWidget *pseudoModal;   //the replace prompt is pseudo modal
 
     public:
-    /** anders: reimplemented from kwdoc to update mTime */
-   // virtual bool saveFile();
     /** Tjecks if the file on disk is newer than document contents.
       If forceReload is true, the document is reloaded without asking the user,
       otherwise [default] the user is asked what to do. */

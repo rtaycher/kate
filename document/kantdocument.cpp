@@ -287,6 +287,7 @@ bool KantDocument::saveFile()
   writeFile( f );
 
   f.close();
+  setMTime();
   return true;
 #endif
 }
@@ -2982,16 +2983,7 @@ void KantDocument::setDocName (QString docName)
   myDocName = docName;
   emit nameChanged (this);
 }
-/*
-bool KantDocument::saveFile()
-{
-  if (KantDocument::saveFile()) {
-    setMTime();
-    return true;
-  }
-  return false;
-}
-         */
+
 void KantDocument::setMTime()
 {
     if (fileinfo && !fileinfo->fileName().isEmpty()) {
