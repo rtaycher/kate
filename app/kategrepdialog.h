@@ -35,13 +35,13 @@ class KConfig;
 class KURLRequester;
 class QEvent;
 
-class GrepDialog : public QWidget
+class GrepTool : public QWidget
 {
     Q_OBJECT
 
 public:
-    GrepDialog(const QString &dirname, class KateMainWindow *parent=0, const char *name=0);
-    ~GrepDialog();
+    GrepTool(const QString &dirname, class KateMainWindow *parent=0, const char *name=0);
+    ~GrepTool();
     void  setDirName(const QString &);
 
 

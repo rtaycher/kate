@@ -162,9 +162,9 @@ KateMainWindow::~KateMainWindow()
 
 void KateMainWindow::setupMainWindow ()
 {
-  grep_dlg = new GrepDialog( QDir::homeDirPath(), this, "grepdialog" );
-  grep_dlg->installEventFilter( this );
-  connect(grep_dlg, SIGNAL(itemSelected(const QString &,int)), this, SLOT(slotGrepDialogItemSelected(const QString &,int)));
+  greptool = new GrepTool( QDir::homeDirPath(), this, "greptool" );
+  greptool->installEventFilter( this );
+  connect(greptool, SIGNAL(itemSelected(const QString &,int)), this, SLOT(slotGrepToolItemSelected(const QString &,int)));
 
     KMdiChildView* pMDICover = new KMdiChildView("MainDock");
     pMDICover->setName("MainDock");
@@ -191,7 +191,7 @@ void KateMainWindow::setupMainWindow ()
   fileselectorDock=addToolViewWidget(KDockWidget::DockLeft,fileselector, SmallIcon("fileopen"), i18n("Selector"));
 
   // TEST
-  grepWidgetDock = addToolViewWidget( KDockWidget::DockBottom, grep_dlg, SmallIcon("filefind"), i18n("Find in Files") );
+  grepWidgetDock = addToolViewWidget( KDockWidget::DockBottom, greptool, SmallIcon("filefind"), i18n("Find in Files") );
   if (kapp->authorize("shell_access"))
   {
      console = new KateConsole (this, "console",viewManager());
@@ -507,7 +507,7 @@ void KateMainWindow::documentMenuAboutToShow()
   }
 }
 
-void KateMainWindow::slotGrepDialogItemSelected(const QString &filename,int linenumber)
+void KateMainWindow::slotGrepToolItemSelected(const QString &filename,int linenumber)
 {
   KURL fileURL;
   fileURL.setPath( filename );
@@ -758,12 +758,12 @@ bool KateMainWindow::event(QEvent* e)
 
 bool KateMainWindow::eventFilter( QObject *o, QEvent *e )
 {
-  if ( o == grep_dlg && e->type() == QEvent::Show && activeView )
+  if ( o == greptool && e->type() == QEvent::Show && activeView )
   {
     if ( activeView->getDoc()->url().isLocalFile() )
     {
       QString dir ( activeView->getDoc()->url().directory() );
-      grep_dlg->setDirName( dir );
+      greptool->setDirName( dir );
          return true;
     }
   }

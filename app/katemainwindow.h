@@ -44,7 +44,7 @@
 
 #define DEFAULT_STYLE "Modern"
 
-class GrepDialog;
+class GrepTool;
 
 class KFileItem;
 class KRecentFilesAction;
@@ -162,10 +162,10 @@ class KateMainWindow : public KMdiMainFrm, virtual public KateMainWindowDCOPIfac
     void slotOpenWithMenuAction(int idx);
 
  private:
-     GrepDialog * grep_dlg;
+     GrepTool * greptool;
 
   public slots:
-    void slotGrepDialogItemSelected ( const QString &filename, int linenumber );
+    void slotGrepToolItemSelected ( const QString &filename, int linenumber );
     void runScript( int menuItemId);
     void slotMail();
 
