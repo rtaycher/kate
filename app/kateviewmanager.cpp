@@ -65,7 +65,7 @@ KateViewManager::KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWi
   m_docManager = docManager;
   m_viewManager = new Kate::ViewManager (this);
   m_currentContainer=0;
- connect(m_tabWidget,SIGNAL(currentChanged(QWidget*)),this,SLOT(tabChanged(QWidget*))); 
+ connect(m_tabWidget,SIGNAL(currentChanged(QWidget*)),this,SLOT(tabChanged(QWidget*)));
  slotNewTab();
  tabChanged(m_tabWidget->currentPage());
   m_blockViewCreationAndActivation=false;
@@ -75,7 +75,7 @@ KateViewManager::KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWi
   m_viewSpaceContainerList.setAutoDelete(true);
 
 
- 
+
   m_init=false;
 
 }
@@ -93,7 +93,7 @@ void KateViewManager::tabChanged(QWidget* widget) {
   m_currentContainer=container;
   if (container) {
     container->reactivateActiveView();
-    
+
   }
 }
 
@@ -115,6 +115,27 @@ void KateViewManager::slotNewTab() {
     container->setShowFullPath(showFullPath);
     m_mainWindow->slotWindowActivated ();
   }
+}
+
+void KateViewManager::slotCloseTab() {
+  if (!m_tabWidget) return;
+  if (m_viewSpaceContainerList.count() <= 1) return;
+  if (!m_currentContainer) return;
+
+  int pos = m_viewSpaceContainerList.find (m_currentContainer);
+
+  if (pos == -1)
+    return;
+
+  if (guiMergedView)
+    m_mainWindow->guiFactory()->removeClient (guiMergedView );
+
+  m_viewSpaceContainerList.remove (pos);
+
+  if ((uint)pos >= m_viewSpaceContainerList.count())
+    pos = m_viewSpaceContainerList.count()-1;
+
+  tabChanged(m_viewSpaceContainerList.at (pos));
 }
 
 bool KateViewManager::eventFilter(QObject *o,QEvent *e) {
@@ -331,7 +352,7 @@ void KateViewManager::slotDocumentCloseAll ()
     m_viewSpaceContainerList.at(i)->m_blockViewCreationAndActivation=true;
   }
   m_docManager->closeAllDocuments(false);
-  
+
   m_currentContainer->m_blockViewCreationAndActivation=false;
   m_currentContainer->openNewIfEmpty();
   for (uint i=0;i<m_viewSpaceContainerList.count();i++) {

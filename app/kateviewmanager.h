@@ -55,13 +55,13 @@ class KateViewManager : public QWidget
     void restoreViewConfiguration (KConfig *config,const QString& group);
 
     uint openURL (const KURL &url, const QString& encoding, bool activate = true);
-    
+
   public slots:
     void openURL (const KURL &url);
 
   private:
     bool useOpaqueResize;
-  
+
 
 
     void removeViewSpace (KateViewSpace *viewspace);
@@ -86,7 +86,7 @@ class KateViewManager : public QWidget
     void activateSpace ( Kate::View* v );
     void slotViewChanged();
     void openNewIfEmpty();
- 
+
     void tabChanged(QWidget*);
   public slots:
     void deleteLastView ();
@@ -120,6 +120,7 @@ class KateViewManager : public QWidget
     /** Splits the active viewspace vertically */
     void slotSplitViewSpaceVert () { splitViewSpace( 0L, false ); }
     void slotNewTab();
+    void slotCloseTab ();
     void slotCloseCurrentViewSpace();
 
 

@@ -254,6 +254,7 @@ void KateMainWindow::setupActions()
   a->setWhatsThis(i18n("Create a new Kate view (a new window with the same document list)."));
 
   a=new KAction (i18n("New Tab"),"view_new_tab",0,m_viewManager,SLOT(slotNewTab()), actionCollection(),"view_new_tab");
+  a=new KAction (i18n("Close Current Tab"),"tab_remove",0,m_viewManager,SLOT(slotCloseTab()), actionCollection(),"view_close_tab");
   a=new KAction( i18n("Split Ve&rtical"), "view_left_right", CTRL+SHIFT+Key_L, m_viewManager, SLOT( slotSplitViewSpaceVert() ), actionCollection(), "view_split_vert");
   a->setWhatsThis(i18n("Split the currently active view vertically into two views."));
 
