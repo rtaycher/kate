@@ -98,7 +98,6 @@ int main( int argc, char **argv )
   {
     KateApp::addCmdLineOptions ();
     KateApp app;
-    return 0;
     return app.exec();
   }
 
