@@ -46,19 +46,19 @@ PluginKantHtmlTools::~PluginKantHtmlTools()
 void PluginKantHtmlTools::slotEditHTMLtag()
 //  PCP
 {
- 
+
   if (!myParent)  return;
   KWrite *kv=myParent->getActiveView();
   if (!kv) return;
- 
+
   QString text ( KantPrompt ( i18n("HTML Tag"),
                         i18n("Enter HTML tag contents. We will supply the <, > and closing tag"),
-                        myParent
-                        ) );
- 
+                        (QWidget *)myParent->parent())
+                         );
+
   if ( !text.isEmpty () )
       slipInHTMLtag (*kv, text); // user entered something and pressed ok
- 
+
 }
 
 

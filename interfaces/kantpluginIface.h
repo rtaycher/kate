@@ -29,7 +29,7 @@ class KantPluginIface : public QObject
     public:
       KantPluginIface(QObject *parent):QObject(parent){;};
       ~KantPluginIface(){;};
-     virtual KWrite *getActiveView()=0;
-  };  
+     KWrite *getActiveView() { return 0;};
+  };
 
 #endif
