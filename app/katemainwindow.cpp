@@ -582,7 +582,7 @@ void KateMainWindow::slotDropEvent( QDropEvent * event )
 
 void KateMainWindow::editKeys()
 {
-  KKeyDialog::configureKeys(actionCollection(), xmlFile());
+  KKeyDialog::configure(actionCollection());
 }
 
 void KateMainWindow::slotSettingsShowConsole()
