@@ -1,6 +1,6 @@
 /***************************************************************************
-                          grepdialog.cpp  -  grep frontend                              
-                             -------------------                                         
+                          grepdialog.cpp  -  grep frontend
+                             -------------------
     copyright            : (C) 1999 by Bernd Gehrmann
     email                : bernd@physik.hu-berlin.de
  ***************************************************************************/
@@ -10,7 +10,7 @@
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
  *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   * 
+ *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
 
@@ -192,25 +192,25 @@ GrepDialog::GrepDialog(QString dirname, QWidget *parent, const char *name)
     layout->activate();
 
     QWhatsThis::add(pattern_combo,
-		    i18n("Enter the regular expression you want to search for here.\n"
-			 "Possible meta characters are:\n"
-			 "<bold>.</bold> - Matches any character\n"
-			 "<bold>^</bold> - Matches the beginning of a line\n"
-			 "<bold>$</bold> - Matches the end of a line\n"
-	                 "<bold>\\\\\\<</bold> - Matches the beginning of a word\n"
-                         "<bold>\\\\\\></bold> - Matches the end of a word\n"
-			 "\n"
-			 "The following repetition operators exist:\n"
-			 "<bold>?</bold> - The preceding item is matches at most once\n"
-			 "<bold>*</bold> - The preceding item is matched zero or more times\n"
-			 "<bold>+</bold> - The preceding item is matched once or more times\n"
-			 "<bold>{<i>n</i>}</bold> - The preceding item is matched exactly <i>n</i> times\n"
-			 "<bold>{<i>n</i>,}</bold> - The preceding item is matched <i>n</i> or more times\n"
-			 "<bold>{,<i>n</i>}</bold> - The preceding item is matched at most <i>n</i> times\n"
-			 "<bold>{<i>n</i>,<i>m</i>}</bold> - The preceding item is matched at least <i>n</i>,\n"
-			 "   but at most <i>m</i> times.\n"
-			 "\n"
-			 "Furthermore, backreferences to bracketed subexpressions are\n"
+		    i18n("Enter the regular expression you want to search for here.<br>"
+			 "Possible meta characters are:<br>"
+			 "<b>.</b> - Matches any character\n"
+			 "<b>^</b> - Matches the beginning of a line<br>"
+			 "<b>$</b> - Matches the end of a line<br>"
+	                 "<b>\\\\\\&lt;</b> - Matches the beginning of a word<br>"
+                         "<b>\\\\\\&gt;</b> - Matches the end of a word<br>"
+			 "<br>"
+			 "The following repetition operators exist:<br>"
+			 "<b>?</b> - The preceding item is matches at most once<br>"
+			 "<b>*</b> - The preceding item is matched zero or more times<br>"
+			 "<b>+</b> - The preceding item is matched once or more times<br>"
+			 "<b>{<i>n</i>}</b> - The preceding item is matched exactly <i>n</i> times<br>"
+			 "<b>{<i>n</i>,}</b> - The preceding item is matched <i>n</i> or more times<br>"
+			 "<b>{,<i>n</i>}</b> - The preceding item is matched at most <i>n</i> times<br>"
+			 "<b>{<i>n</i>,<i>m</i>}</b> - The preceding item is matched at least <i>n</i>,<br>"
+			 "   but at most <i>m</i> times.<br>"
+			 "<br>"
+			 "Furthermore, backreferences to bracketed subexpressions are<br>"
 			 "available via the notation \\\\<i>n</i>."
 			 ));
     QWhatsThis::add(files_combo,

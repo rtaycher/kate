@@ -36,9 +36,23 @@
 #include <qmap.h>
 #include <kmessagebox.h>
 #include <kstddirs.h>
+#include <knuminput.h>
+
+#include "hlparamedit.h"
 
 #include "katedialogs.moc"
 #include "katehighlightdownload.h"
+
+#define TAG_DETECTCHAR "DetectChar"
+#define TAG_DETECT2CHARS "Detect2Chars"
+#define TAG_RANGEDETECT "RangeDetect"
+#define TAG_STRINGDETECT "StringDetect"
+#define TAG_ANYCHAR "AnyChar"
+#define TAG_REGEXPR "RegExpr"
+#define TAG_INT "Int"
+#define TAG_FLOAT "Float"
+#define TAG_KEYWORD "keyword"
+
 
 /*******************************************************************************************************************
 *                                        Context Editor                                                            *
@@ -353,12 +367,15 @@ void HlEditDialog::initItemOptions(QVBox *co)
         ItemType = new QComboBox(tmp);
         tmp= new QHBox(co);
         (void) new QLabel(i18n("Parameter:"),tmp);
-        ItemParameter=  new QLineEdit(tmp);
+        ItemParameter=  new HLParamEdit(tmp);
         tmp= new QHBox(co);
         (void) new QLabel(i18n("Attribute:"),tmp);
         ItemAttribute= new QComboBox(tmp);
         (void) new QLabel(i18n("Context switch:"),tmp);
         ItemContext = new QComboBox(tmp);
+	(ItemPopCount=new KIntNumInput(tmp))->setRange(1,20,1,false);
+	//ItemPopCount->hide();
+
         co->setSpacing(15);
         new QPushButton(i18n("Delete this item"),co);
 
@@ -446,13 +463,13 @@ QListViewItem *HlEditDialog::addContextItem(QListViewItem *_parent,QListViewItem
     // not used at the mom, fix warning
 		//bool insensitive=(HlManager::self()->syntax->groupItemData(data,QString("insensitive"))==QString("TRUE"));
                 QString param("");
-                if ((dataname=="keyword") || (dataname=="dataType")) param=dataname;
+                if ((dataname=="keyword") /*|| (dataname=="dataType")*/) param=stringdata;
                   else if (dataname=="DetectChar") param=chr;
-                    else if ((dataname=="Detect2Chars") || (dataname=="RangeDetect")) param=QString("%1%2").arg(chr).arg(chr1);
+                    else if ((dataname=="Detect2Chars") || (dataname=="RangeDetect")) {param=QString("%1%2").arg(chr).arg(chr1);}
                       else if ((dataname=="StringDetect") || (dataname=="AnyChar") || (dataname=="RegExpr")) param=stringdata;
                         else                     kdDebug(13010)<<"***********************************"<<endl<<"Unknown entry for Context:"<<dataname<<endl;
                 kdDebug(13010)<<dataname << endl;
-                return new QListViewItem(_parent,prev,i18n(dataname.latin1())+" "+param,dataname,param,attr,context);
+                return new QListViewItem(_parent,prev,i18n(dataname.latin1())+" "+param,dataname,attr,context,param);
  }
 
 
@@ -476,11 +493,15 @@ void HlEditDialog::showContext()
     ContextDescr->setText(currentItem->text(0));
     ContextAttribute->setCurrentItem(currentItem->text(2).toInt());
     ContextLineEnd->clear();
+    ContextLineEnd->insertItem("#pop");
+    ContextLineEnd->insertItem("#stay");
     for (QListViewItem *it=contextList->firstChild();it;it=it->nextSibling())
         ContextLineEnd->insertItem(it->text(0));
-    ContextLineEnd->setCurrentItem(currentItem->text(3).toInt());
-//    ContextAttribute->setText(currentItem->text(1));
-//    ContextLineEnd->setText(currentItem->text(2));
+    ContextLineEnd->setCurrentItem(currentItem->text(3).startsWith("#pop")?0:(currentItem->text(3).contains("#stay")?1:currentItem->text(3).toInt()+2));
+    if (currentItem->text(3).startsWith("#pop"));
+    	{
+		//Do something
+	}
   }
 
 void HlEditDialog::contextDescrChanged(const QString& name)
@@ -488,7 +509,7 @@ void HlEditDialog::contextDescrChanged(const QString& name)
     if (currentItem)
       {
         currentItem->setText(0,name);
-        ContextLineEnd->changeItem(name,currentItem->text(3).toInt());
+        ContextLineEnd->changeItem(name,currentItem->text(3).toInt()+2);
       }
   }
 
@@ -505,7 +526,14 @@ void HlEditDialog::contextLineEndChanged(int id)
   kdDebug(13010)<<"contextLineEndChanged"<<endl;
   if (currentItem)
      {
-     currentItem->setText(3,QString("%1").arg(id));
+     if (id==0)
+     {
+     	currentItem->setText(3,"#pop"); // do something
+     }
+     else
+     	if (id==1) currentItem->setText(3,"#stay");
+	else
+     		currentItem->setText(3,QString("%1").arg(id-2));
      }
 }
 
@@ -525,24 +553,44 @@ void HlEditDialog::showItem()
   {
     stack->raiseWidget(HlEItem);
     ItemContext->clear();
+    ItemContext->insertItem("#pop");
+    ItemContext->insertItem("#stay");
     for (QListViewItem *it=contextList->firstChild();it;it=it->nextSibling())
         ItemContext->insertItem(it->text(0));
-    ItemContext->setCurrentItem(currentItem->text(4).toInt());
-    ItemAttribute->setCurrentItem(currentItem->text(3).toInt());
-    QMap<QString,int>::Iterator iter=tag2id.find(currentItem->text(1));
-    if (iter==tag2id.end())
-      kdDebug(13010)<<"Oops, unknown itemtype in showItem: "<<currentItem->text(1)<<endl;
+    uint tmpCtx;
+    ItemContext->setCurrentItem(tmpCtx=(currentItem->text(3).startsWith("#pop")?0:(currentItem->text(3).contains("#stay")?1:currentItem->text(3).toInt()+2)));
+    kdDebug()<<QString("showItem(): tmpCtx=%1").arg(tmpCtx)<<endl;
+    if (tmpCtx==0)
+    {
+    	kdDebug()<<"Showing ItempPopCount"<<endl;
+    	ItemPopCount->show();
+	QString tmp=currentItem->text(3);
+	for (tmpCtx=0;tmp.startsWith("#pop");tmpCtx++,tmp.remove(0,4));
+	ItemPopCount->setValue(tmpCtx);
+    }
+    else ItemPopCount->hide();
+    ItemAttribute->setCurrentItem(currentItem->text(2).toInt());
+    if (currentItem->text(1)==TAG_KEYWORD)
+    {
+	ItemParameter->ListParameter(currentItem->text(4));
+	ItemParameter->show();
+    }
     else
-      {
-        ItemType->setCurrentItem(*iter);
-        if (id2info[*iter].length==0) ItemParameter->hide();
-          else
-           {
-             ItemParameter->setMaxLength(id2info[*iter].length);
-             ItemParameter->show();
-             ItemParameter->setText(currentItem->text(2));
-           }
-      }
+    {
+    	QMap<QString,int>::Iterator iter=tag2id.find(currentItem->text(1));
+    	if (iter==tag2id.end())
+      		kdDebug(13010)<<"Oops, unknown itemtype in showItem: "<<currentItem->text(1)<<endl;
+    	else
+      	{
+	        ItemType->setCurrentItem(*iter);
+        	if (id2info[*iter].length==0) ItemParameter->hide();
+          	else
+           	{
+             		ItemParameter->TextParameter(id2info[*iter].length,currentItem->text(4));
+             		ItemParameter->show();
+           	}
+      	}
+     }
 
   }
 
@@ -551,7 +599,7 @@ void HlEditDialog::ItemTypeChanged(int id)
   if (currentItem)
      {
      currentItem->setText(1,id2tag[id]);
-     ItemParameter->setMaxLength(id2info[id].length);
+     ItemParameter->TextParameter(id2info[id].length,"");
      ItemParameterChanged(ItemParameter->text());
      }
 }
@@ -569,7 +617,7 @@ void HlEditDialog::ItemAttributeChanged(int attr)
 {
    if (currentItem)
      {
-       currentItem->setText(3,QString("%1").arg(attr));
+       currentItem->setText(2,QString("%1").arg(attr));
      }
 }
 
@@ -577,7 +625,7 @@ void HlEditDialog::ItemContextChanged(int cont)
 {
    if (currentItem)
      {
-       currentItem->setText(4,QString("%1").arg(cont));
+//       currentItem->setText(3,QString("%1").arg(cont));
      }
 }
 
