@@ -1002,90 +1002,90 @@ struct DeleteSelection {
   int len;     
 };     
      
-bool KateDocument::removeSelectedText ()     
+bool KateDocument::removeSelectedText ()
 {     
   int end = 0;     
   int line = 0;     
   TextLine::Ptr textLine = 0L;     
   QPtrStack<DeleteSelection> selectedLines;     
-     
-  if (selectEnd < selectStart)     
-    return false;     
-     
-  currentUndo = new KateUndoGroup (this);     
-	     
-	_autoUpdate = false;     
-     
-	for (line = selectStart; line <= selectEnd; line++)     
-  {     
-    textLine = getTextLine(line);     
-     
-    if (!textLine)     
-      break;     
-     
-    DeleteSelection *curLine = new DeleteSelection;     
-     
-    curLine->deleteStart = textLine->length();     
-    curLine->line = line;     
-		curLine->lineLen = textLine->length();     
-     
-    while (true)     
-    {     
-      end = textLine->findRevUnselected(curLine->deleteStart);     
-     
-      if (end == 0)     
-        break;     
-     
-      curLine->deleteStart = textLine->findRevSelected(end);     
-      curLine->len = end - curLine->deleteStart;     
-    }     
-     
-		if (curLine->len > textLine->length())     
-		  curLine->len = textLine->length();     
-     
-    if (textLine->isSelected() && (line > selectStart))     
-    {     
-      curLine->deleteLine = 1;     
-    }     
-    else if (textLine->isSelected() && (line == selectStart))     
-    {     
-      curLine->deleteLine = 0;     
-      curLine->len++;     
-    }     
-    else     
-    {     
-      curLine->deleteLine = 0;     
-    }     
-     
-    selectedLines.push (curLine);     
-  }     
-     
-  while (selectedLines.count() > 0)     
-  {     
-    DeleteSelection *curLine = selectedLines.pop ();     
-     
-    if (curLine->deleteLine == 1)     
-      removeLine (curLine->line);     
-    else if (curLine->deleteStart+curLine->len >= curLine->lineLen)     
-      removeText (curLine->line, curLine->deleteStart, curLine->line+1, 0);     
-		else     
-      removeText (curLine->line, curLine->deleteStart, curLine->line, curLine->deleteStart+curLine->len);     
-  }     
-     
-  selectEnd = -1;     
-  select.col = -1;     
-     
-	_autoUpdate = true;     
-	updateViews ();     
-     
-  undoItems.append (currentUndo);     
-	currentUndo = 0L;     
-	emit undoChanged ();     
-     
-  return true;     
-}     
-     
-bool KateDocument::selectAll()     
+
+  if (selectEnd < selectStart)
+    return false;
+
+  currentUndo = new KateUndoGroup (this);
+
+	_autoUpdate = false;
+
+	for (line = selectStart; line <= selectEnd; line++)
+  {
+    textLine = getTextLine(line);
+
+    if (!textLine)
+      break;
+
+    DeleteSelection *curLine = new DeleteSelection;
+
+    curLine->deleteStart = textLine->length();
+    curLine->line = line;
+		curLine->lineLen = textLine->length();
+
+    while (true)
+    {
+      end = textLine->findRevUnselected(curLine->deleteStart);
+
+      if (end == 0)
+        break;
+
+      curLine->deleteStart = textLine->findRevSelected(end);
+      curLine->len = end - curLine->deleteStart;
+    }
+
+		if (curLine->len > textLine->length())
+		  curLine->len = textLine->length();
+
+    if (textLine->isSelected() && (line > selectStart))
+    {
+      curLine->deleteLine = 1;
+    }
+    else if (textLine->isSelected() && (line == selectStart))
+    {
+      curLine->deleteLine = 0;
+      curLine->len++;
+    }
+    else
+    {
+      curLine->deleteLine = 0;
+    }
+
+    selectedLines.push (curLine);
+  }
+
+  while (selectedLines.count() > 0)
+  {
+    DeleteSelection *curLine = selectedLines.pop ();
+
+    if (curLine->deleteLine == 1)
+      removeLine (curLine->line);
+    else if (curLine->deleteStart+curLine->len > curLine->lineLen)
+      removeText (curLine->line, curLine->deleteStart, curLine->line+1, 0);
+		else
+      removeText (curLine->line, curLine->deleteStart, curLine->line, curLine->deleteStart+curLine->len);
+  }
+
+  selectEnd = -1;
+  select.col = -1;
+
+	_autoUpdate = true;
+	updateViews ();
+
+  undoItems.append (currentUndo);
+	currentUndo = 0L;
+	emit undoChanged ();
+
+  return true;
+}
+
+bool KateDocument::selectAll()
 {     
   int z;     
   TextLine::Ptr textLine;     
