@@ -52,6 +52,8 @@ class KateApp : public KUniqueApplication
     KateDocManager *kateDocumentManager () { return m_docManager; };
 
     class KateMainWindow *newMainWindow ();
+    class KateMainWindow *newMainWindow (bool visible);
+    
     void removeMainWindow (KateMainWindow *mainWindow);
 
     void raiseCurrentMainWindow ();

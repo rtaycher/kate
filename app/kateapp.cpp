@@ -99,7 +99,6 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
   }
   else
   {
-    win=newMainWindow();
     config()->setGroup("General");
 
     KSimpleConfig scfg ("katesessionrc", false);
@@ -112,9 +111,13 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
     if (config()->readBoolEntry("Restore Documents", false))
       m_docManager->restoreDocumentList (&scfg);
 
+    win=newMainWindow(false);
+      
     // window config
     if (config()->readBoolEntry("Restore Window Configuration", false))
       win->restoreWindowConfiguration (&scfg);
+      
+    win->show ();
   }
 
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
@@ -259,6 +262,11 @@ int KateApp::newInstance()
 
 KateMainWindow *KateApp::newMainWindow ()
 {
+  return newMainWindow (true);
+}
+
+KateMainWindow *KateApp::newMainWindow (bool visible)
+{
   if (KateMainWindow::defaultMode==KMdi::UndefinedMode)
   {
     KConfig *cfg=kapp->config();
@@ -281,7 +289,8 @@ KateMainWindow *KateApp::newMainWindow ()
   else if ((mainWindows() > 1) && (m_docManager->documents() < 1))
     mainWindow->kateViewManager()->openURL ( KURL() );
 
-  mainWindow->show ();
+  if (visible)
+    mainWindow->show ();
 
   if (!m_firstStart)
   {
