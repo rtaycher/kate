@@ -90,6 +90,7 @@ KateViewSpace::KateViewSpace( KateViewManager *viewManager,
   mViewCount = 0;
 
   setMinimumWidth (mStatusBar->minimumWidth());
+  m_group = QString::null;
 }
 
 KateViewSpace::~KateViewSpace()
@@ -103,6 +104,23 @@ void KateViewSpace::polish()
 
 void KateViewSpace::addView(Kate::View* v, bool show)
 {
+  // restore the config of this view if possible
+  if ( !m_group.isEmpty() )
+  {
+    QString fn = v->getDoc()->url().prettyURL();
+    if ( ! fn.isEmpty() )
+    {
+      QString vgroup = QString("%1 %2").arg(m_group).arg(fn);
+      KConfig *config = new KConfig("katesessionrc");
+      if ( config->hasGroup( vgroup ) ) {
+        config->setGroup( vgroup );
+        v->readSessionConfig( config );
+      }
+      delete config; // nessecary? nice?
+    }
+  }
+
+
   uint id = mViewList.count();
   stack->addWidget(v, id);
   if (show) {
@@ -211,6 +229,7 @@ void KateViewSpace::slotStatusChanged (Kate::View *view, int r, int c, int ovr, 
 
 void KateViewSpace::saveConfig ( KConfig* config, int myIndex ,const QString& viewConfGrp)
 {
+  kdDebug()<<"KateViewSpace::saveConfig("<<myIndex<<", "<<viewConfGrp<<") - currentView: "<<currentView()<<")"<<endl;
   QString group = QString(viewConfGrp+"-ViewSpace %1").arg( myIndex );
 
   config->setGroup (group);
@@ -248,7 +267,6 @@ void KateViewSpace::modifiedOnDisc(Kate::Document *, bool, unsigned char)
 void KateViewSpace::restoreConfig ( KateViewManager *viewMan, KConfig* config, const QString &group )
 {
   config->setGroup (group);
-
   QString fn = config->readEntry( "Active View" );
 
   if ( !fn.isEmpty() )
@@ -272,6 +290,8 @@ void KateViewSpace::restoreConfig ( KateViewManager *viewMan, KConfig* config, c
 
   if (mViewList.isEmpty())
     viewMan->createView (viewMan->m_docManager->document(0));
+
+  m_group = group; // used for restroing view configs later
 }
 //END KateViewSpace
 
@@ -358,7 +378,7 @@ void KateVSStatusBar::showMenu()
 {
    KMainWindow* mainWindow = static_cast<KMainWindow*>( topLevelWidget() );
    QPopupMenu* menu = static_cast<QPopupMenu*>( mainWindow->factory()->container("viewspace_popup", mainWindow ) );
-   
+
    if (menu)
      menu->exec(QCursor::pos());
 }

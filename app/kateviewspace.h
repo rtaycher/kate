@@ -101,6 +101,7 @@ class KateViewSpace : public QVBox
     int mViewCount;
     KVSSBSep *sep;
     KateViewManager *m_viewManager;
+    QString m_group;
 
   private slots:
     void slotStatusChanged (Kate::View *view, int r, int c, int ovr, bool block, int mod, const QString &msg);
