@@ -836,7 +836,7 @@ void Highlight::createItemData(ItemDataList &list)
         if ( (!color.isEmpty()) && (!selColor.isEmpty()) && (!bold.isEmpty()) && (!italic.isEmpty()))
                 {
                         internalIDList.append(new ItemData(
-                                HlManager::self()->syntax->groupData(data,QString("name")),
+                                HlManager::self()->syntax->groupData(data,QString("name")).simplifyWhiteSpace(),
                                 getDefStyleNum(HlManager::self()->syntax->groupData(data,QString("defStyleNum"))),
                                 QColor(color),QColor(selColor),(bold=="true") || (bold=="1"), (italic=="true") || (italic=="1")
                                 ));
@@ -844,26 +844,42 @@ void Highlight::createItemData(ItemDataList &list)
         else
                 {
                         internalIDList.append(new ItemData(
-                                HlManager::self()->syntax->groupData(data,QString("name")),
+                                HlManager::self()->syntax->groupData(data,QString("name")).simplifyWhiteSpace(),
                                 getDefStyleNum(HlManager::self()->syntax->groupData(data,QString("defStyleNum")))));
 
                 }
       }
     if (data) HlManager::self()->syntax->freeGroupInfo(data);
   }
-  for (uint i=0;i<internalIDList.count();i++)
+//  for (uint i=0;i<internalIDList.count();i++)
   list=internalIDList;
 //	list.append(new ItemData(internalIDList.at(i)));
 }
 
-HlItem *Highlight::createHlItem(syntaxContextData *data, int *res)
+
+int  Highlight::lookupAttrName(const QString& name, ItemDataList &iDl)
+{
+	for (int i=0;i<iDl.count();i++)
+		{
+			if (iDl.at(i)->name==name) return i;
+		}
+	kdDebug()<<"Couldn't resolve itemDataName"<<endl;
+	return 0;
+}
+
+HlItem *Highlight::createHlItem(syntaxContextData *data, ItemDataList &iDl)
 {
   if (noHl)
     return 0;
 
 
                 QString dataname=HlManager::self()->syntax->groupItemData(data,QString(""));
-                int attr=((HlManager::self()->syntax->groupItemData(data,QString("attribute"))).toInt());
+		QString tmpAttr=HlManager::self()->syntax->groupItemData(data,QString("attribute")).simplifyWhiteSpace();
+		int attr;
+		if (QString("%1").arg(tmpAttr.toInt())==tmpAttr)
+			attr=tmpAttr.toInt();
+		else
+			attr=lookupAttrName(tmpAttr,iDl);
                 int context=((HlManager::self()->syntax->groupItemData(data,QString("context"))).toInt());
 		char chr;
                 if (! HlManager::self()->syntax->groupItemData(data,QString("char")).isEmpty())
@@ -877,7 +893,6 @@ HlItem *Highlight::createHlItem(syntaxContextData *data, int *res)
 		else
                   chr1=0;
 		bool insensitive=(HlManager::self()->syntax->groupItemData(data,QString("insensitive"))==QString("TRUE"));
-		*res=0;
                 if (dataname=="keyword")
 		{
 	           HlKeyword *keyword=new HlKeyword(attr,context,casesensitive,
@@ -885,7 +900,6 @@ HlItem *Highlight::createHlItem(syntaxContextData *data, int *res)
 		   keyword->addList(HlManager::self()->syntax->finddata("highlighting",stringdata));
 		   return keyword;
 		} else
-//                if (dataname=="dataType") {*res=2; return(new HlKeyword(attr,context,casesensitive=="1"));} else
                 if (dataname=="Float") return (new HlFloat(attr,context)); else
                 if (dataname=="Int") return(new HlInt(attr,context)); else
                 if (dataname=="DetectChar") return(new HlCharDetect(attr,context,chr)); else
@@ -895,6 +909,7 @@ HlItem *Highlight::createHlItem(syntaxContextData *data, int *res)
                 if (dataname=="StringDetect") return(new HlStringDetect(attr,context,stringdata,insensitive)); else
                 if (dataname=="AnyChar") return(new HlAnyChar(attr,context,stringdata.unicode(), stringdata.length())); else
                 if (dataname=="RegExpr") return(new HlRegExpr(attr,context,stringdata)); else
+
 // apparently these were left out
 	   if(dataname=="HlCChar") return ( new HlCChar(attr,context));else
       if(dataname=="HlCHex") return (new HlCHex(attr,context));else
@@ -979,6 +994,9 @@ void Highlight::makeContextList()
 
   data=0;
 
+  ItemDataList iDl;
+  createItemData(iDl);
+
   data=HlManager::self()->syntax->getGroupInfo("highlighting","context");
   int i=0;
   if (data)
@@ -986,8 +1004,16 @@ void Highlight::makeContextList()
       while (HlManager::self()->syntax->nextGroup(data))
         {
 //	kdDebug(13010)<< "In make Contextlist: Group"<<endl;
+
+		QString tmpAttr=HlManager::self()->syntax->groupData(data,QString("attribute")).simplifyWhiteSpace();
+		int attr;
+		if (QString("%1").arg(tmpAttr.toInt())==tmpAttr)
+			attr=tmpAttr.toInt();
+		else
+			attr=lookupAttrName(tmpAttr,iDl);
+
           contextList[i]=new HlContext(
-            (HlManager::self()->syntax->groupData(data,QString("attribute"))).toInt(),
+            attr,
             (HlManager::self()->syntax->groupData(data,QString("lineEndContext"))).toInt(),
             (HlManager::self()->syntax->groupData(data,QString("lineBeginContext"))).isEmpty()?-1:
             (HlManager::self()->syntax->groupData(data,QString("lineBeginContext"))).toInt());
@@ -998,11 +1024,10 @@ void Highlight::makeContextList()
 //		kdDebug(13010)<< "In make Contextlist: Item:"<<endl;
 
 		int res;
-		c=createHlItem(data,&res);
+		c=createHlItem(data,iDl);
 		if (c)
 			{
 				contextList[i]->items.append(c);
-				if (res==1) keyword=(HlKeyword*)c; else if (res==2) dataType=(HlKeyword*)c;
 
 				datasub=HlManager::self()->syntax->getSubItems(data);
 				bool tmpbool;
@@ -1010,7 +1035,7 @@ void Highlight::makeContextList()
 					{
                                           c->subItems=new QList<HlItem>;
 					  for (;tmpbool;tmpbool=HlManager::self()->syntax->nextItem(datasub))
-                                            c->subItems->append(createHlItem(datasub,&res));
+                                            c->subItems->append(createHlItem(datasub,iDl));
                                         }
 				HlManager::self()->syntax->freeGroupInfo(datasub);
 			}

@@ -280,7 +280,8 @@ class Highlight
     void makeContextList ();
     void setKeywords (HlKeyword *keyword,HlKeyword *dataType);
     void createItemData (ItemDataList &list);
-    HlItem *createHlItem(struct syntaxContextData *data, int *res);
+    HlItem *createHlItem(struct syntaxContextData *data, ItemDataList &iDl);
+    int lookupAttrName(const QString& name, ItemDataList &iDl);
     ItemDataList internalIDList;
 
     static const int nContexts = 32;
