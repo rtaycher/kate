@@ -52,6 +52,7 @@ class HighlightDialogPage : public QTabWidget
     void itemChanged(int);
     void changed();
     void hlEdit();
+    void hlNew();
   protected:
     StyleChanger *defaultStyleChanger;
     ItemStyleList *defaultItemStyleList;
@@ -109,6 +110,7 @@ class HlEditDialog : public KDialogBase
 
     QListViewItem *addContextItem(QListViewItem *_parent,QListViewItem *prev,struct syntaxContextData *data);
     void insertTranslationList(QString tag, QString trans,int length);
+    void newDocument();
 
     class QLineEdit *ContextDescr;
     class QComboBox *ContextAttribute;

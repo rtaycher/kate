@@ -17,6 +17,8 @@
 #include <kcharsets.h>
 #include <kglobal.h>
 #include <qmap.h>
+#include <kmessagebox.h>
+#include <kstddirs.h>
 
 #include "katedialogs.moc"
 /*******************************************************************************************************************
@@ -149,7 +151,7 @@ HighlightDialogPage::HighlightDialogPage(HlManager *hlManager, ItemStyleList *st
   QLabel *label = new QLabel( i18n("Highlight:"), vbox1 );
   hlCombo = new QComboBox( false, vbox1 );
   QHBox *modHl = new QHBox(vbox1);
-  (void) new QPushButton(i18n("New"),modHl);
+  connect(new QPushButton(i18n("New"),modHl),SIGNAL(clicked()),this,SLOT(hlNew()));
   connect(new QPushButton(i18n("Edit"),modHl),SIGNAL(clicked()),this,SLOT(hlEdit()));
   connect( hlCombo, SIGNAL(activated(int)),
            this, SLOT(hlChanged(int)) );
@@ -234,6 +236,10 @@ void HighlightDialogPage::hlEdit() {
   diag.show();
 }
 
+void HighlightDialogPage::hlNew() {
+  HlEditDialog diag(0,0,"hlEdit",true,0);
+  diag.show();
+}
 
 
 HlEditDialog::HlEditDialog(HlManager *,QWidget *parent, const char *name, bool modal,HlData *data)
@@ -259,10 +265,25 @@ HlEditDialog::HlEditDialog(HlManager *,QWidget *parent, const char *name, bool m
     stack->raiseWidget(HlEContext);
     setMainWidget(wid);
     if (data!=0) loadFromDocument(data);
+    else newDocument();
     connect(contextList,SIGNAL(currentChanged( QListViewItem*)),this,SLOT(currentSelectionChanged ( QListViewItem * )));
     connect(addContext,SIGNAL(clicked()),this,SLOT(contextAddNew()));
     connect(addItem,SIGNAL(clicked()),this,SLOT(ItemAddNew()));
     }
+
+void HlEditDialog::newDocument()
+{
+  KStandardDirs *dirs = KGlobal::dirs();
+  QStringList list=dirs->findAllResources("data","kate/syntax/syntax.template",false,true);
+  for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
+      {
+        HlData data("","",*it);
+        loadFromDocument(&data);
+        return;
+      }
+  KMessageBox::error(this,i18n("Can't find templatefile"));
+}
+
 
 void HlEditDialog::initContextOptions(QVBox *co)
 {

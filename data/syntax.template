@@ -1,0 +1,11 @@
+<?xml version="1.01" encoding="UTF-8"?><!DOCTYPE language>
+<language name="" extensions="" mimetype="" casesensitive="0">
+    <highlighting>
+        <contexts>
+           <context name="Normal" attribute="0" lineEndContext="0"/>
+        </contexts>
+        <itemDatas>
+          <itemData name="Normal Text" defStyleNum="dsNormal"/>
+        </itemDatas>
+ </highlighting>
+</language>
