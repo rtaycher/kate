@@ -1,3 +1,7 @@
+2001-11-17 Christoph Cullmann <cullmann@kde.org>
+  * new selection code (bit buggy at the moment, but better than the old way
+    of storing the selection in the attributes
+
 2001-10-29 Joseph Wenninger <jowenn@kde.org>
   * Highlighting definitions support now #stay and #pop as context values
   * Some highlighting definitions ported

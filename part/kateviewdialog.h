@@ -122,7 +122,7 @@ class SelectConfigTab : public QWidget
 
   protected:
 
-    static const int numFlags = 6;
+    static const int numFlags = 5;
     static const int flags[numFlags];
     QCheckBox *opt[numFlags];
 };

@@ -1,13 +1,15 @@
 TODO:
  - dynamic word wrap
+ - code folding
+ - code completion
+ - better indent/unindent
  - Check docs for change on hd when focused, warning dialog: reload? yes/no[/view diff]
- - Fix remaining bugs ;)
  - exhaustive testing of the new highlighting structure
  - porting all .xml files to the new scheme.
-		Small help: 
-		       A context of -1 returns to the next higher one (pop)
-			     A context of -2 stays in the current context (no more context="5" within context 5 (this 
+    Small help: 
+           A context of -1 returns to the next higher one (pop)
+           A context of -2 stays in the current context (no more context="5" within context 5 (this 
            is supported, but should be avoided in new definitions, because you run into problems when using
-				   -1 than. If a context >=0 is given as the argument a new entry is appended to the stack (push)
+           -1 than. If a context >=0 is given as the argument a new entry is appended to the stack (push)
 
-	>>>>> IMPORTANT, instead of -1 and -2 you can now use #stay and #pop <<<<<<
+  >>>>> IMPORTANT, instead of -1 and -2 you can now use #stay and #pop <<<<<<

@@ -608,7 +608,6 @@ void KateViewManager::slotFindAgainB ()
   activeView()->findPrev();
 }
 
-
 void KateViewManager::slotReplace ()
 {
   if (activeView() == 0) return;
@@ -741,7 +740,7 @@ void KateViewManager::toggleIconBorder ()
 void KateViewManager::toggleVertical()
 {
   if (!activeView()) return;
-  activeView()->toggleVertical();
+  activeView()->doc()->toggleBlockSelectionMode();
 }
 
 void KateViewManager::splitViewSpace( KateViewSpace* vs,

@@ -275,7 +275,7 @@ void KateMainWindow::setupActions()
   connect(documentOpenWith->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(mSlotFixOpenWithMenu()));
   connect(documentOpenWith->popupMenu(), SIGNAL(activated(int)), this, SLOT(slotOpenWithMenuAction(int)));
 
-  setVerticalSelection = new KToggleAction(i18n("&Vertical Selection"), Key_F4, viewManager, SLOT(toggleVertical()),
+  new KAction(i18n("&Toggle Block Selection"), Key_F4, viewManager, SLOT(toggleVertical()),
                                              actionCollection(), "set_verticalSelect");
 
   if (pluginManager->myPluginList.count() > 0)

@@ -1402,6 +1402,8 @@ void KateView::setupActions()
                 myDoc->actionCollection(), "incFontSizes");
       new KAction(i18n("Decrease Font Sizes"), "viewmag-", 0, this, SLOT(slotDecFontSizes()),
                 myDoc->actionCollection(), "decFontSizes");
+      new KAction(i18n("&Toggle Block Selection"), Key_F4, myDoc, SLOT(toggleBlockSelectionMode()),
+                                             myDoc->actionCollection(), "set_verticalSelect");
     }
     else
     {
@@ -1419,6 +1421,8 @@ void KateView::setupActions()
                 actionCollection(), "incFontSizes");
       new KAction(i18n("Decrease Font Sizes"), "viewmag-", 0, this, SLOT(slotDecFontSizes()),
                 actionCollection(), "decFontSizes");
+      new KAction(i18n("&Toggle Block Selection"), Key_F4, myDoc, SLOT(toggleBlockSelectionMode()),
+                                             actionCollection(), "set_verticalSelect");
     }
 
   new KAction(i18n("Apply Word Wrap"), "", 0, myDoc, SLOT(applyWordWrap()), actionCollection(), "edit_apply_wordwrap");
@@ -1451,17 +1455,6 @@ void KateView::setupActions()
     new KAction(i18n("Unco&mment"), CTRL+SHIFT+Qt::Key_NumberSign, this, SLOT(uncomment()),
                                  actionCollection(), "tools_uncomment");
 
-    setVerticalSelection = new KToggleAction(i18n("&Vertical Selection"), Key_F4, this, SLOT(toggleVertical()),
-                                             actionCollection(), "set_verticalSelect");
-
-/*
-    connect(setHighlight, SIGNAL(activated(int)), this, SLOT(setHl(int)));
-    QStringList list;
-    for (int z = 0; z < HlManager::self()->highlights(); z++)
-        list.append(HlManager::self()->hlName(z));
-    setHighlight->setItems(list);
-*/
-
     QStringList list;
     setEndOfLine = new KSelectAction(i18n("&End of Line"), 0, actionCollection(), "set_eol");
     connect(setEndOfLine, SIGNAL(activated(int)), this, SLOT(setEol(int)));
@@ -1474,12 +1467,9 @@ void KateView::setupActions()
 
 void KateView::slotUpdate()
 {
-    int cfg = myDoc->configFlags();
-
-    setVerticalSelection->setChecked(cfg & KateDocument::cfVerticalSelect);
-
   slotNewUndo();
 }
+
 void KateView::slotFileStatusChanged()
 {
   int eol = getEol();
@@ -1777,11 +1767,6 @@ void KateView::setOverwriteMode( bool b )
 
 void KateView::toggleInsert() {
   myDoc->setConfigFlags(myDoc->_configFlags ^ KateDocument::cfOvr);
-}
-
-void KateView::toggleVertical()
-{
-  myDoc->setConfigFlags(myDoc->_configFlags ^ KateDocument::cfVerticalSelect);
 }
 
 QString KateView::currentTextLine() {

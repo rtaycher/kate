@@ -143,6 +143,10 @@ class KateDocument : public Kate::Document
     bool removeSelectedText ();
 
     bool selectAll();
+    
+    bool blockSelectionMode ();
+    void setBlockSelectionMode (bool on);
+    void toggleBlockSelectionMode ();
 
   signals:
     void selectionChanged ();
@@ -417,6 +421,7 @@ class KateDocument : public Kate::Document
     int selectStartCol;
     int selectEndLine;
     int selectEndCol;
+    bool blockSelect;
 
     // internal functions to get the selection state of line/col ;)
     bool lineColSelected (int line, int col);
@@ -537,7 +542,6 @@ class KateDocument : public Kate::Document
       cfAutoBrackets= 0x40,
       cfPersistent= 0x80,
       cfKeepSelection= 0x100,
-      cfVerticalSelect= 0x200,
       cfDelOnInput= 0x400,
       cfXorSelect= 0x800,
       cfOvr= 0x1000,

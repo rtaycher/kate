@@ -113,7 +113,6 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     KToggleAction* settingsShowFullPath;
     KToggleAction* settingsShowToolbar;
     KToggleAction* settingsShowConsole;
-    KToggleAction* setVerticalSelection;
 
     KAction* settingsConfigure;
     

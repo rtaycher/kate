@@ -335,7 +335,7 @@ void IndentConfigTab::getData(KateView *view) {
 }
 
 const int SelectConfigTab::flags[] = {KateDocument::cfPersistent, KateDocument::cfDelOnInput,
-  KateDocument::cfMouseAutoCopy, KateDocument::cfSingleSelection, KateDocument::cfVerticalSelect, KateDocument::cfXorSelect};
+  KateDocument::cfMouseAutoCopy, KateDocument::cfSingleSelection, KateDocument::cfXorSelect};
 
 SelectConfigTab::SelectConfigTab(QWidget *parent, KateView *view)
   : QWidget(parent, 0L)
@@ -359,13 +359,9 @@ SelectConfigTab::SelectConfigTab(QWidget *parent, KateView *view)
   layout->addWidget(opt[3], 0, AlignLeft);
   opt[3]->setChecked(configFlags & flags[3]);
 
-  opt[4] = new QCheckBox(i18n("&Vertical Selections"), this);
+  opt[4] = new QCheckBox(i18n("&Toggle Old"), this);
   layout->addWidget(opt[4], 0, AlignLeft);
   opt[4]->setChecked(configFlags & flags[4]);
-
-  opt[5] = new QCheckBox(i18n("&Toggle Old"), this);
-  layout->addWidget(opt[5], 0, AlignLeft);
-  opt[5]->setChecked(configFlags & flags[5]);
 
   layout->addStretch();
 
@@ -374,8 +370,7 @@ SelectConfigTab::SelectConfigTab(QWidget *parent, KateView *view)
   QWhatsThis::add(opt[1], i18n("When this is on, any keyed character input or paste operation will replace the selected text."));
   QWhatsThis::add(opt[2], i18n("When this is on, any text selected with the mouse will be automatically copied to the clipboard."));
   QWhatsThis::add(opt[3], i18n("Not implemented yet."));
-  QWhatsThis::add(opt[4], i18n("Enabling this allows you to make vertical selections."));
-  QWhatsThis::add(opt[5], i18n("Not yet implemented."));
+  QWhatsThis::add(opt[4], i18n("Not yet implemented."));
 }
 
 void SelectConfigTab::getData(KateView *view) {

@@ -228,6 +228,7 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
      
   currentUndo = 0L;     
   pseudoModal = 0L;     
+  blockSelect = false;
        
   myAttribs = 0L;     
   myAttribsLen = 0;     
@@ -953,7 +954,7 @@ QString KateDocument::selection() const
       if (!textLine)
         break;
 
-      if (!(_configFlags & KateDocument::cfVerticalSelect))
+      if (!blockSelect)
       {
         if ((z > selectStartLine) && (z < selectEndLine))
           s.append (textLine->getString());
@@ -1011,7 +1012,7 @@ bool KateDocument::removeSelectedText ()
       curLine->line = z;
       curLine->lineLen = textLine->length();
 
-       if (!(_configFlags & KateDocument::cfVerticalSelect))
+       if (!blockSelect)
        {
          if ((z > selectStartLine) && (z < selectEndLine))
            curLine->deleteLine = 1;
@@ -1068,6 +1069,23 @@ bool KateDocument::removeSelectedText ()
 bool KateDocument::selectAll()
 {
   return setSelection (0, 0, lastLine(), getTextLine(lastLine())->length());
+}
+
+bool KateDocument::blockSelectionMode ()
+{
+  return blockSelect;
+}
+
+void KateDocument::setBlockSelectionMode (bool on)
+{
+  blockSelect = on;
+  setSelection (selectStartLine, selectStartCol, selectEndLine, selectEndCol);
+}
+
+void KateDocument::toggleBlockSelectionMode ()
+{
+  blockSelect = !blockSelect;
+  setSelection (selectStartLine, selectStartCol, selectEndLine, selectEndCol);
 }
 
 //
@@ -2137,6 +2155,7 @@ void KateDocument::paste(VConfig &c) {
 void KateDocument::selectTo(VConfig &c, KateViewCursor &cursor, int cXPos)
 {
   int sl, sc, el, ec;
+  static bool back = false;
 
   sl = selectStartLine;
   sc = selectStartCol;
@@ -2148,21 +2167,40 @@ void KateDocument::selectTo(VConfig &c, KateViewCursor &cursor, int cXPos)
     sl = c.cursor.line;
     sc = c.cursor.col;
   }
-  
+
   el = cursor.line;
   ec = cursor.col;
-  
-  if ((el < sl) || ((el == sl) && (sc > ec)))
+
+  if (!back && ((el < sl) || ((el == sl) && (sc > ec))))
   {
-    int tmpStart, tmpEnd;
-    tmpStart = sl;
-    tmpEnd = sc;
     sl = el;
     sc = ec;
-    el = tmpStart;
-    ec = tmpEnd;
+
+    if (selectEndLine > -1)
+    {
+      el = selectEndLine;
+      ec = selectEndCol;
+    }
+    else
+    {
+      el = c.cursor.line;
+      ec = c.cursor.col;
+    }
+    
+    back = true;
   }
-  
+  else if (back && (el < selectEndLine))
+  {
+    sl = el;
+    sc = ec;
+    el = selectEndLine;
+    ec = selectEndLine;
+  }
+  else
+    back = false;
+
+  kdDebug()<<"sel: "<<sl<<" "<<el<<endl;
+
   setSelection (sl, sc, el, ec);
 }
 
@@ -2763,7 +2801,7 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int xStart, int xEnd
 
 bool KateDocument::lineColSelected (int line, int col)
 {
-  if (!(_configFlags & KateDocument::cfVerticalSelect))
+  if (!blockSelect)
   {
     if ((line > selectStartLine) && (line < selectEndLine))
       return true;
@@ -2791,16 +2829,21 @@ bool KateDocument::lineColSelected (int line, int col)
 
 bool KateDocument::lineSelected (int line)
 {
-  if (!(_configFlags & KateDocument::cfVerticalSelect))
+  if (!blockSelect)
+  {
     if ((line > selectStartLine) && (line < selectEndLine))
       return true;
+      
+    if ((line == selectStartLine) && (line < selectEndLine) && (selectStartCol == 0))
+      return true;
+  }
 
   return false;
 }
 
 bool KateDocument::lineHasSelected (int line)
 {
-  if (!(_configFlags & KateDocument::cfVerticalSelect))
+  if (!blockSelect)
   {
     if ((line > selectStartLine) && (line < selectEndLine))
       return true;

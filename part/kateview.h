@@ -366,7 +366,7 @@ class KateView : public Kate::View
     KAction *editUndo, *editRedo, *bookmarkToggle, *bookmarkClear;
 
     KActionMenu *bookmarkMenu;
-    KToggleAction *setVerticalSelection, *viewBorder;
+    KToggleAction *viewBorder;
     KRecentFilesAction *fileRecent;
     KSelectAction *setEndOfLine;
     KateViewHighlightAction *setHighlight;
@@ -384,10 +384,6 @@ class KateView : public Kate::View
       Toggles Insert mode
     */
     void toggleInsert();
-    /**
-      Toggles "Vertical Selections" option
-    */
-    void toggleVertical();
   signals:
     /**
       The cursor position has changed. Get the values with currentLine()
