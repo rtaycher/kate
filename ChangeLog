@@ -1,3 +1,10 @@
+2001-10-27 Joseph Wenninger <jowenn@kde.org
+  * Highlighting isn't updated completely yet (should be fixed now), but uses:
+        * I have to do some nasty workaround because the overloaded == 
+        operator in QMemArray crashes, if one or both of the arrays has
+        a size of 0 (I think this is a bug in QT, but it could be that
+        this is intended behaviour. Who knows ?)
+
 2001-10-26 Joseph Wenninger <jowenn@kde.org>
   * The stacked highlighting shoul almost work now.
     Using old description files it will use quite a lot memory, but

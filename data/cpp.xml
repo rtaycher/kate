@@ -140,7 +140,7 @@
       <context attribute="10" lineEndContext="-1" name="Commentar 1">
         <RegExpr attribute="3" context="-2" String="(FIXME|TODO)" />
       </context>
-      <context attribute="10" lineEndContext="3" name="Commentar 2">
+      <context attribute="10" lineEndContext="-2" name="Commentar 2">
         <RegExpr attribute="3" context="-2" String="(FIXME|TODO)" />
         <Detect2Chars attribute="10" context="-1" char="*" char1="/"/>
       </context>
@@ -151,7 +151,7 @@
         <Detect2Chars attribute="10" context="2" char="/" char1="/"/>
         <Detect2Chars attribute="10" context="5" char="/" char1="*"/>
       </context>
-      <context attribute="10" lineEndContext="5" name="Commentar/Preprocessor">
+      <context attribute="10" lineEndContext="-2" name="Commentar/Preprocessor">
         <Detect2Chars attribute="10" context="-1" char="*" char1="/" />
       </context>
       <context attribute="0" lineEndContext="1" name="Some Context"/>

@@ -586,7 +586,7 @@ int Highlight::generateContextStack(int ctx,TContexts *ctxs)
                         if (ctxs->size()==0) ctxNum=0;
                         else
                         {   
-                                kdDebug()<<"Truncating 'stack'"<<endl;
+//                                kdDebug()<<"Truncating 'stack'"<<endl;
                                 ctxs->resize(ctxs->size()-1);
                                 ctxNum = ((ctxs->size()==0)?0:(*ctxs)[ctxs->size()-1]);
                         }
@@ -666,10 +666,10 @@ TContexts Highlight::doHighlight(TContexts oCtx, TextLine *textLine)
         if (s2 > s1)
         {
             textLine->setAttribs(item->attr,s1 - str,s2 - str);
-   	    kdDebug()<<QString("item->ctx: %1").arg(item->ctx)<<endl;
+//   	    kdDebug()<<QString("item->ctx: %1").arg(item->ctx)<<endl;
           
 	    ctxNum=generateContextStack(item->ctx,&ctx);
-	    kdDebug()<<QString("current ctxNum==%1").arg(ctxNum)<<endl;
+//	    kdDebug()<<QString("current ctxNum==%1").arg(ctxNum)<<endl;
 	    context=contextList[ctxNum];
 
             z = z + s2 - s1 - 1;

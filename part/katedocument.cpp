@@ -2681,7 +2681,7 @@ void KateDocument::updateLines(int startLine, int endLine) {
 
 	if (line > 0)
 	  ctxNum = getTextLine(line - 1)->getContext();
-
+  bool stillcontinue=true;
   do
 	{
     textLine = getTextLine(line);
@@ -2689,7 +2689,9 @@ void KateDocument::updateLines(int startLine, int endLine) {
 	  ctxNum = m_highlight->doHighlight(ctxNum,textLine);
 		textLine->setContext(ctxNum);
     line++;
-  }	while ((buffer->line(line)!=0) && (line <= endLine)); //|| (!(endCtx == ctxNum)));
+    stillcontinue = (endCtx.size()!=ctxNum.size());
+    if ((endCtx.size()!=0) && (ctxNum.size()!=0)) stillcontinue |= (!(ctxNum==endCtx));
+  }	while (((buffer->line(line)!=0) && ((line <= endLine) || stillcontinue))); //|| (!(endCtx == ctxNum)));
 
   tagLines(startLine, line - 1);
 
