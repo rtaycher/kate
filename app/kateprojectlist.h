@@ -31,6 +31,7 @@
 #include <qwidget.h>
 #include <qvaluelist.h>
 #include <qframe.h>
+#include <qwidgetstack.h>
 
 class KateMainWindow;
 class KActionCollection;
@@ -39,27 +40,26 @@ class KActionSelector;
 /* I think this fix for not moving toolbars is better */
 class KateProjectListToolBar: public KToolBar
 {
-	Q_OBJECT
+  Q_OBJECT
 public:
-	KateProjectListToolBar(QWidget *parent);
-	virtual ~KateProjectListToolBar();
+  KateProjectListToolBar(QWidget *parent);
+  ~KateProjectListToolBar();
 
-	 virtual void setMovingEnabled( bool b );
+   void setMovingEnabled( bool b );
 };
 
 class KateProjectListToolBarParent: public QFrame
 {
-	Q_OBJECT
+  Q_OBJECT
 public:
-	KateProjectListToolBarParent(QWidget *parent);
-	~KateProjectListToolBarParent();
-	void setToolBar(KateProjectListToolBar *tb);
+  KateProjectListToolBarParent(QWidget *parent);
+  ~KateProjectListToolBarParent();
+  void setToolBar(KateProjectListToolBar *tb);
 private:
-	KateProjectListToolBar *m_tb;
+  KateProjectListToolBar *m_tb;
 protected:
-	virtual void resizeEvent ( QResizeEvent * );
+  void resizeEvent ( QResizeEvent * );
 };
-
 
 class KateProjectList : public QWidget
 {
@@ -79,10 +79,10 @@ class KateProjectList : public QWidget
 
   private:
     KComboBox *m_projectCombo;
-    QWidget *m_freeArea;
+    QWidgetStack *m_stack;
     class KateProjectManager *m_projectManager;
     class KateMainWindow *m_mainWindow;
-    class KateProjectListToolBar *toolbar;
+    KateProjectListToolBar *toolbar;
     KActionCollection *mActionCollection;
     
     QValueList<uint> m_numList;
