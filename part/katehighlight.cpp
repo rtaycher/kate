@@ -30,6 +30,8 @@
 #include <kdebug.h>
 #include <kstddirs.h>
 
+#include <kapplication.h>
+
 #include "katehighlight.h"
 #include "katehighlight.moc"
 
@@ -38,6 +40,7 @@
 #include "katesyntaxdocument.h"
 
 #include "katefactory.h"
+
 
 HlManager *HlManager::s_pSelf = 0;
 KConfig *HlManager::s_pConfig =0;
@@ -1360,7 +1363,7 @@ void Highlight::makeContextList()
 
 }
 
-HlManager::HlManager() : QObject(0L)
+HlManager::HlManager() : QObject(0)
 {
   syntax = new SyntaxDocument();
   SyntaxModeList modeList = syntax->modeList();

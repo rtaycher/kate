@@ -56,7 +56,7 @@ KParts::Part *KateFactory::createPartObject( QWidget *parentWidget, const char *
   bool bWantReadOnly = (bWantBrowserView || ( classname == QString("KParts::ReadOnlyPart") ));
 
   KParts::ReadWritePart *part = new KateDocument (bWantSingleView, bWantBrowserView, parentWidget, widgetName, parent, name);
-  part->setReadWrite( bWantReadOnly );
+  part->setReadWrite( !bWantReadOnly );
 
   return part;
 }
