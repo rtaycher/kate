@@ -1,0 +1,63 @@
+<?xml version="1.01" encoding="UTF-8"?><!DOCTYPE language>
+<language name="RPM Spec" extensions="*.spec" mimetype="" casesensitive="1">
+  <highlighting>
+    <keywords>
+        <keyword> Name </keyword>
+                <keyword> Summary </keyword>
+                <keyword> Version </keyword>
+                <keyword> Release </keyword>
+                <keyword> Source </keyword>
+                <keyword> Group </keyword>
+                <keyword> BuildRoot </keyword>
+                <keyword> Copyright </keyword>
+                <keyword> Packager </keyword>
+                <keyword> Url </keyword>
+                <keyword> URL </keyword>
+                <keyword> Prefix </keyword>
+                <keyword> Requires </keyword>
+                <keyword> BuildRequires </keyword>
+                <keyword> Serial </keyword>
+                <keyword> Vendor </keyword>
+                <keyword> License </keyword>
+    </keywords>
+    <types>
+      <type> GPL </type>
+      <type> LGPL </type>
+      <type> Artistic </type>
+    </types>
+    <contexts>
+
+      <context attribute="0" lineEndContext="0">
+         <item name="keyword" attribute="1" context="0"/>
+         <item name="Data Type" attribute="5" context="0"/>
+         <item name="RegExpr" attribute="2" context="0" String="%[a-zA-Z0-9_]*" />
+         <item name="CharDetect" attribute="3" context="1" char="#" />
+         <item name="RegExpr" attribute="1" context="2" String="\{[a-zA-Z0-9_]*" />
+         <item name="RegExpr" attribute="4" context="3" String="&lt;\s*[a-zA-Z0-9_@\.]*" />
+         <item name="RegExpr" attribute="5" context="0" String="\$[a-zA-Z0-9_]*" />
+         <item name="RegExpr" attribute="1" context="0" String="(Source|Patch)[0-9]*" />
+         <item name="RegExpr" attribute="1" context="0" String="^\*.*" />    <!-- ChangeLog -->
+           <item name="Int" attribute="4" context="0" />
+   </context>
+
+       <context attribute="3" lineEndContext="0"/>
+
+       <context attribute="1" lineEndContext="0">
+          <item name="CharDetect" attribute="1" char="}" />
+       </context>
+
+       <context attribute="4" lineEndContext="0">
+           <item name="CharDetect" attribute="4" char="&gt;" />
+       </context>
+
+    </contexts>
+    <itemDatas>
+      <itemData name="Normal Text" defStyleNum="dsNormal"/>
+      <itemData name="Keyword"  defStyleNum="dsKeyword"/>
+      <itemData name="Red"  defStyleNum="dsString"/>
+      <itemData name="Comment"  defStyleNum="dsComment"/>
+      <itemData name="Blue"  defStyleNum="dsDecVal"/>
+      <itemData name="Data" defStyleNum="dsDataType"/>
+    </itemDatas>
+  </highlighting>
+</language>
