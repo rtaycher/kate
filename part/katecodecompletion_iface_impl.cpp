@@ -49,7 +49,7 @@ CodeCompletion_Impl::CodeCompletion_Impl(KateView *view):QObject(view),m_view(vi
   m_pArgHint = new KDevArgHint ( m_view );
   connect(m_pArgHint,SIGNAL(argHintHided()),SIGNAL(argHintHided()));
 
-  connect(m_view, SIGNAL ( newCurPos() ), this, SLOT ( slotCursorPosChanged () ) );
+  connect(m_view, SIGNAL ( cursorPositionChanged() ), this, SLOT ( slotCursorPosChanged () ) );
 }
 
 void CodeCompletion_Impl::showCompletionBox(QValueList<KTextEditor::CompletionEntry> complList,int offset){
