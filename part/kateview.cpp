@@ -66,7 +66,7 @@
 #include <kaction.h>
 #include <kstdaction.h>
 #include <kparts/event.h>
-#include <kxmlgui.h>
+#include <kxmlguifactory.h>
 #include <dcopclient.h>
 #include <qregexp.h>
 #include <kwin.h>
