@@ -444,7 +444,7 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
   QWhatsThis::add( leCmdLine, i18n(
       "If you specify a name here, you can invoke the command from the view "
       "command lines with exttool-the_name_you_specified_here. "
-      "Please don't use spaces or tabs in the name"));
+      "Please do not use spaces or tabs in the name."));
 }
 
 void KateExternalToolServiceEditor::slotOk()
