@@ -22,6 +22,7 @@
 #include <klibloader.h>
 #include <kparts/part.h>
 #include <klocale.h>
+#include <kglobal.h>
 #include <qlabel.h>
 
 KantConsole::KantConsole (QWidget* parent, const char* name) : QWidget (parent, name)
@@ -38,6 +39,7 @@ KantConsole::KantConsole (QWidget* parent, const char* name) : QWidget (parent, 
 		"KParts::ReadOnlyPart"));
 	  if (part)
 	    {
+              KGlobal::locale()->insertCatalogue("konsole");
               part->widget()->show();
               lo->addWidget(part->widget());
               connect ( part, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
