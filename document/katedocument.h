@@ -52,6 +52,9 @@
 #include "katebuffer.h"
 #include "katetextline.h"
 
+
+#include <qptrdict.h>
+
 class KateCmd;
 
 #include "../interfaces/document.h"
@@ -253,6 +256,7 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     int highlightNum() {return hlManager->findHl(m_highlight);}
     int numAttribs() {return m_numAttribs;}
     Attribute *attribs() {return m_attribs;}
+    void setDontChangeHlOnSave();
 
   protected:
     void setHighlight(int n);
@@ -521,6 +525,43 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
 
   public slots:
      void applyWordWrap ();
+
+  private:
+
+	class KateDocPrivate
+	{
+		public:
+	        bool hlSetByUser;
+	};
+ 
+ 
+// BCI: Add a real d-pointer in the next BIC release
+static QPtrDict<KateDocPrivate>* d_ptr;
+static void cleanup_d_ptr()
+      {
+          delete d_ptr;
+      }
+ 
+KateDocPrivate* d( const KateDocument* foo )
+      {
+           if ( !d_ptr ) {
+                     d_ptr = new QPtrDict<KateDocPrivate>;
+                     //qAddPostRoutine( cleanup_d_ptr );
+                }
+                KateDocPrivate* ret = d_ptr->find( (void*) foo );
+                if ( ! ret ) {
+                        ret = new KateDocPrivate;
+                        d_ptr->replace( (void*) foo, ret );
+                }
+                return ret;
+      }
+ 
+void delete_d( const KateDocument* foo )
+     {
+          if ( d_ptr )
+              d_ptr->remove( (void*) foo );
+     }
+
 };
 
 #endif

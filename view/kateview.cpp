@@ -2580,8 +2580,14 @@ int KateView::getHl() {
   return myDoc->highlightNum();
 }
 
+void KateView::setDontChangeHlOnSave()
+{
+    myDoc->setDontChangeHlOnSave();
+}
+
 void KateView::setHl(int n) {
   myDoc->setHighlight(n);
+  myDoc->setDontChangeHlOnSave();
   myDoc->updateViews();
 }
 

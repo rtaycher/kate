@@ -35,7 +35,6 @@
     Boston, MA 02111-1307, USA.
 */
 
-
 #include "katedocument.h"
 #include "katedocument.moc"
 
@@ -132,6 +131,9 @@ QStringList KateDocument::replaceWithList = QStringList();
 
 uint KateDocument::uniqueID = 0;
 
+QPtrDict<KateDocument::KateDocPrivate>* KateDocument::d_ptr = 0;    
+
+
 KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
                                            QWidget *parentWidget, const char *widgetName,
                                            QObject *, const char *)
@@ -140,6 +142,7 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
     myFontMetrics (myFont), myFontMetricsBold (myFontBold), myFontMetricsItalic (myFontItalic), myFontMetricsBI (myFontBI),
     hlManager(HlManager::self ())
 {
+  d(this)->hlSetByUser = false;  
   PreHighlightedTill=0;
   RequestPreHighlightTill=0;
   setInstance( KateFactory::instance() );
@@ -205,6 +208,11 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
     view->show();
     setWidget( view );
   }
+}
+
+void KateDocument::setDontChangeHlOnSave()
+{
+  d(this)->hlSetByUser = true;
 }
 
 void KateDocument::setFont (QFont font)
@@ -278,6 +286,7 @@ KateDocument::~KateDocument()
     m_views.clear();
     m_views.setAutoDelete( false );
   }
+  delete_d(this);
 }
 
 bool KateDocument::openFile()
@@ -355,6 +364,8 @@ bool KateDocument::saveFile()
   fileInfo->setFile (m_file);
   setMTime();
 
+  if (!(d(this)->hlSetByUser))
+  {
   int hl = hlManager->wildcardFind( m_file );
 
   if (hl == -1)
@@ -377,7 +388,7 @@ bool KateDocument::saveFile()
   }
 
   setHighlight(hl);
-
+  }
   emit fileNameChanged ();
 
   return (f.status() == IO_Ok);

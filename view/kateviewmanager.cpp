@@ -666,6 +666,7 @@ void KateViewManager::slotSetHl (int n)
   if (activeView() == 0) return;
 
   activeView()->setHl(n);
+  activeView()->setDontChangeHlOnSave();
 }
 
 void KateViewManager::toggleBookmark ()

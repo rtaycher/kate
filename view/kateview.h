@@ -706,6 +706,9 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
     */
     void writeSessionConfig(KConfig *);
 
+
+  public:
+	void setDontChangeHlOnSave();
   // printing
   public slots:
     void printDlg ();
