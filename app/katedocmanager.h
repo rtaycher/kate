@@ -31,6 +31,7 @@ class KateDocManager : public Kate::DocManager
 
   friend class KateConfigDialog;
   friend class KateMainWindow;
+  friend class KateViewManager;
 
   public:
     KateDocManager ();
@@ -63,6 +64,7 @@ class KateDocManager : public Kate::DocManager
     QPtrList<Kate::Document> docList;
     Kate::Document *myCurrentDoc;
     class KLibFactory *factory;
+    bool myfirstDoc;
 
   signals:
     void documentCreated (Kate::Document *doc);

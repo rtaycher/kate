@@ -110,6 +110,7 @@ class Document : public KTextEditor::Document, public KTextEditor::EditInterface
     virtual void setDocName (QString ) { ; };
 
     virtual ActionMenu *hlActionMenu (const QString& , QObject* =0, const char* = 0) = 0L;
+    virtual ActionMenu *exportActionMenu (const QString& , QObject* =0, const char* = 0) = 0L;
 
   public slots:
     // clear buffer/filename - update the views

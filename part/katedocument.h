@@ -380,6 +380,7 @@ class KateDocument : public Kate::Document
     Kate::ConfigPage *hlConfigPage (QWidget *);
     
     Kate::ActionMenu *hlActionMenu (const QString& text, QObject* parent = 0, const char* name = 0);
+    Kate::ActionMenu *exportActionMenu (const QString& text, QObject* parent = 0, const char* name = 0);
 
   protected:
     //

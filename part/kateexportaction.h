@@ -20,38 +20,30 @@
 
 #include "kateglobal.h"
 
+#include "../interfaces/document.h"
+
 #include <kaction.h>
 #include <qstringlist.h>
+#include <qguardedptr.h>
 
-class KateExportAction: public KActionMenu
+class KateExportAction: public Kate::ActionMenu
 {
 	Q_OBJECT
 public:
-	KateExportAction( QObject *related, const QString& text, QObject* parent = 0,
-		const char* name = 0):KActionMenu(text, parent ,
-		name){init(related);}
-
-	KateExportAction( QObject *related, const QString& text, const QIconSet& icon,
-		 QObject* parent = 0, const char* name = 0 )
-		: KActionMenu(text, icon, parent, name){init(related);}
-
-	KateExportAction( QObject *related,const QString& text, const QString& icon,
-                QObject* parent = 0, const char* name = 0 )
-		:KActionMenu(text,icon, parent, name ){init(related);}
-
-	KateExportAction( QObject* related, QObject* parent = 0, const char* name = 0 )
-    		:KActionMenu( parent, name) {init(related);}
+	KateExportAction(const QString& text, QObject* parent = 0, const char* name = 0)
+       : Kate::ActionMenu(text, parent, name) { init(); };
 
 	~KateExportAction(){;}
+      
+   void updateMenu (Kate::Document *doc);
+
 private:
-	QObject *related;
+	QGuardedPtr<Kate::Document>  myDoc;
 	QStringList filter;
-	void init(QObject *related_);
+	void init();
+
 protected slots:
 	void filterChoosen(int);
-
-signals:
-	void exportAs(const QString&);
 };
 
 #endif

@@ -126,9 +126,9 @@ bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, 
   {
     view->getDoc()->setDocName (doc->docName ());
   }
-
-  if (((KateMainWindow *)topLevelWidget ())->setHighlight == 0L)
-    ((KateMainWindow *)topLevelWidget ())->setHighlight = view->getDoc()->hlActionMenu (i18n("&Highlight Mode"), ((KateMainWindow *)topLevelWidget ())->actionCollection(), "set_highlight");
+  
+  if (docManager->myfirstDoc)
+    view->getDoc()->setDocName (i18n("Untitled %1").arg(doc->documentNumber()));
 
   view->installPopup ((QPopupMenu*)((KMainWindow *)topLevelWidget ())->factory()->container("view_popup", (KMainWindow *)topLevelWidget ()) );
   connect(view,SIGNAL(cursorPositionChanged()),this,SLOT(statusMsg()));
@@ -737,16 +737,39 @@ void KateViewManager::openURL (KURL url)
 
 void KateViewManager::openURLReal (KURL url)
 {
-  Kate::View *cv = activeView();
+  // special handling if still only the first initial doc is there
+  if (docManager->myfirstDoc)
+  {
+    createView (false, KURL(), 0L, (Kate::Document *)docManager->docList.at(0));
+    docManager->docList.at(0)->setEncoding(myEncoding);
+    
+    if (docManager->docList.at(0)->openURL (url))
+    {
+      ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
+      docManager->docList.at(0)->setDocName (docManager->docList.at(0)->url().filename());
+    }
+
+    setWindowCaption();
+
+    docManager->myfirstDoc = false;
+    
+    return;
+  }
 
   if ( !docManager->isOpen( url ) )
   {
+    Kate::View *cv = activeView();
+
     if (cv && !cv->getDoc()->isModified() && cv->getDoc()->url().isEmpty())
     {
-		  cv->getDoc()->setEncoding(myEncoding);
+      cv->getDoc()->setEncoding(myEncoding);
+
       if (cv->getDoc()->openURL (url))
+      {
         ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
-      cv->getDoc()->setDocName (cv->getDoc()->url().filename());
+        cv->getDoc()->setDocName (cv->getDoc()->url().filename());
+      }
+
       setWindowCaption();
     }
     else

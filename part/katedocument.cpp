@@ -25,6 +25,7 @@
 #include "katetextline.h"
 #include "katecmd.h"
 #include "kateglobal.h"
+#include "kateexportaction.h"
 
 #include <qfileinfo.h>
 #include <qfile.h>
@@ -4303,7 +4304,15 @@ Kate::ActionMenu *KateDocument::hlActionMenu (const QString& text, QObject* pare
 {
   KateViewHighlightAction *menu = new KateViewHighlightAction (text, parent, name);
   menu->updateMenu (this);
-  
+
+  return (Kate::ActionMenu *)menu;
+}
+
+Kate::ActionMenu *KateDocument::exportActionMenu (const QString& text, QObject* parent, const char* name)
+{
+  KateExportAction *menu = new KateExportAction (text, parent, name);
+  menu->updateMenu (this);
+
   return (Kate::ActionMenu *)menu;
 }
 

@@ -22,17 +22,26 @@
 #include <klocale.h>
 
 
-void KateExportAction::init(QObject *related_)
+void KateExportAction::init()
 {
 	filter.clear();
 	filter<<QString("kate_html_export");
 	popupMenu()->insertItem (i18n("&HTML..."),0);
 	connect(popupMenu(),SIGNAL(activated(int)),this,SLOT(filterChoosen(int)));
-	related=related_;
-//	connect(popupMenu(),SIGNAL(aboutToShow()),this,SLOT(slotAboutToShow()));
+	myDoc=0L;
+}
+
+void KateExportAction::updateMenu (Kate::Document *doc)
+{
+  myDoc = doc;
 }
 
 void KateExportAction::filterChoosen(int id)
 {
-	emit exportAs(*filter.at(id));
+  Kate::Document *doc = myDoc;
+
+  if (!doc)
+    return;
+
+	doc->exportAs(*filter.at(id));
 }

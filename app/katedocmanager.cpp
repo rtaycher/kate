@@ -25,6 +25,9 @@ KateDocManager::KateDocManager () : Kate::DocManager ()
   docList.setAutoDelete(true);
   myCurrentDoc = 0L;
   factory = KLibLoader::self()->factory( "libkatepart" );
+  
+  createDoc ();
+  myfirstDoc = true;
 }
 
 KateDocManager::~KateDocManager ()

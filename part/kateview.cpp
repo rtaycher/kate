@@ -1442,8 +1442,7 @@ void KateView::setupActions()
       KStdAction::gotoLine(this, SLOT(gotoLine()), myDoc->actionCollection(), "goto_line" );
       new KAction(i18n("&Configure Editor..."), 0, myDoc, SLOT(configDialog()),myDoc->actionCollection(), "set_confdlg");
       setHighlight = myDoc->hlActionMenu (i18n("&Highlight Mode"),myDoc->actionCollection(),"set_highlight");
-      connect(new KateExportAction(this,i18n("&Export"),myDoc->actionCollection(),"file_export"),SIGNAL(exportAs(const QString&)),
-      		myDoc, SLOT(exportAs(const QString&)));
+      myDoc->exportActionMenu (i18n("&Export"),myDoc->actionCollection(),"file_export");
       KStdAction::selectAll(myDoc, SLOT(selectAll()), myDoc->actionCollection(), "select_all");
       new KAction(i18n("Dese&lect All"), 0, myDoc, SLOT(clearSelection ()),
                 myDoc->actionCollection(), "unselect_all");
@@ -1463,8 +1462,7 @@ void KateView::setupActions()
       KStdAction::gotoLine(this, SLOT(gotoLine()), actionCollection());
       new KAction(i18n("&Configure Editor..."), 0, myDoc, SLOT(configDialog()),actionCollection(), "set_confdlg");
       setHighlight = myDoc->hlActionMenu (i18n("&Highlight Mode"),actionCollection(),"set_highlight");
-      connect(new KateExportAction(this,i18n("&Export"),actionCollection(),"file_export"),SIGNAL(exportAs(const QString&)),
-      		myDoc, SLOT(exportAs(const QString&)));
+      myDoc->exportActionMenu (i18n("&Export"),actionCollection(),"file_export");
       KStdAction::selectAll(myDoc, SLOT(selectAll()), actionCollection());
       new KAction(i18n("Dese&lect All"), 0, myDoc, SLOT(clearSelection()),
                 actionCollection(), "edit_deselectAll");

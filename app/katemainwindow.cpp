@@ -107,6 +107,8 @@ KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_
     filelistDock->undock();
     fileselectorDock->undock();
   }
+
+  setAutoSaveSettings( QString::fromLatin1("MainWindow"), false );
 }
 
 KateMainWindow::~KateMainWindow()
@@ -281,13 +283,12 @@ void KateMainWindow::setupActions()
   settingsShowFullPath = new KToggleAction(i18n("Show Full &Path in Title"), 0, this, SLOT(slotSettingsShowFullPath()), actionCollection(), "settings_show_full_path");
   settingsShowToolbar = KStdAction::showToolbar(this, SLOT(slotSettingsShowToolbar()), actionCollection(), "settings_show_toolbar");
   settingsConfigure = KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
+  
+  setHighlight = docManager->docList.at(0)->hlActionMenu (i18n("&Highlight Mode"), actionCollection(), "set_highlight");
+  exportAs = docManager->docList.at(0)->exportActionMenu (i18n("&Export"), actionCollection(),"file_export");
 
   connect(viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
   connect(viewManager,SIGNAL(statChanged()),this,SLOT(slotCurrentDocChanged()));
-
-  setHighlight = 0L;
-//  connect (new KateExportAction(viewManager,i18n("&Export"),actionCollection(),"file_export"),
-//	SIGNAL(exportAs(const QString&)),viewManager,SLOT(exportAs(const QString&)));
 
   slotWindowActivated ();
 }
@@ -422,11 +423,8 @@ void KateMainWindow::slotWindowActivated ()
     }
 
     viewBorder->setChecked(viewManager->activeView()->iconBorder());
-    
-    if (setHighlight == 0L)
-      setHighlight = viewManager->activeView()->getDoc()->hlActionMenu (i18n("&Highlight Mode"), actionCollection(), "set_highlight");
-
     setHighlight->updateMenu (viewManager->activeView()->getDoc());
+    exportAs->updateMenu (viewManager->activeView()->getDoc());
   }
 
   if (viewManager->viewCount ()  > 1)
@@ -477,10 +475,6 @@ void KateMainWindow::slotCurrentDocChanged()
   windowPrev->plug (documentMenu);
   documentMenu->insertSeparator ();
   scriptMenu->plug (documentMenu);
-  
-  if (setHighlight == 0L)
-    setHighlight = viewManager->activeView()->getDoc()->hlActionMenu (i18n("&Highlight Mode"), actionCollection(), "set_highlight");
-
   setHighlight->plug (documentMenu);
   setHighlight->updateMenu (viewManager->activeView()->getDoc());
 
