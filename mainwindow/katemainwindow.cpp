@@ -135,7 +135,6 @@ void KateMainWindow::setupMainWindow ()
   fileselector->dirOperator()->setView(KFile::Simple);
   sidebar->addWidget (fileselector, i18n("Fileselector"));
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileViewItem*)),this,SLOT(fileSelected(const KFileViewItem*)));
-  sidebar->addWidget(new QLabel("hallo",this),"Last Element - test only");
   statusBar()->hide();
 }
 
