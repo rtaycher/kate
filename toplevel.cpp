@@ -125,7 +125,7 @@ bool TopLevel::queryClose()
 bool TopLevel::queryExit()
 {
   writeConfig();
-  kapp->config()->sync();
+  KWriteFactory::instance()->config()->sync();
 
   return true;
 }
@@ -314,7 +314,7 @@ void TopLevel::print(bool dialog)
     }
   }
 
-  KTextPrintConfig::print(this, kapp->config(), dialog, title,
+  KTextPrintConfig::print(this, KWriteFactory::instance()->config(), dialog, title,
     kWrite->numLines(), this, SLOT(doPrint(KTextPrint &)));
 }
 
@@ -501,7 +501,7 @@ void TopLevel::readConfig() {
   KConfig *config;
   int w, h;
 
-  config = kapp->config();
+  config = KWriteFactory::instance()->config();
 
   config->setGroup("General Options");
   w = config->readNumEntry("Width", 550);
@@ -519,7 +519,7 @@ void TopLevel::writeConfig()
 {
   KConfig *config;
 
-  config = kapp->config();
+  config = KWriteFactory::instance()->config();
 
   config->setGroup("General Options");
   config->writeEntry("Width", width());
