@@ -494,6 +494,8 @@ KateExternalToolsConfigWidget::KateExternalToolsConfigWidget( QWidget *parent, c
   lo->addWidget( btnMoveDwn, 3, 4 );
   connect( btnMoveDwn, SIGNAL(clicked()), this, SLOT(slotMoveDown()) );
 
+  connect( lbTools, SIGNAL( doubleClicked ( QListBoxItem * ) ), this,  SLOT( slotEdit() ) );
+
   lo->setRowStretch( 1, 1 );
   lo->setRowStretch( 4, 1 );
   lo->setColStretch( 0, 1 );
@@ -543,7 +545,7 @@ void KateExternalToolsConfigWidget::reload()
         new ToolItem( lbTools, t->icon.isEmpty() ? blankIcon() : SmallIcon( t->icon ), t );
     }
   }
-
+  delete config;
 
 }
 
@@ -586,6 +588,7 @@ void KateExternalToolsConfigWidget::apply()
   config->writeEntry( "tools", tools );
 
   config->sync();
+  delete config;
 }
 
 void KateExternalToolsConfigWidget::slotSelectionChanged()
