@@ -730,18 +730,11 @@ void KateViewManager::slotSetHl (int n)
   activeView()->setHl(n);
 }
 
-void KateViewManager::addBookmark ()
+void KateViewManager::toggleBookmark ()
 {
   if (activeView() == 0) return;
 
-  activeView()->addBookmark();
-}
-
-void KateViewManager::setBookmark ()
-{
-  if (activeView() == 0) return;
-
-  activeView()->setBookmark();
+  activeView()->toggleBookmark();
 }
 
 void KateViewManager::clearBookmarks ()

@@ -69,17 +69,16 @@
     <Action name="go_forward"/>
     <Action name="doc_list"/>
     <Separator />
-    <menu name="bookmarks">
-        <text>&amp;Bookmarks</text>
-        <Action name="edit_bookmarkAdd" />
-        <Action name="edit_bookmarkSet" />
-        <Action name="edit_bookmarksClear" />
-        <Action name="edit_bookmarkList" />
-    </menu>
     <Action name="set_highlight"/>
     <Action name="set_eol"/>
     <Separator />
     <Action name="document_reload" />
+  </Menu>
+
+  <Menu name="bookmarks"><text>&amp;Bookmarks</text>
+    <Action name="edit_bookmarkToggle" />
+    <Action name="edit_bookmarksClear" />
+    <Separator />
   </Menu>
 
   <Merge/>

@@ -103,8 +103,7 @@ class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOP
     KAction *editReplace;
     KAction *editIndent;
     KAction *editUnIndent;
-    KAction *bookmarkAdd;
-    KAction *bookmarkSet;
+    KAction *bookmarkToggle;
     KAction *bookmarkClear;
     KAction *toolsSpell;
     KAction *editCmd;
@@ -127,7 +126,7 @@ class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOP
     KAction* windowNext;
     KAction* windowPrev;
     KActionMenu *docListMenu;
-    KActionMenu *bookmarkMenu;
+    QPopupMenu *bookmarkMenu;
 
     KToggleAction* settingsShowSidebar;
     KToggleAction* settingsShowFullPath;

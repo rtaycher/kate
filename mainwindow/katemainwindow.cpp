@@ -101,11 +101,15 @@ KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_
 
   createGUI();
 
+  pluginManager->enableAllPluginsGUI (this);
+
   // connect settings menu aboutToshow
   QPopupMenu* pm_set = (QPopupMenu*)factory()->container("settings", this);
   connect(pm_set, SIGNAL(aboutToShow()), this, SLOT(settingsMenuAboutToShow()));
 
-  pluginManager->enableAllPluginsGUI (this);
+  // connect settings menu aboutToshow
+  bookmarkMenu = (QPopupMenu*)factory()->container("bookmarks", this);
+  connect(bookmarkMenu, SIGNAL(aboutToShow()), this, SLOT(bookmarkMenuAboutToShow()));
 
   readOptions(config);
 }
@@ -207,11 +211,8 @@ void KateMainWindow::setupActions()
 
   gotoLine = KStdAction::gotoLine(viewManager, SLOT(slotGotoLine()), actionCollection());
 
-  bookmarkAdd = new KAction(i18n("&Add Marker"), Qt::CTRL+Qt::Key_M, viewManager, SLOT(addBookmark()), actionCollection(), "edit_bookmarkAdd");
-  bookmarkSet = new KAction(i18n("&Set Marker..."), 0, viewManager, SLOT(setBookmark()), actionCollection(), "edit_bookmarkSet");
-  bookmarkClear = new KAction(i18n("&Clear Markers"), 0, viewManager, SLOT(clearBookmarks()), actionCollection(), "edit_bookmarksClear");
-  bookmarkMenu = new KActionMenu(i18n("&List of Markers"), actionCollection(), "edit_bookmarkList");
-  connect(bookmarkMenu->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(bookmarkMenuAboutToShow()));
+  bookmarkToggle = new KAction(i18n("&Toggle Bookmark"), Qt::CTRL+Qt::Key_M, viewManager, SLOT(toggleBookmark()), actionCollection(), "edit_bookmarkToggle");
+  bookmarkClear = new KAction(i18n("&Clear Bookmarks"), 0, viewManager, SLOT(clearBookmarks()), actionCollection(), "edit_bookmarksClear");
 
   toolsSpell = KStdAction::spelling(viewManager, SLOT(slotSpellcheck()), actionCollection());
 
@@ -554,13 +555,16 @@ void KateMainWindow::docListMenuAboutToShow()
 
 void KateMainWindow::bookmarkMenuAboutToShow()
 {
-  bookmarkMenu->popupMenu()->clear();
+  for (int z=3; (uint) z < bookmarkMenu->count(); z++)
+  {
+    bookmarkMenu->removeItemAt (z);
+  }
 
   QList<KateMark> list = viewManager->activeView()->doc()->marks();
   for (int i=0; (uint) i < list.count(); i++)
   {
     if (list.at(i)->type == 1)
-      bookmarkMenu->popupMenu()->insertItem ( QString("Bookmark %1 - Line %2").arg(i).arg(list.at(i)->line), i );
+      bookmarkMenu->insertItem ( QString("Bookmark %1 - Line %2").arg(i).arg(list.at(i)->line), i );
   }
 
 }

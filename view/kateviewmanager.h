@@ -179,8 +179,7 @@ class KateViewManager : public KateViewManagerIface
     void activateNextView();
     void activatePrevView();
 
-    void addBookmark();
-    void setBookmark();
+    void toggleBookmark();
     void clearBookmarks();
 
     void setEol(int);

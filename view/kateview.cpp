@@ -3235,6 +3235,18 @@ void KateView::gotoMark (KateMark *mark)
   myDoc->updateViews(this);
 }
 
+void KateView::toggleBookmark ()
+{
+  TextLine::Ptr line = myDoc->getTextLine (currentLine());
+
+  if (line->mark() == 1)
+    line->setMark(0);
+  else
+    line->setMark(1);
+
+  myDoc->updateViews();
+}
+
 KateBrowserExtension::KateBrowserExtension( KateDocument *doc, KateView *view )
 : KParts::BrowserExtension( doc, "katepartbrowserextension" )
 {
