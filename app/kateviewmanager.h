@@ -43,17 +43,17 @@ class KateViewManager : public QObject
   Q_OBJECT
 
   public:
-    KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWidget);
+    KateViewManager (KateMainWindow *parent);
     ~KateViewManager ();
 
     Kate::ViewManager *viewManager () const { return m_viewManager; };
-    
+
     KateViewSpaceContainer *activeContainer () { return m_currentContainer; }
 
     QPtrList<KateViewSpaceContainer> *containers() { return &m_viewSpaceContainerList; }
-    
+
     void updateViewSpaceActions ();
-    
+
   private:
     /**
      * create all actions needed for the view manager
@@ -93,7 +93,6 @@ class KateViewManager : public QObject
   private slots:
     void activateView ( Kate::View *view );
     void activateSpace ( Kate::View* v );
-    void slotViewChanged();
 
     void tabChanged(QWidget*);
 
@@ -108,7 +107,7 @@ class KateViewManager : public QObject
     void slotDocumentNew ();
     void slotDocumentOpen ();
     void slotDocumentClose ();
-    
+
     /** Splits the active viewspace horizontally */
     void slotSplitViewSpaceHoriz ();
     /** Splits the active viewspace vertically */
@@ -131,11 +130,11 @@ class KateViewManager : public QObject
 
   protected:
     friend class KateViewSpaceContainer;
-    
+
     bool eventFilter(QObject *o,QEvent *e);
-    
+
     QGuardedPtr<Kate::View> guiMergedView;
-    
+
   signals:
     void statusChanged (Kate::View *, int, int, int, bool, int, const QString &);
     void statChanged ();
@@ -147,7 +146,6 @@ class KateViewManager : public QObject
     KateViewSpaceContainer *m_currentContainer;
 
     KateMainWindow *m_mainWindow;
-    KMDI::TabWidget *m_tabWidget;
     bool m_init;
 
     QToolButton *m_closeTabButton;

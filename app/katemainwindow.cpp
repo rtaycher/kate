@@ -182,7 +182,7 @@ void KateMainWindow::setupMainWindow ()
   greptool->show();
   greptool->hide();
 
-  m_viewManager = new KateViewManager (this, tabWidget());
+  m_viewManager = new KateViewManager (this);
 
   filelist = new KateFileList (this, m_viewManager, this/*filelistDock*/, "filelist");
   addToolView(KDockWidget::DockLeft,filelist,SmallIcon("kmultiple"), i18n("Documents"));

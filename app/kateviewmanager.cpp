@@ -53,15 +53,15 @@
 #include <qtooltip.h>
 //END Includes
 
-KateViewManager::KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWidget)
+KateViewManager::KateViewManager (KateMainWindow *parent)
  : QObject  (parent),
-  showFullPath(false), m_mainWindow(parent), m_tabWidget(tabWidget)
+  showFullPath(false), m_mainWindow(parent)
 {
   // while init
   m_init=true;
 
   // some stuff for the tabwidget
-  m_tabWidget->setTabReorderingEnabled( true );
+  m_mainWindow->tabWidget()->setTabReorderingEnabled( true );
 
   // important, set them up, as we use them in other methodes
   setupActions ();
@@ -70,9 +70,9 @@ KateViewManager::KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWi
 
   m_viewManager = new Kate::ViewManager (this);
   m_currentContainer=0;
- connect(m_tabWidget,SIGNAL(currentChanged(QWidget*)),this,SLOT(tabChanged(QWidget*)));
+ connect(m_mainWindow->tabWidget(),SIGNAL(currentChanged(QWidget*)),this,SLOT(tabChanged(QWidget*)));
  slotNewTab();
- tabChanged(m_tabWidget->currentPage());
+ tabChanged(m_mainWindow->tabWidget()->currentPage());
 
   // no memleaks
   m_viewSpaceContainerList.setAutoDelete(true);
@@ -140,21 +140,21 @@ void KateViewManager::setupActions ()
   /**
    * buttons for tabbing
    */
-  QToolButton *b = new QToolButton( m_tabWidget );
+  QToolButton *b = new QToolButton( m_mainWindow->tabWidget() );
   connect( b, SIGNAL( clicked() ),
              this, SLOT( slotNewTab() ) );
   b->setIconSet( SmallIcon( "tab_new" ) );
   b->adjustSize();
   QToolTip::add(b, i18n("Open a new tab"));
-  m_tabWidget->setCornerWidget( b, TopLeft );
+  m_mainWindow->tabWidget()->setCornerWidget( b, TopLeft );
 
-  b = m_closeTabButton = new QToolButton( m_tabWidget );
+  b = m_closeTabButton = new QToolButton( m_mainWindow->tabWidget() );
   connect( b, SIGNAL( clicked() ),
             this, SLOT( slotCloseTab() ) );
   b->setIconSet( SmallIcon( "tab_remove" ) );
   b->adjustSize();
   QToolTip::add(b, i18n("Close the current tab"));
-  m_tabWidget->setCornerWidget( b, TopRight );
+  m_mainWindow->tabWidget()->setCornerWidget( b, TopRight );
 }
 
 void KateViewManager::updateViewSpaceActions ()
@@ -176,10 +176,10 @@ void KateViewManager::tabChanged(QWidget* widget) {
 
   }
 
-  m_closeTab->setEnabled(m_tabWidget->count() > 1);
-  m_activateNextTab->setEnabled(m_tabWidget->count() > 1);
-  m_activatePrevTab->setEnabled(m_tabWidget->count() > 1);
-  m_closeTabButton->setEnabled (m_tabWidget->count() > 1);
+  m_closeTab->setEnabled(m_mainWindow->tabWidget()->count() > 1);
+  m_activateNextTab->setEnabled(m_mainWindow->tabWidget()->count() > 1);
+  m_activatePrevTab->setEnabled(m_mainWindow->tabWidget()->count() > 1);
+  m_closeTabButton->setEnabled (m_mainWindow->tabWidget()->count() > 1);
 
   updateViewSpaceActions ();
 }
@@ -190,9 +190,9 @@ void KateViewManager::slotNewTab()
   if (m_currentContainer) {
     if (m_currentContainer->activeView()) documentNumber=m_currentContainer->activeView()->getDoc()->documentNumber();
   }
-  KateViewSpaceContainer *container=new KateViewSpaceContainer (m_tabWidget, this, m_mainWindow);
+  KateViewSpaceContainer *container=new KateViewSpaceContainer (m_mainWindow->tabWidget(), this, m_mainWindow);
   m_viewSpaceContainerList.append(container);
-  m_tabWidget->addTab (container, "");
+  m_mainWindow->tabWidget()->addTab (container, "");
   Q_ASSERT (m_currentContainer==container);
   container->installEventFilter(this);
   connect(container,SIGNAL(viewChanged()),this,SIGNAL(viewChanged()));
@@ -227,35 +227,35 @@ void KateViewManager::slotCloseTab()
 
 void KateViewManager::activateNextTab()
 {
-  if( m_tabWidget->count() <= 1 ) return;
+  if( m_mainWindow->tabWidget()->count() <= 1 ) return;
 
-  int iTab = m_tabWidget->currentPageIndex();
+  int iTab = m_mainWindow->tabWidget()->currentPageIndex();
 
   iTab++;
 
-  if( iTab == m_tabWidget->count() )
+  if( iTab == m_mainWindow->tabWidget()->count() )
     iTab = 0;
 
-  m_tabWidget->setCurrentPage( iTab );
+  m_mainWindow->tabWidget()->setCurrentPage( iTab );
 }
 
 void KateViewManager::activatePrevTab()
 {
-  if( m_tabWidget->count() <= 1 ) return;
+  if( m_mainWindow->tabWidget()->count() <= 1 ) return;
 
-  int iTab = m_tabWidget->currentPageIndex();
+  int iTab = m_mainWindow->tabWidget()->currentPageIndex();
 
   iTab--;
 
   if( iTab == -1 )
-    iTab = m_tabWidget->count() - 1;
+    iTab = m_mainWindow->tabWidget()->count() - 1;
 
-  m_tabWidget->setCurrentPage( iTab );
+  m_mainWindow->tabWidget()->setCurrentPage( iTab );
 }
 
 bool KateViewManager::eventFilter(QObject *o,QEvent *e) {
   if (e->type()==QEvent::CaptionChange) {
-    m_tabWidget->updateCaptionInView(static_cast<QWidget*>(o),static_cast<QWidget*>(o)->caption());
+    m_mainWindow->tabWidget()->updateCaptionInView(static_cast<QWidget*>(o),static_cast<QWidget*>(o)->caption());
   }
   return false;
 }
@@ -337,14 +337,6 @@ void KateViewManager::setViewActivationBlocked (bool block)
 {
   for (uint i=0;i<m_viewSpaceContainerList.count();i++)
     m_viewSpaceContainerList.at(i)->m_blockViewCreationAndActivation=block;
-}
-
-void KateViewManager::slotViewChanged()
-{
-#if 0
-  if ( activeView() && !activeView()->hasFocus())
-    activeView()->setFocus();
-#endif
 }
 
 void KateViewManager::activateNextView()
@@ -485,7 +477,7 @@ void KateViewManager::saveViewConfiguration(KConfig *config,const QString& group
 {
   config->setGroup(group);
   config->writeEntry("ViewSpaceContainers",m_viewSpaceContainerList.count());
-  config->writeEntry("Active ViewSpaceContainer", m_tabWidget->currentPageIndex());
+  config->writeEntry("Active ViewSpaceContainer", m_mainWindow->tabWidget()->currentPageIndex());
   for (uint i=0;i<m_viewSpaceContainerList.count();i++) {
     m_viewSpaceContainerList.at(i)->saveViewConfiguration(config,group+QString(":ViewSpaceContainer-%1:").arg(i));
   }
@@ -503,8 +495,8 @@ void KateViewManager::restoreViewConfiguration (KConfig *config, const QString& 
     m_viewSpaceContainerList.at(i)->restoreViewConfiguration(config,group+QString(":ViewSpaceContainer-%1:").arg(i));
   }
 
-  if (activeOne != m_tabWidget->currentPageIndex())
-    m_tabWidget->setCurrentPage (activeOne);
+  if (activeOne != m_mainWindow->tabWidget()->currentPageIndex())
+    m_mainWindow->tabWidget()->setCurrentPage (activeOne);
 }
 
 KateMainWindow *KateViewManager::mainWindow() {
