@@ -30,8 +30,15 @@
 #include <kwin.h>
 #include <ktip.h>
 
-KateApp::KateApp () : Kate::Application ()
-{                            
+KateApp::KateApp (bool forcedNewProcess, bool oldState) : Kate::Application ()
+{                       
+  if (forcedNewProcess)
+  {
+    config()->setGroup("KDE");
+    config()->writeEntry("MultipleInstances",oldState);
+    config()->sync();
+  } 
+    
   m_firstStart = true;
 
   m_mainWindows.setAutoDelete (false);
@@ -63,7 +70,7 @@ int KateApp::newInstance()
 {
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
     
-  if (!m_firstStart && args->isSet ("n"))
+  if (!m_firstStart && args->isSet ("w"))
     newMainWindow (); 
  
   raiseCurrentMainWindow ();

@@ -30,7 +30,7 @@ class KateApp : public Kate::Application
   Q_OBJECT
 
   public:
-    KateApp ();
+    KateApp (bool forcedNewProcess, bool oldState);
     ~KateApp ();         
     
     int newInstance();

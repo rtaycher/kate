@@ -20,12 +20,15 @@
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <kglobal.h>
+#include <kconfig.h>
+#include <kinstance.h>
 
 #include "kateapp.h"
 
 static KCmdLineOptions options[] =
 {
-    { "n", I18N_NOOP("open a new Kate Window (off by default)"), 0 },
+    { "n", I18N_NOOP("start a new Kate process (off by default)"), 0 },
+    { "w", I18N_NOOP("opens a new Kate window"), 0 },
     { "line <argument>",      I18N_NOOP("navigate to this line"), 0 },
     { "column <argument>",      I18N_NOOP("navigate to this column"), 0 },
     { "+file(s)",          I18N_NOOP("Files to load"), 0 },
@@ -75,9 +78,28 @@ int main( int argc, char **argv )
   data->setTranslator(I18N_NOOP("_: NAME OF TRANSLATORS\nYour names"), I18N_NOOP("_: EMAIL OF TRANSLATORS\nYour emails"));
 
   KCmdLineArgs::init (argc, argv, data);
-  KCmdLineArgs::addCmdLineOptions (options);
-    
+  KCmdLineArgs::addCmdLineOptions (options);   
   KateApp::addCmdLineOptions ();  
-  KateApp app;
+  KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
+   
+  bool newProcess = false;
+  bool oldState = false;
+  KInstance *instance = 0L;
+  KConfig *config = 0L;
+   
+  if (args->isSet ("n"))
+    newProcess = true;
+ 
+  if (newProcess)
+  {
+    instance = new KInstance (data);
+    config = instance->config();
+    config->setGroup("KDE");
+    oldState = config->readBoolEntry("MultipleInstances",false);
+    config->writeEntry("MultipleInstances",true);
+    config->sync();
+  }
+      
+  KateApp app (newProcess, oldState);
   return app.exec();
 }
