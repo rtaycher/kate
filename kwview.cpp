@@ -1522,7 +1522,7 @@ KWrite::~KWrite() {
   delete popup; //right mouse button popup
 }
 
-void KWrite::setCursorPosition( int line, int col, bool mark = false )
+void KWrite::setCursorPosition( int line, int col, bool /*mark*/ )
 {
   setCursorPositionInternal( line, col );
 }
@@ -1863,7 +1863,7 @@ void KWrite::setText(const QString &s) {
   kWriteDoc->updateViews();
 }
 
-void KWrite::insertText(const QString &s, bool mark = false) {
+void KWrite::insertText(const QString &s, bool /*mark*/) {
   VConfig c;
   kWriteView->getVConfig(c);
   kWriteDoc->insert(c, s);
