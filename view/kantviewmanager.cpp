@@ -451,6 +451,8 @@ void KantViewManager::slotWindowNext()
 
   if (id < 0)
     id =  docManager->docCount () - 1;
+
+  activateView (docManager->nthDoc(id)->docID());
 }
 
 void KantViewManager::slotWindowPrev()
@@ -459,6 +461,8 @@ void KantViewManager::slotWindowPrev()
 
   if (id >= docManager->docCount () )
     id = 0;
+
+  activateView (docManager->nthDoc(id)->docID());
 }
 
 void KantViewManager::slotDocumentNew ()
@@ -556,6 +560,8 @@ void KantViewManager::slotDocumentClose ()
       if (!done) return;
     }
   }
+
+  emit viewChanged ();
 }
 
 void KantViewManager::slotDocumentCloseAll ()
@@ -582,16 +588,6 @@ void KantViewManager::slotDocumentCloseAll ()
       if (!done) return;
     }
   }
-
-  /*
-  while (i <= viewCounter)
-  {
-    done = deleteView(activeView());
-
-    if (!done) return;
-    else
-      i++;
-  } */
 }
 
 void KantViewManager::slotUndo ()

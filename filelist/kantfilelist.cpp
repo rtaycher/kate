@@ -64,14 +64,13 @@ void KantFileList::slotDocumentDeleted (long docID)
   for (uint i = 0; i < count(); i++)
   {
     if (((KantFileListItem *) item (i)) ->docID() == docID)
-      {
-        // QT BUGFIX - if you remove the last item of a listbox it crashs after the next insert !!!!!
-        if (count() > 1)
-          removeItem( i );
-        else
-          clear();
-      }
+    {
+      if (count() > 1)
+        removeItem( i );
+      else
+        clear();
     }
+  }
 }
 
 void KantFileList::slotActivateView( QListBoxItem *item )
