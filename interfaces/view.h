@@ -168,10 +168,6 @@ class View : public KTextEditor::View
     */
     virtual void redoMultiple(int ) { ; };
     /**
-      Displays the undo history dialog.
-    */
-    virtual void undoHistory() { ; };
-    /**
       Moves the current line or the selection one position to the right.
     */
     virtual void indent() { ; };

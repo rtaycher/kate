@@ -11,7 +11,6 @@
   <Menu name="edit"><text>&amp;Edit</text>
     <Action name="edit_undo" />
     <Action name="edit_redo" />
-    <Action name="edit_undoHistory" />
     <Separator />
     <Action name="edit_cut" />
     <Action name="edit_copy" />

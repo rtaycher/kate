@@ -205,8 +205,7 @@ void KateMainWindow::setupActions()
 
   editUndo = KStdAction::undo(viewManager, SLOT(slotUndo()), actionCollection());
   editRedo = KStdAction::redo(viewManager, SLOT(slotRedo()), actionCollection());
-  editUndoHist = new KAction(i18n("Undo/Redo &History..."), "history", 0, viewManager, SLOT(slotUndoHistory()), actionCollection(), "edit_undoHistory");
-
+ 
   KStdAction::cut(viewManager, SLOT(slotCut()), actionCollection());
   KStdAction::copy(viewManager, SLOT(slotCopy()), actionCollection()) ;
   KStdAction::paste(viewManager, SLOT(slotPaste()), actionCollection());
@@ -459,15 +458,6 @@ void KateMainWindow::slotCurrentDocChanged()
   else
   {
     editRedo->setEnabled(true);
-  }
-
-  if (!(viewManager->activeView()->undoState() & 1) && !(viewManager->activeView()->undoState() & 2))
-  {
-    editUndoHist->setEnabled(false);
-  }
-  else
-  {
-    editUndoHist->setEnabled(true);
   }
 }
 

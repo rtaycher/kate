@@ -32,9 +32,6 @@
 #include "katebuffer.h"
 #include "katetextline.h"
 
-
-#include <qptrdict.h>
-
 class KateCmd;
 
 #include "../interfaces/document.h"
@@ -340,9 +337,6 @@ class KateDocument : public Kate::Document
 
   public:
     long needPreHighlight(long till);
-    bool hasMarkedText() {return (selectEnd >= selectStart);}
-    QString markedText(int flags);
-    void delMarkedText(VConfig &/*, bool undo = true*/);
 
     void tagLineRange(int line, int x1, int x2);
     void tagLines(int start, int end);

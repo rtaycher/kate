@@ -73,7 +73,6 @@
 #include <kdialogbase.h>
 
 #include "../document/katetextline.h"
-#include "kateundohistory.h"
 
 KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc) : QWidget(view)
 {
@@ -225,19 +224,19 @@ void KateViewInternal::doEditCommand(VConfig &c, int cmdNum)
 
   switch (cmdNum) {
     case KateView::cmReturn:
-      if (c.flags & KateView::cfDelOnInput) myDoc->delMarkedText(c);
+      if (c.flags & KateView::cfDelOnInput) myDoc->removeSelectedText();
       myDoc->newLine(c);
       //emit returnPressed();
       //e->ignore();
       return;
     case KateView::cmDelete:
-      if ((c.flags & KateView::cfDelOnInput) && myDoc->hasMarkedText())
-        myDoc->delMarkedText(c);
+      if ((c.flags & KateView::cfDelOnInput) && myDoc->hasSelection())
+        myDoc->removeSelectedText();
       else myDoc->del(c);
       return;
     case KateView::cmBackspace:
-      if ((c.flags & KateView::cfDelOnInput) && myDoc->hasMarkedText())
-        myDoc->delMarkedText(c);
+      if ((c.flags & KateView::cfDelOnInput) && myDoc->hasSelection())
+        myDoc->removeSelectedText();
       else myDoc->backspace(c);
       return;
     case KateView::cmKillLine:
@@ -247,7 +246,7 @@ void KateViewInternal::doEditCommand(VConfig &c, int cmdNum)
       myDoc->cut(c);
       return;
     case KateView::cmPaste:
-      if (c.flags & KateView::cfDelOnInput) myDoc->delMarkedText(c);
+      if (c.flags & KateView::cfDelOnInput) myDoc->removeSelectedText();
       myDoc->paste(c);
       return;
     case KateView::cmUndo:
@@ -997,7 +996,7 @@ void KateViewInternal::keyPressEvent(QKeyEvent *e) {
   getVConfig(c);
 
   if (!myView->doc()->isReadOnly()) {
-    if (c.flags & KateView::cfTabIndents && myDoc->hasMarkedText()) {
+    if (c.flags & KateView::cfTabIndents && myDoc->hasSelection()) {
       if (e->key() == Qt::Key_Tab) {
         myDoc->indent(c);
         myDoc->updateViews();
@@ -1222,7 +1221,7 @@ void KateViewInternal::timerEvent(QTimerEvent *e) {
 void KateViewInternal::doDrag()
 {
   dragInfo.state = diDragging;
-  dragInfo.dragObject = new QTextDrag(myDoc->markedText(0), this);
+  dragInfo.dragObject = new QTextDrag(myDoc->selection(), this);
   dragInfo.dragObject->dragCopy();
 }
 
@@ -1264,7 +1263,7 @@ void KateViewInternal::dropEvent( QDropEvent *event )
       if (priv) {
         // this is one of mine (this document), not dropped on the selection
         if (event->action() == QDropEvent::Move) {
-          myDoc->delMarkedText(c);
+          myDoc->removeSelectedText();
           getVConfig(c);
           cursor = c.cursor;
         } else {
@@ -1383,8 +1382,7 @@ void KateView::setupActions()
     // setup edit menu
     editUndo = KStdAction::undo(this, SLOT(undo()), actionCollection());
     editRedo = KStdAction::redo(this, SLOT(redo()), actionCollection());
-    editUndoHist = new KAction(i18n("Undo/Redo &History..."), 0, this, SLOT(undoHistory()),
-                               actionCollection(), "edit_undoHistory");
+
     KStdAction::cut(this, SLOT(cut()), actionCollection());
     KStdAction::copy(this, SLOT(copy()), actionCollection());
     KStdAction::paste(this, SLOT(paste()), actionCollection());
@@ -1501,8 +1499,6 @@ void KateView::slotFileStatusChanged()
 void KateView::slotNewUndo()
 {
     int state = undoState();
-
-    editUndoHist->setEnabled(state & 1 || state & 2);
 
     QString t = i18n("Und&o");   // it would be nicer to fetch the original string
     if (state & 1) {
@@ -1639,7 +1635,7 @@ void KateView::keyPressEvent( QKeyEvent *ev )
                VConfig c;
                shiftWordRight();
                myViewInternal->getVConfig(c);
-               myDoc->delMarkedText(c);
+               myDoc->removeSelectedText();
                myViewInternal->update();
             }
             else keyDelete();
@@ -1650,7 +1646,7 @@ void KateView::keyPressEvent( QKeyEvent *ev )
                VConfig c;
                shiftWordLeft();
                myViewInternal->getVConfig(c);
-               myDoc->delMarkedText(c);
+               myDoc->removeSelectedText();
                myViewInternal->update();
             }
             else backspace();
@@ -1995,23 +1991,6 @@ void KateView::redoMultiple(int count) {
   myDoc->updateViews();
 }
 
-void KateView::undoHistory()
-{
-  UndoHistory   *undoH;
-
-  undoH = new UndoHistory(this, this, "UndoHistory", true);
-
-  undoH->setCaption(i18n("Undo/Redo History"));
-
-  connect(this,SIGNAL(newUndo()),undoH,SLOT(newUndo()));
-  connect(undoH,SIGNAL(undo(int)),this,SLOT(undoMultiple(int)));
-  connect(undoH,SIGNAL(redo(int)),this,SLOT(redoMultiple(int)));
-
-  undoH->exec();
-
-  delete undoH;
-}
-
 static void kwview_addToStrList(QStringList &list, const QString &str) {
   if (list.count() > 0) {
     if (list.first() == str) return;
@@ -2026,7 +2005,7 @@ static void kwview_addToStrList(QStringList &list, const QString &str) {
 void KateView::find() {
   SearchDialog *searchDialog;
 
-  if (!myDoc->hasMarkedText()) searchFlags &= ~KateView::sfSelected;
+  if (!myDoc->hasSelection()) searchFlags &= ~KateView::sfSelected;
 
   searchDialog = new SearchDialog(this, myDoc->searchForList, myDoc->replaceWithList,
   searchFlags & ~KateView::sfReplace);
@@ -2064,7 +2043,7 @@ void KateView::replace() {
 
   if (doc()->isReadOnly()) return;
 
-  if (!myDoc->hasMarkedText()) searchFlags &= ~KateView::sfSelected;
+  if (!myDoc->hasSelection()) searchFlags &= ~KateView::sfSelected;
   searchDialog = new SearchDialog(this, myDoc->searchForList, myDoc->replaceWithList,
     searchFlags | KateView::sfReplace);
 
@@ -3005,7 +2984,7 @@ void KateBrowserExtension::print()
 
 void KateBrowserExtension::slotSelectionChanged()
 {
-  emit enableAction( "copy", m_doc->hasMarkedText() );
+  emit enableAction( "copy", m_doc->hasSelection() );
 }
 
 const char*bookmark_xpm[]={

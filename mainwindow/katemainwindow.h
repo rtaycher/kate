@@ -80,7 +80,6 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
   private:
     KAction *editUndo;
     KAction *editRedo;
-    KAction *editUndoHist;
     KAction *bookmarkToggle;
     KAction *bookmarkClear;
 

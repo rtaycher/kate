@@ -543,13 +543,6 @@ void KateViewManager::slotRedo ()
   activeView()->redo();
 }
 
-void KateViewManager::slotUndoHistory ()
-{
-  if (activeView() == 0) return;
-
-  activeView()->undoHistory();
-}
-
 void KateViewManager::slotCut ()
 {
   if (activeView() == 0) return;

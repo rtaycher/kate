@@ -142,7 +142,6 @@ class KateViewManager : public Kate::ViewManager
 
     void slotUndo ();
     void slotRedo ();
-    void slotUndoHistory ();
 
     void slotCut ();
     void slotCopy ();

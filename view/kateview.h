@@ -365,7 +365,7 @@ class KateView : public Kate::View
 
     void setupActions();
 
-    KAction *editUndo, *editRedo, *editUndoHist, *bookmarkToggle, *bookmarkClear;
+    KAction *editUndo, *editRedo, *bookmarkToggle, *bookmarkClear;
 
     KActionMenu *bookmarkMenu;
     KToggleAction *setVerticalSelection, *viewBorder;
@@ -507,10 +507,6 @@ class KateView : public Kate::View
       Called by slot redo().
     */
     void redoMultiple(int count);
-    /**
-      Displays the undo history dialog
-    */
-    void undoHistory();
     /**
       Moves the current line or the selection one position to the right
     */
