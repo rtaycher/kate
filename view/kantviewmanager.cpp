@@ -777,7 +777,8 @@ void KantViewManager::slotHlDlg ()
 
 void KantViewManager::setEol(int which)
 {
-  activeView()->setEol( which );
+  if (activeView())
+    activeView()->setEol( which );
 }
 
 void KantViewManager::slotSetHl (int n)
