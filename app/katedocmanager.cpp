@@ -33,7 +33,7 @@ KateDocManager::~KateDocManager ()
 
 Kate::Document *KateDocManager::createDoc ()
 {
-  KTextEditor::Document *doc = (KTextEditor::Document *) factory->create (this, "kate", "KTextEditor::Document");
+  KTextEditor::Document *doc = (KTextEditor::Document *) factory->create (0L, "kate", "KTextEditor::Document");
   docList.append((Kate::Document *)doc);
 
   emit documentCreated ((Kate::Document *)doc);

@@ -5,13 +5,13 @@ kate_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugindialogpage.cp
 	kateconsole.cpp katedocmanager.cpp katefilelist.cpp katefileselector.cpp \
 	katemainwindow.cpp katepluginmanager.cpp katesplitter.cpp \
 	kateviewmanager.cpp kateviewspace.cpp katemain.cpp \
-	kateappIface.skel kateIface.skel kategrepdialog.cpp
+	kateappIface.skel kateIface.skel kategrepdialog.cpp katefiledialog.cpp
 
 kate_la_LIBADD   = ../interfaces/libkateinterfaces.la ../part/libkatepart.la -lkscript
 kate_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
 
-kwrite_la_SOURCES = kwritemain.cpp
-kwrite_la_LIBADD   = ../interfaces/libkateinterfaces.la ../part/libkatepart.la
+kwrite_la_SOURCES = kwritemain.cpp katefiledialog.cpp
+kwrite_la_LIBADD   = ../interfaces/libkateinterfaces.la
 kwrite_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
 
 kate_SOURCES = dummy.cpp

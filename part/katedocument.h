@@ -617,7 +617,7 @@ class KateDocument : public Kate::Document
     void setWordWrapAt (uint col);
     uint wordWrapAt () { return myWordWrapAt; };
 
-  signals:    
+  signals:
     void modStateChanged (Kate::Document *doc);
     void nameChanged (Kate::Document *doc);
 
@@ -655,34 +655,6 @@ class KateDocument : public Kate::Document
   // Some flags for internal ONLY use !
   //
   public:
-    // Flags for katedocument config !
-    enum ConfigFlags
-    {
-      cfAutoIndent= 0x1,
-      cfBackspaceIndents= 0x2,
-      cfWordWrap= 0x4,
-      cfReplaceTabs= 0x8,
-      cfRemoveSpaces = 0x10,
-      cfWrapCursor= 0x20,
-      cfAutoBrackets= 0x40,
-      cfPersistent= 0x80,
-      cfKeepSelection= 0x100,
-      cfDelOnInput= 0x400,
-      cfXorSelect= 0x800,
-      cfOvr= 0x1000,
-      cfMark= 0x2000,
-      cfGroupUndo= 0x4000,
-      cfKeepIndentProfile= 0x8000,
-      cfKeepExtraSpaces= 0x10000,
-      cfMouseAutoCopy= 0x20000,
-      cfSingleSelection= 0x40000,
-      cfTabIndents= 0x80000,
-      cfPageUDMovesCursor= 0x100000,
-      cfShowTabs= 0x200000,
-      cfSpaceIndent= 0x400000,
-      cfSmartHome = 0x800000
-    };
-
     // Search flags
     enum SearchFlags
     {
