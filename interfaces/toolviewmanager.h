@@ -26,9 +26,6 @@
 #ifndef _KATE_TOOLVIEWMANAGER_INCLUDE_
 #define _KATE_TOOLVIEWMANAGER_INCLUDE_
 
-#include <qwidget.h>
-#include <kurl.h>
-
 #include <kdockwidget.h>
 
 namespace Kate
@@ -37,11 +34,14 @@ namespace Kate
 /** An interface to the kate toolviewmanager.
 
  */
-class ToolViewManager /* You can assume that the implementation is always at least an QObject derived class too */
+class ToolViewManager : public QObject
 {
+  friend class PrivateToolViewManager;
 
-  protected:
-    ToolViewManager ();
+  Q_OBJECT
+  
+  public:
+    ToolViewManager ( void *toolViewManager );
     virtual ~ToolViewManager ();
       
   public:
@@ -53,20 +53,22 @@ class ToolViewManager /* You can assume that the implementation is always at lea
 
 	//The dockwidgets name is "DOCK"+widget->name() Please make sure that this is unique
 	//IMPORTANT: YOU MUST SPECIFY A PIXMAP
-    virtual class KDockWidget *addToolViewWidget(KDockWidget::DockPosition,QWidget *widget,const class QPixmap&, const class QString&)=0;
-    virtual bool  removeToolViewWidget(QWidget *widget)=0;
+    KDockWidget *addToolViewWidget(KDockWidget::DockPosition position,QWidget *widget, const class QPixmap&icon, const class QString&sname);
+    bool removeToolViewWidget(QWidget *widget);
 
 	//Please make sure that the name is unique
 	//IMPORTANT: YOU MUST SPECIFY A PIXMAP
-    virtual class KDockWidget *addToolView(KDockWidget::DockPosition pos,const char *name,const QPixmap &icon,const QString&)=0;
-    virtual bool removeToolView(KDockWidget *)=0;
+    KDockWidget *addToolView(KDockWidget::DockPosition position,const char *name,const QPixmap &icon,const QString&sname);
+    bool removeToolView(KDockWidget *dockwidget);
 
     /* the following methods aren't used yet */
-    virtual bool hideToolView(class KDockWidget*)=0;
-    virtual bool showToolView(class KDockWidget*)=0;
-    virtual bool hideToolView(const QString& name)=0;
-    virtual bool showToolView(const QString& name)=0;
+    bool hideToolView(KDockWidget*dockwidget);
+    bool showToolView(KDockWidget*dockwidget);
+    bool hideToolView(const QString& sname);
+    bool showToolView(const QString& sname);
     
+  private:
+    class PrivateToolViewManager *d;  
 };
 
 };

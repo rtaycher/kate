@@ -39,7 +39,7 @@
 class GrepDialog;
 class KFileItem;
 
-class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWindowDCOPIface, virtual public KParts::PartBase, virtual public Kate::ToolViewManager
+class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWindowDCOPIface, virtual public KParts::PartBase
 {
   Q_OBJECT
 
@@ -56,7 +56,8 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     enum DockWidgetMode {ClassicStyle,IDEAlStyle};
     
     Kate::MainWindow *mainWindow () { return m_mainWindow; };
-
+    Kate::ToolViewManager *toolViewManager () { return m_toolViewManager; };
+    
     /** Returns the URL of the current document.
      * anders: I add this for use from the file selector. */
     KURL activeDocumentUrl();
@@ -185,6 +186,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
   protected:
     static uint uniqueID;
     Kate::MainWindow *m_mainWindow;
+    Kate::ToolViewManager *m_toolViewManager;
 
   public:      
     Kate::ViewManager *viewManager () {return m_viewManager->viewManager(); }; 
@@ -192,8 +194,6 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     KDockWidget *centralDock () { return mainDock; };
 
   public: //ToolViewManager stuff
-    Kate::ToolViewManager *toolViewManager() {return(Kate::ToolViewManager*)this;}
-
     virtual void* interfaces(const QString &name);
 
     virtual KDockWidget *addToolViewWidget(KDockWidget::DockPosition pos,QWidget *widget,const QPixmap &icon, const QString& caption);
