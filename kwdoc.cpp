@@ -32,6 +32,7 @@
 #include <qpainter.h>
 #include <qfile.h>
 #include <qtextstream.h>
+#include <qtextcodec.h>
 
 #include <klocale.h>
 #include <kcharsets.h>
@@ -949,7 +950,6 @@ void KWriteDoc::insertFile(VConfig &c, QIODevice &dev)
 {
   recordStart(c, KWActionGroup::ugPaste);
 
-  // TODO: port this to QTextStream (see loadFile)
   QString buf;
   QChar ch, last;
 
@@ -1009,7 +1009,7 @@ void KWriteDoc::writeFile(QIODevice &dev) {
   QTextStream stream(&dev);
   do {
     QConstString str((QChar *) textLine->getText(), textLine->length());
-    stream << str.string().local8Bit();
+    stream << str.string();
     textLine = contents.next();
     if (!textLine) break;
     if (eolMode != eolUnix) dev.putch('\r');
