@@ -431,7 +431,7 @@ void TopLevel::setupToolBar(){
   toolbar->insertButton("help",0,SIGNAL(clicked()),
     this,SLOT(helpSelected()),TRUE,i18n("Help"));
 
-  toolbar->setBarPos(KToolBar::Top);
+  //  toolbar->setBarPos(KToolBar::Top);
 }
 
 void TopLevel::setupStatusBar(){
