@@ -108,7 +108,7 @@ class KateUndo
 
 class KateUndoGroup     
 {     
-  public:     
+  public:
     KateUndoGroup (KateDocument *doc);     
     ~KateUndoGroup ();     
      
@@ -2620,14 +2620,14 @@ bool KateDocument::insertChars ( int line, int col, const QString &chars, KateVi
   insertText (line, col, buf);
   col += pos;
 
+  if (b)
+    editEnd ();
+
   KateViewCursor c;
   c.line = line;
   c.col = col;
 
   view->updateCursor(c);
-
-  if (b)
-    editEnd ();  
 
 /*
   if (myWordWrap && myWordWrapAt > 0) {
