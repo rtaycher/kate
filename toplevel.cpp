@@ -373,13 +373,13 @@ void TopLevel::doPrint(KTextPrint &printer)
 
 void TopLevel::printNow()
 {
-  print(false);
+  kWrite->printDlg ();
 }
 
 
 void TopLevel::printDlg()
 {
-  print(true);
+  kWrite->printDlg ();
 }
 
 
