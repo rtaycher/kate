@@ -113,7 +113,7 @@ void KatePluginManager::enableAllPluginsGUI (KateMainWindow *win)
 
 void KatePluginManager::loadPlugin (PluginListItem *item)
 {
-  KLibFactory *factory = KLibLoader::self()->factory( item->libname.latin1() );
+  KLibFactory *factory = KLibLoader::self()->factory( QFile::encodeName(item->libname) );
   item->plugin = (Kate::Plugin *)factory->create( (Kate::Application *)parent(), "", "Kate::Plugin" );
   item->load = true;
 }
