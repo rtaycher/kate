@@ -224,12 +224,11 @@ void KateMainWindow::setupActions()
 
   KStdAction::mail( this, SLOT(slotMail()), actionCollection() );
 
-  new KAction(i18n("New &Window"), 0, this, SLOT(newWindow()), actionCollection(), "file_newWindow");
-
   KStdAction::quit( this, SLOT( slotFileQuit() ), actionCollection(), "file_quit" );
 
   new KAction(i18n("Find in Files..."), CTRL+SHIFT+Qt::Key_F, this, SLOT(slotFindInFiles()), actionCollection(),"edit_find_in_files" );
 
+  new KAction(i18n("New &View"), 0, this, SLOT(newWindow()), actionCollection(), "view_new_view");
   new KAction( i18n("Split &Vertical"), "view_left_right", CTRL+SHIFT+Key_L, m_viewManager, SLOT( slotSplitViewSpaceVert() ), actionCollection(), "view_split_vert");
   new KAction( i18n("Split &Horizontal"), "view_top_bottom", CTRL+SHIFT+Key_T, m_viewManager, SLOT( slotSplitViewSpaceHoriz() ), actionCollection(), "view_split_horiz");
   closeCurrentViewSpace = new KAction( i18n("Close &Current"), "view_remove", CTRL+SHIFT+Key_R, m_viewManager, SLOT( slotCloseCurrentViewSpace() ), actionCollection(), "view_close_current_space");
