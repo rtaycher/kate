@@ -264,6 +264,7 @@ KateProjectDialogNew::KateProjectDialogNew (QWidget *parent, KateProjectManager 
   m_urlRequester = new KURLRequester (page);
   grid->addWidget (m_urlRequester, 2, 1);
   
+  m_urlRequester->setMode (KFile::LocalOnly);
   m_urlRequester->setFilter (QString ("*.kateproject|") + i18n("Kate Project Files"));
 }
 
