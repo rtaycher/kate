@@ -29,6 +29,11 @@
 
 #include <kconfig.h>
 
+KateProjectDCOPIface::KateProjectDCOPIface (Kate::Project *p)
+ : m_p (p)
+{ 
+}
+
 namespace Kate
 {
 
