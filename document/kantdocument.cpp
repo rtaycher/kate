@@ -197,8 +197,6 @@ KantDocument::~KantDocument()
     m_views.clear();
     m_views.setAutoDelete( false );
   }
-
-  kdDebug(13020) << "KantDocument::~KantDocument" << endl;
 }
 
 bool KantDocument::openFile()
