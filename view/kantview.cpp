@@ -21,8 +21,7 @@
 
 #include "../document/kantdocument.h"
 
-#include <kaction.h>
-
+#include <kurldrag.h>
 #include <qfocusdata.h>
 #include <kdebug.h>
 #include <kapp.h>
@@ -1424,19 +1423,13 @@ void KantViewInternal::dropEvent( QDropEvent *event )
     if (! HandleURIDrops) {
       // the container should handle this one for us...
       emit dropEventPass(event);
-    } else {
-      // we can only load one url
-      // this is why a smarter container should do this if possible
-      if (QUriDrag::decode(event, urls)) {
-        char *s;
-        s = urls.first();
-        if (s) {
-          // Load the first file in this window
-          if (s == urls.getFirst()) {
-            if (myView->canDiscard()) myView->loadURL(s);
-          }
-        }
-      }
+    }
+    else
+    {
+      KURL::List textlist;
+      if (!KURLDrag::decode(event, textlist)) return;
+      KURL::List::Iterator i=textlist.begin();
+      if (myView->canDiscard()) myView->loadURL(*i);
     }
   } else if ( QTextDrag::canDecode(event) && ! myView->isReadOnly() ) {
 
