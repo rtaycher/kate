@@ -112,8 +112,8 @@ class HlKeyword : public HlItemWw {
     void addList(const char **);
     virtual const QChar *checkHgl(const QChar *);
 //		QStrVec *getVec() {return &Words;};
-		QStringList *getList() { return &words;};
-		QDict<char> *getDict() {return &Dict;};
+		QStringList getList() { return words;};
+		QDict<char> getDict() {return Dict;};
   protected:
     QStringList words;
 //		QStrVec Words;
