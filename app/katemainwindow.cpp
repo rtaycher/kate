@@ -684,24 +684,14 @@ void KateMainWindow::pluginHelp()
 
 void KateMainWindow::setupScripts()
 {
-	// scan $KDEDIR/share/applications/kate/scripts/ for desktop files
-	// and populate the list
-	QString localpath = QString(kapp->name()) + "/scripts/";
-	QDir d(locate("data", localpath));
-	const QFileInfoList *fileList = d.entryInfoList("*.desktop");
-	QFileInfoListIterator it (*fileList);
-	QFileInfo *fi;
-	while (( fi=it.current()))
-	{
-		if (KDesktopFile::isDesktopFile(fi->absFilePath()))
-		{
-			kscript->addScript(fi->absFilePath());
-		}
-		++it;
-	}
-        QStringList l ( kscript->scripts() );
-        for (QStringList::Iterator it1=l.begin(); it1 != l.end(); ++it1 )
-          scriptMenu->popupMenu()->insertItem( *it1 );
+  // locate all scripts, local as well as global.
+  // The script manager will do the nessecary sanity checking
+  QStringList scripts = KGlobal::dirs()->findAllResources("data", QString(kapp->name())+"/scripts/*.desktop", false, true );
+  for (QStringList::Iterator it = scripts.begin(); it != scripts.end(); ++it )
+    kscript->addScript( *it );
+  QStringList l ( kscript->scripts() );
+  for (QStringList::Iterator it=l.begin(); it != l.end(); ++it )
+    scriptMenu->popupMenu()->insertItem( *it );
 }
 
 void KateMainWindow::runScript( int mIId )
