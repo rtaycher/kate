@@ -42,19 +42,12 @@
     <Action name="edit_find_prev" />
     <Action name="edit_replace" />
     <Separator />
-    <Action name="edit_find_in_files" />
-    <Separator />
     <Action name="edit_indent" />
     <Action name="edit_unindent" />
     <Action name="edit_comment" />
     <Action name="edit_uncomment" />
-    <Separator />
-    <Action name="edit_apply_wordwrap"/>
-    <Action name="edit_cmd"/>
     <Separator/>
     <Action name="go_goto_line"/>
-    <Separator />
-    <Action name="tools_spelling" />
   </Menu>
 
   <Menu name="documents"><text>&amp;Document</text>
@@ -68,17 +61,17 @@
   </Menu>
 
   <Menu name="view"><text>&amp;View</text>
-     <Action name="view_split_vert"/>
-     <Action name="view_split_horiz"/>
-     <Separator />
-     <Action name="view_border"/>
-     <Action name="view_line_numbers"/>
-     <Separator />
-     <Action name="view_close_current_space" />
-  	<Menu name="go"><text>&amp;Go</text>
-     	  <Action name="go_next"/>
-     	  <Action name="go_prev"/>
-  	</Menu>
+    <Action name="view_split_vert"/>
+    <Action name="view_split_horiz"/>
+    <Separator />
+    <Action name="view_border"/>
+    <Action name="view_line_numbers"/>
+    <Separator />
+    <Action name="view_close_current_space" />
+    <Menu name="go"><text>&amp;Go</text>
+      <Action name="go_next"/>
+      <Action name="go_prev"/>
+    </Menu>
   </Menu>
 
   <Menu name="bookmarks"><text>&amp;Bookmarks</text>
@@ -86,6 +79,17 @@
     <Action name="edit_bookmarksClear" />
     <Separator />
   </Menu>
+
+  <menu name="tools"><text>&amp;Tools</text>
+    <Action name="edit_cmd"/>
+    <merge />
+    <separator />
+    <Action name="edit_find_in_files" />
+    <Separator />
+    <Action name="edit_apply_wordwrap"/>
+    <Separator />
+    <Action name="tools_spelling" />
+  </menu>
 
   <Merge/>
 

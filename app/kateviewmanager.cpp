@@ -1042,7 +1042,7 @@ void KateViewManager::saveAllDocsAtCloseDown(  )
   uint id = 0;
 
   KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
-  
+
   // save current document, since if we just reopens documents
   // when restarted, we want that in front.
   scfg->setGroup("open files");
@@ -1052,7 +1052,7 @@ void KateViewManager::saveAllDocsAtCloseDown(  )
   {
     activateView (closeList.at(0)->documentNumber());
     v = activeView();
-    id = closeList.at(0)->documentNumber();
+    //id = closeList.at(0)->documentNumber();
 
     if ( !v->getDoc()->url().isEmpty() )
     {
@@ -1067,6 +1067,7 @@ void KateViewManager::saveAllDocsAtCloseDown(  )
       return;
 
     closeList.remove (closeList.at(0));
+    id++;
   }
 
   scfg->sync();
@@ -1092,7 +1093,7 @@ void KateViewManager::reopenDocuments(bool isRestore)
     QString curfile = scfg->readEntry("current file");
     Kate::View *viewtofocus = 0L;
 
-    int i = 1;
+    int i = 0;
     QString fn;
     while ( scfg->hasKey( QString("File%1").arg( i ) )  )
     {
