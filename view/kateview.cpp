@@ -1562,7 +1562,6 @@ void KateView::setupActions()
       KStdAction::find(this, SLOT(find()), actionCollection());
       KStdAction::findNext(this, SLOT(findAgain()), actionCollection());
       KStdAction::gotoLine(this, SLOT(gotoLine()), actionCollection());
-      new KAction(i18n("Configure Highlighti&ng..."), 0, this, SLOT(hlDlg()),actionCollection(), "set_confHighlight");
       setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, actionCollection(), "set_highlight");
     }
 
@@ -3460,6 +3459,7 @@ void KateBrowserExtension::slotSelectionChanged()
 {
   emit enableAction( "copy", m_doc->hasMarkedText() );
 }
+
 
 
 

@@ -2729,22 +2729,27 @@ void KateDocument::setPseudoModal(QWidget *w) {
 }
 
 
-void KateDocument::newBracketMark(PointStruc &cursor, BracketMark &bm) {
+void KateDocument::newBracketMark(PointStruc &cursor, BracketMark &bm)
+{
   TextLine::Ptr textLine;
   int x, line, count, attr;
   QChar bracket, opposite, ch;
   Attribute *a;
 
   bm.eXPos = -1; //mark bracked mark as invalid
-
   x = cursor.x -1; // -1 to look at left side of cursor
   if (x < 0) return;
   line = cursor.y; //current line
   count = 0; //bracket counter for nested brackets
+
   textLine = getTextLine(line);
+  if (!textLine) return;
+
   bracket = textLine->getChar(x);
   attr = textLine->getAttr(x);
-  if (bracket == '(' || bracket == '[' || bracket == '{') {
+
+  if (bracket == '(' || bracket == '[' || bracket == '{')
+  {
     //get opposite bracket
     opposite = ')';
     if (bracket == '[') opposite = ']';
@@ -2770,7 +2775,9 @@ void KateDocument::newBracketMark(PointStruc &cursor, BracketMark &bm) {
       }
       x++;
     }
-  } else if (bracket == ')' || bracket == ']' || bracket == '}') {
+  }
+  else if (bracket == ')' || bracket == ']' || bracket == '}')
+  {
     opposite = '(';
     if (bracket == ']') opposite = '[';
     if (bracket == '}') opposite = '{';
@@ -2795,11 +2802,11 @@ void KateDocument::newBracketMark(PointStruc &cursor, BracketMark &bm) {
     }
   }
   return;
+
 found:
   //cursor position of opposite bracket
   bm.cursor.x = x;
   bm.cursor.y = line;
-
   //x position (start and end) of related bracket
   bm.sXPos = textWidth(textLine, x);
   a = &m_attribs[attr];
@@ -2868,4 +2875,5 @@ void KateDocument::slotModChanged()
 {
   emit modStateChanged (this);
 }
+
 
