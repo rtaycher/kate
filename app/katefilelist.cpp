@@ -32,6 +32,7 @@
 #include <qheader.h>
 #include <qcolor.h>
 #include <qcheckbox.h>
+#include <qevent.h>
 #include <qlayout.h>
 #include <qgroupbox.h>
 #include <qlabel.h>
@@ -88,12 +89,9 @@ KateFileList::KateFileList (KateMainWindow *main,
   m_main = main;
   m_tooltip = new ToolTip( viewport(), this );
 
-  // default colors
-  m_viewShade = QColor( 51, 204, 255 );
-  m_editShade = QColor( 255, 102, 153 );
-  m_enableBgShading = true;
 
-  setFocusPolicy ( QWidget::NoFocus  );
+  // when focus is lost, make sure the current document is selected in the list
+  viewport()->installEventFilter( this );
 
   viewManager = _viewManager;
 
@@ -119,7 +117,7 @@ KateFileList::KateFileList (KateMainWindow *main,
 
   // don't Honour KDE single/double click setting, this files are already open,
   // no need for hassle of considering double-click
-  connect(this,SIGNAL(clicked(QListViewItem *)),
+  connect(this,SIGNAL(currentChanged(QListViewItem *)),
 	  this,SLOT(slotActivateView(QListViewItem *)));
   connect(viewManager,SIGNAL(viewChanged()), this,SLOT(slotViewChanged()));
   connect(this,SIGNAL(contextMenuRequested( QListViewItem *, const QPoint &, int )),
@@ -177,11 +175,6 @@ void KateFileList::resizeEvent( QResizeEvent *e )
 {
   KListView::resizeEvent( e );
 
-  // ### We may want to actually calculate the widest field,
-  // since it's not automatically scrinked. If I add support for
-  // tree or marks, the changes of the required width will vary
-  // a lot with opening/closing of files and display changes for
-  // the mark branches.
   int w = viewport()->width();
   if ( columnWidth( 0 ) < w )
     setColumnWidth( 0, w );
@@ -230,9 +223,6 @@ void KateFileList::slotDocumentDeleted (uint documentNumber)
   while( item ) {
     if ( ((KateFileListItem *)item)->documentNumber() == documentNumber )
     {
-//       m_viewHistory.removeRef( (KateFileListItem *)item );
-//       m_editHistory.removeRef( (KateFileListItem *)item );
-
       removeItem( item );
 
       break;
@@ -263,19 +253,6 @@ void KateFileList::slotModChanged (Kate::Document *doc)
 
     item = item->nextSibling();
   }
-
-  if ( ((KateFileListItem *)item)->document()->isModified() )
-  {
-    m_editHistory.removeRef( (KateFileListItem *)item );
-    m_editHistory.prepend( (KateFileListItem *)item );
-
-    for ( uint i=0; i <  m_editHistory.count(); i++ )
-    {
-      m_editHistory.at( i )->setEditHistPos( i+1 );
-      repaintItem(  m_editHistory.at( i ) );
-    }
-  }
-  else
     repaintItem( item );
 }
 
@@ -341,27 +318,6 @@ void KateFileList::slotViewChanged ()
 
   KateFileListItem *item = (KateFileListItem*)i;
   setCurrentItem( item );
-
-  // ### During load of file lists, all the loaded views gets active.
-  // Do something to avoid shading them -- maybe not creating views, just
-  // open the documents???
-
-
-//   int p = 0;
-//   if (  m_viewHistory.count() )
-//   {
-//     int p =  m_viewHistory.findRef( item ); // only repaint items that needs it
-//   }
-
-  m_viewHistory.removeRef( item );
-  m_viewHistory.prepend( item );
-
-  for ( uint i=0; i <  m_viewHistory.count(); i++ )
-  {
-    m_viewHistory.at( i )->setViewHistPos( i+1 );
-    repaintItem(  m_viewHistory.at( i ) );
-  }
-
 }
 
 void KateFileList::slotMenu ( QListViewItem *item, const QPoint &p, int /*col*/ )
@@ -415,9 +371,6 @@ void KateFileList::readConfig( KConfig *config, const QString &group )
   config->setGroup( group );
 
   setSortType( config->readNumEntry( "Sort Type", sortByID ) );
-  m_viewShade = config->readColorEntry( "View Shade", &m_viewShade );
-  m_editShade = config->readColorEntry( "Edit Shade", &m_editShade );
-  m_enableBgShading = config->readBoolEntry( "Shading Enabled", &m_enableBgShading );
 
   config->setGroup( oldgroup );
 }
@@ -428,21 +381,8 @@ void KateFileList::writeConfig( KConfig *config, const QString &group )
   config->setGroup( group );
 
   config->writeEntry( "Sort Type", m_sort );
-  config->writeEntry( "View Shade", m_viewShade );
-  config->writeEntry( "Edit Shade", m_editShade );
-  config->writeEntry( "Shading Enabled", m_enableBgShading );
 
   config->setGroup( oldgroup );
-}
-
-void KateFileList::takeItem( QListViewItem *item )
-{
-  if ( item->rtti() == RTTI_KateFileListItem )
-  {
-    m_editHistory.removeRef( (KateFileListItem*)item );
-    m_viewHistory.removeRef( (KateFileListItem*)item );
-  }
-  QListView::takeItem( item );
 }
 //END KateFileList
 
@@ -498,35 +438,6 @@ void KateFileListItem::paintCell( QPainter *painter, const QColorGroup & cg, int
       const KateDocumentInfo *info = KateDocManager::self()->documentInfo(doc);
 
       QColor b( cg.base() );
-      if ( fl->shadingEnabled() && m_viewhistpos > 1 )
-      {
-        QColor shade = fl->viewShade();
-        QColor eshade = fl->editShade();
-        int hc = fl->histCount();
-        // If this file is in the edit history, blend in the eshade
-        // color. The blend is weighted by the position in the editing history
-        if ( fl->shadingEnabled() && m_edithistpos > 0 )
-        {
-          int ec = fl->editHistCount();
-          int v = hc-m_viewhistpos;
-          int e = ec-m_edithistpos+1;
-          e = e*e;
-          int n = QMAX(v + e, 1);
-          shade.setRgb(
-              ((shade.red()*v) + (eshade.red()*e))/n,
-              ((shade.green()*v) + (eshade.green()*e))/n,
-              ((shade.blue()*v) + (eshade.blue()*e))/n
-                      );
-        }
-        // blend in the shade color.
-        // max transperancy < .5, latest is most colored.
-        float t = (0.5/hc)*(hc-m_viewhistpos+1);
-        b.setRgb(
-            (int)((b.red()*(1-t)) + (shade.red()*t)),
-            (int)((b.green()*(1-t)) + (shade.green()*t)),
-            (int)((b.blue()*(1-t)) + (shade.blue()*t))
-                );
-      }
 
       painter->fillRect( 0, 0, width, height(), isSelected() ? cg.highlight() : b  );
 
@@ -581,85 +492,6 @@ int KateFileListItem::compare ( QListViewItem * i, int col, bool ascending ) con
   return 0;
 }
 //END KateFileListItem
-
-//BEGIN KFLConfigPage
-KFLConfigPage::KFLConfigPage( QWidget* parent, const char *name, KateFileList *fl )
-  :  Kate::ConfigPage( parent, name ),
-    m_filelist( fl )
-{
-  QVBoxLayout *lo1 = new QVBoxLayout( this );
-  int spacing = KDialog::spacingHint();
-  lo1->setSpacing( spacing );
-
-  QGroupBox *gb = new QGroupBox( 1, Qt::Horizontal, i18n("Background Shading"), this );
-  lo1->addWidget( gb );
-
-  QWidget *g = new QWidget( gb );
-  QGridLayout *lo = new QGridLayout( g, 2, 2 );
-  lo->setSpacing( KDialog::spacingHint() );
-  cbEnableShading = new QCheckBox( i18n("&Enable background shading"), g );
-  lo->addMultiCellWidget( cbEnableShading, 1, 1, 0, 1 );
-
-  kcbViewShade = new KColorButton( g );
-  lViewShade = new QLabel( kcbViewShade, i18n("&Viewed documents' shade:"), g );
-  lo->addWidget( lViewShade, 2, 0 );
-  lo->addWidget( kcbViewShade, 2, 1 );
-
-  kcbEditShade = new KColorButton( g );
-  lEditShade = new QLabel( kcbEditShade, i18n("&Modified documents' shade:"), g );
-  lo->addWidget( lEditShade, 3, 0 );
-  lo->addWidget( kcbEditShade, 3, 1 );
-
-  lo1->insertStretch( -1, 10 );
-
-  QWhatsThis::add( cbEnableShading, i18n(
-      "When background shading is enabled, documents that have been viewed "
-      "or edited within the current session will have a shaded background. "
-      "The most recent documents have the strongest shade.") );
-  QWhatsThis::add( kcbViewShade, i18n(
-      "Set the color for shading viewed documents.") );
-  QWhatsThis::add( kcbEditShade, i18n(
-      "Set the color for modified documents. This color is blended into "
-      "the color for viewed files. The most recently edited documents get "
-      "most of this color.") );
-
-  reload();
-
-  connect( cbEnableShading, SIGNAL(toggled(bool)), this, SLOT(slotChanged()) );
-  connect( cbEnableShading, SIGNAL(toggled(bool)), this, SLOT(slotEnableChanged()) );
-  connect( kcbViewShade, SIGNAL(changed(const QColor&)), this, SLOT(slotChanged()) );
-  connect( kcbEditShade, SIGNAL(changed(const QColor&)), this, SLOT(slotChanged()) );
-}
-
-void KFLConfigPage::apply()
-{
-  // Change settings in the filelist
-  m_filelist->m_viewShade = kcbViewShade->color();
-  m_filelist->m_editShade = kcbEditShade->color();
-  m_filelist->m_enableBgShading = cbEnableShading->isChecked();
-  // repaint the affected items
-  m_filelist->triggerUpdate();
-}
-
-void KFLConfigPage::reload()
-{
-  // read in from config file
-  KConfig *config = kapp->config();
-  config->setGroup( "Filelist" );
-  cbEnableShading->setChecked( config->readBoolEntry("Shading Enabled", &m_filelist->m_enableBgShading ) );
-  kcbViewShade->setColor( config->readColorEntry("View Shade", &m_filelist->m_viewShade ) );
-  kcbEditShade->setColor( config->readColorEntry("Edit Shade", &m_filelist->m_editShade ) );
-}
-
-void KFLConfigPage::slotEnableChanged()
-{
-  kcbViewShade->setEnabled( cbEnableShading->isChecked() );
-  kcbEditShade->setEnabled( cbEnableShading->isChecked() );
-  lViewShade->setEnabled( cbEnableShading->isChecked() );
-  lEditShade->setEnabled( cbEnableShading->isChecked() );
-}
-
-//END KFLConfigPage
 
 
 // kate: space-indent on; indent-width 2; replace-tabs on;
