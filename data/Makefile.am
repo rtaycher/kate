@@ -1,5 +1,5 @@
 
-kdelnk_DATA = kant.desktop
+kdelnk_DATA = kant.desktop kwrite.desktop
 kdelnkdir = $(kde_appsdir)/Editors
 
 rcdir = $(kde_datadir)/kant

@@ -1,14 +1,22 @@
 [Desktop Entry]
 Comment=Kant - get an edge in editing
-Comment[de]=Kant - get an edge in editing
+Comment[cs]=Kant - špička mezi editory
+Comment[da]=Kant - få en fordel ved redigering
+Comment[he]=םיכמסמ הבורמ טסקט ךרוע
+Comment[hu]=Kant szerkesztőprogram
+Comment[lv]=Kant - iegūstiet baudu rediģēšanā
+Comment[pt]=Kant - edição avançada
+Comment[pt_BR]=Kant - edição avançada
+Comment[ro]=Kant - un nou standard în editare
+Comment[ru]=Kant - все лучшее в редактировании
 BinaryPattern=
 Name=Kant
-Name[de]=Kant
+Name[ru]=Редактор Kant
 MimeType=text/english;text/plain;text/x-makefile;text/x-c++hdr;text/x-c++src;text/x-chdr;text/x-csrc;text/x-java;text/x-moc;text/x-pascal;text/x-tcl;text/x-tex;application/x-shellscript;text/x-c;text/x-c++;
 Exec=kant %f
 TerminalOptions=
 Icon=kant
 Path=
-DocPath=kant/kant.html
+DocPath=kant/index.html
 Type=Application
 Terminal=0
