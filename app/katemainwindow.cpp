@@ -81,6 +81,7 @@
 #include "kategrepdialog.h"
 
 #include <assert.h>
+#include <unistd.h>
 //END
 
 uint KateMainWindow::uniqueID = 1;
@@ -96,30 +97,8 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   // first the very important id
   myID = uniqueID;
   uniqueID++;
-
-  // now the config
-  config = kapp->config();
   
-  // init with more usefull size, stolen from konq :)
-  if (!initialGeometrySet() && !config->hasGroup("MainWindow Settings"))
-    resize( 700, 480 );
-  else
-  {
-    QString oldGroup = config->group ();
-    
-    config->setGroup("MainWindow Settings");
-    restoreWindowSize (config);
-    
-    config->setGroup (oldGroup);
-  }
-  
-  m_mainWindow = new Kate::MainWindow (this);
-  m_toolViewManager = new Kate::ToolViewManager (this);
-  setStandardMDIMenuEnabled();
-  setManagedDockPositionModeEnabled(true);
-
-  m_dcop = new KateMainWindowDCOPIface (this);
-
+  // init some vars
   m_docManager =  _m_docManager;
   m_pluginManager =_m_pluginManager;
   m_projectManager = projectMan;
@@ -131,6 +110,28 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   consoleDock = 0L;
   console = 0L;
+  
+  // now the config
+  config = kapp->config();
+  
+  // first init size while we are still invisible, avoid flicker
+  if (!initialGeometrySet())
+  {
+    config->setGroup ("Kate Main Window");
+    int scnum = QApplication::desktop()->screenNumber(parentWidget());
+    QRect desk = QApplication::desktop()->screenGeometry(scnum);
+    QSize s ( config->readNumEntry( QString::fromLatin1("Width %1").arg(desk.width()), 700 ),
+              config->readNumEntry( QString::fromLatin1("Height %1").arg(desk.height()), 480 ) );
+
+    resize (kMin (s.width(), desk.width()), kMin(s.height(), desk.height()));
+  }
+
+  m_mainWindow = new Kate::MainWindow (this);
+  m_toolViewManager = new Kate::ToolViewManager (this);
+  setStandardMDIMenuEnabled();
+  setManagedDockPositionModeEnabled(true);
+
+  m_dcop = new KateMainWindowDCOPIface (this);
 
   setAcceptDrops(true);
 
@@ -152,11 +153,8 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   connect(m_projectManager->projectManager(),SIGNAL(projectDeleted(uint)),this,SLOT(projectDeleted(uint)));
 
   // caption update
-
   for (uint i = 0; i < m_docManager->documents(); i++)
-  {
     slotDocumentCreated (m_docManager->document(i));
-  }
 
   connect(m_docManager,SIGNAL(documentCreated(Kate::Document *)),this,SLOT(slotDocumentCreated(Kate::Document *)));
 
@@ -164,9 +162,6 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   if (console)
     console->loadConsoleIfNeeded();
-
-  // call it as last thing, must be sure everything is already set up ;)
-  setAutoSaveSettings ("MainWindow Settings");
 }
 
 KateMainWindow::~KateMainWindow()
@@ -394,6 +389,8 @@ void KateMainWindow::slotFileQuit()
 
 void KateMainWindow::readOptions(KConfig *config)
 {
+  applyMainWindowSettings(config, "Kate Main Window");
+
   config->setGroup("General");
   syncKonsole =  config->readBoolEntry("Sync Konsole", true);
   modNotification = config->readBoolEntry("Modified Notification", false);
@@ -412,6 +409,8 @@ void KateMainWindow::readOptions(KConfig *config)
 
 void KateMainWindow::saveOptions(KConfig *config)
 {
+  saveMainWindowSettings(config, "Kate Main Window");
+
   config->setGroup("General");
 
   if (consoleDock && console)

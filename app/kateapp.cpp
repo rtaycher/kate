@@ -136,8 +136,6 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
     kdDebug()<<"********************loading init plugin in app constructor"<<endl;
   }
 
-  processEvents();
-
   KTipDialog::showTip(m_mainWindows.first());
 
   kapp->dcopClient()->resume(); // Ok. We are ready for DCOP requests.
