@@ -149,35 +149,9 @@ class KateViewManager : public Kate::ViewManager
 
     void slotCloseCurrentViewSpace();
 
-    void slotUndo ();
-    void slotRedo ();
-
-    void slotCut ();
-    void slotCopy ();
-    void slotPaste ();
-
-    void slotSelectAll ();
-    void slotDeselectAll ();
-
-    void slotFind ();
-    void slotFindAgain ();
-    void slotFindAgainB ();
-    void slotReplace ();
-
-    void slotIndent();
-    void slotUnIndent();
-
-    void slotEditCommand ();
-
     void slotSetHl (uint n);
 
-    void slotSpellcheck ();
-    void slotGotoLine ();
-
     void statusMsg ();
-
-    void printNow();
-    void printDlg();
 
     void setActiveSpace ( KateViewSpace* vs );
     void setActiveView ( Kate::View* view );
@@ -189,17 +163,7 @@ class KateViewManager : public Kate::ViewManager
     void activateNextView();
     void activatePrevView();
 
-    void slotComment ();
-    void slotUnComment ();
-
     void setEol(int);
-    
-    void toggleIconBorder ();
-    void toggleLineNumbers();
-
-    void toggleVertical();
-
-    void slotApplyWordWrap ();
 
   signals:
     void statusChanged (Kate::View *, int, int, int, bool, int, QString);
@@ -211,9 +175,6 @@ class KateViewManager : public Kate::ViewManager
 
   public:  //KatePluginIface
     virtual Kate::View *getActiveView(){return (Kate::View *)activeView();};
-
-  public slots:
-	void exportAs(const QString&);
 };
 
 #endif

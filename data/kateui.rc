@@ -91,23 +91,12 @@
   </Menu>
 </MenuBar>
 
-<ToolBar name="mainToolBar"><text>Main Toolbar</text>
-  <Action name="file_new" group="file_operations" />
-  <Action name="file_open" group="file_operations" />
-  <Action name="file_save" group="file_operations" />
-  <Action name="file_close" group="file_operations" />
-  <Separator/>
-  <Action name="file_print"/>
-  <Separator/>
-  <Action name="edit_undo" />
-  <Action name="edit_redo" />
-  <Action name="edit_undoHistory" />
-  <Separator/>
-  <Action name="edit_cut" />
-  <Action name="edit_copy" />
-  <Action name="edit_paste" />
-  <Separator />
-  <Action name="edit_find" />
+<ToolBar name="mainToolBar" noMerge="1"><text>Main Toolbar</text>
+  <Action name="file_new" />
+  <Action name="file_open" />
+  <DefineGroup name="file_operations" />
+  <Action name="file_close" />
+  <Merge />
   <Separator />
   <Action name="go_back" />
   <Action name="go_forward" />
@@ -118,7 +107,7 @@
   <Action name="view_close_current_space" />
 </ToolBar>
 
-<Menu name="view_popup" noMerge="1">
+<Menu name="katepart_popup" noMerge="1">
   <Action name="edit_undo" />
   <Action name="edit_redo" />
   <Action name="edit_undoHistory" />

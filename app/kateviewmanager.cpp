@@ -133,7 +133,7 @@ bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, 
   if (docManager->myfirstDoc)
     view->getDoc()->setDocName (i18n("Untitled %1").arg(doc->documentNumber()));
 
-  view->installPopup ((QPopupMenu*)((KMainWindow *)topLevelWidget ())->factory()->container("view_popup", (KMainWindow *)topLevelWidget ()) );
+  view->installPopup ((QPopupMenu*)((KMainWindow *)topLevelWidget ())->factory()->container("katepart_popup", (KMainWindow *)topLevelWidget ()) );
   connect(view,SIGNAL(cursorPositionChanged()),this,SLOT(statusMsg()));
   connect(view,SIGNAL(newStatus()),this,SLOT(statusMsg()));
   connect(view->getDoc(), SIGNAL(undoChanged()), this, SLOT(statusMsg()));
@@ -557,120 +557,6 @@ void KateViewManager::slotDocumentCloseAll ()
   }
 }
 
-void KateViewManager::slotUndo ()
-{
-  if (activeView() == 0) return;
-
-  activeView()->getDoc()->undo();
-}
-
-void KateViewManager::slotRedo ()
-{
-  if (activeView() == 0) return;
-
-  activeView()->getDoc()->redo();
-}
-
-void KateViewManager::slotCut ()
-{
-  if (activeView() == 0) return;
-
-  activeView()->cut();
-}
-
-void KateViewManager::slotCopy ()
-{
-  if (activeView() == 0) return;
-
-  activeView()->copy();
-}
-
-void KateViewManager::slotPaste ()
-{
-  if (activeView() == 0) return;
-
-  activeView()->paste();
-}
-
-void KateViewManager::slotSelectAll ()
-{
-  if (activeView() == 0) return;
-
-  activeView()->getDoc()->selectAll();
-}
-
-void KateViewManager::slotDeselectAll ()
-{
-  if (activeView() == 0) return;
-
-  activeView()->getDoc()->clearSelection ();
-}
-
-void KateViewManager::slotFind ()
-{
-  if (activeView() == 0) return;
-
-  activeView()->find();
-}
-
-void KateViewManager::slotFindAgain ()
-{
-  if (activeView() == 0) return;
-
-  activeView()->findAgain(false);
-}
-
-void KateViewManager::slotFindAgainB ()
-{
-  if (activeView() == 0) return;
-
-  activeView()->findPrev();
-}
-
-void KateViewManager::slotReplace ()
-{
-  if (activeView() == 0) return;
-
-  activeView()->replace();
-}
-
-void KateViewManager::slotEditCommand ()
-{
-  if (activeView() == 0) return;
-
-  activeView()->slotEditCommand();
-}
-
-void KateViewManager::slotIndent()
-{
-  Kate::View* v = activeView();
-  if (v)
-    v->indent();
-
-}
-
-void KateViewManager::slotUnIndent()
-{
-  Kate::View* v = activeView();
-  if (v)
-    v->unIndent();
-
-}
-
-void KateViewManager::slotSpellcheck ()
-{
-  if (activeView() == 0) return;
-
-  activeView()->getDoc()->spellcheck();
-}
-
-void KateViewManager::slotGotoLine ()
-{
-  if (activeView() == 0) return;
-
-  activeView()->gotoLine();
-}
-
 void KateViewManager::setEol(int which)
 {
   if (activeView())
@@ -682,27 +568,6 @@ void KateViewManager::slotSetHl (uint n)
   if (activeView() == 0) return;
 
   activeView()->getDoc()->setHlMode(n);
-}
-
-
-void KateViewManager::exportAs(const QString& filter)
-{
-  if (activeView() == 0) return;
-  activeView()->getDoc()->exportAs(filter);
-}
-
-void KateViewManager::slotComment ()
-{
-  if (activeView() == 0) return;
-
-  activeView()->comment();
-}
-
-void KateViewManager::slotUnComment ()
-{
-  if (activeView() == 0) return;
-
-  activeView()->uncomment();
 }
 
 void KateViewManager::openURL (KURL url)
@@ -787,38 +652,6 @@ void KateViewManager::openConstURL_delayed1 (const KURL& url)
 void KateViewManager::openConstURL_delayed2 ()
 {
 	openURL(KURL(delayedURL));
-}
-
-
-
-void KateViewManager::printNow()
-{
-  if (!activeView()) return;
-  activeView()->getDoc()->print ();
-}
-
-void KateViewManager::printDlg()
-{
-  if (!activeView()) return;
-  activeView()->getDoc()->printDialog ();
-}
-
-void KateViewManager::toggleIconBorder ()
-{
-  if (!activeView()) return;
-  activeView()->toggleIconBorder ();
-}
-
-void KateViewManager::toggleLineNumbers()
-{
-  if (!activeView()) return;
-  activeView()->toggleLineNumbersOn();
-}
-
-void KateViewManager::toggleVertical()
-{
-  if (!activeView()) return;
-  activeView()->getDoc()->toggleBlockSelectionMode();
 }
 
 void KateViewManager::splitViewSpace( KateViewSpace* vs,
@@ -1311,11 +1144,4 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
    s->setSizes( config->readIntListEntry("sizes") );
    s->show();
    kdDebug(13030)<<"Bye from KateViewManager::restoreSplitter() ("<<group<<")"<<endl;
-}
-
-void KateViewManager::slotApplyWordWrap ()
-{
-  if (!activeView()) return;
-
-  activeView()->getDoc()->applyWordWrap();
 }
