@@ -312,6 +312,7 @@ void KateMainWindow::setupActions()
   }
 
   connect(m_viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
+  connect(m_viewManager,SIGNAL(viewChanged()),this,SLOT(slotUpdateOpenWith()));
   connect(m_docManager,SIGNAL(documentChanged()),this,SLOT(slotDocumentChanged()));
 
   slotWindowActivated ();
@@ -450,8 +451,6 @@ void KateMainWindow::slotWindowActivated ()
 
   if (m_viewManager->activeView())
   {
-    documentOpenWith->setEnabled (!m_viewManager->activeView()->document()->url().isEmpty());
-
     if (console && syncKonsole)
     {
       QString newPath = m_viewManager->activeView()->getDoc()->url().directory();
@@ -465,15 +464,19 @@ void KateMainWindow::slotWindowActivated ()
 
     updateCaption (m_viewManager->activeView()->getDoc());
   }
-  else
-  {
-    documentOpenWith->setEnabled (false);
-  }
 
   if (m_viewManager->viewSpaceCount() == 1)
     closeCurrentViewSpace->setEnabled(false);
   else
     closeCurrentViewSpace->setEnabled(true);
+}
+
+void KateMainWindow::slotUpdateOpenWith()
+{
+  if (m_viewManager->activeView())
+    documentOpenWith->setEnabled(!m_viewManager->activeView()->document()->url().isEmpty());
+  else
+    documentOpenWith->setEnabled(false);
 }
 
 void KateMainWindow::documentMenuAboutToShow()
@@ -929,6 +932,7 @@ void KateMainWindow::slotDocumentCreated (Kate::Document *doc)
 {
   connect(doc,SIGNAL(modStateChanged(Kate::Document *)),this,SLOT(updateCaption(Kate::Document *)));
   connect(doc,SIGNAL(nameChanged(Kate::Document *)),this,SLOT(updateCaption(Kate::Document *)));
+  connect(doc,SIGNAL(nameChanged(Kate::Document *)),this,SLOT(slotUpdateOpenWith()));
 
   updateCaption (doc);
 }

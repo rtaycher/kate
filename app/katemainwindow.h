@@ -190,6 +190,7 @@ class KateMainWindow : public KMdiMainFrm, virtual public KParts::PartBase
     void slotEditToolbars();
     void slotDocumentChanged();
     void slotWindowActivated ();
+    void slotUpdateOpenWith();
     void documentMenuAboutToShow();
     void slotDropEvent(QDropEvent *);
     void editKeys();
