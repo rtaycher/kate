@@ -134,9 +134,8 @@ void KMultiTabBarInternal::showActiveTabTexts(bool show)
 
 KMultiTabBarTab* KMultiTabBarInternal::tab(int id) const
 {
-
-	for (QPtrList<KMultiTabBarTab>::ConstIterator it=m_tabs.constBegin();it!=m_tabs.constEnd();++it){
-		if ((*it)->id()==id) return (*it);
+	for (QPtrListIterator<KMultiTabBarTab> it(m_tabs);it.current();++it){
+		if (it.current()->id()==id) return it.current();
 	}
         return 0;
 }
@@ -581,11 +580,10 @@ int KMultiTabBar::appendTab(const QPixmap &pic ,int id ,const QString& text)
 
 KMultiTabBarButton* KMultiTabBar::button(int id) const
 {
-
-	for (QPtrList<KMultiTabBarButton>::ConstIterator it=m_buttons.constBegin();it!=m_buttons.constEnd();++it) {
-		if ((*it)->id()==id) return (*it);
+	for (QPtrListIterator<KMultiTabBarButton> it(m_buttons);it.current();++it){
+		if (it.current()->id()==id) return it.current();
 	}
-	return 0;
+        return 0;
 }
 
 KMultiTabBarTab* KMultiTabBar::tab(int id) const
