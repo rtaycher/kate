@@ -171,7 +171,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   sb_numRecentFiles->setValue( mainWindow->fileOpenRecent->maxItems() );
   lNrf->setBuddy( sb_numRecentFiles );
   QString youwouldnotbelieveit ( i18n(
-        "<qt>Sets the number of recent files remembered by Kate.<p><strong>NOTE:</strong>"
+        "<qt>Sets the number of recent files remembered by Kate.<p><strong>NOTE: </strong>"
         "If you set this lower than the current value, the list will be truncated and "
         "some items forgotten.</qt>") );
   QWhatsThis::add( lNrf, youwouldnotbelieveit );
