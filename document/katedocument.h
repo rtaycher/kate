@@ -321,8 +321,6 @@ class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
     void comment(VConfig &c) {doComment(c, 1);}
     void unComment(VConfig &c) {doComment(c, -1);}
     void doComment(VConfig &, int change);
-    void doCommentLine(PointStruc &cursor);
-    void doUncommentLine(PointStruc &cursor);
 
     virtual QString text() const;
     QString getWord(PointStruc &cursor);

@@ -1577,97 +1577,109 @@ void KateDocument::optimizeLeadingSpace(int line, int flags, int change) {
   recordReplace(cursor, chars, s);
 }
 
-void KateDocument::doCommentLine(PointStruc &cursor) {
-
-  kdDebug()<<"doComment"<<m_highlight->getCommentStart()<<endl;
-  QString startComment = m_highlight->getCommentStart() + " ";
-  QString endComment = " " + m_highlight->getCommentEnd();
-
-  // Add a start comment mark
-  cursor.x = 0;
-  recordReplace(cursor, 0, startComment);
-
-  // Add an end comment mark
-  if(endComment != " ") {
-    TextLine* textline = getTextLine(cursor.y);
-    cursor.x = textline->length();
-    recordReplace(cursor, 0, endComment);
-    cursor.x = 0;
-  }
-}
-
-void KateDocument::doUncommentLine(PointStruc &cursor) {
-
-  QString startComment = m_highlight->getCommentStart() + " ";
-  QString otherStartComment = m_highlight->getCommentStart();
-  QString endComment = "";
-  if(m_highlight->getCommentEnd() != "") {
-    endComment = " " + m_highlight->getCommentEnd();
-  }
-
-  int startCommentLen = startComment.length();
-  int otherStartCommentLen = otherStartComment.length();
-  int endCommentLen = endComment.length();
-
-  TextLine* textline = getTextLine(cursor.y);
-
-  if(textline->startingWith(startComment) && textline->endingWith(endComment)) {
-
-    // Remove start comment mark
-    cursor.x = 0;
-    recordReplace(cursor, startCommentLen, "");
-
-    // Remove end comment mark
-    if(endComment != "") {
-      cursor.x = textline->length() - endCommentLen;
-      recordReplace(cursor, endCommentLen, "");
-      cursor.x = 0;
-    }
-
-  } else if(textline->startingWith(otherStartComment) && textline->endingWith(endComment)) {
-
-    // Remove start comment mark
-    cursor.x = 0;
-    recordReplace(cursor, otherStartCommentLen, "");
-
-    // Remove end comment mark
-    if(endComment != "") {
-      cursor.x = textline->length() - endCommentLen;
-      recordReplace(cursor, endCommentLen, "");
-      cursor.x = 0;
-    }
-  }
-}
-
-void KateDocument::doComment(VConfig &c, int change) {
-
+void KateDocument::doComment(VConfig &c, int change)
+{
   c.flags |=KateView:: cfPersistent;
 
   recordStart(c, (change < 0) ? KateActionGroup::ugUncomment
     : KateActionGroup::ugComment);
 
-  if (selectEnd < selectStart) {
-    if(change > 0) {
-      // comment single line
-      doCommentLine(c.cursor);
-    } else if(change < 0) {
-      // uncomment single line
-      doUncommentLine(c.cursor);
-    }
-  } else {
-    for (c.cursor.y = selectStart; c.cursor.y <= selectEnd; c.cursor.y++) {
-      TextLine* textLine = getTextLine(c.cursor.y);
-      if (textLine->isSelected() || textLine->numSelected()) {
-        if(change > 0) {
-          //comment selection
-          doCommentLine(c.cursor);
-        } else if(change < 0) {
-          //uncomment selection
-          doUncommentLine(c.cursor);
+  QString startComment = m_highlight->getCommentStart();
+  QString startLineComment = m_highlight->getCommentSingleLineStart();
+  QString endComment = m_highlight->getCommentEnd();
+
+  int startCommentLen = startComment.length();
+  int startLineCommentLen = startLineComment.length();
+  int endCommentLen = endComment.length();
+
+  if (change > 0)
+  {
+    if ( !hasMarkedText() )
+    {
+      if (startLineComment != "")
+      {
+        // Add a start comment mark
+        c.cursor.x = 0;
+        recordReplace(c.cursor, 0, startLineComment + " ");
+      }
+      else
+      {
+        // Add a start comment mark
+        c.cursor.x = 0;
+        recordReplace(c.cursor, 0, startComment + " ");
+
+        // Add an end comment mark
+        if(endComment != " ") {
+        TextLine* textline = getTextLine(c.cursor.y);
+        c.cursor.x = textline->length();
+        recordReplace(c.cursor, 0, " " + endComment);
+        c.cursor.x = 0;
         }
       }
     }
-    c.cursor.y--;
+    else
+    {
+      QString marked (c.view->markedText ());
+      int preDeleteLine = -1, preDeleteCol = -1;
+      c.view->getCursorPosition (&preDeleteLine, &preDeleteCol);
+
+      if (marked.length() > 0)
+        c.view->keyDelete ();
+
+      int line = -1, col = -1;
+      c.view->getCursorPosition (&line, &col);
+
+      c.view->insertText (startComment + " " + marked + " " + endComment);
+    }
+  }
+  else
+  {
+    if ( !hasMarkedText() )
+    {
+      TextLine* textline = getTextLine(c.cursor.y);
+
+      if(textline->startingWith(startLineComment))
+      {
+        // Remove start comment mark
+        c.cursor.x = 0;
+        recordReplace(c.cursor, startLineCommentLen, "");
+      }
+      else if (textline->startingWith(startComment) && textline->endingWith(endComment))
+      {
+        // Remove start comment mark
+        c.cursor.x = 0;
+        recordReplace(c.cursor, startCommentLen, "");
+
+        // Remove end comment mark
+        if(endComment != "")
+        {
+          c.cursor.x = textline->length() - endCommentLen;
+          recordReplace(c.cursor, endCommentLen, "");
+          c.cursor.x = 0;
+        }
+      }
+    }
+    else
+    {
+      QString marked (c.view->markedText ());
+      int preDeleteLine = -1, preDeleteCol = -1;
+      c.view->getCursorPosition (&preDeleteLine, &preDeleteCol);
+
+      int start = marked.find (startComment);
+      int end = marked.findRev (endComment);
+
+      if ((start > -1) && (end > -1))
+      {
+        marked.remove (start, startCommentLen);
+        marked.remove (end-startCommentLen, endCommentLen);
+
+        c.view->keyDelete ();
+
+        int line = -1, col = -1;
+        c.view->getCursorPosition (&line, &col);
+        c.view->insertText (marked);
+      }
+    }
   }
 
   recordEnd(c.view, c.cursor, c.flags | KateView::cfPersistent);
