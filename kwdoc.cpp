@@ -140,6 +140,7 @@ KWriteDoc::KWriteDoc(HlManager *hlManager, const QString &path,
 
   newDocGeometry = false;
   readOnly = false;
+  newDoc = false;
 
   modified = false;
 
