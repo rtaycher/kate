@@ -17,17 +17,24 @@ KateDockContainer::KateDockContainer(QWidget *parent, class KateMainWindow *win,
 	mTabCnt=0;
 	m_position = position;
 	
-	QHBoxLayout *l=new QHBoxLayout(this);
+	QBoxLayout *l;
+	if ((position==KDockWidget::DockTop) || (position==KDockWidget::DockBottom))
+	l=new QVBoxLayout(this);
+	else
+	l=new QHBoxLayout(this);
+	
 	l->setAutoAdd(false);
 
-	m_tb=new KMultiVertTabBar(this);
-	m_tb->setPosition((position==KDockWidget::DockLeft)?KMultiVertTabBar::Left:KMultiVertTabBar::Right);
+	m_tb=new KMultiTabBar(this,((position==KDockWidget::DockTop) || (position==KDockWidget::DockBottom))?
+		KMultiTabBar::Horizontal:KMultiTabBar::Vertical);
+	m_tb->setPosition((position==KDockWidget::DockLeft)?KMultiTabBar::Left:
+		(position==KDockWidget::DockBottom)?KMultiTabBar::Bottom:KMultiTabBar::Right);
 
 	m_ws=new QWidgetStack(this);
 
 	m_ws->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
  
-	if (position==KDockWidget::DockLeft)
+	if ( (position==KDockWidget::DockLeft) || (position==KDockWidget::DockTop))
 	{
 		l->add(m_tb);
 		l->add(m_ws);
@@ -152,8 +159,8 @@ void KateDockContainer::save(KConfig*)
 	cfg->deleteGroup(QString("BLAH::%1").arg(parent()->name()));
 	cfg->setGroup(QString("BLAH::%1").arg(parent()->name()));
 	
-	QPtrList<KMultiVertTabBarTab>* tl=m_tb->tabs();
-	QPtrListIterator<KMultiVertTabBarTab> it(*tl);
+	QPtrList<KMultiTabBarTab>* tl=m_tb->tabs();
+	QPtrListIterator<KMultiTabBarTab> it(*tl);
 	int i=0;
 	for (;it.current()!=0;++it)
 	{
@@ -192,8 +199,8 @@ void KateDockContainer::load(KConfig*)
 		
 	}
 	
-	QPtrList<KMultiVertTabBarTab>* tl=m_tb->tabs();
-	QPtrListIterator<KMultiVertTabBarTab> it1(*tl);
+	QPtrList<KMultiTabBarTab>* tl=m_tb->tabs();
+	QPtrListIterator<KMultiTabBarTab> it1(*tl);
 	m_ws->hide();
 	parentDockWidget()->setForcedFixedWidth(m_tb->width());
 	for (;it1.current()!=0;++it1)

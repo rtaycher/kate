@@ -1,8 +1,9 @@
-#ifndef _kmultiverttabbar_h_
-#define _kmultiverttabbar_h_
+#ifndef _KMultitabbar_h_
+#define _KMultitabbar_h_
 
 #include <qscrollview.h>
 #include <qvbox.h>
+#include <qhbox.h>
 #include <qlayout.h>
 #include <qstring.h>
 #include <qptrlist.h>
@@ -13,14 +14,15 @@ class QPainter;
 class QFrame;
 
 
-class KMultiVertTabBar: public QWidget
+class KMultiTabBar: public QWidget
 {
 	Q_OBJECT
 public:
-	KMultiVertTabBar(QWidget *parent);
-	~KMultiVertTabBar(){;}
+	enum KMultiTabBarBasicMode{Horizontal, Vertical};
+	KMultiTabBar(QWidget *parent,KMultiTabBarBasicMode bm);
+	~KMultiTabBar(){;}
 
-	enum KMultiVertTabBarPosition{Left, Right};
+	enum KMultiTabBarPosition{Left, Right, Top, Bottom};
  	//int insertButton(QPixmap,int=-1,const QString& =QString::null);
  	int insertButton(QPixmap,int=-1,QPopupMenu* =0,const QString& =QString::null);
 	void removeButton(int);
@@ -28,29 +30,29 @@ public:
 	void removeTab(int);
 	void setTab(int,bool);
 	bool isTabRaised(int);
-	class KMultiVertTabBarButton *getButton(int);
-	class KMultiVertTabBarTab *getTab(int);
-	QPtrList<class KMultiVertTabBarButton> buttons;
-	void setPosition(KMultiVertTabBarPosition pos);
-        QPtrList<KMultiVertTabBarTab>* tabs();
+	class KMultiTabBarButton *getButton(int);
+	class KMultiTabBarTab *getTab(int);
+	QPtrList<class KMultiTabBarButton> buttons;
+	void setPosition(KMultiTabBarPosition pos);
+        QPtrList<KMultiTabBarTab>* tabs();
 private:
-	class KMultiVertTabBarInternal *internal;
-	QVBoxLayout *l;
+	class KMultiTabBarInternal *internal;
+	QBoxLayout *l;
 	QFrame *btnTabSep;	
-	KMultiVertTabBarPosition position;
+	KMultiTabBarPosition position;
 };
 
-class KMultiVertTabBarButton: public QPushButton
+class KMultiTabBarButton: public QPushButton
 {
 	Q_OBJECT
 public:
-	KMultiVertTabBarButton(const QPixmap& pic,const QString&, QPopupMenu *popup,
-		int id,QWidget *parent, KMultiVertTabBar::KMultiVertTabBarPosition pos);
-	~KMultiVertTabBarButton(){;}
+	KMultiTabBarButton(const QPixmap& pic,const QString&, QPopupMenu *popup,
+		int id,QWidget *parent, KMultiTabBar::KMultiTabBarPosition pos);
+	~KMultiTabBarButton(){;}
 	int id(){return m_id;}
-	void setPosition(KMultiVertTabBar::KMultiVertTabBarPosition);
+	void setPosition(KMultiTabBar::KMultiTabBarPosition);
 protected:
-	KMultiVertTabBar::KMultiVertTabBarPosition position;
+	KMultiTabBar::KMultiTabBarPosition position;
 private:
 	int m_id;
 signals:
@@ -60,31 +62,31 @@ private slots:
 };
 
 
-class KMultiVertTabBarTab: public KMultiVertTabBarButton
+class KMultiTabBarTab: public KMultiTabBarButton
 {
 	Q_OBJECT
 public:
-	KMultiVertTabBarTab(const QPixmap& pic,const QString&,int id,QWidget *parent,
-		KMultiVertTabBar::KMultiVertTabBarPosition pos);
-	~KMultiVertTabBarTab(){;}
+	KMultiTabBarTab(const QPixmap& pic,const QString&,int id,QWidget *parent,
+		KMultiTabBar::KMultiTabBarPosition pos);
+	~KMultiTabBarTab(){;}
 protected:
 	virtual void drawButton(QPainter *);
 };
 
-class KMultiVertTabBarInternal: public QScrollView
+class KMultiTabBarInternal: public QScrollView
 {
 	Q_OBJECT
 public:
-	KMultiVertTabBarInternal(QWidget *parent);
+	KMultiTabBarInternal(QWidget *parent,KMultiTabBar::KMultiTabBarBasicMode bm);
 	int insertTab(QPixmap,int=-1,const QString& =QString::null);
-	KMultiVertTabBarTab *getTab(int);
+	KMultiTabBarTab *getTab(int);
 	void removeTab(int);
-	void setPosition(enum KMultiVertTabBar::KMultiVertTabBarPosition pos);
-	QPtrList<KMultiVertTabBarTab>* tabs(){return &m_tabs;}
+	void setPosition(enum KMultiTabBar::KMultiTabBarPosition pos);
+	QPtrList<KMultiTabBarTab>* tabs(){return &m_tabs;}
 private:
-	QVBox *box;
-	QPtrList<KMultiVertTabBarTab> m_tabs;
-	enum KMultiVertTabBar::KMultiVertTabBarPosition position;
+	QHBox *box;
+	QPtrList<KMultiTabBarTab> m_tabs;
+	enum KMultiTabBar::KMultiTabBarPosition position;
 protected:
 	virtual void drawContents ( QPainter *, int, int, int, int);
 

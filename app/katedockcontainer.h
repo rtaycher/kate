@@ -7,7 +7,7 @@
 #include <qmap.h>
 
 class QWidgetStack;
-class KMultiVertTabBar;
+class KMultiTabBar;
 
 class KateDockContainer: public QWidget, public KDockContainer
 {
@@ -27,7 +27,7 @@ public slots:
 private:                    
   class KateMainWindow *m_mainWin;
 	QWidgetStack *m_ws;
-	KMultiVertTabBar *m_tb;
+	KMultiTabBar *m_tb;
 	int mTabCnt;
 	int oldtab;
   	int m_position; 

@@ -78,7 +78,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   m_pluginManager =_m_pluginManager;
   config = kapp->config();
 
- // m_dockStyle=IDEAlStyle;
+  //m_dockStyle=IDEAlStyle;
   m_dockStyle=ClassicStyle;
 
   myID = uniqueID;
@@ -161,12 +161,10 @@ void KateMainWindow::setupMainWindow ()
 
   if (m_dockStyle==IDEAlStyle)
   {
-     m_leftDock->manualDock(mainDock, KDockWidget::DockLeft,100);
-     m_rightDock->manualDock(mainDock, KDockWidget::DockRight,100);
-     m_topDock->manualDock(mainDock, KDockWidget::DockTop,100);
-     m_bottomDock->manualDock(mainDock, KDockWidget::DockBottom,100);
-     m_bottomDock->undock();
-     m_topDock->undock();
+     m_leftDock->manualDock(mainDock, KDockWidget::DockLeft,20);
+     m_rightDock->manualDock(mainDock, KDockWidget::DockRight,20);
+     m_topDock->manualDock(mainDock, KDockWidget::DockTop,20);
+     m_bottomDock->manualDock(mainDock, KDockWidget::DockBottom,20);
   }
 
 
