@@ -1,4 +1,4 @@
-                *** Kant ***
+                *** Kant version 0.2.1 ***
 Kant is a fast mdi-texteditor for the KDE destop.
 It uses the KWrite Part and the normal kdelibs.
 I hope it works well and improve workspeed on many little
@@ -12,4 +12,7 @@ The Kant team
 1. Bookmarks are currently implemented in kwview, which means that setting a mark
    only affects the view in which it is set. Having a document displayed in more
    views this will seem unlogic.
+
+2. Some features are currently not finished. This includes project handling and
+   plugin interface.
                  

@@ -55,6 +55,8 @@
 #include <qstringlist.h>
 #include <qfileinfo.h>
 
+#include <kio/netaccess.h>
+
 KantVMListBoxItem::KantVMListBoxItem (const QPixmap &pixmap,const QString &text, long docID) : KantListBoxItem (pixmap, text )
 {
   myDocID = docID;
@@ -111,6 +113,7 @@ KantViewManager::~KantViewManager ()
 
 bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView )
 {
+  //kdDebug()<<"createView()"<<endl;
   KantDocument *doc;
 
   // create doc
@@ -120,6 +123,7 @@ bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView )
     if ( (!url.isEmpty()) && (url.filename() != 0) ) {
       // if this is a local file, get some information
       if ( url.isLocalFile() ) {
+         //kdDebug()<<"local file!"<<endl;
          fi = new QFileInfo(url.path());
          if (!fi->exists()) {
            kdDebug()<<QString("createView(): ABORTING: %1 dosen't exist").arg(url.path())<<endl;
@@ -128,19 +132,18 @@ bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView )
       }
       ((KantMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
     }
-    else
-      fi = new QFileInfo();
-    doc = docManager->createDoc (fi);
+    doc = docManager->createDoc ();//fi);
   }
   else
     doc = (KantDocument *)origView->doc();
 
+  //kdDebug()<<">> doc created"<<endl;
   // create view
   KantView *view = new KantView (this, doc, (QString("KantViewIface%1").arg(myViewID)).latin1());
   connect(view,SIGNAL(newStatus()),this,SLOT(setWindowCaption()));
   connect(view,SIGNAL(newStatus()),this,SLOT(slotSetModified()));
   myViewID++;
-  viewList.append (view);        
+  viewList.append (view);
 
   KConfig *config = ((KantMainWindow*)topLevelWidget())->config;
   config->setGroup("kwrite");
@@ -151,7 +154,7 @@ bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView )
     view->copySettings(origView);
 
   view->init();
-
+  //kdDebug()<<">> view initialized"<<endl;
   if (newDoc)
   {
     view->newDoc();
@@ -199,7 +202,7 @@ bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView )
 
   activeViewSpace()->addView( view );
   activateView( view );
-
+  //kdDebug()<<">> createView(): done"<<endl;
   return true;
 }
 
