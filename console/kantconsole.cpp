@@ -18,10 +18,10 @@
 #include "kantconsole.h"
 #include "kantconsole.moc"
 
+#include <kurl.h>
 #include <qlayout.h>
 #include <stdlib.h>
 #include <klibloader.h>
-#include <kparts/part.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <qlabel.h>
@@ -32,7 +32,7 @@ KantConsole::KantConsole (QWidget* parent, const char* name) : QWidget (parent, 
   lo = new QVBoxLayout(this);
     KLibFactory *factory = 0;
     factory = KLibLoader::self()->factory("libkonsolepart");
-    KParts::ReadOnlyPart *part=0;
+    part = 0L;
       if (factory)
         {
           part = static_cast<KParts::ReadOnlyPart *>(factory->create(this,"libkonsolepart",
@@ -45,13 +45,15 @@ KantConsole::KantConsole (QWidget* parent, const char* name) : QWidget (parent, 
               connect ( part, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
             }
         }
-    if (part==0)
-	lo->addWidget(new QLabel(i18n("You'll need kdebase - konsole to use this feature"),this));
-
 }
 
 KantConsole::~KantConsole ()
 {
+}
+
+void KantConsole::cd (KURL url)
+{
+  part->openURL (url);
 }
 
 void KantConsole::slotDestroyed ()
@@ -60,7 +62,6 @@ void KantConsole::slotDestroyed ()
 
  KLibFactory *factory = 0;
     factory = KLibLoader::self()->factory("libkonsolepart");
-    KParts::ReadOnlyPart *part=0;
       if (factory)
         {
           part = static_cast<KParts::ReadOnlyPart *>(factory->create(this,"libkonsolepart",
@@ -72,7 +73,4 @@ void KantConsole::slotDestroyed ()
               connect ( part, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
             }
         }
-    if (part==0)
-	lo->addWidget(new QLabel(i18n("You'll need kdebase - konsole to use this feature"),this));
-
 }

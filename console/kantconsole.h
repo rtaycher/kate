@@ -20,6 +20,7 @@
 #include "../kantmain.h"
 
 #include <qwidget.h>
+#include <kparts/part.h>
 
 class KantConsole : public QWidget
 {
@@ -29,7 +30,10 @@ class KantConsole : public QWidget
     KantConsole (QWidget* parent=0, const char* name=0);
     ~KantConsole ();
 
+    void cd (KURL url=0L);
+
   private:
+    KParts::ReadOnlyPart *part;
     QVBoxLayout* lo;
 
   // Only needed for Konsole
