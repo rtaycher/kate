@@ -10,7 +10,10 @@ METASOURCES = AUTO
 kde_module_LTLIBRARIES = libkatepartkttsdplugin.la
 
 libkatepartkttsdplugin_la_SOURCES = katepartkttsd.cpp
-libkatepartkttsdplugin_la_LIBADD  = $(LIB_KPARTS) -lkateinterfaces
+libkatepartkttsdplugin_la_LIBADD  = \
+	$(LIB_KPARTS) \
+        ../../utils/libkateutils.la \
+	../../app/libkateinterfaces.la
 libkatepartkttsdplugin_la_LDFLAGS = -module $(KDE_PLUGIN) $(all_libraries)
 
 pluginsdir = $(kde_datadir)/katepart/kpartplugins
