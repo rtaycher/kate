@@ -1557,7 +1557,7 @@ KWrite::~KWrite() {
   }
   delete kspell.ksc;
 
-  //  kWriteDoc->removeView( this );
+  kWriteDoc->removeView( this );
 
   if ( kWriteDoc->isLastView(0) && !kWriteDoc->isSingleViewMode() )
     delete kWriteDoc;
