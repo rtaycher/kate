@@ -404,7 +404,6 @@ KWBuffer::changeLine(int i)
 void
 KWBuffer::parseBlock(KWBufBlock *buf)
 {
-
     kdDebug()<<"parseBlock "<< buf<<endl;
    if (!buf->b_rawDataValid)
       loadBlock(buf);
@@ -414,6 +413,7 @@ KWBuffer::parseBlock(KWBufBlock *buf)
       buf2->disposeStringList();
    }
    buf->buildStringList();
+   assert(m_parsedBlocksClean.find(buf) == -1);
    m_parsedBlocksClean.append(buf);
 }
 
@@ -430,7 +430,6 @@ KWBuffer::loadBlock(KWBufBlock *buf)
 
    kdDebug()<<"swapIn "<<buf<<endl;
    buf->swapIn(m_vm);
-   m_parsedBlocksClean.append(buf);
    m_loadedBlocks.append(buf);
 }
 
