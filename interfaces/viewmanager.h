@@ -30,7 +30,7 @@ class View;
 /**
  * Interface to the viewmanager
  */
-class ViewManager : public QObject
+class KDE_EXPORT ViewManager : public QObject
 {
   friend class PrivateViewManager;
 

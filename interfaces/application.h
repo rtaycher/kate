@@ -35,7 +35,7 @@ namespace Kate
  * other objects like document/projectmanager, ... no way goes around this
  * central interface
  */
-class Application : public QObject
+class KDE_EXPORT Application : public QObject
 {
   friend class PrivateApplication;
 
