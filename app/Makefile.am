@@ -7,7 +7,7 @@ libkateinterfaces_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugin
 	kateviewmanager.cpp kateviewspace.cpp kateprojectmanager.cpp \
 	kateIface.skel kategrepdialog.cpp katemailfilesdialog.cpp \
         kbookmarkhandler.cpp kactionselector.cpp katedockcontainer.cpp kateprojectlist.cpp \
-        kateprojecttreeview.cpp kateprojectviews.cpp
+        kateprojecttreeview.cpp kateprojectviews.cpp kateprojectdirview.cpp
 
 libkateinterfaces_la_LIBADD   = ../interfaces/libkateinterfacesprivate.la -lkscript ../lib/libkmultitabbar.la ../utils/libkateutils.la
 libkateinterfaces_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -no-undefined

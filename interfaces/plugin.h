@@ -73,11 +73,13 @@ class ProjectPlugin : public Plugin
     virtual bool save ();
     virtual bool close ();
     
-    virtual bool addDir (class ProjectDirFile *dirFile, const QString &dir);
-    virtual bool removeDir (class ProjectDirFile *dirFile, const QString &dir);
+    // default implementations don't modify the given list at all
     
-    virtual bool addFile (class ProjectDirFile *dirFile, const QString &file);
-    virtual bool removeFile (class ProjectDirFile *dirFile, const QString &file);
+    virtual void addDirs (class ProjectDirFile *dirFile, QStringList &dirs);
+    virtual void removeDirs (class ProjectDirFile *dirFile, QStringList &dirs);
+    
+    virtual void addFiles (class ProjectDirFile *dirFile, QStringList &files);
+    virtual void removeFiles (class ProjectDirFile *dirFile, QStringList &files);
     
   private:
     class PrivateProjectPlugin *d;

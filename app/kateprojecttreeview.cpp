@@ -23,6 +23,7 @@
 #include "kateprojecttreeview.h"
 #include "kateprojecttreeview.moc"
 
+#include "kateprojectdirview.h"
 #include "katemainwindow.h"
 
 #include <klocale.h>
@@ -157,8 +158,9 @@ void KateProjectTreeView::slotDoubleClicked( QListViewItem *i, const QPoint &pos
   
   if (item->isDir())
   {
-    if  (item->fullName() != QString::null)
-      setOpen (item, !item->isOpen());
+    KateProjectDirView::addDialog (m_project->dirFile (item->fullName()), this);
+  //  if  (item->fullName() != QString::null)
+      //setOpen (item, !item->isOpen());
   }
   else
     m_mainWin->viewManager()->openURL (KURL (m_project->dir() + QString ("/") + item->fullName()));

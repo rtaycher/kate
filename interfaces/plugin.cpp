@@ -121,24 +121,20 @@ bool ProjectPlugin::close ()
   return true;
 }
 
-bool ProjectPlugin::addDir (ProjectDirFile *, const QString &)
+void ProjectPlugin::addDirs (ProjectDirFile *, QStringList &l)
 {
-  return true;
 }
 
-bool ProjectPlugin::removeDir (ProjectDirFile *, const QString &)
+void ProjectPlugin::removeDirs (ProjectDirFile *, QStringList &l)
 {
-  return true;
 }
 
-bool ProjectPlugin::addFile (ProjectDirFile *, const QString &)
+void ProjectPlugin::addFiles (ProjectDirFile *, QStringList &l)
 {
-  return true;
 }
 
-bool ProjectPlugin::removeFile (ProjectDirFile *, const QString &)
+void ProjectPlugin::removeFiles (ProjectDirFile *, QStringList &l)
 {
-  return true;
 }
 
 InitPlugin :: InitPlugin(Application *application, const char *name):Plugin(application,name)

@@ -28,6 +28,7 @@
 #include <kconfig.h>
 
 #include <qfile.h>
+#include <qdir.h>
 
 namespace Kate
 {
@@ -73,6 +74,8 @@ class PrivateProjectDirFile
     PrivateProjectDirFileData *m_data;
     KConfig *m_config;
     QString m_dir;
+    QString m_absdir;
+    QString m_absfilename;
   };
 
             
@@ -179,7 +182,8 @@ ProjectDirFile::ProjectDirFile (void *projectDirFile) : QObject ()
   d = new PrivateProjectDirFile ();
   d->m_data = (PrivateProjectDirFileData *) projectDirFile;
   
-  d->m_config = new KConfig (d->m_data->project->dir() + QString ("/") + d->m_data->fileName, false, false);
+  d->m_absfilename = d->m_data->project->dir() + QString ("/") + d->m_data->fileName;
+  d->m_config = new KConfig (d->m_absfilename, false, false);
   
   int pos = d->m_data->fileName.findRev (QChar ('/'));
   
@@ -187,6 +191,11 @@ ProjectDirFile::ProjectDirFile (void *projectDirFile) : QObject ()
     d->m_dir = QString::null;
   else
     d->m_dir = d->m_data->fileName.left (pos);
+    
+  if (d->m_dir.isNull())
+    d->m_absdir = d->m_data->project->dir ();
+  else
+    d->m_absdir = d->m_data->project->dir () + QString ("/") + d->m_dir;
 }
 
 ProjectDirFile::~ProjectDirFile ()
@@ -224,6 +233,16 @@ QString ProjectDirFile::fileName () const
 QString ProjectDirFile::dir () const
 {
   return d->m_dir;
+}
+
+QString ProjectDirFile::absFileName () const
+{
+  return d->m_absfilename;
+}
+
+QString ProjectDirFile::absDir () const
+{
+  return d->m_absdir;
 }
 
 ProjectDirFile::Ptr ProjectDirFile::dirFile (const QString &dir)
@@ -266,47 +285,135 @@ ProjectDirFile::List ProjectDirFile::dirFiles ()
   return list;
 }
 
-bool ProjectDirFile::addDir (const QString &dir)
+QStringList ProjectDirFile::addDirs (const QStringList &dirs)
 {
-  QStringList l = dirs();
+  QStringList existingDirs = this->dirs();
   
-  if (!(l.findIndex (dir) == -1))
-    return false;
-  
-  if (!project()->plugin()->addDir (this, dir))
-    return false;
-    
-  l.push_back (dir);
+  QStringList newDirs;
+  QDir dirCheck;
+  for (uint z=0; z < dirs.count(); z++)
+  {  
+    if (existingDirs.findIndex (dirs[z]) == -1)
+    {
+      dirCheck.setPath (absDir() + QString ("/") + dirs[z]);
+      
+      if (dirCheck.exists())
+        newDirs.push_back (dirs[z]);
+    }
+  }
+      
+  project()->plugin()->addDirs (this, newDirs);
   
   d->m_config->setGroup("General");
-  d->m_config->writeEntry ("Dirs", l, '/');
+  d->m_config->writeEntry ("Dirs", newDirs + existingDirs, '/');
   d->m_config->sync ();
   
-  return true;
+  for (uint z=0; z < newDirs.count(); z++)
+  {
+    KConfig config (absDir() + QString ("/") + newDirs[z] + QString ("/") + d->m_data->project->dirFilesName (), false, false);
+    config.setGroup ("General");
+    config.writeEntry ("Dirs", QStringList(), '/');
+    config.writeEntry ("Files", QStringList(), '/');
+    config.sync ();
+  }
+   
+  emit d->m_data->project->dirsAdded (dir(), newDirs);
+  
+  return newDirs;
 }
 
-bool ProjectDirFile::removeDir (const QString &dir)
+QStringList ProjectDirFile::removeDirs (const QStringList &dirs)
 {
-  if (!project()->plugin()->removeDir (this, dir))
-    return false;
-
-  return true;
+  QStringList existingDirs = this->dirs();
+  
+  QStringList removeDirs;
+  for (uint z=0; z < dirs.count(); z++)
+  {  
+    if (existingDirs.findIndex (dirs[z]) != -1)
+    {      
+      removeDirs.push_back (dirs[z]);
+    }
+  }
+      
+  project()->plugin()->removeDirs (this, removeDirs);
+  
+  QStringList saveList;
+  for (uint z=0; z < existingDirs.count(); z++)
+  {  
+    if (removeDirs.findIndex (existingDirs[z]) == -1)
+    {      
+      saveList.push_back (existingDirs[z]);
+    }
+  }
+  
+  d->m_config->setGroup("General");
+  d->m_config->writeEntry ("Dirs", saveList, '/');
+  d->m_config->sync ();
+  
+   emit d->m_data->project->dirsRemoved (dir(), removeDirs);
+  
+  return removeDirs;
 }
 
-bool ProjectDirFile::addFile (const QString &file)
+QStringList ProjectDirFile::addFiles (const QStringList &files)
 {
-  if (!project()->plugin()->addFile (this, file))
-    return false;
-
-  return true;
+  QStringList existingFiles = this->files();
+  
+  QStringList newFiles;
+  QFile fileCheck;
+  for (uint z=0; z < files.count(); z++)
+  {  
+    if (existingFiles.findIndex (files[z]) == -1)
+    {
+      fileCheck.setName (absDir() + QString ("/") + files[z]);
+      
+      if (fileCheck.exists())
+        newFiles.push_back (files[z]);
+    }
+  }
+      
+  project()->plugin()->addFiles (this, newFiles);
+  
+  d->m_config->setGroup("General");
+  d->m_config->writeEntry ("Files", newFiles + existingFiles, '/');
+  d->m_config->sync ();
+   
+   emit d->m_data->project->filesAdded (dir(), newFiles);
+  
+  return newFiles;
 }
 
-bool ProjectDirFile::removeFile (const QString &file)
+QStringList ProjectDirFile::removeFiles (const QStringList &files)
 {
-  if (!project()->plugin()->removeFile (this, file))
-    return false;
-
-  return true;
+  QStringList existingFiles = this->files();
+  
+  QStringList removeFiles;
+  for (uint z=0; z < files.count(); z++)
+  {  
+    if (existingFiles.findIndex (files[z]) != -1)
+    {      
+      removeFiles.push_back (files[z]);
+    }
+  }
+      
+  project()->plugin()->removeFiles (this, removeFiles);
+  
+  QStringList saveList;
+  for (uint z=0; z < existingFiles.count(); z++)
+  {  
+    if (removeFiles.findIndex (existingFiles[z]) == -1)
+    {      
+      saveList.push_back (existingFiles[z]);
+    }
+  }
+  
+  d->m_config->setGroup("General");
+  d->m_config->writeEntry ("Files", saveList, '/');
+  d->m_config->sync ();
+  
+  emit d->m_data->project->filesRemoved (dir(), removeFiles);
+  
+  return removeFiles;
 }
 
 };
