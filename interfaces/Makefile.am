@@ -9,6 +9,11 @@ libkantviewmanagerIface_la_SOURCES = kantviewmanagerIface.cpp
 libkantviewmanagerIface_la_LDFLAGS = $(all_libraries) -version-info 1:0:0 -no-undefined
 libkantviewmanagerIface_la_LIBADD =  ../kwrite/libkwritepart.la $(LIB_KPARTS)
 
+lib_LTLIBRARIES = libkantmainwindowIface.la
+libkantmainwindowIface_la_SOURCES = kantmainwindowIface.cpp
+libkantmainwindowIface_la_LDFLAGS = $(all_libraries) -version-info 1:0:0 -no-undefined
+libkantmainwindowIface_la_LIBADD =  ../kwrite/libkwritepart.la $(LIB_KPARTS)
+
 INCLUDES= $(all_includes)
 
 METASOURCES = AUTO

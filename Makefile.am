@@ -9,7 +9,7 @@ kant_LDADD   =  ./kwrite/libkwritepart.la ./app/libkantapp.la \
 		./sidebar/libkantsidebar.la ./project/libkantproject.la \
 		./fileselector/libkantfileselector.la ./document/libkantdocument.la \
 		./console/libkantconsole.la ./filelist/libkantfilelist.la \
-		./pluginmanager/libkantpluginmanager.la ./pluginmanager/libkantpluginiface.la
+		./pluginmanager/libkantpluginmanager.la ./pluginmanager/libkantpluginiface.la ./interfaces/libkantdocmanagerIface.la ./interfaces/libkantviewmanagerIface.la  ./interfaces/libkantmainwindowIface.la
 kant_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
 INCLUDES= $(all_includes)

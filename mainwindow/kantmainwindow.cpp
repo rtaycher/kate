@@ -84,7 +84,7 @@
 #define POP_(x) kdDebug() << #x " = " << flush << x << endl
 
 KantMainWindow::KantMainWindow(KantDocManager *_docManager, KantPluginManager *_pluginManager) :
-	KDockMainWindow (0, "Main Window"),
+	KantMainWindowIface (0, "Main Window"),
              DCOPObject ("KantIface" ),
 	m_pFilterShellProcess (NULL)
 {
