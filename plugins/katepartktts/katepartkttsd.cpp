@@ -35,7 +35,7 @@
 #include "katepartkttsd.h"
 #include "katepartkttsd.moc"
 
-K_EXPORT_COMPONENT_FACTORY( katepartkttsdplugin, KGenericFactory<KatePartPluginKTTSD>("katepartpluginkttsd") )
+K_EXPORT_COMPONENT_FACTORY( libkatepartkttsdplugin, KGenericFactory<KatePartPluginKTTSD>("katepartpluginkttsd") )
 
 KatePartPluginKTTSD::KatePartPluginKTTSD( QObject* parent, const char* name, const QStringList& )
     : Plugin( parent, name )
