@@ -41,6 +41,7 @@
 #include <qpixmap.h>
 #include <qfileinfo.h>
 #include <qfile.h>
+#include <qevent.h>
 #include <qdir.h>
 #include <qprinter.h>
 #include <qprintdialog.h>
@@ -1509,8 +1510,6 @@ KantView::KantView(QWidget *parent, KantDocument *doc, const char * name, bool H
 
   connect(kWriteView,SIGNAL(dropEventPass(QDropEvent *)),this,SLOT(dropEventPassEmited(QDropEvent *)));
 
-   kWriteView->installEventFilter( this );
-
   setupActions();
 
   setXMLFile( "kwriteui.rc" );
@@ -1552,6 +1551,8 @@ KantView::KantView(QWidget *parent, KantDocument *doc, const char * name, bool H
     client->attach();
     client->registerAs("kwrite");
   }  */
+
+  kWriteView->installEventFilter( this );
 }
 
 KantView::~KantView() {
@@ -3745,23 +3746,16 @@ void KantView::setFocus ()
   emit gotFocus (this);
 }
 
-bool KantView::eventFilter(QObject* o, QEvent* e)
+bool KantView::eventFilter (QObject *object, QEvent *event)
 {
- // if (e->type() == QEvent::FocusIn)
-  //  emit gotFocus (this);
- /* if (e->type()==QEvent::KeyPress)
-    {
-	QKeyEvent * ke=(QKeyEvent *)e;
-	if ((ke->key()==Key_Tab) || (ke->key()==Key_BackTab))
-          {
-            kWriteView->keyPressEvent(ke);
-	    return true;
-          }
-    }   */
-  return QWidget::eventFilter(o, e);
+  if ( (event->type() == 8) )
+    emit gotFocus (this);
+
+  return QWidget::eventFilter (object, event);
 }
 
-/*void KantView::searchAgain(bool back) {
+void KantView::searchAgain (bool back)
+{
   bool b= (searchFlags & sfBackward) > 0;
   initSearch(s, (searchFlags & ((b==back)?~sfBackward:~0))  // clear flag for forward searching
                 | sfFromCursor | sfPrompt | sfAgain | ((b!=back)?sfBackward:0) );
@@ -3770,4 +3764,3 @@ bool KantView::eventFilter(QObject* o, QEvent* e)
   else
     KantView::searchAgain(s);
 }
-       */

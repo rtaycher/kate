@@ -1024,7 +1024,7 @@ class KantView : public KTextEditor::View, virtual public KantViewIface {
 
   public slots:
     virtual void setFocus ();
-  //  void searchAgain(bool back=false);
+    void searchAgain(bool back=false);
 
   protected:
     bool eventFilter(QObject* o, QEvent* e);
