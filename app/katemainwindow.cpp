@@ -28,6 +28,7 @@
 #include "kateapp.h"
 #include "katefileselector.h"
 #include "katefilelist.h"
+#include "katemailfilesdialog.h"
 
 #include <dcopclient.h>
 #include <kinstance.h>
@@ -46,6 +47,7 @@
 #include <kiconloader.h>
 #include <kkeydialog.h>
 #include <klocale.h>
+#include <kmessagebox.h>
 #include <kmimetype.h>
 #include <kopenwith.h>
 #include <kpopupmenu.h>
@@ -127,8 +129,8 @@ void KateMainWindow::setupMainWindow ()
   filelist = new KateFileList (m_docManager, m_viewManager, filelistDock, "filelist");
   filelistDock->setWidget (filelist);
 
+  
   fileselector = new KateFileSelector( this, m_viewManager, fileselectorDock, "operator");
-  fileselector->dirOperator()->setView(KFile::Simple);
   fileselectorDock->setWidget (fileselector);
 
   filelistDock->setDockWindowType (NET::Tool);
@@ -144,7 +146,6 @@ void KateMainWindow::setupMainWindow ()
   filelistDock->manualDock ( mainDock, KDockWidget::DockLeft, 20 );
   fileselectorDock ->manualDock(filelistDock, KDockWidget::DockCenter);
 
-  statusBar()->hide();
 }
 
 bool KateMainWindow::eventFilter(QObject* o, QEvent* e)
@@ -193,6 +194,8 @@ void KateMainWindow::setupActions()
   new KAction( i18n("Save A&ll"),"save_all", CTRL+Key_L, m_viewManager, SLOT( slotDocumentSaveAll() ), actionCollection(), "file_save_all" );
   KStdAction::close( m_viewManager, SLOT( slotDocumentClose() ), actionCollection(), "file_close" );
   new KAction( i18n( "Clos&e All" ), 0, m_viewManager, SLOT( slotDocumentCloseAll() ), actionCollection(), "file_close_all" );
+
+  KStdAction::mail( this, SLOT(slotMail()), actionCollection() );
 
   new KAction(i18n("New &Window"), 0, this, SLOT(newWindow()), actionCollection(), "file_newWindow");
 
@@ -281,7 +284,7 @@ void KateMainWindow::newWindow ()
 
 void KateMainWindow::slotEditToolbars()
 {
-  KEditToolbar dlg(factory());
+  KEditToolbar dlg( factory() );
 
   dlg.exec();
 }
@@ -314,7 +317,7 @@ void KateMainWindow::readOptions(KConfig *config)
   fileOpenRecent->loadEntries(config, "Recent Files");
 
   fileselector->readConfig(config, "fileselector");
-  fileselector->setView(KFile::Default);
+  //fileselector->setView(KFile::Default); grr - the file selector reads the config and does this!!
 
   readDockConfig();
 }
@@ -542,7 +545,12 @@ void KateMainWindow::slotGoPrev()
 
 KURL KateMainWindow::activeDocumentUrl()
 {
-  return m_viewManager->activeView()->getDoc()->url();
+  // anders: i make this one safe, as it may be called during 
+  // startup (by the file selector)
+  Kate::View *v = m_viewManager->activeView();
+  if ( v )
+    return v->getDoc()->url();
+  return KURL();
 }
 
 void KateMainWindow::fileSelected(const KFileItem *file)
@@ -619,4 +627,79 @@ void KateMainWindow::runScript()
 {
 	kdDebug(13000) << "Starting script engine..." << endl;
 	kscript->runScript(scriptMenu->currentText());
+}
+
+void KateMainWindow::slotMail()
+{
+  KateMailDialog *d = new KateMailDialog(this, this);
+  if ( ! d->exec() )
+    return;
+  QPtrList<Kate::Document> attDocs = d->selectedDocs();
+  delete d;
+  // Check that all selected files are saved (or shouldn't be)
+  QStringList urls; // to atthatch
+  Kate::Document *doc;
+  QPtrListIterator<Kate::Document> it(attDocs);
+  for ( ; it.current(); ++it ) {
+    doc = it.current();
+    if (!doc) continue;
+    if ( doc->url().isEmpty() ) {
+      // unsaved document. back out unless it gets saved
+      int r = KMessageBox::questionYesNo( this,
+              i18n("<p>The current document has not beed saved, and can "
+              "not be atthatched to a email message."
+              "<p>Do you want to save it and proceed?"),
+              i18n("Can not send unsaved file") );
+      if ( r == KMessageBox::Yes ) {
+        Kate::View *v = (Kate::View*)doc->views().first();
+        int sr = v->saveAs();
+        if ( sr == Kate::View::SAVE_OK ) {
+          doc->setDocName( doc->url().fileName() );
+          m_viewManager->setWindowCaption();
+        }
+        else {
+          if ( sr != Kate::View::SAVE_CANCEL ) // ERROR or RETRY(?)
+            KMessageBox::sorry( this, i18n("The file could not be saved. Please check "
+                                        "if you have write permission.") );
+          continue;
+        }
+      }
+      else
+        continue;
+    }
+    if ( doc->isModified() ) {
+      // warn that document is modified and offer to save it before preceeding.
+      int r = KMessageBox::warningYesNoCancel( this,
+                QString( i18n("<p>The current file:<br><strong>%1</strong><br>has been "
+                "modified. Modifications will not be available in the atthatchment."
+                "<p>Do you want to save it before sending it?") ).arg(doc->url().prettyURL()),
+                i18n("Save before sending?") );
+      switch ( r ) {
+        case KMessageBox::Cancel:
+          continue;
+        case KMessageBox::Yes:
+          doc->save();
+          if ( doc->isModified() ) { // read-only docs ends here, if modified. Hmm.
+            KMessageBox::sorry( this, i18n("The file could not be saved. Please check "
+                                      "if you have write permission.") );
+            continue;
+          }
+          break;
+        default:
+          break;
+      }
+    }
+    // finally call the mailer
+    urls << doc->url().url();
+  } // check selected docs done
+  if ( ! urls.count() )
+    return;
+  kapp->invokeMailer( QString::null, // to
+                      QString::null, // cc
+                      QString::null, // bcc
+                      QString::null, // subject
+                      QString::null, // body
+                      QString::null, // msgfile
+                      urls           // urls to atthatch
+                      );
 }
