@@ -19,13 +19,15 @@
 #ifndef __kate_pluginconfiginterface_h__
 #define __kate_pluginconfiginterface_h__
 
+#include <kdemacros.h>
+
 namespace Kate
 {
 
 /*
 *  This is an interface for the KTextEditor::Document/Plugin/ViewPlugin classes !!!
 */
-class PluginConfigInterface
+class KDE_EXPORT PluginConfigInterface
 {
   friend class PrivatePluginConfigInterface;
 

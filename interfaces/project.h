@@ -22,6 +22,8 @@
 #include <qobject.h>
 #include <qstringlist.h>
 
+#include <kdemacros.h>
+
 class KConfig;
 class DCOPObject;
 
@@ -33,7 +35,7 @@ namespace Kate
 /**
  * Interface to the project
  */
-class Project : public QObject
+class KDE_EXPORT Project : public QObject
 {
   friend class PrivateProject;
 

@@ -27,7 +27,7 @@ namespace Kate
 {
 /** This interface provides access to the Kate Plugin Manager.
 */
-class PluginManager : public QObject
+class KDE_EXPORT PluginManager : public QObject
 {
   friend class PrivatePluginManager;
 
@@ -65,7 +65,7 @@ class PluginManager : public QObject
     class PrivatePluginManager *d;
 };
 
-class InitPluginManager : public QObject
+class KDE_EXPORT InitPluginManager : public QObject
 {
   friend class PrivateInitPluginManager;
 

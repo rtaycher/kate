@@ -28,7 +28,7 @@ namespace Kate
   class Project;
 }
 
-class KateProjectDCOPIface : public DCOPObject
+class KDE_EXPORT KateProjectDCOPIface : public DCOPObject
 {
   K_DCOP
 

@@ -30,7 +30,7 @@ class Project;
 /**
  * Interface to the projectmanager
  */
-class ProjectManager : public QObject
+class KDE_EXPORT ProjectManager : public QObject
 {
   friend class PrivateProjectManager;
 

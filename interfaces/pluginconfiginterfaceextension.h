@@ -26,7 +26,7 @@
 namespace Kate
 {
 
-class PluginConfigPage : public QWidget
+class KDE_EXPORT PluginConfigPage : public QWidget
 {
   Q_OBJECT
 
@@ -60,7 +60,7 @@ class PluginConfigPage : public QWidget
 /*
 *  This is an interface for the KTextEditor::Document/Plugin/ViewPlugin classes !!!
 */
-class PluginConfigInterfaceExtension
+class KDE_EXPORT PluginConfigInterfaceExtension
 {
   friend class PrivatePluginConfigInterfaceExtension;
 

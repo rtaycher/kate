@@ -26,7 +26,7 @@ namespace Kate
 {
 /** This interface provides access to the Kate Document Manager.
 */
-class DocumentManager : public QObject
+class KDE_EXPORT DocumentManager : public QObject
 {
   friend class PrivateDocumentManager;
 
