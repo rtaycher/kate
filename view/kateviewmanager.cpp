@@ -210,9 +210,9 @@ bool KateViewManager::deleteView (KateView *view, bool force, bool delViewSpace,
     if ( viewspace->viewCount() == 0 )
       removeViewSpace( viewspace );
 
-  if (createNew && (viewList.count() < 1) && (docManager->docCount() < 1) )
+  if (createNew && (viewList.count() < 1) && (docManager->docCount() < 2) )
     createView (true, 0L, 0L);
-  else if (createNew && (viewList.count() < 1) && (docManager->docCount() > 0) )
+  else if (createNew && (viewList.count() < 1) && (docManager->docCount() > 1) )
     createView (false, 0L, 0L, docManager->nthDoc(docManager->docCount()-1));
 
   return true;
