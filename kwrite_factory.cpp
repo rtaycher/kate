@@ -11,7 +11,7 @@
 
 extern "C"
 {
-  void *init_libkwrite()
+  void *init_libkwritepart()
   {
     return new KWriteFactory();
   }
