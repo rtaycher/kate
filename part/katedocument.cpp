@@ -4150,10 +4150,16 @@ void KateDocument::exportAs(const QString& filter)
 {
 	if (filter=="kate_html_export")
 	{
-		KSaveFile *savefile=new KSaveFile("/tmp/jw_1000_tmp.html");
+		QString filename=KFileDialog::getSaveFileName(QString::null,QString::null,0,i18n("Export file as"));
+		if (filename.isEmpty())
+			{
+				return;
+			}
+		KSaveFile *savefile=new KSaveFile(filename);
 		if (!savefile->status())
 		{
-			if (exportDocumentToHTML(savefile->textStream(),QString("/tmp/jw_1000_tmp.html"))) savefile->close(); else savefile->abort();
+			if (exportDocumentToHTML(savefile->textStream(),filename)) savefile->close(); 
+				else savefile->abort();
 			//if (!savefile->status()) --> Error
 		} else {/*ERROR*/}
 		delete savefile;
