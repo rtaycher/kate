@@ -25,6 +25,11 @@
 namespace Kate
 {
 
+  class DocumentManager;
+  class PluginManager;
+  class InitPluginManager;
+  class MainWindow;
+  class ProjectManager;
 /**
  * Interface to the application, beside some global methodes to access
  * other objects like document/projectmanager, ... no way goes around this
@@ -47,21 +52,21 @@ class Application : public QObject
      */
     virtual ~Application ();
     
-  public:
+  public slots:
     /** Returns a pointer to the document manager
     */
-    class DocumentManager *documentManager ();
+    Kate::DocumentManager *documentManager ();
 
-    class ProjectManager *projectManager ();
+    Kate::ProjectManager *projectManager ();
     
-    class PluginManager *pluginManager ();
+    Kate::PluginManager *pluginManager ();
     
-    class InitPluginManager *initPluginManager ();
+    Kate::InitPluginManager *initPluginManager ();
     
-    class MainWindow *activeMainWindow ();
+    Kate::MainWindow *activeMainWindow ();
     
     uint mainWindows ();
-    class MainWindow *mainWindow (uint n = 0);
+    Kate::MainWindow *mainWindow (uint n = 0);
 
   //invention of public signals, like in kparts/browserextension.h
   #undef signals

@@ -78,15 +78,21 @@ void KatePluginManager::loadConfig ()
   kapp->config()->setGroup("Kate Plugins");
 
   for (uint i=0; i<m_pluginList.count(); i++)
-    m_pluginList.at(i)->load = kapp->config()->readBoolEntry(m_pluginList.at(i)->service->library(), false);
+    m_pluginList.at(i)->load =  kapp->config()->readBoolEntry(m_pluginList.at(i)->service->library(), false) ||
+	kapp->config()->readBoolEntry(m_pluginList.at(i)->service->property("X-Kate-PluginName").toString(),false);
 }
 
 void KatePluginManager::writeConfig ()
 {
   kapp->config()->setGroup("Kate Plugins");
 
-  for (uint i=0; i<m_pluginList.count(); i++)
-    kapp->config()->writeEntry(m_pluginList.at(i)->service->library(), m_pluginList.at(i)->load);
+  for (uint i=0; i<m_pluginList.count(); i++) {
+	KatePluginInfo *info=m_pluginList.at(i);
+	QString saveName=info->service->property("X-Kate-PluginName").toString();
+	if (saveName.isEmpty())
+		saveName=info->service->library();
+    	kapp->config()->writeEntry(saveName, m_pluginList.at(i)->load);
+  }
 }
 
 void KatePluginManager::loadAllEnabledPlugins ()
@@ -129,7 +135,10 @@ void KatePluginManager::disableAllPluginsGUI (KateMainWindow *win)
 
 void KatePluginManager::loadPlugin (KatePluginInfo *item)
 {
-  item->load = (item->plugin = Kate::createPlugin (QFile::encodeName(item->service->library()), Kate::application()));
+  QString pluginName=item->service->property("X-Kate-PluginName").toString();
+  if (pluginName.isEmpty())
+       pluginName=item->service->library();
+  item->load = (item->plugin = Kate::createPlugin (QFile::encodeName(item->service->library()), Kate::application(),0,pluginName));
 }
 
 void KatePluginManager::unloadPlugin (KatePluginInfo *item)
@@ -182,10 +191,14 @@ Kate::Plugin *KatePluginManager::plugin(const QString &name)
 {
  for (uint i=0; i<m_pluginList.count(); i++)
   {
-    if  (m_pluginList.at(i)->service->library()==name)
+    KatePluginInfo *info=m_pluginList.at(i);
+    QString pluginName=info->service->property("X-Kate-PluginName").toString();
+    if (pluginName.isEmpty())
+       pluginName=info->service->library();
+    if  (pluginName==name)
     {
-      if (m_pluginList.at(i)->plugin)
-        return m_pluginList.at(i)->plugin;
+      if (info->plugin)
+        return info->plugin;
       else
         break;
     }

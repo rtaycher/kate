@@ -5,6 +5,7 @@ X-KDE-ServiceType=Kate/Plugin
 X-KDE-Derived=
 Comment=Kate Plugin
 Comment[af]=Kate Inplak
+Comment[ar]=ملحق كيت
 Comment[az]=Kate Əlavəsi
 Comment[be]=Дапаўненьне Kate
 Comment[bg]=Приставка за Kate
@@ -50,6 +51,7 @@ Comment[sr]=Kate-ов додатак
 Comment[ss]=I-plugin ye Kate 
 Comment[sv]=Kate-insticksprogram
 Comment[ta]=Kபதிப்பான் செருகல்
+Comment[tg]=Мутассалкунандаи Kate
 Comment[th]=ปลั้กอินของ Kate
 Comment[tr]=Kate Eklentisi
 Comment[uk]=Втулок Kate
@@ -61,4 +63,7 @@ Comment[zh_TW]=Kate 外掛程式
 Comment[zu]=I-Plugin ye-Kate
 
 [PropertyDef::X-Kate-Version]
+Type=QString
+
+[PropertyDef::X-Kate-PluginName]
 Type=QString
