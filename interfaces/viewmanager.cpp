@@ -66,5 +66,5 @@ void ViewManager::openURL (const KURL &url)
   d->viewMan->openURL (url);
 }
 
-};
+}
 

@@ -82,6 +82,6 @@ class Application : public QObject
  */
 Application *application ();
 
-};
+}
 
 #endif

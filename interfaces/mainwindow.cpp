@@ -90,5 +90,5 @@ Project *MainWindow::openProject (const QString &filename)
   return d->win->openProject (filename);
 }
 
-};
+}
 

@@ -32,7 +32,7 @@ class PrivatePluginConfigInterface
     ~PrivatePluginConfigInterface() {}
 };
 
-};
+}
 
 using namespace Kate;
 

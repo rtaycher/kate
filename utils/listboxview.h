@@ -39,6 +39,6 @@ class ListboxView : public DockViewBase {
     class ListboxViewPrivate *d;
 };
 
-};
+}
 
 #endif // _KATE_LISTBOX_VIEW_H_

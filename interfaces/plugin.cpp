@@ -230,5 +230,5 @@ PluginViewInterface *pluginViewInterface (Plugin *plugin)
   return static_cast<PluginViewInterface*>(plugin->qt_cast("Kate::PluginViewInterface"));
 }
 
-};
+}
 

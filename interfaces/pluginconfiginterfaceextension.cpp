@@ -33,13 +33,13 @@ class PrivatePluginConfigInterfaceExtension
      ~PrivatePluginConfigInterfaceExtension() {}
 };
 
-};
+}
 
 using namespace Kate;
 
-PluginConfigPage::PluginConfigPage ( QWidget *parent, const char *name ) : QWidget (parent, name) { ; };
+PluginConfigPage::PluginConfigPage ( QWidget *parent, const char *name ) : QWidget (parent, name) { }
  
-PluginConfigPage::~PluginConfigPage () { ; };
+PluginConfigPage::~PluginConfigPage () { }
 
 unsigned int PluginConfigInterfaceExtension::globalPluginConfigInterfaceExtensionNumber = 0;
 

@@ -83,5 +83,5 @@ ProjectManager *projectManager ()
   return application()->projectManager ();
 }
 
-};
+}
 

@@ -118,5 +118,5 @@ DocumentManager *documentManager ()
   return application()->documentManager ();
 }
 
-};
+}
 

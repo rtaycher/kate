@@ -38,7 +38,7 @@ namespace Kate
     public:
       KComboBox *encoding;
   };
-};
+}
 
 Kate::FileDialog::FileDialog (const QString& startDir,
                     const QString& encoding,

@@ -34,7 +34,7 @@ class PluginView : public KXMLGUIClient
     Kate::MainWindow *win;
 };
 
-K_EXPORT_COMPONENT_FACTORY( katedefaultprojectplugin, KGenericFactory<PluginKateDefaultProject>( "katedefaultproject" ) );
+K_EXPORT_COMPONENT_FACTORY( katedefaultprojectplugin, KGenericFactory<PluginKateDefaultProject>( "katedefaultproject" ) )
 
 PluginKateDefaultProject::PluginKateDefaultProject( QObject* parent, const char* name, const QStringList& )
     : Kate::ProjectPlugin ( (Kate::Project *)parent, name )

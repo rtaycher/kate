@@ -77,6 +77,6 @@ class MainWindow : public QObject
     class PrivateMainWindow *d;
 };
 
-};
+}
 
 #endif

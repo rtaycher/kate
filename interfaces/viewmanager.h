@@ -76,6 +76,6 @@ class ViewManager : public QObject
     class PrivateViewManager *d;
 };
 
-};
+}
 
 #endif

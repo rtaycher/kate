@@ -88,6 +88,6 @@ class ProjectManager : public QObject
  */
 ProjectManager *projectManager ();
 
-};
+}
 
 #endif

@@ -66,7 +66,7 @@ class MessageView : public DockViewBase {
     QTextBrowser *m_view;
 };
 
-};
+}
 
 #endif // _KATE_MESSAGE_VIEW_H_
 

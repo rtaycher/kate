@@ -56,6 +56,6 @@ class PluginConfigInterface
 class Plugin;
 PluginConfigInterface *pluginConfigInterface (Plugin *plugin);
 
-};
+}
 
 #endif

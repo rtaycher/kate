@@ -98,5 +98,5 @@ Application *application ()
   return ((KateApp *)kapp)->application ();
 }
 
-};
+}
 

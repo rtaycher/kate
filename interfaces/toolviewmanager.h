@@ -115,6 +115,6 @@ class ToolViewManager : public QObject
     class PrivateToolViewManager *d;  
 };
 
-};
+}
 
 #endif

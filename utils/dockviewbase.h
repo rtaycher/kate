@@ -92,6 +92,6 @@ class DockViewBase : public QVBox {
   class DockViewBasePrivate *d;
 };
 
-};
+}
 
 #endif // _KATE_DOCKVIEW_BASE_H_

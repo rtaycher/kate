@@ -414,5 +414,5 @@ QStringList ProjectDirFile::removeFiles (const QStringList &files)
   return removeFiles;
 }
 
-};
+}
 

@@ -95,6 +95,6 @@ class DocumentManager : public QObject
  */
 DocumentManager *documentManager ();
 
-};
+}
 
 #endif

@@ -95,5 +95,5 @@ bool ToolViewManager::showToolView(const QString& sname)
   return d->toolViewMan->showToolView (sname);
 }
 
-};
+}
 

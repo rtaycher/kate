@@ -99,6 +99,6 @@ class PluginConfigInterfaceExtension
 class Plugin;
 PluginConfigInterfaceExtension *pluginConfigInterfaceExtension (Plugin *plugin);
 
-};
+}
 
 #endif

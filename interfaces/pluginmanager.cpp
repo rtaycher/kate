@@ -116,5 +116,5 @@ KURL InitPluginManager::initScript() const
   return d->initPluginMan->initScript();
 }
 
-};
+}
 

@@ -85,6 +85,6 @@ class InitPluginManager : public QObject
     class PrivateInitPluginManager *d;
 };
 
-};
+}
 
 #endif

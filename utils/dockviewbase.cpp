@@ -36,7 +36,7 @@ class DockViewBasePrivate {
   QLabel *lPrefix;
 };
 
-};
+}
 
 Kate::DockViewBase::DockViewBase( QWidget* parent, const char* name )
   : QVBox( parent, name ),

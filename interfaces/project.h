@@ -225,6 +225,6 @@ class Project : public QObject
     unsigned int myProjectNumber;
 };
 
-};
+}
 
 #endif

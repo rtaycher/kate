@@ -31,7 +31,7 @@ class ListboxViewPrivate {
     KListBox *listbox;
 };
 
-};
+}
 
 Kate::ListboxView::ListboxView( QWidget *parent, const char *name )
   : Kate::DockViewBase( parent, name),

@@ -64,6 +64,6 @@ class FileDialog : public KFileDialog
     class PrivateFileDialog *d;
 };
 
-};
+}
 
 #endif

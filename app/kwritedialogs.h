@@ -23,7 +23,7 @@
 
 namespace KTextEditor {
 	class EditorChooser;
-};
+}
 
 class KWriteEditorChooser: public KDialogBase {
 
