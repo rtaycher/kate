@@ -46,8 +46,5 @@ TODO:
       punctuation that followed.  Word|. Doing it like that put the caret where you needed
       it most often.
 
-    - [internal] fix how HTML Tag and Filter re-select your text if it is multi-line.
-      As far as we could tell, KWrite exposed no interface to do this cleanly.
-
     - [internal] promote the things supporting both HTML Tag and Filter to a shared area
         so they don't dupe between two modules.
