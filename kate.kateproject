@@ -8,7 +8,7 @@ Files=.cvsignore/kate.desktop/kateinitplugin.desktop/kateplugin.desktop/kateproj
 
 [Dir interfaces]
 Dirs=
-Files=.cvsignore/application.cpp/application.h/documentmanager.cpp/documentmanager.h/mainwindow.cpp/mainwindow.h/Makefile.am/plugin.cpp/plugin.h/pluginconfiginterface.cpp/pluginconfiginterface.h/pluginconfiginterfaceextension.cpp/pluginconfiginterfaceextension.h/pluginmanager.cpp/pluginmanager.h/project.cpp/project.h/projectmanager.cpp/projectmanager.h/toolviewmanager.cpp/toolviewmanager.h/viewmanager.cpp/viewmanager.h
+Files=.cvsignore/application.h/documentmanager.h/plugin.cpp/pluginconfiginterface.cpp/pluginconfiginterface.h/pluginconfiginterfaceextension.h/pluginmanager.h/project.cpp/projectmanager.cpp/toolviewmanager.cpp/toolviewmanager.h/viewmanager.cpp/viewmanager.h/application.cpp/documentmanager.cpp/mainwindow.cpp/mainwindow.h/Makefile.am/plugin.h/pluginconfiginterfaceextension.cpp/pluginmanager.cpp/projectmanager.h/project.h
 
 [Dir pics]
 Dirs=actions
@@ -28,11 +28,11 @@ Files=.cvsignore/katedefaultproject.cpp/katedefaultproject.desktop/katedefaultpr
 
 [Dir utils]
 Dirs=
-Files=.cvsignore
+Files=.cvsignore/dockviewbase.cpp/dockviewbase.h/filedialog.cpp/filedialog.h/listboxview.cpp/listboxview.h/Makefile.am/messageview.cpp/messageview.h/README
 
 [Project Dir]
-Dirs=app/data/interfaces/pics/plugins/utils
-Files=.cvsignore/AUTHORS/ChangeLog/COPYING.LIB/DESIGN/Makefile.am/NEWS/README/TODO/kate.kateproject
+Dirs=data/utils/plugins/interfaces/app/pics
+Files=.cvsignore/AUTHORS/ChangeLog/COPYING.LIB/DESIGN/kate.kateproject/Makefile.am/NEWS/README/TODO
 
 [Project File]
 Name=Kate Application

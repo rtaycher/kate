@@ -232,7 +232,7 @@ void Project::removeFiles (const QString &dir, QStringList &files)
   d->m_config->writeEntry ("Files", existing, '/');
   d->m_config->sync ();
 
-  emit dirsRemoved (dir, files);
+  emit filesRemoved (dir, files);
 }
 
 }

@@ -31,9 +31,10 @@
 #include <kmimetype.h>
 
 #include <qheader.h>
+#include <qpopupmenu.h>
 
 KateProjectTreeViewItem::KateProjectTreeViewItem (QDict<KateProjectTreeViewItem> *dict, KateProjectTreeView * parent, Kate::Project *prj, const QString &name, const QString &fullname, bool dir)
- : QObject (0), KListViewItem (parent)
+ : KListViewItem (parent)
 {
   m_name = name;
   m_fullName = fullname;
@@ -45,7 +46,7 @@ KateProjectTreeViewItem::KateProjectTreeViewItem (QDict<KateProjectTreeViewItem>
 }
 
 KateProjectTreeViewItem::KateProjectTreeViewItem (QDict<KateProjectTreeViewItem> *dict, KateProjectTreeViewItem * parent, Kate::Project *prj, const QString &name, const QString &fullname, bool dir)
- : QObject (0), KListViewItem (parent)
+ : KListViewItem (parent)
 {
   m_name = name;
   m_fullName = fullname;
@@ -176,7 +177,6 @@ void KateProjectTreeView::slotDoubleClicked( QListViewItem *i, const QPoint &, i
     m_mainWin->viewManager()->openURL (KURL (m_project->dir() + QString ("/") + item->fullName()));
 }
 
-
 void KateProjectTreeView::dirsAdded (const QString &dir, const QStringList &dirs)
 {
   KateProjectTreeViewItem *item = m_dirDict [QString("/")+dir];
@@ -190,7 +190,9 @@ void KateProjectTreeView::dirsAdded (const QString &dir, const QStringList &dirs
 
   for (uint z=0; z < dirs.size(); z++)
   {
-    new KateProjectTreeViewItem (&m_dirDict, item, m_project, dirs[z], fullname + dirs[z], true);
+    // add dir recursive
+    KateProjectTreeViewItem *i = new KateProjectTreeViewItem (&m_dirDict, item, m_project, dirs[z], fullname + dirs[z], true);
+    addDir (i, fullname+dirs[z]);
   }
 }
 
@@ -201,16 +203,16 @@ void KateProjectTreeView::dirsRemoved (const QString &dir, const QStringList &di
   if (!item)
     return;
 
-  for (KateProjectTreeViewItem *i = (KateProjectTreeViewItem *) item->firstChild(); i; i = (KateProjectTreeViewItem *) item->nextSibling())
+  QPtrList<KateProjectTreeViewItem> l;
+  l.setAutoDelete (true);
+
+  KateProjectTreeViewItem *myChild = (KateProjectTreeViewItem *) item->firstChild();
+  while( myChild )
   {
-    for (uint z=0; z < dirs.size(); z++)
-    {
-      if (dirs[z] == i->name())
-      {
-        delete item;
-        break;
-      }
-    }
+    if (dirs.findIndex (myChild->name()) != -1)
+      l.append (myChild);
+
+    myChild = (KateProjectTreeViewItem *) myChild->nextSibling();
   }
 }
 
@@ -238,26 +240,61 @@ void KateProjectTreeView::filesRemoved (const QString &dir, const QStringList &f
   if (!item)
     return;
 
-  for (KateProjectTreeViewItem *i = (KateProjectTreeViewItem *) item->firstChild(); i; i = (KateProjectTreeViewItem *) item->nextSibling())
+  QPtrList<KateProjectTreeViewItem> l;
+  l.setAutoDelete (true);
+
+  KateProjectTreeViewItem *myChild = (KateProjectTreeViewItem *) item->firstChild();
+  while( myChild )
   {
-    for (uint z=0; z < files.size(); z++)
-    {
-      if (files[z] == i->name())
-      {
-        delete item;
-        break;
-      }
-    }
+    if (files.findIndex (myChild->name()) != -1)
+      l.append (myChild);
+
+    myChild = (KateProjectTreeViewItem *) myChild->nextSibling();
   }
 }
 
-void KateProjectTreeView::slotContextMenuRequested ( QListViewItem * item, const QPoint & pos, int col )
+void KateProjectTreeView::slotContextMenuRequested ( QListViewItem * item, const QPoint & pos, int )
 {
   if (!item)
     return;
 
- // QPopupMenu *menu = (QPopupMenu*) ((KMainWindow *)(viewManager->topLevelWidget)())->factory()->container("filelist_popup", (KMainWindow *)(viewManager->topLevelWidget ()));
+  KateProjectTreeViewItem *i = (KateProjectTreeViewItem *) item;
 
- // if (menu)
-   // menu->exec(p);
+  QPopupMenu *menu = new QPopupMenu (this);
+
+  menu->insertItem (i18n("Add Dirs/Files"), this, SLOT(addIt()));
+  if (!i->fullName().isNull())
+    menu->insertItem (i->isDir() ? i18n("Remove Dir") : i18n("Remove File"), this, SLOT(removeIt()));
+
+  menu->exec(pos);
+}
+
+void KateProjectTreeView::removeIt ()
+{
+  KateProjectTreeViewItem *item = (KateProjectTreeViewItem *) selectedItem();
+
+  if (!item)
+    return;
+
+  if (item->fullName().isNull())
+    return;
+
+  QString dir = ((KateProjectTreeViewItem *) item->parent())->fullName();
+  QStringList liste (item->name());
+
+  if (item->isDir())
+    m_project->removeDirs (dir, liste);
+  else
+    m_project->removeFiles (dir, liste);
+}
+
+void KateProjectTreeView::addIt ()
+{
+  KateProjectTreeViewItem *item = (KateProjectTreeViewItem *) selectedItem();
+
+  if (!item)
+    return;
+
+  if (item->isDir())
+    KateProjectDirView::addDialog (m_project, item->fullName(), this);
 }

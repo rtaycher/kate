@@ -32,10 +32,8 @@
 
 class KateProjectTreeView;
 
-class KateProjectTreeViewItem : public QObject, public KListViewItem
+class KateProjectTreeViewItem : public KListViewItem
 {
-  Q_OBJECT
-
   public:
     KateProjectTreeViewItem (QDict<KateProjectTreeViewItem> *dict, KateProjectTreeView * parent, Kate::Project *prj, const QString &name, const QString &fullname, bool dir = false);
     KateProjectTreeViewItem (QDict<KateProjectTreeViewItem> *dict, KateProjectTreeViewItem * parent, Kate::Project *prj, const QString &name, const QString &fullname, bool dir = false);
@@ -79,6 +77,9 @@ class KateProjectTreeView : public KListView
     void filesRemoved (const QString &dir, const QStringList &files);
 
     void slotContextMenuRequested ( QListViewItem * item, const QPoint & pos, int col );
+
+    void removeIt ();
+    void addIt ();
 
   private:
     Kate::Project *m_project;
