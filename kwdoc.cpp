@@ -38,6 +38,7 @@
 #include <kcharsets.h>
 #include <kdebug.h>
 
+#include <kglobalsettings.h>
 #include <kaction.h>
 #include <kstdaction.h>
 
@@ -124,11 +125,11 @@ KWriteDoc::KWriteDoc(HlManager *hlManager, const QString &path,
   buffer = new KWBuffer;
   connect(buffer, SIGNAL(linesChanged(int)), this, SLOT(slotBufferChanged()));
 
-  colors[0] = white;
-  colors[1] = darkBlue;
-  colors[2] = black;
-  colors[3] = black;
-  colors[4] = white;
+  colors[0] = KGlobalSettings::baseColor();
+  colors[1] = KGlobalSettings::highlightedTextColor();
+  colors[2] = KGlobalSettings::textColor();
+  colors[3] = KGlobalSettings::textColor();
+  colors[4] = KGlobalSettings::baseColor();
 
   m_attribs = new Attribute[maxAttribs];
 
