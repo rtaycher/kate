@@ -46,7 +46,7 @@
 #include <qcheckbox.h>
 #include <qregexp.h>
 #include <qdockarea.h>
-
+#include <qtimer.h>
 
 #include <kapplication.h>
 #include <kiconloader.h>
@@ -144,7 +144,7 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow, KateViewManager 
   // some consistency - reset up for dir too
   coll->action( "up" )->setShortcut( KShortcut( ALT + SHIFT + Key_Up ) );
   coll->action( "home" )->setShortcut( KShortcut( CTRL + ALT + Key_Home ) );
-  
+
   lo->addWidget(dir);
   lo->setStretchFactor(dir, 2);
 
@@ -168,7 +168,7 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow, KateViewManager 
   connect( filter, SIGNAL( returnPressed(const QString&) ),filter, SLOT( addToHistory(const QString&) ) );
 
   // kaction for the dir sync method
-  acSyncDir = new KAction( i18n("Current Document Directory"), "curfiledir", 0, 
+  acSyncDir = new KAction( i18n("Current Document Directory"), "curfiledir", 0,
         this, SLOT( setActiveDocumentDir() ), mActionCollection, "sync_dir" );
   toolbar->setIconText( KToolBar::IconOnly );
   toolbar->setIconSize( 16 );
@@ -187,10 +187,10 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow, KateViewManager 
   // enable dir sync button if current doc has a valid URL
   connect ( viewmanager, SIGNAL( viewChanged() ),
               this, SLOT( kateViewChanged() ) );
-              
+
   // Connect the bookmark handler
   connect(bookmarkHandler, SIGNAL( openURL( const QString& )), this, SLOT( setDir( const QString& ) ) );
-              
+
   waitingUrl = QString::null;
 
   // whatsthis help
@@ -219,19 +219,21 @@ void KateFileSelector::readConfig(KConfig *config, const QString & name)
 {
   dir->readConfig(config, name + ":dir");
   dir->setView( KFile::Default );
-  
+
   config->setGroup( name );
-  
+
   // set up the toolbar
   setupToolbar( config );
-  
+
   cmbPath->setMaxItems( config->readNumEntry( "pathcombo history len", 9 ) );
   cmbPath->setURLs( config->readListEntry("dir history") );
   // if we restore history
   if ( config->readBoolEntry( "restore location", true ) || kapp->isRestored() ) {
     QString loc( config->readEntry( "location" ) );
-    if ( ! loc.isEmpty() )
-      setDir( loc );
+    if ( ! loc.isEmpty() ) {
+      waitingDir = loc;
+      QTimer::singleShot(0, this, SLOT(initialDirChangeHack()));
+    }
   }
   // else is automatic, as cmpPath->setURL is called when a location is entered.
 
@@ -249,11 +251,16 @@ void KateFileSelector::readConfig(KConfig *config, const QString & name)
   // TODO - solve startup problem: no need to set location for each doc opened!
   if ( autoSyncEvents & DocumentChanged )
     connect( viewmanager, SIGNAL( viewChanged() ), this, SLOT( autoSync() ) );
-  
+
   if ( autoSyncEvents & DocumentOpened )
     connect( mainwin->m_docManager, SIGNAL( documentCreated(Kate::Document *) ),
                 this, SLOT( autoSync(Kate::Document *) ) );
 
+}
+
+void KateFileSelector::initialDirChangeHack()
+{
+  setDir( waitingDir );
 }
 
 void KateFileSelector::setupToolbar( KConfig *config )
@@ -483,10 +490,10 @@ bool KateFileSelector::eventFilter( QObject* o, QEvent *e )
 */
 class ActionLBItem : public QListBoxPixmap {
   public:
-  ActionLBItem( QListBox *lb=0, 
-                const QPixmap &pm = QPixmap(), 
+  ActionLBItem( QListBox *lb=0,
+                const QPixmap &pm = QPixmap(),
                 const QString &text=QString::null,
-                const QString &str=QString::null ) : 
+                const QString &str=QString::null ) :
     QListBoxPixmap( lb, pm, text ),
     _str(str) {};
   QString idstring() { return _str; };
@@ -649,7 +656,7 @@ void KFSConfigPage::init()
     l << "up" << "back" << "forward" << "home" <<
                 "short view" << "detailed view" <<
                 "bookmarks" << "sync_dir";
-  
+
   // actions from diroperator + two of our own
   QStringList allActions;
   allActions << "up" << "back" << "forward" << "home" <<
@@ -669,7 +676,7 @@ void KFSConfigPage::init()
     if ( ac )
       new ActionLBItem( lb, SmallIcon( ac->icon() ), ac->text().replace( re, "" ), *it );
   }
-  
+
   // sync
   int s = fileSelector->autoSyncEvents;
   cbSyncActive->setChecked( s & KateFileSelector::DocumentChanged );
