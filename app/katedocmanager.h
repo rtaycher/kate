@@ -26,6 +26,8 @@
 #include <qptrlist.h>
 #include <qobject.h>
 
+class KConfig;
+
 class KateDocManager : public QObject
 {
   Q_OBJECT
@@ -71,6 +73,7 @@ class KateDocManager : public QObject
     virtual bool closeDocument(uint);
     virtual bool closeDocumentWithID(uint);
     virtual bool closeAllDocuments();
+    virtual void saveDocumentList(KConfig*);    
 
   public slots:
     void checkAllModOnHD(bool forceReload=false);

@@ -400,6 +400,7 @@ void KateViewManager::closeViews(uint documentNumber)
       closeList.removeFirst();
     }
 
+  if (m_blockViewCreationAndActivation) return;
   QTimer::singleShot(0,this,SIGNAL(viewChanged()));
   m_viewManager->emitViewChanged ();
 }
@@ -820,35 +821,13 @@ void KateViewManager::saveAllDocsAtCloseDown(  )
   scfg->setGroup("open files");
   scfg->writeEntry("count",m_docManager->documents());
   scfg->writeEntry("current file", activeView()->getDoc()->url().prettyURL());
-
-  m_blockViewCreationAndActivation=false;
-  while ( closeList.count() > 0 )
-  {
-    activateView (closeList.at(0)->documentNumber(), false);
-    v = activeView();
-    id = closeList.at(0)->documentNumber();
-
-    if ( !closeList.at(0)->url().isEmpty() )
-    {
-      scfg->setGroup(closeList.at(0)->url().prettyURL() );
-      closeList.at(0)->writeSessionConfig(scfg);
-
-      scfg->setGroup("open files");
-      scfg->writeEntry( QString("File%1").arg(id), closeList.at(0)->url().prettyURL() );
-    }
-
-    QPtrList<KTextEditor::View> test = closeList.at(0)->views();
-    
-    if (test.at(0))
-      if( !closeDocWithAllViews( (Kate::View *)test.at(0) ) )
-        return;
-
-    closeList.remove (closeList.at(0));
-    id++;
-  }
-  m_blockViewCreationAndActivation=false;
+  m_docManager->saveDocumentList(scfg);
 
   scfg->sync();
+  m_blockViewCreationAndActivation=true;
+  m_docManager->closeAllDocuments();
+  m_blockViewCreationAndActivation=false;
+
   kdDebug(13001)<<">>>> saveAllDocsAtCloseDown() DONE"<<endl;
 }
 
@@ -881,7 +860,10 @@ void KateViewManager::reopenDocuments(bool isRestore)
 
     QProgressDialog *pd=new QProgressDialog(i18n("Reopening files from the last session..."),QString::null,fileCount,0,"openprog",true);
 
+    m_blockViewCreationAndActivation=true;
     m_docManager->closeAllDocuments();
+    m_blockViewCreationAndActivation=false;
+   
     int i = 0;
     QString fn;
     while (scfg->hasKey(QString("File%1").arg(i)))

@@ -22,6 +22,7 @@
 #include "kateviewmanager.h"
 
 #include <kdebug.h>
+#include <kconfig.h>
 #include <kapplication.h>
 #include <kate/view.h>
 
@@ -177,10 +178,7 @@ Kate::Document *KateDocManager::openURL(const KURL& url,const QString &encoding,
 			encoding);
 
 
-  /*  if */ (documentList().at(0)->openURL (url));
-    {
-#warning FIXME      //((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
-    }
+    documentList().at(0)->openURL (url);
 
     if (documentList().at(0)->url().filename() != "")
       documentList().at(0)->setDocName (documentList().at(0)->url().filename());
@@ -249,8 +247,24 @@ bool KateDocManager::closeAllDocuments()
 {
 	bool res=true;
         if (isFirstDocument()) return true;
-	while (!m_docList.isEmpty())
-		res =res && closeDocument(m_docList.at(0));
+	while (!m_docList.isEmpty() && res)
+		if (! closeDocument(m_docList.at(0)) ) res=false;
 	return res;
 }
 
+void KateDocManager::saveDocumentList(KConfig* cfg)
+{
+
+	QPtrListIterator<Kate::Document> it(m_docList);
+	QString grp=cfg->group();
+	int i=0;	
+        for (; it.current(); ++it, i++) 
+	{
+		kdDebug()<<"SAVE DOCUMENT LIST:"<<it.current()->docName()<<endl;
+		kdDebug()<<"SAVE DOCUMENT LIST:"<<it.current()->url().prettyURL()<<endl;
+		cfg->writeEntry( QString("File%1").arg(i), it.current()->url().prettyURL() );
+		cfg->setGroup(it.current()->url().prettyURL() );
+		it.current()->writeSessionConfig(cfg);
+		cfg->setGroup(grp);
+	}
+}
