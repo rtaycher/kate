@@ -104,6 +104,7 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     KAction *bookmarkSet;
     KAction *bookmarkClear;
     KAction *toolsSpell;
+    KAction *editCmd;
 
     KAction *viewSplitVert;
     KAction *viewSplitHoriz;

@@ -24,6 +24,8 @@
     <Action name="edit_find_next" />
     <Action name="edit_replace" />
     <Separator />
+    <Action name="edit_cmd"/>
+    <Separator />
     <Action name="edit_insertFile"/>
   </Menu>
   <Menu name="go_document"><text>&amp;Go</text>

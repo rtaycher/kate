@@ -47,6 +47,8 @@
 #include <kprinter.h>
 #include <kapp.h>
 
+#include <klineeditdlg.h>
+
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -1540,6 +1542,9 @@ void KantView::setupActions()
     KStdAction::replace(this, SLOT(replace()), actionCollection());
     editInsert = new KAction(i18n("&Insert File..."), 0, this, SLOT(insertFile()),
                              actionCollection(), "edit_insertFile");
+
+   KAction *editCmd = new KAction(i18n("&Editing Command"), Qt::CTRL+Qt::Key_M, this, SLOT(slotEditCommand()),
+                                  actionCollection(), "edit_cmd");
 
     // setup Go menu
     KStdAction::gotoLine(this, SLOT(gotoLine()), actionCollection());
@@ -3486,11 +3491,16 @@ void KantView::searchAgain (bool back)
     KantView::searchAgain(s);
 }
 
+void KantView::slotEditCommand ()
+{
+  bool ok;
+  QString cmd = KLineEditDlg::getText("Editing Command", "", &ok, this);
+}
+
 KantBrowserExtension::KantBrowserExtension( KantDocument *doc )
 : KParts::BrowserExtension( doc, "kantpartbrowserextension" )
 {
   m_doc = doc;
-  emit enableAction( "print", true);
   connect( m_doc, SIGNAL( selectionChanged() ), this, SLOT( slotSelectionChanged() ) );
 }
 

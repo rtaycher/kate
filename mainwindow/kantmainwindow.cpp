@@ -198,6 +198,9 @@ void KantMainWindow::setupActions()
   editIndent = new KAction(i18n("&Indent"), "indent", CTRL+Key_I, viewManager, SLOT(slotIndent()), actionCollection(), "edit_indent");
   editUnIndent = new KAction(i18n("&Unindent"), "unindent", CTRL+SHIFT+Key_I, viewManager, SLOT(slotUnIndent()), actionCollection(), "edit_unindent");
 
+  editCmd = new KAction(i18n("&Editing Command"), Qt::CTRL+Qt::Key_M, viewManager, SLOT(slotEditCommand()),
+                                  actionCollection(), "edit_cmd");
+
   editInsert = new KAction(i18n("I&nsert File..."), 0, viewManager, SLOT(slotInsertFile()), actionCollection(), "edit_insertFile");
 
   gotoLine = KStdAction::gotoLine(viewManager, SLOT(slotGotoLine()), actionCollection());
@@ -232,7 +235,7 @@ void KantMainWindow::setupActions()
   list.append("&Windows/Dos");
   setEndOfLine->setItems(list);
 
-  documentReload = new KAction(i18n("&Reload"), "reload", Key_F4, viewManager, SLOT(reloadCurrentDoc()), actionCollection(), "document_reload");
+  documentReload = new KAction(i18n("&Reload"), "reload", Key_F5, viewManager, SLOT(reloadCurrentDoc()), actionCollection(), "document_reload");
 
   setHighlightConf = new KAction(i18n("Configure Highlighti&ng..."), 0, this, SLOT(slotHlConfigure()),actionCollection(), "set_confHighlight");
 
@@ -401,6 +404,7 @@ void KantMainWindow::slotWindowActivated ()
     setHighlightConf->setEnabled(false);
     setHighlight->setEnabled(false);
     gotoLine->setEnabled(false);
+    editCmd->setEnabled(false);
   }
 
   if (viewManager->activeView() != 0)
@@ -426,6 +430,7 @@ void KantMainWindow::slotWindowActivated ()
     setHighlightConf->setEnabled(true);
     setHighlight->setEnabled(true);
     gotoLine->setEnabled(true);
+    editCmd->setEnabled(true);
   }
 
   if (viewManager->viewCount () == 0 )

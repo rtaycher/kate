@@ -688,6 +688,13 @@ void KantViewManager::slotReplace ()
   activeView()->replace();
 }
 
+void KantViewManager::slotEditCommand ()
+{
+  if (activeView() == 0) return;
+
+  activeView()->slotEditCommand();
+}
+
 void KantViewManager::slotIndent()
 {
   KantView* v = activeView();

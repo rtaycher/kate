@@ -155,6 +155,8 @@ class KantViewManager : public KantViewManagerIface
     void slotIndent();
     void slotUnIndent();
 
+    void slotEditCommand ();
+
     void slotInsertFile ();
 
     void slotSetHl (int n);

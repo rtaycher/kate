@@ -1057,6 +1057,9 @@ class KantView : public KantViewIface, virtual public KantViewDCOPIface
 
   signals:
     void gotFocus (KantView *);
+
+  public slots:
+    void slotEditCommand ();
 };
 
 class KantBrowserExtension : public KParts::BrowserExtension
