@@ -1593,9 +1593,9 @@ void KWrite::setupActions()
 
     // setup Tools menu
     toolsSpell = KStdAction::spelling(this, SLOT(spellcheck()), actionCollection());
-    toolsIndent = new KAction(i18n("&Intend"), Qt::CTRL+Qt::Key_I, this, SLOT(indent()),
+    toolsIndent = new KAction(i18n("&Indent"), Qt::CTRL+Qt::Key_I, this, SLOT(indent()),
                               actionCollection(), "tools_indent");
-    toolsUnindent = new KAction(i18n("&Unintend"), Qt::CTRL+Qt::Key_U, this, SLOT(unIndent()),
+    toolsUnindent = new KAction(i18n("&Unindent"), Qt::CTRL+Qt::Key_U, this, SLOT(unIndent()),
                                 actionCollection(), "tools_unindent");
     toolsCleanIndent = new KAction(i18n("&Clean Indentation"), 0, this, SLOT(cleanIndent()),
                                    actionCollection(), "tools_cleanIndent");
