@@ -678,7 +678,7 @@ KateBufBlock::buildStringList()
       l = p;     
       while(p < e)     
       {     
-         if ((*p == '\n') || (*p == 'r'))
+         if ((*p == '\n') || (*p == '\r'))
          {
             // TODO: Use codec
             QString line = m_codec->toUnicode(l, (p-l-1)+1);     
