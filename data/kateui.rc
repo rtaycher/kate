@@ -65,8 +65,6 @@
     <Action name="go_prev"/>
     <Separator />
     <DefineGroup name="view_operations" />
-    <Separator />
-    <Action name="view_fullscreen_view" />
   </Menu>
 
   <Merge/>
@@ -83,6 +81,8 @@
     <Action name="settings_show_toolviews" />
     <Action name="settings_show_tooldocks" />
     <DefineGroup name="show_merge" />
+    <Separator />
+    <Action name="fullscreen" />
     <Separator />
     <Action name="options_configure_keybinding"/>
     <Action name="set_configure_toolbars"/>
