@@ -5,7 +5,8 @@ kate_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugindialogpage.cp
 	kateconsole.cpp katedocmanager.cpp katefilelist.cpp katefileselector.cpp \
 	katemainwindow.cpp katepluginmanager.cpp katesplitter.cpp \
 	kateviewmanager.cpp kateviewspace.cpp katemain.cpp \
-	kateIface.skel kategrepdialog.cpp katefiledialog.cpp
+	kateIface.skel kategrepdialog.cpp katefiledialog.cpp katemailfilesdialog.cpp \
+        kbookmarkhandler.cpp kactionselector.cpp
 
 kate_la_LIBADD   = ../interfaces/libkateinterfaces.la -lkscript
 kate_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
