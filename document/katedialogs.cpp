@@ -125,7 +125,7 @@ HighlightDialogPage::HighlightDialogPage(HlManager *hlManager, ItemStyleList *st
   QComboBox *styleCombo = new QComboBox( false, dvbox1 );
   defaultStyleChanger = new StyleChanger( dvbox1 );
   for( int i = 0; i < hlManager->defaultStyles(); i++ ) {
-    styleCombo->insertItem(i18n(hlManager->defaultStyleName(i)));
+    styleCombo->insertItem(hlManager->defaultStyleName(i));
   }
   connect(styleCombo, SIGNAL(activated(int)), this, SLOT(defaultChanged(int)));
   grid->addWidget(dvbox1, 0,0);

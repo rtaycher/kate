@@ -1,22 +1,20 @@
 /***************************************************************************
-    Copyright (C) 2000 Scott Manson
-                       SDManson@alltel.net
+                          katesyntaxdocument.h  -  description
+                             -------------------
+    begin                : Sat 31 March 2001
+    copyright            : (C) 2001 by Joseph Wenninger
+    email                : jowenn@bigfoot.com
+ ***************************************************************************/
 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
 
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Library General Public License for more details.
-
-    You should have received a copy of the GNU Library General Public License
-    along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
-*/
 #ifndef SYNTAXDOCUMENT_H
 #define SYNTAXDOCUMENT_H
 
@@ -25,21 +23,23 @@
 
 class QStringList;
 
-struct syntaxModeListItem
+class syntaxModeListItem
 {
-  QString name;
-  QString section;
-  QString mimetype;
-  QString extension;
-  QString casesensitive;
-  QString identifier;
+  public:
+    QString name;
+    QString section;
+    QString mimetype;
+    QString extension;
+    QString casesensitive;
+    QString identifier;
 };
 
-struct syntaxContextData
+class syntaxContextData
 {
-  QDomElement parent;
-  QDomElement currentGroup;
-  QDomElement item;
+  public:
+    QDomElement parent;
+    QDomElement currentGroup;
+    QDomElement item;
 };
 
 typedef QList<syntaxModeListItem> SyntaxModeList;
@@ -49,20 +49,22 @@ class SyntaxDocument : public QDomDocument
   public:
     SyntaxDocument();
     ~SyntaxDocument();
+
     QStringList& finddata(const QString& mainGroup,const QString& type,bool clearList=true);
     SyntaxModeList modeList();
 
-    struct syntaxContextData* getGroupInfo(const QString& langName, const QString &group);
-    void freeGroupInfo(struct syntaxContextData* data);
-    bool nextItem(struct syntaxContextData* data);
-    bool nextGroup(struct syntaxContextData* data);
-    struct syntaxContextData* getSubItems(struct syntaxContextData* data);
-    QString groupItemData(struct syntaxContextData* data,QString name);
-    QString groupData(struct syntaxContextData* data,QString name);
+    syntaxContextData* getGroupInfo(const QString& langName, const QString &group);
+    void freeGroupInfo(syntaxContextData* data);
+    bool nextItem(syntaxContextData* data);
+    bool nextGroup(syntaxContextData* data);
+    syntaxContextData* getSubItems(syntaxContextData* data);
+    QString groupItemData(syntaxContextData* data,QString name);
+    QString groupData(syntaxContextData* data,QString name);
     void setIdentifier(const QString& identifier);
+
   private:
-     void setupModeList();
-     QString currentFile;
+    void setupModeList();
+    QString currentFile;
     SyntaxModeList myModeList;
     QStringList m_data;
 };

@@ -537,9 +537,6 @@ void KateMainWindow::setHighlightMenuAboutToShow()
     QString hlName = HlManager::self()->hlName (z);
     QString hlSection = HlManager::self()->hlSection (z);
 
-    kdDebug()<<hlName<<endl;
-    kdDebug()<<hlSection<<endl;
-
     if ((hlSection != "") && (names.contains(hlName) < 1))
     {
       if (subMenusName.contains(hlSection) < 1)

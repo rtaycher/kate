@@ -103,15 +103,6 @@ class HlRangeDetect : public HlItem {
     QChar sChar2;
 };
 
-/*
-class KeywordData {
-  public:
-    KeywordData(const QString &);
-    ~KeywordData();
-    char *s;
-    int len;
-};
-*/
 class HlKeyword : public HlItemWw {
   public:
     HlKeyword(int attribute, int context,bool casesensitive,QString weakSep);
@@ -133,19 +124,6 @@ class HlKeyword : public HlItemWw {
     static const QChar* sensitiveCheckHgl(const QChar*,bool,HlKeyword *kw);
     static const QChar *inSensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw);
 };
-
-#if 0
-class HlCaseInsensitiveKeyword : public HlKeyword {
-  public:
-    HlCaseInsensitiveKeyword(int attribute, int context);
-    virtual ~HlCaseInsensitiveKeyword();
-    virtual const char *checkHgl(const char *,bool);
-		virtual const QChar *checkHgl(const QChar *,bool);
-    void addList(const QStringList &);
-    void addList(const char **);
-};
-
-#endif
 
 class HlPHex : public HlItemWw {
   public:
@@ -358,7 +336,7 @@ class HlManager : public QObject {
     int makeAttribs(Highlight *, Attribute *, int maxAttribs);
 
     int defaultStyles();
-    const char * defaultStyleName(int n);
+    QString defaultStyleName(int n);
     void getDefaults(ItemStyleList &);
     void setDefaults(ItemStyleList &);
 

@@ -876,7 +876,7 @@ void Highlight::createItemData(ItemDataList &list)
   if (internalIDList.count()==0)
   {
     internalIDList.setAutoDelete(true);
-    struct syntaxContextData *data;
+    syntaxContextData *data;
     HlManager::self()->syntax->setIdentifier(identifier);
     data=HlManager::self()->syntax->getGroupInfo("highlighting","itemData");
     while (HlManager::self()->syntax->nextGroup(data))
@@ -908,7 +908,7 @@ void Highlight::createItemData(ItemDataList &list)
 //	list.append(new ItemData(internalIDList.at(i)));
 }
 
-HlItem *Highlight::createHlItem(struct syntaxContextData *data, int *res)
+HlItem *Highlight::createHlItem(syntaxContextData *data, int *res)
 {
   if (noHl)
     return 0;
@@ -967,7 +967,7 @@ void Highlight::makeContextList()
     return;
 
   HlKeyword *keyword=0, *dataType=0;
-  struct syntaxContextData *data, *datasub;
+  syntaxContextData *data, *datasub;
   HlItem *c;
 
   kdDebug(13010)<< "AutoHighlight makeContextList()"<<endl;
@@ -1183,18 +1183,23 @@ int HlManager::defaultStyles() {
   return 10;
 }
 
-const char * HlManager::defaultStyleName(int n) {
-  static const char *names[] = {
-    I18N_NOOP("Normal"),
-    I18N_NOOP("Keyword"),
-    I18N_NOOP("Data Type"),
-    I18N_NOOP("Decimal/Value"),
-    I18N_NOOP("Base-N Integer"),
-    I18N_NOOP("Floating Point"),
-    I18N_NOOP("Character"),
-    I18N_NOOP("String"),
-    I18N_NOOP("Comment"),
-    I18N_NOOP("Others")};
+QString HlManager::defaultStyleName(int n)
+{
+  static QStringList names;
+
+  if (names.isEmpty())
+  {
+    names << i18n("Normal");
+    names << i18n("Keyword");
+    names << i18n("Data Type");
+    names << i18n("Decimal/Value");
+    names << i18n("Base-N Integer");
+    names << i18n("Floating Point");
+    names << i18n("Character");
+    names << i18n("String");
+    names << i18n("Comment");
+    names << i18n("Others");
+  }
 
   return names[n];
 }
