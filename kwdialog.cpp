@@ -515,33 +515,49 @@ int SettingsDialog::getUndoSteps() {
 */
 
 ColorConfig::ColorConfig( QWidget *parent, char *name )
-  : QGrid( 2, QGrid::Horizontal, parent, name )
+  : QWidget( parent, name )
 {
-  setMargin(0);
-  setSpacing( KDialog::spacingHint() );
+  QGridLayout *glay = new QGridLayout( this, 6, 2, 0, KDialog::spacingHint());
+  glay->setColStretch(1,1);
+  glay->setRowStretch(5,1);
 
   QLabel *label;
 
   label = new QLabel( i18n("Background:"), this);
   label->setAlignment( AlignRight|AlignVCenter );
   m_back = new KColorButton( this );
+  glay->addWidget( label, 0, 0 );
+  glay->addWidget( m_back, 0, 1 );
 
   label = new QLabel( i18n("Text Background:"), this);
   label->setAlignment( AlignRight|AlignVCenter );
   m_textBack = new KColorButton( this );
+  glay->addWidget( label, 1, 0 );
+  glay->addWidget( m_textBack, 1, 1 );
 
   label = new QLabel( i18n("Selected:"), this);
   label->setAlignment( AlignRight|AlignVCenter );
   m_selected = new KColorButton( this );
+  glay->addWidget( label, 2, 0 );
+  glay->addWidget( m_selected, 2, 1 );
 
   label = new QLabel( i18n("Found:"), this);
   label->setAlignment( AlignRight|AlignVCenter );
   m_found = new KColorButton( this );
+  glay->addWidget( label, 3, 0 );
+  glay->addWidget( m_found, 3, 1 );
 
   label = new QLabel( i18n("Selected + Found:"), this);
   label->setAlignment( AlignRight|AlignVCenter );
   m_selFound = new KColorButton( this );
+  glay->addWidget( label, 4, 0 );
+  glay->addWidget( m_selFound, 4, 1 );
+
 }
+
+
+
+
 
 ColorConfig::~ColorConfig()
 {

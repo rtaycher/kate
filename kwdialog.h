@@ -163,7 +163,7 @@ class SettingsDialog : public QDialog {
 };
 */
 
-class ColorConfig : public QGrid
+class ColorConfig : public QWidget
 {
   Q_OBJECT
 
