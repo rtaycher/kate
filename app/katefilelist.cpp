@@ -459,6 +459,8 @@ const QPixmap *KateFileListItem::pixmap ( int column ) const
     else
       return doc->isModified() ? &modPm : &noPm;
   }
+
+  return 0;
 }
 
 void KateFileListItem::paintCell( QPainter *painter, const QColorGroup & cg, int column, int width, int align )
