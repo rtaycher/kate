@@ -1,3 +1,8 @@
+2001-10-14 Christoph Cullmann <cullmann@kde.org>
+  * implementing and enhancing the new KTextEditor interfaces
+  * rewrite the whole internal document/view stuff ;) (hope will be finished
+    soon with that old crap ! 
+
 2001-10-06 Christoph Cullmann <cullmann@kde.org>
   * myself back again ;)
   * now kate is clean (only qt3), no backports ;)
@@ -9,10 +14,10 @@
   * added back Sather highlighting support
   * improved Eiffel language syntax highlighting support
   * added Eiffel language comment directive in eiffel.xml
-  * added Ada language comment directive in ada.xml 
+  * added Ada language comment directive in ada.xml
 
 2001-08-15  christian@kdevelop.org
-  * committed Eiffel language syntax highlighting support 
+  * committed Eiffel language syntax highlighting support
 
 2001-08-08  rokrau@yahoo.com
   * committed changes to Kate's API necessary for integration of kate as

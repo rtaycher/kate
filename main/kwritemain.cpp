@@ -275,12 +275,12 @@ void TopLevel::newStatus()
   newCaption();
 
   bool readOnly = kateView->doc()->isReadOnly();
-  int config = kateView->config();
+  uint config = kateView->doc()->configFlags();
 
   if (readOnly)
     statusBar()->changeItem(i18n(" R/O "),ID_INS_OVR);
   else
-    statusBar()->changeItem(config & KateView::cfOvr ? i18n(" OVR ") : i18n(" INS "),ID_INS_OVR);
+    statusBar()->changeItem(config & KateDocument::cfOvr ? i18n(" OVR ") : i18n(" INS "),ID_INS_OVR);
 
   statusBar()->changeItem(kateView->doc()->isModified() ? " * " : "",ID_MODIFIED);
 }

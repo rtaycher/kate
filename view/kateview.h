@@ -307,14 +307,6 @@ class KateView : public Kate::View
       Sets the current cursor position
     */
     void setCursorPositionInternal(int line, int col);
-    /**
-      Returns the config flags. See the cfXXX constants in the .h file.
-    */
-    int config();// {return configFlags;}
-    /**
-      Sets the config flags
-    */
-    void setConfig(int);
 
     int tabWidth();
     void setTabWidth(int);
@@ -381,8 +373,6 @@ class KateView : public Kate::View
   protected:
     virtual void keyPressEvent( QKeyEvent *ev );
     virtual void customEvent( QCustomEvent *ev );
-
-    uint configFlags;
 
     /*
      * Check if the given URL already exists. Currently used by both save() and saveAs()
@@ -687,32 +677,6 @@ class KateView : public Kate::View
 
 
   public:
-    enum Config_flags {
-      cfAutoIndent= 0x1,
-      cfBackspaceIndents= 0x2,
-      cfWordWrap= 0x4,
-      cfReplaceTabs= 0x8,
-      cfRemoveSpaces = 0x10,
-      cfWrapCursor= 0x20,
-      cfAutoBrackets= 0x40,
-      cfPersistent= 0x80,
-      cfKeepSelection= 0x100,
-      cfVerticalSelect= 0x200,
-      cfDelOnInput= 0x400,
-      cfXorSelect= 0x800,
-      cfOvr= 0x1000,
-      cfMark= 0x2000,
-			cfGroupUndo= 0x4000,
-      cfKeepIndentProfile= 0x8000,
-      cfKeepExtraSpaces= 0x10000,
-      cfMouseAutoCopy= 0x20000,
-      cfSingleSelection= 0x40000,
-      cfTabIndents= 0x80000,
-      cfPageUDMovesCursor= 0x100000,
-      cfShowTabs= 0x200000,
-      cfSpaceIndent= 0x400000,
-      cfSmartHome = 0x800000};
-
     enum Dialog_results {
       srYes=QDialog::Accepted,
       srNo=10,

@@ -234,14 +234,14 @@ int GotoLineDialog::getLine() {
   return e1->value();
 }
 
-const int IndentConfigTab::flags[] = {KateView::cfAutoIndent, KateView::cfSpaceIndent,
-  KateView::cfBackspaceIndents,KateView::cfTabIndents, KateView::cfKeepIndentProfile, KateView::cfKeepExtraSpaces};
+const int IndentConfigTab::flags[] = {KateDocument::cfAutoIndent, KateDocument::cfSpaceIndent,
+  KateDocument::cfBackspaceIndents,KateDocument::cfTabIndents, KateDocument::cfKeepIndentProfile, KateDocument::cfKeepExtraSpaces};
 
 IndentConfigTab::IndentConfigTab(QWidget *parent, KateView *view)
   : QWidget(parent, 0L)
 {
   QVBoxLayout *layout = new QVBoxLayout(this, 0, KDialog::spacingHint() );
-  int configFlags = view->config();
+  int configFlags = view->doc()->configFlags();
 
   opt[0] = new QCheckBox(i18n("&Auto Indent"), this);
   layout->addWidget(opt[0], 0, AlignLeft);
@@ -283,22 +283,22 @@ IndentConfigTab::IndentConfigTab(QWidget *parent, KateView *view)
 void IndentConfigTab::getData(KateView *view) {
   int configFlags, z;
 
-  configFlags = view->config();
+  configFlags = view->doc()->configFlags();
   for (z = 0; z < numFlags; z++) {
     configFlags &= ~flags[z];
     if (opt[z]->isChecked()) configFlags |= flags[z];
   }
-  view->setConfig(configFlags);
+  view->doc()->setConfigFlags(configFlags);
 }
 
-const int SelectConfigTab::flags[] = {KateView::cfPersistent, KateView::cfDelOnInput,
-  KateView::cfMouseAutoCopy, KateView::cfSingleSelection, KateView::cfVerticalSelect, KateView::cfXorSelect};
+const int SelectConfigTab::flags[] = {KateDocument::cfPersistent, KateDocument::cfDelOnInput,
+  KateDocument::cfMouseAutoCopy, KateDocument::cfSingleSelection, KateDocument::cfVerticalSelect, KateDocument::cfXorSelect};
 
 SelectConfigTab::SelectConfigTab(QWidget *parent, KateView *view)
   : QWidget(parent, 0L)
 {
   QVBoxLayout *layout = new QVBoxLayout(this, 0, KDialog::spacingHint() );
-  int configFlags = view->config();
+  int configFlags = view->doc()->configFlags();
 
   opt[0] = new QCheckBox(i18n("&Persistent Selections"), this);
   layout->addWidget(opt[0], 0, AlignLeft);
@@ -338,17 +338,17 @@ SelectConfigTab::SelectConfigTab(QWidget *parent, KateView *view)
 void SelectConfigTab::getData(KateView *view) {
   int configFlags, z;
 
-  configFlags = view->config();
+  configFlags = view->doc()->configFlags();
   for (z = 0; z < numFlags; z++) {
     configFlags &= ~flags[z]; // clear flag
     if (opt[z]->isChecked()) configFlags |= flags[z]; // set flag if checked
   }
-  view->setConfig(configFlags);
+  view->doc()->setConfigFlags(configFlags);
 }
 
-const int EditConfigTab::flags[] = {KateView::cfWordWrap, KateView::cfReplaceTabs, KateView::cfRemoveSpaces,
-  KateView::cfAutoBrackets, KateView::cfGroupUndo, KateView::cfShowTabs, KateView::cfSmartHome,
-  KateView::cfPageUDMovesCursor, KateView::cfWrapCursor};
+const int EditConfigTab::flags[] = {KateDocument::cfWordWrap, KateDocument::cfReplaceTabs, KateDocument::cfRemoveSpaces,
+  KateDocument::cfAutoBrackets, KateDocument::cfGroupUndo, KateDocument::cfShowTabs, KateDocument::cfSmartHome,
+  KateDocument::cfPageUDMovesCursor, KateDocument::cfWrapCursor};
 
 EditConfigTab::EditConfigTab(QWidget *parent, KateView *view)
   : QWidget(parent, 0L) {
@@ -361,7 +361,7 @@ EditConfigTab::EditConfigTab(QWidget *parent, KateView *view)
 
   // checkboxes
   cbLayout = new QVBoxLayout( mainLayout );
-  configFlags = view->config();
+  configFlags = view->doc()->configFlags();
 
   opt[0] = new QCheckBox(i18n("&Word wrap"), this);
   cbLayout->addWidget(opt[0], 0, AlignLeft);
@@ -452,12 +452,12 @@ void EditConfigTab::getData(KateView *view)
 {
   int configFlags, z;
 
-  configFlags = view->config();
+  configFlags = view->doc()->configFlags();
   for (z = 1; z < numFlags; z++) {
     configFlags &= ~flags[z];
     if (opt[z]->isChecked()) configFlags |= flags[z];
   }
-  view->setConfig(configFlags);
+  view->doc()->setConfigFlags(configFlags);
 
   view->setEncoding (encoding->currentText());
   view->doc()->setWordWrapAt(e1->value());

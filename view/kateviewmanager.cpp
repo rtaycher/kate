@@ -375,14 +375,14 @@ void KateViewManager::statusMsg ()
   KateView* v = activeView();
 
   bool readOnly =  v->doc()->isReadOnly();
-  int config =  v->config();
+  uint config =  v->doc()->configFlags();
 
   int ovr = 0;
   if (readOnly)
     ovr = 0;
   else
   {
-    if (config & KateView::cfOvr)
+    if (config & KateDocument::cfOvr)
     {
       ovr=1;
     }

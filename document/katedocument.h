@@ -243,9 +243,6 @@ class KateDocument : public Kate::Document
     void setNewDoc( bool );
     bool isNewDoc() const;
 
-    void setSingleSelection(bool ss) {m_singleSelection = ss;}
-    bool singleSelection() {return m_singleSelection;}
-
     void readConfig();
     void writeConfig();
     void readSessionConfig(KConfig *);
@@ -341,7 +338,7 @@ class KateDocument : public Kate::Document
     void tagLineRange(int line, int x1, int x2);
     void tagLines(int start, int end);
     void tagAll();
-    void updateLines(int startLine = 0, int endLine = 0xffffff, int flags = 0, int cursorY = -1);
+    void updateLines(int startLine = 0, int endLine = 0xffffff, int cursorY = -1);
     void updateMaxLength(TextLine::Ptr &);
     void updateViews(KateView *exclude = 0L);
 
@@ -368,7 +365,6 @@ class KateDocument : public Kate::Document
     //
     // Comment, uncomment methods
     //
-
     bool removeStringFromBegining(int line, QString &str);
     bool removeStringFromEnd(int line, QString &str);
 
@@ -520,10 +516,14 @@ class KateDocument : public Kate::Document
 
   private:
     bool hlSetByUser;
+		
+	public:
+	  uint configFlags ();
+		void setConfigFlags (uint flags);
 
   protected:
-    uint configFlags;
-    uint searchFlags;
+    uint _configFlags;
+    uint _searchFlags;
 
   public:
     enum Config_flags {
@@ -540,7 +540,8 @@ class KateDocument : public Kate::Document
       cfDelOnInput= 0x400,
       cfXorSelect= 0x800,
       cfOvr= 0x1000,
-      cfMark= 0x2000,   
+      cfMark= 0x2000,
+			cfGroupUndo= 0x4000,
       cfKeepIndentProfile= 0x8000,
       cfKeepExtraSpaces= 0x10000,
       cfMouseAutoCopy= 0x20000,

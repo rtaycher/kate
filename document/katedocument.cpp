@@ -83,13 +83,13 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   m_bBrowserView = bBrowserView;
 
   // some defaults
-  configFlags = KateDocument::cfAutoIndent | KateDocument::cfBackspaceIndents
+  _configFlags = KateDocument::cfAutoIndent | KateDocument::cfBackspaceIndents
     | KateDocument::cfTabIndents | KateDocument::cfKeepIndentProfile
     | KateDocument::cfRemoveSpaces
     | KateDocument::cfDelOnInput | KateDocument::cfMouseAutoCopy | KateDocument::cfWrapCursor
     | KateDocument::cfShowTabs | KateDocument::cfSmartHome;
 
-  searchFlags = 0;
+  _searchFlags = 0;
 
   m_url = KURL();
 
@@ -122,8 +122,6 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
 
   m_highlight = 0L;
   tabChars = 8;
-
-  m_singleSelection = false;
 
   newDocGeometry = false;
   readOnly = false;
@@ -323,7 +321,7 @@ bool KateDocument::insertText( int line, int col, const QString &s )
 
   if (tagStart <= tagEnd) {
     optimizeSelection();
-    updateLines(tagStart, tagEnd, 0, line);
+    updateLines(tagStart, tagEnd, line);
     setModified(true);
   }
 
@@ -432,7 +430,7 @@ bool KateDocument::removeText ( int line, int col, int len )
 
   if (tagStart <= tagEnd) {
     optimizeSelection();
-    updateLines(tagStart, tagEnd, 0, line);
+    updateLines(tagStart, tagEnd, line);
     setModified(true);
   }
 
@@ -474,7 +472,7 @@ bool KateDocument::insertLine( int l, const QString &str )
 
   if (tagStart <= tagEnd) {
     optimizeSelection();
-    updateLines(tagStart, tagEnd, 0, l);
+    updateLines(tagStart, tagEnd, l);
     setModified(true);
   }
 
@@ -522,7 +520,7 @@ bool KateDocument::removeLine( int line )
 
   if (tagStart <= tagEnd) {
     optimizeSelection();
-    updateLines(tagStart, tagEnd, 0, line);
+    updateLines(tagStart, tagEnd, line);
     setModified(true);
   }
 
@@ -586,13 +584,12 @@ bool KateDocument::hasSelection() const
 }
 
 QString KateDocument::selection() const
-{
-  uint flags = configFlags;
+{ 
   TextLine::Ptr textLine;
   int len, z, start, end, i;
 
   len = 1;
-  if (!(flags & KateView::cfVerticalSelect)) {
+  if (!(_configFlags & KateDocument::cfVerticalSelect)) {
     for (z = selectStart; z <= selectEnd; z++) {
       textLine = getTextLine(z);
       len += textLine->numSelected();
@@ -1026,8 +1023,8 @@ void KateDocument::readConfig()
   KConfig *config = KateFactory::instance()->config();
   config->setGroup("Kate Document");
 
-  searchFlags = config->readNumEntry("SearchFlags", KateDocument::sfPrompt);
-  configFlags = config->readNumEntry("ConfigFlags", configFlags) & ~KateDocument::cfMark;
+  _searchFlags = config->readNumEntry("SearchFlags", KateDocument::sfPrompt);
+  _configFlags = config->readNumEntry("ConfigFlags", _configFlags) & ~KateDocument::cfMark;
 
   myWordWrap = config->readBoolEntry("Word Wrap On", false);
   myWordWrapAt = config->readNumEntry("Word Wrap At", 80);
@@ -1036,13 +1033,12 @@ void KateDocument::readConfig()
 
   setTabWidth(config->readNumEntry("TabWidth", 8));
   setUndoSteps(config->readNumEntry("UndoSteps", 50));
-  m_singleSelection = config->readBoolEntry("SingleSelection", false);
   myEncoding = config->readEntry("Encoding", QString::fromLatin1(QTextCodec::codecForLocale()->name()));
   setFont (config->readFontEntry("Font", &myFont));
 
   colors[0] = config->readColorEntry("Color Background", &colors[0]);
   colors[1] = config->readColorEntry("Color Selected", &colors[1]);
-  
+
   config->sync();
 }
 
@@ -1051,14 +1047,12 @@ void KateDocument::writeConfig()
   KConfig *config = KateFactory::instance()->config();
   config->setGroup("Kate Document");
 
-  config->writeEntry("SearchFlags",searchFlags);
-  config->writeEntry("ConfigFlags",configFlags);
+  config->writeEntry("SearchFlags",_searchFlags);
+  config->writeEntry("ConfigFlags",_configFlags);
 
   config->writeEntry("Word Wrap On", myWordWrap);
   config->writeEntry("Word Wrap At", myWordWrapAt);
   config->writeEntry("TabWidth", tabChars);
-  //config->writeEntry("UndoSteps", undoSteps);
-  config->writeEntry("SingleSelection", m_singleSelection);
   config->writeEntry("Encoding", myEncoding);
   config->writeEntry("Font", myFont);
   config->writeEntry("Color Background", colors[0]);
@@ -1311,7 +1305,7 @@ bool KateDocument::insertChars ( int line, int col, const QString &chars, KateVi
   onlySpaces = true;
   for (z = 0; z < (int) chars.length(); z++) {
     ch = chars[z];
-    if (ch == '\t' && view->config() & KateView::cfReplaceTabs) {
+    if (ch == '\t' && _configFlags & KateDocument::cfReplaceTabs) {
       l = tabChars - (textLine->cursorX(col, tabChars) % tabChars);
       while (l > 0) {
         buf.insert(pos, ' ');
@@ -1322,7 +1316,7 @@ bool KateDocument::insertChars ( int line, int col, const QString &chars, KateVi
       buf.insert(pos, ch);
       pos++;
       if (ch != ' ') onlySpaces = false;
-      if (view->config() & KateView::cfAutoBrackets) {
+      if (_configFlags & KateDocument::cfAutoBrackets) {
         if (ch == '(') buf.insert(pos, ')');
         if (ch == '[') buf.insert(pos, ']');
         if (ch == '{') buf.insert(pos, '}');
@@ -1334,10 +1328,15 @@ bool KateDocument::insertChars ( int line, int col, const QString &chars, KateVi
   //return false if nothing has to be inserted
   if (buf.isEmpty()) return false;
 
-  if (view->config() &KateView:: cfDelOnInput)
-		removeSelectedText();
+	_autoUpdate = false;
 
-  if (view->config() & KateView::cfOvr)
+  if (_configFlags & KateDocument:: cfDelOnInput)
+	{
+		removeSelectedText();
+		view->getCursorPosition (&line, &col);
+	}
+
+  if (_configFlags & KateDocument::cfOvr)
 	{
 		if ((col+buf.length()) <= textLine->length())
       removeText (line, col, buf.length());
@@ -1348,17 +1347,14 @@ bool KateDocument::insertChars ( int line, int col, const QString &chars, KateVi
   insertText (line, col, buf);
   col += pos;
 
-  if (tagStart <= tagEnd) {
-    optimizeSelection();
-    updateLines(tagStart, tagEnd, view->config(), line);
-    setModified(true);
-  }
-
   PointStruc c;
   c.y = line;
   c.x = col;
 
-  view->updateCursor(c, view->config());
+  view->updateCursor(c, _configFlags);
+
+	_autoUpdate = true;
+	updateViews ();
 
 /*
   if (myWordWrap && myWordWrapAt > 0) {
@@ -1427,7 +1423,7 @@ QString tabString(int pos, int tabChars) {
 void KateDocument::newLine(VConfig &c)
 {
 
-  if (!(c.flags & KateView::cfAutoIndent)) {
+  if (!(_configFlags & KateDocument::cfAutoIndent)) {
     insertText (c.cursor.y, c.cursor.x, "\n");
     c.cursor.y++;
     c.cursor.x = 0;
@@ -1447,7 +1443,7 @@ void KateDocument::newLine(VConfig &c)
     if (pos > 0) {
       pos = textLine->cursorX(pos, tabChars);
 //      if (getTextLine(c.cursor.y)->length() > 0) {
-        QString s = tabString(pos, (c.flags & KateView::cfSpaceIndent) ? 0xffffff : tabChars);
+        QString s = tabString(pos, (_configFlags & KateDocument::cfSpaceIndent) ? 0xffffff : tabChars);
         insertText (c.cursor.y, c.cursor.x, s);
         pos = s.length();
 //      }
@@ -1458,11 +1454,11 @@ void KateDocument::newLine(VConfig &c)
 
   if (tagStart <= tagEnd) {
     optimizeSelection();
-    updateLines(tagStart, tagEnd, c.flags, c.cursor.y);
+    updateLines(tagStart, tagEnd, c.cursor.y);
     setModified(true);
   }
 
-  c.view->updateCursor(c.cursor, c.flags);
+  c.view->updateCursor(c.cursor, _configFlags);
 }
 
 void KateDocument::killLine(VConfig &c)
@@ -1477,7 +1473,7 @@ void KateDocument::backspace(VConfig &c) {
   if (c.cursor.x > 0)
   {
 
-    if (!(c.flags & KateView::cfBackspaceIndents)) {
+    if (!(_configFlags & KateDocument::cfBackspaceIndents)) {
       // ordinary backspace
       c.cursor.x--;
       removeText(c.cursor.y, c.cursor.x, 1);
@@ -1536,7 +1532,7 @@ void KateDocument::cut(VConfig &c) {
 
   if (selectEnd < selectStart) return;
 
-  copy(c.flags);
+  copy(_configFlags);
   removeSelectedText();
 }
 
@@ -1547,12 +1543,12 @@ void KateDocument::copy(int flags) {
   QString s = selection ();
   if (!s.isEmpty()) {
 //#if defined(_WS_X11_)
-    if (m_singleSelection)
+    if (_configFlags & KateDocument::cfSingleSelection)
       disconnect(QApplication::clipboard(), SIGNAL(dataChanged()), this, 0);
 //#endif
     QApplication::clipboard()->setText(s);
 //#if defined(_WS_X11_)
-    if (m_singleSelection) {
+    if (_configFlags & KateDocument::cfSingleSelection) {
       connect(QApplication::clipboard(), SIGNAL(dataChanged()),
         this, SLOT(clipboardChanged()));
     }
@@ -1665,14 +1661,14 @@ void KateDocument::selectTo(VConfig &c, PointStruc &cursor, int cXPos) {
   if (c.cursor.x != select.x || c.cursor.y != select.y) {
     //new selection
 
-    if (!(c.flags & KateView::cfKeepSelection)) clearSelection ();
+    if (!(_configFlags & KateDocument::cfKeepSelection)) clearSelection ();
 //      else recordReset();
 
     anchor = c.cursor;
     aXPos = c.cXPos;
   }
 
-  if (!(c.flags & KateView::cfVerticalSelect)) {
+  if (!(_configFlags & KateDocument::cfVerticalSelect)) {
     //horizontal selections
     int x, y, sXPos;
     int ex, ey, eXPos;
@@ -1708,7 +1704,7 @@ void KateDocument::selectTo(VConfig &c, PointStruc &cursor, int cXPos) {
 
     TextLine::Ptr textLine = getTextLine(y);
 
-    if (c.flags & KateView::cfXorSelect) {
+    if (_configFlags & KateDocument::cfXorSelect) {
       //xor selection with old selection
       while (y < ey) {
         textLine->toggleSelectEol(x);
@@ -1812,7 +1808,7 @@ void KateDocument::selectWord(PointStruc &cursor, int flags) {
   while (start > 0 && m_highlight->isInWord(textLine->getChar(start - 1))) start--;
   while (end < len && m_highlight->isInWord(textLine->getChar(end))) end++;
   if (end <= start) return;
-  if (!(flags & KateView::cfKeepSelection)) clearSelection ();
+  if (!(flags & KateDocument::cfKeepSelection)) clearSelection ();
 //    else recordReset();
 
   textLine->select(true, start, end);
@@ -1833,7 +1829,7 @@ void KateDocument::selectLength(PointStruc &cursor, int length, int flags) {
   start = cursor.x;
   end = start + length;
   if (end <= start) return;
-  if (!(flags & KateView::cfKeepSelection)) clearSelection ();
+  if (!(flags & KateDocument::cfKeepSelection)) clearSelection ();
 
   textLine->select(true, start, end);
 
@@ -1852,14 +1848,14 @@ void KateDocument::doIndent(VConfig &c, int change) {
 
   if (selectEnd < selectStart) {
     // single line
-    optimizeLeadingSpace(c.cursor.y, c.flags, change);
+    optimizeLeadingSpace(c.cursor.y, _configFlags, change);
   } else {
     // entire selection
     TextLine::Ptr textLine;
     int line, z;
     QChar ch;
 
-    if (c.flags & KateView::cfKeepIndentProfile && change < 0) {
+    if (_configFlags & KateDocument::cfKeepIndentProfile && change < 0) {
       // unindent so that the existing indent profile doesnt get screwed
       // if any line we may unindent is already full left, don't do anything
       for (line = selectStart; line <= selectEnd; line++) {
@@ -1881,7 +1877,7 @@ void KateDocument::doIndent(VConfig &c, int change) {
     for (line = selectStart; line <= selectEnd; line++) {
       textLine = getTextLine(line);
       if (textLine->isSelected() || textLine->numSelected()) {
-        optimizeLeadingSpace(line, c.flags, change);
+        optimizeLeadingSpace(line, _configFlags, change);
       }
     }
   }
@@ -1913,10 +1909,10 @@ void KateDocument::optimizeLeadingSpace(int line, int flags, int change) {
     ch = textLine->getChar(chars);
     if (ch == ' ') {
       space++;
-      if (flags & KateView::cfSpaceIndent && okLen == chars) okLen++;
+      if (flags & KateDocument::cfSpaceIndent && okLen == chars) okLen++;
     } else if (ch == '\t') {
       space += tabChars - space % tabChars;
-      if (!(flags & KateView::cfSpaceIndent) && okLen == chars) okLen++;
+      if (!(flags & KateDocument::cfSpaceIndent) && okLen == chars) okLen++;
     } else break;
   }
 
@@ -1925,9 +1921,9 @@ void KateDocument::optimizeLeadingSpace(int line, int flags, int change) {
   if (space < 0 || chars == len) space = 0;
 
   extra = space % tabChars; // extra spaces which dont fit the indentation pattern
-  if (flags & KateView::cfKeepExtraSpaces) chars -= extra;
+  if (flags & KateDocument::cfKeepExtraSpaces) chars -= extra;
 
-  if (flags & KateView::cfSpaceIndent) {
+  if (flags & KateDocument::cfSpaceIndent) {
     space -= extra;
     ch = ' ';
   } else {
@@ -2264,7 +2260,7 @@ void KateDocument::tagAll() {
   }
 }
 
-void KateDocument::updateLines(int startLine, int endLine, int flags, int cursorY) {
+void KateDocument::updateLines(int startLine, int endLine, int cursorY) {
   TextLine::Ptr textLine;
   int line, last_line;
   int ctxNum, endCtx;
@@ -2290,7 +2286,7 @@ void KateDocument::updateLines(int startLine, int endLine, int flags, int cursor
     //kdDebug(13020)<<QString("got text line")<<endl;
     if (line <= endLine && line != cursorY) {
 			//kdDebug(13020)<<QString("removing spaces")<<endl;
-      if (flags & KateView::cfRemoveSpaces) textLine->removeSpaces();
+      if (_configFlags & KateDocument::cfRemoveSpaces) textLine->removeSpaces();
       updateMaxLength(textLine);
     }
 		//kdDebug(13020)<<QString("getting context")<<endl;
@@ -2931,7 +2927,7 @@ found:
 
 void KateDocument::clipboardChanged() { //slot
 //#if defined(_WS_X11_)
-  if (m_singleSelection) {
+  if (_configFlags & KateDocument::cfSingleSelection) {
     disconnect(QApplication::clipboard(), SIGNAL(dataChanged()),
       this, SLOT(clipboardChanged()));
     clearSelection ();
@@ -3086,6 +3082,25 @@ void KateDocument::setWordWrapAt (uint col)
 void KateDocument::applyWordWrap ()
 {
   wrapText (myWordWrapAt);
+}
+
+uint KateDocument::configFlags ()
+{
+  return _configFlags;
+}
+
+void KateDocument::setConfigFlags (uint flags)
+{
+  bool updateView;
+
+  if (flags != _configFlags)
+	{
+    // update the view if visibility of tabs has changed
+    updateView = (flags ^ _configFlags) & KateDocument::cfShowTabs;
+    _configFlags = flags;
+    //emit newStatus();
+    if (updateView) updateViews ();
+  }
 }
 
 KateCursor::KateCursor ( KateDocument *doc)
