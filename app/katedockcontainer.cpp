@@ -105,4 +105,14 @@ void KateDockContainer::setToolTip (KDockWidget *, QString &)
 {
 	;
 }
+
+void KateDockContainer::save()
+{
+}
+  
+void KateDockContainer::load()
+{
+;
+}
+
 #include "katedockcontainer.moc"

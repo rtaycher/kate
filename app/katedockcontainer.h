@@ -3,6 +3,7 @@
 
 #include <qwidget.h>
 #include <kdockwidget.h>
+#include <kdockwidget_p.h>
 #include <qmap.h>
 
 class QWidgetStack;
@@ -18,7 +19,9 @@ public:
         virtual void insertWidget (KDockWidget *w, QPixmap, const QString &, int &);
         virtual void setToolTip (KDockWidget *, QString &);
 //	virtual void undockWidget(KDockWidget*);
-  	virtual void removeWidget(KDockWidget*);
+	virtual void removeWidget(KDockWidget*);	
+	virtual void save();
+	virtual void load();
 private:                    
   class KateMainWindow *m_mainWin;
 	QWidgetStack *m_ws;
