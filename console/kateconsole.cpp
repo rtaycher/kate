@@ -58,6 +58,7 @@ void KateConsole::cd (KURL url)
 
 void KateConsole::slotDestroyed ()
 {
+  if (!topLevelWidget() || !parentWidget()) return;
   if (!topLevelWidget() || !parentWidget()->isVisible()) return;
 
  KLibFactory *factory = 0;
