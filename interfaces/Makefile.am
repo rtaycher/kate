@@ -1,4 +1,5 @@
-METASOURCES = application.moc documentmanager.moc mainwindow.moc plugin.moc viewmanager.moc pluginconfiginterfaceextension.moc
+METASOURCES = AUTO
+#application.moc documentmanager.moc mainwindow.moc plugin.moc viewmanager.moc pluginconfiginterfaceextension.moc
 
 lib_LTLIBRARIES = libkateinterfaces.la
 
