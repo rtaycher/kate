@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="kwrite" version="12">
+<kpartgui name="kwrite" version="13">
 
 <MenuBar>
   <Menu name="file" noMerge="1"><text>&amp;File</text>
@@ -85,5 +85,9 @@
   <Separator />
   <DefineGroup name="zoom_operations" />
 </ToolBar>
+
+<Menu name="ktexteditor_popup" noMerge="1">
+  <DefineGroup name="popup_operations" />
+</Menu>
 
 </kpartgui>
