@@ -26,7 +26,7 @@
 
 extern "C"
 {
-  void *init_libkantpart()
+  void *init_libkant()
   {
     return new KantFactory();
   }
@@ -72,8 +72,8 @@ KInstance *KantFactory::instance()
 
 const KAboutData *KantFactory::aboutData()
 {
-  KAboutData *data = new KAboutData  ("kant", I18N_NOOP("Kant Part"), "0.2",
-                                                           I18N_NOOP( "Kant Part - A Texteditor KPart for KDE" ), KAboutData::License_GPL,
+  KAboutData *data = new KAboutData  ("kant", I18N_NOOP("Kant Texteditor"), "0.2",
+                                                           I18N_NOOP( "Kant - get an edge in editing" ), KAboutData::License_GPL,
                                                            "(c) 2000-2001 The Kant Authors", "http://devel-home.kde.org/~kant");
 
   data->addAuthor("Christoph Cullmann", I18N_NOOP("Project Manager and Core Developer"), "crossfire@babylon2k.de", "http://www.babylon2k.de");
