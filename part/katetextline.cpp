@@ -1,4 +1,4 @@
-/*************************************************************************** 
+/***************************************************************************
                           katetextline.cpp  -  description      
                              -------------------      
     begin                : Mon Feb 5 2001      
@@ -100,8 +100,8 @@ void TextLine::replace(uint pos, uint delLen, const QChar *insText, uint insLen,
  
   if (newLen < textLen) 
   {  
-    text = (QChar *) realloc(text, sizeof (QChar)*newLen); 
-    attributes = (uchar *) realloc(attributes, sizeof (uchar)*newLen);   
+    text = (QChar *) realloc(text, sizeof (QChar)*newLen);
+    attributes = (uchar *) realloc(attributes, sizeof (uchar)*newLen);
   } 
  
   textLen = newLen;  
@@ -116,18 +116,10 @@ void TextLine::truncate(uint newLen)
 {      
   if (newLen < textLen)     
   {     
-    textLen = newLen;     
-	     
-    if (text == 0L)     
-      text = (QChar *) malloc (textLen*sizeof(QChar));     
-    else     
-      text = (QChar *) realloc (text, textLen*sizeof(QChar));     
-     
-    if (attributes == 0L)     
-      attributes = (uchar *) malloc (textLen);     
-    else     
-      attributes = (uchar *) realloc (attributes, textLen);     
-  }     
+    textLen = newLen;
+    text = (QChar *) realloc(text, sizeof (QChar)*newLen);
+    attributes = (uchar *) realloc(attributes, sizeof (uchar)*newLen);
+  }
 }      
       
 void TextLine::wrap(TextLine::Ptr nextLine, uint pos)      
