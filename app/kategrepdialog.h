@@ -58,6 +58,7 @@ private slots:
     void templateActivated(int index);
     void childExited();
     void receivedOutput(KProcess *proc, char *buffer, int buflen);
+    void receivedErrOutput(KProcess *proc, char *buffer, int buflen);
     void itemSelected(const QString&);
     void slotSearch();
     void slotCancel();
@@ -72,9 +73,10 @@ private:
     KURLRequester *dir_combo;
     QCheckBox *recursive_box;
     QListBox *resultbox;
-    QPushButton *search_button;
+    QPushButton *search_button, *clear_button;
     KProcess *childproc;
     QString buf;
+    QString errbuf;
     KConfig* config;
     QStringList lastSearchItems;
     QStringList lastSearchPaths;

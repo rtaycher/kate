@@ -34,6 +34,7 @@
 #include <qlistbox.h>
 #include <qregexp.h>
 #include <qwhatsthis.h>
+#include <qcursor.h>
 
 #include <kaccelmanager.h>
 #include <kbuttonbox.h>
@@ -160,7 +161,7 @@ GrepTool::GrepTool(const QString &dirname, KateMainWindow *parent, const char *n
   actionbox->addStretch();
   search_button = actionbox->addButton(i18n("Search"));
   search_button->setDefault(true);
-   QPushButton *clear_button = actionbox->addButton(i18n("Clear"));
+  clear_button = actionbox->addButton(i18n("Clear"));
   actionbox->addStretch();
   actionbox->layout();
 
@@ -283,52 +284,58 @@ void GrepTool::slotSearch()
   if (pattern_combo->currentText().isEmpty())
   return;
 
-  search_button->setEnabled(false);
+//   search_button->setEnabled(false);
+  if ( childproc && childproc->isRunning() )
+  {
+    childproc->kill();
+    return;
+  }
 
   QString files;
   QString files_temp = files_combo->currentText();
   if (files_temp.right(1) != ",")
-      files_temp = files_temp + ",";
+  files_temp = files_temp + ",";
 
   QStringList tokens = QStringList::split ( ",", files_temp, FALSE );
   QStringList::Iterator it = tokens.begin();
   if (it != tokens.end())
-      files = " '"+(*it++)+"'" ;
+  files = " '"+(*it++)+"'" ;
 
   for ( ; it != tokens.end(); it++ )
-      files = files + " -o -name " + "'"+(*it)+ "'";
-
-  //status_label->setText(i18n("Searching..."));
+  files = files + " -o -name " + "'"+(*it)+ "'";
 
   QString pattern = template_edit->text();
   pattern.replace("%s", pattern_combo->currentText());
   pattern.replace("'", "'\\''");
 
-  QString filepattern = "find ";
-  filepattern += KProcess::quote(dir_combo->/*currentText*/url());
-
+  QString filepattern = "`find ";
+  filepattern += KProcess::quote(dir_combo->url());
   if (!recursive_box->isChecked())
-      filepattern += " -maxdepth 1";
-
+  filepattern += " -maxdepth 1";
   filepattern += " \\( -name ";
   filepattern += files;
-  filepattern += " \\) -exec ";
+  filepattern += " \\) -print";
+  filepattern += "`";
 
   childproc = new KShellProcess();
-  *childproc << filepattern;
   *childproc << "grep";
   *childproc << "-n";
-  *childproc << "-H";
   *childproc << (QString("-e ") + KProcess::quote(pattern));
-  *childproc << "{}";
-  *childproc << "/dev/null";
-  *childproc << "';'";
+  *childproc << filepattern;
+   *childproc << "/dev/null";
 
-  connect( childproc, SIGNAL(processExited(KProcess *)), SLOT(childExited()) );
-  connect( childproc, SIGNAL(receivedStdout(KProcess *, char *, int)), SLOT(receivedOutput(KProcess *, char *, int)) );
+  connect( childproc, SIGNAL(processExited(KProcess *)),
+           SLOT(childExited()) );
+  connect( childproc, SIGNAL(receivedStdout(KProcess *, char *, int)),
+           SLOT(receivedOutput(KProcess *, char *, int)) );
+  connect( childproc, SIGNAL(receivedStderr(KProcess *, char *, int)),
+           SLOT(receivedErrOutput(KProcess *, char *, int)) );
 
   // actually it should be checked whether the process was started successfully
-  /*bool success=*/childproc->start(KProcess::NotifyOnExit, KProcess::Stdout);
+  resultbox->setCursor( QCursor(Qt::WaitCursor) );
+  clear_button->setEnabled( false );
+  search_button->setText( i18n("Cancel") );
+  childproc->start(KProcess::NotifyOnExit, KProcess::AllOutput);
 }
 
 void GrepTool::slotSearchFor(const QString &pattern){
@@ -380,6 +387,10 @@ void GrepTool::slotCancel()
 void GrepTool::childExited()
 {
 //   int status = childproc->exitStatus();
+  resultbox->unsetCursor();
+  clear_button->setEnabled( true );
+  search_button->setText( i18n("Search") );
+
   if ( ! errbuf.isEmpty() )
   {
     KMessageBox::information( parentWidget(), i18n("<strong>Error:</strong><p>") + errbuf, i18n("Grep tool error") );
