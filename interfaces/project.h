@@ -85,16 +85,16 @@ class Project : public QObject
     bool save ();
     
     /**
-     * Sections for the files
-     * @return QStringList list of known sections
+     * top subdirs
+     * @return QStringList list with subdirs
      */
-    QStringList sections () const;
+    QStringList subdirs () const;
     
     /**
-     * Names of the files in the section, filename is relative to the project dir
-     * @return QStringList list with file names of known files in this section
+     * subdirs of given dir
+     * @return QStringList list with subdirs
      */
-    QStringList files (const QString &section) const;
+    QStringList subdirs (const QString &dir) const;
     
   private:
     /**

@@ -26,16 +26,43 @@
 #include "../interfaces/project.h"
 
 #include <ktoolbar.h>
-#include <kcombobox.h>
+#include <klistbox.h>
 
 #include <qwidget.h>
 #include <qvaluelist.h>
 #include <qframe.h>
-#include <qwidgetstack.h>
 
 class KateMainWindow;
 class KActionCollection;
 class KActionSelector;
+
+class KateProjectListItem : public QListBoxItem
+{
+  public:
+    KateProjectListItem( uint projectNumber, const QPixmap &pix, const QString& text);
+    ~KateProjectListItem();
+
+    uint projectNumber ();
+
+    const QPixmap *pixmap() const { return &pm; };
+
+    void setText(const QString &text);
+    void setPixmap(const QPixmap &pixmap);
+
+    void setBold(bool bold);
+
+    int height( const QListBox* lb ) const;
+
+    int width( const QListBox* lb ) const;
+
+  protected:
+    void paint( QPainter *painter );
+
+  private:
+    uint myProjectID;
+    QPixmap pm;
+    bool _bold;
+};
 
 /* I think this fix for not moving toolbars is better */
 class KateProjectListToolBar: public KToolBar
@@ -75,17 +102,14 @@ class KateProjectList : public QWidget
     void projectChanged ();
     void projectCreated (Kate::Project *project);
     void projectDeleted (uint projectNumber);
-    void projectActivated (int num);
+    void slotActivateView( QListBoxItem *item );
 
   private:
-    KComboBox *m_projectCombo;
-    QWidgetStack *m_stack;
+    KListBox *m_projectList;
     class KateProjectManager *m_projectManager;
     class KateMainWindow *m_mainWindow;
     KateProjectListToolBar *toolbar;
     KActionCollection *mActionCollection;
-    
-    QValueList<uint> m_numList;
 };
 
 #endif

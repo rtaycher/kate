@@ -39,21 +39,53 @@ class KateProject : public QObject
     
     Kate::Project *project () { return m_project; };
     
-    Kate::ProjectPlugin *plugin () { return m_plugin; };
-    
+    /**
+     * Returns the project plugin of this project object
+     * @return ProjectPlugin project plugin of this project
+     */
+    Kate::ProjectPlugin *plugin () { return m_plugin; } const;
+   
+    /**
+     * Return the project type
+     * @return QString project type
+     */
     QString type () const;
     
+    /**
+     * Return the project name
+     * @return QString project name
+     */
     QString name () const;
     
+    /**
+     * Return the filename of the project file
+     * @return QString project filename
+     */
     QString fileName () const;
     
+    /**
+     * Return the project dir
+     * @return QString project dir
+     */
     QString dir () const;
     
+    /**
+     * Saves the project
+     * @return bool success
+     */
     bool save ();
     
-    QStringList sections () const;
+    /**
+     * top subdirs
+     * @return QStringList list with subdirs
+     */
+    QStringList subdirs () const;
     
-    QStringList files (const QString &section) const;
+    /**
+     * subdirs of given dir
+     * @return QStringList list with subdirs
+     */
+    QStringList subdirs (const QString &dir) const;
 
   private:
     class KateProjectManager *m_projectMan;
@@ -61,6 +93,7 @@ class KateProject : public QObject
     Kate::ProjectPlugin *m_plugin;
     KConfig *m_data;
     QString m_filename;
+    QString m_path;
 };
 
 #endif

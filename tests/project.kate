@@ -1,4 +1,16 @@
 [General]
 Type=Default
 Name=Test Project
-Sections=Sources,Includes,Docs,Misc
+Subdirs=testit,testmore
+
+[Dir /testit]
+Subdirs=evenmore, test
+
+[Dir /testmore]
+
+[Dir /testit/evenmore]
+Subdirs=hallo
+
+[Dir /testit/test]
+
+[Dir /testit/evenmore/hallo]

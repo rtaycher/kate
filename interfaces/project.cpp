@@ -92,14 +92,14 @@ bool Project::save ()
   return d->project->save ();
 }
 
-QStringList Project::sections () const
+QStringList Project::subdirs () const
 {
-  return d->project->sections ();
+  return d->project->subdirs ();
 }
 
-QStringList Project::files (const QString &section) const
+QStringList Project::subdirs (const QString &dir) const
 {
-  return d->project->files (section);
+  return d->project->subdirs (dir);
 }
 
 };

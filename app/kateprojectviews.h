@@ -18,48 +18,39 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef __KATE_PROJECTTREEVIEW_H__
-#define __KATE_PROJECTTREEVIEW_H__
+#ifndef __KATE_ProjectViews_H__
+#define __KATE_ProjectViews_H__
 
 #include "katemain.h"
 
 #include "../interfaces/project.h"
 
-#include <klistview.h>
+#include <qwidget.h>
+#include <qvaluelist.h>
+#include <qframe.h>
+#include <qwidgetstack.h>
 
-class KateProjectTreeView;
+class KateMainWindow;
 
-class KateProjectTreeViewItem : public KListViewItem
-{
-  public:
-    KateProjectTreeViewItem (KateProjectTreeView * parent, const QString &name, const QString &fullname, bool dir = false);
-    KateProjectTreeViewItem (KateProjectTreeViewItem * parent, const QString &name, const QString &fullname, bool dir = false);
-    ~KateProjectTreeViewItem ();
-    
-    bool isDir () { return m_dir; };
-    
-    QString name () { return m_name; };
-    
-    QString fullName () { return m_fullName; };
-    
-  private:
-    QString m_name;
-    QString m_fullName;
-    bool m_dir;
-};
-
-class KateProjectTreeView : public KListView
+class KateProjectViews : public QWidget
 {
   Q_OBJECT
 
   public:
-    KateProjectTreeView (Kate::Project *project, QWidget *parent);
-    ~KateProjectTreeView ();
+    KateProjectViews (class KateProjectManager *_projectManager, class KateMainWindow *_mainWindow, QWidget * parent = 0, const char * name = 0 );
+    ~KateProjectViews ();
     
-    void addDir (KateProjectTreeViewItem *parent, const QString &dir);
-    
+  private slots:
+    void projectChanged ();
+    void projectCreated (Kate::Project *project);
+    void projectDeleted (uint projectNumber);
+
   private:
-    Kate::Project *m_project;
+    QWidgetStack *m_stack;
+    class KateProjectManager *m_projectManager;
+    class KateMainWindow *m_mainWindow;
+
+    QValueList<uint> m_numList;
 };
 
 #endif

@@ -97,6 +97,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     KDockWidget *filelistDock;
     KDockWidget *projectlistDock;
     KDockWidget *fileselectorDock;
+    KDockWidget *projectviewsDock;
 
     KDockWidget *m_leftDock;
     KDockWidget *m_rightDock;
@@ -116,6 +117,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
 
     KateFileList *filelist;
     class KateProjectList *projectlist;
+    class KateProjectViews *projectviews;
     KateFileSelector *fileselector;
 
   private:

@@ -26,11 +26,11 @@
 #include "kateprojectmanager.h"
 #include "katemainwindow.h"
 #include "kactionselector.h"
-#include "kateprojecttreeview.h"
 
 #include <qapplication.h>
 #include <qlayout.h>
 #include <qstringlist.h>
+#include <qpainter.h>
 
 #include <kiconloader.h>
 #include <klocale.h>
@@ -63,14 +63,10 @@ KateProjectList::KateProjectList (KateProjectManager *_projectManager, KateMainW
   toolbar->setIconText( KToolBar::IconOnly );
   toolbar->setIconSize( 16 );
   toolbar->setEnableContextMenu( false );
-  
-  m_projectCombo = new KComboBox (this);
-  m_projectCombo->hide ();
-  lo->addWidget(m_projectCombo);
-  
-  m_stack = new QWidgetStack (this);
-  lo->addWidget(m_stack);
-  lo->setStretchFactor(m_stack, 2);
+    
+  m_projectList = new KListBox (this);
+  lo->addWidget(m_projectList);
+  lo->setStretchFactor(m_projectList, 2);
   
   // init of the combo box
   for (uint i = 0; i < m_projectManager->projects(); i++)
@@ -82,7 +78,8 @@ KateProjectList::KateProjectList (KateProjectManager *_projectManager, KateMainW
   connect(m_projectManager->projectManager(),SIGNAL(projectCreated(Kate::Project *)),this,SLOT(projectCreated(Kate::Project *)));
   connect(m_projectManager->projectManager(),SIGNAL(projectDeleted(uint)),this,SLOT(projectDeleted(uint)));
   connect(m_mainWindow->mainWindow(),SIGNAL(projectChanged()),this,SLOT(projectChanged()));
-  connect(m_projectCombo,SIGNAL(activated(int)),this,SLOT(projectActivated(int)));
+  connect(m_projectList,SIGNAL(highlighted(QListBoxItem *)),this,SLOT(slotActivateView(QListBoxItem *)));
+  connect(m_projectList,SIGNAL(selected(QListBoxItem *)), this,SLOT(slotActivateView(QListBoxItem *)));
 }
 
 KateProjectList::~KateProjectList ()
@@ -104,12 +101,9 @@ void KateProjectList::setupActions ()
   }
 }
 
-void KateProjectList::projectActivated (int num)
+void KateProjectList::slotActivateView( QListBoxItem *item )
 {
-  if (num >= m_numList.count())
-    return;
-  
-  uint id = m_numList[num];
+  uint id = ((KateProjectListItem *)item)->projectNumber();
   
   for (uint i = 0; i < m_projectManager->projects(); i++)
     if (m_projectManager->project(i)->projectNumber() == id)
@@ -126,12 +120,15 @@ void KateProjectList::projectChanged ()
   if (!(p = m_mainWindow->mainWindow()->activeProject()))
     return;
 
-  int n = m_numList.findIndex (p->projectNumber());
-  
-  if (n >= 0)
+  for (uint i = 0; i < m_projectList->count(); i++)
   {
-    m_projectCombo->setCurrentItem (n);
-    m_stack->raiseWidget (n);
+    if (((KateProjectListItem *) m_projectList->item (i)) ->projectNumber() == p->projectNumber())
+    {
+      m_projectList->setCurrentItem (i);
+      if ( !m_projectList->isSelected( m_projectList->item(i) ) )
+        m_projectList->setSelected( i, true );
+      break;
+    }
   }
 }
 
@@ -140,37 +137,97 @@ void KateProjectList::projectCreated (Kate::Project *project)
   if (!project)
     return;
 
-  m_numList.append (project->projectNumber());
-  m_projectCombo->insertItem (project->name());
-  
-  KateProjectTreeView *tree = new KateProjectTreeView (project, this);
-  m_stack->addWidget (tree);
-  m_stack->raiseWidget (tree);
-  
-  if (m_projectCombo->isHidden())
-    m_projectCombo->show ();
+  m_projectList->insertItem (new KateProjectListItem (project->projectNumber(), SmallIcon("null"), project->name()) );
 }
 
 void KateProjectList::projectDeleted (uint projectNumber)
 {
-  int n = m_numList.findIndex (projectNumber);
-  
-  if (n >= 0)
+  for (uint i = 0; i < m_projectList->count(); i++)
   {
-    m_numList.remove (projectNumber);
-    m_projectCombo->removeItem (n);
-    
-    QWidget *w = m_stack->widget (n);
-    m_stack->removeWidget (w);
-    delete w;
-    
-    if (m_numList.isEmpty())
+    if (((KateProjectListItem *) m_projectList->item (i)) ->projectNumber() == projectNumber)
     {
-      if (!m_projectCombo->isHidden())
-        m_projectCombo->hide ();
+      if (m_projectList->count() > 1)
+        m_projectList->removeItem( i );
+      else
+        m_projectList->clear();
     }
   }
 }
+
+KateProjectListItem::KateProjectListItem( uint projectNumber, const QPixmap &pix, const QString& text): QListBoxItem()
+{
+  _bold=false;
+  myProjectID = projectNumber;
+  setPixmap(pix);
+  setText( text );
+}
+
+KateProjectListItem::~KateProjectListItem()
+{
+}
+
+uint KateProjectListItem::projectNumber ()
+{
+  return myProjectID;
+}
+
+
+void KateProjectListItem::setText(const QString &text)
+{
+  QListBoxItem::setText(text);
+}
+
+void KateProjectListItem::setPixmap(const QPixmap &pixmap)
+{
+  pm=pixmap;
+}
+
+void KateProjectListItem::setBold(bool bold)
+{
+  bold=bold;
+}
+
+int KateProjectListItem::height( const QListBox* lb ) const
+{
+  int h;
+
+  if ( text().isEmpty() )
+    h = pm.height();
+  else
+    h = QMAX( pm.height(), lb->fontMetrics().lineSpacing() + 1 );
+
+  return QMAX( h, QApplication::globalStrut().height() );
+}
+
+int KateProjectListItem::width( const QListBox* lb ) const
+{
+  if ( text().isEmpty() )
+    return QMAX( pm.width() + 6, QApplication::globalStrut().width() );
+
+  return QMAX( pm.width() + lb->fontMetrics().width( text() ) + 6, QApplication::globalStrut().width() );
+}
+
+void KateProjectListItem::paint( QPainter *painter )
+{
+  painter->drawPixmap( 3, 0, pm );
+  QFont f=painter->font();
+  f.setBold(_bold);
+  painter->setFont(f);
+
+  if ( !text().isEmpty() )
+  {
+    QFontMetrics fm = painter->fontMetrics();
+    int yPos;                       // vertical text position
+
+    if ( pm.height() < fm.height() )
+      yPos = fm.ascent() + fm.leading()/2;
+    else
+      yPos = pm.height()/2 - fm.height()/2 + fm.ascent();
+
+    painter->drawText( pm.width() + 5, yPos, text() );
+  }
+}
+
 
 //
 // STUFF FOR THE TOOLBAR

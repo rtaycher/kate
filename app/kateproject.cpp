@@ -31,7 +31,17 @@ KateProject::KateProject (KateProjectManager *proMan, QObject *parent, const QSt
 {
   m_projectMan = proMan;
   m_filename = filename;
+  
+  int n = m_filename.findRev (QChar ('/'));
+
+  if (n > 0)
+    m_path = m_filename.left (n);
+  else
+    m_path = QString ("/");
+  
   m_data = new KConfig (filename);
+  
+  
   m_project = new Kate::Project (this);
   m_plugin = m_projectMan->createPlugin (m_project);
 }
@@ -55,13 +65,12 @@ QString KateProject::name () const
 
 QString KateProject::fileName () const
 {
-  return m_filename;
+  return m_path;
 }
 
 QString KateProject::dir () const
 {
-  m_data->setGroup("General");
-  return m_data->readEntry ("Dir", "");
+  return m_filename;
 }
 
 bool KateProject::save ()
@@ -71,17 +80,19 @@ bool KateProject::save ()
   return m_plugin->save ();
 }
 
-QStringList KateProject::sections () const
+QStringList KateProject::subdirs () const
 {
   m_data->setGroup("General");
-  return m_data->readListEntry ("Sections");
+  return m_data->readListEntry ("Subdirs");
 }
 
-QStringList KateProject::files (const QString &section) const
+QStringList KateProject::subdirs (const QString &dir) const
 {
-  if (!m_data->hasGroup(section))
+  QString groupname = QString ("Dir ") + dir;
+
+  if (!m_data->hasGroup(groupname))
     return QStringList ();
 
-  m_data->setGroup(section);
-  return m_data->readListEntry ("Files");
+  m_data->setGroup(groupname);
+  return m_data->readListEntry ("Subdirs");
 }

@@ -32,6 +32,7 @@
 #include "kateviewmanager.h"
 #include "kateapp.h"
 #include "kateprojectlist.h"
+#include "kateprojectviews.h"
 #include "katefileselector.h"
 #include "katefilelist.h"
 #include "katemailfilesdialog.h"
@@ -218,6 +219,9 @@ void KateMainWindow::setupMainWindow ()
 
   projectlist = new KateProjectList (m_projectManager, this, this/*filelistDock*/, "projectlist");
   projectlistDock=addToolViewWidget(KDockWidget::DockLeft,projectlist,SmallIcon("view_choose"), i18n("Projects"));
+  
+  projectviews = new KateProjectList (m_projectManager, this, this/*filelistDock*/, "projectviews");
+  projectviews=addToolViewWidget(KDockWidget::DockLeft,projectviews,SmallIcon("view_tree"), i18n("Project View"));
   
   fileselector = new KateFileSelector( this, m_viewManager, /*fileselectorDock*/ this, "operator");
   fileselectorDock=addToolViewWidget(KDockWidget::DockLeft,fileselector, SmallIcon("fileopen"), i18n("Selector"));

@@ -27,22 +27,55 @@
 
 #include <qheader.h>
 
+KateProjectTreeViewItem::KateProjectTreeViewItem (KateProjectTreeView * parent, const QString &name, const QString &fullname, bool dir)
+ : KListViewItem (parent, name)
+{
+  m_name = name;
+  m_fullName = fullname;
+  m_dir = dir;
+}
+
+KateProjectTreeViewItem::KateProjectTreeViewItem (KateProjectTreeViewItem * parent, const QString &name, const QString &fullname, bool dir)
+ : KListViewItem (parent, name)
+{
+  m_name = name;
+  m_fullName = fullname;
+  m_dir = dir;
+}
+    
+KateProjectTreeViewItem::~KateProjectTreeViewItem ()
+{
+}
+
 KateProjectTreeView::KateProjectTreeView (Kate::Project *project, QWidget *parent) : KListView (parent)
 {
   m_project = project;
   
+  setRootIsDecorated (true);
+  
   header()->setStretchEnabled (true);
   addColumn(i18n("Project Tree"));
 
-  QStringList sections = project->sections ();
+  QStringList topdirs = m_project->subdirs ();
   
-  KListViewItem *last = 0;
-  for (uint z=0; z < sections.count(); z++)
+  for (uint z=0; z < topdirs.count(); z++)
   {
-    last = new KListViewItem (this, sections[z]);
+    KateProjectTreeViewItem *item = new KateProjectTreeViewItem (this, topdirs[z], QString ("/") + topdirs[z], true);
+    addDir (item, QString ("/") + topdirs[z]);
   }
 }
 
 KateProjectTreeView::~KateProjectTreeView ()
 {
+}
+
+void KateProjectTreeView::addDir (KateProjectTreeViewItem *parent, const QString &dir)
+{
+  QStringList dirs = m_project->subdirs (dir);
+  
+  for (uint z=0; z < dirs.count(); z++)
+  {
+    KateProjectTreeViewItem *item = new KateProjectTreeViewItem (parent, dirs[z], dir + QString ("/") + dirs[z], true);
+    addDir (item, dir + QString ("/") + dirs[z]);
+  }
 }
