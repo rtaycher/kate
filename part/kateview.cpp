@@ -323,7 +323,7 @@ void KateViewInternal::wordRight(VConfig &c) {
     while (cursor.col < len && !highlight->isInWord(textLine->getChar(cursor.col)))
       cursor.col++;
   } else {
-    if (cursor.line < myDoc->lastLine()) {
+    if (cursor.line < (int) myDoc->lastLine()) {
       cursor.line++;
       textLine = myDoc->getTextLine(cursor.line);
       cursor.col = 0;
@@ -367,7 +367,7 @@ void KateViewInternal::cursorUp(VConfig &c) {
 void KateViewInternal::cursorDown(VConfig &c) {
   int x;
 
-  if (cursor.line == myDoc->lastLine()) {
+  if (cursor.line == (int)myDoc->lastLine()) {
     x = myDoc->textLength(cursor.line);
     if (cursor.col >= x) return;
     cursor.col = x;
@@ -394,7 +394,7 @@ void KateViewInternal::scrollUp(VConfig &c) {
 
 void KateViewInternal::scrollDown(VConfig &c) {
 
-  if (endLine >= myDoc->lastLine()) return;
+  if (endLine >= (int)myDoc->lastLine()) return;
 
   newYPos = yPos + myDoc->viewFont.fontHeight;
   if (cursor.line == (yPos + myDoc->viewFont.fontHeight -1)/myDoc->viewFont.fontHeight) {
@@ -416,7 +416,7 @@ void KateViewInternal::bottomOfView(VConfig &c) {
 
   cursor.line = (yPos + height())/myDoc->viewFont.fontHeight -1;
   if (cursor.line < 0) cursor.line = 0;
-  if (cursor.line > myDoc->lastLine()) cursor.line = myDoc->lastLine();
+  if (cursor.line > (int)myDoc->lastLine()) cursor.line = myDoc->lastLine();
   cursor.col = 0;
   cOldXPos = cXPos = 0;
   changeState(c);
@@ -441,8 +441,8 @@ void KateViewInternal::pageDown(VConfig &c) {
 
   int lines = (endLine - startLine - 1);
 
-  if (!(c.flags & KateDocument::cfPageUDMovesCursor) && endLine < myDoc->lastLine()) {
-    if (lines < myDoc->lastLine() - endLine)
+  if (!(c.flags & KateDocument::cfPageUDMovesCursor) && endLine < (int)myDoc->lastLine()) {
+    if (lines < (int)myDoc->lastLine() - endLine)
       newYPos = yPos + lines * myDoc->viewFont.fontHeight;
     else
       newYPos = yPos + (myDoc->lastLine() - endLine) * myDoc->viewFont.fontHeight;
@@ -1356,7 +1356,7 @@ void KateView::initCodeCompletionImplementation()
   myCC_impl=new CodeCompletion_Impl(this);
   connect(myCC_impl,SIGNAL(completionAborted()),this,SIGNAL(completionAborted()));
   connect(myCC_impl,SIGNAL(completionDone()),this,SIGNAL(completionDone()));
-  connect(myCC_impl,SIGNAL(completionHided()),this,SIGNAL(completionHided()));
+  connect(myCC_impl,SIGNAL(argHintHided()),this,SIGNAL(argHintHided()));
 }
 
 QPoint KateView::cursorCoordinates()
@@ -1371,7 +1371,6 @@ void KateView::copy () const
 
 void KateView::setupActions()
 {
-    kdDebug() << "KateView::setupActions()" << endl; // delete me -- ellis
     KStdAction::close( this, SLOT(flush()), actionCollection(), "file_close" );
 
     KStdAction::save(this, SLOT(save()), actionCollection());
@@ -1392,7 +1391,7 @@ void KateView::setupActions()
       KStdAction::findPrev(this, SLOT(findPrev()), myDoc->actionCollection(), "find_prev");
       KStdAction::gotoLine(this, SLOT(gotoLine()), myDoc->actionCollection(), "goto_line" );
       new KAction(i18n("&Configure Editor..."), 0, myDoc, SLOT(configDialog()),myDoc->actionCollection(), "set_confdlg");
-			setHighlight = new KateViewHighlightAction(this,i18n("&Highlight Mode"),myDoc->actionCollection(),"set_highlight");
+      setHighlight = new KateViewHighlightAction(this,i18n("&Highlight Mode"),myDoc->actionCollection(),"set_highlight");
       KStdAction::selectAll(myDoc, SLOT(selectAll()), myDoc->actionCollection(), "select_all");
       new KAction(i18n("&Deselect All"), 0, myDoc, SLOT(clearSelection ()),
                 myDoc->actionCollection(), "unselect_all");
@@ -1770,7 +1769,7 @@ QString KateView::currentWord() {
 QString KateView::word(int x, int y) {
   KateTextCursor cursor;
   cursor.line = (myViewInternal->yPos + y)/myDoc->viewFont.fontHeight;
-  if (cursor.line < 0 || cursor.line > myDoc->lastLine()) return QString();
+  if (cursor.line < 0 || cursor.line > (int)myDoc->lastLine()) return QString();
   cursor.col = myDoc->textPos(myDoc->getTextLine(cursor.line), myViewInternal->xPos-2 + x);
   return myDoc->getWord(cursor);
 }
@@ -2014,7 +2013,7 @@ void KateView::gotoLineNumber( int linenumber )
   myDoc->updateViews(this); //uptade all other views except this one
  }
 
-void KateView::initSearch(SConfig &s, int flags) {
+void KateView::initSearch(SConfig &, int flags) {
 
   myDoc->s.flags = flags;
   myDoc->s.setPattern(myDoc->searchForList.first());
@@ -2052,7 +2051,7 @@ void KateView::initSearch(SConfig &s, int flags) {
   myDoc->s.startCursor = myDoc->s.cursor;
 }
 
-void KateView::continueSearch(SConfig &s) {
+void KateView::continueSearch(SConfig &) {
 
   if (!(myDoc->s.flags & KateDocument::sfBackward)) {
     myDoc->s.cursor.col = 0;

@@ -360,7 +360,7 @@ void HlEditDialog::initItemOptions(QVBox *co)
         (void) new QLabel(i18n("Context switch:"),tmp);
         ItemContext = new QComboBox(tmp);
         co->setSpacing(15);
-        QPushButton *delItem=new QPushButton(i18n("Delete this item"),co);
+        new QPushButton(i18n("Delete this item"),co);
 
 	/* init translation lists */
 	insertTranslationList("DetectChar","DetectChar",1);
@@ -443,7 +443,8 @@ QListViewItem *HlEditDialog::addContextItem(QListViewItem *_parent,QListViewItem
 		  chr1= (HlManager::self()->syntax->groupItemData(data,QString("char1")).latin1())[0];
 		else
                   chr1=0;
-		bool insensitive=(HlManager::self()->syntax->groupItemData(data,QString("insensitive"))==QString("TRUE"));
+    // not used at the mom, fix warning
+		//bool insensitive=(HlManager::self()->syntax->groupItemData(data,QString("insensitive"))==QString("TRUE"));
                 QString param("");
                 if ((dataname=="keyword") || (dataname=="dataType")) param=dataname;
                   else if (dataname=="DetectChar") param=chr;
