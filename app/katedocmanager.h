@@ -56,6 +56,8 @@ class KateDocManager : public QObject
   public:
     KateDocManager (QObject *parent);
     ~KateDocManager ();
+    
+    static KateDocManager *self ();
 
     Kate::DocumentManager *documentManager () { return m_documentManager; };
 

@@ -273,7 +273,7 @@ void KateViewSpace::restoreConfig ( KateViewSpaceContainer *viewMan, KConfig* co
 
   if ( !fn.isEmpty() )
   {
-    Kate::Document *doc = viewMan->m_docManager->findDocumentByUrl (KURL(fn));
+    Kate::Document *doc = KateDocManager::self()->findDocumentByUrl (KURL(fn));
 
     if (doc)
     {
@@ -291,7 +291,7 @@ void KateViewSpace::restoreConfig ( KateViewSpaceContainer *viewMan, KConfig* co
   }
 
   if (mViewList.isEmpty())
-    viewMan->createView (viewMan->m_docManager->document(0));
+    viewMan->createView (KateDocManager::self()->document(0));
 
   m_group = group; // used for restroing view configs later
 }
@@ -362,8 +362,8 @@ void KateVSStatusBar::setStatus( int r, int c, int ovr, bool block, int mod, con
 
 void KateVSStatusBar::updateMod( bool mod )
 {
-  const KateDocumentInfo *info = m_viewSpace->m_viewManager->m_docManager->
-      documentInfo ( m_viewSpace->currentView()->getDoc() );
+  const KateDocumentInfo *info
+      = KateDocManager::self()->documentInfo ( m_viewSpace->currentView()->getDoc() );
 
   m_modifiedLabel->setPixmap(
       mod ?
@@ -387,17 +387,18 @@ void KateVSStatusBar::showMenu()
 
 bool KateVSStatusBar::eventFilter(QObject*,QEvent *e)
 {
-   if (e->type()==QEvent::MouseButtonPress)
-   {
-      if ( ((KateViewSpace*)parentWidget())->currentView() )
-        ((KateViewSpace*)parentWidget())->currentView()->setFocus();
+  if (e->type()==QEvent::MouseButtonPress)
+  {
+    if ( m_viewSpace->currentView() )
+      m_viewSpace->currentView()->setFocus();
 
-      if ( ((QMouseEvent*)e)->button()==RightButton)
-         showMenu();
+    if ( ((QMouseEvent*)e)->button()==RightButton)
+      showMenu();
 
-      return true;
-   }
-   return false;
+    return true;
+  }
+  
+  return false;
 }
 //END KateVSStatusBar
 // kate: space-indent on; indent-width 2; replace-tabs on;

@@ -39,12 +39,12 @@ class PrivateApplication
 
     ~PrivateApplication ()
     {
-      
-    }          
-    
-    KateApp *app; 
+
+    }
+
+    KateApp *app;
   };
-            
+
 Application::Application (void *application) : QObject ((KateApp *) application)
 {
   d = new PrivateApplication;
@@ -75,17 +75,17 @@ InitPluginManager *Application::initPluginManager ()
 {
   return d->app->initPluginManager ();
 }
-    
+
 MainWindow *Application::activeMainWindow ()
 {
   return d->app->activeMainWindow ();
 }
-    
+
 uint Application::mainWindows ()
 {
   return d->app->mainWindows ();
 }
- 
+
 MainWindow *Application::mainWindow (uint n)
 {
   return d->app->mainWindow (n);
@@ -93,7 +93,7 @@ MainWindow *Application::mainWindow (uint n)
 
 Application *application ()
 {
-  return ((KateApp *)kapp)->application ();
+  return KateApp::self()->application ();
 }
 
 }

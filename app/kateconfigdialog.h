@@ -55,9 +55,6 @@ class KateConfigDialog : public KDialogBase
     void slotChanged();
 
   private:
-    KateDocManager *docManager;
-    KateViewManager *viewManager;
-    KatePluginManager *pluginManager;
     KateMainWindow *mainWindow;
 
     Kate::View* v;

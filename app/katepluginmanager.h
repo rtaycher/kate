@@ -47,6 +47,8 @@ class KatePluginManager : public QObject
   public:
     KatePluginManager(QObject *parent);
     ~KatePluginManager();
+    
+    static KatePluginManager *self();
 
     Kate::PluginManager *pluginManager () const { return m_pluginManager; };
 

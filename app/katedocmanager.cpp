@@ -93,6 +93,11 @@ KateDocManager::~KateDocManager ()
   delete m_metaInfos;
 }
 
+KateDocManager *KateDocManager::self ()
+{
+  return KateApp::self()->kateDocumentManager ();
+}
+
 Kate::Document *KateDocManager::createDoc ()
 {
   KTextEditor::Document *doc = (KTextEditor::Document *) m_factory->createPart (0, "", this, "", "KTextEditor::Document");

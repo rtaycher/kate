@@ -53,6 +53,11 @@ KateProjectManager::~KateProjectManager()
   m_pluginList.clear();
 }
 
+KateProjectManager *KateProjectManager::self ()
+{
+  return KateApp::self()->kateProjectManager ();
+}
+
 void KateProjectManager::setupPluginList ()
 {
   QValueList<KService::Ptr> traderList= KTrader::self()->query("Kate/ProjectPlugin");
@@ -203,7 +208,7 @@ ProjectInfo *KateProjectManager::newProjectDialog (QWidget *parent)
 {
   ProjectInfo *info = 0;
 
-  KateProjectDialogNew* dlg = new KateProjectDialogNew (parent, this);
+  KateProjectDialogNew* dlg = new KateProjectDialogNew (parent);
 
   int n = dlg->exec();
 
@@ -284,10 +289,9 @@ void KateProjectManager::restoreProjectList (class KConfig *config)
 // "New Project" Dialog
 //
 
-KateProjectDialogNew::KateProjectDialogNew (QWidget *parent, KateProjectManager *projectMan) : KDialogBase (parent, "project_new", true, i18n ("New Project"), KDialogBase::Ok|KDialogBase::Cancel)
+KateProjectDialogNew::KateProjectDialogNew (QWidget *parent)
+ : KDialogBase (parent, "project_new", true, i18n ("New Project"), KDialogBase::Ok|KDialogBase::Cancel)
 {
-  m_projectMan = projectMan;
-
   QWidget *page = new QWidget( this );
   setMainWidget(page);
 
@@ -297,7 +301,7 @@ KateProjectDialogNew::KateProjectDialogNew (QWidget *parent, KateProjectManager 
   m_typeCombo = new KComboBox (page);
   grid->addWidget (m_typeCombo, 0, 1);
 
-  m_typeCombo->insertStringList (m_projectMan->pluginStringList ());
+  m_typeCombo->insertStringList (KateProjectManager::self()->pluginStringList ());
 
   grid->addWidget (new QLabel (i18n("Project name:"), page), 1, 0);
   m_nameEdit = new KLineEdit (page);

@@ -40,7 +40,7 @@ class KateViewSpaceContainer: public QWidget
 
   public:
     KateViewSpaceContainer (QWidget *parent, KateViewManager *viewManager,
-                            KateDocManager *docManager, KateMainWindow* mainWindow);
+                            KateMainWindow* mainWindow);
 
     ~KateViewSpaceContainer ();
 
@@ -146,7 +146,6 @@ class KateViewSpaceContainer: public QWidget
     void viewChanged ();
 
   private:
-    KateDocManager *m_docManager;
     KateViewManager *m_viewManager;
     QPtrList<KateViewSpace> m_viewSpaceList;
     QPtrList<Kate::View> m_viewList;

@@ -33,13 +33,12 @@
 #include <klocale.h>
 
 
-KateProjectViews::KateProjectViews (KateProjectManager *_projectManager, KateMainWindow *_mainWindow, QWidget * parent, const char * name ):  QWidget (parent, name)
+KateProjectViews::KateProjectViews (KateMainWindow *_mainWindow, QWidget * parent, const char * name ):  QWidget (parent, name)
 {
   setFocusPolicy ((QWidget::FocusPolicy)0);
 
   QVBoxLayout* lo = new QVBoxLayout(this);
 
-  m_projectManager = _projectManager;
   m_mainWindow = _mainWindow;
 
   m_stack = new QWidgetStack (this);
@@ -47,14 +46,14 @@ KateProjectViews::KateProjectViews (KateProjectManager *_projectManager, KateMai
   lo->setStretchFactor(m_stack, 2);
 
   // init of the combo box
-  for (uint i = 0; i < m_projectManager->projects(); i++)
-    projectCreated (m_projectManager->project(i));
+  for (uint i = 0; i < KateProjectManager::self()->projects(); i++)
+    projectCreated (KateProjectManager::self()->project(i));
 
   projectChanged ();
 
   // connecting
-  connect(m_projectManager->projectManager(),SIGNAL(projectCreated(Kate::Project *)),this,SLOT(projectCreated(Kate::Project *)));
-  connect(m_projectManager->projectManager(),SIGNAL(projectDeleted(uint)),this,SLOT(projectDeleted(uint)));
+  connect(KateProjectManager::self()->projectManager(),SIGNAL(projectCreated(Kate::Project *)),this,SLOT(projectCreated(Kate::Project *)));
+  connect(KateProjectManager::self()->projectManager(),SIGNAL(projectDeleted(uint)),this,SLOT(projectDeleted(uint)));
   connect(m_mainWindow->mainWindow(),SIGNAL(projectChanged()),this,SLOT(projectChanged()));
 }
 

@@ -57,9 +57,8 @@
 //END Includes
 
 KateViewSpaceContainer::KateViewSpaceContainer (QWidget *parent, KateViewManager *viewManager,
-                                                KateDocManager *docManager, KateMainWindow *mainWindow)
+                                                KateMainWindow *mainWindow)
  : QWidget  (parent)
- , m_docManager (docManager) 
  , m_viewManager(viewManager)
  , m_grid (new QGridLayout( this, 1, 1 ))
  , m_blockViewCreationAndActivation (false)
@@ -77,10 +76,10 @@ KateViewSpaceContainer::KateViewSpaceContainer (QWidget *parent, KateViewManager
   m_grid->addWidget( vs, 0, 0);
   m_viewSpaceList.append(vs);
   connect( this, SIGNAL(viewChanged()), this, SLOT(slotViewChanged()) );
-  connect(m_docManager, SIGNAL(initialDocumentReplaced()), this, SIGNAL(viewChanged()));
+  connect(KateDocManager::self(), SIGNAL(initialDocumentReplaced()), this, SIGNAL(viewChanged()));
 
-  connect(m_docManager,SIGNAL(documentCreated(Kate::Document *)),this,SLOT(documentCreated(Kate::Document *)));
-  connect(m_docManager,SIGNAL(documentDeleted(uint)),this,SLOT(documentDeleted(uint)));
+  connect(KateDocManager::self(),SIGNAL(documentCreated(Kate::Document *)),this,SLOT(documentCreated(Kate::Document *)));
+  connect(KateDocManager::self(),SIGNAL(documentDeleted(uint)),this,SLOT(documentDeleted(uint)));
 }
 
 KateViewSpaceContainer::~KateViewSpaceContainer ()
@@ -103,8 +102,8 @@ void KateViewSpaceContainer::documentDeleted (uint docNumber)
   
   // just for the case we close a document out of many and this was the active one
   // if all docs are closed, this will be handled by the documentCreated
-  if (!activeView() && (m_docManager->documents() > 0))
-    createView (m_docManager->document(m_docManager->documents()-1));
+  if (!activeView() && (KateDocManager::self()->documents() > 0))
+    createView (KateDocManager::self()->document(KateDocManager::self()->documents()-1));
 }
 
 bool KateViewSpaceContainer::createView ( Kate::Document *doc )
@@ -113,7 +112,7 @@ bool KateViewSpaceContainer::createView ( Kate::Document *doc )
 
   // create doc
   if (!doc)
-    doc = m_docManager->createDoc ();
+    doc = KateDocManager::self()->createDoc ();
 
   // create view
   Kate::View *view = (Kate::View *) doc->createView (this, 0L);
@@ -298,7 +297,7 @@ void KateViewSpaceContainer::activateView ( Kate::View *view )
     emit viewChanged ();
   }
 
-  m_docManager->setActiveDocument(view->getDoc());
+  KateDocManager::self()->setActiveDocument(view->getDoc());
 }
 
 void KateViewSpaceContainer::activateView( uint documentNumber )
@@ -318,7 +317,7 @@ void KateViewSpaceContainer::activateView( uint documentNumber )
       }
     }
 
-    Kate::Document *d = (Kate::Document *)m_docManager->documentWithID(documentNumber);
+    Kate::Document *d = (Kate::Document *)KateDocManager::self()->documentWithID(documentNumber);
     createView (d);
   }
 }

@@ -43,7 +43,7 @@ class KateViewManager : public QObject
   Q_OBJECT
 
   public:
-    KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWidget, KateDocManager *docManager);
+    KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWidget);
     ~KateViewManager ();
 
     Kate::ViewManager *viewManager () const { return m_viewManager; };
@@ -146,7 +146,6 @@ class KateViewManager : public QObject
     QPtrList<KateViewSpaceContainer> m_viewSpaceContainerList;
     KateViewSpaceContainer *m_currentContainer;
 
-    KateDocManager *m_docManager;
     KateMainWindow *m_mainWindow;
     KMDI::TabWidget *m_tabWidget;
     bool m_init;

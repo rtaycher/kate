@@ -60,12 +60,12 @@ KateMailDialog::KateMailDialog( QWidget *parent, KateMainWindow  *mainwin )
   list = new KListView( mw );
   list->addColumn( i18n("Name") );
   list->addColumn( i18n("URL") );
-  Kate::Document *currentDoc = mainWindow->m_viewManager->activeView()->getDoc();
-  uint n = mainWindow->m_docManager->documents();
+  Kate::Document *currentDoc = mainWindow->kateViewManager()->activeView()->getDoc();
+  uint n = KateDocManager::self()->documents();
   uint i = 0;
   QCheckListItem *item;
   while ( i < n ) {
-    Kate::Document *doc = mainWindow->m_docManager->document( i );
+    Kate::Document *doc = KateDocManager::self()->document( i );
     if ( doc ) {
       item = new KateDocCheckItem( list, doc->docName(), doc );
       item->setText( 1, doc->url().prettyURL() );

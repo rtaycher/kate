@@ -30,10 +30,14 @@
 #include <qtooltip.h>
 #include <qcolor.h>
 
+class KateMainWindow;
+
+class KAction;
+
 class KateFileListItem : public QListBoxItem
 {
   public:
-    KateFileListItem( KateDocManager *_docManager, Kate::Document *doc, uint documentNumber, const QString& text);
+    KateFileListItem(Kate::Document *doc, uint documentNumber, const QString& text);
     ~KateFileListItem();
 
     uint documentNumber ();
@@ -50,7 +54,6 @@ class KateFileListItem : public QListBoxItem
   private:
     uint myDocID;
     Kate::Document *doc;
-    KateDocManager *docManager;
 };
 
 class KateFileList : public KListBox
@@ -58,7 +61,7 @@ class KateFileList : public KListBox
   Q_OBJECT
 
   public:
-    KateFileList (KateDocManager *_docManager, KateViewManager *_viewManager, QWidget * parent = 0, const char * name = 0 );
+    KateFileList (KateMainWindow *main, KateViewManager *_viewManager, QWidget * parent = 0, const char * name = 0 );
     ~KateFileList ();
 
     /** called by KFLToolTip::maybeTip() to get a string
@@ -77,15 +80,22 @@ class KateFileList : public KListBox
       sortByName = 1
     };
     
+  private:
+    void setupActions ();
+    void updateActions ();
+    
   public slots:
     void slotNextDocument();
     void slotPrevDocument();
 
   private:
-    KateDocManager *docManager;
+    KateMainWindow *m_main;
     KateViewManager *viewManager;
     int m_sort;
     bool notify;
+    
+    KAction* windowNext;
+    KAction* windowPrev;
 
   private slots:
     void slotDocumentCreated (Kate::Document *doc);

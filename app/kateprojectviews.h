@@ -37,7 +37,7 @@ class KateProjectViews : public QWidget
   Q_OBJECT
 
   public:
-    KateProjectViews (class KateProjectManager *_projectManager, class KateMainWindow *_mainWindow, QWidget * parent = 0, const char * name = 0 );
+    KateProjectViews (class KateMainWindow *_mainWindow, QWidget * parent = 0, const char * name = 0 );
     ~KateProjectViews ();
     
   private slots:
@@ -47,7 +47,6 @@ class KateProjectViews : public QWidget
 
   private:
     QWidgetStack *m_stack;
-    class KateProjectManager *m_projectManager;
     class KateMainWindow *m_mainWindow;
 
     QMap<uint, QWidget*> m_wMap;

@@ -66,6 +66,8 @@ class KateProjectManager : public QObject
   public:
     KateProjectManager(QObject *parent);
     ~KateProjectManager();
+    
+    static KateProjectManager *self ();
 
     Kate::ProjectManager *projectManager ()const { return m_projectManager; };
 
@@ -112,7 +114,7 @@ class KateProjectDialogNew : public KDialogBase
 {
     Q_OBJECT
   public:
-    KateProjectDialogNew (QWidget *parent, KateProjectManager *projectMan);
+    KateProjectDialogNew (QWidget *parent);
     ~KateProjectDialogNew ();
 
     int exec();
@@ -121,8 +123,6 @@ private slots:
     void slotTextChanged();
 
   private:
-    KateProjectManager *m_projectMan;
-
     KComboBox *m_typeCombo;
     KLineEdit *m_nameEdit;
     KURLRequester *m_urlRequester;

@@ -65,7 +65,7 @@ class KateProjectList : public QWidget
   Q_OBJECT
 
   public:
-    KateProjectList (class KateProjectManager *_projectManager, class KateMainWindow *_mainWindow, QWidget * parent = 0, const char * name = 0 );
+    KateProjectList (class KateMainWindow *_mainWindow, QWidget * parent = 0, const char * name = 0 );
     ~KateProjectList ();
 
     void setupActions();
@@ -78,7 +78,6 @@ class KateProjectList : public QWidget
 
   private:
     KComboBox *m_projectList;
-    class KateProjectManager *m_projectManager;
     class KateMainWindow *m_mainWindow;
     KateProjectListToolBar *toolbar;
     KActionCollection *mActionCollection;

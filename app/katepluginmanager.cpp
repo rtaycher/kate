@@ -50,6 +50,11 @@ KatePluginManager::~KatePluginManager()
   m_pluginList.clear();
 }
 
+KatePluginManager *KatePluginManager::self()
+{
+  return KateApp::self()->katePluginManager ();
+}
+
 void KatePluginManager::setupPluginList ()
 {
   QValueList<KService::Ptr> traderList= KTrader::self()->query("Kate/Plugin", "(not ('Kate/ProjectPlugin' in ServiceTypes)) and (not ('Kate/InitPlugin' in ServiceTypes))");

@@ -37,29 +37,31 @@
 #include <kdebug.h>
 #include <kapplication.h>
 
-KateFileList::KateFileList (KateDocManager *_docManager,
+KateFileList::KateFileList (KateMainWindow *main,
                             KateViewManager *_viewManager,
                             QWidget * parent, const char * name )
     :  KListBox (parent, name)
     , m_sort( KateFileList::sortByID )
 {
+  m_main = main;
+  
   setFocusPolicy ((QWidget::FocusPolicy)0);
 
-  docManager = _docManager;
   viewManager = _viewManager;
   tooltip = new KFLToolTip( this );
+  
+  setupActions ();
 
-  for (uint i = 0; i < docManager->documents(); i++)
+  for (uint i = 0; i < KateDocManager::self()->documents(); i++)
   {
-    slotDocumentCreated (docManager->document(i));
-    slotModChanged (docManager->document(i));
+    slotDocumentCreated (KateDocManager::self()->document(i));
+    slotModChanged (KateDocManager::self()->document(i));
   }
 
-  connect(docManager,SIGNAL(documentCreated(Kate::Document *)),this,SLOT(slotDocumentCreated(Kate::Document *)));
-  connect(docManager,SIGNAL(documentDeleted(uint)),this,SLOT(slotDocumentDeleted(uint)));
+  connect(KateDocManager::self(),SIGNAL(documentCreated(Kate::Document *)),this,SLOT(slotDocumentCreated(Kate::Document *)));
+  connect(KateDocManager::self(),SIGNAL(documentDeleted(uint)),this,SLOT(slotDocumentDeleted(uint)));
 
   // don't Honour KDE single/double click setting, this files are already open, no need for hassle of considering double-click
-  //connect(this,SIGNAL(executed(QListBoxItem *)),this,SLOT(slotActivateView(QListBoxItem *)));
   connect(this,SIGNAL(highlighted(QListBoxItem *)),this,SLOT(slotActivateView(QListBoxItem *)));
 
   connect(viewManager,SIGNAL(viewChanged()), this,SLOT(slotViewChanged()));
@@ -70,6 +72,18 @@ KateFileList::KateFileList (KateDocManager *_docManager,
 KateFileList::~KateFileList ()
 {
   delete tooltip;
+}
+
+void KateFileList::setupActions ()
+{
+  windowNext = KStdAction::back(this, SLOT(slotPrevDocument()), m_main->actionCollection());
+  windowPrev = KStdAction::forward(this, SLOT(slotNextDocument()), m_main->actionCollection());
+}
+
+void KateFileList::updateActions ()
+{
+  windowNext->setEnabled(KateDocManager::self()->documents()  > 1);
+  windowPrev->setEnabled(KateDocManager::self()->documents()  > 1);
 }
 
 void KateFileList::keyPressEvent(QKeyEvent *e) {
@@ -113,12 +127,13 @@ void KateFileList::slotPrevDocument()
 
 void KateFileList::slotDocumentCreated (Kate::Document *doc)
 {
-  insertItem (new KateFileListItem (docManager, doc, doc->documentNumber(), doc->docName()) );
+  insertItem (new KateFileListItem (doc, doc->documentNumber(), doc->docName()) );
   connect(doc,SIGNAL(modStateChanged(Kate::Document *)),this,SLOT(slotModChanged(Kate::Document *)));
   connect(doc,SIGNAL(nameChanged(Kate::Document *)),this,SLOT(slotNameChanged(Kate::Document *)));
   connect(doc,SIGNAL(modifiedOnDisc(Kate::Document *, bool, unsigned char)),this,SLOT(slotModifiedOnDisc(Kate::Document *, bool, unsigned char)));
 
   updateSort ();
+  updateActions ();
 }
 
 void KateFileList::slotDocumentDeleted (uint documentNumber)
@@ -133,6 +148,8 @@ void KateFileList::slotDocumentDeleted (uint documentNumber)
         clear();
     }
   }
+  
+  updateActions ();
 }
 
 void KateFileList::slotActivateView( QListBoxItem *item )
@@ -248,12 +265,12 @@ void KateFileList::tip( const QPoint &p, QRect &r, QString &str )
   if ( !i || !r.isValid() )
     return;
 
-  Kate::Document *doc = docManager->documentWithID(i->documentNumber());
+  Kate::Document *doc = KateDocManager::self()->documentWithID(i->documentNumber());
 
   if (!doc)
     return;
 
-  const KateDocumentInfo *info = docManager->documentInfo(doc);
+  const KateDocumentInfo *info = KateDocManager::self()->documentInfo(doc);
 
   if (info && info->modifiedOnDisc)
   {
@@ -268,11 +285,10 @@ void KateFileList::tip( const QPoint &p, QRect &r, QString &str )
   str += doc->url().prettyURL();
 }
 
-KateFileListItem::KateFileListItem( KateDocManager *_docManager, Kate::Document *doc, uint documentNumber, const QString& text): QListBoxItem()
+KateFileListItem::KateFileListItem( Kate::Document *doc, uint documentNumber, const QString& text): QListBoxItem()
 {
   this->doc = doc;
   myDocID = documentNumber;
-  docManager = _docManager;
   setText( text );
 }
 
@@ -317,7 +333,7 @@ void KateFileListItem::paint( QPainter *painter )
   static QPixmap discPm = SmallIcon("modonhd");
   static QPixmap modmodPm = SmallIcon("modmod");
 
-  const KateDocumentInfo *info = docManager->documentInfo (doc);
+  const KateDocumentInfo *info = KateDocManager::self()->documentInfo (doc);
 
   if (info && info->modifiedOnDisc)
     painter->drawPixmap( 3, 0, doc->isModified() ? modmodPm : discPm );

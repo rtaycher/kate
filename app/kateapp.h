@@ -42,6 +42,8 @@ class KateApp : public KUniqueApplication
   public:
     KateApp (bool forcedNewProcess, bool oldState);
     ~KateApp ();
+    
+    inline static KateApp *self () { return (KateApp *) kapp; }
 
     Kate::Application *application () { return m_application; };
 
@@ -50,7 +52,8 @@ class KateApp : public KUniqueApplication
 
     KatePluginManager *katePluginManager() { return m_pluginManager; };
     KateDocManager *kateDocumentManager () { return m_docManager; };
-
+    KateProjectManager *kateProjectManager () { return m_projectManager; };
+    
     class KateMainWindow *newMainWindow ();
     class KateMainWindow *newMainWindow (bool visible);
     

@@ -46,118 +46,88 @@ class KFileItem;
 class KRecentFilesAction;
 class DCOPObject;
 
+class KateExternalToolsMenuAction;
+
 class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
 {
   Q_OBJECT
 
   friend class KateConfigDialog;
-  friend class KateApp;
   friend class KateViewManager;
+  
   public:
-    KateMainWindow ( KateDocManager *_docManager, KatePluginManager *_pluginManager,
-                     KateProjectManager *projectMan );
+    KateMainWindow ();
     ~KateMainWindow();
 
+  /**
+   * Accessor methodes for interface and child objects
+   */
+  public:
     Kate::MainWindow *mainWindow () { return m_mainWindow; }
+    Kate::ViewManager *viewManager () {return m_viewManager->viewManager(); }
     Kate::ToolViewManager *toolViewManager () { return m_toolViewManager; }
 
+    KateViewManager *kateViewManager () { return m_viewManager; }
+
+    DCOPObject *dcopObject () { return m_dcop; }
+
+  /**
+   * ToolView Managment, used to create/access/delete toolviews
+   */
+  public:
+    KMDI::ToolViewAccessor *addToolView(KDockWidget::DockPosition position, QWidget *widget, const QPixmap &icon, const QString &sname, const QString &tabToolTip = 0, const QString &tabCaption = 0);
+
+    bool removeToolView(QWidget *);
+    bool removeToolView(KMDI::ToolViewAccessor *);
+
+    bool showToolView(QWidget *);
+    bool showToolView(KMDI::ToolViewAccessor *);
+
+    bool hideToolView(QWidget *);
+    bool hideToolView(KMDI::ToolViewAccessor *);
+
+  /**
+   * Project section 
+   */
+  public:
+    /**
+     * current active project
+     * @return active project
+     */ 
     Kate::Project *activeProject () { return m_project; }
 
     /**
      * Creates a new project file at give url of given type + opens it
      * @param type projecttype
-     * @param filename name of the new project file
-     * @return Project new created project object
+     * @param name project name
+     * @param filename filename of the new project file
+     * @return new created project object
      */
-     Kate::Project *createProject (const QString &type, const QString &name, const QString &filename);
+    Kate::Project *createProject (const QString &type, const QString &name, const QString &filename);
 
     /**
      * @param filename name of the project file
-     * @return Project opened project
+     * @return opened project
      */
     Kate::Project *openProject (const QString &filename);
 
+    /**
+     * activate given project
+     * @param project project to activate
+     */
     void activateProject (Kate::Project *project);
 
+  /**
+   * various methodes to get some little info out of this
+   */
+  public:
     /** Returns the URL of the current document.
      * anders: I add this for use from the file selector. */
     KURL activeDocumentUrl();
 
-    DCOPObject *dcopObject () { return m_dcop; }
-
-    DCOPObject *m_dcop;
-
-    // console
-    KateConsole *console;
-
-    // management items
-    KateDocManager *m_docManager;
-    KateViewManager *m_viewManager;
-    KateProjectManager *m_projectManager;
-
-    // should be protected, and kateviewmanager a friend class.
-    KRecentFilesAction *fileOpenRecent;
-
-    KateFileList *filelist;
-    class KateProjectList *projectlist;
-    class KateProjectViews *projectviews;
-    KateFileSelector *fileselector;
-
-  private:
-    uint myID;
-    bool syncKonsole;
-    bool modNotification;
-
-  public:
     bool notifyMod() const { return modNotification; }
+    
     uint mainWindowNumber () const { return myID; }
-
-  protected:
-    KatePluginManager *m_pluginManager;
-
-  private:
-    QGuardedPtr<Kate::Project> m_project;
-    uint m_projectNumber;
-
-    KAction *saveProject;
-    KAction *closeProject;
-    KRecentFilesAction *recentProjects;
-
-    KActionMenu* documentOpenWith;
-
-    KAction *gotoLine;
-    KAction* windowNext;
-    KAction* windowPrev;
-
-    QPopupMenu *documentMenu;
-
-    KToggleAction* settingsShowFilelist;
-    KToggleAction* settingsShowFileselector;
-    KToggleAction* showFullScreenAction;
-
-    KAction* settingsConfigure;
-
-    KActionMenu *scriptMenu;
-    KScriptManager* kscript;
-
-    class KateExternalToolsMenuAction *externalTools;
-
-  public slots:
-    void newWindow ();
-
-    void slotConfigure();
-
-    void slotOpenWithMenuAction(int idx);
-
-    void slotPipeToConsole ();
-
- private:
-     GrepTool * greptool;
-
-  public slots:
-    void slotGrepToolItemSelected ( const QString &filename, int linenumber );
-    void runScript( int menuItemId);
-    void slotMail();
 
   public:
     void readProperties(KConfig *config);
@@ -177,18 +147,31 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
     void dragEnterEvent( QDragEnterEvent * );
     void dropEvent( QDropEvent * );
 
+  /**
+   * slots used for actions in the menus/toolbars
+   * or internal signal connections
+   */
   private slots:
+    void newWindow ();
+
+    void slotConfigure();
+
+    void slotOpenWithMenuAction(int idx);
+
+    void slotPipeToConsole ();
+
+    void slotGrepToolItemSelected ( const QString &filename, int linenumber );
+    void runScript( int menuItemId);
+    void slotMail();
+    
     void slotFileQuit();
     void slotEditToolbars();
-    void slotDocumentChanged();
     void slotWindowActivated ();
     void slotUpdateOpenWith();
     void documentMenuAboutToShow();
     void slotDropEvent(QDropEvent *);
     void editKeys();
     void mSlotFixOpenWithMenu();
-    void slotGoNext();
-    void slotGoPrev();
 
     void fileSelected(const KFileItem *file);
 
@@ -198,34 +181,14 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
     void slotDocumentCreated (Kate::Document *doc);
     void updateCaption (Kate::Document *doc);
 
+    void pluginHelp ();
+    void slotFullScreen(bool);
+
   public:
     void openURL (const QString &name=0L);
 
   protected:
     bool eventFilter( QObject*, QEvent * );
-    static uint uniqueID;
-    Kate::MainWindow *m_mainWindow;
-    Kate::ToolViewManager *m_toolViewManager;
-
-  public:
-    Kate::ViewManager *viewManager () {return m_viewManager->viewManager(); }
-    KateViewManager *kateViewManager () { return m_viewManager; }
-
-  public: //ToolViewManager stuff
-    KMDI::ToolViewAccessor *addToolView(KDockWidget::DockPosition position, QWidget *widget, const QPixmap &icon, const QString &sname, const QString &tabToolTip = 0, const QString &tabCaption = 0);
-
-    bool removeToolView(QWidget *);
-    bool removeToolView(KMDI::ToolViewAccessor *);
-
-    bool showToolView(QWidget *);
-    bool showToolView(KMDI::ToolViewAccessor *);
-
-    bool hideToolView(QWidget *);
-    bool hideToolView(KMDI::ToolViewAccessor *);
-
-  private slots:
-    void pluginHelp ();
-    void slotFullScreen(bool);
 
   // slots for the project GUI actions: new/open/save/close
   public slots:
@@ -234,13 +197,63 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
     void slotProjectSave ();
     void slotProjectClose ();
 
-
     // recent files
     void openConstURLProject (const KURL&);
 
   private slots:
     void projectDeleted (uint projectNumber);
     void slotDocumentCloseAll();
+    
+  private:
+    static uint uniqueID;
+    uint myID;
+    
+    Kate::MainWindow *m_mainWindow;
+    Kate::ToolViewManager *m_toolViewManager;
+
+    bool syncKonsole;
+    bool modNotification;
+
+    DCOPObject *m_dcop;
+
+    // console
+    KateConsole *console;
+
+    // management items
+    KateViewManager *m_viewManager;
+
+    // should be protected, and kateviewmanager a friend class.
+    KRecentFilesAction *fileOpenRecent;
+
+    KateFileList *filelist;
+    class KateProjectList *projectlist;
+    class KateProjectViews *projectviews;
+    KateFileSelector *fileselector;
+   
+    QGuardedPtr<Kate::Project> m_project;
+    uint m_projectNumber;
+
+    KAction *saveProject;
+    KAction *closeProject;
+    KRecentFilesAction *recentProjects;
+
+    KActionMenu* documentOpenWith;
+
+    KAction *gotoLine;
+    
+    QPopupMenu *documentMenu;
+
+    KToggleAction* settingsShowFilelist;
+    KToggleAction* settingsShowFileselector;
+    KToggleAction* showFullScreenAction;
+
+    KAction* settingsConfigure;
+
+    KActionMenu *scriptMenu;
+    KScriptManager* kscript;
+
+    KateExternalToolsMenuAction *externalTools;
+    GrepTool * greptool;
 };
 
 #endif

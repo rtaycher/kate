@@ -85,8 +85,7 @@
 
 uint KateMainWindow::uniqueID = 1;
 
-KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager *_m_pluginManager,
-	KateProjectManager *projectMan) :
+KateMainWindow::KateMainWindow () :
     KMDI::MainWindow (0,(QString("__KateMainWindow#%1").arg(uniqueID)).latin1())
 {
   setToolViewStyle(KMultiTabBar::KDEV3ICON);
@@ -95,13 +94,8 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   uniqueID++;
 
   // init some vars
-  m_docManager =  _m_docManager;
-  m_pluginManager =_m_pluginManager;
-  m_projectManager = projectMan;
-
   m_project = 0;
   m_projectNumber = 0;
-
 
   console = 0;
   greptool = 0;
@@ -139,19 +133,19 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   setXMLFile( "kateui.rc" );
   createShellGUI ( true );
 
-  m_pluginManager->enableAllPluginsGUI (this);
+  KatePluginManager::self()->enableAllPluginsGUI (this);
 
   // connect settings menu aboutToshow
   documentMenu = (QPopupMenu*)factory()->container("documents", this);
   connect(documentMenu, SIGNAL(aboutToShow()), this, SLOT(documentMenuAboutToShow()));
 
-  connect(m_projectManager->projectManager(),SIGNAL(projectDeleted(uint)),this,SLOT(projectDeleted(uint)));
+  connect(KateProjectManager::self()->projectManager(),SIGNAL(projectDeleted(uint)),this,SLOT(projectDeleted(uint)));
 
   // caption update
-  for (uint i = 0; i < m_docManager->documents(); i++)
-    slotDocumentCreated (m_docManager->document(i));
+  for (uint i = 0; i < KateDocManager::self()->documents(); i++)
+    slotDocumentCreated (KateDocManager::self()->document(i));
 
-  connect(m_docManager,SIGNAL(documentCreated(Kate::Document *)),this,SLOT(slotDocumentCreated(Kate::Document *)));
+  connect(KateDocManager::self(),SIGNAL(documentCreated(Kate::Document *)),this,SLOT(slotDocumentCreated(Kate::Document *)));
 
   readOptions(config);
 
@@ -161,8 +155,8 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   setAcceptDrops(true);
 
   // activate the first restored project, if any
-  if (m_projectManager->projects() > 0)
-    activateProject(m_projectManager->project(0));
+  if (KateProjectManager::self()->projects() > 0)
+    activateProject(KateProjectManager::self()->project(0));
   else
     activateProject(0);
 }
@@ -173,7 +167,7 @@ KateMainWindow::~KateMainWindow()
 
   ((KateApp *)kapp)->removeMainWindow (this);
 
-  m_pluginManager->disableAllPluginsGUI (this);
+  KatePluginManager::self()->disableAllPluginsGUI (this);
 
   delete m_dcop;
   delete kscript;
@@ -188,15 +182,15 @@ void KateMainWindow::setupMainWindow ()
   greptool->show();
   greptool->hide();
 
-  m_viewManager = new KateViewManager (this, tabWidget(), m_docManager);
+  m_viewManager = new KateViewManager (this, tabWidget());
 
-  filelist = new KateFileList (m_docManager, m_viewManager, this/*filelistDock*/, "filelist");
+  filelist = new KateFileList (this, m_viewManager, this/*filelistDock*/, "filelist");
   addToolView(KDockWidget::DockLeft,filelist,SmallIcon("kmultiple"), i18n("Documents"));
 
   QVBox *prBox = new QVBox (this,"projects");
   addToolView(KDockWidget::DockLeft,prBox,SmallIcon("view_tree"), i18n("Projects"));
-  projectlist = new KateProjectList (m_projectManager, this, prBox/*filelistDock*/, "projectlist");
-  projectviews = new KateProjectViews (m_projectManager, this, prBox/*filelistDock*/, "projectviews");
+  projectlist = new KateProjectList (this, prBox/*filelistDock*/, "projectlist");
+  projectviews = new KateProjectViews (this, prBox/*filelistDock*/, "projectviews");
   prBox->setStretchFactor(projectviews, 2);
   prBox->show ();
   projectlist->show ();
@@ -254,9 +248,6 @@ void KateMainWindow::setupActions()
   showFullScreenAction = KStdAction::fullScreen( 0, 0, actionCollection(),this);
   connect( showFullScreenAction,SIGNAL(toggled(bool)), this,SLOT(slotFullScreen(bool)));
 
-  windowNext = KStdAction::back(filelist, SLOT(slotPrevDocument()), actionCollection());
-  windowPrev = KStdAction::forward(filelist, SLOT(slotNextDocument()), actionCollection());
-
   documentOpenWith = new KActionMenu(i18n("Open W&ith"), actionCollection(), "file_open_with");
   documentOpenWith->setWhatsThis(i18n("Open the current document using another application registered for its file type, or an application of your choice."));
   connect(documentOpenWith->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(mSlotFixOpenWithMenu()));
@@ -286,7 +277,7 @@ void KateMainWindow::setupActions()
   // tip of the day :-)
   KStdAction::tipOfDay( this, SLOT( tipOfTheDay() ), actionCollection() )->setWhatsThis(i18n("This shows useful tips on the use of this application."));
 
-  if (m_pluginManager->pluginList().count() > 0)
+  if (KatePluginManager::self()->pluginList().count() > 0)
   {
     a=new KAction(i18n("Contents &Plugins"), 0, this, SLOT(pluginHelp()), actionCollection(), "help_plugins_contents");
     a->setWhatsThis(i18n("This shows help files for various available plugins."));
@@ -294,28 +285,26 @@ void KateMainWindow::setupActions()
 
   connect(m_viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
   connect(m_viewManager,SIGNAL(viewChanged()),this,SLOT(slotUpdateOpenWith()));
-  connect(m_docManager,SIGNAL(documentChanged()),this,SLOT(slotDocumentChanged()));
 
   slotWindowActivated ();
-  slotDocumentChanged();
 
   projectlist->setupActions();
 }
 
 void KateMainWindow::slotDocumentCloseAll() {
 	if (queryClose_internal())
-    m_docManager->closeAllDocuments(false);
+    KateDocManager::self()->closeAllDocuments(false);
 }
 
 bool KateMainWindow::queryClose_internal() {
-  uint documentCount=m_docManager->documents();
-  QPtrList<Kate::Document> modifiedDocuments=m_docManager->modifiedDocumentList();
+  uint documentCount=KateDocManager::self()->documents();
+  QPtrList<Kate::Document> modifiedDocuments=KateDocManager::self()->modifiedDocumentList();
   bool shutdown=(modifiedDocuments.count()==0);
   if (shutdown) kdDebug(13000)<<"there are no modified documents"<<endl;
   if (!shutdown) {
 	shutdown=KateSaveModifiedDialog::queryClose(this,modifiedDocuments);
   }
-  if (m_docManager->documents()>documentCount) {
+  if (KateDocManager::self()->documents()>documentCount) {
     			  KMessageBox::information (this,
                           i18n ("New file opened while trying to close Kate, closing aborted."),
                           i18n ("Closing Aborted"));
@@ -335,7 +324,7 @@ bool KateMainWindow::queryClose()
   // just test, not close them actually
   if (kapp->sessionSaving())
   {
-    return ( m_projectManager->queryCloseAll () &&
+    return ( KateProjectManager::self()->queryCloseAll () &&
              queryClose_internal() );
   }
 
@@ -348,7 +337,7 @@ bool KateMainWindow::queryClose()
   // and save projects/docs if we really close down !
 
 
-  if ( m_projectManager->queryCloseAll () &&
+  if ( KateProjectManager::self()->queryCloseAll () &&
        queryClose_internal() )
   {
     KConfig scfg("katesessionrc", false);
@@ -357,10 +346,10 @@ bool KateMainWindow::queryClose()
     config->setGroup("General");
 
     if (config->readBoolEntry("Restore Projects", false))
-      m_projectManager->saveProjectList (&scfg);
+      KateProjectManager::self()->saveProjectList (&scfg);
 
     if (config->readBoolEntry("Restore Documents", false))
-      m_docManager->saveDocumentList (&scfg);
+      KateDocManager::self()->saveDocumentList (&scfg);
 
     if (config->readBoolEntry("Restore Window Configuration", false))
       saveProperties (&scfg);
@@ -393,8 +382,8 @@ void KateMainWindow::readOptions(KConfig *config)
   config->setGroup("General");
   syncKonsole =  config->readBoolEntry("Sync Konsole", true);
   modNotification = config->readBoolEntry("Modified Notification", false);
-  m_docManager->setSaveMetaInfos(config->readBoolEntry("Save Meta Infos", true));
-  m_docManager->setDaysMetaInfos(config->readNumEntry("Days Meta Infos", 30));
+  KateDocManager::self()->setSaveMetaInfos(config->readBoolEntry("Save Meta Infos", true));
+  KateDocManager::self()->setDaysMetaInfos(config->readNumEntry("Days Meta Infos", 30));
 
   m_viewManager->setShowFullPath(config->readBoolEntry("Show Full Path in Title", false));
 
@@ -419,9 +408,9 @@ void KateMainWindow::saveOptions(KConfig *config)
   else
     config->writeEntry("Show Console", false);
 
-  config->writeEntry("Save Meta Infos", m_docManager->getSaveMetaInfos());
+  config->writeEntry("Save Meta Infos", KateDocManager::self()->getSaveMetaInfos());
 
-  config->writeEntry("Days Meta Infos", m_docManager->getDaysMetaInfos());
+  config->writeEntry("Days Meta Infos", KateDocManager::self()->getDaysMetaInfos());
 
   config->writeEntry("Show Full Path in Title", m_viewManager->getShowFullPath());
 
@@ -434,20 +423,6 @@ void KateMainWindow::saveOptions(KConfig *config)
   config->writeEntry("Sort Type of File List", filelist->sortType());
 
   recentProjects->saveEntries (config, "Recent Projects");
-}
-
-void KateMainWindow::slotDocumentChanged()
-{
-  if (m_docManager->documents()  > 1)
-  {
-    windowNext->setEnabled(true);
-    windowPrev->setEnabled(true);
-  }
-  else
-  {
-    windowNext->setEnabled(false);
-    windowPrev->setEnabled(false);
-  }
 }
 
 void KateMainWindow::slotWindowActivated ()
@@ -482,9 +457,6 @@ void KateMainWindow::slotUpdateOpenWith()
 void KateMainWindow::documentMenuAboutToShow()
 {
   documentMenu->clear ();
-  windowNext->plug (documentMenu);
-  windowPrev->plug (documentMenu);
-  documentMenu->insertSeparator ();
 
   for (uint z=0; z < filelist->count(); z++)
   {
@@ -542,7 +514,7 @@ void KateMainWindow::editKeys()
 
   dlg.configure();
 
-  QPtrList<Kate::Document>  l=m_docManager->documentList();
+  QPtrList<Kate::Document>  l=KateDocManager::self()->documentList();
   for (uint i=0;i<l.count();i++) {
 	kdDebug(13001)<<"reloading Keysettings for document "<<i<<endl;
 	l.at(i)->reloadXML();
@@ -572,22 +544,6 @@ void KateMainWindow::slotConfigure()
   dlg->exec();
 
   delete dlg;
-}
-
-//Set focus to next input element
-void KateMainWindow::slotGoNext()
-{
-  QFocusEvent::setReason(QFocusEvent::Tab);
-  /*res= */focusNextPrevChild(true); //TRUE == NEXT , FALSE = PREV
-  QFocusEvent::resetReason();
-}
-
-//Set focus to previous input element
-void KateMainWindow::slotGoPrev()
-{
-  QFocusEvent::setReason(QFocusEvent::Tab);
-  /*res= */focusNextPrevChild(false); //TRUE == NEXT , FALSE = PREV
-  QFocusEvent::resetReason();
 }
 
 KURL KateMainWindow::activeDocumentUrl()
@@ -768,11 +724,11 @@ bool KateMainWindow::eventFilter( QObject *o, QEvent *e )
   if ( e->type() == QEvent::WindowActivate && o == this ) {
     Kate::Document *doc;
     typedef QPtrVector<Kate::Document> docvector;
-    docvector list( m_docManager->documents() );
+    docvector list( KateDocManager::self()->documents() );
     uint cnt = 0;
-    for( doc = m_docManager->firstDocument(); doc; doc = m_docManager->nextDocument() )
+    for( doc = KateDocManager::self()->firstDocument(); doc; doc = KateDocManager::self()->nextDocument() )
     {
-      if ( m_docManager->documentInfo( doc )->modifiedOnDisc )
+      if ( KateDocManager::self()->documentInfo( doc )->modifiedOnDisc )
       {
         list.insert( cnt, doc );
         cnt++;
@@ -844,7 +800,7 @@ bool KateMainWindow::hideToolView(KMDI::ToolViewAccessor *){return false;}
 
 void KateMainWindow::slotProjectNew ()
 {
-  ProjectInfo *info = m_projectManager->newProjectDialog (this);
+  ProjectInfo *info = KateProjectManager::self()->newProjectDialog (this);
 
   if (info)
   {
@@ -871,7 +827,7 @@ void KateMainWindow::slotProjectClose ()
 {
   if (m_project)
   {
-    m_projectManager->close (m_project);
+    KateProjectManager::self()->close (m_project);
   }
 }
 
@@ -879,16 +835,16 @@ void KateMainWindow::activateProject (Kate::Project *project)
 {
   kdDebug(13001)<<"activating project "<<project<<endl;
   if (m_project)
-    m_projectManager->disableProjectGUI (m_project, this);
+    KateProjectManager::self()->disableProjectGUI (m_project, this);
 
   if (project)
-    m_projectManager->enableProjectGUI (project, this);
+    KateProjectManager::self()->enableProjectGUI (project, this);
 
   m_project = project;
 
   if (project)
   {
-    m_projectManager->setCurrentProject (project);
+    KateProjectManager::self()->setCurrentProject (project);
     m_projectNumber = project->projectNumber ();
   }
   else
@@ -902,7 +858,7 @@ void KateMainWindow::activateProject (Kate::Project *project)
 
 Kate::Project *KateMainWindow::createProject (const QString &type, const QString &name, const QString &filename)
 {
-  Kate::Project *project = m_projectManager->create (type, name, filename);
+  Kate::Project *project = KateProjectManager::self()->create (type, name, filename);
 
   if (project)
     activateProject (project);
@@ -912,7 +868,7 @@ Kate::Project *KateMainWindow::createProject (const QString &type, const QString
 
 Kate::Project *KateMainWindow::openProject (const QString &filename)
 {
-  Kate::Project *project = m_projectManager->open (filename);
+  Kate::Project *project = KateProjectManager::self()->open (filename);
 
   if (project)
   {
@@ -927,8 +883,8 @@ void KateMainWindow::projectDeleted (uint projectNumber)
 {
   if (projectNumber == m_projectNumber)
   {
-    if (m_projectManager->projects() > 0)
-      activateProject (m_projectManager->project(m_projectManager->projects()-1));
+    if (KateProjectManager::self()->projects() > 0)
+      activateProject (KateProjectManager::self()->project(KateProjectManager::self()->projects()-1));
     else
       activateProject (0);
   }
@@ -1026,8 +982,8 @@ void KateMainWindow::readProperties(KConfig *config)
 
 void KateMainWindow::saveGlobalProperties( KConfig* sessionConfig )
 {
-  m_projectManager->saveProjectList (sessionConfig);
-  m_docManager->saveDocumentList (sessionConfig);
+  KateProjectManager::self()->saveProjectList (sessionConfig);
+  KateDocManager::self()->saveDocumentList (sessionConfig);
 }
 
 void KateMainWindow::slotPipeToConsole ()

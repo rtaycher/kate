@@ -74,9 +74,6 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
 
   actionButton( KDialogBase::Apply)->setEnabled( false );
 
-  docManager = ((KateApp *)kapp)->kateDocumentManager();
-  viewManager = parent->kateViewManager();
-  pluginManager = ((KateApp *)kapp)->katePluginManager();
   mainWindow = parent;
 
   setMinimumSize(600,400);
@@ -143,7 +140,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   // show full path in title
   config->setGroup("General");
   cb_fullPath = new QCheckBox( i18n("&Show full path in title"), bgStartup);
-  cb_fullPath->setChecked( viewManager->getShowFullPath() );
+  cb_fullPath->setChecked( mainWindow->kateViewManager()->getShowFullPath() );
   QWhatsThis::add(cb_fullPath,i18n("If this option is checked, the full document path will be shown in the window caption."));
   connect( cb_fullPath, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
@@ -211,7 +208,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   // save meta infos
   cb_saveMetaInfos = new QCheckBox( bgStartup );
   cb_saveMetaInfos->setText(i18n("Keep &meta-information past sessions"));
-  cb_saveMetaInfos->setChecked(docManager->getSaveMetaInfos());
+  cb_saveMetaInfos->setChecked(KateDocManager::self()->getSaveMetaInfos());
   QWhatsThis::add(cb_saveMetaInfos, i18n(
         "Check this if you want document configuration like for example "
         "bookmarks to be saved past editor sessions. The configuration will be "
@@ -220,12 +217,12 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
 
   // meta infos days
   QHBox *hbDmf = new QHBox( bgStartup );
-  hbDmf->setEnabled(docManager->getSaveMetaInfos());
+  hbDmf->setEnabled(KateDocManager::self()->getSaveMetaInfos());
   QLabel *lDmf = new QLabel( i18n("&Delete unused meta-information after:"), hbDmf );
   sb_daysMetaInfos = new QSpinBox( 0, 180, 1, hbDmf );
   sb_daysMetaInfos->setSpecialValueText(i18n("(never)"));
   sb_daysMetaInfos->setSuffix(i18n(" day(s)"));
-  sb_daysMetaInfos->setValue( docManager->getDaysMetaInfos() );
+  sb_daysMetaInfos->setValue( KateDocManager::self()->getDaysMetaInfos() );
   lDmf->setBuddy( sb_daysMetaInfos );
   connect( cb_saveMetaInfos, SIGNAL( toggled( bool ) ), hbDmf, SLOT( setEnabled( bool ) ) );
   connect( sb_daysMetaInfos, SIGNAL( valueChanged ( int ) ), this, SLOT( slotChanged() ) );
@@ -276,10 +273,11 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
     editorPages.append (cPage);
   }
 
-  for (uint i=0; i<pluginManager->pluginList().count(); i++)
+  for (uint i=0; i<KatePluginManager::self()->pluginList().count(); i++)
   {
-    if  ( pluginManager->pluginList().at(i)->load && Kate::pluginConfigInterfaceExtension(pluginManager->pluginList().at(i)->plugin) )
-      addPluginPage (pluginManager->pluginList().at(i)->plugin);
+    if  ( KatePluginManager::self()->pluginList().at(i)->load
+          && Kate::pluginConfigInterfaceExtension(KatePluginManager::self()->pluginList().at(i)->plugin) )
+      addPluginPage (KatePluginManager::self()->pluginList().at(i)->plugin);
   }
 
   enableButtonSeparator(true);
@@ -350,10 +348,10 @@ void KateConfigDialog::slotApply()
     config->writeEntry("Restore Window Configuration", cb_restoreVC->isChecked());
 
     config->writeEntry("Save Meta Infos", cb_saveMetaInfos->isChecked());
-    docManager->setSaveMetaInfos(cb_saveMetaInfos->isChecked());
+    KateDocManager::self()->setSaveMetaInfos(cb_saveMetaInfos->isChecked());
 
     config->writeEntry("Days Meta Infos", sb_daysMetaInfos->value() );
-    docManager->setDaysMetaInfos(sb_daysMetaInfos->value());
+    KateDocManager::self()->setDaysMetaInfos(sb_daysMetaInfos->value());
 
     config->writeEntry("Modified Notification", cb_modNotifications->isChecked());
     mainWindow->modNotification = cb_modNotifications->isChecked();
@@ -376,7 +374,7 @@ void KateConfigDialog::slotApply()
     KateExternalToolsCommand::self()->reload();
     //mainWindow->externalTools->reload();
 
-    viewManager->setShowFullPath( cb_fullPath->isChecked() ); // hm, stored 2 places :(
+    mainWindow->kateViewManager()->setShowFullPath( cb_fullPath->isChecked() ); // hm, stored 2 places :(
 
     mainWindow->saveOptions (config);
 

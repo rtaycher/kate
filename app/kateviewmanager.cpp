@@ -53,9 +53,9 @@
 #include <qtooltip.h>
 //END Includes
 
-KateViewManager::KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWidget, KateDocManager *docManager)
+KateViewManager::KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWidget)
  : QObject  (parent),
-  showFullPath(false), m_docManager (docManager), m_mainWindow(parent), m_tabWidget(tabWidget)
+  showFullPath(false), m_mainWindow(parent), m_tabWidget(tabWidget)
 {
   // while init
   m_init=true;
@@ -190,7 +190,7 @@ void KateViewManager::slotNewTab()
   if (m_currentContainer) {
     if (m_currentContainer->activeView()) documentNumber=m_currentContainer->activeView()->getDoc()->documentNumber();
   }
-  KateViewSpaceContainer *container=new KateViewSpaceContainer (m_tabWidget, this,m_docManager,m_mainWindow);
+  KateViewSpaceContainer *container=new KateViewSpaceContainer (m_tabWidget, this, m_mainWindow);
   m_viewSpaceContainerList.append(container);
   m_tabWidget->addTab (container, "");
   Q_ASSERT (m_currentContainer==container);
@@ -408,7 +408,7 @@ void KateViewManager::slotDocumentClose ()
 
   // prevent close document if only one view alive and the document of
   // it is not modified and empty !!!
-  if ( (m_docManager->documents() == 1)
+  if ( (KateDocManager::self()->documents() == 1)
        && !activeView()->getDoc()->isModified()
        && activeView()->getDoc()->url().isEmpty()
        && (activeView()->getDoc()->length() == 0) )
@@ -418,13 +418,13 @@ void KateViewManager::slotDocumentClose ()
   }
   
   // close document
-  m_docManager->closeDocument (activeView()->getDoc());
+  KateDocManager::self()->closeDocument (activeView()->getDoc());
 }
 
 uint KateViewManager::openURL (const KURL &url, const QString& encoding, bool activate)
 {
   uint id = 0;
-  Kate::Document *doc = m_docManager->openURL (url, encoding, &id);
+  Kate::Document *doc = KateDocManager::self()->openURL (url, encoding, &id);
 
   if (!doc->url().isEmpty())
     m_mainWindow->fileOpenRecent->addURL( doc->url() );

@@ -309,7 +309,7 @@ KateMainWindow *KateApp::newMainWindow ()
 
 KateMainWindow *KateApp::newMainWindow (bool visible)
 {
-  KateMainWindow *mainWindow = new KateMainWindow (m_docManager, m_pluginManager, m_projectManager);
+  KateMainWindow *mainWindow = new KateMainWindow ();
   m_mainWindows.append (mainWindow);
 
   if ((mainWindows() > 1) && m_mainWindows.at(m_mainWindows.count()-2)->kateViewManager()->activeView())

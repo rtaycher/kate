@@ -38,7 +38,7 @@
 // from kfiledialog.cpp - avoid qt warning in STDERR (~/.xsessionerrors)
 static void silenceQToolBar2 (QtMsgType, const char *) {}
 
-KateProjectList::KateProjectList (KateProjectManager *_projectManager, KateMainWindow *_mainWindow, QWidget * parent, const char * name ):  QWidget (parent, name)
+KateProjectList::KateProjectList (KateMainWindow *_mainWindow, QWidget * parent, const char * name ):  QWidget (parent, name)
 {
   setFocusPolicy ((QWidget::FocusPolicy)0);
 
@@ -46,7 +46,6 @@ KateProjectList::KateProjectList (KateProjectManager *_projectManager, KateMainW
 
   mActionCollection = _mainWindow->actionCollection();
 
-  m_projectManager = _projectManager;
   m_mainWindow = _mainWindow;
 
   QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar2 );
@@ -67,14 +66,14 @@ KateProjectList::KateProjectList (KateProjectManager *_projectManager, KateMainW
   lo->setStretchFactor(m_projectList, 2);
 
   // init of the combo box
-  for (uint i = 0; i < m_projectManager->projects(); i++)
-    projectCreated (m_projectManager->project(i));
+  for (uint i = 0; i < KateProjectManager::self()->projects(); i++)
+    projectCreated (KateProjectManager::self()->project(i));
 
   projectChanged ();
 
   // connecting
-  connect(m_projectManager->projectManager(),SIGNAL(projectCreated(Kate::Project *)),this,SLOT(projectCreated(Kate::Project *)));
-  connect(m_projectManager->projectManager(),SIGNAL(projectDeleted(uint)),this,SLOT(projectDeleted(uint)));
+  connect(KateProjectManager::self()->projectManager(),SIGNAL(projectCreated(Kate::Project *)),this,SLOT(projectCreated(Kate::Project *)));
+  connect(KateProjectManager::self()->projectManager(),SIGNAL(projectDeleted(uint)),this,SLOT(projectDeleted(uint)));
   connect(m_mainWindow->mainWindow(),SIGNAL(projectChanged()),this,SLOT(projectChanged()));
   connect(m_projectList,SIGNAL(activated(int)),this,SLOT(slotActivated(int)));
 }
@@ -103,10 +102,10 @@ void KateProjectList::slotActivated ( int index )
   if ((uint)index >= m_projects.size())
     return;
 
-  for (uint i = 0; i < m_projectManager->projects(); i++)
-    if (m_projectManager->project(i)->projectNumber() == m_projects[index])
+  for (uint i = 0; i < KateProjectManager::self()->projects(); i++)
+    if (KateProjectManager::self()->project(i)->projectNumber() == m_projects[index])
     {
-      m_mainWindow->activateProject (m_projectManager->project(i));
+      m_mainWindow->activateProject (KateProjectManager::self()->project(i));
       return;
     }
 }

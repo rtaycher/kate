@@ -250,7 +250,7 @@ bool KateExternalToolAction::expandMacro( const QString &str, QStringList &ret )
   else if ( str == "text" ) // text of current doc
     ret += view->getDoc()->text();
   else if ( str == "URLs" ) {
-    for( Kate::Document *doc = mw->m_docManager->firstDocument(); doc; doc = mw->m_docManager->nextDocument() )
+    for( Kate::Document *doc = KateDocManager::self()->firstDocument(); doc; doc = KateDocManager::self()->nextDocument() )
       if ( ! doc->url().isEmpty() )
         ret += doc->url().url();
   } else
@@ -294,7 +294,7 @@ KateExternalToolsMenuAction::KateExternalToolsMenuAction( const QString &text,
 
   m_actionCollection = new KActionCollection( this );
 
-  connect(mw->m_docManager,SIGNAL(documentChanged()),this,SLOT(slotDocumentChanged()));
+  connect(KateDocManager::self(),SIGNAL(documentChanged()),this,SLOT(slotDocumentChanged()));
 
   reload();
 }
@@ -374,7 +374,7 @@ void KateExternalToolsMenuAction::reload()
 void KateExternalToolsMenuAction::slotDocumentChanged()
 {
   // try to enable/disable to match current mime type
-  Kate::DocumentExt *de = documentExt( mainwindow->m_docManager->activeDocument() );
+  Kate::DocumentExt *de = documentExt( KateDocManager::self()->activeDocument() );
   if ( de )
   {
     QString mt = de->mimeType();
