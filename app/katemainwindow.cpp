@@ -100,6 +100,16 @@ KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_
   connect(bookmarkMenu, SIGNAL(aboutToShow()), this, SLOT(bookmarkMenuAboutToShow()));
 
   readOptions(config);
+  
+  
+  if (((KateApp *)kapp)->_isSDI)
+  {
+    if ( filelistDock->mayBeHide() )
+      filelistDock->undock();
+      
+    if ( fileselectorDock->mayBeHide() )
+      fileselectorDock->undock();
+  }
 }
 
 KateMainWindow::~KateMainWindow()

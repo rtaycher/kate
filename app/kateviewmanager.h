@@ -36,6 +36,8 @@ class KateViewManager : public Kate::ViewManager
   public:
     KateViewManager (QWidget *parent=0, KateDocManager *docManager=0);
     ~KateViewManager ();
+    
+    bool newOne;
 
   protected:
     bool useOpaqueResize;
@@ -49,7 +51,8 @@ class KateViewManager : public Kate::ViewManager
     void reopenDocuments(bool isRestore);
 
   public slots:
-    virtual void openURL (KURL url=0L);
+    void openURL (KURL url=0L);
+    void openURLReal (KURL url=0L);
     void openConstURL (const KURL&url=0L);
     void reloadCurrentDoc();
 

@@ -51,6 +51,8 @@ KateViewManager::KateViewManager (QWidget *parent, KateDocManager *docManager) :
   // no memleaks
   viewList.setAutoDelete(true);
   viewSpaceList.setAutoDelete(true);
+  
+  newOne = true;
 
   this->docManager = docManager;
 	
@@ -431,7 +433,7 @@ void KateViewManager::slotWindowPrev()
 void KateViewManager::slotDocumentNew ()
 {
   if (((KateApp *)kapp)->_isSDI)
-    ((KateApp *)kapp)->newMainWindow()->viewManager->openURL( KURL() );
+    ((KateApp *)kapp)->newMainWindow()->viewManager->createView (true, KURL(), 0L);
   else
     createView (true, KURL(), 0L);
 }
@@ -454,17 +456,7 @@ void KateViewManager::slotDocumentOpen ()
   for (KURL::List::Iterator i=data.urls.begin(); i != data.urls.end(); ++i)
   {
     myEncoding = data.encoding;
-    
-    if (((KateApp *)kapp)->_isSDI)
-    {
-      ((KateApp *)kapp)->newMainWindow()->viewManager->myEncoding = data.encoding;
-      ((KateApp *)kapp)->newMainWindow()->viewManager->openURL( *i );
-    }
-    else
-    {
-      myEncoding = data.encoding;
-		  openURL( *i );
-    }
+    openURL( *i );
   }
 }
 
@@ -725,6 +717,21 @@ void KateViewManager::slotUnComment ()
 
 void KateViewManager::openURL (KURL url)
 {
+  if (!((KateApp *)kapp)->_isSDI)
+    openURLReal (url);
+  else
+  {
+    if (newOne)
+      openURLReal (url);
+    else
+      ((KateApp *)kapp)->newMainWindow()->viewManager->openURLReal (url);
+  }
+
+  newOne = false;
+}
+
+void KateViewManager::openURLReal (KURL url)
+{
   Kate::View *cv = activeView();
 
   if ( !docManager->isOpen( url ) )
@@ -738,10 +745,14 @@ void KateViewManager::openURL (KURL url)
       setWindowCaption();
     }
     else
+    {
       createView (true, url, 0L);
+    }
   }
   else
     activateView( docManager->findDoc( url ) );
+
+  newOne = false;
 }
 
 void KateViewManager::openConstURL (const KURL& url)
