@@ -13,23 +13,31 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <kdebug.h>
-#include "katepartkttsd.h"
-#include <kaction.h>
-#include <kinstance.h>
-#include <kiconloader.h>
+// Qt includes.
 #include <qmessagebox.h>
-#include <klocale.h>
 #include <qstring.h>
 #include <qtimer.h>
 
+// KDE includes.
+#include <kdebug.h>
+#include <kaction.h>
+#include <kinstance.h>
+#include <kiconloader.h>
+#include <klocale.h>
 #include <kapplication.h>
 #include <dcopclient.h>
+#include <kgenericfactory.h>
 
 // $(kde-includes/kate)
 #include <document.h>
 
-KatePartPluginKTTSD::KatePartPluginKTTSD( QObject* parent, const char* name )
+// katepartkttsd includes.
+#include "katepartkttsd.h"
+#include "katepartkttsd.moc"
+
+K_EXPORT_COMPONENT_FACTORY( katepartkttsdplugin, KGenericFactory<KatePartPluginKTTSD>("katepartpluginkttsd") )
+
+KatePartPluginKTTSD::KatePartPluginKTTSD( QObject* parent, const char* name, const QStringList& )
     : Plugin( parent, name )
 {
     (void) new KAction( "&Speak Text",
@@ -94,29 +102,3 @@ void KatePartPluginKTTSD::slotReadOut()
         }
     }
 }
-
-KPluginFactory::KPluginFactory( QObject* parent, const char* name )
-  : KLibFactory( parent, name )
-{
-  s_instance = new KInstance("KPluginFactory");
-}
-
-QObject* KPluginFactory::createObject( QObject* parent, const char* name, const char*, const QStringList & )
-{
-    QObject *obj = new KatePartPluginKTTSD( parent, name );
-    return obj;
-}
-KPluginFactory::~KPluginFactory()
-{ delete s_instance; }
-
-
-extern "C"
-{
-  void* init_libkatepartkttsdplugin()
-  {
-    return new KPluginFactory;
-  }
-
-}
-
-KInstance* KPluginFactory::s_instance = 0L;
