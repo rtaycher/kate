@@ -22,7 +22,26 @@ print FILE "<?xml version=\"1.01\" encoding=\"UTF-8\"?><!DOCTYPE language>\n";
 @field = split /\"/, $file[0];
 $hlname = @field[1];
 
-print FILE "<language name=\"$hlname\" extensions=\"\" mimetype=\"\" casesensitive=\"0\">\n";
+# get the extensions of the hl
+@fieldtmp = split /File Extensions =/, $file[0];
+@field2 = split / /, @fieldtmp[1];
+
+$ext = "";
+$c = 1;
+while (@field2[$c] ne "")
+{
+  @field2[$c] =~ s/\n//gi;
+  @field2[$c] =~ s/\r//gi;
+
+  if (length(@field2[$c]) > 0)
+  {
+    $ext .= "*.@field2[$c];";
+  }
+
+  $c++;
+}
+
+print FILE "<language name=\"$hlname\" extensions=\"$ext\" mimetype=\"\" casesensitive=\"0\">\n";
 print FILE "  <highlighting>\n";
 
 $i=0;
