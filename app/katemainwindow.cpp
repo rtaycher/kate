@@ -37,6 +37,7 @@
 #include "katemailfilesdialog.h"
 #include "katemainwindowiface.h"
 #include "kateexternaltools.h"
+#include "katesavemodifieddialog.h"
 
 #include <kmdi/tabwidget.h>
 
@@ -88,7 +89,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 	KateProjectManager *projectMan) :
     KMDI::MainWindow (0,(QString("__KateMainWindow#%1").arg(uniqueID)).latin1())
 {
-  setToolviewStyle(KMultiTabBar::KDEV3ICON);
+  setToolViewStyle(KMultiTabBar::KDEV3ICON);
   // first the very important id
   myID = uniqueID;
   uniqueID++;
@@ -321,6 +322,24 @@ void KateMainWindow::setupActions()
   slotDocumentChanged();
 }
 
+
+bool KateMainWindow::queryClose_internal() {
+  uint documentCount=m_docManager->documents();
+  QPtrList<Kate::Document> modifiedDocuments=m_docManager->modifiedDocumentList();
+  bool shutdown=(modifiedDocuments.count()==0);
+  if (shutdown) kdDebug(13000)<<"there are no modified documents"<<endl;
+  if (!shutdown) {
+	shutdown=KateSaveModifiedDialog::queryClose(this,modifiedDocuments);
+  }
+  if (m_docManager->documents()>documentCount) {
+    			  KMessageBox::information (this,
+                          i18n ("New file opened while trying to close Kate, closing aborted."),
+                          i18n ("Closing Aborted"));
+	shutdown=false;
+  }
+  return shutdown;
+}
+
 /**
  * queryClose(), take care that after the last mainwindow the stuff is closed
  */
@@ -333,7 +352,7 @@ bool KateMainWindow::queryClose()
   if (kapp->sessionSaving())
   {
     return ( m_projectManager->queryCloseAll () &&
-             m_docManager->queryCloseDocuments (this) );
+             queryClose_internal() );
   }
 
   // normal closing of window
@@ -343,8 +362,10 @@ bool KateMainWindow::queryClose()
 
   // last one: check if we can close all projects/document, try run
   // and save projects/docs if we really close down !
+
+
   if ( m_projectManager->queryCloseAll () &&
-       m_docManager->queryCloseDocuments (this) )
+       queryClose_internal() )
   {
     KConfig scfg("katesessionrc", false);
 

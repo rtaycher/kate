@@ -302,6 +302,18 @@ bool KateDocManager::closeAllDocuments()
   return res;
 }
 
+QPtrList<Kate::Document> KateDocManager::modifiedDocumentList() {
+  QPtrList<Kate::Document> modified;
+  for (QPtrListIterator<Kate::Document> it(m_docList); it.current(); ++it) {
+    Kate::Document *doc = it.current();
+    if (doc->isModified()) {
+      modified.append(doc);
+    }	
+  }
+  return modified;
+}
+
+
 bool KateDocManager::queryCloseDocuments(KateMainWindow *w)
 {
   uint docCount = m_docList.count();

@@ -94,6 +94,7 @@ class KateDocManager : public QObject
     bool closeDocumentWithID(uint);
     bool closeAllDocuments();
     
+    QPtrList<Kate::Document> modifiedDocumentList();
     bool queryCloseDocuments(KateMainWindow *w);
 
     void saveDocumentList (class KConfig *config);
