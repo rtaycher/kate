@@ -62,7 +62,7 @@ KateViewManager::KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWi
   showFullPath(false), m_activeViewRunning (false),m_mainWindow(parent),m_tabWidget(tabWidget)
 {
   setupActions ();
-  
+
   guiMergedView=0;
   m_init=true;
   m_docManager = docManager;
@@ -100,26 +100,26 @@ void KateViewManager::setupActions ()
 
   m_closeTab = new KAction ( i18n("Close Current Tab"),"tab_remove",0,this,SLOT(slotCloseTab()),
                              m_mainWindow->actionCollection(),"view_close_tab");
-  
+
   m_activateNextTab
-      = new KAction( i18n( "Activate Next Tab" ), "tab_next",
+      = new KAction( i18n( "Activate Next Tab" ),
                      QApplication::reverseLayout() ? KStdAccel::tabPrev() : KStdAccel::tabNext(),
                      this, SLOT( activateNextTab() ), m_mainWindow->actionCollection(), "view_next_tab" );
-  
+
   m_activatePrevTab
-      = new KAction( i18n( "Activate Previous Tab" ), "tab_previous",
+      = new KAction( i18n( "Activate Previous Tab" ),
                      QApplication::reverseLayout() ? KStdAccel::tabNext() : KStdAccel::tabPrev(),
                      this, SLOT( activatePrevTab() ), m_mainWindow->actionCollection(), "view_prev_tab" );
 
   /**
    * view splitting
    */
-  a=new KAction ( i18n("Split Ve&rtical"), "view_left_right", CTRL+SHIFT+Key_L, this, SLOT(
+  a=new KAction ( i18n("Split Ve&rtical"), "view_right", CTRL+SHIFT+Key_L, this, SLOT(
                   slotSplitViewSpaceVert() ), m_mainWindow->actionCollection(), "view_split_vert");
 
   a->setWhatsThis(i18n("Split the currently active view vertically into two views."));
 
-  a=new KAction ( i18n("Split &Horizontal"), "view_top_bottom", CTRL+SHIFT+Key_T, this, SLOT(
+  a=new KAction ( i18n("Split &Horizontal"), "view_bottom", CTRL+SHIFT+Key_T, this, SLOT(
                   slotSplitViewSpaceHoriz() ), m_mainWindow->actionCollection(), "view_split_horiz");
 
   a->setWhatsThis(i18n("Split the currently active view horizontally into two views."));
@@ -129,18 +129,27 @@ void KateViewManager::setupActions ()
                     "view_close_current_space" );
 
   m_closeView->setWhatsThis(i18n("Close the currently active splitted view"));
+
+  goNext=new KAction(i18n("Next View"),Key_F8,this,
+                     SLOT(activateNextView()),m_mainWindow->actionCollection(),"go_next");
+
+  goNext->setWhatsThis(i18n("Make the next split view the active one."));
+
+  goPrev=new KAction(i18n("Previous View"),SHIFT+Key_F8, this, SLOT(activatePrevView()),m_mainWindow->actionCollection(),"go_prev");
+
+  goPrev->setWhatsThis(i18n("Make the previous split view the active one."));
 }
 
 void KateViewManager::tabChanged(QWidget* widget) {
   KateViewSpaceContainer *container=static_cast<KateViewSpaceContainer*>(widget->qt_cast("KateViewSpaceContainer"));
   Q_ASSERT(container);
   m_currentContainer=container;
-  
+
   if (container) {
     container->reactivateActiveView();
 
   }
-  
+
   m_closeTab->setEnabled(m_tabWidget->count() > 1);
   m_activateNextTab->setEnabled(m_tabWidget->count() > 1);
   m_activatePrevTab->setEnabled(m_tabWidget->count() > 1);

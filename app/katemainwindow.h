@@ -119,9 +119,6 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
     QGuardedPtr<Kate::Project> m_project;
     uint m_projectNumber;
 
-    KAction *goNext;
-    KAction *goPrev;
-
     KAction *saveProject;
     KAction *closeProject;
     KRecentFilesAction *recentProjects;

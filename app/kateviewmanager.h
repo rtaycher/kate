@@ -94,7 +94,7 @@ class KateViewManager : public QWidget
     void openNewIfEmpty();
 
     void tabChanged(QWidget*);
-    
+
   public slots:
     void deleteLastView ();
 
@@ -126,14 +126,14 @@ class KateViewManager : public QWidget
     void slotSplitViewSpaceHoriz () { splitViewSpace(); }
     /** Splits the active viewspace vertically */
     void slotSplitViewSpaceVert () { splitViewSpace( 0L, false ); }
-    
-    
+
+
     void slotNewTab();
     void slotCloseTab ();
     void activateNextTab ();
     void activatePrevTab ();
-    
-    
+
+
     void slotCloseCurrentViewSpace();
 
 
@@ -164,12 +164,14 @@ class KateViewManager : public QWidget
     KateMainWindow *m_mainWindow;
     QGuardedPtr<KMDI::TabWidget> m_tabWidget;
     bool m_init;
-    
+
     KAction *m_closeView;
     KAction *m_closeTab;
     KAction *m_activateNextTab;
     KAction *m_activatePrevTab;
-    
+    KAction *goNext;
+    KAction *goPrev;
+
   protected:
     friend class KateViewSpaceContainer;
     bool eventFilter(QObject *o,QEvent *e);

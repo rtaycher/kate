@@ -254,12 +254,6 @@ void KateMainWindow::setupActions()
   showFullScreenAction = KStdAction::fullScreen( 0, 0, actionCollection(),this);
   connect( showFullScreenAction,SIGNAL(toggled(bool)), this,SLOT(slotFullScreen(bool)));
 
-  goNext=new KAction(i18n("Next View"),Key_F8,m_viewManager, SLOT(activateNextView()),actionCollection(),"go_next");
-  goNext->setWhatsThis(i18n("Make the next split view the active one."));
-
-  goPrev=new KAction(i18n("Previous View"),SHIFT+Key_F8,m_viewManager, SLOT(activatePrevView()),actionCollection(),"go_prev");
-  goPrev->setWhatsThis(i18n("Make the previous split view the active one."));
-
   windowNext = KStdAction::back(filelist, SLOT(slotPrevDocument()), actionCollection());
   windowPrev = KStdAction::forward(filelist, SLOT(slotNextDocument()), actionCollection());
 
@@ -304,7 +298,7 @@ void KateMainWindow::setupActions()
 
   slotWindowActivated ();
   slotDocumentChanged();
- 
+
   projectlist->setupActions();
 }
 
