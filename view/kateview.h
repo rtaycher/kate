@@ -458,15 +458,6 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
       cut and copy
     */
     void newMarkStatus();
-    /**
-      The file name has changed. The main window can use this to change
-      its caption
-    */
-    void fileChanged();
-    /**
-      Emits messages for the status line
-    */
-    void statusMsg(const QString &);
 
     // emitted when saving a remote URL with KIO::NetAccess. In that case we have to disable the UI.
     void enableUI( bool enable );

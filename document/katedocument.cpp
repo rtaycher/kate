@@ -188,11 +188,8 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   undoState = 0;
   undoSteps = 50;
 
-//  recordReset();
-
   pseudoModal = 0L;
   clear();
-  clearFileName();
 
   setHighlight(0); //calls updateFontData()
   // if the user changes the highlight with the dialog, notify the doc
@@ -291,7 +288,28 @@ bool KateDocument::openFile()
 
   setMTime();
 
-  setHighlight(hlManager->wildcardFind (m_file));
+  int hl = hlManager->wildcardFind( m_file );
+
+  if (hl == -1)
+  {
+    // fill the detection buffer with the contents of the text
+    const int HOWMANY = 1024;
+    QByteArray buf(HOWMANY);
+    int bufpos = 0, len;
+    for (int i=0; i < buffer->count(); i++)
+    {
+      TextLine::Ptr textLine = buffer->line(i);
+      len = textLine->length();
+      if (bufpos + len > HOWMANY) len = HOWMANY - bufpos;
+      memcpy(&buf[bufpos], textLine->getText(), len);
+      bufpos += len;
+      if (bufpos >= HOWMANY) break;
+    }
+
+    hl = hlManager->mimeFind( buf, m_file );
+  }
+
+  setHighlight(hl);
 
   updateLines();
   updateViews();
@@ -324,6 +342,31 @@ bool KateDocument::saveFile()
 
   fileInfo->setFile (m_file);
   setMTime();
+
+  int hl = hlManager->wildcardFind( m_file );
+
+  if (hl == -1)
+  {
+    // fill the detection buffer with the contents of the text
+    const int HOWMANY = 1024;
+    QByteArray buf(HOWMANY);
+    int bufpos = 0, len;
+    for (int i=0; i < buffer->count(); i++)
+    {
+      TextLine::Ptr textLine = buffer->line(i);
+      len = textLine->length();
+      if (bufpos + len > HOWMANY) len = HOWMANY - bufpos;
+      memcpy(&buf[bufpos], textLine->getText(), len);
+      bufpos += len;
+      if (bufpos >= HOWMANY) break;
+    }
+
+    hl = hlManager->mimeFind( buf, m_file );
+  }
+
+  setHighlight(hl);
+
+  emit fileNameChanged ();
 
   return (f.status() == IO_Ok);
 }
@@ -2101,56 +2144,6 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
   }
 }
 
-void KateDocument::setURL( const KURL &url, bool updateHighlight )
-{
-  int hl;
-  KTextEditor::View *view;
-
-  m_url = url;
-  for (view = m_views.first(); view != 0L; view = m_views.next() ) {
-    emit static_cast<KateView *>( view )->fileChanged();
-  }
-
-  if ( updateHighlight )
-  {
-    QString fn = m_url.fileName();
-    if ( fn.isEmpty() )
-        return;
-
-    hl = hlManager->wildcardFind( fn );
-
-    if (hl == -1) {
-      // fill the detection buffer with the contents of the text
-      const int HOWMANY = 1024;
-      QByteArray buf(HOWMANY);
-      int bufpos = 0, len;
-      for (int i=0; i < buffer->count(); i++)
-      {
-        TextLine::Ptr textLine = buffer->line(i);
-        len = textLine->length();
-        if (bufpos + len > HOWMANY) len = HOWMANY - bufpos;
-        memcpy(&buf[bufpos], textLine->getText(), len);
-        bufpos += len;
-        if (bufpos >= HOWMANY) break;
-      }
-
-      hl = hlManager->mimeFind( buf, fn );
-    }
-    setHighlight(hl);
-  }
-  updateViews();
-}
-
-void KateDocument::clearFileName() {
-  KTextEditor::View *view;
-
-  //  fName.truncate(fName.findRev('/') +1);
-  m_url = KURL();
-  for (view = m_views.first(); view != 0L; view = m_views.next() ) {
-    emit static_cast<KateView *>( view )->fileChanged();
-  }
-}
-
 // Applies the search context, and returns whether a match was found. If one is,
 // the length of the string matched is also returned.
 bool KateDocument::doSearch(SConfig &sc, const QString &searchFor) {
@@ -3055,9 +3048,14 @@ void KateDocument::flush ()
   if (isReadOnly())
     return;
 
+  m_url = KURL();
+  fileInfo->setFile (QString());
+  setMTime();
+
   clear();
-  clearFileName();
   updateViews();
+
+  emit fileNameChanged ();
 }
 
 void KateDocument::open (const QString &name)

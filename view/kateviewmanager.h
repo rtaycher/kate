@@ -166,8 +166,7 @@ class KateViewManager : public Kate::ViewManager
     void slotSpellcheck ();
     void slotGotoLine ();
 
-    void statusMsg (const QString &msg);
-    void statusMsgOther ();
+    void statusMsg ();
 
     void printNow();
     void printDlg();

@@ -1407,7 +1407,7 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate
 
   connect( this, SIGNAL( newStatus() ), this, SLOT( slotUpdate() ) );
   connect( this, SIGNAL( newUndo() ), this, SLOT( slotNewUndo() ) );
-  connect( this, SIGNAL( fileChanged() ), this, SLOT( slotFileStatusChanged() ) );
+  connect( doc, SIGNAL( fileNameChanged() ), this, SLOT( slotFileStatusChanged() ) );
   connect( doc, SIGNAL( highlightChanged() ), this, SLOT( slotHighlightChanged() ) );
 
   if ( doc->hasBrowserExtension() )
@@ -1919,9 +1919,9 @@ void KateView::toggleInsert() {
   setConfig(configFlags ^ KateView::cfOvr);
 }
 
-void KateView::toggleVertical() {
+void KateView::toggleVertical()
+{
   setConfig(configFlags ^ KateView::cfVerticalSelect);
-  emit statusMsg(configFlags & KateView::cfVerticalSelect ? i18n("Vertical Selections On") : i18n("Vertical Selections Off"));
 }
 
 
@@ -2023,7 +2023,7 @@ KateView::fileResult KateView::save() {
     } // New, unnamed document:
     else
       return saveAs();
-  } else emit statusMsg(i18n("No changes need to be saved"));
+  }
   return OK;
 }
 
@@ -2067,7 +2067,6 @@ KateView::fileResult KateView::saveAs() {
     return CANCEL;
 
   myDoc->saveAs(url);
-  myDoc->setURL( url, false );
   return OK;
 }
 

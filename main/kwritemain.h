@@ -78,7 +78,6 @@ class TopLevel : public KParts::MainWindow
 
     void newCurPos();
     void newStatus();
-    void statusMsg(const QString &);
     void timeout();
     void newCaption();
 

@@ -127,10 +127,9 @@ bool KateViewManager::createView ( bool newDoc, KURL url, KateView *origView, Ka
   }
 
   view->installPopup ((QPopupMenu*)((KMainWindow *)topLevelWidget ())->factory()->container("view_popup", (KMainWindow *)topLevelWidget ()) );
-  connect(view,SIGNAL(newCurPos()),this,SLOT(statusMsgOther()));
-  connect(view,SIGNAL(newStatus()),this,SLOT(statusMsgOther()));
-  connect(view, SIGNAL(newUndo()), this, SLOT(statusMsgOther()));
-  connect(view,SIGNAL(statusMsg(const QString &)),this,SLOT(statusMsg(const QString &)));
+  connect(view,SIGNAL(newCurPos()),this,SLOT(statusMsg()));
+  connect(view,SIGNAL(newStatus()),this,SLOT(statusMsg()));
+  connect(view, SIGNAL(newUndo()), this, SLOT(statusMsg()));
   connect(view,SIGNAL(dropEventPass(QDropEvent *)), (KMainWindow *)topLevelWidget (),SLOT(slotDropEvent(QDropEvent *)));
   connect(view,SIGNAL(gotFocus(KateView *)),this,SLOT(activateSpace(KateView *)));
 
@@ -260,7 +259,7 @@ void KateViewManager::activateView ( KateView *view )
     viewList.findRef (view);
 
     setWindowCaption();
-    statusMsgOther();
+    statusMsg();
 
     emit viewChanged ();
   }
@@ -378,37 +377,7 @@ bool KateViewManager::closeDocWithAllViews ( KateView *view )
   return true;
 }
 
-void KateViewManager::statusMsg (const QString &msg)
-{
-  if (activeView() == 0) return;
-  bool readOnly =  activeView()->isReadOnly();
-  int config =  activeView()->config();
-
-  int ovr = 0;
-  if (readOnly)
-    ovr = 0;
-  else
-  {
-    if (config & KateView::cfOvr)
-    {
-      ovr=1;
-    }
-    else
-    {
-      ovr=2;
-    }
-  }
-
-  int mod = 0;
-  if (activeView()->isModified())
-    mod = 1;
-  // anders: since activeView() loops, lets ask it only once!
-  KateView* v = activeView();
-  emit statusChanged (v, v->currentLine() + 1, v->currentColumn() + 1, ovr, mod, QString(msg));
-  emit statChanged ();
-}
-
-void KateViewManager::statusMsgOther ()
+void KateViewManager::statusMsg ()
 {
   if (activeView() == 0) return;
   // anders: since activeView() loops, lets ask it only once!

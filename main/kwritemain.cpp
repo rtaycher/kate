@@ -138,8 +138,7 @@ void TopLevel::setupEditWidget(KateDocument *doc)
 
   connect(kateView,SIGNAL(newCurPos()),this,SLOT(newCurPos()));
   connect(kateView,SIGNAL(newStatus()),this,SLOT(newStatus()));
-  connect(kateView,SIGNAL(statusMsg(const QString &)),this,SLOT(statusMsg(const QString &)));
-  connect(kateView,SIGNAL(fileChanged()),this,SLOT(newCaption()));
+  connect(kateView->doc(),SIGNAL(fileNameChanged()),this,SLOT(newCaption()));
   connect(kateView,SIGNAL(dropEventPass(QDropEvent *)),this,SLOT(slotDropEvent(QDropEvent *)));
   connect(kateView, SIGNAL( enableUI( bool ) ), this, SLOT( slotEnableActions( bool ) ) );
 
@@ -285,13 +284,6 @@ void TopLevel::newStatus()
     statusBar()->changeItem(config & KateView::cfOvr ? i18n(" OVR ") : i18n(" INS "),ID_INS_OVR);
 
   statusBar()->changeItem(kateView->isModified() ? " * " : "",ID_MODIFIED);
-}
-
-void TopLevel::statusMsg(const QString &msg)
-{
-  statusbarTimer->stop();
-  statusBar()->changeItem(" " + msg, ID_GENERAL);
-  statusbarTimer->start(10000, true); //single shot
 }
 
 void TopLevel::timeout() {

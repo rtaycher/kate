@@ -335,9 +335,6 @@ class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
     void paintTextLine(QPainter &, int line, int xStart, int xEnd, bool showTabs);
     void paintTextLine(QPainter &, int line, int y, int xStart, int xEnd, bool showTabs);
 
-    void setURL( const KURL &url, bool updateHighlight );
-    void clearFileName();
-
     bool doSearch(SConfig &s, const QString &searchFor);
 
 // internal
@@ -493,6 +490,13 @@ class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
   public slots:
     // clear buffer/filename - update the views
     void flush ();
+
+  signals:
+    /**
+      The file has been saved (perhaps the name has changed). The main window
+      can use this to change its caption
+    */
+    void fileNameChanged ();
 
   // for the DCOP interface
   public:
