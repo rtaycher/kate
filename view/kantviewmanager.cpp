@@ -476,7 +476,11 @@ void KantViewManager::slotDocumentNew ()
 
 void KantViewManager::slotDocumentOpen ()
 {
-  KURL::List urls = KFileDialog::getOpenURLs(QString::null, QString::null, 0L, i18n("Open File..."));
+  QString path = QString::null;
+  if (activeView())
+    path = activeView()->doc()->url().url();
+
+  KURL::List urls = KFileDialog::getOpenURLs(path, QString::null, 0L, i18n("Open File..."));
 
   for (KURL::List::Iterator i=urls.begin(); i != urls.end(); ++i)
   {
@@ -493,9 +497,7 @@ void KantViewManager::slotDocumentSave ()
   if( current->doc()->isModified() )
   {
     if( !current->doc()->url().isEmpty() && current->doc()->isReadWrite() )
-	{
-           current->doc()->save();
-	}
+      current->doc()->save();
     else
       slotDocumentSaveAs();
   }
@@ -524,7 +526,7 @@ void KantViewManager::slotDocumentSaveAs ()
 
   KantView *current = activeView();
 
-  KURL url = KFileDialog::getSaveURL(QString::null, QString::null, 0L, i18n("Save File..."));
+  KURL url = KFileDialog::getSaveURL(current->doc()->url().url(), QString::null, 0L, i18n("Save File..."));
 
   if( !url.isEmpty() )
   {
