@@ -209,9 +209,9 @@ bool KateDocument::openFile()
 {
 #ifdef NEW_CODE
   // TODO: Pass codec around.
-  if (myUseUTF8)
+/*  if (myUseUTF8)
     loadFile( m_file, QTextStream::UnicodeUTF8);
-  else
+  else  */
     loadFile( m_file, QTextCodec::codecForLocale());
 
 #else
@@ -273,9 +273,9 @@ bool KateDocument::openFile()
 bool KateDocument::saveFile()
 {
 #ifdef NEW_CODE
-  if (myUseUTF8)
+ /* if (myUseUTF8)
     return writeFile( m_file, QTextStream::UnicodeUTF8);
-  else
+  else       */
     return writeFile( m_file, QTextCodec::codecForLocale());
 #else
   QFile f( m_file );
