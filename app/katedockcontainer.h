@@ -18,10 +18,11 @@ public:
         KDockWidget *parentDockWidget();
         virtual void insertWidget (KDockWidget *w, QPixmap, const QString &, int &);
         virtual void setToolTip (KDockWidget *, QString &);
-//	virtual void undockWidget(KDockWidget*);
+	virtual void undockWidget(KDockWidget*);
 	virtual void removeWidget(KDockWidget*);	
 	virtual void save(KConfig *);
 	virtual void load(KConfig *);
+public slots:
 	void init();
 private:                    
   class KateMainWindow *m_mainWin;
@@ -31,8 +32,11 @@ private:
 	int oldtab;
   	int m_position; 
 	QMap<KDockWidget*,int> m_map;
+	int m_inserted;
+	int m_delayedRaise;
 protected slots:
 	void tabClicked(int);
+	void delayedRaise();
 };
 
 #endif
