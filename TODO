@@ -11,9 +11,6 @@ TODO:
 
     - Find Text dialog needs ability to hit all documents.
 
-    - Find Text dialog should persist settings. If you go to a new window it forgets the
-       search string from the prior one
-
     - Select text, and tap <Ctrl+F>. The Find Text dialog pops up blank. It should pop up
        with the selected text in it.
 
@@ -24,13 +21,11 @@ TODO:
     - Put the cursor anywhere on blank space or punctuation. Tap <Ctrl+F>. The Find Text dialog
        should pop up with whatever it had before in it
 
-    - The Find Text dialog should support linefeeds; a "regular expressions" option would be best.
-
     - project managemenet
     - files that are untitled have to be saved before they can be used in a project
     - implement configure, compile, run
     - think about how to implement new! (close all opened files?)
-    - plugin architecture: discuss and decide, then write
+
     - context menu for file list [close, close all, new view top/btm/left/right, others?)
     - feature to open a clicked-on filename in the text
     - <Ctrl+Backspace> should zilch the prior word
@@ -85,10 +80,6 @@ TODO:
       punctuation that followed.  Word|. Doing it like that put the caret where you needed
       it most often.
 
-    - open kant. it goes into a small window, with a small Konsole in the bottom. Maximize this
-      window. The Konsole gets very big, and the text area remains the same height.
-      The text area should get big and the Konsole remain the same height.
-
     - [internal] fix how HTML Tag and Filter re-select your text if it is multi-line.
       As far as we could tell, KWrite exposed no interface to do this cleanly.
 
@@ -108,5 +99,3 @@ TODO:
         This is the correct behavior in the face of dialog boxes that appeor with
         text already in them, but you want to replace it. The alternative is to push the old
         text over, insert the new text, and delete the old.
-
-

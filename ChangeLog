@@ -1,3 +1,6 @@
+2001-02-26 Christoph Cullmann <crossfire@babylon2k.de>
+        * Kant is a part of kdebase :)
+	  sourceforge.net CVS won't be used in the future
 
 2001-02-24 Phlip <phlip_cpp@my-deja.com>
 
@@ -11,10 +14,11 @@
 	  we pipe the selected text thru that command, such as "sort", and then
 	  replace the selection with the result. Impress your friends.
 
-2001-02-21 Joseph Wenninger <jowenn@bigfoot.com
+2001-02-21 Joseph Wenninger <jowenn@bigfoot.com>
 	* Makefile.am's			: correction for linking
 	* kantmenuitem.h                : Improved menu items added doc-list
 	* kantlistboxitem.h		: Improved listboxitem files-list
+
 2001-02-19 Christoph Cullmann <crossfire@babylon2k.de>
 	* kantconsole.* konsole/*       : add kantconsole widget
 
@@ -25,7 +29,7 @@
 	* kantview.cpp		: Tab doesn't jump to next widget anymore, but inserts a tab into the text
 	* kantmainwindow.*	: F8 / SHIFT-F8 jumps to next / previous widget
 
-version 0.2.0:
+version 0.2.0-pre:
   - more splitting fixes
   - kwrite bugfix ;-)
 
