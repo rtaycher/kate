@@ -68,10 +68,11 @@
 #include <kdebug.h>
 //END Includes
 
+//BEGIN Toolbar
  // from kfiledialog.cpp - avoid qt warning in STDERR (~/.xsessionerrors)
 static void silenceQToolBar(QtMsgType, const char *){}
 
-
+// helper classes to be able to have a toolbar without move handle
 KateFileSelectorToolBar::KateFileSelectorToolBar(QWidget *parent)
   : KToolBar( parent, "Kate FileSelector Toolbar", true )
 {
@@ -102,7 +103,7 @@ void KateFileSelectorToolBarParent::resizeEvent ( QResizeEvent * )
 		m_tb->resize(width(),height());
 	}
 }
-
+//END
 
 //BEGIN Constructor/destructor
 
@@ -237,8 +238,9 @@ void KateFileSelector::readConfig(KConfig *config, const QString & name)
   if ( config->readBoolEntry( "restore location", true ) || kapp->isRestored() ) {
     QString loc( config->readEntry( "location" ) );
     if ( ! loc.isEmpty() ) {
-      waitingDir = loc;
-      QTimer::singleShot(0, this, SLOT(initialDirChangeHack()));
+//       waitingDir = loc;
+//       QTimer::singleShot(0, this, SLOT(initialDirChangeHack()));
+      setDir( loc );
     }
   }
 
