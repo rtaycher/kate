@@ -22,6 +22,7 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qlistbox.h>
+#include <qtabwidget.h>
 #include <qspinbox.h>
 #include <kcombobox.h>
 #include <qgroupbox.h>
@@ -605,11 +606,21 @@ FontConfig::FontConfig( QWidget *parent, char *name, KateDocument *doc )
     // sizemanagment
   QGridLayout *grid = new QGridLayout( this, 1, 1 );
 
-  m_fontchooser = new KFontChooser ( this );
+  QTabWidget *tab = new QTabWidget (this);
+  grid->addWidget( tab, 0, 0);
+
+  m_fontchooser = new KFontChooser ( tab );
   m_fontchooser->enableColumn(KFontChooser::StyleList, false);
-  grid->addWidget( m_fontchooser, 0, 0);
+  tab->addTab (m_fontchooser, i18n("Displayfont"));
+
+  m_fontchooserPrint = new KFontChooser ( tab );
+  m_fontchooserPrint->enableColumn(KFontChooser::StyleList, false);
+  tab->addTab (m_fontchooserPrint, i18n("Printerfont"));
+  
+  tab->show ();
 
   connect (m_fontchooser, SIGNAL (fontSelected( const QFont & )), this, SLOT (slotFontSelected( const QFont & )));
+  connect (m_fontchooserPrint, SIGNAL (fontSelected( const QFont & )), this, SLOT (slotFontSelectedPrint( const QFont & )));
 
   reload ();
 }
@@ -629,17 +640,28 @@ void FontConfig::slotFontSelected( const QFont &font )
   myFont = font;
 }
 
+void FontConfig::setFontPrint ( const QFont &font )
+{
+  m_fontchooserPrint->setFont (font);
+  myFontPrint = font;
+}
+
+void FontConfig::slotFontSelectedPrint( const QFont &font )
+{
+  myFontPrint = font;
+}
+
 void FontConfig::apply ()
 {
   myDoc->setFont (KateDocument::ViewFont,getFont());
+  myDoc->setFont (KateDocument::PrintFont,getFontPrint());
 }
 
 void FontConfig::reload ()
 {
   setFont (myDoc->getFont(KateDocument::ViewFont));
+  setFontPrint (myDoc->getFont(KateDocument::PrintFont));
 }
-
-
 
 EditKeyConfiguration::EditKeyConfiguration(QWidget *parent, char *name): Kate::ConfigPage(parent)
 {

@@ -169,6 +169,12 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   page=addVBoxPage(path, i18n("Editing Options"),
                        BarIcon("edit", KIcon::SizeSmall ) );
   editConfigPage = v->getDoc()->editConfigPage (page);
+  
+  path.clear();
+  path << i18n("Editor") << i18n("Keyboard");
+  page=addVBoxPage(path,i18n("Keyboard configuration"),
+                        SmallIcon("edit", KIcon::SizeSmall));
+  keysConfigPage = v->getDoc()->keysConfigPage (page);
 
   // spell checker
   path.clear();
@@ -182,12 +188,6 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   page=addVBoxPage(path,i18n("Highlighting configuration"),
                         SmallIcon("highlighting", KIcon::SizeSmall));
   hlConfigPage = v->getDoc()->hlConfigPage (page);
-  
-  path.clear();
-  path << i18n("Editor") << i18n("Keyboard");
-  page=addVBoxPage(path,i18n("Keyboard configuration"),
-                        SmallIcon("edit", KIcon::SizeSmall));
-  keysConfigPage = v->getDoc()->keysConfigPage (page);
 
   path.clear();
   path << i18n("Plugins") << i18n("Manager");

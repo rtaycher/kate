@@ -1599,6 +1599,10 @@ void KateDocument::readConfig(KConfig *config)
 
   colors[0] = config->readColorEntry("Color Background", &colors[0]);
   colors[1] = config->readColorEntry("Color Selected", &colors[1]);
+  
+  tagAll();
+  updateEditAccels();
+  updateViews();
 }
 
 void KateDocument::writeConfig(KConfig *config)
@@ -1664,94 +1668,65 @@ void KateDocument::configDialog()
   KWin kwin;
 
   KDialogBase *kd = new KDialogBase(KDialogBase::IconList,
-                                    i18n("Configure Kate Editorpart"),
+                                    i18n("Configure"),
                                     KDialogBase::Ok | KDialogBase::Cancel |
                                     KDialogBase::Help ,
                                     KDialogBase::Ok, kapp->mainWidget());
 
   // color options
-  QVBox *page=kd->addVBoxPage(i18n("Colors"), QString::null,
+  QVBox *page=kd->addVBoxPage(i18n("Colors"), i18n("Colors"),
                               BarIcon("colorize", KIcon::SizeMedium) );
-  ColorConfig *colorConfig = new ColorConfig(page, "", this);
+  Kate::ConfigPage *mcolorConfigPage = colorConfigPage(page);
 
   page = kd->addVBoxPage(i18n("Fonts"), i18n("Fonts Settings"),
                               BarIcon("fonts", KIcon::SizeMedium) );
-  FontConfig *fontConfig = new FontConfig(page, "", this);
-
-  //PRINTING / Font options
-  page = kd->addVBoxPage(i18n("Printing"),i18n("Print settings"),
-			    BarIcon("fonts",KIcon::SizeMedium));
-  FontConfig *printFontConfig = new FontConfig(page, "", this);
-  printFontConfig->setFont(getFont(PrintFont));
-
+  Kate::ConfigPage *mfontConfigPage = fontConfigPage(page);
 
   // indent options
-  page=kd->addVBoxPage(i18n("Indent"), QString::null,
+  page=kd->addVBoxPage(i18n("Indent"), i18n("Indent Options"),
                        BarIcon("rightjust", KIcon::SizeMedium) );
-  IndentConfigTab *indentConfig = new IndentConfigTab(page, this);
+  Kate::ConfigPage *mindentConfigPage = indentConfigPage(page);
 
   // select options
-  page=kd->addVBoxPage(i18n("Select"), QString::null,
+  page=kd->addVBoxPage(i18n("Select"), i18n("Selection behavior"),
                        BarIcon("misc") );
-  SelectConfigTab *selectConfig = new SelectConfigTab(page, this);
+  Kate::ConfigPage *mselectConfigPage = selectConfigPage(page);
 
   // edit options
-  page=kd->addVBoxPage(i18n("Edit"), QString::null,
+  page=kd->addVBoxPage(i18n("Edit"), i18n("Editing Options"),
                        BarIcon("edit", KIcon::SizeMedium ) );
-  EditConfigTab *editConfig = new EditConfigTab(page, this);
+  Kate::ConfigPage *meditConfigPage = editConfigPage (page);
 
   // Cursor key options
-  page=kd->addVBoxPage(i18n("Cursor Keys"), QString::null,
+  page=kd->addVBoxPage(i18n("Keyboard"), i18n("Keyboard configuration"),
                        BarIcon("edit", KIcon::SizeMedium ) );
-  EditKeyConfiguration *editKeyConfig = new EditKeyConfiguration(page);
+  Kate::ConfigPage *mkeysConfigPage = keysConfigPage (page);
 
   // spell checker
   page = kd->addVBoxPage( i18n("Spelling"), i18n("Spell checker behavior"),
                           BarIcon("spellcheck", KIcon::SizeMedium) );
-
-  KSpellConfig *ksc = new KSpellConfig(page, 0L, ksConfig(), false );
+  Kate::ConfigPage *mkSpellConfigPage = kSpellConfigPage (page);
 
   kwin.setIcons(kd->winId(), kapp->icon(), kapp->miniIcon());
 
-  HighlightDialogPage *hlPage;
-  HlManager *hlManager;
-  HlDataList hlDataList;
-  ItemStyleList defaultStyleList;
-
-  hlManager = HlManager::self();
-
-  defaultStyleList.setAutoDelete(true);
-  hlManager->getDefaults(defaultStyleList);
-
-  hlDataList.setAutoDelete(true);
-  //this gets the data from the KConfig object
-  hlManager->getHlDataList(hlDataList);
-
   page=kd->addVBoxPage(i18n("Highlighting"),i18n("Highlighting configuration"),
                         BarIcon("edit",KIcon::SizeMedium));
-  hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &hlDataList, 0, page);
+  Kate::ConfigPage *mhlConfigPage = hlConfigPage (page);
 
- if (kd->exec()) {
-    // color options
-    colorConfig->apply ();
-    fontConfig->apply ();
-    setFont (PrintFont,printFontConfig->getFont());
-    tagAll();
-    editKeyConfig->save();
-    updateViews();
-    updateEditAccels();
-    // indent options
-    indentConfig->apply ();
-    // select options
-    selectConfig->apply ();
-    // edit options
-    editConfig->apply ();
-    // spell checker
-    ksc->writeGlobalSettings();
-    setKSConfig(*ksc);
-    hlManager->setHlDataList(hlDataList);
-    hlManager->setDefaults(defaultStyleList);
-    hlPage->saveData();
+  if (kd->exec())
+  {
+    mcolorConfigPage->apply();
+    mfontConfigPage->apply();
+    mindentConfigPage->apply();
+    mselectConfigPage->apply();
+    meditConfigPage->apply();
+    mkeysConfigPage->apply();
+    mkSpellConfigPage->apply();
+    mhlConfigPage->apply();
+
+    // save the config, reload it to update doc + all views
+    writeConfig();
+    readConfig();
   }
 
   delete kd;
@@ -4213,12 +4188,12 @@ bool KateDocument::exportDocumentToHTML(QTextStream *outputStream,const QString 
 	QColor previousCharacterColor(0,0,0); // default color of HTML characters is black
 	(*outputStream) << "<span style='color=#000000'>";
 
-	for (int curLine=0;curLine<numLines();curLine++)
+	for (uint curLine=0;curLine<numLines();curLine++)
 	{ // html-export that line :
 		TextLine::Ptr textLine = getTextLine(curLine);
 		//ASSERT(textLine != NULL);
 		// for each character of the line : (curPos is the position in the line)
-		for (int curPos=0;curPos<textLine->length();curPos++)
+		for (uint curPos=0;curPos<textLine->length();curPos++)
 		{
 			Attribute *charAttributes = attribute(textLine->getAttr(curPos));
 			//ASSERT(charAttributes != NULL);

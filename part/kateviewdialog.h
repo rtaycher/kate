@@ -202,14 +202,20 @@ public:
 
   void setFont ( const QFont &font );
   QFont getFont ( ) { return myFont; };
+  
+  void setFontPrint ( const QFont &font );
+  QFont getFontPrint ( ) { return myFontPrint; };
 
   private:
     class KFontChooser *m_fontchooser;
+    class KFontChooser *m_fontchooserPrint;
     QFont myFont;
+    QFont myFontPrint;
     KateDocument *myDoc;
 
   private slots:
     void slotFontSelected( const QFont &font );
+    void slotFontSelectedPrint ( const QFont &font );
 
   public slots:
     void apply ();
