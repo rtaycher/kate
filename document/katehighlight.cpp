@@ -617,7 +617,7 @@ ItemData::ItemData(const QString name, int defStyleNum,
 HlData::HlData(const QString &wildcards, const QString &mimetypes, const QString &identifier)
   : wildcards(wildcards), mimetypes(mimetypes), identifier(identifier) {
 
-  itemDataList.setAutoDelete(true);
+//JW  itemDataList.setAutoDelete(true);
 }
 
 Highlight::Highlight(const char * name) : iName(name), refCount(0)
@@ -701,7 +701,7 @@ void Highlight::getItemDataList(ItemDataList &list, KConfig *config) {
   QRgb col, selCol;
 
   list.clear();
-  list.setAutoDelete(true);
+//JW  list.setAutoDelete(true);
   createItemData(list);
 
   for (p = list.first(); p != 0L; p = list.next()) {
@@ -907,25 +907,24 @@ void AutoHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
 
 void AutoHighlight::createItemData(ItemDataList &list)
 {
-  struct syntaxContextData *data;
-  //kdDebug(13010)<<"In AutoHighlight::createItemData***********************"<<endl;
-  HlManager::self()->syntax->setIdentifier(identifier);
-  data=HlManager::self()->syntax->getGroupInfo("highlighting","itemData");
-  while (HlManager::self()->syntax->nextGroup(data))
-    {
-	//kdDebug(13010)<< HlManager::self()->syntax->groupData(data,QString("name"))<<endl;
-	list.append(new ItemData(
+  if (internalIDList.count()==0)
+  {
+    internalIDList.setAutoDelete(true);
+    struct syntaxContextData *data;
+    HlManager::self()->syntax->setIdentifier(identifier);
+    data=HlManager::self()->syntax->getGroupInfo("highlighting","itemData");
+    while (HlManager::self()->syntax->nextGroup(data))
+      {
+	internalIDList.append(new ItemData(
           HlManager::self()->syntax->groupData(data,QString("name")),
           getDefStyleNum(HlManager::self()->syntax->groupData(data,QString("defStyleNum")))));
 
-    }
-  if (data) HlManager::self()->syntax->freeGroupInfo(data);
-  //kdDebug(13010)<<"****************ITEMDATALIST - BEGIN*********************"<<endl;
-/*    for (ItemData *it=list.first();it!=0;it=list.next())
-      {
-        kdDebug(13010)<<it->name<<endl;
-      }*/
-//  kdDebug(13010)<<"****************ITEMDATALIST - END*********************"<<endl;
+      }
+    if (data) HlManager::self()->syntax->freeGroupInfo(data);
+  }
+  for (uint i=0;i<internalIDList.count();i++)
+  list=internalIDList;
+//	list.append(new ItemData(internalIDList.at(i)));
 }
 
 HlItem *AutoHighlight::createHlItem(struct syntaxContextData *data, int *res)
@@ -1205,7 +1204,7 @@ int HlManager::makeAttribs(Highlight *highlight, Attribute *a, int maxAttribs) {
   defaultStyleList.setAutoDelete(true);
   getDefaults(defaultStyleList);
 
-  itemDataList.setAutoDelete(true);
+//  itemDataList.setAutoDelete(true);
   highlight->getItemDataList(itemDataList);
   nAttribs = itemDataList.count();
   for (z = 0; z < nAttribs; z++) {

@@ -237,6 +237,7 @@ class ItemStyle {
     ItemStyle();
 //    ItemStyle(const ItemStyle &);
     ItemStyle(const QColor &, const QColor &, bool bold, bool italic);
+    ItemStyle(ItemStyle *its){col=its->col;selCol=its->selCol; bold=its->bold; italic=its->italic;}
 //    void setData(const ItemStyle &);
     QColor col;
     QColor selCol;
@@ -252,7 +253,8 @@ class ItemData : public ItemStyle {
     ItemData(const QString  name, int defStyleNum);
     ItemData(const QString  name, int defStyleNum,
       const QColor&, const QColor&, bool bold, bool italic);
-
+    ItemData(ItemData 
+*itd):ItemStyle((ItemStyle*)itd),name(itd->name),defStyleNum(itd->defStyleNum),defStyle(itd->defStyle){;}
     const QString name;
     int defStyleNum;
     int defStyle; //boolean value
@@ -352,6 +354,7 @@ class AutoHighlight : public GenHighlight
     virtual void setKeywords (HlKeyword *keyword,HlKeyword *dataType);
     virtual void createItemData (ItemDataList &list);
     HlItem *createHlItem(struct syntaxContextData *data, int *res);
+    ItemDataList internalIDList;
 };
 
 //class KWriteDoc;
