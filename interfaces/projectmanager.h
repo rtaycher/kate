@@ -48,16 +48,16 @@ class ProjectManager : public QObject
     /**
      * Creates a new project file at give url of given type + opens it
      * @param type projecttype
-     * @param url url of the new project file
+     * @param filename name of the new project file
      * @return Project new created project object
      */
-    class Project *create (const QString &type, const KURL &url);
+    class Project *create (const QString &type, const QString &filename);
     
     /**
-     * @param url url of the project file
+     * @param filename name of the project file
      * @return Project opened project
      */
-    class Project *open (const KURL &url);
+    class Project *open (const QString &filename);
        
   private:
     /**

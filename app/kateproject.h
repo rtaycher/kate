@@ -31,7 +31,7 @@ class KateProject : public QObject
   Q_OBJECT
 
   public:
-    KateProject (QObject *parent, const KURL &url);
+    KateProject (QObject *parent, const QString &filename);
     ~KateProject ();
     
     Kate::Project *project () { return m_project; };
@@ -39,6 +39,8 @@ class KateProject : public QObject
     Kate::ProjectPlugin *plugin () { return m_plugin; };
     
     QString type () const;
+    
+    QString fileName () const;
     
     bool save ();
     
@@ -48,7 +50,7 @@ class KateProject : public QObject
     Kate::Project *m_project;
     Kate::ProjectPlugin *m_plugin;
     KConfig *m_data;
-    KURL m_url;
+    QString m_filename;
 };
 
 #endif

@@ -54,14 +54,14 @@ ProjectManager::~ProjectManager ()
   delete d;
 }
 
-Project *ProjectManager::create (const QString &type, const KURL &url)
+Project *ProjectManager::create (const QString &type, const QString &filename)
 {
-  return d->projectMan->create (type, url);
+  return d->projectMan->create (type, filename);
 }
     
-Project *ProjectManager::open (const KURL &url)
+Project *ProjectManager::open (const QString &filename)
 {
-  return d->projectMan->open (url);
+  return d->projectMan->open (filename);
 }
 
 ProjectManager *projectManager ()

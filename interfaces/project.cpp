@@ -53,14 +53,19 @@ Project::~Project ()
   delete d;
 }
 
-ProjectPlugin *Project::plugin ()
+ProjectPlugin *Project::plugin () const
 {
   return d->project->plugin ();
 }
 
-QString Project::type ()
+QString Project::type () const
 {
   return d->project->type ();
+}
+
+QString Project::fileName () const
+{
+  return d->project->fileName ();
 }
 
 bool Project::save ()

@@ -1,0 +1,8 @@
+<!DOCTYPE kpartgui>
+<kpartplugin name="katedefaultproject" library="libkatedefaultprojectplugin" version="1">
+<MenuBar>
+ <Menu name="project"><Text>&amp;Project</Text>
+    <Action name="project_compile" />
+ </Menu>
+</MenuBar>
+</kpartplugin>

@@ -10,6 +10,7 @@ libkateinterfaces_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugin
 
 libkateinterfaces_la_LIBADD   = ../interfaces/libkateinterfacesprivate.la -lkscript ../lib/libkmultitabbar.la ../utils/libkateutils.la
 libkateinterfaces_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -no-undefined
+
 kate_la_SOURCES = katemain.cpp
 kate_la_LIBADD = libkateinterfaces.la
 kate_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version 
@@ -38,4 +39,3 @@ dummy_kwrite.cpp:
 METASOURCES = AUTO  
   
 INCLUDES= -I../interfaces -I$(srcdir)/../lib $(all_includes)
-

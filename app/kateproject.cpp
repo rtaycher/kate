@@ -21,20 +21,27 @@
 #include "kateproject.h"
 #include "kateproject.moc"
 
-KateProject::KateProject (QObject *parent, const KURL &url) : QObject (parent)
+KateProject::KateProject (QObject *parent, const QString &filename) : QObject (parent)
 {
-  m_url = url;
+  m_filename = filename;
+  m_data = new KConfig (filename);
   m_project = new Kate::Project (this);
 }
 
 KateProject::~KateProject()
 {
+  delete m_data;
 }
 
 QString KateProject::type () const
 {
   m_data->setGroup("General");
   return m_data->readEntry ("Type", "Default");
+}
+
+QString KateProject::fileName () const
+{
+  return m_filename;
 }
 
 bool KateProject::save ()

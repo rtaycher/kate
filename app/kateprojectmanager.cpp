@@ -53,14 +53,14 @@ void KateProjectManager::setupPluginList ()
   }
 }
 
-Kate::Project *KateProjectManager::create (const QString &type, const KURL &url)
+Kate::Project *KateProjectManager::create (const QString &type, const QString &filename)
 {
   return 0;
 }
     
-Kate::Project *KateProjectManager::open (const KURL &url)
+Kate::Project *KateProjectManager::open (const QString &filename)
 {
-  KateProject *project = new KateProject (this, url);
+  KateProject *project = new KateProject (this, filename);
   
   m_projects.append (project);
   

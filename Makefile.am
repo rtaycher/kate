@@ -1,4 +1,4 @@
-SUBDIRS = lib utils interfaces app data pics
+SUBDIRS = lib utils interfaces app data pics plugins
 EXTRA_DIST = AUTHORS COPYING.LIB ChangeLog DESIGN NEWS README TODO Doxyfile
 
 messages:

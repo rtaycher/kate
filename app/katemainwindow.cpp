@@ -910,12 +910,12 @@ void KateToggleToolViewAction::slotWidgetDestroyed()
 
 void KateMainWindow::slotProjectNew ()
 {
-  m_projectManager->create ("Default", KURL("test"));
+  m_projectManager->create ("Default", QString("test"));
 }
 
 void KateMainWindow::slotProjectOpen ()
 {
-  m_projectManager->create ("Default", KURL("test"));
+  m_projectManager->create ("Default", QString("test"));
 }
 
 void KateMainWindow::slotProjectSave ()

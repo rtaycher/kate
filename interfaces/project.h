@@ -49,13 +49,19 @@ class Project : public QObject
      * Returns the project plugin of this project object
      * @return ProjectPlugin project plugin of this project
      */
-    class ProjectPlugin *plugin ();
+    class ProjectPlugin *plugin () const;
    
     /**
      * Return the project type
      * @return QString project type
      */
-    QString type ();
+    QString type () const;
+    
+    /**
+     * Return the filename of the project file
+     * @return QString project filename
+     */
+    QString fileName () const;
     
     /**
      * Saves the project

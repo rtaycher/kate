@@ -49,9 +49,9 @@ class KateProjectManager : public QObject
     
     Kate::ProjectManager *projectManager () { return m_projectManager; };
     
-    Kate::Project *create (const QString &type, const KURL &url);
+    Kate::Project *create (const QString &type, const QString &filename);
     
-    Kate::Project *open (const KURL &url);
+    Kate::Project *open (const QString &filename);
   
   private:
     Kate::ProjectManager *m_projectManager;
