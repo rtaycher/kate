@@ -2699,7 +2699,7 @@ void KateDocument::updateLines(int startLine, int endLine)
 	  ctxNum = m_highlight->doHighlight(ctxNum,textLine);
 		textLine->setContext(ctxNum);
 
-		stillcontinue = (endCtx == ctxNum);
+		stillcontinue = !(endCtx == ctxNum);
 
  //   stillcontinue = (endCtx.size()!=ctxNum.size());
  //   if ((endCtx.size()!=0) && (ctxNum.size()!=0)) stillcontinue |= (!(ctxNum==endCtx));

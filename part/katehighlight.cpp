@@ -590,14 +590,17 @@ int Highlight::generateContextStack(int ctx,TContexts *ctxs, int *prevLine)
                                 ctxs->resize(ctxs->size()-1);
                                 ctxNum = ((ctxs->size()==0)?0:(*ctxs)[ctxs->size()-1]);
                         }
+
+			if ((*prevLine)>=ctxs->size()-1)
+			{
+				*prevLine=ctxs->size()-1;
+				if (ctxs->size()==0) return ctxNum;
+				if (contextList[(*ctxs)[ctxs->size()-1]]->ctx!=-2)
+				return generateContextStack(contextList[(*ctxs)[ctxs->size()-1]]->ctx,ctxs,prevLine);
+			}
                 }
 		else if (ctx==-2) ctxNum=((ctxs->size()==0)?0:(*ctxs)[ctxs->size()-1]);
-	if ((*prevLine)>=ctxs->size()-1)
-	{
-		*prevLine=ctxs->size()-1;
-		if (contextList[(*ctxs)[ctxs->size()-1]]->ctx!=-2)
-			return generateContextStack(contextList[(*ctxs)[ctxs->size()-1]]->ctx,ctxs,prevLine);
-	}
+
 	return ctxNum;
 }
 
