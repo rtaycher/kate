@@ -1057,17 +1057,17 @@
   <keyword> Explicit </keyword>
   </keywords>
   <types>
-  <type>Integer </types>
-  <type>Long </types>
-  <type>Byte </types>
-  <type>Boolean </types>
-  <type>Variant </types>
-  <type>Single </types>
-  <type>Double </types>
-  <type>Currency </types>
-  <type>String </types>
-  <type>Object </types>
-  <type>Control </types>
+  <type>Integer </type>
+  <type>Long </type>
+  <type>Byte </type>
+  <type>Boolean </type>
+  <type>Variant </type>
+  <type>Single </type>
+  <type>Double </type>
+  <type>Currency </type>
+  <type>String </type>
+  <type>Object </type>
+  <type>Control </type>
   </types>
 </language>
 
