@@ -240,9 +240,11 @@ class KWriteDoc : public KTextEditor::Document {
 
     virtual QString text() const;
     QString getWord(PointStruc &cursor);
-    public slots:
+
+  public slots:
     virtual void setText(const QString &);
-    public:
+
+  public:
     bool hasMarkedText() {return (selectEnd >= selectStart);}
     QString markedText(int flags);
     void delMarkedText(VConfig &/*, bool undo = true*/);
@@ -315,6 +317,7 @@ class KWriteDoc : public KTextEditor::Document {
 
   protected slots:
     void clipboardChanged();
+    void slotBufferChanged();
 
   private slots:
     void slotViewDestroyed();

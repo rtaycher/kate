@@ -122,6 +122,7 @@ KWriteDoc::KWriteDoc(HlManager *hlManager, const QString &path,
   m_bSingleViewMode = bSingleViewMode;
 
   buffer = new KWBuffer;
+  connect(buffer, SIGNAL(linesChanged(int)), this, SLOT(slotBufferChanged()));
 
   colors[0] = white;
   colors[1] = darkBlue;
@@ -1815,6 +1816,11 @@ void KWriteDoc::updateMaxLength(TextLine::Ptr &textLine) {
       newDocGeometry = true;
     }
   }
+}
+
+void KWriteDoc::slotBufferChanged() {
+  newDocGeometry = true;
+  updateViews();
 }
 
 void KWriteDoc::updateViews(KWriteView *exclude) {
