@@ -1,9 +1,10 @@
 /***************************************************************************
-                          kateviewmanager.cpp  -  description
+                          kateviewmanager.cpp 
+                          View Manager for the Kate text editor
                              -------------------
     begin                : Wed Jan 3 2001
-    copyright            : (C) 2001 by Christoph Cullmann
-    email                : cullmann@kde.org
+    copyright            : (C) 2001 by Christoph Cullmann, 2001, 2002 by Anders Lund
+    email                : cullmann@kde.org anders@alweb.dk
  ***************************************************************************/
 
 /***************************************************************************
@@ -51,11 +52,11 @@ KateViewManager::KateViewManager (QWidget *parent, KateDocManager *docManager) :
   // no memleaks
   viewList.setAutoDelete(true);
   viewSpaceList.setAutoDelete(true);
-  
+
   newOne = true;
 
   this->docManager = docManager;
-	
+
 	myEncoding = QString::fromLatin1(QTextCodec::codecForLocale()->name());
 
   // sizemanagment
@@ -90,7 +91,7 @@ bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, 
   Kate::View *view = (Kate::View *)doc->createView (this, 0L);
   connect(view,SIGNAL(newStatus()),this,SLOT(setWindowCaption()));
   viewList.append (view);
-	
+
 	doc->setEncoding(myEncoding);
 
   if (newDoc)
@@ -126,7 +127,7 @@ bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, 
   {
     view->getDoc()->setDocName (doc->docName ());
   }
-  
+
   if (docManager->myfirstDoc)
     view->getDoc()->setDocName (i18n("Untitled %1").arg(doc->documentNumber()));
 
@@ -265,7 +266,7 @@ void KateViewManager::activateView ( Kate::View *view )
 
     emit viewChanged ();
   }
-  
+
   docManager->setCurrentDoc(view->getDoc());
 }
 
@@ -405,7 +406,7 @@ void KateViewManager::statusMsg ()
 
   int mod = (int)v->getDoc()->isModified();
   bool block=v->getDoc()->blockSelectionMode();
-  
+
   QString c = v -> getDoc()->docName();
    //File name shouldn't be too long - Maciek
    if (c.length() > 200)
@@ -742,7 +743,7 @@ void KateViewManager::openURLReal (KURL url)
   {
     createView (false, KURL(), 0L, (Kate::Document *)docManager->docList.at(0));
     docManager->docList.at(0)->setEncoding(myEncoding);
-    
+
     if (docManager->docList.at(0)->openURL (url))
     {
       ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
@@ -752,7 +753,7 @@ void KateViewManager::openURLReal (KURL url)
     setWindowCaption();
 
     docManager->myfirstDoc = false;
-    
+
     return;
   }
 
@@ -804,6 +805,12 @@ void KateViewManager::toggleIconBorder ()
 {
   if (!activeView()) return;
   activeView()->toggleIconBorder ();
+}
+
+void KateViewManager::toggleLineNumbers()
+{
+  if (!activeView()) return;
+  activeView()->toggleLineNumbersOn();
 }
 
 void KateViewManager::toggleVertical()
@@ -1026,8 +1033,9 @@ void KateViewManager::reloadCurrentDoc()
 // session config functions
 ///////////////////////////////////////////////////////////
 
-void KateViewManager::saveAllDocsAtCloseDown()
+void KateViewManager::saveAllDocsAtCloseDown(  )
 {
+  kdDebug(13030)<<"saveAllDocsAtCloseDown()"<<endl;
   if (docManager->docCount () == 0) return;
 
   QPtrList<Kate::Document> closeList;
@@ -1037,7 +1045,6 @@ void KateViewManager::saveAllDocsAtCloseDown()
 
   Kate::View *v = 0L;
   uint id = 0;
-  QStringList list;
 
   KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
   
@@ -1055,12 +1062,10 @@ void KateViewManager::saveAllDocsAtCloseDown()
     if ( !v->getDoc()->url().isEmpty() )
     {
       scfg->setGroup( v->getDoc()->url().prettyURL() );
-      v->writeSessionConfig(scfg);
       v->getDoc()->writeSessionConfig(scfg);
 
       scfg->setGroup("open files");
       scfg->writeEntry( QString("File%1").arg(id), v->getDoc()->url().prettyURL() );
-      list.append( QString("File%1").arg(id) );
     }
 
     if( !closeDocWithAllViews( v ) )
@@ -1069,77 +1074,90 @@ void KateViewManager::saveAllDocsAtCloseDown()
     closeList.remove (closeList.at(0));
   }
 
-  scfg->setGroup("open files");
-  scfg->writeEntry( "list", list );
   scfg->sync();
+  kdDebug(13030)<<">>>> saveAllDocsAtCloseDown() DONE"<<endl;
 }
 
 void KateViewManager::reopenDocuments(bool isRestore)
 {
+  kdDebug(13030)<<"reopenDocuments()"<<endl;
   KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
   KConfig* config = kapp->config();
   config->setGroup("General");
 
-  if ( scfg->hasGroup("splitter0") && (isRestore || config->readBoolEntry("restore views", false)) )
+/*  if ( scfg->hasGroup("splitter0") && (isRestore || config->readBoolEntry("restore views", false)) )
   {
+    kdDebug(13030)<<"calling restoreViewConfig()"<<endl;
     restoreViewConfig();
-    return;
   }
-
-  scfg->setGroup("open files");
-  // try to focus the file that had focus at close down
-  QString curfile = scfg->readEntry("current file");
-  Kate::View *viewtofocus = 0L;
-
-  config->setGroup("open files");
-  if (config->readBoolEntry("reopen at startup", true) || isRestore )
+  else*/ if (config->readBoolEntry("reopen at startup", true) || isRestore )
   {
-    QStringList list = /*config*/scfg->readListEntry("list");
+    scfg->setGroup("open files");
+    // try to focus the file that had focus at close down
+    QString curfile = scfg->readEntry("current file");
+    Kate::View *viewtofocus = 0L;
 
-    for ( uint i = 0; i < list.count(); i++ )
+    int i = 1;
+    QString fn;
+    while ( scfg->hasKey( QString("File%1").arg( i ) )  )
     {
-      scfg->setGroup("open files");
-      QString fn = scfg->readEntry(list[i]);
-      if ( fn.isEmpty() ) continue;
-      openURL( KURL( fn ) );
-      scfg->setGroup( fn );
-      Kate::View* v = activeView();
-      if (v)
-      {
-        v->readSessionConfig( scfg );
-        v->getDoc()->readSessionConfig( scfg );
-        if ( fn == curfile ) viewtofocus = v;
+      fn = scfg->readEntry( QString("File%1").arg( i ) );
+      if ( !fn.isEmpty() ) {
+        kdDebug()<<"reopenDocuments(): opening file : "<<fn<<endl;
+        openURL( KURL( fn ) );
+        Kate::View* v = activeView();
+        if (v)
+        {
+          scfg->setGroup( fn );
+          v->getDoc()->readSessionConfig( scfg );
+          scfg->setGroup( scfg->readEntry("viewconfig") );
+          v->readSessionConfig( scfg );
+          if ( fn == curfile ) viewtofocus = v;
+        }
       }
-      scfg->deleteGroup( fn );
+      scfg->setGroup("open files");
+      i++;
     }
+    if ( viewtofocus ) activateView( viewtofocus );
   }
 
-  if ( viewtofocus ) activateView( viewtofocus );
-  // delete the open files from sessionrc file
-  scfg->deleteGroup("open files");
-  scfg->sync();
+  kdDebug(13030)<<">>>> reopenDocuments() DONE"<<endl;
 }
 
 void KateViewManager::saveViewSpaceConfig()
 {
-   if (viewSpaceCount() == 1) return;
-
+   kdDebug(13030)<<"saveViewSpaceConfig()"<<endl;
    KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
 
-   // I need the first splitter, the one which has this as parent.
-   KateSplitter* s;
-   QObjectList *l = queryList("KateSplitter", 0, false, false);
-   QObjectListIt it( *l );
-   if ( (s = (KateSplitter*)it.current()) != 0 )
-     saveSplitterConfig( s, 0, scfg );
+  // TEMPORARY ??
+  kdDebug(13030)<<"clearing session config file before saving list"<<endl;
+  scfg->setGroup("nogroup");
+  QStringList groups(scfg->groupList());
+  for ( QStringList::Iterator it = groups.begin(); it != groups.end(); ++it )
+    if ( *it != "nogroup") scfg->deleteGroup(*it);
 
-   delete l;
+   if (viewSpaceCount() == 1) {
+     viewSpaceList.first()->saveFileList( scfg, 0 );
+   }
+   else {
+
+     // I need the first splitter, the one which has this as parent.
+     KateSplitter* s;
+     QObjectList *l = queryList("KateSplitter", 0, false, false);
+     QObjectListIt it( *l );
+     if ( (s = (KateSplitter*)it.current()) != 0 )
+       saveSplitterConfig( s, 0, scfg );
+
+     delete l;
+   }
 
    scfg->sync();
+   kdDebug(13030)<<">>>> saveViewSpaceConfig() DONE"<<endl;
 }
 
 void KateViewManager::saveSplitterConfig( KateSplitter* s, int idx, KSimpleConfig* config )
 {
+
    QString grp = QString("splitter%1").arg(idx);
    config->setGroup(grp);
 
@@ -1201,12 +1219,11 @@ void KateViewManager::restoreViewConfig()
    // call restoreSplitter for splitter0
    restoreSplitter( scfg, QString("splitter0"), this );
    // finally, make the correct view active.
+   kdDebug(13030)<<"All splitters restored, setting active view"<<endl;
    scfg->setGroup("general");
-   activateSpace( viewSpaceList.at( scfg->readNumEntry("activeviewspace") )->currentView() );
-   scfg->deleteGroup("general");
-   if ( scfg->hasGroup("open files") )
-     scfg->deleteGroup("open files");
-   scfg->sync();
+   KateViewSpace *vs = viewSpaceList.at( scfg->readNumEntry("activeviewspace") );
+   if ( vs ) // better be sure ;}
+     activateSpace( vs->currentView() );
 }
 
 void KateViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWidget* parent)
@@ -1224,70 +1241,78 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
    QStringList children = config->readListEntry( "children" );
    for (QStringList::Iterator it=children.begin(); it!=children.end(); ++it)
    {
-     kapp->processEvents();
+     //kapp->processEvents();// == CRASH!!!!!!!!!!!!!!!!!!!!
 
      // for a viewspace, create it and open all documents therein.
-     // TODO: restore cursor position.
      if ( (*it).startsWith("viewspace") ) {
-       kdDebug(13030)<<"Adding a viewspace: "<<(*it)<<endl;
-       KateViewSpace* vs;
-       kdDebug(13030)<<"creating a viewspace for "<<(*it)<<endl;
-       vs = new KateViewSpace( s );
-       connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, int, QString)), vs, SLOT(slotStatusChanged(Kate::View *, int, int, int, int, QString)));
+       KateViewSpace* vs = new KateViewSpace( s );
+       connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, QString)), vs, SLOT(slotStatusChanged(Kate::View *, int, int, int, bool, int, QString)));
        vs->installEventFilter( this );
        viewSpaceList.append( vs );
        vs->show();
        setActiveSpace( vs );
+
        // open documents
-       config->setGroup( (*it) );
        int idx = 0;
-       QString key = QString("file%1").arg( idx );
-       while ( config->hasKey( key ) ) {
-         QStringList data = config->readListEntry( key );
-         if ( ! docManager->isOpen( KURL(data[0]) ) ) {
-           openURL( KURL( data[0] ) );
-           config->setGroup( data[0] );
-           Kate::View* v = activeView();
-           if (v)
-           {
-             v->readSessionConfig( config );
+       QString file = QString("file%1").arg( idx );
+       config->setGroup( (*it) );  // "viewspace<n>"
+       while ( config->hasKey( file ) ) {     // FIXME FIXME
+         Kate::View* v;
+         KURL url( config->readEntry( file ) );
+         if ( ! docManager->isOpen( url ) ) {
+           openURL( url );
+           v = activeView();
+           if (v && v->getDoc()->url() == url ) { // this is a wild assumption, but openURL() fails to return a bool :(
+             // doc config is in group "<url.prettyURL()>"
+             config->setGroup( url.prettyURL() );
              v->getDoc()->readSessionConfig( config );
            }
-           else
-           {
-             createView (true, KURL(), 0L);
+           else {
+             //createView (true, KURL(), 0L);
+             kdDebug(13030)<<"KateViewManager: failed to open document "<<file<<endl;
            }
-           config->deleteGroup( data[0] );
          }
          else { // if the group has been deleted, we can find a document
-           kdDebug(13030)<<"document allready open, creating extra view"<<endl;
            // ahem, tjeck if this document actually exists.
-           int documentNumber = docManager->findDoc( KURL(data[0]) );
-           if (documentNumber >= 0)
-             createView( false, KURL(), 0L, (Kate::Document *)docManager->nthDoc( documentNumber ) );
+           Kate::Document *doc = docManager->findDocByUrl( url );
+           if ( doc ) {
+             kdDebug(13030)<<"Document '"<<url.prettyURL()<<"' found open, creating extra view"<<endl;
+             createView( false, KURL(), 0L, doc );
+           }
+           else
+             kdDebug(13030)<<"SOMETHING IS ROTTEN IN THE STATE OF DENMARK (or so)"<<endl;
+           v = activeView(); // if shakespeare was right, this is a mistake :(((
          }
-         // cursor pos
-         Kate::View* v = activeView();
-         v->setCursorPosition( data[1].toInt(), data[2].toInt() );
+         if ( v ) {
+           // view config is in group "<group>:<file>"
+           QString g = *it + ":" + file;
+           kdDebug()<<"view config is group '"<<g<<"'"<<endl;
+           if ( config->hasGroup( g ) ) {
+             config->setGroup( g );
+             v->readSessionConfig( config );
+           }
+         }
+
          idx++;
-         key = QString("file%1").arg( idx );
+         file = QString("file%1").arg( idx );
          config->setGroup(*it);
+         // done this file
        }
-       config->deleteGroup( (*it) );
        // If the viewspace have no documents due to bad luck, create a blank.
        if ( vs->viewCount() < 1)
          createView( true, KURL() );
+       kdDebug(13030)<<"Done resotring a viewspace"<<endl;
      }
      // for a splitter, recurse.
-     else if ( (*it).startsWith("splitter") )
+     else if ( (*it).startsWith("splitter") ) {
        restoreSplitter( config, QString(*it), s );
+     }
    }
    // set sizes
    config->setGroup( group );
-   kdDebug(13030)<<QString("splitter has %1 children").arg( s->children()->count() )<<endl;
    s->setSizes( config->readIntListEntry("sizes") );
    s->show();
-   config->deleteGroup( group );
+   kdDebug(13030)<<"Bye from KateViewManager::restoreSplitter() ("<<group<<")"<<endl;
 }
 
 void KateViewManager::gotoMark (KTextEditor::Mark *mark)

@@ -56,8 +56,11 @@ KateApp::KateApp () : Kate::Application (),DCOPObject ("KateApp" )
   connect(this, SIGNAL(lastWindowClosed()), SLOT(quit()));
 
   processEvents();
-
-  mainWindows.first()->restore(isRestored());
+  
+  if ( KMainWindow::canBeRestored(1) )
+    mainWindows.first()->restore( true );
+  else
+    mainWindows.first()->restore( false );
 
   if (!isRestored())
   {

@@ -92,6 +92,7 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
 
     KAction *closeCurrentViewSpace;
     KToggleAction *viewBorder;
+    KToggleAction *viewLineNumbers;
 
     KAction *goNext;
     KAction *goPrev;

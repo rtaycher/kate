@@ -1,9 +1,10 @@
 /***************************************************************************
-                          kateviewmanager.h  -  description
+                          kateviewmanager.h 
+                          View Manager for the Kate Text Editor
                              -------------------
     begin                : Wed Jan 3 2001
-    copyright            : (C) 2001 by Christoph Cullmann
-    email                : cullmann@kde.org
+    copyright            : (C) 2001 by Christoph Cullmann, 2001, 2002 by Anders Lund
+    email                : cullmann@kde.org anders@alweb.dk
  ***************************************************************************/
 
 /***************************************************************************
@@ -37,18 +38,18 @@ class KateViewManager : public Kate::ViewManager
   public:
     KateViewManager (QWidget *parent=0, KateDocManager *docManager=0);
     ~KateViewManager ();
-    
+
     bool newOne;
 
   protected:
     bool useOpaqueResize;
     QPtrList<Kate::View> viewList;
-
+    /* Save a list of open files. */
     void saveAllDocsAtCloseDown();
-    /** This will save the splitter configuration */
+    /* This will save the splitter configuration */
     void saveViewSpaceConfig();
 
-    /** reopens documents that was open last time kate was shut down*/
+    /* reopens documents that was open last time kate was shut down*/
     void reopenDocuments(bool isRestore);
 
   public slots:
@@ -69,13 +70,13 @@ class KateViewManager : public Kate::ViewManager
     void moveViewtoSplit (Kate::View *view);
     void moveViewtoStack (Kate::View *view);
 
-    /** Save the configuration of a single splitter.
+    /* Save the configuration of a single splitter.
      * If child splitters are found, it calls it self with those as the argument.
      * If a viewspace child is found, it is asked to save its filelist.
      */
     void saveSplitterConfig(KateSplitter* s, int idx=0, KSimpleConfig* config=0L);
 
-    /** Restore view configuration.
+    /* Restore view configuration.
      * If only one view was present at close down, calls reopenDocuemnts.
      * The configuration will be restored so that viewspaces are created, sized
      * and populated exactly like at shotdown.
@@ -107,7 +108,7 @@ class KateViewManager : public Kate::ViewManager
   public slots:
     void deleteLastView ();
 
-    /** Splits a KateViewSpace into two.
+     /* Splits a KateViewSpace into two.
       * The operation is performed by creating a KateSplitter in the parent of the KateViewSpace to be split,
       * which is then moved to that splitter. Then a new KateViewSpace is created and added to the splitter,
       * and a KateView is created to populate the new viewspace. The new KateView is made the active one,
@@ -191,7 +192,9 @@ class KateViewManager : public Kate::ViewManager
     void slotUnComment ();
 
     void setEol(int);
+    
     void toggleIconBorder ();
+    void toggleLineNumbers();
 
     void toggleVertical();
 

@@ -244,6 +244,7 @@ void KateMainWindow::setupActions()
   closeCurrentViewSpace = new KAction( i18n("Close &Current"), "view_remove", CTRL+SHIFT+Key_R, viewManager, SLOT( slotCloseCurrentViewSpace() ), actionCollection(), "view_close_current_space");
 
   viewBorder =  new KToggleAction(i18n("Show &Icon Border"), Key_F6, viewManager, SLOT(toggleIconBorder()), actionCollection(), "view_border");
+  viewLineNumbers =  new KToggleAction(i18n("Show &Line Numbers"), Key_F9, viewManager, SLOT(toggleLineNumbers()), actionCollection(), "view_line_numbers");
 
   goNext=new KAction(i18n("Next View"),Key_F8,viewManager, SLOT(activateNextView()),actionCollection(),"go_next");
   goPrev=new KAction(i18n("Previous View"),SHIFT+Key_F8,viewManager, SLOT(activatePrevView()),actionCollection(),"go_prev");
@@ -284,7 +285,7 @@ void KateMainWindow::setupActions()
   settingsShowFullPath = new KToggleAction(i18n("Show Full &Path in Title"), 0, this, SLOT(slotSettingsShowFullPath()), actionCollection(), "settings_show_full_path");
   settingsShowToolbar = KStdAction::showToolbar(this, SLOT(slotSettingsShowToolbar()), actionCollection(), "settings_show_toolbar");
   settingsConfigure = KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
-  
+
   setHighlight = docManager->docList.at(0)->hlActionMenu (i18n("&Highlight Mode"), actionCollection(), "set_highlight");
   exportAs = docManager->docList.at(0)->exportActionMenu (i18n("&Export"), actionCollection(),"file_export");
 
@@ -296,6 +297,7 @@ void KateMainWindow::setupActions()
 
 bool KateMainWindow::queryClose()
 {
+  kdDebug(13000)<<"queryClose()"<<endl;
   bool val = false;
 
   if ( ((KateApp *)kapp)->mainWindowsCount () < 2 )
@@ -324,10 +326,10 @@ bool KateMainWindow::queryClose()
   return val;
 }
 
-// anders: attempt to get session manager to restore kate.
-void KateMainWindow::saveProperties(KConfig* cfg)
+void KateMainWindow::saveProperties( KConfig * )
 {
-  cfg->writeEntry("hello", "world");
+  // This gets called in case of a crash. TODO: have a file list saved
+  kdDebug(13000)<<"KateMainWindow::saveProperties()"<<endl;
 }
 
 void KateMainWindow::newWindow ()
@@ -424,6 +426,7 @@ void KateMainWindow::slotWindowActivated ()
     }
 
     viewBorder->setChecked(viewManager->activeView()->iconBorder());
+    viewLineNumbers->setChecked(viewManager->activeView()->lineNumbersOn());
     setHighlight->updateMenu (viewManager->activeView()->getDoc());
     exportAs->updateMenu (viewManager->activeView()->getDoc());
   }

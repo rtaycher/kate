@@ -114,6 +114,17 @@ int KateDocManager::findDoc( KURL url )
   return -1;
 }
 
+Kate::Document *KateDocManager::findDocByUrl( KURL url )
+{
+  QPtrListIterator<Kate::Document> it(docList);
+  for (; it.current(); ++it)
+  {
+    if ( it.current()->url() == url)
+      return it.current();
+  }
+  return 0L;
+}
+
 bool KateDocManager::isOpen(KURL url)
 {
   QPtrListIterator<Kate::Document> it(docList);

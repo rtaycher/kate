@@ -17,6 +17,7 @@
     <Separator/>
     <Action name="file_print"/>
     <Separator/>
+    <Merge/>
     <Action name="file_close"/>
     <Action name="file_close_all"/>
     <Separator/>
@@ -71,6 +72,7 @@
      <Action name="view_split_horiz"/>
      <Separator />
      <Action name="view_border"/>
+     <Action name="view_line_numbers"/>
      <Separator />
      <Action name="view_close_current_space" />
   	<Menu name="go"><text>&amp;Go</text>

@@ -170,21 +170,26 @@ void KateViewSpace::slotStatusChanged (Kate::View *view, int r, int c, int ovr, 
 
 void KateViewSpace::saveFileList( KSimpleConfig* config, int myIndex )
 {
-  config->setGroup( QString("viewspace%1").arg( myIndex ) );
+  QString group = QString("viewspace%1").arg( myIndex );
 
   // Save file list, includeing cursor position in this instance.
   QPtrListIterator<Kate::View> it(mViewList);
 
-  QStringList l;
   int idx = 0;
   for (; it.current(); ++it) {
-    l.clear();
     if ( !it.current()->getDoc()->url().isEmpty() )
     {
-      l << it.current()->getDoc()->url().prettyURL();
-      l << QString("%1").arg( it.current()->cursorLine());
-      l << QString("%1").arg( it.current()->cursorColumn() );
-      config->writeEntry(QString("file%1").arg( idx ), l);
+      // filenames, group: "splitter<n>"
+      config->setGroup( group );
+      config->writeEntry( QString("file%1").arg( idx ), it.current()->getDoc()->url().prettyURL() );
+      // view config, group: "splitter<n>:file<m>"
+      QString vgroup = QString("%1:file%2").arg(group).arg( idx );
+      config->setGroup( vgroup );
+      it.current()->writeSessionConfig( config );
+      // put the view group in group "<filename>", 
+      // if user don't want viewconfig restored the config of the last view for doc will be used
+      config->setGroup( it.current()->getDoc()->url().prettyURL() );
+      config->writeEntry( "viewconfig", vgroup );
     }
     idx++;
   }
