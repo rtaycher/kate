@@ -36,6 +36,17 @@
     <DefineGroup name="edit_find_merge"/>
     <Separator/>
   </Menu>
+  
+  <Menu name="project"><text>&amp;Project</text>
+    <Action name="project_new"/>
+    <Separator />
+    <Action name="project_open"/>
+    <Action name="project_open_recent"/>
+    <Separator/>
+    <Action name="project_save"/>
+    <Separator/>
+    <Action name="project_close"/>
+  </Menu>
 
   <Menu name="documents"><text>&amp;Document</text>
     <Action name="go_back"/>

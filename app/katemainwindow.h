@@ -25,6 +25,9 @@
 
 #include "kateviewmanager.h"
 
+#include "kateprojectmanager.h"
+#include "kateproject.h"
+
 #include <kate/view.h>
 #include <kate/document.h>
 
@@ -52,7 +55,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
   friend class KateDocument;
 
   public:
-    KateMainWindow(KateDocManager *_docManager, KatePluginManager *_pluginManager);
+    KateMainWindow(KateDocManager *_docManager, KatePluginManager *_pluginManager, KateProjectManager *projectMan);
     ~KateMainWindow();
     
     enum DockWidgetMode
@@ -63,6 +66,8 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     
     Kate::MainWindow *mainWindow () { return m_mainWindow; };
     Kate::ToolViewManager *toolViewManager () { return m_toolViewManager; };
+    
+    Kate::Project *project () { return m_project->project(); };
     
     /** Returns the URL of the current document.
      * anders: I add this for use from the file selector. */
@@ -85,12 +90,15 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     // managment items
     KateDocManager *m_docManager;
     KateViewManager *m_viewManager;
+    KateProjectManager *m_projectManager;
 
     // should be protected, and kateviewmanager a friend class.
     KRecentFilesAction *fileOpenRecent;
 
     KateFileList *filelist;
     KateFileSelector *fileselector;
+    
+    KateProject *m_project;
 
   private:
     uint myID;
@@ -216,7 +224,13 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     void pluginHelp ();
     void slotFullScreen(bool);
 
-
+  // slots for the project GUI actions: new/open/save/close
+  public slots:
+    void slotProjectNew ();
+    void slotProjectOpen ();
+    void slotProjectSave ();
+    void slotProjectClose ();
+    
 };
 
 class KateToggleToolViewAction:public KToggleAction

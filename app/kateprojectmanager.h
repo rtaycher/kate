@@ -50,7 +50,7 @@ class KateProjectManager : public QObject
     Kate::Project *create (const QString &type, const KURL &url);
     
     Kate::Project *open (const KURL &url);
-
+  
   private:
     Kate::ProjectManager *m_projectManager;
     

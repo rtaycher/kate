@@ -72,7 +72,7 @@ uint KateMainWindow::uniqueID = 0;
 
 
 
-KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager *_m_pluginManager) :
+KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager *_m_pluginManager, KateProjectManager *projectMan) :
 	KParts::DockMainWindow (),
              DCOPObject ((QString("KateMainWindow%1").arg(uniqueID)).latin1())
 {
@@ -83,6 +83,10 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   m_docManager =  _m_docManager;
   m_pluginManager =_m_pluginManager;
+  m_projectManager = projectMan;
+  
+  m_project = 0;
+  
   config = kapp->config();
 
   QString grp=config->group();
@@ -897,4 +901,22 @@ void KateToggleToolViewAction::slotWidgetDestroyed()
 {
 	unplugAll();
 	deleteLater();
+}
+
+void KateMainWindow::slotProjectNew ()
+{
+  m_projectManager->create ("Default", KURL("test"));
+}
+
+void KateMainWindow::slotProjectOpen ()
+{
+  m_projectManager->create ("Default", KURL("test"));
+}
+
+void KateMainWindow::slotProjectSave ()
+{
+}
+
+void KateMainWindow::slotProjectClose ()
+{
 }

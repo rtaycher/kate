@@ -79,6 +79,11 @@ ToolViewManager *MainWindow::toolViewManager ()
 {
   return d->win->toolViewManager ();
 }
-  
+
+Project *MainWindow::project ()
+{
+  return d->win->project ();
+}
+
 };
 

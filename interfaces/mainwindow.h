@@ -49,6 +49,17 @@ class MainWindow : public QObject
     
     class ToolViewManager *toolViewManager();
     
+    class Project *project ();
+    
+  //invention of public signals, like in kparts/browserextension.h
+  #undef signals
+  #define signals public
+  signals:
+  #undef signals
+  #define signals protected   
+
+    void projectChanged ();
+    
   private:
     class PrivateMainWindow *d;  
 };

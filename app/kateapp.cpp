@@ -197,7 +197,7 @@ int KateApp::newInstance()
 
 KateMainWindow *KateApp::newMainWindow ()
 {
-  KateMainWindow *mainWindow = new KateMainWindow (m_docManager, m_pluginManager);
+  KateMainWindow *mainWindow = new KateMainWindow (m_docManager, m_pluginManager, m_projectManager);
   m_mainWindows.append (mainWindow);
 
   if ((mainWindows() > 1) && m_mainWindows.at(m_mainWindows.count()-2)->kateViewManager()->activeView())
