@@ -169,15 +169,19 @@ bool HlKeyword::startEnable(QChar c)
 // an item as such we are using the key to lookup
 void HlKeyword::addWord(const QString &word)
 {
-  words.append(word);
-  dict.insert(word,&trueBool);
+#if QT_VERSION < 300
+				words.append(word);
+#endif
+				dict.insert(word,&trueBool);
 }
 
 void HlKeyword::addList(const QStringList& list)
 {
 
- words+=list;
- for(uint i=0;i<list.count();i++) dict.insert(list[i], &trueBool);
+#if QT_VERSION < 300
+				words+=list;
+#endif
+				for(uint i=0;i<list.count();i++) dict.insert(list[i], &trueBool);
 }
 
 const QChar *HlKeyword::checkHgl(const QChar *s, int len, bool b)

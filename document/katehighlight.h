@@ -29,13 +29,6 @@
 #include <qdialog.h>
 
 #include <kcolorbtn.h>
-#if QT_VERSION < 300
-#else
-#warning "Quick and Dirty hack, I think it's a bug in the QT libs, or qstrvec is deprecated too"
-#include <qptrvector.h>
-#define QVector QPtrVector
-#endif
-#include <qstrvec.h>
 #include <qdict.h>
 
 #if QT_VERSION < 300
@@ -119,12 +112,16 @@ class HlKeyword : public HlItem
     virtual void addWord(const QString &);
     virtual void addList(const QStringList &);
     virtual const QChar *checkHgl(const QChar *, int len, bool);
-    QStringList getList() { return words;};
-    virtual bool startEnable(QChar c);
+#if QT_VERSION < 300
+		QStringList getList() { return words;};
+#endif
+		virtual bool startEnable(QChar c);
 
   protected:
-    QStringList words;
-    QDict<bool> dict;
+#if QT_VERSION < 300
+		QStringList words;
+#endif
+		QDict<bool> dict;
     bool _caseSensitive;
     const QChar *deliminatorChars;
     uint deliminatorLen;
