@@ -482,9 +482,6 @@ void KateMainWindow::slotCurrentDocChanged()
   setHighlight->plug (documentMenu);
   setEndOfLine->plug (documentMenu);
   documentMenu->insertSeparator ();
-  documentReload->plug (documentMenu);
-  documentOpenWith->plug (documentMenu);
-  documentMenu->insertSeparator ();
 
   uint z=0;
   int i=1;
