@@ -161,10 +161,6 @@ class View : public KTextEditor::View
     */
     virtual void selectAll() { ; };
     /**
-      Deselects all text.
-    */
-    virtual void deselectAll() { ; };
-    /**
       Inverts the current selection.
     */
     virtual void invertSelection() { ; };

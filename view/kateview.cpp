@@ -211,10 +211,7 @@ void KateViewInternal::doEditCommand(VConfig &c, int cmdNum)
       return;
     case KateView::cmSelectAll:
       myDoc->selectAll();
-      return;
-    case KateView::cmDeselectAll:
-      myDoc->deselectAll();
-      return;
+      return;        
     case KateView::cmInvertSelection:
       myDoc->invertSelection();
       return;
@@ -580,7 +577,7 @@ void KateViewInternal::changeState(VConfig &c) {
       myDoc->selectTo(c, cursor, cXPos);
   } else {
     if (!(c.flags & KateView::cfPersistent))
-      myDoc->deselectAll();
+      myDoc->clearSelection();
   }
 }
 
@@ -623,7 +620,7 @@ void KateViewInternal::updateCursor(PointStruc &newCursor) {
 
 void KateViewInternal::updateCursor(PointStruc &newCursor, int flags) {
 
-  if (!(flags & KateView::cfPersistent)) myDoc->deselectAll();
+  if (!(flags & KateView::cfPersistent)) myDoc->clearSelection();
 
   exposeCursor = true;
   if (cursorOn) {
@@ -1389,10 +1386,9 @@ void KateView::setupActions()
       KStdAction::findPrev(this, SLOT(findPrev()), myDoc->actionCollection(), "find_prev");
       KStdAction::gotoLine(this, SLOT(gotoLine()), myDoc->actionCollection(), "goto_line" );
       new KAction(i18n("&Configure Editor..."), 0, this, SLOT(configDialog()),myDoc->actionCollection(), "set_confdlg");
-//      setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, myDoc->actionCollection(), "set_highlight");
-	setHighlight = new KateViewHighlightAction(this,i18n("&Highlight Mode"),myDoc->actionCollection(),"set_highlight");
+			setHighlight = new KateViewHighlightAction(this,i18n("&Highlight Mode"),myDoc->actionCollection(),"set_highlight");
       KStdAction::selectAll(this, SLOT(selectAll()), myDoc->actionCollection(), "select_all");
-      new KAction(i18n("&Deselect All"), 0, this, SLOT(deselectAll()),
+      new KAction(i18n("&Deselect All"), 0, myDoc, SLOT(clearSelection ()),
                 myDoc->actionCollection(), "unselect_all");
       new KAction(i18n("Invert &Selection"), 0, this, SLOT(invertSelection()),
                 myDoc->actionCollection(), "invert_select");
@@ -1410,10 +1406,9 @@ void KateView::setupActions()
       KStdAction::findPrev(this, SLOT(findPrev()), actionCollection(), "edit_find_prev");
       KStdAction::gotoLine(this, SLOT(gotoLine()), actionCollection());
       new KAction(i18n("&Configure Editor..."), 0, this, SLOT(configDialog()),actionCollection(), "set_confdlg");
-//      setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, actionCollection(), "set_highlight");
       setHighlight = new KateViewHighlightAction(this,i18n("&Highlight Mode"), actionCollection(), "set_highlight");
       KStdAction::selectAll(this, SLOT(selectAll()), actionCollection());
-      new KAction(i18n("&Deselect All"), 0, this, SLOT(deselectAll()),
+      new KAction(i18n("&Deselect All"), 0, myDoc, SLOT(clearSelection()),
                 actionCollection(), "edit_deselectAll");
       new KAction(i18n("Invert &Selection"), 0, this, SLOT(invertSelection()),
                 actionCollection(), "edit_invertSelection");
@@ -2587,7 +2582,7 @@ void KateView::corrected (QString originalword, QString newword, unsigned pos)
 
 void KateView::spellResult (const QString &)
 {
-  deselectAll(); //!!! this should not be done with persistent selections
+  myDoc->clearSelection (); //!!! this should not be done with persistent selections
 
 //  if (kspellReplaceCount) myDoc->recordReset();
 

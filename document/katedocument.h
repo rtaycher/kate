@@ -199,6 +199,9 @@ class KateDocument : public Kate::Document
     //
     bool insertChars ( int line, int col, const QString &chars, KateView *view );
 
+	private:
+	  bool _autoUpdate;
+
   protected:
     QFont myFont, myFontBold, myFontItalic, myFontBI;
     CachedFontMetrics myFontMetrics, myFontMetricsBold, myFontMetricsItalic, myFontMetricsBI;
@@ -312,7 +315,6 @@ class KateDocument : public Kate::Document
     void toggleRect(int, int, int, int);
     void selectTo(VConfig &c, PointStruc &cursor, int cXPos);
     void selectAll();
-    void deselectAll();
     void invertSelection();
     void selectWord(PointStruc &cursor, int flags);
     void selectLength(PointStruc &cursor, int length, int flags);

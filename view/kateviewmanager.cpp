@@ -575,7 +575,7 @@ void KateViewManager::slotDeselectAll ()
 {
   if (activeView() == 0) return;
 
-  activeView()->deselectAll();
+  activeView()->doc()->clearSelection ();
 }
 
 void KateViewManager::slotInvertSelection ()

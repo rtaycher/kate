@@ -467,15 +467,11 @@ class KateView : public Kate::View
     /**
       Selects all text
     */
-    void selectAll() {doEditCommand(KateView::cmSelectAll);}
-    /**
-      Deselects all text
-    */
-    void deselectAll() {doEditCommand(KateView::cmDeselectAll);}
+    void selectAll() {doEditCommand(KateView::cmSelectAll);};
     /**
       Inverts the current selection
     */
-    void invertSelection() {doEditCommand(KateView::cmInvertSelection);}
+    void invertSelection() {doEditCommand(KateView::cmInvertSelection);};
     /**
       comments out current line
     */

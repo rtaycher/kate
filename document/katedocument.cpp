@@ -139,6 +139,7 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   connect(hlManager,SIGNAL(changed()),SLOT(hlChanged()));
 
   newDocGeometry = false;
+	_autoUpdate = true;
 
   readConfig();
 
@@ -326,7 +327,8 @@ bool KateDocument::insertText( int line, int col, const QString &s )
     setModified(true);
   }
 
-  updateViews();
+	if (_autoUpdate)
+  	updateViews();
 
   emit textChanged ();
 
@@ -434,7 +436,8 @@ bool KateDocument::removeText ( int line, int col, int len )
     setModified(true);
   }
 
-  updateViews();
+  if (_autoUpdate)
+	  updateViews();
 
   emit textChanged ();
 
@@ -475,7 +478,8 @@ bool KateDocument::insertLine( int l, const QString &str )
     setModified(true);
   }
 
-  updateViews();
+  if (_autoUpdate)
+	  updateViews();
 
   emit textChanged ();
 
@@ -522,7 +526,8 @@ bool KateDocument::removeLine( int line )
     setModified(true);
   }
 
-  updateViews();
+	if (_autoUpdate)
+  	updateViews();
 
   emit textChanged ();
 
@@ -554,7 +559,25 @@ bool KateDocument::setSelection ( int , int , int , int )
 
 bool KateDocument::clearSelection ()
 {
-  return true;
+  select.x = -1;
+  if (selectEnd < selectStart)
+	  return false;
+
+  tagLines(selectStart,selectEnd);
+
+  for (int z = selectStart; z <= selectEnd; z++) {
+    TextLine::Ptr textLine = getTextLine(z);
+    textLine->selectEol(false,0);
+  }
+
+  selectStart = 0xffffff;
+  selectEnd = 0;
+
+	updateViews ();
+
+  emit selectionChanged();
+
+	return true;
 }
 
 bool KateDocument::hasSelection() const
@@ -638,7 +661,9 @@ bool KateDocument::removeSelectedText ()
   if (selectEnd < selectStart)
     return false;
 
-  for (line = selectStart; line <= selectEnd; line++)
+	_autoUpdate = false;
+
+	for (line = selectStart; line <= selectEnd; line++)
   {
     textLine = getTextLine(line);
 
@@ -690,6 +715,9 @@ bool KateDocument::removeSelectedText ()
 
   selectEnd = -1;
   select.x = -1;
+	
+	_autoUpdate = true;
+	updateViews ();
 
   return true;
 }
@@ -1306,10 +1334,16 @@ bool KateDocument::insertChars ( int line, int col, const QString &chars, KateVi
   //return false if nothing has to be inserted
   if (buf.isEmpty()) return false;
 
-  if (view->config() &KateView:: cfDelOnInput) removeSelectedText();
+  if (view->config() &KateView:: cfDelOnInput)
+		removeSelectedText();
 
   if (view->config() & KateView::cfOvr)
-    removeText (line, col, buf.length());
+	{
+		if ((col+buf.length()) <= textLine->length())
+      removeText (line, col, buf.length());
+		else
+      removeText (line, col, textLine->length()-col);
+	}
 
   insertText (line, col, buf);
   col += pos;
@@ -1631,7 +1665,7 @@ void KateDocument::selectTo(VConfig &c, PointStruc &cursor, int cXPos) {
   if (c.cursor.x != select.x || c.cursor.y != select.y) {
     //new selection
 
-    if (!(c.flags & KateView::cfKeepSelection)) deselectAll();
+    if (!(c.flags & KateView::cfKeepSelection)) clearSelection ();
 //      else recordReset();
 
     anchor = c.cursor;
@@ -1747,23 +1781,6 @@ void KateDocument::selectAll() {
   emit selectionChanged();
 }
 
-void KateDocument::deselectAll() {
-  select.x = -1;
-  if (selectEnd < selectStart) return;
-
-//  recordReset();
-
-  tagLines(selectStart,selectEnd);
-
-  for (int z = selectStart; z <= selectEnd; z++) {
-    TextLine::Ptr textLine = getTextLine(z);
-    textLine->selectEol(false,0);
-  }
-  selectStart = 0xffffff;
-  selectEnd = 0;
-  emit selectionChanged();
-}
-
 void KateDocument::invertSelection() {
   TextLine::Ptr textLine;
 
@@ -1795,7 +1812,7 @@ void KateDocument::selectWord(PointStruc &cursor, int flags) {
   while (start > 0 && m_highlight->isInWord(textLine->getChar(start - 1))) start--;
   while (end < len && m_highlight->isInWord(textLine->getChar(end))) end++;
   if (end <= start) return;
-  if (!(flags & KateView::cfKeepSelection)) deselectAll();
+  if (!(flags & KateView::cfKeepSelection)) clearSelection ();
 //    else recordReset();
 
   textLine->select(true, start, end);
@@ -1816,7 +1833,7 @@ void KateDocument::selectLength(PointStruc &cursor, int length, int flags) {
   start = cursor.x;
   end = start + length;
   if (end <= start) return;
-  if (!(flags & KateView::cfKeepSelection)) deselectAll();
+  if (!(flags & KateView::cfKeepSelection)) clearSelection ();
 
   textLine->select(true, start, end);
 
@@ -2917,7 +2934,7 @@ void KateDocument::clipboardChanged() { //slot
   if (m_singleSelection) {
     disconnect(QApplication::clipboard(), SIGNAL(dataChanged()),
       this, SLOT(clipboardChanged()));
-    deselectAll();
+    clearSelection ();
     updateViews();
   }
 //#endif
