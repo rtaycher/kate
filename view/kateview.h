@@ -984,6 +984,10 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
   public:
     Kate::Document *getDoc ()
       { return (Kate::Document*) myDoc; };
+
+  public slots:
+    int getHlCount ();
+    QString getHlName (int);
 };
 
 class KateBrowserExtension : public KParts::BrowserExtension

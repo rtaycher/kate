@@ -3165,6 +3165,16 @@ void KateView::gotoBookmark (int n)
   gotoMark (list.at(n));
 }
 
+int KateView::getHlCount ()
+{
+  return HlManager::self()->highlights();
+}
+
+QString KateView::getHlName (int z)
+{
+  return HlManager::self()->hlName(z);
+}
+
 KateBrowserExtension::KateBrowserExtension( KateDocument *doc, KateView *view )
 : KParts::BrowserExtension( doc, "katepartbrowserextension" )
 {

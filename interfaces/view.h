@@ -42,6 +42,11 @@ class View : public KTextEditor::View
   public slots:
     virtual void configDialog () { ; };
 
+    virtual void setHl (int) { ; };
+    virtual int getHl () { return 0; };
+    virtual int getHlCount () { return 0; };
+    virtual QString getHlName (int) { return 0L; };
+
   public:
     virtual void readConfig () { ; };
     virtual void writeConfig () { ; };
