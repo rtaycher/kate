@@ -362,9 +362,12 @@ void KateMainWindow::setupActions()
     a=new KAction(i18n("Contents &Plugins"), 0, this, SLOT(pluginHelp()), actionCollection(), "help_plugins_contents");
     a->setWhatsThis(i18n("This shows help files for various available plugins."));
   }
+
   connect(m_viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
+  connect(m_docManager,SIGNAL(documentChanged()),this,SLOT(slotDocumentChanged()));
 
   slotWindowActivated ();
+  slotDocumentChanged();
 }
 
 bool KateMainWindow::queryClose()
@@ -451,7 +454,7 @@ void KateMainWindow::saveOptions(KConfig *config)
 
   config->writeEntry("Show Full Path in Title", m_viewManager->getShowFullPath());
   config->writeEntry("Opaque Resize", m_viewManager->useOpaqueResize);
-  
+
   config->writeEntry("Sync Konsole", syncKonsole);
 
   fileOpenRecent->saveEntries(config, "Recent Files");
@@ -464,6 +467,20 @@ void KateMainWindow::saveOptions(KConfig *config)
     m_viewManager->activeView()->getDoc()->writeConfig();
 
   m_viewManager->saveViewSpaceConfig();
+}
+
+void KateMainWindow::slotDocumentChanged()
+{
+  if (m_docManager->documents()  > 1)
+  {
+    windowNext->setEnabled(true);
+    windowPrev->setEnabled(true);
+  }
+  else
+  {
+    windowNext->setEnabled(false);
+    windowPrev->setEnabled(false);
+  }
 }
 
 void KateMainWindow::slotWindowActivated ()
@@ -482,17 +499,6 @@ void KateMainWindow::slotWindowActivated ()
         console->cd (path);
       }
     }
-  }
-
-  if (m_viewManager->viewCount ()  > 1)
-  {
-    windowNext->setEnabled(true);
-    windowPrev->setEnabled(true);
-  }
-  else
-  {
-    windowNext->setEnabled(false);
-    windowPrev->setEnabled(false);
   }
 
   if (m_viewManager->viewSpaceCount() == 1)
@@ -956,7 +962,7 @@ void KateMainWindow::slotProjectClose ()
   if (m_project)
   {
     m_projectManager->close (m_project);
-  }  
+  }
 }
 
 void KateMainWindow::activateProject (Kate::Project *project)

@@ -200,6 +200,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
   private slots:
     void slotFileQuit();
     void slotEditToolbars();
+    void slotDocumentChanged();
     void slotWindowActivated ();
     void documentMenuAboutToShow();
     void slotDropEvent(QDropEvent *);
