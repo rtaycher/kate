@@ -358,7 +358,9 @@ void KateVSStatusBar::showMenu()
 {
    KMainWindow* mainWindow = static_cast<KMainWindow*>( topLevelWidget() );
    QPopupMenu* menu = static_cast<QPopupMenu*>( mainWindow->factory()->container("viewspace_popup", mainWindow ) );
-   menu->exec(QCursor::pos());
+   
+   if (menu)
+     menu->exec(QCursor::pos());
 }
 
 bool KateVSStatusBar::eventFilter(QObject*,QEvent *e)

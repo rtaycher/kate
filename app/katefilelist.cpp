@@ -220,10 +220,11 @@ void KateFileList::slotMenu ( QListBoxItem *item, const QPoint &p )
 {
   if (!item)
     return;
+  
   QPopupMenu *menu = (QPopupMenu*) ((viewManager->mainWindow())->factory()->container("filelist_popup", viewManager->mainWindow()));
 
-//  if (menu)
-//    menu->exec(p);
+  if (menu)
+    menu->exec(p);
 }
 
 void KateFileList::tip( const QPoint &p, QRect &r, QString &str )
