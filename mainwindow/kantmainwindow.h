@@ -82,10 +82,11 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     virtual QWidget *createContainer( QWidget *parent, int index,
       const QDomElement &element, int &id );
   protected:
-    /** reopens documents that was open last time kant was shut down*/
-    void reopenDocuments(bool isRestore=false);
 
     KantPluginManager *pluginManager;
+
+    /** just calls viewmanager */
+    void restore(bool isRestored);
 
     void focusInEvent(QFocusEvent*);
     // Anders: I moved the config object to protected, because

@@ -1002,48 +1002,6 @@ void KantViewManager::setUseOpaqueResize( bool enable )
   // TODO: loop through splitters and set this prop
 }
 
-void KantViewManager::saveAllDocsAtCloseDown(KConfig* config)
-{
-  QValueList<long> seen;
-  KantView* v;
-  int id;
-  QStringList data;
-  QStringList list;
-  int vc = viewCount();
-  uint i = 0;
-  KSimpleConfig* scfg = new KSimpleConfig("kantsessionrc", false);
-  while ( i <= vc )
-  {
-    v = activeView();
-    id =  ((KantDocument*)v->doc())->docID();
-    // save to config if not seen
-    if ( ! seen.contains( id ) && ! v->doc()->url().isEmpty() ) {
-      seen.append( id );
-      data.clear();
-      // -- changes here: get kwrite to save data
-      scfg->setGroup( v->doc()->url().prettyURL() );
-      v->writeSessionConfig(scfg);
-      v->doc()->writeSessionConfig(scfg);
-      // TODO: should we tjeck for local file here?
-      // add URL, cursor position
-      //data.append( v->doc()->url().prettyURL() );//URL
-      //data.append( QString("%1.%2").arg(v->currentLine()).arg(v->currentColumn()) );// CURSOR
-      //data.append();// LASTMOD
-      // write entry
-      scfg->setGroup("open files");
-      //scfg->writeEntry( QString("File%1").arg(id), data );
-      scfg->writeEntry( QString("File%1").arg(id), v->doc()->url().prettyURL() );
-      list.append( QString("File%1").arg(id) );
-    }
-    if( ! deleteView( v ) )
-      return;  // this will hopefully never happen, since - WHAT THEN???
-    i++;
-  }
-  scfg->setGroup("open files");
-  scfg->writeEntry( "list", list );
-  scfg->sync();
-}
-
 void KantViewManager::reloadCurrentDoc()
 {
   if (! activeView() )
@@ -1060,6 +1018,82 @@ void KantViewManager::reloadCurrentDoc()
     v->setCursorPosition( cl, cc );
 }
 
+///////////////////////////////////////////////////////////
+// session config functions
+///////////////////////////////////////////////////////////
+
+void KantViewManager::saveAllDocsAtCloseDown()
+{
+  QValueList<long> seen;
+  KantView* v;
+  int id;
+  QStringList list;
+  int vc = viewCount();
+  uint i = 0;
+  KSimpleConfig* scfg = new KSimpleConfig("kantsessionrc", false);
+  while ( i <= vc )
+  {
+    v = activeView();
+    id =  ((KantDocument*)v->doc())->docID();
+    // save to config if not seen
+    if ( ! seen.contains( id ) && ! v->doc()->url().isEmpty() ) {
+      seen.append( id );
+
+      scfg->setGroup( v->doc()->url().prettyURL() );
+      v->writeSessionConfig(scfg);
+      v->doc()->writeSessionConfig(scfg);
+      // TODO: should we tjeck for local file here?
+      // TODO: LASTMOD
+      // write entry
+      scfg->setGroup("open files");
+      scfg->writeEntry( QString("File%1").arg(id), v->doc()->url().prettyURL() );
+      list.append( QString("File%1").arg(id) );
+    }
+    if( ! deleteView( v ) )
+      return;  // this will hopefully never happen, since - WHAT THEN???
+    i++;
+  }
+  scfg->setGroup("open files");
+  scfg->writeEntry( "list", list );
+  scfg->sync();
+}
+
+void KantViewManager::reopenDocuments(bool isRestore)
+{
+  KSimpleConfig* scfg = new KSimpleConfig("kantsessionrc", false);
+  KConfig* config = kapp->config();
+  config->setGroup("General");
+  bool resVC = config->readBoolEntry("restore views", true);
+  ////////////////////////////////////////////////////////////////////////
+  // RESTORE VIEW CONFIG TEST
+  if ( scfg->hasGroup("splitter0") && (isRestore || resVC) ) {
+    kdDebug()<<"reopenDocumentw(): calling restoreViewConfig()"<<endl;
+    restoreViewConfig();
+    return;
+  }
+  ////////////////////////////////////////////////////////////////////////
+  // read the list and loop around it.
+  scfg->setGroup("open files");
+  if (config->readBoolEntry("reopen at startup", true) || isRestore )
+  {
+    QStringList list = /*config*/scfg->readListEntry("list");
+
+    for ( int i = list.count() - 1; i > -1; i-- ) {
+      scfg->setGroup("open files");
+      QString fn = scfg->readEntry(list[i]);
+      openURL( KURL( fn ) );
+      scfg->setGroup( fn );
+      KantView* v = activeView();
+      v->readSessionConfig( scfg );
+      v->doc()->readSessionConfig( scfg );
+      scfg->deleteGroup( fn );
+    }
+  }
+  // truncate sessionconfig file.
+  scfg->deleteGroup("open files");
+  scfg->sync();
+}
+
 void KantViewManager::saveViewSpaceConfig()
 {
    if (viewSpaceCount() == 1) {
@@ -1068,7 +1102,17 @@ void KantViewManager::saveViewSpaceConfig()
    }
 
    KSimpleConfig* scfg = new KSimpleConfig("kantsessionrc", false);
-   saveSplitterConfig( (KantSplitter*)viewSpaceList.first()->parentWidget(), 0, scfg );
+
+   // I need the first splitter, the one which has this as parent.
+   KantSplitter* s;
+   QObjectList *l = queryList("KantSplitter", 0, false, false);
+   QObjectListIt it( *l );
+   if ( (s = (KantSplitter*)it.current()) != 0 )
+     saveSplitterConfig( s, 0, scfg );
+   else
+     kdDebug()<<"saveViewSpaceConfig(): PANIC! can't find starting point!"<<endl;
+   delete l;
+
    scfg->sync();
 }
 
@@ -1088,17 +1132,29 @@ void KantViewManager::saveSplitterConfig( KantSplitter* s, int idx, KSimpleConfi
    QObject* obj;
    for (; it.current(); ++it) {
      obj = it.current();
-     // TODO: make sure the childList gets the order right!!
+     QString n;  // name for child list, see below
      // For KantViewSpaces, ask them to save the file list.
      if ( obj->isA("KantViewSpace") ) {
-       childList.append( QString("viewspace%1").arg( viewSpaceList.find((KantViewSpace*)obj) ) );
+       n = QString("viewspace%1").arg( viewSpaceList.find((KantViewSpace*)obj) );
        ((KantViewSpace*)obj)->saveFileList( config, viewSpaceList.find((KantViewSpace*)obj) );
+       // save active viewspace
+       if ( ((KantViewSpace*)obj)->isActiveSpace() ) {
+         config->setGroup("general");
+         config->writeEntry("activeviewspace", viewSpaceList.find((KantViewSpace*)obj) );
+       }
      }
      // For KantSplitters, recurse
      else if ( obj->isA("KantSplitter") ) {
        idx++;
        saveSplitterConfig( (KantSplitter*)obj, idx, config);
-       childList.append( QString("splitter%1").arg( idx ) );
+       n = QString("splitter%1").arg( idx );
+     }
+     // make sure list goes in right place!
+     if (!n.isEmpty()) {
+       if ( childList.count() > 0 && ! s->isLastChild( (QWidget*)obj ) )
+         childList.prepend( n );
+       else
+         childList.append( n );
      }
    }
 
@@ -1107,3 +1163,96 @@ void KantViewManager::saveSplitterConfig( KantSplitter* s, int idx, KSimpleConfi
    config->writeEntry("children", childList);
 }
 
+void KantViewManager::restoreViewConfig()
+{
+   // This is called *instead* of reopenDocuments if view config needs to be restored.
+   // Consequently, it has the task of opening all documents.
+   KSimpleConfig* scfg = new KSimpleConfig("kantsessionrc", false);
+   // if group splitter0 does not exist, call reopenDocuments() and return
+   if ( ! scfg->hasGroup("splitter0") ) {
+     //reopenDocuments();
+     return;
+   }
+   // remove the initial viewspace.
+   viewSpaceList.clear();
+   // call restoreSplitter for splitter0
+   restoreSplitter( scfg, QString("splitter0"), this );
+   // finally, make the correct view active.
+   scfg->setGroup("general");
+   activateSpace( viewSpaceList.at( scfg->readNumEntry("activeviewspace") )->currentView() );
+   scfg->deleteGroup("general");
+   if ( scfg->hasGroup("open files") )
+     scfg->deleteGroup("open files");
+   scfg->sync();
+}
+
+void KantViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWidget* parent)
+{
+   config->setGroup( group );
+
+   // create a splitter with orientation
+   kdDebug()<<"restoreSplitter():creating a splitter: "<<group<<endl;
+   if (parent == this)
+     kdDebug()<<"parent is this"<<endl;
+   KantSplitter* s = new KantSplitter((Qt::Orientation)config->readNumEntry("orientation"), parent);
+   if ( group.compare("splitter0") == 0 )
+     grid->addWidget(s, 0, 0);
+
+   QStringList children = config->readListEntry( "children" );
+   for (QStringList::Iterator it=children.begin(); it!=children.end(); ++it) {
+     // for a viewspace, create it and open all documents therein.
+     // TODO: restore cursor position.
+     if ( (*it).startsWith("viewspace") ) {
+       kdDebug()<<"Adding a viewspace: "<<(*it)<<endl;
+       KantViewSpace* vs;
+       kdDebug()<<"creating a viewspace for "<<(*it)<<endl;
+       vs = new KantViewSpace( s );
+       connect(this, SIGNAL(statusChanged(KantView *, int, int, int, int, QString)), vs, SLOT(slotStatusChanged(KantView *, int, int, int, int, QString)));
+       vs->installEventFilter( this );
+       viewSpaceList.append( vs );
+       vs->show();
+       setActiveSpace( vs );
+       // open documents
+       config->setGroup( (*it) );
+       int idx = 0;
+       QString key = QString("file%1").arg( idx );
+       while ( config->hasKey( key ) ) {
+         QStringList data = config->readListEntry( key );
+         if ( ! docManager->isOpen( KURL(data[0]) ) ) {
+           openURL( KURL( data[0] ) );
+           config->setGroup( data[0] );
+           KantView* v = activeView();
+           v->readSessionConfig( config );
+           v->doc()->readSessionConfig( config );
+           config->deleteGroup( data[0] );
+         }
+         else { // if the group has been deleted, we can find a document
+           kdDebug()<<"document allready open, creating extra view"<<endl;
+           // ahem, tjeck if this document actually exists.
+           long docID = docManager->findDoc( KURL(data[0]) );
+           if (docID >= 0)
+             createView( false, 0L, 0L, docManager->nthDoc( docID ) );
+         }
+         // cursor pos
+         KantView* v = activeView();
+         v->setCursorPosition( data[1].toInt(), data[2].toInt() );
+         idx++;
+         key = QString("file%1").arg( idx );
+         config->setGroup(*it);
+       }
+       config->deleteGroup( (*it) );
+       // If the viewspace have no documents due to bad luck, create a blank.
+       if ( vs->viewCount() < 1)
+         createView( true );
+     }
+     // for a splitter, recurse.
+     else if ( (*it).startsWith("splitter") )
+       restoreSplitter( config, QString(*it), s );
+   }
+   // set sizes
+   config->setGroup( group );
+   kdDebug()<<QString("splitter has %1 children").arg( s->children()->count() )<<endl;
+   s->setSizes( config->readIntListEntry("sizes") );
+   s->show();
+   config->deleteGroup( group );
+}

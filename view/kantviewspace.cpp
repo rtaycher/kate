@@ -173,12 +173,18 @@ void KantViewSpace::saveFileList( KSimpleConfig* config, int myIndex )
   // Save file list, includeing cursor position in this instance.
   QListIterator<KantView> it(mViewList);
   QStringList l;
-  for (; it.current(); ++it) { // FIXME: SHOULD BE REVERSE!!!
-    // TODO: Save cursor pos.
-    if ( !it.current()->doc()->url().isEmpty() )
+  int idx = 0;
+  for (; it.current(); ++it) {
+    l.clear();
+    if ( !it.current()->doc()->url().isEmpty() ) {
+    kdDebug()<<"saving vs data for "<<it.current()->doc()->url().prettyURL()<<endl;
       l << it.current()->doc()->url().prettyURL();
+      l << QString("%1").arg( it.current()->currentLine());
+      l << QString("%1").arg( it.current()->currentColumn() );
+      config->writeEntry(QString("file%1").arg( idx ), l);
+    }
+    idx++;
   }
-  config->writeEntry("documents", l);
 }
 
 

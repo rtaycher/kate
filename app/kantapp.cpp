@@ -70,7 +70,7 @@ int KantApp::newInstance ()
 {
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 
-  mainWindows.first()->reopenDocuments(isRestored());
+  mainWindows.first()->restore(isRestored());
 
   if (!isRestored())
   {

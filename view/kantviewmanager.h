@@ -36,9 +36,12 @@ class KantViewManager : public KantViewManagerIface
   protected:
     bool useOpaqueResize;
     QList<KantView> viewList;
-    void saveAllDocsAtCloseDown(KConfig* config);
+    void saveAllDocsAtCloseDown();
     /** This will save the splitter configuration */
     void saveViewSpaceConfig();
+
+    /** reopens documents that was open last time kant was shut down*/
+    void reopenDocuments(bool isRestore);
 
   public slots:
     void openURL (KURL url=0L);
@@ -58,11 +61,23 @@ class KantViewManager : public KantViewManagerIface
     void moveViewtoSplit (KantView *view);
     void moveViewtoStack (KantView *view);
 
-    /** This will save the configuration of a single splitter.
+    /** Save the configuration of a single splitter.
      * If child splitters are found, it calls it self with those as the argument.
      * If a viewspace child is found, it is asked to save its filelist.
      */
     void saveSplitterConfig(KantSplitter* s, int idx=0, KSimpleConfig* config=0L);
+
+    /** Restore view configuration.
+     * If only one view was present at close down, calls reopenDocuemnts.
+     * The configuration will be restored so that viewspaces are created, sized
+     * and populated exactly like at shotdown.
+     */
+    void restoreViewConfig();
+
+    /** Restore a single splitter.
+     * This is all the work is done for @see saveSplitterConfig()
+     */
+    void restoreSplitter ( KSimpleConfig* config, QString group, QWidget* parent );
 
     void removeViewSpace (KantViewSpace *viewspace);
 

@@ -338,7 +338,7 @@ bool KantMainWindow::queryClose()
   {
     saveProperties(config);
 
-    viewManager->saveAllDocsAtCloseDown( config );
+    viewManager->saveAllDocsAtCloseDown(  );
 
     if ( (!docManager->currentDoc()) || ((!viewManager->activeView()->doc()->isModified()) && (docManager->docCount() == 1)))
     {
@@ -582,7 +582,7 @@ KantMainWindow::slotEditFilter ()  //  PCP
 void KantMainWindow::slotFileQuit()
 {
 
-  viewManager->saveAllDocsAtCloseDown( config );
+  viewManager->saveAllDocsAtCloseDown(  );
 
   close();
 }
@@ -629,7 +629,7 @@ void KantMainWindow::saveProperties(KConfig *config)
   // Do not uncomment this unless you wish to see how
   // view configuration looks in $KDEHOME/share/config/kantsessionrc
   // It does not crash :) and I'm getting closer to finish.
-  //viewManager->saveViewSpaceConfig();
+  viewManager->saveViewSpaceConfig();
 
 }
 
@@ -933,6 +933,15 @@ void KantMainWindow::slotConfigure()
   config->setGroup("open files");
   cb_reopenFiles->setChecked( config->readBoolEntry("reopen at startup", true) );
   QWhatsThis::add(cb_reopenFiles, i18n("If this is enabled Kant will attempt to reopen files that was open when you closed last time. Cursor position will be recovered if possible. Non-existing files will not be opened."));
+
+  // restore view config
+  QCheckBox* cb_restoreVC = new QCheckBox( frGeneral );
+  cb_restoreVC->setText(i18n("Restore &View Configuration"));
+  gridFrG->addMultiCellWidget( cb_restoreVC, 2, 2, 0, 1 );
+  config->setGroup("General");
+  cb_restoreVC->setChecked( config->readBoolEntry("restore views", true) );
+  QWhatsThis::add(cb_restoreVC, i18n("Check this if you want all your views restored each time you open Kant"));
+
   // editor widgets from kwrite/kwdialog
   // color options
   QStringList path;
@@ -979,6 +988,9 @@ void KantMainWindow::slotConfigure()
     viewManager->setUseOpaqueResize(cb_opaqueResize->isChecked());
     config->setGroup("open files");
     config->writeEntry("reopen at startup", cb_reopenFiles->isChecked());
+
+    config->setGroup("General");
+    config->writeEntry("restore views", cb_restoreVC->isChecked());
 
     ksc->writeGlobalSettings();
     colorConfig->getColors( colors );
@@ -1046,44 +1058,6 @@ void KantMainWindow::slotSettingsShowFullScreen()
 	}
 }
 
-void KantMainWindow::reopenDocuments(bool isRestore)
-{
-  KSimpleConfig* scfg = new KSimpleConfig("kantsessionrc", false);
-  // read the list and loop around it.
-  /*config*/scfg->setGroup("open files");
-  if (config->readBoolEntry("reopen at startup", true) || isRestore )
-  {
-    QStringList list = /*config*/scfg->readListEntry("list");
-
-    for ( int i = list.count() - 1; i > -1; i-- ) {
-      /*config*/scfg->setGroup("open files");
-      //QStringList data = /*config*/scfg->readListEntry( list[i] );
-      // open file
-      // ---- changes here: using the config from kwrite! --
-      //viewManager->openURL( KURL(data[0]) );
-      QString fn = scfg->readEntry(list[i]);
-      viewManager->openURL( KURL( fn ) );
-      /*
-      // restore cursor position
-      int dot, line, col;
-      dot = data[1].find(".");
-      line = data[1].left(dot).toInt();
-      col = data[1].mid(dot + 1, 100).toInt();
-      if (viewManager->activeView()->numLines() >= line) // HACK--
-        viewManager->activeView()->setCursorPosition(line, col);
-      */
-      scfg->setGroup( fn );
-      KantView* v = viewManager->activeView();
-      v->readSessionConfig( scfg );
-      v->doc()->readSessionConfig( scfg );
-      scfg->deleteGroup( fn );
-    }
-  }
-  // truncate sessionconfig file.
-  scfg->deleteGroup("open files");
-  scfg->sync();
-}
-
 void KantMainWindow::slotSidebarFocusNext()
 {
    if (! sidebarDock->isVisible()) {
@@ -1132,3 +1106,6 @@ QWidget *KantMainWindow::createContainer( QWidget *parent, int index,
       }
     return KDockMainWindow::createContainer(parent,index,element,id);
   }
+
+void KantMainWindow::restore(bool isRestored)
+{ viewManager->reopenDocuments(isRestored); }
