@@ -53,31 +53,6 @@ static void replace(QString &s, const QString &needle, const QString &with)
 
 }
 
-// stolen from QString::replace
-static void replace(QString &s, QRegExp &rx, const QString &with)
-{
-	if (s.isEmpty()) return;
-	int index = 0;
-	int slen = with.length();
-	int len;
-	while (index < (int)s.length())
-	{
-		index = rx.search(s, index);
-		len = rx.matchedLength();
-		if ( index >= 0 )
-		{
-			s.replace(index, len, with);
-			index += slen;
-			if (!len)
-				break;  // Avoid infinite loop on 0-length matches, e.g. [a-z]*
-		}
-		else
-			break;
-	}
-}
-
-
-
 static int backslashString(const QString &haystack, const QString &needle, int index)
 {
 	int len=haystack.length();
