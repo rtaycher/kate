@@ -22,7 +22,7 @@
 #include "kantview.h"
 
 class KantSplitter;
-
+class KSimpleConfig;
 class KantViewManager : public KantViewManagerIface
 {
   Q_OBJECT
@@ -62,7 +62,7 @@ class KantViewManager : public KantViewManagerIface
      * If child splitters are found, it calls it self with those as the argument.
      * If a viewspace child is found, it is asked to save its filelist.
      */
-    void saveSplitterConfig(KantSplitter* s, int idx=0);
+    void saveSplitterConfig(KantSplitter* s, int idx=0, KSimpleConfig* config=0L);
 
     void removeViewSpace (KantViewSpace *viewspace);
 

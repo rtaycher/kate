@@ -626,9 +626,9 @@ void KantMainWindow::saveProperties(KConfig *config)
   sidebar->saveConfig( config );
   writeDockConfig();
 
-  // Do not uncomment this unless you wish to see
-  // a lot of debug output at close down.
-  // It does not crash :) but it isn't close to finished.
+  // Do not uncomment this unless you wish to see how
+  // view configuration looks in $KDEHOME/share/config/kantsessionrc
+  // It does not crash :) and I'm getting closer to finish.
   //viewManager->saveViewSpaceConfig();
 
 }
@@ -1057,9 +1057,13 @@ void KantMainWindow::reopenDocuments(bool isRestore)
 
     for ( int i = list.count() - 1; i > -1; i-- ) {
       /*config*/scfg->setGroup("open files");
-      QStringList data = /*config*/scfg->readListEntry( list[i] );
+      //QStringList data = /*config*/scfg->readListEntry( list[i] );
       // open file
-      viewManager->openURL( KURL(data[0]) );
+      // ---- changes here: using the config from kwrite! --
+      //viewManager->openURL( KURL(data[0]) );
+      QString fn = scfg->readEntry(list[i]);
+      viewManager->openURL( KURL( fn ) );
+      /*
       // restore cursor position
       int dot, line, col;
       dot = data[1].find(".");
@@ -1067,6 +1071,12 @@ void KantMainWindow::reopenDocuments(bool isRestore)
       col = data[1].mid(dot + 1, 100).toInt();
       if (viewManager->activeView()->numLines() >= line) // HACK--
         viewManager->activeView()->setCursorPosition(line, col);
+      */
+      scfg->setGroup( fn );
+      KantView* v = viewManager->activeView();
+      v->readSessionConfig( scfg );
+      v->doc()->readSessionConfig( scfg );
+      scfg->deleteGroup( fn );
     }
   }
   // truncate sessionconfig file.

@@ -1020,22 +1020,27 @@ void KantViewManager::saveAllDocsAtCloseDown(KConfig* config)
     if ( ! seen.contains( id ) && ! v->doc()->url().isEmpty() ) {
       seen.append( id );
       data.clear();
+      // -- changes here: get kwrite to save data
+      scfg->setGroup( v->doc()->url().prettyURL() );
+      v->writeSessionConfig(scfg);
+      v->doc()->writeSessionConfig(scfg);
       // TODO: should we tjeck for local file here?
       // add URL, cursor position
-      data.append( v->doc()->url().prettyURL() );//URL
-      data.append( QString("%1.%2").arg(v->currentLine()).arg(v->currentColumn()) );// CURSOR
+      //data.append( v->doc()->url().prettyURL() );//URL
+      //data.append( QString("%1.%2").arg(v->currentLine()).arg(v->currentColumn()) );// CURSOR
       //data.append();// LASTMOD
       // write entry
-      /*config*/scfg->setGroup("open files");
-      /*config*/scfg->writeEntry( QString("File%1").arg(id), data );
+      scfg->setGroup("open files");
+      //scfg->writeEntry( QString("File%1").arg(id), data );
+      scfg->writeEntry( QString("File%1").arg(id), v->doc()->url().prettyURL() );
       list.append( QString("File%1").arg(id) );
     }
     if( ! deleteView( v ) )
       return;  // this will hopefully never happen, since - WHAT THEN???
     i++;
   }
-  /*config*/scfg->setGroup("open files");
-  /*config*/scfg->writeEntry( "list", list );
+  scfg->setGroup("open files");
+  scfg->writeEntry( "list", list );
   scfg->sync();
 }
 
@@ -1062,20 +1067,19 @@ void KantViewManager::saveViewSpaceConfig()
      return;
    }
 
-   KantSplitter* s = (KantSplitter*)viewSpaceList.first()->parentWidget();
-   saveSplitterConfig( s );
+   KSimpleConfig* scfg = new KSimpleConfig("kantsessionrc", false);
+   saveSplitterConfig( (KantSplitter*)viewSpaceList.first()->parentWidget(), 0, scfg );
+   scfg->sync();
 }
 
-void KantViewManager::saveSplitterConfig( KantSplitter* s, int idx/*, KSimplecvs Config* config*/ )
+void KantViewManager::saveSplitterConfig( KantSplitter* s, int idx, KSimpleConfig* config )
 {
-   QString grp = QString("[splitter%1]").arg(idx);
-   //config->setGroup(grp);
-   kdDebug()<<grp<<endl;
+   QString grp = QString("splitter%1").arg(idx);
+   config->setGroup(grp);
 
-   // Save sizes, children for this splitter
-   QValueList<int> sizes = s->sizes();
-   //config->writeEntry("sizes", sizes);
-   kdDebug()<<"sizes="<<QString("%1,%2").arg(sizes[0]).arg(sizes[1])<<endl;
+   // Save sizes, orient, children for this splitter
+   config->writeEntry( "sizes", s->sizes() );
+   config->writeEntry( "orientation", s->orientation() );
 
    QStringList childList;
    // a kantsplitter has two children, of which one may be a KantSplitter.
@@ -1083,24 +1087,23 @@ void KantViewManager::saveSplitterConfig( KantSplitter* s, int idx/*, KSimplecvs
    QObjectListIt it( *l );
    QObject* obj;
    for (; it.current(); ++it) {
-     //++it;
      obj = it.current();
      // TODO: make sure the childList gets the order right!!
      // For KantViewSpaces, ask them to save the file list.
      if ( obj->isA("KantViewSpace") ) {
        childList.append( QString("viewspace%1").arg( viewSpaceList.find((KantViewSpace*)obj) ) );
-       ((KantViewSpace*)obj)->saveFileList( /*config,*/ viewSpaceList.find((KantViewSpace*)obj) );
+       ((KantViewSpace*)obj)->saveFileList( config, viewSpaceList.find((KantViewSpace*)obj) );
      }
      // For KantSplitters, recurse
      else if ( obj->isA("KantSplitter") ) {
-       saveSplitterConfig( (KantSplitter*)obj, idx++/*, config*/);
+       idx++;
+       saveSplitterConfig( (KantSplitter*)obj, idx, config);
        childList.append( QString("splitter%1").arg( idx ) );
      }
    }
 
    // reset config group.
-   //config->setGroup(grp);
-   //config->writeEntry("children", childList);
-   kdDebug()<<"children="<<childList.join(",")<<endl;
+   config->setGroup(grp);
+   config->writeEntry("children", childList);
 }
 

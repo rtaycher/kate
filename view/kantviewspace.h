@@ -25,6 +25,7 @@
 #include <qwidget.h>
 #include <qvbox.h>
 
+class KSimpleConfig;
 class KantVSStatusBar : public QWidget
 {
   Q_OBJECT
@@ -73,7 +74,7 @@ class KantViewSpace : public QVBox
      * Documents with an invalid URL is discarded.
      * myIndex is used as identifyer for a config group.
      */
-    void saveFileList(int myIndex);
+    void saveFileList(KSimpleConfig* config, int myIndex);
   protected:
     bool eventFilter(QObject* o, QEvent* e);
   private:

@@ -26,6 +26,7 @@
 #include <kstatusbar.h>
 #include <qwidgetstack.h>
 #include <kdebug.h>
+#include <ksimpleconfig.h>
 
 KantViewSpace::KantViewSpace(QWidget* parent, const char* name)
   : QVBox(parent, name)
@@ -166,14 +167,18 @@ void KantViewSpace::slotStatusChanged (KantView *view, int r, int c, int ovr, in
   mStatusBar->slotDisplayStatusText (" " + s1 + " " + s2 + " " + ovrstr + " " + modstr + " " + msg);
 }
 
-void KantViewSpace::saveFileList( int myIndex )
+void KantViewSpace::saveFileList( KSimpleConfig* config, int myIndex )
 {
-  //
-  kdDebug()<<QString("[viewspace%1]").arg( myIndex )<<endl;
+  config->setGroup( QString("viewspace%1").arg( myIndex ) );
   // Save file list, includeing cursor position in this instance.
   QListIterator<KantView> it(mViewList);
-  for(; it.current(); ++it)  // FIXME: SHOULD BE REVERSE!!!
-    kdDebug()<<it.current()->doc()->url().prettyURL()<<endl;
+  QStringList l;
+  for (; it.current(); ++it) { // FIXME: SHOULD BE REVERSE!!!
+    // TODO: Save cursor pos.
+    if ( !it.current()->doc()->url().isEmpty() )
+      l << it.current()->doc()->url().prettyURL();
+  }
+  config->writeEntry("documents", l);
 }
 
 
