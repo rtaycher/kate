@@ -385,7 +385,7 @@ HlCFloat::HlCFloat(int attribute, int context)
 
 const QChar *HlCFloat::checkIntHgl(const QChar *str, int, bool)
 {
-  const QChar *s,*s1;
+  const QChar *s;
 
   s = str;
   while (s->isDigit()) s++;

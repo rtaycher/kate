@@ -2240,39 +2240,11 @@ void KateDocument::misspelling (QString origword, QStringList *, unsigned pos)
   updateViews();
 }
 
-void KateDocument::corrected (QString originalword, QString newword, unsigned pos)
+void KateDocument::corrected (QString originalword, QString newword, unsigned)
 {
-  uint line;
-  uint cnt=0;
-
-  if(newword != originalword)
-  {
-      // Find pos
-      for (line = 0 ; line <= lastLine() && cnt <= pos ; line++)
-        cnt += getTextLine(line)->length() + 1;
-
-      // Highlight the mispelled word
-      KateTextCursor cursor;
-      line--;
-      cursor.col = pos - (cnt-getTextLine(line)->length()) + 1;
-      cursor.line = line;
-
-      KateView *view;
-      VConfig c;
-       for (view = myViews.first(); view != 0L; view = myViews.next() )
-      {
-        view->myViewInternal->updateCursor(cursor); //this does deselectAll() if no persistent selections
-        view->myViewInternal->getVConfig(c);
-      }
-
-      selectLength(cursor, newword.length(),c.flags);
-
-      removeText (s.cursor.line, s.cursor.col, s.cursor.line, s.cursor.col + originalword.length());
-      insertText (s.cursor.line, s.cursor.col, newword);
-
-      kspell.kspellReplaceCount++;
-    }
-
+  removeText(selectStart.line, selectStart.col, selectStart.line, selectStart.col + originalword.length());
+  insertText(selectStart.line, selectStart.col, newword);
+  kspell.kspellReplaceCount++;
 }
 
 void KateDocument::spellResult (const QString &)

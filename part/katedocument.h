@@ -427,7 +427,7 @@ class KateDocument : public Kate::Document
     void spellcheck();
     void spellcheck2(KSpell*);
     void misspelling (QString word, QStringList *, unsigned pos);
-    void corrected (QString originalword, QString newword, unsigned pos);
+    void corrected (QString originalword, QString newword, unsigned);
     void spellResult (const QString &newtext);
     void spellCleanDone();
 

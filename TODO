@@ -4,7 +4,6 @@ TODO:
  - code completion
  - search/replace in selection
  - static word wrap
- - fix kspell (replace doesn't work anymore :(
  - blockwise paste must be done !
  - better indent/unindent
  - exhaustive testing of the new highlighting structure
