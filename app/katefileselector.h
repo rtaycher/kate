@@ -35,7 +35,7 @@ class KateMainWindow;
 class KateViewManager;
 class KActionCollection;
 class KActionSelector;
- 
+
 /*
     The kate file selector presents a directory view, in which the default action is
     to open the activated file.
@@ -71,7 +71,7 @@ protected:
 class KateFileSelector : public QWidget
 {
   Q_OBJECT
-  
+
   friend class KFSConfigPage;
 
   public:
@@ -88,7 +88,7 @@ class KateFileSelector : public QWidget
     void setView( KFile::FileView );
     KDirOperator *dirOperator(){ return dir; }
     KActionCollection *actionCollection() { return mActionCollection; };
-    
+
   public slots:
     void slotFilterChange(const QString&);
     void setDir(KURL);
@@ -108,7 +108,7 @@ class KateFileSelector : public QWidget
     void focusInEvent( QFocusEvent * );
     void showEvent( QShowEvent * );
     bool eventFilter( QObject *, QEvent * );
-
+    void initialDirChangeHack();
   private:
     class KateFileSelectorToolBar *toolbar;
     KActionCollection *mActionCollection;
@@ -125,7 +125,7 @@ class KateFileSelector : public QWidget
     QString lastFilter;
     int autoSyncEvents; // enabled autosync events
     QString waitingUrl; // maybe display when we gets visible
-
+    QString waitingDir;
 };
 
 /*  TODO anders
@@ -152,7 +152,7 @@ class KFSConfigPage : public Kate::ConfigPage {
 
   private:
     void init();
-    
+
     KateFileSelector *fileSelector;
     bool bDirty;
     //class QListBox *lbAvailableActions, *lbUsedActions;
