@@ -20,8 +20,9 @@
 #define _KATEFILEDIALOG_H_
 
 #include <kfiledialog.h>
-#include <qtextcodec.h>
 #include <kurl.h>
+#include <kglobal.h>
+#include <klocale.h>
 
 namespace Kate
 {
@@ -42,7 +43,7 @@ class FileDialog : public KFileDialog
 
   public:
     FileDialog (const QString& startDir = QString::null,
-                    const QString& encoding = QString::fromLatin1(QTextCodec::codecForLocale()->name()),
+                    const QString& encoding = QString::fromLatin1(KGlobal::locale()->encoding()),
                     QWidget *parent= 0,
                     const QString& caption = QString::null, int type = FileDialog::openDialog);
 
@@ -55,10 +56,10 @@ class FileDialog : public KFileDialog
       openDialog,
       saveDialog
     };
-    
+
   protected slots:
     void slotApply();
-    
+
   private:
     class PrivateFileDialog *d;
 };

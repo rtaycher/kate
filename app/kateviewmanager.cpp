@@ -38,6 +38,7 @@
 #include <kdockwidget.h>
 #include <kfiledialog.h>
 #include <kiconloader.h>
+#include <kglobal.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <ksimpleconfig.h>
@@ -479,7 +480,7 @@ void KateViewManager::slotDocumentOpen ()
 	Kate::FileDialog *dialog;
 
 	//TODO: move to kdelibs
-	QString DEFAULT_ENCODING = QString::fromLatin1(QTextCodec::codecForLocale()->name());
+	QString DEFAULT_ENCODING = QString::fromLatin1(KGlobal::locale()->encoding());
 
   if (cv)
 	  dialog = new Kate::FileDialog (cv->getDoc()->url().url(),cv->getDoc()->encoding(), this, i18n ("Open File"));

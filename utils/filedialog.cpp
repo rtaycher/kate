@@ -25,9 +25,10 @@
 #include <ktoolbar.h>
 #include <kglobal.h>
 #include <kcharsets.h>
-#include <qstringlist.h>
-
 #include <kdebug.h>
+
+#include <qstringlist.h>
+#include <qtextcodec.h>
 
 namespace Kate
 {
@@ -51,9 +52,7 @@ Kate::FileDialog::FileDialog (const QString& startDir,
 
   setCaption (caption);
 
-  QStringList availableEncodingNames(KGlobal::charsets()->availableEncodingNames());
-
-  toolBar()->insertCombo(availableEncodingNames, 33333, false, 0L,
+  toolBar()->insertCombo(QStringList(), 33333, false, 0L,
           0L, 0L, true);
 
   QStringList filter;
@@ -72,25 +71,26 @@ Kate::FileDialog::FileDialog (const QString& startDir,
 
   d->encoding = toolBar()->getCombo(33333);
 
-        // Set default encoding to the locale one, if a different default wasn't requested
-        if (encoding.isNull())
-          sEncoding = QString::fromLatin1(QTextCodec::codecForLocale()->name());
+  d->encoding->clear ();
+  QStringList encodings (KGlobal::charsets()->availableEncodingNames());
+  int insert = 0;
+  for (uint i=0; i < encodings.count(); i++)
+  {
+    bool found = false;
+    QTextCodec *codecForEnc = KGlobal::charsets()->codecForName(encodings[i], found);
 
-        // This is a bit inefficient, but it's the only way to match
-        // KCharsets encodings and QTextCodec encodings (e.g. KCharsets say 'utf8'
-        // while QTextCodec says 'UTF-8')
-        QStringList::ConstIterator it;
-        QTextCodec *codecForEnc;
-        int iIndex = -1;
-        for (it = availableEncodingNames.begin(); it != availableEncodingNames.end(); ++it) {
-          ++iIndex;
-          codecForEnc = KGlobal::charsets()->codecForName(*it);
-          if ( (codecForEnc->name() == sEncoding) || (*it == sEncoding) )
-             break;
-        }
+    if (found)
+    {
+      d->encoding->insertItem (encodings[i]);
 
-        if (iIndex >= 0)
-          d->encoding->setCurrentItem(iIndex);
+      if ( codecForEnc->name() == encoding )
+      {
+        d->encoding->setCurrentItem(insert);
+      }
+
+      insert++;
+    }
+  }
 }
 
 Kate::FileDialog::~FileDialog ()
