@@ -1,4 +1,4 @@
-/*   
+/*
    Copyright (C) 1998, 1999 Jochen Wilhelmy   
                             digisnap@cs.tu-berlin.de   
    
@@ -192,17 +192,12 @@ uchar TextLine::getRawAttr() const {
    
 void TextLine::setContext(TContexts context)  
 {    
-  ctx.duplicate(context);   
-  ctx.detach(); 
-}   
+  ctx.assign(context);   
+}
    
 TContexts TextLine::getContext() const   
-{   
-  TContexts newctx; 
-  newctx.duplicate(ctx); 
-  newctx.detach(); 
-   
-  return newctx; 
+{
+  return ctx;
 }   
    
    

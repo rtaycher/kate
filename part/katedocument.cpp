@@ -2666,32 +2666,48 @@ void KateDocument::tagAll() {
   }
 }
 
-void KateDocument::updateLines(int startLine, int endLine) {
+void KateDocument::updateLines(int startLine, int endLine)
+{
   TextLine::Ptr textLine;
-  int line, last_line;
+  uint line, last_line;
   TContexts ctxNum, endCtx;
 
-  if (buffer->line(startLine)==0)
+  if (!buffer->line(startLine))
 	  return;
 
 	last_line = lastLine();
 
   line = startLine;
-  ctxNum = TContexts();
 
 	if (line > 0)
+	{
 	  ctxNum = getTextLine(line - 1)->getContext();
-  bool stillcontinue=true;
-  do
+  }
+
+	bool stillcontinue=false;
+
+	// have changed here some stuff, there was a endless loop (mostly on bigger files)
+
+	do
 	{
     textLine = getTextLine(line);
+
+		if (!textLine)
+		  break;
+
     endCtx = textLine->getContext();
 	  ctxNum = m_highlight->doHighlight(ctxNum,textLine);
 		textLine->setContext(ctxNum);
-    line++;
-    stillcontinue = (endCtx.size()!=ctxNum.size());
-    if ((endCtx.size()!=0) && (ctxNum.size()!=0)) stillcontinue |= (!(ctxNum==endCtx));
-  }	while (((buffer->line(line)!=0) && ((line <= endLine) || stillcontinue))); //|| (!(endCtx == ctxNum)));
+
+		stillcontinue = (endCtx == ctxNum);
+
+ //   stillcontinue = (endCtx.size()!=ctxNum.size());
+ //   if ((endCtx.size()!=0) && (ctxNum.size()!=0)) stillcontinue |= (!(ctxNum==endCtx));
+
+		line++;
+		//kdDebug()<<"endless loop har har har harh arh ahraaskldhsjkhsdjkhkjs"<<endl;
+  }
+ while ((line <= last_line) && ((line <= endLine) || stillcontinue)); //|| (!(endCtx == ctxNum)));
 
   tagLines(startLine, line - 1);
 
