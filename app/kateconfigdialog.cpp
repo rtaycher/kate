@@ -232,10 +232,12 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
 
   // save meta infos
   cb_saveMetaInfos = new QCheckBox( bgStartup );
-  cb_saveMetaInfos->setText(i18n("Save &meta-information on edited files"));
+  cb_saveMetaInfos->setText(i18n("Keep &meta-information past sessions"));
   cb_saveMetaInfos->setChecked(docManager->getSaveMetaInfos());
   QWhatsThis::add(cb_saveMetaInfos, i18n(
-        "Check this if you want to things like bookmarks to be saved and restored"));
+        "Check this if you want document configuration like for example "
+        "bookmarks to be saved past editor sessions. The configuration will be "
+        "restored if the document has not changed when reopened."));
   connect( cb_saveMetaInfos, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
   // meta infos days
