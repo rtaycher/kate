@@ -152,7 +152,7 @@ void KateViewSpace::slotStatusChanged (KateView *view, int r, int c, int ovr, in
   if ((QWidgetStack *)view->parentWidget() != stack)
     return;
   //if (!mIsActiveSpace) return;
-  QString s1 = i18n("Line: %1").arg(KGlobal::locale()->formatNumber(r, 0));
+  QString s1 = i18n("Line: %1").arg(KGlobal::locale()->formatNumber(r+1, 0));
   QString s2 = i18n("Col: %1").arg(KGlobal::locale()->formatNumber(c, 0));
 
   QString ovrstr;
