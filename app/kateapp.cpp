@@ -52,6 +52,8 @@ KateApp::KateApp () : Kate::Application (),DCOPObject ("KateApp" )
 
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 
+  processEvents();
+
   mainWindows.first()->restore(isRestored());
 
   if (!isRestored())
@@ -59,6 +61,7 @@ KateApp::KateApp () : Kate::Application (),DCOPObject ("KateApp" )
     for (int z=0; z<args->count(); z++)
     {
       mainWindows.first()->viewManager->openURL( args->url(z) );
+      processEvents();
     }
 
     mainWindows.first()->raise();

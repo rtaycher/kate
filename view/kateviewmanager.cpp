@@ -423,6 +423,8 @@ void KateViewManager::slotDocumentNew ()
 
 void KateViewManager::slotDocumentOpen ()
 {
+  kapp->processEvents();
+
   KateView *cv = activeView();
 
   QString path = QString::null;
@@ -433,25 +435,25 @@ void KateViewManager::slotDocumentOpen ()
 
   for (KURL::List::Iterator i=urls.begin(); i != urls.end(); ++i)
   {
-    kdDebug()<<cv->doc()->url().isEmpty()<<endl;
-    kdDebug()<<cv->doc()->isModified()<<endl;
-
-
     if (!cv->doc()->isModified() && cv->doc()->url().isEmpty())
     {
       cv->doc()->openURL (*i);
       cv->doc()->setDocName (cv->doc()->url().filename());
       setWindowCaption();
+
     }
     else
       openURL( *i );
 
+    kapp->processEvents();
   }
 }
 
 void KateViewManager::slotDocumentSave ()
 {
   if (activeView() == 0) return;
+
+  kapp->processEvents();
 
   KateView *current = activeView();
 
@@ -466,6 +468,8 @@ void KateViewManager::slotDocumentSave ()
 
 void KateViewManager::slotDocumentSaveAll ()
 {
+  kapp->processEvents();
+
   QListIterator<KateView> it(viewList);
   for ( ;it.current(); ++it)
   {
@@ -502,12 +506,16 @@ void KateViewManager::slotDocumentClose ()
 {
   if (!activeView()) return;
 
+  kapp->processEvents();
+
   closeDocWithAllViews (activeView());
 }
 
 void KateViewManager::slotDocumentCloseAll ()
 {
   if (docManager->docCount () == 0) return;
+
+  kapp->processEvents();
 
   QList<KateDocument> closeList;
 
@@ -980,6 +988,8 @@ void KateViewManager::saveAllDocsAtCloseDown()
   scfg->setGroup("open files");
   scfg->writeEntry( "list", list );
   scfg->sync();
+
+  kapp->processEvents();
 }
 
 void KateViewManager::reopenDocuments(bool isRestore)
@@ -999,7 +1009,9 @@ void KateViewManager::reopenDocuments(bool isRestore)
   {
     QStringList list = /*config*/scfg->readListEntry("list");
 
-    for ( int i = list.count() - 1; i > -1; i-- ) {
+    for ( int i = list.count() - 1; i > -1; i-- )
+    {
+      kapp->processEvents();
       scfg->setGroup("open files");
       QString fn = scfg->readEntry(list[i]);
       openURL( KURL( fn ) );
@@ -1121,7 +1133,10 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
      grid->addWidget(s, 0, 0);
 
    QStringList children = config->readListEntry( "children" );
-   for (QStringList::Iterator it=children.begin(); it!=children.end(); ++it) {
+   for (QStringList::Iterator it=children.begin(); it!=children.end(); ++it)
+   {
+     kapp->processEvents();
+
      // for a viewspace, create it and open all documents therein.
      // TODO: restore cursor position.
      if ( (*it).startsWith("viewspace") ) {
