@@ -199,6 +199,7 @@ KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool
 
 void KateDocument::needPreHighlight(long till)
 {
+  kdDebug()<<QString("Already Highlighted: %1, requested: %2").arg(PreHighlightedTill).arg(till);
   if (PreHighlightedTill<till)
     {
       kdDebug()<<"Prehighlighting"<<endl;

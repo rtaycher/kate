@@ -1266,7 +1266,7 @@ void KateViewInternal::paintEvent(QPaintEvent *e) {
   line = (yPos + updateR.y()) / h;
   y = line*h - yPos;
   yEnd = updateR.y() + updateR.height();
-  myDoc->needPreHighlight(y);
+  myDoc->needPreHighlight(line);
   while (y < yEnd)
   {
     TextLine *textLine;
@@ -2617,6 +2617,7 @@ void KateView::gotoLine() {
 //    myDoc->recordReset();
     cursor.x = 0;
     cursor.y = dlg->getLine() - 1;
+    myDoc->needPreHighlight(cursor.y);
     myViewInternal->updateCursor(cursor);
     myViewInternal->center();
     myViewInternal->updateView(KateView::ufUpdateOnScroll);
