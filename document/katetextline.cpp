@@ -21,7 +21,7 @@
 #include "katetextline.h"
 #include <kdebug.h>
 
-TextLine::TextLine(int attribute, int context)
+TextLine::TextLine(uchar attribute, int context)
   : text(0L), attributes(0L), attr(attribute), ctx(context), myMark (0)
 {
 }
@@ -33,7 +33,7 @@ TextLine::~TextLine()
 
 void TextLine::replace(uint pos, uint delLen, const QChar *insText, uint insLen, uchar *insAttribs)
 {
-  int oldLen = text.length();
+  uint oldLen = text.length();
 
   text.remove (pos, delLen);
   text.insert (pos, insText, insLen);
@@ -160,32 +160,32 @@ int TextLine::cursorX(uint pos, uint tabChars) const {
   return x;
 }
 
-void TextLine::setAttribs(int attribute, uint start, uint end) {
+void TextLine::setAttribs(uchar attribute, uint start, uint end) {
   uint z;
 
   if (end > text.length()) end = text.length();
   for (z = start; z < end; z++) attributes[z] = (attributes[z] & taSelected) | attribute;
 }
 
-void TextLine::setAttr(int attribute) {
+void TextLine::setAttr(uchar attribute) {
   attr = (attr & taSelected) | attribute;
 }
 
-int TextLine::getAttr(uint pos) const {
+uchar TextLine::getAttr(uint pos) const {
   if (pos < text.length()) return attributes[pos] & taAttrMask;
   return attr & taAttrMask;
 }
 
-int TextLine::getAttr() const {
+uchar TextLine::getAttr() const {
   return attr & taAttrMask;
 }
 
-int TextLine::getRawAttr(uint pos) const {
+uchar TextLine::getRawAttr(uint pos) const {
   if (pos < text.length()) return attributes[pos];
   return (attr & taSelected) ? attr : attr | 256;
 }
 
-int TextLine::getRawAttr() const {
+uchar TextLine::getRawAttr() const {
   return attr;
 }
 

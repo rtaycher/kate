@@ -161,7 +161,7 @@ public:
       Creates an empty text line with given attribute and syntax highlight
       context
     */
-    TextLine(int attribute = 0, int context = 0);
+    TextLine(uchar attribute = 0, int context = 0);
     ~TextLine();
 
     /**
@@ -237,28 +237,28 @@ public:
     /**
       Sets the attributes from start to end -1
     */
-    void setAttribs(int attribute, uint start, uint end);
+    void setAttribs(uchar attribute, uint start, uint end);
     /**
       Sets the attribute for the free space behind the last character
     */
-    void setAttr(int attribute);
+    void setAttr(uchar attribute);
     /**
       Gets the attribute at the given position
     */
-    int getAttr(uint pos) const;
+    uchar getAttr(uint pos) const;
     /**
       Gets the attribute for the free space behind the last character
     */
-    int getAttr() const;
+    uchar getAttr() const;
     /**
       Gets the attribute, including the select state, at the given position
     */
-    int getRawAttr(uint pos) const;
+    uchar getRawAttr(uint pos) const;
     /**
       Gets the attribute, including the select state, for the free space
       behind the last character
     */
-    int getRawAttr() const;
+    uchar getRawAttr() const;
 
     /**
       Sets the syntax highlight context number
