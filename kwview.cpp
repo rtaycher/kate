@@ -1491,11 +1491,12 @@ KWBookmark::KWBookmark() {
   cursor.y = -1; //mark bookmark as invalid
 }
 
-KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const char * name, bool HandleOwnDND)
+KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const char * name, bool HandleOwnDND, bool deleteDoc)
   : KTextEditor::View(doc, parent, name), DCOPObject("KWriteIface") {
   setInstance( KWriteFactory::instance() );
   kWriteDoc = doc;
   m_singleViewMode = doc->isSingleViewMode();
+  myDeleteDoc = deleteDoc;
   kWriteView = new KWriteView(this,doc,HandleOwnDND);
 
   doc->addView( this );
@@ -1564,7 +1565,7 @@ KWrite::~KWrite() {
   {
     kWriteDoc->removeView( this );
 
-    if ( kWriteDoc->isLastView(0) )
+    if ( kWriteDoc->isLastView(0) && myDeleteDoc )
       delete kWriteDoc;
   }
 

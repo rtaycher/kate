@@ -281,7 +281,7 @@ class KWrite : public KTextEditor::View, virtual public KWriteIface {
       HandleOwnURIDrops should be set to false for a container that can handle URI drops
       better than KWriteView does.
     */
-    KWrite(KWriteDoc *, QWidget *parent = 0L, const char * name = 0, bool HandleOwnURIDrops = true);
+    KWrite(KWriteDoc *, QWidget *parent = 0L, const char * name = 0, bool HandleOwnURIDrops = true, bool deleteDoc = true);
     /**
       The destructor does not delete the document
     */
@@ -897,6 +897,7 @@ class KWrite : public KTextEditor::View, virtual public KWriteIface {
     KRecentFilesAction *fileRecent;
     KSelectAction *setHighlight, *setEndOfLine;
     bool m_singleViewMode;
+    bool myDeleteDoc;
 
 
     // some kwriteview stuff
