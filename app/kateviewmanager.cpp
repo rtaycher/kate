@@ -469,8 +469,12 @@ void KateViewManager::slotDocumentClose ()
   // it is not modified and empty !!!
   if ( (m_viewList.count() == 1)
        && !activeView()->getDoc()->isModified()
+       && activeView()->getDoc()->url().isEmpty()
        && (activeView()->getDoc()->length() == 0) )
+  {
+    activeView()->getDoc()->closeURL();
     return;
+  }
 
   // close document
   m_docManager->closeDocument (activeView()->getDoc());
