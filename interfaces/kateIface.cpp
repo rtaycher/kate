@@ -1,5 +1,5 @@
  /***************************************************************************
-                          kateplugin.cpp  -  description
+                          kateIface.cpp  -  description
                              -------------------
     begin                : FRE Feb 23 2001
     copyright            : (C) 2001 by Joseph Wenninger
@@ -14,5 +14,21 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+
+#include "kateappIface.h"
+#include "kateappIface.moc"
+
+#include "katedocmanagerIface.h"
+#include "katedocmanagerIface.moc"
+
+#include "katedocumentIface.h"
+#include "katedocumentIface.moc"
+
 #include "katepluginIface.h"
 #include "katepluginIface.moc"
+
+#include "kateviewIface.h"
+#include "kateviewIface.moc"
+
+#include "kateviewmanagerIface.h"
+#include "kateviewmanagerIface.moc"
