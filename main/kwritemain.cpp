@@ -598,6 +598,14 @@ int main(int argc, char **argv)
   aboutData.addAuthor( "Simon Hausmann", 0, "hausmann@kde.org" );
   aboutData.addAuthor("Glen Parker",I18N_NOOP("KWrite Undo History, Kspell integration"), "glenebob@nwlink.com");
   aboutData.addAuthor("Scott Manson",I18N_NOOP("KWrite XML Syntax highlighting support"), "sdmanson@alltel.net");
+  aboutData.addAuthor ("John Firebaugh",I18N_NOOP("Patches and more"), "jfire@uclink.berkeley.edu");
+
+  aboutData.addCredit ("Matteo Merli",I18N_NOOP("Highlighting for RPM Spec-Files, Perl, Diff and more"), "merlim@libero.it");
+  aboutData.addCredit ("Rocky Scaletta",I18N_NOOP("Highlighting for VHDL"), "rocky@purdue.edu");
+  aboutData.addCredit ("Carsten Presser", I18N_NOOP("Betatest"), "mord-slime@gmx.de");
+  aboutData.addCredit ("Jens Haupert", I18N_NOOP("Betatest"), "al_all@gmx.de");
+  aboutData.addCredit ("Carsten Pfeiffer", I18N_NOOP("Very nice help"), "");
+  aboutData.addCredit ("Mr. Doerr", I18N_NOOP("For absolutely nothing"), "");
 
   KCmdLineArgs::init( argc, argv, &aboutData );
   KCmdLineArgs::addCmdLineOptions( options );
