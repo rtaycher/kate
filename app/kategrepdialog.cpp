@@ -283,8 +283,10 @@ void GrepTool::processOutput()
 
 void GrepTool::slotSearch()
 {
+  slotClear ();
+
   if (pattern_combo->currentText().isEmpty())
-  return;
+    return;
 
 //   search_button->setEnabled(false);
   if ( childproc && childproc->isRunning() )
