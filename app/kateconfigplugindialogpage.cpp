@@ -161,11 +161,11 @@ KateConfigPluginPage::KateConfigPluginPage(QWidget *parent, KateConfigDialog *di
   listView->addColumn(i18n("License"));
   connect(listView, SIGNAL(stateChange(PluginListItem *, bool)), this, SLOT(stateChange(PluginListItem *, bool)));
       
-  for (uint i=0; i<myPluginMan->myPluginList.count(); i++)
+  for (uint i=0; i<myPluginMan->pluginList().count(); i++)
   {
-    PluginListItem *item = new PluginListItem(false, myPluginMan->myPluginList.at(i)->load, myPluginMan->myPluginList.at(i), listView);
-    item->setText(0, myPluginMan->myPluginList.at(i)->service->name());
-    item->setText(1, myPluginMan->myPluginList.at(i)->service->comment());
+    PluginListItem *item = new PluginListItem(false, myPluginMan->pluginList().at(i)->load, myPluginMan->pluginList().at(i), listView);
+    item->setText(0, myPluginMan->pluginList().at(i)->service->name());
+    item->setText(1, myPluginMan->pluginList().at(i)->service->comment());
     item->setText(2, "");
     item->setText(3, "");
   }

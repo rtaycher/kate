@@ -40,11 +40,6 @@ class KatePluginManager : public QObject
 {
   Q_OBJECT
 
-  friend class KateConfigPluginPage;
-  friend class KateConfigDialog;
-  friend class KateMainWindow;
-  friend class KateApp;
-
   public:
     KatePluginManager(QObject *parent);
     ~KatePluginManager();
@@ -52,8 +47,6 @@ class KatePluginManager : public QObject
     void loadAllEnabledPlugins ();
     void enableAllPluginsGUI (KateMainWindow *win);
 
-  private:
-    void setupPluginList ();
     void loadConfig ();
     void writeConfig ();
 
@@ -61,9 +54,14 @@ class KatePluginManager : public QObject
     void unloadPlugin (PluginInfo *item);
     void enablePluginGUI (PluginInfo *item, KateMainWindow *win);
     void enablePluginGUI (PluginInfo *item);
-    void disablePluginGUI (PluginInfo *item);
-
-    PluginList myPluginList;
+    void disablePluginGUI (PluginInfo *item);      
+    
+    inline PluginList & pluginList () { return m_pluginList; };
+    
+  private:
+    void setupPluginList ();
+    
+    PluginList m_pluginList;
 };
 
 #endif

@@ -37,17 +37,14 @@ struct PluginPageListItem
 class KateConfigDialog : public KDialogBase
 {
   Q_OBJECT
-
-  friend class KateMainWindow;
-  friend class KateConfigPluginPage;
-
+  
   public:
     KateConfigDialog (KateMainWindow *parent, const char * = 0);
     ~KateConfigDialog ();
 
     int exec ();
 
-  private:
+  public:
     void addPluginPage (Kate::Plugin *plugin);
     void removePluginPage (Kate::Plugin *plugin);
 

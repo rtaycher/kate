@@ -232,7 +232,7 @@ void KateMainWindow::setupActions()
 // Don't call this, KMainWindow does it for us.
 //  new KHelpMenu(this, instance()->aboutData(), true, actionCollection());
   
-  if (m_pluginManager->myPluginList.count() > 0)
+  if (m_pluginManager->pluginList().count() > 0)
     new KAction(i18n("Contents &Plugins"), 0, this, SLOT(pluginHelp()), actionCollection(), "help_plugins_contents");
 
   connect(m_viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));

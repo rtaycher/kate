@@ -54,7 +54,7 @@ void KatePluginManager::setupPluginList ()
     info->service = ptr;
     info->plugin = 0L;
 
-    myPluginList.append(info);
+    m_pluginList.append(info);
   }
 }
 
@@ -63,10 +63,10 @@ void KatePluginManager::loadConfig ()
   KSimpleConfig *config = new KSimpleConfig("katepluginrc", false);
   config->setGroup("Plugins");
 
-  for (uint i=0; i<myPluginList.count(); i++)
+  for (uint i=0; i<m_pluginList.count(); i++)
   {
-    if  (config->readBoolEntry(myPluginList.at(i)->service->library(), false))
-      myPluginList.at(i)->load = true;
+    if  (config->readBoolEntry(m_pluginList.at(i)->service->library(), false))
+      m_pluginList.at(i)->load = true;
   }
 }
 
@@ -75,9 +75,9 @@ void KatePluginManager::writeConfig ()
   KSimpleConfig *config = new KSimpleConfig("katepluginrc", false);
   config->setGroup("Plugins");
 
-  for (uint i=0; i<myPluginList.count(); i++)
+  for (uint i=0; i<m_pluginList.count(); i++)
   {
-    config->writeEntry(myPluginList.at(i)->service->library(), myPluginList.at(i)->load);
+    config->writeEntry(m_pluginList.at(i)->service->library(), m_pluginList.at(i)->load);
   }
 
   config->sync();
@@ -86,19 +86,19 @@ void KatePluginManager::writeConfig ()
 
 void KatePluginManager::loadAllEnabledPlugins ()
 {
-  for (uint i=0; i<myPluginList.count(); i++)
+  for (uint i=0; i<m_pluginList.count(); i++)
   {
-    if  (myPluginList.at(i)->load)
-      loadPlugin (myPluginList.at(i));
+    if  (m_pluginList.at(i)->load)
+      loadPlugin (m_pluginList.at(i));
   }
 }
 
 void KatePluginManager::enableAllPluginsGUI (KateMainWindow *win)
 {
-  for (uint i=0; i<myPluginList.count(); i++)
+  for (uint i=0; i<m_pluginList.count(); i++)
   {
-    if  (myPluginList.at(i)->load)
-      enablePluginGUI (myPluginList.at(i), win);
+    if  (m_pluginList.at(i)->load)
+      enablePluginGUI (m_pluginList.at(i), win);
   }
 }
 

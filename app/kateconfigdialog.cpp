@@ -207,10 +207,10 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   path << i18n("Plugins");
   setFolderIcon (path, SmallIcon("kate", KIcon::SizeSmall));
   
-  for (uint i=0; i<pluginManager->myPluginList.count(); i++)
+  for (uint i=0; i<pluginManager->pluginList().count(); i++)
   {
-    if  ( pluginManager->myPluginList.at(i)->load && Kate::pluginConfigInterfaceExtension(pluginManager->myPluginList.at(i)->plugin) )
-      addPluginPage (pluginManager->myPluginList.at(i)->plugin);
+    if  ( pluginManager->pluginList().at(i)->load && Kate::pluginConfigInterfaceExtension(pluginManager->pluginList().at(i)->plugin) )
+      addPluginPage (pluginManager->pluginList().at(i)->plugin);
   }
  
   enableButtonSeparator(true);

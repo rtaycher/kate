@@ -104,12 +104,11 @@ class KateConfigPluginPage: public QVBox
 
   private:
     KatePluginManager *myPluginMan;
-   class KateConfigDialog *myDialog;
+    class KateConfigDialog *myDialog;
 
   private slots:
-    void stateChange(PluginListItem *, bool); 
+    void stateChange(PluginListItem *, bool);
     
-  private slots:
     void loadPlugin (PluginListItem *);
     void unloadPlugin (PluginListItem *);
 };
