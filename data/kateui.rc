@@ -46,6 +46,7 @@
     <Action name="edit_cmd"/>
     <Separator/>
     <Action name="go_goto_line"/>
+    <Action name="view_border"/>
     <Separator />
     <Action name="tools_spelling" />
   </Menu>

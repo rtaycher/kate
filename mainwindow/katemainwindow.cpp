@@ -408,6 +408,7 @@ void KateMainWindow::slotWindowActivated ()
     setHighlight->setEnabled(false);
     gotoLine->setEnabled(false);
     editCmd->setEnabled(false);
+    viewBorder->setEnabled(false);
   }
 
   if (viewManager->activeView() != 0)
@@ -433,6 +434,8 @@ void KateMainWindow::slotWindowActivated ()
     setHighlight->setEnabled(true);
     gotoLine->setEnabled(true);
     editCmd->setEnabled(true);
+    viewBorder->setEnabled(true);
+    viewBorder->setChecked(viewManager->activeView()->iconBorder());
   }
 
   if (viewManager->viewCount () == 0 )
