@@ -73,7 +73,7 @@ class KateProjectManager : public QObject
 
     Kate::Project *open (const QString &filename);
 
-    bool close (Kate::Project *project);
+    bool close (Kate::Project *project, bool force = false);
 
     Kate::Project *project (uint n = 0);
 

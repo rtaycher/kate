@@ -44,6 +44,11 @@ KateProjectManager::KateProjectManager (QObject *parent) : QObject (parent)
 
 KateProjectManager::~KateProjectManager()
 {
+  while (!m_projects.isEmpty())
+  {
+    close (m_projects.at(m_projects.count()-1), true);
+  }
+
   m_pluginList.setAutoDelete(true);
   m_pluginList.clear();
 }
@@ -112,11 +117,11 @@ Kate::Project *KateProjectManager::open (const QString &filename)
   return project;
 }
 
-bool KateProjectManager::close (Kate::Project *project)
+bool KateProjectManager::close (Kate::Project *project, bool force)
 {
   if (project)
   {
-    if (project->close())
+    if (project->close() || force)
     {
       uint id = project->projectNumber ();
       int n = m_projects.findRef (project);

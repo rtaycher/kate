@@ -48,7 +48,12 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState)
  , m_initPlugin (0)
  , m_doNotInitialize (0)
  , m_restoreGUIMode (KMdi::UndefinedMode)
+ , m_sessionConfig (0)
 {
+  // we need to call that now, don't ask me, in the first newInstance run it is wrong !
+  if (isRestored())
+    m_sessionConfig = sessionConfig ();
+
   // Don't handle DCOP requests yet
   kapp->dcopClient()->suspend();
   
@@ -108,10 +113,14 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState)
 
 KateApp::~KateApp ()
 {
+  // cu dcop interface
   delete m_obj;
   
   // cu plugin manager
   delete m_pluginManager;
+  
+  // cu project man
+  delete m_projectManager;
   
   // delete this now, or we crash
   delete m_docManager;
@@ -168,37 +177,25 @@ int KateApp::newInstance()
 {
   if (m_firstStart)
   {
-    // first be sure we have at least one window
-    // #warning Session management ? needs to be fixed
-    config()->setGroup("General");
-    //m_restoreGUIMode=(KMdi::MdiMode)config()->readNumEntry("GUIMode",KMdi::UndefinedMode);
-    KateMainWindow *win; // = newMainWindow ();
-    
     // we restore our great stuff here now ;) super
-    if ( isRestored() )
-    {
+    if ( restoringSession() )
+    { 
       // restore the nice projects & files ;) we need it
       m_projectManager->restoreProjectList (sessionConfig());
       m_docManager->restoreDocumentList (sessionConfig());
-  
-      int n = 1;
-      while (KMainWindow::canBeRestored(n)){
-              // for efficiency do something with m_restoreGuiMode here
-          win=newMainWindow();
-          win->restore(n);
-          n++;
-      }
-  
-      // window config
-      //win->restoreWindowConfiguration (sessionConfig());
+             
+      for (int n=1; KMainWindow::canBeRestored(n); n++)
+      {
+        KateMainWindow *win=newMainWindow(false);
+        win->restore ( n, true );
+      }      
     }
     else
     {
-      win=newMainWindow(false);
-      config()->setGroup("General");
-      
       KSimpleConfig scfg ("katesessionrc", false);
-  
+    
+      config()->setGroup("General");
+
       // restore our nice projects if wanted
       if (config()->readBoolEntry("Restore Projects", false))
         m_projectManager->restoreProjectList (&scfg);
@@ -206,14 +203,20 @@ int KateApp::newInstance()
       // reopen our nice files if wanted
       if (config()->readBoolEntry("Restore Documents", false))
         m_docManager->restoreDocumentList (&scfg);
-    
+         
+      KateMainWindow *win=newMainWindow(false);
+
       // window config
       if (config()->readBoolEntry("Restore Window Configuration", false))
-        win->restoreWindowConfiguration (&scfg);
+        win->readProperties (&scfg);
         
       win->show ();    
     }
   }
+  
+  // oh, no mainwindow, create one, should not happen, but make sure ;)
+  if (mainWindows() == 0)
+    newMainWindow ();
 
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 

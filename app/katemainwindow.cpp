@@ -84,12 +84,9 @@
 
 uint KateMainWindow::uniqueID = 1;
 KMdi::MdiMode KateMainWindow::defaultMode=KMdi::UndefinedMode;
-static bool sessionClosingAccepted=false;
-static bool sessionClosingStarted=false;
-static bool sessionClosingStarted2=false;
 
 KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager *_m_pluginManager,
-	KateProjectManager *projectMan,KMdi::MdiMode guiMode) :
+	KateProjectManager *projectMan, KMdi::MdiMode guiMode) :
 	KMdiMainFrm (0,(QString("__KateMainWindow#%1").arg(uniqueID)).latin1(),guiMode)
 {
   // first the very important id
@@ -166,6 +163,10 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
 KateMainWindow::~KateMainWindow()
 {
+  saveOptions(kapp->config());
+
+  ((KateApp *)kapp)->removeMainWindow (this);
+
   m_pluginManager->disableAllPluginsGUI (this);
 
   delete m_dcop;
@@ -312,65 +313,44 @@ void KateMainWindow::setupActions()
  */
 bool KateMainWindow::queryClose()
 {
-
   kdDebug(13000)<<"QUERY CLOSE ********************"<<endl;
-  bool val = false;
-
-  if (!kapp->sessionSaving()) {
-    if ( ((KateApp *)kapp)->mainWindows () < 2 )
-    {
-      // store the stuff
-      KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
-
-      m_projectManager->saveProjectList (scfg);
-
-      saveOptions(kapp->config());
-
-      if (m_projectManager->closeAll ())
-      {
-        // first ask if something has changed
-
-	val=m_docManager->queryCloseDocuments(this);
-	if (!val)
-        {
-            delete scfg;
-            return false;
-        }
-        m_docManager->saveDocumentList (scfg);
-        saveWindowConfiguration (scfg);
-
-        //m_docManager->closeAllDocuments();
-
-        if ( !m_docManager->activeDocument() || !m_viewManager->activeView() ||
-           ( !m_viewManager->activeView()->getDoc()->isModified() && m_docManager->documents() == 1 ) )
-        {
-           if( m_viewManager->activeView() )
-             m_viewManager->deleteLastView();
-           val = true;
-        }
-     }
-     scfg->sync();
-     delete scfg;
-    }
-    else
-      val = true;
+  
+  // session saving, can we close all projects & views ?
+  // just test, not close them actually
+  if (kapp->sessionSaving())
+  {    
+    return ( m_projectManager->queryCloseAll () &&
+             m_docManager->queryCloseDocuments (this) );
   }
-  else
+  
+  // normal closing of window
+  // allow to close all windows until the last without restrictions
+  if ( ((KateApp *)kapp)->mainWindows () > 1 )
+    return true;
+    
+  // last one: check if we can close all projects/document, try run
+  // and save projects/docs if we really close down !
+  if ( m_projectManager->queryCloseAll () &&
+       m_docManager->queryCloseDocuments (this) )
   {
-	val=sessionClosingAccepted;
-	if (!sessionClosingStarted) {
-		val=sessionClosingStarted=sessionClosingAccepted=m_docManager->queryCloseDocuments(this);
-		if (val) sessionClosingStarted2=true;
-	}
-	if (!val) sessionClosingStarted=false;
-
+    KSimpleConfig scfg ("katesessionrc", false);
+    
+    KConfig *config = kapp->config();
+    config->setGroup("General");
+  
+    if (config->readBoolEntry("Restore Projects", false))
+      m_projectManager->saveProjectList (&scfg);
+  
+    if (config->readBoolEntry("Restore Documents", false))
+      m_docManager->saveDocumentList (&scfg);
+    
+    if (config->readBoolEntry("Restore Window Configuration", false))
+      saveProperties (&scfg);
+  
+    return true;
   }
 
-
-  if (val)
-    ((KateApp *)kapp)->removeMainWindow (this);
-
-  return val;
+  return false;
 }
 
 void KateMainWindow::newWindow ()
@@ -931,28 +911,10 @@ void KateMainWindow::openConstURLProject (const KURL&url)
   openProject (url.path());
 }
 
-
-
 void KateMainWindow::saveProperties(KConfig *config) {
 	kdDebug(13000)<<"KateMainWindow::saveProperties()********************************************"<<endl
 		      <<config->group()<<endl
 		      <<"****************************************************************************"<<endl;
-//	return;
-	saveWindowConfiguration(config);
-
-#warning FIXME, should be done only once
-        m_docManager->saveDocumentList (config);
-        m_projectManager->saveProjectList (config);
-//	m_docManager->closeAllDocuments();
-
-}
-
-void KateMainWindow::readProperties(KConfig *config) {
-	restoreWindowConfiguration(config);
-}
-
-void KateMainWindow::saveWindowConfiguration (KConfig *config)
-{
   assert(config);
 
   kdDebug(13000)<<"preparing session saving"<<endl;
@@ -980,7 +942,7 @@ void KateMainWindow::saveWindowConfiguration (KConfig *config)
 
 }
 
-void KateMainWindow::restoreWindowConfiguration (KConfig *config)
+void KateMainWindow::readProperties(KConfig *config)
 {
   QString grp=config->group();
   QString dockGrp;
@@ -998,16 +960,8 @@ void KateMainWindow::restoreWindowConfiguration (KConfig *config)
   config->setGroup(grp);
 }
 
-
-void KateMainWindow::saveGlobalProperties( KConfig* sessionConfig ) {
-	kdDebug(13001)<<"saveGlobalProperties**********************"<<endl;
-
-     //session saving
-     kdDebug(13001)<<"QUERY CLOSE: session management"<<endl;
-	if (!sessionClosingStarted2)
-		sessionClosingAccepted=m_docManager->queryCloseDocuments(this);
-	sessionClosingStarted=true;
-
-	saveOptions(sessionConfig);
+void KateMainWindow::saveGlobalProperties( KConfig* sessionConfig )
+{
+  m_projectManager->saveProjectList (sessionConfig);
+  m_docManager->saveDocumentList (sessionConfig);
 }
-
