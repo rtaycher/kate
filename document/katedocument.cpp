@@ -152,7 +152,9 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
 
   m_url = KURL();
 
-  myEncoding = KGlobal::charsets()->name(KGlobal::charsets()->charsetForLocale());
+  // NOTE: QFont::CharSet doesn't provide all the charsets KDE supports
+  // (esp. it doesn't distinguish between UTF-8 and iso10646-1) 
+  myEncoding = QString::fromLatin1(QTextCodec::codecForLocale()->name());
 
   setFont (KGlobalSettings::fixedFont());
 
@@ -344,8 +346,8 @@ bool KateDocument::saveFile()
 
   QTextStream stream(&f);
 
-  stream.setCodec(KGlobal::charsets()->codecForName(myEncoding));
-  stream.setEncoding(QTextStream::Locale); //lukas: lets see, not sure if it doesn't clash with the above line...
+  stream.setEncoding(QTextStream::RawUnicode); // disable Unicode headers
+  stream.setCodec(KGlobal::charsets()->codecForName(myEncoding)); // this line sets the mapper to the correct codec
 
   int maxLine = numLines();
   int line = 0;
@@ -644,12 +646,12 @@ void KateDocument::readConfig()
   setTabWidth(config->readNumEntry("TabWidth", 8));
   setUndoSteps(config->readNumEntry("UndoSteps", 50));
   m_singleSelection = config->readBoolEntry("SingleSelection", false);
-  myEncoding = config->readEntry("Encoding", KGlobal::charsets()->name(KGlobal::charsets()->charsetForLocale()));
+  myEncoding = config->readEntry("Encoding", QString::fromLatin1(QTextCodec::codecForLocale()->name()));
   setFont (config->readFontEntry("Font", &myFont));
 
   colors[0] = config->readColorEntry("Color Background", &colors[0]);
   colors[1] = config->readColorEntry("Color Selected", &colors[1]);
-
+  
   config->sync();
 }
 
