@@ -201,9 +201,12 @@ void KateMainWindow::setupMainWindow ()
 
   fileselector = new KateFileSelector( this, m_viewManager, /*fileselectorDock*/ this, "operator");
   fileselectorDock=addToolViewWidget(KDockWidget::DockLeft,fileselector, SmallIcon("fileopen"),"Selector");
-
+  
+  console = new KateConsole (this, "console");
+  console->installEventFilter( this );
+  consoleDock = addToolViewWidget(KDockWidget::DockBottom,console, SmallIcon("konsole"),"Konsole");
+  
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileItem*)),this,SLOT(fileSelected(const KFileItem*)));
-
 }
 
 bool KateMainWindow::eventFilter(QObject* o, QEvent* e)
@@ -313,10 +316,10 @@ void KateMainWindow::setupActions()
 //  settingsShowToolViews->insert(settingsShowFilelist);
 
 //  settingsShowFileselector = new KToggleAction(i18n("Show File Selector"), 0, fileselectorDock, SLOT(changeHideShowState()), actionCollection(), "settings_show_fileselector");
-  settingsShowConsole = new KToggleAction(i18n("Show Terminal Emulator"), QString::fromLatin1("konsole"), Qt::Key_F7, this, SLOT(slotSettingsShowConsole()), actionCollection(), "settings_show_console");
+  //settingsShowConsole = new KToggleAction(i18n("Show Terminal Emulator"), QString::fromLatin1("konsole"), Qt::Key_F7, this, SLOT(slotSettingsShowConsole()), actionCollection(), "settings_show_console");
 
 //  settingsShowToolViews->insert(settingsShowFileselector);
-  m_settingsShowToolViews->insert(settingsShowConsole);
+  //m_settingsShowToolViews->insert(settingsShowConsole);
 
 
   if (m_dockStyle==ModernStyle)
@@ -408,11 +411,6 @@ void KateMainWindow::readOptions(KConfig *config)
 {
   config->setGroup("General");
   syncKonsole =  config->readBoolEntry("Sync Konsole", true);
-
-  if (config->readBoolEntry("Show Console", false))
-  {
-    slotSettingsShowConsole();
-  }
 
   QSize tmpSize(600, 400);
   resize( config->readSizeEntry( "size", &tmpSize ) );
@@ -583,37 +581,10 @@ void KateMainWindow::editKeys()
   dlg.configure();
 }
 
-void KateMainWindow::slotSettingsShowConsole()
-{
-  if (!consoleDock && !console)
-  {
-    consoleDock = createDockWidget( "consoleDock", SmallIcon("konsole"), 0L, "Console", "" );
-    console = new KateConsole (consoleDock, "console");
-    console->installEventFilter( this );
-    console->setMinimumSize(50,50);
-    consoleDock->setWidget( console );
-    consoleDock->manualDock ( mainDock, KDockWidget::DockBottom, 20 );
-    consoleDock->changeHideShowState();
-    consoleDock->setDockWindowType (NET::Tool);
-    consoleDock->setDockWindowTransient (this, true);
-  }
-
-  consoleDock->changeHideShowState();
-
-  if( consoleDock->isVisible() )
-    console->setFocus();
-  else
-    if (m_viewManager->activeView())
-      m_viewManager->activeView()->setFocus();
-}
-
 void KateMainWindow::settingsMenuAboutToShow()
 {
 //  settingsShowFilelist->setChecked( filelistDock->isVisible() );
 //  settingsShowFileselector->setChecked( fileselectorDock->isVisible() );
-
-  if (consoleDock)
-    settingsShowConsole->setChecked( consoleDock->isVisible() );
 }
 
 void KateMainWindow::openURL (const QString &name)
