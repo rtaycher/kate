@@ -315,7 +315,7 @@ class HlManager : public QObject {
     ~HlManager();
 
     static HlManager *self();
-
+    static KConfig *getKConfig();
     Highlight *getHl(int n);
     int defaultHl();
     int nameFind(const QString &name);
@@ -345,6 +345,7 @@ class HlManager : public QObject {
   protected:
     QPtrList<Highlight> hlList;
     static HlManager *s_pSelf;
+    static KConfig *s_pConfig;
 };
 
 

@@ -38,6 +38,7 @@
 #include "katefactory.h"
 
 HlManager *HlManager::s_pSelf = 0;
+KConfig *HlManager::s_pConfig =0;
 
 enum Item_styles { dsNormal,dsKeyword,dsDataType,dsDecVal,dsBaseN,dsFloat,dsChar,dsString,dsComment,dsOthers};
 
@@ -724,7 +725,7 @@ signed char *Highlight::doHighlight(signed char *oCtx, uint *oCtxLen, TextLine *
 KConfig *Highlight::getKConfig() {
   KConfig *config;
 
-  config = KateFactory::instance()->config();
+  config = HlManager::getKConfig();//KateFactory::instance()->config();
   config->setGroup(iName + QString(" Highlight"));
   return config;
 }
@@ -1336,6 +1337,13 @@ HlManager *HlManager::self()
   if ( !s_pSelf )
     s_pSelf = new HlManager;
   return s_pSelf;
+}
+
+KConfig *HlManager::getKConfig()
+{
+  if (!s_pConfig)
+    s_pConfig = new KConfig("katesyntaxhighlightingrc");
+  return s_pConfig;
 }
 
 Highlight *HlManager::getHl(int n) {
