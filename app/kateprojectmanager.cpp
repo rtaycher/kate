@@ -222,6 +222,17 @@ QStringList KateProjectManager::pluginStringList ()
   return list;
 }
 
+bool KateProjectManager::closeAll ()
+{
+  while (!m_projects.isEmpty())
+  {
+    if (!close(m_projects.at(m_projects.count()-1)))
+      return false;
+  }
+
+  return true;
+}
+
 //
 // "New Project" Dialog
 //

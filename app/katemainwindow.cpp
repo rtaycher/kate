@@ -324,24 +324,31 @@ void KateMainWindow::setupActions()
   slotDocumentChanged();
 }
 
+/**
+ * queryClose(), take care that after the last mainwindow the stuff is closed
+ */
 bool KateMainWindow::queryClose()
 {
-  if (m_viewManager->reopening()) return false;
-  kdDebug(13000) << "queryClose()" << endl;
+  if (m_viewManager->reopening())
+    return false;
+
   bool val = false;
 
   if ( ((KateApp *)kapp)->mainWindows () < 2 )
   {
-    saveOptions(config);
-
-    m_viewManager->saveAllDocsAtCloseDown();
-
-    if ( !m_docManager->activeDocument() || !m_viewManager->activeView() ||
-       ( !m_viewManager->activeView()->getDoc()->isModified() && m_docManager->documents() == 1 ) )
+    if (m_projectManager->closeAll ())
     {
-      if( m_viewManager->activeView() )
-        m_viewManager->deleteLastView();
-      val = true;
+      saveOptions(config);
+
+      m_viewManager->saveAllDocsAtCloseDown();
+
+      if ( !m_docManager->activeDocument() || !m_viewManager->activeView() ||
+         ( !m_viewManager->activeView()->getDoc()->isModified() && m_docManager->documents() == 1 ) )
+      {
+        if( m_viewManager->activeView() )
+          m_viewManager->deleteLastView();
+        val = true;
+      }
     }
   }
   else
