@@ -1195,8 +1195,8 @@ void KWriteView::mousePressEvent(QMouseEvent *e) {
     if (! kWrite->isReadOnly())
       kWrite->paste();
   }
-  if (kWrite->popup && e->button() == RightButton) {
-    kWrite->popup->popup(mapToGlobal(e->pos()));
+  if (kWrite->rmbMenu && e->button() == RightButton) {
+    kWrite->rmbMenu->popup(mapToGlobal(e->pos()));
   }
   kWrite->mousePressEvent(e); // this doesn't do anything, does it?
   // it does :-), we need this for KDevelop, so please don't uncomment it again -Sandy
@@ -1492,7 +1492,8 @@ KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const char * name, bool HandleOw
   wrapAt = 80;
   searchFlags = 0;
   replacePrompt = 0L;
-  popup = 0L;
+  rmbMenu = 0L;
+  bmMenu = 0L;
   bookmarks.setAutoDelete(true);
 
   //KSpell initial values
@@ -1530,7 +1531,6 @@ KWrite::~KWrite() {
     delete kWriteDoc;
 
   delete kWriteView;
-  delete popup; //right mouse button popup
 
   delete m_tempSaveFile;
 }
@@ -1683,37 +1683,18 @@ void KWrite::copySettings(KWrite *w) {
   wrapAt = w->wrapAt;
   searchFlags = w->searchFlags;
 }
-/*
-void KWrite::optDlg() {
-  SettingsDialog *dlg;
 
-  dlg = new SettingsDialog(configFlags,wrapAt,kWriteDoc->tabChars,kWriteDoc->undoSteps,
-    topLevelWidget());
 
-  dlg->setCaption(i18n("Options"));
+QColor* KWrite::getColors()
+{
+  return kWriteDoc->colors;
+}
 
-  if (dlg->exec() == QDialog::Accepted) {
-//!!! extra options set to default
-    setConfig(dlg->getFlags() | (configFlags & cfOvr) | cfKeepIndentProfile | cfMouseAutoCopy);
-    wrapAt = dlg->getWrapAt();
-    kWriteDoc->setTabWidth(dlg->getTabWidth());
-    kWriteDoc->setUndoSteps(dlg->getUndoSteps());
-    kWriteDoc->updateViews();
-  }
-  delete dlg;
-} */
 
-void KWrite::colDlg() {
-  ColorDialog *dlg;
-
-  dlg = new ColorDialog(this, kWriteDoc->colors);
-
-  if (dlg->exec() == QDialog::Accepted) {
-    dlg->getColors(kWriteDoc->colors);
-    kWriteDoc->tagAll();
-    kWriteDoc->updateViews();
-  }
-  delete dlg;
+void KWrite::applyColors()
+{
+   kWriteDoc->tagAll();
+   kWriteDoc->updateViews();
 }
 
 
@@ -2663,31 +2644,38 @@ void KWrite::replaceSlot() {
   delete dlg;
 }            */
 
-void KWrite::installRBPopup(QPopupMenu *p) {
-  popup = p;
+void KWrite::installPopups(QPopupMenu *rmb_Menu, QPopupMenu *bm_Menu)
+{
+  rmbMenu = rmb_Menu;
+  rmbMenuOrgCount = rmbMenu->count();
+  connect(rmbMenu,SIGNAL(activated(int)),SLOT(gotoBookmark(int)));
+  bmMenu = bm_Menu;
+  bmMenuOrgCount = bmMenu->count();
+  connect(bmMenu,SIGNAL(activated(int)),SLOT(gotoBookmark(int)));
+
+  updateBookmarks();
 }
 
-/*
-void KWrite::installBMPopup(KGuiCmdPopup *p) {
 
-  connect(p, SIGNAL(aboutToShow()), SLOT(updateBMPopup()));
-//  connect(p,SIGNAL(activated(int)),SLOT(gotoBookmark(int)));
-//  bmEntries = p->count();
-}
-*/
-
-void KWrite::setBookmark() {
+void KWrite::setBookmark()
+{
   QPopupMenu *popup;
   int z;
-  char s[8];
 
   popup = new QPopupMenu(0L);
 
-  for (z = 1; z <= 9; z++) {
-    sprintf(s,"&%d",z);
-    popup->insertItem(s,z);
+  for (z = 0; z < 9; z++) {
+    if ((z < (int) bookmarks.count())&&(bookmarks.at(z)->cursor.y != -1))
+      popup->insertItem(i18n("&%1 - Line %2").arg(z+1)
+                        .arg(KGlobal::locale()->formatNumber(bookmarks.at(z)->cursor.y + 1, 0)),z);
+    else
+      popup->insertItem(i18n("&%1").arg(z+1),z);
   }
-  popup->insertItem("1&0",z);
+  if ((z < (int) bookmarks.count())&&(bookmarks.at(z)->cursor.y != -1))
+     popup->insertItem(i18n("1&0 - Line %1")
+                        .arg(KGlobal::locale()->formatNumber(bookmarks.at(z)->cursor.y + 1, 0)),z);
+  else
+     popup->insertItem(i18n("&10"),z);
 
   popup->move(mapToGlobal(QPoint((width() - 41/*popup->width()*/)/2,
     (height() - 211/*popup->height()*/)/2)));
@@ -2695,12 +2683,13 @@ void KWrite::setBookmark() {
   z = popup->exec();
 //  debug("map %d %d",popup->width(),popup->height());
   delete popup;
-  if (z > 0) {
-    setBookmark(z - 1);
+  if (z >= 0) {
+    setBookmark(z);
   }
 }
 
-void KWrite::addBookmark() {
+void KWrite::addBookmark()
+{
   int z;
 
   for (z = 0; z < (int) bookmarks.count(); z++) {
@@ -2709,26 +2698,32 @@ void KWrite::addBookmark() {
   setBookmark(z);
 }
 
-void KWrite::clearBookmarks() {
+void KWrite::clearBookmarks()
+{
   bookmarks.clear();
+  updateBookmarks();
 }
 
-void KWrite::setBookmark(int n) {
+void KWrite::setBookmark(int n)
+{
   KWBookmark *b;
 
- if (n >= 10) return;
+  if (n >= 10) return;
   while ((int) bookmarks.count() <= n) bookmarks.append(new KWBookmark());
   b = bookmarks.at(n);
   b->xPos = kWriteView->xPos;
   b->yPos = kWriteView->yPos;
   b->cursor = kWriteView->cursor;
+
+  updateBookmarks();
 }
 
-void KWrite::gotoBookmark(int n) {
+void KWrite::gotoBookmark(int n)
+{
   KWBookmark *b;
 
-  if (n < 0 || n >= (int) bookmarks.count()) return;
-  b = bookmarks.at(n);
+  if (n-666 < 0 || n-666 >= (int) bookmarks.count()) return;
+  b = bookmarks.at(n-666);
   if (b->cursor.y == -1) return;
 //  kWriteDoc->recordReset();
   kWriteView->updateCursor(b->cursor);
@@ -2738,62 +2733,41 @@ void KWrite::gotoBookmark(int n) {
   kWriteDoc->updateViews();
 }
 
-/*
-void KWrite::doBookmarkCommand(int cmdNum) {
-  if (cmdNum == cmSetBookmark) {
-    setBookmark();
-  } else if (cmdNum == cmAddBookmark) {
-    addBookmark();
-  } else if (cmdNum == cmClearBookmarks) {
-    clearBookmarks();
-  } else if (cmdNum >= cmSetBookmarks && cmdNum < cmSetBookmarks +10) {
-    setBookmark(cmdNum - cmSetBookmarks);
-  } else if (cmdNum >= cmGotoBookmarks && cmdNum < cmGotoBookmarks +10) {
-    gotoBookmark(cmdNum - cmGotoBookmarks);
-  }
-}
-*/
 
-void KWrite::updateBMPopup() {
-/*  KGuiCmdPopup *p;
+void KWrite::updateBookmarks()
+{
+  if (!bmMenu || !rmbMenu)
+    return;
+
   KWBookmark *b;
-  QString buf;
-  int z, id;
+  int bookCount=0;
+  int keys[] = { Key_1, Key_2, Key_3, Key_4, Key_5, Key_6, Key_7, Key_8, Key_9, Key_0 };
 
-  p = (KGuiCmdPopup *) sender();
-  p->clear();
-  p->addCommand(ctBookmarkCommands, cmSetBookmark);
-  p->addCommand(ctBookmarkCommands, cmAddBookmark);
-  p->addCommand(ctBookmarkCommands, cmClearBookmarks);
-//  p->insertSeparator();
-  for (z = 0; z < (int) bookmarks.count(); z++) {
-    b = bookmarks.at(z);
-    if (b->cursor.y >= 0) {
-      if (p->count() == 3) p->insertSeparator();
-      id = p->addCommand(ctBookmarkCommands, cmGotoBookmarks + z);
-      buf = i18n("Line: %1")
-        .arg(KGlobal::locale()->formatNumber(b->cursor.y + 1, 0));
-      p->setText(buf, id);
-//      p->insertItem(buf,z);
-//      if (z < 9) p->setAccel(ALT+keys[z],z);
-    }
-  }
-*/
-/*
-  while ((int) p->count() > bmEntries) {
-    p->removeItemAt(p->count() - 1);
+  while ((int) bmMenu->count() > bmMenuOrgCount) {
+    bmMenu->removeItemAt(bmMenu->count() - 1);
   }
 
-  for (z = 0; z < (int) bookmarks.count(); z++) {
+  while ((int) rmbMenu->count() > rmbMenuOrgCount) {
+    rmbMenu->removeItemAt(rmbMenu->count() - 1);
+  }
+
+  for (int z = 0; z < (int) bookmarks.count(); z++) {
     b = bookmarks.at(z);
-//  for (b = bookmarks.first(); b != 0L; b = bookmarks.next()) {
     if (b->cursor.y >= 0) {
-      if ((int) p->count() == bmEntries) p->insertSeparator();
-      sprintf(buf,i18n("Line %d"),b->cursor.y +1);
-      p->insertItem(buf,z);
-      if (z < 9) p->setAccel(ALT+keys[z],z);
+      ++bookCount;
+      if ((int) bmMenu->count() == bmMenuOrgCount) {
+        bmMenu->insertSeparator();
+        rmbMenu->insertSeparator();
+      }
+      bmMenu->insertItem(i18n("Line: %1").arg(KGlobal::locale()->formatNumber(b->cursor.y + 1, 0)),666+z);
+      bmMenu->setAccel(ALT+keys[z],666+z);
+      rmbMenu->insertItem(i18n("Line: %1").arg(KGlobal::locale()->formatNumber(b->cursor.y + 1, 0)),666+z);
+      rmbMenu->setAccel(ALT+keys[z],666+z);
     }
-  }*/
+  }
+
+  emit(bookClearChanged(bookCount>0));
+  emit(bookAddChanged(bookCount<10));
 }
 
 
@@ -2946,55 +2920,30 @@ void KWrite::setHighlight(Highlight *hl) {
 }
 */
 
-void KWrite::hlDef() {
-  DefaultsDialog *dlg;
-  HlManager *hlManager;
-  ItemStyleList defaultStyleList;
-  ItemFont defaultFont;
-//  int count, z;
-
-  hlManager = kWriteDoc->hlManager;
-  defaultStyleList.setAutoDelete(true);
-
-  hlManager->getDefaults(defaultStyleList,defaultFont);
-/*
-  defItemStyleList = kWriteDoc->defItemStyleList;
-  count = defItemStyleList->count();
-  for (z = 0; z < count ; z++) {
-    itemStyleList.append(new ItemStyle(*defItemStyleList->at(z)));
-  }
-  */
-  dlg = new DefaultsDialog(hlManager, &defaultStyleList, &defaultFont, this);
-
-  dlg->setCaption(i18n("Highlight Defaults"));
-
-  if (dlg->exec() == QDialog::Accepted) {
-    hlManager->setDefaults(defaultStyleList,defaultFont);
-/*    for (z = 0; z < count; z++) {
-      defItemStyleList->at(z)->setData(*itemStyleList.at(z));
-    }
-    kWriteDoc->defFont->setData(defFont);*/
-  }
-  delete dlg;
-}
 
 void KWrite::hlDlg() {
   HighlightDialog *dlg;
   HlManager *hlManager;
   HlDataList hlDataList;
-
+  ItemStyleList defaultStyleList;
+  ItemFont defaultFont;
 
   hlManager = kWriteDoc->hlManager;
+
+  defaultStyleList.setAutoDelete(true);
+  hlManager->getDefaults(defaultStyleList,defaultFont);
+
   hlDataList.setAutoDelete(true);
   //this gets the data from the KConfig object
   hlManager->getHlDataList(hlDataList);
-  dlg = new HighlightDialog(hlManager, &hlDataList,
-    kWriteDoc->highlightNum(), this);
-  dlg->setCaption(i18n("Highlight Settings"));
+
+  dlg = new HighlightDialog(hlManager, &defaultStyleList, &defaultFont, &hlDataList,
+    kWriteDoc->highlightNum(), this);  
 //  dlg->hlChanged(kWriteDoc->highlightNum());
   if (dlg->exec() == QDialog::Accepted) {
     //this stores the data into the KConfig object
     hlManager->setHlDataList(hlDataList);
+    hlManager->setDefaults(defaultStyleList,defaultFont);
   }
   delete dlg;
 }

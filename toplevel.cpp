@@ -173,12 +173,15 @@ void TopLevel::setupActions()
 
   // setup Go menu
   KStdAction::gotoLine(kWrite, SLOT(gotoLine()), actionCollection());
-  new KAction(i18n("&Add Marker..."), Qt::CTRL+Qt::Key_M, kWrite, SLOT(addBookmark()),
-              actionCollection(), "go_addMarker");
+  KAction *addAct = new KAction(i18n("&Add Marker"), Qt::CTRL+Qt::Key_M, kWrite, SLOT(addBookmark()),
+                                actionCollection(), "go_addMarker");
+  connect(kWrite, SIGNAL(bookAddChanged(bool)),addAct,SLOT(setEnabled(bool)));
   new KAction(i18n("&Set Marker..."), 0, kWrite, SLOT(setBookmark()),
               actionCollection(), "go_setMarker");
-  new KAction(i18n("&Clear Markers..."), 0, kWrite, SLOT(clearBookmarks()),
-              actionCollection(), "go_clearMarkers");
+  KAction *clearAct = new KAction(i18n("&Clear Markers"), 0, kWrite, SLOT(clearBookmarks()),
+                                  actionCollection(), "go_clearMarkers");
+  connect(kWrite, SIGNAL(bookClearChanged(bool)),clearAct,SLOT(setEnabled(bool)));
+  clearAct->setEnabled(false);
 
   // setup Tools menu
   toolsSpell = KStdAction::spelling(kWrite, SLOT(spellcheck()), actionCollection());
@@ -200,6 +203,7 @@ void TopLevel::setupActions()
                     actionCollection(), "set_showPath");
   KStdAction::keyBindings(this, SLOT(editKeys()), actionCollection());
   KStdAction::configureToolbars(this, SLOT(editToolbars()), actionCollection());
+  new KAction(i18n("Configure Highlighti&ng..."), 0, kWrite, SLOT(hlDlg()),actionCollection(), "set_confHighlight");
   KStdAction::preferences(this, SLOT(configure()), actionCollection());
   setVerticalSelection = new KToggleAction(i18n("&Vertical Selection"), 0, kWrite, SLOT(toggleVertical()),
                              actionCollection(), "set_verticalSelect");
@@ -295,7 +299,8 @@ void TopLevel::setupActions()
 
   createGUI();
 
-  kWrite->installRBPopup(static_cast<QPopupMenu *>(factory()->container("rb_popup", this)));
+  kWrite->installPopups(static_cast<QPopupMenu *>(factory()->container("rb_popup", this)),
+                        static_cast<QPopupMenu *>(factory()->container("go_document", this)));
 }
 
 
@@ -345,9 +350,16 @@ void TopLevel::configure()
                                     KDialogBase::Help ,
                                     KDialogBase::Ok, this, "tabdialog");
 
+  // color options
+  QVBox *page=kd->addVBoxPage(i18n("Colors"), QString::null,
+                              BarIcon("colors", KIcon::SizeMedium) );
+  ColorConfig *colorConfig = new ColorConfig(page);
+  QColor* colors = kWrite->getColors();
+  colorConfig->setColors(colors);
+
   // indent options
-  QVBox *page=kd->addVBoxPage(i18n("Indent"), QString::null,
-                              BarIcon("rightjust", KIcon::SizeMedium) );
+  page=kd->addVBoxPage(i18n("Indent"), QString::null,
+                       BarIcon("rightjust", KIcon::SizeMedium) );
   IndentConfigTab *indentConfig = new IndentConfigTab(page, kWrite);
 
   // select options
@@ -367,7 +379,10 @@ void TopLevel::configure()
 
   kwin.setIcons(kd->winId(), kapp->icon(), kapp->miniIcon());
 
-  if (kd->exec()) {
+ if (kd->exec()) {
+    // color options
+    colorConfig->getColors(colors);
+    kWrite->applyColors();
     // indent options
     indentConfig->getData(kWrite);
     // select options
@@ -422,7 +437,8 @@ void TopLevel::editToolbars()
   if (dlg->exec())
     createGUI();
 
-  kWrite->installRBPopup(static_cast<QPopupMenu *>(factory()->container("rb_popup", this)));
+  kWrite->installPopups(static_cast<QPopupMenu *>(factory()->container("rb_popup", this)),
+                        static_cast<QPopupMenu *>(factory()->container("go_document", this)));
 
   delete dlg;
 }

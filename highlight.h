@@ -627,34 +627,24 @@ class FontChanger : public QWidget {
 
 #include <kdialogbase.h>
 
-class DefaultsDialog : public KDialogBase
-{
-  Q_OBJECT
-  public:
-    DefaultsDialog(HlManager *, ItemStyleList *, ItemFont *,
-		   QWidget *parent=0, const char *name=0, bool modal=true);
-  protected slots:
-    void changed(int);
-  protected:
-    StyleChanger *styleChanger;
-    ItemStyleList *itemStyleList;
-};
-
-
-
-
 class HighlightDialog : public KDialogBase
 {
     Q_OBJECT
   public:
-    HighlightDialog(HlManager *, HlDataList *, int hlNumber,
-		    QWidget *parent=0, const char *name=0, bool modal=true);
+    HighlightDialog(HlManager *, ItemStyleList *, ItemFont *, HlDataList *, int hlNumber,
+                    QWidget *parent=0, const char *name=0, bool modal=true);
 
   protected slots:
+    void defaultChanged(int);
+
     void hlChanged(int);
     void itemChanged(int);
     void changed();
   protected:
+    StyleChanger *defaultStyleChanger;
+    ItemStyleList *defaultItemStyleList;
+    FontChanger *defaultFontChanger;
+
     void writeback();
     virtual void done(int r);
     QComboBox *itemCombo, *hlCombo;

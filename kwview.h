@@ -466,15 +466,10 @@ class KWrite : public KTextEditor::View {
 
     void copySettings(KWrite *);
 
+    QColor* getColors();
+    void applyColors();
+
   public slots:
-    /**
-      Presents a options dialog to the user
-    */
-//    void optDlg();
-    /**
-      Presents a color dialog to the user
-    */
-    void colDlg();
 
     /**
       Toggles Insert mode
@@ -817,29 +812,16 @@ class KWrite : public KTextEditor::View {
     SConfig s;
     QDialog *replacePrompt;
 
-//right mouse button popup menu
+//right mouse button popup menu & bookmark menu
   public:
     /**
       Install a Popup Menu. The Popup Menu will be activated on
       a right mouse button press event.
     */
-    void installRBPopup(QPopupMenu *);
-  protected:
-    QPopupMenu *popup;
-
-//bookmarks
-  public:
-    /**
-      Install a Bookmark Menu. The bookmark items will be added to the
-      end of the menu
-    */
-    //void installBMPopup(KGuiCmdPopup *);
-    /**
-      Sets the actual edit position as bookmark number n
-    */
+    void installPopups(QPopupMenu *rmb_Menu, QPopupMenu *bm_Menu);
 
   public slots:
-        void setBookmark(int n);
+    void setBookmark(int n);
     void gotoBookmark(int n);
 
     /**
@@ -862,10 +844,16 @@ class KWrite : public KTextEditor::View {
     /**
       Updates the bookmark popup menu when it emit aboutToShow()
     */
-    void updateBMPopup();
+    void updateBookmarks();
+
   protected:
     QList<KWBookmark> bookmarks;
-//    int bmEntries;
+    QPopupMenu *rmbMenu, *bmMenu;
+    int bmMenuOrgCount,rmbMenuOrgCount;
+
+  signals:
+    void bookAddChanged(bool enabled);
+    void bookClearChanged(bool enabled);
 
 //config file / session management functions
   public:
@@ -889,10 +877,6 @@ class KWrite : public KTextEditor::View {
 
 //syntax highlight
   public slots:
-    /**
-      Presents the highlight defaults dialog to the user
-    */
-    void hlDef();
     /**
       Presents the highlight setup dialog to the user
     */

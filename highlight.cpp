@@ -2374,58 +2374,58 @@ void FontChanger::displayCharsets() {
 //---------
 
 
-DefaultsDialog::DefaultsDialog(HlManager *hlManager, ItemStyleList *styleList,
-			       ItemFont *font, QWidget *parent,
-			       const char *name, bool modal )
-  :KDialogBase(parent, name, modal, i18n("Highlight Defaults"), Ok|Cancel, Ok),
-   itemStyleList(styleList) {
-
-  QHBox *page = new QHBox( this );
-  page->setMargin( 0 );
-  page->setSpacing( spacingHint() );
-  setMainWidget( page );
-
-  QVGroupBox *vbox1 = new QVGroupBox( i18n("Default Item Styles"), page );
-  /*QLabel *label = */new QLabel( i18n("Item:"), vbox1 );
-  QComboBox *styleCombo = new QComboBox( false, vbox1 );
-  styleChanger = new StyleChanger( vbox1 );
-  for( int i = 0; i < hlManager->defaultStyles(); i++ ) {
-    styleCombo->insertItem(i18n(hlManager->defaultStyleName(i)));
-  }
-
-  QVGroupBox *vbox2 = new QVGroupBox( i18n("Default Font"), page );
-  FontChanger *fontChanger = new FontChanger( vbox2 );
-  fontChanger->setRef(font);
-
-  changed(0);
-}
-
-void DefaultsDialog::changed(int z)
-{
-  styleChanger->setRef(itemStyleList->at(z));
-}
-
-
-
-HighlightDialog::HighlightDialog( HlManager *hlManager,
+HighlightDialog::HighlightDialog( HlManager *hlManager, ItemStyleList *styleList,
+				  ItemFont *font,
 				  HlDataList *highlightDataList,
 				  int hlNumber, QWidget *parent,
 				  const char *name, bool modal )
-  :KDialogBase(parent, name, modal, i18n("Highlight Settings"), Ok|Cancel, Ok),
-   hlData(0L) {
-  QLabel *label;
+  :KDialogBase(KDialogBase::Tabbed, i18n("Highlight Settings"), Ok|Cancel, Ok, parent, name, modal),
+   defaultItemStyleList(styleList), hlData(0L)
+{
 
-  QGrid *page = new QGrid( 2, QGrid::Vertical, this );
-  page->setMargin(0);
-  page->setSpacing( KDialog::spacingHint() );
-  setMainWidget( page );
+  // defaults =========================================================
 
-  QVGroupBox *vbox1 = new QVGroupBox( i18n("Config Select"), page );
-  QVGroupBox *vbox2 = new QVGroupBox( i18n("Item Style"), page );
-  QVGroupBox *vbox3 = new QVGroupBox( i18n("Highlight Auto Select"), page );
-  QVGroupBox *vbox4 = new QVGroupBox( i18n("Item Font"), page );
+  QFrame *page1 = addPage(i18n("&Defaults"));
+  QGridLayout *grid = new QGridLayout(page1,2,2,0,spacingHint());
 
-  label = new QLabel( i18n("Highlight:"), vbox1 );
+  QVGroupBox *dvbox1 = new QVGroupBox( i18n("Default Item Styles"), page1 );
+  /*QLabel *label = */new QLabel( i18n("Item:"), dvbox1 );
+  QComboBox *styleCombo = new QComboBox( false, dvbox1 );
+  defaultStyleChanger = new StyleChanger( dvbox1 );
+  for( int i = 0; i < hlManager->defaultStyles(); i++ ) {
+    styleCombo->insertItem(i18n(hlManager->defaultStyleName(i)));
+  }
+  connect(styleCombo, SIGNAL(activated(int)), this, SLOT(defaultChanged(int)));
+  grid->addWidget(dvbox1,0,0);
+
+  QVGroupBox *dvbox2 = new QVGroupBox( i18n("Default Font"), page1 );
+  defaultFontChanger = new FontChanger( dvbox2 );
+  defaultFontChanger->setRef(font);
+  grid->addWidget(dvbox2,0,1);
+
+  grid->setRowStretch(1,1);
+  grid->setColStretch(1,1);
+
+  defaultChanged(0);
+
+  // highlight modes =====================================================
+
+  QFrame *page2 = addPage(i18n("&Highlight Modes"));
+  grid = new QGridLayout(page2,3,2,0,spacingHint());
+
+  QVGroupBox *vbox1 = new QVGroupBox( i18n("Config Select"), page2 );
+  grid->addWidget(vbox1,0,0);
+  QVGroupBox *vbox2 = new QVGroupBox( i18n("Item Style"), page2 );
+  grid->addWidget(vbox2,1,0);
+  QVGroupBox *vbox3 = new QVGroupBox( i18n("Highlight Auto Select"), page2 );
+  grid->addWidget(vbox3,0,1);
+  QVGroupBox *vbox4 = new QVGroupBox( i18n("Item Font"), page2 );
+  grid->addWidget(vbox4,1,1);
+
+  grid->setRowStretch(2,1);
+  grid->setColStretch(1,1);
+
+  QLabel *label = new QLabel( i18n("Highlight:"), vbox1 );
   hlCombo = new QComboBox( false, vbox1 );
   connect( hlCombo, SIGNAL(activated(int)),
 	   this, SLOT(hlChanged(int)) );
@@ -2459,9 +2459,14 @@ HighlightDialog::HighlightDialog( HlManager *hlManager,
 }
 
 
-void HighlightDialog::hlChanged(int z) {
-  ItemData *itemData;
+void HighlightDialog::defaultChanged(int z)
+{
+  defaultStyleChanger->setRef(defaultItemStyleList->at(z));
+}
 
+
+void HighlightDialog::hlChanged(int z)
+{
   writeback();
 
   hlData = hlDataList->at(z);
@@ -2470,7 +2475,7 @@ void HighlightDialog::hlChanged(int z) {
   mimetypes->setText(hlData->mimetypes);
 
   itemCombo->clear();
-  for (itemData = hlData->itemDataList.first(); itemData != 0L;
+  for (ItemData *itemData = hlData->itemDataList.first(); itemData != 0L;
     itemData = hlData->itemDataList.next()) {
     itemCombo->insertItem(i18n(itemData->name));
   }
@@ -2478,8 +2483,8 @@ void HighlightDialog::hlChanged(int z) {
   itemChanged(0);
 }
 
-void HighlightDialog::itemChanged(int z) {
-
+void HighlightDialog::itemChanged(int z)
+{
   itemData = hlData->itemDataList.at(z);
 
   styleDefault->setChecked(itemData->defStyle);
@@ -2489,7 +2494,8 @@ void HighlightDialog::itemChanged(int z) {
   fontChanger->setRef(itemData);
 }
 
-void HighlightDialog::changed() {
+void HighlightDialog::changed()
+{
   itemData->defStyle = styleDefault->isChecked();
   itemData->defFont = fontDefault->isChecked();
 }

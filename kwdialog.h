@@ -184,18 +184,5 @@ private:
   KColorButton *m_selFound;
 };
 
-class ColorDialog : public KDialogBase
-{
-  Q_OBJECT
-
-public:
-
-  ColorDialog(QWidget *parent, QColor *);
-  void getColors(QColor *);
-
-private:
-
-  ColorConfig *m_colors;
-};
 
 #endif //_KWDIALOG_H_

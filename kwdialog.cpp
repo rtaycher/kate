@@ -197,23 +197,35 @@ const int IndentConfigTab::flags[] = {cfAutoIndent, cfSpaceIndent,
   cfBackspaceIndents, cfTabIndents, cfKeepIndentProfile, cfKeepExtraSpaces};
 
 IndentConfigTab::IndentConfigTab(QWidget *parent, KWrite *kWrite)
-  : QWidget(parent, 0L) {
+  : QWidget(parent, 0L)
+{
+  QVBoxLayout *layout = new QVBoxLayout(this, 0, KDialog::spacingHint() );
+  int configFlags = kWrite->config();
 
-  QVBoxLayout *layout;
-  int configFlags;
-  static const char *labels[numFlags] = {I18N_NOOP("&Auto Indent"),
-    I18N_NOOP("Indent With &Spaces"), I18N_NOOP("&Backspace Key Indents"),
-    I18N_NOOP("&Tab Key Indents"), I18N_NOOP("Keep Indent &Profile"),
-    I18N_NOOP("&Keep Extra Spaces")};
-  int z;
+  opt[0] = new QCheckBox(i18n("&Auto Indent"), this);
+  layout->addWidget(opt[0], 0, AlignLeft);
+  opt[0]->setChecked(configFlags & flags[0]);
 
-  layout = new QVBoxLayout(this, 0, KDialog::spacingHint() );
-  configFlags = kWrite->config();
-  for (z = 0; z < numFlags; z++) {
-    opt[z] = new QCheckBox(i18n(labels[z]), this);
-    layout->addWidget(opt[z], 0, AlignLeft);
-    opt[z]->setChecked(configFlags & flags[z]);
-  }
+  opt[1] = new QCheckBox(i18n("Indent With &Spaces"), this);
+  layout->addWidget(opt[1], 0, AlignLeft);
+  opt[1]->setChecked(configFlags & flags[1]);
+
+  opt[2] = new QCheckBox(i18n("&Backspace Key Indents"), this);
+  layout->addWidget(opt[2], 0, AlignLeft);
+  opt[2]->setChecked(configFlags & flags[2]);
+
+  opt[3] = new QCheckBox(i18n("&Tab Key Indents"), this);
+  layout->addWidget(opt[3], 0, AlignLeft);
+  opt[3]->setChecked(configFlags & flags[3]);
+
+  opt[4] = new QCheckBox(i18n("Keep Indent &Profile"), this);
+  layout->addWidget(opt[4], 0, AlignLeft);
+  opt[4]->setChecked(configFlags & flags[4]);
+
+  opt[5] = new QCheckBox(i18n("&Keep Extra Spaces"), this);
+  layout->addWidget(opt[5], 0, AlignLeft);
+  opt[5]->setChecked(configFlags & flags[5]);
+
   layout->addStretch();
 }
 
@@ -232,24 +244,35 @@ const int SelectConfigTab::flags[] = {cfPersistent, cfDelOnInput,
   cfMouseAutoCopy, cfSingleSelection, cfVerticalSelect, cfXorSelect};
 
 SelectConfigTab::SelectConfigTab(QWidget *parent, KWrite *kWrite)
-  : QWidget(parent, 0L) {
+  : QWidget(parent, 0L)
+{
+  QVBoxLayout *layout = new QVBoxLayout(this, 0, KDialog::spacingHint() );
+  int configFlags = kWrite->config();
 
-  QVBoxLayout *layout;
-  int configFlags;
-  static const char *labels[numFlags] = {I18N_NOOP("&Persistent Selections"),
-    I18N_NOOP("&Overwrite Selections"), I18N_NOOP("Mouse &Autocopy"),
-    I18N_NOOP("&X11-like Single Selection"), I18N_NOOP("&Vertical Selections"),
-    I18N_NOOP("&Toggle Old")};
+  opt[0] = new QCheckBox(i18n("&Persistent Selections"), this);
+  layout->addWidget(opt[0], 0, AlignLeft);
+  opt[0]->setChecked(configFlags & flags[0]);
 
-  int z;
+  opt[1] = new QCheckBox(i18n("&Overwrite Selections"), this);
+  layout->addWidget(opt[1], 0, AlignLeft);
+  opt[1]->setChecked(configFlags & flags[1]);
 
-  layout = new QVBoxLayout(this, 0, KDialog::spacingHint() );
-  configFlags = kWrite->config();
-  for (z = 0; z < numFlags; z++) {
-    opt[z] = new QCheckBox(i18n(labels[z]), this);
-    layout->addWidget(opt[z], 0, AlignLeft);
-    opt[z]->setChecked(configFlags & flags[z]);
-  }
+  opt[2] = new QCheckBox(i18n("Mouse &Autocopy"), this);
+  layout->addWidget(opt[2], 0, AlignLeft);
+  opt[2]->setChecked(configFlags & flags[2]);
+
+  opt[3] = new QCheckBox(i18n("&X11-like Single Selection"), this);
+  layout->addWidget(opt[3], 0, AlignLeft);
+  opt[3]->setChecked(configFlags & flags[3]);
+
+  opt[4] = new QCheckBox(i18n("&Vertical Selections"), this);
+  layout->addWidget(opt[4], 0, AlignLeft);
+  opt[4]->setChecked(configFlags & flags[4]);
+
+  opt[5] = new QCheckBox(i18n("&Toggle Old"), this);
+  layout->addWidget(opt[5], 0, AlignLeft);
+  opt[5]->setChecked(configFlags & flags[5]);
+
   layout->addStretch();
 }
 
@@ -274,23 +297,49 @@ EditConfigTab::EditConfigTab(QWidget *parent, KWrite *kWrite)
   QHBoxLayout *mainLayout;
   QVBoxLayout *cbLayout, *leLayout;
   int configFlags;
-  static const char *labels[numFlags] = {I18N_NOOP("&Word wrap"),
-    I18N_NOOP("Replace &tabs with spaces"), I18N_NOOP("&Remove trailing spaces"),
-    I18N_NOOP("&Auto brackets"), I18N_NOOP("Group &undos"), I18N_NOOP("&Show tabs"),
-    I18N_NOOP("Smart &home"),
-    I18N_NOOP("&Page up/down moves cursor"), I18N_NOOP("Wrap &cursor")};
-  int z;
 
   mainLayout = new QHBoxLayout(this, 0, KDialog::spacingHint() );
 
   // checkboxes
   cbLayout = new QVBoxLayout( mainLayout );
   configFlags = kWrite->config();
-  for (z = 0; z < numFlags; z++) {
-    opt[z] = new QCheckBox(i18n(labels[z]), this);
-    cbLayout->addWidget(opt[z], 0, AlignLeft);
-    opt[z]->setChecked(configFlags & flags[z]);
-  }
+
+  opt[0] = new QCheckBox(i18n("&Word wrap"), this);
+  cbLayout->addWidget(opt[0], 0, AlignLeft);
+  opt[0]->setChecked(configFlags & flags[0]);
+
+  opt[1] = new QCheckBox(i18n("Replace &tabs with spaces"), this);
+  cbLayout->addWidget(opt[1], 0, AlignLeft);
+  opt[1]->setChecked(configFlags & flags[1]);
+
+  opt[2] = new QCheckBox(i18n("&Remove trailing spaces"), this);
+  cbLayout->addWidget(opt[2], 0, AlignLeft);
+  opt[2]->setChecked(configFlags & flags[2]);
+
+  opt[3] = new QCheckBox(i18n("&Auto brackets"), this);
+  cbLayout->addWidget(opt[3], 0, AlignLeft);
+  opt[3]->setChecked(configFlags & flags[3]);
+
+  opt[4] = new QCheckBox(i18n("Group &undos"), this);
+  cbLayout->addWidget(opt[4], 0, AlignLeft);
+  opt[4]->setChecked(configFlags & flags[4]);
+
+  opt[5] = new QCheckBox(i18n("&Show tabs"), this);
+  cbLayout->addWidget(opt[5], 0, AlignLeft);
+  opt[5]->setChecked(configFlags & flags[5]);
+
+  opt[6] = new QCheckBox(i18n("Smart &home"), this);
+  cbLayout->addWidget(opt[6], 0, AlignLeft);
+  opt[6]->setChecked(configFlags & flags[6]);
+
+  opt[7] = new QCheckBox(i18n("&Page up/down moves cursor"), this);
+  cbLayout->addWidget(opt[7], 0, AlignLeft);
+  opt[7]->setChecked(configFlags & flags[7]);
+
+  opt[8] = new QCheckBox(i18n("Wrap &cursor"), this);
+  cbLayout->addWidget(opt[8], 0, AlignLeft);
+  opt[8]->setChecked(configFlags & flags[8]);
+
   cbLayout->addStretch();
 
   // edit lines
@@ -315,9 +364,10 @@ EditConfigTab::EditConfigTab(QWidget *parent, KWrite *kWrite)
   leLayout->addStretch();
 }
 
-void EditConfigTab::getData(KWrite *kWrite) {
+void EditConfigTab::getData(KWrite *kWrite)
+{
   int configFlags, z;
-
+  
   configFlags = kWrite->config();
   for (z = 0; z < numFlags; z++) {
     configFlags &= ~flags[z];
@@ -556,9 +606,6 @@ ColorConfig::ColorConfig( QWidget *parent, char *name )
 }
 
 
-
-
-
 ColorConfig::~ColorConfig()
 {
 }
@@ -581,17 +628,5 @@ void ColorConfig::getColors(QColor *colors)
   colors[3] = m_selFound->color();
 }
 
-ColorDialog::ColorDialog( QWidget *parent, QColor *colors )
-  : KDialogBase(parent, 0L, true, i18n("Color Settings"), Ok|Cancel, Ok, true)
-{
-  m_colors = new ColorConfig( this );		
-  m_colors->setColors( colors );
-  setMainWidget( m_colors );
-}
-
-void ColorDialog::getColors(QColor *colors)
-{
-  m_colors->getColors( colors );
-}
 
 #include "kwdialog.moc"
