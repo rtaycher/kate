@@ -1030,6 +1030,7 @@ void KantViewManager::reloadCurrentDoc()
 {
   if (! activeView() )
     return;
-  ((KantDocument*)activeView()->doc())->reloadFile();
+    if (activeView()->canDiscard())
+      ((KantDocument*)activeView()->doc())->reloadFile();
 }
 

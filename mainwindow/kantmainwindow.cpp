@@ -219,7 +219,7 @@ void KantMainWindow::setupActions()
   docListMenu = new KActionMenu(i18n("&Document List"), actionCollection(), "doc_list");
   connect(docListMenu->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(docListMenuAboutToShow()));
 
-  documentReload = new KAction(i18n("&Reload"), "reload", Key_F5, viewManager, SLOT(reloadCurrentDoc()), actionCollection(), "document_reload");
+  documentReload = new KAction(i18n("&Reload"), "reload", Key_F4, viewManager, SLOT(reloadCurrentDoc()), actionCollection(), "document_reload");
 
   setHighlightConf = new KAction(i18n("Configure Highlighti&ng..."), 0, viewManager, SLOT(slotHlDlg()),actionCollection(), "set_confHighlight");
 
