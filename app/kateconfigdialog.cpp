@@ -236,11 +236,6 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   connect( fileSelConfigPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
 
   path.clear();
-  path << i18n("Application") << i18n("Document List");
-  page = addVBoxPage( path, i18n("Document List Settings"),
-		      BarIcon("documents", KIcon::SizeSmall) );
-
-  path.clear();
   path << i18n("Application") << i18n("Plugins");
   /*QVBox **/page=addVBoxPage(path,i18n("Plugin Manager"),
                           BarIcon("connect_established",KIcon::SizeSmall));
