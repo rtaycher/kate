@@ -19,10 +19,7 @@
 #define _KWTEXTLINE_H_
 
 #include <stdlib.h>
-
 #include <qstring.h>
-#include <qmemarray.h>
-#include <qvaluelist.h>
 #include <qvaluevector.h>
 #include <ksharedptr.h>
 
@@ -32,10 +29,8 @@
   behind the last character and a context number for the syntax highlight. 
   The attribute stores the index to a table that contains fonts and colors 
   and also if a character is selected. 
-*/ 
- 
-typedef QMemArray<signed char> TContexts;
- 
+*/
+
 class TextLine : public KShared 
 { 
   friend class KWBuffer; 

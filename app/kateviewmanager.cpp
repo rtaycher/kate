@@ -435,12 +435,8 @@ void KateViewManager::slotDocumentOpen ()
   KateView *cv = activeView();
 	KateFileDialog *dialog;
 
-  QString path = QString::null;
   if (cv)
-    path = cv->doc()->url().url();
-
-  if (cv)
-	  dialog = new KateFileDialog (QString::null,cv->doc()->encoding(), this, i18n ("Open File"));
+	  dialog = new KateFileDialog (cv->doc()->url().url(),cv->doc()->encoding(), this, i18n ("Open File"));
 	else
 	  dialog = new KateFileDialog (QString::null,myEncoding, this, i18n ("Open File"));
 
