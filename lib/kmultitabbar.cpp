@@ -28,8 +28,10 @@
 #include <qpopupmenu.h>
 #include <qlayout.h>
 #include <qpainter.h>
-#include <kdebug.h>
 #include <qtooltip.h>
+
+#include <kiconloader.h>
+#include <kdebug.h>
 
 KMultiTabBarInternal::KMultiTabBarInternal(QWidget *parent, KMultiTabBar::KMultiTabBarBasicMode bm):QScrollView(parent)
 	{
@@ -141,7 +143,8 @@ int KMultiTabBarInternal::appendTab(const QPixmap &pic ,int id,const QString& te
 			int tmp=m_tabs.at(i)->neededSize();
 			size=(size<tmp)?tmp:size;
 		}
-		for (uint i=0;i<m_tabs.count();i++) m_tabs.at(i)->setSize(size);
+		for (uint i=0;i<m_tabs.count();i++)
+			m_tabs.at(i)->setSize(size);
 	}
 	tab->show();
 	return 0;
@@ -209,6 +212,11 @@ KMultiTabBarTab::KMultiTabBarTab(const QPixmap& pic, const QString& text,
 	m_expandedSize=24;
 	m_showActiveTabText=false;
 	setToggleButton(true);
+}
+
+void KMultiTabBarTab::setIcon(const QString& icon)
+{
+	setIconSet(SmallIcon(icon));
 }
 
 void KMultiTabBarTab::slotClicked()

@@ -110,6 +110,8 @@ protected:
 	virtual void drawButton(QPainter *);
 protected slots:
 	virtual void slotClicked();
+public slots:
+	virtual void setIcon(const QString&);
 };
 
 class KMultiTabBarInternal: public QScrollView
