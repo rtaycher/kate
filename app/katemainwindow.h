@@ -26,6 +26,8 @@
 
 #include <kparts/part.h>
 
+class GrepDialog;
+
 class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCOPIface, virtual public KParts::PartBase
 {
   Q_OBJECT
@@ -121,10 +123,17 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
 
     void slotOpenWithMenuAction(int idx);
 
+ private:
+     GrepDialog* grep_dlg;
+
+  public slots:
+    void slotGrepDialogItemSelected ( QString filename, int linenumber );
+    void slotFindInFiles ();
+
   private:
     void setupMainWindow();
     void setupActions();
-    void setupPlugins();
+//    void setupPlugins();
 
     virtual bool queryClose();
 

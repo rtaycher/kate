@@ -26,6 +26,7 @@
 
 class KateSplitter;
 class KSimpleConfig;
+
 class KateViewManager : public Kate::ViewManager
 {
   Q_OBJECT
@@ -100,7 +101,7 @@ class KateViewManager : public Kate::ViewManager
     void slotViewChanged();
     bool closeDocWithAllViews ( KateView *view );
 
-  public:
+  public slots:
     void deleteLastView ();
 
     /** Splits a KateViewSpace into two.
@@ -119,7 +120,6 @@ class KateViewManager : public Kate::ViewManager
     bool getShowFullPath() { return showFullPath; }
     void setUseOpaqueResize( bool enable );
 
-  public slots:
     void activateView ( uint docID );
     void activateView ( int docID ) { activateView((uint) docID); };
 

@@ -8,3 +8,5 @@ TODO:
 			     A context of -2 stays in the current context (no more context="5" within context 5 (this 
            is supported, but should be avoided in new definitions, because you run into problems when using
 				   -1 than. If a context >=0 is given as the argument a new entry is appended to the stack (push)
+
+	>>>>> IMPORTANT, instead of -1 and -2 you can now use #stay and #pop <<<<<<

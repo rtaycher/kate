@@ -521,6 +521,12 @@ class KateView : public Kate::View
       Presents a "Goto Line" dialog to the user
     */
     void gotoLine();
+
+    /**
+      Goes to a given line number; also called by the gotoline slot.
+    */
+    void gotoLineNumber( int linenumber );
+
   protected:
     void initSearch(SConfig &, int flags);
     void continueSearch(SConfig &);

@@ -2,10 +2,10 @@ lib_LTLIBRARIES = kate.la kwrite.la
 bin_PROGRAMS = kate kwrite
 
 kate_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugindialogpage.cpp \
-												kateconsole.cpp katedocmanager.cpp katefilelist.cpp katefileselector.cpp \
-												katemainwindow.cpp katepluginmanager.cpp katesplitter.cpp \
-												kateviewmanager.cpp kateviewspace.cpp katemain.cpp \
-												kateappIface.skel kateIface.skel
+	kateconsole.cpp katedocmanager.cpp katefilelist.cpp katefileselector.cpp \
+	katemainwindow.cpp katepluginmanager.cpp katesplitter.cpp \
+	kateviewmanager.cpp kateviewspace.cpp katemain.cpp \
+	kateappIface.skel kateIface.skel kategrepdialog.cpp
 
 kate_la_LIBADD   = ../interfaces/libkateinterfaces.la ../part/libkatepart.la
 kate_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version

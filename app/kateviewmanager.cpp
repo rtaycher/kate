@@ -27,6 +27,7 @@
 #include "../part/katefiledialog.h"
 #include "kateviewspace.h"
 
+
 #include <dcopclient.h>
 #include <kaction.h>
 #include <kcmdlineargs.h>

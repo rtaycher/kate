@@ -1991,17 +1991,23 @@ void KateView::gotoLine() {
 //  dlg = new GotoLineDialog(myViewInternal->cursor.line + 1, this);
 
   if (dlg->exec() == QDialog::Accepted) {
-//    myDoc->recordReset();
-    cursor.col = 0;
-    cursor.line = dlg->getLine() - 1;
-    myDoc->needPreHighlight(cursor.line);
-    myViewInternal->updateCursor(cursor);
-    myViewInternal->center();
-    myViewInternal->updateView(KateView::ufUpdateOnScroll);
-    myDoc->updateViews(this); //uptade all other views except this one
-  }
-  delete dlg;
+       gotoLineNumber( dlg->getLine() - 1 );
+   }
+   delete dlg;
 }
+
+void KateView::gotoLineNumber( int linenumber ) {
+  KateViewCursor cursor;
+
+  cursor.col = 0;
+  cursor.line = linenumber;
+  myDoc->needPreHighlight(cursor.line);
+  myViewInternal->updateCursor(cursor);
+  myViewInternal->center();
+  myViewInternal->updateView(KateView::ufUpdateOnScroll);
+  myDoc->updateViews(this); //uptade all other views except this one
+ }
+
 
 
 void KateView::initSearch(SConfig &s, int flags) {

@@ -77,6 +77,8 @@
 #include <kuniqueapp.h>
 #include <kurldrag.h>
 
+#include "kategrepdialog.h"
+
 uint KateMainWindow::uniqueID = 0;
 
 KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_pluginManager) :
@@ -117,6 +119,8 @@ KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_
   connect(bookmarkMenu, SIGNAL(aboutToShow()), this, SLOT(bookmarkMenuAboutToShow()));
 
   readOptions(config);
+
+
 }
 
 KateMainWindow::~KateMainWindow()
@@ -125,6 +129,9 @@ KateMainWindow::~KateMainWindow()
 
 void KateMainWindow::setupMainWindow ()
 {
+  grep_dlg = new GrepDialog( QDir::homeDirPath(), this, "grepdialog" );
+  connect(grep_dlg, SIGNAL(itemSelected(QString,int)), this, SLOT(slotGrepDialogItemSelected(QString,int)));
+
   mainDock = createDockWidget( "mainDock", 0L );
   filelistDock =  createDockWidget( "filelistDock",  SmallIcon("kmultiple"), 0L, "Open Files", "");
   fileselectorDock = createDockWidget( "fileselectorDock", SmallIcon("fileopen"), 0L, "Selector", "");
@@ -218,6 +225,8 @@ void KateMainWindow::setupActions()
   KStdAction::findNext(viewManager, SLOT(slotFindAgain()), actionCollection());
   KStdAction::findPrev(viewManager, SLOT(slotFindAgainB()), actionCollection(), "edit_find_prev");
   KStdAction::replace(viewManager, SLOT(slotReplace()), actionCollection());
+
+  new KAction(i18n("Find In Files"), CTRL+SHIFT+Qt::Key_F, this, SLOT(slotFindInFiles()), actionCollection(),"edit_find_in_files" );
 
   new KAction(i18n("&Indent"), "indent", CTRL+Key_I, viewManager, SLOT(slotIndent()), actionCollection(), "edit_indent");
   new KAction(i18n("&Unindent"), "unindent", CTRL+SHIFT+Key_I, viewManager, SLOT(slotUnIndent()), actionCollection(), "edit_unindent");
@@ -510,6 +519,25 @@ void KateMainWindow::bookmarkMenuAboutToShow()
       bookmarkMenu->insertItem ( QString("%1 - \"%2\"").arg(list.at(i)->line).arg(bText), this, SLOT (gotoBookmark(int)), 0, i );
     }
   }
+}
+
+
+
+void KateMainWindow::slotFindInFiles ()
+{
+  grep_dlg->show();
+  grep_dlg->raise();
+}
+
+void KateMainWindow::slotGrepDialogItemSelected(QString filename,int linenumber)
+{
+  KURL fileURL;
+  fileURL.setPath( filename );
+  viewManager->openURL( fileURL );
+  if ( viewManager->activeView() == 0 ) return;
+  viewManager->activeView()->gotoLineNumber( linenumber );
+  this->raise();
+  this->setActiveWindow();
 }
 
 void KateMainWindow::gotoBookmark (int n)
