@@ -98,23 +98,9 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   m_projectNumber = 0;
 
   config = kapp->config();
-
   QString grp=config->group();
   config->setGroup("General");
   manager()->setSplitterOpaqueResize(config->readBoolEntry("Opaque Resize", true));
-  m_dockStyle= (config->readEntry("viewMode",DEFAULT_STYLE)=="Modern") ? ModernStyle : ClassicStyle;
-
-  if (config->readBoolEntry("deleteKDockWidgetConfig",false))
-  {
-	config->writeEntry("deleteKDockWidgetConfig",false);
-	config->deleteGroup("dock_setting_default");
-	config->deleteGroup("KateDock::leftDock");
-	config->deleteGroup("KateDock::rightDock");
-	config->deleteGroup("KateDock::bottomDock");
-	config->deleteGroup("KateDock::topDock");
-	config->sync();
-  }
-
   config->setGroup(grp);
 
   myID = uniqueID;
@@ -150,9 +136,9 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   readOptions(config);
 
-  if (m_dockStyle==ModernStyle) mainDock->setDockSite( KDockWidget::DockNone );
+  mainDock->setDockSite( KDockWidget::DockNone );
 
- if (console)
+  if (console)
     console->loadConsoleIfNeeded();
 
   // call it as last thing, must be sure everything is already set up ;)
@@ -171,13 +157,10 @@ void KateMainWindow::setupMainWindow ()
 
   mainDock = createDockWidget( "mainDock", 0L );
 
-  if (m_dockStyle==ModernStyle)
-  {
-    m_leftDock = createDockWidget("leftDock",SmallIcon("misc"),0L,"Left Dock");
-    m_rightDock = createDockWidget("rightDock",SmallIcon("misc"),0L,"Right Dock");
-    m_topDock = createDockWidget("topDock",SmallIcon("misc"),0L,"Top Dock");
-    m_bottomDock = createDockWidget("bottomDock",SmallIcon("misc"),0L,"Bottom Dock");
-  }
+  m_leftDock = createDockWidget("leftDock",SmallIcon("misc"),0L,"Left Dock");
+  m_rightDock = createDockWidget("rightDock",SmallIcon("misc"),0L,"Right Dock");
+  m_topDock = createDockWidget("topDock",SmallIcon("misc"),0L,"Top Dock");
+  m_bottomDock = createDockWidget("bottomDock",SmallIcon("misc"),0L,"Bottom Dock");
 
   mainDock->setGeometry(100, 100, 100, 100);
   m_viewManager = new KateViewManager (mainDock, m_docManager);
@@ -188,32 +171,29 @@ void KateMainWindow::setupMainWindow ()
   mainDock->setEnableDocking ( KDockWidget::DockNone );
   mainDock->setDockSite( KDockWidget::DockCorner );
 
-  if (m_dockStyle==ModernStyle)
-  {
-    KateDockContainer *tmpDC;
-    m_leftDock->setWidget(tmpDC=new KateDockContainer(m_leftDock, this, KDockWidget::DockLeft));
-    tmpDC->init();
-    m_rightDock->setWidget(tmpDC=new KateDockContainer(m_rightDock, this, KDockWidget::DockRight));
-    tmpDC->init();
-    m_topDock->setWidget(tmpDC=new KateDockContainer(m_topDock, this, KDockWidget::DockTop));
-    tmpDC->init();
-    m_bottomDock->setWidget(tmpDC=new KateDockContainer(m_bottomDock, this, KDockWidget::DockBottom));
-    tmpDC->init();
 
-     m_leftDock->manualDock(mainDock, KDockWidget::DockLeft,20);
-     m_rightDock->manualDock(mainDock, KDockWidget::DockRight,20);
-     m_topDock->manualDock(mainDock, KDockWidget::DockTop,20);
-     m_bottomDock->manualDock(mainDock, KDockWidget::DockBottom,20);
+  KateDockContainer *tmpDC;
+  m_leftDock->setWidget(tmpDC=new KateDockContainer(m_leftDock, this, KDockWidget::DockLeft));
+  tmpDC->init();
+  m_rightDock->setWidget(tmpDC=new KateDockContainer(m_rightDock, this, KDockWidget::DockRight));
+  tmpDC->init();
+  m_topDock->setWidget(tmpDC=new KateDockContainer(m_topDock, this, KDockWidget::DockTop));
+  tmpDC->init();
+  m_bottomDock->setWidget(tmpDC=new KateDockContainer(m_bottomDock, this, KDockWidget::DockBottom));
+  tmpDC->init();
 
-     m_leftDock->setDockSite( KDockWidget::DockCenter );
-     m_rightDock->setDockSite( KDockWidget::DockCenter );
-     m_topDock->setDockSite( KDockWidget::DockCenter );
-     m_bottomDock->setDockSite( KDockWidget::DockCenter );
+  m_leftDock->manualDock(mainDock, KDockWidget::DockLeft,20);
+  m_rightDock->manualDock(mainDock, KDockWidget::DockRight,20);
+  m_topDock->manualDock(mainDock, KDockWidget::DockTop,20);
+  m_bottomDock->manualDock(mainDock, KDockWidget::DockBottom,20);
 
-     m_topDock->undock();
-     m_rightDock->undock();
-  }
+  m_leftDock->setDockSite( KDockWidget::DockCenter );
+  m_rightDock->setDockSite( KDockWidget::DockCenter );
+  m_topDock->setDockSite( KDockWidget::DockCenter );
+  m_bottomDock->setDockSite( KDockWidget::DockCenter );
 
+  m_topDock->undock();
+  m_rightDock->undock();
 
   filelist = new KateFileList (m_docManager, m_viewManager, this/*filelistDock*/, "filelist");
   filelistDock=addToolViewWidget(KDockWidget::DockLeft,filelist,SmallIcon("kmultiple"), i18n("Files"));
@@ -300,16 +280,14 @@ void KateMainWindow::setupActions()
   a=KStdAction::configureToolbars(this, SLOT(slotEditToolbars()), actionCollection(), "set_configure_toolbars");
   a->setWhatsThis(i18n("Configure which items should appear in the toolbar(s)."));
 
-  if (m_dockStyle==ModernStyle)
-  {
-	  KActionMenu *settingsShowToolDocks=new KActionMenu( i18n("Tool Docks"), actionCollection(),"settings_show_tooldocks");
-          settingsShowToolDocks->setWhatsThis(i18n("This allows you to show/hide certain tool view dock areas."));
 
-	  settingsShowToolDocks->insert(new KateToggleToolViewAction(i18n("Bottom"),0,m_bottomDock,actionCollection(),this,"settings_show_bottomdock"));
-	  settingsShowToolDocks->insert(new KateToggleToolViewAction(i18n("Left"),0,m_leftDock,actionCollection(),this,"settings_show_leftdock"));
-  	  settingsShowToolDocks->insert(new KateToggleToolViewAction(i18n("Right"),0,m_rightDock,actionCollection(),this,"settings_show_rightdock"));
-    	  settingsShowToolDocks->insert(new KateToggleToolViewAction(i18n("Top"),0,m_topDock,actionCollection(),this,"settings_show_topdock"));
-  }
+  KActionMenu *settingsShowToolDocks=new KActionMenu( i18n("Tool Docks"), actionCollection(),"settings_show_tooldocks");
+  settingsShowToolDocks->setWhatsThis(i18n("This allows you to show/hide certain tool view dock areas."));
+
+  settingsShowToolDocks->insert(new KateToggleToolViewAction(i18n("Bottom"),0,m_bottomDock,actionCollection(),this,"settings_show_bottomdock"));
+  settingsShowToolDocks->insert(new KateToggleToolViewAction(i18n("Left"),0,m_leftDock,actionCollection(),this,"settings_show_leftdock"));
+  settingsShowToolDocks->insert(new KateToggleToolViewAction(i18n("Right"),0,m_rightDock,actionCollection(),this,"settings_show_rightdock"));
+  settingsShowToolDocks->insert(new KateToggleToolViewAction(i18n("Top"),0,m_topDock,actionCollection(),this,"settings_show_topdock"));
 
   // project menu
   a = new KAction(i18n("&New Project..."), "filenew", 0, this, SLOT(slotProjectNew()), actionCollection(), "project_new");
@@ -763,22 +741,9 @@ void KateMainWindow::slotFullScreen(bool t)
 
 KDockWidget *KateMainWindow::addToolView(KDockWidget::DockPosition pos,const char* name, const QPixmap &icon,const QString& caption)
 {
-	KDockWidget *dw=createDockWidget( name,  icon, 0L, caption, (m_dockStyle==ModernStyle)?caption:"");
+	KDockWidget *dw=createDockWidget( name,  icon, 0L, caption, caption);
 
-	if (m_dockStyle==ClassicStyle)
-	{
-	        	dw->setDockWindowType (NET::Tool);
-        		dw->setDockWindowTransient (this, true);
 
-			//KDockWidget=mainDock->
-			KDockWidget *dw1=mainDock->findNearestDockWidget(pos);
-			if (dw1)
-			dw->manualDock(dw1,KDockWidget::DockCenter,20);
-			else
-			dw->manualDock ( mainDock, pos, 20 );
-	}
-	else
-	{
         	dw->setDockWindowTransient (this, true);
 	        dw->setEnableDocking(dw->enableDocking()); //& ~KDockWidget::DockDesktop);
 		switch (pos)
@@ -794,7 +759,6 @@ KDockWidget *KateMainWindow::addToolView(KDockWidget::DockPosition pos,const cha
 			default:	dw->manualDock(mainDock,pos,20);
 						break;
 		}
-	}
 
 	KToggleAction *showaction= new KateToggleToolViewAction(i18n("Show %1").arg(i18n(caption.utf8())), 0, dw, actionCollection(),this, name);
 	m_settingsShowToolViews->insert(showaction);
@@ -883,7 +847,7 @@ void KateToggleToolViewAction::slotToggled(bool t)
   else
     if ( t && m_dw->mayBeShow() ) m_mw->makeDockVisible(m_dw);
 
-  if (m_mw->dockStyle()==KateMainWindow::ModernStyle) m_mw->mainDock->setDockSite( KDockWidget::DockNone );
+  m_mw->mainDock->setDockSite( KDockWidget::DockNone );
 }
 
 void KateToggleToolViewAction::slotWidgetDestroyed()

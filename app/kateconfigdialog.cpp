@@ -187,25 +187,8 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   QWhatsThis::add( sb_numRecentFiles, youwouldnotbelieveit );
   connect( sb_numRecentFiles, SIGNAL( valueChanged ( int ) ), this, SLOT( slotChanged() ) );
 
-  KSeparator *sep=new KSeparator(frGeneral);
-  sep->setOrientation(KSeparator::HLine);
-  lo->addWidget(sep);
-  lo->addWidget(new QLabel(i18n("Toolview mode:"),frGeneral));
-  cb_mode=new QComboBox(frGeneral);
-  cb_mode->insertItem(i18n("Modern Style"));
-  cb_mode->insertItem(i18n("Classic Style"));
-  lo->addWidget(cb_mode);
-  QWhatsThis::add(cb_mode,i18n("Choose how you want the toolviews managed.<BR><ul>"
-  "<li><b>Modern Style</b> The toolviews will behave similar to the views in Konqueror's navigation panel.</li>"
-  "<li><b>Classic Style</b> The toolviews (filelist, fileselector, ...) can be docked anywhere and made floating.</li></ul>"));
-
-  config->setGroup("General");
-  cb_mode->setCurrentItem((config->readEntry("viewMode",DEFAULT_STYLE)=="Modern")?0:1);
-  connect( cb_mode, SIGNAL( activated ( int ) ), this, SLOT( slotChanged() ) );
-
   lo->addStretch(1); // :-] works correct without autoadd
   // END General page
-
 
   path.clear();
 
@@ -242,11 +225,6 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
     editorPages.append (cPage);
   }
 
-  #if 0
-  path.clear();
-  path << i18n("Plugins");
-  setFolderIcon (path, SmallIcon("kate", KIcon::SizeSmall));
-  #endif
   for (uint i=0; i<pluginManager->pluginList().count(); i++)
   {
     if  ( pluginManager->pluginList().at(i)->load && Kate::pluginConfigInterfaceExtension(pluginManager->pluginList().at(i)->plugin) )
@@ -314,12 +292,6 @@ void KateConfigDialog::slotApply()
   config->writeEntry("MultipleInstances",cb_singleInstance->isChecked());
   config->setGroup("General");
   config->writeEntry("reopen at startup", cb_reopenFiles->isChecked());
-
-  if (((config->readEntry("viewMode",DEFAULT_STYLE)=="Modern")? 0 : 1)!=cb_mode->currentItem())
-  {
-    config->writeEntry("viewMode",(cb_mode->currentItem()==0)?"Modern":"Classic");
-    config->writeEntry("deleteKDockWidgetConfig",true);
-  }
 
   mainWindow->syncKonsole = cb_syncKonsole->isChecked();
 

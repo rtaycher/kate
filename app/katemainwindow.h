@@ -60,12 +60,6 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     KateMainWindow(KateDocManager *_docManager, KatePluginManager *_pluginManager, KateProjectManager *projectMan);
     ~KateMainWindow();
 
-    enum DockWidgetMode
-    {
-      ModernStyle,
-      ClassicStyle
-    };
-
     Kate::MainWindow *mainWindow () { return m_mainWindow; };
     Kate::ToolViewManager *toolViewManager () { return m_toolViewManager; };
 
@@ -125,12 +119,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     uint myID;
     bool syncKonsole;
 
-    enum DockWidgetMode m_dockStyle;
-
-  public:
-   int dockStyle() { return m_dockStyle;}
   protected:
-
     KatePluginManager *m_pluginManager;
 
     /** just calls viewmanager */
