@@ -1033,14 +1033,9 @@ void KantMainWindow::slotConfigure()
 
 void KantMainWindow::slotHlConfigure()
 {
-  KantView* v = 0L;
-  v = viewManager->activeView();
-
-  if (!v) return;
-
-  v->hlDlg();
+  if (viewManager->activeView())
+    viewManager->activeView()->hlDlg();
 }
-
 
 //Set focus to next input element
 void KantMainWindow::slotGoNext()
