@@ -10,7 +10,7 @@ if($#ARGV<0) {
 
 open(OUT,">data.cpp") || die "Unable to open the output file (data.cpp)";
 print OUT "// This file is generated on make messages and it makes it possible\n";
-print OUT "// to translate the strings in the XML files in this directory.\n\n";
+print OUT "// to translate the strings in the XML files in the data directory.\n\n";
 
 foreach(@ARGV) {
     open(FILE,"<$_") || die "Unable to open ", $_;
