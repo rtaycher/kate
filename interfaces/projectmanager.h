@@ -66,6 +66,12 @@ class ProjectManager : public QObject
     class PrivateProjectManager *d;
 };
 
+/**
+ * Returns the project manager object
+ * @return ProjectManager project manager object
+ */
+ProjectManager *projectManager ();
+
 };
 
 #endif

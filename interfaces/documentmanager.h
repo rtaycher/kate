@@ -88,6 +88,12 @@ class DocumentManager : public QObject
     class PrivateDocumentManager *d;
 };
 
+/**
+ * Returns the document manager object
+ * @return DocumentManager document manager object
+ */
+DocumentManager *documentManager ();
+
 };
 
 #endif

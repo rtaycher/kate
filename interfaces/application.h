@@ -25,7 +25,11 @@
 namespace Kate
 {
 
-/** This interface provides access to the central Kate objects */
+/**
+ * Interface to the application, beside some global methodes to access
+ * other objects like document/projectmanager, ... no way goes around this
+ * central interface
+ */
 class Application : public QObject
 {
   friend class PrivateApplication;
@@ -33,7 +37,14 @@ class Application : public QObject
   Q_OBJECT
 
   public:
+    /**
+     * Construtor, should not interest, internal usage
+     */
     Application (void *application);
+    
+    /**
+     * Desctructor
+     */
     virtual ~Application ();
     
   public:
@@ -65,6 +76,10 @@ class Application : public QObject
     class PrivateApplication *d;
 };
 
+/**
+ * Returns the application object
+ * @return Application application object
+ */
 Application *application ();
 
 };

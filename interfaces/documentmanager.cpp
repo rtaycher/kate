@@ -26,6 +26,8 @@
 #include "toolviewmanager.h"
 #include "pluginmanager.h"
 
+#include "application.h"
+
 #include "../app/katedocmanager.h"
 
 namespace Kate
@@ -109,7 +111,12 @@ bool DocumentManager::closeDocumentWithID(uint id)
 bool DocumentManager::closeAllDocuments()
 {
   return d->docMan->closeAllDocuments ();
-}  
+}
+
+DocumentManager *documentManager ()
+{
+  return application()->documentManager ();
+}
 
 };
 

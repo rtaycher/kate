@@ -58,7 +58,7 @@ ProjectPlugin *Project::plugin ()
   return d->project->plugin ();
 }
 
-QString Project::type () const
+QString Project::type ()
 {
   return d->project->type ();
 }

@@ -55,7 +55,7 @@ class Project : public QObject
      * Return the project type
      * @return QString project type
      */
-    QString type () const;
+    QString type ();
     
     /**
      * Saves the project

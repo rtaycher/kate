@@ -21,6 +21,8 @@
 #include "projectmanager.h"
 #include "projectmanager.moc"
 
+#include "application.h"
+
 #include "../app/kateprojectmanager.h"
 #include "../app/kateproject.h"
 
@@ -60,6 +62,11 @@ Project *ProjectManager::create (const QString &type, const KURL &url)
 Project *ProjectManager::open (const KURL &url)
 {
   return d->projectMan->open (url);
+}
+
+ProjectManager *projectManager ()
+{
+  return application()->projectManager ();
 }
 
 };
