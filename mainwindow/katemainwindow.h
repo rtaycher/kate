@@ -36,7 +36,7 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
   friend class KateDocument;
 
   public:
-    KateMainWindow(KateDocManager *_docManager, KatePluginManager *_pluginManager, uint id, const char * = 0);
+    KateMainWindow(KateDocManager *_docManager, KatePluginManager *_pluginManager);
     ~KateMainWindow();
 
     /** Returns the URL of the current document.
@@ -194,6 +194,9 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
 
   protected:
      bool eventFilter (QObject* o, QEvent* e);
+
+  protected:
+    static uint uniqueID;
 
   public:
     Kate::ViewManager *getViewManager ();

@@ -41,6 +41,9 @@ class Document : public KTextEditor::Document
     // read/save sessionconfig of the document
     virtual void readSessionConfig (KConfig *) { ; };
     virtual void writeSessionConfig (KConfig *) { ; };
+
+    // docID
+    virtual uint docID () { return 0L; };
 };
 
 };

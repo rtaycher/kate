@@ -32,7 +32,6 @@
 
 KateApp::KateApp () : Kate::Application (),DCOPObject ("KateApp" )
 {
-  myWinID = 0;
   mainWindows.setAutoDelete (false);
 
   config()->setGroup("startup");
@@ -77,9 +76,8 @@ KateApp::~KateApp ()
 
 void KateApp::newMainWindow ()
 {
-  KateMainWindow *mainWindow = new KateMainWindow (docManager, pluginManager, myWinID, (QString("KateMainWindow%1").arg(myWinID)).latin1());
+  KateMainWindow *mainWindow = new KateMainWindow (docManager, pluginManager);
   mainWindows.append (mainWindow);
-  myWinID++;
 
   if ((mainWindowsCount() > 1) && mainWindows.at(mainWindows.count()-2)->viewManager->activeView())
     mainWindow->viewManager->activateView ( mainWindows.at(mainWindows.count()-2)->viewManager->activeView()->doc()->docID() );

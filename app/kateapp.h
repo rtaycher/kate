@@ -49,7 +49,6 @@ class KateApp : public Kate::Application, public KateAppDCOPIface
     Kate::MainWindow *getMainWindow ();
 
   private:
-    uint myWinID;
     bool _singleInstance;
     KateDocManager *docManager;
     KatePluginManager *pluginManager;

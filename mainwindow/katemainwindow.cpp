@@ -78,15 +78,18 @@
 #include <kuniqueapp.h>
 #include <kurldrag.h>
 
-KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_pluginManager, uint id, const char *name) :
+uint KateMainWindow::uniqueID = 0;
+
+KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_pluginManager) :
 	Kate::MainWindow (),
-             DCOPObject (name)
+             DCOPObject ((QString("KateMainWindow%1").arg(uniqueID)).latin1())
 {
   docManager =  _docManager;
   pluginManager =_pluginManager;
   config = KateFactory::instance()->config();
 
-  myID = id;
+  myID = uniqueID;
+  uniqueID++;
 
   consoleDock = 0L;
   console = 0L;
