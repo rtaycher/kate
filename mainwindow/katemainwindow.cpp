@@ -762,7 +762,7 @@ void KateMainWindow::slotConfigure()
   hlManager->getHlDataList(hlDataList);
 
   page=dlg->addVBoxPage(i18n("Highlighting"),i18n("Highlighting configuration"),
-                        BarIcon("edit",KIcon::SizeMedium));
+                        SmallIcon("highlighting", KIcon::SizeMedium));
   hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &defaultFont, &hlDataList,
     /*myDoc->highlightNum()*/0, page);
 
