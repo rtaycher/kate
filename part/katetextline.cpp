@@ -21,9 +21,10 @@
 #include "katetextline.h"
 #include <kdebug.h>
 
-TextLine::TextLine(uchar attribute, int context)
+TextLine::TextLine(uchar attribute, TContexts context)
   : text(0L), attributes(0L), attr(attribute), ctx(context), myMark (0)
 {
+	ctx.detach();
 }
 
 TextLine::~TextLine()
@@ -189,11 +190,12 @@ uchar TextLine::getRawAttr() const {
   return attr;
 }
 
-void TextLine::setContext(int context) {
+void TextLine::setContext(TContexts context) {
   ctx = context;
+  ctx.detach();
 }
 
-int TextLine::getContext() const {
+TContexts TextLine::getContext() const {
   return ctx;
 }
 

@@ -36,6 +36,9 @@
   The attribute stores the index to a table that contains fonts and colors
   and also if a character is selected.
 */
+
+typedef QMemArray<signed char> TContexts;
+
 class TextLine : public KShared
 {
   friend class KWBuffer;
@@ -50,7 +53,7 @@ public:
       Creates an empty text line with given attribute and syntax highlight
       context
     */
-    TextLine(uchar attribute = 0, int context = 0);
+    TextLine(uchar attribute = 0, TContexts context = TContexts());
     ~TextLine();
 
     /**
@@ -151,11 +154,11 @@ public:
     /**
       Sets the syntax highlight context number
     */
-    void setContext(int context);
+    void setContext(TContexts context);
     /**
       Gets the syntax highlight context number
     */
-    int getContext() const;
+    TContexts getContext() const;
 
     /**
       Sets the select state from start to end -1
@@ -227,7 +230,7 @@ public:
     /**
       The syntax highlight context
     */
-    int ctx;
+    TContexts ctx;
     /**
       The marks of the current line
     */

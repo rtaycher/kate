@@ -27,6 +27,7 @@
 #include <qdict.h>
 #include <qregexp.h>
 #include <kdebug.h>
+#include "katetextline.h"
 
 class SyntaxDocument;
 struct syntaxModeListItem;
@@ -253,7 +254,7 @@ class Highlight
     Highlight(syntaxModeListItem *def);
     ~Highlight();
 
-    int doHighlight(int ctxNum, TextLine *);
+    TContexts doHighlight(TContexts ctxNum, TextLine *);
 
     KConfig *getKConfig();
     QString getWildcards();

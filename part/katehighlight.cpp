@@ -574,7 +574,7 @@ Highlight::~Highlight()
 {
 }
 
-int Highlight::doHighlight(int ctxNum, TextLine *textLine)
+TContexts Highlight::doHighlight(TContexts oCtx, TextLine *textLine)
 {
   if (noHl)
   {
@@ -586,13 +586,37 @@ int Highlight::doHighlight(int ctxNum, TextLine *textLine)
   HlContext *context;
   const QChar *s2;
   HlItem *item;
-
+	
+  TContexts ctx=oCtx;
+  ctx.detach();
+  int ctxNum=((ctx.size()==0)?0:ctx[ctx.size()-1]);
   context = contextList[ctxNum];
-  if (context->lineBeginContext!=-1)
+  if (ctx.size()==0) kdDebug()<<QString("doHighlight: doCtx.size()==0")<<endl;
+
+
+//TEST
+    ctx.resize(ctx.size()+1);
+    ctxNum=context->ctx;
+    context=contextList[ctxNum];
+    ctx[ctx.size()-1]=ctxNum;
+
+//ENDTEST
+
+#if 0
+#warning "Should be moved to the end of this function"
+ if (context->lineBeginContext!=-1)
   {
+//This is wrong, it's just for testing
+    ctx.resize(ctx.size()+1);
     ctxNum=context->lineBeginContext;
     context=contextList[ctxNum];
+    ctx[ctx.size()-1]=ctxNum;
   }
+#warning "End of block"
+#endif
+
+//  for (int i=0;i<ctx.size();i++) kdDebug()<<QString("%1").arg(ctx[i])<<endl;
+//	  kdDebug()<<QString("------------------")<<endl;
 
   QChar lastChar = ' ';
 
@@ -621,6 +645,8 @@ int Highlight::doHighlight(int ctxNum, TextLine *textLine)
             textLine->setAttribs(item->attr,s1 - str,s2 - str);
             ctxNum = item->ctx;
             context = contextList[ctxNum];
+	    ctx.resize(ctx.size()+1);
+	    ctx[ctx.size()-1]=ctxNum;
             z = z + s2 - s1 - 1;
             s1 = s2 - 1;
             found = true;
@@ -640,9 +666,11 @@ int Highlight::doHighlight(int ctxNum, TextLine *textLine)
 
   //set "end of line"-properties
   textLine->setAttr(context->attr);
+  textLine->setContext(ctx);
 
   //return new context
-  return context->ctx;
+
+  return ctx;
 }
 
 KConfig *Highlight::getKConfig() {

@@ -2667,7 +2667,7 @@ void KateDocument::tagAll() {
 void KateDocument::updateLines(int startLine, int endLine) {
   TextLine::Ptr textLine;
   int line, last_line;
-  int ctxNum, endCtx;
+  TContexts ctxNum, endCtx;
 
   if (buffer->line(startLine)==0)
 	  return;
@@ -2675,7 +2675,7 @@ void KateDocument::updateLines(int startLine, int endLine) {
 	last_line = lastLine();
 
   line = startLine;
-  ctxNum = 0;
+  ctxNum = TContexts();
 
 	if (line > 0)
 	  ctxNum = getTextLine(line - 1)->getContext();
@@ -2687,8 +2687,7 @@ void KateDocument::updateLines(int startLine, int endLine) {
 	  ctxNum = m_highlight->doHighlight(ctxNum,textLine);
 		textLine->setContext(ctxNum);
     line++;
-  }
-	while ((buffer->line(line)!=0) && (line <= endLine || endCtx != ctxNum));
+  }	while ((buffer->line(line)!=0) && (line <= endLine)); //|| (!(endCtx == ctxNum)));
 
   tagLines(startLine, line - 1);
 }

@@ -762,7 +762,7 @@ KWBufBlock::flushStringList()
       memcpy(buf, (char *)&a, 1);
       buf += 1;
       uint b[2];
-      b[0] = tl->ctx;
+#warning "FIXME      b[0] = tl->ctx;"
       b[1] = tl->myMark;
       memcpy(buf, (char *)b, sizeof(uint)*2);
       buf += sizeof(uint)*2;
