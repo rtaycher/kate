@@ -18,7 +18,7 @@ METASOURCES = AUTO
 
 
 messages: rc.cpp
-	$(XGETTEXT) -C -ki18n -kI18N_NOOP -ktranslate -x $(kde_includes)/kde.pot *.cpp -o $(podir)/kant.pot
+	$(XGETTEXT) `find . -name "*.cpp"` -o $(podir)/kant.pot
 
 rc.cpp:
 	$(EXTRACTRC) *.rc *.ui */*.rc */*.ui */*/*.rc */*/*.ui > rc.cpp
