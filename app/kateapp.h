@@ -50,15 +50,14 @@ class KateApp : public Kate::Application
     Kate::MainWindow *mainWindow (uint n) { return (Kate::MainWindow *)m_mainWindows.at(n); };
     
     KateMainWindow *kateMainWindow (uint n) { return m_mainWindows.at(n); };
-        
+                 
+    void openURL (const QString &name=0L);  
+    
   private:
     KateDocManager *m_docManager;
     KatePluginManager *m_pluginManager;
     QPtrList<class KateMainWindow> m_mainWindows;
-    bool m_firstStart;
-    
-  public:
-    void openURL (const QString &name=0L);
+    bool m_firstStart;  
 };
 
 #endif

@@ -36,7 +36,7 @@ class KateViewManager : public Kate::ViewManager
     KateViewManager (QWidget *parent=0, KateDocManager *docManager=0);
     ~KateViewManager ();   
     
-    inline QPtrList<Kate::View> &views () { return viewList; };
+    inline QPtrList<Kate::View> &viewList () { return m_viewList; };
 
   public:
     bool useOpaqueResize;
@@ -53,12 +53,6 @@ class KateViewManager : public Kate::ViewManager
     void openConstURL (const KURL&url=0L);
 
   private:
-    QPtrList<KateViewSpace> viewSpaceList; 
-    QPtrList<Kate::View> viewList;
-
-    KateDocManager *docManager;
-    QGridLayout *grid;
-
     bool createView ( bool newDoc=true, KURL url=0L, Kate::View *origView=0L, Kate::Document *doc=0L );
     bool deleteView ( Kate::View *view, bool delViewSpace = true);
 
@@ -158,7 +152,12 @@ class KateViewManager : public Kate::ViewManager
     void viewChanged ();
 
   private:
-    QString myEncoding;
+    QPtrList<KateViewSpace> m_viewSpaceList; 
+    QPtrList<Kate::View> m_viewList;
+
+    KateDocManager *m_docManager;
+    QGridLayout *m_grid;
+    QString m_encoding;
 };
 
 #endif
