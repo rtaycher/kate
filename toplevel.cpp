@@ -262,7 +262,7 @@ void TopLevel::setupMenuBar() {
 
 
   // find dialog
-  pixmap = BarIcon("search");
+  pixmap = BarIcon("find");
   find->addCommand(ctFindCommands, cmFind, pixmap, kWrite, SLOT(find()));
   find->addCommand(ctFindCommands, cmReplace, kWrite, SLOT(replace()));
   find->addCommand(ctFindCommands, cmFindAgain, kWrite, SLOT(findAgain()));
