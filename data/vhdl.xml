@@ -1,0 +1,280 @@
+<?xml version="1.01" encoding="UTF-8"?><!DOCTYPE language>
+<language name="VHDL" extensions="*.vdhl;*.vhd" mimetype="text/x-vhdl" casesensitive="1">
+    <highlighting>
+        <keywords>
+            <keyword> access </keyword>
+            <keyword> after </keyword>
+            <keyword> alias </keyword>
+            <keyword> all </keyword>
+            <keyword> assert </keyword>
+            <keyword> architecture </keyword>
+            <keyword> begin </keyword>
+            <keyword> block </keyword>
+            <keyword> body </keyword>
+            <keyword> buffer </keyword>
+            <keyword> bus </keyword>
+            <keyword> case </keyword>
+            <keyword> component </keyword>
+            <keyword> configuration </keyword>
+            <keyword> constant </keyword>
+            <keyword> disconnect </keyword>
+            <keyword> downto </keyword>
+            <keyword> else </keyword>
+            <keyword> elsif </keyword>
+            <keyword> end </keyword>
+            <keyword> entity </keyword>
+            <keyword> exit </keyword>
+            <keyword> file </keyword>
+            <keyword> for </keyword>
+            <keyword> function </keyword>
+            <keyword> generate </keyword>
+            <keyword> generic </keyword>
+            <keyword> group </keyword>
+            <keyword> guarded </keyword>
+            <keyword> if </keyword>
+            <keyword> impure </keyword>
+            <keyword> in </keyword>
+            <keyword> inertial </keyword>
+            <keyword> inout </keyword>
+            <keyword> is </keyword>
+            <keyword> label </keyword>
+            <keyword> library </keyword>
+            <keyword> linkage </keyword>
+            <keyword> literal </keyword>
+            <keyword> loop </keyword>
+            <keyword> map </keyword>
+            <keyword> new </keyword>
+            <keyword> next </keyword>
+            <keyword> null </keyword>
+            <keyword> of </keyword>
+            <keyword> on </keyword>
+            <keyword> open </keyword>
+            <keyword> others </keyword>
+            <keyword> out </keyword>
+            <keyword> package </keyword>
+            <keyword> port </keyword>
+            <keyword> postponed </keyword>
+            <keyword> procedure </keyword>
+            <keyword> process </keyword>
+            <keyword> pure </keyword>
+            <keyword> range </keyword>
+            <keyword> record </keyword>
+            <keyword> register </keyword>
+            <keyword> reject </keyword>
+            <keyword> report </keyword>
+            <keyword> return </keyword>
+            <keyword> select </keyword>
+            <keyword> severity </keyword>
+            <keyword> signal </keyword>
+            <keyword> shared </keyword>
+            <keyword> subtype </keyword>
+            <keyword> then </keyword>
+            <keyword> to </keyword>
+            <keyword> transport </keyword>
+            <keyword> type </keyword>
+            <keyword> unaffected </keyword>
+            <keyword> units </keyword>
+            <keyword> until </keyword>
+            <keyword> use </keyword>
+            <keyword> variable </keyword>
+            <keyword> wait </keyword>
+            <keyword> when </keyword>
+            <keyword> while </keyword>
+            <keyword> with </keyword>
+            <keyword> note </keyword>
+            <keyword> warning </keyword>
+            <keyword> error </keyword>
+            <keyword> failure </keyword>
+            <keyword> ACCESS </keyword>
+            <keyword> AFTER </keyword>
+            <keyword> ALIAS </keyword>
+            <keyword> ALL </keyword>
+            <keyword> ASSERT </keyword>
+            <keyword> ARCHITECTURE </keyword>
+            <keyword> BEGIN </keyword>
+            <keyword> BLOCK </keyword>
+            <keyword> BODY </keyword>
+            <keyword> BUFFER </keyword>
+            <keyword> BUS </keyword>
+            <keyword> CASE </keyword>
+            <keyword> COMPONENT </keyword>
+            <keyword> CONFIGURATION </keyword>
+            <keyword> CONSTANT </keyword>
+            <keyword> DISCONNECT </keyword>
+            <keyword> DOWNTO </keyword>
+            <keyword> ELSE </keyword>
+            <keyword> ELSIF </keyword>
+            <keyword> END </keyword>
+            <keyword> ENTITY </keyword>
+            <keyword> EXIT </keyword>
+            <keyword> FILE </keyword>
+            <keyword> FOR </keyword>
+            <keyword> FUNCTION </keyword>
+            <keyword> GENERATE </keyword>
+            <keyword> GENERIC </keyword>
+            <keyword> GROUP </keyword>
+            <keyword> GUARDED </keyword>
+            <keyword> IF </keyword>
+            <keyword> IMPURE </keyword>
+            <keyword> IN </keyword>
+            <keyword> INERTIAL </keyword>
+            <keyword> INOUT </keyword>
+            <keyword> IS </keyword>
+            <keyword> LABEL </keyword>
+            <keyword> LIBRARY </keyword>
+            <keyword> LINKAGE </keyword>
+            <keyword> LITERAL </keyword>
+            <keyword> LOOP </keyword>
+            <keyword> MAP </keyword>
+            <keyword> NEW </keyword>
+            <keyword> NEXT </keyword>
+            <keyword> NULL </keyword>
+            <keyword> OF </keyword>
+            <keyword> ON </keyword>
+            <keyword> OPEN </keyword>
+            <keyword> OTHERS </keyword>
+            <keyword> OUT </keyword>
+            <keyword> PACKAGE </keyword>
+            <keyword> PORT </keyword>
+            <keyword> POSTPONED </keyword>
+            <keyword> PROCEDURE </keyword>
+            <keyword> PROCESS </keyword>
+            <keyword> PURE </keyword>
+            <keyword> RANGE </keyword>
+            <keyword> RECORD </keyword>
+            <keyword> REGISTER </keyword>
+            <keyword> REJECT </keyword>
+            <keyword> REPORT </keyword>
+            <keyword> RETURN </keyword>
+            <keyword> SELECT </keyword>
+            <keyword> SEVERITY </keyword>
+            <keyword> SIGNAL </keyword>
+            <keyword> SHARED </keyword>
+            <keyword> SUBTYPE </keyword>
+            <keyword> THEN </keyword>
+            <keyword> TO </keyword>
+            <keyword> TRANSPORT </keyword>
+            <keyword> TYPE </keyword>
+            <keyword> UNAFFECTED </keyword>
+            <keyword> UNITS </keyword>
+            <keyword> UNTIL </keyword>
+            <keyword> USE </keyword>
+            <keyword> VARIABLE </keyword>
+            <keyword> WAIT </keyword>
+            <keyword> WHEN </keyword>
+            <keyword> WHILE </keyword>
+            <keyword> WITH </keyword>
+            <keyword> NOTE </keyword>
+            <keyword> WARNING </keyword>
+            <keyword> ERROR </keyword>
+            <keyword> FAILURE </keyword>
+            <keyword> and </keyword>
+            <keyword> or </keyword>
+            <keyword> xor </keyword>
+            <keyword> not </keyword>
+            <keyword> AND </keyword>
+            <keyword> OR </keyword>
+            <keyword> XOR </keyword>
+            <keyword> NOT </keyword>
+         </keywords>
+        <types>
+            <type> bit </type>
+            <type> bit_vector </type>
+            <type> character </type>
+            <type> boolean </type>
+            <type> integer </type>
+            <type> real </type>
+            <type> time </type>
+            <type> string </type>
+            <type> severity_level </type>
+            <type> positive </type>
+            <type> natural </type>
+            <type> signed </type>
+            <type> unsigned </type>
+            <type> line </type>
+            <type> text </type>
+            <type> std_logic </type>
+            <type> std_logic_vector </type>
+            <type> std_ulogic </type>
+            <type> std_ulogic_vector </type>
+            <type> qsim_state </type>
+            <type> qsim_state_vector </type>
+            <type> qsim_12state </type>
+            <type> qsim_12state_vector </type>
+            <type> qsim_strength </type>
+            <type> mux_bit </type>
+            <type> mux_vector </type>
+            <type> reg_bit </type>
+            <type> reg_vector </type>
+            <type> wor_bit </type>
+            <type> wor_vector </type>
+            <type> BIT </type>
+            <type> BIT_VECTOR </type>
+            <type> CHARACTER </type>
+            <type> BOOLEAN </type>
+            <type> INTEGER </type>
+            <type> REAL </type>
+            <type> TIME </type>
+            <type> STRING </type>
+            <type> SEVERITY_LEVEL </type>
+            <type> POSITIVE </type>
+            <type> NATURAL </type>
+            <type> SIGNED </type>
+            <type> UNSIGNED </type>
+            <type> LINE </type>
+            <type> TEXT </type>
+            <type> STD_LOGIC </type>
+            <type> STD_LOGIC_VECTOR </type>
+            <type> STD_ULOGIC </type>
+            <type> STD_ULOGIC_VECTOR </type>
+            <type> QSIM_STATE </type>
+            <type> QSIM_STATE_VECTOR </type>
+            <type> QSIM_12STATE </type>
+            <type> QSIM_12STATE_VECTOR </type>
+            <type> QSIM_STRENGTH </type>
+            <type> MUX_BIT </type>
+            <type> MUX_VECTOR </type>
+            <type> REG_BIT </type>
+            <type> REG_VECTOR </type>
+            <type> WOR_BIT </type>
+            <type> WOR_VECTOR </type>
+        </types>
+        <contexts>
+            <context name="normal" attribute="0" lineEndContext="0">
+                <item name="keyword" attribute="1" context="0" />
+                <item name="dataType" attribute="2" context="0" />
+                <item name="2CharDetect" attribute="3" context="1" char="-"
+                    char1="-" />
+                <item name="Int" attribute="4" context="0" />
+                <item name="HlCChar" attribute="5" context="0" />
+                <item name="CharDetect" attribute="6" context="2" char="&quot;" />
+                <item name="AnyChar" attribute="7" context="0" String="[&amp;&gt;&lt;=:+\-*\/|]().,;" />
+                <item name="CharDetect" attribute="8" context="3" char="'" />
+             </context>
+            <context name="comment" attribute="3" lineEndContext="0" />
+            <context name="string" attribute="6" lineEndContext="2" >
+                <item name="CharDetect" attribute="6" context="0" char="&quot;" />
+            </context>
+            <context name="attribute" attribute="8" lineEndContext="0">
+                <item name="CharDetect" attribute="8" context="4" char="&quot;" />
+                <item name="CharDetect" attribute="0" context="0" char=" " />
+                <item name="AnyChar" attribute="8" context="0" String=")=&lt;&gt;" />
+            </context>
+            <context name="quot in att" attribute="8" lineEndContext="4">
+                <item name="CharDetect" attribute="8" context="3" char="&quot;" />
+            </context>
+        </contexts>
+        <itemDatas>
+            <itemData name="Normal Text" defStyleNum="dsNormal" />
+            <itemData name="Keyword" defStyleNum="dsKeyword" />
+            <itemData name="Data Type" defStyleNum="dsDataType" />
+            <itemData name="Comment" defStyleNum="dsComment" />
+            <itemData name="Integer" defStyleNum="dsDecVal" />
+            <itemData name="Bit" defStyleNum="dsChar" />
+            <itemData name="Vector" defStyleNum="dsString" />
+            <itemData name="Operator" defStyleNum="dsOthers" />
+			<itemData name="Attribute" defStyleNum="dsBaseN" />
+        </itemDatas>
+    </highlighting>
+</language>
+
