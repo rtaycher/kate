@@ -127,6 +127,8 @@ protected:
    
    // List of parsed blocks that can be disposed.
    QList<KWBufBlock> m_parsedBlocksClean; 
+   // List of parsed blocks that are dirty.
+   QList<KWBufBlock> m_parsedBlocksDirty; 
    // List of blocks that can be swapped out.
    QList<KWBufBlock> m_loadedBlocks; 
 };
@@ -184,6 +186,18 @@ public:
    void disposeStringList();
 
    /**
+    * Copy stringlist back to raw data.
+    * Post Condition: b_rawDataValid is true.
+    */
+   void flushStringList();
+
+   /**
+    * Dispose of raw data.
+    * Post Condition: b_rawDataValid is false.
+    */
+   void disposeRawData();
+
+   /**
     * Swaps raw data to secondary storage.
     * Uses the filedescriptor @p swap_fd and the file-offset @p swap_offset
     * to store m_rawSize bytes.
@@ -219,6 +233,11 @@ protected:
     * Make line @p i the current line
     */
    void seek(int i);
+
+   /**
+    * Create a valid stringList from intern format.
+    */
+   void buildStringListFast();
 
 protected:
    TextLine::List m_stringList;

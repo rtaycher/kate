@@ -30,10 +30,12 @@
 
 #include <qfile.h>
 #include <qtimer.h>
+#include <qtextcodec.h>
 
 #include <assert.h>
 
 #define LOADED_BLOCKS_MAX	25
+#define DIRTY_BLOCKS_MAX        1
 #define AVG_BLOCK_SIZE		8192
 
 /**
@@ -327,7 +329,7 @@ KWBuffer::loadBlock(KWBufBlock *buf)
 qWarning("loadBlock(%p)", buf);
    if (m_loadedBlocks.count() > LOADED_BLOCKS_MAX)
    {
-      KWBufBlock *buf2 = m_loadedBlocks.take(2);
+//      KWBufBlock *buf2 = m_loadedBlocks.take(2);
 //      buf2->swapOut(m_fdSwap, some_offset);
    }
 
@@ -340,9 +342,17 @@ void
 KWBuffer::dirtyBlock(KWBufBlock *buf)
 {
 qWarning("dirtyBlock(%p)", buf);
+   if (m_parsedBlocksDirty.count() > DIRTY_BLOCKS_MAX)
+   {
+      KWBufBlock *buf2 = m_parsedBlocksDirty.take(0);
+      buf2->flushStringList(); // Copy stringlist to raw
+      buf2->disposeStringList(); // dispose stringlist.
+      m_loadedBlocks.append(buf2);
+   }
    m_loadedBlocks.removeRef(buf);
-   buf->b_rawDataValid = false;
    m_parsedBlocksClean.removeRef(buf);
+   m_parsedBlocksDirty.append(buf);
+   buf->disposeRawData();
 }
 
 //-----------------------------------------------------------------
@@ -455,11 +465,7 @@ KWBufBlock::swapOut(int swap_fd, long swap_offset)
       }
    }
    assert(m_vmDataOffset == swap_offset); // Shouldn't change!
-   m_rawData1 = QByteArray();
-   m_rawData1Start = 0;
-   m_rawData2 = QByteArray();
-   m_rawData2End = 0;
-   b_rawDataValid = false;
+   disposeRawData();
    b_vmDataValid = true;
 }
 
@@ -478,13 +484,21 @@ KWBufBlock::swapIn(int swap_fd)
    m_rawData2End = m_rawSize;
 }
 
+
 /**
  * Create a valid stringList.
  */
 void 
 KWBufBlock::buildStringList()
 {
+qWarning("KWBufBlock: buildStringList this = %p", this);
    assert(m_stringList.count() == 0);
+   if (!m_codec)
+   {
+      buildStringListFast();
+      return;
+   }
+
    const char *p;
    const char *e;
    const char *l = 0; // Pointer to start of last line.
@@ -499,7 +513,7 @@ KWBufBlock::buildStringList()
          if (*p == '\n')
          {
             // TODO: Use codec
-            QString line = QString::fromLatin1(l, (p-l-1)+1);
+            QString line = m_codec->toUnicode(l, (p-l-1)+1);
             TextLine::Ptr textLine = new TextLine();
             textLine->append(line.unicode(), line.length());
             m_stringList.append(textLine);
@@ -508,7 +522,7 @@ KWBufBlock::buildStringList()
          p++;
       }
       if (l < e)
-         lastLine = QString::fromLatin1(l, (e-l)+1);
+         lastLine = m_codec->toUnicode(l, (e-l)+1);
    }
 
    if (!m_rawData2.isEmpty())
@@ -520,7 +534,7 @@ KWBufBlock::buildStringList()
       {
          if (*p == '\n')
          {
-            QString line = QString::fromLatin1(l, (p-l-1)+1);
+            QString line = m_codec->toUnicode(l, (p-l-1)+1);
             if (!lastLine.isEmpty())
             {
                line = lastLine + line;
@@ -539,7 +553,7 @@ KWBufBlock::buildStringList()
       // create a line break at the end of the block.
       if (b_appendEOL)
       {
-         QString line = QString::fromLatin1(l, (e-l)+1);
+         QString line = m_codec->toUnicode(l, (e-l)+1);
          if (!lastLine.isEmpty())
          {
             line = lastLine + line;
@@ -550,7 +564,77 @@ KWBufBlock::buildStringList()
          m_stringList.append(textLine);
       }
    }
-   assert(m_stringList.count() == (m_endState.lineNr - m_beginState.lineNr));
+   assert((int) m_stringList.count() == (m_endState.lineNr - m_beginState.lineNr));
+   m_stringListIt = m_stringList.begin();
+   m_stringListCurrent = 0;
+   b_stringListValid = true;
+}
+
+/**
+ * Flush string list
+ * Copies a string list back to the raw buffer.
+ */
+void
+KWBufBlock::flushStringList()
+{
+qWarning("KWBufBlock: flushStringList this = %p", this);
+   assert(b_stringListValid);
+   assert(!b_rawDataValid);
+
+   // Stores the data as lines of <lenght><length characters>
+   // both <length> as well as <character> have size of sizeof(QChar)
+
+   // Calculate size.
+   int size = 0;
+   for(TextLine::List::ConstIterator it = m_stringList.begin();
+       it != m_stringList.end(); ++it)
+   {
+      size += (*it)->length()+1;
+   }
+qWarning("Size = %d", size);
+   size = size*sizeof(QChar);
+   m_rawData2 = QByteArray(size);
+   m_rawData2End = size;
+   m_rawSize = size;
+   char *buf = m_rawData2.data();
+   // Copy data
+   for(TextLine::List::ConstIterator it = m_stringList.begin();
+       it != m_stringList.end(); ++it)
+   {
+      ushort l = (*it)->length();
+      QChar cSize(l);
+      memcpy(buf, &cSize, sizeof(QChar));
+      buf += sizeof(QChar);
+      memcpy(buf, (char *)(*it)->getText(), sizeof(QChar)*l);
+      buf += sizeof(QChar)*l;
+   }
+   assert(buf-m_rawData2.data() == size);
+   m_codec = 0; // No codec
+   b_rawDataValid = true;
+}
+
+/**
+ * Create a valid stringList from raw data in our own format.
+ */
+void 
+KWBufBlock::buildStringListFast()
+{
+qWarning("KWBufBlock: buildStringListFast this = %p", this);
+   char *buf = m_rawData2.data();
+   char *end = buf + m_rawSize;
+   while(buf < end)
+   {
+      QChar cSize;
+      memcpy((char *) &cSize, buf, sizeof(QChar));
+      buf += sizeof(QChar);
+      uint l = cSize.unicode();
+      TextLine::Ptr textLine = new TextLine();
+      textLine->append((QChar *) buf, l);
+      buf += sizeof(QChar)*l;
+      m_stringList.append(textLine);
+   }
+qWarning("stringList.count = %d should be %d", m_stringList.count(), m_endState.lineNr - m_beginState.lineNr);
+   assert((int) m_stringList.count() == (m_endState.lineNr - m_beginState.lineNr));
    m_stringListIt = m_stringList.begin();
    m_stringListCurrent = 0;
    b_stringListValid = true;
@@ -562,9 +646,25 @@ KWBufBlock::buildStringList()
 void
 KWBufBlock::disposeStringList()
 {
+qWarning("KWBufBlock: disposeStringList this = %p", this);
    assert(b_rawDataValid);
    m_stringList.clear();
    b_stringListValid = false;      
+}
+
+/**
+ * Dispose of raw data.
+ */
+void
+KWBufBlock::disposeRawData()
+{
+qWarning("KWBufBlock: disposeRawData this = %p", this);
+   assert(b_stringListValid || b_vmDataValid);
+   b_rawDataValid = false;
+   m_rawData1 = QByteArray();
+   m_rawData1Start = 0;
+   m_rawData2 = QByteArray();
+   m_rawData2End = 0;
 }
 
 /**
@@ -594,7 +694,7 @@ TextLine::Ptr
 KWBufBlock::line(int i)
 {
    assert(b_stringListValid);
-   assert(i < m_stringList.count());
+   assert(i < (int) m_stringList.count());
    seek(i);
    return *m_stringListIt;
 }
@@ -603,7 +703,7 @@ void
 KWBufBlock::insertLine(int i, TextLine::Ptr line)
 {
    assert(b_stringListValid);
-   assert(i <= m_stringList.count());
+   assert(i <= (int) m_stringList.count());
    seek(i);
    m_stringListIt = m_stringList.insert(m_stringListIt, line);
    m_stringListCurrent = i;
@@ -614,7 +714,7 @@ void
 KWBufBlock::removeLine(int i)
 {
    assert(b_stringListValid);
-   assert(i < m_stringList.count());
+   assert(i < (int) m_stringList.count());
    seek(i);
    m_stringListIt = m_stringList.remove(m_stringListIt);  
    m_stringListCurrent = i;
