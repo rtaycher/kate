@@ -63,6 +63,7 @@
 #include <qtoolbar.h>
 #include <kpopupmenu.h>
 #include <kdialog.h>
+#include <kio/netaccess.h>
 
 #include <kdebug.h>
 //END Includes
@@ -71,7 +72,8 @@
 static void silenceQToolBar(QtMsgType, const char *){}
 
 
-KateFileSelectorToolBar::KateFileSelectorToolBar(QWidget *parent):KToolBar( parent, "Kate FileSelector Toolbar", true )
+KateFileSelectorToolBar::KateFileSelectorToolBar(QWidget *parent)
+  : KToolBar( parent, "Kate FileSelector Toolbar", true )
 {
 	setMinimumWidth(10);
 }
@@ -80,7 +82,6 @@ KateFileSelectorToolBar::~KateFileSelectorToolBar(){}
 
 void KateFileSelectorToolBar::setMovingEnabled( bool)
 {
-	//kdDebug()<<"JoWenn's setMovingEnabled called ******************************"<<endl;
 	KToolBar::setMovingEnabled(false);
 }
 
@@ -105,7 +106,8 @@ void KateFileSelectorToolBarParent::resizeEvent ( QResizeEvent * )
 
 //BEGIN Constructor/destructor
 
-KateFileSelector::KateFileSelector( KateMainWindow *mainWindow, KateViewManager *viewManager,
+KateFileSelector::KateFileSelector( KateMainWindow *mainWindow,
+                                    KateViewManager *viewManager,
                                     QWidget * parent, const char * name )
     : QWidget(parent, name),
       mainwin(mainWindow),
@@ -164,8 +166,10 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow, KateViewManager 
   connect( btnFilter, SIGNAL( clicked() ), this, SLOT( btnFilterClick() ) );
   lo->addWidget(filterBox);
 
-  connect( filter, SIGNAL( activated(const QString&) ), SLOT( slotFilterChange(const QString&) ) );
-  connect( filter, SIGNAL( returnPressed(const QString&) ),filter, SLOT( addToHistory(const QString&) ) );
+  connect( filter, SIGNAL( activated(const QString&) ),
+                   SLOT( slotFilterChange(const QString&) ) );
+  connect( filter, SIGNAL( returnPressed(const QString&) ),
+           filter, SLOT( addToHistory(const QString&) ) );
 
   // kaction for the dir sync method
   acSyncDir = new KAction( i18n("Current Document Directory"), "curfiledir", 0,
@@ -189,22 +193,24 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow, KateViewManager 
               this, SLOT( kateViewChanged() ) );
 
   // Connect the bookmark handler
-  connect(bookmarkHandler, SIGNAL( openURL( const QString& )), this, SLOT( setDir( const QString& ) ) );
+  connect( bookmarkHandler, SIGNAL( openURL( const QString& )),
+           this, SLOT( setDir( const QString& ) ) );
 
   waitingUrl = QString::null;
 
   // whatsthis help
   QWhatsThis::add( cmbPath,
        i18n("<p>Here you can enter a path for a directory to display."
-            "<p>To go to a directory previously entered, press the arrow on the right end and choose one."
-            "<p>The entry has directory completion. Right-click to choose how completion should behave.") );
+            "<p>To go to a directory previously entered, press the arrow on "
+            "the right end and choose one. <p>The entry has directory "
+            "completion. Right-click to choose how completion should behave.") );
   QWhatsThis::add( filter,
         i18n("<p>Here you can enter a name filter to limit which files are displayed."
              "<p>To clear the filter, toggle off the filter button to the left."
              "<p>To reapply the last filter used, toggle on the filter button." ) );
   QWhatsThis::add( btnFilter,
-        i18n("<p>This button clears the name filter when toggled off, or reapplies the "
-             "last filter used when toggled on.") );
+        i18n("<p>This button clears the name filter when toggled off, or "
+             "reapplies the last filter used when toggled on.") );
 
 }
 
@@ -235,6 +241,7 @@ void KateFileSelector::readConfig(KConfig *config, const QString & name)
       QTimer::singleShot(0, this, SLOT(initialDirChangeHack()));
     }
   }
+
   // else is automatic, as cmpPath->setURL is called when a location is entered.
 
   filter->setMaxCount( config->readNumEntry( "filter history len", 9 ) );
@@ -320,7 +327,8 @@ void KateFileSelector::slotFilterChange( const QString & nf )
   if ( empty ) {
     dir->clearFilter();
     filter->lineEdit()->setText( QString::null );
-    QToolTip::add( btnFilter, i18n("Apply Last Filter (\"%1\")").arg( lastFilter ) );
+    QToolTip::add( btnFilter,
+        QString( i18n("Apply Last Filter (\"%1\")") ).arg( lastFilter ) );
   }
   else {
     dir->setNameFilter( f );
@@ -335,7 +343,7 @@ void KateFileSelector::slotFilterChange( const QString & nf )
 }
 void KateFileSelector::setDir( KURL u )
 {
-  dir->setURL(u, true);
+    dir->setURL(u, true);
 }
 
 //END Public Slots
@@ -422,17 +430,16 @@ void KateFileSelector::autoSync( Kate::Document *doc )
 //FIXME crash on shutdown
 void KateFileSelector::setActiveDocumentDir()
 {
-kdDebug()<<"KateFileSelector::setActiveDocumentDir()"<<endl;
+//kdDebug()<<"KateFileSelector::setActiveDocumentDir()"<<endl;
   KURL u = mainwin->activeDocumentUrl();
-kdDebug()<<"KateFileSelector::setActiveDocumentDir(): URL is "<<u.url()<<endl;
   if (!u.isEmpty())
-    setDir( u.directory() );
+    setDir( u.upURL() );
 }
 
 void KateFileSelector::kateViewChanged()
 {
-  // TODO: make sure the button is disabled if the directory is unreadable, eg the document URL
-  //       has protocol http
+  // TODO: make sure the button is disabled if the directory is unreadable, eg
+  //       the document URL has protocol http
   acSyncDir->setEnabled( ! mainwin->activeDocumentUrl().directory().isEmpty() );
 }
 
@@ -465,9 +472,9 @@ bool KateFileSelector::eventFilter( QObject* o, QEvent *e )
   /*
       This is rather unfortunate, but:
       QComboBox does not support setting the size of the listbox to something
-      resonable. Even using listbox->setVariableWidth() does not yeld a satisfying
-      result, something is wrong with the handling of the sizehint. And the popup is
-      rather useless, if the paths are only partly visible.
+      resonable. Even using listbox->setVariableWidth() does not yeld a
+      satisfying result, something is wrong with the handling of the sizehint.
+      And the popup is rather useless, if the paths are only partly visible.
   */
   QListBox *lb = cmbPath->listBox();
   if ( o == lb && e->type() == QEvent::Show ) {
@@ -475,7 +482,8 @@ bool KateFileSelector::eventFilter( QObject* o, QEvent *e )
     int w = QMIN( mainwin->width(), lb->contentsWidth() + add );
     lb->resize( w, lb->height() );
     // TODO - move the listbox to a suitable place if nessecary
-    // TODO - decide if it is worth caching the size while untill the contents are changed.
+    // TODO - decide if it is worth caching the size while untill the contents
+    //        are changed.
   }
   // TODO - same thing for the completion popup?
   return QWidget::eventFilter( o, e );
@@ -562,31 +570,35 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
         "move the selected action.") );
   */
   QString lhwt( i18n(
-        "<p>Decides how many locations to keep in the history of the location combo box") );
+        "<p>Decides how many locations to keep in the history of the location "
+        "combo box") );
   QWhatsThis::add( lbPathHist, lhwt );
   QWhatsThis::add( sbPathHistLength, lhwt );
   QString fhwt( i18n(
-        "<p>Decides how many filters to keep in the history of the filter combo box") );
+        "<p>Decides how many filters to keep in the history of the filter "
+        "combo box") );
   QWhatsThis::add( lbFilterHist, fhwt );
   QWhatsThis::add( sbFilterHistLength, fhwt );
   QString synwt( i18n(
-        "<p>These options allow you to have the File Selector automatically change "
-        "location to the directory of the active document on certain events."
-        "<p>Auto synchronization is <em>lazy</em>, meaning it will not take effect "
-        "until the file selector is visible."
-        "<p>None of these are enabled by default, but you can always sync the location "
-        "by pressing the sync button in the toolbar.") );
+        "<p>These options allow you to have the File Selector automatically "
+        "change location to the directory of the active document on certain "
+        "events."
+        "<p>Auto synchronization is <em>lazy</em>, meaning it will not take "
+        "effect until the file selector is visible."
+        "<p>None of these are enabled by default, but you can always sync the "
+        "location by pressing the sync button in the toolbar.") );
   QWhatsThis::add( gbSync, synwt );
   QWhatsThis::add( cbSesLocation, i18n(
-        "<p>If this option is enabled (default), the location will be restored when "
-        "you start Kate.<p><strong>Note</strong> that if the session is handled by the KDE "
-        "session manager, the location is always restored.") );
+        "<p>If this option is enabled (default), the location will be restored "
+        "when you start Kate.<p><strong>Note</strong> that if the session is "
+        "handled by the KDE session manager, the location is always restored.") );
   QWhatsThis::add( cbSesFilter, i18n(
-        "<p>If this option is enabled (default), the current filter will be restored when "
-        "you start Kate.<p><strong>Note</strong> that if the session is handled by the KDE "
-        "session manager, the filter is always restored."
-        "<p><strong>Note</strong> that some of the autosync settings may override the "
-        "restored location if on.") );
+        "<p>If this option is enabled (default), the current filter will be "
+        "restored when you start Kate.<p><strong>Note</strong> that if the "
+        "session is handled by the KDE session manager, the filter is always "
+        "restored."
+        "<p><strong>Note</strong> that some of the autosync settings may "
+        "override the restored location if on.") );
 
   init();
 
