@@ -3,7 +3,6 @@ TODO:
 
     - Find Text dialog needs ability to hit all documents.
 
-    - context menu for file list [close, close all, new view top/btm/left/right, others?)
     - feature to open a clicked-on filename in the text
 
     - <Ctrl+Insert> should copy selected text (same as <Shift+Insert> currently pastes)

@@ -46,8 +46,8 @@ class KantFileListItem : public QListBoxItem
   protected:
     void paint( QPainter *painter );
 
-   private:
-   long myDocID;
+  private:
+    long myDocID;
     QPixmap pm;
     bool _bold;
 };
@@ -72,12 +72,13 @@ class KantFileList : public KListBox
     KantViewManager *viewManager;
 
   private slots:
-      void slotDocumentCreated (KantDocument *doc);
-      void slotDocumentDeleted (long docID);
-      void slotActivateView( QListBoxItem *item );
-      void slotModChanged (KantDocument *doc);
-      void slotNameChanged (KantDocument *doc);
-      void slotViewChanged ();
+    void slotDocumentCreated (KantDocument *doc);
+    void slotDocumentDeleted (long docID);
+    void slotActivateView( QListBoxItem *item );
+    void slotModChanged (KantDocument *doc);
+    void slotNameChanged (KantDocument *doc);
+    void slotViewChanged ();
+    void slotMenu ( QListBoxItem *item, const QPoint &p );
 
   private:
     /////////////////////////////////////////////////////////////////////

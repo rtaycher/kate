@@ -159,4 +159,15 @@
   <Action name="doc_list"/>
 </Menu>
 
+<Menu name="filelist_popup" noMerge="1">
+  <Action name="file_save"/>
+  <Action name="file_save_as"/>
+  <Action name="file_save_all"/>
+  <Separator/>
+  <Action name="file_print"/>
+  <Separator/>
+  <Action name="file_close"/>
+  <Action name="file_close_all"/>
+</Menu>
+
 </kpartgui>

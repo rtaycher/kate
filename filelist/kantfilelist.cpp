@@ -22,6 +22,7 @@
 #include "../document/kantdocmanager.h"
 #include "../view/kantview.h"
 #include "../view/kantviewmanager.h"
+#include "../mainwindow/kantmainwindow.h"
 
 #include <qapplication.h>
 
@@ -48,6 +49,8 @@ KantFileList::KantFileList (KantDocManager *_docManager, KantViewManager *_viewM
   connect(this,SIGNAL(selected(QListBoxItem *)), this,SLOT(slotActivateView(QListBoxItem *)));
 
   connect(viewManager,SIGNAL(viewChanged()), this,SLOT(slotViewChanged()));
+
+  connect(this,SIGNAL(rightButtonPressed ( QListBoxItem *, const QPoint & )), this,SLOT(slotMenu ( QListBoxItem *, const QPoint & )));
 }
 
 KantFileList::~KantFileList ()
@@ -149,6 +152,15 @@ void KantFileList::slotViewChanged ()
       break;
     }
   }
+}
+
+void KantFileList::slotMenu ( QListBoxItem *item, const QPoint &p )
+{
+  if (!item)
+    return;
+
+  QPopupMenu *menu = (QPopupMenu*) ((KMainWindow *)topLevelWidget ())->factory()->container("filelist_popup", (KMainWindow *)topLevelWidget ());
+  menu->exec(p);
 }
 
 void KantFileList::tip( const QPoint &p, QRect &r, QString &str )
