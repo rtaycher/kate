@@ -1084,14 +1084,16 @@ bool KateDocument::blockSelectionMode ()
 
 void KateDocument::setBlockSelectionMode (bool on)
 {
-  blockSelect = on;
-  setSelection (selectStartLine, selectStartCol, selectEndLine, selectEndCol);
+  if (on != blockSelect)
+  {
+    blockSelect = on;
+    setSelection (selectStartLine, selectStartCol, selectEndLine, selectEndCol);
+  }
 }
 
 void KateDocument::toggleBlockSelectionMode ()
 {
-  blockSelect = !blockSelect;
-  setSelection (selectStartLine, selectStartCol, selectEndLine, selectEndCol);
+  setBlockSelectionMode (!blockSelect);
 }
 
 //
@@ -2839,8 +2841,19 @@ bool KateDocument::lineSelected (int line)
   {
     if ((line > selectStartLine) && (line < selectEndLine))
       return true;
-      
+
     if ((line == selectStartLine) && (line < selectEndLine) && (selectStartCol == 0))
+      return true;
+  }
+
+  return false;
+}
+
+bool KateDocument::lineEndSelected (int line)
+{
+  if (!blockSelect)
+  {
+    if ((line >= selectStartLine) && (line < selectEndLine))
       return true;
   }
 
@@ -2967,7 +2980,7 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
   }
 
   // is whole line selected ??
-  if (lineSelected(line))
+  if (lineEndSelected(line))
     paint.fillRect(xs - xStart, y, xEnd - xs, fontHeight, colors[1]);
   else
     paint.fillRect(xs - xStart, y, xEnd - xs, fontHeight, colors[0]);

@@ -426,6 +426,7 @@ class KateDocument : public Kate::Document
     // internal functions to get the selection state of line/col ;)
     bool lineColSelected (int line, int col);
     bool lineSelected (int line);
+    bool lineEndSelected (int line);
     bool lineHasSelected (int line);
 
     bool readOnly;
