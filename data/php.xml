@@ -1664,69 +1664,44 @@
                         <type> array </type>
                         <type> object </type>
                 </types>
-                <contexts>
-                        <context attribute="0" lineEndContext="0">
-                                <item name="keyword" attribute="1" context="0"/>
-                                <item name="dataType" attribute="2" context="0"/>
-                                <item name="Float" attribute="6" context="0">
-                                        <item name="AnyChar" String="fF" attribute="6" context="0"/>
-                                </item>
-                                <item name="HlCOct" attribute="4" context="0"/>
-                                <item name="HlCHex" attribute="5" context="0"/>
-                                <item name="Int" attribute="3" context="0" >
-                                        <item name="StringDetect" attribute="3" context="0" String="ULL" insensitive="TRUE"/>
-                                        <item name="StringDetect" attribute="3" context="0" String="LUL" insensitive="TRUE"/>
-                                        <item name="StringDetect" attribute="3" context="0" String="LLU" insensitive="TRUE"/>
-                                        <item name="StringDetect" attribute="3" context="0" String="UL" insensitive="TRUE"/>
-                                        <item name="StringDetect" attribute="3" context="0" String="LU" insensitive="TRUE"/>
-                                        <item name="StringDetect" attribute="3" context="0" String="LL" insensitive="TRUE"/>
-                                        <item name="StringDetect" attribute="3" context="0" String="U" insensitive="TRUE"/>
-                                        <item name="StringDetect" attribute="3" context="0" String="L" insensitive="TRUE"/>
-                                </item>
-                                <item name="HlCChar" attribute="7" context="0"/>
-                                <item name="CharDetect" attribute="8" context="1" char="&quot;"/>
-                                <item name="2CharDetect" attribute="10" context="2" char="/" char1="/"/>
-                                <item name="2CharDetect" attribute="10" context="3" char="/" char1="*"/>
-                                <item name="AnyChar" attribute="11" context="0" String="!%&amp;()+,-&lt;=&gt;?[]^{|}~"/>
-                                <item name="RegExpr" attribute="12" context="4" String="^#"/>
-                        </context>
-                        <context attribute="8" lineEndContext="0">
-                                <item name="LineContinue" attribute="8" context="6"/>
-                                <item name="HlCStringChar" attribute="9" context="1"/>
-                                <item name="CharDetect" attribute="8" context="0" char="&quot;"/>
-                        </context>
-                        <context attribute="10" lineEndContext="0"/>
-                        <context attribute="10" lineEndContext="3">
-                                <item name="2CharDetect" attribute="10" context="0" char="*" char1="/"/>
-                        </context>
-                        <context attribute="12" lineEndContext="0">
-                                <item name="LineContinue" attribute="12" context="7"/>
-                                <item name="RangeDetect" attribute="13" context="4" char="&quot;" char1="&quot;"/>
-                                <item name="RangeDetect" attribute="13" context="4" char="&lt;" char1="&gt;"/>
-                                <item name="2CharDetect" attribute="10" context="2" char="/" char1="/"/>
-                                <item name="2CharDetect" attribute="10" context="5" char="/" char1="*"/>
-                        </context>
-                        <context attribute="10" lineEndContext="5">
-                                <item name="2CharDetect" attribute="10" context="4" char="*" char1="/" />
-                        </context>
-                        <context attribute="0" lineEndContext="1" />
-                        <context attribute="0" lineEndContext="4" />
-                </contexts>
-                <itemDatas>
-                        <itemData name="Normal Text" defStyleNum="dsNormal"/>
-                        <itemData name="Keyword"  defStyleNum="dsKeyword"/>
-                        <itemData name="Data Type"  defStyleNum="dsDataType"/>
-                        <itemData name="Decimal"  defStyleNum="dsDecVal"/>
-                        <itemData name="Octal"  defStyleNum="dsBaseN"/>
-                        <itemData name="Hex"  defStyleNum="dsBaseN"/>
-                        <itemData name="Float"  defStyleNum="dsFloat"/>
-                        <itemData name="Char"  defStyleNum="dsChar"/>
-                        <itemData name="String"  defStyleNum="dsString"/>
-                        <itemData name="String Char"  defStyleNum="dsChar"/>
-                        <itemData name="Comment"  defStyleNum="dsComment"/>
-                        <itemData name="Symbol"  defStyleNum="dsNormal"/>
-                        <itemData name="Preprocessor"  defStyleNum="dsOthers"/>
-                        <itemData name="Prep. Lib"  defStyleNum="dsOthers"/> <!--,Qt::darkYellow,Qt::yellow,false,false)); -->
-                </itemDatas>
+    <contexts>
+       <context attribute="0" lineEndContext="0">
+         <item name="RegExpr" attribute="1" context="6" String="&lt;\s*\?"/>
+         <item name="RegExpr" attribute="1" context="1" String="&lt;\s*\/?\s*[a-zA-Z0-9_]*" />
+       </context>
+
+       <context attribute="2" lineEndContext="1">
+         <item name="CharDetect" attribute="1" context="0" char="&gt;"/>
+         <item name="RegExpr" attribute="0" context="2" String="\s*=\s*"/>
+       </context>
+
+       <context attribute="8" lineEndContext="2">
+         <item name="RegExpr" attribute="3" context="1" String="\s*#?[a-zA-Z0-9]*" />
+         <item name="CharDetect" attribute="3" context="3" char="&quot;" />
+       </context>
+
+       <context attribute="3" lineEndContext="3">
+         <item name="CharDetect" attribute="3" context="1" char="&quot;" />
+       </context>
+
+       <context attribute="5" lineEndContext="0"/>
+       <context attribute="4" lineEditContext="0">
+         <item name="CharDetect" attribute="4" context="0" char="'"/>
+       </context>
+       <context attribute="0" lineEndContext="0">
+         <item name="keyword" attribute="1" context="6"/>
+         <item name="dataType" attribute="2" context="6"/>
+         <item name="RegExpr" attribute="1" context="0" String="\?\s*&gt;"/>
+       </context>
+    </contexts>
+    <itemDatas>
+      <itemData name="Normal Text" defStyleNum="dsNormal"/>
+      <itemData name="Keyword" defStyleNum="dsKeyword"/>
+      <itemData name="Identifier" defStyleNum="dsOthers"/>
+      <itemData name="Types" defStyleNum="dsDataType"/>
+      <itemData name="String" defStyleNum="dsString"/>
+      <itemData name="Comment" defStyleNum="dsComment"/>
+    </itemDatas>
+  </highlighting>
         </highlighting>
 </language>

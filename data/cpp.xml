@@ -2,6 +2,7 @@
 <language name="C++" extensions="*.cxx;*.cpp;*.cc;*.C;*.h" mimetype="text/x-c++-src;text/x-c++-hdr;text/x-c-hdr;text/x-c++-src" casesensitive="1">
   <highlighting>
     <keywords>
+      <keyword> class </keyword>
       <keyword> false </keyword>
       <keyword> friend </keyword>
       <keyword> inline </keyword>
