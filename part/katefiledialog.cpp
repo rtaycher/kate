@@ -29,6 +29,9 @@ KateFileDialog::KateFileDialog (const QString& startDir,
 			              const QString& caption,
 										int type) : KFileDialog (startDir, QString::null, parent, "", true)
 {
+  int iIndex=0;
+  QString sEncoding (encoding);
+  
   setCaption (caption);
 
   toolBar()->insertCombo(KGlobal::charsets()->availableEncodingNames(), 33333, false, 0L,
@@ -41,10 +44,14 @@ KateFileDialog::KateFileDialog (const QString& startDir,
 
 	this->encoding = toolBar()->getCombo(33333);
   
-	if (encoding != QString::null)
-	  this->encoding->setCurrentItem (KGlobal::charsets()->availableEncodingNames().findIndex(encoding));
-	else
-    this->encoding->setCurrentItem (KGlobal::charsets()->availableEncodingNames().findIndex(QString::fromLatin1(QTextCodec::codecForLocale()->name())));
+        if (encoding == QString::null)
+          sEncoding = QString::fromLatin1(QTextCodec::codecForLocale()->name());
+
+        iIndex = KGlobal::charsets()->availableEncodingNames().findIndex(encoding);
+        if (iIndex < 0) /* Try again with upper */
+          iIndex = KGlobal::charsets()->availableEncodingNames().findIndex(encoding.lower());
+
+        this->encoding->setCurrentItem (iIndex);
 }
 
 KateFileDialog::~KateFileDialog ()
