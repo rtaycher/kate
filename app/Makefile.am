@@ -1,4 +1,5 @@
 lib_LTLIBRARIES = libkateinterfaces.la
+bin_PROGRAMS = 
 kdeinit_LTLIBRARIES = kate.la kwrite.la
 
 libkateinterfaces_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugindialogpage.cpp \
