@@ -298,7 +298,7 @@ const QChar *HlFloat::checkHgl(const QChar *s,bool) {
             }
           return s;
         }
-  if (*s == '-') s++;
+  if ((*s == '-')||(*s =='+'))  s++;
   b = false;
   while (s->isDigit()) {
     s++;

@@ -225,7 +225,7 @@ KateViewInternal::~KateViewInternal()
 
 void KateViewInternal::slotPreHighlightUpdate(long line)
 {
-  kdDebug()<<QString("slotPreHighlightUpdate - Wait for: %1, line: %2").arg(waitForPreHighlight).arg(line)<<endl;
+//  kdDebug()<<QString("slotPreHighlightUpdate - Wait for: %1, line: %2").arg(waitForPreHighlight).arg(line)<<endl;
   if (waitForPreHighlight!=-1)
     {
        if (line>=waitForPreHighlight)
