@@ -190,12 +190,22 @@ KeywordData::~KeywordData() {
   delete s;
 }
 */
-HlKeyword::HlKeyword(int attribute, int context)
+HlKeyword::HlKeyword(int attribute, int context,bool casesensitive)
   : HlItemWw(attribute,context) {
 //  words.setAutoDelete(true);
 // after reading over the docs for Dict
 // 23 is probably too small when we can have > 100 items
-	QDict<char> dict(113);
+        if (casesensitive)
+          {
+            kdDebug()<<"Case Sensitive KeyWord";
+            doCheckHgl=&HlKeyword::sensitiveCheckHgl;
+          } else
+          {
+            kdDebug()<<"Case insensitive Keyword";
+            doCheckHgl=&inSensitiveCheckHgl;
+          }
+        _caseSensitive=casesensitive;
+        QDict<char> dict(113,casesensitive);
 	Dict=dict;
 }
 
@@ -211,20 +221,52 @@ void HlKeyword::addWord(const QString &word)
 }
 void HlKeyword::addList(const QStringList& list)
 {
+ if (_caseSensitive)
+ {
  words+=list;
  for(uint i=0;i<list.count();i++) Dict.insert(list[i],"dummy");
+ }
+ else
+ {
+ words+=list;
+ for(uint i=0;i<list.count();i++)
+	Dict.insert(list[i].lower(),"dummy");
+ }
 }
 
 void HlKeyword::addList(const char **list) {
-
+  if (_caseSensitive)
   while (*list) {
     words.append(*list);
     Dict.insert(*list,"dummy");
     list++;
   }
+  else
+  while (*list) {
+    words.append(*list);
+    Dict.insert(QString(*list).lower(),"dummy");
+    list++;
+  }
 }
 
-const QChar *HlKeyword::checkHgl(const QChar *s,bool) {
+const QChar *HlKeyword::checkHgl(const QChar *s,bool b)
+{
+  return doCheckHgl(s,b,this);
+  //sensitiveCheckHgl(s,b);
+}
+
+const QChar *HlKeyword::inSensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw) {
+  const QChar *s2=s;
+  if(*s2=='\0') return 0L;
+  while( !ustrchr("!%&()*+,-./:;<=>?[]^{|}~ ", *s2) && *s2 != '\0') s2++;
+// oops didn't increment s2 why do anything else ?
+  if(s2 == s) return 0L;
+  QString lookup=QString(s,s2-s)+QString::null;
+  return kw->Dict[lookup.lower()] ? s2 : 0L;
+
+}
+
+const QChar *HlKeyword::sensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw) {
 // this seems to speed up the lookup of keywords somewhat
 // anyway it has to be better than iterating through the list
 
@@ -234,7 +276,7 @@ const QChar *HlKeyword::checkHgl(const QChar *s,bool) {
 // oops didn't increment s2 why do anything else?
 	if(s2 == s) return 0L;
   QString lookup=QString(s,s2-s)+QString::null;
-  return Dict[lookup] ? s2 : 0L;
+  return kw->Dict[lookup] ? s2 : 0L;
 }
 
 
@@ -805,6 +847,7 @@ Hl2CharDetect::Hl2CharDetect(int attribute, int context, const QChar *s)
   sChar2 = s[1];
 }
 
+#if 0
 HlCaseInsensitiveKeyword::HlCaseInsensitiveKeyword(int attribute, int context)
   : HlKeyword(attribute,context) {
 // make dictionary case insensitive
@@ -849,6 +892,7 @@ const char *HlCaseInsensitiveKeyword::checkHgl(const char *s,bool) {
    return Dict[s] ? s+strlen(s) : 0L;
 }
 
+#endif
 
 AutoHighlight::AutoHighlight(syntaxModeListItem *def):GenHighlight(def->name.latin1())
 {
@@ -865,7 +909,7 @@ AutoHighlight::~AutoHighlight()
 
 void AutoHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
 {
-  if (casesensitive=="1")
+//  if (casesensitive=="1")
   {
    if (keyword) keyword->addList(HlManager::self()->syntax->finddata("highlighting","keywords"));
    if (dataType) dataType->addList(HlManager::self()->syntax->finddata("highlighting","types"));
@@ -914,8 +958,8 @@ HlItem *AutoHighlight::createHlItem(struct syntaxContextData *data, int *res)
                   chr1=0;
 		bool insensitive=(HlManager::self()->syntax->groupItemData(data,QString("insensitive"))==QString("TRUE"));
 		*res=0;
-                if (dataname=="keyword") {*res=1; return(new HlKeyword(attr,context));} else
-                if (dataname=="dataType") {*res=2; return new HlKeyword(attr,context);} else
+                if (dataname=="keyword") {*res=1; return(new HlKeyword(attr,context,casesensitive=="1"));} else
+                if (dataname=="dataType") {*res=2; return(new HlKeyword(attr,context,casesensitive=="1"));} else
                 if (dataname=="Float") return (new HlFloat(attr,context)); else
                 if (dataname=="Int") return(new HlInt(attr,context)); else
                 if (dataname=="CharDetect") return(new HlCharDetect(attr,context,chr)); else

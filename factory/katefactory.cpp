@@ -94,6 +94,8 @@ const KAboutData *KateFactory::aboutData()
 
   data->addCredit ("Matteo Merli",I18N_NOOP("Highlighting for RPM Spec-Files, Perl, Diff and more"), "merlim@libero.it");
   data->addCredit ("Rocky Scaletta",I18N_NOOP("Highlighting for VHDL"), "rocky@purdue.edu");
+  data->addCredit ("Yury Lebedev",I18N_NOOP("Highlighting for SQL"),"");
+  data->addCredit ("Cristi Dumitrescu",I18N_NOOP("PHP Keyword/Datatype list"),"");
   data->addCredit ("Carsten Presser", I18N_NOOP("Betatest"), "mord-slime@gmx.de");
   data->addCredit ("Jens Haupert", I18N_NOOP("Betatest"), "al_all@gmx.de");
   data->addCredit ("Carsten Pfeiffer", I18N_NOOP("Very nice help"), "");

@@ -604,6 +604,8 @@ int main(int argc, char **argv)
 
   aboutData.addCredit ("Matteo Merli",I18N_NOOP("Highlighting for RPM Spec-Files, Perl, Diff and more"), "merlim@libero.it");
   aboutData.addCredit ("Rocky Scaletta",I18N_NOOP("Highlighting for VHDL"), "rocky@purdue.edu");
+  aboutData.addCredit ("Yury Lebedev",I18N_NOOP("Highlighting for SQL"),"");
+  aboutData.addCredit ("Cristi Dumitrescu",I18N_NOOP("PHP Keyword/Datatype list"),"");
   aboutData.addCredit ("Carsten Presser", I18N_NOOP("Betatest"), "mord-slime@gmx.de");
   aboutData.addCredit ("Jens Haupert", I18N_NOOP("Betatest"), "al_all@gmx.de");
   aboutData.addCredit ("Carsten Pfeiffer", I18N_NOOP("Very nice help"), "");

@@ -103,6 +103,7 @@ void SyntaxDocument::setupModeList()
                       mli->mimetype = e.attribute("mimetype");
                       mli->extension = e.attribute("extensions");
                       mli->casesensitive = e.attribute("casesensitive");
+                      if (mli->casesensitive.isEmpty()) mli->casesensitive="1";
                       mli->identifier = *it;
                       myModeList.append(mli);
                    }

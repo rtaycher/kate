@@ -113,7 +113,7 @@ class KeywordData {
 */
 class HlKeyword : public HlItemWw {
   public:
-    HlKeyword(int attribute, int context);
+    HlKeyword(int attribute, int context,bool casesensitive);
     virtual ~HlKeyword();
     virtual void addWord(const QString &);
 		virtual void addList(const QStringList &);
@@ -122,11 +122,17 @@ class HlKeyword : public HlItemWw {
     virtual const QChar *checkHgl(const QChar *,bool);
 		QStringList getList() { return words;};
 		QDict<char> getDict() { return Dict;};
-		
+
   protected:
     QStringList words;
-		QDict<char> Dict;
+    QDict<char> Dict;
+    bool _caseSensitive;
+    const QChar*  (*doCheckHgl)(const QChar* ,bool,HlKeyword*);
+    static const QChar* sensitiveCheckHgl(const QChar*,bool,HlKeyword *kw);
+    static const QChar *inSensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw);
 };
+
+#if 0
 class HlCaseInsensitiveKeyword : public HlKeyword {
   public:
     HlCaseInsensitiveKeyword(int attribute, int context);
@@ -136,6 +142,8 @@ class HlCaseInsensitiveKeyword : public HlKeyword {
     void addList(const QStringList &);
     void addList(const char **);
 };
+
+#endif
 
 class HlPHex : public HlItemWw {
   public:

@@ -33,7 +33,6 @@ KateFileList::KateFileList (KateDocManager *_docManager, KateViewManager *_viewM
 {
   docManager = _docManager;
   viewManager = _viewManager;
-
   tooltip = new KFLToolTip( this );
 
   for (uint i = 0; i < docManager->docCount(); i++)
