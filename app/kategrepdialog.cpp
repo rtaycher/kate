@@ -352,9 +352,8 @@ void GrepDialog::slotSearch()
     pattern.replace(QRegExp("%s"), pattern_combo->currentText());
     pattern.replace(QRegExp("'"), "'\\''");
 
-    QString filepattern = "`find '";
-    filepattern += dir_combo->/*currentText*/url();
-    filepattern += "'";
+    QString filepattern = "`find ";
+    filepattern += KProcess::quote(dir_combo->/*currentText*/url());
     if (!recursive_box->isChecked())
         filepattern += " -maxdepth 1";
     filepattern += " \\( -name ";
@@ -365,7 +364,7 @@ void GrepDialog::slotSearch()
     childproc = new KShellProcess();
     *childproc << "grep";
     *childproc << "-n";
-    *childproc << (QString("-e '") + pattern + "'");
+    *childproc << (QString("-e ") + KProcess::quote(pattern));
     *childproc << filepattern;
     *childproc << "/dev/null";
 

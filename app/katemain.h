@@ -49,7 +49,6 @@ class KProcess;
 class KPushButton;
 class KRecentFilesAction;
 class KSelectAction;
-class KShellProcess;
 class KStatusBar;
 class KToggleAction;
 class KURL;
