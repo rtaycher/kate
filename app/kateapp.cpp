@@ -78,8 +78,14 @@ int KateApp::newInstance()
   }
  
   if ( mainWindows.first()->viewManager->viewCount () == 0 )
-    mainWindows.first()->viewManager->openURL( KURL() );
-                          
+    mainWindows.first()->viewManager->openURL( KURL() );     
+    
+  if (args -> isSet ("line"))
+  {
+    int line = args->getOption ("line").toInt();
+    mainWindows.first()->viewManager->activeView ()->setCursorPosition (line, 0);
+  }
+                           
   m_firstStart = false;
     
   return 0;
