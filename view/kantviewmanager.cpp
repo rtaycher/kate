@@ -268,7 +268,7 @@ void KantViewManager::setActiveSpace ( KantViewSpace* vs )
 
 void KantViewManager::setActiveView ( KantView* view )
 {
-kdDebug()<<"setActiveView()"<<endl;
+//kdDebug()<<"setActiveView()"<<endl;
    if (activeView())
      activeView()->setActive( false );
 
@@ -290,7 +290,7 @@ void KantViewManager::activateSpace (KantView* v)
 void KantViewManager::activateView ( KantView *view )
 {
   if (!view) return;
-kdDebug()<<"activateView"<<endl;
+//kdDebug()<<"activateView"<<endl;
   ((KantDocument*)view->doc())->isModOnHD();
   if (!view->isActive())
   {
@@ -301,7 +301,7 @@ kdDebug()<<"activateView"<<endl;
       createView (false, 0L, view );
       return;
     }
-kdDebug()<<"setting view as active"<<endl;
+//kdDebug()<<"setting view as active"<<endl;
     setActiveView (view);
     viewList.findRef (view);
 
@@ -896,14 +896,20 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
     ppsizes = pp->sizes();
   }
 
-  KantViewSpace *next = viewSpaceList.prev();
+  //KantViewSpace *next = viewSpaceList.prev();
+  KantViewSpace* next;
+  if (viewSpaceList.find(viewspace) == 0)
+    next = viewSpaceList.next();
+  else
+    next = viewSpaceList.prev();
 
-  // here, reparent views in viewspace that are not last views.
-  while (viewspace->viewCount() > 0)
+  // here, reparent views in viewspace that are last views, delete the rest.
+  int vsvc = viewspace->viewCount();
+  while (vsvc > 0)
   {
     if (viewspace->currentView())
     {
-    kdDebug()<<"removeViewSpace(): tjecking a view"<<endl;
+    kdDebug()<<QString("removeViewSpace(): %1 views left").arg(vsvc)<<endl;
       KantView* v = viewspace->currentView();
 
       if (v->isLastView())
@@ -913,9 +919,12 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
       }
       else
       {
-        deleteView( v, false, false );
+        deleteView( v, false, false, false );
       }
     }
+    else
+      kdDebug()<<"removeViewSpace(): PANIC!!"<<endl;
+    vsvc = viewspace->viewCount();
   }
 
   viewSpaceList.remove( viewspace );

@@ -107,10 +107,13 @@ bool KantViewSpace::showView(int docID)
 
 KantView* KantViewSpace::currentView()
 {
-  if (mViewList.count() > 0 && mViewList.current() != 0L) {
-    return mViewList.current();
+  if (mViewList.count() > 0) {
+    if (mViewList.current() != 0L)
+      return mViewList.current();
+    else
+      return mViewList.last();
   }
-  return 0;
+  return 0L;
 }
 
 bool KantViewSpace::isActiveSpace()
