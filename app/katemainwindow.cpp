@@ -190,7 +190,7 @@ void KateMainWindow::setupMainWindow ()
   m_viewManager = new KateViewManager (this);
 
   filelist = new KateFileList (this, m_viewManager, this/*filelistDock*/, "filelist");
-  filelist->readConfig(config, "Filelist");
+  filelist->readConfig(kapp->config(), "Filelist");
   addToolView(KDockWidget::DockLeft,filelist,SmallIcon("kmultiple"), i18n("Documents"));
 
   QVBox *prBox = new QVBox (this,"projects");
