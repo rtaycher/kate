@@ -1,8 +1,0 @@
-<!DOCTYPE kpartgui>
-<kpartplugin name="katekttsd" library="libkatekttsdplugin" version="1">
-<MenuBar>
- <Menu name="tools"><Text>&amp;Tools</Text>
-    <Action name="tools_kttsd" />
- </Menu>
-</MenuBar>
-</kpartplugin>
