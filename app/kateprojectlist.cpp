@@ -101,6 +101,7 @@ KateProjectList::KateProjectList (KateProjectManager *_projectManager, KateMainW
   m_freeArea = new QWidget (this);
   lo->addWidget(m_freeArea);
   lo->setStretchFactor(m_freeArea, 2);
+  m_freeArea->setPaletteBackgroundColor (QColor ("white"));
   
   // init of the combo box
   for (uint i = 0; i < m_projectManager->projects(); i++)
