@@ -46,6 +46,7 @@
 #include <kstdaction.h>
 #include <kstandarddirs.h>
 #include <qfileinfo.h>
+#include <kglobalsettings.h>
 
 #include <kio/netaccess.h>
 #include <ktexteditor/encodinginterface.h>
@@ -66,6 +67,8 @@ KateViewManager::KateViewManager (QWidget *parent, KateDocManager *m_docManager,
   m_viewManager = new Kate::ViewManager (this);
 
   m_blockViewCreationAndActivation=false;
+  
+  useOpaqueResize = KGlobalSettings::opaqueResize();
 
   // no memleaks
   m_viewList.setAutoDelete(true);
@@ -682,12 +685,6 @@ void KateViewManager::slotCloseCurrentViewSpace()
 void KateViewManager::setShowFullPath( bool enable )
 {
   showFullPath = enable;
-}
-
-void KateViewManager::setUseOpaqueResize( bool enable )
-{
-  useOpaqueResize = enable;
-  // TODO: loop through splitters and set this prop
 }
 
 void KateViewManager::queryModified()

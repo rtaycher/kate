@@ -47,8 +47,6 @@ class KateViewManager : public QWidget
     inline QPtrList<Kate::View> &viewList () { return m_viewList; };
 
   public:
-    bool useOpaqueResize;
-
     /* Query if the modified untitled docs should now be saved */
     void queryModified();
 
@@ -63,6 +61,8 @@ class KateViewManager : public QWidget
     void openConstURLCheck (const KURL&url=0L);
 
   private:
+    bool useOpaqueResize;
+  
     /**
      * create and activate a new view for doc, if doc == 0, then
      * create a new document
@@ -125,7 +125,6 @@ class KateViewManager : public QWidget
     void splitViewSpace( KateViewSpace* vs=0L, bool isHoriz=true, bool atTop=false );
 
     bool getShowFullPath() const { return showFullPath; }
-    void setUseOpaqueResize( bool enable );
 
     void activateView ( uint documentNumber );
     void activateView ( int documentNumber ) { activateView((uint) documentNumber); };

@@ -163,16 +163,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, const char *name )
 			combo_guiMode->setCurrentItem(3);
 	}
         connect(combo_guiMode,SIGNAL(activated(int)),this,SLOT(slotChanged()));
-  
-  // opaque resize of view splitters
-  cb_opaqueResize = new QCheckBox( bgStartup );
-  cb_opaqueResize->setText(i18n("&Show content when resizing views"));
-  cb_opaqueResize->setChecked( viewManager->useOpaqueResize );
-  QWhatsThis::add( cb_opaqueResize, i18n(
-        "If this is disabled, resizing views will display a <i>rubberband</i> to show the "
-        "new sizes until you release the mouse button.") );
-  connect( cb_opaqueResize, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
-	
+
   // show full path in title
   config->setGroup("General");
   cb_fullPath = new QCheckBox( i18n("Show full &path in title"), bgStartup);
@@ -337,7 +328,6 @@ void KateConfigDialog::slotOk()
 
 void KateConfigDialog::slotApply()
 {
-  viewManager->setUseOpaqueResize(cb_opaqueResize->isChecked());
   config->setGroup("KDE");
   config->writeEntry("MultipleInstances",cb_singleInstance->isChecked());
   config->setGroup("General");

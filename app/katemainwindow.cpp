@@ -106,10 +106,6 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   m_projectNumber = 0;
 
   config = kapp->config();
-  QString grp=config->group();
-  config->setGroup("General");
-  manager()->setSplitterOpaqueResize(config->readBoolEntry("Opaque Resize", KGlobalSettings::opaqueResize()));
-  config->setGroup(grp);
 
   activeView = 0;
 
@@ -391,7 +387,6 @@ void KateMainWindow::readOptions(KConfig *config)
   modNotification = config->readBoolEntry("Modified Notification", false);
 
   m_viewManager->setShowFullPath(config->readBoolEntry("Show Full Path in Title", false));
-  m_viewManager->setUseOpaqueResize(config->readBoolEntry("Opaque Resize", KGlobalSettings::opaqueResize()));
 
   fileOpenRecent->setMaxItems( config->readNumEntry("Number of recent files", fileOpenRecent->maxItems() ) );
   fileOpenRecent->loadEntries(config, "Recent Files");
@@ -420,7 +415,6 @@ void KateMainWindow::saveOptions(KConfig *config)
     config->writeEntry("Show Console", false);
 
   config->writeEntry("Show Full Path in Title", m_viewManager->getShowFullPath());
-  config->writeEntry("Opaque Resize", m_viewManager->useOpaqueResize);
 
   config->writeEntry("Sync Konsole", syncKonsole);
 
