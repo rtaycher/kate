@@ -417,11 +417,18 @@ class KateDocument : public Kate::Document
     TextLine::Ptr longestLine;
     float maxLength;
 
+    // stores the current selection
     int selectStartLine;
     int selectStartCol;
     int selectEndLine;
     int selectEndCol;
+    
+    // do we select normal or blockwise ?
     bool blockSelect;
+    
+    // only to make the selection from the view easier
+    int selectAnchorLine;
+    int selectAnchorCol;
 
     // internal functions to get the selection state of line/col ;)
     bool lineColSelected (int line, int col);

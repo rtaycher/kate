@@ -240,6 +240,8 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   selectStartCol = -1;
   selectEndLine = -1;
   selectEndCol = -1;
+  selectAnchorLine = -1;
+  selectAnchorCol = -1;
      
   // some defaults
   _configFlags = KateDocument::cfAutoIndent | KateDocument::cfBackspaceIndents     
@@ -898,10 +900,34 @@ bool KateDocument::setSelection ( uint startLine, uint startCol, uint endLine, u
   oldStartL = selectStartLine;
   oldEndL = selectEndLine;
 
-  selectStartLine = startLine;
-  selectStartCol = startCol;
-  selectEndLine = endLine;
-  selectEndCol = endCol;
+  if (startLine < endLine)
+  {
+    selectStartLine = startLine;
+    selectStartCol = startCol;
+    selectEndLine = endLine;
+    selectEndCol = endCol;
+  }
+  else if (startLine > endLine)
+  {
+    selectStartLine = endLine;
+    selectStartCol = endCol;
+    selectEndLine = startLine;
+    selectEndCol = startCol;
+  }
+  else if (startCol < endCol)
+  {
+    selectStartLine = startLine;
+    selectStartCol = startCol;
+    selectEndLine = endLine;
+    selectEndCol = endCol;
+  }
+  else if (startCol >= endCol)
+  {
+    selectStartLine = endLine;
+    selectStartCol = endCol;
+    selectEndLine = startLine;
+    selectEndCol = startCol;
+  }
 
   int endL, startL;
   if (oldEndL > selectEndLine)
@@ -930,6 +956,8 @@ bool KateDocument::clearSelection ()
   selectStartCol = -1;
   selectEndLine = -1;
   selectEndCol = -1;
+  selectAnchorLine = -1;
+  selectAnchorCol = -1;
   
   updateViews ();
 
@@ -2162,54 +2190,13 @@ void KateDocument::paste(VConfig &c) {
 
 void KateDocument::selectTo(VConfig &c, KateViewCursor &cursor, int cXPos)
 {
-  int sl, sc, el, ec;
-  static bool back = false;
-
-  sl = selectStartLine;
-  sc = selectStartCol;
-  el = selectEndLine;
-  ec = selectEndCol;
-
-  if (sl == -1)
+  if (selectAnchorLine == -1)
   {
-    sl = c.cursor.line;
-    sc = c.cursor.col;
+    selectAnchorLine = c.cursor.line;
+    selectAnchorCol = c.cursor.col;
   }
 
-  el = cursor.line;
-  ec = cursor.col;
-
-  if (!back && ((el < sl) || ((el == sl) && (sc > ec))))
-  {
-    sl = el;
-    sc = ec;
-
-    if (selectEndLine > -1)
-    {
-      el = selectEndLine;
-      ec = selectEndCol;
-    }
-    else
-    {
-      el = c.cursor.line;
-      ec = c.cursor.col;
-    }
-
-    back = true;
-  }
-  else if (back && ((el < selectEndLine) || ((el == selectEndLine) && (ec < selectEndCol))))
-  {
-    sl = el;
-    sc = ec;
-    el = selectEndLine;
-    ec = selectEndCol;
-  }
-  else
-    back = false;
-
-  kdDebug()<<"sel: "<<sl<<"-"<<sc<<" "<<el<<"-"<<ec<<endl;
-
-  setSelection (sl, sc, el, ec);
+  setSelection (selectAnchorLine, selectAnchorCol, cursor.line, cursor.col);
 }
 
 void KateDocument::selectWord(KateViewCursor &cursor, int flags) {
