@@ -81,8 +81,19 @@ class DocumentManager : public QObject
   #undef signals
   #define signals protected
 
+    /**
+     * emitted if the current doc changes (there need not to be a active document)
+     */
     void documentChanged ();
+    
+    /**
+     * this document has now been created
+     */
     void documentCreated (Kate::Document *document);
+    
+    /**
+     * the document with this number was deleted
+     */
     void documentDeleted (uint documentNumber);
 
   private:

@@ -83,6 +83,9 @@ Kate::Document *KateDocManager::createDoc ()
 void KateDocManager::deleteDoc (Kate::Document *doc)
 {
   uint id = doc->documentNumber();
+  uint activeId = 0;
+  if (m_currentDoc)
+    activeId = m_currentDoc->documentNumber ();
 
   if (m_docList.count() < 2)
     doc->writeConfig(kapp->config());
@@ -93,6 +96,16 @@ void KateDocManager::deleteDoc (Kate::Document *doc)
 
   emit documentDeleted (id);
   emit m_documentManager->documentDeleted (id);
+
+  // ohh, current doc was deleted
+  if (activeId == id)
+  {
+    // special case of documentChanged, no longer any doc here !
+    m_currentDoc = 0;
+    
+    emit documentChanged ();
+    emit m_documentManager->documentChanged ();
+  }
 }
 
 Kate::Document *KateDocManager::document (uint n)
@@ -107,6 +120,12 @@ Kate::Document *KateDocManager::activeDocument ()
 
 void KateDocManager::setActiveDocument (Kate::Document *doc)
 {
+  if (!doc)
+    return;
+
+  if (m_currentDoc && (m_currentDoc->documentNumber() == doc->documentNumber()))
+    return;
+
   m_currentDoc = doc;
   
   emit documentChanged ();
