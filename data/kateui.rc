@@ -150,7 +150,6 @@
   <Separator />
   <Action name="go_back"/>
   <Action name="go_forward"/>
-  <Action name="doc_list"/>
 </Menu>
 
 <Menu name="viewspace_popup" noMerge="1">

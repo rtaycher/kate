@@ -117,6 +117,7 @@ class KateViewManager : public KateViewManagerIface
 
   public slots:
     void activateView ( uint docID );
+    void activateView ( int docID ) { activateView((uint) docID); };
 
     void slotDocumentCloseAll ();
     void slotDocumentSaveAll();

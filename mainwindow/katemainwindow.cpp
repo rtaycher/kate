@@ -531,7 +531,7 @@ void KateMainWindow::slotCurrentDocChanged()
     if (docManager->nthDoc(z)->isModified())
       entry.append (i18n(" - Modified"));
 
-    documentMenu->insertItem ( entry, viewManager, SLOT (activateView (uint)), 0,  docManager->nthDoc(z)->docID());
+    documentMenu->insertItem ( entry, viewManager, SLOT (activateView (int)), 0,  docManager->nthDoc(z)->docID());
 
     if (viewManager->activeView())
       documentMenu->setItemChecked( docManager->nthDoc(z)->docID(), ((KateDocument *)viewManager->activeView()->doc())->docID() == docManager->nthDoc(z)->docID() );
