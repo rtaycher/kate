@@ -35,7 +35,7 @@ KateApp::KateApp () : Kate::Application ()
 
   m_mainWindows.setAutoDelete (false);
   
-  m_docManager = new KateDocManager ();
+  m_docManager = new KateDocManager (this);
 
   m_pluginManager = new KatePluginManager (this);
   m_pluginManager->loadAllEnabledPlugins ();

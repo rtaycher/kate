@@ -35,10 +35,10 @@ namespace Kate
 */
 class DocumentManager : public QObject
 {
-  Q_OBJECT
-
-  public:
-    DocumentManager ();
+  Q_OBJECT   
+  
+  protected:
+    DocumentManager ( QObject *parent = 0, const char *name = 0  );
     virtual ~DocumentManager ();
 
   public:
@@ -61,7 +61,10 @@ class DocumentManager : public QObject
 
     /** returns the number of documents managed by this manager.
     */
-    virtual uint documents () { return 0L; };
+    virtual uint documents () { return 0L; };       
+    
+  signals:
+    void documentChanged ();
 };
 
 };

@@ -35,7 +35,7 @@ class Application : public KUniqueApplication
 {
   Q_OBJECT
 
-  public:
+  protected:
     Application ();
     virtual ~Application ();
     

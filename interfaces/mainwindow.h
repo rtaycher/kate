@@ -35,7 +35,7 @@ class MainWindow : public KParts::DockMainWindow
 {
   Q_OBJECT
 
-  public:
+  protected:
     MainWindow ();
     virtual ~MainWindow ();    
     

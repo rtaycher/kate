@@ -39,16 +39,19 @@ class ViewManager : public QWidget
 {
   Q_OBJECT
 
-  public:
-    ViewManager (QWidget *);
-    virtual ~ViewManager ();          
-    
+  protected:
+    ViewManager ( QWidget *parent = 0, const char *name = 0  );
+    virtual ~ViewManager ();
+      
   public:
     /** Returns a pointer to the currently active Kate::View */
     virtual class View *activeView() = 0;
 
     /** Opens the file pointed to by URL */
-    virtual void openURL (KURL) { ; };
+    virtual void openURL (KURL) { ; };     
+    
+  signals:
+    void viewChanged ();
 };
 
 };

@@ -31,7 +31,7 @@ class KateDocManager : public Kate::DocumentManager
   Q_OBJECT
 
   public:
-    KateDocManager ();
+    KateDocManager (QObject *parent);
     ~KateDocManager ();
 
     Kate::Document *createDoc ();

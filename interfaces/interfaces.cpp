@@ -51,7 +51,7 @@ Application::~Application ()
 {
 }
 
-DocumentManager::DocumentManager () : QObject ()
+DocumentManager::DocumentManager (QObject *parent, const char *name) : QObject (parent, name)
 {
 }
 
@@ -67,7 +67,7 @@ MainWindow::~MainWindow ()
 {
 }
 
-ViewManager::ViewManager (QWidget *parent) : QWidget(parent)
+ViewManager::ViewManager (QWidget *parent = 0, const char *name = 0) : QWidget(parent, name)
 {
 }
 

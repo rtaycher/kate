@@ -149,8 +149,7 @@ class KateViewManager : public Kate::ViewManager
   signals:
     void statusChanged (Kate::View *, int, int, int, bool, int, QString);
     void statChanged ();
-    void viewChanged ();
-
+    
   private:
     QPtrList<KateViewSpace> m_viewSpaceList; 
     QPtrList<Kate::View> m_viewList;

@@ -18,7 +18,7 @@
 #include "katedocmanager.h"
 #include "katedocmanager.moc"
 
-KateDocManager::KateDocManager () : Kate::DocumentManager ()
+KateDocManager::KateDocManager (QObject *parent) : Kate::DocumentManager (parent)
 {
   m_docList.setAutoDelete(true);
   m_currentDoc = 0L;
@@ -28,12 +28,13 @@ KateDocManager::KateDocManager () : Kate::DocumentManager ()
 }
 
 KateDocManager::~KateDocManager ()
-{
+{                                
+  m_docList.setAutoDelete(false);
 }
 
 Kate::Document *KateDocManager::createDoc ()
 {
-  KTextEditor::Document *doc = KTextEditor::createDocument ("katepart");
+  KTextEditor::Document *doc = KTextEditor::createDocument ("katepart", this, "Kate::Document");
   m_docList.append((Kate::Document *)doc);
 
   emit documentCreated ((Kate::Document *)doc);
@@ -61,7 +62,10 @@ Kate::Document *KateDocManager::activeDocument ()
 }
 
 void KateDocManager::setActiveDocument (Kate::Document *doc)
-{
+{                      
+  if (m_currentDoc != doc)
+    emit documentChanged ();
+
   m_currentDoc = doc;
 }
 
