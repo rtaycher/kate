@@ -161,21 +161,21 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   path << i18n("Editor") << i18n("Indent");
   page=addVBoxPage(path, i18n("Indent Options"),
                        BarIcon("rightjust", KIcon::SizeSmall) );
-  indentConfig = new IndentConfigTab(page, v);
+  indentConfig = new IndentConfigTab(page, v->doc());
 
   // select options
   path.clear();
   path << i18n("Editor") << i18n("Select");
   page=addVBoxPage(path, i18n("Selection behavior"),
                        BarIcon("misc") );
-  selectConfig = new SelectConfigTab(page, v);
+  selectConfig = new SelectConfigTab(page, v->doc());
 
   // edit options
   path.clear();
   path << i18n("Editor") << i18n("Edit");
   page=addVBoxPage(path, i18n("Editing Options"),
                        BarIcon("edit", KIcon::SizeSmall ) );
-  editConfig = new EditConfigTab(page, v);
+  editConfig = new EditConfigTab(page, v->doc());
 
   // spell checker
   path.clear();
@@ -183,7 +183,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   page = addVBoxPage( path, i18n("Spell checker behavior"),
                           BarIcon("spellcheck", KIcon::SizeSmall) );
   ksc = new KSpellConfig(page, 0L, v->ksConfig(), false );
-  colors = v->getColors();
+  colors = v->doc()->colors;
   colorConfig->setColors( colors );
 
   path.clear();
@@ -276,7 +276,8 @@ void KateConfigDialog::slotApply()
   ksc->writeGlobalSettings();
   colorConfig->getColors( colors );
   v->doc()->writeConfig();
-  v->applyColors();
+  v->doc()->tagAll();
+  v->doc()->updateViews ();
   hlManager->setHlDataList(hlDataList);
   hlManager->setDefaults(defaultStyleList);
   hlPage->saveData();
@@ -293,9 +294,9 @@ void KateConfigDialog::slotApply()
   for (; it.current(); ++it)
   {
     v = it.current();
-    indentConfig->getData( v );
-    selectConfig->getData( v );
-    editConfig->getData( v );
+    indentConfig->getData( v->doc() );
+    selectConfig->getData( v->doc() );
+    editConfig->getData( v->doc() );
   }
 
   // repeat some calls: kwrite has a bad design.

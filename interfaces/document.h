@@ -36,6 +36,7 @@
 #include <ktexteditor/blockselectioninterface.h>
 #include <ktexteditor/searchinterface.h>
 #include <ktexteditor/highlightinginterface.h>
+#include <ktexteditor/configinterface.h>
 
 class KConfig;
 
@@ -62,9 +63,10 @@ class Cursor : public KTextEditor::Cursor
 /** This interface provides access to the Kate Document class.
 */
 class Document : public KTextEditor::Document, public KTextEditor::EditInterface,
-                      public KTextEditor::UndoInterface, public KTextEditor::CursorInterface,
+                     public KTextEditor::UndoInterface, public KTextEditor::CursorInterface,
                      public KTextEditor::SelectionInterface, public KTextEditor::SearchInterface,
-                     public KTextEditor::HighlightingInterface, public KTextEditor::BlockSelectionInterface
+                     public KTextEditor::HighlightingInterface, public KTextEditor::BlockSelectionInterface,
+                          public KTextEditor::ConfigInterface
 {
   Q_OBJECT
 
@@ -73,21 +75,6 @@ class Document : public KTextEditor::Document, public KTextEditor::EditInterface
     virtual ~Document ();
 
   public:
-    /*
-		* Read document config.
-    */
-    virtual void readConfig () { ; };
-    /** Save document config.
-    */
-    virtual void writeConfig () { ; };
-
-    /** Read document session config.
-    */
-    virtual void readSessionConfig (KConfig *) { ; };
-    /** Save document session config.
-    */
-    virtual void writeSessionConfig (KConfig *) { ; };
-
     /** Checks if the file on disk is newer than document contents.
       If forceReload is true, the document is reloaded without asking the user,
       otherwise [default] the user is asked what to do. */

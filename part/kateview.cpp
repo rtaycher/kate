@@ -54,7 +54,6 @@
 #include <qvbox.h>
 #include <qprintdialog.h>
 #include <qpaintdevicemetrics.h>
-#include <qbuffer.h>
 
 #include <qstyle.h>
 #include <kcursor.h>
@@ -70,8 +69,6 @@
 #include <kxmlguifactory.h>
 #include <dcopclient.h>
 #include <qregexp.h>
-#include <kwin.h>
-#include <kdialogbase.h>
 
 #include "katetextline.h"
 #include "kateiconborder.h"
@@ -1414,7 +1411,7 @@ void KateView::setupActions()
       KStdAction::findNext(this, SLOT(findAgain()), myDoc->actionCollection(), "find_again");
       KStdAction::findPrev(this, SLOT(findPrev()), myDoc->actionCollection(), "find_prev");
       KStdAction::gotoLine(this, SLOT(gotoLine()), myDoc->actionCollection(), "goto_line" );
-      new KAction(i18n("&Configure Editor..."), 0, this, SLOT(configDialog()),myDoc->actionCollection(), "set_confdlg");
+      new KAction(i18n("&Configure Editor..."), 0, myDoc, SLOT(configDialog()),myDoc->actionCollection(), "set_confdlg");
 			setHighlight = new KateViewHighlightAction(this,i18n("&Highlight Mode"),myDoc->actionCollection(),"set_highlight");
       KStdAction::selectAll(myDoc, SLOT(selectAll()), myDoc->actionCollection(), "select_all");
       new KAction(i18n("&Deselect All"), 0, myDoc, SLOT(clearSelection ()),
@@ -1433,7 +1430,7 @@ void KateView::setupActions()
       KStdAction::findNext(this, SLOT(findAgain()), actionCollection());
       KStdAction::findPrev(this, SLOT(findPrev()), actionCollection(), "edit_find_prev");
       KStdAction::gotoLine(this, SLOT(gotoLine()), actionCollection());
-      new KAction(i18n("&Configure Editor..."), 0, this, SLOT(configDialog()),actionCollection(), "set_confdlg");
+      new KAction(i18n("&Configure Editor..."), 0, myDoc, SLOT(configDialog()),actionCollection(), "set_confdlg");
       setHighlight = new KateViewHighlightAction(this,i18n("&Highlight Mode"), actionCollection(), "set_highlight");
       KStdAction::selectAll(myDoc, SLOT(selectAll()), actionCollection());
       new KAction(i18n("&Deselect All"), 0, myDoc, SLOT(clearSelection()),
@@ -1761,17 +1758,6 @@ bool KateView::isLastView() {
 
 KateDocument *KateView::doc() {
   return myDoc;
-}
-
-QColor* KateView::getColors()
-{
-  return myDoc->colors;
-}
-
-void KateView::applyColors()
-{
-   myDoc->tagAll();
-   myDoc->updateViews();
 }
 
 bool KateView::isOverwriteMode() const
@@ -2319,91 +2305,6 @@ void KateView::writeSessionConfig(KConfig *config)
   config->writeEntry("IconBorder on", myIconBorder);
 }
 
-void KateView::configDialog()
-{
-  KWin kwin;
-
-  KDialogBase *kd = new KDialogBase(KDialogBase::IconList,
-                                    i18n("Configure Editor"),
-                                    KDialogBase::Ok | KDialogBase::Cancel |
-                                    KDialogBase::Help ,
-                                    KDialogBase::Ok, this, "tabdialog");
-
-  // color options
-  QVBox *page=kd->addVBoxPage(i18n("Colors"), QString::null,
-                              BarIcon("colorize", KIcon::SizeMedium) );
-  ColorConfig *colorConfig = new ColorConfig(page);
-  QColor* colors = getColors();
-  colorConfig->setColors(colors);
-
- page = kd->addVBoxPage(i18n("Fonts"), i18n("Fonts Settings"),
-                              BarIcon("fonts", KIcon::SizeMedium) );
-  FontConfig *fontConfig = new FontConfig(page);
-  fontConfig->setFont (myDoc->getFont());
-
-  // indent options
-  page=kd->addVBoxPage(i18n("Indent"), QString::null,
-                       BarIcon("rightjust", KIcon::SizeMedium) );
-  IndentConfigTab *indentConfig = new IndentConfigTab(page, this);
-
-  // select options
-  page=kd->addVBoxPage(i18n("Select"), QString::null,
-                       BarIcon("misc") );
-  SelectConfigTab *selectConfig = new SelectConfigTab(page, this);
-
-  // edit options
-  page=kd->addVBoxPage(i18n("Edit"), QString::null,
-                       BarIcon("edit", KIcon::SizeMedium ) );
-  EditConfigTab *editConfig = new EditConfigTab(page, this);
-
-  // spell checker
-  page = kd->addVBoxPage( i18n("Spelling"), i18n("Spell checker behavior"),
-                          BarIcon("spellcheck", KIcon::SizeMedium) );
-  KSpellConfig *ksc = new KSpellConfig(page, 0L, ksConfig(), false );
-
-  kwin.setIcons(kd->winId(), kapp->icon(), kapp->miniIcon());
-
-  HighlightDialogPage *hlPage;
-  HlManager *hlManager;
-  HlDataList hlDataList;
-  ItemStyleList defaultStyleList;
-
-  hlManager = HlManager::self();
-
-  defaultStyleList.setAutoDelete(true);
-  hlManager->getDefaults(defaultStyleList);
-
-  hlDataList.setAutoDelete(true);
-  //this gets the data from the KConfig object
-  hlManager->getHlDataList(hlDataList);
-
-  page=kd->addVBoxPage(i18n("Highlighting"),i18n("Highlighting configuration"),
-                        BarIcon("edit",KIcon::SizeMedium));
-  hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &hlDataList, 0, page);
-
- if (kd->exec()) {
-    // color options
-    colorConfig->getColors(colors);
-    myDoc->setFont (fontConfig->getFont());
-
-    applyColors();
-    // indent options
-    indentConfig->getData(this);
-    // select options
-    selectConfig->getData(this);
-    // edit options
-    editConfig->getData(this);
-    // spell checker
-    ksc->writeGlobalSettings();
-    setKSConfig(*ksc);
-    hlManager->setHlDataList(hlDataList);
-    hlManager->setDefaults(defaultStyleList);
-    hlPage->saveData();
-  }
-
-  delete kd;
-}
-
 int KateView::getEol() {
   return myDoc->eolMode;
 }
@@ -2416,9 +2317,8 @@ void KateView::setEol(int eol) {
   myDoc->setModified(true);
 }
 
-
-
-void KateView::paintEvent(QPaintEvent *e) {
+void KateView::paintEvent(QPaintEvent *e)
+{
   int x, y;
 
   QRect updateR = e->rect();                    // update rectangle
@@ -2865,21 +2765,6 @@ void KateView::gotoBookmark (int n)
   gotoMark (list.at(n));
 }
 
-int KateView::getHlCount ()
-{
-  return HlManager::self()->highlights();
-}
-
-QString KateView::getHlName (int z)
-{
-  return HlManager::self()->hlName(z);
-}
-
-QString KateView::getHlSection (int z)
-{
-  return HlManager::self()->hlSection (z);
-}
-
 void KateView::slotIncFontSizes ()
 {
   QFont font = myDoc->getFont();
@@ -2894,10 +2779,10 @@ void KateView::slotDecFontSizes ()
   myDoc->setFont (font);
 }
 
-KateDocument *KateView::document(){return myDoc;}
-
-
-
+KateDocument *KateView::document()
+{
+  return myDoc;
+}
 
 KateBrowserExtension::KateBrowserExtension( KateDocument *doc, KateView *view )
 : KParts::BrowserExtension( doc, "katepartbrowserextension" )

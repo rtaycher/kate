@@ -71,11 +71,12 @@ class KateUndo;
 class KateUndoGroup;
 
 //
-// Kate KTextEditor::Document class ;)
+// Kate KTextEditor::Document class (and even KTextEditor::Editor ;)
 //
 class KateDocument : public Kate::Document
 {
     Q_OBJECT
+    friend class KateConfigDialog;
     friend class KateViewInternal;
     friend class KateView;
     friend class KateIconBorder;
@@ -203,6 +204,18 @@ class KateDocument : public Kate::Document
 
   signals:
     void hlChanged ();
+    
+  //
+  // KTextEditor::ConfigInterface stuff
+  //
+  public slots:
+    void readConfig ();
+    void writeConfig ();
+    void readConfig (KConfig *);
+    void writeConfig (KConfig *);
+    void readSessionConfig (KConfig *);
+    void writeSessionConfig (KConfig *);
+    void configDialog ();
 
   //
   // KParts::ReadWrite stuff
@@ -261,11 +274,6 @@ class KateDocument : public Kate::Document
     int tabWidth() {return tabChars;}
     void setNewDoc( bool );
     bool isNewDoc() const;
-
-    void readConfig();
-    void writeConfig();
-    void readSessionConfig(KConfig *);
-    void writeSessionConfig(KConfig *);
 
     bool hasBrowserExtension() const { return m_bBrowserView; }
 

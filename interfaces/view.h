@@ -222,10 +222,6 @@ class View : public KTextEditor::View, public KTextEditor::ClipboardInterface,
     */
     virtual void printDlg () { ; };
     /**
-      Presents the setup dialog to the user.
-    */
-    virtual void configDialog () { ; };
-    /**
       Get the end of line mode (Unix, Macintosh or Dos).
     */
     virtual int getEol() { return 0L; };

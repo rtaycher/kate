@@ -101,8 +101,8 @@ class IndentConfigTab : public QWidget
 
   public:
 
-    IndentConfigTab(QWidget *parent, KateView *);
-    void getData(KateView *);
+    IndentConfigTab(QWidget *parent, KateDocument *);
+    void getData(KateDocument *);
 
   protected:
 
@@ -117,8 +117,8 @@ class SelectConfigTab : public QWidget
 
  public:
 
-    SelectConfigTab(QWidget *parent, KateView *);
-    void getData(KateView *);
+    SelectConfigTab(QWidget *parent, KateDocument *);
+    void getData(KateDocument *);
 
   protected:
 
@@ -133,8 +133,8 @@ class EditConfigTab : public QWidget
 
   public:
 
-    EditConfigTab(QWidget *parent, KateView *);
-    void getData(KateView *);
+    EditConfigTab(QWidget *parent, KateDocument *);
+    void getData(KateDocument *);
 
   protected:
 

@@ -343,9 +343,6 @@ class KateView : public Kate::View
     */
     KateDocument *doc();
 
-    QColor* getColors();
-    void applyColors();
-
     void setupActions();
 
     KAction *editUndo, *editRedo, *bookmarkToggle, *bookmarkClear;
@@ -593,11 +590,7 @@ class KateView : public Kate::View
     KPrinter *printer;
 
   // syntax highlight
-  public slots:
-    /**
-      Presents the setup dialog to the user
-    */
-    void configDialog ();
+  public slots:   
     /**
       Get the end of line mode (Unix, Macintosh or Dos)
     */
@@ -768,10 +761,6 @@ class KateView : public Kate::View
       { return (Kate::Document*) myDoc; };
 
   public slots:
-    int getHlCount ();
-    QString getHlName (int);
-    QString getHlSection (int);
-
     void slotIncFontSizes ();
     void slotDecFontSizes ();
 

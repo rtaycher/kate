@@ -19,6 +19,8 @@
 #include "katedocument.moc"
 
 #include "katefactory.h"
+#include "kateviewdialog.h"
+#include "katedialogs.h"
 
 #include <qfileinfo.h>
 #include <kmessagebox.h>
@@ -31,6 +33,52 @@
 
 #include <stdio.h>
 
+#include <kurldrag.h>
+#include <qfocusdata.h>
+#include <kdebug.h>
+#include <kprinter.h>
+#include <kapp.h>
+#include <kiconloader.h>
+#include <qscrollbar.h>
+#include <qiodevice.h>
+#include <qclipboard.h>
+#include <qpopupmenu.h>
+#include <kpopupmenu.h>
+#include <qkeycode.h>
+#include <qintdict.h>
+#include <klineeditdlg.h>
+#include <qdropsite.h>
+#include <qdragobject.h>
+#include <kconfig.h>
+#include <ksconfig.h>
+#include <qfont.h>
+#include <qpainter.h>
+#include <qpixmap.h>
+#include <qfileinfo.h>
+#include <qfile.h>
+#include <qevent.h>
+#include <qdir.h>
+#include <qvbox.h>
+#include <qprintdialog.h>
+#include <qpaintdevicemetrics.h>
+#include <qbuffer.h>
+
+#include <qstyle.h>
+#include <kcursor.h>
+#include <klocale.h>
+#include <kglobal.h>
+#include <kcharsets.h>
+#include <kfiledialog.h>
+#include <kmessagebox.h>
+#include <kstringhandler.h>
+#include <kaction.h>
+#include <kstdaction.h>
+#include <kparts/event.h>
+#include <kxmlguifactory.h>
+#include <dcopclient.h>
+#include <qregexp.h>
+#include <kwin.h>
+#include <kdialogbase.h>
 #include <qtimer.h>
 #include <qobject.h>
 #include <qapplication.h>
@@ -1672,44 +1720,50 @@ bool KateDocument::isNewDoc() const {
   return newDoc;     
 }     
      
-void KateDocument::readConfig()     
-{     
-  KConfig *config = KateFactory::instance()->config();     
-  config->setGroup("Kate Document");     
-     
+void KateDocument::readConfig(KConfig *config)
+{
   _searchFlags = config->readNumEntry("SearchFlags", KateDocument::sfPrompt);     
-  _configFlags = config->readNumEntry("ConfigFlags", _configFlags) & ~KateDocument::cfMark;     
+  _configFlags = config->readNumEntry("ConfigFlags", _configFlags) & ~KateDocument::cfMark;
      
   myWordWrap = config->readBoolEntry("Word Wrap On", false);     
-  myWordWrapAt = config->readNumEntry("Word Wrap At", 80);     
+  myWordWrapAt = config->readNumEntry("Word Wrap At", 80);
   if (myWordWrap)     
     wrapText (myWordWrapAt);     
      
-  setTabWidth(config->readNumEntry("TabWidth", 8));     
+  setTabWidth(config->readNumEntry("TabWidth", 8));
   setUndoSteps(config->readNumEntry("UndoSteps", 50));     
   setFont (config->readFontEntry("Font", &myFont));     
      
   colors[0] = config->readColorEntry("Color Background", &colors[0]);     
-  colors[1] = config->readColorEntry("Color Selected", &colors[1]);     
-     
-  config->sync();
+  colors[1] = config->readColorEntry("Color Selected", &colors[1]);
 }     
      
-void KateDocument::writeConfig()     
-{     
-  KConfig *config = KateFactory::instance()->config();     
-  config->setGroup("Kate Document");
-     
+void KateDocument::writeConfig(KConfig *config)
+{
   config->writeEntry("SearchFlags",_searchFlags);     
-  config->writeEntry("ConfigFlags",_configFlags);     
-     
+  config->writeEntry("ConfigFlags",_configFlags);
+
   config->writeEntry("Word Wrap On", myWordWrap);     
   config->writeEntry("Word Wrap At", myWordWrapAt);     
-  config->writeEntry("TabWidth", tabChars);     
+  config->writeEntry("TabWidth", tabChars);
   config->writeEntry("Font", myFont);     
   config->writeEntry("Color Background", colors[0]);     
-  config->writeEntry("Color Selected", colors[1]);     
-     
+  config->writeEntry("Color Selected", colors[1]);
+}
+
+void KateDocument::readConfig()
+{
+  KConfig *config = KateFactory::instance()->config();
+  config->setGroup("Kate Document");
+  readConfig (config);
+  config->sync();
+}
+
+void KateDocument::writeConfig()
+{
+  KConfig *config = KateFactory::instance()->config();
+  config->setGroup("Kate Document");
+  writeConfig (config);
   config->sync();
 }
 
@@ -1740,6 +1794,94 @@ void KateDocument::writeSessionConfig(KConfig *config)
   }
   if ( ml.count() )
     config->writeEntry("Bookmarks", ml);
+}
+
+void KateDocument::configDialog()
+{
+  KWin kwin;
+
+  KDialogBase *kd = new KDialogBase(KDialogBase::IconList,
+                                    i18n("Configure Kate Editorpart"),
+                                    KDialogBase::Ok | KDialogBase::Cancel |
+                                    KDialogBase::Help ,
+                                    KDialogBase::Ok, kapp->mainWidget());
+
+  // color options
+  QVBox *page=kd->addVBoxPage(i18n("Colors"), QString::null,
+                              BarIcon("colorize", KIcon::SizeMedium) );
+  ColorConfig *colorConfig = new ColorConfig(page);
+  QColor* colors = colors;
+  colorConfig->setColors(colors);
+
+ page = kd->addVBoxPage(i18n("Fonts"), i18n("Fonts Settings"),
+                              BarIcon("fonts", KIcon::SizeMedium) );
+  FontConfig *fontConfig = new FontConfig(page);
+  fontConfig->setFont (getFont());
+
+  // indent options
+  page=kd->addVBoxPage(i18n("Indent"), QString::null,
+                       BarIcon("rightjust", KIcon::SizeMedium) );
+  IndentConfigTab *indentConfig = new IndentConfigTab(page, this);
+
+  // select options
+  page=kd->addVBoxPage(i18n("Select"), QString::null,
+                       BarIcon("misc") );
+  SelectConfigTab *selectConfig = new SelectConfigTab(page, this);
+
+  // edit options
+  page=kd->addVBoxPage(i18n("Edit"), QString::null,
+                       BarIcon("edit", KIcon::SizeMedium ) );
+  EditConfigTab *editConfig = new EditConfigTab(page, this);
+
+  // spell checker
+  page = kd->addVBoxPage( i18n("Spelling"), i18n("Spell checker behavior"),
+                          BarIcon("spellcheck", KIcon::SizeMedium) );
+
+
+  //KSpellConfig *ksc = new KSpellConfig(page, 0L, ksConfig(), false );
+
+  kwin.setIcons(kd->winId(), kapp->icon(), kapp->miniIcon());
+
+  HighlightDialogPage *hlPage;
+  HlManager *hlManager;
+  HlDataList hlDataList;
+  ItemStyleList defaultStyleList;
+
+  hlManager = HlManager::self();
+
+  defaultStyleList.setAutoDelete(true);
+  hlManager->getDefaults(defaultStyleList);
+
+  hlDataList.setAutoDelete(true);
+  //this gets the data from the KConfig object
+  hlManager->getHlDataList(hlDataList);
+
+  page=kd->addVBoxPage(i18n("Highlighting"),i18n("Highlighting configuration"),
+                        BarIcon("edit",KIcon::SizeMedium));
+  hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &hlDataList, 0, page);
+
+ if (kd->exec()) {
+    // color options
+    colorConfig->getColors(colors);
+    setFont (fontConfig->getFont());
+
+    tagAll();
+    updateViews();
+    // indent options
+    indentConfig->getData(this);
+    // select options
+    selectConfig->getData(this);
+    // edit options
+    editConfig->getData(this);
+    // spell checker
+    //ksc->writeGlobalSettings();
+   // setKSConfig(*ksc);
+    hlManager->setHlDataList(hlDataList);
+    hlManager->setDefaults(defaultStyleList);
+    hlPage->saveData();
+  }
+
+  delete kd;
 }
 
 void KateDocument::makeAttribs()
@@ -1790,7 +1932,7 @@ void KateDocument::addCursor(KTextEditor::Cursor *cursor) {
      
 void KateDocument::removeCursor(KTextEditor::Cursor *cursor) {     
   myCursors.removeRef( cursor  );     
-}     
+}
      
 bool KateDocument::ownedView(KateView *view) {
   // do we own the given view?     
@@ -1826,13 +1968,11 @@ int KateDocument::charWidth(KateViewCursor &cursor) {
      cursor.col = 0;
   if (cursor.line < 0)
      cursor.line = 0;
-  if (cursor.line >= numLines())
+  if (cursor.line >= (int) numLines())
      cursor.line = lastLine();
   return charWidth(getTextLine(cursor.line),cursor.col);
 }
 
-
-     
 uint KateDocument::textWidth(const TextLine::Ptr &textLine, int cursorX)
 {
   int x;     

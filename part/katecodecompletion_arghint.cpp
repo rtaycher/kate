@@ -27,6 +27,8 @@
 #include <kdebug.h>
 
 #include "katecodecompletion_arghint.h"
+#include "katecodecompletion_arghint.moc"
+
 #include "kateview.h"
 #include "katedocument.h"
 

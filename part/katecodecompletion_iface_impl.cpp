@@ -9,6 +9,7 @@
 #include "katecodecompletion_arghint.h"
 #include "katedocument.h"
 #include "katecodecompletion_iface_impl.h"
+#include "katecodecompletion_iface_impl.moc"
 #include <kdebug.h>
 #include <iostream.h>
 
