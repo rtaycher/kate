@@ -180,9 +180,13 @@ const int dsString = 7;
 const int dsComment = 8;
 const int dsOthers = 9;
 
-
+// It is my understanding that Roman numerals are also
+// considered Numbers in the Unicode scheme of things
+// so isInWord should be modified to look for letters
+// and digits instead of letters and numbers
+// CHANGED ch.isNumber to ch.isDigit
 bool isInWord(QChar ch) {
-  return ch.isLetter() || ch.isNumber() || ch == '_';
+  return ch.isLetter() || ch.isDigit() || ch == '_';
 /*  static unsigned char data[] = {0,0,0,0,0,0,255,3,254,255,255,135,254,255,255,7};
   if (c & 128) return false;
   return !(data[c >> 3] & (1 << (c & 7)));*/
@@ -318,7 +322,7 @@ const QChar *HlInt::checkHgl(const QChar *str) {
   const QChar *s;
 
   s = str;
-  while (*s >= '0' && *s <= '9') s++;
+	while (s->isDigit()) s++;
   if (s > str) return s;
   return 0L;
 }
@@ -331,13 +335,13 @@ const QChar *HlFloat::checkHgl(const QChar *s) {
   bool b, p;
 
   b = false;
-  while (*s >= '0' && *s <= '9') {
+  while (s->isDigit()){
     s++;
     b = true;
   }
   if (p = (*s == '.')) {
     s++;
-    while (*s >= '0' && *s <= '9') {
+    while (s->isDigit()) {
       s++;
       b = true;
     }
@@ -346,7 +350,7 @@ const QChar *HlFloat::checkHgl(const QChar *s) {
   if (*s == 'E' || *s == 'e') s++; else return (p) ? s : 0L;
   if (*s == '-') s++;
   b = false;
-  while (*s >= '0' && *s <= '9') {
+  while (s->isDigit()) {
     s++;
     b = true;
   }
@@ -413,7 +417,7 @@ const QChar *HlCHex::checkHgl(const QChar *str) {
   if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X')) {
     str += 2;
     s = str;
-    while ((*s >= '0' && *s <= '9') || (*s >= 'A' && *s <= 'F') || (*s >= 'a' && *s <= 'f')) s++;
+    while (s->isDigit() || (*s >= 'A' && *s <= 'F') || (*s >= 'a' && *s <= 'f')) s++;
     if (s > str) {
       if (*s == 'L' || *s == 'l' || *s == 'U' || *s == 'u') s++;
       return s;
@@ -458,17 +462,17 @@ HlCStringChar::HlCStringChar(int attribute, int context)
 }
 
 //checks for hex and oct (for example \x1b or \033)
+// seems inefficient at present would a regex
+// be faster or less complicated?
 const QChar *checkCharHexOct(const QChar *str) {
   const QChar *s;
   int n;
-
-  s = str;
   if (*s == 'x') {
     n = 0;
     do {
       s++;
       n *= 16;
-      if (*s >= '0' && *s <= '9') n += *s - '0';
+      if (s->isDigit()) n += *s - '0';
       else if (*s >= 'A' && *s <= 'F') n += *s - 'A' + 10;
       else if (*s >= 'a' && *s <= 'f') n += *s - 'a' + 10;
       else break;
@@ -594,9 +598,9 @@ HlMHex::HlMHex(int attribute, int context)
 
 const QChar *HlMHex::checkHgl(const QChar *s) {
 
-  if (*s >= '0' && *s <= '9') {
+  if (s->isDigit()) {
     s++;
-    while ((*s >= '0' && *s <= '9') || (*s >= 'A' && *s <= 'F')) s++;
+    while ((s->isDigit()) || (*s >= 'A' && *s <= 'F')) s++;
     if (*s == 'H') return s + 1;
   }
   return 0L;
@@ -609,13 +613,13 @@ HlAdaDec::HlAdaDec(int attribute, int context)
 const QChar *HlAdaDec::checkHgl(const QChar *s) {
   const QChar *str;
 
-  if (*s >= '0' && *s <= '9') {
+  if (s->isDigit()) {
     s++;
-    while ((*s >= '0' && *s <= '9') || *s == '_') s++;
+    while ((s->isDigit()) || *s == '_') s++;
     if (*s != 'e' && *s != 'E') return s;
     s++;
     str = s;
-    while ((*s >= '0' && *s <= '9') || *s == '_') s++;
+    while ((s->isDigit()) || *s == '_') s++;
     if (s > str) return s;
   }
   return 0L;
@@ -631,7 +635,7 @@ const QChar *HlAdaBaseN::checkHgl(const QChar *s) {
   const QChar *str;
 
   base = 0;
-  while (*s >= '0' && *s <= '9') {
+  while (s->isDigit()) {
     base *= 10;
     base += *s - '0';
     if (base > 16) return 0L;
@@ -651,7 +655,7 @@ const QChar *HlAdaBaseN::checkHgl(const QChar *s) {
       if (*s != 'e' && *s != 'E') return s;
       s++;
       str = s;
-      while ((*s >= '0' && *s <= '9') || *s == '_') s++;
+      while ((s->isDigit()) || *s == '_') s++;
       if (s > str) return s;
     }
   }
@@ -666,17 +670,17 @@ const QChar *HlAdaFloat::checkHgl(const QChar *s) {
   const QChar *str;
 
   str = s;
-  while (*s >= '0' && *s <= '9') s++;
+  while (s->isDigit()) s++;
   if (s > str && *s == '.') {
     s++;
     str = s;
-    while (*s >= '0' && *s <= '9') s++;
+    while (s->isDigit()) s++;
     if (s > str) {
       if (*s != 'e' && *s != 'E') return s;
       s++;
       if (*s == '-') s++;
       str = s;
-      while ((*s >= '0' && *s <= '9') || *s == '_') s++;
+      while ((s->isDigit()) || *s == '_') s++;
       if (s > str) return s;
     }
   }
@@ -701,7 +705,7 @@ const QChar *HlSatherClassname::checkHgl(const QChar *s) {
   if (*s >= 'A' && *s <= 'Z') {
     s++;
     while ((*s >= 'A' && *s <= 'Z')
-           || (*s >= '0' && *s <= '9')
+           || (s->isDigit())
            || *s == '_') s++;
     return s;
   }
@@ -713,12 +717,9 @@ HlSatherIdent::HlSatherIdent(int attribute, int context)
 }
 
 const QChar *HlSatherIdent::checkHgl(const QChar *s) {
-  if ((*s >= 'a' && *s <= 'z') || (*s >= 'A' && *s <= 'Z')) {
+  if (s->isLetter()) {
     s++;
-    while ((*s >= 'a' && *s <= 'z')
-           || (*s >= 'A' && *s <= 'Z')
-           || (*s >= '0' && *s <= '9')
-           || *s == '_') s++;
+		while(isInWord(*s)) s++;
     if (*s == '!') s++;
     return s;
   }
@@ -730,9 +731,9 @@ HlSatherDec::HlSatherDec(int attribute, int context)
 }
 
 const QChar *HlSatherDec::checkHgl(const QChar *s) {
-  if (*s >= '0' && *s <= '9') {
+  if (s->isDigit()) {
     s++;
-    while ((*s >= '0' && *s <= '9') || *s == '_') s++;
+    while ((s->isDigit()) || *s == '_') s++;
     if (*s == 'i') s++;
     return s;
   }
@@ -748,7 +749,7 @@ const QChar *HlSatherBaseN::checkHgl(const QChar *s) {
     s++;
     if (*s == 'x') {
       s++;
-      while ((*s >= '0' && *s <= '9')
+      while ((s->isDigit())
              || (*s >= 'a' && *s <= 'f')
              || (*s >= 'A' && *s <= 'F')
              || *s == '_') s++;
@@ -771,18 +772,18 @@ HlSatherFloat::HlSatherFloat(int attribute, int context)
 }
 
 const QChar *HlSatherFloat::checkHgl(const QChar *s) {
-  if (*s >= '0' && *s <= '9') {
+  if (s->isDigit()) {
     s++;
-    while ((*s >= '0' && *s <= '9') || *s == '_') s++;
+    while ((s->isDigit()) || *s == '_') s++;
     if (*s == '.') {
       s++;
-      while (*s >= '0' && *s <= '9') s++;
+      while (s->isDigit()) s++;
       if (*s == 'e' || *s == 'E') {
         s++;
         if (*s == '-') s++;
-        if (*s >= '0' && *s <= '9') {
+        if (s->isDigit()) {
           s++;
-          while ((*s >= '0' && *s <= '9') || *s == '_') s++;
+          while ((s->isDigit()) || *s == '_') s++;
         } else
           return 0L;
       }
@@ -852,7 +853,7 @@ const QChar *HlLatexTag::checkHgl(const QChar *s) {
     if (*s == ' ' || *s == '/' || *s == '\\') return s +1;
     str = s;
     while ((*s >= 'a' && *s <= 'z') || (*s >= 'A' && *s <= 'Z')
-      || (*s >= '0' && *s <= '9') || *s == '@') {
+      || (s->isDigit()) || *s == '@') {
       s++;
     }
     if (s != str) return s;
@@ -882,7 +883,7 @@ HlLatexParam::HlLatexParam(int attribute, int context)
 const QChar *HlLatexParam::checkHgl(const QChar *s) {
   if (*s == '#') {
     s++;
-    while (*s >= '0' && *s <= '9') {
+    while (s->isDigit()) {
       s++;
     }
     return s;
@@ -2077,7 +2078,7 @@ void HlManager::getDefaults(ItemStyleList &list, ItemFont &font) {
     i = list.at(z);
     s = config->readEntry(defaultStyleName(z));
     if (!s.isEmpty()) {
-      sscanf(s.ascii(),"%X,%X,%d,%d",&col,&selCol,&i->bold,&i->italic);
+      sscanf(s.latin1(),"%X,%X,%d,%d",&col,&selCol,&i->bold,&i->italic);
       i->col.setRgb(col);
       i->selCol.setRgb(selCol);
     }
