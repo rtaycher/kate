@@ -75,6 +75,8 @@ public:
 	~KMultiTabBarButton(){;}
 	int id(){return m_id;}
 	void setPosition(KMultiTabBar::KMultiTabBarPosition);
+	void setText(const QString &);
+
 protected:
 	KMultiTabBar::KMultiTabBarPosition position;
 private:

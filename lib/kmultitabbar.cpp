@@ -165,9 +165,15 @@ KMultiTabBarButton::KMultiTabBarButton(const QPixmap& pic,const QString& text, Q
 	connect(this,SIGNAL(clicked()),this,SLOT(slotClicked()));
 }
 
+void KMultiTabBarButton::setText(const QString& text)
+{
+	QToolTip::add(this,text);
+}
 
 void KMultiTabBarButton::slotClicked()
 {
+//	if (isOn()) setFixedHeight(70);
+//	else setFixedHeight(24);
 	emit clicked(m_id);
 }
 
@@ -259,30 +265,34 @@ void KMultiTabBarTab::drawButton(QPainter *paint)
 		if (position==KMultiTabBar::Right)
 		{
 			paint->setPen(colorGroup().shadow());
-			paint->drawLine(0,23,23,23);
-			paint->drawLine(0,22,23,22);
-			paint->drawLine(23,0,23,23);
-			paint->drawLine(22,0,22,23);
-			paint->fillRect(0,0,21,21,QBrush(colorGroup().light()));
+			paint->drawLine(0,height()-1,23,height()-1);
+			paint->drawLine(0,height()-2,23,height()-2);
+			paint->drawLine(23,0,23,height()-1);
+			paint->drawLine(22,0,22,height()-1);
+			paint->fillRect(0,0,21,height()-3,QBrush(colorGroup().light()));
 			paint->drawPixmap(10-pixmap.width()/2,10-pixmap.height()/2,pixmap);
-//			paint->drawLine(19,21,21,21);
-//			paint->drawLine(21,19,21,21);
 		}
 		else 
 		if (position==KMultiTabBar::Top)
 		{
-//			paint->setPen(colorGroup().shadow());
-//			paint->drawLine(0,23,23,23);
-//			paint->drawLine(0,22,23,22);
-			paint->fillRect(0,0,23,23,QBrush(colorGroup().light()));
+			paint->fillRect(0,0,width()-1,23,QBrush(colorGroup().light()));
+			paint->drawPixmap(10-pixmap.width()/2,10-pixmap.height()/2,pixmap);
+		}
+		else
+		if (position==KMultiTabBar::Bottom)
+		{
+			paint->setPen(colorGroup().shadow());
+			paint->drawLine(0,23,width()-1,23);
+			paint->drawLine(0,22,width()-1,22);
+			paint->fillRect(0,0,width()-1,21,QBrush(colorGroup().light()));
 			paint->drawPixmap(10-pixmap.width()/2,10-pixmap.height()/2,pixmap);
 		}
 		else
 		{
 			paint->setPen(colorGroup().shadow());
-			paint->drawLine(0,23,23,23);
-			paint->drawLine(0,22,23,22);
-			paint->fillRect(0,0,23,21,QBrush(colorGroup().light()));
+			paint->drawLine(0,height()-1,23,height()-1);
+			paint->drawLine(0,height()-2,23,height()-2);
+			paint->fillRect(0,0,23,height()-3,QBrush(colorGroup().light()));
 			paint->drawPixmap(10-pixmap.width()/2,10-pixmap.height()/2,pixmap);
 		}
 

@@ -769,7 +769,8 @@ void KateMainWindow::slotFullScreen(bool t)
 
 KDockWidget *KateMainWindow::addToolView(KDockWidget::DockPosition pos,const char* name, const QPixmap &icon,const QString& caption)
 {
-	KDockWidget *dw=createDockWidget( name,  icon, 0L, caption, "");
+	KDockWidget *dw=createDockWidget( name,  icon, 0L, caption, (m_dockStyle==ModernStyle)?caption:"");
+
 	if (m_dockStyle==ClassicStyle)
 	{
 	        	dw->setDockWindowType (NET::Tool);
