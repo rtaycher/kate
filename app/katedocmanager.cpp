@@ -20,11 +20,11 @@
 
 KateDocManager::KateDocManager () : Kate::DocumentManager ()
 {
-  docList.setAutoDelete(true);
-  myCurrentDoc = 0L;
+  m_docList.setAutoDelete(true);
+  m_currentDoc = 0L;
 
   createDoc ();
-  myfirstDoc = true;
+  m_firstDoc = true;
 }
 
 KateDocManager::~KateDocManager ()
@@ -34,7 +34,7 @@ KateDocManager::~KateDocManager ()
 Kate::Document *KateDocManager::createDoc ()
 {
   KTextEditor::Document *doc = KTextEditor::createDocument ("katepart");
-  docList.append((Kate::Document *)doc);
+  m_docList.append((Kate::Document *)doc);
 
   emit documentCreated ((Kate::Document *)doc);
   return (Kate::Document *)doc;
@@ -44,40 +44,40 @@ void KateDocManager::deleteDoc (Kate::Document *doc)
 {
   uint id = doc->documentNumber();
 
-  if (docList.find(doc) > -1)
-    docList.remove (doc);
+  if (m_docList.find(doc) > -1)
+    m_docList.remove (doc);
 
  emit documentDeleted (id);
 }
 
 Kate::Document *KateDocManager::document (uint n)
 {
-  return docList.at(n);
+  return m_docList.at(n);
 }
 
 Kate::Document *KateDocManager::activeDocument ()
 {
-  return myCurrentDoc;
+  return m_currentDoc;
 }
 
 void KateDocManager::setActiveDocument (Kate::Document *doc)
 {
-  myCurrentDoc = doc;
+  m_currentDoc = doc;
 }
 
 Kate::Document *KateDocManager::firstDocument ()
 {
-  return docList.first();
+  return m_docList.first();
 }
 
 Kate::Document *KateDocManager::nextDocument ()
 {
-  return docList.next();
+  return m_docList.next();
 }
 
 Kate::Document *KateDocManager::documentWithID (uint id)
 {
-  QPtrListIterator<Kate::Document> it(docList);
+  QPtrListIterator<Kate::Document> it(m_docList);
 
   for (; it.current(); ++it)
   {
@@ -90,17 +90,17 @@ Kate::Document *KateDocManager::documentWithID (uint id)
 
 int KateDocManager::findDocument (Kate::Document *doc)
 {
-  return docList.find (doc);
+  return m_docList.find (doc);
 }
 
 uint KateDocManager::documents ()
 {
-  return docList.count ();
+  return m_docList.count ();
 }
 
 int KateDocManager::findDocument ( KURL url )
 {
-  QPtrListIterator<Kate::Document> it(docList);
+  QPtrListIterator<Kate::Document> it(m_docList);
 
   for (; it.current(); ++it)
   {
@@ -112,7 +112,7 @@ int KateDocManager::findDocument ( KURL url )
 
 Kate::Document *KateDocManager::findDocumentByUrl( KURL url )
 {
-  QPtrListIterator<Kate::Document> it(docList);
+  QPtrListIterator<Kate::Document> it(m_docList);
   for (; it.current(); ++it)
   {
     if ( it.current()->url() == url)
@@ -123,7 +123,7 @@ Kate::Document *KateDocManager::findDocumentByUrl( KURL url )
 
 bool KateDocManager::isOpen(KURL url)
 {
-  QPtrListIterator<Kate::Document> it(docList);
+  QPtrListIterator<Kate::Document> it(m_docList);
 
   for (; it.current(); ++it)
   {
@@ -135,7 +135,7 @@ bool KateDocManager::isOpen(KURL url)
 
 void KateDocManager::checkAllModOnHD(bool forceReload)
 {
-  QPtrListIterator<Kate::Document> it(docList);
+  QPtrListIterator<Kate::Document> it(m_docList);
 
   for (; it.current(); ++it) {
     it.current()->isModOnHD(forceReload);

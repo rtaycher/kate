@@ -30,10 +30,6 @@ class KateDocManager : public Kate::DocumentManager
 {
   Q_OBJECT
 
-  friend class KateConfigDialog;
-  friend class KateMainWindow;
-  friend class KateViewManager;
-
   public:
     KateDocManager ();
     ~KateDocManager ();
@@ -58,19 +54,24 @@ class KateDocManager : public Kate::DocumentManager
     Kate::Document *findDocumentByUrl( KURL url );
     bool isOpen(KURL url);
 
-    uint documents ();
+    uint documents ();                  
+    
+    QPtrList<Kate::Document> &documentList () { return m_docList; };  
+    
+    void setIsFirstDocument (bool b) { m_firstDoc = b; };
+    bool isFirstDocument () { return m_firstDoc; };
 
   public slots:
     void checkAllModOnHD(bool forceReload=false);
-
-  private:
-    QPtrList<Kate::Document> docList;
-    Kate::Document *myCurrentDoc;
-    bool myfirstDoc;
-
+                 
   signals:
     void documentCreated (Kate::Document *doc);
-    void documentDeleted (uint documentNumber);
+    void documentDeleted (uint documentNumber);  
+    
+  private:
+    QPtrList<Kate::Document> m_docList;
+    Kate::Document *m_currentDoc;
+    bool m_firstDoc;
 };
 
 #endif

@@ -32,17 +32,15 @@ class KateViewManager : public Kate::ViewManager
 {
   Q_OBJECT
 
-  friend class KateConfigDialog;
-  friend class KateMainWindow;
-
   public:
     KateViewManager (QWidget *parent=0, KateDocManager *docManager=0);
-    ~KateViewManager ();
+    ~KateViewManager ();   
+    
+    inline QPtrList<Kate::View> &views () { return viewList; };
 
-  protected:
+  public:
     bool useOpaqueResize;
-    QPtrList<Kate::View> viewList;
-    /* Save a list of open files. */
+        /* Save a list of open files. */
     void saveAllDocsAtCloseDown();
     /* This will save the splitter configuration */
     void saveViewSpaceConfig();
@@ -55,7 +53,8 @@ class KateViewManager : public Kate::ViewManager
     void openConstURL (const KURL&url=0L);
 
   private:
-    QPtrList<KateViewSpace> viewSpaceList;
+    QPtrList<KateViewSpace> viewSpaceList; 
+    QPtrList<Kate::View> viewList;
 
     KateDocManager *docManager;
     QGridLayout *grid;

@@ -127,7 +127,7 @@ bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, 
     view->getDoc()->setDocName (doc->docName ());
   }
 
-  if (docManager->myfirstDoc)
+  if (docManager->isFirstDocument())
     view->getDoc()->setDocName (i18n("Untitled %1").arg(doc->documentNumber()));
 
   // disable settings dialog action
@@ -559,22 +559,22 @@ void KateViewManager::slotDocumentCloseAll ()
 void KateViewManager::openURL (KURL url)
 {
   // special handling if still only the first initial doc is there
-  if (docManager->myfirstDoc)
+  if (docManager->isFirstDocument())
   {
-    createView (false, KURL(), 0L, (Kate::Document *)docManager->docList.at(0));
-    docManager->docList.at(0)->setEncoding(myEncoding);
+    createView (false, KURL(), 0L, (Kate::Document *)docManager->documentList().at(0));
+    docManager->documentList().at(0)->setEncoding(myEncoding);
 
-    if (docManager->docList.at(0)->openURL (url))
+    if (docManager->documentList().at(0)->openURL (url))
     {
       ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
     }
 
-    if (docManager->docList.at(0)->url().filename() != "")
-      docManager->docList.at(0)->setDocName (docManager->docList.at(0)->url().filename());
+    if (docManager->documentList().at(0)->url().filename() != "")
+      docManager->documentList().at(0)->setDocName (docManager->documentList().at(0)->url().filename());
 
     setWindowCaption();
 
-    docManager->myfirstDoc = false;
+    docManager->setIsFirstDocument (false);
 
     return;
   }

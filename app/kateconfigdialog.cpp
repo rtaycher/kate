@@ -296,7 +296,7 @@ void KateConfigDialog::slotApply()
   config->sync();
 
   // all docs need to reread config.
-  QPtrListIterator<Kate::Document> dit (docManager->docList);
+  QPtrListIterator<Kate::Document> dit (docManager->documentList());
   for (; dit.current(); ++dit)
   {
     dit.current()->readConfig(  );
