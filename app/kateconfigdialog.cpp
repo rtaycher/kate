@@ -119,7 +119,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   QButtonGroup *bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("At Startup"), frGeneral );
   // reopen files
   cb_reopenFiles = new QCheckBox( bgStartup );
-  cb_reopenFiles->setText(i18n("Reopen &Files"));
+  cb_reopenFiles->setText(i18n("Reopen &files"));
   //config->setGroup("General");
   cb_reopenFiles->setChecked( config->readBoolEntry("reopen at startup", true) );
   QWhatsThis::add(cb_reopenFiles, i18n(
@@ -130,14 +130,14 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   //config->setGroup("General");
   // restore view  config
   cb_restoreVC = new QCheckBox( bgStartup );
-  cb_restoreVC->setText(i18n("Restore &View Configuration"));
+  cb_restoreVC->setText(i18n("Restore &view configuration"));
   cb_restoreVC->setChecked( config->readBoolEntry("restore views", false) );
   QWhatsThis::add(cb_restoreVC, i18n(
         "Check this if you want all your views and frames restored each time you open Kate"));
 
   // How instances should be handled
   cb_singleInstance = new QCheckBox(frGeneral);
-  cb_singleInstance->setText(i18n("&Restrict to single process"));
+  cb_singleInstance->setText(i18n("Allow only one &instance of Kate"));
   config->setGroup("startup");
   cb_singleInstance->setChecked(config->readBoolEntry("singleinstance",true));
   QWhatsThis::add( cb_singleInstance, i18n(
@@ -146,12 +146,12 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   
   // show full path in title
   config->setGroup("General");
-  cb_fullPath = new QCheckBox( i18n("Show Full &Path in Title"), frGeneral);
+  cb_fullPath = new QCheckBox( i18n("Show full &path in title"), frGeneral);
   cb_fullPath->setChecked( config->readBoolEntry("Show Full Path in Title", false ) );
 
   // opaque resize of view splitters
   cb_opaqueResize = new QCheckBox( frGeneral );
-  cb_opaqueResize->setText(i18n("&Show Content when resizing views"));
+  cb_opaqueResize->setText(i18n("&Show content when resizing views"));
   cb_opaqueResize->setChecked( viewManager->useOpaqueResize );
   QWhatsThis::add( cb_opaqueResize, i18n(
         "If this is disabled, resizing views will display a <i>rubberband</i> to show the "
@@ -159,7 +159,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
 
   // sync the konsole ?
   cb_syncKonsole = new QCheckBox(frGeneral);
-  cb_syncKonsole->setText(i18n("Sync &Konsole with active document"));
+  cb_syncKonsole->setText(i18n("Sync &terminal emulator with active document"));
   cb_syncKonsole->setChecked(parent->syncKonsole);
   QWhatsThis::add( cb_syncKonsole, i18n(
         "If this is checked, the built in Konsole will <code>cd</code> to the directory "
