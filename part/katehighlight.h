@@ -47,6 +47,7 @@ class HlItem {
     virtual ~HlItem();
     virtual bool startEnable(QChar);
     virtual const QChar *checkHgl(const QChar *, int len, bool) = 0;
+    virtual bool lineContinue(){return false;}
 
     QPtrList<HlItem> *subItems;
     int attr;
@@ -159,6 +160,7 @@ class HlLineContinue : public HlItem {
     HlLineContinue(int attribute, int context);
     virtual bool endEnable(QChar c) {return c == '\0';}
     virtual const QChar *checkHgl(const QChar *, int len, bool);
+    virtual bool lineContinue(){return true;}
 };
 
 class HlCStringChar : public HlItem {
@@ -259,7 +261,7 @@ class Highlight
     Highlight(const syntaxModeListItem *def);
     ~Highlight();
 
-    void doHighlight(signed char *oCtx, uint oCtxLen, TextLine *);
+    void doHighlight(signed char *oCtx, uint oCtxLen, TextLine *,bool lineContinue);
 
     KConfig *getKConfig();
     QString getWildcards();
@@ -287,7 +289,7 @@ class Highlight
     void readGlobalKeywordConfig();
     void readCommentConfig();
 
-    signed char *generateContextStack(int *ctxNum, int ctx,signed char *ctxs, uint *ctxsLen, int *posPrevLine);
+    signed char *generateContextStack(int *ctxNum, int ctx,signed char *ctxs, uint *ctxsLen, int *posPrevLine,bool lineContinue=false);
 
     HlItem *createHlItem(struct syntaxContextData *data, ItemDataList &iDl);
     int lookupAttrName(const QString& name, ItemDataList &iDl);

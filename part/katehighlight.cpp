@@ -624,8 +624,18 @@ Highlight::~Highlight()
 {
 }
 
-signed char *Highlight::generateContextStack(int *ctxNum, int ctx,signed char *ctxs, uint *ctxsLen, int *prevLine)
+signed char *Highlight::generateContextStack(int *ctxNum, int ctx,signed char *ctxs, uint *ctxsLen, int *prevLine, bool lineContinue)
 {
+  if (lineContinue) 
+	{ ctx=-1;
+	  if (ctxsLen>0)
+	  {
+		(*ctxNum)=ctxs[*(ctxsLen)-1];
+          } else (*ctxNum)=0;
+	  generateContextStack(ctxNum,*ctxNum,ctxs,ctxsLen,prevLine,false);
+	  return ctxs;
+	}
+
   if (ctx>=0)
   {
     (*ctxNum) = ctx;
@@ -692,7 +702,7 @@ signed char *Highlight::generateContextStack(int *ctxNum, int ctx,signed char *c
                         * return value: signed char*	new context stack at the end of the line
 *******************************************************************************************/
 
-void Highlight::doHighlight(signed char *oCtx, uint oCtxLen, TextLine *textLine)
+void Highlight::doHighlight(signed char *oCtx, uint oCtxLen, TextLine *textLine,bool lineContinue)
 {
   if (!textLine)
     return;
@@ -706,7 +716,9 @@ void Highlight::doHighlight(signed char *oCtx, uint oCtxLen, TextLine *textLine)
 
   HlContext *context;
   const QChar *s2;
-  HlItem *item;
+  HlItem *item=0;
+
+  if (lineContinue) kdDebug()<<"Entering with lineContinue flag set"<<endl;
 
   int ctxNum;
   int prevLine;
@@ -743,7 +755,7 @@ else
 
 
 
-		ctx=generateContextStack(&ctxNum, context->ctx, ctx, &oCtxLen, &prevLine);	//get stack ID to use
+		ctx=generateContextStack(&ctxNum, context->ctx, ctx, &oCtxLen, &prevLine,lineContinue);	//get stack ID to use
 //kdDebug()<<"test1-2-1-text4"<<endl;
 
 context=contextList[ctxNum];	//current context to use
@@ -791,6 +803,7 @@ context=contextList[ctxNum];	//current context to use
       }
     }
 
+
     // nothing found: set attribute of one char
     if (!found)
       textLine->setAttribs(context->attr,s1 - str,s1 - str + 1);
@@ -799,6 +812,18 @@ context=contextList[ctxNum];	//current context to use
     s1++;
     z++;
   }
+
+
+
+    if (item==0)
+	textLine->setHlLineContinue(false);
+    else
+    {
+	textLine->setHlLineContinue(item->lineContinue());
+	if (item->lineContinue()) kdDebug()<<"Setting line continue flag"<<endl;
+    }
+	
+
 
   //set "end of line"-properties
   textLine->setAttr(context->attr);

@@ -151,6 +151,8 @@ public:
 
     uchar *getAttribs() { return attributes; }
  
+    void setHlLineContinue(bool cont){hlContinue=cont;}
+    bool getHlLineContinue() {return hlContinue;}
   protected: 
     /** 
       The text & attributes 
@@ -158,7 +160,7 @@ public:
     QChar *text; 
     uchar *attributes;
     uint textLen;
-
+    bool hlContinue;
     /**
       The attribute of the free space behind the end
     */

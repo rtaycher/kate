@@ -3270,9 +3270,12 @@ void KateDocument::updateLines(int startLine, int endLine)
 
   line = startLine;
 
+  bool line_continue=false;
+
   if (line > 0)
   {
     ctxNumLen = getTextLine(line-1)->getContextLength();
+    line_continue=getTextLine(line-1)->getHlLineContinue();
     if (ctxNumLen>0)
     {
       if (ctxNum)
@@ -3306,9 +3309,10 @@ void KateDocument::updateLines(int startLine, int endLine)
     }
     else { if (endCtx) {free(endCtx); endCtx=0;}}
 
-    m_highlight->doHighlight(ctxNum, ctxNumLen, textLine);
+    m_highlight->doHighlight(ctxNum, ctxNumLen, textLine,line_continue);
 
     ctxNumLen = textLine->getContextLength();
+    line_continue=textLine->getHlLineContinue();
     if (ctxNumLen>0)
     {
       if (ctxNum)

@@ -66,7 +66,7 @@
         <RegExpr attribute="12" context="4" String="^#"/>
       </context>
       <context attribute="8" lineEndContext="#pop">
-        <LineContinue attribute="8" context="6"/>
+        <LineContinue attribute="8" context="#stay"/>
         <HlCStringChar attribute="9" context="#stay"/>
         <DetectChar attribute="8" context="#pop" char="&quot;"/>
       </context>
@@ -78,7 +78,7 @@
         <RegExpr attribute="3" context="#stay" String="(FIXME|TODO)" />
       </context>
       <context attribute="12" lineEndContext="#pop">
-        <LineContinue attribute="12" context="7"/>
+        <LineContinue attribute="12" context="#stay"/>
         <RangeDetect attribute="13" context="#stay" char="&quot;" char1="&quot;"/>
         <RangeDetect attribute="13" context="#stay" char="&lt;" char1="&gt;"/>
         <Detect2Chars attribute="10" context="2" char="/" char1="/"/>

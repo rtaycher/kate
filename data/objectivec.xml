@@ -79,7 +79,7 @@
         <Detect2Chars attribute="8" context="1" char="@" char1="&quot;" />
       </context>
       <context attribute="8" lineEndContext="0">
-        <LineContinue attribute="8" context="6"/>
+        <LineContinue attribute="8" context="#stay"/>
         <HlCStringChar attribute="9" context="1"/>
         <DetectChar attribute="8" context="0" char="&quot;"/>
       </context>
@@ -88,7 +88,7 @@
         <Detect2Chars attribute="10" context="0" char="*" char1="/"/>
       </context>
       <context attribute="12" lineEndContext="0">
-        <LineContinue attribute="12" context="7"/>
+        <LineContinue attribute="12" context="#stay"/>
         <RangeDetect attribute="13" context="4" char="&quot;" char1="&quot;"/>
         <RangeDetect attribute="13" context="4" char="&lt;" char1="&gt;"/>
         <Detect2Chars attribute="10" context="2" char="/" char1="/"/>

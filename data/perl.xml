@@ -366,12 +366,12 @@
              <RegExpr attribute="Keyword" context="0" String="-[rwxoRWXOeszfdlpSbctugkTBMAC]" />
          </context>
          <context attribute="Pod" lineEndContext="1">
-             <LineContinue attribute="Pod" context="1" />
+             <LineContinue attribute="Pod" context="#stay" />
              <RegExpr attribute="Pod" context="1" String="[^\=]*" />
              <RegExpr attribute="Pod" context="0" String="^\=cut.*$" />
          </context>
          <context attribute="Interpolated String" lineEndContext="2" name="2_IPString">
-             <LineContinue attribute="InterPolated String" context="2"/>
+             <LineContinue attribute="InterPolated String" context="#stay"/>
              <Detect2Chars attribute="String" context="2" char="\" char1="\" />
              <Detect2Chars attribute="Interpolated String" context="2" char="\" char1="&quot;" />
              <DetectChar attribute="Interpolated String" context="0" char="&quot;"/>
@@ -382,13 +382,13 @@
              <RegExpr attribute="Pattern Internal Operator" context="2" String="\\[UuLlEtnaefr]" />
          </context>
          <context attribute="String" lineEndContext="3" name="3_String">
-             <LineContinue attribute="String" context="3"/>
+             <LineContinue attribute="String" context="#stay"/>
              <Detect2Chars attribute="String" context="3" char="\" char1="\" />
              <Detect2Chars attribute="String" context="3" char="\" char1="'" />
              <DetectChar attribute="String" context="0" char="'" />
          </context>
          <context attribute="Interpolated String" lineEndContext="4">
-             <LineContinue attribute="Interpolated String" context="4" />
+             <LineContinue attribute="Interpolated String" context="#stay" />
              <Detect2Chars attribute="Interpolated String" context="4" char="\" char1="(" />
              <Detect2Chars attribute="Interpolated String" context="4" char="\" char1=")" />
              <RangeDetect attribute="Interpolated String" context="4" char="(" char1=")" />
@@ -400,7 +400,7 @@
              <RegExpr attribute="Pattern Internal Operator" context="4" String="\\[UuLlEtnaefr]" />
          </context>
          <context attribute="Interpolated String" lineEndContext="5">
-             <LineContinue attribute="Interpolated String" context="5" />
+             <LineContinue attribute="Interpolated String" context="#stay" />
              <Detect2Chars attribute="Interpolated String" context="5" char="\" char1="{" />
              <Detect2Chars attribute="Interpolated String" context="5" char="\" char1="}" />
              <RangeDetect attribute="Interpolated String" context="5" char="{" char1="}" />
@@ -412,7 +412,7 @@
              <RegExpr attribute="Pattern Internal Operator" context="5" String="\\[UuLlEtnaefr]" />
          </context>
          <context attribute="Interpolated String" lineEndContext="6">
-             <LineContinue attribute="Interpolated String" context="6" />
+             <LineContinue attribute="Interpolated String" context="#stay" />
              <Detect2Chars attribute="Interpolated String" context="6" char="\" char1="[" />
              <Detect2Chars attribute="Interpolated String" context="6" char="\" char1="]" />
              <RangeDetect attribute="Interpolated String" context="6" char="[" char1="]" />
@@ -424,7 +424,7 @@
              <RegExpr attribute="Pattern Internal Operator" context="6" String="\\[UuLlEtnaefr]" />
          </context>
          <context attribute="Interpolated String" lineEndContext="7">
-             <LineContinue attribute="Interpolated String" context="7" />
+             <LineContinue attribute="Interpolated String" context="#stay" />
              <Detect2Chars attribute="Interpolated String" context="7" char="\" char1="&lt;" />
              <Detect2Chars attribute="Interpolated String" context="7" char="\" char1="&gt;" />
              <RangeDetect attribute="Interpolated String" context="7" char="&lt;" char1="&gt;" />
@@ -436,7 +436,7 @@
              <RegExpr attribute="Pattern Internal Operator" context="7" String="\\[UuLlEtnaefr]" />
          </context>
          <context attribute="String" lineEndContext="8">
-             <LineContinue attribute="String" context="8" />
+             <LineContinue attribute="String" context="#stay" />
              <Detect2Chars attribute="String" context="8" char="\" char1="(" />
              <Detect2Chars attribute="String" context="8" char="\" char1=")" />
              <RangeDetect attribute="String" context="8" char="(" char1=")" />
@@ -446,25 +446,25 @@
              <Detect2Chars attribute="String" context="9" char="\" char1="{" />
              <Detect2Chars attribute="String" context="9" char="\" char1="}" />
              <RangeDetect attribute="String" context="9" char="{" char1="}" />
-             <LineContinue attribute="String" context="9" />
+             <LineContinue attribute="String" context="#stay" />
              <DetectChar attribute="String" context="0" char="}" />
          </context>
          <context attribute="String" lineEndContext="10">
-             <LineContinue attribute="String" context="10" />
+             <LineContinue attribute="String" context="#stay" />
              <Detect2Chars attribute="String" context="10" char="\" char1="[" />
              <Detect2Chars attribute="String" context="10" char="\" char1="]" />
              <RangeDetect attribute="String" context="10" char="[" char1="]" />
              <DetectChar attribute="String" context="0" char="]" />
          </context>
          <context attribute="String" lineEndContext="11">
-             <LineContinue attribute="String" context="11" />
+             <LineContinue attribute="String" context="#stay" />
              <Detect2Chars attribute="String" context="11" char="\" char1="&lt;" />
              <Detect2Chars attribute="String" context="11" char="\" char1="&gt;" />
              <RangeDetect attribute="String" context="11" char="&lt;" char1="&gt;" />
              <DetectChar attribute="String" context="0" char="&gt;" />
          </context>
          <context attribute="Pattern" lineEndContext="12">
-             <LineContinue attribute="Pattern" context="12" />
+             <LineContinue attribute="Pattern" context="#stay" />
              <RegExpr attribute="Comment" context="12" String="\s+#.*$" />
              <RegExpr attribute="Pattern" context="12" String="\{[\d,\s]+\}" />
              <Detect2Chars attribute="Pattern" context="12" char="\" char1="{" />
@@ -475,7 +475,7 @@
              <DetectChar attribute="Pattern" context="13" char="}" />
          </context>
          <context attribute="Normal Text" lineEndContext="13">
-             <LineContinue attribute="Normal Text" context="13" />
+             <LineContinue attribute="Normal Text" context="#stay" />
              <RegExpr attribute="Normal Text" context="13" String="[&quot;'\/]" />
              <RegExpr attribute="Comment" context="13" String="\s*#.*$" />
              <RegExpr attribute="Special Variable" context="13" String="\$[0-9]+" />
@@ -490,7 +490,7 @@
              <DetectChar attribute="Pattern" context="0" char="}" />
          </context>
          <context attribute="Normal Text" lineEndContext="14">
-             <LineContinue attribute="Normal Text" context="14" />
+             <LineContinue attribute="Normal Text" context="#stay" />
              <Detect2Chars attribute="Normal Text" context="14" char="\" char1="/" />
              <DetectChar attribute="Normal Text" context="0" char="/" />
              <RegExpr attribute="Data Type" context="14" String="\$+#?[a-zA-Z_]+[a-zA-Z0-9_]*" />
@@ -498,7 +498,7 @@
          </context>
          <context attribute="Pattern" lineEndContext="15" name="slash_pat">
              <RegExpr attribute="Comment" context="15" String="^\s*#.*$" />
-             <LineContinue attribute="Pattern" context="15" />
+             <LineContinue attribute="Pattern" context="#stay" />
              <RegExpr attribute="Pattern Character Class" context="15" String="\\[anDdSsWw]" />
              <RegExpr attribute="Pattern Internal Operator" context="15" String="\\[ABbEGLlNUuQdQZz]" />
              <RegExpr attribute="Special Variable" context="15" String="\\[\d]+" />
@@ -513,12 +513,12 @@
              <RegExpr attribute="Comment" context="15" String="\s{3,}#.*$" />
          </context>
          <context attribute="Data" lineEndContext="16" name="16_data_handle">
-             <LineContinue attribute="Data" context="16"/>
+             <LineContinue attribute="Data" context="#stay"/>
              <RegExpr attribute="Pod" context="1" String="^\=(?:head[1-6]|over|back|item|for|begin|end|pod)\s*.*" />
              <RegExpr attribute="Keyword" context="end_handle" String="^__END__" />
          </context>
          <context attribute="Nothing" lineEndContext="17" name="17_end_handle">
-             <LineContinue attribute="Nothing" context="17" />
+             <LineContinue attribute="Nothing" context="#stay" />
              <RegExpr attribute="Pod" context="1" String="^\=(?:head[1-6]|over|back|item|for|begin|end|pod)\s*.*" />
              <RegExpr attribute="Keyword" context="16" String="^__DATA__" />
          </context>
@@ -574,7 +574,7 @@
              <DetectChar attribute="Pattern Internal Operator" context="15" char=")" />
          </context>
          <context attribute="Pattern Character Class" lineEndContext="25" name="pat_char_class">
-             <LineContinue attribute="Pattern Character Class" context="25" />
+             <LineContinue attribute="Pattern Character Class" context="#stay" />
              <DetectChar attribute="Pattern Internal Operator" context="25" char="^" />
              <Detect2Chars attribute="Pattern Character Class" context="25" char="\" char1="\" />
              <Detect2Chars attribute="Pattern Character Class" context="25" char="\" char1="]" />

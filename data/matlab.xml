@@ -91,7 +91,7 @@
         <Detect2Chars attribute="10" context="2" char="%" char1=" "/>
       </context>
       <context attribute="8" lineEndContext="0" name="String">
-        <LineContinue attribute="8" context="6"/>
+        <LineContinue attribute="8" context="#stay"/>
         <HlCStringChar attribute="9" context="1"/>
         <DetectChar attribute="8" context="0" char="&apos;"/>
       </context>
