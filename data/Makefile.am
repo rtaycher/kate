@@ -5,7 +5,7 @@ rckantdir = $(kde_datadir)/kant
 rckant_DATA = kantui.rc syntax.xml kantpartui.rc kantpartbrowserui.rc
 
 syntaxkantdir = $(kde_datadir)/kant/syntax
-syntaxkant_DATA = cpp.xml c.xml html.xml kbasic.xml objectivec.xml changelog.xml
+syntaxkant_DATA = cpp.xml c.xml html.xml kbasic.xml objectivec.xml changelog.xml ada.xml
 
 rckwritedir = $(kde_datadir)/kwrite
 rckwrite_DATA = kwriteui.rc
