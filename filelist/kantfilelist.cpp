@@ -140,7 +140,7 @@ void KantFileList::slotViewChanged ()
   {
     if (((KantFileListItem *) item (i)) ->docID() == ((KantDocument *)view->doc())->docID())
     {
-      //kdDebug()<<"found one!"<<endl;
+      //kdDebug()<<"KantFileList::slotViewChanged(): got it!: "<<item(i)->text()<<endl;
       setCurrentItem (i);
       if ( !isSelected( item(i) ) )
         setSelected( i, true );

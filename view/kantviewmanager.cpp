@@ -253,6 +253,13 @@ KantView* KantViewManager::activeView ()
       return it.current();
   }
 
+  KantViewSpace* vs;
+  if ( (vs = activeViewSpace()) )
+    if ( vs->currentView() ) {
+      vs->currentView()->setActive( true );
+      return vs->currentView();
+    }
+
   if (viewList.count() > 0)
   {
    viewList.first()->setActive( true );
@@ -905,7 +912,8 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
       }
       else
       {
-        deleteView( v, false, false, false );
+        deleteView( v, false, false );
+        //kdDebug()<<"KantViewManager::removeViewSpace(): deleting a view: "<<v->doc()->url().filename()<<endl;
       }
     }
     vsvc = viewspace->viewCount();
@@ -934,6 +942,7 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
         activeViewSpace()->setActive( false );
         ((KantViewSpace*)l->first())->setActive( true );
       }
+      delete l;
     }
   }
 
@@ -945,6 +954,7 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
   // find the view that is now active.
   KantView* v = activeViewSpace()->currentView();
   if ( v ) {
+    //kdDebug()<<"removeViewSpace(): setting active view: "<<v->doc()->url().filename()<<endl;
     activateView( v );
   }
 

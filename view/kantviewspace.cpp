@@ -70,7 +70,8 @@ void KantViewSpace::removeView(KantView* v)
   mViewList.remove (v);
   stack->removeWidget (v);
 
-  if (mViewList.current() != 0L)
+//  if (mViewList.current() != 0L)
+  if (currentView() != 0L)
     stack->raiseWidget(mViewList.current());
   else if (mViewList.count() > 0)
     stack->raiseWidget(mViewList.last());
@@ -115,12 +116,15 @@ bool KantViewSpace::showView(int docID)
 KantView* KantViewSpace::currentView()
 {
   if (mViewList.count() > 0) {
-
+    /*
+    //kdDebug()<<mViewList.current()->doc()->url().filename()<<endl;
     if (mViewList.current() != 0L)
       return mViewList.current();
     else
       return mViewList.last();
-
+    */
+    //kdDebug()<<"KantViewSpace::currentView(): "<<((KantView*)stack->visibleWidget())->doc()->url().filename()<<endl;
+    return (KantView*)stack->visibleWidget();
   }
   return 0L;
 }
