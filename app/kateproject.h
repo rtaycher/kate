@@ -31,7 +31,7 @@ class KateProject : public QObject
   Q_OBJECT
 
   public:
-    KateProject (QObject *parent, const QString &filename);
+    KateProject (class KateProjectManager *proMan, QObject *parent, const QString &filename);
     ~KateProject ();
     
     Kate::Project *project () { return m_project; };
@@ -47,6 +47,7 @@ class KateProject : public QObject
     bool save ();
 
   private:
+    class KateProjectManager *m_projectMan;
     Kate::Project *m_project;
     Kate::ProjectPlugin *m_plugin;
     KConfig *m_data;

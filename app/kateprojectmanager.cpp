@@ -25,6 +25,8 @@
 
 #include <kconfig.h>
 
+#include <qfile.h>
+
 KateProjectManager::KateProjectManager (QObject *parent) : QObject (parent)
 {
   m_projects.setAutoDelete (true);
@@ -71,7 +73,7 @@ Kate::Project *KateProjectManager::create (const QString &type, const QString &n
     
 Kate::Project *KateProjectManager::open (const QString &filename)
 {
-  KateProject *project = new KateProject (this, filename);
+  KateProject *project = new KateProject (this, this, filename);
   
   m_projects.append (project);
   
@@ -89,6 +91,28 @@ bool KateProjectManager::close (Kate::Project *project)
   }
 
   return false;
+}
+
+Kate::ProjectPlugin *KateProjectManager::createPlugin (Kate::Project *project)
+{
+  ProjectPluginInfo *def = 0;
+  ProjectPluginInfo *info = 0;
+
+  for (uint i=0; i<m_pluginList.count(); i++)
+  {
+    if (m_pluginList.at(i)->projectType == project->type())
+    {
+      info = m_pluginList.at(i);
+      break;
+    }
+    else if (m_pluginList.at(i)->projectType == QString ("Default"))
+      def = m_pluginList.at(i);
+  }
+  
+  if (!info)
+    info = def;
+  
+  return Kate::createProjectPlugin (QFile::encodeName(info->service->library()), project);
 }
 
 void KateProjectManager::enableProjectGUI (Kate::Project *project, KateMainWindow *win)

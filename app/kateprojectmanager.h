@@ -55,9 +55,11 @@ class KateProjectManager : public QObject
     
     bool close (Kate::Project *project);
     
+    Kate::ProjectPlugin *createPlugin (Kate::Project *project);
+    
     void enableProjectGUI (Kate::Project *project, class KateMainWindow *win);
     void disableProjectGUI (Kate::Project *project, class KateMainWindow *win);
-  
+    
   private:
     Kate::ProjectManager *m_projectManager;
     

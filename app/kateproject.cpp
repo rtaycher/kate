@@ -21,12 +21,15 @@
 #include "kateproject.h"
 #include "kateproject.moc"
 
-KateProject::KateProject (QObject *parent, const QString &filename) : QObject (parent)
+#include "kateprojectmanager.h"
+
+KateProject::KateProject (KateProjectManager *proMan, QObject *parent, const QString &filename) : QObject (parent)
 {
+  m_projectMan = proMan;
   m_filename = filename;
-  m_project = 0;
   m_data = new KConfig (filename);
   m_project = new Kate::Project (this);
+  m_plugin = m_projectMan->createPlugin (m_project);
 }
 
 KateProject::~KateProject()
