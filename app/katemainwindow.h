@@ -27,6 +27,8 @@
 
 #include <kparts/part.h>
 
+#include <qguardedptr.h>
+
 #include <scriptmanager.h>
 
 class GrepDialog;
@@ -85,11 +87,8 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     KConfig* config;
 
   private:
-    KAction *editUndo;
-    KAction *editRedo;
-    KAction *bookmarkToggle;
-    KAction *bookmarkClear;
-
+    QGuardedPtr<Kate::View> activeView;
+  
     KAction *closeCurrentViewSpace;
     KToggleAction *viewBorder;
     KToggleAction *viewLineNumbers;
@@ -107,7 +106,7 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     KAction* windowNext;
     KAction* windowPrev;
 
-    QPopupMenu *bookmarkMenu, *documentMenu;
+    QPopupMenu *documentMenu;
     QPtrList<KTextEditor::Mark> list;
 
     KToggleAction* settingsShowFilelist;
@@ -142,7 +141,6 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
   private:
     void setupMainWindow();
     void setupActions();
-//    void setupPlugins();
     void setupScripts();
     virtual bool queryClose();
 
@@ -157,12 +155,9 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     void slotFileQuit();
     void slotEditToolbars();
     void slotWindowActivated ();
-    void slotCurrentDocChanged();
     void documentMenuAboutToShow();
     void setEOLMenuAboutToShow();
-    void bookmarkMenuAboutToShow();
     void settingsMenuAboutToShow();
-    //void slotSettingsShowFullPath();
     void slotDropEvent(QDropEvent *);
     void editKeys();
     void mSlotFixOpenWithMenu();

@@ -158,6 +158,8 @@ bool KateViewManager::deleteView (Kate::View *view, bool delViewSpace)
 
   viewspace->removeView (view);
 
+  ((KMainWindow *)topLevelWidget ())->guiFactory ()->removeClient (view);
+  
   // remove view from list and memory !!
   viewList.remove (view);
 
@@ -263,7 +265,13 @@ void KateViewManager::activateView ( Kate::View *view )
 
     setActiveView (view);
     viewList.findRef (view);
-
+        
+    if (((KateMainWindow *)topLevelWidget ())->activeView)
+      ((KMainWindow *)topLevelWidget ())->guiFactory()->removeClient ( ((KateMainWindow *)topLevelWidget ())->activeView );
+  
+    ((KateMainWindow *)topLevelWidget ())->activeView = view;
+    ((KMainWindow *)topLevelWidget ())->guiFactory ()->addClient( view );
+      
     setWindowCaption();
     statusMsg();
 

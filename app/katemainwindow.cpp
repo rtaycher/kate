@@ -72,6 +72,8 @@ KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_
 
   myID = uniqueID;
   uniqueID++;
+  
+  activeView = 0;
 
   consoleDock = 0L;
   console = 0L;
@@ -84,7 +86,9 @@ KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_
 
   setXMLFile( "kateui.rc" );
 
-  createGUI();
+  guiFactory()->addClient (this);
+  
+  //createGUI();
 
   pluginManager->enableAllPluginsGUI (this);
 
@@ -95,10 +99,6 @@ KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_
   // connect settings menu aboutToshow
   documentMenu = (QPopupMenu*)factory()->container("documents", this);
   connect(documentMenu, SIGNAL(aboutToShow()), this, SLOT(documentMenuAboutToShow()));
-
-  // connect settings menu aboutToshow
-  bookmarkMenu = (QPopupMenu*)factory()->container("bookmarks", this);
-  connect(bookmarkMenu, SIGNAL(aboutToShow()), this, SLOT(bookmarkMenuAboutToShow()));
 
   readOptions(config);
 
@@ -199,9 +199,7 @@ void KateMainWindow::setupActions()
   KStdAction::open( viewManager, SLOT( slotDocumentOpen() ), actionCollection(), "file_open" );
 
   fileOpenRecent = KStdAction::openRecent (viewManager, SLOT(openConstURL_delayed1 (const KURL&)), actionCollection());
-  KStdAction::save( viewManager, SLOT( slotDocumentSave() ), actionCollection(), "file_save" );
   new KAction( i18n("Save A&ll"),"save_all", CTRL+Key_L, viewManager, SLOT( slotDocumentSaveAll() ), actionCollection(), "file_save_all" );
-  KStdAction::saveAs( viewManager, SLOT( slotDocumentSaveAs() ), actionCollection(), "file_save_as" );
   KStdAction::print(viewManager, SLOT(printDlg()), actionCollection());
   KStdAction::close( viewManager, SLOT( slotDocumentClose() ), actionCollection(), "file_close" );
   new KAction( i18n( "Clos&e All" ), 0, viewManager, SLOT( slotDocumentCloseAll() ), actionCollection(), "file_close_all" );
@@ -210,38 +208,7 @@ void KateMainWindow::setupActions()
 
   KStdAction::quit( this, SLOT( slotFileQuit() ), actionCollection(), "file_quit" );
 
-  editUndo = KStdAction::undo(viewManager, SLOT(slotUndo()), actionCollection());
-  editRedo = KStdAction::redo(viewManager, SLOT(slotRedo()), actionCollection());
-
-  KStdAction::cut(viewManager, SLOT(slotCut()), actionCollection());
-  KStdAction::copy(viewManager, SLOT(slotCopy()), actionCollection()) ;
-  KStdAction::paste(viewManager, SLOT(slotPaste()), actionCollection());
-
-  KStdAction::selectAll(viewManager, SLOT(slotSelectAll()), actionCollection());
-  KStdAction::deselect(viewManager, SLOT(slotDeselectAll()), actionCollection());
-
-  KStdAction::find(viewManager, SLOT(slotFind()), actionCollection());
-  KStdAction::findNext(viewManager, SLOT(slotFindAgain()), actionCollection());
-  KStdAction::findPrev(viewManager, SLOT(slotFindAgainB()), actionCollection(), "edit_find_prev");
-  KStdAction::replace(viewManager, SLOT(slotReplace()), actionCollection());
-
   new KAction(i18n("Find in Files..."), CTRL+SHIFT+Qt::Key_F, this, SLOT(slotFindInFiles()), actionCollection(),"edit_find_in_files" );
-
-  new KAction(i18n("&Indent"), "indent", CTRL+Key_I, viewManager, SLOT(slotIndent()), actionCollection(), "edit_indent");
-  new KAction(i18n("&Unindent"), "unindent", CTRL+SHIFT+Key_I, viewManager, SLOT(slotUnIndent()), actionCollection(), "edit_unindent");
-
-  new KAction(i18n("Co&mment"), /*"comment",*/ CTRL+Qt::Key_NumberSign, viewManager, SLOT(slotComment()), actionCollection(), "edit_comment");
-  new KAction(i18n("Unc&omment"), /*"uncomment",*/ CTRL+SHIFT+Qt::Key_NumberSign, viewManager, SLOT(slotUnComment()), actionCollection(), "edit_uncomment");
-
-  new KAction(i18n("Apply Word Wrap"), "", 0, viewManager, SLOT(slotApplyWordWrap()), actionCollection(), "edit_apply_wordwrap");
-
-  new KAction(i18n("Editing Co&mmand..."), Qt::CTRL+Qt::Key_M, viewManager, SLOT(slotEditCommand()),
-                                  actionCollection(), "edit_cmd");
-
-  KStdAction::gotoLine(viewManager, SLOT(slotGotoLine()), actionCollection());
-
-  bookmarkToggle = new KAction(i18n("Toggle &Bookmark"), Qt::CTRL+Qt::Key_B, viewManager, SLOT(toggleBookmark()), actionCollection(), "edit_bookmarkToggle");
-  bookmarkClear = new KAction(i18n("Clear Bookmarks"), 0, viewManager, SLOT(clearBookmarks()), actionCollection(), "edit_bookmarksClear");
 
   KStdAction::spelling(viewManager, SLOT(slotSpellcheck()), actionCollection());
 
@@ -296,7 +263,6 @@ void KateMainWindow::setupActions()
   exportAs = docManager->docList.at(0)->exportActionMenu (i18n("E&xport"), actionCollection(),"file_export");
 
   connect(viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
-  connect(viewManager,SIGNAL(statChanged()),this,SLOT(slotCurrentDocChanged()));
 
   slotWindowActivated ();
 }
@@ -420,9 +386,9 @@ void KateMainWindow::saveOptions(KConfig *config)
 void KateMainWindow::slotWindowActivated ()
 {
   static QString path;
-
+  
   if (viewManager->activeView() != 0)
-  {
+  {                         
     if (console && syncKonsole)
     {
       QString newPath = viewManager->activeView()->getDoc()->url().directory();
@@ -455,18 +421,6 @@ void KateMainWindow::slotWindowActivated ()
     closeCurrentViewSpace->setEnabled(false);
   else
     closeCurrentViewSpace->setEnabled(true);
-}
-
-void KateMainWindow::slotCurrentDocChanged()
-{
-  if (!viewManager->activeView())
-    return;
-
-  if ((viewManager->activeView()->getDoc()->undoCount() > 0) != editUndo->isEnabled())
-    editUndo->setEnabled(viewManager->activeView()->getDoc()->undoCount() > 0);
-
-  if ((viewManager->activeView()->getDoc()->redoCount() > 0) != editRedo->isEnabled())
-    editRedo->setEnabled(viewManager->activeView()->getDoc()->redoCount() > 0);
 }
 
 void KateMainWindow::documentMenuAboutToShow()
@@ -509,30 +463,6 @@ void KateMainWindow::documentMenuAboutToShow()
 
     z++;
     i++;
-  }
-}
-
-void KateMainWindow::bookmarkMenuAboutToShow()
-{
-  bookmarkMenu->clear ();
-  bookmarkToggle->plug (bookmarkMenu);
-  bookmarkClear->plug (bookmarkMenu);
-
-  list = viewManager->activeView()->getDoc()->marks();
-  bool hassep = false;
-  for (int i=0; (uint) i < list.count(); i++)
-  {
-    if (list.at(i)->type&Kate::Document::markType01)
-    {
-      if (!hassep) {
-        bookmarkMenu->insertSeparator ();
-        hassep = true;
-      }
-      QString bText = viewManager->activeView()->getDoc()->textLine(list.at(i)->line);
-      bText.truncate(32);
-      bText.append ("...");
-      bookmarkMenu->insertItem ( QString("%1 - \"%2\"").arg(list.at(i)->line).arg(bText), this, SLOT (gotoBookmark(int)), 0, i );
-    }
   }
 }
 

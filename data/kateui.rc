@@ -7,8 +7,6 @@
     <Action name="file_open" />
     <Action name="file_open_recent" />
     <Separator/>
-    <Action name="file_save"/>
-    <Action name="file_save_as"/>
     <Action name="file_save_all"/>
     <Action name="file_export"/>
     <Separator />
@@ -27,27 +25,6 @@
   </Menu>
 
   <Menu name="edit" noMerge="1"><text>&amp;Edit</text>
-    <Action name="edit_undo" />
-    <Action name="edit_redo" />
-    <Separator />
-    <Action name="edit_cut" />
-    <Action name="edit_copy" />
-    <Action name="edit_paste" />
-    <Action name="edit_select_all" />
-    <Action name="edit_deselect"/>
-    <Action name="set_verticalSelect"/>
-    <Separator />
-    <Action name="edit_find" />
-    <Action name="edit_find_next" />
-    <Action name="edit_find_prev" />
-    <Action name="edit_replace" />
-    <Separator />
-    <Action name="edit_indent" />
-    <Action name="edit_unindent" />
-    <Action name="edit_comment" />
-    <Action name="edit_uncomment" />
-    <Separator/>
-    <Action name="go_goto_line"/>
   </Menu>
 
   <Menu name="documents"><text>&amp;Document</text>
@@ -120,7 +97,7 @@
   </Menu>
 </MenuBar>
 
-<ToolBar name="mainToolBar" noMerge="1"><text>Main Toolbar</text>
+<ToolBar name="mainToolBar"><text>Main Toolbar</text>
   <Action name="file_new" group="file_operations" />
   <Action name="file_open" group="file_operations" />
   <Action name="file_save" group="file_operations" />
