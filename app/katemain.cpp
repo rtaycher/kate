@@ -37,7 +37,7 @@ static KCmdLineOptions options[] =
     { "line <argument>",      I18N_NOOP("Navigate to this line"), 0 },
     { "column <argument>",      I18N_NOOP("Navigate to this column"), 0 },
     { "+file(s)",          I18N_NOOP("Files to load"), 0 },
-    { 0,0,0 }
+    KCmdLineLastOption
 };
 
 int main( int argc, char **argv )
@@ -81,29 +81,29 @@ int main( int argc, char **argv )
   data->setTranslator(I18N_NOOP("_: NAME OF TRANSLATORS\nYour names"), I18N_NOOP("_: EMAIL OF TRANSLATORS\nYour emails"));
 
   KCmdLineArgs::init (argc, argv, data);
-  KCmdLineArgs::addCmdLineOptions (options);   
-  KateApp::addCmdLineOptions ();  
+  KCmdLineArgs::addCmdLineOptions (options);
+  KateApp::addCmdLineOptions ();
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
-   
+
   bool newProcess = false;
   bool oldState = false;
-  
+
   if (args->isSet ("n"))
     newProcess = true;
- 
+
   if (newProcess)
   {
     KInstance *instance = new KInstance (data);
-    
+
     KConfig *config = instance->config();
     config->setGroup("KDE");
     oldState = config->readBoolEntry("MultipleInstances",false);
     config->writeEntry("MultipleInstances",true);
     config->sync();
-    
+
     delete instance;
   }
-      
+
   KateApp app (newProcess, oldState);
   return app.exec();
 }
