@@ -191,7 +191,8 @@ KWBuffer::loadFilePart()
   }
   if (eof)
   {
-      kdDebug(13020)<<"Loading finished.\n";
+     kdDebug(13020)<<"Loading finished.\n";
+     close( loader->fd );
      m_loader.removeRef(loader);
 //     emit needHighlight(startLine,state.lineNr);
   }
