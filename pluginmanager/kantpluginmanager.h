@@ -17,7 +17,7 @@
 #ifndef _kant_pluginmanager_h_
 #define _kant_pluginmanager_h_
 
-#include "../kantmain.h"
+#include "../main/kantmain.h"
 
 #include <qobject.h>
 #include <kdebug.h>

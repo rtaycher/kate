@@ -17,7 +17,7 @@
 #ifndef _KANT_DOCMANAGER_IFACE_
 #define _KANT_DOCMANAGER_IFACE_
 
-#include "../kantmain.h"
+#include "../main/kantmain.h"
 
 #include <qobject.h>
 

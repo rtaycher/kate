@@ -17,7 +17,7 @@
 #ifndef kant_viewmanager_h__
 #define kant_viewmanager_h__
 
-#include "../kantmain.h"
+#include "../main/kantmain.h"
 #include "../interfaces/kantviewmanagerIface.h"
 #include "kantview.h"
 

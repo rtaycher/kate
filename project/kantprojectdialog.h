@@ -18,7 +18,7 @@
 #ifndef kant_projectdialog_h
 #define kant_projectdialog_h
 
-#include "../kantmain.h"
+#include "../main/kantmain.h"
 #include "../document/kantdocmanager.h"
 #include "../view/kantviewmanager.h"
 

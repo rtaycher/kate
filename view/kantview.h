@@ -18,7 +18,7 @@
 #ifndef kant_view_h
 #define kant_view_h
 
-#include "../kantmain.h"
+#include "../main/kantmain.h"
 
 
 #include <qlist.h>
@@ -279,7 +279,7 @@ class KantView : public KTextEditor::View, virtual public KantViewIface
       HandleOwnURIDrops should be set to false for a container that can handle URI drops
       better than KantViewInternal does.
     */
-    KantView(KantDocument *doc=0L, QWidget *parent = 0L, const char * name = 0, bool HandleOwnURIDrops = true);
+    KantView(KantDocument *doc=0L, QWidget *parent = 0L, const char * name = 0, bool HandleOwnURIDrops = true, bool deleteDoc = true);
     /**
       The destructor does not delete the document
     */
@@ -386,6 +386,29 @@ class KantView : public KTextEditor::View, virtual public KantViewIface
 
     QColor* getColors();
     void applyColors();
+
+   void setupActions();
+
+    KAction *fileSave, *editInsert, *editCut, *editPaste,
+            *editReplace, *editUndo, *editRedo, *editUndoHist,
+            *toolsIndent, *toolsUnindent, *toolsCleanIndent,
+            *toolsComment, *toolsUncomment, *toolsSpell;
+
+    KToggleAction *setVerticalSelection;
+    KRecentFilesAction *fileRecent;
+    KSelectAction *setHighlight, *setEndOfLine;
+
+  private:
+    bool myDeleteDoc;
+
+  protected slots:
+    void slotDropEventPass( QDropEvent * ev );
+
+  public slots:
+    void slotUpdate();
+    void slotFileStatusChanged();
+    void slotNewUndo();
+    void slotHighlightChanged();
 
   public slots:
 

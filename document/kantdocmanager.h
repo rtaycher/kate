@@ -18,7 +18,7 @@
 #ifndef kant_docmanager_h
 #define kant_docmanager_h
 
-#include "../kantmain.h"
+#include "../main/kantmain.h"
 
 #include <qlist.h>
 #include <qobject.h>

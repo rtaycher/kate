@@ -29,7 +29,7 @@
 #include "../app/kantapp.h"
 #include "../fileselector/kantfileselector.h"
 #include "../filelist/kantfilelist.h"
-#include "../part/kantpartfactory.h"
+#include "../factory/kantfactory.h"
 #include "kantmenuitem.h"
 
 #include "../view/kantviewdialog.h"
@@ -94,7 +94,7 @@ KantMainWindow::KantMainWindow(KantDocManager *_docManager, KantPluginManager *_
   tagSidebar=QString("sidebar");
   docManager =  _docManager;
   pluginManager =_pluginManager;
-  config = KantPartFactory::instance()->config();
+  config = KantFactory::instance()->config();
 
   setXMLFile( "kantui.rc" );
 
@@ -416,7 +416,7 @@ void KantMainWindow::saveOptions(KConfig *config)
   writeDockConfig();
 
   if (viewManager->activeView())
-    KantPartFactory::instance()->config()->sync();
+    KantFactory::instance()->config()->sync();
 
   // Do not uncomment this unless you wish to see how
   // view configuration looks in $KDEHOME/share/config/kantsessionrc

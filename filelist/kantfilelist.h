@@ -18,7 +18,7 @@
 #ifndef KANTFILELIST_H
 #define KANTFILELIST_H
 
-#include "../kantmain.h"
+#include "../main/kantmain.h"
 
 #include <klistbox.h>
 #include <qtooltip.h>

@@ -18,7 +18,7 @@
 #ifndef KANTFILESELECTOR_H
 #define KANTFILESELECTOR_H
 
-#include "../kantmain.h"
+#include "../main/kantmain.h"
 
 #include <qwidget.h>
 #include <kfile.h>

@@ -17,7 +17,7 @@
 #ifndef _KANT_VIEWMANAGER_IFACE_
 #define _KANT_VIEWMANAGER_IFACE_
 
-#include "../kantmain.h"
+#include "../main/kantmain.h"
 #include "../view/kantview.h"
 
 #include <qwidget.h>

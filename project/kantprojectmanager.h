@@ -18,7 +18,7 @@
 #ifndef kant_projectmanager_h
 #define kant_projectmanager_h
 
-#include "../kantmain.h"
+#include "../main/kantmain.h"
 
 #include <qobject.h>
 #include <kurl.h>

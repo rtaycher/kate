@@ -17,7 +17,7 @@
 #ifndef __kant_mainwindow_h__
 #define __kant_mainwindow_h__
 
-#include "../kantmain.h"
+#include "../main/kantmain.h"
 #include "kantIface.h"
 
 #include <kdockwidget.h>

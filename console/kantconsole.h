@@ -17,7 +17,7 @@
 #ifndef __kant_console_h__
 #define __kant_console_h__
 
-#include "../kantmain.h"
+#include "../main/kantmain.h"
 
 #include <qwidget.h>
 #include <kparts/part.h>

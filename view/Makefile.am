@@ -1,6 +1,5 @@
-noinst_LTLIBRARIES =libkantview.la  libkantviewinternal.la
-libkantview_la_SOURCES = kantview.cpp  kantviewIface.skel kantundohistory.cpp kantviewdialog.cpp
-libkantviewinternal_la_SOURCES = kantviewspace.cpp kantviewmanager.cpp kantsplitter.cpp
+noinst_LTLIBRARIES =libkantview.la
+libkantview_la_SOURCES = kantviewspace.cpp kantviewmanager.cpp kantsplitter.cpp kantview.cpp  kantviewIface.skel kantundohistory.cpp kantviewdialog.cpp
 
 INCLUDES= $(all_includes)
 

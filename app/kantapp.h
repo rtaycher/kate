@@ -17,7 +17,7 @@
 #ifndef __kant_app_h__
 #define __kant_app_h__
 
-#include "../kantmain.h"
+#include "../main/kantmain.h"
 
 #include <kuniqueapp.h>
 #include <qlist.h>

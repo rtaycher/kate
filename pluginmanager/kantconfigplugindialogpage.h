@@ -18,7 +18,7 @@
 #ifndef _kant_config_Plugin_Dialog_Page_h_
 #define _kant_config_Plugin_Dialog_Page_h_
 
-#include "../kantmain.h"
+#include "../main/kantmain.h"
 
 #include <qvbox.h>
 

@@ -18,7 +18,7 @@
 #include "kantdocument.h"
 #include "kantdocument.moc"
 
-#include "../part/kantpartfactory.h"
+#include "../factory/kantfactory.h"
 
 #include <qfileinfo.h>
 #include <qdatetime.h>
@@ -102,11 +102,15 @@ const char * KantActionGroup::typeName(int type)
 
 const int KantDocument::maxAttribs = 32;
 
-KantDocument::KantDocument(long docID, QFileInfo* fi) : KTextEditor::Document(0L, 0L), hlManager(HlManager::self ())
+KantDocument::KantDocument(long docID, QFileInfo* fi, bool bSingleViewMode, bool bBrowserView,
+                                           QWidget *parentWidget, const char *widgetName,
+                                           QObject *parent, const char *name)
+  : KTextEditor::Document(0L, 0L), hlManager(HlManager::self ())
 {
-  setInstance( KantPartFactory::instance() );
+  setInstance( KantFactory::instance() );
 
-  m_bSingleViewMode=false;
+  m_bSingleViewMode=bSingleViewMode;
+  m_bBrowserView = bBrowserView;
 
   m_url.setPath( 0L );
 
@@ -154,11 +158,39 @@ KantDocument::KantDocument(long docID, QFileInfo* fi) : KTextEditor::Document(0L
   connect(hlManager,SIGNAL(changed()),SLOT(hlChanged()));
 
   newDocGeometry = false;
+
+  if ( m_bSingleViewMode )
+  {
+    KTextEditor::View *view = createView( parentWidget, widgetName );
+    view->show();
+    setWidget( view );
+
+    if ( m_bBrowserView )
+    {
+      // We are embedded in konqueror, let's provide an XML file and actions.
+      (void)new KantBrowserExtension( this );
+      setXMLFile( "kantpartbrowserui.rc" );
+
+      KStdAction::selectAll( view, SLOT( selectAll() ), actionCollection(), "select_all" );
+      (void)new KAction( i18n( "Unselect all" ), 0, view, SLOT( deselectAll() ), actionCollection(), "unselect_all" );
+      KStdAction::find( view, SLOT( find() ), actionCollection(), "find" );
+      KStdAction::findNext( view, SLOT( findAgain() ), actionCollection(), "find_again" );
+      KStdAction::gotoLine( view, SLOT( gotoLine() ), actionCollection(), "goto_line" );
+    }
+  }
 }
 
 KantDocument::~KantDocument()
 {
   m_highlight->release();
+
+  if ( !m_bSingleViewMode )
+  {
+    m_views.setAutoDelete( true );
+    m_views.clear();
+    m_views.setAutoDelete( false );
+  }
+
   kdDebug(13020) << "KantDocument::~KantDocument" << endl;
 }
 
@@ -2977,4 +3009,21 @@ void KantDocument::reloadFile()
 void KantDocument::slotModChanged()
 {
   emit modStateChanged (this);
+}
+
+KantBrowserExtension::KantBrowserExtension( KantDocument *doc )
+: KParts::BrowserExtension( doc, "kantpartbrowserextension" )
+{
+  m_doc = doc;
+  connect( m_doc, SIGNAL( selectionChanged() ), this, SLOT( slotSelectionChanged() ) );
+}
+
+void KantBrowserExtension::copy()
+{
+  m_doc->copy( 0 );
+}
+
+void KantBrowserExtension::slotSelectionChanged()
+{
+  emit enableAction( "copy", m_doc->hasMarkedText() );
 }

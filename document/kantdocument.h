@@ -18,7 +18,7 @@
 #ifndef kant_document_h
 #define kant_document_h
 
-#include "../kantmain.h"
+#include "../main/kantmain.h"
 
 #include <qobject.h>
 #include <qlist.h>
@@ -97,7 +97,7 @@ class KantDocument : public KTextEditor::Document
     friend class KantView;
 
   public:
-    KantDocument(long docID, QFileInfo* fi);
+    KantDocument(long docID, QFileInfo* fi, bool bSingleViewMode=false, bool bBrowserView=false, QWidget *parentWidget = 0, const char *widgetName = 0, QObject *parent = 0, const char *name = 0);
     ~KantDocument();
 
     virtual bool openFile();
@@ -158,6 +158,11 @@ class KantDocument : public KTextEditor::Document
     void writeConfig(KConfig *);
     void readSessionConfig(KConfig *);
     void writeSessionConfig(KConfig *);
+
+    bool hasBrowserExtension() const { return m_bBrowserView; }
+
+  protected:
+    bool m_bBrowserView;
 
   signals:
     void selectionChanged();
@@ -411,6 +416,21 @@ class KantDocument : public KTextEditor::Document
   signals:
     void modStateChanged (KantDocument *doc);
     void nameChanged (KantDocument *doc);
+};
+
+class KantBrowserExtension : public KParts::BrowserExtension
+{
+  Q_OBJECT
+
+  public:
+    KantBrowserExtension( KantDocument *doc );
+
+  private slots:
+    void copy();
+    void slotSelectionChanged();
+
+  private:
+    KantDocument *m_doc;
 };
 
 #endif

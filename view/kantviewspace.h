@@ -18,7 +18,7 @@
 #ifndef __kant_view_space_h__
 #define __kant_view_space_h__
 
-#include "../kantmain.h"
+#include "../main/kantmain.h"
 #include "kantview.h"
 
 #include <qlist.h>
