@@ -200,16 +200,16 @@ void KateMainWindow::setupMainWindow ()
 
 
   filelist = new KateFileList (m_docManager, m_viewManager, this/*filelistDock*/, "filelist");
-  filelistDock=addToolViewWidget(KDockWidget::DockLeft,filelist,SmallIcon("kmultiple"),"File List");
+  filelistDock=addToolViewWidget(KDockWidget::DockLeft,filelist,SmallIcon("kmultiple"), i18n("File List"));
 
   fileselector = new KateFileSelector( this, m_viewManager, /*fileselectorDock*/ this, "operator");
-  fileselectorDock=addToolViewWidget(KDockWidget::DockLeft,fileselector, SmallIcon("fileopen"),"Selector");
+  fileselectorDock=addToolViewWidget(KDockWidget::DockLeft,fileselector, SmallIcon("fileopen"), i18n("Selector"));
   
   if (kapp->authorize("shell_access"))
   {
      console = new KateConsole (this, "console",viewManager());
      console->installEventFilter( this );
-     consoleDock = addToolViewWidget(KDockWidget::DockBottom,console, SmallIcon("konsole"),"Terminal");
+     consoleDock = addToolViewWidget(KDockWidget::DockBottom,console, SmallIcon("konsole"), i18n("Terminal"));
   }     
   
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileItem*)),this,SLOT(fileSelected(const KFileItem*)));
@@ -802,7 +802,7 @@ KDockWidget *KateMainWindow::addToolView(KDockWidget::DockPosition pos,const cha
 		}
 	}
 
-	KToggleAction *showaction= new KateToggleToolViewAction(i18n("Show %1").arg(caption), 0, dw, actionCollection(),this, name);
+	KToggleAction *showaction= new KateToggleToolViewAction(i18n("Show %1").arg(i18n(caption.utf8())), 0, dw, actionCollection(),this, name);
 	m_settingsShowToolViews->insert(showaction);
 
 	return dw;
