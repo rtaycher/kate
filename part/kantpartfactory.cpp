@@ -72,7 +72,7 @@ KInstance *KantPartFactory::instance()
 
 const KAboutData *KantPartFactory::aboutData()
 {
-   KAboutData *data = new KAboutData  ("kant", I18N_NOOP("Kant"), "0.2",
+  KAboutData *data = new KAboutData  ("kant", I18N_NOOP("Kant"), "0.2",
                                                            I18N_NOOP( "Kant - A MDI Texteditor for KDE" ), KAboutData::License_GPL,
                                                            "(c) 2000-2001 The Kant Authors", "http://devel-home.kde.org/~kant");
 

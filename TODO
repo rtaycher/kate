@@ -1,7 +1,8 @@
 TODO:
+    - fixing highlighting config dialog !!!!
+
     - make configure dialog work
     - Tjeck docs for change on hd when focused, warning dialog: reload? yes/no[/view diff]
-  --------- RELEASE 0.2.0 -----------------------------------------------------------------
 
     - Find Text dialog needs ability to hit all documents.
 
@@ -15,7 +16,6 @@ TODO:
     - Put the cursor anywhere on blank space or punctuation. Tap <Ctrl+F>. The Find Text dialog
        should pop up with whatever it had before in it
 
-    - project managemenet
     - files that are untitled have to be saved before they can be used in a project
     - implement configure, compile, run
     - think about how to implement new! (close all opened files?)
