@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE language SYSTEM "language.dtd">
-<language name="LaTeX" section="Markup" extensions="*.tex;*.TEX;*.bib;*.BIB;*.ltx;*.LTX;*.sty;*.STY;*.cls;*.CLS" mimetype="text/x-tex">
+<?xml version="1.01" encoding="UTF-8"?><!DOCTYPE language>
+<language name="LaTeX" extensions="*.tex;*.TEX;*.bib;*.BIB;*.ltx;*.LTX;*.sty;*.STY;*.cls;*.CLS" mimetype="text/x-tex" casesensitive="1">
   <highlighting>
     <list name="keywords">
       <item> begin</item>
@@ -155,36 +154,6 @@
       <item>minipage</item>
       <item>multicolumn</item>
       <item>multiput</item>
-      <item>name</item>
-      <item>newcommand</item>
-      <item>newcounter</item>
-      <item>newenvironment</item>
-      <item>newfont</item>
-      <item>newlength</item>
-      <item>newline</item>
-      <item>newpage</item>
-      <item>newsavebox</item>
-      <item>newtheorem</item>
-      <item>noindent</item>
-      <item>nolinebreak</item>
-      <item>nonfrenchspacing</item>
-      <item>nonumber</item>
-      <item>nopagebreak</item>
-      <item>normalmarginpar</item>
-      <item>normalsize</item>
-      <item>numberline</item>
-      <item>oddsidemargin</item>
-      <item>onecolumn</item>
-      <item>opening</item>
-      <item>oval</item>
-      <item>overbrace</item>
-      <item>overline</item>
-      <item>pagebreak</item>
-      <item>pagenumbering</item>
-      <item>pageref</item>
-      <item>pagestyle</item>
-      <item>par</item>
-      <item>paragraph</item>
       <item>parbox</item>
       <item>parindent</item>
       <item>parsep</item>
@@ -290,20 +259,57 @@
       <item>widehat</item>
       <item>widetilde</item>
       </list>
+    <list name="funcword">
+      <item>name</item>
+      <item>newcommand</item>
+      <item>newcounter</item>
+      <item>newenvironment</item>
+      <item>newfont</item>
+      <item>newlength</item>
+      <item>newline</item>
+      <item>newpage</item>
+      <item>newsavebox</item>
+      <item>newtheorem</item>
+      <item>noindent</item>
+      <item>nolinebreak</item>
+      <item>nonfrenchspacing</item>
+      <item>nonumber</item>
+      <item>nopagebreak</item>
+      <item>normalmarginpar</item>
+      <item>normalsize</item>
+      <item>numberline</item>
+      <item>oddsidemargin</item>
+      <item>onecolumn</item>
+      <item>opening</item>
+      <item>oval</item>
+      <item>overbrace</item>
+      <item>overline</item>
+      <item>pagebreak</item>
+      <item>pagenumbering</item>
+      <item>pageref</item>
+      <item>pagestyle</item>
+      <item>par</item>
+      <item>paragraph</item>
+      </list>
     <contexts>
 	<context attribute="0" lineEndContext="0">
         	<StringDetect String="\begin{" attribute="0" context="1"/>
         	<StringDetect String="\end{" attribute="0" context="1"/>
-		<RegExpr String="%.*$" attribute="2" context="1"/>
+		<RegExpr String="%.*$" attribute="3" context="1"/>
 	</context>
-	<context attribute="0" lineEndContextxt="1">
+	<context attribute="0" lineEndContext="1">
 		<keyword String="keywords" attribute="1" context="1"/>
 		<DetectChar char="}" attribute="0" context="0"/>
+	</context>
+	<context attribute="0" lineEndContext="0">
+        	<StringDetect String="\" attribute="0" context="1"/>
+		<RegExpr String="%.*$" attribute="3" context="1"/>
 	</context>
     </contexts>
     <itemDatas>
       <itemData name="Normal Text" defStyleNum="dsNormal"/>
       <itemData name="Keyword" defStyleNum="dsKeyword" color="#00ff00" selColor="#ff0000" bold="1" italic="1"/>
+      <itemData name="funcword" defStyleNum="dsKeyword" color="#00ff00" selColor="#ff0000" bold="1" italic="1"/>
       <itemData name="Comment" defStyleNum="dsComment"/>
     </itemDatas>
   </highlighting>
@@ -311,6 +317,5 @@
     <comments>
       <comment name="singleLine" start="%" />
     </comments>
-    <keywords casesensitive="1" />
   </general>
 </language>
