@@ -244,12 +244,15 @@ bool KateProjectManager::closeAll ()
 
 void KateProjectManager::saveProjectList (class KConfig *config)
 {
+  QString prevGrp=config->group();
   config->setGroup ("Open Projects");
 
   config->writeEntry ("Count", m_projects.count());
 
   for (uint z=0; z < m_projects.count(); z++)
     config->writeEntry( QString("Project %1").arg(z), m_projects.at(z)->fileName() );
+
+  config->setGroup(prevGrp);
 }
 
 void KateProjectManager::restoreProjectList (class KConfig *config)

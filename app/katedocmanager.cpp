@@ -24,7 +24,6 @@
 #include "kateapp.h"
 #include "katemainwindow.h"
 #include "kateviewmanager.h"
-
 #include "katedocmanageriface.h"
 
 #include <kate/view.h>
@@ -36,6 +35,9 @@
 
 #include <qtextcodec.h>
 #include <qprogressdialog.h>
+#include <kmessagebox.h>
+#include <kencodingfiledialog.h>
+#include <ktexteditor/encodinginterface.h>
 
 KateDocManager::KateDocManager (QObject *parent) : QObject (parent)
 {
@@ -264,8 +266,64 @@ bool KateDocManager::closeAllDocuments()
   return res;
 }
 
+bool KateDocManager::queryCloseDocuments(KateMainWindow *w) {
+	bool res=true;
+	Kate::Document	*doc;
+	for (QPtrListIterator<Kate::Document> it(m_docList);(doc=it.current())!=0;++it) {
+
+		if (doc->url().isEmpty() && doc->isModified()) {
+
+		      int msgres=KMessageBox::warningYesNoCancel( w,
+		              i18n("<p>The document '%1' has been modified, but not saved."
+		                   "<p>Do you want to keep it?").arg( doc->docName() ),
+              			i18n("Unsaved Document") ) ;
+			kdDebug()<<"msgres:"<<msgres<<" "<<KMessageBox::Cancel<<endl;
+			if (msgres==KMessageBox::Cancel) {
+				res=false;
+				break;
+			}
+			if (msgres==KMessageBox::Yes) {
+			        KEncodingFileDialog::Result r=KEncodingFileDialog::getSaveURLAndEncoding(
+	                	KTextEditor::encodingInterface(doc)->encoding(),QString::null,QString::null,w,i18n("Save As"));
+	
+			        doc->setEncoding( r.encoding );
+			        KURL tmp;
+		        	if (!r.URLs.isEmpty()) {
+					tmp=r.URLs.first();
+				        if ( !doc->saveAs( tmp ) ) {
+						res=false;
+						break;
+					}
+				} else { res =false;
+					break;
+				}
+		   	}
+
+		}
+		else {
+			res=doc->queryClose();
+			if (!res) break;
+		}
+	}
+
+#if 0
+	if (res) {
+		for (int i=0;i<m_docList.count();i++) {
+//			m_docList.at(i)->setModified(false);
+			if (m_docList.at(i)->url().isEmpty()) {
+				Q_ASSERT(closeDocument(m_docList.at(i)));
+				i--;
+			}
+		}
+	}
+#endif
+	return res;
+}
+
+
 void KateDocManager::saveDocumentList (KConfig* config)
 {
+  QString prevGrp=config->group();
   config->setGroup ("Open Documents");
   QString grp = config->group();
 
@@ -274,18 +332,22 @@ void KateDocManager::saveDocumentList (KConfig* config)
   int i=0;
   for ( Kate::Document *doc = m_docList.first(); doc; doc = m_docList.next() )
   {
-    config->writeEntry( QString("Document %1").arg(i), doc->url().prettyURL() );
+	if (!doc->url().isEmpty()) {
+	    config->writeEntry( QString("Document %1").arg(i), doc->url().prettyURL() );
 
-    config->setGroup(QString ("Document ")+doc->url().prettyURL() );
-    doc->writeSessionConfig(config);
-    config->setGroup(grp);
+	    config->setGroup(QString ("Document ")+doc->url().prettyURL() );
+	    doc->writeSessionConfig(config);
+	    config->setGroup(grp);
 
-    i++;
+	    i++;
+	}
   }
+  config->setGroup(prevGrp);
 }
 
 void KateDocManager::restoreDocumentList (KConfig* config)
 {
+  QString prevGrp=config->group();
   config->setGroup ("Open Documents");
   QString grp = config->group();
 
@@ -328,6 +390,8 @@ void KateDocManager::restoreDocumentList (KConfig* config)
   }
 
   delete pd;
+
+  config->setGroup(prevGrp);
 }
 
 void KateDocManager::slotModifiedOnDisc (Kate::Document *doc, bool b, unsigned char reason)

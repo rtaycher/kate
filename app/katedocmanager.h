@@ -90,6 +90,7 @@ class KateDocManager : public QObject
     virtual bool closeDocument(uint);
     virtual bool closeDocumentWithID(uint);
     virtual bool closeAllDocuments();
+    bool queryCloseDocuments(KateMainWindow *w);
 
     void saveDocumentList (class KConfig *config);
     void restoreDocumentList (class KConfig *config);

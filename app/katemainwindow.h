@@ -181,6 +181,9 @@ class KateMainWindow : public KMdiMainFrm, virtual public KParts::PartBase
   public:
     void saveWindowConfiguration (KConfig *config);
     void restoreWindowConfiguration (KConfig *config);
+    virtual void readProperties(KConfig *config);
+    virtual void saveProperties(KConfig *config);
+    virtual void saveGlobalProperties( KConfig* sessionConfig );
 
   private:
     void setupMainWindow();
@@ -190,7 +193,6 @@ class KateMainWindow : public KMdiMainFrm, virtual public KParts::PartBase
 
     void readOptions(KConfig *);
     void saveOptions(KConfig *);
-    void saveProperties(KConfig*);
 
     void dragEnterEvent( QDragEnterEvent * );
     void dropEvent( QDropEvent * );

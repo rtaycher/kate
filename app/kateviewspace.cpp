@@ -211,9 +211,9 @@ void KateViewSpace::slotStatusChanged (Kate::View *view, int r, int c, int ovr, 
   mStatusBar->setStatus( r, c, ovr, block, mod, msg );
 }
 
-void KateViewSpace::saveConfig ( KConfig* config, int myIndex )
+void KateViewSpace::saveConfig ( KConfig* config, int myIndex ,const QString& viewConfGrp)
 {
-  QString group = QString("ViewSpace %1").arg( myIndex );
+  QString group = QString(viewConfGrp+"-ViewSpace %1").arg( myIndex );
 
   config->setGroup (group);
   config->writeEntry ("Count", mViewList.count());

@@ -79,10 +79,15 @@
 #include <kmenubar.h>
 
 #include "kategrepdialog.h"
+
+#include <assert.h>
 //END
 
 uint KateMainWindow::uniqueID = 1;
 KMdi::MdiMode KateMainWindow::defaultMode=KMdi::UndefinedMode;
+static bool sessionClosingAccepted=false;
+static bool sessionClosingStarted=false;
+static bool sessionClosingStarted2=false;
 
 KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager *_m_pluginManager,
 	KateProjectManager *projectMan,KMdi::MdiMode guiMode) :
@@ -299,53 +304,56 @@ void KateMainWindow::setupActions()
  */
 bool KateMainWindow::queryClose()
 {
+
+  kdDebug(13000)<<"QUERY CLOSE ********************"<<endl;
   bool val = false;
 
-  if ( ((KateApp *)kapp)->mainWindows () < 2 )
-  {
-    // store the stuff
-    KSimpleConfig* scfg = 0;
-    if (!kapp->sessionSaving())
-      scfg = new KSimpleConfig("katesessionrc", false);
+  if (!kapp->sessionSaving()) {
+    if ( ((KateApp *)kapp)->mainWindows () < 2 )
+    {
+      // store the stuff
+      KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
 
-    if (!scfg)
-      m_projectManager->saveProjectList (kapp->sessionConfig());
-    else
       m_projectManager->saveProjectList (scfg);
 
-    saveOptions(config);
+      saveOptions(config);
 
-    if (m_projectManager->closeAll ())
-    {
-      // first ask if something has changed
-      m_viewManager->queryModified();
+      if (m_projectManager->closeAll ())
+      {
+        // first ask if something has changed
 
-      if (!scfg)
-      {
-        m_docManager->saveDocumentList (kapp->sessionConfig());
-        saveWindowConfiguration (kapp->sessionConfig());
-      }
-      else
-      {
+	val=m_docManager->queryCloseDocuments(this);
+	if (!val) return false;
         m_docManager->saveDocumentList (scfg);
         saveWindowConfiguration (scfg);
-      }
 
-      m_docManager->closeAllDocuments();
+        //m_docManager->closeAllDocuments();
 
-      if ( !m_docManager->activeDocument() || !m_viewManager->activeView() ||
-         ( !m_viewManager->activeView()->getDoc()->isModified() && m_docManager->documents() == 1 ) )
-      {
-        if( m_viewManager->activeView() )
-          m_viewManager->deleteLastView();
-        val = true;
-      }
+        if ( !m_docManager->activeDocument() || !m_viewManager->activeView() ||
+           ( !m_viewManager->activeView()->getDoc()->isModified() && m_docManager->documents() == 1 ) )
+        {  
+           if( m_viewManager->activeView() )
+             m_viewManager->deleteLastView();
+           val = true;
+        }
+     }
+     scfg->sync();
+     delete scfg;
     }
-
-    delete scfg;
+    else
+      val = true;
   }
-  else
-    val = true;
+  else 
+  {
+	val=sessionClosingAccepted;
+	if (!sessionClosingStarted) {
+		val=sessionClosingStarted=sessionClosingAccepted=m_docManager->queryCloseDocuments(this);
+		if (val) sessionClosingStarted2=true;
+	}
+	if (!val) sessionClosingStarted=false;
+	
+  }
+
 
   if (val)
   {
@@ -354,13 +362,8 @@ bool KateMainWindow::queryClose()
     if( consoleDock && console && consoleDock->isVisible() )
       consoleDock->changeHideShowState();
   }
-
+  
   return val;
-}
-
-void KateMainWindow::saveProperties( KConfig * )
-{
-  kdDebug(13000)<<"KateMainWindow::saveProperties()"<<endl;
 }
 
 void KateMainWindow::newWindow ()
@@ -397,17 +400,17 @@ void KateMainWindow::readOptions(KConfig *config)
 
   recentProjects->loadEntries (config, "Recent Projects");
 
-  if (config->hasGroup("MainWindow0-Docking"))
-	  readDockConfig(config,"MainWindow0-Docking");
+  //if (config->hasGroup("MainWindow0-Docking"))
+//	  readDockConfig(config,"MainWindow0-Docking");
 }
 
 void KateMainWindow::saveOptions(KConfig *config)
 {
   config->setGroup("General");
-  if (config->readNumEntry("GUIMode",KMdi::UndefinedMode)!=mdiMode()) {
+/*  if (config->readNumEntry("GUIMode",KMdi::UndefinedMode)!=mdiMode()) {
 	config->writeEntry("GUIMode",mdiMode());
 	config->deleteGroup("MainWindow0-Docking");
-  }
+  }*/
 
   if (consoleDock && console)
     config->writeEntry("Show Console", console->isVisible());
@@ -426,7 +429,7 @@ void KateMainWindow::saveOptions(KConfig *config)
 
   recentProjects->saveEntries (config, "Recent Projects");
 
-  writeDockConfig(config,"MainWindow0-Docking");
+  //writeDockConfig(config,"MainWindow0-Docking");
 }
 
 void KateMainWindow::slotDocumentChanged()
@@ -990,12 +993,83 @@ void KateMainWindow::openConstURLProject (const KURL&url)
   openProject (url.path());
 }
 
+
+
+void KateMainWindow::saveProperties(KConfig *config) {
+	kdDebug(13000)<<"KateMainWindow::saveProperties()********************************************"<<endl
+		      <<config->group()<<endl
+		      <<"****************************************************************************"<<endl;
+//	return;
+	saveWindowConfiguration(config);
+
+#warning FIXME, should be done only once
+        m_docManager->saveDocumentList (config);
+        m_projectManager->saveProjectList (config);
+//	m_docManager->closeAllDocuments();
+
+}
+
+void KateMainWindow::readProperties(KConfig *config) {
+	restoreWindowConfiguration(config);
+}
+
 void KateMainWindow::saveWindowConfiguration (KConfig *config)
 {
-  m_viewManager->saveViewConfiguration (config);
+  assert(config);
+
+  kdDebug(13000)<<"preparing session saving"<<endl;
+  QString grp=config->group();
+  QString dockGrp;
+
+  if (kapp->sessionSaving()) dockGrp=grp+"-Docking";
+	else dockGrp="MainWindow0-Docking";
+/*  if (config->readNumEntry("GUIMode",KMdi::UndefinedMode)!=mdiMode()) {
+        config->writeEntry("GUIMode",mdiMode());
+        config->deleteGroup("MainWindow0-Docking");
+  }*/
+
+  kdDebug(13000)<<"Before write dock config"<<endl;
+  writeDockConfig(config,dockGrp);
+  kdDebug(13000)<<"After write dock config"<<endl;
+
+
+  if (kapp->sessionSaving()) dockGrp=grp+"-View Configuration";
+	else dockGrp="MainWindow0-View Configuration";
+
+  m_viewManager->saveViewConfiguration (config,dockGrp);
+  kdDebug(13000)<<"After saving view configuration"<<endl;
+  config->setGroup(grp);
+
 }
 
 void KateMainWindow::restoreWindowConfiguration (KConfig *config)
 {
-  m_viewManager->restoreViewConfiguration (config);
+  QString grp=config->group();
+  QString dockGrp;
+
+  if (kapp->isRestored()) dockGrp=grp+"-Docking";
+	else dockGrp="MainWindow0-Docking";
+
+  if (config->hasGroup(dockGrp))
+        readDockConfig(config,dockGrp);
+
+  if (kapp->isRestored()) dockGrp=grp+"-View Configuration";
+	else dockGrp="MainWindow0-View Configuration";
+
+  m_viewManager->restoreViewConfiguration (config,dockGrp);
+  config->setGroup(grp);
 }
+
+
+void KateMainWindow::saveGlobalProperties( KConfig* sessionConfig ) {
+	kdDebug()<<"saveGlobalProperties**********************"<<endl;
+
+     //session saving
+     kdDebug()<<"QUERY CLOSE: session management"<<endl;
+	if (!sessionClosingStarted2)
+		sessionClosingAccepted=m_docManager->queryCloseDocuments(this);
+	sessionClosingStarted=true;
+
+	saveOptions(sessionConfig);
+}
+

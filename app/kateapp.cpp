@@ -77,7 +77,7 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
 #warning Session management ?
   config()->setGroup("General");
   m_restoreGUIMode=(KMdi::MdiMode)config()->readNumEntry("GUIMode",KMdi::UndefinedMode);
-  KateMainWindow *win = newMainWindow ();
+  KateMainWindow *win; // = newMainWindow ();
   m_restoreGUIMode=KMdi::UndefinedMode;
 
   // we restore our great stuff here now ;) super
@@ -87,11 +87,19 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
     m_projectManager->restoreProjectList (sessionConfig());
     m_docManager->restoreDocumentList (sessionConfig());
 
+    int n = 1;
+    while (KMainWindow::canBeRestored(n)){
+	    // for efficiency do something with m_restoreGuiMode here
+	win=newMainWindow();
+	win->restore(n);
+	n++;
+    }
     // window config
-    win->restoreWindowConfiguration (sessionConfig());
+    //win->restoreWindowConfiguration (sessionConfig());
   }
   else
   {
+    win=newMainWindow();
     config()->setGroup("General");
 
     KSimpleConfig scfg ("katesessionrc", false);
@@ -138,7 +146,7 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
 KateApp::~KateApp ()
 {
   m_pluginManager->writeConfig ();
-
+  //m_docManager->closeAllDocuments();
   delete m_obj;
 }
 

@@ -51,10 +51,10 @@ class KateViewManager : public QWidget
     void queryModified();
 
     /* This will save the splitter configuration */
-    void saveViewConfiguration(KConfig *config);
+    void saveViewConfiguration(KConfig *config,const QString& group);
 
     /* restore it */
-    void restoreViewConfiguration (KConfig *config);
+    void restoreViewConfiguration (KConfig *config,const QString& group);
 
   public slots:
     void openURL (KURL url=0L, const QString& encoding=QString::null);
@@ -78,12 +78,12 @@ class KateViewManager : public QWidget
      * If child splitters are found, it calls it self with those as the argument.
      * If a viewspace child is found, it is asked to save its filelist.
      */
-    void saveSplitterConfig(KateSplitter* s, int idx=0, KConfig* config=0L);
+    void saveSplitterConfig(KateSplitter* s, int idx=0, KConfig* config=0L, const QString& viewConfGrp="");
 
     /** Restore a single splitter.
      * This is all the work is done for @see saveSplitterConfig()
      */
-    void restoreSplitter ( KConfig* config, const QString &group, QWidget* parent );
+    void restoreSplitter ( KConfig* config, const QString &group, QWidget* parent , const QString& viewConfGrp);
 
     void removeViewSpace (KateViewSpace *viewspace);
 

@@ -82,7 +82,7 @@ class KateViewSpace : public QVBox
     Kate::View* currentView();
     int viewCount() const { return mViewList.count(); }
 
-    void saveConfig (KConfig* config, int myIndex);
+    void saveConfig (KConfig* config, int myIndex,const QString& viewConfGrp);
     void restoreConfig ( class KateViewManager *viewMan, KConfig* config, const QString &group );
 
 
