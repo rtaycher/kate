@@ -129,7 +129,7 @@
         <Detect2Chars attribute="10" context="2" char="/" char1="/"/>
         <Detect2Chars attribute="10" context="3" char="/" char1="*"/>
         <AnyChar attribute="11" context="-2" String="!%&amp;()+,-&lt;=&gt;?[]^{|}~"/>
-        <StringDetect attribute="10" context="8" String="#if 0" insensitive="FALSE"/>
+        <StringDetect attribute="12" context="8" String="#if 0" insensitive="FALSE"/>
         <RegExpr attribute="12" context="4" String="^#"/>
       </context>
       <context attribute="8" lineEndContext="-1" name="String">
@@ -158,7 +158,11 @@
       <context attribute="0" lineEndContext="4" name="Some Context2"/>
       <context attribute="10" lineEndContext="-2">
           <RegExpr attribute="3" context="-2" String="(FIXME|TODO)" />
-	  <RegExpr attribute="10" context="-2" String="#if" />
+	  <RegExpr attribute="10" context="9" String="#if" />
+          <RegExpr attribute="12" context="-1" String="^#endif" />
+	  <RegExpr attribute="12" context="-1" String="^#else" />
+      </context>
+      <context attribute="10" lineEndContext="-2">
           <RegExpr attribute="10" context="-1" String="^#endif" />
       </context>
     </contexts>
