@@ -214,7 +214,7 @@ void KateProjectTreeView::addDir (KateProjectTreeViewItem *parent, const QString
   }
 }
 
-void KateProjectTreeView::slotDoubleClicked( QListViewItem *i, const QPoint &pos, int c )
+void KateProjectTreeView::slotDoubleClicked( QListViewItem *i, const QPoint &, int )
 {
   KateProjectTreeViewItem *item = (KateProjectTreeViewItem *) i;
   
