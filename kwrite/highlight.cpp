@@ -1309,6 +1309,59 @@ void PascalHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
   dataType->addList(HlManager::self()->syntax->finddata("Pascal","type"));
 }
 
+
+PovrayHighlight::PovrayHighlight(const char *name) : CHighlight(name) {
+  iWildcards = "*.pov;*.inc";
+  iMimetypes = "text/x-povray";
+}
+ 
+PovrayHighlight::~PovrayHighlight() {
+}
+
+ void PovrayHighlight::createItemData(ItemDataList &list) {
+  list.append(new ItemData("Normal Text",dsNormal));  //0
+  list.append(new ItemData("Keyword",dsKeyword));     //1
+  list.append(new ItemData("Number",dsDecVal));       //2
+  list.append(new ItemData("String",dsString));       //3
+  list.append(new ItemData("Comment",dsComment));     //4
+  list.append(new ItemData("Symbol",dsNormal));       //5
+}
+
+void PovrayHighlight::makeContextList() {
+  HlContext *c;
+  HlKeyword *keyword, *dataType;
+ 
+  // normal context
+  contextList[0] = c = new HlContext(dsNormal,0);
+  c->items.append(keyword = new HlKeyword(dsKeyword,0));
+  c->items.append(new HlCFloat(2,0));
+  c->items.append(new HlCInt(2,0));
+  c->items.append(new HlCChar(3,0));
+  c->items.append(new HlCharDetect(3,1,'"'));
+  c->items.append(new Hl2CharDetect(4,2, '/', '/'));
+  c->items.append(new Hl2CharDetect(4,3, '/', '*'));
+  c->items.append(new HlCSymbol(5,0));
+  //string context
+  contextList[1] = c = new HlContext(3,0);
+  c->items.append(new HlLineContinue(3,4));
+  c->items.append(new HlCStringChar(3,1));
+  c->items.append(new HlCharDetect(3,0,'"'));
+  //one line comment context
+  contextList[2] = new HlContext(4,0);
+  //multi line comment context
+  contextList[3] = c = new HlContext(4,3);
+  c->items.append(new Hl2CharDetect(4,0, '*', '/'));
+  //string line continue
+  contextList[4] = new HlContext(0,1);
+ 
+  setKeywords(keyword,dataType);
+}
+ 
+void PovrayHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
+{
+  keyword->addList(HlManager::self()->syntax->finddata("Povray","keyword"));
+}
+
 IdlHighlight::IdlHighlight(const char * name) : CHighlight(name) {
   iWildcards = "*.idl";
   iMimetypes = "text/x-idl-src";
@@ -1947,6 +2000,7 @@ HlManager::HlManager() : QObject(0L) {
   hlList.append(new ModulaHighlight("Modula 2" ));
   hlList.append(new AdaHighlight(   "Ada"      ));
   hlList.append(new PascalHighlight("Pascal"   ));
+  hlList.append(new PovrayHighlight("Povray"   ));
   hlList.append(new PythonHighlight("Python"   ));
   hlList.append(new PerlHighlight(  "Perl"     ));
   hlList.append(new SatherHighlight("Sather"   ));
