@@ -23,6 +23,7 @@
 #include <qtabdialog.h>
 #include <qdropsite.h>
 #include <qdragobject.h>
+#include <qvbox.h>
 
 #include <kglobal.h>
 #include <kapp.h>
@@ -34,6 +35,7 @@
 #include <kconfig.h>
 #include <kwin.h>
 #include <kcmdlineargs.h>
+#include <kdialogbase.h>
 
 #include "kwdialog.h"
 #include "highlight.h"
@@ -488,25 +490,26 @@ void TopLevel::quitEditor() {
 void TopLevel::configure() {
   KWin kwin;
   // I read that no widgets should be created on the stack
-  QTabDialog *qtd = new QTabDialog(this, "tabdialog", TRUE);
-
-  qtd->setCaption(i18n("Configure KWrite"));
+  KDialogBase *kd = new KDialogBase(KDialogBase::Tabbed,
+				    i18n("Configure KWrite"),
+				    KDialogBase::Ok | KDialogBase::Cancel,
+				    KDialogBase::Ok, this, "tabdialog");
 
   // indent options
-  IndentConfigTab *indentConfig = new IndentConfigTab(qtd, kWrite);
-  qtd->addTab(indentConfig, i18n("Indent"));
+  QVBox *page=kd->addVBoxPage(i18n("Indent"));
+  IndentConfigTab *indentConfig = new IndentConfigTab(page, kWrite);
 
   // select options
-  SelectConfigTab *selectConfig = new SelectConfigTab(qtd, kWrite);
-  qtd->addTab(selectConfig, i18n("Select"));
+  page=kd->addVBoxPage(i18n("Select"));
+  SelectConfigTab *selectConfig = new SelectConfigTab(page, kWrite);
 
   // edit options
-  EditConfigTab *editConfig = new EditConfigTab(qtd, kWrite);
-  qtd->addTab(editConfig, i18n("Edit"));
+  page=kd->addVBoxPage(i18n("Edit"));
+  EditConfigTab *editConfig = new EditConfigTab(page, kWrite);
 
   // spell checker
-  KSpellConfig *ksc = new KSpellConfig(qtd, 0L, kWrite->ksConfig());
-  qtd->addTab(ksc, i18n("Spellchecker"));
+  page=kd->addVBoxPage(i18n("Spellchecker"));
+  KSpellConfig *ksc = new KSpellConfig(page, 0L, kWrite->ksConfig());
 
   // keys
   //this still lacks layout management, so the tabdialog does not
@@ -514,16 +517,13 @@ void TopLevel::configure() {
 //  KGuiCmdConfigTab *keys = new KGuiCmdConfigTab(qtd, &cmdMngr);
 //  qtd->addTab(keys, i18n("Keys"));
 
-  qtd->setOkButton(i18n("OK"));
-  qtd->setCancelButton(i18n("Cancel"));
-
   // Is there a _right_ way to do this?
   // yes: don´t do it :)
 //  qtd->setMinimumSize (ksc.sizeHint().width() + qtd->sizeHint().width(),
 //          ksc.sizeHint().height() + qtd->sizeHint().height());
-  kwin.setIcons(qtd->winId(), kapp->icon(), kapp->miniIcon());
+  kwin.setIcons(kd->winId(), kapp->icon(), kapp->miniIcon());
 
-  if (qtd->exec()) {
+  if (kd->exec()) {
     // indent options
     indentConfig->getData(kWrite);
     // select options
@@ -541,7 +541,7 @@ void TopLevel::configure() {
 //    cmdMngr.restoreAccels();
   }
 
-  delete qtd;
+  delete kd;
 }
 
 void TopLevel::keys() {
