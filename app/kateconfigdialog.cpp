@@ -306,27 +306,19 @@ void KateConfigDialog::slotApply()
 
   config->writeEntry( "Number of recent files", sb_numRecentFiles->value() );
   mainWindow->fileOpenRecent->setMaxItems( sb_numRecentFiles->value() );
-  
+
   fileSelConfigPage->apply();
   
   for (uint i=0; i<editorPages.count(); i++)
   {
     editorPages.at(i)->apply();
   }
-  
+
   v->getDoc()->writeConfig();
-  v->getDoc()->readConfig();
 
   viewManager->setShowFullPath( cb_fullPath->isChecked() ); // hm, stored 2 places :(
   config->writeEntry( "Show Full Path in Title", cb_fullPath->isChecked() );
   config->sync();
-
-  // all docs need to reread config.
-  QPtrListIterator<Kate::Document> dit (docManager->documentList());
-  for (; dit.current(); ++dit)
-  {
-    dit.current()->readConfig(  );
-  }
 
   for (uint i=0; i<pluginPages.count(); i++)
   {
