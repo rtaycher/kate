@@ -75,7 +75,6 @@ KateViewManager::KateViewManager (QWidget *parent, KateDocManager *m_docManager)
   KateViewSpace* vs = new KateViewSpace( this );
   connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, const QString&)), vs, SLOT(slotStatusChanged(Kate::View *, int, int, int, bool, int, const QString&)));
   vs->setActive( true );
-  vs->installEventFilter( this );
   m_grid->addWidget( vs, 0, 0);
   m_viewSpaceList.append(vs);
   connect( this, SIGNAL(viewChanged()), this, SLOT(slotViewChanged()) );
@@ -607,7 +606,6 @@ void KateViewManager::splitViewSpace( KateViewSpace* vs,
 
   connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, const QString &)), vsNew, SLOT(slotStatusChanged(Kate::View *, int, int,int, bool, int, const QString &)));
   m_viewSpaceList.append( vsNew );
-  vsNew->installEventFilter( this );
   activeViewSpace()->setActive( false );
   vsNew->setActive( true, true );
   vsNew->show();
@@ -990,7 +988,6 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, const QString &gro
      if ( (*it).startsWith("viewspace") ) {
        KateViewSpace* vs = new KateViewSpace( s );
        connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, const QString &)), vs, SLOT(slotStatusChanged(Kate::View *, int, int, int, bool, int, const QString &)));
-       vs->installEventFilter( this );
        m_viewSpaceList.append( vs );
        vs->show();
        setActiveSpace( vs );

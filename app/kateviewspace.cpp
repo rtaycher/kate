@@ -77,7 +77,6 @@ KateViewSpace::KateViewSpace(QWidget* parent, const char* name)
 
   stack = new QWidgetStack( this );
   setStretchFactor(stack, 1);
-  stack->installEventFilter( this );
   stack->setFocus();
   sep = new KVSSBSep( this );
   mStatusBar = new KateVSStatusBar(this);
