@@ -1,4 +1,4 @@
-lib_LTLIBRARIES = libkant.la kant.la kwrite.la
+lib_LTLIBRARIES = libkant.la libkantmain.la kwrite.la
 bin_PROGRAMS = kant kwrite
 
 libkant_la_SOURCES = dummy.cpp
@@ -10,16 +10,16 @@ libkant_la_LIBADD   = ../factory/libkantfactory.la ../document/libkantdocument.l
 		../pluginmanager/libkantpluginmanager.la ../interfaces/libkantIface.la -lktexteditor -lkspell
 libkant_la_LDFLAGS = $(all_libraries) $(KDE_RPATH)  $(KDE_PLUGIN)  -module -avoid-version
 
-kant_la_SOURCES = kantmain.cpp
-kant_la_LIBADD   = libkant.la
-kant_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
+libkantmain_la_SOURCES = kantmain.cpp
+libkantmain_la_LIBADD   = libkant.la
+libkantmain_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
 
 kwrite_la_SOURCES = kwritemain.cpp
 kwrite_la_LIBADD   = libkant.la
 kwrite_la_LDFLAGS = $(all_libraries) $(KDE_RPATH)  -module -avoid-version
 
 kant_SOURCES = dummy.cpp
-kant_LDADD = kant.la
+kant_LDADD = libkantmain.la
 kant_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 kwrite_SOURCES = dummy.cpp
