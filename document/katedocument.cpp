@@ -162,6 +162,7 @@ KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool
 
   buffer = new KWBuffer;
   connect(buffer, SIGNAL(linesChanged(int)), this, SLOT(slotBufferChanged()));
+//  connect(buffer, SIGNAL(textChanged()), this, SIGNAL(textChanged()));
   connect(buffer, SIGNAL(needHighlight(long,long)),this,SLOT(slotBufferHighlight(long,long)));
 
   colors[0] = KGlobalSettings::baseColor();
@@ -2717,6 +2718,7 @@ printf("recordend %d %d\n", undoType, undoCount);
 
   // this should keep the flood of signals down a little...
   if (undoCount == 0) newUndo();
+  emit textChanged();
 }
 /*
 void KateDocument::recordReset()

@@ -398,6 +398,7 @@ KWBuffer::changeLine(int i)
    {
       dirtyBlock(buf);
    }
+   emit textChanged();
 }
 
 void
