@@ -52,7 +52,7 @@ class Application : public QObject
      */
     virtual ~Application ();
     
-  public slots:
+  public:
     /** Returns a pointer to the document manager
     */
     Kate::DocumentManager *documentManager ();

@@ -25,6 +25,8 @@
 namespace Kate
 {
 
+class Project;
+
 /**
  * Interface to the projectmanager
  */
@@ -45,13 +47,14 @@ class ProjectManager : public QObject
      */
     virtual ~ProjectManager ();
     
+    public slots:
     /**
      * Creates a new project file at give url of given type + opens it
      * @param type projecttype
      * @param filename name of the new project file
      * @return Project new created project object
      */
-    class Project *create (const QString &type, const QString &name, const QString &filename);
+    Kate::Project *create (const QString &type, const QString &name, const QString &filename);
     
     /**
      * @param filename name of the project file
@@ -61,10 +64,10 @@ class ProjectManager : public QObject
     
     bool close (Kate::Project *project);
     
-    class Project *project (uint n = 0);
+    Kate::Project *project (uint n = 0);
     
     uint projects ();
-    
+
   #undef signals
   #define signals public
   signals:

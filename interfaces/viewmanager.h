@@ -25,6 +25,8 @@
 namespace Kate
 {
 
+class View;
+
 /**
  * Interface to the viewmanager
  */
@@ -50,7 +52,7 @@ class ViewManager : public QObject
      * Returns a pointer to the currently active view
      * @return View active view
      */
-    class View *activeView ();
+    Kate::View *activeView ();
 
     /**
      * Activates the view with the corresponding documentNumber

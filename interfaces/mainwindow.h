@@ -27,6 +27,9 @@
 namespace Kate
 {
 
+class Project;
+class ViewManager;
+
 class MainWindow : public QObject
 {
   friend class PrivateMainWindow;
@@ -37,12 +40,13 @@ class MainWindow : public QObject
     MainWindow (void *mainWindow);
     virtual ~MainWindow ();
 
-  public slots: /*these are slots for kjs*/
+  public: /*these are slots for kjs*/
     KXMLGUIFactory *guiFactory() const;
 
-    class ViewManager *viewManager () const;
+  public slots:
+    Kate::ViewManager *viewManager () const;
 
-  public:
+  public :
 
     class ToolViewManager *toolViewManager() const;
 
@@ -51,7 +55,7 @@ class MainWindow : public QObject
      * Returns the active project of this main window
      * @return Project current active project
      */
-    class Project *activeProject () const;
+    Kate::Project *activeProject () const;
 
     /**
      * Creates a new project file at give url of given type + opens it
@@ -59,13 +63,13 @@ class MainWindow : public QObject
      * @param filename name of the new project file
      * @return Project new created project object
      */
-    class Project *createProject (const QString &type, const QString &name, const QString &filename);
+    Kate::Project *createProject (const QString &type, const QString &name, const QString &filename);
 
     /**
      * @param filename name of the project file
      * @return Project opened project
      */
-    class Project *openProject (const QString &filename);
+    Kate::Project *openProject (const QString &filename);
 
   //invention of public signals, like in kparts/browserextension.h
   #undef signals
