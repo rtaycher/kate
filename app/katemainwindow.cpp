@@ -88,8 +88,6 @@ KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_
 
   guiFactory()->addClient (this);
   
-  //createGUI();
-
   pluginManager->enableAllPluginsGUI (this);
 
   // connect settings menu aboutToshow
@@ -200,7 +198,6 @@ void KateMainWindow::setupActions()
 
   fileOpenRecent = KStdAction::openRecent (viewManager, SLOT(openConstURL_delayed1 (const KURL&)), actionCollection());
   new KAction( i18n("Save A&ll"),"save_all", CTRL+Key_L, viewManager, SLOT( slotDocumentSaveAll() ), actionCollection(), "file_save_all" );
-  KStdAction::print(viewManager, SLOT(printDlg()), actionCollection());
   KStdAction::close( viewManager, SLOT( slotDocumentClose() ), actionCollection(), "file_close" );
   new KAction( i18n( "Clos&e All" ), 0, viewManager, SLOT( slotDocumentCloseAll() ), actionCollection(), "file_close_all" );
 
@@ -216,32 +213,17 @@ void KateMainWindow::setupActions()
   new KAction( i18n("Split &Horizontal"), "view_top_bottom", CTRL+SHIFT+Key_T, viewManager, SLOT( slotSplitViewSpaceHoriz() ), actionCollection(), "view_split_horiz");
   closeCurrentViewSpace = new KAction( i18n("Close &Current"), "view_remove", CTRL+SHIFT+Key_R, viewManager, SLOT( slotCloseCurrentViewSpace() ), actionCollection(), "view_close_current_space");
 
-  viewBorder =  new KToggleAction(i18n("Show &Icon Border"), Key_F6, viewManager, SLOT(toggleIconBorder()), actionCollection(), "view_border");
-  viewLineNumbers =  new KToggleAction(i18n("Show &Line Numbers"), Key_F9, viewManager, SLOT(toggleLineNumbers()), actionCollection(), "view_line_numbers");
-
   goNext=new KAction(i18n("Next View"),Key_F8,viewManager, SLOT(activateNextView()),actionCollection(),"go_next");
   goPrev=new KAction(i18n("Previous View"),SHIFT+Key_F8,viewManager, SLOT(activatePrevView()),actionCollection(),"go_prev");
 
   windowNext = KStdAction::back(viewManager, SLOT(slotWindowNext()), actionCollection());
   windowPrev = KStdAction::forward(viewManager, SLOT(slotWindowPrev()), actionCollection());
 
-  setEndOfLine = new KSelectAction(i18n("&End of Line"), 0, actionCollection(), "set_eol");
-  connect(setEndOfLine, SIGNAL(activated(int)), viewManager, SLOT(setEol(int)));
-  connect(setEndOfLine->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(setEOLMenuAboutToShow()));
-  QStringList list;
-  list.append("&Unix");
-  list.append("&Windows/Dos");
-  list.append("&Macintosh");
-  setEndOfLine->setItems(list);
-
   documentReload = new KAction(i18n("Reloa&d"), "reload", Key_F5, viewManager, SLOT(reloadCurrentDoc()), actionCollection(), "file_reload");
 
   documentOpenWith = new KActionMenu(i18n("Open W&ith"), actionCollection(), "file_open_with");
   connect(documentOpenWith->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(mSlotFixOpenWithMenu()));
   connect(documentOpenWith->popupMenu(), SIGNAL(activated(int)), this, SLOT(slotOpenWithMenuAction(int)));
-
-  new KAction(i18n("&Toggle Block Selection"), Key_F4, viewManager, SLOT(toggleVertical()),
-                                             actionCollection(), "set_verticalSelect");
 
   if (pluginManager->myPluginList.count() > 0)
     new KAction(i18n("Contents &Plugins"), 0, this, SLOT(pluginHelp()), actionCollection(), "help_plugins_contents");
@@ -254,13 +236,8 @@ void KateMainWindow::setupActions()
   settingsShowFileselector = new KToggleAction(i18n("Show File Selector"), 0, fileselectorDock, SLOT(changeHideShowState()), actionCollection(), "settings_show_fileselector");
   settingsShowConsole = new KToggleAction(i18n("Show Terminal Emulator"), QString::fromLatin1("konsole"), Qt::Key_F7, this, SLOT(slotSettingsShowConsole()), actionCollection(), "settings_show_console");
 
-  // (now moved to config dialog) show full path in title -anders
-  // settingsShowFullPath = new KToggleAction(i18n("Show Full &Path in Title"), 0, this, SLOT(slotSettingsShowFullPath()), actionCollection(), "settings_show_full_path");
   settingsShowToolbar = KStdAction::showToolbar(this, SLOT(slotSettingsShowToolbar()), actionCollection(), "settings_show_toolbar");
   settingsConfigure = KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
-
-  setHighlight = docManager->docList.at(0)->hlActionMenu (i18n("&Highlight Mode"), actionCollection(), "set_highlight");
-  exportAs = docManager->docList.at(0)->exportActionMenu (i18n("E&xport"), actionCollection(),"file_export");
 
   connect(viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
 
@@ -338,7 +315,7 @@ void KateMainWindow::readOptions(KConfig *config)
       resize( config->readSizeEntry( "size", &tmpSize ) );
     }
   viewManager->setShowFullPath(config->readBoolEntry("Show Full Path in Title", false));
-  //settingsShowFullPath->setChecked(viewManager->getShowFullPath());
+
   settingsShowToolbar->setChecked(config->readBoolEntry("Show Toolbar", true));
   slotSettingsShowToolbar();
   viewManager->setUseOpaqueResize(config->readBoolEntry("Opaque Resize", true));
@@ -399,11 +376,6 @@ void KateMainWindow::slotWindowActivated ()
         console->cd (path);
       }
     }
-
-    viewBorder->setChecked(viewManager->activeView()->iconBorder());
-    viewLineNumbers->setChecked(viewManager->activeView()->lineNumbersOn());
-    setHighlight->updateMenu (viewManager->activeView()->getDoc());
-    exportAs->updateMenu (viewManager->activeView()->getDoc());
   }
 
   if (viewManager->viewCount ()  > 1)
@@ -430,10 +402,7 @@ void KateMainWindow::documentMenuAboutToShow()
   windowPrev->plug (documentMenu);
   documentMenu->insertSeparator ();
   scriptMenu->plug (documentMenu);
-  setHighlight->plug (documentMenu);
-  setHighlight->updateMenu (viewManager->activeView()->getDoc());
 
-  setEndOfLine->plug (documentMenu);
   documentMenu->insertSeparator ();
 
   uint z=0;
@@ -551,24 +520,11 @@ void KateMainWindow::settingsMenuAboutToShow()
     settingsShowConsole->setChecked( consoleDock->isVisible() );
 }
 
-void KateMainWindow::setEOLMenuAboutToShow()
-{
-  int eol = viewManager->activeView()->getEol();
-  eol = eol>=0? eol: 0;
-  setEndOfLine->setCurrentItem( eol );
-}
-
 void KateMainWindow::openURL (const QString &name)
 {
   viewManager->openURL (KURL(name));
 }
 
-/* FIXME anders: remove later
-void KateMainWindow::slotSettingsShowFullPath()
-{
-  viewManager->setShowFullPath( settingsShowFullPath->isChecked() );
-}
-*/
 void KateMainWindow::slotSettingsShowToolbar()
 {
   if (settingsShowToolbar->isChecked())

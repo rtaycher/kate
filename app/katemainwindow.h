@@ -90,17 +90,12 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     QGuardedPtr<Kate::View> activeView;
   
     KAction *closeCurrentViewSpace;
-    KToggleAction *viewBorder;
-    KToggleAction *viewLineNumbers;
 
     KAction *goNext;
     KAction *goPrev;
 
-    KSelectAction* setEndOfLine;
     KAction* documentReload;
     KActionMenu* documentOpenWith;
-    Kate::ActionMenu *setHighlight;
-    Kate::ActionMenu *exportAs;
 
     KAction *gotoLine;
     KAction* windowNext;
@@ -110,7 +105,6 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
 
     KToggleAction* settingsShowFilelist;
     KToggleAction* settingsShowFileselector;
-    //KToggleAction* settingsShowFullPath;
     KToggleAction* settingsShowToolbar;
     KToggleAction* settingsShowConsole;
 
@@ -141,21 +135,20 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     void setupMainWindow();
     void setupActions();
     void setupScripts();
-    virtual bool queryClose();
+    bool queryClose();
 
     void readOptions(KConfig *);
     void saveOptions(KConfig *);
-    virtual void saveProperties(KConfig*);
+    void saveProperties(KConfig*);
 
-    virtual void dragEnterEvent( QDragEnterEvent * );
-    virtual void dropEvent( QDropEvent * );
+    void dragEnterEvent( QDragEnterEvent * );
+    void dropEvent( QDropEvent * );
 
   private slots:
     void slotFileQuit();
     void slotEditToolbars();
     void slotWindowActivated ();
     void documentMenuAboutToShow();
-    void setEOLMenuAboutToShow();
     void settingsMenuAboutToShow();
     void slotDropEvent(QDropEvent *);
     void editKeys();

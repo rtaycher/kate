@@ -149,8 +149,6 @@ class KateViewManager : public Kate::ViewManager
 
     void slotCloseCurrentViewSpace();
 
-    void slotSetHl (uint n);
-
     void statusMsg ();
 
     void setActiveSpace ( KateViewSpace* vs );
@@ -162,8 +160,6 @@ class KateViewManager : public Kate::ViewManager
 
     void activateNextView();
     void activatePrevView();
-
-    void setEol(int);
 
   signals:
     void statusChanged (Kate::View *, int, int, int, bool, int, QString);

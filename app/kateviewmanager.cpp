@@ -557,19 +557,6 @@ void KateViewManager::slotDocumentCloseAll ()
   }
 }
 
-void KateViewManager::setEol(int which)
-{
-  if (activeView())
-    activeView()->setEol( which );
-}
-
-void KateViewManager::slotSetHl (uint n)
-{
-  if (activeView() == 0) return;
-
-  activeView()->getDoc()->setHlMode(n);
-}
-
 void KateViewManager::openURL (KURL url)
 {
   if (!((KateApp *)kapp)->_isSDI)

@@ -1,23 +1,22 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
 <kpartgui name="kate" version="5">
 
-<MenuBar noMerge="1">
-  <Menu name="file"><text>&amp;File</text>
+<MenuBar>
+  <Menu name="file" noMerge="1"><text>&amp;File</text>
     <Action name="file_new" />
     <Action name="file_open" />
     <Action name="file_open_recent" />
     <Separator/>
+    <DefineGroup name="file_operations" />
     <Action name="file_save_all"/>
-    <Action name="file_export"/>
+    <Separator/>
+    <DefineGroup name="print_operations" />
+    <Separator/>
+    <Action name="file_close"/>
+    <Action name="file_close_all"/>
     <Separator />
     <Action name="file_reload" />
     <Action name="file_open_with" />
-    <Separator/>
-    <Action name="file_print"/>
-    <Separator/>
-    <Merge/>
-    <Action name="file_close"/>
-    <Action name="file_close_all"/>
     <Separator/>
     <Action name="file_newWindow"/>
     <Separator/>
@@ -25,6 +24,9 @@
   </Menu>
 
   <Menu name="edit" noMerge="1"><text>&amp;Edit</text>
+    <DefineGroup name="edit_operations" />
+    <Separator/>
+    <DefineGroup name="find_operations" />
   </Menu>
 
   <Menu name="documents"><text>&amp;Document</text>
@@ -64,22 +66,19 @@
 
   <Merge/>
 
-  <Menu name="settings" noMerge="1"><text>&amp;Settings</text>
+  <Menu name="settings" ><text>&amp;Settings</text>
     <Action name="settings_show_toolbar" />
     <DefineGroup name="settings_show_toolbar_group" />
     <Action name="settings_show_filelist" />
     <Action name="settings_show_fileselector" />
     <Action name="settings_show_console" />
     <Separator />
-<!--    <Action name="settings_show_full_path" />
-    <Action name="settings_show_fullscreen" />
-    <Separator />//-->
     <Action name="options_configure_keybinding"/>
     <Action name="set_configure_toolbars"/>
     <Action name="settings_configure" />
   </Menu>
 
-  <Menu name="help"><text>&amp;Help</text>
+  <Menu name="help" noMerge="1"><text>&amp;Help</text>
     <Action name="help_contents"/>
     <Action name="help_plugins_contents"/>
     <Action name="help_whats_this"/>
@@ -94,9 +93,16 @@
 <ToolBar name="mainToolBar" noMerge="1"><text>Main Toolbar</text>
   <Action name="file_new" />
   <Action name="file_open" />
+  <Separator />
   <DefineGroup name="file_operations" />
+  <Separator />
   <Action name="file_close" />
-  <Merge />
+  <Separator />
+  <DefineGroup name="edit_operations" />
+  <Separator />
+  <DefineGroup name="find_operations" />
+  <Separator />
+  <DefineGroup name="zoom_operations" /> 
   <Separator />
   <Action name="go_back" />
   <Action name="go_forward" />
