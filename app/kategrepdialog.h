@@ -28,7 +28,7 @@ class QLineEdit;
 class QComboBox;
 class QCheckBox;
 class QListBox;
-class QPushButton;
+class KPushButton;
 class QLabel;
 class KProcess;
 class KConfig;
@@ -78,7 +78,7 @@ private:
     QCheckBox *cbRecursive;
     QCheckBox *cbCasesensitive, *cbRegex;
     QListBox *lbResult;
-    QPushButton *btnSearch, *btnClear;
+    KPushButton *btnSearch, *btnClear;
     KProcess *childproc;
     QString buf;
     QString errbuf;

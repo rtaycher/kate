@@ -23,7 +23,6 @@
 
 #include <qobject.h>
 #include <qlayout.h>
-#include <qpushbutton.h>
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <qcombobox.h>
@@ -43,6 +42,7 @@
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
+#include <kpushbutton.h>
 #include <kurlrequester.h>
 #include <kurlcompletion.h>
 #include <kcombobox.h>
@@ -172,9 +172,9 @@ GrepTool::GrepTool(KateMainWindow *parent, const char *name)
   KButtonBox *actionbox = new KButtonBox(this, Qt::Vertical);
   layout->addWidget(actionbox, 0, 2);
   actionbox->addStretch();
-  btnSearch = actionbox->addButton(KGuiItem(i18n("Find"),"find"));
+  btnSearch = static_cast<KPushButton*>(actionbox->addButton(KGuiItem(i18n("Find"),"find")));
   btnSearch->setDefault(true);
-  btnClear = actionbox->addButton( KStdGuiItem::clear() );
+  btnClear = static_cast<KPushButton*>(actionbox->addButton( KStdGuiItem::clear() ));
   actionbox->addStretch();
   actionbox->layout();
 
@@ -368,7 +368,7 @@ void GrepTool::slotSearch()
   // actually it should be checked whether the process was started successfully
   lbResult->setCursor( QCursor(Qt::WaitCursor) );
   btnClear->setEnabled( false );
-  btnSearch->setText( i18n("Cancel") );
+  btnSearch->setGuiItem( KGuiItem(i18n("Cancel"), "button_cancel"));
   childproc->start(KProcess::NotifyOnExit, KProcess::AllOutput);
 }
 
@@ -427,7 +427,7 @@ void GrepTool::childExited()
 //   int status = childproc->exitStatus();
   lbResult->unsetCursor();
   btnClear->setEnabled( true );
-  btnSearch->setText( i18n("Find") );
+  btnSearch->setGuiItem( KGuiItem(i18n("Find"), "find") );
 
   if ( ! errbuf.isEmpty() )
   {
