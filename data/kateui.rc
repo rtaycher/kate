@@ -59,6 +59,7 @@
     <Action name="go_back"/>
     <Action name="go_forward"/>
     <Separator />
+    <Action name="scripts"/>
     <Action name="set_highlight"/>
     <Action name="set_eol"/>
     <Separator />
@@ -81,10 +82,6 @@
     <Action name="edit_bookmarkToggle" />
     <Action name="edit_bookmarksClear" />
     <Separator />
-  </Menu>
-
-  <Menu name="scripts"><text>Scripts</text>
-  	<Action name="scripts"/>
   </Menu>
 
   <Merge/>
@@ -140,8 +137,6 @@
   <Action name="view_split_horiz"/>
   <Separator />
   <Action name="view_close_current_space" />
-  <Separator />
-  <Action name="scripts"/>
 </ToolBar>
 
 <Menu name="view_popup" noMerge="1">

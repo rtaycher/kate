@@ -478,6 +478,7 @@ void KateMainWindow::slotCurrentDocChanged()
   windowNext->plug (documentMenu);
   windowPrev->plug (documentMenu);
   documentMenu->insertSeparator ();
+  scriptMenu->plug (documentMenu);
   setHighlight->plug (documentMenu);
   setEndOfLine->plug (documentMenu);
   documentMenu->insertSeparator ();
