@@ -283,14 +283,22 @@ void KateConfigDialog::slotApply()
 
   // all docs need to reread config.
 
-  QListIterator<KateDocument> dit (docManager->docList);
-  for (; dit.current(); ++dit)
+#if QT_VERSION < 300
+	QListIterator<KateDocument> dit (docManager->docList);
+#else
+	QPtrListIterator<KateDocument> dit (docManager->docList);
+#endif
+	for (; dit.current(); ++dit)
   {
     dit.current()->readConfig(  );
   }
 
-  QListIterator<KateView> it (viewManager->viewList);
-  for (; it.current(); ++it)
+#if QT_VERSION < 300
+	QListIterator<KateView> it (viewManager->viewList);
+#else
+	QPtrListIterator<KateView> it (viewManager->viewList);
+#endif
+	for (; it.current(); ++it)
   {
     v = it.current();
     indentConfig->getData( v );

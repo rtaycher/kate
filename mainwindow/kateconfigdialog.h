@@ -77,7 +77,11 @@ class KateConfigDialog : public KDialogBase
     HlDataList hlDataList;
     ItemStyleList defaultStyleList;
 
-    QList<PluginPageListItem> pluginPages;
+#if QT_VERSION < 300
+		QList<PluginPageListItem> pluginPages;
+#else
+		QPtrList<PluginPageListItem> pluginPages;
+#endif
 };
 
 #endif

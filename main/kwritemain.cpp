@@ -49,7 +49,11 @@
 #define ID_MODIFIED 3
 #define ID_GENERAL 4
 
+#if QT_VERSION < 300
 QList<KateDocument> docList; //documents
+#else
+QPtrList<KateDocument> docList; //documents
+#endif
 
 
 TopLevel::TopLevel (KateDocument *doc)
@@ -326,8 +330,12 @@ void TopLevel::slotDropEvent( QDropEvent *event )
 
   if (QUriDrag::decode(event, urls)) {
     kdDebug(13000) << "TopLevel:Handling QUriDrag..." << endl;
-    QListIterator<char> it(urls);
-    for( ; it.current(); ++it ) {
+#if QT_VERSION < 300
+		QListIterator<char> it(urls);
+#else
+		QPtrListIterator<char> it(urls);
+#endif
+		for( ; it.current(); ++it ) {
       slotOpen( (*it) );
     }
   }

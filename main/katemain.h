@@ -18,7 +18,7 @@
 #define __kate_main_h__
 
 #include <config.h>
-
+#include <kurl.h>
 class QComboBox;
 class QDateTime;
 class QEvent;

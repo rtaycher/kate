@@ -533,8 +533,12 @@ void KateMainWindow::setHighlightMenuAboutToShow()
 {
   static QStringList subMenusName;
   static QStringList names;
-  static QList<QPopupMenu> subMenus;
-  int count = HlManager::self()->highlights();
+#if QT_VERSION < 300
+	static QList<QPopupMenu> subMenus;
+#else
+	static QPtrList<QPopupMenu> subMenus;
+#endif
+	int count = HlManager::self()->highlights();
   static QString oldActiveSec;
   static int oldActiveID;
 
