@@ -137,7 +137,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
 
   // How instances should be handled
   cb_singleInstance = new QCheckBox(frGeneral);
-  cb_singleInstance->setText(i18n("Allow only one un&ix process of Kate"));
+  cb_singleInstance->setText(i18n("Allow only one &instance of Kate"));
   config->setGroup("startup");
   cb_singleInstance->setChecked(config->readBoolEntry("singleinstance",true));
   QWhatsThis::add( cb_singleInstance, i18n(
