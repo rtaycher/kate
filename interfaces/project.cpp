@@ -86,7 +86,7 @@ Project::Project (void *project) : QObject (((KateInternalProjectData*) project)
   d = new PrivateProject ();
   d->m_data = ((KateInternalProjectData*) project);
   
-  d->m_config = new KConfig (d->m_data->fileName);
+  d->m_config = new KConfig (d->m_data->fileName, false, false);
   d->m_dir = d->m_data->fileName.left (d->m_data->fileName.findRev (QChar ('/')));
   
   // LAST STEP, IMPORTANT, LOAD PLUGIN AFTER ALL OTHER WORK IS DONE !
@@ -174,7 +174,7 @@ ProjectDirFile::ProjectDirFile (void *projectDirFile) : QObject ()
   d = new PrivateProjectDirFile ();
   d->m_data = (PrivateProjectDirFileData *) projectDirFile;
   
-  d->m_config = new KConfig (d->m_data->fileName);
+  d->m_config = new KConfig (d->m_data->fileName, false, false);
   d->m_dir = d->m_data->fileName.left (d->m_data->fileName.findRev (QChar ('/')));
 }
 

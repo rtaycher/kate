@@ -98,7 +98,7 @@ void KateProjectManager::setCurrentProject (Kate::Project *project)
 
 Kate::Project *KateProjectManager::create (const QString &type, const QString &name, const QString &filename)
 {
-  KConfig *c = new KConfig (filename);
+  KConfig *c = new KConfig (filename, false, false);
 
   c->setGroup("General");
   c->writeEntry ("Type", type);
