@@ -113,120 +113,133 @@ void TextLine::append(const QChar *s, uint l)
 }      
       
 void TextLine::truncate(uint newLen)      
-{      
-  if (newLen < textLen)     
-  {     
+{
+  if (newLen < textLen)
+  {
     textLen = newLen;
     text = (QChar *) realloc(text, sizeof (QChar)*newLen);
     attributes = (uchar *) realloc(attributes, sizeof (uchar)*newLen);
   }
-}      
-      
-void TextLine::wrap(TextLine::Ptr nextLine, uint pos)      
-{      
-  int l = textLen - pos;      
-      
-  if (l > 0)      
-  {      
-    nextLine->replace(0, 0, &text[pos], l, &attributes[pos]);      
-    attr = attributes[pos];      
-    truncate(pos);      
-  }      
-}      
-      
-void TextLine::unWrap(uint pos, TextLine::Ptr nextLine, uint len) {      
-      
-  replace(pos, 0, nextLine->text, len, nextLine->attributes);      
-  attr = nextLine->getRawAttr(len);      
-  nextLine->replace(0, len, 0L, 0);      
-}      
-      
-int TextLine::firstChar() const {      
-  uint z = 0;      
-      
-  while (z < textLen && text[z].isSpace()) z++;      
-      
-  if (z < textLen)      
-    return z;      
-  else      
-    return -1;      
-}      
-      
-int TextLine::lastChar() const {      
-  uint z = textLen;      
-      
-  while (z > 0 && text[z - 1].isSpace()) z--;      
-  return z;      
-}      
-      
-void TextLine::removeSpaces()     
-{      
-  while (textLen > 0 && text[textLen - 1].isSpace()) truncate (textLen-1);         
-}      
-      
-QChar TextLine::getChar(uint pos) const {      
-  if (pos < textLen) return text[pos];       
-  return ' ';      
-}      
-const QChar *TextLine::firstNonSpace()      
-{      
-  const QChar *ptr=getText();      
-  int first=firstChar();      
-  return (first > -1) ? ptr+first : ptr;      
-}      
-      
-bool TextLine::startingWith(QString& match)      
-{      
-  return QString(text, textLen).startsWith (match);     
-}      
-      
-bool TextLine::endingWith(QString& match) {      
-      
-  int matchLen = match.length();      
-      
-  // Get the last chars of the textline      
-  QString lastChars = QString(text, textLen).right(matchLen);      
-      
-  return (lastChars == match);      
-}      
-      
-int TextLine::cursorX(uint pos, uint tabChars) const {      
-  int l, x, z;      
-      
-  l = (pos < textLen) ? pos : textLen;        
-  x = 0;      
-  for (z = 0; z < l; z++) {      
-    if (text[z] == '\t') x += tabChars - (x % tabChars); else x++;      
-  }      
-  x += pos - l;      
-  return x;      
-}      
-      
-void TextLine::setAttribs(uchar attribute, uint start, uint end) {       
-  uint z;      
-      
-  if (end > textLen) end = textLen;        
-  for (z = start; z < end; z++) attributes[z] = (attributes[z] & taSelected) | attribute;      
-}      
-      
-void TextLine::setAttr(uchar attribute) {      
-  attr = (attr & taSelected) | attribute;      
-}      
-      
-uchar TextLine::getAttr(uint pos) const {      
-  if (pos < textLen) return attributes[pos] & taAttrMask;       
-  return attr & taAttrMask;      
-}      
-      
-uchar TextLine::getAttr() const {      
-  return attr & taAttrMask;      
-}      
-      
-uchar TextLine::getRawAttr(uint pos) const {      
-  if (pos < textLen) return attributes[pos];       
-  return (attr & taSelected) ? attr : attr | 256;      
-}      
-      
+}
+
+void TextLine::wrap(TextLine::Ptr nextLine, uint pos)
+{
+  int l = textLen - pos;
+
+  if (l > 0)
+  {
+    nextLine->replace(0, 0, &text[pos], l, &attributes[pos]);
+    attr = attributes[pos];
+    truncate(pos);
+  }
+}
+
+void TextLine::unWrap(uint pos, TextLine::Ptr nextLine, uint len) {
+
+  replace(pos, 0, nextLine->text, len, nextLine->attributes);
+  attr = nextLine->getRawAttr(len);
+  nextLine->replace(0, len, 0L, 0);
+}
+
+int TextLine::firstChar() const {
+  uint z = 0;
+
+  while (z < textLen && text[z].isSpace()) z++;
+
+  if (z < textLen)
+    return z;
+  else
+    return -1;
+}
+
+int TextLine::lastChar() const {
+  uint z = textLen;
+
+  while (z > 0 && text[z - 1].isSpace()) z--;
+  return z;
+}
+
+void TextLine::removeSpaces()
+{
+  while (textLen > 0 && text[textLen - 1].isSpace()) truncate (textLen-1);
+}
+
+QChar TextLine::getChar(uint pos) const
+{
+  if (pos < textLen)
+	  return text[pos];
+
+  return QChar(' ');
+}
+
+const QChar *TextLine::firstNonSpace()
+{
+  int first=firstChar();
+  return (first > -1) ? &text[first] : text;
+}
+
+bool TextLine::startingWith(const QString& match) const
+{
+  if (match.length() > textLen)
+	  return false;
+
+	for (int z=0; z<match.length(); z++)
+	  if (match[z] != text[z])
+		  return false;
+
+  return true;
+}
+
+bool TextLine::endingWith(const QString& match) const
+{
+  if (match.length() > textLen)
+	  return false;
+
+	for (int z=textLen; z>textLen-match.length(); z--)
+	  if (match[z] != text[z])
+		  return false;
+
+	return true;
+}
+
+int TextLine::cursorX(uint pos, uint tabChars) const
+{
+  int l, x, z;
+
+  l = (pos < textLen) ? pos : textLen;
+  x = 0;
+  for (z = 0; z < l; z++) {
+    if (text[z] == QChar('\t')) x += tabChars - (x % tabChars); else x++;
+  }
+  x += pos - l;
+  return x;
+}
+
+void TextLine::setAttribs(uchar attribute, uint start, uint end) {
+  uint z;
+
+  if (end > textLen) end = textLen;
+  for (z = start; z < end; z++) attributes[z] = (attributes[z] & taSelected) | attribute;
+}
+
+void TextLine::setAttr(uchar attribute) {
+  attr = (attr & taSelected) | attribute;
+}
+
+uchar TextLine::getAttr(uint pos) const {
+  if (pos < textLen) return attributes[pos] & taAttrMask;
+  return attr & taAttrMask;
+}
+
+uchar TextLine::getAttr() const {
+  return attr & taAttrMask;
+}
+
+uchar TextLine::getRawAttr(uint pos) const {
+  if (pos < textLen) return attributes[pos];
+  return (attr & taSelected) ? attr : attr | 256;
+}
+
 uchar TextLine::getRawAttr() const {      
   return attr;      
 }      

@@ -1,4 +1,4 @@
-/*************************************************************************** 
+/***************************************************************************
                           katetextline.h  -  description 
                              ------------------- 
     begin                : Mon Feb 5 2001 
@@ -109,13 +109,13 @@ public:
     */  
     int cursorX(uint pos, uint tabChars) const;  
     /**  
-      Is the line starting with the given string  
-    */  
-    bool startingWith(QString& match);  
-    /**  
-      Is the line ending with the given string  
-    */  
-    bool endingWith(QString& match);  
+      Is the line starting with the given string
+    */
+    bool startingWith(const QString& match) const;
+    /**
+      Is the line ending with the given string
+    */
+    bool endingWith(const QString& match) const;
   
     /**  
       Sets the attributes from start to end -1  
