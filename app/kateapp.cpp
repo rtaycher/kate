@@ -82,8 +82,12 @@ void KateApp::newMainWindow ()
   mainWindows.append (mainWindow);
   myWinID++;
 
-  if (mainWindowsCount() > 1)
+  if ((mainWindowsCount() > 1) && mainWindows.at(mainWindows.count()-2)->viewManager->activeView())
     mainWindow->viewManager->activateView ( mainWindows.at(mainWindows.count()-2)->viewManager->activeView()->doc()->docID() );
+  else if ((mainWindowsCount() > 1) && (docManager->docCount() > 0))
+    mainWindow->viewManager->activateView ( (docManager->nthDoc(docManager->docCount()-1))->docID() );
+  else if ((mainWindowsCount() > 1) && (docManager->docCount() < 1))
+    mainWindow->viewManager->openURL ( KURL() );
 
   mainWindow->show ();
 }

@@ -94,6 +94,7 @@ class KateViewManager : public KateViewManagerIface
     void activateView ( KateView *view );
     void activateSpace ( KateView* v );
     void slotViewChanged();
+    bool closeDocWithAllViews ( KateView *view );
 
   public:
     void deleteLastView ();
@@ -127,7 +128,7 @@ class KateViewManager : public KateViewManagerIface
     void slotDocumentOpen ();
     void slotDocumentSave ();
     void slotDocumentSaveAs ();
-    bool slotDocumentClose ();
+    void slotDocumentClose ();
     /** Splits the active viewspace horizontally */
     void slotSplitViewSpaceHoriz () { splitViewSpace(); }
     /** Splits the active viewspace vertically */

@@ -366,6 +366,53 @@ void KateViewManager::deleteLastView ()
   deleteView (activeView (), true, false);
 }
 
+bool KateViewManager::closeDocWithAllViews ( KateView *view )
+{
+  if (!view) return false;
+
+  if (!view->canDiscard()) return false;
+
+  KateDocument *doc = view->doc();
+
+  QList<KateView> closeList;
+  uint docID = ((KateDocument *)view->doc())->docID();
+
+  for (uint i=0; i < ((KateApp *)kapp)->mainWindowsCount (); i++ )
+  {
+    for (uint z=0 ; z < ((KateApp *)kapp)->mainWindows.at(i)->viewManager->viewList.count(); z++)
+    {
+      KateView* current = ((KateApp *)kapp)->mainWindows.at(i)->viewManager->viewList.at(z);
+      if ( ((KateDocument *)current->doc())->docID() == docID )
+      {
+        closeList.append (current);
+      }
+    }
+
+    while ( closeList.at(0) )
+    {
+      KateView *view = closeList.at(0);
+      ((KateApp *)kapp)->mainWindows.at(i)->viewManager->deleteView (view, true, false);
+      closeList.remove (view);
+    }
+  }
+
+  docManager->deleteDoc (doc);
+
+  for (uint i2=0; i2 < ((KateApp *)kapp)->mainWindowsCount (); i2++ )
+  {
+    if (((KateApp *)kapp)->mainWindows.at(i2)->viewManager->viewCount() == 0)
+    {
+      if ((viewList.count() < 1) && (docManager->docCount() < 1) )
+        ((KateApp *)kapp)->mainWindows.at(i2)->viewManager->createView (true, 0L, 0L);
+      else if ((viewList.count() < 1) && (docManager->docCount() > 0) )
+        ((KateApp *)kapp)->mainWindows.at(i2)->viewManager->createView (false, 0L, 0L, docManager->nthDoc(docManager->docCount()-1));
+    }
+  }
+
+  emit viewChanged ();
+  return true;
+}
+
 void KateViewManager::statusMsg (const QString &msg)
 {
   if (activeView() == 0) return;
@@ -518,51 +565,11 @@ void KateViewManager::slotDocumentSaveAs ()
   }
 }
 
-bool KateViewManager::slotDocumentClose ()
+void KateViewManager::slotDocumentClose ()
 {
-  if (!activeView()) return false;
+  if (!activeView()) return;
 
-  if (!activeView()->canDiscard()) return false;
-
-  KateDocument *doc = activeView()->doc();
-
-  QList<KateView> closeList;
-  uint docID = ((KateDocument *)activeView()->doc())->docID();
-
-  for (uint i=0; i < ((KateApp *)kapp)->mainWindowsCount (); i++ )
-  {
-    for (uint z=0 ; z < ((KateApp *)kapp)->mainWindows.at(i)->viewManager->viewList.count(); z++)
-    {
-      KateView* current = ((KateApp *)kapp)->mainWindows.at(i)->viewManager->viewList.at(z);
-      if ( ((KateDocument *)current->doc())->docID() == docID )
-      {
-        closeList.append (current);
-      }
-    }
-
-    while ( closeList.at(0) )
-    {
-      KateView *view = closeList.at(0);
-      ((KateApp *)kapp)->mainWindows.at(i)->viewManager->deleteView (view, true, false);
-      closeList.remove (view);
-    }
-  }
-
-  docManager->deleteDoc (doc);
-
-  for (uint i2=0; i2 < ((KateApp *)kapp)->mainWindowsCount (); i2++ )
-  {
-    if (((KateApp *)kapp)->mainWindows.at(i2)->viewManager->viewCount() == 0)
-    {
-      if ((viewList.count() < 1) && (docManager->docCount() < 1) )
-        ((KateApp *)kapp)->mainWindows.at(i2)->viewManager->createView (true, 0L, 0L);
-      else if ((viewList.count() < 1) && (docManager->docCount() > 0) )
-        ((KateApp *)kapp)->mainWindows.at(i2)->viewManager->createView (false, 0L, 0L, docManager->nthDoc(docManager->docCount()-1));
-    }
-  }
-
-  emit viewChanged ();
-  return true;
+  closeDocWithAllViews (activeView());
 }
 
 void KateViewManager::slotDocumentCloseAll ()
@@ -578,7 +585,7 @@ void KateViewManager::slotDocumentCloseAll ()
   while (closeList.count() > 0)
   {
     activateView (closeList.at(0)->docID());
-    done = slotDocumentClose();
+    done = closeDocWithAllViews (activeView());
 
     if (!done) break;
 
@@ -987,35 +994,42 @@ void KateViewManager::reloadCurrentDoc()
 
 void KateViewManager::saveAllDocsAtCloseDown()
 {
-  QValueList<uint> seen;
-  KateView* v;
-  uint id;
-  QStringList list;
-  uint vc = viewCount();
-  uint i = 0;
-  KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
-  while ( i <= vc )
-  {
-    v = activeView();
-    id =  ((KateDocument*)v->doc())->docID();
-    // save to config if not seen
-    if ( ! seen.contains( id ) && ! v->doc()->url().isEmpty() ) {
-      seen.append( id );
+  if (docManager->docCount () == 0) return;
 
+  QList<KateDocument> closeList;
+
+  for (uint i=0; i < docManager->docCount(); i++ )
+    closeList.append (docManager->nthDoc (i));
+
+  KateView *v = 0L;
+  uint id = 0;
+  QStringList list;
+
+  KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
+
+  while ( closeList.count() > 0 )
+  {
+    activateView (closeList.at(0)->docID());
+    v = activeView();
+    id = closeList.at(0)->docID();
+
+    if ( !v->doc()->url().isEmpty() )
+    {
       scfg->setGroup( v->doc()->url().prettyURL() );
       v->writeSessionConfig(scfg);
       v->doc()->writeSessionConfig(scfg);
-      // TODO: should we tjeck for local file here?
-      // TODO: LASTMOD
-      // write entry
+
       scfg->setGroup("open files");
       scfg->writeEntry( QString("File%1").arg(id), v->doc()->url().prettyURL() );
       list.append( QString("File%1").arg(id) );
     }
-    if( ! deleteView( v ) )
-      return;  // this will hopefully never happen, since - WHAT THEN???
-    i++;
+
+    if( !closeDocWithAllViews( v ) )
+      return;
+
+    closeList.remove (closeList.at(0));
   }
+
   scfg->setGroup("open files");
   scfg->writeEntry( "list", list );
   scfg->sync();
