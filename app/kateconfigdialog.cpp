@@ -178,8 +178,8 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   cb_mode->insertItem(i18n("Classic Style"));
   lo->addWidget(cb_mode);
   QWhatsThis::add(cb_mode,i18n("Choose how you want the toolviews managed.<BR><ul>"
-	"<li><b>Modern Style</b> The toolviews will behave similiar to the views in Konqueror's navigation panel.</li></ul>"
-	"<li><b>Classic Style</b> The toolviews (filelist, fileselector, ...) can be docked anywhere and made floating.</li>"));
+	"<li><b>Modern Style</b> The toolviews will behave similiar to the views in Konqueror's navigation panel.</li>"
+	"<li><b>Classic Style</b> The toolviews (filelist, fileselector, ...) can be docked anywhere and made floating.</li></ul>"));
 
   config->setGroup("General");
   cb_mode->setCurrentItem((config->readEntry("viewMode",DEFAULT_STYLE)=="Modern")?0:1);
