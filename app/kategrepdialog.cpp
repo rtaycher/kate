@@ -188,7 +188,7 @@ GrepTool::GrepTool(KateMainWindow *parent, const char *name)
 
   QWhatsThis::add(cmbPattern,
     i18n("<p>Enter the expression you want to search for here."
-     "<p>If ``regular expression´´ is unchecked, any non-space letters in your "
+     "<p>If 'regular expression' is unchecked, any non-space letters in your "
      "expression will be escaped with a backslash character."
      "<p>Possible meta characters are:<br>"
      "<b>.</b> - Matches any character<br>"
