@@ -197,7 +197,7 @@ void KateMainWindow::setupActions()
   KStdAction::saveAs( viewManager, SLOT( slotDocumentSaveAs() ), actionCollection(), "file_save_as" );
   KStdAction::print(viewManager, SLOT(printDlg()), actionCollection());
   KStdAction::close( viewManager, SLOT( slotDocumentClose() ), actionCollection(), "file_close" );
-  new KAction( i18n( "&Close All" ), 0, viewManager, SLOT( slotDocumentCloseAll() ), actionCollection(), "file_close_all" );
+  new KAction( i18n( "Clos&e All" ), 0, viewManager, SLOT( slotDocumentCloseAll() ), actionCollection(), "file_close_all" );
 
   new KAction(i18n("New &Window"), 0, this, SLOT(newWindow()), actionCollection(), "file_newWindow");
 
@@ -260,9 +260,9 @@ void KateMainWindow::setupActions()
   list.append("&Macintosh");
   setEndOfLine->setItems(list);
 
-  documentReload = new KAction(i18n("&Reload"), "reload", Key_F5, viewManager, SLOT(reloadCurrentDoc()), actionCollection(), "file_reload");
+  documentReload = new KAction(i18n("Reloa&d"), "reload", Key_F5, viewManager, SLOT(reloadCurrentDoc()), actionCollection(), "file_reload");
 
-  documentOpenWith = new KActionMenu(i18n("O&pen With"), actionCollection(), "file_open_with");
+  documentOpenWith = new KActionMenu(i18n("Open W&ith"), actionCollection(), "file_open_with");
   connect(documentOpenWith->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(mSlotFixOpenWithMenu()));
   connect(documentOpenWith->popupMenu(), SIGNAL(activated(int)), this, SLOT(slotOpenWithMenuAction(int)));
 
@@ -286,7 +286,7 @@ void KateMainWindow::setupActions()
   settingsConfigure = KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
 
   setHighlight = docManager->docList.at(0)->hlActionMenu (i18n("&Highlight Mode"), actionCollection(), "set_highlight");
-  exportAs = docManager->docList.at(0)->exportActionMenu (i18n("&Export"), actionCollection(),"file_export");
+  exportAs = docManager->docList.at(0)->exportActionMenu (i18n("E&xport"), actionCollection(),"file_export");
 
   connect(viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
   connect(viewManager,SIGNAL(statChanged()),this,SLOT(slotCurrentDocChanged()));
