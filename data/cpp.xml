@@ -77,7 +77,7 @@
       <item> while </item>
       <item> connect </item>
     </list>
-    <list name="datatypes">
+    <list name="types">
       <item> bool </item>
       <item> wchar_t </item>
       <item> mutable </item>
@@ -108,7 +108,7 @@
     <contexts>
       <context attribute="0" lineEndContext="0" name="Normal">
         <keyword attribute="1" context="0" String="keywords" />
-        <keyword attribute="2" context="0" String="datatypes" />
+        <keyword attribute="2" context="0" String="types" />
         <Float attribute="6" context="0">
           <AnyChar String="fF" attribute="6" context="0"/>
         </Float>

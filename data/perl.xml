@@ -69,7 +69,7 @@
 
 		<context attribute="0" lineEndContext="0" name="Normal">
 			<keyword attribute="1" context="0" String="keywords"/>
-			<keyword attribute="2" context="0" String="datatypes"/>
+			<keyword attribute="2" context="0" String="types"/>
 			<HlCOct attribute="4" context="0"/>
 			<HlCHex attribute="5" context="0"/>
 			<Int attribute="3" context="0" />

@@ -44,11 +44,11 @@
        <context attribute="3" lineEndContext="0"/>
 
        <context attribute="1" lineEndContext="0">
-          <DetectChar attribute="1" char="}" />
+          <DetectChar attribute="1" char="}" context="0"/>
        </context>
 
        <context attribute="4" lineEndContext="0">
-           <DetectChar attribute="4" char="&gt;" />
+           <DetectChar attribute="4" char="&gt;" context="0"/>
        </context>
 
     </contexts>

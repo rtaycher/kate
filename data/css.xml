@@ -128,7 +128,7 @@
       <item> konq_bgpos_x </item>
       <item> konq_bgpos_y </item>
     </list>
-    <list name="datatypes">
+    <list name="types">
       <item> inherit </item>
       <item> none </item>
       <item> hidden </item>
@@ -305,7 +305,7 @@
     <contexts>
       <context attribute="0" lineEndContext="0">
         <keyword attribute="1" context="0" String="keywords" weakDelimiter="-"/>
-        <keyword attribute="2" context="0" String="datatypes" weakDelimiter="-"/>
+        <keyword attribute="2" context="0" String="types" weakDelimiter="-"/>
       </context>
     </contexts>
     <itemDatas>

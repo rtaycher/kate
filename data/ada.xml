@@ -70,10 +70,10 @@
                 <contexts>
                         <context attribute="0" lineEndContext="0">
                                 <keyword attribute="1" context="0" String="keywords"/>
-                                <HlAdaBaseN attribute="3" context="0"/>
-                                <HlAdaFloat attribute="4" context="0"/>
-                                <HlAdaDec attribute="2" context="0"/>
-                                <RegExprr attribute="5" context="0" String="'.'"/> <!-- Ada Char -->
+                                <!-- HlAdaBaseN attribute="3" context="0"/ -->
+                                <Float attribute="4" context="0"/>
+                                <Int attribute="2" context="0"/>
+                                <RegExpr attribute="5" context="0" String="'.'"/> <!-- Ada Char -->
                                 <DetectChar attribute="6" context="1" char="&quot;"/>
                                 <Detect2Chars attribute="7" context="2" char="-" char1="-"/>
                         </context>

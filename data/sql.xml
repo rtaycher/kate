@@ -763,7 +763,7 @@
       </context>
       <context attribute="6" lineEndContext="2"/>
       <context attribute="7" lineEndContext="0">
-        <Detect2Chars attribute="7" context="0" char="&quot;"/>
+        <DetectChar attribute="7" context="0" char="&quot;"/>
       </context>
     </contexts>
     <itemDatas>

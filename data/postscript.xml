@@ -463,7 +463,8 @@
 			<DetectChar attribute="2" context="1" char="%"/>
 			<Float attribute="4" context="0"/>
 			<Int attribute="5" context="0"/>
-			<DetectChar attribute="6" context="3" lineEndContext="3" char="("/>
+			<!-- DetectChar attribute="6" context="3" lineEndContext="3" char="("/ -->
+		        <DetectChar attribute="6" context="3" char="("/>
 			<RegExpr attribute="7" context="0" String="\/[a-zA-Z_0-9.]+"/>
 		</context>
 		<context attribute="2" lineEndContext="0" name="Comment"/>

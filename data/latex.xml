@@ -1,5 +1,6 @@
-<?xml version="1.01" encoding="UTF-8"?><!DOCTYPE language>
-<language name="LaTeX" extensions="*.tex;*.TEX;*.bib;*.BIB;*.ltx;*.LTX;*.sty;*.STY;*.cls;*.CLS" mimetype="text/x-tex" casesensitive="1">
+<?xml version="1.01" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
+<language name="LaTeX" section="Markup" extensions="*.tex;*.TEX;*.bib;*.BIB;*.ltx;*.LTX;*.sty;*.STY;*.cls;*.CLS" mimetype="text/x-tex" casesensitive="1">
   <highlighting>
     <list name="keywords">
       <item> begin</item>
@@ -297,8 +298,8 @@
       </list>
     <contexts>
 	<context attribute="0" lineEndContext="0">
-        	<StringDetect String="\begin{" attribute="4" context="1"/>
-        	<StringDetect String="\end{" attribute="4" context="1"/>
+        	<StringDetect String="\begin{" attribute="4" context="1" insensitive="FALSE"/>
+        	<StringDetect String="\end{" attribute="4" context="1" insensitive="FALSE"/>
 		<DetectChar char="\" attribute="2" context="2" />
 		<RegExpr String="%.*$" attribute="3" context="0"/>
 	</context>

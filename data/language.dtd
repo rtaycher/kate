@@ -1,150 +1,159 @@
-<!ENTITY language (highlighting, general)>
+<!ELEMENT language (highlighting, general?)>
 <!ATTLIST language
   name CDATA #REQUIRED
-  section CDATA #REQUIRED
+  section (Sources|Markup|Other|Scripts) #REQUIRED
   extensions CDATA #REQUIRED
   mimetype CDATA #REQUIRED
+  casesensitive (0|1) #IMPLIED
 >
 
-<!ENTITY general (comments, keywords)>
+<!ELEMENT general (comments?, keywords?)>
 <!ATTLIST general
 >
 
-<!ENTITY comments (comment)>
+<!ELEMENT comments (comment)+>
 <!ATTLIST comments
 >
 
-<!ENTITY comment EMPTY>
+<!ELEMENT comment EMPTY>
 <!ATTLIST comment
-  name CDATA #REQUIRED
+  name (singleLine|multiLine) #REQUIRED
   start CDATA #REQUIRED
   end CDATA #IMPLIED
 >
 
-<!ENTITY keywords EMPTY>
+<!ELEMENT keywords EMPTY>
 <!ATTLIST keywords
   casesensitive CDATA #IMPLIED
   weakDeliminator CDATA #IMPLIED
 >
 
-<!ENTITY highlighting (list, contexts, itemDatas)>
+<!ELEMENT highlighting (list*, contexts, itemDatas)>
 <!ATTLIST highlighting
 >
 
-<!ENTITY list (item)>
+<!ELEMENT list (item)+>
 <!ATTLIST list
-  name CDATA #REQUIRED
+  name (types|keywords|attribute-definitions|literals|definitions) #REQUIRED
 >
 
-<!ENTITY item (#PCDATA)>
-<!ATTLIST item
->
+<!ELEMENT item (#PCDATA)>
 
-<!ENTITY contexts (context)>
-<!ATTLIST contexts
->
+<!ELEMENT contexts (context)+>
 
-<!ENTITY context (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ELEMENT context (keyword | Float | HlCOct | HlCHex | Int | DetectChar | Detect2Chars | AnyChar | StringDetect | RegExpr | LineContinue | HlCStringChar | RangeDetect | HlCChar)*>
 <!ATTLIST context
   attribute CDATA #REQUIRED
-  lineEndContext CDATA #REQUIRED
+  lineEndContext NMTOKEN #REQUIRED
+  lineBeginContext NMTOKEN #IMPLIED
   name CDATA #IMPLIED
 >
 
-<!ENTITY keyword (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ELEMENT keyword EMPTY>
 <!ATTLIST keyword
   attribute CDATA #REQUIRED
-  context CDATA #REQUIRED
-  String CDATA #REQUIRED
+  context NMTOKEN #REQUIRED
+  String (types|keywords|attribute-definitions|literals|definitions) #REQUIRED
+  weakDelimiter CDATA #IMPLIED
 >
 
-<!ENTITY Float (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ELEMENT Float (AnyChar)*>
 <!ATTLIST Float
   attribute CDATA #REQUIRED
-  context CDATA #REQUIRED
+  context NMTOKEN #REQUIRED
 >
 
-<!ENTITY HlCOct (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ELEMENT HlCOct EMPTY>
 <!ATTLIST HlCOct
   attribute CDATA #REQUIRED
-  context CDATA #REQUIRED
+  context NMTOKEN #REQUIRED
 >
 
-<!ENTITY HlCHex (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ELEMENT HlCHex EMPTY>
 <!ATTLIST HlCHex
   attribute CDATA #REQUIRED
-  context CDATA #REQUIRED
+  context NMTOKEN #REQUIRED
 >
 
-<!ENTITY Int (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ELEMENT HlCChar EMPTY>
+<!ATTLIST HlCChar
+  attribute CDATA #REQUIRED
+  context NMTOKEN #REQUIRED
+>
+
+<!ELEMENT Int (StringDetect)*>
 <!ATTLIST Int
   attribute CDATA #REQUIRED
-  context CDATA #REQUIRED
+  context NMTOKEN #REQUIRED
 >
 
-<!ENTITY DetectChar (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ELEMENT DetectChar EMPTY>
 <!ATTLIST DetectChar
   attribute CDATA #REQUIRED
-  context CDATA #REQUIRED
+  context NMTOKEN #REQUIRED
   char CDATA #REQUIRED
 >
 
-<!ENTITY Detect2Chars (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ELEMENT Detect2Chars EMPTY>
 <!ATTLIST Detect2Chars
   attribute CDATA #REQUIRED
-  context CDATA #REQUIRED
+  context NMTOKEN #REQUIRED
   char CDATA #REQUIRED
   char1 CDATA #REQUIRED
 >
 
-<!ENTITY AnyChar (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ELEMENT AnyChar EMPTY>
 <!ATTLIST AnyChar
   attribute CDATA #REQUIRED
-  context CDATA #REQUIRED
+  context NMTOKEN #REQUIRED
   String CDATA #REQUIRED
 >
 
-<!ENTITY StringDetect (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ELEMENT StringDetect EMPTY>
 <!ATTLIST StringDetect
   attribute CDATA #REQUIRED
-  context CDATA #REQUIRED
+  context NMTOKEN #REQUIRED
   String CDATA #REQUIRED
-  insensitive CDATA #REQUIRED
+  insensitive (TRUE|FALSE) #REQUIRED
 >
 
-<!ENTITY RegExpr (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ELEMENT RegExpr EMPTY>
 <!ATTLIST RegExpr
   attribute CDATA #REQUIRED
-  context CDATA #REQUIRED
+  context NMTOKEN #REQUIRED
   String CDATA #REQUIRED
 >
 
-<!ENTITY LineContinue (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ELEMENT LineContinue EMPTY>
 <!ATTLIST LineContinue
   attribute CDATA #REQUIRED
-  context CDATA #REQUIRED
+  context NMTOKEN #REQUIRED
 >
 
-<!ENTITY HlCStringChar (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ELEMENT HlCStringChar EMPTY>
 <!ATTLIST HlCStringChar
   attribute CDATA #REQUIRED
-  context CDATA #REQUIRED
+  context NMTOKEN #REQUIRED
 >
 
-<!ENTITY RangeDetect (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ELEMENT RangeDetect EMPTY>
 <!ATTLIST RangeDetect
   attribute CDATA #REQUIRED
-  context CDATA #REQUIRED
+  context NMTOKEN #REQUIRED
   char CDATA #REQUIRED
   char1 CDATA #REQUIRED
 >
 
-<!ENTITY itemDatas (itemData)>
+<!ELEMENT itemDatas (itemData)+>
 <!ATTLIST itemDatas
 >
 
-<!ENTITY itemData EMPTY>
+<!ELEMENT itemData EMPTY>
 <!ATTLIST itemData
   name CDATA #REQUIRED
   defStyleNum CDATA #REQUIRED
+  color CDATA #IMPLIED
+  selColor CDATA #IMPLIED
+  italic CDATA #IMPLIED
+  bold CDATA #IMPLIED
 >
