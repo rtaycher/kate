@@ -31,7 +31,10 @@
 #include <qvbox.h>
 #include <kstatusbar.h>
 
-class KSimpleConfig;
+class KVSSBSep;
+
+class KConfig;
+
 class KateVSStatusBar : public KStatusBar
 {
   Q_OBJECT
@@ -55,9 +58,10 @@ class KateVSStatusBar : public KStatusBar
       QLabel* m_fileNameLabel;
 };
 
-class KVSSBSep;
 class KateViewSpace : public QVBox
 {
+  friend class KateViewManager;
+
   Q_OBJECT
 
   public:
@@ -72,11 +76,11 @@ class KateViewSpace : public QVBox
     bool showView(uint docID);
     Kate::View* currentView();
     int viewCount() const { return mViewList.count(); }
-    /** Saves the list of documents represented in this viewspace.
-     * Documents with an invalid URL is discarded.
-     * myIndex is used as identifyer for a config group.
-     */
-    void saveFileList(KSimpleConfig* config, int myIndex);
+
+    void saveConfig (KConfig* config, int myIndex);
+    void restoreConfig ( class KateViewManager *viewMan, KConfig* config, const QString &group );
+
+
   protected:
     /** reimplemented to catch QEvent::PaletteChange,
     since we use a modified palette for the statusbar */
@@ -91,12 +95,12 @@ class KateViewSpace : public QVBox
     QPtrList<Kate::View> mViewList;
     int mViewCount;
     KVSSBSep *sep;
+
   private slots:
     void slotStatusChanged (Kate::View *view, int r, int c, int ovr, bool block, int mod, const QString &msg);
 
   public slots:
     void polish();
-
 };
 
 #endif

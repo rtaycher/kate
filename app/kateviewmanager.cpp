@@ -91,9 +91,8 @@ KateViewManager::~KateViewManager ()
   m_viewSpaceList.setAutoDelete(false);
 }
 
-bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, Kate::Document *doc )
+bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, Kate::Document *doc)
 {
-
   if (m_blockViewCreationAndActivation) return false;
 
   // create doc
@@ -105,6 +104,7 @@ bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, 
 
   // create view
   Kate::View *view = (Kate::View *)doc->createView (this, 0L);
+
   m_viewList.append (view);
 
   if (newDoc)
@@ -144,9 +144,6 @@ bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, 
       doc->setDocName( i18n("Untitled %1").arg( doc->documentNumber() ) );
     view->getDoc()->setDocName (doc->docName ());
   }
-
- // if (m_docManager->isFirstDocument())
-   // view->getDoc()->setDocName (i18n("Untitled %1").arg(doc->documentNumber()));
 
   // disable settings dialog action
   view->actionCollection()->remove (view->actionCollection()->action( "set_confdlg" ));
@@ -338,7 +335,7 @@ void KateViewManager::activateView( uint documentNumber )
     // the document exist, but had no views, so we try restoring the view
     // session config
     // FIXME anders: this is clumsy and probably slow, so make something nicer.
-    KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
+   /* KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
     int n = m_viewSpaceList.findRef( activeViewSpace() );
     if ( n > -1 )
     {
@@ -360,7 +357,7 @@ void KateViewManager::activateView( uint documentNumber )
           activeView()->readSessionConfig( scfg );
         }
       }
-    }
+    }*/
 
   }
 }
@@ -788,10 +785,7 @@ void KateViewManager::setUseOpaqueResize( bool enable )
   // TODO: loop through splitters and set this prop
 }
 
-///////////////////////////////////////////////////////////
-// session config functions
-///////////////////////////////////////////////////////////
-void KateViewManager::saveAllDocsAtCloseDown()
+void KateViewManager::queryModified()
 {
   if (m_docManager->documents () == 0) return;
 
@@ -835,191 +829,158 @@ void KateViewManager::saveAllDocsAtCloseDown()
   }
 }
 
-void KateViewManager::saveViewSpaceConfig()
+/**
+ * session config functions
+ */
+
+void KateViewManager::saveViewConfiguration(KConfig *config)
 {
-   //kdDebug(13001)<<"saveViewSpaceConfig()"<<endl;
-   KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
+  bool weHaveSplittersAlive (viewSpaceCount() > 1);
 
-  // TEMPORARY ??
-  //kdDebug(13001)<<"clearing session config file before saving list"<<endl;
-  scfg->setGroup("nogroup");
-  QStringList groups(scfg->groupList());
-  for ( QStringList::Iterator it = groups.begin(); it != groups.end(); ++it )
-    if ( *it != "nogroup") scfg->deleteGroup(*it);
+  config->setGroup ("View Configuration");
+  config->writeEntry ("Splitters", weHaveSplittersAlive);
 
-   if (viewSpaceCount() == 1) {
-     m_viewSpaceList.first()->saveFileList( scfg, 0 );
-   }
-   else {
+  // no splitters around
+  if (!weHaveSplittersAlive)
+  {
+    config->writeEntry("Active Viewspace", 0);
+    m_viewSpaceList.first()->saveConfig ( config, 0 );
 
-     // I need the first splitter, the one which has this as parent.
-     KateSplitter* s;
-     QObjectList *l = queryList("KateSplitter", 0, false, false);
-     QObjectListIt it( *l );
-     if ( (s = (KateSplitter*)it.current()) != 0 )
-       saveSplitterConfig( s, 0, scfg );
+    return;
+  }
 
-     delete l;
-   }
+  // I need the first splitter, the one which has this as parent.
+  KateSplitter* s;
+  QObjectList *l = queryList("KateSplitter", 0, false, false);
+  QObjectListIt it( *l );
 
-   scfg->sync();
-   delete scfg;
-   //kdDebug(13001)<<">>>> saveViewSpaceConfig() DONE"<<endl;
+  if ( (s = (KateSplitter*)it.current()) != 0 )
+    saveSplitterConfig( s, 0, config );
+
+  delete l;
 }
 
-void KateViewManager::saveSplitterConfig( KateSplitter* s, int idx, KSimpleConfig* config )
+void KateViewManager::restoreViewConfiguration (KConfig *config)
 {
+  config->setGroup ("View Configuration");
 
-   QString grp = QString("splitter%1").arg(idx);
-   config->setGroup(grp);
+  // send all views to **** ;)
+  m_viewList.clear ();
 
-   // Save sizes, orient, children for this splitter
-   config->writeEntry( "sizes", s->sizes() );
-   config->writeEntry( "orientation", s->orientation() );
+  // no splitters around, ohhh :()
+  if (!config->readBoolEntry ("Splitters"))
+  {
+    // all views in this list are away, remove them
+    m_viewSpaceList.first()->mViewList.clear();
 
-   QStringList childList;
-   // a katesplitter has two children, of which one may be a KateSplitter.
-   const QObjectList* l = s->children();
-   QObjectListIt it( *l );
-   QObject* obj;
-   for (; it.current(); ++it) {
-     obj = it.current();
-     QString n;  // name for child list, see below
-     // For KateViewSpaces, ask them to save the file list.
-     if ( obj->isA("KateViewSpace") ) {
-       n = QString("viewspace%1").arg( m_viewSpaceList.find((KateViewSpace*)obj) );
-       ((KateViewSpace*)obj)->saveFileList( config, m_viewSpaceList.find((KateViewSpace*)obj) );
-       // save active viewspace
-       if ( ((KateViewSpace*)obj)->isActiveSpace() ) {
-         config->setGroup("general");
-         config->writeEntry("activeviewspace", m_viewSpaceList.find((KateViewSpace*)obj) );
-       }
-     }
-     // For KateSplitters, recurse
-     else if ( obj->isA("KateSplitter") ) {
-       idx++;
-       saveSplitterConfig( (KateSplitter*)obj, idx, config);
-       n = QString("splitter%1").arg( idx );
-     }
-     // make sure list goes in right place!
-     if (!n.isEmpty()) {
-       if ( childList.count() > 0 && ! s->isLastChild( (QWidget*)obj ) )
-         childList.prepend( n );
-       else
-         childList.append( n );
-     }
-   }
+    m_viewSpaceList.first ()->restoreConfig (this, config, 0);
+  }
+  else
+  {
+    // cu viewspaces
+    m_viewSpaceList.clear();
 
-   // reset config group.
-   config->setGroup(grp);
-   config->writeEntry("children", childList);
+    // call restoreSplitter for Splitter 0
+    restoreSplitter( config, QString("Splitter 0"), this );
+  }
+
+  // finally, make the correct view active.
+  config->setGroup ("View Configuration");
+/*
+  KateViewSpace *vs = m_viewSpaceList.at( config->readNumEntry("Active ViewSpace") );
+  if ( vs )
+    activateSpace( vs->currentView() );
+  */
 }
 
-void KateViewManager::restoreViewConfig()
-{
-   // This is called *instead* of reopenDocuments if view config needs to be restored.
-   // Consequently, it has the task of opening all documents.
-   KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
-   // if group splitter0 does not exist, call reopenDocuments() and return
-   if ( ! scfg->hasGroup("splitter0") ) {
-     //reopenDocuments();
-       delete scfg;
-     return;
-   }
 
-   // remove the initial viewspace.
-   m_viewSpaceList.clear();
-   // call restoreSplitter for splitter0
-   restoreSplitter( scfg, QString("splitter0"), this );
-   // finally, make the correct view active.
-   //kdDebug(13001)<<"All splitters restored, setting active view"<<endl;
-   scfg->setGroup("general");
-   KateViewSpace *vs = m_viewSpaceList.at( scfg->readNumEntry("activeviewspace") );
-   if ( vs ) // better be sure ;}
-     activateSpace( vs->currentView() );
-   delete scfg;
+void KateViewManager::saveSplitterConfig( KateSplitter* s, int idx, KConfig* config )
+{
+  QString grp = QString("Splitter %1").arg(idx);
+  config->setGroup(grp);
+
+  // Save sizes, orient, children for this splitter
+  config->writeEntry( "Sizes", s->sizes() );
+  config->writeEntry( "Orientation", s->orientation() );
+
+  QStringList childList;
+  // a katesplitter has two children, of which one may be a KateSplitter.
+  const QObjectList* l = s->children();
+  QObjectListIt it( *l );
+  QObject* obj;
+  for (; it.current(); ++it) {
+   obj = it.current();
+   QString n;  // name for child list, see below
+   // For KateViewSpaces, ask them to save the file list.
+   if ( obj->isA("KateViewSpace") ) {
+     n = QString("ViewSpace %1").arg( m_viewSpaceList.find((KateViewSpace*)obj) );
+     ((KateViewSpace*)obj)->saveConfig ( config, m_viewSpaceList.find((KateViewSpace*)obj) );
+     // save active viewspace
+     if ( ((KateViewSpace*)obj)->isActiveSpace() ) {
+       config->setGroup("View Configuration");
+       config->writeEntry("Active Viewspace", m_viewSpaceList.find((KateViewSpace*)obj) );
+     }
+   }
+   // For KateSplitters, recurse
+   else if ( obj->isA("KateSplitter") ) {
+     idx++;
+     saveSplitterConfig( (KateSplitter*)obj, idx, config);
+     n = QString("Splitter %1").arg( idx );
+   }
+   // make sure list goes in right place!
+   if (!n.isEmpty()) {
+     if ( childList.count() > 0 && ! s->isLastChild( (QWidget*)obj ) )
+       childList.prepend( n );
+     else
+       childList.append( n );
+   }
+  }
+
+  // reset config group.
+  config->setGroup(grp);
+  config->writeEntry("Children", childList);
 }
 
-void KateViewManager::restoreSplitter( KSimpleConfig* config, const QString &group, QWidget* parent)
+void KateViewManager::restoreSplitter( KConfig* config, const QString &group, QWidget* parent)
 {
-   config->setGroup( group );
+  config->setGroup( group );
 
-   // create a splitter with orientation
-   //kdDebug(13001)<<"restoreSplitter():creating a splitter: "<<group<<endl;
-   //if (parent == this)
-   //  kdDebug(13001)<<"parent is this"<<endl;
-   KateSplitter* s = new KateSplitter((Qt::Orientation)config->readNumEntry("orientation"), parent);
-   if ( group.compare("splitter0") == 0 )
-     m_grid->addWidget(s, 0, 0);
+  KateSplitter* s = new KateSplitter((Qt::Orientation)config->readNumEntry("Orientation"), parent);
 
-   QStringList children = config->readListEntry( "children" );
-   for (QStringList::Iterator it=children.begin(); it!=children.end(); ++it)
-   {
-     // for a viewspace, create it and open all documents therein.
-     if ( (*it).startsWith("viewspace") ) {
-       KateViewSpace* vs = new KateViewSpace( s );
-       connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, const QString &)), vs, SLOT(slotStatusChanged(Kate::View *, int, int, int, bool, int, const QString &)));
-       m_viewSpaceList.append( vs );
-       vs->show();
-       setActiveSpace( vs );
+  if ( group.compare("Splitter 0") == 0 )
+   m_grid->addWidget(s, 0, 0);
 
-       // open documents
-       int idx = 0;
-       QString file = QString("file%1").arg( idx );
-       config->setGroup( (*it) );  // "viewspace<n>"
-       while ( config->hasKey( file ) ) {     // FIXME FIXME
-         Kate::View* v;
-         KURL url( config->readEntry( file ) );
-         if ( ! m_docManager->isOpen( url ) ) {
-           Kate::Document *doc = m_docManager->createDoc ();
+  QStringList children = config->readListEntry( "Children" );
+  for (QStringList::Iterator it=children.begin(); it!=children.end(); ++it)
+  {
+    // for a viewspace, create it and open all documents therein.
+    if ( (*it).startsWith("ViewSpace") )
+    {
+     KateViewSpace* vs = new KateViewSpace( s );
 
-           config->setGroup( url.prettyURL() );
-           doc->readSessionConfig(config);
+     connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, const QString &)), vs, SLOT(slotStatusChanged(Kate::View *, int, int, int, bool, int, const QString &)));
 
-           activateView (doc->documentNumber());
-           v = activeView();
-         }
-         else { // if the group has been deleted, we can find a document
-           // ahem, tjeck if this document actually exists.
-           Kate::Document *doc = m_docManager->findDocumentByUrl( url );
-           if ( doc ) {
-             //kdDebug(13001)<<"Document '"<<url.prettyURL()<<"' found open, creating extra view"<<endl;
-             createView( false, KURL(), 0L, doc );
-           }
-           else
-             kdDebug(13001)<<"ARGH, I can't find the document "<<url<<endl;
-           v = activeView();
-         }
-         if ( v ) {
-           // view config is in group "<group>:<file>"
-           QString g = *it + ":" + file;
-           //kdDebug(13001)<<"view config is group '"<<g<<"'"<<endl;
-           if ( config->hasGroup( g ) ) {
-             config->setGroup( g );
-             v->readSessionConfig( config );
-           }
-         }
+     if (m_viewSpaceList.isEmpty())
+       vs->setActive (true);
 
-         idx++;
-         file = QString("file%1").arg( idx );
-         config->setGroup(*it);
-         // done this file
-       }
-       // If the viewspace have no documents due to bad luck, create a blank.
-       if ( vs->viewCount() < 1)
-         createView( true, KURL() );
-       //kdDebug(13001)<<"Done resotring a viewspace"<<endl;
-     }
-     // for a splitter, recurse.
-     else if ( (*it).startsWith("splitter") ) {
-       restoreSplitter( config, QString(*it), s );
-     }
-   }
-   // set sizes
-   config->setGroup( group );
-   s->setSizes( config->readIntListEntry("sizes") );
-   s->show();
-   //kdDebug(13001)<<"Bye from KateViewManager::restoreSplitter() ("<<group<<")"<<endl;
+     m_viewSpaceList.append( vs );
+
+     vs->show();
+     setActiveSpace( vs );
+
+     vs->restoreConfig (this, config, *it);
+    }
+    else
+    {
+      // for a splitter, recurse.
+      restoreSplitter( config, QString(*it), s );
+    }
+  }
+
+  // set sizes
+  config->setGroup( group );
+  s->setSizes( config->readIntListEntry("Sizes") );
+  s->show();
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

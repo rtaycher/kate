@@ -28,11 +28,13 @@
 #include <kate/document.h>
 
 class KateSplitter;
-class KSimpleConfig;
+class KConfig;
 
 class KateViewManager : public QWidget
 {
   Q_OBJECT
+
+  friend class KateViewSpace;
 
   public:
     KateViewManager (QWidget *parent=0, KateDocManager *docManager=0);
@@ -44,17 +46,22 @@ class KateViewManager : public QWidget
 
   public:
     bool useOpaqueResize;
-        /* Save a list of open files. */
-    void saveAllDocsAtCloseDown();
+
+    /* Query if the modified untitled docs should now be saved */
+    void queryModified();
+
     /* This will save the splitter configuration */
-    void saveViewSpaceConfig();
+    void saveViewConfiguration(KConfig *config);
+
+    /* restore it */
+    void restoreViewConfiguration (KConfig *config);
 
   public slots:
     void openURL (KURL url=0L, const QString& encoding=QString::null);
     void openConstURLCheck (const KURL&url=0L);
 
   private:
-    bool createView ( bool newDoc=true, KURL url=0L, Kate::View *origView=0L, Kate::Document *doc=0L );
+    bool createView ( bool newDoc=true, KURL url=0L, Kate::View *origView=0L, Kate::Document *doc=0L);
     bool deleteView ( Kate::View *view, bool delViewSpace = true);
 
     void moveViewtoSplit (Kate::View *view);
@@ -64,19 +71,12 @@ class KateViewManager : public QWidget
      * If child splitters are found, it calls it self with those as the argument.
      * If a viewspace child is found, it is asked to save its filelist.
      */
-    void saveSplitterConfig(KateSplitter* s, int idx=0, KSimpleConfig* config=0L);
-
-    /* Restore view configuration.
-     * If only one view was present at close down, calls reopenDocuemnts.
-     * The configuration will be restored so that viewspaces are created, sized
-     * and populated exactly like at shotdown.
-     */
-    void restoreViewConfig();
+    void saveSplitterConfig(KateSplitter* s, int idx=0, KConfig* config=0L);
 
     /** Restore a single splitter.
      * This is all the work is done for @see saveSplitterConfig()
      */
-    void restoreSplitter ( KSimpleConfig* config, const QString &group, QWidget* parent );
+    void restoreSplitter ( KConfig* config, const QString &group, QWidget* parent );
 
     void removeViewSpace (KateViewSpace *viewspace);
 

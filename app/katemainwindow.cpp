@@ -349,7 +349,7 @@ bool KateMainWindow::queryClose()
     if (m_projectManager->closeAll ())
     {
       // first ask if something has changed
-      m_viewManager->saveAllDocsAtCloseDown();
+      m_viewManager->queryModified();
 
       if (kapp->sessionSaving())
       {
@@ -462,8 +462,6 @@ void KateMainWindow::saveOptions(KConfig *config)
 
   if (m_viewManager->activeView())
     m_viewManager->activeView()->getDoc()->writeConfig();
-
-  m_viewManager->saveViewSpaceConfig();
 }
 
 void KateMainWindow::slotDocumentChanged()
@@ -1040,8 +1038,10 @@ void KateMainWindow::openConstURLProject (const KURL&url)
 
 void KateMainWindow::saveWindowConfiguration (KConfig *config)
 {
+  m_viewManager->saveViewConfiguration (config);
 }
 
 void KateMainWindow::restoreWindowConfiguration (KConfig *config)
 {
+  m_viewManager->restoreViewConfiguration (config);
 }
