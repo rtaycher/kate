@@ -29,8 +29,9 @@
 #include <qfile.h>
 #include <kmessagebox.h>
 
-KatePluginManager::KatePluginManager(QObject *parent) : Kate::PluginManager(parent)
+KatePluginManager::KatePluginManager(QObject *parent) : QObject (parent)
 {
+  m_pluginManager = new Kate::PluginManager (this);
   setupPluginList ();
   loadConfig ();
 }

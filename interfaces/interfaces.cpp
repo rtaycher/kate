@@ -23,12 +23,7 @@
     Boston, MA 02111-1307, USA.
  ***************************************************************************/
 
- #include "application.h"
-    
-#include "toolviewmanager.h"
-
-#include "pluginmanager.h"
-#include "pluginmanager.moc"
+    #include "toolviewmanager.h"
 
 #include <kparts/componentfactory.h>
 
@@ -42,27 +37,6 @@ ToolViewManager::ToolViewManager()
 ToolViewManager::~ToolViewManager()
 {
 }
-
-InitPluginManager::InitPluginManager(){;}
-InitPluginManager::~InitPluginManager(){;}
-
-
-InitPluginManager *initPluginManager(Application *app)
-{
-	if (!app) return 0;
-	return static_cast<InitPluginManager*>(app->qt_cast("Kate::InitPluginManager"));
-}
-
-
-PluginManager::PluginManager (QObject *parent, const char *name) : QObject (parent, name)
-{
-}
-
-PluginManager::~PluginManager ()
-{
-}
-
-
 
 };
 

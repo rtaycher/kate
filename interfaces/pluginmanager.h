@@ -35,36 +35,61 @@ namespace Kate
 */
 class PluginManager : public QObject
 {
+  friend class PrivatePluginManager;
+
   Q_OBJECT   
   
-  protected:
-    PluginManager ( QObject *parent = 0, const char *name = 0  );
+  public:
+    PluginManager ( void *pluginManager  );
     virtual ~PluginManager ();
 
   public:
     /** if the plugin with the library name "name" is loaded, a pointer to that plugin is returned */
-    virtual class Plugin *plugin(const QString &name)=0;
+    class Plugin *plugin(const QString &name);
 
     /** return true, if plugin is known to kate (either loaded or not loaded)
      * 
      * This method is not used yet
      */
-    virtual bool pluginAvailable(const QString &name)=0;
+    bool pluginAvailable(const QString &name);
 
     /** tries loading the specified plugin and returns a pointer to the new plugin or 0
      *  if permanent is true (default value) the plugin will be loaded at the next kate startup
      * 
      * This method is not used yet
      */
-    virtual class Plugin *loadPlugin(const QString &name,bool permanent=true)=0;
+    class Plugin *loadPlugin(const QString &name,bool permanent=true);
 	
     /** unload the specified plugin. If the value permanent is true (default value), the plugin will not be
      * loaded on kate's next startup. Even if it had been loaded with permanent=true.
      * 
      * This method is not used yet
      */
-    virtual void unloadPlugin(const QString &name,bool permanent=true)=0;
+    void unloadPlugin(const QString &name,bool permanent=true);
    
+    
+  private:
+    class PrivatePluginManager *d;
+};
+
+class InitPluginManager : public QObject
+{
+  friend class PrivateInitPluginManager;
+
+  Q_OBJECT   
+  
+  public:
+    InitPluginManager ( void *initPluginManager );
+    virtual ~InitPluginManager ();
+    
+  public:
+    void performInit(const QString &libname, const KURL &initScript);
+    
+    class InitPlugin *initPlugin() const;
+    KURL initScript() const;
+    
+  private:
+    class PrivateInitPluginManager *d;
 };
 
 };

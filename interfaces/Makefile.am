@@ -3,7 +3,7 @@ METASOURCES = AUTO
 noinst_LTLIBRARIES = libkateinterfacesprivate.la
 
 libkateinterfacesprivate_la_SOURCES = interfaces.cpp application.cpp mainwindow.cpp documentmanager.cpp viewmanager.cpp \
-                                                           plugin.cpp \
+                                                           pluginmanager.cpp plugin.cpp \
                                                            pluginconfiginterface.cpp pluginconfiginterfaceextension.cpp
 libkateinterfacesprivate_la_LIBADD   = -lkatepartinterfaces
 libkateinterfacesprivate_la_LDFLAGS = $(all_libraries) $(KDE_RPATH)

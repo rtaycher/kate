@@ -27,10 +27,11 @@
 
 #include "katemainwindow.h"
 #include "katedocmanager.h"
+#include "katepluginmanager.h"
 
 #include <kuniqueapplication.h>
 
-class KateApp : public KUniqueApplication, Kate::InitPluginManager
+class KateApp : public KUniqueApplication
 {
   Q_OBJECT
 
@@ -52,7 +53,8 @@ class KateApp : public KUniqueApplication, Kate::InitPluginManager
     void raiseCurrentMainWindow ();   
     
     Kate::DocumentManager *documentManager () { return m_docManager->documentManager(); };
-    Kate::PluginManager *pluginManager () { return (Kate::PluginManager*)m_pluginManager; };
+    Kate::PluginManager *pluginManager () { return m_pluginManager->pluginManager(); };
+    Kate::InitPluginManager *initPluginManager () { return m_initPluginManager; };
     Kate::MainWindow *activeMainWindow ();
     
     uint mainWindows () { return m_mainWindows.count(); };
@@ -68,6 +70,7 @@ class KateApp : public KUniqueApplication, Kate::InitPluginManager
     
   private:
     Kate::Application *m_application;
+    Kate::InitPluginManager *m_initPluginManager;
     KateDocManager *m_docManager;
     KatePluginManager *m_pluginManager;
     QPtrList<class KateMainWindow> m_mainWindows;

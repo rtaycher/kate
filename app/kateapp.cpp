@@ -34,9 +34,10 @@
 #include <qfile.h>
 #include <qtimer.h>
 
-KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (true,true,true), Kate::InitPluginManager(),m_initPlugin(0),m_doNotInitialize(0)
+KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (true,true,true),m_initPlugin(0),m_doNotInitialize(0)
 {       
   m_application = new Kate::Application (this);
+  m_initPluginManager = new Kate::InitPluginManager (this);
               
   if (forcedNewProcess)
   {

@@ -37,13 +37,15 @@ class PluginInfo
 
 typedef QPtrList<PluginInfo> PluginList;
 
-class KatePluginManager : public Kate::PluginManager
+class KatePluginManager : public QObject
 {
   Q_OBJECT
 
   public:
     KatePluginManager(QObject *parent);
     ~KatePluginManager();
+    
+    Kate::PluginManager *pluginManager () { return m_pluginManager; };
 
     void loadAllEnabledPlugins ();
     void enableAllPluginsGUI (KateMainWindow *win);
@@ -65,6 +67,8 @@ class KatePluginManager : public Kate::PluginManager
     virtual void unloadPlugin(const QString &name,bool permanent=true);
 
   private:
+    Kate::PluginManager *m_pluginManager;  
+  
     void setupPluginList ();
     
     PluginList m_pluginList;
