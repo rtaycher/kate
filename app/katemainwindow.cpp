@@ -925,7 +925,7 @@ void KateMainWindow::slotProjectNew ()
   QString fileName = KFileDialog::getSaveFileName(QString::null, QString::null, this, i18n("New Project"));
 
   if (!fileName.isEmpty())
-    createProject (QString ("Default"), fileName);
+    createProject (QString ("Default"), QString("Test"), fileName);
 }
 
 void KateMainWindow::slotProjectOpen ()
@@ -967,9 +967,9 @@ void KateMainWindow::activateProject (Kate::Project *project)
   emit m_mainWindow->projectChanged ();
 }
 
-Kate::Project *KateMainWindow::createProject (const QString &type, const QString &filename)
+Kate::Project *KateMainWindow::createProject (const QString &type, const QString &name, const QString &filename)
 {
-  Kate::Project *project = m_projectManager->create (type, filename);
+  Kate::Project *project = m_projectManager->create (type, name, filename);
   
   if (project)
     activateProject (project);

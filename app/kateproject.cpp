@@ -24,6 +24,7 @@
 KateProject::KateProject (QObject *parent, const QString &filename) : QObject (parent)
 {
   m_filename = filename;
+  m_project = 0;
   m_data = new KConfig (filename);
   m_project = new Kate::Project (this);
 }
@@ -37,6 +38,12 @@ QString KateProject::type () const
 {
   m_data->setGroup("General");
   return m_data->readEntry ("Type", "Default");
+}
+
+QString KateProject::name () const
+{
+  m_data->setGroup("General");
+  return m_data->readEntry ("Name", "");
 }
 
 QString KateProject::fileName () const

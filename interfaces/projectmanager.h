@@ -51,7 +51,7 @@ class ProjectManager : public QObject
      * @param filename name of the new project file
      * @return Project new created project object
      */
-    class Project *create (const QString &type, const QString &filename);
+    class Project *create (const QString &type, const QString &name, const QString &filename);
     
     /**
      * @param filename name of the project file

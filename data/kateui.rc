@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="kate" version="17">
+<kpartgui name="kate" version="18">
 
 <MenuBar noMerge="1">
   <Menu name="file"><text>&amp;File</text>

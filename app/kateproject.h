@@ -40,6 +40,8 @@ class KateProject : public QObject
     
     QString type () const;
     
+    QString name () const;
+    
     QString fileName () const;
     
     bool save ();

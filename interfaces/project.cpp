@@ -63,6 +63,11 @@ QString Project::type () const
   return d->project->type ();
 }
 
+QString Project::name () const
+{
+  return d->project->name ();
+}
+
 QString Project::fileName () const
 {
   return d->project->fileName ();

@@ -78,7 +78,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
      * @param filename name of the new project file
      * @return Project new created project object
      */
-     Kate::Project *createProject (const QString &type, const QString &filename);
+     Kate::Project *createProject (const QString &type, const QString &name, const QString &filename);
     
     /**
      * @param filename name of the project file

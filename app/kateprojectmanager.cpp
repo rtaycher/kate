@@ -23,6 +23,8 @@
 
 #include "katemainwindow.h"
 
+#include <kconfig.h>
+
 KateProjectManager::KateProjectManager (QObject *parent) : QObject (parent)
 {
   m_projects.setAutoDelete (true);
@@ -55,9 +57,16 @@ void KateProjectManager::setupPluginList ()
   }
 }
 
-Kate::Project *KateProjectManager::create (const QString &type, const QString &filename)
+Kate::Project *KateProjectManager::create (const QString &type, const QString &name, const QString &filename)
 {
-  return 0;
+  KConfig *c = new KConfig (filename);
+  c->setGroup("General");
+  c->writeEntry ("Type", type);
+  c->writeEntry ("Name", name);
+  c->sync ();
+  delete c;
+
+  return open (filename);
 }
     
 Kate::Project *KateProjectManager::open (const QString &filename)

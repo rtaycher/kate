@@ -54,9 +54,9 @@ ProjectManager::~ProjectManager ()
   delete d;
 }
 
-Project *ProjectManager::create (const QString &type, const QString &filename)
+Project *ProjectManager::create (const QString &type, const QString &name, const QString &filename)
 {
-  return d->projectMan->create (type, filename);
+  return d->projectMan->create (type, name, filename);
 }
     
 Project *ProjectManager::open (const QString &filename)

@@ -58,6 +58,12 @@ class Project : public QObject
     QString type () const;
     
     /**
+     * Return the project name
+     * @return QString project name
+     */
+    QString name () const;
+    
+    /**
      * Return the filename of the project file
      * @return QString project filename
      */
