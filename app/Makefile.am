@@ -8,7 +8,7 @@ kate_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugindialogpage.cp
 	kateIface.skel kategrepdialog.cpp katefiledialog.cpp katemailfilesdialog.cpp \
         kbookmarkhandler.cpp kactionselector.cpp katedockcontainer.cpp
 
-kate_la_LIBADD   = ../interfaces/libkateinterfaces.la -lkscript ../lib/libkmultiverttabbar.la
+kate_la_LIBADD   = ../interfaces/libkateinterfaces.la -lkscript ../lib/libkmultitabbar.la
 kate_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
 
 kwrite_la_SOURCES = kwritemain.cpp katefiledialog.cpp kwritedialogs.cpp

@@ -1,5 +1,5 @@
-#include "kmultiverttabbar.h"
-#include "kmultiverttabbar.moc"
+#include "kmultitabbar.h"
+#include "kmultitabbar.moc"
 #include <qbutton.h>
 #include <qpopupmenu.h>
 #include <qlayout.h>

@@ -1,7 +1,7 @@
 #include "katedockcontainer.h"
 #include <qwidgetstack.h>
 #include <qlayout.h>
-#include <kmultiverttabbar.h>
+#include <kmultitabbar.h>
 #include <kdebug.h>
 #include <kiconloader.h>                       
 #include <kapplication.h>
