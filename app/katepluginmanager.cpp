@@ -29,6 +29,7 @@
 #include <kstandarddirs.h>
 #include <qstringlist.h>
 #include <qfile.h>
+#include <kmessagebox.h>
 
 KatePluginManager::KatePluginManager(QObject *parent) : QObject(parent)
 {
@@ -113,6 +114,12 @@ void KatePluginManager::enableAllPluginsGUI (KateMainWindow *win)
 void KatePluginManager::loadPlugin (PluginListItem *item)
 {
   KLibFactory *factory = KLibLoader::self()->factory( QFile::encodeName(item->libname) );
+  if (!factory)
+  {
+     KMessageBox::sorry(0,KLibLoader::self()->lastErrorMessage());
+     item->load=false;
+     return;
+  }
   item->plugin = (Kate::Plugin *)factory->create( (Kate::Application *)parent(), "", "Kate::Plugin" );
   item->load = true;
 }
@@ -120,14 +127,14 @@ void KatePluginManager::loadPlugin (PluginListItem *item)
 void KatePluginManager::unloadPlugin (PluginListItem *item)
 {
   disablePluginGUI (item);
-
-  delete item->plugin;
+  if (item->plugin) delete item->plugin;
   item->plugin = 0L;
   item->load = false;
 }
 
 void KatePluginManager::enablePluginGUI (PluginListItem *item, KateMainWindow *win)
 {
+  if (!item->plugin) return;
   if (!item->plugin->hasView()) return;
 
   win->guiFactory()->addClient( item->plugin->createView(win) );
@@ -135,6 +142,7 @@ void KatePluginManager::enablePluginGUI (PluginListItem *item, KateMainWindow *w
 
 void KatePluginManager::enablePluginGUI (PluginListItem *item)
 {
+  if (!item->plugin) return;
   if (!item->plugin->hasView()) return;
 
   for (uint i=0; i< ((KateApp*)parent())->mainWindows.count(); i++)
@@ -145,6 +153,7 @@ void KatePluginManager::enablePluginGUI (PluginListItem *item)
 
 void KatePluginManager::disablePluginGUI (PluginListItem *item)
 {
+  if (!item->plugin) return;
   for (uint i=0; i< ((KateApp*)parent())->mainWindows.count(); i++)
   {
     for (uint z=0; z< item->plugin->viewList.count(); z++)

@@ -113,7 +113,8 @@ void KateConfigPluginPage::loadPlugin ()
     {
       myPluginMan->loadPlugin (myPluginMan->myPluginList.at(i));
       myPluginMan->enablePluginGUI (myPluginMan->myPluginList.at(i));
-      myDialog->addPluginPage (myPluginMan->myPluginList.at(i)->plugin);
+      if (myPluginMan->myPluginList.at(i)->load)
+          myDialog->addPluginPage (myPluginMan->myPluginList.at(i)->plugin);
     }
   }
   slotUpdate();
