@@ -3079,7 +3079,7 @@ void KateView::clearBookmarks()
   {
     if (list.at(i)->type == 1)
     {
-      myDoc->getTextLine(i)->setMark(0);
+      myDoc->getTextLine(list.at(i)->line)->setMark(0);
       myDoc->tagLines(list.at(i)->line, list.at(i)->line);
     }
   }
