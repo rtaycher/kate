@@ -2196,9 +2196,7 @@ void KWrite::loadURL(const KURL &url, int flags) {
         kWriteDoc->clear();
         kWriteDoc->setURL( url, !(flags & lfNoAutoHl ) );
         kWriteDoc->updateViews();
-        emit statusMsg( QString::null );
-        // !!!! replace with this when the string freeze is over: !!!
-        // emit statusMsg( i18n( "New File : %1" ).arg( url.fileName() ) );
+        emit statusMsg( i18n( "New File : %1" ).arg( url.fileName() ) );
       }
     }
   }
