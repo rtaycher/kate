@@ -242,7 +242,7 @@ void KateViewManager::activateView ( Kate::View *view )
 {
   if (!view) return;
 
-  // FIX IT view->getDoc()->isModOnHD();
+  view->getDoc()->isModOnHD();
   if (!view->isActive())
   {
     if ( !activeViewSpace()->showView (view) )
@@ -463,6 +463,9 @@ void KateViewManager::slotDocumentSave ()
 
   Kate::View *current = activeView();
 
+  kdDebug()<<current->getDoc()->isModified()<<endl;
+
+
   if( current->getDoc()->isModified() || current->getDoc()->url().isEmpty() )
   {
     if( !current->getDoc()->url().isEmpty() && current->getDoc()->isReadWrite() )
@@ -649,7 +652,7 @@ void KateViewManager::slotSpellcheck ()
 {
   if (activeView() == 0) return;
 
-  // FIX ME activeView()->getDoc()->spellcheck();
+  activeView()->getDoc()->spellcheck();
 }
 
 void KateViewManager::slotGotoLine ()
@@ -676,21 +679,21 @@ void KateViewManager::slotSetHl (uint n)
 void KateViewManager::exportAs(const QString& filter)
 {
   if (activeView() == 0) return;
-  // FIX ME ;) activeView()->getDoc()->exportAs(filter);
+  activeView()->getDoc()->exportAs(filter);
 }
 
 void KateViewManager::toggleBookmark ()
 {
   if (activeView() == 0) return;
 
- //  activeView()->toggleBookmark();
+  activeView()->toggleBookmark();
 }
 
 void KateViewManager::clearBookmarks ()
 {
   if (activeView() == 0) return;
 
-//  activeView()->document()->clearMarks();
+  activeView()->getDoc()->clearMarks();
 }
 
 void KateViewManager::slotComment ()
@@ -1230,12 +1233,12 @@ void KateViewManager::gotoMark (KTextEditor::Mark *mark)
 {
   if (!activeView()) return;
 
- // activeView()->gotoMark (mark);
+  activeView()->gotoMark (mark);
 }
 
 void KateViewManager::slotApplyWordWrap ()
 {
   if (!activeView()) return;
 
-//  activeView()->getDoc()->applyWordWrap();
+  activeView()->getDoc()->applyWordWrap();
 }

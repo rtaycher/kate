@@ -84,7 +84,7 @@ class Document : public KTextEditor::Document, public KTextEditor::EditInterface
     /** Checks if the file on disk is newer than document contents.
       If forceReload is true, the document is reloaded without asking the user,
       otherwise [default] the user is asked what to do. */
-    virtual void isModOnHD(bool ) { ; };
+    virtual void isModOnHD(bool =false) { ; };
 
     /** Returns the document name.
     */
@@ -101,10 +101,24 @@ class Document : public KTextEditor::Document, public KTextEditor::EditInterface
     /** Reloads the current document from disk if possible */
     virtual void reloadFile() = 0;
     
+    virtual void spellcheck() = 0;
+
+    virtual void exportAs(const QString &) = 0;
+    
+    virtual void applyWordWrap () = 0;
+
+    
   public:
+    virtual void setWordWrap (bool ) = 0;
+    virtual bool wordWrap () = 0;
+
+    virtual void setWordWrapAt (uint) = 0;
+    virtual uint wordWrapAt () = 0;
+
+
     virtual void setEncoding (QString e) = 0;
     virtual QString encoding() = 0;
-    
+        
   public:
     virtual ConfigPage *colorConfigPage (QWidget *) = 0;
     virtual ConfigPage *fontConfigPage (QWidget *) = 0;

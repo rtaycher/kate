@@ -2043,6 +2043,7 @@ void KateDocument::setReadWrite( bool rw )
   if (rw == readOnly)
   {
     readOnly = !rw;
+    KParts::ReadWritePart::setReadWrite (rw);
     for (view = myViews.first(); view != 0L; view = myViews.next() ) {
       emit static_cast<KateView *>( view )->newStatus();
     }
@@ -2059,6 +2060,7 @@ void KateDocument::setModified(bool m) {
 
   if (m != modified) {
     modified = m;
+    KParts::ReadWritePart::setModified (m);
     for (view = myViews.first(); view != 0L; view = myViews.next() ) {
       emit static_cast<KateView *>( view )->newStatus();
     }
@@ -3999,7 +4001,7 @@ void KateDocument::guiActivateEvent( KParts::GUIActivateEvent *ev )
 void KateDocument::setDocName (QString docName)
 {
   myDocName = docName;
-  emit nameChanged (this);
+  emit nameChanged ((Kate::Document *) this);
 }
 
 void KateDocument::setMTime()
@@ -4038,7 +4040,7 @@ void KateDocument::reloadFile()
 
 void KateDocument::slotModChanged()
 {
-  emit modStateChanged (this);
+  emit modStateChanged ((Kate::Document *)this);
 }
 
 void KateDocument::flush ()
@@ -4337,7 +4339,6 @@ Kate::ConfigPage *KateDocument::hlConfigPage (QWidget *p)
 {
   return (Kate::ConfigPage*) new HlConfigPage (p, this);
 }
-
 
 KateCursor::KateCursor ( KateDocument *doc)
 {

@@ -539,7 +539,7 @@ void KateMainWindow::slotGrepDialogItemSelected(QString filename,int linenumber)
   fileURL.setPath( filename );
   viewManager->openURL( fileURL );
   if ( viewManager->activeView() == 0 ) return;
-  //viewManager->activeView()->gotoLineNumber( linenumber );
+  viewManager->activeView()->gotoLineNumber( linenumber );
   this->raise();
   this->setActiveWindow();
 }

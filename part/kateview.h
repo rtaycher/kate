@@ -658,7 +658,6 @@ public slots:
     bool eventFilter(QObject* o, QEvent* e);
 
   signals:
-    void gotFocus (KateView *);
     void gotFocus (Kate::View *);
 
   public slots:

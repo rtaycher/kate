@@ -31,6 +31,7 @@
 #include <ktexteditor/view.h>
 #include <ktexteditor/clipboardinterface.h>
 #include <ktexteditor/popupmenuinterface.h>
+#include <ktexteditor/markinterface.h>
 #include <ktexteditor/viewcursorinterface.h>
 #include <ktexteditor/codecompletioninterface.h>
 
@@ -268,6 +269,11 @@ class View : public KTextEditor::View, public KTextEditor::ClipboardInterface,
       Decrease font size.
     */
     virtual void slotDecFontSizes () { ; };
+    
+    virtual void gotoMark (KTextEditor::Mark *mark) = 0;
+    virtual void toggleBookmark () = 0;
+    
+    virtual void gotoLineNumber( int ) = 0;
     
   signals:
     void gotFocus (View *);

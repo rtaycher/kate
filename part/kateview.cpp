@@ -2413,7 +2413,6 @@ void KateView::setFocus ()
   QWidget::setFocus ();
 
   emit gotFocus ((Kate::View *) this);
-  emit gotFocus (this);
 }
 
 bool KateView::eventFilter (QObject *object, QEvent *event)
