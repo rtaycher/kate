@@ -198,7 +198,7 @@ void HighlightDialogPage::hlChanged(int z)
   itemCombo->clear();
   for (ItemData *itemData = hlData->itemDataList.first(); itemData != 0L;
     itemData = hlData->itemDataList.next()) {
-    kdDebug()<<itemData->name;
+    kdDebug() << itemData->name << endl;
     itemCombo->insertItem(i18n(itemData->name.latin1()));
   }
 

@@ -171,11 +171,11 @@ HlKeyword::HlKeyword(int attribute, int context,bool casesensitive,QString weakS
         _weakSep=weakSep;
         if (casesensitive)
           {
-            kdDebug()<<"Case Sensitive KeyWord";
+            kdDebug() << "Case Sensitive KeyWord" << endl;
             doCheckHgl=&HlKeyword::sensitiveCheckHgl;
           } else
           {
-            kdDebug()<<"Case insensitive Keyword";
+            kdDebug() << "Case insensitive Keyword" << endl;
             doCheckHgl=&inSensitiveCheckHgl;
           }
         _caseSensitive=casesensitive;
