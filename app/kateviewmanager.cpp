@@ -249,6 +249,7 @@ void KateViewManager::activateView ( Kate::View *view )
   if (!view) return;
 
   view->getDoc()->isModOnHD();
+
   if (!view->isActive())
   {
     if ( !activeViewSpace()->showView (view) )
@@ -473,9 +474,6 @@ void KateViewManager::slotDocumentSave ()
   kapp->processEvents();
 
   Kate::View *current = activeView();
-
-  kdDebug()<<current->getDoc()->isModified()<<endl;
-
 
   if( current->getDoc()->isModified() || current->getDoc()->url().isEmpty() )
   {
