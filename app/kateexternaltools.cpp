@@ -431,7 +431,7 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
   if ( tool ) leMimetypes->setText( tool->mimetypes.join("; ") );
   QWhatsThis::add( leMimetypes, i18n(
       "A semicolon-separated list of mime types for which this tool should "
-      "be available; if this is left empty, the tool is always available."
+      "be available; if this is left empty, the tool is always available. "
       "To choose from known mimetypes, press the button on the right.") );
 
 
