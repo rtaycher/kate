@@ -415,7 +415,7 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     bool newDocGeometry;
 
     TextLine::Ptr longestLine;
-    int maxLength;
+    float maxLength;
 
     PointStruc select;
     PointStruc anchor;
