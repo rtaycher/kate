@@ -2,6 +2,11 @@ TODO:
  - dynamic word wrap
  - code folding
  - code completion
+ - search/replace in selection
+ - static word wrap
+ - fix kspell (replace doesn't work anymore :(
+ - speedUp removeSelectedText !!!!
+ - blockwise paste must be done !
  - better indent/unindent
  - Check docs for change on hd when focused, warning dialog: reload? yes/no[/view diff]
  - exhaustive testing of the new highlighting structure

@@ -2191,45 +2191,44 @@ void KateDocument::updateFontData() {
   fontAscent = maxAscent;     
   m_tabWidth = tabChars*tabWidth;     
      
-  for (view = myViews.first(); view != 0L; view = myViews.next() ) {     
-    view->myViewInternal->drawBuffer->resize(view->width(),fontHeight);     
-    view->tagAll();     
-    view->updateCursor();     
-  }     
-}     
-     
-void KateDocument::internalHlChanged() { //slot     
-  makeAttribs();     
-  updateViews();     
-}     
-     
-void KateDocument::addView(KTextEditor::View *view) {     
-  myViews.append( static_cast<KateView *>( view ) );     
-  _views.append( view );     
+  for (view = myViews.first(); view != 0L; view = myViews.next() ) {
+    view->myViewInternal->drawBuffer->resize(view->width(),fontHeight);
+    view->tagAll();
+    view->updateCursor();
+  }
 }
 
-void KateDocument::removeView(KTextEditor::View *view) {     
-  myViews.removeRef( static_cast<KateView *>( view ) );     
-  _views.removeRef( view  );     
-}     
-     
-void KateDocument::addCursor(KTextEditor::Cursor *cursor) {     
-  myCursors.append( cursor );     
+void KateDocument::internalHlChanged() { //slot
+  makeAttribs();
+  updateViews();
 }
-     
-void KateDocument::removeCursor(KTextEditor::Cursor *cursor) {     
-  myCursors.removeRef( cursor  );     
+
+void KateDocument::addView(KTextEditor::View *view) {
+  myViews.append( static_cast<KateView *>( view ) );
+  _views.append( view );
 }
-     
+
+void KateDocument::removeView(KTextEditor::View *view) {
+  myViews.removeRef( static_cast<KateView *>( view ) );
+  _views.removeRef( view  );
+}
+
+void KateDocument::addCursor(KTextEditor::Cursor *cursor) {
+  myCursors.append( cursor );
+}
+
+void KateDocument::removeCursor(KTextEditor::Cursor *cursor) {
+  myCursors.removeRef( cursor  );
+}
+
 bool KateDocument::ownedView(KateView *view) {
-  // do we own the given view?     
-  return (myViews.containsRef(view) > 0);     
-}     
-     
-bool KateDocument::isLastView(int numViews) {     
-  return ((int) myViews.count() == numViews);     
-}     
+  // do we own the given view?
+  return (myViews.containsRef(view) > 0);
+}
 
+bool KateDocument::isLastView(int numViews) {
+  return ((int) myViews.count() == numViews);
+}
 
 int KateDocument::charWidth(const TextLine::Ptr &textLine, int cursorX) {
   QChar ch = textLine->getChar(cursorX);
@@ -2262,26 +2261,26 @@ int KateDocument::charWidth(KateViewCursor &cursor) {
 
 uint KateDocument::textWidth(const TextLine::Ptr &textLine, int cursorX)
 {
-  int x;     
-  int z;     
-  QChar ch;     
-  Attribute *a;     
-     
-  x = 0;     
-  for (z = 0; z < cursorX; z++) {     
-    ch = textLine->getChar(z);     
-    a = attribute(textLine->getAttr(z));     
-     
-    if (ch == '\t')     
-      x += m_tabWidth - (x % m_tabWidth);     
-    else if (a->bold && a->italic)     
-      x += myFontMetricsBI.width(ch);     
-    else if (a->bold)     
-      x += myFontMetricsBold.width(ch);     
-    else if (a->italic)     
-      x += myFontMetricsItalic.width(ch);     
-    else     
-      x += myFontMetrics.width(ch);     
+  int x;
+  int z;
+  QChar ch;
+  Attribute *a;
+
+  x = 0;
+  for (z = 0; z < cursorX; z++) {
+    ch = textLine->getChar(z);
+    a = attribute(textLine->getAttr(z));
+
+    if (ch == '\t')
+      x += m_tabWidth - (x % m_tabWidth);
+    else if (a->bold && a->italic)
+      x += myFontMetricsBI.width(ch);
+    else if (a->bold)
+      x += myFontMetricsBold.width(ch);
+    else if (a->italic)
+      x += myFontMetricsItalic.width(ch);
+    else
+      x += myFontMetrics.width(ch);
   }
   return x;
 }
@@ -2295,96 +2294,96 @@ uint KateDocument::textWidth(KateViewCursor &cursor)
   if (cursor.line >= (int)numLines())
      cursor.line = lastLine();
   return textWidth(getTextLine(cursor.line),cursor.col);
-}     
-     
+}
+
 uint KateDocument::textWidth(bool wrapCursor, KateViewCursor &cursor, int xPos)
 {
   int len;
   int x, oldX;
   int z;
   QChar ch;
-  Attribute *a;     
-     
-  if (cursor.line < 0) cursor.line = 0;     
-  if (cursor.line > lastLine()) cursor.line = lastLine();     
-  TextLine::Ptr textLine = getTextLine(cursor.line);     
-  len = textLine->length();     
-     
-  x = oldX = z = 0;     
-  while (x < xPos && (!wrapCursor || z < len)) {     
-    oldX = x;     
-    ch = textLine->getChar(z);     
-    a = attribute(textLine->getAttr(z));     
-     
-    if (ch == '\t')     
-      x += m_tabWidth - (x % m_tabWidth);     
-    else if (a->bold && a->italic)     
-      x += myFontMetricsBI.width(ch);     
-    else if (a->bold)     
-      x += myFontMetricsBold.width(ch);     
-    else if (a->italic)     
-      x += myFontMetricsItalic.width(ch);     
-    else     
-      x += myFontMetrics.width(ch);     
-     
-    z++;     
-  }     
-  if (xPos - oldX < x - xPos && z > 0) {     
-    z--;     
-    x = oldX;     
-  }     
-  cursor.col = z;     
-  return x;     
-}     
-     
-uint KateDocument::textPos(const TextLine::Ptr &textLine, int xPos) {     
-  int x, oldX;     
-  int z;     
-  QChar ch;     
-  Attribute *a;     
+  Attribute *a;
 
-  x = oldX = z = 0;     
-  while (x < xPos) { // && z < len) {     
-    oldX = x;     
-    ch = textLine->getChar(z);     
-    a = attribute(textLine->getAttr(z));     
-     
-    if (ch == '\t')     
-      x += m_tabWidth - (x % m_tabWidth);     
-    else if (a->bold && a->italic)     
-      x += myFontMetricsBI.width(ch);     
-    else if (a->bold)     
-      x += myFontMetricsBold.width(ch);     
-    else if (a->italic)     
-      x += myFontMetricsItalic.width(ch);     
-    else     
-      x += myFontMetrics.width(ch);     
-     
-    z++;     
-  }     
-  if (xPos - oldX < x - xPos && z > 0) {     
-    z--;     
-   // newXPos = oldX;     
-  }// else newXPos = x;     
-  return z;     
-}     
-     
-uint KateDocument::textWidth() {     
-  return (int) maxLength + 8;     
-}     
-     
-uint KateDocument::textHeight() {     
-  return numLines()*fontHeight;     
-}     
-     
-uint KateDocument::currentColumn(KateViewCursor &cursor)     
-{     
-  TextLine::Ptr t = getTextLine(cursor.line);     
-     
-  if (t)     
-    return t->cursorX(cursor.col,tabChars);     
-  else     
-    return 0;     
+  if (cursor.line < 0) cursor.line = 0;
+  if (cursor.line > lastLine()) cursor.line = lastLine();
+  TextLine::Ptr textLine = getTextLine(cursor.line);
+  len = textLine->length();
+
+  x = oldX = z = 0;
+  while (x < xPos && (!wrapCursor || z < len)) {
+    oldX = x;
+    ch = textLine->getChar(z);
+    a = attribute(textLine->getAttr(z));
+
+    if (ch == '\t')
+      x += m_tabWidth - (x % m_tabWidth);
+    else if (a->bold && a->italic)
+      x += myFontMetricsBI.width(ch);
+    else if (a->bold)
+      x += myFontMetricsBold.width(ch);
+    else if (a->italic)
+      x += myFontMetricsItalic.width(ch);
+    else
+      x += myFontMetrics.width(ch);
+
+    z++;
+  }
+  if (xPos - oldX < x - xPos && z > 0) {
+    z--;
+    x = oldX;
+  }
+  cursor.col = z;
+  return x;
+}
+
+uint KateDocument::textPos(const TextLine::Ptr &textLine, int xPos) {
+  int x, oldX;
+  int z;
+  QChar ch;
+  Attribute *a;
+
+  x = oldX = z = 0;
+  while (x < xPos) { // && z < len) {
+    oldX = x;
+    ch = textLine->getChar(z);
+    a = attribute(textLine->getAttr(z));
+
+    if (ch == '\t')
+      x += m_tabWidth - (x % m_tabWidth);
+    else if (a->bold && a->italic)
+      x += myFontMetricsBI.width(ch);
+    else if (a->bold)
+      x += myFontMetricsBold.width(ch);
+    else if (a->italic)
+      x += myFontMetricsItalic.width(ch);
+    else
+      x += myFontMetrics.width(ch);
+
+    z++;
+  }
+  if (xPos - oldX < x - xPos && z > 0) {
+    z--;
+   // newXPos = oldX;
+  }// else newXPos = x;
+  return z;
+}
+
+uint KateDocument::textWidth() {
+  return (int) maxLength + 8;
+}
+
+uint KateDocument::textHeight() {
+  return numLines()*fontHeight;
+}
+
+uint KateDocument::currentColumn(KateViewCursor &cursor)
+{
+  TextLine::Ptr t = getTextLine(cursor.line);
+
+  if (t)
+    return t->cursorX(cursor.col,tabChars);
+  else
+    return 0;
 }
 
 bool KateDocument::insertChars ( int line, int col, const QString &chars, KateView *view )
@@ -3170,7 +3169,6 @@ void KateDocument::updateLines(int startLine, int endLine)
   tagLines(startLine, line - 1);
 }
 
-
 void KateDocument::updateMaxLength(TextLine::Ptr &textLine)
 {
   int len;
@@ -3201,9 +3199,9 @@ void KateDocument::slotBufferChanged() {
   newDocGeometry = true;
   //updateLines();//JW
   updateViews();
-}     
+}
 
-void KateDocument::slotBufferHighlight(uint start,uint stop) {     
+void KateDocument::slotBufferHighlight(uint start,uint stop) {
   //kdDebug(13020)<<"KateDocument::slotBufferHighlight"<<QString("%1-%2").arg(start).arg(stop)<<endl;     
   updateLines(start,stop);     
 //  buffer->startLoadTimer();     
