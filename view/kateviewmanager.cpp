@@ -451,24 +451,20 @@ void KateViewManager::statusMsgOther ()
 
 void KateViewManager::slotWindowNext()
 {
-  uint id = docManager->findDoc ((KateDocument *) activeView ()->doc());
+  int id = docManager->findDoc ((KateDocument *) activeView ()->doc()) - 1;
 
-  if (id == 0)
+  if (id < 0)
     id =  docManager->docCount () - 1;
-  else
-    id--;
 
   activateView (docManager->nthDoc(id)->docID());
 }
 
 void KateViewManager::slotWindowPrev()
 {
-  uint id = docManager->findDoc ((KateDocument *) activeView ()->doc());
+  int id = docManager->findDoc ((KateDocument *) activeView ()->doc()) + 1;
 
-  if (id == docManager->docCount () )
+  if (id >= docManager->docCount () )
     id = 0;
-  else
-    id++;
 
   activateView (docManager->nthDoc(id)->docID());
 }
