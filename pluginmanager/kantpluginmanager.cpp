@@ -16,6 +16,8 @@
  ***************************************************************************/
 
 #include "kantpluginmanager.h"
+#include "kantpluginmanager.moc"
+
 #include <kglobal.h>
 #include <kstddirs.h>
 #include <qstringlist.h>
@@ -67,4 +69,3 @@ KantPluginManager::KantPluginManager(QObject *parent):QObject(parent)
 
    kdDebug()<<"KantPluginManager initializes"<<endl;
   }
-#include "kantpluginmanager.moc"

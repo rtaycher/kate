@@ -1,4 +1,6 @@
 #include "kantconfigplugindialogpage.h"
+#include "kantconfigplugindialogpage.moc"
+
 #include "kantpluginmanager.h"
 #include <qlistbox.h>
 #include "../app/kantapp.h"
@@ -11,6 +13,3 @@ KantConfigPluginPage::KantConfigPluginPage(QWidget *parent):QHBox(parent)
   KantPluginManager *man=((KantApp*)kapp)->getPluginManager();
 }
 
-
-
-#include "kantconfigplugindialogpage.moc"
