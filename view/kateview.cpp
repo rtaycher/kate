@@ -1482,9 +1482,9 @@ void KateView::setupActions()
 
     // setup Tools menu
     KStdAction::spelling(this, SLOT(spellcheck()), actionCollection());
-    new KAction(i18n("&Indent"), Qt::CTRL+Qt::Key_I, this, SLOT(indent()),
+    new KAction(i18n("&Indent"), "indent", Qt::CTRL+Qt::Key_I, this, SLOT(indent()),
                               actionCollection(), "tools_indent");
-    new KAction(i18n("&Unindent"), Qt::CTRL+Qt::Key_U, this, SLOT(unIndent()),
+    new KAction(i18n("&Unindent"), "unindent", Qt::CTRL+Qt::Key_U, this, SLOT(unIndent()),
                                 actionCollection(), "tools_unindent");
     new KAction(i18n("&Clean Indentation"), 0, this, SLOT(cleanIndent()),
                                    actionCollection(), "tools_cleanIndent");
