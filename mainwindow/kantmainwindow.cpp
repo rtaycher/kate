@@ -309,12 +309,6 @@ void KantMainWindow::setupActions()
   projectRun = new KAction(i18n("&Run"), 0, projectManager,
   	 SLOT(slotProjectRun()), actionCollection(),"project_run");
 
-  // KActions for Plugins
-  pluginsAdd = new KAction(i18n("&Add"), 0, this,
-  	 SLOT(slotPluginsAdd()), actionCollection(),"plugins_add");
-  pluginsDelete = new KAction(i18n("&Delete"), 0, this,
-  	 SLOT(slotPluginsDelete()), actionCollection(),"plugins_delete");
-
   connect(viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
   connect(viewManager,SIGNAL(statChanged()),this,SLOT(slotCurrentDocChanged()));
 
@@ -786,14 +780,6 @@ void KantMainWindow::bookmarkMenuAboutToShow()
 void KantMainWindow::setHighlightMenuAboutToShow()
 {
    setHighlight->setCurrentItem( viewManager->activeView()->getHl() );
-}
-
-void KantMainWindow::slotPluginsAdd()
-{
-}
-
-void KantMainWindow::slotPluginsDelete()
-{
 }
 
 void KantMainWindow::projectMenuAboutToShow()

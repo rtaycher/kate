@@ -91,12 +91,6 @@
     <Action name="project_run" />
   </Menu>
 
-  <Menu name="plugins" noMerge="1"><text>P&amp;lugins</text>
-    <Action name="plugins_add" />
-    <Action name="plugins_delete" />
-    <Separator />
-  </Menu>
-
   <Menu name="settings" noMerge="1"><text>&amp;Settings</text>
     <Action name="settings_show_toolbar" />
     <Action name="settings_show_sidebar" />

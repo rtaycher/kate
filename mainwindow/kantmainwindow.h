@@ -107,8 +107,6 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     KAction *projectConfigure;
     KAction *projectCompile;
     KAction *projectRun;
-    KAction *pluginsAdd;
-    KAction *pluginsDelete;
 
     KAction *viewSplitVert;
     KAction *viewSplitHoriz;
@@ -176,8 +174,6 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     void projectMenuAboutToShow();
     void settingsMenuAboutToShow();
     void setHighlightMenuAboutToShow();
-    void slotPluginsAdd();
-    void slotPluginsDelete();
     void slotSettingsShowFullPath();
     void slotDropEvent(QDropEvent *);
     void slotEditFilter ();
