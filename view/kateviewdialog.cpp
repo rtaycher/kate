@@ -394,7 +394,7 @@ EditConfigTab::EditConfigTab(QWidget *parent, KateView *view)
 
   e2 = new KIntNumInput(e1, view->tabWidth(), this);
   e2->setRange(1, 16, 1, false);
-  e2->setLabel(i18n("Tab Width:"));
+  e2->setLabel(i18n("Tab/Indent Width:"));
 
   e3 = new KIntNumInput(e2, view->undoSteps(), this);
   e3->setRange(5, 30000, 1, false);
@@ -520,4 +520,6 @@ void ColorConfig::getColors(QColor *colors)
 }
 
 #include "kateviewdialog.moc"
+
+
 
