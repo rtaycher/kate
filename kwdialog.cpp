@@ -43,7 +43,7 @@ SearchDialog::SearchDialog( QWidget *parent, QStringList &searchFor, QStringList
   m_search->setMinimumWidth( m_search->sizeHint().width() );
   m_search->lineEdit()->selectAll();
   QLabel *label = new QLabel( m_search, i18n( "&Text To Find:" ), page );
-  m_optRegExp = new QCheckBox( i18n( "&Regular Expression" ), page );
+  m_optRegExp = new QCheckBox( i18n( "Regular Expression" ), page );
   topLayout->addWidget( label );
   topLayout->addWidget( m_search );
   topLayout->addWidget( m_optRegExp );
