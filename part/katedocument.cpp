@@ -2194,20 +2194,20 @@ void KateDocument::selectTo(VConfig &c, KateViewCursor &cursor, int cXPos)
       el = c.cursor.line;
       ec = c.cursor.col;
     }
-    
+
     back = true;
   }
-  else if (back && (el < selectEndLine))
+  else if (back && ((el < selectEndLine) || ((el == selectEndLine) && (ec < selectEndCol))))
   {
     sl = el;
     sc = ec;
     el = selectEndLine;
-    ec = selectEndLine;
+    ec = selectEndCol;
   }
   else
     back = false;
 
-  kdDebug()<<"sel: "<<sl<<" "<<el<<endl;
+  kdDebug()<<"sel: "<<sl<<"-"<<sc<<" "<<el<<"-"<<ec<<endl;
 
   setSelection (sl, sc, el, ec);
 }
