@@ -30,7 +30,6 @@
 #include <qdialog.h>
 #include <kspell.h>
 
-#include "kateviewIface.h"
 #include "kateviewhighlightaction.h"
 
 class KToggleAction;

@@ -38,7 +38,6 @@
 class KateCmd;
 
 #include "../interfaces/document.h"
-#include "./katedocumentIface.h"
 
 class CachedFontMetrics : public QFontMetrics {
 private:
