@@ -1616,24 +1616,22 @@ void KateDocument::doComment(VConfig &c, int change)
       {
         // Add a start comment mark
         c.cursor.x = 0;
-        recordReplace(c.cursor, 0, startLineComment + " ");
+        recordReplace(c.cursor, 0, startLineComment);
       }
-      else
+      else  if ((startComment != "") && (endComment != ""))
       {
         // Add a start comment mark
         c.cursor.x = 0;
-        recordReplace(c.cursor, 0, startComment + " ");
+        recordReplace(c.cursor, 0, startComment);
 
         // Add an end comment mark
-        if(endComment != " ") {
         TextLine* textline = getTextLine(c.cursor.y);
         c.cursor.x = textline->length();
-        recordReplace(c.cursor, 0, " " + endComment);
+        recordReplace(c.cursor, 0, endComment);
         c.cursor.x = 0;
-        }
       }
     }
-    else
+    else if ((startComment != "") && (endComment != ""))
     {
       QString marked (c.view->markedText ());
       int preDeleteLine = -1, preDeleteCol = -1;
@@ -1645,7 +1643,7 @@ void KateDocument::doComment(VConfig &c, int change)
       int line = -1, col = -1;
       c.view->getCursorPosition (&line, &col);
 
-      c.view->insertText (startComment + " " + marked + " " + endComment);
+      c.view->insertText (startComment + marked + endComment);
     }
   }
   else
