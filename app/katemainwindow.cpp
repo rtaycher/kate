@@ -754,7 +754,7 @@ void KateMainWindow::slotMail()
                 i18n("<p>The current file:<br><strong>%1</strong><br>has been "
                 "modified. Modifications will not be available in the attachment."
                 "<p>Do you want to save it before sending it?").arg(doc->url().prettyURL()),
-                i18n("Save before sending?") );
+                i18n("Save Before Sending?") );
       switch ( r ) {
         case KMessageBox::Cancel:
           continue;
