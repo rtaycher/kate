@@ -128,7 +128,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   m_mainWindow = new Kate::MainWindow (this);
   m_toolViewManager = new Kate::ToolViewManager (this);
-  setStandardMDIMenuEnabled();
+  setStandardMDIMenuEnabled(false);
   setManagedDockPositionModeEnabled(true);
 
   m_dcop = new KateMainWindowDCOPIface (this);
