@@ -2435,7 +2435,7 @@ bool KateView::askReplaceEnd() {
   myDoc->updateViews();
   if (s.flags & KateView::sfFinished) {
     // replace finished
-    str = i18n("%1 replace(s) made").arg(replaces);
+    str = i18n("%1 replacement(s) made").arg(replaces);
     KMessageBox::information(this, str, i18n("Replace"));
     return true;
   }
@@ -2443,14 +2443,14 @@ bool KateView::askReplaceEnd() {
   // ask for continue
   if (!(s.flags & KateView::sfBackward)) {
     // forward search
-    str = i18n("%1 replace(s) made.\n"
+    str = i18n("%1 replacement(s) made.\n"
                "End of document reached.\n"
                "Continue from the beginning?").arg(replaces);
     query = KMessageBox::questionYesNo(this, str, i18n("Replace"),
 		i18n("Continue"), i18n("Stop"));
   } else {
     // backward search
-    str = i18n("%1 replace(s) made.\n"
+    str = i18n("%1 replacement(s) made.\n"
                 "Beginning of document reached.\n"
                 "Continue from the end?").arg(replaces);
     query = KMessageBox::questionYesNo(this, str, i18n("Replace"),

@@ -54,7 +54,7 @@ KateFileSelector::KateFileSelector( QWidget * parent, const char * name ): QWidg
   QToolTip::add(back, i18n("Previous directory"));
   forward = new QPushButton( /*i18n("&Next"),*/ hlow );
   forward->setPixmap(SmallIcon("forward"));
-  QToolTip::add(forward, i18n("Next Direcotry"));
+  QToolTip::add(forward, i18n("Next Directory"));
 
   // HACK
   QWidget* spacer = new QWidget(hlow);

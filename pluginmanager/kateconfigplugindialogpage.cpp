@@ -59,7 +59,7 @@ KateConfigPluginPage::KateConfigPluginPage(QWidget *parent, KateConfigDialog *di
   QToolTip::add(unloadButton, i18n("Previous directory"));
   loadButton = new QPushButton( /*i18n("&Next"),*/ vbox2 );
   loadButton->setPixmap(SmallIcon("forward"));
-  QToolTip::add(loadButton, i18n("Next Direcotry"));
+  QToolTip::add(loadButton, i18n("Next Directory"));
 
   unloadButton->setEnabled(false);
   loadButton->setEnabled(false);

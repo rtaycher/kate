@@ -104,7 +104,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   gridFrG->addMultiCellWidget( cb_reopenFiles, 1, 1, 0, 1 );
   config->setGroup("open files");
   cb_reopenFiles->setChecked( config->readBoolEntry("reopen at startup", true) );
-  QWhatsThis::add(cb_reopenFiles, i18n("If this is enabled Kate will attempt to reopen files that was open when you closed last time. Cursor position will be recovered if possible. Non-existing files will not be opened."));
+  QWhatsThis::add(cb_reopenFiles, i18n("If this is enabled Kate will attempt to reopen files that were open when you closed last time. Cursor position will be recovered if possible. Non-existent files will not be opened."));
 
   // restore view  config
   cb_restoreVC = new QCheckBox( frGeneral );
