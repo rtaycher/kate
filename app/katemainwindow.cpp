@@ -29,6 +29,7 @@
 #include "katefileselector.h"
 #include "katefilelist.h"
 #include "katemailfilesdialog.h"
+#include "katedockcontainer.h"
 
 #include <dcopclient.h>
 #include <kinstance.h>
@@ -71,10 +72,14 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 	Kate::MainWindow (),
              DCOPObject ((QString("KateMainWindow%1").arg(uniqueID)).latin1())
 {
+  m_leftDock=m_rightDock=m_topDock=m_bottomDock=0;
 
   m_docManager =  _m_docManager;
   m_pluginManager =_m_pluginManager;
   config = kapp->config();
+
+  //m_dockStyle=IDEAlStyle;
+  m_dockStyle=ClassicStyle;
 
   myID = uniqueID;
   uniqueID++;
@@ -121,6 +126,18 @@ void KateMainWindow::setupMainWindow ()
   filelistDock =  createDockWidget( "filelistDock",  SmallIcon("kmultiple"), 0L, "Open Files", "");
   fileselectorDock = createDockWidget( "fileselectorDock", SmallIcon("fileopen"), 0L, "Selector", "");
   
+
+  if (m_dockStyle==IDEAlStyle)
+  {
+    fileselectorDock->setEnableDocking(fileselectorDock->enableDocking() & ~KDockWidget::DockDesktop);
+    filelistDock->setEnableDocking(filelistDock->enableDocking() & ~KDockWidget::DockDesktop);
+
+    m_leftDock = createDockWidget("leftDock",SmallIcon("misc"),0L,"Left Dock");
+    m_rightDock = createDockWidget("rightDock",SmallIcon("misc"),0L,"Right Dock");
+    m_topDock = createDockWidget("topDock",SmallIcon("misc"),0L,"Top Dock");
+    m_bottomDock = createDockWidget("bottomDock",SmallIcon("misc"),0L,"Bottom Dock");
+  }
+
   mainDock->setGeometry(100, 100, 100, 100);
   m_viewManager = new KateViewManager (mainDock, m_docManager);
   m_viewManager->setMinimumSize(200,200);
@@ -132,7 +149,14 @@ void KateMainWindow::setupMainWindow ()
   filelist = new KateFileList (m_docManager, m_viewManager, filelistDock, "filelist");
   filelistDock->setWidget (filelist);
 
-  
+  if (m_dockStyle==IDEAlStyle)
+  {
+    m_leftDock->setWidget(new KateDockContainer(m_leftDock));
+    m_rightDock->setWidget(new KateDockContainer(m_rightDock));
+    m_topDock->setWidget(new KateDockContainer(m_topDock));
+    m_bottomDock->setWidget(new KateDockContainer(m_bottomDock));
+  }
+
   fileselector = new KateFileSelector( this, m_viewManager, fileselectorDock, "operator");
   fileselectorDock->setWidget (fileselector);
   
@@ -148,6 +172,16 @@ void KateMainWindow::setupMainWindow ()
 
   filelistDock->manualDock ( mainDock, KDockWidget::DockLeft, 20 );
   fileselectorDock ->manualDock(filelistDock, KDockWidget::DockCenter);
+
+  if (m_dockStyle==IDEAlStyle)
+  {
+     m_leftDock->manualDock(mainDock, KDockWidget::DockLeft,20);
+     m_rightDock->manualDock(mainDock, KDockWidget::DockRight,20);
+     m_topDock->manualDock(mainDock, KDockWidget::DockTop,20);
+     m_bottomDock->manualDock(mainDock, KDockWidget::DockBottom,20);
+     m_rightDock->undock();
+     m_topDock->undock();
+  }
 
 }
 
@@ -223,10 +257,23 @@ void KateMainWindow::setupActions()
   KStdAction::keyBindings(this, SLOT(editKeys()), actionCollection());
   KStdAction::configureToolbars(this, SLOT(slotEditToolbars()), actionCollection(), "set_configure_toolbars");
 
+
+
   // toggle dockwidgets
+  KActionMenu *settingsShowToolViews=new KActionMenu( i18n("Tool Views"), actionCollection(),"settings_show_toolviews");
   settingsShowFilelist = new KToggleAction(i18n("Show File List"), 0, filelistDock, SLOT(changeHideShowState()), actionCollection(), "settings_show_filelist");
   settingsShowFileselector = new KToggleAction(i18n("Show File Selector"), 0, fileselectorDock, SLOT(changeHideShowState()), actionCollection(), "settings_show_fileselector");
   settingsShowConsole = new KToggleAction(i18n("Show Terminal Emulator"), QString::fromLatin1("konsole"), Qt::Key_F7, this, SLOT(slotSettingsShowConsole()), actionCollection(), "settings_show_console");
+
+  settingsShowToolViews->insert(settingsShowFilelist);
+  settingsShowToolViews->insert(settingsShowFileselector);
+  settingsShowToolViews->insert(settingsShowConsole);
+
+
+  if (m_dockStyle==IDEAlStyle)
+  {
+	  KActionMenu *settingsShowToolDocks=new KActionMenu( i18n("Tool Docks"), actionCollection(),"settings_show_tooldocks");
+  }
 
   settingsShowToolbar = KStdAction::showToolbar(this, SLOT(slotSettingsShowToolbar()), actionCollection(), "settings_show_toolbar");
   settingsConfigure = KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
@@ -485,7 +532,7 @@ void KateMainWindow::slotSettingsShowConsole()
 {
   if (!consoleDock && !console)
   {
-    consoleDock = createDockWidget( "consoleDock", 0, 0L, "Console", "" );
+    consoleDock = createDockWidget( "consoleDock", SmallIcon("konsole"), 0L, "Console", "" );
     console = new KateConsole (consoleDock, "console");
     console->installEventFilter( this );
     console->setMinimumSize(50,50);

@@ -69,11 +69,8 @@
     <DefineGroup name="show_toolbar_merge" />
     <Action name="toolbars_showhide" /> -->
     <Action name="options_show_toolbar"/>
-    <Menu name="toolviews"><text>&amp;Toolviews</text>
-       <Action name="settings_show_filelist" />
-       <Action name="settings_show_fileselector" />
-       <Action name="settings_show_console" />
-    </Menu>
+    <Action name="settings_show_toolviews" />
+    <Action name="settings_show_tooldocks" />
     <DefineGroup name="show_merge" />
     <Separator />
     <Action name="options_configure_keybinding"/>

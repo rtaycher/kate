@@ -41,6 +41,8 @@ class MainWindow : public KParts::DockMainWindow
     
   public:
     virtual class ViewManager *viewManager () = 0;
+
+    enum DockWidgetMode {ClassicStyle,IDEAlStyle};
 };
 
 };

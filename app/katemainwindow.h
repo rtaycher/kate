@@ -58,6 +58,11 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     KDockWidget *filelistDock;
     KDockWidget *fileselectorDock;
 
+    KDockWidget *m_leftDock;
+    KDockWidget *m_rightDock;
+    KDockWidget *m_topDock;
+    KDockWidget *m_bottomDock;
+
     // console
     KateConsole *console;
 
@@ -74,6 +79,8 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
   private:
     uint myID;
     bool syncKonsole;
+  
+    enum DockWidgetMode m_dockStyle;
 
   protected:
 
