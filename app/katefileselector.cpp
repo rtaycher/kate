@@ -63,7 +63,6 @@
 #include <qtoolbar.h>
 #include <kpopupmenu.h>
 #include <kdialog.h>
-#include <kio/netaccess.h>
 
 #include <kdebug.h>
 //END Includes
@@ -113,11 +112,11 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow, KateViewManager 
       viewmanager(viewManager)
 {
   mActionCollection = new KActionCollection( this );
-  
+
   QVBoxLayout* lo = new QVBoxLayout(this);
 
   QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar );
- 
+
   KateFileSelectorToolBarParent *tbp=new KateFileSelectorToolBarParent(this);
   toolbar = new KateFileSelectorToolBar(tbp);
   tbp->setToolBar(toolbar);
@@ -329,8 +328,7 @@ void KateFileSelector::slotFilterChange( const QString & nf )
 }
 void KateFileSelector::setDir( KURL u )
 {
-  if (KIO::NetAccess::exists(u))
-    dir->setURL(u, true);
+  dir->setURL(u, true);
 }
 
 //END Public Slots
