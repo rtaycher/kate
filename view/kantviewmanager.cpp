@@ -787,21 +787,14 @@ void KantViewManager::openConstURL (const KURL& url)
 
 void KantViewManager::printNow()
 {
-   if (activeView() == 0) return;
-  print(false);
+  if (!activeView()) return;
+  activeView()->printDlg ();
 }
 
 void KantViewManager::printDlg()
 {
-   if (activeView() == 0) return;
-  print(true);
-}
-
-void KantViewManager::print(bool dialog)
-{
-  QString title = activeView()->doc()->url().fileName();
-
-  KTextPrintConfig::print(this, KWriteFactory::instance()->config(), dialog, title, activeView()->numLines(), (KantDocument *) activeView()->doc(), SLOT(print(KTextPrint &)));
+  if (!activeView()) return;
+  activeView()->printDlg ();
 }
 
 void KantViewManager::splitViewSpace(bool isHoriz)

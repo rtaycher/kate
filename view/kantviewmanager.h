@@ -184,7 +184,6 @@ class KantViewManager : public KantPluginIface
     void setActiveSpace ( KantViewSpace* vs );
     void setActiveView ( KantView* view );
 
-    void print(bool dialog);
     void setShowFullPath(bool enable);
 
     void setWindowCaption();

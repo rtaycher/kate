@@ -56,9 +56,6 @@ class KantDocument : public KWriteDoc
     long myDocID;
     QFileInfo* fileinfo;
     QDateTime mTime;
-
-  public slots:
-    void print (KTextPrint &printer);
 };
 
 #endif

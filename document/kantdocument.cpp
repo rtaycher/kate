@@ -41,55 +41,6 @@ long KantDocument::docID ()
   return myDocID;
 }
 
-void KantDocument::print (KTextPrint &printer)
-{
-  int z, numAttribs;
-  Attribute *a;
-  int line, attr, nextAttr, oldZ;
-  TextLine *textLine;
-  const QChar *s;
-
-//  printer.setTitle(kWriteDoc->fileName());
-  printer.setTabWidth(this->tabWidth());
-
-  numAttribs = this->numAttribs();
-  a = this->attribs();
-  for (z = 0; z < numAttribs; z++) {
-    printer.defineColor(z, a[z].col.red(), a[z].col.green(), a[z].col.blue());
-  }
-
-  printer.begin();
-
-  line = 0;
-  attr = -1;
-  while (true) {
-    textLine = this->getTextLine(line);
-    s = textLine->getText();
-//    printer.print(s, textLine->length());
-    oldZ = 0;
-    for (z = 0; z < textLine->length(); z++) {
-      nextAttr = textLine->getAttr(z);
-      if (nextAttr != attr) {
-        attr = nextAttr;
-        printer.print(&s[oldZ], z - oldZ);
-        printer.setColor(attr);
-        int fontStyle = 0;
-        if (a[attr].font.bold()) fontStyle |= KTextPrint::Bold;
-        if (a[attr].font.italic()) fontStyle |= KTextPrint::Italics;
-        printer.setFontStyle(fontStyle);
-        oldZ = z;
-      }
-    }
-    printer.print(&s[oldZ], z - oldZ);
-
-    line++;
-    if (line == this->numLines()) break;
-    printer.newLine();
-  }
-
-  printer.end();
-}
-
 bool KantDocument::saveFile()
 {
   if (KWriteDoc::saveFile()) {
