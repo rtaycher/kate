@@ -57,7 +57,7 @@ DocManager::~DocManager ()
 {
 }
 
-MainWindow::MainWindow () : KDockMainWindow ()
+MainWindow::MainWindow () : KParts::DockMainWindow ()
 {
 }
 

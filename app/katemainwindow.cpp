@@ -86,8 +86,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_
   setupActions();
 
   setXMLFile( "kateui.rc" );
-  
-  guiFactory()->addClient( this );
+  createShellGUI ( true );
   
   pluginManager->enableAllPluginsGUI (this);
 

@@ -26,12 +26,12 @@
 #ifndef _KATE_MAINWINDOW_INCLUDE_
 #define _KATE_MAINWINDOW_INCLUDE_
 
-#include <kdockwidget.h>
+#include <kparts/dockmainwindow.h>
 
 namespace Kate
 {
 
-class MainWindow : public KDockMainWindow
+class MainWindow : public KParts::DockMainWindow
 {
   Q_OBJECT
 
