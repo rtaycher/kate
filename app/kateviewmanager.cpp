@@ -206,20 +206,33 @@ KateViewSpace* KateViewManager::activeViewSpace ()
 
 Kate::View* KateViewManager::activeView ()
 {
-  QPtrListIterator<Kate::View> it(m_viewList);
+  static bool allreadyrunning = false;
 
-  for (; it.current(); ++it)
+  if (allreadyrunning)
+    return 0L;
+
+  allreadyrunning = true;
+
+  for (QPtrListIterator<Kate::View> it(m_viewList); it.current(); ++it)
   {
     if ( it.current()->isActive() )
+    {
+      allreadyrunning = false;
+
       return it.current();
+    }
   }
 
   // if we get to here, no view isActive()
   // first, try to get one from activeViewSpace()
   KateViewSpace* vs;
-  if ( (vs = activeViewSpace()) ) {
-    if ( vs->currentView() ) {
-      vs->currentView()->setActive( true );
+  if ( (vs = activeViewSpace()) )
+  {
+    if ( vs->currentView() )
+    {
+      activateView (vs->currentView());
+
+      allreadyrunning = false;
       return vs->currentView();
     }
   }
@@ -227,9 +240,13 @@ Kate::View* KateViewManager::activeView ()
   // last attempt: just pick first
   if (m_viewList.count() > 0)
   {
-    m_viewList.first()->setActive( true );
+    activateView (m_viewList.first());
+
+    allreadyrunning = false;
     return m_viewList.first();
   }
+
+  allreadyrunning = false;
 
   // no views exists!
   return 0L;
