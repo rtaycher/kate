@@ -4,7 +4,7 @@ bin_PROGRAMS = kant kwrite
 libkant_la_SOURCES = dummy.cpp
 libkant_la_LIBADD   = ../factory/libkantfactory.la ../document/libkantdocument.la ../view/libkantview.la ../app/libkantapp.la \
 		../mainwindow/libkantmainwindow.la \
-		../sidebar/libkantsidebar.la ../project/libkantproject.la \
+		../sidebar/libkantsidebar.la \
 		../fileselector/libkantfileselector.la  \
 		../console/libkantconsole.la ../filelist/libkantfilelist.la \
 		../pluginmanager/libkantpluginmanager.la ../interfaces/libkantpluginIface.la -lktexteditor -lkspell $(LIB_KPARTS)

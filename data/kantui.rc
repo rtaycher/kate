@@ -79,17 +79,6 @@
     <Action name="document_reload" />
   </Menu>
 
-  <Menu name="project" noMerge="1"><text>&amp;Project</text>
-    <Action name="project_new" />
-    <Action name="project_open" />
-    <Action name="project_save" />
-    <Action name="project_save_as" />
-    <Separator />
-    <Action name="project_configure" />
-    <Action name="project_compile" />
-    <Action name="project_run" />
-  </Menu>
-
   <Menu name="settings" noMerge="1"><text>&amp;Settings</text>
     <Action name="settings_show_toolbar" />
     <Action name="settings_show_sidebar" />

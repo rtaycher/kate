@@ -69,7 +69,7 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     // managment items
     KantDocManager *docManager;
     KantViewManager *viewManager;
-    KantProjectManager *projectManager;
+
     // should be protected, and kantviewmanager a friend class.
     KRecentFilesAction *fileOpenRecent;
 
@@ -120,13 +120,6 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     KAction *bookmarkSet;
     KAction *bookmarkClear;
     KAction *toolsSpell;
-    KAction *projectNew;
-    KAction *projectOpen;
-    KAction *projectSave;
-    KAction *projectSaveAs;
-    KAction *projectConfigure;
-    KAction *projectCompile;
-    KAction *projectRun;
 
     KAction *viewSplitVert;
     KAction *viewSplitHoriz;
@@ -193,7 +186,6 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     void docListMenuAboutToShow();
     void setEOLMenuAboutToShow();
     void bookmarkMenuAboutToShow();
-    void projectMenuAboutToShow();
     void settingsMenuAboutToShow();
     void setHighlightMenuAboutToShow();
     void slotSettingsShowFullPath();

@@ -24,7 +24,6 @@
 #include "../document/kantdocmanager.h"
 #include "../pluginmanager/kantpluginmanager.h"
 #include "../pluginmanager/kantconfigplugindialogpage.h"
-#include "../project/kantprojectmanager.h"
 #include "../view/kantviewmanager.h"
 #include "../app/kantapp.h"
 #include "../fileselector/kantfileselector.h"
@@ -107,10 +106,6 @@ KantMainWindow::KantMainWindow(KantDocManager *_docManager, KantPluginManager *_
 
   readOptions(config);
 
-  // connect slot for updating menustatus of "project"
-  QPopupMenu* pm_project = (QPopupMenu*)factory()->container("project", this);
-  connect(pm_project, SIGNAL(aboutToShow()), this, SLOT(projectMenuAboutToShow()));
-
   // connect settings menu aboutToshow
   QPopupMenu* pm_set = (QPopupMenu*)factory()->container("settings", this);
   connect(pm_set, SIGNAL(aboutToShow()), this, SLOT(settingsMenuAboutToShow()));
@@ -146,8 +141,6 @@ void KantMainWindow::setupMainWindow ()
   mainDock->setEnableDocking ( KDockWidget::DockNone );
   sidebarDock->manualDock ( mainDock, KDockWidget::DockLeft, 20 );
   consoleDock->manualDock ( mainDock, KDockWidget::DockBottom, 20 );
-
-  projectManager = new KantProjectManager (docManager, viewManager, statusBar());
 
   filelist = new KantFileList (docManager, viewManager, 0L, "filelist");
   sidebar->addWidget (filelist, i18n("Filelist"));
@@ -296,22 +289,6 @@ void KantMainWindow::setupActions()
   settingsShowToolbar = KStdAction::showToolbar(this, SLOT(slotSettingsShowToolbar()), actionCollection(), "settings_show_toolbar");
   settingsConfigure = KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
   settingsShowFullScreen = new KToggleAction(i18n("Show &Fullscreen"),0,this,SLOT(slotSettingsShowFullScreen()),actionCollection(),"settings_show_fullscreen");
-
-  // KActions for Project
-  projectNew = new KAction(i18n("&New"), 0, projectManager,
-  	 SLOT(slotProjectNew()), actionCollection(),"project_new");
-  projectOpen = new KAction(i18n("&Open"), 0, projectManager,
-  	 SLOT(slotProjectOpen()), actionCollection(),"project_open");
-  projectSave = new KAction(i18n("&Save"), 0, projectManager,
-  	 SLOT(slotProjectSave()), actionCollection(),"project_save");
-  projectSaveAs = new KAction(i18n("&SaveAs"), 0, projectManager,
-  	 SLOT(slotProjectSaveAs()), actionCollection(),"project_save_as");
-  projectConfigure = new KAction(i18n("&Configure"), 0, projectManager,
-  	 SLOT(slotProjectConfigure()), actionCollection(),"project_configure");
-  projectCompile = new KAction(i18n("&Compile"), Key_F5, projectManager,
-  	 SLOT(slotProjectCompile()), actionCollection(),"project_compile");
-  projectRun = new KAction(i18n("&Run"), 0, projectManager,
-  	 SLOT(slotProjectRun()), actionCollection(),"project_run");
 
   connect(viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
   connect(viewManager,SIGNAL(statChanged()),this,SLOT(slotCurrentDocChanged()));
@@ -596,25 +573,6 @@ void KantMainWindow::bookmarkMenuAboutToShow()
 void KantMainWindow::setHighlightMenuAboutToShow()
 {
    setHighlight->setCurrentItem( viewManager->activeView()->getHl() );
-}
-
-void KantMainWindow::projectMenuAboutToShow()
-{
-
- // projectCompile->setEnabled(true); PCP - the best thing to do here would be to test for an executable 'builder.sh' in the current directory...
-
-  projectConfigure->setEnabled(false);
-  projectRun->setEnabled(false);
-
-  if (projectManager->projectFile.isEmpty())
-    projectSave->setEnabled(false);
-  else
-    projectSave->setEnabled(true);
-
-  if (docManager->docCount () == 0)
-   projectSaveAs->setEnabled(false);
-  else
-    projectSaveAs->setEnabled(true);
 }
 
 void KantMainWindow::dragEnterEvent( QDragEnterEvent *event )
