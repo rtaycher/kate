@@ -349,7 +349,7 @@ EditConfigTab::EditConfigTab(QWidget *parent, KateView *view)
 
   opt[0] = new QCheckBox(i18n("&Word wrap"), this);
   cbLayout->addWidget(opt[0], 0, AlignLeft);
-  opt[0]->setChecked(configFlags & flags[0]);
+  opt[0]->setChecked(view->doc()->wordWrap());
 
   opt[1] = new QCheckBox(i18n("Replace &tabs with spaces"), this);
   cbLayout->addWidget(opt[1], 0, AlignLeft);
@@ -389,7 +389,7 @@ EditConfigTab::EditConfigTab(QWidget *parent, KateView *view)
   leLayout = new QVBoxLayout();
   mainLayout->addLayout(leLayout,10);
 
-  e1 = new KIntNumInput(view->wordWrapAt(), this);
+  e1 = new KIntNumInput(view->doc()->wordWrapAt(), this);
   e1->setRange(20, 200, 1, false);
   e1->setLabel(i18n("Wrap Words At:"));
 
@@ -437,14 +437,15 @@ void EditConfigTab::getData(KateView *view)
   int configFlags, z;
 
   configFlags = view->config();
-  for (z = 0; z < numFlags; z++) {
+  for (z = 1; z < numFlags; z++) {
     configFlags &= ~flags[z];
     if (opt[z]->isChecked()) configFlags |= flags[z];
   }
   view->setConfig(configFlags);
 
   view->setEncoding (encoding->currentText());
-  view->setWordWrapAt(e1->value());
+  view->doc()->setWordWrapAt(e1->value());
+  view->doc()->setWordWrap (opt[0]->isChecked());
   view->setTabWidth(e2->value());
   view->setUndoSteps(e3->value());
 }
@@ -501,6 +502,8 @@ FontConfig::FontConfig( QWidget *parent, char *name )
   m_fontchooser = new KFontChooser ( this );
   m_fontchooser->enableColumn(KFontChooser::StyleList, false);
   grid->addWidget( m_fontchooser, 0, 0);
+
+  connect (m_fontchooser, SIGNAL (fontSelected( const QFont & )), this, SLOT (slotFontSelected( const QFont & )));
 }
 
 FontConfig::~FontConfig()
@@ -510,11 +513,12 @@ FontConfig::~FontConfig()
 void FontConfig::setFont ( const QFont &font )
 {
   m_fontchooser->setFont (font);
+  myFont = font;
 }
 
-QFont FontConfig::getFont ( )
+void FontConfig::slotFontSelected( const QFont &font )
 {
-  return m_fontchooser->font();
+  myFont = font;
 }
 
 #include "kateviewdialog.moc"

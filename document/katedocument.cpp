@@ -288,6 +288,9 @@ bool KateDocument::openFile()
 
   setMTime();
 
+  if (myWordWrap)
+    wrapText (myWordWrapAt);
+
   int hl = hlManager->wildcardFind( m_file );
 
   if (hl == -1)
@@ -562,6 +565,11 @@ void KateDocument::readConfig()
   KConfig *config = KateFactory::instance()->config();
   config->setGroup("Kate Document");
 
+  myWordWrap = config->readBoolEntry("Word Wrap On", false);
+  myWordWrapAt = config->readNumEntry("Word Wrap At", 80);
+  if (myWordWrap)
+    wrapText (myWordWrapAt);
+
   setTabWidth(config->readNumEntry("TabWidth", 8));
   setUndoSteps(config->readNumEntry("UndoSteps", 50));
   m_singleSelection = config->readBoolEntry("SingleSelection", false);
@@ -579,6 +587,8 @@ void KateDocument::writeConfig()
   KConfig *config = KateFactory::instance()->config();
   config->setGroup("Kate Document");
 
+  config->writeEntry("Word Wrap On", myWordWrap);
+  config->writeEntry("Word Wrap At", myWordWrapAt);
   config->writeEntry("TabWidth", tabChars);
   config->writeEntry("UndoSteps", undoSteps);
   config->writeEntry("SingleSelection", m_singleSelection);
@@ -941,7 +951,7 @@ bool KateDocument::insertChars(VConfig &c, const QString &chars) {
   recordReplace(c/*.cursor*/, (c.flags & KateView::cfOvr) ? buf.length() : 0, buf);
   c.cursor.x += pos;
 
-  if (c.flags & KateView::cfWordWrap && c.wrapAt > 0) {
+  if (myWordWrap && myWordWrapAt > 0) {
     int line;
     const QChar *s;
 //    int pos;
@@ -952,9 +962,9 @@ bool KateDocument::insertChars(VConfig &c, const QString &chars) {
       textLine = getTextLine(line);
       s = textLine->getText();
       l = textLine->length();
-      for (z = c.wrapAt; z < l; z++) if (!s[z].isSpace()) break; //search for text to wrap
+      for (z = myWordWrapAt; z < l; z++) if (!s[z].isSpace()) break; //search for text to wrap
       if (z >= l) break; // nothing more to wrap
-      pos = c.wrapAt;
+      pos = myWordWrapAt;
       for (; z >= 0; z--) { //find wrap position
         if (s[z].isSpace()) {
           pos = z + 1;
@@ -3083,5 +3093,22 @@ void KateDocument::wrapText (uint col)
   };
 
   newDocGeometry=true;
+  updateLines();
   updateViews();
+}
+
+void KateDocument::setWordWrap (bool on)
+{
+  if (on != myWordWrap && on)
+    wrapText (myWordWrapAt);
+
+  myWordWrap = on;
+}
+
+void KateDocument::setWordWrapAt (uint col)
+{
+  if (myWordWrapAt != col && myWordWrap)
+    wrapText (myWordWrapAt);
+
+  myWordWrapAt = col;
 }

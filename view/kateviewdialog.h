@@ -163,10 +163,14 @@ public:
   ~FontConfig();
 
   void setFont ( const QFont &font );
-  QFont getFont ( );
+  QFont getFont ( ) { return myFont; };
 
   private:
     class KFontChooser *m_fontchooser;
+    QFont myFont;
+
+  private slots:
+    void slotFontSelected( const QFont &font );
 };
 
 

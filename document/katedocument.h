@@ -253,10 +253,12 @@ class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
     int highlightNum() {return hlManager->findHl(m_highlight);}
     int numAttribs() {return m_numAttribs;}
     Attribute *attribs() {return m_attribs;}
+
   protected:
     void setHighlight(int n);
     void makeAttribs();
     void updateFontData();
+
   protected slots:
     void hlChanged();
 
@@ -354,8 +356,7 @@ class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
     void newUndo();
 
     void recordStart(VConfig &, int newUndoType);
-    void recordStart(KateView *, PointStruc &, int flags, int newUndoType,
-      bool keepModal = false, bool mergeUndo = false);
+    void recordStart(KateView *, PointStruc &, int flags, int newUndoType, bool keepModal = false, bool mergeUndo = false);
     void recordAction(KateAction::Action, PointStruc &);
     void recordInsert(VConfig &, const QString &text);
     void recordReplace(VConfig &, int len, const QString &text);
@@ -364,7 +365,6 @@ class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
     void recordReplace(PointStruc &, int len, const QString &text);
     void recordEnd(VConfig &);
     void recordEnd(KateView *, PointStruc &, int flags);
-//  void recordReset();
     void doActionGroup(KateActionGroup *, int flags, bool undo = false);
 
     int nextUndoType();
@@ -430,6 +430,9 @@ class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
                           // to check for overwriting files on save)
     bool modified;
 
+    bool myWordWrap;
+    uint myWordWrapAt;
+
     QList<KateActionGroup> undoList;
     int currentUndo;
     int undoState;
@@ -479,6 +482,12 @@ class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
   public:
     void setEncoding (QString e) { myEncoding = e; };
     QString encoding() { return myEncoding; };
+
+    void setWordWrap (bool on);
+    bool wordWrap () { return myWordWrap; };
+
+    void setWordWrapAt (uint col);
+    uint wordWrapAt () { return myWordWrapAt; };
 
   signals:
     void modStateChanged (KateDocument *doc);
