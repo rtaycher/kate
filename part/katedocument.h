@@ -71,12 +71,49 @@ class KateCursor : public Kate::Cursor
 class KateUndo;
 class KateUndoGroup;
 
+class KateFontMetrics : public QFontMetrics
+{
+  private:
+    short *warray[256];
+
+  public:
+    KateFontMetrics(const QFont& f) : QFontMetrics(f)
+    {
+      for (int i=0; i<256; i++) warray[i]=0;
+    }
+
+    ~KateFontMetrics()
+    {
+      for (int i=0; i<256; i++)
+        if (warray[i]) delete[] warray[i];
+    }
+
+    int width(QChar c)
+    {
+      uchar cell=c.cell();
+      uchar row=c.row();
+
+      short *wa=warray[row];
+
+        if (!wa)
+      {
+                wa=warray[row]=new short[256];
+                for (int i=0; i<256; i++) wa[i]=-1;
+      }
+      if (wa[cell]<0) wa[cell]=(short) QFontMetrics::width(c);
+
+      return (int)wa[cell];
+    }
+    
+    int width(QString s) { return QFontMetrics::width(s); }
+};
+
 class FontStruct
 {
     public:
     FontStruct():myFont(KGlobalSettings::fixedFont()), myFontBold(KGlobalSettings::fixedFont()),
                  myFontItalic(KGlobalSettings::fixedFont()), myFontBI(KGlobalSettings::fixedFont()),
-    		myFontMetrics (myFont), myFontMetricsBold (myFontBold), myFontMetricsItalic (myFontItalic), myFontMetricsBI 
+    		myFontMetrics (myFont), myFontMetricsBold (myFontBold), myFontMetricsItalic (myFontItalic), myFontMetricsBI
                 (myFontBI){;}
     ~FontStruct(){;}
     void updateFontData(int tabChars)
@@ -93,7 +130,7 @@ class FontStruct
 	};
 
               QFont myFont, myFontBold, myFontItalic, myFontBI;
-              QFontMetrics myFontMetrics, myFontMetricsBold, myFontMetricsItalic, myFontMetricsBI;
+              KateFontMetrics myFontMetrics, myFontMetricsBold, myFontMetricsItalic, myFontMetricsBI;
     	      int m_tabWidth;
               int fontHeight;
               int fontAscent;
@@ -343,7 +380,7 @@ class KateDocument : public Kate::Document
   public:
     void setFont (WhichFont wf,QFont font);
     QFont getFont (WhichFont wf) { if(wf==ViewFont) return viewFont.myFont; else return printFont.myFont;};
-    QFontMetrics getFontMetrics (WhichFont wf) { if (wf==ViewFont) return viewFont.myFontMetrics; else return printFont.myFontMetrics;};
+    KateFontMetrics getFontMetrics (WhichFont wf) { if (wf==ViewFont) return viewFont.myFontMetrics; else return printFont.myFontMetrics;};
 
     QPtrList<KTextEditor::Cursor> myCursors;
 

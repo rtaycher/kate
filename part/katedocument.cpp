@@ -2083,10 +2083,10 @@ void KateDocument::setFont (WhichFont wf,QFont font)
   fs->myFontBI.setBold (true);
   fs->myFontBI.setItalic (true);
 
-  fs->myFontMetrics = QFontMetrics (fs->myFont);
-  fs->myFontMetricsBold = QFontMetrics (fs->myFontBold);
-  fs->myFontMetricsItalic = QFontMetrics (fs->myFontItalic);
-  fs->myFontMetricsBI = QFontMetrics (fs->myFontBI);
+  fs->myFontMetrics = KateFontMetrics (fs->myFont);
+  fs->myFontMetricsBold = KateFontMetrics (fs->myFontBold);
+  fs->myFontMetricsItalic = KateFontMetrics (fs->myFontItalic);
+  fs->myFontMetricsBI = KateFontMetrics (fs->myFontBI);
   int newwidth=fs->myFontMetrics.width('W'); //Quick & Dirty Hack (by JoWenn)  //Remove in KDE 3.0
   maxLength=maxLength*(float)newwidth/(float)oldwidth; //Quick & Dirty Hack (by JoWenn)  //Remove in KDE 3.0
 
