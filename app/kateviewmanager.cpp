@@ -477,9 +477,27 @@ void KateViewManager::slotDocumentOpen ()
 void KateViewManager::slotDocumentSave ()
 {
   if (activeView() == 0) return;
+  slotDocumentSave( activeView() );
+}
 
-  Kate::View *current = activeView();
+void KateViewManager::slotDocumentSaveAll ()
+{
+  QPtrListIterator<Kate::View> it(m_viewList);
 
+  for ( ; it.current(); ++it)
+  {
+    slotDocumentSave( it.current() );
+  }
+}
+
+void KateViewManager::slotDocumentSaveAs ()
+{
+  if (activeView() == 0) return;
+  slotDocumentSaveAs( activeView() );
+}
+
+void KateViewManager::slotDocumentSave( Kate::View* current )
+{
   if( current->getDoc()->isModified() || current->getDoc()->url().isEmpty() )
   {
     if( !current->getDoc()->url().isEmpty() && current->getDoc()->isReadWrite() )
@@ -490,37 +508,12 @@ void KateViewManager::slotDocumentSave ()
 //         KMessageBox::sorry(this, i18n("The file could not be saved. Please check if you have write permission."));
     }
     else
-      slotDocumentSaveAs();
+      slotDocumentSaveAs( current );
   }
 }
 
-void KateViewManager::slotDocumentSaveAll ()
+void KateViewManager::slotDocumentSaveAs( Kate::View* current )
 {
-  QPtrListIterator<Kate::View> it(m_viewList);
-
-  for ( ;it.current(); ++it)
-  {
-    Kate::View* current = it.current();
-    if( current->getDoc()->isModified() ) {
-      if( !current->getDoc()->url().isEmpty() && current->getDoc()->isReadWrite() )
-        {
-          current->getDoc()->save();
-
-           if ( current->getDoc()->isModified() )
-             KMessageBox::sorry(this, i18n("The file could not be saved. Please check if you have write permission."));
-        }
-      else
-        slotDocumentSaveAs();
-    }
-  }
-}
-
-void KateViewManager::slotDocumentSaveAs ()
-{
-  if (activeView() == 0) return;
-
-  Kate::View *current = activeView();
-
   if( current->saveAs() == Kate::View::SAVE_OK )
   {
     ((Kate::Document *)current->getDoc())->setDocName (current->getDoc()->url().filename());
