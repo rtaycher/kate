@@ -47,7 +47,6 @@ class ProjectPluginInfo
   public:
     KService::Ptr service;
     QString projectType;
-    QString name;
 };
 
 class ProjectInfo

@@ -62,8 +62,6 @@ void KateProjectManager::setupPluginList ()
       ProjectPluginInfo *info=new ProjectPluginInfo;
   
       info->service = ptr;
-      info->name=info->service->library();
-  
       info->projectType=info->service->property("X-Kate-ProjectType").toString();
   
       m_pluginList.append(info);
