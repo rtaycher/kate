@@ -38,9 +38,11 @@
 
 #include <kio/netaccess.h>
 
+#include <kmdidefines.h>
+
 #include <qfile.h>
 #include <qtimer.h>
-#include <kmdidefines.h>
+#include <qdir.h>
 
 KConfig *KateApp::m_sessionConfig = 0;
 
@@ -133,7 +135,7 @@ KateApp::~KateApp ()
 
   // delete this now, or we crash
   delete m_docManager;
-  
+
   // our session config is our own one, cleanup
   if (m_sessionConfigDelete)
     delete m_sessionConfig;
@@ -238,16 +240,12 @@ int KateApp::newInstance()
   if (!m_firstStart)
     raiseCurrentMainWindow ();
 
-  kdDebug(13001)<<"******************************************** loop depth"<<kapp->loopLevel()<<endl;
-
   if (m_firstStart && m_initPlugin)
   {
     m_initPlugin->initKate();
-    kdDebug(13001)<<"***************************** INIT PLUGIN ON FIRST START"<<endl;
   }
   else if (args->isSet("initplugin"))
   {
-    kdDebug(13001)<<"***************************** INIT PLUGIN ON ANY  START"<<endl;
     performInit(args->getOption("initplugin"),args->url(0));
   }
   else
@@ -255,17 +253,19 @@ int KateApp::newInstance()
     Kate::Document::setOpenErrorDialogsActivated (false);
     for (int z=0; z<args->count(); z++)
     {
-      QString mime = KIO::NetAccess::mimetype( args->url(z), m_mainWindows.first() );
-    
-      if (mime != "inode/directory")
+      // this file is no local dir, open it, else warn
+      bool noDir = !args->url(z).isLocalFile() || !QDir (args->url(z).path()).exists();
+
+      if (noDir)
       {
-        if (mime == "application/x-kate-project") // open a project file
+        if (args->url(z).isLocalFile () && args->url(z).path().endsWith(".kateproject")) // open a project file
           m_mainWindows.first()->openProject ( args->url(z).path() );
         else // open a normal file
           m_mainWindows.first()->kateViewManager()->openURL( args->url(z) );
       }
       else
-        KMessageBox::sorry( m_mainWindows.first(), i18n("The file '%1' could not be opened: it is not a normal file, it is a folder.").arg(args->url(z).url()) );
+        KMessageBox::sorry( m_mainWindows.first(),
+                            i18n("The file '%1' could not be opened: it is not a normal file, it is a folder.").arg(args->url(z).url()) );
     }
     Kate::Document::setOpenErrorDialogsActivated (true);
 
