@@ -24,6 +24,7 @@
 #include "../part/katedocument.h"
 #include "kateapp.h"
 #include "../part/kateview.h"
+#include "../part/katefiledialog.h"
 #include "kateviewspace.h"
 
 #include <dcopclient.h>
@@ -53,6 +54,8 @@ KateViewManager::KateViewManager (QWidget *parent, KateDocManager *docManager) :
   viewSpaceList.setAutoDelete(true);
 
   this->docManager = docManager;
+	
+	myEncoding = QString::fromLatin1(QTextCodec::codecForLocale()->name());
 
   // sizemanagment
   grid = new QGridLayout( this, 1, 1 );
@@ -86,6 +89,8 @@ bool KateViewManager::createView ( bool newDoc, KURL url, KateView *origView, Ka
   KateView *view = new KateView (doc, this, 0L);
   connect(view,SIGNAL(newStatus()),this,SLOT(setWindowCaption()));
   viewList.append (view);
+	
+	doc->setEncoding(myEncoding);
 
   if (newDoc)
   {
@@ -428,14 +433,25 @@ void KateViewManager::slotDocumentOpen ()
   kapp->processEvents();
 
   KateView *cv = activeView();
+	KateFileDialog *dialog;
 
   QString path = QString::null;
   if (cv)
     path = cv->doc()->url().url();
 
-  KURL::List urls = KFileDialog::getOpenURLs(path, QString::null, 0L, i18n("Open File..."));
+  if (cv)
+	  dialog = new KateFileDialog (QString::null,cv->doc()->encoding(), this, i18n ("Open File"));
+	else
+	  dialog = new KateFileDialog (QString::null,myEncoding, this, i18n ("Open File"));
 
-  for (KURL::List::Iterator i=urls.begin(); i != urls.end(); ++i)
+	KateFileDialogData *data = dialog->exec ();
+
+	if (data == 0L)
+	  return;
+
+	myEncoding = data->encoding;
+
+  for (KURL::List::Iterator i=data->urls.begin(); i != data->urls.end(); ++i)
   {
     openURL( *i );
 
@@ -486,12 +502,17 @@ void KateViewManager::slotDocumentSaveAs ()
 
   KateView *current = activeView();
 
-  KURL url = KFileDialog::getSaveURL(current->doc()->url().url(), QString::null, 0L, i18n("Save File..."));
+	KateFileDialog *dialog = new KateFileDialog (current->doc()->url().url(),current->doc()->encoding(), this, i18n ("Save File"), KateFileDialog::saveDialog);
+	KateFileDialogData *data = dialog->exec ();
 
-  if( !url.isEmpty() )
+	if (data == 0L)
+	  return;
+
+  if( !data->url.isEmpty() )
   {
-    current->doc()->saveAs( url );
-    ((KateDocument *)current->doc())->setDocName (url.filename());
+	  current->doc()->setEncoding (data->encoding);
+    current->doc()->saveAs( data->url );
+    ((KateDocument *)current->doc())->setDocName (data->url.filename());
 
     setWindowCaption();
   }
@@ -701,6 +722,7 @@ void KateViewManager::openURL (KURL url)
   {
     if (cv && !cv->doc()->isModified() && cv->doc()->url().isEmpty())
     {
+		  cv->doc()->setEncoding(myEncoding);
       if (cv->doc()->openURL (url))
         ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
       cv->doc()->setDocName (cv->doc()->url().filename());
