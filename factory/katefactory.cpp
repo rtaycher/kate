@@ -72,7 +72,7 @@ KInstance *KateFactory::instance()
 
 const KAboutData *KateFactory::aboutData()
 {
-  KAboutData *data = new KAboutData  ("kate", I18N_NOOP("Kate Texteditor"), "0.2",
+  KAboutData *data = new KAboutData  ("kate", I18N_NOOP("Kate"), "0.2",
                                                            I18N_NOOP( "Kate - KDE Advanced Text Editor" ), KAboutData::License_GPL,
                                                            "(c) 2000-2001 The Kate Authors", "http://devel-home.kde.org/~kate");
 
@@ -89,6 +89,7 @@ const KAboutData *KateFactory::aboutData()
   data->addAuthor( "Simon Hausmann", 0, "hausmann@kde.org" );
   data->addAuthor("Glen Parker",I18N_NOOP("KWrite Undo History, Kspell integration"), "glenebob@nwlink.com");
   data->addAuthor("Scott Manson",I18N_NOOP("KWrite XML Syntax highlighting support"), "sdmanson@alltel.net");
+  data->addAuthor("John Firebaugh",I18N_NOOP("Patches and more"), "jfire@uclink.berkeley.edu");
 
   data->addCredit ("Carsten Presser", I18N_NOOP("Betatest"), "mord-slime@gmx.de");
   data->addCredit ("Jens Haupert", I18N_NOOP("Betatest"), "al_all@gmx.de");
