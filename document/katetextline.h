@@ -24,6 +24,7 @@
 #include <stdlib.h>
 
 #include <qstring.h>
+#include <qarray.h>
 #include <qvaluelist.h>
 
 #include <ksharedptr.h>
@@ -166,7 +167,7 @@ public:
     /**
       Returns the length
     */
-    int length() const {return len;}
+    uint length() const {return text.length();}
     /**
       Universal text manipulation method. It can be used to insert, delete
       or replace text.
@@ -177,7 +178,7 @@ public:
     /**
       Appends a string of length l to the textline
     */
-    void append(const QChar *s, int l) {replace(len, 0, s, l);}
+    void append(const QChar *s, int l) {replace(text.length(), 0, s, l);}
     /**
       Wraps the text from the given position to the end to the next line
     */
@@ -190,7 +191,7 @@ public:
     /**
       Truncates the textline to the new length
     */
-    void truncate(int newLen) {if (newLen < len) len = newLen;}
+    void truncate(uint newLen) { text.truncate(newLen);}
     /**
       Returns the position of the first character which is not a white space
     */
@@ -210,11 +211,11 @@ public:
     /**
       Gets the text. WARNING: it is not null terminated
     */
-    QChar *getText() const {return text;}
+    const QChar *getText() const {return text.unicode();};
     /**
       Gets a C-like null terminated string
     */
-    const QChar *getString();
+    const QString getString() { return text; };
 
     /*
       Gets a null terminated pointer to first non space char
@@ -323,21 +324,17 @@ public:
 
   protected:
     /**
-      Length of the text line
-    */
-    int len;
-    /**
       Memory Size of the text line
     */
     int size;
     /**
       The text
     */
-    QChar *text;
+    QString text;
     /**
       The attributes
     */
-    uchar *attribs;
+    QArray<uchar> attributes;
     /**
       The attribute of the free space behind the end
     */

@@ -779,15 +779,19 @@ int GenHighlight::doHighlight(int ctxNum, TextLine *textLine) {
   HlItem *item;
 
   context = contextList[ctxNum];
-  str = textLine->getString();
-  lastChar = '\0';
-// this causes the while loop to skip any spaces at beginning of line
-// while still allowing the highlighting to continue
-// On limited tests I got a 5-10% reduction in number of times in while loop
-// Anything helps :)
- s1=textLine->firstNonSpace();
+  str = textLine->getText();
 
-  while (*s1 != '\0') {
+  lastChar = '\0';
+
+  // this causes the while loop to skip any spaces at beginning of line
+  // while still allowing the highlighting to continue
+  // On limited tests I got a 5-10% reduction in number of times in while loop
+  // Anything helps :)
+  s1=textLine->firstNonSpace();
+
+  uint z = 0;
+  while (z < textLine->length())
+  {
     for (item = context->items.first(); item != 0L; item = context->items.next()) {
       if (item->startEnable(lastChar)) {
         s2 = item->checkHgl(s1,s1==str);
@@ -806,9 +810,11 @@ int GenHighlight::doHighlight(int ctxNum, TextLine *textLine) {
     textLine->setAttribs(context->attr,s1 - str,s1 - str + 1);
 
     found:
-    lastChar = *s1;
-    s1++;
+      lastChar = *s1;
+      s1++;
+      z++;
   }
+
   //set "end of line"-properties
   textLine->setAttr(context->attr);
   //return new context

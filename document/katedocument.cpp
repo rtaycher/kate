@@ -316,13 +316,11 @@ KTextEditor::View *KateDocument::createView( QWidget *parent, const char *name )
 
 QString KateDocument::textLine( int line ) const
 {
-  QString res;
-
   TextLine::Ptr l = getTextLine( line );
   if ( !l )
-    return res;
+    return QString();
 
-  return QConstString( l->getText(), l->length() ).string();
+  return l->getString();
 }
 
 void KateDocument::replaceLine(const QString& s,int line)
@@ -2153,7 +2151,7 @@ void KateDocument::setURL( const KURL &url, bool updateHighlight )
         return;
 
     hl = hlManager->wildcardFind( fn );
-
+/*
     if (hl == -1) {
       // fill the detection buffer with the contents of the text
       const int HOWMANY = 1024;
@@ -2170,7 +2168,7 @@ void KateDocument::setURL( const KURL &url, bool updateHighlight )
       }
 
       hl = hlManager->mimeFind( buf, fn );
-    }
+    }*/
     setHighlight(hl);
   }
   updateViews();
