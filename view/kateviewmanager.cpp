@@ -103,7 +103,7 @@ bool KateViewManager::createView ( bool newDoc, KURL url, KateView *origView, Ka
   }
 
   // create view
-  KateView *view = new KateView (doc, this, (QString("KateView%1").arg(myViewID)).latin1(), false, false);
+  KateView *view = new KateView (doc, this, (QString("KateView%1-%2").arg(doc->docID()).arg(myViewID)).latin1(), false, false);
   connect(view,SIGNAL(newStatus()),this,SLOT(setWindowCaption()));
   myViewID++;
   viewList.append (view);
