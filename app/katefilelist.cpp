@@ -41,7 +41,7 @@ KateFileList::KateFileList (KateDocManager *_docManager,
                             KateViewManager *_viewManager,
                             QWidget * parent, const char * name )
     :  KListBox (parent, name)
-    , m_sort( KateFileList::sortByName )
+    , m_sort( KateFileList::sortByID )
 {
   setFocusPolicy ((QWidget::FocusPolicy)0);
 
@@ -90,20 +90,20 @@ void KateFileList::slotNextDocument()
 
   if ((c == -1) || (count() == 0))
     return;
-  
+
   if (uint(c+1) < count())
     viewManager->activateView( ((KateFileListItem *)item(c+1))->documentNumber() );
   else
     viewManager->activateView( ((KateFileListItem *)item(0))->documentNumber() );
 }
-	
+
 void KateFileList::slotPrevDocument()
 {
   int c = currentItem ();
 
   if ((c == -1) || (count() == 0))
     return;
-  
+
   if ((c-1) >= 0)
     viewManager->activateView( ((KateFileListItem *)item(c-1))->documentNumber() );
   else
@@ -232,7 +232,7 @@ void KateFileList::slotMenu ( QListBoxItem *item, const QPoint &p )
 {
   if (!item)
     return;
-  
+
   QPopupMenu *menu = (QPopupMenu*) ((viewManager->mainWindow())->factory()->container("filelist_popup", viewManager->mainWindow()));
 
   if (menu)

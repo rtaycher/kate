@@ -159,7 +159,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
     console->loadConsoleIfNeeded();
 
   setAcceptDrops(true);
-  
+
   // activate the first restored project, if any
   if (m_projectManager->projects() > 0)
     activateProject(m_projectManager->project(0));
@@ -404,7 +404,7 @@ void KateMainWindow::readOptions(KConfig *config)
 
   fileselector->readConfig(config, "fileselector");
 
-  filelist->setSortType(config->readNumEntry("Sort Type of File List", KateFileList::sortByID));
+  filelist->setSortType( config->readNumEntry("Sort Type of File List", KateFileList::sortByID) );
 
   recentProjects->loadEntries (config, "Recent Projects");
 }
@@ -899,7 +899,7 @@ void KateMainWindow::activateProject (Kate::Project *project)
 
   saveProject->setEnabled(project != 0);
   closeProject->setEnabled(project != 0);
-  
+
   emit m_mainWindow->projectChanged ();
 }
 
