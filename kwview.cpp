@@ -1986,6 +1986,11 @@ void KWrite::writeURL(const KURL &url, int ) {
 
     emit enableUI( true );
   }
+  else
+  {
+      kWriteDoc->setModified( false );
+      emit statusMsg( i18n( "Wrote %1" ).arg( url.fileName() ) );
+  }
 }
 
 void KWrite::slotJobReadResult( KIO::Job *job )

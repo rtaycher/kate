@@ -818,11 +818,24 @@ int main(int argc, char **argv)
   if (kapp->isRestored()) {
     restore();
   } else {
-    TopLevel *t = new TopLevel();
-    t->readConfig();
-    if ( args->count() == 1 )
-      t->loadURL(args->url(0), lfNewFile);
-    t->init();
+    TopLevel *t;
+
+    if ( args->count() == 0 )
+    {
+        t = new TopLevel;
+        t->readConfig();
+        t->init();
+    }
+    else
+    {
+        for ( int i = 0; i < args->count(); ++i )
+        {
+            t = new TopLevel();
+            t->readConfig();
+            t->loadURL( args->url( i ) );
+            t->init();
+        }
+    }
   }
   int r = a->exec();
 
