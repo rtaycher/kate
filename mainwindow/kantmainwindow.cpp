@@ -25,6 +25,8 @@
 #include <qiconview.h>
 #include <qinputdialog.h>
 #include <qlist.h>
+#include <qwhatsthis.h>
+
 #include <kapp.h>
 #include <kdebug.h>
 #include <kdialogbase.h>
@@ -880,6 +882,7 @@ void KantMainWindow::slotConfigure()
   cb_opaqueResize->setText(i18n("Show &Content when resizing views"));
   gridFrG->addMultiCellWidget( cb_opaqueResize, 0, 0, 0, 1 );
   cb_opaqueResize->setChecked(viewManager->useOpaqueResize);
+  QWhatsThis::add(cb_opaqueResize, i18n("If this is disabled, resizing views will display a <i>rubberband</i> to show the new sizes untill you release the mouse button."));
 
   // reopen files
   QCheckBox* cb_reopenFiles = new QCheckBox( frGeneral );
@@ -887,7 +890,7 @@ void KantMainWindow::slotConfigure()
   gridFrG->addMultiCellWidget( cb_reopenFiles, 1, 1, 0, 1 );
   config->setGroup("open files");
   cb_reopenFiles->setChecked( config->readBoolEntry("reopen at startup", true) );
-
+  QWhatsThis::add(cb_reopenFiles, i18n("If this is enabled Kant will attempt to reopen files that was open when you closed last time. Cursor position will be recovered if possible. Non-existing files will not be opened."));
   // editor widgets from kwrite/kwdialog
   // color options
   QStringList path;

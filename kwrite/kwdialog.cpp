@@ -16,6 +16,7 @@
 #include <qpushbutton.h>
 #include <qobjectlist.h>
 #include <qradiobutton.h>
+#include <qwhatsthis.h>
 
 #include <klocale.h>
 #include <kcolorbtn.h>
@@ -243,6 +244,14 @@ IndentConfigTab::IndentConfigTab(QWidget *parent, KWrite *kWrite)
   opt[5]->setChecked(configFlags & flags[5]);
 
   layout->addStretch();
+
+  // What is this? help
+  QWhatsThis::add(opt[0], i18n("When <b>Auto indent</b> is on, KWrite will indent new lines to equal the indent on the previous line.<p>If the previous line is blank, the nearest line above with text is used"));
+  QWhatsThis::add(opt[1], i18n("Check this if you want to indent with spaces rather than tabs.<br>A Tab will be converted to <u>Tab-width</u> as set in the <b>edit</b> options"));
+  QWhatsThis::add(opt[2], i18n("This allows the <b>backspace</b> key to be used to indent."));
+  QWhatsThis::add(opt[3], i18n("This allows the <b>tab</b> key to be used to indent."));
+  QWhatsThis::add(opt[4], i18n("This retains current indentation settings for future documents."));
+  QWhatsThis::add(opt[5], i18n("Indentations of more than the selected number of spaces will not be shortened."));
 }
 
 void IndentConfigTab::getData(KWrite *kWrite) {
@@ -290,6 +299,14 @@ SelectConfigTab::SelectConfigTab(QWidget *parent, KWrite *kWrite)
   opt[5]->setChecked(configFlags & flags[5]);
 
   layout->addStretch();
+
+  // What is this? help
+  QWhatsThis::add(opt[0], i18n("Enabling this prevents key input or cursor movement by way of the arrow keys from causing the elimination of text selection.<p><b>Note:</b> If the Overwrite Selections option is activated then any typed character input or paste operation will replace the selected text."));
+  QWhatsThis::add(opt[1], i18n("When this is on, any keyed character input or paste operation will replace the selected text."));
+  QWhatsThis::add(opt[2], i18n("When this is on, any text selected with the mouse will be automatically copied to the clipboard."));
+  QWhatsThis::add(opt[3], i18n("Not implemented yet."));
+  QWhatsThis::add(opt[4], i18n("Enabling this allows you to make vertical selections."));
+  QWhatsThis::add(opt[5], i18n("Not yet implemented."));
 }
 
 void SelectConfigTab::getData(KWrite *kWrite) {
@@ -378,6 +395,20 @@ EditConfigTab::EditConfigTab(QWidget *parent, KWrite *kWrite)
   leLayout->addWidget(e2, 0, AlignLeft);
   leLayout->addWidget(e3, 0, AlignLeft);
   leLayout->addStretch();
+
+  // What is this? help
+  QWhatsThis::add(opt[0], i18n("Word wrap is a feature that causes the editor to automatically start a new line of text and move (wrap) the cursor to the beginning of that new line. KWrite will automatically start a new line of text when the current line reaches the length specified by the Wrap Words At: option.<p><b>NOTE:<b> Word Wrap will not change existing lines or wrap them for easy reading as in some applications."));
+  QWhatsThis::add(e1, i18n("If the Word Wrap option is selected this entry determines the length (in characters) at which the editor will automatically start a new line."));
+  QWhatsThis::add(opt[1], i18n("KWrite will replace any tabs with the number of spaces indicated in the Tab Width: entry."));
+  QWhatsThis::add(e2, i18n("If the Replace Tabs By Spaces option is selected this entry determines the number of spaces with which the editor will automatically replace tabs."));
+  QWhatsThis::add(opt[2], i18n("KWrite will automatically eliminate extra spaces at the ends of lines of text."));
+  QWhatsThis::add(opt[3], i18n("When the user types a left bracket ([,(, or {) KWrite automatically enters the right bracket (}, ), or ]) to the right of the cursor."));
+  QWhatsThis::add(opt[4], i18n("Checking this will cause sequences of similar actions to be undone at once."));
+  QWhatsThis::add(opt[5], i18n("The editor will display a symbol to indicate the presence of a tab in the text."));
+  QWhatsThis::add(opt[6], i18n("Not yet implemented."));
+  QWhatsThis::add(opt[7], i18n("If this is selected, the insertion cursor will be moved to the first/last line when pressing the page up/down buttons.<p>If not selected, it will remain it's relative posision in the visible text."));
+  QWhatsThis::add(e3, i18n("Sets the number of undo/redo steps to record. More steps uses more memory."));
+  QWhatsThis::add(opt[8], i18n("When on, moving the insertion cursor using the <b>Left</b> and <b>Right</b> keys will go on to previous/next line at beginning/end of the line, similar to most editors.<p>When off, the insertion cursor cannot be moved left of the line start, but it can be moved off the line end, which can be very handy for programmers."));
 }
 
 void EditConfigTab::getData(KWrite *kWrite)
@@ -618,6 +649,13 @@ ColorConfig::ColorConfig( QWidget *parent, char *name )
   m_selFound = new KColorButton( this );
   glay->addWidget( label, 4, 0 );
   glay->addWidget( m_selFound, 4, 1 );
+
+  // QWhatsThis help
+  QWhatsThis::add(m_back, i18n("Sets the background color of the editing area"));
+  QWhatsThis::add(m_textBack, i18n("Sets the background color of the text"));
+  QWhatsThis::add(m_selected, i18n("Sets the background color of the selection. To set the text color for selected text, use the &quot;<b>Configure Highlightning</b>&quot; dialog."));
+  QWhatsThis::add(m_found, i18n("Sets the background color the text found by the <b>Find</b> functions"));
+  QWhatsThis::add(m_selFound, i18n("Sets the background color text found within a selection"));
 
 }
 
