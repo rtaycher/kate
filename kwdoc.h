@@ -199,6 +199,7 @@ class KWriteDoc : public KTextEditor::Document {
 #ifdef NEW_CODE
     void loadFile(const QString &file, QTextCodec *codec);
     bool writeFile(const QString &file, QTextCodec *codec);
+    void appendData(const QByteArray &data, QTextCodec *codec);
 #else
     void loadFile(QIODevice &);
     void writeFile(QIODevice &);

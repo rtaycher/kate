@@ -1,4 +1,4 @@
-/*
+;/*
    $Id$
    This file is part of KWrite
    Copyright (c) 2000 Waldo Bastian <bastian@kde.org>
@@ -32,9 +32,11 @@
 #include <qtimer.h>
 #include <qtextcodec.h>
 
+#include <kvmallocator.h>
+
 #include <assert.h>
 
-#define LOADED_BLOCKS_MAX	25
+#define LOADED_BLOCKS_MAX	10
 #define DIRTY_BLOCKS_MAX        1
 #define AVG_BLOCK_SIZE		8192
 
@@ -44,10 +46,10 @@
 KWBuffer::KWBuffer()
 {
    m_totalLines = 0;
-   m_fdSwap = -1;
    m_blocks.setAutoDelete(true);
    m_loader.setAutoDelete(true);
    connect( &m_loadTimer, SIGNAL(timeout()), this, SLOT(slotLoadFile()));
+   m_vm = new KVMAllocator;
 }
 
 /**
@@ -149,6 +151,12 @@ KWBuffer::loadFilePart()
      KWBufBlock *block = new KWBufBlock(state);
      m_blocks.insert(loader->blockNr++, block);
      m_loadedBlocks.append(block);
+     if (m_loadedBlocks.count() > LOADED_BLOCKS_MAX)
+     {
+        KWBufBlock *buf2 = m_loadedBlocks.take(2);
+qWarning("swapOut(%p)", buf2);
+        buf2->swapOut(m_vm);
+     }
      block->m_codec = loader->codec;
      loader->dataStart = block->blockFill(loader->dataStart, 
                                   loader->lastBlock, currentBlock, eof);
@@ -168,6 +176,34 @@ qWarning("Starting timer...");
      m_loadTimer.start(0, true);
   }
 
+  m_totalLines += state.lineNr - startLine;
+}
+
+void
+KWBuffer::insertData(int line, const QByteArray &data, QTextCodec *codec)
+{
+   assert(line == m_totalLines);
+   KWBufBlock *prev_block = m_blocks.last();
+   KWBufState state;
+   if (prev_block)
+   {
+       state = prev_block->m_endState;
+   }
+   else
+   {
+        // Initial state.
+       state.lineNr = 0;
+   }
+
+  int startLine = state.lineNr;
+  KWBufBlock *block = new KWBufBlock(state);
+  m_blocks.append(block);
+  m_loadedBlocks.append(block);
+  block->m_codec = codec;
+  // TODO:
+  block->blockFill(0, QByteArray(), data, true); // THIS is wrong. 
+  // The above inserts a LF at the end of every block!
+  state = block->m_endState;
   m_totalLines += state.lineNr - startLine;
 }
 
@@ -267,6 +303,7 @@ KWBuffer::insertLine(int i, TextLine::Ptr line)
       state.lineNr = 0;
       buf = new KWBufBlock(state);
       m_blocks.insert(0, buf);
+      buf->b_rawDataValid = true;
    }
 
    if (!buf->b_stringListValid) 
@@ -332,11 +369,13 @@ KWBuffer::loadBlock(KWBufBlock *buf)
 qWarning("loadBlock(%p)", buf);
    if (m_loadedBlocks.count() > LOADED_BLOCKS_MAX)
    {
-//      KWBufBlock *buf2 = m_loadedBlocks.take(2);
-//      buf2->swapOut(m_fdSwap, some_offset);
+      KWBufBlock *buf2 = m_loadedBlocks.take(2);
+qWarning("swapOut(%p)", buf2);
+      buf2->swapOut(m_vm);
    }
 
-//   buf->swapIn(m_fdSwap); TODO: Open m_fdSwap
+qWarning("swapIn(%p)", buf);
+   buf->swapIn(m_vm);
    m_parsedBlocksClean.append(buf);
    m_loadedBlocks.append(buf);
 }
@@ -356,6 +395,8 @@ qWarning("dirtyBlock(%p)", buf);
    m_parsedBlocksClean.removeRef(buf);
    m_parsedBlocksDirty.append(buf);
    buf->disposeRawData();
+   if (buf->b_vmDataValid)
+      buf->disposeSwap(m_vm);
 }
 
 //-----------------------------------------------------------------
@@ -374,7 +415,7 @@ KWBufBlock::KWBufBlock(const KWBufState &beginState)
    m_rawData1Start = 0;
    m_rawData2End = 0;  
    m_rawSize = 0;
-   m_vmDataOffset = 0;
+   m_vmblock = 0;
    b_stringListValid = false;
    b_rawDataValid = false;
    b_vmDataValid = false;
@@ -455,26 +496,26 @@ qWarning("blockFill(%x) beginState = %d endState = %d", this,
  * to store m_rawSize bytes.
  */
 void 
-KWBufBlock::swapOut(int swap_fd, long swap_offset)
+KWBufBlock::swapOut(KVMAllocator *vm)
 {
    assert(b_rawDataValid);
    // TODO: Error checking and reporting (?)
    if (!b_vmDataValid)
    {
-      m_vmDataOffset = swap_offset;
-      lseek(swap_fd, m_vmDataOffset, SEEK_SET);
+      m_vmblock = vm->allocate(m_rawSize);
+      off_t ofs = 0;
       if (!m_rawData1.isEmpty())
       {
-         writeBlock(swap_fd, m_rawData1, m_rawData1Start, m_rawData1.count());
+         ofs = m_rawData1.count() - m_rawData1Start;
+         vm->copy(m_vmblock, m_rawData1.data()+m_rawData1Start, 0, ofs);
       }
       if (!m_rawData2.isEmpty())
       {
-         writeBlock(swap_fd, m_rawData2, 0, m_rawData2End);
+         vm->copy(m_vmblock, m_rawData2.data(), ofs, m_rawData2End);
       }
+      b_vmDataValid = true;
    }
-   assert(m_vmDataOffset == swap_offset); // Shouldn't change!
    disposeRawData();
-   b_vmDataValid = true;
 }
 
 /**
@@ -482,14 +523,16 @@ KWBufBlock::swapOut(int swap_fd, long swap_offset)
  * with file-descirptor swap_fd.
  */
 void 
-KWBufBlock::swapIn(int swap_fd)
+KWBufBlock::swapIn(KVMAllocator *vm)
 {
    assert(b_vmDataValid);
    assert(!b_rawDataValid);
-   lseek(swap_fd, m_vmDataOffset, SEEK_SET);
-   m_rawData2 = readBlock(swap_fd, m_rawSize);
-   assert(m_rawData2 == m_rawSize); // TODO: Error checking / reporting.
+   assert(m_vmblock);   
+
+   m_rawData2.resize(m_rawSize);
+   vm->copy(m_rawData2.data(), m_vmblock, 0, m_rawSize);
    m_rawData2End = m_rawSize;
+   b_rawDataValid = true;
 }
 
 
@@ -655,7 +698,7 @@ void
 KWBufBlock::disposeStringList()
 {
 qWarning("KWBufBlock: disposeStringList this = %p", this);
-   assert(b_rawDataValid);
+   assert(b_rawDataValid || b_vmDataValid);
    m_stringList.clear();
    b_stringListValid = false;      
 }
@@ -673,6 +716,19 @@ qWarning("KWBufBlock: disposeRawData this = %p", this);
    m_rawData1Start = 0;
    m_rawData2 = QByteArray();
    m_rawData2End = 0;
+}
+
+/**
+ * Dispose of data in vm
+ */
+void
+KWBufBlock::disposeSwap(KVMAllocator *vm)
+{
+qWarning("KWBufBlock: disposeSwap this = %p", this);
+   assert(b_stringListValid || b_rawDataValid);
+   vm->free(m_vmblock);
+   m_vmblock = 0;
+   b_vmDataValid = false;
 }
 
 /**

@@ -13,7 +13,7 @@ lib_LTLIBRARIES = kwrite.la libkwritepart.la
 libkwritepart_la_SOURCES = highlight.cpp ktextprint.cpp  \
 		           kwdoc.cpp kwview.cpp undohistory.cpp  \
 		           kwdialog.cpp kwrite_factory.cpp \
-                           kwbuffer.cpp kwtextline.cpp \
+                           kwbuffer.cpp kwtextline.cpp kvmallocator.cpp\
                            kwattribute.cpp kwriteIface.skel syntaxdocument.cpp
 
 libkwritepart_la_LDFLAGS = $(all_libraries) $(KDE_PLUGIN)

@@ -28,6 +28,7 @@
 #include <qtimer.h>
 
 #include <kwtextline.h>
+#include <kvmallocator.h>
 
 class KWBufBlock;
 class KWBufFileLoader;
@@ -58,6 +59,12 @@ public:
     * Using @p codec to decode the file.
     */
    void insertFile(int line, const QString &file, QTextCodec *codec);
+
+   /**
+    * Insert a block of data at line @p line in the buffer. 
+    * Using @p codec to decode the file.
+    */
+   void insertData(int line, const QByteArray &data, QTextCodec *codec);
 
    /**
     * Return the total number of lines in the buffer.
@@ -121,7 +128,6 @@ protected slots:
    
 protected:
    int m_totalLines;
-   int m_fdSwap;
    QList<KWBufBlock> m_blocks;
    QList<KWBufFileLoader> m_loader;
    QTimer m_loadTimer;
@@ -131,7 +137,8 @@ protected:
    // List of parsed blocks that are dirty.
    QList<KWBufBlock> m_parsedBlocksDirty; 
    // List of blocks that can be swapped out.
-   QList<KWBufBlock> m_loadedBlocks; 
+   QList<KWBufBlock> m_loadedBlocks;
+   KVMAllocator *m_vm;
 };
 
 class KWBufFileLoader
@@ -199,19 +206,21 @@ public:
    void disposeRawData();
 
    /**
-    * Swaps raw data to secondary storage.
-    * Uses the filedescriptor @p swap_fd and the file-offset @p swap_offset
-    * to store m_rawSize bytes.
     * Post Condition: b_vmDataValid is true, b_rawDataValid is false
     */
-   void swapOut(int swap_fd, long swap_offset);
+   void swapOut(KVMAllocator *vm);
 
    /**
-    * Swaps m_rawSize bytes in from offset m_vmDataOffset in the file
-    * with file-descirptor swap_fd.
+    * Swaps raw data from secondary storage.
     * Post Condition: b_rawDataValid is true.
     */
-   void swapIn(int swap_fd);
+   void swapIn(KVMAllocator *vm);
+
+   /**
+    * Dispose of swap data.
+    * Post Condition: b_vmDataValid is false.
+    */
+   void disposeSwap(KVMAllocator *vm);
     
    /**
     * Return line @p i
@@ -250,7 +259,6 @@ protected:
    QByteArray m_rawData2;   
    int m_rawData2End;
    long m_rawSize;
-   long m_vmDataOffset;
    bool b_stringListValid;
    bool b_rawDataValid;
    bool b_vmDataValid;
@@ -258,6 +266,7 @@ protected:
    KWBufState m_beginState;
    KWBufState m_endState;
    QTextCodec *m_codec;
+   KVMAllocator::Block *m_vmblock;
 };
 
 #endif

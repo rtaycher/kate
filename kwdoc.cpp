@@ -727,7 +727,14 @@ void KWriteDoc::insertFile(VConfig &c, QIODevice &dev)
 void KWriteDoc::loadFile(const QString &file, QTextCodec *codec)
 {
   buffer->insertFile(0, file, codec);
-qWarning("Linecount = %d", buffer->count());
+qWarning("Linecount = %d (loadFile)", buffer->count());
+}
+
+void KWriteDoc::appendData(const QByteArray &data, QTextCodec *codec)
+{
+  buffer->insertData(buffer->count(), data, codec);
+qWarning("Linecount = %d (appendData)", buffer->count());
+  slotBufferChanged();
 }
 
 bool KWriteDoc::writeFile(const QString &file, QTextCodec *codec)

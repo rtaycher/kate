@@ -2306,8 +2306,12 @@ void KWrite::slotJobReadResult( KIO::Job *job )
 
     if ( job->error() )
         job->showErrorDialog();
+#ifdef NEW_CODE
+    // Something todo?
+#else
     else
         loadInternal( data, url, flags );
+#endif
 }
 
 void KWrite::loadInternal( const QByteArray &data, const KURL &url, int flags )
@@ -2341,12 +2345,16 @@ void KWrite::loadInternal( const QByteArray &data, const KURL &url, int flags )
 
 void KWrite::slotJobData( KIO::Job *job, const QByteArray &data )
 {
+#ifdef NEW_CODE
+    kWriteDoc->appendData(data, QTextCodec::codecForLocale());
+#else
     QMap<KIO::Job *, NetData>::Iterator it = m_mapNetData.find( job );
     assert( it != m_mapNetData.end() );
     QBuffer buff( (*it).m_data );
     buff.open(IO_WriteOnly | IO_Append );
     buff.writeBlock( data.data(), data.size() );
     buff.close();
+#endif
 }
 
 bool KWrite::canDiscard() {
