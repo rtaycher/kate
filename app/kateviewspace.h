@@ -46,7 +46,7 @@ class KateVSStatusBar : public KStatusBar
 
    public slots:
       void setStatus( int r, int c, int ovr, bool block, int mod, const QString &msg );
-
+      void modOnHd( bool );
    protected:
       virtual bool eventFilter (QObject*,QEvent *);
       virtual void showMenu ();
@@ -57,6 +57,8 @@ class KateVSStatusBar : public KStatusBar
       QLabel* m_insertModeLabel;
       QLabel* m_selectModeLabel;
       KSqueezedTextLabel* m_fileNameLabel;
+      QLabel* m_iconLabel;
+      QPixmap m_modIcon, m_noIcon;
 };
 
 class KateViewSpace : public QVBox
@@ -99,6 +101,7 @@ class KateViewSpace : public QVBox
 
   private slots:
     void slotStatusChanged (Kate::View *view, int r, int c, int ovr, bool block, int mod, const QString &msg);
+    void slotModOnHd(Kate::Document *, bool, unsigned char);
 
   public slots:
     void polish();

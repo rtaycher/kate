@@ -34,6 +34,7 @@
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kglobalsettings.h>
+#include <kpassivepopup.h>
 #include <kdebug.h>
 
 KateFileList::KateFileList (KateDocManager *_docManager, KateViewManager *_viewManager, QWidget * parent, const char * name ):  KListBox (parent, name)
@@ -110,7 +111,7 @@ void KateFileList::slotModChanged (Kate::Document *doc)
   }
 }
 
-void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool, unsigned char)
+void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool, unsigned char r)
 {
   for (uint i = 0; i < count(); i++)
   {
@@ -119,6 +120,20 @@ void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool, unsigned char)
       triggerUpdate(false);
       break;
     }
+  }
+  if ( r != 0 )
+  {
+    QPixmap w( BarIcon("messagebox_warning", 32) );
+    QString a;
+    if ( r == 1 )
+      a = i18n("was changed on disk by another process.");
+    else if ( r == 2 )
+      a = i18n("was created on disk by another proecss.");
+    else if ( r == 3 )
+      a = i18n("was deleted from disk");
+    KPassivePopup::message( i18n("Warning"),
+        i18n("The document<br><code>%1</code><br>%2").arg( doc->url().prettyURL() ).arg( a ) ,
+        w, topLevelWidget() );
   }
 }
 

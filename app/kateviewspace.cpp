@@ -38,6 +38,7 @@
 #include <qlabel.h>
 #include <qcursor.h>
 #include <qpopupmenu.h>
+#include <qpixmap.h>
 
 //BEGIN KVSSBSep
 /*
@@ -137,27 +138,30 @@ bool KateViewSpace::showView(Kate::View* v)
   for( ; it.current(); --it ) {
     if (it.current()->getDoc() == d) {
       Kate::View* kv = it.current();
+      disconnect( 0, 0, this, SLOT(slotModOnHd(Kate::Document *, bool, unsigned char)) );
+      connect( kv->getDoc(), SIGNAL(modifiedOnDisc(Kate::Document *, bool, unsigned char)),
+               this, SLOT(slotModOnHd(Kate::Document *, bool, unsigned char)) );
       mViewList.removeRef( kv );
       mViewList.append( kv );
-//      kv->show();
       stack->raiseWidget( kv );
       return true;
     }
   }
-   return false;
+  return false;
 }
 
 bool KateViewSpace::showView(uint documentNumber)
 {
   QPtrListIterator<Kate::View> it (mViewList);
-
   it.toLast();
   for( ; it.current(); --it ) {
     if (((Kate::Document*)it.current()->getDoc())->documentNumber() == documentNumber) {
       Kate::View* kv = it.current();
+      disconnect( 0, 0, this, SLOT(slotModOnHd(Kate::Document *, bool, unsigned char)) );
+      connect( kv->getDoc(), SIGNAL(modifiedOnDisc(Kate::Document *, bool, unsigned char)),
+               this, SLOT(slotModOnHd(Kate::Document *, bool, unsigned char)) );
       mViewList.removeRef( kv );
       mViewList.append( kv );
-//      kv->show();
       stack->raiseWidget( kv );
       return true;
     }
@@ -274,7 +278,10 @@ void KateViewSpace::restoreConfig ( KateViewManager *viewMan, KConfig* config, c
     viewMan->createView (viewMan->m_docManager->document(0));
 }
 
-
+void KateViewSpace::slotModOnHd( Kate::Document*, bool s, unsigned char )
+{
+  mStatusBar->modOnHd( s );
+}
 //END KateViewSpace
 
 //BEGIN KateVSStatusBar
@@ -312,7 +319,13 @@ KateVSStatusBar::KateVSStatusBar ( KateViewSpace *parent, const char *name )
    m_fileNameLabel->setAlignment( /*Qt::AlignRight*/Qt::AlignLeft );
    m_fileNameLabel->installEventFilter( this );
 
+   m_iconLabel = new QLabel( this );
+   m_iconLabel->setFixedWidth( 18 );
+   addWidget( m_iconLabel, 0, true );
+
    installEventFilter( this );
+   m_modIcon = SmallIcon("messagebox_warning");
+   m_noIcon = SmallIcon("null");
 }
 
 KateVSStatusBar::~KateVSStatusBar ()
@@ -340,6 +353,15 @@ void KateVSStatusBar::setStatus( int r, int c, int ovr, bool block, int mod, con
   m_selectModeLabel->setText( block ? i18n(" BLK ") : i18n(" NORM ") );
 
   m_fileNameLabel->setText( msg );
+}
+
+void KateVSStatusBar::modOnHd( bool b )
+{
+  kdDebug()<<"GOT SIGNAL!! #####    "<<b<<endl;
+  if ( b )
+    m_iconLabel->setPixmap( m_modIcon );
+  else
+    m_iconLabel->setPixmap( m_noIcon );
 }
 
 void KateVSStatusBar::showMenu()
