@@ -85,6 +85,7 @@ private:
     KConfig* config;
     QStringList lastSearchItems;
     QStringList lastSearchPaths;
+    QStringList lastSearchFiles;
     QString m_lastUpdatedDir;
     QString m_workingDir;
 };

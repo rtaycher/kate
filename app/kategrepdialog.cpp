@@ -75,6 +75,7 @@ GrepTool::GrepTool(KateMainWindow *parent, const char *name)
   config->setGroup("GrepTool");
   lastSearchItems = config->readListEntry("LastSearchItems");
   lastSearchPaths = config->readListEntry("LastSearchPaths");
+  lastSearchFiles = config->readListEntry("LastSearchFiles");
 
   QGridLayout *layout = new QGridLayout(this, 6, 3, 4, 4);
   layout->setColStretch(0, 10);
@@ -97,6 +98,7 @@ GrepTool::GrepTool(KateMainWindow *parent, const char *name)
   QBoxLayout *loPattern = new QHBoxLayout( 4 );
   loInput->addLayout( loPattern, 0, 1 );
   cmbPattern = new QComboBox(true, this);
+  cmbPattern->setDuplicatesEnabled(false);
   cmbPattern->insertStringList(lastSearchItems);
   cmbPattern->setEditText(QString::null);
   cmbPattern->setInsertionPolicy(QComboBox::NoInsertion);
@@ -142,6 +144,8 @@ GrepTool::GrepTool(KateMainWindow *parent, const char *name)
   cmbFiles = new QComboBox(true, this);
   lFiles->setBuddy(cmbFiles->focusProxy());
   cmbFiles->setMinimumSize(cmbFiles->sizeHint());
+  cmbFiles->setDuplicatesEnabled(false);
+  cmbFiles->insertStringList(lastSearchFiles);
   cmbFiles->insertItem("*.h,*.hxx,*.cpp,*.cc,*.C,*.cxx,*.idl,*.c");
   cmbFiles->insertItem("*.cpp,*.cc,*.C,*.cxx,*.c");
   cmbFiles->insertItem("*.h,*.hxx,*.idl");
@@ -157,6 +161,7 @@ GrepTool::GrepTool(KateMainWindow *parent, const char *name)
 
   KComboBox* cmbUrl = new KComboBox(true, this);
   cmbUrl->setMinimumWidth(80); // make sure that 800x600 res works
+  cmbUrl->setDuplicatesEnabled(false);
   cmbDir = new KURLRequester( cmbUrl, this, "dir combo" );
   cmbDir->completionObject()->setMode(KURLCompletion::DirCompletion);
   cmbDir->comboBox()->insertStringList(lastSearchPaths);
@@ -412,6 +417,18 @@ void GrepTool::finish()
     }
     config->writeEntry("LastSearchPaths", lastSearchPaths);
   }
+
+  if (lastSearchFiles.contains(cmbFiles->currentText()) == 0)
+  {
+    cmbFiles->insertItem(cmbFiles->currentText(), 0);
+    lastSearchFiles.prepend(cmbFiles->currentText());
+    if (lastSearchItems.count() > 10) {
+      lastSearchFiles.remove(lastSearchFiles.fromLast());
+      cmbFiles->removeItem(cmbFiles->count() - 1);
+    }
+    config->writeEntry("LastSearchFiles", lastSearchFiles);
+  }
+
   config->writeEntry("Recursive", cbRecursive->isChecked());
   config->writeEntry("CaseSensitive", cbCasesensitive->isChecked());
   config->writeEntry( "Regex", cbRegex->isChecked() );
