@@ -101,6 +101,18 @@ class ProjectDirFile : public QObject, public KShared
      * @return ProjectDirFile::List for all direct subdirs
      */
     ProjectDirFile::List dirFiles ();
+    
+  #undef signals
+  #define signals public
+  signals:
+  #undef signals
+  #define signals protected
+  
+    void dirsAdded (const QStringList &dirs);
+    void dirsRemoved (const QStringList &dirs);
+    
+    void filesAdded (const QStringList &files);
+    void filesRemoved (const QStringList &files);
 
   private:
     /**

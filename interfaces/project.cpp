@@ -29,6 +29,7 @@
 
 #include <qfile.h>
 #include <qdir.h>
+#include <qdict.h>
 
 namespace Kate
 {
@@ -36,8 +37,10 @@ namespace Kate
 class PrivateProjectDirFileData
 {
   public:
+    QString dir;
     QString fileName;
     Project *project;
+    PrivateProject *privateProject;
 };
 
 class PrivateProject
@@ -45,6 +48,7 @@ class PrivateProject
   public:
     PrivateProject ()
     {
+      m_dirFiles.setAutoDelete ( false );
     }
 
     ~PrivateProject ()
@@ -55,6 +59,7 @@ class PrivateProject
         
     KateInternalProjectData *m_data;
     Kate::ProjectPlugin *m_plugin;
+    QDict<ProjectDirFile> m_dirFiles;
     KConfig *m_config;
     QString m_dir;
   };
@@ -73,7 +78,6 @@ class PrivateProjectDirFile
     
     PrivateProjectDirFileData *m_data;
     KConfig *m_config;
-    QString m_dir;
     QString m_absdir;
     QString m_absfilename;
   };
@@ -98,6 +102,7 @@ Project::Project (void *project) : QObject (((KateInternalProjectData*) project)
 
 Project::~Project ()
 {
+  
   delete d;
 }
 
@@ -153,23 +158,27 @@ bool Project::close ()
 
 ProjectDirFile::Ptr Project::dirFile (const QString &dir)
 {
+  ProjectDirFile *p = d->m_dirFiles[dir];
+  if (p)
+    return ProjectDirFile::Ptr (p);
+  
   QString fname;
   
   if (!dir.isNull ())
     fname = dir + QString ("/") + dirFilesName ();
    else
     fname = dirFilesName ();
-    
+
   if (!QFile::exists (d->m_dir + QString ("/") + fname))
     return 0;
     
   PrivateProjectDirFileData *data = new PrivateProjectDirFileData ();
+  data->dir = dir;
   data->fileName = fname;
   data->project = this;
+  data->privateProject = this->d;
   
-  ProjectDirFile::Ptr p = new ProjectDirFile ((void *)data);
-  
-  return p;
+  return ProjectDirFile::Ptr (new ProjectDirFile ((void *)data));
 }
 
 KConfig *Project::data ()
@@ -177,29 +186,28 @@ KConfig *Project::data ()
   return d->m_config;
 }
 
-ProjectDirFile::ProjectDirFile (void *projectDirFile) : QObject ()
+ProjectDirFile::ProjectDirFile (void *projectDirFile) : QObject (((PrivateProjectDirFileData *) projectDirFile)->project)
 {
   d = new PrivateProjectDirFile ();
   d->m_data = (PrivateProjectDirFileData *) projectDirFile;
   
   d->m_absfilename = d->m_data->project->dir() + QString ("/") + d->m_data->fileName;
   d->m_config = new KConfig (d->m_absfilename, false, false);
-  
-  int pos = d->m_data->fileName.findRev (QChar ('/'));
-  
-  if (pos == -1)
-    d->m_dir = QString::null;
-  else
-    d->m_dir = d->m_data->fileName.left (pos);
-    
-  if (d->m_dir.isNull())
+        
+  if (d->m_data->dir.isNull())
     d->m_absdir = d->m_data->project->dir ();
   else
-    d->m_absdir = d->m_data->project->dir () + QString ("/") + d->m_dir;
+    d->m_absdir = d->m_data->project->dir () + QString ("/") + d->m_data->dir;
+    
+  // ADD TO PROJECT WIDE HASH !
+  d->m_data->privateProject->m_dirFiles.insert(d->m_data->dir, this);
 }
 
 ProjectDirFile::~ProjectDirFile ()
 {
+  // REMOVE FROM PROJECT WIDE HASH !
+  d->m_data->privateProject->m_dirFiles.remove (d->m_data->dir);
+
   delete d;
 }
 
@@ -232,7 +240,7 @@ QString ProjectDirFile::fileName () const
 
 QString ProjectDirFile::dir () const
 {
-  return d->m_dir;
+  return d->m_data->dir;
 }
 
 QString ProjectDirFile::absFileName () const
@@ -247,26 +255,12 @@ QString ProjectDirFile::absDir () const
 
 ProjectDirFile::Ptr ProjectDirFile::dirFile (const QString &dir)
 {
-  QString fname = d->m_dir;
+  QString realdir = d->m_data->dir;
   
-  if (!fname.isNull())
-    fname += QString ("/");
-  
-  if (!dir.isNull ())
-    fname += dir + QString ("/") + d->m_data->project->dirFilesName ();
-   else
-    fname += d->m_data->project->dirFilesName ();
-    
-  if (!QFile::exists (d->m_data->project->dir() + QString ("/") + fname))
-    return 0;
-    
-  PrivateProjectDirFileData *data = new PrivateProjectDirFileData ();
-  data->fileName = fname;
-  data->project = d->m_data->project;
-  
-  ProjectDirFile::Ptr p = new ProjectDirFile ((void *)data);
-  
-  return p;
+  if (!realdir.isNull() && !dir.isNull())
+    realdir += QString ("/") + dir;
+
+  return d->m_data->project->dirFile (realdir);
 }
 
 ProjectDirFile::List ProjectDirFile::dirFiles ()
@@ -316,7 +310,8 @@ QStringList ProjectDirFile::addDirs (const QStringList &dirs)
     config.writeEntry ("Files", QStringList(), '/');
     config.sync ();
   }
-   
+  
+  emit dirsAdded (newDirs);
   emit d->m_data->project->dirsAdded (dir(), newDirs);
   
   return newDirs;
@@ -350,7 +345,8 @@ QStringList ProjectDirFile::removeDirs (const QStringList &dirs)
   d->m_config->writeEntry ("Dirs", saveList, '/');
   d->m_config->sync ();
   
-   emit d->m_data->project->dirsRemoved (dir(), removeDirs);
+  emit dirsRemoved (removeDirs);
+  emit d->m_data->project->dirsRemoved (dir(), removeDirs);
   
   return removeDirs;
 }
@@ -378,7 +374,8 @@ QStringList ProjectDirFile::addFiles (const QStringList &files)
   d->m_config->writeEntry ("Files", newFiles + existingFiles, '/');
   d->m_config->sync ();
    
-   emit d->m_data->project->filesAdded (dir(), newFiles);
+  emit filesAdded (newFiles);
+  emit d->m_data->project->filesAdded (dir(), newFiles);
   
   return newFiles;
 }
@@ -411,6 +408,7 @@ QStringList ProjectDirFile::removeFiles (const QStringList &files)
   d->m_config->writeEntry ("Files", saveList, '/');
   d->m_config->sync ();
   
+  emit filesRemoved (removeFiles);
   emit d->m_data->project->filesRemoved (dir(), removeFiles);
   
   return removeFiles;
