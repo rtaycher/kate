@@ -687,7 +687,7 @@ void KFSConfigPage::init()
   KConfig *config = kapp->config();
   config->setGroup( "fileselector" );
   // toolbar
-  QStringList l = config->readListEntry( "fstoolbar", ',' );
+  QStringList l = config->readListEntry( "toolbar actions", ',' );
   if ( l.isEmpty() ) // default toolbar
     l << "up" << "back" << "forward" << "home" <<
                 "short view" << "detailed view" <<
