@@ -35,7 +35,7 @@ class PrivateApplication
     PrivateApplication ();
     virtual ~PrivateApplication ();
     
-    class Application *application () { return m_application; };
+    virtual class Application *application () = 0;
     
   public:
     /** Returns a pointer to the document manager
@@ -47,10 +47,7 @@ class PrivateApplication
     virtual class MainWindow *activeMainWindow () = 0;
     
     virtual uint mainWindows () = 0;
-    virtual class MainWindow *mainWindow (uint n) = 0;
-    
-  private:
-    Application *m_application;
+    virtual class MainWindow *mainWindow (uint n) = 0; 
 };
 
 };

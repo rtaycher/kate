@@ -50,7 +50,7 @@ Application::~Application ()
 
 PrivateApplication::PrivateApplication ()
 {
-  m_application = new Kate::Application (this);
+  
 }
 
 PrivateApplication::~PrivateApplication ()

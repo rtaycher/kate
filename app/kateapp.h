@@ -35,6 +35,8 @@ class KateApp : public KUniqueApplication, Kate::PrivateApplication, Kate::InitP
   public:
     KateApp (bool forcedNewProcess, bool oldState);
     ~KateApp ();    
+    
+    Kate::Application *application () { return m_application; };
       
   public:
     int newInstance();
@@ -65,6 +67,7 @@ class KateApp : public KUniqueApplication, Kate::PrivateApplication, Kate::InitP
     virtual KURL initScript() const;
     
   private:
+    Kate::Application *m_application;
     KateDocManager *m_docManager;
     KatePluginManager *m_pluginManager;
     QPtrList<class KateMainWindow> m_mainWindows;

@@ -36,7 +36,9 @@
 #include <qtimer.h>
 
 KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (true,true,true), Kate::PrivateApplication (), Kate::InitPluginManager(),m_initPlugin(0),m_doNotInitialize(0)
-{                     
+{       
+  m_application = new Kate::Application (this);
+              
   if (forcedNewProcess)
   {
     config()->setGroup("KDE");
