@@ -1,3 +1,3 @@
 KDE_ICON = AUTO
 
-SUBDIRS = actions tabicons
+SUBDIRS = actions
