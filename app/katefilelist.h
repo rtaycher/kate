@@ -44,7 +44,7 @@ class KateFileListItem : public QListViewItem
 		      Kate::Document *doc );
     ~KateFileListItem();
 
-    inline uint documentNumber () { return doc->documentNumber(); }
+    inline uint documentNumber () { return m_docNumber; }
     inline Kate::Document * document() { return doc; }
 
     int height() const;
@@ -71,6 +71,7 @@ class KateFileListItem : public QListViewItem
     Kate::Document *doc;
     int m_viewhistpos; ///< this gets set by the list as needed
     int m_edithistpos; ///< this gets set by the list as needed
+    uint m_docNumber;
 };
 
 class KateFileList : public KListView

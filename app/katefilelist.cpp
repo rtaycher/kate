@@ -226,17 +226,15 @@ void KateFileList::slotDocumentCreated (Kate::Document *doc)
 
 void KateFileList::slotDocumentDeleted (uint documentNumber)
 {
-  kdDebug() << k_funcinfo << endl;
   QListViewItem * item = firstChild();
   while( item ) {
     if ( ((KateFileListItem *)item)->documentNumber() == documentNumber )
     {
-      disconnect( this, 0, ((KateFileListItem*)item)->document(), 0 );
-
       m_viewHistory.removeRef( (KateFileListItem *)item );
       m_editHistory.removeRef( (KateFileListItem *)item );
 
-      delete (KateFileListItem *)item;
+      removeItem( item );
+
       break;
     }
     item = item->nextSibling();
@@ -273,7 +271,6 @@ void KateFileList::slotModChanged (Kate::Document *doc)
 
     for ( uint i=0; i <  m_editHistory.count(); i++ )
     {
-      kdDebug()<<"slotModeChanged repainting item in view history: "<<i<<endl;
       m_editHistory.at( i )->setEditHistPos( i+1 );
       repaintItem(  m_editHistory.at( i ) );
     }
@@ -305,14 +302,14 @@ void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool, unsigned char 
 
 void KateFileList::slotNameChanged (Kate::Document *doc)
 {
-  kdDebug() << k_funcinfo << endl;
   if (!doc) return;
 
   // ### using nextSibling to *only* look at toplevel items.
   // child items could be marks for example
   QListViewItem * item = firstChild();
   while( item ) {
-    if ( ((KateFileListItem *)item)->document() == doc )
+    KateFileListItem *i = ((KateFileListItem *)item);
+    if ( i && i->document() == doc )
     {
       item->setText( 0, doc->docName() );
       repaintItem( item );
@@ -320,7 +317,6 @@ void KateFileList::slotNameChanged (Kate::Document *doc)
     }
     item = item->nextSibling();
   }
-
   updateSort();
 }
 
@@ -437,7 +433,8 @@ KateFileListItem::KateFileListItem( QListView* lv,
   : QListViewItem( lv, _doc->docName() ),
     doc( _doc ),
     m_viewhistpos( 0 ),
-    m_edithistpos( 0 )
+    m_edithistpos( 0 ),
+    m_docNumber( _doc->documentNumber() )
 {
 }
 
