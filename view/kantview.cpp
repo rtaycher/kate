@@ -2970,11 +2970,12 @@ void KantView::updateBookmarks()
 }
 
 
-void KantView::readConfig(KConfig *config) {
+void KantView::readConfig(KConfig *config)
+{
+  searchFlags = config->readNumEntry("SearchFlags", KantView::sfPrompt);
+  configFlags = config->readNumEntry("ConfigFlags", configFlags) & ~KantView::cfMark;
+  wrapAt = config->readNumEntry("WrapAt", wrapAt);
 
- // searchFlags = config->readNumEntry("SearchFlags", KantView::sfPrompt);
-//  configFlags = config->readNumEntry("ConfigFlags", configFlags) & ~KantView::cfMark;
-//  wrapAt = config->readNumEntry("WrapAt", wrapAt);
 /*
   int flags;
 
@@ -3008,8 +3009,6 @@ void KantView::readConfig(KConfig *config) {
   kWriteDoc->setTabWidth(config->readNumEntry("TabWidth",8));
   kWriteDoc->setUndoSteps(config->readNumEntry("UndoSteps",50));
 */
- // fileRecent->loadEntries(config);
-
 }
 
 void KantView::writeConfig(KConfig *config) {

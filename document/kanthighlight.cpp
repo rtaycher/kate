@@ -911,7 +911,7 @@ Highlight::~Highlight() {
 KConfig *Highlight::getKConfig() {
   KConfig *config;
 
-  config = new KConfig("kwriterc");;
+  config = new KConfig("kwriterc");
   config->setGroup(QString::fromUtf8(iName) + QString::fromUtf8(" Highlight"));
   return config;
 }
