@@ -2,7 +2,7 @@
                           katepluginmanager.cpp  -  description
                              -------------------
     begin                : FRE Feb 23 2001
-    copyright            : (C) 2001 by Joseph Wenninger
+    copyright            : (C) 2001,2002 by Joseph Wenninger
     email                : jowenn@kde.org
  ***************************************************************************/
 
@@ -159,7 +159,7 @@ Kate::Plugin *KatePluginManager::plugin(const QString &name)
 }
 
 
-bool KatePluginManager::pluginAvailable(const QString &name){return false;}
-class Kate::Plugin *KatePluginManager::loadPlugin(const QString &name,bool permanent=true){return 0;}
-void KatePluginManager::unloadPlugin(const QString &name,bool permanent=true){;}
+bool KatePluginManager::pluginAvailable(const QString &){return false;}
+class Kate::Plugin *KatePluginManager::loadPlugin(const QString &,bool ){return 0;}
+void KatePluginManager::unloadPlugin(const QString &,bool){;}
 

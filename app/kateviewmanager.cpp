@@ -781,9 +781,6 @@ void KateViewManager::saveAllDocsAtCloseDown(  )
   for (uint i=0; i < m_docManager->documents(); i++ )
     closeList.append (m_docManager->document (i));
 
-  Kate::View *v = 0L;
-  uint id = 0;
-
   KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
 
   // save current document, since if we just reopens documents
@@ -816,7 +813,6 @@ void KateViewManager::reopenDocuments(bool isRestore)
     scfg->setGroup("open files");
     // try to focus the file that had focus at close down
     QString curfile = scfg->readEntry("current file");
-    Kate::View *viewtofocus = 0L;
 
     if (curfile.isEmpty()) {m_reopening=false; return;}
     
