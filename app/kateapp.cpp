@@ -29,8 +29,11 @@
 #include <kconfig.h>
 #include <kwin.h>
 #include <ktip.h>
+#include <kdebug.h>
 
-KateApp::KateApp (bool forcedNewProcess, bool oldState) : Kate::Application ()
+#include <qfile.h>
+
+KateApp::KateApp (bool forcedNewProcess, bool oldState) : Kate::Application (),m_initPlugin(0),m_doNotInitialize(0)
 {                       
   if (forcedNewProcess)
   {
@@ -51,6 +54,19 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : Kate::Application ()
   newMainWindow ();
 
   connect(this, SIGNAL(lastWindowClosed()), SLOT(quit()));
+
+  KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
+
+  if (args->isSet("initplugin"))
+  {
+	QString pluginName=args->getOption("initplugin");
+	m_initPlugin= static_cast<Kate::InitPlugin*>(Kate::createPlugin (QFile::encodeName(pluginName),
+				 (Kate::Application *)kapp)->qt_cast("Kate::InitPlugin"));
+	m_initPlugin->activate(args->url(0));
+	m_doNotInitialize=m_initPlugin->actionsKateShouldNotPerformOnRealStartup();;
+        kdDebug()<<"********************loading init plugin in app constructor"<<endl;
+  } else kdDebug()<<"************************no plugin specified"<<endl;
+
   processEvents();
 
   if ( isRestored() && KMainWindow::canBeRestored(1) )
@@ -66,6 +82,17 @@ KateApp::~KateApp ()
   m_pluginManager->writeConfig ();
 }          
 
+void KateApp::performInit(const QString &libname, const KURL &url)
+{
+        m_initPlugin= static_cast<Kate::InitPlugin*>(Kate::createPlugin (QFile::encodeName(libname),
+                                 (Kate::Application *)kapp)->qt_cast("Kate::InitPlugin"));
+        m_initPlugin->activate(url);
+	m_initPlugin->initKate();
+	m_initPlugin->deleteLater();
+	m_initPlugin=0;
+	
+}
+
 int KateApp::newInstance()
 {
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
@@ -74,34 +101,50 @@ int KateApp::newInstance()
     newMainWindow (); 
  
   raiseCurrentMainWindow ();
-  
-  for (int z=0; z<args->count(); z++)
+
+  if (m_firstStart && m_initPlugin)
   {
-    m_mainWindows.first()->kateViewManager()->openURL( args->url(z) );
+	m_initPlugin->initKate();
+	delete m_initPlugin;
+        kdDebug()<<"***************************** INIT PLUGIN ON FIRST START"<<endl;
+	m_initPlugin=0;
   }
+  else if (args->isSet("initplugin"))
+  {	
+        kdDebug()<<"***************************** INIT PLUGIN ON ANY  START"<<endl;
+	performInit(args->getOption("initplugin"),args->url(0));
+	
+  }
+  else
+  {
+    for (int z=0; z<args->count(); z++)
+    {
+      m_mainWindows.first()->kateViewManager()->openURL( args->url(z) );
+    }
  
-  if ( m_mainWindows.first()->kateViewManager()->viewCount () == 0 )
-    m_mainWindows.first()->kateViewManager()->openURL( KURL() );     
+    if ( m_mainWindows.first()->kateViewManager()->viewCount () == 0 )
+      m_mainWindows.first()->kateViewManager()->openURL( KURL() );     
     
-  int line = 0;
-  int column = 0;
-  bool nav = false;
+    int line = 0;
+    int column = 0;
+    bool nav = false;
   
-  if (args->isSet ("line"))
-  {
-    line = args->getOption ("line").toInt();
-    nav = true;
-  } 
+    if (args->isSet ("line"))
+    {
+      line = args->getOption ("line").toInt();
+      nav = true;
+    } 
   
-  if (args->isSet ("column"))
-  {
-    column = args->getOption ("column").toInt();
-    nav = true;
-  } 
+    if (args->isSet ("column"))
+    {
+      column = args->getOption ("column").toInt();
+      nav = true;
+    } 
   
-  if (nav)
-    m_mainWindows.first()->kateViewManager()->activeView ()->setCursorPosition (line, column);
-                           
+    if (nav)
+      m_mainWindows.first()->kateViewManager()->activeView ()->setCursorPosition (line, column);
+
+  }                           
   m_firstStart = false;
     
   return 0;
@@ -167,3 +210,4 @@ Kate::MainWindow *KateApp::activeMainWindow ()
 
   return (Kate::MainWindow*)m_mainWindows.at(n);
 }
+

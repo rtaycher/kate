@@ -123,6 +123,38 @@ Plugin::~Plugin()
 {
 }
 
+
+InitPlugin :: InitPlugin(Application *application, const char *name):Plugin(application,name),m_configScript(KURL())
+{
+}
+
+void InitPlugin::activate(const KURL &initScript)
+{
+	m_configScript=initScript;
+}
+
+
+InitPlugin::~InitPlugin()
+{
+}
+
+int InitPlugin::actionsKateShouldNotPerformOnRealStartup()
+{
+  return 0;
+}
+
+const KURL InitPlugin::configScript() const
+{
+  return m_configScript;
+}
+
+
+int InitPlugin::initKate()
+{
+return 0;
+}
+
+
 unsigned int Plugin::pluginNumber () const
 {
   return myPluginNumber;

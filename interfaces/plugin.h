@@ -30,6 +30,8 @@
 #include <qpixmap.h>
 #include <kicontheme.h>
 
+#include <kurl.h>
+
 namespace Kate
 {
                            
@@ -56,6 +58,49 @@ class Plugin : public QObject
     unsigned int myPluginNumber;
 };
    
+class InitPlugin : public Plugin
+{
+  Q_OBJECT
+  public:
+
+    /**
+     * Please never instanciate this class yourself from a plugin. Use the Applications performInit(pluginname,configscript) method instead
+     */
+    InitPlugin(Application *application=0, const char *name = 0);
+    virtual ~InitPlugin();
+    virtual void activate( const KURL &configScript=KURL());
+
+    /**
+     * I don't create an enum, because I want this to be freely extensible 
+     * Please return the or'ed values from the list, you don't need initialized by kate.
+     * That speeds up appliaction startup. Be aware though, that you have to unload plugins
+     * or clear view/document lists yourself anyway. This is needed, because There could be
+     * a reinitialisation during the application runtime. (eg if another config script is opened)
+     *
+     * 0x1: restoreDocuments
+     * 0x2: restoreViews;
+     * 0x4: loadPlugins
+     */ 
+    virtual int actionsKateShouldNotPerformOnRealStartup();
+
+    /**
+     *This should initiate the real kate initialisation. Please always return "0". The return value
+     *is for later extenstion
+     * 
+     * Be aware, that the plugin is deleted again after the initKate call
+     */
+    virtual int initKate();
+
+    const KURL configScript() const;
+
+  private:
+    KURL m_configScript;
+
+    class InitPluginPrivate;
+    InitPluginPrivate *d;
+
+};
+
 Plugin *createPlugin ( const char* libname, Application *application = 0, const char *name = 0 );
 
 /*

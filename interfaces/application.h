@@ -48,6 +48,9 @@ class Application : public KUniqueApplication
     
     virtual uint mainWindows () = 0;
     virtual class MainWindow *mainWindow (uint n) = 0;
+  
+    virtual void performInit(const QString &libname, const KURL &initScript)=0;
+
 };
 
 };

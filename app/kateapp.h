@@ -25,6 +25,10 @@
 
 #include <qptrlist.h>
 
+namespace Kate {
+class InitPlugin;
+}
+
 class KateApp : public Kate::Application
 {
   Q_OBJECT
@@ -53,11 +57,15 @@ class KateApp : public Kate::Application
                  
     void openURL (const QString &name=0L);  
     
+    void performInit(const QString &, const KURL &);
+
   private:
     KateDocManager *m_docManager;
     KatePluginManager *m_pluginManager;
     QPtrList<class KateMainWindow> m_mainWindows;
     bool m_firstStart;  
+    Kate::InitPlugin *m_initPlugin;
+    bool m_doNotInitialize;
 };
 
 #endif
