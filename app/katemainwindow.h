@@ -220,7 +220,6 @@ class KateMainWindow : public KMdiMainFrm, virtual public KParts::PartBase
     static KMdi::MdiMode defaultMode;
 
   protected:
-    virtual bool event(QEvent*);
     bool eventFilter( QObject*, QEvent * );
     static uint uniqueID;
     Kate::MainWindow *m_mainWindow;

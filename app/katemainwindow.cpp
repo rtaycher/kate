@@ -247,7 +247,7 @@ void KateMainWindow::setupActions()
   a=closeCurrentViewSpace = new KAction( i18n("Close &Current View"), "view_remove", CTRL+SHIFT+Key_R, m_viewManager, SLOT( slotCloseCurrentViewSpace() ), actionCollection(), "view_close_current_space");
   a->setWhatsThis(i18n("Close the currently active splitted view"));
 
-  showFullScreenAction = KStdAction::fullScreen( 0, 0, actionCollection());
+  showFullScreenAction = KStdAction::fullScreen( 0, 0, actionCollection(),this);
   connect( showFullScreenAction,SIGNAL(toggled(bool)), this,SLOT(slotFullScreen(bool)));
 
   goNext=new KAction(i18n("Next View"),Key_F8,m_viewManager, SLOT(activateNextView()),actionCollection(),"go_next");
@@ -747,13 +747,6 @@ void KateMainWindow::tipOfTheDay()
 void KateMainWindow::slotFullScreen(bool t)
 {
 	if (t) showFullScreen(); else showNormal();
-}
-
-bool KateMainWindow::event(QEvent* e)
-{
-  if( e->type() == QEvent::ShowFullScreen || e->type() == QEvent::ShowNormal )
-      showFullScreenAction->setChecked( isFullScreen());
-  return KParts::DockMainWindow::event( e );
 }
 
 bool KateMainWindow::eventFilter( QObject *o, QEvent *e )
