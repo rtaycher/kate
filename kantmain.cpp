@@ -37,7 +37,7 @@ int main( int argc, char **argv )
 {
   KAboutData aboutData ("kant", I18N_NOOP("Kant"), "0.2",
 	I18N_NOOP( "Kant - A MDI Texteditor for KDE" ), KAboutData::License_GPL,
-	 "(c) 2000-2001 The Kant Authors");
+	 "(c) 2000-2001 The Kant Authors", "http://devel-home.kde.org/~kant");
 
   aboutData.addAuthor("Christoph Cullmann", I18N_NOOP("Project Manager and Core Developer"), "crossfire@babylon2k.de", "http://www.babylon2k.de");
   aboutData.addAuthor("Michael Bartl", I18N_NOOP("Core Developer"), "michael.bartl1@chello.at");
