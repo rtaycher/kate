@@ -1351,9 +1351,9 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate
   connect(myViewInternal,SIGNAL(dropEventPass(QDropEvent *)),this,SLOT(dropEventPassEmited(QDropEvent *)));
 
   // some defaults
-  configFlags = KateView::cfAutoIndent | KateView::cfSpaceIndent | KateView::cfBackspaceIndents
+  configFlags = KateView::cfAutoIndent | KateView::cfBackspaceIndents
     | KateView::cfTabIndents | KateView::cfKeepIndentProfile
-    | KateView::cfReplaceTabs | KateView::cfSpaceIndent | KateView::cfRemoveSpaces
+    | KateView::cfRemoveSpaces
     | KateView::cfDelOnInput | KateView::cfMouseAutoCopy | KateView::cfWrapCursor
     | KateView::cfGroupUndo | KateView::cfShowTabs | KateView::cfSmartHome;
 
