@@ -20,6 +20,7 @@
 
 #include <iostream.h>
 #include <qtextstream.h>
+#include <klocale.h>
 #include "kantprojectdialog.h"
 #include "../piper/piper.cpp"  //  PCP I feel not a scrap of guilt...
 
@@ -53,7 +54,7 @@ void KantProjectManager::slotProjectNew()
 
 void KantProjectManager::slotProjectOpen()
 {
-	KURL url = KFileDialog::getOpenURL(QString::null, QString::null, 0L, "Load Project...");
+	KURL url = KFileDialog::getOpenURL(QString::null, QString::null, 0L, i18n("Load Project..."));
 	if ( url.isMalformed() )
 		return;
 
@@ -114,7 +115,7 @@ void KantProjectManager::slotProjectSave()
 void KantProjectManager::slotProjectSaveAs()
 {
 	// KURL of the project file to save
-	KURL url = KFileDialog::getSaveURL(QString::null, "Project File (*.prj)", 0L, "Save Project...");
+	KURL url = KFileDialog::getSaveURL(QString::null, i18n("Project File (*.prj)"), 0L, i18n("Save Project..."));
 
 	if (!url.isEmpty())
 	{
