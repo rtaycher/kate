@@ -60,33 +60,36 @@
 
 HlManager *HlManager::s_pSelf = 0;
 
+enum Item_styles { dsNormal,dsKeyword,dsDataType,dsDecVal,dsBaseN,dsFloat,dsChar,dsString,dsComment,dsOthers};
 
-
-enum Item_styles { dsNormal,dsKeyword,dsDataType,dsDecVal,dsBaseN,dsFloat,
-                   dsChar,dsString,dsComment,dsOthers};
+static const QChar *stdWeakSep = QString("!%&()*+,-./:;<=>?[]^{|}~ 	").unicode();
+static const QChar nullChr = QChar ('\0');
 
 int getDefStyleNum(QString name)
-  {
-	if (name=="dsNormal") return dsNormal;
-        if (name=="dsKeyword") return dsKeyword;
-        if (name=="dsDataType") return dsDataType;
-        if (name=="dsDecVal") return dsDecVal;
-        if (name=="dsBaseN") return dsBaseN;
-        if (name=="dsFloat") return dsFloat;
-        if (name=="dsChar") return dsChar;
-        if (name=="dsString") return dsString;
-        if (name=="dsComment") return dsComment;
-        if (name=="dsOthers")  return dsOthers;
-	return dsNormal;
-  }
+{
+  if (name=="dsNormal") return dsNormal;
+  if (name=="dsKeyword") return dsKeyword;
+  if (name=="dsDataType") return dsDataType;
+  if (name=="dsDecVal") return dsDecVal;
+  if (name=="dsBaseN") return dsBaseN;
+  if (name=="dsFloat") return dsFloat;
+  if (name=="dsChar") return dsChar;
+  if (name=="dsString") return dsString;
+  if (name=="dsComment") return dsComment;
+  if (name=="dsOthers")  return dsOthers;
+
+  return dsNormal;
+}
 
 bool isInWord(QChar ch)
 {
   return ch.isLetterOrNumber() || ch == '_';
 }
 
-bool ustrchr(const char *s, QChar c) {
-  while (*s != '\0') {
+bool ustrchr(const QChar *s, QChar c)
+{
+  while (*s != nullChr)
+  {
     if (*s == c) return true;
     s++;
   }
@@ -163,17 +166,6 @@ const QChar *HlRangeDetect::checkHgl(const QChar *s,bool) {
   return 0L;
 }
 
-/*
-KeywordData::KeywordData(const char *str) {
-  len = strlen(str);
-  s = new char[len];
-  memcpy(s,str,len);
-}
-
-KeywordData::~KeywordData() {
-  delete s;
-}
-*/
 HlKeyword::HlKeyword(int attribute, int context,bool casesensitive,QString weakSep)
   : HlItemWw(attribute,context) {
 //  words.setAutoDelete(true);
@@ -246,10 +238,13 @@ const QChar *HlKeyword::inSensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw) {
   bool ws;
   QStack<QChar> stack;
   stack.setAutoDelete(false);
-  char empty[]="";
-  const char *wk(kw->_weakSep.isEmpty()?empty:kw->_weakSep.latin1());
+
+  const QChar *wk = &nullChr;
+  if (!kw->_weakSep.isEmpty())
+    wk = kw->_weakSep.unicode();
+
   if(*s2=='\0') return 0L;
-  while( ((ws=ustrchr(wk,*s2)) ||(!ustrchr("!%&()*+,-./:;<=>?[]^{|}~ 	", *s2))) && *s2 != '\0')
+  while( ((ws=ustrchr(wk,*s2)) || (!ustrchr(stdWeakSep, *s2))) && *s2 != '\0')
         {
            if (ws) stack.push(s2);
            s2++;
@@ -272,10 +267,13 @@ const QChar *HlKeyword::sensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw) {
   bool ws;
   QStack<QChar> stack;
   stack.setAutoDelete(false);
-  char empty[]="";
-  const char *wk(kw->_weakSep.isEmpty()?empty:kw->_weakSep.latin1());
+
+  const QChar *wk = &nullChr;
+  if (!kw->_weakSep.isEmpty())
+    wk = kw->_weakSep.unicode();
+
   if(*s2=='\0') return 0L;
-  while( ((ws=ustrchr(wk,*s2)) ||(!ustrchr("!%&()*+,-./:;<=>?[]^{|}~ 	", *s2))) && *s2 != '\0')
+  while( ((ws=ustrchr(wk,*s2)) || (!ustrchr(stdWeakSep, *s2))) && *s2 != '\0')
         {
            if (ws) stack.push(s2);
            s2++;
@@ -465,13 +463,13 @@ const QChar *HlCFloat::checkHgl(const QChar *s,bool lineStart) {
   return s;
 }
 
-HlAnyChar::HlAnyChar(int attribute, int context, char* charList)
+HlAnyChar::HlAnyChar(int attribute, int context, const QChar* charList)
   : HlItem(attribute, context) {
   _charList=charList;
 }
 
-const QChar *HlAnyChar::checkHgl(const QChar *s,bool) {
-  //kdDebug(13010)<<"in AnyChar::checkHgl: _charList: "<<_charList<<endl;
+const QChar *HlAnyChar::checkHgl(const QChar *s,bool)
+{
   if (ustrchr(_charList, *s)) return s +1;
   return 0L;
 }
@@ -945,7 +943,7 @@ HlItem *Highlight::createHlItem(syntaxContextData *data, int *res)
                 if (dataname=="RangeDetect") return(new HlRangeDetect(attr,context, chr, chr1)); else
 		if (dataname=="LineContinue") return(new HlLineContinue(attr,context)); else
                 if (dataname=="StringDetect") return(new HlStringDetect(attr,context,stringdata,insensitive)); else
-                if (dataname=="AnyChar") return(new HlAnyChar(attr,context,(char*)stringdata.latin1())); else
+                if (dataname=="AnyChar") return(new HlAnyChar(attr,context,stringdata.unicode())); else
                 if (dataname=="RegExpr") return(new HlRegExpr(attr,context,stringdata)); else
 // apparently these were left out
 	   if(dataname=="HlCChar") return ( new HlCChar(attr,context));else

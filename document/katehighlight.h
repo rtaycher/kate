@@ -193,9 +193,9 @@ class HlCChar : public HlItemWw {
 
 class HlAnyChar : public HlItem {
   public:
-    HlAnyChar(int attribute, int context,char* charList);
+    HlAnyChar(int attribute, int context, const QChar* charList);
     virtual const QChar *checkHgl(const QChar *,bool);
-    char* _charList;
+    const QChar* _charList;
 };
 
 class HlRegExpr : public HlItem {
