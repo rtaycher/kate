@@ -94,6 +94,7 @@ class KateApp : public KUniqueApplication
     QString m_oldInitLib;
     class KateAppDCOPIface *m_obj;
     KMdi::MdiMode m_restoreGUIMode;
+  
   protected slots:
     void performInit();
     void callOnEventLoopEnter();

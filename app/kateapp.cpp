@@ -44,16 +44,20 @@
 #include <qtimer.h>
 #include <kmdidefines.h>
 
-KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (true,true,true),m_initPlugin(0),m_doNotInitialize(0)
+KateApp::KateApp (bool forcedNewProcess, bool oldState)
+ : KUniqueApplication (true,true,true)
+ , m_firstStart (true)
+ , m_initPlugin (0)
+ , m_doNotInitialize (0)
+ , m_restoreGUIMode (KMdi::UndefinedMode)
 {
-  m_restoreGUIMode=KMdi::UndefinedMode;
-  m_application = new Kate::Application (this);
-  m_initPluginManager = new Kate::InitPluginManager (this);
-
-  m_obj = new KateAppDCOPIface (this);
-
-  KGlobal::locale()->insertCatalogue("katepart");
-
+  // Don't handle DCOP requests yet
+  kapp->dcopClient()->suspend();
+  
+  m_mainWindows.setAutoDelete (false);
+  
+  // uh, we have forced this session to come up via changing config
+  // change it back now
   if (forcedNewProcess)
   {
     config()->setGroup("KDE");
@@ -61,62 +65,25 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
     config()->sync();
   }
 
-  m_firstStart = true;
-  kapp->dcopClient()->suspend(); // Don't handle DCOP requests yet
+  // application interface
+  m_application = new Kate::Application (this);
+  
+  // init plugin manager
+  m_initPluginManager = new Kate::InitPluginManager (this);
 
-  m_mainWindows.setAutoDelete (false);
+  // application dcop interface
+  m_obj = new KateAppDCOPIface (this);
 
+  // insert right translations for the katepart
+  KGlobal::locale()->insertCatalogue("katepart");
+
+  // doc + project man
   m_docManager = new KateDocManager (this);
-
   m_projectManager = new KateProjectManager (this);
 
+  // init all normal plugins
   m_pluginManager = new KatePluginManager (this);
   m_pluginManager->loadAllEnabledPlugins ();
-
-  // first be sure we have at least one window
-  // #warning Session management ? needs to be fixed
-  config()->setGroup("General");
-  //m_restoreGUIMode=(KMdi::MdiMode)config()->readNumEntry("GUIMode",KMdi::UndefinedMode);
-  KateMainWindow *win; // = newMainWindow ();
-  
-  // we restore our great stuff here now ;) super
-  if ( isRestored() )
-  {
-    // restore the nice projects & files ;) we need it
-    m_projectManager->restoreProjectList (sessionConfig());
-    m_docManager->restoreDocumentList (sessionConfig());
-
-    int n = 1;
-    while (KMainWindow::canBeRestored(n)){
-	    // for efficiency do something with m_restoreGuiMode here
-	win=newMainWindow();
-	win->restore(n);
-	n++;
-    }
-    // window config
-    //win->restoreWindowConfiguration (sessionConfig());
-  }
-  else
-  {
-    win=newMainWindow(false);
-    config()->setGroup("General");
-    
-    KSimpleConfig scfg ("katesessionrc", false);
-
-    // restore our nice projects if wanted
-    if (config()->readBoolEntry("Restore Projects", false))
-      m_projectManager->restoreProjectList (&scfg);
-
-    // reopen our nice files if wanted
-    if (config()->readBoolEntry("Restore Documents", false))
-      m_docManager->restoreDocumentList (&scfg);
-  
-    // window config
-    if (config()->readBoolEntry("Restore Window Configuration", false))
-      win->restoreWindowConfiguration (&scfg);
-      
-    win->show ();    
-  }
 
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 
@@ -135,10 +102,10 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
     kdDebug(13001)<<"********************loading init plugin in app constructor"<<endl;
   }
 
-  KTipDialog::showTip(m_mainWindows.first());
-
-  kapp->dcopClient()->resume(); // Ok. We are ready for DCOP requests.
-
+  // Ok. We are ready for DCOP requests.
+  kapp->dcopClient()->resume(); 
+  
+  // notify our self on enter the event loop
   QTimer::singleShot(10,this,SLOT(callOnEventLoopEnter()));
 }
 
@@ -193,12 +160,64 @@ void KateApp::performInit()
   m_initPlugin->initKate();
 }
 
-Kate::InitPlugin *KateApp::initPlugin() const {return m_initPlugin;}
+Kate::InitPlugin *KateApp::initPlugin() const
+{
+  return m_initPlugin;
+}
 
 KURL KateApp::initScript() const {return m_initURL;}
 
 int KateApp::newInstance()
 {
+  if (m_firstStart)
+  {
+    // first be sure we have at least one window
+    // #warning Session management ? needs to be fixed
+    config()->setGroup("General");
+    //m_restoreGUIMode=(KMdi::MdiMode)config()->readNumEntry("GUIMode",KMdi::UndefinedMode);
+    KateMainWindow *win; // = newMainWindow ();
+    
+    // we restore our great stuff here now ;) super
+    if ( isRestored() )
+    {
+      // restore the nice projects & files ;) we need it
+      m_projectManager->restoreProjectList (sessionConfig());
+      m_docManager->restoreDocumentList (sessionConfig());
+  
+      int n = 1;
+      while (KMainWindow::canBeRestored(n)){
+              // for efficiency do something with m_restoreGuiMode here
+          win=newMainWindow();
+          win->restore(n);
+          n++;
+      }
+  
+      // window config
+      //win->restoreWindowConfiguration (sessionConfig());
+    }
+    else
+    {
+      win=newMainWindow(false);
+      config()->setGroup("General");
+      
+      KSimpleConfig scfg ("katesessionrc", false);
+  
+      // restore our nice projects if wanted
+      if (config()->readBoolEntry("Restore Projects", false))
+        m_projectManager->restoreProjectList (&scfg);
+  
+      // reopen our nice files if wanted
+      if (config()->readBoolEntry("Restore Documents", false))
+        m_docManager->restoreDocumentList (&scfg);
+    
+      // window config
+      if (config()->readBoolEntry("Restore Window Configuration", false))
+        win->restoreWindowConfiguration (&scfg);
+        
+      win->show ();    
+    }
+  }
+
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 
   if (!m_firstStart && args->isSet ("w"))
@@ -254,9 +273,15 @@ int KateApp::newInstance()
       m_mainWindows.first()->kateViewManager()->activeView ()->setCursorPosition (line, column);
   }
 
-  // very important :)
-  m_firstStart = false;
-
+  if (m_firstStart)
+  {
+    // very important :)
+    m_firstStart = false;
+    
+    // show the nice tips
+    KTipDialog::showTip(m_mainWindows.first());    
+  }
+  
   return 0;
 }
 
