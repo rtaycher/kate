@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui>
-<kpartgui name="KWriteBrowserView" version="1">
+<kpartgui name="KantPartBrowserView" version="1">
 <MenuBar>
  <Menu name="edit"><Text>&amp;Edit</Text>
   <Action name="select_all"/>
