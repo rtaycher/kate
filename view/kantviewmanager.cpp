@@ -172,12 +172,12 @@ bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView, Ka
 
   kdDebug()<<">> view initialized 12"<<endl;
 
- /* view->installPopup ((QPopupMenu*)((KMainWindow *)topLevelWidget ())->factory()->container("view_popup", (KMainWindow *)topLevelWidget ()) );
+  view->installPopup ((QPopupMenu*)((KMainWindow *)topLevelWidget ())->factory()->container("view_popup", (KMainWindow *)topLevelWidget ()) );
   connect(view,SIGNAL(newCurPos()),this,SLOT(statusMsgOther()));
   connect(view,SIGNAL(newStatus()),this,SLOT(statusMsgOther()));
   connect(view, SIGNAL(newUndo()), this, SLOT(statusMsgOther()));
   connect(view,SIGNAL(statusMsg(const QString &)),this,SLOT(statusMsg(const QString &)));
-  connect(view,SIGNAL(dropEventPass(QDropEvent *)), (KMainWindow *)topLevelWidget (),SLOT(slotDropEvent(QDropEvent *)));   */
+  connect(view,SIGNAL(dropEventPass(QDropEvent *)), (KMainWindow *)topLevelWidget (),SLOT(slotDropEvent(QDropEvent *)));
   connect(view,SIGNAL(gotFocus(KantView *)),this,SLOT(activateSpace(KantView *)));
        kdDebug()<<">> view initialized 113"<<endl;
   activeViewSpace()->addView( view );
@@ -692,7 +692,7 @@ void KantViewManager::slotFindAgainB ()
 {
   if (activeView() == 0) return;
 
-  //activeView()->searchAgain(true);
+  activeView()->searchAgain(true);
 }
 
 
