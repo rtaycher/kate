@@ -35,6 +35,7 @@
 #include <kmessagebox.h>
 #include <klocale.h>
 #include <ksimpleconfig.h>
+#include <kstartupinfo.h>
 
 #include <qfile.h>
 #include <qtimer.h>
@@ -286,6 +287,8 @@ int KateApp::newInstance()
     if (nav)
       m_mainWindows.first()->kateViewManager()->activeView ()->setCursorPosition (line, column);
   }
+
+  KStartupInfo::setNewStartupId( m_mainWindows.first(), kapp->startupId());
 
   if (m_firstStart)
   {

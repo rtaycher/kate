@@ -105,6 +105,7 @@ class KateViewSpaceContainer: public QWidget
     void slotViewChanged();
     void openNewIfEmpty();
     void reactivateActiveView();
+    void slotPendingDocumentNameChanged();
   public slots:
     void deleteLastView ();
 

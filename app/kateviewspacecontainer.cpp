@@ -243,6 +243,7 @@ void KateViewSpaceContainer::reactivateActiveView() {
     activateView(view);
   } else if (m_pendingViewCreation) {
     m_pendingViewCreation=false;
+    disconnect(m_pendingDocument,SIGNAL(nameChanged(Kate::Document *)),this,SLOT(slotPendingDocumentNameChanged()));
     createView(m_pendingDocument);
   }
 }
@@ -395,6 +396,26 @@ void KateViewSpaceContainer::openNewIfEmpty()
     if (m_viewList.count()<1) {
         if (!m_pendingDocument) {
           m_pendingDocument=m_docManager->document(m_docManager->documents()-1);
+          connect(m_pendingDocument,SIGNAL(nameChanged(Kate::Document *)),this,SLOT(slotPendingDocumentNameChanged()));
+          slotPendingDocumentNameChanged();
+        return;
+    }
+   }
+    else {
+      emit viewChanged();
+      return;
+    }
+  }
+  if ((m_viewList.count() < 1) && (m_docManager->documents() < 1) )
+     createView ();
+  else if ((m_viewList.count() < 1) && (m_docManager->documents() > 0) )
+     createView (m_docManager->document(m_docManager->documents()-1));
+
+  emit viewChanged ();
+  //emit m_viewManager->viewChanged ();
+}
+
+void KateViewSpaceContainer::slotPendingDocumentNameChanged() {
           QString c;
           if (m_pendingDocument->url().isEmpty() || (!showFullPath))
           {
@@ -405,18 +426,6 @@ void KateViewSpaceContainer::openNewIfEmpty()
             c = m_pendingDocument->url().prettyURL();
           }
           setCaption(KStringHandler::lsqueeze(c,32)); 
-        }
-        return;
-    }
-    else emit viewChanged();
-  }
-  if ((m_viewList.count() < 1) && (m_docManager->documents() < 1) )
-     createView ();
-  else if ((m_viewList.count() < 1) && (m_docManager->documents() > 0) )
-     createView (m_docManager->document(m_docManager->documents()-1));
-
-  emit viewChanged ();
-  //emit m_viewManager->viewChanged ();
 }
 
 void KateViewSpaceContainer::statusMsg ()
