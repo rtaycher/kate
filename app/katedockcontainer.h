@@ -1,6 +1,7 @@
+
 /* This file is part of the KDE project
    Copyright (C) 2002 Christoph Cullmann <cullmann@kde.org>
-   Copyright (C) 2002 Joseph Wenninger <jowenn@kde.org>
+   Copyright (C) 2002,2003 Joseph Wenninger <jowenn@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -25,8 +26,11 @@
 #include <kdockwidget_p.h>
 #include <qmap.h>
 
+#include <qpushbutton.h>
+
 class QWidgetStack;
 class KMultiTabBar;
+class KDockButton_Private;
 
 class KateDockContainer: public QWidget, public KDockContainer
 {
@@ -52,6 +56,7 @@ private:
   	int m_position; 
 	QMap<KDockWidget*,int> m_map;
 	QMap<int,KDockWidget*> m_revMap;
+	QMap<KDockWidget*,KDockButton_Private*> m_overlapButtons;
 	QStringList itemNames;
 	int m_inserted;
 	int m_delayedRaise;
@@ -60,6 +65,26 @@ private:
 protected slots:
 	void tabClicked(int);
 	void delayedRaise();
+	void changeOverlapMode();
+};
+
+
+/* THIS IS GOING TO BE REMOVED ONCE THAT CONTAINER IS IN KDELIBS. It's a copy of a private header
+*/
+class KDockButton_Private : public QPushButton
+{
+  Q_OBJECT
+public:
+  KDockButton_Private( QWidget *parent=0, const char *name=0 );
+  ~KDockButton_Private();
+
+protected:
+  virtual void drawButton( QPainter * );
+  virtual void enterEvent( QEvent * );
+  virtual void leaveEvent( QEvent * );
+
+private:
+  bool moveMouse;
 };
 
 #endif

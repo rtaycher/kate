@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 2002 Christoph Cullmann <cullmann@kde.org>
-   Copyright (C) 2002 Joseph Wenninger <jowenn@kde.org>
+   Copyright (C) 2002,2003 Joseph Wenninger <jowenn@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -29,6 +29,19 @@
 #include <kconfig.h>
 #include "katemainwindow.h"
 #include <qtimer.h>
+#include <qtooltip.h>
+#include <klocale.h>
+
+static const char* const not_close_xpm[]={
+"5 5 2 1",
+"# c black",
+". c None",
+"#####",
+"#...#",
+"#...#",
+"#...#",
+"#####"};
+
 
 KateDockContainer::KateDockContainer(QWidget *parent, class KateMainWindow *win, int position):QWidget(parent),KDockContainer()
 {         
@@ -83,10 +96,15 @@ KateDockContainer::~KateDockContainer()
 
 void KateDockContainer::init()
 {
-	if (m_vertical)
-	parentDockWidget()->setForcedFixedWidth(m_tb->width());	
+	if (m_vertical) {
+		parentDockWidget()->setForcedFixedWidth(m_tb->width());	
+		activateOverlapMode(m_tb->width());
+	}
 	else
-	parentDockWidget()->setForcedFixedHeight(m_tb->height());
+	{
+		parentDockWidget()->setForcedFixedHeight(m_tb->height());
+		activateOverlapMode(m_tb->height());
+	}
 
 }
 
@@ -110,6 +128,21 @@ void KateDockContainer::insertWidget (KDockWidget *w, QPixmap pixmap, const QStr
 		tab=m_ws->addWidget(w);
 		m_map.insert(w,tab);
 		m_revMap.insert(tab,w);
+
+		if (w->getHeader()->qt_cast("KDockWidgetHeader")) {
+			kdDebug()<<"*** KDockWidgetHeader has been found"<<endl;
+			KDockWidgetHeader *hdr=static_cast<KDockWidgetHeader*>(w->getHeader()->
+				qt_cast("KDockWidgetHeader"));
+			KDockButton_Private *btn = new KDockButton_Private( hdr, "OverlapButton" );
+			QToolTip::add( btn, i18n("Switch between overlap and side by side mode", "Overlap") );
+		  	btn->setToggleButton( true );
+			btn->setPixmap( const_cast< const char** >(not_close_xpm) );
+			hdr->addButton(btn);
+			m_overlapButtons.insert(w,btn);
+			btn->setOn(!isOverlapMode());
+			connect(btn,SIGNAL(clicked()),this,SLOT(changeOverlapMode()));
+		}
+
 		m_tb->appendTab(pixmap.isNull()?SmallIcon("misc"):pixmap,tab,w->tabPageLabel());
 		kdDebug()<<"NAMENAMENAMENAME:===========================:"<<w->tabPageLabel()<<endl;
 		m_tb->setTab(tab,true);
@@ -127,6 +160,26 @@ void KateDockContainer::insertWidget (KDockWidget *w, QPixmap pixmap, const QStr
 		
 }
 
+void KateDockContainer::changeOverlapMode() {
+	const KDockButton_Private *btn=dynamic_cast<const KDockButton_Private*>(sender());
+	if (!btn) return;
+	if (!btn->isOn()) {
+		if (m_vertical) {
+			activateOverlapMode(m_tb->width());
+		}
+		else
+		{
+			activateOverlapMode(m_tb->height());
+		}
+	} else {
+		deactivateOverlapMode();
+	}
+	
+	for (QMap<KDockWidget*,KDockButton_Private*>::iterator it=m_overlapButtons.begin();
+		it!=m_overlapButtons.end();++it)
+		it.data()->setOn(!isOverlapMode());
+}
+
 void KateDockContainer::removeWidget(KDockWidget* w)
 {
 	if (!m_map.contains(w)) return;
@@ -136,6 +189,10 @@ void KateDockContainer::removeWidget(KDockWidget* w)
 	m_tb->removeTab(id);
 	m_map.remove(w);
 	m_revMap.remove(id);
+	if (m_overlapButtons.contains(w)) {
+		(static_cast<KDockWidgetHeader*>(w->getHeader()->qt_cast("KDockWidgetHeader")))->removeButton(m_overlapButtons[w]);
+		m_overlapButtons.remove(w);
+	}
 	KDockContainer::removeWidget(w);
 	itemNames.remove(w->name());
 }
@@ -183,9 +240,9 @@ void KateDockContainer::tabClicked(int t)
     m_ws->hide ();
 	kdDebug()<<"Fixed Width:"<<m_tb->width()<<endl;
 	if (m_vertical)
-	parentDockWidget()->setForcedFixedWidth(m_tb->width());
+	parentDockWidget()->setForcedFixedWidth(m_tb->width()+2); // strange why it worked before at all
 	else
-	parentDockWidget()->setForcedFixedHeight(m_tb->height());
+	parentDockWidget()->setForcedFixedHeight(m_tb->height()+2); // strange why it worked before at all
  	}
 }
 
