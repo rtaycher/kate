@@ -605,6 +605,9 @@ void KateViewSpaceContainer::splitViewSpace( KateViewSpace* vs,
   vsNew->show();
 
   createView (activeView()->getDoc());
+  
+  if (this == m_viewManager->activeContainer())
+    m_viewManager->updateViewSpaceActions ();
 
   kdDebug(13001)<<"splitViewSpace() - DONE!"<<endl;
 }
@@ -696,9 +699,11 @@ void KateViewSpaceContainer::removeViewSpace (KateViewSpace *viewspace)
   Kate::View* v = activeViewSpace()->currentView();
   if ( v )
     activateView( v );
+  
+  if (this == m_viewManager->activeContainer())
+    m_viewManager->updateViewSpaceActions ();
 
   emit viewChanged();
-  //emit m_viewManager->viewChanged ();
 }
 
 void KateViewSpaceContainer::slotCloseCurrentViewSpace()

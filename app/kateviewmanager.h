@@ -48,7 +48,11 @@ class KateViewManager : public QWidget
     Kate::ViewManager *viewManager () const { return m_viewManager; };
 
     inline QPtrList<Kate::View> &viewList () { return m_viewList; };
+    
+    KateViewSpaceContainer *activeContainer () { return m_currentContainer; }
 
+    void updateViewSpaceActions ();
+    
   private:
     /**
      * create all actions needed for the view manager

@@ -78,14 +78,12 @@ KateViewManager::KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWi
   m_viewSpaceContainerList.setAutoDelete(true);
 
   m_init=false;
-
 }
 
 KateViewManager::~KateViewManager ()
 {
   m_viewList.setAutoDelete(false);
   m_viewSpaceContainerList.setAutoDelete(false);
-
 }
 
 void KateViewManager::setupActions ()
@@ -140,6 +138,15 @@ void KateViewManager::setupActions ()
   goPrev->setWhatsThis(i18n("Make the previous split view the active one."));
 }
 
+void KateViewManager::updateViewSpaceActions ()
+{
+  if (!m_currentContainer) return;
+  
+  m_closeView->setEnabled (m_currentContainer->viewSpaceCount() > 1);
+  goNext->setEnabled (m_currentContainer->viewSpaceCount() > 1);
+  goPrev->setEnabled (m_currentContainer->viewSpaceCount() > 1);
+}
+
 void KateViewManager::tabChanged(QWidget* widget) {
   KateViewSpaceContainer *container=static_cast<KateViewSpaceContainer*>(widget->qt_cast("KateViewSpaceContainer"));
   Q_ASSERT(container);
@@ -153,6 +160,8 @@ void KateViewManager::tabChanged(QWidget* widget) {
   m_closeTab->setEnabled(m_tabWidget->count() > 1);
   m_activateNextTab->setEnabled(m_tabWidget->count() > 1);
   m_activatePrevTab->setEnabled(m_tabWidget->count() > 1);
+  
+  updateViewSpaceActions ();
 }
 
 void KateViewManager::slotNewTab() {
