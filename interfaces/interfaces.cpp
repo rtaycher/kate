@@ -23,9 +23,8 @@
     Boston, MA 02111-1307, USA.
  ***************************************************************************/
 
-#include "application.h"
-#include "application.moc"
-
+ #include "application.h"
+ 
 #include "documentmanager.h"
 #include "documentmanager.moc"
 
@@ -48,14 +47,6 @@
 namespace Kate
 {
             
-Application::Application () : KUniqueApplication (true,true,true)
-{
-}
-
-Application::~Application ()
-{
-}
-
 DocumentManager::DocumentManager (QObject *parent, const char *name) : QObject (parent, name)
 {
 }
@@ -166,7 +157,7 @@ unsigned int Plugin::pluginNumber () const
 
  Application *Plugin::application () const
 {
-   return ((Kate::Application *)kapp);
+  return Kate::application();
 } 
 
 PluginViewInterface::PluginViewInterface()

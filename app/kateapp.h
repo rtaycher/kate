@@ -19,20 +19,24 @@
 
 #include "katemain.h"
 #include "../interfaces/application.h"
+#include "../interfaces/application_p.h"
 #include "../interfaces/mainwindow.h"
 #include "../interfaces/documentmanager.h"
 #include "../interfaces/viewmanager.h"
 #include "../interfaces/plugin.h"
 #include <qptrlist.h>
 
-class KateApp : public Kate::Application, Kate::InitPluginManager
+#include <kuniqueapplication.h>
+
+class KateApp : public KUniqueApplication, Kate::PrivateApplication, Kate::InitPluginManager
 {
   Q_OBJECT
 
   public:
     KateApp (bool forcedNewProcess, bool oldState);
-    ~KateApp ();         
-    
+    ~KateApp ();    
+      
+  public:
     int newInstance();
     
     KatePluginManager *katePluginManager() { return m_pluginManager; };
@@ -59,6 +63,7 @@ class KateApp : public Kate::Application, Kate::InitPluginManager
     virtual void performInit(const QString &, const KURL &);
     virtual Kate::InitPlugin *initPlugin() const;
     virtual KURL initScript() const;
+    
   private:
     KateDocManager *m_docManager;
     KatePluginManager *m_pluginManager;

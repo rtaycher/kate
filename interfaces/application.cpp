@@ -1,5 +1,5 @@
 /***************************************************************************
-                          application.h -  description
+                          interfaces.cpp  -  description
                              -------------------
     begin                : Mon Jan 15 2001
     copyright            : (C) 2001 by Christoph Cullmann
@@ -23,57 +23,69 @@
     Boston, MA 02111-1307, USA.
  ***************************************************************************/
 
-#ifndef _KATE_APPLICATION_INCLUDE_
-#define _KATE_APPLICATION_INCLUDE_
+#include "application.h"
+#include "application_p.h"
+#include "application.moc"
 
-#include <qobject.h>
-#include <kurl.h>
+#include "documentmanager.h"
+#include "mainwindow.h"
+#include "plugin.h"
+#include "viewmanager.h"
+#include "toolviewmanager.h"
+#include "pluginmanager.h"
+
+#include <kapplication.h>
 
 namespace Kate
 {
-
-/** This interface provides access to the central Kate objects */
-class Application : public QObject
+            
+Application::Application (class PrivateApplication *d) : QObject ()
 {
-  friend class PrivateApplication;
+  this->d = d;
+}
 
-  Q_OBJECT
-
-  public:
-    Application (class PrivateApplication *d);
-    ~Application ();
-    
-  public:
-    /** Returns a pointer to the document manager
-    */
-    class DocumentManager *documentManager ();
-
-    class PluginManager *pluginManager ();
-    
-    class MainWindow *activeMainWindow ();
-    
-    uint mainWindows ();
-    class MainWindow *mainWindow (uint n = 0);
-
-  private:
-    class PrivateApplication *d;
-};
-
-Application *application ();
-
-class InitPluginManager
+Application::~Application ()
 {
-   public:
-    InitPluginManager();
-    virtual ~InitPluginManager();
-    virtual void performInit(const QString &libname, const KURL &initScript)=0;
-    virtual class InitPlugin *initPlugin() const =0;
-    virtual class KURL  initScript() const =0;
+}
+
+PrivateApplication::PrivateApplication ()
+{
+  m_application = new Kate::Application (this);
+}
+
+PrivateApplication::~PrivateApplication ()
+{
+}
+
+DocumentManager *Application::documentManager ()
+{
+  return d->documentManager ();
+}
+
+PluginManager *Application::pluginManager ()
+{
+  return d->pluginManager ();
+}
+    
+MainWindow *Application::activeMainWindow ()
+{
+  return d->activeMainWindow ();
+}
+    
+uint Application::mainWindows ()
+{
+  return d->mainWindows ();
+}
+ 
+MainWindow *Application::mainWindow (uint n)
+{
+  return d->mainWindow (n);
+}
+
+Application *application ()
+{
+  return ((PrivateApplication *)kapp)->application ();
+}
 
 };
 
-InitPluginManager *initPluginManager(Application *app);
-
-};
-
-#endif

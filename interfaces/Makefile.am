@@ -3,7 +3,7 @@ METASOURCES = AUTO
 
 lib_LTLIBRARIES = libkateinterfaces.la
 
-libkateinterfaces_la_SOURCES = interfaces.cpp pluginconfiginterface.cpp pluginconfiginterfaceextension.cpp
+libkateinterfaces_la_SOURCES = interfaces.cpp application.cpp pluginconfiginterface.cpp pluginconfiginterfaceextension.cpp
 libkateinterfaces_la_LIBADD   = -lkatepartinterfaces
 libkateinterfaces_la_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 

@@ -23,56 +23,35 @@
     Boston, MA 02111-1307, USA.
  ***************************************************************************/
 
-#ifndef _KATE_APPLICATION_INCLUDE_
-#define _KATE_APPLICATION_INCLUDE_
-
-#include <qobject.h>
-#include <kurl.h>
+#ifndef _KATE_APPLICATION_P_INCLUDE_
+#define _KATE_APPLICATION_P_INCLUDE_
 
 namespace Kate
 {
-
 /** This interface provides access to the central Kate objects */
-class Application : public QObject
+class PrivateApplication
 {
-  friend class PrivateApplication;
-
-  Q_OBJECT
-
   public:
-    Application (class PrivateApplication *d);
-    ~Application ();
+    PrivateApplication ();
+    virtual ~PrivateApplication ();
+    
+    class Application *application () { return m_application; };
     
   public:
     /** Returns a pointer to the document manager
     */
-    class DocumentManager *documentManager ();
+    virtual class DocumentManager *documentManager () = 0;
 
-    class PluginManager *pluginManager ();
+    virtual class PluginManager *pluginManager () = 0;
     
-    class MainWindow *activeMainWindow ();
+    virtual class MainWindow *activeMainWindow () = 0;
     
-    uint mainWindows ();
-    class MainWindow *mainWindow (uint n = 0);
-
+    virtual uint mainWindows () = 0;
+    virtual class MainWindow *mainWindow (uint n) = 0;
+    
   private:
-    class PrivateApplication *d;
+    Application *m_application;
 };
-
-Application *application ();
-
-class InitPluginManager
-{
-   public:
-    InitPluginManager();
-    virtual ~InitPluginManager();
-    virtual void performInit(const QString &libname, const KURL &initScript)=0;
-    virtual class InitPlugin *initPlugin() const =0;
-    virtual class KURL  initScript() const =0;
-
-};
-
-InitPluginManager *initPluginManager(Application *app);
 
 };
 
