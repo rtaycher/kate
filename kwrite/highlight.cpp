@@ -2123,12 +2123,22 @@ void AutoHighlight::makeContextList()
 		  chr= (HlManager::self()->syntax->groupItemData(data,QString("char")).latin1())[0];
 		else
                   chr=0;
-		kdDebug()<<"Char"<<chr<<endl;
-                if (dataname=="keyword") contextList[i]->items.append(keyword=new HlKeyword(attr,context));
-                if (dataname=="dataType") contextList[i]->items.append(dataType=new HlKeyword(attr,context));
-                if (dataname=="Float") contextList[i]->items.append(new HlFloat(attr,context));
-                if (dataname=="Int") contextList[i]->items.append(new HlInt(attr,context));
-                if (dataname=="CharDetect") contextList[i]->items.append(new HlCharDetect(attr,context,chr));
+
+    char chr1;
+    if (! HlManager::self()->syntax->groupItemData(data,QString("char1")).isEmpty())
+		  chr1= (HlManager::self()->syntax->groupItemData(data,QString("char1")).latin1())[0];
+		else
+                  chr1=0;
+
+                if (dataname=="keyword") contextList[i]->items.append(keyword=new HlKeyword(attr,context)); else
+                if (dataname=="dataType") contextList[i]->items.append(dataType=new HlKeyword(attr,context)); else
+                if (dataname=="Float") contextList[i]->items.append(new HlFloat(attr,context)); else
+                if (dataname=="Int") contextList[i]->items.append(new HlInt(attr,context)); else
+                if (dataname=="CharDetect") contextList[i]->items.append(new HlCharDetect(attr,context,chr)); else
+                if (dataname=="2CharDetect") contextList[i]->items.append(new Hl2CharDetect(attr,context,chr,chr1)); else
+                if (dataname=="RangeDetect") contextList[i]->items.append(new HlRangeDetect(attr,context, chr, chr1)); else
+		if (dataname=="LineContinue") contextList[i]->items.append(new HlLineContinue(attr,context)); else
+                kdDebug()<<"***********************************"<<endl<<"Unknown entry for Context:"<<dataname<<endl;
 		kdDebug()<<"Last line in loop"<<endl;
               }
           i++;
@@ -2159,7 +2169,7 @@ HlManager::HlManager() : QObject(0L)
   {
     hlList.append(new AutoHighlight(modeList.at(i)));
     i++;
-  }                */
+  }            */    
 
 
   hlList.append(new CHighlight(     "C"        ));

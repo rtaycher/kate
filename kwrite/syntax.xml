@@ -69,20 +69,7 @@
  <type> mutable </type>
  <type> uint </type>
 </types>
-<contexts>
-  <context attribute="0" lineEndContext="0">
-    <item name="keyword" attribute="1" context="0"/>
-    <item name="dataType" attribute="2" context="0"/>
-    <item name="Float" attribute="4" context="0"/>
-    <item name="Int" attribute="3" context="0"/>
-    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
-    <item name="CharDetect" attribute="5" context="1" char="'"/>
-  </context>
-  <context attribute="5" lineEndContext="0"/>
-  <context attribute="4" lineEditContext="0">
-    <item name="CharDetect" attribute="4" context="0" char="'"/>
-  </context>
-</contexts>
+<contexts  extends="C"/>
 <itemDatas>
   <itemData name="Normal Text" defStyleNum="dsNormal"/>
   <itemData name="Keyword" defStyleNum="dsKeyword"/>
@@ -134,23 +121,54 @@
   <context attribute="0" lineEndContext="0">
     <item name="keyword" attribute="1" context="0"/>
     <item name="dataType" attribute="2" context="0"/>
-    <item name="Float" attribute="4" context="0"/>
-    <item name="Int" attribute="3" context="0"/>
-    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
-    <item name="CharDetect" attribute="5" context="1" char="'"/>
+    <item name="HlCFloat" attribute="6" context="0"/>
+    <item name="HlCOct" attribute="4" context="0"/>
+    <item name="HlCHex" attribute="5" context="0"/>
+    <item name="HlCInt" attribute="3" context="0"/>
+    <item name="HlCChar" attribute="7" context="0"/>
+    <item name="CharDetect" attribute="8" context="1" char="&quot;"/>
+    <item name="2CharDetect" attribute="10" context="2" char="/" char1="/"/>
+    <item name="2CharDetect" attribute="10" context="3" char="/" char1="*"/>
+    <item name="HlCSymbol" attribute="11" context="0"/>
+    <item name="HlCPrep" attribute="12" context="4"/>
   </context>
-  <context attribute="5" lineEndContext="0"/>
-  <context attribute="4" lineEditContext="0">
-    <item name="CharDetect" attribute="4" context="0" char="'"/>
+  <context attribute="8" lineEndContext="0">
+    <item name="LineContinue" attribute="8" context="6"/>
+    <item name="HlCStringChar" attribute="9" context="1"/>
+    <item name="CharDetect" attribute="8" context="0" char="&quot;"/>
   </context>
+  <context attribute="10" lineEndContext="0"/>
+  <context attribute="10" lineEndContext="3">
+    <item name="CharDetect" attribute="10" context="0" char="*" char1="/"/>
+  </context>
+  <context attribute="12" lineEndContext="0">
+    <item name="LineContinue" attribute="12" context="7"/>
+    <item name="RangeDetect" attribute="13" context="4" char="&quot;" char1="&quot;"/>
+    <item name="RangeDetect" attribute="13" context="4" char="&lt;" char1="&gt;"/>
+    <item name="2CharDetect" attribute="10" context="2" char="/" char1="/"/>
+    <item name="2CharDetect" attribute="10" context="5" char="/" char1="*"/>
+  </context>
+  <context attribute="10" lineEndContext="5">
+    <item name="2CharDetect" attribute="10" context="4" char="*" char1="/" />
+  </context>
+  <context attribute="0" lineEndContext="1" />
+  <context attribute="0" lineEndContext="4" />
 </contexts>
 <itemDatas>
   <itemData name="Normal Text" defStyleNum="dsNormal"/>
-  <itemData name="Keyword" defStyleNum="dsKeyword"/>
-  <itemData name="Identifier" defStyleNum="dsOthers"/>
-  <itemData name="Types" defStyleNum="dsDataType"/>
-  <itemData name="String" defStyleNum="dsString"/>
-  <itemData name="Comment" defStyleNum="dsComment"/>
+  <itemData name="Keyword"  defStyleNum="dsKeyword"/>
+  <itemData name="Data Type"  defStyleNum="dsDataType"/>
+  <itemData name="Decimal"  defStyleNum="dsDecVal"/>
+  <itemData name="Octal"  defStyleNum="dsBaseN"/>
+  <itemData name="Hex"  defStyleNum="dsBaseN"/>
+  <itemData name="Float"  defStyleNum="dsFloat"/>
+  <itemData name="Char"  defStyleNum="dsChar"/>
+  <itemData name="String"  defStyleNum="dsString"/>
+  <itemData name="String Char"  defStyleNum="dsChar"/>
+  <itemData name="Comment"  defStyleNum="dsComment"/>
+  <itemData name="Symbol"  defStyleNum="dsNormal"/>
+  <itemData name="Preprocessor"  defStyleNum="dsOthers"/>
+  <itemData name="Prep. Lib"  defStyleNum="dsOthers"/> <!--,Qt::darkYellow,Qt::yellow,false,false)); -->
 </itemDatas>
 </language>
 
@@ -186,18 +204,9 @@
  <type> void </type>
  <type> volatile </type>
 </types>
-<contexts>
-  <context attribute="0" lineEndContext="0">
-    <item name="keyword" attribute="1" context="0"/>
-    <item name="dataType" attribute="2" context="0"/>
-    <item name="Float" attribute="4" context="0"/>
-    <item name="Int" attribute="3" context="0"/>
-    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
-    <item name="CharDetect" attribute="5" context="1" char="'"/>
-  </context>
-  <context attribute="5" lineEndContext="0"/>
-  <context attribute="4" lineEditContext="0">
-    <item name="CharDetect" attribute="4" context="0" char="'"/>
+<contexts  extends="C">
+  <context>
+    <item name="2CharDetect" attribute="8" context="1" char="@" char1="&quot;" />
   </context>
 </contexts>
 <itemDatas>
@@ -246,6 +255,7 @@
   <type> void </type>
   <type> boolean </type>
 </types>
+<contexts extends="C"/>
 </language>
 
 <language name="Java" extensions="*.java" mimetype="text/x-java-src" casesensitive="1">
@@ -332,6 +342,7 @@
   <itemData name="String" defStyleNum="dsString"/>
   <itemData name="Comment" defStyleNum="dsComment"/>
 </itemDatas>
+<contexts extends="C"/>
 </language>
 
 <language name="Bash" extensions="*.sh" mimetype="text/x-bash-src" casesensitive="1">
@@ -357,6 +368,21 @@
   <keyword> while </keyword>
   <keyword> . </keyword>
 </keywords>
+<contexts>
+  <context attribute="0" lineEndContext="0">
+    <item name="HlInt" attribute="2" context="0"/>
+    <item name="CharDetect" attribute="3" context="1" char="&quot;"/>
+    <item name="CharDetect" attribute="4" context="2" char="`"/>
+    <item name="HlShellComment" attribute="5" context="3"/>;
+  </context>
+  <context attribute="3" lineEndContext="0">
+    <item name="CharDetect" attribute="3" context="0" char="&quot;"/>
+  </context>
+  <context attribute="4" lineEndContext="0">
+    <item name="CharDetect" attribute="4" context="0" char="`"/>
+  </context>
+  <context attribute="5" lineEndContext="0"/>
+</contexts>
 </language>
 
 <language name="Modula 2" extensions="*.md;*.mi" mimetype="text/x-modula-2-src" casesensitive="1">
@@ -390,15 +416,17 @@
 <contexts>
   <context attribute="0" lineEndContext="0">
     <item name="keyword" attribute="1" context="0"/>
-    <item name="dataType" attribute="2" context="0"/>
     <item name="Float" attribute="4" context="0"/>
-    <item name="Int" attribute="3" context="0"/>
-    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
-    <item name="CharDetect" attribute="5" context="1" char="'"/>
+    <item name="HlMHex" attribute="3" context="0"/>
+    <item name="Int" attribute="2" context="0"/>
+    <item name="CharDetect" attribute="5" context="1" char="&quot;"/>
+    <item name="2CharDetect" attribute="6" context="2" char="(" char1="*" />
   </context>
-  <context attribute="5" lineEndContext="0"/>
-  <context attribute="4" lineEditContext="0">
-    <item name="CharDetect" attribute="4" context="0" char="'"/>
+  <context attribute="5" lineEndContext="0">
+    <item name="CharDetect" attribute="5" context="0" char="&quot;" />
+  </context>
+  <context attribute="6" lineEditContext="2">
+    <item name="2CharDetect" attribute="6" context="0" char="*" char1=")"/>
   </context>
 </contexts>
 <itemDatas>
@@ -480,16 +508,17 @@
 <contexts>
   <context attribute="0" lineEndContext="0">
     <item name="keyword" attribute="1" context="0"/>
-    <item name="dataType" attribute="2" context="0"/>
-    <item name="Float" attribute="4" context="0"/>
-    <item name="Int" attribute="3" context="0"/>
-    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
-    <item name="CharDetect" attribute="5" context="1" char="'"/>
+    <item name="HlAdaBaseN" attribute="3" context="0"/>
+    <item name="HlAdaFloat" attribute="4" context="0"/>
+    <item name="HlAdaDec" attribute="2" context="0"/>
+    <item name="HlAdaChar" attribute="5" context="0"/>
+    <item name="CharDetect" attribute="6" context="1" char="&quot;"/>
+    <item name="2CharDetect" attribute="7" context="2" char="-" char1="-"/>
   </context>
-  <context attribute="5" lineEndContext="0"/>
-  <context attribute="4" lineEditContext="0">
-    <item name="CharDetect" attribute="4" context="0" char="'"/>
+  <context attribute="6" lineEndContext="0">
+    <item name="CharDetect" attribute="6" context="0" char="&quot;"/>
   </context>
+  <context attribute="7" lineEditContext="0"/>
 </contexts>
 <itemDatas>
   <itemData name="Normal Text" defStyleNum="dsNormal"/>
@@ -556,16 +585,6 @@
 </keywords>
 <contexts>
   <context attribute="0" lineEndContext="0">
-    <item name="keyword" attribute="1" context="0"/>
-    <item name="dataType" attribute="2" context="0"/>
-    <item name="Float" attribute="4" context="0"/>
-    <item name="Int" attribute="3" context="0"/>
-    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
-    <item name="CharDetect" attribute="5" context="1" char="'"/>
-  </context>
-  <context attribute="5" lineEndContext="0"/>
-  <context attribute="4" lineEditContext="0">
-    <item name="CharDetect" attribute="4" context="0" char="'"/>
   </context>
 </contexts>
 <itemDatas>
@@ -609,28 +628,6 @@
  <keyword> try </keyword>
  <keyword> while </keyword>
 </keywords>
-<contexts>
-  <context attribute="0" lineEndContext="0">
-    <item name="keyword" attribute="1" context="0"/>
-    <item name="dataType" attribute="2" context="0"/>
-    <item name="Float" attribute="4" context="0"/>
-    <item name="Int" attribute="3" context="0"/>
-    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
-    <item name="CharDetect" attribute="5" context="1" char="'"/>
-  </context>
-  <context attribute="5" lineEndContext="0"/>
-  <context attribute="4" lineEditContext="0">
-    <item name="CharDetect" attribute="4" context="0" char="'"/>
-  </context>
-</contexts>
-<itemDatas>
-  <itemData name="Normal Text" defStyleNum="dsNormal"/>
-  <itemData name="Keyword" defStyleNum="dsKeyword"/>
-  <itemData name="Identifier" defStyleNum="dsOthers"/>
-  <itemData name="Types" defStyleNum="dsDataType"/>
-  <itemData name="String" defStyleNum="dsString"/>
-  <itemData name="Comment" defStyleNum="dsComment"/>
-</itemDatas>
 </language>
 
 <language name="Sather" extensions="*.sa" mimetype="text/x-sather-src" casesensitive="1">
@@ -734,28 +731,6 @@
  <type> pow </type>
  <type> times </type>
 </types>
-<contexts>
-  <context attribute="0" lineEndContext="0">
-    <item name="keyword" attribute="1" context="0"/>
-    <item name="dataType" attribute="2" context="0"/>
-    <item name="Float" attribute="4" context="0"/>
-    <item name="Int" attribute="3" context="0"/>
-    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
-    <item name="CharDetect" attribute="5" context="1" char="'"/>
-  </context>
-  <context attribute="5" lineEndContext="0"/>
-  <context attribute="4" lineEditContext="0">
-    <item name="CharDetect" attribute="4" context="0" char="'"/>
-  </context>
-</contexts>
-<itemDatas>
-  <itemData name="Normal Text" defStyleNum="dsNormal"/>
-  <itemData name="Keyword" defStyleNum="dsKeyword"/>
-  <itemData name="Identifier" defStyleNum="dsOthers"/>
-  <itemData name="Types" defStyleNum="dsDataType"/>
-  <itemData name="String" defStyleNum="dsString"/>
-  <itemData name="Comment" defStyleNum="dsComment"/>
-</itemDatas>
 </language>
 
 <language name="Pascal" extensions="*.pp;*.pas;*.inc" mimetype="text/x-pascal-src" casesensitive="0">
@@ -873,28 +848,6 @@
  <type> File </type>
  <type> Text </type>
 </types>
-<contexts>
-  <context attribute="0" lineEndContext="0">
-    <item name="keyword" attribute="1" context="0"/>
-    <item name="dataType" attribute="2" context="0"/>
-    <item name="Float" attribute="4" context="0"/>
-    <item name="Int" attribute="3" context="0"/>
-    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
-    <item name="CharDetect" attribute="5" context="1" char="'"/>
-  </context>
-  <context attribute="5" lineEndContext="0"/>
-  <context attribute="4" lineEditContext="0">
-    <item name="CharDetect" attribute="4" context="0" char="'"/>
-  </context>
-</contexts>
-<itemDatas>
-  <itemData name="Normal Text" defStyleNum="dsNormal"/>
-  <itemData name="Keyword" defStyleNum="dsKeyword"/>
-  <itemData name="Identifier" defStyleNum="dsOthers"/>
-  <itemData name="Types" defStyleNum="dsDataType"/>
-  <itemData name="String" defStyleNum="dsString"/>
-  <itemData name="Comment" defStyleNum="dsComment"/>
-</itemDatas>
 </language>
 
 <language name="Povray" extensions="*.pov;*.inc" mimetype="text/x-povray" casesensitive="1">
@@ -1229,28 +1182,6 @@
   <keyword> vcross </keyword>
   <keyword> vdot </keyword>
 </keywords>
-<contexts>
-  <context attribute="0" lineEndContext="0">
-    <item name="keyword" attribute="1" context="0"/>
-    <item name="dataType" attribute="2" context="0"/>
-    <item name="Float" attribute="4" context="0"/>
-    <item name="Int" attribute="3" context="0"/>
-    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
-    <item name="CharDetect" attribute="5" context="1" char="'"/>
-  </context>
-  <context attribute="5" lineEndContext="0"/>
-  <context attribute="4" lineEditContext="0">
-    <item name="CharDetect" attribute="4" context="0" char="'"/>
-  </context>
-</contexts>
-<itemDatas>
-  <itemData name="Normal Text" defStyleNum="dsNormal"/>
-  <itemData name="Keyword" defStyleNum="dsKeyword"/>
-  <itemData name="Identifier" defStyleNum="dsOthers"/>
-  <itemData name="Types" defStyleNum="dsDataType"/>
-  <itemData name="String" defStyleNum="dsString"/>
-  <itemData name="Comment" defStyleNum="dsComment"/>
-</itemDatas>
 </language>
 
 <language name="KBasic" extensions="*.kbasic" mimetype="text/x-kbasic-src" casesensitive="1">
