@@ -293,34 +293,6 @@ void KateViewManager::activateView( uint documentNumber )
 
     Kate::Document *d = (Kate::Document *)m_docManager->documentWithID(documentNumber);
     createView (false, KURL(), 0L, d );
-
-    // the document exist, but had no views, so we try restoring the view
-    // session config
-    // FIXME anders: this is clumsy and probably slow, so make something nicer.
-   /* KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
-    int n = m_viewSpaceList.findRef( activeViewSpace() );
-    if ( n > -1 )
-    {
-      QString gr = QString("viewspace%1").arg( n );
-      if ( scfg->hasGroup( gr ) )
-      {
-        scfg->setGroup ( gr );
-        int i( 0 );
-        QString fg = QString("file%1").arg( i );
-        while ( scfg->hasKey( fg ) ) {
-          if ( scfg->readEntry( fg ) == d->url().prettyURL() )
-            break;
-          i++;
-          fg = QString("file%1").arg( i );
-        }
-        if ( scfg->hasGroup( gr + ":" + fg ) )
-        {
-          scfg->setGroup( gr + ":" + fg );
-          activeView()->readSessionConfig( scfg );
-        }
-      }
-    }*/
-
   }
 }
 
