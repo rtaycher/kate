@@ -1,4 +1,9 @@
-INCLUDES    = $(all_includes)
+# Allow build from within kdebase or not.
+INCLUDES    = \
+	-I$(top_srcdir)/kate/app \
+	-I$(kde_includes)/kate \
+	$(all_includes)
+
 METASOURCES = AUTO
 
 # Install this plugin in the KDE modules directory

@@ -27,13 +27,14 @@
 #include <dcopclient.h>
 #include <qtimer.h>
 
-#include <kate/application.h>
-#include <kate/documentmanager.h>
-#include <kate/document.h>
-#include <kate/mainwindow.h>
-#include <kate/plugin.h>
-#include <kate/view.h>
-#include <kate/viewmanager.h>
+// $(kde_includes)/kate
+#include <application.h>
+#include <documentmanager.h>
+#include <document.h>
+#include <mainwindow.h>
+#include <plugin.h>
+#include <view.h>
+#include <viewmanager.h>
 
 class PluginView : public KXMLGUIClient
 {

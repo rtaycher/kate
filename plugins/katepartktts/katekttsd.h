@@ -17,8 +17,9 @@
 #ifndef _KATEKTTSD_H_
 #define _KATEKTTSD_H_
 
-#include <kate/mainwindow.h>
-#include <kate/plugin.h>
+// $(kde_includes)/kate
+#include <mainwindow.h>
+#include <plugin.h>
 
 #include <klibloader.h>
 #include <klocale.h>
