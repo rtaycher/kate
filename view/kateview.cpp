@@ -3065,10 +3065,10 @@ void KateView::toggleBookmark ()
 {
   TextLine::Ptr line = myDoc->getTextLine (currentLine());
 
-  if (line->mark() == 1)
-    line->setMark(0);
+  if (line->mark()&KateDocument::Bookmark)
+    line->delMark(KateDocument::Bookmark);
   else
-    line->setMark(1);
+    line->addMark(KateDocument::Bookmark);
 
   myDoc->tagLines (currentLine(), currentLine());
   myDoc->updateViews();
@@ -3079,9 +3079,9 @@ void KateView::clearBookmarks()
   QList<KateMark> list = myDoc->marks();
   for (int i=0; (uint) i < list.count(); i++)
   {
-    if (list.at(i)->type == 1)
+    if (list.at(i)->type&KateDocument::Bookmark)
     {
-      myDoc->getTextLine(list.at(i)->line)->setMark(0);
+      myDoc->getTextLine(list.at(i)->line)->delMark(KateDocument::Bookmark);
       myDoc->tagLines(list.at(i)->line, list.at(i)->line);
     }
   }
@@ -3099,7 +3099,7 @@ void KateView::bookmarkMenuAboutToShow()
   list = myDoc->marks();
   for (int i=0; (uint) i < list.count(); i++)
   {
-    if (list.at(i)->type == 1)
+    if (list.at(i)->type&KateDocument::Bookmark)
     {
       QString bText = textLine(list.at(i)->line);
       bText.truncate(32);
@@ -3120,7 +3120,7 @@ KateBrowserExtension::KateBrowserExtension( KateDocument *doc, KateView *view )
   m_doc = doc;
   m_view = view;
   connect( m_doc, SIGNAL( selectionChanged() ), this, SLOT( slotSelectionChanged() ) );
-  emit enableAction( "print", true ); 
+  emit enableAction( "print", true );
 }
 
 void KateBrowserExtension::copy()
@@ -3130,7 +3130,7 @@ void KateBrowserExtension::copy()
 
 void KateBrowserExtension::print()
 {
-  m_view->printDlg ();  
+  m_view->printDlg ();
 }
 
 void KateBrowserExtension::slotSelectionChanged()
@@ -3290,7 +3290,7 @@ void KateIconBorder::paintLine(int i)
     if (!line)
         return;
 
-    if (line->mark() == 1)
+    if (line->mark()&KateDocument::Bookmark)
         p.drawPixmap(2, y, QPixmap(bookmark_xpm));      /*
     if (line && (line->breakpointId() != -1)) {
         if (!line->breakpointEnabled())
@@ -3341,10 +3341,10 @@ void KateIconBorder::mousePressEvent(QMouseEvent* e)
             break;
         else
         {
-            if (line->mark() == 1)
-              line->setMark (0);
+            if (line->mark()&KateDocument::Bookmark)
+              line->delMark (KateDocument::Bookmark);
             else
-              line->setMark (1);
+              line->addMark (KateDocument::Bookmark);
 
             doc->tagLines(cursorOnLine, cursorOnLine);
             doc->updateViews();

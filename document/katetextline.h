@@ -325,8 +325,9 @@ public:
     */
     void unmarkFound();
 
-    void setMark ( uint m );
-
+    void clearMark () { myMark = 0; };
+    void addMark ( uint m );
+    void delMark ( uint m );
     uint mark() { return myMark; };
 
   protected:

@@ -457,6 +457,12 @@ class KateDocument : public KateDocumentIface, virtual public KateDocumentDCOPIf
     void nameChanged (KateDocument *doc);
 
   public:
+    enum marks
+    {
+    Bookmark = 1,
+    Breakpoint = 2
+    };
+
     QList<KateMark> marks ();
 
   // for the DCOP interface

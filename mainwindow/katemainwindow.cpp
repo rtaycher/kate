@@ -559,7 +559,7 @@ void KateMainWindow::bookmarkMenuAboutToShow()
   list = viewManager->activeView()->doc()->marks();
   for (int i=0; (uint) i < list.count(); i++)
   {
-    if (list.at(i)->type == 1)
+    if (list.at(i)->type&KateDocument::Bookmark)
     {
       QString bText = viewManager->activeView()->textLine(list.at(i)->line);
       bText.truncate(32);

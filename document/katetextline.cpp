@@ -335,9 +335,14 @@ void TextLine::unmarkFound() {
   for (z = 0; z < len; z++) attribs[z] &= ~taFound;
 }
 
-void TextLine::setMark (uint m)
+void TextLine::addMark (uint m)
 {
-  myMark = m;
+  myMark = myMark | m;
+}
+
+void TextLine::delMark (uint m)
+{
+  myMark = myMark & ~m;
 }
 
 
