@@ -126,7 +126,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   QWhatsThis::add( cb_singleInstance, i18n(
         "If this is unchecked, Kate will only use one UNIX process. If you try running it again, the current "
         "process will get the focus, and open any files you requested to be opened. If it is checked, each time "
-        "you start Kate, a new unix process will be started.") );
+        "you start Kate, a new UNIX process will be started.") );
   
   // show full path in title
   config->setGroup("General");

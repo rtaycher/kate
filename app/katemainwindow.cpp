@@ -697,10 +697,10 @@ void KateMainWindow::slotMail()
     if ( doc->url().isEmpty() ) {
       // unsaved document. back out unless it gets saved
       int r = KMessageBox::questionYesNo( this,
-              i18n("<p>The current document has not beed saved, and can "
-              "not be atthatched to a email message."
+              i18n("<p>The current document has not been saved, and cannot "
+              "be attached to an email message."
               "<p>Do you want to save it and proceed?"),
-              i18n("Can not send unsaved file") );
+              i18n("Cannot Send Unsaved File") );
       if ( r == KMessageBox::Yes ) {
         Kate::View *v = (Kate::View*)doc->views().first();
         int sr = v->saveAs();
@@ -722,9 +722,9 @@ void KateMainWindow::slotMail()
       // warn that document is modified and offer to save it before preceeding.
       int r = KMessageBox::warningYesNoCancel( this,
                 QString( i18n("<p>The current file:<br><strong>%1</strong><br>has been "
-                "modified. Modifications will not be available in the atthatchment."
+                "modified. Modifications will not be available in the attachment."
                 "<p>Do you want to save it before sending it?") ).arg(doc->url().prettyURL()),
-                i18n("Save before sending?") );
+                i18n("Save Before Sending?") );
       switch ( r ) {
         case KMessageBox::Cancel:
           continue;

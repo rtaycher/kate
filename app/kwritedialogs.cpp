@@ -6,7 +6,7 @@
 
 
 KWriteEditorChooser::KWriteEditorChooser(QWidget *):
-	KDialogBase(KDialogBase::Plain,i18n("Choose a Editor Component"),KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Cancel) 
+	KDialogBase(KDialogBase::Plain,i18n("Choose an Editor Component"),KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Cancel) 
 {
 	(new QVBoxLayout(plainPage()))->setAutoAdd(true);
 	m_chooser=new KTextEditor::EditorChooser(plainPage(),"Editor Chooser");

@@ -149,11 +149,11 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow, KateViewManager 
   // whatsthis help
   QWhatsThis::add( cmbPath,
        i18n("<p>Here you can enter a path for a directory to display."
-            "<p>To go to a directory perviously entered press the arrow on the right end and choose one."
-            "<p>The entry has directory completion. Rightclick to choose how completion should behave.") );
+            "<p>To go to a directory previously entered, press the arrow on the right end and choose one."
+            "<p>The entry has directory completion. Right-click to choose how completion should behave.") );
   QWhatsThis::add( filter,
         i18n("<p>Here you can enter a name filter to limit which files are displayed."
-             "<p>To clear the filter, toggle off the filter button off the left."
+             "<p>To clear the filter, toggle off the filter button to the left."
              "<p>To reapply the last filter used, toggle on the filter button." ) );
   QWhatsThis::add( btnFilter,
         i18n("<p>This button clears the name filter when toggled off, or reapplies the "
@@ -467,7 +467,7 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
   acSel->setSelectedLabel( i18n("S&elected Actions") );
   lo->addWidget( gbToolbar );
   // Sync
-  QGroupBox *gbSync = new QGroupBox( 1, Qt::Horizontal, i18n("Auto Syncronization"), this );
+  QGroupBox *gbSync = new QGroupBox( 1, Qt::Horizontal, i18n("Auto Synchronization"), this );
   cbSyncActive = new QCheckBox( i18n("When a docu&ment becomes active"), gbSync );
   cbSyncOpen = new QCheckBox( i18n("When a document is &opened"), gbSync );
   cbSyncShow = new QCheckBox( i18n("When the File Selector becomes visible"), gbSync );
@@ -517,19 +517,19 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
   QString synwt( i18n(
         "<p>These options allows you to have the File Selector automatically change "
         "location to the directory of the active document on certain events."
-        "<p>Auto syncronization is <em>lazy</em>, meaning it will not take effect "
-        "untill the file selector is visible."
-        "<p>None of theese are enabled by default, but you can allways sync the location "
+        "<p>Auto synchronization is <em>lazy</em>, meaning it will not take effect "
+        "until the file selector is visible."
+        "<p>None of these are enabled by default, but you can always sync the location "
         "by pressing the sync button in the toolbar.") );
   QWhatsThis::add( gbSync, synwt );
   QWhatsThis::add( cbSesLocation, i18n(
         "<p>If this option is enabled (default), the location will be restored when "
-        "you start kate.<p><strong>Note</strong> that if the session is handled by the KDE "
-        "session manager, the location is allways resotred.") );
+        "you start Kate.<p><strong>Note</strong> that if the session is handled by the KDE "
+        "session manager, the location is always restored.") );
   QWhatsThis::add( cbSesFilter, i18n(
         "<p>If this option is enabled (default), the current filter will be restored when "
-        "you start kate.<p><strong>Note</strong> that if the session is handled by the KDE "
-        "session manager, the filter is allways resotred."
+        "you start Kate.<p><strong>Note</strong> that if the session is handled by the KDE "
+        "session manager, the filter is always restored."
         "<p><strong>Note</strong> that some of the autosync settings may override the "
         "restored location if on.") );
 
