@@ -107,44 +107,6 @@ bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, 
 
   m_viewList.append (view);
 
-  if (newDoc)
-  {
-    if (!url.isEmpty())
-    {
-      if (view->getDoc()->openURL ( url ))
-        ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL ( view->getDoc()->url() );
-
-      QString name = url.filename();
-
-      // anders avoid two views w/ same caption
-      QPtrListIterator<Kate::View> it (m_viewList);
-
-      int hassamename = 0;
-      for (; it.current(); ++it)
-      {
-        if ( it.current()->getDoc()->url().filename().compare( name ) == 0 )
-          hassamename++;
-      }
-
-      if (hassamename > 1)
-        name = QString(name+"<%1>").arg(hassamename);
-
-      view->getDoc()->setDocName (name);
-    }
-    else
-    {
-      view->getDoc()->setDocName (i18n("Untitled %1").arg(doc->documentNumber()));
-    }
-  }
-  else
-  {
-    // when reopening files from an empty session, this is needed to
-    // get a name for the automatic document. FIXME why, niceify
-    if ( doc->docName().isEmpty() )
-      doc->setDocName( i18n("Untitled %1").arg( doc->documentNumber() ) );
-    view->getDoc()->setDocName (doc->docName ());
-  }
-
   // disable settings dialog action
   view->actionCollection()->remove (view->actionCollection()->action( "set_confdlg" ));
 
