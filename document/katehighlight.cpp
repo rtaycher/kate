@@ -198,6 +198,7 @@ void HlKeyword::addWord(const QString &word)
   words.append(word);
   Dict.insert(word,"dummy");
 }
+
 void HlKeyword::addList(const QStringList& list)
 {
  if (_caseSensitive)
@@ -693,29 +694,35 @@ int Highlight::doHighlight(int ctxNum, TextLine *textLine)
   s1=textLine->firstNonSpace();
 
   uint z = 0;
+  bool found = false;
   while (z < textLine->length())
   {
-    for (item = context->items.first(); item != 0L; item = context->items.next()) {
-      if (item->startEnable(lastChar)) {
+    found = false;
+
+    for (item = context->items.first(); item != 0L; item = context->items.next())
+    {
+      if (item->startEnable(lastChar))
+      {
         s2 = item->checkHgl(s1,s1==str);
-        if (s2 > s1) {
-          if (item->endEnable(*s2)) { //jowenn: Here I've to change a lot
+        if (s2 > s1)
+        {
             textLine->setAttribs(item->attr,s1 - str,s2 - str);
             ctxNum = item->ctx;
             context = contextList[ctxNum];
             s1 = s2 - 1;
-            goto found;
-          }
+            found = true;
+            break;
         }
       }
     }
-    // nothing found: set attribute of one char
-    textLine->setAttribs(context->attr,s1 - str,s1 - str + 1);
 
-    found:
-      lastChar = *s1;
-      s1++;
-      z++;
+    // nothing found: set attribute of one char
+    if (!found)
+      textLine->setAttribs(context->attr,s1 - str,s1 - str + 1);
+
+    lastChar = *s1;
+    s1++;
+    z++;
   }
 
   //set "end of line"-properties

@@ -50,7 +50,6 @@ class HlItem {
     HlItem(int attribute, int context);
     virtual ~HlItem();
     virtual bool startEnable(QChar) {return true;}
-    virtual bool endEnable(QChar) {return true;}
     virtual const QChar *checkHgl(const QChar *,bool) = 0;
     QList<HlItem> *subItems;
     int attr;
@@ -60,8 +59,7 @@ class HlItem {
 class HlItemWw : public HlItem {
   public:
     HlItemWw(int attribute, int context);
-    virtual bool startEnable(QChar c) {return !isInWord(c);}
-    virtual bool endEnable(QChar c) {return !isInWord(c);}
+    virtual bool startEnable(QChar c) {return !isInWord(c);};
 };
 
 
