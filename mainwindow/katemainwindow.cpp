@@ -144,13 +144,12 @@ void KateMainWindow::setupMainWindow ()
   fileselector->dirOperator()->setView(KFile::Simple);
   fileselectorDock->setWidget (fileselector);
 
-#ifdef _KDOCKWIDGET_2_2_
-//  disabled because it will be only available in KDE >= 2.2
-  filelistDock->setDockWindowType (NET::Tool);
+  // disabled because it will be only available in KDE >= 2.2
+  /*filelistDock->setDockWindowType (NET::Tool);
   fileselectorDock->setDockWindowType (NET::Tool);
   filelistDock->setDockWindowTransient (true);
-  fileselectorDock->setDockWindowTransient (true);
-#endif
+  fileselectorDock->setDockWindowTransient (true);*/
+
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileViewItem*)),this,SLOT(fileSelected(const KFileViewItem*)));
 
   mainDock->setEnableDocking ( KDockWidget::DockNone );
