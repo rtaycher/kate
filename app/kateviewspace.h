@@ -46,7 +46,8 @@ class KateVSStatusBar : public KStatusBar
 
    public slots:
       void setStatus( int r, int c, int ovr, bool block, int mod, const QString &msg );
-      void modOnHd( bool );
+      void updateMod( bool );
+
    protected:
       virtual bool eventFilter (QObject*,QEvent *);
       virtual void showMenu ();
@@ -57,18 +58,19 @@ class KateVSStatusBar : public KStatusBar
       QLabel* m_insertModeLabel;
       QLabel* m_selectModeLabel;
       KSqueezedTextLabel* m_fileNameLabel;
-      QLabel* m_iconLabel;
-      QPixmap m_modIcon, m_noIcon;
+      QPixmap m_modPm, m_modDiscPm, m_modmodPm, m_noPm;
+      class KateViewSpace *m_viewSpace;
 };
 
 class KateViewSpace : public QVBox
 {
   friend class KateViewManager;
+  friend class KateVSStatusBar;
 
   Q_OBJECT
 
   public:
-    KateViewSpace(QWidget* parent=0, const char* name=0);
+    KateViewSpace(KateViewManager *, QWidget* parent=0, const char* name=0);
     ~KateViewSpace();
     bool isActiveSpace();
     void setActive(bool b, bool showled=false);
@@ -98,13 +100,15 @@ class KateViewSpace : public QVBox
     QPtrList<Kate::View> mViewList;
     int mViewCount;
     KVSSBSep *sep;
+    KateViewManager *m_viewManager;
 
   private slots:
     void slotStatusChanged (Kate::View *view, int r, int c, int ovr, bool block, int mod, const QString &msg);
-    void slotModOnHd(Kate::Document *, bool, unsigned char);
 
   public slots:
     void polish();
+    void modifiedOnDisc(Kate::Document *, bool, unsigned char);
 };
 
 #endif
+// kate: space-indent on; indent-width 2; replace-tabs on;

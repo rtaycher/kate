@@ -1,3 +1,4 @@
+
 /* This file is part of the KDE project
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
@@ -76,7 +77,7 @@ KateViewManager::KateViewManager (QWidget *parent, KateDocManager *m_docManager,
   // sizemanagement
   m_grid = new QGridLayout( this, 1, 1 );
 
-  KateViewSpace* vs = new KateViewSpace( this );
+  KateViewSpace* vs = new KateViewSpace( this, this );
   connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, const QString&)), vs, SLOT(slotStatusChanged(Kate::View *, int, int, int, bool, int, const QString&)));
   vs->setActive( true );
   m_grid->addWidget( vs, 0, 0);
@@ -117,6 +118,8 @@ bool KateViewManager::createView ( Kate::Document *doc )
 
   activeViewSpace()->addView( view );
   activateView( view );
+  connect( doc, SIGNAL(modifiedOnDisc(Kate::Document *, bool, unsigned char)),
+      activeViewSpace(), SLOT(modifiedOnDisc(Kate::Document *, bool, unsigned char)) );
 
   return true;
 }
@@ -559,7 +562,7 @@ void KateViewManager::splitViewSpace( KateViewSpace* vs,
        ((KateSplitter*)s->parentWidget())->moveToFirst( s );
   }
   vs->reparent( s, 0, QPoint(), true );
-  KateViewSpace* vsNew = new KateViewSpace( s );
+  KateViewSpace* vsNew = new KateViewSpace( this, s );
 
   if (atTop)
     s->moveToFirst( vsNew );
@@ -867,7 +870,7 @@ void KateViewManager::restoreSplitter( KConfig* config, const QString &group, QW
     // for a viewspace, create it and open all documents therein.
     if ( (*it).startsWith("ViewSpace") )
     {
-     KateViewSpace* vs = new KateViewSpace( s );
+     KateViewSpace* vs = new KateViewSpace( this, s );
 
      connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, const QString &)), vs, SLOT(slotStatusChanged(Kate::View *, int, int, int, bool, int, const QString &)));
 
@@ -895,7 +898,7 @@ void KateViewManager::restoreSplitter( KConfig* config, const QString &group, QW
 }
 
 KateMainWindow *KateViewManager::mainWindow() {
-	return m_mainWindow;
+        return m_mainWindow;
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

@@ -36,6 +36,7 @@ class KateViewManager : public QWidget
   Q_OBJECT
 
   friend class KateViewSpace;
+  friend class KateVSStatusBar;
 
   public:
     KateViewManager (QWidget *parent=0, KateDocManager *docManager=0,KateMainWindow* mainWindow=0);

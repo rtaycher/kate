@@ -81,6 +81,7 @@ class KateFileList : public KListBox
     KateDocManager *docManager;
     KateViewManager *viewManager;
     int m_sort;
+    bool notify;
 
   private slots:
     void slotDocumentCreated (Kate::Document *doc);

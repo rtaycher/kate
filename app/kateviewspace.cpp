@@ -76,9 +76,10 @@ protected:
 //END KVSSBSep
 
 //BEGIN KateViewSpace
-
-KateViewSpace::KateViewSpace(QWidget* parent, const char* name)
-  : QVBox(parent, name)
+KateViewSpace::KateViewSpace( KateViewManager *viewManager,
+                              QWidget* parent, const char* name )
+  : QVBox(parent, name),
+    m_viewManager( viewManager )
 {
   mViewList.setAutoDelete(false);
 
@@ -138,9 +139,6 @@ bool KateViewSpace::showView(Kate::View* v)
   for( ; it.current(); --it ) {
     if (it.current()->getDoc() == d) {
       Kate::View* kv = it.current();
-      disconnect( 0, 0, this, SLOT(slotModOnHd(Kate::Document *, bool, unsigned char)) );
-      connect( kv->getDoc(), SIGNAL(modifiedOnDisc(Kate::Document *, bool, unsigned char)),
-               this, SLOT(slotModOnHd(Kate::Document *, bool, unsigned char)) );
       mViewList.removeRef( kv );
       mViewList.append( kv );
       stack->raiseWidget( kv );
@@ -157,9 +155,6 @@ bool KateViewSpace::showView(uint documentNumber)
   for( ; it.current(); --it ) {
     if (((Kate::Document*)it.current()->getDoc())->documentNumber() == documentNumber) {
       Kate::View* kv = it.current();
-      disconnect( 0, 0, this, SLOT(slotModOnHd(Kate::Document *, bool, unsigned char)) );
-      connect( kv->getDoc(), SIGNAL(modifiedOnDisc(Kate::Document *, bool, unsigned char)),
-               this, SLOT(slotModOnHd(Kate::Document *, bool, unsigned char)) );
       mViewList.removeRef( kv );
       mViewList.append( kv );
       stack->raiseWidget( kv );
@@ -197,8 +192,6 @@ void KateViewSpace::setActive( bool b, bool )
   mStatusBar->setPalette( pal );
   mStatusBar->update();
   sep->update();
-  // enable the painting of the icon and repaint it ;-)
-  // mStatusBar->showActiveViewIndicator( showled );
 }
 
 bool KateViewSpace::event( QEvent *e )
@@ -249,6 +242,11 @@ void KateViewSpace::saveConfig ( KConfig* config, int myIndex )
   }
 }
 
+void KateViewSpace::modifiedOnDisc(Kate::Document *, bool, unsigned char)
+{
+  mStatusBar->updateMod( currentView()->getDoc()->isModified() );
+}
+
 void KateViewSpace::restoreConfig ( KateViewManager *viewMan, KConfig* config, const QString &group )
 {
   config->setGroup (group);
@@ -277,55 +275,45 @@ void KateViewSpace::restoreConfig ( KateViewManager *viewMan, KConfig* config, c
   if (mViewList.isEmpty())
     viewMan->createView (viewMan->m_docManager->document(0));
 }
-
-void KateViewSpace::slotModOnHd( Kate::Document*, bool s, unsigned char )
-{
-  mStatusBar->modOnHd( s );
-}
 //END KateViewSpace
 
 //BEGIN KateVSStatusBar
-///////////////////////////////////////////////////////////
-// KateVSStatusBar implementation
-///////////////////////////////////////////////////////////
-
 KateVSStatusBar::KateVSStatusBar ( KateViewSpace *parent, const char *name )
-  : KStatusBar( parent, name )
+  : KStatusBar( parent, name ),
+    m_viewSpace( parent )
 {
-   m_lineColLabel = new QLabel( i18n(" Line: 1 Col: 0 "), this );
-   addWidget( m_lineColLabel, 0, false );
-   m_lineColLabel->setAlignment( Qt::AlignCenter );
-   m_lineColLabel->installEventFilter( this );
+  m_lineColLabel = new QLabel( i18n(" Line: 1 Col: 0 "), this );
+  addWidget( m_lineColLabel, 0, false );
+  m_lineColLabel->setAlignment( Qt::AlignCenter );
+  m_lineColLabel->installEventFilter( this );
 
-   m_modifiedLabel = new QLabel( QString("   "), this );
-   addWidget( m_modifiedLabel, 0, false );
-   m_modifiedLabel->setAlignment( Qt::AlignCenter );
-   m_modifiedLabel->installEventFilter( this );
+  m_modifiedLabel = new QLabel( QString("   "), this );
+  addWidget( m_modifiedLabel, 0, false );
+  m_modifiedLabel->setAlignment( Qt::AlignCenter );
+  m_modifiedLabel->installEventFilter( this );
 
-   m_insertModeLabel = new QLabel( i18n(" INS "), this );
-   addWidget( m_insertModeLabel, 0, false );
-   m_insertModeLabel->setAlignment( Qt::AlignCenter );
-   m_insertModeLabel->installEventFilter( this );
+  m_insertModeLabel = new QLabel( i18n(" INS "), this );
+  addWidget( m_insertModeLabel, 0, false );
+  m_insertModeLabel->setAlignment( Qt::AlignCenter );
+  m_insertModeLabel->installEventFilter( this );
 
-   m_selectModeLabel = new QLabel( i18n(" NORM "), this );
-   addWidget( m_selectModeLabel, 0, false );
-   m_selectModeLabel->setAlignment( Qt::AlignCenter );
-   m_selectModeLabel->installEventFilter( this );
+  m_selectModeLabel = new QLabel( i18n(" NORM "), this );
+  addWidget( m_selectModeLabel, 0, false );
+  m_selectModeLabel->setAlignment( Qt::AlignCenter );
+  m_selectModeLabel->installEventFilter( this );
 
-   m_fileNameLabel=new KSqueezedTextLabel( this );
-   addWidget( m_fileNameLabel, 1, true );
-   m_fileNameLabel->setMinimumSize( 0, 0 );
-   m_fileNameLabel->setSizePolicy(QSizePolicy( QSizePolicy::Ignored, QSizePolicy::Fixed ));
-   m_fileNameLabel->setAlignment( /*Qt::AlignRight*/Qt::AlignLeft );
-   m_fileNameLabel->installEventFilter( this );
+  m_fileNameLabel=new KSqueezedTextLabel( this );
+  addWidget( m_fileNameLabel, 1, true );
+  m_fileNameLabel->setMinimumSize( 0, 0 );
+  m_fileNameLabel->setSizePolicy(QSizePolicy( QSizePolicy::Ignored, QSizePolicy::Fixed ));
+  m_fileNameLabel->setAlignment( /*Qt::AlignRight*/Qt::AlignLeft );
+  m_fileNameLabel->installEventFilter( this );
 
-   m_iconLabel = new QLabel( this );
-   m_iconLabel->setFixedWidth( 18 );
-   addWidget( m_iconLabel, 0, true );
-
-   installEventFilter( this );
-   m_modIcon = SmallIcon("messagebox_warning");
-   m_noIcon = SmallIcon("null");
+  installEventFilter( this );
+  m_modPm = SmallIcon("modified");
+  m_modDiscPm = SmallIcon("modonhd");
+  m_modmodPm = SmallIcon("modmod");
+  m_noPm = SmallIcon("null");
 }
 
 KateVSStatusBar::~KateVSStatusBar ()
@@ -345,23 +333,27 @@ void KateVSStatusBar::setStatus( int r, int c, int ovr, bool block, int mod, con
   else if (ovr == 2)
     m_insertModeLabel->setText( i18n(" INS ") );
 
-  if (mod == 1)
-    m_modifiedLabel->setText( QString(" * ") );
-  else
-    m_modifiedLabel->setText( QString("   ") );
+  updateMod( mod );
 
   m_selectModeLabel->setText( block ? i18n(" BLK ") : i18n(" NORM ") );
 
   m_fileNameLabel->setText( msg );
 }
 
-void KateVSStatusBar::modOnHd( bool b )
+void KateVSStatusBar::updateMod( bool mod )
 {
-  kdDebug()<<"GOT SIGNAL!! #####    "<<b<<endl;
-  if ( b )
-    m_iconLabel->setPixmap( m_modIcon );
-  else
-    m_iconLabel->setPixmap( m_noIcon );
+  const KateDocumentInfo *info = m_viewSpace->m_viewManager->m_docManager->
+      documentInfo ( m_viewSpace->currentView()->getDoc() );
+
+  m_modifiedLabel->setPixmap(
+      mod ?
+        info && info->modifiedOnDisc ?
+          m_modmodPm :
+          m_modPm :
+        info && info->modifiedOnDisc ?
+          m_modDiscPm :
+      m_noPm
+      );
 }
 
 void KateVSStatusBar::showMenu()
@@ -385,5 +377,5 @@ bool KateVSStatusBar::eventFilter(QObject*,QEvent *e)
    }
    return false;
 }
-
 //END KateVSStatusBar
+// kate: space-indent on; indent-width 2; replace-tabs on;

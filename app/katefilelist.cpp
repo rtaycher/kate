@@ -35,11 +35,15 @@
 #include <klocale.h>
 #include <kglobalsettings.h>
 #include <kpassivepopup.h>
-#include <knotifyclient.h>
+// #include <knotifyclient.h>
 #include <kdebug.h>
+#include <kapplication.h>
 
-KateFileList::KateFileList (KateDocManager *_docManager, KateViewManager *_viewManager, QWidget * parent, const char * name ):  KListBox (parent, name)
-, m_sort( KateFileList::sortByName )
+KateFileList::KateFileList (KateDocManager *_docManager,
+                            KateViewManager *_viewManager,
+                            QWidget * parent, const char * name )
+    :  KListBox (parent, name)
+    , m_sort( KateFileList::sortByName )
 {
   setFocusPolicy ((QWidget::FocusPolicy)0);
 
@@ -132,14 +136,16 @@ void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool, unsigned char 
     else if ( r == 2 )
       a = i18n("was created on disk by another proecss.");
     else if ( r == 3 )
-      a = i18n("was deleted from disk");
-/*    KPassivePopup::message( i18n("Warning"),
-        i18n("The document<br><code>%1</code><br>%2").arg( doc->url().prettyURL() ).arg( a ) ,
-        w, topLevelWidget() );*/
+      a = i18n("was deleted from disk by another process");
+
 //     KNotifyClient::instance();
-    int n = KNotifyClient::event( topLevelWidget()->winId(), "file_modified_on_disc",
-          i18n("The document<br><code>%1</code><br>%2").arg( doc->url().prettyURL() ).arg( a ) );
-    kdDebug()<<"The BASTARD returned "<<n<<endl;
+//     int n = KNotifyClient::event( "file_modified_on_disc",
+//           i18n("The document<br><code>%1</code><br>%2").arg( doc->url().prettyURL() ).arg( a ) );
+//     kdDebug()<<"The BASTARD returned "<<n<<endl;
+    if ( ((KateMainWindow*)topLevelWidget())->notifyMod() )
+      KPassivePopup::message( i18n("WARNING"),
+            i18n("The document<br><code>%1</code><br>%2")
+            .arg( doc->url().prettyURL() ).arg( a ), w, topLevelWidget() );
   }
 }
 
