@@ -65,7 +65,7 @@
                         <cstring>addAttribute</cstring>
                     </property>
                     <property name="text">
-                        <string>New item</string>
+                        <string>New Item</string>
                     </property>
                 </widget>
             </vbox>
