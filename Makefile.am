@@ -1,4 +1,4 @@
-SUBDIRS = document view part app console data filelist fileselector kwrite mainwindow pics project sidebar interfaces pluginmanager plugins
+SUBDIRS = document view part app console data filelist fileselector mainwindow pics project sidebar interfaces pluginmanager plugins
 EXTRA_DIST = piper AUTHORS COPYING ChangeLog NEWS README TODO
 
 bin_PROGRAMS = kant kwrite
