@@ -49,8 +49,8 @@ KateDockContainer::KateDockContainer(QWidget *parent, class KateMainWindow *win,
 	
 	l->setAutoAdd(false);
 
-	m_tb=new KMultiTabBar(this,((position==KDockWidget::DockTop) || (position==KDockWidget::DockBottom))?
-		KMultiTabBar::Horizontal:KMultiTabBar::Vertical);
+	m_tb=new KMultiTabBar(((position==KDockWidget::DockTop) || (position==KDockWidget::DockBottom))?
+		KMultiTabBar::Horizontal:KMultiTabBar::Vertical,this);
 	m_tb->showActiveTabTexts(true);
 	m_tb->setPosition((position==KDockWidget::DockLeft)?KMultiTabBar::Left:
 		(position==KDockWidget::DockBottom)?KMultiTabBar::Bottom:
