@@ -549,13 +549,6 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
     */
     void newDoc();
     /**
-      This will present an open file dialog and open the file specified by
-      the user, if possible. The user will be given a chance to save the
-      current file if it has been modified. This starts the automatic
-      highlight selection.
-    */
-    void open();
-    /**
       Saves the file if necessary under the current file name. If the current file
       name is Untitled, as it is after a call to newFile(), this routing will
       call saveAs().

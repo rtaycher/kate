@@ -2003,18 +2003,6 @@ void KateView::newDoc() {
   if (canDiscard()) clear();
 }
 
-void KateView::open() {
-  KURL url;
-
-  if (!canDiscard()) return;
-//  if (myDoc->hasFileName()) s = QFileInfo(myDoc->fileName()).dirPath();
-//    else s = QDir::currentDirPath();
-
-  url = KFileDialog::getOpenURL(myDoc->url().url(), QString::null, this);
-  if (url.isEmpty()) return;
-  myDoc->openURL(url);
-}
-
 KateView::fileResult KateView::save() {
   int query = KMessageBox::Yes;
   if (isModified()) {
@@ -3405,5 +3393,6 @@ void KateIconBorder::mousePressEvent(QMouseEvent* e)
         break;
     }
 }
+
 
 

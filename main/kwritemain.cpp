@@ -22,6 +22,7 @@
 #include <qvbox.h>
 
 #include <dcopclient.h>
+#include <kfiledialog.h>
 #include <kiconloader.h>
 #include <kaboutdata.h>
 #include <kstdaction.h>
@@ -192,15 +193,19 @@ void TopLevel::slotNew()
 
 void TopLevel::slotOpen()
 {
+  KURL url = KFileDialog::getOpenURL(QString::null, QString::null, this, i18n ("Open File"));
+
+  if (url.isEmpty()) return;
+
   if (kateView->isModified() || !kateView->doc()->url().isEmpty())
   {
     TopLevel *t = new TopLevel();
     t->readConfig();
     t->init();
-    t->kateView->open();
+    t->kateView->doc()->openURL(url);
   }
   else
-    kateView->open();
+    kateView->doc()->openURL(url);
 }
 
 void TopLevel::newView()
