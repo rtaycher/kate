@@ -1083,6 +1083,14 @@
       <item name="CharDetect" attribute="4" context="0" char="'"/>
     </context>
   </contexts>
+  <itemDatas>
+    <itemData name="Normal Text" defStyleNum="dsNormal"/>
+    <itemData name="Keyword" defStyleNum="dsKeyword"/>
+    <itemData name="Identifier" defStyleNum="dsOthers"/>
+    <itemData name="Types" defStyleNum="dsDataType"/>
+    <itemData name="String" defStyleNum="dsString"/>
+    <itemData name="Comment" defStyleNum="dsComment"/>
+  </itemDatas>
 </language>
 
 </highlighting>

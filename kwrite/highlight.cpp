@@ -58,6 +58,21 @@ char fontSizes[] = {4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,22,24,26,28,32,
 enum Item_styles { dsNormal,dsKeyword,dsDataType,dsDecVal,dsBaseN,dsFloat,
                    dsChar,dsString,dsComment,dsOthers};
 
+int getDefStyleNum(QString name)
+  {
+	if (name=="dsNormal") return dsNormal;
+        if (name=="dsKeyword") return dsKeyword;
+        if (name=="dsDataType") return dsDataType;
+        if (name=="dsDecVal") return dsDecVal;
+        if (name=="dsBaseN") return dsBaseN;
+        if (name=="dsFloat") return dsFloat;
+        if (name=="dsChar") return dsChar;
+        if (name=="dsString") return dsString;
+        if (name=="dsComment") return dsComment;
+        if (name=="dsOthers")  return dsOthers;
+	return dsNormal;
+  }
+
 bool isInWord(QChar ch) {
   return ch.isLetter() || ch.isDigit() || ch == '_';
 /*  static unsigned char data[] = {0,0,0,0,0,0,255,3,254,255,255,135,254,255,255,7};
@@ -2053,21 +2068,25 @@ void AutoHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
 
 void AutoHighlight::createItemData(ItemDataList &list)
 {
+  struct syntaxContextData *data;
+
   kdDebug()<<"In AutoHighlight::createItemData"<<endl;
-  list.append(new ItemData(I18N_NOOP("Normal Text"),dsNormal));  // 0
-  list.append(new ItemData(I18N_NOOP("Keyword"),dsKeyword)); // 1
-  list.append(new ItemData(I18N_NOOP("Identifier"),dsOthers)); // 2
-  list.append(new ItemData(I18N_NOOP("Types"),dsDataType));  // 3
-  list.append(new ItemData(I18N_NOOP("String"),dsString)); // 4
-  list.append(new ItemData(I18N_NOOP("Comment"),dsComment)); // 5
+  data=HlManager::self()->syntax->getGroupInfo(iName,"itemData");
+  while (HlManager::self()->syntax->nextGroup(data))
+    {
+	list.append(new ItemData(
+          HlManager::self()->syntax->groupData(data,QString("name")).latin1(),
+          getDefStyleNum(HlManager::self()->syntax->groupData(data,QString("defStyleNum")))));
+     
+    }
+  if (data) HlManager::self()->syntax->freeGroupInfo(data);
 }
 
 void AutoHighlight::makeContextList()
 {
-  HlContext *c;
   HlKeyword *keyword, *dataType;
   struct syntaxContextData *data;
- //Normal Context
+
   kdDebug()<< "AutoHighlight makeContextList()"<<endl;
   data=HlManager::self()->syntax->getGroupInfo(iName,"context");
   int i=0;
