@@ -22,6 +22,7 @@
 #include "../mainwindow/kantIface.h"
 #include "../document/kantdocmanager.h"
 #include "../document/kantdocument.h"
+#include "../app/kantapp.h"
 #include "kantview.h"
 #include "kantviewspace.h"
 
@@ -528,28 +529,30 @@ void KantViewManager::slotDocumentClose ()
 {
   if (!activeView()) return;
 
+  QList<KantView> closeList;
   long docID = ((KantDocument *)activeView()->doc())->docID();
 
-  QList<KantView> closeList;
 
-  QListIterator<KantView> it(viewList);
-  for ( ;it.current(); ++it)
+  for (uint i=0; i < ((KantApp *)kapp)->mainWindowsCount (); i++ )
   {
-    KantView* current = it.current();
-    if ( ((KantDocument *)current->doc())->docID() == docID )
+    for (uint z=0 ; z < ((KantApp *)kapp)->mainWindows.at(i)->viewManager->viewList.count(); z++)
     {
-      closeList.append (current);
+      KantView* current = ((KantApp *)kapp)->mainWindows.at(i)->viewManager->viewList.at(z);
+      if ( ((KantDocument *)current->doc())->docID() == docID )
+      {
+        closeList.append (current);
+      }
     }
-  }
 
-  bool done = false;
-  while ( closeList.at(0) )
-  {
-    KantView *view = closeList.at(0);
-    done = deleteView (view);
-    closeList.remove (view);
+    bool done = false;
+    while ( closeList.at(0) )
+    {
+      KantView *view = closeList.at(0);
+      done = ((KantApp *)kapp)->mainWindows.at(i)->viewManager->deleteView (view);
+      closeList.remove (view);
 
-    if (!done) return;
+      if (!done) return;
+    }
   }
 }
 
@@ -557,10 +560,28 @@ void KantViewManager::slotDocumentCloseAll ()
 {
   if (docManager->docCount () == 0) return;
 
-  bool done = false;
-  uint viewCounter = viewCount();
-  uint i = 0;
+  QList<KantView> closeList;
 
+  for (uint i=0; i < ((KantApp *)kapp)->mainWindowsCount (); i++ )
+  {
+    for (uint z=0 ; z < ((KantApp *)kapp)->mainWindows.at(i)->viewManager->viewList.count(); z++)
+    {
+      KantView* current = ((KantApp *)kapp)->mainWindows.at(i)->viewManager->viewList.at(z);
+      closeList.append (current);
+    }
+
+    bool done = false;
+    while ( closeList.at(0) )
+    {
+      KantView *view = closeList.at(0);
+      done = ((KantApp *)kapp)->mainWindows.at(i)->viewManager->deleteView (view);
+      closeList.remove (view);
+
+      if (!done) return;
+    }
+  }
+
+  /*
   while (i <= viewCounter)
   {
     done = deleteView(activeView());
@@ -568,7 +589,7 @@ void KantViewManager::slotDocumentCloseAll ()
     if (!done) return;
     else
       i++;
-  }
+  } */
 }
 
 void KantViewManager::slotUndo ()

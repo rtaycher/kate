@@ -26,6 +26,8 @@ class KantApp : public KUniqueApplication
 {
   Q_OBJECT
 
+  friend class KantViewManager;
+
   public:
     KantApp ();
     ~KantApp ();
