@@ -204,6 +204,48 @@ syntaxContextData* SyntaxDocument::getSubItems(syntaxContextData* data)
   return retval;
 }
 
+syntaxContextData* SyntaxDocument::getConfig(const QString& mainGroupName, const QString &Config)
+{
+  QDomElement docElem = documentElement();
+  QDomNode n = docElem.firstChild();
+
+  while (!n.isNull())
+  {
+    kdDebug(13010)<<"in SyntaxDocument::getGroupInfo (outer loop) " <<endl;
+    QDomElement e=n.toElement();
+
+    if (e.tagName().compare(mainGroupName)==0 )
+    {
+      QDomNode n1=e.firstChild();
+
+      while (!n1.isNull())
+      {
+        kdDebug(13010)<<"in SyntaxDocument::getGroupInfo (inner loop) " <<endl;
+        QDomElement e1=n1.toElement();
+
+        if (e1.tagName()==Config)
+        {
+          syntaxContextData *data=new ( syntaxContextData);
+          data->item=e1;
+          return data;
+        }
+
+        n1=e1.nextSibling();
+      }
+
+      kdDebug(13010) << "WARNING :returning null " << k_lineinfo << endl;
+      return 0;
+    }
+
+    n=e.nextSibling();
+  }
+
+  kdDebug(13010) << "WARNING :returning null " << k_lineinfo << endl;
+  return 0;
+}
+
+
+
 syntaxContextData* SyntaxDocument::getGroupInfo(const QString& mainGroupName, const QString &group)
 {
   QDomElement docElem = documentElement();
@@ -243,6 +285,7 @@ syntaxContextData* SyntaxDocument::getGroupInfo(const QString& mainGroupName, co
   kdDebug(13010) << "WARNING :returning null " << k_lineinfo << endl;
   return 0;
 }
+
 
 QStringList& SyntaxDocument::finddata(const QString& mainGroup,const QString& type,bool clearList)
 {

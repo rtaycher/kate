@@ -172,6 +172,7 @@ const QChar *HlRangeDetect::checkHgl(const QChar *s, int len, bool) {
 HlKeyword::HlKeyword (int attribute, int context,bool casesensitive, const QChar *deliminator, uint deliLen)
   : HlItem(attribute,context), dict (113, casesensitive)
 {
+  if (casesensitive) kdDebug()<<"Case Sensitive Keyword"<<endl; else kdDebug()<<"Case Insensitive KeyWord"<<endl;
   deliminatorChars = deliminator;
   deliminatorLen = deliLen;
   _caseSensitive=casesensitive;
@@ -879,7 +880,7 @@ HlItem *Highlight::createHlItem(syntaxContextData *data, int *res)
 		*res=0;
                 if (dataname=="keyword")
 		{
-	           HlKeyword *keyword=new HlKeyword(attr,context,casesensitive=="1",
+	           HlKeyword *keyword=new HlKeyword(attr,context,casesensitive,
                         deliminatorChars, deliminatorLen);
 		   keyword->addList(HlManager::self()->syntax->finddata("highlighting",stringdata));
 		   return keyword;
@@ -947,12 +948,13 @@ void Highlight::makeContextList()
   if (data) HlManager::self()->syntax->freeGroupInfo(data);
   data=0;
 
-  data=HlManager::self()->syntax->getGroupInfo("general","keyword");
+  data=HlManager::self()->syntax->getConfig("general","keywords");
   if (data)
     {
-    	if (HlManager::self()->syntax->groupData(data,QString("casesensitive"))!="0")
-		casesensitive="1"; else casesensitive="0";
-     weakDeliminator=(!HlManager::self()->syntax->groupData(data,QString("weakDeliminator")));
+	kdDebug()<<"Found global keyword config"<<endl;
+    	if (HlManager::self()->syntax->groupItemData(data,QString("casesensitive"))!="0")
+		casesensitive=true; else {casesensitive=false; kdDebug()<<"Turning on case insensitiveness"<<endl;}
+     weakDeliminator=(!HlManager::self()->syntax->groupItemData(data,QString("weakDeliminator")));
 
      int f;
      for (int s=0; s < weakDeliminator.length(); s++)
@@ -971,11 +973,12 @@ void Highlight::makeContextList()
     }
   else
     {
-       casesensitive="1";
+       casesensitive=true;
        weakDeliminator=QString("");
     }
 
   data=0;
+
   data=HlManager::self()->syntax->getGroupInfo("highlighting","context");
   int i=0;
   if (data)
@@ -1018,7 +1021,6 @@ void Highlight::makeContextList()
       }
 //  kdDebug(13010)<<"After creation loop in AutoHighlight::makeContextList"<<endl;
   HlManager::self()->syntax->freeGroupInfo(data);
-  setKeywords(keyword, dataType);
 //  kdDebug(13010)<<"After setKeyWords AutoHighlight::makeContextList"<<endl;
 
 }

@@ -54,6 +54,7 @@ class SyntaxDocument : public QDomDocument
 
     syntaxContextData* getGroupInfo(const QString& langName, const QString &group);
     void freeGroupInfo(syntaxContextData* data);
+    syntaxContextData* getConfig(const QString& mainGroupName, const QString &Config);       
     bool nextItem(syntaxContextData* data);
     bool nextGroup(syntaxContextData* data);
     syntaxContextData* getSubItems(syntaxContextData* data);

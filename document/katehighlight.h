@@ -287,7 +287,7 @@ class Highlight
     HlContext *contextList[nContexts];
 
     bool noHl;
-    QString casesensitive;
+    bool casesensitive;
     QString weakDeliminator;
     QString deliminator;
     const QChar *deliminatorChars;
