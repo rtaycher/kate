@@ -172,6 +172,8 @@ class KateExternalToolsConfigWidget : public Kate::ConfigPage
     class QPushButton *btnNew, *btnRemove, *btnEdit, *btnMoveUp, *btnMoveDwn;
 
     class KConfig *config;
+
+    bool m_changed;
 };
 
 /**

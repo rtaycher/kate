@@ -558,7 +558,8 @@ void KateExternalToolServiceEditor::showMTDlg()
 
 //BEGIN KateExternalToolsConfigWidget
 KateExternalToolsConfigWidget::KateExternalToolsConfigWidget( QWidget *parent, const char* name )
-  : Kate::ConfigPage( parent, name )
+  : Kate::ConfigPage( parent, name ),
+    m_changed( false )
 {
   QGridLayout *lo = new QGridLayout( this, 5, 5, 0, KDialog::spacingHint() );
 
@@ -645,6 +646,7 @@ void KateExternalToolsConfigWidget::reload()
         new ToolItem( lbTools, t->icon.isEmpty() ? blankIcon() : SmallIcon( t->icon ), t );
     }
   }
+  m_changed = false;
 }
 
 QPixmap KateExternalToolsConfigWidget::blankIcon()
@@ -657,6 +659,10 @@ QPixmap KateExternalToolsConfigWidget::blankIcon()
 
 void KateExternalToolsConfigWidget::apply()
 {
+  if ( ! m_changed )
+    return;
+  m_changed = false;
+
   // save a new list
   // save each item
   QStringList tools;
@@ -743,6 +749,7 @@ void KateExternalToolsConfigWidget::slotNew()
     new ToolItem ( lbTools, t->icon.isEmpty() ? blankIcon() : SmallIcon( t->icon ), t );
 
     slotChanged();
+    m_changed = true;
   }
 }
 
@@ -757,6 +764,7 @@ void KateExternalToolsConfigWidget::slotRemove()
 
     lbTools->removeItem( lbTools->currentItem() );
     slotChanged();
+    m_changed = true;
   }
 }
 
@@ -789,6 +797,7 @@ void KateExternalToolsConfigWidget::slotEdit()
     }
 
     slotChanged();
+    m_changed = true;
   }
 
   config->setGroup( "Editor" );
@@ -800,6 +809,7 @@ void KateExternalToolsConfigWidget::slotInsertSeparator()
 {
   lbTools->insertItem( "---", lbTools->currentItem()+1 );
   slotChanged();
+  m_changed = true;
 }
 
 void KateExternalToolsConfigWidget::slotMoveUp()
@@ -827,6 +837,7 @@ void KateExternalToolsConfigWidget::slotMoveUp()
   lbTools->setCurrentItem( idx - 1 );
   slotSelectionChanged();
   slotChanged();
+  m_changed = true;
 }
 
 void KateExternalToolsConfigWidget::slotMoveDown()
@@ -854,6 +865,7 @@ void KateExternalToolsConfigWidget::slotMoveDown()
   lbTools->setCurrentItem( idx+1 );
   slotSelectionChanged();
   slotChanged();
+  m_changed = true;
 }
 //END KateExternalToolsConfigWidget
 // kate: space-indent on; indent-width 2; replace-tabs on;
