@@ -365,7 +365,7 @@ KateDocument::~KateDocument()
   m_highlight->release();
   myMarks.clear ();
 
-  delete printer;
+  //SSSdelete printer;
   delete [] myAttribs;
   delete buffer;
 }
