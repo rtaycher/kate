@@ -26,7 +26,7 @@
 #ifndef _KATE_APPLICATION_INCLUDE_
 #define _KATE_APPLICATION_INCLUDE_
 
-#include <kapp.h>
+#include <kapplication.h>
 
 namespace Kate
 {
