@@ -518,17 +518,9 @@ void KateViewManager::slotDocumentSaveAs ()
 
   Kate::View *current = activeView();
 
-	KateFileDialog *dialog = new KateFileDialog (current->getDoc()->url().url(),current->getDoc()->encoding(), this, i18n ("Save File"), KateFileDialog::saveDialog);
-	KateFileDialogData data = dialog->exec ();
-	delete dialog;
-
-  if( !data.url.isEmpty() )
+  if( current->saveAs() == Kate::View::SAVE_OK )
   {
-	  current->getDoc()->setEncoding (data.encoding);
-    if( !current->getDoc()->saveAs( data.url ) || current->getDoc()->isModified() ) {
-        KMessageBox::sorry(this, i18n("The file could not be saved. Please check if you have write permission."));
-    }
-    ((Kate::Document *)current->getDoc())->setDocName (data.url.filename());
+    ((Kate::Document *)current->getDoc())->setDocName (current->getDoc()->url().filename());
     setWindowCaption();
   }
 }
