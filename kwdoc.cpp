@@ -31,6 +31,7 @@
 #include <qfont.h>
 #include <qpainter.h>
 #include <qfile.h>
+#include <qtextstream.h>
 
 #include <klocale.h>
 #include <kcharsets.h>
@@ -954,6 +955,7 @@ void KWriteDoc::insertFile(VConfig &c, QIODevice &dev) {
 
   recordStart(c, KWActionGroup::ugPaste);
 
+ // TODO: port this to QTextStream (see loadFile)
   do {
     len = dev.readBlock(block, 256);
     s = block;
@@ -981,34 +983,28 @@ void KWriteDoc::insertFile(VConfig &c, QIODevice &dev) {
 
 void KWriteDoc::loadFile(QIODevice &dev) {
   TextLine *textLine;
-  char block[256];
-  int len;
-  char *s;
   QChar ch;
   char last = '\0';
+  char s;
 
   clear();
 
   textLine = contents.getFirst();
-  do {
-    len = dev.readBlock(block, 256);
-    s = block;
-    while (len > 0) {
-      ch = *s;
-      if (ch.isPrint() || *s == '\t') {
+  QTextStream stream( &dev );
+  while ( !stream.eof() ) {
+      stream >> ch;
+      s = ch.latin1();
+      if (ch.isPrint() || s == '\t') {
         textLine->append(&ch, 1);
-      } else if (*s == '\n' || *s == '\r') {
-        if (last != '\r' || *s != '\n') {
+      } else if (s == '\n' || s == '\r') {
+        if (last != '\r' || s != '\n') {
           textLine = new TextLine();
           contents.append(textLine);
-          if (*s == '\r') eolMode = eolMacintosh;
+          if (s == '\r') eolMode = eolMacintosh;
         } else eolMode = eolDos;
-        last = *s;
+        last = s;
       }
-      s++;
-      len--;
-    }
-  } while (s != block);
+  }
 //  updateLines();
 }
 
@@ -1016,11 +1012,10 @@ void KWriteDoc::writeFile(QIODevice &dev) {
   TextLine *textLine;
 
   textLine = contents.first();
+  QTextStream stream(&dev);
   do {
     QConstString str((QChar *) textLine->getText(), textLine->length());
-    dev.writeBlock(str.string().latin1(), textLine->length());
-//    dev.writeBlock(QString(textLine->getText(),
-//      textLine->length()).latin1(), textLine->length());
+    stream << str.string().local8Bit();
     textLine = contents.next();
     if (!textLine) break;
     if (eolMode != eolUnix) dev.putch('\r');
