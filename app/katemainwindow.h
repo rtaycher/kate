@@ -52,10 +52,7 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
 
   friend class KateConfigDialog;
   friend class KateApp;
-  friend class KateViewManager; //FIXME GET RID OF THIS
-  friend class KateView;
-  friend class KateDocument;
-
+  friend class KateViewManager;
   public:
     KateMainWindow ( KateDocManager *_docManager, KatePluginManager *_pluginManager,
                      KateProjectManager *projectMan );
@@ -243,11 +240,13 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
     void slotProjectSave ();
     void slotProjectClose ();
 
+   
     // recent files
     void openConstURLProject (const KURL&);
 
   private slots:
     void projectDeleted (uint projectNumber);
+    void slotDocumentCloseAll();
 };
 
 #endif

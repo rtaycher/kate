@@ -260,12 +260,12 @@ Kate::Document *KateDocManager::openURL (const KURL& url,const QString &encoding
   return doc;
 }
 
-bool KateDocManager::closeDocument(class Kate::Document *doc)
+bool KateDocManager::closeDocument(class Kate::Document *doc,bool closeURL)
 {
   if (!doc) return false;
 
   saveMetaInfos(doc);
-
+  if (closeURL)
   if (!doc->closeURL()) return false;
 
   QPtrList<Kate::View> closeList;
@@ -291,12 +291,12 @@ bool KateDocManager::closeDocumentWithID(uint id)
   return closeDocument(documentWithID(id));
 }
 
-bool KateDocManager::closeAllDocuments()
+bool KateDocManager::closeAllDocuments(bool closeURL)
 {
   bool res = true;
 
   while (!m_docList.isEmpty() && res)
-    if (! closeDocument(m_docList.at(0)) )
+    if (! closeDocument(m_docList.at(0),closeURL) )
       res = false;
 
   return res;

@@ -89,10 +89,10 @@ class KateDocManager : public QObject
 
     Kate::Document *openURL(const KURL&,const QString &encoding=QString::null,uint *id =0);
     
-    bool closeDocument(class Kate::Document *);
+    bool closeDocument(class Kate::Document *,bool closeURL=true);
     bool closeDocument(uint);
     bool closeDocumentWithID(uint);
-    bool closeAllDocuments();
+    bool closeAllDocuments(bool closeURL=true);
     
     QPtrList<Kate::Document> modifiedDocumentList();
     bool queryCloseDocuments(KateMainWindow *w);

@@ -196,7 +196,7 @@ void KateMainWindow::setupMainWindow ()
   //tabWidget()->addTab (m_viewManager, "viewmanager");
 
   filelist = new KateFileList (m_docManager, m_viewManager, this/*filelistDock*/, "filelist");
-  addToolView(KDockWidget::DockLeft,filelist,SmallIcon("kmultiple"), i18n("Files"));
+  addToolView(KDockWidget::DockLeft,filelist,SmallIcon("kmultiple"), i18n("Documents"));
 
   QVBox *prBox = new QVBox (this,"projects");
   addToolView(KDockWidget::DockLeft,prBox,SmallIcon("view_tree"), i18n("Projects"));
@@ -208,7 +208,7 @@ void KateMainWindow::setupMainWindow ()
   projectviews->show ();
 
   fileselector = new KateFileSelector( this, m_viewManager, /*fileselectorDock*/ this, "operator");
-  addToolView(KDockWidget::DockLeft,fileselector, SmallIcon("fileopen"), i18n("Selector"));
+  addToolView(KDockWidget::DockLeft,fileselector, SmallIcon("fileopen"), i18n("Filesystem browser"));
 
   // TEST
   addToolView( KDockWidget::DockBottom, greptool, SmallIcon("filefind"), i18n("Find in Files") );
@@ -243,7 +243,7 @@ void KateMainWindow::setupActions()
 
   KStdAction::close( m_viewManager, SLOT( slotDocumentClose() ), actionCollection(), "file_close" )->setWhatsThis(i18n("Close the current document."));
 
-  a=new KAction( i18n( "Clos&e All" ), 0, m_viewManager, SLOT( slotDocumentCloseAll() ), actionCollection(), "file_close_all" );
+  a=new KAction( i18n( "Clos&e All" ), 0, this, SLOT( slotDocumentCloseAll() ), actionCollection(), "file_close_all" );
   a->setWhatsThis(i18n("Close all open documents."));
 
   KStdAction::mail( this, SLOT(slotMail()), actionCollection() )->setWhatsThis(i18n("Send one or more of the open documents as email attachments."));
@@ -322,6 +322,10 @@ void KateMainWindow::setupActions()
   slotDocumentChanged();
 }
 
+void KateMainWindow::slotDocumentCloseAll() {
+	if (queryClose_internal())
+		m_viewManager->slotDocumentCloseAll();
+}
 
 bool KateMainWindow::queryClose_internal() {
   uint documentCount=m_docManager->documents();

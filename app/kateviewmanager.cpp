@@ -325,12 +325,12 @@ void KateViewManager::slotDocumentCloseAll ()
 
   kdDebug(13001)<<"CLOSE ALL DOCUMENTS *****************"<<endl;
 
-
+#warning fixme for more than one main window
 
   for (uint i=0;i<m_viewSpaceContainerList.count();i++) {
     m_viewSpaceContainerList.at(i)->m_blockViewCreationAndActivation=true;
   }
-  m_docManager->closeAllDocuments();
+  m_docManager->closeAllDocuments(false);
   
   m_currentContainer->m_blockViewCreationAndActivation=false;
   m_currentContainer->openNewIfEmpty();
