@@ -45,7 +45,7 @@ HlManager *HlManager::s_pSelf = 0;
 enum Item_styles { dsNormal,dsKeyword,dsDataType,dsDecVal,dsBaseN,dsFloat,dsChar,dsString,dsComment,dsOthers};
 
 static bool trueBool = true;
-static QString stdDeliminator = QString ("!%&()*+,-./:;<=>?[]^{|}~ \t");
+static QString stdDeliminator = QString ("!%&()*+,-./:;<=>?[]^{|}~ \t\\");
 
 int getDefStyleNum(QString name)
 {

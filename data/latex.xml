@@ -293,24 +293,26 @@
       </list>
     <contexts>
 	<context attribute="0" lineEndContext="0">
-        	<StringDetect String="\begin{" attribute="0" context="1"/>
-        	<StringDetect String="\end{" attribute="0" context="1"/>
-		<RegExpr String="%.*$" attribute="3" context="1"/>
+        	<StringDetect String="\begin{" attribute="4" context="1"/>
+        	<StringDetect String="\end{" attribute="4" context="1"/>
+		<DetectChar char="\" attribute="2" context="2" />
+		<RegExpr String="%.*$" attribute="3" context="0"/>
 	</context>
 	<context attribute="0" lineEndContext="1">
 		<keyword String="keywords" attribute="1" context="1"/>
-		<DetectChar char="}" attribute="0" context="0"/>
+		<DetectChar char="}" attribute="4" context="0"/>
 	</context>
 	<context attribute="0" lineEndContext="0">
-        	<StringDetect String="\" attribute="0" context="1"/>
-		<RegExpr String="%.*$" attribute="3" context="1"/>
+		<keyword String="keywords" attribute="2" context="0" />
 	</context>
     </contexts>
     <itemDatas>
       <itemData name="Normal Text" defStyleNum="dsNormal"/>
-      <itemData name="Keyword" defStyleNum="dsKeyword" color="#00ff00" selColor="#ff0000" bold="1" italic="1"/>
-      <itemData name="funcword" defStyleNum="dsKeyword" color="#00ff00" selColor="#ff0000" bold="1" italic="1"/>
+      <itemData name="Keyword" defStyleNum="dsNormal" color="#0000ff" selColor="#ff0000" bold="1" italic="1"/>
+      <itemData name="funcword" defStyleNum="dsNormal" color="#ff0000" selColor="#ff0000" bold="1" italic="1"/>
       <itemData name="Comment" defStyleNum="dsComment"/>
+      <itemData name="Begin End" defStyleNum="dsNormal" color="#000000" selColor="#ffffff" bold="1" italic="1"/>
+
     </itemDatas>
   </highlighting>
   <general>

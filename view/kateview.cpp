@@ -1210,6 +1210,7 @@ void KateViewInternal::paintEvent(QPaintEvent *e) {
     TextLine *textLine;
     int ctxNum = 0;
 
+    /* Should be removed if Waldo fixes the buffer management -BEGIN */
     if (!pre)
     if ((myDoc->getTextLineCount()-1)>line)
     {
@@ -1219,7 +1220,7 @@ void KateViewInternal::paintEvent(QPaintEvent *e) {
 
       ctxNum = myDoc->highlight()->doHighlight(ctxNum,textLine);
       textLine->setContext(ctxNum);
-    }
+    } /* Should be removed if Waldo fixes the buffer managment -END*/
 
     myDoc->paintTextLine(paint, line, xStart, xEnd, myView->configFlags & KateView::cfShowTabs);
     bitBlt(this, updateR.x(), y, drawBuffer, 0, 0, updateR.width(), h);
