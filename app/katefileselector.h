@@ -24,12 +24,16 @@
 #include <kfile.h>
 #include <kurl.h>
 
+class KateMainWindow;
+class KateViewManager;
+
 class KateFileSelector : public QWidget
 {
   Q_OBJECT
 
   public:
-    KateFileSelector(QWidget * parent = 0, const char * name = 0 );
+    KateFileSelector( KateMainWindow *mainWindow=0, KateViewManager *viewManager=0,
+                      QWidget * parent = 0, const char * name = 0 );
     ~KateFileSelector();
 
     void readConfig(KConfig *, const QString &);
@@ -47,6 +51,7 @@ class KateFileSelector : public QWidget
     void dirUrlEntered( const KURL& u );
     void dirFinishedLoading();
     void setCurrentDocDir();
+    void kateViewChanged();
 
   protected:
     void focusInEvent(QFocusEvent*);
@@ -56,7 +61,10 @@ class KateFileSelector : public QWidget
     KHistoryCombo * filter;
     QLabel* filterIcon;
     KDirOperator * dir;
-    class QPushButton *home, *up, *back, *forward, *cfdir;
+    class QToolButton *home, *up, *back, *forward, *cfdir;
+    
+    KateMainWindow *mainwin;
+    KateViewManager *viewmanager;
 };
 
 #endif //KANTFILESELECTOR_H

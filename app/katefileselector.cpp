@@ -19,9 +19,10 @@
 #include "katefileselector.moc"
 
 #include "katemainwindow.h"
+#include "kateviewmanager.h"
 
 #include <qlayout.h>
-#include <qpushbutton.h>
+#include <qtoolbutton.h>
 #include <qhbox.h>
 #include <qlabel.h>
 #include <qstrlist.h>
@@ -36,24 +37,30 @@
 #include <klocale.h>
 #include <kcombobox.h>
 
-KateFileSelector::KateFileSelector( QWidget * parent, const char * name ): QWidget(parent, name)
+#include <kmessagebox.h>
+
+KateFileSelector::KateFileSelector( KateMainWindow *mainWindow, KateViewManager *viewManager,
+                                    QWidget * parent, const char * name )
+    : QWidget(parent, name),
+      mainwin(mainWindow),
+      viewmanager(viewManager)
 {
   QVBoxLayout* lo = new QVBoxLayout(this);
 
   QHBox *hlow = new QHBox (this);
   lo->addWidget(hlow);
 
-  home = new QPushButton( hlow );
-  home->setPixmap(SmallIcon("gohome"));
+  home = new QToolButton( hlow );
+  home->setIconSet(SmallIconSet("gohome"));
   QToolTip::add(home, i18n("Home directory"));
-  up = new QPushButton( /*i18n("&Up"),*/ hlow );
-  up->setPixmap(SmallIcon("up"));
+  up = new QToolButton( hlow );
+  up->setIconSet(SmallIconSet("up"));
   QToolTip::add(up, i18n("Up one level"));
-  back = new QPushButton( /*i18n("&Back"),*/ hlow );
-  back->setPixmap(SmallIcon("back"));
+  back = new QToolButton( hlow );
+  back->setIconSet(SmallIconSet("back"));
   QToolTip::add(back, i18n("Previous directory"));
-  forward = new QPushButton( /*i18n("&Next"),*/ hlow );
-  forward->setPixmap(SmallIcon("forward"));
+  forward = new QToolButton( hlow );
+  forward->setIconSet(SmallIconSet("forward"));
   QToolTip::add(forward, i18n("Next Directory"));
 
   // HACK
@@ -61,8 +68,8 @@ KateFileSelector::KateFileSelector( QWidget * parent, const char * name ): QWidg
   hlow->setStretchFactor(spacer, 1);
   hlow->setMaximumHeight(up->height());
 
-  cfdir = new QPushButton( ""/*i18n("&Next")*/, hlow );
-  cfdir->setPixmap(SmallIcon("curfiledir"));
+  cfdir = new QToolButton( hlow );
+  cfdir->setIconSet(SmallIconSet("curfiledir"));
   QToolTip::add(cfdir, i18n("Current Document Directory"));
 
   cmbPath = new KURLComboBox( KURLComboBox::Directories, true, this, "path combo" );
@@ -104,6 +111,9 @@ KateFileSelector::KateFileSelector( QWidget * parent, const char * name ): QWidg
   connect(dir, SIGNAL(finishedLoading()),
              this, SLOT(dirFinishedLoading()) );
 
+  // enable dir sync button if current doc has a valid URL
+  connect ( viewmanager, SIGNAL( viewChanged() ),
+              this, SLOT( kateViewChanged() ) );
 }
 
 KateFileSelector::~KateFileSelector()
@@ -195,7 +205,15 @@ void KateFileSelector::setDir( KURL u )
 
 void KateFileSelector::setCurrentDocDir()
 {
-  KURL u = ((KateMainWindow*)topLevelWidget())->currentDocUrl().directory();
+  KURL u = mainwin->currentDocUrl().directory();
   if (!u.isEmpty())
     setDir( u );
 }
+
+void KateFileSelector::kateViewChanged()
+{
+  // TODO: make sure the button is disabled if the directory is unreadable, eg the document URL
+  //       has protocol http
+  cfdir->setEnabled( ! mainwin->currentDocUrl().directory().isEmpty() );
+}
+
