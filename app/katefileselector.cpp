@@ -470,26 +470,26 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
   QGroupBox *gbSync = new QGroupBox( 1, Qt::Horizontal, i18n("Auto Synchronization"), this );
   cbSyncActive = new QCheckBox( i18n("When a docu&ment becomes active"), gbSync );
   cbSyncOpen = new QCheckBox( i18n("When a document is &opened"), gbSync );
-  cbSyncShow = new QCheckBox( i18n("When the File Selector becomes visible"), gbSync );
+  cbSyncShow = new QCheckBox( i18n("When the file selector becomes visible"), gbSync );
   lo->addWidget( gbSync );
 
   // Histories
   QHBox *hbPathHist = new QHBox ( this );
-  QLabel *lbPathHist = new QLabel( i18n("Remember &Locations:"), hbPathHist );
+  QLabel *lbPathHist = new QLabel( i18n("Remember &locations:"), hbPathHist );
   sbPathHistLength = new QSpinBox( hbPathHist );
   lbPathHist->setBuddy( sbPathHistLength );
   lo->addWidget( hbPathHist );
 
   QHBox *hbFilterHist = new QHBox ( this );
-  QLabel *lbFilterHist = new QLabel( i18n("Remember &Filters:"), hbFilterHist );
+  QLabel *lbFilterHist = new QLabel( i18n("Remember &filters:"), hbFilterHist );
   sbFilterHistLength = new QSpinBox( hbFilterHist );
   lbFilterHist->setBuddy( sbFilterHistLength );
   lo->addWidget( hbFilterHist );
 
   // Session
   QGroupBox *gbSession = new QGroupBox( 1, Qt::Horizontal, i18n("Session"), this );
-  cbSesLocation = new QCheckBox( i18n("Restore L&ocation"), gbSession );
-  cbSesFilter = new QCheckBox( i18n("Restore Last F&ilter"), gbSession );
+  cbSesLocation = new QCheckBox( i18n("Restore l&ocation"), gbSession );
+  cbSesFilter = new QCheckBox( i18n("Restore last f&ilter"), gbSession );
   lo->addWidget( gbSession );
 
   // make it look nice
