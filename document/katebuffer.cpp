@@ -730,7 +730,7 @@ KWBufBlock::flushStringList()
    {
       size += (*it)->length()+1;
    }
-qWarning("Size = %d", size);
+   kdDebug()<<"Size = "<< size<<endl;
    size = size*sizeof(QChar);
    m_rawData2 = QByteArray(size);
    m_rawData2End = size;

@@ -29,6 +29,7 @@
 #include <qlist.h>
 
 #include <ktempfile.h>
+#include <kdebug.h>
 
 #include "katevmallocator.h"
 
@@ -37,7 +38,7 @@
 
 struct KVMAllocator::Block
 {
-   off_t start;   
+   off_t start;
    size_t length;
    void *mmap;
 };
@@ -53,7 +54,7 @@ public:
 };
 
 /**
- * Create a KVMAllocator 
+ * Create a KVMAllocator
  */
 KVMAllocator::KVMAllocator()
 {
@@ -96,24 +97,24 @@ KVMAllocator::allocate(size_t _size)
    d->max_length += (_size + KVM_ALIGN) & ~KVM_ALIGN;
    return block;
 }
-    
+
 /**
  * Free a virtual memory block
  */
-void 
+void
 KVMAllocator::free(Block *block)
 {
    d->used_blocks.removeRef(block);
    d->free_blocks.append(block);
 }
-    
+
 /**
  * Copy data from a virtual memory block to normal memory
  */
-void 
+void
 KVMAllocator::copy(void *dest, Block *src, int _offset, size_t length)
 {
-qWarning("VM read: seek %d + %d", src->start,_offset);
+    kdDebug()<<"VM read: seek "<<src->start<<" +"<<_offset<<endl;
    lseek(d->tempfile->handle(), src->start+_offset, SEEK_SET);
    if (length == 0)
       length = src->length - _offset;
@@ -129,14 +130,14 @@ qWarning("VM read: seek %d + %d", src->start,_offset);
    }
    // Done.
 }
-     
+
 /**
  * Copy data from normal memory to a virtual memory block
  */
-void 
+void
 KVMAllocator::copy(Block *dest, void *src, int _offset, size_t length)
 {
-qWarning("VM write: seek %d + %d", dest->start,_offset);
+    kdDebug()<<"VM write: seek "<< dest->start<<" "<<_offset<<endl;
    lseek(d->tempfile->handle(), dest->start+_offset, SEEK_SET);
    if (length == 0)
       length = dest->length - _offset;
@@ -162,16 +163,16 @@ KVMAllocator::map(Block *block)
    if (block->mmap)
       return block->mmap;
 
-   void *result = mmap(0, block->length, PROT_READ| PROT_WRITE, 
+   void *result = mmap(0, block->length, PROT_READ| PROT_WRITE,
                        MAP_SHARED, d->tempfile->handle(), 0);
    block->mmap = result;
    return block->mmap;
 }
-    
+
 /**
  * Unmap a virtual memory block
  */
-void 
+void
 KVMAllocator::unmap(Block *block)
 {
    munmap(block->mmap, block->length);
