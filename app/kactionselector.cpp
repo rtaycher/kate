@@ -16,7 +16,6 @@
    Boston, MA 02111-1307, USA.
 */
 
-// $Id$
 
 #include "kactionselector.h"
 
@@ -24,7 +23,7 @@
 #include <kiconloader.h>
 #include <kdialog.h> // for spacingHint()
 #include <kdebug.h>
-
+#include <qapplication.h>
 #include <qlistbox.h>
 #include <qtoolbutton.h>
 #include <qlabel.h>
@@ -53,8 +52,8 @@ KActionSelector::KActionSelector( QWidget *parent, const char *name )
   d->moveOnDoubleClick = true;
   d->keyboardEnabled = true;
   d->iconSize = SmallIcon;
-  d->addIcon = "forward";
-  d->removeIcon = "back";
+  d->addIcon = QApplication::reverseLayout()? "back" : "forward";
+  d->removeIcon = QApplication::reverseLayout()? "forward" : "back";
   d->upIcon = "up";
   d->downIcon = "down";
   d->availableInsertionPolicy = Sorted;
