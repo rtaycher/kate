@@ -76,10 +76,9 @@ void TextLine::replace(int pos, int delLen, const QChar *insText, int insLen,
   }
 
   i = (insLen - delLen);
-#ifdef __GNUC__
-#warning fix me ! realloc is a function. condition will always be true (harri)
-#endif
-  if (i != 0 || realloc) {
+
+  // realloc has gone - no idea why it was here
+  if (i != 0) {
     if (i <= 0) {
       //text to replace longer than new text
       for (z = pos + delLen; z < len; z++) {
