@@ -1,3 +1,13 @@
+2001-04-01 Joseph Wenninger <jowenn@bigfoot.com>
+         * Added a new widget KantStackTabWidget
+           Now you can chose between tabbed or an
+           KOffice Workspace like view for the file sidebar
+	   --> You can change this behaviour in the config dialog
+         * Not implemented:
+              restore sidebar page  on startup
+              remove page not implemented yet
+           (will be fixed soon)
+           
 2001-03-27 Christoph Cullmann <crossfire@babylon2k.de>
              * console disabled per default
              * console only loaded if enabled

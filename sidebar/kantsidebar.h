@@ -19,13 +19,13 @@
 
 #include "../main/kantmain.h"
 
-#include <qtabwidget.h>
+#include "kantstacktabwidget.h"
 
-class KantSidebar : public QTabWidget
+class KantSidebar : public KantStackTabWidget
 {
   Q_OBJECT
   public:
-    KantSidebar(QWidget* parent=0, const char* name=0);
+    KantSidebar(QWidget* parent=0, const char* name=0,bool stacked=true);
     ~KantSidebar();
 
     void addWidget(QWidget* widget, const QString & label);

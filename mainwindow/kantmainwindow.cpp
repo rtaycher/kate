@@ -135,7 +135,7 @@ void KantMainWindow::setupMainWindow ()
   fileselector->dirOperator()->setView(KFile::Simple);
   sidebar->addWidget (fileselector, i18n("Fileselector"));
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileViewItem*)),this,SLOT(fileSelected(const KFileViewItem*)));
-
+  sidebar->addWidget(new QLabel("hallo",this),"Last Element - test only");
   statusBar()->hide();
 }
 
@@ -688,11 +688,20 @@ void KantMainWindow::slotConfigure()
   cb_restoreVC->setChecked( config->readBoolEntry("restore views", true) );
   QWhatsThis::add(cb_restoreVC, i18n("Check this if you want all your views restored each time you open Kant"));
 
+
+  // How instances should be handled
   QCheckBox *cb_singleInstance = new QCheckBox(frGeneral);
   cb_singleInstance->setText(i18n("Restrict to single instance"));
   gridFrG->addMultiCellWidget(cb_singleInstance,3,3,0,1);
   config->setGroup("startup");
   cb_singleInstance->setChecked(config->readBoolEntry("singleinstance",true));
+
+  // FileSidebar style
+  QCheckBox *cb_fileSidebarStyle = new QCheckBox(frGeneral);
+  cb_fileSidebarStyle->setText(i18n("Show Filebar in KOffice Workspace style"));
+  gridFrG->addMultiCellWidget(cb_fileSidebarStyle,4,4,0,1);
+  config->setGroup("Sidebar");
+  cb_fileSidebarStyle->setChecked(config->readBoolEntry("KOWStyle",true));
 
   config->setGroup("General");
 
@@ -744,6 +753,10 @@ void KantMainWindow::slotConfigure()
     config->writeEntry("singleinstance",cb_singleInstance->isChecked());
     config->setGroup("open files");
     config->writeEntry("reopen at startup", cb_reopenFiles->isChecked());
+
+    config->setGroup("Sidebar");
+    config->writeEntry("KOWStyle",cb_fileSidebarStyle->isChecked());
+    sidebar->setMode(cb_fileSidebarStyle->isChecked());
 
     config->setGroup("General");
     config->writeEntry("restore views", cb_restoreVC->isChecked());
