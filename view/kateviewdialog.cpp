@@ -216,11 +216,11 @@ int GotoLineDialog::getLine() {
 const int IndentConfigTab::flags[] = {KateView::cfAutoIndent, KateView::cfSpaceIndent,
   KateView::cfBackspaceIndents,KateView::cfTabIndents, KateView::cfKeepIndentProfile, KateView::cfKeepExtraSpaces};
 
-IndentConfigTab::IndentConfigTab(QWidget *parent, KateView *kWrite)
+IndentConfigTab::IndentConfigTab(QWidget *parent, KateView *view)
   : QWidget(parent, 0L)
 {
   QVBoxLayout *layout = new QVBoxLayout(this, 0, KDialog::spacingHint() );
-  int configFlags = kWrite->config();
+  int configFlags = view->config();
 
   opt[0] = new QCheckBox(i18n("&Auto Indent"), this);
   layout->addWidget(opt[0], 0, AlignLeft);
@@ -257,25 +257,25 @@ IndentConfigTab::IndentConfigTab(QWidget *parent, KateView *kWrite)
   QWhatsThis::add(opt[5], i18n("Indentations of more than the selected number of spaces will not be shortened."));
 }
 
-void IndentConfigTab::getData(KateView *kWrite) {
+void IndentConfigTab::getData(KateView *view) {
   int configFlags, z;
 
-  configFlags = kWrite->config();
+  configFlags = view->config();
   for (z = 0; z < numFlags; z++) {
     configFlags &= ~flags[z];
     if (opt[z]->isChecked()) configFlags |= flags[z];
   }
-  kWrite->setConfig(configFlags);
+  view->setConfig(configFlags);
 }
 
 const int SelectConfigTab::flags[] = {KateView::cfPersistent, KateView::cfDelOnInput,
   KateView::cfMouseAutoCopy, KateView::cfSingleSelection, KateView::cfVerticalSelect, KateView::cfXorSelect};
 
-SelectConfigTab::SelectConfigTab(QWidget *parent, KateView *kWrite)
+SelectConfigTab::SelectConfigTab(QWidget *parent, KateView *view)
   : QWidget(parent, 0L)
 {
   QVBoxLayout *layout = new QVBoxLayout(this, 0, KDialog::spacingHint() );
-  int configFlags = kWrite->config();
+  int configFlags = view->config();
 
   opt[0] = new QCheckBox(i18n("&Persistent Selections"), this);
   layout->addWidget(opt[0], 0, AlignLeft);
@@ -312,22 +312,22 @@ SelectConfigTab::SelectConfigTab(QWidget *parent, KateView *kWrite)
   QWhatsThis::add(opt[5], i18n("Not yet implemented."));
 }
 
-void SelectConfigTab::getData(KateView *kWrite) {
+void SelectConfigTab::getData(KateView *view) {
   int configFlags, z;
 
-  configFlags = kWrite->config();
+  configFlags = view->config();
   for (z = 0; z < numFlags; z++) {
     configFlags &= ~flags[z]; // clear flag
     if (opt[z]->isChecked()) configFlags |= flags[z]; // set flag if checked
   }
-  kWrite->setConfig(configFlags);
+  view->setConfig(configFlags);
 }
 
 const int EditConfigTab::flags[] = {KateView::cfWordWrap, KateView::cfReplaceTabs, KateView::cfRemoveSpaces,
   KateView::cfAutoBrackets, KateView::cfGroupUndo, KateView::cfShowTabs, KateView::cfSmartHome,
   KateView::cfPageUDMovesCursor, KateView::cfWrapCursor};
 
-EditConfigTab::EditConfigTab(QWidget *parent, KateView *kWrite)
+EditConfigTab::EditConfigTab(QWidget *parent, KateView *view)
   : QWidget(parent, 0L) {
 
   QHBoxLayout *mainLayout;
@@ -338,7 +338,7 @@ EditConfigTab::EditConfigTab(QWidget *parent, KateView *kWrite)
 
   // checkboxes
   cbLayout = new QVBoxLayout( mainLayout );
-  configFlags = kWrite->config();
+  configFlags = view->config();
 
   opt[0] = new QCheckBox(i18n("&Word wrap"), this);
   cbLayout->addWidget(opt[0], 0, AlignLeft);
@@ -376,21 +376,25 @@ EditConfigTab::EditConfigTab(QWidget *parent, KateView *kWrite)
   cbLayout->addWidget(opt[8], 0, AlignLeft);
   opt[8]->setChecked(configFlags & flags[8]);
 
+  useUTF = new QCheckBox(i18n("&Use UTF8 Encoding for Files"), this);
+  cbLayout->addWidget(useUTF, 0, AlignLeft);
+  useUTF->setChecked(view->doc()->useUTF8());
+
   cbLayout->addStretch();
 
   // edit lines
   leLayout = new QVBoxLayout();
   mainLayout->addLayout(leLayout,10);
 
-  e1 = new KIntNumInput(kWrite->wordWrapAt(), this);
+  e1 = new KIntNumInput(view->wordWrapAt(), this);
   e1->setRange(20, 200, 1, false);
   e1->setLabel(i18n("Wrap Words At:"));
 
-  e2 = new KIntNumInput(e1, kWrite->tabWidth(), this);
+  e2 = new KIntNumInput(e1, view->tabWidth(), this);
   e2->setRange(1, 16, 1, false);
   e2->setLabel(i18n("Tab Width:"));
 
-  e3 = new KIntNumInput(e2, kWrite->undoSteps(), this);
+  e3 = new KIntNumInput(e2, view->undoSteps(), this);
   e3->setRange(5, 30000, 1, false);
   e3->setLabel(i18n("Undo steps:"));
 
@@ -414,20 +418,21 @@ EditConfigTab::EditConfigTab(QWidget *parent, KateView *kWrite)
   QWhatsThis::add(opt[8], i18n("When on, moving the insertion cursor using the <b>Left</b> and <b>Right</b> keys will go on to previous/next line at beginning/end of the line, similar to most editors.<p>When off, the insertion cursor cannot be moved left of the line start, but it can be moved off the line end, which can be very handy for programmers."));
 }
 
-void EditConfigTab::getData(KateView *kWrite)
+void EditConfigTab::getData(KateView *view)
 {
   int configFlags, z;
-  
-  configFlags = kWrite->config();
+
+  configFlags = view->config();
   for (z = 0; z < numFlags; z++) {
     configFlags &= ~flags[z];
     if (opt[z]->isChecked()) configFlags |= flags[z];
   }
-  kWrite->setConfig(configFlags);
+  view->setConfig(configFlags);
 
-  kWrite->setWordWrapAt(e1->value());
-  kWrite->setTabWidth(e2->value());
-  kWrite->setUndoSteps(e3->value());
+  view->setUseUTF8 (useUTF->isChecked());
+  view->setWordWrapAt(e1->value());
+  view->setTabWidth(e2->value());
+  view->setUndoSteps(e3->value());
 }
 
 ColorConfig::ColorConfig( QWidget *parent, char *name )

@@ -136,6 +136,8 @@ KateDocument::KateDocument(long docID, QFileInfo* fi, bool bSingleViewMode, bool
 
   m_url.setPath( 0L );
 
+  myUseUTF8 = false;
+
   myDocID = docID;
   myDocName = QString ("");
   fileinfo = fi;
@@ -207,7 +209,11 @@ bool KateDocument::openFile()
 {
 #ifdef NEW_CODE
   // TODO: Pass codec around.
-  loadFile( m_file, QTextCodec::codecForLocale());
+  if (myUseUTF8)
+    loadFile( m_file, QTextStream::UnicodeUTF8);
+  else
+    loadFile( m_file, QTextCodec::codecForLocale());
+
 #else
   QFile f( m_file );
   if ( !f.open( IO_ReadOnly ) )
@@ -267,7 +273,10 @@ bool KateDocument::openFile()
 bool KateDocument::saveFile()
 {
 #ifdef NEW_CODE
-  return writeFile( m_file, QTextCodec::codecForLocale());
+  if (myUseUTF8)
+    return writeFile( m_file, QTextStream::UnicodeUTF8);
+  else
+    return writeFile( m_file, QTextCodec::codecForLocale());
 #else
   QFile f( m_file );
   if ( !f.open( IO_WriteOnly | IO_Truncate ) )
@@ -454,6 +463,8 @@ void KateDocument::readConfig(KConfig *config) {
   setTabWidth(config->readNumEntry("TabWidth", 8));
   setUndoSteps(config->readNumEntry("UndoSteps", 50));
   m_singleSelection = config->readBoolEntry("SingleSelection", false);
+  myUseUTF8 = config->readBoolEntry("useUTF8", false);
+
   for (z = 0; z < 5; z++) {
     sprintf(s, "Color%d", z);
     colors[z] = config->readColorEntry(s, &colors[z]);
@@ -467,6 +478,8 @@ void KateDocument::writeConfig(KConfig *config) {
   config->writeEntry("TabWidth", tabChars);
   config->writeEntry("UndoSteps", undoSteps);
   config->writeEntry("SingleSelection", m_singleSelection);
+  config->writeEntry("useUTF8", myUseUTF8);
+
   for (z = 0; z < 5; z++) {
     sprintf(s, "Color%d", z);
     config->writeEntry(s, colors[z]);
@@ -727,6 +740,10 @@ void KateDocument::insertFile(VConfig &c, QIODevice &dev)
   QChar ch, last;
 
   QTextStream stream( &dev );
+
+  if (myUseUTF8)
+    stream.setEncoding( QTextStream::UnicodeUTF8 );
+
   while ( !stream.eof() ) {
     stream >> ch;
 
@@ -770,7 +787,9 @@ qWarning("writeFile()");
     return false; // Error
 
   QTextStream stream(&f);
+
   stream.setCodec(codec);
+
   int maxLine = numLines();
   int line = 0;
   while(true)
@@ -796,6 +815,10 @@ void KateDocument::loadFile(QIODevice &dev) {
 
   TextLine::Ptr textLine = contents.first();
   QTextStream stream( &dev );
+
+  if (myUseUTF8)
+    stream.setEncoding( QTextStream::UnicodeUTF8 );
+
   while ( !stream.eof() ) {
       stream >> ch;
       s = ch.latin1();
@@ -816,6 +839,10 @@ void KateDocument::loadFile(QIODevice &dev) {
 void KateDocument::writeFile(QIODevice &dev) {
   TextLine::List::ConstIterator it = contents.begin();
   QTextStream stream(&dev);
+
+  if (myUseUTF8)
+    stream.setEncoding( QTextStream::UnicodeUTF8 );
+
   do {
     TextLine::Ptr textLine = *it;
     QConstString str((QChar *) textLine->getText(), textLine->length());

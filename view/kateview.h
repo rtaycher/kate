@@ -346,6 +346,7 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
     void setWordWrapAt(int at) {wrapAt = at;}
     int tabWidth();
     void setTabWidth(int);
+   void setUseUTF8(bool);
     int undoSteps();
     void setUndoSteps(int);
 

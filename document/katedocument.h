@@ -427,10 +427,19 @@ class KateDocument : public KateDocumentIface
     QFileInfo* fileinfo;
     QDateTime mTime;
     QString myDocName;
+
+  private:
     KateCmd *myCmd;
 
   public:
     KateCmd *cmd () { return myCmd; };
+
+  private:
+    bool myUseUTF8;
+
+  public:
+    void setUseUTF8 (bool b) { myUseUTF8 = b; };
+    bool useUTF8() { return myUseUTF8; };
 
   signals:
     void modStateChanged (KateDocument *doc);

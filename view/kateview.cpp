@@ -1907,6 +1907,11 @@ void KateView::setTabWidth(int w) {
   myDoc->updateViews();
 }
 
+void KateView::setUseUTF8 (bool b) {
+  myDoc->setUseUTF8 (b);
+  myDoc->updateViews();
+}
+
 int KateView::undoSteps() {
   return myDoc->undoSteps;
 }
@@ -3036,8 +3041,8 @@ void KateView::readConfig(KConfig *config)
   wrapAt = config->readNumEntry("WrapAt", wrapAt);
 }
 
-void KateView::writeConfig(KConfig *config) {
-
+void KateView::writeConfig(KConfig *config)
+{
   config->writeEntry("SearchFlags",searchFlags);
   config->writeEntry("ConfigFlags",configFlags);
   config->writeEntry("WrapAt",wrapAt);

@@ -1,4 +1,4 @@
-lib_LTLIBRARIES = libkate.la katemain.la kwrite.la
+lib_LTLIBRARIES = libkate.la kate.la kwrite.la
 bin_PROGRAMS = kate kwrite
 
 libkate_la_SOURCES = dummy.cpp
@@ -11,16 +11,16 @@ libkate_la_LIBADD   = ../qt3back/libqregexp3.la \
 		../pluginmanager/libkatepluginmanager.la ../interfaces/libkateIface.la -lktexteditor -lkspell -lkdeprint
 libkate_la_LDFLAGS = $(all_libraries) $(KDE_RPATH)  $(KDE_PLUGIN)  -module -avoid-version
 
-katemain_la_SOURCES = katemain.cpp
-katemain_la_LIBADD   = libkate.la
-katemain_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
+kate_la_SOURCES = katemain.cpp
+kate_la_LIBADD   = libkate.la
+kate_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
 
 kwrite_la_SOURCES = kwritemain.cpp
 kwrite_la_LIBADD   = libkate.la
 kwrite_la_LDFLAGS = $(all_libraries) $(KDE_RPATH)  -module -avoid-version
 
 kate_SOURCES = dummy.cpp
-kate_LDADD = katemain.la
+kate_LDADD = kate.la
 kate_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 kwrite_SOURCES = dummy.cpp
