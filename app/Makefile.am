@@ -9,7 +9,7 @@ libkateinterfaces_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugin
         kbookmarkhandler.cpp kactionselector.cpp katedockcontainer.cpp
 
 libkateinterfaces_la_LIBADD   = ../interfaces/libkateinterfacesprivate.la -lkscript ../lib/libkmultitabbar.la
-libkateinterfaces_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
+libkateinterfaces_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -no-undefined
 kate_la_SOURCES = katemain.cpp
 kate_la_LIBADD = libkateinterfaces.la
 kate_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version 
