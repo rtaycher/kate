@@ -201,11 +201,6 @@ class View : public KTextEditor::View, public KTextEditor::ClipboardInterface,
 
   public:
     /**
-      Install a Popup Menu. The Popup Menu will be activated on
-      a right mouse button press event.
-    */
-    virtual void installPopup(QPopupMenu *) { ; };
-    /**
       Reads session config out of the KConfig object. This also includes
       the actual cursor position and the bookmarks.
     */
@@ -215,11 +210,7 @@ class View : public KTextEditor::View, public KTextEditor::ClipboardInterface,
     */
     virtual void writeSessionConfig(KConfig *) { ; };
 
-  public slots:
-    /**
-      Shows the print dialog.
-    */
-    virtual void printDlg () { ; };
+  public slots:  
     /**
       Get the end of line mode (Unix, Macintosh or Dos).
     */

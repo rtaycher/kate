@@ -100,7 +100,7 @@
      
 #include "katebuffer.h"     
 #include "katetextline.h"     
-     
+
 #include "katecmd.h"
      
 class KateUndo     
@@ -144,7 +144,7 @@ class KateUndoGroup
      
   private:     
     KateDocument *myDoc;     
-    QPtrList<KateUndo> items;     
+    QPtrList<KateUndo> items;
 };
      
 QStringList KateDocument::searchForList = QStringList();     
@@ -188,7 +188,7 @@ void KateUndo::undo ()
   {     
     myDoc->internalRemoveLine (line);     
   }     
-  else if (type == KateUndo::internalRemoveLine)     
+  else if (type == KateUndo::internalRemoveLine)
   {
     myDoc->internalInsertLine (line, text);     
   }     
@@ -232,7 +232,7 @@ KateUndoGroup::~KateUndoGroup ()
 }     
      
 void KateUndoGroup::undo ()     
-{     
+{
   if (items.count() == 0)
     return;     
      
@@ -286,6 +286,8 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   
   myMarks.setAutoDelete (true);
   
+  printer = new KPrinter();
+  
   selectStartLine = -1;
   selectStartCol = -1;
   selectEndLine = -1;
@@ -320,7 +322,7 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   myDocName = QString ("");     
   fileInfo = new QFileInfo ();     
      
-  myCmd = new KateCmd (this);     
+  myCmd = new KateCmd (this);
      
   connect(this,SIGNAL(modifiedChanged ()),this,SLOT(slotModChanged ()));     
      
@@ -328,7 +330,7 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   connect(buffer, SIGNAL(linesChanged(int)), this, SLOT(slotBufferChanged()));     
   connect(buffer, SIGNAL(needHighlight(uint,uint)),this,SLOT(slotBufferHighlight(uint,uint)));
 
-  colors[0] = KGlobalSettings::baseColor();     
+  colors[0] = KGlobalSettings::baseColor();
   colors[1] = KGlobalSettings::highlightColor();     
      
   m_highlight = 0L;     
@@ -376,11 +378,14 @@ KateDocument::~KateDocument()
     kspell.kspell->setAutoDelete(true);
     kspell.kspell->cleanUp(); // need a way to wait for this to complete
   }
-  delete kspell.ksc;
+  
+  if (kspell.ksc)
+    delete kspell.ksc;
 
   m_highlight->release();
   myMarks.clear ();
-
+  
+  delete printer;
   delete [] myAttribs;
 }
 
@@ -1839,6 +1844,44 @@ void KateDocument::clearMarks ()
 
   emit marksChanged ();
   updateViews ();
+}
+
+//
+// KTextEditor::PrintInterface stuff
+//
+
+bool KateDocument::printDialog ()
+{
+   if ( printer->setup( kapp->mainWidget() ) )
+   {
+     QPainter paint( printer );
+     QPaintDeviceMetrics pdm( printer );
+
+     uint y = 0;
+     uint lineCount = 0;
+     while (  lineCount <= lastLine()  )
+     {
+        if (y+fontHeight >= pdm.height() )
+       {
+         printer->newPage();
+         y=0;
+       }
+
+       paintTextLine ( paint, lineCount, y, 0, pdm.width(), false );
+       y += fontHeight;
+
+       lineCount++;
+     }
+
+     return true;
+  }
+
+  return false;
+}
+
+bool KateDocument::print ()
+{
+  return printDialog ();
 }
 
 //

@@ -237,6 +237,16 @@ class KateDocument : public Kate::Document
 
   private:
     QPtrList<KTextEditor::Mark> myMarks;
+    
+  //
+  // KTextEditor::PrintInterface
+  //
+  public slots:
+    bool printDialog ();
+    bool print ();
+
+  private:
+    KPrinter *printer;
 
   //
   // KParts::ReadWrite stuff

@@ -29,7 +29,6 @@
 #include <kurldrag.h>
 #include <qfocusdata.h>
 #include <kdebug.h>
-#include <kprinter.h>
 #include <kapp.h>
 #include <kiconloader.h>
 #include <qscrollbar.h>
@@ -1317,8 +1316,6 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate
   myViewInternal->setFocus();
   resize(parent->width() -4, parent->height() -4);
 
-  printer = new KPrinter();
-
   myViewInternal->installEventFilter( this );
 
   if (!doc->hasBrowserExtension())
@@ -1352,8 +1349,6 @@ KateView::~KateView()
     myDoc->removeView( this );
 
   delete myViewInternal;
-
-  delete printer;
 }
 
 void KateView::initCodeCompletionImplementation()
@@ -2360,31 +2355,6 @@ void KateView::dropEventPassEmited (QDropEvent* e)
   emit dropEventPass(e);
 }
 
-void KateView::printDlg ()
-{
-   if ( printer->setup( this ) )
-   {
-     QPainter paint( printer );
-     QPaintDeviceMetrics pdm( printer );
-
-     int y = 0;
-     int lineCount = 0;
-     while (  lineCount <= myDoc->lastLine()  )
-     {
-        if (y+myDoc->fontHeight >= pdm.height() )
-       {
-         printer->newPage();
-         y=0;
-       }
-
-       myDoc->paintTextLine ( paint, lineCount, y, 0, pdm.width(), false );
-       y += myDoc->fontHeight;
-
-       lineCount++;
-     }
-   }
-}
-
 // Applies a new pattern to the search context.
 void SConfig::setPattern(QString &newPattern) {
   bool regExp = (flags & KateDocument::sfRegularExpression);
@@ -2617,7 +2587,7 @@ void KateBrowserExtension::copy()
 
 void KateBrowserExtension::print()
 {
-  m_view->printDlg ();
+  m_doc->printDialog ();
 }
 
 void KateBrowserExtension::slotSelectionChanged()

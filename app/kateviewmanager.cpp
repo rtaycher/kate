@@ -722,13 +722,13 @@ void KateViewManager::openConstURL (const KURL& url)
 void KateViewManager::printNow()
 {
   if (!activeView()) return;
-  activeView()->printDlg ();
+  activeView()->doc()->print ();
 }
 
 void KateViewManager::printDlg()
 {
   if (!activeView()) return;
-  activeView()->printDlg ();
+  activeView()->doc()->printDialog ();
 }
 
 void KateViewManager::toggleIconBorder ()

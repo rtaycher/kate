@@ -583,13 +583,6 @@ class KateView : public Kate::View
     */
     void writeSessionConfig(KConfig *);
 
-  // printing
-  public slots:
-    void printDlg ();
-
-  protected:
-    KPrinter *printer;
-
   // syntax highlight
   public slots:   
     /**
