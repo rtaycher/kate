@@ -19,8 +19,6 @@
 #ifndef __kate_pluginconfiginterface_h__
 #define __kate_pluginconfiginterface_h__
 
-class KConfig;
-
 namespace Kate
 {
 

@@ -207,17 +207,20 @@ KateConfigDialog::~KateConfigDialog()
 void KateConfigDialog::addPluginPage (Kate::Plugin *plugin)
 {      
   if (!Kate::pluginConfigInterfaceExtension(plugin))
-    return;
+    return;               
+    
+  for (uint i=0; i<Kate::pluginConfigInterfaceExtension(plugin)->configPages(); i++)
+  {
+    QStringList path;
+    path.clear();
+    path << i18n("Plugins") << Kate::pluginConfigInterfaceExtension(plugin)->configPageName(i);
+    QVBox *page=addVBoxPage(path, Kate::pluginConfigInterfaceExtension(plugin)->configPageFullName(i), Kate::pluginConfigInterfaceExtension(plugin)->configPagePixmap(i, KIcon::SizeSmall));
 
-  QStringList path;
-  path.clear();
-  path << i18n("Plugins") << Kate::pluginConfigInterfaceExtension(plugin)->configPageName();
-  QVBox *page=addVBoxPage(path, Kate::pluginConfigInterfaceExtension(plugin)->configPageFullName(), Kate::pluginConfigInterfaceExtension(plugin)->configPagePixmap(KIcon::SizeSmall));
-
-  PluginPageListItem *info=new PluginPageListItem;
-  info->plugin = plugin;
-  info->page = Kate::pluginConfigInterfaceExtension(plugin)->configPage (page);
-  pluginPages.append(info);
+    PluginPageListItem *info=new PluginPageListItem;
+    info->plugin = plugin;
+    info->page = Kate::pluginConfigInterfaceExtension(plugin)->configPage (i, page);
+    pluginPages.append(info);  
+  }
 }
 
 void KateConfigDialog::removePluginPage (Kate::Plugin *plugin)

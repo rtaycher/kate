@@ -71,12 +71,21 @@ class PluginConfigInterfaceExtension
   // slots !!!
   //
   public:    
-    virtual PluginConfigPage *configPage (QWidget *parent = 0, const char *name=0 ) = 0;
-  
-    virtual QString configPageName () const = 0;
-    virtual QString configPageFullName () const = 0;
-    virtual QPixmap configPagePixmap (int size = KIcon::SizeSmall) const = 0;
+    /**
+      Number of available config pages
+    */
+    virtual uint configPages () const = 0;
     
+    /**
+      returns config page with the given number,
+      config pages from 0 to configPages()-1 are available
+      if configPages() > 0
+    */ 
+    virtual PluginConfigPage *configPage (uint number = 0, QWidget *parent = 0, const char *name=0 ) = 0;
+  
+    virtual QString configPageName (uint number = 0) const = 0;
+    virtual QString configPageFullName (uint number = 0) const = 0;
+    virtual QPixmap configPagePixmap (uint number = 0, int size = KIcon::SizeSmall) const = 0;    
     
   private:
     class PrivatePluginConfigInterfaceExtension *d;
