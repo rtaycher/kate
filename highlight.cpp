@@ -186,7 +186,8 @@ const int dsComment = 8;
 const int dsOthers = 9;
 */
 enum Item_styles { dsNormal,dsKeyword,dsDataType,dsDecVal,dsBaseN,dsFloat,
-                   dsChar,dsString,dsComment,dsOthers,};
+                   dsChar,dsString,dsComment,dsOthers};
+
 // It is my understanding that Roman numerals are also
 // considered Numbers in the Unicode scheme of things
 // so isInWord should be modified to look for letters

@@ -35,8 +35,8 @@
 #include "highlight.h"
 #include "ktexteditor.h"
 #include "kwbuffer.h"
+#include "kwtextline.h"
 
-class TextLine;
 class Attribute;
 
 class KWAction {
@@ -139,7 +139,7 @@ class KWriteDoc : public KTextEditor::Document {
       @return  the TextLine object at the given line
       @see     TextLine
     */
-    TextLine *getTextLine(int line) const;
+    TextLine::Ptr getTextLine(int line) const;
 
     /**
       get the length in pixels of the given line
@@ -186,11 +186,11 @@ class KWriteDoc : public KTextEditor::Document {
     bool ownedView(KWriteView *);
     bool isLastView(int numViews);
 
-    int textWidth(TextLine *, int cursorX);
+    int textWidth(const TextLine::Ptr &, int cursorX);
     int textWidth(PointStruc &cursor);
     int textWidth(bool wrapCursor, PointStruc &cursor, int xPos);
-    int textPos(TextLine *, int xPos);
-//    int textPos(TextLine *, int xPos, int &newXPos);
+    int textPos(const TextLine::Ptr &, int xPos);
+//    int textPos(TextLine::Ptr &, int xPos, int &newXPos);
     int textWidth();
     int textHeight();
 
@@ -229,7 +229,7 @@ class KWriteDoc : public KTextEditor::Document {
     // just does some setup and then calls optimizeLeadingSpace()
     void doIndent(VConfig &, int change);
     // optimize leading whitespace on a single line - see kwdoc.cpp for full description
-//    bool optimizeLeadingSpace(VConfig &, TextLine *, int, bool);
+//    bool optimizeLeadingSpace(VConfig &, const TextLine::Ptr &, int, bool);
     void optimizeLeadingSpace(int line, int flags, int change);
 
     void comment(VConfig &c) {doComment(c, 1);}
@@ -252,7 +252,7 @@ class KWriteDoc : public KTextEditor::Document {
     void tagAll();
     void updateLines(int startLine = 0, int endLine = 0xffffff, int flags = 0,
       int cursorY = -1);
-    void updateMaxLength(TextLine *);
+    void updateMaxLength(TextLine::Ptr &);
     void updateViews(KWriteView *exclude = 0L);
 
     QColor &cursorCol(int x, int y);
@@ -321,7 +321,7 @@ class KWriteDoc : public KTextEditor::Document {
 
 // member variables
   protected:
-    QList<TextLine> contents;
+    TextLine::List contents;
     KWBuffer *buffer;
     QColor colors[5];
     HlManager *hlManager;
@@ -340,7 +340,7 @@ class KWriteDoc : public KTextEditor::Document {
     QList<KWriteView> views;
     bool newDocGeometry;
 
-    TextLine *longestLine;
+    TextLine::Ptr longestLine;
     int maxLength;
 
     PointStruc select;

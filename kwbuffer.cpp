@@ -183,15 +183,12 @@ KWBuffer::count()
 {
    return m_totalLines;
 }
-   
-/**
- * Return line @p i
- */
-const QString &
-KWBuffer::line(int i)
+
+KWBufBlock *
+KWBuffer::findBlock(int i)
 {
    if ((i < 0) || (i >= m_totalLines))
-      return QString::null;
+      return 0;
 
    int lastLine = 0;
    // This needs a bit of optimisation/caching so that we don't walk 
@@ -219,13 +216,73 @@ KWBuffer::line(int i)
       // Huh? Strange, m_totalLines must have been out of sync?
       assert(lastLine == m_totalLines);
       assert(false);
-      return QString::null;
+      return 0;
    }
+   return buf;
+}
+   
+/**
+ * Return line @p i
+ */
+TextLine::Ptr
+KWBuffer::line(int i)
+{
+   KWBufBlock *buf = findBlock(i);
+   if (!buf)
+      return 0;
+
    if (!buf->b_stringListValid) 
    {
       parseBlock(buf);
    }
    return buf->line(i - buf->m_beginState.lineNr);
+}
+
+void
+KWBuffer::insertLine(int i, TextLine::Ptr line)
+{
+   KWBufBlock *buf;
+   if (i == m_totalLines)
+      buf = findBlock(i-1);
+   else
+      buf = findBlock(i);
+
+   if (!buf)
+   {
+      KWBufState state;
+      // Initial state.
+      state.lineNr = 0;
+      buf = new KWBufBlock(state);
+      m_blocks.insert(0, buf);
+   }
+
+   if (!buf->b_stringListValid) 
+   {
+      parseBlock(buf);
+   }
+   if (buf->b_rawDataValid)
+   {
+      dirtyBlock(buf);
+   }
+   buf->insertLine(i -  buf->m_beginState.lineNr, line);
+   m_totalLines++;
+}
+
+void
+KWBuffer::removeLine(int i)
+{
+   KWBufBlock *buf = findBlock(i);
+   assert(buf);
+   if (!buf->b_stringListValid) 
+   {
+      parseBlock(buf);
+   }
+   if (buf->b_rawDataValid)
+   {
+      dirtyBlock(buf);
+   }
+   buf->removeLine(i -  buf->m_beginState.lineNr);
+   m_totalLines--;
 }
 
 void
@@ -256,6 +313,14 @@ KWBuffer::loadBlock(KWBufBlock *buf)
    m_loadedBlocks.append(buf);
 }
 
+void
+KWBuffer::dirtyBlock(KWBufBlock *buf)
+{
+   m_loadedBlocks.removeRef(buf);
+   buf->b_rawDataValid = false;
+   m_parsedBlocksClean.removeRef(buf);
+}
+
 //-----------------------------------------------------------------
 
 /**
@@ -269,7 +334,6 @@ KWBuffer::loadBlock(KWBufBlock *buf)
 KWBufBlock::KWBufBlock(const KWBufState &beginState)
  : m_beginState(beginState), m_endState(beginState)
 {
-   m_stringList = 0;
    m_rawData1Start = 0;
    m_rawData2End = 0;  
    m_rawSize = 0;
@@ -396,8 +460,7 @@ KWBufBlock::swapIn(int swap_fd)
 void 
 KWBufBlock::buildStringList()
 {
-   assert(m_stringList == 0);
-   m_stringList = new QStringList();
+   assert(m_stringList.count() == 0);
    const char *p;
    const char *e;
    const char *l = 0; // Pointer to start of last line.
@@ -413,7 +476,9 @@ KWBufBlock::buildStringList()
          {
             // TODO: Use codec
             QString line = QString::fromLatin1(l, (p-l-1)+1);
-            m_stringList->append(line);
+            TextLine::Ptr textLine = new TextLine();
+            textLine->append(line.unicode(), line.length());
+            m_stringList.append(textLine);
             l = p+1;
          }
          p++;
@@ -437,7 +502,9 @@ KWBufBlock::buildStringList()
                line = lastLine + line;
                lastLine.truncate(0);
             }
-            m_stringList->append(line);
+            TextLine::Ptr textLine = new TextLine();
+            textLine->append(line.unicode(), line.length());
+            m_stringList.append(textLine);
             l = p+1;
          }
          p++;
@@ -454,10 +521,12 @@ KWBufBlock::buildStringList()
             line = lastLine + line;
             lastLine.truncate(0);
          }
-         m_stringList->append(line);
+         TextLine::Ptr textLine = new TextLine();
+         textLine->append(line.unicode(), line.length());
+         m_stringList.append(textLine);
       }
    }
-   assert(m_stringList->count() == (m_endState.lineNr - m_beginState.lineNr));
+   assert(m_stringList.count() == (m_endState.lineNr - m_beginState.lineNr));
    b_stringListValid = true;
 }
 
@@ -467,10 +536,8 @@ KWBufBlock::buildStringList()
 void
 KWBufBlock::disposeStringList()
 {
-   assert(m_stringList != 0);
    assert(b_rawDataValid);
-   delete m_stringList;
-   m_stringList = 0;
+   m_stringList.clear();
    b_stringListValid = false;      
 }
 
@@ -479,12 +546,30 @@ KWBufBlock::disposeStringList()
  * Return line @p i
  * The first line of this block is line 0.
  */
-const QString &
+TextLine::Ptr
 KWBufBlock::line(int i)
 {
    assert(b_stringListValid);
-   assert(i < m_stringList->count());
-   return (*m_stringList)[i];
+   assert(i < m_stringList.count());
+   return m_stringList[i];
+}
+
+void
+KWBufBlock::insertLine(int i, TextLine::Ptr line)
+{
+   assert(b_stringListValid);
+   assert(i <= m_stringList.count());
+   m_stringList.insert(m_stringList.at(i), line);  
+   m_endState.lineNr++;
+}
+
+void
+KWBufBlock::removeLine(int i)
+{
+   assert(b_stringListValid);
+   assert(i < m_stringList.count());
+   m_stringList.remove(m_stringList.at(i));  
+   m_endState.lineNr--;
 }
 
 #include <kwbuffer.moc>

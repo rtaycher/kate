@@ -23,8 +23,13 @@
 #ifndef _KWTEXTLINE_H_
 #define _KWTEXTLINE_H_
 
-#include <qstring.h>
 #include <stdlib.h>
+
+#include <qstring.h>
+#include <qvaluelist.h>
+
+#include <ksharedptr.h>
+
 
 /**
   The TextLine represents a line of text. A text line that contains the
@@ -33,8 +38,12 @@
   The attribute stores the index to a table that contains fonts and colors
   and also if a character is selected.
 */
-class TextLine {
-  public:
+class TextLine : public KShared
+{
+public:
+    typedef KSharedPtr<TextLine> Ptr;
+    typedef QValueList<Ptr> List;
+public:
     /**
       Creates an empty text line with given attribute and syntax highlight
       context
@@ -60,12 +69,12 @@ class TextLine {
     /**
       Wraps the text from the given position to the end to the next line
     */
-    void wrap(TextLine *nextLine, int pos);
+    void wrap(TextLine::Ptr nextLine, int pos);
     /**
       Wraps the text of given length from the beginning of the next line to
       this line at the given position
     */
-    void unWrap(int pos, TextLine *nextLine, int len);
+    void unWrap(int pos, TextLine::Ptr nextLine, int len);
     /**
       Truncates the textline to the new length
     */

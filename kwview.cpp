@@ -341,11 +341,10 @@ void KWriteView::cursorRight(VConfig &c) {
 }
 
 void KWriteView::wordLeft(VConfig &c) {
-  TextLine *textLine;
   Highlight *highlight;
 
   highlight = kWriteDoc->highlight();
-  textLine = kWriteDoc->getTextLine(cursor.y);
+  TextLine::Ptr textLine = kWriteDoc->getTextLine(cursor.y);
 
   if (cursor.x > 0) {
     do {
@@ -379,12 +378,11 @@ void KWriteView::wordLeft(VConfig &c) {
 }
 
 void KWriteView::wordRight(VConfig &c) {
-  TextLine *textLine;
   Highlight *highlight;
   int len;
 
   highlight = kWriteDoc->highlight();
-  textLine = kWriteDoc->getTextLine(cursor.y);
+  TextLine::Ptr textLine = kWriteDoc->getTextLine(cursor.y);
   len = textLine->length();
 
   if (cursor.x < len) {
@@ -434,9 +432,8 @@ void KWriteView::home(VConfig &c) {
 }
 
 void KWriteView::end(VConfig &c) {
-/*  TextLine *textLine;
-
-  textLine = kWriteDoc->textLine(cursor.y);
+/* 
+  TextLine::Ptr textLine = kWriteDoc->textLine(cursor.y);
   if (c.flags & cfRemoveSpaces) { // ignore trailing spaces
     cursor.x = textLine->lastChar();
   } else {
@@ -644,7 +641,7 @@ void KWriteView::changeState(VConfig &c) {
 
     // remove trailing spaces when leaving a line
     if (c.flags & cfRemoveSpaces && cursor.y != c.cursor.y) {
-      TextLine *textLine = kWriteDoc->getTextLine(c.cursor.y);
+      TextLine::Ptr textLine = kWriteDoc->getTextLine(c.cursor.y);
       int newLen = textLine->lastChar();
       if (newLen != textLine->length()) {
         textLine->truncate(newLen);
@@ -1109,12 +1106,10 @@ void KWriteView::calcLogicalPosition(int &x, int &y) {
 // given physical coordinates, report whether the text there is selected
 bool KWriteView::isTargetSelected(int x, int y) {
 
-  TextLine   *line;
-
   y = (yPos + y) / kWriteDoc->fontHeight;
 
-  line = kWriteDoc->getTextLine(y);
-  if (! line)
+  TextLine::Ptr line = kWriteDoc->getTextLine(y);
+  if (!line)
     return false;
 
   x = kWriteDoc->textPos(line, x);
@@ -2050,14 +2045,12 @@ QString KWrite::text() {
 }
 
 QString KWrite::currentTextLine() {
-  TextLine *textLine;
-  textLine = kWriteDoc->getTextLine(kWriteView->cursor.y);
+  TextLine::Ptr textLine = kWriteDoc->getTextLine(kWriteView->cursor.y);
   return QString(textLine->getText(), textLine->length());
 }
 
 QString KWrite::textLine(int num) {
-  TextLine *textLine;
-  textLine = kWriteDoc->getTextLine(num);
+  TextLine::Ptr textLine = kWriteDoc->getTextLine(num);
   return QString(textLine->getText(), textLine->length());
 }
 
@@ -2834,12 +2827,11 @@ void KWrite::doReplaceAction(int result, bool found) {
 }
 
 void KWrite::exposeFound(PointStruc &cursor, int slen, int flags, bool replace) {
-  TextLine *textLine;
   int x1, x2, y1, y2, xPos, yPos;
 
   kWriteDoc->markFound(cursor,slen);
 
-  textLine = kWriteDoc->getTextLine(cursor.y);
+  TextLine::Ptr textLine = kWriteDoc->getTextLine(cursor.y);
   x1 = kWriteDoc->textWidth(textLine,cursor.x)        -10;
   x2 = kWriteDoc->textWidth(textLine,cursor.x + slen) +20;
   y1 = kWriteDoc->fontHeight*cursor.y                 -10;

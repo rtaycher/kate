@@ -26,6 +26,8 @@
 #include <qobject.h>
 #include <qtimer.h>
 
+#include <kwtextline.h>
+
 class KWBufBlock;
 class KWBufFileLoader;
 class KWBufState;
@@ -68,7 +70,17 @@ public:
    /**
     * Return line @p i
     */
-   const QString &line(int i);
+   TextLine::Ptr line(int i);
+   
+   /**
+    * Insert @p line in front of line @p i
+    */
+   void insertLine(int i, TextLine::Ptr line);
+
+   /**
+    * Remove line @p i
+    */
+   void removeLine(int i);
 
 signals:
    void linesChanged(int lines);
@@ -83,6 +95,16 @@ protected:
     * Make sure @p buf gets parsed.
     */
    void parseBlock(KWBufBlock *buf);
+
+   /**
+    * Mark @p buf dirty.
+    */
+   void dirtyBlock(KWBufBlock *buf);
+   
+   /**
+    * Find the block containing line @p i
+    */
+   KWBufBlock *findBlock(int i);
    
 protected slots:
    void slotLoadFile();
@@ -171,10 +193,20 @@ public:
     * Return line @p i
     * The first line of this block is line 0.
     */
-   const QString &line(int i);
+   TextLine::Ptr line(int i);
+
+   /**
+    * Insert @p line in front of line @p i
+    */
+   void insertLine(int i, TextLine::Ptr line);
+
+   /**
+    * Remove line @p i
+    */
+   void removeLine(int i);
   
 protected:
-   QStringList *m_stringList;
+   TextLine::List m_stringList;
    QByteArray m_rawData1;   
    int m_rawData1Start;
    QByteArray m_rawData2;   

@@ -64,7 +64,7 @@ const int srCancel            = QDialog::Rejected;
 
 enum Select_flags {
   selectFlag          = 0x100000,
-  multiSelectFlag     = 0x200000,
+  multiSelectFlag     = 0x200000
 };
 //state commands
 enum State_commands {
@@ -144,26 +144,61 @@ class KWriteView : public QWidget {
     void bottom_end(VConfig &c);
 //
     enum Config_flags {
-      cfAutoIndent= 0x1,cfBackspaceIndents= 0x2,cfWordWrap= 0x4,cfReplaceTabs= 0x8,
-      cfRemoveSpaces = 0x10,cfWrapCursor= 0x20,cfAutoBrackets= 0x40,cfPersistent= 0x80,
-      cfKeepSelection= 0x100,cfVerticalSelect= 0x200,cfDelOnInput= 0x400,cfXorSelect= 0x800,
-      cfOvr= 0x1000,cfMark= 0x2000,cfGroupUndo= 0x4000,cfKeepIndentProfile= 0x8000,
-      cfKeepExtraSpaces= 0x10000,cfMouseAutoCopy= 0x20000,cfSingleSelection= 0x40000,
-      cfTabIndents= 0x80000,cfPageUDMovesCursor= 0x100000,cfShowTabs= 0x400000,
-      cfSpaceIndent= 0x400000,cfSmartHome = 0x800000,};
+      cfAutoIndent= 0x1,
+      cfBackspaceIndents= 0x2,
+      cfWordWrap= 0x4,
+      cfReplaceTabs= 0x8,
+      cfRemoveSpaces = 0x10,
+      cfWrapCursor= 0x20,
+      cfAutoBrackets= 0x40,
+      cfPersistent= 0x80,
+      cfKeepSelection= 0x100,
+      cfVerticalSelect= 0x200,
+      cfDelOnInput= 0x400,
+      cfXorSelect= 0x800,
+      cfOvr= 0x1000,
+      cfMark= 0x2000,
+      cfGroupUndo= 0x4000,
+      cfKeepIndentProfile= 0x8000,
+      cfKeepExtraSpaces= 0x10000,
+      cfMouseAutoCopy= 0x20000,
+      cfSingleSelection= 0x40000,
+      cfTabIndents= 0x80000,
+      cfPageUDMovesCursor= 0x100000,
+      cfShowTabs= 0x400000,
+      cfSpaceIndent= 0x400000,
+      cfSmartHome = 0x800000};
 
-    enum Dialog_results { srYes=QDialog::Accepted,srNo=10,srAll,srCancel=QDialog::Rejected};
+    enum Dialog_results { 
+      srYes=QDialog::Accepted,
+      srNo=10,
+      srAll,
+      srCancel=QDialog::Rejected};
+      
 //search flags
     enum Search_flags {
-     sfCaseSensitive=1,sfWholeWords=2,sfFromCursor=4,sfBackward=8,
-     sfSelected=16,sfPrompt=32,sfReplace=64,sfAgain=128,
-     sfWrapped=256,sfFinished=512
-	   };
+     sfCaseSensitive=1,
+     sfWholeWords=2,
+     sfFromCursor=4,
+     sfBackward=8,
+     sfSelected=16,
+     sfPrompt=32,
+     sfReplace=64,
+     sfAgain=128,
+     sfWrapped=256,
+     sfFinished=512};
 
 //update flags
-    enum Update_flags {ufDocGeometry=1,ufUpdateOnScroll=2,ufPos=4};
+    enum Update_flags {
+     ufDocGeometry=1,
+     ufUpdateOnScroll=2,
+     ufPos=4};
+
 //load flags
-    enum Load_flags {lfInsert=1,lfNewFile=2,lfNoAutoHl=4};
+    enum Load_flags {
+     lfInsert=1,
+     lfNewFile=2,
+     lfNoAutoHl=4};
 
 //end of line settings
     enum Eol_settings {eolUnknown,eolUnix,eolMacintosh,eolDos};

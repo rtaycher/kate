@@ -120,7 +120,7 @@ void TextLine::replace(int pos, int delLen, const QChar *insText, int insLen,
   len = newLen;
 }
 
-void TextLine::wrap(TextLine *nextLine, int pos) {
+void TextLine::wrap(TextLine::Ptr nextLine, int pos) {
   int l;
 
   l = len - pos;
@@ -131,7 +131,7 @@ void TextLine::wrap(TextLine *nextLine, int pos) {
   }
 }
 
-void TextLine::unWrap(int pos, TextLine *nextLine, int len) {
+void TextLine::unWrap(int pos, TextLine::Ptr nextLine, int len) {
 
   replace(pos, 0, nextLine->text, len, nextLine->attribs);
   attr = nextLine->getRawAttr(len);
