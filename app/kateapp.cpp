@@ -192,11 +192,13 @@ int KateApp::newInstance()
   }
   else
   {
+    Kate::Document::setOpenErrorDialogsActivated (false);
     for (int z=0; z<args->count(); z++)
     {
       if (!KIO::NetAccess::mimetype( args->url(z), m_mainWindows.first() ).startsWith(QString ("inode/directory")))
         m_mainWindows.first()->kateViewManager()->openURL( args->url(z) );
     }
+    Kate::Document::setOpenErrorDialogsActivated (true);
 
     if ( m_mainWindows.first()->kateViewManager()->viewCount () == 0 )
        m_mainWindows.first()->kateViewManager()->activateView(m_docManager->firstDocument()->documentNumber());
