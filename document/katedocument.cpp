@@ -374,8 +374,6 @@ bool KateDocument::removeText ( int line, int col, int len )
   if (!l)
     return false;
 
-  kdDebug()<<line<<"-line removeText col: "<<col<<" len: "<<len<<endl;
-
   int chars = len;
   int rchars;
   while (chars > 0)
@@ -387,8 +385,6 @@ bool KateDocument::removeText ( int line, int col, int len )
       l->truncate(deletePos);
 
       tl = getTextLine(line+1);
-
-      kdDebug()<<"1"<<endl;
 
       if (!tl)
         return false;
@@ -405,27 +401,17 @@ bool KateDocument::removeText ( int line, int col, int len )
       updateMaxLength(l);
       tagLine(line);
 
-      kdDebug()<<"2"<<endl;
-
       if (selectStart >= (line+1) && selectStart > 0) selectStart--;
       if (selectEnd >= (line+1)) selectEnd--;
       if (tagStart >= (line+1) && tagStart > 0) tagStart--;
       if (tagEnd >= (line+1)) tagEnd--;
 
-      kdDebug()<<"3"<<endl;
-
       newDocGeometry = true;
       for (view = myViews.first(); view != 0L; view = myViews.next() )
       {
-        kdDebug()<<"3-1"<<endl;
-
         view->getCursorPosition (&cLine, &cCol);
 
-        kdDebug()<<"3-1-1"<<endl;
-
         view->delLine(line+1);
-
-        kdDebug()<<"3-2"<<endl;
 
         if ( (cLine == (line+1)) || ((cLine == line) && (cCol >= deletePos)) )
           cCol = deletePos;
@@ -434,11 +420,7 @@ bool KateDocument::removeText ( int line, int col, int len )
         c.x = cCol;
 
         view->updateCursor (c);
-
-        kdDebug()<<"3-3"<<endl;
       }
-
-      kdDebug()<<"4"<<endl;
 
       chars=chars-(rchars+1);
     }
@@ -468,15 +450,11 @@ bool KateDocument::removeText ( int line, int col, int len )
     }
   }
 
-  kdDebug()<<"5"<<endl;
-
   if (tagStart <= tagEnd) {
     optimizeSelection();
     updateLines(tagStart, tagEnd, 0, line);
     setModified(true);
   }
-
-  kdDebug()<<"6"<<endl;
 
   updateViews();
 
@@ -679,9 +657,6 @@ bool KateDocument::removeSelectedText ()
   TextLine::Ptr textLine = 0L;
   QPtrStack<DeleteSelection> selectedLines;
 
-  kdDebug()<<""<<endl;
-  kdDebug()<<"start selDelete"<<endl;
-
   if (selectEnd < selectStart)
     return false;
 
@@ -723,8 +698,6 @@ bool KateDocument::removeSelectedText ()
     }
 
     selectedLines.push (curLine);
-
-    kdDebug()<<curLine->line<<"-line delLine: "<<curLine->deleteLine<<" start: "<<curLine->deleteStart<<" len: "<<curLine->len<<endl;
   }
 
   while (selectedLines.count() > 0)
@@ -739,8 +712,6 @@ bool KateDocument::removeSelectedText ()
 
   selectEnd = -1;
   select.x = -1;
-
-  kdDebug()<<"end selDelete"<<endl;
 
   return true;
 }
