@@ -36,6 +36,9 @@
     <Action name="edit_find_prev" />
     <Action name="edit_replace" />
     <Separator />
+    <Action name="edit_indent" />
+    <Action name="edit_unindent" />
+    <Separator />
     <Action name="edit_insertFile"/>
     <Separator/>
     <Action name="go_goto_line"/>

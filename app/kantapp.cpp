@@ -17,6 +17,12 @@
 
 #include "kantapp.h"
 #include "kantapp.moc"
+//#include <kapp.h>
+#include "../mainwindow/kantIface.h"
+#include "../pluginmanager/kantpluginmanager.h"
+#include <kcmdlineargs.h>
+#include "../mainwindow/kantmainwindow.h"
+#include "../view/kantviewmanager.h"
 
 KantApp::KantApp () : KUniqueApplication ()
 {

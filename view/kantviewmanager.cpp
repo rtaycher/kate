@@ -718,6 +718,22 @@ void KantViewManager::slotReplace ()
   activeView()->replace();
 }
 
+void KantViewManager::slotIndent()
+{
+  KantView* v = activeView();
+  if (v)
+    v->indent();
+
+}
+
+void KantViewManager::slotUnIndent()
+{
+  KantView* v = activeView();
+  if (v)
+    v->unIndent();
+
+}
+
 void KantViewManager::slotInsertFile ()
 {
   if (activeView() == 0) return;

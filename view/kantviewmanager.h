@@ -161,6 +161,10 @@ class KantViewManager : public KantPluginIface
     void slotFindAgain ();
     void slotFindAgainB ();
     void slotReplace ();
+
+    void slotIndent();
+    void slotUnIndent();
+
     void slotInsertFile ();
 
     void slotHlDlg ();

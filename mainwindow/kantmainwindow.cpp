@@ -19,8 +19,8 @@
 #include "kantmainwindow.moc"
 
 #include <cassert>
-#include <fstream>
-#include <iostream>
+//#include <fstream>
+//#include <iostream>
 #include <qcheckbox.h>
 #include <qiconview.h>
 #include <qinputdialog.h>
@@ -42,9 +42,12 @@
 #include "../view/kantviewmanager.h"
 #include "kantmenuitem.h"
 
-#define POP_(x) std::cout << #x " = " << flush << x << std::endl
+#define POP_(x) kdDebug() << #x " = " << flush << x << std::endl
 
-KantMainWindow::KantMainWindow(KantPluginManager *_pluginManager) : KDockMainWindow  (0, "Main Window"), DCOPObject("KantIface" )
+KantMainWindow::KantMainWindow(KantPluginManager *_pluginManager) : 
+	KDockMainWindow (0, "Main Window"), 
+	DCOPObject ("KantIface" ),
+	m_pFilterShellProcess (NULL)
 {
   pluginManager=_pluginManager;
   config = kapp->config();
@@ -85,9 +88,14 @@ KantMainWindow::KantMainWindow(KantPluginManager *_pluginManager) : KDockMainWin
 
 }
 
+
 KantMainWindow::~KantMainWindow()
 {
+
+	delete m_pFilterShellProcess;
+
 }
+
 
 void KantMainWindow::setupMainWindow ()
 {
@@ -178,13 +186,16 @@ void KantMainWindow::setupActions()
   editFindPrev = KStdAction::findPrev(viewManager, SLOT(slotFindAgainB()), actionCollection(), "edit_find_prev");
   editReplace = KStdAction::replace(viewManager, SLOT(slotReplace()), actionCollection());
 
-  editInsert = new KAction(i18n("&Insert File..."), 0, viewManager, SLOT(slotInsertFile()), actionCollection(), "edit_insertFile");
+  editIndent = new KAction(i18n("&Indent"), "indent", CTRL+Key_I, viewManager, SLOT(slotIndent()), actionCollection(), "edit_indent");
+  editUnIndent = new KAction(i18n("&Unindent"), "unindent", CTRL+SHIFT+Key_I, viewManager, SLOT(slotUnIndent()), actionCollection(), "edit_unindent");
+
+  editInsert = new KAction(i18n("I&nsert File..."), 0, viewManager, SLOT(slotInsertFile()), actionCollection(), "edit_insertFile");
 
   gotoLine = KStdAction::gotoLine(viewManager, SLOT(slotGotoLine()), actionCollection());
   toolsSpell = KStdAction::spelling(viewManager, SLOT(slotSpellcheck()), actionCollection());
 
   new KAction ( i18n("Fi&lter Text..."), "edit_filter", CTRL + Key_Backslash, this,
-  				SLOT( slotEditFilter() ), actionCollection(), "edit_filter" );
+  SLOT( slotEditFilter() ), actionCollection(), "edit_filter" );
   viewSplitVert = new KAction( i18n("Split &Vertical"), "view_left_right", CTRL+SHIFT+Key_L, viewManager, SLOT( slotSplitViewSpaceVert() ), actionCollection(), "view_split_vert");
   viewSplitHoriz = new KAction( i18n("Split &Horizontal"), "view_top_bottom", CTRL+SHIFT+Key_T, viewManager, SLOT( slotSplitViewSpaceHoriz() ), actionCollection(), "view_split_horiz");
   closeCurrentViewSpace = new KAction( i18n("Close &Current"), "remove_view", CTRL+SHIFT+Key_R, viewManager, SLOT( slotCloseCurrentViewSpace() ), actionCollection(), "view_close_current_space");
@@ -304,6 +315,7 @@ slipInNewText (KantView & view, QString pre, QString marked, QString post, bool 
   //  shoot me for strlen() but it worked better than .length() for some reason...
 
 //  POP_(marked.latin1 ());
+
   if (strlen (marked.latin1 ()) > 0)  view.keyDelete ();
   int line = -1, col = -1;
   view.getCursorPosition (&line, &col);
@@ -341,23 +353,6 @@ slipInNewText (KantView & view, QString pre, QString marked, QString post, bool 
 }
 
 
-/*        static void
-slipInHTMLtag (KantView & view, QString text)  //  PCP
-{
-
-  //  We must add a <em>heavy</em> elaborate HTML markup system. Not!
-
-   QStringList list;
-   splitString (text, ' ', list);
-   QString marked (view.markedText ());
-   QString pre ("<" + text + ">");
-   QString post;
-   if (list.count () > 0)  post = "</" + list[0] + ">";
-   slipInNewText (view, pre, marked, post, true);
-
-}*/
-
-
         static QString  //  PCP
 KantPrompt
         (
@@ -381,71 +376,82 @@ KantPrompt
                         that
                         ) );
 
-  if (!ok) text = "";
+  if (!ok)  text = "";
   return text;
 
 }
 
 
-  /*      void
-KantMainWindow::slotEditHTMLtag ()  //  PCP
+	void
+KantMainWindow::slotFilterReceivedStdout (KProcess * pProcess, char * got, int len)
 {
 
-  if (!viewManager)  return;
-  KantView * kv (viewManager -> activeView ());
-  if (!kv) return;
+	assert (pProcess == m_pFilterShellProcess);
+	
+	if (got && len)
+		{
+		
+  //  TODO: got a better idea?
 
-  QString text ( KantPrompt ( "HTML Tag",
-                        "Enter HTML tag contents. We will supply the <, > and closing tag",
-                        this
-                        ) );
-
-  if ( !text.isEmpty () )
-      slipInHTMLtag (*kv, text); // user entered something and pressed ok
+  		while (len--)  m_strFilterOutput += *got++;
+//		POP_(m_strFilterOutput);
+		}
 
 }
-*/
+
+    
+	void
+KantMainWindow::slotFilterReceivedStderr (KProcess * pProcess, char * got, int len)
+	{
+	slotFilterReceivedStdout (pProcess, got, len);
+	}
+
+
+	void
+KantMainWindow::slotFilterProcessExited (KProcess * pProcess)
+{
+
+	assert (pProcess == m_pFilterShellProcess);
+	if (!viewManager)  return;
+	KantView * kv (viewManager -> activeView ());
+	if (!kv) return;
+	QString marked (kv -> markedText ());
+	if (strlen (marked.latin1 ()) > 0)  kv -> keyDelete ();
+	kv -> insertText (m_strFilterOutput);
+//	slipInNewText (*kv, "", m_strFilterOutput, "", false);
+	m_strFilterOutput = "";
+
+}
+
 
         static void  //  PCP
-slipInFilter (KantView & view, QString text)
+slipInFilter (KShellProcess & shell, KantView & view, QString command)
 {
 
   QString marked (view.markedText ());
 
-    //  TODO make this a real temp file
-    //  (sorry, but I did not expect
-    //  a non-POSIX-compliant popen when I got
-    //  here. We could also create a KantPopen
-    //  that does all the dup & fork mucking
-    //  on real bi-pipes)
+//  POP_(command.latin1 ());
+  shell.clearArguments ();
+  shell << command.latin1 ();
 
-  std::ofstream out (".scratch.txt");
-  out << marked.latin1 ();
-  out.close ();
-  text += "<.scratch.txt >.scratch2.txt ";
+  bool started (shell.start (KProcess::NotifyOnExit, KProcess::All));
+//  POP_(started);
 
-  system (text.latin1 ());
-  FILE * fp (fopen (".scratch2.txt", "r"));
+  bool sentDataIn (shell.writeStdin (marked.latin1 (), marked.length ()));
+//  POP_(sentDataIn);
 
-  if (fp)
-        {
-        //fputs (marked.latin1 (), fp);
-        QString replacement;
-
-        while (!feof (fp))
-                {
-                int ch (fgetc (fp));
-                if (ch == EOF)  break;
-                replacement += char (ch);
-                }
-
-        fclose (fp);
-        slipInNewText (view, "", replacement, "", false);
-        }
-  else
-        perror ("fopen failed");
+  //  TODO: Put up a modal dialog to defend the text from further
+  //  keystrokes while the command is out. With a cancel button...  
 
 }
+
+
+	void
+KantMainWindow::slotFilterCloseStdin (KProcess * pProcess)
+	{
+	assert (pProcess == m_pFilterShellProcess);
+	pProcess -> closeStdin ();
+	}
 
 
                  void
@@ -461,7 +467,28 @@ KantMainWindow::slotEditFilter ()  //  PCP
                         ) );
 
   if ( !text.isEmpty () )
-      slipInFilter (*kv, text);
+      {
+      m_strFilterOutput = "";
+      
+      if (!m_pFilterShellProcess)
+      	{
+      	m_pFilterShellProcess = new KShellProcess;
+      	
+	connect ( m_pFilterShellProcess, SIGNAL(wroteStdin(KProcess *)),
+			   this, SLOT(slotFilterCloseStdin (KProcess *)));
+	
+	connect ( m_pFilterShellProcess, SIGNAL(receivedStdout(KProcess*,char*,int)),
+	  	       this, SLOT(slotFilterReceivedStdout(KProcess*,char*,int)) );
+    
+	connect ( m_pFilterShellProcess, SIGNAL(receivedStderr(KProcess*,char*,int)),
+	 	       this, SLOT(slotFilterReceivedStderr(KProcess*,char*,int)) );
+    
+	connect ( m_pFilterShellProcess, SIGNAL(processExited(KProcess*)),
+		       this, SLOT(slotFilterProcessExited(KProcess*) ) ) ;
+      	}
+      
+      slipInFilter (*m_pFilterShellProcess, *kv, text);
+      }
 }
 
 

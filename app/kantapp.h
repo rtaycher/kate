@@ -17,6 +17,7 @@
 #ifndef __kant_app_h__
 #define __kant_app_h__
 
+/*
 #include "../kantmain.h"
 #include "../mainwindow/kantIface.h"
 #include "../sidebar/kantsidebar.h"
@@ -27,17 +28,21 @@
 #include "../view/kantviewmanager.h"
 #include "../mainwindow/kantmainwindow.h"
 #include "../pluginmanager/kantpluginmanager.h"
+*/
 
-#include <kapp.h>
+//#include <kapp.h>
 #include <kuniqueapp.h>
-#include <kiconloader.h>
+/*#include <kiconloader.h>
 #include <kstddirs.h>
 #include <kaction.h>
 #include <klocale.h>
 #include <kcmdlineargs.h>
 #include <kglobal.h>
 #include <kglobalaccel.h>
-#include <kglobalsettings.h>
+#include <kglobalsettings.h>*/
+
+class KantPluginManager;
+class KantMainWindow;
 
 class KantApp : public KUniqueApplication
 {

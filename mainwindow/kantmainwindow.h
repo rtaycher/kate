@@ -71,6 +71,7 @@ class KEditToolbar;
 class KProcess;
 class KRecentFilesAction;
 class KSelectAction;
+class KShellProcess;
 class KToggleAction;
 
 //namespace KParts
@@ -132,6 +133,8 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     KAction *editFindNext;
     KAction *editFindPrev;
     KAction *editReplace;
+    KAction *editIndent;
+    KAction *editUnIndent;
     KAction *editInsert;
     KAction *toolsSpell;
     KAction *projectNew;
@@ -172,6 +175,8 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     KAction* sidebarFocusNext;
 
     KConfig* config;
+    QString  m_strFilterOutput;
+    KShellProcess * m_pFilterShellProcess;
 
   public slots:
     void slotSettingsShowSidebar();
@@ -210,7 +215,10 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     void slotSettingsShowFullPath();
     void slotDropEvent(QDropEvent *);
     void slotEditFilter ();
-    //void slotEditHTMLtag ();
+    void slotFilterReceivedStdout (KProcess * pProcess, char * got, int len);
+    void slotFilterReceivedStderr (KProcess * pProcess, char * got, int len);
+    void slotFilterProcessExited (KProcess * pProcess);
+    void slotFilterCloseStdin (KProcess *);
     void editKeys();
 
     void slotGoNext();
