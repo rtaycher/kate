@@ -94,7 +94,7 @@ class ProjectDirFile : public QObject, public KShared
      * @param dir dir name
      * @return ProjectDirFile for given dir
      */
-    ProjectDirFile::Ptr dirFile (const QString &dir = QString::null);
+    ProjectDirFile::Ptr dirFile (const QString &dir = QString::null, bool createOnDemand = false);
     
     /**
      * ProjectDirFile objects for all direct subdirs
@@ -196,7 +196,7 @@ class Project : public QObject
      * @param dir dir name
      * @return ProjectDirFile for given dir
      */
-    ProjectDirFile::Ptr dirFile (const QString &dir = QString::null);
+    ProjectDirFile::Ptr dirFile (const QString &dir = QString::null, bool createOnDemand = false);
     
     /**
      * Raw access to config file

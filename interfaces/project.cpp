@@ -156,7 +156,7 @@ bool Project::close ()
   return d->m_plugin->close ();
 }
 
-ProjectDirFile::Ptr Project::dirFile (const QString &dir)
+ProjectDirFile::Ptr Project::dirFile (const QString &dir, bool createOnDemand)
 {
   ProjectDirFile *p = d->m_dirFiles[dir+QString("/")];
   if (p)
@@ -169,7 +169,7 @@ ProjectDirFile::Ptr Project::dirFile (const QString &dir)
    else
     fname = dirFilesName ();
 
-  if (!QFile::exists (d->m_dir + QString ("/") + fname))
+  if (!createOnDemand && !QFile::exists (d->m_dir + QString ("/") + fname))
     return 0;
     
   PrivateProjectDirFileData *data = new PrivateProjectDirFileData ();
@@ -253,14 +253,14 @@ QString ProjectDirFile::absDir () const
   return d->m_absdir;
 }
 
-ProjectDirFile::Ptr ProjectDirFile::dirFile (const QString &dir)
+ProjectDirFile::Ptr ProjectDirFile::dirFile (const QString &dir, bool createOnDemand)
 {
   QString realdir = d->m_data->dir;
   
   if (!realdir.isNull() && !dir.isNull())
     realdir += QString ("/") + dir;
 
-  return d->m_data->project->dirFile (realdir);
+  return d->m_data->project->dirFile (realdir, createOnDemand);
 }
 
 ProjectDirFile::List ProjectDirFile::dirFiles ()

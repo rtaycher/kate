@@ -47,6 +47,7 @@ KateProjectDirView::KateProjectDirView (Kate::ProjectDirFile::Ptr dirFile, QWidg
   m_dirs = dirFile->dirs ();
   m_files = dirFile->files ();
   
+  setSelectionMode (KFile::Extended);
   setIconSize( KIcon::SizeMedium );
   
   m_listJob = KIO::listDir (m_dir, false, true);

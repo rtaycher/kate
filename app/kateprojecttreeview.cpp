@@ -62,7 +62,7 @@ void KateProjectTreeViewItem::init ()
 {
   if (m_dir)
   {
-    m_dirFile = m_project->dirFile (m_fullName);
+    m_dirFile = m_project->dirFile (m_fullName, true);
   
     connect (m_dirFile, SIGNAL (dirsAdded (const QStringList &)), this, SLOT (dirsAdded (const QStringList &)));
     connect (m_dirFile, SIGNAL (filesAdded (const QStringList &)), this, SLOT (filesAdded (const QStringList &)));
@@ -223,9 +223,7 @@ void KateProjectTreeView::slotDoubleClicked( QListViewItem *i, const QPoint &pos
   
   if (item->isDir())
   {
-    KateProjectDirView::addDialog (m_project->dirFile (item->fullName()), this);
-  //  if  (item->fullName() != QString::null)
-      //setOpen (item, !item->isOpen());
+    KateProjectDirView::addDialog (m_project->dirFile (item->fullName(), true), this);
   }
   else
     m_mainWin->viewManager()->openURL (KURL (m_project->dir() + QString ("/") + item->fullName()));
