@@ -20,6 +20,7 @@
 
 // $Id$
 
+//BEGIN Includes
 #include "kateviewmanager.h"
 #include "kateviewmanager.moc"
 
@@ -56,6 +57,7 @@
 #include <qprogressdialog.h>
 
 #include "katesplitter.h"
+//END Includes
 
 KateViewManager::KateViewManager (QWidget *parent, KateDocManager *m_docManager) : QWidget  (parent)
 {
@@ -759,27 +761,57 @@ void KateViewManager::setUseOpaqueResize( bool enable )
 ///////////////////////////////////////////////////////////
 // session config functions
 ///////////////////////////////////////////////////////////
-
 void KateViewManager::saveAllDocsAtCloseDown(  )
 {
   kdDebug(13001)<<"saveAllDocsAtCloseDown()"<<endl;
   if (m_docManager->documents () == 0) return;
 
-  QPtrList<Kate::Document> closeList;
+  // Make sure all documents have a URL
+  Kate::Document *d = m_docManager->firstDocument();
+  while ( d )
+  {
+    if ( d->url().isEmpty() && d->isModified() )
+    {
+      // ask if the user wants to save this one
+      // and if so, ask for a URL
+      // else, close doc.
+      bool keep( false );
+      if ( KMessageBox::warningYesNo( this,
+	      i18n("<p>The document '%1' has been modified, but not saved."
+		   "<p>Do you want to keep it?").arg( d->docName() ),
+	      i18n("Unsaved Document") ) == KMessageBox::Yes )
+      { // FIXME add some nicer constructors to the file dialog
+	Kate::FileDialogData fdd = (new Kate::FileDialog( QString::null,
+	                               QString::fromLatin1( KGlobal::locale()->encoding() ),
+				       this,
+				       i18n("Save As"),
+				       Kate::FileDialog::saveDialog ))->exec();
+	d->setEncoding( fdd.encoding );
+	if ( d->saveAs( fdd.url ) )
+	  keep = true;
+      }
+      if ( ! keep )
+      {
+	closeViews( d->documentNumber() );
+	m_docManager->deleteDoc( d );
+      }
+    }
+    d = m_docManager->nextDocument();
+  }
 
-  for (uint i=0; i < m_docManager->documents(); i++ )
-    closeList.append (m_docManager->document (i));
 
   KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
 
   // save current document, since if we just reopens documents
   // when restarted, we want that in front.
+
   scfg->setGroup("open files");
   scfg->writeEntry("count",m_docManager->documents());
   scfg->writeEntry("current file", activeView()->getDoc()->url().prettyURL());
   m_docManager->saveDocumentList(scfg);
 
   scfg->sync();
+
   m_blockViewCreationAndActivation=true;
   m_docManager->closeAllDocuments();
   m_blockViewCreationAndActivation=false;
