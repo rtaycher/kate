@@ -87,6 +87,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   QString grp=config->group();
   config->setGroup("General");
+  manager()->setSplitterOpaqueResize(config->readBoolEntry("Opaque Resize", true));
   m_dockStyle= (config->readEntry("viewMode",DEFAULT_STYLE)=="Modern") ? ModernStyle : ClassicStyle;
   
   if (config->readBoolEntry("deleteKDockWidgetConfig",false))
