@@ -1384,7 +1384,7 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate
 
 void KateView::setEditKey(int cmd, Qt::Key key, int modifiers, bool valid)
 {
-	defaultEditKeys[cmd].modifiers=modifiers;
+	defaultEditKeys[cmd].modifiers=(Qt::ButtonState)modifiers;
 	defaultEditKeys[cmd].key=key;
 	defaultEditKeys[cmd].valid=valid;
 }
@@ -1622,7 +1622,7 @@ void KateView::slotDropEventPass( QDropEvent * ev )
 
 bool KateView::trySpecialKey(int key, Qt::ButtonState state,int id,void (KateView::*myfunc)())
 {
-	static Qt::ButtonState tmpState=Qt::ControlButton | Qt::ShiftButton | Qt::AltButton | Qt::MetaButton;
+	static Qt::ButtonState tmpState=(Qt::ButtonState)(Qt::ControlButton | Qt::ShiftButton | Qt::AltButton | Qt::MetaButton);
 	if (!editKeys[id].valid) return false;
 	if (key!=editKeys[id].key) return false;
 	if ((state & tmpState)!=(int)editKeys[id].modifiers) return false;
