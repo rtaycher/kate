@@ -299,7 +299,7 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
       "<li><code>%URLs</code> - a list of the URLs of all open documents."
       "<li><code>%directory</code> - the URL of the directory containing "
       "the current document."
-      "<li><code>filename</code> - the filename of the current document."
+      "<li><code>%filename</code> - the filename of the current document."
       "<li><code>%line</code> - the current line of the text cursor in the "
       "current view."
       "<li><code>%column</code> - the column of the text cursor in the "
