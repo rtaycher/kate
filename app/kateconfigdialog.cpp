@@ -171,7 +171,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
 
   // sort filelist ?
   cb_sortFiles = new QCheckBox(bgStartup);
-  cb_sortFiles->setText(i18n("Sort &files alphabetically in the file list."));
+  cb_sortFiles->setText(i18n("Sort &files alphabetically in the file list"));
   cb_sortFiles->setChecked(parent->filelist->sortType() == KateFileList::sortByName);
   QWhatsThis::add( cb_sortFiles, i18n(
         "If this is checked, the files in the file list will be sorted alphabetically.") );
