@@ -37,7 +37,9 @@
 #include <kmessagebox.h>
 #include <kstddirs.h>
 #include <knuminput.h>
-
+#include <klineedit.h>
+#include <kcombobox.h>
+#include <kcolorcombo.h>
 #include "hlparamedit.h"
 
 #include "katedialogs.moc"
@@ -292,7 +294,18 @@ HlEditDialog::HlEditDialog(HlManager *,QWidget *parent, const char *name, bool m
 /* attributes */
   tabWid->addTab(attrEd=new AttribEditor(tabWid),i18n("Attributes"));
   attrEd->attributes->setSorting(-1);
-
+  attrEd->AttributeType->insertItem("dsNormal");
+  attrEd->AttributeType->insertItem("dsKeyword");
+  attrEd->AttributeType->insertItem("dsDataType");
+  attrEd->AttributeType->insertItem("dsDecVal");
+  attrEd->AttributeType->insertItem("dsBaseN");
+  attrEd->AttributeType->insertItem("dsFloat");
+  attrEd->AttributeType->insertItem("dsChar");
+  attrEd->AttributeType->insertItem("dsString");
+  attrEd->AttributeType->insertItem("dsComment");
+  attrEd->AttributeType->insertItem("dsOthers");
+  attrEd->AttributeType->insertItem(i18n("Custom"));
+  connect(attrEd->attributes,SIGNAL(currentChanged(QListViewItem*)),this,SLOT(currentAttributeChanged(QListViewItem*)));
 /*Contextstructure */
   currentItem=0;
     transTableCnt=0;
@@ -466,7 +479,49 @@ void HlEditDialog::loadFromDocument(HlData *hl)
 		QString("%1").arg(cnt)));
 	cnt++;
     }
+  currentAttributeChanged(attrEd->attributes->firstChild());
   if (data) HlManager::self()->syntax->freeGroupInfo(data);
+}
+
+void HlEditDialog::currentAttributeChanged(QListViewItem *item)
+{
+	if (item)
+	{
+		bool isCustom=(item->text(1)=="dsNormal")&&(!(item->text(2).isEmpty()));
+		attrEd->AttributeName->setText(item->text(0));
+		attrEd->AttributeType->setCurrentText(
+			isCustom?i18n("Custom"):item->text(1));
+		attrEd->AttributeName->setEnabled(true);
+		attrEd->AttributeType->setEnabled(true);
+		if (isCustom)
+		{
+			attrEd->Colour->setColor(QColor(item->text(2)));
+			attrEd->SelectedColour->setColor(QColor(item->text(3)));
+			attrEd->Bold->setChecked(item->text(4)=="1");
+			attrEd->Italic->setChecked(item->text(5)=="1");
+
+			attrEd->Colour->setEnabled(true);
+			attrEd->SelectedColour->setEnabled(true);
+			attrEd->Bold->setEnabled(true);
+			attrEd->Italic->setEnabled(true);
+		}
+		else
+		{
+			attrEd->Colour->setEnabled(false);
+			attrEd->SelectedColour->setEnabled(false);
+			attrEd->Bold->setEnabled(false);
+			attrEd->Italic->setEnabled(false);
+		}
+	}
+	else
+	{
+		attrEd->Colour->setEnabled(false);
+		attrEd->SelectedColour->setEnabled(false);
+		attrEd->Bold->setEnabled(false);
+		attrEd->Italic->setEnabled(false);
+		attrEd->AttributeName->setEnabled(false);
+		attrEd->AttributeType->setEnabled(false);
+	}
 }
 
 void HlEditDialog::addAttribute()

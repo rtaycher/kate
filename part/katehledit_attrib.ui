@@ -111,7 +111,7 @@
                         </widget>
                         <widget class="KLineEdit">
                             <property name="name">
-                                <cstring>KLineEdit1</cstring>
+                                <cstring>AttributeName</cstring>
                             </property>
                         </widget>
                     </hbox>
@@ -140,7 +140,7 @@
                         </widget>
                         <widget class="KComboBox">
                             <property name="name">
-                                <cstring>KComboBox1</cstring>
+                                <cstring>AttributeType</cstring>
                             </property>
                         </widget>
                     </hbox>
@@ -161,7 +161,7 @@
                 </widget>
                 <widget class="QCheckBox">
                     <property name="name">
-                        <cstring>CheckBox1</cstring>
+                        <cstring>Bold</cstring>
                     </property>
                     <property name="text">
                         <string>bold</string>
@@ -169,7 +169,7 @@
                 </widget>
                 <widget class="QCheckBox">
                     <property name="name">
-                        <cstring>CheckBox2</cstring>
+                        <cstring>Italic</cstring>
                     </property>
                     <property name="text">
                         <string>italic</string>
@@ -199,7 +199,7 @@
                         </widget>
                         <widget class="KColorCombo">
                             <property name="name">
-                                <cstring>KColorCombo1</cstring>
+                                <cstring>Colour</cstring>
                             </property>
                         </widget>
                     </hbox>
@@ -228,7 +228,7 @@
                         </widget>
                         <widget class="KColorCombo">
                             <property name="name">
-                                <cstring>KColorCombo1_3</cstring>
+                                <cstring>SelectedColour</cstring>
                             </property>
                         </widget>
                     </hbox>

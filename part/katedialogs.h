@@ -148,6 +148,7 @@ class HlEditDialog : public KDialogBase
     int transTableCnt;
   protected slots:
     void addAttribute();
+    void currentAttributeChanged(QListViewItem *item);
 
     void currentSelectionChanged ( QListViewItem * );
     void contextDescrChanged(const QString&);
