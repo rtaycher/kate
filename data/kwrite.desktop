@@ -1,15 +1,11 @@
 [Desktop Entry]
-Comment=Fast text editor
-Comment[da]=En hurtig teksteditor
-Comment[he]=עורך טקסט מהיר
-Comment[sk]=Rýchly textový editor
-Comment[sv]=En snabb enkel texteditor
+Comment=Text Editor
 BinaryPattern=
 Name=KWrite
-Name[da]=KWrite (teksteditor)
-Name[he]=עורך טקסט (KWrite)
-Name[sk]=KWrite (Textový editor)
-Name[sv]=Kwrite (texteditor)
+Name[af]=kskryf
+Name[lv]=KRakstīt
+Name[sv]=Kwrite
+Name[xx]=xx
 MimeType=text/english;text/plain;text/x-makefile;text/x-c++hdr;text/x-c++src;text/x-chdr;text/x-csrc;text/x-java;text/x-moc;text/x-pascal;text/x-tcl;text/x-tex;application/x-shellscript;text/x-c;text/x-c++;text/x-diff;
 Exec=kwrite -caption "%c" %i %m %U
 X-KDE-StartupNotify=true
