@@ -157,6 +157,8 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     void slotGoPrev();
 
     void fileSelected(const KFileItem *file);
+    
+    void tipOfTheDay();
 
   public:
     void openURL (const QString &name=0L);
