@@ -1028,8 +1028,8 @@ void KantViewManager::saveAllDocsAtCloseDown()
       seen.append( id );
 
       scfg->setGroup( v->doc()->url().prettyURL() );
-      //v->writeSessionConfig(scfg);
-      //v->doc()->writeSessionConfig(scfg);
+      v->writeSessionConfig(scfg);
+      v->doc()->writeSessionConfig(scfg);
       // TODO: should we tjeck for local file here?
       // TODO: LASTMOD
       // write entry

@@ -886,9 +886,6 @@ class KantView : public KTextEditor::View, virtual public KantViewIface {
       bool kspellPristine;        // doing spell check on a clean document?
     } kspell;
 
-    KToggleAction *setVerticalSelection;
-    KRecentFilesAction *fileRecent;
-    KSelectAction *setHighlight, *setEndOfLine;
     bool m_singleViewMode;
     bool myDeleteDoc;
 

@@ -2975,40 +2975,6 @@ void KantView::readConfig(KConfig *config)
   searchFlags = config->readNumEntry("SearchFlags", KantView::sfPrompt);
   configFlags = config->readNumEntry("ConfigFlags", configFlags) & ~KantView::cfMark;
   wrapAt = config->readNumEntry("WrapAt", wrapAt);
-
-/*
-  int flags;
-
-  config->setGroup("Search Options");
-  flags = 0;
-  if (config->readNumEntry("CaseSensitive")) flags |= sfCaseSensitive;
-  if (config->readNumEntry("WholeWordsOnly")) flags |= sfWholeWords;
-  if (config->readNumEntry("FromCursor")) flags |= sfFromCursor;
-  if (config->readNumEntry("FindBackwards")) flags |= sfBackward;
-  if (config->readNumEntry("SelectedText")) flags |= sfSelected;
-  if (config->readNumEntry("PromptOnReplace",1)) flags |= sfPrompt;
-  searchFlags = flags;
-
-  config->setGroup("Settings");
-  flags = 0;
-  if (config->readNumEntry("AutoIndent")) flags |= cfAutoIndent;
-  if (config->readNumEntry("BackspaceIndent")) flags |= cfBackspaceIndent;
-  if (config->readNumEntry("WordWrap")) flags |= cfWordWrap;
-  if (config->readNumEntry("ReplaceTabs")) flags |= cfReplaceTabs;
-  if (config->readNumEntry("RemoveTrailingSpaces",1)) flags |= cfRemoveSpaces;
-  if (config->readNumEntry("WrapCursor")) flags |= cfWrapCursor;
-  if (config->readNumEntry("AutoBrackets")) flags |= cfAutoBrackets;
-  if (config->readNumEntry("PersistentSelections",1)) flags |= cfPersistent;
-  if (config->readNumEntry("MultipleSelections")) flags |= cfKeepSelection;
-  if (config->readNumEntry("VerticalSelections")) flags |= cfVerticalSelect;
-  if (config->readNumEntry("DeleteOnInput")) flags |= cfDelOnInput;
-  if (config->readNumEntry("ToggleOld")) flags |= cfXorSelect;
-  configFlags = flags;
-
-  wrapAt = config->readNumEntry("WrapAt",79);
-  kWriteDoc->setTabWidth(config->readNumEntry("TabWidth",8));
-  kWriteDoc->setUndoSteps(config->readNumEntry("UndoSteps",50));
-*/
 }
 
 void KantView::writeConfig(KConfig *config) {
@@ -3016,40 +2982,6 @@ void KantView::writeConfig(KConfig *config) {
   config->writeEntry("SearchFlags",searchFlags);
   config->writeEntry("ConfigFlags",configFlags);
   config->writeEntry("WrapAt",wrapAt);
-
-/*
-  int flags;
-
-  config->setGroup("Search Options");
-  flags = searchFlags;
-  config->writeEntry("CaseSensitive",(flags & sfCaseSensitive) != 0);
-  config->writeEntry("WholeWordsOnly",(flags & sfWholeWords) != 0);
-  config->writeEntry("FromCursor",(flags & sfFromCursor) != 0);
-  config->writeEntry("FindBackwards",(flags & sfBackward) != 0);
-  config->writeEntry("SelectedText",(flags & sfSelected) != 0);
-  config->writeEntry("PromptOnReplace",(flags & sfPrompt) != 0);
-
-  config->setGroup("Settings");
-  flags = configFlags;
-  config->writeEntry("AutoIndent",(flags & cfAutoIndent) != 0);
-  config->writeEntry("BackspaceIndent",(flags & cfBackspaceIndent) != 0);
-  config->writeEntry("WordWrap",(flags & cfWordWrap) != 0);
-  config->writeEntry("ReplaceTabs",(flags & cfReplaceTabs) != 0);
-  config->writeEntry("RemoveTrailingSpaces",(flags & cfRemoveSpaces) != 0);
-  config->writeEntry("WrapCursor",(flags & cfWrapCursor) != 0);
-  config->writeEntry("AutoBrackets",(flags & cfAutoBrackets) != 0);
-  config->writeEntry("PersistentSelections",(flags & cfPersistent) != 0);
-  config->writeEntry("MultipleSelections",(flags & cfKeepSelection) != 0);
-  config->writeEntry("VerticalSelections",(flags & cfVerticalSelect) != 0);
-  config->writeEntry("DeleteOnInput",(flags & cfDelOnInput) != 0);
-  config->writeEntry("ToggleOld",(flags & cfXorSelect) != 0);
-
-  config->writeEntry("WrapAt",wrapAt);
-  config->writeEntry("TabWidth",kWriteDoc->tabChars);
-  config->writeEntry("UndoSteps",kWriteDoc->undoSteps);
-*/
-  fileRecent->saveEntries(config);
-
 }
 
 void KantView::readSessionConfig(KConfig *config) {
@@ -3112,16 +3044,6 @@ void KantView::writeSessionConfig(KConfig *config) {
     }
   }
 }
-
-/*
-void KantView::setHighlight(Highlight *hl) {
-  if (hl) {
-    kWriteDoc->setHighlight(hl);
-    kWriteDoc->updateViews();
-  }
-}
-*/
-
 
 void KantView::hlDlg() {
   HighlightDialog *dlg;
