@@ -75,7 +75,6 @@ class KateViewSpace : public QVBox
      */
     void saveFileList(KSimpleConfig* config, int myIndex);
   protected:
-    bool eventFilter(QObject* o, QEvent* e);
     /** reimplemented to catch QEvent::PaletteChange, 
     since we use a modified palette for the statusbar */
     bool event( QEvent * );

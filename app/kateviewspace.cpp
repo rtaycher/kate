@@ -185,16 +185,6 @@ void KateViewSpace::setActive( bool b, bool )
   // mStatusBar->showActiveViewIndicator( showled );
 }
 
-//FIXME - test if this is redundant - should be!
-bool KateViewSpace::eventFilter(QObject* o, QEvent* e)
-{
-  if(o == stack && e->type() == QEvent::ChildRemoved) {
-    if (mViewList.count() > 0)
-      mViewList.current()->setFocus(); // trigger gotFocus sig!
-  }
-  return QWidget::eventFilter(o, e);
-}
-
 bool KateViewSpace::event( QEvent *e )
 {
   if ( e->type() == QEvent::PaletteChange )
