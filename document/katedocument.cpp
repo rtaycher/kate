@@ -808,8 +808,7 @@ qWarning("writeFile()");
 #else
 void KateDocument::loadFile(QIODevice &dev) {
   QChar ch;
-  char last = '\0';
-  char s;
+  QChar last = '\0';
 
   clear();
 
@@ -821,16 +820,16 @@ void KateDocument::loadFile(QIODevice &dev) {
 
   while ( !stream.eof() ) {
       stream >> ch;
-      s = ch.latin1();
-      if (ch.isPrint() || s == '\t') {
+
+      if (ch.isPrint() || ch == '\t') {
         textLine->append(&ch, 1);
-      } else if (s == '\n' || s == '\r') {
-        if (last != '\r' || s != '\n') {
+      } else if (ch == '\n' || ch == '\r') {
+        if (last != '\r' || ch != '\n') {
           textLine = new TextLine();
           contents.append(textLine);
-          if (s == '\r') eolMode = KateView::eolMacintosh;
+          if (ch == '\r') eolMode = KateView::eolMacintosh;
         } else eolMode = KateView::eolDos;
-        last = s;
+        last = ch;
       }
   }
 //  updateLines();
