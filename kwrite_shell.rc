@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="kwriteshell" version="7">
+<kpartgui name="kwriteshell" version="8">
 <MenuBar>
   <Menu name="file" noMerge="1"><text>&amp;File</text>
     <Merge />
@@ -9,7 +9,7 @@
     <Action name="file_newWindow"/>
     <Action name="file_newView"/>
     <Separator/>
-    <Action name="file_close"/>
+    <Action name="file_quit"/>
   </Menu>
   <Merge />
   <Menu name="settings"><text>&amp;Settings</text>

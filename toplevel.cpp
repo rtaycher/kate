@@ -153,7 +153,7 @@ void TopLevel::setupActions()
               actionCollection(), "file_newWindow");
   new KAction(i18n("New &View"), 0, this, SLOT(newView()),
               actionCollection(), "file_newView");
-  KStdAction::close(this, SLOT(close()), actionCollection());
+  KStdAction::quit(this, SLOT(close()), actionCollection());
 
 
   // setup Settings menu

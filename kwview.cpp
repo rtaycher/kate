@@ -31,7 +31,6 @@
 #include <qwidget.h>
 #include <qfont.h>
 #include <qpainter.h>
-#include <qmessagebox.h>
 #include <qpixmap.h>
 #include <qfileinfo.h>
 #include <qfile.h>
@@ -57,6 +56,7 @@
 #include <kstdaction.h>
 #include <kparts/event.h>
 #include <kxmlgui.h>
+#include <kmessagebox.h>
 #include <dcopclient.h>
 
 #include <X11/Xlib.h> //used to have XSetTransientForHint()
@@ -2331,14 +2331,10 @@ bool KWrite::canDiscard() {
       case KMessageBox::Yes: //yes
         if (save() == CANCEL) return false;
         if (isModified()) {
-            query = QMessageBox::warning(this,
-            i18n("Sorry"),
-            i18n("Could not save the document.\nDiscard it and continue?"),
-            i18n("Yes"),
-            i18n("No"),
-            "",
-            0,1);
-          if (query == 1) return false; //no
+            query = KMessageBox::warningContinueCancel(this,
+               i18n("Could not save the document.\nDiscard it and continue?"),
+	       i18n("Save"), i18n("&Discard"));
+          if (query == KMessageBox::No) return false;
         }
         break;
       case KMessageBox::Cancel: //cancel
@@ -2390,7 +2386,7 @@ KWrite::fileResult KWrite::saveAs() {
   int query;
 
   do {
-    query = 0;
+    query = KMessageBox::Yes;
 
     url = KFileDialog::getSaveURL(kWriteDoc->url().url(), QString::null,this);
     if (url.isEmpty()) return CANCEL;
@@ -2401,15 +2397,11 @@ KWrite::fileResult KWrite::saveAs() {
       QString name(u.path());
       info.setFile(name);
       if (info.exists()) {
-        query = QMessageBox::warning(this,
-          i18n("Warning"),
-          i18n("A Document with this Name already exists.\nDo you want to overwrite it?"),
-          i18n("Yes"),
-          i18n("No"),
-          "",0,1);
+        query = KMessageBox::warningYesNo(this,
+          i18n("A Document with this Name already exists.\nDo you want to overwrite it?"));
       }
     }
-  } while (query == 1);
+  } while (query == KMessageBox::No);
 
 //  kapp->processEvents();
   writeURL(url);
@@ -2689,7 +2681,7 @@ void KWrite::searchAgain(SConfig &s) {
 
   slen = searchFor.length();
   do {
-    query = 1;
+    query = KMessageBox::Cancel;
     if (kWriteDoc->doSearch(s,searchFor)) {
       cursor = s.cursor;
       if (!(s.flags & sfBackward)) s.cursor.x += slen;
@@ -2701,24 +2693,15 @@ void KWrite::searchAgain(SConfig &s) {
         if (!(s.flags & sfBackward)) {
           // forward search
           str = i18n("End of document reached.\n"
-            "Continue from the beginning?");
-            query = QMessageBox::information(this,
-            i18n("Find"),
-            str,
-            i18n("Yes"),
-            i18n("No"),
-            "",0,1);
+                "Continue from the beginning?");
+          query = KMessageBox::warningContinueCancel(this,
+                           str, i18n("Find"), i18n("Continue"));
         } else {
           // backward search
-          str =
-            i18n("Beginning of document reached.\n"
-            "Continue from the end");
-            query = QMessageBox::information(this,
-            i18n("Find"),
-            str,
-            i18n("Yes"),
-            i18n("No"),
-            "",0,1);
+          str = i18n("Beginning of document reached.\n"
+                "Continue from the end?");
+          query = KMessageBox::warningContinueCancel(this,
+                           str, i18n("Find"), i18n("Continue"));
         }
         continueSearch(s);
       } else {
@@ -2728,7 +2711,7 @@ void KWrite::searchAgain(SConfig &s) {
           i18n("Find"));
       }
     }
-  } while (query == 0);
+  } while (query == KMessageBox::Continue);
 }
 
 //void qt_enter_modal(QWidget *);
@@ -2862,7 +2845,7 @@ bool KWrite::askReplaceEnd() {
   if (s.flags & sfFinished) {
     // replace finished
     str = i18n("%1 replace(s) made").arg(replaces);
-    QMessageBox::information(this, i18n("Replace"), str);
+    KMessageBox::information(this, str, i18n("Replace"));
     return true;
   }
 
@@ -2872,27 +2855,19 @@ bool KWrite::askReplaceEnd() {
     str = i18n("%1 replace(s) made.\n"
                "End of document reached.\n"
                "Continue from the beginning?").arg(replaces);
-  query = QMessageBox::information(this,
-      i18n("Replace"),
-      str,
-      i18n("Yes"),
-      i18n("No"),
-      "",0,1);
+    query = KMessageBox::questionYesNo(this, str, i18n("Replace"),
+		i18n("Continue"), i18n("Stop"));
   } else {
     // backward search
     str = i18n("%1 replace(s) made.\n"
                 "Beginning of document reached.\n"
                 "Continue from the end?").arg(replaces);
-    query = QMessageBox::information(this,
-      i18n("Replace"),
-      str,
-      i18n("Yes"),
-      i18n("No"),
-      "",0,1);
+    query = KMessageBox::questionYesNo(this, str, i18n("Replace"),
+                i18n("Continue"), i18n("Stop"));
   }
   replaces = 0;
   continueSearch(s);
-  return query;
+  return (query == KMessageBox::No);
 }
 
 void KWrite::replaceSlot() {
