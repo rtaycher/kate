@@ -180,13 +180,6 @@ KateMainWindow::~KateMainWindow()
 
 void KateMainWindow::setupMainWindow ()
 {
-  greptool = new GrepTool( this, "greptool" );
-  greptool->installEventFilter( this );
-  connect(greptool, SIGNAL(itemSelected(const QString &,int)), this, SLOT(slotGrepToolItemSelected(const QString &,int)));
-  // WARNING HACK - anders: showing the greptool seems to make the menu accels work
-  greptool->show();
-  greptool->hide();
-
   m_viewManager = new KateViewManager (this);
 
   filelist = new KateFileList (this, m_viewManager, this/*filelistDock*/, "filelist");
@@ -204,17 +197,24 @@ void KateMainWindow::setupMainWindow ()
 
   fileselector = new KateFileSelector( this, m_viewManager, /*fileselectorDock*/ this, "operator");
   addToolView(KDockWidget::DockLeft,fileselector, SmallIcon("fileopen"), i18n("Filesystem Browser"));
+  connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileItem*)),this,SLOT(fileSelected(const KFileItem*)));
 
   // TEST
-  addToolView( KDockWidget::DockBottom, greptool, SmallIcon("filefind"), i18n("Find in Files") );
   if (kapp->authorize("shell_access"))
   {
-     console = new KateConsole (this, "console",viewManager());
-     console->installEventFilter( this );
-     addToolView(KDockWidget::DockBottom,console, SmallIcon("konsole"), i18n("Terminal"));
-  }
+    greptool = new GrepTool( this, "greptool" );
+    greptool->installEventFilter( this );
+    connect(greptool, SIGNAL(itemSelected(const QString &,int)), this, SLOT(slotGrepToolItemSelected(const QString &,int)));
+    // WARNING HACK - anders: showing the greptool seems to make the menu accels work
+    greptool->show();
+    greptool->hide();
 
-  connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileItem*)),this,SLOT(fileSelected(const KFileItem*)));
+    addToolView( KDockWidget::DockBottom, greptool, SmallIcon("filefind"), i18n("Find in Files") );
+
+    console = new KateConsole (this, "console",viewManager());
+    console->installEventFilter( this );
+    addToolView(KDockWidget::DockBottom,console, SmallIcon("konsole"), i18n("Terminal"));
+  }
 }
 
 void KateMainWindow::setupActions()
