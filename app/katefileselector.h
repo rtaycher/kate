@@ -2,8 +2,8 @@
                           katefileselector.h  -  description
                              -------------------
     begin                : Mon Feb 5 2001
-    copyright            : (C) 2001 by Matt Newell
-    email                : newellm@proaxis.com
+    copyright            : (C) 2001 by Matt Newell, 2002 by Anders Lund
+    email                : newellm@proaxis.com, anders@alweb.dk
  ***************************************************************************/
 
 /***************************************************************************
@@ -19,52 +19,155 @@
 #define __KATE_FILESELECTOR_H__
 
 #include "katemain.h"
+#include "katedocmanager.h"
+#include <kate/document.h>
 
 #include <qwidget.h>
 #include <kfile.h>
 #include <kurl.h>
+#include <ktoolbar.h>
+#include <qframe.h>
 
 class KateMainWindow;
 class KateViewManager;
+class KActionCollection;
+class KActionSelector;
+ 
+/*
+    The kate file selector presents a directory view, in which the default action is
+    to open the activated file.
+    Additinally, a toolbar for managing the kdiroperator widget + sync that to
+    the directory of the current file is available, as well as a filter widget
+    allowing to filter the displayed files using a name filter.
+*/
 
 class KateFileSelector : public QWidget
 {
   Q_OBJECT
+  
+  friend class KFSConfigPage;
 
   public:
+    /* When to sync to current document directory */
+    enum AutoSyncEvent { DocumentChanged=1, DocumentOpened=2, GotVisible=4 };
+
     KateFileSelector( KateMainWindow *mainWindow=0, KateViewManager *viewManager=0,
                       QWidget * parent = 0, const char * name = 0 );
     ~KateFileSelector();
 
-    void readConfig(KConfig *, const QString &);
-    void writeConfig(KConfig *, const QString &);
-    void setView(KFile::FileView);
-    KDirOperator * dirOperator(){return dir;}
-
+    void readConfig( KConfig *, const QString & );
+    void writeConfig( KConfig *, const QString & );
+    void setupToolbar( KConfig * );
+    void setView( KFile::FileView );
+    KDirOperator *dirOperator(){ return dir; }
+    KActionCollection *actionCollection() { return mActionCollection; };
+    
   public slots:
     void slotFilterChange(const QString&);
     void setDir(KURL);
+    void setDir( const QString& url ) { setDir( KURL( url ) ); };
 
   private slots:
     void cmbPathActivated( const KURL& u );
     void cmbPathReturnPressed( const QString& u );
     void dirUrlEntered( const KURL& u );
     void dirFinishedLoading();
-    void setactiveDocumentDir();
+    void setActiveDocumentDir();
     void kateViewChanged();
-
+    void btnFilterClick();
+    void autoSync();
+    void autoSync( Kate::Document * );
   protected:
-    void focusInEvent(QFocusEvent*);
+    void focusInEvent( QFocusEvent * );
+    void showEvent( QShowEvent * );
+    bool eventFilter( QObject *, QEvent * );
 
   private:
+    /*class */KToolBar *toolbar;
+    KActionCollection *mActionCollection;
+    class KBookmarkHandler *bookmarkHandler;
     KURLComboBox *cmbPath;
-    KHistoryCombo * filter;
-    QLabel* filterIcon;
     KDirOperator * dir;
-    class QToolButton *home, *up, *back, *forward, *cfdir;
-    
+    class KAction *acSyncDir;
+    class TBContainer *tbparent;
+    KHistoryCombo * filter;
+    class QToolButton *btnFilter;
+
     KateMainWindow *mainwin;
     KateViewManager *viewmanager;
+
+    QString lastFilter;
+    int autoSyncEvents; // enabled autosync events
+    QString waitingUrl; // maybe display when we gets visible
+
 };
 
-#endif //KANTFILESELECTOR_H
+/*  TODO anders
+    KFSFilterHelper
+    A popup widget presenting a listbox with checkable items
+    representing the mime types available in the current directory, and
+    providing a name filter based on those.
+*/
+
+/*
+    Config page for file selector.
+    Allows for configuring the toolbar, the history length
+    of the path and file filter combos, and how to handle
+    user closed session.
+*/
+class KFSConfigPage : public Kate::ConfigPage {
+  Q_OBJECT
+  public:
+    KFSConfigPage( QWidget* parent=0, const char *name=0, KateFileSelector *kfs=0);
+    virtual ~KFSConfigPage() {};
+
+    virtual void apply();
+    virtual void reload();
+
+  private:
+    void init();
+    
+    KateFileSelector *fileSelector;
+    bool bDirty;
+    //class QListBox *lbAvailableActions, *lbUsedActions;
+    KActionSelector *acSel;
+    class QSpinBox *sbPathHistLength, *sbFilterHistLength;
+    class QCheckBox *cbSyncOpen, *cbSyncActive, *cbSyncShow;
+    class QCheckBox *cbSesLocation, *cbSesFilter;
+};
+
+/*
+    This is a hack to allow to have the toolbar without a resize
+    handle.
+    As it seems QMainWindow(?) recursively sets all toolbars
+    movable according to the global setting in it's polish() method,
+    this class is there mainly to reset that, and to handle resizing.
+    It is required to setTB() before the widget is shown, that is in
+    the parent constructor, or add the toolbar in the constructor,
+    but there is no access to it (which could easily be changed;)
+*/
+class TBContainer : public QFrame {
+  Q_OBJECT
+  public:
+    TBContainer( QWidget *parent=0, KToolBar *toolbar=0 )
+      : QFrame( parent, "toolbar container hack" ), tb( toolbar ){};
+    void setTb( KToolBar *toolbar) { tb = toolbar; };
+  public slots:
+    void polish() {
+      if (tb) {
+        setMinimumHeight( tb->sizeHint().height() );
+        ((QToolBar*)tb)->setMovingEnabled( false );
+      }
+    };
+  protected:
+    void resizeEvent( QResizeEvent *e ) {
+      if( tb ) {
+        tb->resize( e->size() );
+      }
+    }
+  private:
+    KToolBar *tb;
+};
+
+
+#endif //__KATE_FILESELECTOR_H__
