@@ -1366,12 +1366,10 @@ KateView::~KateView()
 
 void KateView::initCodeCompletionImplementation()
 {
-  /*myCC_impl=CodeCompletion_impl(this)  
-    connect(myCC_impl,SIGNAL(completionAborted()),this,SIGNAL(completionAborted));
-    connect(myCC_impl,SIGNAL(completionDone()),this,SIGNAL(completionDone));
-    connect(myCC_impl,SIGNAL(completionHided()),this,SIGNAL(completionHided));
-  */
-
+  myCC_impl=new CodeCompletion_Impl(this);
+  connect(myCC_impl,SIGNAL(completionAborted()),this,SIGNAL(completionAborted()));
+  connect(myCC_impl,SIGNAL(completionDone()),this,SIGNAL(completionDone()));
+  connect(myCC_impl,SIGNAL(completionHided()),this,SIGNAL(completionHided()));
 }
 
 QPoint KateView::cursorCoordinates()
@@ -2886,12 +2884,9 @@ void KateView::slotDecFontSizes ()
   myDoc->setFont (font);
 }
 
-/****************************************************************************************
- Code completion interface implementation
-*****************************************************************************************/
+KateDocument *KateView::document(){return myDoc;}
 
-void KateView::showArgHint(QStringList, const QString &, const QString &){;}
-void KateView::showCompletionBox(QValueList<KTextEditor::CompletionEntry>, int){;}
+
 
 
 KateBrowserExtension::KateBrowserExtension( KateDocument *doc, KateView *view )

@@ -31,6 +31,7 @@
 #include <kspell.h>
 
 #include "kateviewhighlightaction.h"
+#include "katecodecompletion_iface_impl.h"
 
 class KToggleAction;
 class KActionMenu;
@@ -39,10 +40,9 @@ class KRecentFilesAction;
 class KSelectAction;
 class QTextDrag;
 class KPrinter;
-class KateDocument;
 class Highlight;
 class KateIconBorder;
-
+class KateDocument;
 /*
 //dialog results
 const int srYes               = QDialog::Accepted;
@@ -117,6 +117,7 @@ class KateViewInternal : public QWidget {
     friend class KateDocument;
     friend class KateView;
     friend class KateIconBorder;
+    friend class CodeCompletion_Impl;
 
   private:
     uint waitForPreHighlight;
@@ -258,12 +259,14 @@ class KateView : public Kate::View
     friend class KateViewInternal;
     friend class KateDocument;
     friend class KateIconBorder;
+    friend class CodeCompletion_Impl;
 
   public:
     KateView(KateDocument *doc=0L, QWidget *parent = 0L, const char * name = 0);
     ~KateView();
+    KateDocument *document();
     /** get the real CursorCoodinates in pixels: */
-	
+
   //
   // KTextEditor::ClipboardInterface stuff
   //
@@ -555,14 +558,17 @@ class KateView : public Kate::View
 
 //code completion
   private:
+    CodeCompletion_Impl *myCC_impl;
     void initCodeCompletionImplementation();
   public:
-    virtual void showArgHint(QStringList, const QString &, const QString &);
-    virtual void showCompletionBox(QValueList<KTextEditor::CompletionEntry>, int = 0);
+    virtual void showArgHint(QStringList arg1, const QString &arg2, const QString &arg3)
+    	{ myCC_impl->showArgHint(arg1,arg2,arg3);}
+    virtual void showCompletionBox(QValueList<KTextEditor::CompletionEntry> arg1, int arg2= 0)
+    	{ myCC_impl->showCompletionBox(arg1,arg2);}
 
   signals:
     void completionAborted();
-    void completionDone(); 
+    void completionDone();
     void argHintHided();
 
 
