@@ -540,6 +540,14 @@ class KWrite : public KTextEditor::View, virtual public KWriteIface {
 
     KTempFile *m_tempSaveFile;
 
+    /*
+     * Check if the given URL already exists. Currently used by both save() and saveAs()
+     *
+     * Asks the user for permission and returns the message box result and defaults to
+     * KMessageBox::Yes in case of doubt
+     */
+    int checkOverwrite( KURL u );
+
 //text access
   public:
      /**

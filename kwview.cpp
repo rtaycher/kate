@@ -2184,6 +2184,10 @@ bool KWrite::writeFile(const QString &name) {
 
 
 void KWrite::loadURL(const KURL &url, int flags) {
+/*
+    TODO: Add newDoc code for non-local files. Currently this is not supported there
+          - Martijn Klingens
+*/
   KURL u(url);
 
   if (u.isMalformed()) {
@@ -2224,6 +2228,7 @@ void KWrite::loadURL(const KURL &url, int flags) {
         kWriteDoc->setURL( url, !(flags & KWriteView::lfNoAutoHl ) );
         kWriteDoc->updateViews();
         emit statusMsg( i18n( "New File : %1" ).arg( url.fileName() ) );
+        kWriteDoc->setNewDoc( true ); // File is new, check for overwrite!
       }
     }
   }
@@ -2231,6 +2236,10 @@ void KWrite::loadURL(const KURL &url, int flags) {
 
 
 void KWrite::writeURL(const KURL &url, int ) {
+/*
+    TODO: Add newDoc code for non-local files. Currently this is not supported there
+          - Martijn Klingens
+*/
 
     // url
     emit statusMsg(i18n("Saving..."));
@@ -2292,6 +2301,7 @@ void KWrite::writeURL(const KURL &url, int ) {
   {
       kWriteDoc->setModified( false );
       emit statusMsg( i18n( "Wrote %1" ).arg( url.fileName() ) );
+      kWriteDoc->setNewDoc( false ); // File is not new anymore
   }
 }
 
@@ -2407,12 +2417,49 @@ void KWrite::insertFile() {
 }
 
 KWrite::fileResult KWrite::save() {
+  int query = KMessageBox::Yes;
   if (isModified()) {
     if (!kWriteDoc->url().fileName().isEmpty() && ! isReadOnly()) {
+      // If document is new but has a name, check if saving it would
+      // overwrite a file that has been created since the new doc
+      // was created:
+      if( kWriteDoc->isNewDoc() )
+      {
+        query = checkOverwrite( kWriteDoc->url() );
+        if( query == KMessageBox::Cancel )
+          return CANCEL;
+      }
+      if( query == KMessageBox::Yes )
       writeURL(kWriteDoc->url(),!(KWriteView::lfNoAutoHl));
-    } else return saveAs();
+      else  // Do not overwrite already existing document:
+        return saveAs();
+    } // New, unnamed document:
+    else
+      return saveAs();
   } else emit statusMsg(i18n("No changes need to be saved"));
   return OK;
+}
+
+/*
+ * Check if the given URL already exists. Currently used by both save() and saveAs()
+ *
+ * Asks the user for permission and returns the message box result and defaults to
+ * KMessageBox::Yes in case of doubt
+ */
+int KWrite::checkOverwrite( KURL u )
+{
+  int query = KMessageBox::Yes;
+
+  if( u.isLocalFile() )
+  {
+    QFileInfo info;
+    QString name( u.path() );
+    info.setFile( name );
+    if( info.exists() )
+      query = KMessageBox::warningYesNoCancel( this,
+        i18n( "A Document with this Name already exists.\nDo you want to overwrite it?" ) );
+  }
+  return query;
 }
 
 KWrite::fileResult KWrite::saveAs() {
@@ -2425,17 +2472,12 @@ KWrite::fileResult KWrite::saveAs() {
     url = KFileDialog::getSaveURL(kWriteDoc->url().url(), QString::null,this);
     if (url.isEmpty()) return CANCEL;
 
-    KURL u(url);
-    if (u.isLocalFile()) {
-      QFileInfo info;
-      QString name(u.path());
-      info.setFile(name);
-      if (info.exists()) {
-        query = KMessageBox::warningYesNo(this,
-          i18n("A Document with this Name already exists.\nDo you want to overwrite it?"));
-      }
-    }
-  } while (query == KMessageBox::No);
+    query = checkOverwrite( url );
+  } 
+  while (query != KMessageBox::Yes);
+
+  if( query == KMessageBox::Cancel )
+    return CANCEL;
 
   writeURL(url);
   kWriteDoc->setURL( url, false );

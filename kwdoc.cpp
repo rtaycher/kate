@@ -404,6 +404,24 @@ bool KWriteDoc::isReadOnly() const {
   return readOnly;
 }
 
+void KWriteDoc::setNewDoc( bool m )
+{
+//  KTextEditor::View *view;
+
+  if ( m != newDoc )
+  {
+    newDoc = m;
+////    if (readOnly) recordReset();
+//    for (view = m_views.first(); view != 0L; view = m_views.next() ) {
+//      emit static_cast<KWrite *>( view )->newStatus();
+//    }
+  }
+}
+
+bool KWriteDoc::isNewDoc() const {
+  return newDoc;
+}
+
 void KWriteDoc::setModified(bool m) {
   KTextEditor::View *view;
 

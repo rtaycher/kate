@@ -150,6 +150,8 @@ class KWriteDoc : public KTextEditor::Document {
     int tabWidth() {return tabChars;}
     void setReadOnly(bool);
     bool isReadOnly() const;
+    void setNewDoc( bool );
+    bool isNewDoc() const;
     virtual void setReadWrite( bool );
     virtual bool isReadWrite() const;
     virtual void setModified(bool);
@@ -356,6 +358,8 @@ class KWriteDoc : public KTextEditor::Document {
     bool m_singleSelection; // false: windows-like, true: X11-like
 
     bool readOnly;
+    bool newDoc;          // True if the file is a new document (used to determine whether
+                          // to check for overwriting files on save)
     bool modified;
 
     int foundLine;
