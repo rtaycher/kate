@@ -430,7 +430,10 @@ void KateViewManager::slotWindowPrev()
 
 void KateViewManager::slotDocumentNew ()
 {
-  createView (true, KURL(), 0L);
+  if (((KateApp *)kapp)->_isSDI)
+    ((KateApp *)kapp)->newMainWindow()->viewManager->openURL( KURL() );
+  else
+    createView (true, KURL(), 0L);
 }
 
 void KateViewManager::slotDocumentOpen ()
@@ -451,7 +454,17 @@ void KateViewManager::slotDocumentOpen ()
   for (KURL::List::Iterator i=data.urls.begin(); i != data.urls.end(); ++i)
   {
     myEncoding = data.encoding;
-		openURL( *i );
+    
+    if (((KateApp *)kapp)->_isSDI)
+    {
+      ((KateApp *)kapp)->newMainWindow()->viewManager->myEncoding = data.encoding;
+      ((KateApp *)kapp)->newMainWindow()->viewManager->openURL( *i );
+    }
+    else
+    {
+      myEncoding = data.encoding;
+		  openURL( *i );
+    }
   }
 }
 

@@ -32,6 +32,7 @@
 KateApp::KateApp () : Kate::Application (),DCOPObject ("KateApp" )
 {
   mainWindows.setAutoDelete (false);
+  _isSDI = true;
 
   config()->setGroup("startup");
   _singleInstance=config()->readBoolEntry("singleinstance",true);
@@ -72,7 +73,7 @@ KateApp::~KateApp ()
   pluginManager->writeConfig ();
 }
 
-void KateApp::newMainWindow ()
+KateMainWindow *KateApp::newMainWindow ()
 {
   KateMainWindow *mainWindow = new KateMainWindow (docManager, pluginManager);
   mainWindows.append (mainWindow);
@@ -85,6 +86,8 @@ void KateApp::newMainWindow ()
     mainWindow->viewManager->openURL ( KURL() );
 
   mainWindow->show ();
+  
+  return mainWindow;
 }
 
 void KateApp::removeMainWindow (KateMainWindow *mainWindow)

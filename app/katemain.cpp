@@ -31,6 +31,7 @@
 static KCmdLineOptions options[] =
 {
     { "n", I18N_NOOP("start a new Kate (off by default)"), 0 },
+    { "s", I18N_NOOP("start Kate in SDI mode (off by default)"), 0 },
     { "+file(s)",          I18N_NOOP("Files to load"), 0 },
     { 0,0,0 }
 };
@@ -86,7 +87,7 @@ int main( int argc, char **argv )
   DCOPClient *client=0L, *client2=0L;
   QCString appID = "";
 
-  if (!args->isSet ("n"))
+  if (!args->isSet ("n") && !args->isSet ("s"))
   {
     client  = new DCOPClient ();
     client->attach();
@@ -142,6 +143,7 @@ int main( int argc, char **argv )
   {
     KateApp::addCmdLineOptions ();
     KateApp app;
+    app._isSDI = args->isSet ("s");
     return app.exec();
   }
 

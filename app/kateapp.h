@@ -39,7 +39,7 @@ class KateApp : public Kate::Application, public KateAppDCOPIface
 
     KatePluginManager *getPluginManager(){return pluginManager;};
 
-    void newMainWindow ();
+    class KateMainWindow *newMainWindow ();
     void removeMainWindow (KateMainWindow *mainWindow);
     uint mainWindowsCount ();
     virtual QString  isSingleInstance(){if (_singleInstance) return "true"; else return "false";};
@@ -52,6 +52,11 @@ class KateApp : public Kate::Application, public KateAppDCOPIface
 
   private:
     bool _singleInstance;
+    
+  public:
+    bool _isSDI;
+
+  private:
     KateDocManager *docManager;
     KatePluginManager *pluginManager;
     QPtrList<KateMainWindow> mainWindows;
