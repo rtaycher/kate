@@ -897,8 +897,6 @@ bool KateDocument::internalRemoveLine ( uint line )
 
 bool KateDocument::setSelection ( uint startLine, uint startCol, uint endLine, uint endCol )
 {
-  kdDebug()<<"setSelection "<<startLine<<" "<<endLine<<endl;
-
   int oldStartL, oldEndL;
 
   oldStartL = selectStartLine;
@@ -953,61 +951,41 @@ bool KateDocument::hasSelection() const
 QString KateDocument::selection() const
 {
   TextLine::Ptr textLine;
-  int len, z, start, end, i;
-/*
-  len = 1;
-  if (!(_configFlags & KateDocument::cfVerticalSelect)) {
-    for (z = selectStart; z <= selectEnd; z++) {
-      textLine = getTextLine(z);
-      len += textLine->numSelected();
-      if (textLine->isSelected()) len++;
-    }
-    QString s;
-    len = 0;
-    for (z = selectStart; z <= selectEnd; z++) {
-      textLine = getTextLine(z);
-      end = 0;
-      do {
-        start = textLine->findUnselected(end);
-        end = textLine->findSelected(start);
-        for (i = start; i < end; i++) {
-          s[len] = textLine->getChar(i);
-          len++;
-        }
-      } while (start < end);
-      if (textLine->isSelected()) {
-        s[len] = '\n';
-        len++;
-      }
-    }
-//    s[len] = '\0';
-    return s;
-  } else {
-    for (z = selectStart; z <= selectEnd; z++) {
-      textLine = getTextLine(z);
-      len += textLine->numSelected() + 1;
-    }
-    QString s;
-    len = 0;
-    for (z = selectStart; z <= selectEnd; z++) {
-      textLine = getTextLine(z);
-      end = 0;
-      do {
-        start = textLine->findUnselected(end);
-        end = textLine->findSelected(start);
-        for (i = start; i < end; i++) {
-          s[len] = textLine->getChar(i);
-          len++;
-        }
-      } while (start < end);
-      s[len] = '\n';
-      len++;
-    }
-//    s[len] = '\0';       //  the final \0 is not counted in length()
-    return s;
-  } */
+  QString s;
   
-  return QString();
+  if (!invertedSelection)
+  {
+    for (int z=selectStartLine; z <= selectEndLine; z++)
+    {
+      textLine = getTextLine(z);
+      if (!textLine)
+        break;
+    
+      if (!(_configFlags & KateDocument::cfVerticalSelect))
+      {
+        if ((z > selectStartLine) && (z < selectEndLine))
+          s.append (textLine->getString());
+	else
+	{
+	  if ((z == selectStartLine) && (z == selectEndLine))
+	    s.append (textLine->getString().mid(selectStartCol, selectEndCol-selectStartCol));
+	  else if ((z == selectStartLine))
+	    s.append (textLine->getString().mid(selectStartCol, textLine->length()-selectStartCol));
+	  else if ((z == selectEndLine))
+	    s.append (textLine->getString().mid(0, selectEndCol));	  
+	}
+      }
+      else
+      {
+        s.append (textLine->getString().mid(selectStartCol, selectEndCol-selectStartCol));
+      }
+      
+      if (z < selectEndLine)
+	s.append (QChar('\n'));
+    }
+  }
+  
+  return s;  
 }
 
 struct DeleteSelection {

@@ -420,6 +420,7 @@ class KateDocument : public Kate::Document
     int selectEndCol;
     bool invertedSelection;
 
+    // internal functions to get the selection state of line/col ;)
     bool lineColSelected (int line, int col);
     bool lineSelected (int line);
     bool lineHasSelected (int line);
