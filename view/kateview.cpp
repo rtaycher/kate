@@ -1009,8 +1009,7 @@ void KateViewInternal::paintCursor() {
 
     h += y - 1;
     paint.drawLine(x, y, x, h);
-    paint.drawLine(x-2, y, x+2, y);
-    paint.drawLine(x-2, h, x+2, h);
+
  paint.end();
   } else { if (drawBuffer && !drawBuffer->isNull()) {
     paint.begin(drawBuffer);
