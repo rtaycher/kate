@@ -158,7 +158,6 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
 
     virtual void readProperties(KConfig *);
     virtual void saveProperties(KConfig *);
-    virtual void saveGlobalProperties(KConfig *);
 
     virtual void dragEnterEvent( QDragEnterEvent * );
     virtual void dropEvent( QDropEvent * );

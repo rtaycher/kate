@@ -339,7 +339,7 @@ void KantMainWindow::newWindow ()
 
 void KantMainWindow::slotEditToolbars()
 {
-  KEditToolbar dlg(factory());//(actionCollection());
+  KEditToolbar dlg(factory());
 
   if (dlg.exec())
     createGUI();
@@ -461,7 +461,7 @@ KantMainWindow::slotFilterReceivedStdout (KProcess * pProcess, char * got, int l
 
 }
 
-    
+
 	void
 KantMainWindow::slotFilterReceivedStderr (KProcess * pProcess, char * got, int len)
 	{
@@ -502,7 +502,7 @@ slipInFilter (KShellProcess & shell, KantView & view, QString command)
   shell.writeStdin (marked.local8Bit (), marked.length ());
 
   //  TODO: Put up a modal dialog to defend the text from further
-  //  keystrokes while the command is out. With a cancel button...  
+  //  keystrokes while the command is out. With a cancel button...
 
 }
 
@@ -530,20 +530,20 @@ KantMainWindow::slotEditFilter ()  //  PCP
   if ( !text.isEmpty () )
       {
       m_strFilterOutput = "";
-      
+
       if (!m_pFilterShellProcess)
       	{
       	m_pFilterShellProcess = new KShellProcess;
-      	
+
 	connect ( m_pFilterShellProcess, SIGNAL(wroteStdin(KProcess *)),
 			   this, SLOT(slotFilterCloseStdin (KProcess *)));
-	
+
 	connect ( m_pFilterShellProcess, SIGNAL(receivedStdout(KProcess*,char*,int)),
 	  	       this, SLOT(slotFilterReceivedStdout(KProcess*,char*,int)) );
-    
+
 	connect ( m_pFilterShellProcess, SIGNAL(receivedStderr(KProcess*,char*,int)),
 	 	       this, SLOT(slotFilterReceivedStderr(KProcess*,char*,int)) );
-    
+
 	connect ( m_pFilterShellProcess, SIGNAL(processExited(KProcess*)),
 		       this, SLOT(slotFilterProcessExited(KProcess*) ) ) ;
       	}
@@ -552,15 +552,11 @@ KantMainWindow::slotEditFilter ()  //  PCP
       }
 }
 
-
 void KantMainWindow::slotFileQuit()
 {
-
-//  viewManager->slotDocumentCloseAll();
   viewManager->saveAllDocsAtCloseDown( config );
   close();
 }
-
 
 void KantMainWindow::readProperties(KConfig *config)
 {
@@ -586,12 +582,8 @@ void KantMainWindow::readProperties(KConfig *config)
   readDockConfig();
 }
 
-
 void KantMainWindow::saveProperties(KConfig *config)
 {
-/*  writeConfig(config);
-  config->writeEntry("DocumentNumber",docList.find(kWrite->doc()) + 1);
-  kWrite->writeSessionConfig(config); */
   config->setGroup("General");
   config->writeEntry("Show Sidebar", sidebar->isVisible());
   config->writeEntry("size", size());
@@ -604,24 +596,6 @@ void KantMainWindow::saveProperties(KConfig *config)
   viewManager->fileselector->saveConfig(config, "fileselector");
   sidebar->saveConfig( config );
   writeDockConfig();
-}
-
-
-void KantMainWindow::saveGlobalProperties(KConfig * /*config*/ )
-{
-  /*int z;
-  char buf[16];
-  KWriteDoc *doc;
-
-  config->setGroup("Number");
-  config->writeEntry("NumberOfDocuments",docList.count());
-
-  for (z = 1; z <= (int) docList.count(); z++) {
-     sprintf(buf,"Document%d",z);
-     config->setGroup(buf);
-     doc = docList.at(z - 1);
-     doc->writeSessionConfig(config);
-  } */
 }
 
 void KantMainWindow::slotWindowActivated ()
@@ -907,6 +881,11 @@ void KantMainWindow::slotSettingsShowToolbar()
 
 void KantMainWindow::slotConfigure()
 {
+  KantView* v = 0L;
+  v = viewManager->activeView();
+
+  if (!v) return;
+
   KDialogBase* dlg = new KDialogBase(KDialogBase::IconList, i18n("Configure Kant"), KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok, this, "configdialog");//KantConfigDlg(this);
 
   QFrame* frGeneral = dlg->addPage(i18n("General"), i18n("General Options"), BarIcon("misc", KIcon::SizeMedium));
@@ -935,71 +914,77 @@ void KantMainWindow::slotConfigure()
                               BarIcon("colorize", KIcon::SizeMedium) );
   ColorConfig *colorConfig = new ColorConfig(page);
   // some kwrite tabs needs a kwrite as an arg!
-  KantView* v = viewManager->activeView();
+
   KSpellConfig * ksc = 0L;
   IndentConfigTab * indentConfig = 0L;
   SelectConfigTab * selectConfig = 0L;
   EditConfigTab * editConfig = 0L;
   QColor* colors = 0L;
-  // the test can go if we are sure we allways have 1 view
-  if (v) {
-    // indent options
-    page=dlg->addVBoxPage(i18n("Indent"), i18n("Indent Options"),
+
+  // indent options
+  page=dlg->addVBoxPage(i18n("Indent"), i18n("Indent Options"),
                        BarIcon("rightjust", KIcon::SizeMedium) );
-    indentConfig = new IndentConfigTab(page, v);
-    // select options
-    page=dlg->addVBoxPage(i18n("Select"), QString::null,
+  indentConfig = new IndentConfigTab(page, v);
+
+  // select options
+  page=dlg->addVBoxPage(i18n("Select"), QString::null,
                        BarIcon("misc") );
-    selectConfig = new SelectConfigTab(page, v);
-    // edit options
-    page=dlg->addVBoxPage(i18n("Edit"), QString::null,
+  selectConfig = new SelectConfigTab(page, v);
+
+  // edit options
+  page=dlg->addVBoxPage(i18n("Edit"), QString::null,
                        BarIcon("edit", KIcon::SizeMedium ) );
-    editConfig = new EditConfigTab(page, v);
-    // spell checker
-    page = dlg->addVBoxPage( i18n("Spelling"), i18n("Spell checker behavior"),
+  editConfig = new EditConfigTab(page, v);
+
+  // spell checker
+  page = dlg->addVBoxPage( i18n("Spelling"), i18n("Spell checker behavior"),
                           BarIcon("spellcheck", KIcon::SizeMedium) );
-    ksc = new KSpellConfig(page, 0L, v->ksConfig(), false );
-    colors = v->getColors();
-    colorConfig->setColors( colors );
+  ksc = new KSpellConfig(page, 0L, v->ksConfig(), false );
+  colors = v->getColors();
+  colorConfig->setColors( colors );
 
-    page=dlg->addVBoxPage(i18n("Plugins"),i18n("Configure plugins"),
+  page=dlg->addVBoxPage(i18n("Plugins"),i18n("Configure plugins"),
                           BarIcon("misc",KIcon::SizeMedium));
-    (void)new KantConfigPluginPage(page);
+  (void)new KantConfigPluginPage(page);
 
-  }
-
-  if (dlg->exec()) {
+  if (dlg->exec())
+  {
     viewManager->setUseOpaqueResize(cb_opaqueResize->isChecked());
     config->setGroup("open files");
     config->writeEntry("reopen at startup", cb_reopenFiles->isChecked());
 
-    if (viewManager->viewCount()) {
-      ksc->writeGlobalSettings();
-      colorConfig->getColors( colors );
-      config->setGroup("kwrite");
-      v->writeConfig( config );
-      v->doc()->writeConfig( config );
-      v->applyColors();
-      config->sync();
-      // all docs need to reread config.
-      QListIterator<KantDocument> dit (docManager->docList);
-      for (; dit.current(); ++dit) {
-         dit.current()->readConfig( config );
-      }
-      QListIterator<KantView> it (viewManager->viewList);
-      for (; it.current(); ++it) {
-        v = it.current();
-        indentConfig->getData( v );
-        selectConfig->getData( v );
-        editConfig->getData( v );
-      }
-      // repeat some calls: kwrite has a bad design.
-      config->setGroup("kwrite");
-      v->writeConfig( config );
-      v->doc()->writeConfig( config );
-      config->sync();
+    ksc->writeGlobalSettings();
+    colorConfig->getColors( colors );
+    config->setGroup("kwrite");
+    v->writeConfig( config );
+    v->doc()->writeConfig( config );
+    v->applyColors();
+    config->sync();
+
+    // all docs need to reread config.
+
+    QListIterator<KantDocument> dit (docManager->docList);
+    for (; dit.current(); ++dit)
+    {
+      dit.current()->readConfig( config );
     }
+
+    QListIterator<KantView> it (viewManager->viewList);
+    for (; it.current(); ++it)
+    {
+      v = it.current();
+      indentConfig->getData( v );
+      selectConfig->getData( v );
+      editConfig->getData( v );
+    }
+
+    // repeat some calls: kwrite has a bad design.
+    config->setGroup("kwrite");
+    v->writeConfig( config );
+    v->doc()->writeConfig( config );
+    config->sync();
   }
+
   delete dlg;
   dlg = 0;
 }

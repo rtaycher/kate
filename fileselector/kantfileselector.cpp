@@ -18,7 +18,7 @@
 #include "kantfileselector.h"
 #include "kantfileselector.moc"
 
- #include "../mainwindow/kantmainwindow.h"
+#include "../mainwindow/kantmainwindow.h"
 
 #include <qlayout.h>
 #include <qpushbutton.h>
@@ -35,8 +35,6 @@
 #include <kconfig.h>
 #include <klocale.h>
 #include <kcombobox.h>
-
-#include <kdebug.h>
 
 KantFileSelector::KantFileSelector( QWidget * parent, const char * name ): QWidget(parent, name)
 {
@@ -200,5 +198,4 @@ void KantFileSelector::setCurrentDocDir()
   KURL u = ((KantMainWindow*)topLevelWidget())->currentDocUrl().directory();
   if (!u.isEmpty())
     setDir( u );
-
 }
