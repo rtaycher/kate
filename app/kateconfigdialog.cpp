@@ -142,7 +142,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, const char *name )
   lo->addWidget( bgStartup );
   
   QHBox *hbGM=new QHBox(bgStartup);
-	QLabel *lGM=new QLabel(i18n("Default GUI Mode for new windows:"),hbGM);
+	QLabel *lGM=new QLabel(i18n("Default GUI mode for new windows:"),hbGM);
   	combo_guiMode = new QComboBox(hbGM);
 	QStringList gml;
 	gml<<i18n("Toplevel Mode")<<i18n("Childframe Mode")<<i18n("Tab Page Mode")<<i18n("IDEAL Mode");

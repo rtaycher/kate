@@ -278,7 +278,7 @@ void KateProjectTreeView::slotContextMenuRequested ( QListViewItem * item, const
   QPopupMenu *menu = new QPopupMenu (this);
 
   if (i->isDir())
-    menu->insertItem (i18n("Add Folders/Files"), this, SLOT(addIt()));
+    menu->insertItem (i18n("Add Folders/Files..."), this, SLOT(addIt()));
 
   if (!i->fullName().isNull())
     menu->insertItem (i->isDir() ? i18n("Remove Folder") : i18n("Remove File"), this, SLOT(removeIt()));
