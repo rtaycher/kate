@@ -978,8 +978,8 @@ void KateViewInternal::paintCursor() {
   y = h*cursor.y - yPos;
   x = cXPos - (xPos-2);
 
-  QFont f = myDoc->getTextFont(cursor.x, cursor.y);
-  if(f != font()) setFont(f);
+  //QFont f = myDoc->getTextFont(cursor.x, cursor.y);
+  if(myDoc->myFont != font()) setFont(myDoc->myFont);
   if(cx != x || cy != y || ch != h){
     cx = x;
     cy = y;

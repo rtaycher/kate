@@ -142,7 +142,14 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   QVBox *page = addVBoxPage(path, i18n("Colors"),
                               BarIcon("colorize", KIcon::SizeSmall) );
   colorConfig = new ColorConfig(page);
-  // some kwrite tabs needs a kwrite as an arg!
+
+  // font options
+  path.clear();
+  path << i18n("Editor") << i18n("Fonts");
+  page = addVBoxPage(path, i18n("Fonts Settings"),
+                              BarIcon("fonts", KIcon::SizeSmall) );
+  fontConfig = new FontConfig(page);
+  fontConfig->setFont (v->doc()->getFont());
 
   // indent options
   path.clear();
@@ -225,6 +232,8 @@ void KateConfigDialog::slotApply()
 
   config->setGroup("General");
   config->writeEntry("restore views", cb_restoreVC->isChecked());
+
+  v->doc()->setFont (fontConfig->getFont());
 
   ksc->writeGlobalSettings();
   colorConfig->getColors( colors );

@@ -62,19 +62,11 @@ typedef CachedFontMetrics FontMetrics;
 class Attribute {
   public:
     Attribute();
-//    Attribute(const char *aName, const QColor &, const QColor &, const QFont &);
-//    QString name;
+
     QColor col;
     QColor selCol;
-    void setFont(const QFont &);
-    QFont font;
-    // QFontMetrics fm;
-    FontMetrics fm;
-    //workaround for slow QFontMetrics::width()
-    int width(QChar c) {return (fontWidth < 0) ? fm.width(c) : fontWidth;}
-    int width(QString s) {return (fontWidth < 0) ? fm.width(s) : s.length()*fontWidth;}
-  protected:
-    int fontWidth;
+    bool bold;
+    bool italic;
 };
 
 #endif //_KWATTRIBUTE_H_

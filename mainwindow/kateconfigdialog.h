@@ -54,6 +54,7 @@ class KateConfigDialog : public KDialogBase
     class QCheckBox *cb_syncKonsole;
 
     class ColorConfig *colorConfig;
+    class FontConfig *fontConfig;
     class KSpellConfig * ksc;
     class IndentConfigTab * indentConfig;
     class SelectConfigTab * selectConfig;

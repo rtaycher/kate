@@ -571,28 +571,16 @@ void KateDocument::makeAttribs() {
 
 void KateDocument::updateFontData() {
   int maxAscent, maxDescent;
-  int minTabWidth, maxTabWidth;
-  int i, z;
+  int tabWidth;
   KateView *view;
 
-  maxAscent = 0;
-  maxDescent = 0;
-  minTabWidth = 0xffffff;
-  maxTabWidth = 0;
-
-  for (z = 0; z < m_numAttribs; z++) {
-    i = m_attribs[z].fm.ascent();
-    if (i > maxAscent) maxAscent = i;
-    i = m_attribs[z].fm.descent();
-    if (i > maxDescent) maxDescent = i;
-    i = m_attribs[z].fm.width('x');
-    if (i < minTabWidth) minTabWidth = i;
-    if (i > maxTabWidth) maxTabWidth = i;
-  }
+  maxAscent = myFontMetrics.ascent();
+  maxDescent = myFontMetrics.descent();
+  tabWidth = myFontMetrics.width('x');
 
   fontHeight = maxAscent + maxDescent + 1;
   fontAscent = maxAscent;
-  m_tabWidth = tabChars*(maxTabWidth + minTabWidth)/2;
+  m_tabWidth = tabChars*tabWidth;
 
   for (view = views.first(); view != 0L; view = views.next() ) {
     resizeBuffer(view,view->width(),fontHeight);
@@ -638,13 +626,11 @@ int KateDocument::textWidth(const TextLine::Ptr &textLine, int cursorX) {
   int x;
   int z;
   QChar ch;
-  Attribute *a;
 
   x = 0;
   for (z = 0; z < cursorX; z++) {
     ch = textLine->getChar(z);
-    a = &m_attribs[textLine->getAttr(z)];
-    x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : a->fm.width(ch);//a->width(ch);
+    x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : myFontMetrics.width(ch);//a->width(ch);
   }
   return x;
 }
@@ -664,7 +650,6 @@ int KateDocument::textWidth(bool wrapCursor, PointStruc &cursor, int xPos) {
   int x, oldX;
   int z;
   QChar ch;
-  Attribute *a;
 
   if (cursor.y < 0) cursor.y = 0;
   if (cursor.y > lastLine()) cursor.y = lastLine();
@@ -675,8 +660,7 @@ int KateDocument::textWidth(bool wrapCursor, PointStruc &cursor, int xPos) {
   while (x < xPos && (!wrapCursor || z < len)) {
     oldX = x;
     ch = textLine->getChar(z);
-    a = &m_attribs[textLine->getAttr(z)];
-    x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : a->fm.width(ch);//a->width(ch);
+    x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : myFontMetrics.width(ch);//a->width(ch);
     z++;
   }
   if (xPos - oldX < x - xPos && z > 0) {
@@ -700,7 +684,6 @@ int KateDocument::textPos(const TextLine::Ptr &textLine, int xPos, int &newXPos)
   int x, oldX;
   int z;
   QChar ch;
-  Attribute *a;
 
 //  len = textLine->length();
 
@@ -708,8 +691,7 @@ int KateDocument::textPos(const TextLine::Ptr &textLine, int xPos, int &newXPos)
   while (x < xPos) { // && z < len) {
     oldX = x;
     ch = textLine->getChar(z);
-    a = &m_attribs[textLine->getAttr(z)];
-    x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : a->fm.width(ch);//a->width(ch);
+    x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : myFontMetrics.width(ch);//a->width(ch);
     z++;
   }
   if (xPos - oldX < x - xPos && z > 0) {
@@ -1155,7 +1137,6 @@ void KateDocument::toggleRect(int start, int end, int x1, int x2) {
   for (line = start; line < end; line++) {
     int x, oldX, s, e, newX1, newX2;
     QChar ch;
-    Attribute *a;
 
     TextLine::Ptr textLine = getTextLine(line);
 
@@ -1165,8 +1146,7 @@ void KateDocument::toggleRect(int start, int end, int x1, int x2) {
     while (x < x1) { // && z < len) {
       oldX = x;
       ch = textLine->getChar(z);
-      a = &m_attribs[textLine->getAttr(z)];
-      x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : a->fm.width(ch);//a->width(ch);
+      x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : myFontMetrics.width(ch);//a->width(ch);
       z++;
     }
     s = z;
@@ -1178,8 +1158,7 @@ void KateDocument::toggleRect(int start, int end, int x1, int x2) {
     while (x < x2) { // && z < len) {
       oldX = x;
       ch = textLine->getChar(z);
-      a = &m_attribs[textLine->getAttr(z)];
-      x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : a->fm.width(ch);//a->width(ch);
+      x += (ch == '\t') ? m_tabWidth - (x % m_tabWidth) : myFontMetrics.width(ch);//a->width(ch);
       z++;
     }
     e = z;
@@ -1873,16 +1852,6 @@ QColor &KateDocument::cursorCol(int x, int y) {
   if (attr & taSelectMask) return a->selCol; else return a->col;
 }
 
-QFont &KateDocument::getTextFont(int x, int y) {
-  int attr;
-  Attribute *a;
-
-  TextLine::Ptr textLine = getTextLine(y);
-  attr = textLine->getRawAttr(x);
-  a = &m_attribs[attr & taAttrMask];
-  return a->font;
-}
-
 void KateDocument::paintTextLine(QPainter &paint, int line, int xStart, int xEnd, bool showTabs)
 {
   paintTextLine (paint, line, 0, xStart, xEnd, showTabs);
@@ -1899,6 +1868,9 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
   int attr, nextAttr;
   int xs;
   int xc, zc;
+  QFont font;
+
+  font = QFont(myFont);
 
   if (line > lastLine()) {
     paint.fillRect(0, y, xEnd - xStart,fontHeight, colors[4]);
@@ -1920,8 +1892,7 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
     if (ch == '\t') {
       x += m_tabWidth - (x % m_tabWidth);
     } else {
-      a = &m_attribs[textLine->getAttr(z)];
-      x += a->fm.width(ch);//a->width(ch);
+      x += myFontMetrics.width(ch);//a->width(ch);
     }
     z++;
   } while (x <= xStart);
@@ -1941,8 +1912,7 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
     if (ch == '\t') {
       x += m_tabWidth - (x % m_tabWidth);
     } else {
-      a = &m_attribs[attr & taAttrMask];
-      x += a->fm.width(ch);//a->width(ch);
+      x += myFontMetrics.width(ch);//a->width(ch);
     }
     z++;
   }
@@ -1962,7 +1932,7 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
         QConstString str((QChar *) &s[zc], z - zc /*+1*/);
         QString s = str.string();
         paint.drawText(x - xStart, y, s);
-        x += a->fm.width(s);//a->width(s);//&s[zc], z - zc);
+        x += myFontMetrics.width(s);//a->width(s);//&s[zc], z - zc);
       }
       zc = z +1;
 
@@ -1974,7 +1944,10 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
 
           if (attr & taSelectMask) paint.setPen(a->selCol);
             else paint.setPen(a->col);
-          paint.setFont(a->font);
+
+          font.setBold (a->bold);
+          font.setItalic (a->italic);
+          paint.setFont(font);
         }
 
 //        paint.drawLine(x - xStart, y -2, x - xStart, y);
@@ -1991,7 +1964,7 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
           QConstString str((QChar *) &s[zc], z - zc /*+1*/);
           QString s = str.string();
           paint.drawText(x - xStart, y, s);
-          x += a->fm.width(s);//a->width(s);//&s[zc], z - zc);
+          x += myFontMetrics.width(s);//a->width(s);//&s[zc], z - zc);
           zc = z;
         }
         attr = nextAttr;
@@ -1999,7 +1972,10 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
 
         if (attr & taSelectMask) paint.setPen(a->selCol);
           else paint.setPen(a->col);
-        paint.setFont(a->font);
+
+        font.setBold (a->bold);
+        font.setItalic (a->italic);
+        paint.setFont(font);
       }
     }
     z++;
@@ -2863,8 +2839,7 @@ found:
   bm.cursor.y = line;
   //x position (start and end) of related bracket
   bm.sXPos = textWidth(textLine, x);
-  a = &m_attribs[attr];
-  bm.eXPos = bm.sXPos + a->fm.width(bracket);//a->width(bracket);
+  bm.eXPos = bm.sXPos + myFontMetrics.width(bracket);//a->width(bracket);
 }
 
 void KateDocument::clipboardChanged() { //slot

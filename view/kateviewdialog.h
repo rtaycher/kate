@@ -156,5 +156,21 @@ private:
   KColorButton *m_selFound;
 };
 
+class FontConfig : public QWidget
+{
+  Q_OBJECT
+
+public:
+
+  FontConfig( QWidget *parent = 0, char *name = 0 );
+  ~FontConfig();
+
+  void setFont ( const QFont &font );
+  QFont getFont ( );
+
+  private:
+    class KFontChooser *m_fontchooser;
+};
+
 
 #endif //_KWDIALOG_H_

@@ -20,13 +20,5 @@
 
 #include "kateattribute.h"
 
-Attribute::Attribute() : font(), fm(font) {
+Attribute::Attribute()  {
 }
-
-void Attribute::setFont(const QFont &f) {
-  font = f;
-  fm = FontMetrics(f);
-//workaround for slow QFontMetrics::width(), QFont::fixedPitch() doesn't seem to work
-  if ((fontWidth = fm.width('W')) != fm.width('i')) fontWidth = -1;
-}
-

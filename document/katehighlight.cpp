@@ -1185,7 +1185,6 @@ int HlManager::makeAttribs(Highlight *highlight, Attribute *a, int maxAttribs) {
   ItemDataList itemDataList;
   ItemData *itemData;
   int nAttribs, z;
-  QFont font;
 
   defaultStyleList.setAutoDelete(true);
   getDefaults(defaultStyleList, defaultFont);
@@ -1200,30 +1199,22 @@ int HlManager::makeAttribs(Highlight *highlight, Attribute *a, int maxAttribs) {
       defaultStyle = defaultStyleList.at(itemData->defStyleNum);
       a[z].col = defaultStyle->col;
       a[z].selCol = defaultStyle->selCol;
-      font.setBold(defaultStyle->bold);
-      font.setItalic(defaultStyle->italic);
+      a[z].bold = defaultStyle->bold;
+      a[z].italic = defaultStyle->italic;
     } else {
       // custom style
       a[z].col = itemData->col;
       a[z].selCol = itemData->selCol;
-      font.setBold(itemData->bold);
-      font.setItalic(itemData->italic);
+      a[z].bold = itemData->bold;
+      a[z].italic = itemData->italic;
     }
-    if (itemData->defFont) {
-      font.setFamily(defaultFont.family);
-      font.setPointSize(defaultFont.size);
-//      KCharset(defaultFont.charset).setQFont(font);
-    } else {
-      font.setFamily(itemData->family);
-      font.setPointSize(itemData->size);
-//      KCharset(itemData->charset).setQFont(font);
-    }
-    a[z].setFont(font);
   }
+
   for (; z < maxAttribs; z++) {
     a[z].col = black;
     a[z].selCol = black;
-    a[z].setFont(font);
+    a[z].bold = defaultStyle->bold;
+    a[z].italic = defaultStyle->italic;
   }
   return nAttribs;
 }

@@ -309,7 +309,6 @@ class KateDocument : public KateDocumentIface, virtual public KateDocumentDCOPIf
     void updateViews(KateView *exclude = 0L);
 
     QColor &cursorCol(int x, int y);
-    QFont &getTextFont(int x, int y);
     void paintTextLine(QPainter &, int line, int xStart, int xEnd, bool showTabs);
     void paintTextLine(QPainter &, int line, int y, int xStart, int xEnd, bool showTabs);
 

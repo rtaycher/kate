@@ -25,6 +25,7 @@
 #include <kglobal.h>
 #include <kcharsets.h>
 #include <qvbox.h>
+#include <kfontdialog.h>
 
 #include "../document/katedocument.h"
 #include "kateviewdialog.h"
@@ -517,6 +518,30 @@ void ColorConfig::getColors(QColor *colors)
   colors[1] = m_selected->color();
   colors[2] = m_found->color();
   colors[3] = m_selFound->color();
+}
+
+FontConfig::FontConfig( QWidget *parent, char *name )
+  : QWidget( parent, name )
+{
+    // sizemanagment
+  QGridLayout *grid = new QGridLayout( this, 1, 1 );
+
+  m_fontchooser = new KFontChooser ( this );
+  grid->addWidget( m_fontchooser, 0, 0);
+}
+
+FontConfig::~FontConfig()
+{
+}
+
+void FontConfig::setFont ( const QFont &font )
+{
+  m_fontchooser->setFont (font);
+}
+
+QFont FontConfig::getFont ( )
+{
+  return m_fontchooser->font();
 }
 
 #include "kateviewdialog.moc"
