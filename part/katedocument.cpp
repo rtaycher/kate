@@ -3334,11 +3334,11 @@ void KateDocument::updateLines(int startLine, int endLine)
   }
   while ((line <= last_line) && (((int)line <= endLine) || stillcontinue));
 
-  if (ctxNum)
-    delete [] ctxNum;
+  if (ctxNum != 0L)
+    free (ctxNum);
 
-  if (endCtx)
-    delete [] endCtx;
+  if (endCtx != 0L)
+    free (endCtx);
 
   tagLines(startLine, line - 1);
 }

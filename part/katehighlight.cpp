@@ -718,11 +718,11 @@ else
 
 
 		ctx=generateContextStack(&ctxNum, context->ctx, ctx, &oCtxLen, &prevLine);	//get stack ID to use
-//kdDebug()<<"test1-2-1-text4"<<endl;		
+//kdDebug()<<"test1-2-1-text4"<<endl;
 
 context=contextList[ctxNum];	//current context to use
 
-		
+
 		//kdDebug()<<"test1-2-2"<<endl;
 	}
 
@@ -773,7 +773,7 @@ context=contextList[ctxNum];	//current context to use
     s1++;
     z++;
   }
-	
+
   //set "end of line"-properties
   textLine->setAttr(context->attr);
 
@@ -782,8 +782,9 @@ context=contextList[ctxNum];	//current context to use
 //  else kdDebug()<<QString("Context stack len:0")<<endl;
 
   textLine->setContext(ctx, oCtxLen);
-  delete [] ctx;
-
+  
+  if (ctx != 0L)
+    free (ctx);
 }
 
 KConfig *Highlight::getKConfig() {
