@@ -26,6 +26,9 @@ METASOURCES = AUTO
 appsdir = $(kde_appsdir)/Editors
 apps_DATA = kwrite.desktop
 
+rcdir = $(kde_datadir)/kwrite
+rc_DATA = kwrite_browser.rc
+
 KDE_ICON = kwrite
 
 EXTRA_DIST = $(apps_DATA)

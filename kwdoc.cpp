@@ -37,6 +37,9 @@
 #include <kcharsets.h>
 #include <kdebug.h>
 
+#include <kaction.h>
+#include <kstdaction.h>
+
 #include "kwrite_factory.h"
 #include "kwview.h"
 #include "kwdoc.h"
@@ -467,13 +470,26 @@ KWriteDoc::KWriteDoc(HlManager *hlManager, const QString &path,
 
   if ( m_bSingleViewMode )
   {
-    QWidget *view = createView( parentWidget, widgetName );
+    KTextEditor::View *view = createView( parentWidget, widgetName );
     view->show();
     setWidget( view );
-  }
 
-  if ( bBrowserView )
-    (void)new KWriteBrowserExtension( this );
+    if ( bBrowserView )
+    {
+      // We are embedded in konqueror, let's provide an XML file and actions.
+      (void)new KWriteBrowserExtension( this );
+      setXMLFile( "kwrite_browser.rc" );
+
+      KStdAction::selectAll( view, SLOT( selectAll() ), actionCollection(), "select_all" );
+      (void)new KAction( i18n( "Unselect all" ), 0, view, SLOT( deselectAll() ), actionCollection(), "unselect_all" );
+      //(void)new KAction( i18n( "Invert selection" ), 0, view, SLOT( invertSelection() ), actionCollection(), "invert_select" );
+      KStdAction::find( view, SLOT( find() ), actionCollection(), "find" );
+      KStdAction::findNext( view, SLOT( findAgain() ), actionCollection(), "find_again" );
+      KStdAction::gotoLine( view, SLOT( gotoLine() ), actionCollection(), "goto_line" );
+
+      // TODO highlight select submenu
+    }
+  }
 }
 
 KWriteDoc::~KWriteDoc() {
@@ -567,7 +583,7 @@ bool KWriteDoc::hasSelection() const
 
 QString KWriteDoc::selection() const
 {
-} 
+}
 
 TextLine *KWriteDoc::getTextLine(int line) const {
 //  if (line < 0) line = 0;
@@ -1786,7 +1802,7 @@ void KWriteDoc::doUncommentLine(PointStruc &cursor) {
     if(endComment != "") {
       cursor.x = textline->length() - endCommentLen;
       recordReplace(cursor, endCommentLen, "");
-      cursor.x = 0;        
+      cursor.x = 0;
     }
 
   } else if(textline->startingWith(otherStartComment) && textline->endingWith(endComment)) {
@@ -1799,7 +1815,7 @@ void KWriteDoc::doUncommentLine(PointStruc &cursor) {
     if(endComment != "") {
       cursor.x = textline->length() - endCommentLen;
       recordReplace(cursor, endCommentLen, "");
-      cursor.x = 0;        
+      cursor.x = 0;
     }
   }
 }
@@ -1818,7 +1834,7 @@ void KWriteDoc::doComment(VConfig &c, int change) {
     } else if(change < 0) {
       // uncomment single line
       doUncommentLine(c.cursor);
-    }                                                                    
+    }
   } else {
     for (c.cursor.y = selectStart; c.cursor.y <= selectEnd; c.cursor.y++) {
       TextLine* textLine = contents.at(c.cursor.y);
