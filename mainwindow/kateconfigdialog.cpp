@@ -73,7 +73,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   QStringList path;
 
   path.clear();
-  path << i18n("App") << i18n("General");
+  path << i18n("Kate") << i18n("General");
   QFrame* frGeneral = addPage(path, i18n("General Options"), BarIcon("misc", KIcon::SizeMedium));
   QGridLayout* gridFrG = new QGridLayout(frGeneral);
   gridFrG->setSpacing( 6 );
@@ -164,7 +164,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   colorConfig->setColors( colors );
 
   path.clear();
-  path << i18n("App") << i18n("Plugins");
+  path << i18n("Plugins") << i18n("Manager");
   page=addVBoxPage(path,i18n("Configure plugins"),
                           BarIcon("misc",KIcon::SizeMedium));
   (void)new KateConfigPluginPage(page);
@@ -182,6 +182,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   path << i18n("Editor") << i18n("Highlighting");
   page=addVBoxPage(path,i18n("Highlighting configuration"),
                         SmallIcon("highlighting", KIcon::SizeMedium));
+//  setFolderIcon (path, SmallIcon("highlighting", KIcon::SizeMedium));
   hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &defaultFont, &hlDataList,
     0, page);
 }
