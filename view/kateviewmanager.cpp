@@ -1010,10 +1010,10 @@ void KateViewManager::saveAllDocsAtCloseDown()
 {
   QValueList<uint> seen;
   KateView* v;
-  int id;
+  uint id;
   QStringList list;
-  int vc = viewCount();
-  int i = 0;
+  uint vc = viewCount();
+  uint i = 0;
   KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
   while ( i <= vc )
   {
