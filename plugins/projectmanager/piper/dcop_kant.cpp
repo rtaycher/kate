@@ -6,7 +6,6 @@
 #include <kapp.h>
 #include <kdebug.h>
 #include <dcopclient.h>
-#include "dcop_kant.h"
 
 
 	int
@@ -37,15 +36,14 @@ ShowErrorMessage ( int argc, char** argv, QString strFileName, int nLine, QStrin
 
 }
 
-#ifdef SELF_TEST
+//#ifdef SELF_TEST
 
-	int
+int
 main ( int argc, char** argv )
 {
 
-	ShowErrorMessage ( argc, argv, "kantmainwindow.cpp", 42, 
-				   "I dislike this line for some strange reason" );
+	ShowErrorMessage ( argc, argv, "kantmainwindow.cpp", 42, "I dislike this line for some strange reason" );
 
 }
 
-#endif  //  SELF_TEST
+//#endif  //  SELF_TEST

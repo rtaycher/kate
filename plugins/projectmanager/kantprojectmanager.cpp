@@ -26,7 +26,7 @@
 #include <kstatusbar.h>
 #include <klocale.h>
 #include <kaction.h>
-#include "./piper/piper.cpp"  //  PCP I feel not a scrap of guilt...
+#include "./piper/piper.h"  //  PCP I feel not a scrap of guilt...
 
 extern "C"
 {
