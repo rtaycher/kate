@@ -56,6 +56,7 @@
 #include <kstdaction.h>
 #include <kstandarddirs.h>
 #include <kwin.h>
+#include <kseparator.h>
 
 KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
  : KDialogBase (KDialogBase::TreeList, i18n("Configure Kate"), KDialogBase::Ok|KDialogBase::Apply|KDialogBase::Cancel, KDialogBase::Ok, parent, name)
@@ -167,10 +168,20 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   QWhatsThis::add( lNrf, youwouldnotbelieveit );
   QWhatsThis::add( sb_numRecentFiles, youwouldnotbelieveit );
 
+  KSeparator *sep=new KSeparator(frGeneral);
+  sep->setOrientation(KSeparator::HLine);
+  lo->addWidget(sep);
+  QComboBox *cb_mode=new QComboBox(frGeneral);
+  cb_mode->insertItem(i18n("Classic Mode"));
+  cb_mode->insertItem(i18n("IDEAl Mode"));
+  lo->addWidget(cb_mode);
+
+  config->setGroup("General");
+  cb_mode->setCurrentItem((config->readEntry("viewMode","")=="IDEAl")?1:0);
+
   lo->addStretch(1); // :-] works correct without autoadd
   // END General page
   
-  config->setGroup("General");
 
   path.clear();
 
