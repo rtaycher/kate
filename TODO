@@ -6,13 +6,6 @@ TODO:
 
     - Find Text dialog needs ability to hit all documents.
 
-    - Put the cursor anywhere on a "word". Don't select it, and tap <Ctrl+F>. The Find Text
-       dialog should pop up with the word in it. The definition of "word" is the same as what
-       a mouse double click would select.
-
-    - Put the cursor anywhere on blank space or punctuation. Tap <Ctrl+F>. The Find Text dialog
-       should pop up with whatever it had before in it
-
     - files that are untitled have to be saved before they can be used in a project
     - implement configure, compile, run
     - think about how to implement new! (close all opened files?)
