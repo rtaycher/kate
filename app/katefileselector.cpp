@@ -378,7 +378,6 @@ void KateFileSelector::cmbPathActivated( const KURL& u )
 
 void KateFileSelector::cmbPathReturnPressed( const QString& u )
 {
-  kdDebug()<<"opening url "<<u<<endl;
   KURL typedURL( u );
   if ( typedURL.hasPass() )
     typedURL.setPass( QString::null );
