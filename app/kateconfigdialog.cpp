@@ -217,7 +217,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   // select options
   path.clear();
   path << i18n("Editor") << i18n("Select");
-  page=addVBoxPage(path, i18n("Selection behavior"),
+  page=addVBoxPage(path, i18n("Selection Behavior"),
                        BarIcon("misc") );
   selectConfigPage = v->getDoc()->selectConfigPage(page);
 
@@ -230,26 +230,26 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
 
   path.clear();
   path << i18n("Editor") << i18n("Keyboard");
-  page=addVBoxPage(path,i18n("Keyboard configuration"),
+  page=addVBoxPage(path,i18n("Keyboard Configuration"),
                         SmallIcon("edit", KIcon::SizeSmall));
   keysConfigPage = v->getDoc()->keysConfigPage (page);
 
   // spell checker
   path.clear();
   path << i18n("Editor") << i18n("Spelling");
-  page = addVBoxPage( path, i18n("Spell checker behavior"),
+  page = addVBoxPage( path, i18n("Spell Checker Behavior"),
                           BarIcon("spellcheck", KIcon::SizeSmall) );
   kSpellConfigPage = v->getDoc()->kSpellConfigPage (page);
 
   path.clear();
   path << i18n("Editor") << i18n("Highlighting");
-  page=addVBoxPage(path,i18n("Highlighting configuration"),
+  page=addVBoxPage(path,i18n("Highlighting Configuration"),
                         SmallIcon("highlighting", KIcon::SizeSmall));
   hlConfigPage = v->getDoc()->hlConfigPage (page);
 
   path.clear();
   path << i18n("Plugins") << i18n("Manager");
-  page=addVBoxPage(path,i18n("Configure plugins"),
+  page=addVBoxPage(path,i18n("Configure Plugins"),
                           BarIcon("misc",KIcon::SizeSmall));
   (void)new KateConfigPluginPage(page, this);
 
@@ -258,6 +258,8 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
     if  ( pluginManager->myPluginList.at(i)->load && pluginManager->myPluginList.at(i)->plugin->hasConfigPage() )
       addPluginPage (pluginManager->myPluginList.at(i)->plugin);
   }
+
+  enableButtonSeparator(true);
 }
 
 KateConfigDialog::~KateConfigDialog()
