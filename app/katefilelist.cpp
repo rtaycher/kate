@@ -592,7 +592,7 @@ KFLConfigPage::KFLConfigPage( QWidget* parent, const char *name, KateFileList *f
       "Set the color for shading recently viewed documents.") );
   QWhatsThis::add( kcbEditShade, i18n(
       "Set the color for recently edited documents. This color is blended into "
-      "the color for viewed files. The most recently edited documents gets "
+      "the color for viewed files. The most recently edited documents get "
       "most of this color.") );
 
   reload();
