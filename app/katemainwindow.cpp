@@ -159,6 +159,12 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
     console->loadConsoleIfNeeded();
 
   setAcceptDrops(true);
+  
+  // activate the first restored project, if any
+  if (m_projectManager->projects() > 0)
+    activateProject(m_projectManager->project(0));
+  else
+    activateProject(0);
 }
 
 KateMainWindow::~KateMainWindow()
