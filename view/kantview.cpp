@@ -1497,7 +1497,8 @@ KantView::KantView(QWidget *parent, KantDocument *doc, const char * name, bool H
   : KTextEditor::View(doc, parent, name), DCOPObject("KantViewIface") {
   //setInstance( KantViewFactory::instance() );
 
-   active = false;
+  active = false;
+  deleteDoc = false;
 
   kWriteDoc = doc;
   m_singleViewMode = doc->isSingleViewMode();

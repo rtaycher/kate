@@ -230,11 +230,6 @@ bool KantViewManager::deleteView (KantView *view, bool force, bool delViewSpace,
   if (createNew && (viewList.count() < 1))
     createView (true, 0L, 0L);
 
-  // anders: I remove this because it makes removeviewspace behave badly.
-  //         All functions that call deleteView() seems to emit the signal
-  //         anyway.
-  //emit viewChanged ();
-
   return true;
 }
 
