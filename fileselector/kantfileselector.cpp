@@ -43,16 +43,16 @@ KantFileSelector::KantFileSelector( QWidget * parent, const char * name ): QWidg
   QHBox *hlow = new QHBox (this);
   lo->addWidget(hlow);
 
-  home = new QPushButton( "", hlow );
+  home = new QPushButton( hlow );
   home->setPixmap(SmallIcon("gohome"));
   QToolTip::add(home, i18n("Home directory"));
-  up = new QPushButton( ""/*i18n("&Up")*/, hlow );
+  up = new QPushButton( /*i18n("&Up"),*/ hlow );
   up->setPixmap(SmallIcon("up"));
   QToolTip::add(up, i18n("Up one level"));
-  back = new QPushButton( ""/*i18n("&Back")*/, hlow );
+  back = new QPushButton( /*i18n("&Back"),*/ hlow );
   back->setPixmap(SmallIcon("back"));
   QToolTip::add(back, i18n("Previous directory"));
-  forward = new QPushButton( ""/*i18n("&Next")*/, hlow );
+  forward = new QPushButton( /*i18n("&Next"),*/ hlow );
   forward->setPixmap(SmallIcon("forward"));
   QToolTip::add(forward, i18n("Next Direcotry"));
 
@@ -100,6 +100,9 @@ KantFileSelector::KantFileSelector( QWidget * parent, const char * name ): QWidg
              this,  SLOT( cmbPathReturnPressed( const QString& ) ));
   connect(dir, SIGNAL(urlEntered(const KURL&)),
              this, SLOT(dirUrlEntered(const KURL&)) );
+
+  connect(dir, SIGNAL(finishedLoading()),
+             this, SLOT(dirFinishedLoading()) );
 
 }
 
@@ -168,12 +171,16 @@ void KantFileSelector::dirUrlEntered( const KURL& u )
    while ( urls.count() >= cmbPath->maxItems() )
       urls.remove( urls.last() );
    cmbPath->setURLs( urls );
+}
+
+void KantFileSelector::dirFinishedLoading()
+{
    // HACK - enable the nav buttons
+   // have to wait for diroperator...
    up->setEnabled( dir->actionCollection()->action( "up" )->isEnabled() );
    back->setEnabled( dir->actionCollection()->action( "back" )->isEnabled() );
    forward->setEnabled( dir->actionCollection()->action( "forward" )->isEnabled() );
    home->setEnabled( dir->actionCollection()->action( "home" )->isEnabled() );
-
 }
 
 void KantFileSelector::focusInEvent(QFocusEvent*)
