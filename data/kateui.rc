@@ -67,8 +67,9 @@
 
   <Menu name="settings"><text>&amp;Settings</text>
 <!--    <Action name="settings_show_toolbar" />
-    <DefineGroup name="show_toolbar_merge" /> -->
-    <Action name="toolbars_showhide" />
+    <DefineGroup name="show_toolbar_merge" />
+    <Action name="toolbars_showhide" /> -->
+    <Action name="options_show_toolbar"/>
     <Menu name="toolviews"><text>&amp;Toolviews</text>
        <Action name="settings_show_filelist" />
        <Action name="settings_show_fileselector" />
