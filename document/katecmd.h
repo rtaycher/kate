@@ -30,7 +30,7 @@ class KateCmdParser
     KateCmdParser (KateDocument *doc=0L);
     virtual ~KateCmdParser ();
 
-    virtual bool execCmd (QString cmd=0L, KateView *view=0L)=0L;
+    virtual bool execCmd (QString cmd=0L, KateView *view=0L)=0;
 
   private:
     KateDocument *myDoc;
