@@ -84,20 +84,21 @@ int main( int argc, char **argv )
    
   bool newProcess = false;
   bool oldState = false;
-  KInstance *instance = 0L;
-  KConfig *config = 0L;
-   
+  
   if (args->isSet ("n"))
     newProcess = true;
  
   if (newProcess)
   {
-    instance = new KInstance (data);
-    config = instance->config();
+    KInstance *instance = new KInstance (data);
+    
+    KConfig *config = instance->config();
     config->setGroup("KDE");
     oldState = config->readBoolEntry("MultipleInstances",false);
     config->writeEntry("MultipleInstances",true);
     config->sync();
+    
+    delete instance;
   }
       
   KateApp app (newProcess, oldState);
