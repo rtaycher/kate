@@ -67,7 +67,7 @@ class KateViewSpace : public QVBox
     void addView(KateView* v, bool show=true);
     void removeView(KateView* v);
     bool showView(KateView* v);
-    bool showView(int docID);
+    bool showView(uint docID);
     KateView* currentView();
     int viewCount() { return mViewList.count(); }
     /** Saves the list of documents represented in this viewspace.

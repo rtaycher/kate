@@ -49,7 +49,7 @@ KateViewSpace::~KateViewSpace()
 
 void KateViewSpace::addView(KateView* v, bool show)
 {
-  int id = mViewList.count();
+  uint id = mViewList.count();
   stack->addWidget(v, id);
   if (show) {
     mViewList.append(v);
@@ -94,7 +94,7 @@ bool KateViewSpace::showView(KateView* v)
    return false;
 }
 
-bool KateViewSpace::showView(int docID)
+bool KateViewSpace::showView(uint docID)
 {
   QListIterator<KateView> it (mViewList);
   it.toLast();
