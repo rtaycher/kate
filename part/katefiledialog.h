@@ -43,7 +43,7 @@ class KateFileDialog : public KFileDialog
 
     ~KateFileDialog ();
 
-	  KateFileDialogData *exec ();
+	  KateFileDialogData exec ();
 
   protected slots:
     virtual void slotApply();

@@ -441,18 +441,12 @@ void KateViewManager::slotDocumentOpen ()
 	else
 	  dialog = new KateFileDialog (QString::null,myEncoding, this, i18n ("Open File"));
 
-	KateFileDialogData *data = dialog->exec ();
+	KateFileDialogData data = dialog->exec ();
 
-	if (data == 0L)
-	  return;
-
-	myEncoding = data->encoding;
-
-  for (KURL::List::Iterator i=data->urls.begin(); i != data->urls.end(); ++i)
+  for (KURL::List::Iterator i=data.urls.begin(); i != data.urls.end(); ++i)
   {
-    openURL( *i );
-
-    kapp->processEvents();
+    myEncoding = data.encoding;
+		openURL( *i );
   }
 }
 
@@ -500,16 +494,13 @@ void KateViewManager::slotDocumentSaveAs ()
   KateView *current = activeView();
 
 	KateFileDialog *dialog = new KateFileDialog (current->doc()->url().url(),current->doc()->encoding(), this, i18n ("Save File"), KateFileDialog::saveDialog);
-	KateFileDialogData *data = dialog->exec ();
+	KateFileDialogData data = dialog->exec ();
 
-	if (data == 0L)
-	  return;
-
-  if( !data->url.isEmpty() )
+  if( !data.url.isEmpty() )
   {
-	  current->doc()->setEncoding (data->encoding);
-    current->doc()->saveAs( data->url );
-    ((KateDocument *)current->doc())->setDocName (data->url.filename());
+	  current->doc()->setEncoding (data.encoding);
+    current->doc()->saveAs( data.url );
+    ((KateDocument *)current->doc())->setDocName (data.url.filename());
 
     setWindowCaption();
   }

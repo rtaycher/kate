@@ -34,6 +34,11 @@ KateFileDialog::KateFileDialog (const QString& startDir,
   toolBar()->insertCombo(KGlobal::charsets()->availableEncodingNames(), 33333, false, "",
 	        this, "", true);
 
+	if (type == KateFileDialog::openDialog)
+	  setMode(KFile::Files);
+	else
+	  setMode(KFile::File);
+
 	this->encoding = toolBar()->getCombo(33333);
   
 	if (encoding != QString::null)
@@ -47,21 +52,20 @@ KateFileDialog::~KateFileDialog ()
 
 }
 
-KateFileDialogData *KateFileDialog::exec()
+KateFileDialogData KateFileDialog::exec()
 {
 	int n = KDialogBase::exec();
 
-  if (n)
+	KateFileDialogData data = KateFileDialogData ();
+  
+	if (n)
 	{
-    KateFileDialogData *data = new KateFileDialogData ();
-    data->encoding = this->encoding->currentText();
-		data->url = selectedURL ();
-		data->urls = selectedURLs ();
+	  data.encoding = this->encoding->currentText();
+	  data.url = selectedURL ();
+	  data.urls = selectedURLs ();
+  }
 
-		return data;
-	}
-
-	return 0L;
+	return data;
 }
 
 void KateFileDialog::slotApply()

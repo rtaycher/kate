@@ -1857,7 +1857,7 @@ int KateView::checkOverwrite( KURL u )
 KateView::saveResult KateView::saveAs() {
   int query;
 	KateFileDialog *dialog;
-	KateFileDialogData *data;
+	KateFileDialogData data;
 
   do {
     query = KMessageBox::Yes;
@@ -1865,18 +1865,18 @@ KateView::saveResult KateView::saveAs() {
 		dialog = new KateFileDialog (myDoc->url().url(),doc()->encoding(), this, i18n ("Save File"), KateFileDialog::saveDialog);
 	  data = dialog->exec ();
 
-	  if ((data == 0L) || (data->url.isEmpty()))
+	  if (data.url.isEmpty())
 	    return SAVE_CANCEL;
 
-    query = checkOverwrite( data->url );
+    query = checkOverwrite( data.url );
   }
   while (query != KMessageBox::Yes);
 
   if( query == KMessageBox::Cancel )
     return SAVE_CANCEL;
 
-	myDoc->setEncoding (data->encoding);
-  myDoc->saveAs(data->url);
+	myDoc->setEncoding (data.encoding);
+  myDoc->saveAs(data.url);
   return SAVE_OK;
 }
 
