@@ -245,7 +245,7 @@ KateDocument::~KateDocument()
 
 bool KateDocument::openFile()
 {
-  loadFile( m_file, KGlobal::charsets()->codecForName(myEncoding));
+  loadFile( m_file );
 
 //  if ( updateHighlight )
   {
@@ -271,7 +271,7 @@ bool KateDocument::openFile()
 
 bool KateDocument::saveFile()
 {
-  return writeFile( m_file, KGlobal::charsets()->codecForName(myEncoding));
+  return writeFile( m_file );
 }
 
 KTextEditor::View *KateDocument::createView( QWidget *parent, const char *name )
@@ -293,7 +293,7 @@ QString KateDocument::textLine( int line ) const
 void KateDocument::insertLine( const QString &str, int l )
 
 {
-  kdDebug()<<"KateDocument::insertLine "<<str<<QString("	%1").arg(l)<<endl;
+  kdDebug()<<"KateDocument::insertLine "<<str<<QString("	%1").arg(l)<<endl;
   TextLine::Ptr TL=new TextLine();
   TL->append(str.unicode(),str.length());
   buffer->insertLine(l,TL);
@@ -749,29 +749,26 @@ void KateDocument::insertFile(VConfig &c, QIODevice &dev)
   recordEnd(c);
 }
 
-void KateDocument::loadFile(const QString &file, QTextCodec *codec)
+void KateDocument::loadFile(const QString &file)
 {
-  buffer->insertFile(0, file, codec);
-qWarning("Linecount = %d (loadFile)", buffer->count());
+  buffer->insertFile(0, file, KGlobal::charsets()->codecForName(myEncoding));
 }
 
-void KateDocument::appendData(const QByteArray &data, QTextCodec *codec)
+void KateDocument::appendData(const QByteArray &data)
 {
-  buffer->insertData(buffer->count(), data, codec);
-qWarning("Linecount = %d (appendData)", buffer->count());
+  buffer->insertData(buffer->count(), data, KGlobal::charsets()->codecForName(myEncoding));
   slotBufferChanged();
 }
 
-bool KateDocument::writeFile(const QString &file, QTextCodec *codec)
+bool KateDocument::writeFile(const QString &file)
 {
-qWarning("writeFile()");
   QFile f( file );
   if ( !f.open( IO_WriteOnly ) )
     return false; // Error
 
   QTextStream stream(&f);
 
-  stream.setCodec(codec);
+  stream.setCodec(KGlobal::charsets()->codecForName(myEncoding));
 
   int maxLine = numLines();
   int line = 0;

@@ -76,7 +76,6 @@
 #include <qdragobject.h>
 #include <qiodevice.h>
 #include <qbuffer.h>
-#include <qtextcodec.h>
 #include <qfocusdata.h>
 
 #include <kapp.h>
@@ -2084,13 +2083,13 @@ QString KateView::markedText() {
   return myDoc->markedText(configFlags);
 }
 
-void KateView::loadFile(const QString &file, QTextCodec *codec, bool insert)
+void KateView::loadFile(const QString &file, bool insert)
 {
   VConfig c;
 
   if (!insert) {
     myDoc->clear();
-    myDoc->loadFile(file, codec);
+    myDoc->loadFile(file);
   } else {
     // TODO: Not yet supported.
 #if 0
@@ -2101,11 +2100,6 @@ void KateView::loadFile(const QString &file, QTextCodec *codec, bool insert)
 #endif
   }
 }
-
-void KateView::writeFile(QIODevice &dev) {
-  // TODO: Not yet implemented.
-}
-
 
 bool KateView::loadFile(const QString &name, int flags) {
   QFileInfo info(name);
@@ -2124,7 +2118,7 @@ bool KateView::loadFile(const QString &name, int flags) {
   }
 
   // TODO: Select a proper codec.
-  loadFile(name, KGlobal::charsets()->codecForName(myDoc->myEncoding), flags & KateView::lfInsert);
+  loadFile(name, flags & KateView::lfInsert);
   return true;
 
   KMessageBox::sorry(this, i18n("An error occured while trying to open this document"));
@@ -2139,7 +2133,7 @@ bool KateView::writeFile(const QString &name) {
     return false;
   }
 
-  if (myDoc->writeFile(name, KGlobal::charsets()->codecForName(myDoc->myEncoding)))
+  if (myDoc->writeFile(name))
      return true; // Success
 
   KMessageBox::sorry(this, i18n("An error occured while trying to write this document"));
@@ -2201,30 +2195,9 @@ void KateView::loadURL(const KURL &url, int flags) {
 }
 
 
-void KateView::writeURL(const KURL &url, int ) {
-/*
-    TODO: Add newDoc code for non-local files. Currently this is not supported there
-          - Martijn Klingens
-*/
-
-    // url
-    emit statusMsg(i18n("Saving..."));
-    /*
-    KIOJob * iojob = new KIOJob;
-    iojob->setGUImode ( KIOJob::NONE );
-    QString tmpFile;
-    tmpFile = QString(_PATH_TMP"/kwrite%1").arg(time(0L));
-
-    m_sNet.insert( iojob->id(), new QString(u.url()) );
-    m_sLocal.insert( iojob->id(), new QString(tmpFile));
-    m_flags.insert( iojob->id(), new int(flags));
-
-    connect(iojob,SIGNAL(sigFinished( int )),this,SLOT(slotPUTFinished( int )));
-    connect(iojob,SIGNAL(sigError(int, const char *)),this,SLOT(slotIOJobError(int, const char *)));
-    iojob->copy(tmpFile, url);
-
-    if (!writeFile(tmpFile)) return;
-    }*/
+void KateView::writeURL(const KURL &url, int )
+{
+  emit statusMsg(i18n("Saving..."));
 
   QString path;
 
@@ -2294,9 +2267,9 @@ void KateView::slotJobReadResult( KIO::Job *job )
     // Something else todo?
 }
 
-void KateView::slotJobData( KIO::Job *job, const QByteArray &data )
+void KateView::slotJobData( KIO::Job *, const QByteArray &data )
 {
-  myDoc->appendData(data, KGlobal::charsets()->codecForName(myDoc->myEncoding));
+  myDoc->appendData(data);
 }
 
 bool KateView::canDiscard() {

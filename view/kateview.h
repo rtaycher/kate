@@ -565,15 +565,11 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
     enum fileResult { OK, CANCEL, RETRY, ERROR };
 
     /**
-     * Loads a file @p file using @p codec.
+     * Loads a file @p file
      * If insert = false the old contents will be deleted.
      */
-    void loadFile(const QString &file, QTextCodec *codec, bool insert);
+    void loadFile(const QString &file, bool insert);
 
-    /**
-      Writes the document into the given QIODevice
-    */
-    void writeFile(QIODevice &);
     /**
       Loads the file given in name into the editor
     */
@@ -594,7 +590,7 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
 
   protected slots:
     void slotJobReadResult( KIO::Job *job );
-    void slotJobData( KIO::Job *job, const QByteArray &data );
+    void slotJobData( KIO::Job *, const QByteArray &data );
 
   public:
     /**
@@ -633,24 +629,13 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
       automatic highlight selection.
     */
     fileResult saveAs();
-  protected:
-//    KFM *kfm;
-//    QString kfmURL;
-//    QString kfmFile;
-//    fileAction kfmAction;
-//    int kfmFlags;
 
-//command processors
   public slots:
-
-
-//edit functions
-  public:
     /**
       Clears the document without any warnings or requesters.
     */
     void clear();
-  public slots:
+
     /**
       Moves the marked text into the clipboard
     */

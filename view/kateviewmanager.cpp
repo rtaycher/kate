@@ -365,6 +365,7 @@ void KateViewManager::activateNextView()
   if (i >= viewSpaceList.count())
     i=0;
 
+  setActiveSpace (viewSpaceList.at(i));
   activateView(viewSpaceList.at(i)->currentView());
 }
 
@@ -375,6 +376,7 @@ void KateViewManager::activatePrevView()
   if (i < 0)
     i=viewSpaceList.count()-1;
 
+  setActiveSpace (viewSpaceList.at(i));
   activateView(viewSpaceList.at(i)->currentView());  
 }
 
@@ -1245,4 +1247,5 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
    s->show();
    config->deleteGroup( group );
 }
+
 
