@@ -103,12 +103,22 @@ uint KateApp::mainWindowsCount ()
 
 void KateApp::openURL (const QString &name)
 {
-  mainWindows.at(0)->viewManager->openURL (KURL(name));
+  int n = mainWindows.find ((KateMainWindow *)activeWindow());
+
+  if (n < 0)
+    n=0;
+
+  mainWindows.at(n)->viewManager->openURL (KURL(name));
 }
 
 KateViewManagerIface *KateApp::viewManagerIface ()
 {
-  return ((KateViewManagerIface *)mainWindows.at(0)->viewManager);
+  int n = mainWindows.find ((KateMainWindow *)activeWindow());
+
+  if (n < 0)
+    n=0;
+
+  return ((KateViewManagerIface *)mainWindows.at(n)->viewManager);
 }
 
 KateDocManagerIface *KateApp::docManagerIface ()
@@ -119,6 +129,10 @@ KateDocManagerIface *KateApp::docManagerIface ()
 
 KStatusBar *KateApp::statusBar ()
 {
-  return mainWindows.at(0)->statusBar();
-}
+  int n = mainWindows.find ((KateMainWindow *)activeWindow());
 
+  if (n < 0)
+    n=0;
+
+  return mainWindows.at(n)->statusBar();
+}
