@@ -439,7 +439,7 @@ void KantViewManager::statusMsgOther ()
 
   QString  msg = v->doc()->url().prettyURL();
   if (msg.isEmpty())
-    msg = v->caption();
+    msg = ((KantDocument *)v->doc())->docName();
 
   emit statusChanged (v, v->currentLine() + 1, v->currentColumn() + 1, ovr, mod, msg);
   emit statChanged ();
@@ -951,7 +951,7 @@ void KantViewManager::setWindowCaption()
   {
     QString c;
     if (activeView()->doc()->url().isEmpty() || (! showFullPath))
-      c = activeView()->caption();
+      c = ((KantDocument *)activeView()->doc())->docName();
     else
       c = activeView()->doc()->url().prettyURL();
 
