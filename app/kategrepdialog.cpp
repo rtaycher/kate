@@ -339,7 +339,6 @@ void GrepTool::slotSearch()
   pattern.replace( "%s", s );
 
   childproc = new KProcess();
-  childproc->setUseShell( true );
   childproc->setWorkingDirectory( m_workingDir );
   *childproc << "find" << ".";
   if (!cbRecursive->isChecked())
@@ -347,20 +346,17 @@ void GrepTool::slotSearch()
   if (!cmbFiles->currentText().isEmpty() )
   {
     QStringList files = QStringList::split ( ",", cmbFiles->currentText(), FALSE );
-    *childproc << "'('" << "-false";
+    *childproc << "(" << "-false";
     for ( QStringList::Iterator it = files.begin(); it != files.end(); ++it )
-      *childproc << "-o" << "-name" << KProcess::quote(*it);
-    *childproc << "')'";
+      *childproc << "-o" << "-name" << (*it);
+    *childproc << ")";
   }
   *childproc << "-exec" << "grep";
   if (!cbCasesensitive->isChecked())
     *childproc << "-i";
-  *childproc << "-n";
-  *childproc << "-H"; // gnu option, should we really assume gnu?
-  *childproc << "-e" << KProcess::quote(pattern);
-  *childproc << "{}";
+  *childproc << "-n" << "-e" << pattern << "{}";
   *childproc << "/dev/null"; //trick to have grep always display the filename
-  *childproc << "';'";
+  *childproc << ";";
 
   connect( childproc, SIGNAL(processExited(KProcess *)),
            SLOT(childExited()) );
