@@ -1031,9 +1031,8 @@ void KateViewInternal::keyPressEvent(QKeyEvent *e) {
         return;
       }
     }
-    if ( !(e->state() & ControlButton ) && (e->text())[0].isPrint() )
+    if ( !(e->state() & ControlButton ) && myDoc->insertChars (c.cursor.y, c.cursor.x, e->text(), this->myView) )
     {
-      myDoc->insertChars (c.cursor.y, c.cursor.x, e->text(), this->myView);
       myDoc->updateViews();
       e->accept();
       return;

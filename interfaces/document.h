@@ -33,6 +33,7 @@
 #include <ktexteditor/view.h>
 #include <ktexteditor/editinterface.h>
 #include <ktexteditor/cursorinterface.h>
+#include <ktexteditor/selectioninterface.h>
 
 class KConfig;
 
@@ -58,7 +59,7 @@ class Cursor : public KTextEditor::Cursor
 
 /** This interface provides access to the Kate Document class.
 */
-class Document : public KTextEditor::Document, KTextEditor::EditInterface, KTextEditor::CursorInterface
+class Document : public KTextEditor::Document, KTextEditor::EditInterface, KTextEditor::CursorInterface, KTextEditor::SelectionInterface
 {
   Q_OBJECT
 

@@ -237,7 +237,7 @@ QString KateDocument::textLine( int line ) const
   return l->getString();
 }
 
-void KateDocument::setText(const QString &s) {
+bool KateDocument::setText(const QString &s) {
   int pos;
   QChar ch;
 
@@ -258,6 +258,40 @@ void KateDocument::setText(const QString &s) {
     }
   }
   updateLines();
+
+  return true;
+}
+
+bool KateDocument::clear() {
+  PointStruc cursor;
+  KateView *view;
+
+  setPseudoModal(0L);
+  cursor.x = cursor.y = 0;
+  for (view = myViews.first(); view != 0L; view = myViews.next() ) {
+    view->updateCursor(cursor);
+    view->tagAll();
+  }
+
+  eolMode = KateDocument::eolUnix;
+
+  buffer->clear();
+  longestLine = buffer->line(0);
+
+  maxLength = 0;
+
+  select.x = -1;
+
+  selectStart = 0xffffff;
+  selectEnd = 0;
+  oldMarkState = false;
+
+  setModified(false);
+
+  currentUndo = 0;
+  newUndo();
+
+  return true;
 }
 
 bool KateDocument::insertText( int line, int col, const QString &s )
@@ -300,7 +334,6 @@ bool KateDocument::insertText( int line, int col, const QString &s )
 
       updateMaxLength(l);
 
-      insLine(line);
       tagLine(line);
       tagLine(line+1);
 
@@ -389,7 +422,6 @@ bool KateDocument::removeText ( int line, int col, int len )
 
       updateMaxLength(l);
       tagLine(line);
-      delLine (line+1);
 
       if (selectStart >= (line+1) && selectStart > 0) selectStart--;
       if (selectEnd >= (line+1)) selectEnd--;
@@ -402,7 +434,7 @@ bool KateDocument::removeText ( int line, int col, int len )
         view->getCursorPosition (&cLine, &cCol);
         view->delLine(line+1);
 
-        if ( (cLine == (line+1)) || ((cLine == line) && (cCol > deletePos)) )
+        if ( (cLine == (line+1)) || ((cLine == line) && (cCol >= deletePos)) )
           cCol = deletePos;
 
         c.y = line;
@@ -494,6 +526,89 @@ int KateDocument::lineLength ( int line ) const
     return -1;
 
   return l->getString().length();
+}
+
+//
+// KTextEditor::SelectionInterface stuff
+//
+
+bool KateDocument::setSelection ( int , int , int , int )
+{
+  return true;
+}
+
+bool KateDocument::clearSelection ()
+{
+  return true;
+}
+
+bool KateDocument::hasSelection() const
+{
+  return (selectEnd >= selectStart);
+}
+
+QString KateDocument::selection() const
+{
+  uint flags = 0;
+  TextLine::Ptr textLine;
+  int len, z, start, end, i;
+
+  len = 1;
+  if (!(flags & KateView::cfVerticalSelect)) {
+    for (z = selectStart; z <= selectEnd; z++) {
+      textLine = getTextLine(z);
+      len += textLine->numSelected();
+      if (textLine->isSelected()) len++;
+    }
+    QString s;
+    len = 0;
+    for (z = selectStart; z <= selectEnd; z++) {
+      textLine = getTextLine(z);
+      end = 0;
+      do {
+        start = textLine->findUnselected(end);
+        end = textLine->findSelected(start);
+        for (i = start; i < end; i++) {
+          s[len] = textLine->getChar(i);
+          len++;
+        }
+      } while (start < end);
+      if (textLine->isSelected()) {
+        s[len] = '\n';
+        len++;
+      }
+    }
+//    s[len] = '\0';
+    return s;
+  } else {
+    for (z = selectStart; z <= selectEnd; z++) {
+      textLine = getTextLine(z);
+      len += textLine->numSelected() + 1;
+    }
+    QString s;
+    len = 0;
+    for (z = selectStart; z <= selectEnd; z++) {
+      textLine = getTextLine(z);
+      end = 0;
+      do {
+        start = textLine->findUnselected(end);
+        end = textLine->findSelected(start);
+        for (i = start; i < end; i++) {
+          s[len] = textLine->getChar(i);
+          len++;
+        }
+      } while (start < end);
+      s[len] = '\n';
+      len++;
+    }
+//    s[len] = '\0';       //  the final \0 is not counted in length()
+    return s;
+  }
+}
+
+bool KateDocument::removeSelectedText ()
+{
+  return true;
 }
 
 //
@@ -683,74 +798,6 @@ bool KateDocument::saveFile()
   emit fileNameChanged ();
 
   return (f.status() == IO_Ok);
-}
-
-void KateDocument::setSelection( int , int , int , int )
-{
-}
-
-bool KateDocument::hasSelection() const
-{
-  return (selectEnd >= selectStart);
-}
-
-QString KateDocument::selection() const
-{
-  uint flags = 0;
-  TextLine::Ptr textLine;
-  int len, z, start, end, i;
-
-  len = 1;
-  if (!(flags & KateView::cfVerticalSelect)) {
-    for (z = selectStart; z <= selectEnd; z++) {
-      textLine = getTextLine(z);
-      len += textLine->numSelected();
-      if (textLine->isSelected()) len++;
-    }
-    QString s;
-    len = 0;
-    for (z = selectStart; z <= selectEnd; z++) {
-      textLine = getTextLine(z);
-      end = 0;
-      do {
-        start = textLine->findUnselected(end);
-        end = textLine->findSelected(start);
-        for (i = start; i < end; i++) {
-          s[len] = textLine->getChar(i);
-          len++;
-        }
-      } while (start < end);
-      if (textLine->isSelected()) {
-        s[len] = '\n';
-        len++;
-      }
-    }
-//    s[len] = '\0';
-    return s;
-  } else {
-    for (z = selectStart; z <= selectEnd; z++) {
-      textLine = getTextLine(z);
-      len += textLine->numSelected() + 1;
-    }
-    QString s;
-    len = 0;
-    for (z = selectStart; z <= selectEnd; z++) {
-      textLine = getTextLine(z);
-      end = 0;
-      do {
-        start = textLine->findUnselected(end);
-        end = textLine->findSelected(start);
-        for (i = start; i < end; i++) {
-          s[len] = textLine->getChar(i);
-          len++;
-        }
-      } while (start < end);
-      s[len] = '\n';
-      len++;
-    }
-//    s[len] = '\0';       //  the final \0 is not counted in length()
-    return s;
-  }
 }
 
 int KateDocument::numLines() const
@@ -1312,23 +1359,17 @@ void KateDocument::newLine(VConfig &c)
   c.view->updateCursor(c.cursor, c.flags);
 }
 
-void KateDocument::killLine(VConfig &c) {
-
+void KateDocument::killLine(VConfig &c)
+{
   removeLine (c.cursor.y);
-  //recordStart(c, KateUndoGroup::ugDelLine);
- /* c.cursor.x = 0;
-  recordDelete(c.cursor, 0xffffff);
-  if (c.cursor.y < lastLine()) {
-    recordAction(KateUndo::killLine, c.cursor);
-  }*/
- // recordEnd(c);
 }
 
 void KateDocument::backspace(VConfig &c) {
 
   if (c.cursor.x <= 0 && c.cursor.y <= 0) return;
 
-  if (c.cursor.x > 0) {
+  if (c.cursor.x > 0)
+  {
 
     if (!(c.flags & KateView::cfBackspaceIndents)) {
       // ordinary backspace
@@ -1383,36 +1424,6 @@ void KateDocument::del(VConfig &c) {
       recordEnd(c);
     }
   }*/
-}
-
-void KateDocument::clear() {
-  PointStruc cursor;
-  KateView *view;
-
-  setPseudoModal(0L);
-  cursor.x = cursor.y = 0;
-  for (view = myViews.first(); view != 0L; view = myViews.next() ) {
-    view->updateCursor(cursor);
-    view->tagAll();
-  }
-
-  eolMode = KateDocument::eolUnix;
-
-  buffer->clear();
-  longestLine = buffer->line(0);
-
-  maxLength = 0;
-
-  select.x = -1;
-
-  selectStart = 0xffffff;
-  selectEnd = 0;
-  oldMarkState = false;
-
-  setModified(false);
-
-  currentUndo = 0;
-  newUndo();
 }
 
 void KateDocument::cut(VConfig &c) {
@@ -2755,34 +2766,6 @@ void KateDocument::tagLine(int line) {
 
   if (tagStart > line) tagStart = line;
   if (tagEnd < line) tagEnd = line;
-}
-
-void KateDocument::insLine(int line) {
-  KateView *view;
-
-  if (selectStart >= line) selectStart++;
-  if (selectEnd >= line) selectEnd++;
-  if (tagStart >= line) tagStart++;
-  if (tagEnd >= line) tagEnd++;
-
-  newDocGeometry = true;
-  for (view = myViews.first(); view != 0L; view = myViews.next() ) {
-    view->insLine(line);
-  }
-}
-
-void KateDocument::delLine(int line) {
-  KateView *view;
-
-  if (selectStart >= line && selectStart > 0) selectStart--;
-  if (selectEnd >= line) selectEnd--;
-  if (tagStart >= line && tagStart > 0) tagStart--;
-  if (tagEnd >= line) tagEnd--;
-
-  newDocGeometry = true;
-  for (view = myViews.first(); view != 0L; view = myViews.next() ) {
-    view->delLine(line);
-  }
 }
 
 void KateDocument::optimizeSelection() {

@@ -150,7 +150,8 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     virtual QString text ( int line, int col, int len ) const;
     virtual QString textLine ( int line ) const;
 
-    virtual void setText(const QString &);
+    virtual bool setText(const QString &);
+    virtual bool clear ();
 
     virtual bool insertText ( int line, int col, const QString &s );
     virtual bool removeText ( int line, int col, int len );
@@ -158,8 +159,21 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     virtual bool insertLine ( int line, const QString &s );
     virtual bool removeLine ( int line );
 
+    virtual int numLines() const;
     virtual int length () const;
     virtual int lineLength ( int line ) const;
+
+  public slots:
+    //
+    // KTextEditor::SelectionInterface stuff
+    //
+    virtual bool setSelection ( int line_start, int col_start, int line_end, int col_end );
+    virtual bool clearSelection ();
+
+    virtual bool hasSelection () const;
+    virtual QString selection () const ;
+
+    virtual bool removeSelectedText ();
 
   public:
     //
@@ -186,20 +200,10 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     virtual bool openFile();
     virtual bool saveFile();
 
-    virtual void setSelection( int row_from, int col_from, int row_to, int col_t );
-    virtual bool hasSelection() const;
-    virtual QString selection() const;
-
     // only to make part work, don't change it !
     bool m_bSingleViewMode;
 
     QPtrList<KTextEditor::Cursor> myCursors;
-
-// public interface
-    /**
-     *  gets the number of lines
-     */
-    virtual int numLines() const;
 
     /**
      * gets the last line number (numLines() -1)
@@ -319,7 +323,6 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     void killLine(VConfig &);
     void backspace(VConfig &);
     void del(VConfig &);
-    void clear();
     void cut(VConfig &);
     void copy(int flags);
     void paste(VConfig &);
@@ -369,8 +372,6 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
 
 // internal
     void tagLine(int line);
-    void insLine(int line);
-    void delLine(int line);
     void optimizeSelection();
 
     void newUndo();
