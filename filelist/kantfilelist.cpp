@@ -27,7 +27,6 @@
 
 #include <kiconloader.h>
 #include <klocale.h>
-#include <kdebug.h>
 
 KantFileList::KantFileList (KantDocManager *_docManager, KantViewManager *_viewManager, QWidget * parent, const char * name ):  KListBox (parent, name)
 {
@@ -137,14 +136,13 @@ void KantFileList::slotNameChanged (KantDocument *doc)
 void KantFileList::slotViewChanged ()
 {
   if (!viewManager->activeView()) return;
-  //kdDebug(13030)<<"filelist::slotViewChanged(): an active vies was found, attempting to select item"<<endl;
+
   KantView *view = viewManager->activeView();
 
   for (uint i = 0; i < count(); i++)
   {
     if (((KantFileListItem *) item (i)) ->docID() == ((KantDocument *)view->doc())->docID())
     {
-      //kdDebug(13030)<<"KantFileList::slotViewChanged(): got it!: "<<item(i)->text()<<endl;
       setCurrentItem (i);
       if ( !isSelected( item(i) ) )
         setSelected( i, true );
@@ -163,7 +161,6 @@ void KantFileList::tip( const QPoint &p, QRect &r, QString &str )
   else
     str = "";
 }
-
 
 KantFileListItem::KantFileListItem( long docID, const QPixmap &pix, const QString& text): QListBoxItem()
 {
