@@ -74,7 +74,7 @@ const KAboutData *KateFactory::aboutData()
 {
   KAboutData *data = new KAboutData  ("kate", I18N_NOOP("Kate"), "0.2",
                                                            I18N_NOOP( "Kate - KDE Advanced Text Editor" ), KAboutData::License_GPL,
-                                                           "(c) 2000-2001 The Kate Authors", "http://devel-home.kde.org/~kate");
+                                                           "(c) 2000-2001 The Kate Authors", 0, "http://devel-home.kde.org/~kate");
 
   data->addAuthor ("Christoph Cullmann", I18N_NOOP("Project Manager and Core Developer"), "cullmann@kde.org", "http://www.babylon2k.de");
   data->addAuthor ("Anders Lund", I18N_NOOP("Core Developer"), "anders@alweb.dk", "http://www.alweb.dk");

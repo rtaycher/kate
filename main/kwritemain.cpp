@@ -594,7 +594,7 @@ int main(int argc, char **argv)
 {
   KAboutData aboutData ("kwrite", I18N_NOOP("KWrite"), "0.2",
 	I18N_NOOP( "KWrite - A new KWrite using the Kate Texteditor KPart" ), KAboutData::License_GPL,
-	 "(c) 2000-2001 The Kate Authors", "http://devel-home.kde.org/~kate");
+	 "(c) 2000-2001 The Kate Authors", 0, "http://devel-home.kde.org/~kate");
 
   aboutData.addAuthor("Christoph Cullmann", I18N_NOOP("Project Manager and Core Developer"), "cullmann@kde.org", "http://www.babylon2k.de");
   aboutData.addAuthor("Michael Bartl", I18N_NOOP("Core Developer"), "michael.bartl1@chello.at");
