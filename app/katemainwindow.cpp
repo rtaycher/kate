@@ -577,7 +577,7 @@ void KateMainWindow::editKeys()
 
   }
 
-  externalTools->actionCollection()->writeShortcutSettings( "Shortcuts", new KConfig("kateexternaltoolsrc") );
+  externalTools->actionCollection()->writeShortcutSettings( "Shortcuts", new KConfig("externaltools", false, false, "appdata") );
 }
 
 void KateMainWindow::openURL (const QString &name)
