@@ -1,12 +1,9 @@
 #ifndef _KATEVIEW_HIGHLIGHTACTION_H_
 #define _KATEVIEW_HIGHLIGHTACTION_H_
+
 #include <kaction.h>
 #include <qstringlist.h>
-#if QT_VERSION < 300
-#include <qlist.h>
-#else
 #include <qptrlist.h>
-#endif
 #include <qpopupmenu.h>
 
 class KateViewHighlightAction: public KActionMenu
@@ -34,11 +31,8 @@ private:
 	void init(QObject *related_);
 	QStringList subMenusName;
 	QStringList names;
-#if QT_VERSION < 300
-        QList<QPopupMenu> subMenus;
-#else
         QPtrList<QPopupMenu> subMenus;
-#endif
+
 public  slots:
 	void slotAboutToShow();
 };

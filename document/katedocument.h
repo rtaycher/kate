@@ -41,11 +41,7 @@
 #include "../main/katemain.h"
 
 #include <qobject.h>
-#if QT_VERSION<300
 #include <qptrlist.h>
-#else
-#include <qptrlist.h>
-#endif
 #include <qcolor.h>
 #include <qfont.h>
 #include <qfontmetrics.h>
@@ -455,11 +451,8 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     int fontHeight;
     int fontAscent;
 
-#if QT_VERSION<300
-    QList<KateView> views;
-#else
     QPtrList<KateView> views;
-#endif
+
     bool newDocGeometry;
 
     TextLine::Ptr longestLine;
@@ -481,11 +474,8 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     bool myWordWrap;
     uint myWordWrapAt;
 
-#if QT_VERSION < 300
-    QList<KateActionGroup> undoList;
-#else
     QPtrList<KateActionGroup> undoList;
-#endif
+
     int currentUndo;
     int undoState;
     int undoSteps;
@@ -546,11 +536,8 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     void nameChanged (KateDocument *doc);
 
   public:
-#if QT_VERSION < 300
-    QList<Kate::Mark> marks ();
-#else
     QPtrList<Kate::Mark> marks ();
-#endif
+
   public slots:
     // clear buffer/filename - update the views
     void flush ();

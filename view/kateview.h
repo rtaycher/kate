@@ -44,12 +44,8 @@
 #include "../interfaces/document.h"
 
 #include <kparts/browserextension.h>
-#if QT_VERSION < 300
-#include <qptrlist.h>
-#else
 #include <qptrlist.h>
 #include <qregexp.h>
-#endif
 #include <qstring.h>
 #include <qdialog.h>
 #include <kspell.h>
@@ -904,11 +900,8 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
   private:
     bool active;
     bool myIconBorder;
-#if QT_VERSION <300
-    QList<Kate::Mark> list;
-#else
     QPtrList<Kate::Mark> list;
-#endif
+
   public slots:
     virtual void setFocus ();
     void findAgain(bool back=false);

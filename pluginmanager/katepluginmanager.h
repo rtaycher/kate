@@ -22,11 +22,7 @@
 
 #include <qobject.h>
 #include <qvaluelist.h>
-#if QT_VERSION < 300
 #include <qptrlist.h>
-#else
-#include <qptrlist.h>
-#endif
 
 struct PluginListItem
 {
@@ -38,11 +34,7 @@ struct PluginListItem
   Kate::Plugin *plugin;
 };
 
-#if QT_VERSION < 300
-typedef QList<PluginListItem> PluginList;
-#else
 typedef QPtrList<PluginListItem> PluginList;
-#endif
 
 class KatePluginManager : public QObject
 {

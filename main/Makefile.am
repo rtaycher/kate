@@ -2,8 +2,7 @@ lib_LTLIBRARIES = libkatecore.la kate.la kwrite.la
 bin_PROGRAMS = kate kwrite
 
 libkatecore_la_SOURCES = dummy.cpp
-libkatecore_la_LIBADD   = ../qt3back/libqregexp3.la \
-		../factory/libkatefactory.la ../document/libkatedocument.la ../view/libkateview.la ../app/libkateapp.la \
+libkatecore_la_LIBADD   = ../factory/libkatefactory.la ../document/libkatedocument.la ../view/libkateview.la ../app/libkateapp.la \
 		../mainwindow/libkatemainwindow.la \
 		../fileselector/libkatefileselector.la  \
 		../console/libkateconsole.la ../filelist/libkatefilelist.la \

@@ -21,22 +21,11 @@
 #ifndef _HIGHLIGHT_H_
 #define _HIGHLIGHT_H_
 
-#if QT_VERSION < 300
 #include <qptrlist.h>
-#else
-#include <qptrlist.h>
-#endif
 #include <qdialog.h>
-
 #include <kcolorbtn.h>
 #include <qdict.h>
-
-#if QT_VERSION < 300
 #include <qregexp.h>
-#include "../qt3back/qregexp3.h"
-#else
-#include <qregexp.h>
-#endif
 #include <kdebug.h>
 
 class SyntaxDocument;
@@ -56,11 +45,8 @@ class HlItem {
     virtual ~HlItem();
     virtual bool startEnable(QChar);
     virtual const QChar *checkHgl(const QChar *, int len, bool) = 0;
-#if QT_VERSION < 300
-    QList<HlItem> *subItems;
-#else
+
     QPtrList<HlItem> *subItems;
-#endif
     int attr;
     int ctx;
 };
@@ -112,16 +98,10 @@ class HlKeyword : public HlItem
     virtual void addWord(const QString &);
     virtual void addList(const QStringList &);
     virtual const QChar *checkHgl(const QChar *, int len, bool);
-#if QT_VERSION < 300
-		QStringList getList() { return words;};
-#endif
-		virtual bool startEnable(QChar c);
+    virtual bool startEnable(QChar c);
 
   protected:
-#if QT_VERSION < 300
-		QStringList words;
-#endif
-		QDict<bool> dict;
+    QDict<bool> dict;
     bool _caseSensitive;
     const QChar *deliminatorChars;
     uint deliminatorLen;
@@ -201,11 +181,7 @@ class HlRegExpr : public HlItem {
   virtual const QChar *checkHgl(const QChar *, int len, bool);
   ~HlRegExpr(){delete Expr;};
 
-#if QT_VERSION < 300
-  QRegExp3 *Expr;
-#else
   QRegExp *Expr;
-#endif
 
   bool handlesLinestart;
 };
@@ -227,11 +203,7 @@ class ItemStyle {
     int italic; //boolean value
 };
 
-#if QT_VERSION < 300
-typedef QList<ItemStyle> ItemStyleList;
-#else
 typedef QPtrList<ItemStyle> ItemStyleList;
-#endif
 
 //Item Properties: name, Item Style, Item Font
 class ItemData : public ItemStyle {
@@ -246,11 +218,7 @@ class ItemData : public ItemStyle {
     int defStyle; //boolean value
 };
 
-#if QT_VERSION < 300
-typedef QList<ItemData> ItemDataList;
-#else
 typedef QPtrList<ItemData> ItemDataList;
-#endif
 
 class HlData {
   public:
@@ -261,11 +229,7 @@ class HlData {
     QString identifier;
 };
 
-#if QT_VERSION < 300
-typedef QList<HlData> HlDataList;
-#else
 typedef QPtrList<HlData> HlDataList;
-#endif
 
 class HlManager;
 class KConfig;
@@ -274,11 +238,8 @@ class KConfig;
 class HlContext {
   public:
     HlContext(int attribute, int lineEndContext,int _lineBeginContext);
-#if QT_VERSION <300
-    QList<HlItem> items;
-#else
+
     QPtrList<HlItem> items;
-#endif
     int attr;
     int ctx;
     int lineBeginContext;
@@ -375,13 +336,9 @@ class HlManager : public QObject {
 
   signals:
     void changed();
-  protected:
-#if QT_VERSION < 300
-    QList<Highlight> hlList;
-#else
-    QPtrList<Highlight> hlList;
-#endif
 
+  protected:
+    QPtrList<Highlight> hlList;
     static HlManager *s_pSelf;
 };
 

@@ -144,12 +144,10 @@ void KateMainWindow::setupMainWindow ()
   fileselector->dirOperator()->setView(KFile::Simple);
   fileselectorDock->setWidget (fileselector);
 
-#ifdef  _KDOCKWIDGET_2_2_
   filelistDock->setDockWindowType (NET::Tool);
   fileselectorDock->setDockWindowType (NET::Tool);
   filelistDock->setDockWindowTransient (this, true);
   fileselectorDock->setDockWindowTransient (this, true);
-#endif
 
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileViewItem*)),this,SLOT(fileSelected(const KFileViewItem*)));
 
@@ -535,11 +533,8 @@ void KateMainWindow::setHighlightMenuAboutToShow()
 {
   static QStringList subMenusName;
   static QStringList names;
-#if QT_VERSION < 300
-	static QList<QPopupMenu> subMenus;
-#else
-	static QPtrList<QPopupMenu> subMenus;
-#endif
+  static QPtrList<QPopupMenu> subMenus;
+
 	int count = HlManager::self()->highlights();
   static QString oldActiveSec;
   static int oldActiveID;
@@ -627,11 +622,8 @@ void KateMainWindow::slotSettingsShowConsole()
     consoleDock->setWidget( console );
     consoleDock->manualDock ( mainDock, KDockWidget::DockBottom, 20 );
     consoleDock->changeHideShowState();
-
-#ifdef  _KDOCKWIDGET_2_2_
     consoleDock->setDockWindowType (NET::Tool);
     consoleDock->setDockWindowTransient (this, true);
-#endif
   }
 
   consoleDock->changeHideShowState();

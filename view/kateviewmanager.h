@@ -38,11 +38,8 @@ class KateViewManager : public Kate::ViewManager
 
   protected:
     bool useOpaqueResize;
-#if QT_VERSION < 300
-    QList<KateView> viewList;
-#else
     QPtrList<KateView> viewList;
-#endif
+
     void saveAllDocsAtCloseDown();
     /** This will save the splitter configuration */
     void saveViewSpaceConfig();
@@ -56,11 +53,7 @@ class KateViewManager : public Kate::ViewManager
     void reloadCurrentDoc();
 
   private:
-#if QT_VERSION < 300
-    QList<KateViewSpace> viewSpaceList;
-#else
     QPtrList<KateViewSpace> viewSpaceList;
-#endif
 
     KateDocManager *docManager;
     QGridLayout *grid;

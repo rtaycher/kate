@@ -49,12 +49,7 @@
 #define ID_MODIFIED 3
 #define ID_GENERAL 4
 
-#if QT_VERSION < 300
-QList<KateDocument> docList; //documents
-#else
 QPtrList<KateDocument> docList; //documents
-#endif
-
 
 TopLevel::TopLevel (KateDocument *doc)
 {
@@ -87,11 +82,6 @@ TopLevel::TopLevel (KateDocument *doc)
 
 TopLevel::~TopLevel()
 {
-    // ### FIXME
-//  KParts::GUIActivateEvent ev( false );
-//  QApplication::sendEvent( kateView, &ev );
-//  guiFactory()->removeClient( kateView );
-//  createShellGUI( false );
   if (kateView->isLastView()) docList.remove((KateDocument*)kateView->doc());
 }
 
@@ -330,11 +320,7 @@ void TopLevel::slotDropEvent( QDropEvent *event )
 
   if (QUriDrag::decode(event, urls)) {
     kdDebug(13000) << "TopLevel:Handling QUriDrag..." << endl;
-#if QT_VERSION < 300
-		QListIterator<char> it(urls);
-#else
 		QPtrListIterator<char> it(urls);
-#endif
 		for( ; it.current(); ++it ) {
       slotOpen( (*it) );
     }
@@ -480,7 +466,7 @@ int main(int argc, char **argv)
 {
   KLocale::setMainCatalogue("kate");         //lukas: set this to have the kwritepart translated using kate message catalog
 
-  KAboutData aboutData ("kwrite", I18N_NOOP("KWrite"), "3.0",
+  KAboutData aboutData ("kwrite", I18N_NOOP("KWrite"), "4.0",
 	I18N_NOOP( "KWrite - A new KWrite using the Kate Texteditor KPart" ), KAboutData::License_GPL,
 	 "(c) 2000-2001 The Kate Authors", 0, "http://kate.sourceforge.net");
 

@@ -1,3 +1,7 @@
+2001-10-06 Christoph Cullmann <cullmann@kde.org>
+  * myself back again ;)
+  * now kate is clean (only qt3), no backports ;)
+
 2001-08-24  christian@kdevelop.org
   * reimplement the commenting of selections on some languages
 
@@ -14,27 +18,27 @@
   * committed changes to Kate's API necessary for integration of kate as
     a kpart into kdevelop
 
-2001-05-13 Christoph Cullmann <crossfire@babylon2k.de>
+2001-05-13 Christoph Cullmann <cullmann@kde.org>
   * after some time of learning for my "Abitur" now again some fixes ;):
     textlines stuff rewritten, selection fixed + +/- font zoom buttons in the part
 
-2001-04-27 Christoph Cullmann <crossfire@babylon2k.de>
+2001-04-27 Christoph Cullmann <cullmann@kde.org>
   * now the pluginconfig pages work ;)
 
 2001-04-24 Joseph Wenninger <jowenn@bigfoot.com>
   *  now <keywords> and <types> is replaced by <list name="XXXX">
 
-2001-04-20 Christoph Cullmann <crossfire@babylon2k.de>
+2001-04-20 Christoph Cullmann <cullmann@kde.org>
   * new configdialog
   * enhanced pluginIface to supports configdialogpages
 
-2001-04-14 Christoph Cullmann <crossfire@babylon2k.de>
+2001-04-14 Christoph Cullmann <cullmann@kde.org>
   * now kateview has in iconborder too (without real function at the moment)
 
-2001-04-10 Christoph Cullmann <crossfire@babylon2k.de>
+2001-04-10 Christoph Cullmann <cullmann@kde.org>
   * bugfixes for drawBuffer stuff, next/prev viewspace, restoreView
 
-2001-04-08 Christoph Cullmann <crossfire@babylon2k.de>
+2001-04-08 Christoph Cullmann <cullmann@kde.org>
   * now encoding for files can be selected at settings dialog (not only UTF8, all possible encodings)
   * dropped old code -> use Waldo's code ;)
 
@@ -46,7 +50,7 @@
   * Highlighting Configuration is now in kate/kwrite settings too
   * Made a cleanup of no longer used classes
 
-2001-04-04 Christoph Cullmann <crossfire@babylon2k.de>
+2001-04-04 Christoph Cullmann <cullmann@kde.org>
   * sidebar now again restores config
 
 2001-04-03 Joseph Wenninger <jowenn@bigfoot.com>
@@ -66,14 +70,14 @@
     hopefully this will give us more flexibility for syntax
     highlighting
 
-2001-03-27 Christoph Cullmann <crossfire@babylon2k.de>
+2001-03-27 Christoph Cullmann <cullmann@kde.org>
   * console disabled per default
   * console only loaded if enabled
 
 2001-03-28 Joseph Wenninger <jowenn@bigfoot.com>
   * -n in kate.desktop removed, now config settings are used
 
-2001-03-27 Christoph Cullmann <crossfire@babylon2k.de>
+2001-03-27 Christoph Cullmann <cullmann@kde.org>
   * interfaces extended (mainly for projectmanager)
   * piper moved to plugins/projectmanager/piper
   * a piper Makefile.am created
@@ -83,7 +87,7 @@
   * 1 experimental highlighting config
   * preparations for an highlighting editing dialog
 
-2001-03-25 Christoph Cullmann <crossfire@babylon2k.de>
+2001-03-25 Christoph Cullmann <cullmann@kde.org>
   * rewrite of plugin API and manager, now loading/unloading nice
 
 2001-03-22 Joseph Wenninger <jowenn@bigfoot.com>
@@ -93,13 +97,13 @@
     the settings dialog. At the moment -n is
     default start option
 
-2001-03-21 Christoph Cullmann <crossfire@babylon2k.de>
+2001-03-21 Christoph Cullmann <cullmann@kde.org>
   * QPopupMenu for filelist
 
-2001-03-20 Christoph Cullmann <crossfire@babylon2k.de>
+2001-03-20 Christoph Cullmann <cullmann@kde.org>
   * kate is now a normal KApplication
 
-2001-03-18 Christoph Cullmann <crossfire@babylon2k.de>
+2001-03-18 Christoph Cullmann <cullmann@kde.org>
   * big location changes of source files
   * KateFactory now in use by hole Kate app
   * KatePartView/Doc merged with KateView/Doc (make life more easy)
@@ -115,28 +119,28 @@
     (Not ported completely yet)
   * Some simple reg expression work (see html.xml)
 
-2001-03-17 Christoph Cullmann <crossfire@babylon2k.de>
+2001-03-17 Christoph Cullmann <cullmann@kde.org>
   * moved textfilter stuff to a own plugin "textfilter"
   * cleaned up katemainwindow.*
 
-2001-03-16 Christoph Cullmann <crossfire@babylon2k.de>
+2001-03-16 Christoph Cullmann <cullmann@kde.org>
   * search dialog comes up with selected text
   * backport of some KDevelop KWrite patches ;)
 
-2001-03-15 Christoph Cullmann <crossfire@babylon2k.de>
+2001-03-15 Christoph Cullmann <cullmann@kde.org>
   * katepart finished
   * new kwrite using katepart
   * removed old kwrite and kwritepart !
   * fixed menu and toolbar problems of the new KWrite app
 
-2001-03-11 Christoph Cullmann <crossfire@babylon2k.de>
+2001-03-11 Christoph Cullmann <cullmann@kde.org>
   * kwrite stuff merged into kate !!!!!
 
-2001-03-04 Christoph Cullmann <crossfire@babylon2k.de>
+2001-03-04 Christoph Cullmann <cullmann@kde.org>
   * mutiple mainwindows
   * fileist, sync for all mainwindows, all open docs listed
 
-2001-03-03 Christoph Cullmann <crossfire@babylon2k.de>
+2001-03-03 Christoph Cullmann <cullmann@kde.org>
   * session managment (Anders Lund)
   * removed some debug stuff
 
@@ -144,7 +148,7 @@
   * First step for a plugin management dialog page
     Soon to come
 
-2001-02-26 Christoph Cullmann <crossfire@babylon2k.de>
+2001-02-26 Christoph Cullmann <cullmann@kde.org>
   * Kate is a part of kdebase :)
     sourceforge.net CVS won't be used in the future
 
@@ -164,7 +168,7 @@
   * katemenuitem.h    : Improved menu items added doc-list
   * katelistboxitem.h    : Improved listboxitem files-list
 
-2001-02-19 Christoph Cullmann <crossfire@babylon2k.de>
+2001-02-19 Christoph Cullmann <cullmann@kde.org>
   * kateconsole.* konsole/*     : add kateconsole widget
 
 2001-02-16 Anders Lund <anders@alweb.dk>

@@ -97,11 +97,8 @@ bool KateViewManager::createView ( bool newDoc, KURL url, KateView *origView, Ka
       QString name = url.filename();
 
       // anders avoid two views w/ same caption
-#if QT_VERSION < 300
-      QListIterator<KateView> it (viewList);
-#else
       QPtrListIterator<KateView> it (viewList);
-#endif
+
       int hassamename = 0;
       for (; it.current(); ++it)
       {
@@ -161,12 +158,9 @@ bool KateViewManager::deleteView (KateView *view, bool delViewSpace)
 
 KateViewSpace* KateViewManager::activeViewSpace ()
 {
-#if QT_VERSION < 300
-				QListIterator<KateViewSpace> it(viewSpaceList);
-#else
-				QPtrListIterator<KateViewSpace> it(viewSpaceList);
-#endif
-				for (; it.current(); ++it)
+  QPtrListIterator<KateViewSpace> it(viewSpaceList);
+
+  for (; it.current(); ++it)
   {
     if ( it.current()->isActiveSpace() )
       return it.current();
@@ -183,12 +177,9 @@ KateViewSpace* KateViewManager::activeViewSpace ()
 
 KateView* KateViewManager::activeView ()
 {
-#if QT_VERSION < 300
-  QListIterator<KateView> it(viewList);
-#else
-	QPtrListIterator<KateView> it(viewList);
-#endif
-	for (; it.current(); ++it)
+  QPtrListIterator<KateView> it(viewList);
+
+  for (; it.current(); ++it)
   {
     if ( it.current()->isActive() )
       return it.current();
@@ -274,11 +265,7 @@ void KateViewManager::activateView( uint docID )
   }
   else
   {
-#if QT_VERSION < 300
-					QListIterator<KateView> it(viewList);
-#else
-					QPtrListIterator<KateView> it(viewList);
-#endif					
+    QPtrListIterator<KateView> it(viewList);
     for ( ;it.current(); ++it)
     {
       if ( it.current()->doc()->docID() == docID  )
@@ -342,12 +329,8 @@ bool KateViewManager::closeDocWithAllViews ( KateView *view )
   if (!view->canDiscard()) return false;
 
   KateDocument *doc = view->doc();
-#if QT_VERSION < 300
-  QList<KateView> closeList;
-#else
-	QPtrList<KateView> closeList;
-#endif
-	uint docID = view->doc()->docID();
+  QPtrList<KateView> closeList;
+  uint docID = view->doc()->docID();
 
   for (uint i=0; i < ((KateApp *)kapp)->mainWindowsCount (); i++ )
   {
@@ -481,12 +464,9 @@ void KateViewManager::slotDocumentSaveAll ()
 {
   kapp->processEvents();
 
-#if QT_VERSION < 300
-	QListIterator<KateView> it(viewList);
-#else
-	QPtrListIterator<KateView> it(viewList);
-#endif
-	for ( ;it.current(); ++it)
+  QPtrListIterator<KateView> it(viewList);
+
+  for ( ;it.current(); ++it)
   {
     KateView* current = it.current();
     if( current->doc()->isModified() ) {
@@ -532,11 +512,7 @@ void KateViewManager::slotDocumentCloseAll ()
 
   kapp->processEvents();
 
-#if QT_VERSION < 300
-	QList<KateDocument> closeList;
-#else
-	QPtrList<KateDocument> closeList;
-#endif
+  QPtrList<KateDocument> closeList;
 
   for (uint i=0; i < docManager->docCount(); i++ )
     closeList.append (docManager->nthDoc (i));
@@ -892,12 +868,9 @@ void KateViewManager::removeViewSpace (KateViewSpace *viewspace)
   // reparent the other sibling of the parent.
   while (p->children ())
   {
-#if QT_VERSION < 300
-					QWidget* other = ((QWidget *)(( QList<QObject>*)p->children())->first());
-#else
-					QWidget* other = ((QWidget *)(( QPtrList<QObject>*)p->children())->first());
-#endif
-					other->reparent( p->parentWidget(), 0, QPoint(), true );
+    QWidget* other = ((QWidget *)(( QPtrList<QObject>*)p->children())->first());
+
+    other->reparent( p->parentWidget(), 0, QPoint(), true );
     // We also need to find the right viewspace to become active,
     // and if "other" is the last, we move it into the grid.
     if (pIsFirst)
@@ -984,11 +957,7 @@ void KateViewManager::saveAllDocsAtCloseDown()
 {
   if (docManager->docCount () == 0) return;
 
-#if QT_VERSION < 300
-	QList<KateDocument> closeList;
-#else
-	QPtrList<KateDocument> closeList;
-#endif
+  QPtrList<KateDocument> closeList;
 
   for (uint i=0; i < docManager->docCount(); i++ )
     closeList.append (docManager->nthDoc (i));

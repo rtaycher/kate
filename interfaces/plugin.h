@@ -29,11 +29,7 @@
 #include <qobject.h>
 #include <kxmlguiclient.h>
 
-#if QT_VERSION <300
 #include <qptrlist.h>
-#else
-#include <qptrlist.h>
-#endif
 #include <qstring.h>
 #include <qpixmap.h>
 #include <qwidget.h>
@@ -140,11 +136,8 @@ Kate::PluginView* myPlugin::createView()
     */
     virtual class QPixmap configPageIcon() { return 0L; };
 
-#if QT_VERSION < 300
-    QList<PluginView> viewList;
-#else
     QPtrList<PluginView> viewList;
-#endif
+
     /** A pointer to the application object.
     Allows the plugin to acces the document and view managers as well as the main window.
     */

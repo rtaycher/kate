@@ -21,12 +21,7 @@
 #include "../main/katemain.h"
 #include "kateview.h"
 
-#if QT_VERSION < 300
 #include <qptrlist.h>
-#else
-#include <qptrlist.h>
-#endif
-
 #include <qwidget.h>
 #include <qvbox.h>
 
@@ -80,19 +75,17 @@ class KateViewSpace : public QVBox
      * myIndex is used as identifyer for a config group.
      */
     void saveFileList(KSimpleConfig* config, int myIndex);
+
   protected:
     bool eventFilter(QObject* o, QEvent* e);
+
   private:
     bool mIsActiveSpace;
     KateVSStatusBar* mStatusBar;
     QLabel* l;
     QPixmap i_active;
     QPixmap i_empty;
-#if QT_VERSION < 300
-    QList<KateView> mViewList;
-#else
     QPtrList<KateView> mViewList;
-#endif
     int mViewCount;
 
   private slots:

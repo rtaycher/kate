@@ -14,4 +14,4 @@ New KWrite app is using the Kate part ! ;-)
 
 Licensing:
 The Kate and KWrite apps are licensed under the GPL.
-The Kate interfaces (libkate.la) is licensed under the LGPL.
+The Kate interfaces (libkateinterfaces.la) is licensed under the LGPL.

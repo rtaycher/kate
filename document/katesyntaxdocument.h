@@ -19,12 +19,8 @@
 #define SYNTAXDOCUMENT_H
 
 #include <qdom.h>
-#if QT_VERSION < 300
-#include <qptrlist.h>
-#else
 #include <qptrlist.h>
 #include <qstringlist.h>
-#endif
 
 class QStringList;
 
@@ -46,11 +42,7 @@ class syntaxContextData
     QDomElement item;
 };
 
-#if QT_VERSION < 300
-typedef QList<syntaxModeListItem> SyntaxModeList;
-#else
 typedef QPtrList<syntaxModeListItem> SyntaxModeList;
-#endif
 
 class SyntaxDocument : public QDomDocument
 {
