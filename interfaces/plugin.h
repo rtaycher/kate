@@ -48,7 +48,7 @@ class PluginConfigPage : public QWidget
   friend class PluginView;
 
   public:
-    PluginConfigPage (QObject* parent = 0L, QWidget *parentWidget = 0L);
+    PluginConfigPage (QObject *parent = 0L, QWidget *wparent = 0L);
     virtual ~PluginConfigPage ();
 
     /** Reimplement to apply the config of the page to the plugin and save it */
@@ -68,11 +68,11 @@ class PluginView : public QObject, virtual public KXMLGUIClient
   friend class PluginConfigPage;
 
   public:
-    PluginView (class Plugin *plugin = 0L, class MainWindow *win = 0L);
+    PluginView (class Plugin *plugin = 0L, class MainWindow *mainwin = 0L);
     virtual ~PluginView ();
 
     /** Set the xmlGUI rc file for the plugin. */
-    void setXML (QString filename);
+    void setXML (QString);
 
     class Plugin *myPlugin;
     class MainWindow *myMainWindow;
@@ -90,7 +90,7 @@ class Plugin : public QObject
   friend class PluginConfigPage;
 
   public:
-    Plugin (QObject* parent = 0L, const char* name = 0L);
+    Plugin (QObject *parent= 0L, const char *name = 0L);
     virtual ~Plugin ();
 
     /** Called by the plugin manager to create GUI elements for the plugin.

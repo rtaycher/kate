@@ -123,60 +123,60 @@ KateBuffer::clear()
  * Insert a file at line @p line in the buffer.     
  */     
 void     
-KateBuffer::insertFile(int line, const QString &file, QTextCodec *codec)     
-{     
-  assert(line == 0); // Inserting at other places not yet handled.     
-     
-  int fd = open(QFile::encodeName(file), O_RDONLY);     
-  if (fd < 0)     
-  {     
-      //kdDebug(13020)<<"Error loading file.\n";     
-     return; // Do some error propagation here.     
-  }     
-     
-  KateBufFileLoader *loader = new KateBufFileLoader;     
-  loader->fd = fd;     
-  loader->dataStart = 0;     
-  loader->blockNr = 0;     
-  loader->codec = codec;     
-  m_loader.append(loader);     
-     
-  loadFilePart();     
-}     
-     
-void     
-KateBuffer::loadFilePart()     
-{     
-  const int blockSize = AVG_BLOCK_SIZE;     
-  const int blockRead = 3; // Read 5 blocks in a row     
-     
-  KateBufFileLoader *loader = m_loader.first();     
-     
-  KateBufState state;     
-  if (loader->blockNr > 0)     
-  {     
-     KateBufBlock *block = m_blocks.at(loader->blockNr-1);     
-     state = block->m_endState;     
-  }     
-  else     
-  {     
-     // Initial state.     
-     state.lineNr = 0;     
-  }     
-  int startLine = state.lineNr;     
-  bool eof = false;     
-     
-     
-  for(int i = 0; i < blockRead; i++)     
-  {     
-     QByteArray currentBlock = readBlock(loader->fd, blockSize);     
-     eof = ((int) currentBlock.size()) != blockSize;     
-     KateBufBlock *block = new KateBufBlock(state);     
-     m_blocks.insert(loader->blockNr++, block);     
-     m_loadedBlocks.append(block);     
-     if (m_loadedBlocks.count() > LOADED_BLOCKS_MAX)     
-     {     
-        KateBufBlock *buf2 = m_loadedBlocks.take(2);     
+KateBuffer::insertFile(uint line, const QString &file, QTextCodec *codec)
+{
+  assert(line == 0); // Inserting at other places not yet handled.
+
+  int fd = open(QFile::encodeName(file), O_RDONLY);
+  if (fd < 0)
+  {
+      //kdDebug(13020)<<"Error loading file.\n";
+     return; // Do some error propagation here.
+  }
+
+  KateBufFileLoader *loader = new KateBufFileLoader;
+  loader->fd = fd;
+  loader->dataStart = 0;
+  loader->blockNr = 0;
+  loader->codec = codec;
+  m_loader.append(loader);
+
+  loadFilePart();
+}
+
+void
+KateBuffer::loadFilePart()
+{
+  const int blockSize = AVG_BLOCK_SIZE;
+  const int blockRead = 3; // Read 5 blocks in a row
+
+  KateBufFileLoader *loader = m_loader.first();
+
+  KateBufState state;
+  if (loader->blockNr > 0)
+  {
+     KateBufBlock *block = m_blocks.at(loader->blockNr-1);
+     state = block->m_endState;
+  }
+  else
+  {
+     // Initial state.
+     state.lineNr = 0;
+  }
+  int startLine = state.lineNr;
+  bool eof = false;
+
+
+  for(int i = 0; i < blockRead; i++)
+  {
+     QByteArray currentBlock = readBlock(loader->fd, blockSize);
+     eof = ((int) currentBlock.size()) != blockSize;
+     KateBufBlock *block = new KateBufBlock(state);
+     m_blocks.insert(loader->blockNr++, block);
+     m_loadedBlocks.append(block);
+     if (m_loadedBlocks.count() > LOADED_BLOCKS_MAX)
+     {
+        KateBufBlock *buf2 = m_loadedBlocks.take(2);
         //kdDebug(13020)<<"swapOut "<<buf2<<endl;     
         buf2->swapOut(m_vm);     
         assert(m_parsedBlocksClean.find(buf2) == -1);
@@ -193,7 +193,7 @@ KateBuffer::loadFilePart()
   if (eof)     
   {     
      //kdDebug(13020)<<"Loading finished.\n";     
-     close( loader->fd );     
+     close( loader->fd );
      m_loader.removeRef(loader);     
 //     emit needHighlight(startLine,state.lineNr);     
   }     
@@ -210,7 +210,7 @@ KateBuffer::loadFilePart()
      
      
 void     
-KateBuffer::insertData(int line, const QByteArray &data, QTextCodec *codec)     
+KateBuffer::insertData(uint line, const QByteArray &data, QTextCodec *codec)
 {     
    assert(line == m_totalLines);     
    KateBufBlock *prev_block;     
@@ -220,7 +220,7 @@ KateBuffer::insertData(int line, const QByteArray &data, QTextCodec *codec)
    {     
       prev_block = m_blocks.last();     
       if (!prev_block || !prev_block->b_emptyBlock)     
-         break;     
+         break;
      
       m_totalLines -= prev_block->m_endState.lineNr - prev_block->m_beginState.lineNr;     
 kdDebug(13020)<< "Removing empty block "<< prev_block << endl;
@@ -237,7 +237,7 @@ kdDebug(13020)<< "Removing empty block "<< prev_block << endl;
    }     
    else     
    {     
-        // Initial state.     
+        // Initial state.
        state.lineNr = 0;     
    }     
      
@@ -274,17 +274,17 @@ KateBuffer::slotLoadFile()
 /**     
  * Return the total number of lines in the buffer.     
  */     
-int     
+uint     
 KateBuffer::count()     
 {     
    return m_totalLines;     
 }     
      
 KateBufBlock *     
-KateBuffer::findBlock(int i)     
-{     
-   if ((i < 0) || (i >= m_totalLines))     
-      return 0;     
+KateBuffer::findBlock(uint i)
+{
+   if ((i >= m_totalLines))
+      return 0;
      
    int lastLine = 0;     
    // This needs a bit of optimisation/caching so that we don't walk     
@@ -325,13 +325,13 @@ KateBuffer::findBlock(int i)
       return 0;     
    }     
    return buf;     
-}     
+}
      
 /**     
  * Return line @p i     
  */     
 TextLine::Ptr     
-KateBuffer::line(int i)     
+KateBuffer::line(uint i)
 {     
    KateBufBlock *buf = findBlock(i);     
    if (!buf)     
@@ -345,7 +345,7 @@ KateBuffer::line(int i)
 }     
      
 void     
-KateBuffer::insertLine(int i, TextLine::Ptr line)     
+KateBuffer::insertLine(uint i, TextLine::Ptr line)
 {     
    KateBufBlock *buf;     
    if (i == m_totalLines)     
@@ -369,7 +369,7 @@ KateBuffer::insertLine(int i, TextLine::Ptr line)
       parseBlock(buf);     
    }     
    if (buf->b_rawDataValid)     
-   {     
+   {
       dirtyBlock(buf);     
    }     
    buf->insertLine(i -  buf->m_beginState.lineNr, line);     
@@ -377,7 +377,7 @@ KateBuffer::insertLine(int i, TextLine::Ptr line)
 }     
      
 void     
-KateBuffer::removeLine(int i)     
+KateBuffer::removeLine(uint i)
 {     
    KateBufBlock *buf = findBlock(i);     
    assert(buf);     
@@ -408,12 +408,12 @@ kdDebug(13020)<< "Empty block still has VM."<< buf << endl;
 }     
      
 void     
-KateBuffer::changeLine(int i)     
+KateBuffer::changeLine(uint i)
 {     
     ////kdDebug(13020)<<"changeLine "<< i<<endl;     
    KateBufBlock *buf = findBlock(i);     
    assert(buf);     
-   assert(buf->b_stringListValid);     
+   assert(buf->b_stringListValid);
    if (buf->b_rawDataValid)     
    {     
       dirtyBlock(buf);     
@@ -457,7 +457,7 @@ KateBuffer::loadBlock(KateBufBlock *buf)
       //kdDebug(13020)<<"swapOut "<<buf2<<endl;     
       buf2->swapOut(m_vm);     
       assert(m_parsedBlocksClean.find(buf2) == -1);     
-      assert(m_parsedBlocksDirty.find(buf2) == -1);     
+      assert(m_parsedBlocksDirty.find(buf2) == -1);
    }     
      
    //kdDebug(13020)<<"swapIn "<<buf<<endl;     
@@ -501,7 +501,7 @@ KateBuffer::dirtyBlock(KateBufBlock *buf)
 KateBufBlock::KateBufBlock(const KateBufState &beginState)     
  : m_beginState(beginState), m_endState(beginState)     
 {     
-   m_rawData1Start = 0;     
+   m_rawData1Start = 0;
    m_rawData2End = 0;     
    m_rawSize = 0;     
    m_vmblock = 0;     
@@ -545,7 +545,7 @@ KateBufBlock::blockFill(int dataStart, QByteArray data1, QByteArray data2, bool 
    m_rawData1 = data1;     
    m_rawData1Start = dataStart;     
    m_rawData2 = data2;     
-     
+
    int lineNr = m_beginState.lineNr;     
      
    const char *p;     
@@ -589,7 +589,7 @@ KateBufBlock::blockFill(int dataStart, QByteArray data1, QByteArray data2, bool 
          b_appendEOL = true;     
          if (l)     
             m_lastLine = l - m_rawData2.data();     
-         else     
+         else
             m_lastLine = 0;     
          lineNr++;     
       }     
@@ -633,7 +633,7 @@ KateBufBlock::swapOut(KVMAllocator *vm)
    disposeRawData();     
 }     
      
-/**     
+/**
  * Swaps m_rawSize bytes in from offset m_vmDataOffset in the file     
  * with file-descirptor swap_fd.     
  */     
@@ -677,7 +677,7 @@ KateBufBlock::buildStringList()
       while(p < e)     
       {     
          if (*p == '\n')     
-         {     
+         {
             // TODO: Use codec     
             QString line = m_codec->toUnicode(l, (p-l-1)+1);     
             TextLine::Ptr textLine = new TextLine();     
@@ -721,7 +721,7 @@ KateBufBlock::buildStringList()
       {     
           //kdDebug(13020)<<"KateBufBlock: buildStringList this ="<<this<<" l ="<< l<<" e ="<<e <<" (e-l)+1 ="<<(e-l)<<endl;     
          QString line = m_codec->toUnicode(l, (e-l));     
-         //kdDebug(13020)<<"KateBufBlock: line ="<< line.latin1()<<endl;     
+         //kdDebug(13020)<<"KateBufBlock: line ="<< line.latin1()<<endl;
          if (!lastLine.isEmpty())     
          {     
             line = lastLine + line;     
@@ -765,7 +765,7 @@ KateBufBlock::flushStringList()
    for(TextLine::List::const_iterator it = m_stringList.begin(); 
        it != m_stringList.end(); ++it) 
    { 
-      uint l = (*it)->textLen; 
+      uint l = (*it)->textLen;
       uint lctx = (*it)->ctxLen; 
       size += (2*sizeof(uint)) + (l*sizeof(QChar)) + l + 1 + sizeof(uint) + (lctx * sizeof(signed char)); 
    } 
@@ -809,7 +809,7 @@ KateBufBlock::flushStringList()
    kdDebug()<<"KateBuffer::FlushStringList"<<endl;
 
 } 
- 
+
 /** 
  * Create a valid stringList from raw data in our own format. 
  */ 
@@ -853,7 +853,7 @@ KateBufBlock::buildStringListFast()
 			  textLine->ctx = (signed char *)malloc (lctx); 
 				memcpy((signed char *)textLine->ctx, buf, lctx); 
         buf += lctx; 
-      } 
+      }
 			textLine->ctxLen = lctx; 
  
       m_stringList.push_back (textLine); 
@@ -897,7 +897,7 @@ KateBufBlock::disposeRawData()
  */     
 void     
 KateBufBlock::disposeSwap(KVMAllocator *vm)     
-{     
+{
    kdDebug(13020)<<"KateBufBlock: disposeSwap this = "<< this<<endl;     
    assert(b_stringListValid || b_rawDataValid);     
    vm->free(m_vmblock);     
@@ -908,7 +908,7 @@ KateBufBlock::disposeSwap(KVMAllocator *vm)
 /**     
  * Make line @p i the current line     
  */     
-void KateBufBlock::seek(int i)     
+void KateBufBlock::seek(uint i)
 {     
    if (m_stringListCurrent == i)     
       return;     
@@ -929,7 +929,7 @@ void KateBufBlock::seek(int i)
  * The first line of this block is line 0.     
  */     
 TextLine::Ptr     
-KateBufBlock::line(int i)     
+KateBufBlock::line(uint i)
 {     
    assert(b_stringListValid);     
    assert(i < (int) m_stringList.size());     
@@ -938,10 +938,10 @@ KateBufBlock::line(int i)
 }     
      
 void     
-KateBufBlock::insertLine(int i, TextLine::Ptr line)     
+KateBufBlock::insertLine(uint i, TextLine::Ptr line)
 {     
    assert(b_stringListValid);     
-   assert(i <= (int) m_stringList.size());     
+   assert(i <= (int) m_stringList.size());
    seek(i);     
    m_stringListIt = m_stringList.insert(m_stringListIt, line);     
    m_stringListCurrent = i;     
@@ -949,7 +949,7 @@ KateBufBlock::insertLine(int i, TextLine::Ptr line)
 }     
      
 void     
-KateBufBlock::removeLine(int i)
+KateBufBlock::removeLine(uint i)
 {     
    assert(b_stringListValid);     
    assert(i < (int) m_stringList.size());     

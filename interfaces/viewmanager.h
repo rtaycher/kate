@@ -40,7 +40,7 @@ class ViewManager : public QWidget
   Q_OBJECT
 
   public:
-    ViewManager (QWidget *parent = 0L);
+    ViewManager (QWidget *);
     virtual ~ViewManager ();
 
     /** Returns a pointer to the currently active KateView */

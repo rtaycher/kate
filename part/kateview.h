@@ -297,8 +297,8 @@ class KateView : public Kate::View
 		void cursorPosition( uint *line, uint *col ) { getCursorPosition ((int*)line, (int*)col); } ;
 		void cursorPositionReal( uint *line, uint *col ) { getCursorPositionReal((int*)line, (int*)col); } ;
 
-		bool setCursorPosition( uint line, uint col ) { setCursorPosition ((int)line, (int)col, false); } ;
-		bool setCursorPositionReal( uint line, uint col ) { setCursorPositionReal ((int)line, (int)col, false); } ;
+		bool setCursorPosition( uint line, uint col ) { setCursorPosition ((int)line, (int)col, false); return true; } ;
+		bool setCursorPositionReal( uint line, uint col ) { setCursorPositionReal ((int)line, (int)col, false); return true; } ;
 
 		uint cursorLine () {return (uint) currentLine (); };
 		uint cursorColumn () {return (uint) currentColumn (); };
@@ -411,7 +411,7 @@ class KateView : public Kate::View
        Insert text at the current cursor position.
        The parameter @param mark is unused.
      */
-     void insertText(const QString &, bool = false );
+     void insertText(const QString &);
 
   public:
 

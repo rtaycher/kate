@@ -57,38 +57,38 @@ public:
     * Insert a file at line @p line in the buffer.
     * Using @p codec to decode the file.
     */
-   void insertFile(int line, const QString &file, QTextCodec *codec);
+   void insertFile(uint line, const QString &file, QTextCodec *codec);
 
    /**
     * Insert a block of data at line @p line in the buffer.
     * Using @p codec to decode the file.
     */
-   void insertData(int line, const QByteArray &data, QTextCodec *codec);
+   void insertData(uint line, const QByteArray &data, QTextCodec *codec);
 
    /**
     * Return the total number of lines in the buffer.
     */
-   int count();
+   uint count();
 
    /**
     * Return line @p i
     */
-   TextLine::Ptr line(int i);
+   TextLine::Ptr line(uint i);
 
    /**
     * Insert @p line in front of line @p i
     */
-   void insertLine(int i, TextLine::Ptr line);
+   void insertLine(uint i, TextLine::Ptr line);
 
    /**
     * Remove line @p i
     */
-   void removeLine(int i);
+   void removeLine(uint i);
 
    /**
     * Change line @p i
     */
-   void changeLine(int i);
+   void changeLine(uint i);
 
    /**
     * Clear the buffer.
@@ -123,7 +123,7 @@ protected:
    /**
     * Find the block containing line @p i
     */
-   KateBufBlock *findBlock(int i);
+   KateBufBlock *findBlock(uint i);
 
    /**
     * Load a part of the file that is currently loading.
@@ -243,23 +243,23 @@ public:
     * Return line @p i
     * The first line of this block is line 0.
     */
-   TextLine::Ptr line(int i);
+   TextLine::Ptr line(uint i);
 
    /**
     * Insert @p line in front of line @p i
     */
-   void insertLine(int i, TextLine::Ptr line);
+   void insertLine(uint i, TextLine::Ptr line);
 
    /**
     * Remove line @p i
     */
-   void removeLine(int i);
+   void removeLine(uint i);
 
 protected:
    /**
     * Make line @p i the current line
     */
-   void seek(int i);
+   void seek(uint i);
 
    /**
     * Create a valid stringList from intern format.

@@ -103,7 +103,7 @@ class Document : public KTextEditor::Document, public KTextEditor::EditInterface
 
     /** Sets the document name.
     */
-    virtual void setDocName (QString /*docName*/) { ; };
+    virtual void setDocName (QString ) { ; };
 
     /** Defines possible mark types. A line can have marks of different types.
     */

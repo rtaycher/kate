@@ -60,7 +60,7 @@ class View : public KTextEditor::View, public KTextEditor::ClipboardInterface,
     /**
      Constructor (should much rather take a reference to the document).
     */
-    View ( KTextEditor::Document *doc, QWidget *parent, const char *name = 0 );
+    View ( KTextEditor::Document *, QWidget *, const char *name = 0 );
     /**
      Destructor, you need a destructor if Scott Meyers says so.
     */
@@ -104,7 +104,7 @@ class View : public KTextEditor::View, public KTextEditor::ClipboardInterface,
       Insert text at the current cursor position.
       The parameter @param mark is unused.
     */
-    virtual void insertText(const QString &, bool mark = false ) { ; };
+    virtual void insertText(const QString & ) { ; };
     /**
       Returns true if the current document can be
       discarded. If the document is modified, the user is asked if he wants

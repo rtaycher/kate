@@ -1720,9 +1720,10 @@ void KateView::setCursorPositionInternal(int line, int col, int tabwidth) {
 
   int z;
   int x = 0;
-  for (z = 0; z < line_str.length() && z <= col; z++) {
+  for (z = 0; z < (int)line_str.length() && z <= col; z++) {
     if (line_str[z] == QChar('\t')) x += tabwidth - (x % tabwidth); else x++;
   }
+
   cursor.col = x;
   cursor.line = line;
   myViewInternal->updateCursor(cursor);
@@ -1799,7 +1800,8 @@ QString KateView::word(int x, int y) {
   return myDoc->getWord(cursor);
 }
 
-void KateView::insertText(const QString &s, bool /*mark*/) {
+void KateView::insertText(const QString &s)
+{
   VConfig c;
   myViewInternal->getVConfig(c);
   myDoc->insertText(c.cursor.line, c.cursor.col, s);
@@ -2009,20 +2011,20 @@ void KateView::replace() {
   delete searchDialog;
 }
 
-void KateView::gotoLine() {
+void KateView::gotoLine()
+{
   GotoLineDialog *dlg;
-  KateViewCursor cursor;
 
   dlg = new GotoLineDialog(this, myViewInternal->cursor.line + 1, myDoc->numLines());
-//  dlg = new GotoLineDialog(myViewInternal->cursor.line + 1, this);
 
-  if (dlg->exec() == QDialog::Accepted) {
-       gotoLineNumber( dlg->getLine() - 1 );
-   }
-   delete dlg;
+  if (dlg->exec() == QDialog::Accepted)
+    gotoLineNumber( dlg->getLine() - 1 );
+
+  delete dlg;
 }
 
-void KateView::gotoLineNumber( int linenumber ) {
+void KateView::gotoLineNumber( int linenumber ) 
+{
   KateViewCursor cursor;
 
   cursor.col = 0;
@@ -2033,8 +2035,6 @@ void KateView::gotoLineNumber( int linenumber ) {
   myViewInternal->updateView(KateView::ufUpdateOnScroll);
   myDoc->updateViews(this); //uptade all other views except this one
  }
-
-
 
 void KateView::initSearch(SConfig &s, int flags) {
 
