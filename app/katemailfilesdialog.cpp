@@ -31,7 +31,7 @@
 #include <qlabel.h>
 #include <qstringlist.h>
 #include <qvbox.h>
- 
+
 /* a private check list item, that can store a Kate::Document*.  */
 class KateDocCheckItem : public QCheckListItem {
   public:

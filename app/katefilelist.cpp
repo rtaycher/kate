@@ -35,6 +35,7 @@
 #include <klocale.h>
 #include <kglobalsettings.h>
 #include <kpassivepopup.h>
+#include <knotifyclient.h>
 #include <kdebug.h>
 
 KateFileList::KateFileList (KateDocManager *_docManager, KateViewManager *_viewManager, QWidget * parent, const char * name ):  KListBox (parent, name)
@@ -121,6 +122,7 @@ void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool, unsigned char 
       break;
     }
   }
+
   if ( r != 0 )
   {
     QPixmap w( BarIcon("messagebox_warning", 32) );
@@ -131,9 +133,13 @@ void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool, unsigned char 
       a = i18n("was created on disk by another proecss.");
     else if ( r == 3 )
       a = i18n("was deleted from disk");
-    KPassivePopup::message( i18n("Warning"),
+/*    KPassivePopup::message( i18n("Warning"),
         i18n("The document<br><code>%1</code><br>%2").arg( doc->url().prettyURL() ).arg( a ) ,
-        w, topLevelWidget() );
+        w, topLevelWidget() );*/
+//     KNotifyClient::instance();
+    int n = KNotifyClient::event( topLevelWidget()->winId(), "file_modified_on_disc",
+          i18n("The document<br><code>%1</code><br>%2").arg( doc->url().prettyURL() ).arg( a ) );
+    kdDebug()<<"The BASTARD returned "<<n<<endl;
   }
 }
 
