@@ -585,7 +585,8 @@ int KateFileListItem::compare ( QListViewItem * i, int col, bool ascending ) con
 //BEGIN KFLConfigPage
 KFLConfigPage::KFLConfigPage( QWidget* parent, const char *name, KateFileList *fl )
   :  Kate::ConfigPage( parent, name ),
-    m_filelist( fl )
+    m_filelist( fl ),
+    m_changed( false )
 {
   QVBoxLayout *lo1 = new QVBoxLayout( this );
   int spacing = KDialog::spacingHint();
@@ -625,14 +626,18 @@ KFLConfigPage::KFLConfigPage( QWidget* parent, const char *name, KateFileList *f
 
   reload();
 
-  connect( cbEnableShading, SIGNAL(toggled(bool)), this, SLOT(slotChanged()) );
-  connect( cbEnableShading, SIGNAL(toggled(bool)), this, SLOT(slotEnableChanged()) );
-  connect( kcbViewShade, SIGNAL(changed(const QColor&)), this, SLOT(slotChanged()) );
-  connect( kcbEditShade, SIGNAL(changed(const QColor&)), this, SLOT(slotChanged()) );
+  connect( cbEnableShading, SIGNAL(toggled(bool)), this, SLOT(slotMyChanged()) );
+  connect( cbEnableShading, SIGNAL(toggled(bool)), this, SLOT(slotMyEnableChanged()) );
+  connect( kcbViewShade, SIGNAL(changed(const QColor&)), this, SLOT(slotMyChanged()) );
+  connect( kcbEditShade, SIGNAL(changed(const QColor&)), this, SLOT(slotMyChanged()) );
 }
 
 void KFLConfigPage::apply()
 {
+  if ( ! m_changed )
+    return;
+  m_changed = false;
+
   // Change settings in the filelist
   m_filelist->m_viewShade = kcbViewShade->color();
   m_filelist->m_editShade = kcbEditShade->color();
@@ -649,6 +654,7 @@ void KFLConfigPage::reload()
   cbEnableShading->setChecked( config->readBoolEntry("Shading Enabled", &m_filelist->m_enableBgShading ) );
   kcbViewShade->setColor( config->readColorEntry("View Shade", &m_filelist->m_viewShade ) );
   kcbEditShade->setColor( config->readColorEntry("Edit Shade", &m_filelist->m_editShade ) );
+  m_changed = false;
 }
 
 void KFLConfigPage::slotEnableChanged()
@@ -657,6 +663,12 @@ void KFLConfigPage::slotEnableChanged()
   kcbEditShade->setEnabled( cbEnableShading->isChecked() );
   lViewShade->setEnabled( cbEnableShading->isChecked() );
   lEditShade->setEnabled( cbEnableShading->isChecked() );
+}
+
+void KFLConfigPage::slotMyChanged()
+{
+  m_changed = true;
+  slotChanged();
 }
 
 //END KFLConfigPage
