@@ -1,6 +1,6 @@
 <?xml version="1.01" encoding="UTF-8"?>
 
-<language name="bash" extensions="" mimetype="text/x-shellscript" casesensitive="1">
+<language name="Bash" extensions="" mimetype="text/x-shellscript" casesensitive="1">
         <highlighting>
                  <list name = "keywords">
                         <item> break </item>
