@@ -1,9 +1,16 @@
 <!DOCTYPE kpartgui>
-<kpartplugin name="kanttextfilter" library="libkanttextfilterplugin" version="1">
+<kpartplugin name="kantprojectmanager" library="libkantprojectmanager" version="1">
 <MenuBar>
- <Menu name="edit"><Text>&amp;Edit</Text>
-    <Action name="edit_filter" />
- </Menu>
+  <Menu name="project" noMerge="1"><text>&amp;Project</text>
+    <Action name="project_new" />
+    <Action name="project_open" />
+    <Action name="project_save" />
+    <Action name="project_save_as" />
+    <Separator />
+    <Action name="project_configure" />
+    <Action name="project_compile" />
+    <Action name="project_run" />
+  </Menu>
 </MenuBar>
 <!--
 <SideBar>
