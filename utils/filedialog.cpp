@@ -29,12 +29,24 @@
 
 #include <kdebug.h>
 
+namespace Kate
+{
+
+  class PrivateFileDialog
+  {
+    public:
+      KComboBox *encoding;
+  };
+};
+    
 Kate::FileDialog::FileDialog (const QString& startDir,
                     const QString& encoding,
                     QWidget *parent,
                     const QString& caption,
                     int type) : KFileDialog (startDir, QString::null, parent, "", true)
 {
+  d = new Kate::PrivateFileDialog ();
+
   QString sEncoding (encoding);
   
   setCaption (caption);
@@ -51,7 +63,7 @@ Kate::FileDialog::FileDialog (const QString& startDir,
     setOperationMode( Saving );
     }
 
-  this->encoding = toolBar()->getCombo(33333);
+  d->encoding = toolBar()->getCombo(33333);
 
         // Set default encoding to the locale one, if a different default wasn't requested
         if (encoding == QString::null)
@@ -71,12 +83,12 @@ Kate::FileDialog::FileDialog (const QString& startDir,
         }
 
         if (iIndex >= 0)
-          this->encoding->setCurrentItem(iIndex);
+          d->encoding->setCurrentItem(iIndex);
 }
 
 Kate::FileDialog::~FileDialog ()
 {
-
+  delete d;
 }
 
 Kate::FileDialogData Kate::FileDialog::exec()
@@ -87,7 +99,7 @@ Kate::FileDialogData Kate::FileDialog::exec()
   
   if (n)
   {
-    data.encoding = this->encoding->currentText();
+    data.encoding = d->encoding->currentText();
     data.url = selectedURL ();
     data.urls = selectedURLs ();
   }

@@ -23,16 +23,12 @@
 #include <qtextcodec.h>
 #include <kurl.h>
 
-class KComboBox;
-
-namespace Kate {
+namespace Kate
+{
 
 class FileDialogData
 {
   public:
-    FileDialogData () { ; }
-    ~FileDialogData () { ; }
-
     KURL::List urls;
     KURL url;
     QString encoding;
@@ -40,6 +36,8 @@ class FileDialogData
 
 class FileDialog : public KFileDialog
 {
+  friend class PrivateFileDialog;
+
   Q_OBJECT
 
   public:
@@ -52,18 +50,17 @@ class FileDialog : public KFileDialog
 
     FileDialogData exec ();
 
-  protected slots:
-    void slotApply();
-
-  public:
     enum FileDialogType
     {
       openDialog,
       saveDialog
     };
     
+  protected slots:
+    void slotApply();
+    
   private:
-    KComboBox *encoding;
+    class PrivateFileDialog *d;
 };
 
 };
