@@ -190,6 +190,9 @@ void KateMainWindow::setupMainWindow ()
      m_rightDock->manualDock(mainDock, KDockWidget::DockRight,20);
      m_topDock->manualDock(mainDock, KDockWidget::DockTop,20);
      m_bottomDock->manualDock(mainDock, KDockWidget::DockBottom,20);
+     
+     m_topDock->undock();
+     m_rightDock->undock();
   }
 
 
