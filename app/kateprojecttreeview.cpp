@@ -170,9 +170,7 @@ void KateProjectTreeView::slotDoubleClicked( QListViewItem *i, const QPoint &, i
     return;
 
   if (item->isDir())
-  {
-    KateProjectDirView::addDialog (m_project, item->fullName(), this);
-  }
+    item->setOpen (!item->isOpen());
   else
     m_mainWin->viewManager()->openURL (KURL (m_project->dir() + QString ("/") + item->fullName()));
 }
@@ -262,7 +260,9 @@ void KateProjectTreeView::slotContextMenuRequested ( QListViewItem * item, const
 
   QPopupMenu *menu = new QPopupMenu (this);
 
-  menu->insertItem (i18n("Add Dirs/Files"), this, SLOT(addIt()));
+  if (i->isDir())
+    menu->insertItem (i18n("Add Dirs/Files"), this, SLOT(addIt()));
+
   if (!i->fullName().isNull())
     menu->insertItem (i->isDir() ? i18n("Remove Dir") : i18n("Remove File"), this, SLOT(removeIt()));
 
