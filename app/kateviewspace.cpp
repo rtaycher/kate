@@ -218,6 +218,9 @@ void KateViewSpace::saveConfig ( KConfig* config, int myIndex )
   config->setGroup (group);
   config->writeEntry ("Count", mViewList.count());
 
+  if (currentView())
+    config->writeEntry( "Active View", currentView()->getDoc()->url().prettyURL() );
+
   // Save file list, includeing cursor position in this instance.
   QPtrListIterator<Kate::View> it(mViewList);
 
@@ -243,34 +246,25 @@ void KateViewSpace::restoreConfig ( KateViewManager *viewMan, KConfig* config, c
 {
   config->setGroup (group);
 
-  int count = config->readNumEntry("Count");
+  QString fn = config->readEntry( "Active View" );
 
-  int i = 0;
-  while ((i < count) && config->hasKey(QString("View %1").arg(i)))
+  if ( !fn.isEmpty() )
   {
-    config->setGroup( group );
-    QString fn = config->readEntry( QString("View %1").arg( i ) );
+    Kate::Document *doc = viewMan->m_docManager->findDocumentByUrl (KURL(fn));
 
-    if ( !fn.isEmpty() )
+    if (doc)
     {
-      Kate::Document *doc = viewMan->m_docManager->findDocumentByUrl (KURL(fn));
+      // view config, group: "ViewSpace <n> url"
+      QString vgroup = QString("%1 %2").arg(group).arg(fn);
+      config->setGroup( vgroup );
 
-      if (doc)
-      {
-        // view config, group: "ViewSpace <n> url"
-        QString vgroup = QString("%1 %2").arg(group).arg(fn);
-        config->setGroup( vgroup );
+      viewMan->createView (false, KURL(), 0, doc);
 
-        viewMan->createView (false, KURL(), 0, doc);
+      Kate::View *v = viewMan->activeView ();
 
-        Kate::View *v = viewMan->activeView ();
-
-        if (v)
-          v->readSessionConfig( config );
-      }
+      if (v)
+        v->readSessionConfig( config );
     }
-
-    i++;
   }
 
   if (mViewList.isEmpty())
