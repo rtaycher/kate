@@ -5,6 +5,8 @@ $filename = $ARGV[0];
 $newfilename = $filename;
 $newfilename =~ s/\.txt/\.xml/gi;
 
+$stdDel = "!%&()*+,-./:;<=>?[]^{|}~ \t";
+
 $z = 0;
 open (FILE,"<$filename");
 foreach $_ (<FILE>)
@@ -16,7 +18,8 @@ close FILE;
 
 open (FILE,">$newfilename");
 
-print FILE "<?xml version=\"1.01\" encoding=\"UTF-8\"?><!DOCTYPE language>\n";
+print FILE "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+print FILE "<!DOCTYPE language SYSTEM \"language.dtd\">\n";
 
 # get the name of the hl
 @field = split /\"/, $file[0];
@@ -67,7 +70,7 @@ $commentend = @field[1];
 @field = split / /, @field[1];
 $delimeter = @field[1];
 
-print FILE "<language name=\"$hlname\" extensions=\"$ext\" mimetype=\"\" casesensitive=\"$case\">\n";
+print FILE "<language name=\"$hlname\" extensions=\"$ext\" mimetype=\"\">\n";
 print FILE "  <highlighting>\n";
 
 $i=0;
@@ -94,10 +97,12 @@ while ($i <= $z)
   if ($file[$i] =~ /\/Delimiters/)
   {
     @field = split /Delimiters = #/, $file[$i];
-    $weakdel = @field[1]
+    $weakdel = @field[1];
   }
   $i++;
 }
+
+$weakdel = $stdDel;
 
 $weakdel =~ s/</\&lt;/gi;
 $weakdel =~ s/>/\&gt;/gi;
@@ -156,14 +161,7 @@ $n=0;
 while (($n < $s) && ($file[$sections[$n]] ne ""))
 {
   $str = $n+4;
-  if ($weakdel eq "")
-  {
-    print FILE "        <keyword attribute=\"$str\" context=\"0\" String=\"$listname[$n]\" />\n";
-  }
-  else
-  {
-    print FILE "        <keyword attribute=\"$str\" context=\"0\" String=\"$listname[$n]\" weakDelimiter=\"$weakdel\" />\n";
-  }
+  print FILE "        <keyword attribute=\"$str\" context=\"0\" String=\"$listname[$n]\" />\n";
   $n++;
 }
 
@@ -229,10 +227,10 @@ while (($n < $s) && ($file[$sections[$n]] ne ""))
 
 print FILE "    </itemDatas>\n";
 print FILE "  </highlighting>\n";
+print FILE "  <general>\n";
 
 if (($linecomment ne "") || ($commentstart ne "") && ($commentend ne ""))
 {
-  print FILE "  <general>\n";
   print FILE "    <comments>\n";
 
   if ($linecomment ne "")
@@ -246,9 +244,16 @@ if (($linecomment ne "") || ($commentstart ne "") && ($commentend ne ""))
   }
 
   print FILE "    </comments>\n";
-  print FILE "  </general>\n";
 }
 
+print FILE "    <keywords casesensitive=\"$case\"/>\n";
+
+if ($weakdel ne "")
+{
+  print FILE "    <keywords weakDeliminator=\"$weakdel\"/>\n";
+}
+
+print FILE "  </general>\n";
 print FILE "</language>\n";
 
 close FILE;
