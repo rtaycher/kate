@@ -771,26 +771,32 @@ void KateViewManager::saveAllDocsAtCloseDown(  )
       // and if so, ask for a URL
       // else, close doc.
       bool keep( false );
+
       if ( KMessageBox::warningYesNo( this,
               i18n("<p>The document '%1' has been modified, but not saved."
                    "<p>Do you want to keep it?").arg( d->docName() ),
               i18n("Unsaved Document") ) == KMessageBox::Yes )
       { // FIXME add some nicer constructors to the file dialog
         Kate::FileDialogData fdd = (new Kate::FileDialog( QString::null,
-                                       QString::fromLatin1( KGlobal::locale()->encoding() ),
+                                       d->encoding(),
                                        this,
                                        i18n("Save As"),
                                        Kate::FileDialog::saveDialog ))->exec();
         d->setEncoding( fdd.encoding );
+
         if ( d->saveAs( fdd.url ) )
           keep = true;
+        else
+          return;
       }
-      if ( ! keep )
+
+      if ( !keep )
       {
         closeViews( d->documentNumber() );
         m_docManager->deleteDoc( d );
       }
     }
+
     d = m_docManager->nextDocument();
   }
 
