@@ -18,6 +18,8 @@
 #include "kantpluginmanager.h"
 #include "kantpluginmanager.moc"
 
+#include "../mainwindow/kantmainwindow.h"
+
 #include <kglobal.h>
 #include <kstddirs.h>
 #include <qstringlist.h>
@@ -28,7 +30,6 @@
 KantPluginManager::KantPluginManager(QObject *parent) : QObject(parent)
 {
   setupPluginList ();
-  loadAllEnabledPlugins ();
 }
 
 KantPluginManager::~KantPluginManager()
@@ -58,39 +59,45 @@ void KantPluginManager::setupPluginList ()
     info->name = confFile->readEntry("name","no");
     info->description = confFile->readEntry("description","no");
     info->author = confFile->readEntry("author","no");
+
+    KParts::Plugin::PluginInfo plInf;
+    plInf.m_absXMLFileName=info->relp;
+
+    QFile f( info->relp );
+    if ( f.open( IO_ReadOnly ) )
+    {
+      if ( plInf.m_document.setContent( &f ) )
+      {
+        info->pluginInfo.append(plInf);
+      }
+
+      f.close();
+    }
+
     myPluginList.append(info);
 
     delete confFile;
   }
 }
 
-void KantPluginManager::loadAllEnabledPlugins ()
+void KantPluginManager::loadAllEnabledPlugins (QObject *parent)
 {
   for (int i=0; i<myPluginList.count(); i++)
   {
     if  (myPluginList.at(i)->load)
-      loadPlugin (myPluginList.at(i));
+      loadPlugin (myPluginList.at(i), parent);
   }
 }
 
-bool KantPluginManager::loadPlugin (PluginListItem *item)
+void KantPluginManager::loadPlugin (PluginListItem *item, QObject *parent)
 {
-  bool val = false;
+  KParts::Plugin::loadPlugins(parent,item->pluginInfo);
+  KParts::GUIActivateEvent ev( true );
+  QApplication::sendEvent( parent, &ev );
 
-  KParts::Plugin::PluginInfo plInf;
-  plInf.m_absXMLFileName=item->relp;
+  QList<KParts::Plugin> plugins = KParts:: Plugin::pluginObjects( parent );
+  QListIterator<KParts::Plugin> pIt( plugins );
 
-  QFile f( item->relp );
-  if ( f.open( IO_ReadOnly ) )
-  {
-    if ( plInf.m_document.setContent( &f ) )
-    {
-      plugins.append(plInf);
-      val = true;
-    }
-
-    f.close();
-  }
-
-  return val;
+  for (; pIt.current(); ++pIt )
+    ((KantMainWindow*)parent->parent())->guiFactory()->addClient( pIt.current() );
 }

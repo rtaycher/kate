@@ -26,6 +26,7 @@
 struct PluginListItem
 {
   bool load;
+  QValueList<KParts::Plugin::PluginInfo> pluginInfo;
   QString config;
   QString relp;
   QString name;
@@ -46,15 +47,13 @@ class KantPluginManager : public QObject
     KantPluginManager(QObject *parent);
     ~KantPluginManager();
 
-    bool loadPlugin (PluginListItem *item);
+    void loadAllEnabledPlugins (QObject *parent);
 
   private:
     void setupPluginList ();
-    void loadAllEnabledPlugins ();
+    void loadPlugin (PluginListItem *item, QObject *parent);
 
     PluginList myPluginList;
-
-    QValueList<KParts::Plugin::PluginInfo> plugins;
 };
 
 #endif

@@ -110,7 +110,7 @@ KantMainWindow::KantMainWindow(KantDocManager *_docManager, KantPluginManager *_
   QPopupMenu* pm_set = (QPopupMenu*)factory()->container("settings", this);
   connect(pm_set, SIGNAL(aboutToShow()), this, SLOT(settingsMenuAboutToShow()));
 
-  setupPlugins();
+  pluginManager->loadAllEnabledPlugins (pluginIface);
 }
 
 KantMainWindow::~KantMainWindow()
@@ -153,23 +153,6 @@ void KantMainWindow::setupMainWindow ()
   pluginIface = new KantMyPluginIface (this);
 
   statusBar()->hide();
-}
-
-void KantMainWindow::setupPlugins()
-{
-  setUpdatesEnabled(false);
-
-  KParts::Plugin::loadPlugins(pluginIface,pluginManager->plugins);
-  KParts::GUIActivateEvent ev( true );
-  QApplication::sendEvent( pluginIface, &ev );
-
-  QList<KParts::Plugin> plugins = KParts:: Plugin::pluginObjects( pluginIface );
-  QListIterator<KParts::Plugin> pIt( plugins );
-
-  for (; pIt.current(); ++pIt )
-    guiFactory()->addClient( pIt.current() );
-  setUpdatesEnabled(true);
-
 }
 
 bool KantMainWindow::eventFilter(QObject* o, QEvent* e)
