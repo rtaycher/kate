@@ -940,6 +940,7 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
 
   QSplitter* p = (QSplitter*)viewspace->parentWidget();
 
+  // save some size information
   QSplitter* pp=0L;
   QValueList<int> ppsizes;
   if (viewSpaceList.count() > 2 && p->parentWidget() != this)
@@ -948,14 +949,14 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
     ppsizes = pp->sizes();
   }
 
-  //KantViewSpace *next = viewSpaceList.prev();
+  // Figure out where to put views that are still needed
   KantViewSpace* next;
   if (viewSpaceList.find(viewspace) == 0)
     next = viewSpaceList.next();
   else
     next = viewSpaceList.prev();
 
-  // here, reparent views in viewspace that are last views, delete the rest.
+  // Reparent views in viewspace that are last views, delete the rest.
   int vsvc = viewspace->viewCount();
   while (vsvc > 0)
   {
@@ -974,15 +975,16 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
         deleteView( v, false, false, false );
       }
     }
-    else
+    else // this can not happen!
       kdDebug()<<"removeViewSpace(): PANIC!!"<<endl;
     vsvc = viewspace->viewCount();
   }
 
   viewSpaceList.remove( viewspace );
 
-  // reparent the other child of the removed splitter.
+  // reparent the other sibling of the parent.
   // here is a bug: they sometimes gets in the wrong place.
+  // requires reimplementation of qsplitter?
   while (p->children ())
   {
     kdDebug()<<"removeViewSpace(): reparenting a splitter"<<endl;
@@ -1008,6 +1010,7 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
     kdDebug()<<"removeViewSpace(): new active view: "<<v->doc()->url().filename()<<endl;
     activateView( v );
   }
+  // else: there is no view.
   emit viewChanged();
 }
 

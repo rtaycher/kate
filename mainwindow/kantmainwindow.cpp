@@ -278,7 +278,7 @@ void KantMainWindow::setupActions()
 
   // toggle sidebar -anders
   settingsShowSidebar = new KToggleAction(i18n("Show Side&bar"), CTRL+Key_B, this, SLOT(slotSettingsShowSidebar()), actionCollection(), "settings_show_sidebar");
-  settingsShowConsole = new KToggleAction(i18n("Show &Console"), CTRL+SHIFT+Key_K, this, SLOT(slotSettingsShowConsole()), actionCollection(), "settings_show_console");
+  settingsShowConsole = new KToggleAction(i18n("Show &Console"), CTRL+Key_T, this, SLOT(slotSettingsShowConsole()), actionCollection(), "settings_show_console");
   // allow full path in title -anders
   settingsShowFullPath = new KToggleAction(i18n("Show Full &Path in Title"), 0, this, SLOT(slotSettingsShowFullPath()), actionCollection(), "settings_show_full_path");
   settingsShowToolbar = KStdAction::showToolbar(this, SLOT(slotSettingsShowToolbar()), actionCollection(), "settings_show_toolbar");
@@ -862,6 +862,8 @@ void KantMainWindow::slotSettingsShowConsole()
   // Anders: focus at show
   if( consoleDock->isVisible() )
     console->setFocus();
+  else
+    viewManager->activeView()->setFocus();
 }
 
 void KantMainWindow::settingsMenuAboutToShow()
