@@ -223,7 +223,7 @@ GrepTool::GrepTool(KateMainWindow *parent, const char *name)
      "by the pattern input field, resulting in the regular expression\n"
      "to search for."));
   QWhatsThis::add(lDir,
-    i18n("Enter the folder which contains the files you want to search in."));
+    i18n("Enter the folder which contains the files in which you want to search."));
   QWhatsThis::add(cbRecursive,
     i18n("Check this box to search in all subfolders."));
   QWhatsThis::add(cbCasesensitive,
