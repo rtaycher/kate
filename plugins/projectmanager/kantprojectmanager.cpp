@@ -25,6 +25,7 @@
 #include <iostream.h>
 #include <qtextstream.h>
 #include <kstatusbar.h>
+#include <kpopupmenu.h>
 #include <klocale.h>
 #include <kaction.h>
 #include "./piper/piper.h"
@@ -236,7 +237,7 @@ KantProjectManagerView::KantProjectManagerView(QObject *parent) : KantPluginView
   setXML( "plugins/kantprojectmanager/ui.rc" );
 
  KActionMenu* pm_project  = new KActionMenu(i18n("&Project"), actionCollection(), "project");
- connect(pm_project, SIGNAL(aboutToShow()), this, SLOT(projectMenuAboutToShow()));
+ connect(pm_project->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(projectMenuAboutToShow()));
 
   // KActions for Project
    projectNew = new KAction(i18n("&New"), 0, (KantProjectManager*)pluginIface,
