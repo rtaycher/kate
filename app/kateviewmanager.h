@@ -126,10 +126,6 @@ class KateViewManager : public Kate::ViewManager
 
     void slotDocumentNew ();
     void slotDocumentOpen ();
-    void slotDocumentSave ();
-    void slotDocumentSave( Kate::View* );
-    void slotDocumentSaveAs ();
-    void slotDocumentSaveAs( Kate::View* );
     void slotDocumentClose ();
     /** Splits the active viewspace horizontally */
     void slotSplitViewSpaceHoriz () { splitViewSpace(); }
