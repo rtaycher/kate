@@ -57,6 +57,7 @@ class TopLevel : public KParts::MainWindow
 
     KateView *kateView;
 
+    KRecentFilesAction * m_recentFiles;
     KToggleAction * m_paShowPath;
     KToggleAction * m_paShowToolBar;
     KToggleAction * m_paShowStatusBar;
@@ -65,7 +66,8 @@ class TopLevel : public KParts::MainWindow
 
   public slots:
     void slotNew();
-    void slotOpen ();
+    void slotOpen();
+    void slotOpen( const KURL& url );
     void newView();
     void toggleToolBar();
     void toggleStatusBar();

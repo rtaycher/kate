@@ -418,9 +418,6 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
     void slotHighlightChanged();
 
   public slots:
-
-    void slotOpenRecent( const KURL & );
-
     /**
       Toggles Insert mode
     */

@@ -1410,8 +1410,6 @@ KateView::~KateView()
 void KateView::setupActions()
 {
     KStdAction::close( this, SLOT(flush()), actionCollection(), "file_close" );
-    fileRecent = KStdAction::openRecent(this, SLOT(slotOpenRecent(const KURL&)),
-                                        actionCollection());
 
     KStdAction::save(this, SLOT(save()), actionCollection());
 
@@ -1527,11 +1525,6 @@ void KateView::slotFileStatusChanged()
   eol = eol>=0? eol: 0;
 
     setEndOfLine->setCurrentItem(eol);
-
-    if ( !doc()->url().isEmpty() )
-        //set recent files popup menu
-        fileRecent->addURL(doc()->url());
-
 }
 void KateView::slotNewUndo()
 {
@@ -1716,12 +1709,6 @@ void KateView::customEvent( QCustomEvent *ev )
 
     KTextEditor::View::customEvent( ev );
     return;
-}
-
-void KateView::slotOpenRecent( const KURL &url )
-{
-    if ( canDiscard() )
-        myDoc->openURL( url );
 }
 
 void KateView::setCursorPosition( int line, int col, bool /*mark*/ )

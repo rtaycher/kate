@@ -110,6 +110,7 @@ void TopLevel::init()
 
 void TopLevel::loadURL(const KURL &url)
 {
+  m_recentFiles->addURL( url );
   kateView->doc()->openURL(url);
 }
 
@@ -118,7 +119,6 @@ bool TopLevel::queryClose()
 {
   if (!kateView->isLastView()) return true;
   return kateView->canDiscard();
-//  writeConfig();
 }
 
 
@@ -152,6 +152,8 @@ void TopLevel::setupActions()
   KStdAction::print(this, SLOT(printDlg()), actionCollection());
   KStdAction::openNew( this, SLOT(slotNew()), actionCollection(), "file_new" );
   KStdAction::open( this, SLOT( slotOpen() ), actionCollection(), "file_open" );
+  m_recentFiles = KStdAction::openRecent(this, SLOT(slotOpen(const KURL&)),
+                                        actionCollection());
 
   new KAction(i18n("New &View"), 0, this, SLOT(newView()),
               actionCollection(), "file_newView");
@@ -192,8 +194,11 @@ void TopLevel::slotNew()
 
 void TopLevel::slotOpen()
 {
-  KURL url = KFileDialog::getOpenURL(QString::null, QString::null, this, i18n ("Open File"));
+  slotOpen( KFileDialog::getOpenURL(QString::null, QString::null, this, i18n ("Open File")) );
+}
 
+void TopLevel::slotOpen( const KURL& url )
+{
   if (url.isEmpty()) return;
 
   if (kateView->isModified() || !kateView->doc()->url().isEmpty())
@@ -201,10 +206,10 @@ void TopLevel::slotOpen()
     TopLevel *t = new TopLevel();
     t->readConfig();
     t->init();
-    t->kateView->doc()->openURL(url);
+    t->loadURL(url);
   }
   else
-    kateView->doc()->openURL(url);
+    loadURL(url);
 }
 
 void TopLevel::newView()
@@ -321,17 +326,9 @@ void TopLevel::slotDropEvent( QDropEvent *event )
 
   if (QUriDrag::decode(event, urls)) {
     kdDebug(13000) << "TopLevel:Handling QUriDrag..." << endl;
-    char *s;
-    for (s = urls.first(); s != 0L; s = urls.next()) {
-      // Load the first file in this window
-      if (s == urls.getFirst() && !kateView->isModified() && !kateView->isReadOnly()) {
-        loadURL(s);
-      } else {
-        TopLevel *t = new TopLevel();
-        t->readConfig();
-        t->loadURL(s);
-        t->init();
-      }
+    QListIterator<char> it(urls);
+    for( ; it.current(); ++it ) {
+      slotOpen( (*it) );
     }
   }
 }
@@ -355,13 +352,14 @@ void TopLevel::slotEnableActions( bool enable )
 void TopLevel::readConfig(KConfig *config)
 {
   m_paShowPath->setChecked( config->readBoolEntry("ShowPath") );
+  m_recentFiles->loadEntries(config, "Recent Files");
 }
 
 
 void TopLevel::writeConfig(KConfig *config)
 {
   config->writeEntry("ShowPath",m_paShowPath->isChecked());
-
+  m_recentFiles->saveEntries(config, "Recent Files");
 }
 
 
@@ -400,7 +398,6 @@ void TopLevel::restore(KConfig *config, int n)
   }
   readPropertiesInternal(config, n);
   init();
-//  show();
 }
 
 void TopLevel::readProperties(KConfig *config)
