@@ -138,6 +138,7 @@ HighlightDialogPage::HighlightDialogPage(HlManager *hlManager, ItemStyleList *st
   QVBoxLayout *bl=new QVBoxLayout(page2);
   bl->setAutoAdd(true);
   QHGroupBox *hbox1 = new QHGroupBox( i18n("Config Select"), page2 );
+  hbox1->layout()->setMargin(5);
   QVBox *vbox1=new QVBox(hbox1);
 //  grid->addMultiCellWidget(vbox1,0,0,0,1);
   QVGroupBox *vbox2 = new QVGroupBox( i18n("Item Style"), page2 );
@@ -260,7 +261,8 @@ HlEditDialog::HlEditDialog(HlManager *,QWidget *parent, const char *name, bool m
     if (data!=0) loadFromDocument(data);
     connect(contextList,SIGNAL(currentChanged( QListViewItem*)),this,SLOT(currentSelectionChanged ( QListViewItem * )));
     connect(addContext,SIGNAL(clicked()),this,SLOT(contextAddNew()));
-}
+    connect(addItem,SIGNAL(clicked()),this,SLOT(ItemAddNew()));
+    }
 
 void HlEditDialog::initContextOptions(QVBox *co)
 {
@@ -533,8 +535,13 @@ void HlEditDialog::ItemContextChanged(int cont)
 
 void HlEditDialog::ItemAddNew()
 {
-/*  QListViewItem *it=contextList->firstChild();
-  for (;it->nextSibling()!=0;it=it->nextSibling());
-  it=new QListViewItem(contextList,it,i18n("New Context"),QString("%1").arg(it->text(1).toInt()),"0","0");
-  contextList->setSelected(it,true);*/
+  QListViewItem *it;
+  if (currentItem)
+    {
+      if (currentItem->depth()==0) it=currentItem->firstChild();
+        else
+          it=currentItem;
+      if (it) for (;it->nextSibling();it=it->nextSibling());
+      (void) new QListViewItem(it ? it->parent() : currentItem,it,"","","","",0,it ? it->parent()->text(1) : currentItem->text(1));
+    }
 }
