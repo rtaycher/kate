@@ -18,7 +18,7 @@
     <Merge />
   </Menu>
 </MenuBar>
-<ToolBar name="mainToolBar" noMerge="1">
+<ToolBar name="mainToolBar" noMerge="1"><text>Main Toolbar</text>
  <DefineGroup name="file_operations" />
  <Action name="file_print" />
  <Separator />
