@@ -38,6 +38,9 @@
 #include "viewmanager.h"
 #include "viewmanager.moc"     
 
+#include "toolviewmanager.h"
+#include "toolviewmanager.moc"     
+
 #include <kparts/componentfactory.h>
 
 namespace Kate
@@ -74,6 +77,14 @@ ViewManager::ViewManager (QWidget *parent = 0, const char *name = 0) : QWidget(p
 ViewManager::~ViewManager ()
 {
 }   
+
+ToolViewManager::ToolViewManager()
+{
+}
+
+ToolViewManager::~ToolViewManager()
+{
+}
 
 class PrivatePlugin
   {

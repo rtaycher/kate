@@ -20,6 +20,7 @@
 
 #include "katemain.h"
 #include "../interfaces/mainwindow.h"
+#include "../interfaces/toolviewmanager.h"
 #include "kateIface.h"
 
 #include <kate/view.h>
@@ -34,7 +35,7 @@
 class GrepDialog;
 class KFileItem;
 
-class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCOPIface, virtual public KParts::PartBase
+class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCOPIface, virtual public KParts::PartBase, virtual public Kate::ToolViewManager
 {
   Q_OBJECT
 
@@ -62,7 +63,7 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     KDockWidget *m_rightDock;
     KDockWidget *m_topDock;
     KDockWidget *m_bottomDock;
-
+    KActionMenu *m_settingsShowToolViews;
     // console
     KateConsole *console;
 
@@ -179,9 +180,19 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
   public:      
     Kate::ViewManager *viewManager () {return (Kate::ViewManager *)m_viewManager; }; 
     KateViewManager *kateViewManager () { return m_viewManager; };
+
+  public: //ToolViewManager stuff
+    Kate::ToolViewManager *toolViewManager() {return(Kate::ToolViewManager*)this;}
+
+    virtual KDockWidget *addToolViewWidget(KDockWidget::DockPosition pos,QWidget *widget,const QPixmap &icon, const QString& caption);
+    virtual bool removeToolViewWidget(QWidget *){return false;}
+    virtual KDockWidget *addToolView(KDockWidget::DockPosition pos,const char* name,const QPixmap &icon,const QString&);
+    virtual bool removeToolView(KDockWidget *){return false;}
     
   private slots:
     void pluginHelp ();
 };
 
 #endif
+
+

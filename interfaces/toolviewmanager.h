@@ -1,9 +1,9 @@
 /***************************************************************************
-                          mainwindow.h -  description
+                          toolviewmanager.h -  description
                              -------------------
-    begin                : Mon Jan 15 2001
-    copyright            : (C) 2001 by Christoph Cullmann
-    email                : cullmann@kde.org
+    begin                : Sat June 16 2002
+    copyright            : (C) 2001 by Joseph Wenninger
+    email                : jowenn@kde.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -23,27 +23,31 @@
     Boston, MA 02111-1307, USA.
  ***************************************************************************/
 
-#ifndef _KATE_MAINWINDOW_INCLUDE_
-#define _KATE_MAINWINDOW_INCLUDE_
+#ifndef _KATE_TOOLVIEWMANAGER_INCLUDE_
+#define _KATE_TOOLVIEWMANAGER_INCLUDE_
 
-#include <kparts/dockmainwindow.h>
+#include <qwidget.h>
+#include <kurl.h>
 
 namespace Kate
 {
 
-class MainWindow : public KParts::DockMainWindow
+/** An interface to the kate toolviewmanager.
+
+ */
+class ToolViewManager /* You can assume that the implementation is always at least an QObject derived class too */
 {
-  Q_OBJECT
 
   protected:
-    MainWindow ();
-    virtual ~MainWindow ();    
-    
+    ToolViewManager ();
+    virtual ~ToolViewManager ();
+      
   public:
-    virtual class ViewManager *viewManager () = 0;
-
-    enum DockWidgetMode {ClassicStyle,IDEAlStyle};
-    virtual class ToolViewManager *toolViewManager() = 0;
+    virtual class KDockWidget *addToolViewWidget(KDockWidget::DockPosition,QWidget *widget,const class QPixmap&, const class QString&)=0;
+    virtual bool  removeToolViewWidget(QWidget *widget)=0;
+    virtual KDockWidget *addToolView(KDockWidget::DockPosition pos,const char *name,const QPixmap &icon,const QString&)=0;
+    virtual bool removeToolView(KDockWidget *)=0;
+    
 };
 
 };

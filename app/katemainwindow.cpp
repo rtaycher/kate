@@ -70,7 +70,7 @@ uint KateMainWindow::uniqueID = 0;
 
 KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager *_m_pluginManager) :
 	Kate::MainWindow (),
-             DCOPObject ((QString("KateMainWindow%1").arg(uniqueID)).latin1())
+             DCOPObject ((QString("KateMainWindow%1").arg(uniqueID)).latin1()),ToolViewManager()
 {
   m_leftDock=m_rightDock=m_topDock=m_bottomDock=0;
 
@@ -90,6 +90,8 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   console = 0L;
 
   setAcceptDrops(true);
+
+  m_settingsShowToolViews=new KActionMenu( i18n("Tool Views"), actionCollection(),"settings_show_toolviews");
 
   setupMainWindow();
 
@@ -123,15 +125,10 @@ void KateMainWindow::setupMainWindow ()
   connect(grep_dlg, SIGNAL(itemSelected(QString,int)), this, SLOT(slotGrepDialogItemSelected(QString,int)));
 
   mainDock = createDockWidget( "mainDock", 0L );
-  filelistDock =  createDockWidget( "filelistDock",  SmallIcon("kmultiple"), 0L, "Open Files", "");
-  fileselectorDock = createDockWidget( "fileselectorDock", SmallIcon("fileopen"), 0L, "Selector", "");
   
 
   if (m_dockStyle==IDEAlStyle)
   {
-    fileselectorDock->setEnableDocking(fileselectorDock->enableDocking() & ~KDockWidget::DockDesktop);
-    filelistDock->setEnableDocking(filelistDock->enableDocking() & ~KDockWidget::DockDesktop);
-
     m_leftDock = createDockWidget("leftDock",SmallIcon("misc"),0L,"Left Dock");
     m_rightDock = createDockWidget("rightDock",SmallIcon("misc"),0L,"Right Dock");
     m_topDock = createDockWidget("topDock",SmallIcon("misc"),0L,"Top Dock");
@@ -145,9 +142,9 @@ void KateMainWindow::setupMainWindow ()
   
   setMainDockWidget( mainDock );
   setView( mainDock );
+  mainDock->setEnableDocking ( KDockWidget::DockNone );
+  mainDock->setDockSite( KDockWidget::DockCorner );
 
-  filelist = new KateFileList (m_docManager, m_viewManager, filelistDock, "filelist");
-  filelistDock->setWidget (filelist);
 
   if (m_dockStyle==IDEAlStyle)
   {
@@ -157,21 +154,6 @@ void KateMainWindow::setupMainWindow ()
     m_bottomDock->setWidget(new KateDockContainer(m_bottomDock));
   }
 
-  fileselector = new KateFileSelector( this, m_viewManager, fileselectorDock, "operator");
-  fileselectorDock->setWidget (fileselector);
-  
-  filelistDock->setDockWindowType (NET::Tool);
-  fileselectorDock->setDockWindowType (NET::Tool);
-  filelistDock->setDockWindowTransient (this, true);
-  fileselectorDock->setDockWindowTransient (this, true);
-
-  connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileItem*)),this,SLOT(fileSelected(const KFileItem*)));
-
-  mainDock->setEnableDocking ( KDockWidget::DockNone );
-  mainDock->setDockSite( KDockWidget::DockCorner );
-
-  filelistDock->manualDock ( mainDock, KDockWidget::DockLeft, 20 );
-  fileselectorDock ->manualDock(filelistDock, KDockWidget::DockCenter);
 
   if (m_dockStyle==IDEAlStyle)
   {
@@ -182,6 +164,14 @@ void KateMainWindow::setupMainWindow ()
      m_rightDock->undock();
      m_topDock->undock();
   }
+
+  filelist = new KateFileList (m_docManager, m_viewManager, this/*filelistDock*/, "filelist");
+  filelistDock=addToolViewWidget(KDockWidget::DockLeft,filelist,SmallIcon("kmultiple"),"File List");
+
+  fileselector = new KateFileSelector( this, m_viewManager, /*fileselectorDock*/ this, "operator");
+  fileselectorDock=addToolViewWidget(KDockWidget::DockLeft,fileselector, SmallIcon("fileopen"),"Selector");
+
+  connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileItem*)),this,SLOT(fileSelected(const KFileItem*)));
 
 }
 
@@ -260,14 +250,14 @@ void KateMainWindow::setupActions()
 
 
   // toggle dockwidgets
-  KActionMenu *settingsShowToolViews=new KActionMenu( i18n("Tool Views"), actionCollection(),"settings_show_toolviews");
-  settingsShowFilelist = new KToggleAction(i18n("Show File List"), 0, filelistDock, SLOT(changeHideShowState()), actionCollection(), "settings_show_filelist");
-  settingsShowFileselector = new KToggleAction(i18n("Show File Selector"), 0, fileselectorDock, SLOT(changeHideShowState()), actionCollection(), "settings_show_fileselector");
+//  settingsShowFilelist = new KToggleAction(i18n("Show File List"), 0, filelistDock, SLOT(changeHideShowState()), actionCollection(), "settings_show_filelist");
+//  settingsShowToolViews->insert(settingsShowFilelist);
+
+//  settingsShowFileselector = new KToggleAction(i18n("Show File Selector"), 0, fileselectorDock, SLOT(changeHideShowState()), actionCollection(), "settings_show_fileselector");
   settingsShowConsole = new KToggleAction(i18n("Show Terminal Emulator"), QString::fromLatin1("konsole"), Qt::Key_F7, this, SLOT(slotSettingsShowConsole()), actionCollection(), "settings_show_console");
 
-  settingsShowToolViews->insert(settingsShowFilelist);
-  settingsShowToolViews->insert(settingsShowFileselector);
-  settingsShowToolViews->insert(settingsShowConsole);
+//  settingsShowToolViews->insert(settingsShowFileselector);
+  m_settingsShowToolViews->insert(settingsShowConsole);
 
 
   if (m_dockStyle==IDEAlStyle)
@@ -554,8 +544,8 @@ void KateMainWindow::slotSettingsShowConsole()
 
 void KateMainWindow::settingsMenuAboutToShow()
 {
-  settingsShowFilelist->setChecked( filelistDock->isVisible() );
-  settingsShowFileselector->setChecked( fileselectorDock->isVisible() );
+//  settingsShowFilelist->setChecked( filelistDock->isVisible() );
+//  settingsShowFileselector->setChecked( fileselectorDock->isVisible() );
 
   if (consoleDock)
     settingsShowConsole->setChecked( consoleDock->isVisible() );
@@ -760,4 +750,46 @@ void KateMainWindow::slotMail()
 void KateMainWindow::tipOfTheDay()
 {
   KTipDialog::showTip( /*0*/this, QString::null, true );
+}
+
+
+KDockWidget *KateMainWindow::addToolView(KDockWidget::DockPosition pos,const char* name, const QPixmap &icon,const QString& caption)
+{
+	KDockWidget *dw=createDockWidget( name,  icon, 0L, caption, "");
+        dw->setEnableDocking(dw->enableDocking() & ~KDockWidget::DockDesktop);
+        dw->setDockWindowType (NET::Tool);
+        dw->setDockWindowTransient (this, true);
+	if (m_dockStyle==ClassicStyle)
+		dw->manualDock ( mainDock, pos, 20 );
+	else
+	{
+		switch (pos)
+		{
+			case KDockWidget::DockLeft:  dw->manualDock(m_leftDock,KDockWidget::DockCenter,20);
+						break;
+			case KDockWidget::DockRight:  dw->manualDock(m_rightDock,KDockWidget::DockCenter,20);
+						break;
+			case KDockWidget::DockTop:  dw->manualDock(m_topDock,KDockWidget::DockCenter,20);
+						break;
+			case KDockWidget::DockBottom:  dw->manualDock(m_bottomDock,KDockWidget::DockCenter,20);
+						break;
+			default:	dw->manualDock(mainDock,pos,20);
+						break;
+		}
+	}
+	
+	KToggleAction *showaction= new KToggleAction(i18n("Show %1").arg(caption), 0, dw, SLOT(changeHideShowState()), actionCollection(), name);
+	m_settingsShowToolViews->insert(showaction);
+
+	return dw;
+
+
+}
+
+KDockWidget *KateMainWindow::addToolViewWidget(KDockWidget::DockPosition pos,QWidget *widget, const QPixmap &icon,const QString &caption)
+{
+	KDockWidget *dw=addToolView(pos,widget->name(),icon,caption);
+        dw->setWidget (widget);
+	return dw;
+
 }

@@ -9,14 +9,20 @@ KateDockContainer::KateDockContainer(QWidget *parent):QWidget(parent),KDockConta
 {
 	oldtab=-1;
 	mTabCnt=0;
+
 	QHBoxLayout *l=new QHBoxLayout(this);
+
+
+	m_tb=new KMultiVertTabBar(this);
+	m_tb->setPosition(KMultiVertTabBar::Left);
+	l->add(m_tb);
+
 	m_ws=new QWidgetStack(this);
 
 	m_ws->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
 	l->add(m_ws);
-	m_tb=new KMultiVertTabBar(this);
-	l->add(m_tb);
+
 	l->activate();
 }
 
@@ -31,6 +37,7 @@ void KateDockContainer::insertWidget (KDockWidget *w, QPixmap pixmap, const QStr
 {
 	int tab;
 	tab=m_ws->addWidget(w);
+        m_ws->raiseWidget(tab);
 	m_tb->insertTab(pixmap.isNull()?SmallIcon("misc"):pixmap,tab);
 	m_tb->setTab(tab,true);
 	connect(m_tb->getTab(tab),SIGNAL(clicked(int)),this,SLOT(tabClicked(int)));
