@@ -2726,15 +2726,15 @@ void KateDocument::updateLines(int startLine, int endLine)
 		//textLine->setContext(ctxNum, ctxNumLen);
 
 		if (endCtxLen != ctxNumLen)
-		  stillcontinue = false;
+		  stillcontinue = true;
 		else
 		{
-		  stillcontinue = true;
+		  stillcontinue = false;
 		  for (uint z=0; z < ctxNumLen; z++)
 			{
 			  if (ctxNum[z] != endCtx[z])
 				{
-				  stillcontinue = false;
+				  stillcontinue = true;
 					break;
 				}
 			}
