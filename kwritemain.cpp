@@ -1,6 +1,4 @@
 /*
-  $Id$
-
     Copyright (C) 1998, 1999 Jochen Wilhelmy
                              digisnap@cs.tu-berlin.de
 
@@ -23,6 +21,7 @@
 #include <qdragobject.h>
 #include <qvbox.h>
 
+#include <dcopclient.h>
 #include <kiconloader.h>
 #include <kaboutdata.h>
 #include <kstdaction.h>
@@ -563,6 +562,13 @@ int main(int argc, char **argv)
   KCmdLineArgs::addCmdLineOptions( options );
 
   KApplication *a = new KApplication();
+
+  DCOPClient *client = kapp->dcopClient();
+  if (!client->isRegistered())
+  {
+    client->attach();
+    client->registerAs("kwrite");
+  }
 
   //list that contains all documents
   docList.setAutoDelete(false);
