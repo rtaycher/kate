@@ -51,6 +51,7 @@
 #include <qiodevice.h>
 #include <qbuffer.h>
 #include <qtextcodec.h>
+#include <qfocusdata.h>
 
 #include <kapp.h>
 #include <kcursor.h>
@@ -3439,6 +3440,15 @@ bool KantView::eventFilter (QObject *object, QEvent *event)
   if ( (event->type() == 8) )
     emit gotFocus (this);
 
+  if ( (event->type() == 6) )
+    {
+        QKeyEvent * ke=(QKeyEvent *)event;
+        if ((ke->key()==Qt::Key_Tab) || (ke->key()==Qt::Key_BackTab))
+          {
+            myViewInternal->keyPressEvent(ke);
+            return true;
+          }
+    }
   return QWidget::eventFilter (object, event);
 }
 
