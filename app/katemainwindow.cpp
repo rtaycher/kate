@@ -284,7 +284,7 @@ void KateMainWindow::setupActions()
 
   if (KatePluginManager::self()->pluginList().count() > 0)
   {
-    a=new KAction(i18n("Contents &Plugins"), 0, this, SLOT(pluginHelp()), actionCollection(), "help_plugins_contents");
+    a=new KAction(i18n("&Plugins Handbook"), 0, this, SLOT(pluginHelp()), actionCollection(), "help_plugins_contents");
     a->setWhatsThis(i18n("This shows help files for various available plugins."));
   }
 
