@@ -28,6 +28,7 @@
 #include <dcopclient.h>
 #include <kconfig.h>
 #include <kwin.h>
+#include <ktip.h>
 
 KateApp::KateApp () : Kate::Application ()
 {                            
@@ -43,13 +44,14 @@ KateApp::KateApp () : Kate::Application ()
   newMainWindow ();
 
   connect(this, SIGNAL(lastWindowClosed()), SLOT(quit()));
-
   processEvents();
 
   if ( isRestored() && KMainWindow::canBeRestored(1) )
     m_mainWindows.first()->restore( true );
   else
     m_mainWindows.first()->restore( false );
+
+  KTipDialog::showTip(m_mainWindows.first());
 }
 
 KateApp::~KateApp ()
