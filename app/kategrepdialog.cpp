@@ -152,7 +152,7 @@ GrepTool::GrepTool(KateMainWindow *parent, const char *name)
   cmbFiles->insertItem("*");
   loInput->addWidget(cmbFiles, 2, 1);
 
-  QLabel *lDir = new QLabel(i18n("Directory:"), this);
+  QLabel *lDir = new QLabel(i18n("Folder:"), this);
   lDir->setFixedSize(lDir->sizeHint());
   loInput->addWidget(lDir, 3, 0, AlignRight | AlignVCenter);
 
@@ -319,8 +319,8 @@ void GrepTool::slotSearch()
   {
     cmbDir->setFocus();
     KMessageBox::information( this, i18n(
-        "You must enter an existing local directory in the 'Directory' entry."),
-        i18n("Invalid Directory"), "Kate grep tool: invalid directory" );
+        "You must enter an existing local directory in the 'Folder' entry."),
+        i18n("Invalid Folder"), "Kate grep tool: invalid folder" );
     return;
   }
 
