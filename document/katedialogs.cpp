@@ -389,7 +389,7 @@ HlEditDialog::HlEditDialog(HlManager *,QWidget *parent, const char *name, bool m
     setMainWidget(wid);
     if (data!=0) loadFromDocument(data);
     connect(contextList,SIGNAL(currentChanged( QListViewItem*)),this,SLOT(currentSelectionChanged ( QListViewItem * )));
-    connect(addContext,SIGNAL(clickeD()),this,SLOT(contextAddNew()));
+    connect(addContext,SIGNAL(clicked()),this,SLOT(contextAddNew()));
 }
 
 void HlEditDialog::initContextOptions(QVBox *co)
@@ -594,6 +594,7 @@ void HlEditDialog::contextAddNew()
   QListViewItem *it=contextList->firstChild();
   for (;it->nextSibling()!=0;it=it->nextSibling());
   it=new QListViewItem(contextList,it,i18n("New Context"),QString("%1").arg(it->text(1).toInt()),"0","0");
+  contextList->setSelected(it,true);
 }
 
 /****************************************************************************/
@@ -658,4 +659,12 @@ void HlEditDialog::ItemContextChanged(int cont)
      {
        currentItem->setText(4,QString("%1").arg(cont));
      }
+}
+
+void HlEditDialog::ItemAddNew()
+{
+/*  QListViewItem *it=contextList->firstChild();
+  for (;it->nextSibling()!=0;it=it->nextSibling());
+  it=new QListViewItem(contextList,it,i18n("New Context"),QString("%1").arg(it->text(1).toInt()),"0","0");
+  contextList->setSelected(it,true);*/
 }

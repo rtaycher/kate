@@ -159,6 +159,7 @@ class HlEditDialog : public KDialogBase
     void ItemParameterChanged(const QString& name);
     void ItemAttributeChanged(int attr);
     void ItemContextChanged(int cont);
+    void ItemAddNew();
 };
 
 #endif
