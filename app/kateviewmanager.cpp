@@ -355,11 +355,11 @@ bool KateViewManager::closeDocWithAllViews ( Kate::View *view )
       }
     }
 
-    while ( closeList.at(0) )
+    while ( !closeList.isEmpty() )
     {
-      Kate::View *view = closeList.at(0);
+      Kate::View *view = closeList.first();
       ((KateApp *)kapp)->mainWindows.at(i)->viewManager->deleteView (view, true);
-      closeList.remove (view);
+      closeList.removeFirst();
     }
   }
 
