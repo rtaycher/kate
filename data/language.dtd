@@ -44,3 +44,10 @@
 <!ATTLIST contexts
 >
 
+<!ENTITY context (keyword, Float, HlCOct, HlCHex, Int DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ATTLIST context
+  attribute CDATA #REQUIRED
+  lineEndContext CDATA #REQUIRED
+  name CDATA #REQUIRED
+>
+
