@@ -32,7 +32,7 @@ KateDocManager::KateDocManager () : Kate::DocManager ()
 
 KateDocManager::~KateDocManager ()
 {
-  delete factory;
+  //delete factory;
 }
 
 Kate::Document *KateDocManager::createDoc ()
