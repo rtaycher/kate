@@ -781,7 +781,7 @@ class HlEditDialog : public KDialogBase
     void initContextOptions(class QVBox *co);
     void initItemOptions(class QVBox *co); 
     void loadFromDocument(HlData *hl);
-    QListViewItem *addContextItem(KListView *cL,QListViewItem *parent,QListViewItem *prev,struct syntaxContextData *data);
+    QListViewItem *addContextItem(KListView *cL,QListViewItem *_parent,QListViewItem *prev,struct syntaxContextData *data);
 };
 
 #endif //_HIGHLIGHT_H_

@@ -2818,9 +2818,9 @@ HighlightDialog::HighlightDialog( HlManager *hlManager, ItemStyleList *styleList
   QLabel *label = new QLabel( i18n("Highlight:"), vbox1 );
   hlCombo = new QComboBox( false, vbox1 );
   QHBox *modHl = new QHBox(vbox1);
-/*  QPushButton *createHl=new QPushButton(i18n("New"),modHl);
+  QPushButton *createHl=new QPushButton(i18n("New"),modHl);
   QPushButton *editHl=new QPushButton(i18n("Edit"),modHl);
-  connect(editHl,SIGNAL(clicked()),this,SLOT(hlEdit()));*/
+  connect(editHl,SIGNAL(clicked()),this,SLOT(hlEdit()));
   connect( hlCombo, SIGNAL(activated(int)),
            this, SLOT(hlChanged(int)) );
   for( int i = 0; i < hlManager->highlights(); i++) {
@@ -2999,7 +2999,7 @@ void HlEditDialog::loadFromDocument(HlData *hl)
                  HlManager::self()->syntax->groupData(data,QString("lineEndContext"))); //);
           i++;
           int iitem=0;
-          lastsub=last;
+          lastsub=0;//last;
           bool tmpbool;
           while (HlManager::self()->syntax->nextItem(data))
               {
@@ -3019,7 +3019,7 @@ void HlEditDialog::loadFromDocument(HlData *hl)
    }
 }
 
-QListViewItem *HlEditDialog::addContextItem(KListView *cL,QListViewItem *parent,QListViewItem *prev,struct syntaxContextData *data)
+QListViewItem *HlEditDialog::addContextItem(KListView *cL,QListViewItem *_parent,QListViewItem *prev,struct syntaxContextData *data)
   {
 
                 QString dataname=HlManager::self()->syntax->groupItemData(data,QString("name"));
@@ -3043,7 +3043,8 @@ QListViewItem *HlEditDialog::addContextItem(KListView *cL,QListViewItem *parent,
                     else if ((dataname=="2CharDetect") || (dataname=="RangeDetect")) param=chr+chr1;
                       else if ((dataname=="StringDetect") || (dataname=="AnyChar") || (dataname=="RegExpr")) param=stringdata;
                         else                     kdDebug(13010)<<"***********************************"<<endl<<"Unknown entry for Context:"<<dataname<<endl;
-                return new QListViewItem(parent,prev,i18n(dataname.latin1())+param,dataname,param,attr,context);
+                kdDebug(13010)<<dataname;
+                return new QListViewItem(_parent,prev,i18n(dataname.latin1())+param,dataname,param,attr,context);
   }
 
 #include "katehighlight.moc"
