@@ -285,7 +285,7 @@ void KantViewManager::setActiveSpace ( KantViewSpace* vs )
    if (activeViewSpace())
      activeViewSpace()->setActive( false );
 
-   vs->setActive( true );
+   vs->setActive( true, viewSpaceCount() > 1 );
 }
 
 void KantViewManager::setActiveView ( KantView* view )
@@ -862,7 +862,7 @@ void KantViewManager::splitViewSpace( KantViewSpace* vs,
   viewSpaceList.append( vsNew );
   vsNew->installEventFilter( this );
   activeViewSpace()->setActive( false );
-  vsNew->setActive( true );
+  vsNew->setActive( true, true );
   vsNew->show();
   if (!newViewUrl.isValid())
     createView (false, 0L, (KantView *)activeView());

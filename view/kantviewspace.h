@@ -62,7 +62,7 @@ class KantViewSpace : public QVBox
     KantViewSpace(QWidget* parent=0, const char* name=0);
     ~KantViewSpace();
     bool isActiveSpace();
-    void setActive(bool b);
+    void setActive(bool b, bool showled=false);
     QWidgetStack* stack;
     void addView(KantView* v, bool show=true);
     void removeView(KantView* v);

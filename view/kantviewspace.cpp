@@ -126,12 +126,12 @@ bool KantViewSpace::isActiveSpace()
   return mIsActiveSpace;
 }
 
-void KantViewSpace::setActive(bool b)
+void KantViewSpace::setActive(bool b,  bool showled)
 {
   mIsActiveSpace = b;
 
   // enable the painting of the icon and repaint it ;-)
-  mStatusBar->showActiveViewIndicator( b );
+  mStatusBar->showActiveViewIndicator( showled );
 }
 
 bool KantViewSpace::eventFilter(QObject* o, QEvent* e)
@@ -194,7 +194,7 @@ void KantViewSpace::saveFileList( KSimpleConfig* config, int myIndex )
 
 KantVSStatusBar::KantVSStatusBar ( KantViewSpace *parent, const char *name ) : QWidget( parent, name )
 ,m_yOffset(0)
-,m_showLed(true)
+,m_showLed( false )
 {
    viewspace = parent;
    installEventFilter( this );
