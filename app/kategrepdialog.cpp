@@ -318,6 +318,9 @@ void GrepTool::slotSearch()
   if ( cmbDir->url().isEmpty() || ! QDir(cmbDir->url()).exists() )
   {
     cmbDir->setFocus();
+    KMessageBox::information( this, i18n(
+        "You must enter a existing local directory in the 'Directory' entry."),
+        i18n("Invalid Directory"), "Kate grep tool: invalid directory" );
     return;
   }
 
