@@ -1,3 +1,6 @@
+2001-04-08 Christoph Cullmann <crossfire@babylon2k.de>
+             * now encoding for files can be selected at settings dialog (not only UTF8, all possible encodings)
+
 2001-04-07 Joseph Wenninger <jowenn@bigfoot.com>
 	* Activated Waldo Bastian's NEW_CODE
 	* Ported Highlighting to it
