@@ -121,10 +121,21 @@
   <context attribute="0" lineEndContext="0">
     <item name="keyword" attribute="1" context="0"/>
     <item name="dataType" attribute="2" context="0"/>
-    <item name="HlCFloat" attribute="6" context="0"/>
+    <item name="Float" attribute="6" context="0">
+      <item name="AnyChar" String="fF" attribute="6" context="0"/>
+    </item>
     <item name="HlCOct" attribute="4" context="0"/>
     <item name="HlCHex" attribute="5" context="0"/>
-    <item name="HlCInt" attribute="3" context="0"/>
+    <item name="Int" attribute="3" context="0" >
+      <item name="StringDetect" attribute="3" context="0" String="ULL" insensitive="TRUE"/>
+      <item name="StringDetect" attribute="3" context="0" String="LUL" insensitive="TRUE"/>
+      <item name="StringDetect" attribute="3" context="0" String="LLU" insensitive="TRUE"/>
+      <item name="StringDetect" attribute="3" context="0" String="UL" insensitive="TRUE"/>
+      <item name="StringDetect" attribute="3" context="0" String="LU" insensitive="TRUE"/>
+      <item name="StringDetect" attribute="3" context="0" String="LL" insensitive="TRUE"/>
+      <item name="StringDetect" attribute="3" context="0" String="U" insensitive="TRUE"/>
+      <item name="StringDetect" attribute="3" context="0" String="L" insensitive="TRUE"/>
+    </item>
     <item name="HlCChar" attribute="7" context="0"/>
     <item name="CharDetect" attribute="8" context="1" char="&quot;"/>
     <item name="2CharDetect" attribute="10" context="2" char="/" char1="/"/>

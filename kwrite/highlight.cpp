@@ -103,7 +103,13 @@ bool ustrchr(const char *s, QChar c) {
 
 
 HlItem::HlItem(int attribute, int context)
-  : attr(attribute), ctx(context) {
+  : attr(attribute), ctx(context)  {subItems=0;
+}
+
+HlItem::~HlItem()
+{
+  kdDebug()<<"In hlItem::~HlItem()"<<endl;
+  if (subItems!=0) {subItems->setAutoDelete(true); subItems->clear(); delete subItems;}
 }
 
 HlItemWw::HlItemWw(int attribute, int context)
@@ -131,15 +137,20 @@ const QChar *Hl2CharDetect::checkHgl(const QChar *str) {
   return 0L;
 }
 
-HlStringDetect::HlStringDetect(int attribute, int context, const QString &s)
-  : HlItem(attribute, context), str(s) {
+HlStringDetect::HlStringDetect(int attribute, int context, const QString &s, bool inSensitive)
+  : HlItem(attribute, context), str(inSensitive ? s.upper():s), _inSensitive(inSensitive) {
 }
 
 HlStringDetect::~HlStringDetect() {
 }
 
 const QChar *HlStringDetect::checkHgl(const QChar *s) {
-  if (memcmp(s, str.unicode(), str.length()*sizeof(QChar)) == 0) return s + str.length();
+  if (!_inSensitive) {if (memcmp(s, str.unicode(), str.length()*sizeof(QChar)) == 0) return s + str.length();}
+     else
+       {
+	 QString tmp=QString(s,str.length()).upper();
+	 if (tmp==str) return s+str.length();		
+       }
   return 0L;
 }
 
@@ -234,11 +245,22 @@ HlInt::HlInt(int attribute, int context)
 }
 
 const QChar *HlInt::checkHgl(const QChar *str) {
-  const QChar *s;
+  const QChar *s,*s1;
 
   s = str;
   while (s->isDigit()) s++;
-  if (s > str) return s;
+  if (s > str)
+   {
+     if (subItems)
+       {
+	 for (HlItem *it=subItems->first();it;it=subItems->next())
+          {
+            s1=it->checkHgl(s);
+	    if (s1) return s1;
+          }
+       }
+     return s;
+  }
   return 0L;
 }
 
@@ -248,6 +270,7 @@ HlFloat::HlFloat(int attribute, int context)
 
 const QChar *HlFloat::checkHgl(const QChar *s) {
   bool b, p;
+  QChar *s1;
 
   b = false;
   while (s->isDigit()){
@@ -262,14 +285,40 @@ const QChar *HlFloat::checkHgl(const QChar *s) {
     }
   }
   if (!b) return 0L;
-  if ((*s&0xdf) == 'E') s++; else return (p) ? s : 0L;
+  if ((*s&0xdf) == 'E') s++;
+    else
+      if (!p) return 0L;
+	else
+	{
+          if (subItems)
+            {
+	      for (HlItem *it=subItems->first();it;it=subItems->next())
+                {
+                  s1=it->checkHgl(s);
+	          if (s1) return s1;
+                }
+            }
+          return s;
+        } 
   if (*s == '-') s++;
   b = false;
   while (s->isDigit()) {
     s++;
     b = true;
   }
-  if (b) return s; else return 0L;
+  if (b)
+    {
+      if (subItems)
+        {
+          for (HlItem *it=subItems->first();it;it=subItems->next())
+            {
+              s1=it->checkHgl(s);
+              if (s1) return s1;
+            }
+        }
+      return s;
+    }
+   else return 0L;
 }
 
 
@@ -350,6 +399,17 @@ const QChar *HlCFloat::checkHgl(const QChar *s) {
   s = HlFloat::checkHgl(s);
   if (s && ((*s&0xdf) == 'F' )) s++;
   return s;
+}
+
+HlAnyChar::HlAnyChar(int attribute, int context, char* charList)
+  : HlItem(attribute, context) {
+  _charList=charList;  
+}
+
+const QChar *HlAnyChar::checkHgl(const QChar *s) {
+  kdDebug()<<"in AnyChar::checkHgl: _charList: "<<_charList<<endl;
+  if (ustrchr(_charList, *s)) return s +1;
+  return 0L;
 }
 
 HlCSymbol::HlCSymbol(int attribute, int context)
@@ -1022,7 +1082,7 @@ int GenHighlight::doHighlight(int ctxNum, TextLine *textLine) {
       if (item->startEnable(lastChar)) {
         s2 = item->checkHgl(s1);
         if (s2 > s1) {
-          if (item->endEnable(*s2)) {
+          if (item->endEnable(*s2)) { //jowenn: Here I've to change a lot
             textLine->setAttribs(item->attr,s1 - str,s2 - str);
             ctxNum = item->ctx;
             context = contextList[ctxNum];
@@ -2086,10 +2146,49 @@ void AutoHighlight::createItemData(ItemDataList &list)
   if (data) HlManager::self()->syntax->freeGroupInfo(data);
 }
 
+HlItem *AutoHighlight::createHlItem(struct syntaxContextData *data, int *res)
+{
+
+                QString dataname=HlManager::self()->syntax->groupItemData(data,QString("name"));
+                int attr=((HlManager::self()->syntax->groupItemData(data,QString("attribute"))).toInt());
+                int context=((HlManager::self()->syntax->groupItemData(data,QString("context"))).toInt());
+		char chr;
+                if (! HlManager::self()->syntax->groupItemData(data,QString("char")).isEmpty())
+		  chr= (HlManager::self()->syntax->groupItemData(data,QString("char")).latin1())[0];
+		else
+                  chr=0;
+		QString stringdata=HlManager::self()->syntax->groupItemData(data,QString("String"));
+                char chr1;
+                if (! HlManager::self()->syntax->groupItemData(data,QString("char1")).isEmpty())
+		  chr1= (HlManager::self()->syntax->groupItemData(data,QString("char1")).latin1())[0];
+		else
+                  chr1=0;
+		bool insensitive=(HlManager::self()->syntax->groupItemData(data,QString("insensitive"))==QString("TRUE"));
+		*res=0;
+
+                if (dataname=="keyword") {*res=1; return(new HlKeyword(attr,context));} else
+                if (dataname=="dataType") {*res=2; return new HlKeyword(attr,context);} else
+                if (dataname=="Float") return (new HlFloat(attr,context)); else
+                if (dataname=="Int") return(new HlInt(attr,context)); else
+                if (dataname=="CharDetect") return(new HlCharDetect(attr,context,chr)); else
+                if (dataname=="2CharDetect") return(new Hl2CharDetect(attr,context,chr,chr1)); else
+                if (dataname=="RangeDetect") return(new HlRangeDetect(attr,context, chr, chr1)); else
+		if (dataname=="LineContinue") return(new HlLineContinue(attr,context)); else
+                if (dataname=="StringDetect") return(new HlStringDetect(attr,context,stringdata,insensitive)); else
+                if (dataname=="AnyChar") return(new HlAnyChar(attr,context,(char*)stringdata.latin1())); else
+		  {
+                    kdDebug()<<"***********************************"<<endl<<"Unknown entry for Context:"<<dataname<<endl;
+                    return 0;
+                  }
+
+
+}
+
 void AutoHighlight::makeContextList()
 {
   HlKeyword *keyword, *dataType;
-  struct syntaxContextData *data;
+  struct syntaxContextData *data, *datasub;
+  HlItem *c;
 
   kdDebug()<< "AutoHighlight makeContextList()"<<endl;
   data=HlManager::self()->syntax->getGroupInfo(iName,"context");
@@ -2103,42 +2202,33 @@ void AutoHighlight::makeContextList()
             (HlManager::self()->syntax->groupData(data,QString("attribute"))).toInt(),
             (HlManager::self()->syntax->groupData(data,QString("lineEndContext"))).toInt());
 
-            if ((i==0) && (casesensitive=="0"))
+/*            if ((i==0) && (casesensitive=="0"))
             {
                contextList[0]->items.append(keyword = new HlCaseInsensitiveKeyword(dsKeyword,0));
                contextList[0]->items.append(dataType = new HlCaseInsensitiveKeyword(dsDataType,0));
-            }
+            }*/
 
             while (HlManager::self()->syntax->nextItem(data))
               {
 		kdDebug()<< "In make Contextlist: Item:"<<endl;
-                QString dataname=HlManager::self()->syntax->groupItemData(data,QString("name"));
-		kdDebug()<<"DataName: "<<dataname<<endl;
-                int attr=((HlManager::self()->syntax->groupItemData(data,QString("attribute"))).toInt());
-		kdDebug()<<"Attribute:"<<attr<<endl;
-                int context=((HlManager::self()->syntax->groupItemData(data,QString("context"))).toInt());
-		kdDebug()<<"context:"<<context<<endl;
-		char chr;
-                if (! HlManager::self()->syntax->groupItemData(data,QString("char")).isEmpty())
-		  chr= (HlManager::self()->syntax->groupItemData(data,QString("char")).latin1())[0];
-		else
-                  chr=0;
 
-    char chr1;
-    if (! HlManager::self()->syntax->groupItemData(data,QString("char1")).isEmpty())
-		  chr1= (HlManager::self()->syntax->groupItemData(data,QString("char1")).latin1())[0];
-		else
-                  chr1=0;
+		int res;
+		c=createHlItem(data,&res);
+		if (c)
+			{
+				contextList[i]->items.append(c);
+				if (res==1) keyword=(HlKeyword*)c; else if (res==2) dataType=(HlKeyword*)c;
 
-                if (dataname=="keyword") contextList[i]->items.append(keyword=new HlKeyword(attr,context)); else
-                if (dataname=="dataType") contextList[i]->items.append(dataType=new HlKeyword(attr,context)); else
-                if (dataname=="Float") contextList[i]->items.append(new HlFloat(attr,context)); else
-                if (dataname=="Int") contextList[i]->items.append(new HlInt(attr,context)); else
-                if (dataname=="CharDetect") contextList[i]->items.append(new HlCharDetect(attr,context,chr)); else
-                if (dataname=="2CharDetect") contextList[i]->items.append(new Hl2CharDetect(attr,context,chr,chr1)); else
-                if (dataname=="RangeDetect") contextList[i]->items.append(new HlRangeDetect(attr,context, chr, chr1)); else
-		if (dataname=="LineContinue") contextList[i]->items.append(new HlLineContinue(attr,context)); else
-                kdDebug()<<"***********************************"<<endl<<"Unknown entry for Context:"<<dataname<<endl;
+				datasub=HlManager::self()->syntax->getSubItems(data);
+				bool tmpbool;
+				if (tmpbool=HlManager::self()->syntax->nextItem(datasub))
+					{
+                                          c->subItems=new QList<HlItem>;
+					  for (;tmpbool;tmpbool=HlManager::self()->syntax->nextItem(datasub))
+                                            c->subItems->append(createHlItem(datasub,&res));
+                                        }
+				HlManager::self()->syntax->freeGroupInfo(datasub);
+			}
 		kdDebug()<<"Last line in loop"<<endl;
               }
           i++;
@@ -2169,8 +2259,8 @@ HlManager::HlManager() : QObject(0L)
   {
     hlList.append(new AutoHighlight(modeList.at(i)));
     i++;
-  }            */    
-
+  }              
+ */
 
   hlList.append(new CHighlight(     "C"        ));
   hlList.append(new CppHighlight(   "C++"      ));
@@ -2188,6 +2278,7 @@ HlManager::HlManager() : QObject(0L)
   hlList.append(new KBasicHighlight("KBasic"));
   hlList.append(new LatexHighlight( "Latex"    ));
   hlList.append(new IdlHighlight("IDL"));
+
 }
 
 HlManager::~HlManager() {

@@ -31,6 +31,7 @@
 
 class SyntaxDocument;
 struct syntaxModeListItem;
+struct syntaxContextData;
 
 class QCheckBox;
 class QComboBox;
@@ -45,11 +46,13 @@ bool isInWord(QChar); //true for '_','0'-'9','A'-'Z','a'-'z'
 class HlItem {
   public:
     HlItem(int attribute, int context);
+    virtual ~HlItem();
     virtual bool startEnable(QChar) {return true;}
     virtual bool endEnable(QChar) {return true;}
     virtual const QChar *checkHgl(const QChar *) = 0;
+    QList<HlItem> *subItems;
     int attr;
-    int ctx;
+    int ctx;    
 };
 
 class HlItemWw : public HlItem {
@@ -81,11 +84,12 @@ class Hl2CharDetect : public HlItem {
 
 class HlStringDetect : public HlItem {
   public:
-    HlStringDetect(int attribute, int context, const QString &);
+    HlStringDetect(int attribute, int context, const QString &, bool inSensitive=false);
     virtual ~HlStringDetect();
     virtual const QChar *checkHgl(const QChar *);
   protected:
     const QString str;
+    bool _inSensitive;
 };
 
 class HlRangeDetect : public HlItem {
@@ -321,6 +325,15 @@ class HlLatexParam : public HlItem {
     virtual const QChar *checkHgl(const QChar *);
     virtual bool endEnable(QChar c) {return !isInWord(c);}
 };
+
+
+class HlAnyChar : public HlItem {
+  public:
+    HlAnyChar(int attribute, int context,char* charList);
+    virtual const QChar *checkHgl(const QChar *);
+    char* _charList;
+};
+
 
 //--------
 
@@ -626,6 +639,7 @@ class AutoHighlight : public GenHighlight
     virtual void makeContextList ();
     virtual void setKeywords (HlKeyword *keyword,HlKeyword *dataType);
     virtual void createItemData (ItemDataList &list);
+    HlItem *createHlItem(struct syntaxContextData *data, int *res);
 };
 
 //class KWriteDoc;

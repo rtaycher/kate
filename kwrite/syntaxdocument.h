@@ -55,9 +55,9 @@ class SyntaxDocument : public QDomDocument
     void freeGroupInfo(struct syntaxContextData* data);
     bool nextItem(struct syntaxContextData* data);
     bool nextGroup(struct syntaxContextData* data);
+    struct syntaxContextData* getSubItems(struct syntaxContextData* data);
     QString groupItemData(struct syntaxContextData* data,QString name);
     QString groupData(struct syntaxContextData* data,QString name);
-
   private:
      void setupModeList();
 

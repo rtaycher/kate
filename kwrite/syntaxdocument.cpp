@@ -122,6 +122,19 @@ void SyntaxDocument::freeGroupInfo(struct syntaxContextData* data)
   delete data;
 }
 
+
+struct syntaxContextData* SyntaxDocument::getSubItems(struct syntaxContextData* data)
+{
+  syntaxContextData *retval=new syntaxContextData;
+  if (data!=0)
+    {  
+      retval->parent=data->currentGroup;
+      retval->currentGroup=data->item;
+      retval->item=QDomElement();
+   }
+  return retval;
+}
+
 struct syntaxContextData* SyntaxDocument::getGroupInfo(const QString& langName, const QString &group)
 {
   QDomElement docElem = documentElement();
