@@ -261,7 +261,7 @@
                 <AnyChar attribute="8" context="0" String=")=&lt;&gt;" />
             </context>
             <context name="quot in att" attribute="8" lineEndContext="4">
-                <CharDetect attribute="8" context="3" char="&quot;" />
+                <DetectChar attribute="8" context="3" char="&quot;" />
             </context>
         </contexts>
         <itemDatas>
