@@ -54,18 +54,14 @@ Kate::FileDialog::FileDialog (const QString& startDir,
 
   toolBar()->insertCombo(QStringList(), 33333, false, 0L, 0L, 0L, true);
 
-  QStringList filter;
-  filter << "all/allfiles";
-  filter << "text/plain";
+  setFilter ("all/allfiles test/plain");
 
   if (type == Kate::FileDialog::openDialog) {
     setMode(KFile::Files);
-    setMimeFilter (filter, "all/allfiles");
     }
   else {
     setMode(KFile::File);
     setOperationMode( Saving );
-    setMimeFilter (filter, "all/allfiles");
     }
 
   d->encoding = toolBar()->getCombo(33333);
@@ -99,7 +95,7 @@ Kate::FileDialog::~FileDialog ()
 
 Kate::FileDialogData Kate::FileDialog::exec()
 {
-  int n = KDialogBase::exec();
+  int n = KFileDialog::exec();
 
   Kate::FileDialogData data = Kate::FileDialogData ();
 
