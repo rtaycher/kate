@@ -84,7 +84,7 @@ class ProjectDirFile : public QObject, public KShared
     QStringList files () const;
     
     QStringList addDirs (const QStringList &dirs);
-    QStringList  removeDirs (const QStringList &dirs);
+    QStringList removeDirs (const QStringList &dirs);
     
     QStringList addFiles (const QStringList &files);
     QStringList removeFiles (const QStringList &files);

@@ -26,11 +26,14 @@
 #include "../interfaces/project.h"
 
 #include <klistview.h>
+#include <qstringlist.h>
 
 class KateProjectTreeView;
 
-class KateProjectTreeViewItem : public KListViewItem
+class KateProjectTreeViewItem : public QObject, public KListViewItem
 {
+  Q_OBJECT
+
   public:
     KateProjectTreeViewItem (KateProjectTreeView * parent, Kate::Project *prj, const QString &name, const QString &fullname, bool dir = false);
     KateProjectTreeViewItem (KateProjectTreeViewItem * parent, Kate::Project *prj, const QString &name, const QString &fullname, bool dir = false);
@@ -45,11 +48,19 @@ class KateProjectTreeViewItem : public KListViewItem
     QString fullName () { return m_fullName; };
     
     int compare ( QListViewItem *i, int, bool ) const;
+    
+  private slots:
+    void dirsAdded (const QStringList &dirs);
+    void dirsRemoved (const QStringList &dirs);
+    
+    void filesAdded (const QStringList &files);
+    void filesRemoved (const QStringList &files);
 
   private:
     QString m_name;
     QString m_fullName;
     Kate::Project *m_project;
+    Kate::ProjectDirFile::Ptr m_dirFile;
     bool m_dir;
 };
 
