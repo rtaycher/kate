@@ -65,21 +65,21 @@ enum State_commands {
 class KateViewInternal;
 class KateView;
 
-struct PointStruc {
-  int x;
-  int y;
+struct KateViewCursor {
+  int col;
+  int line;
 };
 
 struct VConfig {
   KateView *view;
-  PointStruc cursor;
+  KateViewCursor cursor;
   int cXPos;
   int flags;
 };
 
 struct SConfig {
-  PointStruc cursor;
-  PointStruc startCursor;
+  KateViewCursor cursor;
+  KateViewCursor startCursor;
   int flags;
 
   // Set the pattern to be used for searching.
@@ -105,7 +105,7 @@ struct LineRange {
 };
 
 struct BracketMark {
-  PointStruc cursor;
+  KateViewCursor cursor;
   int sXPos;
   int eXPos;
 };
@@ -182,7 +182,7 @@ class KateViewInternal : public QWidget {
     void insLine(int line);
     void delLine(int line);
     void updateCursor();
-    void updateCursor(PointStruc &newCursor);
+    void updateCursor(KateViewCursor &newCursor);
     void clearDirtyCache(int height);
     void tagLines(int start, int end, int x1, int x2);
     void tagAll();
@@ -230,7 +230,7 @@ class KateViewInternal : public QWidget {
     int scrollY;
     int scrollTimer;
 
-    PointStruc cursor;
+    KateViewCursor cursor;
     bool cursorOn;
     int cursorTimer;
     int cXPos;
@@ -254,7 +254,7 @@ class KateViewInternal : public QWidget {
 
     struct _dragInfo {
       DragState       state;
-      PointStruc      start;
+      KateViewCursor      start;
       QTextDrag       *dragObject;
     } dragInfo;
 
@@ -519,7 +519,7 @@ class KateView : public Kate::View
     void findAgain(SConfig &);
     void replaceAgain();
     void doReplaceAction(int result, bool found = false);
-    void exposeFound(PointStruc &cursor, int slen, int flags, bool replace);
+    void exposeFound(KateViewCursor &cursor, int slen, int flags, bool replace);
     void deleteReplacePrompt();
     bool askReplaceEnd();
   protected slots:
@@ -645,7 +645,7 @@ class KateView : public Kate::View
     void insLine(int line) { myViewInternal->insLine(line); };
     void delLine(int line) { myViewInternal->delLine(line); };
     void updateCursor() { myViewInternal->updateCursor(); };
-    void updateCursor(PointStruc &newCursor) { myViewInternal->updateCursor(newCursor); };
+    void updateCursor(KateViewCursor &newCursor) { myViewInternal->updateCursor(newCursor); };
 
     void clearDirtyCache(int height) { myViewInternal->clearDirtyCache(height); };
     void tagLines(int start, int end, int x1, int x2) { myViewInternal->tagLines(start, end, x1, x2); };

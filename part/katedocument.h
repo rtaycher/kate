@@ -294,13 +294,13 @@ class KateDocument : public Kate::Document
     int getTextLineCount() {return numLines();}
 
     int textWidth(const TextLine::Ptr &, int cursorX);
-    int textWidth(PointStruc &cursor);
-    int textWidth(bool wrapCursor, PointStruc &cursor, int xPos);
+    int textWidth(KateViewCursor &cursor);
+    int textWidth(bool wrapCursor, KateViewCursor &cursor, int xPos);
     int textPos(const TextLine::Ptr &, int xPos);
     int textWidth();
     int textHeight();
 
-    int currentColumn(PointStruc &cursor);
+    int currentColumn(KateViewCursor &cursor);
     void newLine(VConfig &);
     void killLine(VConfig &);
     void backspace(VConfig &);
@@ -310,9 +310,9 @@ class KateDocument : public Kate::Document
     void paste(VConfig &);
 
     void toggleRect(int, int, int, int);
-    void selectTo(VConfig &c, PointStruc &cursor, int cXPos);
-    void selectWord(PointStruc &cursor, int flags);
-    void selectLength(PointStruc &cursor, int length, int flags);
+    void selectTo(VConfig &c, KateViewCursor &cursor, int cXPos);
+    void selectWord(KateViewCursor &cursor, int flags);
+    void selectLength(KateViewCursor &cursor, int length, int flags);
 
     void indent(VConfig &c) {doIndent(c, 1);}
     void unIndent(VConfig &c) {doIndent(c, -1);}
@@ -328,7 +328,7 @@ class KateDocument : public Kate::Document
     void doComment(VConfig &, int change);
 
     virtual QString text() const;
-    QString getWord(PointStruc &cursor);
+    QString getWord(KateViewCursor &cursor);
 
   public:
     long needPreHighlight(long till);
@@ -354,7 +354,7 @@ class KateDocument : public Kate::Document
 
     void setPseudoModal(QWidget *);
 
-    void newBracketMark(PointStruc &, BracketMark &);
+    void newBracketMark(KateViewCursor &, BracketMark &);
 
   protected:
     virtual void guiActivateEvent( KParts::GUIActivateEvent *ev );
@@ -412,8 +412,8 @@ class KateDocument : public Kate::Document
     TextLine::Ptr longestLine;
     float maxLength;
 
-    PointStruc select;
-    PointStruc anchor;
+    KateViewCursor select;
+    KateViewCursor anchor;
     int aXPos;
     int selectStart;
     int selectEnd;

@@ -101,8 +101,8 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc) : QWidget(
 
   scrollTimer = 0;
 
-  cursor.x = 0;
-  cursor.y = 0;
+  cursor.col = 0;
+  cursor.line = 0;
   cursorOn = false;
   cursorTimer = 0;
   cXPos = 0;
@@ -260,10 +260,10 @@ void KateViewInternal::doEditCommand(VConfig &c, int cmdNum)
 
 void KateViewInternal::cursorLeft(VConfig &c) {
 
-  cursor.x--;
-  if (c.flags & KateDocument::cfWrapCursor && cursor.x < 0 && cursor.y > 0) {
-    cursor.y--;
-    cursor.x = myDoc->textLength(cursor.y);
+  cursor.col--;
+  if (c.flags & KateDocument::cfWrapCursor && cursor.col < 0 && cursor.line > 0) {
+    cursor.line--;
+    cursor.col = myDoc->textLength(cursor.line);
   }
   cOldXPos = cXPos = myDoc->textWidth(cursor);
   changeState(c);
@@ -272,13 +272,13 @@ void KateViewInternal::cursorLeft(VConfig &c) {
 void KateViewInternal::cursorRight(VConfig &c) {
 
   if (c.flags & KateDocument::cfWrapCursor) {
-    if (cursor.x >= myDoc->textLength(cursor.y)) {
-      if (cursor.y == myDoc->lastLine()) return;
-      cursor.y++;
-      cursor.x = -1;
+    if (cursor.col >= myDoc->textLength(cursor.line)) {
+      if (cursor.line == myDoc->lastLine()) return;
+      cursor.line++;
+      cursor.col = -1;
     }
   }
-  cursor.x++;
+  cursor.col++;
   cOldXPos = cXPos = myDoc->textWidth(cursor);
   changeState(c);
 }
@@ -287,19 +287,19 @@ void KateViewInternal::wordLeft(VConfig &c) {
   Highlight *highlight;
 
   highlight = myDoc->highlight();
-  TextLine::Ptr textLine = myDoc->getTextLine(cursor.y);
+  TextLine::Ptr textLine = myDoc->getTextLine(cursor.line);
 
-  if (cursor.x > 0) {
+  if (cursor.col > 0) {
     do {
-      cursor.x--;
-    } while (cursor.x > 0 && !highlight->isInWord(textLine->getChar(cursor.x)));
-    while (cursor.x > 0 && highlight->isInWord(textLine->getChar(cursor.x -1)))
-      cursor.x--;
+      cursor.col--;
+    } while (cursor.col > 0 && !highlight->isInWord(textLine->getChar(cursor.col)));
+    while (cursor.col > 0 && highlight->isInWord(textLine->getChar(cursor.col -1)))
+      cursor.col--;
   } else {
-    if (cursor.y > 0) {
-      cursor.y--;
-      textLine = myDoc->getTextLine(cursor.y);
-      cursor.x = textLine->length();
+    if (cursor.line > 0) {
+      cursor.line--;
+      textLine = myDoc->getTextLine(cursor.line);
+      cursor.col = textLine->length();
     }
   }
 
@@ -312,20 +312,20 @@ void KateViewInternal::wordRight(VConfig &c) {
   int len;
 
   highlight = myDoc->highlight();
-  TextLine::Ptr textLine = myDoc->getTextLine(cursor.y);
+  TextLine::Ptr textLine = myDoc->getTextLine(cursor.line);
   len = textLine->length();
 
-  if (cursor.x < len) {
+  if (cursor.col < len) {
     do {
-      cursor.x++;
-    } while (cursor.x < len && highlight->isInWord(textLine->getChar(cursor.x)));
-    while (cursor.x < len && !highlight->isInWord(textLine->getChar(cursor.x)))
-      cursor.x++;
+      cursor.col++;
+    } while (cursor.col < len && highlight->isInWord(textLine->getChar(cursor.col)));
+    while (cursor.col < len && !highlight->isInWord(textLine->getChar(cursor.col)))
+      cursor.col++;
   } else {
-    if (cursor.y < myDoc->lastLine()) {
-      cursor.y++;
-      textLine = myDoc->getTextLine(cursor.y);
-      cursor.x = 0;
+    if (cursor.line < myDoc->lastLine()) {
+      cursor.line++;
+      textLine = myDoc->getTextLine(cursor.line);
+      cursor.col = 0;
     }
   }
 
@@ -336,12 +336,12 @@ void KateViewInternal::wordRight(VConfig &c) {
 void KateViewInternal::home(VConfig &c) {
   int lc;
 
-  lc = (c.flags & KateDocument::cfSmartHome) ? myDoc->getTextLine(cursor.y)->firstChar() : 0;
-  if (lc <= 0 || cursor.x == lc) {
-    cursor.x = 0;
+  lc = (c.flags & KateDocument::cfSmartHome) ? myDoc->getTextLine(cursor.line)->firstChar() : 0;
+  if (lc <= 0 || cursor.col == lc) {
+    cursor.col = 0;
     cOldXPos = cXPos = 0;
   } else {
-    cursor.x = lc;
+    cursor.col = lc;
     cOldXPos = cXPos = myDoc->textWidth(cursor);
   }
 
@@ -349,7 +349,7 @@ void KateViewInternal::home(VConfig &c) {
 }
 
 void KateViewInternal::end(VConfig &c) {
-  cursor.x = myDoc->textLength(cursor.y);
+  cursor.col = myDoc->textLength(cursor.line);
   cOldXPos = cXPos = myDoc->textWidth(cursor);
   changeState(c);
 }
@@ -357,7 +357,7 @@ void KateViewInternal::end(VConfig &c) {
 
 void KateViewInternal::cursorUp(VConfig &c) {
 
-  cursor.y--;
+  cursor.line--;
   cXPos = myDoc->textWidth(c.flags & KateDocument::cfWrapCursor,cursor,cOldXPos);
   changeState(c);
 }
@@ -366,13 +366,13 @@ void KateViewInternal::cursorUp(VConfig &c) {
 void KateViewInternal::cursorDown(VConfig &c) {
   int x;
 
-  if (cursor.y == myDoc->lastLine()) {
-    x = myDoc->textLength(cursor.y);
-    if (cursor.x >= x) return;
-    cursor.x = x;
+  if (cursor.line == myDoc->lastLine()) {
+    x = myDoc->textLength(cursor.line);
+    if (cursor.col >= x) return;
+    cursor.col = x;
     cXPos = myDoc->textWidth(cursor);
   } else {
-    cursor.y++;
+    cursor.line++;
     cXPos = myDoc->textWidth(c.flags & KateDocument::cfWrapCursor, cursor, cOldXPos);
   }
   changeState(c);
@@ -383,8 +383,8 @@ void KateViewInternal::scrollUp(VConfig &c) {
   if (! yPos) return;
 
   newYPos = yPos - myDoc->fontHeight;
-  if (cursor.y == (yPos + height())/myDoc->fontHeight -1) {
-    cursor.y--;
+  if (cursor.line == (yPos + height())/myDoc->fontHeight -1) {
+    cursor.line--;
     cXPos = myDoc->textWidth(c.flags & KateDocument::cfWrapCursor,cursor,cOldXPos);
 
     changeState(c);
@@ -396,8 +396,8 @@ void KateViewInternal::scrollDown(VConfig &c) {
   if (endLine >= myDoc->lastLine()) return;
 
   newYPos = yPos + myDoc->fontHeight;
-  if (cursor.y == (yPos + myDoc->fontHeight -1)/myDoc->fontHeight) {
-    cursor.y++;
+  if (cursor.line == (yPos + myDoc->fontHeight -1)/myDoc->fontHeight) {
+    cursor.line++;
     cXPos = myDoc->textWidth(c.flags & KateDocument::cfWrapCursor,cursor,cOldXPos);
     changeState(c);
   }
@@ -405,18 +405,18 @@ void KateViewInternal::scrollDown(VConfig &c) {
 
 void KateViewInternal::topOfView(VConfig &c) {
 
-  cursor.y = (yPos + myDoc->fontHeight -1)/myDoc->fontHeight;
-  cursor.x = 0;
+  cursor.line = (yPos + myDoc->fontHeight -1)/myDoc->fontHeight;
+  cursor.col = 0;
   cOldXPos = cXPos = 0;
   changeState(c);
 }
 
 void KateViewInternal::bottomOfView(VConfig &c) {
 
-  cursor.y = (yPos + height())/myDoc->fontHeight -1;
-  if (cursor.y < 0) cursor.y = 0;
-  if (cursor.y > myDoc->lastLine()) cursor.y = myDoc->lastLine();
-  cursor.x = 0;
+  cursor.line = (yPos + height())/myDoc->fontHeight -1;
+  if (cursor.line < 0) cursor.line = 0;
+  if (cursor.line > myDoc->lastLine()) cursor.line = myDoc->lastLine();
+  cursor.col = 0;
   cOldXPos = cXPos = 0;
   changeState(c);
 }
@@ -430,7 +430,7 @@ void KateViewInternal::pageUp(VConfig &c) {
     newYPos = yPos - lines * myDoc->fontHeight;
     if (newYPos < 0) newYPos = 0;
   }
-  cursor.y -= lines;
+  cursor.line -= lines;
   cXPos = myDoc->textWidth(c.flags & KateDocument::cfWrapCursor, cursor, cOldXPos);
   changeState(c);
 //  cursorPageUp(c);
@@ -446,7 +446,7 @@ void KateViewInternal::pageDown(VConfig &c) {
     else
       newYPos = yPos + (myDoc->lastLine() - endLine) * myDoc->fontHeight;
   }
-  cursor.y += lines;
+  cursor.line += lines;
   cXPos = myDoc->textWidth(c.flags & KateDocument::cfWrapCursor,cursor,cOldXPos);
   changeState(c);
 //  cursorPageDown(c);
@@ -455,8 +455,8 @@ void KateViewInternal::pageDown(VConfig &c) {
 // go to the top, same X position
 void KateViewInternal::top(VConfig &c) {
 
-//  cursor.x = 0;
-  cursor.y = 0;
+//  cursor.col = 0;
+  cursor.line = 0;
   cXPos = myDoc->textWidth(c.flags & KateDocument::cfWrapCursor,cursor,cOldXPos);
 //  cOldXPos = cXPos = 0;
   changeState(c);
@@ -465,8 +465,8 @@ void KateViewInternal::top(VConfig &c) {
 // go to the bottom, same X position
 void KateViewInternal::bottom(VConfig &c) {
 
-//  cursor.x = 0;
-  cursor.y = myDoc->lastLine();
+//  cursor.col = 0;
+  cursor.line = myDoc->lastLine();
   cXPos = myDoc->textWidth(c.flags & KateDocument::cfWrapCursor,cursor,cOldXPos);
 //  cOldXPos = cXPos = 0;
   changeState(c);
@@ -475,8 +475,8 @@ void KateViewInternal::bottom(VConfig &c) {
 // go to the top left corner
 void KateViewInternal::top_home(VConfig &c)
 {
-  cursor.y = 0;
-  cursor.x = 0;
+  cursor.line = 0;
+  cursor.col = 0;
   cOldXPos = cXPos = 0;
   changeState(c);
 }
@@ -484,8 +484,8 @@ void KateViewInternal::top_home(VConfig &c)
 // go to the bottom right corner
 void KateViewInternal::bottom_end(VConfig &c) {
 
-  cursor.y = myDoc->lastLine();
-  cursor.x = myDoc->textLength(cursor.y);
+  cursor.line = myDoc->lastLine();
+  cursor.col = myDoc->textLength(cursor.line);
   cOldXPos = cXPos = myDoc->textWidth(cursor);
   changeState(c);
 }
@@ -532,10 +532,10 @@ void KateViewInternal::changeState(VConfig &c) {
    * like we don't want to expose the cursor
    */
 
-//  if (cursor.x == c.cursor.x && cursor.y == c.cursor.y) return;
-  bool nullMove = (cursor.x == c.cursor.x && cursor.y == c.cursor.y);
+//  if (cursor.col == c.cursor.col && cursor.line == c.cursor.line) return;
+  bool nullMove = (cursor.col == c.cursor.col && cursor.line == c.cursor.line);
 
-//  if (cursor.y != c.cursor.y || c.flags & KateDocument::cfMark) myDoc->recordReset();
+//  if (cursor.line != c.cursor.line || c.flags & KateDocument::cfMark) myDoc->recordReset();
 
   if (! nullMove) {
 
@@ -543,25 +543,25 @@ void KateViewInternal::changeState(VConfig &c) {
 
     // mark old position of cursor as dirty
     if (cursorOn) {
-      tagLines(c.cursor.y, c.cursor.y, c.cXPos -2, c.cXPos +3);
+      tagLines(c.cursor.line, c.cursor.line, c.cXPos -2, c.cXPos +3);
       cursorOn = false;
     }
 
     // mark old bracket mark position as dirty
     if (bm.sXPos < bm.eXPos) {
-      tagLines(bm.cursor.y, bm.cursor.y, bm.sXPos, bm.eXPos);
+      tagLines(bm.cursor.line, bm.cursor.line, bm.sXPos, bm.eXPos);
     }
     // make new bracket mark
     myDoc->newBracketMark(cursor, bm);
 
     // remove trailing spaces when leaving a line
-    if (c.flags & KateDocument::cfRemoveSpaces && cursor.y != c.cursor.y) {
-      TextLine::Ptr textLine = myDoc->getTextLine(c.cursor.y);
+    if (c.flags & KateDocument::cfRemoveSpaces && cursor.line != c.cursor.line) {
+      TextLine::Ptr textLine = myDoc->getTextLine(c.cursor.line);
       unsigned int newLen = textLine->lastChar();
       if (newLen != textLine->length()) {
         textLine->truncate(newLen);
         // if some spaces are removed, tag the line as dirty
-        myDoc->tagLines(c.cursor.y, c.cursor.y);
+        myDoc->tagLines(c.cursor.line, c.cursor.line);
       }
     }
   }
@@ -577,8 +577,8 @@ void KateViewInternal::changeState(VConfig &c) {
 
 void KateViewInternal::insLine(int line) {
 
-  if (line <= cursor.y) {
-    cursor.y++;
+  if (line <= cursor.line) {
+    cursor.line++;
   }
   if (line < startLine) {
     startLine++;
@@ -591,8 +591,8 @@ void KateViewInternal::insLine(int line) {
 
 void KateViewInternal::delLine(int line) {
 
-  if (line <= cursor.y && cursor.y > 0) {
-    cursor.y--;
+  if (line <= cursor.line && cursor.line > 0) {
+    cursor.line--;
   }
   if (line < startLine) {
     startLine--;
@@ -609,18 +609,18 @@ void KateViewInternal::updateCursor()
 }
 
 
-void KateViewInternal::updateCursor(PointStruc &newCursor)
+void KateViewInternal::updateCursor(KateViewCursor &newCursor)
 {
   if (!(myDoc->_configFlags & KateDocument::cfPersistent)) myDoc->clearSelection();
 
   exposeCursor = true;
   if (cursorOn) {
-    tagLines(cursor.y, cursor.y, cXPos -2, cXPos +3);
+    tagLines(cursor.line, cursor.line, cXPos -2, cXPos +3);
     cursorOn = false;
   }
 
   if (bm.sXPos < bm.eXPos) {
-    tagLines(bm.cursor.y, bm.cursor.y, bm.sXPos, bm.eXPos);
+    tagLines(bm.cursor.line, bm.cursor.line, bm.sXPos, bm.eXPos);
   }
   myDoc->newBracketMark(newCursor, bm);
 
@@ -686,7 +686,7 @@ void KateViewInternal::setPos(int x, int y) {
 
 void KateViewInternal::center() {
   newXPos = 0;
-  newYPos = cursor.y*myDoc->fontHeight - height()/2;
+  newYPos = cursor.line*myDoc->fontHeight - height()/2;
   if (newYPos < 0) newYPos = 0;
 }
 
@@ -727,7 +727,7 @@ void KateViewInternal::updateView(int flags) {
   if (newYPos >= 0) yPos = newYPos;
 
   fontHeight = myDoc->fontHeight;
-  cYPos = cursor.y*fontHeight;
+  cYPos = cursor.line*fontHeight;
 
   z = 0;
   do {
@@ -882,7 +882,7 @@ void KateViewInternal::paintCursor() {
   static int cx = 0, cy = 0, ch = 0;
 
   h = myDoc->fontHeight;
-  y = h*cursor.y - yPos;
+  y = h*cursor.line - yPos;
   x = cXPos - (xPos-2);
 
   if(myDoc->myFont != font()) setFont(myDoc->myFont);
@@ -897,7 +897,7 @@ void KateViewInternal::paintCursor() {
   if (cursorOn) {
     paint.begin(this);
     paint.setClipping(false);
-    paint.setPen(myDoc->cursorCol(cursor.x,cursor.y));
+    paint.setPen(myDoc->cursorCol(cursor.col,cursor.line));
 
     h += y - 1;
     paint.drawLine(x, y, x, h);
@@ -905,7 +905,7 @@ void KateViewInternal::paintCursor() {
  paint.end();
   } else { if (drawBuffer && !drawBuffer->isNull()) {
     paint.begin(drawBuffer);
-    myDoc->paintTextLine(paint, cursor.y, cXPos - 2, cXPos + 3, myView->myDoc->_configFlags & KateDocument::cfShowTabs);
+    myDoc->paintTextLine(paint, cursor.line, cXPos - 2, cXPos + 3, myView->myDoc->_configFlags & KateDocument::cfShowTabs);
     bitBlt(this,x - 2,y, drawBuffer, 0, 0, 5, h);
  paint.end(); }
   }
@@ -915,11 +915,11 @@ void KateViewInternal::paintCursor() {
 void KateViewInternal::paintBracketMark() {
   int y;
 
-  y = myDoc->fontHeight*(bm.cursor.y +1) - yPos -1;
+  y = myDoc->fontHeight*(bm.cursor.line +1) - yPos -1;
 
   QPainter paint;
   paint.begin(this);
-  paint.setPen(myDoc->cursorCol(bm.cursor.x, bm.cursor.y));
+  paint.setPen(myDoc->cursorCol(bm.cursor.col, bm.cursor.line));
 
   paint.drawLine(bm.sXPos - (xPos-2), y, bm.eXPos - (xPos-2) -1, y);
   paint.end();
@@ -930,7 +930,7 @@ void KateViewInternal::placeCursor(int x, int y, int flags) {
 
   getVConfig(c);
   c.flags |= flags;
-  cursor.y = (yPos + y)/myDoc->fontHeight;
+  cursor.line = (yPos + y)/myDoc->fontHeight;
   cXPos = cOldXPos = myDoc->textWidth(c.flags & KateDocument::cfWrapCursor, cursor,xPos-2 + x);
   changeState(c);
 }
@@ -990,7 +990,7 @@ void KateViewInternal::keyPressEvent(QKeyEvent *e) {
         return;
       }
     }
-    if ( !(e->state() & ControlButton ) && myDoc->insertChars (c.cursor.y, c.cursor.x, e->text(), this->myView) )
+    if ( !(e->state() & ControlButton ) && myDoc->insertChars (c.cursor.line, c.cursor.col, e->text(), this->myView) )
     {
       myDoc->updateViews();
       e->accept();
@@ -1009,8 +1009,8 @@ void KateViewInternal::mousePressEvent(QMouseEvent *e) {
       // we initialize the drag info thingy as pending from this position
 
       dragInfo.state = diPending;
-      dragInfo.start.x = e->x();
-      dragInfo.start.y = e->y();
+      dragInfo.start.col = e->x();
+      dragInfo.start.line = e->y();
     } else {
       // we have no reason to ever start a drag from here
       dragInfo.state = diNone;
@@ -1084,8 +1084,8 @@ void KateViewInternal::mouseMoveEvent(QMouseEvent *e) {
       // we had a mouse down, but haven't confirmed a drag yet
       // if the mouse has moved sufficiently, we will confirm
 
-      if (x > dragInfo.start.x + 4 || x < dragInfo.start.x - 4 ||
-          y > dragInfo.start.y + 4 || y < dragInfo.start.y - 4) {
+      if (x > dragInfo.start.col + 4 || x < dragInfo.start.col - 4 ||
+          y > dragInfo.start.line + 4 || y < dragInfo.start.line - 4) {
         // we've left the drag square, we can start a real drag operation now
         doDrag();
       }
@@ -1237,7 +1237,7 @@ void KateViewInternal::dropEvent( QDropEvent *event )
       }
 
       VConfig c;
-      PointStruc cursor;
+      KateViewCursor cursor;
 
       getVConfig(c);
       cursor = c.cursor;
@@ -1261,7 +1261,7 @@ void KateViewInternal::dropEvent( QDropEvent *event )
           cursor = c.cursor;
         }
       }
-      myDoc->insertText(c.cursor.y, c.cursor.x, text);
+      myDoc->insertText(c.cursor.line, c.cursor.col, text);
       cursor = c.cursor;
 
       updateCursor(cursor);
@@ -1677,7 +1677,7 @@ void KateView::getCursorPosition( int *line, int *col )
 
 
 int KateView::currentLine() {
-  return myViewInternal->cursor.y;
+  return myViewInternal->cursor.line;
 }
 
 int KateView::currentColumn() {
@@ -1685,14 +1685,14 @@ int KateView::currentColumn() {
 }
 
 int KateView::currentCharNum() {
-  return myViewInternal->cursor.x;
+  return myViewInternal->cursor.col;
 }
 
 void KateView::setCursorPositionInternal(int line, int col) {
-  PointStruc cursor;
+  KateViewCursor cursor;
 
-  cursor.x = col;
-  cursor.y = line;
+  cursor.col = col;
+  cursor.line = line;
   myViewInternal->updateCursor(cursor);
   myViewInternal->center();
 //  myViewInternal->updateView(ufPos, 0, line*myDoc->fontHeight - height()/2);
@@ -1756,7 +1756,7 @@ void KateView::toggleVertical()
 }
 
 QString KateView::currentTextLine() {
-  TextLine::Ptr textLine = myDoc->getTextLine(myViewInternal->cursor.y);
+  TextLine::Ptr textLine = myDoc->getTextLine(myViewInternal->cursor.line);
   return QString(textLine->getText(), textLine->length());
 }
 
@@ -1765,17 +1765,17 @@ QString KateView::currentWord() {
 }
 
 QString KateView::word(int x, int y) {
-  PointStruc cursor;
-  cursor.y = (myViewInternal->yPos + y)/myDoc->fontHeight;
-  if (cursor.y < 0 || cursor.y > myDoc->lastLine()) return QString();
-  cursor.x = myDoc->textPos(myDoc->getTextLine(cursor.y), myViewInternal->xPos-2 + x);
+  KateViewCursor cursor;
+  cursor.line = (myViewInternal->yPos + y)/myDoc->fontHeight;
+  if (cursor.line < 0 || cursor.line > myDoc->lastLine()) return QString();
+  cursor.col = myDoc->textPos(myDoc->getTextLine(cursor.line), myViewInternal->xPos-2 + x);
   return myDoc->getWord(cursor);
 }
 
 void KateView::insertText(const QString &s, bool /*mark*/) {
   VConfig c;
   myViewInternal->getVConfig(c);
-  myDoc->insertText(c.cursor.y, c.cursor.x, s);
+  myDoc->insertText(c.cursor.line, c.cursor.col, s);
   myDoc->updateViews();
 }
 
@@ -1979,16 +1979,16 @@ void KateView::replace() {
 
 void KateView::gotoLine() {
   GotoLineDialog *dlg;
-  PointStruc cursor;
+  KateViewCursor cursor;
 
-  dlg = new GotoLineDialog(this, myViewInternal->cursor.y + 1, myDoc->numLines());
-//  dlg = new GotoLineDialog(myViewInternal->cursor.y + 1, this);
+  dlg = new GotoLineDialog(this, myViewInternal->cursor.line + 1, myDoc->numLines());
+//  dlg = new GotoLineDialog(myViewInternal->cursor.line + 1, this);
 
   if (dlg->exec() == QDialog::Accepted) {
 //    myDoc->recordReset();
-    cursor.x = 0;
-    cursor.y = dlg->getLine() - 1;
-    myDoc->needPreHighlight(cursor.y);
+    cursor.col = 0;
+    cursor.line = dlg->getLine() - 1;
+    myDoc->needPreHighlight(cursor.line);
     myViewInternal->updateCursor(cursor);
     myViewInternal->center();
     myViewInternal->updateView(KateView::ufUpdateOnScroll);
@@ -2007,30 +2007,30 @@ void KateView::initSearch(SConfig &s, int flags) {
     // If we are continuing a backward search, make sure we do not get stuck
     // at an existing match.
     s.cursor = myViewInternal->cursor;
-    TextLine::Ptr textLine = myDoc->getTextLine(s.cursor.y);
+    TextLine::Ptr textLine = myDoc->getTextLine(s.cursor.line);
     QString const txt(textLine->getText(),textLine->length());
     const QString searchFor= myDoc->searchForList.first();
-    int pos = s.cursor.x-searchFor.length()-1;
+    int pos = s.cursor.col-searchFor.length()-1;
     if ( pos < 0 ) pos = 0;
     pos= txt.find(searchFor, pos, s.flags & KateView::sfCaseSensitive);
     if ( s.flags & KateView::sfBackward )
     {
-      if ( pos <= s.cursor.x )  s.cursor.x= pos-1;
+      if ( pos <= s.cursor.col )  s.cursor.col= pos-1;
     }
     else
-      if ( pos == s.cursor.x )  s.cursor.x++;
+      if ( pos == s.cursor.col )  s.cursor.col++;
   } else {
     if (!(s.flags & KateView::sfBackward)) {
-      s.cursor.x = 0;
-      s.cursor.y = 0;
+      s.cursor.col = 0;
+      s.cursor.line = 0;
     } else {
-      s.cursor.x = -1;
-      s.cursor.y = myDoc->lastLine();
+      s.cursor.col = -1;
+      s.cursor.line = myDoc->lastLine();
     }
     s.flags |= KateView::sfFinished;
   }
   if (!(s.flags & KateView::sfBackward)) {
-    if (!(s.cursor.x || s.cursor.y))
+    if (!(s.cursor.col || s.cursor.line))
       s.flags |= KateView::sfFinished;
   }
   s.startCursor = s.cursor;
@@ -2039,11 +2039,11 @@ void KateView::initSearch(SConfig &s, int flags) {
 void KateView::continueSearch(SConfig &s) {
 
   if (!(s.flags & KateView::sfBackward)) {
-    s.cursor.x = 0;
-    s.cursor.y = 0;
+    s.cursor.col = 0;
+    s.cursor.line = 0;
   } else {
-    s.cursor.x = -1;
-    s.cursor.y = myDoc->lastLine();
+    s.cursor.col = -1;
+    s.cursor.line = myDoc->lastLine();
   }
   s.flags |= KateView::sfFinished;
   s.flags &= ~KateView::sfAgain;
@@ -2051,7 +2051,7 @@ void KateView::continueSearch(SConfig &s) {
 
 void KateView::findAgain(SConfig &s) {
   int query;
-  PointStruc cursor;
+  KateViewCursor cursor;
   QString str;
 
   QString searchFor = myDoc->searchForList.first();
@@ -2066,7 +2066,7 @@ void KateView::findAgain(SConfig &s) {
     if (myDoc->doSearch(s,searchFor)) {
       cursor = s.cursor;
       if (!(s.flags & KateView::sfBackward))
-        s.cursor.x += s.matchedLength;
+        s.cursor.col += s.matchedLength;
       myViewInternal->updateCursor(s.cursor); //does deselectAll()
       exposeFound(cursor,s.matchedLength,(s.flags & KateView::sfAgain) ? 0 : KateView::ufUpdateOnScroll,false);
     } else {
@@ -2110,7 +2110,7 @@ void KateView::replaceAgain() {
 
 void KateView::doReplaceAction(int result, bool found) {
   int rlen;
-  PointStruc cursor;
+  KateViewCursor cursor;
   bool started;
 
   QString searchFor = myDoc->searchForList.first();
@@ -2119,15 +2119,15 @@ void KateView::doReplaceAction(int result, bool found) {
 
   switch (result) {
     case KateView::srYes: //yes
-      myDoc->removeText (s.cursor.y, s.cursor.x, s.matchedLength);
-      myDoc->insertText (s.cursor.y, s.cursor.x, replaceWith);
+      myDoc->removeText (s.cursor.line, s.cursor.col, s.matchedLength);
+      myDoc->insertText (s.cursor.line, s.cursor.col, replaceWith);
       replaces++;
-      if (s.cursor.y == s.startCursor.y && s.cursor.x < s.startCursor.x)
-        s.startCursor.x += rlen - s.matchedLength;
-      if (!(s.flags & KateView::sfBackward)) s.cursor.x += rlen;
+      if (s.cursor.line == s.startCursor.line && s.cursor.col < s.startCursor.col)
+        s.startCursor.col += rlen - s.matchedLength;
+      if (!(s.flags & KateView::sfBackward)) s.cursor.col += rlen;
       break;
     case KateView::srNo: //no
-      if (!(s.flags & KateView::sfBackward)) s.cursor.x += s.matchedLength;
+      if (!(s.flags & KateView::sfBackward)) s.cursor.col += s.matchedLength;
       break;
     case KateView::srAll: //replace all
       deleteReplacePrompt();
@@ -2138,12 +2138,12 @@ void KateView::doReplaceAction(int result, bool found) {
             found = false;
             started = true;
           }
-          myDoc->removeText (s.cursor.y, s.cursor.x, s.matchedLength);
-          myDoc->insertText (s.cursor.y, s.cursor.x, replaceWith);
+          myDoc->removeText (s.cursor.line, s.cursor.col, s.matchedLength);
+          myDoc->insertText (s.cursor.line, s.cursor.col, replaceWith);
           replaces++;
-          if (s.cursor.y == s.startCursor.y && s.cursor.x < s.startCursor.x)
-            s.startCursor.x += rlen - s.matchedLength;
-          if (!(s.flags & KateView::sfBackward)) s.cursor.x += rlen;
+          if (s.cursor.line == s.startCursor.line && s.cursor.col < s.startCursor.col)
+            s.startCursor.col += rlen - s.matchedLength;
+          if (!(s.flags & KateView::sfBackward)) s.cursor.col += rlen;
         }
       } while (!askReplaceEnd());
       return;
@@ -2158,7 +2158,7 @@ void KateView::doReplaceAction(int result, bool found) {
     if (myDoc->doSearch(s,searchFor)) {
       //text found: highlight it, show replace prompt if needed and exit
       cursor = s.cursor;
-      if (!(s.flags & KateView::sfBackward)) cursor.x += s.matchedLength;
+      if (!(s.flags & KateView::sfBackward)) cursor.col += s.matchedLength;
       myViewInternal->updateCursor(cursor); //does deselectAll()
       exposeFound(s.cursor,s.matchedLength,(s.flags & KateView::sfAgain) ? 0 : KateView::ufUpdateOnScroll,true);
       if (replacePrompt == 0L) {
@@ -2174,17 +2174,17 @@ void KateView::doReplaceAction(int result, bool found) {
   deleteReplacePrompt();
 }
 
-void KateView::exposeFound(PointStruc &cursor, int slen, int flags, bool replace) {
+void KateView::exposeFound(KateViewCursor &cursor, int slen, int flags, bool replace) {
   int x1, x2, y1, y2, xPos, yPos;
 
   VConfig c;
   myViewInternal->getVConfig(c);
   myDoc->selectLength(cursor,slen,c.flags);
 
-  TextLine::Ptr textLine = myDoc->getTextLine(cursor.y);
-  x1 = myDoc->textWidth(textLine,cursor.x)        -10;
-  x2 = myDoc->textWidth(textLine,cursor.x + slen) +20;
-  y1 = myDoc->fontHeight*cursor.y                 -10;
+  TextLine::Ptr textLine = myDoc->getTextLine(cursor.line);
+  x1 = myDoc->textWidth(textLine,cursor.col)        -10;
+  x2 = myDoc->textWidth(textLine,cursor.col + slen) +20;
+  y1 = myDoc->fontHeight*cursor.line                 -10;
   y2 = y1 + myDoc->fontHeight                     +30;
 
   xPos = myViewInternal->xPos;
@@ -2198,7 +2198,7 @@ void KateView::exposeFound(PointStruc &cursor, int slen, int flags, bool replace
   }
   if (y1 < yPos || y2 > yPos + myViewInternal->height()) {
     xPos = x2 - myViewInternal->width();
-    yPos = myDoc->fontHeight*cursor.y - height()/3;
+    yPos = myDoc->fontHeight*cursor.line - height()/3;
   }
   myViewInternal->setPos(xPos, yPos);
   myViewInternal->updateView(flags);// | ufPos,xPos,yPos);
@@ -2253,12 +2253,12 @@ void KateView::installPopup(QPopupMenu *rmb_Menu)
 
 void KateView::readSessionConfig(KConfig *config)
 {
-  PointStruc cursor;
+  KateViewCursor cursor;
 
   myViewInternal->xPos = config->readNumEntry("XPos");
   myViewInternal->yPos = config->readNumEntry("YPos");
-  cursor.x = config->readNumEntry("CursorX");
-  cursor.y = config->readNumEntry("CursorY");
+  cursor.col = config->readNumEntry("CursorX");
+  cursor.line = config->readNumEntry("CursorY");
   myViewInternal->updateCursor(cursor);
   myIconBorder = config->readBoolEntry("IconBorder on");
   setIconBorder(myIconBorder);
@@ -2268,8 +2268,8 @@ void KateView::writeSessionConfig(KConfig *config)
 {
   config->writeEntry("XPos",myViewInternal->xPos);
   config->writeEntry("YPos",myViewInternal->yPos);
-  config->writeEntry("CursorX",myViewInternal->cursor.x);
-  config->writeEntry("CursorY",myViewInternal->cursor.y);
+  config->writeEntry("CursorX",myViewInternal->cursor.col);
+  config->writeEntry("CursorY",myViewInternal->cursor.line);
   config->writeEntry("IconBorder on", myIconBorder);
 }
 
@@ -2392,7 +2392,7 @@ void KateView::paintEvent(QPaintEvent *e) {
 
   QRect updateR = e->rect();                    // update rectangle
 //  debug("Update rect = ( %i, %i, %i, %i )",
-//    updateR.x(),updateR.y(), updateR.width(), updateR.height() );
+//    updateR.col(),updateR.line(), updateR.width(), updateR.height() );
 
   int ux1 = updateR.x();
   int uy1 = updateR.y();
@@ -2500,10 +2500,10 @@ void KateView::misspelling (QString origword, QStringList *, unsigned pos)
     cnt += myDoc->getTextLine(line)->length()+1;
 
   // Highlight the mispelled word
-  PointStruc cursor;
+  KateViewCursor cursor;
   line--;
-  cursor.x = pos - (cnt - myDoc->getTextLine(line)->length()) + 1;
-  cursor.y = line;
+  cursor.col = pos - (cnt - myDoc->getTextLine(line)->length()) + 1;
+  cursor.line = line;
 //  deselectAll(); // shouldn't the spell check be allowed within selected text?
   kspell.kspellMispellCount++;
   myViewInternal->updateCursor(cursor); //this does deselectAll() if no persistent selections
@@ -2529,17 +2529,17 @@ void KateView::corrected (QString originalword, QString newword, unsigned pos)
         cnt += myDoc->getTextLine(line)->length() + 1;
 
       // Highlight the mispelled word
-      PointStruc cursor;
+      KateViewCursor cursor;
       line--;
-      cursor.x = pos - (cnt-myDoc->getTextLine(line)->length()) + 1;
-      cursor.y = line;
+      cursor.col = pos - (cnt-myDoc->getTextLine(line)->length()) + 1;
+      cursor.line = line;
       myViewInternal->updateCursor(cursor);
       VConfig c;
       myViewInternal->getVConfig(c);
       myDoc->selectLength(cursor, newword.length(),c.flags);
 
-      myDoc->removeText (s.cursor.y, s.cursor.x, originalword.length());
-      myDoc->insertText (s.cursor.y, s.cursor.x, newword);
+      myDoc->removeText (s.cursor.line, s.cursor.col, originalword.length());
+      myDoc->insertText (s.cursor.line, s.cursor.col, newword);
 
       kspell.kspellReplaceCount++;
     }
@@ -2769,11 +2769,11 @@ void KateView::toggleIconBorder ()
 
 void KateView::gotoMark (Kate::Mark *mark)
 {
-  PointStruc cursor;
+  KateViewCursor cursor;
 
-  cursor.x = 0;
-  cursor.y = mark->line;
-  myDoc->needPreHighlight(cursor.y);
+  cursor.col = 0;
+  cursor.line = mark->line;
+  myDoc->needPreHighlight(cursor.line);
   myViewInternal->updateCursor(cursor);
   myViewInternal->center();
   myViewInternal->updateView(KateView::ufUpdateOnScroll);
