@@ -82,6 +82,9 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
   Q_OBJECT
 
   friend class KantApp;
+  friend class KantViewManager;
+  friend class KantView;
+  friend class KantDocument;
 
   public:
     KantMainWindow(KantPluginManager *_pluginManager);
@@ -112,6 +115,9 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     KantPluginManager *pluginManager;
 
     void focusInEvent(QFocusEvent*);
+    // Anders: I moved the config object to protected, because
+    // other objects needs access.
+    KConfig* config;
 
   private:
     KAction *fileSave;
@@ -178,7 +184,6 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
 
     KAction* sidebarFocusNext;
 
-    KConfig* config;
     QString  m_strFilterOutput;
     KShellProcess * m_pFilterShellProcess;
 

@@ -20,6 +20,7 @@
 
 #include <kmessagebox.h>
 #include <klocale.h>
+#include <kconfig.h>
 
 #include "kantdocument.h"
 #include "kantdocument.moc"

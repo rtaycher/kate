@@ -909,10 +909,15 @@ void KantMainWindow::slotConfigure()
       config->setGroup("kwrite");
       v->writeConfig( config );
       v->doc()->writeConfig( config );
+      v->applyColors();
+      // all docs need to reread config.
+      QListIterator<KantDocument> dit (docManager->docList);
+      for (; dit.current(); ++dit) {
+         dit.current()->readConfig( config );
+      }
       QListIterator<KantView> it (viewManager->viewList);
       for (; it.current(); ++it) {
         v = it.current();
-	v->applyColors();
         indentConfig->getData( v );
         selectConfig->getData( v );
         editConfig->getData( v );
@@ -962,6 +967,7 @@ void KantMainWindow::reopenDocuments(bool isRestore)
     QStringList list = config->readListEntry("list");
 
     for ( int i = list.count() - 1; i > -1; i-- ) {
+      config->setGroup("open files");
       QStringList data = config->readListEntry( list[i] );
       // open file
       viewManager->openURL( KURL(data[0]) );

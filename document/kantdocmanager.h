@@ -26,6 +26,8 @@ class KantDocManager : public QObject
 {
   Q_OBJECT
 
+  friend class KantMainWindow;
+
   public:
     KantDocManager ();
     ~KantDocManager ();
@@ -50,8 +52,10 @@ class KantDocManager : public QObject
   public slots:
     void checkAllModOnHD(bool forceReload=false);
 
-  private:
+  protected:
     QList<KantDocument> docList;
+
+  private:
     long myDocID;
 };
 

@@ -110,6 +110,11 @@ bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView )
   myViewID++;
   viewList.append (view);
 
+  KConfig* config = ((KantMainWindow*)topLevelWidget())->config;
+  config->setGroup("kwrite");
+  doc->readConfig( config );
+  view->readConfig( config );
+
   if (!newDoc)
     view->copySettings(origView);
 
