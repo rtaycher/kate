@@ -2683,7 +2683,6 @@ void KWrite::replace() {
 //    searchAgain();
 
 void KWrite::findAgain() {
-
   initSearch(s, searchFlags | KWriteView::sfFromCursor |KWriteView::sfPrompt | KWriteView::sfAgain);
   if (s.flags & KWriteView::sfReplace) replaceAgain(); else searchAgain(s);
 }
@@ -2713,11 +2712,18 @@ void KWrite::initSearch(SConfig &s, int flags) {
   s.flags = flags;
   s.setPattern(searchForList.first());
 
-  if (s.flags & KWriteView::sfAgain) {
-    if (s.flags & KWriteView::sfBackward)
+  if (s.flags & KWriteView::sfFromCursor) {
+    // If we are continuing a backward search, make sure we do not get stuck
+    // at an existing match.
+    if ((s.flags & KWriteView::sfAgain) &&
+      (s.flags & KWriteView::sfBackward) &&
+      (s.cursor.x == kWriteView->cursor.x) &&
+      (s.cursor.y == kWriteView->cursor.y)) {
       s.cursor.x--;
-  } else if (s.flags & KWriteView::sfFromCursor) {
-    s.cursor = kWriteView->cursor;
+    }
+    else {
+      s.cursor = kWriteView->cursor;
+    }
   } else {
     if (!(s.flags & KWriteView::sfBackward)) {
       s.cursor.x = 0;
