@@ -80,7 +80,7 @@ void SyntaxDocument::setupModeList()
   if (myModeList.count() > 0) return;
 
       KStandardDirs *dirs = KGlobal::dirs();
-      QStringList list=dirs->findAllResources("appdata","syntax/*.xml",false,true);
+      QStringList list=dirs->findAllResources("data","kant/syntax/*.xml",false,true);
       for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
       {
         QFile f(*it);

@@ -1,3 +1,8 @@
+2001-03-26 Joseph Wenninger <jowenn@bigfoot.com>
+        * 2 reimplemented highlighing configs
+	* 1 experimental highlighting config
+        * preparations for an highlighting editing dialog
+
 2001-03-25 Christoph Cullmann <crossfire@babylon2k.de>
         * rewrite of plugin API and manager, now loading/unloading nice
 

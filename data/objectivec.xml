@@ -1,58 +1,7 @@
 <?xml version="1.01" encoding="UTF-8"?><!DOCTYPE language>
-<language name="C++" extensions="*.cxx;*.cpp;*.cc;*.C;*.h" mimetype="text/x-c++-src;text/x-c++-hdr;text/x-c-hdr;text/x-c++-src" casesensitive="1">
+<language name="Objective-C" extensions="*.m;*.h" mimetype="text/x-objc-src;text/x-c-hdr" casesensitive="1">
   <highlighting>
     <keywords>
-      <keyword> false </keyword>
-      <keyword> friend </keyword>
-      <keyword> inline </keyword>
-      <keyword> namespace </keyword>
-      <keyword> new </keyword>
-      <keyword> operator </keyword>
-      <keyword> private </keyword>
-      <keyword> protected </keyword>
-      <keyword> public </keyword>
-      <keyword> reinterpret_cast </keyword>
-      <keyword> static_cast </keyword>
-      <keyword> template </keyword>
-      <keyword> this </keyword>
-      <keyword> throw </keyword>
-      <keyword> true </keyword>
-      <keyword> try </keyword>
-      <keyword> typeid </keyword>
-      <keyword> typename </keyword>
-      <keyword> using </keyword>
-      <keyword> virtual </keyword>
-      <keyword> and_eq </keyword>
-      <keyword> and </keyword>
-      <keyword> bitand </keyword>
-      <keyword> bitor </keyword>
-      <keyword> compl </keyword>
-      <keyword> not_eq </keyword>
-      <keyword> not </keyword>
-      <keyword> or_eq </keyword>
-      <keyword> or </keyword>
-      <keyword> xor_eq </keyword>
-      <keyword> xor </keyword>
-      <keyword> bad_cast </keyword>
-      <keyword> bad_typeid </keyword>
-      <keyword> except </keyword>
-      <keyword> finally </keyword>
-      <keyword> type_info </keyword>
-      <keyword> xalloc </keyword>
-      <keyword> Q_EXPORT </keyword>
-      <keyword> Q_OBJECT </keyword>
-      <keyword> K_DCOP </keyword>
-      <keyword> SLOT </keyword>
-      <keyword> SIGNAL </keyword>
-      <keyword> slots </keyword>
-      <keyword> signals </keyword>
-      <keyword> Q_PROPERTY </keyword>
-      <keyword> Q_ENUMS </keyword>
-      <keyword> Q_SETS </keyword>
-      <keyword> Q_OVERRIDE </keyword>
-      <keyword> Q_CLASSINFO </keyword>
-      <keyword> TRUE </keyword>
-      <keyword> FALSE </keyword>
       <keyword> break </keyword>
       <keyword> case </keyword>
       <keyword> continue </keyword>
@@ -71,12 +20,21 @@
       <keyword> typedef </keyword>
       <keyword> union </keyword>
       <keyword> while </keyword>
+      <keyword> @class </keyword>
+      <keyword> @defs </keyword>
+      <keyword> @encode </keyword>
+      <keyword> @end </keyword>
+      <keyword> @implementation </keyword>
+      <keyword> @interface </keyword>
+      <keyword> @private </keyword>
+      <keyword> @protected </keyword>
+      <keyword> @protocol </keyword>
+      <keyword> @public </keyword>
+      <keyword> @selector </keyword>
+      <keyword> self </keyword>
+      <keyword> super </keyword>
     </keywords>
     <types>
-      <type> bool </type>
-      <type> wchar_t </type>
-      <type> mutable </type>
-      <type> uint </type>
       <type> auto </type>
       <type> char </type>
       <type> const </type>
@@ -93,7 +51,7 @@
       <type> volatile </type>
     </types>
     <contexts>
-      <context attribute="0" lineEndContext="0" name="Normal">
+      <context attribute="0" lineEndContext="0">
         <item name="keyword" attribute="1" context="0"/>
         <item name="dataType" attribute="2" context="0"/>
         <item name="Float" attribute="6" context="0">
@@ -117,28 +75,29 @@
         <item name="2CharDetect" attribute="10" context="3" char="/" char1="*"/>
         <item name="AnyChar" attribute="11" context="0" String="!%&amp;()+,-&lt;=&gt;?[]^{|}~"/>
         <item name="RegExpr" attribute="12" context="4" String="^#"/>
+        <item name="2CharDetect" attribute="8" context="1" char="@" char1="&quot;" />
       </context>
-      <context attribute="8" lineEndContext="0" name="String">
+      <context attribute="8" lineEndContext="0">
         <item name="LineContinue" attribute="8" context="6"/>
         <item name="HlCStringChar" attribute="9" context="1"/>
         <item name="CharDetect" attribute="8" context="0" char="&quot;"/>
       </context>
-      <context attribute="10" lineEndContext="0" name="Commentar 1"/>
-      <context attribute="10" lineEndContext="3" name="Commentar 2">
+      <context attribute="10" lineEndContext="0"/>
+      <context attribute="10" lineEndContext="3">
         <item name="2CharDetect" attribute="10" context="0" char="*" char1="/"/>
       </context>
-      <context attribute="12" lineEndContext="0" name="Preprocessor">
+      <context attribute="12" lineEndContext="0">
         <item name="LineContinue" attribute="12" context="7"/>
         <item name="RangeDetect" attribute="13" context="4" char="&quot;" char1="&quot;"/>
         <item name="RangeDetect" attribute="13" context="4" char="&lt;" char1="&gt;"/>
         <item name="2CharDetect" attribute="10" context="2" char="/" char1="/"/>
         <item name="2CharDetect" attribute="10" context="5" char="/" char1="*"/>
       </context>
-      <context attribute="10" lineEndContext="5" name="Commentar/Preprocessor">
+      <context attribute="10" lineEndContext="5">
         <item name="2CharDetect" attribute="10" context="4" char="*" char1="/" />
       </context>
-      <context attribute="0" lineEndContext="1" name="Some Context"/>
-      <context attribute="0" lineEndContext="4" name="Some Context2"/>
+      <context attribute="0" lineEndContext="1" />
+      <context attribute="0" lineEndContext="4" />
     </contexts>
     <itemDatas>
       <itemData name="Normal Text" defStyleNum="dsNormal"/>

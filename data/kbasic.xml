@@ -1,0 +1,89 @@
+<?xml version="1.01" encoding="UTF-8"?><!DOCTYPE language>
+<language name="KBasic" extensions="*.kbasic" mimetype="text/x-kbasic-src" casesensitive="1">
+    <highlighting>
+        <keywords>
+        <keyword> For </keyword>
+        <keyword> Next</keyword>
+        <keyword> Do </keyword>
+        <keyword> Loop </keyword>
+        <keyword> While </keyword>
+        <keyword> Wend </keyword>
+        <keyword> Until </keyword>
+        <keyword> If </keyword>
+        <keyword> Else </keyword>
+        <keyword> End  </keyword>
+        <keyword> Function </keyword>
+        <keyword> Goto </keyword>
+        <keyword> Sub  </keyword>
+        <keyword> Implements </keyword>
+        <keyword> In  </keyword>
+        <keyword> Sub </keyword>
+        <keyword> Private </keyword>
+        <keyword> Public  </keyword>
+        <keyword> Global </keyword>
+        <keyword> As  </keyword>
+        <keyword> Dim </keyword>
+        <keyword> Set </keyword>
+        <keyword> Let </keyword>
+        <keyword> Get </keyword>
+        <keyword> To </keyword>
+        <keyword> Property </keyword>
+        <keyword> True </keyword>
+        <keyword> False </keyword>
+        <keyword> Or  </keyword>
+        <keyword> Not </keyword>
+        <keyword> Xor  </keyword>
+        <keyword> And  </keyword>
+        <keyword> Then </keyword>
+        <keyword> Exit </keyword>
+        <keyword> Put </keyword>
+        <keyword> Open </keyword>
+        <keyword> Close </keyword>
+        <keyword> Seek </keyword>
+        <keyword> Print </keyword>
+        <keyword> Input</keyword>
+        <keyword> Output </keyword>
+        <keyword> Repeat </keyword>
+        <keyword> Load </keyword>
+        <keyword> Unload </keyword>
+        <keyword> Declare </keyword>
+        <keyword> Option </keyword>
+        <keyword> Explicit </keyword>
+        </keywords>
+        <types>
+        <type>Integer </type>
+        <type>Long </type>
+        <type>Byte </type>
+        <type>Boolean </type>
+        <type>Variant </type>
+        <type>Single </type>
+        <type>Double </type>
+        <type>Currency </type>
+        <type>String </type>
+        <type>Object </type>
+        <type>Control </type>
+        </types>
+        <contexts>
+        <context attribute="0" lineEndContext="0">
+        <item name="keyword" attribute="1" context="0"/>
+        <item name="dataType" attribute="2" context="0"/>
+        <item name="Float" attribute="4" context="0"/>
+        <item name="Int" attribute="3" context="0"/>
+        <item name="CharDetect" attribute="4" context="2" char="quot;"/>
+        <item name="CharDetect" attribute="5" context="1" char="'"/>
+        </context>
+        <context attribute="5" lineEndContext="0"/>
+        <context attribute="4" lineEditContext="0">
+        <item name="CharDetect" attribute="4" context="0" char="'"/>
+        </context>
+        </contexts>
+        <itemDatas>
+        <itemData name="Normal Text" defStyleNum="dsNormal"/>
+        <itemData name="Keyword" defStyleNum="dsKeyword"/>
+        <itemData name="Identifier" defStyleNum="dsOthers"/>
+        <itemData name="Types" defStyleNum="dsDataType"/>
+        <itemData name="String" defStyleNum="dsString"/>
+        <itemData name="Comment" defStyleNum="dsComment"/>
+        </itemDatas>
+ </highlighting>
+</language>

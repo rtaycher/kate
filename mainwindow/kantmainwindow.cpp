@@ -836,10 +836,10 @@ QStringList KantMainWindow::containerTags() const
 QWidget *KantMainWindow::createContainer( QWidget *parent, int index,
           const QDomElement &element, int &id )
   {
-    kdDebug(13000)<<"************************This is KantMainWindow::createContainer " << ((parent) ? parent->className() : "Null ") <<endl;
+//    kdDebug(13000)<<"************************This is KantMainWindow::createContainer " << ((parent) ? parent->className() : "Null ") <<endl;
     if (element.tagName().lower()==tagSidebar)
       {
-        kdDebug(13000)<<"****** A sidebar should be created";
+//        kdDebug(13000)<<"****** A sidebar should be created";
         KDockWidget *tmp=createDockWidget("TMPDOCK",0);
         tmp->manualDock ( mainDock, KDockWidget::DockRight, 20 );
 	tmp->setWidget(new KListBox(tmp));

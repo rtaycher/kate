@@ -932,8 +932,8 @@ ItemData::ItemData(const QString name, int defStyleNum,
   defStyle(false), defFont(true) {
 }
 
-HlData::HlData(const QString &wildcards, const QString &mimetypes)
-  : wildcards(wildcards), mimetypes(mimetypes) {
+HlData::HlData(const QString &wildcards, const QString &mimetypes, const QString &identifier)
+  : wildcards(wildcards), mimetypes(mimetypes), identifier(identifier) {
 
   itemDataList.setAutoDelete(true);
 }
@@ -986,7 +986,8 @@ HlData *Highlight::getData() {
 //  hlData = new HlData(iWildcards,iMimetypes);
   hlData = new HlData(
     config->readEntry("Wildcards", iWildcards),
-    config->readEntry("Mimetypes", iMimetypes));
+    config->readEntry("Mimetypes", iMimetypes),
+    config->readEntry("Identifier", identifier));
   getItemDataList(hlData->itemDataList, config);
   return hlData;
 }
@@ -2249,11 +2250,6 @@ void AutoHighlight::makeContextList()
             (HlManager::self()->syntax->groupData(data,QString("attribute"))).toInt(),
             (HlManager::self()->syntax->groupData(data,QString("lineEndContext"))).toInt());
 
-/*            if ((i==0) && (casesensitive=="0"))
-            {
-               contextList[0]->items.append(keyword = new HlCaseInsensitiveKeyword(dsKeyword,0));
-               contextList[0]->items.append(dataType = new HlCaseInsensitiveKeyword(dsDataType,0));
-            }*/
 
             while (HlManager::self()->syntax->nextItem(data))
               {
@@ -2818,9 +2814,9 @@ HighlightDialog::HighlightDialog( HlManager *hlManager, ItemStyleList *styleList
   QLabel *label = new QLabel( i18n("Highlight:"), vbox1 );
   hlCombo = new QComboBox( false, vbox1 );
   QHBox *modHl = new QHBox(vbox1);
-/*  QPushButton *createHl=new QPushButton(i18n("New"),modHl);
+  QPushButton *createHl=new QPushButton(i18n("New"),modHl);
   QPushButton *editHl=new QPushButton(i18n("Edit"),modHl);
-  connect(editHl,SIGNAL(clicked()),this,SLOT(hlEdit()));*/
+  connect(editHl,SIGNAL(clicked()),this,SLOT(hlEdit()));
   connect( hlCombo, SIGNAL(activated(int)),
            this, SLOT(hlChanged(int)) );
   for( int i = 0; i < hlManager->highlights(); i++) {
@@ -2909,7 +2905,7 @@ void HighlightDialog::done(int r) {
 
 
 void HighlightDialog::hlEdit() {
-  HlEditDialog diag(0,0,"hlEdit", true);
+  HlEditDialog diag(0,0,"hlEdit", true,hlData);
   diag.show();
 }
 
@@ -2920,15 +2916,129 @@ void HighlightDialog::hlEdit() {
 
 
 
-HlEditDialog::HlEditDialog(HlManager *,QWidget *parent, const char *name, bool modal)
+HlEditDialog::HlEditDialog(HlManager *,QWidget *parent, const char *name, bool modal,HlData *data)
   :KDialogBase(KDialogBase::Swallow, i18n("Highlight Conditions"), Ok|Cancel, Ok, parent, name, modal)
 {
   QHBox *wid=new QHBox(this);
-  QVBox *lbox=new QVBox(wid);  
-    KListView *contextlist=new KListView(lbox);
+  QVBox *lbox=new QVBox(wid);
+    contextList=new KListView(lbox);
+    contextList->addColumn(i18n("Syntax structur"));
+    contextList->setSorting(-1);
     QPushButton *addContext=new QPushButton(i18n("New Context"),lbox);
     QVGroupBox *opt  = new QVGroupBox( i18n("Options"), wid);
-    QWidgetStack *stack=new QWidgetStack(opt);     
-  
-  setMainWidget(wid);
+    stack=new QWidgetStack(opt);
+    initContextOptions(contextOptions=new QVBox(stack));
+    stack->addWidget(contextOptions,HlEContext);
+    initItemOptions(itemOptions=new QVBox(stack));
+    stack->addWidget(itemOptions,HlEItem);
+    stack->raiseWidget(HlEContext);
+    setMainWidget(wid);
+    if (data!=0) loadFromDocument(data);
 }
+
+void HlEditDialog::initContextOptions(QVBox *co)
+{
+  if( co!=0)
+    {
+        QHBox *tmp = new QHBox(co);
+        (void) new QLabel(i18n("Description:"),tmp);
+        (void) new QLineEdit(tmp);
+        tmp= new QHBox(co);
+        (void) new QLabel(i18n("Attribute:"),tmp);
+        (void) new QComboBox(tmp);
+        tmp= new QHBox(co);
+        (void) new QLabel(i18n("Lineend:"),tmp);
+        (void) new QComboBox(tmp);
+    }
+   else
+     kdDebug()<<"initContextOptions: Widget is 0"<<endl;
+}
+
+void HlEditDialog::initItemOptions(QVBox *co)
+{
+  if (co!=0)
+    {
+        QHBox *tmp = new QHBox(co);
+        (void) new QLabel(i18n("Type:"),tmp);
+        (void) new QComboBox(tmp);
+        tmp= new QHBox(co);
+        (void) new QLabel(i18n("Parameter:"),tmp);
+        (void) new QLineEdit(tmp);
+        tmp= new QHBox(co);
+        (void) new QLabel(i18n("Attribute:"),tmp);
+        (void) new QComboBox(tmp);
+        (void) new QLabel(i18n("Context switch:"),tmp);
+        (void) new QComboBox(tmp);
+    }
+  else
+    kdDebug()<<"initItemOptions: Widget is 0"<<endl;
+}
+
+void HlEditDialog::loadFromDocument(HlData *hl)
+{
+  struct syntaxContextData *data,*datasub;
+  QListViewItem *last=0,*lastsub=0;
+
+  HlManager::self()->syntax->setIdentifier(hl->identifier);
+  data=HlManager::self()->syntax->getGroupInfo("highlighting","context");
+  int i=0;
+  if (data)
+    {
+      while (HlManager::self()->syntax->nextGroup(data))
+        {
+        kdDebug(13010)<< "Adding context to list"<<endl;
+//	  contextList->insertItem(
+          last= new QListViewItem(contextList,last,
+                 HlManager::self()->syntax->groupData(data,QString("name")),
+                 QString("%1").arg(i),
+                 HlManager::self()->syntax->groupData(data,QString("attribute")),
+                 HlManager::self()->syntax->groupData(data,QString("lineEndContext"))); //);
+          i++;
+          int iitem=0;
+          lastsub=last;
+          bool tmpbool;
+          while (HlManager::self()->syntax->nextItem(data))
+              {
+                kdDebug(13010)<< "Adding item to list"<<endl;
+                datasub=HlManager::self()->syntax->getSubItems(data);
+                if (tmpbool=HlManager::self()->syntax->nextItem(datasub))
+                  {
+                    for (;tmpbool;tmpbool=HlManager::self()->syntax->nextItem(datasub))
+                        lastsub=addContextItem(contextList,last,lastsub,data);
+                  }
+                 HlManager::self()->syntax->freeGroupInfo(datasub);
+              }
+
+
+	 }
+       if (data) HlManager::self()->syntax->freeGroupInfo(data);
+   }
+}
+
+QListViewItem *HlEditDialog::addContextItem(KListView *cL,QListViewItem *parent,QListViewItem *prev,struct syntaxContextData *data)
+  {
+
+                QString dataname=HlManager::self()->syntax->groupItemData(data,QString("name"));
+                QString attr=(HlManager::self()->syntax->groupItemData(data,QString("attribute")));
+                QString context=(HlManager::self()->syntax->groupItemData(data,QString("context")));
+		char chr;
+                if (! HlManager::self()->syntax->groupItemData(data,QString("char")).isEmpty())
+		  chr= (HlManager::self()->syntax->groupItemData(data,QString("char")).latin1())[0];
+		else
+                  chr=0;
+		QString stringdata=HlManager::self()->syntax->groupItemData(data,QString("String"));
+                char chr1;
+                if (! HlManager::self()->syntax->groupItemData(data,QString("char1")).isEmpty())
+		  chr1= (HlManager::self()->syntax->groupItemData(data,QString("char1")).latin1())[0];
+		else
+                  chr1=0;
+		bool insensitive=(HlManager::self()->syntax->groupItemData(data,QString("insensitive"))==QString("TRUE"));
+                QString param("");
+                if ((dataname=="keyword") || (dataname=="dataType")) param=dataname;
+                  else if (dataname=="CharDetect") param=chr;
+                    else if ((dataname=="2CharDetect") || (dataname=="RangeDetect")) param=chr+chr1;
+                      else if ((dataname=="StringDetect") || (dataname=="AnyChar") || (dataname=="RegExpr")) param=stringdata;
+                        else                     kdDebug(13010)<<"***********************************"<<endl<<"Unknown entry for Context:"<<dataname<<endl;
+                return new QListViewItem(parent,prev,i18n(dataname.latin1())+param,dataname,param,attr,context);
+  }
+

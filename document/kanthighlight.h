@@ -390,10 +390,11 @@ typedef QList<ItemData> ItemDataList;
 
 class HlData {
   public:
-    HlData(const QString &wildcards, const QString &mimetypes);
+    HlData(const QString &wildcards, const QString &mimetypes,const QString &identifier);
     ItemDataList itemDataList;
     QString wildcards;
     QString mimetypes;
+    QString identifier;
 };
 
 typedef QList<HlData> HlDataList;
@@ -430,6 +431,7 @@ class Highlight {
     const char * iName;
     QString iWildcards;
     QString iMimetypes;
+    QString identifier;
     int refCount;
 };
 
@@ -643,7 +645,6 @@ class AutoHighlight : public GenHighlight
   protected:
     QString iName;
     QString casesensitive;
-    QString identifier;
     virtual void makeContextList ();
     virtual void setKeywords (HlKeyword *keyword,HlKeyword *dataType);
     virtual void createItemData (ItemDataList &list);
@@ -763,11 +764,23 @@ class HighlightDialog : public KDialogBase
     ItemData *itemData;
 };
 
+#define HlEUnknown 0
+#define HlEContext 1
+#define HlEItem 2
+
 class HlEditDialog : public KDialogBase
 {
     Q_OBJECT
   public:
-    HlEditDialog(HlManager *,QWidget *parent=0, const char *name=0, bool modal=true);
+    HlEditDialog(HlManager *,QWidget *parent=0, const char *name=0, bool modal=true, HlData *data=0);
+  private:
+    class QWidgetStack *stack;
+    class QVBox *contextOptions, *itemOptions;
+    class KListView *contextList;
+    void initContextOptions(class QVBox *co);
+    void initItemOptions(class QVBox *co); 
+    void loadFromDocument(HlData *hl);
+    QListViewItem *addContextItem(KListView *cL,QListViewItem *parent,QListViewItem *prev,struct syntaxContextData *data);
 };
 
 #endif //_HIGHLIGHT_H_
