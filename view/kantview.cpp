@@ -1470,7 +1470,7 @@ KantView::KantView(KantDocument *doc, QWidget *parent, const char * name, bool H
   else
   {
     (void)new KantBrowserExtension( myDoc );
-    setXMLFile( "kantpartbrowserui.rc" );
+    myDoc->setXMLFile( "kantpartbrowserui.rc" );
   }
 
   setupActions();
@@ -1540,8 +1540,24 @@ void KantView::setupActions()
                 actionCollection(), "edit_deselectAll");
     new KAction(i18n("Invert &Selection"), 0, this, SLOT(invertSelection()),
                 actionCollection(), "edit_invertSelection");
-    KStdAction::find(this, SLOT(find()), actionCollection(), "find");
-    KStdAction::findNext(this, SLOT(findAgain()), actionCollection(), "find_again");
+
+    if ( myDoc->hasBrowserExtension() )
+    {
+      KStdAction::find(this, SLOT(find()), myDoc->actionCollection(), "find");
+      KStdAction::findNext(this, SLOT(findAgain()), myDoc->actionCollection(), "find_again");
+      KStdAction::gotoLine(this, SLOT(gotoLine()), myDoc->actionCollection(), "goto_line" );
+      new KAction(i18n("Configure Highlighti&ng..."), 0, this, SLOT(hlDlg()),myDoc->actionCollection(), "set_confHighlight");
+      setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, myDoc->actionCollection(), "set_highlight");
+    }
+    else
+    {
+      KStdAction::find(this, SLOT(find()), actionCollection());
+      KStdAction::findNext(this, SLOT(findAgain()), actionCollection());
+      KStdAction::gotoLine(this, SLOT(gotoLine()), actionCollection());
+      new KAction(i18n("Configure Highlighti&ng..."), 0, this, SLOT(hlDlg()),actionCollection(), "set_confHighlight");
+      setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, actionCollection(), "set_highlight");
+    }
+
     KStdAction::replace(this, SLOT(replace()), actionCollection());
     editInsert = new KAction(i18n("&Insert File..."), 0, this, SLOT(insertFile()),
                              actionCollection(), "edit_insertFile");
@@ -1550,7 +1566,6 @@ void KantView::setupActions()
                                   actionCollection(), "edit_cmd");
 
     // setup Go menu
-    KStdAction::gotoLine(this, SLOT(gotoLine()), actionCollection(), "goto_line" );
     KAction *addAct = new KAction(i18n("&Add Marker"), Qt::CTRL+Qt::Key_M, this, SLOT(addBookmark()),
                                   actionCollection(), "go_addMarker");
     connect(this, SIGNAL(bookAddChanged(bool)),addAct,SLOT(setEnabled(bool)));
