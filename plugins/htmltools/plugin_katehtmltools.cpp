@@ -130,7 +130,7 @@ void PluginKateHtmlTools::slipInHTMLtag (KateViewIface & view, QString text)  //
   assert (preDeleteLine > -1);  assert (preDeleteCol > -1);
 
 
-  if (marked.length() > 1)
+  if (marked.length() > 0)
     view.keyDelete ();
   int line = -1, col = -1;
   view.getCursorPosition (&line, &col);
