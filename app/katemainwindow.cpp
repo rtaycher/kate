@@ -87,7 +87,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 	KateProjectManager *projectMan, KMdi::MdiMode guiMode) :
 	KMdiMainFrm (0,(QString("__KateMainWindow#%1").arg(uniqueID)).latin1(),guiMode)
 {
-  setIDEAlModeStyle(KMultiTabBar::KDEV3ICON);
+  setToolviewStyle(KMultiTabBar::KDEV3ICON);
   // first the very important id
   myID = uniqueID;
   uniqueID++;
