@@ -25,7 +25,7 @@ kwrite_la_LDFLAGS = $(all_libraries) -module -avoid-version
 kwrite_la_LIBADD = libkwritepart.la $(LIB_KFILE)
 
 kwrite_SOURCES = dummy.cpp
-kwrite_LDADD = kwrite.la
+kwrite_LDADD = ../part/libkantpart.la kwrite.la
 kwrite_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 dummy.cpp:
