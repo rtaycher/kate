@@ -56,7 +56,7 @@ class KateViewManager : public KateViewManagerIface
     QGridLayout *grid;
 
     bool createView ( bool newDoc=true, KURL url=0L, KateView *origView=0L, KateDocument *doc=0L );
-    bool deleteView ( KateView *view, bool force=false, bool delViewSpace = true, bool createNew = true );
+    bool deleteView ( KateView *view, bool delViewSpace = true, bool createNew = true );
 
     void moveViewtoSplit (KateView *view);
     void moveViewtoStack (KateView *view);
@@ -127,7 +127,7 @@ class KateViewManager : public KateViewManagerIface
     void slotDocumentOpen ();
     void slotDocumentSave ();
     void slotDocumentSaveAs ();
-    void slotDocumentClose ();
+    bool slotDocumentClose ();
     /** Splits the active viewspace horizontally */
     void slotSplitViewSpaceHoriz () { splitViewSpace(); }
     /** Splits the active viewspace vertically */

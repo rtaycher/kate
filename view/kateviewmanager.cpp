@@ -170,24 +170,11 @@ bool KateViewManager::createView ( bool newDoc, KURL url, KateView *origView, Ka
   return true;
 }
 
-bool KateViewManager::deleteView (KateView *view, bool force, bool delViewSpace, bool createNew)
+bool KateViewManager::deleteView (KateView *view, bool delViewSpace, bool createNew)
 {
   if (!view) return true;
 
   KateViewSpace *viewspace = (KateViewSpace *)view->parentWidget()->parentWidget();
-
-  bool removeDoc = false;
-  if (view->isLastView())
-  {
-    // If !force query user to close doc
-    if (!force)
-    {
-      if (!view->canDiscard())
-        return false;
-    }
-
-    removeDoc = true;
-  }
 
   // clear caption of mainwindow if this is the current view ;-)
   if ( view == activeView() )
@@ -195,24 +182,16 @@ bool KateViewManager::deleteView (KateView *view, bool force, bool delViewSpace,
 
   viewspace->removeView (view);
 
-  // Remove hole doc
-  KateDocument *dDoc = 0L;
-  if (removeDoc)
-    dDoc = (KateDocument *) view->doc();
-
   // remove view from list and memory !!
   viewList.remove (view);
-
-  if (removeDoc)
-    docManager->deleteDoc (dDoc);
 
   if (delViewSpace)
     if ( viewspace->viewCount() == 0 )
       removeViewSpace( viewspace );
 
-  if (createNew && (viewList.count() < 1) && (docManager->docCount() < 2) )
+  if (createNew && (viewList.count() < 1) && (docManager->docCount() < 1) )
     createView (true, 0L, 0L);
-  else if (createNew && (viewList.count() < 1) && (docManager->docCount() > 1) )
+  else if (createNew && (viewList.count() < 1) && (docManager->docCount() > 0) )
     createView (false, 0L, 0L, docManager->nthDoc(docManager->docCount()-1));
 
   return true;
@@ -384,7 +363,7 @@ void KateViewManager::activatePrevView()
 
 void KateViewManager::deleteLastView ()
 {
-  deleteView (activeView (), true, true, false);
+  deleteView (activeView (), true, false);
 }
 
 void KateViewManager::statusMsg (const QString &msg)
@@ -539,13 +518,16 @@ void KateViewManager::slotDocumentSaveAs ()
   }
 }
 
-void KateViewManager::slotDocumentClose ()
+bool KateViewManager::slotDocumentClose ()
 {
-  if (!activeView()) return;
+  if (!activeView()) return false;
+
+  if (!activeView()->canDiscard()) return false;
+
+  KateDocument *doc = activeView()->doc();
 
   QList<KateView> closeList;
   uint docID = ((KateDocument *)activeView()->doc())->docID();
-
 
   for (uint i=0; i < ((KateApp *)kapp)->mainWindowsCount (); i++ )
   {
@@ -558,43 +540,49 @@ void KateViewManager::slotDocumentClose ()
       }
     }
 
-    bool done = false;
     while ( closeList.at(0) )
     {
       KateView *view = closeList.at(0);
-      done = ((KateApp *)kapp)->mainWindows.at(i)->viewManager->deleteView (view);
+      ((KateApp *)kapp)->mainWindows.at(i)->viewManager->deleteView (view, true, false);
       closeList.remove (view);
+    }
+  }
 
-      if (!done) return;
+  docManager->deleteDoc (doc);
+
+  for (uint i2=0; i2 < ((KateApp *)kapp)->mainWindowsCount (); i2++ )
+  {
+    if (((KateApp *)kapp)->mainWindows.at(i2)->viewManager->viewCount() == 0)
+    {
+      if ((viewList.count() < 1) && (docManager->docCount() < 1) )
+        ((KateApp *)kapp)->mainWindows.at(i2)->viewManager->createView (true, 0L, 0L);
+      else if ((viewList.count() < 1) && (docManager->docCount() > 0) )
+        ((KateApp *)kapp)->mainWindows.at(i2)->viewManager->createView (false, 0L, 0L, docManager->nthDoc(docManager->docCount()-1));
     }
   }
 
   emit viewChanged ();
+  return true;
 }
 
 void KateViewManager::slotDocumentCloseAll ()
 {
   if (docManager->docCount () == 0) return;
 
-  QList<KateView> closeList;
+  QList<KateDocument> closeList;
 
-  for (uint i=0; i < ((KateApp *)kapp)->mainWindowsCount (); i++ )
+  for (uint i=0; i < docManager->docCount(); i++ )
+    closeList.append (docManager->nthDoc (i));
+
+  bool done = false;
+  while (closeList.count() > 0)
   {
-    for (uint z=0 ; z < ((KateApp *)kapp)->mainWindows.at(i)->viewManager->viewList.count(); z++)
-    {
-      KateView* current = ((KateApp *)kapp)->mainWindows.at(i)->viewManager->viewList.at(z);
-      closeList.append (current);
-    }
+    activateView (closeList.at(0)->docID());
+    done = slotDocumentClose();
 
-    bool done = false;
-    while ( closeList.at(0) )
-    {
-      KateView *view = closeList.at(0);
-      done = ((KateApp *)kapp)->mainWindows.at(i)->viewManager->deleteView (view);
-      closeList.remove (view);
+    if (!done) break;
 
-      if (!done) return;
-    }
+    closeList.remove (closeList.at(0));
   }
 }
 
@@ -898,7 +886,7 @@ void KateViewManager::removeViewSpace (KateViewSpace *viewspace)
       }
       else
       {
-        deleteView( v, false, false );
+        deleteView( v, false );
         //kdDebug(13030)<<"KateViewManager::removeViewSpace(): deleting a view: "<<v->doc()->url().filename()<<endl;
       }
     }
