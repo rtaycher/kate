@@ -1,3 +1,9 @@
+2001-11-24 Christoph Cullmann <cullmann@kde.org>
+  * new print and mark interfaces ;)
+  * bugfixes for some stuff in kateview/document.*
+  * move more of the document stuff from the view to the document
+    (old kwritedoc/view was very mixed, no real seperation, but that should be nearly done)
+
 2001-11-17 Christoph Cullmann <cullmann@kde.org>
   * new selection code (bit buggy at the moment, but better than the old way
     of storing the selection in the attributes
@@ -13,32 +19,32 @@
 
 2001-10-27 Joseph Wenninger <jowenn@kde.org
   * Highlighting isn't updated completely yet (should be fixed now), but uses:
-        * I have to do some nasty workaround because the overloaded == 
-        operator in QMemArray crashes, if one or both of the arrays has
-        a size of 0 (I think this is a bug in QT, but it could be that
-        this is intended behaviour. Who knows ?)
+  * I have to do some nasty workaround because the overloaded ==
+    operator in QMemArray crashes, if one or both of the arrays has
+    a size of 0 (I think this is a bug in QT, but it could be that
+    this is intended behaviour. Who knows ?)
 
 2001-10-26 Joseph Wenninger <jowenn@kde.org>
   * The stacked highlighting shoul almost work now.
     Using old description files it will use quite a lot memory, but
     they should work.
     Problems:
-        * It's leaking like a sieve on destruction, because the
-	memarrays aren't deleted correctly yet (They need to be pointers and not
-	references, otherwise there are out of memory errors in qgarray)
-        * Highlighting isn't updated completely yet
-	* I have to do some nasty workaround because the overloaded ==
-	operator in QMemArray crashes, if one or both of the arrays has 
-	a size of 0 (I think this is a bug in QT, but it could be that
-	this is intended behaviour. Who knows ?)
+  * It's leaking like a sieve on destruction, because the
+    memarrays aren't deleted correctly yet (They need to be pointers and not
+    references, otherwise there are out of memory errors in qgarray)
+  * Highlighting isn't updated completely yet
+  * I have to do some nasty workaround because the overloaded ==
+    operator in QMemArray crashes, if one or both of the arrays has
+    a size of 0 (I think this is a bug in QT, but it could be that
+    this is intended behaviour. Who knows ?)
 
 2001-10-20 Christoph Cullmann <cullmann@kde.org>
   * new undo/redo stuff, should work now allready fine (mostly ;)
 
 2001-10-14 Christoph Cullmann <cullmann@kde.org>
   * new interfaces
-	* fixed some bugs (or better mistakes) in EditInterface
-	* fix bugs and even more bugs
+  * fixed some bugs (or better mistakes) in EditInterface
+  * fix bugs and even more bugs
 
 2001-10-14 Christoph Cullmann <cullmann@kde.org>
   * implementing and enhancing the new KTextEditor interfaces

@@ -1318,7 +1318,7 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate
 
   myViewInternal->installEventFilter( this );
 
-  if (!doc->hasBrowserExtension())
+  if (!doc->m_bBrowserView)
   {
     setXMLFile( "katepartui.rc" );
   }
@@ -1335,7 +1335,7 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate
   connect( doc, SIGNAL( fileNameChanged() ), this, SLOT( slotFileStatusChanged() ) );
   connect( doc, SIGNAL( hlChanged() ), this, SLOT( slotHighlightChanged() ) );
 
-  if ( doc->hasBrowserExtension() )
+  if ( doc->m_bBrowserView )
   {
     connect( this, SIGNAL( dropEventPass(QDropEvent*) ), this, SLOT( slotDropEventPass(QDropEvent*) ) );
   }
@@ -1384,7 +1384,7 @@ void KateView::setupActions()
     KStdAction::copy(this, SLOT(copy()), actionCollection());
     KStdAction::paste(this, SLOT(paste()), actionCollection());
 
-    if ( myDoc->hasBrowserExtension() )
+    if ( myDoc->m_bBrowserView )
     {
       KStdAction::saveAs(this, SLOT(saveAs()), myDoc->actionCollection());
       KStdAction::find(this, SLOT(find()), myDoc->actionCollection(), "find");

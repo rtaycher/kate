@@ -144,10 +144,19 @@ class KateDocument : public Kate::Document
     bool removeSelectedText ();
 
     bool selectAll();
+    
+  private:
+    //
+    // Some internal functions to get selection state of a line/col
+    //
+    bool lineColSelected (int line, int col);
+    bool lineSelected (int line);
+    bool lineEndSelected (int line);
+    bool lineHasSelected (int line);
 
   signals:
     void selectionChanged ();
-    
+
   //
   // KTextEditor::BlockSelectionInterface stuff
   //
@@ -170,6 +179,15 @@ class KateDocument : public Kate::Document
 
     uint undoSteps () const;
     void setUndoSteps ( uint steps );
+    
+  private:
+    //
+    // some internals for undo/redo
+    //
+    QPtrList<KateUndoGroup> undoItems;
+    QPtrList<KateUndoGroup> redoItems;
+    uint myUndoSteps;
+    KateUndoGroup *currentUndo;
 
   signals:
     void undoChanged ();
@@ -187,7 +205,7 @@ class KateDocument : public Kate::Document
   public slots:
     bool searchText (unsigned int startLine, unsigned int startCol, const QString &text, unsigned int *foundAtLine, unsigned int *foundAtCol, unsigned int *matchLen, bool casesensitive = true, bool backwards = false);
     bool searchText (unsigned int startLine, unsigned int startCol, const QRegExp &regexp, unsigned int *foundAtLine, unsigned int *foundAtCol, unsigned int *matchLen, bool backwards = false);
-  
+
   //
   // KTextEditor::HighlightingInterface stuff
   //
@@ -197,14 +215,14 @@ class KateDocument : public Kate::Document
     uint hlModeCount ();
     QString hlModeName (uint mode);
     QString hlModeSectionName (uint mode);
-    
+
   private:
     bool internalSetHlMode (uint mode);
     void setDontChangeHlOnSave();
 
   signals:
     void hlChanged ();
-    
+
   //
   // KTextEditor::ConfigInterface stuff
   //
@@ -279,9 +297,6 @@ class KateDocument : public Kate::Document
     QFont getFont () { return myFont; };
     QFontMetrics getFontMetrics () { return myFontMetrics; };
 
-    // only to make part work, don't change it !
-    bool m_bSingleViewMode;
-
     QPtrList<KTextEditor::Cursor> myCursors;
 
     /**
@@ -306,11 +321,6 @@ class KateDocument : public Kate::Document
     void setNewDoc( bool );
     bool isNewDoc() const;
 
-    bool hasBrowserExtension() const { return m_bBrowserView; }
-
-  protected:
-    bool m_bBrowserView;
-    
   //
   // KSpell stuff
   //
@@ -342,6 +352,8 @@ class KateDocument : public Kate::Document
       bool kspellPristine;        // doing spell check on a clean document?
     } kspell;
 
+
+
   //spell checker
   public:
     /**
@@ -358,17 +370,7 @@ class KateDocument : public Kate::Document
     void modifiedChanged ();
     void preHighlightChanged(uint);
 
-  // search stuff
-  protected:
-    static QStringList searchForList;
-    static QStringList replaceWithList;
-    static uint uniqueID;
-
-  // highlight stuff
   private:
-    Attribute *myAttribs;
-    uint myAttribsLen;
-
     Attribute *attribute (uint pos);
 
   public:
@@ -447,7 +449,6 @@ class KateDocument : public Kate::Document
 
     bool doSearch(SConfig &s, const QString &searchFor);
 
-// internal
     void tagLine(int line);
 
   public:
@@ -483,62 +484,6 @@ class KateDocument : public Kate::Document
     void slotBufferHighlight(uint,uint);
     void doPreHighlight();
 
-
-// member variables
-  protected:
-    uint PreHighlightedTill;
-    uint RequestPreHighlightTill;
-    KateBuffer *buffer;
-    QColor colors[2];
-    HlManager *hlManager;
-    Highlight *m_highlight;
-
-    int eolMode;
-    int tabChars;
-    int m_tabWidth;
-    int fontHeight;
-    int fontAscent;
-
-    QPtrList<KateView> myViews;
-    QPtrList<KTextEditor::View> _views;
-
-    bool newDocGeometry;
-
-    TextLine::Ptr longestLine;
-    float maxLength;
-
-    // stores the current selection
-    int selectStartLine;
-    int selectStartCol;
-    int selectEndLine;
-    int selectEndCol;
-    
-    // do we select normal or blockwise ?
-    bool blockSelect;
-    
-    // only to make the selection from the view easier
-    int selectAnchorLine;
-    int selectAnchorCol;
-
-    // internal functions to get the selection state of line/col ;)
-    bool lineColSelected (int line, int col);
-    bool lineSelected (int line);
-    bool lineEndSelected (int line);
-    bool lineHasSelected (int line);
-
-    bool readOnly;
-    bool newDoc;          // True if the file is a new document (used to determine whether
-                          // to check for overwriting files on save)
-    bool modified;
-
-    bool myWordWrap;
-    uint myWordWrapAt;
-
-    int tagStart;
-    int tagEnd;
-
-    QWidget *pseudoModal;   //the replace prompt is pseudo modal
-
   public:
     /** Checks if the file on disk is newer than document contents.
       If forceReload is true, the document is reloaded without asking the user,
@@ -557,23 +502,8 @@ class KateDocument : public Kate::Document
   private slots:
     void slotModChanged ();
 
-  private:
-    /** updates mTime to reflect file on fs.
-     called from constructor and from saveFile. */
-    void setMTime();
-    uint myDocID;
-    class QFileInfo* fileInfo;
-    class QDateTime mTime;
-    QString myDocName;
-
-  private:
-    class KateCmd *myCmd;
-
   public:
     KateCmd *cmd () { return myCmd; };
-
-  private:
-    QString myEncoding;
 
   public:
     void setEncoding (QString e) { myEncoding = e; };
@@ -615,20 +545,17 @@ class KateDocument : public Kate::Document
   public slots:
      void applyWordWrap ();
 
-  private:
-    bool hlSetByUser;
-
   public:
     uint configFlags ();
     void setConfigFlags (uint flags);
 
-  protected:
-    uint _configFlags;
-    uint _searchFlags;
-    SConfig s;
-
+  //
+  // Some flags for internal ONLY use !
+  //
   public:
-    enum Config_flags {
+    // Flags for katedocument config !
+    enum ConfigFlags
+    {
       cfAutoIndent= 0x1,
       cfBackspaceIndents= 0x2,
       cfWordWrap= 0x4,
@@ -651,9 +578,12 @@ class KateDocument : public Kate::Document
       cfPageUDMovesCursor= 0x100000,
       cfShowTabs= 0x200000,
       cfSpaceIndent= 0x400000,
-      cfSmartHome = 0x800000};
-      
-    enum Search_flags {
+      cfSmartHome = 0x800000
+    };
+
+    // Search flags
+    enum SearchFlags
+    {
      sfCaseSensitive=1,
      sfWholeWords=2,
      sfFromBeginning=4,
@@ -664,19 +594,102 @@ class KateDocument : public Kate::Document
      sfAgain=128,
      sfWrapped=256,
      sfFinished=512,
-     sfRegularExpression=1024};
+     sfRegularExpression=1024
+    };
 
-    enum Dialog_results {
+    // result flags for katepart's internal dialogs
+    enum DialogResults
+    {
       srYes=QDialog::Accepted,
       srNo=10,
       srAll,
-      srCancel=QDialog::Rejected};
+      srCancel=QDialog::Rejected
+    };
 
+  //
+  // Much internal data ;)
+  //
   private:
-    QPtrList<KateUndoGroup> undoItems;
-    QPtrList<KateUndoGroup> redoItems;
-    uint myUndoSteps;
-    KateUndoGroup *currentUndo;
+    uint PreHighlightedTill;
+    uint RequestPreHighlightTill;
+    KateBuffer *buffer;
+    QColor colors[2];
+    HlManager *hlManager;
+    Highlight *m_highlight;
+
+    int eolMode;
+    int tabChars;
+    int m_tabWidth;
+    int fontHeight;
+    int fontAscent;
+
+    QPtrList<KateView> myViews;
+    QPtrList<KTextEditor::View> _views;
+
+    bool newDocGeometry;
+
+    TextLine::Ptr longestLine;
+    float maxLength;
+
+    // stores the current selection
+    int selectStartLine;
+    int selectStartCol;
+    int selectEndLine;
+    int selectEndCol;
+
+    // do we select normal or blockwise ?
+    bool blockSelect;
+    
+    // only to make the selection from the view easier
+    int selectAnchorLine;
+    int selectAnchorCol;
+
+    bool readOnly;
+    bool newDoc;          // True if the file is a new document (used to determine whether
+                          // to check for overwriting files on save)
+    bool modified;
+
+    bool myWordWrap;
+    uint myWordWrapAt;
+
+    bool hlSetByUser;
+
+    int tagStart;
+    int tagEnd;
+
+    QString myEncoding;
+
+    QWidget *pseudoModal;   //the replace prompt is pseudo modal
+
+    /** updates mTime to reflect file on fs.
+     called from constructor and from saveFile. */
+    void setMTime();
+    uint myDocID;
+    class QFileInfo* fileInfo;
+    class QDateTime mTime;
+    QString myDocName;
+
+    class KateCmd *myCmd;
+    
+    // only to make part work, don't change it !
+    bool m_bSingleViewMode;
+    bool m_bBrowserView;
+
+    static QStringList searchForList;
+    static QStringList replaceWithList;
+    static uint uniqueID;
+
+  // highlight stuff
+  private:
+    Attribute *myAttribs;
+    uint myAttribsLen;
+
+    //
+    // core katedocument config !
+    //
+    uint _configFlags;
+    uint _searchFlags;
+    SConfig s;
 };
 
 #endif
