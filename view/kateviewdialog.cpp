@@ -76,7 +76,7 @@ SearchDialog::SearchDialog( QWidget *parent, QStringList &searchFor, QStringList
   m_opt2 = new QCheckBox(i18n("&Whole Words Only" ), group );
   gbox->addWidget( m_opt2, 2, 0 );
 
-  m_opt3 = new QCheckBox(i18n("&From Cursor" ), group );
+  m_opt3 = new QCheckBox(i18n("&From Beginning" ), group );
   gbox->addWidget( m_opt3, 3, 0 );
 
   m_opt4 = new QCheckBox(i18n("Find &Backwards" ), group );
@@ -87,7 +87,7 @@ SearchDialog::SearchDialog( QWidget *parent, QStringList &searchFor, QStringList
 
   m_opt1->setChecked( flags & KateView::sfCaseSensitive );
   m_opt2->setChecked( flags & KateView::sfWholeWords );
-  m_opt3->setChecked( flags & KateView::sfFromCursor );
+  m_opt3->setChecked( flags & KateView::sfFromBeginning );
   m_optRegExp->setChecked( flags & KateView::sfRegularExpression );
   m_opt4->setChecked( flags & KateView::sfBackward );
   m_opt5->setChecked( flags & KateView::sfSelected );
@@ -118,7 +118,7 @@ int SearchDialog::getFlags()
 
   if( m_opt1->isChecked() ) flags |= KateView::sfCaseSensitive;
   if( m_opt2->isChecked() ) flags |= KateView::sfWholeWords;
-  if( m_opt3->isChecked() ) flags |= KateView::sfFromCursor;
+  if( m_opt3->isChecked() ) flags |= KateView::sfFromBeginning;
   if( m_opt4->isChecked() ) flags |= KateView::sfBackward;
   if( m_opt5->isChecked() ) flags |= KateView::sfSelected;
   if( m_optRegExp->isChecked() ) flags |= KateView::sfRegularExpression;

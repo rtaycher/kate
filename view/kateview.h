@@ -853,7 +853,7 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
     enum Search_flags {
      sfCaseSensitive=1,
      sfWholeWords=2,
-     sfFromCursor=4,
+     sfFromBeginning=4,
      sfBackward=8,
      sfSelected=16,
      sfPrompt=32,

@@ -2220,7 +2220,7 @@ void KateView::initSearch(SConfig &s, int flags) {
   s.flags = flags;
   s.setPattern(myDoc->searchForList.first());
 
-  if (s.flags & KateView::sfFromCursor) {
+  if (!(s.flags & KateView::sfFromBeginning)) {
     // If we are continuing a backward search, make sure we do not get stuck
     // at an existing match.
     s.cursor = myViewInternal->cursor;
@@ -2965,8 +2965,8 @@ bool KateView::eventFilter (QObject *object, QEvent *event)
 void KateView::findAgain (bool back)
 {
   bool b= (searchFlags & sfBackward) > 0;
-  initSearch(s, (searchFlags & ((b==back)?~sfBackward:~0))  // clear flag for forward searching
-                | sfFromCursor | sfPrompt | sfAgain | ((b!=back)?sfBackward:0) );
+  initSearch(s, (searchFlags & ((b==back)?~sfBackward:~0) & ~sfFromBeginning)  // clear flag for forward searching
+                | sfPrompt | sfAgain | ((b!=back)?sfBackward:0) );
   if (s.flags & sfReplace)
     replaceAgain();
   else
