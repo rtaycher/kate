@@ -2121,7 +2121,7 @@ uint  KateDocument::needPreHighlight(uint till)
 void KateDocument::doPreHighlight()
 {
   uint from = PreHighlightedTill;
-  uint till = PreHighlightedTill+200;
+  uint till = PreHighlightedTill+1000;
   uint max = numLines()-1;
   if (till > max)
     {
@@ -2131,7 +2131,7 @@ void KateDocument::doPreHighlight()
   updateLines(from,till);
   emit preHighlightChanged(PreHighlightedTill);
   if (PreHighlightedTill<RequestPreHighlightTill)
-    QTimer::singleShot(10,this,SLOT(doPreHighlight()));
+    QTimer::singleShot(100,this,SLOT(doPreHighlight()));
 }
 
 TextLine::Ptr KateDocument::getTextLine(int line) const
