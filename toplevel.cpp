@@ -707,6 +707,8 @@ void TopLevel::newStatus() {
   int config;
   bool readOnly;
 
+  newCaption();
+
   readOnly = kWrite->isReadOnly();
 
   config = kWrite->config();
@@ -752,7 +754,10 @@ void TopLevel::newCaption() {
   QString caption;
   int z;
 
-  if (kWrite->hasFileName()) {
+  if (!kWrite->hasFileName())
+    caption = i18n("Untitled");
+
+  else {
     caption = kWrite->fileName();
     //set recent files popup menu
     z = (int) recentPopup->count();
@@ -772,10 +777,9 @@ void TopLevel::newCaption() {
         caption = caption.right( caption.length() - pos - 1);
       }
     }
-    setCaption(caption);
-  } else {
-    setCaption(kapp->caption());
   }
+
+  setCaption(caption, kWrite->isModified());
 }
 
 void TopLevel::newUndo() {
