@@ -29,21 +29,23 @@ class DocManager : public QObject
   Q_OBJECT
 
   public:
-    DocManager ();
+     DocManager ();
     virtual ~DocManager ();
 
- public:
+  public:
+    // get doc number n/current/first/next/doc by id
     virtual class Document *getNthDoc (uint) { return 0L; };
     virtual class Document *getCurrentDoc () { return 0L; };
-    virtual class Document *getFirstDoc () { return 0L; };
-    virtual class Document *getNextDoc () { return 0L; };
+     virtual class Document *getFirstDoc () { return 0L; };
+     virtual class Document *getNextDoc () { return 0L; };
+     virtual class Document *getDocWithID (uint) { return 0L; };
 
-    virtual class Document *getDocWithID (uint) { return 0L; };
+     // find do with URL / is doc with URL open ?
+     virtual int findDoc (KURL) { return 0L; };
+     virtual bool isOpen (KURL) { return 0L; };
 
-    virtual int findDoc (KURL) { return 0L; };
-    virtual bool isOpen (KURL) { return 0L; };
-
-    virtual uint docCount () { return 0L; };
+     // how much docs open ?
+     virtual uint docCount () { return 0L; };
 };
 
 };

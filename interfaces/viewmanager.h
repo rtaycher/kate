@@ -32,7 +32,10 @@ class ViewManager : public QWidget
     ViewManager (QWidget *parent = 0L);
     virtual ~ViewManager ();
 
+    // current active view
     virtual class View *getActiveView() { return 0L; };
+
+    // open a file
     virtual void openURL (KURL) { ; };
 };
 

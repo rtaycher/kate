@@ -35,31 +35,44 @@ class View : public KTextEditor::View
     View ( KTextEditor::Document *doc, QWidget *parent, const char *name = 0 );
     virtual ~View ();
 
+    // doc of the view
     virtual Document *getDoc () { return 0L; };
 
+    // marked text
     virtual QString markedText () { return 0L; };
 
   public slots:
+    // popup a config dialog for the editor part
     virtual void configDialog () { ; };
 
+    // Highlighting slots
     virtual void setHl (int) { ; };
     virtual int getHl () { return 0; };
     virtual int getHlCount () { return 0; };
     virtual QString getHlName (int) { return 0L; };
 
+    // undo/redo stuff
+     virtual void undo () { ; };
+     virtual void redo () { ; };
+     virtual void undoHistory() { ; };
+
   public:
+    // read/save config of the view
     virtual void readConfig () { ; };
     virtual void writeConfig () { ; };
 
+    // read/save sessionconfig of the view
     virtual void readSessionConfig (KConfig *) { ; };
     virtual void writeSessionConfig (KConfig *) { ; };
 
   public slots:
+    // some simply key commands
     virtual void keyReturn () { ; };
     virtual void keyDelete () { ; };
     virtual void backspace () { ; };
     virtual void killLine () { ; };
 
+    // move cursor in the view
     virtual void cursorLeft () { ; };
     virtual void shiftCursorLeft () { ; };
     virtual void cursorRight () { ; };

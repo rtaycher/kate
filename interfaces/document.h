@@ -34,9 +34,11 @@ class Document : public KTextEditor::Document
     virtual ~Document ();
 
   public:
+    // read/save config of the document
     virtual void readConfig () { ; };
     virtual void writeConfig () { ; };
 
+    // read/save sessionconfig of the document
     virtual void readSessionConfig (KConfig *) { ; };
     virtual void writeSessionConfig (KConfig *) { ; };
 };
