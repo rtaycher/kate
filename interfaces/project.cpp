@@ -158,7 +158,7 @@ bool Project::close ()
 
 ProjectDirFile::Ptr Project::dirFile (const QString &dir)
 {
-  ProjectDirFile *p = d->m_dirFiles[dir];
+  ProjectDirFile *p = d->m_dirFiles[dir+QString("/")];
   if (p)
     return ProjectDirFile::Ptr (p);
   
@@ -200,13 +200,13 @@ ProjectDirFile::ProjectDirFile (void *projectDirFile) : QObject (((PrivateProjec
     d->m_absdir = d->m_data->project->dir () + QString ("/") + d->m_data->dir;
     
   // ADD TO PROJECT WIDE HASH !
-  d->m_data->privateProject->m_dirFiles.insert(d->m_data->dir, this);
+  d->m_data->privateProject->m_dirFiles.insert(d->m_data->dir+QString("/"), this);
 }
 
 ProjectDirFile::~ProjectDirFile ()
 {
   // REMOVE FROM PROJECT WIDE HASH !
-  d->m_data->privateProject->m_dirFiles.remove (d->m_data->dir);
+  d->m_data->privateProject->m_dirFiles.remove (d->m_data->dir+QString("/"));
 
   delete d;
 }
