@@ -824,21 +824,24 @@ void KateViewManager::saveAllDocsAtCloseDown(  )
   m_blockViewCreationAndActivation=false;
   while ( closeList.count() > 0 )
   {
-    activateView (closeList.at(0)->documentNumber(), false);
-    v = activeView();
+  //  activateView (closeList.at(0)->documentNumber(), false);
+//    v = activeView();
     //id = closeList.at(0)->documentNumber();
 
-    if ( !v->getDoc()->url().isEmpty() )
+    if ( !closeList.at(0)->url().isEmpty() )
     {
-      scfg->setGroup( v->getDoc()->url().prettyURL() );
-      v->getDoc()->writeSessionConfig(scfg);
+      scfg->setGroup(closeList.at(0)->url().prettyURL() );
+      closeList.at(0)->writeSessionConfig(scfg);
 
       scfg->setGroup("open files");
-      scfg->writeEntry( QString("File%1").arg(id), v->getDoc()->url().prettyURL() );
+      scfg->writeEntry( QString("File%1").arg(id), closeList.at(0)->url().prettyURL() );
     }
 
-    if( !closeDocWithAllViews( v ) )
-      return;
+    QPtrList<KTextEditor::View> test = closeList.at(0)->views();
+    
+    if (test.at(0))
+      if( !closeDocWithAllViews( (Kate::View *)test.at(0) ) )
+        return;
 
     closeList.remove (closeList.at(0));
     id++;
