@@ -330,7 +330,8 @@ void KantMainWindow::readOptions(KConfig *config)
   kWrite->readSessionConfig(config);*/
   config->setGroup("General");
   sidebarDock->resize( config->readSizeEntry("Sidebar:size", new QSize(150, height())) );
-  settingsShowSidebar->setChecked( config->readBoolEntry("Show Sidebar", true) );
+  settingsShowSidebar->setChecked( config->readBoolEntry("Show Sidebar", false) );
+  settingsShowConsole->setChecked( config->readBoolEntry("Show Console", false)  );
   resize( config->readSizeEntry( "size", new QSize(600, 400) ) );
   viewManager->setShowFullPath(config->readBoolEntry("Show Full Path in Title", false));
   settingsShowFullPath->setChecked(viewManager->getShowFullPath());
@@ -352,6 +353,7 @@ void KantMainWindow::saveOptions(KConfig *config)
 {
   config->setGroup("General");
   config->writeEntry("Show Sidebar", sidebar->isVisible());
+  config->writeEntry("Show Console", console->isVisible());
   config->writeEntry("size", size());
   config->writeEntry("Show Full Path in Title", viewManager->getShowFullPath());
   config->writeEntry("Show Toolbar", settingsShowToolbar->isChecked());
