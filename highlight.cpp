@@ -492,7 +492,7 @@ const QChar *checkCharHexOct(const QChar *str) {
   }
   return s;
 }
-
+#if 0
 //checks for C escape chars like \n
 const QChar *checkEscapedChar(const QChar *s) {
 
@@ -526,6 +526,48 @@ const QChar *checkEscapedChar(const QChar *s) {
   }
   return 0L;
 }
+#else
+// checks for C escaped chars \n and escaped hex/octal chars
+// this one will eliminate 2 function calls
+// a strchr and the checkCharHexOct function
+// this is faster than the old one
+// I bracketed the function with gettimeofday calls
+// and got times from 3-9 mu secs
+// while the orginal was 9-12 mu secs K6-2 500
+// compiled with -O3
+const QChar *checkEscapedChar(const QChar *s) {
+
+  if (s[0] == '\\' && s[1] != '\0' ) s++;
+	switch(*s){
+  		case  'a': // checks for control chars
+		case  'b': // we want to fall through
+		case  'e':
+		case  'f':
+		case  'n':
+		case  'r':
+		case  't':
+		case  'v':
+		case '\'':
+		case '\"':
+		case '\\': s++;
+       		           break;
+		case 'x': // if it's like \xff
+			s++; // eat the x
+			// these for loops can probably be
+			// replaced with something else but
+			// for right now they work
+			// check for hexdigits
+                        for(int i=0;i<2&&(*s>='0' && *s<='9'|| *s >= 'a' && *s <='f'|| *s>='A' && *s<='F');i++,s++);
+			break;
+		case '0': // if it's like \0777
+			s++;  // eat the 0 NOT SURE
+     	  		for(int i=0;i < 3 &&(*s >='0'&& *s<='7');i++,s++);
+			break;
+			default: return 0L;
+	}
+  return s;
+}
+#endif
 
 const QChar *HlCStringChar::checkHgl(const QChar *str) {
   return checkEscapedChar(str);
