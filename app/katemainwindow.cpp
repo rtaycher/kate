@@ -236,8 +236,8 @@ void KateMainWindow::setupActions()
 //  new KHelpMenu(this, instance()->aboutData(), true, actionCollection());
 
   // tip of the day :-)
-  new KAction( i18n("Tip of the &Day"), 0, this, SLOT(tipOfTheDay()), actionCollection(), "help_tipoftheday" );
-  
+  KStdAction::tipOfDay( this, SLOT( tipOfTheDay() ), actionCollection() );
+
   if (m_pluginManager->pluginList().count() > 0)
     new KAction(i18n("Contents &Plugins"), 0, this, SLOT(pluginHelp()), actionCollection(), "help_plugins_contents");
 
