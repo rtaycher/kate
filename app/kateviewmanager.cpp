@@ -36,9 +36,7 @@
 #include <kdebug.h>
 #include <kdiroperator.h>
 #include <kdockwidget.h>
-#define protected public
-#include <kfiledialog.h>
-#undef protected
+#include <kencodingfiledialog.h>
 #include <kiconloader.h>
 #include <kglobal.h>
 #include <klocale.h>
@@ -47,7 +45,6 @@
 #include <ksimpleconfig.h>
 #include <kstdaction.h>
 #include <kstandarddirs.h>
-#include <kfiledialog.h>
 #include <qfileinfo.h>
 
 #include <kio/netaccess.h>
@@ -467,18 +464,15 @@ void KateViewManager::slotDocumentOpen ()
         //TODO: move to kdelibs
         QString DEFAULT_ENCODING = QString::fromLatin1(KGlobal::locale()->encoding());
 
-        KFileDialog dlg(QString::null,
-        (cv?KTextEditor::encodingInterface(cv->document())->encoding():QString::null),
-                i18n("Open File"),KFileDialog::Opening,this,"",true);
-        dlg.setMode(KFile::Files);
-            dlg.exec();
-        KURL::List urls=dlg.selectedURLs();
-  for (KURL::List::Iterator i=urls.begin(); i != urls.end(); ++i)
+	KEncodingFileDialog::Result r=KEncodingFileDialog::getOpenURLsAndEncoding(
+	        (cv?KTextEditor::encodingInterface(cv->document())->encoding():QString::null),
+		QString::null,QString::null,this,i18n("Open File"));
+  for (KURL::List::Iterator i=r.URLs.begin(); i != r.URLs.end(); ++i)
   {
     if (!KIO::NetAccess::exists(*i, true, this))
       KMessageBox::error (this, i18n("The given file could not be read, check if it exists or if it is readable for the current user."));
     else
-      openURL( *i, dlg.selectedEncoding() );
+      openURL( *i, r.encoding );
   }
 }
 
@@ -718,15 +712,13 @@ void KateViewManager::queryModified()
                    "<p>Do you want to keep it?").arg( d->docName() ),
               i18n("Unsaved Document") ) == KMessageBox::Yes )
       {
-               KFileDialog dlg (QString::null,
-                KTextEditor::encodingInterface(d)->encoding(),
-                i18n("Save As"),KFileDialog::Saving,this,"",true);
-        dlg.setMode(KFile::File);
-        //dlg.ops->clearHistory();
-            dlg.exec();
-        d->setEncoding( dlg.selectedEncoding() );
+	KEncodingFileDialog::Result r=KEncodingFileDialog::getSaveURLAndEncoding(
+		KTextEditor::encodingInterface(d)->encoding(),QString::null,QString::null,this,i18n("Save As"));
 
-        if ( d->saveAs( dlg.selectedURL() ) )
+        d->setEncoding( r.encoding );
+	KURL tmp;
+	if (!r.URLs.isEmpty()) tmp=r.URLs.first();
+        if ( d->saveAs( tmp ) )
           keep = true;
         else
           return;
