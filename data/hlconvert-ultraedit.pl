@@ -138,11 +138,23 @@ while (($n < $s) && ($file[$sections[$n]] ne ""))
 }
 
 print FILE "    <contexts>\n";
+print FILE "      <context name=\"Normal\" attribute=\"0\" lineEndContext=\"0\">\n";
+
+$n=0;
+while (($n < $s) && ($file[$sections[$n]] ne ""))
+{
+  $str = $n+3;
+  print FILE "        <keyword attribute=\"$str\" context=\"0\" String=\"$listname[$n]\" />\n";
+  $n++;
+}
+
+print FILE "      <DetectChar char=\"&quot;\" attribute=\"1\" context=\"1\">\n";
+print FILE "      </context>\n";
 
 if ($delimeter ne "")
 {
-  print FILE "      <context attribute=\"1\" lineEndContext=\"0\" name=\"String\">\n";
-  print FILE "        <LineContinue attribute=\"1\" context=\"6\"/>\n";
+  print FILE "      <context attribute=\"1\" lineEndContext=\"1\" name=\"String\">\n";
+  print FILE "        <LineContinue attribute=\"1\" context=\"2\"/>\n";
 
   if ($delimeter =~ /'/)
   {
@@ -157,17 +169,9 @@ if ($delimeter ne "")
   print FILE "      </context>\n";
 }
 
-print FILE "      <context name=\"Normal\" attribute=\"0\" lineEndContext=\"0\">\n";
-
-$n=0;
-while (($n < $s) && ($file[$sections[$n]] ne ""))
-{
-  $str = $n+3;
-  print FILE "        <keyword attribute=\"$str\" context=\"0\" String=\"$listname[$n]\" />\n";
-  $n++;
-}
-
-print FILE "      </context>\n";
+print FILE "<context attribute=\"1\" lineEndContext=\"2\" name=\"Continue\">\n";
+print FILE "      <RegExpr String=\"^\" attribute=\"1\" context=\"1\"/>";
+print FILE "      </context>";
 
 print FILE "    </contexts>\n";
 print FILE "    <itemDatas>\n";
