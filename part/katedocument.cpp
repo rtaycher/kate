@@ -340,7 +340,7 @@ QString KateDocument::text() const
   for (int i=0; i < buffer->count(); i++)
   {
     TextLine::Ptr textLine = buffer->line(i);
-    s.insert(s.length(), textLine->getText(), textLine->length());
+    s.append (textLine->getString());
     if ( (i < (buffer->count()-1)) )
       s.append('\n');
   }
@@ -350,12 +350,30 @@ QString KateDocument::text() const
 
 QString KateDocument::text ( uint startLine, uint startCol, uint endLine, uint endCol ) const
 {
+  QString s;
 
+  for (int i=startLine; i < buffer->count(); i++)
+  {
+    TextLine::Ptr textLine = buffer->line(i);
+
+		if (i == startLine)
+		  s.append(textLine->getString().mid (startCol, textLine->length()-startCol));
+		else if (i == endLine)
+		  s.append(textLine->getString().mid (0, endCol));
+		else
+      s.append(textLine->getString());
+
+		if ( i < endLine )
+      s.append('\n');
+  }
+
+  return s;
 }
 
 QString KateDocument::textLine( uint line ) const
 {
   TextLine::Ptr l = getTextLine( line );
+
   if ( !l )
     return QString();
 
