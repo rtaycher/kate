@@ -34,6 +34,9 @@
 ** not clear to you.
 **
 **********************************************************************/
+#if QT_VERSION >=300
+#error QRegExp3 is now in QT 3 use QRegExp instead
+#endif
 
 #include "qarray.h"
 #include "qbitarray.h"

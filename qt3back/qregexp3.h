@@ -37,11 +37,13 @@
 
 #ifndef QREGEXP3_H
 #define QREGEXP3_H
-
 #ifndef QT_H
 #include "qstringlist.h"
 #endif // QT_H
 
+#if QT_VERSION >=300
+#include <qregexp.h>
+#else
 class QRegExpEngine;
 struct QRegExpPrivate;
 
@@ -94,5 +96,5 @@ private:
     QRegExpEngine *eng;
     QRegExpPrivate *priv;
 };
-
+#endif // QT_VERSION >= 300
 #endif // QREGEXP_H
