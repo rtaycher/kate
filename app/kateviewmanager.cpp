@@ -59,9 +59,9 @@
 #include "katesplitter.h"
 //END Includes
 
-KateViewManager::KateViewManager (QWidget *parent, KateDocManager *m_docManager)
+KateViewManager::KateViewManager (QWidget *parent, KateDocManager *m_docManager, KateMainWindow *mainWindow)
  : QWidget  (parent),
-   m_activeViewRunning (false)
+   m_activeViewRunning (false),m_mainWindow(mainWindow)
 {
   m_viewManager = new Kate::ViewManager (this);
 
@@ -107,12 +107,12 @@ bool KateViewManager::createView ( Kate::Document *doc )
   view->actionCollection()->remove (view->actionCollection()->action( "set_confdlg" ));
 
   // popup menu
-  view->installPopup ((QPopupMenu*)((KMainWindow *)topLevelWidget ())->factory()->container("ktexteditor_popup", (KMainWindow *)topLevelWidget ()) );
+  view->installPopup ((QPopupMenu*)(m_mainWindow->factory()->container("ktexteditor_popup", m_mainWindow)) );
 
   connect(view,SIGNAL(cursorPositionChanged()),this,SLOT(statusMsg()));
   connect(view,SIGNAL(newStatus()),this,SLOT(statusMsg()));
   connect(view->getDoc(), SIGNAL(undoChanged()), this, SLOT(statusMsg()));
-  connect(view,SIGNAL(dropEventPass(QDropEvent *)), (KMainWindow *)topLevelWidget (),SLOT(slotDropEvent(QDropEvent *)));
+  connect(view,SIGNAL(dropEventPass(QDropEvent *)), m_mainWindow,SLOT(slotDropEvent(QDropEvent *)));
   connect(view,SIGNAL(gotFocus(Kate::View *)),this,SLOT(activateSpace(Kate::View *)));
 
   activeViewSpace()->addView( view );
@@ -129,7 +129,7 @@ bool KateViewManager::deleteView (Kate::View *view, bool delViewSpace)
 
   viewspace->removeView (view);
 
-  ((KMainWindow *)topLevelWidget ())->guiFactory ()->removeClient (view);
+  m_mainWindow->guiFactory ()->removeClient (view);
 
   // remove view from list and memory !!
   m_viewList.remove (view);
@@ -249,17 +249,17 @@ void KateViewManager::activateView ( Kate::View *view )
     setActiveView (view);
     m_viewList.findRef (view);
 
-    ((KMainWindow *)topLevelWidget ())->toolBar ()->setUpdatesEnabled (false);
+   m_mainWindow->toolBar ()->setUpdatesEnabled (false);
 
-    if (((KateMainWindow *)topLevelWidget ())->activeView)
-      ((KMainWindow *)topLevelWidget ())->guiFactory()->removeClient ( ((KateMainWindow *)topLevelWidget ())->activeView );
+    if (m_mainWindow->activeView)
+      m_mainWindow->guiFactory()->removeClient (m_mainWindow->activeView );
 
-    ((KateMainWindow *)topLevelWidget ())->activeView = view;
+    m_mainWindow->activeView = view;
 
     if (!m_blockViewCreationAndActivation)
-      ((KMainWindow *)topLevelWidget ())->guiFactory ()->addClient( view );
+      m_mainWindow->guiFactory ()->addClient( view );
 
-    ((KMainWindow *)topLevelWidget ())->toolBar ()->setUpdatesEnabled (true);
+    m_mainWindow->toolBar ()->setUpdatesEnabled (true);
 
     statusMsg();
 
@@ -513,7 +513,7 @@ void KateViewManager::openURL (KURL url, const QString& encoding)
   Kate::Document *doc=m_docManager->openURL(url,encoding,&id);
 
   if (!doc->url().isEmpty())
-    ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( doc->url() );
+    m_mainWindow->fileOpenRecent->addURL( doc->url() );
 
   activateView( id );
 }
@@ -784,7 +784,7 @@ void KateViewManager::restoreViewConfiguration (KConfig *config)
   {
     // send all views + their gui to **** ;)
     for (uint i=0; i < m_viewList.count(); i++)
-      ((KMainWindow *)topLevelWidget ())->guiFactory ()->removeClient (m_viewList.at(i));
+      m_mainWindow->guiFactory ()->removeClient (m_viewList.at(i));
 
     m_viewList.clear ();
 
@@ -892,6 +892,10 @@ void KateViewManager::restoreSplitter( KConfig* config, const QString &group, QW
   config->setGroup( group );
   s->setSizes( config->readIntListEntry("Sizes") );
   s->show();
+}
+
+KateMainWindow *KateViewManager::mainWindow() {
+	return m_mainWindow;
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

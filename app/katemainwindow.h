@@ -35,6 +35,7 @@
 
 #include <kparts/part.h>
 #include <kparts/dockmainwindow.h>
+#include <kmdimainfrm.h>
 
 #include <qguardedptr.h>
 
@@ -48,7 +49,7 @@ class GrepDialog;
 class KFileItem;
 class KRecentFilesAction;
 
-class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWindowDCOPIface, virtual public KParts::PartBase
+class KateMainWindow : public KMdiMainFrm, virtual public KateMainWindowDCOPIface, virtual public KParts::PartBase
 {
   Q_OBJECT
 
@@ -64,8 +65,8 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
 
     Kate::MainWindow *mainWindow () { return m_mainWindow; };
     Kate::ToolViewManager *toolViewManager () { return m_toolViewManager; };
-
-    Kate::Project *activeProject () { return m_project; };
+#warning FIXME
+    Kate::Project *activeProject () { return 0;}//return m_project; };
 
     /**
      * Creates a new project file at give url of given type + opens it
@@ -95,11 +96,6 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     KDockWidget *fileselectorDock;
     KDockWidget *grepWidgetDock;
 
-    KDockWidget *m_leftDock;
-    KDockWidget *m_rightDock;
-    KDockWidget *m_topDock;
-    KDockWidget *m_bottomDock;
-    KActionMenu *m_settingsShowToolViews;
     // console
     KateConsole *console;
 
@@ -257,22 +253,6 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
 
   private slots:
     void projectDeleted (uint projectNumber);
-};
-
-class KateToggleToolViewAction:public KToggleAction
-{
-Q_OBJECT
-public:
-	KateToggleToolViewAction( const QString& text, const KShortcut& cut = KShortcut(),KDockWidget *dw=0, QObject* parent = 0, KateMainWindow* mw=0, const char* name = 0 );
-	virtual ~KateToggleToolViewAction();
-
-private:
-	KDockWidget *m_dw;
-	KateMainWindow *m_mw;
-protected slots:
-	void slotToggled(bool);
-	void anDWChanged();
-	void slotWidgetDestroyed();
 };
 
 #endif

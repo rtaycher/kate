@@ -29,6 +29,7 @@
 
 class KateSplitter;
 class KConfig;
+class KateMainWindow;
 
 class KateViewManager : public QWidget
 {
@@ -37,7 +38,7 @@ class KateViewManager : public QWidget
   friend class KateViewSpace;
 
   public:
-    KateViewManager (QWidget *parent=0, KateDocManager *docManager=0);
+    KateViewManager (QWidget *parent=0, KateDocManager *docManager=0,KateMainWindow* mainWindow=0);
     ~KateViewManager ();
 
     Kate::ViewManager *viewManager () const { return m_viewManager; };
@@ -98,6 +99,7 @@ class KateViewManager : public QWidget
 
   public:
     void closeViews(uint documentNumber);
+    KateMainWindow *mainWindow();
 
   private slots:
     void activateView ( Kate::View *view );
@@ -168,6 +170,7 @@ class KateViewManager : public QWidget
     bool m_blockViewCreationAndActivation;
 
     bool m_activeViewRunning;
+    KateMainWindow *m_mainWindow;
 };
 
 #endif
