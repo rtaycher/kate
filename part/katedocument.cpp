@@ -1913,8 +1913,8 @@ void KateDocument::backspace(VConfig &c) {
 
     if (!(_configFlags & KateDocument::cfBackspaceIndents)) {
       // ordinary backspace
-      c.cursor.col--;
-      removeText(c.cursor.line, c.cursor.col, c.cursor.line, c.cursor.col+1);
+      //c.cursor.col--;
+      removeText(c.cursor.line, c.cursor.col-1, c.cursor.line, c.cursor.col);
     } else {
       // backspace indents: erase to next indent position
       int l = 1; // del one char
@@ -1935,8 +1935,8 @@ void KateDocument::backspace(VConfig &c) {
         }
       }
       // break effectively jumps here
-      c.cursor.col -= l;
-      removeText(c.cursor.line, c.cursor.col, c.cursor.line, c.cursor.col+1);
+      //c.cursor.col -= l;
+      removeText(c.cursor.line, c.cursor.col-1, c.cursor.line, c.cursor.col);
     }
   } else {
     // c.cursor.col == 0: wrap to previous line
