@@ -206,6 +206,9 @@ class KateViewManager : public Kate::ViewManager
 
   public:  //KatePluginIface
     virtual Kate::View *getActiveView(){return (Kate::View *)activeView();};
+
+  public slots:
+	void exportAs(const QString&);
 };
 
 #endif

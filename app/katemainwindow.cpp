@@ -34,6 +34,7 @@
 #include "../part/kateviewdialog.h"
 #include "../part/katedialogs.h"
 #include "../part/katehighlight.h"
+#include "../part/kateexportaction.h"
 
 #include <qcheckbox.h>
 #include <qiconview.h>
@@ -301,6 +302,8 @@ void KateMainWindow::setupActions()
   connect(viewManager,SIGNAL(statChanged()),this,SLOT(slotCurrentDocChanged()));
 
   setHighlight = new KateViewHighlightAction (viewManager,i18n("&Highlight Mode"), actionCollection(), "set_highlight");
+  connect (new KateExportAction(viewManager,i18n("&Export"),actionCollection(),"file_export"),
+	SIGNAL(exportAs(const QString&)),viewManager,SLOT(exportAs(const QString&)));
 
   slotWindowActivated ();
 }

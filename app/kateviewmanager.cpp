@@ -675,6 +675,13 @@ void KateViewManager::slotSetHl (uint n)
   activeView()->doc()->setHlMode(n);
 }
 
+
+void KateViewManager::exportAs(const QString& filter)
+{
+  if (activeView() == 0) return;
+  activeView()->doc()->exportAs(filter);
+}
+
 void KateViewManager::toggleBookmark ()
 {
   if (activeView() == 0) return;
