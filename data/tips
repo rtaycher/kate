@@ -102,7 +102,7 @@ line.</p>
 </p>
 <p>Simply enter your filter in the filter entry at the bottom, for example: 
 <code>*.html *.php</code> if you only want to see HTML and PHP files in the 
-current directory.</p>
+current folder.</p>
 <p>The File Selector will even remember your filters for you.</strong></p>
 </html>
 </tip>
