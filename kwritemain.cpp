@@ -541,7 +541,25 @@ static KCmdLineOptions options[] =
 
 int main(int argc, char **argv)
 {
-  KCmdLineArgs::init( argc, argv, KantPartFactory::aboutData() );
+  KAboutData aboutData ("kwrite", I18N_NOOP("KWrite"), "0.2",
+	I18N_NOOP( "KWrite - A new KWrite using the Kant Texteditor KPart" ), KAboutData::License_GPL,
+	 "(c) 2000-2001 The Kant Authors", "http://devel-home.kde.org/~kant");
+
+  aboutData.addAuthor("Christoph Cullmann", I18N_NOOP("Project Manager and Core Developer"), "crossfire@babylon2k.de", "http://www.babylon2k.de");
+  aboutData.addAuthor("Michael Bartl", I18N_NOOP("Core Developer"), "michael.bartl1@chello.at");
+  aboutData.addAuthor("Phlip", I18N_NOOP("The Project Compiler"), "phlip_cpp@my-deja.com");
+  aboutData.addAuthor("Anders Lund", I18N_NOOP("Core Developer"), "anders@alweb.dk", "http://www.alweb.dk");
+  aboutData.addAuthor("Matt Newell", I18N_NOOP("Testing, ..."), "newellm@proaxis.com");
+  aboutData.addAuthor("Joseph Wenninger", I18N_NOOP("Core Developer"), "jowenn@bigfoot.com");
+  aboutData.addAuthor("Michael McCallum", I18N_NOOP("Core Developer"), "gholam@xtra.co.nz");
+  aboutData.addAuthor( "Jochen Wilhemly", I18N_NOOP( "KWrite Author" ), "digisnap@cs.tu-berlin.de" );
+  aboutData.addAuthor( "Michael Koch",I18N_NOOP("KWrite port to KParts"), "koch@kde.org");
+  aboutData.addAuthor( "Christian Gebauer", 0, "gebauer@bigfoot.com" );
+  aboutData.addAuthor( "Simon Hausmann", 0, "hausmann@kde.org" );
+  aboutData.addAuthor("Glen Parker",I18N_NOOP("KWrite Undo History, Kspell integration"), "glenebob@nwlink.com");
+  aboutData.addAuthor("Scott Manson",I18N_NOOP("KWrite XML Syntax highlighting support"), "sdmanson@alltel.net");
+
+  KCmdLineArgs::init( argc, argv, &aboutData );
   KCmdLineArgs::addCmdLineOptions( options );
 
   KApplication *a = new KApplication();

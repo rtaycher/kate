@@ -16,7 +16,10 @@
  ***************************************************************************/
 
 #include "kantpartdocument.h"
+#include "kantpartdocument.moc"
+
 #include "kantpartview.h"
+#include "kantpartfactory.h"
 
 #include <klocale.h>
 #include <kcharsets.h>
@@ -30,6 +33,8 @@ KantPartDocument::KantPartDocument (bool bSingleViewMode, bool bBrowserView,
                                                        QWidget *parentWidget, const char *widgetName,
                                                        QObject *parent, const char *name) :  KantDocument (0L, 0L)
 {
+  setInstance( KantPartFactory::instance() );
+
   m_bSingleViewMode = bSingleViewMode;
 
   if ( m_bSingleViewMode )

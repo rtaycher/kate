@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "kantpartfactory.h"
+#include "kantpartfactory.moc"
 
 #include "kantpartdocument.h"
 #include "../document/kantdocument.h"
@@ -72,8 +73,8 @@ KInstance *KantPartFactory::instance()
 
 const KAboutData *KantPartFactory::aboutData()
 {
-  KAboutData *data = new KAboutData  ("kant", I18N_NOOP("Kant"), "0.2",
-                                                           I18N_NOOP( "Kant - A MDI Texteditor for KDE" ), KAboutData::License_GPL,
+  KAboutData *data = new KAboutData  ("kantpart", I18N_NOOP("Kant Part"), "0.2",
+                                                           I18N_NOOP( "Kant Part - A Texteditor KPart for KDE" ), KAboutData::License_GPL,
                                                            "(c) 2000-2001 The Kant Authors", "http://devel-home.kde.org/~kant");
 
   data->addAuthor("Christoph Cullmann", I18N_NOOP("Project Manager and Core Developer"), "crossfire@babylon2k.de", "http://www.babylon2k.de");
