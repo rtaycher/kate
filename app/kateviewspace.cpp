@@ -302,7 +302,7 @@ KateVSStatusBar::KateVSStatusBar ( KateViewSpace *parent, const char *name )
   : KStatusBar( parent, name ),
     m_viewSpace( parent )
 {
-  m_lineColLabel = new QLabel( i18n(" Line: 1 Col: 0 "), this );
+  m_lineColLabel = new QLabel( this );
   addWidget( m_lineColLabel, 0, false );
   m_lineColLabel->setAlignment( Qt::AlignCenter );
   m_lineColLabel->installEventFilter( this );
