@@ -4,8 +4,7 @@ servicetype_DATA = kateplugin.desktop kateprojectplugin.desktop kateinitplugin.d
 katescriptsdir = $(kde_datadir)/kate/scripts
 katescripts_DATA = sample.desktop sample.sh tolower.desktop tolower.sh
 
-kdelnk_DATA = kate.desktop kwrite.desktop
-kdelnkdir = $(prefix)/share/applications
+xdg_apps_DATA = kate.desktop kwrite.desktop
 
 rckatedir = $(kde_datadir)/kate
 rckate_DATA = kateui.rc
