@@ -171,22 +171,23 @@ void KateDocManager::checkAllModOnHD(bool forceReload)
 Kate::Document *KateDocManager::openURL(const KURL& url,const QString &encoding,uint *id )
 {
   // special handling if still only the first initial doc is there
-  if (isFirstDocument() && documentList().at(0))
+  if (isFirstDocument() && !documentList().isEmpty())
   {
-      documentList().at(0)->setEncoding(encoding==QString::null?
+      Kate::Document* doc = documentList().getFirst();
+      doc->setEncoding(encoding.isNull()?
 			QString::fromLatin1(QTextCodec::codecForLocale()->name()):
 			encoding);
 
 
-      documentList().at(0)->openURL (url);
+      doc->openURL (url);
 
-      if (documentList().at(0)->url().filename() != "")
-        documentList().at(0)->setDocName (documentList().at(0)->url().filename());
+      if (!doc->url().filename().isEmpty())
+        doc->setDocName (doc->url().filename());
    
       setIsFirstDocument (false);
     
-      if (id) *id=documentID(documentList().at(0));
-      return documentList().at(0);
+      if (id) *id=documentID(doc);
+      return doc;
  }
 
   if ( !isOpen( url ) )
@@ -204,7 +205,7 @@ Kate::Document *KateDocManager::openURL(const KURL& url,const QString &encoding,
 
       if (doc->url().filename() != "")
       {
-  	      QString name=doc->url().filename();
+	      QString name=doc->url().filename();
 	      int hassamename = 0;
 
                  QPtrListIterator<Kate::Document> it(m_docList);
@@ -213,7 +214,7 @@ Kate::Document *KateDocManager::openURL(const KURL& url,const QString &encoding,
                  {
 		        if ( it.current()->url().filename().compare( name ) == 0 )
 		        hassamename++;
-   		 }
+		 }
  
               if (hassamename > 1)
                   name = QString(name+"<%1>").arg(hassamename);
