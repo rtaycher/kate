@@ -51,8 +51,8 @@ class PluginView : public QObject, virtual public KXMLGUIClient
   friend class Plugin;
 
   public:
-    PluginView (QObject* parent = 0L) : QObject (0L, 0L)
-     { myPlugin = (Plugin *) parent; };
+    PluginView (class Plugin *plugin, class MainWindow *win) : QObject ((QObject *)win)
+     { myPlugin = plugin; myMainWindow = win; };
 
     ~PluginView () {;};
 
@@ -60,6 +60,7 @@ class PluginView : public QObject, virtual public KXMLGUIClient
       { setXMLFile( filename ); };
 
     class Plugin *myPlugin;
+    class MainWindow *myMainWindow;
 };
 
 class Plugin : public QObject
@@ -75,10 +76,11 @@ class Plugin : public QObject
 
     virtual ~Plugin () {;};
 
-    virtual PluginView *createView ()=0;
+    virtual PluginView *createView (class MainWindow *win)=0;
+    virtual bool hasView () { return true; };
 
     virtual PluginConfigPage *createConfigPage (QWidget *) { return 0L; };
-    virtual bool hasConfigPage() { return false; };
+    virtual bool hasConfigPage () { return false; };
 
     QList<PluginView> viewList;
     class Application *myApp;
