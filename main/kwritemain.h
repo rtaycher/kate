@@ -57,9 +57,10 @@ class TopLevel : public KParts::MainWindow
 
     KantView *kWrite;
 
-    KToggleAction *setShowPath;
-
-    bool showPath;
+    KToggleAction * m_paShowPath;
+    KToggleAction * m_paShowMenuBar;
+    KToggleAction * m_paShowToolBar;
+    KToggleAction * m_paShowStatusBar;
 
     QTimer *statusbarTimer;
 
@@ -67,9 +68,9 @@ class TopLevel : public KParts::MainWindow
     void newWindow();
     void newView();
     void configure();
-    void togglePath();
-    void toggleToolbar();
-    void toggleStatusbar();
+    void toggleMenuBar();
+    void toggleToolBar();
+    void toggleStatusBar();
     void editKeys();
     void editToolbars();
 

@@ -39,6 +39,7 @@
 #include <kedittoolbar.h>
 #include <kdebug.h>
 #include <kparts/event.h>
+#include <kmenubar.h>
 
 #include "kwritemain.h"
 #include "kwritemain.moc"
@@ -77,6 +78,10 @@ TopLevel::TopLevel (KantDocument *doc)
   guiFactory()->addClient( kWrite );
   KParts::GUIActivateEvent ev( true );
   QApplication::sendEvent( kWrite, &ev );
+
+  // Read basic main-view settings, and set to autosave
+  setAutoSaveSettings( "General Options" );
+
 }
 
 
@@ -93,7 +98,14 @@ TopLevel::~TopLevel()
 
 void TopLevel::init()
 {
-  setShowPath->setChecked(showPath);
+  m_paShowMenuBar->setChecked( !menuBar()->isHidden() );
+  KToolBar *tb = toolBar("mainToolBar");
+  if (tb) m_paShowToolBar->setChecked( !tb->isHidden() );
+    else m_paShowToolBar->setEnabled(false);
+  KStatusBar *sb = statusBar();
+  if (sb) m_paShowStatusBar->setChecked( !sb->isHidden() );
+    else m_paShowStatusBar->setEnabled(false);
+
   newCurPos();
   newStatus();
 
@@ -152,9 +164,10 @@ void TopLevel::setupActions()
 
 
   // setup Settings menu
-  KStdAction::showToolbar(this, SLOT(toggleToolbar()), actionCollection());
-  KStdAction::showStatusbar(this, SLOT(toggleStatusbar()), actionCollection());
-  setShowPath = new KToggleAction(i18n("Sho&w Path"), 0, this, SLOT(togglePath()),
+  m_paShowMenuBar = KStdAction::showMenubar( this, SLOT( toggleMenuBar() ), actionCollection() );
+  m_paShowToolBar = KStdAction::showToolbar( this, SLOT( toggleToolBar() ), actionCollection() );
+  m_paShowStatusBar = KStdAction::showStatusbar(this, SLOT(toggleStatusBar()), actionCollection());
+  m_paShowPath = new KToggleAction(i18n("Sho&w Path"), 0, this, SLOT(newCaption()),
                     actionCollection(), "set_showPath");
   KStdAction::keyBindings(this, SLOT(editKeys()), actionCollection());
   KStdAction::configureToolbars(this, SLOT(editToolbars()), actionCollection());
@@ -246,30 +259,29 @@ void TopLevel::configure()
   delete kd;
 }
 
-
-void TopLevel::togglePath()
+void TopLevel::toggleMenuBar()
 {
-  showPath = !showPath;
-  newCaption();
+  if( m_paShowMenuBar->isChecked() )
+    menuBar()->show();
+  else
+    menuBar()->hide();
+}
+
+void TopLevel::toggleToolBar()
+{
+  if( m_paShowToolBar->isChecked() )
+    toolBar("mainToolBar")->show();
+  else
+    toolBar("mainToolBar")->hide();
 }
 
 
-void TopLevel::toggleToolbar()
+void TopLevel::toggleStatusBar()
 {
-  QToolBar *bar = toolBar("mainToolBar");
-  if(bar->isVisible())
-    bar->hide();
-  else
-    bar->show();
-}
-
-
-void TopLevel::toggleStatusbar()
-{
-  if (statusBar()->isVisible())
-    statusBar()->hide();
-  else
+  if( m_paShowStatusBar->isChecked() )
     statusBar()->show();
+  else
+    statusBar()->hide();
 }
 
 
@@ -350,7 +362,7 @@ void TopLevel::newCaption()
     setCaption(i18n("Untitled"),kWrite->isModified());
   } else {
     //set caption
-    if (showPath)
+    if ( m_paShowPath->isChecked() )
       setCaption(kWrite->doc()->url().prettyURL(),kWrite->isModified());
     else
       setCaption(kWrite->doc()->url().fileName(),kWrite->isModified());
@@ -408,13 +420,13 @@ void TopLevel::slotEnableActions( bool enable )
 //common config
 void TopLevel::readConfig(KConfig *config)
 {
-  showPath = config->readBoolEntry("ShowPath");
+  m_paShowPath->setChecked( config->readBoolEntry("ShowPath") );
 }
 
 
 void TopLevel::writeConfig(KConfig *config)
 {
-  config->writeEntry("ShowPath",showPath);
+  config->writeEntry("ShowPath",m_paShowPath->isChecked());
 
 }
 
@@ -422,15 +434,10 @@ void TopLevel::writeConfig(KConfig *config)
 //config file
 void TopLevel::readConfig() {
   KConfig *config;
-  int w, h;
 
   config = kapp->config();
 
   config->setGroup("General Options");
-  w = config->readNumEntry("Width", 550);
-  h = config->readNumEntry("Height", 400);
-  resize(w, h);
-
   readConfig(config);
 
   config = KantFactory::instance()->config();
@@ -448,9 +455,6 @@ void TopLevel::writeConfig()
   config = kapp->config();
 
   config->setGroup("General Options");
-  config->writeEntry("Width", width());
-  config->writeEntry("Height", height());
-
   writeConfig(config);
 
   config = KantFactory::instance()->config();
