@@ -121,6 +121,9 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
     resize (kMin (s.width(), desk.width()), kMin(s.height(), desk.height()));
   }
 
+  // apply settings
+  applyMainWindowSettings(kapp->config(), "Kate Main Window");
+
   m_mainWindow = new Kate::MainWindow (this);
   m_toolViewManager = new Kate::ToolViewManager (this);
 
@@ -382,8 +385,6 @@ void KateMainWindow::slotFileQuit()
 
 void KateMainWindow::readOptions(KConfig *config)
 {
-  applyMainWindowSettings(config, "Kate Main Window");
-
   config->setGroup("General");
   syncKonsole =  config->readBoolEntry("Sync Konsole", true);
   modNotification = config->readBoolEntry("Modified Notification", false);
