@@ -23,23 +23,37 @@ print FILE "<?xml version=\"1.01\" encoding=\"UTF-8\"?><!DOCTYPE language>\n";
 $hlname = @field[1];
 
 # get the extensions of the hl
-@fieldtmp = split /File Extensions =/, $file[0];
-@field2 = split / /, @fieldtmp[1];
+@field = split /File Extensions =/, $file[0];
+@field = split / /, @field[1];
 
 $ext = "";
 $c = 1;
-while (@field2[$c] ne "")
+while (@field[$c] ne "")
 {
-  @field2[$c] =~ s/\n//gi;
-  @field2[$c] =~ s/\r//gi;
+  @field[$c] =~ s/\n//gi;
+  @field[$c] =~ s/\r//gi;
 
-  if (length(@field2[$c]) > 0)
+  if (length(@field[$c]) > 0)
   {
-    $ext .= "*.@field2[$c];";
+    $ext .= "*.@field[$c];";
   }
 
   $c++;
 }
+
+# get the single line comment
+@field = split /Line Comment =/, $file[0];
+@field = split / /, @field[1];
+$linecomment = @field[1];
+
+# get the multi line comment
+@field = split /Block Comment On =/, $file[0];
+@field = split / /, @field[1];
+$commentstart = @field[1];
+
+@field = split /Block Comment Off =/, $file[0];
+@field = split / /, @field[1];
+$commentend = @field[1];
 
 print FILE "<language name=\"$hlname\" extensions=\"$ext\" mimetype=\"\" casesensitive=\"0\">\n";
 print FILE "  <highlighting>\n";
@@ -136,6 +150,21 @@ while (($n < $s) && ($file[$sections[$n]] ne ""))
 
 print FILE "    </itemDatas>\n";
 print FILE "  </highlighting>\n";
+print FILE "  <general>\n";
+print FILE "    <comments>\n";
+
+if ($linecomment ne "")
+{
+  print FILE "      <comment name=\"singleLine\" start=\"$linecomment\" />\n";
+}
+
+if (($commentstart ne "") && ($commentend ne ""))
+{
+  print FILE "      <comment name=\"multiLine\" start=\"$commentstart\" end=\"$commentend\" />\n";
+}
+
+print FILE "    </comments>\n";
+print FILE "  </general>\n";
 print FILE "</language>\n";
 
 close FILE;
