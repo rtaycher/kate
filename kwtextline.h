@@ -59,7 +59,7 @@ protected:
 
     Iterator fastat( uint i ) {
         uint num=count();
-        ASSERT(i<num);
+        if (i>=num) {return end();}
         if (fvp->curpos<0) { fvp->curpos=0; fvp->curit=begin(); }
         uint curpos=(uint) fvp->curpos;
         Iterator curit(fvp->curit.node);
@@ -87,7 +87,7 @@ protected:
     }
     ConstIterator fastat( uint i ) const {
         uint num=count();
-        ASSERT(i<num);
+        if (i>=num) {return end();}
         if (fvp->curpos<0) { fvp->curpos=0; fvp->curit=begin(); }
         uint curpos=(uint) fvp->curpos;
         ConstIterator curit=fvp->curit;
