@@ -132,20 +132,20 @@ void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool, unsigned char 
     QPixmap w( BarIcon("messagebox_warning", 32) );
     QString a;
     if ( r == 1 )
-      a = i18n("was changed on disk by another process.");
+      a = i18n("The document<br><code>%1</code><br>was changed on disk by another process.");
     else if ( r == 2 )
-      a = i18n("was created on disk by another process.");
+      a = i18n("The document<br><code>%1</code><br>was created on disk by another process.");
     else if ( r == 3 )
-      a = i18n("was deleted from disk by another process");
+      a = i18n("The document<br><code>%1</code><br>was deleted from disk by another process");
 
 //     KNotifyClient::instance();
 //     int n = KNotifyClient::event( "file_modified_on_disc",
 //           i18n("The document<br><code>%1</code><br>%2").arg( doc->url().prettyURL() ).arg( a ) );
 //     kdDebug()<<"The BASTARD returned "<<n<<endl;
     if ( ((KateMainWindow*)topLevelWidget())->notifyMod() )
-      KPassivePopup::message( i18n("WARNING"),
-            i18n("The document<br><code>%1</code><br>%2")
-            .arg( doc->url().prettyURL() ).arg( a ), w, topLevelWidget() );
+      KPassivePopup::message( i18n("Warning"),
+                              a.arg( doc->url().prettyURL() ),
+                              w, topLevelWidget() );
   }
 }
 
