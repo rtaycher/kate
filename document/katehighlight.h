@@ -120,9 +120,6 @@ class HlKeyword : public HlItemWw {
     QDict<char> Dict;
     bool _caseSensitive;
     QString _weakSep;
-    const QChar*  (*doCheckHgl)(const QChar* ,bool,HlKeyword*);
-    static const QChar* sensitiveCheckHgl(const QChar*,bool,HlKeyword *kw);
-    static const QChar *inSensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw);
 };
 
 class HlPHex : public HlItemWw {

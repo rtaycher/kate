@@ -169,22 +169,11 @@ const QChar *HlRangeDetect::checkHgl(const QChar *s,bool) {
 }
 
 HlKeyword::HlKeyword(int attribute, int context,bool casesensitive,QString weakSep)
-  : HlItemWw(attribute,context) {
-//  words.setAutoDelete(true);
-// after reading over the docs for Dict
-// 23 is probably too small when we can have > 100 items
-        _weakSep=weakSep;
-        if (casesensitive)
-          {
-            kdDebug()<<"Case Sensitive KeyWord";
-            doCheckHgl=&HlKeyword::sensitiveCheckHgl;
-          } else
-          {
-            kdDebug()<<"Case insensitive Keyword";
-            doCheckHgl=&inSensitiveCheckHgl;
-          }
-        _caseSensitive=casesensitive;
-        QDict<char> dict(113,casesensitive);
+  : HlItemWw(attribute,context)
+{
+  _weakSep=weakSep;
+  _caseSensitive=casesensitive;
+  QDict<char> dict(113,casesensitive);
 	Dict=dict;
 }
 
@@ -228,20 +217,15 @@ void HlKeyword::addList(const char **list) {
   }
 }
 
-const QChar *HlKeyword::checkHgl(const QChar *s,bool b)
+const QChar *HlKeyword::checkHgl(const QChar *s,bool)
 {
-  return doCheckHgl(s,b,this);
-  //sensitiveCheckHgl(s,b);
-}
-
-const QChar *HlKeyword::inSensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw) {
   const QChar *s2=s;
   QChar *s3;
   bool ws;
   QStack<QChar> stack;
   stack.setAutoDelete(false);
 
-  const QChar *wk = kw->_weakSep.unicode();
+  const QChar *wk = _weakSep.unicode();
 
   if(*s2=='\0') return 0L;
   while( ((ws=ustrchr(wk,*s2)) || ( s2->isLetterOrNumber()) ) && *s2 != '\0')
@@ -255,39 +239,11 @@ const QChar *HlKeyword::inSensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw) {
   while (s3=stack.pop())
         {
           QString lookup=QString(s,s3-s)+QString::null;
-          if (kw->Dict[lookup.lower()]) return s3;
+          if (Dict[lookup.lower()]) return s3;
         }
   return 0L;
 
 }
-
-const QChar *HlKeyword::sensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw) {
-  const QChar *s2=s;
-  QChar *s3;
-  bool ws;
-  QStack<QChar> stack;
-  stack.setAutoDelete(false);
-
-  const QChar *wk = kw->_weakSep.unicode();
-
-  if(*s2=='\0') return 0L;
-  while( ((ws=ustrchr(wk,*s2)) || ( s2->isLetterOrNumber()) ) && *s2 != '\0')
-        {
-           if (ws) stack.push(s2);
-           s2++;
-        }
-  stack.push(s2);
-// oops didn't increment s2 why do anything else ?
-  if (s2 == s) return 0L;
-  while (s3=stack.pop())
-        {
-          QString lookup=QString(s,s3-s)+QString::null;
-          if (kw->Dict[lookup]) return s3;
-        }
-  return 0L;
-
-}
-
 
 HlInt::HlInt(int attribute, int context)
   : HlItemWw(attribute,context) {
