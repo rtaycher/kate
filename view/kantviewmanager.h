@@ -44,7 +44,7 @@ class KantViewManager : public KantViewManagerIface
     void reopenDocuments(bool isRestore);
 
   public slots:
-    void openURL (KURL url=0L);
+    virtual void openURL (KURL url=0L);
     void openConstURL (const KURL&url=0L);
     void reloadCurrentDoc();
 

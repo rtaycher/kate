@@ -1,5 +1,5 @@
  /***************************************************************************
-                          kantpluginiface.h  -  description
+                          plugin_kanttextfilter.h  -  description
                              -------------------
     begin                : FRE Feb 23 2001
     copyright            : (C) 2001 by Joseph Wenninger
@@ -14,24 +14,45 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef _KANT_VIEWMANAGER_IFACE_
-#define _KANT_VIEWMANAGER_IFACE_
 
-#include "../main/kantmain.h"
-#include "../view/kantview.h"
+#ifndef _PLUGIN_KANT_HEADER_H
+#define _PLUGIN_KANT_HEADER_H
 
-#include <qwidget.h>
+#include <qstring.h>
 
-class KantViewManagerIface : public QWidget
+#include <kparts/plugin.h>
+#include <klibloader.h>
+#include <kantpluginIface.h>
+
+class PluginKantOpenHeader : public KParts::Plugin
 {
   Q_OBJECT
 
   public:
-    KantViewManagerIface (QWidget *parent) : QWidget(parent) {;};
-    ~KantViewManagerIface () {;};
+    PluginKantOpenHeader( QObject* parent = 0, const char* name = 0 );
+    virtual ~PluginKantOpenHeader();
 
-    virtual KantView *getActiveView()=0;
-    virtual void openURL (KURL)=0;  
+  private:
+    KantPluginIface *myParent;
+
+  public slots:
+    void slotOpenHeader ();
 };
 
-#endif
+class kantopenheaderFactory : public KLibFactory
+{
+  Q_OBJECT
+
+  public:
+    kantopenheaderFactory();
+    virtual ~kantopenheaderFactory();
+
+    virtual QObject* createObject( QObject* parent = 0, const char* pname = 0, const char* name = "QObject", const QStringList &args = QStringList() );
+
+    static KInstance* instance();
+
+  private:
+    static KInstance* s_instance;
+};
+
+#endif // _PLUGIN_KANT_OPENHEADER_H

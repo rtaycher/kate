@@ -1,3 +1,8 @@
+2001-03-18 Joseph Wenninger <jowenn@bigfoot.com>
+        * openheader plugin opens the corresponding
+          .h file for .cpp or .c, and vice versa
+        * Hopefully fixed highlighting dialog for now.
+
 2001-03-17 Joseph Wenninger <jowenn@bigfoot.com>
         * Syntaxhighlighting is now defined in cpp.xml, c.xml html.xml ...
           instead of a global syntax.xml.

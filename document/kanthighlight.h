@@ -376,11 +376,11 @@ class ItemFont {
 //Item Properties: name, Item Style, Item Font
 class ItemData : public ItemStyle, public ItemFont {
   public:
-    ItemData(const char * name, int defStyleNum);
-    ItemData(const char * name, int defStyleNum,
+    ItemData(const QString  name, int defStyleNum);
+    ItemData(const QString  name, int defStyleNum,
       const QColor&, const QColor&, bool bold, bool italic);
 
-    const char * name;
+    const QString name;
     int defStyleNum;
     int defStyle; //boolean value
     int defFont;  //boolean value

@@ -1,0 +1,4 @@
+load=1
+name=Kant OpenHeader
+description=Opens the corresponding .h/[.cpp|.c] file
+author=Joseph Wenninger

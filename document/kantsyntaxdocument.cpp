@@ -208,41 +208,29 @@ struct syntaxContextData* SyntaxDocument::getGroupInfo(const QString& mainGroupN
 }
 
 
-QStringList& SyntaxDocument::finddata(const QString& langName,const QString& type,bool clearList)
+QStringList& SyntaxDocument::finddata(const QString& mainGroup,const QString& type,bool clearList)
 {
-  QDomElement docElem = documentElement();
-  QDomNode n = docElem.firstChild();
-
+  QDomElement e  = documentElement();
   if (clearList) m_data.clear();
-  while ( !n.isNull() )
-  {
-    if ( n.isElement())
+//  if ( n.isElement())
     {
-      QDomElement e = n.toElement(); //e.tagName is language
-      QDomNode child=e.firstChild(); // child.toElement().tagname() is keywords/types
-      QDomNode grandchild=child.firstChild(); // grandchild.tagname is keyword/type
-
-      // at this point e.attribute("name") should equal langName
-      // and we can use type==keyword as an index to child list
-
-      if(e.attribute("name").compare(langName)==0 )
-      {
-        //&& grandchild.toElement().tagName().compare(type) == 0 ){
-        QDomNodeList childlist=n.childNodes();
-        QDomNodeList grandchildlist=childlist.item(type=="keyword" ? 0 : 1).childNodes();
-
-        for(uint i=0; i< grandchildlist.count();i++)
-          m_data+=grandchildlist.item(i).toElement().text().stripWhiteSpace();
-	if (!(e.attribute("extends").isEmpty()))
+	for(QDomNode n=e.firstChild(); !n.isNull(); n=n.nextSibling())
 	  {
-	     m_data+=finddata(e.attribute("extends"),type,FALSE);
-          }
-        return m_data;
-      }
-    }
-
-    n = n.nextSibling();
-  }
-
+            if (n.toElement().tagName()==mainGroup)
+              {
+                for (n=n.firstChild(); !n.isNull(); n=n.nextSibling())
+		  {
+                    if (n.toElement().tagName()==type)
+                     {
+		       QDomNodeList childlist=n.childNodes();
+                       for (uint i=0; i<childlist.count();i++)
+                         m_data+=childlist.item(i).toElement().text().stripWhiteSpace();
+                       break;
+                     }
+                  }
+                break;
+              }
+          }      
+   }
   return m_data;
 }

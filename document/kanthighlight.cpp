@@ -916,11 +916,11 @@ ItemStyle::ItemStyle(const QColor &col, const QColor &selCol,
 ItemFont::ItemFont() : family("courier"), size(12), charset("") {
 }
 
-ItemData::ItemData(const char * name, int defStyleNum)
+ItemData::ItemData(const QString  name, int defStyleNum)
   : name(name), defStyleNum(defStyleNum), defStyle(true), defFont(true) {
 }
 
-ItemData::ItemData(const char * name, int defStyleNum,
+ItemData::ItemData(const QString name, int defStyleNum,
   const QColor &col, const QColor &selCol, bool bold, bool italic)
   : ItemStyle(col,selCol,bold,italic), name(name), defStyleNum(defStyleNum),
   defStyle(false), defFont(true) {
@@ -2158,25 +2158,32 @@ void AutoHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
 {
   if (casesensitive=="1")
   {
-   if (keyword) keyword->addList(HlManager::self()->syntax->finddata(iName,"keyword"));
-   if (dataType) dataType->addList(HlManager::self()->syntax->finddata(iName,"type"));
+   if (keyword) keyword->addList(HlManager::self()->syntax->finddata("highlighting","keywords"));
+   if (dataType) dataType->addList(HlManager::self()->syntax->finddata("highlighting","types"));
   }
 }
 
 void AutoHighlight::createItemData(ItemDataList &list)
 {
   struct syntaxContextData *data;
-  kdDebug(13010)<<"In AutoHighlight::createItemData"<<endl;
-  HlManager::self()->syntax->setIdentifier(identifier);     
+  kdDebug(13010)<<"In AutoHighlight::createItemData***********************"<<endl;
+  HlManager::self()->syntax->setIdentifier(identifier);
   data=HlManager::self()->syntax->getGroupInfo("highlighting","itemData");
   while (HlManager::self()->syntax->nextGroup(data))
     {
+	kdDebug(13010)<< HlManager::self()->syntax->groupData(data,QString("name"))<<endl;
 	list.append(new ItemData(
-          HlManager::self()->syntax->groupData(data,QString("name")).latin1(),
+          HlManager::self()->syntax->groupData(data,QString("name")),
           getDefStyleNum(HlManager::self()->syntax->groupData(data,QString("defStyleNum")))));
 
     }
   if (data) HlManager::self()->syntax->freeGroupInfo(data);
+  kdDebug(13010)<<"****************ITEMDATALIST - BEGIN*********************"<<endl;
+    for (ItemData *it=list.first();it!=0;it=list.next())
+      {
+        kdDebug(13010)<<it->name<<endl;
+      }
+  kdDebug(13010)<<"****************ITEMDATALIST - END*********************"<<endl;
 }
 
 HlItem *AutoHighlight::createHlItem(struct syntaxContextData *data, int *res)
@@ -2855,7 +2862,8 @@ void HighlightDialog::hlChanged(int z)
   itemCombo->clear();
   for (ItemData *itemData = hlData->itemDataList.first(); itemData != 0L;
     itemData = hlData->itemDataList.next()) {
-    itemCombo->insertItem(i18n(itemData->name));
+    kdDebug()<<itemData->name;
+    itemCombo->insertItem(i18n(itemData->name.latin1()));
   }
 
   itemChanged(0);
