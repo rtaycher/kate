@@ -990,6 +990,7 @@ void AutoHighlight::makeContextList()
         kdDebug()<<HlManager::self()->syntax->groupData(data,"name")<<endl;
         if (HlManager::self()->syntax->groupData(data,"name")=="singleLine")
 		cslStart=HlManager::self()->syntax->groupData(data,"start");
+       else cslStart = "";
 	if (HlManager::self()->syntax->groupData(data,"name")=="multiLine")
            {
 		cmlStart=HlManager::self()->syntax->groupData(data,"start");
