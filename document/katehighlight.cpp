@@ -493,11 +493,8 @@ HlRegExpr::HlRegExpr(int attribute, int context,QString regexp)
 const QChar *HlRegExpr::checkHgl(const QChar *s, int len, bool lineStart)
 {
   if ((!lineStart) && handlesLinestart) return 0;
-  //kdDebug(13010)<<"Trying to match:"<<Expr->pattern()<<endl;
-  const QChar *chtmp=s;
-  int i;
-  for (i=0;(*chtmp)!='\0';chtmp++,i++);
-  QString line(s,i);
+
+  QString line(s,len);
   int pos = Expr->search( line, 0 );
   if (pos==-1) return 0L;
     else
@@ -510,12 +507,12 @@ HlLineContinue::HlLineContinue(int attribute, int context)
 }
 
 const QChar *HlLineContinue::checkHgl(const QChar *s, int len, bool) {
-  
+
  // kdDebug()<<"Interesting:"<<QString("%1").arg(s[1])<<endl;
 //  qDebug(">>>>%d %d %c<<<<<",s[0].latin1(),s[1].latin1(),s[0].latin1());
 //  qDebug(">>>>%d %d %c<<<<<",s[0].latin1(),s[1].latin1(),s[0].latin1());
 //  qDebug(">>>>%d %d %c<<<<<",s[0].latin1(),s[1].latin1(),s[0].latin1());
-  if ((s[0].latin1() == '\\') && (s[1].latin1()=='\0'))
+  if ((s[0].latin1() == '\\') && (len == 1))
 	{
 //	   kdDebug()<<"\\ found"<<endl;
            return s + 1;
