@@ -93,6 +93,8 @@ const KAboutData *KateFactory::aboutData()
 
   data->addCredit ("Carsten Presser", I18N_NOOP("Betatest"), "mord-slime@gmx.de");
   data->addCredit ("Jens Haupert", I18N_NOOP("Betatest"), "al_all@gmx.de");
+  data->addCredit ("Carsten Pfeiffer", I18N_NOOP("Very nice help"), "");
+  data->addCredit ("Mr. Doerr", I18N_NOOP("For absolutely nothing"), "");
 
   return data;
 }
