@@ -1,5 +1,5 @@
 <?xml version="1.02" encoding="UTF-8"?><!DOCTYPE language>
-<language name="XML/SGML" section="Markup" extensions="*.docbook;*.xml;*.rc;*.sgml" mimetype="text/sgml;text/xml;text/book">
+<language name="XML/SGML" extensions="*.docbook;*.xml;*.rc;*.sgml" mimetype="text/sgml;text/xml;text/book">
   <highlighting>
     <contexts>
        <context attribute="0" lineEndContext="0">
@@ -7,23 +7,20 @@
        </context>
 
        <context attribute="2" lineEndContext="1">
-         <DetectChar attribute="1" context="0" char="&gt;"/>
-         <RegExpr attribute="0" context="2" String="\s*=\s*"/>
+		 <Detect2Chars attribute="1" context="0" char="/" char1="&gt;" />
+		 <DetectChar attribute="1" context="0" char="&gt;" />
+         <RegExpr attribute="0" context="2" String="\s*=\s*" />
        </context>
 
-       <context attribute="8" lineEndContext="2">
-         <RegExpr attribute="3" context="1" String="\s*#?[a-zA-Z0-9]*" />
-         <CharDetect attribute="3" context="3" char="&quot;" />
+       <context attribute="3" lineEndContext="2">
+		 <RegExpr attribute="3" context="1" String="[A-Za-z0-9.-]*" />
+         <DetectChar attribute="3" context="3" char="&quot;" />
        </context>
 
        <context attribute="3" lineEndContext="3">
-         <CharDetect attribute="3" context="1" char="&quot;" />
+         <DetectChar attribute="3" context="1" char="&quot;" />
        </context>
 
-       <context attribute="5" lineEndContext="0"/>
-       <context attribute="4" lineEndContext="0">
-         <CharDetect attribute="4" context="0" char="'"/>
-       </context>
     </contexts>
     <itemDatas>
       <itemData name="Normal Text" defStyleNum="dsNormal"/>
