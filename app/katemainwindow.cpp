@@ -238,10 +238,12 @@ bool KateMainWindow::eventFilter(QObject* o, QEvent* e)
 void KateMainWindow::setupActions()
 {
   kscript = new KScriptManager(this, "scriptmanager");
-  scriptMenu = new KSelectAction(i18n("KDE Scripts"),0,this,SLOT(runScript()),actionCollection(),"scripts");
+  //scriptMenu = new KSelectAction(i18n("KDE Scripts"),0,this,SLOT(runScript()),actionCollection(),"scripts");
+  scriptMenu = new KActionMenu( i18n("KDE Scri&pts"), actionCollection(), "scripts");  
   setupScripts();
-  scriptMenu->clear();
-  scriptMenu->setItems(kscript->scripts());
+  connect( scriptMenu->popupMenu(), SIGNAL(activated( int)), this, SLOT(runScript( int )) );
+  //scriptMenu->clear();
+  //scriptMenu->setItems(kscript->scripts());
   KStdAction::openNew( m_viewManager, SLOT( slotDocumentNew() ), actionCollection(), "file_new" );
   KStdAction::open( m_viewManager, SLOT( slotDocumentOpen() ), actionCollection(), "file_open" );
 
@@ -696,12 +698,16 @@ void KateMainWindow::setupScripts()
 		}
 		++it;
 	}
+        QStringList l ( kscript->scripts() );
+        for (QStringList::Iterator it1=l.begin(); it1 != l.end(); ++it1 )
+          scriptMenu->popupMenu()->insertItem( *it1 );
 }
 
-void KateMainWindow::runScript()
+void KateMainWindow::runScript( int mIId )
 {
-	kdDebug(13000) << "Starting script engine..." << endl;
-	kscript->runScript(scriptMenu->currentText());
+	//kdDebug(13000) << "Starting script engine..." << endl;
+        kdDebug()<<"runScript( "<<mIId<<" ) ["<<scriptMenu->popupMenu()->text( mIId )<<"]"<<endl;
+	kscript->runScript( scriptMenu->popupMenu()->text( mIId ) );
 }
 
 void KateMainWindow::slotMail()
@@ -781,6 +787,17 @@ void KateMainWindow::slotMail()
 void KateMainWindow::tipOfTheDay()
 {
   KTipDialog::showTip( /*0*/this, QString::null, true );
+}
+
+int KateMainWindow::currentDocumentIfaceNumber()
+{
+  Kate::View *v = m_viewManager->activeView();
+  if ( v )
+  {
+  kdDebug()<<"currentDocumentIfaceNumber(): returning "<<v->getDoc()->documentNumber()<<endl;
+    return v->getDoc()->documentNumber();
+  }
+  return 0;
 }
 
 
@@ -915,10 +932,9 @@ void KateToggleToolViewAction::slotToggled(bool t)
   	if ( t && m_dw->mayBeShow() ) m_mw->makeDockVisible(m_dw);
 }
 
-
 void KateToggleToolViewAction::slotWidgetDestroyed()
+
 {
 	unplugAll();
 	deleteLater();
 }
-

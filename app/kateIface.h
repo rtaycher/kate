@@ -25,5 +25,6 @@ class KateMainWindowDCOPIface : virtual public DCOPObject
 
   k_dcop:
     virtual void openURL (const QString &name=0)=0;
+    virtual int currentDocumentIfaceNumber()=0;
 };
 #endif

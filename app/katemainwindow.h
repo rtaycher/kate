@@ -126,7 +126,8 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
 
     KAction* settingsConfigure;
 
-    KSelectAction* scriptMenu;
+    //KSelectAction* scriptMenu;
+    KActionMenu *scriptMenu;
     KScriptManager* kscript;
 
   public slots:
@@ -145,7 +146,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
   public slots:
     void slotGrepDialogItemSelected ( QString filename, int linenumber );
     void slotFindInFiles ();
-    void runScript();
+    void runScript( int menuItemId);
     void slotMail();
 
   private:
@@ -192,7 +193,12 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     Kate::ViewManager *viewManager () {return m_viewManager->viewManager(); }; 
     KateViewManager *kateViewManager () { return m_viewManager; };
     KDockWidget *centralDock () { return mainDock; };
-
+    
+  // For dcop interface. -anders
+  public:
+    /** @return the interface number for the current document */
+    int currentDocumentIfaceNumber();
+  
   public: //ToolViewManager stuff
     virtual void* interfaces(const QString &name);
 
