@@ -950,7 +950,7 @@ void KateMainWindow::openConstURLProject (const KURL&url)
 }
 
 void KateMainWindow::saveProperties(KConfig *config) {
-  kdDebug(13000)<<"KateMainWindow::saveProperties(): group: "<<config->group()<<endl
+  kdDebug(13000)<<"KateMainWindow::saveProperties(): group: "<<config->group()<<endl;
   assert(config);
 
 //   kdDebug(13000)<<"preparing session saving"<<endl;
