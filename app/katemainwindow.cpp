@@ -87,7 +87,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   QString grp=config->group();
   config->setGroup("General");
-  m_dockStyle= (config->readEntry("viewMode","Modern")=="Modern") ? ModernStyle : ClassicStyle;
+  m_dockStyle= (config->readEntry("viewMode",DEFAULT_STYLE)=="Modern") ? ModernStyle : ClassicStyle;
   
   if (config->readBoolEntry("deleteKDockWidgetConfig",false))
   {
