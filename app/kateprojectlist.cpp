@@ -38,7 +38,7 @@
 #include <qtoolbar.h>
 
 // from kfiledialog.cpp - avoid qt warning in STDERR (~/.xsessionerrors)
-extern static void silenceQToolBar(QtMsgType, const char *){}
+static void silenceQToolBar2 (QtMsgType, const char *) {}
 
 KateProjectList::KateProjectList (KateProjectManager *_projectManager, KateMainWindow *_mainWindow, QWidget * parent, const char * name ):  QWidget (parent, name)
 {                              
@@ -51,7 +51,7 @@ KateProjectList::KateProjectList (KateProjectManager *_projectManager, KateMainW
   m_projectManager = _projectManager;
   m_mainWindow = _mainWindow;
   
-  QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar );
+  QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar2 );
   
   KateProjectListToolBarParent *tbp=new KateProjectListToolBarParent(this);
   toolbar = new KateProjectListToolBar(tbp);
