@@ -93,7 +93,7 @@ QString PluginKantHtmlTools::KantPrompt
 void PluginKantHtmlTools::slipInHTMLtag (KantView & view, QString text)  //  PCP
 {
 
-  //  We must add a <em>heavy</em> elaborate HTML markup system. Not!
+  //  We must add a heavy elaborate HTML markup system. Not!
 
   QStringList list = QStringList::split (' ', text);
   QString marked (view.markedText ());
@@ -101,10 +101,8 @@ void PluginKantHtmlTools::slipInHTMLtag (KantView & view, QString text)  //  PCP
   view.getCursorPosition (&preDeleteLine, &preDeleteCol);
   assert (preDeleteLine > -1);  assert (preDeleteCol > -1);
 
-  //  shoot me for strlen() but it worked better than .length() for some reason...
-  // lukas: BANG! strlen() fucks up non latin1 characters :-)
 
-  if (marked.length() > 0)
+  if (marked.length() > 1)
     view.keyDelete ();
   int line = -1, col = -1;
   view.getCursorPosition (&line, &col);
