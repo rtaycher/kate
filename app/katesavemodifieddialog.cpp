@@ -125,7 +125,7 @@ private:
 };
 
 KateSaveModifiedDialog::KateSaveModifiedDialog(QWidget *parent, QPtrList<Kate::Document> documents):
-	KDialogBase( parent, "KateSaveModifiedDialog", true, i18n("Save documents"), Yes | No | Cancel) {
+	KDialogBase( parent, "KateSaveModifiedDialog", true, i18n("Save Documents"), Yes | No | Cancel) {
 
 	KGuiItem yesItem=KStdGuiItem::yes();
 	yesItem.setText(i18n("&Save selected"));
