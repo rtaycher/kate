@@ -34,6 +34,9 @@ class KateConfigDialog : public KDialogBase
 
     int exec ();
 
+  protected slots:
+    virtual void slotApply();
+
   private:
     class KConfig *config;
     KateDocManager *docManager;

@@ -58,7 +58,7 @@
 #include <kstddirs.h>
 
 KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
- : KDialogBase (KDialogBase::TreeList, i18n("Configure Kate"), KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok, parent, name)
+ : KDialogBase (KDialogBase::TreeList, i18n("Configure Kate"), KDialogBase::Ok|KDialogBase::Apply|KDialogBase::Cancel, KDialogBase::Ok, parent, name)
 {
   config = parent->config;
   docManager = parent->docManager;
@@ -202,8 +202,15 @@ KateConfigDialog::~KateConfigDialog()
 
 int KateConfigDialog::exec()
 {
-  if (!KDialogBase::exec()) return 0;
+  int n = KDialogBase::exec();
+  if (n)
+    slotApply();
 
+  return n;
+}
+
+void KateConfigDialog::slotApply()
+{
   viewManager->setUseOpaqueResize(cb_opaqueResize->isChecked());
   config->setGroup("startup");
   config->writeEntry("singleinstance",cb_singleInstance->isChecked());
@@ -253,6 +260,4 @@ int KateConfigDialog::exec()
   v->doc()->writeConfig( config );
   hlPage->saveData();
   config->sync();
-
-  return 1;
 }
