@@ -155,6 +155,7 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   // NOTE: QFont::CharSet doesn't provide all the charsets KDE supports
   // (esp. it doesn't distinguish between UTF-8 and iso10646-1) 
   myEncoding = QString::fromLatin1(QTextCodec::codecForLocale()->name());
+  maxLength = -1;
 
   setFont (KGlobalSettings::fixedFont());
 
