@@ -56,7 +56,7 @@ class KateViewManager : public KateViewManagerIface
     QGridLayout *grid;
 
     bool createView ( bool newDoc=true, KURL url=0L, KateView *origView=0L, KateDocument *doc=0L );
-    bool deleteView ( KateView *view, bool delViewSpace = true, bool createNew = true );
+    bool deleteView ( KateView *view, bool delViewSpace = true);
 
     void moveViewtoSplit (KateView *view);
     void moveViewtoStack (KateView *view);

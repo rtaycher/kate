@@ -170,7 +170,7 @@ bool KateViewManager::createView ( bool newDoc, KURL url, KateView *origView, Ka
   return true;
 }
 
-bool KateViewManager::deleteView (KateView *view, bool delViewSpace, bool createNew)
+bool KateViewManager::deleteView (KateView *view, bool delViewSpace)
 {
   if (!view) return true;
 
@@ -188,11 +188,6 @@ bool KateViewManager::deleteView (KateView *view, bool delViewSpace, bool create
   if (delViewSpace)
     if ( viewspace->viewCount() == 0 )
       removeViewSpace( viewspace );
-
-  if (createNew && (viewList.count() < 1) && (docManager->docCount() < 1) )
-    createView (true, 0L, 0L);
-  else if (createNew && (viewList.count() < 1) && (docManager->docCount() > 0) )
-    createView (false, 0L, 0L, docManager->nthDoc(docManager->docCount()-1));
 
   return true;
 }
@@ -363,7 +358,7 @@ void KateViewManager::activatePrevView()
 
 void KateViewManager::deleteLastView ()
 {
-  deleteView (activeView (), true, false);
+  deleteView (activeView (), true);
 }
 
 bool KateViewManager::closeDocWithAllViews ( KateView *view )
@@ -391,7 +386,7 @@ bool KateViewManager::closeDocWithAllViews ( KateView *view )
     while ( closeList.at(0) )
     {
       KateView *view = closeList.at(0);
-      ((KateApp *)kapp)->mainWindows.at(i)->viewManager->deleteView (view, true, false);
+      ((KateApp *)kapp)->mainWindows.at(i)->viewManager->deleteView (view, true);
       closeList.remove (view);
     }
   }
