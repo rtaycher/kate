@@ -531,6 +531,8 @@ void KateMainWindow::setHighlightMenuAboutToShow()
   static QStringList names;
   static QList<QPopupMenu> subMenus;
   int count = HlManager::self()->highlights();
+  static QString oldActiveSec;
+  static int oldActiveID;
 
   for (int z=0; z<count; z++)
   {
@@ -556,6 +558,24 @@ void KateMainWindow::setHighlightMenuAboutToShow()
       names << hlName;
       setHighlight->popupMenu()->insertItem ( hlName, viewManager, SLOT(slotSetHl(int)), 0,  z);
     }
+  }
+
+  if (viewManager->activeView())
+  {
+    int s = subMenusName.findIndex (oldActiveSec);
+    if (subMenus.at(s))
+      subMenus.at(s)->setItemChecked (oldActiveID, false);
+    else
+      setHighlight->popupMenu()->setItemChecked (0, false);
+
+    int i = subMenusName.findIndex (HlManager::self()->hlSection (viewManager->activeView()->getHl()));
+    if (subMenus.at(i))
+      subMenus.at(i)->setItemChecked (viewManager->activeView()->getHl(), true);
+    else
+      setHighlight->popupMenu()->setItemChecked (0, true);
+
+    oldActiveSec = HlManager::self()->hlSection (viewManager->activeView()->getHl());
+    oldActiveID = viewManager->activeView()->getHl();
   }
 }
 
