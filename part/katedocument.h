@@ -406,7 +406,7 @@ class KateDocument : public Kate::Document
     uint currentColumn(KateViewCursor &cursor);
     void newLine(VConfig &);
     void killLine(VConfig &);
-    void backspace(VConfig &);
+    void backspace(uint line, uint col);
     void del(VConfig &);
     void cut(VConfig &);
     void copy(int flags);

@@ -228,7 +228,7 @@ void KateViewInternal::doEditCommand(VConfig &c, int cmdNum)
     case KateView::cmBackspace:
       if ((c.flags & KateDocument::cfDelOnInput) && myDoc->hasSelection())
         myDoc->removeSelectedText();
-      else myDoc->backspace(c);
+      else myDoc->backspace(c.cursor.line, c.cursor.col);
       return;
     case KateView::cmKillLine:
       myDoc->killLine(c);

@@ -726,8 +726,9 @@ bool KateDocument::internalRemoveText ( uint line, uint col, uint len )
   tagLine(line);
 
   newDocGeometry = true;
-  for (view = myViews.first(); view != 0L; view = myViews.next() )
+  for (uint z2 = 0; z2 < myViews.count(); z2++)
   {
+    view = myViews.at(z2);
     view->cursorPositionReal (&cLine, &cCol);
 
     if ( (cLine == line) && (cCol > col) )
@@ -800,8 +801,9 @@ bool KateDocument::internalWrapLine ( uint line, uint col )
   if (tagEnd > (int)line) tagEnd++;
 
   newDocGeometry = true;
-  for (view = myViews.first(); view != 0L; view = myViews.next() )
+  for (uint z2 = 0; z2 < myViews.count(); z2++)
   {
+    view = myViews.at(z2);
     view->insLine(line+1);
   }
 
@@ -838,6 +840,7 @@ bool KateDocument::internalUnWrapLine ( uint line, uint col)
 
   updateMaxLength(l);
   tagLine(line);
+  tagLine(line+1);
 
   if (!myMarks.isEmpty())
   {
@@ -863,8 +866,9 @@ bool KateDocument::internalUnWrapLine ( uint line, uint col)
   if (tagEnd > (int) line) tagEnd--;
 
   newDocGeometry = true;
-  for (view = myViews.first(); view != 0L; view = myViews.next() )
+  for (uint z2 = 0; z2 < myViews.count(); z2++)
   {
+    view = myViews.at(z2);
     view->cursorPositionReal (&cLine, &cCol);
 
     view->delLine(line+1);
@@ -921,8 +925,9 @@ bool KateDocument::internalInsertLine ( uint line, const QString &s )
   }
 
   newDocGeometry = true;
-  for (view = myViews.first(); view != 0L; view = myViews.next() )
+  for (uint z2 = 0; z2 < myViews.count(); z2++)
   {
+    view = myViews.at(z2);
     view->insLine(line);
   }
 
@@ -973,8 +978,9 @@ bool KateDocument::internalRemoveLine ( uint line )
   }
 
   newDocGeometry = true;
-  for (view = myViews.first(); view != 0L; view = myViews.next() )
+  for (uint z2 = 0; z2 < myViews.count(); z2++)
   {
+    view = myViews.at(z2);
     view->cursorPositionReal (&cLine, &cCol);
     view->delLine(line);
 
@@ -2665,57 +2671,61 @@ void KateDocument::killLine(VConfig &c)
   removeLine (c.cursor.line);
 }
 
-void KateDocument::backspace(VConfig &c) {
-
-  if (c.cursor.col <= 0 && c.cursor.line <= 0) return;
-
-  if (c.cursor.col > 0)
-  {     
-     
-    if (!(_configFlags & KateDocument::cfBackspaceIndents)) {     
+void KateDocument::backspace(uint line, uint col)
+{
+  if (col > 0)
+  {
+    if (!(_configFlags & KateDocument::cfBackspaceIndents))
+    {
       // ordinary backspace
       //c.cursor.col--;
-      removeText(c.cursor.line, c.cursor.col-1, c.cursor.line, c.cursor.col);     
-    } else {     
-      // backspace indents: erase to next indent position     
-      int l = 1; // del one char     
-     
-      TextLine::Ptr textLine = getTextLine(c.cursor.line);     
-      int pos = textLine->firstChar();     
-      if (pos < 0 || pos >= c.cursor.col) {     
-        // only spaces on left side of cursor     
-        // search a line with less spaces     
-        int y = c.cursor.line;     
-        while (y > 0) {     
+      removeText(line, col-1, line, col);
+    }
+    else
+    {
+      // backspace indents: erase to next indent position
+      int l = 1; // del one char
+
+      TextLine::Ptr textLine = getTextLine(line);
+      int pos = textLine->firstChar();
+      if (pos < 0 || pos >= (int)col)
+      {
+        // only spaces on left side of cursor
+        // search a line with less spaces
+        uint y = line;
+        while (y > 0)
+        {
           textLine = getTextLine(--y);
           pos = textLine->firstChar();
-          if (pos >= 0 && pos < c.cursor.col) {     
-            l = c.cursor.col - pos; // del more chars     
-            break;     
+
+          if (pos >= 0 && pos < (int)col)
+          {
+            l = col - pos; // del more chars
+            break;
           }
         }
       }
       // break effectively jumps here
       //c.cursor.col -= l;
-      removeText(c.cursor.line, c.cursor.col-1, c.cursor.line, c.cursor.col);
+      removeText(line, col-1, line, col);
     }
-  } else {
-    // c.cursor.col == 0: wrap to previous line
-
-    c.cursor.line--;
-    c.cursor.col = getTextLine(c.cursor.line)->length();
-    removeText (c.cursor.line, c.cursor.col, c.cursor.line+1, 0);
+  }
+  else
+  {
+    // col == 0: wrap to previous line
+    if ((line - 1) >= 0)
+      removeText (line-1, getTextLine(line-1)->length(), line, 0);
   }
 }
 
 void KateDocument::del(VConfig &c)
 {
   if (c.cursor.col < (int) getTextLine(c.cursor.line)->length())
-  {     
+  {
     removeText(c.cursor.line, c.cursor.col, c.cursor.line, c.cursor.col+1);
-  }     
-  else     
-  {     
+  }
+  else
+  {
     removeText(c.cursor.line, c.cursor.col, c.cursor.line+1, 0);
   }
 }
@@ -3154,28 +3164,22 @@ QString KateDocument::getWord(KateViewCursor &cursor) {
   return QString(&textLine->getText()[start], len);
 }
 
-void KateDocument::tagLineRange(int line, int x1, int x2) {
-  int z;
-
-  for (z = 0; z < (int) myViews.count(); z++) {
+void KateDocument::tagLineRange(int line, int x1, int x2)
+{
+  for (uint z = 0; z < myViews.count(); z++)
     myViews.at(z)->tagLines(line, line, x1, x2);
-  }
 }
 
-void KateDocument::tagLines(int start, int end) {
-  int z;
+void KateDocument::tagLines(int start, int end)
+{
+  for (uint z = 0; z < myViews.count(); z++)
+    myViews.at(z)->tagLines(start, end, 0, 0xffffff);
+}
 
-  for (z = 0; z < (int) myViews.count(); z++) {     
-    myViews.at(z)->tagLines(start, end, 0, 0xffffff);     
-  }     
-}     
-     
-void KateDocument::tagAll() {     
-  int z;     
-
-  for (z = 0; z < (int) myViews.count(); z++) {
+void KateDocument::tagAll()
+{
+  for (uint z = 0; z < myViews.count(); z++)
     myViews.at(z)->tagAll();
-  }
 }
 
 void KateDocument::updateLines(int startLine, int endLine)
@@ -3313,15 +3317,18 @@ void KateDocument::slotBufferHighlight(uint start,uint stop) {
 //  buffer->startLoadTimer();     
 }     
      
-void KateDocument::updateViews(KateView *exclude) {     
-  KateView *view;     
-  int flags;     
+void KateDocument::updateViews(KateView *exclude)
+{
+  KateView *view;
+  int flags;
 
   flags = (newDocGeometry) ? KateView::ufDocGeometry : 0;
-  for (view = myViews.first(); view != 0L; view = myViews.next() ) {
-    if (view != exclude) view->updateView(flags);
-
+  
+  for (view = myViews.first(); view != 0L; view = myViews.next() )
+  {
+    view->updateView(flags);
   }
+
   newDocGeometry = false;
 }
 
