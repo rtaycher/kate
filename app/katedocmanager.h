@@ -111,6 +111,7 @@ class KateDocManager : public QObject
     void documentCreated (Kate::Document *doc);
     void documentDeleted (uint documentNumber);
     void documentChanged ();
+    void initialDocumentReplaced ();
 
   private slots:
     void slotModifiedOnDisc (Kate::Document *doc, bool b, unsigned char reason);

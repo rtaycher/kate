@@ -235,6 +235,8 @@ Kate::Document *KateDocManager::openURL (const KURL& url,const QString &encoding
       *id=doc->documentNumber();
 
     connect(doc, SIGNAL(modStateChanged(Kate::Document *)), this, SLOT(slotModChanged(Kate::Document *)));
+    
+    emit initialDocumentReplaced();
 
     return doc;
  }

@@ -83,6 +83,7 @@ KateViewManager::KateViewManager (QWidget *parent, KateDocManager *m_docManager,
   m_grid->addWidget( vs, 0, 0);
   m_viewSpaceList.append(vs);
   connect( this, SIGNAL(viewChanged()), this, SLOT(slotViewChanged()) );
+  connect(m_docManager, SIGNAL(initialDocumentReplaced()), this, SIGNAL(viewChanged()));
 }
 
 KateViewManager::~KateViewManager ()
