@@ -179,6 +179,8 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     KShellProcess * m_pFilterShellProcess;
 
   public slots:
+    void newWindow ();
+
     void slotSettingsShowSidebar();
     void slotSettingsShowConsole();
     void slotSettingsShowToolbar();

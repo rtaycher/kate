@@ -47,7 +47,7 @@
 
 KantMainWindow::KantMainWindow(KantPluginManager *_pluginManager) : 
 	KDockMainWindow (0, "Main Window"), 
-	DCOPObject ("KantIface" ),
+             DCOPObject ("KantIface" ),
 	m_pFilterShellProcess (NULL)
 {
   pluginManager=_pluginManager;
@@ -78,7 +78,7 @@ KantMainWindow::KantMainWindow(KantPluginManager *_pluginManager) :
   KParts::Plugin::loadPlugins(viewManager,pluginManager->plugins);
         KParts::GUIActivateEvent ev( true );
         QApplication::sendEvent( viewManager, &ev );
- 
+
 //        guiFactory()->addClient( gui );
 
         QList<KParts::Plugin> plugins =KParts:: Plugin::pluginObjects( viewManager );
@@ -86,17 +86,12 @@ KantMainWindow::KantMainWindow(KantPluginManager *_pluginManager) :
         for (; pIt.current(); ++pIt )
             guiFactory()->addClient( pIt.current() );
   setUpdatesEnabled(true);
-
 }
-
 
 KantMainWindow::~KantMainWindow()
 {
-
-	delete m_pFilterShellProcess;
-
+  delete m_pFilterShellProcess;
 }
-
 
 void KantMainWindow::setupMainWindow ()
 {
@@ -169,6 +164,9 @@ void KantMainWindow::setupActions()
   filePrint = KStdAction::print(viewManager, SLOT(printDlg()), actionCollection());
   fileClose = KStdAction::close( viewManager, SLOT( slotDocumentClose() ), actionCollection(), "file_close" );
   fileCloseAll = new KAction( i18n( "&Close All" ), 0, viewManager, SLOT( slotDocumentCloseAll() ), actionCollection(), "file_close_all" );
+
+  new KAction(i18n("New &Window"), 0, this, SLOT(newWindow()), actionCollection(), "file_newWindow");
+
   KStdAction::quit( this, SLOT( slotFileQuit() ), actionCollection(), "file_quit" );
 
   editUndo = KStdAction::undo(viewManager, SLOT(slotUndo()), actionCollection());
@@ -276,6 +274,13 @@ bool KantMainWindow::queryClose()
   }
 
   return false;
+}
+
+void KantMainWindow::newWindow ()
+{
+  KantMainWindow *newWin = new KantMainWindow (pluginManager);
+  newWin->viewManager->openURL( KURL() );
+  newWin->show ();
 }
 
 void KantMainWindow::slotEditToolbars()

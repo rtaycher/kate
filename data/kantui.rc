@@ -16,6 +16,8 @@
     <Action name="file_close"/>
     <Action name="file_close_all"/>
     <Separator/>
+    <Action name="file_newWindow"/>
+    <Separator/>
     <Action name="file_quit"/>
   </Menu>
 
