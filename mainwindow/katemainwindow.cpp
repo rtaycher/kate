@@ -200,7 +200,7 @@ void KateMainWindow::setupActions()
   editIndent = new KAction(i18n("&Indent"), "indent", CTRL+Key_I, viewManager, SLOT(slotIndent()), actionCollection(), "edit_indent");
   editUnIndent = new KAction(i18n("&Unindent"), "unindent", CTRL+SHIFT+Key_I, viewManager, SLOT(slotUnIndent()), actionCollection(), "edit_unindent");
 
-  editCmd = new KAction(i18n("&Editing Command"), Qt::CTRL+Qt::Key_D, viewManager, SLOT(slotEditCommand()),
+  editCmd = new KAction(i18n("&Editing Command"), Qt::CTRL+Qt::Key_D, viewManager, SLOT(slotEditCommand()),
                                   actionCollection(), "edit_cmd");
 
   editInsert = new KAction(i18n("I&nsert File..."), 0, viewManager, SLOT(slotInsertFile()), actionCollection(), "edit_insertFile");
@@ -511,9 +511,9 @@ void KateMainWindow::docListMenuAboutToShow()
 
   if (docManager->docCount() == 0) return;
 
-  int z=0;
+  uint z=0;
   int i=1;
-  int id = 0;
+  uint id = 0;
   docListMenu->popupMenu()->polish(); // adjust system settings
   QFont fMod = docListMenu->popupMenu()->font();
   fMod.setBold( TRUE );
@@ -533,7 +533,7 @@ void KateMainWindow::docListMenuAboutToShow()
     id=docListMenu->popupMenu()->insertItem(new KateMenuItem(Entry,
 			docManager->nthDoc(z)->isModified() ? fMod : fUnMod,
                         docManager->nthDoc(z)->isModified() ? SmallIcon("modified") : SmallIcon("null")) );
-    docListMenu->popupMenu()->connectItem(id, viewManager, SLOT( activateView ( int ) ) );
+    docListMenu->popupMenu()->connectItem(id, viewManager, SLOT( activateView ( uint ) ) );
 
     docListMenu->popupMenu()->setItemParameter( id, docManager->nthDoc(z)->docID() );
 
@@ -682,7 +682,7 @@ void KateMainWindow::slotConfigure()
   cb_reopenFiles->setChecked( config->readBoolEntry("reopen at startup", true) );
   QWhatsThis::add(cb_reopenFiles, i18n("If this is enabled Kate will attempt to reopen files that was open when you closed last time. Cursor position will be recovered if possible. Non-existing files will not be opened."));
 
-  // restore view config
+  // restore view  config
   QCheckBox* cb_restoreVC = new QCheckBox( frGeneral );
   cb_restoreVC->setText(i18n("Restore &View Configuration"));
   gridFrG->addMultiCellWidget( cb_restoreVC, 2, 2, 0, 1 );
@@ -910,4 +910,7 @@ QWidget *KateMainWindow::createContainer( QWidget *parent, int index,
 
 void KateMainWindow::restore(bool isRestored)
 { viewManager->reopenDocuments(isRestored); }
+
+
+
 
