@@ -28,7 +28,7 @@
 #include <qstrvec.h>
 #include <qdict.h>
 #include <qregexp.h>
-
+#include "../qt3back/qregexp3.h"
 class SyntaxDocument;
 struct syntaxModeListItem;
 struct syntaxContextData;
@@ -339,7 +339,7 @@ class HlRegExpr : public HlItem {
   HlRegExpr(int attribute, int context,QString expr);
   ~HlRegExpr(){delete Expr;};
   virtual const QChar *checkHgl(const QChar *,bool);
-  QRegExp *Expr;
+  QRegExp3 *Expr;
   bool handlesLinestart;
 };
 
