@@ -824,9 +824,9 @@ void KateViewManager::saveAllDocsAtCloseDown(  )
   m_blockViewCreationAndActivation=false;
   while ( closeList.count() > 0 )
   {
-  //  activateView (closeList.at(0)->documentNumber(), false);
-//    v = activeView();
-    //id = closeList.at(0)->documentNumber();
+    activateView (closeList.at(0)->documentNumber(), false);
+    v = activeView();
+    id = closeList.at(0)->documentNumber();
 
     if ( !closeList.at(0)->url().isEmpty() )
     {
