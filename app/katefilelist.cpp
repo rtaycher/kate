@@ -29,7 +29,9 @@
 #include <klocale.h>
 
 KateFileList::KateFileList (KateDocManager *_docManager, KateViewManager *_viewManager, QWidget * parent, const char * name ):  KListBox (parent, name)
-{
+{                              
+  setFocusPolicy ((QWidget::FocusPolicy)0);       
+
   docManager = _docManager;
   viewManager = _viewManager;
   tooltip = new KFLToolTip( this );
