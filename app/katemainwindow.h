@@ -107,7 +107,6 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     KAction* windowPrev;
 
     QPopupMenu *documentMenu;
-    QPtrList<KTextEditor::Mark> list;
 
     KToggleAction* settingsShowFilelist;
     KToggleAction* settingsShowFileselector;
@@ -163,8 +162,6 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     void mSlotFixOpenWithMenu();
     void slotGoNext();
     void slotGoPrev();
-
-    void gotoBookmark (int n);
 
     void fileSelected(const KFileItem *file);
 

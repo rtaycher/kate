@@ -486,11 +486,6 @@ void KateMainWindow::slotGrepDialogItemSelected(QString filename,int linenumber)
   this->setActiveWindow();
 }
 
-void KateMainWindow::gotoBookmark (int n)
-{
-  viewManager->gotoMark (list.at(n));
-}
-
 void KateMainWindow::dragEnterEvent( QDragEnterEvent *event )
 {
   event->accept(QUriDrag::canDecode(event));
