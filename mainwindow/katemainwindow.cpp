@@ -241,7 +241,7 @@ void KateMainWindow::setupActions()
   new KAction( i18n("Split &Horizontal"), "view_top_bottom", CTRL+SHIFT+Key_T, viewManager, SLOT( slotSplitViewSpaceHoriz() ), actionCollection(), "view_split_horiz");
   closeCurrentViewSpace = new KAction( i18n("Close &Current"), "view_remove", CTRL+SHIFT+Key_R, viewManager, SLOT( slotCloseCurrentViewSpace() ), actionCollection(), "view_close_current_space");
 
-  viewBorder =  new KToggleAction(i18n("Show &IconBorder"), Key_F6, viewManager, SLOT(toggleIconBorder()), actionCollection(), "view_border");
+  viewBorder =  new KToggleAction(i18n("Show &Icon Border"), Key_F6, viewManager, SLOT(toggleIconBorder()), actionCollection(), "view_border");
 
   goNext=new KAction(i18n("Next View"),Key_F8,viewManager, SLOT(activateNextView()),actionCollection(),"go_next");
   goPrev=new KAction(i18n("Previous View"),SHIFT+Key_F8,viewManager, SLOT(activatePrevView()),actionCollection(),"go_prev");
@@ -249,7 +249,7 @@ void KateMainWindow::setupActions()
   windowNext = KStdAction::back(viewManager, SLOT(slotWindowNext()), actionCollection());
   windowPrev = KStdAction::forward(viewManager, SLOT(slotWindowPrev()), actionCollection());
 
-  setEndOfLine = new KSelectAction(i18n("&End Of Line"), 0, actionCollection(), "set_eol");
+  setEndOfLine = new KSelectAction(i18n("&End of Line"), 0, actionCollection(), "set_eol");
   connect(setEndOfLine, SIGNAL(activated(int)), viewManager, SLOT(setEol(int)));
   connect(setEndOfLine->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(setEOLMenuAboutToShow()));
   QStringList list;
@@ -260,7 +260,7 @@ void KateMainWindow::setupActions()
 
   documentReload = new KAction(i18n("&Reload"), "reload", Key_F5, viewManager, SLOT(reloadCurrentDoc()), actionCollection(), "file_reload");
 
-  documentOpenWith = new KActionMenu(i18n("O&pen with"), actionCollection(), "file_open_with");
+  documentOpenWith = new KActionMenu(i18n("O&pen With"), actionCollection(), "file_open_with");
   connect(documentOpenWith->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(mSlotFixOpenWithMenu()));
   connect(documentOpenWith->popupMenu(), SIGNAL(activated(int)), this, SLOT(slotOpenWithMenuAction(int)));
 
@@ -276,7 +276,7 @@ void KateMainWindow::setupActions()
   // toggle dockwidgets
   settingsShowFilelist = new KToggleAction(i18n("Show Filelist"), 0, filelistDock, SLOT(changeHideShowState()), actionCollection(), "settings_show_filelist");
   settingsShowFileselector = new KToggleAction(i18n("Show Fileselector"), 0, fileselectorDock, SLOT(changeHideShowState()), actionCollection(), "settings_show_fileselector");
-  settingsShowConsole = new KToggleAction(i18n("Show &Console"), Qt::Key_F7, this, SLOT(slotSettingsShowConsole()), actionCollection(), "settings_show_console");
+  settingsShowConsole = new KToggleAction(i18n("Show Terminal Emulator"), Qt::Key_F7, this, SLOT(slotSettingsShowConsole()), actionCollection(), "settings_show_console");
 
   // allow full path in title -anders
   settingsShowFullPath = new KToggleAction(i18n("Show Full &Path in Title"), 0, this, SLOT(slotSettingsShowFullPath()), actionCollection(), "settings_show_full_path");
