@@ -270,7 +270,7 @@ HlFloat::HlFloat(int attribute, int context)
 
 const QChar *HlFloat::checkHgl(const QChar *s) {
   bool b, p;
-  QChar *s1;
+  const QChar *s1;
 
   b = false;
   while (s->isDigit()){
