@@ -138,6 +138,8 @@ void KateFileList::slotNameChanged (Kate::Document *doc)
       break;
     }
   }
+  
+  viewManager->setWindowCaption();
 }
 
 void KateFileList::slotViewChanged ()
