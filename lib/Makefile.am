@@ -1,3 +1,4 @@
+subdirs = . utils
 
 INCLUDES = -I$(top_srcdir)/libkonq -I$(top_srcdir)/kate/lib $(all_includes)
 
