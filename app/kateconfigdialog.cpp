@@ -318,7 +318,7 @@ void KateConfigDialog::slotApply()
     editorPages.at(i)->apply();
   }
 
-  v->getDoc()->writeConfig();
+  v->getDoc()->writeConfig(kapp->config());
 
   viewManager->setShowFullPath( cb_fullPath->isChecked() ); // hm, stored 2 places :(
   config->writeEntry( "Show Full Path in Title", cb_fullPath->isChecked() );
