@@ -316,15 +316,6 @@ public:
     */
     int findRevUnselected(int pos) const;
 
-    /**
-      Marks the text from the given position and length as found
-    */
-    void markFound(int pos, int l);
-    /**
-      Removes the found marks
-    */
-    void unmarkFound();
-
     void clearMark () { myMark = 0; };
     void addMark ( uint m );
     void delMark ( uint m );
@@ -361,10 +352,7 @@ public:
 
 //text attribute constants
 const int taSelected = 0x40;
-const int taFound = 0x80;
-const int taSelectMask = taSelected | taFound;
-const int taAttrMask = ~taSelectMask & 0xFF;
-const int taShift = 6;
+const int taAttrMask = ~taSelected & 0xFF;
 
 #endif //KWTEXTLINE_H
 

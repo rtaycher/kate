@@ -211,11 +211,11 @@ void TextLine::setAttribs(int attribute, int start, int end) {
   int z;
 
   if (end > len) end = len;
-  for (z = start; z < end; z++) attribs[z] = (attribs[z] & taSelectMask) | attribute;
+  for (z = start; z < end; z++) attribs[z] = (attribs[z] & taSelected) | attribute;
 }
 
 void TextLine::setAttr(int attribute) {
-  attr = (attr & taSelectMask) | attribute;
+  attr = (attr & taSelected) | attribute;
 }
 
 int TextLine::getAttr(int pos) const {
@@ -229,7 +229,7 @@ int TextLine::getAttr() const {
 
 int TextLine::getRawAttr(int pos) const {
   if (pos < len) return attribs[pos];
-  return (attr & taSelectMask) ? attr : attr | 256;
+  return (attr & taSelected) ? attr : attr | 256;
 }
 
 int TextLine::getRawAttr() const {
@@ -322,19 +322,6 @@ int TextLine::findRevUnselected(int pos) const {
   return pos;
 }
 
-void TextLine::markFound(int pos, int l) {
-  int z;
-
-  l += pos;
-  if (l > len) l = len;
-  for (z = pos; z < l; z++) attribs[z] |= taFound;
-}
-
-void TextLine::unmarkFound() {
-  int z;
-  for (z = 0; z < len; z++) attribs[z] &= ~taFound;
-}
-
 void TextLine::addMark (uint m)
 {
   myMark = myMark | m;
@@ -344,5 +331,3 @@ void TextLine::delMark (uint m)
 {
   myMark = myMark & ~m;
 }
-
-

@@ -1943,7 +1943,7 @@ QColor &KateDocument::cursorCol(int x, int y) {
   TextLine::Ptr textLine = getTextLine(y);
   attr = textLine->getRawAttr(x);
   a = &m_attribs[attr & taAttrMask];
-  if (attr & taSelectMask) return a->selCol; else return a->col;
+  if (attr & taSelected) return a->selCol; else return a->col;
 }
 
 void KateDocument::paintTextLine(QPainter &paint, int line, int xStart, int xEnd, bool showTabs)
@@ -2000,32 +2000,47 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
   // draw background
   xs = xStart;
   attr = textLine->getRawAttr(zc);
-  while (x < xEnd) {
+  while (x < xEnd)
+  {
     nextAttr = textLine->getRawAttr(z);
-    if ((nextAttr ^ attr) & (taSelectMask | 256)) {
-      paint.fillRect(xs - xStart, y, x - xs, fontHeight, colors[attr >> taShift]);
+    if ((nextAttr ^ attr) & taSelected)
+    {
+      if (attr & taSelected)
+        paint.fillRect(xs - xStart, y, x - xs, fontHeight, colors[1]);
+      else
+        paint.fillRect(xs - xStart, y, x - xs, fontHeight, colors[4]);
+
       xs = x;
       attr = nextAttr;
     }
-    if (z == len) break;
-    ch = s[z];//textLine->getChar(z);
-    if (ch == '\t') {
-      x += m_tabWidth - (x % m_tabWidth);
-    } else {
-a = &m_attribs[textLine->getAttr(z)];
 
-    if (a->bold && a->italic)
-      x += myFontMetricsBI.width(ch);
-    else if (a->bold)
-      x += myFontMetricsBold.width(ch);
-    else if (a->italic)
-      x += myFontMetricsItalic.width(ch);
+    if (z == len) break;
+
+    ch = s[z];//textLine->getChar(z);
+
+    if (ch == '\t')
+      x += m_tabWidth - (x % m_tabWidth);
     else
-      x += myFontMetrics.width(ch);
+    {
+      a = &m_attribs[textLine->getAttr(z)];
+
+      if (a->bold && a->italic)
+        x += myFontMetricsBI.width(ch);
+      else if (a->bold)
+        x += myFontMetricsBold.width(ch);
+      else if (a->italic)
+        x += myFontMetricsItalic.width(ch);
+      else
+        x += myFontMetrics.width(ch);
     }
     z++;
   }
-  paint.fillRect(xs - xStart, y, xEnd - xs, fontHeight, colors[attr >> taShift]);
+
+  if (attr & taSelected)
+    paint.fillRect(xs - xStart, y, xEnd - xs, fontHeight, colors[1]);
+  else
+    paint.fillRect(xs - xStart, y, xEnd - xs, fontHeight, colors[4]);
+
   len = z; //reduce length to visible length
 
   // draw text
@@ -2059,7 +2074,7 @@ a = &m_attribs[textLine->getAttr(z)];
           attr = nextAttr;
           a = &m_attribs[attr & taAttrMask];
 
-          if (attr & taSelectMask) paint.setPen(a->selCol);
+          if (attr & taSelected) paint.setPen(a->selCol);
             else paint.setPen(a->col);
 
    if (a->bold && a->italic)
@@ -2100,7 +2115,7 @@ a = &m_attribs[textLine->getAttr(z)];
         attr = nextAttr;
         a = &m_attribs[attr & taAttrMask];
 
-        if (attr & taSelectMask) paint.setPen(a->selCol);
+        if (attr & taSelected) paint.setPen(a->selCol);
           else paint.setPen(a->col);
 
    if (a->bold && a->italic)
