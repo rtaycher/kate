@@ -27,6 +27,7 @@
 
 #include <klistview.h>
 
+#include <qvbox.h>
 #include <qstringlist.h>
 #include <qdict.h>
 
@@ -81,10 +82,34 @@ class KateProjectTreeView : public KListView
     void removeIt ();
     void addIt ();
 
+    // doubleclicked or return pressed
+    void execute( QListViewItem * );
+
   private:
     Kate::Project *m_project;
     class KateMainWindow *m_mainWin;
     QDict<KateProjectTreeViewItem> m_dirDict;
+};
+
+class KateProjectTreeViewContainer : public QVBox
+{
+  Q_OBJECT
+  public:
+    KateProjectTreeViewContainer( Kate::Project *project, class KateMainWindow *mainwin, QWidget*, const char* name=0 );
+    ~KateProjectTreeViewContainer();
+
+     KateProjectTreeView * tree();
+
+  protected:
+    bool eventFilter( QObject *, QEvent * );
+
+  private slots:
+    void qfTextChanged( const QString & );
+
+  private:
+    QString oldtext; //??
+    class KLineEdit *m_leQF;
+    KateProjectTreeView *m_tree;
 };
 
 #endif

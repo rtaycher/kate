@@ -63,15 +63,15 @@ KateProjectViews::KateProjectViews (KateProjectManager *_projectManager, KateMai
 KateProjectViews::~KateProjectViews ()
 {
 }
-
+#include <kdebug.h>
 void KateProjectViews::projectChanged ()
 {
   Kate::Project *p = 0;
 
-  if (!(p = m_mainWindow->mainWindow()->activeProject()))
+  if (!(p = m_mainWindow/*->mainWindow()*/->activeProject()))
     return;
 
-  m_stack->raiseWidget (m_wMap[p->projectNumber()]);
+  m_stack->raiseWidget (m_wMap[p->projectNumber()]->parentWidget());
 }
 
 void KateProjectViews::projectCreated (Kate::Project *project)
@@ -79,11 +79,12 @@ void KateProjectViews::projectCreated (Kate::Project *project)
   if (!project)
     return;
 
-  KateProjectTreeView *tree = new KateProjectTreeView (project, m_mainWindow, this);
+  KateProjectTreeViewContainer *c =
+      new KateProjectTreeViewContainer( project, m_mainWindow, m_stack ) ;
+  KateProjectTreeView *tree = c->tree();
   m_wMap[project->projectNumber()] = tree;
 
-  m_stack->addWidget (tree);
-  m_stack->raiseWidget (tree);
+  m_stack->raiseWidget (c);
 }
 
 void KateProjectViews::projectDeleted (uint projectNumber)

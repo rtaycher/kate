@@ -20,19 +20,28 @@
 
 // $Id$
 
+//BEGIN Includes
 #include "kateprojecttreeview.h"
 #include "kateprojecttreeview.moc"
 
 #include "kateprojectdirview.h"
 #include "katemainwindow.h"
 
+#include <kapplication.h>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kmimetype.h>
+#include <klineedit.h>
 
+#include <kdebug.h>
+
+#include <qlabel.h>
 #include <qheader.h>
 #include <qpopupmenu.h>
+#include <qevent.h>
+//END
 
+//BEGIN KateProjectTreeViewItem
 KateProjectTreeViewItem::KateProjectTreeViewItem (QDict<KateProjectTreeViewItem> *dict, KateProjectTreeView * parent, Kate::Project *prj, const QString &name, const QString &fullname, bool dir)
  : KListViewItem (parent)
 {
@@ -104,7 +113,9 @@ int KateProjectTreeViewItem::compare ( QListViewItem *i, int, bool ) const
       return 1;
   }
 }
+//END KateProjectTreeViewItem
 
+//BEGIN KateProjectTreeView
 KateProjectTreeView::KateProjectTreeView (Kate::Project *project, KateMainWindow *mainwin, QWidget *parent) : KListView (parent)
 {
   m_project = project;
@@ -126,6 +137,7 @@ KateProjectTreeView::KateProjectTreeView (Kate::Project *project, KateMainWindow
   setOpen (item, true);
 
   connect(this,SIGNAL(doubleClicked(QListViewItem *, const QPoint &, int)),this,SLOT(slotDoubleClicked(QListViewItem *, const QPoint &, int)));
+  connect( this, SIGNAL(returnPressed(QListViewItem*)), SLOT(execute(QListViewItem*)) );
   connect(this, SIGNAL( contextMenuRequested( QListViewItem *, const QPoint& , int ) ),
             this, SLOT( slotContextMenuRequested( QListViewItem *, const QPoint &, int ) ) );
 
@@ -163,6 +175,11 @@ void KateProjectTreeView::addDir (KateProjectTreeViewItem *parent, const QString
 }
 
 void KateProjectTreeView::slotDoubleClicked( QListViewItem *i, const QPoint &, int )
+{
+  execute( i );
+}
+
+void KateProjectTreeView::execute( QListViewItem *i )
 {
   KateProjectTreeViewItem *item = (KateProjectTreeViewItem *) i;
 
@@ -298,3 +315,98 @@ void KateProjectTreeView::addIt ()
   if (item->isDir())
     KateProjectDirView::addDialog (m_project, item->fullName(), this);
 }
+//END KateProjectTreeView
+
+//BEGIN KateProjectTreeViewContainer
+KateProjectTreeViewContainer::KateProjectTreeViewContainer(
+     Kate::Project *project, KateMainWindow *mainwin,
+     QWidget *parent, const char *name )
+     : QVBox( parent, name )
+{
+  // quick find entry
+  QHBox *b = new QHBox( this, "quickfind entry" );
+  QLabel *l = new QLabel( i18n("F&ind:"), b );
+  m_leQF = new KLineEdit( b );
+  m_leQF->installEventFilter( this );
+  l->setBuddy( m_leQF );
+  connect( m_leQF, SIGNAL(textChanged(const QString &)),
+                   SLOT(qfTextChanged(const QString &)) );
+
+  // tree view
+  m_tree = new KateProjectTreeView( project, mainwin, this );
+}
+
+KateProjectTreeViewContainer::~KateProjectTreeViewContainer()
+{}
+
+KateProjectTreeView *KateProjectTreeViewContainer::tree()
+{
+  return m_tree;
+}
+
+void KateProjectTreeViewContainer::qfTextChanged( const QString &t )
+{
+  QListViewItem *i ( m_tree->currentItem() );
+  if ( ! i ) i = m_tree->firstChild();
+
+  bool found ( false );
+  QListViewItemIterator it ( i );
+/*  if ( oldtext < t )
+  {*/
+    while ( it.current() )
+    {
+      if ( it.current()->text(0).startsWith( t ) )
+      {
+        found = true;
+        break;
+      }
+      ++it;
+    }
+//   }
+  if ( ! found )
+  {
+    QListViewItemIterator it ( i );
+    while ( it.current() )
+    {
+      if ( it.current()->text(0).startsWith( t ) )
+      {
+        found = true;
+        break;
+      }
+      --it;
+    }
+  }
+  if ( it.current() )
+  {
+    i = it.current();
+    if ( i->parent() && ! i->parent()->isOpen() )
+      i->parent()->setOpen( true );
+    m_tree->ensureItemVisible( i );
+
+    m_tree->setCurrentItem( i );
+    m_tree->setSelected(i, true);
+  }
+  oldtext = t;
+}
+
+bool KateProjectTreeViewContainer::eventFilter( QObject *o, QEvent *e )
+{
+  if ( o == m_leQF )
+  {
+    if ( e->type() == QEvent::KeyPress &&
+         ( ((QKeyEvent*)e)->key() == Qt::Key_Return ||
+           ((QKeyEvent*)e)->key() == Qt::Key_Enter ) )
+    {
+      return kapp->sendEvent( m_tree, e );
+    }
+    if ( e->type() == QEvent::KeyPress &&
+         ((QKeyEvent*)e)->key() == Qt::Key_Tab )
+    {
+      m_tree->setFocus();
+      return true;
+    }
+  }
+  return QVBox::eventFilter( o, e );
+}
+
+//END KateProjectTreeViewContainer
