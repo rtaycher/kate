@@ -23,43 +23,49 @@
 #include <qtextcodec.h>
 #include <kurl.h>
 
-class KateFileDialogData
+class KComboBox;
+
+namespace Kate {
+
+class FileDialogData
 {
   public:
-	  KateFileDialogData () { ; }
-		~KateFileDialogData () { ; }
+    FileDialogData () { ; }
+    ~FileDialogData () { ; }
 
     KURL::List urls;
-		KURL url;
-	  QString encoding;
+    KURL url;
+    QString encoding;
 };
 
-class KateFileDialog : public KFileDialog
+class FileDialog : public KFileDialog
 {
   Q_OBJECT
 
   public:
-	  KateFileDialog (const QString& startDir = QString::null,
-		                const QString& encoding = QString::fromLatin1(QTextCodec::codecForLocale()->name()),
-			              QWidget *parent= 0,
-			              const QString& caption = QString::null, int type = KateFileDialog::openDialog);
+    FileDialog (const QString& startDir = QString::null,
+                    const QString& encoding = QString::fromLatin1(QTextCodec::codecForLocale()->name()),
+                    QWidget *parent= 0,
+                    const QString& caption = QString::null, int type = FileDialog::openDialog);
 
-    ~KateFileDialog ();
+    ~FileDialog ();
 
-	  virtual KateFileDialogData exec ();
+    FileDialogData exec ();
 
   protected slots:
-    virtual void slotApply();
+    void slotApply();
 
-	public:
-	  enum KateFileDialogType
-		{
+  public:
+    enum FileDialogType
+    {
       openDialog,
-			saveDialog
-		};
-		
-	private:
-	  class KComboBox *encoding;
+      saveDialog
+    };
+    
+  private:
+    KComboBox *encoding;
+};
+
 };
 
 #endif

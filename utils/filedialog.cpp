@@ -18,7 +18,8 @@
 
 // $Id$
     
-#include "katefiledialog.h"
+#include "filedialog.h"
+#include "filedialog.moc"
 
 #include <kcombobox.h>
 #include <ktoolbar.h>
@@ -28,11 +29,11 @@
 
 #include <kdebug.h>
 
-KateFileDialog::KateFileDialog (const QString& startDir,
+Kate::FileDialog::FileDialog (const QString& startDir,
                     const QString& encoding,
-			              QWidget *parent,
-			              const QString& caption,
-										int type) : KFileDialog (startDir, QString::null, parent, "", true)
+                    QWidget *parent,
+                    const QString& caption,
+                    int type) : KFileDialog (startDir, QString::null, parent, "", true)
 {
   QString sEncoding (encoding);
   
@@ -41,16 +42,16 @@ KateFileDialog::KateFileDialog (const QString& startDir,
   QStringList availableEncodingNames(KGlobal::charsets()->availableEncodingNames());
 
   toolBar()->insertCombo(availableEncodingNames, 33333, false, 0L,
-	        0L, 0L, true);
+          0L, 0L, true);
 
-	if (type == KateFileDialog::openDialog)
-	  setMode(KFile::Files);
-	else {
-	  setMode(KFile::File);
-	  setOperationMode( Saving );
+  if (type == Kate::FileDialog::openDialog)
+    setMode(KFile::Files);
+  else {
+    setMode(KFile::File);
+    setOperationMode( Saving );
     }
 
-	this->encoding = toolBar()->getCombo(33333);
+  this->encoding = toolBar()->getCombo(33333);
 
         // Set default encoding to the locale one, if a different default wasn't requested
         if (encoding == QString::null)
@@ -73,30 +74,28 @@ KateFileDialog::KateFileDialog (const QString& startDir,
           this->encoding->setCurrentItem(iIndex);
 }
 
-KateFileDialog::~KateFileDialog ()
+Kate::FileDialog::~FileDialog ()
 {
 
 }
 
-KateFileDialogData KateFileDialog::exec()
+Kate::FileDialogData Kate::FileDialog::exec()
 {
-	int n = KDialogBase::exec();
+  int n = KDialogBase::exec();
 
-	KateFileDialogData data = KateFileDialogData ();
+  Kate::FileDialogData data = Kate::FileDialogData ();
   
-	if (n)
-	{
-	  data.encoding = this->encoding->currentText();
-	  data.url = selectedURL ();
-	  data.urls = selectedURLs ();
+  if (n)
+  {
+    data.encoding = this->encoding->currentText();
+    data.url = selectedURL ();
+    data.urls = selectedURLs ();
   }
 
-	return data;
+  return data;
 }
 
-void KateFileDialog::slotApply()
+void Kate::FileDialog::slotApply()
 {
 
 }
-
-#include "katefiledialog.moc"

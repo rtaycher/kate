@@ -5,17 +5,17 @@ libkateinterfaces_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugin
 	kateconsole.cpp katedocmanager.cpp katefilelist.cpp katefileselector.cpp \
 	katemainwindow.cpp katepluginmanager.cpp katesplitter.cpp \
 	kateviewmanager.cpp kateviewspace.cpp kateprojectmanager.cpp kateproject.cpp \
-	kateIface.skel kategrepdialog.cpp katefiledialog.cpp katemailfilesdialog.cpp \
+	kateIface.skel kategrepdialog.cpp katemailfilesdialog.cpp \
         kbookmarkhandler.cpp kactionselector.cpp katedockcontainer.cpp
 
-libkateinterfaces_la_LIBADD   = ../interfaces/libkateinterfacesprivate.la -lkscript ../lib/libkmultitabbar.la
+libkateinterfaces_la_LIBADD   = ../interfaces/libkateinterfacesprivate.la -lkscript ../lib/libkmultitabbar.la ../utils/libkateutils.la
 libkateinterfaces_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -no-undefined
 kate_la_SOURCES = katemain.cpp
 kate_la_LIBADD = libkateinterfaces.la
 kate_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version 
 
-kwrite_la_SOURCES = kwritemain.cpp katefiledialog.cpp kwritedialogs.cpp
-kwrite_la_LIBADD   = -lktexteditor
+kwrite_la_SOURCES = kwritemain.cpp kwritedialogs.cpp
+kwrite_la_LIBADD   = -lktexteditor  ../utils/libkateutils.la
 kwrite_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
 
 kate_SOURCES = dummy_kate.cpp

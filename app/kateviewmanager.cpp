@@ -27,7 +27,7 @@
 #include "kateIface.h"
 #include "katedocmanager.h"
 #include "kateapp.h"
-#include "katefiledialog.h"
+#include "../utils/filedialog.h"
 #include "kateviewspace.h"
 
 #include <dcopclient.h>
@@ -476,17 +476,17 @@ void KateViewManager::slotDocumentNew ()
 void KateViewManager::slotDocumentOpen ()
 {
   Kate::View *cv = activeView();
-	KateFileDialog *dialog;
+	Kate::FileDialog *dialog;
 
 	//TODO: move to kdelibs
 	QString DEFAULT_ENCODING = QString::fromLatin1(QTextCodec::codecForLocale()->name());
 
   if (cv)
-	  dialog = new KateFileDialog (cv->getDoc()->url().url(),cv->getDoc()->encoding(), this, i18n ("Open File"));
+	  dialog = new Kate::FileDialog (cv->getDoc()->url().url(),cv->getDoc()->encoding(), this, i18n ("Open File"));
 	else
-	  dialog = new KateFileDialog (QString::null, DEFAULT_ENCODING, this, i18n ("Open File"));
+	  dialog = new Kate::FileDialog (QString::null, DEFAULT_ENCODING, this, i18n ("Open File"));
 
-	KateFileDialogData data = dialog->exec ();
+	Kate::FileDialogData data = dialog->exec ();
 	delete dialog;
 
   for (KURL::List::Iterator i=data.urls.begin(); i != data.urls.end(); ++i)
