@@ -98,6 +98,8 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
   
     enum DockWidgetMode m_dockStyle;
 
+  public:
+   int dockStyle() { return m_dockStyle;}
   protected:
 
     KatePluginManager *m_pluginManager;

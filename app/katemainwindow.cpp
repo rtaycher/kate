@@ -132,7 +132,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   readOptions(config);
 
-  mainDock->setDockSite( KDockWidget::DockNone );
+  if (m_dockStyle==ModernStyle) mainDock->setDockSite( KDockWidget::DockNone );
   
   setAutoSaveSettings( QString::fromLatin1("MainWindow"), false );
 
@@ -887,7 +887,7 @@ void KateToggleToolViewAction::slotToggled(bool t)
   else
     if ( t && m_dw->mayBeShow() ) m_mw->makeDockVisible(m_dw);
     
-  m_mw->mainDock->setDockSite( KDockWidget::DockNone );
+  if (m_mw->dockStyle()==KateMainWindow::ModernStyle) m_mw->mainDock->setDockSite( KDockWidget::DockNone );
 }
 
 void KateToggleToolViewAction::slotWidgetDestroyed()
