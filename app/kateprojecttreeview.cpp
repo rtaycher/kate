@@ -125,6 +125,8 @@ KateProjectTreeView::KateProjectTreeView (Kate::Project *project, KateMainWindow
   setOpen (item, true);
 
   connect(this,SIGNAL(doubleClicked(QListViewItem *, const QPoint &, int)),this,SLOT(slotDoubleClicked(QListViewItem *, const QPoint &, int)));
+  connect(this, SIGNAL( contextMenuRequested( QListViewItem *, const QPoint& , int ) ),
+            this, SLOT( slotContextMenuRequested( QListViewItem *, const QPoint &, int ) ) );
 
   connect (m_project, SIGNAL (dirsAdded (const QString &, const QStringList &)), this, SLOT (dirsAdded (const QString &, const QStringList &)));
   connect (m_project, SIGNAL (filesAdded (const QString &, const QStringList &)), this, SLOT (filesAdded (const QString &, const QStringList &)));
@@ -249,3 +251,13 @@ void KateProjectTreeView::filesRemoved (const QString &dir, const QStringList &f
   }
 }
 
+void KateProjectTreeView::slotContextMenuRequested ( QListViewItem * item, const QPoint & pos, int col )
+{
+  if (!item)
+    return;
+
+ // QPopupMenu *menu = (QPopupMenu*) ((KMainWindow *)(viewManager->topLevelWidget)())->factory()->container("filelist_popup", (KMainWindow *)(viewManager->topLevelWidget ()));
+
+ // if (menu)
+   // menu->exec(p);
+}

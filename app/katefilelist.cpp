@@ -60,7 +60,7 @@ KateFileList::KateFileList (KateDocManager *_docManager, KateViewManager *_viewM
 
   connect(viewManager,SIGNAL(viewChanged()), this,SLOT(slotViewChanged()));
 
-  connect(this,SIGNAL(rightButtonPressed ( QListBoxItem *, const QPoint & )), this,SLOT(slotMenu ( QListBoxItem *, const QPoint & )));
+  connect(this,SIGNAL(contextMenuRequested ( QListBoxItem *, const QPoint & )), this,SLOT(slotMenu ( QListBoxItem *, const QPoint & )));
 }
 
 KateFileList::~KateFileList ()

@@ -41,6 +41,7 @@ class PrivateProject
     {
       delete m_data;
       delete m_config;
+      delete m_plugin;
     }
 
     KateInternalProjectData *m_data;
@@ -68,7 +69,6 @@ Project::Project (void *project) : QObject (((KateInternalProjectData*) project)
 
 Project::~Project ()
 {
-
   delete d;
 }
 
@@ -77,29 +77,52 @@ unsigned int Project::projectNumber () const
   return myProjectNumber;
 }
 
-ProjectPlugin *Project::plugin ()
+ProjectPlugin *Project::plugin () const
 {
   return d->m_plugin;
 }
 
-QString Project::type () const
+KConfig *Project::data ()
 {
-  d->m_config->setGroup("General");
-  return d->m_config->readEntry ("Type", "Default");
+  return d->m_config;
 }
 
-QString Project::name () const
+KConfig *Project::dirData (const QString &dir)
 {
-  d->m_config->setGroup("General");
-  return d->m_config->readEntry ("Name", "Untitled");
+  if (dir.isNull())
+    d->m_config->setGroup("Project Dir");
+  else
+    d->m_config->setGroup ("Dir "+dir);
+
+  return d->m_config;
 }
 
-QString Project::fileName () const
+KConfig *Project::fileData (const QString &file)
+{
+  if (file.isNull())
+    d->m_config->setGroup("Project File");
+  else
+    d->m_config->setGroup ("File "+file);
+
+  return d->m_config;
+}
+
+QString Project::type ()
+{
+  return fileData()->readEntry ("Type", "Default");
+}
+
+QString Project::name ()
+{
+  return fileData()->readEntry ("Name", "Untitled");
+}
+
+QString Project::fileName ()
 {
   return d->m_data->fileName;
 }
 
-QString Project::dir () const
+QString Project::dir ()
 {
   return d->m_dir;
 }
@@ -114,21 +137,6 @@ bool Project::save ()
 bool Project::close ()
 {
   return d->m_plugin->close ();
-}
-
-KConfig *Project::data ()
-{
-  return d->m_config;
-}
-
-KConfig *Project::dirData (const QString &dir)
-{
-  if (dir == QString::null)
-    d->m_config->setGroup("Project Dir");
-  else
-    d->m_config->setGroup ("Dir "+dir);
-
-  return d->m_config;
 }
 
 QStringList Project::dirs (const QString &dir)

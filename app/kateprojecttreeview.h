@@ -78,6 +78,8 @@ class KateProjectTreeView : public KListView
     void filesAdded (const QString &dir, const QStringList &files);
     void filesRemoved (const QString &dir, const QStringList &files);
 
+    void slotContextMenuRequested ( QListViewItem * item, const QPoint & pos, int col );
+
   private:
     Kate::Project *m_project;
     class KateMainWindow *m_mainWin;

@@ -80,7 +80,7 @@ Kate::Project *KateProjectManager::create (const QString &type, const QString &n
 {
   KConfig *c = new KConfig (filename, false, false);
 
-  c->setGroup("General");
+  c->setGroup("Project File");
   c->writeEntry ("Type", type);
   c->writeEntry ("Name", name);
   c->sync ();

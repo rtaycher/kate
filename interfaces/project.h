@@ -53,31 +53,41 @@ class Project : public QObject
      * Returns the project plugin of this project object
      * @return ProjectPlugin project plugin of this project
      */
-    class ProjectPlugin *plugin ();
+    class ProjectPlugin *plugin () const;
+
+    /**
+     * Raw access to config file
+     * @return KConfig config data
+     */
+    KConfig *data ();
+
+    KConfig *dirData (const QString &dir = QString::null);
+
+    KConfig *fileData (const QString &file = QString::null);
 
     /**
      * Return the project type
      * @return QString project type
      */
-    QString type () const;
+    QString type ();
 
     /**
      * Return the project name
      * @return QString project name
      */
-    QString name () const;
+    QString name ();
 
     /**
      * Return the filename of the project file
      * @return QString project filename
      */
-    QString fileName () const;
+    QString fileName ();
 
     /**
      * Return the dir of the project
      * @return QString project dir
      */
-    QString dir () const;
+    QString dir ();
 
     /**
      * Saves the project
@@ -91,14 +101,6 @@ class Project : public QObject
      */
     bool close ();
 
-    /**
-     * Raw access to config file
-     * @return KConfig config data
-     */
-    KConfig *data ();
-
-    KConfig *dirData (const QString &dir = QString::null);
-
     QStringList dirs (const QString &dir = QString::null);
 
     QStringList files (const QString &dir = QString::null);
@@ -108,8 +110,6 @@ class Project : public QObject
 
     void addFiles (const QString &dir, QStringList &files);
     void removeFiles (const QString &dir, QStringList &files);
-
-
 
   #undef signals
   #define signals public
