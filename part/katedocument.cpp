@@ -3513,23 +3513,23 @@ KateCursor::~KateCursor ( )
   myDoc->removeCursor (this);     
 }     
      
-void KateCursor::position ( int *line, int *col ) const     
-{     
-     
-}     
-     
-bool KateCursor::setPosition ( int line, int col )     
-{     
-     
-}     
-     
-bool KateCursor::insertText ( const QString& text )     
-{     
-     
-}     
-     
-bool KateCursor::removeText ( int numberOfCharacters )     
-{     
+void KateCursor::position ( uint *line, uint *col ) const
+{
+
+}
+
+bool KateCursor::setPosition ( uint line, uint col )
+{
+
+}
+
+bool KateCursor::insertText ( const QString& text )
+{
+
+}
+
+bool KateCursor::removeText ( uint numberOfCharacters )
+{
      
 }     
      
