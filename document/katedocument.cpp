@@ -167,9 +167,6 @@ KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool
 
   colors[0] = KGlobalSettings::baseColor();
   colors[1] = KGlobalSettings::highlightColor();
-  colors[2] = KGlobalSettings::textColor();
-  colors[3] = KGlobalSettings::textColor();
-  colors[4] = KGlobalSettings::baseColor();
 
   m_attribs = new Attribute[maxAttribs];
 
@@ -493,10 +490,8 @@ bool KateDocument::isModified() const {
   return modified;
 }
 
-void KateDocument::readConfig() {
-  int z;
-  char s[16];
-
+void KateDocument::readConfig()
+{
   KConfig *config = KateFactory::instance()->config();
   config->setGroup("Kate Document");
 
@@ -504,22 +499,16 @@ void KateDocument::readConfig() {
   setUndoSteps(config->readNumEntry("UndoSteps", 50));
   m_singleSelection = config->readBoolEntry("SingleSelection", false);
   myEncoding = config->readEntry("Encoding", KGlobal::charsets()->name(KGlobal::charsets()->charsetForLocale()));
+  setFont (config->readFontEntry("Font", &myFont));
 
-  QFont defaultFont = KGlobalSettings::fixedFont();
-  setFont (QFont (config->readEntry("Font Family", defaultFont.family()), config->readNumEntry("Font Size", defaultFont.pointSize()), QFont::Normal, false, KGlobal::charsets()->charsetForEncoding(config->readEntry("Font Charset",QFont::encodingName(defaultFont.charSet())))));
-
-  for (z = 0; z < 5; z++) {
-    sprintf(s, "Color%d", z);
-    colors[z] = config->readColorEntry(s, &colors[z]);
-  }
+  colors[0] = config->readColorEntry("Color Background", &colors[0]);
+  colors[1] = config->readColorEntry("Color Selected", &colors[1]);
 
   config->sync();
 }
 
-void KateDocument::writeConfig() {
-  int z;
-  char s[16];
-
+void KateDocument::writeConfig()
+{
   KConfig *config = KateFactory::instance()->config();
   config->setGroup("Kate Document");
 
@@ -527,14 +516,9 @@ void KateDocument::writeConfig() {
   config->writeEntry("UndoSteps", undoSteps);
   config->writeEntry("SingleSelection", m_singleSelection);
   config->writeEntry("Encoding", myEncoding);
-  config->writeEntry("Font Family",myFont.family());
-  config->writeEntry("Font Size",myFont.pointSize());
-  config->writeEntry("Font Charset",QFont::encodingName(myFont.charSet()));
-
-  for (z = 0; z < 5; z++) {
-    sprintf(s, "Color%d", z);
-    config->writeEntry(s, colors[z]);
-  }
+  config->writeEntry("Font", myFont);
+  config->writeEntry("Color Background", colors[0]);
+  config->writeEntry("Color Selected", colors[1]);
 
   config->sync();
 }
@@ -1960,7 +1944,7 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
   int xc, zc;
 
   if (line > lastLine()) {
-    paint.fillRect(0, y, xEnd - xStart,fontHeight, colors[4]);
+    paint.fillRect(0, y, xEnd - xStart,fontHeight, colors[0]);
     return;
   }
 
@@ -2004,7 +1988,7 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
       if (attr & taSelected)
         paint.fillRect(xs - xStart, y, x - xs, fontHeight, colors[1]);
       else
-        paint.fillRect(xs - xStart, y, x - xs, fontHeight, colors[4]);
+        paint.fillRect(xs - xStart, y, x - xs, fontHeight, colors[0]);
 
       xs = x;
       attr = nextAttr;
@@ -2035,7 +2019,7 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
   if (attr & taSelected)
     paint.fillRect(xs - xStart, y, xEnd - xs, fontHeight, colors[1]);
   else
-    paint.fillRect(xs - xStart, y, xEnd - xs, fontHeight, colors[4]);
+    paint.fillRect(xs - xStart, y, xEnd - xs, fontHeight, colors[0]);
 
   len = z; //reduce length to visible length
 
@@ -2935,7 +2919,7 @@ void KateDocument::newBracketMark(PointStruc &cursor, BracketMark &bm)
     x++;
     while (line - cursor.y < 40) {
       //go to next line on end of line
-      while (x >= textLine->length()) {
+      while (x >= (int) textLine->length()) {
         line++;
         if (line > lastLine()) return;
         textLine = getTextLine(line);

@@ -150,10 +150,7 @@ public:
 private:
 
   KColorButton *m_back;
-  KColorButton *m_textBack;
   KColorButton *m_selected;
-  KColorButton *m_found;
-  KColorButton *m_selFound;
 };
 
 class FontConfig : public QWidget

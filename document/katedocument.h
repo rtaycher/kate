@@ -409,7 +409,7 @@ class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
     long PreHighlightedTill;
     long RequestPreHighlightTill;
     KWBuffer *buffer;
-    QColor colors[5];
+    QColor colors[2];
     HlManager *hlManager;
     Highlight *m_highlight;
     int m_numAttribs;

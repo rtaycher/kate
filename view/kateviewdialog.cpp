@@ -464,37 +464,15 @@ ColorConfig::ColorConfig( QWidget *parent, char *name )
   glay->addWidget( label, 0, 0 );
   glay->addWidget( m_back, 0, 1 );
 
-  label = new QLabel( i18n("Text Background:"), this);
-  label->setAlignment( AlignRight|AlignVCenter );
-  m_textBack = new KColorButton( this );
-  glay->addWidget( label, 1, 0 );
-  glay->addWidget( m_textBack, 1, 1 );
-
   label = new QLabel( i18n("Selected:"), this);
   label->setAlignment( AlignRight|AlignVCenter );
   m_selected = new KColorButton( this );
   glay->addWidget( label, 2, 0 );
   glay->addWidget( m_selected, 2, 1 );
 
-  label = new QLabel( i18n("Found:"), this);
-  label->setAlignment( AlignRight|AlignVCenter );
-  m_found = new KColorButton( this );
-  glay->addWidget( label, 3, 0 );
-  glay->addWidget( m_found, 3, 1 );
-
-  label = new QLabel( i18n("Selected + Found:"), this);
-  label->setAlignment( AlignRight|AlignVCenter );
-  m_selFound = new KColorButton( this );
-  glay->addWidget( label, 4, 0 );
-  glay->addWidget( m_selFound, 4, 1 );
-
   // QWhatsThis help
   QWhatsThis::add(m_back, i18n("Sets the background color of the editing area"));
-  QWhatsThis::add(m_textBack, i18n("Sets the background color of the text"));
   QWhatsThis::add(m_selected, i18n("Sets the background color of the selection. To set the text color for selected text, use the &quot;<b>Configure Highlightning</b>&quot; dialog."));
-  QWhatsThis::add(m_found, i18n("Sets the background color the text found by the <b>Find</b> functions"));
-  QWhatsThis::add(m_selFound, i18n("Sets the background color text found within a selection"));
-
 }
 
 
@@ -504,20 +482,14 @@ ColorConfig::~ColorConfig()
 
 void ColorConfig::setColors(QColor *colors)
 {
-  m_textBack->setColor( colors[0] );
+  m_back->setColor( colors[0] );
   m_selected->setColor( colors[1] );
-  m_found->setColor( colors[2] );
-  m_selFound->setColor( colors[3] );
-  m_back->setColor( colors[4] );
 }
 
 void ColorConfig::getColors(QColor *colors)
 {
-  colors[4] = m_back->color();
-  colors[0] = m_textBack->color();
+  colors[0] = m_back->color();
   colors[1] = m_selected->color();
-  colors[2] = m_found->color();
-  colors[3] = m_selFound->color();
 }
 
 FontConfig::FontConfig( QWidget *parent, char *name )
