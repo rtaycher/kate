@@ -1,6 +1,5 @@
                 *** Kant version 0.2.1 ***
 Kant is a fast mdi-texteditor for the KDE destop.
-It uses the KWrite Part and the normal kdelibs.
 I hope it works well and improve workspeed on many little
 textfiles. ;-)
 
