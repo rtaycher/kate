@@ -1,4 +1,4 @@
-SUBDIRS = qt3back document view app console data filelist fileselector mainwindow pics sidebar interfaces pluginmanager factory main part plugins
+SUBDIRS = qt3back document view app console data filelist fileselector mainwindow pics sidebar pluginmanager factory interfaces main plugins
 EXTRA_DIST = AUTHORS COPYING ChangeLog NEWS README TODO
 
 messages:

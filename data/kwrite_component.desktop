@@ -2,6 +2,7 @@
 # Note: if some app wants to see "Text Editor Component" here, (i.e. not readonly) then
 # we should separate the desktop files for the read-only and the read-write components.
 Name=Embedded Text Viewer
+Name[az]=Daxili Mətn Nümayişçisi
 Name[ca]=Visor de text encastat
 Name[cs]=Zabudovaný prohlížeč textů
 Name[da]=Indlejret tekst-fremviser
@@ -18,13 +19,13 @@ Name[hu]=Beágyazott szövegnézegető
 Name[is]=Ásetjanleg textasjá
 Name[it]=Visualizzatore testi integrato
 Name[ja]=埋め込みテキストビューア
+Name[ko]=다른 곳에 끼워져서 실행되는 글월 보기
 Name[lt]=Esamas teksto žiūriklis
 Name[lv]=Iebūvēts Teksta Skatītājs
 Name[mk]=Вградлив текст гледач
 Name[nl]=Ingebedde tekstviewer
 Name[no]=Innebygd tekstleser
 Name[no_NY]=Innebygd tekstlesar
-Name[pl]=Wbudowana przegl�darka do tekstów
 Name[pt]=Visualizador de Texto Embebido
 Name[pt_BR]=Visualizador embutido de texto
 Name[ro]=Vizualizor texte înglobat
@@ -38,7 +39,7 @@ Name[tr]=Gömülü Metin Görüntüleyici
 Name[uk]=Вмонтований переглядач текстів
 Name[zh_CN.GB2312]=嵌入文本查看器
 Name[zh_TW.Big5]=嵌入式文字檢視器
-X-KDE-Library=libkatepart
+X-KDE-Library=libkatecore
 Icon=kate
 
 MimeType=text/english;text/plain;text/x-makefile;text/x-c++hdr;text/x-c++src;text/x-chdr;text/x-csrc;text/x-java;text/x-moc;text/x-pascal;text/x-tcl;text/x-tex;application/x-shellscript;text/x-c;text/x-c++;text/x-diff;
