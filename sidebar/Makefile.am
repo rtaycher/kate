@@ -1,6 +1,6 @@
 
-noinst_LTLIBRARIES = libkantsidebar.la
-libkantsidebar_la_SOURCES = kantsidebar.cpp kantstacktabwidget.cpp
+noinst_LTLIBRARIES = libkatesidebar.la
+libkatesidebar_la_SOURCES = katesidebar.cpp katestacktabwidget.cpp
 
 INCLUDES= $(all_includes)
 

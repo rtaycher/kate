@@ -1,5 +1,5 @@
-noinst_LTLIBRARIES = libkantfactory.la
-libkantfactory_la_SOURCES = kantfactory.cpp
+noinst_LTLIBRARIES = libkatefactory.la
+libkatefactory_la_SOURCES = katefactory.cpp
 
 INCLUDES = $(all_includes)
 

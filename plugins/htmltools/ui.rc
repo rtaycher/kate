@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui>
-<kpartplugin name="kanthtmltools" library="libkanthtmltoolsplugin" version="1">
+<kpartplugin name="katehtmltools" library="libkatehtmltoolsplugin" version="1">
 <MenuBar>
  <Menu name="edit"><Text>&amp;Edit</Text>
     <Action name="edit_HTML_tag" />

@@ -1,1 +1,1 @@
-make -f Makefile_dcop && ./dcop_kant
+make -f Makefile_dcop && ./dcop_kate

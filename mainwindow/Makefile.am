@@ -1,6 +1,6 @@
 
-noinst_LTLIBRARIES = libkantmainwindow.la
-libkantmainwindow_la_SOURCES = kantmainwindow.cpp kantIface.skel
+noinst_LTLIBRARIES = libkatemainwindow.la
+libkatemainwindow_la_SOURCES = katemainwindow.cpp kateIface.skel
 
 INCLUDES= $(all_includes)
 

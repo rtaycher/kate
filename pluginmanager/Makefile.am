@@ -1,6 +1,6 @@
 
-noinst_LTLIBRARIES = libkantpluginmanager.la
-libkantpluginmanager_la_SOURCES = kantpluginmanager.cpp kantconfigplugindialogpage.cpp
+noinst_LTLIBRARIES = libkatepluginmanager.la
+libkatepluginmanager_la_SOURCES = katepluginmanager.cpp kateconfigplugindialogpage.cpp
 
 INCLUDES= $(all_includes)
 

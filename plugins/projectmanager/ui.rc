@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui>
-<kpartplugin name="kantprojectmanager" library="libkantprojectmanager" version="1">
+<kpartplugin name="kateprojectmanager" library="libkateprojectmanager" version="1">
 <MenuBar>
   <Menu name="project"><text>&amp;Project</text>
     <Action name="project_new" />

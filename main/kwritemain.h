@@ -23,9 +23,9 @@
 #define _TOPLEVEL_H_
 
 #include <kparts/mainwindow.h>
-#include "../view/kantview.h"
-#include "../document/kantdocument.h"
-#include "../factory/kantfactory.h"
+#include "../view/kateview.h"
+#include "../document/katedocument.h"
+#include "../factory/katefactory.h"
 
 class KAction;
 class KToggleAction;
@@ -37,7 +37,7 @@ class TopLevel : public KParts::MainWindow
   Q_OBJECT
 
   public:
-    TopLevel(KantDocument * = 0L);
+    TopLevel(KateDocument * = 0L);
     ~TopLevel();
 
     void init(); //initialize caption, status and show
@@ -48,14 +48,14 @@ class TopLevel : public KParts::MainWindow
     virtual bool queryClose();
     virtual bool queryExit();
 
-    void setupEditWidget(KantDocument *);
+    void setupEditWidget(KateDocument *);
     void setupActions();
     void setupStatusBar();
 
     virtual void dragEnterEvent( QDragEnterEvent * );
     virtual void dropEvent( QDropEvent * );
 
-    KantView *kWrite;
+    KateView *kWrite;
 
     KToggleAction * m_paShowPath;
     KToggleAction * m_paShowMenuBar;

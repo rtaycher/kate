@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui>
-<kpartplugin name="kanttextfilter" library="libkanttextfilterplugin" version="1">
+<kpartplugin name="katetextfilter" library="libkatetextfilterplugin" version="1">
 <MenuBar>
  <Menu name="edit"><Text>&amp;Edit</Text>
     <Action name="edit_filter" />

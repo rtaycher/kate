@@ -1,6 +1,6 @@
 
-noinst_LTLIBRARIES = libkantconsole.la
-libkantconsole_la_SOURCES = kantconsole.cpp
+noinst_LTLIBRARIES = libkateconsole.la
+libkateconsole_la_SOURCES = kateconsole.cpp
 
 INCLUDES= $(all_includes)
 

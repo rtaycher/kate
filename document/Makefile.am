@@ -1,5 +1,5 @@
-noinst_LTLIBRARIES = libkantdocument.la
-libkantdocument_la_SOURCES = kantdocmanager.cpp kantdocument.cpp kantattribute.cpp kantvmallocator.cpp kanttextline.cpp kantbuffer.cpp kanthighlight.cpp kantsyntaxdocument.cpp
+noinst_LTLIBRARIES = libkatedocument.la
+libkatedocument_la_SOURCES = katedocmanager.cpp katedocument.cpp kateattribute.cpp katevmallocator.cpp katetextline.cpp katebuffer.cpp katehighlight.cpp katesyntaxdocument.cpp
 
 INCLUDES= $(all_includes)
 

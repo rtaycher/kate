@@ -1,14 +1,14 @@
-                *** Kant version 0.2.1 ***
-Kant is a fast texteditor for the KDE destop with an Emacs-style document interface.
+                *** Kate version 0.2.1 ***
+Kate is a fast texteditor for the KDE destop with an Emacs-style document interface.
 I hope it works well and improve workspeed on many little
 textfiles. ;-)
 
-Homepage: http://devel-home.kde.org/~kant
+Homepage: http://devel-home.kde.org/~kate
 
-The Kant team
+The Kate team
 
                 *** KWrite ***
-New KWrite app is using the Kant part ! ;-)
+New KWrite app is using the Kate part ! ;-)
 
 
              *** KNOWN ISSUES ***

@@ -1,5 +1,5 @@
 2001-04-01 Joseph Wenninger <jowenn@bigfoot.com>
-         * Added a new widget KantStackTabWidget
+         * Added a new widget KateStackTabWidget
            Now you can chose between tabbed or an
            KOffice Workspace like view for the file sidebar
 	   --> You can change this behaviour in the config dialog
@@ -18,7 +18,7 @@
              * console only loaded if enabled
 
 2001-03-28 Joseph Wenninger <jowenn@bigfoot.com>
-	* -n in kant.desktop removed, now config settings are used
+	* -n in kate.desktop removed, now config settings are used
 
 2001-03-27 Christoph Cullmann <crossfire@babylon2k.de>
         * interfaces extended (mainly for projectmanager)
@@ -44,12 +44,12 @@
         * QPopupMenu for filelist
 
 2001-03-20 Christoph Cullmann <crossfire@babylon2k.de>
-        * kant is now a normal KApplication
+        * kate is now a normal KApplication
 
 2001-03-18 Christoph Cullmann <crossfire@babylon2k.de>
         * big location changes of source files
-        * KantFactory now in use by hole Kant app
-        * KantPartView/Doc merged with KantView/Doc (make life more easy)
+        * KateFactory now in use by hole Kate app
+        * KatePartView/Doc merged with KateView/Doc (make life more easy)
 
 2001-03-18 Joseph Wenninger <jowenn@bigfoot.com>
         * openheader plugin opens the corresponding
@@ -64,20 +64,20 @@
 
 2001-03-17 Christoph Cullmann <crossfire@babylon2k.de>
         * moved textfilter stuff to a own plugin "textfilter"
-        * cleaned up kantmainwindow.*
+        * cleaned up katemainwindow.*
 
 2001-03-16 Christoph Cullmann <crossfire@babylon2k.de>
         * search dialog comes up with selected text
         * backport of some KDevelop KWrite patches ;)
 
 2001-03-15 Christoph Cullmann <crossfire@babylon2k.de>
-        * kantpart finished
-        * new kwrite using kantpart
+        * katepart finished
+        * new kwrite using katepart
         * removed old kwrite and kwritepart !
         * fixed menu and toolbar problems of the new KWrite app
 
 2001-03-11 Christoph Cullmann <crossfire@babylon2k.de>
-        * kwrite stuff merged into kant !!!!!
+        * kwrite stuff merged into kate !!!!!
 
 2001-03-04 Christoph Cullmann <crossfire@babylon2k.de>
         * mutiple mainwindows
@@ -92,7 +92,7 @@
           Soon to come
 
 2001-02-26 Christoph Cullmann <crossfire@babylon2k.de>
-        * Kant is a part of kdebase :)
+        * Kate is a part of kdebase :)
           sourceforge.net CVS won't be used in the future
 
 2001-02-24 Phlip <phlip_cpp@my-deja.com>
@@ -108,15 +108,15 @@
 
 2001-02-21 Joseph Wenninger <jowenn@bigfoot.com>
         * Makefile.am's                        : correction for linking
-        * kantmenuitem.h                : Improved menu items added doc-list
-        * kantlistboxitem.h                : Improved listboxitem files-list
+        * katemenuitem.h                : Improved menu items added doc-list
+        * katelistboxitem.h                : Improved listboxitem files-list
 
 2001-02-19 Christoph Cullmann <crossfire@babylon2k.de>
-        * kantconsole.* konsole/*       : add kantconsole widget
+        * kateconsole.* konsole/*       : add kateconsole widget
 
 2001-02-16 Anders Lund <anders@alweb.dk>
-        * kantmainwindow.cpp        :fixing read/write options to use maindockwindow functions.
+        * katemainwindow.cpp        :fixing read/write options to use maindockwindow functions.
 
 2001-02-15 Joseph Wenninger <jowenn@bigfoot.com>
-        * kantview.cpp                : Tab doesn't jump to next widget anymore, but inserts a tab into the text
-        * kantmainwindow.*        : F8 / SHIFT-F8 jumps to next / previous widget
+        * kateview.cpp                : Tab doesn't jump to next widget anymore, but inserts a tab into the text
+        * katemainwindow.*        : F8 / SHIFT-F8 jumps to next / previous widget

@@ -1,8 +1,8 @@
-lib_LTLIBRARIES = libkantIface.la
+lib_LTLIBRARIES = libkateIface.la
 
-libkantIface_la_SOURCES = kantpluginIface.cpp kantdocumentIface.cpp kantviewIface.cpp kantdocmanagerIface.cpp kantviewmanagerIface.cpp kantappIface.cpp
-libkantIface_la_LIBADD   = -lktexteditor
-libkantIface_la_LDFLAGS = $(all_libraries) $(KDE_RPATH)  $(KDE_PLUGIN)  -module -avoid-version
+libkateIface_la_SOURCES = katepluginIface.cpp katedocumentIface.cpp kateviewIface.cpp katedocmanagerIface.cpp kateviewmanagerIface.cpp kateappIface.cpp
+libkateIface_la_LIBADD   = -lktexteditor
+libkateIface_la_LDFLAGS = $(all_libraries) $(KDE_RPATH)  $(KDE_PLUGIN)  -module -avoid-version
 
 INCLUDES= $(all_includes)
 

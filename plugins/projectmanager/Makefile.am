@@ -6,18 +6,18 @@ METASOURCES = AUTO
 KDE_ICON = textfilter
 
 # Install this plugin in the KDE modules directory
-kde_module_LTLIBRARIES = libkantprojectmanagerplugin.la
+kde_module_LTLIBRARIES = libkateprojectmanagerplugin.la
 
 # This is all standard.  Remove the LIB_KHTML reference if you are not
 # using the KHTML Part
-libkantprojectmanagerplugin_la_SOURCES =  kantprojectmanager.cpp kantprojectdialog.cpp kantproject.cpp
-libkantprojectmanagerplugin_la_LIBADD = ../../interfaces/libkantIface.la ./piper/libpiper.la
-libkantprojectmanagerplugin_la_LDFLAGS = $(KDE_PLUGIN) $(all_libraries)
+libkateprojectmanagerplugin_la_SOURCES =  kateprojectmanager.cpp kateprojectdialog.cpp kateproject.cpp
+libkateprojectmanagerplugin_la_LIBADD = ../../interfaces/libkateIface.la ./piper/libpiper.la
+libkateprojectmanagerplugin_la_LDFLAGS = $(KDE_PLUGIN) $(all_libraries)
 
 # Install the .rc file in the Part's directory (in this case, the part
 # is KHTMLPart)
-pluginsdir = $(kde_datadir)/kant/plugins/kantprojectmanager
+pluginsdir = $(kde_datadir)/kate/plugins/kateprojectmanager
 plugins_DATA = ui.rc
 
-deskdir=$(kde_datadir)/kant/plugins
-desk_DATA=kantprojectmanager.desktop
+deskdir=$(kde_datadir)/kate/plugins
+desk_DATA=kateprojectmanager.desktop

@@ -1,9 +1,9 @@
-#include "../factory/kantfactory.h"
+#include "../factory/katefactory.h"
 
 extern "C"
 {
   void *init_libkwritepart()
   {
-    return new KantFactory();
+    return new KateFactory();
   }
 }

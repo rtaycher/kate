@@ -1,27 +1,27 @@
-lib_LTLIBRARIES = libkant.la libkantmain.la kwrite.la
-bin_PROGRAMS = kant kwrite
+lib_LTLIBRARIES = libkate.la libkatemain.la kwrite.la
+bin_PROGRAMS = kate kwrite
 
-libkant_la_SOURCES = dummy.cpp
-libkant_la_LIBADD   = ../qt3back/libqregexp3.la \
-		../factory/libkantfactory.la ../document/libkantdocument.la ../view/libkantview.la ../app/libkantapp.la \
-		../mainwindow/libkantmainwindow.la \
-		../sidebar/libkantsidebar.la \
-		../fileselector/libkantfileselector.la  \
-		../console/libkantconsole.la ../filelist/libkantfilelist.la \
-		../pluginmanager/libkantpluginmanager.la ../interfaces/libkantIface.la -lktexteditor -lkspell -lkdeprint
-libkant_la_LDFLAGS = $(all_libraries) $(KDE_RPATH)  $(KDE_PLUGIN)  -module -avoid-version
+libkate_la_SOURCES = dummy.cpp
+libkate_la_LIBADD   = ../qt3back/libqregexp3.la \
+		../factory/libkatefactory.la ../document/libkatedocument.la ../view/libkateview.la ../app/libkateapp.la \
+		../mainwindow/libkatemainwindow.la \
+		../sidebar/libkatesidebar.la \
+		../fileselector/libkatefileselector.la  \
+		../console/libkateconsole.la ../filelist/libkatefilelist.la \
+		../pluginmanager/libkatepluginmanager.la ../interfaces/libkateIface.la -lktexteditor -lkspell -lkdeprint
+libkate_la_LDFLAGS = $(all_libraries) $(KDE_RPATH)  $(KDE_PLUGIN)  -module -avoid-version
 
-libkantmain_la_SOURCES = kantmain.cpp
-libkantmain_la_LIBADD   = libkant.la
-libkantmain_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
+libkatemain_la_SOURCES = katemain.cpp
+libkatemain_la_LIBADD   = libkate.la
+libkatemain_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
 
 kwrite_la_SOURCES = kwritemain.cpp
-kwrite_la_LIBADD   = libkant.la
+kwrite_la_LIBADD   = libkate.la
 kwrite_la_LDFLAGS = $(all_libraries) $(KDE_RPATH)  -module -avoid-version
 
-kant_SOURCES = dummy.cpp
-kant_LDADD = libkantmain.la
-kant_LDFLAGS = $(KDE_RPATH) $(all_libraries)
+kate_SOURCES = dummy.cpp
+kate_LDADD = libkatemain.la
+kate_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 kwrite_SOURCES = dummy.cpp
 kwrite_LDADD = kwrite.la

@@ -1,0 +1,27 @@
+[Desktop Entry]
+Comment=Kate - get an edge in editing
+Comment[cs]=Kate - špička mezi editory
+Comment[da]=Kate - få en fordel ved redigering
+Comment[es]=Kate.-.en el límite de la edición
+Comment[he]=םיכמסמ הבורמ טסקט ךרוע
+Comment[hu]=Kate szerkesztőprogram
+Comment[is]=Kate:  Ritill með meiru
+Comment[ja]=Kate - 最先端の編集ツール
+Comment[lv]=Kate - iegūstiet baudu rediģēšanā
+Comment[pt]=Kate - edição avançada
+Comment[pt_BR]=Kate - edição avançada
+Comment[ro]=Kate - un nou standard în editare
+Comment[ru]=Kate - все лучшее в редактировании
+Comment[ta]=Kate - ÅÊÅ¨ÁôÀ¾¢ø ´Õ Ó¨Éô¨Àô ¦ÀÚ¸
+Comment[tr]=Kate - düzenlemede yeni ufuklar
+BinaryPattern=
+Name=Kate
+Name[ru]=Редактор Kate
+MimeType=text/english;text/plain;text/x-makefile;text/x-c++hdr;text/x-c++src;text/x-chdr;text/x-csrc;text/x-java;text/x-moc;text/x-pascal;text/x-tcl;text/x-tex;application/x-shellscript;text/x-c;text/x-c++;
+Exec=kate %f
+TerminalOptions=
+Icon=kate
+Path=
+DocPath=kate/index.html
+Type=Application
+Terminal=0

@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui>
-<kpartplugin name="kantopenheader" library="libkantopenheaderplugin" version="1">
+<kpartplugin name="kateopenheader" library="libkateopenheaderplugin" version="1">
 <MenuBar>
  <Menu name="file"><Text>&amp;File</Text>
     <Action name="file_openheader" />

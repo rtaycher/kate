@@ -44,8 +44,8 @@
 #include "kwritemain.h"
 #include "kwritemain.moc"
 
-#include "../document/kanthighlight.h"
-#include "../view/kantviewdialog.h"
+#include "../document/katehighlight.h"
+#include "../view/kateviewdialog.h"
 
 // StatusBar field IDs
 #define ID_LINE_COLUMN 1
@@ -53,10 +53,10 @@
 #define ID_MODIFIED 3
 #define ID_GENERAL 4
 
-QList<KantDocument> docList; //documents
+QList<KateDocument> docList; //documents
 
 
-TopLevel::TopLevel (KantDocument *doc)
+TopLevel::TopLevel (KateDocument *doc)
 {
   setMinimumSize(180,120);
 
@@ -64,7 +64,7 @@ TopLevel::TopLevel (KantDocument *doc)
   connect(statusbarTimer,SIGNAL(timeout()),this,SLOT(timeout()));
 
   if (!doc) {
-    doc = new KantDocument (0L, 0L, false, false); //new doc with default path
+    doc = new KateDocument (0L, 0L, false, false); //new doc with default path
     docList.append(doc);
   }
   setupEditWidget(doc);
@@ -92,7 +92,7 @@ TopLevel::~TopLevel()
 //  QApplication::sendEvent( kWrite, &ev );
 //  guiFactory()->removeClient( kWrite );
 //  createShellGUI( false );
-  if (kWrite->isLastView()) docList.remove((KantDocument*)kWrite->doc());
+  if (kWrite->isLastView()) docList.remove((KateDocument*)kWrite->doc());
 }
 
 
@@ -131,15 +131,15 @@ bool TopLevel::queryExit()
 {
   writeConfig();
   kapp->config()->sync();
-  KantFactory::instance()->config()->sync();
+  KateFactory::instance()->config()->sync();
 
   return true;
 }
 
 
-void TopLevel::setupEditWidget(KantDocument *doc)
+void TopLevel::setupEditWidget(KateDocument *doc)
 {
-  kWrite = new KantView(doc, this, 0, false);
+  kWrite = new KateView(doc, this, 0, false);
 
   connect(kWrite,SIGNAL(newCurPos()),this,SLOT(newCurPos()));
   connect(kWrite,SIGNAL(newStatus()),this,SLOT(newStatus()));
@@ -213,7 +213,7 @@ void TopLevel::slotOpen()
 
 void TopLevel::newView()
 {
-  TopLevel *t = new TopLevel((KantDocument *)kWrite->doc());
+  TopLevel *t = new TopLevel((KateDocument *)kWrite->doc());
   t->readConfig();
   t->kWrite->copySettings(kWrite);
   t->init();
@@ -224,7 +224,7 @@ void TopLevel::configure()
   KWin kwin;
   // I read that no widgets should be created on the stack
   KDialogBase *kd = new KDialogBase(KDialogBase::IconList,
-                                    i18n("Configure Kant"),
+                                    i18n("Configure Kate"),
                                     KDialogBase::Ok | KDialogBase::Cancel |
                                     KDialogBase::Help ,
                                     KDialogBase::Ok, this, "tabdialog");
@@ -354,7 +354,7 @@ void TopLevel::newStatus()
   if (readOnly)
     statusBar()->changeItem(i18n(" R/O "),ID_INS_OVR);
   else
-    statusBar()->changeItem(config & KantView::cfOvr ? i18n(" OVR ") : i18n(" INS "),ID_INS_OVR);
+    statusBar()->changeItem(config & KateView::cfOvr ? i18n(" OVR ") : i18n(" INS "),ID_INS_OVR);
 
   statusBar()->changeItem(kWrite->isModified() ? " * " : "",ID_MODIFIED);
 }
@@ -457,7 +457,7 @@ void TopLevel::readConfig() {
   config->setGroup("General Options");
   readConfig(config);
 
-  config = KantFactory::instance()->config();
+  config = KateFactory::instance()->config();
 
   config->setGroup("General Options");
   kWrite->readConfig(config);
@@ -474,7 +474,7 @@ void TopLevel::writeConfig()
   config->setGroup("General Options");
   writeConfig(config);
 
-  config = KantFactory::instance()->config();
+  config = KateFactory::instance()->config();
 
   config->setGroup("General Options");
   kWrite->writeConfig(config);
@@ -485,7 +485,7 @@ void TopLevel::writeConfig()
 void TopLevel::restore(KConfig *config, int n)
 {
   if (kWrite->isLastView() && !kWrite->doc()->url().isEmpty()) { //in this case first view
-    loadURL(kWrite->doc()->url(), KantView::lfNewFile );
+    loadURL(kWrite->doc()->url(), KateView::lfNewFile );
   }
   readPropertiesInternal(config, n);
   init();
@@ -503,7 +503,7 @@ void TopLevel::readProperties(KConfig *config)
 void TopLevel::saveProperties(KConfig *config)
 {
   writeConfig(config);
-  config->writeEntry("DocumentNumber",docList.find((KantDocument *)kWrite->doc()) + 1);
+  config->writeEntry("DocumentNumber",docList.find((KateDocument *)kWrite->doc()) + 1);
   kWrite->writeSessionConfig(config);
 }
 
@@ -512,7 +512,7 @@ void TopLevel::saveGlobalProperties(KConfig *config) //save documents
 {
   int z;
   char buf[16];
-  KantDocument *doc;
+  KateDocument *doc;
 
   config->setGroup("Number");
   config->writeEntry("NumberOfDocuments",docList.count());
@@ -520,7 +520,7 @@ void TopLevel::saveGlobalProperties(KConfig *config) //save documents
   for (z = 1; z <= (int) docList.count(); z++) {
      sprintf(buf,"Document%d",z);
      config->setGroup(buf);
-     doc = (KantDocument *) docList.at(z - 1);
+     doc = (KateDocument *) docList.at(z - 1);
      doc->writeSessionConfig(config);
   }
 }
@@ -532,7 +532,7 @@ void restore()
   KConfig *config;
   int docs, windows, z;
   char buf[16];
-  KantDocument *doc;
+  KateDocument *doc;
   TopLevel *t;
 
   config = kapp->sessionConfig();
@@ -545,7 +545,7 @@ void restore()
   for (z = 1; z <= docs; z++) {
      sprintf(buf,"Document%d",z);
      config->setGroup(buf);
-     doc = new KantDocument (0L,0L);
+     doc = new KateDocument (0L,0L);
      doc->readSessionConfig(config);
      docList.append(doc);
   }
@@ -569,8 +569,8 @@ static KCmdLineOptions options[] =
 int main(int argc, char **argv)
 {
   KAboutData aboutData ("kwrite", I18N_NOOP("KWrite"), "0.2",
-	I18N_NOOP( "KWrite - A new KWrite using the Kant Texteditor KPart" ), KAboutData::License_GPL,
-	 "(c) 2000-2001 The Kant Authors", "http://devel-home.kde.org/~kant");
+	I18N_NOOP( "KWrite - A new KWrite using the Kate Texteditor KPart" ), KAboutData::License_GPL,
+	 "(c) 2000-2001 The Kate Authors", "http://devel-home.kde.org/~kate");
 
   aboutData.addAuthor("Christoph Cullmann", I18N_NOOP("Project Manager and Core Developer"), "crossfire@babylon2k.de", "http://www.babylon2k.de");
   aboutData.addAuthor("Michael Bartl", I18N_NOOP("Core Developer"), "michael.bartl1@chello.at");

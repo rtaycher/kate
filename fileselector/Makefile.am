@@ -1,6 +1,6 @@
 
-noinst_LTLIBRARIES = libkantfileselector.la
-libkantfileselector_la_SOURCES = kantfileselector.cpp
+noinst_LTLIBRARIES = libkatefileselector.la
+libkatefileselector_la_SOURCES = katefileselector.cpp
 
 INCLUDES= $(all_includes)
 
