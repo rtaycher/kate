@@ -99,13 +99,13 @@ static void writeBlock(int fd, const QByteArray &buf, int begin, int end)
 void     
 KateBuffer::clear()     
 {     
-   delete m_vm;     
-   m_vm = new KVMAllocator;     
    m_parsedBlocksClean.clear();     
    m_parsedBlocksDirty.clear();     
    m_loadedBlocks.clear();     
    m_loader.clear();     
    m_blocks.clear();     
+   delete m_vm;     
+   m_vm = new KVMAllocator;     
    KateBufState state;     
    // Initial state.     
    state.lineNr = 0;     
@@ -115,6 +115,7 @@ KateBuffer::clear()
    block->b_appendEOL = true;     
    block->b_emptyBlock = true;     
    block->m_endState.lineNr++;     
+   m_loadedBlocks.append(block);
    m_totalLines = block->m_endState.lineNr;     
 }     
      
@@ -178,6 +179,8 @@ KateBuffer::loadFilePart()
         KateBufBlock *buf2 = m_loadedBlocks.take(2);     
         //kdDebug(13020)<<"swapOut "<<buf2<<endl;     
         buf2->swapOut(m_vm);     
+        assert(m_parsedBlocksClean.find(buf2) == -1);
+        assert(m_parsedBlocksDirty.find(buf2) == -1);
      }     
      block->m_codec = loader->codec;     
      loader->dataStart = block->blockFill(loader->dataStart,     
@@ -220,6 +223,7 @@ KateBuffer::insertData(int line, const QByteArray &data, QTextCodec *codec)
          break;     
      
       m_totalLines -= prev_block->m_endState.lineNr - prev_block->m_beginState.lineNr;     
+kdDebug(13020)<< "Removing empty block "<< prev_block << endl;
       m_blocks.removeRef(prev_block);     
       m_parsedBlocksClean.removeRef(prev_block);     
       m_parsedBlocksDirty.removeRef(prev_block);     
@@ -356,7 +360,8 @@ KateBuffer::insertLine(int i, TextLine::Ptr line)
       state.lineNr = 0;     
       buf = new KateBufBlock(state);     
       m_blocks.insert(0, buf);     
-      buf->b_rawDataValid = true;     
+      buf->b_rawDataValid = true;
+      m_loadedBlocks.append(buf);
    }     
      
    if (!buf->b_stringListValid)     
@@ -384,8 +389,22 @@ KateBuffer::removeLine(int i)
    {     
       dirtyBlock(buf);     
    }     
-   buf->removeLine(i -  buf->m_beginState.lineNr);     
+   buf->removeLine(i -  buf->m_beginState.lineNr);
    m_totalLines--;     
+   if (buf->m_beginState.lineNr == buf->m_endState.lineNr)
+   {
+kdDebug(13020)<< "Removing empty block "<< buf << endl;
+      if (buf->b_vmDataValid)     
+      {
+kdDebug(13020)<< "Empty block still has VM."<< buf << endl;
+         assert(false);
+         buf->disposeSwap(m_vm);
+      }
+      m_blocks.removeRef(buf);     
+      m_parsedBlocksClean.removeRef(buf);     
+      m_parsedBlocksDirty.removeRef(buf);     
+      m_loadedBlocks.removeRef(buf);
+   }
 }     
      
 void     
@@ -405,17 +424,21 @@ KateBuffer::changeLine(int i)
 void     
 KateBuffer::parseBlock(KateBufBlock *buf)     
 {     
-    //kdDebug(13020)<<"parseBlock "<< buf<<endl;     
+   //kdDebug(13020)<<"parseBlock "<< buf<<endl;     
    if (!buf->b_rawDataValid)     
       loadBlock(buf);     
    if (m_parsedBlocksClean.count() > 5)     
    {     
       KateBufBlock *buf2 = m_parsedBlocksClean.take(2);     
       buf2->disposeStringList();     
+      m_loadedBlocks.append(buf2);
+      assert(m_parsedBlocksDirty.find(buf2) == -1);
    }     
    buf->buildStringList();     
    assert(m_parsedBlocksClean.find(buf) == -1);     
-   m_parsedBlocksClean.append(buf);     
+   m_parsedBlocksClean.append(buf);
+   assert(m_loadedBlocks.find(buf) != -1);     
+   m_loadedBlocks.removeRef(buf);
      
    // From now on store the raw block in unicode.     
    // As a side-effect this will also store the highlighting info, which     
@@ -433,17 +456,21 @@ KateBuffer::loadBlock(KateBufBlock *buf)
       KateBufBlock *buf2 = m_loadedBlocks.take(2);     
       //kdDebug(13020)<<"swapOut "<<buf2<<endl;     
       buf2->swapOut(m_vm);     
+      assert(m_parsedBlocksClean.find(buf2) == -1);     
+      assert(m_parsedBlocksDirty.find(buf2) == -1);     
    }     
      
    //kdDebug(13020)<<"swapIn "<<buf<<endl;     
    buf->swapIn(m_vm);     
    m_loadedBlocks.append(buf);     
+   assert(m_parsedBlocksClean.find(buf) == -1);     
+   assert(m_parsedBlocksDirty.find(buf) == -1);     
 }     
      
 void     
 KateBuffer::dirtyBlock(KateBufBlock *buf)     
 {     
-    //kdDebug(13020)<<"dirtyBlock "<<buf<<endl;     
+   kdDebug(13020)<<"dirtyBlock "<<buf<<endl;     
    buf->b_emptyBlock = false;     
    if (m_parsedBlocksDirty.count() > DIRTY_BLOCKS_MAX)     
    {     
@@ -451,8 +478,9 @@ KateBuffer::dirtyBlock(KateBufBlock *buf)
       buf2->flushStringList(); // Copy stringlist to raw     
       buf2->disposeStringList(); // dispose stringlist.     
       m_loadedBlocks.append(buf2);     
+      assert(m_parsedBlocksClean.find(buf2) == -1);
    }     
-   m_loadedBlocks.removeRef(buf);     
+   assert(m_loadedBlocks.find(buf) == -1);
    m_parsedBlocksClean.removeRef(buf);     
    m_parsedBlocksDirty.append(buf);     
    buf->disposeRawData();     
@@ -484,7 +512,7 @@ KateBufBlock::KateBufBlock(const KateBufState &beginState)
    b_emptyBlock = false;     
    m_lastLine = 0;     
 }     
-     
+
 /**     
  * Remove the last line of this block.     
  */     
@@ -584,6 +612,7 @@ KateBufBlock::blockFill(int dataStart, QByteArray data1, QByteArray data2, bool 
 void     
 KateBufBlock::swapOut(KVMAllocator *vm)     
 {     
+   // kdDebug(13020)<<"KateBufBlock: swapout this ="<< this<<endl;     
    assert(b_rawDataValid);     
    // TODO: Error checking and reporting (?)     
    if (!b_vmDataValid)     
@@ -611,6 +640,7 @@ KateBufBlock::swapOut(KVMAllocator *vm)
 void     
 KateBufBlock::swapIn(KVMAllocator *vm)     
 {     
+   // kdDebug(13020)<<"KateBufBlock: swapin this ="<< this<<endl;     
    assert(b_vmDataValid);     
    assert(!b_rawDataValid);     
    assert(m_vmblock);     
@@ -627,7 +657,7 @@ KateBufBlock::swapIn(KVMAllocator *vm)
 void     
 KateBufBlock::buildStringList()     
 {     
-    //kdDebug(13020)<<"KateBufBlock: buildStringList this ="<< this<<endl;     
+   //kdDebug(13020)<<"KateBufBlock: buildStringList this ="<< this<<endl;     
    assert(m_stringList.empty());     
    if (!m_codec && !m_rawData2.isEmpty())     
    {     
@@ -723,7 +753,7 @@ KateBufBlock::buildStringList()
 void     
 KateBufBlock::flushStringList() 
 { 
-    //kdDebug(13020)<<"KateBufBlock: flushStringList this ="<< this<<endl; 
+   kdDebug(13020)<<"KateBufBlock: flushStringList this ="<< this<<endl; 
    assert(b_stringListValid); 
    assert(!b_rawDataValid); 
  
@@ -776,7 +806,7 @@ KateBufBlock::flushStringList()
    assert(buf-m_rawData2.data() == size); 
    m_codec = 0; // No codec 
    b_rawDataValid = true; 
-   kdDebug()<<"KateBuffer::FlashStringList"<<endl;
+   kdDebug()<<"KateBuffer::FlushStringList"<<endl;
 
 } 
  
@@ -786,7 +816,7 @@ KateBufBlock::flushStringList()
 void 
 KateBufBlock::buildStringListFast() 
 { 
-    //kdDebug(13020)<<"KateBufBlock: buildStringListFast this = "<< this<<endl; 
+   // kdDebug(13020)<<"KateBufBlock: buildStringListFast this = "<< this<<endl; 
    char *buf = m_rawData2.data(); 
    char *end = buf + m_rawSize; 
    while(buf < end) 
@@ -828,8 +858,7 @@ KateBufBlock::buildStringListFast()
  
       m_stringList.push_back (textLine); 
    } 
-   kdDebug()<<"KateBuffer::buildStringListFast"<<endl;
-   //kdDebug(13020)<<"stringList.count = "<< m_stringList.count()<<" should be %ld"<< m_endState.lineNr - m_beginState.lineNr<<endl; 
+   //kdDebug(13020)<<"stringList.count = "<< m_stringList.size()<<" should be "<< (m_endState.lineNr - m_beginState.lineNr) <<endl; 
    assert((int) m_stringList.size() == (m_endState.lineNr - m_beginState.lineNr)); 
    m_stringListIt = m_stringList.begin(); 
    m_stringListCurrent = 0; 
@@ -842,7 +871,7 @@ KateBufBlock::buildStringListFast()
 void 
 KateBufBlock::disposeStringList() 
 { 
-    //kdDebug(13020)<<"KateBufBlock: disposeStringList this = "<< this<<endl; 
+//   kdDebug(13020)<<"KateBufBlock: disposeStringList this = "<< this<<endl; 
    assert(b_rawDataValid || b_vmDataValid); 
    m_stringList.clear(); 
    b_stringListValid = false;     
@@ -854,7 +883,7 @@ KateBufBlock::disposeStringList()
 void     
 KateBufBlock::disposeRawData()     
 {     
-    //kdDebug(13020)<< "KateBufBlock: disposeRawData this = "<< this<<endl;     
+//   kdDebug(13020)<< "KateBufBlock: disposeRawData this = "<< this<<endl;     
    assert(b_stringListValid || b_vmDataValid);     
    b_rawDataValid = false;     
    m_rawData1 = QByteArray();     
@@ -869,7 +898,7 @@ KateBufBlock::disposeRawData()
 void     
 KateBufBlock::disposeSwap(KVMAllocator *vm)     
 {     
-    //kdDebug(13020)<<"KateBufBlock: disposeSwap this = "<< this<<endl;     
+   kdDebug(13020)<<"KateBufBlock: disposeSwap this = "<< this<<endl;     
    assert(b_stringListValid || b_rawDataValid);     
    vm->free(m_vmblock);     
    m_vmblock = 0;     

@@ -22,11 +22,14 @@
 //
 // Virtual Memory Allocator
 
+// TODO: Add large file support.
+// TODO: Error reporting. (e.g. disk-full)
+
 #include <unistd.h>
 #include <sys/mman.h>
 
 #include <qintdict.h>
-#include <qptrlist.h>
+#include <qmap.h>
 
 #include <ktempfile.h>
 #include <kdebug.h>
@@ -39,7 +42,8 @@
 struct KVMAllocator::Block
 {
    off_t start;
-   size_t length;
+   size_t length; // Requested length
+   size_t size; // Actual size
    void *mmap;
 };
 
@@ -49,8 +53,8 @@ class KVMAllocatorPrivate
 public:
    KTempFile *tempfile;
    off_t max_length;
-   QPtrList<KVMAllocator::Block> used_blocks;
-   QPtrList<KVMAllocator::Block> free_blocks;
+   QMap<off_t, KVMAllocator::Block> used_blocks;
+   QMap<off_t, KVMAllocator::Block> free_blocks;
 };
 
 /**
@@ -61,7 +65,6 @@ KVMAllocator::KVMAllocator()
    d = new KVMAllocatorPrivate;
    d->tempfile = 0;
    d->max_length = 0;
-//   d->free_blocks = 0;
 }
 
 /**
@@ -69,7 +72,6 @@ KVMAllocator::KVMAllocator()
  */
 KVMAllocator::~KVMAllocator()
 {
-   // TODO: Unmap all blocks.
    delete d->tempfile;
    delete d;
 }
@@ -87,25 +89,89 @@ KVMAllocator::allocate(size_t _size)
       d->tempfile->unlink();
    }
    // Search in free list
+   QMap<off_t,KVMAllocator::Block>::iterator it;
+   it = d->free_blocks.begin();
+   while (it != d->free_blocks.end())
+   {
+      if (it.data().size > _size)
+      {
+         Block &free_block = it.data();
+         Block block;
+         kdDebug(13020)<<"VM alloc: using block from free list "<<(long)free_block.start<<" size ="<<(long)free_block.size<<" request = "<<_size<< endl;
+         block.start = free_block.start;
+         block.length = _size;
+         block.size = (_size + KVM_ALIGN) & ~KVM_ALIGN;
+         block.mmap = 0;
+         free_block.size -= block.size;
+         free_block.start += block.size;
+         if (!free_block.size)
+            d->free_blocks.remove(it);
+         it = d->used_blocks.replace(block.start, block);
+         return &(it.data());
+      }
+      ++it;
+   } 
+
 
    // Create new block
-   Block *block = new Block;
-   block->start = d->max_length;
-   block->length = _size;
-   block->mmap = 0;
-   d->used_blocks.prepend(block);
-   d->max_length += (_size + KVM_ALIGN) & ~KVM_ALIGN;
-   return block;
+   Block block;
+   block.start = d->max_length;
+   block.length = _size;
+   block.size = (_size + KVM_ALIGN) & ~KVM_ALIGN;
+   block.mmap = 0;
+   kdDebug(13020)<<"VM alloc: using new block "<<(long)block.start<<" size ="<<(long)block.size<<" request = "<<_size<< endl;
+   it = d->used_blocks.replace(block.start, block);
+   d->max_length += block.size;
+   return &(it.data());
 }
 
 /**
  * Free a virtual memory block
  */
 void
-KVMAllocator::free(Block *block)
+KVMAllocator::free(Block *block_p)
 {
-   d->used_blocks.removeRef(block);
-   d->free_blocks.append(block);
+   Block block = *block_p;
+   if (block.mmap)
+   {
+      kdDebug(13020)<<"VM free: Block "<<(long)block.start<<" is still mmapped!"<<endl;
+      return;
+   }
+   QMap<off_t,KVMAllocator::Block>::iterator it;
+   it = d->used_blocks.find(block.start);
+   if (it == d->used_blocks.end())
+   {
+      kdDebug(13020)<<"VM free: Block "<<(long)block.start<<" is not allocated."<<endl;
+      return;
+   }
+   d->used_blocks.remove(it);
+   it = d->free_blocks.replace(block.start, block);
+   QMap<off_t,KVMAllocator::Block>::iterator before = it;
+   --before;
+   Block &block_before = before.data();
+   if ((block_before.start + block_before.size) == block.start)
+   {
+      // Merge blocks.
+      kdDebug(13020) << "VM merging: Block "<< (long)block_before.start<<
+                        " with "<< (long)block.start<< " (before)" << endl;
+      block.size += block_before.size;
+      block.start = block_before.start;
+      it.data() = block;
+      d->free_blocks.remove(before);
+   }
+   
+   QMap<off_t,KVMAllocator::Block>::iterator after = it;
+   ++after;
+   Block &block_after = after.data();
+   if ((block.start + block.size) == block_after.start)
+   {
+      // Merge blocks.
+      kdDebug(13020) << "VM merging: Block "<< (long)block.start<<
+                        " with "<< (long)block_after.start<< " (after)" << endl;
+      block.size += block_after.size;
+      it.data() = block;
+      d->free_blocks.remove(after);
+   }
 }
 
 /**
@@ -114,7 +180,7 @@ KVMAllocator::free(Block *block)
 void
 KVMAllocator::copy(void *dest, Block *src, int _offset, size_t length)
 {
-   // kdDebug(13020)<<"VM read: seek "<<(long)src->start<<" +"<<_offset<<endl;
+   //kdDebug(13020)<<"VM read: seek "<<(long)src->start<<" +"<<_offset<<":"<<length<<endl;
    lseek(d->tempfile->handle(), src->start+_offset, SEEK_SET);
    if (length == 0)
       length = src->length - _offset;
@@ -137,7 +203,7 @@ KVMAllocator::copy(void *dest, Block *src, int _offset, size_t length)
 void
 KVMAllocator::copy(Block *dest, void *src, int _offset, size_t length)
 {
-   // kdDebug(13020)<<"VM write: seek "<<(long)dest->start<<" "<<_offset<<endl;
+   //kdDebug(13020)<<"VM write: seek "<<(long)dest->start<<" +"<<_offset<< ":" << length << endl;
    lseek(d->tempfile->handle(), dest->start+_offset, SEEK_SET);
    if (length == 0)
       length = dest->length - _offset;
@@ -178,4 +244,5 @@ KVMAllocator::unmap(Block *block)
    // The following cast is necassery for Solaris.
    // (touch it and die). --Waba
    munmap((char *)block->mmap, block->length);
+   block->mmap = 0;
 }
