@@ -139,9 +139,9 @@ void KateProjectTreeView::slotExecuted ( QListViewItem *i )
 {
   KateProjectTreeViewItem *item = (KateProjectTreeViewItem *) i;
   
-  if (item)
+  if (item && !item->isDir())
   {
-   // m_mainWin->viewManager()->openURL (KURL (m_project->baseurl(false), item->fullName()));
+    m_mainWin->viewManager()->openURL (KURL (m_project->dir() + QString ("/") + item->fullName()));
   }
 }
 
