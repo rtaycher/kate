@@ -32,7 +32,8 @@ class SyntaxDocument : public QDomDocument  {
 	  SyntaxDocument();
 	  ~SyntaxDocument();
 
-	  QStringList& finddata(const QString& langName,const QString& type);
+          QStringList modesList();
+          QStringList& finddata(const QString& langName,const QString& type);
 
 	private:
 	  QStringList m_data;

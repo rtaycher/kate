@@ -56,27 +56,63 @@ SyntaxDocument::~SyntaxDocument()
 </language>
 
 */
+
+QStringList SyntaxDocument::modesList()
+{
+  QDomElement docElem = documentElement();
+  QDomNode n = docElem.firstChild();
+
+  QStringList modeList;
+
+  while ( !n.isNull() )
+  {
+    if ( n.isElement())
+    {
+      QDomElement e = n.toElement(); //e.tagName is language
+      QDomNode child=e.firstChild(); // child.toElement().tagname() is keywords/types
+      QDomNode grandchild=child.firstChild(); // grandchild.tagname is keyword/type
+      kdDebug() << e.attribute("name") << endl;
+      modeList += e.attribute("name");
+    }
+
+    n = n.nextSibling();
+  }
+
+  return modeList;
+}
+
+
 QStringList& SyntaxDocument::finddata(const QString& langName,const QString& type)
 {
-	QDomElement docElem = documentElement();
-	QDomNode n = docElem.firstChild();
-		while ( !n.isNull() ) {
-			if ( n.isElement()) {
-				QDomElement e = n.toElement(); //e.tagName is language
-				QDomNode child=e.firstChild(); // child.toElement().tagname() is keywords/types
-				QDomNode grandchild=child.firstChild(); // grandchild.tagname is keyword/type
+  QDomElement docElem = documentElement();
+  QDomNode n = docElem.firstChild();
 
-// at this point e.attribute("name") should equal langName
-// and we can use type==keyword as an index to child list
-				if(e.attribute("name").compare(langName)==0 ) { //&& grandchild.toElement().tagName().compare(type) == 0 ){
-					QDomNodeList childlist=n.childNodes();
-					QDomNodeList grandchildlist=childlist.item(type=="keyword" ? 0 : 1).childNodes();
-					for(uint i=0; i< grandchildlist.count();i++)
-						m_data+=grandchildlist.item(i).toElement().text().stripWhiteSpace();
-					return m_data;
-				}
-			}
-		n = n.nextSibling();
-	}
-	return m_data;
+  while ( !n.isNull() )
+  {
+    if ( n.isElement())
+    {
+      QDomElement e = n.toElement(); //e.tagName is language
+      QDomNode child=e.firstChild(); // child.toElement().tagname() is keywords/types
+      QDomNode grandchild=child.firstChild(); // grandchild.tagname is keyword/type
+
+      // at this point e.attribute("name") should equal langName
+      // and we can use type==keyword as an index to child list
+
+      if(e.attribute("name").compare(langName)==0 )
+      {
+        //&& grandchild.toElement().tagName().compare(type) == 0 ){
+        QDomNodeList childlist=n.childNodes();
+        QDomNodeList grandchildlist=childlist.item(type=="keyword" ? 0 : 1).childNodes();
+
+        for(uint i=0; i< grandchildlist.count();i++)
+          m_data+=grandchildlist.item(i).toElement().text().stripWhiteSpace();
+
+        return m_data;
+      }
+    }
+
+    n = n.nextSibling();
+  }
+
+  return m_data;
 }
