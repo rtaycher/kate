@@ -514,6 +514,41 @@ bool KWriteDoc::openFile()
     return false;
 
   loadFile( f );
+//  if ( updateHighlight )
+  {
+    //highlight detection
+    //  pos = fName.findRev('/') +1;
+    //  if (pos >= (int) fName.length()) return; //no filename
+    //  hl = hlManager->wildcardFind(s.right( s.length() - pos ));
+    QString fn = m_url.fileName();
+    if ( fn.isEmpty() )
+        return false;
+
+    int hl = hlManager->wildcardFind( fn );
+
+    if (hl == -1)
+    {
+      // fill the detection buffer with the contents of the text
+      const int HOWMANY = 1024;
+      QByteArray buf(HOWMANY);
+      int bufpos = 0, len;
+      TextLine *textLine;
+
+      for (textLine = contents.first(); textLine != 0L; textLine = contents.next())
+      {
+        len = textLine->length();
+        if (bufpos + len > HOWMANY)
+          len = HOWMANY - bufpos;
+        memcpy(&buf[bufpos], textLine->getText(), len);
+        bufpos += len;
+        if (bufpos >= HOWMANY)
+          break;
+      }
+      //    hl = hlManager->mimeFind(buf, s.right( s.length() - pos));
+      hl = hlManager->mimeFind( buf, fn );
+    }
+    setHighlight(hl);
+  }
 
   updateLines();
   updateViews();
