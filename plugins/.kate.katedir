@@ -1,2 +1,3 @@
 [General]
-Files=Makefile.am
+Dirs=defaultproject
+Files=.cvsignore/Makefile.am

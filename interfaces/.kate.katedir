@@ -1,2 +1,2 @@
 [General]
-Files=Makefile.am
+Files=.cvsignore/Makefile.am/application.cpp/application.h/documentmanager.cpp/documentmanager.h/mainwindow.cpp/mainwindow.h/plugin.cpp/plugin.h/pluginconfiginterface.cpp/pluginconfiginterface.h/pluginconfiginterfaceextension.cpp/pluginconfiginterfaceextension.h/pluginmanager.cpp/pluginmanager.h/project.cpp/project.h/projectmanager.cpp/projectmanager.h/toolviewmanager.cpp/toolviewmanager.h/viewmanager.cpp/viewmanager.h
