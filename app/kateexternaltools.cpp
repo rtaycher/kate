@@ -141,22 +141,46 @@ void KateExternalToolAction::slotRun()
   KateMainWindow *mw = ((KateExternalToolsMenuAction*)parent()->parent())->mainwindow;
   Kate::View *view = mw->viewManager()->activeView();
 
-  QMap<QString, QStringList> m;
-  m.insert( "URL", mw->activeDocumentUrl().url());
-  m.insert( "directory", mw->activeDocumentUrl().directory() );
-  m.insert( "filename", mw->activeDocumentUrl().filename());
-  m.insert( "line", QString::number( view->cursorLine() ));
-  m.insert( "col", QString::number( view->cursorColumn() ));
-  m.insert( "selection", view->getDoc()->selection());
-  m.insert( "text", view->getDoc()->text());
-  QStringList l;
-  for( Kate::Document *doc = mw->m_docManager->firstDocument(); doc; doc = mw->m_docManager->nextDocument() )
+  QRegExp re("[^%]%(\\w+)"); // never at the start of the string
+  int pos = 0;
+  QMap<QString, QString> m;
+  while( (pos = re.search( cmd, pos )) > -1 )
   {
-    if ( ! doc->url().isEmpty() )
-      l << doc->url().url();
+    if ( re.cap(1) == "URL" )
+      m.insert( "URL", mw->activeDocumentUrl().url());
+    else if ( re.cap(1) == "directory" ) // directory of current doc
+      m.insert( "directory", mw->activeDocumentUrl().directory() );
+    else if ( re.cap(1) == "filename" )
+      m.insert( "filename", mw->activeDocumentUrl().filename());
+    else if ( re.cap(1) == "line" ) // cursor line of current doc
+      m.insert( "line", QString::number( view->cursorLine() ));
+    else if ( re.cap(1) == "col" ) // cursor col of current doc
+      m.insert( "col", QString::number( view->cursorColumn() ));
+    else if ( re.cap(1) == "selection" ) // selection of current doc if any
+      m.insert( "selection", view->getDoc()->selection());
+    else if ( re.cap(1) == "text" ) // text of current doc
+      m.insert( "text", view->getDoc()->text());
+
+    pos += re.matchedLength();
   }
-  m.insert( "URLs", l );
+
+  cmd.replace( QRegExp("[^%]%URLs"), "%%URLs" );
+
   cmd = KMacroExpander::expandMacrosShellQuote( cmd, m );
+
+  if ( cmd.contains("%URLs") )
+  {
+    QStringList l;
+    for( Kate::Document *doc = mw->m_docManager->firstDocument(); doc; doc = mw->m_docManager->nextDocument() )
+    {
+      if ( ! doc->url().isEmpty() )
+        l << doc->url().url();
+    }
+    QMap<QString, QStringList> m1;
+    m1.insert( "URLs", l );
+
+    cmd = KMacroExpander::expandMacrosShellQuote( cmd, m1 );
+  }
 
   kdDebug()<<"=== Running command: "<<cmd<<endl;
   KRun::runCommand( cmd, tool->tryexec, tool->icon );
