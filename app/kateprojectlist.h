@@ -26,7 +26,7 @@
 #include "../interfaces/project.h"
 
 #include <ktoolbar.h>
-#include <klistbox.h>
+#include <kcombobox.h>
 
 #include <qwidget.h>
 #include <qvaluelist.h>
@@ -35,34 +35,6 @@
 class KateMainWindow;
 class KActionCollection;
 class KActionSelector;
-
-class KateProjectListItem : public QListBoxItem
-{
-  public:
-    KateProjectListItem( uint projectNumber, const QPixmap &pix, const QString& text);
-    ~KateProjectListItem();
-
-    uint projectNumber ();
-
-    const QPixmap *pixmap() const { return &pm; };
-
-    void setText(const QString &text);
-    void setPixmap(const QPixmap &pixmap);
-
-    void setBold(bool bold);
-
-    int height( const QListBox* lb ) const;
-
-    int width( const QListBox* lb ) const;
-
-  protected:
-    void paint( QPainter *painter );
-
-  private:
-    uint myProjectID;
-    QPixmap pm;
-    bool _bold;
-};
 
 /* I think this fix for not moving toolbars is better */
 class KateProjectListToolBar: public KToolBar
@@ -95,21 +67,22 @@ class KateProjectList : public QWidget
   public:
     KateProjectList (class KateProjectManager *_projectManager, class KateMainWindow *_mainWindow, QWidget * parent = 0, const char * name = 0 );
     ~KateProjectList ();
-    
+
     void setupActions();
-    
+
   private slots:
     void projectChanged ();
     void projectCreated (Kate::Project *project);
     void projectDeleted (uint projectNumber);
-    void slotActivateView( QListBoxItem *item );
+    void slotActivated ( int index );
 
   private:
-    KListBox *m_projectList;
+    KComboBox *m_projectList;
     class KateProjectManager *m_projectManager;
     class KateMainWindow *m_mainWindow;
     KateProjectListToolBar *toolbar;
     KActionCollection *mActionCollection;
+    QValueList<unsigned int> m_projects;
 };
 
 #endif

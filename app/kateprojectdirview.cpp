@@ -43,11 +43,12 @@ class KateProjectDirViewDialog : public KDialogBase
 
 KateProjectDirView::KateProjectDirView (Kate::Project *project, const QString &dir, QWidget *parent) : KFileIconView (parent, "projectdirview")
 {
- /* m_dirFile = dirFile;
-  m_dir = KURL (dirFile->absDir());
-  m_dirs = dirFile->dirs ();
-  m_files = dirFile->files ();
-  */
+  m_project = project;
+  m_relDir = dir;
+  m_dir = KURL (m_project->dir() + QString ("/") + m_relDir);
+  m_dirs = m_project->dirs (dir);
+  m_files = m_project->files (dir);
+
   setSelectionMode (KFile::Extended);
   setIconSize( KIcon::SizeMedium );
 
@@ -87,7 +88,8 @@ void KateProjectDirView::addDialog (Kate::Project *project, const QString &dir, 
 
 KateProjectDirViewDialog::KateProjectDirViewDialog (Kate::Project *project, const QString &dir, QWidget *parent) : KDialogBase (parent, "dirviewdialog", true, i18n ("Add Directories/Files to Project"), KDialogBase::Ok|KDialogBase::Cancel)
 {
-
+  m_project = project;
+  m_dir = dir;
   m_view = new KateProjectDirView (project, dir, this);
   setMainWidget(m_view);
 }
@@ -114,8 +116,8 @@ int KateProjectDirViewDialog::exec()
       }
     }
 
-   // m_dirFile->addDirs (dirs);
-   // m_dirFile->addFiles (files);
+    m_project->addDirs (m_dir, dirs);
+    m_project->addFiles (m_dir, files);
   }
 
   return n;

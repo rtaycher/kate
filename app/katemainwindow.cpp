@@ -180,7 +180,6 @@ void KateMainWindow::setupMainWindow ()
   mainDock->setEnableDocking ( KDockWidget::DockNone );
   mainDock->setDockSite( KDockWidget::DockCorner );
 
-
   KateDockContainer *tmpDC;
   m_leftDock->setWidget(tmpDC=new KateDockContainer(m_leftDock, this, KDockWidget::DockLeft));
   tmpDC->init();
@@ -207,11 +206,11 @@ void KateMainWindow::setupMainWindow ()
   filelist = new KateFileList (m_docManager, m_viewManager, this/*filelistDock*/, "filelist");
   filelistDock=addToolViewWidget(KDockWidget::DockLeft,filelist,SmallIcon("kmultiple"), i18n("Files"));
 
-  projectlist = new KateProjectList (m_projectManager, this, this/*filelistDock*/, "projectlist");
-  projectlistDock=addToolViewWidget(KDockWidget::DockLeft,projectlist,SmallIcon("view_choose"), i18n("Projects"));
-
-  projectviews = new KateProjectViews (m_projectManager, this, this/*filelistDock*/, "projectviews");
-  projectviewsDock =addToolViewWidget(KDockWidget::DockLeft,projectviews,SmallIcon("view_tree"), i18n("Project View"));
+  QVBox *prBox = new QVBox (this);
+  projectsDock=addToolViewWidget(KDockWidget::DockLeft,prBox,SmallIcon("view_tree"), i18n("Projects"));
+  projectlist = new KateProjectList (m_projectManager, this, prBox/*filelistDock*/, "projectlist");
+  projectviews = new KateProjectViews (m_projectManager, this, prBox/*filelistDock*/, "projectviews");
+  prBox->setStretchFactor(projectviews, 2);
 
   fileselector = new KateFileSelector( this, m_viewManager, /*fileselectorDock*/ this, "operator");
   fileselectorDock=addToolViewWidget(KDockWidget::DockLeft,fileselector, SmallIcon("fileopen"), i18n("Selector"));

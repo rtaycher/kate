@@ -44,6 +44,7 @@ class KateProjectDirView : public KFileIconView
 
   private:
     Kate::Project *m_project;
+    QString m_relDir;
     KIO::ListJob *m_listJob;
     KURL m_dir;
     QStringList m_dirs;

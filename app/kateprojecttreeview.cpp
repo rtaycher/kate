@@ -32,34 +32,41 @@
 
 #include <qheader.h>
 
-KateProjectTreeViewItem::KateProjectTreeViewItem (KateProjectTreeView * parent, Kate::Project *prj, const QString &name, const QString &fullname, bool dir)
+KateProjectTreeViewItem::KateProjectTreeViewItem (QDict<KateProjectTreeViewItem> *dict, KateProjectTreeView * parent, Kate::Project *prj, const QString &name, const QString &fullname, bool dir)
  : QObject (0), KListViewItem (parent)
 {
   m_name = name;
   m_fullName = fullname;
   m_dir = dir;
   m_project = prj;
+  m_dict = dict;
 
   init ();
 }
 
-KateProjectTreeViewItem::KateProjectTreeViewItem (KateProjectTreeViewItem * parent, Kate::Project *prj, const QString &name, const QString &fullname, bool dir)
+KateProjectTreeViewItem::KateProjectTreeViewItem (QDict<KateProjectTreeViewItem> *dict, KateProjectTreeViewItem * parent, Kate::Project *prj, const QString &name, const QString &fullname, bool dir)
  : QObject (0), KListViewItem (parent)
 {
   m_name = name;
   m_fullName = fullname;
   m_dir = dir;
   m_project = prj;
+  m_dict = dict;
 
   init ();
 }
 
 KateProjectTreeViewItem::~KateProjectTreeViewItem ()
 {
+  if (m_dir)
+    m_dict->remove(QString("/")+m_fullName);
 }
 
 void KateProjectTreeViewItem::init ()
 {
+  if (m_dir)
+    m_dict->insert(QString("/")+m_fullName, this);
+
   if (m_dir)
     setPixmap (0, KMimeType::mimeType("inode/directory")->pixmap( KIcon::Small ));
   else
@@ -157,14 +164,17 @@ KateProjectTreeView::KateProjectTreeView (Kate::Project *project, KateMainWindow
   m_project = project;
   m_mainWin = mainwin;
 
+  m_dirDict.setAutoDelete (false);
+
   setSelectionModeExt( KListView::Single );
   setRootIsDecorated (false);
   setAlternateBackground (viewport()->colorGroup().base());
 
   header()->setStretchEnabled (true);
   addColumn(i18n("Project: ") + m_project->name());
+  header()->hide ();
 
-  KateProjectTreeViewItem *item = new KateProjectTreeViewItem (this, m_project, i18n("Project Root"), QString::null, true);
+  KateProjectTreeViewItem *item = new KateProjectTreeViewItem (&m_dirDict, this, m_project, i18n("Project Dir"), QString::null, true);
   addDir (item, QString::null);
 
   setOpen (item, true);
@@ -192,7 +202,7 @@ void KateProjectTreeView::addDir (KateProjectTreeViewItem *parent, const QString
 
   for (uint z=0; z < dirs.count(); z++)
   {
-    KateProjectTreeViewItem *item = new KateProjectTreeViewItem (parent, m_project, dirs[z], base + dirs[z], true);
+    KateProjectTreeViewItem *item = new KateProjectTreeViewItem (&m_dirDict, parent, m_project, dirs[z], base + dirs[z], true);
     addDir (item, base + dirs[z]);
   }
 
@@ -200,7 +210,7 @@ void KateProjectTreeView::addDir (KateProjectTreeViewItem *parent, const QString
 
   for (uint z=0; z < files.count(); z++)
   {
-    new KateProjectTreeViewItem (parent, m_project, files[z], base + files[z], false);
+    new KateProjectTreeViewItem (&m_dirDict, parent, m_project, files[z], base + files[z], false);
   }
 }
 
@@ -210,13 +220,13 @@ void KateProjectTreeView::slotDoubleClicked( QListViewItem *i, const QPoint &, i
 
   if (!item)
     return;
-  /*
+
   if (item->isDir())
   {
-    KateProjectDirView::addDialog (m_project->dirFile (item->fullName(), true), this);
+    KateProjectDirView::addDialog (m_project, item->fullName(), this);
   }
   else
-    m_mainWin->viewManager()->openURL (KURL (m_project->dir() + QString ("/") + item->fullName()));*/
+    m_mainWin->viewManager()->openURL (KURL (m_project->dir() + QString ("/") + item->fullName()));
 }
 
 

@@ -91,9 +91,8 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     KDockWidget *mainDock;
     KDockWidget *consoleDock;
     KDockWidget *filelistDock;
-    KDockWidget *projectlistDock;
+    KDockWidget *projectsDock;
     KDockWidget *fileselectorDock;
-    KDockWidget *projectviewsDock;
     KDockWidget *grepWidgetDock;
 
     KDockWidget *m_leftDock;

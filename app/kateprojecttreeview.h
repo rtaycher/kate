@@ -26,7 +26,9 @@
 #include "../interfaces/project.h"
 
 #include <klistview.h>
+
 #include <qstringlist.h>
+#include <qdict.h>
 
 class KateProjectTreeView;
 
@@ -35,8 +37,8 @@ class KateProjectTreeViewItem : public QObject, public KListViewItem
   Q_OBJECT
 
   public:
-    KateProjectTreeViewItem (KateProjectTreeView * parent, Kate::Project *prj, const QString &name, const QString &fullname, bool dir = false);
-    KateProjectTreeViewItem (KateProjectTreeViewItem * parent, Kate::Project *prj, const QString &name, const QString &fullname, bool dir = false);
+    KateProjectTreeViewItem (QDict<KateProjectTreeViewItem> *dict, KateProjectTreeView * parent, Kate::Project *prj, const QString &name, const QString &fullname, bool dir = false);
+    KateProjectTreeViewItem (QDict<KateProjectTreeViewItem> *dict, KateProjectTreeViewItem * parent, Kate::Project *prj, const QString &name, const QString &fullname, bool dir = false);
     ~KateProjectTreeViewItem ();
 
     void init ();
@@ -54,6 +56,7 @@ class KateProjectTreeViewItem : public QObject, public KListViewItem
     QString m_fullName;
     Kate::Project *m_project;
     bool m_dir;
+    QDict<KateProjectTreeViewItem> *m_dict;
 };
 
 class KateProjectTreeView : public KListView
@@ -78,6 +81,7 @@ class KateProjectTreeView : public KListView
   private:
     Kate::Project *m_project;
     class KateMainWindow *m_mainWin;
+    QDict<KateProjectTreeViewItem> m_dirDict;
 };
 
 #endif
