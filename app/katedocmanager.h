@@ -56,6 +56,7 @@ class KateDocManager : public Kate::DocManager
 
     uint docCount ();
 
+    void createPseudoStaticActionsFor(QObject *actionCollection);
   public slots:
     void checkAllModOnHD(bool forceReload=false);
 

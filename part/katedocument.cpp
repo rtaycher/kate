@@ -76,6 +76,8 @@
 #include <kglobalsettings.h>
 #include <ksavefile.h>
 
+#include "kateviewhighlightaction.h"
+
 class KateUndo
 {
   friend class KateUndoGroup;
@@ -4241,6 +4243,17 @@ bool KateDocument::exportDocumentToHTML(QTextStream *outputStream,const QString 
 	(*outputStream) << "</html>";
 	// close the file :
 	return true;
+}
+
+void KateDocument::createPseudoStaticActionsFor(Kate::KateCurrentDocProvider *provider, QObject *coll)
+{
+	kdDebug()<<"KateDocument::createPseudoStaticActionsFor"<<endl;
+ 	if (!(dynamic_cast<QObject*>(provider)))
+	{
+		kdDebug()<<"KateDocument::createPseudoStaticActionsFor: Can't create an action for a non QObject type provider :("<<endl;
+		return;
+	}
+      new KateViewHighlightAction(dynamic_cast<QObject*>(provider),i18n("&Highlight Mode"), coll,"set_highlight");
 }
 
 QString KateDocument::HTMLEncode(QChar theChar)

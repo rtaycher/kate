@@ -24,16 +24,17 @@
 #include <qstringlist.h>
 #include <qptrlist.h>
 #include <qpopupmenu.h>
+#include <qguardedptr.h>
 
 class KateViewHighlightAction: public KActionMenu
 {
 	Q_OBJECT
 public:
-	KateViewHighlightAction( QObject *related, const QString& text, QObject* parent = 0,
+	KateViewHighlightAction(QObject *related, const QString& text, QObject* parent = 0,
 		const char* name = 0):KActionMenu(text, parent ,
 		name){init(related);}
 
-	KateViewHighlightAction( QObject *related, const QString& text, const QIconSet& icon,
+	KateViewHighlightAction( QObject  *related, const QString& text, const QIconSet& icon,
 		 QObject* parent = 0, const char* name = 0 )
 		: KActionMenu(text, icon, parent, name){init(related);}
 
@@ -46,7 +47,7 @@ public:
 
 	~KateViewHighlightAction(){;}
 private:
-	QObject *related;
+	QGuardedPtr<QObject>  related;
 	void init(QObject *related_);
 	QStringList subMenusName;
 	QStringList names;

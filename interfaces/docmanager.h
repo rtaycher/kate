@@ -28,12 +28,13 @@
 
 #include <qobject.h>
 #include <kurl.h>
+#include <currentdocprovider.h>
 
 namespace Kate
 {
 /** This interface provides access to the Kate Document Manager.
 */
-class DocManager : public QObject
+class DocManager : public QObject, public KateCurrentDocProvider
 {
   Q_OBJECT
 

@@ -39,6 +39,11 @@
 #include <ktexteditor/configinterface.h>
 #include <ktexteditor/markinterface.h>
 #include <ktexteditor/printinterface.h>
+#ifndef KATEPART_NOT_INSTALLED
+#include <kate/currentdocprovider.h>
+#else
+#include <currentdocprovider.h>
+#endif
 
 namespace Kate
 {
@@ -93,6 +98,9 @@ class Document : public KTextEditor::Document, public KTextEditor::EditInterface
     /** Sets the document name.
     */
     virtual void setDocName (QString ) { ; };
+
+    virtual void createPseudoStaticActionsFor(KateCurrentDocProvider *,QObject *){;}
+
 
   public slots:
     // clear buffer/filename - update the views

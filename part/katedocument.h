@@ -23,7 +23,7 @@
 #include "katehighlight.h"
 #include "katebuffer.h"
 #include "katetextline.h"
-
+#include "../interfaces/currentdocprovider.h"
 #include "../interfaces/document.h"
 
 #include <qobject.h>
@@ -755,6 +755,10 @@ class KateDocument : public Kate::Document
     uint _configFlags;
     uint _searchFlags;
     SConfig s;
+
+    /* don't create too much actions, if the app developer knows how to do it :)  */
+   virtual void createPseudoStaticActionsFor(Kate::KateCurrentDocProvider *provider, QObject *coll);
+
 };
 
 #endif

@@ -25,6 +25,6 @@ kwrite_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 dummy.cpp:
 	echo > dummy.cpp
 
-INCLUDES= $(all_includes)
+INCLUDES= $(all_includes) -DKATEPART_NOT_INSTALLED -I../interfaces
 
 METASOURCES = AUTO

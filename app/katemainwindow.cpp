@@ -76,12 +76,23 @@ KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_
   consoleDock = 0L;
   console = 0L;
 
-  setXMLFile( "kateui.rc" );
 
   setAcceptDrops(true);
 
   setupMainWindow();
+
+  if (docManager->getCurrentDoc())
+    {
+	docManager->getCurrentDoc()->createPseudoStaticActionsFor(docManager,actionCollection());
+    }
+  else
+    {
+	docManager->createPseudoStaticActionsFor(actionCollection());
+    }
+
   setupActions();
+
+  setXMLFile( "kateui.rc" );
 
   createGUI();
 
