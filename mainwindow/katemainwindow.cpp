@@ -344,6 +344,7 @@ void KateMainWindow::readOptions(KConfig *config)
   config->setGroup("General");
   sidebarDock->resize( config->readSizeEntry("Sidebar:size", new QSize(150, height())) );
   settingsShowSidebar->setChecked( config->readBoolEntry("Show Sidebar", false) );
+  syncKonsole =  config->readBoolEntry("Sync Konsole", true);
 
   if (config->readBoolEntry("Show Console", false))
   {
@@ -363,8 +364,6 @@ void KateMainWindow::readOptions(KConfig *config)
   fileselector->setView(KFile::Default);
 
   sidebar->readConfig( config );
-
-  syncKonsole =  config->readBoolEntry("Sync Konsole", true);
 
   readDockConfig();
 }
