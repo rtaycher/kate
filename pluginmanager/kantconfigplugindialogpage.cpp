@@ -13,3 +13,4 @@ KantConfigPluginPage::KantConfigPluginPage(QWidget *parent):QHBox(parent)
 
 
 
+#include "kantconfigplugindialogpage.moc"

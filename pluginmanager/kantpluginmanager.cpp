@@ -67,3 +67,4 @@ KantPluginManager::KantPluginManager(QObject *parent):QObject(parent)
 
    kdDebug()<<"KantPluginManager initializes"<<endl;
   }
+#include "kantpluginmanager.moc"
