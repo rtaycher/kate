@@ -37,6 +37,8 @@ class KateMainWindow;
 class KConfig;
 class KAction;
 
+class QToolButton;
+
 class KateViewManager : public QObject
 {
   Q_OBJECT
@@ -145,6 +147,7 @@ class KateViewManager : public QObject
     KMDI::TabWidget *m_tabWidget;
     bool m_init;
 
+    QToolButton *m_closeTabButton;
     KAction *m_closeView;
     KAction *m_closeTab;
     KAction *m_activateNextTab;

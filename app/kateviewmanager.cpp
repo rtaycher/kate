@@ -49,6 +49,8 @@
 #include <qobjectlist.h>
 #include <qstringlist.h>
 #include <qfileinfo.h>
+#include <qtoolbutton.h>
+#include <qtooltip.h>
 //END Includes
 
 KateViewManager::KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWidget, KateDocManager *docManager)
@@ -134,6 +136,25 @@ void KateViewManager::setupActions ()
   goPrev=new KAction(i18n("Previous View"),SHIFT+Key_F8, this, SLOT(activatePrevView()),m_mainWindow->actionCollection(),"go_prev");
 
   goPrev->setWhatsThis(i18n("Make the previous split view the active one."));
+  
+  /**
+   * buttons for tabbing
+   */
+  QToolButton *b = new QToolButton( m_tabWidget );
+  connect( b, SIGNAL( clicked() ),
+             this, SLOT( slotNewTab() ) );
+  b->setIconSet( SmallIcon( "tab_new" ) );
+  b->adjustSize();
+  QToolTip::add(b, i18n("Open a new tab"));
+  m_tabWidget->setCornerWidget( b, TopLeft );
+  
+  b = m_closeTabButton = new QToolButton( m_tabWidget );
+  connect( b, SIGNAL( clicked() ),
+            this, SLOT( slotCloseTab() ) );
+  b->setIconSet( SmallIcon( "tab_remove" ) );
+  b->adjustSize();
+  QToolTip::add(b, i18n("Close the current tab"));
+  m_tabWidget->setCornerWidget( b, TopRight );
 }
 
 void KateViewManager::updateViewSpaceActions ()
@@ -158,6 +179,7 @@ void KateViewManager::tabChanged(QWidget* widget) {
   m_closeTab->setEnabled(m_tabWidget->count() > 1);
   m_activateNextTab->setEnabled(m_tabWidget->count() > 1);
   m_activatePrevTab->setEnabled(m_tabWidget->count() > 1);
+  m_closeTabButton->setEnabled (m_tabWidget->count() > 1);
   
   updateViewSpaceActions ();
 }
