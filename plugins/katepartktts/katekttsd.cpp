@@ -25,6 +25,7 @@
 #include <qmessagebox.h>
 #include <kapplication.h>
 #include <dcopclient.h>
+#include <qtimer.h>
 
 #include <kate/application.h>
 #include <kate/documentmanager.h>
@@ -81,7 +82,7 @@ void KatePluginKTTSD::addView(Kate::MainWindow *win)
 {
     PluginView *view = new PluginView ();
 
-     (void) new KAction ( i18n("&Read Out Text"), "kttsd", 0, this,
+     (void) new KAction ( i18n("&Speak Text"), "kttsd", 0, this,
                       SLOT( slotReadOut() ), view->actionCollection(),
                       "tools_kttsd" );
 
@@ -122,6 +123,19 @@ void KatePluginKTTSD::slotReadOut()
     }
 
     DCOPClient *client = kapp->dcopClient();
+    // If KTTSD not running, start it.
+    if (!client->isApplicationRegistered("kttsd"))
+    {
+        QString error;
+        if (kapp->startServiceByName("KTTSD", QStringList(), &error))
+            QMessageBox::warning(0, i18n( "Starting KTTSD failed"), error );
+        else
+        {
+            // Give KTTSD time to load.
+            QTimer::singleShot(1000, this, SLOT(slotReadOut()));
+            return;
+        }
+    }
     QByteArray  data;
     QByteArray  data2;
     QCString    replyType;
