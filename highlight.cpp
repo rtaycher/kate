@@ -48,6 +48,7 @@
 #include "highlight.h"
 #include "kwdoc.h"
 #include <kstddirs.h>
+#include <kdebug.h>
 
 // general rule for keywords: if one keyword contains another at the beginning,
 // the long one has to come first (eg. "const_cast", "const")
@@ -2136,9 +2137,9 @@ void HlManager::getDefaults(ItemStyleList &list, ItemFont &font) {
   config->setGroup("Default Font");
   QFont defaultFont = KGlobalSettings::fixedFont();
   font.family = config->readEntry("Family", defaultFont.family());
-  qDebug("family == %s", font.family.ascii());
+  kdDebug()<<"family == "<<font.family.ascii()<<endl;
   font.size = config->readNumEntry("Size", defaultFont.pointSize());
-  qDebug("size == %d", font.size);
+  kdDebug()<<"size == "<<font.size<<endl;
   font.charset = config->readEntry("Charset","ISO-8859-1");
 }
 
