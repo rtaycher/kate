@@ -134,10 +134,10 @@ bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView )
         QListIterator<KantView> it (viewList);
         int hassamename = 0;
         for (; it.current(); ++it) {
-           if ( it.current()->caption().compare( name ) == 0 )
+           if ( it.current()->doc()->url().filename().compare( name ) == 0 )
              hassamename++;
         }
-        if (hassamename > 0)
+        if (hassamename > 1)
           name = QString(name+"<%1>").arg(hassamename);
         view->setCaption ( name );
       }
