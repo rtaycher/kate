@@ -1055,8 +1055,11 @@ void KantViewManager::reopenDocuments(bool isRestore)
       openURL( KURL( fn ) );
       scfg->setGroup( fn );
       KantView* v = activeView();
-      v->readSessionConfig( scfg );
-      v->doc()->readSessionConfig( scfg );
+      if (v)
+      {
+        v->readSessionConfig( scfg );
+        v->doc()->readSessionConfig( scfg );
+      }
       scfg->deleteGroup( fn );
     }
   }
