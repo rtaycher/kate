@@ -747,7 +747,18 @@ int KateMainWindow::currentDocumentIfaceNumber()
   }
   return 0;
 }
+int KateMainWindow::newDocument()
+{
 
+}
+bool KateMainWindow::activateDocument(int)
+{
+
+}
+void KateMainWindow::closeActiveDocument()
+{
+
+}
 
 void KateMainWindow::slotFullScreen(bool t)
 {

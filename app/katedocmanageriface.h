@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
+   Copyright (C) 2003 Ian Reinhart Geiser <geiseri@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -16,21 +16,23 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef _katemainwindow_Iface_h_
-#define _katemainwindow_Iface_h_
+#ifndef _katedocmanager_Iface_h_
+#define _katedocmanager_Iface_h_
 
 #include <dcopobject.h>
 #include <kurl.h>
-class KateMainWindowDCOPIface : virtual public DCOPObject
+class KateDocManagerDCOPIface : virtual public DCOPObject
 {
   K_DCOP
 
   k_dcop:
-    virtual void openURL (const QString &name=0)=0;
-    virtual int currentDocumentIfaceNumber()=0;
-    virtual KURL activeDocumentUrl()=0;
-    virtual int newDocument()=0;
-    virtual bool activateDocument(int)=0;
-    virtual void closeActiveDocument()=0;
+    virtual bool closeDocument(uint)=0;
+    virtual bool closeDocumentWithID(uint)=0;
+    virtual bool closeAllDocuments()=0;
+    virtual bool isOpen(KURL)=0;
+    virtual uint documents ()=0;
+    virtual int findDocument (KURL)=0;
+    virtual KURL activeDocumentURL()=0;
+
 };
 #endif

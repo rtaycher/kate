@@ -94,6 +94,10 @@ Kate::Document *KateDocManager::activeDocument ()
   return m_currentDoc;
 }
 
+KURL KateDocManager::activeDocumentURL()
+{
+  return m_currentDoc->url();
+}
 void KateDocManager::setActiveDocument (Kate::Document *doc)
 {
   if (m_currentDoc != doc)

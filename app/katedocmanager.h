@@ -21,6 +21,7 @@
 #define __KATE_DOCMANAGER_H__
 
 #include "katemain.h"
+#include "katedocmanageriface.h"
 #include "../interfaces/documentmanager.h"
 
 #include <kate/document.h>
@@ -45,7 +46,7 @@ class KateDocumentInfo
     unsigned char modifiedOnDiscReason;
 };
 
-class KateDocManager : public QObject
+class KateDocManager : public QObject,virtual public KateDocManagerDCOPIface
 {
   Q_OBJECT
 
@@ -61,6 +62,7 @@ class KateDocManager : public QObject
     Kate::Document *document (uint n);
 
     Kate::Document *activeDocument ();
+    KURL activeDocumentURL();
     void setActiveDocument (Kate::Document *doc);
 
     Kate::Document *firstDocument ();

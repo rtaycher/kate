@@ -228,6 +228,12 @@ class KateMainWindow : public KMdiMainFrm, virtual public KateMainWindowDCOPIfac
   public:
     /** @return the interface number for the current document */
     int currentDocumentIfaceNumber();
+    /** @return the interface number of the created document */
+    int newDocument();
+    /** @return the success of activateing a document **/
+    bool activateDocument(int);
+    /** @return the success of closing the active document **/
+    void closeActiveDocument();
 
   public: //ToolViewManager stuff
     virtual KDockWidget *addToolViewWidget(KDockWidget::DockPosition pos,QWidget *widget,const QPixmap &icon, const QString& caption);
