@@ -4,7 +4,7 @@ EXTRA_DIST = piper AUTHORS COPYING ChangeLog NEWS README TODO
 bin_PROGRAMS = kant
 
 kant_SOURCES = kantmain.cpp
-kant_LDADD   =  ./kwrite/libkwritepart.la ./app/libkantapp.la \
+kant_LDADD   =   ./qt3stuff/libqt3stuff.la ./kwrite/libkwritepart.la ./app/libkantapp.la \
 		./view/libkantview.la ./mainwindow/libkantmainwindow.la \
 		./sidebar/libkantsidebar.la ./project/libkantproject.la \
 		./fileselector/libkantfileselector.la ./document/libkantdocument.la \
