@@ -921,9 +921,9 @@ void KantViewManager::splitViewSpace(bool isHoriz)
 
   s->show();
 
-  connect(this, SIGNAL(statusChanged(KantView *, int, int, int, int, QString)), vs, SLOT(slotStatusChanged(KantView *, int, int, int, int, QString)));
+  connect(this, SIGNAL(statusChanged(KantView *, int, int, int, int, QString)), vsNew, SLOT(slotStatusChanged(KantView *, int, int, int, int, QString)));
   viewSpaceList.append( vsNew );
-  vs->installEventFilter( this );
+  vsNew->installEventFilter( this );
   activeViewSpace()->setActive( false );
   vsNew->setActive( true );
   vsNew->show();
@@ -967,7 +967,7 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
   {
     if (viewspace->currentView())
     {
-    kdDebug()<<QString("removeViewSpace(): %1 views left").arg(vsvc)<<endl;
+      //kdDebug()<<QString("removeViewSpace(): %1 views left").arg(vsvc)<<endl;
       KantView* v = viewspace->currentView();
 
       if (v->isLastView())
@@ -980,8 +980,6 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
         deleteView( v, false, false, false );
       }
     }
-    else // this can not happen!
-      kdDebug()<<"removeViewSpace(): PANIC!!"<<endl;
     vsvc = viewspace->viewCount();
   }
 
@@ -990,12 +988,25 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
   // reparent the other sibling of the parent.
   while (p->children ())
   {
-    kdDebug()<<"removeViewSpace(): reparenting a splitter"<<endl;
     QWidget* other = ((QWidget *)(( QList<QObject>*)p->children())->first());
     other->reparent( p->parentWidget(), 0, QPoint(), true );
-    //
+    // We also need to find the right viewspace to become active,
+    // and if "other" is the last, we move it into the grid.
     if (pIsFirst)
        ((KantSplitter*)p->parentWidget())->moveToFirst( other );
+    if ( other->isA("KantViewSpace") ) {
+      activeViewSpace()->setActive( false );
+      ((KantViewSpace*)other)->setActive( true );
+      if (viewSpaceList.count() == 1)
+        grid->addWidget( other, 0, 0);
+    }
+    else {
+      QObjectList* l = other->queryList( "KantViewSpace" );
+      if ( l->first() != 0 ) { // I REALLY hope so!
+        activeViewSpace()->setActive( false );
+        ((KantViewSpace*)l->first())->setActive( true );
+      }
+    }
   }
 
   delete p;
@@ -1003,21 +1014,12 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
   if (!ppsizes.isEmpty())
     pp->setSizes( ppsizes );
 
-  viewSpaceList.find( activeViewSpace() );
-
-  if (viewSpaceList.current()->parentWidget() == this)
-    grid->addWidget( viewSpaceList.current(), 0, 0);
-
-  // anders: this dosen't seem to make sense?
-  //viewSpaceList.current()->setActive( true );
-
   // find the view that is now active.
   KantView* v = activeViewSpace()->currentView();
   if ( v ) {
-    kdDebug()<<"removeViewSpace(): new active view: "<<v->doc()->url().filename()<<endl;
     activateView( v );
   }
-  // else: there is no view.
+
   emit viewChanged();
 }
 

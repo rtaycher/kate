@@ -25,6 +25,7 @@
 #include <klocale.h>
 #include <kstatusbar.h>
 #include <qwidgetstack.h>
+#include <kdebug.h>
 
 KantViewSpace::KantViewSpace(QWidget* parent, const char* name)
   : QVBox(parent, name)
@@ -167,7 +168,6 @@ void KantViewSpace::slotStatusChanged (KantView *view, int r, int c, int ovr, in
     modstr = QString (" * ");
   else
     modstr = QString ("   ");
-
   mStatusBar->slotDisplayStatusText (" " + s1 + " " + s2 + " " + ovrstr + " " + modstr + " " + msg);
 }
 
