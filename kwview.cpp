@@ -290,6 +290,12 @@ void KWriteView::doEditCommand(VConfig &c, int cmdNum) {
     case cmCleanIndent:
       kWriteDoc->cleanIndent(c);
       return;
+    case cmComment:
+      kWriteDoc->comment(c);
+      return;
+    case cmUncomment:
+      kWriteDoc->unComment(c);
+      return;
   }
 }
 
@@ -1583,6 +1589,8 @@ void KWrite::addEditCommands(KGuiCmdManager &cmdMngr) {
   cmdMngr.addCommand(cmIndent,          i18nop("&Indent"          ), Qt::CTRL+Qt::Key_I);
   cmdMngr.addCommand(cmUnindent,        i18nop("Uninden&t"        ), Qt::CTRL+Qt::Key_U);
   cmdMngr.addCommand(cmCleanIndent,     i18nop("Clean Indent"     ));
+  cmdMngr.addCommand(cmComment,          i18nop("Comment"          ), Qt::CTRL+Qt::Key_M);
+  cmdMngr.addCommand(cmUncomment,        i18nop("Uncomment"        ), Qt::CTRL+Qt::ALT+Qt::Key_M);
   cmdMngr.addCommand(cmSelectAll,       i18nop("&Select All"      ));
   cmdMngr.addCommand(cmDeselectAll,     i18nop("&Deselect All"    ));
   cmdMngr.addCommand(cmInvertSelection, i18nop("In&vert Selection"));

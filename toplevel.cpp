@@ -248,6 +248,9 @@ void TopLevel::setupMenuBar() {
   edit->addCommand(ctEditCommands, cmUnindent);
   edit->addCommand(ctEditCommands, cmCleanIndent);
   edit->insertSeparator();
+  edit->addCommand(ctEditCommands, cmComment);
+  edit->addCommand(ctEditCommands, cmUncomment);
+  edit->insertSeparator();
   edit->addCommand(ctEditCommands, cmSelectAll);
   edit->addCommand(ctEditCommands, cmDeselectAll);
   edit->addCommand(ctEditCommands, cmInvertSelection);
@@ -734,6 +737,8 @@ void TopLevel::newStatus() {
   edit->setItemEnabled(menuIndent,!readOnly);
   edit->setItemEnabled(menuUnindent,!readOnly);
   edit->setItemEnabled(menuCleanIndent,!readOnly);
+  edit->setItemEnabled(menuComment,!readOnly);
+  edit->setItemEnabled(menuUncomment,!readOnly);
   edit->setItemEnabled(menuSpell,!readOnly);
   edit->setItemEnabled(menuCut,!readOnly);
   edit->setItemEnabled(menuPaste,!readOnly);

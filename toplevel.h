@@ -70,6 +70,7 @@ class TopLevel : public KTMainWindow {
     int menuInsert, menuSave;
     int menuUndo, menuRedo, menuUndoHist,
         menuIndent, menuUnindent, menuCleanIndent,
+        menuComment, menuUncomment,
         menuSpell, menuCut, menuPaste, menuReplace;
     int menuVertical, menuShowTB, menuShowSB, menuShowPath;
 //    int statusID, toolID, verticalID, indentID;

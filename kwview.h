@@ -161,6 +161,8 @@ const int cmCleanIndent       = 12;
 const int cmSelectAll         = 13;
 const int cmDeselectAll       = 14;
 const int cmInvertSelection   = 15;
+const int cmComment           = 16;
+const int cmUncomment         = 17;
 //find commands
 const int cmFind              = 1;
 const int cmReplace           = 2;
