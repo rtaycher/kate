@@ -1111,7 +1111,6 @@ int GenHighlight::doHighlight(int ctxNum, TextLine *textLine) {
   return context->ctx;
 }
 
-
 void GenHighlight::init() {
   int z;
 

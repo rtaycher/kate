@@ -191,6 +191,26 @@ const QChar* TextLine::getString() {
   return text;
 }
 
+bool TextLine::startingWith(QString& match) {
+
+  int matchLen = match.length();
+
+  // Get the first chars of the textline
+  QString firstChars = QString(text, len).left(matchLen);
+
+  return (firstChars == match);
+}
+
+bool TextLine::endingWith(QString& match) {
+
+  int matchLen = match.length();
+
+  // Get the last chars of the textline
+  QString lastChars = QString(text, len).right(matchLen);
+
+  return (lastChars == match);
+}
+
 int TextLine::cursorX(int pos, int tabChars) const {
   int l, x, z;
 
@@ -1723,36 +1743,92 @@ void KWriteDoc::optimizeLeadingSpace(int line, int flags, int change) {
   recordReplace(cursor, chars, s);
 }
 
+void KWriteDoc::doCommentLine(PointStruc &cursor) {
+
+  QString startComment = m_highlight->getCommentStart() + " ";
+  QString endComment = " " + m_highlight->getCommentEnd();
+
+  // Add a start comment mark
+  cursor.x = 0;
+  recordReplace(cursor, 0, startComment);
+
+  // Add an end comment mark
+  if(endComment != " ") {
+    TextLine* textline = contents.at(cursor.y);
+    cursor.x = textline->length();
+    recordReplace(cursor, 0, endComment);
+    cursor.x = 0;
+  }
+}
+
+void KWriteDoc::doUncommentLine(PointStruc &cursor) {
+
+  QString startComment = m_highlight->getCommentStart() + " ";
+  QString otherStartComment = m_highlight->getCommentStart();
+  QString endComment = "";
+  if(m_highlight->getCommentEnd() != "") {
+    endComment = " " + m_highlight->getCommentEnd();
+  }
+
+  int startCommentLen = startComment.length();
+  int otherStartCommentLen = otherStartComment.length();
+  int endCommentLen = endComment.length();
+
+  TextLine* textline = contents.at(cursor.y);
+
+  if(textline->startingWith(startComment) && textline->endingWith(endComment)) {
+
+    // Remove start comment mark
+    cursor.x = 0;
+    recordReplace(cursor, startCommentLen, "");
+
+    // Remove end comment mark
+    if(endComment != "") {
+      cursor.x = textline->length() - endCommentLen;
+      recordReplace(cursor, endCommentLen, "");
+      cursor.x = 0;        
+    }
+
+  } else if(textline->startingWith(otherStartComment) && textline->endingWith(endComment)) {
+
+    // Remove start comment mark
+    cursor.x = 0;
+    recordReplace(cursor, otherStartCommentLen, "");
+
+    // Remove end comment mark
+    if(endComment != "") {
+      cursor.x = textline->length() - endCommentLen;
+      recordReplace(cursor, endCommentLen, "");
+      cursor.x = 0;        
+    }
+  }
+}
+
 void KWriteDoc::doComment(VConfig &c, int change) {
 
-  TextLine *textLine;
-
   c.flags |= cfPersistent;
-  c.cursor.x = 0;
 
   recordStart(c, (change < 0) ? KWActionGroup::ugUncomment
     : KWActionGroup::ugComment);
 
   if (selectEnd < selectStart) {
-    textLine = contents.at(c.cursor.y);
     if(change > 0) {
-      //comment single line
-      recordReplace(c.cursor,0,"//");
+      // comment single line
+      doCommentLine(c.cursor);
     } else if(change < 0) {
-      //uncomment single line
-      if ((textLine->getChar(0) != '/') || (textLine->getChar(1) != '/')) return;
-      recordReplace(c.cursor,2,"");
-    }                                                                             } else {
+      // uncomment single line
+      doUncommentLine(c.cursor);
+    }                                                                    
+  } else {
     for (c.cursor.y = selectStart; c.cursor.y <= selectEnd; c.cursor.y++) {
-      textLine = contents.at(c.cursor.y);
-      if(change > 0) {
-      //comment selection
-        if (textLine->isSelected() || textLine->numSelected())
-          recordReplace(c.cursor,0,"//");
-      } else if(change < 0) {
-        //uncomment selection
-        if ((textLine->isSelected() || textLine->numSelected())
-            && (textLine->getChar(0) == '/') && (textLine->getChar(1) == '/')) {          recordReplace(c.cursor,2,"");
+      TextLine* textLine = contents.at(c.cursor.y);
+      if (textLine->isSelected() || textLine->numSelected()) {
+        if(change > 0) {
+          //comment selection
+          doCommentLine(c.cursor);
+        } else if(change < 0) {
+          //uncomment selection
+          doUncommentLine(c.cursor);
         }
       }
     }
@@ -1761,6 +1837,7 @@ void KWriteDoc::doComment(VConfig &c, int change) {
 
   recordEnd(c.view, c.cursor, c.flags | cfPersistent);
 }
+
 
 QString KWriteDoc::text() const {
   QListIterator<TextLine> it( contents );

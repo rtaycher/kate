@@ -372,6 +372,8 @@ class Highlight {
     void release();
     virtual bool isInWord(QChar c) {return ::isInWord(c);}
     virtual int doHighlight(int ctxNum, TextLine *textLine);
+    virtual QString getCommentStart() { return QString(""); };
+    virtual QString getCommentEnd() { return QString(""); };
   protected:
     virtual void createItemData(ItemDataList &);
     virtual void init();
@@ -413,6 +415,8 @@ class CHighlight : public GenHighlight {
   public:
     CHighlight(const QString &name);
     virtual ~CHighlight();
+    virtual QString getCommentStart() { return QString("/*"); };
+    virtual QString getCommentEnd() { return QString("*/"); };
   protected:
     virtual void createItemData(ItemDataList &);
     virtual void makeContextList();
@@ -423,6 +427,8 @@ class CppHighlight : public CHighlight {
   public:
     CppHighlight(const QString &name);
     virtual ~CppHighlight();
+    virtual QString getCommentStart() { return QString("//"); };
+    virtual QString getCommentEnd() { return QString(""); };
   protected:
     virtual void setKeywords(HlKeyword *keyword, HlKeyword *dataType);
 };
@@ -431,6 +437,8 @@ class ObjcHighlight : public CHighlight {
   public:
     ObjcHighlight(const QString &name);
     virtual ~ObjcHighlight();
+    virtual QString getCommentStart() { return QString("//"); };
+    virtual QString getCommentEnd() { return QString(""); };
   protected:
     virtual void makeContextList();
     virtual void setKeywords(HlKeyword *keyword, HlKeyword *dataType);
@@ -440,6 +448,8 @@ class IdlHighlight : public CHighlight {
   public:
     IdlHighlight(const QString &name);
     virtual ~IdlHighlight();
+    virtual QString getCommentStart() { return QString("//"); };
+    virtual QString getCommentEnd() { return QString(""); };
   protected:
     virtual void setKeywords(HlKeyword *keyword, HlKeyword *dataType);
 };
@@ -448,6 +458,8 @@ class JavaHighlight : public CHighlight {
   public:
     JavaHighlight(const QString &name);
     virtual ~JavaHighlight();
+    virtual QString getCommentStart() { return QString("//"); };
+    virtual QString getCommentEnd() { return QString(""); };
   protected:
     virtual void setKeywords(HlKeyword *keyword, HlKeyword *dataType);
 };
@@ -456,6 +468,8 @@ class HtmlHighlight : public GenHighlight {
   public:
     HtmlHighlight(const QString &name);
     virtual ~HtmlHighlight();
+    virtual QString getCommentStart() { return QString("<!--"); };
+    virtual QString getCommentEnd() { return QString("-->"); };
   protected:
     virtual void createItemData(ItemDataList &);
     virtual void makeContextList();
@@ -465,6 +479,7 @@ class BashHighlight : public GenHighlight {
   public:
     BashHighlight(const QString &name);
     virtual ~BashHighlight();
+    virtual QString getCommentStart() { return QString("#"); };
   protected:
     virtual void createItemData(ItemDataList &);
     virtual void makeContextList();
@@ -474,6 +489,8 @@ class ModulaHighlight : public GenHighlight {
   public:
     ModulaHighlight(const QString &name);
     virtual ~ModulaHighlight();
+    virtual QString getCommentStart() { return QString("(*"); };
+    virtual QString getCommentEnd() { return QString("*)"); };
   protected:
     virtual void createItemData(ItemDataList &);
     virtual void makeContextList();
@@ -483,6 +500,7 @@ class AdaHighlight : public GenHighlight {
   public:
     AdaHighlight(const QString &name);
     virtual ~AdaHighlight();
+    virtual QString getCommentStart() { return QString("--"); };
   protected:
     virtual void createItemData(ItemDataList &);
     virtual void makeContextList();
@@ -492,6 +510,7 @@ class PythonHighlight : public GenHighlight {
   public:
     PythonHighlight(const QString &name);
     virtual ~PythonHighlight();
+    virtual QString getCommentStart() { return QString("#"); };
   protected:
     virtual void createItemData(ItemDataList &);
     virtual void makeContextList();
@@ -502,6 +521,7 @@ class PerlHighlight : public Highlight {
     PerlHighlight(const QString &name);
 
     virtual int doHighlight(int ctxNum, TextLine *);
+    virtual QString getCommentStart() { return QString("#"); };
   protected:
     virtual void createItemData(ItemDataList &);
     virtual void init();
@@ -513,6 +533,7 @@ class SatherHighlight : public GenHighlight {
   public:
     SatherHighlight(const QString &name);
     virtual ~SatherHighlight();
+    virtual QString getCommentStart() { return QString("--"); };
   protected:
     virtual void createItemData(ItemDataList &);
     virtual void makeContextList();
@@ -522,6 +543,7 @@ class LatexHighlight : public GenHighlight {
   public:
     LatexHighlight(const QString &name);
     virtual ~LatexHighlight();
+    virtual QString getCommentStart() { return QString("%"); };
   protected:
     virtual void createItemData(ItemDataList &);
     virtual void makeContextList();

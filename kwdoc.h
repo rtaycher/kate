@@ -110,6 +110,14 @@ class TextLine {
       depends on the number of tab characters
     */
     int cursorX(int pos, int tabChars) const;
+    /**
+      Is the line starting with the given string
+    */
+    bool startingWith(QString& match);
+    /**
+      Is the line ending with the given string
+    */
+    bool endingWith(QString& match);
 
     /**
       Sets the attributes from start to end -1
@@ -435,6 +443,8 @@ class KWriteDoc : public KTextEditor::Document {
     void comment(VConfig &c) {doComment(c, 1);}
     void unComment(VConfig &c) {doComment(c, -1);}
     void doComment(VConfig &, int change);
+    void doCommentLine(PointStruc &cursor);
+    void doUncommentLine(PointStruc &cursor);
 
     virtual QString text() const;
     QString getWord(PointStruc &cursor);
