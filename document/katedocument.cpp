@@ -196,6 +196,8 @@ KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool
 
   newDocGeometry = false;
 
+  readConfig();
+
   if ( m_bSingleViewMode )
   {
     KTextEditor::View *view = createView( parentWidget, widgetName );
@@ -520,8 +522,8 @@ void KateDocument::writeConfig() {
   config->sync();
 }
 
-void KateDocument::readSessionConfig(KConfig *config) {
-  readConfig();
+void KateDocument::readSessionConfig(KConfig *config)
+{
   m_url = config->readEntry("URL"); // ### doesn't this break the encoding? (Simon)
   setHighlight(hlManager->nameFind(config->readEntry("Highlight")));
   // anders: restore bookmarks if possible
@@ -534,9 +536,8 @@ void KateDocument::readSessionConfig(KConfig *config) {
   }
 }
 
-void KateDocument::writeSessionConfig(KConfig *config) {
-
-  writeConfig();
+void KateDocument::writeSessionConfig(KConfig *config)
+{
   config->writeEntry("URL", m_url.url() ); // ### encoding?? (Simon)
   config->writeEntry("Highlight", m_highlight->name());
   // anders: save bookmarks

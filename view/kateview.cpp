@@ -1456,11 +1456,9 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name, bool H
   if ( doc->hasBrowserExtension() )
   {
     connect( this, SIGNAL( dropEventPass(QDropEvent*) ), this, SLOT( slotDropEventPass(QDropEvent*) ) );
-
-    this->readConfig( );
-    myDoc->readConfig();
   }
 
+  readConfig();
   setHighlight->setCurrentItem(getHl());
   slotUpdate();
 }
@@ -2595,10 +2593,9 @@ void KateView::writeConfig()
   config->sync();
 }
 
-void KateView::readSessionConfig(KConfig *config) {
+void KateView::readSessionConfig(KConfig *config)
+{
   PointStruc cursor;
-
-  readConfig();
 
   myViewInternal->xPos = config->readNumEntry("XPos");
   myViewInternal->yPos = config->readNumEntry("YPos");
@@ -2609,9 +2606,8 @@ void KateView::readSessionConfig(KConfig *config) {
   setIconBorder(myIconBorder);
 }
 
-void KateView::writeSessionConfig(KConfig *config) {
-  writeConfig();
-
+void KateView::writeSessionConfig(KConfig *config)
+{
   config->writeEntry("XPos",myViewInternal->xPos);
   config->writeEntry("YPos",myViewInternal->yPos);
   config->writeEntry("CursorX",myViewInternal->cursor.x);
