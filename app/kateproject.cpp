@@ -64,3 +64,18 @@ bool KateProject::save ()
 
   return m_plugin->save ();
 }
+
+QStringList KateProject::sections () const
+{
+  m_data->setGroup("General");
+  return m_data->readListEntry ("Sections");
+}
+
+QStringList KateProject::files (const QString &section) const
+{
+  if (!m_data->hasGroup(section))
+    return QStringList ();
+
+  m_data->setGroup(section);
+  return m_data->readListEntry ("Files");
+}

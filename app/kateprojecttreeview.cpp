@@ -23,9 +23,24 @@
 #include "kateprojecttreeview.h"
 #include "kateprojecttreeview.moc"
 
+#include <klocale.h>
+
+#include <qheader.h>
+
 KateProjectTreeView::KateProjectTreeView (Kate::Project *project, QWidget *parent) : KListView (parent)
 {
   m_project = project;
+  
+  header()->setStretchEnabled (true);
+  addColumn(i18n("Project Tree"));
+
+  QStringList sections = project->sections ();
+  
+  KListViewItem *last = 0;
+  for (uint z=0; z < sections.count(); z++)
+  {
+    last = new KListViewItem (this, sections[z]);
+  }
 }
 
 KateProjectTreeView::~KateProjectTreeView ()

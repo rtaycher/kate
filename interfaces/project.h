@@ -21,9 +21,22 @@
 
 #include <qobject.h>
 #include <kurl.h>
+#include <qstringlist.h>
 
 namespace Kate
 {
+
+/**
+ * Class to capsule the data for a file of an project
+ */
+class ProjectFile
+{
+  public:
+    QString section;
+    QString name;
+    QStringList keys;
+    QStringList values;
+};
 
 /**
  * Interface to the project
@@ -76,6 +89,18 @@ class Project : public QObject
      * @return bool success
      */
     bool save ();
+    
+    /**
+     * Sections for the files
+     * @return QStringList list of known sections
+     */
+    QStringList sections () const;
+    
+    /**
+     * Names of the files in the section
+     * @return QStringList list with names (NOT FILE NAMES) of known files in this section
+     */
+    QStringList files (const QString &section) const;
     
   private:
     /**

@@ -48,6 +48,10 @@ class KateProject : public QObject
     QString fileName () const;
     
     bool save ();
+    
+    QStringList sections () const;
+    
+    QStringList files (const QString &section) const;
 
   private:
     class KateProjectManager *m_projectMan;

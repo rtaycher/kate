@@ -142,7 +142,10 @@ void KateProjectList::projectCreated (Kate::Project *project)
 
   m_numList.append (project->projectNumber());
   m_projectCombo->insertItem (project->name());
-  m_stack->addWidget (new KateProjectTreeView (project, this));
+  
+  KateProjectTreeView *tree = new KateProjectTreeView (project, this);
+  m_stack->addWidget (tree);
+  m_stack->raiseWidget (tree);
   
   if (m_projectCombo->isHidden())
     m_projectCombo->show ();
@@ -156,8 +159,11 @@ void KateProjectList::projectDeleted (uint projectNumber)
   {
     m_numList.remove (projectNumber);
     m_projectCombo->removeItem (n);
-    m_stack->removeWidget (m_stack->widget (n));
-  
+    
+    QWidget *w = m_stack->widget (n);
+    m_stack->removeWidget (w);
+    delete w;
+    
     if (m_numList.isEmpty())
     {
       if (!m_projectCombo->isHidden())

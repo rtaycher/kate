@@ -87,5 +87,15 @@ bool Project::save ()
   return d->project->save ();
 }
 
+QStringList Project::sections () const
+{
+  return d->project->sections ();
+}
+
+QStringList Project::files (const QString &section) const
+{
+  return d->project->files (section);
+}
+
 };
 

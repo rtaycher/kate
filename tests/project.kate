@@ -1,0 +1,4 @@
+[General]
+Type=Default
+Name=Test Project
+Sections=Sources,Includes,Docs,Misc
