@@ -94,8 +94,6 @@
 #include <dcopclient.h>
 #include <qregexp.h>
 
-#include <X11/Xlib.h> //used to have XSetTransientForHint()
-
 #include "../document/katetextline.h"
 #include "kateviewdialog.h"
 #include "kateundohistory.h"
@@ -1323,28 +1321,7 @@ void KateViewInternal::doDrag()
 {
   dragInfo.state = diDragging;
   dragInfo.dragObject = new QTextDrag(myDoc->markedText(0), this);
-  if (myView->isReadOnly()) {
-    dragInfo.dragObject->dragCopy();
-  } else {
-
-/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   drag() is broken for move operations in Qt - dragCopy() is the only safe way
-   to go right now
-
-    if (dragInfo.dragObject->drag()) {
-      // the drag has completed and it turned out to be a move operation
-      if (! myDoc->ownedView((KateViewInternal*)(QDragObject::target()))) {
-        // the target is not me - we need to delete our selection
-        VConfig c;
-        getVConfig(c);
-        myDoc->delMarkedText(c);
-        myDoc->updateViews();
-      }
-    }
-*/
-    dragInfo.dragObject->dragCopy();
-
-  }
+  dragInfo.dragObject->dragCopy();
 }
 
 void KateViewInternal::dragEnterEvent( QDragEnterEvent *event )
@@ -1482,6 +1459,7 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name, bool H
   connect( this, SIGNAL( newUndo() ), this, SLOT( slotNewUndo() ) );
   connect( this, SIGNAL( fileChanged() ), this, SLOT( slotFileStatusChanged() ) );
   connect( doc, SIGNAL( highlightChanged() ), this, SLOT( slotHighlightChanged() ) );
+
   if ( doc->hasBrowserExtension() )
     connect( this, SIGNAL( dropEventPass(QDropEvent*) ), this, SLOT( slotDropEventPass(QDropEvent*) ) );
 
@@ -1565,7 +1543,7 @@ void KateView::setupActions()
     editInsert = new KAction(i18n("&Insert File..."), 0, this, SLOT(insertFile()),
                              actionCollection(), "edit_insertFile");
 
-   KAction *editCmd = new KAction(i18n("&Editing Command"), Qt::CTRL+Qt::Key_D, this, SLOT(slotEditCommand()),
+   new KAction(i18n("&Editing Command"), Qt::CTRL+Qt::Key_D, this, SLOT(slotEditCommand()),
                                   actionCollection(), "edit_cmd");
 
     // setup Go menu
@@ -2744,9 +2722,6 @@ void KateView::findAgain(SConfig &s) {
   } while (query == KMessageBox::Continue);
 }
 
-//void qt_enter_modal(QWidget *);
-
-
 void KateView::replaceAgain() {
   if (isReadOnly())
     return;
@@ -2819,7 +2794,6 @@ void KateView::doReplaceAction(int result, bool found) {
       exposeFound(s.cursor,s.matchedLength,(s.flags & KateView::sfAgain) ? 0 : KateView::ufUpdateOnScroll,true);
       if (replacePrompt == 0L) {
         replacePrompt = new ReplacePrompt(this);
-        XSetTransientForHint(qt_xdisplay(),replacePrompt->winId(),topLevelWidget()->winId());
         myDoc->setPseudoModal(replacePrompt);//disable();
         connect(replacePrompt,SIGNAL(clicked()),this,SLOT(replaceSlot()));
         replacePrompt->show(); //this is not modal
@@ -2858,7 +2832,6 @@ void KateView::exposeFound(PointStruc &cursor, int slen, int flags, bool replace
   myViewInternal->setPos(xPos, yPos);
   myViewInternal->updateView(flags);// | ufPos,xPos,yPos);
   myDoc->updateViews(this);
-//  myDoc->updateViews();
 }
 
 void KateView::deleteReplacePrompt() {
