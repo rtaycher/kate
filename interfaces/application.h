@@ -31,9 +31,10 @@ class Application : public KApplication
     Application ();
     virtual ~Application ();
 
-    // get the current active doc/viewmanager
+    // get the current active doc/viewmanager, mainwindow
     virtual class ViewManager *getViewManager () { return 0L; };
     virtual class DocManager *getDocManager () { return 0L; };
+    virtual class MainWindow *getMainWindow () { return 0L; };
 };
 
 };
