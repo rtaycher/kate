@@ -1,5 +1,5 @@
 SUBDIRS = kwrite app console data document fileselector mainwindow pics project sidebar view pluginmanager plugins
-EXTRA_DIST = piper
+EXTRA_DIST = piper AUTHORS COPYING ChangeLog NEWS README TODO 
 
 bin_PROGRAMS = kant
 
