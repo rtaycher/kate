@@ -40,6 +40,7 @@
 #include <qfile.h>
 #include <qtimer.h>
 #include <qdir.h>
+#include <qtextcodec.h>
 
 KConfig *KateApp::m_sessionConfig = 0;
 
@@ -278,6 +279,8 @@ int KateApp::newInstance()
   }
   else
   {
+    QTextCodec *codec = args->isSet("encoding") ? QTextCodec::codecForName(args->getOption("encoding")) : 0;
+
     Kate::Document::setOpenErrorDialogsActivated (false);
     for (int z=0; z<args->count(); z++)
     {
@@ -288,8 +291,15 @@ int KateApp::newInstance()
       {
         if (args->url(z).isLocalFile () && args->url(z).path().endsWith(".kateproject")) // open a project file
           m_mainWindows.first()->openProject ( args->url(z).path() );
-        else // open a normal file
-          m_mainWindows.first()->kateViewManager()->openURL( args->url(z) );
+        else
+        {
+          // open a normal file
+
+          if (codec)
+            m_mainWindows.first()->kateViewManager()->openURL( args->url(z), codec->name() );
+          else
+            m_mainWindows.first()->kateViewManager()->openURL( args->url(z) );
+        }
       }
       else
         KMessageBox::sorry( m_mainWindows.first(),

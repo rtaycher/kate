@@ -32,9 +32,10 @@ static KCmdLineOptions options[] =
     { "n", I18N_NOOP("Start a new Kate process (off by default)"), 0 },
     { "w", I18N_NOOP("Open a new Kate window"), 0 },
     { "initplugin <argument>",	I18N_NOOP("Allow Kate to be initialized by a plugin. You most probably have to specify a file too."),0},
+    { "encoding <argument>",      I18N_NOOP("Set encoding for the file to open"), 0 },
     { "line <argument>",      I18N_NOOP("Navigate to this line"), 0 },
     { "column <argument>",      I18N_NOOP("Navigate to this column"), 0 },
-    { "+file(s)",          I18N_NOOP("Files to load"), 0 },
+    { "+[URL]",          I18N_NOOP("Document to open"), 0 },
     KCmdLineLastOption
 };
 
@@ -77,7 +78,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
   aboutData.addCredit ("Cristi Dumitrescu",I18N_NOOP("PHP Keyword/Datatype list"),"");
   aboutData.addCredit ("Carsten Pfeiffer", I18N_NOOP("Very nice help"), "");
   aboutData.addCredit (I18N_NOOP("All people who have contributed and I have forgotten to mention"),"","");
-  
+
   aboutData.setTranslator(I18N_NOOP("_: NAME OF TRANSLATORS\nYour names"), I18N_NOOP("_: EMAIL OF TRANSLATORS\nYour emails"));
 
   KCmdLineArgs::init (argc, argv, &aboutData);
