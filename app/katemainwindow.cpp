@@ -582,7 +582,7 @@ KURL KateMainWindow::activeDocumentUrl()
   return KURL();
 }
 
-void KateMainWindow::fileSelected(const KFileItem *file)
+void KateMainWindow::fileSelected(const KFileItem * /*file*/)
 {
   /*if (file) {
   	m_viewManager->openURL( file->url() );

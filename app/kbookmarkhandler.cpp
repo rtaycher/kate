@@ -65,7 +65,7 @@ QString KBookmarkHandler::currentURL() const
 }
 
 
-void KBookmarkHandler::slotNewBookmark( const QString& text,
+void KBookmarkHandler::slotNewBookmark( const QString& /*text*/,
                                             const QCString& url,
                                             const QString& additionalInfo )
 {
