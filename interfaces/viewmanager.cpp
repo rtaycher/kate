@@ -63,7 +63,7 @@ View *ViewManager::activeView()
 
 void ViewManager::openURL (const KURL &url)
 {
-  d->viewMan->openURL (url);
+  d->viewMan->openURL (url, QString::null, true);
 }
 
 }

@@ -56,8 +56,9 @@ class KateViewManager : public QWidget
     /* restore it */
     void restoreViewConfiguration (KConfig *config,const QString& group);
 
+    uint openURL (const KURL &url, const QString& encoding=QString::null, bool activate = true);
+    
   public slots:
-    void openURL (KURL url=0L, const QString& encoding=QString::null);
     void openConstURLCheck (const KURL&url=0L);
 
   private:

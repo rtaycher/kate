@@ -468,13 +468,17 @@ void KateViewManager::slotDocumentOpen ()
      (cv ? cv->document()->url().url() : QString::null),
      QString::null,this,i18n("Open File"));
 
+  uint lastID = 0;
   for (KURL::List::Iterator i=r.URLs.begin(); i != r.URLs.end(); ++i)
   {
     if (!KIO::NetAccess::exists(*i, true, this))
       KMessageBox::error (this, i18n("The given file could not be read, check if it exists or if it is readable for the current user."));
     else
-      openURL( *i, r.encoding );
+      lastID = openURL( *i, r.encoding, false );
   }
+  
+  if (lastID > 0)
+    activateView (lastID);
 }
 
 void KateViewManager::slotDocumentSaveAll()
@@ -505,15 +509,18 @@ void KateViewManager::slotDocumentCloseAll ()
   openNewIfEmpty();
 }
 
-void KateViewManager::openURL (KURL url, const QString& encoding)
+uint KateViewManager::openURL (const KURL &url, const QString& encoding, bool activate)
 {
-  uint id;
-  Kate::Document *doc=m_docManager->openURL(url,encoding,&id);
+  uint id = 0;
+  Kate::Document *doc = m_docManager->openURL (url, encoding, &id);
 
   if (!doc->url().isEmpty())
     m_mainWindow->fileOpenRecent->addURL( doc->url() );
 
-  activateView( id );
+  if (activate)
+    activateView( id );
+    
+  return id;
 }
 
 void KateViewManager::openConstURLCheck (const KURL& url)
