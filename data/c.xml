@@ -1,46 +1,46 @@
 <?xml version="1.01" encoding="UTF-8"?><!DOCTYPE language>
 <language name="C" extensions="*.c;*.cpp;*.cc;*.C;*.h" mimetype="text/x-c++-src;text/x-c++-hdr;text/x-c-hdr;text/x-c++-src" casesensitive="1">
   <highlighting>
-    <keywords>
-      <keyword> break </keyword>
-      <keyword> case </keyword>
-      <keyword> continue </keyword>
-      <keyword> default </keyword>
-      <keyword> do </keyword>
-      <keyword> else </keyword>
-      <keyword> enum </keyword>
-      <keyword> extern </keyword>
-      <keyword> for </keyword>
-      <keyword> goto </keyword>
-      <keyword> if </keyword>
-      <keyword> return </keyword>
-      <keyword> sizeof </keyword>
-      <keyword> struct </keyword>
-      <keyword> switch </keyword>
-      <keyword> typedef </keyword>
-      <keyword> union </keyword>
-      <keyword> while </keyword>
-    </keywords>
-    <types>
-      <type> auto </type>
-      <type> char </type>
-      <type> const </type>
-      <type> double </type>
-      <type> float </type>
-      <type> int </type>
-      <type> long </type>
-      <type> register </type>
-      <type> short </type>
-      <type> signed </type>
-      <type> static </type>
-      <type> unsigned </type>
-      <type> void </type>
-      <type> volatile </type>
-    </types>
+    <list name="keywords">
+      <item> break </item>
+      <item> case </item>
+      <item> continue </item>
+      <item> default </item>
+      <item> do </item>
+      <item> else </item>
+      <item> enum </item>
+      <item> extern </item>
+      <item> for </item>
+      <item> goto </item>
+      <item> if </item>
+      <item> return </item>
+      <item> sizeof </item>
+      <item> struct </item>
+      <item> switch </item>
+      <item> typedef </item>
+      <item> union </item>
+      <item> while </item>
+    </list>
+    <list name="datatypes">
+      <item> auto </item>
+      <item> char </item>
+      <item> const </item>
+      <item> double </item>
+      <item> float </item>
+      <item> int </item>
+      <item> long </item>
+      <item> register </item>
+      <item> short </item>
+      <item> signed </item>
+      <item> static </item>
+      <item> unsigned </item>
+      <item> void </item>
+      <item> volatile </item>
+    </list>
     <contexts>
       <context attribute="0" lineEndContext="0">
-        <item name="keyword" attribute="1" context="0"/>
-        <item name="dataType" attribute="2" context="0"/>
+        <item name="keyword" attribute="1" context="0" String="keywords"/>
+        <item name="keyword" attribute="2" context="0" String="datatypes"/>
         <item name="Float" attribute="6" context="0">
           <item name="AnyChar" String="fF" attribute="6" context="0"/>
         </item>

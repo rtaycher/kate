@@ -1,7 +1,7 @@
 <?xml version="1.01" encoding="UTF-8"?><!DOCTYPE language>
 <language name="Java" extensions="*.java" mimetype="text/x-java-src" casesensitive="1">
   <highlighting>
-    <keywords>
+    <list name="keywords">
       <keyword> abstract </keyword>
       <keyword> break </keyword>
       <keyword> case </keyword>
@@ -41,8 +41,8 @@
       <keyword> try </keyword>
       <keyword> volatile </keyword>
       <keyword> while </keyword>
-    </keywords>
-    <types>
+    </list>
+    <list name="types">
       <type> boolean </type>
       <type> byte </type>
       <type> char </type>
@@ -55,11 +55,11 @@
       <type> short </type>
       <type> static </type>
       <type> void </type>
-    </types>
+    </list>
     <contexts>
       <context attribute="0" lineEndContext="0" name="Normal">
-        <item name="keyword" attribute="1" context="0"/>
-        <item name="dataType" attribute="2" context="0"/>
+        <item name="keyword" attribute="1" context="0" String="keywords"/>
+        <item name="keyword" attribute="2" context="0" String="types" />
         <item name="Float" attribute="6" context="0">
           <item name="AnyChar" String="fF" attribute="6" context="0"/>
         </item>

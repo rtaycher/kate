@@ -1,10 +1,6 @@
 <?xml version="1.01" encoding="UTF-8"?><!DOCTYPE language>
 <language name="XML/SGML" extensions="*.docbook;*.xml;*.sgml" mimetype="text/sgml;text/xml;text/book" casesensitive="0">
   <highlighting>
-    <keywords>
-    </keywords>
-    <types>
-    </types>
     <contexts>
        <context attribute="0" lineEndContext="0">
          <item name="RegExpr" attribute="1" context="1" String="&lt;\s*\/?\s*[a-zA-Z0-9_]*" />

@@ -1,72 +1,72 @@
 <?xml version="1.01" encoding="UTF-8"?><!DOCTYPE language>
 <language name="KBasic" extensions="*.kbasic" mimetype="text/x-kbasic-src" casesensitive="1">
     <highlighting>
-        <keywords>
-        <keyword> For </keyword>
-        <keyword> Next</keyword>
-        <keyword> Do </keyword>
-        <keyword> Loop </keyword>
-        <keyword> While </keyword>
-        <keyword> Wend </keyword>
-        <keyword> Until </keyword>
-        <keyword> If </keyword>
-        <keyword> Else </keyword>
-        <keyword> End  </keyword>
-        <keyword> Function </keyword>
-        <keyword> Goto </keyword>
-        <keyword> Sub  </keyword>
-        <keyword> Implements </keyword>
-        <keyword> In  </keyword>
-        <keyword> Sub </keyword>
-        <keyword> Private </keyword>
-        <keyword> Public  </keyword>
-        <keyword> Global </keyword>
-        <keyword> As  </keyword>
-        <keyword> Dim </keyword>
-        <keyword> Set </keyword>
-        <keyword> Let </keyword>
-        <keyword> Get </keyword>
-        <keyword> To </keyword>
-        <keyword> Property </keyword>
-        <keyword> True </keyword>
-        <keyword> False </keyword>
-        <keyword> Or  </keyword>
-        <keyword> Not </keyword>
-        <keyword> Xor  </keyword>
-        <keyword> And  </keyword>
-        <keyword> Then </keyword>
-        <keyword> Exit </keyword>
-        <keyword> Put </keyword>
-        <keyword> Open </keyword>
-        <keyword> Close </keyword>
-        <keyword> Seek </keyword>
-        <keyword> Print </keyword>
-        <keyword> Input</keyword>
-        <keyword> Output </keyword>
-        <keyword> Repeat </keyword>
-        <keyword> Load </keyword>
-        <keyword> Unload </keyword>
-        <keyword> Declare </keyword>
-        <keyword> Option </keyword>
-        <keyword> Explicit </keyword>
-        </keywords>
-        <types>
-        <type>Integer </type>
-        <type>Long </type>
-        <type>Byte </type>
-        <type>Boolean </type>
-        <type>Variant </type>
-        <type>Single </type>
-        <type>Double </type>
-        <type>Currency </type>
-        <type>String </type>
-        <type>Object </type>
-        <type>Control </type>
-        </types>
+        <list name="keywords">
+        <item> For </item>
+        <item> Next</item>
+        <item> Do </item>
+        <item> Loop </item>
+        <item> While </item>
+        <item> Wend </item>
+        <item> Until </item>
+        <item> If </item>
+        <item> Else </item>
+        <item> End  </item>
+        <item> Function </item>
+        <item> Goto </item>
+        <item> Sub  </item>
+        <item> Implements </item>
+        <item> In  </item>
+        <item> Sub </item>
+        <item> Private </item>
+        <item> Public  </item>
+        <item> Global </item>
+        <item> As  </item>
+        <item> Dim </item>
+        <item> Set </item>
+        <item> Let </item>
+        <item> Get </item>
+        <item> To </item>
+        <item> Property </item>
+        <item> True </item>
+        <item> False </item>
+        <item> Or  </item>
+        <item> Not </item>
+        <item> Xor  </item>
+        <item> And  </item>
+        <item> Then </item>
+        <item> Exit </item>
+        <item> Put </item>
+        <item> Open </item>
+        <item> Close </item>
+        <item> Seek </item>
+        <item> Print </item>
+        <item> Input</item>
+        <item> Output </item>
+        <item> Repeat </item>
+        <item> Load </item>
+        <item> Unload </item>
+        <item> Declare </item>
+        <item> Option </item>
+        <item> Explicit </item>
+        </list>
+        <list name="types">
+        <item>Integer </item>
+        <item>Long </item>
+        <item>Byte </item>
+        <item>Boolean </item>
+        <item>Variant </item>
+        <item>Single </item>
+        <item>Double </item>
+        <item>Currency </item>
+        <item>String </item>
+        <item>Object </item>
+        <item>Control </item>
+        </list>
         <contexts>
         <context attribute="0" lineEndContext="0">
-        <item name="keyword" attribute="1" context="0"/>
-        <item name="dataType" attribute="2" context="0"/>
+        <item name="keyword" attribute="1" context="0" String="keywords"/>
+        <item name="keyword" attribute="2" context="0" String="types"/>
         <item name="Float" attribute="4" context="0"/>
         <item name="Int" attribute="3" context="0"/>
         <item name="CharDetect" attribute="4" context="2" char="quot;"/>

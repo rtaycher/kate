@@ -220,16 +220,18 @@ QStringList& SyntaxDocument::finddata(const QString& mainGroup,const QString& ty
 	  {
             if (n.toElement().tagName()==mainGroup)
               {
-                for (n=n.firstChild(); !n.isNull(); n=n.nextSibling())
+		QDomNodeList nodelist1=n.toElement().elementsByTagName("list");
+		for (uint l=0; l<nodelist1.count();l++)
 		  {
-                    if (n.toElement().tagName()==type)
-                     {
-		       QDomNodeList childlist=n.childNodes();
-                       for (uint i=0; i<childlist.count();i++)
-                         m_data+=childlist.item(i).toElement().text().stripWhiteSpace();
-                       break;
-                     }
-                  }
+                    if (nodelist1.item(l).toElement().attribute("name")==type)
+		      {
+                        n=nodelist1.item(l).toElement();
+		        QDomNodeList childlist=n.childNodes();
+                        for (uint i=0; i<childlist.count();i++)
+                          m_data+=childlist.item(i).toElement().text().stripWhiteSpace();
+                        break;
+                      }
+                   }
                 break;
               }
           }      

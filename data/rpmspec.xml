@@ -1,35 +1,35 @@
 <?xml version="1.01" encoding="UTF-8"?><!DOCTYPE language>
 <language name="RPM Spec" extensions="*.spec" mimetype="" casesensitive="1">
   <highlighting>
-    <keywords>
-        <keyword> Name </keyword>
-                <keyword> Summary </keyword>
-                <keyword> Version </keyword>
-                <keyword> Release </keyword>
-                <keyword> Source </keyword>
-                <keyword> Group </keyword>
-                <keyword> BuildRoot </keyword>
-                <keyword> Copyright </keyword>
-                <keyword> Packager </keyword>
-                <keyword> Url </keyword>
-                <keyword> URL </keyword>
-                <keyword> Prefix </keyword>
-                <keyword> Requires </keyword>
-                <keyword> BuildRequires </keyword>
-                <keyword> Serial </keyword>
-                <keyword> Vendor </keyword>
-                <keyword> License </keyword>
-    </keywords>
-    <types>
-      <type> GPL </type>
-      <type> LGPL </type>
-      <type> Artistic </type>
-    </types>
+    <list name="keywords">
+        <item> Name </item>
+                <item> Summary </item>
+                <item> Version </item>
+                <item> Release </item>
+                <item> Source </item>
+                <item> Group </item>
+                <item> BuildRoot </item>
+                <item> Copyright </item>
+                <item> Packager </item>
+                <item> Url </item>
+                <item> URL </item>
+                <item> Prefix </item>
+                <item> Requires </item>
+                <item> BuildRequires </item>
+                <item> Serial </item>
+                <item> Vendor </item>
+                <item> License </item>
+    </list>
+    <list name="types">
+      <item> GPL </item>
+      <item> LGPL </item>
+      <item> Artistic </item>
+    </list>
     <contexts>
 
       <context attribute="0" lineEndContext="0">
-         <item name="keyword" attribute="1" context="0"/>
-         <item name="Data Type" attribute="5" context="0"/>
+         <item name="keyword" attribute="1" context="0" String="keywords"/>
+         <item name="keyword" attribute="5" context="0" String="types"/>
          <item name="RegExpr" attribute="2" context="0" String="%[a-zA-Z0-9_]*" />
          <item name="CharDetect" attribute="3" context="1" char="#" />
          <item name="RegExpr" attribute="1" context="2" String="\{[a-zA-Z0-9_]*" />

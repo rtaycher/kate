@@ -947,8 +947,13 @@ HlItem *AutoHighlight::createHlItem(struct syntaxContextData *data, int *res)
                   chr1=0;
 		bool insensitive=(HlManager::self()->syntax->groupItemData(data,QString("insensitive"))==QString("TRUE"));
 		*res=0;
-                if (dataname=="keyword") {*res=1; return(new HlKeyword(attr,context,casesensitive=="1"));} else
-                if (dataname=="dataType") {*res=2; return(new HlKeyword(attr,context,casesensitive=="1"));} else
+                if (dataname=="keyword") 
+		{
+	           HlKeyword *keyword=new HlKeyword(attr,context,casesensitive=="1");
+		   keyword->addList(HlManager::self()->syntax->finddata("highlighting",stringdata));  
+		   return keyword;
+		} else
+//                if (dataname=="dataType") {*res=2; return(new HlKeyword(attr,context,casesensitive=="1"));} else
                 if (dataname=="Float") return (new HlFloat(attr,context)); else
                 if (dataname=="Int") return(new HlInt(attr,context)); else
                 if (dataname=="CharDetect") return(new HlCharDetect(attr,context,chr)); else
