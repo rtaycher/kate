@@ -3100,7 +3100,12 @@ void KateView::bookmarkMenuAboutToShow()
   for (int i=0; (uint) i < list.count(); i++)
   {
     if (list.at(i)->type == 1)
-      bookmarkMenu->popupMenu()->insertItem ( QString("Bookmark %1 - Line %2").arg(i).arg(list.at(i)->line), this, SLOT (gotoBookmark(int)), 0, i );
+    {
+      QString bText = textLine(list.at(i)->line);
+      bText.truncate(32);
+      bText.append ("...");
+      bookmarkMenu->popupMenu()->insertItem ( QString("%1 - \"%2\"").arg(list.at(i)->line).arg(bText), this, SLOT (gotoBookmark(int)), 0, i );
+    }
   }
 }
 
