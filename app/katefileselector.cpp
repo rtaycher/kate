@@ -510,8 +510,8 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
   // Toolbar - a lot for a little...
   QGroupBox *gbToolbar = new QGroupBox( 1, Qt::Vertical, i18n("Toolbar"), this );
   acSel = new KActionSelector( gbToolbar );
-  acSel->setAvailableLabel( i18n("A&vailable Actions") );
-  acSel->setSelectedLabel( i18n("S&elected Actions") );
+  acSel->setAvailableLabel( i18n("A&vailable actions:") );
+  acSel->setSelectedLabel( i18n("S&elected actions:") );
   lo->addWidget( gbToolbar );
   // Sync
   QGroupBox *gbSync = new QGroupBox( 1, Qt::Horizontal, i18n("Auto Synchronization"), this );
