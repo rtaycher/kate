@@ -984,7 +984,6 @@ void KantViewManager::slotSetModified()
 
 void KantViewManager::saveAllDocsAtCloseDown(KConfig* config)
 {
-  config->setGroup("open files");
   QValueList<long> seen;
   KantView* v;
   int id;
@@ -1006,6 +1005,7 @@ void KantViewManager::saveAllDocsAtCloseDown(KConfig* config)
       data.append( QString("%1.%2").arg(v->currentLine()).arg(v->currentColumn()) );// CURSOR
       //data.append();// LASTMOD
       // write entry
+      config->setGroup("open files");
       config->writeEntry( QString("File%1").arg(id), data );
       list.append( QString("File%1").arg(id) );
     }
@@ -1013,6 +1013,7 @@ void KantViewManager::saveAllDocsAtCloseDown(KConfig* config)
       return;
     i++;
   }
+  config->setGroup("open files");
   config->writeEntry( "list", list );
 }
 

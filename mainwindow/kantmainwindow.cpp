@@ -86,6 +86,8 @@ KantMainWindow::KantMainWindow(KantPluginManager *_pluginManager) :
         for (; pIt.current(); ++pIt )
             guiFactory()->addClient( pIt.current() );
   setUpdatesEnabled(true);
+
+  installEventFilter(this);
 }
 
 KantMainWindow::~KantMainWindow()
@@ -147,7 +149,9 @@ bool KantMainWindow::eventFilter(QObject* o, QEvent* e)
                                 	return true;
 	                        }
         }
-
+   if (o == this && e->type() == QEvent::FocusIn) {
+     kdDebug()<<"focus in"<<endl;
+   }
   return QWidget::eventFilter(o,e);
 }
 
@@ -910,6 +914,7 @@ void KantMainWindow::slotConfigure()
       v->writeConfig( config );
       v->doc()->writeConfig( config );
       v->applyColors();
+      config->sync();
       // all docs need to reread config.
       QListIterator<KantDocument> dit (docManager->docList);
       for (; dit.current(); ++dit) {
