@@ -54,7 +54,7 @@ class KateDocManager : public Kate::DocManager
     int findDoc (Kate::Document *doc);
     /** Returns the documentNumber of the doc with url URL or -1 if no such doc is found */
     int findDoc (KURL url);
-    // Anders: The above is not currently stable ??!
+    // Anders: The above is not currently stable ?
     Kate::Document *findDocByUrl( KURL url );
     bool isOpen(KURL url);
 
