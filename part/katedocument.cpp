@@ -917,20 +917,26 @@ bool KateDocument::invertSelection()
 // KTextEditor::UndoInterface stuff
 //
 
-int KateDocument::undoCount () const
+uint KateDocument::undoCount () const
 {
 
 }
 
-int KateDocument::redoCount () const
+uint KateDocument::redoCount () const
 {
 
 }
 
-int KateDocument::undoSteps () const
+uint KateDocument::undoSteps () const
 {
-
+  return myUndoSteps;
 }
+
+void KateDocument::setUndoSteps(uint steps)
+{
+  myUndoSteps = steps;
+}
+
 
 //
 // KTextEditor::CursorInterface stuff
@@ -2943,11 +2949,6 @@ void KateDocument::clearRedo() {
   }
 
   if (deleted) newUndo();*/
-}
-
-void KateDocument::setUndoSteps(int steps) {
-  if (steps < 5) steps = 5;
-//  undoSteps = steps;
 }
 
 void KateDocument::setPseudoModal(QWidget *w) {

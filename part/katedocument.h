@@ -210,11 +210,11 @@ class KateDocument : public Kate::Document
     void clearUndo ();
 		void clearRedo ();
 
-		int undoCount () const;
-		int redoCount () const;
+		uint undoCount () const;
+		uint redoCount () const;
 
-		int undoSteps () const;
-    void setUndoSteps ( int steps );
+		uint undoSteps () const;
+    void setUndoSteps ( uint steps );
 
 	signals:
 		void undoChanged ();
@@ -614,6 +614,7 @@ class KateDocument : public Kate::Document
 	private:
 	  QPtrList<KateUndoGroup> undoItems;
 		QPtrList<KateUndoGroup> redoItems;
+		uint myUndoSteps;
 };
 
 #endif
