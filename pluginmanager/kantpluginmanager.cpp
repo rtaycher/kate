@@ -5,7 +5,7 @@
     copyright            : (C) 2001 by Joseph Wenninger
     email                : jowenn@bigfoot.com
  ***************************************************************************/
- 
+
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -25,52 +25,44 @@
 #include <qfile.h>
 #include <ksimpleconfig.h>
 
-KantPluginManager::KantPluginManager(QObject *parent):QObject(parent)
+KantPluginManager::KantPluginManager(QObject *parent) : QObject(parent)
+{
+  KStandardDirs *dirs = KGlobal::dirs();
+
+  QStringList list=dirs->findAllResources("appdata","plugins/*.desktop",false,true);
+
+  KSimpleConfig *confFile;
+  for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
   {
-    kdDebug(13040)<<"Constructing KantPluginManager"<<endl;
-    KStandardDirs *dirs = KGlobal::dirs();
+    confFile=new KSimpleConfig(*it,true);
 
-    QStringList list=dirs->findAllResources("appdata","plugins/*.desktop",false,true);
+    PluginListItem *info=new PluginListItem;
+    info->load = (confFile->readEntry("load","no") =="1");
+    info->name = confFile->readEntry("name","no");
+    info->description = confFile->readEntry("description","no");
+    info->author = confFile->readEntry("author","no");
+    myPluginList.append(info);
 
-    KSimpleConfig *confFile;    
-    for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
+    if (info->load)
+    {
+      QString relp=QFileInfo(*it).fileName();
+      relp=relp.left(relp.length()-8);
+
+      relp=dirs->findResource("appdata","plugins/"+relp+"/ui.rc");
+
+      KParts::Plugin::PluginInfo plInf;
+      plInf.m_absXMLFileName=relp;
+
+      QFile f( relp );
+      if ( f.open( IO_ReadOnly ) )
       {
-	confFile=new KSimpleConfig(*it,true);
-                 PluginListItem *info=new PluginListItem;
-       info->load = (confFile->readEntry("load","no") =="1");
-      info->name = confFile->readEntry("name","no");
-      info->description = confFile->readEntry("description","no");
-      info->author = confFile->readEntry("author","no");
-      myPluginList.append(info);
+        if ( plInf.m_document.setContent( &f ) )
+          plugins.append(plInf);
 
-if (confFile->readEntry("load","no")=="1")
-          {
-	    kdDebug(13040)<<"Cool one  plugin should be loaded"<<endl;
-            QString relp=QFileInfo(*it).fileName();
-	    relp=relp.left(relp.length()-8);
-	    kdDebug(13040)<<"Found plugin: "<<relp<<endl;
-	    relp=dirs->findResource("appdata","plugins/"+relp+"/ui.rc");
-	    KParts::Plugin::PluginInfo plInf;
-	    plInf.m_absXMLFileName=relp;
-            //        plInf.m_document=
-            //  QDomDocument doc( "mydocument" );
-            QFile f( relp );
-            if ( f.open( IO_ReadOnly ) )
-	      {
-                if ( plInf.m_document.setContent( &f ) ) 
-                  {
-	            plugins.append(plInf);
-                  }
-                f.close();
-              }
-          }
-	else
-          { 
-		kdDebug(13040)<<"Plugin skipped"<<endl;
-	  }
-	delete confFile;
+        f.close();
       }
-     //       qDebug((*it).latin1());}
+    }
 
-   kdDebug(13040)<<"KantPluginManager initializes"<<endl;
+    delete confFile;
   }
+}

@@ -20,7 +20,6 @@
 #include "../main/kantmain.h"
 
 #include <qobject.h>
-#include <kdebug.h>
 #include <qvaluelist.h>
 #include <kparts/plugin.h>
 
