@@ -209,8 +209,9 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
 
 void KateDocument::setFont (QFont font)
 {
+  kdDebug()<<"Kate:: setFont"<<endl;
+  int oldwidth=myFontMetrics.width('W');  //Quick & Dirty Hack (by JoWenn) //Remove in KDE 3.0
   myFont = font;
-
   myFontBold = QFont (font);
   myFontBold.setBold (true);
 
@@ -225,8 +226,12 @@ void KateDocument::setFont (QFont font)
   myFontMetricsBold = CachedFontMetrics (myFontBold);
   myFontMetricsItalic = CachedFontMetrics (myFontItalic);
   myFontMetricsBI = CachedFontMetrics (myFontBI);
+  int newwidth=myFontMetrics.width('W'); //Quick & Dirty Hack (by JoWenn)  //Remove in KDE 3.0
+  maxLength=maxLength*(float)newwidth/(float)oldwidth; //Quick & Dirty Hack (by JoWenn)  //Remove in KDE 3.0
 
   updateFontData();
+  updateViews(); //Quick & Dirty Hack (by JoWenn) //Remove in KDE 3.0
+
 }
 
 long  KateDocument::needPreHighlight(long till)
