@@ -336,14 +336,23 @@ void KateFileList::slotViewChanged ()
     i = i->nextSibling();
   }
 
+  if ( ! i )
+    return;
+
   KateFileListItem *item = (KateFileListItem*)i;
   setCurrentItem( item );
+
+  // ### During load of file lists, all the loaded views gets active.
+  // Do something to avoid shading them -- maybe not creating views, just
+  // open the documents???
+
 
 //   int p = 0;
 //   if (  m_viewHistory.count() )
 //   {
 //     int p =  m_viewHistory.findRef( item ); // only repaint items that needs it
 //   }
+
   m_viewHistory.removeRef( item );
   m_viewHistory.prepend( item );
 
