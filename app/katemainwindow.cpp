@@ -986,3 +986,4 @@ void KateMainWindow::slotPipeToConsole ()
   else
     console->sendInput (v->getDoc()->text()); 
 }
+
