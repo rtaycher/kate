@@ -351,9 +351,15 @@ void GrepTool::slotSearch()
   if (!cmbFiles->currentText().isEmpty() )
   {
     QStringList files = QStringList::split ( ",", cmbFiles->currentText(), FALSE );
-    *childproc << "(" << "-false";
+    *childproc << "(";
+    bool first = true;
     for ( QStringList::Iterator it = files.begin(); it != files.end(); ++it )
-      *childproc << "-o" << "-name" << (*it);
+    {
+      if (!first)
+        *childproc << "-o";
+      *childproc << "-name" << (*it);
+      first = false;
+    }
     *childproc << ")";
   }
   *childproc << "-exec" << "grep";
