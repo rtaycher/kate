@@ -166,7 +166,7 @@ GrepTool::GrepTool(KateMainWindow *parent, const char *name)
   actionbox->addStretch();
   search_button = actionbox->addButton(i18n("Search"));
   search_button->setDefault(true);
-  clear_button = actionbox->addButton(i18n("Clear"));
+  clear_button = actionbox->addButton(KStdGuiItem::clear());
   actionbox->addStretch();
   actionbox->layout();
 
@@ -294,7 +294,7 @@ void GrepTool::slotSearch()
     childproc->kill();
     return;
   }
-  
+
   if (pattern_combo->currentText().isEmpty())
     return;
 
@@ -343,7 +343,7 @@ void GrepTool::slotSearch()
            SLOT(receivedOutput(KProcess *, char *, int)) );
   connect( childproc, SIGNAL(receivedStderr(KProcess *, char *, int)),
            SLOT(receivedErrOutput(KProcess *, char *, int)) );
-  
+
   // actually it should be checked whether the process was started successfully
   resultbox->setCursor( QCursor(Qt::WaitCursor) );
   clear_button->setEnabled( false );
