@@ -460,23 +460,9 @@ void KateMainWindow::slotCurrentDocChanged()
   if (!viewManager->activeView())
     return;
 
-  if (viewManager->activeView()->getDoc()->undoCount() == 0)
-  {
-    editUndo->setEnabled(false);
-  }
-  else
-  {
-    editUndo->setEnabled(true);
-  }
+  editUndo->setEnabled(viewManager->activeView()->getDoc()->undoCount() > 0);
+  editRedo->setEnabled(viewManager->activeView()->getDoc()->redoCount() > 0);
 
-  if (viewManager->activeView()->getDoc()->redoCount() == 0)
-  {
-    editRedo->setEnabled(false);
-  }
-  else
-  {
-    editRedo->setEnabled(true);
-  }
 }
 
  void KateMainWindow::documentMenuAboutToShow()
@@ -527,13 +513,17 @@ void KateMainWindow::bookmarkMenuAboutToShow()
   bookmarkMenu->clear ();
   bookmarkToggle->plug (bookmarkMenu);
   bookmarkClear->plug (bookmarkMenu);
-  bookmarkMenu->insertSeparator ();
 
   list = viewManager->activeView()->getDoc()->marks();
+  bool hassep = false;
   for (int i=0; (uint) i < list.count(); i++)
   {
     if (list.at(i)->type&Kate::Document::markType01)
     {
+      if (!hassep) {
+        bookmarkMenu->insertSeparator ();
+        hassep = true;
+      }
       QString bText = viewManager->activeView()->getDoc()->textLine(list.at(i)->line);
       bText.truncate(32);
       bText.append ("...");
