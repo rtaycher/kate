@@ -23,6 +23,7 @@
 #include <kglobal.h>
 #include <kglobalaccel.h>
 #include <kglobalsettings.h>
+#include <kstartupinfo.h>
 #include <dcopclient.h>
 #include <kurl.h>
 
@@ -91,6 +92,7 @@ int main( int argc, char **argv )
       arg << args->url(z).url();
       client->send (appID, "KateApp", "openURL(QString)", data);
     }
+    KStartupInfo::appStarted();
   }
   else
   {
