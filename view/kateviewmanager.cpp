@@ -739,6 +739,20 @@ void KateViewManager::clearBookmarks ()
   activeView()->clearBookmarks();
 }
 
+void KateViewManager::slotComment ()
+{
+  if (activeView() == 0) return;
+
+  activeView()->comment();
+}
+
+void KateViewManager::slotUnComment ()
+{
+  if (activeView() == 0) return;
+
+  activeView()->uncomment();
+}
+
 void KateViewManager::openURL (KURL url)
 {
   if ( !docManager->isOpen( url ) )

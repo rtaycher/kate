@@ -107,6 +107,8 @@ class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOP
     KAction *editReplace;
     KAction *editIndent;
     KAction *editUnIndent;
+    KAction *editComment;
+    KAction *editUnComment;
     KAction *bookmarkToggle;
     KAction *bookmarkClear;
     KAction *toolsSpell;

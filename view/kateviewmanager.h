@@ -185,6 +185,9 @@ class KateViewManager : public Kate::ViewManager
     void toggleBookmark();
     void clearBookmarks();
 
+    void slotComment ();
+    void slotUnComment ();
+
     void setEol(int);
     void toggleIconBorder ();
 
