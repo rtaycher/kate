@@ -56,10 +56,10 @@ KateConfigPluginPage::KateConfigPluginPage(QWidget *parent, KateConfigDialog *di
 
   unloadButton = new QPushButton( /*i18n("&Back"),*/ vbox2 );
   unloadButton->setPixmap(SmallIcon("back"));
-  QToolTip::add(unloadButton, i18n("Previous directory"));
+  QToolTip::add(unloadButton, i18n("Unload Plugin"));
   loadButton = new QPushButton( /*i18n("&Next"),*/ vbox2 );
   loadButton->setPixmap(SmallIcon("forward"));
-  QToolTip::add(loadButton, i18n("Next Directory"));
+  QToolTip::add(loadButton, i18n("Load Plugin"));
 
   unloadButton->setEnabled(false);
   loadButton->setEnabled(false);
