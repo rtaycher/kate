@@ -1052,6 +1052,7 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
   public slots:
     virtual void setFocus ();
     void findAgain(bool back=false);
+    void findAgain () { findAgain(false); };
 
   protected:
     bool eventFilter(QObject* o, QEvent* e);

@@ -670,7 +670,7 @@ void KateViewManager::slotFindAgain ()
 {
   if (activeView() == 0) return;
 
-  activeView()->findAgain();
+  activeView()->findAgain(false);
 }
 
 void KateViewManager::slotFindAgainB ()
