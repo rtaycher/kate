@@ -73,7 +73,7 @@ KInstance *KateFactory::instance()
 const KAboutData *KateFactory::aboutData()
 {
   KAboutData *data = new KAboutData  ("kate", I18N_NOOP("Kate Texteditor"), "0.2",
-                                                           I18N_NOOP( "Kate - get an edge in editing" ), KAboutData::License_GPL,
+                                                           I18N_NOOP( "Kate - KDE Advanced Text Editor" ), KAboutData::License_GPL,
                                                            "(c) 2000-2001 The Kate Authors", "http://devel-home.kde.org/~kate");
 
   data->addAuthor("Christoph Cullmann", I18N_NOOP("Project Manager and Core Developer"), "crossfire@babylon2k.de", "http://www.babylon2k.de");
