@@ -351,19 +351,10 @@ HlCHex::HlCHex(int attribute, int context)
   : HlItem(attribute,context) {
 }
 
-const QChar *HlCHex::checkHgl(const QChar *str, int , bool) {
+const QChar *HlCHex::checkHgl(const QChar *str, int , bool)
+{
   const QChar *s=str;
-#if 0
-  int i;
-  for (i=0;(*s)!='\0';s++,i++);
-  QString line(str,i);
-  QRegExp3 rx("0[xX][a-fA-F\\d]+[UuLl]?"); // this matches but is also matching parenthesis
-  int pos=rx.search(line,0);
-  if(pos > -1) return str+rx.matchedLength();
-  else
-	return 0L;
 
-#else
   if (str[0] == '0' && ((str[1]&0xdf) == 'X' )) {
     str += 2;
     s = str;
@@ -374,7 +365,6 @@ const QChar *HlCHex::checkHgl(const QChar *str, int , bool) {
     }
   }
   return 0L;
-#endif
 }
 
 HlCFloat::HlCFloat(int attribute, int context)
