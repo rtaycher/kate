@@ -55,7 +55,7 @@
 QList<KantDocument> docList; //documents
 
 
-TopLevel::TopLevel (KantDocument *doc, const QString &path)
+TopLevel::TopLevel (KantDocument *doc)
 {
   setMinimumSize(180,120);
 
@@ -174,7 +174,7 @@ void TopLevel::setupStatusBar()
 
 void TopLevel::newWindow()
 {
-  TopLevel *t = new TopLevel(0L, kWrite->doc()->url().fileName());
+  TopLevel *t = new TopLevel();
   t->readConfig();
   t->init();
 //  t->kWrite->doc()->inheritFileName(kWrite->doc());

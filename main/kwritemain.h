@@ -37,7 +37,7 @@ class TopLevel : public KParts::MainWindow
   Q_OBJECT
 
   public:
-    TopLevel(KantDocument * = 0L, const QString &path = QString::null);
+    TopLevel(KantDocument * = 0L);
     ~TopLevel();
 
     void init(); //initialize caption, status and show
