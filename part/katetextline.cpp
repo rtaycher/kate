@@ -36,12 +36,19 @@ void TextLine::replace(uint pos, uint delLen, const QChar *insText, uint insLen,
   text.remove (pos, delLen); 
   text.insert (pos, insText, insLen); 
  
-  if (oldLen<text.length()) attributes = (uchar *) realloc (attributes, text.length()); 
- 
-  if (text.length() == 0) 
-  { 
-    attributes = (uchar *) realloc (attributes, 0); 
-    return; 
+  if (oldLen<text.length())
+	{
+	  if (attributes == 0L)
+		  attributes = (uchar *) malloc (text.length());
+	  else
+		  attributes = (uchar *) realloc (attributes, text.length());
+  }
+
+  if (text.length() == 0)
+  {
+	  if (attributes != 0L)
+      attributes = (uchar *) realloc (attributes, 0);
+    return;
   } 
  
   if (pos >= oldLen) 
@@ -76,7 +83,13 @@ void TextLine::replace(uint pos, uint delLen, const QChar *insText, uint insLen,
     } 
   } 
  
-  if (oldLen>text.length()) attributes = (uchar *) realloc (attributes, text.length()); 
+  if (oldLen>text.length())
+	{
+		if (attributes == 0L)
+		  attributes = (uchar *) malloc (text.length());
+	  else
+		  attributes = (uchar *) realloc (attributes, text.length());
+	}
 } 
  
 void TextLine::append(const QChar *s, uint l) 
@@ -86,8 +99,15 @@ void TextLine::append(const QChar *s, uint l)
  
 void TextLine::truncate(uint newLen) 
 { 
-  text.truncate(newLen); 
-	attributes = (uchar *) realloc (attributes, text.length()); 
+  if (newLen < text.length())
+	{
+	  text.truncate(newLen);
+	  
+		if (attributes == 0L)
+		  attributes = (uchar *) malloc (text.length());
+	  else
+		  attributes = (uchar *) realloc (attributes, text.length());
+	}
 } 
  
 void TextLine::wrap(TextLine::Ptr nextLine, uint pos) 
