@@ -678,7 +678,6 @@ class KateView : public Kate::View
     void toggleIconBorder ();
     void gotoMark (KTextEditor::Mark *mark);
     void toggleBookmark ();
-    void clearBookmarks ();
 
   public:
     bool iconBorder() { return myIconBorder; } ;

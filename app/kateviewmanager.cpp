@@ -678,7 +678,7 @@ void KateViewManager::clearBookmarks ()
 {
   if (activeView() == 0) return;
 
-  activeView()->clearBookmarks();
+  activeView()->document()->clearMarks();
 }
 
 void KateViewManager::slotComment ()

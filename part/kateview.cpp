@@ -2507,22 +2507,6 @@ void KateView::toggleBookmark ()
   myDoc->updateViews();*/
 }
 
-void KateView::clearBookmarks()
-{/*
-  QPtrList<Kate::Mark> list = myDoc->marks();
-
-  for (int i=0; (uint) i < list.count(); i++)
-  {
-    if (list.at(i)->type&KateDocument::Bookmark)
-    {
-      myDoc->getTextLine(list.at(i)->line)->delMark(KateDocument::Bookmark);
-      myDoc->tagLines(list.at(i)->line, list.at(i)->line);
-    }
-  }
-
-  myDoc->updateViews();*/
-}
-
 void KateView::bookmarkMenuAboutToShow()
 {
   bookmarkMenu->popupMenu()->clear ();
