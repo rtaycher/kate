@@ -171,7 +171,7 @@ int KateApp::newInstance()
     }
  
     if ( m_mainWindows.first()->kateViewManager()->viewCount () == 0 )
-      m_mainWindows.first()->kateViewManager()->openURL( KURL() );     
+       m_mainWindows.first()->kateViewManager()->activateView(m_docManager->firstDocument()->documentNumber());     
     
     int line = 0;
     int column = 0;

@@ -521,10 +521,16 @@ void KateViewManager::slotDocumentCloseAll ()
 
 void KateViewManager::openURL (KURL url, const QString& encoding)
 {
+   uint id;
+   Kate::Document *doc=m_docManager->openURL(url,encoding,&id);
+   Kate::View *cv = activeView();
+   if (!cv)
+	createView(false,url,0L,doc);
+   activateView( id );
 
-	if ( !m_docManager->isOpen( url ) )
-  {
-    Kate::View *cv = activeView();
+  setWindowCaption();
+
+/*
 		Kate::Document *open_into = 0L;
 
     if (cv && !cv->getDoc()->isModified() && cv->getDoc()->url().isEmpty())
@@ -548,7 +554,7 @@ void KateViewManager::openURL (KURL url, const QString& encoding)
 
 	}
 	else
-    activateView( m_docManager->findDocument( url ) );
+    activateView( m_docManager->findDocument( url ) );*/
 
 }
 

@@ -173,20 +173,20 @@ Kate::Document *KateDocManager::openURL(const KURL& url,const QString &encoding,
   // special handling if still only the first initial doc is there
   if (isFirstDocument())
   {
-    documentList().at(0)->setEncoding(encoding==QString::null?
+      documentList().at(0)->setEncoding(encoding==QString::null?
 			QString::fromLatin1(QTextCodec::codecForLocale()->name()):
 			encoding);
 
 
-    documentList().at(0)->openURL (url);
+      documentList().at(0)->openURL (url);
 
-    if (documentList().at(0)->url().filename() != "")
-      documentList().at(0)->setDocName (documentList().at(0)->url().filename());
-
-    setIsFirstDocument (false);
-
-    if (id) *id=documentID(documentList().at(0));
-    return documentList().at(0);
+      if (documentList().at(0)->url().filename() != "")
+        documentList().at(0)->setDocName (documentList().at(0)->url().filename());
+   
+      setIsFirstDocument (false);
+    
+      if (id) *id=documentID(documentList().at(0));
+      return documentList().at(0);
  }
 
   if ( !isOpen( url ) )
@@ -263,7 +263,7 @@ bool KateDocManager::closeDocumentWithID(uint id)
 bool KateDocManager::closeAllDocuments()
 {
 	bool res=true;
-        if (isFirstDocument()) return true;
+//        if (isFirstDocument()) return true;
 	while (!m_docList.isEmpty() && res)
 		if (! closeDocument(m_docList.at(0)) ) res=false;
 	return res;
