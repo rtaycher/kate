@@ -37,6 +37,8 @@ protected:
 	bool doSave(QListViewItem *root);
 protected slots:
 	void slotSelectAll();
+	void slotItemSelected();
+	
 private:
 	QListViewItem *m_projectRoot;
 	QListViewItem *m_documentRoot;

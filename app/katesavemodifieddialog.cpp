@@ -124,21 +124,21 @@ private:
 };
 
 KateSaveModifiedDialog::KateSaveModifiedDialog(QWidget *parent, QPtrList<Kate::Document> documents):
-	KDialogBase( parent, "KateSaveModifiedDialog", true, i18n("Closing documents ..."), Yes | No | Cancel) {
+	KDialogBase( parent, "KateSaveModifiedDialog", true, i18n("Save documents"), Yes | No | Cancel) {
 
 	KGuiItem yesItem=KStdGuiItem::yes();
-	yesItem.setText(i18n("Save selected"));
+	yesItem.setText(i18n("&Save selected"));
 	setButtonGuiItem(KDialogBase::Yes,yesItem);
-
+	
 	KGuiItem noItem=KStdGuiItem::dontSave();
 	setButtonGuiItem(KDialogBase::No,noItem);
 
 	KGuiItem cancelItem=KStdGuiItem::close();
-	cancelItem.setText(i18n("Abort closing"));
+	cancelItem.setText(i18n("&Abort closing"));
 	setButtonGuiItem(KDialogBase::Cancel,cancelItem);
 
 	QVBox *box=makeVBoxMainWidget();
-	new QLabel(i18n("<qt>Some of the documents you intend to close contain modifications which have not yet been saved to disc. Please choose how you want to proceed.</qt>"),box);
+	new QLabel(i18n("<qt>The following document has been modified. Do you want to save it before closing?</qt>","<qt>The following documents have been modified. Do you want to save them before closing?</qt>", documents.count()),box);
 	m_list=new KListView(box);
 	m_list->addColumn(i18n("Title"));
 	m_list->addColumn(i18n("Location"));
@@ -155,12 +155,29 @@ KateSaveModifiedDialog::KateSaveModifiedDialog(QWidget *parent, QPtrList<Kate::D
 		}
 		m_documentRoot->setOpen(true);
 	} else m_documentRoot=0;
-	connect(new QPushButton(i18n("Select All"),box),SIGNAL(clicked()),this,SLOT(slotSelectAll()));
+	//FIXME - How on earth do I do this correctly?  There's no correct signal damnit.  Maybe with events?
+//	connect(m_list, SIGNAL(executed(QListViewItem *)), SLOT(slotItemSelected()));
+//	connect(m_list, SIGNAL(clicked(QListViewItem *)), SLOT(slotItemSelected()));
+//	connect(m_list, SIGNAL(spacePressed(QListViewItem *)), SLOT(slotItemSelected()));
+	if(documents.count()>3) { //For 3 or less, it would be quicker just to tick or untick them yourself, so don't clutter the gui.
+		connect(new QPushButton(i18n("Select All"),box),SIGNAL(clicked()),this,SLOT(slotSelectAll()));
+	}
 }	
 
 KateSaveModifiedDialog::~KateSaveModifiedDialog() {
 }
 
+void KateSaveModifiedDialog::slotItemSelected() {
+	kdDebug() << "slotItemSelected()" << endl;
+
+	for(QListViewItem *it=m_documentRoot->firstChild();it;it=it->nextSibling()) {
+		if(((QCheckListItem*)it)->isOn()) {
+			enableButton(KDialogBase::Yes, true);
+			return;
+		}
+	}
+	enableButton(KDialogBase::Yes, false);
+}
 
 static void selectItems(QListViewItem *root) {
 	if (!root) return;
