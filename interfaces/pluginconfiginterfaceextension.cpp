@@ -1,4 +1,4 @@
-/* This file is part of the KDE libraries
+/* This file is part of the KDE project
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
 
    This library is free software; you can redistribute it and/or
