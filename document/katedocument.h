@@ -128,6 +128,10 @@ class KateDocument : public KateDocumentIface
     virtual QString textLine( int line ) const;
 
     virtual void insertLine( const QString &s, int line = -1 );
+
+    void insert_Line(const QString& s,int line=-1, bool update=true);
+    void remove_Line(int line,bool update=true);
+    void replaceLine(const QString& s,int line=-1);   
     virtual void insertAt( const QString &s, int line, int col, bool mark = FALSE );
     virtual void removeLine( int line );
     virtual int length() const;

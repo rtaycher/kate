@@ -103,8 +103,9 @@ QString SedReplace::sedMagic(QString textLine, QString find, QString rep, bool n
 static void setLineText(KateView *view, int line, const QString &text)
 {
 	kdDebug()<<"setLineText"<<endl;
-	view->doc()->removeLine(line);
-	view->doc()->insertLine(text, line);
+//	view->doc()->removeLine(line);
+//	view->doc()->insertLine(text, line);
+	view->doc()->replaceLine(text,line);
 }
 
 bool SedReplace::execCmd(QString cmd, KateView *view)

@@ -290,16 +290,28 @@ QString KateDocument::textLine( int line ) const
   return QConstString( l->getText(), l->length() ).string();
 }
 
-void KateDocument::insertLine( const QString &str, int l )
-
+void KateDocument::replaceLine(const QString& s,int line)
 {
-  kdDebug()<<"KateDocument::insertLine "<<str<<QString("	%1").arg(l)<<endl;
+  remove_Line(line,false);
+  insert_Line(s,line,true);
+}
+
+void KateDocument::insertLine( const QString &str, int l ) {
+  insert_Line(str,l,true);
+}
+
+void KateDocument::insert_Line(const QString& s,int line, bool update)
+{
+  kdDebug()<<"KateDocument::insertLine "<<s<<QString("	%1").arg(line)<<endl;
   TextLine::Ptr TL=new TextLine();
-  TL->append(str.unicode(),str.length());
-  buffer->insertLine(l,TL);
-  newDocGeometry=true;
-  updateLines(l);
-  updateViews();
+  TL->append(s.unicode(),s.length());
+  buffer->insertLine(line,TL);
+  if (update)
+  {
+    newDocGeometry=true;
+    updateLines(line);
+    updateViews();
+  }
 }
 
 void KateDocument::insertAt( const QString &s, int line, int col, bool  )
@@ -314,14 +326,21 @@ void KateDocument::insertAt( const QString &s, int line, int col, bool  )
   insert( c, s );
 }
 
-void KateDocument::removeLine( int line )
+void KateDocument::removeLine( int line ) {
+  remove_Line(line,true);
+}
+
+void KateDocument::remove_Line(int line,bool update)
 {
   kdDebug()<<"KateDocument::removeLine "<<QString("%1").arg(line)<<endl;
   buffer->removeLine(line);
 //  newDocGeometry=true;
 //  if line==0)
-  updateLines(line);
-  updateViews();
+  if (update)
+  {
+    updateLines(line);
+    updateViews();
+  }
 }
 
 int KateDocument::length() const
