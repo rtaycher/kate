@@ -78,8 +78,8 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   m_pluginManager =_m_pluginManager;
   config = kapp->config();
 
-  m_dockStyle=IDEAlStyle;
-  //m_dockStyle=ClassicStyle;
+ // m_dockStyle=IDEAlStyle;
+  m_dockStyle=ClassicStyle;
 
   myID = uniqueID;
   uniqueID++;
