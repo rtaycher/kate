@@ -29,6 +29,11 @@
 #include <qstringlist.h>
 #include <ktrader.h>
 #include <qguardedptr.h>
+#include <kdialogbase.h>
+
+class KComboBox;
+class KLineEdit;
+class KURLRequester;
 
 class KateInternalProjectData
 {
@@ -62,40 +67,65 @@ class KateProjectManager : public QObject
   public:
     KateProjectManager(QObject *parent);
     ~KateProjectManager();
-    
-    Kate::ProjectManager *projectManager () { return m_projectManager; };
-    
+
+    Kate::ProjectManager *projectManager ()const { return m_projectManager; };
+
     Kate::Project *create (const QString &type, const QString &name, const QString &filename);
-    
+
     Kate::Project *open (const QString &filename);
-    
+
     bool close (Kate::Project *project);
-    
+
     Kate::Project *project (uint n = 0);
-    
+
     uint projects ();
-    
+
     Kate::ProjectPlugin *createPlugin (Kate::Project *project);
-    
+
     void enableProjectGUI (Kate::Project *project, class KateMainWindow *win);
     void disableProjectGUI (Kate::Project *project, class KateMainWindow *win);
-    
+
     ProjectInfo *newProjectDialog (QWidget *parent);
 
-    QStringList pluginStringList ();    
-    
+    QStringList pluginStringList ();
+
     void setCurrentProject (Kate::Project *project);
-    
+
   private:
     Kate::ProjectManager *m_projectManager;
-    
+
     void setupPluginList ();
-    
+
     ProjectPluginList m_pluginList;
-    
+
     // INTERNAL USE OF KateProject !!!
     QPtrList<Kate::Project> m_projects;
     QGuardedPtr<Kate::Project> m_currentProject;
+};
+
+class KateProjectDialogNew : public KDialogBase
+{
+    Q_OBJECT
+  public:
+    KateProjectDialogNew (QWidget *parent, KateProjectManager *projectMan);
+    ~KateProjectDialogNew ();
+
+    int exec();
+
+private slots:
+    void slotTextChanged();
+
+  private:
+    KateProjectManager *m_projectMan;
+
+    KComboBox *m_typeCombo;
+    KLineEdit *m_nameEdit;
+    KURLRequester *m_urlRequester;
+
+  public:
+    QString type;
+    QString name;
+    QString fileName;
 };
 
 #endif

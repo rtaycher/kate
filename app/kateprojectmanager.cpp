@@ -33,29 +33,8 @@
 #include <kmessagebox.h>
 
 #include <qfile.h>
-#include <qlayout.h> 
+#include <qlayout.h>
 #include <qlabel.h>
-
-class KateProjectDialogNew : public KDialogBase
-{
-  public:
-    KateProjectDialogNew (QWidget *parent, KateProjectManager *projectMan);
-    ~KateProjectDialogNew ();
-    
-    int exec();
-    
-  private:
-    KateProjectManager *m_projectMan;
-
-    KComboBox *m_typeCombo;
-    KLineEdit *m_nameEdit;
-    KURLRequester *m_urlRequester;
-  
-  public:
-    QString type;
-    QString name;
-    QString fileName;
-};
 
 KateProjectManager::KateProjectManager (QObject *parent) : QObject (parent)
 {
@@ -82,9 +61,9 @@ void KateProjectManager::setupPluginList ()
     info->service = ptr;
     info->name=info->service->property("X-KATE-InternalName").toString();
     if (info->name.isEmpty()) info->name=info->service->library();
-    
+
     info->projectType=info->service->property("X-KATE-ProjectType").toString();
-    
+
     m_pluginList.append(info);
   }
 }
@@ -92,7 +71,7 @@ void KateProjectManager::setupPluginList ()
 void KateProjectManager::setCurrentProject (Kate::Project *project)
 {
   m_currentProject = project;
-  
+
   emit m_projectManager->projectChanged ();
 }
 
@@ -104,12 +83,12 @@ Kate::Project *KateProjectManager::create (const QString &type, const QString &n
   c->writeEntry ("Type", type);
   c->writeEntry ("Name", name);
   c->sync ();
-  
+
   delete c;
- 
+
   return open (filename);
 }
-    
+
 Kate::Project *KateProjectManager::open (const QString &filename)
 {
   KateInternalProjectData *data = new KateInternalProjectData ();
@@ -117,11 +96,11 @@ Kate::Project *KateProjectManager::open (const QString &filename)
   data->fileName = filename;
 
   Kate::Project *project = new Kate::Project ((void *) data);
-  
+
   m_projects.append (project);
-  
+
   emit m_projectManager->projectCreated (project);
-  
+
   return project;
 }
 
@@ -133,10 +112,10 @@ bool KateProjectManager::close (Kate::Project *project)
     {
       uint id = project->projectNumber ();
       int n = m_projects.findRef (project);
-      
+
       if (n >= 0)
       {
-        if (Kate::pluginViewInterface(project->plugin())) 
+        if (Kate::pluginViewInterface(project->plugin()))
         {
           for (uint i=0; i< ((KateApp*)parent())->mainWindows(); i++)
           {
@@ -145,9 +124,9 @@ bool KateProjectManager::close (Kate::Project *project)
         }
 
         m_projects.remove (n);
-        
+
         emit m_projectManager->projectDeleted (id);
-      
+
         return true;
       }
     }
@@ -160,10 +139,10 @@ Kate::Project *KateProjectManager::project (uint n)
 {
   if (n >= m_projects.count())
     return 0;
-    
+
   return m_projects.at(n);
 }
-    
+
 uint KateProjectManager::projects ()
 {
   return m_projects.count ();
@@ -184,10 +163,10 @@ Kate::ProjectPlugin *KateProjectManager::createPlugin (Kate::Project *project)
     else if (m_pluginList.at(i)->projectType == QString ("Default"))
       def = m_pluginList.at(i);
   }
-  
+
   if (!info)
     info = def;
-  
+
   return Kate::createProjectPlugin (QFile::encodeName(info->service->library()), project);
 }
 
@@ -210,11 +189,11 @@ void KateProjectManager::disableProjectGUI (Kate::Project *project, KateMainWind
 ProjectInfo *KateProjectManager::newProjectDialog (QWidget *parent)
 {
   ProjectInfo *info = 0;
-  
+
   KateProjectDialogNew* dlg = new KateProjectDialogNew (parent, this);
-  
+
   int n = dlg->exec();
-  
+
   if (n)
   {
     info = new ProjectInfo ();
@@ -222,7 +201,7 @@ ProjectInfo *KateProjectManager::newProjectDialog (QWidget *parent)
     info->name = dlg->name;
     info->fileName = dlg->fileName;
   }
-  
+
   delete dlg;
   return info;
 }
@@ -230,10 +209,10 @@ ProjectInfo *KateProjectManager::newProjectDialog (QWidget *parent)
 QStringList KateProjectManager::pluginStringList ()
 {
   QStringList list;
-  
+
   for (uint i=0; i<m_pluginList.count(); i++)
     list.push_back (m_pluginList.at(i)->projectType);
-  
+
   return list;
 }
 
@@ -244,44 +223,51 @@ QStringList KateProjectManager::pluginStringList ()
 KateProjectDialogNew::KateProjectDialogNew (QWidget *parent, KateProjectManager *projectMan) : KDialogBase (parent, "project_new", true, i18n ("New Project"), KDialogBase::Ok|KDialogBase::Cancel)
 {
   m_projectMan = projectMan;
-  
+
   QWidget *page = new QWidget( this );
   setMainWidget(page);
-  
+
   QGridLayout *grid = new QGridLayout (page, 3, 2, 0, spacingHint());
-  
+
   grid->addWidget (new QLabel (i18n("Project type:"), page), 0, 0);
   m_typeCombo = new KComboBox (page);
   grid->addWidget (m_typeCombo, 0, 1);
-  
+
   m_typeCombo->insertStringList (m_projectMan->pluginStringList ());
-  
+
   grid->addWidget (new QLabel (i18n("Project name:"), page), 1, 0);
   m_nameEdit = new KLineEdit (page);
   grid->addWidget (m_nameEdit, 1, 1);
-  
+  connect( m_nameEdit, SIGNAL( textChanged ( const QString & )),this,SLOT(slotTextChanged()));
   grid->addWidget (new QLabel (i18n("Project file:"), page), 2, 0);
   m_urlRequester = new KURLRequester (page);
   grid->addWidget (m_urlRequester, 2, 1);
-  
+
   m_urlRequester->setMode (KFile::LocalOnly);
   m_urlRequester->setFilter (QString ("*.kateproject|") + i18n("Kate Project Files"));
+  connect( m_urlRequester->lineEdit(), SIGNAL( textChanged ( const QString & )),this,SLOT(slotTextChanged()));
+  slotTextChanged();
 }
 
 KateProjectDialogNew::~KateProjectDialogNew ()
 {
 }
 
+void KateProjectDialogNew::slotTextChanged()
+{
+    enableButtonOK( !m_urlRequester->lineEdit()->text().isEmpty() && !m_nameEdit->text().isEmpty());
+}
+
 int KateProjectDialogNew::exec()
 {
   int n = 0;
-  
+
   while ((n = KDialogBase::exec()))
   {
     type = m_typeCombo->currentText ();
     name = m_nameEdit->text ();
     fileName = m_urlRequester->url ();
-    
+
     if (!name.isEmpty() && !fileName.isEmpty())
       break;
     else
