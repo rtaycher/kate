@@ -202,20 +202,22 @@ KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool
   }
 }
 
-bool KateDocument::needPreHighlight(long till)
+long  KateDocument::needPreHighlight(long till)
 {
-//  kdDebug()<<QString("Already Highlighted: %1, requested: %2").arg(PreHighlightedTill).arg(till);
-  if (PreHighlightedTill>=till) return false;
+  int max=numLines()-1;
+  if (till>max)
+    {
+      till=max;
+    }
+  if (PreHighlightedTill>=till) return -1;
+
   long tmp=RequestPreHighlightTill;
   if (RequestPreHighlightTill<till)
     {
-//      kdDebug()<<"Prehighlighting"<<endl;
-//      updateLines(PreHighlightedTill,till);
       RequestPreHighlightTill=till;
       if (tmp<=PreHighlightedTill) QTimer::singleShot(10,this,SLOT(doPreHighlight()));
-//      return true;
     }
-  return true;
+  return RequestPreHighlightTill;
 }
 
 void KateDocument::doPreHighlight()
@@ -224,11 +226,14 @@ void KateDocument::doPreHighlight()
   int till = PreHighlightedTill+200;
   int max = numLines()-1;
   if (till > max)
-     till = max;
+    {
+      till = max;
+    }
   PreHighlightedTill = till;
   updateLines(from,till);
-  emit preHighlightChanged(PreHighlightedTill); 
-  if (PreHighlightedTill<RequestPreHighlightTill) QTimer::singleShot(10,this,SLOT(doPreHighlight()));
+  emit preHighlightChanged(PreHighlightedTill);
+  if (PreHighlightedTill<RequestPreHighlightTill)
+    QTimer::singleShot(10,this,SLOT(doPreHighlight()));
 }
 
 KateDocument::~KateDocument()

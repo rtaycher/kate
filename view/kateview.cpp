@@ -216,7 +216,7 @@ KateViewInternal::~KateViewInternal()
 
 void KateViewInternal::slotPreHighlightUpdate(long line)
 {
-//  kdDebug()<<QString("slotPreHighlightUpdate - Wait for: %1, line: %2").arg(waitForPreHighlight).arg(line)<<endl;
+  kdDebug()<<QString("slotPreHighlightUpdate - Wait for: %1, line: %2").arg(waitForPreHighlight).arg(line)<<endl;
   if (waitForPreHighlight!=-1)
     {
        if (line>=waitForPreHighlight)
@@ -1281,8 +1281,8 @@ void KateViewInternal::paintEvent(QPaintEvent *e) {
   line = (yPos + updateR.y()) / h;
   y = line*h - yPos;
   yEnd = updateR.y() + updateR.height();
-  bool pre=myDoc->needPreHighlight(waitForPreHighlight=line+((long)(yEnd-y)/h)+5);
-  if (!pre) waitForPreHighlight=-1; 
+  waitForPreHighlight=myDoc->needPreHighlight(waitForPreHighlight=line+((long)(yEnd-y)/h)+5);
+  bool pre=(waitForPreHighlight!=-1); 
   while (y < yEnd)
   {
     TextLine *textLine;

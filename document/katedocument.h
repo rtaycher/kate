@@ -278,7 +278,7 @@ class KateDocument : public KateDocumentIface
     virtual void setText(const QString &);
 
   public:
-    bool needPreHighlight(long till);
+    long needPreHighlight(long till);
     bool hasMarkedText() {return (selectEnd >= selectStart);}
     QString markedText(int flags);
     void delMarkedText(VConfig &/*, bool undo = true*/);
