@@ -31,6 +31,8 @@
 #include <qfont.h>
 #include <qfontmetrics.h>
 
+#include <kparts/browserextension.h>
+
 #include "kwview.h"
 #include "highlight.h"
 #include "ktexteditor.h"
@@ -362,6 +364,9 @@ class KWriteDoc : public KTextEditor::Document {
     void readSessionConfig(KConfig *);
     void writeSessionConfig(KConfig *);
 
+  signals:
+    void selectionChanged();
+
 // highlight
   public:
     Highlight *highlight() {return m_highlight;}
@@ -376,7 +381,7 @@ class KWriteDoc : public KTextEditor::Document {
     void hlChanged();
 
 // view interaction
-  protected:
+  public:
     virtual void addView(KTextEditor::View *);
     virtual void removeView(KTextEditor::View *);
     bool ownedView(KWriteView *);
@@ -500,6 +505,9 @@ class KWriteDoc : public KTextEditor::Document {
 
     void newBracketMark(PointStruc &, BracketMark &);
 
+  protected:
+    virtual void guiActivateEvent( KParts::GUIActivateEvent *ev );
+
   protected slots:
     void clipboardChanged();
 
@@ -555,6 +563,20 @@ class KWriteDoc : public KTextEditor::Document {
     QWidget *pseudoModal;   //the replace prompt is pseudo modal
 
     bool m_bSingleViewMode;
+};
+
+class KWriteBrowserExtension : public KParts::BrowserExtension
+{
+  Q_OBJECT
+public:
+  KWriteBrowserExtension( KWriteDoc *doc );
+
+private slots:
+  void copy();
+  void slotSelectionChanged();
+
+private:
+  KWriteDoc *m_doc;
 };
 
 #endif //KWDOC_H

@@ -451,6 +451,9 @@ KWriteDoc::KWriteDoc(HlManager *hlManager, const QString &path,
     view->show();
     setWidget( view );
   }
+  
+  if ( bBrowserView )
+    (void)new KWriteBrowserExtension( this );
 }
 
 KWriteDoc::~KWriteDoc() {
@@ -1403,6 +1406,7 @@ void KWriteDoc::toggleRect(int start, int end, int x1, int x2) {
 
     if (start < selectStart) selectStart = start;
     if (end > selectEnd) selectEnd = end;
+    emit selectionChanged();
   }
 }
 
@@ -1504,6 +1508,7 @@ void KWriteDoc::selectTo(VConfig &c, PointStruc &cursor, int cXPos) {
   }
   select = cursor;
   optimizeSelection();
+  emit selectionChanged();
 }
 
 
@@ -1527,6 +1532,7 @@ void KWriteDoc::selectAll() {
   }
   textLine = contents.at(z);
   textLine->select(true,0,textLine->length());
+  emit selectionChanged();
 }
 
 void KWriteDoc::deselectAll() {
@@ -1547,6 +1553,7 @@ void KWriteDoc::deselectAll() {
   }
   selectStart = 0xffffff;
   selectEnd = 0;
+  emit selectionChanged();
 }
 
 void KWriteDoc::invertSelection() {
@@ -1570,6 +1577,7 @@ void KWriteDoc::invertSelection() {
   textLine = contents.at(z);
   textLine->toggleSelect(0,textLine->length());
   optimizeSelection();
+  emit selectionChanged();
 }
 
 void KWriteDoc::selectWord(PointStruc &cursor, int flags) {
@@ -1593,6 +1601,7 @@ void KWriteDoc::selectWord(PointStruc &cursor, int flags) {
   tagLines(cursor.y, cursor.y);
   if (cursor.y < selectStart) selectStart = cursor.y;
   if (cursor.y > selectEnd) selectEnd = cursor.y;
+  emit selectionChanged();
 }
 
 void KWriteDoc::doIndent(VConfig &c, int change) {
@@ -1703,15 +1712,15 @@ void KWriteDoc::optimizeLeadingSpace(int line, int flags, int change) {
 }
 
 void KWriteDoc::doComment(VConfig &c, int change) {
- 
+
   TextLine *textLine;
- 
+
   c.flags |= cfPersistent;
   c.cursor.x = 0;
- 
+
   recordStart(c, (change < 0) ? KWActionGroup::ugUncomment
     : KWActionGroup::ugComment);
- 
+
   if (selectEnd < selectStart) {
     textLine = contents.at(c.cursor.y);
     if(change > 0) {
@@ -1737,9 +1746,9 @@ void KWriteDoc::doComment(VConfig &c, int change) {
     }
     c.cursor.y--;
   }
- 
+
   recordEnd(c.view, c.cursor, c.flags | cfPersistent);
-}                                                                              
+}
 
 QString KWriteDoc::text() const {
   QListIterator<TextLine> it( contents );
@@ -3068,3 +3077,29 @@ void KWriteDoc::clipboardChanged() { //slot
   }
 //#endif
 }
+
+void KWriteDoc::guiActivateEvent( KParts::GUIActivateEvent *ev )
+{
+  KParts::ReadWritePart::guiActivateEvent( ev ); 
+  if ( ev->activated() )
+    emit selectionChanged();
+} 
+
+KWriteBrowserExtension::KWriteBrowserExtension( KWriteDoc *doc )
+: KParts::BrowserExtension( doc, "kwritebrowserextension" )
+{
+  m_doc = doc; 
+  connect( m_doc, SIGNAL( selectionChanged() ),
+	   this, SLOT( slotSelectionChanged() ) );
+}
+
+void KWriteBrowserExtension::copy()
+{
+  m_doc->copy( 0 ); 
+} 
+
+void KWriteBrowserExtension::slotSelectionChanged()
+{
+  emit enableAction( "copy", m_doc->hasMarkedText() ); 
+}
+
