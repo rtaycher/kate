@@ -333,7 +333,36 @@ void KateViewManager::activateView( uint documentNumber )
       }
     }
 
-    createView (false, KURL(), 0L, (Kate::Document *)m_docManager->documentWithID(documentNumber));
+    Kate::Document *d = (Kate::Document *)m_docManager->documentWithID(documentNumber);
+    createView (false, KURL(), 0L, d );
+
+    // the document exist, but had no views, so we try restoring the view
+    // session config
+    // FIXME anders: this is clumsy and probably slow, so make something nicer.
+    KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
+    int n = m_viewSpaceList.findRef( activeViewSpace() );
+    if ( n > -1 )
+    {
+      QString gr = QString("viewspace%1").arg( n );
+      if ( scfg->hasGroup( gr ) )
+      {
+        scfg->setGroup ( gr );
+        int i( 0 );
+        QString fg = QString("file%1").arg( i );
+        while ( scfg->hasKey( fg ) ) {
+          if ( scfg->readPathEntry( fg ) == d->url().prettyURL() )
+            break;
+          i++;
+          fg = QString("file%1").arg( i );
+        }
+        if ( scfg->hasGroup( gr + ":" + fg ) )
+        {
+          scfg->setGroup( gr + ":" + fg );
+          activeView()->readSessionConfig( scfg );
+        }
+      }
+    }
+
   }
 }
 
@@ -559,10 +588,16 @@ void KateViewManager::openURL (KURL url, const QString& encoding)
   if (!doc->url().isEmpty())
     ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( doc->url() );
 
-  Kate::View *cv = activeView();
+  /* NOTE by uncommenting this, we are forced to try if a session configuration
+     exists for this viewspace.
+     In some cases this will cause misbehaviour, that is if viewspaces are
+     created and deleted and a file is then opened first time in a viewspace
+     for which a record exists...
+     TODO - generally clean up the session config reading/writing */
+  //Kate::View *cv = activeView();
 
-  if (!cv)
-    createView(false,url,0L,doc);
+  //if (!cv)
+  //  createView(false,url,0L,doc);
 
   activateView( id );
 }
@@ -825,7 +860,7 @@ void KateViewManager::saveAllDocsAtCloseDown(  )
 void KateViewManager::reopenDocuments(bool isRestore)
 {
   m_reopening=true;
-  kdDebug(13001)<<"reopenDocuments()"<<endl;
+  //kdDebug(13001)<<"reopenDocuments()"<<endl;
   KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
   KConfig* config = kapp->config();
   config->setGroup("General");
@@ -874,7 +909,7 @@ void KateViewManager::reopenDocuments(bool isRestore)
     {
       fn = scfg->readPathEntry( QString("File%1").arg( i ) );
       if ( !fn.isEmpty() ) {
-        kdDebug(13001)<<"reopenDocuments(): opening file : "<<fn<<endl;
+        //kdDebug(13001)<<"reopenDocuments(): opening file : "<<fn<<endl;
         scfg->setGroup( fn );
 
         Kate::Document *doc = m_docManager->openURL( KURL( fn ) );
@@ -893,24 +928,24 @@ void KateViewManager::reopenDocuments(bool isRestore)
 
     if ( scfg->hasGroup("splitter0") && ( isRestore || restoreViews ) )
     {
-      kdDebug(13001)<<"calling restoreViewConfig()"<<endl;
+      //kdDebug(13001)<<"calling restoreViewConfig()"<<endl;
       restoreViewConfig();
     }
     else  openURL(KURL(curfile));
 
   }
   m_reopening=false;
-  kdDebug(13001)<<">>>> reopenDocuments() DONE"<<endl;
+  //kdDebug(13001)<<">>>> reopenDocuments() DONE"<<endl;
   delete scfg;
 }
 
 void KateViewManager::saveViewSpaceConfig()
 {
-   kdDebug(13001)<<"saveViewSpaceConfig()"<<endl;
+   //kdDebug(13001)<<"saveViewSpaceConfig()"<<endl;
    KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
 
   // TEMPORARY ??
-  kdDebug(13001)<<"clearing session config file before saving list"<<endl;
+  //kdDebug(13001)<<"clearing session config file before saving list"<<endl;
   scfg->setGroup("nogroup");
   QStringList groups(scfg->groupList());
   for ( QStringList::Iterator it = groups.begin(); it != groups.end(); ++it )
@@ -933,7 +968,7 @@ void KateViewManager::saveViewSpaceConfig()
 
    scfg->sync();
    delete scfg;
-   kdDebug(13001)<<">>>> saveViewSpaceConfig() DONE"<<endl;
+   //kdDebug(13001)<<">>>> saveViewSpaceConfig() DONE"<<endl;
 }
 
 void KateViewManager::saveSplitterConfig( KateSplitter* s, int idx, KSimpleConfig* config )
@@ -1001,7 +1036,7 @@ void KateViewManager::restoreViewConfig()
    // call restoreSplitter for splitter0
    restoreSplitter( scfg, QString("splitter0"), this );
    // finally, make the correct view active.
-   kdDebug(13001)<<"All splitters restored, setting active view"<<endl;
+   //kdDebug(13001)<<"All splitters restored, setting active view"<<endl;
    scfg->setGroup("general");
    KateViewSpace *vs = m_viewSpaceList.at( scfg->readNumEntry("activeviewspace") );
    if ( vs ) // better be sure ;}
@@ -1014,9 +1049,9 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, const QString &gro
    config->setGroup( group );
 
    // create a splitter with orientation
-   kdDebug(13001)<<"restoreSplitter():creating a splitter: "<<group<<endl;
-   if (parent == this)
-     kdDebug(13001)<<"parent is this"<<endl;
+   //kdDebug(13001)<<"restoreSplitter():creating a splitter: "<<group<<endl;
+   //if (parent == this)
+   //  kdDebug(13001)<<"parent is this"<<endl;
    KateSplitter* s = new KateSplitter((Qt::Orientation)config->readNumEntry("orientation"), parent);
    if ( group.compare("splitter0") == 0 )
      m_grid->addWidget(s, 0, 0);
@@ -1056,17 +1091,17 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, const QString &gro
            // ahem, tjeck if this document actually exists.
            Kate::Document *doc = m_docManager->findDocumentByUrl( url );
            if ( doc ) {
-             kdDebug(13001)<<"Document '"<<url.prettyURL()<<"' found open, creating extra view"<<endl;
+             //kdDebug(13001)<<"Document '"<<url.prettyURL()<<"' found open, creating extra view"<<endl;
              createView( false, KURL(), 0L, doc );
            }
            else
-             kdDebug(13001)<<"SOMETHING IS ROTTEN IN THE STATE OF DENMARK (or so)"<<endl;
-           v = activeView(); // if shakespeare was right, this is a mistake :(((
+             kdDebug(13001)<<"ARGH, I can't find the document "<<url<<endl;
+           v = activeView();
          }
          if ( v ) {
            // view config is in group "<group>:<file>"
            QString g = *it + ":" + file;
-           kdDebug(13001)<<"view config is group '"<<g<<"'"<<endl;
+           //kdDebug(13001)<<"view config is group '"<<g<<"'"<<endl;
            if ( config->hasGroup( g ) ) {
              config->setGroup( g );
              v->readSessionConfig( config );
@@ -1081,7 +1116,7 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, const QString &gro
        // If the viewspace have no documents due to bad luck, create a blank.
        if ( vs->viewCount() < 1)
          createView( true, KURL() );
-       kdDebug(13001)<<"Done resotring a viewspace"<<endl;
+       //kdDebug(13001)<<"Done resotring a viewspace"<<endl;
      }
      // for a splitter, recurse.
      else if ( (*it).startsWith("splitter") ) {
@@ -1092,7 +1127,7 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, const QString &gro
    config->setGroup( group );
    s->setSizes( config->readIntListEntry("sizes") );
    s->show();
-   kdDebug(13001)<<"Bye from KateViewManager::restoreSplitter() ("<<group<<")"<<endl;
+   //kdDebug(13001)<<"Bye from KateViewManager::restoreSplitter() ("<<group<<")"<<endl;
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;
