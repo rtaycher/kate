@@ -65,7 +65,7 @@ class KAction;
 class KRecentFilesAction;
 class KSelectAction;
 
-class QPrinter;
+class KPrinter;
 
 namespace KIO { class FileCopyJob; }
 
@@ -854,7 +854,7 @@ class KantView : public KantViewIface, virtual public KantViewDCOPIface
     void printDlg ();
 
   protected:
-    QPrinter *printer;
+    KPrinter *printer;
 
   // syntax highlight
   public slots:

@@ -44,6 +44,7 @@
 #include <kurldrag.h>
 #include <qfocusdata.h>
 #include <kdebug.h>
+#include <kprinter.h>
 #include <kapp.h>
 
 #include <stdio.h>
@@ -62,7 +63,6 @@
 #include <qfile.h>
 #include <qevent.h>
 #include <qdir.h>
-#include <qprinter.h>
 #include <qprintdialog.h>
 #include <qpaintdevicemetrics.h>
 #include <qdropsite.h>
@@ -1457,7 +1457,7 @@ KantView::KantView(KantDocument *doc, QWidget *parent, const char * name, bool H
 
   m_tempSaveFile = 0;
 
-  printer = new QPrinter();
+  printer = new KPrinter();
 
   myViewInternal->installEventFilter( this );
 
