@@ -230,7 +230,7 @@ GrepTool::GrepTool(KateMainWindow *parent, const char *name)
       "them as part of the expression.") );
   QWhatsThis::add(lbResult,
     i18n("The results of the grep run are listed here. Select a\n"
-     "filename/line number combination and press Enter or doubleclick\n"
+     "file name/line number combination and press Enter or doubleclick\n"
      "on the item to show the respective line in the editor."));
 
   // event filter, do something relevant for RETURN
