@@ -205,31 +205,22 @@ const QChar *HlKeyword::checkHgl(const QChar *s, int len, bool b)
 {
   if(len==0) return 0L;
 
+  int origLen = len;
   const QChar *s2=s;
-  QChar *s3;
-  bool ws;
-  QStack<QChar> stack;
-  stack.setAutoDelete(false);
-
   const QChar *wk = _weakSep.unicode();
 
-  while( (len > 0)  && ((ws=ustrchr(wk,*s2)) || ( s2->isLetterOrNumber())) )
+  while ( (len > 0) && ((ustrchr(wk,*s2)) || ( s2->isLetterOrNumber())) )
   {
-    if (ws) stack.push(s2);
     s2++;
     len--;
   }
-  stack.push(s2);
 
-// oops didn't increment s2 why do anything else ?
   if (s2 == s) return 0L;
-  while (s3=stack.pop())
-        {
-          QString lookup=QString(s,s3-s);
-          if (dict.find(lookup)) return s3;
-        }
-  return 0L;
 
+  QString lookup=QString(s,origLen-len);
+  if (dict.find(lookup)) return s2;
+
+  return 0L;
 }
 
 HlInt::HlInt(int attribute, int context)
