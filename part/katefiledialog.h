@@ -35,6 +35,8 @@ class KateFileDialogData
 
 class KateFileDialog : public KFileDialog
 {
+  Q_OBJECT
+
   public:
 	  KateFileDialog (const QString& startDir = QString::null,
 		                const QString& encoding = QString::fromLatin1(QTextCodec::codecForLocale()->name()),
@@ -43,7 +45,7 @@ class KateFileDialog : public KFileDialog
 
     ~KateFileDialog ();
 
-	  KateFileDialogData exec ();
+	  virtual KateFileDialogData exec ();
 
   protected slots:
     virtual void slotApply();

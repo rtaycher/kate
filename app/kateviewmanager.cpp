@@ -442,6 +442,7 @@ void KateViewManager::slotDocumentOpen ()
 	  dialog = new KateFileDialog (QString::null,myEncoding, this, i18n ("Open File"));
 
 	KateFileDialogData data = dialog->exec ();
+	delete dialog;
 
   for (KURL::List::Iterator i=data.urls.begin(); i != data.urls.end(); ++i)
   {
@@ -495,6 +496,7 @@ void KateViewManager::slotDocumentSaveAs ()
 
 	KateFileDialog *dialog = new KateFileDialog (current->doc()->url().url(),current->doc()->encoding(), this, i18n ("Save File"), KateFileDialog::saveDialog);
 	KateFileDialogData data = dialog->exec ();
+	delete dialog;
 
   if( !data.url.isEmpty() )
   {

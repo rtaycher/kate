@@ -1866,6 +1866,7 @@ KateView::saveResult KateView::saveAs() {
 
 		dialog = new KateFileDialog (myDoc->url().url(),doc()->encoding(), this, i18n ("Save File"), KateFileDialog::saveDialog);
 	  data = dialog->exec ();
+	  delete dialog;
 
 	  if (data.url.isEmpty())
 	    return SAVE_CANCEL;

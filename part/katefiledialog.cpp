@@ -31,8 +31,8 @@ KateFileDialog::KateFileDialog (const QString& startDir,
 {
   setCaption (caption);
 
-  toolBar()->insertCombo(KGlobal::charsets()->availableEncodingNames(), 33333, false, "",
-	        this, "", true);
+  toolBar()->insertCombo(KGlobal::charsets()->availableEncodingNames(), 33333, false, 0L,
+	        0L, 0L, true);
 
 	if (type == KateFileDialog::openDialog)
 	  setMode(KFile::Files);
@@ -72,3 +72,5 @@ void KateFileDialog::slotApply()
 {
 
 }
+
+#include "katefiledialog.moc"
