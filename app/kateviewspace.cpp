@@ -67,9 +67,9 @@ protected:
   {
     QPainter p( this );
     p.setPen( colorGroup().shadow() );
-    p.drawLine( e->rect().topLeft(), e->rect().topRight() );
+    p.drawLine( e->rect().left(), 0, e->rect().right(), 0 );
     p.setPen( ((KateViewSpace*)parentWidget())->isActiveSpace() ? colorGroup().light() : colorGroup().midlight() );
-    p.drawLine( e->rect().bottomLeft(), e->rect().bottomRight() );
+    p.drawLine( e->rect().left(), 1, e->rect().right(), 1 );
   }
 };
 //END KVSSBSep
