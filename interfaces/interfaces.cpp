@@ -39,7 +39,6 @@
 #include "viewmanager.moc"     
 
 #include "toolviewmanager.h"
-#include "toolviewmanager.moc"     
 
 #include <kparts/componentfactory.h>
 
@@ -70,7 +69,7 @@ MainWindow::~MainWindow ()
 {
 }
 
-ViewManager::ViewManager (QWidget *parent = 0, const char *name = 0) : QWidget(parent, name)
+ViewManager::ViewManager (QWidget *parent, const char *name) : QWidget(parent, name)
 {
 }
 
