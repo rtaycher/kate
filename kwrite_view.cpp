@@ -231,6 +231,12 @@ void KWriteView::doEditCommand(VConfig &c, int cmdNum) {
     case cmCleanIndent:
       m_doc->cleanIndent(c);
       return;
+    case cmComment:
+      m_doc->comment(c);
+      return;
+    case cmUncomment:
+      m_doc->unComment(c);
+      return;
   }
 
   // commands that delete marked text

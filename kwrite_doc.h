@@ -324,6 +324,8 @@ class KWActionGroup {
       ugDelBlock,     // delete/replace selected text
       ugIndent,       // indent
       ugUnindent,     // unindent
+      ugComment,      // comment
+      ugUncomment,    // uncomment
       ugReplace,      // text search/replace
       ugSpell,        // spell check
       ugInsChar,      // char type/deleting
@@ -498,6 +500,10 @@ class KWriteDoc : QObject {
     // optimize leading whitespace on a single line - see kwdoc.cpp for full description
 //    bool optimizeLeadingSpace(VConfig &, TextLine *, int, bool);
     void optimizeLeadingSpace(int line, int flags, int change);
+
+    void comment(VConfig &c) {doComment(c, 1);}
+    void unComment(VConfig &c) {doComment(c, -1);}
+    void doComment(VConfig &c, int change);
 
   public:
     QString text();

@@ -379,6 +379,10 @@ QString KWActionGroup::typeName(int type) {
       return "Indent";
     case ugUnindent :
       return "Unindent";
+    case ugComment :
+      return "Comment";
+    case ugUncomment :
+      return "Uncomment";
     case ugReplace :
       return "Text Replace";
     case ugSpell :
@@ -1668,6 +1672,47 @@ void KWriteDoc::optimizeLeadingSpace(int line, int flags, int change) {
 //printf("chars %d insert %d cursor.x() %d\n", chars, insert, cursor.x());
   cursor.setY(line);
   recordReplace(cursor, chars, s);
+}
+
+void KWriteDoc::doComment(VConfig &c, int change) {
+
+  TextLine *textLine;
+
+  c.flags |= cfPersistent;
+  c.cursor.setX(0);
+
+  recordStart(c, (change < 0) ? KWActionGroup::ugUncomment
+    : KWActionGroup::ugComment);
+
+  if (m_selectEnd < m_selectStart) {
+    textLine = m_contents.at(c.cursor.y());
+    if(change > 0) {
+      //comment single line
+      recordReplace(c.cursor,0,"//");
+    } else if(change < 0) {
+      //uncomment single line
+      if ((textLine->getChar(0) != '/') || (textLine->getChar(1) != '/')) return;
+      recordReplace(c.cursor,2,"");
+    }
+  } else {
+    for (c.cursor.setY(m_selectStart); c.cursor.y() <= m_selectEnd; c.cursor.incY()) {
+      textLine = m_contents.at(c.cursor.y());
+      if(change > 0) {
+      //comment selection
+        if (textLine->isSelected() || textLine->numSelected())
+          recordReplace(c.cursor,0,"//");
+      } else if(change < 0) {
+        //uncomment selection
+        if ((textLine->isSelected() || textLine->numSelected())
+            && (textLine->getChar(0) == '/') && (textLine->getChar(1) == '/')) {
+          recordReplace(c.cursor,2,"");
+        }
+      }
+    }
+    c.cursor.decY();
+  }
+
+  recordEnd(c.view, c.cursor, c.flags | cfPersistent);
 }
 
 

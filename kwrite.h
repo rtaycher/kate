@@ -177,7 +177,9 @@ enum KWEditCommands {
   cmCleanIndent       = 15,
   cmSelectAll         = 16,
   cmDeselectAll       = 17,
-  cmInvertSelection   = 18
+  cmInvertSelection   = 18,
+  cmComment           = 19,
+  cmUncomment         = 20
 };
 
 // search commands
@@ -743,6 +745,7 @@ class KWrite : public KParts::ReadWritePart /*QWidget*/ {
     KSelectAction *m_langAction;
     KAction       *m_cut, *m_copy, *m_paste, *m_undo, *m_redo, *m_replace;
     KAction       *m_indent, *m_unindent, *m_cleanIndent, *m_spell;
+    KAction       *m_comment, *m_uncomment;
 
 
 //edit functions
@@ -811,6 +814,16 @@ class KWrite : public KParts::ReadWritePart /*QWidget*/ {
       Optimizes the selected indentation, replacing tabs and spaces as needed
     */
     void cleanIndent();
+
+    /**
+      Comment the current line or the selection
+    */
+    void comment();
+
+    /**
+      Uncomment the current line or the selection
+    */
+    void uncomment();
 
     /**
       Selects all text

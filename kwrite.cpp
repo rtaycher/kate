@@ -303,6 +303,8 @@ KWrite::KWrite(QWidget *parentWidget, QObject *parent, int flags, KWriteDoc *doc
   g->addCommand(cmIndent,          i18nop("Indent")/*, CTRL+Key_I*/);
   g->addCommand(cmUnindent,        i18nop("Unindent")/*, CTRL+Key_U*/);
   g->addCommand(cmCleanIndent,     i18nop("Clean Indent"));
+  g->addCommand(cmComment,         i18nop("Comment")/*, CTRL+Key_I*/);
+  g->addCommand(cmUncomment,       i18nop("Uncomment")/*, CTRL+Key_U*/);
   g->addCommand(cmSelectAll,       i18nop("Select All"));
   g->addCommand(cmDeselectAll,     i18nop("Deselect All"));
   g->addCommand(cmInvertSelection, i18nop("Invert Selection"));
@@ -355,6 +357,8 @@ KWrite::KWrite(QWidget *parentWidget, QObject *parent, int flags, KWriteDoc *doc
   m_indent = new KAction( i18n( "&Indent"), 0, this, SLOT( indent() ), actionCollection(), "indent" );
   m_unindent = new KAction( i18n( "Unindent" ), 0, this, SLOT( unindent() ), actionCollection(), "unindent" );
   m_cleanIndent = new KAction( i18n( "Clean indent" ), 0, this, SLOT( cleanIndent() ), actionCollection(), "clean_indent" );
+  m_comment = new KAction( i18n( "&Comment"), 0, this, SLOT( comment() ), actionCollection(), "comment" );
+  m_uncomment = new KAction( i18n( "Uncomment" ), 0, this, SLOT( uncomment() ), actionCollection(), "uncomment" );
   KStdAction::selectAll( this, SLOT( selectAll() ), actionCollection(), "select_all" );
   (void)new KAction( i18n( "Unselect All" ), 0, this, SLOT( unselectAll() ), actionCollection(), "unselect_all" );
   (void)new KAction( i18n( "Invert Selection" ), 0, this, SLOT( invertSelection() ), actionCollection(), "invert_select" );
@@ -577,6 +581,8 @@ void KWrite::emitNewStatus() {
   m_indent->setEnabled(rw);
   m_unindent->setEnabled(rw);
   m_cleanIndent->setEnabled(rw);
+  m_comment->setEnabled(rw);
+  m_uncomment->setEnabled(rw);
   m_spell->setEnabled(rw);
 
   emit newStatus();
@@ -1246,6 +1252,30 @@ void KWrite::cleanIndent() {
   VConfig c;
   m_view->getVConfig(c);
   m_doc->cleanIndent(m_view, c);
+  m_doc->updateViews();
+*/
+}
+
+void KWrite::comment() {
+/*
+  if (isReadOnly())
+    return;
+
+  VConfig c;
+  m_view->getVConfig(c);
+  m_doc->comment(m_view, c);
+  m_doc->updateViews();
+*/
+}
+
+void KWrite::uncomment() {
+/*
+  if (isReadOnly())
+    return;
+
+  VConfig c;
+  m_view->getVConfig(c);
+  m_doc->unComment(m_view, c);
   m_doc->updateViews();
 */
 }
