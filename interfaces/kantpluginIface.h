@@ -20,16 +20,21 @@
 #include "../kantmain.h"
 #include "../kwrite/kwview.h"
 
+#include <qobject.h>
+
 #include "kantdocmanagerIface.h"
 #include "kantviewmanagerIface.h"
 
 class KantPluginIface : public QObject
-  {
-    Q_OBJECT
-    public:
-      KantPluginIface(QObject *parent):QObject(parent){;};
-      ~KantPluginIface(){;};
-     KWrite *getActiveView() { return 0;};
-  };
+{
+  Q_OBJECT
+
+  public:
+    KantPluginIface (QObject *parent) : QObject (parent) {;};
+    ~KantPluginIface () {;};
+
+    virtual KantViewManagerIface *viewManagerIface ()=0L;
+    virtual KantDocManagerIface *docManagerIface ()=0L;
+};
 
 #endif

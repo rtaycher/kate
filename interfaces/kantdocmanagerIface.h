@@ -29,8 +29,6 @@ class KantDocManagerIface : public QObject
   public:
     KantDocManagerIface () : QObject () {;};
     ~KantDocManagerIface () {;};
-
-    //virtual KWrite *getActiveView()=0;
 };
 
 #endif

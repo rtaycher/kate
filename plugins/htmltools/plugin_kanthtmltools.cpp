@@ -48,7 +48,7 @@ void PluginKantHtmlTools::slotEditHTMLtag()
 {
 
   if (!myParent)  return;
-  KWrite *kv=myParent->getActiveView();
+  KWrite *kv=myParent->viewManagerIface()->getActiveView();
   if (!kv) return;
 
   QString text ( KantPrompt ( i18n("HTML Tag"),

@@ -31,8 +31,6 @@
 #include "../filelist/kantfilelist.h"
 #include "kantmenuitem.h"
 
-#include "../interfaces/kantpluginIface.h"
-
 #include "../kwrite/kwview.h"
 #include "../kwrite/kwattribute.h"
 #include "../kwrite/kwdoc.h"
@@ -84,6 +82,16 @@
 #include <kurldrag.h>
 
 #define POP_(x) kdDebug() << #x " = " << flush << x << endl
+
+KantViewManagerIface *KantMyPluginIface::viewManagerIface ()
+{
+  return ((KantViewManagerIface *)((KantMainWindow *)parent())->viewManager);
+}
+
+KantDocManagerIface *KantMyPluginIface::docManagerIface ()
+{
+  return ((KantDocManagerIface *)((KantMainWindow *)parent())->docManager);
+}
 
 KantMainWindow::KantMainWindow(KantDocManager *_docManager, KantPluginManager *_pluginManager) :
 	KDockMainWindow (0, "Main Window"),
@@ -157,21 +165,20 @@ void KantMainWindow::setupMainWindow ()
   sidebar->addWidget (fileselector, i18n("Fileselector"));
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileViewItem*)),this,SLOT(fileSelected(const KFileViewItem*)));
 
-  pluginIface = new KantPluginIface (this);
+  pluginIface = new KantMyPluginIface (this);
 
   setUpdatesEnabled(false);
-//  QObject *jw1=new QObject(this);
-//  KXMLGUIClient *gui=new KXMLGUIClient(this);
-  KParts::Plugin::loadPlugins(viewManager,pluginManager->plugins);
-        KParts::GUIActivateEvent ev( true );
-        QApplication::sendEvent( viewManager, &ev );
 
-//        guiFactory()->addClient( gui );
+  KParts::Plugin::loadPlugins(pluginIface,pluginManager->plugins);
+  KParts::GUIActivateEvent ev( true );
+  QApplication::sendEvent( pluginIface, &ev );
 
-        QList<KParts::Plugin> plugins =KParts:: Plugin::pluginObjects( pluginIface );
-        QListIterator<KParts::Plugin> pIt( plugins );
-        for (; pIt.current(); ++pIt )
-            guiFactory()->addClient( pIt.current() );
+  QList<KParts::Plugin> plugins =KParts:: Plugin::pluginObjects( pluginIface );
+  QListIterator<KParts::Plugin> pIt( plugins );
+
+  /*for (; pIt.current(); ++pIt )
+    guiFactory()->addClient( pIt.current() );
+    */
   setUpdatesEnabled(true);
 
   statusBar()->hide();
