@@ -110,7 +110,7 @@ KateProjectTreeView::KateProjectTreeView (Kate::Project *project, KateMainWindow
 
   addDir (0, QString::null);
   
-  connect(this,SIGNAL(executed (QListViewItem*)),this,SLOT(slotExecuted (QListViewItem*)));
+  connect(this,SIGNAL(doubleClicked(QListViewItem *, const QPoint &, int)),this,SLOT(slotDoubleClicked(QListViewItem *, const QPoint &, int)));
 }
 
 KateProjectTreeView::~KateProjectTreeView ()
@@ -153,13 +153,16 @@ void KateProjectTreeView::addDir (KateProjectTreeViewItem *parent, const QString
   }
 }
 
-void KateProjectTreeView::slotExecuted ( QListViewItem *i )
+void KateProjectTreeView::slotDoubleClicked( QListViewItem *i, const QPoint &pos, int c )
 {
   KateProjectTreeViewItem *item = (KateProjectTreeViewItem *) i;
   
-  if (item && !item->isDir())
-  {
+  if (!item)
+    return;
+  
+  if (item->isDir())
+    setOpen (item, !item->isOpen());
+  else
     m_mainWin->viewManager()->openURL (KURL (m_project->dir() + QString ("/") + item->fullName()));
-  }
 }
 

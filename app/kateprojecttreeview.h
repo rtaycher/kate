@@ -64,7 +64,7 @@ class KateProjectTreeView : public KListView
     void addDir (KateProjectTreeViewItem *parent, const QString &dir);
     
   private slots:
-    void slotExecuted ( QListViewItem *i );
+    void slotDoubleClicked( QListViewItem *i, const QPoint &pos, int c );
     
   private:
     Kate::Project *m_project;
