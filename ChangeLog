@@ -1,4 +1,5 @@
 2001-11-24 Christoph Cullmann <cullmann@kde.org>
+  * the docID is now called documentNumber and is in the KTextEditor lib ;)
   * new print and mark interfaces ;)
   * bugfixes for some stuff in kateview/document.*
   * move more of the document stuff from the view to the document
