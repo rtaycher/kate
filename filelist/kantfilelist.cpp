@@ -142,7 +142,8 @@ void KantFileList::slotViewChanged ()
     {
       //kdDebug()<<"found one!"<<endl;
       setCurrentItem (i);
-      setSelected( i, true );
+      if ( !isSelected( item(i) ) )
+        setSelected( i, true );
       break;
     }
   }
