@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="kate" version="23">
+<kpartgui name="kate" version="24">
 
 <MenuBar noMerge="1">
   <Menu name="file"><text>&amp;File</text>
@@ -79,7 +79,7 @@
 
   <Menu name="settings"><text>&amp;Settings</text>
     <Merge name="StandardToolBarMenuHandler"/>
-    <Action name="settings_show_toolviews" />
+    <Merge name="KMDIViewActions"/>
     <Action name="settings_show_tooldocks" />
     <DefineGroup name="show_merge" />
     <Separator />
