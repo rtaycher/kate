@@ -389,7 +389,11 @@ HlRegExpr::HlRegExpr(int attribute, int context,QString regexp)
 
     handlesLinestart=regexp.startsWith("^");
     if(!handlesLinestart) regexp.prepend("^");
+#if QT_VERSION <300
     Expr=new QRegExp3(regexp);
+#else
+    Expr=new QRegExp(regexp);
+#endif
 }
 
 const QChar *HlRegExpr::checkHgl(const QChar *s, int len, bool lineStart)
@@ -1210,7 +1214,11 @@ void Highlight::makeContextList()
 				bool tmpbool;
 				if (tmpbool=HlManager::self()->syntax->nextItem(datasub))
 					{
+#if QT_VERSION < 300
                                           c->subItems=new QList<HlItem>;
+#else
+					  c->subItems=new QPtrList<HlItem>;
+#endif
 					  for (;tmpbool;tmpbool=HlManager::self()->syntax->nextItem(datasub))
                                             c->subItems->append(createHlItem(datasub,iDl));
                                         }
@@ -1290,7 +1298,11 @@ int HlManager::wildcardFind(const QString &fileName) {
       if (p2 == -1) p2 = w.length();
       if (p1 < p2) {
         QRegExp regExp(w.mid(p1,p2 - p1),true,true);
+#if QT_VERSION <300
         if (regExp.match(fileName) == 0) return hlList.at();
+#else
+        if (regExp.search(fileName) == 0) return hlList.at();
+#endif
       }
       p1 = p2 + 1;
     }
@@ -1318,7 +1330,11 @@ int HlManager::mimeFind(const QByteArray &contents, const QString &fname)
       if (p2 == -1) p2 = w.length();
       if (p1 < p2) {
         QRegExp regExp(w.mid(p1,p2 - p1),true,true);
+#if QT_VERSION < 300
         if (regExp.match(result->mimeType()) == 0) return hlList.at();
+#else
+        if (regExp.search(result->mimeType()) == 0) return hlList.at();
+#endif
       }
       p1 = p2 + 1;
     }

@@ -31,33 +31,33 @@ StyleChanger::StyleChanger( QWidget *parent )
   QLabel *label;
 
   QGridLayout *glay = new QGridLayout( this, 4, 3, 0, KDialog::spacingHint() );
-  CHECK_PTR(glay);
+  Q_CHECK_PTR(glay);
   glay->addColSpacing( 1, KDialog::spacingHint() ); // Looks better
   glay->setColStretch( 2, 10 );
 
   col = new KColorButton(this);
-  CHECK_PTR(col);
+  Q_CHECK_PTR(col);
   connect(col,SIGNAL(changed(const QColor &)),this,SLOT(changed()));
   label = new QLabel(col,i18n("Normal:"),this);
-  CHECK_PTR(label);
+  Q_CHECK_PTR(label);
   glay->addWidget(label,0,0);
   glay->addWidget(col,1,0);
 
   selCol = new KColorButton(this);
-  CHECK_PTR(selCol);
+  Q_CHECK_PTR(selCol);
   connect(selCol,SIGNAL(changed(const QColor &)),this,SLOT(changed()));
   label = new QLabel(selCol,i18n("Selected:"),this);
-  CHECK_PTR(label);
+  Q_CHECK_PTR(label);
   glay->addWidget(label,2,0);
   glay->addWidget(selCol,3,0);
 
   bold = new QCheckBox(i18n("Bold"),this);
-  CHECK_PTR(bold);
+  Q_CHECK_PTR(bold);
   connect(bold,SIGNAL(clicked()),SLOT(changed()));
   glay->addWidget(bold,1,2);
 
   italic = new QCheckBox(i18n("Italic"),this);
-  CHECK_PTR(italic);
+  Q_CHECK_PTR(italic);
   connect(italic,SIGNAL(clicked()),SLOT(changed()));
   glay->addWidget(italic,2,2);
 }

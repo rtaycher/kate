@@ -26,7 +26,11 @@
 #include <sys/mman.h>
 
 #include <qintdict.h>
+#if QT_VERSION < 300
 #include <qlist.h>
+#else
+#include <qptrlist.h>
+#endif
 
 #include <ktempfile.h>
 #include <kdebug.h>
@@ -49,8 +53,13 @@ class KVMAllocatorPrivate
 public:
    KTempFile *tempfile;
    off_t max_length;
+#if QT_VERSION < 300
    QList<KVMAllocator::Block> used_blocks;
    QList<KVMAllocator::Block> free_blocks;
+#else
+   QPtrList<KVMAllocator::Block> used_blocks;
+   QPtrList<KVMAllocator::Block> free_blocks;
+#endif
 };
 
 /**

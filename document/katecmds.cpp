@@ -1,5 +1,10 @@
 #include "katecmds.h"
+
 #include <qregexp.h>
+#if QT_VERSION < 300
+#else
+#include <qstring.h>
+#endif
 #include <qdatetime.h>
 #include "katedocument.h"
 #include <kdebug.h>
@@ -33,7 +38,11 @@ static void replace(QString &s, const QString &needle, const QString &with)
 }
 
 // stolen from QString::replace
+#if QT_VERSION < 300
 static void replace(QString &s, QRegExp3 &rx, const QString &with)
+#else
+static void replace(QString &s, QRegExp &rx, const QString &with)
+#endif
 {
 	if (s.isEmpty()) return;
 	int index = 0;
@@ -107,7 +116,11 @@ static void exchangeAbbrevs(QString &str)
 
 QString SedReplace::sedMagic(QString textLine, QString find, QString rep, bool noCase, bool repeat)
 {
+#if QT_VERSION < 300
 	QRegExp3 matcher(find, noCase);
+#else
+	QRegExp matcher(find, noCase);
+#endif
 
 	int start=0;
 	while (start!=-1)
@@ -167,7 +180,11 @@ static void setLineText(KateView *view, int line, const QString &text)
 bool SedReplace::execCmd(QString cmd, KateView *view)
 {
 	kdDebug(13010)<<"SedReplace::execCmd()"<<endl;
+#if QT_VERSION < 300
 	if (QRegExp("[$%]?s/.+/.*/[ig]*").find(cmd, 0)==-1)
+#else
+	if (QRegExp("[$%]?s/.+/.*/[ig]*").search(cmd, 0)==-1)
+#endif
 		return false;
 	
 	bool fullFile=cmd[0]=='%';
@@ -175,7 +192,11 @@ bool SedReplace::execCmd(QString cmd, KateView *view)
 	bool repeat=cmd[cmd.length()-1]=='g' || cmd[cmd.length()-2]=='g';
 	bool onlySelect=cmd[0]=='$';
 
+#if QT_VERSION < 300
 	QRegExp3 splitter("^[$%]?s/((?:[^\\\\/]|\\\\[\\\\/\\$0-9tadDsSwW])*)/((?:[^\\\\/]|\\\\[\\\\/\\$0-9tadDsSwW])*)/[ig]*$");
+#else
+	QRegExp splitter("^[$%]?s/((?:[^\\\\/]|\\\\[\\\\/\\$0-9tadDsSwW])*)/((?:[^\\\\/]|\\\\[\\\\/\\$0-9tadDsSwW])*)/[ig]*$");
+#endif
 	if (splitter.search(cmd)<0) return false;
 	
 	QString find=splitter.cap(1);
@@ -213,7 +234,11 @@ bool SedReplace::execCmd(QString cmd, KateView *view)
 bool Character::execCmd(QString cmd, KateView *view)
 {
 	// hex, octal, base 9+1
+#if QT_VERSION < 300
 	QRegExp3 num("^char: *(0?x[0-9A-Fa-f]{1,4}|0[0-7]{1,6}|[0-9]{1,3})$");
+#else
+	QRegExp num("^char: *(0?x[0-9A-Fa-f]{1,4}|0[0-7]{1,6}|[0-9]{1,3})$");
+#endif
 	if (num.search(cmd)==-1) return false;
 
 	cmd=num.cap(1);
