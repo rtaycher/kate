@@ -62,6 +62,11 @@ PluginManager::~PluginManager ()
   delete d;
 }
 
+Plugin *PluginManager::plugin(const QString &name)
+{
+	return d->pluginMan->plugin(name);
+}
+
 bool PluginManager::pluginAvailable(const QString &name)
 {
   return d->pluginMan->pluginAvailable (name);
