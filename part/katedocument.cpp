@@ -990,69 +990,71 @@ QString KateDocument::selection() const
 
 struct DeleteSelection {
   int line;
-	int lineLen;
+  int lineLen;
   int deleteLine;
   int deleteStart;
   int len;
 };
 
 bool KateDocument::removeSelectedText ()
-{/*
-  int end = 0;
-  int line = 0;
+{
   TextLine::Ptr textLine = 0L;
   QPtrStack<DeleteSelection> selectedLines;
 
-  if (selectEnd < selectStart)
+  if (!hasSelection())
     return false;
 
   currentUndo = new KateUndoGroup (this);
 
   _autoUpdate = false;
-
-  for (line = selectStart; line <= selectEnd; line++)
+  
+  if (!invertedSelection)
   {
-    textLine = getTextLine(line);
-
-    if (!textLine)
-      break;
-
-    DeleteSelection *curLine = new DeleteSelection;
-
-    curLine->deleteStart = textLine->length();
-    curLine->line = line;
-		curLine->lineLen = textLine->length();
-
-    while (true)
+    for (int z=selectStartLine; z <= selectEndLine; z++)
     {
-      end = textLine->findRevUnselected(curLine->deleteStart);
-
-      if (end == 0)
+      textLine = getTextLine(z);
+      if (!textLine)
         break;
+	
+      DeleteSelection *curLine = new DeleteSelection;
 
-      curLine->deleteStart = textLine->findRevSelected(end);
-      curLine->len = end - curLine->deleteStart;
+      curLine->deleteStart = textLine->length();
+      curLine->line = z;
+      curLine->lineLen = textLine->length();
+    
+      if (!(_configFlags & KateDocument::cfVerticalSelect))
+      {
+        if ((z > selectStartLine) && (z < selectEndLine))
+          curLine->deleteLine = 1;
+	else
+	{
+	  if ((z == selectStartLine) && (z == selectEndLine))
+	  {
+	    curLine->deleteStart = selectStartCol;
+	    curLine->len = selectEndCol-selectStartCol;
+	  }
+	  else if ((z == selectStartLine))
+	  {
+	    curLine->deleteStart = selectStartCol;
+	    curLine->len = textLine->length()-selectStartCol;
+	  }
+	  else if ((z == selectEndLine))
+	  {
+	    curLine->deleteStart = 0;
+	    curLine->len = selectEndCol;	  
+	  }
+	}
+      }
+      else
+      {
+        curLine->deleteStart = selectStartCol;
+	curLine->len = selectEndCol-selectStartCol;
+      }
+      
+      selectedLines.push (curLine);
     }
-
-		if (curLine->len > textLine->length())
-		  curLine->len = textLine->length();
-
-    if (textLine->isSelected() && (line > selectStart))
-    {
-      curLine->deleteLine = 1;
-    }
-    else if (textLine->isSelected() && (line == selectStart))
-    {
-      curLine->deleteLine = 0;
-      curLine->len++;
-    }
-    else
-    {
-      curLine->deleteLine = 0;
-    }
-
-    selectedLines.push (curLine);
   }
+
 
   while (selectedLines.count() > 0)
   {
@@ -1066,17 +1068,16 @@ bool KateDocument::removeSelectedText ()
       removeText (curLine->line, curLine->deleteStart, curLine->line, curLine->deleteStart+curLine->len);
   }
 
-  selectEnd = -1;
-  select.col = -1;
+  clearSelection();
 
-	_autoUpdate = true;
-	updateViews ();
+  _autoUpdate = true;
+  updateViews ();
 
   undoItems.append (currentUndo);
-	currentUndo = 0L;
-	emit undoChanged ();
+  currentUndo = 0L;
+  emit undoChanged ();
 
-  return true;*/
+  return true;
 }
 
 bool KateDocument::selectAll()
