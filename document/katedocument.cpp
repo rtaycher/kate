@@ -365,8 +365,10 @@ bool KateDocument::removeText ( int line, int col, int len )
   int rchars;
   while (chars > 0)
   {
-    if ((deletePos+chars) > (l->length()-deletePos))
+    if (chars > (l->length()-deletePos))
     {
+      kdDebug()<<deletePos<<" remove "<<chars<<" line "<<l->length()<<endl;
+
       rchars = l->length()-deletePos;
 
       l->truncate(deletePos);
@@ -413,6 +415,8 @@ bool KateDocument::removeText ( int line, int col, int len )
     }
     else
     {
+      kdDebug()<<deletePos<<" remove "<<chars<<" text "<<l->length()<<endl;
+
       l->replace (deletePos, chars, 0, 0);
       buffer->changeLine(line);
       updateMaxLength(l);
@@ -426,7 +430,6 @@ bool KateDocument::removeText ( int line, int col, int len )
         if ( (cLine == line) && (cCol > deletePos) )
           cCol = deletePos;
 
-
         c.y = line;
         c.x = cCol;
 
@@ -434,6 +437,7 @@ bool KateDocument::removeText ( int line, int col, int len )
       }
 
       chars = 0;
+      break;
     }
   }
 
@@ -1364,7 +1368,7 @@ void KateDocument::backspace(VConfig &c) {
 
 void KateDocument::del(VConfig &c) {
   TextLine::Ptr textLine = getTextLine(c.cursor.y);
-  int len =  (c.flags & KateView::cfRemoveSpaces) ? textLine->lastChar() : textLine->length();
+  int len = textLine->length();
 
  /* if (c.cursor.x < len)
   {*/
