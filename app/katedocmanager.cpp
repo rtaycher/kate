@@ -28,10 +28,13 @@
 
 #include <kate/view.h>
 
+#include <kparts/factory.h>
+
 #include <klocale.h>
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kapplication.h>
+#include <klibloader.h>
 
 #include <qtextcodec.h>
 #include <qprogressdialog.h>
@@ -41,6 +44,8 @@
 
 KateDocManager::KateDocManager (QObject *parent) : QObject (parent)
 {
+  m_factory = (KParts::Factory *) KLibLoader::self()->factory ("libkatepart");
+
   m_documentManager = new Kate::DocumentManager (this);
   m_docList.setAutoDelete(true);
   m_docDict.setAutoDelete(false);
@@ -55,13 +60,12 @@ KateDocManager::KateDocManager (QObject *parent) : QObject (parent)
 KateDocManager::~KateDocManager ()
 {
   delete m_dcop;
-
-  m_docList.setAutoDelete(false);
 }
 
 Kate::Document *KateDocManager::createDoc ()
 {
-  KTextEditor::Document *doc = KTextEditor::createDocument ("libkatepart", this, "Kate::Document");
+  KTextEditor::Document *doc = (KTextEditor::Document *) m_factory->createPart (0, "", this, "", "KTextEditor::Document");
+  
   m_docList.append((Kate::Document *)doc);
   m_docDict.insert (doc->documentNumber(), (Kate::Document *)doc);
   m_docInfos.insert (doc, new KateDocumentInfo ());

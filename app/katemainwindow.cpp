@@ -166,7 +166,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
     console->loadConsoleIfNeeded();
 
   // call it as last thing, must be sure everything is already set up ;)
-  setAutoSaveSettings ("MainWindow Settings");//mainDock->setDockSite( KDockWidget::DockNone );
+  setAutoSaveSettings ("MainWindow Settings");
 }
 
 KateMainWindow::~KateMainWindow()

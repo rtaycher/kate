@@ -149,8 +149,12 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
 KateApp::~KateApp ()
 {
   m_pluginManager->writeConfig ();
+
   //m_docManager->closeAllDocuments();
   delete m_obj;
+  
+  // delete this now, or we crash
+  delete m_docManager;
 }
 
 void KateApp::callOnEventLoopEnter()

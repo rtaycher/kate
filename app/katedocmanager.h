@@ -30,6 +30,8 @@
 #include <qptrdict.h>
 #include <qintdict.h>
 
+namespace KParts { class Factory; }
+
 class KConfig;
 class DCOPObject;
 
@@ -113,6 +115,8 @@ class KateDocManager : public QObject
     Kate::Document *m_currentDoc;
 
     DCOPObject *m_dcop;
+    
+    KParts::Factory *m_factory;
 };
 
 #endif
