@@ -56,23 +56,20 @@
 
 //END Includes
 
-KateViewSpaceContainer::KateViewSpaceContainer (QWidget *parent, KateViewManager *viewManager, KateDocManager *m_docManager, KateMainWindow *mainWindow)
- : QWidget  (parent),
-   m_viewManager(viewManager),m_activeViewRunning (false),m_mainWindow(mainWindow),m_pendingViewCreation(false)
+KateViewSpaceContainer::KateViewSpaceContainer (QWidget *parent, KateViewManager *viewManager,
+                                                KateDocManager *docManager, KateMainWindow *mainWindow)
+ : QWidget  (parent)
+ , m_docManager (docManager) 
+ , m_viewManager(viewManager)
+ , m_grid (new QGridLayout( this, 1, 1 ))
+ , m_blockViewCreationAndActivation (false)
+ , m_activeViewRunning (false)
+ , m_mainWindow(mainWindow)
+ , m_pendingViewCreation(false)
 {
-
-  m_blockViewCreationAndActivation=false;
-
-  useOpaqueResize = KGlobalSettings::opaqueResize();
-
   // no memleaks
   m_viewList.setAutoDelete(true);
   m_viewSpaceList.setAutoDelete(true);
-
-  this->m_docManager = m_docManager;
-
-  // sizemanagement
-  m_grid = new QGridLayout( this, 1, 1 );
 
   KateViewSpace* vs = new KateViewSpace( this, this );
   connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, const QString&)), vs, SLOT(slotStatusChanged(Kate::View *, int, int, int, bool, int, const QString&)));
@@ -462,7 +459,7 @@ void KateViewSpaceContainer::splitViewSpace( KateViewSpace* vs,
 
   Qt::Orientation o = isHoriz ? Qt::Vertical : Qt::Horizontal;
   KateSplitter* s = new KateSplitter(o, vs->parentWidget());
-  s->setOpaqueResize( useOpaqueResize );
+  s->setOpaqueResize( KGlobalSettings::opaqueResize() );
 
   if (! isFirstTime) {
     // anders: make sure the split' viewspace is always

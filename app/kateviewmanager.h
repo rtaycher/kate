@@ -24,8 +24,6 @@
 #include "katemain.h"
 #include "../interfaces/viewmanager.h"
 
-#include "kateviewspacecontainer.h"
-
 #include <kate/view.h>
 #include <kate/document.h>
 #include <kmdi/tabwidget.h>
@@ -33,6 +31,7 @@
 
 class KateSplitter;
 class KateMainWindow;
+class KateViewSpaceContainer;
 
 class KConfig;
 class KAction;
@@ -74,14 +73,12 @@ class KateViewManager : public QObject
     void openURL (const KURL &url);
 
   private:
-    bool useOpaqueResize;
-
     void removeViewSpace (KateViewSpace *viewspace);
 
     bool showFullPath;
 
   public:
-    virtual Kate::View* activeView ();
+    Kate::View* activeView ();
     KateViewSpace* activeViewSpace ();
 
     uint viewCount ();
@@ -132,6 +129,13 @@ class KateViewManager : public QObject
     void activateNextView();
     void activatePrevView();
 
+  protected:
+    friend class KateViewSpaceContainer;
+    
+    bool eventFilter(QObject *o,QEvent *e);
+    
+    QGuardedPtr<Kate::View> guiMergedView;
+    
   signals:
     void statusChanged (Kate::View *, int, int, int, bool, int, const QString &);
     void statChanged ();
@@ -154,11 +158,6 @@ class KateViewManager : public QObject
     KAction *m_activatePrevTab;
     KAction *goNext;
     KAction *goPrev;
-
-  protected:
-    friend class KateViewSpaceContainer;
-    bool eventFilter(QObject *o,QEvent *e);
-    QGuardedPtr<Kate::View> guiMergedView;
 };
 
 #endif

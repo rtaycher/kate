@@ -39,7 +39,9 @@ class KateViewSpaceContainer: public QWidget
   friend class KateVSStatusBar;
 
   public:
-    KateViewSpaceContainer (QWidget *parent,KateViewManager *viewManager, KateDocManager *docManager,KateMainWindow* mainWindow);
+    KateViewSpaceContainer (QWidget *parent, KateViewManager *viewManager,
+                            KateDocManager *docManager, KateMainWindow* mainWindow);
+
     ~KateViewSpaceContainer ();
 
     inline QPtrList<Kate::View> &viewList () { return m_viewList; };
@@ -52,8 +54,6 @@ class KateViewSpaceContainer: public QWidget
     void restoreViewConfiguration (KConfig *config,const QString& group);
 
   private:
-    bool useOpaqueResize;
-  
     /**
      * create and activate a new view for doc, if doc == 0, then
      * create a new document
@@ -81,7 +81,7 @@ class KateViewSpaceContainer: public QWidget
     bool showFullPath;
 
   public:
-    virtual Kate::View* activeView ();
+    Kate::View* activeView ();
     KateViewSpace* activeViewSpace ();
 
     uint viewCount ();
@@ -146,11 +146,11 @@ class KateViewSpaceContainer: public QWidget
     void viewChanged ();
 
   private:
+    KateDocManager *m_docManager;
     KateViewManager *m_viewManager;
     QPtrList<KateViewSpace> m_viewSpaceList;
     QPtrList<Kate::View> m_viewList;
 
-    KateDocManager *m_docManager;
     QGridLayout *m_grid;
     bool m_blockViewCreationAndActivation;
 
