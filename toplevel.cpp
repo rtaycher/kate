@@ -385,48 +385,37 @@ void TopLevel::setupToolBar(){
 
   toolbar = toolBar();//new KToolBar(this);
 
-  QPixmap pixmap;
-
-  pixmap = BarIcon("filenew");
-  toolbar->insertButton(pixmap,0,SIGNAL(clicked()),
+  toolbar->insertButton("filenew",0,SIGNAL(clicked()),
     kWrite,SLOT(newDoc()),TRUE,i18n("New"));
 
-  pixmap = BarIcon("fileopen");
-  toolbar->insertButton(pixmap,0,SIGNAL(clicked()),
+  toolbar->insertButton("fileopen",0,SIGNAL(clicked()),
     kWrite,SLOT(open()),TRUE,i18n("Open"));
 
-  pixmap = BarIcon("filesave");
-  toolbar->insertButton(pixmap,0,SIGNAL(clicked()),
+  toolbar->insertButton("filesave",0,SIGNAL(clicked()),
     kWrite,SLOT(save()),TRUE,i18n("Save"));
 
   toolbar->insertSeparator();
 
-  pixmap = BarIcon("editcut");
-  toolbar->insertButton(pixmap,toolCut,SIGNAL(clicked()),
+  toolbar->insertButton("editcut",toolCut,SIGNAL(clicked()),
     kWrite,SLOT(cut()),TRUE,i18n("Cut"));
 
-  pixmap = BarIcon("editcopy");
-  toolbar->insertButton(pixmap,0,SIGNAL(clicked()),
+  toolbar->insertButton("editcopy",0,SIGNAL(clicked()),
     kWrite,SLOT(copy()),TRUE,i18n("Copy"));
 
-  pixmap = BarIcon("editpaste");
-  toolbar->insertButton(pixmap,toolPaste,SIGNAL(clicked()),
+  toolbar->insertButton("editpaste",toolPaste,SIGNAL(clicked()),
     kWrite,SLOT(paste()),TRUE,i18n("Paste"));
 
   toolbar->insertSeparator();
 
-  pixmap = BarIcon("undo");
-  toolbar->insertButton(pixmap,toolUndo,SIGNAL(clicked()),
+  toolbar->insertButton("undo",toolUndo,SIGNAL(clicked()),
     kWrite,SLOT(undo()),TRUE,i18n("Undo"));
 
-  pixmap = BarIcon("redo");
-  toolbar->insertButton(pixmap,toolRedo,SIGNAL(clicked()),
+  toolbar->insertButton("redo",toolRedo,SIGNAL(clicked()),
     kWrite,SLOT(redo()),TRUE,i18n("Redo"));
 
   toolbar->insertSeparator();
 
-  pixmap = BarIcon("fileprint");
-  toolbar->insertButton(pixmap, 0, SIGNAL(clicked()),
+  toolbar->insertButton("fileprint", 0, SIGNAL(clicked()),
     this, SLOT(printNow()), TRUE, i18n("Print Document"));
 
 /*
@@ -437,8 +426,7 @@ void TopLevel::setupToolBar(){
 
 */
   toolbar->insertSeparator();
-  pixmap = BarIcon("help");
-  toolbar->insertButton(pixmap,0,SIGNAL(clicked()),
+  toolbar->insertButton("help",0,SIGNAL(clicked()),
     this,SLOT(helpSelected()),TRUE,i18n("Help"));
 
   toolbar->setBarPos(KToolBar::Top);
