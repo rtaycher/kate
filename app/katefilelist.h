@@ -163,9 +163,13 @@ class KFLConfigPage : public Kate::ConfigPage {
     virtual void apply();
     virtual void reload();
 
+  public slots:
+    void slotEnableChanged();
+
   private:
     class QCheckBox *cbEnableShading;
     class KColorButton *kcbViewShade, *kcbEditShade;
+    class QLabel *lEditShade, *lViewShade;
     KateFileList *m_filelist;
 };
 

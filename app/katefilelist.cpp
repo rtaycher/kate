@@ -226,12 +226,16 @@ void KateFileList::slotDocumentCreated (Kate::Document *doc)
 
 void KateFileList::slotDocumentDeleted (uint documentNumber)
 {
+  kdDebug() << k_funcinfo << endl;
   QListViewItem * item = firstChild();
   while( item ) {
     if ( ((KateFileListItem *)item)->documentNumber() == documentNumber )
     {
+      disconnect( this, 0, ((KateFileListItem*)item)->document(), 0 );
+
       m_viewHistory.removeRef( (KateFileListItem *)item );
       m_editHistory.removeRef( (KateFileListItem *)item );
+
       delete (KateFileListItem *)item;
       break;
     }
@@ -269,6 +273,7 @@ void KateFileList::slotModChanged (Kate::Document *doc)
 
     for ( uint i=0; i <  m_editHistory.count(); i++ )
     {
+      kdDebug()<<"slotModeChanged repainting item in view history: "<<i<<endl;
       m_editHistory.at( i )->setEditHistPos( i+1 );
       repaintItem(  m_editHistory.at( i ) );
     }
@@ -300,13 +305,14 @@ void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool, unsigned char 
 
 void KateFileList::slotNameChanged (Kate::Document *doc)
 {
+  kdDebug() << k_funcinfo << endl;
   if (!doc) return;
 
   // ### using nextSibling to *only* look at toplevel items.
   // child items could be marks for example
   QListViewItem * item = firstChild();
   while( item ) {
-    if ( ((KateFileListItem *)item)->documentNumber() == doc->documentNumber() )
+    if ( ((KateFileListItem *)item)->document() == doc )
     {
       item->setText( 0, doc->docName() );
       repaintItem( item );
@@ -314,6 +320,7 @@ void KateFileList::slotNameChanged (Kate::Document *doc)
     }
     item = item->nextSibling();
   }
+
   updateSort();
 }
 
@@ -570,34 +577,38 @@ KFLConfigPage::KFLConfigPage( QWidget* parent, const char *name, KateFileList *f
   lo1->addWidget( gb );
 
   QWidget *g = new QWidget( gb );
-  QGridLayout *lo = new QGridLayout( g, 3, 2 );
+  QGridLayout *lo = new QGridLayout( g, 2, 2 );
+  lo->setSpacing( KDialog::spacingHint() );
   cbEnableShading = new QCheckBox( i18n("&Enable background shading"), g );
-  lo->addMultiCellWidget( cbEnableShading, 1, 1, 1, 2 );
+  lo->addMultiCellWidget( cbEnableShading, 1, 1, 0, 1 );
 
   kcbViewShade = new KColorButton( g );
-  QLabel *l = new QLabel( kcbViewShade, i18n("&Viewed documents:"), g );
-  lo->addWidget( l, 2, 1 );
-  lo->addWidget( kcbViewShade, 2, 2 );
+  lViewShade = new QLabel( kcbViewShade, i18n("&Viewed documents shade:"), g );
+  lo->addWidget( lViewShade, 2, 0 );
+  lo->addWidget( kcbViewShade, 2, 1 );
 
   kcbEditShade = new KColorButton( g );
-  l = new QLabel( kcbEditShade, i18n("&Edited documents:"), g );
-  lo->addWidget( l, 3, 1 );
-  lo->addWidget( kcbEditShade, 3, 2 );
+  lEditShade = new QLabel( kcbEditShade, i18n("&Modified documents shade:"), g );
+  lo->addWidget( lEditShade, 3, 0 );
+  lo->addWidget( kcbEditShade, 3, 1 );
+
+  lo1->insertStretch( -1, 10 );
 
   QWhatsThis::add( cbEnableShading, i18n(
-      "When background shading is enabled, documents that was recently viewed "
-      "or edited will have a shaded background. The most recent documents have "
-      "the strongest shade.") );
+      "When background shading is enabled, documents that was viewed "
+      "or edited within the current session will have a shaded background. "
+      "The most recent documents have the strongest shade.") );
   QWhatsThis::add( kcbViewShade, i18n(
-      "Set the color for shading recently viewed documents.") );
+      "Set the color for shading viewed documents.") );
   QWhatsThis::add( kcbEditShade, i18n(
-      "Set the color for recently edited documents. This color is blended into "
+      "Set the color for modified documents. This color is blended into "
       "the color for viewed files. The most recently edited documents get "
       "most of this color.") );
 
   reload();
 
   connect( cbEnableShading, SIGNAL(toggled(bool)), this, SLOT(slotChanged()) );
+  connect( cbEnableShading, SIGNAL(toggled(bool)), this, SLOT(slotEnableChanged()) );
   connect( kcbViewShade, SIGNAL(changed(const QColor&)), this, SLOT(slotChanged()) );
   connect( kcbEditShade, SIGNAL(changed(const QColor&)), this, SLOT(slotChanged()) );
 
@@ -624,6 +635,15 @@ void KFLConfigPage::reload()
   kcbViewShade->setColor( config->readColorEntry("View Shade", &m_filelist->m_viewShade ) );
   kcbEditShade->setColor( config->readColorEntry("Edit Shade", &m_filelist->m_editShade ) );
 }
+
+void KFLConfigPage::slotEnableChanged()
+{
+  kcbViewShade->setEnabled( cbEnableShading->isChecked() );
+  kcbEditShade->setEnabled( cbEnableShading->isChecked() );
+  lViewShade->setEnabled( cbEnableShading->isChecked() );
+  lEditShade->setEnabled( cbEnableShading->isChecked() );
+}
+
 //END KFLConfigPage
 
 
