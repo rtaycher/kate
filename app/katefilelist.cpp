@@ -119,7 +119,7 @@ KateFileList::KateFileList (KateMainWindow *main,
 
   // don't Honour KDE single/double click setting, this files are already open,
   // no need for hassle of considering double-click
-  connect(this,SIGNAL(selectionChanged(QListViewItem *)),
+  connect(this,SIGNAL(clicked(QListViewItem *)),
 	  this,SLOT(slotActivateView(QListViewItem *)));
   connect(viewManager,SIGNAL(viewChanged()), this,SLOT(slotViewChanged()));
   connect(this,SIGNAL(contextMenuRequested( QListViewItem *, const QPoint &, int )),
@@ -167,8 +167,8 @@ void KateFileList::keyPressEvent(QKeyEvent *e) {
 // returning
 void KateFileList::contentsMousePressEvent( QMouseEvent *e )
 {
-  if ( ! itemAt( e->pos() ) )
-    return;
+  if ( ! itemAt( contentsToViewport( e->pos() ) ) )
+  return;
 
   KListView::contentsMousePressEvent( e );
 }
@@ -452,10 +452,11 @@ int KateFileListItem::height() const
 
 int KateFileListItem::width( const QFontMetrics &fm, const QListView* /*lv*/, int column ) const
 {
+  static int iSize = IconSize( KIcon::Small );
   if ( text( 0 ).isEmpty() )
-    return QMAX( 16 + 6, QApplication::globalStrut().width() );
+    return QMAX( iSize + 6, QApplication::globalStrut().width() );
 
-  return QMAX( 16 + fm.width( text(column) ) + 6, QApplication::globalStrut().width() );
+  return QMAX( iSize + fm.width( text(column) ) + 6, QApplication::globalStrut().width() );
 }
 
 void KateFileListItem::paintCell( QPainter *painter, const QColorGroup & cg, int column, int width, int align )
