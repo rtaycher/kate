@@ -246,9 +246,9 @@ void KateMainWindow::setupActions()
   list.append("&Windows/Dos");
   setEndOfLine->setItems(list);
 
-  documentReload = new KAction(i18n("&Reload"), "reload", Key_F5, viewManager, SLOT(reloadCurrentDoc()), actionCollection(), "document_reload");
+  documentReload = new KAction(i18n("&Reload"), "reload", Key_F5, viewManager, SLOT(reloadCurrentDoc()), actionCollection(), "file_reload");
 
-  documentOpenWith = new KActionMenu(i18n("O&pen with"), actionCollection(), "document_open_with");
+  documentOpenWith = new KActionMenu(i18n("O&pen with"), actionCollection(), "file_open_with");
   connect(documentOpenWith->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(mSlotFixOpenWithMenu()));
   connect(documentOpenWith->popupMenu(), SIGNAL(activated(int)), this, SLOT(slotOpenWithMenuAction(int)));
 

@@ -79,7 +79,7 @@
                         <context attribute="6" lineEndContext="0">
                                 <item name="CharDetect" attribute="6" context="0" char="&quot;"/>
                         </context>
-                        <context attribute="7" lineEditContext="0"/>
+                        <context attribute="7" lineEndContext="0"/>
                 </contexts>
                 <itemDatas>
                         <itemData name="Normal Text" defStyleNum="dsNormal" />

@@ -753,14 +753,14 @@
         <item name="RegExpr" attribute="6" context="2" String="^[Rr][Ee][Mm][ \t]"/>
         <item name="CharDetect" attribute="7" context="0" char="&quot;"/>
       </context>
-      <context attribute="5" lineEditContext="0">
+      <context attribute="5" lineEndContext="0">
         <item name="CharDetect" attribute="5" context="0" char="'"/>
       </context>
-      <context attribute="6" lineEditContext="0"/>
+      <context attribute="6" lineEndContext="0"/>
       <context attribute="6" lineEndContext="1">
         <item name="2CharDetect" attribute="6" context="0" char="*" char1="/"/>
       </context>
-      <context attribute="6" lineEditContext="2"/>
+      <context attribute="6" lineEndContext="2"/>
       <context attribute="7" lineEndContext="0">
         <item name="CharDetect" attribute="7" context="0" char="&quot;"/>
       </context>

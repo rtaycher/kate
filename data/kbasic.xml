@@ -73,7 +73,7 @@
         <item name="CharDetect" attribute="5" context="1" char="'"/>
         </context>
         <context attribute="5" lineEndContext="0"/>
-        <context attribute="4" lineEditContext="0">
+        <context attribute="4" lineEndContext="0">
         <item name="CharDetect" attribute="4" context="0" char="'"/>
         </context>
         </contexts>

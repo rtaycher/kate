@@ -10,6 +10,9 @@
     <Action name="file_save"/>
     <Action name="file_save_as"/>
     <Action name="file_save_all"/>
+    <Separator />
+    <Action name="file_reload" />
+    <Action name="file_open_with" />
     <Separator/>
     <Action name="file_print"/>
     <Separator/>
@@ -58,10 +61,6 @@
     <Separator />
     <Action name="set_highlight"/>
     <Action name="set_eol"/>
-    <Separator />
-    <Action name="document_open_with" />
-    <Separator />
-    <Action name="document_reload" />
     <Separator />
   </Menu>
 
@@ -172,6 +171,9 @@
   <Action name="file_save"/>
   <Action name="file_save_as"/>
   <Action name="file_save_all"/>
+  <Separator/>
+  <Action name="file_reload" />
+  <Action name="file_open_with" />
   <Separator/>
   <Action name="file_print"/>
   <Separator/>
