@@ -326,6 +326,7 @@ void KateFileSelector::slotFilterChange( const QString & nf )
 {
   QString f = nf.stripWhiteSpace();
   bool empty = f.isEmpty() || f == "*";
+  QToolTip::remove( btnFilter );
   if ( empty ) {
     dir->clearFilter();
     filter->lineEdit()->setText( QString::null );
