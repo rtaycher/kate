@@ -24,12 +24,17 @@
 #include <kglobalaccel.h>
 #include <kglobalsettings.h>
 #include <kdebug.h>
+#include <dcopclient.h>
+#include <kurl.h>
 
 #include "../app/kantapp.h"
 #include "../factory/kantfactory.h"
 
+#include <stdio.h>
+
 static KCmdLineOptions options[] =
 {
+    { "n", I18N_NOOP("start a new Kant, don't use a allready running Kant (off by default)"), 0 },
     { "+file(s)",          I18N_NOOP("Files to load"), 0 },
     { 0,0,0 }
 };
@@ -38,8 +43,46 @@ int main( int argc, char **argv )
 {
   KCmdLineArgs::init (argc, argv, KantFactory::aboutData());
   KCmdLineArgs::addCmdLineOptions (options);
-  KantApp::addCmdLineOptions ();
+  KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 
-  KantApp app;
-  return app.exec();
+  bool running = false;
+
+  DCOPClient *client;
+  QCString appID = "";
+
+  if (!args->isSet ("n"))
+  {
+    client  = new DCOPClient ();
+    client->attach();
+
+    QCStringList apps = client->registeredApplications();
+    for ( QCStringList::Iterator it = apps.begin(); it != apps.end(); ++it )
+    {
+      if ( ((*it).contains ("kant") > 0) )
+      {
+        appID = (*it);
+        running = true;
+      }
+    }
+  }
+
+  if (running)
+  {
+    for (int z=0; z<args->count(); z++)
+    {
+      QByteArray data;
+      QDataStream arg(data, IO_WriteOnly);
+
+      arg << args->url(z).url();
+      client->send (appID, "KantIface", "openURL(QString)", data);
+    }
+  }
+  else
+  {
+    KantApp::addCmdLineOptions ();
+    KantApp app;
+    return app.exec();
+  }
+
+  return 0;
 }
