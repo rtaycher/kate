@@ -32,7 +32,7 @@
 #include <kurl.h>
 #include <kstdaccel.h>
 #include <kconfig.h>
-#include <kwm.h>
+#include <kwin.h>
 #include <kcmdlineargs.h>
 
 #include "kwdialog.h"
@@ -498,7 +498,7 @@ void TopLevel::quitEditor() {
 }
 
 void TopLevel::configure() {
-  KWM kwm;
+  KWin kwin;
   // I read that no widgets should be created on the stack
   QTabDialog *qtd = new QTabDialog(this, "tabdialog", TRUE);
 
@@ -533,7 +533,7 @@ void TopLevel::configure() {
   // yes: don´t do it :)
 //  qtd->setMinimumSize (ksc.sizeHint().width() + qtd->sizeHint().width(),
 //          ksc.sizeHint().height() + qtd->sizeHint().height());
-  kwm.setMiniIcon(qtd->winId(), kapp->miniIcon());
+  kwin.setIcons(qtd->winId(), kapp->icon(), kapp->miniIcon());
 
   if (qtd->exec()) {
     // indent options
