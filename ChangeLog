@@ -1,3 +1,11 @@
+2002-01-03 Christoph Cullmann <cullmann@kde.org>
+  * kate app and kwrite app now use the katepart via libloader and link only
+    to the kateinterfaces (which will soon be splitted into katepartinterfaces
+    and kateinterfaces
+  * new framework for the configpages of the katepart accessible through the 
+    interfaces
+  * KSpell works again ;) my god, what a buggy thingy
+
 2001-12-01 Christoph Cullmann <cullmann@kde.org>
   * speedup for insert/removeText/Line
   * new editStart/editEnd/editAddUndo functions to make the undo/redo + update

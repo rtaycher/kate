@@ -1,4 +1,5 @@
 TODO:
+ - complete the kate view/document interfaces
  - dynamic word wrap
  - code folding
  - code completion
