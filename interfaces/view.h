@@ -142,7 +142,7 @@ class View : public KTextEditor::View
       Insert text at the current cursor position.
       The parameter @param mark is unused.
     */
-    virtual void insertText(const QString &, bool ) { ; };
+    virtual void insertText(const QString &, bool mark = false ) { ; };
     /**
       Queries if there is marked text
     */
