@@ -127,7 +127,13 @@ void KateFileList::slotNameChanged (KateDocument *doc)
   {
     if (((KateFileListItem *) item (i)) ->documentNumber() == doc->documentNumber())
     {
-      ((KateFileListItem *)item(i))->setText(doc->docName());
+      //File name shouldn't be too long - Maciek
+     QString c = doc -> docName();
+     if (c.length() > 200)
+       c = "..." + c.right(197);
+
+     ((KateFileListItem *)item(i))->setText(c);
+
       triggerUpdate(false);
       break;
     }

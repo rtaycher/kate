@@ -400,8 +400,14 @@ void KateViewManager::statusMsg ()
   }
 
   int mod = (int)v->doc()->isModified();
+  
+  
+  QString c = v -> doc()->docName();
+   //File name shouldn't be too long - Maciek
+   if (c.length() > 200)
+     c = "..." + c.right(197);
 
-  emit statusChanged (v, v->cursorLine(), v->cursorColumn(), ovr, mod, v->doc()->docName());
+  emit statusChanged (v, v->cursorLine(), v->cursorColumn(), ovr, mod, c);
   emit statChanged ();
 }
 
@@ -911,9 +917,19 @@ void KateViewManager::setWindowCaption()
   {
     QString c;
     if (activeView()->doc()->url().isEmpty() || (! showFullPath))
-      c = ((KateDocument *)activeView()->doc())->docName();
-    else
-      c = activeView()->doc()->url().prettyURL();
+     {
+        c = ((KateDocument *)activeView()->doc())->docName();
+       //File name shouldn't be too long - Maciek
+       if (c.length() > 200)
+         c = "..." + c.right(197);
+     }
+      else
+     {
+        c = activeView()->doc()->url().prettyURL();
+       //File name shouldn't be too long - Maciek
+       if (c.length() > 200)
+         c = c.left(197) + "...";
+     }
 
     ((KateMainWindow*)topLevelWidget())->setCaption( c,activeView()->doc()->isModified());
   }

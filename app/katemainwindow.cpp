@@ -490,7 +490,13 @@ void KateMainWindow::slotCurrentDocChanged()
   while ( z<docManager->docCount() )
   {
     if ( (!docManager->nthDoc(z)->url().isEmpty()) && (docManager->nthDoc(z)->url().filename() != 0) )
-      entry=QString("&%1 ").arg(i)+docManager->nthDoc(z)->url().filename();
+    {
+       //File name shouldn't be too long - Maciek
+       if (docManager->nthDoc(z)->url().filename().length() > 200)
+         entry=QString("&%1 ").arg(i)+"..."+(docManager->nthDoc(z)->url().filename()).right(197);
+       else
+         entry=QString("&%1 ").arg(i)+docManager->nthDoc(z)->url().filename();
+     }
     else
       entry=QString("&%1 ").arg(i)+i18n("Untitled %1").arg(docManager->nthDoc(z)->documentNumber());
 
