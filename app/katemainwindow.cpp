@@ -224,7 +224,7 @@ void KateMainWindow::setupActions()
   new KAction(i18n("&Unindent"), "unindent", CTRL+SHIFT+Key_I, viewManager, SLOT(slotUnIndent()), actionCollection(), "edit_unindent");
 
   new KAction(i18n("Co&mment"), /*"comment",*/ CTRL+Qt::Key_NumberSign, viewManager, SLOT(slotComment()), actionCollection(), "edit_comment");
-  new KAction(i18n("Unc&ommen&t"), /*"uncomment",*/ CTRL+SHIFT+Qt::Key_NumberSign, viewManager, SLOT(slotUnComment()), actionCollection(), "edit_uncomment");
+  new KAction(i18n("Unc&omment"), /*"uncomment",*/ CTRL+SHIFT+Qt::Key_NumberSign, viewManager, SLOT(slotUnComment()), actionCollection(), "edit_uncomment");
 
   new KAction(i18n("Apply Word Wrap"), "", 0, viewManager, SLOT(slotApplyWordWrap()), actionCollection(), "edit_apply_wordwrap");
 
