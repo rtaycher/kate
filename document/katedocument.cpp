@@ -777,6 +777,7 @@ void KateDocument::insertFile(VConfig &c, QIODevice &dev)
 
 void KateDocument::loadFile(const QString &file)
 {
+  buffer->clear();
   buffer->insertFile(0, file, KGlobal::charsets()->codecForName(myEncoding));
 }
 
