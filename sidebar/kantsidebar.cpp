@@ -18,13 +18,11 @@
 #include "kantsidebar.moc"
 
 #include <kconfig.h>
-#include <kdebug.h>
 #include <qlayout.h>
 #include <qwidgetstack.h>
 #include <qcombobox.h>
 
-KantSidebar::KantSidebar(QWidget* parent, const char* name)
-  : QWidget(parent, name)
+KantSidebar::KantSidebar(QWidget* parent, const char* name) : QWidget(parent, name)
 {
   setFocusPolicy(QWidget::ClickFocus);
 
@@ -37,6 +35,7 @@ KantSidebar::KantSidebar(QWidget* parent, const char* name)
   stack->setFocusPolicy(QWidget::ClickFocus);
   connect(cmb, SIGNAL( activated( int ) ), stack, SLOT( raiseWidget( int ) ) );
 }
+
 KantSidebar::~KantSidebar()
 {
 }
@@ -61,23 +60,26 @@ void KantSidebar::removeWidget(QWidget* widget)
 
 void KantSidebar::focusNextWidget()
 {
-   int id = cmb->currentItem();
-   if ( id < cmb->count()-1 )
-     id++;
-   else
-     id = 0;
-   cmb->setCurrentItem( id );
-   stack->raiseWidget( id );
-   stack->visibleWidget()->setFocus();
+  int id = cmb->currentItem();
 
+  if ( id < cmb->count()-1 )
+    id++;
+  else
+    id = 0;
+
+  cmb->setCurrentItem( id );
+  stack->raiseWidget( id );
+  stack->visibleWidget()->setFocus();
 }
 
 void KantSidebar::readConfig(KConfig* config, const char* group)
 {
   config->setGroup(group);
   QString t = config->readEntry("Current", "Files");
-  for (int i=0; i<cmb->count()-1; i++) {
-    if ( cmb->text( i ).compare( t ) == 0 ) {
+  for (int i=0; i<cmb->count()-1; i++)
+  {
+    if ( cmb->text( i ).compare( t ) == 0 )
+    {
       cmb->setCurrentItem( i );
       stack->raiseWidget( i );
       break;
@@ -89,5 +91,4 @@ void KantSidebar::saveConfig(KConfig* config, const char* group)
 {
   config->setGroup(group);
   config->writeEntry("Current", cmb->currentText());
-  kdDebug()<< cmb->currentText() << endl;
 }

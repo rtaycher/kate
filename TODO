@@ -1,10 +1,4 @@
-Might Be Done:
-    - reopen files as option
-    - put absolute, not relative, paths in the Most Recently Used list under the File menu
-    - [internal] remove the leftover HTML Tag stuff from kantmainwindow.*
-
 TODO:
-    - session managment     [anders:partly done]
     - make configure dialog work
     - Tjeck docs for change on hd when focused, warning dialog: reload? yes/no[/view diff]
   --------- RELEASE 0.2.0 -----------------------------------------------------------------
@@ -85,17 +79,3 @@ TODO:
 
     - [internal] promote the things supporting both HTML Tag and Filter to a shared area
         so they don't dupe between two modules.
-
-    - The Un*x "standard" concept of drag-selecting text with a mouse, and seeing this
-        text appear in the copy buffer, is inexcusable. The user should be offered a way to
-        confirm their intent to copy text between the mousestroke and the text goes into the
-        copy buffer. I understand the origin of this feature in hacks added to the console
-        text drivers to provide a primitive copy system, but in real copy-n-paste situations
-        the user should be allowed to
-                - drag select the text they want
-                - commit the text with (say) <Ctrl+Insert>
-                - drag select text to be replaced
-                - paste in the replacing text with <Shift+Insert>
-        This is the correct behavior in the face of dialog boxes that appeor with
-        text already in them, but you want to replace it. The alternative is to push the old
-        text over, insert the new text, and delete the old.

@@ -1,3 +1,7 @@
+2001-03-03 Christoph Cullmann <crossfire@babylon2k.de>
+        * session managment (Anders Lund)
+        * removed some debug stuff
+
 2001-02-26 Joseph Wenninger <jowenn@bigfoot.com>
         * First step for a plugin management dialog page
 	  Soon to come

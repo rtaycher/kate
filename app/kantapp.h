@@ -23,7 +23,7 @@
 
 class KantApp : public KUniqueApplication
 {
-    Q_OBJECT
+  Q_OBJECT
 
   public:
     KantApp ();
@@ -31,8 +31,6 @@ class KantApp : public KUniqueApplication
 
     virtual int newInstance ();
     KantPluginManager *getPluginManager(){return pluginManager;};
-  protected:
-    void restore ();
 
     KantPluginManager *pluginManager;
     KantMainWindow *mainWindow;
