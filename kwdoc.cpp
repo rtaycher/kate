@@ -2344,7 +2344,7 @@ void KWriteDoc::clearFileName() {
   KTextEditor::View *view;
 
   //  fName.truncate(fName.findRev('/') +1);
-  m_url.setFileName( QString::null );
+  m_url = KURL();
   for (view = m_views.first(); view != 0L; view = m_views.next() ) {
     emit static_cast<KWrite *>( view )->fileChanged();
   }

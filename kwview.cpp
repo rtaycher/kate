@@ -2140,7 +2140,7 @@ void KWrite::slotJobWriteResult( KIO::Job *job )
     delete m_tempSaveFile;
     m_tempSaveFile = 0;
     kWriteDoc->setModified( false );
-    
+
     if ( job->error() )
 	emit statusMsg( QString::null );
     else
@@ -2249,7 +2249,7 @@ void KWrite::open() {
 //  if (kWriteDoc->hasFileName()) s = QFileInfo(kWriteDoc->fileName()).dirPath();
 //    else s = QDir::currentDirPath();
 
-  url = KFileDialog::getOpenURL(kWriteDoc->url().url(), "*", this);
+  url = KFileDialog::getOpenURL(kWriteDoc->url().url(), QString::null, this);
   if (url.isEmpty()) return;
 //  kapp->processEvents();
   loadURL(url);
@@ -2259,7 +2259,7 @@ void KWrite::insertFile() {
   if (isReadOnly())
     return;
 
-  KURL  url = KFileDialog::getOpenURL(kWriteDoc->url().url(), "*", this);
+  KURL  url = KFileDialog::getOpenURL(kWriteDoc->url().url(), QString::null, this);
   if (url.isEmpty()) return;
 //  kapp->processEvents();
   loadURL(url,lfInsert);
@@ -2281,7 +2281,7 @@ KWrite::fileResult KWrite::saveAs() {
   do {
     query = 0;
 
-    url = KFileDialog::getSaveURL(kWriteDoc->url().url(),"*",this);
+    url = KFileDialog::getSaveURL(kWriteDoc->url().url(), QString::null,this);
     if (url.isEmpty()) return CANCEL;
 
     KURL u(url);
