@@ -1078,13 +1078,15 @@ void KateViewManager::reopenDocuments(bool isRestore)
   KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
   KConfig* config = kapp->config();
   config->setGroup("General");
+  bool restoreViews = config->readBoolEntry("restore views", false);
+  bool reopenAtStart = config->readBoolEntry("reopen at startup", true);
 
-  if ( scfg->hasGroup("splitter0") && (isRestore || config->readBoolEntry("restore views", false)) )
+  if ( scfg->hasGroup("splitter0") && ( isRestore || restoreViews ) )
   {
     kdDebug(13030)<<"calling restoreViewConfig()"<<endl;
     restoreViewConfig();
   }
-  else if (config->readBoolEntry("reopen at startup", true) || isRestore )
+  else if ( reopenAtStart || isRestore )
   {
     scfg->setGroup("open files");
     // try to focus the file that had focus at close down

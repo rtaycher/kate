@@ -119,14 +119,14 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   // reopen files
   cb_reopenFiles = new QCheckBox( bgStartup );
   cb_reopenFiles->setText(i18n("Reopen &Files"));
-  config->setGroup("open files");
+  //config->setGroup("General");
   cb_reopenFiles->setChecked( config->readBoolEntry("reopen at startup", true) );
   QWhatsThis::add(cb_reopenFiles, i18n(
         "If this is enabled Kate will attempt to reopen files that were open when you closed "
         "last time. Cursor position will be recovered if possible. Non-existent files will "
         "not be opened."));
 
-  config->setGroup("General");
+  //config->setGroup("General");
   // restore view  config
   cb_restoreVC = new QCheckBox( bgStartup );
   cb_restoreVC->setText(i18n("Restore &View Configuration"));
@@ -144,6 +144,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
         "instance will get the focus, and open any files you requested opened.") );
   
   // show full path in title
+  config->setGroup("General");
   cb_fullPath = new QCheckBox( i18n("Show Full &Path in Title"), frGeneral);
   cb_fullPath->setChecked( config->readBoolEntry("Show Full Path in Title", false ) );
 
@@ -308,12 +309,12 @@ void KateConfigDialog::slotApply()
   config->setGroup("startup");
   config->writeEntry("singleinstance",cb_singleInstance->isChecked());
   config->writeEntry("sdi",/*cb_sdi->isChecked()*/rb_modeSDI->isChecked() );
-  config->setGroup("open files");
+  config->setGroup("General");
   config->writeEntry("reopen at startup", cb_reopenFiles->isChecked());
 
   mainWindow->syncKonsole = cb_syncKonsole->isChecked();
 
-  config->setGroup("General");
+  //config->setGroup("General");
   config->writeEntry("restore views", cb_restoreVC->isChecked());
 
   config->writeEntry( "Number of recent files", sb_numRecentFiles->value() );
