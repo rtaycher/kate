@@ -3,7 +3,7 @@
         Base class for dock views
         Copyright (C) 2002 by Anders Lund <anders@alweb.dk>
 
-        $Id:$
+        $Id: $
         ---
 
         This program is free software; you can redistribute it and/or
