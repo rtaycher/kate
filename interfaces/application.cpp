@@ -28,9 +28,6 @@
 
 #include "documentmanager.h"
 #include "mainwindow.h"
-#include "plugin.h"
-#include "viewmanager.h"
-#include "toolviewmanager.h"
 #include "pluginmanager.h"
 
 #include "../app/kateapp.h"

@@ -28,13 +28,15 @@
 class KateSplitter;
 class KSimpleConfig;
 
-class KateViewManager : public Kate::ViewManager
+class KateViewManager : public QWidget
 {
   Q_OBJECT
 
   public:
     KateViewManager (QWidget *parent=0, KateDocManager *docManager=0);
     ~KateViewManager ();   
+    
+    Kate::ViewManager *viewManager () { return m_viewManager; };
     
     inline QPtrList<Kate::View> &viewList () { return m_viewList; };
 
@@ -152,8 +154,10 @@ class KateViewManager : public Kate::ViewManager
   signals:
     void statusChanged (Kate::View *, int, int, int, bool, int, QString);
     void statChanged ();
+    void viewChanged ();
     
   private:
+    Kate::ViewManager *m_viewManager;
     QPtrList<KateViewSpace> m_viewSpaceList; 
     QPtrList<Kate::View> m_viewList;
 

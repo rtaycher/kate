@@ -60,7 +60,10 @@ class Plugin : public QObject
    
 class InitPlugin : public Plugin
 {
+  friend class PrivateInitPlugin;
+
   Q_OBJECT
+  
   public:
 
     /**
@@ -69,6 +72,8 @@ class InitPlugin : public Plugin
      */
     InitPlugin(Application *application=0, const char *name = 0);
     virtual ~InitPlugin();
+    
+    unsigned int initPluginNumber () const;
 
     /* This is called whenever a new config script should be opened */
     virtual void activate( const KURL &configScript=KURL());
@@ -96,11 +101,9 @@ class InitPlugin : public Plugin
     const KURL configScript() const;
 
   private:
-    KURL m_configScript;
-
-    class InitPluginPrivate;
-    InitPluginPrivate *d;
-
+    class PrivateInitPlugin *d;
+    static unsigned int globalInitPluginNumber;
+    unsigned int myInitPluginNumber;    
 };
 
 Plugin *createPlugin ( const char* libname, Application *application = 0, const char *name = 0 );

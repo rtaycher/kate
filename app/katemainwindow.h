@@ -23,6 +23,8 @@
 #include "../interfaces/toolviewmanager.h"
 #include "kateIface.h"
 
+#include "kateviewmanager.h"
+
 #include <kate/view.h>
 #include <kate/document.h>
 
@@ -185,7 +187,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     Kate::MainWindow *m_mainWindow;
 
   public:      
-    Kate::ViewManager *viewManager () {return (Kate::ViewManager *)m_viewManager; }; 
+    Kate::ViewManager *viewManager () {return m_viewManager->viewManager(); }; 
     KateViewManager *kateViewManager () { return m_viewManager; };
     KDockWidget *centralDock () { return mainDock; };
 

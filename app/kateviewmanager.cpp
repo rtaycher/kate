@@ -49,8 +49,10 @@
 
 #include "katesplitter.h"
 
-KateViewManager::KateViewManager (QWidget *parent, KateDocManager *m_docManager) : Kate::ViewManager  (parent)
+KateViewManager::KateViewManager (QWidget *parent, KateDocManager *m_docManager) : QWidget  (parent)
 {
+  m_viewManager = new Kate::ViewManager (this);
+
   // no memleaks
   m_viewList.setAutoDelete(true);
   m_viewSpaceList.setAutoDelete(true);
@@ -279,6 +281,7 @@ void KateViewManager::activateView ( Kate::View *view, bool checkModified /*=fal
     statusMsg();
 
     emit viewChanged ();
+    m_viewManager->emitViewChanged ();
   }
 
   m_docManager->setActiveDocument(view->getDoc());
@@ -363,6 +366,7 @@ bool KateViewManager::closeDocWithAllViews ( Kate::View *view )
   if (m_docManager->closeDocument(view->getDoc()))
   {
     emit viewChanged (); // I think I don't need that anymore
+    m_viewManager->emitViewChanged ();
     return true;
   }
   return false;
@@ -389,6 +393,7 @@ void KateViewManager::closeViews(uint documentNumber)
     }
 
   QTimer::singleShot(0,this,SIGNAL(viewChanged()));
+  m_viewManager->emitViewChanged ();
 }
 
 
@@ -405,6 +410,7 @@ void KateViewManager::openNewIfEmpty()
     }
   }
   emit viewChanged ();
+  m_viewManager->emitViewChanged ();
 }
 
 void KateViewManager::statusMsg ()
@@ -727,6 +733,7 @@ void KateViewManager::removeViewSpace (KateViewSpace *viewspace)
     activateView( v );
 
   emit viewChanged();
+  m_viewManager->emitViewChanged ();
 }
 
 void KateViewManager::slotCloseCurrentViewSpace()

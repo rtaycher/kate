@@ -41,7 +41,7 @@ class DocumentManager : public QObject
   
   public:
     DocumentManager ( void *documentManager  );
-    ~DocumentManager ();
+    virtual ~DocumentManager ();
 
   public:
     /** Returns a pointer to the document indexed by n in the managers internal list.
@@ -85,7 +85,7 @@ class DocumentManager : public QObject
   signals:
     void documentChanged ();
     
-  public:
+  public slots:
     void emitDocumentChanged ();
     
   private:

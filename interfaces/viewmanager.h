@@ -26,7 +26,7 @@
 #ifndef _KATE_VIEWMANAGER_INCLUDE_
 #define _KATE_VIEWMANAGER_INCLUDE_
 
-#include <qwidget.h>
+#include <qobject.h>
 #include <kurl.h>
 
 namespace Kate
@@ -35,23 +35,31 @@ namespace Kate
 /** An interface to the kate viewmanager.
 
  */
-class ViewManager : public QWidget
+class ViewManager : public QObject
 {
+  friend class PrivateViewManager;
+
   Q_OBJECT
 
-  protected:
-    ViewManager ( QWidget *parent = 0, const char *name = 0  );
+  public:
+    ViewManager ( void *viewManager );
     virtual ~ViewManager ();
       
   public:
     /** Returns a pointer to the currently active Kate::View */
-    virtual class View *activeView() = 0;
+    class View *activeView();
 
     /** Opens the file pointed to by URL */
-    virtual void openURL (KURL) { ; };     
+    void openURL (const KURL &url);     
     
   signals:
     void viewChanged ();
+    
+  public slots:
+    void emitViewChanged ();
+    
+  private:
+    class PrivateViewManager *d;
 };
 
 };

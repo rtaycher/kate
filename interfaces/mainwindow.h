@@ -40,7 +40,7 @@ class MainWindow : public QObject
 
   public:
     MainWindow (void *mainWindow);
-    ~MainWindow ();    
+    virtual ~MainWindow ();    
     
   public:
     KXMLGUIFactory *guiFactory();

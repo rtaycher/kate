@@ -41,7 +41,7 @@ class Application : public QObject
 
   public:
     Application (void *application);
-    ~Application ();
+    virtual ~Application ();
     
   public:
     /** Returns a pointer to the document manager

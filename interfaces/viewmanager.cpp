@@ -23,46 +23,58 @@
     Boston, MA 02111-1307, USA.
  ***************************************************************************/
 
- #include "application.h"
-    
+#include "viewmanager.h"
+#include "viewmanager.moc"
+
+#include "plugin.h"
+#include "documentmanager.h"
 #include "toolviewmanager.h"
-
 #include "pluginmanager.h"
-#include "pluginmanager.moc"
 
-#include <kparts/componentfactory.h>
+#include "../app/kateviewmanager.h"
 
 namespace Kate
 {
+
+class PrivateViewManager
+  {
+  public:
+    PrivateViewManager ()
+    {
+    }
+
+    ~PrivateViewManager ()
+    {    
+    }          
+        
+    KateViewManager *viewMan; 
+  };
             
-ToolViewManager::ToolViewManager()
+ViewManager::ViewManager (void *viewManager) : QObject ((KateViewManager*) viewManager)
 {
+  d = new PrivateViewManager ();
+  d->viewMan = (KateViewManager*) viewManager;
 }
 
-ToolViewManager::~ToolViewManager()
+ViewManager::~ViewManager ()
 {
+  delete d;
 }
 
-InitPluginManager::InitPluginManager(){;}
-InitPluginManager::~InitPluginManager(){;}
-
-
-InitPluginManager *initPluginManager(Application *app)
+View *ViewManager::activeView()
 {
-	if (!app) return 0;
-	return static_cast<InitPluginManager*>(app->qt_cast("Kate::InitPluginManager"));
+  return d->viewMan->activeView();
 }
 
-
-PluginManager::PluginManager (QObject *parent, const char *name) : QObject (parent, name)
+void ViewManager::openURL (const KURL &url)
 {
+  d->viewMan->openURL (url);
 }
 
-PluginManager::~PluginManager ()
+void ViewManager::emitViewChanged ()
 {
+  emit viewChanged ();
 }
-
-
 
 };
 
