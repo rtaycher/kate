@@ -15,6 +15,12 @@ print OUT "// to translate the strings in the XML files in the data directory.\n
 foreach(@ARGV) {
     open(FILE,"<$_") || die "Unable to open ", $_;
     while(<FILE>) {
+       if(m/.*language\s+name=\"(.*?)\"/) {
+            print OUT "i18n( \"", $1, "\" );\n";
+        }
+        if(m/.*language\s+name=\"(.*?)\"\s+section=\"(.*?)\"/) {
+            print OUT "i18n( \"", $2, "\" );\n";
+        }
         if(m/.*itemData\s+name=\"(.*?)\"/) {
             print OUT "i18n( \"", $1, "\" );\n";
         }
