@@ -117,11 +117,11 @@ void KateApp::performInit(const QString &libname, const KURL &url)
 
 void KateApp::performInit()
 {
-	if (( m_oldInitLib==QString::null) || (m_oldInitLib!=m_initLib))
+	if (( m_oldInitLib.isNull()) || (m_oldInitLib!=m_initLib))
 	{
 		if (m_initPlugin) delete m_initPlugin;
 		m_initPlugin=0;
-		if (m_oldInitLib!=QString::null) KLibLoader::self()->unloadLibrary(m_oldInitLib.latin1());
+		if (!m_oldInitLib.isNull()) KLibLoader::self()->unloadLibrary(m_oldInitLib.latin1());
 
         	m_initPlugin= static_cast<Kate::InitPlugin*>(Kate::createPlugin (QFile::encodeName(m_initLib),
                                  (Kate::Application *)kapp)->qt_cast("Kate::InitPlugin"));

@@ -204,7 +204,7 @@ Kate::Document *KateDocManager::openURL(const KURL& url,const QString &encoding,
     Kate::Document *doc = (Kate::Document *)createDoc ();
 
 
-        doc->setEncoding(encoding==QString::null?
+        doc->setEncoding(encoding.isNull()?
                         QString::fromLatin1(QTextCodec::codecForLocale()->name()):
                         encoding);
 

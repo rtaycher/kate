@@ -66,7 +66,7 @@ Kate::FileDialog::FileDialog (const QString& startDir,
   d->encoding = toolBar()->getCombo(33333);
 
         // Set default encoding to the locale one, if a different default wasn't requested
-        if (encoding == QString::null)
+        if (encoding.isNull())
           sEncoding = QString::fromLatin1(QTextCodec::codecForLocale()->name());
 
         // This is a bit inefficient, but it's the only way to match
