@@ -3222,6 +3222,19 @@ void KateView::toggleIconBorder ()
   setIconBorder (!myIconBorder);
 }
 
+void KateView::gotoMark (KateMark *mark)
+{
+  PointStruc cursor;
+
+  cursor.x = 0;
+  cursor.y = mark->line;
+  myDoc->needPreHighlight(cursor.y);
+  myViewInternal->updateCursor(cursor);
+  myViewInternal->center();
+  myViewInternal->updateView(KateView::ufUpdateOnScroll);
+  myDoc->updateViews(this);
+}
+
 KateBrowserExtension::KateBrowserExtension( KateDocument *doc, KateView *view )
 : KParts::BrowserExtension( doc, "katepartbrowserextension" )
 {

@@ -1016,6 +1016,7 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
     void slotEditCommand ();
     void setIconBorder (bool enable);
     void toggleIconBorder ();
+    void gotoMark (class KateMark *mark);
 
   public:
     bool iconBorder() { return myIconBorder; } ;
