@@ -123,21 +123,21 @@ class KateDocument : public Kate::Document
   // KTextEditor::EditInterface stuff
   //
 	public slots:
-    QString text ( int line, int col, int len ) const;
-    QString textLine ( int line ) const;
+    QString text ( uint startLine, uint startCol, uint endLine, uint endCol ) const;
+    QString textLine ( uint line ) const;
 
     bool setText(const QString &);
     bool clear ();
 
-		bool insertText ( int line, int col, const QString &s );
-    bool removeText ( int line, int col, int len );
+		bool insertText ( uint line, uint col, const QString &s );
+    bool removeText ( uint startLine, uint startCol, uint endLine, uint endCol );
 
-    bool insertLine ( int line, const QString &s );
-    bool removeLine ( int line );
+    bool insertLine ( uint line, const QString &s );
+    bool removeLine ( uint line );
 
-		int numLines() const;
-    int length () const;
-    int lineLength ( int line ) const;
+		uint numLines() const;
+    uint length () const;
+    int lineLength ( uint line ) const;
 
 	signals:
 		void textChanged ();

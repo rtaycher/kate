@@ -2119,7 +2119,7 @@ void KateView::doReplaceAction(int result, bool found) {
 
   switch (result) {
     case KateView::srYes: //yes
-      myDoc->removeText (s.cursor.line, s.cursor.col, s.matchedLength);
+      myDoc->removeText (s.cursor.line, s.cursor.col, s.cursor.line, s.cursor.col + s.matchedLength);
       myDoc->insertText (s.cursor.line, s.cursor.col, replaceWith);
       replaces++;
       if (s.cursor.line == s.startCursor.line && s.cursor.col < s.startCursor.col)
@@ -2138,7 +2138,7 @@ void KateView::doReplaceAction(int result, bool found) {
             found = false;
             started = true;
           }
-          myDoc->removeText (s.cursor.line, s.cursor.col, s.matchedLength);
+          myDoc->removeText (s.cursor.line, s.cursor.col, s.cursor.line, s.cursor.col + s.matchedLength);
           myDoc->insertText (s.cursor.line, s.cursor.col, replaceWith);
           replaces++;
           if (s.cursor.line == s.startCursor.line && s.cursor.col < s.startCursor.col)
@@ -2538,7 +2538,7 @@ void KateView::corrected (QString originalword, QString newword, unsigned pos)
       myViewInternal->getVConfig(c);
       myDoc->selectLength(cursor, newword.length(),c.flags);
 
-      myDoc->removeText (s.cursor.line, s.cursor.col, originalword.length());
+      myDoc->removeText (s.cursor.line, s.cursor.col, s.cursor.line, s.cursor.col + originalword.length());
       myDoc->insertText (s.cursor.line, s.cursor.col, newword);
 
       kspell.kspellReplaceCount++;

@@ -196,12 +196,12 @@ QString KateDocument::text() const
   return s;
 }
 
-QString KateDocument::text ( int line, int col, int len ) const
+QString KateDocument::text ( uint startLine, uint startCol, uint endLine, uint endCol ) const
 {
 
 }
 
-QString KateDocument::textLine( int line ) const
+QString KateDocument::textLine( uint line ) const
 {
   TextLine::Ptr l = getTextLine( line );
   if ( !l )
@@ -248,10 +248,10 @@ bool KateDocument::clear() {
   return true;
 }
 
-bool KateDocument::insertText( int line, int col, const QString &s )
+bool KateDocument::insertText( uint line, uint col, const QString &s )
 {
-  int insertPos = col;
-  int len = s.length();
+  uint insertPos = col;
+  uint len = s.length();
   QChar ch;
   QString buf;
   TextLine::Ptr l, tl;
@@ -268,7 +268,7 @@ bool KateDocument::insertText( int line, int col, const QString &s )
   if (!l)
     return false;
 
-  for (int pos = 0; pos < len; pos++)
+  for (uint pos = 0; pos < len; pos++)
   {
     ch = s[pos];
 
@@ -332,104 +332,175 @@ bool KateDocument::insertText( int line, int col, const QString &s )
   return true;
 }
 
-bool KateDocument::removeText ( int line, int col, int len )
+bool KateDocument::removeText ( uint startLine, uint startCol, uint endLine, uint endCol )
 {
-  int deletePos = col;
   TextLine::Ptr l, tl;
   KateView *view;
   int cLine, cCol;
+	uint deletePos = 0;
+	uint endPos = 0;
+	uint line = 0;
   KateViewCursor c;
-
-  if (len < 1)
-    return true;
 
   tagEnd = 0;
   tagStart = 0xffffff;
 
-  l = getTextLine(line);
+  l = getTextLine(startLine);
 
   if (!l)
     return false;
 
-  int chars = len;
-  int rchars;
-  while (chars > 0)
+  if (startLine == endLine)
   {
-    if (chars > (l->length()-deletePos))
+    l->replace (startCol, endCol-startCol, 0, 0);
+    buffer->changeLine(startLine);
+    updateMaxLength(l);
+    tagLine(startLine);
+
+    newDocGeometry = true;
+    for (view = myViews.first(); view != 0L; view = myViews.next() )
     {
-      rchars = l->length()-deletePos;
+      view->getCursorPosition (&cLine, &cCol);
 
-      l->truncate(deletePos);
+			if ( (cLine == startLine) && (cCol > startCol) )
+        cCol = startCol;
 
-      tl = getTextLine(line+1);
+      c.line = startLine;
+      c.col = cCol;
 
-      if (!tl)
-        return false;
-
-      l->unWrap (deletePos, tl, tl->length());
-      l->setContext (tl->getContext());
-
-      if (longestLine == tl)
-        longestLine = 0L;
-
-      buffer->changeLine(line);
-      buffer->removeLine(line+1);
-
-      updateMaxLength(l);
-      tagLine(line);
-
-      if (selectStart >= (line+1) && selectStart > 0) selectStart--;
-      if (selectEnd >= (line+1)) selectEnd--;
-      if (tagStart >= (line+1) && tagStart > 0) tagStart--;
-      if (tagEnd >= (line+1)) tagEnd--;
-
-      newDocGeometry = true;
-      for (view = myViews.first(); view != 0L; view = myViews.next() )
-      {
-        view->getCursorPosition (&cLine, &cCol);
-
-        view->delLine(line+1);
-
-        if ( (cLine == (line+1)) || ((cLine == line) && (cCol >= deletePos)) )
-          cCol = deletePos;
-
-        c.line = line;
-        c.col = cCol;
-
-        view->updateCursor (c);
-      }
-
-      chars=chars-(rchars+1);
-    }
-    else
-    {
-      l->replace (deletePos, chars, 0, 0);
-      buffer->changeLine(line);
-      updateMaxLength(l);
-      tagLine(line);
-
-      newDocGeometry = true;
-      for (view = myViews.first(); view != 0L; view = myViews.next() )
-      {
-        view->getCursorPosition (&cLine, &cCol);
-
-        if ( (cLine == line) && (cCol > deletePos) )
-          cCol = deletePos;
-
-        c.line = line;
-        c.col = cCol;
-
-        view->updateCursor (c);
-      }
-
-      chars = 0;
-      break;
+      view->updateCursor (c);
     }
   }
+  else if ((startLine+1) == endLine)
+  {
+    l->truncate(startCol);
+
+    tl = getTextLine(startLine+1);
+
+    if (!tl)
+     	return false;
+
+    tl->replace (0, endCol, 0, 0);
+
+    l->unWrap (startCol, tl, tl->length());
+    l->setContext (tl->getContext());
+
+    if (longestLine == tl)
+     	longestLine = 0L;
+
+    buffer->changeLine(startLine);
+    buffer->removeLine(startLine+1);
+
+    updateMaxLength(l);
+    tagLine(startLine);
+
+    if (selectStart >= (startLine+1) && selectStart > 0) selectStart--;
+    if (selectEnd >= (startLine+1)) selectEnd--;
+    if (tagStart >= (startLine+1) && tagStart > 0) tagStart--;
+    if (tagEnd >= (startLine+1)) tagEnd--;
+
+    newDocGeometry = true;
+    for (view = myViews.first(); view != 0L; view = myViews.next() )
+    {
+     	view->getCursorPosition (&cLine, &cCol);
+
+     	view->delLine(startLine+1);
+
+     	if ( (cLine == (startLine+1)) || ((cLine == startLine) && (cCol >= startCol)) )
+       	cCol = startCol;
+
+      c.line = startLine;
+      c.col = cCol;
+
+      view->updateCursor (c);
+    }
+	}
+	else
+	{
+    for (line = startLine; line <= endLine; line++)
+    {
+    	if ((line > startLine) && (line < endLine))
+    	{
+			  deletePos = 0;
+
+      	l->truncate(deletePos);
+
+      	tl = getTextLine(startLine+1);
+
+      	if (!tl)
+        	return false;
+
+      	l->unWrap (deletePos, tl, tl->length());
+      	l->setContext (tl->getContext());
+
+      	if (longestLine == tl)
+        	longestLine = 0L;
+
+      	buffer->changeLine(startLine);
+      	buffer->removeLine(startLine+1);
+
+      	updateMaxLength(l);
+      	tagLine(startLine);
+
+      	if (selectStart >= (startLine+1) && selectStart > 0) selectStart--;
+      	if (selectEnd >= (startLine+1)) selectEnd--;
+      	if (tagStart >= (startLine+1) && tagStart > 0) tagStart--;
+      	if (tagEnd >= (startLine+1)) tagEnd--;
+
+      	newDocGeometry = true;
+      	for (view = myViews.first(); view != 0L; view = myViews.next() )
+      	{
+        	view->getCursorPosition (&cLine, &cCol);
+
+        	view->delLine(startLine+1);
+
+        	if ( (cLine == (startLine+1)) || ((cLine == startLine) && (cCol >= deletePos)) )
+          	cCol = deletePos;
+
+        	c.line = startLine;
+        	c.col = cCol;
+
+        	view->updateCursor (c);
+      	}
+    	}
+    	else
+    	{
+      	if (line == startLine)
+    		{
+			  	deletePos = startCol;
+					endPos = l->length();
+				}
+		 		else
+				{
+			  	deletePos = 0;
+					endPos = endCol;
+				}
+
+      	l->replace (deletePos, endPos-deletePos, 0, 0);
+      	buffer->changeLine(startLine);
+      	updateMaxLength(l);
+      	tagLine(startLine);
+
+      	newDocGeometry = true;
+      	for (view = myViews.first(); view != 0L; view = myViews.next() )
+      	{
+        	view->getCursorPosition (&cLine, &cCol);
+
+        	if ( (cLine == startLine) && (cCol > deletePos) )
+          	cCol = deletePos;
+
+        	c.line = startLine;
+        	c.col = cCol;
+
+        	view->updateCursor (c);
+      	}
+    	}
+  	}
+	}
 
   if (tagStart <= tagEnd) {
     optimizeSelection();
-    updateLines(tagStart, tagEnd, line);
+    updateLines(tagStart, tagEnd, startLine);
     setModified(true);
   }
 
@@ -441,7 +512,7 @@ bool KateDocument::removeText ( int line, int col, int len )
   return true;
 }
 
-bool KateDocument::insertLine( int l, const QString &str )
+bool KateDocument::insertLine( uint l, const QString &str )
 {
   if (l > buffer->count())
     return false;
@@ -483,7 +554,7 @@ bool KateDocument::insertLine( int l, const QString &str )
   return true;
 }
 
-bool KateDocument::removeLine( int line )
+bool KateDocument::removeLine( uint line )
 {
   KateView *view;
   int cLine, cCol;
@@ -531,18 +602,24 @@ bool KateDocument::removeLine( int line )
   return true;
 }
 
-int KateDocument::length() const
+uint KateDocument::length() const
 {
   return text().length();
 }
 
-int KateDocument::lineLength ( int line ) const
+uint KateDocument::numLines() const
+{
+  return buffer->count();
+}
+
+int KateDocument::lineLength ( uint line ) const
 {
   TextLine::Ptr l = getTextLine( line );
-  if ( !l )
+
+	if ( !l )
     return -1;
 
-  return l->getString().length();
+  return l->length();
 }
 
 //
@@ -642,6 +719,7 @@ QString KateDocument::selection() const
 
 struct DeleteSelection {
   int line;
+	int lineLen;
   int deleteLine;
   int deleteStart;
   int len;
@@ -670,6 +748,7 @@ bool KateDocument::removeSelectedText ()
 
     curLine->deleteStart = textLine->length();
     curLine->line = line;
+		curLine->lineLen = textLine->length();
 
     while (true)
     {
@@ -705,8 +784,10 @@ bool KateDocument::removeSelectedText ()
 
     if (curLine->deleteLine == 1)
       removeLine (curLine->line);
-    else
-      removeText (curLine->line, curLine->deleteStart, curLine->len);
+    else if (curLine->deleteStart+curLine->len >= curLine->lineLen)
+      removeText (curLine->line, curLine->deleteStart, curLine->line+1, 0);
+		else
+      removeText (curLine->line, curLine->deleteStart, curLine->line, curLine->deleteStart+curLine->len);
   }
 
   selectEnd = -1;
@@ -1017,12 +1098,6 @@ void KateDocument::doPreHighlight()
   if (PreHighlightedTill<RequestPreHighlightTill)
     QTimer::singleShot(10,this,SLOT(doPreHighlight()));
 }
-
-int KateDocument::numLines() const
-{
-  return buffer->count();
-}
-
 
 TextLine::Ptr KateDocument::getTextLine(int line) const
 {
@@ -1391,9 +1466,9 @@ bool KateDocument::insertChars ( int line, int col, const QString &chars, KateVi
   if (_configFlags & KateDocument::cfOvr)
 	{
 		if ((col+buf.length()) <= textLine->length())
-      removeText (line, col, buf.length());
+      removeText (line, col, line, col+buf.length());
 		else
-      removeText (line, col, textLine->length()-col);
+      removeText (line, col, line, col+textLine->length()-col);
 	}
 
   insertText (line, col, buf);
@@ -1528,7 +1603,7 @@ void KateDocument::backspace(VConfig &c) {
     if (!(_configFlags & KateDocument::cfBackspaceIndents)) {
       // ordinary backspace
       c.cursor.col--;
-      removeText(c.cursor.line, c.cursor.col, 1);
+      removeText(c.cursor.line, c.cursor.col, c.cursor.line, c.cursor.col+1);
     } else {
       // backspace indents: erase to next indent position
       int l = 1; // del one char
@@ -1550,34 +1625,27 @@ void KateDocument::backspace(VConfig &c) {
       }
       // break effectively jumps here
       c.cursor.col -= l;
-      removeText(c.cursor.line, c.cursor.col, 1);
+      removeText(c.cursor.line, c.cursor.col, c.cursor.line, c.cursor.col+1);
     }
   } else {
     // c.cursor.col == 0: wrap to previous line
 
     c.cursor.line--;
     c.cursor.col = getTextLine(c.cursor.line)->length();
-    removeText (c.cursor.line, c.cursor.col, 1);
+    removeText (c.cursor.line, c.cursor.col, c.cursor.line+1, 0);
   }
 }
 
-void KateDocument::del(VConfig &c) {
-  TextLine::Ptr textLine = getTextLine(c.cursor.line);
-  int len = textLine->length();
-
- /* if (c.cursor.col < len)
-  {*/
-    // delete one character
-    removeText(c.cursor.line, c.cursor.col, 1);
-/*  } else {
-    if (c.cursor.line < lastLine()) {
-      // wrap next line to this line
-      textLine->truncate(c.cursor.col); // truncate spaces
-      removeText (c.cursor.line, c.cursor.col, 1);
-      recordAction(KateUndo::delLine,c.cursor);
-      recordEnd(c);
-    }
-  }*/
+void KateDocument::del(VConfig &c)
+{
+  if (c.cursor.col < getTextLine(c.cursor.line)->length())
+  {
+    removeText(c.cursor.line, c.cursor.col, c.cursor.line, c.cursor.col+1);
+	}
+  else
+	{
+    removeText(c.cursor.line, c.cursor.col, c.cursor.line+1, 0);
+	}
 }
 
 void KateDocument::cut(VConfig &c) {
@@ -1948,7 +2016,7 @@ void KateDocument::optimizeLeadingSpace(int line, int flags, int change) {
 
 //printf("chars %d insert %d cursor.col %d\n", chars, insert, cursor.col);
   cursor.line = line;
-  removeText (cursor.line, cursor.col, chars);
+  removeText (cursor.line, cursor.col, cursor.line, cursor.col+chars);
   insertText(cursor.line, cursor.col, s);
 }
 
@@ -1966,7 +2034,7 @@ bool KateDocument::removeStringFromBegining(int line, QString &str)
 		int length = str.length();
 
 		// Remove some chars
-		removeText (line, 0, length);
+		removeText (line, 0, line, length);
 
     return true;
 	}
@@ -1988,7 +2056,7 @@ bool KateDocument::removeStringFromEnd(int line, QString &str)
 		int length = str.length();
 
 		// Remove some chars
-		removeText (line, 0, length);
+		removeText (line, 0, line, length);
 
     return true;
   }
