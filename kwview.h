@@ -609,6 +609,8 @@ class KWrite : public KTextEditor::View {
       Saves the file as given in url
     */
     void writeURL(const KURL &url, int flags = 0);
+
+    void loadInternal( const QByteArray &data, const KURL &url, int flags );
   protected slots:
     void slotJobReadResult( KIO::Job *job );
     void slotJobData( KIO::Job *job, const QByteArray &data );

@@ -1862,42 +1862,13 @@ void KWrite::loadURL(const KURL &url, int flags) {
   KURL u(url);
 
   if (u.isMalformed()) {
-  /*
-    QString s;
-    if (url) {
-      s = "file:";
-      if (*url != '/') {
-        s += QDir::currentDirPath();
-        s += '/';
-      }
-      s += url;
-      u = s;
-    } */
-    if (u.isMalformed()) {
-        QString s = i18n("Malformed URL\n%1").arg(url.url());
+      QString s = i18n("Malformed URL\n%1").arg(url.prettyURL());
       KMessageBox::sorry(this, s);
       return;
-    }
   }
 
-  //  if (u.isLocalFile()) {
-    // usual local file
-  /*
-    emit statusMsg(i18n("Loading..."));
-
-    QString name(u.path());
-    if (loadFile(name,flags)) {
-      if (flags & lfInsert) {
-        name = i18n( "Inserted : %1" ).arg( u.prettyURL() );
-      } else {
-          kWriteDoc->setURL(u, flags & lfNoAutoHl );
-          kWriteDoc->updateLines();
-        name = i18n( "Read : %1" ).arg( u.prettyURL() );
-      }
-      emit statusMsg(name);
-    }
-    } else { */
-    // url
+  if ( !url.isLocalFile() )
+  {
     emit statusMsg(i18n("Loading..."));
 
     NetData d;
@@ -1909,22 +1880,16 @@ void KWrite::loadURL(const KURL &url, int flags) {
 
     connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotJobReadResult( KIO::Job * ) ) );
     connect( job, SIGNAL( data( KIO::Job *, const QByteArray & ) ), this, SLOT( slotJobData( KIO::Job *, const QByteArray & ) ) );
-
-    /*
-    KIOJob * iojob = new KIOJob;
-    iojob->setGUImode ( KIOJob::NONE );
-    QString tmpFile;
-    tmpFile = QString(_PATH_TMP"/kwrite%1").arg(time(0L));
-
-    m_sNet.insert( iojob->id(), new QString(u.url()) );
-    m_sLocal.insert( iojob->id(), new QString(tmpFile));
-    m_flags.insert( iojob->id(), new int(flags));
-
-    connect(iojob,SIGNAL(sigFinished( int )),this,SLOT(slotGETFinished( int )));
-    connect(iojob,SIGNAL(sigError(int, const char *)),this,SLOT(slotIOJobError(int, const char *)));
-    iojob->copy(url, tmpFile);
-    */
-    //  }
+  }
+  else if ( loadFile( url.path(), flags ) )
+  {
+    if ( flags & lfInsert )
+        emit statusMsg( i18n( "Inserted : %1" ).arg( url.fileName() ) );
+    else
+        emit statusMsg( i18n( "Read : %1" ).arg( url.fileName() ) );
+  }
+  else
+      emit statusMsg( QString::null );
 }
 
 
@@ -2005,25 +1970,29 @@ void KWrite::slotJobReadResult( KIO::Job *job )
     if ( job->error() )
         job->showErrorDialog();
     else
+        loadInternal( data, url, flags );
+}
+
+void KWrite::loadInternal( const QByteArray &data, const KURL &url, int flags )
+{
+    QBuffer buff( data );
+    buff.open( IO_ReadOnly );
+    loadFile( buff, flags );
+
+    QString msg;
+
+    if ( flags & lfInsert )
+        msg = i18n( "Inserted : %1" ).arg( url.fileName() );
+    else
     {
-        QBuffer buff( data );
-        buff.open( IO_ReadOnly );
-        loadFile( buff, flags );
+        kWriteDoc->setURL( url, !(flags & lfNoAutoHl ) );
+        kWriteDoc->updateLines();
+        kWriteDoc->updateViews();
 
-        QString msg;
-
-        if ( flags & lfInsert )
-            msg = i18n( "Inserted : %1" ).arg( url.fileName() );
-        else
-        {
-            kWriteDoc->setURL( url, !(flags & lfNoAutoHl ) );
-            kWriteDoc->updateLines();
-            kWriteDoc->updateViews();
-
-            msg = i18n( "Read : %1" ).arg( url.fileName() );
-        }
-        emit statusMsg( msg );
+        msg = i18n( "Read : %1" ).arg( url.fileName() );
     }
+
+    emit statusMsg( msg );
 
     if ( flags & lfNewFile )
         kWriteDoc->setModified( false );
