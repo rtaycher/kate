@@ -301,9 +301,7 @@ KateExternalToolsMenuAction::KateExternalToolsMenuAction( const QString &text,
 
 void KateExternalToolsMenuAction::reload()
 {
-  // HACK - clear() causes crashs here on apply or ok of config dialog
-  delete m_actionCollection;
-  m_actionCollection = new KActionCollection( this );
+  m_actionCollection->clear ();
 
   popupMenu()->clear();
 
@@ -595,8 +593,6 @@ KateExternalToolsConfigWidget::KateExternalToolsConfigWidget( QWidget *parent, c
 
   QWhatsThis::add( lbTools, i18n(
       "This list shows all the configured tools, represented by their menu text.") );
-
-
 
   config = new KConfig("externaltools", false, false, "appdata");
   reload();
