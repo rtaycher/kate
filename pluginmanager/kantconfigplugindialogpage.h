@@ -14,8 +14,13 @@ class KantConfigPluginPage: public QHBox
     ~KantConfigPluginPage(){;};
 
   private:
-    QListBox *AvailableBox;
-    QListBox *LoadBox;
+    KantPluginManager *myPluginMan;
+
+    KListBox *availableBox;
+    KListBox *loadedBox;
+
+  private slots:
+    void slotUpdate ();
 };
 
 #endif
