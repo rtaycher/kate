@@ -134,7 +134,6 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   // setup the actions
   setupActions();
-  projectlist->setupActions();
 
   setStandardToolBarMenuEnabled( true );
   setXMLFile( "kateui.rc" );
@@ -189,11 +188,7 @@ void KateMainWindow::setupMainWindow ()
   greptool->show();
   greptool->hide();
 
-  //mainDock->setGeometry(100, 100, 100, 100);
- /* QBoxLayout *ml=new QHBoxLayout(centralWidget());
-  ml->setAutoAdd(true);*/
-  m_viewManager = new KateViewManager (this,tabWidget(), m_docManager);
-  //tabWidget()->addTab (m_viewManager, "viewmanager");
+  m_viewManager = new KateViewManager (this, tabWidget(), m_docManager);
 
   filelist = new KateFileList (m_docManager, m_viewManager, this/*filelistDock*/, "filelist");
   addToolView(KDockWidget::DockLeft,filelist,SmallIcon("kmultiple"), i18n("Documents"));
@@ -253,17 +248,6 @@ void KateMainWindow::setupActions()
   a=new KAction(i18n("&New Window"), "window_new", 0, this, SLOT(newWindow()), actionCollection(), "view_new_view");
   a->setWhatsThis(i18n("Create a new Kate view (a new window with the same document list)."));
 
-  a=new KAction (i18n("New Tab"),"view_new_tab",0,m_viewManager,SLOT(slotNewTab()), actionCollection(),"view_new_tab");
-  a=new KAction (i18n("Close Current Tab"),"tab_remove",0,m_viewManager,SLOT(slotCloseTab()), actionCollection(),"view_close_tab");
-  a=new KAction( i18n("Split Ve&rtical"), "view_left_right", CTRL+SHIFT+Key_L, m_viewManager, SLOT( slotSplitViewSpaceVert() ), actionCollection(), "view_split_vert");
-  a->setWhatsThis(i18n("Split the currently active view vertically into two views."));
-
-  a=new KAction( i18n("Split &Horizontal"), "view_top_bottom", CTRL+SHIFT+Key_T, m_viewManager, SLOT( slotSplitViewSpaceHoriz() ), actionCollection(), "view_split_horiz");
-  a->setWhatsThis(i18n("Split the currently active view horizontally into two views."));
-
-  a=closeCurrentViewSpace = new KAction( i18n("Cl&ose Current View"), "view_remove", CTRL+SHIFT+Key_R, m_viewManager, SLOT( slotCloseCurrentViewSpace() ), actionCollection(), "view_close_current_space");
-  a->setWhatsThis(i18n("Close the currently active splitted view"));
-
   externalTools = new KateExternalToolsMenuAction( i18n("External Tools"), actionCollection(), "tools_external", this );
   externalTools->setWhatsThis( i18n("Launch external helper applications") );
 
@@ -289,7 +273,6 @@ void KateMainWindow::setupActions()
 
   a=KStdAction::configureToolbars(this, SLOT(slotEditToolbars()), actionCollection(), "set_configure_toolbars");
   a->setWhatsThis(i18n("Configure which items should appear in the toolbar(s)."));
-
 
   // project menu
   a = new KAction(i18n("&New Project..."), "filenew", 0, this, SLOT(slotProjectNew()), actionCollection(), "project_new");
@@ -321,6 +304,9 @@ void KateMainWindow::setupActions()
 
   slotWindowActivated ();
   slotDocumentChanged();
+ 
+  projectlist->setupActions();
+  m_viewManager->setupActions ();
 }
 
 void KateMainWindow::slotDocumentCloseAll() {
@@ -490,11 +476,6 @@ void KateMainWindow::slotWindowActivated ()
 
     updateCaption (m_viewManager->activeView()->getDoc());
   }
-
-  if (m_viewManager->viewSpaceCount() == 1)
-    closeCurrentViewSpace->setEnabled(false);
-  else
-    closeCurrentViewSpace->setEnabled(true);
 }
 
 void KateMainWindow::slotUpdateOpenWith()

@@ -45,6 +45,7 @@
 #include <kstdaction.h>
 #include <kstandarddirs.h>
 #include <kglobalsettings.h>
+#include <kstdaccel.h>
 
 #include <ktexteditor/encodinginterface.h>
 
@@ -74,8 +75,6 @@ KateViewManager::KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWi
   m_viewList.setAutoDelete(true);
   m_viewSpaceContainerList.setAutoDelete(true);
 
-
-
   m_init=false;
 
 }
@@ -85,6 +84,49 @@ KateViewManager::~KateViewManager ()
   m_viewList.setAutoDelete(false);
   m_viewSpaceContainerList.setAutoDelete(false);
 
+}
+
+void KateViewManager::setupActions ()
+{
+  KAction *a;
+
+  /**
+   * tabbing
+   */
+  a=new KAction ( i18n("New Tab"),"tab_new", 0, this, SLOT(slotNewTab()),
+                  m_mainWindow->actionCollection(), "view_new_tab" );
+
+  a=new KAction ( i18n("Close Current Tab"),"tab_remove",0,m_viewManager,SLOT(slotCloseTab()),
+                  m_mainWindow->actionCollection(),"view_close_tab");
+  
+  m_activateNextTab
+      = new KAction( i18n( "Activate Next Tab" ), "tab_next",
+                     QApplication::reverseLayout() ? KStdAccel::tabPrev() : KStdAccel::tabNext(),
+                     this, SLOT( activateNextTab() ), m_mainWindow->actionCollection(), "view_next_tab" );
+  
+  m_activatePrevTab
+      = new KAction( i18n( "Activate Previous Tab" ), "tab_previous",
+                     QApplication::reverseLayout() ? KStdAccel::tabNext() : KStdAccel::tabPrev(),
+                     this, SLOT( activatePrevTab() ), m_mainWindow->actionCollection(), "view_prev_tab" );
+
+  /**
+   * view splitting
+   */
+  a=new KAction ( i18n("Split Ve&rtical"), "view_left_right", CTRL+SHIFT+Key_L, this, SLOT(
+                  slotSplitViewSpaceVert() ), m_mainWindow->actionCollection(), "view_split_vert");
+
+  a->setWhatsThis(i18n("Split the currently active view vertically into two views."));
+
+  a=new KAction ( i18n("Split &Horizontal"), "view_top_bottom", CTRL+SHIFT+Key_T, this, SLOT(
+                  slotSplitViewSpaceHoriz() ), m_mainWindow->actionCollection(), "view_split_horiz");
+
+  a->setWhatsThis(i18n("Split the currently active view horizontally into two views."));
+
+  a = new KAction ( i18n("Cl&ose Current View"), "view_remove", CTRL+SHIFT+Key_R, this,
+                    SLOT( slotCloseCurrentViewSpace() ), m_mainWindow->actionCollection(),
+                    "view_close_current_space" );
+
+  a->setWhatsThis(i18n("Close the currently active splitted view"));
 }
 
 void KateViewManager::tabChanged(QWidget* widget) {
@@ -136,6 +178,36 @@ void KateViewManager::slotCloseTab() {
     pos = m_viewSpaceContainerList.count()-1;
 
   tabChanged(m_viewSpaceContainerList.at (pos));
+}
+
+void KateViewManager::activateNextTab()
+{
+  if (!m_tabWidget) return;
+  if( m_tabWidget->count() <= 1 ) return;
+
+  int iTab = m_tabWidget->currentPageIndex();
+
+  iTab++;
+
+  if( iTab == m_tabWidget->count() )
+    iTab = 0;
+
+  m_tabWidget->setCurrentPage( iTab );
+}
+
+void KateViewManager::activatePrevTab()
+{
+  if (!m_tabWidget) return;
+  if( m_tabWidget->count() <= 1 ) return;
+
+  int iTab = m_tabWidget->currentPageIndex();
+
+  iTab--;
+
+  if( iTab == -1 )
+    iTab = m_tabWidget->count() - 1;
+
+  m_tabWidget->setCurrentPage( iTab );
 }
 
 bool KateViewManager::eventFilter(QObject *o,QEvent *e) {

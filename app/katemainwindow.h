@@ -118,9 +118,6 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
   private:
     QGuardedPtr<Kate::Project> m_project;
     uint m_projectNumber;
-    
-
-    KAction *closeCurrentViewSpace;
 
     KAction *goNext;
     KAction *goPrev;
@@ -240,7 +237,7 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
     void slotProjectSave ();
     void slotProjectClose ();
 
-   
+
     // recent files
     void openConstURLProject (const KURL&);
 

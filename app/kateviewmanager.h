@@ -30,14 +30,16 @@
 #include <kate/document.h>
 #include <kmdi/tabwidget.h>
 #include <qguardedptr.h>
+
 class KateSplitter;
-class KConfig;
 class KateMainWindow;
+
+class KConfig;
+class KAction;
 
 class KateViewManager : public QWidget
 {
   Q_OBJECT
-
 
   public:
     KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWidget, KateDocManager *docManager);
@@ -46,6 +48,11 @@ class KateViewManager : public QWidget
     Kate::ViewManager *viewManager () const { return m_viewManager; };
 
     inline QPtrList<Kate::View> &viewList () { return m_viewList; };
+
+    /**
+     * create all actions needed for the view manager
+     */
+    void setupActions ();
 
   public:
     /* This will save the splitter configuration */
@@ -61,8 +68,6 @@ class KateViewManager : public QWidget
 
   private:
     bool useOpaqueResize;
-
-
 
     void removeViewSpace (KateViewSpace *viewspace);
 
@@ -88,6 +93,7 @@ class KateViewManager : public QWidget
     void openNewIfEmpty();
 
     void tabChanged(QWidget*);
+    
   public slots:
     void deleteLastView ();
 
@@ -119,8 +125,14 @@ class KateViewManager : public QWidget
     void slotSplitViewSpaceHoriz () { splitViewSpace(); }
     /** Splits the active viewspace vertically */
     void slotSplitViewSpaceVert () { splitViewSpace( 0L, false ); }
+    
+    
     void slotNewTab();
     void slotCloseTab ();
+    void activateNextTab ();
+    void activatePrevTab ();
+    
+    
     void slotCloseCurrentViewSpace();
 
 
@@ -151,6 +163,10 @@ class KateViewManager : public QWidget
     KateMainWindow *m_mainWindow;
     QGuardedPtr<KMDI::TabWidget> m_tabWidget;
     bool m_init;
+    
+    KAction *m_activateNextTab;
+    KAction *m_activatePrevTab;
+    
   protected:
     friend class KateViewSpaceContainer;
     bool eventFilter(QObject *o,QEvent *e);
