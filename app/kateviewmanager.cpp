@@ -41,6 +41,7 @@
 #include <kiconloader.h>
 #include <kglobal.h>
 #include <klocale.h>
+#include <ktoolbar.h>
 #include <kmessagebox.h>
 #include <ksimpleconfig.h>
 #include <kstdaction.h>
@@ -287,13 +288,17 @@ void KateViewManager::activateView ( Kate::View *view, bool checkModified /*=fal
     setActiveView (view);
     m_viewList.findRef (view);
 
+    ((KMainWindow *)topLevelWidget ())->toolBar ()->setUpdatesEnabled (false);
+
     if (((KateMainWindow *)topLevelWidget ())->activeView)
       ((KMainWindow *)topLevelWidget ())->guiFactory()->removeClient ( ((KateMainWindow *)topLevelWidget ())->activeView );
 
     ((KateMainWindow *)topLevelWidget ())->activeView = view;
 
     if (!m_blockViewCreationAndActivation)
-    ((KMainWindow *)topLevelWidget ())->guiFactory ()->addClient( view );
+      ((KMainWindow *)topLevelWidget ())->guiFactory ()->addClient( view );
+
+    ((KMainWindow *)topLevelWidget ())->toolBar ()->setUpdatesEnabled (true);
 
     setWindowCaption();
     statusMsg();
