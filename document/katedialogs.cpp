@@ -281,7 +281,7 @@ void HlEditDialog::newDocument()
         loadFromDocument(&data);
         return;
       }
-  KMessageBox::error(this,i18n("Can't find templatefile"));
+  KMessageBox::error(this,i18n("Can't find template file"));
 }
 
 
