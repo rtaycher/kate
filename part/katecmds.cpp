@@ -270,11 +270,11 @@ bool Character::execCmd(QString cmd, KateView *view)
 		QChar c(number);
 		view->insertText(QString(&c, 1));
 	}
-	
+
 	return true;
 }
 
-bool Fifo::execCmd(QString cmd, KateView *view)
+bool Fifo::execCmd(QString , KateView *)
 {
 
 }

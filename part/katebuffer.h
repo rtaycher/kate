@@ -134,7 +134,7 @@ protected slots:
    void slotLoadFile();
 
 protected:
-   int m_totalLines;
+   uint m_totalLines;
 
    QPtrList<KateBufBlock> m_blocks;
    QPtrList<KateBufFileLoader> m_loader;
@@ -166,7 +166,7 @@ public:
 class KateBufState
 {
 public:
-   long lineNr;
+   uint lineNr;
 };
 
 
@@ -281,7 +281,7 @@ protected:
    bool b_vmDataValid;
    bool b_appendEOL; // Buffer is not terminated with '\n'.
    bool b_emptyBlock; // Buffer is empty
-   int m_lastLine; // Start of last line if buffer is without EOL.
+   uint m_lastLine; // Start of last line if buffer is without EOL.
    KateBufState m_beginState;
    KateBufState m_endState;
    QTextCodec *m_codec;
