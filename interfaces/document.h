@@ -109,30 +109,6 @@ class Document : public KTextEditor::Document, KTextEditor::EditInterface, KText
     */
     virtual void setDocName (QString /*docName*/) { ; };
 
-    /** Returns the first view in the documents list of views.
-    */
-    virtual Kate::View* getFirstView() { return 0L; };
-
-    /** Returns the next view in the documents list of views.
-    */
-    virtual Kate::View* getNextView() { return 0L; };
-
-    /** Returns the last view in the documents list of views.
-    */
-    virtual Kate::View* getLastView() { return 0L; };
-
-    /** Returns the previous view in the documents list of views.
-    */
-    virtual Kate::View* getPrevView() { return 0L; };
-
-    /** Returns the current view in the documents list of views.
-    */
-    virtual Kate::View* getCurrentView() { return 0L; };
-
-    /** Returns the number of views for the document.
-    */
-    virtual int getViewCount() { return 0L; };
-
     /** Defines possible mark types. A line can have marks of different types.
     */
     enum marks

@@ -282,31 +282,6 @@ class KateDocument : public Kate::Document
 
 // view interaction
   public:
-    /** Returns the first view in the documents list of views.
-    *   see @ref QList
-    */
-    KateView* getFirstView();
-    /** Returns the next view in the documents list of views.
-    *   see @ref QList
-    */
-    KateView* getNextView();
-    /** Returns the last view in the documents list of views.
-    *   see @ref QList
-    */
-    KateView* getLastView();
-    /** Returns the previous view in the documents list of views.
-    *   see @ref QList
-    */
-    KateView* getPrevView();
-    /** Returns the current view in the documents list of views.
-    *   see @ref QList
-    */
-    KateView* getCurrentView();
-    /** Returns the number of views for the document.
-    *   see @ref QList
-    */
-    int getViewCount();
-
     void addView(KTextEditor::View *);
     void removeView(KTextEditor::View *);
 
