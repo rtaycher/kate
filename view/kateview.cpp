@@ -54,6 +54,7 @@
 #include <kapp.h>
 #include <qscrollbar.h>
 #include <qiodevice.h>
+#include <qclipboard.h>
 #include <qpopupmenu.h>
 #include <kpopupmenu.h>
 #include <qkeycode.h>
@@ -1121,7 +1122,11 @@ void KateViewInternal::mouseReleaseEvent(QMouseEvent *e) {
       placeCursor(e->x(), e->y(), 0);
       myDoc->updateViews();
     } else if (dragInfo.state == diNone) {
-      if (myView->config() & KateView::cfMouseAutoCopy) myView->copy();
+      if (myView->config() & KateView::cfMouseAutoCopy) {
+        QApplication::clipboard()->setSelectionMode( true );
+        myView->copy();
+        QApplication::clipboard()->setSelectionMode( false );
+      }
       killTimer(scrollTimer);
       scrollTimer = 0;
     }
