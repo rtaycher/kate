@@ -259,6 +259,9 @@ void KateDockContainer::save(KConfig*)
 	cfg->deleteGroup(QString("KateDock::%1").arg(parent()->name()));
 	cfg->setGroup(QString("KateDock::%1").arg(parent()->name()));
 	
+	if (isOverlapMode()) cfg->writeEntry("overlapMode","true");
+		else cfg->writeEntry("overlapMode","false");
+
 	QPtrList<KMultiTabBarTab>* tl=m_tb->tabs();
 	QPtrListIterator<KMultiTabBarTab> it(*tl);
 	QStringList::Iterator it2=itemNames.begin();
@@ -282,6 +285,13 @@ void KateDockContainer::load(KConfig*)
 	KConfig *cfg=kapp->config();
 	QString grp=cfg->group();	
 	cfg->setGroup(QString("KateDock::%1").arg(parent()->name()));
+	
+	if (cfg->readEntry("overlapMode")!="false")
+		activateOverlapMode(m_tb->width());
+	else
+		deactivateOverlapMode();
+
+
 	int i=0;
 	QString raise;
 	while (true)
