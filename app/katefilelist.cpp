@@ -258,11 +258,11 @@ void KateFileList::tip( const QPoint &p, QRect &r, QString &str )
   if (info && info->modifiedOnDisc)
   {
     if (info->modifiedOnDiscReason == 1)
-      str += i18n("<b>This file was changed (modified) on disc by another program!</b><br />");
+      str += i18n("<b>This file was changed (modified) on disc by another program.</b><br />");
     else if (info->modifiedOnDiscReason == 2)
-      str += i18n("<b>This file was changed (created) on disc by another program!</b><br />");
+      str += i18n("<b>This file was changed (created) on disc by another program.</b><br />");
     else if (info->modifiedOnDiscReason == 3)
-      str += i18n("<b>This file was changed (deleted) on disc by another program!</b><br />");
+      str += i18n("<b>This file was changed (deleted) on disc by another program.</b><br />");
   }
 
   str += doc->url().prettyURL();
