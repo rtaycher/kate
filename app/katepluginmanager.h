@@ -30,7 +30,7 @@
 #include <qptrlist.h>
 #include <ktrader.h>
 
-class PluginInfo
+class KatePluginInfo
 {
   public:
     bool load;
@@ -39,7 +39,7 @@ class PluginInfo
     QString name;
 };
 
-typedef QPtrList<PluginInfo> PluginList;
+typedef QPtrList<KatePluginInfo> KatePluginList;
 
 class KatePluginManager : public QObject
 {
@@ -57,13 +57,13 @@ class KatePluginManager : public QObject
     void loadConfig ();
     void writeConfig ();
 
-    void loadPlugin (PluginInfo *item);
-    void unloadPlugin (PluginInfo *item);
-    void enablePluginGUI (PluginInfo *item, KateMainWindow *win);
-    void enablePluginGUI (PluginInfo *item);
-    void disablePluginGUI (PluginInfo *item);
+    void loadPlugin (KatePluginInfo *item);
+    void unloadPlugin (KatePluginInfo *item);
+    void enablePluginGUI (KatePluginInfo *item, KateMainWindow *win);
+    void enablePluginGUI (KatePluginInfo *item);
+    void disablePluginGUI (KatePluginInfo *item);
 
-    inline PluginList & pluginList () { return m_pluginList; };
+    inline KatePluginList & pluginList () { return m_pluginList; };
 
     virtual Kate::Plugin *plugin(const QString &name);
     virtual bool pluginAvailable(const QString &name);
@@ -75,7 +75,7 @@ class KatePluginManager : public QObject
 
     void setupPluginList ();
 
-    PluginList m_pluginList;
+    KatePluginList m_pluginList;
 };
 
 #endif

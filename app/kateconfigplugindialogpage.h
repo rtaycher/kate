@@ -25,55 +25,24 @@
 
 #include <qvbox.h>  
 
-#define private protected
-#include <qlistview.h>
-#undef private 
-
 #include <klistview.h>
 
-class QListBoxItem;
+class KatePluginListItem;
 
-class PluginListItem : public QCheckListItem
+class KatePluginListView : public KListView
 {
-public:
-	PluginListItem(const bool _exclusive, bool _checked, PluginInfo *_info, QListView *_parent);
-	PluginInfo *info() const { return mInfo; }
-
-	// This will toggle the state without "emitting" the stateChange
-	void setChecked(bool);
-
-protected:	
-	virtual void stateChange(bool);
-	virtual void paintCell(QPainter *, const QColorGroup &, int, int, int);
-   
-private:
-	PluginInfo *mInfo;
-	bool silentStateChange;
-	bool exclusive;
-};
-
-class PluginListView : public KListView
-{
-Q_OBJECT
-
-friend class PluginListItem;
-
-public:
-	PluginListView(QWidget *_parent = 0, const char *_name = 0);
-	PluginListView(unsigned _min, QWidget *_parent = 0, const char *_name = 0);
-	PluginListView(unsigned _min, unsigned _max, QWidget *_parent = 0, const char *_name = 0);
-
-	virtual void clear();
-
-signals:
-	void stateChange(PluginListItem *, bool);
-
-private:
-	void stateChanged(PluginListItem *, bool);
-	
-	bool hasMaximum;
-	unsigned max, min;
-	unsigned count;
+  Q_OBJECT
+  
+  friend class KatePluginListItem;
+  
+  public:
+    KatePluginListView (QWidget *parent = 0, const char *name = 0);
+  
+  signals:
+    void stateChange(KatePluginListItem *, bool);
+  
+  private:
+    void stateChanged(KatePluginListItem *, bool);
 };
 
 class KateConfigPluginPage: public QVBox
@@ -92,10 +61,10 @@ class KateConfigPluginPage: public QVBox
     void changed();
 
   private slots:
-    void stateChange(PluginListItem *, bool);
+    void stateChange(KatePluginListItem *, bool);
     
-    void loadPlugin (PluginListItem *);
-    void unloadPlugin (PluginListItem *);
+    void loadPlugin (KatePluginListItem *);
+    void unloadPlugin (KatePluginListItem *);
 };
 
 #endif

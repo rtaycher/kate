@@ -34,104 +34,45 @@
 #include <qtooltip.h>
 #include <kiconloader.h>
 #include <qwhatsthis.h>
+
+class KatePluginListItem : public QCheckListItem
+{
+  public:
+    KatePluginListItem(bool checked, KatePluginInfo *info, QListView *parent);
+    KatePluginInfo *info() const { return mInfo; }
+  
+  protected:	
+    void stateChange(bool);
+    
+  private:
+    KatePluginInfo *mInfo;
+    bool silentStateChange;
+};
          
-PluginListItem::PluginListItem(const bool _exclusive, bool _checked, PluginInfo *_info, QListView *_parent)
-	: QCheckListItem(_parent, _info->service->name(), CheckBox)
-	, mInfo(_info)
-	, silentStateChange(false)
-	, exclusive(_exclusive)
+KatePluginListItem::KatePluginListItem(bool checked, KatePluginInfo *info, QListView *parent)
+  : QCheckListItem(parent, info->service->name(), CheckBox)
+  , mInfo(info)
+  , silentStateChange(false)
 {
-	setChecked(_checked);
-	if(_checked) static_cast<PluginListView *>(listView())->count++;
+  silentStateChange = true;
+  setOn(checked);
+  silentStateChange = false;
 }
 
-
-void PluginListItem::setChecked(bool b)
+void KatePluginListItem::stateChange(bool b)
 {
-	silentStateChange = true;
-	setOn(b);
-	silentStateChange = false;
+  if(!silentStateChange)
+    static_cast<KatePluginListView *>(listView())->stateChanged(this, b);
 }
 
-void PluginListItem::stateChange(bool b)
-{
-	if(!silentStateChange)
-		static_cast<PluginListView *>(listView())->stateChanged(this, b);
-}
-
-void PluginListItem::paintCell(QPainter *p, const QColorGroup &cg, int a, int b, int c)
-{
-	if(exclusive) myType = RadioButton;
-	QCheckListItem::paintCell(p, cg, a, b, c);
-	if(exclusive) myType = CheckBox;
-}
-
-PluginListView::PluginListView(unsigned _min, unsigned _max, QWidget *_parent, const char *_name)
-	: KListView(_parent, _name)
-	, hasMaximum(true)
-	, max(_max)
-	, min(_min <= _max ? _min : _max)
-	, count(0)
+KatePluginListView::KatePluginListView(QWidget *parent, const char *name)
+  : KListView(parent, name)
 {
 }
 
-PluginListView::PluginListView(unsigned _min, QWidget *_parent, const char *_name)
-	: KListView(_parent, _name)
-	, hasMaximum(false)
-	, min(_min)
-	, count(0)
+void KatePluginListView::stateChanged(KatePluginListItem *item, bool b)
 {
-}
-
-PluginListView::PluginListView(QWidget *_parent, const char *_name)
-	: KListView(_parent, _name)
-	, hasMaximum(false)
-	, min(0)
-	, count(0)
-{
-}
-
-void PluginListView::clear()
-{
-	count = 0;
-	KListView::clear();
-}
-
-void PluginListView::stateChanged(PluginListItem *item, bool b)
-{
-	if(b)
-	{
-		count++;
-		emit stateChange(item, b);
-		
-		if(hasMaximum && count > max)
-		{
-			// Find a different one and turn it off
-
-			QListViewItem *cur = firstChild();
-			PluginListItem *curItem = dynamic_cast<PluginListItem *>(cur);
-
-			while(cur == item || !curItem || !curItem->isOn())
-			{
-				cur = cur->nextSibling();
-				curItem = dynamic_cast<PluginListItem *>(cur);
-			}
-
-			curItem->setOn(false);
-		}
-	}
-	else
-	{
-		if(count == min)
-		{
-			item->setChecked(true);
-		}
-		else
-		{
-			count--;
-			emit stateChange(item, b);
-		}
-	}
+  emit stateChange(item, b);
 }
 
 KateConfigPluginPage::KateConfigPluginPage(QWidget *parent, KateConfigDialog *dialog):QVBox(parent)
@@ -139,31 +80,32 @@ KateConfigPluginPage::KateConfigPluginPage(QWidget *parent, KateConfigDialog *di
   myPluginMan=((KateApp*)kapp)->katePluginManager();
   myDialog=dialog;
   
-  PluginListView* listView = new PluginListView(0, this);
+  KatePluginListView* listView = new KatePluginListView(this);
   listView->addColumn(i18n("Name"));
   listView->addColumn(i18n("Comment"));
   QWhatsThis::add(listView,i18n("Here you can see all available Kate plugins. Those with a check mark are loaded, and will be loaded again the next time Kate is started."));
 
-  connect(listView, SIGNAL(stateChange(PluginListItem *, bool)), this, SLOT(stateChange(PluginListItem *, bool)));
+  connect(listView, SIGNAL(stateChange(KatePluginListItem *, bool)), this, SLOT(stateChange(KatePluginListItem *, bool)));
       
   for (uint i=0; i<myPluginMan->pluginList().count(); i++)
   {
-    PluginListItem *item = new PluginListItem(false, myPluginMan->pluginList().at(i)->load, myPluginMan->pluginList().at(i), listView);
+    KatePluginListItem *item = new KatePluginListItem(myPluginMan->pluginList().at(i)->load, myPluginMan->pluginList().at(i), listView);
     item->setText(0, myPluginMan->pluginList().at(i)->service->name());
     item->setText(1, myPluginMan->pluginList().at(i)->service->comment());
   }
 }
 
- void KateConfigPluginPage::stateChange(PluginListItem *item, bool b)
+ void KateConfigPluginPage::stateChange(KatePluginListItem *item, bool b)
 {   
-	if(b)
-		loadPlugin(item);
-	else
-		unloadPlugin(item);
-	emit changed();
+  if(b)
+    loadPlugin(item);
+  else
+    unloadPlugin(item);
+  
+  emit changed();
 }
                       
-void KateConfigPluginPage::loadPlugin (PluginListItem *item)
+void KateConfigPluginPage::loadPlugin (KatePluginListItem *item)
 {       
   myPluginMan->loadPlugin (item->info());
   myPluginMan->enablePluginGUI (item->info());
@@ -172,7 +114,7 @@ void KateConfigPluginPage::loadPlugin (PluginListItem *item)
   item->setOn(true);
 }
 
-void KateConfigPluginPage::unloadPlugin (PluginListItem *item)
+void KateConfigPluginPage::unloadPlugin (KatePluginListItem *item)
 {                                  
   myDialog->removePluginPage (item->info()->plugin);
   myPluginMan->unloadPlugin (item->info());

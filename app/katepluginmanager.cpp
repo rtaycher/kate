@@ -53,7 +53,7 @@ void KatePluginManager::setupPluginList ()
   {
     KService::Ptr ptr = (*it);
 
-    PluginInfo *info=new PluginInfo;
+    KatePluginInfo *info=new KatePluginInfo;
 
     info->load = false;
     info->service = ptr;
@@ -104,12 +104,12 @@ void KatePluginManager::enableAllPluginsGUI (KateMainWindow *win)
   }
 }
 
-void KatePluginManager::loadPlugin (PluginInfo *item)
+void KatePluginManager::loadPlugin (KatePluginInfo *item)
 {
   item->load = (item->plugin = Kate::createPlugin (QFile::encodeName(item->service->library()), Kate::application()));
 }
 
-void KatePluginManager::unloadPlugin (PluginInfo *item)
+void KatePluginManager::unloadPlugin (KatePluginInfo *item)
 {
   disablePluginGUI (item);
   if (item->plugin) delete item->plugin;
@@ -117,7 +117,7 @@ void KatePluginManager::unloadPlugin (PluginInfo *item)
   item->load = false;
 }
 
-void KatePluginManager::enablePluginGUI (PluginInfo *item, KateMainWindow *win)
+void KatePluginManager::enablePluginGUI (KatePluginInfo *item, KateMainWindow *win)
 {
   if (!item->plugin) return;
   if (!Kate::pluginViewInterface(item->plugin)) return;
@@ -125,7 +125,7 @@ void KatePluginManager::enablePluginGUI (PluginInfo *item, KateMainWindow *win)
   Kate::pluginViewInterface(item->plugin)->addView(win->mainWindow());
 }
 
-void KatePluginManager::enablePluginGUI (PluginInfo *item)
+void KatePluginManager::enablePluginGUI (KatePluginInfo *item)
 {
   if (!item->plugin) return;
   if (!Kate::pluginViewInterface(item->plugin)) return;
@@ -136,7 +136,7 @@ void KatePluginManager::enablePluginGUI (PluginInfo *item)
   }
 }
 
-void KatePluginManager::disablePluginGUI (PluginInfo *item)
+void KatePluginManager::disablePluginGUI (KatePluginInfo *item)
 {
   if (!item->plugin) return;
   if (!Kate::pluginViewInterface(item->plugin)) return;
