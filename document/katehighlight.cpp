@@ -230,7 +230,7 @@ const QChar *HlKeyword::checkHgl(const QChar *s,bool) {
 
   const QChar *s2=s;
 
-  while( !ustrchr("!%&()*+,-./:;<=>?[]^{|}~ ", *s2) && *s2 != '\0') s2++;
+  while( !ustrchr("!%&()*+,-./:;<=>?[]^{|}~ \t", *s2) && *s2 != '\0') s2++;
 // oops didn't increment s2 why do anything else?
 	if(s2 == s) return 0L;
   QString lookup=QString(s,s2-s)+QString::null;
