@@ -392,7 +392,7 @@ KWBuffer::removeLine(int i)
 void
 KWBuffer::changeLine(int i)
 {
-    kdDebug(13020)<<"changeLine "<< i<<endl;
+    //kdDebug(13020)<<"changeLine "<< i<<endl;
    KWBufBlock *buf = findBlock(i);
    assert(buf);
    assert(buf->b_stringListValid);
@@ -418,7 +418,7 @@ KWBuffer::parseBlock(KWBufBlock *buf)
    assert(m_parsedBlocksClean.find(buf) == -1);
    m_parsedBlocksClean.append(buf);
 
-   // From now on store the raw block in unicode. 
+   // From now on store the raw block in unicode.
    // As a side-effect this will also store the highlighting info, which
    // is the real reason that we do this.
    if (buf->m_codec)
