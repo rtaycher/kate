@@ -47,7 +47,7 @@
 */
 class KVSSBSep : public QWidget {
 public:
-  KVSSBSep( QWidget *parent=0) : QWidget(parent)
+  KVSSBSep( KateViewSpace *parent=0) : QWidget(parent)
   {
     setFixedHeight( 2 );
   }
@@ -57,7 +57,7 @@ protected:
     QPainter p( this );
     p.setPen( colorGroup().shadow() );
     p.drawLine( e->rect().topLeft(), e->rect().topRight() );
-    p.setPen( colorGroup().light() );
+    p.setPen( ((KateViewSpace*)parentWidget())->isActiveSpace() ? colorGroup().light() : colorGroup().midlight() );
     p.drawLine( e->rect().bottomLeft(), e->rect().bottomRight() );
   }
 };
@@ -74,7 +74,7 @@ KateViewSpace::KateViewSpace(QWidget* parent, const char* name)
   setStretchFactor(stack, 1);
   stack->installEventFilter( this );
   stack->setFocus();
-  new KVSSBSep( this );
+  sep = new KVSSBSep( this );
   mStatusBar = new KateVSStatusBar(this);
   mIsActiveSpace = false;
   mViewCount = 0;
@@ -109,7 +109,7 @@ void KateViewSpace::removeView(Kate::View* v)
 //  mStatusBar->slotClear ();
   mViewList.remove (v);
   stack->removeWidget (v);
-
+// FIXME only if active - focus stack->visibleWidget() or back out
   if (currentView() != 0L)
     stack->raiseWidget(mViewList.current());
   else if (mViewList.count() > 0)
@@ -170,11 +170,22 @@ bool KateViewSpace::isActiveSpace()
 void KateViewSpace::setActive( bool b, bool )
 {
   mIsActiveSpace = b;
-
+  
+  // change the statusbar palette and make sure it gets updated
+  QPalette pal( palette() );
+  if ( ! b )
+  {
+    pal.setColor( QColorGroup::Background, pal.active().mid() );
+    pal.setColor( QColorGroup::Light, pal.active().midlight() );
+  }
+  mStatusBar->setPalette( pal );
+  mStatusBar->update();
+  sep->update();
   // enable the painting of the icon and repaint it ;-)
   // mStatusBar->showActiveViewIndicator( showled );
 }
 
+//FIXME - test if this is redundant - should be!
 bool KateViewSpace::eventFilter(QObject* o, QEvent* e)
 {
   if(o == stack && e->type() == QEvent::ChildRemoved) {
@@ -182,6 +193,16 @@ bool KateViewSpace::eventFilter(QObject* o, QEvent* e)
       mViewList.current()->setFocus(); // trigger gotFocus sig!
   }
   return QWidget::eventFilter(o, e);
+}
+
+bool KateViewSpace::event( QEvent *e )
+{
+  if ( e->type() == QEvent::PaletteChange )
+  {
+    setActive( mIsActiveSpace );
+    return true;
+  }
+  return QVBox::event( e );
 }
 
 void KateViewSpace::slotStatusChanged (Kate::View *view, int r, int c, int ovr, bool block, int mod, QString msg)
@@ -217,6 +238,7 @@ void KateViewSpace::saveFileList( KSimpleConfig* config, int myIndex )
     idx++;
   }
 }
+
  
 //END KateViewSpace
 
@@ -249,8 +271,8 @@ KateVSStatusBar::KateVSStatusBar ( KateViewSpace *parent, const char *name )
    m_selectModeLabel->installEventFilter( this );
    
    m_fileNameLabel=new QLabel("",this);
-   addWidget(m_fileNameLabel,0,true);
-   m_selectModeLabel->setAlignment( Qt::AlignRight );
+   addWidget( m_fileNameLabel,/*0,true*/1, true );
+   m_selectModeLabel->setAlignment( /*Qt::AlignRight*/Qt::AlignLeft );
    m_selectModeLabel->installEventFilter( this );
    
    installEventFilter( this );

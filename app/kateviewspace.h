@@ -52,6 +52,7 @@ class KateVSStatusBar : public KStatusBar
       QLabel* m_fileNameLabel;
 };
 
+class KVSSBSep;
 class KateViewSpace : public QVBox
 {
   Q_OBJECT
@@ -73,9 +74,11 @@ class KateViewSpace : public QVBox
      * myIndex is used as identifyer for a config group.
      */
     void saveFileList(KSimpleConfig* config, int myIndex);
-
   protected:
     bool eventFilter(QObject* o, QEvent* e);
+    /** reimplemented to catch QEvent::PaletteChange, 
+    since we use a modified palette for the statusbar */
+    bool event( QEvent * );
 
   private:
     bool mIsActiveSpace;
@@ -85,7 +88,7 @@ class KateViewSpace : public QVBox
     QPixmap i_empty;
     QPtrList<Kate::View> mViewList;
     int mViewCount;
-
+    KVSSBSep *sep;
   private slots:
     void slotStatusChanged (Kate::View *view, int r, int c, int ovr, bool block, int mod, QString msg);
 
