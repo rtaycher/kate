@@ -120,7 +120,7 @@ Kate::InitPlugin *KateApp::initPlugin() const {return m_initPlugin;}
 
 KURL KateApp::initScript() const {return m_initURL;}
 
-int KateApp::newInstance()
+int KateApp::kateNewInstance()
 {
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
     

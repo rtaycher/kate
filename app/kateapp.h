@@ -42,7 +42,7 @@ class KateApp : public KUniqueApplication
     Kate::Application *application () { return m_application; };
       
   public:
-    int newInstance();
+    int kateNewInstance();
     
     KatePluginManager *katePluginManager() { return m_pluginManager; };
     KateDocManager *kateDocumentManager () { return m_docManager; };
