@@ -30,7 +30,7 @@ class KateCmdParser
     KateCmdParser (KateDocument *doc=0L);
     virtual ~KateCmdParser ();
 
-    virtual bool execCmd (QString cmd=0L, int line=0, int col=0, KateView *view=0L)=0L;
+    virtual bool execCmd (QString cmd=0L, KateView *view=0L)=0L;
 
   private:
     KateDocument *myDoc;
@@ -44,7 +44,7 @@ class KateCmd : public QObject
     KateCmd (KateDocument *doc=0L);
     ~KateCmd ();
 
-    void execCmd (QString cmd=0L, int line=0, int col=0, KateView *view=0L);
+    void execCmd (QString cmd=0L, KateView *view=0L);
 
   private:
     KateDocument *myDoc;
@@ -57,7 +57,7 @@ class KateInsertTimeParser : public KateCmdParser
     KateInsertTimeParser (KateDocument *doc=0L) : KateCmdParser (doc) { ; };
     ~KateInsertTimeParser () { ; };
 
-   bool execCmd (QString cmd=0L, int line=0, int col=0, KateView *view=0L);
+   bool execCmd (QString cmd=0L, KateView *view=0L);
 };
 
 #endif

@@ -3515,7 +3515,7 @@ void KateView::slotEditCommand ()
   QString cmd = KLineEditDlg::getText("Editing Command", "", &ok, this);
 
   if (ok)
-    myDoc->cmd()->execCmd (cmd, currentLine(), currentColumn(), this);
+    myDoc->cmd()->execCmd (cmd, this);
 }
 
 KateBrowserExtension::KateBrowserExtension( KateDocument *doc )

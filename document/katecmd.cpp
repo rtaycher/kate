@@ -33,11 +33,11 @@ KateCmd::~KateCmd ()
 {
 }
 
-void KateCmd::execCmd (QString cmd, int line, int col, KateView *view)
+void KateCmd::execCmd (QString cmd, KateView *view)
 {
   for (int i=0; i<myParser.count(); i++)
   {
-    if (myParser.at(i)->execCmd (cmd, line, col, view))
+    if (myParser.at(i)->execCmd (cmd, view))
       break;
   }
 }
@@ -51,7 +51,7 @@ KateCmdParser::~KateCmdParser ()
 {
 }
 
-bool KateInsertTimeParser::execCmd (QString cmd, int line, int col, KateView *view)
+bool KateInsertTimeParser::execCmd (QString cmd, KateView *view)
 {
   if (cmd.left( 5 ) == "time:")
   {
