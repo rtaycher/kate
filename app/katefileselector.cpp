@@ -138,7 +138,7 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow,
   cmbPath->listBox()->installEventFilter( this );
 
   dir = new KDirOperator(QString::null, this, "operator");
-  dir->setView(KFile::/*Simple*/Detail);
+  dir->setView(KFile::/* Simple */Detail);
 
   KActionCollection *coll = dir->actionCollection();
   // some shortcuts of diroperator that clashes with Kate
@@ -226,6 +226,7 @@ KateFileSelector::~KateFileSelector()
 
 void KateFileSelector::readConfig(KConfig *config, const QString & name)
 {
+  dir->setViewConfig( config, name + ":view" );
   dir->readConfig(config, name + ":dir");
   dir->setView( KFile::Default );
 
@@ -355,7 +356,7 @@ void KateFileSelector::setDir( KURL u )
     newurl.setPath( QDir::homeDirPath() );
   else
     newurl = u;
-  
+
   QString pathstr = newurl.path(+1);
   newurl.setPath(pathstr);
 
@@ -418,10 +419,12 @@ void KateFileSelector::btnFilterClick()
 //FIXME crash on shutdown
 void KateFileSelector::setActiveDocumentDir()
 {
-//kdDebug(13001)<<"KateFileSelector::setActiveDocumentDir()"<<endl;
+//   kdDebug(13001)<<"KateFileSelector::setActiveDocumentDir()"<<endl;
   KURL u = mainwin->activeDocumentUrl();
+//   kdDebug(13001)<<"URL: "<<u.prettyURL()<<endl;
   if (!u.isEmpty())
     setDir( u.upURL() );
+//   kdDebug(13001)<<"... setActiveDocumentDir() DONE!"<<endl;
 }
 
 void KateFileSelector::kateViewChanged()
@@ -460,7 +463,7 @@ void KateFileSelector::showEvent( QShowEvent * )
 {
     // sync if we should
     if ( autoSyncEvents & GotVisible ) {
-    kdDebug(13001)<<"syncing fs on show"<<endl;
+//     kdDebug(13001)<<"syncing fs on show"<<endl;
       setActiveDocumentDir();
       waitingUrl = QString::null;
     }
