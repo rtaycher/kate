@@ -2814,9 +2814,9 @@ HighlightDialog::HighlightDialog( HlManager *hlManager, ItemStyleList *styleList
   QLabel *label = new QLabel( i18n("Highlight:"), vbox1 );
   hlCombo = new QComboBox( false, vbox1 );
   QHBox *modHl = new QHBox(vbox1);
-  QPushButton *createHl=new QPushButton(i18n("New"),modHl);
+/*  QPushButton *createHl=new QPushButton(i18n("New"),modHl);
   QPushButton *editHl=new QPushButton(i18n("Edit"),modHl);
-  connect(editHl,SIGNAL(clicked()),this,SLOT(hlEdit()));
+  connect(editHl,SIGNAL(clicked()),this,SLOT(hlEdit()));*/
   connect( hlCombo, SIGNAL(activated(int)),
            this, SLOT(hlChanged(int)) );
   for( int i = 0; i < hlManager->highlights(); i++) {

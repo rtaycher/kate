@@ -1,3 +1,6 @@
+2001-03-28 Joseph Wenninger <jowenn@bigfoot.com>
+	* -n in kant.desktop removed, now config settings are used
+
 2001-03-27 Christoph Cullmann <crossfire@babylon2k.de>
         * interfaces extended (mainly for projectmanager)
         * piper moved to plugins/projectmanager/piper
