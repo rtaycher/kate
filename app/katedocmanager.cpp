@@ -270,58 +270,47 @@ bool KateDocManager::closeAllDocuments()
   return res;
 }
 
-bool KateDocManager::queryCloseDocuments(KateMainWindow *w) {
-	bool res=true;
-	Kate::Document	*doc;
-	for (QPtrListIterator<Kate::Document> it(m_docList);(doc=it.current())!=0;++it) {
+bool KateDocManager::queryCloseDocuments(KateMainWindow *w)
+{  
+  Kate::Document  *doc;
+  for (QPtrListIterator<Kate::Document> it(m_docList); (doc=it.current())!=0; ++it)
+  {
+    if (doc->url().isEmpty() && doc->isModified())
+    {
+      int msgres=KMessageBox::warningYesNoCancel( w,
+                  i18n("<p>The document '%1' has been modified, but not saved."
+                       "<p>Do you want to keep it?").arg( doc->docName() ),
+                    i18n("Unsaved Document") );
+  
+      if (msgres==KMessageBox::Cancel)
+        return false;
+      
+      if (msgres==KMessageBox::Yes)
+      {
+        KEncodingFileDialog::Result r=KEncodingFileDialog::getSaveURLAndEncoding(
+              KTextEditor::encodingInterface(doc)->encoding(),QString::null,QString::null,w,i18n("Save As"));
 
-		if (doc->url().isEmpty() && doc->isModified()) {
-
-		      int msgres=KMessageBox::warningYesNoCancel( w,
-		              i18n("<p>The document '%1' has been modified, but not saved."
-		                   "<p>Do you want to keep it?").arg( doc->docName() ),
-              			i18n("Unsaved Document") ) ;
-			kdDebug(13001)<<"msgres:"<<msgres<<" "<<KMessageBox::Cancel<<endl;
-			if (msgres==KMessageBox::Cancel) {
-				res=false;
-				break;
-			}
-			if (msgres==KMessageBox::Yes) {
-			        KEncodingFileDialog::Result r=KEncodingFileDialog::getSaveURLAndEncoding(
-	                	KTextEditor::encodingInterface(doc)->encoding(),QString::null,QString::null,w,i18n("Save As"));
-	
-			        doc->setEncoding( r.encoding );
-			        KURL tmp;
-		        	if (!r.URLs.isEmpty()) {
-					tmp=r.URLs.first();
-				        if ( !doc->saveAs( tmp ) ) {
-						res=false;
-						break;
-					}
-				} else { res =false;
-					break;
-				}
-		   	}
-
-		}
-		else {
-			res=doc->queryClose();
-			if (!res) break;
-		}
-	}
-
-#if 0
-	if (res) {
-		for (int i=0;i<m_docList.count();i++) {
-//			m_docList.at(i)->setModified(false);
-			if (m_docList.at(i)->url().isEmpty()) {
-				Q_ASSERT(closeDocument(m_docList.at(i)));
-				i--;
-			}
-		}
-	}
-#endif
-	return res;
+        doc->setEncoding( r.encoding );
+        
+        if (!r.URLs.isEmpty())
+        {
+          KURL tmp = r.URLs.first();
+          
+          if ( !doc->saveAs( tmp ) )
+            return false;
+        }
+        else
+          return false;
+      }
+    }
+    else
+    {
+      if (!doc->queryClose())
+        return false;
+    }
+  }
+  
+  return true;
 }
 
 
