@@ -9,16 +9,3 @@ The Kate team
 
                 *** KWrite ***
 New KWrite app is using the Kate part ! ;-)
-
-
-             *** KNOWN ISSUES ***
-
-1. Bookmarks are currently implemented in kwview, which means that setting a mark
-   only affects the view in which it is set. Having a document displayed in more
-   views this will seem unlogic.
-
-2. There is no documentation. Use the menus and read the kwrite manual for help.
-
-3. You can not move focus away from the konsole using the keyboard, unless you hide
-   it which will focus your current document.
-                 
