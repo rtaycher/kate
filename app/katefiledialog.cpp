@@ -23,18 +23,21 @@
 #include <kcharsets.h>
 #include <qstringlist.h>
 
+#include <kdebug.h>
+
 KateFileDialog::KateFileDialog (const QString& startDir,
                     const QString& encoding,
 			              QWidget *parent,
 			              const QString& caption,
 										int type) : KFileDialog (startDir, QString::null, parent, "", true)
 {
-  int iIndex=0;
   QString sEncoding (encoding);
   
   setCaption (caption);
+  
+  QStringList availableEncodingNames(KGlobal::charsets()->availableEncodingNames());
 
-  toolBar()->insertCombo(KGlobal::charsets()->availableEncodingNames(), 33333, false, 0L,
+  toolBar()->insertCombo(availableEncodingNames, 33333, false, 0L,
 	        0L, 0L, true);
 
 	if (type == KateFileDialog::openDialog)
@@ -45,15 +48,26 @@ KateFileDialog::KateFileDialog (const QString& startDir,
     }
 
 	this->encoding = toolBar()->getCombo(33333);
-  
+
+        // Set default encoding to the locale one, if a different default wasn't requested
         if (encoding == QString::null)
           sEncoding = QString::fromLatin1(QTextCodec::codecForLocale()->name());
 
-        iIndex = KGlobal::charsets()->availableEncodingNames().findIndex(encoding);
-        if (iIndex < 0) /* Try again with upper */
-          iIndex = KGlobal::charsets()->availableEncodingNames().findIndex(encoding.lower());
+        // This is a bit inefficient, but it's the only way to match
+        // KCharsets encodings and QTextCodec encodings (e.g. KCharsets say 'utf8'
+        // while QTextCodec says 'UTF-8')
+        QStringList::ConstIterator it;
+        QTextCodec *codecForEnc;
+        int iIndex = -1;
+        for (it = availableEncodingNames.begin(); it != availableEncodingNames.end(); ++it) {
+          ++iIndex;
+          codecForEnc = KGlobal::charsets()->codecForName(*it);
+          if (codecForEnc->name() == sEncoding)
+             break;
+        }
 
-        this->encoding->setCurrentItem (iIndex);
+        if (iIndex >= 0)
+          this->encoding->setCurrentItem(iIndex);
 }
 
 KateFileDialog::~KateFileDialog ()
