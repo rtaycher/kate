@@ -19,7 +19,7 @@ libkwrite_la_SOURCES = highlight.cpp ktextprint.cpp  \
 		       kwview.cpp undohistory.cpp kwdialog.cpp \
 		       kwrite_factory.cpp
 
-libkwrite_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version -no-undefined
+libkwrite_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) $(KDE_PLUGIN)
 libkwrite_la_LIBADD = libktexteditor.la -lkspell $(LIB_KPARTS)
 
 kwrite_SOURCES = toplevel.cpp
