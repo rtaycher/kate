@@ -2,8 +2,8 @@
                           katedocmanager.cpp  -  description
                              -------------------
     begin                : Mon Jan 15 2001
-    copyright            : (C) 2001 by Christoph Cullmann
-    email                : cullmann@kde.org
+    copyright            : (C) 2001,2002 by Christoph Cullmann <cullmann@kde.org>
+			   (C) 2002 by Joseph Wenninger <jowenn@kde.org>
  ***************************************************************************/
 
 /***************************************************************************

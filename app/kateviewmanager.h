@@ -3,8 +3,9 @@
                           View Manager for the Kate Text Editor
                              -------------------
     begin                : Wed Jan 3 2001
-    copyright            : (C) 2001 by Christoph Cullmann, 2001, 2002 by Anders Lund
-    email                : cullmann@kde.org anders@alweb.dk
+    copyright            : (C) 2001 by Christoph Cullmann <cullmann@kde.org>
+			   (C) 2001, 2002 by Anders Lund <anders@alweb.dk>
+			   (C) 2002 by Joseph Wenninger <jowenn@kde.org>
  ***************************************************************************/
 
 /***************************************************************************

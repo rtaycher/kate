@@ -2,8 +2,9 @@
                           KateFileSelector.cpp  -  description
                              -------------------
     begin                : Mon Feb 5 2001
-    copyright            : (C) 2001 by Matt Newell, 2002 by Anders Lund
-    email                : newellm@proaxis.com, anders@alweb.dk
+    copyright            : (C) 2001 by Matt Newell <newellm@proaxis.com>
+			   (C) 2002 by Anders Lund <anders@alweb.dk>
+			   (C) 2002 by Joseph Wenninger <jowenn@kde.org>
  ***************************************************************************/
 
 /***************************************************************************

@@ -2,7 +2,7 @@
                           toolviewmanager.h -  description
                              -------------------
     begin                : Sat June 16 2002
-    copyright            : (C) 2001 by Joseph Wenninger
+    copyright            : (C) 2002 by Joseph Wenninger
     email                : jowenn@kde.org
  ***************************************************************************/
 

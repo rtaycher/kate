@@ -3,8 +3,9 @@
                           View Manager for the Kate text editor
                              -------------------
     begin                : Wed Jan 3 2001
-    copyright            : (C) 2001 by Christoph Cullmann, 2001, 2002 by Anders Lund
-    email                : cullmann@kde.org anders@alweb.dk
+    copyright            : (C) 2001 by Christoph Cullmann <cullmann@kde.org>
+			   (C) 2001, 2002 by Anders Lund <anders@alweb.dk>
+			   (C) 2002 by Joseph Wenninger <jowenn@kde.org>
  ***************************************************************************/
 
 /***************************************************************************
@@ -810,12 +811,7 @@ void KateViewManager::reopenDocuments(bool isRestore)
   bool restoreViews = config->readBoolEntry("restore views", false);
   bool reopenAtStart = config->readBoolEntry("reopen at startup", true);
 
-  if ( scfg->hasGroup("splitter0") && ( isRestore || restoreViews ) )
-  {
-    kdDebug(13001)<<"calling restoreViewConfig()"<<endl;
-    restoreViewConfig();
-  }
-  else if (  (reopenAtStart &&  (!(((KateApp*)kapp)->doNotInitialize() & 0x1))) || isRestore )
+  if (  (reopenAtStart &&  (!(((KateApp*)kapp)->doNotInitialize() & 0x1))) || isRestore )
   {
     scfg->setGroup("open files");
     // try to focus the file that had focus at close down
@@ -851,7 +847,14 @@ void KateViewManager::reopenDocuments(bool isRestore)
 
     }
     delete pd;
-    openURL(KURL(curfile));
+  
+    if ( scfg->hasGroup("splitter0") && ( isRestore || restoreViews ) )
+    {
+      kdDebug(13001)<<"calling restoreViewConfig()"<<endl;
+      restoreViewConfig();
+    }
+    else  openURL(KURL(curfile));
+
   }
   m_reopening=false;
   kdDebug(13001)<<">>>> reopenDocuments() DONE"<<endl;
