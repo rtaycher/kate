@@ -1393,7 +1393,7 @@ void KateView::setupActions()
       new KAction(i18n("&Configure Editor..."), 0, myDoc, SLOT(configDialog()),myDoc->actionCollection(), "set_confdlg");
       setHighlight = new KateViewHighlightAction(this,i18n("&Highlight Mode"),myDoc->actionCollection(),"set_highlight");
       KStdAction::selectAll(myDoc, SLOT(selectAll()), myDoc->actionCollection(), "select_all");
-      new KAction(i18n("&Deselect All"), 0, myDoc, SLOT(clearSelection ()),
+      new KAction(i18n("Dese&lect All"), 0, myDoc, SLOT(clearSelection ()),
                 myDoc->actionCollection(), "unselect_all");
       new KAction(i18n("Increase Font Sizes"), "viewmag+", 0, this, SLOT(slotIncFontSizes()),
                 myDoc->actionCollection(), "incFontSizes");
@@ -1412,7 +1412,7 @@ void KateView::setupActions()
       new KAction(i18n("&Configure Editor..."), 0, myDoc, SLOT(configDialog()),actionCollection(), "set_confdlg");
       setHighlight = new KateViewHighlightAction(this,i18n("&Highlight Mode"), actionCollection(), "set_highlight");
       KStdAction::selectAll(myDoc, SLOT(selectAll()), actionCollection());
-      new KAction(i18n("&Deselect All"), 0, myDoc, SLOT(clearSelection()),
+      new KAction(i18n("Dese&lect All"), 0, myDoc, SLOT(clearSelection()),
                 actionCollection(), "edit_deselectAll");
       new KAction(i18n("Increase Font Sizes"), "viewmag+", 0, this, SLOT(slotIncFontSizes()),
                 actionCollection(), "incFontSizes");

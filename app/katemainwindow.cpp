@@ -224,7 +224,7 @@ void KateMainWindow::setupActions()
   KStdAction::paste(viewManager, SLOT(slotPaste()), actionCollection());
 
   KStdAction::selectAll(viewManager, SLOT(slotSelectAll()), actionCollection());
-  new KAction(i18n("&Deselect All"), 0, viewManager, SLOT(slotDeselectAll()), actionCollection(), "edit_deselectAll");
+  new KAction(i18n("Dese&lect All"), 0, viewManager, SLOT(slotDeselectAll()), actionCollection(), "edit_deselectAll");
 
   KStdAction::find(viewManager, SLOT(slotFind()), actionCollection());
   KStdAction::findNext(viewManager, SLOT(slotFindAgain()), actionCollection());
