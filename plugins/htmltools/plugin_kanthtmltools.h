@@ -20,10 +20,10 @@
 
 #include <qstring.h>
 
-#include "../../pluginmanager/kantplugin.h"
+#include <kantplugin.h>
+#include <kantappIface.h>
 
 #include <klibloader.h>
-#include <kantpluginIface.h>
 
 class KantPluginFactory : public KLibFactory
 {
@@ -49,7 +49,7 @@ public:
   KantPluginView *createView ();
 
 private:
-  KantPluginIface *myParent;
+  KantAppIface *myParent;
 
   QString KantPrompt (QString strTitle, QString strPrompt,
 			     QWidget * that);

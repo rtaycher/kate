@@ -117,7 +117,7 @@ void KantPluginManager::enableAllPluginsGUI (KantMainWindow *win)
 void KantPluginManager::loadPlugin (PluginListItem *item)
 {
   KLibFactory *factory = KLibLoader::self()->factory( item->libname.latin1() );
-  item->plugin = (KantPlugin *)factory->create( ((KantApp*)parent())->pluginIface, "", "KantPlugin" );
+  item->plugin = (KantPlugin *)factory->create( (KantAppIface *)parent(), "", "KantPlugin" );
   item->load = true;
 }
 
@@ -132,17 +132,11 @@ void KantPluginManager::unloadPlugin (PluginListItem *item)
 
 void KantPluginManager::enablePluginGUI (PluginListItem *item, KantMainWindow *win)
 {
-  KParts::GUIActivateEvent ev( true );
-  QApplication::sendEvent( ((KantApp*)parent())->pluginIface, &ev );
-
   win->guiFactory()->addClient( item->plugin->createView() );
 }
 
 void KantPluginManager::enablePluginGUI (PluginListItem *item)
 {
-  KParts::GUIActivateEvent ev( true );
-  QApplication::sendEvent( ((KantApp*)parent())->pluginIface, &ev );
-
   for (int i=0; i< ((KantApp*)parent())->mainWindows.count(); i++)
   {
     ((KantApp*)parent())->mainWindows.at(i)->guiFactory()->addClient( item->plugin->createView() );
@@ -151,9 +145,6 @@ void KantPluginManager::enablePluginGUI (PluginListItem *item)
 
 void KantPluginManager::disablePluginGUI (PluginListItem *item)
 {
-  KParts::GUIActivateEvent ev( true );
-  QApplication::sendEvent( ((KantApp*)parent())->pluginIface, &ev );
-
   for (int i=0; i< ((KantApp*)parent())->mainWindows.count(); i++)
   {
     for (int z=0; z< item->plugin->viewList.count(); z++)

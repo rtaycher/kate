@@ -60,7 +60,7 @@ PluginKantTextFilter::PluginKantTextFilter( QObject* parent, const char* name )
     : KantPlugin ( parent, name ),
   m_pFilterShellProcess (NULL)
 {
-   myParent=(KantPluginIface *)parent;
+   myParent=(KantAppIface *)parent;
 }
 
 PluginKantTextFilter::~PluginKantTextFilter()

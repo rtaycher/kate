@@ -7,7 +7,7 @@ libkant_la_LIBADD   = ../factory/libkantfactory.la ../document/libkantdocument.l
 		../sidebar/libkantsidebar.la \
 		../fileselector/libkantfileselector.la  \
 		../console/libkantconsole.la ../filelist/libkantfilelist.la \
-		../pluginmanager/libkantpluginmanager.la ../interfaces/libkantpluginIface.la -lktexteditor -lkspell
+		../pluginmanager/libkantpluginmanager.la ../interfaces/libkantIface.la -lktexteditor -lkspell
 libkant_la_LDFLAGS = $(all_libraries) $(KDE_RPATH)  $(KDE_PLUGIN)  -module -avoid-version
 
 kant_la_SOURCES = kantmain.cpp

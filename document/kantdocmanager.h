@@ -19,11 +19,12 @@
 #define kant_docmanager_h
 
 #include "../main/kantmain.h"
+#include "../interfaces/kantdocmanagerIface.h"
 
 #include <qlist.h>
 #include <qobject.h>
 
-class KantDocManager : public QObject
+class KantDocManager : public KantDocManagerIface
 {
   Q_OBJECT
 

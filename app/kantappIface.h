@@ -19,7 +19,7 @@
 
 #include <dcopobject.h>
 
-class KantAppIface : virtual public DCOPObject
+class KantAppDCOPIface : virtual public DCOPObject
 {
   K_DCOP
 

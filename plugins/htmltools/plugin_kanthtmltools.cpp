@@ -56,7 +56,7 @@ KInstance* KantPluginFactory::s_instance = 0L;
 PluginKantHtmlTools::PluginKantHtmlTools( QObject* parent, const char* name )
     : KantPlugin ( parent, name )
 {
-   myParent=(KantPluginIface *)parent;
+   myParent=(KantAppIface *)parent;
 }
 
 PluginKantHtmlTools::~PluginKantHtmlTools()

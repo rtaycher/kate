@@ -14,23 +14,23 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef _KANT_PLUGIN_IFACE_
-#define _KANT_PLUGIN_IFACE_
+#ifndef _KANT_APP_IFACE_
+#define _KANT_APP_IFACE_
 
 #include "../main/kantmain.h"
 
-#include <qobject.h>
+#include <kapp.h>
 
 #include "kantdocmanagerIface.h"
 #include "kantviewmanagerIface.h"
 
-class KantPluginIface : public QObject
+class KantAppIface : public KApplication
 {
   Q_OBJECT
 
   public:
-    KantPluginIface (QObject *parent) : QObject (parent) {;};
-    ~KantPluginIface () {;};
+    KantAppIface () : KApplication () {;};
+    virtual ~KantAppIface () {;};
 
     virtual KantViewManagerIface *viewManagerIface ()=0;
     virtual KantDocManagerIface *docManagerIface ()=0;

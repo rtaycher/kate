@@ -60,7 +60,7 @@ KInstance* KantPluginFactory::s_instance = 0L;
 PluginKantOpenHeader::PluginKantOpenHeader( QObject* parent, const char* name )
     : KantPlugin ( parent, name )
 {
-   myParent=(KantPluginIface *)parent;
+   myParent=(KantAppIface *)parent;
 }
 
 PluginKantOpenHeader::~PluginKantOpenHeader()

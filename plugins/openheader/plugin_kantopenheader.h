@@ -20,10 +20,10 @@
 
 #include <qstring.h>
 
-#include "../../pluginmanager/kantplugin.h"
+#include <kantplugin.h>
+#include <kantappIface.h>
 
 #include <klibloader.h>
-#include <kantpluginIface.h>
 
 class KantPluginFactory : public KLibFactory
 {
@@ -50,7 +50,7 @@ class PluginKantOpenHeader : public KantPlugin
     KantPluginView *createView ();
 
   private:
-    KantPluginIface *myParent;
+    KantAppIface *myParent;
 
   public slots:
     void slotOpenHeader ();

@@ -22,7 +22,7 @@
 
 #include <qfileinfo.h>
 
-KantDocManager::KantDocManager () : QObject ()
+KantDocManager::KantDocManager () : KantDocManagerIface ()
 {
   docList.setAutoDelete(true);
   myDocID = 0;
