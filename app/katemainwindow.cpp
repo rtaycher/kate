@@ -134,7 +134,8 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   if (m_dockStyle==ModernStyle) mainDock->setDockSite( KDockWidget::DockNone );
   
-  console->loadConsoleIfNeeded();
+ if (console)
+    console->loadConsoleIfNeeded();
   
   // call it as last thing, must be sure everything is allready set up ;)
   setAutoSaveSettings( QString::fromLatin1("MainWindow"), true );
@@ -203,9 +204,12 @@ void KateMainWindow::setupMainWindow ()
   fileselector = new KateFileSelector( this, m_viewManager, /*fileselectorDock*/ this, "operator");
   fileselectorDock=addToolViewWidget(KDockWidget::DockLeft,fileselector, SmallIcon("fileopen"),"Selector");
   
-  console = new KateConsole (this, "console");
-  console->installEventFilter( this );
-  consoleDock = addToolViewWidget(KDockWidget::DockBottom,console, SmallIcon("konsole"),"Terminal");
+  if (kapp->authorize("shell_access"))
+  {
+     console = new KateConsole (this, "console");
+     console->installEventFilter( this );
+     consoleDock = addToolViewWidget(KDockWidget::DockBottom,console, SmallIcon("konsole"),"Terminal");
+  }     
   
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileItem*)),this,SLOT(fileSelected(const KFileItem*)));
 }
