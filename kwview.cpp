@@ -1734,7 +1734,7 @@ void KWrite::keyPressEvent( QKeyEvent *ev )
                     shiftCursorLeft();
             }
             else if ( ev->state() & ControlButton )
-                shiftWordLeft();
+                wordLeft();
             else
                 cursorLeft();
             break;
@@ -1747,7 +1747,7 @@ void KWrite::keyPressEvent( QKeyEvent *ev )
                     shiftCursorRight();
             }
             else if ( ev->state() & ControlButton )
-                shiftWordRight();
+                wordRight();
             else
                 cursorRight();
             break;
