@@ -540,7 +540,7 @@ ColorConfig::ColorConfig( QWidget *parent, char *name )
 
   label = new QLabel( i18n("Selected + Found:"), this);
   label->setAlignment( AlignRight|AlignVCenter );
-  m_found = new KColorButton( this );
+  m_selFound = new KColorButton( this );
 }
 
 ColorConfig::~ColorConfig()
