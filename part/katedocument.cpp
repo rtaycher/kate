@@ -448,7 +448,7 @@ bool KateDocument::insertText( uint line, uint col, const QString &s )
 
   if (tagStart <= tagEnd) {
     optimizeSelection();
-    updateLines(tagStart, tagEnd, line);
+    updateLines(tagStart, tagEnd);
     setModified(true);
   }
 
@@ -534,7 +534,7 @@ bool KateDocument::removeText ( uint startLine, uint startCol, uint endLine, uin
 
   if (tagStart <= tagEnd) {
     optimizeSelection();
-    updateLines(tagStart, tagEnd, startLine);
+    updateLines(tagStart, tagEnd);
     setModified(true);
   }
 
@@ -569,7 +569,7 @@ bool KateDocument::insertLine( uint l, const QString &str )
 
   if (tagStart <= tagEnd) {
     optimizeSelection();
-    updateLines(tagStart, tagEnd, l);
+    updateLines(tagStart, tagEnd);
     setModified(true);
   }
 
@@ -601,7 +601,7 @@ bool KateDocument::removeLine( uint line )
 
   if (tagStart <= tagEnd) {
     optimizeSelection();
-    updateLines(tagStart, tagEnd, line);
+    updateLines(tagStart, tagEnd);
     setModified(true);
   }
 
@@ -978,6 +978,8 @@ bool KateDocument::removeSelectedText ()
   if (selectEnd < selectStart)
     return false;
 
+  currentUndo = new KateUndoGroup (this);
+	
 	_autoUpdate = false;
 
 	for (line = selectStart; line <= selectEnd; line++)
@@ -1041,6 +1043,10 @@ bool KateDocument::removeSelectedText ()
 
 	_autoUpdate = true;
 	updateViews ();
+
+  undoItems.append (currentUndo);
+	currentUndo = 0L;
+	emit undoChanged ();
 
   return true;
 }
@@ -1131,6 +1137,14 @@ void KateDocument::undo()
 	redoItems.append (undoItems.last());
 	undoItems.removeLast ();
 
+	if (tagStart <= tagEnd) {
+    optimizeSelection();
+    updateLines(tagStart, tagEnd);
+    setModified(true);
+  }
+
+  updateViews();
+
 	emit undoChanged ();
 }
 
@@ -1139,6 +1153,14 @@ void KateDocument::redo()
   redoItems.last()->redo();
 	undoItems.append (redoItems.last());
 	redoItems.removeLast ();
+
+  if (tagStart <= tagEnd) {
+    optimizeSelection();
+    updateLines(tagStart, tagEnd);
+    setModified(true);
+  }
+
+  updateViews();
 
 	emit undoChanged ();
 }
@@ -1870,7 +1892,7 @@ void KateDocument::newLine(VConfig &c)
 
   if (tagStart <= tagEnd) {
     optimizeSelection();
-    updateLines(tagStart, tagEnd, c.cursor.line);
+    updateLines(tagStart, tagEnd);
     setModified(true);
   }
 
@@ -2624,44 +2646,32 @@ void KateDocument::tagAll() {
   }
 }
 
-void KateDocument::updateLines(int startLine, int endLine, int cursorY) {
+void KateDocument::updateLines(int startLine, int endLine) {
   TextLine::Ptr textLine;
   int line, last_line;
   int ctxNum, endCtx;
 
-	//kdDebug(13020)<<"******************KateDocument::updateLines Checkpoint 1"<<endl;
+  if (buffer->line(startLine)==0)
+	  return;
 
-  if (buffer->line(startLine)==0) {
-		//kdDebug(13020)<<"********************No buffer for line " << startLine << " found**************"<<endl;
-		return;
-	};
-
-	//kdDebug(13020)<<"KateDocument::updateLines Checkpoint 2"<<endl;
-  last_line = lastLine();
-//  if (endLine >= last_line) endLine = last_line;
+	last_line = lastLine();
 
   line = startLine;
   ctxNum = 0;
-  if (line > 0) ctxNum = getTextLine(line - 1)->getContext();
-  do {
-    //kdDebug(13020)<<QString("**************Working on line: %1").arg(line)<<endl;
+
+	if (line > 0)
+	  ctxNum = getTextLine(line - 1)->getContext();
+
+  do
+	{
     textLine = getTextLine(line);
-    //if (textLine==0) kdDebug(13020)<<"****updateLines()>> error textLine==0"<<endl;
-    //kdDebug(13020)<<QString("got text line")<<endl;
-    if (line <= endLine && line != cursorY) {
-			//kdDebug(13020)<<QString("removing spaces")<<endl;
-      if (_configFlags & KateDocument::cfRemoveSpaces) textLine->removeSpaces();
-      updateMaxLength(textLine);
-    }
-		//kdDebug(13020)<<QString("getting context")<<endl;
     endCtx = textLine->getContext();
-		//kdDebug(13020)<<QString("highlighting : %1").arg((int)m_highlight)<<endl;
-    ctxNum = m_highlight->doHighlight(ctxNum,textLine);
-		//kdDebug(13020)<<QString("set context")<<endl;
-    textLine->setContext(ctxNum);
+	  ctxNum = m_highlight->doHighlight(ctxNum,textLine);
+		textLine->setContext(ctxNum);
     line++;
-  } while ((buffer->line(line)!=0) && (line <= endLine || endCtx != ctxNum));
-	//kdDebug(13020)<<"updateLines :: while loop left"<<endl;
+  }
+	while ((buffer->line(line)!=0) && (line <= endLine || endCtx != ctxNum));
+
   tagLines(startLine, line - 1);
 }
 

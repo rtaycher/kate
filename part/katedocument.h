@@ -354,7 +354,7 @@ class KateDocument : public Kate::Document
     void tagLineRange(int line, int x1, int x2);
     void tagLines(int start, int end);
     void tagAll();
-    void updateLines(int startLine = 0, int endLine = 0xffffff, int cursorY = -1);
+    void updateLines(int startLine = 0, int endLine = 0xffffff);
     void updateMaxLength(TextLine::Ptr &);
     void updateViews(KateView *exclude = 0L);
 
