@@ -7,16 +7,14 @@ INCLUDES    = \
 METASOURCES = AUTO
 
 # Install this plugin in the KDE modules directory
-kde_module_LTLIBRARIES = katekttsdplugin.la
+kde_module_LTLIBRARIES = libkatepartkttsdplugin.la
 
-katekttsdplugin_la_SOURCES = katekttsd.cpp
-katekttsdplugin_la_LIBADD  = -lkateinterfaces
-katekttsdplugin_la_LDFLAGS = -module $(KDE_PLUGIN) $(all_libraries)
+libkatepartkttsdplugin_la_SOURCES = katepartkttsd.cpp
+libkatepartkttsdplugin_la_LIBADD  = $(LIB_KPARTS) -lkateinterfaces
+libkatepartkttsdplugin_la_LDFLAGS = -module $(KDE_PLUGIN) $(all_libraries)
 
-pluginsdir = $(kde_datadir)/kate/plugins/katekttsd
-plugins_DATA = ui.rc
-
-kde_services_DATA = katekttsd.desktop
+pluginsdir = $(kde_datadir)/katepart/kpartplugins
+plugins_DATA = katepartkttsd.rc
 
 messages: rc.cpp
-	$(XGETTEXT) *.cpp -o $(podir)/katekttsd.pot
+	$(XGETTEXT) *.cpp -o $(podir)/katepartkttsd.pot
