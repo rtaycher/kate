@@ -95,6 +95,9 @@
   <Action name="file_new" />
   <Action name="file_open" />
   <Separator />
+  <Action name="go_back" />
+  <Action name="go_forward" />
+  <Separator />
   <DefineGroup name="file_operations" />
   <Separator />
   <Action name="file_close" />
@@ -104,9 +107,6 @@
   <DefineGroup name="find_operations" />
   <Separator />
   <DefineGroup name="zoom_operations" /> 
-  <Separator />
-  <Action name="go_back" />
-  <Action name="go_forward" />
   <Separator />
   <Action name="view_split_vert"/>
   <Action name="view_split_horiz"/>
