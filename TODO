@@ -12,9 +12,6 @@ TODO:
     - <Ctrl+U> should lowercase the next letter or a selection
     - <Shift+Ctrl+U> should uppercase the next letter or a selection
 
-    - Plug-in to open the H file for a given C or CPP file or vice versa
-      -  that's a plug-in because (shocked gasp) not everyone's a C++ programmer ;-)
-
     - <Shift+Left> should follow text, not go into virtual blank space
             KWrite uses "virtual blank space". When you click beyond where a
          programmer knows the \n is on a line, the text insertion caret

@@ -1,3 +1,6 @@
+2001-03-20 Christoph Cullmann <crossfire@babylon2k.de>
+        * kant is now a normal KApplication
+
 2001-03-18 Christoph Cullmann <crossfire@babylon2k.de>
         * big location changes of source files
         * KantFactory now in use by hole Kant app
