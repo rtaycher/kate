@@ -56,7 +56,7 @@ class KateDocManager : public QObject
   public:
     KateDocManager (QObject *parent);
     ~KateDocManager ();
-    
+
     static KateDocManager *self ();
 
     Kate::DocumentManager *documentManager () { return m_documentManager; };
@@ -90,12 +90,12 @@ class KateDocManager : public QObject
     QPtrList<Kate::Document> &documentList () { return m_docList; };
 
     Kate::Document *openURL(const KURL&,const QString &encoding=QString::null,uint *id =0);
-    
+
     bool closeDocument(class Kate::Document *,bool closeURL=true);
     bool closeDocument(uint);
     bool closeDocumentWithID(uint);
     bool closeAllDocuments(bool closeURL=true);
-    
+
     QPtrList<Kate::Document> modifiedDocumentList();
     bool queryCloseDocuments(KateMainWindow *w);
 
@@ -109,6 +109,13 @@ class KateDocManager : public QObject
 
     inline int getDaysMetaInfos() { return m_daysMetaInfos; };
     inline void setDaysMetaInfos(int i) { m_daysMetaInfos = i; };
+
+  public slots:
+    /**
+     * saves all documents that has at least one view.
+     * documents with no views are ignored :P
+     */
+    void saveAll();
 
   signals:
     void documentCreated (Kate::Document *doc);
@@ -135,9 +142,10 @@ class KateDocManager : public QObject
     int m_daysMetaInfos;
 
     DCOPObject *m_dcop;
-    
+
     KParts::Factory *m_factory;
-  
+
 };
 
 #endif
+// kate: space-indent on; indent-width 2; replace-tabs on;

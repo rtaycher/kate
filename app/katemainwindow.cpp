@@ -38,6 +38,7 @@
 #include "katemainwindowiface.h"
 #include "kateexternaltools.h"
 #include "katesavemodifieddialog.h"
+#include "katemwmodonhddialog.h"
 
 #include <kmdi/tabwidget.h>
 
@@ -96,6 +97,8 @@ KateMainWindow::KateMainWindow () :
   // init some vars
   m_project = 0;
   m_projectNumber = 0;
+
+  m_modignore = false;
 
   console = 0;
   greptool = 0;
@@ -227,7 +230,7 @@ void KateMainWindow::setupActions()
   fileOpenRecent = KStdAction::openRecent (m_viewManager, SLOT(openURL (const KURL&)), actionCollection());
   fileOpenRecent->setWhatsThis(i18n("This lists files which you have opened recently, and allows you to easily open them again."));
 
-  a=new KAction( i18n("Save A&ll"),"save_all", CTRL+Key_L, m_viewManager, SLOT( slotDocumentSaveAll() ), actionCollection(), "file_save_all" );
+  a=new KAction( i18n("Save A&ll"),"save_all", CTRL+Key_L, KateDocManager::self(), SLOT( saveAll() ), actionCollection(), "file_save_all" );
   a->setWhatsThis(i18n("Save all open, modified documents to disc."));
 
   KStdAction::close( m_viewManager, SLOT( slotDocumentClose() ), actionCollection(), "file_close" )->setWhatsThis(i18n("Close the current document."));
@@ -516,15 +519,13 @@ void KateMainWindow::editKeys()
 
   QPtrList<Kate::Document>  l=KateDocManager::self()->documentList();
   for (uint i=0;i<l.count();i++) {
-	kdDebug(13001)<<"reloading Keysettings for document "<<i<<endl;
-	l.at(i)->reloadXML();
-	QPtrList<class KTextEditor::View> l1=l.at(i)->views ();//KTextEditor::Document
-	for (uint i1=0;i1<l1.count();i1++) {
-		l1.at(i1)->reloadXML();
-		kdDebug(13001)<<"reloading Keysettings for view "<<i<<"/"<<i1<<endl;
-
-	}
-
+    kdDebug(13001)<<"reloading Keysettings for document "<<i<<endl;
+    l.at(i)->reloadXML();
+    QPtrList<class KTextEditor::View> l1=l.at(i)->views ();//KTextEditor::Document
+    for (uint i1=0;i1<l1.count();i1++) {
+      l1.at(i1)->reloadXML();
+      kdDebug(13001)<<"reloading Keysettings for view "<<i<<"/"<<i1<<endl;
+    }
   }
 
   externalTools->actionCollection()->writeShortcutSettings( "Shortcuts", new KConfig("externaltools", false, false, "appdata") );
@@ -722,6 +723,11 @@ void KateMainWindow::slotFullScreen(bool t)
 bool KateMainWindow::eventFilter( QObject *o, QEvent *e )
 {
   if ( e->type() == QEvent::WindowActivate && o == this ) {
+    if ( m_modignore )
+    {
+      m_modignore = false;
+      return false;
+    }
     Kate::Document *doc;
     typedef QPtrVector<Kate::Document> docvector;
     docvector list( KateDocManager::self()->documents() );
@@ -735,23 +741,14 @@ bool KateMainWindow::eventFilter( QObject *o, QEvent *e )
       }
     }
 
-    if ( cnt )
-    {
-      list.resize( cnt );
-#warning REIMPLEMENT Modified on Disk Handling
-#if 0
-      // TODO
-      // display a dialog with a list of modified documents,
-      // and options to reload/disguard all, or handle individually
-      for ( uint i=0; i < cnt; i++ )
-      {
-        Kate::DocumentExt *ext = Kate::documentExt (list.at( i ));
-
-        if (ext)
-          ext->slotModifiedOnDisk( activeView );
-      }
-#endif
-    }
+//     if ( cnt )
+//     {
+//       list.resize( cnt );
+//       KateMwModOnHdDialog *mhdlg = new KateMwModOnHdDialog( list, this );
+//       if ( dlg->exec() == KDialogBase::Cancel )
+//         m_modignore = true;
+//       delete mhdlg;
+//     }
   }
 
   if ( o == greptool && e->type() == QEvent::Show && m_viewManager->activeView() )

@@ -283,7 +283,7 @@ bool KateDocManager::closeDocument(class Kate::Document *doc,bool closeURL)
   }
 
   deleteDoc (doc);
-  
+
   // never ever empty the whole document list
   if (m_docList.isEmpty())
     createDoc ();
@@ -304,9 +304,9 @@ bool KateDocManager::closeDocumentWithID(uint id)
 bool KateDocManager::closeAllDocuments(bool closeURL)
 {
   bool res = true;
-  
+
   QPtrList<Kate::Document> docs = m_docList;
-  
+
   for (uint i=0; i < ((KateApp *)kapp)->mainWindows (); i++ )
   {
     ((KateApp *)kapp)->kateMainWindow(i)->kateViewManager()->setViewActivationBlocked(true);
@@ -321,11 +321,11 @@ bool KateDocManager::closeAllDocuments(bool closeURL)
   for (uint i=0; i < ((KateApp *)kapp)->mainWindows (); i++ )
   {
     ((KateApp *)kapp)->kateMainWindow(i)->kateViewManager()->setViewActivationBlocked(false);
-    
+
     for (uint s=0; s < ((KateApp *)kapp)->kateMainWindow(i)->kateViewManager()->containers()->count(); s++)
       ((KateApp *)kapp)->kateMainWindow(i)->kateViewManager()->containers()->at(s)->activateView (m_docList.at(0)->documentNumber());
   }
-    
+
   return res;
 }
 
@@ -335,7 +335,7 @@ QPtrList<Kate::Document> KateDocManager::modifiedDocumentList() {
     Kate::Document *doc = it.current();
     if (doc->isModified()) {
       modified.append(doc);
-    }	
+    }
   }
   return modified;
 }
@@ -395,6 +395,13 @@ bool KateDocManager::queryCloseDocuments(KateMainWindow *w)
   return true;
 }
 
+
+void KateDocManager::saveAll()
+{
+  for (QPtrListIterator<Kate::Document> it(m_docList); it.current(); ++it)
+    if ( it.current()->isModified() && it.current()->views().count() )
+      ((Kate::View*)it.current()->views().first())->save();
+}
 
 void KateDocManager::saveDocumentList (KConfig* config)
 {
@@ -550,3 +557,4 @@ bool KateDocManager::computeUrlMD5(const KURL &url, QCString &result)
 
   return true;
 }
+// kate: space-indent on; indent-width 2; replace-tabs on;

@@ -102,8 +102,6 @@ class KateViewManager : public QObject
     void activateView ( uint documentNumber );
     void activateView ( int documentNumber ) { activateView((uint) documentNumber); };
 
-    void slotDocumentSaveAll();
-
     void slotDocumentNew ();
     void slotDocumentOpen ();
     void slotDocumentClose ();

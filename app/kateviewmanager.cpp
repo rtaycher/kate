@@ -385,14 +385,6 @@ void KateViewManager::slotDocumentOpen ()
   }
 }
 
-void KateViewManager::slotDocumentSaveAll()
-{
-#if 0
-  for( QPtrListIterator<Kate::View> it( m_viewList ); it.current(); ++it )
-    it.current()->save();
-#endif
-}
-
 void KateViewManager::slotDocumentClose ()
 {
   // no active view, do nothing
