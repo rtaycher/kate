@@ -303,8 +303,8 @@
     </list>
     <contexts>
       <context attribute="0" lineEndContext="0">
-        <item name="keyword" attribute="1" context="0" String="keywords"/>
-        <item name="keyword" attribute="2" context="0" String="datatypes"/>
+        <item name="keyword" attribute="1" context="0" String="keywords" weakDelimiter="-"/>
+        <item name="keyword" attribute="2" context="0" String="datatypes" weakDelimiter="-"/>
       </context>
     </contexts>
     <itemDatas>

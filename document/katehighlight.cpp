@@ -56,6 +56,8 @@
 #include "katesyntaxdocument.h"
 #include "../factory/katefactory.h"
 #include "katedialogs.h"
+#include <qstack.h>
+
 HlManager *HlManager::s_pSelf = 0;
 
 
@@ -188,11 +190,12 @@ KeywordData::~KeywordData() {
   delete s;
 }
 */
-HlKeyword::HlKeyword(int attribute, int context,bool casesensitive)
+HlKeyword::HlKeyword(int attribute, int context,bool casesensitive,QString weakSep)
   : HlItemWw(attribute,context) {
 //  words.setAutoDelete(true);
 // after reading over the docs for Dict
 // 23 is probably too small when we can have > 100 items
+        _weakSep=weakSep;
         if (casesensitive)
           {
             kdDebug()<<"Case Sensitive KeyWord";
@@ -255,26 +258,54 @@ const QChar *HlKeyword::checkHgl(const QChar *s,bool b)
 
 const QChar *HlKeyword::inSensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw) {
   const QChar *s2=s;
+  QChar *s3;
+  bool ws;
+  QStack<QChar> stack;
+  stack.setAutoDelete(false);
+  char empty[]="";
+  const char *wk(kw->_weakSep.isEmpty()?empty:kw->_weakSep.latin1());
   if(*s2=='\0') return 0L;
-  while( !ustrchr("!%&()*+,-./:;<=>?[]^{|}~ ", *s2) && *s2 != '\0') s2++;
+  while( ((ws=ustrchr(wk,*s2)) ||(!ustrchr("!%&()*+,-./:;<=>?[]^{|}~ ", *s2))) && *s2 != '\0')
+        {
+           if (ws) stack.push(s2);
+           s2++;
+        }
+  stack.push(s2);
 // oops didn't increment s2 why do anything else ?
-  if(s2 == s) return 0L;
-  QString lookup=QString(s,s2-s)+QString::null;
-  return kw->Dict[lookup.lower()] ? s2 : 0L;
+  if (s2 == s) return 0L;
+  while (s3=stack.pop())
+        {
+          QString lookup=QString(s,s3-s)+QString::null;
+          if (kw->Dict[lookup.lower()]) return s3;
+        }
+  return 0L;
 
 }
 
 const QChar *HlKeyword::sensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw) {
-// this seems to speed up the lookup of keywords somewhat
-// anyway it has to be better than iterating through the list
-
   const QChar *s2=s;
+  QChar *s3;
+  bool ws;
+  QStack<QChar> stack;
+  stack.setAutoDelete(false);
+  char empty[]="";
+  const char *wk(kw->_weakSep.isEmpty()?empty:kw->_weakSep.latin1());
+  if(*s2=='\0') return 0L;
+  while( ((ws=ustrchr(wk,*s2)) ||(!ustrchr("!%&()*+,-./:;<=>?[]^{|}~ ", *s2))) && *s2 != '\0')
+        {
+           if (ws) stack.push(s2);
+           s2++;
+        }
+  stack.push(s2);
+// oops didn't increment s2 why do anything else ?
+  if (s2 == s) return 0L;
+  while (s3=stack.pop())
+        {
+          QString lookup=QString(s,s3-s)+QString::null;
+          if (kw->Dict[lookup]) return s3;
+        }
+  return 0L;
 
-  while( !ustrchr("!%&()*+,-./:;<=>?[]^{|}~ \t", *s2) && *s2 != '\0') s2++;
-// oops didn't increment s2 why do anything else?
-	if(s2 == s) return 0L;
-  QString lookup=QString(s,s2-s)+QString::null;
-  return kw->Dict[lookup] ? s2 : 0L;
 }
 
 
@@ -952,10 +983,11 @@ HlItem *AutoHighlight::createHlItem(struct syntaxContextData *data, int *res)
                   chr1=0;
 		bool insensitive=(HlManager::self()->syntax->groupItemData(data,QString("insensitive"))==QString("TRUE"));
 		*res=0;
-                if (dataname=="keyword") 
+                if (dataname=="keyword")
 		{
-	           HlKeyword *keyword=new HlKeyword(attr,context,casesensitive=="1");
-		   keyword->addList(HlManager::self()->syntax->finddata("highlighting",stringdata));  
+	           HlKeyword *keyword=new HlKeyword(attr,context,casesensitive=="1",
+                        HlManager::self()->syntax->groupItemData(data,QString("weakDelimiter")));
+		   keyword->addList(HlManager::self()->syntax->finddata("highlighting",stringdata));
 		   return keyword;
 		} else
 //                if (dataname=="dataType") {*res=2; return(new HlKeyword(attr,context,casesensitive=="1"));} else

@@ -114,7 +114,7 @@ class KeywordData {
 */
 class HlKeyword : public HlItemWw {
   public:
-    HlKeyword(int attribute, int context,bool casesensitive);
+    HlKeyword(int attribute, int context,bool casesensitive,QString weakSep);
     virtual ~HlKeyword();
     virtual void addWord(const QString &);
 		virtual void addList(const QStringList &);
@@ -128,6 +128,7 @@ class HlKeyword : public HlItemWw {
     QStringList words;
     QDict<char> Dict;
     bool _caseSensitive;
+    QString _weakSep;
     const QChar*  (*doCheckHgl)(const QChar* ,bool,HlKeyword*);
     static const QChar* sensitiveCheckHgl(const QChar*,bool,HlKeyword *kw);
     static const QChar *inSensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw);
