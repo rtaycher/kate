@@ -719,6 +719,60 @@ bool KateDocument::removeSelectedText ()
   return true;
 }
 
+bool KateDocument::selectAll()
+{
+  int z;
+  TextLine::Ptr textLine;
+
+  select.x = -1;
+
+//  if (selectStart != 0 || selectEnd != lastLine()) recordReset();
+
+  selectStart = 0;
+  selectEnd = lastLine();
+
+  tagLines(selectStart,selectEnd);
+
+  for (z = selectStart; z < selectEnd; z++) {
+    textLine = getTextLine(z);
+    textLine->selectEol(true,0);
+  }
+  textLine = getTextLine(z);
+  textLine->select(true,0,textLine->length());
+  emit selectionChanged();
+	
+	updateViews ();
+
+	return true;
+}
+
+bool KateDocument::invertSelection()
+{
+  TextLine::Ptr textLine;
+
+  select.x = -1;
+
+//  if (selectStart != 0 || selectEnd != lastLine()) recordReset();
+
+  selectStart = 0;
+  selectEnd = lastLine();
+
+  tagLines(selectStart,selectEnd);
+
+  for (int z = selectStart; z < selectEnd; z++) {
+    textLine = getTextLine(z);
+    textLine->toggleSelectEol(0);
+  }
+  textLine = getTextLine(selectEnd);
+  textLine->toggleSelect(0,textLine->length());
+  optimizeSelection();
+  emit selectionChanged();
+	
+	updateViews ();
+
+	return true;
+}
+
 //
 // KTextEditor::UndoInterface stuff
 //
@@ -1753,51 +1807,6 @@ void KateDocument::selectTo(VConfig &c, PointStruc &cursor, int cXPos) {
     toggleRect(anchor.y, cursor.y + 1, c.cXPos, cXPos);
   }
   select = cursor;
-  optimizeSelection();
-  emit selectionChanged();
-}
-
-
-void KateDocument::selectAll() {
-  int z;
-  TextLine::Ptr textLine;
-
-  select.x = -1;
-
-//  if (selectStart != 0 || selectEnd != lastLine()) recordReset();
-
-  selectStart = 0;
-  selectEnd = lastLine();
-
-  tagLines(selectStart,selectEnd);
-
-  for (z = selectStart; z < selectEnd; z++) {
-    textLine = getTextLine(z);
-    textLine->selectEol(true,0);
-  }
-  textLine = getTextLine(z);
-  textLine->select(true,0,textLine->length());
-  emit selectionChanged();
-}
-
-void KateDocument::invertSelection() {
-  TextLine::Ptr textLine;
-
-  select.x = -1;
-
-//  if (selectStart != 0 || selectEnd != lastLine()) recordReset();
-
-  selectStart = 0;
-  selectEnd = lastLine();
-
-  tagLines(selectStart,selectEnd);
-
-  for (int z = selectStart; z < selectEnd; z++) {
-    textLine = getTextLine(z);
-    textLine->toggleSelectEol(0);
-  }
-  textLine = getTextLine(selectEnd);
-  textLine->toggleSelect(0,textLine->length());
   optimizeSelection();
   emit selectionChanged();
 }

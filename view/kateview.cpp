@@ -209,12 +209,6 @@ void KateViewInternal::doEditCommand(VConfig &c, int cmdNum)
     case KateView::cmCopy:
       myDoc->copy(c.flags);
       return;
-    case KateView::cmSelectAll:
-      myDoc->selectAll();
-      return;        
-    case KateView::cmInvertSelection:
-      myDoc->invertSelection();
-      return;
   }
 
   if (myView->doc()->isReadOnly()) return;
@@ -1386,10 +1380,10 @@ void KateView::setupActions()
       KStdAction::gotoLine(this, SLOT(gotoLine()), myDoc->actionCollection(), "goto_line" );
       new KAction(i18n("&Configure Editor..."), 0, this, SLOT(configDialog()),myDoc->actionCollection(), "set_confdlg");
 			setHighlight = new KateViewHighlightAction(this,i18n("&Highlight Mode"),myDoc->actionCollection(),"set_highlight");
-      KStdAction::selectAll(this, SLOT(selectAll()), myDoc->actionCollection(), "select_all");
+      KStdAction::selectAll(myDoc, SLOT(selectAll()), myDoc->actionCollection(), "select_all");
       new KAction(i18n("&Deselect All"), 0, myDoc, SLOT(clearSelection ()),
                 myDoc->actionCollection(), "unselect_all");
-      new KAction(i18n("Invert &Selection"), 0, this, SLOT(invertSelection()),
+      new KAction(i18n("Invert &Selection"), 0, myDoc, SLOT(invertSelection()),
                 myDoc->actionCollection(), "invert_select");
 
       new KAction(i18n("Increase Font Sizes"), "viewmag+", 0, this, SLOT(slotIncFontSizes()),
@@ -1406,10 +1400,10 @@ void KateView::setupActions()
       KStdAction::gotoLine(this, SLOT(gotoLine()), actionCollection());
       new KAction(i18n("&Configure Editor..."), 0, this, SLOT(configDialog()),actionCollection(), "set_confdlg");
       setHighlight = new KateViewHighlightAction(this,i18n("&Highlight Mode"), actionCollection(), "set_highlight");
-      KStdAction::selectAll(this, SLOT(selectAll()), actionCollection());
+      KStdAction::selectAll(myDoc, SLOT(selectAll()), actionCollection());
       new KAction(i18n("&Deselect All"), 0, myDoc, SLOT(clearSelection()),
                 actionCollection(), "edit_deselectAll");
-      new KAction(i18n("Invert &Selection"), 0, this, SLOT(invertSelection()),
+      new KAction(i18n("Invert &Selection"), 0, myDoc, SLOT(invertSelection()),
                 actionCollection(), "edit_invertSelection");
 
       new KAction(i18n("Increase Font Sizes"), "viewmag+", 0, this, SLOT(slotIncFontSizes()),

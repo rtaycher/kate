@@ -153,6 +153,9 @@ class KateDocument : public Kate::Document
     QString selection () const ;
 
     bool removeSelectedText ();
+
+		bool selectAll();
+    bool invertSelection();
 	
 	signals:
 		void selectionChanged ();
@@ -311,8 +314,6 @@ class KateDocument : public Kate::Document
 
     void toggleRect(int, int, int, int);
     void selectTo(VConfig &c, PointStruc &cursor, int cXPos);
-    void selectAll();
-    void invertSelection();
     void selectWord(PointStruc &cursor, int flags);
     void selectLength(PointStruc &cursor, int length, int flags);
 

@@ -455,14 +455,6 @@ class KateView : public Kate::View
     */
     void cleanIndent() {doEditCommand(KateView::cmCleanIndent);};
     /**
-      Selects all text
-    */
-    void selectAll() {doEditCommand(KateView::cmSelectAll);};
-    /**
-      Inverts the current selection
-    */
-    void invertSelection() {doEditCommand(KateView::cmInvertSelection);};
-    /**
       comments out current line
     */
     void comment() {doEditCommand(KateView::cmComment);};
@@ -720,7 +712,7 @@ class KateView : public Kate::View
     enum Edit_commands {
 		    cmReturn=1,cmDelete,cmBackspace,cmKillLine,
         cmCut,cmCopy,cmPaste,cmIndent,cmUnindent,cmCleanIndent,
-        cmSelectAll,cmDeselectAll,cmInvertSelection,cmComment,
+        cmComment,
         cmUncomment};
 //find commands
     enum Find_commands { cmFind=1,cmReplace,cmFindAgain,cmGotoLine};

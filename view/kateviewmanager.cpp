@@ -124,7 +124,7 @@ bool KateViewManager::createView ( bool newDoc, KURL url, KateView *origView, Ka
   view->installPopup ((QPopupMenu*)((KMainWindow *)topLevelWidget ())->factory()->container("view_popup", (KMainWindow *)topLevelWidget ()) );
   connect(view,SIGNAL(newCurPos()),this,SLOT(statusMsg()));
   connect(view,SIGNAL(newStatus()),this,SLOT(statusMsg()));
-  connect(view, SIGNAL(newUndo()), this, SLOT(statusMsg()));
+  connect(view->doc(), SIGNAL(undoChanged()), this, SLOT(statusMsg()));
   connect(view,SIGNAL(dropEventPass(QDropEvent *)), (KMainWindow *)topLevelWidget (),SLOT(slotDropEvent(QDropEvent *)));
   connect(view,SIGNAL(gotFocus(KateView *)),this,SLOT(activateSpace(KateView *)));
 
@@ -568,7 +568,7 @@ void KateViewManager::slotSelectAll ()
 {
   if (activeView() == 0) return;
 
-  activeView()->selectAll();
+  activeView()->doc()->selectAll();
 }
 
 void KateViewManager::slotDeselectAll ()
@@ -582,7 +582,7 @@ void KateViewManager::slotInvertSelection ()
 {
   if (activeView() == 0) return;
 
-  activeView()->invertSelection();
+  activeView()->doc()->invertSelection();
 }
 
 void KateViewManager::slotFind ()
