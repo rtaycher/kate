@@ -183,9 +183,7 @@ void KateConfigPluginPage::loadPlugin (PluginListItem *item)
 {       
   myPluginMan->loadPlugin (item->info());
   myPluginMan->enablePluginGUI (item->info());
-  
-  if (item->info()->load)
-    myDialog->addPluginPage (item->info()->plugin);
+  myDialog->addPluginPage (item->info()->plugin);
    
   item->setOn(true);
 }

@@ -66,5 +66,5 @@ PluginConfigInterfaceExtension *Kate::pluginConfigInterfaceExtension (Plugin *pl
   if (!plugin)
     return 0;
 
-  return static_cast<PluginConfigInterfaceExtension*>(plugin->qt_cast("KTextEditor::PluginConfigInterfaceExtension"));
+  return static_cast<PluginConfigInterfaceExtension*>(plugin->qt_cast("Kate::PluginConfigInterfaceExtension"));
 }
