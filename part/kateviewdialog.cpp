@@ -63,8 +63,7 @@ SearchDialog::SearchDialog( QWidget *parent, QStringList &searchFor, QStringList
   m_search->lineEdit()->selectAll();
   QLabel *label = new QLabel( m_search, i18n( "&Text To Find:" ), page );
   m_optRegExp = new QCheckBox( i18n( "&Regular Expression" ), page );
-  QPushButton* regexpButton = new QPushButton( i18n("Edit"), page );
-  
+
   topLayout->addWidget( label );
   topLayout->addWidget( m_search );
 
@@ -74,9 +73,11 @@ SearchDialog::SearchDialog( QWidget *parent, QStringList &searchFor, QStringList
   // Add the Edit button if KRegExp exists.
   m_regExpDialog = KParts::ComponentFactory::createInstanceFromQuery<QDialog>( "KRegExpEditor/KRegExpEditor" );
   if ( m_regExpDialog ) {
+    QPushButton* regexpButton = new QPushButton( i18n("Edit"), page );
+
     regexpLayout->addWidget( regexpButton );
     regexpLayout->addStretch(1);
-    
+
     connect( regexpButton, SIGNAL( clicked() ), this, SLOT( slotEditRegExp() ) );
     connect( m_optRegExp, SIGNAL( toggled(bool) ), regexpButton, SLOT( setEnabled(bool) ) );
     regexpButton->setEnabled( false );
