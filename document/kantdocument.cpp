@@ -18,6 +18,8 @@
 #include "kantdocument.h"
 #include "kantdocument.moc"
 
+#include "../part/kantpartfactory.h"
+
 #include <qfileinfo.h>
 #include <qdatetime.h>
 
@@ -102,6 +104,8 @@ const int KantDocument::maxAttribs = 32;
 
 KantDocument::KantDocument(long docID, QFileInfo* fi) : KTextEditor::Document(0L, 0L), hlManager(HlManager::self ())
 {
+  setInstance( KantPartFactory::instance() );
+
   m_bSingleViewMode=false;
 
   m_url.setPath( 0L );

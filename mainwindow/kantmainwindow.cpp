@@ -29,6 +29,7 @@
 #include "../app/kantapp.h"
 #include "../fileselector/kantfileselector.h"
 #include "../filelist/kantfilelist.h"
+#include "../part/kantpartfactory.h"
 #include "kantmenuitem.h"
 
 #include "../view/kantviewdialog.h"
@@ -47,6 +48,7 @@
 #include <qwidgetstack.h>
 
 #include <dcopclient.h>
+#include <kinstance.h>
 #include <kaction.h>
 #include <kapp.h>
 #include <kcmdlineargs.h>
@@ -93,7 +95,7 @@ KantMainWindow::KantMainWindow(KantDocManager *_docManager, KantPluginManager *_
   tagSidebar=QString("sidebar");
   docManager =  _docManager;
   pluginManager =_pluginManager;
-  config = kapp->config();
+  config = KantPartFactory::instance()->config();
 
   setXMLFile( "kantui.rc" );
 
@@ -625,11 +627,13 @@ void KantMainWindow::saveOptions(KConfig *config)
   sidebar->saveConfig( config );
   writeDockConfig();
 
+  if (viewManager->activeView())
+    KantPartFactory::instance()->config()->sync();
+
   // Do not uncomment this unless you wish to see how
   // view configuration looks in $KDEHOME/share/config/kantsessionrc
   // It does not crash :) and I'm getting closer to finish.
   viewManager->saveViewSpaceConfig();
-
 }
 
 void KantMainWindow::slotWindowActivated ()

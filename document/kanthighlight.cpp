@@ -36,6 +36,7 @@
 
 #include <kconfig.h>
 #include <kglobal.h>
+#include <kinstance.h>
 #include <kfontdialog.h>
 #include <kcharsets.h>
 #include <kmimemagic.h>
@@ -49,6 +50,7 @@
 #include "kantattribute.h"
 #include "kanthighlight.h"
 #include "kantsyntaxdocument.h"
+#include "../part/kantpartfactory.h"
 
 HlManager *HlManager::s_pSelf = 0;
 
@@ -943,7 +945,7 @@ Highlight::~Highlight() {
 KConfig *Highlight::getKConfig() {
   KConfig *config;
 
-  config = new KConfig("kantrc");
+  config = KantPartFactory::instance()->config();
   config->setGroup(QString::fromUtf8(iName) + QString::fromUtf8(" Highlight"));
   return config;
 }
@@ -2333,7 +2335,7 @@ Highlight *HlManager::getHl(int n) {
 int HlManager::defaultHl() {
   KConfig *config;
 
-  config = new KConfig("kantrc");
+  config = KantPartFactory::instance()->config();
   config->setGroup("General Options");
   return nameFind(config->readEntry("Highlight"));
 }
@@ -2504,7 +2506,7 @@ void HlManager::getDefaults(ItemStyleList &list, ItemFont &font) {
   list.append(new ItemStyle(darkGray,gray,false,true));    //comment
   list.append(new ItemStyle(darkGreen,green,false,false)); //others
 
-  config = new KConfig("kantrc");
+  config = KantPartFactory::instance()->config();
   config->setGroup("Default Item Styles");
   for (z = 0; z < defaultStyles(); z++) {
     i = list.at(z);
@@ -2531,7 +2533,7 @@ void HlManager::setDefaults(ItemStyleList &list, ItemFont &font) {
   ItemStyle *i;
   char s[64];
 
-  config = new KConfig("kantrc");
+  config =  KantPartFactory::instance()->config();
   config->setGroup("Default Item Styles");
   for (z = 0; z < defaultStyles(); z++) {
     i = list.at(z);

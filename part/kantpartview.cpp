@@ -19,7 +19,6 @@
 #include "kantpartview.moc"
 
 #include "kantpartdocument.h"
-#include "kantpartfactory.h"
 
 #include <kaction.h>
 #include <kstdaction.h>
@@ -28,8 +27,6 @@
 
 KantPartView::KantPartView (KantPartDocument *doc, QWidget *parent, const char * name, bool HandleOwnURIDrops):  KantView (doc, parent, name, HandleOwnURIDrops)
 {
-  setInstance( KantPartFactory::instance() );
-
   setupActions();
 
   setXMLFile( "kantpartui.rc" );

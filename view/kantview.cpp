@@ -20,6 +20,7 @@
 #include "kantview.moc"
 
 #include "../document/kantdocument.h"
+#include "../part/kantpartfactory.h"
 
 #include <kurldrag.h>
 #include <qfocusdata.h>
@@ -1401,6 +1402,8 @@ KWBookmark::KWBookmark() {
 
 KantView::KantView(KantDocument *doc, QWidget *parent, const char * name, bool HandleOwnDND) : KTextEditor::View(doc, parent, name), DCOPObject(name)
 {
+  setInstance( KantPartFactory::instance() );
+
   active = false;
 
   myDoc = doc;
