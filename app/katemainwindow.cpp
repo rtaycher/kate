@@ -136,7 +136,7 @@ void KateMainWindow::setupMainWindow ()
   filelist = new KateFileList (docManager, viewManager, filelistDock, "filelist");
   filelistDock->setWidget (filelist);
 
-  fileselector = new KateFileSelector(fileselectorDock, "operator");
+  fileselector = new KateFileSelector( this, viewManager, fileselectorDock, "operator");
   fileselector->dirOperator()->setView(KFile::Simple);
   fileselectorDock->setWidget (fileselector);
 
@@ -224,8 +224,8 @@ void KateMainWindow::setupActions()
   new KAction(i18n("&Indent"), "indent", CTRL+Key_I, viewManager, SLOT(slotIndent()), actionCollection(), "edit_indent");
   new KAction(i18n("&Unindent"), "unindent", CTRL+SHIFT+Key_I, viewManager, SLOT(slotUnIndent()), actionCollection(), "edit_unindent");
 
-  new KAction(i18n("Comme&nt"), "comment", CTRL+Qt::Key_NumberSign, viewManager, SLOT(slotComment()), actionCollection(), "edit_comment");
-  new KAction(i18n("Uncommen&t"), "uncomment", CTRL+SHIFT+Qt::Key_NumberSign, viewManager, SLOT(slotUnComment()), actionCollection(), "edit_uncomment");
+  new KAction(i18n("Comme&nt"), /*"comment",*/ CTRL+Qt::Key_NumberSign, viewManager, SLOT(slotComment()), actionCollection(), "edit_comment");
+  new KAction(i18n("Uncommen&t"), /*"uncomment",*/ CTRL+SHIFT+Qt::Key_NumberSign, viewManager, SLOT(slotUnComment()), actionCollection(), "edit_uncomment");
 
   new KAction(i18n("Apply Word Wrap"), "", 0, viewManager, SLOT(slotApplyWordWrap()), actionCollection(), "edit_apply_wordwrap");
 
