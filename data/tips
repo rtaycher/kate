@@ -9,7 +9,7 @@ choose <strong>Settings -&gt;configure</strong> to launch that.</p>
 <tip category="Kate|part">
 <html>
 <p>You can swap the characters on each side of the cursor just by pressing
-<strong>CTRL-T</strong></p>
+<strong>Ctrl+T</strong></p>
 </html>
 </tip>
 <tip category="Kate|part">
@@ -76,8 +76,8 @@ tab (You have to be online, of course...).</p>
 </tip>
 <tip category="Kate|app">
 <html>
-<p>You can cycle through all open documents by pressing <strong>ALT-Left</strong> 
-or <strong>ALT-Right</strong>. The next/previous document will immediately be displayed 
+<p>You can cycle through all open documents by pressing <strong>Alt+Left</strong> 
+or <strong>Alt+Right</strong>. The next/previous document will immediately be displayed 
 in the active frame.</p>
 </html>
 </tip>
@@ -85,7 +85,7 @@ in the active frame.</p>
 <html>
 <p>You can do cool sed-like regular expression replacements using <em>Editing 
 Command</em>.</p>
-<p>For example, press <strong>CTRL-M</strong> and enter <code>s/oldtext/newtext/g</code> 
+<p>For example, press <strong>Ctrl+M</strong> and enter <code>s/oldtext/newtext/g</code> 
 to replace &quot;oldtext&quot; with &quot;newtext&quot; throughout the current 
 line.</p>
 </html>
@@ -93,7 +93,7 @@ line.</p>
 <tip category="Kate|part">
 <html>
 <p>You can repeat your last search by just pressing <strong>F3</strong>, or 
-<strong>SHIFT-F3</strong> if you want to search backwards.</p>
+<strong>Shift+F3</strong> if you want to search backwards.</p>
 </html>
 </tip>
 <tip category="Kate|app">
@@ -111,13 +111,13 @@ current directory.</p>
 <p>You can have two views - or even more - of the same document in Kate. Editing 
 in either will be reflected in both.</p>
 <p>So if you find yourself scrolling up and down to look at text at the other 
-end of a document, just press <strong>CTRL-SHIFT-T</strong> to split 
+end of a document, just press <strong>Ctrl+Shift+T</strong> to split 
 horizontally.</p>
 </html>
 </tip>
 <tip category="kate|app">
 <html>
-<p>Press <strong>F8</strong> or <strong>SHIFT-F8</strong> to switch to the 
+<p>Press <strong>F8</strong> or <strong>Shift+F8</strong> to switch to the 
 next/previous frame.</p>
 </html>
 </tip>
