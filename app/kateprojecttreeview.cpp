@@ -122,7 +122,7 @@ void KateProjectTreeViewItem::dirsAdded (const QStringList &dirs)
 
 void KateProjectTreeViewItem::dirsRemoved (const QStringList &dirs)
 {
-  for (KateProjectTreeViewItem *item = (KateProjectTreeViewItem *) firstChild(); item; item = nextSibling())
+  for (KateProjectTreeViewItem *item = (KateProjectTreeViewItem *) firstChild(); item; item = (KateProjectTreeViewItem *) nextSibling())
   {
     for (uint z=0; z < dirs.size(); z++)
     {
@@ -149,7 +149,7 @@ void KateProjectTreeViewItem::filesAdded (const QStringList &files)
 
 void KateProjectTreeViewItem::filesRemoved (const QStringList &files)
 {
-  for (KateProjectTreeViewItem *item = (KateProjectTreeViewItem *) firstChild(); item; item = nextSibling())
+  for (KateProjectTreeViewItem *item = (KateProjectTreeViewItem *) firstChild(); item; item = (KateProjectTreeViewItem *) nextSibling())
   {
     for (uint z=0; z < files.size(); z++)
     {
