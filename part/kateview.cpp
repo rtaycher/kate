@@ -2358,46 +2358,6 @@ void SConfig::setPattern(QString &newPattern) {
   }
 }
 
-// Applies the search context to the given string, and returns whether a match was found. If one is,
-// the length of the string matched is also returned.
-int SConfig::search(QString &text, int index) {
-  bool regExp = (flags & KateDocument::sfRegularExpression);
-  bool caseSensitive = (flags & KateDocument::sfCaseSensitive);
-
-  if (flags & KateDocument::sfBackward) {
-    if (regExp) {
-      index = text.findRev(m_regExp, index);
-    }
-    else {
-      index = text.findRev(m_pattern, index, caseSensitive);
-    }
-  }
-  else {
-    if (regExp) {
-      index = text.find(m_regExp, index);
-    }
-    else {
-      index = text.find(m_pattern, index, caseSensitive);
-    }
-  }
-
-  // Work out the matched length.
-  if (index != -1)
-  {
-    if (regExp) {
-
-//			  from what I can we don't care about the position just
-//			  whether it matched
-					int pos = m_regExp.search(text, index); // &matchedLength, false);
-					if(pos >-1)	matchedLength=m_regExp.matchedLength();
-		}
-    else {
-      matchedLength = m_pattern.length();
-    }
-  }
-  return index;
-}
-
 void KateView::setActive (bool b)
 {
   active = b;

@@ -79,13 +79,9 @@ class SConfig
   // Set the pattern to be used for searching.
   void setPattern(QString &newPattern);
 
-  // Search the given string.
-  int search(QString &text, int index);
-
   // The length of the last match found using pattern or regExp.
   int matchedLength;
 
-private:
   QString m_pattern;
 
   // The regular expression corresponding to pattern. Only guaranteed valid if

@@ -3714,7 +3714,13 @@ bool KateDocument::doSearch(SConfig &sc, const QString &searchFor) {
 
       uint fCol = 0;
       uint mlen = 0;
-      bool found = textLine->searchText (col, searchFor, &fCol, &mlen, sc.flags & KateDocument::sfCaseSensitive, false);
+      
+      bool found = false;
+
+      if (sc.flags & KateDocument::sfRegularExpression)
+        found = textLine->searchText (col, sc.m_regExp, &fCol, &mlen, false);
+      else
+        found = textLine->searchText (col, sc.m_pattern, &fCol, &mlen, sc.flags & KateDocument::sfCaseSensitive, false);
 
       if ((sc.flags & KateDocument::sfSelected) && blockSelectionMode())
         if (fCol+mlen > selectEnd.col)
@@ -3763,7 +3769,13 @@ bool KateDocument::doSearch(SConfig &sc, const QString &searchFor) {
 
       uint fCol = 0;
       uint mlen = 0;
-      bool found = textLine->searchText (col, searchFor, &fCol, &mlen, sc.flags & KateDocument::sfCaseSensitive, true);
+      bool found = false;
+
+      if (sc.flags & KateDocument::sfRegularExpression)
+        found = textLine->searchText (col, sc.m_regExp, &fCol, &mlen, true);
+      else
+        found = textLine->searchText (col, sc.m_pattern, &fCol, &mlen, sc.flags & KateDocument::sfCaseSensitive, true);
+
 
       if ((sc.flags & KateDocument::sfSelected) && blockSelectionMode())
         if (fCol < selectStart.col)
