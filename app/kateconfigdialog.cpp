@@ -121,7 +121,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   // How instances should be handled
   cb_singleInstance = new QCheckBox(frGeneral);
   lo->addWidget( cb_singleInstance );
-  cb_singleInstance->setText(i18n("Allow Kate to only use more than one UN&IX process"));
+  cb_singleInstance->setText(i18n("Allow Kate to use more than one UN&IX process"));
   config->setGroup("KDE");
   cb_singleInstance->setChecked(config->readBoolEntry("MultipleInstances",false));
   QWhatsThis::add( cb_singleInstance, i18n(
