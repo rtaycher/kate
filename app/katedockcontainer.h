@@ -7,7 +7,7 @@
 class QWidgetStack;
 class KMultiVertTabBar;
 
-class KateDockContainer:public QWidget,public KDockContainer
+class KateDockContainer: public QWidget, public KDockContainer
 {
         Q_OBJECT
 public:
