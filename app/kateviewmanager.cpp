@@ -451,10 +451,23 @@ void KateViewManager::statusMsg ()
   int mod = (int)v->getDoc()->isModified();
   bool block=v->getDoc()->blockSelectionMode();
 
-  QString c = v -> getDoc()->docName();
-   //File name shouldn't be too long - Maciek
-   if (c.length() > 200)
-     c = "..." + c.right(197);
+  QString c;
+  if (v->getDoc()->url().isEmpty() || (!showFullPath))
+  {
+    c = v->getDoc()->docName();
+
+    //File name shouldn't be too long - Maciek
+    if (c.length() > 64)
+      c = c.left(64) + "...";
+  }
+  else
+  {
+    c = v->getDoc()->url().prettyURL();
+
+    //File name shouldn't be too long - Maciek
+    if (c.length() > 64)
+      c = "..." + c.right(64);
+  }
 
   emit statusChanged (v, v->cursorLine(), v->cursorColumn(), ovr,block, mod, c);
   emit statChanged ();
@@ -736,20 +749,22 @@ void KateViewManager::setWindowCaption()
   if (activeView())
   {
     QString c;
-    if (activeView()->getDoc()->url().isEmpty() || (! showFullPath))
-     {
-        c = ((Kate::Document *)activeView()->getDoc())->docName();
-       //File name shouldn't be too long - Maciek
-       if (c.length() > 200)
-         c = "..." + c.right(197);
-     }
-      else
-     {
-        c = activeView()->getDoc()->url().prettyURL();
-       //File name shouldn't be too long - Maciek
-       if (c.length() > 200)
-         c = c.left(197) + "...";
-     }
+    if (activeView()->getDoc()->url().isEmpty() || (!showFullPath))
+    {
+      c = activeView()->getDoc()->docName();
+
+      //File name shouldn't be too long - Maciek
+      if (c.length() > 64)
+        c = c.left(64) + "...";
+    }
+    else
+    {
+      c = activeView()->getDoc()->url().prettyURL();
+
+      //File name shouldn't be too long - Maciek
+      if (c.length() > 64)
+        c = "..." + c.right(64);
+    }
 
     ((KateMainWindow*)topLevelWidget())->setCaption( c,activeView()->getDoc()->isModified());
   }

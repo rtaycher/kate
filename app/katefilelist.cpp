@@ -150,24 +150,26 @@ void KateFileList::slotNameChanged (Kate::Document *doc)
   }
 
   QString c;
-  if (doc->url().isEmpty() || (! viewManager->getShowFullPath()))
+  if (doc->url().isEmpty() || (!viewManager->getShowFullPath()))
   {
     c = doc->docName();
-       //File name shouldn't be too long - Maciek
-       if (c.length() > 200)
-         c = "..." + c.right(197);
-     }
-      else
-     {
-        c = doc->url().prettyURL();
-       //File name shouldn't be too long - Maciek
-       if (c.length() > 200)
-         c = c.left(197) + "...";
-     }
 
-   ((KateMainWindow*)topLevelWidget())->setCaption( c,doc->isModified());
+    //File name shouldn't be too long - Maciek
+    if (c.length() > 64)
+      c = c.left(64) + "...";
+  }
+  else
+  {
+    c = doc->url().prettyURL();
 
-   updateSort ();
+    //File name shouldn't be too long - Maciek
+    if (c.length() > 64)
+      c = "..." + c.right(64);
+  }
+
+  ((KateMainWindow*)topLevelWidget())->setCaption( c, doc->isModified());
+
+  updateSort ();
 }
 
 void KateFileList::slotViewChanged ()
