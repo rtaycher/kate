@@ -61,6 +61,8 @@
 #include <kdesktopfile.h>
 #include <khelpmenu.h>
 
+#include <ktip.h>
+
 #include "kategrepdialog.h"
 
 uint KateMainWindow::uniqueID = 0;
@@ -69,6 +71,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 	Kate::MainWindow (),
              DCOPObject ((QString("KateMainWindow%1").arg(uniqueID)).latin1())
 {
+
   m_docManager =  _m_docManager;
   m_pluginManager =_m_pluginManager;
   config = kapp->config();
@@ -117,12 +120,12 @@ void KateMainWindow::setupMainWindow ()
   mainDock = createDockWidget( "mainDock", 0L );
   filelistDock =  createDockWidget( "filelistDock",  SmallIcon("kmultiple"), 0L, "Open Files", "");
   fileselectorDock = createDockWidget( "fileselectorDock", SmallIcon("fileopen"), 0L, "Selector", "");
-
+  
   mainDock->setGeometry(100, 100, 100, 100);
   m_viewManager = new KateViewManager (mainDock, m_docManager);
   m_viewManager->setMinimumSize(200,200);
   mainDock->setWidget(m_viewManager);
-
+  
   setMainDockWidget( mainDock );
   setView( mainDock );
 
@@ -132,7 +135,7 @@ void KateMainWindow::setupMainWindow ()
   
   fileselector = new KateFileSelector( this, m_viewManager, fileselectorDock, "operator");
   fileselectorDock->setWidget (fileselector);
-
+  
   filelistDock->setDockWindowType (NET::Tool);
   fileselectorDock->setDockWindowType (NET::Tool);
   filelistDock->setDockWindowTransient (this, true);
@@ -231,6 +234,9 @@ void KateMainWindow::setupActions()
   // help menu
 // Don't call this, KMainWindow does it for us.
 //  new KHelpMenu(this, instance()->aboutData(), true, actionCollection());
+
+  // tip of the day :-)
+  new KAction( i18n("Tip of the &Day"), 0, this, SLOT(tipOfTheDay()), actionCollection(), "help_tipoftheday" );
   
   if (m_pluginManager->pluginList().count() > 0)
     new KAction(i18n("Contents &Plugins"), 0, this, SLOT(pluginHelp()), actionCollection(), "help_plugins_contents");
@@ -703,4 +709,8 @@ void KateMainWindow::slotMail()
                       QString::null, // msgfile
                       urls           // urls to atthatch
                       );
+}
+void KateMainWindow::tipOfTheDay()
+{
+  KTipDialog::showTip( /*0*/this, QString::null, true );
 }
