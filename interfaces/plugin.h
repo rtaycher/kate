@@ -32,12 +32,11 @@ class PluginConfigPage : public QWidget
   Q_OBJECT
 
   friend class Plugin;
+  friend class PluginView;
 
   public:
-    PluginConfigPage (QObject* parent = 0L, QWidget *parentWidget=0L) : QWidget (parentWidget, 0L)
-     { myPlugin = (Plugin *) parent; };
-
-    ~PluginConfigPage () {;};
+    PluginConfigPage (QObject* parent = 0L, QWidget *parentWidget = 0L);
+    virtual ~PluginConfigPage ();
 
     virtual void applyConfig () { ; };
 
@@ -49,15 +48,19 @@ class PluginView : public QObject, virtual public KXMLGUIClient
   Q_OBJECT
 
   friend class Plugin;
+  friend class PluginConfigPage;
 
   public:
-    PluginView (class Plugin *plugin, class MainWindow *win) : QObject ((QObject *)win)
-     { myPlugin = plugin; myMainWindow = win; };
+    PluginView (class Plugin *plugin = 0L, class MainWindow *win = 0L);
+    virtual ~PluginView ();
 
-    ~PluginView () {;};
+    void setXML (QString filename);
 
-    void setXML (QString filename)
-      { setXMLFile( filename ); };
+    virtual QWidget *createSidebarPage () { return 0L; };
+    virtual bool hasSidebarPage () { return false; };
+
+    virtual QWidget *createDockWidget () { return 0L; };
+    virtual bool hasDockWidget () { return false; };
 
     class Plugin *myPlugin;
     class MainWindow *myMainWindow;
@@ -71,12 +74,10 @@ class Plugin : public QObject
   friend class PluginConfigPage;
 
   public:
-    Plugin (QObject* parent = 0L, const char* name = 0L) : QObject (parent, name)
-    { myApp = (class Application *) parent; };
+    Plugin (QObject* parent = 0L, const char* name = 0L);
+    virtual ~Plugin ();
 
-    virtual ~Plugin () {;};
-
-    virtual PluginView *createView (class MainWindow *win)=0;
+    virtual PluginView *createView (class MainWindow *) { return 0L; };
     virtual bool hasView () { return true; };
 
     virtual PluginConfigPage *createConfigPage (QWidget *) { return 0L; };

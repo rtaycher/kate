@@ -28,11 +28,11 @@ class MainWindow : public KDockMainWindow
   Q_OBJECT
 
   public:
-    MainWindow () : KDockMainWindow () {;};
-    virtual ~MainWindow () {;};
+    MainWindow ();
+    virtual ~MainWindow ();
 
-    virtual class ViewManager *getViewManager ()=0;
-    virtual class DocManager *getDocManager ()=0;
+    virtual class ViewManager *getViewManager () { return 0L; };
+    virtual class DocManager *getDocManager () { return 0L; };
 };
 
 };

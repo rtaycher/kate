@@ -19,6 +19,7 @@
 #define _KATE_VIEWMANAGER_INCLUDE_
 
 #include <qwidget.h>
+#include <kurl.h>
 
 namespace Kate
 {
@@ -28,11 +29,11 @@ class ViewManager : public QWidget
   Q_OBJECT
 
   public:
-    ViewManager (QWidget *parent) : QWidget(parent) {;};
-    virtual ~ViewManager () {;};
+    ViewManager (QWidget *parent = 0L);
+    virtual ~ViewManager ();
 
-    virtual class View *getActiveView()=0;
-    virtual void openURL (KURL)=0;
+    virtual class View *getActiveView() { return 0L; };
+    virtual void openURL (KURL) { ; };
 };
 
 };

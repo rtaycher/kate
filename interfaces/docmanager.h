@@ -19,6 +19,7 @@
 #define _KATE_DOCMANAGER_INCLUDE_
 
 #include <qobject.h>
+#include <kurl.h>
 
 namespace Kate
 {
@@ -28,21 +29,21 @@ class DocManager : public QObject
   Q_OBJECT
 
   public:
-    DocManager () : QObject () {;};
-    virtual ~DocManager () {;};
+    DocManager ();
+    virtual ~DocManager ();
 
  public:
-    virtual class Document *getNthDoc (uint n)=0;
-    virtual class Document *getCurrentDoc ()=0;
-    virtual class Document *getFirstDoc ()=0;
-    virtual class Document *getNextDoc ()=0;
+    virtual class Document *getNthDoc (uint) { return 0L; };
+    virtual class Document *getCurrentDoc () { return 0L; };
+    virtual class Document *getFirstDoc () { return 0L; };
+    virtual class Document *getNextDoc () { return 0L; };
 
-    virtual class Document *getDocWithID (uint id)=0;
+    virtual class Document *getDocWithID (uint) { return 0L; };
 
-    virtual int findDoc (KURL url)=0;
-    virtual bool isOpen (KURL url)=0;
+    virtual int findDoc (KURL) { return 0L; };
+    virtual bool isOpen (KURL) { return 0L; };
 
-    virtual uint docCount ()=0;
+    virtual uint docCount () { return 0L; };
 };
 
 };

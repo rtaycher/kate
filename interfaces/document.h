@@ -30,15 +30,15 @@ class Document : public KTextEditor::Document
   Q_OBJECT
 
   public:
-    Document ( ) : KTextEditor::Document (0L, 0L) {;};
-    virtual ~Document () {;};
+    Document ();
+    virtual ~Document ();
 
   public:
     virtual void readConfig () { ; };
     virtual void writeConfig () { ; };
 
-    virtual void readSessionConfig(KConfig *) { ; };
-    virtual void writeSessionConfig(KConfig *) { ; };
+    virtual void readSessionConfig (KConfig *) { ; };
+    virtual void writeSessionConfig (KConfig *) { ; };
 };
 
 };

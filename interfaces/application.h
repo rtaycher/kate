@@ -28,11 +28,11 @@ class Application : public KApplication
   Q_OBJECT
 
   public:
-    Application () : KApplication () {;};
-    virtual ~Application () {;};
+    Application ();
+    virtual ~Application ();
 
-    virtual class ViewManager *getViewManager ()=0;
-    virtual class DocManager *getDocManager ()=0;
+    virtual class ViewManager *getViewManager () { return 0L; };
+    virtual class DocManager *getDocManager () { return 0L; };
 };
 
 };
