@@ -114,14 +114,9 @@ const QChar *TextLine::firstNonSpace()
   return (first > -1) ? ptr+first : ptr;
 }
 
-bool TextLine::startingWith(QString& match) {
-
-  int matchLen = match.length();
-
-  // Get the first chars of the textline
-  QString firstChars = text.left(matchLen);
-
-  return (firstChars == match);
+bool TextLine::startingWith(QString& match)
+{
+  return text.startsWith (match);
 }
 
 bool TextLine::endingWith(QString& match) {
