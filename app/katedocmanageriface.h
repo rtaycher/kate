@@ -34,19 +34,25 @@ class KateDocManagerDCOPIface : public DCOPObject
     KateDocManagerDCOPIface (KateDocManager *dm);
 
   k_dcop:
-    DCOPRef document (uint n = 0);
+    DCOPRef document (uint n);
 
-    bool closeDocument(uint n = 0);
+    DCOPRef activeDocument ();
 
-    bool closeDocumentWithID(uint);
+    DCOPRef documentWithID (uint id);
 
-    bool closeAllDocuments();
+    int findDocument (KURL url);
 
-    bool isOpen(KURL);
+    bool isOpen (KURL url);
 
     uint documents ();
 
-    int findDocument (KURL);
+    DCOPRef openURL (KURL url, QString encoding);
+
+    bool closeDocument (uint n);
+
+    bool closeDocumentWithID (uint id);
+
+    bool closeAllDocuments ();
 
   private:
     KateDocManager *m_dm;

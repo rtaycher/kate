@@ -43,14 +43,59 @@ DCOPRef KateDocManagerDCOPIface::document (uint n)
   return DCOPRef (obj);
 }
 
+DCOPRef KateDocManagerDCOPIface::activeDocument ()
+{
+  Kate::Document *doc = m_dm->activeDocument();
+
+  if (!doc)
+    return DCOPRef ();
+
+  DCOPObject *obj = static_cast<DCOPObject*>(doc->qt_cast("DCOPObject"));
+
+  if (!obj)
+    return DCOPRef ();
+
+  return DCOPRef (obj);
+}
+
+DCOPRef KateDocManagerDCOPIface::documentWithID (uint id)
+{
+  Kate::Document *doc = m_dm->documentWithID (id);
+
+  if (!doc)
+    return DCOPRef ();
+
+  DCOPObject *obj = static_cast<DCOPObject*>(doc->qt_cast("DCOPObject"));
+
+  if (!obj)
+    return DCOPRef ();
+
+  return DCOPRef (obj);
+}
+
+DCOPRef KateDocManagerDCOPIface::openURL (KURL url, QString encoding)
+{
+  Kate::Document *doc = m_dm->openURL (url, encoding);
+
+  if (!doc)
+    return DCOPRef ();
+
+  DCOPObject *obj = static_cast<DCOPObject*>(doc->qt_cast("DCOPObject"));
+
+  if (!obj)
+    return DCOPRef ();
+
+  return DCOPRef (obj);
+}
+
 bool KateDocManagerDCOPIface::closeDocument(uint n)
 {
   return m_dm->closeDocument(n);
 }
 
-bool KateDocManagerDCOPIface::closeDocumentWithID(uint n)
+bool KateDocManagerDCOPIface::closeDocumentWithID(uint id)
 {
-  return m_dm->closeDocumentWithID (n);
+  return m_dm->closeDocumentWithID (id);
 }
 
 bool KateDocManagerDCOPIface::closeAllDocuments()
@@ -58,9 +103,9 @@ bool KateDocManagerDCOPIface::closeAllDocuments()
   return m_dm->closeAllDocuments();
 }
 
-bool KateDocManagerDCOPIface::isOpen(KURL u)
+bool KateDocManagerDCOPIface::isOpen(KURL url)
 {
-  return m_dm->isOpen (u);
+  return m_dm->isOpen (url);
 }
 
 uint KateDocManagerDCOPIface::documents ()
@@ -68,9 +113,9 @@ uint KateDocManagerDCOPIface::documents ()
   return m_dm->documents();
 }
 
-int KateDocManagerDCOPIface::findDocument (KURL u)
+int KateDocManagerDCOPIface::findDocument (KURL url)
 {
-  return m_dm->findDocument (u);
+  return m_dm->findDocument (url);
 }
 
 
