@@ -1,6 +1,6 @@
 # Allow build from within kdebase or not.
 INCLUDES    = \
-	-I$(top_srcdir)/kate/app \
+	-I$(top_srcdir)/kate/interfaces \
 	-I$(kde_includes)/kate \
 	$(all_includes)
 
