@@ -1,5 +1,5 @@
 /***************************************************************************
-                          interfaces.cpp  -  description
+                          mainwindow.h -  description
                              -------------------
     begin                : Mon Jan 15 2001
     copyright            : (C) 2001 by Christoph "Crossfire" Cullmann
@@ -15,23 +15,29 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "application.h"
-#include "application.moc"
+#ifndef _KATE_MAINWINDOW_INCLUDE_
+#define _KATE_MAINWINDOW_INCLUDE_
 
-#include "docmanager.h"
-#include "docmanager.moc"
+#include <kdockwidget.h>
 
-#include "document.h"
-#include "document.moc"
+class KStatusBar;
 
-#include "mainwindow.h"
-#include "mainwindow.moc"
+namespace Kate
+{
 
-#include "plugin.h"
-#include "plugin.moc"
+class MainWindow : public KDockMainWindow
+{
+  Q_OBJECT
 
-#include "view.h"
-#include "view.moc"
+  public:
+    MainWindow () : KDockMainWindow () {;};
+    virtual ~MainWindow () {;};
 
-#include "viewmanager.h"
-#include "viewmanager.moc"
+    virtual class ViewManager *getViewManager ()=0;
+    virtual class DocManager *getDocManager ()=0;
+    virtual KStatusBar *statusBar ()=0;
+};
+
+};
+
+#endif

@@ -1,4 +1,4 @@
-METASOURCES = application.moc docmanager.moc document.moc plugin.moc view.moc viewmanager.moc
+METASOURCES = application.moc docmanager.moc document.moc mainwindow.moc plugin.moc view.moc viewmanager.moc
 
 lib_LTLIBRARIES = libkate.la
 
