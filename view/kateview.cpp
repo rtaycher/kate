@@ -1601,7 +1601,7 @@ void KateView::setupActions()
     toolsUncomment = new KAction(i18n("Unco&mment"), 0, this, SLOT(uncomment()),
                                  actionCollection(), "tools_uncomment");
 
-    setVerticalSelection = new KToggleAction(i18n("&Vertical Selection"), 0, this, SLOT(toggleVertical()),
+    setVerticalSelection = new KToggleAction(i18n("&Vertical Selection"), Key_F4, this, SLOT(toggleVertical()),
                                              actionCollection(), "set_verticalSelect");
 
     connect(setHighlight, SIGNAL(activated(int)), this, SLOT(setHl(int)));

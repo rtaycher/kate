@@ -142,6 +142,7 @@ class HlEditDialog : public KDialogBase
     class QComboBox *ItemType;
     class QComboBox *ItemContext;
     class QLineEdit *ItemParameter;
+    class QComboBox *ItemAttribute;
 
     class QMap<int,QString> id2tag;
     class QMap<int,ItemInfo> id2info;

@@ -244,6 +244,10 @@ void KateMainWindow::setupActions()
   setHighlightConf = new KAction(i18n("Configure Highlighti&ng..."), 0, this, SLOT(slotHlConfigure()),actionCollection(), "set_confHighlight");
 
   setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, actionCollection(), "set_highlight");
+
+  setVerticalSelection = new KToggleAction(i18n("&Vertical Selection"), Key_F4, viewManager, SLOT(toggleVertical()),
+                                             actionCollection(), "set_verticalSelect");
+
   connect(setHighlight, SIGNAL(activated(int)), viewManager, SLOT(slotSetHl(int)));
   connect(setHighlight->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(setHighlightMenuAboutToShow()));
 

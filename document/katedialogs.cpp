@@ -269,8 +269,8 @@ HighlightDialogPage::HighlightDialogPage(HlManager *hlManager, ItemStyleList *st
   QLabel *label = new QLabel( i18n("Highlight:"), vbox1 );
   hlCombo = new QComboBox( false, vbox1 );
   QHBox *modHl = new QHBox(vbox1);
-//  (void) new QPushButton(i18n("New"),modHl);
-//  connect(new QPushButton(i18n("Edit"),modHl),SIGNAL(clicked()),this,SLOT(hlEdit()));
+  (void) new QPushButton(i18n("New"),modHl);
+  connect(new QPushButton(i18n("Edit"),modHl),SIGNAL(clicked()),this,SLOT(hlEdit()));
   connect( hlCombo, SIGNAL(activated(int)),
            this, SLOT(hlChanged(int)) );
   for( int i = 0; i < hlManager->highlights(); i++) {
@@ -431,7 +431,7 @@ void HlEditDialog::initItemOptions(QVBox *co)
         ItemParameter=  new QLineEdit(tmp);
         tmp= new QHBox(co);
         (void) new QLabel(i18n("Attribute:"),tmp);
-        (void) new QComboBox(tmp);
+        ItemAttribute= new QComboBox(tmp);
         (void) new QLabel(i18n("Context switch:"),tmp);
         ItemContext = new QComboBox(tmp);
 
@@ -483,6 +483,15 @@ void HlEditDialog::loadFromDocument(HlData *hl)
 	 }
        if (data) HlManager::self()->syntax->freeGroupInfo(data);
    }
+  ContextAttribute->clear();
+  ItemAttribute->clear();
+  data=HlManager::self()->syntax->getGroupInfo("highlighting","itemData");
+  while (HlManager::self()->syntax->nextGroup(data))
+    {
+        ContextAttribute->insertItem(HlManager::self()->syntax->groupData(data,QString("name")));
+        ItemAttribute->insertItem(HlManager::self()->syntax->groupData(data,QString("name")));
+    }
+  if (data) HlManager::self()->syntax->freeGroupInfo(data);
 }
 
 QListViewItem *HlEditDialog::addContextItem(QListViewItem *_parent,QListViewItem *prev,struct syntaxContextData *data)
@@ -528,6 +537,7 @@ void HlEditDialog::showContext()
   {
     stack->raiseWidget(HlEContext);
     ContextDescr->setText(currentItem->text(0));
+    ContextAttribute->setCurrentItem(currentItem->text(2).toInt());
     ContextLineEnd->clear();
     for (QListViewItem *it=contextList->firstChild();it;it=it->nextSibling())
         ContextLineEnd->insertItem(it->text(0));
@@ -552,6 +562,7 @@ void HlEditDialog::showItem()
     for (QListViewItem *it=contextList->firstChild();it;it=it->nextSibling())
         ItemContext->insertItem(it->text(0));
     ItemContext->setCurrentItem(currentItem->text(4).toInt());
+    ItemAttribute->setCurrentItem(currentItem->text(3).toInt());
     QMap<QString,int>::Iterator iter=tag2id.find(currentItem->text(1));
     if (iter==tag2id.end())
       kdDebug(13010)<<"Oops, unknown itemtype in showItem: "<<currentItem->text(1)<<endl;

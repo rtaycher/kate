@@ -186,6 +186,8 @@ class KateViewManager : public KateViewManagerIface
     void setEol(int);
     void toggleIconBorder ();
 
+    void toggleVertical();
+
   signals:
     void statusChanged (KateView *, int, int, int, int, QString);
     void statChanged ();

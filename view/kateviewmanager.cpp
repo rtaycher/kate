@@ -785,6 +785,12 @@ void KateViewManager::toggleIconBorder ()
   activeView()->toggleIconBorder ();
 }
 
+void KateViewManager::toggleVertical()
+{
+  if (!activeView()) return;
+  activeView()->toggleVertical();
+}
+
 void KateViewManager::splitViewSpace( KateViewSpace* vs,
                                       bool isHoriz,
                                       bool atTop,

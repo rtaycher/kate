@@ -133,6 +133,8 @@ class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOP
     KToggleAction* settingsShowFullPath;
     KToggleAction* settingsShowToolbar;
     KToggleAction* settingsShowConsole;
+    KToggleAction* setVerticalSelection; 
+ 
     KAction* settingsConfigure;
 
     KToggleAction* settingsShowFullScreen;
