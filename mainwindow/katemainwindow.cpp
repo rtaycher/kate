@@ -402,10 +402,20 @@ void KateMainWindow::saveOptions(KConfig *config)
 
 void KateMainWindow::slotWindowActivated ()
 {
+  static QString path;
+
   if (viewManager->activeView() != 0)
   {
     if (console && syncKonsole)
-      console->cd (viewManager->activeView()->doc()->url());
+    {
+      QString newPath = viewManager->activeView()->doc()->url().directory();
+
+      if ( newPath != path )
+      {
+        path = newPath;
+        console->cd (path);
+      }
+    }
 
     viewBorder->setChecked(viewManager->activeView()->iconBorder());
   }
