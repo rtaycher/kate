@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="kwrite" version="11">
+<kpartgui name="kwrite" version="12">
 
 <MenuBar>
   <Menu name="file" noMerge="1"><text>&amp;File</text>
@@ -37,6 +37,8 @@
   </Menu>
 
   <Menu name="view" noMerge="1"><text>&amp;View</text>
+    <Action name="view_new_view" />
+    <Separator />
     <DefineGroup name="view_operations" />
   </Menu>
 
