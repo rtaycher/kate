@@ -158,7 +158,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   // number of recent files
   QHBox *hbNrf = new QHBox( frGeneral );
   lo->addWidget( hbNrf );
-  QLabel *lNrf = new QLabel( i18n("&Number of recent files"), hbNrf );
+  QLabel *lNrf = new QLabel( i18n("&Number of recent files:"), hbNrf );
   sb_numRecentFiles = new QSpinBox( 0, 1000, 1, hbNrf );
   sb_numRecentFiles->setValue( mainWindow->fileOpenRecent->maxItems() );
   lNrf->setBuddy( sb_numRecentFiles );
