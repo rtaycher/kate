@@ -92,6 +92,10 @@ int main( int argc, char **argv )
       arg << args->url(z).url();
       client->send (appID, "KateApp", "openURL(QString)", data);
     }
+
+    QByteArray data;
+    client->send (appID, "KateApp", "raiseCurrentMainWindow()", data);
+
     KStartupInfo::appStarted();
   }
   else

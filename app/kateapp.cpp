@@ -115,6 +115,17 @@ void KateApp::openURL (const QString &name)
   KWin::setActiveWindow (mainWindows.at(n)->winId());
 }
 
+void KateApp::raiseCurrentMainWindow ()
+{
+  int n = mainWindows.find ((KateMainWindow *)activeWindow());
+
+  if (n < 0)
+    n=0;
+
+  mainWindows.at(n)->raise();
+  KWin::setActiveWindow (mainWindows.at(n)->winId());
+}
+
 Kate::ViewManager *KateApp::getViewManager ()
 {
   int n = mainWindows.find ((KateMainWindow *)activeWindow());

@@ -44,6 +44,8 @@ class KateApp : public Kate::Application, public KateAppDCOPIface
     uint mainWindowsCount ();
     virtual QString  isSingleInstance(){if (_singleInstance) return "true"; else return "false";};
 
+    void raiseCurrentMainWindow ();
+
     Kate::ViewManager *getViewManager ();
     Kate::DocManager *getDocManager ();
     Kate::MainWindow *getMainWindow ();
