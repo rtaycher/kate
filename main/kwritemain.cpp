@@ -488,7 +488,7 @@ int main(int argc, char **argv)
   aboutData.addAuthor("Michael McCallum", I18N_NOOP("Core Developer"), "gholam@xtra.co.nz");
   aboutData.addAuthor( "Jochen Wilhemly", I18N_NOOP( "KWrite Author" ), "digisnap@cs.tu-berlin.de" );
   aboutData.addAuthor( "Michael Koch",I18N_NOOP("KWrite port to KParts"), "koch@kde.org");
-  aboutData.addAuthor( "Christian Gebauer", 0, "gebauer@bigfoot.com" );
+  aboutData.addAuthor( "Christian Gebauer", 0, "gebauer@kde.org" );
   aboutData.addAuthor( "Simon Hausmann", 0, "hausmann@kde.org" );
   aboutData.addAuthor("Glen Parker",I18N_NOOP("KWrite Undo History, Kspell integration"), "glenebob@nwlink.com");
   aboutData.addAuthor("Scott Manson",I18N_NOOP("KWrite XML Syntax highlighting support"), "sdmanson@alltel.net");

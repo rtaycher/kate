@@ -86,7 +86,7 @@ const KAboutData *KateFactory::aboutData()
   data->addAuthor ("Michael McCallum", I18N_NOOP("Core Developer"), "gholam@xtra.co.nz");
   data->addAuthor ("Jochen Wilhemly", I18N_NOOP( "KWrite Author" ), "digisnap@cs.tu-berlin.de" );
   data->addAuthor ("Michael Koch",I18N_NOOP("KWrite port to KParts"), "koch@kde.org");
-  data->addAuthor ("Christian Gebauer", 0, "gebauer@bigfoot.com" );
+  data->addAuthor ("Christian Gebauer", 0, "gebauer@kde.org" );
   data->addAuthor ("Simon Hausmann", 0, "hausmann@kde.org" );
   data->addAuthor ("Glen Parker",I18N_NOOP("KWrite Undo History, Kspell integration"), "glenebob@nwlink.com");
   data->addAuthor ("Scott Manson",I18N_NOOP("KWrite XML Syntax highlighting support"), "sdmanson@alltel.net");
