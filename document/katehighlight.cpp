@@ -105,7 +105,7 @@ HlItem::~HlItem()
 
 bool HlItem::startEnable(QChar c)
 {
-  return !(c.isLetterOrNumber());
+  return true;
 }
 
 HlCharDetect::HlCharDetect(int attribute, int context, QChar c)
@@ -504,16 +504,16 @@ HlLineContinue::HlLineContinue(int attribute, int context)
 
 const QChar *HlLineContinue::checkHgl(const QChar *s,bool) {
   
-  kdDebug()<<"Interesting:"<<QString("%1").arg(s[1])<<endl;
-  qDebug(">>>>%d %d %c<<<<<",s[0].latin1(),s[1].latin1(),s[0].latin1());
-  qDebug(">>>>%d %d %c<<<<<",s[0].latin1(),s[1].latin1(),s[0].latin1());
-  qDebug(">>>>%d %d %c<<<<<",s[0].latin1(),s[1].latin1(),s[0].latin1());
+ // kdDebug()<<"Interesting:"<<QString("%1").arg(s[1])<<endl;
+//  qDebug(">>>>%d %d %c<<<<<",s[0].latin1(),s[1].latin1(),s[0].latin1());
+//  qDebug(">>>>%d %d %c<<<<<",s[0].latin1(),s[1].latin1(),s[0].latin1());
+//  qDebug(">>>>%d %d %c<<<<<",s[0].latin1(),s[1].latin1(),s[0].latin1());
   if ((s[0].latin1() == '\\') && (s[1].latin1()=='\0'))
 	{
-	   kdDebug()<<"\\ found"<<endl;
+//	   kdDebug()<<"\\ found"<<endl;
            return s + 1;
 	}
-  kdDebug()<<"No LineEnd Found"<<endl;
+  //kdDebug()<<"No LineEnd Found"<<endl;
   return 0L;
 }
 
