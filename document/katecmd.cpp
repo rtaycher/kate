@@ -16,17 +16,18 @@
  ***************************************************************************/
 
 #include "katecmd.h"
+#include "katecmds.h"
 #include "katecmd.moc"
 
 #include "katedocument.h"
-#include <qregexp.h>
-#include <qdatetime.h>
 
 KateCmd::KateCmd (KateDocument *doc) : QObject (doc)
 {
   myDoc = doc;
 
-  myParser.append (new KateInsertTimeParser (myDoc));
+  myParser.append (new KateCommands::InsertTime (myDoc));
+  myParser.append (new KateCommands::SedReplace (myDoc));
+  myParser.append (new KateCommands::Character (myDoc));
 }
 
 KateCmd::~KateCmd ()
@@ -47,17 +48,8 @@ KateCmdParser::KateCmdParser (KateDocument *doc)
   myDoc = doc;
 }
 
-KateCmdParser::~KateCmdParser ()
+KateCmdParser::~KateCmdParser()
 {
 }
 
-bool KateInsertTimeParser::execCmd (QString cmd, KateView *view)
-{
-  if (cmd.left( 5 ) == "time:")
-  {
-     view->insertText (QTime::currentTime().toString());
-     return true;
-  }
 
-  return false;
-}

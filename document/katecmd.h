@@ -51,13 +51,5 @@ class KateCmd : public QObject
     QList<KateCmdParser> myParser;
 };
 
-class KateInsertTimeParser : public KateCmdParser
-{
-  public:
-    KateInsertTimeParser (KateDocument *doc=0L) : KateCmdParser (doc) { ; };
-    ~KateInsertTimeParser () { ; };
-
-   bool execCmd (QString cmd=0L, KateView *view=0L);
-};
-
 #endif
+

@@ -1,0 +1,179 @@
+#include "katecmds.h"
+#include <qregexp.h>
+#include <qregexp3.h>
+#include <qdatetime.h>
+#include "katedocument.h"
+
+
+namespace KateCommands
+{
+
+
+bool InsertTime::execCmd(QString cmd, KateView *view)
+{
+	if (cmd.left(5) == "time:")
+	{
+		view->insertText(QTime::currentTime().toString());
+		return true;
+	}
+
+	return false;
+}
+
+// stolen from QString::replace
+static void replace(QString &s, QRegExp3 &rx, const QString &with)
+{
+	if (s.isEmpty()) return;
+	int index = 0;
+	int slen = with.length();
+	int len;
+	while (index < (int)s.length())
+	{
+		index = rx.search(s, index);
+		len = rx.matchedLength();
+		if ( index >= 0 )
+		{
+			s.replace(index, len, with);
+			index += slen;
+			if (!len)
+				break;  // Avoid infinite loop on 0-length matches, e.g. [a-z]*
+		}
+		else
+			break;
+	}
+}
+
+QString SedReplace::sedMagic(QString textLine, QString find, QString rep, bool noCase)
+{
+	QRegExp3 matcher(find, noCase);
+	int start=matcher.search(textLine, 0);
+	int length=matcher.matchedLength();
+	
+	if (start==-1) return textLine;
+
+	// now set the backreferences in the replacement
+	QStringList backrefs=matcher.capturedTexts();
+	int refnum=1;
+	
+	QStringList::Iterator i = backrefs.begin();
+	++i;
+
+	for (; i!=backrefs.end(); ++i)
+	{
+		// I need to match "\\" or "", but not "\"
+		QString regex;
+
+		// make sure we match the backref if it's at the front
+		if (refnum==1 && rep.left(2)=="\\1")
+		{
+			regex="^\\\\1";
+		}
+		else
+		{
+			regex="(?:\\\\\\\\|)\\\\";
+			regex+=QString::number(refnum);
+		}
+		
+		QRegExp3 re(regex);
+		replace(rep, re, *i);
+		refnum++;
+	}
+
+	textLine.replace(start, length, rep);
+
+	return textLine;
+}
+
+static void setLineText(KateView *view, int line, const QString &text)
+{
+	view->doc()->removeLine(line);
+	view->doc()->insertLine(text, line);
+}
+
+bool SedReplace::execCmd(QString cmd, KateView *view)
+{
+	if (QRegExp("[$%]?s/.+/.*/n?").find(cmd, 0)==-1)
+		return false;
+	
+	bool fullFile=cmd[0]=='%';
+	bool noCase=cmd[cmd.length()-1]=='n';
+	bool onlySelect=cmd[0]=='$';
+
+	QRegExp3 splitter("^[$%]?s/(.+(?:\\\\|))/(.*(?:\\\\|))/[n]?$");
+	splitter.search(cmd);
+	
+	QString find=splitter.cap(1);
+	QString replace=splitter.cap(2);
+	
+	
+	if (fullFile)
+	{
+		int numLines=view->doc()->numLines();
+		for (int line=0; line < numLines; line++)
+		{
+			QString text=view->textLine(line);
+			text=sedMagic(text, find, replace, noCase);
+			setLineText(view, line, text);
+		}
+	}
+	else if (onlySelect)
+	{
+		// Not implemented
+	}
+	else
+	{ // just this line
+		QString textLine=view->currentTextLine();
+		int line=view->currentLine();
+		textLine=sedMagic(textLine, find, replace, noCase);
+		setLineText(view, line, textLine);
+	}
+	return true;
+}
+
+bool Character::execCmd(QString cmd, KateView *view)
+{
+	// hex, octal, base 9+1
+	QRegExp3 num("^char: *(0?x[0-9A-Fa-f]{1,4}|0[0-7]{1,6}|[0-9]{1,3})$");
+	if (num.search(cmd)==-1) return false;
+
+	cmd=num.cap(1);
+
+	// identify the base
+	
+	unsigned short int number=0;
+	int base=10;
+	if (cmd[0]=='x' || cmd.left(2)=="0x")
+	{
+		cmd.replace(QRegExp("^0?x"), "");
+		base=16;
+	}
+	else if (cmd[0]=='0')
+		base=8;
+	bool ok;
+	number=cmd.toUShort(&ok, base);
+	if (!ok || number==0) return false;
+	if (number<=255)
+	{
+		char buf[2];
+		buf[0]=(char)number;
+		buf[1]=0;
+		view->insertText(QString(buf));
+	}
+	else
+	{ // do the unicode thing
+		QChar c(number);
+		view->insertText(QString(&c, 1));
+	}
+	
+	return true;
+}
+
+bool Fifo::execCmd(QString cmd, KateView *view)
+{
+
+}
+
+}
+
+// vim: noet
+
