@@ -36,7 +36,7 @@
 #include <scriptmanager.h>
 #include <kaction.h>
 
-#define DEFAULT_STYLE "Classic"
+#define DEFAULT_STYLE "Modern"
 
 class GrepDialog;
 class KFileItem;
