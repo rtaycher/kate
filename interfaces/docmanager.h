@@ -31,7 +31,8 @@
 
 namespace Kate
 {
-
+/** This interface provides access to the Kate Document Manager.
+*/
 class DocManager : public QObject
 {
   Q_OBJECT
@@ -41,18 +42,31 @@ class DocManager : public QObject
     virtual ~DocManager ();
 
   public:
-    // get doc number n/current/first/next/doc by id
-    virtual class Document *getNthDoc (uint) { return 0L; };
+    /** Returns a pointer to the document indexed by n in the managers internal list.
+    */
+    virtual class Document *getNthDoc (uint n) { return 0L; };
+    /** Returns a pointer to the currently active document or NULL if no document is open.
+    */
     virtual class Document *getCurrentDoc () { return 0L; };
+    /** Returns a pointer to the first document in the managers internal list or NULL if the list is empty.
+    */
     virtual class Document *getFirstDoc () { return 0L; };
+    /** Returns a pointer to the next document in the managers internal list or NULL if no such doc exists.
+    */
     virtual class Document *getNextDoc () { return 0L; };
-    virtual class Document *getDocWithID (uint) { return 0L; };
+    /** Returns a pointer to the document with the given ID or NULL if no such document exists.
+    */
+    virtual class Document *getDocWithID (uint ID) { return 0L; };
 
-    // find do with URL / is doc with URL open ?
-    virtual int findDoc (KURL) { return 0L; };
-    virtual bool isOpen (KURL) { return 0L; };
+    /** Returns the ID of the document located at url if such a document is known by the manager.
+     */
+    virtual int findDoc (KURL url) { return 0L; };
+    /** Returns true if the document located at url is open, otherwise false.
+     */
+    virtual bool isOpen (KURL url) { return 0L; };
 
-    // how much docs open ?
+    /** returns the number of documents managed by this manager.
+    */
     virtual uint docCount () { return 0L; };
 };
 

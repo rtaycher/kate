@@ -30,7 +30,7 @@
 
 namespace Kate
 {
-
+/** This interface provides access to the central Kate objects */
 class Application : public KApplication
 {
   Q_OBJECT
@@ -39,9 +39,14 @@ class Application : public KApplication
     Application ();
     virtual ~Application ();
 
-    // get the current active doc/viewmanager, mainwindow
+    /** Returns a pointer to the view manager
+    */
     virtual class ViewManager *getViewManager () { return 0L; };
+    /** Returns a pointer to the document manager
+    */
     virtual class DocManager *getDocManager () { return 0L; };
+    /** Returns a pointer to the main window
+    */
     virtual class MainWindow *getMainWindow () { return 0L; };
 };
 

@@ -36,6 +36,8 @@ namespace Kate
 class Document;
 class Mark;
 
+/** This interface provides access to the view.
+*/
 class View : public KTextEditor::View
 {
   Q_OBJECT
@@ -44,14 +46,17 @@ class View : public KTextEditor::View
     View ( KTextEditor::Document *doc, QWidget *parent, const char *name = 0 );
     virtual ~View ();
 
-    // doc of the view
+    /** Returns a pointer to the document of the view.
+    */
     virtual Document *getDoc () { return 0L; };
 
-    // marked text
+    /** Returns the marked text in the view.
+    */
     virtual QString markedText () { return 0L; };
 
   public slots:
-    // popup a config dialog for the editor part
+    /** popup a config dialog for the editor part.
+    */
     virtual void configDialog () { ; };
 
     // Highlighting slots

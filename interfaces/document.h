@@ -33,6 +33,7 @@ class KConfig;
 namespace Kate
 {
 
+/** internal class for document bookmarks. */
 class Mark
 {
   public:
@@ -40,6 +41,8 @@ class Mark
     uint type;
 };
 
+/** This interface provedes access to the Kate Document class.
+*/
 class Document : public KTextEditor::Document
 {
   Q_OBJECT
@@ -49,28 +52,47 @@ class Document : public KTextEditor::Document
     virtual ~Document ();
 
   public:
-    // read/save config of the document
+    /** Read document config.
+    */
     virtual void readConfig () { ; };
+    /** Save document config.
+    */
     virtual void writeConfig () { ; };
 
-    // read/save sessionconfig of the document
+    /** Read document session config.
+    */
     virtual void readSessionConfig (KConfig *) { ; };
+    /** Save document session config.
+    */
     virtual void writeSessionConfig (KConfig *) { ; };
 
-    // docID
+    /** Returns the document ID.
+    */
     virtual uint docID () { return 0L; };
 
-    // marks
+    /** Defines possible mark types. A line can have marks of different types.
+    */
     enum marks
     {
     Bookmark = 1,
-    Breakpoint = 2
+    Breakpoint = 2,
+    markType0 = 4,
+    markType1 = 8,
+    markType2 = 16,
+    markType3 = 32,
+    markType4 = 64,
+    markType5 = 128,
+    markType6 = 256,
+    markType7 = 512,
+    markType8 = 1024
     };
 
+    /** A list of all marks in a document. Use binary comparing to find marks of a specific type.
+    */
     virtual QList<Mark> marks () { QList<Mark> l; return l; };
 
   public slots:
-    // clear buffer/filename - update the views  
+    // clear buffer/filename - update the views
     virtual void flush () { ; };
 };
 

@@ -6,7 +6,7 @@
     email                : crossfire@babylon2k.de
  ***************************************************************************/
 
-/***************************************************************************
+/* **************************************************************************
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -36,6 +36,9 @@
 namespace Kate
 {
 
+/** Plugins that wish to have a page in the kate config dialog must create a widget
+    inheriting from this class and implement the applyConfig() method.
+*/
 class PluginConfigPage : public QWidget
 {
   Q_OBJECT
@@ -47,12 +50,15 @@ class PluginConfigPage : public QWidget
     PluginConfigPage (QObject* parent = 0L, QWidget *parentWidget = 0L);
     virtual ~PluginConfigPage ();
 
-    // apply the config of the page to the plugin / save it
+    /** Reimplement to apply the config of the page to the plugin and save it */
     virtual void applyConfig () { ; };
 
     class Plugin *myPlugin;
 };
 
+/** Base class for plugin views.
+    Use the constructor from the plugins @ref createView method.
+*/
 class PluginView : public QObject, virtual public KXMLGUIClient
 {
   Q_OBJECT
@@ -64,13 +70,17 @@ class PluginView : public QObject, virtual public KXMLGUIClient
     PluginView (class Plugin *plugin = 0L, class MainWindow *win = 0L);
     virtual ~PluginView ();
 
-    // set xmlGUI rc file
+    /** Set the xmlGUI rc file for the plugin. */
     void setXML (QString filename);
 
     class Plugin *myPlugin;
     class MainWindow *myMainWindow;
 };
 
+
+/** The base class for all Kate plugins.
+
+*/
 class Plugin : public QObject
 {
   Q_OBJECT
@@ -82,20 +92,54 @@ class Plugin : public QObject
     Plugin (QObject* parent = 0L, const char* name = 0L);
     virtual ~Plugin ();
 
-    // create a view / can plugin create a view ?
+    /** Called by the plugin manager to create GUI elements for the plugin.
+        This method must create a Kate::PluginView and the required actions
+        and sidebar widgets as well as setting the ui XML file.
+<pre>
+Kate::PluginView* myPlugin::createView()
+{
+  Kate::PluginView *view = new Kate::PluginView( this, win );
+  // ... initialize GUI elements
+  return view;
+}
+</pre>
+    */
     virtual PluginView *createView (class MainWindow *) { return 0L; };
+
+    /** Plugins that has no GUI elements must reimplement this to return false.
+    */
     virtual bool hasView () { return true; };
 
-    // create a configpage / can plugin create a configpage ?
+    /** Plugins that has a config page must implement this method. It is called by
+        the plugin manager when the config dialog is created.
+        It must create and initialize the config page and return a pointer
+    */
     virtual PluginConfigPage *createConfigPage (QWidget *) { return 0L; };
+
+    /** Plugins that has a config page must remplement this method to return true.
+    */
     virtual bool hasConfigPage () { return false; };
 
-    // name / title / icon of the configpage (if you have a page, you must have these stuff too)
+    /** Plugins that has a config page must reimplement this method to return
+        a suitable name for the page
+    */
     virtual class QString configPageName() { return 0L; };
+
+    /** Plugins that has a config page must reimplement this method to return
+        a suitable title for the page. The title is displayed on the top of the config page.
+    */
     virtual class QString configPageTitle() { return 0L; };
+
+    /** Plugins that has a config page may reimplement this method to return
+        a suitable icon for the page. The icon is displayed in the config dialog tree.
+    */
     virtual class QPixmap configPageIcon() { return 0L; };
 
     QList<PluginView> viewList;
+
+    /** A pointer to the application object.
+    Allows the plugin to acces the document and view managers as well as the main window.
+    */
     class Application *myApp;
 };
 

@@ -32,6 +32,9 @@
 namespace Kate
 {
 
+/** An interface to the kate viewmanager.
+
+ */
 class ViewManager : public QWidget
 {
   Q_OBJECT
@@ -40,10 +43,10 @@ class ViewManager : public QWidget
     ViewManager (QWidget *parent = 0L);
     virtual ~ViewManager ();
 
-    // current active view
+    /** Returns a pointer to the currently active KateView */
     virtual class View *getActiveView() { return 0L; };
 
-    // open a file
+    /** Opens the file pointed to by URL */
     virtual void openURL (KURL) { ; };
 };
 
