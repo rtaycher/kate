@@ -165,6 +165,9 @@ class KateViewSpaceContainer: public QWidget
 
     bool m_activeViewRunning;
     KateMainWindow *m_mainWindow;
+    
+    bool m_pendingViewCreation;
+    QGuardedPtr<Kate::Document> m_pendingDocument;
 };
 
 #endif

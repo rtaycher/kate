@@ -53,7 +53,6 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
   friend class KateConfigDialog;
   friend class KateApp;
   friend class KateViewManager; //FIXME GET RID OF THIS
-  friend class KateViewSpaceContainer; //FIXME GET RID OF THIS
   friend class KateView;
   friend class KateDocument;
 
@@ -122,7 +121,7 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
   private:
     QGuardedPtr<Kate::Project> m_project;
     uint m_projectNumber;
-    QGuardedPtr<Kate::View> activeView;
+    
 
     KAction *closeCurrentViewSpace;
 

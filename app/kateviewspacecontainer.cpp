@@ -59,7 +59,7 @@
 
 KateViewSpaceContainer::KateViewSpaceContainer (QWidget *parent, KateViewManager *viewManager, KateDocManager *m_docManager, KateMainWindow *mainWindow)
  : QWidget  (parent),
-   m_viewManager(viewManager),m_activeViewRunning (false),m_mainWindow(mainWindow)
+   m_viewManager(viewManager),m_activeViewRunning (false),m_mainWindow(mainWindow),m_pendingViewCreation(false)
 {
 
   m_blockViewCreationAndActivation=false;
@@ -241,6 +241,9 @@ void KateViewSpaceContainer::reactivateActiveView() {
   if (view) {
     view->setActive(false);
     activateView(view);
+  } else if (m_pendingViewCreation) {
+    m_pendingViewCreation=false;
+    createView(m_pendingDocument);
   }
 }
 
@@ -262,10 +265,10 @@ void KateViewSpaceContainer::activateView ( Kate::View *view )
 
    m_mainWindow->toolBar ()->setUpdatesEnabled (false);
 
-    if (m_mainWindow->activeView)
-      m_mainWindow->guiFactory()->removeClient (m_mainWindow->activeView );
+    if (m_viewManager->guiMergedView)
+      m_mainWindow->guiFactory()->removeClient (m_viewManager->guiMergedView );
 
-    m_mainWindow->activeView = view;
+    m_viewManager->guiMergedView = view;
 
     if (!m_blockViewCreationAndActivation)
       m_mainWindow->guiFactory ()->addClient( view );
@@ -387,6 +390,26 @@ void KateViewSpaceContainer::openNewIfEmpty()
     }
   }
 #endif
+  if (m_viewManager->m_currentContainer!=this) {
+    m_pendingViewCreation=true;
+    if (m_viewList.count()<1) {
+        if (!m_pendingDocument) {
+          m_pendingDocument=m_docManager->document(m_docManager->documents()-1);
+          QString c;
+          if (m_pendingDocument->url().isEmpty() || (!showFullPath))
+          {
+            c = m_pendingDocument->docName();
+          }
+          else
+          {
+            c = m_pendingDocument->url().prettyURL();
+          }
+          setCaption(KStringHandler::lsqueeze(c,32)); 
+        }
+        return;
+    }
+    else emit viewChanged();
+  }
   if ((m_viewList.count() < 1) && (m_docManager->documents() < 1) )
      createView ();
   else if ((m_viewList.count() < 1) && (m_docManager->documents() > 0) )
@@ -678,7 +701,7 @@ void KateViewSpaceContainer::setShowFullPath( bool enable )
 {
   showFullPath = enable;
   statusMsg ();
-  m_mainWindow->slotWindowActivated ();
+  //m_mainWindow->slotWindowActivated ();
 }
 
 /**

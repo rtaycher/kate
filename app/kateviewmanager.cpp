@@ -60,6 +60,7 @@ KateViewManager::KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWi
  : QWidget  (parent),
    m_activeViewRunning (false),m_mainWindow(parent),m_tabWidget(tabWidget),showFullPath(false)
 {
+  guiMergedView=0;
   m_init=true;
   m_docManager = docManager;
   m_viewManager = new Kate::ViewManager (this);
@@ -112,8 +113,8 @@ void KateViewManager::slotNewTab() {
   if (!m_init) {
     container->activateView(documentNumber);
     container->setShowFullPath(showFullPath);
+    m_mainWindow->slotWindowActivated ();
   }
-
 }
 
 bool KateViewManager::eventFilter(QObject *o,QEvent *e) {
@@ -290,10 +291,9 @@ void KateViewManager::slotDocumentSaveAll()
 
 void KateViewManager::slotDocumentClose ()
 {
-#if 0
   // no active view, do nothing
   if (!activeView()) return;
-
+/*
   // prevent close document if only one view alive and the document of
   // it is not modified and empty !!!
   if ( (m_viewList.count() == 1)
@@ -304,13 +304,19 @@ void KateViewManager::slotDocumentClose ()
     activeView()->getDoc()->closeURL();
     return;
   }
-
+*/
   // close document
   m_docManager->closeDocument (activeView()->getDoc());
 
   // create new one, if none alive
-  openNewIfEmpty();
-#endif
+  //openNewIfEmpty();
+  if (m_currentContainer) {
+      m_currentContainer->openNewIfEmpty();
+  }
+  for (uint i=0;i<m_viewSpaceContainerList.count();i++) {
+    if (m_currentContainer!=m_viewSpaceContainerList.at(i))
+      m_viewSpaceContainerList.at(i)->openNewIfEmpty();
+  }
 }
 
 void KateViewManager::slotDocumentCloseAll ()
@@ -381,6 +387,7 @@ void KateViewManager::setShowFullPath( bool enable )
   for (uint i=0;i<m_viewSpaceContainerList.count();i++) {
     m_viewSpaceContainerList.at(i)->setShowFullPath(enable);
   }
+  m_mainWindow->slotWindowActivated ();
  }
 
 /**

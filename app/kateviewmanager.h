@@ -38,8 +38,6 @@ class KateViewManager : public QWidget
 {
   Q_OBJECT
 
-  friend class KateViewSpace;
-  friend class KateVSStatusBar;
 
   public:
     KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWidget, KateDocManager *docManager);
@@ -153,7 +151,9 @@ class KateViewManager : public QWidget
     QGuardedPtr<KMDI::TabWidget> m_tabWidget;
     bool m_init;
   protected:
+    friend class KateViewSpaceContainer;
     bool eventFilter(QObject *o,QEvent *e);
+    QGuardedPtr<Kate::View> guiMergedView;
 };
 
 #endif

@@ -102,7 +102,6 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   m_project = 0;
   m_projectNumber = 0;
 
-  activeView = 0;
 
   console = 0;
   greptool = 0;
@@ -804,7 +803,8 @@ bool KateMainWindow::eventFilter( QObject *o, QEvent *e )
     if ( cnt )
     {
       list.resize( cnt );
-
+#warning REIMPLEMENT Modified on Disk Handling
+#if 0
       // TODO
       // display a dialog with a list of modified documents,
       // and options to reload/disguard all, or handle individually
@@ -815,21 +815,22 @@ bool KateMainWindow::eventFilter( QObject *o, QEvent *e )
         if (ext)
           ext->slotModifiedOnDisk( activeView );
       }
+#endif
     }
   }
 
-  if ( o == greptool && e->type() == QEvent::Show && activeView )
+  if ( o == greptool && e->type() == QEvent::Show && m_viewManager->activeView() )
   {
-    if ( activeView->getDoc()->url().isLocalFile() )
+    if ( m_viewManager->activeView()->getDoc()->url().isLocalFile() )
     {
-      greptool->updateDirName( activeView->getDoc()->url().directory() );
+      greptool->updateDirName( m_viewManager->activeView()->getDoc()->url().directory() );
       return true;
     }
   }
   if ( ( o == greptool || o == console ) &&
-      e->type() == QEvent::Hide && activeView )
+      e->type() == QEvent::Hide && m_viewManager->activeView() )
   {
-     activeView->setFocus();
+     m_viewManager->activeView()->setFocus();
      return true;
   }
 
