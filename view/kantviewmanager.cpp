@@ -55,7 +55,34 @@
 #include <qstringlist.h>
 #include <qfileinfo.h>
 
-#include <kio/netaccess.h>
+/////////////////////////////////////////////////////////////////////
+// kantSplitter : public QSplitter
+// this class is required because qsplitter dosen't have a public method
+// to get the index of a child.
+/*
+class KantSplitter : public QSplitter
+{
+  Q_OBJECT
+
+  public:
+    KantSplitter ( Orientation o, QWidget * parent=0, const char * name=0 );
+    KantSplitter(QWidget* parent=0, const char* name=0);
+    ~KantSplitter()
+    {
+    }
+
+    bool isFirstChild(QWidget* w) { return idAfter(w) > 0; }
+};
+
+KantSplitter::KantSplitter(QWidget* parent, const char* name)
+  : QSplitter(parent, name)
+{
+}
+KantSplitter::KantSplitter ( Orientation o, QWidget * parent, const char * name=0 )
+  : QSplitter( o, parent, name )
+{
+}
+*/
 
 KantVMListBoxItem::KantVMListBoxItem (const QPixmap &pixmap,const QString &text, long docID) : KantListBoxItem (pixmap, text )
 {
@@ -984,7 +1011,7 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
 
   // reparent the other sibling of the parent.
   // here is a bug: they sometimes gets in the wrong place.
-  // requires reimplementation of qsplitter?
+  // requires reimplementation of QSplitter?
   while (p->children ())
   {
     kdDebug()<<"removeViewSpace(): reparenting a splitter"<<endl;

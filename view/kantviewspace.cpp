@@ -250,19 +250,3 @@ void KantVSStatusBar::paintEvent(QPaintEvent* e)
      p.drawPixmap(4,m_yOffset,viewspace->isActiveSpace() ? indicator_viewactive : indicator_empty);
    }
 }
-
-/////////////////////////////////////////////////////////////////////
-// kantSplitter : public QSplitter
-// this class is required because qsplitter dosen't have a public method
-// to get the index of a child.
-class KantSplitter : public QSplitter
-{
-  Q_OBJECT
-  public:
-    KantSplitter(QWidget* parent, const char* name=0)
-      : QSplitter(parent, name)
-    {;}
-    ~KantSplitter(){;}
-
-    bool isFirstChild(QWidget* w) { return idAfter(w) > 0; }
-};
