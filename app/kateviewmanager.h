@@ -91,7 +91,7 @@ class KateViewManager : public QWidget
     uint viewSpaceCount ();
 
     bool isViewActivationBlocked(){return m_blockViewCreationAndActivation;};
-
+    bool reopening(){return m_reopening;}
   public:
     void closeViews(uint documentNumber);
 
@@ -167,7 +167,7 @@ class KateViewManager : public QWidget
     QGridLayout *m_grid;
     QString m_encoding;
     bool m_blockViewCreationAndActivation;
-
+    bool m_reopening;
 };
 
 #endif

@@ -318,6 +318,7 @@ void KateMainWindow::setupActions()
 
 bool KateMainWindow::queryClose()
 {
+  if (m_viewManager->reopening()) return false;
   kdDebug(13000) << "queryClose()" << endl;
   bool val = false;
 

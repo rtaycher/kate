@@ -47,12 +47,15 @@
 
 #include <qtimer.h>
 
+#include <qprogressdialog.h>
+
 #include "katesplitter.h"
 
 KateViewManager::KateViewManager (QWidget *parent, KateDocManager *m_docManager) : QWidget  (parent)
 {
   m_viewManager = new Kate::ViewManager (this);
 
+  m_reopening=false;
   m_blockViewCreationAndActivation=false;
 
   // no memleaks
@@ -815,6 +818,7 @@ void KateViewManager::saveAllDocsAtCloseDown(  )
   // save current document, since if we just reopens documents
   // when restarted, we want that in front.
   scfg->setGroup("open files");
+  scfg->writeEntry("count",m_docManager->documents());
   scfg->writeEntry("current file", activeView()->getDoc()->url().prettyURL());
 
   m_blockViewCreationAndActivation=false;
@@ -847,6 +851,7 @@ void KateViewManager::saveAllDocsAtCloseDown(  )
 
 void KateViewManager::reopenDocuments(bool isRestore)
 {
+  m_reopening=true;
   kdDebug(13001)<<"reopenDocuments()"<<endl;
   KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
   KConfig* config = kapp->config();
@@ -859,15 +864,20 @@ void KateViewManager::reopenDocuments(bool isRestore)
     kdDebug(13001)<<"calling restoreViewConfig()"<<endl;
     restoreViewConfig();
   }
-  else if ( reopenAtStart || isRestore )
+  else if (  (reopenAtStart &&  (!(((KateApp*)kapp)->doNotInitialize() & 0x1))) || isRestore )
   {
     scfg->setGroup("open files");
     // try to focus the file that had focus at close down
     QString curfile = scfg->readEntry("current file");
     Kate::View *viewtofocus = 0L;
 
-#if 1
-    if (curfile.isEmpty()) return;
+    if (curfile.isEmpty()) {m_reopening=false; return;}
+    
+    QString fileCountStr=scfg->readEntry("count");
+    int fileCount=fileCountStr.isEmpty() ? 100 : fileCountStr.toInt();
+
+    QProgressDialog *pd=new QProgressDialog(i18n("Reopening files from last session ..."),QString::null,fileCount,0,"openprog",true);
+
     m_docManager->closeAllDocuments();
     int i = 0;
     QString fn;
@@ -881,35 +891,15 @@ void KateViewManager::reopenDocuments(bool isRestore)
 	scfg->setGroup("open files");
       }
       i++;
+
+      pd->setProgress(pd->progress()+1);
+      kapp->processEvents();
+
     }
+    delete pd;
     openURL(KURL(curfile));
   }
-#endif
-#if 0
-    int i = 0;
-    QString fn;
-    while ( scfg->hasKey( QString("File%1").arg( i ) )  )
-    {
-      fn = scfg->readEntry( QString("File%1").arg( i ) );
-      if ( !fn.isEmpty() ) {
-        kdDebug(13001)<<"reopenDocuments(): opening file : "<<fn<<endl;
-        openURL( KURL( fn ) );
-        Kate::View* v = activeView();
-        if (v)
-        {
-          scfg->setGroup( fn );
-          v->getDoc()->readSessionConfig( scfg );
-          scfg->setGroup( scfg->readEntry("viewconfig") );
-          v->readSessionConfig( scfg );
-          if ( fn == curfile ) viewtofocus = v;
-        }
-      }
-      scfg->setGroup("open files");
-      i++;
-    }
-    if ( viewtofocus ) activateView( viewtofocus );
-  }
-#endif
+  m_reopening=false;
   kdDebug(13001)<<">>>> reopenDocuments() DONE"<<endl;
 }
 
