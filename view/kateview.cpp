@@ -1526,8 +1526,8 @@ void KateView::slotUpdate()
 }
 void KateView::slotFileStatusChanged()
 {
-  int eol = getEol()-1;
-  eol = eol>=0? eol: 0;
+  int eol = getEol();
+  eol = eol>=1 ? eol : 0;
 
     setEndOfLine->setCurrentItem(eol);
 }
