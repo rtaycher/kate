@@ -235,6 +235,11 @@ void TopLevel::configure()
   QColor* colors = kateView->getColors();
   colorConfig->setColors(colors);
 
+ page = kd->addVBoxPage(i18n("Fonts"), i18n("Fonts Settings"),
+                              BarIcon("fonts", KIcon::SizeMedium) );
+  FontConfig *fontConfig = new FontConfig(page);
+  fontConfig->setFont (kateView->doc()->getFont());
+
   // indent options
   page=kd->addVBoxPage(i18n("Indent"), QString::null,
                        BarIcon("rightjust", KIcon::SizeMedium) );
@@ -280,6 +285,8 @@ void TopLevel::configure()
  if (kd->exec()) {
     // color options
     colorConfig->getColors(colors);
+     kateView->doc()->setFont (fontConfig->getFont());
+
     kateView->applyColors();
     // indent options
     indentConfig->getData(kateView);
