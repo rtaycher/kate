@@ -40,6 +40,17 @@ DCOPRef KateAppDCOPIface::activeMainWindow ()
   return DCOPRef ();
 }
 
+uint KateAppDCOPIface::activeMainWindowNumber ()
+{
+  KateMainWindow *win = m_app->activeKateMainWindow();
+
+  if (win)
+    return win->mainWindowNumber ();
+
+  return 0;
+}
+
+
 uint KateAppDCOPIface::mainWindows ()
 {
   return m_app->mainWindows ();

@@ -37,6 +37,8 @@ class KateDocManagerDCOPIface : public DCOPObject
     DCOPRef document (uint n);
 
     DCOPRef activeDocument ();
+    
+    uint activeDocumentNumber ();
 
     DCOPRef documentWithID (uint id);
 

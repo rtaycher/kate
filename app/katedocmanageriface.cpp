@@ -58,6 +58,16 @@ DCOPRef KateDocManagerDCOPIface::activeDocument ()
   return DCOPRef (obj);
 }
 
+uint KateDocManagerDCOPIface::activeDocumentNumber ()
+{
+  Kate::Document *doc = m_dm->activeDocument();
+
+  if (doc)
+    return doc->documentNumber ();
+  
+  return 0;
+}
+
 DCOPRef KateDocManagerDCOPIface::documentWithID (uint id)
 {
   Kate::Document *doc = m_dm->documentWithID (id);

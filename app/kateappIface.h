@@ -35,6 +35,8 @@ class KateAppDCOPIface : public DCOPObject
     DCOPRef documentManager ();
 
     DCOPRef activeMainWindow ();
+    
+    uint activeMainWindowNumber ();
 
     uint mainWindows ();
     DCOPRef mainWindow (uint n = 0);
