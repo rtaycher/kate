@@ -22,7 +22,7 @@
 #include "kateprojectmanager.moc"
 
 #include "kateproject.h"
-
+#include "kateapp.h"
 #include "katemainwindow.h"
 
 #include <kconfig.h>
@@ -126,6 +126,14 @@ bool KateProjectManager::close (Kate::Project *project)
       
       if (n >= 0)
       {
+        if (Kate::pluginViewInterface(project->plugin())) 
+        {
+          for (uint i=0; i< ((KateApp*)parent())->mainWindows(); i++)
+          {
+            Kate::pluginViewInterface(project->plugin())->removeView(((KateApp*)parent())->mainWindow(i));
+          }
+        }
+        
         m_projectsR.remove (n);
         m_projects.remove (n);
         
