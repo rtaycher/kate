@@ -206,8 +206,8 @@ class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
     void setSingleSelection(bool ss) {m_singleSelection = ss;}
     bool singleSelection() {return m_singleSelection;}
 
-    void readConfig(KConfig *);
-    void writeConfig(KConfig *);
+    void readConfig();
+    void writeConfig();
     void readSessionConfig(KConfig *);
     void writeSessionConfig(KConfig *);
 

@@ -476,11 +476,8 @@ void TopLevel::readConfig() {
   config->setGroup("General Options");
   readConfig(config);
 
-  config = KateFactory::instance()->config();
-
-  config->setGroup("General Options");
-  kateView->readConfig(config);
-  kateView->doc()->readConfig(config);
+  kateView->readConfig();
+  kateView->doc()->readConfig();
 }
 
 
@@ -493,11 +490,8 @@ void TopLevel::writeConfig()
   config->setGroup("General Options");
   writeConfig(config);
 
-  config = KateFactory::instance()->config();
-
-  config->setGroup("General Options");
-  kateView->writeConfig(config);
-  kateView->doc()->writeConfig(config);
+  kateView->writeConfig();
+  kateView->doc()->writeConfig();
 }
 
 // session management

@@ -237,9 +237,8 @@ void KateConfigDialog::slotApply()
 
   ksc->writeGlobalSettings();
   colorConfig->getColors( colors );
-  config->setGroup("kwrite");
-  v->writeConfig( config );
-  v->doc()->writeConfig( config );
+  v->writeConfig(  );
+  v->doc()->writeConfig();
   v->applyColors();
   hlManager->setHlDataList(hlDataList);
   hlManager->setDefaults(defaultStyleList);
@@ -251,7 +250,7 @@ void KateConfigDialog::slotApply()
   QListIterator<KateDocument> dit (docManager->docList);
   for (; dit.current(); ++dit)
   {
-    dit.current()->readConfig( config );
+    dit.current()->readConfig(  );
   }
 
   QListIterator<KateView> it (viewManager->viewList);
@@ -264,9 +263,8 @@ void KateConfigDialog::slotApply()
   }
 
   // repeat some calls: kwrite has a bad design.
-  config->setGroup("kwrite");
-  v->writeConfig( config );
-  v->doc()->writeConfig( config );
+  v->writeConfig( );
+  v->doc()->writeConfig( );
   hlPage->saveData();
   config->sync();
 }

@@ -745,13 +745,13 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
 //config file / session management functions
   public:
     /**
-      Reads config entries out of the KConfig object
+      Reads config entries
     */
-    void readConfig(KConfig *);
+    void readConfig();
     /**
-      Writes config entries into the KConfig object
+      Writes config entries i
     */
-    void writeConfig(KConfig *);
+    void writeConfig();
     /**
       Reads session config out of the KConfig object. This also includes
       the actual cursor position and the bookmarks.

@@ -68,6 +68,7 @@
 #include <klocale.h>
 #include <kcharsets.h>
 #include <kdebug.h>
+#include <kinstance.h>
 
 #include <kglobalsettings.h>
 #include <kaction.h>
@@ -473,9 +474,12 @@ bool KateDocument::isModified() const {
   return modified;
 }
 
-void KateDocument::readConfig(KConfig *config) {
+void KateDocument::readConfig() {
   int z;
   char s[16];
+
+  KConfig *config = KateFactory::instance()->config();
+  config->setGroup("Kate Document");
 
   setTabWidth(config->readNumEntry("TabWidth", 8));
   setUndoSteps(config->readNumEntry("UndoSteps", 50));
@@ -483,34 +487,41 @@ void KateDocument::readConfig(KConfig *config) {
   myEncoding = config->readEntry("Encoding", KGlobal::charsets()->name(KGlobal::charsets()->charsetForLocale()));
 
   QFont defaultFont = KGlobalSettings::fixedFont();
-  setFont (QFont (config->readEntry("Family", defaultFont.family()), config->readNumEntry("Size", defaultFont.pointSize()), QFont::Normal, false, KGlobal::charsets()->charsetForEncoding(config->readEntry("Charset",QFont::encodingName(defaultFont.charSet())))));
+  setFont (QFont (config->readEntry("Font Family", defaultFont.family()), config->readNumEntry("Font Size", defaultFont.pointSize()), QFont::Normal, false, KGlobal::charsets()->charsetForEncoding(config->readEntry("Font Charset",QFont::encodingName(defaultFont.charSet())))));
 
   for (z = 0; z < 5; z++) {
     sprintf(s, "Color%d", z);
     colors[z] = config->readColorEntry(s, &colors[z]);
   }
+
+  config->sync();
 }
 
-void KateDocument::writeConfig(KConfig *config) {
+void KateDocument::writeConfig() {
   int z;
   char s[16];
+
+  KConfig *config = KateFactory::instance()->config();
+  config->setGroup("Kate Document");
 
   config->writeEntry("TabWidth", tabChars);
   config->writeEntry("UndoSteps", undoSteps);
   config->writeEntry("SingleSelection", m_singleSelection);
   config->writeEntry("Encoding", myEncoding);
-  config->writeEntry("Family",myFont.family());
-  config->writeEntry("Size",myFont.pointSize());
-  config->writeEntry("Charset",QFont::encodingName(myFont.charSet()));
+  config->writeEntry("Font Family",myFont.family());
+  config->writeEntry("Font Size",myFont.pointSize());
+  config->writeEntry("Font Charset",QFont::encodingName(myFont.charSet()));
 
   for (z = 0; z < 5; z++) {
     sprintf(s, "Color%d", z);
     config->writeEntry(s, colors[z]);
   }
+
+  config->sync();
 }
 
 void KateDocument::readSessionConfig(KConfig *config) {
-  readConfig(config);
+  readConfig();
   m_url = config->readEntry("URL"); // ### doesn't this break the encoding? (Simon)
   setHighlight(hlManager->nameFind(config->readEntry("Highlight")));
   // anders: restore bookmarks if possible
@@ -525,7 +536,7 @@ void KateDocument::readSessionConfig(KConfig *config) {
 
 void KateDocument::writeSessionConfig(KConfig *config) {
 
-  writeConfig(config);
+  writeConfig();
   config->writeEntry("URL", m_url.url() ); // ### encoding?? (Simon)
   config->writeEntry("Highlight", m_highlight->name());
   // anders: save bookmarks

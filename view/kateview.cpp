@@ -1457,10 +1457,8 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name, bool H
   {
     connect( this, SIGNAL( dropEventPass(QDropEvent*) ), this, SLOT( slotDropEventPass(QDropEvent*) ) );
 
-    KConfig *config = KateFactory::instance()->config();
-    config->setGroup("kwrite");
-    this->readConfig( config );
-    myDoc->readConfig( config );
+    this->readConfig( );
+    myDoc->readConfig();
   }
 
   setHighlight->setCurrentItem(getHl());
@@ -2573,24 +2571,34 @@ void KateView::installPopup(QPopupMenu *rmb_Menu)
   rmbMenu = rmb_Menu;
 }
 
-void KateView::readConfig(KConfig *config)
+void KateView::readConfig()
 {
+  KConfig *config = KateFactory::instance()->config();
+  config->setGroup("Kate View");
+
   searchFlags = config->readNumEntry("SearchFlags", KateView::sfPrompt);
   configFlags = config->readNumEntry("ConfigFlags", configFlags) & ~KateView::cfMark;
   wrapAt = config->readNumEntry("WrapAt", wrapAt);
+
+  config->sync();
 }
 
-void KateView::writeConfig(KConfig *config)
+void KateView::writeConfig()
 {
+  KConfig *config = KateFactory::instance()->config();
+  config->setGroup("Kate View");
+
   config->writeEntry("SearchFlags",searchFlags);
   config->writeEntry("ConfigFlags",configFlags);
   config->writeEntry("WrapAt",wrapAt);
+
+  config->sync();
 }
 
 void KateView::readSessionConfig(KConfig *config) {
   PointStruc cursor;
 
-  readConfig(config);
+  readConfig();
 
   myViewInternal->xPos = config->readNumEntry("XPos");
   myViewInternal->yPos = config->readNumEntry("YPos");
@@ -2602,7 +2610,7 @@ void KateView::readSessionConfig(KConfig *config) {
 }
 
 void KateView::writeSessionConfig(KConfig *config) {
-  writeConfig(config);
+  writeConfig();
 
   config->writeEntry("XPos",myViewInternal->xPos);
   config->writeEntry("YPos",myViewInternal->yPos);

@@ -108,10 +108,8 @@ bool KateViewManager::createView ( bool newDoc, KURL url, KateView *origView, Ka
   myViewID++;
   viewList.append (view);
 
-  KConfig *config = ((KateMainWindow*)topLevelWidget())->config;
-  config->setGroup("kwrite");
-  doc->readConfig( config );
-  view->readConfig( config );
+  doc->readConfig ();
+  view->readConfig ();
 
   if (!newDoc && origView)
     view->copySettings(origView);
