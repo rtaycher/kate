@@ -227,7 +227,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
            this, SLOT( slotChanged() ) );
 
   // GROUP with the one below: "Meta-informations"
-  bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("Meta-information"), frGeneral );
+  bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("Meta-Information"), frGeneral );
   lo->addWidget( bgStartup );
 
   // save meta infos

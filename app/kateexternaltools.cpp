@@ -365,11 +365,11 @@ KateExternalToolsConfigWidget::KateExternalToolsConfigWidget( QWidget *parent, c
   connect( btnNew, SIGNAL(clicked()), this, SLOT(slotNew()) );
 
   btnRemove = new QPushButton( i18n("&Remove"), this );
-  lo->addWidget( btnRemove, 5, 1 );
+  lo->addWidget( btnRemove, 5, 2 );
   connect( btnRemove, SIGNAL(clicked()), this, SLOT(slotRemove()) );
 
   btnEdit = new QPushButton( i18n("&Edit..."), this );
-  lo->addWidget( btnEdit, 5, 2 );
+  lo->addWidget( btnEdit, 5, 1 );
   connect( btnEdit, SIGNAL(clicked()), this, SLOT(slotEdit()) );
 
   QPushButton *b = new QPushButton( i18n("Insert &Separator"), this );
