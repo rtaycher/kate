@@ -98,3 +98,4 @@ Type=Application
 Terminal=false
 InitialPreference=8
 X-DCOP-ServiceType=Multi
+Categories=Qt;KDE;TextEditor;
