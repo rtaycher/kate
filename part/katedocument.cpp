@@ -753,7 +753,6 @@ bool KateDocument::editInsertText ( uint line, uint col, const QString &s )
 bool KateDocument::editRemoveText ( uint line, uint col, uint len )
 {
   TextLine::Ptr l;
-  KateView *view;
   uint cLine, cCol;
 
   l = getTextLine(line);
@@ -1673,19 +1672,16 @@ void KateDocument::configDialog()
   // color options
   QVBox *page=kd->addVBoxPage(i18n("Colors"), QString::null,
                               BarIcon("colorize", KIcon::SizeMedium) );
-  ColorConfig *colorConfig = new ColorConfig(page);
-  QColor* colors = colors;
-  colorConfig->setColors(this->colors);
+  ColorConfig *colorConfig = new ColorConfig(page, "", this);
 
   page = kd->addVBoxPage(i18n("Fonts"), i18n("Fonts Settings"),
                               BarIcon("fonts", KIcon::SizeMedium) );
-  FontConfig *fontConfig = new FontConfig(page);
-  fontConfig->setFont (getFont(ViewFont));
+  FontConfig *fontConfig = new FontConfig(page, "", this);
 
   //PRINTING / Font options
   page = kd->addVBoxPage(i18n("Printing"),i18n("Print settings"),
 			    BarIcon("fonts",KIcon::SizeMedium));
-  FontConfig *printFontConfig = new FontConfig(page);
+  FontConfig *printFontConfig = new FontConfig(page, "", this);
   printFontConfig->setFont(getFont(PrintFont));
 
 
@@ -1713,7 +1709,6 @@ void KateDocument::configDialog()
   page = kd->addVBoxPage( i18n("Spelling"), i18n("Spell checker behavior"),
                           BarIcon("spellcheck", KIcon::SizeMedium) );
 
-
   KSpellConfig *ksc = new KSpellConfig(page, 0L, ksConfig(), false );
 
   kwin.setIcons(kd->winId(), kapp->icon(), kapp->miniIcon());
@@ -1738,19 +1733,19 @@ void KateDocument::configDialog()
 
  if (kd->exec()) {
     // color options
-    colorConfig->getColors(colors);
-    setFont (ViewFont,fontConfig->getFont());
+    colorConfig->apply ();
+    fontConfig->apply ();
     setFont (PrintFont,printFontConfig->getFont());
     tagAll();
     editKeyConfig->save();
     updateViews();
     updateEditAccels();
     // indent options
-    indentConfig->getData(this);
+    indentConfig->apply ();
     // select options
-    selectConfig->getData(this);
+    selectConfig->apply ();
     // edit options
-    editConfig->getData(this);
+    editConfig->apply ();
     // spell checker
     ksc->writeGlobalSettings();
     setKSConfig(*ksc);
@@ -4303,21 +4298,45 @@ QString KateDocument::HTMLEncode(QChar theChar)
 	return theChar;
 }
 
+Kate::ConfigPage *KateDocument::colorConfigPage (QWidget *p)
+{
+  return (Kate::ConfigPage*) new ColorConfig(p, "", this);
+}
 
+Kate::ConfigPage *KateDocument::fontConfigPage (QWidget *p)
+{
+  return (Kate::ConfigPage*) new FontConfig(p, "", this);
+}
 
+Kate::ConfigPage *KateDocument::indentConfigPage (QWidget *p)
+{
+  return (Kate::ConfigPage*) new IndentConfigTab(p, this);
+}
 
+Kate::ConfigPage *KateDocument::selectConfigPage (QWidget *p)
+{
+  return (Kate::ConfigPage*) new SelectConfigTab(p, this);
+}
 
+Kate::ConfigPage *KateDocument::editConfigPage (QWidget *p)
+{
+  return (Kate::ConfigPage*) new EditConfigTab(p, this);
+}
 
+Kate::ConfigPage *KateDocument::keysConfigPage (QWidget *p)
+{
+  return (Kate::ConfigPage*) new EditKeyConfiguration(p);
+}
 
+Kate::ConfigPage *KateDocument::kSpellConfigPage (QWidget *p)
+{
+  return (Kate::ConfigPage*) new KSpellConfigPage (p, this);
+}
 
-
-
-
-
-
-
-
-
+Kate::ConfigPage *KateDocument::hlConfigPage (QWidget *p)
+{
+  return (Kate::ConfigPage*) new HlConfigPage (p, this);
+}
 
 
 KateCursor::KateCursor ( KateDocument *doc)

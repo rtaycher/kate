@@ -19,6 +19,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <qgroupbox.h>
+#include <qlayout.h>
 #include <qvgroupbox.h>
 #include <qhgroupbox.h>
 #include <qhbox.h>
@@ -124,6 +125,41 @@ void StyleChanger::changed() {
     style->bold = bold->isChecked();
     style->italic = italic->isChecked();
   }
+}
+
+HlConfigPage::HlConfigPage (QWidget *parent, KateDocument *doc) : Kate::ConfigPage (parent, "")
+{
+  myDoc = doc;
+
+  QGridLayout *grid = new QGridLayout( this, 1, 1 );
+  
+  hlManager = HlManager::self();
+
+  defaultStyleList.setAutoDelete(true);
+  hlManager->getDefaults(defaultStyleList);
+
+  hlDataList.setAutoDelete(true);
+  //this gets the data from the KConfig object
+  hlManager->getHlDataList(hlDataList);
+
+  page = new HighlightDialogPage(hlManager, &defaultStyleList, &hlDataList, 0, this);
+  grid->addWidget( page, 0, 0);
+}
+
+HlConfigPage::~HlConfigPage ()
+{
+}
+
+void HlConfigPage::apply ()
+{
+  hlManager->setHlDataList(hlDataList);
+  hlManager->setDefaults(defaultStyleList);
+  page->saveData();
+}
+
+void HlConfigPage::reload ()
+{
+
 }
 
 HighlightDialog::HighlightDialog( HlManager *hlManager, ItemStyleList *styleList,

@@ -150,6 +150,7 @@ class KateDocument : public Kate::Document
     friend class KateUndoGroup;
     friend class KateUndo;
     friend class HlManager;
+    friend class ColorConfig;
 
   public:
     KateDocument (bool bSingleViewMode=false, bool bBrowserView=false, QWidget *parentWidget = 0, const char *widgetName = 0, QObject * = 0, const char * = 0);
@@ -366,6 +367,19 @@ class KateDocument : public Kate::Document
 
     void setModified(bool);
     bool isModified() const;
+    
+  //
+  // Kate::Document stuff
+  //
+  public:
+    Kate::ConfigPage *colorConfigPage (QWidget *);
+    Kate::ConfigPage *fontConfigPage (QWidget *);
+    Kate::ConfigPage *indentConfigPage (QWidget *);
+    Kate::ConfigPage *selectConfigPage (QWidget *);
+    Kate::ConfigPage *editConfigPage (QWidget *);
+    Kate::ConfigPage *keysConfigPage (QWidget *);
+    Kate::ConfigPage *kSpellConfigPage (QWidget *);
+    Kate::ConfigPage *hlConfigPage (QWidget *);
 
   protected:
     //

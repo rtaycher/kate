@@ -31,10 +31,6 @@
 #include "katefilelist.h"
 #include "../part/katefactory.h"
 
-#include "../part/kateviewdialog.h"
-#include "../part/katedialogs.h"
-#include "../part/katehighlight.h"
-
 #include <qabstractlayout.h>
 #include <qcheckbox.h>
 #include <qinputdialog.h>
@@ -146,73 +142,60 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   path << i18n("Editor") << i18n("Colors");
   QVBox *page = addVBoxPage(path, i18n("Colors"),
                               BarIcon("colorize", KIcon::SizeSmall) );
-  colorConfig = new ColorConfig(page);
+  colorConfigPage = v->doc()->colorConfigPage(page);
 
   // font options
   path.clear();
   path << i18n("Editor") << i18n("Fonts");
   page = addVBoxPage(path, i18n("Fonts Settings"),
                               BarIcon("fonts", KIcon::SizeSmall) );
-  fontConfig = new FontConfig(page);
-  fontConfig->setFont (v->doc()->getFont(KateDocument::ViewFont));
+  fontConfigPage = v->doc()->fontConfigPage(page);
 
-  //Print options (fonts at the moment)
-  path.clear();
-  path << i18n("Editor") << i18n("Printing");
-  page = addVBoxPage(path,i18n("Font printing settings"),
-			    BarIcon("fonts",KIcon::SizeSmall));
-  printFontConfig = new FontConfig(page);
-  printFontConfig->setFont(v->doc()->getFont(KateDocument::PrintFont));
   // indent options
   path.clear();
   path << i18n("Editor") << i18n("Indent");
   page=addVBoxPage(path, i18n("Indent Options"),
                        BarIcon("rightjust", KIcon::SizeSmall) );
-  indentConfig = new IndentConfigTab(page, v->doc());
+  indentConfigPage = v->doc()->indentConfigPage(page);
 
   // select options
   path.clear();
   path << i18n("Editor") << i18n("Select");
   page=addVBoxPage(path, i18n("Selection behavior"),
                        BarIcon("misc") );
-  selectConfig = new SelectConfigTab(page, v->doc());
+  selectConfigPage = v->doc()->selectConfigPage(page);
 
   // edit options
   path.clear();
   path << i18n("Editor") << i18n("Edit");
   page=addVBoxPage(path, i18n("Editing Options"),
                        BarIcon("edit", KIcon::SizeSmall ) );
-  editConfig = new EditConfigTab(page, v->doc());
+  editConfigPage = v->doc()->editConfigPage (page);
 
   // spell checker
   path.clear();
   path << i18n("Editor") << i18n("Spelling");
   page = addVBoxPage( path, i18n("Spell checker behavior"),
                           BarIcon("spellcheck", KIcon::SizeSmall) );
-  ksc = new KSpellConfig(page, 0L, v->doc()->ksConfig(), false );
-  colors = v->doc()->colors;
-  colorConfig->setColors( colors );
+  kSpellConfigPage = v->doc()->kSpellConfigPage (page);
+
+  path.clear();
+  path << i18n("Editor") << i18n("Highlighting");
+  page=addVBoxPage(path,i18n("Highlighting configuration"),
+                        SmallIcon("highlighting", KIcon::SizeSmall));
+  hlConfigPage = v->doc()->hlConfigPage (page);
+  
+  path.clear();
+  path << i18n("Editor") << i18n("Keyboard");
+  page=addVBoxPage(path,i18n("Keyboard configuration"),
+                        SmallIcon("edit", KIcon::SizeSmall));
+  keysConfigPage = v->doc()->keysConfigPage (page);
 
   path.clear();
   path << i18n("Plugins") << i18n("Manager");
   page=addVBoxPage(path,i18n("Configure plugins"),
                           BarIcon("misc",KIcon::SizeSmall));
   (void)new KateConfigPluginPage(page, this);
-
-  hlManager = HlManager::self();
-
-  defaultStyleList.setAutoDelete(true);
-  hlManager->getDefaults(defaultStyleList);
-
-  hlDataList.setAutoDelete(true);
-  //this gets the data from the KConfig object
-  hlManager->getHlDataList(hlDataList);
-
-  path.clear();
-  path << i18n("Editor") << i18n("Highlighting");
-  page=addVBoxPage(path,i18n("Highlighting configuration"),
-                        SmallIcon("highlighting", KIcon::SizeSmall));
-  hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &hlDataList, 0, page);
 
   for (uint i=0; i<pluginManager->myPluginList.count(); i++)
   {
@@ -278,17 +261,19 @@ void KateConfigDialog::slotApply()
   config->setGroup("General");
   config->writeEntry("restore views", cb_restoreVC->isChecked());
 
-  v->doc()->setFont (KateDocument::ViewFont,fontConfig->getFont());
-  v->doc()->setFont (KateDocument::PrintFont,printFontConfig->getFont());
-  ksc->writeGlobalSettings();
-  v->doc()->setKSConfig(*ksc);
-  colorConfig->getColors( colors );
+  colorConfigPage->apply();
+  fontConfigPage->apply();
+  indentConfigPage->apply();
+  selectConfigPage->apply();
+  editConfigPage->apply();
+  keysConfigPage->apply();
+  kSpellConfigPage->apply();
+  hlConfigPage->apply();
+
   v->doc()->writeConfig();
   v->doc()->tagAll();
   v->doc()->updateViews ();
-  hlManager->setHlDataList(hlDataList);
-  hlManager->setDefaults(defaultStyleList);
-  hlPage->saveData();
+
   config->sync();
 
   // all docs need to reread config.
@@ -302,15 +287,8 @@ void KateConfigDialog::slotApply()
   for (; it.current(); ++it)
   {
     v = it.current();
-    indentConfig->getData( v->doc() );
-    selectConfig->getData( v->doc() );
-    editConfig->getData( v->doc() );
+    v->doc()->readConfig();
   }
-
-  // repeat some calls: kwrite has a bad design.
-  v->doc()->writeConfig( );
-  hlPage->saveData();
-  config->sync();
 
   for (uint i=0; i<pluginPages.count(); i++)
   {

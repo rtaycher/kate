@@ -46,6 +46,7 @@
 #include <kparts/componentfactory.h>
 #include <kkeybutton.h>
 #include <klistview.h>
+#include <qlayout.h>
 #include <kconfig.h>
 
 #include <kmainwindow.h>
@@ -291,8 +292,10 @@ const int IndentConfigTab::flags[] = {KateDocument::cfAutoIndent, KateDocument::
   KateDocument::cfBackspaceIndents,KateDocument::cfTabIndents, KateDocument::cfKeepIndentProfile, KateDocument::cfKeepExtraSpaces};
 
 IndentConfigTab::IndentConfigTab(QWidget *parent, KateDocument *view)
-  : QWidget(parent, 0L)
+  : Kate::ConfigPage(parent)
 {
+  myDoc = view;
+
   QVBoxLayout *layout = new QVBoxLayout(this, 0, KDialog::spacingHint() );
   int configFlags = view->configFlags();
 
@@ -344,12 +347,25 @@ void IndentConfigTab::getData(KateDocument *view) {
   view->setConfigFlags(configFlags);
 }
 
+void IndentConfigTab::apply ()
+{
+  getData(myDoc);
+}
+
+
+void IndentConfigTab::reload ()
+{
+
+}
+
 const int SelectConfigTab::flags[] = {KateDocument::cfPersistent, KateDocument::cfDelOnInput,
   KateDocument::cfMouseAutoCopy, KateDocument::cfSingleSelection, KateDocument::cfXorSelect};
 
 SelectConfigTab::SelectConfigTab(QWidget *parent, KateDocument *view)
-  : QWidget(parent, 0L)
+  : Kate::ConfigPage(parent)
 {
+  myDoc = view;
+
   QVBoxLayout *layout = new QVBoxLayout(this, 0, KDialog::spacingHint() );
   int configFlags = view->configFlags();
 
@@ -394,16 +410,27 @@ void SelectConfigTab::getData(KateDocument *view) {
   view->setConfigFlags(configFlags);
 }
 
+void SelectConfigTab::apply ()
+{
+  getData (myDoc);
+}
+
+void SelectConfigTab::reload ()
+{
+
+}
+
 const int EditConfigTab::flags[] = {KateDocument::cfWordWrap, KateDocument::cfReplaceTabs, KateDocument::cfRemoveSpaces,
   KateDocument::cfAutoBrackets, KateDocument::cfGroupUndo, KateDocument::cfShowTabs, KateDocument::cfSmartHome,
   KateDocument::cfPageUDMovesCursor, KateDocument::cfWrapCursor};
 
 EditConfigTab::EditConfigTab(QWidget *parent, KateDocument *view)
-  : QWidget(parent, 0L) {
+  : Kate::ConfigPage(parent) {
 
   QHBoxLayout *mainLayout;
   QVBoxLayout *cbLayout, *leLayout;
   int configFlags;
+  myDoc = view;
 
   mainLayout = new QHBoxLayout(this, 0, KDialog::spacingHint() );
 
@@ -503,9 +530,21 @@ void EditConfigTab::getData(KateDocument *view)
   view->setUndoSteps(e3->value());
 }
 
-ColorConfig::ColorConfig( QWidget *parent, char *name )
-  : QWidget( parent, name )
+void EditConfigTab::apply ()
 {
+  getData (myDoc);
+}
+
+void EditConfigTab::reload ()
+{
+
+}
+
+ColorConfig::ColorConfig( QWidget *parent, char *name, KateDocument *doc )
+  : Kate::ConfigPage(parent)
+{
+  myDoc = doc;
+
   QGridLayout *glay = new QGridLayout( this, 6, 2, 0, KDialog::spacingHint());
   glay->setColStretch(1,1);
   glay->setRowStretch(5,1);
@@ -527,6 +566,8 @@ ColorConfig::ColorConfig( QWidget *parent, char *name )
   // QWhatsThis help
   QWhatsThis::add(m_back, i18n("Sets the background color of the editing area"));
   QWhatsThis::add(m_selected, i18n("Sets the background color of the selection. To set the text color for selected text, use the &quot;<b>Configure Highlighting</b>&quot; dialog."));
+
+  reload ();
 }
 
 
@@ -546,9 +587,21 @@ void ColorConfig::getColors(QColor *colors)
   colors[1] = m_selected->color();
 }
 
-FontConfig::FontConfig( QWidget *parent, char *name )
-  : QWidget( parent, name )
+void ColorConfig::apply ()
 {
+  getColors(myDoc->colors);
+}
+
+void ColorConfig::reload ()
+{
+  setColors(myDoc->colors);
+}
+
+FontConfig::FontConfig( QWidget *parent, char *name, KateDocument *doc )
+  : Kate::ConfigPage(parent)
+{
+  myDoc = doc;
+
     // sizemanagment
   QGridLayout *grid = new QGridLayout( this, 1, 1 );
 
@@ -557,6 +610,8 @@ FontConfig::FontConfig( QWidget *parent, char *name )
   grid->addWidget( m_fontchooser, 0, 0);
 
   connect (m_fontchooser, SIGNAL (fontSelected( const QFont & )), this, SLOT (slotFontSelected( const QFont & )));
+
+  reload ();
 }
 
 FontConfig::~FontConfig()
@@ -574,15 +629,27 @@ void FontConfig::slotFontSelected( const QFont &font )
   myFont = font;
 }
 
+void FontConfig::apply ()
+{
+  myDoc->setFont (KateDocument::ViewFont,getFont());
+}
+
+void FontConfig::reload ()
+{
+  setFont (myDoc->getFont(KateDocument::ViewFont));
+}
 
 
-EditKeyConfiguration::EditKeyConfiguration(QWidget *parent, char *name):QWidget(parent,name)
+
+EditKeyConfiguration::EditKeyConfiguration(QWidget *parent, char *name): Kate::ConfigPage(parent)
 {
 	(new QVBoxLayout(this))->setAutoAdd(true);
 	tmpWin=new KMainWindow(0);
 	tmpWin->hide();
 	setupEditKeys();
 	chooser=new KKeyChooser(m_editAccels->actions(),this);
+  KConfig config("kateeditkeysrc");
+  m_editAccels->readSettings(&config);
 }
 
 void EditKeyConfiguration::dummy()
@@ -620,11 +687,6 @@ void EditKeyConfiguration::setupEditKeys()
   m_editAccels->insertAction("KATE_CURSOR_DOWN",i18n("Cursor down"),"","Down",this,SLOT(dummy()));
   m_editAccels->insertAction("KATE_CURSOR_DOWN_SELECT",i18n("Cursor down + SELECT"),"","Shift+Down",this,SLOT(dummy()));
   m_editAccels->insertAction("KATE_SCROLL_DOWN",i18n("Scroll one line down"),"","Ctrl+Down",this,SLOT(dummy()));
-  
-  
-  KConfig config("kateeditkeysrc");
-  m_editAccels->readSettings(&config);
-
 }
 
 void EditKeyConfiguration::save()
@@ -636,11 +698,43 @@ void EditKeyConfiguration::save()
   config.sync();
 }
 
+void EditKeyConfiguration::apply()
+{
+  save ();
+}
+
+void EditKeyConfiguration::reload ()
+{
+}
+
 EditKeyConfiguration::~EditKeyConfiguration()
 {
 	delete tmpWin;
 }
 
+KSpellConfigPage::KSpellConfigPage (QWidget *parent, KateDocument *doc) : Kate::ConfigPage (parent, "")
+{
+  myDoc = doc;
+
+  QGridLayout *grid = new QGridLayout( this, 1, 1 );
+
+  ksc = new KSpellConfig(this, 0L, myDoc->ksConfig(), false );
+  grid->addWidget( ksc, 0, 0);
+}
+
+KSpellConfigPage::~KSpellConfigPage ()
+{
+}
+
+void KSpellConfigPage::apply ()
+{
+  ksc->writeGlobalSettings();
+  myDoc->setKSConfig(*ksc);
+}
+
+void KSpellConfigPage::reload ()
+{
+}
 
 #include "kateviewdialog.moc"
 

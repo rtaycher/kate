@@ -52,6 +52,19 @@ class Cursor : public KTextEditor::Cursor
     virtual ~Cursor () { ; };
 };
 
+class ConfigPage : public QWidget
+{
+  Q_OBJECT
+
+  public:
+    ConfigPage ( QWidget *parent=0, const char *name=0 ) : QWidget (parent, name) { ; };
+    virtual ~ConfigPage () { ; };
+
+  public slots:
+    virtual void apply () { ; };
+    virtual void reload () { ; };
+};
+
 /** This interface provides access to the Kate Document class.
 */
 class Document : public KTextEditor::Document, public KTextEditor::EditInterface,
@@ -91,6 +104,16 @@ class Document : public KTextEditor::Document, public KTextEditor::EditInterface
   public:
     virtual void setEncoding (QString e) = 0;
     virtual QString encoding() = 0;
+    
+  public:
+    virtual ConfigPage *colorConfigPage (QWidget *) = 0;
+    virtual ConfigPage *fontConfigPage (QWidget *) = 0;
+    virtual ConfigPage *indentConfigPage (QWidget *) = 0;
+    virtual ConfigPage *selectConfigPage (QWidget *) = 0;
+    virtual ConfigPage *editConfigPage (QWidget *) = 0;
+    virtual ConfigPage *keysConfigPage (QWidget *) = 0;
+    virtual ConfigPage *kSpellConfigPage (QWidget *) = 0;
+    virtual ConfigPage *hlConfigPage (QWidget *) = 0;
 };
 
 };

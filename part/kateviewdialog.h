@@ -35,6 +35,7 @@ class KKeyChooser;
 
 #include <kdialogbase.h>
 #include "kateview.h"
+#include "katedocument.h"
 
 class SearchDialog : public KDialogBase
 {
@@ -100,7 +101,7 @@ class GotoLineDialog : public KDialogBase
     QPushButton *btnOK;
 };
 
-class IndentConfigTab : public QWidget
+class IndentConfigTab : public Kate::ConfigPage
 {
     Q_OBJECT
 
@@ -110,13 +111,18 @@ class IndentConfigTab : public QWidget
     void getData(KateDocument *);
 
   protected:
+    KateDocument *myDoc;
 
     static const int numFlags = 6;
     static const int flags[numFlags];
     QCheckBox *opt[numFlags];
+    
+  public slots:
+    void apply ();
+    void reload ();
 };
 
-class SelectConfigTab : public QWidget
+class SelectConfigTab : public Kate::ConfigPage
 {
     Q_OBJECT
 
@@ -124,15 +130,20 @@ class SelectConfigTab : public QWidget
 
     SelectConfigTab(QWidget *parent, KateDocument *);
     void getData(KateDocument *);
+    KateDocument *myDoc;
 
   protected:
 
     static const int numFlags = 5;
     static const int flags[numFlags];
     QCheckBox *opt[numFlags];
+
+  public slots:
+    void apply ();
+    void reload ();
 };
 
-class EditConfigTab : public QWidget
+class EditConfigTab : public Kate::ConfigPage
 {
     Q_OBJECT
 
@@ -150,33 +161,43 @@ class EditConfigTab : public QWidget
     KIntNumInput *e1;
     KIntNumInput *e2;
     KIntNumInput *e3;
+    KateDocument *myDoc;
+  
+  public slots:
+    void apply ();
+    void reload ();
 };
 
-class ColorConfig : public QWidget
+class ColorConfig : public Kate::ConfigPage
 {
   Q_OBJECT
 
 public:
 
-  ColorConfig( QWidget *parent = 0, char *name = 0 );
+  ColorConfig( QWidget *parent = 0, char *name = 0, KateDocument *doc=0 );
   ~ColorConfig();
 
   void setColors( QColor * );
   void getColors( QColor * );
 
 private:
+  KateDocument *myDoc;
 
   KColorButton *m_back;
   KColorButton *m_selected;
+
+  public slots:
+    void apply ();
+    void reload ();
 };
 
-class FontConfig : public QWidget
+class FontConfig : public Kate::ConfigPage
 {
   Q_OBJECT
 
 public:
 
-  FontConfig( QWidget *parent = 0, char *name = 0 );
+  FontConfig( QWidget *parent = 0, char *name = 0, KateDocument *doc=0 );
   ~FontConfig();
 
   void setFont ( const QFont &font );
@@ -185,13 +206,18 @@ public:
   private:
     class KFontChooser *m_fontchooser;
     QFont myFont;
+    KateDocument *myDoc;
 
   private slots:
     void slotFontSelected( const QFont &font );
+
+  public slots:
+    void apply ();
+    void reload ();
 };
 
 
-class EditKeyConfiguration: public QWidget
+class EditKeyConfiguration: public Kate::ConfigPage
 {
 	Q_OBJECT
 public:
@@ -205,6 +231,27 @@ private:
 	void setupEditKeys();
 protected slots:
 	void dummy();
+  
+  public slots:
+    void apply ();
+    void reload ();
+};
+
+class KSpellConfigPage : public Kate::ConfigPage
+{
+  Q_OBJECT
+
+  public:
+    KSpellConfigPage (QWidget *parent, KateDocument *doc);
+    ~KSpellConfigPage ();
+
+  private:
+    KateDocument *myDoc;
+    class KSpellConfig *ksc;
+
+  public slots:
+    void apply ();
+    void reload ();
 };
 
 #endif

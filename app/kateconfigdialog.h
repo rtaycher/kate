@@ -19,8 +19,8 @@
 
 #include "katemain.h"
 
-#include "../part/katehighlight.h"
 #include "../interfaces/plugin.h"
+#include "../interfaces/document.h"
 #include <kdialogbase.h>
 
 struct PluginPageListItem
@@ -64,19 +64,15 @@ class KateConfigDialog : public KDialogBase
     class QCheckBox *cb_singleInstance;
     class QCheckBox *cb_syncKonsole;
 
-    class ColorConfig *colorConfig;
-    class FontConfig *fontConfig;
-    class FontConfig *printFontConfig;
-    class KSpellConfig * ksc;
-    class IndentConfigTab * indentConfig;
-    class SelectConfigTab * selectConfig;
-    class EditConfigTab * editConfig;
-    class QColor* colors;
+    Kate::ConfigPage *colorConfigPage;
+    Kate::ConfigPage *fontConfigPage;
+    Kate::ConfigPage *indentConfigPage;
+    Kate::ConfigPage *selectConfigPage;
+    Kate::ConfigPage *editConfigPage;
+    Kate::ConfigPage *keysConfigPage;
+    Kate::ConfigPage *kSpellConfigPage;
+    Kate::ConfigPage *hlConfigPage;
 
-    class HighlightDialogPage *hlPage;
-    class HlManager *hlManager;
-    HlDataList hlDataList;
-    ItemStyleList defaultStyleList;
     QPtrList<PluginPageListItem> pluginPages;
 };
 

@@ -22,6 +22,7 @@
 #include <kdialogbase.h>
 #include "katesyntaxdocument.h"
 #include  "katehighlight.h"
+#include "katedocument.h"
 #include <klistview.h>
 #include <qtabwidget.h>
 #include <kcolorbutton.h>
@@ -51,6 +52,26 @@ class StyleChanger : public QWidget {
     KColorButton *selCol;
     QCheckBox *bold;
     QCheckBox *italic;
+};
+
+class HlConfigPage : public Kate::ConfigPage
+{
+  Q_OBJECT
+
+  public:
+    HlConfigPage (QWidget *parent, KateDocument *doc);
+    ~HlConfigPage ();
+
+  private:
+    KateDocument *myDoc;
+    class HighlightDialogPage *page;
+    class HlManager *hlManager;
+    HlDataList hlDataList;
+    ItemStyleList defaultStyleList;
+
+  public slots:
+    void apply ();
+    void reload ();
 };
 
 class HighlightDialogPage : public QTabWidget
