@@ -68,6 +68,7 @@
 <ToolBar name="mainToolBar"><text>Main Toolbar</text>
   <Action name="file_save" group="file_operations" />
   <Action name="file_close" group="file_operations" />
+  <Separator />
   <Action name="edit_undo" />
   <Action name="edit_redo" />
   <Action name="edit_cut" />
@@ -75,6 +76,9 @@
   <Action name="edit_paste" />
   <Separator />
   <Action name="edit_find" />
+  <Separator />
+  <Action name="incFontSizes" />
+  <Action name="decFontSizes" />
 </ToolBar>
 
 </kpartgui>

@@ -949,6 +949,9 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
     int getHlCount ();
     QString getHlName (int);
 
+    void slotIncFontSizes ();
+    void slotDecFontSizes ();
+
   protected:
     uint myViewID;
     static uint uniqueID;

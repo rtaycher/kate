@@ -1468,6 +1468,11 @@ void KateView::setupActions()
                 myDoc->actionCollection(), "unselect_all");
       new KAction(i18n("Invert &Selection"), 0, this, SLOT(invertSelection()),
                 myDoc->actionCollection(), "invert_select");
+
+      new KAction(i18n("Increase Font Sizes"), "viewmag+", 0, this, SLOT(slotIncFontSizes()),
+                myDoc->actionCollection(), "incFontSizes");
+      new KAction(i18n("Decrease Font Sizes"), "viewmag-", 0, this, SLOT(slotDecFontSizes()),
+                myDoc->actionCollection(), "decFontSizes");
     }
     else
     {
@@ -1482,6 +1487,11 @@ void KateView::setupActions()
                 actionCollection(), "edit_deselectAll");
       new KAction(i18n("Invert &Selection"), 0, this, SLOT(invertSelection()),
                 actionCollection(), "edit_invertSelection");
+
+      new KAction(i18n("Increase Font Sizes"), "viewmag+", 0, this, SLOT(slotIncFontSizes()),
+                actionCollection(), "incFontSizes");
+      new KAction(i18n("Decrease Font Sizes"), "viewmag-", 0, this, SLOT(slotDecFontSizes()),
+                actionCollection(), "decFontSizes");
     }
 
     KStdAction::replace(this, SLOT(replace()), actionCollection());
@@ -3095,6 +3105,20 @@ int KateView::getHlCount ()
 QString KateView::getHlName (int z)
 {
   return HlManager::self()->hlName(z);
+}
+
+void KateView::slotIncFontSizes ()
+{
+  QFont font = myDoc->getFont();
+  font.setPointSize (font.pointSize()+1);
+  myDoc->setFont (font);
+}
+
+void KateView::slotDecFontSizes ()
+{
+  QFont font = myDoc->getFont();
+  font.setPointSize (font.pointSize()-1);
+  myDoc->setFont (font);
 }
 
 KateBrowserExtension::KateBrowserExtension( KateDocument *doc, KateView *view )
