@@ -1,10 +1,4 @@
-FIRST SUBJECT - ALL OTHER STUFF CAN BE DONE LATER !!!!!!
-
-           GO AWAY FROM USING KWRITE WIDGET - USE QTEXTEDIT STUFF
-
-
-
-LATER TODO IF KANT IS PORTED TO QTEXTEDIT STUFF:
+TODO:
     - make configure dialog work
     - Tjeck docs for change on hd when focused, warning dialog: reload? yes/no[/view diff]
   --------- RELEASE 0.2.0 -----------------------------------------------------------------
