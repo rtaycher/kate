@@ -2,7 +2,7 @@
 
 INCLUDES = $(all_includes)
 
-KDE_CXXFLAGS = -frtti
+KDE_CXXFLAGS = $(USE_RTTI)
 
 bin_PROGRAMS = kwrite
 
@@ -19,7 +19,7 @@ libkwrite_la_LIBADD = -lktexteditor -lkspell $(LIB_KPARTS)
 kwrite_SOURCES = toplevel.cpp
 
 kwrite_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-kwrite_LDADD = libkwrite.la $(LIB_KFILE) $(LIB_KDEUI) $(LIB_KDECORE)
+kwrite_LDADD = libkwrite.la $(LIB_KFILE)
 
 METASOURCES = AUTO
 
