@@ -23,20 +23,24 @@
 #include "katehighlight.h"
 #include <kpopupmenu.h>
 #include "../interfaces/viewmanager.h"
-#include "../interfaces/currentdocprovider.h"
 
-void KateViewHighlightAction::init(QObject *related_)
+void KateViewHighlightAction::init()
 {
 	subMenus.setAutoDelete( true );
-	related=related_;
+  myDoc = 0L;
 	connect(popupMenu(),SIGNAL(aboutToShow()),this,SLOT(slotAboutToShow()));
+}
+
+void KateViewHighlightAction::updateMenu (Kate::Document *doc)
+{
+  myDoc = doc;
 }
 
 void KateViewHighlightAction::slotAboutToShow()
 {
   kdDebug()<<"KateViewHighlightAction::slotAboutToShow()"<<endl;
 
-  QObject *_related=related;
+  Kate::Document *doc=myDoc;
 
   int count = HlManager::self()->highlights();
   static QString oldActiveSec;
@@ -68,44 +72,30 @@ void KateViewHighlightAction::slotAboutToShow()
     }
   }
 
-  Kate::KateCurrentDocProvider *docProvider=dynamic_cast<Kate::KateCurrentDocProvider*>(_related);
-  KateView *view=dynamic_cast<KateView*>(_related);
+  if (!doc) return;
 
-  if (view) kdDebug()<<"KateViewHighlightAction: related is a View"<<endl;
-  if (docProvider) kdDebug()<<"KateViewHighlightAction: related is a KateCurrentDocProvider"<<endl;
-
-  if ((!view) && (!docProvider)) return;
-
-  if (view?true:(bool)docProvider->getCurrentDoc())
+  for (uint i=0;i<subMenus.count();i++)
   {
-    for (uint i=0;i<subMenus.count();i++)
-    {
-      for (uint i2=0;i2<subMenus.at(i)->count();i2++)
+    for (uint i2=0;i2<subMenus.at(i)->count();i2++)
       	subMenus.at(i)->setItemChecked(subMenus.at(i)->idAt(i2),false);
-    }
-    popupMenu()->setItemChecked (0, false);
-
-    int i = subMenusName.findIndex (HlManager::self()->hlSection
-	(view?view->doc()->hlMode():docProvider->getCurrentDoc()->hlMode()));
-    if (subMenus.at(i))
-      subMenus.at(i)->setItemChecked ((view?view->doc()->hlMode():docProvider->getCurrentDoc()->hlMode()), true);
-    else
-      popupMenu()->setItemChecked (0, true);
-
-    oldActiveSec = HlManager::self()->hlSection (
-	view?view->doc()->hlMode():docProvider->getCurrentDoc()->hlMode());
-    oldActiveID = (view?view->doc()->hlMode():docProvider->getCurrentDoc()->hlMode());
   }
+  popupMenu()->setItemChecked (0, false);
 
+  int i = subMenusName.findIndex (HlManager::self()->hlSection(doc->hlMode()));
+  if (subMenus.at(i))
+    subMenus.at(i)->setItemChecked (doc->hlMode(), true);
+  else
+    popupMenu()->setItemChecked (0, true);
+
+  oldActiveSec = HlManager::self()->hlSection (doc->hlMode());
+  oldActiveID = (doc->hlMode());
 }
 
 void KateViewHighlightAction::setHl (int mode)
 {
-  QObject *_related=related;
-  if (dynamic_cast<KateView*>(_related))
-    dynamic_cast<KateView*>(_related)->doc()->setHlMode((uint)mode);
-  else
-	  if (dynamic_cast<Kate::KateCurrentDocProvider*>(_related))
-      		dynamic_cast<Kate::KateCurrentDocProvider*>(_related)->getCurrentDoc()->setHlMode((uint)mode);
+  Kate::Document *doc=myDoc;
+  
+  if (!doc) return;
 
+  doc->setHlMode((uint)mode);
 }

@@ -51,16 +51,6 @@ void KateDocManager::deleteDoc (Kate::Document *doc)
  emit documentDeleted (id);
 }
 
-void KateDocManager::createPseudoStaticActionsFor(QObject *actionCollection)
-{
-  KTextEditor::Document *doc = (KTextEditor::Document *) factory->create (0L, "kate", "KTextEditor::Document");
-  if (doc)
-  {
-     ((Kate::Document*)doc)->createPseudoStaticActionsFor(this,actionCollection);
-     delete doc;
-  }
-}
-
 Kate::Document *KateDocManager::nthDoc (uint n)
 {
   return docList.at(n);

@@ -27,6 +27,8 @@
 #define _KATE_DOCUMENT_INCLUDE_
 
 #include <qptrlist.h>
+#include <kaction.h>
+
 #include <ktexteditor/document.h>
 #include <ktexteditor/view.h>
 #include <ktexteditor/editinterface.h>
@@ -39,11 +41,6 @@
 #include <ktexteditor/configinterface.h>
 #include <ktexteditor/markinterface.h>
 #include <ktexteditor/printinterface.h>
-#ifndef KATEPART_NOT_INSTALLED
-#include <kate/currentdocprovider.h>
-#else
-#include <currentdocprovider.h>
-#endif
 
 namespace Kate
 {
@@ -68,6 +65,19 @@ class ConfigPage : public QWidget
   public slots:
     virtual void apply () { ; };
     virtual void reload () { ; };
+};
+
+class ActionMenu : public KActionMenu
+{
+  Q_OBJECT
+
+  public:
+    ActionMenu ( const QString& text, QObject* parent = 0, const char* name = 0 )
+      : KActionMenu(text, parent, name) { ; };
+    virtual ~ActionMenu () { ; };
+
+  public:
+    virtual void updateMenu (class Document *) = 0L;
 };
 
 /** This interface provides access to the Kate Document class.
@@ -99,8 +109,7 @@ class Document : public KTextEditor::Document, public KTextEditor::EditInterface
     */
     virtual void setDocName (QString ) { ; };
 
-    virtual void createPseudoStaticActionsFor(KateCurrentDocProvider *,QObject *){;}
-
+    virtual ActionMenu *hlActionMenu (const QString& , QObject* =0, const char* = 0) = 0L;
 
   public slots:
     // clear buffer/filename - update the views
@@ -108,11 +117,11 @@ class Document : public KTextEditor::Document, public KTextEditor::EditInterface
 
     /** Reloads the current document from disk if possible */
     virtual void reloadFile() = 0;
-    
+
     virtual void spellcheck() = 0;
 
     virtual void exportAs(const QString &) = 0;
-    
+
     virtual void applyWordWrap () = 0;
 
     

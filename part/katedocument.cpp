@@ -4245,17 +4245,6 @@ bool KateDocument::exportDocumentToHTML(QTextStream *outputStream,const QString 
 	return true;
 }
 
-void KateDocument::createPseudoStaticActionsFor(Kate::KateCurrentDocProvider *provider, QObject *coll)
-{
-	kdDebug()<<"KateDocument::createPseudoStaticActionsFor"<<endl;
- 	if (!(dynamic_cast<QObject*>(provider)))
-	{
-		kdDebug()<<"KateDocument::createPseudoStaticActionsFor: Can't create an action for a non QObject type provider :("<<endl;
-		return;
-	}
-      new KateViewHighlightAction(dynamic_cast<QObject*>(provider),i18n("&Highlight Mode"), coll,"set_highlight");
-}
-
 QString KateDocument::HTMLEncode(QChar theChar)
 {
 	switch (theChar.latin1())
@@ -4308,6 +4297,14 @@ Kate::ConfigPage *KateDocument::kSpellConfigPage (QWidget *p)
 Kate::ConfigPage *KateDocument::hlConfigPage (QWidget *p)
 {
   return (Kate::ConfigPage*) new HlConfigPage (p, this);
+}
+
+Kate::ActionMenu *KateDocument::hlActionMenu (const QString& text, QObject* parent, const char* name)
+{
+  KateViewHighlightAction *menu = new KateViewHighlightAction (text, parent, name);
+  menu->updateMenu (this);
+  
+  return (Kate::ActionMenu *)menu;
 }
 
 KateCursor::KateCursor ( KateDocument *doc)

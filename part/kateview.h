@@ -339,7 +339,7 @@ class KateView : public Kate::View
     KToggleAction *viewBorder;
     KRecentFilesAction *fileRecent;
     KSelectAction *setEndOfLine;
-    KateViewHighlightAction *setHighlight;
+    Kate::ActionMenu *setHighlight;
 
   protected slots:
     void slotDropEventPass( QDropEvent * ev );

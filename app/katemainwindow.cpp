@@ -76,19 +76,9 @@ KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_
   consoleDock = 0L;
   console = 0L;
 
-
   setAcceptDrops(true);
 
   setupMainWindow();
-
-  if (docManager->getCurrentDoc())
-    {
-	docManager->getCurrentDoc()->createPseudoStaticActionsFor(docManager,actionCollection());
-    }
-  else
-    {
-	docManager->createPseudoStaticActionsFor(actionCollection());
-    }
 
   setupActions();
 
@@ -295,7 +285,7 @@ void KateMainWindow::setupActions()
   connect(viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
   connect(viewManager,SIGNAL(statChanged()),this,SLOT(slotCurrentDocChanged()));
 
-  //setHighlight = new KateViewHighlightAction (viewManager,i18n("&Highlight Mode"), actionCollection(), "set_highlight");
+  setHighlight = 0L;
 //  connect (new KateExportAction(viewManager,i18n("&Export"),actionCollection(),"file_export"),
 //	SIGNAL(exportAs(const QString&)),viewManager,SLOT(exportAs(const QString&)));
 
@@ -432,6 +422,11 @@ void KateMainWindow::slotWindowActivated ()
     }
 
     viewBorder->setChecked(viewManager->activeView()->iconBorder());
+    
+    if (setHighlight == 0L)
+      setHighlight = viewManager->activeView()->getDoc()->hlActionMenu (i18n("&Highlight Mode"), actionCollection(), "set_highlight");
+
+    setHighlight->updateMenu (viewManager->activeView()->getDoc());
   }
 
   if (viewManager->viewCount ()  > 1)
@@ -482,7 +477,13 @@ void KateMainWindow::slotCurrentDocChanged()
   windowPrev->plug (documentMenu);
   documentMenu->insertSeparator ();
   scriptMenu->plug (documentMenu);
-  //setHighlight->plug (documentMenu);
+  
+  if (setHighlight == 0L)
+    setHighlight = viewManager->activeView()->getDoc()->hlActionMenu (i18n("&Highlight Mode"), actionCollection(), "set_highlight");
+
+  setHighlight->plug (documentMenu);
+  setHighlight->updateMenu (viewManager->activeView()->getDoc());
+
   setEndOfLine->plug (documentMenu);
   documentMenu->insertSeparator ();
 

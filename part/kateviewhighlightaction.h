@@ -20,44 +20,38 @@
 
 #include "kateglobal.h"
 
+#include "../interfaces/document.h"
+
 #include <kaction.h>
 #include <qstringlist.h>
 #include <qptrlist.h>
 #include <qpopupmenu.h>
 #include <qguardedptr.h>
 
-class KateViewHighlightAction: public KActionMenu
+class KateViewHighlightAction: public Kate::ActionMenu
 {
-	Q_OBJECT
-public:
-	KateViewHighlightAction(QObject *related, const QString& text, QObject* parent = 0,
-		const char* name = 0):KActionMenu(text, parent ,
-		name){init(related);}
+  Q_OBJECT
+  
+  public:
+    KateViewHighlightAction(const QString& text, QObject* parent = 0, const char* name = 0)
+       : Kate::ActionMenu(text, parent, name) { init(); };
 
-	KateViewHighlightAction( QObject  *related, const QString& text, const QIconSet& icon,
-		 QObject* parent = 0, const char* name = 0 )
-		: KActionMenu(text, icon, parent, name){init(related);}
+    ~KateViewHighlightAction(){;};
+    
+    void updateMenu (Kate::Document *doc);
 
-	KateViewHighlightAction( QObject *related,const QString& text, const QString& icon,
-                QObject* parent = 0, const char* name = 0 )
-		:KActionMenu(text,icon, parent, name ){init(related);}
+  private:
+    QGuardedPtr<Kate::Document>  myDoc;
+    void init();
+    QStringList subMenusName;
+    QStringList names;
+    QPtrList<QPopupMenu> subMenus;
 
-	KateViewHighlightAction( QObject* related, QObject* parent = 0, const char* name = 0 )
-    		:KActionMenu( parent, name) {init(related);}
+  public  slots:
+    void slotAboutToShow();
 
-	~KateViewHighlightAction(){;}
-private:
-	QGuardedPtr<QObject>  related;
-	void init(QObject *related_);
-	QStringList subMenusName;
-	QStringList names;
-        QPtrList<QPopupMenu> subMenus;
-
-public  slots:
-	void slotAboutToShow();
-
-private slots:
-  void setHl (int mode);
+  private slots:
+    void setHl (int mode);
 };
 
 #endif

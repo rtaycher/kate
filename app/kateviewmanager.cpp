@@ -127,6 +127,9 @@ bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, 
     view->getDoc()->setDocName (doc->docName ());
   }
 
+  if (((KateMainWindow *)topLevelWidget ())->setHighlight == 0L)
+    ((KateMainWindow *)topLevelWidget ())->setHighlight = view->getDoc()->hlActionMenu (i18n("&Highlight Mode"), ((KateMainWindow *)topLevelWidget ())->actionCollection(), "set_highlight");
+
   view->installPopup ((QPopupMenu*)((KMainWindow *)topLevelWidget ())->factory()->container("view_popup", (KMainWindow *)topLevelWidget ()) );
   connect(view,SIGNAL(cursorPositionChanged()),this,SLOT(statusMsg()));
   connect(view,SIGNAL(newStatus()),this,SLOT(statusMsg()));

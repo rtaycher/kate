@@ -44,8 +44,6 @@
 #include "viewmanager.h"
 #include "viewmanager.moc"
 
-#include "currentdocprovider.h"
-
 namespace Kate
 {
 
@@ -130,14 +128,6 @@ ViewManager::ViewManager (QWidget *parent) : QWidget(parent)
 }
 
 ViewManager::~ViewManager ()
-{
-}
-
-KateCurrentDocProvider::KateCurrentDocProvider()
-{
-}
-
-KateCurrentDocProvider::~KateCurrentDocProvider()
 {
 }
 

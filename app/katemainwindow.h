@@ -98,7 +98,7 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     KSelectAction* setEndOfLine;
     KAction* documentReload;
     KActionMenu* documentOpenWith;
-    //KateViewHighlightAction *setHighlight;
+    Kate::ActionMenu *setHighlight;
 
     KAction *gotoLine;
     KAction* windowNext;
