@@ -1,5 +1,4 @@
-- merge KWrite and KWriteView (cullmann - done - now KWriteView is only for internal use in KWrite)
-- implement all KTextEditor methods
+- implement all KTextEditor methods (on the way)
 - extend the KTextEditor interfaces to let it have stuff like VConfig?
 - obey the mark boolean arguments in all the insert* methods
    -- or --
