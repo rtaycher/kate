@@ -220,6 +220,7 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     void bookmarkMenuAboutToShow();
     void projectMenuAboutToShow();
     void settingsMenuAboutToShow();
+    void setHighlightMenuAboutToShow();
     void slotPluginsAdd();
     void slotPluginsDelete();
     void slotSettingsShowFullPath();

@@ -5,4 +5,11 @@ I hope it works well and improve workspeed on many little
 textfiles. ;-)
 
 The Kant team
+
+
+             *** KNOWN ISSUES ***
+
+1. Bookmarks are currently implemented in kwview, which means that setting a mark
+   only affects the view in which it is set. Having a document displayed in more
+   views this will seem unlogic.
                  

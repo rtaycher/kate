@@ -225,6 +225,8 @@ void KantMainWindow::setupActions()
 
   setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, actionCollection(), "set_highlight");
   connect(setHighlight, SIGNAL(activated(int)), viewManager, SLOT(slotSetHl(int)));
+  connect(setHighlight->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(setHighlightMenuAboutToShow()));
+
   QStringList list;
   for (int z = 0; z < HlManager::self()->highlights(); z++)
        list.append(i18n(HlManager::self()->hlName(z)));
@@ -745,6 +747,11 @@ void KantMainWindow::bookmarkMenuAboutToShow()
    QListIterator<KAction> it(l);
    for (; it.current(); ++it)
      it.current()->plug( bookmarkMenu->popupMenu() );
+}
+
+void KantMainWindow::setHighlightMenuAboutToShow()
+{
+   setHighlight->setCurrentItem( viewManager->activeView()->getHl() );
 }
 
 void KantMainWindow::slotPluginsAdd()

@@ -74,6 +74,8 @@
         <Action name="edit_bookmarksClear" />
         <Action name="edit_bookmarkList" />
     </menu>
+    <Action name="set_highlight"/>
+    <Separator />
     <Action name="document_reload" />
   </Menu>
 
@@ -106,8 +108,6 @@
     <Action name="set_configure_toolbars"/>
     <Action name="set_confHighlight"/>
     <Action name="settings_configure" />
-    <Separator />
-    <Action name="set_highlight"/>
   </Menu>
 
   <Menu name="help"><text>&amp;Help</text>
