@@ -51,24 +51,26 @@
 #include "kwattribute.h"
 #include "highlight.h"
 
+
+
 // general rule for keywords: if one keyword contains another at the beginning,
 // the long one has to come first (eg. "const_cast", "const")
 
 // ISO/IEC 9899:1990 (aka ANSI C)
 // "interrupt" isn´t an ANSI keyword, but an extension of some C compilers
-const char *cKeywords[] = {
+const char *cKeywords[] = { // 18 words
   "break", "case", "continue", "default", "do", "else", "enum", "extern",
   "for", "goto", "if", /*"interrupt",*/  "return", "sizeof", "struct",
   "switch", "typedef", "union", "while", 0L};
 
-const char *cTypes[] = {
+const char *cTypes[] = {    // 14 words
   "auto", "char", "const", "double", "float", "int", "long", "register",
   "short", "signed", "static", "unsigned", "void", "volatile", 0L};
 
 // ISO/IEC 14882:1998 . Sec. 2.11.1 (aka ANSI C++)
 // keyword "const" (apart from a type spec.) is also a keyword, so it is named inside this array
 // what about typeof?
-const char *cppKeywords[] = {
+const char *cppKeywords[] = { // 40 words 58 with QT_SUPPORT
   "asm", "catch", "class", "const_cast", "const", "delete", "dynamic_cast",
   "explicit", "export", "false", "friend", "inline", "namespace", "new",
   "operator", "private", "protected", "public", "reinterpret_cast",
@@ -77,31 +79,41 @@ const char *cppKeywords[] = {
   // alternative representations  (these words are reserved and shall not be used otherwise)
   //  ISO/IEC 14882:1998 . Sec. 2.11.2
   "and_eq", "and", "bitand", "bitor", "compl", "not_eq", "not", "or_eq", "or",
-  "xor_eq", "xor", 0L};
+  "xor_eq", "xor",
+#ifdef QT_SUPPORT
+   "bad_cast", "bad_typeid","except","finally","type_info", "xalloc",
+ // ADDED FOR TESTING
+ "Q_EXPORT","Q_OBJECT","K_DCOP","SLOT","SIGNAL", "slots","signals",
+ // QT 2.1 macros
+ "Q_PROPERTY", "Q_ENUMS","Q_SETS","Q_OVERRIDE","Q_CLASSINFO",
+#endif
+  0L};
 
-const char *cppTypes[] = {
+
+
+const char *cppTypes[] = {  //3 words
   "bool", "wchar_t", "mutable", 0L};
 
-const char *objcKeywords[] = {
+const char *objcKeywords[] = { // 13 words
   "@class", "@defs", "@encode", "@end", "@implementation", "@interface", "@private", "@protected",
   "@protocol", "@public","@selector", "self", "super", 0L};
 
-const char *objcTypes[] = {
+const char *objcTypes[] = {  // 14 words
   "auto", "char", "const", "double", "float", "int", "long", "register",
   "short", "signed", "static",
   "unsigned", "void", "volatile",
   0L};
 
-const char *idlKeywords[] = {
+const char *idlKeywords[] = { // 16 words
   "module", "interface", "struct", "case", "enum", "typedef","signal", "slot",
   "attribute", "readonly", "context", "oneway", "union", "in", "out", "inout",
   0L};
 
-const char *idlTypes[] = {
+const char *idlTypes[] = {  // 15 words
   "long", "short", "unsigned", "double", "octet", "sequence", "char", "wchar",
   "string", "wstring", "any", "fixed", "Object", "void", "boolean", 0L};
 
-const char *javaKeywords[] = {
+const char *javaKeywords[] = { // 46 words
   "abstract", "break", "case", "cast", "catch", "class", "continue",
   "default", "do", "else", "extends", "false", "finally", "for", "future",
   "generic", "goto", "if", "implements", "import", "inner", "instanceof",
@@ -110,20 +122,20 @@ const char *javaKeywords[] = {
   "synchronized", "this", "throws", "throw", "transient", "true", "try",
   "var", "volatile", "while", 0L};
 
-const char *javaTypes[] = {
+const char *javaTypes[] = {  // 12 words
   "boolean", "byte", "char", "const", "double", "final", "float", "int",
   "long", "short", "static", "void", 0L};
 
-const char *bashKeywords[] = {
+const char *bashKeywords[] = {  // 20 words
   "break","case","done","do","elif","else","esac","exit","export","fi","for",
   "function","if","in","return","select","then","until","while",".",0L};
 
-const char *modulaKeywords[] = {
+const char *modulaKeywords[] = { // 25 words
   "BEGIN","CONST","DEFINITION","DIV","DO","ELSE","ELSIF","END","FOR","FROM",
   "IF","IMPLEMENTATION","IMPORT","MODULE","MOD","PROCEDURE","RECORD","REPEAT",
   "RETURN","THEN","TYPE","VAR","WHILE","WITH","|",0L};
 
-const char *adaKeywords[] = {
+const char *adaKeywords[] = { // 63 words
   "abort","abs","accept","access","all","and","array","at","begin","body",
   "case","constant","declare","delay","delta","digits","do","else","elsif",
   "end","entry","exception","exit","for", "function","generic","goto","if",
@@ -132,12 +144,12 @@ const char *adaKeywords[] = {
   "record","renames","return","reverse","select","separate","subtype", "task",
   "terminate","then","type","use","when","while","with","xor",0L};
 
-const char *pythonKeywords[] = {
+const char *pythonKeywords[] = { // 28 words
   "and","assert","break","class","continue","def","del","elif","else",
   "except","exec"," finally","for","from","global","if","import","in","is",
   "lambda","not","or","pass","print","raise","return","try","while",0L};
 
-const char *perlKeywords[] = {
+const char *perlKeywords[] = {  // 51 words
   "and","&&", "bless","caller","cmp","continue","dbmclose","dbmopen","do",
   "die", "dump", "each", "else", "elsif","eq","eval", "exit", "foreach",
   "for", "ge", "goto", "gt", "if", "import", "last", "le", "local", "lt",
@@ -145,7 +157,7 @@ const char *perlKeywords[] = {
   "redo", "require","return","sub", "tied", "tie", "unless",
   "until", "untie", "use", "wantarray", "while", "xor", 0L};
 
-const char *satherKeywords[] = {
+const char *satherKeywords[] = { // 60 words
   "and","assert","attr","break!","case","class","const","else","elsif",
   "end","exception","external","false","if","include","initial","is","ITER",
   "loop","new","or","post","pre","private","protect","quit","raise",
@@ -158,41 +170,54 @@ const char *satherKeywords[] = {
 // are those Sather keywords, too?
 //     "nil","do@", "do"
 
-const char *satherSpecClassNames[] = {
+const char *satherSpecClassNames[] = {  // 17 words
   "$OB","ARRAY","AREF","AVAL","BOOL","CHAR","EXT_OB","FLTDX","FLTD","FLTX",
   "FLTI","FLT","INTI","INT","$REHASH","STR","SYS",0L};
 
-const char *satherSpecFeatureNames[] = {
+const char *satherSpecFeatureNames[] = {  // 19 words
 // real special features
   "create","invariant","main",
 // sugar feature names
   "aget","aset","div","is_eq","is_geq","is_gt","is_leq","is_lt","is_neq",
   "minus","mod","negate","not","plus","pow","times", 0L};
+#ifdef PASCAL_SUPPORT
+const char *pascalKeywords[] = { // 79 words
+  // Ancient DOS Turbo Pascal keywords:
+  //"absolute", "out",
+  // Generic pascal keywords:
+  "and", "array", "asm", "begin", "case", "const", "div", "do", "downto", "else",
+  "end", "for", "function", "goto", "if", "implementation", "in", "interface",
+  "label", "mod", "nil", "not", "of", "on", "operator", "or", "packed",
+  "procedure", "program", "record", "repeat", "self", "set", "shl", "shr", "then",
+  "to", "type", "unit", "until", "uses", "var", "while", "with", "xor",
+  // Borland pascal keywords:
+  "break", "continue", "constructor", "destructor", "inherited", "inline", "object",
+  "private","protected" , "public",
+  // Borland Delphi keywords
+  "as", "at", "automated", "class", "dispinterface", "except", "exports",
+  "finalization", "finally", "initialization", "is", "library", "on", "property",
+  "published", "raise", "resourcestring", "threadvar", "try",
+  // FPC keywords (www.freepascal.org)
+  "dispose", "exit", "false", "new", "true",
+  0L};
 
+const char *pascalTypes[] = { // 31 words
+  "Integer", "Cardinal",
+  "ShortInt", "SmallInt", "LongInt", "Int64", "Byte", "Word", "LongWord",
+  "Char", "AnsiChar", "WideChar",
+  "Boolean", "ByteBool", "WordBool", "LongBool",
+  "Single", "Double", "Extended", "Comp",  "Currency", "Real", "Real48"
+  "String", "ShortString", "AnsiString", "WideString",
+  "Pointer", "Variant",
+  "File", "Text",
+  0L};
+#endif
 
 char fontSizes[] = {4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,22,24,26,28,32,48,64,0};
 
-//default item style indexes
-/*
-const int dsNormal = 0;
-const int dsKeyword = 1;
-const int dsDataType = 2;
-const int dsDecVal = 3;
-const int dsBaseN = 4;
-const int dsFloat = 5;
-const int dsChar = 6;
-const int dsString = 7;
-const int dsComment = 8;
-const int dsOthers = 9;
-*/
 enum Item_styles { dsNormal,dsKeyword,dsDataType,dsDecVal,dsBaseN,dsFloat,
                    dsChar,dsString,dsComment,dsOthers};
 
-// It is my understanding that Roman numerals are also
-// considered Numbers in the Unicode scheme of things
-// so isInWord should be modified to look for letters
-// and digits instead of letters and numbers
-// CHANGED ch.isNumber to ch.isDigit
 bool isInWord(QChar ch) {
   return ch.isLetter() || ch.isDigit() || ch == '_';
 /*  static unsigned char data[] = {0,0,0,0,0,0,255,3,254,255,255,135,254,255,255,7};
@@ -241,6 +266,13 @@ Hl2CharDetect::Hl2CharDetect(int attribute, int context, QChar ch1, QChar ch2)
   sChar1 = ch1;
   sChar2 = ch2;
 }
+#ifdef PASCAL_SUPPORT
+Hl2CharDetect::Hl2CharDetect(int attribute, int context, const QChar *s)
+  : HlItem(attribute,context) {
+  sChar1 = s[0];
+  sChar2 = s[1];
+}
+#endif
 
 const QChar *Hl2CharDetect::checkHgl(const QChar *str) {
   if (str[0] == sChar1 && str[1] == sChar2) return str + 2;
@@ -258,6 +290,7 @@ const QChar *HlStringDetect::checkHgl(const QChar *s) {
   if (memcmp(s, str.unicode(), str.length()*sizeof(QChar)) == 0) return s + str.length();
   return 0L;
 }
+
 
 HlRangeDetect::HlRangeDetect(int attribute, int context, QChar ch1, QChar ch2)
   : HlItem(attribute,context) {
@@ -290,17 +323,15 @@ KeywordData::~KeywordData() {
 HlKeyword::HlKeyword(int attribute, int context)
   : HlItemWw(attribute,context) {
 //  words.setAutoDelete(true);
-//	Words.resize(100);
-	Dict.resize(79);
+	Dict.resize(83);
 }
 
 HlKeyword::~HlKeyword() {
 }
 
 
-void HlKeyword::addWord(const QString &word) {
-//  KeywordData *word;
-//  word = new KeywordData(s);
+void HlKeyword::addWord(const QString &word)
+{
   words.append(word);
 	Dict.insert(word,"dummy");
 }
@@ -315,7 +346,6 @@ void HlKeyword::addList(const char **list) {
   while (*list) {
     words.append(*list);
 		Dict.insert(*list,"dummy");
-//    addWord(*list);
     list++;
   }
 }
@@ -331,24 +361,14 @@ const QChar *HlKeyword::checkHgl(const QChar *s) {
 #else
 // this seems to speed up the lookup of keywords somewhat
 // anyway it has to be better than iterating through the list
-// would a dictionary/hash key be better?
 
-// this has a bug if your keyword is not space delimited it
-// will not be hightlighted
-/*
-  const QChar *s2=s;
-  while (!s2->isSpace() && *s2 != '\0') s2++;
-  QString lookup=QString(s,s2-s)+QString::null;
-  int found=Words.bsearch(lookup);
-  return (found > -1) ? s2 : 0L;
-*/
 #ifdef STATS
 	static bool once=false;
 	if(!once) Dict.statistics();
 	once=true;
 #endif
   const QChar *s2=s;
-  while (!s2->isSpace() && *s2 != '\0' ) s2++; // find space
+  while( !ustrchr("!%&()*+,-./:;<=>?[]^{|}~ ", *s2) && *s2 != '\0') s2++;
   QString lookup=QString(s,s2-s)+QString::null;
   return Dict[lookup] ? s2 : 0L;
 
@@ -389,7 +409,7 @@ const QChar *HlFloat::checkHgl(const QChar *s) {
     }
   }
   if (!b) return 0L;
-  if (*s == 'E' || *s == 'e') s++; else return (p) ? s : 0L;
+  if ((*s&0xdf) == 'E') s++; else return (p) ? s : 0L;
   if (*s == '-') s++;
   b = false;
   while (s->isDigit()) {
@@ -415,12 +435,12 @@ const QChar *HlCInt::checkHgl(const QChar *s) {
 
     do {
       str = s;
-      if (*s&0xdf == 'L') { // || *s == 'l') {
+      if ((*s&0xdf) == 'L' ) {
         l++;
         if (l > 2) return 0L;
         s++;
       }
-      if (*s&0xdf == 'U') { // || *s == 'u') {
+      if ((*s&0xdf) == 'U' ){
         u++;
         if (u > 1) return 0L;
         s++;
@@ -442,7 +462,7 @@ const QChar *HlCOct::checkHgl(const QChar *str) {
     s = str;
     while (*s >= '0' && *s <= '7') s++;
     if (s > str) {
-      if (*s == 'L' || *s == 'l' || *s == 'U' || *s == 'u') s++;
+      if ((*s&0xdf) == 'L' || (*s&0xdf) == 'U' ) s++;
       return s;
     }
   }
@@ -456,12 +476,12 @@ HlCHex::HlCHex(int attribute, int context)
 const QChar *HlCHex::checkHgl(const QChar *str) {
   const QChar *s;
 
-  if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X')) {
+  if (str[0] == '0' && ((str[1]&0xdf) == 'X' )) {
     str += 2;
     s = str;
-    while (s->isDigit() || (*s >= 'A' && *s <= 'F') || (*s >= 'a' && *s <= 'f')) s++;
+    while (s->isDigit() || ((*s&0xdf) >= 'A' && (*s&0xdf) <= 'F') /*|| (*s >= 'a' && *s <= 'f')*/) s++;
     if (s > str) {
-      if (*s == 'L' || *s == 'l' || *s == 'U' || *s == 'u') s++;
+      if ((*s&0xdf) == 'L' || (*s&0xdf) == 'U' ) s++;
       return s;
     }
   }
@@ -475,7 +495,7 @@ HlCFloat::HlCFloat(int attribute, int context)
 const QChar *HlCFloat::checkHgl(const QChar *s) {
 
   s = HlFloat::checkHgl(s);
-  if (s && (*s == 'F' || *s == 'f')) s++;
+  if (s && ((*s&0xdf) == 'F' )) s++;
   return s;
 }
 
@@ -514,8 +534,8 @@ const QChar *checkCharHexOct(const QChar *str) {
       s++;
       n *= 16;
       if (s->isDigit()) n += *s - '0';
-      else if (*s >= 'A' && *s <= 'F') n += *s - 'A' + 10;
-      else if (*s >= 'a' && *s <= 'f') n += *s - 'a' + 10;
+      else if ((*s&0xdf) >= 'A' && (*s&0xdf) <= 'F') n += (*s&0xdf) - 'A' + 10;
+//      else if (*s >= 'a' && *s <= 'f') n += *s - 'a' + 10;
       else break;
       if (n >= 256) return 0L;
     } while (true);
@@ -533,13 +553,6 @@ const QChar *checkCharHexOct(const QChar *str) {
   return s;
 }
 // checks for C escaped chars \n and escaped hex/octal chars
-// this one will eliminate 2 function calls
-// a strchr and the checkCharHexOct function
-// this is faster than the old one
-// I bracketed the function with gettimeofday calls
-// and got times from 3-9 mu secs
-// while the orginal was 9-12 mu secs K6-2 500
-// compiled with -O3
 const QChar *checkEscapedChar(const QChar *s) {
   int i;
   if (s[0] == '\\' && s[1] != '\0' ) {
@@ -549,6 +562,7 @@ const QChar *checkEscapedChar(const QChar *s) {
                 case  'b': // we want to fall through
                 case  'e':
                 case  'f':
+
                 case  'n':
                 case  'r':
                 case  't':
@@ -564,7 +578,7 @@ const QChar *checkEscapedChar(const QChar *s) {
                         // replaced with something else but
                         // for right now they work
                         // check for hexdigits
-                        for(i=0;i<2&&(*s>='0' && *s<='9'|| *s >= 'a' && *s <='f'|| *s>='A' && *s<='F');i++,s++);
+                        for(i=0;i<2 &&(*s >= '0' && *s <= '9' || (*s&0xdf) >= 'A' && (*s&0xdf) <= 'F');i++,s++);
                         if(i==0) return 0L; // takes care of case '\x'
                         break;
 
@@ -669,7 +683,7 @@ const QChar *HlAdaDec::checkHgl(const QChar *s) {
   if (s->isDigit()) {
     s++;
     while ((s->isDigit()) || *s == '_') s++;
-    if (*s != 'e' && *s != 'E') return s;
+    if ((*s&0xdf) != 'E') return s;
     s++;
     str = s;
     while ((s->isDigit()) || *s == '_') s++;
@@ -705,7 +719,7 @@ const QChar *HlAdaBaseN::checkHgl(const QChar *s) {
     }
     if (*s == '#') {
       s++;
-      if (*s != 'e' && *s != 'E') return s;
+      if ((*s&0xdf) != 'E') return s;
       s++;
       str = s;
       while ((s->isDigit()) || *s == '_') s++;
@@ -729,7 +743,7 @@ const QChar *HlAdaFloat::checkHgl(const QChar *s) {
     str = s;
     while (s->isDigit()) s++;
     if (s > str) {
-      if (*s != 'e' && *s != 'E') return s;
+      if ((*s&0xdf) != 'E') return s;
       s++;
       if (*s == '-') s++;
       str = s;
@@ -755,6 +769,7 @@ HlSatherClassname::HlSatherClassname(int attribute, int context)
 
 const QChar *HlSatherClassname::checkHgl(const QChar *s) {
   if (*s == '$') s++;
+
   if (*s >= 'A' && *s <= 'Z') {
     s++;
     while ((*s >= 'A' && *s <= 'Z')
@@ -803,8 +818,8 @@ const QChar *HlSatherBaseN::checkHgl(const QChar *s) {
     if (*s == 'x') {
       s++;
       while ((s->isDigit())
-             || (*s >= 'a' && *s <= 'f')
-             || (*s >= 'A' && *s <= 'F')
+//           || (*s >= 'a' && *s <= 'f')
+             || ((*s&0xdf) >= 'A' && (*s&0xdf) <= 'F')
              || *s == '_') s++;
     } else if (*s == 'o') {
       s++;
@@ -831,7 +846,7 @@ const QChar *HlSatherFloat::checkHgl(const QChar *s) {
     if (*s == '.') {
       s++;
       while (s->isDigit()) s++;
-      if (*s == 'e' || *s == 'E') {
+      if ((*s&0xdf) == 'E') {
         s++;
         if (*s == '-') s++;
         if (s->isDigit()) {
@@ -905,7 +920,7 @@ const QChar *HlLatexTag::checkHgl(const QChar *s) {
     s++;
     if (*s == ' ' || *s == '/' || *s == '\\') return s +1;
     str = s;
-    while ((*s >= 'a' && *s <= 'z') || (*s >= 'A' && *s <= 'Z')
+    while (((*s&0xdf) >= 'A' && (*s&0xdf) <= 'Z')
       || (s->isDigit()) || *s == '@') {
       s++;
     }
@@ -1410,11 +1425,99 @@ void ObjcHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
 	  keyword->addList(configlist);
 
 }
+#ifdef PASCAL_SUPPORT
+HlCaseInsensitiveKeyword::HlCaseInsensitiveKeyword(int attribute, int context)
+  : HlKeyword(attribute,context) {
+}
 
+HlCaseInsensitiveKeyword::~HlCaseInsensitiveKeyword() {
+}
+
+const QChar *HlCaseInsensitiveKeyword::checkHgl(const QChar *s)
+{
+  const QChar *s2=s;
+  while (!s2->isSpace() && *s2 != '\0'&& *s2 != ';' ) s2++; // find space
+  QString lookup=QString(s,s2-s)+QString::null;
+  return Dict[lookup.lower()] ? s2 : 0L;
+}
+const char *HlCaseInsensitiveKeyword::checkHgl(const char *s) {
+  int z, count;
+  QString word;
+
+  count = words.count();
+  for (z = 0; z < count; z++) {
+    word = *words.at(z);
+    if (strncasecmp(s,word,word.length()) == 0) {
+      return s + word.length();
+    }
+  }
+  return 0L;
+}
+
+PascalHighlight::PascalHighlight(const char *name) : GenHighlight(name) {
+  iWildcards = "*.pp;*.pas;*.inc";
+  iMimetypes = "text/x-pascal-src";
+}
+
+PascalHighlight::~PascalHighlight() {
+}
+
+void PascalHighlight::createItemData(ItemDataList &list) {
+  list.append(new ItemData("Normal Text",dsNormal));   // 0
+  list.append(new ItemData("Keyword",dsKeyword));      // 1
+  list.append(new ItemData("Data Type",dsDataType));   // 2
+  list.append(new ItemData("Number",dsDecVal));        // 3
+  list.append(new ItemData("String",dsString));        // 4
+  list.append(new ItemData("Directive",dsOthers));     // 5
+  list.append(new ItemData("Comment",dsComment));      // 6
+}
+
+void PascalHighlight::makeContextList() {
+  HlContext *c;
+  HlKeyword *keyword, *dataType;
+
+  contextList[0] = c = new HlContext(0,0);
+    c->items.append(keyword = new HlCaseInsensitiveKeyword(1,0));
+    c->items.append(dataType = new HlCaseInsensitiveKeyword(2,0));
+    c->items.append(new HlFloat(3,0));
+    c->items.append(new HlInt(3,0));
+    // TODO: Pascal hex $1234
+    c->items.append(new HlCharDetect(4,1,'\''));
+    c->items.append(new HlStringDetect(5,2,"(*$"));
+    c->items.append(new Hl2CharDetect(5,3,(QChar*)"{$"));
+    c->items.append(new Hl2CharDetect(6,4,(QChar*) "(*"));
+    c->items.append(new HlCharDetect(6,5,'{'));
+    c->items.append(new Hl2CharDetect(6,6,(QChar*) "//"));
+
+  // string context
+  contextList[1] = c = new HlContext(4,0);
+    c->items.append(new HlCharDetect(4,0,'\''));
+  // TODO: detect '''' or 'Holger''s Jokes are silly'
+
+  // (*$ directive context
+  contextList[2] = c = new HlContext(5,2);
+    c->items.append(new Hl2CharDetect(5,0,(QChar*)"*)"));
+  // {$ directive context
+  contextList[3] = c = new HlContext(5,3);
+    c->items.append(new HlCharDetect(5,0,'}'));
+  // (* comment context
+  contextList[4] = c = new HlContext(6,4);
+    c->items.append(new Hl2CharDetect(6,0,(QChar*)"*)"));
+  // { comment context
+  contextList[5] = c = new HlContext(6,5);
+    c->items.append(new HlCharDetect(6,0,'}'));
+  // one line context
+  contextList[6] = c = new HlContext(6,0);
+
+  keyword->addList(pascalKeywords);
+  dataType->addList(pascalTypes);
+}
+#endif
 IdlHighlight::IdlHighlight(const char * name) : CHighlight(name) {
   iWildcards = "*.idl";
   iMimetypes = "text/x-idl-src";
 }
+
 
 IdlHighlight::~IdlHighlight() {
 }
@@ -1450,6 +1553,7 @@ JavaHighlight::JavaHighlight(const char * name) : CHighlight(name) {
 
 JavaHighlight::~JavaHighlight() {
 }
+
 // UNTESTED
 void JavaHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
 {
@@ -1517,6 +1621,7 @@ BashHighlight::BashHighlight(const char * name) : GenHighlight(name) {
 //  iWildcards = "";
   iMimetypes = "text/x-shellscript";
 }
+
 
 
 BashHighlight::~BashHighlight() {
@@ -1696,6 +1801,7 @@ void PythonHighlight::makeContextList() {
     c->items.append(new HlFloat(5,0));
     c->items.append(new HlCChar(6,0));
     c->items.append(new HlStringDetect(7,3,"\"\"\""));
+
     c->items.append(new HlStringDetect(7,4,"\'\'\'"));
     c->items.append(new HlCharDetect(7,1,'"'));
     c->items.append(new HlCharDetect(7,2,'\''));
@@ -2164,6 +2270,9 @@ HlManager::HlManager() : QObject(0L) {
   hlList.append(new BashHighlight(  "Bash"     ));
   hlList.append(new ModulaHighlight("Modula 2" ));
   hlList.append(new AdaHighlight(   "Ada"      ));
+#ifdef PASCAL_SUPPORT
+  hlList.append(new PascalHighlight("Pascal"   ));
+#endif
   hlList.append(new PythonHighlight("Python"   ));
   hlList.append(new PerlHighlight(  "Perl"     ));
   hlList.append(new SatherHighlight("Sather"   ));

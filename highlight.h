@@ -31,7 +31,6 @@
 #include <qdict.h>
 
 
-
 class QCheckBox;
 class QComboBox;
 class QLineEdit;
@@ -70,6 +69,9 @@ class HlCharDetect : public HlItem {
 class Hl2CharDetect : public HlItem {
   public:
     Hl2CharDetect(int attribute, int context,  QChar ch1, QChar ch2);
+#ifdef PASCAL_SUPPORT
+		Hl2CharDetect(int attribute, int context, const QChar *ch);
+#endif
     virtual const QChar *checkHgl(const QChar *);
   protected:
     QChar sChar1;
@@ -119,7 +121,15 @@ class HlKeyword : public HlItemWw {
 //		QStrVec Words;
 		QDict<char> Dict;
 };
-
+#ifdef PASCAL_SUPPORT
+class HlCaseInsensitiveKeyword : public HlKeyword {
+  public:
+    HlCaseInsensitiveKeyword(int attribute, int context);
+    virtual ~HlCaseInsensitiveKeyword();
+    virtual const char *checkHgl(const char *);
+		virtual const QChar *checkHgl(const QChar *);
+};
+#endif
 class HlInt : public HlItemWw {
   public:
     HlInt(int attribute, int context);
@@ -516,7 +526,16 @@ class AdaHighlight : public GenHighlight {
     virtual void createItemData(ItemDataList &);
     virtual void makeContextList();
 };
-
+#ifdef PASCAL_SUPPORT
+class PascalHighlight : public GenHighlight {
+  public:
+    PascalHighlight(const char *name);
+    virtual ~PascalHighlight();
+  protected:
+    virtual void createItemData(ItemDataList &);
+    virtual void makeContextList();
+};
+#endif
 class PythonHighlight : public GenHighlight {
   public:
     PythonHighlight(const char * name);
@@ -531,7 +550,7 @@ class PerlHighlight : public Highlight {
   public:
     PerlHighlight(const char * name);
 
-    virtual int doHighlight(int ctxNum, TextLine *);
+    virtual int doHighlight(int ctxNum, TextLine*);
     virtual QString getCommentStart() { return QString("#"); };
   protected:
     virtual void createItemData(ItemDataList &);
