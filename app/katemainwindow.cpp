@@ -264,10 +264,6 @@ void KateMainWindow::setupActions()
   a->setWhatsThis(i18n("Configure which items should appear in the toolbar(s)."));
 
 
-  KActionMenu *settingsShowToolDocks=new KActionMenu( i18n("Tool Docks"), actionCollection(),"settings_show_tooldocks");
-  settingsShowToolDocks->setWhatsThis(i18n("This allows you to show/hide certain tool view dock areas."));
-
-
   // project menu
   a = new KAction(i18n("&New Project..."), "filenew", 0, this, SLOT(slotProjectNew()), actionCollection(), "project_new");
   a = new KAction(i18n("&Open Project..."), "fileopen", 0, this, SLOT(slotProjectOpen()), actionCollection(), "project_open");
