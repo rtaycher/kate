@@ -945,38 +945,32 @@ void KWriteDoc::insert(VConfig &c, const QString &s) {
   recordEnd(c);
 }
 
-void KWriteDoc::insertFile(VConfig &c, QIODevice &dev) {
-  char block[256];
-  int len;
-  char *s;
-  QChar ch;
-  QString buf;
-  char last = '\0';
-
+void KWriteDoc::insertFile(VConfig &c, QIODevice &dev)
+{
   recordStart(c, KWActionGroup::ugPaste);
 
- // TODO: port this to QTextStream (see loadFile)
-  do {
-    len = dev.readBlock(block, 256);
-    s = block;
-    while (len > 0) {
-      ch = *s;
-      if (ch.isPrint() || *s == '\t') {
+  // TODO: port this to QTextStream (see loadFile)
+  QString buf;
+  QChar ch, last;
+
+  QTextStream stream( &dev );
+  while ( !stream.eof() ) {
+    stream >> ch;
+
+    if (ch.isPrint() || ch == '\t') {
         buf += ch;
-      } else if (*s == '\n' || *s == '\r') {
-        if (last != '\r' || *s != '\n') {
+    } else if (ch == '\n' || ch == '\r') {
+        if (last != '\r' || ch != '\n') {
           recordAction(KWAction::newLine, c.cursor);
           recordInsert(c, buf);
           buf.truncate(0);
           c.cursor.y++;
           c.cursor.x = 0;
         }
-        last = *s;
-      }
-      s++;
-      len--;
+        last = ch;
     }
-  } while (s != block);
+  }
+
   recordInsert(c, buf);
   recordEnd(c);
 }
