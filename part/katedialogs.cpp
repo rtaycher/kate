@@ -442,7 +442,7 @@ void HlEditDialog::initItemOptions(QVBox *co)
 	//ItemPopCount->hide();
 
         co->setSpacing(15);
-        new QPushButton(i18n("Delete this item"),co);
+        new QPushButton(i18n("Delete This Item"),co);
 
 	/* init translation lists */
 	insertTranslationList("DetectChar","DetectChar",1);
