@@ -157,14 +157,6 @@ class View : public KTextEditor::View
     */
     virtual void cleanIndent() { ; };
     /**
-      Selects all text.
-    */
-    virtual void selectAll() { ; };
-    /**
-      Inverts the current selection.
-    */
-    virtual void invertSelection() { ; };
-    /**
       Comments out current line.
     */
     virtual void comment() { ; };

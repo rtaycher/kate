@@ -69,16 +69,8 @@ class Document : public KTextEditor::Document, KTextEditor::EditInterface, KText
     virtual ~Document ();
 
   public:
-    /** Opens and reads the current file into the document
-    */
-    virtual bool openFile() { return false; };
-    /** Saves the current document to file
-    */
-    virtual bool saveFile() { return false; };
-
-    virtual KTextEditor::View* createView( QWidget *, const char *) { return 0L; };
-
-    /** Read document config.
+    /*
+		* Read document config.
     */
     virtual void readConfig () { ; };
     /** Save document config.

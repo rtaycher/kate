@@ -12,4 +12,4 @@ eiffel.xml pascal.xml sather.xml python.xml makefile.xml ferite.xml scheme.xml
 rckwritedir = $(kde_datadir)/kwrite
 rckwrite_DATA = kwriteui.rc
 
-kde_services_DATA = kate_component.desktop
+kde_services_DATA = katepart.desktop
