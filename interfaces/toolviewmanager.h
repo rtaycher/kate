@@ -22,6 +22,8 @@
 
 #include <kdockwidget.h>
 
+class KMdiToolViewAccessor;
+
 namespace Kate
 {
 
@@ -52,61 +54,53 @@ class ToolViewManager : public QObject
      * @param widget widget to add
      * @param icon icon for the dock button
      * @param sname unique name (used for example for hide/show)
-     * @return KDockWidget * generated dockwidget
+     * @param tabToolTip tooltip for the tab
+     * @param tabCaption caption for the tab
+     * @return KMdiToolViewAccessor * generated accessor
      */
-    KDockWidget *addToolViewWidget (KDockWidget::DockPosition position,QWidget *widget, const class QPixmap&icon, const class QString&sname);
-    
-    /**
-     * Add a toolview
-     * @param position position where to dock
-     * @param name name
-     * @param icon icon for the dock button
-     * @param sname unique name (used for example for hide/show)
-     * @return KDockWidget * generated dockwidget
-     */
-    KDockWidget *addToolView (KDockWidget::DockPosition position,const char *name,const QPixmap &icon,const QString&sname) KDE_DEPRECATED;
+    KMdiToolViewAccessor *addToolView (KDockWidget::DockPosition position, QWidget *widget, const QPixmap &icon, const QString &sname, const QString &tabToolTip = 0, const QString &tabCaption = 0);
     
     /**
      * Remove a toolview
-     * @param widget widget to remove
+     * @param toolview widget to remove
      * @return bool success
      */
-    bool removeToolViewWidget (QWidget *widget);
+    bool removeToolView (QWidget *widget);
     
     /**
      * Remove a toolview
-     * @param dockwidget widget to remove
+     * @param toolview to remove
      * @return bool success
      */
-    bool removeToolView (KDockWidget *dockwidget);
+    bool removeToolView (KMdiToolViewAccessor *accessor);
 
     /**
      * Show the toolview
-     * @param dockwidget widget to show
+     * @param widget to show
      * @return bool success
      */
-    bool showToolView (KDockWidget*dockwidget);
+    bool showToolView (QWidget *widget);
     
     /**
      * Show the toolview
-     * @param sname name of the widget to show
+     * @param toolview to show
      * @return bool success
      */
-    bool showToolView (const QString& sname);
+    bool showToolView (KMdiToolViewAccessor *accessor);
     
     /**
      * Hide the toolview
-     * @param dockwidget widget to hide
+     * @param widget to hide
      * @return bool success
      */
-    bool hideToolView (KDockWidget*dockwidget);
+    bool hideToolView (QWidget *widget);
     
     /**
      * Hide the toolview
-     * @param sname name of the widget to hide
+     * @param toolview to hide
      * @return bool success
      */
-    bool hideToolView (const QString& sname);
+    bool hideToolView (KMdiToolViewAccessor *accessor);
 
   private:
     /**

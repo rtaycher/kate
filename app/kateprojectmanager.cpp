@@ -55,15 +55,19 @@ void KateProjectManager::setupPluginList ()
   {
     KService::Ptr ptr = (*it);
 
-    ProjectPluginInfo *info=new ProjectPluginInfo;
-
-    info->service = ptr;
-    info->name=info->service->property("X-KATE-InternalName").toString();
-    if (info->name.isEmpty()) info->name=info->service->library();
-
-    info->projectType=info->service->property("X-KATE-ProjectType").toString();
-
-    m_pluginList.append(info);
+    QString pVersion = ptr->property("X-Kate-Version").toString();
+    
+    if ((pVersion >= "2.2") && (pVersion <= KATE_VERSION))
+    {
+      ProjectPluginInfo *info=new ProjectPluginInfo;
+  
+      info->service = ptr;
+      info->name=info->service->library();
+  
+      info->projectType=info->service->property("X-Kate-ProjectType").toString();
+  
+      m_pluginList.append(info);
+    }
   }
 }
 

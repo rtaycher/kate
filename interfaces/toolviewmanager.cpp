@@ -53,45 +53,39 @@ ToolViewManager::~ToolViewManager ()
   delete d;
 }
 
-KDockWidget *ToolViewManager::addToolViewWidget(KDockWidget::DockPosition position,QWidget *widget, const class QPixmap&icon, const class QString&sname)
+KMdiToolViewAccessor *ToolViewManager::addToolView(KDockWidget::DockPosition position, QWidget *widget, const QPixmap &icon, const QString &sname, const QString &tabToolTip, const QString &tabCaption)
 {
-  return d->toolViewMan->addToolViewWidget (position, widget, icon, sname);
+  return d->toolViewMan->addToolView (position, widget, icon, sname, tabToolTip, tabCaption);
 }
 
-bool ToolViewManager::removeToolViewWidget(QWidget *widget)
+bool ToolViewManager::removeToolView(QWidget *widget)
 {
-  return d->toolViewMan->removeToolViewWidget (widget);
+  return d->toolViewMan->removeToolView (widget);
 }
 
-KDockWidget *ToolViewManager::addToolView(KDockWidget::DockPosition position,const char *name,const QPixmap &icon,const QString&sname)
+bool ToolViewManager::removeToolView(KMdiToolViewAccessor *accessor)
 {
-  return d->toolViewMan->addToolView (position, name, icon, sname);
+  return d->toolViewMan->removeToolView (accessor);
 }
 
-bool ToolViewManager::removeToolView(KDockWidget *dockwidget)
+bool ToolViewManager::showToolView(QWidget *widget)
 {
-  return d->toolViewMan->removeToolView (dockwidget);
+  return d->toolViewMan->showToolView (widget);
 }
 
-bool ToolViewManager::hideToolView(KDockWidget*dockwidget)
+bool ToolViewManager::showToolView(KMdiToolViewAccessor *accessor)
 {
-  return d->toolViewMan->hideToolView (dockwidget);
+  return d->toolViewMan->showToolView (accessor);
 }
 
-bool ToolViewManager::showToolView(KDockWidget*dockwidget)
+bool ToolViewManager::hideToolView(QWidget *widget)
 {
-  return d->toolViewMan->showToolView (dockwidget);
+  return d->toolViewMan->hideToolView (widget);
 }
     
-bool ToolViewManager::hideToolView(const QString& sname)
+bool ToolViewManager::hideToolView(KMdiToolViewAccessor *accessor)
 {
-  return d->toolViewMan->hideToolView (sname);
-}
-
-bool ToolViewManager::showToolView(const QString& sname)
-{
-  return d->toolViewMan->showToolView (sname);
+  return d->toolViewMan->hideToolView (accessor);
 }
 
 }
-

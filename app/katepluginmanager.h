@@ -36,7 +36,6 @@ class KatePluginInfo
     bool load;
     KService::Ptr service;
     Kate::Plugin *plugin;
-    QString name;
 };
 
 typedef QPtrList<KatePluginInfo> KatePluginList;

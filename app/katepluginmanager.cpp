@@ -25,11 +25,10 @@
 #include "katemainwindow.h"
 
 #include <kconfig.h>
-#include <kglobal.h>
-#include <kstandarddirs.h>
 #include <qstringlist.h>
-#include <qfile.h>
 #include <kmessagebox.h>
+#include <kdebug.h>
+#include <qfile.h>
 
 KatePluginManager::KatePluginManager(QObject *parent) : QObject (parent)
 {
@@ -46,19 +45,22 @@ void KatePluginManager::setupPluginList ()
 {
   QValueList<KService::Ptr> traderList= KTrader::self()->query("Kate/Plugin", "(not ('Kate/ProjectPlugin' in ServiceTypes)) and (not ('Kate/InitPlugin' in ServiceTypes))");
 
-  KTrader::OfferList::Iterator it(traderList.begin());
-  for( ; it != traderList.end(); ++it)
+  for(KTrader::OfferList::Iterator it(traderList.begin()); it != traderList.end(); ++it)
   {
     KService::Ptr ptr = (*it);
+    
+    QString pVersion = ptr->property("X-Kate-Version").toString();
+    
+    if ((pVersion >= "2.2") && (pVersion <= KATE_VERSION))
+    {
+      KatePluginInfo *info = new KatePluginInfo;
+      
+      info->load = false;
+      info->service = ptr;
+      info->plugin = 0L;
 
-    KatePluginInfo *info=new KatePluginInfo;
-
-    info->load = false;
-    info->service = ptr;
-    info->plugin = 0L;
-    info->name=info->service->property("X-KATE-InternalName").toString();
-    if (info->name.isEmpty()) info->name=info->service->library();
-    m_pluginList.append(info);
+      m_pluginList.append(info);
+    }
   }
 }
 
@@ -67,10 +69,7 @@ void KatePluginManager::loadConfig ()
   kapp->config()->setGroup("Kate Plugins");
 
   for (uint i=0; i<m_pluginList.count(); i++)
-  {
-    if  (kapp->config()->readBoolEntry(m_pluginList.at(i)->name, false))
-      m_pluginList.at(i)->load = true;
-  }
+    m_pluginList.at(i)->load = kapp->config()->readBoolEntry(m_pluginList.at(i)->service->library(), false);
 }
 
 void KatePluginManager::writeConfig ()
@@ -78,11 +77,8 @@ void KatePluginManager::writeConfig ()
   kapp->config()->setGroup("Kate Plugins");
 
   for (uint i=0; i<m_pluginList.count(); i++)
-  {
-    kapp->config()->writeEntry(m_pluginList.at(i)->name, m_pluginList.at(i)->load);
-  }
+    kapp->config()->writeEntry(m_pluginList.at(i)->service->library(), m_pluginList.at(i)->load);
 }
-
 
 void KatePluginManager::loadAllEnabledPlugins ()
 {
@@ -149,16 +145,17 @@ Kate::Plugin *KatePluginManager::plugin(const QString &name)
 {
  for (uint i=0; i<m_pluginList.count(); i++)
   {
-    if  (m_pluginList.at(i)->name==name)
+    if  (m_pluginList.at(i)->service->library()==name)
     {
-	if (m_pluginList.at(i)->plugin) return m_pluginList.at(i)->plugin; else break;
+      if (m_pluginList.at(i)->plugin)
+        return m_pluginList.at(i)->plugin;
+      else
+        break;
     }
   }
   return 0;
 }
 
-
 bool KatePluginManager::pluginAvailable(const QString &){return false;}
 class Kate::Plugin *KatePluginManager::loadPlugin(const QString &,bool ){return 0;}
 void KatePluginManager::unloadPlugin(const QString &,bool){;}
-

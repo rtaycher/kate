@@ -89,14 +89,6 @@ class KateMainWindow : public KMdiMainFrm, virtual public KParts::PartBase
 
     DCOPObject *dcopObject () { return m_dcop; }
 
-    // dockwidgets
-    KDockWidget *mainDock;
-    KDockWidget *consoleDock;
-    KDockWidget *filelistDock;
-    KDockWidget *projectsDock;
-    KDockWidget *fileselectorDock;
-    KDockWidget *grepWidgetDock;
-
     DCOPObject *m_dcop;
 
     // console
@@ -230,19 +222,18 @@ class KateMainWindow : public KMdiMainFrm, virtual public KParts::PartBase
   public:
     Kate::ViewManager *viewManager () {return m_viewManager->viewManager(); }
     KateViewManager *kateViewManager () { return m_viewManager; }
-    KDockWidget *centralDock () { return mainDock; }
 
   public: //ToolViewManager stuff
-    virtual KDockWidget *addToolViewWidget(KDockWidget::DockPosition pos,QWidget *widget,const QPixmap &icon, const QString& caption);
-    virtual bool removeToolViewWidget(QWidget *);
-    virtual KDockWidget *addToolView(KDockWidget::DockPosition pos,const char* name,const QPixmap &icon,const QString&);
-    virtual bool removeToolView(KDockWidget *);
+    KMdiToolViewAccessor *addToolView(KDockWidget::DockPosition position, QWidget *widget, const QPixmap &icon, const QString &sname, const QString &tabToolTip = 0, const QString &tabCaption = 0);
+    
+    bool removeToolView(QWidget *);
+    bool removeToolView(KMdiToolViewAccessor *);
 
-    virtual bool hideToolView(class KDockWidget*);
-    virtual bool showToolView(class KDockWidget*);
-    virtual bool hideToolView(const QString& name);
-    virtual bool showToolView(const QString& name);
-
+    bool showToolView(QWidget *);
+    bool showToolView(KMdiToolViewAccessor *);
+    
+    bool hideToolView(QWidget *);
+    bool hideToolView(KMdiToolViewAccessor *);
 
   private slots:
     void pluginHelp ();
