@@ -146,7 +146,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   cb_opaqueResize->setChecked( viewManager->useOpaqueResize );
   QWhatsThis::add( cb_opaqueResize, i18n(
         "If this is disabled, resizing views will display a <i>rubberband</i> to show the "
-        "new sizes untill you release the mouse button.") );
+        "new sizes until you release the mouse button.") );
 
   // sync the konsole ?
   cb_syncKonsole = new QCheckBox(frGeneral);
@@ -181,7 +181,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   cb_mode->insertItem(i18n("Classic Style"));
   lo->addWidget(cb_mode);
   QWhatsThis::add(cb_mode,i18n("Choose how you want the toolviews managed.<BR><ul>"
-	"<li><b>Modern Style</b> The toolviews will behave similiar to the views in Konqueror's navigation panel.</li>"
+	"<li><b>Modern Style</b> The toolviews will behave similar to the views in Konqueror's navigation panel.</li>"
 	"<li><b>Classic Style</b> The toolviews (filelist, fileselector, ...) can be docked anywhere and made floating.</li></ul>"));
 
   config->setGroup("General");
