@@ -19,6 +19,7 @@
 #define KANTFILESELECTOR_H
 
 #include "../kantmain.h"
+#include "../mainwindow/kantmainwindow.h"
 #include <qwidget.h>
 
 #include <kfile.h>
@@ -47,11 +48,13 @@ class KantFileSelector : public QWidget
 
   public slots:
     void slotFilterChange(const QString&);
+    void setDir(KURL);
 
   private slots:
     void cmbPathActivated( const KURL& u );
     void cmbPathReturnPressed( const QString& u );
     void dirUrlEntered( const KURL& u );
+    void setCurrentDocDir();
 
   protected:
     void focusInEvent(QFocusEvent*);
@@ -60,6 +63,7 @@ class KantFileSelector : public QWidget
     KHistoryCombo * filter;
     QLabel* filterIcon;
     KDirOperator * dir;
+    QPushButton *home, *up, *back, *forward, *cfdir;
 };
 
 #endif //KANTFILESELECTOR_H

@@ -23,6 +23,7 @@
 #include <qhbox.h>
 #include <qlabel.h>
 #include <qstrlist.h>
+#include <qtooltip.h>
 
 #include <kiconloader.h>
 #include <kurlcombobox.h>
@@ -42,11 +43,27 @@ KantFileSelector::KantFileSelector( QWidget * parent, const char * name ): QWidg
   QHBox *hlow = new QHBox (this);
   lo->addWidget(hlow);
 
-  QPushButton *up = new QPushButton( i18n("&Up"), hlow );
-  QPushButton *back = new QPushButton( i18n("&Back"), hlow );
-  QPushButton *forward = new QPushButton( i18n("&Next"), hlow );
+  home = new QPushButton( "", hlow );
+  home->setPixmap(SmallIcon("gohome"));
+  QToolTip::add(home, i18n("Home directory"));
+  up = new QPushButton( ""/*i18n("&Up")*/, hlow );
+  up->setPixmap(SmallIcon("up"));
+  QToolTip::add(up, i18n("Up one level"));
+  back = new QPushButton( ""/*i18n("&Back")*/, hlow );
+  back->setPixmap(SmallIcon("back"));
+  QToolTip::add(back, i18n("Previous directory"));
+  forward = new QPushButton( ""/*i18n("&Next")*/, hlow );
+  forward->setPixmap(SmallIcon("forward"));
+  QToolTip::add(forward, i18n("Next Direcotry"));
 
+  // HACK
+  QWidget* spacer = new QWidget(hlow);
+  hlow->setStretchFactor(spacer, 1);
   hlow->setMaximumHeight(up->height());
+
+  cfdir = new QPushButton( ""/*i18n("&Next")*/, hlow );
+  cfdir->setPixmap(BarIcon("curfiledir"));
+  QToolTip::add(cfdir, i18n("Current Document Direcotry"));
 
   cmbPath = new KURLComboBox( KURLComboBox::Directories, true, this, "path combo" );
   cmbPath->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
@@ -71,9 +88,11 @@ KantFileSelector::KantFileSelector( QWidget * parent, const char * name ): QWidg
   connect( filter, SIGNAL( activated(const QString&) ), SLOT( slotFilterChange(const QString&) ) );
   connect( filter, SIGNAL( returnPressed(const QString&) ),filter, SLOT( addToHistory(const QString&) ) );
 
+  connect( home, SIGNAL( clicked() ), dir, SLOT( home() ) );
   connect( up, SIGNAL( clicked() ), dir, SLOT( cdUp() ) );
   connect( back, SIGNAL( clicked() ), dir, SLOT( back() ) );
   connect( forward, SIGNAL( clicked() ), dir, SLOT( forward() ) );
+  connect( cfdir, SIGNAL( clicked() ), this, SLOT( setCurrentDocDir() ) );
 
   connect( cmbPath, SIGNAL( urlActivated( const KURL&  )),
              this,  SLOT( cmbPathActivated( const KURL& ) ));
@@ -149,10 +168,28 @@ void KantFileSelector::dirUrlEntered( const KURL& u )
    while ( urls.count() >= cmbPath->maxItems() )
       urls.remove( urls.last() );
    cmbPath->setURLs( urls );
+   // HACK - enable the nav buttons
+   up->setEnabled( dir->actionCollection()->action( "up" )->isEnabled() );
+   back->setEnabled( dir->actionCollection()->action( "back" )->isEnabled() );
+   forward->setEnabled( dir->actionCollection()->action( "forward" )->isEnabled() );
+   home->setEnabled( dir->actionCollection()->action( "home" )->isEnabled() );
 
 }
 
 void KantFileSelector::focusInEvent(QFocusEvent*)
 {
    dir->setFocus();
+}
+
+void KantFileSelector::setDir( KURL u )
+{
+  dir->setURL(u, true);
+}
+
+void KantFileSelector::setCurrentDocDir()
+{
+  KURL u = ((KantMainWindow*)topLevelWidget())->currentDocUrl().directory();
+  if (!u.isEmpty())
+    setDir( u );
+
 }

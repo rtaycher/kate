@@ -87,7 +87,6 @@ KantMainWindow::KantMainWindow(KantPluginManager *_pluginManager) :
             guiFactory()->addClient( pIt.current() );
   setUpdatesEnabled(true);
 
-  installEventFilter(this);
 }
 
 KantMainWindow::~KantMainWindow()
@@ -149,9 +148,6 @@ bool KantMainWindow::eventFilter(QObject* o, QEvent* e)
                                 	return true;
 	                        }
         }
-   if (o == this && e->type() == QEvent::FocusIn) {
-     kdDebug()<<"focus in"<<endl;
-   }
   return QWidget::eventFilter(o,e);
 }
 
@@ -1038,4 +1034,9 @@ void KantMainWindow::focusInEvent(QFocusEvent*  /* e */)
 {
   kdDebug()<<"focusIn"<<endl;
   docManager->checkAllModOnHD();
+}
+
+KURL KantMainWindow::currentDocUrl()
+{
+  return viewManager->activeView()->doc()->url();
 }

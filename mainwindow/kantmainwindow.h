@@ -73,6 +73,7 @@ class KRecentFilesAction;
 class KSelectAction;
 class KShellProcess;
 class KToggleAction;
+class KURL;
 
 //namespace KParts
 //{
@@ -89,6 +90,10 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
   public:
     KantMainWindow(KantPluginManager *_pluginManager);
     ~KantMainWindow();
+
+    /** Returns the URL of the current document.
+     * anders: I add this for use from the file selector. */
+    KURL currentDocUrl();
 
     // dockwidgets
     KDockWidget *mainDock;
