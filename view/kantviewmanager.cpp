@@ -1036,7 +1036,15 @@ void KantViewManager::reloadCurrentDoc()
 {
   if (! activeView() )
     return;
-    if (activeView()->canDiscard())
-      ((KantDocument*)activeView()->doc())->reloadFile();
+  if (! activeView()->canDiscard())
+    return;
+  KantView* v = activeView();
+  // save cursor position
+  int cl = v->currentLine();
+  int cc = v->currentColumn();
+  // save bookmarks
+  ((KantDocument*)v->doc())->reloadFile();
+  if (v->numLines() >= cl)
+    v->setCursorPosition( cl, cc );
 }
 
