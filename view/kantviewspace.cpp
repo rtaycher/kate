@@ -59,6 +59,7 @@ void KantViewSpace::addView(KantView* v, bool show)
     KantView* c = mViewList.current();
     mViewList.prepend( v );
     mViewList.findRef( c );
+    stack->raiseWidget( c );
   }
 }
 
@@ -113,10 +114,12 @@ bool KantViewSpace::showView(int docID)
 KantView* KantViewSpace::currentView()
 {
   if (mViewList.count() > 0) {
+
     if (mViewList.current() != 0L)
       return mViewList.current();
     else
       return mViewList.last();
+
   }
   return 0L;
 }

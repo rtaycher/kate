@@ -314,7 +314,7 @@ void KantViewManager::setActiveSpace ( KantViewSpace* vs )
 
 void KantViewManager::setActiveView ( KantView* view )
 {
-//kdDebug()<<"setActiveView()"<<endl;
+//kdDebug()<<QString("setActiveView(): " + view->doc()->url().filename())<<endl;
    if (activeView())
      activeView()->setActive( false );
 
@@ -981,8 +981,11 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
 
   viewSpaceList.remove( viewspace );
 
+  // reparent the other child of the removed splitter.
+  // here is a bug: they sometimes gets in the wrong place.
   while (p->children ())
   {
+    kdDebug()<<"removeViewSpace(): reparenting a splitter"<<endl;
     ((QWidget *)(( QList<QObject>*)p->children())->first())->reparent( p->parentWidget(), 0, QPoint(), true );
   }
 
@@ -996,7 +999,15 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
   if (viewSpaceList.current()->parentWidget() == this)
     grid->addWidget( viewSpaceList.current(), 0, 0);
 
-  viewSpaceList.current()->setActive( true );
+  // anders: this dosen't seem to make sense?
+  //viewSpaceList.current()->setActive( true );
+
+  // find the view that is now active.
+  KantView* v = activeViewSpace()->currentView();
+  if ( v ) {
+    kdDebug()<<"removeViewSpace(): new active view: "<<v->doc()->url().filename()<<endl;
+    activateView( v );
+  }
   emit viewChanged();
 }
 
