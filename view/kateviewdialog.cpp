@@ -527,6 +527,7 @@ FontConfig::FontConfig( QWidget *parent, char *name )
   QGridLayout *grid = new QGridLayout( this, 1, 1 );
 
   m_fontchooser = new KFontChooser ( this );
+  m_fontchooser->enableColumn(KFontChooser::StyleList, false);
   grid->addWidget( m_fontchooser, 0, 0);
 }
 
