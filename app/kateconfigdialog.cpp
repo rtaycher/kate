@@ -144,23 +144,23 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, const char *name )
   QHBox *hbGM=new QHBox(bgStartup);
 	QLabel *lGM=new QLabel(i18n("Default GUI mode for new windows:"),hbGM);
   	combo_guiMode = new QComboBox(hbGM);
-	QStringList gml;
-	gml<<i18n("Toplevel Mode")<<i18n("Childframe Mode")<<i18n("Tab Page Mode")<<i18n("IDEAL Mode");
-	combo_guiMode->insertStringList(gml);
+	
+        QStringList allgml;
+	allgml<<i18n("Toplevel Mode")<<i18n("Childframe Mode")<<i18n("Tab Page Mode")<<i18n("IDEAL Mode");
+	
+        QStringList gml;
+        gml<<i18n("IDEAL Mode")<<i18n("Tab Page Mode");
+	
+        combo_guiMode->insertStringList(gml);
 	lGM->setBuddy(combo_guiMode);
-  	switch (KateMainWindow::defaultMode) {
-		case KMdi::ToplevelMode:
-			combo_guiMode->setCurrentItem(0);
-			break;
-		case KMdi::ChildframeMode:
-			combo_guiMode->setCurrentItem(1);
-			break;
+  	switch (KateMainWindow::defaultMode)
+        {
 		case KMdi::TabPageMode:
-			combo_guiMode->setCurrentItem(2);
+			combo_guiMode->setCurrentItem(1);
 			break;
 		case KMdi::IDEAlMode:
 		default:
-			combo_guiMode->setCurrentItem(3);
+			combo_guiMode->setCurrentItem(0);
 	}
         connect(combo_guiMode,SIGNAL(activated(int)),this,SLOT(slotChanged()));
 
@@ -340,23 +340,30 @@ void KateConfigDialog::slotApply()
 
   KMdi::MdiMode tmpMode;
   switch (combo_guiMode->currentItem()) {
-	case 0:
-		tmpMode=KMdi::ToplevelMode;
-		break;
-	case 1:
-		tmpMode=KMdi::ChildframeMode;
-		break;
-	case 2: 
+	case 1: 
 		tmpMode=KMdi::TabPageMode;
 		break;
-	case 3:
+	case 0:
 	default:
 		tmpMode=KMdi::IDEAlMode;
 		break;
   }
   config->writeEntry("DefaultGUIMode",tmpMode);
   mainWindow->defaultMode=tmpMode;
-
+  
+  for (uint i=0; i < ((KateApp *)kapp)->mainWindows(); i++)
+  {
+    KateMainWindow *win = ((KateApp *)kapp)->kateMainWindow (i);
+    
+    if (tmpMode != win->mdiMode())
+    {
+      if (tmpMode == KMdi::TabPageMode)
+        win->switchToTabPageMode();
+      else
+        win->switchToIDEAlMode();      
+    }
+  }
+  
   mainWindow->syncKonsole = cb_syncKonsole->isChecked();
 
   mainWindow->filelist->setSortType(cb_sortFiles->isChecked() ? KateFileList::sortByName : KateFileList::sortByID);
