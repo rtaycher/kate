@@ -520,6 +520,7 @@ class KWrite : public KTextEditor::View {
     void enableUI( bool enable );
 
   protected:
+    virtual void keyPressEvent( QKeyEvent *ev );
     virtual void customEvent( QCustomEvent *ev );
 
     int configFlags;

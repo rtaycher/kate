@@ -1158,7 +1158,7 @@ void KWriteView::keyPressEvent(QKeyEvent *e) {
         return;
       }
     }
-    if (kWriteDoc->insertChars(c, e->text())) {
+    if ( !(e->state() & ControlButton ) && kWriteDoc->insertChars(c, e->text())) {
       kWriteDoc->updateViews();
       e->accept();
       return;
@@ -1626,6 +1626,7 @@ void KWrite::setupActions()
     setEndOfLine->setItems(list);
 
     // keyboard actions...
+    /*
     KAccel *acc=new KAccel(this);
     KAction* act;
     act = new KAction(i18n("Left"), Qt::Key_Left, this, SLOT(cursorLeft()), actionCollection(), "cursor_left");
@@ -1697,6 +1698,122 @@ void KWrite::setupActions()
     act->plugAccel(acc);
     act = new KAction(i18n("Insert Mode"), Qt::Key_Insert, this, SLOT(toggleInsert()), actionCollection(), "insert_mode");
     act->plugAccel(acc);
+    */
+}
+
+void KWrite::keyPressEvent( QKeyEvent *ev )
+{
+    switch ( ev->key() )
+    {
+        case Key_Left:
+            if ( ev->state() & ShiftButton )
+            {
+                if ( ev->state() & ControlButton )
+                    shiftWordLeft();
+                else
+                    shiftCursorLeft();
+            }
+            else if ( ev->state() & ControlButton )
+                shiftWordLeft();
+            else
+                cursorLeft();
+            break;
+        case Key_Right:
+            if ( ev->state() & ShiftButton )
+            {
+                if ( ev->state() & ControlButton )
+                    shiftWordRight();
+                else
+                    shiftCursorRight();
+            }
+            else if ( ev->state() & ControlButton )
+                shiftWordRight();
+            else
+                cursorRight();
+            break;
+        case Key_Home:
+            if ( ev->state() & ShiftButton )
+            {
+                if ( ev->state() & ControlButton )
+                    shiftTop();
+                else
+                    shiftHome();
+            }
+            else if ( ev->state() & ControlButton )
+                top();
+            else
+                home();
+            break;
+        case Key_End:
+            if ( ev->state() & ShiftButton )
+            {
+                if ( ev->state() & ControlButton )
+                    shiftBottom();
+                else
+                    shiftEnd();
+            }
+            else if ( ev->state() & ControlButton )
+                bottom();
+            else
+                end();
+            break;
+        case Key_Up:
+            if ( ev->state() & ShiftButton )
+                shiftUp();
+            else if ( ev->state() & ControlButton )
+                scrollUp();
+            else
+                up();
+            break;
+        case Key_Down:
+            if ( ev->state() & ShiftButton )
+                shiftDown();
+            else if ( ev->state() & ControlButton )
+                scrollDown();
+            else
+                down();
+            break;
+        case Key_PageUp:
+            if ( ev->state() & ShiftButton )
+                shiftPageUp();
+            else if ( ev->state() & ControlButton )
+                topOfView();
+            else
+                pageUp();
+            break;
+        case Key_PageDown:
+            if ( ev->state() & ShiftButton )
+                shiftPageDown();
+            else if ( ev->state() & ControlButton )
+                bottomOfView();
+            else
+                pageDown();
+            break;
+        case Key_Return:
+        case Key_Enter:
+            keyReturn();
+            break;
+        case Key_Delete:
+            keyDelete();
+            break;
+        case Key_Backspace:
+            backspace();
+            break;
+        case Key_Insert:
+            toggleInsert();
+            break;
+        case Key_K:
+            if ( ev->state() & ControlButton )
+            {
+                killLine();
+                break;
+            }
+        default:
+            KTextEditor::View::keyPressEvent( ev );
+            return;
+            break;
+    }
+    ev->accept();
 }
 
 void KWrite::customEvent( QCustomEvent *ev )
