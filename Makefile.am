@@ -6,13 +6,7 @@ KDE_CXXFLAGS = -frtti
 
 bin_PROGRAMS = kwrite
 
-lib_LTLIBRARIES = libktexteditor.la libkwrite.la
-
-libktexteditor_la_SOURCES = ktexteditor.cpp
-libktexteditor_la_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-libktexteditor_la_LIBADD = $(LIB_KPARTS)
-
-include_HEADERS = ktexteditor.h
+lib_LTLIBRARIES = libkwrite.la
 
 libkwrite_la_SOURCES = highlight.cpp ktextprint.cpp  \
 		       kguicommand.cpp kwdoc.cpp \
@@ -20,7 +14,7 @@ libkwrite_la_SOURCES = highlight.cpp ktextprint.cpp  \
 		       kwrite_factory.cpp
 
 libkwrite_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) $(KDE_PLUGIN)
-libkwrite_la_LIBADD = libktexteditor.la -lkspell $(LIB_KPARTS)
+libkwrite_la_LIBADD = -lktexteditor -lkspell $(LIB_KPARTS)
 
 kwrite_SOURCES = toplevel.cpp
 
@@ -28,9 +22,6 @@ kwrite_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 kwrite_LDADD = libkwrite.la $(LIB_KFILE) $(LIB_KDEUI) $(LIB_KDECORE)
 
 METASOURCES = AUTO
-
-servicetypedir = $(kde_servicetypesdir)
-servicetype_DATA = ktexteditor.desktop
 
 appsdir = $(kde_appsdir)/Editors
 apps_DATA = kwrite.desktop
