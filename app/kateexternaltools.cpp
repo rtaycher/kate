@@ -25,6 +25,7 @@
 #include "kateexternaltools.h"
 #include "kateexternaltools.moc"
 #include "katedocmanager.h"
+#include "kateapp.h"
 
 #include "katemainwindow.h"
 
@@ -54,6 +55,10 @@
 #include <unistd.h>
 
 #include <kdebug.h>
+#include <kapplication.h>
+#include <kmdimainfrm.h>
+
+KateExternalToolsCommand *KateExternalToolsCommand::s_self=0;
 
 //BEGIN KateExternalTool
 KateExternalTool::KateExternalTool( const QString &name,
@@ -61,13 +66,15 @@ KateExternalTool::KateExternalTool( const QString &name,
                       const QString &icon,
                       const QString &tryexec,
                       const QStringList &mimetypes,
-                      const QString &acname )
+                      const QString &acname,
+                      const QString &cmdname )
   : name ( name ),
     command ( command ),
     icon ( icon ),
     tryexec ( tryexec ),
     mimetypes ( mimetypes ),
-    acname ( acname )
+    acname ( acname ),
+    cmdname (cmdname)
 {
   //if ( ! tryexec.isEmpty() )
     hasexec = checkExec();
@@ -118,6 +125,91 @@ bool KateExternalTool::valid( QString mt ) const
 }
 //END KateExternalTool
 
+//BEGIN KateExternalToolsCommand
+KateExternalToolsCommand::KateExternalToolsCommand() : Kate::Command() {
+	m_inited=false;
+	reload();
+}
+
+QStringList KateExternalToolsCommand::cmds () {
+	return m_list;
+}
+
+KateExternalToolsCommand *KateExternalToolsCommand::self () {
+	if (s_self) return s_self;
+	s_self=new KateExternalToolsCommand;
+	return s_self;
+}
+
+void KateExternalToolsCommand::reload () {
+  m_list.clear();
+  m_map.clear();
+  
+  KConfig config("externaltools", false, false, "appdata");
+  config.setGroup("Global");
+  QStringList tools = config.readListEntry("tools");
+
+
+  for( QStringList::Iterator it = tools.begin(); it != tools.end(); ++it )
+  {
+    if ( *it == "---" )
+      continue;
+   
+
+    config.setGroup( *it );
+
+    KateExternalTool t = KateExternalTool(
+        config.readEntry( "name", "" ),
+        config.readEntry( "command", ""),
+        config.readEntry( "icon", ""),
+        config.readEntry( "executable", ""),
+        config.readListEntry( "mimetypes" ),
+        config.readEntry( "acname", "" ),
+        config.readEntry( "cmdname", "" ) );
+
+	if ( t.hasexec && (!t.cmdname.isEmpty())) {
+		m_list.append("exttool-"+t.cmdname);
+		m_map.insert("exttool-"+t.cmdname,t.acname);
+	}
+  }
+  if (m_inited) {
+	  Kate::Document::unregisterCommand(this);
+	  Kate::Document::registerCommand(this);
+   }
+  else m_inited=true;
+ }
+
+bool KateExternalToolsCommand::exec (Kate::View *view, const QString &cmd, QString &msg) {
+	QWidget *wv=dynamic_cast<QWidget*>(view);
+	if (!wv) {
+		kdDebug()<<"KateExternalToolsCommand::exec: Could not get view widget"<<endl;
+		return false;
+	}
+	KMdiMainFrm *dmw=dynamic_cast<KMdiMainFrm*>(wv->topLevelWidget());
+	if (!dmw) {
+		kdDebug()<<"KateExternalToolsCommand::exec: Could not get main window"<<endl;
+		return false;
+	}
+	kdDebug()<<"cmd="<<cmd.stripWhiteSpace()<<endl;
+	QString actionName=m_map[cmd.stripWhiteSpace()];
+	if (actionName.isEmpty()) return false;
+	kdDebug()<<"actionName is not empty:"<<actionName<<endl;
+	KateExternalToolsMenuAction *a=
+		dynamic_cast<KateExternalToolsMenuAction*>(dmw->action("tools_external"));
+	if (!a) return false;
+	kdDebug()<<"trying to find action"<<endl;
+	KAction *a1=a->actionCollection()->action(actionName.utf8());
+	if (!a1) return false;
+	kdDebug()<<"activating action"<<endl;
+	a1->activate();
+	return true;
+}
+
+bool KateExternalToolsCommand::help (Kate::View *view, const QString &cmd, QString &msg) {
+	return false;
+}
+//END KateExternalToolsCommand
+
 //BEGIN KateExternalToolAction
 KateExternalToolAction::KateExternalToolAction( QObject *parent,
              const char *name, KateExternalTool *t)
@@ -157,6 +249,10 @@ bool KateExternalToolAction::expandMacro( const QString &str, QStringList &ret )
   } else
     return false;
   return true;
+}
+
+KateExternalToolAction::~KateExternalToolAction() {
+	delete(tool);
 }
 
 void KateExternalToolAction::slotRun()
@@ -218,7 +314,8 @@ void KateExternalToolsMenuAction::reload()
         config->readEntry( "icon", ""),
         config->readEntry( "executable", ""),
         config->readListEntry( "mimetypes" ),
-        config->readEntry( "acname", "" ) );
+        config->readEntry( "acname", "" ),
+        config->readEntry( "cmdname", "" ) );
 
     if ( t->hasexec )
       insert( new KateExternalToolAction( m_actionCollection, t->acname.ascii(), t ) );
@@ -335,6 +432,18 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
       "A semicolon-separated list of mime types for which this tool should "
       "be available; if this is left empty, the tool is always available."
       "To choose from known mimetypes, press the button on the right.") );
+
+
+  leCmdLine = new QLineEdit( w );
+  lo->addWidget( leCmdLine, 5, 2 );
+  l = new QLabel( leCmdLine, i18n("&Command line name:"), w );
+  l->setAlignment( l->alignment()|Qt::AlignRight );
+  lo->addWidget( l, 5, 1 );
+  if ( tool ) leCmdLine->setText( tool->cmdname );
+  QWhatsThis::add( leCmdLine, i18n(
+      "If you specify a name here, you can invoke the command from the view "
+      "command lines with exttool-the_name_you_specified_here. "
+      "Please don't use spaces or tabs in the name"));
 }
 
 void KateExternalToolServiceEditor::slotOk()
@@ -426,7 +535,8 @@ void KateExternalToolsConfigWidget::reload()
           config->readEntry( "icon", ""),
           config->readEntry( "executable", ""),
           config->readListEntry( "mimetypes" ),
-          config->readEntry( "acname" ) );
+          config->readEntry( "acname" ),
+	  config->readEntry( "cmdname") );
 
       if ( t->hasexec ) // we only show tools that are also in the menu.
         new ToolItem( lbTools, t->icon.isEmpty() ? blankIcon() : SmallIcon( t->icon ), t );
@@ -468,6 +578,7 @@ void KateExternalToolsConfigWidget::apply()
     config->writeEntry( "executable", t->tryexec );
     config->writeEntry( "mimetypes", t->mimetypes );
     config->writeEntry( "acname", t->acname );
+    config->writeEntry( "cmdname", t->cmdname );
   }
 
   config->setGroup("Global");
@@ -531,6 +642,7 @@ void KateExternalToolsConfigWidget::slotEdit()
     bool iconChanged = ( editor.btnIcon->icon() != t->icon );
 
     t->name = editor.leName->text();
+    t->cmdname = editor.leCmdLine->text();
     t->command = editor.leCommand->text();
     t->icon = editor.btnIcon->icon();
     t->tryexec = editor.leExecutable->text();

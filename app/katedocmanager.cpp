@@ -23,6 +23,7 @@
 #include "katemainwindow.h"
 #include "kateviewmanager.h"
 #include "katedocmanageriface.h"
+#include "kateexternaltools.h"
 
 #include <kate/view.h>
 
@@ -42,6 +43,7 @@
 #include <kencodingfiledialog.h>
 #include <ktexteditor/encodinginterface.h>
 
+
 KateDocManager::KateDocManager (QObject *parent)
  : QObject (parent)
  , m_saveMetaInfos(true)
@@ -55,8 +57,9 @@ KateDocManager::KateDocManager (QObject *parent)
   m_docInfos.setAutoDelete(true);
 
   m_dcop = new KateDocManagerDCOPIface (this);
-
+  
   m_metaInfos = new KConfig("metainfos", false, false, "appdata");
+  Kate::Document::registerCommand(KateExternalToolsCommand::self());
 
   createDoc ();
 }
@@ -104,7 +107,6 @@ Kate::Document *KateDocManager::createDoc ()
   emit m_documentManager->documentCreated ((Kate::Document *)doc);
 
   connect(doc,SIGNAL(modifiedOnDisc(Kate::Document *, bool, unsigned char)),this,SLOT(slotModifiedOnDisc(Kate::Document *, bool, unsigned char)));
-
   return (Kate::Document *)doc;
 }
 

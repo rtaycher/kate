@@ -134,6 +134,7 @@ class KateDocManager : public QObject
     DCOPObject *m_dcop;
     
     KParts::Factory *m_factory;
+  
 };
 
 #endif

@@ -390,7 +390,7 @@ void KateConfigDialog::slotOk()
     for (uint i=0; i < ((KateApp *)kapp)->mainWindows(); i++)
     {
       KateMainWindow *win = ((KateApp *)kapp)->kateMainWindow (i);
-
+      //win->externalTools->reload();
       if (tmpMode != win->mdiMode())
       {
         if (tmpMode == KMdi::TabPageMode)
@@ -400,6 +400,7 @@ void KateConfigDialog::slotOk()
       }
     }
 
+    
     mainWindow->syncKonsole = cb_syncKonsole->isChecked();
 
     mainWindow->filelist->setSortType(cb_sortFiles->isChecked() ? KateFileList::sortByName : KateFileList::sortByID);
@@ -410,7 +411,13 @@ void KateConfigDialog::slotOk()
     fileSelConfigPage->apply();
 
     configExternalToolsPage->apply();
-    mainWindow->externalTools->reload();
+    for (uint i=0; i < ((KateApp *)kapp)->mainWindows(); i++)
+    {
+      KateMainWindow *win = ((KateApp *)kapp)->kateMainWindow (i);
+      win->externalTools->reload();
+    }
+    KateExternalToolsCommand::self()->reload();
+    //mainWindow->externalTools->reload();
 
     viewManager->setShowFullPath( cb_fullPath->isChecked() ); // hm, stored 2 places :(
 

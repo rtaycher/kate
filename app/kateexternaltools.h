@@ -83,7 +83,7 @@ class KateExternalToolAction : public KAction, public KWordMacroExpander
   Q_OBJECT
   public:
     KateExternalToolAction( QObject *parent, const char *name, class KateExternalTool *t );
-
+    ~KateExternalToolAction();
   protected:
     virtual bool expandMacro( const QString &str, QStringList &ret );
 
@@ -105,7 +105,8 @@ class KateExternalTool
                       const QString &icon=QString::null,
                       const QString &tryexec=QString::null,
                       const QStringList &mimetypes=QStringList(),
-                      const QString &acname=QString::null );
+                      const QString &acname=QString::null,
+                      const QString &cmdname=QString::null );
     ~KateExternalTool() {};
 
     QString name; ///< The name used in the menu.
@@ -115,6 +116,7 @@ class KateExternalTool
     QStringList mimetypes; ///< Optional list of mimetypes for which this action is valid.
     bool hasexec; ///< This is set by the constructor by calling checkExec(), if a value is present.
     QString acname; ///< The name for the action. This is generated first time the action is is created.
+    QString cmdname; ///< The name for the commandline.
 
     /**
      * @return true if mimetypes is empty, or the @p mimetype matches.
@@ -167,6 +169,26 @@ class KateExternalToolsConfigWidget : public Kate::ConfigPage
 };
 
 /**
+ * A Singleton class for invoking external tools with the view command line
+ */
+ class KateExternalToolsCommand: public Kate::Command {
+ public:
+    KateExternalToolsCommand ();
+    virtual ~KateExternalToolsCommand () {};
+    static KateExternalToolsCommand *self();
+    void reload();
+  public:
+    virtual QStringList cmds ();
+    virtual bool exec (Kate::View *view, const QString &cmd, QString &msg);
+    virtual bool help (Kate::View *view, const QString &cmd, QString &msg);
+  private:
+    static KateExternalToolsCommand *s_self;
+    QStringList m_list;
+    QMap<QString,QString> m_map;
+    bool m_inited;
+ };
+
+/**
  * A Dialog to edit a single KateExternalTool object
  */
 class KateExternalToolServiceEditor : public KDialogBase
@@ -178,7 +200,7 @@ class KateExternalToolServiceEditor : public KDialogBase
     KateExternalToolServiceEditor( KateExternalTool *tool=0,
     				   QWidget *parent=0, const char *name=0 );
 
-    class QLineEdit *leName, *leCommand, *leExecutable, *leMimetypes;
+    class QLineEdit *leName, *leCommand, *leExecutable, *leMimetypes,*leCmdLine;
     class KIconButton *btnIcon;
 
   private slots:
