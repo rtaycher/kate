@@ -726,7 +726,7 @@ void KWriteDoc::insertFile(VConfig &c, QIODevice &dev)
 #ifdef NEW_CODE
 void KWriteDoc::loadFile(const QString &file, QTextCodec *codec)
 {
-  buffer->insertFile(0, file);
+  buffer->insertFile(0, file, codec);
 qWarning("Linecount = %d", buffer->count());
 }
 
@@ -2369,6 +2369,9 @@ void KWriteDoc::doReplace(KWAction *a) {
 
   a->len = a->text.length();
   a->text = oldText;
+#ifdef NEW_CODE
+  buffer->changeLine(a->cursor.y);
+#endif
 
   tagLine(a->cursor.y);
 }
@@ -2379,6 +2382,11 @@ void KWriteDoc::doWordWrap(KWAction *a) {
   textLine = getTextLine(a->cursor.y - 1);
   a->len = textLine->length() - a->cursor.x;
   textLine->wrap(getTextLine(a->cursor.y),a->len);
+
+#ifdef NEW_CODE
+  buffer->changeLine(a->cursor.y - 1);
+  buffer->changeLine(a->cursor.y);
+#endif
 
   tagLine(a->cursor.y - 1);
   tagLine(a->cursor.y);
@@ -2394,6 +2402,11 @@ void KWriteDoc::doWordUnWrap(KWAction *a) {
 //  textLine->setLength(a->len);
   textLine->unWrap(a->len, getTextLine(a->cursor.y),a->cursor.x);
 
+#ifdef NEW_CODE
+  buffer->changeLine(a->cursor.y - 1);
+  buffer->changeLine(a->cursor.y);
+#endif
+
   tagLine(a->cursor.y - 1);
   tagLine(a->cursor.y);
 
@@ -2408,6 +2421,7 @@ void KWriteDoc::doNewLine(KWAction *a) {
   textLine->wrap(newLine,a->cursor.x);
 #ifdef NEW_CODE
   buffer->insertLine(a->cursor.y + 1, newLine);
+  buffer->changeLine(a->cursor.y);
 #else
   contents.insert(contents.at(a->cursor.y + 1),newLine);
 #endif
@@ -2430,6 +2444,7 @@ void KWriteDoc::doDelLine(KWAction *a) {
   textLine->setContext(nextLine->getContext());
   if (longestLine == nextLine) longestLine = 0L;
 #ifdef NEW_CODE
+  buffer->changeLine(a->cursor.y);
   buffer->removeLine(a->cursor.y+1);
 #else
   contents.remove(contents.at(a->cursor.y+1));
@@ -2616,6 +2631,10 @@ void KWriteDoc::recordReplace(PointStruc &cursor, int len, const QString &text) 
   a->text.insert(a->text.length(), &textLine->getText()[cursor.x], (l < 0) ? 0 : l);
   textLine->replace(cursor.x, len, text.unicode(), text.length());
   a->len += text.length();
+
+#ifdef NEW_CODE
+  buffer->changeLine(a->cursor.y);
+#endif
 
   tagLine(a->cursor.y);
 }

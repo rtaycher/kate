@@ -41,7 +41,6 @@
  */
 KWBuffer::KWBuffer()
 {
-   m_codec = 0;
    m_totalLines = 0;
    m_fdSwap = -1;
    m_blocks.setAutoDelete(true);
@@ -97,7 +96,7 @@ static void writeBlock(int fd, const QByteArray &buf, int begin, int end)
  * Insert a file at line @p line in the buffer.
  */
 void
-KWBuffer::insertFile(int line, const QString &file)
+KWBuffer::insertFile(int line, const QString &file, QTextCodec *codec)
 {
   assert(line == 0); // Inserting at other places not yet handled.
 
@@ -109,13 +108,14 @@ KWBuffer::insertFile(int line, const QString &file)
   loader->fd = fd;
   loader->dataStart = 0;
   loader->blockNr = 0;
+  loader->codec = codec;
   m_loader.append(loader);
 
-  slotLoadFile();
+  loadFilePart();
 }
 
 void
-KWBuffer::slotLoadFile()
+KWBuffer::loadFilePart()
 {
   const int blockSize = AVG_BLOCK_SIZE;
   const int blockRead = 5; // Read 5 blocks in a row
@@ -144,6 +144,7 @@ KWBuffer::slotLoadFile()
      KWBufBlock *block = new KWBufBlock(state);
      m_blocks.insert(loader->blockNr++, block);
      m_loadedBlocks.append(block);
+     block->m_codec = loader->codec;
      loader->dataStart = block->blockFill(loader->dataStart, 
                                   loader->lastBlock, currentBlock, eof);
      state = block->m_endState;
@@ -163,18 +164,15 @@ qWarning("Starting timer...");
   }
 
   m_totalLines += state.lineNr - startLine;
+}
+
+void
+KWBuffer::slotLoadFile()
+{
+  loadFilePart();
   emit linesChanged(m_totalLines);
 }
    
-/**
- * Set the codec to decode the buffer with.
- */
-void 
-KWBuffer::setCodec(QTextCodec *codec)
-{
-   m_codec = codec;
-}
-     
 /**
  * Return the total number of lines in the buffer.
  */
@@ -286,8 +284,22 @@ KWBuffer::removeLine(int i)
 }
 
 void
+KWBuffer::changeLine(int i)
+{
+qWarning("changeLine(%d)", i);
+   KWBufBlock *buf = findBlock(i);
+   assert(buf);
+   assert(buf->b_stringListValid); 
+   if (buf->b_rawDataValid)
+   {
+      dirtyBlock(buf);
+   }
+}
+
+void
 KWBuffer::parseBlock(KWBufBlock *buf)
 {
+qWarning("parseBlock(%p)", buf);
    if (!buf->b_rawDataValid)
       loadBlock(buf);
    if (m_parsedBlocksClean.count() > 5)
@@ -302,6 +314,7 @@ KWBuffer::parseBlock(KWBufBlock *buf)
 void
 KWBuffer::loadBlock(KWBufBlock *buf)
 {
+qWarning("loadBlock(%p)", buf);
    if (m_loadedBlocks.count() > LOADED_BLOCKS_MAX)
    {
       KWBufBlock *buf2 = m_loadedBlocks.take(2);
@@ -316,6 +329,7 @@ KWBuffer::loadBlock(KWBufBlock *buf)
 void
 KWBuffer::dirtyBlock(KWBufBlock *buf)
 {
+qWarning("dirtyBlock(%p)", buf);
    m_loadedBlocks.removeRef(buf);
    buf->b_rawDataValid = false;
    m_parsedBlocksClean.removeRef(buf);

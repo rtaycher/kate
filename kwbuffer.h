@@ -54,14 +54,10 @@ public:
    
    /**
     * Insert a file at line @p line in the buffer. 
+    * Using @p codec to decode the file.
     */
-   void insertFile(int line, const QString &file);
+   void insertFile(int line, const QString &file, QTextCodec *codec);
 
-   /**
-    * Set the codec to decode the buffer with.
-    */
-   void setCodec(QTextCodec *codec);
-     
    /**
     * Return the total number of lines in the buffer.
     */
@@ -82,7 +78,15 @@ public:
     */
    void removeLine(int i);
 
+   /**
+    * Change line @p i
+    */
+   void changeLine(int i);
+
 signals:
+   /**
+    * Emitted during loading.
+    */
    void linesChanged(int lines);
 
 protected:
@@ -105,6 +109,11 @@ protected:
     * Find the block containing line @p i
     */
    KWBufBlock *findBlock(int i);
+
+   /**
+    * Load a part of the file that is currently loading.
+    */
+   void loadFilePart();
    
 protected slots:
    void slotLoadFile();
@@ -112,7 +121,6 @@ protected slots:
 protected:
    int m_totalLines;
    int m_fdSwap;
-   QTextCodec *m_codec;
    QList<KWBufBlock> m_blocks;
    QList<KWBufFileLoader> m_loader;
    QTimer m_loadTimer;
@@ -130,6 +138,7 @@ public:
   QByteArray lastBlock;
   int dataStart;
   int blockNr;  
+  QTextCodec *codec;
 };
 
 
@@ -219,6 +228,7 @@ protected:
    bool b_appendEOL; // Buffer is not terminated with '\n'.
    KWBufState m_beginState;
    KWBufState m_endState;
+   QTextCodec *m_codec;
 };
 
 #endif
