@@ -253,7 +253,7 @@ class Highlight
     Highlight(syntaxModeListItem *def);
     ~Highlight();
 
-    signed char *doHighlight(signed char *oCtx, uint *oCtxLen, TextLine *);
+    void doHighlight(signed char *oCtx, uint oCtxLen, TextLine *);
 
     KConfig *getKConfig();
     QString getWildcards();

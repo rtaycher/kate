@@ -2684,7 +2684,7 @@ void KateDocument::updateLines(int startLine, int endLine)
   TextLine::Ptr textLine;
   uint line, last_line, ctxNumLen, endCtxLen;
   signed char *ctxNum, *endCtx;
-	
+
 	ctxNum = 0L;
 	endCtx = 0L;
 
@@ -2703,7 +2703,7 @@ void KateDocument::updateLines(int startLine, int endLine)
 	  ctxNum = getTextLine(line - 1)->getContext();
 		ctxNumLen = getTextLine(line - 1)->getContextLength();
   }
-	
+
 	bool stillcontinue=false;
 
 	// have changed here some stuff, there was a endless loop (mostly on bigger files)
@@ -2717,7 +2717,12 @@ void KateDocument::updateLines(int startLine, int endLine)
 
     endCtx = textLine->getContext();
 		endCtxLen = textLine->getContextLength();
-	  ctxNum = m_highlight->doHighlight(ctxNum, &ctxNumLen, textLine);
+
+	  m_highlight->doHighlight(ctxNum, ctxNumLen, textLine);
+
+		ctxNum = textLine->getContext();
+		ctxNumLen = textLine->getContextLength();
+
 		//textLine->setContext(ctxNum, ctxNumLen);
 
 		if (endCtxLen != ctxNumLen)
