@@ -130,6 +130,15 @@ class KateDocument : public KateDocumentIface, virtual public KateDocumentDCOPIf
     KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode=false, bool bBrowserView=false, QWidget *parentWidget = 0, const char *widgetName = 0, QObject * = 0, const char * = 0);
     ~KateDocument();
 
+  protected:
+    QFont myFont;
+    QFontMetrics myFontMetrics;
+
+  public:
+    void setFont (QFont font);
+    QFont getFont () { return myFont; };
+    QFontMetrics getFontMetrics () { return myFontMetrics; };
+
     virtual bool openFile();
     virtual bool saveFile();
 

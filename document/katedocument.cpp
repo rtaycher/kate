@@ -133,10 +133,10 @@ QStringList KateDocument::replaceWithList = QStringList();
 KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool bBrowserView,
                                            QWidget *parentWidget, const char *widgetName,
                                            QObject *, const char *name)
-  : KateDocumentIface (), DCOPObject(name), hlManager(HlManager::self ())
+  : KateDocumentIface (), DCOPObject(name), myFont (KGlobalSettings::fixedFont()), myFontMetrics (myFont), hlManager(HlManager::self ())
 {
   PreHighlightedTill=0;
-  RequestPreHighlightTill=0; 
+  RequestPreHighlightTill=0;
   setInstance( KateFactory::instance() );
 
   m_bSingleViewMode=bSingleViewMode;
@@ -144,7 +144,6 @@ KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool
 
   m_url.setPath( 0L );
 
-  //myEncoding = QString::fromLatin1(QTextCodec::locale());
   myEncoding = KGlobal::charsets()->name(KGlobal::charsets()->charsetForLocale());
 
   myDocID = docID;
@@ -201,6 +200,13 @@ KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool
     view->show();
     setWidget( view );
   }
+}
+
+void KateDocument::setFont (QFont font)
+{
+  myFont = font;
+  myFontMetrics = QFontMetrics (myFont);
+  updateFontData();
 }
 
 long  KateDocument::needPreHighlight(long till)
@@ -480,6 +486,10 @@ void KateDocument::readConfig(KConfig *config) {
     sprintf(s, "Color%d", z);
     colors[z] = config->readColorEntry(s, &colors[z]);
   }
+
+  config->setGroup("Editor Font");
+  QFont defaultFont = KGlobalSettings::fixedFont();
+  setFont (QFont (config->readEntry("Family", defaultFont.family()), config->readNumEntry("Size", defaultFont.pointSize()), QFont::Normal, false, KGlobal::charsets()->charsetForEncoding(config->readEntry("Charset",QFont::encodingName(defaultFont.charSet())))));
 }
 
 void KateDocument::writeConfig(KConfig *config) {
@@ -495,6 +505,11 @@ void KateDocument::writeConfig(KConfig *config) {
     sprintf(s, "Color%d", z);
     config->writeEntry(s, colors[z]);
   }
+
+  config->setGroup("Editor Font");
+  config->writeEntry("Family",myFont.family());
+  config->writeEntry("Size",myFont.pointSize());
+  config->writeEntry("Charset",QFont::encodingName(myFont.charSet()));
 }
 
 void KateDocument::readSessionConfig(KConfig *config) {
