@@ -110,7 +110,7 @@ GrepTool::GrepTool(KateMainWindow *parent, const char *name)
   cbCasesensitive->setChecked(config->readBoolEntry("CaseSensitive", true));
   loPattern->addWidget(cbCasesensitive);
 
-  cbRegex = new QCheckBox( i18n("Regular Expression"), this );
+  cbRegex = new QCheckBox( i18n("Regular expression"), this );
   cbRegex->setMinimumWidth( cbRegex->sizeHint().width() );
   cbRegex->setChecked( config->readBoolEntry( "Regex", true ) );
   loPattern->addWidget( cbRegex );

@@ -265,7 +265,7 @@ class ToolItem : public QListBoxPixmap
 //BEGIN KateExternalToolServiceEditor
 KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *tool,
                                 QWidget *parent, const char *name )
-    : KDialogBase( parent, name, true, i18n("Edit external tool"), KDialogBase::Ok|KDialogBase::Cancel ),
+    : KDialogBase( parent, name, true, i18n("Edit External Tool"), KDialogBase::Ok|KDialogBase::Cancel ),
       tool( tool )
 {
     // create a entry for each property
@@ -327,7 +327,7 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
 
   leMimetypes = new QLineEdit( w );
   lo->addWidget( leMimetypes, 4, 2 );
-  l = new QLabel( leMimetypes, i18n("&Mime Types:"), w );
+  l = new QLabel( leMimetypes, i18n("&Mime types:"), w );
   l->setAlignment( l->alignment()|Qt::AlignRight );
   lo->addWidget( l, 4, 1 );
   if ( tool ) leMimetypes->setText( tool->mimetypes.join("; ") );
