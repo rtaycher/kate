@@ -1,0 +1,116 @@
+<?xml version="1.01" encoding="UTF-8"?><!DOCTYPE language>
+<language name="Java" extensions="*.java" mimetype="text/x-java-src" casesensitive="1">
+  <highlighting>
+    <keywords>
+      <keyword> abstract </keyword>
+      <keyword> break </keyword>
+      <keyword> case </keyword>
+      <keyword> cast </keyword>
+      <keyword> catch </keyword>
+      <keyword> class </keyword>
+      <keyword> continue </keyword>
+      <keyword> default </keyword>
+      <keyword> do </keyword>
+      <keyword> else </keyword>
+      <keyword> extends </keyword>
+      <keyword> false </keyword>
+      <keyword> finally </keyword>
+      <keyword> for </keyword>
+      <keyword> future </keyword>
+      <keyword> generic </keyword>
+      <keyword> goto </keyword>
+      <keyword> if </keyword>
+      <keyword> implements </keyword>
+      <keyword> import </keyword>
+      <keyword> inner </keyword>
+      <keyword> instanceof </keyword>
+      <keyword> interface </keyword>
+      <keyword> native </keyword>
+      <keyword> new </keyword>
+      <keyword> null </keyword>
+      <keyword> operator </keyword>
+      <keyword> outer </keyword>
+      <keyword> package </keyword>
+      <keyword> private </keyword>
+      <keyword> protected </keyword>
+      <keyword> public </keyword>
+      <keyword> rest </keyword>
+      <keyword> return </keyword>
+      <keyword> super </keyword>
+      <keyword> switch </keyword>
+      <keyword> synchronized </keyword>
+      <keyword> this </keyword>
+      <keyword> throws </keyword>
+      <keyword> throw </keyword>
+      <keyword> transient </keyword>
+      <keyword> true </keyword>
+      <keyword> try </keyword>
+      <keyword> var </keyword>
+      <keyword> volatile </keyword>
+      <keyword> while </keyword>
+    </keywords>
+    <types>
+      <type> boolean </type>
+      <type> byte </type>
+      <type> char </type>
+      <type> const </type>
+      <type> double </type>
+      <type> final </type>
+      <type> float </type>
+      <type> int </type>
+      <type> long </type>
+      <type> short </type>
+      <type> static </type>
+      <type> void </type>
+    </types>
+    <contexts>
+      <context attribute="0" lineEndContext="0" name="Normal">
+        <item name="keyword" attribute="1" context="0"/>
+        <item name="dataType" attribute="2" context="0"/>
+        <item name="Float" attribute="6" context="0">
+          <item name="AnyChar" String="fF" attribute="6" context="0"/>
+        </item>
+        <item name="HlCOct" attribute="4" context="0"/>
+        <item name="HlCHex" attribute="5" context="0"/>
+        <item name="Int" attribute="3" context="0" >
+          <item name="StringDetect" attribute="3" context="0" String="ULL" insensitive="TRUE"/>
+          <item name="StringDetect" attribute="3" context="0" String="LUL" insensitive="TRUE"/>
+          <item name="StringDetect" attribute="3" context="0" String="LLU" insensitive="TRUE"/>
+          <item name="StringDetect" attribute="3" context="0" String="UL" insensitive="TRUE"/>
+          <item name="StringDetect" attribute="3" context="0" String="LU" insensitive="TRUE"/>
+          <item name="StringDetect" attribute="3" context="0" String="LL" insensitive="TRUE"/>
+          <item name="StringDetect" attribute="3" context="0" String="U" insensitive="TRUE"/>
+          <item name="StringDetect" attribute="3" context="0" String="L" insensitive="TRUE"/>
+        </item>
+        <item name="HlCChar" attribute="7" context="0"/>
+        <item name="CharDetect" attribute="8" context="1" char="&quot;"/>
+        <item name="2CharDetect" attribute="10" context="2" char="/" char1="/"/>
+        <item name="2CharDetect" attribute="10" context="3" char="/" char1="*"/>
+        <item name="AnyChar" attribute="11" context="0" String="!%&amp;()+,-&lt;=&gt;?[]^{|}~"/>
+      </context>
+      <context attribute="8" lineEndContext="0" name="String">
+        <item name="LineContinue" attribute="8" context="6"/>
+        <item name="HlCStringChar" attribute="9" context="1"/>
+        <item name="CharDetect" attribute="8" context="0" char="&quot;"/>
+      </context>
+      <context attribute="10" lineEndContext="0" name="Commentar 1"/>
+      <context attribute="10" lineEndContext="3" name="Commentar 2">
+        <item name="2CharDetect" attribute="10" context="0" char="*" char1="/"/>
+      </context>
+    </contexts>
+    <itemDatas>
+      <itemData name="Normal Text" defStyleNum="dsNormal"/>
+      <itemData name="Keyword"  defStyleNum="dsKeyword"/>
+      <itemData name="Data Type"  defStyleNum="dsDataType"/>
+      <itemData name="Decimal"  defStyleNum="dsDecVal"/>
+      <itemData name="Octal"  defStyleNum="dsBaseN"/>
+      <itemData name="Hex"  defStyleNum="dsBaseN"/>
+      <itemData name="Float"  defStyleNum="dsFloat"/>
+      <itemData name="Char"  defStyleNum="dsChar"/>
+      <itemData name="String"  defStyleNum="dsString"/>
+      <itemData name="String Char"  defStyleNum="dsChar"/>
+      <itemData name="Comment"  defStyleNum="dsComment"/>
+      <itemData name="Symbol"  defStyleNum="dsNormal"/>
+    </itemDatas>
+  </highlighting>
+</language>
