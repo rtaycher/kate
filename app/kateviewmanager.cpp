@@ -460,11 +460,8 @@ void KateViewManager::slotDocumentOpen ()
 {
   Kate::View *cv = activeView();
 
-  //TODO: move to kdelibs
-  QString DEFAULT_ENCODING = QString::fromLatin1(KGlobal::locale()->encoding());
-
   KEncodingFileDialog::Result r=KEncodingFileDialog::getOpenURLsAndEncoding(
-     (cv ? KTextEditor::encodingInterface(cv->document())->encoding() : QString::null),
+     (cv ? KTextEditor::encodingInterface(cv->document())->encoding() : Kate::Document::defaultEncoding()),
      (cv ? cv->document()->url().url() : QString::null),
      QString::null,this,i18n("Open File"));
 
