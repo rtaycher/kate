@@ -1,4 +1,4 @@
-/* 
+/*
    This file is part of KWrite
    Copyright (c) 2000 Waldo Bastian <bastian@kde.org>
    
@@ -54,7 +54,13 @@ public:
     * Insert a file at line @p line in the buffer. 
     */
    void insertFile(int line, const QString &file);
-   
+
+   /**
+    * Overloaded function of insertFile
+    */
+   void insertFile(int line, const QFile &file);
+
+
    /**
     * Set the codec to decode the buffer with.
     */
