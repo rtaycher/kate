@@ -198,7 +198,7 @@ void KateMainWindow::setupActions()
   KStdAction::openNew( viewManager, SLOT( slotDocumentNew() ), actionCollection(), "file_new" );
   KStdAction::open( viewManager, SLOT( slotDocumentOpen() ), actionCollection(), "file_open" );
 
-  fileOpenRecent = KStdAction::openRecent (viewManager, SLOT(openConstURL (const KURL&)), actionCollection());
+  fileOpenRecent = KStdAction::openRecent (viewManager, SLOT(openConstURL_delayed1 (const KURL&)), actionCollection());
   KStdAction::save( viewManager, SLOT( slotDocumentSave() ), actionCollection(), "file_save" );
   new KAction( i18n("Save A&ll"),"save_all", CTRL+Key_L, viewManager, SLOT( slotDocumentSaveAll() ), actionCollection(), "file_save_all" );
   KStdAction::saveAs( viewManager, SLOT( slotDocumentSaveAs() ), actionCollection(), "file_save_as" );

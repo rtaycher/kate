@@ -45,6 +45,8 @@
 #include <qstringlist.h>
 #include <qvbox.h>
 
+#include <qtimer.h>
+
 #include "katesplitter.h"
 
 KateViewManager::KateViewManager (QWidget *parent, KateDocManager *docManager) : Kate::ViewManager  (parent)
@@ -776,6 +778,20 @@ void KateViewManager::openConstURL (const KURL& url)
 {
   openURL (KURL (url));
 }
+
+void KateViewManager::openConstURL_delayed1 (const KURL& url)
+{
+	delayedURL=url;
+	QTimer::singleShot(0,this,SLOT(openConstURL_delayed2()));
+//  openURL (KURL (url));
+}
+
+void KateViewManager::openConstURL_delayed2 ()
+{
+	openURL(KURL(delayedURL));
+}
+
+
 
 void KateViewManager::printNow()
 {

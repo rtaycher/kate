@@ -52,9 +52,13 @@ class KateViewManager : public Kate::ViewManager
     /* reopens documents that was open last time kate was shut down*/
     void reopenDocuments(bool isRestore);
 
+  private:
+    KURL delayedURL;
   public slots:
     void openURL (KURL url=0L);
     void openURLReal (KURL url=0L);
+    void openConstURL_delayed1 (const KURL& url=0L);
+    void openConstURL_delayed2();
     void openConstURL (const KURL&url=0L);
     void reloadCurrentDoc();
 
