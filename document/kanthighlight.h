@@ -49,7 +49,7 @@ class HlItem {
     virtual ~HlItem();
     virtual bool startEnable(QChar) {return true;}
     virtual bool endEnable(QChar) {return true;}
-    virtual const QChar *checkHgl(const QChar *) = 0;
+    virtual const QChar *checkHgl(const QChar *,bool) = 0;
     QList<HlItem> *subItems;
     int attr;
     int ctx;    
@@ -66,7 +66,7 @@ class HlItemWw : public HlItem {
 class HlCharDetect : public HlItem {
   public:
     HlCharDetect(int attribute, int context, QChar);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
   protected:
     QChar sChar;
 };
@@ -76,7 +76,7 @@ class Hl2CharDetect : public HlItem {
     Hl2CharDetect(int attribute, int context,  QChar ch1, QChar ch2);
    	Hl2CharDetect(int attribute, int context, const QChar *ch);
 
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
   protected:
     QChar sChar1;
     QChar sChar2;
@@ -86,7 +86,7 @@ class HlStringDetect : public HlItem {
   public:
     HlStringDetect(int attribute, int context, const QString &, bool inSensitive=false);
     virtual ~HlStringDetect();
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
   protected:
     const QString str;
     bool _inSensitive;
@@ -95,7 +95,7 @@ class HlStringDetect : public HlItem {
 class HlRangeDetect : public HlItem {
   public:
     HlRangeDetect(int attribute, int context, QChar ch1, QChar ch2);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
   protected:
     QChar sChar1;
     QChar sChar2;
@@ -118,7 +118,7 @@ class HlKeyword : public HlItemWw {
 		virtual void addList(const QStringList &);
 // needed for kdevelop (if they decide to use this code)
     virtual void addList(const char **);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 		QStringList getList() { return words;};
 		QDict<char> getDict() { return Dict;};
 		
@@ -130,8 +130,8 @@ class HlCaseInsensitiveKeyword : public HlKeyword {
   public:
     HlCaseInsensitiveKeyword(int attribute, int context);
     virtual ~HlCaseInsensitiveKeyword();
-    virtual const char *checkHgl(const char *);
-		virtual const QChar *checkHgl(const QChar *);
+    virtual const char *checkHgl(const char *,bool);
+		virtual const QChar *checkHgl(const QChar *,bool);
     void addList(const QStringList &);
     void addList(const char **);
 };
@@ -139,88 +139,88 @@ class HlCaseInsensitiveKeyword : public HlKeyword {
 class HlPHex : public HlItemWw {
   public:
     HlPHex(int attribute,int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 class HlInt : public HlItemWw {
   public:
     HlInt(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 class HlFloat : public HlItemWw {
   public:
     HlFloat(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 class HlCInt : public HlInt {
   public:
     HlCInt(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 class HlCOct : public HlItemWw {
   public:
     HlCOct(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 class HlCHex : public HlItemWw {
   public:
     HlCHex(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 class HlCFloat : public HlFloat {
   public:
     HlCFloat(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 class HlCSymbol : public HlItem {
   public:
     HlCSymbol(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 class HlLineContinue : public HlItem {
   public:
     HlLineContinue(int attribute, int context);
     virtual bool endEnable(QChar c) {return c == '\0';}
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 class HlCStringChar : public HlItem {
   public:
     HlCStringChar(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 class HlCChar : public HlItemWw {
   public:
     HlCChar(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 class HlCPrep : public HlItem {
   public:
     HlCPrep(int attribute, int context);
     virtual bool startEnable(QChar c) {return c == '\0';}
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 class HlHtmlTag : public HlItem {
   public:
     HlHtmlTag(int attribute, int context);
     virtual bool startEnable(QChar c) {return c == '<';}
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 class HlHtmlValue : public HlItem {
   public:
     HlHtmlValue(int attribute, int context);
     virtual bool startEnable(QChar c) {return c == '=';}
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 class HlShellComment : public HlCharDetect {
@@ -233,7 +233,7 @@ class HlShellComment : public HlCharDetect {
 class HlMHex : public HlItemWw {
   public:
     HlMHex(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 
@@ -241,88 +241,88 @@ class HlMHex : public HlItemWw {
 class HlAdaDec : public HlItemWw {
   public:
     HlAdaDec(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 //ada base n
 class HlAdaBaseN : public HlItemWw {
   public:
     HlAdaBaseN(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 //ada float
 class HlAdaFloat : public HlItemWw {
   public:
     HlAdaFloat(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 //ada character
 class HlAdaChar : public HlItemWw {
   public:
     HlAdaChar(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 class HlSatherClassname : public HlItemWw {
   public:
     HlSatherClassname(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 class HlSatherIdent : public HlItemWw {
   public:
     HlSatherIdent(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 class HlSatherDec : public HlItemWw {
   public:
     HlSatherDec(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 class HlSatherBaseN : public HlItemWw {
   public:
     HlSatherBaseN(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 class HlSatherFloat : public HlItemWw {
   public:
     HlSatherFloat(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 class HlSatherChar : public HlItemWw {
   public:
     HlSatherChar(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 class HlSatherString : public HlItemWw {
   public:
     HlSatherString(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 class HlLatexTag : public HlItem {
   public:
     HlLatexTag(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 class HlLatexChar : public HlItem {
   public:
     HlLatexChar(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
 };
 
 class HlLatexParam : public HlItem {
   public:
     HlLatexParam(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
     virtual bool endEnable(QChar c) {return !isInWord(c);}
 };
 
@@ -330,7 +330,7 @@ class HlLatexParam : public HlItem {
 class HlAnyChar : public HlItem {
   public:
     HlAnyChar(int attribute, int context,char* charList);
-    virtual const QChar *checkHgl(const QChar *);
+    virtual const QChar *checkHgl(const QChar *,bool);
     char* _charList;
 };
 

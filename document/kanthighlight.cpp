@@ -119,7 +119,7 @@ HlCharDetect::HlCharDetect(int attribute, int context, QChar c)
   : HlItem(attribute,context), sChar(c) {
 }
 
-const QChar *HlCharDetect::checkHgl(const QChar *str) {
+const QChar *HlCharDetect::checkHgl(const QChar *str,bool) {
   if (*str == sChar) return str + 1;
   return 0L;
 }
@@ -130,7 +130,7 @@ Hl2CharDetect::Hl2CharDetect(int attribute, int context, QChar ch1, QChar ch2)
   sChar2 = ch2;
 }
 
-const QChar *Hl2CharDetect::checkHgl(const QChar *str) {
+const QChar *Hl2CharDetect::checkHgl(const QChar *str,bool) {
   if (str[0] == sChar1 && str[1] == sChar2) return str + 2;
   return 0L;
 }
@@ -142,7 +142,7 @@ HlStringDetect::HlStringDetect(int attribute, int context, const QString &s, boo
 HlStringDetect::~HlStringDetect() {
 }
 
-const QChar *HlStringDetect::checkHgl(const QChar *s) {
+const QChar *HlStringDetect::checkHgl(const QChar *s,bool) {
   if (!_inSensitive) {if (memcmp(s, str.unicode(), str.length()*sizeof(QChar)) == 0) return s + str.length();}
      else
        {
@@ -159,7 +159,7 @@ HlRangeDetect::HlRangeDetect(int attribute, int context, QChar ch1, QChar ch2)
   sChar2 = ch2;
 }
 
-const QChar *HlRangeDetect::checkHgl(const QChar *s) {
+const QChar *HlRangeDetect::checkHgl(const QChar *s,bool) {
   if (*s == sChar1) {
     do {
       s++;
@@ -215,7 +215,7 @@ void HlKeyword::addList(const char **list) {
   }
 }
 
-const QChar *HlKeyword::checkHgl(const QChar *s) {
+const QChar *HlKeyword::checkHgl(const QChar *s,bool) {
 #if 0
   for (QStringList::Iterator it = words.begin(); it != words.end(); ++it) {
     if (memcmp(s, (*it).unicode(), (*it).length()*sizeof(QChar)) == 0) {
@@ -242,7 +242,7 @@ HlInt::HlInt(int attribute, int context)
   : HlItemWw(attribute,context) {
 }
 
-const QChar *HlInt::checkHgl(const QChar *str) {
+const QChar *HlInt::checkHgl(const QChar *str,bool) {
   const QChar *s,*s1;
 
   s = str;
@@ -253,7 +253,7 @@ const QChar *HlInt::checkHgl(const QChar *str) {
        {
 	 for (HlItem *it=subItems->first();it;it=subItems->next())
           {
-            s1=it->checkHgl(s);
+            s1=it->checkHgl(s,false);
 	    if (s1) return s1;
           }
        }
@@ -266,7 +266,7 @@ HlFloat::HlFloat(int attribute, int context)
   : HlItemWw(attribute,context) {
 }
 
-const QChar *HlFloat::checkHgl(const QChar *s) {
+const QChar *HlFloat::checkHgl(const QChar *s,bool) {
   bool b, p;
   const QChar *s1;
 
@@ -292,7 +292,7 @@ const QChar *HlFloat::checkHgl(const QChar *s) {
             {
 	      for (HlItem *it=subItems->first();it;it=subItems->next())
                 {
-                  s1=it->checkHgl(s);
+                  s1=it->checkHgl(s,false);
 	          if (s1) return s1;
                 }
             }
@@ -310,7 +310,7 @@ const QChar *HlFloat::checkHgl(const QChar *s) {
         {
           for (HlItem *it=subItems->first();it;it=subItems->next())
             {
-              s1=it->checkHgl(s);
+              s1=it->checkHgl(s,false);
               if (s1) return s1;
             }
         }
@@ -324,10 +324,10 @@ HlCInt::HlCInt(int attribute, int context)
   : HlInt(attribute,context) {
 }
 
-const QChar *HlCInt::checkHgl(const QChar *s) {
+const QChar *HlCInt::checkHgl(const QChar *s,bool lineStart) {
 
 //  if (*s == '0') s++; else s = HlInt::checkHgl(s);
-  s = HlInt::checkHgl(s);
+  s = HlInt::checkHgl(s,lineStart);
   if (s != 0L) {
     int l = 0;
     int u = 0;
@@ -354,7 +354,7 @@ HlCOct::HlCOct(int attribute, int context)
   : HlItemWw(attribute,context) {
 }
 
-const QChar *HlCOct::checkHgl(const QChar *str) {
+const QChar *HlCOct::checkHgl(const QChar *str,bool) {
   const QChar *s;
 
   if (*str == '0') {
@@ -373,7 +373,7 @@ HlCHex::HlCHex(int attribute, int context)
   : HlItemWw(attribute,context) {
 }
 
-const QChar *HlCHex::checkHgl(const QChar *str) {
+const QChar *HlCHex::checkHgl(const QChar *str,bool) {
   const QChar *s;
 
   if (str[0] == '0' && ((str[1]&0xdf) == 'X' )) {
@@ -392,9 +392,9 @@ HlCFloat::HlCFloat(int attribute, int context)
   : HlFloat(attribute,context) {
 }
 
-const QChar *HlCFloat::checkHgl(const QChar *s) {
+const QChar *HlCFloat::checkHgl(const QChar *s,bool lineStart) {
 
-  s = HlFloat::checkHgl(s);
+  s = HlFloat::checkHgl(s,lineStart);
   if (s && ((*s&0xdf) == 'F' )) s++;
   return s;
 }
@@ -404,7 +404,7 @@ HlAnyChar::HlAnyChar(int attribute, int context, char* charList)
   _charList=charList;  
 }
 
-const QChar *HlAnyChar::checkHgl(const QChar *s) {
+const QChar *HlAnyChar::checkHgl(const QChar *s,bool) {
   kdDebug()<<"in AnyChar::checkHgl: _charList: "<<_charList<<endl;
   if (ustrchr(_charList, *s)) return s +1;
   return 0L;
@@ -414,7 +414,7 @@ HlCSymbol::HlCSymbol(int attribute, int context)
   : HlItem(attribute, context) {
 }
 
-const QChar *HlCSymbol::checkHgl(const QChar *s) {
+const QChar *HlCSymbol::checkHgl(const QChar *s,bool) {
   if (ustrchr("!%&()*+,-./:;<=>?[]^{|}~", *s)) return s +1;
   return 0L;
 }
@@ -424,7 +424,7 @@ HlLineContinue::HlLineContinue(int attribute, int context)
   : HlItem(attribute,context) {
 }
 
-const QChar *HlLineContinue::checkHgl(const QChar *s) {
+const QChar *HlLineContinue::checkHgl(const QChar *s,bool) {
   if (*s == '\\') return s + 1;
   return 0L;
 }
@@ -504,7 +504,7 @@ const QChar *checkEscapedChar(const QChar *s) {
   return 0L;
 }
 
-const QChar *HlCStringChar::checkHgl(const QChar *str) {
+const QChar *HlCStringChar::checkHgl(const QChar *str,bool) {
   return checkEscapedChar(str);
 }
 
@@ -513,7 +513,7 @@ HlCChar::HlCChar(int attribute, int context)
   : HlItemWw(attribute,context) {
 }
 
-const QChar *HlCChar::checkHgl(const QChar *str) {
+const QChar *HlCChar::checkHgl(const QChar *str,bool) {
   const QChar *s;
 
   if (str[0] == '\'' && str[1] != '\0' && str[1] != '\'') {
@@ -528,7 +528,7 @@ HlCPrep::HlCPrep(int attribute, int context)
   : HlItem(attribute,context) {
 }
 
-const QChar *HlCPrep::checkHgl(const QChar *s) {
+const QChar *HlCPrep::checkHgl(const QChar *s,bool) {
 
   while (*s == ' ' || *s == '\t') s++;
   if (*s == '#') {
@@ -542,7 +542,7 @@ HlHtmlTag::HlHtmlTag(int attribute, int context)
   : HlItem(attribute,context) {
 }
 
-const QChar *HlHtmlTag::checkHgl(const QChar *s) {
+const QChar *HlHtmlTag::checkHgl(const QChar *s,bool) {
   while (*s == ' ' || *s == '\t') s++;
   while (*s != ' ' && *s != '\t' && *s != '>' && *s != '\0') s++;
   return s;
@@ -552,7 +552,7 @@ HlHtmlValue::HlHtmlValue(int attribute, int context)
   : HlItem(attribute,context) {
 }
 
-const QChar *HlHtmlValue::checkHgl(const QChar *s) {
+const QChar *HlHtmlValue::checkHgl(const QChar *s,bool) {
   while (*s == ' ' || *s == '\t') s++;
   if (*s == '\"') {
     do {
@@ -574,7 +574,7 @@ HlMHex::HlMHex(int attribute, int context)
   : HlItemWw(attribute,context) {
 }
 
-const QChar *HlMHex::checkHgl(const QChar *s) {
+const QChar *HlMHex::checkHgl(const QChar *s,bool) {
 
   if (s->isDigit()) {
     s++;
@@ -588,7 +588,7 @@ HlAdaDec::HlAdaDec(int attribute, int context)
   : HlItemWw(attribute,context) {
 }
 
-const QChar *HlAdaDec::checkHgl(const QChar *s) {
+const QChar *HlAdaDec::checkHgl(const QChar *s,bool) {
   const QChar *str;
 
   if (s->isDigit()) {
@@ -607,7 +607,7 @@ HlAdaBaseN::HlAdaBaseN(int attribute, int context)
   : HlItemWw(attribute,context) {
 }
 
-const QChar *HlAdaBaseN::checkHgl(const QChar *s) {
+const QChar *HlAdaBaseN::checkHgl(const QChar *s,bool) {
   int base;
   QChar c1, c2, c3;
   const QChar *str;
@@ -644,7 +644,7 @@ HlAdaFloat::HlAdaFloat(int attribute, int context)
   : HlItemWw(attribute,context) {
 }
 
-const QChar *HlAdaFloat::checkHgl(const QChar *s) {
+const QChar *HlAdaFloat::checkHgl(const QChar *s,bool) {
   const QChar *str;
 
   str = s;
@@ -669,7 +669,7 @@ HlAdaChar::HlAdaChar(int attribute, int context)
   : HlItemWw(attribute,context) {
 }
 
-const QChar *HlAdaChar::checkHgl(const QChar *s) {
+const QChar *HlAdaChar::checkHgl(const QChar *s,bool) {
   if (s[0] == '\'' && s[1] && s[2] == '\'') return s + 3;
   return 0L;
 }
@@ -678,7 +678,7 @@ HlSatherClassname::HlSatherClassname(int attribute, int context)
   : HlItemWw(attribute,context) {
 }
 
-const QChar *HlSatherClassname::checkHgl(const QChar *s) {
+const QChar *HlSatherClassname::checkHgl(const QChar *s,bool) {
   if (*s == '$') s++;
 
   if (*s >= 'A' && *s <= 'Z') {
@@ -695,7 +695,7 @@ HlSatherIdent::HlSatherIdent(int attribute, int context)
   : HlItemWw(attribute,context) {
 }
 
-const QChar *HlSatherIdent::checkHgl(const QChar *s) {
+const QChar *HlSatherIdent::checkHgl(const QChar *s,bool) {
   if (s->isLetter()) {
     s++;
                 while(isInWord(*s)) s++;
@@ -709,7 +709,7 @@ HlSatherDec::HlSatherDec(int attribute, int context)
   : HlItemWw(attribute,context) {
 }
 
-const QChar *HlSatherDec::checkHgl(const QChar *s) {
+const QChar *HlSatherDec::checkHgl(const QChar *s,bool) {
   if (s->isDigit()) {
     s++;
     while ((s->isDigit()) || *s == '_') s++;
@@ -723,7 +723,7 @@ HlSatherBaseN::HlSatherBaseN(int attribute, int context)
   : HlItemWw(attribute,context) {
 }
 
-const QChar *HlSatherBaseN::checkHgl(const QChar *s) {
+const QChar *HlSatherBaseN::checkHgl(const QChar *s,bool) {
   if (*s == '0') {
     s++;
     if (*s == 'x') {
@@ -750,7 +750,7 @@ HlSatherFloat::HlSatherFloat(int attribute, int context)
   : HlItemWw(attribute,context) {
 }
 
-const QChar *HlSatherFloat::checkHgl(const QChar *s) {
+const QChar *HlSatherFloat::checkHgl(const QChar *s,bool) {
   if (s->isDigit()) {
     s++;
     while ((s->isDigit()) || *s == '_') s++;
@@ -780,7 +780,7 @@ HlSatherChar::HlSatherChar(int attribute, int context)
   : HlItemWw(attribute,context) {
 }
 
-const QChar *HlSatherChar::checkHgl(const QChar *s) {
+const QChar *HlSatherChar::checkHgl(const QChar *s,bool) {
   if (*s == '\'') {
     s++;
     if (*s == '\\') {
@@ -804,7 +804,7 @@ HlSatherString::HlSatherString(int attribute, int context)
   : HlItemWw(attribute, context) {
 }
 
-const QChar *HlSatherString::checkHgl(const QChar *s) {
+const QChar *HlSatherString::checkHgl(const QChar *s,bool) {
   if (*s == '\"') {
     s++;
     while (*s != '\"') {
@@ -824,7 +824,7 @@ HlLatexTag::HlLatexTag(int attribute, int context)
   : HlItem(attribute, context) {
 }
 
-const QChar *HlLatexTag::checkHgl(const QChar *s) {
+const QChar *HlLatexTag::checkHgl(const QChar *s,bool) {
   const QChar *str;
 
   if (*s == '\\') {
@@ -844,7 +844,7 @@ HlLatexChar::HlLatexChar(int attribute, int context)
   : HlItem(attribute, context) {
 }
 
-const QChar *HlLatexChar::checkHgl(const QChar *s) {
+const QChar *HlLatexChar::checkHgl(const QChar *s,bool) {
   if (*s == '\\') {
     s++;
     if (*s && strchr("{}$&#_%", *s)) return s +1;
@@ -859,7 +859,7 @@ HlLatexParam::HlLatexParam(int attribute, int context)
   : HlItem(attribute, context) {
 }
 
-const QChar *HlLatexParam::checkHgl(const QChar *s) {
+const QChar *HlLatexParam::checkHgl(const QChar *s,bool) {
   if (*s == '#') {
     s++;
     while (s->isDigit()) {
@@ -1078,7 +1078,7 @@ int GenHighlight::doHighlight(int ctxNum, TextLine *textLine) {
   while (*s1 != '\0') {
     for (item = context->items.first(); item != 0L; item = context->items.next()) {
       if (item->startEnable(lastChar)) {
-        s2 = item->checkHgl(s1);
+        s2 = item->checkHgl(s1,s1==str);
         if (s2 > s1) {
           if (item->endEnable(*s2)) { //jowenn: Here I've to change a lot
             textLine->setAttribs(item->attr,s1 - str,s2 - str);
@@ -1260,7 +1260,7 @@ HlPHex::HlPHex(int attribute,int context)
   : HlItemWw(attribute,context){
 }
 
-const QChar *HlPHex::checkHgl(const QChar *str)
+const QChar *HlPHex::checkHgl(const QChar *str,bool)
 {
   const QChar *s;
   if(str[0] == '$') {
@@ -1285,7 +1285,7 @@ void HlCaseInsensitiveKeyword::addList(const char **list)
     list++;
   }
 }
-const QChar *HlCaseInsensitiveKeyword::checkHgl(const QChar *s)
+const QChar *HlCaseInsensitiveKeyword::checkHgl(const QChar *s,bool)
 {
   const QChar *s2=s;
   if(*s2=='\0') return 0L;
@@ -1299,7 +1299,7 @@ const QChar *HlCaseInsensitiveKeyword::checkHgl(const QChar *s)
 /*
    Not really tested but I assume it will work
 */
-const char *HlCaseInsensitiveKeyword::checkHgl(const char *s) {
+const char *HlCaseInsensitiveKeyword::checkHgl(const char *s,bool) {
 #if 0
   int z, count;
   QString word;
@@ -1763,7 +1763,7 @@ int PerlHighlight::doHighlight(int ctxNum, TextLine *textLine) {
     pos = s - str;
     if (op == 0 && lastWw) {
       //match keyword
-      s2 = keyword->checkHgl(s);
+      s2 = keyword->checkHgl(s,false);
       if (s2 && !isInWord(*s2)) {
         s = s2;
         textLine->setAttribs(1, pos, s - str);
@@ -2258,8 +2258,9 @@ HlManager::HlManager() : QObject(0L)
     hlList.append(new AutoHighlight(modeList.at(i)));
     i++;
   }              
- */
 
+*/
+  kdDebug()<<"Creating HlList"<<endl;
   hlList.append(new CHighlight(     "C"        ));
   hlList.append(new CppHighlight(   "C++"      ));
   hlList.append(new ObjcHighlight(  "Objective-C"));
@@ -2276,6 +2277,7 @@ HlManager::HlManager() : QObject(0L)
   hlList.append(new KBasicHighlight("KBasic"));
   hlList.append(new LatexHighlight( "Latex"    ));
   hlList.append(new IdlHighlight("IDL"));
+  kdDebug()<<"HlList created"<<endl;
 
 }
 

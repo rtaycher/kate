@@ -140,7 +140,7 @@
     <item name="CharDetect" attribute="8" context="1" char="&quot;"/>
     <item name="2CharDetect" attribute="10" context="2" char="/" char1="/"/>
     <item name="2CharDetect" attribute="10" context="3" char="/" char1="*"/>
-    <item name="HlCSymbol" attribute="11" context="0"/>
+    <item name="AnyChar" attribute="11" context="0" String="!%&amp;()+,-&lt;=&gt;?[]^{|}~"/>   
     <item name="HlCPrep" attribute="12" context="4"/>
   </context>
   <context attribute="8" lineEndContext="0">
@@ -150,7 +150,7 @@
   </context>
   <context attribute="10" lineEndContext="0"/>
   <context attribute="10" lineEndContext="3">
-    <item name="CharDetect" attribute="10" context="0" char="*" char1="/"/>
+    <item name="2CharDetect" attribute="10" context="0" char="*" char1="/"/>
   </context>
   <context attribute="12" lineEndContext="0">
     <item name="LineContinue" attribute="12" context="7"/>
