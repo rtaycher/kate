@@ -446,11 +446,11 @@ bool KateDocument::insertText( uint line, uint col, const QString &s )
 
   tagEnd = 0;
   tagStart = 0xffffff;
-     
-  for (uint pos = 0; pos < len; pos++)     
-  {     
+
+  for (uint pos = 0; pos < len; pos++)
+  {
     ch = s[pos];
-     
+
     if (ch == '\n')
     {
       internalInsertText (line, insertPos, buf);
@@ -1008,18 +1008,10 @@ QString KateDocument::selection() const
   return s;
 }
 
-struct DeleteSelection {
-  int line;
-  int lineLen;
-  int deleteLine;
-  int deleteStart;
-  int len;
-};
-
 bool KateDocument::removeSelectedText ()
 {
   TextLine::Ptr textLine = 0L;
-  QPtrStack<DeleteSelection> selectedLines;
+  int delLen, delStart, delLine;
 
   if (!hasSelection())
     return false;
@@ -1028,69 +1020,75 @@ bool KateDocument::removeSelectedText ()
 
   _autoUpdate = false;
 
-  for (int z=selectStartLine; z <= selectEndLine; z++)
+  int sl = selectStartLine;
+  int el = selectEndLine;
+  int sc = selectStartCol;
+  int ec = selectEndCol;
+
+  for (int z=el; z >= sl; z--)
   {
     textLine = getTextLine(z);
     if (!textLine)
       break;
 
-    DeleteSelection *curLine = new DeleteSelection;
-
-    curLine->deleteStart = textLine->length();
-    curLine->line = z;
-    curLine->lineLen = textLine->length();
+    delLine = 0;
+    delStart = 0;
+    delLen = 0;
 
     if (!blockSelect)
     {
-      if (lineSelected(z))
-        curLine->deleteLine = 1;
+      if ((z > sl) && (z < el))
+        delLine = 1;
       else
       {
-        if ((z == selectStartLine) && (z == selectEndLine))
+        if ((z == sl) && (z == el))
         {
-          curLine->deleteStart = selectStartCol;
-          curLine->len = selectEndCol-selectStartCol;
+          delStart = sc;
+          delLen = ec-sc;
         }
-        else if ((z == selectStartLine))
+        else if ((z == sl))
         {
-          curLine->deleteStart = selectStartCol;
-          curLine->len = textLine->length()-selectStartCol;
+          delStart = sc;
+          delLen = textLine->length()-sc;
 
-          if (selectStartLine < selectEndLine)
-            curLine->len++;
+          if (sl < el)
+            delLen++;
         }
-        else if ((z == selectEndLine))
+        else if ((z == el))
         {
-          curLine->deleteStart = 0;
-          curLine->len = selectEndCol;
+          delStart = 0;
+          delLen = ec;
         }
       }
     }
     else
     {
-      curLine->deleteStart = selectStartCol;
-      curLine->len = selectEndCol-selectStartCol;
+      delStart = sc;
+      delLen = ec-sc;
+
+      if (delStart >= textLine->length())
+      {
+        delStart = 0;
+        delLen = 0;
+      }
+      else if (delLen+delStart > textLine->length())
+        delLen = textLine->length()-delStart;
     }
 
-    selectedLines.push (curLine);
-  }
-
-  while (selectedLines.count() > 0)
-  {
-    DeleteSelection *curLine = selectedLines.pop ();
-
-    if (curLine->deleteLine == 1)
-      removeLine (curLine->line);
-    else if (curLine->deleteStart+curLine->len > curLine->lineLen)
-      removeText (curLine->line, curLine->deleteStart, curLine->line+1, 0);
-    else
-      removeText (curLine->line, curLine->deleteStart, curLine->line, curLine->deleteStart+curLine->len);
-    
-    if (curLine)
-      delete curLine;
+    if (delLine == 1)
+      internalRemoveLine (z);
+    else if (delStart+delLen > textLine->length())
+    {
+      internalRemoveText (z, delStart, textLine->length()-delStart);
+      internalUnWrapLine (z, delStart);
+    }
+     else
+      internalRemoveText (z, delStart, delStart+delLen);
   }
 
   _autoUpdate = true;
+
+  updateLines(sl, el);
   clearSelection();
 
   undoItems.append (currentUndo);
@@ -2696,10 +2694,6 @@ void KateDocument::updateLines(int startLine, int endLine)
     }
     else { if (endCtx) {free(endCtx); endCtx=0;}}
 
-
-
-    kdDebug()<<QString("Calling doHighlight for line %1").arg(line)<<endl;
-
     m_highlight->doHighlight(ctxNum, ctxNumLen, textLine);
 
     ctxNumLen = textLine->getContextLength();
@@ -2732,7 +2726,7 @@ void KateDocument::updateLines(int startLine, int endLine)
     //kdDebug()<<QString("Next line: %1, last_line %2, endLine %3").arg(line).arg(last_line).arg(endLine)<<endl;
   }
   while ((line <= last_line) && ((line <= endLine) || stillcontinue));
-  
+
   if (ctxNum)
     delete [] ctxNum;
   if (endCtx)
