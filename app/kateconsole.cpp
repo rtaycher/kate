@@ -94,4 +94,8 @@ void KateConsole::cd (KURL url)
 void KateConsole::slotDestroyed ()
 {
   part=0;
+  
+  // hide the dockwidget
+  if (parentWidget())
+    parentWidget()->hide ();
 }
