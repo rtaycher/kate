@@ -1,5 +1,5 @@
 /***************************************************************************
-                          kateviewmanager.cpp 
+                          kateviewmanager.cpp
                           View Manager for the Kate text editor
                              -------------------
     begin                : Wed Jan 3 2001
@@ -85,7 +85,7 @@ KateViewManager::~KateViewManager ()
 
 bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, Kate::Document *doc )
 {
-  
+
   if (m_blockViewCreationAndActivation) return false;
 
   // create doc
@@ -139,10 +139,10 @@ bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, 
 
   // disable settings dialog action
   view->actionCollection()->remove (view->actionCollection()->action( "set_confdlg" ));
-    
+
   // popup menu
   view->installPopup ((QPopupMenu*)((KMainWindow *)topLevelWidget ())->factory()->container("ktexteditor_popup", (KMainWindow *)topLevelWidget ()) );
-  
+
   connect(view,SIGNAL(cursorPositionChanged()),this,SLOT(statusMsg()));
   connect(view,SIGNAL(newStatus()),this,SLOT(statusMsg()));
   connect(view->getDoc(), SIGNAL(undoChanged()), this, SLOT(statusMsg()));
@@ -168,7 +168,7 @@ bool KateViewManager::deleteView (Kate::View *view, bool delViewSpace)
   viewspace->removeView (view);
 
   ((KMainWindow *)topLevelWidget ())->guiFactory ()->removeClient (view);
-  
+
   // remove view from list and memory !!
   m_viewList.remove (view);
 
@@ -276,15 +276,15 @@ void KateViewManager::activateView ( Kate::View *view, bool checkModified /*=fal
 
     setActiveView (view);
     m_viewList.findRef (view);
-        
+
     if (((KateMainWindow *)topLevelWidget ())->activeView)
       ((KMainWindow *)topLevelWidget ())->guiFactory()->removeClient ( ((KateMainWindow *)topLevelWidget ())->activeView );
-  
+
     ((KateMainWindow *)topLevelWidget ())->activeView = view;
-   
+
     if (!m_blockViewCreationAndActivation)
     ((KMainWindow *)topLevelWidget ())->guiFactory ()->addClient( view );
-      
+
     setWindowCaption();
     statusMsg();
 
@@ -474,10 +474,10 @@ void KateViewManager::slotDocumentOpen ()
 {
   Kate::View *cv = activeView();
 	KateFileDialog *dialog;
-	
+
 	//TODO: move to kdelibs
 	QString DEFAULT_ENCODING = QString::fromLatin1(QTextCodec::codecForLocale()->name());
-	
+
   if (cv)
 	  dialog = new KateFileDialog (cv->getDoc()->url().url(),cv->getDoc()->encoding(), this, i18n ("Open File"));
 	else
@@ -488,7 +488,7 @@ void KateViewManager::slotDocumentOpen ()
 
   for (KURL::List::Iterator i=data.urls.begin(); i != data.urls.end(); ++i)
     openURL( *i, data.encoding );
-		
+
 }
 
 void KateViewManager::slotDocumentSaveAll()
@@ -502,7 +502,7 @@ void KateViewManager::slotDocumentClose ()
   if (!activeView()) return;
 
   m_docManager->closeDocument (activeView()->getDoc());
-  
+
   openNewIfEmpty();
 }
 
@@ -513,15 +513,15 @@ void KateViewManager::slotDocumentCloseAll ()
   kdDebug()<<"CLOSE ALL DOCUMENTS *****************"<<endl;
 
   m_blockViewCreationAndActivation=true;
-  m_docManager->closeAllDocuments();  
+  m_docManager->closeAllDocuments();
   m_blockViewCreationAndActivation=false;
-  
+
   openNewIfEmpty();
 }
 
-void KateViewManager::openURL (KURL url=0L, const QString& encoding)
+void KateViewManager::openURL (KURL url, const QString& encoding)
 {
-  
+
 	if ( !m_docManager->isOpen( url ) )
   {
     Kate::View *cv = activeView();
@@ -534,10 +534,10 @@ void KateViewManager::openURL (KURL url=0L, const QString& encoding)
       createView (true, KURL(), 0L, open_into);
     	m_docManager->setIsFirstDocument (false);
     }
-  
+
     if (encoding!=QString::null)	// default==locale there
-			open_into->setEncoding( encoding );  
-			
+			open_into->setEncoding( encoding );
+
     if (open_into->openURL (url))
     	((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
 
@@ -545,7 +545,7 @@ void KateViewManager::openURL (KURL url=0L, const QString& encoding)
       open_into->setDocName (open_into->url().filename());
 
     setWindowCaption();
-		
+
 	}
 	else
     activateView( m_docManager->findDocument( url ) );
@@ -563,7 +563,7 @@ void KateViewManager::splitViewSpace( KateViewSpace* vs,
                                       KURL newViewUrl)
 {
   kdDebug(13001)<<"splitViewSpace()"<<endl;
-  
+
   if (!activeView()) return;
   if (!vs) vs = activeViewSpace();
 
@@ -795,7 +795,7 @@ void KateViewManager::reopenDocuments(bool isRestore)
     QString curfile = scfg->readEntry("current file");
 
     if (curfile.isEmpty()) {m_reopening=false; return;}
-    
+
     QString fileCountStr=scfg->readEntry("count");
     int fileCount=fileCountStr.isEmpty() ? 100 : fileCountStr.toInt();
 
@@ -804,7 +804,7 @@ void KateViewManager::reopenDocuments(bool isRestore)
     m_blockViewCreationAndActivation=true;
     m_docManager->closeAllDocuments();
     m_blockViewCreationAndActivation=false;
-   
+
     int i = 0;
     QString fn;
     while (scfg->hasKey(QString("File%1").arg(i)))
@@ -823,7 +823,7 @@ void KateViewManager::reopenDocuments(bool isRestore)
 
     }
     delete pd;
-  
+
     if ( scfg->hasGroup("splitter0") && ( isRestore || restoreViews ) )
     {
       kdDebug(13001)<<"calling restoreViewConfig()"<<endl;
