@@ -492,17 +492,11 @@ void KateMainWindow::documentMenuAboutToShow()
   QString entry;
   while ( z<m_docManager->documents() )
   {
-    if ( (!m_docManager->document(z)->url().isEmpty()) && (m_docManager->document(z)->url().filename() != 0) )
-    {
-       //File name shouldn't be too long - Maciek
-       if (m_docManager->document(z)->url().filename().length() > 200)
-         entry=QString("&%1 ").arg(i)+"..."+(m_docManager->document(z)->url().filename()).right(197);
-       else
-         entry=QString("&%1 ").arg(i)+m_docManager->document(z)->url().filename();
-     }
-    else
-      entry=QString("&%1 ").arg(i)+i18n("Untitled %1").arg(m_docManager->document(z)->documentNumber());
-
+    //File name shouldn't be too long - Maciek
+     entry = m_docManager->document(z)->docName();
+     if (entry.length() > 200)
+       entry = "..." + entry.right(197);
+  
     if (m_docManager->document(z)->isModified())
       entry.append (i18n(" - Modified"));
 
