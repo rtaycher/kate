@@ -727,8 +727,8 @@ void KateMainWindow::slotMail()
     if ( doc->url().isEmpty() ) {
       // unsaved document. back out unless it gets saved
       int r = KMessageBox::questionYesNo( this,
-              i18n("<p>The current document has not been saved, and can "
-              "not be attached to a email message."
+              i18n("<p>The current document has not been saved, and "
+              "cannot be attached to an email message."
               "<p>Do you want to save it and proceed?"),
               i18n("Cannot Send Unsaved File") );
       if ( r == KMessageBox::Yes ) {

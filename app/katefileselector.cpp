@@ -202,7 +202,7 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow,
   QWhatsThis::add( cmbPath,
        i18n("<p>Here you can enter a path for a directory to display."
             "<p>To go to a directory previously entered, press the arrow on "
-            "the right end and choose one. <p>The entry has directory "
+            "the right and choose one. <p>The entry has directory "
             "completion. Right-click to choose how completion should behave.") );
   QWhatsThis::add( filter,
         i18n("<p>Here you can enter a name filter to limit which files are displayed."
