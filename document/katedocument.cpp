@@ -127,6 +127,9 @@ const char * KateActionGroup::typeName(int type)
 
 const int KateDocument::maxAttribs = 32;
 
+QStringList KateDocument::searchForList = QStringList();
+QStringList KateDocument::replaceWithList = QStringList();
+
 KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool bBrowserView,
                                            QWidget *parentWidget, const char *widgetName,
                                            QObject *, const char *)
@@ -2865,3 +2868,4 @@ void KateDocument::slotModChanged()
 {
   emit modStateChanged (this);
 }
+

@@ -193,8 +193,8 @@ class KateDocument : public KateDocumentIface
 
   // search stuff
   protected:
-    QStringList searchForList;
-    QStringList replaceWithList;
+    static QStringList searchForList;
+    static QStringList replaceWithList;
 
   // highlight stuff
   public:
@@ -445,3 +445,4 @@ class KateDocument : public KateDocumentIface
 };
 
 #endif
+
