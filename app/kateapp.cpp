@@ -255,8 +255,15 @@ int KateApp::newInstance()
     Kate::Document::setOpenErrorDialogsActivated (false);
     for (int z=0; z<args->count(); z++)
     {
-      if (!KIO::NetAccess::mimetype( args->url(z), m_mainWindows.first() ).startsWith(QString ("inode/directory")))
-        m_mainWindows.first()->kateViewManager()->openURL( args->url(z) );
+      QString mime = KIO::NetAccess::mimetype( args->url(z), m_mainWindows.first() );
+    
+      if (mime != "inode/directory")
+      {
+        if (mime == "application/x-kate-project") // open a project file
+          m_mainWindows.first()->openProject ( args->url(z).path() );
+        else // open a normal file
+          m_mainWindows.first()->kateViewManager()->openURL( args->url(z) );
+      }
       else
         KMessageBox::sorry( m_mainWindows.first(), i18n("The file '%1' could not be opened, it is not a normal file, it is a folder!").arg(args->url(z).url()) );
     }
