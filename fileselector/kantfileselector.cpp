@@ -42,9 +42,9 @@ KantFileSelector::KantFileSelector( QWidget * parent, const char * name ): QWidg
   QHBox *hlow = new QHBox (this);
   lo->addWidget(hlow);
 
-  QPushButton *up = new QPushButton( "&Up", hlow );
-  QPushButton *back = new QPushButton( "&Back", hlow );
-  QPushButton *forward = new QPushButton( "&Next", hlow );
+  QPushButton *up = new QPushButton( i18n("&Up"), hlow );
+  QPushButton *back = new QPushButton( i18n("&Back"), hlow );
+  QPushButton *forward = new QPushButton( i18n("&Next"), hlow );
 
   hlow->setMaximumHeight(up->height());
 
