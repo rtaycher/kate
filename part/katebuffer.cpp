@@ -47,9 +47,14 @@ KateBuffer::KateBuffer()
    m_blocks.setAutoDelete(true);     
    m_loader.setAutoDelete(true);     
    connect( &m_loadTimer, SIGNAL(timeout()), this, SLOT(slotLoadFile()));     
-   m_vm = 0;     
+   m_vm = 0; 
    clear();     
 }     
+
+KateBuffer::~KateBuffer()
+{
+   delete m_vm;
+}
      
 /**     
  * Reads @p size bytes from file-descriptor @p fd.     

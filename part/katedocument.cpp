@@ -293,8 +293,6 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   kspell.ksc = new KSpellConfig; //default KSpellConfig to start
   kspell.kspellon = false;
 
-  m_url = KURL();
-
   myEncoding = QString::fromLatin1(QTextCodec::codecForLocale()->name());
   maxLength = -1;
 
@@ -368,6 +366,7 @@ KateDocument::~KateDocument()
   
   delete printer;
   delete [] myAttribs;
+  delete buffer;
 }
 
 //

@@ -52,6 +52,7 @@ public:
     * Create an empty buffer.
     */
    KateBuffer();
+   ~KateBuffer();
 
    /**
     * Insert a file at line @p line in the buffer.
