@@ -45,6 +45,8 @@ class Project : public QObject
      */
     virtual ~Project ();
     
+    unsigned int projectNumber () const;
+    
     /**
      * Returns the project plugin of this project object
      * @return ProjectPlugin project plugin of this project
@@ -80,6 +82,8 @@ class Project : public QObject
      * REALLY PRIVATE ;)
      */
     class PrivateProject *d;
+    static unsigned int globalProjectNumber;
+    unsigned int myProjectNumber;
 };
 
 };

@@ -53,6 +53,8 @@ Kate::Document *KateDocManager::createDoc ()
   m_docList.append((Kate::Document *)doc);
 
   emit documentCreated ((Kate::Document *)doc);
+  emit m_documentManager->documentCreated ((Kate::Document *)doc);
+  
   return (Kate::Document *)doc;
 }
 
@@ -64,6 +66,7 @@ void KateDocManager::deleteDoc (Kate::Document *doc)
     m_docList.remove (doc);
 
  emit documentDeleted (id);
+ emit m_documentManager->documentDeleted (id);
 }
 
 Kate::Document *KateDocManager::document (uint n)

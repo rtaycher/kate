@@ -60,6 +60,16 @@ class ProjectManager : public QObject
     class Project *open (const QString &filename);
     
     bool close (Kate::Project *project);
+    
+  #undef signals
+  #define signals public
+  signals:
+  #undef signals
+  #define signals protected
+  
+    void projectChanged ();
+    void projectCreated (Kate::Project *project);
+    void projectDeleted (uint projectNumber);
        
   private:
     /**

@@ -77,6 +77,8 @@ Kate::Project *KateProjectManager::open (const QString &filename)
   
   m_projects.append (project);
   
+  emit m_projectManager->projectCreated ((Kate::Project *)project);
+  
   return project->project();
 }
 
@@ -86,7 +88,10 @@ bool KateProjectManager::close (Kate::Project *project)
   {
     if (project->plugin()->close())
     {
+      uint id = project->projectNumber ();
       m_projects.removeRef ((KateProject *)project);
+      
+      emit m_projectManager->projectDeleted (id);
     }
   }
 

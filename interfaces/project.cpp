@@ -42,8 +42,12 @@ class PrivateProject
     KateProject *project; 
   };
             
+unsigned int Project::globalProjectNumber = 0;
+  
 Project::Project (void *project) : QObject ((KateProject*) project)
 {
+  globalProjectNumber++;
+  myProjectNumber = globalProjectNumber; 
   d = new PrivateProject ();
   d->project = (KateProject*) project;
 }
@@ -52,6 +56,11 @@ Project::~Project ()
 {
   delete d;
 }
+
+unsigned int Project::projectNumber () const
+{
+  return myProjectNumber;
+}     
 
 ProjectPlugin *Project::plugin () const
 {

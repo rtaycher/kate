@@ -74,8 +74,7 @@ class DocumentManager : public QObject
     /** close all documents
      */
     bool closeAllDocuments();
-    
-  //invention of public signals, like in kparts/browserextension.h
+
   #undef signals
   #define signals public
   signals:
@@ -83,6 +82,8 @@ class DocumentManager : public QObject
   #define signals protected
   
     void documentChanged ();
+    void documentCreated (Kate::Document *document);
+    void documentDeleted (uint documentNumber);  
     
   private:
     class PrivateDocumentManager *d;
