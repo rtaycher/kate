@@ -41,8 +41,6 @@
 #include <scriptmanager.h>
 #include <kaction.h>
 
-#define DEFAULT_STYLE "Modern"
-
 class GrepTool;
 
 class KFileItem;
@@ -217,6 +215,8 @@ class KateMainWindow : public KMdiMainFrm, virtual public KParts::PartBase
 
   public:
     void openURL (const QString &name=0L);
+
+    static KMdi::MdiMode defaultMode;
 
   protected:
     virtual bool event(QEvent*);

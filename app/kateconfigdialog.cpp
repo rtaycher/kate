@@ -59,6 +59,8 @@
 #include <kstandarddirs.h>
 #include <kwin.h>
 #include <kseparator.h>
+#include <qcombobox.h>
+#include <kmdidefines.h>
 
 KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, const char *name )
  : KDialogBase ( KDialogBase::TreeList,
@@ -211,6 +213,29 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, const char *name )
   connect( cb_modNotifications, SIGNAL( toggled( bool ) ),
            this, SLOT( slotChanged() ) );
 
+  QHBox *hbGM=new QHBox(frGeneral);
+  lo->addWidget(hbGM);
+	QLabel *lGM=new QLabel(i18n("Default GUI Mode for new windows:"),hbGM);
+  	combo_guiMode = new QComboBox(hbGM);
+	QStringList gml;
+	gml<<i18n("Toplevel Mode")<<i18n("Childframe Mode")<<i18n("Tab Page Mode")<<i18n("IDEAL Mode");
+	combo_guiMode->insertStringList(gml);
+	lGM->setBuddy(combo_guiMode);
+  	switch (KateMainWindow::defaultMode) {
+		case KMdi::ToplevelMode:
+			combo_guiMode->setCurrentItem(0);
+			break;
+		case KMdi::ChildframeMode:
+			combo_guiMode->setCurrentItem(1);
+			break;
+		case KMdi::TabPageMode:
+			combo_guiMode->setCurrentItem(2);
+			break;
+		case KMdi::IDEAlMode:
+		default:
+			combo_guiMode->setCurrentItem(3);
+	}
+        connect(combo_guiMode,SIGNAL(activated(int)),this,SLOT(slotChanged()));
   lo->addStretch(1); // :-] works correct without autoadd
   // END General page
 
@@ -321,6 +346,25 @@ void KateConfigDialog::slotApply()
 
   config->writeEntry("Modified Notification", cb_modNotifications->isChecked());
   mainWindow->modNotification = cb_modNotifications->isChecked();
+
+  KMdi::MdiMode tmpMode;
+  switch (combo_guiMode->currentItem()) {
+	case 0:
+		tmpMode=KMdi::ToplevelMode;
+		break;
+	case 1:
+		tmpMode=KMdi::ChildframeMode;
+		break;
+	case 2: 
+		tmpMode=KMdi::TabPageMode;
+		break;
+	case 3:
+	default:
+		tmpMode=KMdi::IDEAlMode;
+		break;
+  }
+  config->writeEntry("DefaultGUIMode",tmpMode);
+  mainWindow->defaultMode=tmpMode;
 
   mainWindow->syncKonsole = cb_syncKonsole->isChecked();
 

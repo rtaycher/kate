@@ -41,6 +41,7 @@
 
 #include <qfile.h>
 #include <qtimer.h>
+#include <kmdidefines.h>
 
 KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (true,true,true),m_initPlugin(0),m_doNotInitialize(0)
 {
@@ -233,6 +234,13 @@ int KateApp::newInstance()
 
 KateMainWindow *KateApp::newMainWindow ()
 {
+  if (KateMainWindow::defaultMode==KMdi::UndefinedMode) {
+	KConfig *cfg=kapp->config();
+	QString grp=cfg->group();
+	cfg->setGroup("General");
+	KateMainWindow::defaultMode=(KMdi::MdiMode)cfg->readNumEntry("DefaultGUIMode",KMdi::IDEAlMode);
+	cfg->setGroup(grp);
+  }
   KateMainWindow *mainWindow = new KateMainWindow (m_docManager, m_pluginManager, m_projectManager);
   m_mainWindows.append (mainWindow);
 

@@ -82,9 +82,10 @@
 //END
 
 uint KateMainWindow::uniqueID = 1;
+KMdi::MdiMode KateMainWindow::defaultMode=KMdi::UndefinedMode;
 
 KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager *_m_pluginManager, KateProjectManager *projectMan) :
-	KMdiMainFrm (0,(QString("__KateMainWindow#%1").arg(uniqueID)).latin1(),KMdi::IDEAlMode)
+	KMdiMainFrm (0,(QString("__KateMainWindow#%1").arg(uniqueID)).latin1(),defaultMode)
 {
   myID = uniqueID;
   uniqueID++;
