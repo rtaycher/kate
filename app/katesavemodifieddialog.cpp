@@ -22,6 +22,7 @@
 #include <qlistview.h>
 #include <klistview.h>
 #include <kguiitem.h>
+#include <kactivelabel.h>
 #include <kstdguiitem.h>
 #include <qvbox.h>
 #include <qlabel.h>
@@ -138,7 +139,7 @@ KateSaveModifiedDialog::KateSaveModifiedDialog(QWidget *parent, QPtrList<Kate::D
 	setButtonGuiItem(KDialogBase::Cancel,cancelItem);
 
 	QVBox *box=makeVBoxMainWidget();
-	new QLabel(i18n("<qt>The following document has been modified. Do you want to save it before closing?</qt>","<qt>The following documents have been modified. Do you want to save them before closing?</qt>", documents.count()),box);
+	new KActiveLabel(i18n("<qt>The following document has been modified. Do you want to save it before closing?</qt>","<qt>The following documents have been modified. Do you want to save them before closing?</qt>", documents.count()),box);
 	m_list=new KListView(box);
 	m_list->addColumn(i18n("Title"));
 	m_list->addColumn(i18n("Location"));
