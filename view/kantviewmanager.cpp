@@ -887,25 +887,26 @@ void KantViewManager::splitViewSpace(bool isHoriz)
 {
   if (!activeView()) return;
 
-  bool isFirstTime = activeViewSpace()->parentWidget() == this;
+  KantViewSpace* vs = activeViewSpace();
+  bool isFirstTime = vs->parentWidget() == this;
 
   QValueList<int> sizes;
   if (! isFirstTime)
-    sizes = ((KantSplitter*)activeViewSpace()->parentWidget())->sizes();
+    sizes = ((KantSplitter*)vs->parentWidget())->sizes();
 
   Qt::Orientation o = isHoriz ? Qt::Vertical : Qt::Horizontal;
-  KantSplitter* s = new KantSplitter(o, activeViewSpace()->parentWidget());
+  KantSplitter* s = new KantSplitter(o, vs->parentWidget());
   s->setOpaqueResize( useOpaqueResize );
 
   if (! isFirstTime) {
-    viewSpaceList.findRef(activeViewSpace());
-    uint at =  viewSpaceList.at();
-    if ( (at < (viewSpaceList.count() - 1))
-       && (viewSpaceList.at(at +1)->parentWidget() == activeViewSpace()->parentWidget() ) )
-         ((KantSplitter*)s->parentWidget())->moveToFirst( s );
+    // anders: make sure the split' viewspace is allways
+    // correctly positioned.
+    // If viewSpace is the first child, the new splitter must be moveToFirst'd
+    if ( !((KantSplitter*)vs->parentWidget())->isLastChild( vs ) )
+       ((KantSplitter*)s->parentWidget())->moveToFirst( s );
   }
-  activeViewSpace()->reparent( s, 0, QPoint(), true );
-  KantViewSpace* vs = new KantViewSpace( s );
+  vs->reparent( s, 0, QPoint(), true );
+  KantViewSpace* vsNew = new KantViewSpace( s );
 
   if (isFirstTime)
     grid->addWidget(s, 0, 0);
@@ -921,12 +922,11 @@ void KantViewManager::splitViewSpace(bool isHoriz)
   s->show();
 
   connect(this, SIGNAL(statusChanged(KantView *, int, int, int, int, QString)), vs, SLOT(slotStatusChanged(KantView *, int, int, int, int, QString)));
-  viewSpaceList.append( vs );
+  viewSpaceList.append( vsNew );
   vs->installEventFilter( this );
-  //s->moveToLast( vs );
   activeViewSpace()->setActive( false );
-  vs->setActive( true );
-  vs->show();
+  vsNew->setActive( true );
+  vsNew->show();
   createView (false, 0L, (KantView *)activeView());
 }
 
@@ -988,8 +988,6 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
   viewSpaceList.remove( viewspace );
 
   // reparent the other sibling of the parent.
-  // here is a bug: they sometimes gets in the wrong place.
-  // requires reimplementation of QSplitter? DONE!!!
   while (p->children ())
   {
     kdDebug()<<"removeViewSpace(): reparenting a splitter"<<endl;

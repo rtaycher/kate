@@ -1,0 +1,74 @@
+/****************************************************************************
+** KantSplitter meta object code from reading C++ file 'kantsplitter.h'
+**
+** Created: Fri Mar 2 06:29:29 2001
+**      by: The Qt MOC ($Id$)
+**
+** WARNING! All changes made in this file will be lost!
+*****************************************************************************/
+
+#define Q_MOC_KantSplitter
+#if !defined(Q_MOC_OUTPUT_REVISION)
+#define Q_MOC_OUTPUT_REVISION 9
+#elif Q_MOC_OUTPUT_REVISION != 9
+#error "Moc format conflict - please regenerate all moc files"
+#endif
+
+#include "kantsplitter.h"
+#include <qmetaobject.h>
+#include <qapplication.h>
+
+
+
+const char *KantSplitter::className() const
+{
+    return "KantSplitter";
+}
+
+QMetaObject *KantSplitter::metaObj = 0;
+
+void KantSplitter::initMetaObject()
+{
+    if ( metaObj )
+	return;
+    if ( qstrcmp(QSplitter::className(), "QSplitter") != 0 )
+	badSuperclassWarning("KantSplitter","QSplitter");
+    (void) staticMetaObject();
+}
+
+#ifndef QT_NO_TRANSLATION
+
+QString KantSplitter::tr(const char* s)
+{
+    return qApp->translate( "KantSplitter", s, 0 );
+}
+
+QString KantSplitter::tr(const char* s, const char * c)
+{
+    return qApp->translate( "KantSplitter", s, c );
+}
+
+#endif // QT_NO_TRANSLATION
+
+QMetaObject* KantSplitter::staticMetaObject()
+{
+    if ( metaObj )
+	return metaObj;
+    (void) QSplitter::staticMetaObject();
+#ifndef QT_NO_PROPERTIES
+#endif // QT_NO_PROPERTIES
+    QMetaData::Access *slot_tbl_access = 0;
+    metaObj = QMetaObject::new_metaobject(
+	"KantSplitter", "QSplitter",
+	0, 0,
+	0, 0,
+#ifndef QT_NO_PROPERTIES
+	0, 0,
+	0, 0,
+#endif // QT_NO_PROPERTIES
+	0, 0 );
+    metaObj->set_slot_access( slot_tbl_access );
+#ifndef QT_NO_PROPERTIES
+#endif // QT_NO_PROPERTIES
+    return metaObj;
+}
