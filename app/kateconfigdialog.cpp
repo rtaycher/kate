@@ -93,7 +93,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
 
   // General page
   path << i18n("Application") << i18n("General");
-  QFrame* frGeneral = addPage(path, i18n("General Options"), BarIcon("misc", KIcon::SizeSmall));
+  QFrame* frGeneral = addPage(path, i18n("General Options"), BarIcon("gohome", KIcon::SizeSmall));
 
   QVBoxLayout *lo = new QVBoxLayout( frGeneral );
   lo->setSpacing(KDialog::spacingHint());
@@ -196,8 +196,8 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   cb_mode->insertItem(i18n("Classic Style"));
   lo->addWidget(cb_mode);
   QWhatsThis::add(cb_mode,i18n("Choose how you want the toolviews managed.<BR><ul>"
-	"<li><b>Modern Style</b> The toolviews will behave similar to the views in Konqueror's navigation panel.</li>"
-	"<li><b>Classic Style</b> The toolviews (filelist, fileselector, ...) can be docked anywhere and made floating.</li></ul>"));
+  "<li><b>Modern Style</b> The toolviews will behave similar to the views in Konqueror's navigation panel.</li>"
+  "<li><b>Classic Style</b> The toolviews (filelist, fileselector, ...) can be docked anywhere and made floating.</li></ul>"));
 
   config->setGroup("General");
   cb_mode->setCurrentItem((config->readEntry("viewMode",DEFAULT_STYLE)=="Modern")?0:1);
@@ -256,6 +256,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   enableButtonSeparator(true);
   dataChanged = false;
   enableButton(Apply, false);
+  unfoldTreeList ();
 }
 
 KateConfigDialog::~KateConfigDialog()
