@@ -41,6 +41,7 @@
 #include "../main/katemain.h"
 
 #include "../interfaces/view.h"
+#include "../interfaces/document.h"
 
 #include <kparts/browserextension.h>
 #include <qlist.h>
@@ -982,6 +983,10 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
   private slots:
     void bookmarkMenuAboutToShow();
     void gotoBookmark (int n);
+
+  public:
+    Kate::Document *getDoc ()
+      { return (Kate::Document*) myDoc; };
 };
 
 class KateBrowserExtension : public KParts::BrowserExtension

@@ -25,6 +25,8 @@ class KConfig;
 namespace Kate
 {
 
+class Document;
+
 class View : public KTextEditor::View
 {
   Q_OBJECT
@@ -32,6 +34,8 @@ class View : public KTextEditor::View
   public:
     View ( KTextEditor::Document *doc, QWidget *parent, const char *name = 0 ) : KTextEditor::View (doc, parent, name) {;};
     virtual ~View () {;};
+
+    virtual Document *getDoc ()=0;
 
     virtual QString markedText()=0;
 
