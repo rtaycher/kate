@@ -476,8 +476,8 @@ void KateMainWindow::slotGrepToolItemSelected(const QString &filename,int linenu
   m_viewManager->openURL( fileURL );
   if ( m_viewManager->activeView() == 0 ) return;
   m_viewManager->activeView()->gotoLineNumber( linenumber );
-  this->raise();
-  this->setActiveWindow();
+  raise();
+  setActiveWindow();
 }
 
 void KateMainWindow::dragEnterEvent( QDragEnterEvent *event )
