@@ -20,8 +20,8 @@
     <Action name="edit_deselectAll"/>
     <Action name="edit_invertSelection" />
     <Separator />
-    <Action name="edit_find" />
-    <Action name="edit_find_next" />
+    <Action name="find" />
+    <Action name="find_again" />
     <Action name="edit_replace" />
     <Separator />
     <Action name="edit_cmd"/>
@@ -29,7 +29,7 @@
     <Action name="edit_insertFile"/>
   </Menu>
   <Menu name="go_document"><text>&amp;Go</text>
-    <Action name="go_goto_line" />
+    <Action name="goto_line" />
     <Separator />
     <Action name="go_addMarker"/>
     <Action name="go_setMarker"/>

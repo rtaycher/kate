@@ -1463,14 +1463,17 @@ KantView::KantView(KantDocument *doc, QWidget *parent, const char * name, bool H
 
   myViewInternal->installEventFilter( this );
 
-  setupActions();
-
-  (void)new KantBrowserExtension( myDoc );
-
   if (!doc->hasBrowserExtension())
+  {
     setXMLFile( "kantpartui.rc" );
+  }
   else
+  {
+    (void)new KantBrowserExtension( myDoc );
     setXMLFile( "kantpartbrowserui.rc" );
+  }
+
+  setupActions();
 
   connect( this, SIGNAL( newStatus() ), this, SLOT( slotUpdate() ) );
   connect( this, SIGNAL( newUndo() ), this, SLOT( slotNewUndo() ) );
@@ -1537,8 +1540,8 @@ void KantView::setupActions()
                 actionCollection(), "edit_deselectAll");
     new KAction(i18n("Invert &Selection"), 0, this, SLOT(invertSelection()),
                 actionCollection(), "edit_invertSelection");
-    KStdAction::find(this, SLOT(find()), actionCollection());
-    KStdAction::findNext(this, SLOT(findAgain()), actionCollection());
+    KStdAction::find(this, SLOT(find()), actionCollection(), "find");
+    KStdAction::findNext(this, SLOT(findAgain()), actionCollection(), "find_again");
     KStdAction::replace(this, SLOT(replace()), actionCollection());
     editInsert = new KAction(i18n("&Insert File..."), 0, this, SLOT(insertFile()),
                              actionCollection(), "edit_insertFile");
@@ -1547,7 +1550,7 @@ void KantView::setupActions()
                                   actionCollection(), "edit_cmd");
 
     // setup Go menu
-    KStdAction::gotoLine(this, SLOT(gotoLine()), actionCollection());
+    KStdAction::gotoLine(this, SLOT(gotoLine()), actionCollection(), "goto_line" );
     KAction *addAct = new KAction(i18n("&Add Marker"), Qt::CTRL+Qt::Key_M, this, SLOT(addBookmark()),
                                   actionCollection(), "go_addMarker");
     connect(this, SIGNAL(bookAddChanged(bool)),addAct,SLOT(setEnabled(bool)));

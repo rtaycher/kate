@@ -6,8 +6,8 @@
   <Action name="unselect_all"/>
   <Action name="invert_select"/>
   <Separator/>
-  <Action name="edit_find" />
-  <Action name="edit_find_next" />
+  <Action name="find" />
+  <Action name="find_again" />
   <Separator/>
   <Action name="goto_line"/>
  </Menu>
