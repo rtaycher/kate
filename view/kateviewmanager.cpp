@@ -517,7 +517,7 @@ void KateViewManager::slotDocumentSave ()
 
   KateView *current = activeView();
 
-  if( current->doc()->isModified() )
+  if( current->doc()->isModified() || current->doc()->url().isEmpty() )
   {
     if( !current->doc()->url().isEmpty() && current->doc()->isReadWrite() )
       current->doc()->save();

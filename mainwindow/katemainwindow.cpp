@@ -429,7 +429,8 @@ void KateMainWindow::slotWindowActivated ()
     if (console && syncKonsole)
       console->cd (viewManager->activeView()->doc()->url());
 
-    fileSave->setEnabled(viewManager->activeView()->doc()->isModified());
+    fileSave->setEnabled(viewManager->activeView()->doc()->isModified()
+                      || viewManager->activeView()->doc()->url().isEmpty());
     fileSaveAs->setEnabled(true);
     filePrint->setEnabled(true);
     fileClose->setEnabled(true);
@@ -489,7 +490,8 @@ void KateMainWindow::slotCurrentDocChanged()
   if (!viewManager->activeView())
     return;
 
-  fileSave->setEnabled( viewManager->activeView()->doc()->isModified() );
+  fileSave->setEnabled( viewManager->activeView()->doc()->isModified()
+                      || viewManager->activeView()->doc()->url().isEmpty() );
 
   if (!(viewManager->activeView()->undoState() & 1))
   {
