@@ -515,7 +515,7 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
   QWhatsThis::add( lbFilterHist, fhwt );
   QWhatsThis::add( sbFilterHistLength, fhwt );
   QString synwt( i18n(
-        "<p>These options allows you to have the File Selector automatically change "
+        "<p>These options allow you to have the File Selector automatically change "
         "location to the directory of the active document on certain events."
         "<p>Auto synchronization is <em>lazy</em>, meaning it will not take effect "
         "until the file selector is visible."
