@@ -860,7 +860,7 @@ bool KateDocument::editWrapLine ( uint line, uint col )
   return true;
 }
 
-bool KateDocument::editUnWrapLine ( uint line, uint col)
+bool KateDocument::editUnWrapLine ( uint line, uint col )
 {
   TextLine::Ptr l, tl;
   KateView *view;
@@ -1034,9 +1034,13 @@ bool KateDocument::editRemoveLine ( uint line )
 
     if ( (cLine == line) )
     {
-      cCol = 0;
+      if (line < lastLine())
+        view->cursorCache.line = line;
+      else
+        view->cursorCache.line = line-1;
 
-      view->cursorCache.line = line;
+
+      cCol = 0;
       view->cursorCache.col = cCol;
       view->cursorCacheChanged = true;
     }
@@ -1176,6 +1180,17 @@ bool KateDocument::removeSelectedText ()
     return false;
 
   bool b = editStart ();
+
+  for (uint z = 0; z < myViews.count(); z++)
+  {
+    KateView *v = myViews.at(z);
+    if (selectStartLine <= v->cursorCache.line <= selectEndLine)
+    {
+      v->cursorCache.line = selectStartLine;
+      v->cursorCache.col = selectStartCol;
+      v->cursorCacheChanged = true;
+    }
+  }
 
   int sl = selectStartLine;
   int el = selectEndLine;
@@ -2580,16 +2595,17 @@ bool KateDocument::insertChars ( int line, int col, const QString &chars, KateVi
   //return false if nothing has to be inserted
   if (buf.isEmpty()) return false;
 
+  bool b = editStart ();
+
   if (_configFlags & KateDocument::cfDelOnInput)
   {
     if (hasSelection())
     {
       removeSelectedText();
-      view->cursorPositionReal (&(uint)line, &(uint)col);
+      line = view->cursorCache.line;
+      col = view->cursorCache.col;
     }
   }
-
-  bool b = editStart ();
 
   if (_configFlags & KateDocument::cfOvr)
   {
