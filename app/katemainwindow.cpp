@@ -897,6 +897,9 @@ void KateMainWindow::activateProject (Kate::Project *project)
   else
     m_projectNumber = 0;
 
+  saveProject->setEnabled(project != 0);
+  closeProject->setEnabled(project != 0);
+  
   emit m_mainWindow->projectChanged ();
 }
 
