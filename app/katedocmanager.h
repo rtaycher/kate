@@ -47,6 +47,8 @@ class KateDocManager : public Kate::DocumentManager
 
     Kate::Document *documentWithID (uint id);
 
+    uint documentID(Kate::Document *);
+
     int findDocument (Kate::Document *doc);
     /** Returns the documentNumber of the doc with url URL or -1 if no such doc is found */
     int findDocument (KURL url);
@@ -60,6 +62,13 @@ class KateDocManager : public Kate::DocumentManager
     
     void setIsFirstDocument (bool b) { m_firstDoc = b; };
     bool isFirstDocument () { return m_firstDoc; };
+
+  
+    virtual class Kate::Document *openURL(const KURL&,const QString &encoding=QString::null,uint *id =0);
+    virtual bool closeDocument(class Kate::Document *);
+    virtual bool closeDocument(uint);
+    virtual bool closeDocumentWithID(uint);
+    virtual bool closeAllDocuments();
 
   public slots:
     void checkAllModOnHD(bool forceReload=false);

@@ -62,7 +62,25 @@ class DocumentManager : public QObject
     /** returns the number of documents managed by this manager.
     */
     virtual uint documents () { return 0L; };       
-    
+
+
+    /** open a document and return a pointer to the document, if you specify a pointer != 0 to the id parameter
+     * you will get the document id returned too
+     */    
+    virtual class Document *openURL(const KURL&,const QString &/*encoding*/=QString::null,uint *id =0)=0;
+    /** close a document by pointer
+     */
+    virtual bool closeDocument(class Document *)=0;
+    /** close a document identified by the index
+     */
+    virtual bool closeDocument(uint)=0; 
+    /** close a document identified by the ID
+     */
+    virtual bool closeDocumentWithID(uint)=0;
+    /** close all documents
+     */
+    virtual bool closeAllDocuments()=0;
+
   signals:
     void documentChanged ();
 };

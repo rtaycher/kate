@@ -17,6 +17,15 @@
 
 #include "katedocmanager.h"
 #include "katedocmanager.moc"
+#include "kateapp.h"
+#include "katemainwindow.h"
+#include "kateviewmanager.h"
+
+#include <kdebug.h>
+#include <kapplication.h>
+#include <kate/view.h>
+
+#include <qtextcodec.h>
 
 KateDocManager::KateDocManager (QObject *parent) : Kate::DocumentManager (parent)
 {
@@ -92,6 +101,12 @@ Kate::Document *KateDocManager::documentWithID (uint id)
   return 0L;
 }
 
+
+uint KateDocManager::documentID(Kate::Document *doc)
+{
+	return doc->documentNumber();
+}
+
 int KateDocManager::findDocument (Kate::Document *doc)
 {
   return m_docList.find (doc);
@@ -144,5 +159,93 @@ void KateDocManager::checkAllModOnHD(bool forceReload)
   for (; it.current(); ++it) {
     it.current()->isModOnHD(forceReload);
   }
+}
+
+
+
+Kate::Document *KateDocManager::openURL(const KURL& url,const QString &encoding,uint *id )
+{
+  // special handling if still only the first initial doc is there
+  if (isFirstDocument())
+  {
+    documentList().at(0)->setEncoding(encoding==QString::null?
+			QString::fromLatin1(QTextCodec::codecForLocale()->name()):
+			encoding);
+
+    if (documentList().at(0)->openURL (url))
+    {
+#warning FIXME      //((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
+    }
+
+    if (documentList().at(0)->url().filename() != "")
+      documentList().at(0)->setDocName (documentList().at(0)->url().filename());
+
+    setIsFirstDocument (false);
+
+    if (id) *id=documentID(documentList().at(0));
+    return documentList().at(0);
+ }
+
+  if ( !isOpen( url ) )
+  {
+    Kate::Document *doc = (Kate::Document *)createDoc ();
+
+
+        doc->setEncoding(encoding==QString::null?
+                        QString::fromLatin1(QTextCodec::codecForLocale()->name()):
+                        encoding);
+
+	doc->openURL(url);
+
+      if (doc->url().filename() != "")
+      doc->setDocName (doc->url().filename());
+      if (id) *id=documentID(doc);
+      return doc;
+  }
+  else
+  {
+	Kate::Document *doc1=findDocumentByUrl(url);
+	if (id) *id=documentID(doc1);
+	return doc1;
+  }
+
+}
+
+bool KateDocManager::closeDocument(class Kate::Document *doc)
+{
+  if (!doc) return false;
+
+  if (!doc->closeURL()) return false;
+
+  QPtrList<Kate::View> closeList;
+  uint documentNumber = doc->documentNumber();
+
+
+  for (uint i=0; i < ((KateApp *)kapp)->mainWindows (); i++ )
+  {
+     ((KateApp *)kapp)->kateMainWindow(i)->kateViewManager()->closeViews(documentNumber);
+  }
+
+  deleteDoc (doc);
+  return true;
+}
+
+bool KateDocManager::closeDocument(uint n)
+{
+	closeDocument(document(n));
+}
+
+bool KateDocManager::closeDocumentWithID(uint id)
+{
+	closeDocument(documentWithID(id));
+}
+
+bool KateDocManager::closeAllDocuments()
+{
+	bool res=true;
+        if (isFirstDocument()) return true;
+	while (!m_docList.isEmpty())
+		res =res && closeDocument(m_docList.at(0));
+	return res;
 }
 

@@ -360,15 +360,20 @@ bool KateViewManager::closeDocWithAllViews ( Kate::View *view )
 
   if (!view->canDiscard()) return false;
 
-  Kate::Document *doc = view->getDoc();
-  QPtrList<Kate::View> closeList;
-  uint documentNumber = view->getDoc()->documentNumber();
-
-  for (uint i=0; i < ((KateApp *)kapp)->mainWindows (); i++ )
+  if (m_docManager->closeDocument(view->getDoc()))
   {
-    for (uint z=0 ; z < ((KateApp *)kapp)->kateMainWindow(i)->kateViewManager()->m_viewList.count(); z++)
+    emit viewChanged ();
+    return true;
+  }
+}
+
+void KateViewManager::closeViews(uint documentNumber)
+{
+    QPtrList<Kate::View> closeList;
+
+    for (uint z=0 ; z < m_viewList.count(); z++)
     {
-      Kate::View* current = ((KateApp *)kapp)->kateMainWindow(i)->kateViewManager()->m_viewList.at(z);
+      Kate::View* current = m_viewList.at(z);
       if ( current->getDoc()->documentNumber() == documentNumber )
       {
         closeList.append (current);
@@ -378,16 +383,13 @@ bool KateViewManager::closeDocWithAllViews ( Kate::View *view )
     while ( !closeList.isEmpty() )
     {
       Kate::View *view = closeList.first();
-      ((KateApp *)kapp)->kateMainWindow(i)->kateViewManager()->deleteView (view, true);
+      deleteView (view, true);
       closeList.removeFirst();
     }
-  }
 
-  m_docManager->deleteDoc (doc);
-
-  emit viewChanged ();
-  return true;
+  QTimer::singleShot(0,this,SIGNAL(viewChanged()));
 }
+
 
 void KateViewManager::openNewIfEmpty()
 {

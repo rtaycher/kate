@@ -88,6 +88,9 @@ class KateViewManager : public Kate::ViewManager
     uint viewCount ();
     uint viewSpaceCount ();
 
+  public:
+    void closeViews(uint documentNumber);
+
   private slots:
     void activateView ( Kate::View *view, bool checkModified = true );
     void activateSpace ( Kate::View* v );
