@@ -137,8 +137,8 @@ bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, 
     view->getDoc()->setDocName (doc->docName ());
   }
 
-  if (m_docManager->isFirstDocument())
-    view->getDoc()->setDocName (i18n("Untitled %1").arg(doc->documentNumber()));
+ // if (m_docManager->isFirstDocument())
+   // view->getDoc()->setDocName (i18n("Untitled %1").arg(doc->documentNumber()));
 
   // disable settings dialog action
   view->actionCollection()->remove (view->actionCollection()->action( "set_confdlg" ));

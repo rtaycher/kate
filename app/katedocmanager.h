@@ -64,12 +64,8 @@ class KateDocManager : public QObject
 
     uint documents ();                  
     
-    QPtrList<Kate::Document> &documentList () { return m_docList; };  
-    
-    void setIsFirstDocument (bool b) { m_firstDoc = b; };
-    bool isFirstDocument () { return m_firstDoc; };
+    QPtrList<Kate::Document> &documentList () { return m_docList; };
 
-  
     virtual class Kate::Document *openURL(const KURL&,const QString &encoding=QString::null,uint *id =0);
     virtual bool closeDocument(class Kate::Document *);
     virtual bool closeDocument(uint);
@@ -89,7 +85,6 @@ class KateDocManager : public QObject
     Kate::DocumentManager *m_documentManager;
     QPtrList<Kate::Document> m_docList;
     Kate::Document *m_currentDoc;
-    bool m_firstDoc;
 };
 
 #endif

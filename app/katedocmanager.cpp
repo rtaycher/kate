@@ -39,7 +39,6 @@ KateDocManager::KateDocManager (QObject *parent) : QObject (parent)
   m_currentDoc = 0L;
 
   createDoc ();
-  m_firstDoc = true;
 }
 
 KateDocManager::~KateDocManager ()
@@ -113,10 +112,9 @@ Kate::Document *KateDocManager::documentWithID (uint id)
   return 0L;
 }
 
-
 uint KateDocManager::documentID(Kate::Document *doc)
 {
-	return doc->documentNumber();
+  return doc->documentNumber();
 }
 
 int KateDocManager::findDocument (Kate::Document *doc)
@@ -173,69 +171,65 @@ void KateDocManager::checkAllModOnHD(bool forceReload)
   }
 }
 
-
-
-Kate::Document *KateDocManager::openURL(const KURL& url,const QString &encoding,uint *id )
+Kate::Document *KateDocManager::openURL (const KURL& url,const QString &encoding, uint *id)
 {
   // special handling if still only the first initial doc is there
-  if (isFirstDocument() && !documentList().isEmpty())
+  if (!documentList().isEmpty() && (documentList().count() == 1) && (!documentList().at(0)->isModified() && documentList().at(0)->url().isEmpty()))
   {
-      Kate::Document* doc = documentList().getFirst();
-      doc->setEncoding(encoding.isNull()?
-			QString::fromLatin1(QTextCodec::codecForLocale()->name()):
-			encoding);
+    Kate::Document* doc = documentList().getFirst();
 
+    doc->setEncoding(encoding.isNull() ? QString::fromLatin1(QTextCodec::codecForLocale()->name()) : encoding);
 
-      doc->openURL (url);
+    doc->openURL (url);
 
-      if (!doc->url().filename().isEmpty())
-        doc->setDocName (doc->url().filename());
-   
-      setIsFirstDocument (false);
-    
-      if (id) *id=documentID(doc);
-      return doc;
+    if (!doc->url().filename().isEmpty())
+      doc->setDocName (doc->url().filename());
+
+    if (id)
+      *id=documentID(doc);
+
+    return doc;
  }
 
   if ( !isOpen( url ) )
   {
-    setIsFirstDocument (false);
-  
     Kate::Document *doc = (Kate::Document *)createDoc ();
 
 
-        doc->setEncoding(encoding.isNull()?
-                        QString::fromLatin1(QTextCodec::codecForLocale()->name()):
-                        encoding);
+    doc->setEncoding(encoding.isNull() ? QString::fromLatin1(QTextCodec::codecForLocale()->name()) : encoding);
 
-	doc->openURL(url);
+    doc->openURL(url);
 
-      if (doc->url().filename() != "")
-      {
-	      QString name=doc->url().filename();
-	      int hassamename = 0;
+    if (doc->url().filename() != "")
+    {
+      QString name=doc->url().filename();
+      int hassamename = 0;
 
-                 QPtrListIterator<Kate::Document> it(m_docList);
+      QPtrListIterator<Kate::Document> it(m_docList);
 
-                 for (; it.current(); ++it)
-                 {
-		        if ( it.current()->url().filename().compare( name ) == 0 )
-		        hassamename++;
-		 }
- 
-              if (hassamename > 1)
-                  name = QString(name+"<%1>").arg(hassamename);
+      for (; it.current(); ++it)
+        if ( it.current()->url().filename().compare( name ) == 0 )
+          hassamename++;
 
-              doc->setDocName (name);
-      }
-      if (id) *id=documentID(doc);
-      return doc;
+      if (hassamename > 1)
+        name = QString(name+"<%1>").arg(hassamename);
+
+      doc->setDocName (name);
+    }
+
+    if (id)
+      *id=documentID(doc);
+
+    return doc;
   }
   else
   {
-	Kate::Document *doc1=findDocumentByUrl(url);
-	if (id) *id=documentID(doc1);
-	return doc1;
+    Kate::Document *doc1=findDocumentByUrl(url);
+
+    if (id)
+      *id=documentID(doc1);
+
+    return doc1;
   }
 }
 
@@ -247,7 +241,6 @@ bool KateDocManager::closeDocument(class Kate::Document *doc)
 
   QPtrList<Kate::View> closeList;
   uint documentNumber = doc->documentNumber();
-
 
   for (uint i=0; i < ((KateApp *)kapp)->mainWindows (); i++ )
   {
@@ -261,21 +254,23 @@ bool KateDocManager::closeDocument(class Kate::Document *doc)
 
 bool KateDocManager::closeDocument(uint n)
 {
-	return closeDocument(document(n));
+  return closeDocument(document(n));
 }
 
 bool KateDocManager::closeDocumentWithID(uint id)
 {
-	return closeDocument(documentWithID(id));
+  return closeDocument(documentWithID(id));
 }
 
 bool KateDocManager::closeAllDocuments()
 {
-	bool res=true;
-//        if (isFirstDocument()) return true;
-	while (!m_docList.isEmpty() && res)
-		if (! closeDocument(m_docList.at(0)) ) res=false;
-	return res;
+  bool res = true;
+
+  while (!m_docList.isEmpty() && res)
+    if (! closeDocument(m_docList.at(0)) )
+      res = false;
+
+  return res;
 }
 
 void KateDocManager::saveDocumentList(KConfig* cfg)
