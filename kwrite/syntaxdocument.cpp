@@ -37,7 +37,7 @@ SyntaxDocument::SyntaxDocument() : QDomDocument()
     if ( f.open(IO_ReadOnly) )
     {
       setContent(&f);
-      myModeList = modeList();
+      setupModeList();
     }
     else
       KMessageBox::error( 0L, i18n("Can't open %1").arg(syntaxPath) );
@@ -52,14 +52,12 @@ SyntaxDocument::~SyntaxDocument()
 {
 }
 
-SyntaxModeList SyntaxDocument::modeList()
+void SyntaxDocument::setupModeList()
 {
+  if (myModeList.count() > 0) return;
 
-  if (!myModeList.count()) return myModeList;
   QDomElement docElem = documentElement();
   QDomNodeList nL = docElem.elementsByTagName("language");
-
-  //syntaxModeList modeList;
 
  for (int i=0;i<nL.count();i++)
   {
@@ -67,16 +65,18 @@ SyntaxModeList SyntaxDocument::modeList()
     if ( n.isElement())
     {
       QDomElement e = n.toElement();
-      //kdDebug() << e.attribute("name") << endl;
       syntaxModeListItem *mli=new syntaxModeListItem;
       mli->name = e.attribute("name");
       mli->mimetype = e.attribute("mimetype");
       mli->extension = e.attribute("extensions");
+      mli->casesensitive = e.attribute("casesensitive");
       myModeList.append(mli);
     }
-   //    n = n.nextSibling();
   }
+}
 
+SyntaxModeList SyntaxDocument::modeList()
+{
   return myModeList;
 }
 

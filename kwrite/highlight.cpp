@@ -2054,6 +2054,7 @@ AutoHighlight::AutoHighlight(syntaxModeListItem *def):GenHighlight(def->name.lat
   iName = def->name;
   iWildcards = def->extension;
   iMimetypes = def->mimetype;
+  casesensitive = def->casesensitive;
 }
 
 AutoHighlight::~AutoHighlight()
@@ -2062,8 +2063,11 @@ AutoHighlight::~AutoHighlight()
 
 void AutoHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
 {
-  keyword->addList(HlManager::self()->syntax->finddata(iName,"keyword"));
-  dataType->addList(HlManager::self()->syntax->finddata(iName,"type"));
+  if (casesensitive=="1")
+  {
+    keyword->addList(HlManager::self()->syntax->finddata(iName,"keyword"));
+    dataType->addList(HlManager::self()->syntax->finddata(iName,"type"));
+  }
 }
 
 void AutoHighlight::createItemData(ItemDataList &list)
@@ -2077,7 +2081,7 @@ void AutoHighlight::createItemData(ItemDataList &list)
 	list.append(new ItemData(
           HlManager::self()->syntax->groupData(data,QString("name")).latin1(),
           getDefStyleNum(HlManager::self()->syntax->groupData(data,QString("defStyleNum")))));
-     
+
     }
   if (data) HlManager::self()->syntax->freeGroupInfo(data);
 }
@@ -2098,6 +2102,12 @@ void AutoHighlight::makeContextList()
           contextList[i]=new HlContext(
             (HlManager::self()->syntax->groupData(data,QString("attribute"))).toInt(),
             (HlManager::self()->syntax->groupData(data,QString("lineEndContext"))).toInt());
+
+            if ((i==0) && (casesensitive=="0"))
+            {
+               contextList[0]->items.append(keyword = new HlCaseInsensitiveKeyword(dsKeyword,0));
+               contextList[0]->items.append(dataType = new HlCaseInsensitiveKeyword(dsDataType,0));
+            }
 
             while (HlManager::self()->syntax->nextItem(data))
               {
@@ -2135,10 +2145,22 @@ void AutoHighlight::makeContextList()
 
 
 
-HlManager::HlManager() : QObject(0L) {
+HlManager::HlManager() : QObject(0L)
+{
+  syntax = new SyntaxDocument();
+  SyntaxModeList modeList = syntax->modeList();
 
   hlList.setAutoDelete(true);
   hlList.append(new Highlight(I18N_NOOP("Normal")));
+
+  uint i=0;
+  while (i < modeList.count())
+  {
+    hlList.append(new AutoHighlight(modeList.at(i)));
+    i++;
+  }
+
+ /*
   hlList.append(new CHighlight(     "C"        ));
   hlList.append(new CppHighlight(   "C++"      ));
   hlList.append(new ObjcHighlight(  "Objective-C"));
@@ -2152,19 +2174,10 @@ HlManager::HlManager() : QObject(0L) {
   hlList.append(new PythonHighlight("Python"   ));
   hlList.append(new PerlHighlight(  "Perl"     ));
   hlList.append(new SatherHighlight("Sather"   ));
-//  hlList.append(new KBasicHighlight("KBasic"));
+  hlList.append(new KBasicHighlight("KBasic"));
   hlList.append(new LatexHighlight( "Latex"    ));
   hlList.append(new IdlHighlight("IDL"));
-
-  syntax=new SyntaxDocument();
-
-  SyntaxModeList modelist=syntax->modeList();
-
-  syntaxModeListItem *mli=new syntaxModeListItem;
-  mli->name="KBasic";
-  mli->mimetype="mimetype";
-  mli->extension="ext";
-  hlList.append(new AutoHighlight(mli));
+   */
 }
 
 HlManager::~HlManager() {

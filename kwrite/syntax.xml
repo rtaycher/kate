@@ -1,6 +1,6 @@
 <?xml version="1.01" encoding="UTF-8"?><!DOCTYPE highlighting>
 <highlighting>
-<language name="C++">
+<language name="C++" extensions="*.cpp;*.cc;*.C;*.h" mimetype="text/x-c++-src;text/x-c++-hdr;text/x-c-hdr;text/x-c++-src" casesensitive="1">
 <keywords>
  <keyword> asm </keyword>
  <keyword> catch </keyword>
@@ -69,9 +69,31 @@
  <type> mutable </type>
  <type> uint </type>
 </types>
+<contexts>
+  <context attribute="0" lineEndContext="0">
+    <item name="keyword" attribute="1" context="0"/>
+    <item name="dataType" attribute="2" context="0"/>
+    <item name="Float" attribute="4" context="0"/>
+    <item name="Int" attribute="3" context="0"/>
+    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
+    <item name="CharDetect" attribute="5" context="1" char="'"/>
+  </context>
+  <context attribute="5" lineEndContext="0"/>
+  <context attribute="4" lineEditContext="0">
+    <item name="CharDetect" attribute="4" context="0" char="'"/>
+  </context>
+</contexts>
+<itemDatas>
+  <itemData name="Normal Text" defStyleNum="dsNormal"/>
+  <itemData name="Keyword" defStyleNum="dsKeyword"/>
+  <itemData name="Identifier" defStyleNum="dsOthers"/>
+  <itemData name="Types" defStyleNum="dsDataType"/>
+  <itemData name="String" defStyleNum="dsString"/>
+  <itemData name="Comment" defStyleNum="dsComment"/>
+</itemDatas>
 </language>
 
-<language name="C">
+<language name="C" extensions="*.c" mimetype="text/x-c-src" casesensitive="1">
 <keywords>
    <keyword> break </keyword>
    <keyword> case </keyword>
@@ -108,9 +130,39 @@
     <type> void </type>
     <type> volatile </type>
 </types>
+<contexts>
+  <context attribute="0" lineEndContext="0">
+    <item name="keyword" attribute="1" context="0"/>
+    <item name="dataType" attribute="2" context="0"/>
+    <item name="Float" attribute="4" context="0"/>
+    <item name="Int" attribute="3" context="0"/>
+    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
+    <item name="CharDetect" attribute="5" context="1" char="'"/>
+  </context>
+  <context attribute="5" lineEndContext="0"/>
+  <context attribute="4" lineEditContext="0">
+    <item name="CharDetect" attribute="4" context="0" char="'"/>
+  </context>
+</contexts>
+<itemDatas>
+  <itemData name="Normal Text" defStyleNum="dsNormal"/>
+  <itemData name="Keyword" defStyleNum="dsKeyword"/>
+  <itemData name="DataType" defStyleNum="dsDataType"/>
+  <itemData name="Decimal" defStyleNum="dsDecVal"/>
+  <itemData name="Octal" defStyleNum="dsBaseN"/>
+  <itemData name="Hex" defStyleNum="dsBaseN"/>
+  <itemData name="Float" defStyleNum="dsFloat"/>
+  <itemData name="Char" defStyleNum="dsChar"/>
+  <itemData name="String" defStyleNum="dsString"/>
+  <itemData name="String Char" defStyleNum="dsChar"/>
+  <itemData name="Comment" defStyleNum="dsComment"/>
+  <itemData name="Symbol" defStyleNum="dsNormal"/>
+  <itemData name="Preprocessor" defStyleNum="dsOthers"/>
+  <itemData name="Prep. Lib" defStyleNum="dsOthers"/>
+</itemDatas>
 </language>
 
-<language name="Objective-C">
+<language name="Objective-C" extensions="*.m;*.h" mimetype="text/x-objc-src;text/x-c-hdr" casesensitive="1">
 <keywords>
  <keyword> @class </keyword>
  <keyword> @defs </keyword>
@@ -142,9 +194,31 @@
  <type> void </type>
  <type> volatile </type>
 </types>
+<contexts>
+  <context attribute="0" lineEndContext="0">
+    <item name="keyword" attribute="1" context="0"/>
+    <item name="dataType" attribute="2" context="0"/>
+    <item name="Float" attribute="4" context="0"/>
+    <item name="Int" attribute="3" context="0"/>
+    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
+    <item name="CharDetect" attribute="5" context="1" char="'"/>
+  </context>
+  <context attribute="5" lineEndContext="0"/>
+  <context attribute="4" lineEditContext="0">
+    <item name="CharDetect" attribute="4" context="0" char="'"/>
+  </context>
+</contexts>
+<itemDatas>
+  <itemData name="Normal Text" defStyleNum="dsNormal"/>
+  <itemData name="Keyword" defStyleNum="dsKeyword"/>
+  <itemData name="Identifier" defStyleNum="dsOthers"/>
+  <itemData name="Types" defStyleNum="dsDataType"/>
+  <itemData name="String" defStyleNum="dsString"/>
+  <itemData name="Comment" defStyleNum="dsComment"/>
+</itemDatas>
 </language>
 
-<language name="IDL">
+<language name="IDL" extensions="*.idl" mimetype="text/x-idl-src" casesensitive="1">
 <keywords>
  <keyword> module </keyword>
  <keyword> interface </keyword>
@@ -181,7 +255,8 @@
   <type> boolean </type>
 </types>
 </language>
-<language name="Java">
+
+<language name="Java" extensions="*.java" mimetype="text/x-java-src" casesensitive="1">
 <keywords>
  <keyword> abstract </keyword>
  <keyword> break </keyword>
@@ -243,8 +318,31 @@
   <type> short </type>
   <type> static </type>
 </types>
+<contexts>
+  <context attribute="0" lineEndContext="0">
+    <item name="keyword" attribute="1" context="0"/>
+    <item name="dataType" attribute="2" context="0"/>
+    <item name="Float" attribute="4" context="0"/>
+    <item name="Int" attribute="3" context="0"/>
+    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
+    <item name="CharDetect" attribute="5" context="1" char="'"/>
+  </context>
+  <context attribute="5" lineEndContext="0"/>
+  <context attribute="4" lineEditContext="0">
+    <item name="CharDetect" attribute="4" context="0" char="'"/>
+  </context>
+</contexts>
+<itemDatas>
+  <itemData name="Normal Text" defStyleNum="dsNormal"/>
+  <itemData name="Keyword" defStyleNum="dsKeyword"/>
+  <itemData name="Identifier" defStyleNum="dsOthers"/>
+  <itemData name="Types" defStyleNum="dsDataType"/>
+  <itemData name="String" defStyleNum="dsString"/>
+  <itemData name="Comment" defStyleNum="dsComment"/>
+</itemDatas>
 </language>
-<language name="Bash">
+
+<language name="Bash" extensions="*.sh" mimetype="text/x-bash-src" casesensitive="1">
   <keywords>
   <keyword> break </keyword>
   <keyword> case </keyword>
@@ -268,7 +366,8 @@
   <keyword> . </keyword>
 </keywords>
 </language>
-<language name="Modula 2">
+
+<language name="Modula 2" extensions="*.md;*.mi" mimetype="text/x-modula-2-src" casesensitive="1">
 <keywords>
  <keyword> BEGIN </keyword>
  <keyword> CONST </keyword>
@@ -296,9 +395,31 @@
  <keyword> WITH </keyword>
  <keyword> | </keyword>
 </keywords>
+<contexts>
+  <context attribute="0" lineEndContext="0">
+    <item name="keyword" attribute="1" context="0"/>
+    <item name="dataType" attribute="2" context="0"/>
+    <item name="Float" attribute="4" context="0"/>
+    <item name="Int" attribute="3" context="0"/>
+    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
+    <item name="CharDetect" attribute="5" context="1" char="'"/>
+  </context>
+  <context attribute="5" lineEndContext="0"/>
+  <context attribute="4" lineEditContext="0">
+    <item name="CharDetect" attribute="4" context="0" char="'"/>
+  </context>
+</contexts>
+<itemDatas>
+  <itemData name="Normal Text" defStyleNum="dsNormal"/>
+  <itemData name="Keyword" defStyleNum="dsKeyword"/>
+  <itemData name="Identifier" defStyleNum="dsOthers"/>
+  <itemData name="Types" defStyleNum="dsDataType"/>
+  <itemData name="String" defStyleNum="dsString"/>
+  <itemData name="Comment" defStyleNum="dsComment"/>
+</itemDatas>
 </language>
 
-<language name="Ada">
+<language name="Ada"extensions="*.a" mimetype="text/x-ada-src" casesensitive="1">
 <keywords>
  <keyword> abort </keyword>
  <keyword> abs </keyword>
@@ -364,9 +485,31 @@
  <keyword> with </keyword>
  <keyword> xor </keyword>
 </keywords>
+<contexts>
+  <context attribute="0" lineEndContext="0">
+    <item name="keyword" attribute="1" context="0"/>
+    <item name="dataType" attribute="2" context="0"/>
+    <item name="Float" attribute="4" context="0"/>
+    <item name="Int" attribute="3" context="0"/>
+    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
+    <item name="CharDetect" attribute="5" context="1" char="'"/>
+  </context>
+  <context attribute="5" lineEndContext="0"/>
+  <context attribute="4" lineEditContext="0">
+    <item name="CharDetect" attribute="4" context="0" char="'"/>
+  </context>
+</contexts>
+<itemDatas>
+  <itemData name="Normal Text" defStyleNum="dsNormal"/>
+  <itemData name="Keyword" defStyleNum="dsKeyword"/>
+  <itemData name="Identifier" defStyleNum="dsOthers"/>
+  <itemData name="Types" defStyleNum="dsDataType"/>
+  <itemData name="String" defStyleNum="dsString"/>
+  <itemData name="Comment" defStyleNum="dsComment"/>
+</itemDatas>
 </language>
 
-<language name="Perl">
+<language name="Perl" extensions="*.pl" mimetype="text/x-perl-src" casesensitive="1">
 <keywords>
   <keyword> and </keyword>
   <keyword> bless </keyword>
@@ -419,8 +562,31 @@
   <keyword> while </keyword>
   <keyword> xor </keyword>
 </keywords>
+<contexts>
+  <context attribute="0" lineEndContext="0">
+    <item name="keyword" attribute="1" context="0"/>
+    <item name="dataType" attribute="2" context="0"/>
+    <item name="Float" attribute="4" context="0"/>
+    <item name="Int" attribute="3" context="0"/>
+    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
+    <item name="CharDetect" attribute="5" context="1" char="'"/>
+  </context>
+  <context attribute="5" lineEndContext="0"/>
+  <context attribute="4" lineEditContext="0">
+    <item name="CharDetect" attribute="4" context="0" char="'"/>
+  </context>
+</contexts>
+<itemDatas>
+  <itemData name="Normal Text" defStyleNum="dsNormal"/>
+  <itemData name="Keyword" defStyleNum="dsKeyword"/>
+  <itemData name="Identifier" defStyleNum="dsOthers"/>
+  <itemData name="Types" defStyleNum="dsDataType"/>
+  <itemData name="String" defStyleNum="dsString"/>
+  <itemData name="Comment" defStyleNum="dsComment"/>
+</itemDatas>
 </language>
-<language name="Python">
+
+<language name="Python" extensions="*.py" mimetype="text/x-phyton-src" casesensitive="1">
 <keywords>
  <keyword> and </keyword>
  <keyword> assert </keyword>
@@ -451,9 +617,31 @@
  <keyword> try </keyword>
  <keyword> while </keyword>
 </keywords>
+<contexts>
+  <context attribute="0" lineEndContext="0">
+    <item name="keyword" attribute="1" context="0"/>
+    <item name="dataType" attribute="2" context="0"/>
+    <item name="Float" attribute="4" context="0"/>
+    <item name="Int" attribute="3" context="0"/>
+    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
+    <item name="CharDetect" attribute="5" context="1" char="'"/>
+  </context>
+  <context attribute="5" lineEndContext="0"/>
+  <context attribute="4" lineEditContext="0">
+    <item name="CharDetect" attribute="4" context="0" char="'"/>
+  </context>
+</contexts>
+<itemDatas>
+  <itemData name="Normal Text" defStyleNum="dsNormal"/>
+  <itemData name="Keyword" defStyleNum="dsKeyword"/>
+  <itemData name="Identifier" defStyleNum="dsOthers"/>
+  <itemData name="Types" defStyleNum="dsDataType"/>
+  <itemData name="String" defStyleNum="dsString"/>
+  <itemData name="Comment" defStyleNum="dsComment"/>
+</itemDatas>
 </language>
 
-<language name="Sather">
+<language name="Sather" extensions="*.sa" mimetype="text/x-sather-src" casesensitive="1">
 <keywords>
  <keyword> and </keyword>
  <keyword> assert </keyword>
@@ -554,8 +742,31 @@
  <type> pow </type>
  <type> times </type>
 </types>
+<contexts>
+  <context attribute="0" lineEndContext="0">
+    <item name="keyword" attribute="1" context="0"/>
+    <item name="dataType" attribute="2" context="0"/>
+    <item name="Float" attribute="4" context="0"/>
+    <item name="Int" attribute="3" context="0"/>
+    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
+    <item name="CharDetect" attribute="5" context="1" char="'"/>
+  </context>
+  <context attribute="5" lineEndContext="0"/>
+  <context attribute="4" lineEditContext="0">
+    <item name="CharDetect" attribute="4" context="0" char="'"/>
+  </context>
+</contexts>
+<itemDatas>
+  <itemData name="Normal Text" defStyleNum="dsNormal"/>
+  <itemData name="Keyword" defStyleNum="dsKeyword"/>
+  <itemData name="Identifier" defStyleNum="dsOthers"/>
+  <itemData name="Types" defStyleNum="dsDataType"/>
+  <itemData name="String" defStyleNum="dsString"/>
+  <itemData name="Comment" defStyleNum="dsComment"/>
+</itemDatas>
 </language>
-<language name="Pascal">
+
+<language name="Pascal" extensions="*.pp;*.pas;*.inc" mimetype="text/x-pascal-src" casesensitive="0">
 <keywords>
  <keyword> and </keyword>
  <keyword> array </keyword>
@@ -670,9 +881,31 @@
  <type> File </type>
  <type> Text </type>
 </types>
+<contexts>
+  <context attribute="0" lineEndContext="0">
+    <item name="keyword" attribute="1" context="0"/>
+    <item name="dataType" attribute="2" context="0"/>
+    <item name="Float" attribute="4" context="0"/>
+    <item name="Int" attribute="3" context="0"/>
+    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
+    <item name="CharDetect" attribute="5" context="1" char="'"/>
+  </context>
+  <context attribute="5" lineEndContext="0"/>
+  <context attribute="4" lineEditContext="0">
+    <item name="CharDetect" attribute="4" context="0" char="'"/>
+  </context>
+</contexts>
+<itemDatas>
+  <itemData name="Normal Text" defStyleNum="dsNormal"/>
+  <itemData name="Keyword" defStyleNum="dsKeyword"/>
+  <itemData name="Identifier" defStyleNum="dsOthers"/>
+  <itemData name="Types" defStyleNum="dsDataType"/>
+  <itemData name="String" defStyleNum="dsString"/>
+  <itemData name="Comment" defStyleNum="dsComment"/>
+</itemDatas>
 </language>
 
-<language name="Povray">
+<language name="Povray" extensions="*.pov;*.inc" mimetype="text/x-povray" casesensitive="1">
 <keywords>
   <keyword> aa_level </keyword>
   <keyword> aa_treshold </keyword>
@@ -1004,10 +1237,32 @@
   <keyword> vcross </keyword>
   <keyword> vdot </keyword>
 </keywords>
+<contexts>
+  <context attribute="0" lineEndContext="0">
+    <item name="keyword" attribute="1" context="0"/>
+    <item name="dataType" attribute="2" context="0"/>
+    <item name="Float" attribute="4" context="0"/>
+    <item name="Int" attribute="3" context="0"/>
+    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
+    <item name="CharDetect" attribute="5" context="1" char="'"/>
+  </context>
+  <context attribute="5" lineEndContext="0"/>
+  <context attribute="4" lineEditContext="0">
+    <item name="CharDetect" attribute="4" context="0" char="'"/>
+  </context>
+</contexts>
+<itemDatas>
+  <itemData name="Normal Text" defStyleNum="dsNormal"/>
+  <itemData name="Keyword" defStyleNum="dsKeyword"/>
+  <itemData name="Identifier" defStyleNum="dsOthers"/>
+  <itemData name="Types" defStyleNum="dsDataType"/>
+  <itemData name="String" defStyleNum="dsString"/>
+  <itemData name="Comment" defStyleNum="dsComment"/>
+</itemDatas>
 </language>
 
-<language name='KBasic' extensions="*.kbasic" mimetype="text/x-kbasic-src">
-  <keywords>
+<language name="KBasic" extensions="*.kbasic" mimetype="text/x-kbasic-src" casesensitive="1">
+<keywords>
   <keyword> For </keyword>
   <keyword> Next</keyword>
   <keyword> Do </keyword>
@@ -1055,8 +1310,8 @@
   <keyword> Declare </keyword>
   <keyword> Option </keyword>
   <keyword> Explicit </keyword>
-  </keywords>
-  <types>
+</keywords>
+<types>
   <type>Integer </type>
   <type>Long </type>
   <type>Byte </type>
@@ -1068,31 +1323,203 @@
   <type>String </type>
   <type>Object </type>
   <type>Control </type>
-  </types>
-  <contexts>
-    <context attribute="0" lineEndContext="0">
-      <item name="keyword" attribute="1" context="0"/>
-      <item name="dataType" attribute="2" context="0"/>
-      <item name="Float" attribute="4" context="0"/>
-      <item name="Int" attribute="3" context="0"/>
-      <item name="CharDetect" attribute="4" context="2" char="quot;"/>
-      <item name="CharDetect" attribute="5" context="1" char="'"/>
-    </context>
-    <context attribute="5" lineEndContext="0"/>
-    <context attribute="4" lineEditContext="0">
-      <item name="CharDetect" attribute="4" context="0" char="'"/>
-    </context>
-  </contexts>
-  <itemDatas>
-    <itemData name="Normal Text" defStyleNum="dsNormal"/>
-    <itemData name="Keyword" defStyleNum="dsKeyword"/>
-    <itemData name="Identifier" defStyleNum="dsOthers"/>
-    <itemData name="Types" defStyleNum="dsDataType"/>
-    <itemData name="String" defStyleNum="dsString"/>
-    <itemData name="Comment" defStyleNum="dsComment"/>
-  </itemDatas>
+</types>
+<contexts>
+  <context attribute="0" lineEndContext="0">
+    <item name="keyword" attribute="1" context="0"/>
+    <item name="dataType" attribute="2" context="0"/>
+    <item name="Float" attribute="4" context="0"/>
+    <item name="Int" attribute="3" context="0"/>
+    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
+    <item name="CharDetect" attribute="5" context="1" char="'"/>
+  </context>
+  <context attribute="5" lineEndContext="0"/>
+  <context attribute="4" lineEditContext="0">
+    <item name="CharDetect" attribute="4" context="0" char="'"/>
+  </context>
+</contexts>
+<itemDatas>
+  <itemData name="Normal Text" defStyleNum="dsNormal"/>
+  <itemData name="Keyword" defStyleNum="dsKeyword"/>
+  <itemData name="Identifier" defStyleNum="dsOthers"/>
+  <itemData name="Types" defStyleNum="dsDataType"/>
+  <itemData name="String" defStyleNum="dsString"/>
+  <itemData name="Comment" defStyleNum="dsComment"/>
+</itemDatas>
+</language>
+
+<language name="HTML" extensions="*.html;*.htm;*.docbook;*.xml;*.sgml" mimetype="text/html;text/sgml;text/xml;text/book" casesensitive="0">
+<keywords>
+  <keyword> For </keyword>
+  <keyword> Next</keyword>
+  <keyword> Do </keyword>
+  <keyword> Loop </keyword>
+  <keyword> While </keyword>
+  <keyword> Wend </keyword>
+  <keyword> Until </keyword>
+  <keyword> If </keyword>
+  <keyword> Else </keyword>
+  <keyword> End  </keyword>
+  <keyword> Function </keyword>
+  <keyword> Goto </keyword>
+  <keyword> Sub  </keyword>
+  <keyword> Implements </keyword>
+  <keyword> In  </keyword>
+  <keyword> Sub </keyword>
+  <keyword> Private </keyword>
+  <keyword> Public  </keyword>
+  <keyword> Global </keyword>
+  <keyword> As  </keyword>
+  <keyword> Dim </keyword>
+  <keyword> Set </keyword>
+  <keyword> Let </keyword>
+  <keyword> Get </keyword>
+  <keyword> To </keyword>
+  <keyword> Property </keyword>
+  <keyword> True </keyword>
+  <keyword> False </keyword>
+  <keyword> Or  </keyword>
+  <keyword> Not </keyword>
+  <keyword> Xor  </keyword>
+  <keyword> And  </keyword>
+  <keyword> Then </keyword>
+  <keyword> Exit </keyword>
+  <keyword> Put </keyword>
+  <keyword> Open </keyword>
+  <keyword> Close </keyword>
+  <keyword> Seek </keyword>
+  <keyword> Print </keyword>
+  <keyword> Input</keyword>
+  <keyword> Output </keyword>
+  <keyword> Repeat </keyword>
+  <keyword> Load </keyword>
+  <keyword> Unload </keyword>
+  <keyword> Declare </keyword>
+  <keyword> Option </keyword>
+  <keyword> Explicit </keyword>
+</keywords>
+<types>
+  <type>Integer </type>
+  <type>Long </type>
+  <type>Byte </type>
+  <type>Boolean </type>
+  <type>Variant </type>
+  <type>Single </type>
+  <type>Double </type>
+  <type>Currency </type>
+  <type>String </type>
+  <type>Object </type>
+  <type>Control </type>
+</types>
+<contexts>
+  <context attribute="0" lineEndContext="0">
+    <item name="keyword" attribute="1" context="0"/>
+    <item name="dataType" attribute="2" context="0"/>
+    <item name="Float" attribute="4" context="0"/>
+    <item name="Int" attribute="3" context="0"/>
+    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
+    <item name="CharDetect" attribute="5" context="1" char="'"/>
+  </context>
+  <context attribute="5" lineEndContext="0"/>
+  <context attribute="4" lineEditContext="0">
+    <item name="CharDetect" attribute="4" context="0" char="'"/>
+  </context>
+</contexts>
+<itemDatas>
+  <itemData name="Normal Text" defStyleNum="dsNormal"/>
+  <itemData name="Keyword" defStyleNum="dsKeyword"/>
+  <itemData name="Identifier" defStyleNum="dsOthers"/>
+  <itemData name="Types" defStyleNum="dsDataType"/>
+  <itemData name="String" defStyleNum="dsString"/>
+  <itemData name="Comment" defStyleNum="dsComment"/>
+</itemDatas>
+</language>
+
+<language name="Latex" extensions="*.tex;*.sty" mimetype="text/x-tex" casesensitive="1">
+<keywords>
+  <keyword> For </keyword>
+  <keyword> Next</keyword>
+  <keyword> Do </keyword>
+  <keyword> Loop </keyword>
+  <keyword> While </keyword>
+  <keyword> Wend </keyword>
+  <keyword> Until </keyword>
+  <keyword> If </keyword>
+  <keyword> Else </keyword>
+  <keyword> End  </keyword>
+  <keyword> Function </keyword>
+  <keyword> Goto </keyword>
+  <keyword> Sub  </keyword>
+  <keyword> Implements </keyword>
+  <keyword> In  </keyword>
+  <keyword> Sub </keyword>
+  <keyword> Private </keyword>
+  <keyword> Public  </keyword>
+  <keyword> Global </keyword>
+  <keyword> As  </keyword>
+  <keyword> Dim </keyword>
+  <keyword> Set </keyword>
+  <keyword> Let </keyword>
+  <keyword> Get </keyword>
+  <keyword> To </keyword>
+  <keyword> Property </keyword>
+  <keyword> True </keyword>
+  <keyword> False </keyword>
+  <keyword> Or  </keyword>
+  <keyword> Not </keyword>
+  <keyword> Xor  </keyword>
+  <keyword> And  </keyword>
+  <keyword> Then </keyword>
+  <keyword> Exit </keyword>
+  <keyword> Put </keyword>
+  <keyword> Open </keyword>
+  <keyword> Close </keyword>
+  <keyword> Seek </keyword>
+  <keyword> Print </keyword>
+  <keyword> Input</keyword>
+  <keyword> Output </keyword>
+  <keyword> Repeat </keyword>
+  <keyword> Load </keyword>
+  <keyword> Unload </keyword>
+  <keyword> Declare </keyword>
+  <keyword> Option </keyword>
+  <keyword> Explicit </keyword>
+</keywords>
+<types>
+  <type>Integer </type>
+  <type>Long </type>
+  <type>Byte </type>
+  <type>Boolean </type>
+  <type>Variant </type>
+  <type>Single </type>
+  <type>Double </type>
+  <type>Currency </type>
+  <type>String </type>
+  <type>Object </type>
+  <type>Control </type>
+</types>
+<contexts>
+  <context attribute="0" lineEndContext="0">
+    <item name="keyword" attribute="1" context="0"/>
+    <item name="dataType" attribute="2" context="0"/>
+    <item name="Float" attribute="4" context="0"/>
+    <item name="Int" attribute="3" context="0"/>
+    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
+    <item name="CharDetect" attribute="5" context="1" char="'"/>
+  </context>
+  <context attribute="5" lineEndContext="0"/>
+  <context attribute="4" lineEditContext="0">
+    <item name="CharDetect" attribute="4" context="0" char="'"/>
+  </context>
+</contexts>
+<itemDatas>
+  <itemData name="Normal Text" defStyleNum="dsNormal"/>
+  <itemData name="Keyword" defStyleNum="dsKeyword"/>
+  <itemData name="Identifier" defStyleNum="dsOthers"/>
+  <itemData name="Types" defStyleNum="dsDataType"/>
+  <itemData name="String" defStyleNum="dsString"/>
+  <itemData name="Comment" defStyleNum="dsComment"/>
+</itemDatas>
 </language>
 
 </highlighting>
-
-
