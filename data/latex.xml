@@ -6,17 +6,20 @@
       <item> itemize</item>	 	
     </list>
     <contexts>
-	<context attribute="0" lineEndContext="0"/>
+	<context attribute="0" lineEndContext="0">
         	<StringDetect String="\begin{" attribute="0" context="1"/>
+        	<StringDetect String="\end{" attribute="0" context="1"/>
+		<RegExpr String="%.*$" attribute="2" context="1"/>
 	</context>
-	<context attribute="1" lineEndContextxt="1">
-		<Keyword name)"keywords" attribute="1" context="1">
+	<context attribute="0" lineEndContextxt="1">
+		<keyword String="keywords" attribute="1" context="1"/>
 		<DetectChar char="}" attribute="0" context="0"/>
 	</context>
     </contexts>
     <itemDatas>
       <itemData name="Normal Text" defStyleNum="dsNormal"/>
       <itemData name="Keyword" defStyleNum="dsKeyword"/>
+      <itemData name="Comment" defStyleNum="dsComment"/>
     </itemDatas>
   </highlighting>
   <general>
