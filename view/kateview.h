@@ -43,31 +43,19 @@
 #include "../interfaces/kateviewIface.h"
 
 #include <kparts/browserextension.h>
-
 #include <qlist.h>
-#include <qscrollbar.h>
-#include <qiodevice.h>
-#include <qpopupmenu.h>
-#include <qkeycode.h>
-#include <qintdict.h>
 #include <qstring.h>
-#include <qdropsite.h>
-#include <qdragobject.h>
-
-#include <ktempfile.h>
-#include <kconfig.h>
+#include <qdialog.h>
 #include <kspell.h>
-#include <ksconfig.h>
+
 #include "kateviewIface.h"
 
 class KToggleAction;
 class KAction;
 class KRecentFilesAction;
 class KSelectAction;
-
+class QTextDrag;
 class KPrinter;
-
-class KTempFile;
 class KateDocument;
 class Highlight;
 

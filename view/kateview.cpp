@@ -51,18 +51,16 @@
 #include <kdebug.h>
 #include <kprinter.h>
 #include <kapp.h>
-
+#include <qscrollbar.h>
+#include <qiodevice.h>
+#include <qpopupmenu.h>
+#include <qkeycode.h>
+#include <qintdict.h>
 #include <klineeditdlg.h>
-
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <assert.h>
-
-#include <list>
-
-#include <qstring.h>
-#include <qwidget.h>
+#include <qdropsite.h>
+#include <qdragobject.h>
+#include <kconfig.h>
+#include <ksconfig.h>
 #include <qfont.h>
 #include <qpainter.h>
 #include <qpixmap.h>
@@ -77,8 +75,6 @@
 #include <qiodevice.h>
 #include <qbuffer.h>
 #include <qfocusdata.h>
-
-#include <kapp.h>
 #include <kcursor.h>
 #include <klocale.h>
 #include <kglobal.h>

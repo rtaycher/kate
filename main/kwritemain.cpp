@@ -523,15 +523,15 @@ void TopLevel::saveProperties(KConfig *config)
 
 void TopLevel::saveGlobalProperties(KConfig *config) //save documents
 {
-  int z;
-  char buf[16];
+  uint z;
+  QString buf;
   KateDocument *doc;
 
   config->setGroup("Number");
   config->writeEntry("NumberOfDocuments",docList.count());
 
-  for (z = 1; z <= (int) docList.count(); z++) {
-     sprintf(buf,"Document%d",z);
+  for (z = 1; z <= docList.count(); z++) {
+     buf = QString("Document%1").arg(z);
      config->setGroup(buf);
      doc = (KateDocument *) docList.at(z - 1);
      doc->writeSessionConfig(config);
@@ -544,7 +544,7 @@ void restore()
 {
   KConfig *config;
   int docs, windows, z;
-  char buf[16];
+  QString buf;
   KateDocument *doc;
   TopLevel *t;
 
@@ -556,7 +556,7 @@ void restore()
   windows = config->readNumEntry("NumberOfWindows");
 
   for (z = 1; z <= docs; z++) {
-     sprintf(buf,"Document%d",z);
+     buf = QString("Document%1").arg(z);
      config->setGroup(buf);
      doc = new KateDocument (0L,0L);
      doc->readSessionConfig(config);
@@ -564,7 +564,7 @@ void restore()
   }
 
   for (z = 1; z <= windows; z++) {
-    sprintf(buf,"%d",z);
+    buf = QString("Document%1").arg(z);
     config->setGroup(buf);
     t = new TopLevel(docList.at(config->readNumEntry("DocumentNumber") - 1));
     t->restore(config,z);

@@ -26,8 +26,8 @@
 #include "../view/kateviewmanager.h"
 
 #include <kcmdlineargs.h>
-#include <kdebug.h>
 #include <dcopclient.h>
+#include <kconfig.h>
 
 KateApp::KateApp () : KateAppIface (),DCOPObject ("KateApp" )
 {
@@ -54,11 +54,8 @@ KateApp::KateApp () : KateAppIface (),DCOPObject ("KateApp" )
 
   mainWindows.first()->restore(isRestored());
 
-  if (isRestored())
-    kdDebug(13000)<<"restored app anybody?"<<endl;
   if (!isRestored())
   {
-
     for (int z=0; z<args->count(); z++)
     {
       mainWindows.first()->viewManager->openURL( args->url(z) );

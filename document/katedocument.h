@@ -45,6 +45,7 @@
 #include <qcolor.h>
 #include <qfont.h>
 #include <qfontmetrics.h>
+#include <qdatetime.h>
 
 #include "../view/kateview.h"
 #include "katehighlight.h"
