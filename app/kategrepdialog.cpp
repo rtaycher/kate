@@ -60,7 +60,7 @@ const char *template_str[] = {
 };
 
 
-GrepDialog::GrepDialog(QString dirname, QWidget *parent, const char *name)
+GrepDialog::GrepDialog(const QString &dirname, QWidget *parent, const char *name)
     : KDialog(parent, name, false), childproc(0)
 {
     setCaption(i18n("Find in Files"));
@@ -376,7 +376,7 @@ void GrepDialog::slotSearch()
     /*bool success=*/childproc->start(KProcess::NotifyOnExit, KProcess::Stdout);
 }
 
-void GrepDialog::slotSearchFor(QString pattern){
+void GrepDialog::slotSearchFor(const QString &pattern){
     slotClear();
     pattern_combo->setEditText(pattern);
     slotSearch();
@@ -456,7 +456,7 @@ void GrepDialog::slotClear()
 }
 
 
-void  GrepDialog::setDirName(QString dir){
+void  GrepDialog::setDirName(const QString &dir){
 //    dir_combo->setEditText(dir);
     dir_combo->setURL(dir);
 }

@@ -41,7 +41,7 @@ class KateVSStatusBar : public KStatusBar
       virtual ~KateVSStatusBar ();
       
    public slots:
-      void setStatus( int r, int c, int ovr, bool block, int mod, QString msg );
+      void setStatus( int r, int c, int ovr, bool block, int mod, const QString &msg );
       
    protected:
       virtual bool eventFilter (QObject*,QEvent *);
@@ -92,7 +92,7 @@ class KateViewSpace : public QVBox
     int mViewCount;
     KVSSBSep *sep;
   private slots:
-    void slotStatusChanged (Kate::View *view, int r, int c, int ovr, bool block, int mod, QString msg);
+    void slotStatusChanged (Kate::View *view, int r, int c, int ovr, bool block, int mod, const QString &msg);
 
   public slots:
     void polish();

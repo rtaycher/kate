@@ -72,7 +72,7 @@ KateViewManager::KateViewManager (QWidget *parent, KateDocManager *m_docManager)
   m_grid = new QGridLayout( this, 1, 1 );
 
   KateViewSpace* vs = new KateViewSpace( this );
-  connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, QString)), vs, SLOT(slotStatusChanged(Kate::View *, int, int, int, bool, int, QString)));
+  connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, const QString&)), vs, SLOT(slotStatusChanged(Kate::View *, int, int, int, bool, int, const QString&)));
   vs->setActive( true );
   vs->installEventFilter( this );
   m_grid->addWidget( vs, 0, 0);
@@ -592,7 +592,7 @@ void KateViewManager::splitViewSpace( KateViewSpace* vs,
   sizes << space << space;
   s->setSizes( sizes );
 
-  connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, QString)), vsNew, SLOT(slotStatusChanged(Kate::View *, int, int,int, bool, int, QString)));
+  connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, const QString &)), vsNew, SLOT(slotStatusChanged(Kate::View *, int, int,int, bool, int, const QString &)));
   m_viewSpaceList.append( vsNew );
   vsNew->installEventFilter( this );
   activeViewSpace()->setActive( false );
@@ -948,7 +948,7 @@ void KateViewManager::restoreViewConfig()
    delete scfg;
 }
 
-void KateViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWidget* parent)
+void KateViewManager::restoreSplitter( KSimpleConfig* config, const QString &group, QWidget* parent)
 {
    config->setGroup( group );
 
@@ -966,7 +966,7 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
      // for a viewspace, create it and open all documents therein.
      if ( (*it).startsWith("viewspace") ) {
        KateViewSpace* vs = new KateViewSpace( s );
-       connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, QString)), vs, SLOT(slotStatusChanged(Kate::View *, int, int, int, bool, int, QString)));
+       connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, const QString &)), vs, SLOT(slotStatusChanged(Kate::View *, int, int, int, bool, int, const QString &)));
        vs->installEventFilter( this );
        m_viewSpaceList.append( vs );
        vs->show();

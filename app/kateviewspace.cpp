@@ -202,7 +202,7 @@ bool KateViewSpace::event( QEvent *e )
   return QVBox::event( e );
 }
 
-void KateViewSpace::slotStatusChanged (Kate::View *view, int r, int c, int ovr, bool block, int mod, QString msg)
+void KateViewSpace::slotStatusChanged (Kate::View *view, int r, int c, int ovr, bool block, int mod, const QString &msg)
 {
   if ((QWidgetStack *)view->parentWidget() != stack)
     return;
@@ -279,7 +279,7 @@ KateVSStatusBar::~KateVSStatusBar ()
 {
 }
 
-void KateVSStatusBar::setStatus( int r, int c, int ovr, bool block, int mod, QString msg )
+void KateVSStatusBar::setStatus( int r, int c, int ovr, bool block, int mod, const QString &msg )
 {
   m_lineColLabel->setText(
     i18n(" Line: %1 Col: %2 ").arg(KGlobal::locale()->formatNumber(r+1, 0))

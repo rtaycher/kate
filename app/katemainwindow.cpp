@@ -165,7 +165,7 @@ KateMainWindow::~KateMainWindow()
 void KateMainWindow::setupMainWindow ()
 {
   grep_dlg = new GrepDialog( QDir::homeDirPath(), this, "grepdialog" );
-  connect(grep_dlg, SIGNAL(itemSelected(QString,int)), this, SLOT(slotGrepDialogItemSelected(QString,int)));
+  connect(grep_dlg, SIGNAL(itemSelected(const QString &,int)), this, SLOT(slotGrepDialogItemSelected(const QString &,int)));
 
   mainDock = createDockWidget( "mainDock", 0L );
 
@@ -553,7 +553,7 @@ void KateMainWindow::slotFindInFiles ()
   grep_dlg->raise();
 }
 
-void KateMainWindow::slotGrepDialogItemSelected(QString filename,int linenumber)
+void KateMainWindow::slotGrepDialogItemSelected(const QString &filename,int linenumber)
 {
   KURL fileURL;
   fileURL.setPath( filename );

@@ -79,7 +79,7 @@ class KateViewManager : public QWidget
     /** Restore a single splitter.
      * This is all the work is done for @see saveSplitterConfig()
      */
-    void restoreSplitter ( KSimpleConfig* config, QString group, QWidget* parent );
+    void restoreSplitter ( KSimpleConfig* config, const QString &group, QWidget* parent );
 
     void removeViewSpace (KateViewSpace *viewspace);
 
@@ -155,7 +155,7 @@ class KateViewManager : public QWidget
     void activatePrevView();
 
   signals:
-    void statusChanged (Kate::View *, int, int, int, bool, int, QString);
+    void statusChanged (Kate::View *, int, int, int, bool, int, const QString &);
     void statChanged ();
     void viewChanged ();
     

@@ -179,7 +179,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
      GrepDialog* grep_dlg;
 
   public slots:
-    void slotGrepDialogItemSelected ( QString filename, int linenumber );
+    void slotGrepDialogItemSelected ( const QString &filename, int linenumber );
     void slotFindInFiles ();
     void runScript( int menuItemId);
     void slotMail();

@@ -128,7 +128,7 @@ KMultiTabBarTab* KMultiTabBarInternal::getTab(int id)
 }
 
 
-int KMultiTabBarInternal::appendTab(QPixmap pic ,int id,const QString& text)
+int KMultiTabBarInternal::appendTab(const QPixmap &pic ,int id,const QString& text)
 {
 	KMultiTabBarTab  *tab;
 	m_tabs.append(tab= new KMultiTabBarTab(pic,text,id,box,position));
@@ -429,7 +429,7 @@ KMultiTabBar::KMultiTabBar(QWidget *parent,KMultiTabBarBasicMode bm):QWidget(par
   return 0;
 }*/
 
-int KMultiTabBar::appendButton(QPixmap pic ,int id,QPopupMenu *popup,const QString&)
+int KMultiTabBar::appendButton(const QPixmap &pic ,int id,QPopupMenu *popup,const QString&)
 {
 	KMultiTabBarButton  *btn;
 	buttons.append(btn= new KMultiTabBarButton(pic,QString::null,
@@ -440,7 +440,7 @@ int KMultiTabBar::appendButton(QPixmap pic ,int id,QPopupMenu *popup,const QStri
 	return 0;
 }
 
-int KMultiTabBar::appendTab(QPixmap pic ,int id ,const QString& text)
+int KMultiTabBar::appendTab(const QPixmap &pic ,int id ,const QString& text)
 {
  internal->appendTab(pic,id,text);
  return 0;

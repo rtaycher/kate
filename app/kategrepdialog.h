@@ -39,15 +39,15 @@ class GrepDialog : public KDialog
     Q_OBJECT
 
 public:
-    GrepDialog(QString dirname, QWidget *parent=0, const char *name=0);
+    GrepDialog(const QString &dirname, QWidget *parent=0, const char *name=0);
   ~GrepDialog();
-  void  setDirName(QString);
+  void  setDirName(const QString &);
 
 signals:
-    void itemSelected(QString abs_filename, int line);
+    void itemSelected(const QString &abs_filename, int line);
     
 public slots:
-		void slotSearchFor(QString pattern);
+		void slotSearchFor(const QString &pattern);
 		
 private slots:
     //void dirButtonClicked();
