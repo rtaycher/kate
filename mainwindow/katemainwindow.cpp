@@ -555,10 +555,7 @@ void KateMainWindow::docListMenuAboutToShow()
 
 void KateMainWindow::bookmarkMenuAboutToShow()
 {
-  for (int z=3; (uint) z < bookmarkMenu->count(); z++)
-  {
-    bookmarkMenu->removeItemAt (z);
-  }
+  bookmarkMenu->clear ();
 
   QList<KateMark> list = viewManager->activeView()->doc()->marks();
   for (int i=0; (uint) i < list.count(); i++)
