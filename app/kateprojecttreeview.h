@@ -38,29 +38,21 @@ class KateProjectTreeViewItem : public QObject, public KListViewItem
     KateProjectTreeViewItem (KateProjectTreeView * parent, Kate::Project *prj, const QString &name, const QString &fullname, bool dir = false);
     KateProjectTreeViewItem (KateProjectTreeViewItem * parent, Kate::Project *prj, const QString &name, const QString &fullname, bool dir = false);
     ~KateProjectTreeViewItem ();
-    
+
     void init ();
-    
+
     bool isDir () { return m_dir; };
-    
+
     QString name () { return m_name; };
-    
+
     QString fullName () { return m_fullName; };
-    
+
     int compare ( QListViewItem *i, int, bool ) const;
-    
-  private slots:
-    void dirsAdded (const QStringList &dirs);
-    void dirsRemoved (const QStringList &dirs);
-    
-    void filesAdded (const QStringList &files);
-    void filesRemoved (const QStringList &files);
 
   private:
     QString m_name;
     QString m_fullName;
     Kate::Project *m_project;
-    Kate::ProjectDirFile::Ptr m_dirFile;
     bool m_dir;
 };
 
@@ -71,12 +63,18 @@ class KateProjectTreeView : public KListView
   public:
     KateProjectTreeView (Kate::Project *project, class KateMainWindow *mainwin, QWidget *parent);
     ~KateProjectTreeView ();
-    
+
     void addDir (KateProjectTreeViewItem *parent, const QString &dir);
-    
+
   private slots:
     void slotDoubleClicked( QListViewItem *i, const QPoint &pos, int c );
-    
+
+    void dirsAdded (const QString &dir, const QStringList &dirs);
+    void dirsRemoved (const QString &dir, const QStringList &dirs);
+
+    void filesAdded (const QString &dir, const QStringList &files);
+    void filesRemoved (const QString &dir, const QStringList &files);
+
   private:
     Kate::Project *m_project;
     class KateMainWindow *m_mainWin;

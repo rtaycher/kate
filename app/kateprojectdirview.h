@@ -34,16 +34,16 @@ class KateProjectDirView : public KFileIconView
   Q_OBJECT
 
   public:
-    KateProjectDirView (Kate::ProjectDirFile::Ptr dirFile, QWidget *parent);
+    KateProjectDirView (Kate::Project *project, const QString &dir, QWidget *parent);
     ~KateProjectDirView ();
-    
-    static void addDialog (Kate::ProjectDirFile::Ptr dirFile, QWidget *parent);
-  
+
+    static void addDialog (Kate::Project *project, const QString &dir, QWidget *parent);
+
   private slots:
     void entries( KIO::Job *job, const KIO::UDSEntryList& list);
-    
+
   private:
-    Kate::ProjectDirFile::Ptr m_dirFile;
+    Kate::Project *m_project;
     KIO::ListJob *m_listJob;
     KURL m_dir;
     QStringList m_dirs;

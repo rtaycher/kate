@@ -20,7 +20,7 @@
 
  #include "application.h"
  #include "project.h"
- 
+
 #include "plugin.h"
 #include "plugin.moc"
 
@@ -28,7 +28,7 @@
 
 namespace Kate
 {
-            
+
   class PrivatePlugin
   {
   public:
@@ -38,9 +38,9 @@ namespace Kate
 
     ~PrivatePlugin ()
     {
-    }           
+    }
   };
-  
+
   class PrivateProjectPlugin
   {
   public:
@@ -51,10 +51,10 @@ namespace Kate
     ~PrivateProjectPlugin ()
     {
     }
-    
-    Project *m_project;           
+
+    Project *m_project;
   };
-  
+
   class PrivateInitPlugin
   {
   public:
@@ -64,11 +64,11 @@ namespace Kate
 
     ~PrivateInitPlugin ()
     {
-    }    
-    
-    KURL m_configScript;       
+    }
+
+    KURL m_configScript;
   };
-  
+
   class PrivatePluginViewInterface
   {
   public:
@@ -79,9 +79,9 @@ namespace Kate
     ~PrivatePluginViewInterface ()
     {
     }
-    
+
   };
-                
+
 unsigned int Plugin::globalPluginNumber = 0;
 unsigned int ProjectPlugin::globalProjectPluginNumber = 0;
 unsigned int InitPlugin::globalInitPluginNumber = 0;
@@ -90,7 +90,7 @@ unsigned int PluginViewInterface::globalPluginViewInterfaceNumber = 0;
 Plugin::Plugin( Application *application, const char *name ) : QObject (application, name )
 {
   globalPluginNumber++;
-  myPluginNumber = globalPluginNumber; 
+  myPluginNumber = globalPluginNumber;
 }
 
 Plugin::~Plugin()
@@ -101,7 +101,7 @@ ProjectPlugin::ProjectPlugin( Project *project, const char *name ) : Plugin (Kat
 {
   globalProjectPluginNumber++;
   myProjectPluginNumber = globalProjectPluginNumber;
-  
+
   d = new PrivateProjectPlugin ();
   d->m_project = project;
 }
@@ -115,32 +115,32 @@ bool ProjectPlugin::save ()
 {
   return true;
 }
-    
+
 bool ProjectPlugin::close ()
 {
   return true;
 }
 
-void ProjectPlugin::addDirs (ProjectDirFile *, QStringList &)
+void ProjectPlugin::addDirs (const QString &dir, QStringList &)
 {
 }
 
-void ProjectPlugin::removeDirs (ProjectDirFile *, QStringList &)
+void ProjectPlugin::removeDirs (const QString &dir, QStringList &)
 {
 }
 
-void ProjectPlugin::addFiles (ProjectDirFile *, QStringList &)
+void ProjectPlugin::addFiles (const QString &dir, QStringList &)
 {
 }
 
-void ProjectPlugin::removeFiles (ProjectDirFile *, QStringList &)
+void ProjectPlugin::removeFiles (const QString &dir, QStringList &)
 {
 }
 
 InitPlugin :: InitPlugin(Application *application, const char *name):Plugin(application,name)
 {
   globalInitPluginNumber++;
-  myInitPluginNumber = globalInitPluginNumber; 
+  myInitPluginNumber = globalInitPluginNumber;
 
   d = new PrivateInitPlugin ();
   d->m_configScript = KURL();
@@ -154,7 +154,7 @@ InitPlugin::~InitPlugin()
 unsigned int InitPlugin::initPluginNumber () const
 {
   return myInitPluginNumber;
-}    
+}
 
 void InitPlugin::activate(const KURL &initScript)
 {
@@ -180,22 +180,22 @@ return 0;
 unsigned int Plugin::pluginNumber () const
 {
   return myPluginNumber;
-}     
+}
 
  Application *Plugin::application () const
 {
   return Kate::application();
-} 
+}
 
 unsigned int ProjectPlugin::projectPluginNumber () const
 {
   return myProjectPluginNumber;
-}     
+}
 
  Project *ProjectPlugin::project () const
 {
   return d->m_project;
-} 
+}
 
 PluginViewInterface::PluginViewInterface()
 {
@@ -210,7 +210,7 @@ PluginViewInterface::~PluginViewInterface()
 unsigned int PluginViewInterface::pluginViewInterfaceNumber () const
 {
   return myPluginViewInterfaceNumber;
-}    
+}
 
 Plugin *createPlugin ( const char* libname, Application *application, const char *name, const QStringList &args )
 {
@@ -223,7 +223,7 @@ ProjectPlugin *createProjectPlugin ( const char* libname, Project *project, cons
 }
 
 PluginViewInterface *pluginViewInterface (Plugin *plugin)
-{       
+{
   if (!plugin)
     return 0;
 

@@ -28,12 +28,12 @@
 
 namespace Kate
 {
-                           
+
 class Application;
 class Project;
 class MainWindow;
 
-                  
+
 class Plugin : public QObject
 {
   friend class PrivatePlugin;
@@ -43,11 +43,11 @@ class Plugin : public QObject
   public:
     Plugin (Application *application = 0, const char *name = 0 );
     virtual ~Plugin ();
-    
+
     unsigned int pluginNumber () const;
-      
+
     Application *application() const;
-    
+
   private:
     class PrivatePlugin *d;
     static unsigned int globalPluginNumber;
@@ -63,36 +63,36 @@ class ProjectPlugin : public Plugin
   public:
     ProjectPlugin (Project *project = 0, const char *name = 0 );
     virtual ~ProjectPlugin ();
-    
+
     unsigned int projectPluginNumber () const;
-      
+
     Project *project() const;
-    
+
     // default implementations returns true of the following bool methodes
-    
+
     virtual bool save ();
     virtual bool close ();
-    
+
     // default implementations don't modify the given list at all
-    
-    virtual void addDirs (class ProjectDirFile *dirFile, QStringList &dirs);
-    virtual void removeDirs (class ProjectDirFile *dirFile, QStringList &dirs);
-    
-    virtual void addFiles (class ProjectDirFile *dirFile, QStringList &files);
-    virtual void removeFiles (class ProjectDirFile *dirFile, QStringList &files);
-    
+
+    virtual void addDirs (const QString &dir, QStringList &dirs);
+    virtual void removeDirs (const QString &dir, QStringList &dirs);
+
+    virtual void addFiles (const QString &dir, QStringList &files);
+    virtual void removeFiles (const QString &dir, QStringList &files);
+
   private:
     class PrivateProjectPlugin *d;
     static unsigned int globalProjectPluginNumber;
     unsigned int myProjectPluginNumber;
 };
-   
+
 class InitPlugin : public Plugin
 {
   friend class PrivateInitPlugin;
 
   Q_OBJECT
-  
+
   public:
 
     /**
@@ -101,14 +101,14 @@ class InitPlugin : public Plugin
      */
     InitPlugin(Application *application=0, const char *name = 0);
     virtual ~InitPlugin();
-    
+
     unsigned int initPluginNumber () const;
 
     /* This is called whenever a new config script should be opened */
     virtual void activate( const KURL &configScript=KURL());
 
     /**
-     * I don't create an enum, because I want this to be freely extensible 
+     * I don't create an enum, because I want this to be freely extensible
      * Please return the or'ed values from the list, you don't need initialized by kate.
      * That speeds up appliaction startup. Be aware though, that you have to unload plugins
      * or clear view/document lists yourself anyway. This is needed, because There could be
@@ -117,13 +117,13 @@ class InitPlugin : public Plugin
      * 0x1: restoreDocuments
      * 0x2: restoreViews;
      * 0x4: loadPlugins
-     */ 
+     */
     virtual int actionsKateShouldNotPerformOnRealStartup();
 
     /**
      *This should initiate the real kate initialisation. Please always return "0". The return value
      *is for later extenstion
-     * 
+     *
      */
     virtual int initKate();
 
@@ -132,7 +132,7 @@ class InitPlugin : public Plugin
   private:
     class PrivateInitPlugin *d;
     static unsigned int globalInitPluginNumber;
-    unsigned int myInitPluginNumber;    
+    unsigned int myInitPluginNumber;
 };
 
 Plugin *createPlugin ( const char* libname, Application *application = 0, const char *name = 0,const QStringList &args = QStringList() );
@@ -149,9 +149,9 @@ class PluginViewInterface
   public:
     PluginViewInterface ();
     virtual ~PluginViewInterface ();
-    
+
     unsigned int pluginViewInterfaceNumber () const;
-  
+
     /*
      * will be called from the part to bound the plugin to a view
      */
@@ -162,7 +162,7 @@ class PluginViewInterface
     class PrivatePluginViewInterface *d;
     static unsigned int globalPluginViewInterfaceNumber;
     unsigned int myPluginViewInterfaceNumber;
-};         
+};
 
 PluginViewInterface *pluginViewInterface (Plugin *plugin);
 

@@ -22,7 +22,7 @@
 
 #include "kateprojectdirview.h"
 #include "kateprojectdirview.moc"
- 
+
 #include <kdialogbase.h>
 #include <kicontheme.h>
 #include <klocale.h>
@@ -30,26 +30,27 @@
 class KateProjectDirViewDialog : public KDialogBase
 {
   public:
-    KateProjectDirViewDialog (Kate::ProjectDirFile::Ptr dirFile, QWidget *parent);
+    KateProjectDirViewDialog (Kate::Project *project, const QString &dir, QWidget *parent);
     ~KateProjectDirViewDialog ();
-    
+
     int exec();
-    
+
   private:
-    Kate::ProjectDirFile::Ptr m_dirFile;
+    Kate::Project *m_project;
+    QString m_dir;
     KateProjectDirView *m_view;
 };
 
-KateProjectDirView::KateProjectDirView (Kate::ProjectDirFile::Ptr dirFile, QWidget *parent) : KFileIconView (parent, "projectdirview")
+KateProjectDirView::KateProjectDirView (Kate::Project *project, const QString &dir, QWidget *parent) : KFileIconView (parent, "projectdirview")
 {
-  m_dirFile = dirFile;
+ /* m_dirFile = dirFile;
   m_dir = KURL (dirFile->absDir());
   m_dirs = dirFile->dirs ();
   m_files = dirFile->files ();
-  
+  */
   setSelectionMode (KFile::Extended);
   setIconSize( KIcon::SizeMedium );
-  
+
   m_listJob = KIO::listDir (m_dir, false, true);
   connect (m_listJob, SIGNAL(entries( KIO::Job *, const KIO::UDSEntryList&)), this, SLOT(entries( KIO::Job *, const KIO::UDSEntryList&)));
 }
@@ -63,7 +64,7 @@ void KateProjectDirView::entries( KIO::Job *, const KIO::UDSEntryList& list)
   for (uint z=0; z < list.count(); z++)
   {
     KFileItem *item = new KFileItem (list[z], m_dir, true, true);
-    
+
     if (item->isDir())
     {
       if ((item->name() != QString (".")) && (item->name() != QString ("..")) && (m_dirs.findIndex (item->name()) == -1))
@@ -77,18 +78,17 @@ void KateProjectDirView::entries( KIO::Job *, const KIO::UDSEntryList& list)
   }
 }
 
-void KateProjectDirView::addDialog (Kate::ProjectDirFile::Ptr dirFile, QWidget *parent)
+void KateProjectDirView::addDialog (Kate::Project *project, const QString &dir, QWidget *parent)
 {
-  KateProjectDirViewDialog* dlg = new KateProjectDirViewDialog (dirFile, parent);
+  KateProjectDirViewDialog* dlg = new KateProjectDirViewDialog (project, dir, parent);
   dlg->exec();
   delete dlg;
 }
 
-KateProjectDirViewDialog::KateProjectDirViewDialog (Kate::ProjectDirFile::Ptr dirFile, QWidget *parent) : KDialogBase (parent, "dirviewdialog", true, i18n ("Add Directories/Files to Project"), KDialogBase::Ok|KDialogBase::Cancel)
+KateProjectDirViewDialog::KateProjectDirViewDialog (Kate::Project *project, const QString &dir, QWidget *parent) : KDialogBase (parent, "dirviewdialog", true, i18n ("Add Directories/Files to Project"), KDialogBase::Ok|KDialogBase::Cancel)
 {
-  m_dirFile = dirFile;
-  
-  m_view = new KateProjectDirView (m_dirFile, this);
+
+  m_view = new KateProjectDirView (project, dir, this);
   setMainWidget(m_view);
 }
 
@@ -99,7 +99,7 @@ KateProjectDirViewDialog::~KateProjectDirViewDialog ()
 int KateProjectDirViewDialog::exec()
 {
   int n = 0;
-  
+
   if ((n = KDialogBase::exec()))
   {
     QStringList dirs, files;
@@ -113,9 +113,9 @@ int KateProjectDirViewDialog::exec()
           files.push_back (item->name());
       }
     }
-    
-    m_dirFile->addDirs (dirs);
-    m_dirFile->addFiles (files);
+
+   // m_dirFile->addDirs (dirs);
+   // m_dirFile->addFiles (files);
   }
 
   return n;

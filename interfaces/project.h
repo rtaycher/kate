@@ -19,107 +19,13 @@
 #ifndef _KATE_PROJECT_INCLUDE_
 #define _KATE_PROJECT_INCLUDE_
 
-#include <ksharedptr.h>
 #include <qobject.h>
-#include <kurl.h>
 #include <qstringlist.h>
-#include <qvaluelist.h>
 
 class KConfig;
 
 namespace Kate
 {
-
-class Project;
-
-/**
- * Interface to the project
- */
-class ProjectDirFile : public QObject, public KShared
-{
-  friend class PrivateProjectDirFile;
-
-  Q_OBJECT
-
-  public:
-    typedef KSharedPtr<ProjectDirFile> Ptr;
-    typedef QValueList<Ptr> List;
-
-  public:
-    /**
-     * Construtor, should not interest, internal usage
-     */
-    ProjectDirFile (void *projectDirFile);
-
-    /**
-     * Desctructor
-     */
-    virtual ~ProjectDirFile ();
-
-    Project *project () const;
-
-    /**
-     * Return the filename of the dir file, relative to the project dir
-     * @return QString project dirfile name
-     */
-    QString fileName () const;
-
-    /**
-     * Return the dir of this file, relative to the project dir
-     * @return QString project dir
-     */
-    QString dir () const;
-
-    QString absFileName () const;
-    QString absDir () const;
-
-    /**
-     * Raw access to config file
-     * @return KConfig config data
-     */
-    KConfig *data () const;
-
-    QStringList dirs () const;
-
-    QStringList files () const;
-
-    QStringList addDirs (const QStringList &dirs);
-    QStringList removeDirs (const QStringList &dirs);
-
-    QStringList addFiles (const QStringList &files);
-    QStringList removeFiles (const QStringList &files);
-
-    /**
-     * ProjectDirFile object for the dir dir file in the given dir, QString::null for this dir !
-     * @param dir dir name
-     * @return ProjectDirFile for given dir
-     */
-    ProjectDirFile::Ptr dirFile (const QString &dir = QString::null, bool createOnDemand = false);
-
-    /**
-     * ProjectDirFile objects for all direct subdirs
-     * @return ProjectDirFile::List for all direct subdirs
-     */
-    ProjectDirFile::List dirFiles ();
-
-  #undef signals
-  #define signals public
-  signals:
-  #undef signals
-  #define signals protected
-
-    void dirsAdded (const QStringList &dirs);
-    void dirsRemoved (const QStringList &dirs);
-
-    void filesAdded (const QStringList &files);
-    void filesRemoved (const QStringList &files);
-
-  private:
-    /**
-     * REALLY PRIVATE ;)
-     */
-    class PrivateProjectDirFile *d;
-};
 
 /**
  * Interface to the project
@@ -174,12 +80,6 @@ class Project : public QObject
     QString dir () const;
 
     /**
-     * Return the name of the dir project files
-     * @return QString dir project file naming
-     */
-    QString dirFilesName () const;
-
-    /**
      * Saves the project
      * @return bool success
      */
@@ -192,17 +92,24 @@ class Project : public QObject
     bool close ();
 
     /**
-     * ProjectDirFile object for the dir dir file in the given dir, QString::null for toplevel dir !
-     * @param dir dir name
-     * @return ProjectDirFile for given dir
-     */
-    ProjectDirFile::Ptr dirFile (const QString &dir = QString::null, bool createOnDemand = false);
-
-    /**
      * Raw access to config file
      * @return KConfig config data
      */
     KConfig *data ();
+
+    KConfig *dirData (const QString &dir = QString::null);
+
+    QStringList dirs (const QString &dir = QString::null);
+
+    QStringList files (const QString &dir = QString::null);
+
+    void addDirs (const QString &dir, QStringList &dirs);
+    void removeDirs (const QString &dir, QStringList &dirs);
+
+    void addFiles (const QString &dir, QStringList &files);
+    void removeFiles (const QString &dir, QStringList &files);
+
+
 
   #undef signals
   #define signals public
