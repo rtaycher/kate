@@ -37,13 +37,16 @@ class MainWindow : public QObject
     MainWindow (void *mainWindow);
     virtual ~MainWindow ();
 
-  public:
+  public slots: /*these are slots for kjs*/
     KXMLGUIFactory *guiFactory() const;
 
     class ViewManager *viewManager () const;
 
+  public:
+
     class ToolViewManager *toolViewManager() const;
 
+  public slots: /*these are slots for kjs*/
     /**
      * Returns the active project of this main window
      * @return Project current active project

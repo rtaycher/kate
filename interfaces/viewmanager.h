@@ -45,7 +45,7 @@ class ViewManager : public QObject
      */
     virtual ~ViewManager ();
       
-  public:
+  public slots: /*these are slots for kjs*/
     /**
      * Returns a pointer to the currently active view
      * @return View active view
