@@ -108,9 +108,9 @@ bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView )
   connect(view,SIGNAL(newStatus()),this,SLOT(setWindowCaption()));
   connect(view,SIGNAL(newStatus()),this,SLOT(slotSetModified()));
   myViewID++;
-  viewList.append (view);
+  viewList.append (view);        
 
-  KConfig* config = ((KantMainWindow*)topLevelWidget())->config;
+  KConfig *config = ((KantMainWindow*)topLevelWidget())->config;
   config->setGroup("kwrite");
   doc->readConfig( config );
   view->readConfig( config );

@@ -927,21 +927,11 @@ void KantMainWindow::slotConfigure()
         selectConfig->getData( v );
         editConfig->getData( v );
       }
-    }
-
-    viewManager->setUseOpaqueResize(cb_opaqueResize->isChecked());
-    config->setGroup("open files");
-    config->writeEntry("reopen at startup", cb_reopenFiles->isChecked());
-
-    if (viewManager->viewCount()) {
-      ksc->writeGlobalSettings();
-      colorConfig->getColors( colors );
+      // repeat some calls: kwrite has a bad design.
       config->setGroup("kwrite");
       v->writeConfig( config );
       v->doc()->writeConfig( config );
-      v->applyColors();
       config->sync();
-     
     }
   }
   delete dlg;
