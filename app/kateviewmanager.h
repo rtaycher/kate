@@ -61,7 +61,12 @@ class KateViewManager : public QWidget
     void openConstURLCheck (const KURL&url=0L);
 
   private:
-    bool createView ( bool newDoc=true, KURL url=0L, Kate::View *origView=0L, Kate::Document *doc=0L);
+    /**
+     * create and activate a new view for doc, if doc == 0, then
+     * create a new document
+     */
+    bool createView ( Kate::Document *doc =0L );
+
     bool deleteView ( Kate::View *view, bool delViewSpace = true);
 
     void moveViewtoSplit (Kate::View *view);
@@ -90,7 +95,7 @@ class KateViewManager : public QWidget
     uint viewSpaceCount ();
 
     bool isViewActivationBlocked(){return m_blockViewCreationAndActivation;};
-    bool reopening(){return m_reopening;}
+
   public:
     void closeViews(uint documentNumber);
 
@@ -114,7 +119,7 @@ class KateViewManager : public QWidget
       * If a newViewUrl is provided, the new view will show the document in that URL if any, otherwise
       * the document of the current view in the viewspace to be split is used.
       */
-    void splitViewSpace( KateViewSpace* vs=0L, bool isHoriz=true, bool atTop=false, KURL newViewUrl=0L );
+    void splitViewSpace( KateViewSpace* vs=0L, bool isHoriz=true, bool atTop=false );
 
     bool getShowFullPath() const { return showFullPath; }
     void setUseOpaqueResize( bool enable );
@@ -161,7 +166,6 @@ class KateViewManager : public QWidget
     KateDocManager *m_docManager;
     QGridLayout *m_grid;
     bool m_blockViewCreationAndActivation;
-    bool m_reopening;
 
     bool m_activeViewRunning;
 };

@@ -261,7 +261,7 @@ void KateViewSpace::restoreConfig ( KateViewManager *viewMan, KConfig* config, c
       QString vgroup = QString("%1 %2").arg(group).arg(fn);
       config->setGroup( vgroup );
 
-      viewMan->createView (false, KURL(), 0, doc);
+      viewMan->createView (doc);
 
       Kate::View *v = viewMan->activeView ();
 
@@ -271,7 +271,7 @@ void KateViewSpace::restoreConfig ( KateViewManager *viewMan, KConfig* config, c
   }
 
   if (mViewList.isEmpty())
-    viewMan->createView (false, KURL(), 0, viewMan->m_docManager->document(0));
+    viewMan->createView (viewMan->m_docManager->document(0));
 }
 
 

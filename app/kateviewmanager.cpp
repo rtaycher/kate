@@ -65,7 +65,6 @@ KateViewManager::KateViewManager (QWidget *parent, KateDocManager *m_docManager)
 {
   m_viewManager = new Kate::ViewManager (this);
 
-  m_reopening=false;
   m_blockViewCreationAndActivation=false;
 
   // no memleaks
@@ -91,19 +90,16 @@ KateViewManager::~KateViewManager ()
   m_viewSpaceList.setAutoDelete(false);
 }
 
-bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, Kate::Document *doc)
+bool KateViewManager::createView ( Kate::Document *doc )
 {
   if (m_blockViewCreationAndActivation) return false;
 
   // create doc
-  if (newDoc && !doc)
-    doc = (Kate::Document *)m_docManager->createDoc ();
-  else
-    if (!doc)
-      doc = (Kate::Document *)origView->getDoc();
+  if (!doc)
+    doc = m_docManager->createDoc ();
 
   // create view
-  Kate::View *view = (Kate::View *)doc->createView (this, 0L);
+  Kate::View *view = (Kate::View *) doc->createView (this, 0L);
 
   m_viewList.append (view);
 
@@ -246,7 +242,7 @@ void KateViewManager::activateView ( Kate::View *view )
     if ( !activeViewSpace()->showView (view) )
     {
       // since it wasn't found, give'em a new one
-      createView (false, KURL(), view );
+      createView ( view->getDoc() );
       return;
     }
 
@@ -286,13 +282,13 @@ void KateViewManager::activateView( uint documentNumber )
     {
       if ( it.current()->getDoc()->documentNumber() == documentNumber  )
       {
-        createView( false, KURL(), it.current() );
+        createView( it.current()->getDoc() );
         return;
       }
     }
 
     Kate::Document *d = (Kate::Document *)m_docManager->documentWithID(documentNumber);
-    createView (false, KURL(), 0L, d );
+    createView (d);
   }
 }
 
@@ -374,9 +370,9 @@ void KateViewManager::openNewIfEmpty()
     if (((KateApp *)kapp)->kateMainWindow(i2)->kateViewManager()->viewCount() == 0)
     {
       if ((m_viewList.count() < 1) && (m_docManager->documents() < 1) )
-        ((KateApp *)kapp)->kateMainWindow(i2)->kateViewManager()->createView (true, KURL(), 0L);
+        ((KateApp *)kapp)->kateMainWindow(i2)->kateViewManager()->createView ();
       else if ((m_viewList.count() < 1) && (m_docManager->documents() > 0) )
-        ((KateApp *)kapp)->kateMainWindow(i2)->kateViewManager()->createView (false, KURL(), 0L, (Kate::Document *)m_docManager->document(m_docManager->documents()-1));
+        ((KateApp *)kapp)->kateMainWindow(i2)->kateViewManager()->createView (m_docManager->document(m_docManager->documents()-1));
     }
   }
 
@@ -455,7 +451,7 @@ void KateViewManager::slotWindowPrev()
 
 void KateViewManager::slotDocumentNew ()
 {
-  createView (true, KURL(), 0L);
+  createView ();
 }
 
 void KateViewManager::slotDocumentOpen ()
@@ -519,17 +515,6 @@ void KateViewManager::openURL (KURL url, const QString& encoding)
   if (!doc->url().isEmpty())
     ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( doc->url() );
 
-  /* NOTE by uncommenting this, we are forced to try if a session configuration
-     exists for this viewspace.
-     In some cases this will cause misbehaviour, that is if viewspaces are
-     created and deleted and a file is then opened first time in a viewspace
-     for which a record exists...
-     TODO - generally clean up the session config reading/writing */
-  //Kate::View *cv = activeView();
-
-  //if (!cv)
-  //  createView(false,url,0L,doc);
-
   activateView( id );
 }
 
@@ -548,8 +533,7 @@ void KateViewManager::openConstURLCheck (const KURL& url)
 
 void KateViewManager::splitViewSpace( KateViewSpace* vs,
                                       bool isHoriz,
-                                      bool atTop,
-                                      KURL newViewUrl)
+                                      bool atTop)
 {
   kdDebug(13001)<<"splitViewSpace()"<<endl;
 
@@ -585,7 +569,6 @@ void KateViewManager::splitViewSpace( KateViewSpace* vs,
   else if ( QSplitter *ps = static_cast<QSplitter*>(s->parentWidget()->qt_cast("QSplitter")) )
     ps->setSizes( psizes );
 
-
   s->show();
 
   QValueList<int> sizes;
@@ -598,16 +581,9 @@ void KateViewManager::splitViewSpace( KateViewSpace* vs,
   activeViewSpace()->setActive( false );
   vsNew->setActive( true, true );
   vsNew->show();
-  if (!newViewUrl.isValid())
-    createView (false, KURL(), (Kate::View *)activeView());
-  else {
-    // tjeck if doc is already open
-    uint aDocId;
-    if ( (aDocId = m_docManager->findDocument( newViewUrl )) )
-      createView (false, KURL(), 0L, (Kate::Document *)m_docManager->documentWithID( aDocId) );
-    else
-      createView( true, newViewUrl );
-  }
+
+  createView (activeView()->getDoc());
+
   kdDebug(13001)<<"splitViewSpace() - DONE!"<<endl;
 }
 

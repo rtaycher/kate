@@ -330,9 +330,6 @@ void KateMainWindow::setupActions()
  */
 bool KateMainWindow::queryClose()
 {
-  if (m_viewManager->reopening())
-    return false;
-
   bool val = false;
 
   if ( ((KateApp *)kapp)->mainWindows () < 2 )
