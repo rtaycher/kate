@@ -232,7 +232,7 @@ KateExternalToolAction::KateExternalToolAction( QObject *parent,
 
 bool KateExternalToolAction::expandMacro( const QString &str, QStringList &ret )
 {
-  KateMainWindow *mw = ((KateExternalToolsMenuAction*)parent()->parent())->mainwindow;
+  KateMainWindow *mw = (KateMainWindow*)parent()->parent();
   Kate::View *view = mw->viewManager()->activeView();
 
   if ( str == "URL" )
@@ -273,7 +273,7 @@ void KateExternalToolAction::slotRun()
   kdDebug(13001)<<"externaltools: Running command: "<<cmd<<endl;
 
   // save documents if requested
-  KateMainWindow *mw = ((KateExternalToolsMenuAction*)parent()->parent())->mainwindow;
+  KateMainWindow *mw = (KateMainWindow*)parent()->parent();
   if ( tool->save == 1 )
     mw->viewManager()->activeView()->document()->save();
   else if ( tool->save == 2 )
@@ -292,7 +292,7 @@ KateExternalToolsMenuAction::KateExternalToolsMenuAction( const QString &text,
       mainwindow( mw )
 {
 
-  m_actionCollection = new KActionCollection( mw );
+  m_actionCollection = new KActionCollection( mainwindow );
 
   connect(KateDocManager::self(),SIGNAL(documentChanged()),this,SLOT(slotDocumentChanged()));
 
@@ -301,7 +301,8 @@ KateExternalToolsMenuAction::KateExternalToolsMenuAction( const QString &text,
 
 void KateExternalToolsMenuAction::reload()
 {
-  m_actionCollection->clear();
+  m_actionCollection->clear ();
+
   popupMenu()->clear();
 
   // load all the tools, and create a action for each of them
@@ -629,7 +630,7 @@ void KateExternalToolsConfigWidget::reload()
           config->readEntry( "executable", ""),
           config->readListEntry( "mimetypes" ),
           config->readEntry( "acname" ),
-          config->readEntry( "cmdname"),
+	  config->readEntry( "cmdname"),
           config->readNumEntry( "save", 0 ) );
 
       if ( t->hasexec ) // we only show tools that are also in the menu.
