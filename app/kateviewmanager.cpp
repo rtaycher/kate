@@ -262,6 +262,8 @@ void KateViewManager::activateView ( Kate::View *view )
 
     emit viewChanged ();
   }
+  
+  docManager->setCurrentDoc(view->getDoc());
 }
 
 void KateViewManager::activateView( uint documentNumber )

@@ -40,7 +40,10 @@ class KateDocManager : public Kate::DocManager
     void deleteDoc (Kate::Document *doc);
 
     Kate::Document *nthDoc (uint n);
+
     Kate::Document *currentDoc ();
+    void setCurrentDoc (Kate::Document *doc);
+
     Kate::Document *firstDoc ();
     Kate::Document *nextDoc ();
 
@@ -58,6 +61,7 @@ class KateDocManager : public Kate::DocManager
 
   private:
     QPtrList<Kate::Document> docList;
+    Kate::Document *myCurrentDoc;
     class KLibFactory *factory;
 
   signals:

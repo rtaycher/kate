@@ -23,6 +23,7 @@
 KateDocManager::KateDocManager () : Kate::DocManager ()
 {
   docList.setAutoDelete(true);
+  myCurrentDoc = 0L;
   factory = KLibLoader::self()->factory( "libkatepart" );
 }
 
@@ -57,7 +58,12 @@ Kate::Document *KateDocManager::nthDoc (uint n)
 
 Kate::Document *KateDocManager::currentDoc ()
 {
-  return docList.current();
+  return myCurrentDoc;
+}
+
+void KateDocManager::setCurrentDoc (Kate::Document *doc)
+{
+  myCurrentDoc = doc;
 }
 
 Kate::Document *KateDocManager::firstDoc ()
