@@ -1042,6 +1042,7 @@ void KateViewManager::reopenDocuments(bool isRestore)
   }
 
   scfg->setGroup("open files");
+  config->setGroup("open files");
   if (config->readBoolEntry("reopen at startup", true) || isRestore )
   {
     QStringList list = /*config*/scfg->readListEntry("list");
