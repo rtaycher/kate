@@ -29,7 +29,8 @@ class KantPluginManager : public QObject
     KantPluginManager(QObject *parent);
     ~KantPluginManager(){qDebug("KantPluginManager destroyed");};
     QValueList<KParts::Plugin::PluginInfo> plugins;
-
+    QStringList availablePlugins;
+    QStringList loadedPlugins;
   };
 
 #endif

@@ -53,7 +53,7 @@ class KantApp : public KUniqueApplication
     ~KantApp ();
 
     virtual int newInstance ();
-
+    KantPluginManager *getPluginManager(){return pluginManager;};
   protected:
     void restore ();
 

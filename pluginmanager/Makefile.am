@@ -1,6 +1,6 @@
 
 noinst_LTLIBRARIES = libkantpluginmanager.la
-libkantpluginmanager_la_SOURCES = kantpluginmanager.cpp
+libkantpluginmanager_la_SOURCES = kantpluginmanager.cpp kantconfigplugindialogpage.cpp
 
 lib_LTLIBRARIES = libkantpluginiface.la
 libkantpluginiface_la_SOURCES = kantpluginiface.cpp

@@ -38,6 +38,7 @@
 #include "../document/kantdocmanager.h"
 #include "../kwrite/kwdialog.h"
 #include "../pluginmanager/kantpluginmanager.h"
+#include "../pluginmanager/kantconfigplugindialogpage.h"
 #include "../project/kantprojectmanager.h"
 #include "../view/kantviewmanager.h"
 #include "kantmenuitem.h"
@@ -875,6 +876,11 @@ void KantMainWindow::slotConfigure()
     ksc = new KSpellConfig(page, 0L, v->ksConfig(), false );
     colors = v->getColors();
     colorConfig->setColors( colors );
+
+    page=dlg->addVBoxPage(i18n("Plugins"),i18n("Configure plugins"),
+                          BarIcon("misc",KIcon::SizeMedium));
+    (void)new KantConfigPluginPage(page);
+
   }
 
   if (dlg->exec()) {
