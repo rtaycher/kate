@@ -393,7 +393,6 @@ void KateMainWindow::readOptions(KConfig *config)
 
   m_viewManager->setShowFullPath(config->readBoolEntry("Show Full Path in Title", false));
 
-  fileOpenRecent->setMaxItems( config->readNumEntry("Number of recent files", fileOpenRecent->maxItems() ) );
   fileOpenRecent->loadEntries(config, "Recent Files");
 
   fileselector->readConfig(config, "fileselector");

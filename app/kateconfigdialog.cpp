@@ -148,20 +148,6 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("&Behavior"), frGeneral );
   lo->addWidget( bgStartup );
 
-  // number of recent files
-  QHBox *hbNrf = new QHBox( bgStartup );
-  QLabel *lNrf = new QLabel( i18n("&Number of recent files:"), hbNrf );
-  sb_numRecentFiles = new QSpinBox( 0, 1000, 1, hbNrf );
-  sb_numRecentFiles->setValue( mainWindow->fileOpenRecent->maxItems() );
-  lNrf->setBuddy( sb_numRecentFiles );
-  QString youwouldnotbelieveit ( i18n(
-        "<qt>Sets the number of recent files remembered by Kate.<p><strong>NOTE: </strong>"
-        "If you set this lower than the current value, the list will be truncated and "
-        "some items forgotten.</qt>") );
-  QWhatsThis::add( lNrf, youwouldnotbelieveit );
-  QWhatsThis::add( sb_numRecentFiles, youwouldnotbelieveit );
-  connect( sb_numRecentFiles, SIGNAL( valueChanged ( int ) ), this, SLOT( slotChanged() ) );
-
   // How instances should be handled
   cb_singleInstance = new QCheckBox(bgStartup);
   cb_singleInstance->setText(i18n("Allow Kate to use more than one UN&IX process"));
@@ -351,9 +337,6 @@ void KateConfigDialog::slotApply()
     mainWindow->modNotification = cb_modNotifications->isChecked();
 
     mainWindow->syncKonsole = cb_syncKonsole->isChecked();
-
-    config->writeEntry( "Number of recent files", sb_numRecentFiles->value() );
-    mainWindow->fileOpenRecent->setMaxItems( sb_numRecentFiles->value() );
 
     fileSelConfigPage->apply();
 
