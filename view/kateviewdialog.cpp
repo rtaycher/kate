@@ -24,6 +24,7 @@
 #include <knuminput.h>
 #include <kglobal.h>
 #include <kcharsets.h>
+#include <qvbox.h>
 
 #include "../document/katedocument.h"
 #include "kateviewdialog.h"
@@ -264,7 +265,7 @@ void IndentConfigTab::getData(KateView *view) {
   int configFlags, z;
 
   configFlags = view->config();
-  for (z = 0; z < numFlags; z++) {
+  for (z = 0; z < numFlags; z++) {
     configFlags &= ~flags[z];
     if (opt[z]->isChecked()) configFlags |= flags[z];
   }
@@ -379,10 +380,6 @@ EditConfigTab::EditConfigTab(QWidget *parent, KateView *view)
   cbLayout->addWidget(opt[8], 0, AlignLeft);
   opt[8]->setChecked(configFlags & flags[8]);
 
-  encoding = new KComboBox(this);
-  cbLayout->addWidget(encoding, 0, AlignLeft);
-  encoding->insertStringList (KGlobal::charsets()->availableEncodingNames());
-
   cbLayout->addStretch();
 
   // edit lines
@@ -404,6 +401,16 @@ EditConfigTab::EditConfigTab(QWidget *parent, KateView *view)
   leLayout->addWidget(e1, 0, AlignLeft);
   leLayout->addWidget(e2, 0, AlignLeft);
   leLayout->addWidget(e3, 0, AlignLeft);
+
+
+  QVBox *box = new QVBox (this);
+  leLayout->addWidget (box, 0, AlignLeft);
+
+  new QLabel (i18n("Encoding:"), box);
+
+  encoding = new KComboBox(box);
+  encoding->insertStringList (KGlobal::charsets()->availableEncodingNames());
+
   leLayout->addStretch();
 
   // What is this? help
