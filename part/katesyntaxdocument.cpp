@@ -56,7 +56,7 @@ void SyntaxDocument::setupModeList(bool force)
 {
   if (myModeList.count() > 0) return;
 
-  KConfig *config=kapp->config();
+  KConfig config("katesyntaxhighlightingrc");
   KStandardDirs *dirs = KGlobal::dirs();
 
   QStringList list=dirs->findAllResources("data","kate/syntax/*.xml",false,true);
@@ -65,14 +65,14 @@ void SyntaxDocument::setupModeList(bool force)
   {
     QString Group="Highlighting_Cache"+*it;
 
-    if ((config->hasGroup(Group)) && (!force))
+    if ((config.hasGroup(Group)) && (!force))
     {
-      config->setGroup(Group);
+      config.setGroup(Group);
       syntaxModeListItem *mli=new syntaxModeListItem;
-      mli->name = config->readEntry("name","");
-      mli->section = config->readEntry("section","");
-      mli->mimetype = config->readEntry("mimetype","");
-      mli->extension = config->readEntry("extension","");
+      mli->name = config.readEntry("name","");
+      mli->section = config.readEntry("section","");
+      mli->mimetype = config.readEntry("mimetype","");
+      mli->extension = config.readEntry("extension","");
       mli->identifier = *it;
       myModeList.append(mli);
     }
@@ -102,11 +102,11 @@ void SyntaxDocument::setupModeList(bool force)
 
             mli->identifier = *it;
 
-            config->setGroup(Group);
-            config->writeEntry("name",mli->name);
-            config->writeEntry("section",mli->section);
-            config->writeEntry("mimetype",mli->mimetype);
-            config->writeEntry("extension",mli->extension);
+            config.setGroup(Group);
+            config.writeEntry("name",mli->name);
+            config.writeEntry("section",mli->section);
+            config.writeEntry("mimetype",mli->mimetype);
+            config.writeEntry("extension",mli->extension);
 
             myModeList.append(mli);
           }
@@ -115,7 +115,7 @@ void SyntaxDocument::setupModeList(bool force)
     }
   }
 
-  config->sync();
+  config.sync();
 }
 
 SyntaxModeList SyntaxDocument::modeList()
