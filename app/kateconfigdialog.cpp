@@ -137,12 +137,12 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
 
   // How instances should be handled
   cb_singleInstance = new QCheckBox(frGeneral);
-  cb_singleInstance->setText(i18n("Allow only one &instance of Kate"));
+  cb_singleInstance->setText(i18n("Allow Kate to only use one UN&IX process"));
   config->setGroup("startup");
   cb_singleInstance->setChecked(config->readBoolEntry("singleinstance",true));
   QWhatsThis::add( cb_singleInstance, i18n(
-        "If this is checked, you can only start one instance of Kate. If you try, the current "
-        "instance will get the focus, and open any files you requested opened.") );
+        "If this is checked, Kate will only use one UNIX process. If you try running it again, the current "
+        "process will get the focus, and open any files you requested to be opened.") );
   
   // show full path in title
   config->setGroup("General");
