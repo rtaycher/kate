@@ -56,7 +56,6 @@
 #include <kstdaction.h>
 #include <kparts/event.h>
 #include <kxmlgui.h>
-#include <kmessagebox.h>
 #include <dcopclient.h>
 
 #include <X11/Xlib.h> //used to have XSetTransientForHint()
@@ -2241,8 +2240,8 @@ void KWrite::writeURL(const KURL &url, int ) {
     path = url.path();
   }
 
-  if ( writeFile( path ) )
-      kWriteDoc->setModified( false );
+  if ( !writeFile( path ) )
+     return;
 
   if ( !url.isLocalFile() )
   {
@@ -2333,8 +2332,8 @@ bool KWrite::canDiscard() {
         if (isModified()) {
             query = KMessageBox::warningContinueCancel(this,
                i18n("Could not save the document.\nDiscard it and continue?"),
-	       i18n("Save"), i18n("&Discard"));
-          if (query == KMessageBox::No) return false;
+	       QString::null, i18n("&Discard"));
+          if (query == KMessageBox::Cancel) return false;
         }
         break;
       case KMessageBox::Cancel: //cancel
