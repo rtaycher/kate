@@ -80,7 +80,7 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
 	m_initPlugin= static_cast<Kate::InitPlugin*>(Kate::createPlugin (QFile::encodeName(pluginName),
 				 (Kate::Application *)kapp)->qt_cast("Kate::InitPlugin"));
 	m_initPlugin->activate(args->url(0));
-	m_doNotInitialize=m_initPlugin->actionsKateShouldNotPerformOnRealStartup();;
+	m_doNotInitialize=m_initPlugin->actionsKateShouldNotPerformOnRealStartup();
         kdDebug()<<"********************loading init plugin in app constructor"<<endl;
   } else kdDebug()<<"************************no plugin specified"<<endl;
 
