@@ -534,7 +534,9 @@ void KateMainWindow::bookmarkMenuAboutToShow()
 
 void KateMainWindow::slotFindInFiles ()
 {
-  grep_dlg->setDirName(currentDocUrl().directory());
+  QString d = currentDocUrl().directory();
+  if ( ! d.isEmpty() )
+    grep_dlg->setDirName( d );
   grep_dlg->show();
   grep_dlg->raise();
 }
