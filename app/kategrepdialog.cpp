@@ -32,6 +32,9 @@
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kwin.h>
+#include <kurlrequester.h>
+#include <kurlcompletion.h>
+#include <kcombobox.h>
 
 const char *template_desc[] = {
     "normal",
@@ -72,7 +75,7 @@ GrepDialog::GrepDialog(QString dirname, QWidget *parent, const char *name)
     layout->setRowStretch(2, 10);
     layout->addRowSpacing(4, 10);
     layout->setRowStretch(4, 0);
-    
+
     QGridLayout *input_layout = new QGridLayout(4, 2, 4);
     layout->addLayout(input_layout, 0, 0);
     input_layout->setColStretch(0, 0);
@@ -90,14 +93,14 @@ GrepDialog::GrepDialog(QString dirname, QWidget *parent, const char *name)
     pattern_combo->setFocus();
     pattern_combo->setMinimumSize(pattern_combo->sizeHint());
     input_layout->addWidget(pattern_combo, 0, 1);
-    
+
     QLabel *template_label = new QLabel(i18n("&Template:"), this);
     template_label->setFixedSize(template_label->sizeHint());
     input_layout->addWidget(template_label, 1, 0, AlignRight | AlignVCenter);
 
     QBoxLayout *template_layout = new QHBoxLayout(4);
     input_layout->addLayout(template_layout, 1, 1);
-    
+
     template_edit = new QLineEdit(this);
     template_label->setBuddy(template_edit);
     template_edit->setText(template_str[0]);
@@ -127,9 +130,9 @@ GrepDialog::GrepDialog(QString dirname, QWidget *parent, const char *name)
     dir_label->setFixedSize(dir_label->sizeHint());
     input_layout->addWidget(dir_label, 3, 0, AlignRight | AlignVCenter);
 
-    QBoxLayout *dir_layout = new QHBoxLayout(4);
+    QBoxLayout *dir_layout = new QHBoxLayout(3);
     input_layout->addLayout(dir_layout, 3, 1);
-    
+/*
     dir_combo = new QComboBox(true, this);
     dir_combo->insertStringList(lastSearchPaths);
     dir_combo->setInsertionPolicy(QComboBox::NoInsertion);
@@ -144,7 +147,12 @@ GrepDialog::GrepDialog(QString dirname, QWidget *parent, const char *name)
     dir_button->setFixedHeight(dir_combo->sizeHint().height());
     dir_button->setFixedWidth(30);
     dir_layout->addWidget(dir_button);
-    
+*/
+    // anders: KDE is an amazing tool:)
+    dir_combo = new KURLRequester( this, "dir combo" );
+    dir_combo->completionObject()->setMode(KURLCompletion::DirCompletion);
+    dir_layout->addWidget(dir_combo);
+
     recursive_box = new QCheckBox(i18n("&Recursive"), this);
     recursive_box->setMinimumWidth(recursive_box->sizeHint().width());
     recursive_box->setChecked(true);
@@ -230,8 +238,8 @@ GrepDialog::GrepDialog(QString dirname, QWidget *parent, const char *name)
 
     connect( template_combo, SIGNAL(activated(int)),
 	     SLOT(templateActivated(int)) );
-    connect( dir_button, SIGNAL(clicked()),
-	     SLOT(dirButtonClicked()) );
+/*    connect( dir_button, SIGNAL(clicked()),
+	     SLOT(dirButtonClicked()) );*/
     connect( resultbox, SIGNAL(selected(const QString&)),
 	     SLOT(itemSelected(const QString&)) );
     connect( search_button, SIGNAL(clicked()),
@@ -251,12 +259,12 @@ GrepDialog::~GrepDialog()
       delete childproc;
 }
 
-
+/*
 void GrepDialog::dirButtonClicked()
 {
     dir_combo->setEditText(KFileDialog::getExistingDirectory(dir_combo->currentText()));
 }
-
+*/
 
 void GrepDialog::templateActivated(int index)
 {
@@ -331,7 +339,7 @@ void GrepDialog::slotSearch()
     pattern.replace(QRegExp("'"), "'\\''");
 
     QString filepattern = "`find '";
-    filepattern += dir_combo->currentText();
+    filepattern += dir_combo->/*currentText*/url();
     filepattern += "'";
     if (!recursive_box->isChecked())
         filepattern += " -maxdepth 1";
@@ -382,12 +390,12 @@ void GrepDialog::finish()
         }
         config->writeEntry("LastSearchItems", lastSearchItems);
     }
-    if (lastSearchPaths.contains(dir_combo->currentText()) == 0) {
-        dir_combo->insertItem(dir_combo->currentText(), 0);
-        lastSearchPaths.prepend(dir_combo->currentText());
+    if (lastSearchPaths.contains(dir_combo->/*currentText*/url()) == 0) {
+        dir_combo->comboBox()->insertItem(dir_combo->/*currentText*/url(), 0);
+        lastSearchPaths.prepend(dir_combo->/*currentText*/url());
         if (lastSearchPaths.count() > 10) {
             lastSearchPaths.remove(lastSearchPaths.fromLast());
-            dir_combo->removeItem(dir_combo->count() - 1);
+            dir_combo->comboBox()->removeItem(dir_combo->comboBox()->count() - 1);
         }
         config->writeEntry("LastSearchPaths", lastSearchPaths);
     }
@@ -437,6 +445,7 @@ void GrepDialog::slotClear()
 
 
 void  GrepDialog::setDirName(QString dir){
-    dir_combo->setEditText(dir);
+//    dir_combo->setEditText(dir);
+    dir_combo->setURL(dir);
 }
 #include "kategrepdialog.moc"

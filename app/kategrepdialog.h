@@ -29,7 +29,7 @@ class QPushButton;
 class QLabel;
 class KProcess;
 class KConfig;
-
+class KURLRequester;
 
 class GrepDialog : public KDialog
 {
@@ -47,7 +47,7 @@ public slots:
 		void slotSearchFor(QString pattern);
 		
 private slots:
-    void dirButtonClicked();
+    //void dirButtonClicked();
     void templateActivated(int index);
     void childExited();
     void receivedOutput(KProcess *proc, char *buffer, int buflen);
@@ -61,7 +61,8 @@ private:
     void finish();
     
     QLineEdit *template_edit;
-    QComboBox *files_combo, *pattern_combo, *dir_combo;
+    QComboBox *files_combo, *pattern_combo/*, *dir_combo*/;
+    KURLRequester *dir_combo;
     QCheckBox *recursive_box;
     QListBox *resultbox;
     QPushButton *search_button, *cancel_button;
