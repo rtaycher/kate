@@ -342,10 +342,7 @@ void KateMainWindow::slotEditToolbars()
 
 void KateMainWindow::slotFileQuit()
 {
-
-  viewManager->saveAllDocsAtCloseDown(  );
-
-  close();
+  queryClose ();
 }
 
 void KateMainWindow::readOptions(KConfig *config)
