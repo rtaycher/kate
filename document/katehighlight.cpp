@@ -567,10 +567,10 @@ Highlight::Highlight(syntaxModeListItem *def) : refCount(0)
     iWildcards = def->extension;
     iMimetypes = def->mimetype;
     identifier = def->identifier;
-    deliminator = stdDeliminator;
-    deliminatorChars = deliminator.unicode();
-    deliminatorLen = deliminator.length();
   }
+  deliminator = stdDeliminator;
+  deliminatorChars = deliminator.unicode();
+  deliminatorLen = deliminator.length();
 }
 
 Highlight::~Highlight()
