@@ -613,11 +613,12 @@ class KBasicHighlight : public GenHighlight {
 
 class AutoHighlight : public GenHighlight {
   public:
-    AutoHighlight(syntaxModeListItem *def); 
-    virtual ~AutoHighlight();    
+    AutoHighlight(syntaxModeListItem *def);
+    virtual ~AutoHighlight();
   protected:
     QString iName;
     virtual void makeContextList();
+    virtual void setKeywords(HlKeyword *keyword,HlKeyword *dataType);
 
 };
 

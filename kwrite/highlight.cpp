@@ -2045,9 +2045,16 @@ AutoHighlight::~AutoHighlight()
 {
 }
 
+void AutoHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
+{
+  keyword->addList(HlManager::self()->syntax->finddata(iName,"keyword"));
+  dataType->addList(HlManager::self()->syntax->finddata(iName,"type"));
+}
+
 void AutoHighlight::makeContextList()
 {
-}    
+
+}
 
 //--------
 
@@ -2076,10 +2083,9 @@ HlManager::HlManager() : QObject(0L) {
 
   syntax=new SyntaxDocument();
 
-/* 
- Don't remove this part:
   SyntaxModeList modelist=syntax->modeList();
 
+/* Do not remove this part
   syntaxModeListItem *mli=new syntaxModeListItem;
   mli->name="KBasic";
   mli->mimetype="mimetype";
