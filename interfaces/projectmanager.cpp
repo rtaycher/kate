@@ -64,6 +64,11 @@ Project *ProjectManager::open (const QString &filename)
   return d->projectMan->open (filename);
 }
 
+bool ProjectManager::close (Kate::Project *project)
+{
+  d->projectMan->close (project);
+}
+
 ProjectManager *projectManager ()
 {
   return application()->projectManager ();

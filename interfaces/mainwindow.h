@@ -42,7 +42,25 @@ class MainWindow : public QObject
     
     class ToolViewManager *toolViewManager();
     
+    /**
+     * Returns the active project of this main window
+     * @return Project current active project
+     */
     class Project *project ();
+    
+    /**
+     * Creates a new project file at give url of given type + opens it
+     * @param type projecttype
+     * @param filename name of the new project file
+     * @return Project new created project object
+     */
+    class Project *createProject (const QString &type, const QString &filename);
+    
+    /**
+     * @param filename name of the project file
+     * @return Project opened project
+     */
+    class Project *openProject (const QString &filename);
     
   //invention of public signals, like in kparts/browserextension.h
   #undef signals

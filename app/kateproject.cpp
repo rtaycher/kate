@@ -57,10 +57,3 @@ bool KateProject::save ()
   
   return false;
 }
-
-bool KateProject::close ()
-{
-  bool b = m_plugin->close ();
-  
-  return b;
-}

@@ -31,6 +31,7 @@
 #include "kateconfigplugindialogpage.h"
 #include "kateviewmanager.h"
 #include "kateapp.h"
+#include "kateprojectlist.h"
 #include "katefileselector.h"
 #include "katefilelist.h"
 #include "katemailfilesdialog.h"
@@ -81,6 +82,8 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 	KParts::DockMainWindow (),
              DCOPObject ((QString("KateMainWindow%1").arg(uniqueID)).latin1())
 {
+  m_activeProject = 0;
+
   m_mainWindow = new Kate::MainWindow (this);
   m_toolViewManager = new Kate::ToolViewManager (this);
   
@@ -209,8 +212,11 @@ void KateMainWindow::setupMainWindow ()
 
 
   filelist = new KateFileList (m_docManager, m_viewManager, this/*filelistDock*/, "filelist");
-  filelistDock=addToolViewWidget(KDockWidget::DockLeft,filelist,SmallIcon("kmultiple"), i18n("File List"));
+  filelistDock=addToolViewWidget(KDockWidget::DockLeft,filelist,SmallIcon("kmultiple"), i18n("Files"));
 
+  projectlist = new KateProjectList (m_projectManager, this, this/*filelistDock*/, "projectlist");
+  projectlistDock=addToolViewWidget(KDockWidget::DockLeft,projectlist,SmallIcon("view_choose"), i18n("Projects"));
+  
   fileselector = new KateFileSelector( this, m_viewManager, /*fileselectorDock*/ this, "operator");
   fileselectorDock=addToolViewWidget(KDockWidget::DockLeft,fileselector, SmallIcon("fileopen"), i18n("Selector"));
   
@@ -333,6 +339,12 @@ void KateMainWindow::setupActions()
     	  settingsShowToolDocks->insert(new KateToggleToolViewAction(i18n("Top"),0,m_topDock,actionCollection(),this,"settings_show_topdock"));
   }
 
+  // project menu
+  a = new KAction(i18n("&New Project"), "filenew", 0, this, SLOT(slotProjectNew()), actionCollection(), "project_new");
+  a = new KAction(i18n("&Open Project"), "fileopen", 0, this, SLOT(slotProjectOpen()), actionCollection(), "project_open");
+  saveProject = new KAction(i18n("&Save Project"), "filesave", 0, this, SLOT(slotProjectSave()), actionCollection(), "project_save");
+  closeProject = new KAction(i18n("&Close Project"), "fileclose", 0, this, SLOT(slotProjectClose()), actionCollection(), "project_close");
+  
   settingsConfigure = KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
   settingsConfigure->setWhatsThis(i18n("Configure various aspects of this application and the editing component."));
 
@@ -910,18 +922,67 @@ void KateToggleToolViewAction::slotWidgetDestroyed()
 
 void KateMainWindow::slotProjectNew ()
 {
-  m_projectManager->create ("Default", QString("test"));
+  QString fileName = KFileDialog::getSaveFileName(QString::null, QString::null, this, i18n("New Project"));
+
+  if (!fileName.isEmpty())
+    createProject (QString ("Default"), fileName);
 }
 
 void KateMainWindow::slotProjectOpen ()
 {
-  m_projectManager->create ("Default", QString("test"));
+  QString fileName = KFileDialog::getSaveFileName(QString::null, QString::null, this, i18n("New Project"));
+
+  if (!fileName.isEmpty())
+    openProject (fileName);
 }
 
 void KateMainWindow::slotProjectSave ()
 {
+  if (m_activeProject)
+    m_activeProject->save ();
 }
 
 void KateMainWindow::slotProjectClose ()
 {
+  if (m_activeProject)
+  {
+    if (m_projectManager->close ((Kate::Project *)m_activeProject));
+    {
+      m_activeProject = 0;
+      activateProject (0);
+    }
+  }  
+}
+
+void KateMainWindow::activateProject (Kate::Project *project)
+{
+  if (m_activeProject)
+    m_projectManager->disableProjectGUI ((Kate::Project *)m_activeProject, this);
+    
+  if (project)
+    m_projectManager->enableProjectGUI (project, this);
+  
+  m_activeProject = (KateProject *) project;
+  
+  emit m_mainWindow->projectChanged ();
+}
+
+Kate::Project *KateMainWindow::createProject (const QString &type, const QString &filename)
+{
+  Kate::Project *project = m_projectManager->create (type, filename);
+  
+  if (project)
+    activateProject (project);
+    
+  return project;
+}
+    
+Kate::Project *KateMainWindow::openProject (const QString &filename)
+{
+  Kate::Project *project = m_projectManager->open (filename);
+  
+  if (project)
+    activateProject (project);
+    
+  return project;
 }

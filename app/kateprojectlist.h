@@ -1,5 +1,7 @@
 /* This file is part of the KDE project
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
+   Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
+   Copyright (C) 2001 Anders Lund <anders.lund@lund.tdcadsl.dk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -16,62 +18,24 @@
    Boston, MA 02111-1307, USA.
 */
 
-// $Id$
+#ifndef __KATE_PROJECTLIST_H__
+#define __KATE_PROJECTLIST_H__
 
-#include "project.h"
-#include "project.moc"
+#include "katemain.h"
 
-#include "plugin.h"
+#include <qwidget.h>
 
-#include "../app/kateproject.h"
-
-namespace Kate
+class KateProjectList : public QWidget
 {
+  Q_OBJECT
 
-class PrivateProject
-  {
   public:
-    PrivateProject ()
-    {
-    }
+    KateProjectList (class KateProjectManager *_projectManager, class KateMainWindow *_mainWindow, QWidget * parent = 0, const char * name = 0 );
+    ~KateProjectList ();
 
-    ~PrivateProject ()
-    {    
-    }          
-        
-    KateProject *project; 
-  };
-            
-Project::Project (void *project) : QObject ((KateProject*) project)
-{
-  d = new PrivateProject ();
-  d->project = (KateProject*) project;
-}
-
-Project::~Project ()
-{
-  delete d;
-}
-
-ProjectPlugin *Project::plugin () const
-{
-  return d->project->plugin ();
-}
-
-QString Project::type () const
-{
-  return d->project->type ();
-}
-
-QString Project::fileName () const
-{
-  return d->project->fileName ();
-}
-
-bool Project::save ()
-{
-  return d->project->save ();
-}
-
+  private:
+    class KateProjectManager *m_projectManager;
+    class KateMainWindow *m_mainWindow;
 };
 
+#endif

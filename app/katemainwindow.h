@@ -72,6 +72,22 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     
     Kate::Project *project () { return m_project->project(); };
     
+    /**
+     * Creates a new project file at give url of given type + opens it
+     * @param type projecttype
+     * @param filename name of the new project file
+     * @return Project new created project object
+     */
+     Kate::Project *createProject (const QString &type, const QString &filename);
+    
+    /**
+     * @param filename name of the project file
+     * @return Project opened project
+     */
+    Kate::Project *openProject (const QString &filename);
+    
+    void activateProject (Kate::Project *project);
+    
     /** Returns the URL of the current document.
      * anders: I add this for use from the file selector. */
     KURL activeDocumentUrl();
@@ -80,6 +96,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     KDockWidget *mainDock;
     KDockWidget *consoleDock;
     KDockWidget *filelistDock;
+    KDockWidget *projectlistDock;
     KDockWidget *fileselectorDock;
 
     KDockWidget *m_leftDock;
@@ -99,6 +116,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     KRecentFilesAction *fileOpenRecent;
 
     KateFileList *filelist;
+    class KateProjectList *projectlist;
     KateFileSelector *fileselector;
     
     KateProject *m_project;
@@ -123,12 +141,16 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     KConfig* config;
 
   private:
+    KateProject *m_activeProject;
     QGuardedPtr<Kate::View> activeView;
   
     KAction *closeCurrentViewSpace;
 
     KAction *goNext;
     KAction *goPrev;
+    
+    KAction *saveProject;
+    KAction *closeProject;
 
     KActionMenu* documentOpenWith;
 

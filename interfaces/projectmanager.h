@@ -58,6 +58,8 @@ class ProjectManager : public QObject
      * @return Project opened project
      */
     class Project *open (const QString &filename);
+    
+    bool close (Kate::Project *project);
        
   private:
     /**

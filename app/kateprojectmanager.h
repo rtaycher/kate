@@ -52,6 +52,11 @@ class KateProjectManager : public QObject
     Kate::Project *create (const QString &type, const QString &filename);
     
     Kate::Project *open (const QString &filename);
+    
+    bool close (Kate::Project *project);
+    
+    void enableProjectGUI (Kate::Project *project, class KateMainWindow *win);
+    void disableProjectGUI (Kate::Project *project, class KateMainWindow *win);
   
   private:
     Kate::ProjectManager *m_projectManager;

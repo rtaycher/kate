@@ -80,5 +80,15 @@ Project *MainWindow::project ()
   return d->win->project ();
 }
 
+Project *MainWindow::createProject (const QString &type, const QString &filename)
+{
+  return d->win->createProject (type, filename);
+}
+    
+Project *MainWindow::openProject (const QString &filename)
+{
+  return d->win->openProject (filename);
+}
+
 };
 

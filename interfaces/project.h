@@ -69,12 +69,6 @@ class Project : public QObject
      */
     bool save ();
     
-    /**
-     * Closes the project
-     * @return bool success
-     */
-    bool close ();
-    
   private:
     /**
      * REALLY PRIVATE ;)

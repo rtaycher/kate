@@ -21,6 +21,8 @@
 #include "kateprojectmanager.h"
 #include "kateprojectmanager.moc"
 
+#include "katemainwindow.h"
+
 KateProjectManager::KateProjectManager (QObject *parent) : QObject (parent)
 {
   m_projects.setAutoDelete (true);
@@ -65,4 +67,33 @@ Kate::Project *KateProjectManager::open (const QString &filename)
   m_projects.append (project);
   
   return project->project();
+}
+
+bool KateProjectManager::close (Kate::Project *project)
+{
+  if (project)
+  {
+    if (project->plugin()->close())
+    {
+      m_projects.removeRef ((KateProject *)project);
+    }
+  }
+
+  return false;
+}
+
+void KateProjectManager::enableProjectGUI (Kate::Project *project, KateMainWindow *win)
+{
+  if (!project->plugin()) return;
+  if (!Kate::pluginViewInterface(project->plugin())) return;
+
+  Kate::pluginViewInterface(project->plugin())->addView(win->mainWindow());
+}
+
+void KateProjectManager::disableProjectGUI (Kate::Project *project, KateMainWindow *win)
+{
+  if (!project->plugin()) return;
+  if (!Kate::pluginViewInterface(project->plugin())) return;
+
+  Kate::pluginViewInterface(project->plugin())->removeView(win->mainWindow());
 }

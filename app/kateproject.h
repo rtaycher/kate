@@ -43,8 +43,6 @@ class KateProject : public QObject
     QString fileName () const;
     
     bool save ();
-    
-    bool close ();
 
   private:
     Kate::Project *m_project;
