@@ -296,7 +296,7 @@ void KateMainWindow::setupActions()
   // pipe to terminal action
   if (kapp->authorize("shell_access"))
     new KAction(i18n("&Pipe to Console"), "pipe", 0, this, SLOT(slotPipeToConsole()), actionCollection(), "tools_pipe_to_terminal");
-  
+
   // tip of the day :-)
   KStdAction::tipOfDay( this, SLOT( tipOfTheDay() ), actionCollection() )->setWhatsThis(i18n("This shows useful tips on the use of this application."));
 
@@ -338,19 +338,19 @@ bool KateMainWindow::queryClose()
   if ( m_projectManager->queryCloseAll () &&
        m_docManager->queryCloseDocuments (this) )
   {
-    KSimpleConfig scfg ("katesessionrc", false);
+    KConfig *scfg = KateApp::kateSessionConfig();
 
     KConfig *config = kapp->config();
     config->setGroup("General");
 
     if (config->readBoolEntry("Restore Projects", false))
-      m_projectManager->saveProjectList (&scfg);
+      m_projectManager->saveProjectList (scfg);
 
     if (config->readBoolEntry("Restore Documents", false))
-      m_docManager->saveDocumentList (&scfg);
+      m_docManager->saveDocumentList (scfg);
 
     if (config->readBoolEntry("Restore Window Configuration", false))
-      saveProperties (&scfg);
+      saveProperties (scfg);
 
     return true;
   }
@@ -975,15 +975,14 @@ void KateMainWindow::slotPipeToConsole ()
 {
   if (!console)
     return;
-    
+
   Kate::View *v = m_viewManager->activeView();
-  
+
   if (!v)
     return;
-    
-  if (v->getDoc()->hasSelection ())
-    console->sendInput (v->getDoc()->selection()); 
-  else
-    console->sendInput (v->getDoc()->text()); 
-}
 
+  if (v->getDoc()->hasSelection ())
+    console->sendInput (v->getDoc()->selection());
+  else
+    console->sendInput (v->getDoc()->text());
+}
