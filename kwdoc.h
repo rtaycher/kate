@@ -320,6 +320,9 @@ class KWriteDoc : public KTextEditor::Document {
     void clipboardChanged();
     void slotBufferChanged();
 
+  private:
+    bool match(const QChar *text, SConfig &sc);
+
   private slots:
     void slotViewDestroyed();
 

@@ -95,6 +95,14 @@ struct SConfig {
   PointStruc cursor;
   PointStruc startCursor;
   int flags;
+  QString pattern;
+
+  // The regular expression corresponding to pattern. Only guaranteed valid if
+  // flags has sfRegularExpression set.
+  QRegExp regExp;
+
+  // The length of the last match found using pattern or regExp.
+  int matchedLength;
 };
 
 struct LineRange {
@@ -186,7 +194,8 @@ class KWriteView : public QWidget {
      sfReplace=64,
      sfAgain=128,
      sfWrapped=256,
-     sfFinished=512};
+     sfFinished=512,
+     sfRegularExpression=1024};
 
 //update flags
     enum Update_flags {

@@ -2667,9 +2667,13 @@ void KWrite::gotoLine() {
 
 
 void KWrite::initSearch(SConfig &s, int flags) {
-  QString searchFor = searchForList.first();
 
   s.flags = flags;
+  s.pattern = searchForList.first();
+  if (!(s.flags & KWriteView::sfCaseSensitive))
+    s.pattern = s.pattern.lower();
+  s.regExp.setPattern(s.pattern);
+
   if (s.flags & KWriteView::sfFromCursor) {
     s.cursor = kWriteView->cursor;
   } else {
@@ -2683,9 +2687,10 @@ void KWrite::initSearch(SConfig &s, int flags) {
     s.flags |= KWriteView::sfFinished;
   }
   if (!(s.flags & KWriteView::sfBackward)) {
-    if (!(s.cursor.x || s.cursor.y)) s.flags |= KWriteView::sfFinished;
+    if (!(s.cursor.x || s.cursor.y))
+      s.flags |= KWriteView::sfFinished;
   } else {
-    s.startCursor.x -= searchFor.length();
+    s.cursor.x -= s.matchedLength;
   }
   s.startCursor = s.cursor;
 }
@@ -2706,19 +2711,17 @@ void KWrite::continueSearch(SConfig &s) {
 void KWrite::searchAgain(SConfig &s) {
   int query;
   PointStruc cursor;
-  int slen;
   QString str;
 
   QString searchFor = searchForList.first();
 
-  slen = searchFor.length();
   do {
     query = KMessageBox::Cancel;
     if (kWriteDoc->doSearch(s,searchFor)) {
       cursor = s.cursor;
-      if (!(s.flags & KWriteView::sfBackward)) s.cursor.x += slen;
+      if (!(s.flags & KWriteView::sfBackward)) s.cursor.x += s.matchedLength;
       kWriteView->updateCursor(s.cursor); //does deselectAll()
-      exposeFound(cursor,slen,(s.flags & KWriteView::sfAgain) ? 0 : KWriteView::ufUpdateOnScroll,false);
+      exposeFound(cursor,s.matchedLength,(s.flags & KWriteView::sfAgain) ? 0 : KWriteView::ufUpdateOnScroll,false);
     } else {
       if (!(s.flags & KWriteView::sfFinished)) {
         // ask for continue
@@ -2762,28 +2765,27 @@ void KWrite::replaceAgain() {
 }
 
 void KWrite::doReplaceAction(int result, bool found) {
-  int slen, rlen;
+  int rlen;
   PointStruc cursor;
   bool started;
 
   QString searchFor = searchForList.first();
   QString replaceWith = replaceWithList.first();
-  slen = searchFor.length();
   rlen = replaceWith.length();
 
   switch (result) {
     case KWriteView::srYes: //yes
       kWriteDoc->recordStart(kWriteView, s.cursor, configFlags,
         KWActionGroup::ugReplace, true);
-      kWriteDoc->recordReplace(s.cursor, slen, replaceWith);
+      kWriteDoc->recordReplace(s.cursor, s.matchedLength, replaceWith);
       replaces++;
       if (s.cursor.y == s.startCursor.y && s.cursor.x < s.startCursor.x)
-        s.startCursor.x += rlen - slen;
+        s.startCursor.x += rlen - s.matchedLength;
       if (!(s.flags & KWriteView::sfBackward)) s.cursor.x += rlen;
       kWriteDoc->recordEnd(kWriteView, s.cursor, configFlags | KWriteView::cfPersistent);
       break;
     case KWriteView::srNo: //no
-      if (!(s.flags & KWriteView::sfBackward)) s.cursor.x += slen;
+      if (!(s.flags & KWriteView::sfBackward)) s.cursor.x += s.matchedLength;
       break;
     case KWriteView::srAll: //replace all
       deleteReplacePrompt();
@@ -2796,10 +2798,10 @@ void KWrite::doReplaceAction(int result, bool found) {
               KWActionGroup::ugReplace);
             started = true;
           }
-          kWriteDoc->recordReplace(s.cursor, slen, replaceWith);
+          kWriteDoc->recordReplace(s.cursor, s.matchedLength, replaceWith);
           replaces++;
           if (s.cursor.y == s.startCursor.y && s.cursor.x < s.startCursor.x)
-            s.startCursor.x += rlen - slen;
+            s.startCursor.x += rlen - s.matchedLength;
           if (!(s.flags & KWriteView::sfBackward)) s.cursor.x += rlen;
         }
         if (started) kWriteDoc->recordEnd(kWriteView, s.cursor,
@@ -2817,9 +2819,9 @@ void KWrite::doReplaceAction(int result, bool found) {
     if (kWriteDoc->doSearch(s,searchFor)) {
       //text found: highlight it, show replace prompt if needed and exit
       cursor = s.cursor;
-      if (!(s.flags & KWriteView::sfBackward)) cursor.x += slen;
+      if (!(s.flags & KWriteView::sfBackward)) cursor.x += s.matchedLength;
       kWriteView->updateCursor(cursor); //does deselectAll()
-      exposeFound(s.cursor,slen,(s.flags & KWriteView::sfAgain) ? 0 : KWriteView::ufUpdateOnScroll,true);
+      exposeFound(s.cursor,s.matchedLength,(s.flags & KWriteView::sfAgain) ? 0 : KWriteView::ufUpdateOnScroll,true);
       if (replacePrompt == 0L) {
         replacePrompt = new ReplacePrompt(this);
         XSetTransientForHint(qt_xdisplay(),replacePrompt->winId(),topLevelWidget()->winId());
