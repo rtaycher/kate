@@ -13,14 +13,16 @@
  *   the Free Software Foundation; either version 2 of the License, or     *      
  *   (at your option) any later version.                                   *      
  *                                                                         *      
- ***************************************************************************/      
+ ***************************************************************************/
          
 #include "katetextline.h"         
 #include <kdebug.h>
 
 TextLine::TextLine()
-  : text(0L), attributes(0L), textLen(0), ctx(0L), ctxLen(0), attr(0), myMark (0)
+  : text(0L), attributes(0L), textLen(0), ctx(0L), ctxLen(0)
 {
+  attr = 0;
+  myMark = 0;
 }
 
 TextLine::~TextLine()
@@ -32,11 +34,14 @@ TextLine::~TextLine()
 
 void TextLine::replace(uint pos, uint delLen, const QChar *insText, uint insLen, uchar *insAttribs)
 {
-  int newLen, i, z;
+  uint newLen, i, z;
   uchar newAttr;
 
   //find new length
-  newLen = textLen - delLen;
+  if (delLen <= textLen)
+    newLen = textLen - delLen;
+  else
+    newLen = 0;
 
   if (newLen < pos) newLen = pos;
   newLen += insLen;
@@ -78,10 +83,10 @@ void TextLine::replace(uint pos, uint delLen, const QChar *insText, uint insLen,
 
     } else {
       //text to replace shorter than new text
-      for (z = textLen-1; z >= pos + delLen; z--) {
-        if (z < 0) break;
-        text[z + i] = text[z];
-        attributes[z + i] = attributes[z];
+      for (int z2 = textLen-1; z2 >= (int) (pos + delLen); z2--) {
+        if (z2 < 0) break;
+        text[z2 + i] = text[z2];
+        attributes[z2 + i] = attributes[z2];
       }
     }
   }
@@ -183,7 +188,7 @@ bool TextLine::startingWith(const QString& match) const
   if (match.length() > textLen)
 	  return false;
 
-	for (int z=0; z<match.length(); z++)
+	for (uint z=0; z<match.length(); z++)
 	  if (match[z] != text[z])
 		  return false;
 
@@ -193,13 +198,13 @@ bool TextLine::startingWith(const QString& match) const
 bool TextLine::endingWith(const QString& match) const
 {
   if (match.length() > textLen)
-	  return false;
+    return false;
 
-	for (int z=textLen; z>textLen-match.length(); z--)
-	  if (match[z] != text[z])
-		  return false;
+  for (int z=textLen; z>(int)(textLen-match.length()); z--)
+    if (match[z] != text[z])
+      return false;
 
-	return true;
+  return true;
 }
 
 int TextLine::cursorX(uint pos, uint tabChars) const

@@ -10,7 +10,7 @@
  *                                                                         * 
  *   This program is free software; you can redistribute it and/or modify  * 
  *   it under the terms of the GNU General Public License as published by  * 
- *   the Free Software Foundation; either version 2 of the License, or     * 
+ *   the Free Software Foundation; either version 2 of the License, or     *
  *   (at your option) any later version.                                   * 
  *                                                                         * 
  ***************************************************************************/ 
@@ -37,7 +37,7 @@ class TextLine : public KShared
   friend class KateBuffer;  
   friend class KateBufBlock;
   
-public: 
+public:
     typedef KSharedPtr<TextLine> Ptr; 
     typedef QValueVector<Ptr> List; 
  
@@ -64,7 +64,7 @@ public:
     void append(const QChar *s, uint l); 
 		/** 
       Wraps the text from the given position to the end to the next line  
-    */  
+    */
     void wrap(TextLine::Ptr nextLine, uint pos);  
     /**  
       Wraps the text of given length from the beginning of the next line to  
@@ -91,7 +91,7 @@ public:
       Gets the char at the given position  
     */  
     QChar getChar(uint pos) const;  
-    /**  
+    /**
       Gets the text. WARNING: it is not null terminated  
     */  
     const QChar *getText() const { return text; }; 
@@ -118,30 +118,30 @@ public:
     */
     bool endingWith(const QString& match) const;
     /**
-      Sets the attributes from start to end -1  
-    */  
-    void setAttribs(uchar attribute, uint start, uint end); 
-    /**  
-      Sets the attribute for the free space behind the last character  
-    */  
-    void setAttr(uchar attribute); 
-    /**  
-      Gets the attribute at the given position  
-    */  
-    uchar getAttr(uint pos) const;  
-    /**  
-      Gets the attribute for the free space behind the last character  
-    */  
+      Sets the attributes from start to end -1
+    */
+    void setAttribs(uchar attribute, uint start, uint end);
+    /**
+      Sets the attribute for the free space behind the last character
+    */
+    void setAttr(uchar attribute);
+    /**
+      Gets the attribute at the given position
+    */
+    uchar getAttr(uint pos) const;
+    /**
+      Gets the attribute for the free space behind the last character
+    */
     uchar getAttr() const;
     /**
-      Sets the syntax highlight context number  
-    */  
-    void setContext(signed char *newctx, uint len); 
-    /** 
-      Gets the syntax highlight context number 
-    */ 
-    signed char *getContext() const { return ctx; }; 
-		/** 
+      Sets the syntax highlight context number
+    */
+    void setContext(signed char *newctx, uint len);
+    /**
+      Gets the syntax highlight context number
+    */
+    signed char *getContext() const { return ctx; };
+		/**
       Gets the syntax highlight context number
     */
     uint getContextLength() const { return ctxLen; };
@@ -161,23 +161,24 @@ public:
       The text & attributes 
     */ 
     QChar *text; 
-    uchar *attributes; 
-    uint textLen; 
- 
-    /** 
-      The attribute of the free space behind the end 
-    */ 
-    uchar attr; 
-    /** 
-      The syntax highlight context 
-    */ 
-    signed char *ctx; 
-    uint ctxLen;
-    
+    uchar *attributes;
+    uint textLen;
+
     /**
-      The marks of the current line  
-    */  
-    uint myMark; 
-};  
+      The attribute of the free space behind the end
+    */
+    uchar attr;
+
+    /**
+      The syntax highlight context
+    */
+    signed char *ctx;
+    uint ctxLen;
+
+    /**
+      The marks of the current line
+    */
+    uint myMark;
+};
 
 #endif
