@@ -1103,23 +1103,30 @@ bool KateDocument::selectAll()
   return setSelection (0, 0, lastLine(), getTextLine(lastLine())->length());
 }
 
+//
+// KTextEditor::BlockSelectionInterface stuff
+//
+
 bool KateDocument::blockSelectionMode ()
 {
   return blockSelect;
 }
 
-void KateDocument::setBlockSelectionMode (bool on)
+bool KateDocument::setBlockSelectionMode (bool on)
 {
   if (on != blockSelect)
   {
     blockSelect = on;
     setSelection (selectStartLine, selectStartCol, selectEndLine, selectEndCol);
   }
+  
+  return true;
 }
 
-void KateDocument::toggleBlockSelectionMode ()
+bool KateDocument::toggleBlockSelectionMode ()
 {
   setBlockSelectionMode (!blockSelect);
+  return true;
 }
 
 //

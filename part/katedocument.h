@@ -143,13 +143,17 @@ class KateDocument : public Kate::Document
     bool removeSelectedText ();
 
     bool selectAll();
-    
-    bool blockSelectionMode ();
-    void setBlockSelectionMode (bool on);
-    void toggleBlockSelectionMode ();
 
   signals:
     void selectionChanged ();
+    
+  //
+  // KTextEditor::BlockSelectionInterface stuff
+  //
+  public slots:
+    bool blockSelectionMode ();
+    bool setBlockSelectionMode (bool on);
+    bool toggleBlockSelectionMode ();
 
   //
   // KTextEditor::UndoInterface stuff
