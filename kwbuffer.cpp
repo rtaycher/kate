@@ -1,4 +1,4 @@
-/* 
+/*
    This file is part of KWrite
    Copyright (c) 2000 Waldo Bastian <bastian@kde.org>
    
@@ -90,11 +90,12 @@ static void writeBlock(int fd, const QByteArray &buf, int begin, int end)
       begin += n;
    }
 }
-   
+
+
 /**
- * Insert a file at line @p line in the buffer. 
+ * Insert a file at line @p line in the buffer.
  */
-void 
+void
 KWBuffer::insertFile(int line, const QString &file)
 {
   assert(line == 0); // Inserting at other places not yet handled.
@@ -102,7 +103,7 @@ KWBuffer::insertFile(int line, const QString &file)
   int fd = open(QFile::encodeName(file), O_RDONLY);
   if (fd < 0)
      return; // Do some error propagation here.
- 
+
   KWBufFileLoader *loader = new KWBufFileLoader;
   loader->fd = fd;
   loader->dataStart = 0;
@@ -111,7 +112,12 @@ KWBuffer::insertFile(int line, const QString &file)
 
   slotLoadFile();
 }
+void
+KWBuffer::insertFile(int line, const QFile &file)
+{
+ insertFile(line,file.name());
 
+}
 void
 KWBuffer::slotLoadFile()
 {
