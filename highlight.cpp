@@ -44,12 +44,12 @@
 #include <klocale.h>
 #include <kregexp.h>
 #include <kglobalsettings.h>
+#include <kdebug.h>
 
 #include "highlight.h"
 #include "kwdoc.h"
 #include <kstddirs.h>
 
-#include <kdebug.h>
 // general rule for keywords: if one keyword contains another at the beginning,
 // the long one has to come first (eg. "const_cast", "const")
 
@@ -172,6 +172,7 @@ const char *satherSpecFeatureNames[] = {
 char fontSizes[] = {4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,22,24,26,28,32,48,64,0};
 
 //default item style indexes
+/*
 const int dsNormal = 0;
 const int dsKeyword = 1;
 const int dsDataType = 2;
@@ -182,13 +183,9 @@ const int dsChar = 6;
 const int dsString = 7;
 const int dsComment = 8;
 const int dsOthers = 9;
-
-
-
-HlManager *HlManager::s_pSelf = 0;
-
-
-
+*/
+enum Item_styles { dsNormal,dsKeyword,dsDataType,dsDecVal,dsBaseN,dsFloat,
+                   dsChar,dsString,dsComment,dsOthers,};
 // It is my understanding that Roman numerals are also
 // considered Numbers in the Unicode scheme of things
 // so isInWord should be modified to look for letters
@@ -291,6 +288,8 @@ KeywordData::~KeywordData() {
 HlKeyword::HlKeyword(int attribute, int context)
   : HlItemWw(attribute,context) {
 //  words.setAutoDelete(true);
+//	Words.resize(100);
+	Dict.resize(113);
 }
 
 HlKeyword::~HlKeyword() {
@@ -301,29 +300,52 @@ void HlKeyword::addWord(const QString &word) {
 //  KeywordData *word;
 //  word = new KeywordData(s);
   words.append(word);
+	Dict.insert(word,"dummy");
+}
+void HlKeyword::addList(const QStringList& list)
+{
+ words+=list;
+ for(uint i=0;i<list.count();i++) Dict.insert(list[i],"dummy");
 }
 
 void HlKeyword::addList(const char **list) {
 
   while (*list) {
     words.append(*list);
+		Dict.insert(*list,"dummy");
 //    addWord(*list);
     list++;
   }
 }
-void HlKeyword::addList(const QStringList &list)
-{
-	words+=list;
-}
 
 const QChar *HlKeyword::checkHgl(const QChar *s) {
-
+#if 0
   for (QStringList::Iterator it = words.begin(); it != words.end(); ++it) {
     if (memcmp(s, (*it).unicode(), (*it).length()*sizeof(QChar)) == 0) {
       return s + (*it).length();
     }
   }
-  return 0L;
+	return 0L;
+#else
+// this seems to speed up the lookup of keywords somewhat
+// anyway it has to be better than iterating through the list
+// would a dictionary/hash key be better?
+
+// this has a bug if your keyword is not space delimited it
+// will not be hightlighted
+/*
+  const QChar *s2=s;
+  while (!s2->isSpace() && *s2 != '\0') s2++;
+  QString lookup=QString(s,s2-s)+QString::null;
+  int found=Words.bsearch(lookup);
+  return (found > -1) ? s2 : 0L;
+*/
+  const QChar *s2=s;
+  while (!s2->isSpace() && *s2 != '\0' ) s2++; // find space
+  QString lookup=QString(s,s2-s)+QString::null;
+  return Dict[lookup] ? s2 : 0L;
+
+#endif
 }
 
 
@@ -335,7 +357,7 @@ const QChar *HlInt::checkHgl(const QChar *str) {
   const QChar *s;
 
   s = str;
-        while (s->isDigit()) s++;
+  while (s->isDigit()) s++;
   if (s > str) return s;
   return 0L;
 }
@@ -386,12 +408,12 @@ const QChar *HlCInt::checkHgl(const QChar *s) {
 
     do {
       str = s;
-      if (*s == 'L' || *s == 'l') {
+      if (*s&0xdf == 'L') { // || *s == 'l') {
         l++;
         if (l > 2) return 0L;
         s++;
       }
-      if (*s == 'U' || *s == 'u') {
+      if (*s&0xdf == 'U') { // || *s == 'u') {
         u++;
         if (u > 1) return 0L;
         s++;
@@ -427,13 +449,12 @@ HlCHex::HlCHex(int attribute, int context)
 const QChar *HlCHex::checkHgl(const QChar *str) {
   const QChar *s;
 
-  if (str[0] == '0' && (/*str[1] == 'x' || */ (str[1]&0xdf) == 'X')) {
+  if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X')) {
     str += 2;
     s = str;
-    
-    while (s->isDigit() || ((*s&0xdf) >= 'A' && (*s&0xdf) <= 'F')) s++; //|| (*s >= 'a' && *s <= 'f')) s++;
+    while (s->isDigit() || (*s >= 'A' && *s <= 'F') || (*s >= 'a' && *s <= 'f')) s++;
     if (s > str) {
-      if ((*s&0xdf) == 'L' || (*s&0xdf)== 'U') s++; //|| *s == 'l' || *s == 'U' || *s == 'u') s++;
+      if (*s == 'L' || *s == 'l' || *s == 'U' || *s == 'u') s++;
       return s;
     }
   }
@@ -447,7 +468,7 @@ HlCFloat::HlCFloat(int attribute, int context)
 const QChar *HlCFloat::checkHgl(const QChar *s) {
 
   s = HlFloat::checkHgl(s);
-  if (s && ((*s&0xdf) == 'F' )) s++; //|| *s == 'f')) s++;
+  if (s && (*s == 'F' || *s == 'f')) s++;
   return s;
 }
 
@@ -571,7 +592,7 @@ const QChar *checkEscapedChar(const QChar *s) {
                         // replaced with something else but
                         // for right now they work
                         // check for hexdigits
-                        for(i=0;i<2&&(*s>='0' && *s<='9'||/* *s >= 'a' && *s <='f'||*/ (*s&0xdf) >='A' && (*s&0xdf) <='F');i++,s++);
+                        for(i=0;i<2&&(*s>='0' && *s<='9'|| *s >= 'a' && *s <='f'|| *s>='A' && *s<='F');i++,s++);
                         if(i==0) return 0L; // takes care of case '\x'
                         break;
 
@@ -780,7 +801,7 @@ HlSatherIdent::HlSatherIdent(int attribute, int context)
 const QChar *HlSatherIdent::checkHgl(const QChar *s) {
   if (s->isLetter()) {
     s++;
-    while(isInWord(*s)) s++;
+                while(isInWord(*s)) s++;
     if (*s == '!') s++;
     return s;
   }
@@ -811,8 +832,8 @@ const QChar *HlSatherBaseN::checkHgl(const QChar *s) {
     if (*s == 'x') {
       s++;
       while ((s->isDigit())
-//             || (*s >= 'a' && *s <= 'f')
-             || ((*s&0xdf) >= 'A' && (*s&0xdf) <= 'F')
+             || (*s >= 'a' && *s <= 'f')
+             || (*s >= 'A' && *s <= 'F')
              || *s == '_') s++;
     } else if (*s == 'o') {
       s++;
@@ -839,7 +860,7 @@ const QChar *HlSatherFloat::checkHgl(const QChar *s) {
     if (*s == '.') {
       s++;
       while (s->isDigit()) s++;
-      if (/* *s == 'e' || */(*s&0xdf) == 'E') {
+      if (*s == 'e' || *s == 'E') {
         s++;
         if (*s == '-') s++;
         if (s->isDigit()) {
@@ -913,7 +934,7 @@ const QChar *HlLatexTag::checkHgl(const QChar *s) {
     s++;
     if (*s == ' ' || *s == '/' || *s == '\\') return s +1;
     str = s;
-    while (/*(*s >= 'a' && *s <= 'z') || */((*s&0xdf) >= 'A' && (*s&0xdf) <= 'Z')
+    while ((*s >= 'a' && *s <= 'z') || (*s >= 'A' && *s <= 'Z')
       || (s->isDigit()) || *s == '@') {
       s++;
     }
@@ -1143,12 +1164,11 @@ int GenHighlight::doHighlight(int ctxNum, TextLine *textLine) {
   context = contextList[ctxNum];
   str = textLine->getString();
   lastChar = '\0';
-  int numlines=0;
+
   s1 = str;
   while (*s1 != '\0') {
-    for (item = context->items.first(); item != 0L; item = context->items.next(),numlines++) {
-				kapp->processEvents(2);				
-        if (item->startEnable(lastChar)) {
+    for (item = context->items.first(); item != 0L; item = context->items.next()) {
+      if (item->startEnable(lastChar)) {
         s2 = item->checkHgl(s1);
         if (s2 > s1) {
           if (item->endEnable(*s2)) {
@@ -1261,44 +1281,6 @@ void CHighlight::makeContextList() {
   setKeywords(keyword, dataType);
 }
 
-void CHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
-
-	KConfig *config = kapp->config();
-	config->setGroup(QString("%1 Highlight").arg(name()));
-	QStringList configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name()) );
-  
-// read config file for list of keywords/data types  
-// if there is none count==0  then process normally and save it in config file
-// if there is a list already in config file use that instead of creating one
-  
-  if(configlist.count()==0) {
-    keyword->addList(cKeywords);
-   	config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()) ,keyword->getWords());
-  }
-  else 
-    keyword->addList(configlist);
-  
-  configlist.clear();
-  configlist=config->readListEntry(QString::fromUtf8("%1Types").arg(name()));
-  
-  if(configlist.count()==0) {
-    dataType->addList(cTypes);
-  	config->writeEntry(QString::fromUtf8("%1Types").arg(name()) ,dataType->getWords());
- 	}
-  else
-     dataType->addList(configlist);
-}
-
-
-CppHighlight::CppHighlight(const char * name) : CHighlight(name) {
-
-  iWildcards = "*.cpp;*.cc;*.C;*.h";
-  iMimetypes = "text/x-c++-src;text/x-c++-hdr;text/x-c-hdr;text/x-c++-src";
-}
-
-CppHighlight::~CppHighlight() {
-}
-
 void getCKeywords(QStringList configlist) {
 	KConfig *config = kapp->config();
 	config->setGroup(QString::fromUtf8("C Highlight") );
@@ -1312,59 +1294,139 @@ void getCTypes(QStringList configlist) {
 }
 
 
-void CppHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) 
-{
+void CHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
+
 	KConfig *config = kapp->config();
 	config->setGroup(QString("%1 Highlight").arg(name()));
-//	QStringList configlist=config->readListEntry( QString::fromUtf8("CKeywords") );
+	QStringList configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name()) );
+
+// read config file for list of keywords/data types
+// if there is none count==0  then process normally and save it in config file
+// if there is a list already in config file use that instead of creating one
+
+  if(configlist.count()==0) {
+    keyword->addList(cKeywords);
+   	config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()) ,keyword->getList());
+  }
+  else
+    keyword->addList(configlist);
+
+  configlist.clear();
+  configlist=config->readListEntry(QString::fromUtf8("%1Types").arg(name()));
+
+  if(configlist.count()==0) {
+    dataType->addList(cTypes);
+  	config->writeEntry(QString::fromUtf8("%1Types").arg(name()) ,dataType->getList());
+ 	}
+  else
+     dataType->addList(configlist);
+/*
+  QStringList *keyList=keyword->getList();
+	QStringList *dataList=dataType->getList();
+	uint i;
+	for(i=0;i<keyList->count();i++)
+	  keyword->getVec()->insert(i,*keyList->at(i));
+
+  for(i=0;i<dataList->count();i++)
+	  dataType->getVec()->insert(i,*dataList->at(i));
+	
+  dataType->getVec()->sort();
+	keyword->getVec()->sort();
+*/	
+}
+
+CppHighlight::CppHighlight(const char * name) : CHighlight(name) {
+
+  iWildcards = "*.cpp;*.cc;*.C;*.h";
+  iMimetypes = "text/x-c++-src;text/x-c++-hdr;text/x-c-hdr;text/x-c++-src";
+}
+
+CppHighlight::~CppHighlight() {
+}
+
+void CppHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
+#if 0
+	uint i;
+  keyword->addList(cKeywords);
+  keyword->addList(cppKeywords);
+	
+	QStringList *tmpList=keyword->getList();
+	for(i=0;i<tmpList->count();i++)
+	keyword->getVec()->insert(i,*tmpList->at(i));
+  keyword->getVec()->sort();
+	
+  dataType->addList(cTypes);
+  dataType->addList(cppTypes);
+
+	tmpList=dataType->getList();
+	for(i=0;i<tmpList->count();i++)
+	dataType->getVec()->insert(i,*tmpList->at(i));
+	dataType->getVec()->sort();
+
+#else
+ 	KConfig *config = kapp->config();
+	config->setGroup(QString("%1 Highlight").arg(name()));
+
+ 	
 	QStringList configlist;
 	getCKeywords(configlist);
-	
+
 	if ( configlist.count() == 0 ) {
     keyword->addList( cKeywords );
     config->setGroup(QString::fromUtf8("C Highlight") );
-    config->writeEntry(QString::fromUtf8("CKeywords"),keyword->getWords());
+    config->writeEntry(QString::fromUtf8("CKeywords"),keyword->getList());
   }
   else {
-    keyword->addList(configlist);	
-  }  
-  
+    keyword->addList(configlist);
+  }
+
   configlist.clear();
-  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name()) );  
-  
+  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name()) );
+
   if (configlist.count()==0) {
     keyword->addList(cppKeywords);
-    config->setGroup(QString("%1 Highlight").arg(name()));
-    config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()) , keyword->getWords() );
+    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+    config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()) , keyword->getList());
   }
   else {
-    keyword->addList(configlist);	
+    keyword->addList(configlist);
+
   }
-  
+
   configlist.clear();
-//  configlist=config->readListEntry(QString::fromUtf8("CTypes"));  
   getCTypes(configlist);
   if (configlist.count()==0) {
     dataType->addList(cTypes);
     config->setGroup(QString::fromUtf8("C Highlight") );
-    config->writeEntry(QString::fromUtf8("CTypes"),dataType->getWords());
+    config->writeEntry(QString::fromUtf8("CTypes"),dataType->getList());
   }
   else {
-    dataType->addList(configlist);	
+    dataType->addList(configlist);
 	}
-	
+
 	configlist.clear();
-  configlist=config->readListEntry(QString::fromUtf8("%1Types").arg(name() ));  
-	
+  configlist=config->readListEntry(QString::fromUtf8("%1Types").arg(name() ));
+
 	if (configlist.count()==0) {
     dataType->addList(cppTypes);
-    config->setGroup(QString("%1 Highlight").arg(name()));
-    config->writeEntry(QString::fromUtf8("%1Types").arg(name() ),dataType->getWords());
+    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+    config->writeEntry(QString::fromUtf8("%1Types").arg(name() ),dataType->getList());
   }
   else  {
-    dataType->addList(configlist);	
-  }  
-
+    dataType->addList(configlist);
+  }
+/*
+  QStringList *keyList=keyword->getList();
+	QStringList *dataList=dataType->getList();
+	uint i;
+	for(i=0;i<keyList->count();i++)
+	keyword->getVec()->insert(i,*keyList->at(i));
+  for(i=0;i<dataList->count();i++)
+	dataType->getVec()->insert(i,*dataList->at(i));
+	dataType->getVec()->sort();
+	keyword->getVec()->sort();
+*/
+#endif	
 }
 
 ObjcHighlight::ObjcHighlight(const char * name) : CHighlight(name) {
@@ -1382,60 +1444,12 @@ void ObjcHighlight::makeContextList() {
   c = contextList[0];
   c->items.append(new Hl2CharDetect(8,1,'@','"'));
 }
-// UNTESTED can someone w/ Objective C test this
+
 void ObjcHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
-  
- 	KConfig *config = kapp->config();
-//	config->setGroup(QString("%1 Highlight").arg(name()));
-//	QStringList configlist=config->readListEntry( QString::fromUtf8("CKeywords") );
-    
-  QStringList configlist;
-  getCKeywords(configlist);
-    
-  if(configlist.count() == 0) {
-   keyword->addList(cKeywords); 
-    config->setGroup(QString::fromUtf8("C Highlight") );
-    config->writeEntry(QString::fromUtf8("CKeywords"), keyword->getWords() );  
-  } 
-  else {
-  	keyword->addList(configlist);
-  }
-  configlist.clear();
-  configlist=config->readListEntry( QString::fromUtf8("%1Keywords").arg(name()) );
-  if(configlist.count() == 0) {
-    keyword->addList(objcKeywords); 
-    config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()), keyword->getWords() );
-  } 
-  else {
-  	keyword->addList(configlist);
-  }
-  
-  configlist.clear();
-  configlist=config->readListEntry( QString::fromUtf8("CTypes") );
-  getCTypes(configlist);
-  if(configlist.count() == 0) {
-    dataType->addList(cTypes); 
-    config->setGroup(QString::fromUtf8("C Highlight") );
-    config->writeEntry(QString::fromUtf8("CTypes"), dataType->getWords() );
-  } 
-  else {
-  	dataType->addList(configlist);
-  }
-  configlist.clear();
-  configlist=config->readListEntry( QString::fromUtf8("%1Types").arg(name()) );
-  if(configlist.count() == 0) {
-    dataType->addList(cTypes); 
-    config->writeEntry(QString::fromUtf8("%1Types").arg(name()), dataType->getWords() );
-  } 
-  else {
-  	dataType->addList(configlist);
-  }
-/*  
   keyword->addList(cKeywords);
   keyword->addList(objcKeywords);
   dataType->addList(cTypes);
   dataType->addList(objcTypes);
-*/
 }
 
 IdlHighlight::IdlHighlight(const char * name) : CHighlight(name) {
@@ -1445,32 +1459,10 @@ IdlHighlight::IdlHighlight(const char * name) : CHighlight(name) {
 
 IdlHighlight::~IdlHighlight() {
 }
-// UNTESTED 
+
 void IdlHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
-	
-	KConfig *config = kapp->config();
-	config->setGroup(QString("%1 Highlight").arg(name()));
-	QStringList configlist=config->readListEntry( QString::fromUtf8("%1Keywords").arg(name()) );
- 	
- 	if (configlist.count() == 0 ) {
- 	  keyword->addList(idlKeywords);
- 	  config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()) ,keyword->getWords() );
- 	}
- 	else
- 		keyword->addList(configlist);
- 
-  configlist.clear();
-  configlist=config->readListEntry( QString::fromUtf8("%1Types").arg(name()) );
- 	
- 	if (configlist.count() == 0 ) {
- 	  dataType->addList(idlKeywords);
- 	  config->writeEntry(QString::fromUtf8("%1Types").arg(name()) ,dataType->getWords() );
- 	}
- 	else
- 		dataType->addList(configlist);
-  
-//  keyword->addList(idlKeywords);
-//  dataType->addList(idlTypes);
+  keyword->addList(idlKeywords);
+  dataType->addList(idlTypes);
 }
 
 JavaHighlight::JavaHighlight(const char * name) : CHighlight(name) {
@@ -1481,31 +1473,10 @@ JavaHighlight::JavaHighlight(const char * name) : CHighlight(name) {
 JavaHighlight::~JavaHighlight() {
 }
 
-// UNTESTED 
 void JavaHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
 
-	KConfig *config = kapp->config();
-	config->setGroup(QString("%1 Highlight").arg(name()));
-	QStringList configlist=config->readListEntry( QString::fromUtf8("JavaKeywords") );
-
-  if (configlist.count() == 0 ) {
- 	  keyword->addList(javaKeywords);
- 	  config->writeEntry(QString::fromUtf8("JavaKeywords") ,keyword->getWords() );
- 	}
- 	else
- 		keyword->addList(configlist);
- 
- 	configlist.clear();
-  configlist=config->readListEntry( QString::fromUtf8("JavaTypes") );
-  if (configlist.count() == 0 ) {
- 	  dataType->addList(javaTypes);
- 	  config->writeEntry(QString::fromUtf8("JavaTypes") ,dataType->getWords() );
- 	}
- 	else
- 		dataType->addList(configlist);
- 
-//  keyword->addList(javaKeywords);
-//  dataType->addList(javaTypes);
+  keyword->addList(javaKeywords);
+  dataType->addList(javaTypes);
 }
 
 
@@ -1580,16 +1551,8 @@ void BashHighlight::makeContextList() {
   contextList[2] = c = new HlContext(4,0);
     c->items.append(new HlCharDetect(4,0,'`'));
   contextList[3] = new HlContext(5,0);
-	
-	KConfig *config = kapp->config();
-	config->setGroup(QString("%1 Highlight").arg(name()));
-  QStringList configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name()) );
-	if(configlist.count() == 0) {
-    keyword->addList(bashKeywords);
-    config->writeEntry( QString::fromUtf8("%1Keywords").arg(name() ),keyword->getWords() );
-  } 
-  else
-    keyword->addList(configlist);
+
+  keyword->addList(bashKeywords);
 }
 
 
@@ -1627,18 +1590,8 @@ void ModulaHighlight::makeContextList() {
     c->items.append(new HlCharDetect(5,0,'"'));
   contextList[2] = c = new HlContext(6,2);
     c->items.append(new Hl2CharDetect(6,0, '*', ')'));
-	
-	KConfig *config = kapp->config();
-	config->setGroup(QString("%1 Highlight").arg(name()));
-  QStringList configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name()) );
-	if(configlist.count() == 0) {
-    keyword->addList(modulaKeywords);
-    config->writeEntry( QString::fromUtf8("%1Keywords").arg(name()),keyword->getWords() );
-  } 
-  else
-    keyword->addList(configlist);
 
-//  keyword->addList(modulaKeywords);
+  keyword->addList(modulaKeywords);
 }
 
 
@@ -1677,18 +1630,8 @@ void AdaHighlight::makeContextList() {
   contextList[1] = c = new HlContext(6,0);
     c->items.append(new HlCharDetect(6,0,'"'));
   contextList[2] = c = new HlContext(7,0);
-	
-	KConfig *config = kapp->config();
-	config->setGroup(QString("%1 Highlight").arg(name()));
-  QStringList configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ) );
-	if(configlist.count() == 0) {
-    keyword->addList(adaKeywords);
-    config->writeEntry( QString::fromUtf8("%1Keywords").arg(name()),keyword->getWords() );
-  } 
-  else
-    keyword->addList(configlist);
 
-//  keyword->addList(adaKeywords);
+  keyword->addList(adaKeywords);
 }
 
 
@@ -1713,7 +1656,7 @@ void PythonHighlight::createItemData(ItemDataList &list) {
   list.append(new ItemData(I18N_NOOP("String Char"),dsChar));
   list.append(new ItemData(I18N_NOOP("Comment"    ),dsComment));
 }
-// UNTESTED
+
 void PythonHighlight::makeContextList() {
   HlContext *c;
   HlKeyword *keyword;
@@ -1746,18 +1689,8 @@ void PythonHighlight::makeContextList() {
   contextList[5] = new HlContext(9,0);
   contextList[6] = new HlContext(0,1);
   contextList[7] = new HlContext(0,2);
-	
-	KConfig *config = kapp->config();
-	config->setGroup(QString("%1 Highlight").arg(name()));
-  QStringList configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ) );
-	if(configlist.count() == 0) {
-    keyword->addList(pythonKeywords);
-    config->writeEntry( QString::fromUtf8("%1Keywords").arg(name()),keyword->getWords() );
-  } 
-  else
-    keyword->addList(configlist);
 
-//  keyword->addList(pythonKeywords);
+  keyword->addList(pythonKeywords);
 }
 
 PerlHighlight::PerlHighlight(const char * name) : Highlight(name) {
@@ -2135,6 +2068,8 @@ void LatexHighlight::makeContextList() {
 
 //--------
 
+HlManager *HlManager::s_pSelf = 0;
+
 HlManager::HlManager() : QObject(0L) {
 
   hlList.setAutoDelete(true);
@@ -2358,10 +2293,9 @@ void HlManager::getDefaults(ItemStyleList &list, ItemFont &font) {
   config->setGroup("Default Font");
   QFont defaultFont = KGlobalSettings::fixedFont();
   font.family = config->readEntry("Family", defaultFont.family());
- // kdDebug() << QString("family == %1").arg(font.family.utf8())<< endl;
-  
+//  qDebug("family == %s", font.family.ascii());
   font.size = config->readNumEntry("Size", defaultFont.pointSize());
-//  kdDebug() << QString("size == %1").arg(font.size) << endl;
+//  qDebug("size == %d", font.size);
   font.charset = config->readEntry("Charset","ISO-8859-1");
 }
 
