@@ -467,9 +467,7 @@ class KWriteDoc : public KTextEditor::Document {
     void paintTextLine(QPainter &, int line, int xStart, int xEnd, bool showTabs);
 //    void printTextLine(QPainter &, int line, int xEnd, int y);
 
-    bool hasFileName();
-    const QString fileName();
-    void setFileName(const QString&);
+    void setURL( const KURL &url, bool updateHighlight );
     void clearFileName();
 
     bool doSearch(SConfig &s, const QString &searchFor);
@@ -558,7 +556,6 @@ class KWriteDoc : public KTextEditor::Document {
 
     bool readOnly;
     bool modified;
-    QString fName;
 
     int foundLine;
 

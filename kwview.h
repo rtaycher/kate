@@ -34,6 +34,7 @@
 #include <qdropsite.h>
 #include <qdragobject.h>
 
+#include <ktempfile.h>
 #include <kconfig.h>
 #include <kspell.h>
 #include <ksconfig.h>
@@ -41,6 +42,9 @@
 #include "kguicommand.h"
 #include "ktexteditor.h"
 
+namespace KIO { class FileCopyJob; }
+
+class KTempFile;
 class KWriteDoc;
 class Highlight;
 
@@ -543,9 +547,16 @@ class KWrite : public KTextEditor::View {
      * The source, the destination of the copy, and the flags
      * for each job being run (job id is the dict key).
      */
-    QIntDict <QString> m_sNet;
-    QIntDict <QString> m_sLocal;
-    QIntDict <int> m_flags;
+    struct NetData
+    {
+      KURL m_url;
+      QByteArray m_data;
+      int m_flags;
+    };
+    QMap<KIO::Job *, NetData> m_mapNetData;
+
+    QGuardedPtr<KIO::FileCopyJob> m_saveJob;
+    KTempFile *m_tempSaveFile;
 
 //text access
   public:
@@ -621,8 +632,11 @@ class KWrite : public KTextEditor::View {
     /**
       Saves the file as given in url
     */
-    void writeURL(const QString &url, int flags = 0);
+    void writeURL(const KURL &url, int flags = 0);
   protected slots:
+    void slotJobReadResult( KIO::Job *job );
+    void slotJobData( KIO::Job *job, const QByteArray &data );
+    void slotJobWriteResult( KIO::Job *job );
     /**
       Gets signals from iojob
     */
@@ -630,18 +644,6 @@ class KWrite : public KTextEditor::View {
     void slotPUTFinished( int id );
     void slotIOJobError(int, const char *);
   public:
-    /**
-      Returns true if the document has a filename (not counting the path).
-    */
-    bool hasFileName();
-    /**
-      Returns the URL of the currnet file
-    */
-    const QString fileName();
-    /**
-      Set the file name. This starts the automatic highlight selection.
-    */
-    void setFileName(const QString &);
     /**
       Mainly for internal use. Returns true if the current document can be
       discarded. If the document is modified, the user is asked if he wants

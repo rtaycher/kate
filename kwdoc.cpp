@@ -428,9 +428,11 @@ KWriteDoc::KWriteDoc(HlManager *hlManager, const QString &path,
 		     bool bSingleViewMode, bool bBrowserView,
 		     QWidget *parentWidget, const char *widgetName,
 		     QObject *parent, const char *name )
-  : KTextEditor::Document(parent, name), hlManager(hlManager), fName(path) {
+  : KTextEditor::Document(parent, name), hlManager(hlManager) {
 
   setInstance( KWriteFactory::instance() );
+
+  m_url.setPath( path );
 
   m_bSingleViewMode = bSingleViewMode;
 
@@ -514,7 +516,7 @@ bool KWriteDoc::openFile()
 
   updateLines();
   updateViews();
-  setFileName( m_url.path() );
+  //  setFileName( m_url.path() );
 
   f.close();
   return true;
@@ -697,14 +699,14 @@ void KWriteDoc::writeConfig(KConfig *config) {
 void KWriteDoc::readSessionConfig(KConfig *config) {
 
   readConfig(config);
-  fName = config->readEntry("URL");
+  m_url = config->readEntry("URL"); // ### doesn't this break the encoding? (Simon)
   setHighlight(hlManager->nameFind(config->readEntry("Highlight")));
 }
 
 void KWriteDoc::writeSessionConfig(KConfig *config) {
 
   writeConfig(config);
-  config->writeEntry("URL", fName);
+  config->writeEntry("URL", m_url.url() ); // ### encoding?? (Simon)
   config->writeEntry("Highlight", m_highlight->name());
 }
 
@@ -2295,52 +2297,54 @@ void KWriteDoc::printTextLine(QPainter &paint, int line, int xEnd, int y) {
 }
 */
 
-
-bool KWriteDoc::hasFileName() {
-  return fName.findRev('/') +1 < (int) fName.length();
-}
-
-const QString KWriteDoc::fileName() {
-  return fName;
-}
-
-void KWriteDoc::setFileName( const QString& s ) {
+void KWriteDoc::setURL( const KURL &url, bool updateHighlight )
+{
   int pos, hl;
   KTextEditor::View *view;
 
-  fName = s;
+  m_url = url;
   for (view = m_views.first(); view != 0L; view = m_views.next() ) {
     emit static_cast<KWrite *>( view )->fileChanged();
   }
 
-  //highlight detection
-  pos = fName.findRev('/') +1;
-  if (pos >= (int) fName.length()) return; //no filename
-  hl = hlManager->wildcardFind(s.right( s.length() - pos ));
-  if (hl == -1) {
-    // fill the detection buffer with the contents of the text
-    const int HOWMANY = 1024;
-    QByteArray buf(HOWMANY);
-    int bufpos = 0, len;
-    TextLine *textLine;
+  if ( updateHighlight )
+  {
+    //highlight detection
+    //  pos = fName.findRev('/') +1;
+    //  if (pos >= (int) fName.length()) return; //no filename
+    //  hl = hlManager->wildcardFind(s.right( s.length() - pos ));
+    QString fn = m_url.fileName();
+    if ( fn.isEmpty() )
+        return;
+    hl = hlManager->wildcardFind( fn );
 
-    for (textLine = contents.first(); textLine != 0L; textLine = contents.next()) {
-      len = textLine->length();
-      if (bufpos + len > HOWMANY) len = HOWMANY - bufpos;
-      memcpy(&buf[bufpos], textLine->getText(), len);
-      bufpos += len;
-      if (bufpos >= HOWMANY) break;
+    if (hl == -1) {
+      // fill the detection buffer with the contents of the text
+      const int HOWMANY = 1024;
+      QByteArray buf(HOWMANY);
+      int bufpos = 0, len;
+      TextLine *textLine;
+
+      for (textLine = contents.first(); textLine != 0L; textLine = contents.next()) {
+        len = textLine->length();
+        if (bufpos + len > HOWMANY) len = HOWMANY - bufpos;
+        memcpy(&buf[bufpos], textLine->getText(), len);
+        bufpos += len;
+        if (bufpos >= HOWMANY) break;
+      }
+      //    hl = hlManager->mimeFind(buf, s.right( s.length() - pos));
+      hl = hlManager->mimeFind( buf, fn );
     }
-    hl = hlManager->mimeFind(buf, s.right( s.length() - pos));
+    setHighlight(hl);
   }
-  setHighlight(hl);
   updateViews();
 }
 
 void KWriteDoc::clearFileName() {
   KTextEditor::View *view;
 
-  fName.truncate(fName.findRev('/') +1);
+  //  fName.truncate(fName.findRev('/') +1);
+  m_url.setFileName( QString::null );
   for (view = m_views.first(); view != 0L; view = m_views.next() ) {
     emit static_cast<KWrite *>( view )->fileChanged();
   }

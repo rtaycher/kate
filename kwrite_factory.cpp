@@ -24,7 +24,7 @@ KWriteFactory::KWriteFactory()
 {
   s_instance = 0; // I don't trust anyone ;-)
   s_aboutData = 0;
-  
+
   KWrite::addCursorCommands( *KGuiCmdManager::self() );
   KWrite::addEditCommands(*KGuiCmdManager::self());
   KWrite::addStateCommands(*KGuiCmdManager::self());
@@ -40,7 +40,7 @@ KWriteFactory::~KWriteFactory()
   s_aboutData = 0;
 }
 
-KParts::Part *KWriteFactory::createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const char *classname, const QStringList &args )
+KParts::Part *KWriteFactory::createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const char *classname, const QStringList & )
 {
   bool bWantDocument = ( strcmp( classname, "KTextEditor::Document" ) == 0 );
   bool bWantBrowserView = ( strcmp( classname, "Browser/View" ) == 0 );

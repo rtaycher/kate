@@ -461,7 +461,7 @@ void TopLevel::openRecent(int id) {
 
 void TopLevel::newWindow() {
 
-  TopLevel *t = new TopLevel(0L, kWrite->fileName());
+  TopLevel *t = new TopLevel(0L, kWrite->doc()->url().fileName());
   t->readConfig();
   t->init();
 //  t->kWrite->doc()->inheritFileName(kWrite->doc());
@@ -618,7 +618,7 @@ void TopLevel::togglePath() {
 
 
 void TopLevel::print(bool dialog) {
-  QString title = kWrite->fileName();
+  QString title = kWrite->doc()->url().fileName();
   if (!showPath) {
     int pos = title.findRev('/');
     if (pos != -1) {
@@ -752,11 +752,11 @@ void TopLevel::newCaption() {
   QString caption;
   int z;
 
-  if (!kWrite->hasFileName())
+  if (kWrite->doc()->url().fileName().isEmpty())
     caption = i18n("Untitled");
 
   else {
-    caption = kWrite->fileName();
+    caption = kWrite->doc()->url().fileName();
     //set recent files popup menu
     z = (int) recentPopup->count();
     while (z > 0) {
@@ -933,8 +933,8 @@ void TopLevel::writeConfig() {
 // session management
 void TopLevel::restore(KConfig *config, int n) {
 
-  if (kWrite->isLastView() && kWrite->hasFileName()) { //in this case first view
-    loadURL(kWrite->fileName(), lfNoAutoHl);
+  if (kWrite->isLastView() && kWrite->doc()->url().fileName().isEmpty()) { //in this case first view
+    loadURL(kWrite->doc()->url().fileName(), lfNoAutoHl);
   }
   readPropertiesInternal(config, n);
   init();

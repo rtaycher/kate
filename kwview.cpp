@@ -40,6 +40,8 @@
 #include <qpaintdevicemetrics.h>
 #include <qdropsite.h>
 #include <qdragobject.h>
+#include <qiodevice.h>
+#include <qbuffer.h>
 
 #include <kapp.h>
 #include <klocale.h>
@@ -47,6 +49,7 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
+#include <kio/job.h>
 
 #include <X11/Xlib.h> //used to have XSetTransientForHint()
 
@@ -1504,10 +1507,20 @@ KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const char * name, bool HandleOw
   m_dispatcher->connectCategory( ctCursorCommands, this, SLOT( doCursorCommand( int ) ) );
   m_dispatcher->connectCategory(ctEditCommands, this, SLOT(doEditCommand(int)));
   m_dispatcher->connectCategory(ctStateCommands, this, SLOT(doStateCommand(int)));
+
+  m_tempSaveFile = 0;
 }
 
 KWrite::~KWrite() {
    kdDebug() << "KWrite::~KWrite" << endl;
+  QMap<KIO::Job *, NetData>::Iterator it = m_mapNetData.begin();
+  while ( it != m_mapNetData.end() )
+  {
+      KIO::Job *job = it.key();
+      m_mapNetData.remove( it );
+      job->kill();
+      it = m_mapNetData.begin();
+  }
   if (kspell.kspell)
   {
     kspell.kspell->setAutoDelete(true);
@@ -1521,6 +1534,11 @@ KWrite::~KWrite() {
 
   delete kWriteView;
   delete popup; //right mouse button popup
+
+  if ( m_saveJob )
+      m_saveJob->kill();
+
+  delete m_tempSaveFile;
 }
 
 void KWrite::setCursorPosition( int line, int col, bool /*mark*/ )
@@ -1966,27 +1984,37 @@ void KWrite::loadURL(const KURL &url, int flags) {
       return;
     }
   }
-  if (u.isLocalFile()) {
+
+  //  if (u.isLocalFile()) {
     // usual local file
+  /*
     emit statusMsg(i18n("Loading..."));
 
     QString name(u.path());
     if (loadFile(name,flags)) {
-      name = u.url();
       if (flags & lfInsert) {
-        name.prepend(": ");
-        name.prepend(i18n("Inserted"));
+        name = i18n( "Inserted : %1" ).arg( u.prettyURL() );
       } else {
-        if (!(flags & lfNoAutoHl)) kWriteDoc->setFileName(name);
-          else kWriteDoc->updateLines();
-        name.prepend(": ");
-        name.prepend(i18n("Read"));
+          kWriteDoc->setURL(u, flags & lfNoAutoHl );
+          kWriteDoc->updateLines();
+        name = i18n( "Read : %1" ).arg( u.prettyURL() );
       }
       emit statusMsg(name);
     }
-  } else {
+    } else { */
     // url
     emit statusMsg(i18n("Loading..."));
+
+    NetData d;
+    d.m_url = url;
+    d.m_flags = flags;
+
+    KIO::Job *job = KIO::get( url );
+    m_mapNetData.insert( job, d );
+
+    connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotJobReadResult( KIO::Job * ) ) );
+    connect( job, SIGNAL( data( KIO::Job *, const QByteArray & ) ), this, SLOT( slotJobData( KIO::Job *, const QByteArray & ) ) );
+
     /*
     KIOJob * iojob = new KIOJob;
     iojob->setGUImode ( KIOJob::NONE );
@@ -2001,27 +2029,12 @@ void KWrite::loadURL(const KURL &url, int flags) {
     connect(iojob,SIGNAL(sigError(int, const char *)),this,SLOT(slotIOJobError(int, const char *)));
     iojob->copy(url, tmpFile);
     */
-  }
+    //  }
 }
 
 
-void KWrite::writeURL(const QString &url, int flags) {
-  KURL u(url);
+void KWrite::writeURL(const KURL &url, int flags) {
 
-  if (u.isLocalFile()) {
-    // usual local file
-    emit statusMsg(i18n("Saving..."));
-
-    QString name(u.path());
-    if (writeFile(name)) {
-      if (!(flags & lfNoAutoHl)) kWriteDoc->setFileName(url);
-      name = url;
-      name.prepend(": ");
-      name.prepend(i18n("Wrote"));
-      emit statusMsg(name);
-      setModified(false);
-    }
-  } else {
     // url
     emit statusMsg(i18n("Saving..."));
     /*
@@ -2039,11 +2052,101 @@ void KWrite::writeURL(const QString &url, int flags) {
     iojob->copy(tmpFile, url);
 
     if (!writeFile(tmpFile)) return;
-    */
+    }*/
+
+  if ( m_saveJob )
+      m_saveJob->kill();
+
+  QString path;
+
+  delete m_tempSaveFile;
+  if ( !url.isLocalFile() )
+  {
+    m_tempSaveFile = new KTempFile;
+    path = m_tempSaveFile->name();
+  }
+  else
+  {
+    m_tempSaveFile = 0;
+    path = url.path();
+  }
+
+  if ( writeFile( path ) )
+      kWriteDoc->setModified( false );
+
+  if ( !url.isLocalFile() )
+  {
+    KURL localURL;
+    localURL.setPath( m_tempSaveFile->name() );
+    m_saveJob = KIO::file_copy( localURL, url, -1, true );
+    connect( m_saveJob, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotJobWriteResult( KIO::Job * ) ) );
   }
 }
 
+void KWrite::slotJobReadResult( KIO::Job *job )
+{
+    QMap<KIO::Job *, NetData>::Iterator it = m_mapNetData.find( job );
+    assert( it != m_mapNetData.end() );
+    QByteArray data = (*it).m_data;
+    int flags = (*it).m_flags;
+    KURL url = (*it).m_url;
+    m_mapNetData.remove( it );
+
+    if ( job->error() )
+	job->showErrorDialog();
+    else
+    {
+	QBuffer buff( data );
+	buff.open( IO_ReadOnly );
+	loadFile( buff, flags );
+	
+	QString msg;
+	
+	if ( flags & lfInsert )
+	    msg = i18n( "Inserted : %1" ).arg( url.fileName() );
+        	else
+	{
+	    kWriteDoc->setURL( url, !(flags & lfNoAutoHl) );
+	    kWriteDoc->updateLines();
+	    kWriteDoc->updateViews();
+
+	    msg = i18n( "Read : %1" ).arg( url.fileName() );
+	}
+	emit statusMsg( msg );
+    }
+
+    if ( flags & lfNewFile )
+	kWriteDoc->setModified( false );
+}
+
+void KWrite::slotJobData( KIO::Job *job, const QByteArray &data )
+{
+    QMap<KIO::Job *, NetData>::Iterator it = m_mapNetData.find( job );
+    assert( it != m_mapNetData.end() );
+    QBuffer buff( (*it).m_data );
+    buff.open(IO_WriteOnly | IO_Append );
+    buff.writeBlock( data.data(), data.size() );
+    buff.close();
+}
+
+void KWrite::slotJobWriteResult( KIO::Job *job )
+{
+    // this should probably go into the document? (Simon)
+    if ( job->error() )
+	job->showErrorDialog();
+
+    delete m_tempSaveFile;
+    m_tempSaveFile = 0;
+    kWriteDoc->setModified( false );
+    
+    if ( job->error() )
+	emit statusMsg( QString::null );
+    else
+	emit statusMsg( i18n( "Wrote %1" ).arg( static_cast<KIO::FileCopyJob *>( job )->destURL().fileName() ) );
+}
+
 void KWrite::slotGETFinished( int id ) {
+    /*
   QString *tmpFile = m_sLocal.find( id );
   QString *netFile = m_sNet.find( id );
   int flags = * m_flags.find( id );
@@ -2074,9 +2177,11 @@ void KWrite::slotGETFinished( int id ) {
   m_sNet.remove( id );
   m_sLocal.remove( id );
   m_flags.remove( id );
+    */
 }
 
 void KWrite::slotPUTFinished( int id ) {
+    /*
   QString *tmpFile = m_sLocal.find( id );
   QString *netFile = m_sNet.find( id );
   int flags = * m_flags.find( id );
@@ -2096,23 +2201,11 @@ void KWrite::slotPUTFinished( int id ) {
   m_sNet.remove( id );
   m_sLocal.remove( id );
   m_flags.remove( id );
+    */
 }
 
 void KWrite::slotIOJobError(int e, const char *s) {
   printf("error %d = %s\n",e,s);
-}
-
-
-bool KWrite::hasFileName() {
-  return kWriteDoc->hasFileName();
-}
-
-const QString KWrite::fileName() {
-  return kWriteDoc->fileName();
-}
-
-void KWrite::setFileName(const QString& s) {
-  kWriteDoc->setFileName(s);
 }
 
 bool KWrite::canDiscard() {
@@ -2148,13 +2241,13 @@ void KWrite::newDoc() {
 }
 
 void KWrite::open() {
-  QString url;
+  KURL url;
 
   if (!canDiscard()) return;
 //  if (kWriteDoc->hasFileName()) s = QFileInfo(kWriteDoc->fileName()).dirPath();
 //    else s = QDir::currentDirPath();
 
-  url = KFileDialog::getOpenFileName(kWriteDoc->fileName(), "*", this);
+  url = KFileDialog::getOpenURL(kWriteDoc->url().url(), "*", this);
   if (url.isEmpty()) return;
 //  kapp->processEvents();
   loadURL(url);
@@ -2164,9 +2257,7 @@ void KWrite::insertFile() {
   if (isReadOnly())
     return;
 
-  QString url;
-
-  url = KFileDialog::getOpenFileName(kWriteDoc->fileName(), "*", this);
+  KURL  url = KFileDialog::getOpenURL(kWriteDoc->url().url(), "*", this);
   if (url.isEmpty()) return;
 //  kapp->processEvents();
   loadURL(url,lfInsert);
@@ -2174,21 +2265,21 @@ void KWrite::insertFile() {
 
 KWrite::fileResult KWrite::save() {
   if (isModified()) {
-    if (kWriteDoc->hasFileName() && ! isReadOnly()) {
-      writeURL(kWriteDoc->fileName(),lfNoAutoHl);
+    if (!kWriteDoc->url().fileName().isEmpty() && ! isReadOnly()) {
+      writeURL(kWriteDoc->url(),!(lfNoAutoHl));
     } else return saveAs();
   } else emit statusMsg(i18n("No changes need to be saved"));
   return OK;
 }
 
 KWrite::fileResult KWrite::saveAs() {
-  QString url;
+  KURL url;
   int query;
 
   do {
     query = 0;
 
-    url = KFileDialog::getSaveFileName(kWriteDoc->fileName(),"*",this);
+    url = KFileDialog::getSaveURL(kWriteDoc->url().url(),"*",this);
     if (url.isEmpty()) return CANCEL;
 
     KURL u(url);
@@ -2209,6 +2300,7 @@ KWrite::fileResult KWrite::saveAs() {
 
 //  kapp->processEvents();
   writeURL(url);
+  kWriteDoc->setURL( url, false );
   return OK;
 }
 
