@@ -405,9 +405,6 @@ void KateMainWindow::documentMenuAboutToShow()
   windowNext->plug (documentMenu);
   windowPrev->plug (documentMenu);
   documentMenu->insertSeparator ();
-  scriptMenu->plug (documentMenu);
-
-  documentMenu->insertSeparator ();
 
   uint z=0;
   int i=1;
