@@ -271,17 +271,17 @@ KateProjectDialogNew::KateProjectDialogNew (QWidget *parent, KateProjectManager 
   
   QGridLayout *grid = new QGridLayout (page, 3, 2, 0, spacingHint());
   
-  grid->addWidget (new QLabel (i18n("Project Type:"), page), 0, 0);
+  grid->addWidget (new QLabel (i18n("Project type:"), page), 0, 0);
   m_typeCombo = new KComboBox (page);
   grid->addWidget (m_typeCombo, 0, 1);
   
   m_typeCombo->insertStringList (m_projectMan->pluginStringList ());
   
-  grid->addWidget (new QLabel (i18n("Project Name:"), page), 1, 0);
+  grid->addWidget (new QLabel (i18n("Project name:"), page), 1, 0);
   m_nameEdit = new KLineEdit (page);
   grid->addWidget (m_nameEdit, 1, 1);
   
-  grid->addWidget (new QLabel (i18n("Project File:"), page), 2, 0);
+  grid->addWidget (new QLabel (i18n("Project file:"), page), 2, 0);
   m_urlRequester = new KURLRequester (page);
   grid->addWidget (m_urlRequester, 2, 1);
   
