@@ -95,7 +95,7 @@ class KateFileList : public KListBox
     void slotDocumentDeleted (uint documentNumber);
     void slotActivateView( QListBoxItem *item );
     void slotModChanged (Kate::Document *doc);
-    void slotModifiedOnDisc (Kate::Document *doc, bool b);
+    void slotModifiedOnDisc (Kate::Document *doc, bool b, unsigned char reason);
     void slotNameChanged (Kate::Document *doc);
     void slotViewChanged ();
     void slotMenu ( QListBoxItem *item, const QPoint &p );

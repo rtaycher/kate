@@ -71,7 +71,7 @@ void KateFileList::slotDocumentCreated (Kate::Document *doc)
   insertItem (new KateFileListItem (doc->documentNumber(), SmallIcon("null"), doc->docName(), KGlobalSettings::textColor()) );
   connect(doc,SIGNAL(modStateChanged(Kate::Document *)),this,SLOT(slotModChanged(Kate::Document *)));
   connect(doc,SIGNAL(nameChanged(Kate::Document *)),this,SLOT(slotNameChanged(Kate::Document *)));
-  connect(doc,SIGNAL(modifiedOnDisc(Kate::Document *, bool)),this,SLOT(slotModifiedOnDisc(Kate::Document *, bool)));
+  connect(doc,SIGNAL(modifiedOnDisc(Kate::Document *, bool, unsigned char)),this,SLOT(slotModifiedOnDisc(Kate::Document *, bool, unsigned char)));
 
   updateSort ();
 }
@@ -131,7 +131,7 @@ void KateFileList::slotModChanged (Kate::Document *doc)
   }
 }
 
-void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool b)
+void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool b, unsigned char reason)
 {
   for (uint i = 0; i < count(); i++)
   {
