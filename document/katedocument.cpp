@@ -282,8 +282,15 @@ QString KateDocument::textLine( int line ) const
   return QConstString( l->getText(), l->length() ).string();
 }
 
-void KateDocument::insertLine( const QString &, int )
+void KateDocument::insertLine( const QString &str, int l )
+
 {
+  kdDebug()<<"KateDocument::insertLine "<<str<<QString("	%1").arg(l)<<endl;
+  TextLine::Ptr TL=new TextLine();
+  TL->append(str.unicode(),str.length());
+  buffer->insertLine(l,TL);
+  newDocGeometry=true;
+  updateViews();
 }
 
 void KateDocument::insertAt( const QString &s, int line, int col, bool  )
@@ -298,8 +305,12 @@ void KateDocument::insertAt( const QString &s, int line, int col, bool  )
   insert( c, s );
 }
 
-void KateDocument::removeLine( int  )
+void KateDocument::removeLine( int line )
 {
+  kdDebug()<<"KateDocument::removeLine "<<QString("%1").arg(line)<<endl;
+  buffer->removeLine(line);
+  newDocGeometry=true;
+  updateViews();
 }
 
 int KateDocument::length() const

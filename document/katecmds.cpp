@@ -3,7 +3,7 @@
 #include <qregexp3.h>
 #include <qdatetime.h>
 #include "katedocument.h"
-
+#include <kdebug.h>
 
 namespace KateCommands
 {
@@ -86,12 +86,14 @@ QString SedReplace::sedMagic(QString textLine, QString find, QString rep, bool n
 
 static void setLineText(KateView *view, int line, const QString &text)
 {
+	kdDebug()<<"setLineText"<<endl;
 	view->doc()->removeLine(line);
 	view->doc()->insertLine(text, line);
 }
 
 bool SedReplace::execCmd(QString cmd, KateView *view)
 {
+	kdDebug()<<"SedReplace::execCmd()"<<endl;
 	if (QRegExp("[$%]?s/.+/.*/n?").find(cmd, 0)==-1)
 		return false;
 	
