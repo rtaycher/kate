@@ -28,7 +28,8 @@
 #include <qstrvec.h>
 #include <qdict.h>
 #include <qregexp.h>
-#include "../qt3back/qregexp3.h"
+#include "../qt3back/qgregexp3.h"
+
 class SyntaxDocument;
 struct syntaxModeListItem;
 struct syntaxContextData;

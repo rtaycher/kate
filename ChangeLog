@@ -7,12 +7,11 @@
               restore sidebar page  on startup
               remove page not implemented yet
            (will be fixed soon)
-	---------------------------------------------
-	* Added a backport of QT3's QRegExp I got from Scott Manson
-	  wit one addtion (see qt3back/README)
+        ---------------------------------------------
+        * Added a backport of QT3's QRegExp I got from Scott Manson
+          wit one addtion (see qt3back/README)
                 hopefully this will give us more flexibility for syntax
                 highlighting
-
            
 2001-03-27 Christoph Cullmann <crossfire@babylon2k.de>
              * console disabled per default

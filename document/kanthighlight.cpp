@@ -429,7 +429,7 @@ HlRegExpr::HlRegExpr(int attribute, int context,QString regexp)
          if (regexp.at(0)=='^') handlesLinestart=true;
            else regexp='^'+regexp;
        }
-     Expr=new QRegExp3(regexp);
+     Expr=new QRegExp(regexp);
    }
 }
 
@@ -445,7 +445,8 @@ const QChar *HlRegExpr::checkHgl(const QChar *s,bool lineStart)
   if (pos==-1) return 0L;
     else return (s+Expr->matchedLength());
 
-/*  if (Expr->match(line,0,&len)!=-1)
+/*  int len;
+  if (Expr->match(line,0,&len)!=-1)
    {
      return s+len;
    }
