@@ -745,9 +745,9 @@ void KateMainWindow::slotMail()
     if ( doc->isModified() ) {
       // warn that document is modified and offer to save it before preceeding.
       int r = KMessageBox::warningYesNoCancel( this,
-                QString( i18n("<p>The current file:<br><strong>%1</strong><br>has been "
+                i18n("<p>The current file:<br><strong>%1</strong><br>has been "
                 "modified. Modifications will not be available in the attachment."
-                "<p>Do you want to save it before sending it?") ).arg(doc->url().prettyURL()),
+                "<p>Do you want to save it before sending it?").arg(doc->url().prettyURL()),
                 i18n("Save before sending?") );
       switch ( r ) {
         case KMessageBox::Cancel:
