@@ -83,6 +83,12 @@ const KAboutData *KantPartFactory::aboutData()
   data->addAuthor("Matt Newell", I18N_NOOP("Testing, ..."), "newellm@proaxis.com");
   data->addAuthor("Joseph Wenninger", I18N_NOOP("Core Developer"), "jowenn@bigfoot.com");
   data->addAuthor("Michael McCallum", I18N_NOOP("Core Developer"), "gholam@xtra.co.nz");
+  data->addAuthor( "Jochen Wilhemly", I18N_NOOP( "KWrite Author" ), "digisnap@cs.tu-berlin.de" );
+  data->addAuthor( "Michael Koch",I18N_NOOP("KWrite port to KParts"), "koch@kde.org");
+  data->addAuthor( "Christian Gebauer", 0, "gebauer@bigfoot.com" );
+  data->addAuthor( "Simon Hausmann", 0, "hausmann@kde.org" );
+  data->addAuthor("Glen Parker",I18N_NOOP("KWrite Undo History, Kspell integration"), "glenebob@nwlink.com");
+  data->addAuthor("Scott Manson",I18N_NOOP("KWrite XML Syntax highlighting support"), "sdmanson@alltel.net");
 
   return data;
 }
