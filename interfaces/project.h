@@ -23,6 +23,7 @@
 #include <qstringlist.h>
 
 class KConfig;
+class DCOPObject;
 
 namespace Kate
 {
@@ -48,6 +49,8 @@ class Project : public QObject
     virtual ~Project ();
 
     unsigned int projectNumber () const;
+
+    DCOPObject *dcopObject ();
 
     /**
      * Returns the project plugin of this project object

@@ -21,6 +21,8 @@
 #include "project.h"
 #include "project.moc"
 
+#include "projectiface.h"
+
 #include "plugin.h"
 
 #include "../app/kateprojectmanager.h"
@@ -39,6 +41,7 @@ class PrivateProject
 
     ~PrivateProject ()
     {
+      delete m_dcop;
       delete m_data;
       delete m_config;
       delete m_plugin;
@@ -48,6 +51,7 @@ class PrivateProject
     Kate::ProjectPlugin *m_plugin;
     KConfig *m_config;
     QString m_dir;
+    KateProjectDCOPIface *m_dcop;
 };
 
 unsigned int Project::globalProjectNumber = 0;
@@ -63,6 +67,8 @@ Project::Project (void *project) : QObject (((KateInternalProjectData*) project)
   d->m_config = new KConfig (d->m_data->fileName, false, false);
   d->m_dir = d->m_data->fileName.left (d->m_data->fileName.findRev (QChar ('/')));
 
+  d->m_dcop = new KateProjectDCOPIface (this);
+
   // LAST STEP, IMPORTANT, LOAD PLUGIN AFTER ALL OTHER WORK IS DONE !
   d->m_plugin = d->m_data->proMan->createPlugin (this);
 }
@@ -75,6 +81,11 @@ Project::~Project ()
 unsigned int Project::projectNumber () const
 {
   return myProjectNumber;
+}
+
+DCOPObject *Project::dcopObject ()
+{
+  return 0;
 }
 
 ProjectPlugin *Project::plugin () const
