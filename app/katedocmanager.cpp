@@ -190,7 +190,9 @@ Kate::Document *KateDocManager::openURL(const KURL& url,const QString &encoding,
  }
 
   if ( !isOpen( url ) )
-  {  
+  {
+    setIsFirstDocument (false);
+  
     Kate::Document *doc = (Kate::Document *)createDoc ();
 
 
@@ -270,17 +272,16 @@ bool KateDocManager::closeAllDocuments()
 
 void KateDocManager::saveDocumentList(KConfig* cfg)
 {
-
-	QPtrListIterator<Kate::Document> it(m_docList);
-	QString grp=cfg->group();
-	int i=0;	
-        for (; it.current(); ++it, i++) 
-	{
-		kdDebug()<<"SAVE DOCUMENT LIST:"<<it.current()->docName()<<endl;
-		kdDebug()<<"SAVE DOCUMENT LIST:"<<it.current()->url().prettyURL()<<endl;
-		cfg->writeEntry( QString("File%1").arg(i), it.current()->url().prettyURL() );
-		cfg->setGroup(it.current()->url().prettyURL() );
-		it.current()->writeSessionConfig(cfg);
-		cfg->setGroup(grp);
-	}
+  QString grp=cfg->group();
+  int i=0;
+  
+  for ( Kate::Document *doc = m_docList.first(); doc; doc = m_docList.next() )
+  {
+    cfg->writeEntry( QString("File%1").arg(i), doc->url().prettyURL() );
+    cfg->setGroup(doc->url().prettyURL() );
+    doc->writeSessionConfig(cfg);
+    cfg->setGroup(grp);
+    
+    i++;
+  }
 }
