@@ -21,8 +21,6 @@
 #include "kateapp.h"
 #include "katemainwindow.h"
 
-#include <kparts/factory.h>
-
 #include <kconfig.h>
 #include <ksimpleconfig.h>
 #include <kglobal.h>
@@ -105,18 +103,8 @@ void KatePluginManager::enableAllPluginsGUI (KateMainWindow *win)
 }
 
 void KatePluginManager::loadPlugin (PluginInfo *item)
-{
-  KLibFactory *factory = KLibLoader::self()->factory( QFile::encodeName(item->service->library()) );
-  
-  if (!factory)
-  {
-     KMessageBox::sorry(0,KLibLoader::self()->lastErrorMessage());
-     item->load=false;
-     return;
-  }
-  
-  item->plugin = (Kate::Plugin *)factory->create( (Kate::Application *)parent(), "", "Kate::Plugin" );
-  item->load = true;
+{               
+  item->load = (item->plugin = Kate::createPlugin (QFile::encodeName(item->service->library()), (Kate::Application *)kapp));
 }
 
 void KatePluginManager::unloadPlugin (PluginInfo *item)
