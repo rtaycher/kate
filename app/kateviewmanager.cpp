@@ -479,8 +479,8 @@ void KateViewManager::slotDocumentSave ()
     {
       current->getDoc()->save();
 
-       if ( current->getDoc()->isModified() )
-         KMessageBox::sorry(this, i18n("The file could not be saved. Please check if you have write permission."));
+//       if ( current->getDoc()->isModified() )
+//         KMessageBox::sorry(this, i18n("The file could not be saved. Please check if you have write permission."));
     }
     else
       slotDocumentSaveAs();

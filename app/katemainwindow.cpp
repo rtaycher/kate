@@ -584,7 +584,13 @@ void KateMainWindow::slotDropEvent( QDropEvent * event )
 
 void KateMainWindow::editKeys()
 {
-  KKeyDialog::configure(actionCollection());
+  KKeyDialog dlg( false, this );
+  QPtrList<KXMLGUIClient> clients = guiFactory()->clients();
+  for( QPtrListIterator<KXMLGUIClient> it( clients );
+       it.current(); ++it ) {
+    dlg.insert( (*it)->actionCollection() );
+  }
+  dlg.configure();
 }
 
 void KateMainWindow::slotSettingsShowConsole()
