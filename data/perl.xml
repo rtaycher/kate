@@ -1,0 +1,166 @@
+<?xml version="1.01" encoding="UTF-8"?><!DOCTYPE language>
+<language name="Perl" extensions="*.pl" mimetype="" casesensitive="1">
+<highlighting>
+	<keywords>
+		<keyword> sub </keyword>
+		<keyword> bless </keyword>
+		<keyword> caller </keyword>
+		<keyword> cmp </keyword>
+		<keyword> print </keyword>
+		<keyword> echo </keyword>
+		<keyword> die </keyword>
+		<keyword> import </keyword>
+		<keyword> lt </keyword>
+		<keyword> le </keyword>
+		<keyword> local </keyword>
+		<keyword> last </keyword>
+		<keyword> ! </keyword>
+		<keyword> || </keyword>
+		<keyword> eq </keyword>
+		<keyword> ne </keyword>
+		<keyword> use </keyword>
+		<keyword> elsif </keyword>
+		<keyword> my </keyword>
+		<keyword> foreach </keyword>
+		<keyword> wantarray </keyword>
+		<keyword> push </keyword>
+		<keyword> pop </keyword>
+		<keyword> dbmclose </keyword>
+		<keyword> dbmopen </keyword>
+		<keyword> dump </keyword>
+		<keyword> each </keyword>
+		<keyword> ge </keyword>
+		<keyword> gt </keyword>
+		<keyword> split </keyword>
+		<keyword> open </keyword>
+		<keyword> close </keyword>
+		<keyword> eval </keyword>
+		<keyword> chomp </keyword>
+		<keyword> chop </keyword>
+		<keyword> unless </keyword>
+		<keyword> undef </keyword>
+		<keyword> next </keyword>
+		<keyword> unlink </keyword>
+		<keyword> new </keyword>
+		<keyword> and </keyword>
+		<keyword> not </keyword>
+		<keyword> no </keyword>
+		<keyword> ref </keyword>
+		<keyword> redo </keyword>
+		<keyword> require </keyword>
+		<keyword> tied </keyword>
+		<keyword> tie </keyword>
+		<keyword> untie </keyword>
+		<keyword> or </keyword>
+		<keyword> xor </keyword>
+		<keyword> continue </keyword>
+		<keyword> do </keyword>
+		<keyword> else </keyword>
+		<keyword> for </keyword>
+		<keyword> goto </keyword>
+		<keyword> if </keyword>
+		<keyword> return </keyword>
+		<keyword> switch </keyword>
+		<keyword> while </keyword>
+	</keywords>
+
+	<contexts>
+
+		<context attribute="0" lineEndContext="0" name="Normal">
+			<item name="keyword" attribute="1" context="0"/>
+			<item name="dataType" attribute="2" context="0"/>
+			<item name="HlCOct" attribute="4" context="0"/>
+			<item name="HlCHex" attribute="5" context="0"/>
+			<item name="Int" attribute="3" context="0" />
+			<item name="HlCChar" attribute="7" context="0"/>
+			<item name="RegExpr" attribute="1" context="0" String="^#!.*" />
+			<item name="CharDetect" attribute="8" context="1" char="&quot;"/>
+			<item name="CharDetect" attribute="8" context="12" char="'"/>
+			<item name="CharDetect" attribute="9" context="1" char="`"/>
+			<item name="2CharDetect" attribute="10" context="2" char="/" char1="/"/>
+			<item name="2CharDetect" attribute="10" context="3" char="/" char1="*"/>
+			<item name="2CharDetect" attribute="12" context="9" char="s" char1="/" />
+			<item name="CharDetect" attribute="12" context="8" char="/" />
+			<item name="AnyChar" attribute="11" context="0" String="!%&amp;()+,-&lt;=&gt;?[]^{|}~"/>
+			<item name="RegExpr" attribute="3" context="0" String="\$[0-9]+" />
+			<item name="RegExpr" attribute="2" context="0" String="\$\#?[a-zA-Z_]+[a-zA-Z0-9_]*" />
+			<item name="RegExpr" attribute="12" context="0" String="\s+\:" />
+			<item name="CharDetect" attribute="10" context="2" char="#" />
+		</context>
+
+		<context attribute="8" lineEndContext="1" name="String">
+			<item name="LineContinue" attribute="8" context="6"/>
+			<item name="HlCStringChar" attribute="9" context="1"/>
+			<item name="CharDetect" attribute="8" context="0" char="&quot;"/>
+			<item name="RegExpr" attribute="3" context="1" String="\$[0-9]+" />
+			<item name="RegExpr" attribute="2" context="1" String="\$[a-zA-Z_]*[a-zA-Z0-9_]*" />
+		</context>
+
+		<context attribute="10" lineEndContext="0" name="Commentar 1"/>
+
+		<context attribute="10" lineEndContext="3" name="Commentar 2">
+			<item name="2CharDetect" attribute="10" context="0" char="*" char1="/"/>
+		</context>
+
+		<context attribute="12" lineEndContext="0" name="Preprocessor">
+			<item name="LineContinue" attribute="12" context="7"/>
+			<item name="RangeDetect" attribute="13" context="4" char="&quot;" char1="&quot;"/>
+			<item name="RangeDetect" attribute="13" context="4" char="&lt;" char1="&gt;"/>
+			<item name="2CharDetect" attribute="10" context="2" char="/" char1="/"/>
+			<item name="2CharDetect" attribute="10" context="5" char="/" char1="*"/>
+		</context>
+
+		<context attribute="10" lineEndContext="5" name="Commentar/Preprocessor">
+			<item name="2CharDetect" attribute="10" context="4" char="*" char1="/" />
+		</context>
+
+		<context attribute="0" lineEndContext="1" name="Some Context"/>
+
+		<context attribute="0" lineEndContext="4" name="Some Context2"/>
+
+		<context attribute="12" lineEndContext="8" >
+			<item name="RegExpr" attribute="9" context="8" String="\\[\/\[\]dDwWsSnrtfb0\$@]?" />
+			<item name="RegExpr" attribute="9" context="8" String="\^[\/\[\]]?" />
+			<item name="CharDetect" attribute="12" context="0" char="/" />
+		</context>
+
+		<context attribute="12" lineEndContext="9">
+			<item name="RegExpr" attribute="9" context="9" String="\\[\/\[\]dDwWsSnrtfb0\$@]?" />
+			<item name="RegExpr" attribute="9" context="9" String="\^[\/\[\]]?" />
+			<item name="RegExpr" attribute="12" context="10" String="\/" />
+		</context>
+
+		<context attribute="12" lineEndContext="10">
+			<item name="RegExpr" attribute="9" context="10" String="\\[\/\[\]dDwWsSnrtfb0\$@]?" />
+			<item name="RegExpr" attribute="9" context="10" String="\^[\/\[\]]?" />
+			<item name="RegExpr" attribute="12" context="0" String="\/g?" />
+		</context>
+
+		<context attribute="9" lineEndContext="11">
+			<item name="CharDetect" attribute="9" context="0" char="`"/>
+		</context>
+
+		<context attribute="8" lineEndContext="1" name="String2">
+			<item name="LineContinue" attribute="8" context="6"/>
+			<item name="2CharDetect" attribute="9" context="12" char="\" char1="'"/>
+			<item name="CharDetect" attribute="8" context="0" char="'"/>
+		</context>
+	</contexts>
+
+	<itemDatas>
+		<itemData name="Normal Text" defStyleNum="dsNormal"/>
+		<itemData name="Keyword"  defStyleNum="dsKeyword"/>
+		<itemData name="Data Type"  defStyleNum="dsDataType"/>
+		<itemData name="Decimal"  defStyleNum="dsDecVal"/>
+		<itemData name="Octal"  defStyleNum="dsBaseN"/>
+		<itemData name="Hex"  defStyleNum="dsBaseN"/>
+		<itemData name="Float"  defStyleNum="dsFloat"/>
+		<itemData name="Char"  defStyleNum="dsChar"/>
+		<itemData name="String"  defStyleNum="dsString"/>
+		<itemData name="String Char"  defStyleNum="dsChar"/>
+		<itemData name="Comment"  defStyleNum="dsComment"/>
+		<itemData name="Symbol"  defStyleNum="dsNormal"/>
+		<itemData name="Pattern"  defStyleNum="dsOthers"/>
+	</itemDatas>
+</highlighting>
+</language>
