@@ -1490,7 +1490,7 @@ void KateView::setupActions()
     bookmarkMenu = new KActionMenu(i18n("&Bookmarks"), actionCollection(), "bookmarks");
     connect(bookmarkMenu->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(bookmarkMenuAboutToShow()));
 
-    new KToggleAction(i18n("Show &IconBorder"), Key_F6, this, SLOT(toggleIconBorder()), actionCollection(), "view_border");
+    new KToggleAction(i18n("Show &Icon Border"), Key_F6, this, SLOT(toggleIconBorder()), actionCollection(), "view_border");
 
     // setup Tools menu
     KStdAction::spelling(this, SLOT(spellcheck()), actionCollection());
@@ -1514,7 +1514,7 @@ void KateView::setupActions()
         list.append(HlManager::self()->hlName(z));
     setHighlight->setItems(list);
 
-    setEndOfLine = new KSelectAction(i18n("&End Of Line"), 0, actionCollection(), "set_eol");
+    setEndOfLine = new KSelectAction(i18n("&End of Line"), 0, actionCollection(), "set_eol");
     connect(setEndOfLine, SIGNAL(activated(int)), this, SLOT(setEol(int)));
     list.clear();
     list.append("&Unix");
