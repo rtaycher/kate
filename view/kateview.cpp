@@ -43,7 +43,8 @@
 #include "../document/katedocument.h"
 #include "../document/katecmd.h"
 #include "../factory/katefactory.h"
-
+#include "../document/katehighlight.h"
+#include "kateviewdialog.h"
 #include "../document/katedialogs.h"
 
 #include <kurldrag.h>
@@ -69,6 +70,7 @@
 #include <qfile.h>
 #include <qevent.h>
 #include <qdir.h>
+#include <qvbox.h>
 #include <qprintdialog.h>
 #include <qpaintdevicemetrics.h>
 #include <qdropsite.h>
@@ -91,6 +93,8 @@
 #include <kxmlgui.h>
 #include <dcopclient.h>
 #include <qregexp.h>
+#include <kwin.h>
+#include <kdialogbase.h>
 
 #include "../document/katetextline.h"
 #include "kateviewdialog.h"
@@ -1510,7 +1514,7 @@ void KateView::setupActions()
       KStdAction::findNext(this, SLOT(findAgain()), myDoc->actionCollection(), "find_again");
       KStdAction::findPrev(this, SLOT(findPrev()), myDoc->actionCollection(), "find_prev");
       KStdAction::gotoLine(this, SLOT(gotoLine()), myDoc->actionCollection(), "goto_line" );
-      new KAction(i18n("Configure Highlighti&ng..."), 0, this, SLOT(hlDlg()),myDoc->actionCollection(), "set_confHighlight");
+      new KAction(i18n("&Configure Editor..."), 0, this, SLOT(configDialog()),myDoc->actionCollection(), "set_confdlg");
       setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, myDoc->actionCollection(), "set_highlight");
       KStdAction::selectAll(this, SLOT(selectAll()), myDoc->actionCollection(), "select_all");
       new KAction(i18n("&Deselect All"), 0, this, SLOT(deselectAll()),
@@ -1524,6 +1528,7 @@ void KateView::setupActions()
       KStdAction::findNext(this, SLOT(findAgain()), actionCollection());
       KStdAction::findPrev(this, SLOT(findPrev()), actionCollection(), "edit_find_prev");
       KStdAction::gotoLine(this, SLOT(gotoLine()), actionCollection());
+      new KAction(i18n("&Configure Editor..."), 0, this, SLOT(configDialog()),actionCollection(), "set_confdlg");
       setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, actionCollection(), "set_highlight");
       KStdAction::selectAll(this, SLOT(selectAll()), actionCollection());
       new KAction(i18n("&Deselect All"), 0, this, SLOT(deselectAll()),
@@ -2615,13 +2620,56 @@ void KateView::writeSessionConfig(KConfig *config)
   config->writeEntry("IconBorder on", myIconBorder);
 }
 
-void KateView::hlDlg() {
-  HighlightDialog *dlg;
+void KateView::configDialog()
+{
+  KWin kwin;
+
+  KDialogBase *kd = new KDialogBase(KDialogBase::IconList,
+                                    i18n("Configure Editor"),
+                                    KDialogBase::Ok | KDialogBase::Cancel |
+                                    KDialogBase::Help ,
+                                    KDialogBase::Ok, this, "tabdialog");
+
+  // color options
+  QVBox *page=kd->addVBoxPage(i18n("Colors"), QString::null,
+                              BarIcon("colorize", KIcon::SizeMedium) );
+  ColorConfig *colorConfig = new ColorConfig(page);
+  QColor* colors = getColors();
+  colorConfig->setColors(colors);
+
+ page = kd->addVBoxPage(i18n("Fonts"), i18n("Fonts Settings"),
+                              BarIcon("fonts", KIcon::SizeMedium) );
+  FontConfig *fontConfig = new FontConfig(page);
+  fontConfig->setFont (myDoc->getFont());
+
+  // indent options
+  page=kd->addVBoxPage(i18n("Indent"), QString::null,
+                       BarIcon("rightjust", KIcon::SizeMedium) );
+  IndentConfigTab *indentConfig = new IndentConfigTab(page, this);
+
+  // select options
+  page=kd->addVBoxPage(i18n("Select"), QString::null,
+                       BarIcon("misc") );
+  SelectConfigTab *selectConfig = new SelectConfigTab(page, this);
+
+  // edit options
+  page=kd->addVBoxPage(i18n("Edit"), QString::null,
+                       BarIcon("edit", KIcon::SizeMedium ) );
+  EditConfigTab *editConfig = new EditConfigTab(page, this);
+
+  // spell checker
+  page = kd->addVBoxPage( i18n("Spelling"), i18n("Spell checker behavior"),
+                          BarIcon("spellcheck", KIcon::SizeMedium) );
+  KSpellConfig *ksc = new KSpellConfig(page, 0L, ksConfig(), false );
+
+  kwin.setIcons(kd->winId(), kapp->icon(), kapp->miniIcon());
+
+  HighlightDialogPage *hlPage;
   HlManager *hlManager;
   HlDataList hlDataList;
   ItemStyleList defaultStyleList;
 
-  hlManager = myDoc->hlManager;
+  hlManager = HlManager::self();
 
   defaultStyleList.setAutoDelete(true);
   hlManager->getDefaults(defaultStyleList);
@@ -2630,15 +2678,31 @@ void KateView::hlDlg() {
   //this gets the data from the KConfig object
   hlManager->getHlDataList(hlDataList);
 
-  dlg = new HighlightDialog(hlManager, &defaultStyleList, &hlDataList,
-    myDoc->highlightNum(), this);
-//  dlg->hlChanged(myDoc->highlightNum());
-  if (dlg->exec() == QDialog::Accepted) {
-    //this stores the data into the KConfig object
+  page=kd->addVBoxPage(i18n("Highlighting"),i18n("Highlighting configuration"),
+                        BarIcon("edit",KIcon::SizeMedium));
+  hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &hlDataList, 0, page);
+
+ if (kd->exec()) {
+    // color options
+    colorConfig->getColors(colors);
+    myDoc->setFont (fontConfig->getFont());
+
+    applyColors();
+    // indent options
+    indentConfig->getData(this);
+    // select options
+    selectConfig->getData(this);
+    // edit options
+    editConfig->getData(this);
+    // spell checker
+    ksc->writeGlobalSettings();
+    setKSConfig(*ksc);
     hlManager->setHlDataList(hlDataList);
     hlManager->setDefaults(defaultStyleList);
+    hlPage->saveData();
   }
-  delete dlg;
+
+  delete kd;
 }
 
 int KateView::getHl() {

@@ -772,9 +772,9 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
   // syntax highlight
   public slots:
     /**
-      Presents the highlight setup dialog to the user
+      Presents the setup dialog to the user
     */
-    void hlDlg();
+    void configDialog ();
     /**
       Gets the highlight number
     */

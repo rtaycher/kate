@@ -20,6 +20,8 @@
 
 #include <ktexteditor.h>
 
+class KConfig;
+
 namespace Kate
 {
 
@@ -32,6 +34,16 @@ class View : public KTextEditor::View
     virtual ~View () {;};
 
     virtual QString markedText()=0;
+
+  public slots:
+    virtual void configDialog () { ; };
+
+  public:
+    virtual void readConfig () { ; };
+    virtual void writeConfig () { ; };
+
+    virtual void readSessionConfig(KConfig *) { ; };
+    virtual void writeSessionConfig(KConfig *) { ; };
 
   public slots:
     virtual void keyReturn() { ; };

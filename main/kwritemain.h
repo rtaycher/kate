@@ -67,7 +67,6 @@ class TopLevel : public KParts::MainWindow
     void slotNew();
     void slotOpen ();
     void newView();
-    void configure();
     void toggleToolBar();
     void toggleStatusBar();
     void editKeys();

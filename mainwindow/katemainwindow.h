@@ -123,7 +123,6 @@ class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOP
     KSelectAction* setEndOfLine;
     KAction* documentReload;
     KActionMenu* documentOpenWith;
-    KAction *setHighlightConf;
     KSelectAction *setHighlight;
 
     KAction *gotoLine;
@@ -153,7 +152,6 @@ class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOP
     void slotSettingsShowToolbar();
 
     void slotConfigure();
-    void slotHlConfigure();
 
     void slotSidebarFocusNext();
     

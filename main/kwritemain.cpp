@@ -32,9 +32,7 @@
 #include <klocale.h>
 #include <kurl.h>
 #include <kconfig.h>
-#include <kwin.h>
 #include <kcmdlineargs.h>
-#include <kdialogbase.h>
 #include <kkeydialog.h>
 #include <kedittoolbar.h>
 #include <kdebug.h>
@@ -43,10 +41,6 @@
 
 #include "kwritemain.h"
 #include "kwritemain.moc"
-
-#include "../document/katehighlight.h"
-#include "../view/kateviewdialog.h"
-#include "../document/katedialogs.h"
 
 // StatusBar field IDs
 #define ID_LINE_COLUMN 1
@@ -171,7 +165,6 @@ void TopLevel::setupActions()
                     actionCollection(), "set_showPath");
   KStdAction::keyBindings(this, SLOT(editKeys()), actionCollection());
   KStdAction::configureToolbars(this, SLOT(editToolbars()), actionCollection());
-  KStdAction::preferences(this, SLOT(configure()), actionCollection());
 }
 
 void TopLevel::setupStatusBar()
@@ -218,92 +211,6 @@ void TopLevel::newView()
   t->init();
 }
 
-void TopLevel::configure()
-{
-  KWin kwin;
-  // I read that no widgets should be created on the stack
-  KDialogBase *kd = new KDialogBase(KDialogBase::IconList,
-                                    i18n("Configure Kate"),
-                                    KDialogBase::Ok | KDialogBase::Cancel |
-                                    KDialogBase::Help ,
-                                    KDialogBase::Ok, this, "tabdialog");
-
-  // color options
-  QVBox *page=kd->addVBoxPage(i18n("Colors"), QString::null,
-                              BarIcon("colorize", KIcon::SizeMedium) );
-  ColorConfig *colorConfig = new ColorConfig(page);
-  QColor* colors = kateView->getColors();
-  colorConfig->setColors(colors);
-
- page = kd->addVBoxPage(i18n("Fonts"), i18n("Fonts Settings"),
-                              BarIcon("fonts", KIcon::SizeMedium) );
-  FontConfig *fontConfig = new FontConfig(page);
-  fontConfig->setFont (kateView->doc()->getFont());
-
-  // indent options
-  page=kd->addVBoxPage(i18n("Indent"), QString::null,
-                       BarIcon("rightjust", KIcon::SizeMedium) );
-  IndentConfigTab *indentConfig = new IndentConfigTab(page, kateView);
-
-  // select options
-  page=kd->addVBoxPage(i18n("Select"), QString::null,
-                       BarIcon("misc") );
-  SelectConfigTab *selectConfig = new SelectConfigTab(page, kateView);
-
-  // edit options
-  page=kd->addVBoxPage(i18n("Edit"), QString::null,
-                       BarIcon("edit", KIcon::SizeMedium ) );
-  EditConfigTab *editConfig = new EditConfigTab(page, kateView);
-
-  // spell checker
-  page = kd->addVBoxPage( i18n("Spelling"), i18n("Spell checker behavior"),
-                          BarIcon("spellcheck", KIcon::SizeMedium) );
-  KSpellConfig *ksc = new KSpellConfig(page, 0L, kateView->ksConfig(), false );
-
-  kwin.setIcons(kd->winId(), kapp->icon(), kapp->miniIcon());
-
-  HighlightDialogPage *hlPage;
-  HlManager *hlManager;
-  HlDataList hlDataList;
-  ItemStyleList defaultStyleList;
-
-  hlManager = HlManager::self();
-
-  defaultStyleList.setAutoDelete(true);
-  hlManager->getDefaults(defaultStyleList);
-
-  hlDataList.setAutoDelete(true);
-  //this gets the data from the KConfig object
-  hlManager->getHlDataList(hlDataList);
-
-  page=kd->addVBoxPage(i18n("Highlighting"),i18n("Highlighting configuration"),
-                        BarIcon("edit",KIcon::SizeMedium));
-  hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &hlDataList,
-    /*myDoc->highlightNum()*/0, page);
-
- if (kd->exec()) {
-    // color options
-    colorConfig->getColors(colors);
-     kateView->doc()->setFont (fontConfig->getFont());
-
-    kateView->applyColors();
-    // indent options
-    indentConfig->getData(kateView);
-    // select options
-    selectConfig->getData(kateView);
-    // edit options
-    editConfig->getData(kateView);
-    // spell checker
-    ksc->writeGlobalSettings();
-    kateView->setKSConfig(*ksc);
-    hlManager->setHlDataList(hlDataList);
-    hlManager->setDefaults(defaultStyleList);
-    hlPage->saveData();
-  }
-
-  delete kd;
-}
-
 void TopLevel::toggleToolBar()
 {
   if( m_paShowToolBar->isChecked() )
@@ -320,12 +227,10 @@ void TopLevel::toggleStatusBar()
     statusBar()->hide();
 }
 
-
 void TopLevel::editKeys()
 {
   KKeyDialog::configureKeys(actionCollection(), xmlFile());
 }
-
 
 void TopLevel::editToolbars()
 {

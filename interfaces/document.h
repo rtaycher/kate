@@ -20,6 +20,8 @@
 
 #include <ktexteditor.h>
 
+class KConfig;
+
 namespace Kate
 {
 
@@ -30,6 +32,13 @@ class Document : public KTextEditor::Document
   public:
     Document ( ) : KTextEditor::Document (0L, 0L) {;};
     virtual ~Document () {;};
+
+  public:
+    virtual void readConfig () { ; };
+    virtual void writeConfig () { ; };
+
+    virtual void readSessionConfig(KConfig *) { ; };
+    virtual void writeSessionConfig(KConfig *) { ; };
 };
 
 };

@@ -247,8 +247,6 @@ void KateMainWindow::setupActions()
   connect(documentOpenWith->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(mSlotFixOpenWithMenu()));
   connect(documentOpenWith->popupMenu(), SIGNAL(activated(int)), this, SLOT(slotOpenWithMenuAction(int)));
 
-  setHighlightConf = new KAction(i18n("Configure Highlighti&ng..."), 0, this, SLOT(slotHlConfigure()),actionCollection(), "set_confHighlight");
-
   setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, actionCollection(), "set_highlight");
 
   setVerticalSelection = new KToggleAction(i18n("&Vertical Selection"), Key_F4, viewManager, SLOT(toggleVertical()),
@@ -415,7 +413,6 @@ void KateMainWindow::slotWindowActivated ()
     editFindNext->setEnabled(false);
     editReplace->setEnabled(false);
     toolsSpell->setEnabled(false);
-    setHighlightConf->setEnabled(false);
     setHighlight->setEnabled(false);
     gotoLine->setEnabled(false);
     editCmd->setEnabled(false);
@@ -442,7 +439,6 @@ void KateMainWindow::slotWindowActivated ()
     editFindNext->setEnabled(true);
     editReplace->setEnabled(true);
     toolsSpell->setEnabled(true);
-    setHighlightConf->setEnabled(true);
     setHighlight->setEnabled(true);
     gotoLine->setEnabled(true);
     editCmd->setEnabled(true);
@@ -687,12 +683,6 @@ void KateMainWindow::slotConfigure()
   KateConfigDialog* dlg = new KateConfigDialog (this, "configdialog");
   dlg->exec();
   delete dlg;
-}
-
-void KateMainWindow::slotHlConfigure()
-{
-  if (viewManager->activeView())
-    viewManager->activeView()->hlDlg();
 }
 
 //Set focus to next input element

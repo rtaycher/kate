@@ -56,6 +56,7 @@
 #include <ksimpleconfig.h>
 #include <kstdaction.h>
 #include <kstddirs.h>
+#include <kwin.h>
 
 KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
  : KDialogBase (KDialogBase::TreeList, i18n("Configure Kate"), KDialogBase::Ok|KDialogBase::Apply|KDialogBase::Cancel, KDialogBase::Ok, parent, name)
@@ -69,6 +70,9 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   v = viewManager->activeView();
 
   if (!v) return;
+
+  KWin kwin;
+  kwin.setIcons(winId(), kapp->icon(), kapp->miniIcon());
 
   QStringList path;
 
