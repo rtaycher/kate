@@ -114,3 +114,4 @@ KStatusBar *KantApp::statusBar ()
 {
   return mainWindows.at(0)->statusBar();
 }
+
