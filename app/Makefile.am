@@ -8,11 +8,11 @@ libkateinterfaces_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugin
 	kateIface.skel kategrepdialog.cpp katefiledialog.cpp katemailfilesdialog.cpp \
         kbookmarkhandler.cpp kactionselector.cpp katedockcontainer.cpp
 
-libkateinterfaces_la_LIBADD   = ../interfaces/libkateinterfacesprivate.la -lkscript ../lib/libkmultitabbar.la
+libkateinterfaces_la_LIBADD   = ../interfaces/libkateinterfacesprivate.la -lkscript ../lib/libkmultitabbar.la -L/usr/local/lib
 libkateinterfaces_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
 
 kate_la_SOURCES = dummy_kate_la.cpp
-kate_la_LIBADD = libkateinterfaces.la
+kate_la_LIBADD = libkateinterfaces.la -lgc #-lmono -lglib-2.0 -lgmodule-2.0
 kate_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version 
 
 kwrite_la_SOURCES = kwritemain.cpp katefiledialog.cpp kwritedialogs.cpp

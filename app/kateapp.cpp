@@ -74,10 +74,6 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
 
   processEvents();
 
-  if ( isRestored() && KMainWindow::canBeRestored(1) )
-    m_mainWindows.first()->restore( true );
-  else
-    m_mainWindows.first()->restore( false );
 
   KTipDialog::showTip(m_mainWindows.first());
   QTimer::singleShot(0,this,SLOT(callOnEventLoopEnter()));
@@ -132,6 +128,15 @@ int KateApp::newInstance()
     newMainWindow (); 
  
   raiseCurrentMainWindow ();
+
+  if (m_firstStart)
+  {
+    if ( isRestored() && KMainWindow::canBeRestored(1) )
+      m_mainWindows.first()->restore( true );
+    else
+      m_mainWindows.first()->restore( false );
+  }
+
 
   kdDebug()<<"******************************************** loop depth"<<kapp->loopLevel()<<endl;
 
