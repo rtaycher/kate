@@ -1,5 +1,5 @@
 SUBDIRS = lib interfaces app data pics
-EXTRA_DIST = AUTHORS COPYING COPYING.LIB ChangeLog DESIGN NEWS README TODO
+EXTRA_DIST = AUTHORS COPYING.LIB ChangeLog DESIGN NEWS README TODO
 
 messages:
 	rm -f tips.cpp
