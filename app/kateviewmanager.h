@@ -89,10 +89,11 @@ class KateViewManager : public Kate::ViewManager
     uint viewSpaceCount ();
 
   private slots:
-    void activateView ( Kate::View *view );
+    void activateView ( Kate::View *view, bool checkModified = true );
     void activateSpace ( Kate::View* v );
     void slotViewChanged();
     bool closeDocWithAllViews ( Kate::View *view );
+    void openNewIfEmpty();
 
   public slots:
     void deleteLastView ();
@@ -114,6 +115,7 @@ class KateViewManager : public Kate::ViewManager
     void setUseOpaqueResize( bool enable );
 
     void activateView ( uint documentNumber );
+    void activateView ( uint documentNumber, bool checkModified );
     void activateView ( int documentNumber ) { activateView((uint) documentNumber); };
 
     void slotDocumentCloseAll ();

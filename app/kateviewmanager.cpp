@@ -250,11 +250,12 @@ void KateViewManager::activateSpace (Kate::View* v)
   }
 }
 
-void KateViewManager::activateView ( Kate::View *view )
+void KateViewManager::activateView ( Kate::View *view, bool checkModified /*=false*/ )
 {
   if (!view) return;
 
-  view->getDoc()->isModOnHD();
+  if( checkModified )
+    view->getDoc()->isModOnHD();
 
   if (!view->isActive())
   {
@@ -283,10 +284,16 @@ void KateViewManager::activateView ( Kate::View *view )
   m_docManager->setActiveDocument(view->getDoc());
 }
 
+// Don't combine, this is a slot
 void KateViewManager::activateView( uint documentNumber )
 {
+  activateView( documentNumber, true );
+}
+
+void KateViewManager::activateView( uint documentNumber, bool checkModified )
+{
   if ( activeViewSpace()->showView(documentNumber) ) {
-    activateView( activeViewSpace()->currentView() );
+    activateView( activeViewSpace()->currentView(), checkModified );
   }
   else
   {
@@ -378,6 +385,12 @@ bool KateViewManager::closeDocWithAllViews ( Kate::View *view )
 
   m_docManager->deleteDoc (doc);
 
+  emit viewChanged ();
+  return true;
+}
+
+void KateViewManager::openNewIfEmpty()
+{
   for (uint i2=0; i2 < ((KateApp *)kapp)->mainWindows (); i2++ )
   {
     if (((KateApp *)kapp)->kateMainWindow(i2)->kateViewManager()->viewCount() == 0)
@@ -388,9 +401,7 @@ bool KateViewManager::closeDocWithAllViews ( Kate::View *view )
         ((KateApp *)kapp)->kateMainWindow(i2)->kateViewManager()->createView (false, KURL(), 0L, (Kate::Document *)m_docManager->document(m_docManager->documents()-1));
     }
   }
-
   emit viewChanged ();
-  return true;
 }
 
 void KateViewManager::statusMsg ()
@@ -526,6 +537,8 @@ void KateViewManager::slotDocumentClose ()
   if (!activeView()) return;
 
   closeDocWithAllViews (activeView());
+  
+  openNewIfEmpty();
 }
 
 void KateViewManager::slotDocumentCloseAll ()
@@ -540,13 +553,15 @@ void KateViewManager::slotDocumentCloseAll ()
   bool done = false;
   while (closeList.count() > 0)
   {
-    activateView (closeList.at(0)->documentNumber());
+    activateView (closeList.at(0)->documentNumber(), false);
     done = closeDocWithAllViews (activeView());
 
     if (!done) break;
 
     closeList.remove (closeList.at(0));
   }
+  
+  openNewIfEmpty();
 }
 
 void KateViewManager::openURL (KURL url)
@@ -819,7 +834,7 @@ void KateViewManager::saveAllDocsAtCloseDown(  )
 
   while ( closeList.count() > 0 )
   {
-    activateView (closeList.at(0)->documentNumber());
+    activateView (closeList.at(0)->documentNumber(), false);
     v = activeView();
     //id = closeList.at(0)->documentNumber();
 

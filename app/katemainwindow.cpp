@@ -284,18 +284,20 @@ void KateMainWindow::setupActions()
 
 bool KateMainWindow::queryClose()
 {
-  kdDebug(13000)<<"queryClose()"<<endl;
+  kdDebug(13000) << "queryClose()" << endl;
   bool val = false;
 
   if ( ((KateApp *)kapp)->mainWindows () < 2 )
   {
     saveOptions(config);
 
-    m_viewManager->saveAllDocsAtCloseDown(  );
+    m_viewManager->saveAllDocsAtCloseDown();
 
-    if ( (!m_docManager->activeDocument()) || ((!m_viewManager->activeView()->getDoc()->isModified()) && (m_docManager->documents() == 1)))
+    if ( !m_docManager->activeDocument() || !m_viewManager->activeView() ||
+       ( !m_viewManager->activeView()->getDoc()->isModified() && m_docManager->documents() == 1 ) )
     {
-      if (m_viewManager->activeView()) m_viewManager->deleteLastView ();
+      if( m_viewManager->activeView() )
+        m_viewManager->deleteLastView();
       val = true;
     }
   }
@@ -306,9 +308,8 @@ bool KateMainWindow::queryClose()
   {
     ((KateApp *)kapp)->removeMainWindow (this);
     
-    if (consoleDock && console)
-      if (consoleDock->isVisible())
-        consoleDock->changeHideShowState();
+    if( consoleDock && console && consoleDock->isVisible() )
+      consoleDock->changeHideShowState();
   }
 
   return val;
