@@ -362,7 +362,8 @@ void KateMainWindow::readOptions(KConfig *config)
   fileselector->readConfig(config, "fileselector");
   //fileselector->setView(KFile::Default); grr - the file selector reads the config and does this!!
 
- // readDockConfig();
+  if (m_dockStyle!=IDEAlStyle)
+    readDockConfig();
 }
 
 void KateMainWindow::saveOptions(KConfig *config)
@@ -384,8 +385,9 @@ void KateMainWindow::saveOptions(KConfig *config)
   fileOpenRecent->saveEntries(config, "Recent Files");
 
   fileselector->writeConfig(config, "fileselector");
-
-  writeDockConfig();
+    
+  if (m_dockStyle!=IDEAlStyle)
+    writeDockConfig();
 
   if (m_viewManager->activeView())
     m_viewManager->activeView()->getDoc()->writeConfig();
