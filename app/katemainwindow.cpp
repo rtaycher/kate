@@ -486,27 +486,14 @@ void KateMainWindow::documentMenuAboutToShow()
   windowPrev->plug (documentMenu);
   documentMenu->insertSeparator ();
 
-  uint z=0;
-  int i=1;
-
-  QString entry;
-  while ( z<m_docManager->documents() )
+  for (uint z=0; z < filelist->count(); z++)
   {
-    //File name shouldn't be too long - Maciek
-     entry = m_docManager->document(z)->docName();
-     if (entry.length() > 200)
-       entry = "..." + entry.right(197);
-  
-    if (m_docManager->document(z)->isModified())
-      entry.append (i18n(" - Modified"));
-
-    documentMenu->insertItem ( entry, m_viewManager, SLOT (activateView (int)), 0,  m_docManager->document(z)->documentNumber());
+    documentMenu->insertItem (filelist->item(z)->text(),
+                              m_viewManager, SLOT (activateView (int)), 0,
+                              ((KateFileListItem *)filelist->item (z))->documentNumber ());
 
     if (m_viewManager->activeView())
-      documentMenu->setItemChecked( m_docManager->document(z)->documentNumber(), ((Kate::Document *)m_viewManager->activeView()->getDoc())->documentNumber() == m_docManager->document(z)->documentNumber() );
-
-    z++;
-    i++;
+      documentMenu->setItemChecked ( m_viewManager->activeView()->getDoc()->documentNumber(), true);
   }
 }
 
