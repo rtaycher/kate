@@ -54,6 +54,7 @@ private:
 	int m_inserted;
 	int m_delayedRaise;
 	bool m_vertical;
+        bool m_block;
 protected slots:
 	void tabClicked(int);
 	void delayedRaise();

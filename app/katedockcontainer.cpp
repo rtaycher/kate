@@ -28,6 +28,7 @@
 
 KateDockContainer::KateDockContainer(QWidget *parent, class KateMainWindow *win, int position):QWidget(parent),KDockContainer()
 {         
+	m_block=false;
 	m_inserted=-1;
 	m_mainWin = win;
 	oldtab=-1;
@@ -96,6 +97,8 @@ void KateDockContainer::insertWidget (KDockWidget *w, QPixmap pixmap, const QStr
 		tab=m_map[w];
 		if (m_ws->addWidget(w,tab)!=tab) kdDebug()<<"ERROR COULDN'T READD WIDGET************"<<endl;
 		kdDebug()<<"READDED WIDGET***********************************"<<endl;
+		m_tb->setTab(tab,true);
+		tabClicked(tab);
 	}
 	else
 	{
@@ -164,6 +167,13 @@ void KateDockContainer::tabClicked(int t)
 	else
 	{
 //		oldtab=-1;
+    if (m_block) return;
+    m_block=true;
+    if (m_ws->widget(t)) 
+    {
+//		((KDockWidget*)m_ws->widget(t))->undock();
+    }
+    m_block=false;
     m_ws->hide ();
 	kdDebug()<<"Fixed Width:"<<m_tb->width()<<endl;
 	if (m_vertical)

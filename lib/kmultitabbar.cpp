@@ -195,7 +195,7 @@ void KMultiTabBarTab::drawButton(QPainter *paint)
 	if (!isOn())
 	{
 
-		if ((position==KMultiTabBar::Right) || (position==KMultiTabBar::Bottom))
+		if (position==KMultiTabBar::Right)
 		{
 			paint->fillRect(0,0,21,21,QBrush(colorGroup().background()));
 
@@ -213,6 +213,26 @@ void KMultiTabBarTab::drawButton(QPainter *paint)
 			paint->drawLine(0,0,0,23);
 			paint->setPen(colorGroup().background().dark(120));
 			paint->drawLine(1,0,1,23);
+
+		}
+		else
+		if ((position==KMultiTabBar::Bottom) || (position==KMultiTabBar::Top))
+		{
+                        paint->fillRect(0,1,23,22,QBrush(colorGroup().background()));
+
+                        paint->drawPixmap(12-pixmap.width()/2,12-pixmap.height()/2,pixmap);
+
+                        paint->setPen(colorGroup().background().dark(120));
+                        paint->drawLine(23,0,23,23);
+
+
+                        paint->setPen(colorGroup().light());
+                        paint->drawLine(0,22,23,22);
+                        paint->drawLine(0,23,23,23);
+                	paint->setPen(colorGroup().shadow());
+                	paint->drawLine(0,0,23,0);
+                        paint->setPen(colorGroup().background().dark(120));
+                        paint->drawLine(0,1,23,1);
 
 		}
 		else
@@ -247,6 +267,15 @@ void KMultiTabBarTab::drawButton(QPainter *paint)
 			paint->drawPixmap(10-pixmap.width()/2,10-pixmap.height()/2,pixmap);
 //			paint->drawLine(19,21,21,21);
 //			paint->drawLine(21,19,21,21);
+		}
+		else 
+		if (position==KMultiTabBar::Top)
+		{
+//			paint->setPen(colorGroup().shadow());
+//			paint->drawLine(0,23,23,23);
+//			paint->drawLine(0,22,23,22);
+			paint->fillRect(0,0,23,23,QBrush(colorGroup().light()));
+			paint->drawPixmap(10-pixmap.width()/2,10-pixmap.height()/2,pixmap);
 		}
 		else
 		{
