@@ -572,7 +572,7 @@ void KateMainWindow::slotGrepDialogItemSelected(const QString &filename,int line
 
 void KateMainWindow::dragEnterEvent( QDragEnterEvent *event )
 {
-  event->accept(QUriDrag::canDecode(event));
+  event->accept(KURLDrag::canDecode(event));
 }
 
 void KateMainWindow::dropEvent( QDropEvent *event )
