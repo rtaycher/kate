@@ -172,7 +172,7 @@ GrepTool::GrepTool(KateMainWindow *parent, const char *name)
   KButtonBox *actionbox = new KButtonBox(this, Qt::Vertical);
   layout->addWidget(actionbox, 0, 2);
   actionbox->addStretch();
-  btnSearch = actionbox->addButton(i18n("Search"));
+  btnSearch = actionbox->addButton(KGuiItem(i18n("Find"),"find"));
   btnSearch->setDefault(true);
   btnClear = actionbox->addButton( KStdGuiItem::clear() );
   actionbox->addStretch();
@@ -423,7 +423,7 @@ void GrepTool::childExited()
 //   int status = childproc->exitStatus();
   lbResult->unsetCursor();
   btnClear->setEnabled( true );
-  btnSearch->setText( i18n("Search") );
+  btnSearch->setText( i18n("Find") );
 
   if ( ! errbuf.isEmpty() )
   {
