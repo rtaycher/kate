@@ -367,8 +367,10 @@ void KateMainWindow::readOptions(KConfig *config)
   }
 
   if (!((KateApp *)kapp)->_isSDI)
-    resize( config->readSizeEntry( "size", new QSize(600, 400) ) );
-
+    {
+      QSize tmpSize(600, 400);
+      resize( config->readSizeEntry( "size", &tmpSize ) );
+    }
   viewManager->setShowFullPath(config->readBoolEntry("Show Full Path in Title", false));
   //settingsShowFullPath->setChecked(viewManager->getShowFullPath());
   settingsShowToolbar->setChecked(config->readBoolEntry("Show Toolbar", true));
