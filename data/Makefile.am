@@ -12,3 +12,6 @@ rckate_DATA = kateui.rc
 
 rckwritedir = $(kde_datadir)/kwrite
 rckwrite_DATA = kwriteui.rc
+
+tipdir = $(kde_datadir)/kate
+tip_DATA = tips
