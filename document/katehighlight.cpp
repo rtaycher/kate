@@ -152,7 +152,6 @@ const QChar *HlRangeDetect::checkHgl(const QChar *s, int len, bool) {
 HlKeyword::HlKeyword (int attribute, int context,bool casesensitive, const QChar *deliminator, uint deliLen)
   : HlItem(attribute,context), dict (113, casesensitive)
 {
-  if (casesensitive) kdDebug()<<"Case Sensitive Keyword"<<endl; else kdDebug()<<"Case Insensitive KeyWord"<<endl;
   deliminatorChars = deliminator;
   deliminatorLen = deliLen;
   _caseSensitive=casesensitive;
@@ -411,17 +410,10 @@ HlLineContinue::HlLineContinue(int attribute, int context)
 
 const QChar *HlLineContinue::checkHgl(const QChar *s, int len, bool) {
 
- // kdDebug()<<"Interesting:"<<QString("%1").arg(s[1])<<endl;
-//  qDebug(">>>>%d %d %c<<<<<",s[0].latin1(),s[1].latin1(),s[0].latin1());
-//  qDebug(">>>>%d %d %c<<<<<",s[0].latin1(),s[1].latin1(),s[0].latin1());
-//  qDebug(">>>>%d %d %c<<<<<",s[0].latin1(),s[1].latin1(),s[0].latin1());
-  if (s[0].latin1() =='\\') kdDebug()<<QString("Found \\ %1").arg(len)<<endl;
   if ((s[0].latin1() == '\\') && (len == 1))
 	{
-//	   kdDebug()<<"\\ found"<<endl;
            return s + 1;
 	}
-  //kdDebug()<<"No LineEnd Found"<<endl;
   return 0L;
 }
 
@@ -740,6 +732,22 @@ void Highlight::getItemDataList(ItemDataList &list, KConfig *config) {
   }
 }
 
+/*******************************************************************************************
+        Highlight - setItemDataList
+        saves the ItemData / attribute / style definitions to the apps configfile.
+        Especially needed for user overridden values.
+
+                        * input: ItemDataList &list             :reference to the list, whose
+                        *                                        items should be saved
+                        *        KConfig *config                :Pointer KDE configuration
+                        *                                        class, which should be used
+                        *                                        as storage
+                        *************
+                        * output: none
+                        *************
+                        * return value: none
+*******************************************************************************************/
+
 void Highlight::setItemDataList(ItemDataList &list, KConfig *config) {
   ItemData *p;
   QString s;
@@ -751,17 +759,52 @@ void Highlight::setItemDataList(ItemDataList &list, KConfig *config) {
   }
 }
 
+
+/*******************************************************************************************
+        Highlight - use
+        Increase the usage count and trigger initialization if needed
+
+                        * input: none
+                        *************
+                        * output: none
+                        *************
+                        * return value: none
+*******************************************************************************************/
+
 void Highlight::use()
 {
   if (refCount == 0) init();
   refCount++;
 }
 
+
+/*******************************************************************************************
+        Highlight - release
+        Decrease the usage count and trigger a cleanup if needed
+
+                        * input: none
+                        *************
+                        * output: none
+                        *************
+                        * return value: none
+*******************************************************************************************/
+
 void Highlight::release()
 {
   refCount--;
   if (refCount == 0) done();
 }
+
+/*******************************************************************************************
+        Highlight - init
+        If it's the first time a particular highlighting is used create the needed contextlist
+
+                        * input: none
+                        *************
+                        * output: none
+                        *************
+                        * return value: none
+*******************************************************************************************/
 
 void Highlight::init()
 {
@@ -772,6 +815,19 @@ void Highlight::init()
   makeContextList();
 }
 
+
+/*******************************************************************************************
+        Highlight - done
+        If the there is no document using the highlighting style free the complete context
+        structure.
+
+                        * input: none
+                        *************
+                        * output: none
+                        *************
+                        * return value: none
+*******************************************************************************************/
+
 void Highlight::done()
 {
   if (noHl)
@@ -780,17 +836,24 @@ void Highlight::done()
   for (int z = 0; z < nContexts; z++) delete contextList[z];
 }
 
-void Highlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
-{
-  if (noHl)
-    return;
 
-  if (keyword) keyword->addList(HlManager::self()->syntax->finddata("highlighting","keywords"));
-  if (dataType) dataType->addList(HlManager::self()->syntax->finddata("highlighting","types"));
-}
+/*******************************************************************************************
+        Highlight - createItemData
+        This function reads the itemData entries from the config file, which specifies the
+        default attribute styles for matched items/contexts.
+
+                        * input: none
+                        *************
+                        * output: ItemDataList &list            :A reference to the internal
+                                                                list containing the parsed
+                                                                default config
+                        *************
+                        * return value: none
+*******************************************************************************************/
 
 void Highlight::createItemData(ItemDataList &list)
 {
+  // If no highlighting is selected we need only one default.
   if (noHl)
   {
      list.append(new ItemData(I18N_NOOP("Normal Text"), dsNormal));
@@ -801,20 +864,29 @@ void Highlight::createItemData(ItemDataList &list)
   QString selColor;
   QString bold;
   QString italic;
+
+  // If the internal list isn't already available read the config file
   if (internalIDList.count()==0)
   {
+    //if all references to the list are destried the contents will also be deleted
     internalIDList.setAutoDelete(true);
     syntaxContextData *data;
+
+    //Tell the syntax document class which file we want to parse and which data group
     HlManager::self()->syntax->setIdentifier(identifier);
     data=HlManager::self()->syntax->getGroupInfo("highlighting","itemData");
+    //begin with the real parsing
     while (HlManager::self()->syntax->nextGroup(data))
       {
+        // read all attributes
         color=HlManager::self()->syntax->groupData(data,QString("color"));
         selColor=HlManager::self()->syntax->groupData(data,QString("selColor"));
         bold=HlManager::self()->syntax->groupData(data,QString("bold"));
         italic=HlManager::self()->syntax->groupData(data,QString("italic"));
+        //check if the user overrides something
         if ( (!color.isEmpty()) && (!selColor.isEmpty()) && (!bold.isEmpty()) && (!italic.isEmpty()))
                 {
+                        //create a user defined style
                         internalIDList.append(new ItemData(
                                 HlManager::self()->syntax->groupData(data,QString("name")).simplifyWhiteSpace(),
                                 getDefStyleNum(HlManager::self()->syntax->groupData(data,QString("defStyleNum"))),
@@ -823,19 +895,36 @@ void Highlight::createItemData(ItemDataList &list)
                 }
         else
                 {
+                        //assign a default style
                         internalIDList.append(new ItemData(
                                 HlManager::self()->syntax->groupData(data,QString("name")).simplifyWhiteSpace(),
                                 getDefStyleNum(HlManager::self()->syntax->groupData(data,QString("defStyleNum")))));
 
                 }
       }
+    //clean up
     if (data) HlManager::self()->syntax->freeGroupInfo(data);
   }
-//  for (uint i=0;i<internalIDList.count();i++)
+
+  //set the ouput reference
   list=internalIDList;
-//	list.append(new ItemData(internalIDList.at(i)));
 }
 
+
+/*******************************************************************************************
+        Highlight - lookupAttrName
+        This function is  a helper for makeContextList and createHlItem. It looks the given
+        attribute name in the itemData list up and returns it's index
+
+                        * input: QString &name                  :the attribute name to lookup
+                        *        ItemDataList &iDl               :the list containing all
+                        *                                         available attributes
+                        *************
+                        * output: none
+                        *************
+                        * return value: int                     :The index of the attribute
+                        *                                        or 0
+*******************************************************************************************/
 
 int  Highlight::lookupAttrName(const QString& name, ItemDataList &iDl)
 {
@@ -847,89 +936,141 @@ int  Highlight::lookupAttrName(const QString& name, ItemDataList &iDl)
 	return 0;
 }
 
+
+/*******************************************************************************************
+        Highlight - createHlItem
+        This function is  a helper for makeContextList. It parses the xml file for
+        information, how single or multi line comments are marked
+
+                        * input: syntaxContextData *data : Data about the item read from
+                        *                                  the xml file
+                        *        ItemDataList &iDl :       List of all available itemData
+                        *                                   entries. Needed for attribute
+                        *                                   name->index translation
+                        *************
+                        * output: none
+                        *************
+                        * return value: HlItem * :          Pointer to the newly created item
+                        *                                   object
+*******************************************************************************************/
+
 HlItem *Highlight::createHlItem(syntaxContextData *data, ItemDataList &iDl)
 {
+  // No highlighting -> exit
   if (noHl)
     return 0;
 
-
+                // get the (tagname) itemd type
                 QString dataname=HlManager::self()->syntax->groupItemData(data,QString(""));
-		QString tmpAttr=HlManager::self()->syntax->groupItemData(data,QString("attribute")).simplifyWhiteSpace();
-		int attr;
-		if (QString("%1").arg(tmpAttr.toInt())==tmpAttr)
-			attr=tmpAttr.toInt();
-		else
-			attr=lookupAttrName(tmpAttr,iDl);
+
+                // BEGIN - Translation of the attribute parameter
+                QString tmpAttr=HlManager::self()->syntax->groupItemData(data,QString("attribute")).simplifyWhiteSpace();
+                int attr;
+                if (QString("%1").arg(tmpAttr.toInt())==tmpAttr)
+                  attr=tmpAttr.toInt();
+                else
+                  attr=lookupAttrName(tmpAttr,iDl);
+                // END - Translation of the attribute parameter
+
+                // Info about context switch
                 int context=((HlManager::self()->syntax->groupItemData(data,QString("context"))).toInt());
-		char chr;
+
+                // Get the char parameter (eg DetectChar)
+                char chr;
                 if (! HlManager::self()->syntax->groupItemData(data,QString("char")).isEmpty())
-		  chr= (HlManager::self()->syntax->groupItemData(data,QString("char")).latin1())[0];
-		else
+                  chr= (HlManager::self()->syntax->groupItemData(data,QString("char")).latin1())[0];
+                else
                   chr=0;
-		QString stringdata=HlManager::self()->syntax->groupItemData(data,QString("String"));
+
+                // Get the String parameter (eg. StringDetect)
+                QString stringdata=HlManager::self()->syntax->groupItemData(data,QString("String"));
+
+                // Get a second char parameter (char1) (eg Detect2Chars)
                 char chr1;
                 if (! HlManager::self()->syntax->groupItemData(data,QString("char1")).isEmpty())
-		  chr1= (HlManager::self()->syntax->groupItemData(data,QString("char1")).latin1())[0];
-		else
+                  chr1= (HlManager::self()->syntax->groupItemData(data,QString("char1")).latin1())[0];
+                else
                   chr1=0;
-		bool insensitive=(HlManager::self()->syntax->groupItemData(data,QString("insensitive"))==QString("TRUE"));
+
+                // Will be removed eventuall. Atm used for StringDetect
+                bool insensitive=(HlManager::self()->syntax->groupItemData(data,QString("insensitive"))==QString("TRUE"));
+
+
+                //Create the item corresponding to it's type and set it's parameters
                 if (dataname=="keyword")
-		{
-	           HlKeyword *keyword=new HlKeyword(attr,context,casesensitive,
-                        deliminatorChars, deliminatorLen);
-		   keyword->addList(HlManager::self()->syntax->finddata("highlighting",stringdata));
-		   return keyword;
-		} else
+                {
+                  HlKeyword *keyword=new HlKeyword(attr,context,casesensitive,
+                     deliminatorChars, deliminatorLen);
+
+                   //Get the entries for the keyword lookup list
+                  keyword->addList(HlManager::self()->syntax->finddata("highlighting",stringdata));
+                  return keyword;
+                } else
                 if (dataname=="Float") return (new HlFloat(attr,context)); else
                 if (dataname=="Int") return(new HlInt(attr,context)); else
                 if (dataname=="DetectChar") return(new HlCharDetect(attr,context,chr)); else
                 if (dataname=="Detect2Chars") return(new Hl2CharDetect(attr,context,chr,chr1)); else
                 if (dataname=="RangeDetect") return(new HlRangeDetect(attr,context, chr, chr1)); else
-		if (dataname=="LineContinue") return(new HlLineContinue(attr,context)); else
+                if (dataname=="LineContinue") return(new HlLineContinue(attr,context)); else
                 if (dataname=="StringDetect") return(new HlStringDetect(attr,context,stringdata,insensitive)); else
                 if (dataname=="AnyChar") return(new HlAnyChar(attr,context,stringdata.unicode(), stringdata.length())); else
                 if (dataname=="RegExpr") return(new HlRegExpr(attr,context,stringdata)); else
-
-// apparently these were left out
-	   if(dataname=="HlCChar") return ( new HlCChar(attr,context));else
-      if(dataname=="HlCHex") return (new HlCHex(attr,context));else
-	  if(dataname=="HlCOct") return (new HlCOct(attr,context)); else
-	  if(dataname=="HlCStringChar") return (new HlCStringChar(attr,context)); else
+                if(dataname=="HlCChar") return ( new HlCChar(attr,context));else
+                if(dataname=="HlCHex") return (new HlCHex(attr,context));else
+                if(dataname=="HlCOct") return (new HlCOct(attr,context)); else
+                if(dataname=="HlCStringChar") return (new HlCStringChar(attr,context)); else
 
                   {
-//                  //  kdDebug(13010)<< k_lineinfo "****************** "<<endl<<"Unknown entry for Context:"<<dataname<<endl;
+                    // oops, unknown type. Perhaps a spelling error in the xml file
                     return 0;
                   }
 
 
 }
 
+
+/*******************************************************************************************
+        Highlight - isInWord
+
+                        * input: Qchar c       Character to investigate
+                        *************
+                        * output: none
+                        *************
+                        * return value: returns true, if c is no deliminator
+*******************************************************************************************/
+
 bool Highlight::isInWord(QChar c)
 {
   return !ustrchr(deliminatorChars, deliminatorLen, c);
 }
 
-void Highlight::makeContextList()
+
+
+/*******************************************************************************************
+        Highlight - readCommentConfig
+        This function is  a helper for makeContextList. It parses the xml file for
+        information, how single or multi line comments are marked
+
+                        * input: none
+                        *************
+                        * output: none
+                        *************
+                        * return value: none
+*******************************************************************************************/
+
+void Highlight::readCommentConfig()
 {
-  if (noHl)
-    return;
-
-  HlKeyword *keyword=0, *dataType=0;
-  syntaxContextData *data, *datasub;
-  HlItem *c;
-
-//  kdDebug(13010)<< "AutoHighlight makeContextList()"<<endl;
-  HlManager::self()->syntax->setIdentifier(identifier);
 
   cslStart = "";
+  HlManager::self()->syntax->setIdentifier(identifier);
 
-  data=HlManager::self()->syntax->getGroupInfo("general","comment");
+  syntaxContextData *data=HlManager::self()->syntax->getGroupInfo("general","comment");
   if (data)
     {
 //      kdDebug()<<"COMMENT DATA FOUND"<<endl;
     while  (HlManager::self()->syntax->nextGroup(data))
       {
-    //    kdDebug()<<HlManager::self()->syntax->groupData(data,"name")<<endl;
+
         if (HlManager::self()->syntax->groupData(data,"name")=="singleLine")
 		cslStart=HlManager::self()->syntax->groupData(data,"start");
 	if (HlManager::self()->syntax->groupData(data,"name")=="multiLine")
@@ -938,19 +1079,42 @@ void Highlight::makeContextList()
 		cmlEnd=HlManager::self()->syntax->groupData(data,"end");
            }
       }
+    HlManager::self()->syntax->freeGroupInfo(data);
     }
 
-  if (data) HlManager::self()->syntax->freeGroupInfo(data);
-  data=0;
+}
 
-  data=HlManager::self()->syntax->getConfig("general","keywords");
+/*******************************************************************************************
+        Highlight - readGlobalKeyWordConfig
+        This function is  a helper for makeContextList. It parses the xml file for
+        information, if keywords should be treated case(in)sensitive and creates the keyword
+        delimiter list. Which is the default list, without any given weak deliminiators
+
+                        * input: none
+                        *************
+                        * output: none
+                        *************
+                        * return value: none
+*******************************************************************************************/
+
+
+void Highlight::readGlobalKeywordConfig()
+{
+  // Tell the syntax document class which file we want to parse
+  HlManager::self()->syntax->setIdentifier(identifier);
+
+  // Get the keywords config entry
+  syntaxContextData * data=HlManager::self()->syntax->getConfig("general","keywords");
   if (data)
     {
 	kdDebug()<<"Found global keyword config"<<endl;
-    	if (HlManager::self()->syntax->groupItemData(data,QString("casesensitive"))!="0")
+
+        if (HlManager::self()->syntax->groupItemData(data,QString("casesensitive"))!="0")
 		casesensitive=true; else {casesensitive=false; kdDebug()<<"Turning on case insensitiveness"<<endl;}
+     //get the weak deliminators
      weakDeliminator=(!HlManager::self()->syntax->groupItemData(data,QString("weakDeliminator")));
 
+     // remove any weakDelimitars (if any) from the default list and store this list.
      int f;
      for (int s=0; s < weakDeliminator.length(); s++)
      {
@@ -968,29 +1132,62 @@ void Highlight::makeContextList()
     }
   else
     {
+       //Default values
        casesensitive=true;
        weakDeliminator=QString("");
     }
 
-  data=0;
+}
 
+/*******************************************************************************************
+        Highlight - makeContextList
+        That's the most important initialization function for each highlighting. It's called
+        each time a document gets a highlighting style assigned. parses the xml file and
+        creates a corresponding internal structure
+
+                        * input: none
+                        *************
+                        * output: none
+                        *************
+                        * return value: none
+*******************************************************************************************/
+
+
+void Highlight::makeContextList()
+{
+  if (noHl)
+    return;
+
+  HlKeyword *keyword=0, *dataType=0;
+  syntaxContextData *data, *datasub;
+  HlItem *c;
+
+  readCommentConfig();
+  readGlobalKeywordConfig();
+
+  // Let the syntax document class know, which file we'd like to parse
+  HlManager::self()->syntax->setIdentifier(identifier);
+
+  // This list is needed for the translation of the attribute parameter, if the itemData name is given instead of the index
   ItemDataList iDl;
   createItemData(iDl);
 
+  //start the real work
   data=HlManager::self()->syntax->getGroupInfo("highlighting","context");
   int i=0;
   if (data)
     {
       while (HlManager::self()->syntax->nextGroup(data))
         {
-//	kdDebug(13010)<< "In make Contextlist: Group"<<endl;
 
-		QString tmpAttr=HlManager::self()->syntax->groupData(data,QString("attribute")).simplifyWhiteSpace();
-		int attr;
-		if (QString("%1").arg(tmpAttr.toInt())==tmpAttr)
-			attr=tmpAttr.toInt();
-		else
-			attr=lookupAttrName(tmpAttr,iDl);
+          // BEGIN - Translation of the attribute parameter
+          QString tmpAttr=HlManager::self()->syntax->groupData(data,QString("attribute")).simplifyWhiteSpace();
+          int attr;
+          if (QString("%1").arg(tmpAttr.toInt())==tmpAttr)
+            attr=tmpAttr.toInt();
+          else
+            attr=lookupAttrName(tmpAttr,iDl);
+          // END - Translation of the attribute parameter
 
           contextList[i]=new HlContext(
             attr,
@@ -999,16 +1196,16 @@ void Highlight::makeContextList()
             (HlManager::self()->syntax->groupData(data,QString("lineBeginContext"))).toInt());
 
 
+            //Let's create all items for the context
             while (HlManager::self()->syntax->nextItem(data))
               {
 //		kdDebug(13010)<< "In make Contextlist: Item:"<<endl;
-
-		int res;
 		c=createHlItem(data,iDl);
 		if (c)
 			{
-				contextList[i]->items.append(c);
+                                contextList[i]->items.append(c);
 
+                                // Not supported completely atm and only one level. Subitems.(all have to be matched to at once)
 				datasub=HlManager::self()->syntax->getSubItems(data);
 				bool tmpbool;
 				if (tmpbool=HlManager::self()->syntax->nextItem(datasub))
@@ -1018,15 +1215,16 @@ void Highlight::makeContextList()
                                             c->subItems->append(createHlItem(datasub,iDl));
                                         }
 				HlManager::self()->syntax->freeGroupInfo(datasub);
+                                // end of sublevel
 			}
 //		kdDebug(13010)<<"Last line in loop"<<endl;
               }
           i++;
         }
       }
-//  kdDebug(13010)<<"After creation loop in AutoHighlight::makeContextList"<<endl;
+
   HlManager::self()->syntax->freeGroupInfo(data);
-//  kdDebug(13010)<<"After setKeyWords AutoHighlight::makeContextList"<<endl;
+
 
 }
 
