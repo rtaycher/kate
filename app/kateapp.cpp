@@ -36,11 +36,13 @@
 #include <klibloader.h>
 #include <klocale.h>
 
+#include <kio/netaccess.h>
+
 #include <qfile.h>
 #include <qtimer.h>
 
 KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (true,true,true),m_initPlugin(0),m_doNotInitialize(0)
-{       
+{
   m_application = new Kate::Application (this);
   m_initPluginManager = new Kate::InitPluginManager (this);
 
@@ -51,15 +53,15 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
     config()->setGroup("KDE");
     config()->writeEntry("MultipleInstances",oldState);
     config()->sync();
-  } 
-    
+  }
+
   m_firstStart = true;
   kapp->dcopClient()->suspend(); // Don't handle DCOP requests yet
 
   m_mainWindows.setAutoDelete (false);
-  
+
   m_docManager = new KateDocManager (this);
-  
+
   m_projectManager = new KateProjectManager (this);
 
   m_pluginManager = new KatePluginManager (this);
@@ -95,7 +97,7 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
 KateApp::~KateApp ()
 {
   m_pluginManager->writeConfig ();
-}          
+}
 
 void KateApp::callOnEventLoopEnter()
 {
@@ -137,10 +139,10 @@ KURL KateApp::initScript() const {return m_initURL;}
 int KateApp::newInstance()
 {
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
-    
+
   if (!m_firstStart && args->isSet ("w"))
-    newMainWindow (); 
- 
+    newMainWindow ();
+
   raiseCurrentMainWindow ();
 
   if (m_firstStart)
@@ -160,42 +162,43 @@ int KateApp::newInstance()
         kdDebug()<<"***************************** INIT PLUGIN ON FIRST START"<<endl;
   }
   else if (args->isSet("initplugin"))
-  {	
+  {
         kdDebug()<<"***************************** INIT PLUGIN ON ANY  START"<<endl;
 	performInit(args->getOption("initplugin"),args->url(0));
-	
+
   }
   else
-  {  
+  {
     for (int z=0; z<args->count(); z++)
     {
-      m_mainWindows.first()->kateViewManager()->openURL( args->url(z) );
+      if (!KIO::NetAccess::mimetype( args->url(z), m_mainWindows.first() ).startsWith(QString ("inode/directory")))
+        m_mainWindows.first()->kateViewManager()->openURL( args->url(z) );
     }
- 
+
     if ( m_mainWindows.first()->kateViewManager()->viewCount () == 0 )
-       m_mainWindows.first()->kateViewManager()->activateView(m_docManager->firstDocument()->documentNumber());     
-    
+       m_mainWindows.first()->kateViewManager()->activateView(m_docManager->firstDocument()->documentNumber());
+
     int line = 0;
     int column = 0;
     bool nav = false;
-  
+
     if (args->isSet ("line"))
     {
       line = args->getOption ("line").toInt();
       nav = true;
-    } 
-  
+    }
+
     if (args->isSet ("column"))
     {
       column = args->getOption ("column").toInt();
       nav = true;
-    } 
-  
+    }
+
     if (nav)
       m_mainWindows.first()->kateViewManager()->activeView ()->setCursorPosition (line, column);
-  }                   
+  }
   m_firstStart = false;
-    
+
   return 0;
 }
 
@@ -214,7 +217,7 @@ KateMainWindow *KateApp::newMainWindow ()
   mainWindow->show ();
   mainWindow->raise();
   KWin::setActiveWindow (mainWindow->winId());
-  
+
   return mainWindow;
 }
 
@@ -245,7 +248,7 @@ void KateApp::raiseCurrentMainWindow ()
 
   m_mainWindows.at(n)->raise();
   KWin::setActiveWindow (m_mainWindows.at(n)->winId());
-}    
+}
 
 Kate::MainWindow *KateApp::activeMainWindow ()
 {
