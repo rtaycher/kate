@@ -15,10 +15,22 @@ sub prg($)
 	$test = 2/453453.21;
 	$test /= 2;
 
+	print qq~d fsd fsdf sdfl sd~
+	
+	$" = '/';
+	
+	$foo = <<__EOF;
+d ahfdklf klsdfl sdf sd
+fsd sdf sdfsdlkf sd
+__EOF
+
+	$x = "dasds";
+
 	next if( $match eq "two" );
 	next if( $match =~ /go/i );
 
 	@array = (1,2,3);		# a comment
+	@array = qw(apple foo bar);
 	push(@array, 4);
 	%hash = (red => 'rot',
 		blue => 'blau');
