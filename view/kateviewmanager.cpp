@@ -77,27 +77,10 @@ bool KateViewManager::createView ( bool newDoc, KURL url, KateView *origView, Ka
 {
   // create doc
   if (newDoc && !doc)
-  {
-    QFileInfo* fi;
-    if ( (!url.isEmpty()) && (url.filename() != 0) ) {
-      // if this is a local file, get some information
-      if ( url.isLocalFile() ) {
-         //kdDebug(13030)<<"local file!"<<endl;
-         fi = new QFileInfo(url.path());
-         if (!fi->exists()) {
-           kdDebug(13030)<<QString("createView(): ABORTING: %1 dosen't exist").arg(url.path())<<endl;
-           return false;
-         }
-      }
-      ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
-    }
     doc = docManager->createDoc ();
-  }
   else
-  {
     if (!doc)
       doc = (KateDocument *)origView->doc();
-  }
 
   // create view
   KateView *view = new KateView (doc, this, 0L);
@@ -113,7 +96,8 @@ bool KateViewManager::createView ( bool newDoc, KURL url, KateView *origView, Ka
 
     if (!url.isEmpty())
     {
-      view->doc()->openURL ( url );
+      if (view->doc()->openURL ( url ))
+        ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
 
       if (url.filename() != 0) {
         QString name = url.filename();
