@@ -145,7 +145,6 @@ void KateMainWindow::setupMainWindow ()
   mainDock->setEnableDocking ( KDockWidget::DockNone );
   mainDock->setDockSite( KDockWidget::DockCorner );
 
-
   if (m_dockStyle==IDEAlStyle)
   {
     m_leftDock->setWidget(new KateDockContainer(m_leftDock, this, KDockWidget::DockLeft));
@@ -153,7 +152,6 @@ void KateMainWindow::setupMainWindow ()
     m_topDock->setWidget(new KateDockContainer(m_topDock, this, KDockWidget::DockTop));
     m_bottomDock->setWidget(new KateDockContainer(m_bottomDock, this, KDockWidget::DockBottom));
   }
-
 
   if (m_dockStyle==IDEAlStyle)
   {
@@ -164,6 +162,7 @@ void KateMainWindow::setupMainWindow ()
      m_bottomDock->undock();
      m_topDock->undock();
   }
+
 
   filelist = new KateFileList (m_docManager, m_viewManager, this/*filelistDock*/, "filelist");
   filelistDock=addToolViewWidget(KDockWidget::DockLeft,filelist,SmallIcon("kmultiple"),"File List");

@@ -3,6 +3,7 @@
 
 #include <qwidget.h>
 #include <kdockwidget.h>
+#include <qmap.h>
 
 class QWidgetStack;
 class KMultiVertTabBar;
@@ -14,15 +15,18 @@ public:
         KateDockContainer(QWidget *parent, class KateMainWindow *win, int position);
         virtual ~KateDockContainer();
         KDockWidget *parentDockWidget();
-        void insertWidget (KDockWidget *w, QPixmap, const QString &, int &);
-        void setToolTip (KDockWidget *, QString &);
+        virtual void insertWidget (KDockWidget *w, QPixmap, const QString &, int &);
+        virtual void setToolTip (KDockWidget *, QString &);
+//	virtual void undockWidget(KDockWidget*);
+  	virtual void removeWidget(KDockWidget*);
 private:                    
   class KateMainWindow *m_mainWin;
 	QWidgetStack *m_ws;
 	KMultiVertTabBar *m_tb;
 	int mTabCnt;
 	int oldtab;
-  int m_position; 
+  	int m_position; 
+	QMap<KDockWidget*,int> m_map;
 protected slots:
 	void tabClicked(int);
 };
