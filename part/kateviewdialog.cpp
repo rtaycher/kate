@@ -611,11 +611,11 @@ FontConfig::FontConfig( QWidget *parent, char *name, KateDocument *doc )
 
   m_fontchooser = new KFontChooser ( tab );
   m_fontchooser->enableColumn(KFontChooser::StyleList, false);
-  tab->addTab (m_fontchooser, i18n("Displayfont"));
+  tab->addTab (m_fontchooser, i18n("Display Font"));
 
   m_fontchooserPrint = new KFontChooser ( tab );
   m_fontchooserPrint->enableColumn(KFontChooser::StyleList, false);
-  tab->addTab (m_fontchooserPrint, i18n("Printerfont"));
+  tab->addTab (m_fontchooserPrint, i18n("Printer Font"));
   
   tab->show ();
 
