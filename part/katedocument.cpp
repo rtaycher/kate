@@ -3687,152 +3687,116 @@ void KateDocument::paintTextLine(QPainter &paint, uint line, int y, int xStart, 
 bool KateDocument::doSearch(SConfig &sc, const QString &searchFor) {
   int line, col;
   int searchEnd;
-  int bufLen, tlen;
-  QChar *t;
   TextLine::Ptr textLine;
 
   if (searchFor.isEmpty()) return false;
 
-  bufLen = 0;
-  t = 0L;
-
   line = sc.cursor.line;
   col = sc.cursor.col;
-  if (!(sc.flags & KateDocument::sfBackward)) {
-    //forward search
-    if (sc.flags & KateDocument::sfSelected) {
-      if (line < selectStart.line) {
+
+  if (!(sc.flags & KateDocument::sfBackward)) // FORWARDS
+  {
+    if (sc.flags & KateDocument::sfSelected)
+    {
+      if (line < selectStart.line)
+      {
         line = selectStart.line;
-        col = 0;
+        col = selectStart.col;
       }
       searchEnd = selectEnd.line;
-    } else searchEnd = lastLine();
+    }
+    else
+      searchEnd = lastLine();
 
-    while (line <= searchEnd) {
+    while (line <= searchEnd)
+    {
       textLine = getTextLine(line);
-      tlen = textLine->length();
-      if (tlen > bufLen) {
-        delete t;
-        bufLen = (tlen + 255) & (~255);
-        t = new QChar[bufLen];
-      }
-      memcpy(t, textLine->getText(), tlen*sizeof(QChar));
-      /*if (sc.flags & KateDocument::sfSelected) {
-        pos = 0;
-        do {
-          pos = textLine->findSelected(pos);
-          newPos = textLine->findUnselected(pos);
-          memset(&t[pos], 0, (newPos - pos)*sizeof(QChar));
-          pos = newPos;
-        } while (pos < tlen);
-      }*/
 
-      QString text(t, tlen);
-      if (sc.flags & KateDocument::sfWholeWords) {
-        // Until the end of the line...
-        while (col < tlen) {
-          // ...find the next match.
-          col = sc.search(text, col);
-          if (col != -1) {
-            // Is the match delimited correctly?
-            if (((col == 0) || (!m_highlight->isInWord(t[col]))) &&
-              ((col + sc.matchedLength == tlen) || (!m_highlight->isInWord(t[col + sc.matchedLength])))) {
-              goto found;
-            }
-            else {
-              // Start again from the next character.
-              col++;
-            }
-          }
-          else {
-            // No match.
-            break;
-          }
-        }
+      uint fCol = 0;
+      uint mlen = 0;
+      bool found = textLine->searchText (col, searchFor, &fCol, &mlen, sc.flags & KateDocument::sfCaseSensitive, false);
+
+      if ((sc.flags & KateDocument::sfSelected) && blockSelectionMode())
+        if (fCol+mlen > selectEnd.col)
+          found = false;
+
+      if ((sc.flags & KateDocument::sfSelected) && (line == selectEnd.line))
+        if (fCol+mlen > selectEnd.col)
+          found = false;
+
+      if (found)
+      {
+        sc.cursor.col = fCol;
+        sc.cursor.line = line;
+        sc.matchedLength = mlen;
+        return true;
       }
-      else {
-        // Non-whole-word search.
-        col = sc.search(text, col);
-        if (col != -1)
-          goto found;
-      }
-      col = 0;
+
+      if ((sc.flags & KateDocument::sfSelected) && blockSelectionMode())
+        col = selectStart.col;
+      else
+        col = 0;
+
       line++;
     }
-  } else {
-    // backward search
-    if (sc.flags & KateDocument::sfSelected) {
-      if (line > selectEnd.line) {
+  }
+  else // BACKWARDS
+  {
+    if (sc.flags & KateDocument::sfSelected)
+    {
+      if (line > selectEnd.line)
+      {
         line = selectEnd.line;
-        col = -1;
+        col = selectEnd.col;
       }
       searchEnd = selectStart.line;
-    } else searchEnd = 0;
+    }
+    else
+      searchEnd = 0;
 
-    while (line >= searchEnd) {
+    while (line >= searchEnd)
+    {
       textLine = getTextLine(line);
-      tlen = textLine->length();
-      if (tlen > bufLen) {
-        delete t;
-        bufLen = (tlen + 255) & (~255);
-        t = new QChar[bufLen];
-      }
-      memcpy(t, textLine->getText(), tlen*sizeof(QChar));
-      /*if (sc.flags & KateDocument::sfSelected) {
-        pos = 0;
-        do {
-          pos = textLine->findSelected(pos);
-          newPos = textLine->findUnselected(pos);
-          memset(&t[pos], 0, (newPos - pos)*sizeof(QChar));
-          pos = newPos;
-        } while (pos < tlen);
-      }*/
 
-      if (col < 0 || col > tlen) col = tlen;
+      if ((col == -1) || (col > textLine->length()))
+        col = textLine->length();
 
-      QString text(t, tlen);
-      if (sc.flags & KateDocument::sfWholeWords) {
-        // Until the beginning of the line...
-        while (col >= 0) {
-          // ...find the next match.
-          col = sc.search(text, col);
-          if (col != -1) {
-            // Is the match delimited correctly?
-            if (((col == 0) || (!m_highlight->isInWord(t[col]))) &&
-              ((col + sc.matchedLength == tlen) || (!m_highlight->isInWord(t[col + sc.matchedLength])))) {
-              goto found;
-            }
-            else {
-              // Start again from the previous character.
-              col--;
-            }
-          }
-          else {
-            // No match.
-            break;
-          }
-        }
+      uint fCol = 0;
+      uint mlen = 0;
+      bool found = textLine->searchText (col, searchFor, &fCol, &mlen, sc.flags & KateDocument::sfCaseSensitive, true);
+
+      if ((sc.flags & KateDocument::sfSelected) && blockSelectionMode())
+        if (fCol < selectStart.col)
+          found = false;
+
+      if ((sc.flags & KateDocument::sfSelected) && (line == selectStart.line))
+        if (fCol < selectStart.col)
+          found = false;
+
+      if (found)
+      {
+        sc.cursor.col = fCol;
+        sc.cursor.line = line;
+        sc.matchedLength = mlen;
+        return true;
       }
-      else {
-        // Non-whole-word search.
-        col = sc.search(text, col);
-        if (col != -1)
-          goto found;
-      }
-      col = -1;
+
+      if ((sc.flags & KateDocument::sfSelected) && blockSelectionMode())
+        col = selectEnd.col;
+      else
+        col = -1;
+
       line--;
     }
   }
+
+// old stuff
+
+  //    if (sc.flags & KateDocument::sfWholeWords) {
+
   sc.flags |= KateDocument::sfWrapped;
+
   return false;
-found:
-  if (sc.flags & KateDocument::sfWrapped) {
-    if ((line > sc.startCursor.line || (line == sc.startCursor.line && col >= sc.startCursor.col))
-      ^ ((sc.flags & KateDocument::sfBackward) != 0)) return false;
-  }
-  sc.cursor.col = col;
-  sc.cursor.line = line;
-  return true;
 }
 
 void KateDocument::newBracketMark(KateTextCursor &cursor, BracketMark &bm)
