@@ -98,14 +98,14 @@ class View : public KTextEditor::View, public KTextEditor::ClipboardInterface,
     virtual bool canDiscard() { return false; };
     
   public:
-    virtual int tabWidth() = 0L;
-    virtual void setTabWidth(int) = 0L;
-    virtual void setEncoding (QString e) = 0L;
+    virtual int tabWidth() = 0;
+    virtual void setTabWidth(int) = 0;
+    virtual void setEncoding (QString e) = 0;
 
     /**
       Returns true if this editor is the only owner of its document
     */
-    virtual bool isLastView() = 0L;
+    virtual bool isLastView() = 0;
 
   public slots:
     /**
@@ -273,8 +273,8 @@ class View : public KTextEditor::View, public KTextEditor::ClipboardInterface,
     void gotFocus (View *);
 
   public:
-    virtual void setActive (bool b) = 0L;
-    virtual bool isActive () = 0L;
+    virtual void setActive (bool b) = 0;
+    virtual bool isActive () = 0;
 };
 };
 

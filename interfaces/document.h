@@ -89,8 +89,8 @@ class Document : public KTextEditor::Document, public KTextEditor::EditInterface
     virtual void reloadFile() = 0;
     
   public:
-    virtual void setEncoding (QString e) = 0L;
-    virtual QString encoding() = 0L;
+    virtual void setEncoding (QString e) = 0;
+    virtual QString encoding() = 0;
 };
 
 };
