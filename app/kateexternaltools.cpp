@@ -240,7 +240,7 @@ bool KateExternalToolAction::expandMacro( const QString &str, QStringList &ret )
   else if ( str == "directory" ) // directory of current doc
     ret += mw->activeDocumentUrl().directory();
   else if ( str == "filename" )
-    ret += mw->activeDocumentUrl().filename();
+    ret += mw->activeDocumentUrl().fileName();
   else if ( str == "line" ) // cursor line of current doc
     ret += QString::number( view->cursorLine() );
   else if ( str == "col" ) // cursor col of current doc
@@ -292,7 +292,7 @@ KateExternalToolsMenuAction::KateExternalToolsMenuAction( const QString &text,
       mainwindow( mw )
 {
 
-  m_actionCollection = new KActionCollection( this );
+  m_actionCollection = new KActionCollection( mw );
 
   connect(KateDocManager::self(),SIGNAL(documentChanged()),this,SLOT(slotDocumentChanged()));
 
@@ -301,7 +301,13 @@ KateExternalToolsMenuAction::KateExternalToolsMenuAction( const QString &text,
 
 void KateExternalToolsMenuAction::reload()
 {
-  m_actionCollection->clear ();
+  // m_actionCollection->clear();
+  // clear() is KDE_NO_COMPAT, should it have been?
+  KAction *it = m_actionCollection->action(0);
+  while ( it ){
+    m_actionCollection->remove( it );
+    it = m_actionCollection->action(0);
+  }
 
   popupMenu()->clear();
 
@@ -630,7 +636,7 @@ void KateExternalToolsConfigWidget::reload()
           config->readEntry( "executable", ""),
           config->readListEntry( "mimetypes" ),
           config->readEntry( "acname" ),
-	  config->readEntry( "cmdname"),
+          config->readEntry( "cmdname"),
           config->readNumEntry( "save", 0 ) );
 
       if ( t->hasexec ) // we only show tools that are also in the menu.
