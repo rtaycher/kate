@@ -25,6 +25,7 @@
   <Action name="file_new" />
   <Action name="file_open" />
  <DefineGroup name="file_operations" />
+ <Action name="file_close" />
  <Action name="file_print" />
  <Separator />
  <Merge />
