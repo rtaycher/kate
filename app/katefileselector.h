@@ -1,20 +1,22 @@
-/***************************************************************************
-                          katefileselector.h  -  description
-                             -------------------
-    begin                : Mon Feb 5 2001
-    copyright            : (C) 2001 by Matt Newell <newellm@proaxis.com>
-			   (C) 2002 by Anders Lund <anders@alweb.dk>
-			   (C) 2002 by Joseph Wenninger <jowennn@kde.org>
- ***************************************************************************/
+/* This file is part of the KDE project
+   Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
+   Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
+   Copyright (C) 2001 Anders Lund <anders.lund@lund.tdcadsl.dk>
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License version 2 as published by the Free Software Foundation.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
+*/
 
 #ifndef __KATE_FILESELECTOR_H__
 #define __KATE_FILESELECTOR_H__
