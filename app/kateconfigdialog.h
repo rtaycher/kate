@@ -42,7 +42,7 @@ class KateConfigDialog : public KDialogBase
   Q_OBJECT
 
   public:
-    KateConfigDialog (KateMainWindow *parent, const char * = 0);
+    KateConfigDialog (KateMainWindow *parent, Kate::View *view);
     ~KateConfigDialog ();
 
   public:
@@ -50,12 +50,10 @@ class KateConfigDialog : public KDialogBase
     void removePluginPage (Kate::Plugin *plugin);
 
   protected slots:
-    virtual void slotApply();
-    virtual void slotOk();
+    void slotOk();
     void slotChanged();
 
   private:
-    class KConfig *config;
     KateDocManager *docManager;
     KateViewManager *viewManager;
     KatePluginManager *pluginManager;

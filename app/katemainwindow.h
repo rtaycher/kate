@@ -119,10 +119,6 @@ class KateMainWindow : public KMdiMainFrm, virtual public KParts::PartBase
   protected:
     KatePluginManager *m_pluginManager;
 
-    // Anders: I moved the config object to protected, because
-    // other objects needs access.
-    KConfig* config;
-
   private:
     QGuardedPtr<Kate::Project> m_project;
     uint m_projectNumber;

@@ -657,51 +657,8 @@ void KateViewManager::slotCloseCurrentViewSpace()
 void KateViewManager::setShowFullPath( bool enable )
 {
   showFullPath = enable;
-}
-
-void KateViewManager::queryModified()
-{
-#if 0
-  if (m_docManager->documents () == 0) return;
-
-  // Make sure all documents have a URL
-  Kate::Document *d = m_docManager->firstDocument();
-  while ( d )
-  {
-    if ( d->url().isEmpty() && d->isModified() )
-    {
-      // ask if the user wants to save this one
-      // and if so, ask for a URL
-      // else, close doc.
-      bool keep( false );
-
-      if ( KMessageBox::warningYesNo( this,
-              i18n("<p>The document '%1' has been modified, but not saved."
-                   "<p>Do you want to keep it?").arg( d->docName() ),
-              i18n("Unsaved Document") ) == KMessageBox::Yes )
-      {
-        KEncodingFileDialog::Result r=KEncodingFileDialog::getSaveURLAndEncoding(
-                KTextEditor::encodingInterface(d)->encoding(),QString::null,QString::null,this,i18n("Save As"));
-
-        d->setEncoding( r.encoding );
-        KURL tmp;
-        if (!r.URLs.isEmpty()) tmp=r.URLs.first();
-        if ( d->saveAs( tmp ) )
-          keep = true;
-        else
-          return;
-      }
-
-      if ( !keep )
-      {
-        closeViews( d->documentNumber() );
-        m_docManager->deleteDoc( d );
-      }
-    }
-
-    d = m_docManager->nextDocument();
-  }
-#endif
+  statusMsg ();
+  m_mainWindow->slotWindowActivated ();
 }
 
 /**

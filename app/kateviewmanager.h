@@ -47,9 +47,6 @@ class KateViewManager : public QWidget
     inline QPtrList<Kate::View> &viewList () { return m_viewList; };
 
   public:
-    /* Query if the modified untitled docs should now be saved */
-    void queryModified();
-
     /* This will save the splitter configuration */
     void saveViewConfiguration(KConfig *config,const QString& group);
 

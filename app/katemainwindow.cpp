@@ -109,7 +109,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   console = 0L;
 
   // now the config
-  config = kapp->config();
+  KConfig *config = kapp->config();
 
   // first init size while we are still invisible, avoid flicker
   if (!initialGeometrySet())
@@ -323,7 +323,7 @@ bool KateMainWindow::queryClose()
 
       m_projectManager->saveProjectList (scfg);
 
-      saveOptions(config);
+      saveOptions(kapp->config());
 
       if (m_projectManager->closeAll ())
       {
@@ -561,8 +561,12 @@ void KateMainWindow::openURL (const QString &name)
 
 void KateMainWindow::slotConfigure()
 {
-  KateConfigDialog* dlg = new KateConfigDialog (this, "configdialog");
+  if (!m_viewManager->activeView())
+    return;
+    
+  KateConfigDialog* dlg = new KateConfigDialog (this, m_viewManager->activeView());
   dlg->exec();
+  
   delete dlg;
 }
 

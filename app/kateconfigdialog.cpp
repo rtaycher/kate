@@ -60,17 +60,18 @@
 #include <qcombobox.h>
 #include <kmdidefines.h>
 
-KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, const char *name )
+KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
  : KDialogBase ( KDialogBase::TreeList,
                  i18n("Configure"),
                  KDialogBase::Ok | KDialogBase::Cancel | KDialogBase::Help,
                  KDialogBase::Ok,
                  parent,
-                 name )
+                 "configdialog" )
 {
+  KConfig *config = kapp->config();
+
   KWin::setIcons( winId(), kapp->icon(), kapp->miniIcon() );
 
-  config = parent->config;
   docManager = ((KateApp *)kapp)->kateDocumentManager();
   viewManager = parent->kateViewManager();
   pluginManager = ((KateApp *)kapp)->katePluginManager();
@@ -78,9 +79,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, const char *name )
 
   setMinimumSize(600,400);
 
-  v = viewManager->activeView();
-
-  if (!v) return;
+  v = view;
 
   pluginPages.setAutoDelete (false);
   editorPages.setAutoDelete (false);
@@ -165,7 +164,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, const char *name )
   // show full path in title
   config->setGroup("General");
   cb_fullPath = new QCheckBox( i18n("Show full &path in title"), bgStartup);
-  cb_fullPath->setChecked( config->readBoolEntry("Show Full Path in Title", false ) );
+  cb_fullPath->setChecked( viewManager->getShowFullPath() );
   QWhatsThis::add(cb_fullPath,i18n("If this option is checked, the full document path will be shown in the window caption."));
   connect( cb_fullPath, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
   
@@ -272,7 +271,6 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, const char *name )
 
   enableButtonSeparator(true);
   dataChanged = false;
-  enableButton(Apply, false);
   unfoldTreeList ();
 }
 
@@ -319,79 +317,86 @@ void KateConfigDialog::removePluginPage (Kate::Plugin *plugin)
 
 void KateConfigDialog::slotOk()
 {
+  KConfig *config = kapp->config();
+
+  // if data changed apply the kate app stuff
   if( dataChanged )
-    slotApply();
-  accept();
-}
-
-void KateConfigDialog::slotApply()
-{
-  config->setGroup("KDE");
-  config->writeEntry("MultipleInstances",cb_singleInstance->isChecked());
-  config->setGroup("General");
-  config->writeEntry("Restore Projects", cb_reopenProjects->isChecked());
-  config->writeEntry("Restore Documents", cb_reopenFiles->isChecked());
-  config->writeEntry("Restore Window Configuration", cb_restoreVC->isChecked());
-
-  config->writeEntry("Modified Notification", cb_modNotifications->isChecked());
-  mainWindow->modNotification = cb_modNotifications->isChecked();
-
-  KMdi::MdiMode tmpMode;
-  switch (combo_guiMode->currentItem()) {
-	case 1: 
-		tmpMode=KMdi::TabPageMode;
-		break;
-	case 0:
-	default:
-		tmpMode=KMdi::IDEAlMode;
-		break;
-  }
-  config->writeEntry("DefaultGUIMode",tmpMode);
-  mainWindow->defaultMode=tmpMode;
-  
-  for (uint i=0; i < ((KateApp *)kapp)->mainWindows(); i++)
   {
-    KateMainWindow *win = ((KateApp *)kapp)->kateMainWindow (i);
-    
-    if (tmpMode != win->mdiMode())
-    {
-      if (tmpMode == KMdi::TabPageMode)
-        win->switchToTabPageMode();
-      else
-        win->switchToIDEAlMode();      
+    config->setGroup("KDE");
+    config->writeEntry("MultipleInstances",cb_singleInstance->isChecked());
+    config->setGroup("General");
+    config->writeEntry("Restore Projects", cb_reopenProjects->isChecked());
+    config->writeEntry("Restore Documents", cb_reopenFiles->isChecked());
+    config->writeEntry("Restore Window Configuration", cb_restoreVC->isChecked());
+  
+    config->writeEntry("Modified Notification", cb_modNotifications->isChecked());
+    mainWindow->modNotification = cb_modNotifications->isChecked();
+  
+    KMdi::MdiMode tmpMode;
+    switch (combo_guiMode->currentItem()) {
+          case 1: 
+                  tmpMode=KMdi::TabPageMode;
+                  break;
+          case 0:
+          default:
+                  tmpMode=KMdi::IDEAlMode;
+                  break;
     }
+    config->writeEntry("DefaultGUIMode",tmpMode);
+    mainWindow->defaultMode=tmpMode;
+    
+    for (uint i=0; i < ((KateApp *)kapp)->mainWindows(); i++)
+    {
+      KateMainWindow *win = ((KateApp *)kapp)->kateMainWindow (i);
+      
+      if (tmpMode != win->mdiMode())
+      {
+        if (tmpMode == KMdi::TabPageMode)
+          win->switchToTabPageMode();
+        else
+          win->switchToIDEAlMode();      
+      }
+    }
+    
+    mainWindow->syncKonsole = cb_syncKonsole->isChecked();
+  
+    mainWindow->filelist->setSortType(cb_sortFiles->isChecked() ? KateFileList::sortByName : KateFileList::sortByID);
+  
+    config->writeEntry( "Number of recent files", sb_numRecentFiles->value() );
+    mainWindow->fileOpenRecent->setMaxItems( sb_numRecentFiles->value() );
+  
+    fileSelConfigPage->apply();
+    
+    viewManager->setShowFullPath( cb_fullPath->isChecked() ); // hm, stored 2 places :(
+
+    mainWindow->saveOptions (config);
   }
   
-  mainWindow->syncKonsole = cb_syncKonsole->isChecked();
-
-  mainWindow->filelist->setSortType(cb_sortFiles->isChecked() ? KateFileList::sortByName : KateFileList::sortByID);
-
-  config->writeEntry( "Number of recent files", sb_numRecentFiles->value() );
-  mainWindow->fileOpenRecent->setMaxItems( sb_numRecentFiles->value() );
-
-  fileSelConfigPage->apply();
-
+  //
+  // editor config ! (the apply() methode will check the changed state internally)
+  //
   for (uint i=0; i<editorPages.count(); i++)
   {
     editorPages.at(i)->apply();
   }
 
-  v->getDoc()->writeConfig(kapp->config());
+  v->getDoc()->writeConfig(config);
 
-  viewManager->setShowFullPath( cb_fullPath->isChecked() ); // hm, stored 2 places :(
-  config->writeEntry( "Show Full Path in Title", cb_fullPath->isChecked() );
-  config->sync();
-
+  //
+  // plugins config ! (the apply() methode SHOULD check the changed state internally)
+  //
   for (uint i=0; i<pluginPages.count(); i++)
   {
     pluginPages.at(i)->page->apply();
   }
+  
+  config->sync();
+  
   dataChanged = false;
-  enableButton(Apply, false);
+  accept();
 }
 
 void KateConfigDialog::slotChanged()
 {
   dataChanged = true;
-  enableButton(Apply, true);
 }
