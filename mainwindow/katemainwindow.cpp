@@ -684,12 +684,6 @@ void KateMainWindow::slotGoPrev()
   QFocusEvent::resetReason();
 }
 
-void KateMainWindow::focusInEvent(QFocusEvent*  /* e */)
-{
-  kdDebug(13000)<<"focusIn"<<endl;
-  docManager->checkAllModOnHD();
-}
-
 KURL KateMainWindow::currentDocUrl()
 {
   return viewManager->activeView()->doc()->url();
@@ -752,14 +746,9 @@ Kate::DocManager *KateMainWindow::getDocManager ()
   return ((Kate::DocManager *)docManager);
 }
 
-void KateMainWindow::addSidebarWidget (QWidget* widget, const QString & label)
+KDockWidget *KateMainWindow::getMainDock ()
 {
- // sidebar->addWidget (widget, label);
-}
-
-void KateMainWindow::removeSidebarWidget (QWidget* widget)
-{
- // sidebar->removeWidget (widget);
+  return mainDock;
 }
 
 void KateMainWindow::pluginHelp()

@@ -72,7 +72,6 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     /** just calls viewmanager */
     void restore(bool isRestored);
 
-    void focusInEvent(QFocusEvent*);
     // Anders: I moved the config object to protected, because
     // other objects needs access.
     KConfig* config;
@@ -158,8 +157,6 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
 
   public:
     void openURL (const QString &name=0L);
-    void addSidebarWidget(QWidget* widget, const QString & label);
-    void removeSidebarWidget(QWidget* widget);
 
   protected:
      bool eventFilter (QObject* o, QEvent* e);
@@ -170,6 +167,7 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
   public:
     Kate::ViewManager *getViewManager ();
     Kate::DocManager *getDocManager ();
+    KDockWidget *getMainDock ();
 
   private slots:
     void pluginHelp ();

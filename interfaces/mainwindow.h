@@ -43,9 +43,8 @@ class MainWindow : public KDockMainWindow
     virtual class ViewManager *getViewManager () { return 0L; };
     virtual class DocManager *getDocManager () { return 0L; };
 
-    // add/remove widget of the sidebar
-    virtual void addSidebarWidget (class QWidget *, const class QString &) { ; };
-    virtual void removeSidebarWidget (class QWidget *) { ; };
+    // return the main DockWidget of the mainwindow (the dockwidget in which the kateviews are located)
+    virtual class KDockWidget *getMainDock () { return 0L; };
 };
 
 };
