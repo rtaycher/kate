@@ -1,0 +1,29 @@
+<?xml version="1.01" encoding="UTF-8"?><!DOCTYPE language>
+<language name="Diff" extensions="*.diff;*patch" mimetype="text/plain; text/x-c++-src;text/x-c++-hdr;text/x-c-hdr;text/x-c++-src" casesensitive="1">
+  <highlighting>
+
+    <contexts>
+      <context attribute="0" lineEndContext="0">
+      	<item name="RegExpr" attribute="1" context="1" String="^(\+\+\+|\-\-\-|\*\*\*|diff|\d)" />
+	<item name="RegExpr" attribute="4" context="2" String="^(\+|&gt;|!)" />
+	<item name="RegExpr" attribute="3" context="3" String="^(\-|&lt;)" />
+	<item name="RegExpr" attribute="2" context="4" String="^\@\@" />
+      </context>
+
+      <context attribute="1" lineEndContext="0" />
+      <context attribute="4" lineEndContext="0" />
+      <context attribute="3" lineEndContext="0" />
+      <context attribute="2" lineEndContext="0" />
+
+    </contexts>
+
+    <itemDatas>
+      <itemData name="Normal Text" defStyleNum="dsNormal"/>
+      <itemData name="Keyword"  defStyleNum="dsKeyword"/>
+      <itemData name="Data Type"  defStyleNum="dsDataType"/>
+      <itemData name="Removed line"  defStyleNum="dsOthers"/>
+      <itemData name="Added line"  defStyleNum="dsString"/>
+      <itemData name="Comment"  defStyleNum="dsComment"/>
+    </itemDatas>
+  </highlighting>
+</language>

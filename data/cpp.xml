@@ -117,6 +117,7 @@
         <item name="2CharDetect" attribute="10" context="2" char="/" char1="/"/>
         <item name="2CharDetect" attribute="10" context="3" char="/" char1="*"/>
         <item name="AnyChar" attribute="11" context="0" String="!%&amp;()+,-&lt;=&gt;?[]^{|}~"/>
+          <item name="StringDetect" attribute="10" context="8" String="#if 0" insensitive="FALSE"/>
         <item name="RegExpr" attribute="12" context="4" String="^#"/>
       </context>
       <context attribute="8" lineEndContext="0" name="String">
@@ -124,8 +125,11 @@
         <item name="HlCStringChar" attribute="9" context="1"/>
         <item name="CharDetect" attribute="8" context="0" char="&quot;"/>
       </context>
-      <context attribute="10" lineEndContext="0" name="Commentar 1"/>
+      <context attribute="10" lineEndContext="0" name="Commentar 1">
+        <item name="RegExpr" attribute="3" context="2" String="(FIXME|TODO)" />
+      </context>
       <context attribute="10" lineEndContext="3" name="Commentar 2">
+        <item name="RegExpr" attribute="3" context="3" String="(FIXME|TODO)" />
         <item name="2CharDetect" attribute="10" context="0" char="*" char1="/"/>
       </context>
       <context attribute="12" lineEndContext="0" name="Preprocessor">
@@ -140,6 +144,10 @@
       </context>
       <context attribute="0" lineEndContext="1" name="Some Context"/>
       <context attribute="0" lineEndContext="4" name="Some Context2"/>
+      <context attribute="10" lineEndContext="8">
+          <item name="RegExpr" attribute="3" context="8" String="(FIXME|TODO)" />
+          <item name="RegExpr" attribute="10" context="0" String="^#endif" />
+      </context>
     </contexts>
     <itemDatas>
       <itemData name="Normal Text" defStyleNum="dsNormal"/>
