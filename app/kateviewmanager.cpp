@@ -332,9 +332,13 @@ void KateViewManager::slotDocumentCloseAll ()
   }
   m_docManager->closeAllDocuments();
   
+  m_currentContainer->m_blockViewCreationAndActivation=false;
+  m_currentContainer->openNewIfEmpty();
   for (uint i=0;i<m_viewSpaceContainerList.count();i++) {
-    m_viewSpaceContainerList.at(i)->m_blockViewCreationAndActivation=false;
-    m_viewSpaceContainerList.at(i)->openNewIfEmpty();
+    if (m_currentContainer!=m_viewSpaceContainerList.at(i)) {
+      m_viewSpaceContainerList.at(i)->m_blockViewCreationAndActivation=false;
+      m_viewSpaceContainerList.at(i)->openNewIfEmpty();
+    }
   }
   tabChanged(m_currentContainer);
 }
