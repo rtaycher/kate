@@ -156,6 +156,13 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   fontConfig = new FontConfig(page);
   fontConfig->setFont (v->doc()->getFont(KateDocument::ViewFont));
 
+  //Print options (fonts at the moment)
+  path.clear();
+  path << i18n("Editor") << i18n("Printing");
+  page = addVBoxPage(path,i18n("Font printing settings"),
+			    BarIcon("fonts",KIcon::SizeSmall));
+  printFontConfig = new FontConfig(page);
+  printFontConfig->setFont(v->doc()->getFont(KateDocument::PrintFont));
   // indent options
   path.clear();
   path << i18n("Editor") << i18n("Indent");
@@ -272,7 +279,7 @@ void KateConfigDialog::slotApply()
   config->writeEntry("restore views", cb_restoreVC->isChecked());
 
   v->doc()->setFont (KateDocument::ViewFont,fontConfig->getFont());
-
+  v->doc()->setFont (KateDocument::PrintFont,printFontConfig->getFont());
   ksc->writeGlobalSettings();
   v->doc()->setKSConfig(*ksc);
   colorConfig->getColors( colors );

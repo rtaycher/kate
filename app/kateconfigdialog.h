@@ -66,6 +66,7 @@ class KateConfigDialog : public KDialogBase
 
     class ColorConfig *colorConfig;
     class FontConfig *fontConfig;
+    class FontConfig *printFontConfig;
     class KSpellConfig * ksc;
     class IndentConfigTab * indentConfig;
     class SelectConfigTab * selectConfig;
