@@ -613,7 +613,6 @@ void KateViewInternal::changeState(VConfig &c) {
 //  if (cursor.y != c.cursor.y || c.flags & KateView::cfMark) myDoc->recordReset();
 
   if (! nullMove) {
-    myDoc->unmarkFound();
 
     exposeCursor = true;
 
@@ -710,8 +709,7 @@ void KateViewInternal::updateCursor(PointStruc &newCursor) {
 void KateViewInternal::updateCursor(PointStruc &newCursor, int flags) {
 
   if (!(flags & KateView::cfPersistent)) myDoc->deselectAll();
-  myDoc->unmarkFound();
-
+ 
   exposeCursor = true;
   if (cursorOn) {
     tagLines(cursor.y, cursor.y, cXPos -2, cXPos +3);
@@ -1846,7 +1844,6 @@ void KateView::setCursorPositionInternal(int line, int col) {
   cursor.y = line;
   myViewInternal->updateCursor(cursor);
   myViewInternal->center();
-//  myDoc->unmarkFound();
 //  myViewInternal->updateView(ufPos, 0, line*myDoc->fontHeight - height()/2);
 //  myDoc->updateViews(myViewInternal); //uptade all other views except this one
   myDoc->updateViews();
@@ -2808,7 +2805,9 @@ void KateView::doReplaceAction(int result, bool found) {
 void KateView::exposeFound(PointStruc &cursor, int slen, int flags, bool replace) {
   int x1, x2, y1, y2, xPos, yPos;
 
-  myDoc->markFound(cursor,slen);
+  VConfig c;
+  myViewInternal->getVConfig(c);
+  myDoc->selectLength(cursor,slen,c.flags);
 
   TextLine::Ptr textLine = myDoc->getTextLine(cursor.y);
   x1 = myDoc->textWidth(textLine,cursor.x)        -10;
@@ -3234,7 +3233,9 @@ void KateView::misspelling (QString origword, QStringList *, unsigned pos)
 //  deselectAll(); // shouldn't the spell check be allowed within selected text?
   kspell.kspellMispellCount++;
   myViewInternal->updateCursor(cursor); //this does deselectAll() if no persistent selections
-  myDoc->markFound(cursor,origword.length());
+  VConfig c;
+  myViewInternal->getVConfig(c);
+  myDoc->selectLength(cursor,origword.length(),c.flags);
   myDoc->updateViews();
 }
 
@@ -3259,7 +3260,9 @@ void KateView::corrected (QString originalword, QString newword, unsigned pos)
       cursor.x = pos - (cnt-myDoc->getTextLine(line)->length()) + 1;
       cursor.y = line;
       myViewInternal->updateCursor(cursor);
-      myDoc->markFound(cursor, newword.length());
+      VConfig c;
+      myViewInternal->getVConfig(c);
+      myDoc->selectLength(cursor, newword.length(),c.flags);
 
       myDoc->recordStart(this, cursor, configFlags,
         KateActionGroup::ugSpell, true, kspell.kspellReplaceCount > 0);
@@ -3299,10 +3302,6 @@ void KateView::spellResult (const QString &)
   myDoc->setPseudoModal(0L);
   myDoc->setReadOnly (FALSE);
 
-  // if we marked up the text, clear it now
-  if (kspell.kspellMispellCount)
-    myDoc->unmarkFound();
-
   myDoc->updateViews();
 
   kspell.kspell->cleanUp();
@@ -3326,10 +3325,6 @@ void KateView::spellCleanDone ()
   {
      myDoc->setPseudoModal(0L);
      myDoc->setReadOnly (FALSE);
-
-     // if we marked up the text, clear it now
-     if (kspell.kspellMispellCount)
-        myDoc->unmarkFound();
 
      myDoc->updateViews();
      KMessageBox::sorry(this, i18n("ISpell seems to have crashed."));

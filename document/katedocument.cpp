@@ -1179,8 +1179,6 @@ void KateDocument::clear() {
   selectEnd = 0;
   oldMarkState = false;
 
-  foundLine = -1;
-
   setModified(false);
 
   undoList.clear();
@@ -1193,7 +1191,6 @@ void KateDocument::cut(VConfig &c) {
 
   if (selectEnd < selectStart) return;
 
-//  unmarkFound();
   copy(c.flags);
   delMarkedText(c);
 }
@@ -1221,7 +1218,6 @@ void KateDocument::copy(int flags) {
 void KateDocument::paste(VConfig &c) {
   QString s = QApplication::clipboard()->text();
   if (!s.isEmpty()) {
-//    unmarkFound();
     insert(c, s);
   }
 }
@@ -1402,7 +1398,6 @@ void KateDocument::selectAll() {
 
   select.x = -1;
 
-  unmarkFound();
 //  if (selectStart != 0 || selectEnd != lastLine()) recordReset();
 
   selectStart = 0;
@@ -1423,7 +1418,6 @@ void KateDocument::deselectAll() {
   select.x = -1;
   if (selectEnd < selectStart) return;
 
-  unmarkFound();
 //  recordReset();
 
   tagLines(selectStart,selectEnd);
@@ -1442,7 +1436,6 @@ void KateDocument::invertSelection() {
 
   select.x = -1;
 
-  unmarkFound();
 //  if (selectStart != 0 || selectEnd != lastLine()) recordReset();
 
   selectStart = 0;
@@ -1471,6 +1464,26 @@ void KateDocument::selectWord(PointStruc &cursor, int flags) {
   if (end <= start) return;
   if (!(flags & KateView::cfKeepSelection)) deselectAll();
 //    else recordReset();
+
+  textLine->select(true, start, end);
+
+  anchor.x = start;
+  select.x = end;
+  anchor.y = select.y = cursor.y;
+  tagLines(cursor.y, cursor.y);
+  if (cursor.y < selectStart) selectStart = cursor.y;
+  if (cursor.y > selectEnd) selectEnd = cursor.y;
+  emit selectionChanged();
+}
+
+void KateDocument::selectLength(PointStruc &cursor, int length, int flags) {
+  int start, end;
+
+  TextLine::Ptr textLine = getTextLine(cursor.y);
+  start = cursor.x;
+  end = start + length;
+  if (end <= start) return;
+  if (!(flags & KateView::cfKeepSelection)) deselectAll();
 
   textLine->select(true, start, end);
 
@@ -2285,28 +2298,6 @@ found:
   return true;
 }
 
-void KateDocument::unmarkFound() {
-  if (pseudoModal) return;
-  if (foundLine != -1) {
-    getTextLine(foundLine)->unmarkFound();
-    tagLines(foundLine,foundLine);
-    foundLine = -1;
-  }
-}
-
-void KateDocument::markFound(PointStruc &cursor, int len) {
-//  unmarkFound();
-//  recordReset();
-  if (foundLine != -1) {
-    getTextLine(foundLine)->unmarkFound();
-    tagLines(foundLine,foundLine);
-  }
-  getTextLine(cursor.y)->markFound(cursor.x,len);
-  foundLine = cursor.y;
-  tagLines(foundLine,foundLine);
-}
-
-
 void KateDocument::tagLine(int line) {
 
   if (tagStart > line) tagStart = line;
@@ -2603,7 +2594,6 @@ printf("bla!!!\n");
   undoList.append(g);
 //  currentUndo++;
 
-  unmarkFound();
   tagEnd = 0;
   tagStart = 0xffffff;
 }
@@ -2756,7 +2746,6 @@ void KateDocument::doActionGroup(KateActionGroup *g, int flags, bool undo) {
 
   setPseudoModal(0L);
   if (!(flags & KateView::cfPersistent)) deselectAll();
-  unmarkFound();
   tagEnd = 0;
   tagStart = 0xffffff;
 

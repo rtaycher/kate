@@ -253,6 +253,7 @@ class KateDocument : public KateDocumentIface
     void deselectAll();
     void invertSelection();
     void selectWord(PointStruc &cursor, int flags);
+    void selectLength(PointStruc &cursor, int length, int flags);
 
     void indent(VConfig &c) {doIndent(c, 1);}
     void unIndent(VConfig &c) {doIndent(c, -1);}
@@ -296,8 +297,6 @@ class KateDocument : public KateDocumentIface
     void clearFileName();
 
     bool doSearch(SConfig &s, const QString &searchFor);
-    void unmarkFound();
-    void markFound(PointStruc &cursor, int len);
 
 // internal
     void tagLine(int line);
@@ -388,8 +387,6 @@ class KateDocument : public KateDocumentIface
     bool newDoc;          // True if the file is a new document (used to determine whether
                           // to check for overwriting files on save)
     bool modified;
-
-    int foundLine;
 
     QList<KateActionGroup> undoList;
     int currentUndo;
