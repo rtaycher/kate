@@ -95,8 +95,8 @@ class KWActionGroup {
 */
 class KWriteDoc : public KTextEditor::Document {
     Q_OBJECT
-    friend KWriteView;
-    friend KWrite;
+    friend class KWriteView;
+    friend class KWrite;
 
   public:
     KWriteDoc(HlManager *, const QString &path = QString::null,

@@ -338,8 +338,8 @@ class KWBookmark {
 
 class KWrite : public KTextEditor::View, virtual public KWriteIface {
     Q_OBJECT
-    friend KWriteView;
-    friend KWriteDoc;
+    friend class KWriteView;
+    friend class KWriteDoc;
   public:
     /**
       The document can be used by more than one KWrite objects.
