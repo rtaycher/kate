@@ -1,3 +1,7 @@
+2001-03-27 Christoph Cullmann <crossfire@babylon2k.de>
+             * console disabled per default
+             * console only loaded if enabled
+
 2001-03-28 Joseph Wenninger <jowenn@bigfoot.com>
 	* -n in kant.desktop removed, now config settings are used
 

@@ -85,6 +85,9 @@ KantMainWindow::KantMainWindow(KantDocManager *_docManager, KantPluginManager *_
   pluginManager =_pluginManager;
   config = KantFactory::instance()->config();
 
+  consoleDock = 0L;
+  console = 0L;
+
   setXMLFile( "kantui.rc" );
 
   setAcceptDrops(true);
@@ -94,13 +97,13 @@ KantMainWindow::KantMainWindow(KantDocManager *_docManager, KantPluginManager *_
 
   createGUI();
 
-  readOptions(config);
-
   // connect settings menu aboutToshow
   QPopupMenu* pm_set = (QPopupMenu*)factory()->container("settings", this);
   connect(pm_set, SIGNAL(aboutToShow()), this, SLOT(settingsMenuAboutToShow()));
 
   pluginManager->enableAllPluginsGUI (this);
+
+  readOptions(config);
 }
 
 KantMainWindow::~KantMainWindow()
@@ -114,12 +117,6 @@ void KantMainWindow::setupMainWindow ()
   sidebar->setMinimumSize(100,100);
   sidebarDock->setWidget( sidebar );
 
-  consoleDock = createDockWidget( "consoleDock", 0 );
-  console = new KantConsole (consoleDock, "console");
-  console->installEventFilter( this );
-  console->setMinimumSize(50,50);
-  consoleDock->setWidget( console );
-
   mainDock = createDockWidget( "mainDock", 0 );
   mainDock->setGeometry(100, 100, 100, 100);
   viewManager = new KantViewManager (mainDock, docManager);
@@ -130,7 +127,6 @@ void KantMainWindow::setupMainWindow ()
 
   mainDock->setEnableDocking ( KDockWidget::DockNone );
   sidebarDock->manualDock ( mainDock, KDockWidget::DockLeft, 20 );
-  consoleDock->manualDock ( mainDock, KDockWidget::DockBottom, 20 );
 
   filelist = new KantFileList (docManager, viewManager, 0L, "filelist");
   sidebar->addWidget (filelist, i18n("Filelist"));
@@ -291,8 +287,9 @@ bool KantMainWindow::queryClose()
   if (val)
   {
     ((KantApp *)kapp)->removeMainWindow (this);
-    if (consoleDock->isVisible())
-      consoleDock->changeHideShowState();
+    if (consoleDock && console)
+      if (consoleDock->isVisible())
+        consoleDock->changeHideShowState();
   }
 
   return val;
@@ -326,12 +323,15 @@ void KantMainWindow::slotFileQuit()
 
 void KantMainWindow::readOptions(KConfig *config)
 {
- /* readConfig(config);
-  kWrite->readSessionConfig(config);*/
   config->setGroup("General");
   sidebarDock->resize( config->readSizeEntry("Sidebar:size", new QSize(150, height())) );
   settingsShowSidebar->setChecked( config->readBoolEntry("Show Sidebar", false) );
-  settingsShowConsole->setChecked( config->readBoolEntry("Show Console", false)  );
+
+  if (config->readBoolEntry("Show Console", false))
+  {
+    slotSettingsShowConsole();
+  }
+
   resize( config->readSizeEntry( "size", new QSize(600, 400) ) );
   viewManager->setShowFullPath(config->readBoolEntry("Show Full Path in Title", false));
   settingsShowFullPath->setChecked(viewManager->getShowFullPath());
@@ -353,7 +353,12 @@ void KantMainWindow::saveOptions(KConfig *config)
 {
   config->setGroup("General");
   config->writeEntry("Show Sidebar", sidebar->isVisible());
-  config->writeEntry("Show Console", console->isVisible());
+
+  if (consoleDock && console)
+    config->writeEntry("Show Console", console->isVisible());
+  else
+    config->writeEntry("Show Console", false);
+
   config->writeEntry("size", size());
   config->writeEntry("Show Full Path in Title", viewManager->getShowFullPath());
   config->writeEntry("Show Toolbar", settingsShowToolbar->isChecked());
@@ -368,9 +373,6 @@ void KantMainWindow::saveOptions(KConfig *config)
   if (viewManager->activeView())
     KantFactory::instance()->config()->sync();
 
-  // Do not uncomment this unless you wish to see how
-  // view configuration looks in $KDEHOME/share/config/kantsessionrc
-  // It does not crash :) and I'm getting closer to finish.
   viewManager->saveViewSpaceConfig();
 }
 
@@ -584,17 +586,31 @@ void KantMainWindow::slotSettingsShowSidebar()
 
 void KantMainWindow::slotSettingsShowConsole()
 {
+  if (!consoleDock && !console)
+  {
+    consoleDock = createDockWidget( "consoleDock", 0 );
+    console = new KantConsole (consoleDock, "console");
+    console->installEventFilter( this );
+    console->setMinimumSize(50,50);
+    consoleDock->setWidget( console );
+    consoleDock->manualDock ( mainDock, KDockWidget::DockBottom, 20 );
+    consoleDock->changeHideShowState();
+  }
+
   consoleDock->changeHideShowState();
-  // Anders: focus at show
+
   if( consoleDock->isVisible() )
     console->setFocus();
   else
-    viewManager->activeView()->setFocus();
+    if (viewManager->activeView())
+      viewManager->activeView()->setFocus();
 }
 
 void KantMainWindow::settingsMenuAboutToShow()
 {
   settingsShowSidebar->setChecked( sidebarDock->isVisible() );
+
+  if (consoleDock)
   settingsShowConsole->setChecked( consoleDock->isVisible() );
 }
 
