@@ -492,7 +492,7 @@ const QChar *checkCharHexOct(const QChar *str) {
   }
   return s;
 }
-#if 0
+#if 1
 //checks for C escape chars like \n
 const QChar *checkEscapedChar(const QChar *s) {
 
