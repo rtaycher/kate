@@ -12,10 +12,6 @@ TODO:
 
     - context menu for file list [close, close all, new view top/btm/left/right, others?)
     - feature to open a clicked-on filename in the text
-    - <Ctrl+Backspace> should zilch the prior word
-
-    - <Ctrl+Delete> should zilch the next word
-        yes, Virginia, there is a Delete key
 
     - <Ctrl+Insert> should copy selected text (same as <Shift+Insert> currently pastes)
     - <Alt+Backspace> should undo
@@ -25,9 +21,6 @@ TODO:
 
     - Plug-in to open the H file for a given C or CPP file or vice versa
       -  that's a plug-in because (shocked gasp) not everyone's a C++ programmer ;-)
-
-    - Store filenames in the File MRU list with their complete paths.
-      - EVEN if the user entered ../filename at the Open dialog to get them.
 
     - <Shift+Left> should follow text, not go into virtual blank space
             KWrite uses "virtual blank space". When you click beyond where a
