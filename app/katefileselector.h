@@ -150,16 +150,21 @@ class KFSConfigPage : public Kate::ConfigPage {
     virtual void apply();
     virtual void reload();
 
+  private slots:
+    void slotMyChanged();
+
   private:
     void init();
 
     KateFileSelector *fileSelector;
-    bool bDirty;
     KActionSelector *acSel;
     class QSpinBox *sbPathHistLength, *sbFilterHistLength;
     class QCheckBox *cbSyncActive, *cbSyncShow;
     class QCheckBox *cbSesLocation, *cbSesFilter;
+
+    bool m_changed;
 };
 
 
 #endif //__KATE_FILESELECTOR_H__
+// kate: space-indent on; indent-width 2; replace-tabs on;

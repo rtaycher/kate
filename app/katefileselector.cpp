@@ -522,7 +522,7 @@ class ActionLBItem : public QListBoxPixmap {
 KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelector *kfs )
   : Kate::ConfigPage( parent, name ),
     fileSelector( kfs ),
-    bDirty( false )
+    m_changed( false )
 {
   QVBoxLayout *lo = new QVBoxLayout( this );
   int spacing = KDialog::spacingHint();
@@ -534,18 +534,18 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
   acSel->setAvailableLabel( i18n("A&vailable actions:") );
   acSel->setSelectedLabel( i18n("S&elected actions:") );
   lo->addWidget( gbToolbar );
-  connect( acSel, SIGNAL( added( QListBoxItem * ) ), this, SLOT( slotChanged() ) );
-  connect( acSel, SIGNAL( removed( QListBoxItem * ) ), this, SLOT( slotChanged() ) );
-  connect( acSel, SIGNAL( movedUp( QListBoxItem * ) ), this, SLOT( slotChanged() ) );
-  connect( acSel, SIGNAL( movedDown( QListBoxItem * ) ), this, SLOT( slotChanged() ) );
+  connect( acSel, SIGNAL( added( QListBoxItem * ) ), this, SLOT( slotMyChanged() ) );
+  connect( acSel, SIGNAL( removed( QListBoxItem * ) ), this, SLOT( slotMyChanged() ) );
+  connect( acSel, SIGNAL( movedUp( QListBoxItem * ) ), this, SLOT( slotMyChanged() ) );
+  connect( acSel, SIGNAL( movedDown( QListBoxItem * ) ), this, SLOT( slotMyChanged() ) );
 
   // Sync
   QGroupBox *gbSync = new QGroupBox( 1, Qt::Horizontal, i18n("Auto Synchronization"), this );
   cbSyncActive = new QCheckBox( i18n("When a docu&ment becomes active"), gbSync );
   cbSyncShow = new QCheckBox( i18n("When the file selector becomes visible"), gbSync );
   lo->addWidget( gbSync );
-  connect( cbSyncActive, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
-  connect( cbSyncShow, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
+  connect( cbSyncActive, SIGNAL( toggled( bool ) ), this, SLOT( slotMyChanged() ) );
+  connect( cbSyncShow, SIGNAL( toggled( bool ) ), this, SLOT( slotMyChanged() ) );
 
   // Histories
   QHBox *hbPathHist = new QHBox ( this );
@@ -553,22 +553,22 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
   sbPathHistLength = new QSpinBox( hbPathHist );
   lbPathHist->setBuddy( sbPathHistLength );
   lo->addWidget( hbPathHist );
-  connect( sbPathHistLength, SIGNAL( valueChanged ( int ) ), this, SLOT( slotChanged() ) );
+  connect( sbPathHistLength, SIGNAL( valueChanged ( int ) ), this, SLOT( slotMyChanged() ) );
 
   QHBox *hbFilterHist = new QHBox ( this );
   QLabel *lbFilterHist = new QLabel( i18n("Remember &filters:"), hbFilterHist );
   sbFilterHistLength = new QSpinBox( hbFilterHist );
   lbFilterHist->setBuddy( sbFilterHistLength );
   lo->addWidget( hbFilterHist );
-  connect( sbFilterHistLength, SIGNAL( valueChanged ( int ) ), this, SLOT( slotChanged() ) );
+  connect( sbFilterHistLength, SIGNAL( valueChanged ( int ) ), this, SLOT( slotMyChanged() ) );
 
   // Session
   QGroupBox *gbSession = new QGroupBox( 1, Qt::Horizontal, i18n("Session"), this );
   cbSesLocation = new QCheckBox( i18n("Restore loca&tion"), gbSession );
   cbSesFilter = new QCheckBox( i18n("Restore last f&ilter"), gbSession );
   lo->addWidget( gbSession );
-  connect( cbSesLocation, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
-  connect( cbSesFilter, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
+  connect( cbSesLocation, SIGNAL( toggled( bool ) ), this, SLOT( slotMyChanged() ) );
+  connect( cbSesFilter, SIGNAL( toggled( bool ) ), this, SLOT( slotMyChanged() ) );
 
   // make it look nice
   lo->addStretch( 1 );
@@ -621,6 +621,11 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
 
 void KFSConfigPage::apply()
 {
+  if ( ! m_changed )
+    return;
+
+  m_changed = false;
+
   KConfig *config = kapp->config();
   config->setGroup( "fileselector" );
   // toolbar
@@ -659,6 +664,7 @@ void KFSConfigPage::reload()
 {
   // hmm, what is this supposed to do, actually??
   init();
+  m_changed = false;
 }
 void KFSConfigPage::init()
 {
@@ -702,4 +708,11 @@ void KFSConfigPage::init()
   cbSesLocation->setChecked( config->readBoolEntry( "restore location", true ) );
   cbSesFilter->setChecked( config->readBoolEntry( "restore last filter", true ) );
 }
+
+void KFSConfigPage::slotMyChanged()
+{
+  m_changed = true;
+  slotChanged();
+}
 //END KFSConfigPage
+// kate: space-indent on; indent-width 2; replace-tabs on;
