@@ -505,6 +505,10 @@ class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
   // for the DCOP interface
   public:
     void open (const QString &name=0);
+
+  public:
+    // wrap the text of the document at the column col
+    void wrapText (uint col);
 };
 
 #endif

@@ -3064,3 +3064,24 @@ void KateDocument::open (const QString &name)
   openURL (KURL (name));
 }
 
+void KateDocument::wrapText (uint col)
+{
+  int line = 0;
+  while(true)
+  {
+    TextLine::Ptr l = getTextLine(line);
+
+    if (l->length() > col)
+    {
+      TextLine::Ptr tl = new TextLine();
+      buffer->insertLine(line+1,tl);
+      l->wrap (tl, col);
+    }
+
+    line++;
+    if (line >= numLines()) break;
+  };
+
+  newDocGeometry=true;
+  updateViews();
+}
