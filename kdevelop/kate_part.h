@@ -2,7 +2,7 @@
 #define __KWRITE_PART_H__
 
 
-#include <qlist.h>
+#include <qptrlist.h>
 
 
 #include <kparts/part.h>

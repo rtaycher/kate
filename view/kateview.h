@@ -45,7 +45,7 @@
 
 #include <kparts/browserextension.h>
 #if QT_VERSION < 300
-#include <qlist.h>
+#include <qptrlist.h>
 #else
 #include <qptrlist.h>
 #include <qregexp.h>

@@ -29,7 +29,7 @@
 #include <qglobal.h> /* Only for 2.X and 3.X compatibility */
 
 #if QT_VERSION < 300
-#include <qlist.h>
+#include <qptrlist.h>
 #else
 #include <qptrlist.h>
 #endif

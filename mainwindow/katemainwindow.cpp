@@ -40,7 +40,7 @@
 #include <qinputdialog.h>
 #include <qlayout.h>
 #include <qlayout.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qsplitter.h>
 #include <qsplitter.h>
 #include <qvbox.h>

@@ -20,7 +20,7 @@
 
 #include <qdom.h>
 #if QT_VERSION < 300
-#include <qlist.h>
+#include <qptrlist.h>
 #else
 #include <qptrlist.h>
 #include <qstringlist.h>
