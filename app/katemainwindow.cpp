@@ -190,6 +190,7 @@ void KateMainWindow::setupMainWindow ()
   m_viewManager = new KateViewManager (this);
 
   filelist = new KateFileList (this, m_viewManager, this/*filelistDock*/, "filelist");
+  filelist->readConfig(config, "Filelist");
   addToolView(KDockWidget::DockLeft,filelist,SmallIcon("kmultiple"), i18n("Documents"));
 
   QVBox *prBox = new QVBox (this,"projects");
@@ -396,7 +397,6 @@ void KateMainWindow::readOptions(KConfig *config)
   fileOpenRecent->loadEntries(config, "Recent Files");
 
   fileselector->readConfig(config, "fileselector");
-  filelist->readConfig(config, "Filelist");
 
   recentProjects->loadEntries (config, "Recent Projects");
 }
