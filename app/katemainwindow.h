@@ -26,8 +26,8 @@
 
 #include <kparts/part.h>
 
-#include <scriptloader.h>
-#include <scriptinterface.h>
+#include <kscript/scriptloader.h>
+#include <kscript/scriptinterface.h>
 
 class GrepDialog;
 class KFileItem;
