@@ -78,7 +78,7 @@
 
 KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc) : QWidget(view)
 {
-  waitForPreHighlight=-1;
+  waitForPreHighlight=0;
   myView = view;
   myDoc = doc;
 

@@ -704,12 +704,6 @@ class KateView : public Kate::View
      ufUpdateOnScroll=2,
      ufPos=4};
 
-//load flags
-    enum Load_flags {
-     lfInsert=1,
-     lfNewFile=2,
-     lfNoAutoHl=4};
-
 //cursor movement commands
     enum Cursor_commands
 	   { cmLeft,cmRight,cmWordLeft,cmWordRight,
