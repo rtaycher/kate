@@ -134,6 +134,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   cb_fullPath = new QCheckBox( i18n("Show full &path in title"), frGeneral);
   lo->addWidget( cb_fullPath );
   cb_fullPath->setChecked( config->readBoolEntry("Show Full Path in Title", false ) );
+  QWhatsThis::add(cb_fullPath,i18n("It this option is checked the full document path is going to be shown in the window caption"));
 
   // opaque resize of view splitters
   cb_opaqueResize = new QCheckBox( frGeneral );
@@ -171,10 +172,14 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   KSeparator *sep=new KSeparator(frGeneral);
   sep->setOrientation(KSeparator::HLine);
   lo->addWidget(sep);
+  lo->addWidget(new QLabel(i18n("Toolview mode:"),frGeneral));
   cb_mode=new QComboBox(frGeneral);
   cb_mode->insertItem(i18n("Classic Mode"));
   cb_mode->insertItem(i18n("IDEAl Mode"));
   lo->addWidget(cb_mode);
+  QWhatsThis::add(cb_mode,i18n("Choose how you want the toolviews managed.<BR><ul>"
+	"<li><b>Classic Mode</b> The toolviews (filelist, fileselector, ...) can be docked anywhere and made floating</li>"
+	"<li><b>IDEAl Mode</b> The toolviews will behave similiar to the views in konquerors sidebar</li></ul>"));
 
   config->setGroup("General");
   cb_mode->setCurrentItem((config->readEntry("viewMode","")=="IDEAl")?1:0);

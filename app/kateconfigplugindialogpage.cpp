@@ -49,6 +49,7 @@
 #include <qpushbutton.h>
 #include <qtooltip.h>
 #include <kiconloader.h>
+#include <qwhatsthis.h>
          
 PluginListItem::PluginListItem(const bool _exclusive, bool _checked, PluginInfo *_info, QListView *_parent)
 	: QCheckListItem(_parent, _info->service->name(), CheckBox)
@@ -159,6 +160,8 @@ KateConfigPluginPage::KateConfigPluginPage(QWidget *parent, KateConfigDialog *di
   listView->addColumn(i18n("Description"));
   listView->addColumn(i18n("Author"));
   listView->addColumn(i18n("License"));
+  QWhatsThis::add(listView,i18n("Here you can see all available KATE plugins. Those with a check mark are loaded and will be loaded again the next time KATE is started"));
+
   connect(listView, SIGNAL(stateChange(PluginListItem *, bool)), this, SLOT(stateChange(PluginListItem *, bool)));
       
   for (uint i=0; i<myPluginMan->pluginList().count(); i++)

@@ -114,6 +114,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   setAcceptDrops(true);
 
   m_settingsShowToolViews=new KActionMenu( i18n("Tool Views"), actionCollection(),"settings_show_toolviews");
+  m_settingsShowToolViews->setWhatsThis(i18n("Shows all available tool views an allows showing/hiding them"));
 
   setupMainWindow();
 
@@ -237,47 +238,71 @@ bool KateMainWindow::eventFilter(QObject* o, QEvent* e)
 
 void KateMainWindow::setupActions()
 {
+  KAction *a;
+
   kscript = new KScriptManager(this, "scriptmanager");
   //scriptMenu = new KSelectAction(i18n("KDE Scripts"),0,this,SLOT(runScript()),actionCollection(),"scripts");
   scriptMenu = new KActionMenu( i18n("KDE Scri&pts"), actionCollection(), "scripts");  
+  scriptMenu->setWhatsThis(i18n("This shows all available scripts and allows executing them"));
   setupScripts();
   connect( scriptMenu->popupMenu(), SIGNAL(activated( int)), this, SLOT(runScript( int )) );
   //scriptMenu->clear();
   //scriptMenu->setItems(kscript->scripts());
-  KStdAction::openNew( m_viewManager, SLOT( slotDocumentNew() ), actionCollection(), "file_new" );
-  KStdAction::open( m_viewManager, SLOT( slotDocumentOpen() ), actionCollection(), "file_open" );
+  KStdAction::openNew( m_viewManager, SLOT( slotDocumentNew() ), actionCollection(), "file_new" )->setWhatsThis(i18n("Create a new document"));
+  KStdAction::open( m_viewManager, SLOT( slotDocumentOpen() ), actionCollection(), "file_open" )->setWhatsThis(i18n("Open an existing document for editing"));
 
   fileOpenRecent = KStdAction::openRecent (m_viewManager, SLOT(openConstURL (const KURL&)), actionCollection());
-  new KAction( i18n("Save A&ll"),"save_all", CTRL+Key_L, m_viewManager, SLOT( slotDocumentSaveAll() ), actionCollection(), "file_save_all" );
-  KStdAction::close( m_viewManager, SLOT( slotDocumentClose() ), actionCollection(), "file_close" );
-  new KAction( i18n( "Clos&e All" ), 0, m_viewManager, SLOT( slotDocumentCloseAll() ), actionCollection(), "file_close_all" );
+  fileOpenRecent->setWhatsThis(i18n("This lists files you had recently opened and allows you to easily open them again"));
 
-  KStdAction::mail( this, SLOT(slotMail()), actionCollection() );
+  a=new KAction( i18n("Save A&ll"),"save_all", CTRL+Key_L, m_viewManager, SLOT( slotDocumentSaveAll() ), actionCollection(), "file_save_all" );
+  a->setWhatsThis(i18n("Save all opened, modified documents to disc"));
 
-  KStdAction::quit( this, SLOT( slotFileQuit() ), actionCollection(), "file_quit" );
+  KStdAction::close( m_viewManager, SLOT( slotDocumentClose() ), actionCollection(), "file_close" )->setWhatsThis(i18n("Close the current document"));
+  
+  a=new KAction( i18n( "Clos&e All" ), 0, m_viewManager, SLOT( slotDocumentCloseAll() ), actionCollection(), "file_close_all" );
+  a->setWhatsThis(i18n("Close all opened documents"));
 
-  new KAction(i18n("Find in Files..."), CTRL+SHIFT+Qt::Key_F, this, SLOT(slotFindInFiles()), actionCollection(),"edit_find_in_files" );
+  KStdAction::mail( this, SLOT(slotMail()), actionCollection() )->setWhatsThis(i18n("Send one or more of the opened documents as email attachments"));
 
-  new KAction(i18n("New &View"), 0, this, SLOT(newWindow()), actionCollection(), "view_new_view");
-  new KAction( i18n("Split &Vertical"), "view_left_right", CTRL+SHIFT+Key_L, m_viewManager, SLOT( slotSplitViewSpaceVert() ), actionCollection(), "view_split_vert");
-  new KAction( i18n("Split &Horizontal"), "view_top_bottom", CTRL+SHIFT+Key_T, m_viewManager, SLOT( slotSplitViewSpaceHoriz() ), actionCollection(), "view_split_horiz");
-  closeCurrentViewSpace = new KAction( i18n("Close &Current"), "view_remove", CTRL+SHIFT+Key_R, m_viewManager, SLOT( slotCloseCurrentViewSpace() ), actionCollection(), "view_close_current_space");
+  KStdAction::quit( this, SLOT( slotFileQuit() ), actionCollection(), "file_quit" )->setWhatsThis(i18n("Close this window"));
+
+  a=new KAction(i18n("Find in Files..."), CTRL+SHIFT+Qt::Key_F, this, SLOT(slotFindInFiles()), actionCollection(),"edit_find_in_files" );
+  a->setWhatsThis(i18n("Lookup text in a selection of files in a given directory (and below)"));
+
+  a=new KAction(i18n("New &View"), 0, this, SLOT(newWindow()), actionCollection(), "view_new_view");
+  a->setWhatsThis(i18n("Create a new KATE view. (A new window with the same documentlist)"));
+
+  a=new KAction( i18n("Split &Vertical"), "view_left_right", CTRL+SHIFT+Key_L, m_viewManager, SLOT( slotSplitViewSpaceVert() ), actionCollection(), "view_split_vert");
+  a->setWhatsThis(i18n("Split the currently active view vertically into two views"));
+
+  a=new KAction( i18n("Split &Horizontal"), "view_top_bottom", CTRL+SHIFT+Key_T, m_viewManager, SLOT( slotSplitViewSpaceHoriz() ), actionCollection(), "view_split_horiz");
+  a->setWhatsThis(i18n("Split the currently active view horizontally into two views"));
+
+  a=closeCurrentViewSpace = new KAction( i18n("Close &Current"), "view_remove", CTRL+SHIFT+Key_R, m_viewManager, SLOT( slotCloseCurrentViewSpace() ), actionCollection(), "view_close_current_space");
+  a->setWhatsThis(i18n("Close the currently active splitted view")); 
 
   connect(new KToggleAction(i18n("Show &Full-Screen"), QString::fromLatin1("window_fullscreen"),0, actionCollection(), 
 	"view_fullscreen_view"),SIGNAL(toggled(bool)), this,SLOT(slotFullScreen(bool)));
 
   goNext=new KAction(i18n("Next View"),Key_F8,m_viewManager, SLOT(activateNextView()),actionCollection(),"go_next");
+  goNext->setWhatsThis(i18n("Make the next split view the active one"));
+
   goPrev=new KAction(i18n("Previous View"),SHIFT+Key_F8,m_viewManager, SLOT(activatePrevView()),actionCollection(),"go_prev");
+  goPrev->setWhatsThis(i18n("Make the previous split view the active one"));
 
   windowNext = KStdAction::back(m_viewManager, SLOT(slotWindowNext()), actionCollection());
   windowPrev = KStdAction::forward(m_viewManager, SLOT(slotWindowPrev()), actionCollection());
 
   documentOpenWith = new KActionMenu(i18n("Open W&ith"), actionCollection(), "file_open_with");
+  documentOpenWith->setWhatsThis(i18n("Open the current document with another application registerd for its file type or an application of your choice"));
   connect(documentOpenWith->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(mSlotFixOpenWithMenu()));
   connect(documentOpenWith->popupMenu(), SIGNAL(activated(int)), this, SLOT(slotOpenWithMenuAction(int)));
 
-  KStdAction::keyBindings(this, SLOT(editKeys()), actionCollection());
-  KStdAction::configureToolbars(this, SLOT(slotEditToolbars()), actionCollection(), "set_configure_toolbars");
+  a=KStdAction::keyBindings(this, SLOT(editKeys()), actionCollection());
+  a->setWhatsThis(i18n("Configure the application's keyboard shorcut assignments"));
+
+  a=KStdAction::configureToolbars(this, SLOT(slotEditToolbars()), actionCollection(), "set_configure_toolbars");
+  a->setWhatsThis(i18n("Configure which items should appear in the toolbar(s)"));
 
 
 
@@ -295,6 +320,7 @@ void KateMainWindow::setupActions()
   if (m_dockStyle==IDEAlStyle)
   {
 	  KActionMenu *settingsShowToolDocks=new KActionMenu( i18n("Tool Docks"), actionCollection(),"settings_show_tooldocks");
+          settingsShowToolDocks->setWhatsThis(i18n("This allows you to show/hide certain tool view dock areas"));
 
 	  settingsShowToolDocks->insert(new KateToggleToolViewAction(i18n("Bottom"),0,m_bottomDock,actionCollection(),this,"settings_show_bottomdock"));
 	  settingsShowToolDocks->insert(new KateToggleToolViewAction(i18n("Left"),0,m_leftDock,actionCollection(),this,"settings_show_leftdock"));
@@ -302,15 +328,18 @@ void KateMainWindow::setupActions()
     	  settingsShowToolDocks->insert(new KateToggleToolViewAction(i18n("Top"),0,m_topDock,actionCollection(),this,"settings_show_topdock"));
   }
 
-  settingsShowToolbar = KStdAction::showToolbar(this, SLOT(slotSettingsShowToolbar()), actionCollection(), "settings_show_toolbar");
+  //settingsShowToolbar = KStdAction::showToolbar(this, SLOT(slotSettingsShowToolbar()), actionCollection(), "settings_show_toolbar");
   settingsConfigure = KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
+  settingsConfigure->setWhatsThis(i18n("Configure various aspects of this application and the editing component"));
 
   // tip of the day :-)
-  KStdAction::tipOfDay( this, SLOT( tipOfTheDay() ), actionCollection() );
+  KStdAction::tipOfDay( this, SLOT( tipOfTheDay() ), actionCollection() )->setWhatsThis(i18n("This shows usefull tips for the usage of this application"));
 
   if (m_pluginManager->pluginList().count() > 0)
-    new KAction(i18n("Contents &Plugins"), 0, this, SLOT(pluginHelp()), actionCollection(), "help_plugins_contents");
-
+  {
+    a=new KAction(i18n("Contents &Plugins"), 0, this, SLOT(pluginHelp()), actionCollection(), "help_plugins_contents");
+    a->setWhatsThis(i18n("This shows helpfiles for various available plugins"));
+  }
   connect(m_viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
 
   slotWindowActivated ();
@@ -388,8 +417,8 @@ void KateMainWindow::readOptions(KConfig *config)
 
   m_viewManager->setShowFullPath(config->readBoolEntry("Show Full Path in Title", false));
 
-  settingsShowToolbar->setChecked(config->readBoolEntry("Show Toolbar", true));
-  slotSettingsShowToolbar();
+  //settingsShowToolbar->setChecked(config->readBoolEntry("Show Toolbar", true));
+  //slotSettingsShowToolbar();
   m_viewManager->setUseOpaqueResize(config->readBoolEntry("Opaque Resize", true));
 
   fileOpenRecent->setMaxItems( config->readNumEntry("Number of recent files", fileOpenRecent->maxItems() ) );
@@ -412,7 +441,7 @@ void KateMainWindow::saveOptions(KConfig *config)
   config->writeEntry("size", size());
 
   config->writeEntry("Show Full Path in Title", m_viewManager->getShowFullPath());
-  config->writeEntry("Show Toolbar", settingsShowToolbar->isChecked());
+//  config->writeEntry("Show Toolbar", settingsShowToolbar->isChecked());
   config->writeEntry("Opaque Resize", m_viewManager->useOpaqueResize);
   config->writeEntry("Sync Konsole", syncKonsole);
 
@@ -590,13 +619,14 @@ void KateMainWindow::openURL (const QString &name)
   m_viewManager->openURL (KURL(name));
 }
 
+/*
 void KateMainWindow::slotSettingsShowToolbar()
 {
   if (settingsShowToolbar->isChecked())
     toolBar()->show();
   else
     toolBar()->hide();
-}
+}*/
 
 void KateMainWindow::slotConfigure()
 {

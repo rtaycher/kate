@@ -121,7 +121,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
 
     KToggleAction* settingsShowFilelist;
     KToggleAction* settingsShowFileselector;
-    KToggleAction* settingsShowToolbar;
+//    KToggleAction* settingsShowToolbar;
     KToggleAction* settingsShowConsole;
 
     KAction* settingsConfigure;
@@ -134,7 +134,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     void newWindow ();
 
     void slotSettingsShowConsole();
-    void slotSettingsShowToolbar();
+    //void slotSettingsShowToolbar();
 
     void slotConfigure();
 
