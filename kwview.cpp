@@ -2548,7 +2548,7 @@ void KWrite::invertSelection() {
 }
 */
 
-static void addToStrList(QStringList &list, const QString &str) {
+static void kwview_addToStrList(QStringList &list, const QString &str) {
   if (list.count() > 0) {
     if (list.first() == str) return;
     QStringList::Iterator it;
@@ -2568,7 +2568,7 @@ void KWrite::find() {
 
   kWriteView->focusOutEvent(0L);// QT bug ?
   if (searchDialog->exec() == QDialog::Accepted) {
-    addToStrList(searchForList, searchDialog->getSearchFor());
+    kwview_addToStrList(searchForList, searchDialog->getSearchFor());
     searchFlags = searchDialog->getFlags() | (searchFlags & sfPrompt);
     initSearch(s, searchFlags);
     searchAgain(s);
@@ -2588,8 +2588,8 @@ void KWrite::replace() {
   kWriteView->focusOutEvent(0L);// QT bug ?
   if (searchDialog->exec() == QDialog::Accepted) {
 //    kWriteDoc->recordReset();
-    addToStrList(searchForList, searchDialog->getSearchFor());
-    addToStrList(replaceWithList, searchDialog->getReplaceWith());
+    kwview_addToStrList(searchForList, searchDialog->getSearchFor());
+    kwview_addToStrList(replaceWithList, searchDialog->getReplaceWith());
     searchFlags = searchDialog->getFlags();
     initSearch(s, searchFlags);
     replaceAgain();

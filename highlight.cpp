@@ -45,6 +45,9 @@
 #include <kregexp.h>
 #include <X11/Xlib.h> //used in getXFontList()
 
+#undef Unsorted
+#undef GrayScale
+
 #include "highlight.h"
 #include "kwdoc.h"
 #include <kstddirs.h>

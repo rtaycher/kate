@@ -1,3 +1,6 @@
+#ifndef _KWRITE_IFACE_H_
+#define _KWRITE_IFACE_H_
+
 #include <dcopobject.h>
 
 class KWriteIface : virtual public DCOPObject
@@ -53,3 +56,4 @@ k_dcop:
    virtual bool loadFile(const QString &name, int flags = 0)=0;
    virtual bool writeFile(const QString &name)=0;
 };
+#endif
