@@ -148,7 +148,7 @@ const QChar *HlStringDetect::checkHgl(const QChar *s,bool) {
      else
        {
 	 QString tmp=QString(s,str.length()).upper();
-	 if (tmp==str) return s+str.length();		
+	 if (tmp==str) return s+str.length();
        }
   return 0L;
 }
@@ -298,7 +298,7 @@ const QChar *HlFloat::checkHgl(const QChar *s,bool) {
                 }
             }
           return s;
-        } 
+        }
   if (*s == '-') s++;
   b = false;
   while (s->isDigit()) {
@@ -429,7 +429,7 @@ const QChar *HlRegExpr::checkHgl(const QChar *s,bool lineStart)
 {
   if ((!lineStart) && handlesLinestart) return 0;
   //kdDebug()<<"Trying to match:"<<Expr->pattern()<<endl;
-  QChar *chtmp=s;
+  const QChar *chtmp=s;
   int i;
   for (i=0;(*chtmp)!='\0';chtmp++,i++);
   QString line(s,i);
