@@ -447,8 +447,6 @@ void KateViewManager::slotDocumentNew ()
 
 void KateViewManager::slotDocumentOpen ()
 {
-  kapp->processEvents();
-
   Kate::View *cv = activeView();
 	KateFileDialog *dialog;
 
@@ -471,8 +469,6 @@ void KateViewManager::slotDocumentSave ()
 {
   if (activeView() == 0) return;
 
-  kapp->processEvents();
-
   Kate::View *current = activeView();
 
   if( current->getDoc()->isModified() || current->getDoc()->url().isEmpty() )
@@ -491,8 +487,6 @@ void KateViewManager::slotDocumentSave ()
 
 void KateViewManager::slotDocumentSaveAll ()
 {
-  kapp->processEvents();
-
   QPtrListIterator<Kate::View> it(viewList);
 
   for ( ;it.current(); ++it)
@@ -529,16 +523,12 @@ void KateViewManager::slotDocumentClose ()
 {
   if (!activeView()) return;
 
-  kapp->processEvents();
-
   closeDocWithAllViews (activeView());
 }
 
 void KateViewManager::slotDocumentCloseAll ()
 {
   if (docManager->docCount () == 0) return;
-
-  kapp->processEvents();
 
   QPtrList<Kate::Document> closeList;
 
@@ -1237,8 +1227,6 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
    QStringList children = config->readListEntry( "children" );
    for (QStringList::Iterator it=children.begin(); it!=children.end(); ++it)
    {
-     //kapp->processEvents();// == CRASH!!!!!!!!!!!!!!!!!!!!
-
      // for a viewspace, create it and open all documents therein.
      if ( (*it).startsWith("viewspace") ) {
        KateViewSpace* vs = new KateViewSpace( s );
