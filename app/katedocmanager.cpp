@@ -281,7 +281,7 @@ bool KateDocManager::queryCloseDocuments(KateMainWindow *w) {
 		              i18n("<p>The document '%1' has been modified, but not saved."
 		                   "<p>Do you want to keep it?").arg( doc->docName() ),
               			i18n("Unsaved Document") ) ;
-			kdDebug()<<"msgres:"<<msgres<<" "<<KMessageBox::Cancel<<endl;
+			kdDebug(13001)<<"msgres:"<<msgres<<" "<<KMessageBox::Cancel<<endl;
 			if (msgres==KMessageBox::Cancel) {
 				res=false;
 				break;

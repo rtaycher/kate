@@ -496,7 +496,7 @@ void KateViewManager::slotDocumentCloseAll ()
 {
   if (m_docManager->documents () == 0) return;
 
-  kdDebug()<<"CLOSE ALL DOCUMENTS *****************"<<endl;
+  kdDebug(13001)<<"CLOSE ALL DOCUMENTS *****************"<<endl;
 
   m_blockViewCreationAndActivation=true;
   m_docManager->closeAllDocuments();

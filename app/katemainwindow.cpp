@@ -567,12 +567,12 @@ void KateMainWindow::editKeys()
 
   QPtrList<Kate::Document>  l=m_docManager->documentList();
   for (uint i=0;i<l.count();i++) {
-	kdDebug()<<"reloading Keysettings for document "<<i<<endl;
+	kdDebug(13001)<<"reloading Keysettings for document "<<i<<endl;
 	l.at(i)->reloadXML();
 	QPtrList<class KTextEditor::View> l1=l.at(i)->views ();//KTextEditor::Document
 	for (uint i1=0;i1<l1.count();i1++) {
 		l1.at(i1)->reloadXML();
-		kdDebug()<<"reloading Keysettings for view "<<i<<"/"<<i1<<endl;
+		kdDebug(13001)<<"reloading Keysettings for view "<<i<<"/"<<i1<<endl;
 
 	}
 
@@ -624,11 +624,11 @@ void KateMainWindow::fileSelected(const KFileItem *file)
 
 void KateMainWindow::mSlotFixOpenWithMenu()
 {
-  //kdDebug()<<"13000"<<"fixing open with menu"<<endl;
+  //kdDebug(13001)<<"13000"<<"fixing open with menu"<<endl;
   documentOpenWith->popupMenu()->clear();
   // get a list of appropriate services.
   KMimeType::Ptr mime = KMimeType::findByURL( m_viewManager->activeView()->getDoc()->url() );
-  //kdDebug()<<"13000"<<"url: "<<m_viewManager->activeView()->getDoc()->url().prettyURL()<<"mime type: "<<mime->name()<<endl;
+  //kdDebug(13001)<<"13000"<<"url: "<<m_viewManager->activeView()->getDoc()->url().prettyURL()<<"mime type: "<<mime->name()<<endl;
   // some checking goes here...
   KTrader::OfferList offers = KTrader::self()->query(mime->name(), "Type == 'Application'");
   // for each one, insert a menu item...
@@ -680,7 +680,7 @@ void KateMainWindow::setupScripts()
 void KateMainWindow::runScript( int mIId )
 {
 	//kdDebug(13000) << "Starting script engine..." << endl;
-        kdDebug()<<"runScript( "<<mIId<<" ) ["<<scriptMenu->popupMenu()->text( mIId )<<"]"<<endl;
+        kdDebug(13001)<<"runScript( "<<mIId<<" ) ["<<scriptMenu->popupMenu()->text( mIId )<<"]"<<endl;
 	kscript->runScript( scriptMenu->popupMenu()->text( mIId ) );
 }
 
@@ -911,7 +911,7 @@ void KateMainWindow::slotProjectClose ()
 
 void KateMainWindow::activateProject (Kate::Project *project)
 {
-  kdDebug()<<"activating project "<<project<<endl;
+  kdDebug(13001)<<"activating project "<<project<<endl;
   if (m_project)
     m_projectManager->disableProjectGUI (m_project, this);
 
@@ -1082,10 +1082,10 @@ void KateMainWindow::restoreWindowConfiguration (KConfig *config)
 
 
 void KateMainWindow::saveGlobalProperties( KConfig* sessionConfig ) {
-	kdDebug()<<"saveGlobalProperties**********************"<<endl;
+	kdDebug(13001)<<"saveGlobalProperties**********************"<<endl;
 
      //session saving
-     kdDebug()<<"QUERY CLOSE: session management"<<endl;
+     kdDebug(13001)<<"QUERY CLOSE: session management"<<endl;
 	if (!sessionClosingStarted2)
 		sessionClosingAccepted=m_docManager->queryCloseDocuments(this);
 	sessionClosingStarted=true;

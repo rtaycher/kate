@@ -141,7 +141,7 @@ void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool, unsigned char 
 //     KNotifyClient::instance();
 //     int n = KNotifyClient::event( "file_modified_on_disc",
 //           i18n("The document<br><code>%1</code><br>%2").arg( doc->url().prettyURL() ).arg( a ) );
-//     kdDebug()<<"The BASTARD returned "<<n<<endl;
+//     kdDebug(13001)<<"The BASTARD returned "<<n<<endl;
     if ( ((KateMainWindow*)topLevelWidget())->notifyMod() )
       KPassivePopup::message( i18n("Warning"),
                               a.arg( doc->url().prettyURL() ),

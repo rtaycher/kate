@@ -408,7 +408,7 @@ void KateFileSelector::btnFilterClick()
 
 void KateFileSelector::autoSync()
 {
-  kdDebug()<<"KateFileSelector::autoSync()"<<endl;
+  kdDebug(13001)<<"KateFileSelector::autoSync()"<<endl;
   // if visible, sync
   if ( isVisible() ) {
     setActiveDocumentDir();
@@ -425,7 +425,7 @@ void KateFileSelector::autoSync()
 void KateFileSelector::autoSync( Kate::Document *doc )
 {
   // as above, but using document url.
-  kdDebug()<<"KateFileSelector::autoSync( Kate::Document )"<<endl;
+  kdDebug(13001)<<"KateFileSelector::autoSync( Kate::Document )"<<endl;
   KURL u ( doc->url() );
   if ( u.isEmpty() ) {
     waitingUrl = QString::null;
@@ -442,7 +442,7 @@ void KateFileSelector::autoSync( Kate::Document *doc )
 //FIXME crash on shutdown
 void KateFileSelector::setActiveDocumentDir()
 {
-//kdDebug()<<"KateFileSelector::setActiveDocumentDir()"<<endl;
+//kdDebug(13001)<<"KateFileSelector::setActiveDocumentDir()"<<endl;
   KURL u = mainwin->activeDocumentUrl();
   if (!u.isEmpty())
     setDir( u.upURL() );
@@ -468,7 +468,7 @@ void KateFileSelector::showEvent( QShowEvent * )
 {
     // sync if we should
     if ( autoSyncEvents & GotVisible ) {
-    kdDebug()<<"syncing fs on show"<<endl;
+    kdDebug(13001)<<"syncing fs on show"<<endl;
       setActiveDocumentDir();
       waitingUrl = QString::null;
     }

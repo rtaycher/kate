@@ -49,7 +49,7 @@ KateConsole::~KateConsole ()
 
 void KateConsole::loadConsoleIfNeeded()
 {
-  kdDebug()<<"================================ loadConsoleIfNeeded()"<<endl;
+  kdDebug(13001)<<"================================ loadConsoleIfNeeded()"<<endl;
   if (part!=0) return;
   if (!kapp->loopLevel()) {
 	connect(kapp,SIGNAL(onEventLoopEnter()),this,SLOT(loadConsoleIfNeeded()));
@@ -59,7 +59,7 @@ void KateConsole::loadConsoleIfNeeded()
   if (!topLevelWidget() || !parentWidget()) return;
   if (!topLevelWidget() || !isVisibleTo(topLevelWidget())) return;
 
-  kdDebug()<<"CREATING A CONSOLE PART"<<endl;
+  kdDebug(13001)<<"CREATING A CONSOLE PART"<<endl;
 
     KLibFactory *factory = 0;
     factory = KLibLoader::self()->factory("libkonsolepart");

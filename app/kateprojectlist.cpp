@@ -165,7 +165,7 @@ KateProjectListToolBar::~KateProjectListToolBar(){}
 
 void KateProjectListToolBar::setMovingEnabled( bool)
 {
-	//kdDebug()<<"JoWenn's setMovingEnabled called ******************************"<<endl;
+	//kdDebug(13001)<<"JoWenn's setMovingEnabled called ******************************"<<endl;
 	KToolBar::setMovingEnabled(false);
 }
 

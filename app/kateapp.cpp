@@ -132,7 +132,7 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
     
     m_doNotInitialize=m_initPlugin->actionsKateShouldNotPerformOnRealStartup();
     
-    kdDebug()<<"********************loading init plugin in app constructor"<<endl;
+    kdDebug(13001)<<"********************loading init plugin in app constructor"<<endl;
   }
 
   KTipDialog::showTip(m_mainWindows.first());
@@ -160,7 +160,7 @@ void KateApp::callOnEventLoopEnter()
   emit m_application->onEventLoopEnter();
   disconnect(m_application,SIGNAL(onEventLoopEnter()),0,0);
 
-  kdDebug()<<"callOnEventLoopEnter(): "<<kapp->loopLevel()<<"*****************************"<<endl;
+  kdDebug(13001)<<"callOnEventLoopEnter(): "<<kapp->loopLevel()<<"*****************************"<<endl;
 }
 
 void KateApp::performInit(const QString &libname, const KURL &url)
@@ -207,16 +207,16 @@ int KateApp::newInstance()
   if (!m_firstStart)
     raiseCurrentMainWindow ();
 
-  kdDebug()<<"******************************************** loop depth"<<kapp->loopLevel()<<endl;
+  kdDebug(13001)<<"******************************************** loop depth"<<kapp->loopLevel()<<endl;
 
   if (m_firstStart && m_initPlugin)
   {
     m_initPlugin->initKate();
-    kdDebug()<<"***************************** INIT PLUGIN ON FIRST START"<<endl;
+    kdDebug(13001)<<"***************************** INIT PLUGIN ON FIRST START"<<endl;
   }
   else if (args->isSet("initplugin"))
   {
-    kdDebug()<<"***************************** INIT PLUGIN ON ANY  START"<<endl;
+    kdDebug(13001)<<"***************************** INIT PLUGIN ON ANY  START"<<endl;
     performInit(args->getOption("initplugin"),args->url(0));
   }
   else
