@@ -77,7 +77,7 @@ void KateConsole::loadConsoleIfNeeded()
               connect ( part, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
 	      if (m_kvm->activeView())
 	      	if (m_kvm->activeView()->getDoc()->url().isValid())
-			cd(m_kvm->activeView()->getDoc()->url().path());
+			cd(KURL( m_kvm->activeView()->getDoc()->url().path() ));
             }
         }
 }

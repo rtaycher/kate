@@ -448,7 +448,7 @@ void KateMainWindow::slotWindowActivated ()
       if ( newPath != path )
       {
         path = newPath;
-        console->cd (path);
+        console->cd (KURL( path ));
       }
     }
 

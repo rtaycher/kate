@@ -137,7 +137,7 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow,
   lo->addWidget(cmbPath);
   cmbPath->listBox()->installEventFilter( this );
 
-  dir = new KDirOperator(QString::null, this, "operator");
+  dir = new KDirOperator(KURL(), this, "operator");
   dir->setView(KFile::/* Simple */Detail);
 
   KActionCollection *coll = dir->actionCollection();
