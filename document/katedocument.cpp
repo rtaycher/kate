@@ -144,7 +144,8 @@ KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool
 
   m_url.setPath( 0L );
 
-  myEncoding = QString::fromLatin1(QTextCodec::locale());
+  //myEncoding = QString::fromLatin1(QTextCodec::locale());
+  myEncoding = KGlobal::charsets()->name(KGlobal::charsets()->charsetForLocale());
 
   myDocID = docID;
   myDocName = QString ("");
@@ -472,7 +473,8 @@ void KateDocument::readConfig(KConfig *config) {
   setTabWidth(config->readNumEntry("TabWidth", 8));
   setUndoSteps(config->readNumEntry("UndoSteps", 50));
   m_singleSelection = config->readBoolEntry("SingleSelection", false);
-  myEncoding = config->readEntry("Encoding", QString::fromLatin1(QTextCodec::locale()));
+  //myEncoding = config->readEntry("Encoding", QString::fromLatin1(QTextCodec::locale()));
+  myEncoding = config->readEntry("Encoding", KGlobal::charsets()->name(KGlobal::charsets()->charsetForLocale()));
 
   for (z = 0; z < 5; z++) {
     sprintf(s, "Color%d", z);
@@ -752,7 +754,7 @@ void KateDocument::insertFile(VConfig &c, QIODevice &dev)
 
   QTextStream stream( &dev );
 
-  while ( !stream.eof() ) {
+  while ( !stream.atEnd() ) {
     stream >> ch;
 
     if (ch.isPrint() || ch == '\t') {
@@ -793,6 +795,7 @@ bool KateDocument::writeFile(const QString &file)
   QTextStream stream(&f);
 
   stream.setCodec(KGlobal::charsets()->codecForName(myEncoding));
+  stream.setEncoding(QTextStream::Locale); //lukas: lets see, not sure if it doesn't clash with the above line...
 
   int maxLine = numLines();
   int line = 0;
