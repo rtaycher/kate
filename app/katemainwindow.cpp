@@ -97,7 +97,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   // first the very important id
   myID = uniqueID;
   uniqueID++;
-  
+
   // init some vars
   m_docManager =  _m_docManager;
   m_pluginManager =_m_pluginManager;
@@ -110,10 +110,10 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   consoleDock = 0L;
   console = 0L;
-  
+
   // now the config
   config = kapp->config();
-  
+
   // first init size while we are still invisible, avoid flicker
   if (!initialGeometrySet())
   {
@@ -329,7 +329,11 @@ bool KateMainWindow::queryClose()
         // first ask if something has changed
 
 	val=m_docManager->queryCloseDocuments(this);
-	if (!val) return false;
+	if (!val)
+        {
+            delete scfg;
+            return false;
+        }
         m_docManager->saveDocumentList (scfg);
         saveWindowConfiguration (scfg);
 
@@ -337,7 +341,7 @@ bool KateMainWindow::queryClose()
 
         if ( !m_docManager->activeDocument() || !m_viewManager->activeView() ||
            ( !m_viewManager->activeView()->getDoc()->isModified() && m_docManager->documents() == 1 ) )
-        {  
+        {
            if( m_viewManager->activeView() )
              m_viewManager->deleteLastView();
            val = true;
@@ -349,7 +353,7 @@ bool KateMainWindow::queryClose()
     else
       val = true;
   }
-  else 
+  else
   {
 	val=sessionClosingAccepted;
 	if (!sessionClosingStarted) {
@@ -357,7 +361,7 @@ bool KateMainWindow::queryClose()
 		if (val) sessionClosingStarted2=true;
 	}
 	if (!val) sessionClosingStarted=false;
-	
+
   }
 
 
@@ -368,7 +372,7 @@ bool KateMainWindow::queryClose()
     if( consoleDock && console && consoleDock->isVisible() )
       consoleDock->changeHideShowState();
   }
-  
+
   return val;
 }
 
@@ -559,7 +563,7 @@ void KateMainWindow::editKeys()
 
   dlg.configure();
 
-  QPtrList<Kate::Document>  l=m_docManager->documentList(); 
+  QPtrList<Kate::Document>  l=m_docManager->documentList();
   for (int i=0;i<l.count();i++) {
 	kdDebug()<<"reloading Keysettings for document "<<i<<endl;
 	l.at(i)->reloadXML();
