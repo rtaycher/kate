@@ -787,6 +787,10 @@ KDockWidget *KateMainWindow::addToolView(KDockWidget::DockPosition pos,const cha
 	if (m_dockStyle==ClassicStyle)
 	{			
 			//KDockWidget=mainDock->
+			KDockWidget *dw1=mainDock->findNearestDockWidget(pos);
+			if (dw1)
+			dw->manualDock(dw1,KDockWidget::DockCenter,20);
+			else
 			dw->manualDock ( mainDock, pos, 20 );
 	}
 	else
