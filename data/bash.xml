@@ -28,22 +28,22 @@
 
         <contexts>
                 <context name = "Base" attribute = "0" lineEndContext="0">
-                        <item name="keyword" String = "keywords" attribute = "1" context="0"/>
-                        <item name="Int" attribute = "2" context="0"/>
-                        <item name="RegExpr" String = "$[0-9]+" attribute = "8" context="0"/>
-                        <item name="AnyChar" String = "|&lt;&gt;=;" attribute = "9" context="0"/>
-                        <item name="CharDetect" char = '"' attribute = "5" context = "1" context="0"/>
-                        <item name="CharDetect" char="`" attribute = "7" context = "2"/>
-                        <item name="RegExpr" String= "^#.*$" attribute = "6" context="0"/>
+                        <keyword String = "keywords" attribute = "1" context="0"/>
+                        <Int attribute = "2" context="0"/>
+                        <RegExpr String = "$[0-9]+" attribute = "8" context="0"/>
+                        <AnyChar String = "|&lt;&gt;=;" attribute = "9" context="0"/>
+                        <DetectChar char = '"' attribute = "5" context = "1" context="0"/>
+                        <DetectChar char="`" attribute = "7" context = "2"/>
+                        <RegExpr String= "^#.*$" attribute = "6" context="0"/>
                 </context>
 
                 <context name = "String" attribute = "5" lineEndContext="1">
-                        <item name="HlCChar" attribute = "4" context = "1"/>
-                        <item name="CharDetect" char = '"' attribute = "5" context = "0"/>
+                        <HlCChar attribute = "4" context = "1"/>
+                        <DetectChar char = '"' attribute = "5" context = "0"/>
                 </context>
 
                 <context name = "Substitution" attribute = "7" lineEndContext="2">
-                        <item name="CharDetect" char = "`" attribute = "7" context = "0"/>
+                        <DetectChar char = "`" attribute = "7" context = "0"/>
                 </context>
         </contexts>
 

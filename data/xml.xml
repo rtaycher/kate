@@ -3,26 +3,26 @@
   <highlighting>
     <contexts>
        <context attribute="0" lineEndContext="0">
-         <item name="RegExpr" attribute="1" context="1" String="&lt;\s*\/?\s*[a-zA-Z0-9_]*" />
+         <RegExpr attribute="1" context="1" String="&lt;\s*\/?\s*[a-zA-Z0-9_]*" />
        </context>
 
        <context attribute="2" lineEndContext="1">
-         <item name="CharDetect" attribute="1" context="0" char="&gt;"/>
-         <item name="RegExpr" attribute="0" context="2" String="\s*=\s*"/>
+         <DetectChar attribute="1" context="0" char="&gt;"/>
+         <RegExpr attribute="0" context="2" String="\s*=\s*"/>
        </context>
 
        <context attribute="8" lineEndContext="2">
-         <item name="RegExpr" attribute="3" context="1" String="\s*#?[a-zA-Z0-9]*" />
-         <item name="CharDetect" attribute="3" context="3" char="&quot;" />
+         <RegExpr attribute="3" context="1" String="\s*#?[a-zA-Z0-9]*" />
+         <CharDetect attribute="3" context="3" char="&quot;" />
        </context>
 
        <context attribute="3" lineEndContext="3">
-         <item name="CharDetect" attribute="3" context="1" char="&quot;" />
+         <CharDetect attribute="3" context="1" char="&quot;" />
        </context>
 
        <context attribute="5" lineEndContext="0"/>
        <context attribute="4" lineEndContext="0">
-         <item name="CharDetect" attribute="4" context="0" char="'"/>
+         <CharDetect attribute="4" context="0" char="'"/>
        </context>
     </contexts>
     <itemDatas>

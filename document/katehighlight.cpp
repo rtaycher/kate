@@ -967,7 +967,7 @@ void AutoHighlight::createItemData(ItemDataList &list)
 HlItem *AutoHighlight::createHlItem(struct syntaxContextData *data, int *res)
 {
 
-                QString dataname=HlManager::self()->syntax->groupItemData(data,QString("name"));
+                QString dataname=HlManager::self()->syntax->groupItemData(data,QString(""));
                 int attr=((HlManager::self()->syntax->groupItemData(data,QString("attribute"))).toInt());
                 int context=((HlManager::self()->syntax->groupItemData(data,QString("context"))).toInt());
 		char chr;
@@ -993,8 +993,8 @@ HlItem *AutoHighlight::createHlItem(struct syntaxContextData *data, int *res)
 //                if (dataname=="dataType") {*res=2; return(new HlKeyword(attr,context,casesensitive=="1"));} else
                 if (dataname=="Float") return (new HlFloat(attr,context)); else
                 if (dataname=="Int") return(new HlInt(attr,context)); else
-                if (dataname=="CharDetect") return(new HlCharDetect(attr,context,chr)); else
-                if (dataname=="2CharDetect") return(new Hl2CharDetect(attr,context,chr,chr1)); else
+                if (dataname=="DetectChar") return(new HlCharDetect(attr,context,chr)); else
+                if (dataname=="Detect2Chars") return(new Hl2CharDetect(attr,context,chr,chr1)); else
                 if (dataname=="RangeDetect") return(new HlRangeDetect(attr,context, chr, chr1)); else
 		if (dataname=="LineContinue") return(new HlLineContinue(attr,context)); else
                 if (dataname=="StringDetect") return(new HlStringDetect(attr,context,stringdata,insensitive)); else

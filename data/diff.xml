@@ -4,10 +4,10 @@
 
     <contexts>
       <context attribute="0" lineEndContext="0">
-      	<item name="RegExpr" attribute="1" context="1" String="^(\+\+\+|\-\-\-|\*\*\*|diff|\d)" />
-	<item name="RegExpr" attribute="4" context="2" String="^(\+|&gt;|!)" />
-	<item name="RegExpr" attribute="3" context="3" String="^(\-|&lt;)" />
-	<item name="RegExpr" attribute="2" context="4" String="^\@\@" />
+      	<RegExpr attribute="1" context="1" String="^(\+\+\+|\-\-\-|\*\*\*|diff|\d)" />
+	<RegExpr attribute="4" context="2" String="^(\+|&gt;|!)" />
+	<RegExpr attribute="3" context="3" String="^(\-|&lt;)" />
+	<RegExpr attribute="2" context="4" String="^\@\@" />
       </context>
 
       <context attribute="1" lineEndContext="0" />

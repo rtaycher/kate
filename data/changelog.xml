@@ -3,7 +3,7 @@
         <highlighting>
           <contexts>
                 <context attribute="0" lineEndContext="0">
-                <item name="RegExpr" attribute="1" context="0" String="^\d\d\d\d\s*-\s*\d\d\s*-\s*\d\d.*$"/>
+                <RegExpr attribute="1" context="0" String="^\d\d\d\d\s*-\s*\d\d\s*-\s*\d\d.*$"/>
                 </context>
           </contexts>
           <itemDatas>

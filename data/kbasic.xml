@@ -65,16 +65,16 @@
         </list>
         <contexts>
         <context attribute="0" lineEndContext="0">
-        <item name="keyword" attribute="1" context="0" String="keywords"/>
-        <item name="keyword" attribute="2" context="0" String="types"/>
-        <item name="Float" attribute="4" context="0"/>
-        <item name="Int" attribute="3" context="0"/>
-        <item name="CharDetect" attribute="4" context="2" char="quot;"/>
-        <item name="CharDetect" attribute="5" context="1" char="'"/>
+        <keyword attribute="1" context="0" String="keywords"/>
+        <keyword attribute="2" context="0" String="types"/>
+        <Float attribute="4" context="0"/>
+        <Int attribute="3" context="0"/>
+        <DetectChar attribute="4" context="2" char="quot;"/>
+        <DetectChar attribute="5" context="1" char="'"/>
         </context>
         <context attribute="5" lineEndContext="0"/>
         <context attribute="4" lineEndContext="0">
-        <item name="CharDetect" attribute="4" context="0" char="'"/>
+        <DetectChar attribute="4" context="0" char="'"/>
         </context>
         </contexts>
         <itemDatas>

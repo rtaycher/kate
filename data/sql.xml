@@ -743,26 +743,26 @@
     </list>
     <contexts>
       <context attribute="0" lineEndContext="0">
-        <item name="keyword" attribute="1" context="0" String="keywords"/>
-        <item name="keyword" attribute="2" context="0" String="types"/>
-        <item name="Int" attribute="3" context="0"/>
-        <item name="Float" attribute="4" context="0"/>
-        <item name="CharDetect" attribute="5" context="0" char="'"/>
-        <item name="2CharDetect" attribute="6" context="0" char="-" char1="-"/>
-        <item name="2CharDetect" attribute="6" context="1" char="/" char1="*"/>
-        <item name="RegExpr" attribute="6" context="2" String="^[Rr][Ee][Mm][ \t]"/>
-        <item name="CharDetect" attribute="7" context="0" char="&quot;"/>
+        <keyword attribute="1" context="0" String="keywords"/>
+        <keyword attribute="2" context="0" String="types"/>
+        <Int attribute="3" context="0"/>
+        <Float attribute="4" context="0"/>
+        <DetectChar attribute="5" context="0" char="'"/>
+        <Detect2Chars attribute="6" context="0" char="-" char1="-"/>
+        <Detect2Chars attribute="6" context="1" char="/" char1="*"/>
+        <RegExpr attribute="6" context="2" String="^[Rr][Ee][Mm][ \t]"/>
+        <DetectChar attribute="7" context="0" char="&quot;"/>
       </context>
       <context attribute="5" lineEndContext="0">
-        <item name="CharDetect" attribute="5" context="0" char="'"/>
+        <DetectChar attribute="5" context="0" char="'"/>
       </context>
       <context attribute="6" lineEndContext="0"/>
       <context attribute="6" lineEndContext="1">
-        <item name="2CharDetect" attribute="6" context="0" char="*" char1="/"/>
+        <Detect2Chars attribute="6" context="0" char="*" char1="/"/>
       </context>
       <context attribute="6" lineEndContext="2"/>
       <context attribute="7" lineEndContext="0">
-        <item name="CharDetect" attribute="7" context="0" char="&quot;"/>
+        <Detect2Chars attribute="7" context="0" char="&quot;"/>
       </context>
     </contexts>
     <itemDatas>

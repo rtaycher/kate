@@ -241,27 +241,27 @@
         </list>
         <contexts>
             <context name="normal" attribute="0" lineEndContext="0">
-                <item name="keyword" attribute="1" context="0"  String="keywords"/>
-                <item name="keyword" attribute="2" context="0"  String="types"/>
-                <item name="2CharDetect" attribute="3" context="1" char="-"
+                <keyword attribute="1" context="0"  String="keywords"/>
+                <keyword attribute="2" context="0"  String="types"/>
+                <Detect2Chars attribute="3" context="1" char="-"
                     char1="-" />
-                <item name="Int" attribute="4" context="0" />
-                <item name="HlCChar" attribute="5" context="0" />
-                <item name="CharDetect" attribute="6" context="2" char="&quot;" />
-                <item name="AnyChar" attribute="7" context="0" String="[&amp;&gt;&lt;=:+\-*\/|]().,;" />
-                <item name="CharDetect" attribute="8" context="3" char="'" />
+                <Int attribute="4" context="0" />
+                <HlCChar attribute="5" context="0" />
+                <DetectChar attribute="6" context="2" char="&quot;" />
+                <AnyChar attribute="7" context="0" String="[&amp;&gt;&lt;=:+\-*\/|]().,;" />
+                <DetectChar attribute="8" context="3" char="'" />
              </context>
             <context name="comment" attribute="3" lineEndContext="0" />
             <context name="string" attribute="6" lineEndContext="2" >
-                <item name="CharDetect" attribute="6" context="0" char="&quot;" />
+                <DetectChar attribute="6" context="0" char="&quot;" />
             </context>
             <context name="attribute" attribute="8" lineEndContext="0">
-                <item name="CharDetect" attribute="8" context="4" char="&quot;" />
-                <item name="CharDetect" attribute="0" context="0" char=" " />
-                <item name="AnyChar" attribute="8" context="0" String=")=&lt;&gt;" />
+                <DetectChar attribute="8" context="4" char="&quot;" />
+                <DetectChar attribute="0" context="0" char=" " />
+                <AnyChar attribute="8" context="0" String=")=&lt;&gt;" />
             </context>
             <context name="quot in att" attribute="8" lineEndContext="4">
-                <item name="CharDetect" attribute="8" context="3" char="&quot;" />
+                <CharDetect attribute="8" context="3" char="&quot;" />
             </context>
         </contexts>
         <itemDatas>
