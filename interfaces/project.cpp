@@ -102,7 +102,7 @@ unsigned int Project::projectNumber () const
   return myProjectNumber;
 }     
 
-ProjectPlugin *Project::plugin () const
+ProjectPlugin *Project::plugin ()
 {
   return d->m_plugin;
 }
@@ -142,7 +142,7 @@ bool Project::save ()
   return d->m_plugin->save ();
 }
 
-ProjectDirFile *Project::dirFile (const QString &dir) const
+ProjectDirFile::Ptr Project::dirFile (const QString &dir)
 {
   QString fname = d->m_dir + QString ("/");
   
@@ -158,10 +158,12 @@ ProjectDirFile *Project::dirFile (const QString &dir) const
   data->fileName = fname;
   data->project = this;
   
-  return new ProjectDirFile ((void *)data);
+  ProjectDirFile::Ptr p = new ProjectDirFile ((void *)data);
+  
+  return p;
 }
 
-KConfig *Project::data () const
+KConfig *Project::data ()
 {
   return d->m_config;
 }
@@ -179,12 +181,12 @@ ProjectDirFile::~ProjectDirFile ()
   delete d;
 }
 
-Project *ProjectDirFile::project () const
+Project *ProjectDirFile::project ()
 {
   return d->m_data->project;
 }
 
-KConfig *ProjectDirFile::data () const
+KConfig *ProjectDirFile::data ()
 {
   return d->m_config;
 }

@@ -19,6 +19,7 @@
 #ifndef _KATE_PROJECT_INCLUDE_
 #define _KATE_PROJECT_INCLUDE_
 
+#include <ksharedptr.h>
 #include <qobject.h>
 #include <kurl.h>
 #include <qstringlist.h>
@@ -33,12 +34,15 @@ class Project;
 /**
  * Interface to the project
  */
-class ProjectDirFile : public QObject
+class ProjectDirFile : public QObject, public KShared
 {
   friend class PrivateProjectDirFile;
 
-  Q_OBJECT   
-  
+  Q_OBJECT
+ 
+  public:
+    typedef KSharedPtr<ProjectDirFile> Ptr;
+   
   public:
     /**
      * Construtor, should not interest, internal usage
@@ -50,13 +54,13 @@ class ProjectDirFile : public QObject
      */
     virtual ~ProjectDirFile ();
     
-    Project *project () const;
+    Project *project ();
     
     /**
      * Raw access to config file
      * @return KConfig config data
      */
-     KConfig *data () const;
+     KConfig *data ();
      
      QStringList dirs () const;
      
@@ -95,7 +99,7 @@ class Project : public QObject
      * Returns the project plugin of this project object
      * @return ProjectPlugin project plugin of this project
      */
-    class ProjectPlugin *plugin () const;
+    class ProjectPlugin *plugin ();
    
     /**
      * Return the project type
@@ -137,13 +141,13 @@ class Project : public QObject
      * ProjectDirFile object for the dir project file in the given dir, QString::null for toplevel dir !
      * @return ProjectDirFile for given dir
      */
-    ProjectDirFile *dirFile (const QString &dir = QString::null) const;
+    ProjectDirFile::Ptr dirFile (const QString &dir = QString::null);
     
     /**
      * Raw access to config file
      * @return KConfig config data
      */
-     KConfig *data () const;
+     KConfig *data ();
     
   #undef signals
   #define signals public

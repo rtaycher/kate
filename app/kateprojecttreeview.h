@@ -32,9 +32,11 @@ class KateProjectTreeView;
 class KateProjectTreeViewItem : public KListViewItem
 {
   public:
-    KateProjectTreeViewItem (KateProjectTreeView * parent, const QString &name, const QString &fullname, bool dir = false);
-    KateProjectTreeViewItem (KateProjectTreeViewItem * parent, const QString &name, const QString &fullname, bool dir = false);
+    KateProjectTreeViewItem (KateProjectTreeView * parent, Kate::Project *prj, const QString &name, const QString &fullname, bool dir = false);
+    KateProjectTreeViewItem (KateProjectTreeViewItem * parent, Kate::Project *prj, const QString &name, const QString &fullname, bool dir = false);
     ~KateProjectTreeViewItem ();
+    
+    void init ();
     
     bool isDir () { return m_dir; };
     
@@ -47,6 +49,7 @@ class KateProjectTreeViewItem : public KListViewItem
   private:
     QString m_name;
     QString m_fullName;
+    Kate::Project *m_project;
     bool m_dir;
 };
 
