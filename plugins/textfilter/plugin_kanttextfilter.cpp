@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "plugin_kanttextfilter.h"
+#include "plugin_kanttextfilter.moc"
 
 #include <qinputdialog.h>
 #include <kaction.h>
@@ -28,6 +29,32 @@
 #include <qstring.h>
 
 #define POP_(x) kdDebug(13000) << #x " = " << flush << x << endl
+
+extern "C"
+{
+  void* init_libkanttextfilterplugin()
+  {
+    return new KantPluginFactory;
+  }
+}
+
+KantPluginFactory::KantPluginFactory()
+{
+  s_instance = new KInstance( "textfilter" );
+}
+
+KantPluginFactory::~KantPluginFactory()
+{
+  delete s_instance;
+}
+
+QObject* KantPluginFactory::createObject( QObject* parent, const char* name, const char*, const QStringList & )
+{
+  return new PluginKantTextFilter( parent, name );
+}
+
+KInstance* KantPluginFactory::s_instance = 0L;
+
 
 PluginKantTextFilter::PluginKantTextFilter( QObject* parent, const char* name )
     : Plugin( parent, name ),
@@ -251,37 +278,3 @@ PluginKantTextFilter::slotEditFilter ()  //  PCP
       slipInFilter (*m_pFilterShellProcess, *kv, text);
       }
 }
-
-kanttextfilterFactory::kanttextfilterFactory()
-{
-}
-
-kanttextfilterFactory::~kanttextfilterFactory()
-{
-  delete s_instance;
-  s_instance = 0;
-}
-
-QObject* kanttextfilterFactory::createObject( QObject* parent, const char* name, const char*, const QStringList & )
-{
-  return new PluginKantTextFilter( parent, name );
-}
-
-KInstance *kanttextfilterFactory::instance()
-{
-  if ( !s_instance )
-    s_instance = new KInstance( "textfilter" );
-  return s_instance;
-}
-
-extern "C"
-{
-  void* init_libkanttextfilterplugin()
-  {
-    return new kanttextfilterFactory;
-  }
-}
-
-KInstance* kanttextfilterFactory::s_instance = 0L;
-
-#include <plugin_kanttextfilter.moc>

@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "plugin_kanthtmltools.h"
+#include "plugin_kanthtmltools.moc"
 
 #include <qinputdialog.h>
 #include <kaction.h>
@@ -26,6 +27,31 @@
 #include <cassert>  
 #include <kdebug.h>
 #include <qstring.h>
+
+extern "C"
+{
+  void* init_libkanthtmltoolsplugin()
+  {
+    return new KantPluginFactory;
+  }
+}
+
+KantPluginFactory::KantPluginFactory()
+{
+  s_instance = new KInstance( "htmltools" );
+}
+
+KantPluginFactory::~KantPluginFactory()
+{
+  delete s_instance;
+}
+
+QObject* KantPluginFactory::createObject( QObject* parent, const char* name, const char*, const QStringList & )
+{
+  return new PluginKantHtmlTools( parent, name );
+}
+
+KInstance* KantPluginFactory::s_instance = 0L;
 
 PluginKantHtmlTools::PluginKantHtmlTools( QObject* parent, const char* name )
     : Plugin( parent, name )
@@ -139,38 +165,3 @@ void PluginKantHtmlTools::slipInHTMLtag (KantView & view, QString text)  //  PCP
         }
 
 }
-
-
-kanthtmltoolsFactory::kanthtmltoolsFactory()
-{
-}
-
-kanthtmltoolsFactory::~kanthtmltoolsFactory()
-{
-  delete s_instance;
-  s_instance = 0;
-}
-
-QObject* kanthtmltoolsFactory::createObject( QObject* parent, const char* name, const char*, const QStringList & )
-{
-  return new PluginKantHtmlTools( parent, name );
-}
-
-KInstance *kanthtmltoolsFactory::instance()
-{
-  if ( !s_instance )
-    s_instance = new KInstance( "htmltools" );
-  return s_instance;
-}
-
-extern "C"
-{
-  void* init_libkanthtmltoolsplugin()
-  {
-    return new kanthtmltoolsFactory;
-  }
-}
-
-KInstance* kanthtmltoolsFactory::s_instance = 0L;
-
-#include <plugin_kanthtmltools.moc>

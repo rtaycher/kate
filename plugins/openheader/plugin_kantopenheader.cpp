@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "plugin_kantopenheader.h"
+#include "plugin_kantopenheader.moc"
 
 #include <qinputdialog.h>
 #include <kaction.h>
@@ -30,6 +31,31 @@
 #include <kio/netaccess.h>
 
 #define POP_(x) kdDebug(13000) << #x " = " << flush << x << endl
+
+extern "C"
+{
+  void* init_libkantopenheaderplugin()
+  {
+    return new KantPluginFactory;
+  }
+}
+
+KantPluginFactory::KantPluginFactory()
+{
+  s_instance = new KInstance( "openheader" );
+}
+
+KantPluginFactory::~KantPluginFactory()
+{
+  delete s_instance;
+}
+
+QObject* KantPluginFactory::createObject( QObject* parent, const char* name, const char*, const QStringList & )
+{
+  return new PluginKantOpenHeader( parent, name );
+}
+
+KInstance* KantPluginFactory::s_instance = 0L;
 
 PluginKantOpenHeader::PluginKantOpenHeader( QObject* parent, const char* name )
     : Plugin( parent, name )
@@ -75,37 +101,3 @@ void PluginKantOpenHeader::slotOpenHeader ()
           else myParent->viewManagerIface()->openURL(KURL(docname+".CPP"));
     }
 }
-
-kantopenheaderFactory::kantopenheaderFactory()
-{
-}
-
-kantopenheaderFactory::~kantopenheaderFactory()
-{
-  delete s_instance;
-  s_instance = 0;
-}
-
-QObject* kantopenheaderFactory::createObject( QObject* parent, const char* name, const char*, const QStringList & )
-{
-  return new PluginKantOpenHeader( parent, name );
-}
-
-KInstance *kantopenheaderFactory::instance()
-{
-  if ( !s_instance )
-    s_instance = new KInstance( "openheader" );
-  return s_instance;
-}
-
-extern "C"
-{
-  void* init_libkantopenheaderplugin()
-  {
-    return new kantopenheaderFactory;
-  }
-}
-
-KInstance* kantopenheaderFactory::s_instance = 0L;
-
-#include <plugin_kantopenheader.moc>

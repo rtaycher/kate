@@ -24,6 +24,20 @@
 #include <klibloader.h>
 #include <kantpluginIface.h>
 
+class KantPluginFactory : public KLibFactory
+{
+  Q_OBJECT
+
+  public:
+    KantPluginFactory();
+    virtual ~KantPluginFactory();
+
+    virtual QObject* createObject( QObject* parent = 0, const char* pname = 0, const char* name = "QObject", const QStringList &args = QStringList() );
+
+  private:
+    static KInstance* s_instance;
+};
+
 class PluginKantOpenHeader : public KParts::Plugin
 {
   Q_OBJECT
@@ -37,22 +51,6 @@ class PluginKantOpenHeader : public KParts::Plugin
 
   public slots:
     void slotOpenHeader ();
-};
-
-class kantopenheaderFactory : public KLibFactory
-{
-  Q_OBJECT
-
-  public:
-    kantopenheaderFactory();
-    virtual ~kantopenheaderFactory();
-
-    virtual QObject* createObject( QObject* parent = 0, const char* pname = 0, const char* name = "QObject", const QStringList &args = QStringList() );
-
-    static KInstance* instance();
-
-  private:
-    static KInstance* s_instance;
 };
 
 #endif // _PLUGIN_KANT_OPENHEADER_H

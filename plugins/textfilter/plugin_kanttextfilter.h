@@ -24,6 +24,20 @@
 #include <klibloader.h>
 #include <kantpluginIface.h>
 
+class KantPluginFactory : public KLibFactory
+{
+  Q_OBJECT
+
+  public:
+    KantPluginFactory();
+    virtual ~KantPluginFactory();
+
+    virtual QObject* createObject( QObject* parent = 0, const char* pname = 0, const char* name = "QObject", const QStringList &args = QStringList() );
+
+  private:
+    static KInstance* s_instance;
+};
+
 class PluginKantTextFilter : public KParts::Plugin
 {
   Q_OBJECT
@@ -43,22 +57,6 @@ class PluginKantTextFilter : public KParts::Plugin
     void slotFilterReceivedStderr (KProcess * pProcess, char * got, int len);
     void slotFilterProcessExited (KProcess * pProcess);
     void slotFilterCloseStdin (KProcess *);
-};
-
-class kanttextfilterFactory : public KLibFactory
-{
-  Q_OBJECT
-
-  public:
-    kanttextfilterFactory();
-    virtual ~kanttextfilterFactory();
-
-    virtual QObject* createObject( QObject* parent = 0, const char* pname = 0, const char* name = "QObject", const QStringList &args = QStringList() );
-
-    static KInstance* instance();
-
-  private:
-    static KInstance* s_instance;
 };
 
 #endif // _PLUGIN_KANT_TEXTFILTER_H
