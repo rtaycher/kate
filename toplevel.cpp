@@ -161,7 +161,7 @@ void TopLevel::setupActions()
   KStdAction::selectAll(kWrite, SLOT(selectAll()), actionCollection());
   new KAction(i18n("&Deselect All"), 0, kWrite, SLOT(deselectAll()),
               actionCollection(), "edit_deselectAll");
-  new KAction(i18n("&Invert Selection"), 0, kWrite, SLOT(invertSelection()),
+  new KAction(i18n("Invert &Selection"), 0, kWrite, SLOT(invertSelection()),
               actionCollection(), "edit_invertSelection");
   KStdAction::find(kWrite, SLOT(find()), actionCollection());
   KStdAction::findNext(kWrite, SLOT(findAgain()), actionCollection());
@@ -194,7 +194,7 @@ void TopLevel::setupActions()
   // setup Settings menu
   KStdAction::showToolbar(this, SLOT(toggleToolbar()), actionCollection());
   KStdAction::showStatusbar(this, SLOT(toggleStatusbar()), actionCollection());
-  setShowPath = new KToggleAction(i18n("Show &Path"), 0, this, SLOT(togglePath()),
+  setShowPath = new KToggleAction(i18n("Sho&w Path"), 0, this, SLOT(togglePath()),
                     actionCollection(), "set_showPath");
   KStdAction::keyBindings(this, SLOT(editKeys()), actionCollection());
   KStdAction::configureToolbars(this, SLOT(editToolbars()), actionCollection());
@@ -212,9 +212,9 @@ void TopLevel::setupActions()
   setEndOfLine = new KSelectAction(i18n("&End Of Line"), 0, actionCollection(), "set_eol");
   connect(setEndOfLine, SIGNAL(activated(int)), kWrite, SLOT(setEol(int)));
   list.clear();
-  list.append("Unix");
-  list.append("Macintosh");
-  list.append("Windows/Dos");
+  list.append("&Unix");
+  list.append("&Macintosh");
+  list.append("&Windows/Dos");
   setEndOfLine->setItems(list);
 
 
