@@ -247,7 +247,9 @@ void KateConfigDialog::removePluginPage (Kate::Plugin *plugin)
   {
     if  ( pluginPages.at(i)->plugin == plugin )
     {
-      delete pluginPages.at(i)->page->parentWidget();
+      QWidget *w = pluginPages.at(i)->page->parentWidget();
+      delete pluginPages.at(i)->page;
+      delete w;
       pluginPages.remove(pluginPages.at(i));
     }
   }
