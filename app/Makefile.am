@@ -36,7 +36,7 @@ dummy_kate.cpp:
 
 dummy_kwrite.cpp:
 	echo > dummy_kwrite.cpp
-                         
-METASOURCES = AUTO  
-  
+
+METASOURCES = AUTO
+
 INCLUDES= -I../interfaces -I$(srcdir)/../lib $(all_includes)
