@@ -115,7 +115,8 @@ class KantDocument : public KTextEditor::Document
     virtual bool hasSelection() const;
     virtual QString selection() const;
 
-    public:
+    // only to make part work, don't change it !
+    bool m_bSingleViewMode;
 
 // public interface
     /**

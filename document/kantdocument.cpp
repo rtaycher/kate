@@ -102,6 +102,8 @@ const int KantDocument::maxAttribs = 32;
 
 KantDocument::KantDocument(long docID, QFileInfo* fi) : KTextEditor::Document(0L, 0L), hlManager(HlManager::self ())
 {
+  m_bSingleViewMode=false;
+
   m_url.setPath( 0L );
 
   myDocID = docID;
@@ -154,10 +156,6 @@ KantDocument::~KantDocument()
 {
   m_highlight->release();
   kdDebug() << "KantDocument::~KantDocument" << endl;
-
-  m_views.setAutoDelete( true );
-  m_views.clear();
-  m_views.setAutoDelete( false );
 }
 
 bool KantDocument::openFile()

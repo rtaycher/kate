@@ -16,14 +16,19 @@
  ***************************************************************************/
 
 #include "kantpartview.h"
+#include "kantpartdocument.h"
 
-#include "../document/kantdocument.h"
-
-KantPartView::KantPartView (KantDocument *doc, QWidget *parent, const char * name, bool HandleOwnURIDrops):  KantView (doc, parent, name, HandleOwnURIDrops)
+KantPartView::KantPartView (KantPartDocument *doc, QWidget *parent, const char * name, bool HandleOwnURIDrops):  KantView (doc, parent, name, HandleOwnURIDrops)
 {
   setXMLFile( "kantpartui.rc" );
 }
 
 KantPartView::~KantPartView ()
 {
+  if ( !myDoc->m_bSingleViewMode )
+  {
+    if ( myDoc->isLastView(0))
+      delete myDoc;
+  }
+
 }

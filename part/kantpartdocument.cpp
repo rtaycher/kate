@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "kantpartdocument.h"
+#include "kantpartview.h"
 
 #include <klocale.h>
 #include <kcharsets.h>
@@ -54,6 +55,17 @@ KantPartDocument::KantPartDocument (bool bSingleViewMode, bool bBrowserView,
 
 KantPartDocument::~KantPartDocument ()
 {
+  if ( !m_bSingleViewMode )
+  {
+    m_views.setAutoDelete( true );
+    m_views.clear();
+    m_views.setAutoDelete( false );
+  }
+}
+
+KTextEditor::View *KantPartDocument::createView( QWidget *parent, const char *name )
+{
+  return new KantPartView( this, parent, name );
 }
 
 KantPartBrowserExtension::KantPartBrowserExtension( KantPartDocument *doc )

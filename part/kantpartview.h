@@ -24,8 +24,10 @@
 
 class KantPartView : public KantView
 {
+  friend class KantPartDocument;
+
   public:
-    KantPartView (KantDocument *doc=0L, QWidget *parent = 0L, const char * name = 0, bool HandleOwnURIDrops = true);
+    KantPartView (KantPartDocument *doc=0L, QWidget *parent = 0L, const char * name = 0, bool HandleOwnURIDrops = true);
     ~KantPartView ();
 };
 

@@ -1537,7 +1537,7 @@ KantView::~KantView()
   }
   delete kspell.ksc;
 
-  if (myDoc)
+  if (myDoc && !myDoc->m_bSingleViewMode)
     myDoc->removeView( this );
 
   delete myViewInternal;
