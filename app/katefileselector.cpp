@@ -259,15 +259,6 @@ void KateFileSelector::readConfig(KConfig *config, const QString & name)
   slotFilterChange( flt );
 
   autoSyncEvents = config->readNumEntry( "AutoSyncEvents", 0 );
-  // connect events as needed
-  // TODO - solve startup problem: no need to set location for each doc opened!
-  if ( autoSyncEvents & DocumentChanged )
-    connect( viewmanager, SIGNAL( viewChanged() ), this, SLOT( autoSync() ) );
-
-  if ( autoSyncEvents & DocumentOpened )
-    connect( mainwin->m_docManager, SIGNAL( documentCreated(Kate::Document *) ),
-                this, SLOT( autoSync(Kate::Document *) ) );
-
 }
 
 void KateFileSelector::initialDirChangeHack()
@@ -425,40 +416,6 @@ void KateFileSelector::btnFilterClick()
   }
 }
 
-
-void KateFileSelector::autoSync()
-{
-  kdDebug(13001)<<"KateFileSelector::autoSync()"<<endl;
-  // if visible, sync
-  if ( isVisible() ) {
-    setActiveDocumentDir();
-    waitingUrl = QString::null;
-  }
-  // else set waiting url
-  else {
-    KURL u = mainwin->activeDocumentUrl();
-    if (!u.isEmpty())
-      waitingUrl = u.directory();
-  }
-}
-
-void KateFileSelector::autoSync( Kate::Document *doc )
-{
-  // as above, but using document url.
-  kdDebug(13001)<<"KateFileSelector::autoSync( Kate::Document )"<<endl;
-  KURL u ( doc->url() );
-  if ( u.isEmpty() ) {
-    waitingUrl = QString::null;
-    return;
-  }
-  if ( isVisible() ) {
-    setDir( u.directory() );
-    waitingUrl = QString::null;
-  }
-  else {
-    waitingUrl = u.directory();
-  }
-}
 //FIXME crash on shutdown
 void KateFileSelector::setActiveDocumentDir()
 {
@@ -470,6 +427,22 @@ void KateFileSelector::setActiveDocumentDir()
 
 void KateFileSelector::kateViewChanged()
 {
+  if ( autoSyncEvents & DocumentChanged )
+  {
+    kdDebug(13001)<<"KateFileSelector::do a sync ()"<<endl;
+    // if visible, sync
+    if ( isVisible() ) {
+      setActiveDocumentDir();
+      waitingUrl = QString::null;
+    }
+    // else set waiting url
+    else {
+      KURL u = mainwin->activeDocumentUrl();
+      if (!u.isEmpty())
+        waitingUrl = u.directory();
+    }
+  }
+
   // TODO: make sure the button is disabled if the directory is unreadable, eg
   //       the document URL has protocol http
   acSyncDir->setEnabled( ! mainwin->activeDocumentUrl().directory().isEmpty() );
@@ -569,11 +542,9 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
   // Sync
   QGroupBox *gbSync = new QGroupBox( 1, Qt::Horizontal, i18n("Auto Synchronization"), this );
   cbSyncActive = new QCheckBox( i18n("When a docu&ment becomes active"), gbSync );
-  cbSyncOpen = new QCheckBox( i18n("When a document is o&pened"), gbSync );
   cbSyncShow = new QCheckBox( i18n("When the file selector becomes visible"), gbSync );
   lo->addWidget( gbSync );
   connect( cbSyncActive, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
-  connect( cbSyncOpen, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
   connect( cbSyncShow, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
   // Histories
@@ -671,22 +642,9 @@ void KFSConfigPage::apply()
   int s = 0;
   if ( cbSyncActive->isChecked() )
     s |= KateFileSelector::DocumentChanged;
-  if ( cbSyncOpen->isChecked() )
-    s |= KateFileSelector::DocumentOpened;
   if ( cbSyncShow->isChecked() )
     s |= KateFileSelector::GotVisible;
   fileSelector->autoSyncEvents = s;
-  // reset connections
-  disconnect( fileSelector->viewmanager, 0, fileSelector, SLOT( autoSync() ) );
-  disconnect( fileSelector->mainwin->m_docManager, 0,
-                fileSelector, SLOT( autoSync( Kate::Document *) ) );
-  if ( s & KateFileSelector::DocumentChanged )
-    connect( fileSelector->viewmanager, SIGNAL( viewChanged() ),
-                fileSelector, SLOT( autoSync() ) );
-  if ( s & KateFileSelector::DocumentOpened )
-    connect( fileSelector->mainwin->m_docManager,
-                SIGNAL( documentCreated(Kate::Document *) ),
-                fileSelector, SLOT( autoSync(Kate::Document *) ) );
 
   // histories
   fileSelector->cmbPath->setMaxItems( sbPathHistLength->value() );
@@ -736,7 +694,6 @@ void KFSConfigPage::init()
   // sync
   int s = fileSelector->autoSyncEvents;
   cbSyncActive->setChecked( s & KateFileSelector::DocumentChanged );
-  cbSyncOpen->setChecked( s & KateFileSelector::DocumentOpened );
   cbSyncShow->setChecked( s & KateFileSelector::GotVisible );
   // histories
   sbPathHistLength->setValue( fileSelector->cmbPath->maxItems() );

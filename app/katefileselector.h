@@ -76,7 +76,7 @@ class KateFileSelector : public QWidget
 
   public:
     /* When to sync to current document directory */
-    enum AutoSyncEvent { DocumentChanged=1, DocumentOpened=2, GotVisible=4 };
+    enum AutoSyncEvent { DocumentChanged=1, GotVisible=2 };
 
     KateFileSelector( KateMainWindow *mainWindow=0, KateViewManager *viewManager=0,
                       QWidget * parent = 0, const char * name = 0 );
@@ -102,8 +102,6 @@ class KateFileSelector : public QWidget
     void dirFinishedLoading();
     void setActiveDocumentDir();
     void btnFilterClick();
-    void autoSync();
-    void autoSync( Kate::Document * );
 
   protected:
     void focusInEvent( QFocusEvent * );
@@ -160,7 +158,7 @@ class KFSConfigPage : public Kate::ConfigPage {
     //class QListBox *lbAvailableActions, *lbUsedActions;
     KActionSelector *acSel;
     class QSpinBox *sbPathHistLength, *sbFilterHistLength;
-    class QCheckBox *cbSyncOpen, *cbSyncActive, *cbSyncShow;
+    class QCheckBox *cbSyncActive, *cbSyncShow;
     class QCheckBox *cbSesLocation, *cbSesFilter;
 };
 
