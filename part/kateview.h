@@ -264,10 +264,14 @@ class KateView : public Kate::View
     friend class CodeCompletion_Impl;
 
   public:
-    KateView(KateDocument *doc=0L, QWidget *parent = 0L, const char * name = 0);
-    ~KateView();
+    KateView (KateDocument *doc, QWidget *parent = 0L, const char * name = 0);
+    ~KateView ();
+
+  //
+  // KTextEditor::View stuff
+  //
+  public:
     KateDocument *document();
-    /** get the real CursorCoodinates in pixels: */
 
   //
   // KTextEditor::ClipboardInterface stuff
@@ -317,6 +321,19 @@ class KateView : public Kate::View
 
   signals:
     void cursorPositionChanged ();
+
+  //
+  // KTextEditor::PopupMenuInterface stuff
+  //
+  public:
+    /**
+      Install a Popup Menu. The Popup Menu will be activated on
+      a right mouse button press event.
+    */
+    void installPopup(QPopupMenu *rmb_Menu);
+
+  private:
+    QPopupMenu *rmbMenu;
 
   //
   // internal KateView stuff
@@ -523,16 +540,6 @@ class KateView : public Kate::View
     int replaces;
     QDialog *replacePrompt;
 
-//right mouse button popup menu & bookmark menu
-  public:
-    /**
-      Install a Popup Menu. The Popup Menu will be activated on
-      a right mouse button press event.
-    */
-    void installPopup(QPopupMenu *rmb_Menu);
-
-  protected:
-    QPopupMenu *rmbMenu;
 
   signals:
     void bookAddChanged(bool enabled);

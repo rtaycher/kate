@@ -1893,7 +1893,6 @@ void KateView::doEditCommand(int cmdNum) {
   VConfig c;
   myViewInternal->getVConfig(c);
   myViewInternal->doEditCommand(c, cmdNum);
-  myDoc->updateViews();
 }
 
 static void kwview_addToStrList(QStringList &list, const QString &str) {
