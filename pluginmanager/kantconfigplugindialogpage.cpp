@@ -8,6 +8,9 @@
 #include <qhbox.h>
 #include <qlabel.h>
 #include <klocale.h>
+#include <qpushbutton.h>
+#include <qtooltip.h>
+#include <kiconloader.h>
 
 KantConfigPluginPage::KantConfigPluginPage(QWidget *parent):QVBox(parent)
 {
@@ -15,12 +18,32 @@ KantConfigPluginPage::KantConfigPluginPage(QWidget *parent):QVBox(parent)
 
   QHBox *hbox = new QHBox (this);
 
-  availableBox=new KListBox(hbox);
-  loadedBox=new KListBox(hbox);
+  QVBox *vbox1 = new QVBox (hbox);
+  QVBox *vbox2 = new QVBox (hbox);
+  QVBox *vbox3 = new QVBox (hbox);
+
+  QLabel *label1 = new QLabel (vbox1);
+  label1->setText (i18n("Available Plugins"));
+
+  QLabel *label2 = new QLabel (vbox3);
+  label2->setText (i18n("Loaded Plugins"));
+
+  availableBox=new KListBox(vbox1);
+  loadedBox=new KListBox(vbox3);
 
   label = new QLabel (this);
   label->setMinimumHeight (50);
   label->setText (i18n("Select a plugin to get a short info here !"));
+
+  unloadButton = new QPushButton( /*i18n("&Back"),*/ vbox2 );
+  unloadButton->setPixmap(SmallIcon("back"));
+  QToolTip::add(unloadButton, i18n("Previous directory"));
+  loadButton = new QPushButton( /*i18n("&Next"),*/ vbox2 );
+  loadButton->setPixmap(SmallIcon("forward"));
+  QToolTip::add(loadButton, i18n("Next Direcotry"));
+
+  unloadButton->setEnabled(false);
+  loadButton->setEnabled(false);
 
   connect(availableBox,SIGNAL(highlighted(QListBoxItem *)),this,SLOT(slotActivatePluginItem (QListBoxItem *)));
   connect(availableBox,SIGNAL(selected(QListBoxItem *)), this,SLOT(slotActivatePluginItem (QListBoxItem *)));
@@ -50,6 +73,10 @@ void KantConfigPluginPage::slotActivatePluginItem (QListBoxItem *item)
   for (int i=0; i<myPluginMan->myPluginList.count(); i++)
   {
     if  (myPluginMan->myPluginList.at(i)->name == item->text())
+    {
+      unloadButton->setEnabled(myPluginMan->myPluginList.at(i)->load);
+      loadButton->setEnabled(!myPluginMan->myPluginList.at(i)->load);
       label->setText (i18n("Name: ") + myPluginMan->myPluginList.at(i)->name + i18n ("\nAuthor: ") + myPluginMan->myPluginList.at(i)->author + i18n ("\nDescription: ") + myPluginMan->myPluginList.at(i)->description);
+    }
   }
 }

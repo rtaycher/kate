@@ -22,6 +22,9 @@ class KantConfigPluginPage: public QVBox
     KListBox *loadedBox;
     class QLabel *label;
 
+    class QPushButton *unloadButton;
+    class QPushButton *loadButton;
+
   private slots:
     void slotUpdate ();
     void slotActivatePluginItem (QListBoxItem *item);
