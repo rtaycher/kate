@@ -157,8 +157,6 @@ class KateViewManager : public KateViewManagerIface
 
     void slotEditCommand ();
 
-    void slotInsertFile ();
-
     void slotSetHl (int n);
 
     void slotSpellcheck ();

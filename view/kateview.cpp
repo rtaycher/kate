@@ -1559,8 +1559,6 @@ void KateView::setupActions()
     }
 
     KStdAction::replace(this, SLOT(replace()), actionCollection());
-    editInsert = new KAction(i18n("&Insert File..."), 0, this, SLOT(insertFile()),
-                             actionCollection(), "edit_insertFile");
 
    new KAction(i18n("&Editing Command"), Qt::CTRL+Qt::Key_D, this, SLOT(slotEditCommand()),
                                   actionCollection(), "edit_cmd");
@@ -1615,7 +1613,6 @@ void KateView::slotUpdate()
     setVerticalSelection->setChecked(cfg & KateView::cfVerticalSelect);
 
     fileSave->setEnabled(!readOnly);
-    editInsert->setEnabled(!readOnly);
     editCut->setEnabled(!readOnly);
     editPaste->setEnabled(!readOnly);
     editReplace->setEnabled(!readOnly);
@@ -2100,15 +2097,6 @@ void KateView::open() {
   url = KFileDialog::getOpenURL(myDoc->url().url(), QString::null, this);
   if (url.isEmpty()) return;
   myDoc->openURL(url);
-}
-
-void KateView::insertFile() {
-  if (isReadOnly())
-    return;
-
-  KURL  url = KFileDialog::getOpenURL(myDoc->url().url(), QString::null, this);
-  if (url.isEmpty()) return;
-//loadURL  (url,KateView::lfInsert);
 }
 
 KateView::fileResult KateView::save() {

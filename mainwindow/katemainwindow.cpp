@@ -203,8 +203,6 @@ void KateMainWindow::setupActions()
   editCmd = new KAction(i18n("&Editing Command"), Qt::CTRL+Qt::Key_D, viewManager, SLOT(slotEditCommand()),
                                   actionCollection(), "edit_cmd");
 
-  editInsert = new KAction(i18n("I&nsert File..."), 0, viewManager, SLOT(slotInsertFile()), actionCollection(), "edit_insertFile");
-
   gotoLine = KStdAction::gotoLine(viewManager, SLOT(slotGotoLine()), actionCollection());
 
   bookmarkAdd = new KAction(i18n("&Add Marker"), Qt::CTRL+Qt::Key_M, viewManager, SLOT(addBookmark()), actionCollection(), "edit_bookmarkAdd");
@@ -401,7 +399,6 @@ void KateMainWindow::slotWindowActivated ()
     editFind->setEnabled(false);
     editFindNext->setEnabled(false);
     editReplace->setEnabled(false);
-    editInsert->setEnabled(false);
     toolsSpell->setEnabled(false);
     setHighlightConf->setEnabled(false);
     setHighlight->setEnabled(false);
@@ -427,7 +424,6 @@ void KateMainWindow::slotWindowActivated ()
     editFind->setEnabled(true);
     editFindNext->setEnabled(true);
     editReplace->setEnabled(true);
-    editInsert->setEnabled(true);
     toolsSpell->setEnabled(true);
     setHighlightConf->setEnabled(true);
     setHighlight->setEnabled(true);

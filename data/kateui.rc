@@ -44,8 +44,6 @@
     <Action name="edit_unindent" />
     <Separator />
     <Action name="edit_cmd"/>
-    <Separator />
-    <Action name="edit_insertFile"/>
     <Separator/>
     <Action name="go_goto_line"/>
     <Separator />
@@ -141,8 +139,6 @@
   <Action name="edit_cut"/>
   <Action name="edit_copy"/>
   <Action name="edit_paste"/>
-  <Separator />
-  <Action name="edit_insertFile"/>
   <Separator />
   <Action name="set_highlight"/>
   <Separator />

@@ -418,7 +418,7 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
 
    void setupActions();
 
-    KAction *fileSave, *editInsert, *editCut, *editPaste,
+    KAction *fileSave, *editCut, *editPaste,
             *editReplace, *editUndo, *editRedo, *editUndoHist,
             *toolsIndent, *toolsUnindent, *toolsCleanIndent,
             *toolsComment, *toolsUncomment, *toolsSpell;
@@ -567,11 +567,6 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
       highlight selection.
     */
     void open();
-    /**
-      Calling this method will let the user insert a file at the current
-      cursor position.
-    */
-    void insertFile();
     /**
       Saves the file if necessary under the current file name. If the current file
       name is Untitled, as it is after a call to newFile(), this routing will

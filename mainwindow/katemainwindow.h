@@ -99,7 +99,6 @@ class KateMainWindow : public KDockMainWindow, virtual public KateIface , virtua
     KAction *editReplace;
     KAction *editIndent;
     KAction *editUnIndent;
-    KAction *editInsert;
     KAction *bookmarkAdd;
     KAction *bookmarkSet;
     KAction *bookmarkClear;

@@ -711,13 +711,6 @@ void KateViewManager::slotUnIndent()
 
 }
 
-void KateViewManager::slotInsertFile ()
-{
-  if (activeView() == 0) return;
-
-  activeView()->insertFile();
-}
-
 void KateViewManager::slotSpellcheck ()
 {
   if (activeView() == 0) return;
