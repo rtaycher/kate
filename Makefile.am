@@ -1,4 +1,4 @@
-SUBDIRS = interfaces part app data pics
+SUBDIRS = interfaces app data pics
 EXTRA_DIST = AUTHORS COPYING COPYING.LIB ChangeLog NEWS README TODO
 
 messages:
