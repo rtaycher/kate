@@ -242,8 +242,8 @@ void KateMainWindow::setupActions()
   connect(setEndOfLine->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(setEOLMenuAboutToShow()));
   QStringList list;
   list.append("&Unix");
-  list.append("&Macintosh");
   list.append("&Windows/Dos");
+  list.append("&Macintosh");
   setEndOfLine->setItems(list);
 
   documentReload = new KAction(i18n("&Reload"), "reload", Key_F5, viewManager, SLOT(reloadCurrentDoc()), actionCollection(), "file_reload");

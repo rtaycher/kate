@@ -335,8 +335,10 @@ bool KateDocument::saveFile()
     stream << getTextLine(line)->getString();
     line++;
     if (line >= maxLine) break;
-    if (eolMode != KateView::eolUnix) stream << QChar('\r');
-    if (eolMode != KateView::eolMacintosh) stream << QChar('\n');
+
+    if (eolMode == KateDocument::eolUnix) stream << "\n";
+    else if (eolMode == KateDocument::eolDos) stream << "\r\n";
+    else if (eolMode == KateDocument::eolMacintosh) stream << '\r';
   };
   f.close();
 
@@ -1125,8 +1127,7 @@ void KateDocument::clear() {
     view->tagAll();
   }
 
-  eolMode = KateView::eolUnix;
-
+  eolMode = KateDocument::eolUnix;
 
   buffer->clear();
   longestLine = buffer->line(0);

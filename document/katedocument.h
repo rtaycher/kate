@@ -498,6 +498,10 @@ class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
     */
     void fileNameChanged ();
 
+  public:
+    //end of line settings
+    enum Eol_settings {eolUnix=0,eolDos=1,eolMacintosh=2};
+
   // for the DCOP interface
   public:
     void open (const QString &name=0);

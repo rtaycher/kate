@@ -886,9 +886,6 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
      lfNewFile=2,
      lfNoAutoHl=4};
 
-//end of line settings
-    enum Eol_settings {eolUnknown,eolUnix,eolMacintosh,eolDos};
-
 //cursor movement commands
     enum Cursor_commands
 	   { cmLeft,cmRight,cmWordLeft,cmWordRight,

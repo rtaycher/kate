@@ -1225,8 +1225,7 @@ void KateViewInternal::paintEvent(QPaintEvent *e) {
     TextLine *textLine;
     int ctxNum = 0;
 
-//    kdDebug()<<QString("KateViewInternal::paintEvent: line:%1.count%2").arg(line).arg(myDoc->getTextLineCount()-1)<<endl;
-/*JW    if (!pre)
+    if (!pre)
     if ((myDoc->getTextLineCount()-1)>line)
     {
       textLine = myDoc->getTextLine(line);
@@ -1235,7 +1234,7 @@ void KateViewInternal::paintEvent(QPaintEvent *e) {
 
       ctxNum = myDoc->highlight()->doHighlight(ctxNum,textLine);
       textLine->setContext(ctxNum);
-    }*/
+    }
 
     myDoc->paintTextLine(paint, line, xStart, xEnd, myView->configFlags & KateView::cfShowTabs);
     bitBlt(this, updateR.x(), y, drawBuffer, 0, 0, updateR.width(), h);
@@ -1535,8 +1534,8 @@ void KateView::setupActions()
     connect(setEndOfLine, SIGNAL(activated(int)), this, SLOT(setEol(int)));
     list.clear();
     list.append("&Unix");
-    list.append("&Macintosh");
     list.append("&Windows/Dos");
+    list.append("&Macintosh");
     setEndOfLine->setItems(list);
 }
 
