@@ -118,6 +118,7 @@ class KateDocument : public KateDocumentIface, virtual public KateDocumentDCOPIf
     Q_OBJECT
     friend class KateViewInternal;
     friend class KateView;
+    friend class KateIconBorder;
 
   public:
     KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode=false, bool bBrowserView=false, QWidget *parentWidget = 0, const char *widgetName = 0, QObject * = 0, const char * = 0);

@@ -131,14 +131,36 @@ struct BracketMark {
   int eXPos;
 };
 
+
+class KateIconBorder : public QWidget
+{
+public:
+    KateIconBorder(KateView *view, class KateViewInternal *internalView);
+    ~KateIconBorder();
+
+    void paintLine(int i);
+
+protected:
+    void paintEvent(QPaintEvent* e);
+    void mousePressEvent(QMouseEvent* e);
+
+private:
+
+    KateView *myView;
+    class KateViewInternal *myInternalView;
+    bool lmbSetsBreakpoints;
+};
+
 class KateViewInternal : public QWidget {
     Q_OBJECT
     friend class KateDocument;
     friend class KateView;
-
+    friend class KateIconBorder;
 
   private:
     long waitForPreHighlight;
+    int iconBorderWidth;
+    int iconBorderHeight;
 
   protected slots:
     void slotPreHighlightUpdate(long line);
@@ -223,6 +245,7 @@ class KateViewInternal : public QWidget {
     KateDocument *myDoc;
     QScrollBar *xScroll;
     QScrollBar *yScroll;
+    KateIconBorder *leftBorder;
 
     int xPos;
     int yPos;
@@ -289,6 +312,8 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
     Q_OBJECT
     friend class KateViewInternal;
     friend class KateDocument;
+    friend class KateIconBorder;
+
   public:
     /**
       The document can be used by more than one KateView objects.
@@ -974,6 +999,7 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
 
   private:
     bool active;
+    bool myIconBorder;
 
   public slots:
     virtual void setFocus ();
@@ -988,6 +1014,11 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
 
   public slots:
     void slotEditCommand ();
+    void setIconBorder (bool enable);
+    void toggleIconBorder ();
+
+  public:
+    bool iconBorder() { return myIconBorder; } ;
 };
 
 class KateBrowserExtension : public KParts::BrowserExtension

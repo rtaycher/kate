@@ -779,6 +779,12 @@ void KateViewManager::printDlg()
   activeView()->printDlg ();
 }
 
+void KateViewManager::toggleIconBorder ()
+{
+  if (!activeView()) return;
+  activeView()->toggleIconBorder ();
+}
+
 void KateViewManager::splitViewSpace( KateViewSpace* vs,
                                       bool isHoriz,
                                       bool atTop,

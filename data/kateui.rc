@@ -145,6 +145,8 @@
   <Separator />
   <Action name="set_highlight"/>
   <Separator />
+  <Action name="view_border"/>
+  <Separator />
   <Action name="go_back"/>
   <Action name="go_forward"/>
   <Action name="doc_list"/>

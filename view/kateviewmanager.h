@@ -184,6 +184,7 @@ class KateViewManager : public KateViewManagerIface
     void clearBookmarks();
 
     void setEol(int);
+    void toggleIconBorder ();
 
   signals:
     void statusChanged (KateView *, int, int, int, int, QString);

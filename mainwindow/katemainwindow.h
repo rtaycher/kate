@@ -112,6 +112,7 @@ class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOP
     KAction *viewSplitVert;
     KAction *viewSplitHoriz;
     KAction *closeCurrentViewSpace;
+    KToggleAction *viewBorder;
 
     KAction *goNext;
     KAction *goPrev;
