@@ -648,7 +648,7 @@ void KWriteDoc::setModified(bool m) {
   }
 }
 
-bool KWriteDoc::isModified() {
+bool KWriteDoc::isModified() const {
   return modified;
 }
 

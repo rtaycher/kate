@@ -367,7 +367,7 @@ class KWriteDoc : public KTextEditor::Document {
     virtual void setReadWrite( bool );
     virtual bool isReadWrite() const;
     virtual void setModified(bool);
-    virtual bool isModified();
+    virtual bool isModified() const;
     void setSingleSelection(bool ss) {m_singleSelection = ss;}
     bool singleSelection() {return m_singleSelection;}
 
