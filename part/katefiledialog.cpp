@@ -24,14 +24,20 @@
 #include <qstringlist.h>
 
 KateFileDialog::KateFileDialog (const QString& startDir,
+                    const QString& encoding,
 			              QWidget *parent,
-			              const QString& caption, int type, const QString& encoding) : KFileDialog (startDir, QString::null, parent, "", true)
+			              const QString& caption,
+										int type) : KFileDialog (startDir, QString::null, parent, "", true)
 {
   toolBar()->insertCombo(KGlobal::charsets()->availableEncodingNames(), 33333, false, "",
 	        this, "", true);
 
 	this->encoding = toolBar()->getCombo(33333);
-  this->encoding->setCurrentItem (KGlobal::charsets()->availableEncodingNames().findIndex(encoding));
+  
+	if (encoding != QString::null)
+	  this->encoding->setCurrentItem (KGlobal::charsets()->availableEncodingNames().findIndex(encoding));
+	else
+    this->encoding->setCurrentItem (KGlobal::charsets()->availableEncodingNames().findIndex(QString::fromLatin1(QTextCodec::codecForLocale()->name())));
 }
 
 KateFileDialog::~KateFileDialog ()

@@ -37,8 +37,9 @@ class KateFileDialog : public KFileDialog
 {
   public:
 	  KateFileDialog (const QString& startDir = QString::null,
+		                const QString& encoding = QString::fromLatin1(QTextCodec::codecForLocale()->name()),
 			              QWidget *parent= 0,
-			              const QString& caption = QString::null, int type = KateFileDialog::openDialog, const QString& encoding = QString::fromLatin1(QTextCodec::codecForLocale()->name()));
+			              const QString& caption = QString::null, int type = KateFileDialog::openDialog);
 
     ~KateFileDialog ();
 
