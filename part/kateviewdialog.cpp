@@ -8,7 +8,7 @@
 #include <qlayout.h>
 #include <qlistbox.h>
 #include <qspinbox.h>
-#include <qcombobox.h>
+#include <kcombobox.h>
 #include <qgroupbox.h>
 #include <qlineedit.h>
 #include <qcheckbox.h>
@@ -39,7 +39,7 @@ SearchDialog::SearchDialog( QWidget *parent, QStringList &searchFor, QStringList
 
   QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
 
-  m_search = new QComboBox( true, page );
+  m_search = new KComboBox( true, page );
   m_search->insertStringList( searchFor );
   m_search->setMinimumWidth( m_search->sizeHint().width() );
   m_search->lineEdit()->selectAll();
@@ -53,7 +53,7 @@ SearchDialog::SearchDialog( QWidget *parent, QStringList &searchFor, QStringList
   {
     // make it a replace dialog
     setCaption( i18n( "Replace Text" ) );
-    m_replace = new QComboBox( true, page );
+    m_replace = new KComboBox( true, page );
     m_replace->insertStringList( replaceWith );
     m_replace->setMinimumWidth( m_search->sizeHint().width() );
     label = new QLabel( m_replace, i18n( "&Replace With:" ), page );

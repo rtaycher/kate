@@ -32,8 +32,8 @@ class SearchDialog : public KDialogBase
     void selectedStateChanged (int);
 
   protected:
-    QComboBox *m_search;
-    QComboBox *m_replace;
+    KComboBox *m_search;
+    KComboBox *m_replace;
     QCheckBox *m_opt1;
     QCheckBox *m_opt2;
     QCheckBox *m_opt3;
