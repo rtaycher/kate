@@ -104,7 +104,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   config->setGroup("General");
 
   // GROUP with the one below: "Startup"
-  QButtonGroup *bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("Startup"), frGeneral );
+  QButtonGroup *bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("Start&up"), frGeneral );
   lo->addWidget( bgStartup );
 
   // reopen projects
@@ -117,7 +117,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
 
   // reopen files
   cb_reopenFiles = new QCheckBox( bgStartup );
-  cb_reopenFiles->setText(i18n("Reopen &files at startup"));
+  cb_reopenFiles->setText(i18n("R&eopen files at startup"));
   //config->setGroup("General");
   cb_reopenFiles->setChecked( config->readBoolEntry("Restore Documents", false) );
   QWhatsThis::add(cb_reopenFiles, i18n(
@@ -136,11 +136,11 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   connect( cb_restoreVC, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
   // GROUP with the one below: "Appearance"
-  bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("Appearance"), frGeneral );
+  bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("&Appearance"), frGeneral );
   lo->addWidget( bgStartup );
 
   QHBox *hbGM=new QHBox(bgStartup);
-	QLabel *lGM=new QLabel(i18n("Default GUI mode for new windows:"),hbGM);
+	QLabel *lGM=new QLabel(i18n("Default &GUI mode for new windows:"),hbGM);
   	combo_guiMode = new QComboBox(hbGM);
 
         QStringList allgml;
@@ -164,7 +164,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
 
   // show full path in title
   config->setGroup("General");
-  cb_fullPath = new QCheckBox( i18n("Show full &path in title"), bgStartup);
+  cb_fullPath = new QCheckBox( i18n("&Show full path in title"), bgStartup);
   cb_fullPath->setChecked( viewManager->getShowFullPath() );
   QWhatsThis::add(cb_fullPath,i18n("If this option is checked, the full document path will be shown in the window caption."));
   connect( cb_fullPath, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
@@ -178,7 +178,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   connect( cb_sortFiles, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
   // GROUP with the one below: "Behavior"
-  bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("Behavior"), frGeneral );
+  bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("&Behavior"), frGeneral );
   lo->addWidget( bgStartup );
 
   // number of recent files
