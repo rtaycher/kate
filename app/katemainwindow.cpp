@@ -771,7 +771,10 @@ bool KateMainWindow::eventFilter( QObject *o, QEvent *e )
       // and options to reload/disguard all, or handle individually
       for ( uint i=0; i < cnt; i++ )
       {
-        list.at( i )->slotModifiedOnDisk( activeView );
+        Kate::DocumentExt *ext = Kate::documentExt (list.at( i ));
+        
+        if (ext)
+          ext->slotModifiedOnDisk( activeView );
       }
     }
   }
