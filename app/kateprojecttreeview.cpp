@@ -102,13 +102,16 @@ KateProjectTreeView::KateProjectTreeView (Kate::Project *project, KateMainWindow
   m_mainWin = mainwin;
  
   setSelectionModeExt( KListView::Single ); 
-  setRootIsDecorated (true);
+  setRootIsDecorated (false);
   setAlternateBackground (viewport()->colorGroup().base());
   
   header()->setStretchEnabled (true);
   addColumn(i18n("Project: ") + m_project->name());
 
-  addDir (0, QString::null);
+  KateProjectTreeViewItem *item = new KateProjectTreeViewItem (this, m_project, i18n("Project Root"), QString::null, true);
+  addDir (item, QString::null);
+  
+  setOpen (item, true);
   
   connect(this,SIGNAL(doubleClicked(QListViewItem *, const QPoint &, int)),this,SLOT(slotDoubleClicked(QListViewItem *, const QPoint &, int)));
 }
@@ -133,12 +136,7 @@ void KateProjectTreeView::addDir (KateProjectTreeViewItem *parent, const QString
   
   for (uint z=0; z < dirs.count(); z++)
   {
-    KateProjectTreeViewItem *item = 0;
-    if (parent)
-      item = new KateProjectTreeViewItem (parent, m_project, dirs[z], base + dirs[z], true);
-    else
-      item = new KateProjectTreeViewItem (this, m_project, dirs[z], base + dirs[z], true);
-      
+    KateProjectTreeViewItem *item = new KateProjectTreeViewItem (parent, m_project, dirs[z], base + dirs[z], true);
     addDir (item, base + dirs[z]);
   }
   
@@ -146,10 +144,7 @@ void KateProjectTreeView::addDir (KateProjectTreeViewItem *parent, const QString
   
   for (uint z=0; z < files.count(); z++)
   {
-    if (parent)
-      new KateProjectTreeViewItem (parent, m_project, files[z], base + files[z], false);
-    else
-      new KateProjectTreeViewItem (this, m_project, files[z], base + files[z], false);
+    new KateProjectTreeViewItem (parent, m_project, files[z], base + files[z], false);      
   }
 }
 
@@ -161,7 +156,10 @@ void KateProjectTreeView::slotDoubleClicked( QListViewItem *i, const QPoint &pos
     return;
   
   if (item->isDir())
-    setOpen (item, !item->isOpen());
+  {
+    if  (item->fullName() != QString::null)
+      setOpen (item, !item->isOpen());
+  }
   else
     m_mainWin->viewManager()->openURL (KURL (m_project->dir() + QString ("/") + item->fullName()));
 }

@@ -59,13 +59,13 @@ class ProjectDirFile : public QObject, public KShared
     Project *project ();
     
     /**
-     * Return the filename of the project file
-     * @return QString project filename
+     * Return the filename of the dir file, relative to the project dir
+     * @return QString project dirfile name
      */
     QString fileName () const;
-    
+        
     /**
-     * Return the dir of the project
+     * Return the dir of this file, relative to the project dir
      * @return QString project dir
      */
     QString dir () const;
@@ -79,6 +79,12 @@ class ProjectDirFile : public QObject, public KShared
     QStringList dirs () const;
      
     QStringList files () const;
+    
+    bool addDir (const QString &dir);
+    bool removeDir (const QString &dir);
+    
+    bool addFile (const QString &file);
+    bool removeFile (const QString &file);
      
     /**
      * ProjectDirFile object for the dir dir file in the given dir, QString::null for this dir !
@@ -182,12 +188,6 @@ class Project : public QObject
      * @return KConfig config data
      */
     KConfig *data ();
-    
-    bool addDir (const QString &dir);
-    bool removeDir (const QString &dir);
-    
-    bool addFile (const QString &file);
-    bool removeFile (const QString &file);
     
   #undef signals
   #define signals public

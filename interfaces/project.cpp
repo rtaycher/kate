@@ -150,14 +150,14 @@ bool Project::close ()
 
 ProjectDirFile::Ptr Project::dirFile (const QString &dir)
 {
-  QString fname = d->m_dir + QString ("/");
+  QString fname;
   
   if (!dir.isNull ())
-    fname += dir + QString ("/") + dirFilesName ();
+    fname = dir + QString ("/") + dirFilesName ();
    else
-    fname += dirFilesName ();
+    fname = dirFilesName ();
     
-  if (!QFile::exists (fname))
+  if (!QFile::exists (d->m_dir + QString ("/") + fname))
     return 0;
     
   PrivateProjectDirFileData *data = new PrivateProjectDirFileData ();
@@ -174,45 +174,19 @@ KConfig *Project::data ()
   return d->m_config;
 }
 
-bool Project::addDir (const QString &dir)
-{
-  if (!plugin()->addDir (dir))
-    return false;
-
-  return true;
-}
-
-bool Project::removeDir (const QString &dir)
-{
-  if (!plugin()->removeDir (dir))
-    return false;
-
-  return true;
-}
-
-bool Project::addFile (const QString &file)
-{
-  if (!plugin()->addFile (file))
-    return false;
-
-  return true;
-}
-
-bool Project::removeFile (const QString &file)
-{
-  if (!plugin()->removeFile (file))
-    return false;
-
-  return true;
-}
-
 ProjectDirFile::ProjectDirFile (void *projectDirFile) : QObject ()
 {
   d = new PrivateProjectDirFile ();
   d->m_data = (PrivateProjectDirFileData *) projectDirFile;
   
-  d->m_config = new KConfig (d->m_data->fileName, false, false);
-  d->m_dir = d->m_data->fileName.left (d->m_data->fileName.findRev (QChar ('/')));
+  d->m_config = new KConfig (d->m_data->project->dir() + QString ("/") + d->m_data->fileName, false, false);
+  
+  int pos = d->m_data->fileName.findRev (QChar ('/'));
+  
+  if (pos == -1)
+    d->m_dir = QString::null;
+  else
+    d->m_dir = d->m_data->fileName.left (pos);
 }
 
 ProjectDirFile::~ProjectDirFile ()
@@ -254,14 +228,17 @@ QString ProjectDirFile::dir () const
 
 ProjectDirFile::Ptr ProjectDirFile::dirFile (const QString &dir)
 {
-  QString fname = d->m_dir + QString ("/");
+  QString fname = d->m_dir;
+  
+  if (!fname.isNull())
+    fname += QString ("/");
   
   if (!dir.isNull ())
     fname += dir + QString ("/") + d->m_data->project->dirFilesName ();
    else
     fname += d->m_data->project->dirFilesName ();
     
-  if (!QFile::exists (fname))
+  if (!QFile::exists (d->m_data->project->dir() + QString ("/") + fname))
     return 0;
     
   PrivateProjectDirFileData *data = new PrivateProjectDirFileData ();
@@ -287,6 +264,49 @@ ProjectDirFile::List ProjectDirFile::dirFiles ()
   }
   
   return list;
+}
+
+bool ProjectDirFile::addDir (const QString &dir)
+{
+  QStringList l = dirs();
+  
+  if (!(l.findIndex (dir) == -1))
+    return false;
+  
+  if (!project()->plugin()->addDir (this, dir))
+    return false;
+    
+  l.push_back (dir);
+  
+  d->m_config->setGroup("General");
+  d->m_config->writeEntry ("Dirs", l, '/');
+  d->m_config->sync ();
+  
+  return true;
+}
+
+bool ProjectDirFile::removeDir (const QString &dir)
+{
+  if (!project()->plugin()->removeDir (this, dir))
+    return false;
+
+  return true;
+}
+
+bool ProjectDirFile::addFile (const QString &file)
+{
+  if (!project()->plugin()->addFile (this, file))
+    return false;
+
+  return true;
+}
+
+bool ProjectDirFile::removeFile (const QString &file)
+{
+  if (!project()->plugin()->removeFile (this, file))
+    return false;
+
+  return true;
 }
 
 };

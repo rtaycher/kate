@@ -121,22 +121,22 @@ bool ProjectPlugin::close ()
   return true;
 }
 
-bool ProjectPlugin::addDir (const QString &)
+bool ProjectPlugin::addDir (ProjectDirFile *, const QString &)
 {
   return true;
 }
 
-bool ProjectPlugin::removeDir (const QString &)
+bool ProjectPlugin::removeDir (ProjectDirFile *, const QString &)
 {
   return true;
 }
 
-bool ProjectPlugin::addFile (const QString &)
+bool ProjectPlugin::addFile (ProjectDirFile *, const QString &)
 {
   return true;
 }
 
-bool ProjectPlugin::removeFile (const QString &)
+bool ProjectPlugin::removeFile (ProjectDirFile *, const QString &)
 {
   return true;
 }

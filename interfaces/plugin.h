@@ -73,11 +73,11 @@ class ProjectPlugin : public Plugin
     virtual bool save ();
     virtual bool close ();
     
-    virtual bool addDir (const QString &dir);
-    virtual bool removeDir (const QString &dir);
+    virtual bool addDir (class ProjectDirFile *dirFile, const QString &dir);
+    virtual bool removeDir (class ProjectDirFile *dirFile, const QString &dir);
     
-    virtual bool addFile (const QString &file);
-    virtual bool removeFile (const QString &file);
+    virtual bool addFile (class ProjectDirFile *dirFile, const QString &file);
+    virtual bool removeFile (class ProjectDirFile *dirFile, const QString &file);
     
   private:
     class PrivateProjectPlugin *d;
