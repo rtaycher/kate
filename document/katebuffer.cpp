@@ -417,6 +417,12 @@ KWBuffer::parseBlock(KWBufBlock *buf)
    buf->buildStringList();
    assert(m_parsedBlocksClean.find(buf) == -1);
    m_parsedBlocksClean.append(buf);
+
+   // From now on store the raw block in unicode. 
+   // As a side-effect this will also store the highlighting info, which
+   // is the real reason that we do this.
+   if (buf->m_codec)
+      dirtyBlock(buf);
 }
 
 void
