@@ -2,6 +2,7 @@
 Encoding=UTF-8
 GenericName=Text Editor
 GenericName[af]=Teks Redigeerder
+GenericName[ar]=محرر نصوص
 GenericName[be]=Тэкставы рэдактар
 GenericName[bg]=Текст Редактор
 GenericName[bs]=Tekst editor
@@ -66,3 +67,4 @@ DocPath=kate/index.html
 Type=Application
 Terminal=0
 X-DCOP-ServiceType=Multi
+Categories=QT;KDE;TextEditor
