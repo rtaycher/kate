@@ -467,6 +467,7 @@ HlCStringChar::HlCStringChar(int attribute, int context)
 const QChar *checkCharHexOct(const QChar *str) {
   const QChar *s;
   int n;
+	s=str;
   if (*s == 'x') {
     n = 0;
     do {
