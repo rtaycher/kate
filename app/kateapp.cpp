@@ -230,11 +230,43 @@ int KateApp::newInstance()
 
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 
-  if (!m_firstStart && args->isSet ("w"))
-    newMainWindow ();
+  // search the right main window
+  // or create one if no window on the current desktop
+  KateMainWindow *win = 0;
 
+  if (!m_firstStart && args->isSet ("w"))
+  {
+    win = newMainWindow ();
+  }
+  else
+  {
+    if (activeKateMainWindow() && KWin::windowInfo (activeKateMainWindow()->winId()).isOnCurrentDesktop())
+    {
+      win = activeKateMainWindow();
+    }
+    else
+    {
+      for (uint i=0; i < m_mainWindows.count(); i++)
+      {
+        if (KWin::windowInfo (m_mainWindows.at(i)->winId()).isOnCurrentDesktop())
+        {
+          win = m_mainWindows.at(i);
+          break;
+        }
+      }
+    }
+
+    // create window on current desktop
+    if (!win)
+      win = newMainWindow ();
+  }
+
+  // raise the window if not first start
   if (!m_firstStart)
-    raiseCurrentMainWindow ();
+  {
+    win->raise();
+    KWin::activateWindow (win->winId());
+  }
 
   if (m_firstStart && m_initPlugin)
   {
@@ -368,13 +400,4 @@ Kate::MainWindow *KateApp::activeMainWindow ()
     return 0;
 
   return activeKateMainWindow()->mainWindow();
-}
-
-void KateApp::raiseCurrentMainWindow ()
-{
-  if (!activeKateMainWindow())
-    return;
-
-  activeKateMainWindow()->raise();
-  KWin::activateWindow (activeKateMainWindow()->winId());
 }
