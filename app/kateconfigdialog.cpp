@@ -60,9 +60,16 @@
 #include <kwin.h>
 #include <kseparator.h>
 
-KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
- : KDialogBase (KDialogBase::TreeList, i18n("Configure Kate"), KDialogBase::Ok|KDialogBase::Apply|KDialogBase::Cancel, KDialogBase::Ok, parent, name)
+KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, const char *name )
+ : KDialogBase ( KDialogBase::TreeList,
+                 i18n("Configure"),
+                 KDialogBase::Ok | KDialogBase::Cancel | KDialogBase::Help,
+                 KDialogBase::Ok,
+                 parent,
+                 name )
 {
+  KWin::setIcons( winId(), kapp->icon(), kapp->miniIcon() );
+
   config = parent->config;
   docManager = ((KateApp *)kapp)->kateDocumentManager();
   viewManager = parent->kateViewManager();
@@ -77,9 +84,6 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
 
   pluginPages.setAutoDelete (false);
   editorPages.setAutoDelete (false);
-
-  KWin kwin;
-  kwin.setIcons(winId(), kapp->icon(), kapp->miniIcon());
 
   QStringList path;
 
