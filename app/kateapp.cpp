@@ -69,7 +69,7 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
 
   newMainWindow ();
 
-  connect(this, SIGNAL(lastWindowClosed()), SLOT(quit()));
+//  connect(this, SIGNAL(lastWindowClosed()), SLOT(deref()));
 
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 
