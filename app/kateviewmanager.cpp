@@ -459,14 +459,15 @@ void KateViewManager::slotDocumentNew ()
 void KateViewManager::slotDocumentOpen ()
 {
   Kate::View *cv = activeView();
-        //Kate::FileDialog *dialog;
 
-        //TODO: move to kdelibs
-        QString DEFAULT_ENCODING = QString::fromLatin1(KGlobal::locale()->encoding());
+  //TODO: move to kdelibs
+  QString DEFAULT_ENCODING = QString::fromLatin1(KGlobal::locale()->encoding());
 
-	KEncodingFileDialog::Result r=KEncodingFileDialog::getOpenURLsAndEncoding(
-	        (cv?KTextEditor::encodingInterface(cv->document())->encoding():QString::null),
-		QString::null,QString::null,this,i18n("Open File"));
+  KEncodingFileDialog::Result r=KEncodingFileDialog::getOpenURLsAndEncoding(
+     (cv ? KTextEditor::encodingInterface(cv->document())->encoding() : QString::null),
+     (cv ? cv->document()->url().url() : QString::null),
+     QString::null,this,i18n("Open File"));
+
   for (KURL::List::Iterator i=r.URLs.begin(); i != r.URLs.end(); ++i)
   {
     if (!KIO::NetAccess::exists(*i, true, this))
@@ -712,12 +713,12 @@ void KateViewManager::queryModified()
                    "<p>Do you want to keep it?").arg( d->docName() ),
               i18n("Unsaved Document") ) == KMessageBox::Yes )
       {
-	KEncodingFileDialog::Result r=KEncodingFileDialog::getSaveURLAndEncoding(
-		KTextEditor::encodingInterface(d)->encoding(),QString::null,QString::null,this,i18n("Save As"));
+        KEncodingFileDialog::Result r=KEncodingFileDialog::getSaveURLAndEncoding(
+                KTextEditor::encodingInterface(d)->encoding(),QString::null,QString::null,this,i18n("Save As"));
 
         d->setEncoding( r.encoding );
-	KURL tmp;
-	if (!r.URLs.isEmpty()) tmp=r.URLs.first();
+        KURL tmp;
+        if (!r.URLs.isEmpty()) tmp=r.URLs.first();
         if ( d->saveAs( tmp ) )
           keep = true;
         else
