@@ -290,6 +290,7 @@ void KateDocument::insertLine( const QString &str, int l )
   TL->append(str.unicode(),str.length());
   buffer->insertLine(l,TL);
   newDocGeometry=true;
+  updateLines(l);
   updateViews();
 }
 
@@ -309,7 +310,9 @@ void KateDocument::removeLine( int line )
 {
   kdDebug()<<"KateDocument::removeLine "<<QString("%1").arg(line)<<endl;
   buffer->removeLine(line);
-  newDocGeometry=true;
+//  newDocGeometry=true;
+//  if line==0)
+  updateLines(line);
   updateViews();
 }
 
