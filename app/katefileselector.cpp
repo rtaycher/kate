@@ -26,8 +26,6 @@
 #include "kateviewmanager.h"
 #include "kbookmarkhandler.h"
 
-#include <kio/netaccess.h>
-
 #include "kactionselector.h"
 
 #include <qlayout.h>
@@ -64,8 +62,6 @@
 #include <qtoolbar.h>
 #include <kpopupmenu.h>
 #include <kdialog.h>
-#include <kio/netaccess.h>
-
 #include <kdebug.h>
 //END Includes
 
@@ -140,7 +136,7 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow,
   dir = new KDirOperator(KURL(), this, "operator");
   dir->setView(KFile::/* Simple */Detail);
   dir->view()->setSelectionMode(KFile::Multi);
-  
+
   KActionCollection *coll = dir->actionCollection();
   // some shortcuts of diroperator that clashes with Kate
   coll->action( "delete" )->setShortcut( KShortcut( ALT + Key_Delete ) );

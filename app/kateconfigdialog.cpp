@@ -41,6 +41,7 @@
 #include <qspinbox.h>
 #include <qvbox.h>
 #include <qwhatsthis.h>
+#include <qcombobox.h>
 
 #include <kinstance.h>
 #include <kdebug.h>
@@ -49,7 +50,6 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kiconloader.h>
-#include <kio/netaccess.h>
 #include <kkeydialog.h>
 #include <klistbox.h>
 #include <klocale.h>
@@ -58,7 +58,7 @@
 #include <kstandarddirs.h>
 #include <kwin.h>
 #include <kseparator.h>
-#include <qcombobox.h>
+
 #include <kmdidefines.h>
 
 KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
@@ -400,7 +400,7 @@ void KateConfigDialog::slotOk()
       }
     }
 
-    
+
     mainWindow->syncKonsole = cb_syncKonsole->isChecked();
 
     mainWindow->filelist->setSortType(cb_sortFiles->isChecked() ? KateFileList::sortByName : KateFileList::sortByID);

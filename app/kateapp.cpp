@@ -36,8 +36,6 @@
 #include <klocale.h>
 #include <ksimpleconfig.h>
 
-#include <kio/netaccess.h>
-
 #include <kmdidefines.h>
 
 #include <qfile.h>

@@ -25,7 +25,7 @@
 #include "katemainwindow.h"
 #include "katedocmanager.h"
 #include "kateapp.h"
-
+#include "katesplitter.h"
 #include "kateviewspace.h"
 
 #include <dcopclient.h>
@@ -43,10 +43,8 @@
 #include <ksimpleconfig.h>
 #include <kstdaction.h>
 #include <kstandarddirs.h>
-#include <qfileinfo.h>
 #include <kglobalsettings.h>
 
-#include <kio/netaccess.h>
 #include <ktexteditor/encodinginterface.h>
 
 #include <qlayout.h>
@@ -54,8 +52,7 @@
 #include <qstringlist.h>
 #include <qvbox.h>
 #include <qtimer.h>
-
-#include "katesplitter.h"
+#include <qfileinfo.h>
 //END Includes
 
 KateViewManager::KateViewManager (QWidget *parent, KateDocManager *m_docManager, KateMainWindow *mainWindow)
@@ -65,7 +62,7 @@ KateViewManager::KateViewManager (QWidget *parent, KateDocManager *m_docManager,
   m_viewManager = new Kate::ViewManager (this);
 
   m_blockViewCreationAndActivation=false;
-  
+
   useOpaqueResize = KGlobalSettings::opaqueResize();
 
   // no memleaks
@@ -451,7 +448,7 @@ void KateViewManager::slotDocumentOpen ()
   uint lastID = 0;
   for (KURL::List::Iterator i=r.URLs.begin(); i != r.URLs.end(); ++i)
     lastID = openURL( *i, r.encoding, false );
-  
+
   if (lastID > 0)
     activateView (lastID);
 }
@@ -466,7 +463,7 @@ void KateViewManager::slotDocumentClose ()
 {
   // no active view, do nothing
   if (!activeView()) return;
-  
+
   // prevent close document if only one view alive and the document of
   // it is not modified and empty !!!
   if ( (m_viewList.count() == 1)
@@ -508,7 +505,7 @@ uint KateViewManager::openURL (const KURL &url, const QString& encoding, bool ac
 
   if (activate)
     activateView( id );
-    
+
   return id;
 }
 

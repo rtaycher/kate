@@ -19,16 +19,16 @@
 #include "katedefaultproject.h"
 #include "katedefaultproject.moc"
 
-#include <qfileinfo.h>
 #include <kgenericfactory.h>
 #include <kaction.h>
 #include <klocale.h>
 #include <kdebug.h>
 #include <kurl.h>
-#include <kio/netaccess.h>
-                                     
+
+#include <qfileinfo.h>
+
 class PluginView : public KXMLGUIClient
-{             
+{
   friend class PluginKateDefaultProject;
 
   public:
@@ -50,14 +50,14 @@ void PluginKateDefaultProject::addView(Kate::MainWindow *win)
 {
     // TODO: doesn't this have to be deleted?
     PluginView *view = new PluginView ();
-             
+
     view->setInstance (new KInstance("kate"));
     view->setXMLFile( "plugins/katedefaultproject/ui.rc" );
     win->guiFactory()->addClient (view);
-    view->win = win; 
-    
+    view->win = win;
+
    m_views.append (view);
-}   
+}
 
 void PluginKateDefaultProject::removeView(Kate::MainWindow *win)
 {
@@ -68,5 +68,5 @@ void PluginKateDefaultProject::removeView(Kate::MainWindow *win)
       m_views.remove (view);
       win->guiFactory()->removeClient (view);
       delete view;
-    }  
+    }
 }
