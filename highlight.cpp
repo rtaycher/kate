@@ -1450,7 +1450,7 @@ void AdaHighlight::makeContextList() {
   contextList[2] = c = new HlContext(7,0);
 
 //  HlManager *manager=HlManager::self();
-  keyword->addList(HlManager::self()->syntax->finddata("C"));
+  keyword->addList(HlManager::self()->syntax->finddata("C","keyword"));
 }
 
 
