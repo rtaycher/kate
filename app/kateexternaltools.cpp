@@ -597,8 +597,8 @@ void KateExternalToolsConfigWidget::slotSelectionChanged()
   bool hs =  lbTools->selectedItem() != 0;
   btnEdit->setEnabled( hs && static_cast<ToolItem*>(lbTools->selectedItem()) );
   btnRemove->setEnabled( hs );
-  btnMoveUp->setEnabled( lbTools->currentItem() > 0 );
-  btnMoveDwn->setEnabled( lbTools->currentItem() < (int)lbTools->count()-1 );
+  btnMoveUp->setEnabled( ( lbTools->currentItem() > 0 ) && hs );
+  btnMoveDwn->setEnabled( ( lbTools->currentItem() < (int)lbTools->count()-1 )&&hs );
 }
 
 void KateExternalToolsConfigWidget::slotNew()
