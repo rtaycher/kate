@@ -42,9 +42,9 @@ static KCmdLineOptions options[] =
 
 int main( int argc, char **argv )
 {
-  KAboutData *data = new KAboutData  ("kate", I18N_NOOP("Kate"), "2.1",
+  KAboutData *data = new KAboutData  ("kate", I18N_NOOP("Kate"), "2.2",
                                                            I18N_NOOP( "Kate - KDE Advanced Text Editor" ), KAboutData::License_LGPL_V2,
-                                                           I18N_NOOP( "(c) 2000-2001 The Kate Authors" ), 0, "http://kate.kde.org");
+                                                           I18N_NOOP( "(c) 2000-2003 The Kate Authors" ), 0, "http://kate.kde.org");
 
   data->addAuthor ("Christoph Cullmann", I18N_NOOP("Project Manager and Core Developer"), "cullmann@kde.org", "http://www.babylon2k.de");
   data->addAuthor ("Anders Lund", I18N_NOOP("Core Developer"), "anders@alweb.dk", "http://www.alweb.dk");
