@@ -3,9 +3,11 @@
 
 #include "../kantmain.h"
 
-#include <qhbox.h>
+#include <qvbox.h>
 
-class KantConfigPluginPage: public QHBox
+class QListBoxItem;
+
+class KantConfigPluginPage: public QVBox
 {
   Q_OBJECT
 
@@ -18,9 +20,11 @@ class KantConfigPluginPage: public QHBox
 
     KListBox *availableBox;
     KListBox *loadedBox;
+    class QLabel *label;
 
   private slots:
     void slotUpdate ();
+    void slotActivatePluginItem (QListBoxItem *item);
 };
 
 #endif
