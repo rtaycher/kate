@@ -85,23 +85,23 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 {
   m_mainWindow = new Kate::MainWindow (this);
   m_toolViewManager = new Kate::ToolViewManager (this);
-  
+
   m_leftDock=m_rightDock=m_topDock=m_bottomDock=0;
 
   m_docManager =  _m_docManager;
   m_pluginManager =_m_pluginManager;
   m_projectManager = projectMan;
-  
+
   m_project = 0;
   m_projectNumber = 0;
-  
+
   config = kapp->config();
 
   QString grp=config->group();
   config->setGroup("General");
   manager()->setSplitterOpaqueResize(config->readBoolEntry("Opaque Resize", true));
   m_dockStyle= (config->readEntry("viewMode",DEFAULT_STYLE)=="Modern") ? ModernStyle : ClassicStyle;
-  
+
   if (config->readBoolEntry("deleteKDockWidgetConfig",false))
   {
 	config->writeEntry("deleteKDockWidgetConfig",false);
@@ -143,16 +143,16 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   // connect settings menu aboutToshow
   documentMenu = (QPopupMenu*)factory()->container("documents", this);
   connect(documentMenu, SIGNAL(aboutToShow()), this, SLOT(documentMenuAboutToShow()));
-  
+
   connect(m_projectManager->projectManager(),SIGNAL(projectDeleted(uint)),this,SLOT(projectDeleted(uint)));
 
   readOptions(config);
 
   if (m_dockStyle==ModernStyle) mainDock->setDockSite( KDockWidget::DockNone );
-  
+
  if (console)
     console->loadConsoleIfNeeded();
-  
+
   // call it as last thing, must be sure everything is allready set up ;)
   setAutoSaveSettings( QString::fromLatin1("MainWindow"), true );
 }
@@ -202,12 +202,12 @@ void KateMainWindow::setupMainWindow ()
      m_rightDock->manualDock(mainDock, KDockWidget::DockRight,20);
      m_topDock->manualDock(mainDock, KDockWidget::DockTop,20);
      m_bottomDock->manualDock(mainDock, KDockWidget::DockBottom,20);
-     
+
      m_leftDock->setDockSite( KDockWidget::DockCenter );
      m_rightDock->setDockSite( KDockWidget::DockCenter );
      m_topDock->setDockSite( KDockWidget::DockCenter );
      m_bottomDock->setDockSite( KDockWidget::DockCenter );
-     
+
      m_topDock->undock();
      m_rightDock->undock();
   }
@@ -218,20 +218,20 @@ void KateMainWindow::setupMainWindow ()
 
   projectlist = new KateProjectList (m_projectManager, this, this/*filelistDock*/, "projectlist");
   projectlistDock=addToolViewWidget(KDockWidget::DockLeft,projectlist,SmallIcon("view_choose"), i18n("Projects"));
-  
+
   projectviews = new KateProjectViews (m_projectManager, this, this/*filelistDock*/, "projectviews");
   projectviewsDock =addToolViewWidget(KDockWidget::DockLeft,projectviews,SmallIcon("view_tree"), i18n("Project View"));
-  
+
   fileselector = new KateFileSelector( this, m_viewManager, /*fileselectorDock*/ this, "operator");
   fileselectorDock=addToolViewWidget(KDockWidget::DockLeft,fileselector, SmallIcon("fileopen"), i18n("Selector"));
-  
+
   if (kapp->authorize("shell_access"))
   {
      console = new KateConsole (this, "console",viewManager());
      console->installEventFilter( this );
      consoleDock = addToolViewWidget(KDockWidget::DockBottom,console, SmallIcon("konsole"), i18n("Terminal"));
-  }     
-  
+  }
+
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileItem*)),this,SLOT(fileSelected(const KFileItem*)));
 }
 
@@ -272,22 +272,22 @@ void KateMainWindow::setupActions()
   KAction *a;
 
   kscript = new KScriptManager(this, "scriptmanager");
-  scriptMenu = new KActionMenu( i18n("KDE Scri&pts"), actionCollection(), "scripts");  
+  scriptMenu = new KActionMenu( i18n("KDE Scri&pts"), actionCollection(), "scripts");
   scriptMenu->setWhatsThis(i18n("This shows all available scripts and allows them to be executed."));
   setupScripts();
   connect( scriptMenu->popupMenu(), SIGNAL(activated( int)), this, SLOT(runScript( int )) );
-  
+
   KStdAction::openNew( m_viewManager, SLOT( slotDocumentNew() ), actionCollection(), "file_new" )->setWhatsThis(i18n("Create a new document"));
   KStdAction::open( m_viewManager, SLOT( slotDocumentOpen() ), actionCollection(), "file_open" )->setWhatsThis(i18n("Open an existing document for editing"));
 
-  fileOpenRecent = KStdAction::openRecent (m_viewManager, SLOT(openConstURL (const KURL&)), actionCollection());
+  fileOpenRecent = KStdAction::openRecent (m_viewManager, SLOT(openConstURLCheck (const KURL&)), actionCollection());
   fileOpenRecent->setWhatsThis(i18n("This lists files which you have opened recently, and allows you to easily open them again."));
 
   a=new KAction( i18n("Save A&ll"),"save_all", CTRL+Key_L, m_viewManager, SLOT( slotDocumentSaveAll() ), actionCollection(), "file_save_all" );
   a->setWhatsThis(i18n("Save all open, modified documents to disc."));
 
   KStdAction::close( m_viewManager, SLOT( slotDocumentClose() ), actionCollection(), "file_close" )->setWhatsThis(i18n("Close the current document."));
-  
+
   a=new KAction( i18n( "Clos&e All" ), 0, m_viewManager, SLOT( slotDocumentCloseAll() ), actionCollection(), "file_close_all" );
   a->setWhatsThis(i18n("Close all open documents."));
 
@@ -310,7 +310,7 @@ void KateMainWindow::setupActions()
   a=closeCurrentViewSpace = new KAction( i18n("Close &Current"), "view_remove", CTRL+SHIFT+Key_R, m_viewManager, SLOT( slotCloseCurrentViewSpace() ), actionCollection(), "view_close_current_space");
   a->setWhatsThis(i18n("Close the currently active splitted view"));
 
-  connect(new KToggleAction(i18n("Show &Full-Screen"), QString::fromLatin1("window_fullscreen"),0, actionCollection(), 
+  connect(new KToggleAction(i18n("Show &Full-Screen"), QString::fromLatin1("window_fullscreen"),0, actionCollection(),
 	"view_fullscreen_view"),SIGNAL(toggled(bool)), this,SLOT(slotFullScreen(bool)));
 
   goNext=new KAction(i18n("Next View"),Key_F8,m_viewManager, SLOT(activateNextView()),actionCollection(),"go_next");
@@ -349,7 +349,7 @@ void KateMainWindow::setupActions()
   a = new KAction(i18n("&Open Project..."), "fileopen", 0, this, SLOT(slotProjectOpen()), actionCollection(), "project_open");
   saveProject = new KAction(i18n("&Save Project"), "filesave", 0, this, SLOT(slotProjectSave()), actionCollection(), "project_save");
   closeProject = new KAction(i18n("&Close Project"), "fileclose", 0, this, SLOT(slotProjectClose()), actionCollection(), "project_close");
-  
+
   settingsConfigure = KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
   settingsConfigure->setWhatsThis(i18n("Configure various aspects of this application and the editing component."));
 
@@ -796,7 +796,7 @@ int KateMainWindow::currentDocumentIfaceNumber()
 
 void KateMainWindow::slotFullScreen(bool t)
 {
-	if (t) showFullScreen(); else showNormal();	
+	if (t) showFullScreen(); else showNormal();
 }
 
 
@@ -916,11 +916,11 @@ void KateToggleToolViewAction::anDWChanged()
 void KateToggleToolViewAction::slotToggled(bool t)
 {
   m_mw->mainDock->setDockSite( KDockWidget::DockCorner );
-  
+
   if ((!t) && m_dw->mayBeHide() ) m_dw->undock();
   else
     if ( t && m_dw->mayBeShow() ) m_mw->makeDockVisible(m_dw);
-    
+
   if (m_mw->dockStyle()==KateMainWindow::ModernStyle) m_mw->mainDock->setDockSite( KDockWidget::DockNone );
 }
 
@@ -968,12 +968,12 @@ void KateMainWindow::activateProject (Kate::Project *project)
 {
   if (m_project)
     m_projectManager->disableProjectGUI (m_project, this);
-    
+
   if (project)
     m_projectManager->enableProjectGUI (project, this);
-  
+
   m_project = project;
-  
+
   if (project)
   {
     m_projectManager->setCurrentProject (project);
@@ -981,27 +981,27 @@ void KateMainWindow::activateProject (Kate::Project *project)
   }
   else
     m_projectNumber = 0;
-    
+
   emit m_mainWindow->projectChanged ();
 }
 
 Kate::Project *KateMainWindow::createProject (const QString &type, const QString &name, const QString &filename)
 {
   Kate::Project *project = m_projectManager->create (type, name, filename);
-  
+
   if (project)
     activateProject (project);
-    
+
   return project;
 }
-    
+
 Kate::Project *KateMainWindow::openProject (const QString &filename)
 {
   Kate::Project *project = m_projectManager->open (filename);
-  
+
   if (project)
     activateProject (project);
-    
+
   return project;
 }
 

@@ -36,10 +36,10 @@ class KateViewManager : public QWidget
 
   public:
     KateViewManager (QWidget *parent=0, KateDocManager *docManager=0);
-    ~KateViewManager ();   
-    
+    ~KateViewManager ();
+
     Kate::ViewManager *viewManager () { return m_viewManager; };
-    
+
     inline QPtrList<Kate::View> &viewList () { return m_viewList; };
 
   public:
@@ -51,10 +51,10 @@ class KateViewManager : public QWidget
 
     /* reopens documents that was open last time kate was shut down*/
     void reopenDocuments(bool isRestore);
-  
+
   public slots:
     void openURL (KURL url=0L, const QString& encoding=QString::null);
-    void openConstURL (const KURL&url=0L);
+    void openConstURLCheck (const KURL&url=0L);
 
   private:
     bool createView ( bool newDoc=true, KURL url=0L, Kate::View *origView=0L, Kate::Document *doc=0L );
@@ -158,10 +158,10 @@ class KateViewManager : public QWidget
     void statusChanged (Kate::View *, int, int, int, bool, int, const QString &);
     void statChanged ();
     void viewChanged ();
-    
+
   private:
     Kate::ViewManager *m_viewManager;
-    QPtrList<KateViewSpace> m_viewSpaceList; 
+    QPtrList<KateViewSpace> m_viewSpaceList;
     QPtrList<Kate::View> m_viewList;
 
     KateDocManager *m_docManager;

@@ -545,8 +545,16 @@ void KateViewManager::openURL (KURL url, const QString& encoding)
   setWindowCaption();
 }
 
-void KateViewManager::openConstURL (const KURL& url)
+void KateViewManager::openConstURLCheck (const KURL& url)
 {
+  if (url.isEmpty()) return;
+
+  if (!KIO::NetAccess::exists(url, true, this))
+  {
+    KMessageBox::error (this, i18n("The given file could not be read, check if it exists or if it is readable for the current user."));
+    return;
+  }
+
   openURL (KURL (url));
 }
 
@@ -822,7 +830,7 @@ void KateViewManager::reopenDocuments(bool isRestore)
       if ( !fn.isEmpty() && !KURL( fn ).isLocalFile() )
           KIO::NetAccess::exists(KURL( fn ), true, this);
       i++;
-    }    
+    }
     i = 0;
     while (scfg->hasKey(QString("File%1").arg(i)))
     {
