@@ -3486,8 +3486,7 @@ void KWrite::slotNewUndo()
     } else {
         editUndo->setEnabled(false);
     }
-    // icons disappear when text is altered, seems to be a bug in KToolbarButton
-    //editUndo->setText(t);
+    editUndo->setText(t);
 
     t = i18n("Re&do");   // it would be nicer to fetch the original string
     if (state & 2) {
@@ -3497,8 +3496,7 @@ void KWrite::slotNewUndo()
     } else {
         editRedo->setEnabled(false);
     }
-    // icons disappear when text is altered, seems to be a bug in KToolbarButton
-    //editRedo->setText(t);
+    editRedo->setText(t);
 }
 void KWrite::slotHighlightChanged()
 {
