@@ -204,6 +204,14 @@ HlInt::HlInt(int attribute, int context)
   : HlItem(attribute,context) {
 }
 
+
+bool HlInt::startEnable(QChar c)
+{
+//  return ustrchr(deliminatorChars, deliminatorLen, c);
+#warning bad performance, store this qchar array in the class
+    return ustrchr(stdDeliminator.unicode(), stdDeliminator.length(), c);
+}
+
 const QChar *HlInt::checkHgl(const QChar *str, int len, bool) {
   const QChar *s,*s1;
 
