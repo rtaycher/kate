@@ -1560,7 +1560,7 @@ void KateView::setupActions()
 
     KStdAction::replace(this, SLOT(replace()), actionCollection());
 
-   new KAction(i18n("&Editing Command"), Qt::CTRL+Qt::Key_D, this, SLOT(slotEditCommand()),
+   new KAction(i18n("E&diting Command"), Qt::CTRL+Qt::Key_D, this, SLOT(slotEditCommand()),
                                   actionCollection(), "edit_cmd");
 
     // setup Go menu

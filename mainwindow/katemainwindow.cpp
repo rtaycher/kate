@@ -200,7 +200,7 @@ void KateMainWindow::setupActions()
   editIndent = new KAction(i18n("&Indent"), "indent", CTRL+Key_I, viewManager, SLOT(slotIndent()), actionCollection(), "edit_indent");
   editUnIndent = new KAction(i18n("&Unindent"), "unindent", CTRL+SHIFT+Key_I, viewManager, SLOT(slotUnIndent()), actionCollection(), "edit_unindent");
 
-  editCmd = new KAction(i18n("&Editing Command"), Qt::CTRL+Qt::Key_D, viewManager, SLOT(slotEditCommand()),
+  editCmd = new KAction(i18n("E&diting Command"), Qt::CTRL+Qt::Key_D, viewManager, SLOT(slotEditCommand()),
                                   actionCollection(), "edit_cmd");
 
   gotoLine = KStdAction::gotoLine(viewManager, SLOT(slotGotoLine()), actionCollection());
