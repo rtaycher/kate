@@ -2044,8 +2044,9 @@ bool KateDocument::insertChars ( int line, int col, const QString &chars, KateVi
      
   return true;     
 }     
-     
-QString tabString(int pos, int tabChars) {     
+
+QString tabString(int pos, int tabChars)
+{
   QString s;     
   while (pos >= tabChars) {     
     s += '\t';     
@@ -2081,18 +2082,13 @@ void KateDocument::newLine(VConfig &c)
     if (pos > 0) {     
       pos = textLine->cursorX(pos, tabChars);     
 //      if (getTextLine(c.cursor.line)->length() > 0) {     
-        QString s = tabString(pos, (_configFlags & KateDocument::cfSpaceIndent) ? 0xffffff : tabChars);     
+        QString s = tabString(pos, (_configFlags & KateDocument::cfSpaceIndent) ? 0xffffff : tabChars);
         insertText (c.cursor.line, c.cursor.col, s);
         pos = s.length();     
 //      }     
 //      recordInsert(c.cursor, QString(textLine->getText(), pos));     
       c.cursor.col = pos;     
     }     
-  }     
-     
-  if (tagStart <= tagEnd) {
-    updateLines(tagStart, tagEnd);
-    setModified(true);
   }
 
   c.view->updateCursor(c.cursor);
@@ -2158,38 +2154,39 @@ void KateDocument::del(VConfig &c)
   }
 }
      
-void KateDocument::cut(VConfig &c) {     
-     
+void KateDocument::cut(VConfig &c)
+{
   if (!hasSelection()) return;
 
   copy(_configFlags);
   removeSelectedText();
 }
 
-void KateDocument::copy(int flags) {
-
+void KateDocument::copy(int flags)
+{
   if (!hasSelection()) return;
 
-  QString s = selection ();
-  if (!s.isEmpty()) {
-//#if defined(_WS_X11_)
-    if (_configFlags & KateDocument::cfSingleSelection)
-      disconnect(QApplication::clipboard(), SIGNAL(dataChanged()), this, 0);
-//#endif
-    QApplication::clipboard()->setText(s);
-//#if defined(_WS_X11_)
-    if (_configFlags & KateDocument::cfSingleSelection) {
-      connect(QApplication::clipboard(), SIGNAL(dataChanged()),
-        this, SLOT(clipboardChanged()));
-    }
-//#endif
-  }
+  if (_configFlags & KateDocument::cfSingleSelection)
+    disconnect(QApplication::clipboard(), SIGNAL(dataChanged()), this, 0);
+
+  QApplication::clipboard()->setText(selection ());
+
+  if (_configFlags & KateDocument::cfSingleSelection)
+    connect(QApplication::clipboard(), SIGNAL(dataChanged()), this, SLOT(clipboardChanged()));
 }
 
-void KateDocument::paste(VConfig &c) {
+void KateDocument::paste (VConfig &c)
+{
   QString s = QApplication::clipboard()->text();
-  if (!s.isEmpty()) {
-    insertText(c.cursor.line, c.cursor.col, s);
+
+  if (!s.isEmpty())
+  {
+    if (!blockSelect)
+      insertText(c.cursor.line, c.cursor.col, s);
+    else
+    {
+      insertText(c.cursor.line, c.cursor.col, s);
+    }
   }
 }
 
@@ -2376,113 +2373,109 @@ bool KateDocument::removeStringFromEnd(int line, QString &str)
 }     
      
 /*     
-  Add to the current line a comment line mark at     
-  the begining.     
-*/     
-void KateDocument::addStartLineCommentToSingleLine(int line)     
-{     
-  QString commentLineMark = m_highlight->getCommentSingleLineStart() + " ";     
-  insertText (line, 0, commentLineMark);     
-}     
-     
-/*     
-  Remove from the current line a comment line mark at     
-  the begining if there is one.     
-*/     
-bool KateDocument::removeStartLineCommentFromSingleLine(int line)     
-{     
-  QString shortCommentMark = m_highlight->getCommentSingleLineStart();     
-  QString longCommentMark = shortCommentMark + " ";     
-     
-  // Try to remove the long comment mark first     
-  bool removed = (removeStringFromBegining(line, longCommentMark)     
-                  || removeStringFromBegining(line, shortCommentMark));     
-     
-  return removed;     
-}     
-     
-/*     
-  Add to the current line a start comment mark at the     
- begining and a stop comment mark at the end.     
-*/     
-void KateDocument::addStartStopCommentToSingleLine(int line)     
-{     
-  QString startCommentMark = m_highlight->getCommentStart() + " ";     
-  QString stopCommentMark = " " + m_highlight->getCommentEnd();     
-     
-  // Add the start comment mark     
-  insertText (line, 0, startCommentMark);     
-     
-  // Go to the end of the line     
-  TextLine* textline = getTextLine(line);     
-  int col = textline->length();     
-     
-  // Add the stop comment mark     
-  insertText (line, col, stopCommentMark);     
-}     
-     
-/*     
-  Remove from the current line a start comment mark at     
-  the begining and a stop comment mark at the end.     
-*/     
-bool KateDocument::removeStartStopCommentFromSingleLine(int line)     
-{     
-  QString shortStartCommentMark = m_highlight->getCommentStart();     
-  QString longStartCommentMark = shortStartCommentMark + " ";     
-  QString shortStopCommentMark = m_highlight->getCommentEnd();     
-  QString longStopCommentMark = " " + shortStopCommentMark;     
-     
-  // Try to remove the long start comment mark first     
-  bool removedStart = (removeStringFromBegining(line, longStartCommentMark)     
-                       || removeStringFromBegining(line, shortStartCommentMark));     
-     
-  // Try to remove the long stop comment mark first     
-  bool removedStop = (removeStringFromEnd(line, longStopCommentMark)     
-                      || removeStringFromEnd(line, shortStopCommentMark));     
-     
-  return (removedStart || removedStop);     
-}     
-     
-/*     
-  Add to the current selection a start comment     
- mark at the begining and a stop comment mark     
- at the end.     
-*/     
-void KateDocument::addStartStopCommentToSelection()     
-{     
-  QString startComment = m_highlight->getCommentStart();     
-  QString endComment = m_highlight->getCommentEnd();     
-/*     
-  QString marked (selection());     
-  int preDeleteLine = -1, preDeleteCol = -1;     
-  c.view->getCursorPosition (&preDeleteLine, &preDeleteCol);     
-     
-  if (marked.length() > 0)     
-    c.view->keyDelete ();     
-     
-  int line = -1, col = -1;     
-  c.view->getCursorPosition (&line, &col);     
-     
-  c.view->insertText (startComment + marked + endComment);*/     
-}     
-     
-/*     
-  Add to the current selection a comment line     
- mark at the begining of each line.     
-*/     
-void KateDocument::addStartLineCommentToSelection()     
-{     
-     
-  QString commentLineMark = m_highlight->getCommentSingleLineStart() + " ";     
-     
-/*     
-  // For each line of the selection     
-  for (c.cursor.line = selectStart; c.cursor.line <= selectEnd; c.cursor.line++) {     
-    TextLine* textLine = getTextLine(c.cursor.line);     
-    if (textLine->isSelected() || textLine->numSelected()) {     
-      // Add the comment line mark     
-      insertText (c.cursor.line, c.cursor.col, commentLineMark);     
-    }     
+  Add to the current line a comment line mark at
+  the begining.
+*/
+void KateDocument::addStartLineCommentToSingleLine(int line)
+{
+  QString commentLineMark = m_highlight->getCommentSingleLineStart() + " ";
+  insertText (line, 0, commentLineMark);
+}
+
+/*
+  Remove from the current line a comment line mark at
+  the begining if there is one.
+*/
+bool KateDocument::removeStartLineCommentFromSingleLine(int line)
+{
+  QString shortCommentMark = m_highlight->getCommentSingleLineStart();
+  QString longCommentMark = shortCommentMark + " ";
+
+  // Try to remove the long comment mark first
+  bool removed = (removeStringFromBegining(line, longCommentMark)
+                  || removeStringFromBegining(line, shortCommentMark));
+
+  return removed;
+}
+
+/*
+  Add to the current line a start comment mark at the
+ begining and a stop comment mark at the end.
+*/
+void KateDocument::addStartStopCommentToSingleLine(int line)
+{
+  QString startCommentMark = m_highlight->getCommentStart() + " ";
+  QString stopCommentMark = " " + m_highlight->getCommentEnd();
+
+  // Add the start comment mark
+  insertText (line, 0, startCommentMark);
+
+  // Go to the end of the line
+  TextLine* textline = getTextLine(line);
+  int col = textline->length();
+
+  // Add the stop comment mark
+  insertText (line, col, stopCommentMark);
+}
+
+/*
+  Remove from the current line a start comment mark at
+  the begining and a stop comment mark at the end.
+*/
+bool KateDocument::removeStartStopCommentFromSingleLine(int line)
+{
+  QString shortStartCommentMark = m_highlight->getCommentStart();
+  QString longStartCommentMark = shortStartCommentMark + " ";
+  QString shortStopCommentMark = m_highlight->getCommentEnd();
+  QString longStopCommentMark = " " + shortStopCommentMark;
+
+  // Try to remove the long start comment mark first
+  bool removedStart = (removeStringFromBegining(line, longStartCommentMark)
+                       || removeStringFromBegining(line, shortStartCommentMark));
+
+  // Try to remove the long stop comment mark first
+  bool removedStop = (removeStringFromEnd(line, longStopCommentMark)
+                      || removeStringFromEnd(line, shortStopCommentMark));
+
+  return (removedStart || removedStop);
+}
+
+/*
+  Add to the current selection a start comment
+ mark at the begining and a stop comment mark
+ at the end.
+*/
+void KateDocument::addStartStopCommentToSelection()
+{
+  QString startComment = m_highlight->getCommentStart();
+  QString endComment = m_highlight->getCommentEnd();
+
+  int sl = selectStartLine;
+  int el = selectEndLine;
+  int sc = selectStartCol;
+  int ec = selectEndCol;
+
+  insertText (el, ec, endComment);
+  insertText (sl, sc, startComment);
+}
+
+/*
+  Add to the current selection a comment line
+ mark at the begining of each line.
+*/
+void KateDocument::addStartLineCommentToSelection()
+{
+
+  QString commentLineMark = m_highlight->getCommentSingleLineStart() + " ";
+
+/*
+  // For each line of the selection
+  for (c.cursor.line = selectStart; c.cursor.line <= selectEnd; c.cursor.line++) {
+    TextLine* textLine = getTextLine(c.cursor.line);
+    if (textLine->isSelected() || textLine->numSelected()) {
+      // Add the comment line mark
+      insertText (c.cursor.line, c.cursor.col, commentLineMark);
+    }
   }     
      
   // Go back to the last commented line     
@@ -3590,6 +3583,6 @@ bool KateCursor::removeText ( uint numberOfCharacters )
 QChar KateCursor::currentChar () const     
 {     
      
-}     
-     
+}
+
     
