@@ -550,12 +550,15 @@ void KateMainWindow::docListMenuAboutToShow()
 
 void KateMainWindow::bookmarkMenuAboutToShow()
 {
-   bookmarkMenu->popupMenu()->clear();
-   viewManager->activeView()->doUpdateBookmarks();
-   QList<KAction> l =  viewManager->activeView()->bmActions();
-   QListIterator<KAction> it(l);
-   for (; it.current(); ++it)
-     it.current()->plug( bookmarkMenu->popupMenu() );
+  bookmarkMenu->popupMenu()->clear();
+
+  QList<KateMark> list = viewManager->activeView()->doc()->marks();
+  for (int i=0; (uint) i < list.count(); i++)
+  {
+    if (list.at(i)->type == 1)
+      bookmarkMenu->popupMenu()->insertItem ( QString("Bookmark %1 - Line %2").arg(i).arg(list.at(i)->line), i );
+  }
+
 }
 
 void KateMainWindow::setHighlightMenuAboutToShow()

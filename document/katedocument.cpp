@@ -2894,6 +2894,26 @@ void KateDocument::slotModChanged()
   emit modStateChanged (this);
 }
 
+QList<KateMark> KateDocument::marks ()
+{
+  QList<KateMark> list;
+  TextLine::Ptr line;
+
+  for (int i=0; i < numLines(); i++)
+  {
+    line = getTextLine(i);
+    if (line->mark() != 0)
+    {
+      KateMark *mark=new KateMark;
+      mark->line = i;
+      mark->type = line->mark();
+      list.append (mark);
+    }
+  }
+
+  return list;
+}
+
 void KateDocument::open (const QString &name)
 {
   openURL (KURL (name));
