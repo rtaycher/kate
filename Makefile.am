@@ -6,6 +6,6 @@ messages:
 	$(XGETTEXT) `find . -name "*.cpp"` -o $(podir)/kate.pot
 
 install-data-local: uninstall.desktop
-	$(mkinstalldirs) $(kde_servicesdir)
-	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(kde_servicesdir)/kate_component.desktop
-	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(kde_servicesdir)/kwrite_component.desktop
+	$(mkinstalldirs) $(DESTDIR)$(kde_servicesdir)
+	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(DESTDIR)$(kde_servicesdir)/kate_component.desktop
+	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(DESTDIR)$(kde_servicesdir)/kwrite_component.desktop
