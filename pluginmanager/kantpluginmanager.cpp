@@ -36,7 +36,14 @@ KantPluginManager::KantPluginManager(QObject *parent):QObject(parent)
     for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
       {
 	confFile=new KSimpleConfig(*it,true);
-	if (confFile->readEntry("load","no").upper()=="YES")
+                 PluginListItem *info=new PluginListItem;
+       info->load = (confFile->readEntry("load","no") =="1");
+      info->name = confFile->readEntry("name","no");
+      info->description = confFile->readEntry("description","no");
+      info->author = confFile->readEntry("author","no");
+      myPluginList.append(info);
+
+if (confFile->readEntry("load","no")=="1")
           {
 	    kdDebug(13040)<<"Cool one  plugin should be loaded"<<endl;
             QString relp=QFileInfo(*it).fileName();
@@ -56,12 +63,10 @@ KantPluginManager::KantPluginManager(QObject *parent):QObject(parent)
                   }
                 f.close();
               }
-	    loadedPlugins<<(*it);
           }
 	else
           { 
 		kdDebug(13040)<<"Plugin skipped"<<endl;
-	       availablePlugins<<(*it);
 	  }
 	delete confFile;
       }

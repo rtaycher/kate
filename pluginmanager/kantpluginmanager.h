@@ -23,16 +23,31 @@
 #include <kdebug.h>
 #include <qvaluelist.h>
 #include <kparts/plugin.h>
- 
+
+struct PluginListItem
+{
+  bool load;
+  QString name;
+  QString description;
+  QString author;
+};
+
+typedef QList<PluginListItem> PluginList;
+
 class KantPluginManager : public QObject
-  {
-    Q_OBJECT
-    public:
+{
+  Q_OBJECT
+
+  friend class KantConfigPluginPage;
+  friend class KantMainWindow;
+
+  public:
     KantPluginManager(QObject *parent);
     ~KantPluginManager(){qDebug("KantPluginManager destroyed");};
+
+  private:
     QValueList<KParts::Plugin::PluginInfo> plugins;
-    QStringList availablePlugins;
-    QStringList loadedPlugins;
-  };
+    PluginList myPluginList;
+};
 
 #endif

@@ -19,10 +19,14 @@ KantConfigPluginPage::KantConfigPluginPage(QWidget *parent):QHBox(parent)
 void KantConfigPluginPage::slotUpdate ()
 {
   availableBox->clear();
-  if  (myPluginMan->availablePlugins.count() > 0)
-    availableBox->insertStringList (myPluginMan->availablePlugins);
-
   loadedBox->clear();
-  if  (myPluginMan->loadedPlugins.count() > 0)
-    loadedBox->insertStringList (myPluginMan->loadedPlugins);
+
+  for (int i=0; i<myPluginMan->myPluginList.count(); i++)
+  {
+    if  (!myPluginMan->myPluginList.at(i)->load)
+      availableBox->insertItem (myPluginMan->myPluginList.at(i)->name);
+    else
+      loadedBox->insertItem (myPluginMan->myPluginList.at(i)->name);
+  }
+
 }

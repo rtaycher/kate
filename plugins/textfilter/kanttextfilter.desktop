@@ -1,1 +1,4 @@
-load=YES
+load=1
+name=Kant TextFilter
+description=Kant TextFilter - filtern von Text
+author=Phlip

@@ -170,7 +170,7 @@ void KantMainWindow::setupPlugins()
   KParts::GUIActivateEvent ev( true );
   QApplication::sendEvent( pluginIface, &ev );
 
-  QList<KParts::Plugin> plugins =KParts:: Plugin::pluginObjects( pluginIface );
+  QList<KParts::Plugin> plugins = KParts:: Plugin::pluginObjects( pluginIface );
   QListIterator<KParts::Plugin> pIt( plugins );
 
   for (; pIt.current(); ++pIt )
