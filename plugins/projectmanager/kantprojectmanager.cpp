@@ -20,13 +20,14 @@
 
 #include "kantprojectdialog.h"
 
+#include <kxmlgui.h>
 #include <kfiledialog.h>
 #include <iostream.h>
 #include <qtextstream.h>
 #include <kstatusbar.h>
 #include <klocale.h>
 #include <kaction.h>
-#include "./piper/piper.h"  //  PCP I feel not a scrap of guilt...
+#include "./piper/piper.h"
 
 extern "C"
 {
@@ -63,12 +64,8 @@ KantProjectManager::~KantProjectManager ()
 
 KantPluginViewIface *KantProjectManager::createView ()
 {
-   KantPluginViewIface *view = new KantPluginViewIface ();
+   KantPluginViewIface *view = (KantPluginViewIface *) new KantProjectManagerView (this);
 
-(void)  new KAction ( i18n("HT&ML Tag..."), "edit_HTML_tag", ALT + Key_Minus, this,
-                                SLOT( slotEditHTMLtag() ), view->actionCollection(), "edit_HTML_tag" );
-
-   view->setXML( "plugins/kanthtmltools/ui.rc" );
    viewList.append (view);
    return view;
 }
@@ -233,3 +230,49 @@ void KantProjectManager::slotProjectCompile()
   if (fp)
     readAnyErrors(fp, *appIface->statusBar());
 }
+
+KantProjectManagerView::KantProjectManagerView(QObject *parent) : KantPluginViewIface (parent)
+{
+  setXML( "plugins/kantprojectmanager/ui.rc" );
+
+ KActionMenu* pm_project  = new KActionMenu(i18n("&Project"), actionCollection(), "project");
+ connect(pm_project, SIGNAL(aboutToShow()), this, SLOT(projectMenuAboutToShow()));
+
+  // KActions for Project
+   projectNew = new KAction(i18n("&New"), 0, (KantProjectManager*)pluginIface,
+         SLOT(slotProjectNew()), actionCollection(),"project_new");
+  projectOpen = new KAction(i18n("&Open"), 0, (KantProjectManager*)pluginIface,
+         SLOT(slotProjectOpen()), actionCollection(),"project_open");
+  projectSave = new KAction(i18n("&Save"), 0, (KantProjectManager*)pluginIface,
+         SLOT(slotProjectSave()), actionCollection(),"project_save");
+  projectSaveAs = new KAction(i18n("&SaveAs"), 0, (KantProjectManager*)pluginIface,
+         SLOT(slotProjectSaveAs()), actionCollection(),"project_save_as");
+  projectConfigure = new KAction(i18n("&Configure"), 0, (KantProjectManager*)pluginIface,
+         SLOT(slotProjectConfigure()), actionCollection(),"project_configure");
+  projectCompile = new KAction(i18n("&Compile"), Key_F5, (KantProjectManager*)pluginIface,
+         SLOT(slotProjectCompile()), actionCollection(),"project_compile");
+  projectRun = new KAction(i18n("&Run"), 0, (KantProjectManager*)pluginIface,
+         SLOT(slotProjectRun()), actionCollection(),"project_run");
+}
+
+KantProjectManagerView::~KantProjectManagerView ()
+{
+
+}
+
+void KantProjectManagerView::projectMenuAboutToShow()
+{
+  projectConfigure->setEnabled(false);
+  projectRun->setEnabled(false);
+
+  if (((KantProjectManager*)pluginIface)->projectFile.isEmpty())
+    projectSave->setEnabled(false);
+  else
+    projectSave->setEnabled(true);
+
+  if (pluginIface->appIface->docManagerIface()->getDocCount () == 0)
+   projectSaveAs->setEnabled(false);
+  else
+    projectSaveAs->setEnabled(true);
+}
+

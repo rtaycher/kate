@@ -39,6 +39,25 @@ class KantPluginFactory : public KLibFactory
     static KInstance* s_instance;
 };
 
+class KantProjectManagerView : public KantPluginViewIface
+{
+  Q_OBJECT
+
+  public:
+    KantProjectManagerView (QObject *parent=0);
+    ~KantProjectManagerView ();
+
+    KAction *projectNew;
+    KAction *projectOpen;
+    KAction *projectSave;
+    KAction *projectSaveAs;
+    KAction *projectConfigure;
+    KAction *projectCompile;
+    KAction *projectRun;
+
+  public slots:
+    void projectMenuAboutToShow();
+};
 
 class KantProjectManager : public KantPluginIface
 {

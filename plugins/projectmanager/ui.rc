@@ -1,7 +1,7 @@
 <!DOCTYPE kpartgui>
 <kpartplugin name="kantprojectmanager" library="libkantprojectmanager" version="1">
 <MenuBar>
-  <Menu name="project" noMerge="1"><text>&amp;Project</text>
+  <Menu name="project"><text>&amp;Project</text>
     <Action name="project_new" />
     <Action name="project_open" />
     <Action name="project_save" />

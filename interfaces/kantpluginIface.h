@@ -24,19 +24,29 @@
 #include <qlist.h>
 #include <qstring.h>
 
-class KantPluginViewIface : virtual public KXMLGUIClient
+class KantPluginViewIface : public QObject, virtual public KXMLGUIClient
 {
+  Q_OBJECT
+
+  friend class KantPluginIface;
+
   public:
-    KantPluginViewIface () {;};
+    KantPluginViewIface (QObject* parent = 0) : QObject (0L, 0L)
+     { pluginIface = (KantPluginIface *) parent; };
+
     ~KantPluginViewIface () {;};
 
     void setXML (QString filename)
-      { setXMLFile( filename ); };
+      { setXMLFile( filename ); }
+
+      class KantPluginIface *pluginIface;;
 };
 
 class KantPluginIface : public QObject
 {
   Q_OBJECT
+
+  friend class KantPluginViewIface;
 
   public:
     KantPluginIface (QObject* parent = 0, const char* name = 0) : QObject (parent, name)
