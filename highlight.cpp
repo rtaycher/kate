@@ -43,6 +43,7 @@
 #include <kmimemagic.h>
 #include <klocale.h>
 #include <kregexp.h>
+#include <kglobalsettings.h>
 
 #include "highlight.h"
 #include "kwdoc.h"
@@ -2133,8 +2134,11 @@ void HlManager::getDefaults(ItemStyleList &list, ItemFont &font) {
   }
 
   config->setGroup("Default Font");
-  font.family = config->readEntry("Family","courier");
-  font.size = config->readNumEntry("Size",12);
+  QFont defaultFont = KGlobalSettings::fixedFont();
+  font.family = config->readEntry("Family", defaultFont.family());
+  qDebug("family == %s", font.family.ascii());
+  font.size = config->readNumEntry("Size", defaultFont.pointSize());
+  qDebug("size == %d", font.size);
   font.charset = config->readEntry("Charset","ISO-8859-1");
 }
 
