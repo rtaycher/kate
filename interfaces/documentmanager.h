@@ -35,54 +35,61 @@ namespace Kate
 */
 class DocumentManager : public QObject
 {
+  friend class PrivateDocumentManager;
+
   Q_OBJECT   
   
-  protected:
-    DocumentManager ( QObject *parent = 0, const char *name = 0  );
-    virtual ~DocumentManager ();
+  public:
+    DocumentManager ( void *documentManager  );
+    ~DocumentManager ();
 
   public:
     /** Returns a pointer to the document indexed by n in the managers internal list.
     */
-    virtual class Document *document (uint ) { return 0L; };
+    class Document *document (uint n = 0);
     /** Returns a pointer to the currently active document or NULL if no document is open.
     */
-    virtual class Document *activeDocument () { return 0L; };
+    class Document *activeDocument ();
     /** Returns a pointer to the document with the given ID or NULL if no such document exists.
     */
-    virtual class Document *documentWithID (uint ) { return 0L; };
+    class Document *documentWithID (uint id);
 
     /** Returns the ID of the document located at url if such a document is known by the manager.
      */
-    virtual int findDocument (KURL ) { return 0L; };
+    int findDocument (const KURL &url);
     /** Returns true if the document located at url is open, otherwise false.
      */
-    virtual bool isOpen (KURL ) { return 0L; };
+    bool isOpen (const KURL &url);
 
     /** returns the number of documents managed by this manager.
     */
-    virtual uint documents () { return 0L; };       
-
+    uint documents ();       
 
     /** open a document and return a pointer to the document, if you specify a pointer != 0 to the id parameter
      * you will get the document id returned too
      */    
-    virtual class Document *openURL(const KURL&,const QString &/*encoding*/=QString::null,uint *id =0)=0;
+    class Document *openURL(const KURL&url,const QString &encoding=QString::null,uint *id =0);
     /** close a document by pointer
      */
-    virtual bool closeDocument(class Document *)=0;
+    bool closeDocument(class Document *document);
     /** close a document identified by the index
      */
-    virtual bool closeDocument(uint)=0; 
+    bool closeDocument(uint n = 0); 
     /** close a document identified by the ID
      */
-    virtual bool closeDocumentWithID(uint)=0;
+    bool closeDocumentWithID(uint id);
     /** close all documents
      */
-    virtual bool closeAllDocuments()=0;
+    bool closeAllDocuments();
 
   signals:
     void documentChanged ();
+    
+  public:
+    void emitDocumentChanged ();
+    
+  private:
+    class PrivateDocumentManager *d;
 };
 
 };

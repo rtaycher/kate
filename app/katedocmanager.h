@@ -26,13 +26,15 @@
 #include <qptrlist.h>
 #include <qobject.h>
 
-class KateDocManager : public Kate::DocumentManager
+class KateDocManager : public QObject
 {
   Q_OBJECT
 
   public:
     KateDocManager (QObject *parent);
     ~KateDocManager ();
+    
+    Kate::DocumentManager *documentManager () { return m_documentManager; };
 
     Kate::Document *createDoc ();
     void deleteDoc (Kate::Document *doc);
@@ -76,8 +78,10 @@ class KateDocManager : public Kate::DocumentManager
   signals:
     void documentCreated (Kate::Document *doc);
     void documentDeleted (uint documentNumber);  
+    void documentChanged ();
     
   private:
+    Kate::DocumentManager *m_documentManager;
     QPtrList<Kate::Document> m_docList;
     Kate::Document *m_currentDoc;
     bool m_firstDoc;

@@ -25,12 +25,6 @@
 
  #include "application.h"
  
-#include "documentmanager.h"
-#include "documentmanager.moc"
-
-#include "plugin.h"
-#include "plugin.moc"
-
 #include "viewmanager.h"
 #include "viewmanager.moc"     
 
@@ -44,14 +38,6 @@
 namespace Kate
 {
             
-DocumentManager::DocumentManager (QObject *parent, const char *name) : QObject (parent, name)
-{
-}
-
-DocumentManager::~DocumentManager ()
-{
-}
-
 ViewManager::ViewManager (QWidget *parent, const char *name) : QWidget(parent, name)
 {
 }
@@ -66,114 +52,6 @@ ToolViewManager::ToolViewManager()
 
 ToolViewManager::~ToolViewManager()
 {
-}
-
-class PrivatePlugin
-  {
-  public:
-    PrivatePlugin ()
-    {
-    }
-
-    ~PrivatePlugin ()
-    {
-    }           
-  };
-  
-  class PrivatePluginViewInterface
-  {
-  public:
-    PrivatePluginViewInterface ()
-    {
-    }
-
-    ~PrivatePluginViewInterface ()
-    {
-    }
-  };
-    
-                        
-unsigned int Plugin::globalPluginNumber = 0;
-unsigned int PluginViewInterface::globalPluginViewInterfaceNumber = 0;
-
-Plugin::Plugin( Application *application, const char *name ) : QObject (application, name )
-{
-  globalPluginNumber++;
-  myPluginNumber = globalPluginNumber; 
-}
-
-Plugin::~Plugin()
-{
-}
-
-
-InitPlugin :: InitPlugin(Application *application, const char *name):Plugin(application,name),m_configScript(KURL())
-{
-}
-
-void InitPlugin::activate(const KURL &initScript)
-{
-	m_configScript=initScript;
-}
-
-
-InitPlugin::~InitPlugin()
-{
-}
-
-int InitPlugin::actionsKateShouldNotPerformOnRealStartup()
-{
-  return 0;
-}
-
-const KURL InitPlugin::configScript() const
-{
-  return m_configScript;
-}
-
-
-int InitPlugin::initKate()
-{
-return 0;
-}
-
-
-unsigned int Plugin::pluginNumber () const
-{
-  return myPluginNumber;
-}     
-
- Application *Plugin::application () const
-{
-  return Kate::application();
-} 
-
-PluginViewInterface::PluginViewInterface()
-{
-  globalPluginViewInterfaceNumber++;
-  myPluginViewInterfaceNumber = globalPluginViewInterfaceNumber;
-}
-
-PluginViewInterface::~PluginViewInterface()
-{
-}
-
-unsigned int PluginViewInterface::pluginViewInterfaceNumber () const
-{
-  return myPluginViewInterfaceNumber;
-}    
-
-Plugin *createPlugin ( const char* libname, Application *application, const char *name )
-{
-  return KParts::ComponentFactory::createInstanceFromLibrary<Plugin>( libname, application, name );
-}
-
-PluginViewInterface *pluginViewInterface (Plugin *plugin)
-{       
-  if (!plugin)
-    return 0;
-
-  return static_cast<PluginViewInterface*>(plugin->qt_cast("Kate::PluginViewInterface"));
 }
 
 InitPluginManager::InitPluginManager(){;}

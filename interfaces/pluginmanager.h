@@ -43,7 +43,7 @@ class PluginManager : public QObject
 
   public:
     /** if the plugin with the library name "name" is loaded, a pointer to that plugin is returned */
-    virtual class Kate::Plugin *plugin(const QString &name)=0;
+    virtual class Plugin *plugin(const QString &name)=0;
 
     /** return true, if plugin is known to kate (either loaded or not loaded)
      * 
@@ -56,7 +56,7 @@ class PluginManager : public QObject
      * 
      * This method is not used yet
      */
-    virtual class Kate::Plugin *loadPlugin(const QString &name,bool permanent=true)=0;
+    virtual class Plugin *loadPlugin(const QString &name,bool permanent=true)=0;
 	
     /** unload the specified plugin. If the value permanent is true (default value), the plugin will not be
      * loaded on kate's next startup. Even if it had been loaded with permanent=true.

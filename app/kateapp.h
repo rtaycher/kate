@@ -26,6 +26,7 @@
 #include <qptrlist.h>
 
 #include "katemainwindow.h"
+#include "katedocmanager.h"
 
 #include <kuniqueapplication.h>
 
@@ -50,7 +51,7 @@ class KateApp : public KUniqueApplication, Kate::InitPluginManager
     
     void raiseCurrentMainWindow ();   
     
-    Kate::DocumentManager *documentManager () { return (Kate::DocumentManager*)m_docManager; };
+    Kate::DocumentManager *documentManager () { return m_docManager->documentManager(); };
     Kate::PluginManager *pluginManager () { return (Kate::PluginManager*)m_pluginManager; };
     Kate::MainWindow *activeMainWindow ();
     

@@ -27,8 +27,9 @@
 
 #include <qtextcodec.h>
 
-KateDocManager::KateDocManager (QObject *parent) : Kate::DocumentManager (parent)
+KateDocManager::KateDocManager (QObject *parent) : QObject (parent)
 {
+  m_documentManager = new Kate::DocumentManager (this);
   m_docList.setAutoDelete(true);
   m_currentDoc = 0L;
 
@@ -73,8 +74,11 @@ Kate::Document *KateDocManager::activeDocument ()
 void KateDocManager::setActiveDocument (Kate::Document *doc)
 {                      
   if (m_currentDoc != doc)
+  {
     emit documentChanged ();
-
+    m_documentManager->emitDocumentChanged ();
+  }
+  
   m_currentDoc = doc;
 }
 

@@ -32,10 +32,6 @@
 namespace Kate
 {
 
-/**
- I want to stay source compatible, so I don't remove the KParts::DockMainWindow. This will happen in KDE 4.0 though
- NEVER CALL A KParts::DockMainWindow method directly. Use the ToolViewManager !!!!!
- **/
 class MainWindow : public QObject
 {
   friend class PrivateMainWindow;
