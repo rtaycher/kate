@@ -200,7 +200,7 @@ Kate::Document *KateDocManager::openURL (const KURL& url,const QString &encoding
 
     doc->openURL(url);
 
-    if (doc->url().filename() != "")
+    if (!doc->url().filename().isEmpty())
     {
       QString name=doc->url().filename();
       int hassamename = 0;
