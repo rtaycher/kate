@@ -32,6 +32,7 @@
 #include <qheader.h>
 #include <qcolor.h>
 #include <qcheckbox.h>
+#include <qhbox.h>
 #include <qlayout.h>
 #include <qgroupbox.h>
 #include <qlabel.h>
@@ -566,6 +567,16 @@ KFLConfigPage::KFLConfigPage( QWidget* parent, const char *name, KateFileList *f
   lo->addWidget( lEditShade, 3, 0 );
   lo->addWidget( kcbEditShade, 3, 1 );
 
+  // sorting
+  QHBox *hbSorting = new QHBox( this );
+  lo1->addWidget( hbSorting );
+  lSort = new QLabel( i18n("&Sort by:"), hbSorting );
+  cmbSort = new QComboBox( hbSorting );
+  lSort->setBuddy( cmbSort );
+  QStringList l;
+  l << i18n("Opening Order") << i18n("Document Name") << i18n("URL");
+  cmbSort->insertStringList( l );
+
   lo1->insertStretch( -1, 10 );
 
   QWhatsThis::add( cbEnableShading, i18n(
@@ -579,6 +590,9 @@ KFLConfigPage::KFLConfigPage( QWidget* parent, const char *name, KateFileList *f
       "the color for viewed files. The most recently edited documents get "
       "most of this color.") );
 
+  QWhatsThis::add( cmbSort, i18n(
+      "Set the sorting method for the documents.") );
+
   reload();
 
   slotEnableChanged();
@@ -586,6 +600,7 @@ KFLConfigPage::KFLConfigPage( QWidget* parent, const char *name, KateFileList *f
   connect( cbEnableShading, SIGNAL(toggled(bool)), this, SLOT(slotEnableChanged()) );
   connect( kcbViewShade, SIGNAL(changed(const QColor&)), this, SLOT(slotMyChanged()) );
   connect( kcbEditShade, SIGNAL(changed(const QColor&)), this, SLOT(slotMyChanged()) );
+  connect( cmbSort, SIGNAL(activated(int)), this, SLOT(slotMyChanged()) );
 }
 
 void KFLConfigPage::apply()
@@ -598,6 +613,7 @@ void KFLConfigPage::apply()
   m_filelist->m_viewShade = kcbViewShade->color();
   m_filelist->m_editShade = kcbEditShade->color();
   m_filelist->m_enableBgShading = cbEnableShading->isChecked();
+  m_filelist->setSortType( cmbSort->currentItem() );
   // repaint the affected items
   m_filelist->triggerUpdate();
 }
@@ -610,6 +626,7 @@ void KFLConfigPage::reload()
   cbEnableShading->setChecked( config->readBoolEntry("Shading Enabled", &m_filelist->m_enableBgShading ) );
   kcbViewShade->setColor( config->readColorEntry("View Shade", &m_filelist->m_viewShade ) );
   kcbEditShade->setColor( config->readColorEntry("Edit Shade", &m_filelist->m_editShade ) );
+  cmbSort->setCurrentItem( m_filelist->sortType() );
   m_changed = false;
 }
 

@@ -177,7 +177,8 @@ class KFLConfigPage : public Kate::ConfigPage {
   private:
     class QCheckBox *cbEnableShading;
     class KColorButton *kcbViewShade, *kcbEditShade;
-    class QLabel *lEditShade, *lViewShade;
+    class QLabel *lEditShade, *lViewShade, *lSort;
+    class QComboBox *cmbSort;
     KateFileList *m_filelist;
 
     bool m_changed;
