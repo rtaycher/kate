@@ -311,6 +311,7 @@ void KateConfigDialog::removePluginPage (Kate::Plugin *plugin)
       delete pluginPages.at(i)->page;
       delete w;
       pluginPages.remove(pluginPages.at(i));
+      i--;
     }
   }
 }
