@@ -296,7 +296,7 @@ KateMainWindow *KateApp::newMainWindow (bool visible)
   if (!m_firstStart)
   {
     mainWindow->raise();
-    KWin::setActiveWindow (mainWindow->winId());
+    KWin::activateWindow (mainWindow->winId());
   }
 
   return mainWindow;
@@ -317,7 +317,7 @@ void KateApp::openURL (const QString &name)
   m_mainWindows.at(n)->kateViewManager()->openURL (KURL(name));
 
   m_mainWindows.at(n)->raise();
-  KWin::setActiveWindow (m_mainWindows.at(n)->winId());
+  KWin::activateWindow (m_mainWindows.at(n)->winId());
 }
 
 void KateApp::raiseCurrentMainWindow ()
@@ -328,7 +328,7 @@ void KateApp::raiseCurrentMainWindow ()
     n=0;
 
   m_mainWindows.at(n)->raise();
-  KWin::setActiveWindow (m_mainWindows.at(n)->winId());
+  KWin::activateWindow (m_mainWindows.at(n)->winId());
 }
 
 Kate::MainWindow *KateApp::activeMainWindow ()
