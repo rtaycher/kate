@@ -14,5 +14,5 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include "kantmainwindowIface.h"
-#include "kantmainwindowIface.moc"
+#include "kantpluginIface.h"
+#include "kantpluginIface.moc"

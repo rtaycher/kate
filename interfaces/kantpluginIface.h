@@ -14,21 +14,21 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef _KANT_MAINWINDOW_IFACE_
-#define _KANT_MAINWINDOW_IFACE_
+#ifndef _KANT_PLUGIN_IFACE_
+#define _KANT_PLUGIN_IFACE_
 
 #include "../kantmain.h"
 #include "../kwrite/kwview.h"
 
-#include <kdockwidget.h>
+#include <qobject.h>
 
-class KantMainWindowIface : public KDockMainWindow
-{
-  Q_OBJECT
-
-  public:
-    KantMainWindowIface (QWidget *parent, const char * name = 0) : KDockMainWindow (parent, name) {;};
-    ~KantMainWindowIface () {;};
-};
+class KantPluginIface : public QObject
+  {
+    Q_OBJECT
+    public:
+      KantPluginIface(QObject *parent):QObject(parent){;};
+      ~KantPluginIface(){;};
+     // virtual KWrite *getActiveView()=0;
+  };  
 
 #endif
