@@ -276,7 +276,7 @@ void TopLevel::configure()
 
   page=kd->addVBoxPage(i18n("Highlighting"),i18n("Highlighting configuration"),
                         BarIcon("edit",KIcon::SizeMedium));
-  hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &defaultFont, &hlDataList,
+  hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &defaultFont, &hlDataList,
     /*myDoc->highlightNum()*/0, page);
 
  if (kd->exec()) {
@@ -596,7 +596,7 @@ int main(int argc, char **argv)
 	I18N_NOOP( "KWrite - A new KWrite using the Kate Texteditor KPart" ), KAboutData::License_GPL,
 	 "(c) 2000-2001 The Kate Authors", "http://devel-home.kde.org/~kate");
 
-  aboutData.addAuthor("Christoph Cullmann", I18N_NOOP("Project Manager and Core Developer"), "crossfire@babylon2k.de", "http://www.babylon2k.de");
+  aboutData.addAuthor("Christoph Cullmann", I18N_NOOP("Project Manager and Core Developer"), "cullmann@kde.org", "http://www.babylon2k.de");
   aboutData.addAuthor("Michael Bartl", I18N_NOOP("Core Developer"), "michael.bartl1@chello.at");
   aboutData.addAuthor("Phlip", I18N_NOOP("The Project Compiler"), "phlip_cpp@my-deja.com");
   aboutData.addAuthor("Anders Lund", I18N_NOOP("Core Developer"), "anders@alweb.dk", "http://www.alweb.dk");
