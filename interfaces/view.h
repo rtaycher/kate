@@ -45,8 +45,8 @@ class Mark;
   The Kate::View text editor interface.
   @author Cullmann Christoph, modified by rokrau (6/21/01)
 */
-class View : public KTextEditor::View, virtual KTextEditor::ClipboardInterface,
-             virtual KTextEditor::PopupMenuInterface, virtual KTextEditor::ViewCursorInterface
+class View : public KTextEditor::View, public KTextEditor::ClipboardInterface,
+             public KTextEditor::PopupMenuInterface, public KTextEditor::ViewCursorInterface
 {
   Q_OBJECT
 
