@@ -217,9 +217,8 @@ void KateViewInternal::doEditCommand(VConfig &c, int cmdNum)
   switch (cmdNum) {
     case KateView::cmReturn:
       if (c.flags & KateDocument::cfDelOnInput) myDoc->removeSelectedText();
+      getVConfig(c);
       myDoc->newLine(c);
-      //emit returnPressed();
-      //e->ignore();
       return;
     case KateView::cmDelete:
       if ((c.flags & KateDocument::cfDelOnInput) && myDoc->hasSelection())
@@ -239,6 +238,7 @@ void KateViewInternal::doEditCommand(VConfig &c, int cmdNum)
       return;
     case KateView::cmPaste:
       if (c.flags & KateDocument::cfDelOnInput) myDoc->removeSelectedText();
+      getVConfig(c);
       myDoc->paste(c);
       return;
     case KateView::cmIndent:
