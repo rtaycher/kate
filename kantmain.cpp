@@ -39,13 +39,13 @@ int main( int argc, char **argv )
 	I18N_NOOP( "Kant - A MDI Texteditor for KDE" ), KAboutData::License_GPL,
 	 "(c) 2000-2001 The Kant Authors");
 
-  aboutData.addAuthor("Christoph Cullmann", "Project Manager and Core Developer", "crossfire@babylon2k.de", "http://www.babylon2k.de");
-  aboutData.addAuthor("Michael Bartl", "Core Developer", "michael.bartl1@chello.at");
-  aboutData.addAuthor("Phlip", "The Project Compiler", "phlip_cpp@my-deja.com");
-  aboutData.addAuthor("Anders Lund", "Core Developer", "anders@alweb.dk", "http://www.alweb.dk");
-  aboutData.addAuthor("Matt Newell", "Testing, ...", "newellm@proaxis.com");
-  aboutData.addAuthor("Joseph Wenninger", "Core Developer", "jowenn@bigfoot.com");
-  aboutData.addAuthor("Michael McCallum", "Core Developer", "gholam@xtra.co.nz");
+  aboutData.addAuthor("Christoph Cullmann", I18N_NOOP("Project Manager and Core Developer"), "crossfire@babylon2k.de", "http://www.babylon2k.de");
+  aboutData.addAuthor("Michael Bartl", I18N_NOOP("Core Developer"), "michael.bartl1@chello.at");
+  aboutData.addAuthor("Phlip", I18N_NOOP("The Project Compiler"), "phlip_cpp@my-deja.com");
+  aboutData.addAuthor("Anders Lund", I18N_NOOP("Core Developer"), "anders@alweb.dk", "http://www.alweb.dk");
+  aboutData.addAuthor("Matt Newell", I18N_NOOP("Testing, ..."), "newellm@proaxis.com");
+  aboutData.addAuthor("Joseph Wenninger", I18N_NOOP("Core Developer"), "jowenn@bigfoot.com");
+  aboutData.addAuthor("Michael McCallum", I18N_NOOP("Core Developer"), "gholam@xtra.co.nz");
 
   KCmdLineArgs::init (argc, argv, &aboutData);
   KCmdLineArgs::addCmdLineOptions (options);
