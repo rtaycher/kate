@@ -360,19 +360,6 @@ void KantViewInternal::wordLeft(VConfig &c) {
     }
   }
 
-/*
-  do {
-    if (cursor.x <= 0) {
-      if (cursor.y > 0) {
-        cursor.y--;
-        textLine = myDoc->textLine(cursor.y);
-        cursor.x = textLine->length() -1;
-      } else break;
-    } else cursor.x--;
-  } while (cursor.x < 0 || !highlight->isInWord(textLine->getChar(cursor.x)));
-  while (cursor.x > 0 && highlight->isInWord(textLine->getChar(cursor.x -1)))
-    cursor.x--;
-*/
   cOldXPos = cXPos = myDoc->textWidth(cursor);
   changeState(c);
 }
@@ -398,20 +385,7 @@ void KantViewInternal::wordRight(VConfig &c) {
       cursor.x = 0;
     }
   }
-/*
-  while (cursor.x < len && highlight->isInWord(textLine->getChar(cursor.x)))
-    cursor.x++;
-  do {
-    if (cursor.x >= len) {
-      if (cursor.y < myDoc->lastLine()) {
-        cursor.y++;
-        textLine = myDoc->textLine(cursor.y);
-        len = textLine->length();
-        cursor.x = 0;
-      } else break;
-    } else cursor.x++;
-  } while (cursor.x >= len || !highlight->isInWord(textLine->getChar(cursor.x)));
-*/
+
   cOldXPos = cXPos = myDoc->textWidth(cursor);
   changeState(c);
 }
@@ -432,13 +406,6 @@ void KantViewInternal::home(VConfig &c) {
 }
 
 void KantViewInternal::end(VConfig &c) {
-/*
-  TextLine::Ptr textLine = myDoc->textLine(cursor.y);
-  if (c.flags & KantView::cfRemoveSpaces) { // ignore trailing spaces
-    cursor.x = textLine->lastChar();
-  } else {
-    cursor.x = textLine->length();
-  }*/
   cursor.x = myDoc->textLength(cursor.y);
   cOldXPos = cXPos = myDoc->textWidth(cursor);
   changeState(c);
@@ -659,25 +626,6 @@ void KantViewInternal::changeState(VConfig &c) {
       myDoc->deselectAll();
   }
 }
-
-/*
-void KantViewInternal::insLine(int line) {
-  if (insert) {
-    if (start.y < startLine && end.y < startLine) {
-      startLine += dy;
-      endLine += dy;
-      yPos += dy*myDoc->fontHeight;
-    } else if (start.y <= endLine || end.y <= endLine) {
-      if (dy == 0) {
-        if (start.y == cursor.y) cursorOn = false;
-        tagLines(start.y,start.y);
-      } else tagAll();
-    }
-  } else {
-    if (dy >= 0) tagLines(start.y,end.y); else tagLines(end.y,start.y);
-  }
-}
-*/
 
 void KantViewInternal::insLine(int line) {
 
@@ -903,23 +851,6 @@ void KantViewInternal::updateView(int flags) {
       yPos += cYPos - cYPosMax;
     }
 
-/*
-    if (cXPos < xPos + 4) {
-      xPos = cXPos - 8;
-      if (xPos < 0) xPos = 0;
-    }
-    if (cXPos > xPos + w - 4) {
-      xPos = cXPos - w +8;
-    }
-
-    if (cYPos < yPos) {
-      yPos = cYPos;
-      if (yPos < 0) yPos = 0;
-    }
-    if (cYPos > yPos + (h-fontHeight)) {
-      yPos = cYPos - (h-fontHeight);
-    }
-*/
     z++;
   } while (z < 2);
 
@@ -954,16 +885,6 @@ void KantViewInternal::updateView(int flags) {
     yScroll->show();
   } else yScroll->hide();
 
-  //startLine = yPos / fontHeight;
-  //endLine = (yPos + h -1) / fontHeight;
-/*
-  if (endLine < startLine) {
-    endLine = startLine;
-    visibleLines = 0;
-  } else {
-    visibleLines = (h - (h % fontHeight)) / fontHeight;
-  }
-*/
   if (w != width() || h != height()) {
     clearDirtyCache(h);
     resize(w,h);
@@ -1020,15 +941,7 @@ void KantViewInternal::paintTextLines(int xPos, int yPos) {
     }
     r++;
   }
-/*
-  xStart = xPos-2;
-  xEnd = xStart + width();
-  h = myDoc->fontHeight;
-  for (z = 0; z < updateState; z++) {
-    line = updateLines[z];
-    myDoc->paintTextLine(paint,line,xStart,xEnd);
-    bitBlt(this,0,line*h - yPos,drawBuffer,0,0,width(),h);
-  }*/
+
   paint.end();
 }
 
@@ -2918,11 +2831,6 @@ void KantView::readSessionConfig(KConfig *config) {
   QString s2;
   KWBookmark *b;
 
-/*
-  searchFlags = config->readNumEntry("SearchFlags",sfPrompt);
-  configFlags = config->readNumEntry("ConfigFlags");
-  wrapAt = config->readNumEntry("WrapAt",79);
-*/
   readConfig(config);
 
   myViewInternal->xPos = config->readNumEntry("XPos");
@@ -2949,11 +2857,6 @@ void KantView::writeSessionConfig(KConfig *config) {
   char s2[64];
   KWBookmark *b;
 
-/*
-  config->writeEntry("SearchFlags",searchFlags);
-  config->writeEntry("ConfigFlags",configFlags);
-  config->writeEntry("WrapAt",wrapAt);
-*/
   writeConfig(config);
 
   config->writeEntry("XPos",myViewInternal->xPos);
