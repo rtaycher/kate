@@ -34,7 +34,7 @@ KateDocManager::~KateDocManager ()
 
 Kate::Document *KateDocManager::createDoc ()
 {
-  KTextEditor::Document *doc = KTextEditor::createDocument ("katepart", this, "Kate::Document");
+  KTextEditor::Document *doc = KTextEditor::createDocument ("libkatepart", this, "Kate::Document");
   m_docList.append((Kate::Document *)doc);
 
   emit documentCreated ((Kate::Document *)doc);
