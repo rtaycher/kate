@@ -68,6 +68,7 @@ class KantFileList : public KListBox
       void slotActivateView( QListBoxItem *item );
       void slotModChanged (KantDocument *doc);
       void slotNameChanged (KantDocument *doc);
+      void slotViewChanged ();
 };
 
 #endif

@@ -44,6 +44,8 @@ KantFileList::KantFileList (KantDocManager *_docManager, KantViewManager *_viewM
 
   connect(this,SIGNAL(highlighted(QListBoxItem *)),this,SLOT(slotActivateView(QListBoxItem *)));
   connect(this,SIGNAL(selected(QListBoxItem *)), this,SLOT(slotActivateView(QListBoxItem *)));
+
+  connect(viewManager,SIGNAL(viewChanged()), this,SLOT(slotViewChanged()));
 }
 
 KantFileList::~KantFileList ()
@@ -123,6 +125,22 @@ void KantFileList::slotNameChanged (KantDocument *doc)
     {
       ((KantFileListItem *)item(i))->setText(doc->docName());
       triggerUpdate(false);
+      break;
+    }
+  }
+}
+
+void KantFileList::slotViewChanged ()
+{
+  if (!viewManager->activeView()) return;
+
+  KantView *view = viewManager->activeView();
+
+  for (uint i = 0; i < count(); i++)
+  {
+    if (((KantFileListItem *) item (i)) ->docID() == ((KantDocument *)view->doc())->docID())
+    {
+      setCurrentItem (i);
       break;
     }
   }

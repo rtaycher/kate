@@ -131,33 +131,33 @@ bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView, Ka
 
       if (url.filename() != 0) {
         QString name = url.filename();
+
         // anders avoid two views w/ same caption
         QListIterator<KantView> it (viewList);
         int hassamename = 0;
-        for (; it.current(); ++it) {
+        for (; it.current(); ++it)
+        {
            if ( it.current()->doc()->url().filename().compare( name ) == 0 )
              hassamename++;
         }
+
         if (hassamename > 1)
           name = QString(name+"<%1>").arg(hassamename);
-        view->setCaption ( name );
+
         ((KantDocument *)view->doc())->setDocName (name);
       }
       else
       {
-        view->setCaption (i18n("Untitled %1").arg(doc->docID()));
         ((KantDocument *)view->doc())->setDocName (i18n("Untitled %1").arg(doc->docID()));
       }
     }
     else
     {
-      view->setCaption (i18n("Untitled %1").arg(doc->docID()));
       ((KantDocument *)view->doc())->setDocName (i18n("Untitled %1").arg(doc->docID()));
     }
   }
   else
   {
-    if (origView) view->setCaption (origView->caption());
     ((KantDocument *)view->doc())->setDocName (doc->docName ());
   }
 
@@ -171,7 +171,7 @@ bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView, Ka
 
   activeViewSpace()->addView( view );
   activateView( view );
-  //kdDebug()<<">> createView(): done"<<endl;
+
   return true;
 }
 
@@ -518,7 +518,6 @@ void KantViewManager::slotDocumentSaveAs ()
   if( !url.isEmpty() )
   {
     current->doc()->saveAs( url );
-    current->setCaption (url.filename());
     ((KantDocument *)current->doc())->setDocName (url.filename());
 
     setWindowCaption();
