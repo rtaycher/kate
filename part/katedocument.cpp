@@ -469,7 +469,6 @@ bool KateDocument::insertText( uint line, uint col, const QString &s )
 
   if (tagStart <= tagEnd) {
     updateLines(tagStart, tagEnd);
-    setModified(true);
   }
 
   if (_autoUpdate)
@@ -481,8 +480,6 @@ bool KateDocument::insertText( uint line, uint col, const QString &s )
     currentUndo = 0L;
     emit undoChanged ();
   }
-
-  emit textChanged ();
 
   return true;
 }
@@ -551,7 +548,6 @@ bool KateDocument::removeText ( uint startLine, uint startCol, uint endLine, uin
 
   if (tagStart <= tagEnd) {
     updateLines(tagStart, tagEnd);
-    setModified(true);
   }
 
   if (_autoUpdate)
@@ -563,8 +559,6 @@ bool KateDocument::removeText ( uint startLine, uint startCol, uint endLine, uin
     currentUndo = 0L;
     emit undoChanged ();
   }
-
-  emit textChanged ();
 
   return true;
 }
@@ -585,7 +579,6 @@ bool KateDocument::insertLine( uint l, const QString &str )
 
   if (tagStart <= tagEnd) {
     updateLines(tagStart, tagEnd);
-    setModified(true);
   }
 
   if (_autoUpdate)
@@ -597,8 +590,6 @@ bool KateDocument::insertLine( uint l, const QString &str )
     currentUndo = 0L;
     emit undoChanged ();
   }
-
-  emit textChanged ();
 
   return true;
 }
@@ -617,7 +608,6 @@ bool KateDocument::removeLine( uint line )
 
   if (tagStart <= tagEnd) {
     updateLines(tagStart, tagEnd);
-    setModified(true);
   }
 
   if (_autoUpdate)
@@ -629,8 +619,6 @@ bool KateDocument::removeLine( uint line )
     currentUndo = 0L;
     emit undoChanged ();
   }
-
-  emit textChanged ();
 
   return true;
 }
@@ -676,7 +664,9 @@ bool KateDocument::internalInsertText ( uint line, uint col, const QString &s )
   updateMaxLength(l);
   tagLine(line);
 
+  setModified(true);
   emit textChanged ();
+
   return true;
 }
 
@@ -724,7 +714,9 @@ bool KateDocument::internalRemoveText ( uint line, uint col, uint len )
     view->updateCursor (c);
   }
 
+  setModified(true);
   emit textChanged ();
+
   return true;
 }
 
@@ -761,7 +753,9 @@ bool KateDocument::internalWrapLine ( uint line, uint col )
     view->insLine(line+1);
   }
 
+  setModified(true);
   emit textChanged ();
+
   return true;
 }
 
@@ -813,7 +807,9 @@ bool KateDocument::internalUnWrapLine ( uint line, uint col)
     view->updateCursor (c);
   }
 
+  setModified(true);
   emit textChanged ();
+
   return true;
 }
 
@@ -842,7 +838,9 @@ bool KateDocument::internalInsertLine ( uint line, const QString &s )
     view->insLine(line);
   }
 
+  setModified(true);
   emit textChanged ();
+
   return true;
 }
 
@@ -882,7 +880,9 @@ bool KateDocument::internalRemoveLine ( uint line )
     view->updateCursor (c);
   }
 
+  setModified(true);
   emit textChanged ();
+
   return true;
 }
 
