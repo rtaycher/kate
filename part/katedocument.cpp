@@ -246,8 +246,6 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
 
   m_url = KURL();
 
-  // NOTE: QFont::CharSet doesn't provide all the charsets KDE supports
-  // (esp. it doesn't distinguish between UTF-8 and iso10646-1)
   myEncoding = QString::fromLatin1(QTextCodec::codecForLocale()->name());
   maxLength = -1;
 
@@ -1492,7 +1490,6 @@ void KateDocument::readConfig()
 
   setTabWidth(config->readNumEntry("TabWidth", 8));
   setUndoSteps(config->readNumEntry("UndoSteps", 50));
-  myEncoding = config->readEntry("Encoding", QString::fromLatin1(QTextCodec::codecForLocale()->name()));
   setFont (config->readFontEntry("Font", &myFont));
 
   colors[0] = config->readColorEntry("Color Background", &colors[0]);
@@ -1512,7 +1509,6 @@ void KateDocument::writeConfig()
   config->writeEntry("Word Wrap On", myWordWrap);
   config->writeEntry("Word Wrap At", myWordWrapAt);
   config->writeEntry("TabWidth", tabChars);
-  config->writeEntry("Encoding", myEncoding);
   config->writeEntry("Font", myFont);
   config->writeEntry("Color Background", colors[0]);
   config->writeEntry("Color Selected", colors[1]);

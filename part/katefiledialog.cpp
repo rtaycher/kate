@@ -29,6 +29,8 @@ KateFileDialog::KateFileDialog (const QString& startDir,
 			              const QString& caption,
 										int type) : KFileDialog (startDir, QString::null, parent, "", true)
 {
+  setCaption (caption);
+
   toolBar()->insertCombo(KGlobal::charsets()->availableEncodingNames(), 33333, false, "",
 	        this, "", true);
 
