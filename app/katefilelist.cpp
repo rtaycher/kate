@@ -69,6 +69,7 @@ KateFileList::KateFileList (KateDocManager *_docManager,
 
 KateFileList::~KateFileList ()
 {
+  delete tooltip;
 }
 
 void KateFileList::slotDocumentCreated (Kate::Document *doc)

@@ -51,15 +51,21 @@ class KatePluginManager : public QObject
     Kate::PluginManager *pluginManager () const { return m_pluginManager; };
 
     void loadAllEnabledPlugins ();
+    void unloadAllPlugins ();
+    
     void enableAllPluginsGUI (KateMainWindow *win);
+    void disableAllPluginsGUI (KateMainWindow *win);
 
     void loadConfig ();
     void writeConfig ();
 
     void loadPlugin (KatePluginInfo *item);
     void unloadPlugin (KatePluginInfo *item);
+    
     void enablePluginGUI (KatePluginInfo *item, KateMainWindow *win);
     void enablePluginGUI (KatePluginInfo *item);
+    
+    void disablePluginGUI (KatePluginInfo *item, KateMainWindow *win);
     void disablePluginGUI (KatePluginInfo *item);
 
     inline KatePluginList & pluginList () { return m_pluginList; };

@@ -165,6 +165,8 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
 KateMainWindow::~KateMainWindow()
 {
+  m_pluginManager->disableAllPluginsGUI (this);
+
   delete m_dcop;
   delete kscript;
 }

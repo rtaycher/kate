@@ -44,6 +44,8 @@ KateProjectManager::KateProjectManager (QObject *parent) : QObject (parent)
 
 KateProjectManager::~KateProjectManager()
 {
+  m_pluginList.setAutoDelete(true);
+  m_pluginList.clear();
 }
 
 void KateProjectManager::setupPluginList ()

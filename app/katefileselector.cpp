@@ -133,6 +133,7 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow,
   cmbPath->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
   KURLCompletion* cmpl = new KURLCompletion(KURLCompletion::DirCompletion);
   cmbPath->setCompletionObject( cmpl );
+  cmbPath->setAutoDeleteCompletionObject( true );
   lo->addWidget(cmbPath);
   cmbPath->listBox()->installEventFilter( this );
 

@@ -34,11 +34,20 @@ KatePluginManager::KatePluginManager(QObject *parent) : QObject (parent)
 {
   m_pluginManager = new Kate::PluginManager (this);
   setupPluginList ();
+  
   loadConfig ();
+  loadAllEnabledPlugins ();
 }
 
 KatePluginManager::~KatePluginManager()
 {
+  // first write config
+  writeConfig ();
+  
+  // than unload the plugins
+  unloadAllPlugins ();
+  m_pluginList.setAutoDelete(true);
+  m_pluginList.clear();
 }
 
 void KatePluginManager::setupPluginList ()
@@ -86,6 +95,17 @@ void KatePluginManager::loadAllEnabledPlugins ()
   {
     if  (m_pluginList.at(i)->load)
       loadPlugin (m_pluginList.at(i));
+    else
+      unloadPlugin (m_pluginList.at(i)); 
+  }
+}
+
+void KatePluginManager::unloadAllPlugins ()
+{
+  for (uint i=0; i<m_pluginList.count(); i++)
+  {
+    if  (m_pluginList.at(i)->plugin)
+      unloadPlugin (m_pluginList.at(i));
   }
 }
 
@@ -95,6 +115,15 @@ void KatePluginManager::enableAllPluginsGUI (KateMainWindow *win)
   {
     if  (m_pluginList.at(i)->load)
       enablePluginGUI (m_pluginList.at(i), win);
+  }
+}
+
+void KatePluginManager::disableAllPluginsGUI (KateMainWindow *win)
+{
+  for (uint i=0; i<m_pluginList.count(); i++)
+  {
+    if  (m_pluginList.at(i)->load)
+      disablePluginGUI (m_pluginList.at(i), win);
   }
 }
 
@@ -128,6 +157,14 @@ void KatePluginManager::enablePluginGUI (KatePluginInfo *item)
   {
     Kate::pluginViewInterface(item->plugin)->addView(((KateApp*)parent())->mainWindow(i));
   }
+}
+
+void KatePluginManager::disablePluginGUI (KatePluginInfo *item, KateMainWindow *win)
+{
+  if (!item->plugin) return;
+  if (!Kate::pluginViewInterface(item->plugin)) return;
+
+  Kate::pluginViewInterface(item->plugin)->removeView(win->mainWindow());
 }
 
 void KatePluginManager::disablePluginGUI (KatePluginInfo *item)

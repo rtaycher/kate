@@ -81,7 +81,6 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState)
 
   // init all normal plugins
   m_pluginManager = new KatePluginManager (this);
-  m_pluginManager->loadAllEnabledPlugins ();
 
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 
@@ -109,10 +108,10 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState)
 
 KateApp::~KateApp ()
 {
-  m_pluginManager->writeConfig ();
-
-  //m_docManager->closeAllDocuments();
   delete m_obj;
+  
+  // cu plugin manager
+  delete m_pluginManager;
   
   // delete this now, or we crash
   delete m_docManager;

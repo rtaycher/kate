@@ -103,6 +103,7 @@ class KateFileList : public KListBox
     {
       public:
         KFLToolTip(QWidget *parent);
+        
       protected:
         void maybeTip( const QPoint & );
     };
