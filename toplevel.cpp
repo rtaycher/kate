@@ -184,25 +184,25 @@ void TopLevel::setupMenuBar() {
 //    int addCommand(int catNum, int cmdNum, QPixmap &pixmap,
 //      const QObject *receiver, const char *member, int id = -1, int index = -1);
 
-  pixmap = BarIcon("filenew");
+  pixmap = SmallIcon("filenew");
   file->addCommand(ctFileCommands, cmNew, pixmap, kWrite, SLOT(newDoc()));
-  pixmap = BarIcon("fileopen");
+  pixmap = SmallIcon("fileopen");
   file->addCommand(ctFileCommands, cmOpen, pixmap, kWrite, SLOT(open()));
   menuInsert = file->addCommand(ctFileCommands, cmInsert, kWrite, SLOT(insertFile()));
   file->insertItem(i18n("Open &Recent"), recentPopup);
   connect(recentPopup, SIGNAL(activated(int)), SLOT(openRecent(int)));
   file->insertSeparator ();
-  pixmap = BarIcon("filesave");
+  pixmap = SmallIcon("filesave");
   menuSave = file->addCommand(ctFileCommands, cmSave, pixmap, kWrite, SLOT(save()));
   file->addCommand(ctFileCommands, cmSaveAs, kWrite, SLOT(saveAs()));
   file->insertSeparator ();
-  pixmap = BarIcon("fileprint");
+  pixmap = SmallIcon("fileprint");
   file->addCommand(ctFileCommands, cmPrint, pixmap, this, SLOT(printDlg()));
   file->insertSeparator ();
   file->addCommand(ctFileCommands, cmNewWindow, this, SLOT(newWindow()));
   file->addCommand(ctFileCommands, cmNewView, this, SLOT(newView()));
   file->insertSeparator ();
-  pixmap = BarIcon("exit");
+  pixmap = SmallIcon("exit");
   file->addCommand(ctFileCommands, cmClose, pixmap, this, SLOT(closeWindow()));
 
 /*
@@ -226,20 +226,20 @@ void TopLevel::setupMenuBar() {
 //  file->insertItem (i18n("E&xit"),this,SLOT(quitEditor()),keys.quit());
 */
 
-  pixmap = BarIcon("undo");
+  pixmap = SmallIcon("undo");
   menuUndo = edit->addCommand(ctEditCommands, cmUndo, pixmap);
-  pixmap = BarIcon("redo");
+  pixmap = SmallIcon("redo");
   menuRedo = edit->addCommand(ctEditCommands, cmRedo, pixmap);
   menuUndoHist = edit->insertItem(i18n("Undo/Redo &History..."),kWrite,SLOT(undoHistory()));
   edit->insertSeparator();
-  pixmap = BarIcon("editcut");
+  pixmap = SmallIcon("editcut");
   menuCut = edit->addCommand(ctEditCommands, cmCut, pixmap);
-  pixmap = BarIcon("editcopy");
+  pixmap = SmallIcon("editcopy");
   edit->addCommand(ctEditCommands, cmCopy, pixmap);
-  pixmap = BarIcon("editpaste");
+  pixmap = SmallIcon("editpaste");
   menuPaste = edit->addCommand(ctEditCommands, cmPaste, pixmap);
 //  edit->insertSeparator();
-//  pixmap = BarIcon("search");
+//  pixmap = SmallIcon("search");
 //  edit->addCommand(ctFindCommands, cmFind, pixmap, kWrite, SLOT(search()));
 //  edit->addCommand(ctFindCommands, cmReplace, kWrite, SLOT(replace()));
 //  edit->addCommand(ctFindCommands, cmFindAgain, kWrite, SLOT(searchAgain()));
@@ -256,12 +256,12 @@ void TopLevel::setupMenuBar() {
   edit->addCommand(ctEditCommands, cmDeselectAll);
   edit->addCommand(ctEditCommands, cmInvertSelection);
   edit->insertSeparator();
-  pixmap = BarIcon("spellcheck");
+  pixmap = SmallIcon("spellcheck");
   menuSpell = edit->insertItem(pixmap, i18n("Check Spe&lling..."), kWrite,SLOT(spellcheck()));
 
 
   // find dialog
-  pixmap = BarIcon("find");
+  pixmap = SmallIcon("find");
   find->addCommand(ctFindCommands, cmFind, pixmap, kWrite, SLOT(find()));
   find->addCommand(ctFindCommands, cmReplace, kWrite, SLOT(replace()));
   find->addCommand(ctFindCommands, cmFindAgain, kWrite, SLOT(findAgain()));
@@ -352,22 +352,22 @@ void TopLevel::setupMenuBar() {
   //right mouse button popup
   popup = new QPopupMenu();
 
-  pixmap = BarIcon("fileopen");
+  pixmap = SmallIcon("fileopen");
   popup->insertItem(QIconSet(pixmap), i18n("&Open..."),kWrite,SLOT(open()));
-  pixmap = BarIcon("filefloppy");
+  pixmap = SmallIcon("filefloppy");
   popup->insertItem(QIconSet(pixmap), i18n("&Save"),kWrite,SLOT(save()));
   popup->insertItem(i18n("S&ave as..."),kWrite,SLOT(saveAs()));
   popup->insertSeparator();
-/*  pixmap = BarIcon("undo");
+/*  pixmap = SmallIcon("undo");
   popup->insertItem(QIconSet(pixmap), i18n("&Undo"),kWrite,SLOT(undo()));
-  pixmap = BarIcon("redo");
+  pixmap = SmallIcon("redo");
   popup->insertItem(QIconSet(pixmap), i18n("R&edo"),kWrite,SLOT(redo()));
   popup->insertSeparator();*/
-  pixmap = BarIcon("editcut");
+  pixmap = SmallIcon("editcut");
   popup->insertItem(QIconSet(pixmap), i18n("C&ut"),kWrite,SLOT(cut()));
-  pixmap = BarIcon("editcopy");
+  pixmap = SmallIcon("editcopy");
   popup->insertItem(QIconSet(pixmap), i18n("&Copy"),kWrite,SLOT(copy()));
-  pixmap = BarIcon("editpaste");
+  pixmap = SmallIcon("editpaste");
   popup->insertItem(QIconSet(pixmap), i18n("&Paste"),kWrite,SLOT(paste()));
   kWrite->installRBPopup(popup);
 
