@@ -330,8 +330,6 @@ bool KateMainWindow::queryClose_internal() {
  */
 bool KateMainWindow::queryClose()
 {
-  kdDebug(13000)<<"QUERY CLOSE ********************"<<endl;
-
   // session saving, can we close all projects & views ?
   // just test, not close them actually
   if (kapp->sessionSaving())
@@ -527,12 +525,12 @@ void KateMainWindow::editKeys()
 
   QPtrList<Kate::Document>  l=KateDocManager::self()->documentList();
   for (uint i=0;i<l.count();i++) {
-    kdDebug(13001)<<"reloading Keysettings for document "<<i<<endl;
+//     kdDebug(13001)<<"reloading Keysettings for document "<<i<<endl;
     l.at(i)->reloadXML();
     QPtrList<class KTextEditor::View> l1=l.at(i)->views ();//KTextEditor::Document
     for (uint i1=0;i1<l1.count();i1++) {
       l1.at(i1)->reloadXML();
-      kdDebug(13001)<<"reloading Keysettings for view "<<i<<"/"<<i1<<endl;
+//       kdDebug(13001)<<"reloading Keysettings for view "<<i<<"/"<<i1<<endl;
     }
   }
 
@@ -638,8 +636,8 @@ void KateMainWindow::setupScripts()
 
 void KateMainWindow::runScript( int mIId )
 {
-	//kdDebug(13000) << "Starting script engine..." << endl;
-        kdDebug(13001)<<"runScript( "<<mIId<<" ) ["<<scriptMenu->popupMenu()->text( mIId )<<"]"<<endl;
+	//kdDebug(13001) << "Starting script engine..." << endl;
+//         kdDebug(13001)<<"runScript( "<<mIId<<" ) ["<<scriptMenu->popupMenu()->text( mIId )<<"]"<<endl;
 	kscript->runScript( scriptMenu->popupMenu()->text( mIId ) );
 }
 
@@ -856,7 +854,7 @@ void KateMainWindow::slotProjectClose ()
 
 void KateMainWindow::activateProject (Kate::Project *project)
 {
-  kdDebug(13001)<<"activating project "<<project<<endl;
+//   kdDebug(13001)<<"activating project "<<project<<endl;
   if (m_project)
     KateProjectManager::self()->disableProjectGUI (m_project, this);
 
@@ -952,12 +950,10 @@ void KateMainWindow::openConstURLProject (const KURL&url)
 }
 
 void KateMainWindow::saveProperties(KConfig *config) {
-  kdDebug(13000)<<"KateMainWindow::saveProperties()**********************"<<endl
-  <<config->group()<<endl
-  <<"******************************************************"<<endl;
+  kdDebug(13000)<<"KateMainWindow::saveProperties(): group: "<<config->group()<<endl
   assert(config);
 
-  kdDebug(13000)<<"preparing session saving"<<endl;
+//   kdDebug(13000)<<"preparing session saving"<<endl;
   QString grp=config->group();
   QString dockGrp;
 
@@ -968,16 +964,16 @@ void KateMainWindow::saveProperties(KConfig *config) {
         config->deleteGroup("MainWindow0-Docking");
   }*/
 
-  kdDebug(13000)<<"Before write dock config"<<endl;
+//   kdDebug(13000)<<"Before write dock config"<<endl;
   writeDockConfig(config,dockGrp);
-  kdDebug(13000)<<"After write dock config"<<endl;
+//   kdDebug(13000)<<"After write dock config"<<endl;
 
 
   if (kapp->sessionSaving()) dockGrp=grp+"-View Configuration";
 	else dockGrp="MainWindow0-View Configuration";
 
   m_viewManager->saveViewConfiguration (config,dockGrp);
-  kdDebug(13000)<<"After saving view configuration"<<endl;
+//   kdDebug(13000)<<"After saving view configuration"<<endl;
   config->setGroup(grp);
 
 }

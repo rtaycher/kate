@@ -18,6 +18,7 @@
 
 #include "katesavemodifieddialog.h"
 #include "katesavemodifieddialog.moc"
+
 #include <klocale.h>
 #include <qlistview.h>
 #include <klistview.h>
@@ -169,7 +170,7 @@ KateSaveModifiedDialog::~KateSaveModifiedDialog() {
 }
 
 void KateSaveModifiedDialog::slotItemSelected() {
-	kdDebug() << "slotItemSelected()" << endl;
+	kdDebug(13001) << "slotItemSelected()" << endl;
 
 	for(QListViewItem *it=m_documentRoot->firstChild();it;it=it->nextSibling()) {
 		if(((QCheckListItem*)it)->isOn()) {
@@ -194,7 +195,7 @@ void KateSaveModifiedDialog::slotSelectAll() {
 
 
 void KateSaveModifiedDialog::slotUser2() {
-	kdDebug()<<"KateSaveModifiedDialog::slotYes()"<<endl;
+	kdDebug(13001)<<"KateSaveModifiedDialog::slotYes()"<<endl;
 	if (doSave(m_documentRoot)) done(QDialog::Accepted);
 }
 

@@ -109,7 +109,7 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState)
 
     m_doNotInitialize=m_initPlugin->actionsKateShouldNotPerformOnRealStartup();
 
-     kdDebug(13001)<<"********************loading init plugin in app constructor"<<endl;
+//      kdDebug(13001)<<"********************loading init plugin in app constructor"<<endl;
   }
 
   // Ok. We are ready for DCOP requests.
@@ -145,7 +145,7 @@ void KateApp::callOnEventLoopEnter()
   emit m_application->onEventLoopEnter();
   disconnect(m_application,SIGNAL(onEventLoopEnter()),0,0);
 
-  kdDebug(13001)<<"callOnEventLoopEnter(): "<<kapp->loopLevel()<<"*****************************"<<endl;
+//   kdDebug(13001)<<"callOnEventLoopEnter(): "<<kapp->loopLevel()<<"*****************************"<<endl;
 }
 
 void KateApp::performInit(const QString &libname, const KURL &url)

@@ -189,25 +189,25 @@ void KateExternalToolsCommand::reload () {
 bool KateExternalToolsCommand::exec (Kate::View *view, const QString &cmd, QString &msg) {
 	QWidget *wv=dynamic_cast<QWidget*>(view);
 	if (!wv) {
-		kdDebug(13001)<<"KateExternalToolsCommand::exec: Could not get view widget"<<endl;
+// 		kdDebug(13001)<<"KateExternalToolsCommand::exec: Could not get view widget"<<endl;
 		return false;
 	}
   KMDI::MainWindow *dmw=dynamic_cast<KMDI::MainWindow*>(wv->topLevelWidget());
 	if (!dmw) {
-		kdDebug(13001)<<"KateExternalToolsCommand::exec: Could not get main window"<<endl;
+// 		kdDebug(13001)<<"KateExternalToolsCommand::exec: Could not get main window"<<endl;
 		return false;
 	}
-	kdDebug(13001)<<"cmd="<<cmd.stripWhiteSpace()<<endl;
+// 	kdDebug(13001)<<"cmd="<<cmd.stripWhiteSpace()<<endl;
 	QString actionName=m_map[cmd.stripWhiteSpace()];
 	if (actionName.isEmpty()) return false;
-	kdDebug(13001)<<"actionName is not empty:"<<actionName<<endl;
+// 	kdDebug(13001)<<"actionName is not empty:"<<actionName<<endl;
 	KateExternalToolsMenuAction *a=
 		dynamic_cast<KateExternalToolsMenuAction*>(dmw->action("tools_external"));
 	if (!a) return false;
-	kdDebug(13001)<<"trying to find action"<<endl;
+// 	kdDebug(13001)<<"trying to find action"<<endl;
 	KAction *a1=a->actionCollection()->action(actionName.utf8());
 	if (!a1) return false;
-	kdDebug(13001)<<"activating action"<<endl;
+// 	kdDebug(13001)<<"activating action"<<endl;
 	a1->activate();
 	return true;
 }

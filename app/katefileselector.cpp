@@ -433,7 +433,7 @@ void KateFileSelector::kateViewChanged()
 {
   if ( autoSyncEvents & DocumentChanged )
   {
-    kdDebug(13001)<<"KateFileSelector::do a sync ()"<<endl;
+//     kdDebug(13001)<<"KateFileSelector::do a sync ()"<<endl;
     // if visible, sync
     if ( isVisible() ) {
       setActiveDocumentDir();

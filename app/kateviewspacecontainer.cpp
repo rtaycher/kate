@@ -442,7 +442,7 @@ void KateViewSpaceContainer::splitViewSpace( KateViewSpace* vs,
                                       bool isHoriz,
                                       bool atTop)
 {
-  kdDebug(13001)<<"splitViewSpace()"<<endl;
+//   kdDebug(13001)<<"splitViewSpace()"<<endl;
 
   if (!activeView()) return;
   if (!vs) vs = activeViewSpace();
@@ -494,7 +494,7 @@ void KateViewSpaceContainer::splitViewSpace( KateViewSpace* vs,
   if (this == m_viewManager->activeContainer())
     m_viewManager->updateViewSpaceActions ();
 
-  kdDebug(13001)<<"splitViewSpace() - DONE!"<<endl;
+//   kdDebug(13001)<<"splitViewSpace() - DONE!"<<endl;
 }
 
 void KateViewSpaceContainer::removeViewSpace (KateViewSpace *viewspace)

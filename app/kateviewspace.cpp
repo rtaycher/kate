@@ -155,13 +155,11 @@ void KateViewSpace::removeView(Kate::View* v)
 
 bool KateViewSpace::showView(Kate::View* v)
 {
-  kdDebug()<<k_funcinfo<<endl;
   return showView( v->getDoc()->documentNumber() );
 }
 
 bool KateViewSpace::showView(uint documentNumber)
 {
-  kdDebug()<<k_funcinfo<<endl;
   QPtrListIterator<Kate::View> it (mViewList);
   it.toLast();
   for( ; it.current(); --it ) {
@@ -234,7 +232,7 @@ void KateViewSpace::slotStatusChanged (Kate::View *view, int r, int c, int ovr, 
 
 void KateViewSpace::saveConfig ( KConfig* config, int myIndex ,const QString& viewConfGrp)
 {
-  kdDebug()<<"KateViewSpace::saveConfig("<<myIndex<<", "<<viewConfGrp<<") - currentView: "<<currentView()<<")"<<endl;
+//   kdDebug()<<"KateViewSpace::saveConfig("<<myIndex<<", "<<viewConfGrp<<") - currentView: "<<currentView()<<")"<<endl;
   QString group = QString(viewConfGrp+"-ViewSpace %1").arg( myIndex );
 
   config->setGroup (group);
