@@ -160,7 +160,8 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
 
   public:
     void openURL (const QString &name=0L);
-
+    void tipOfTheDay ();
+    
   protected:
      bool eventFilter (QObject* o, QEvent* e);
 
