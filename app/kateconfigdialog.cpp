@@ -227,21 +227,21 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
            this, SLOT( slotChanged() ) );
 
   // GROUP with the one below: "Meta-informations"
-  bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("Meta-informations"), frGeneral );
+  bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("Meta-information"), frGeneral );
   lo->addWidget( bgStartup );
 
   // save meta infos
   cb_saveMetaInfos = new QCheckBox( bgStartup );
-  cb_saveMetaInfos->setText(i18n("Save &meta-informations on edited files"));
+  cb_saveMetaInfos->setText(i18n("Save &meta-information on edited files"));
   cb_saveMetaInfos->setChecked(docManager->getSaveMetaInfos());
   QWhatsThis::add(cb_saveMetaInfos, i18n(
-        "Check this if you want to see things like bookmarks to be saved then restored"));
+        "Check this if you want to things like bookmarks to be saved and restored"));
   connect( cb_saveMetaInfos, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
   // meta infos days
   QHBox *hbDmf = new QHBox( bgStartup );
   hbDmf->setEnabled(docManager->getSaveMetaInfos());
-  QLabel *lDmf = new QLabel( i18n("&Delete unused meta-informations after:"), hbDmf );
+  QLabel *lDmf = new QLabel( i18n("&Delete unused meta-information after:"), hbDmf );
   sb_daysMetaInfos = new QSpinBox( 0, 180, 1, hbDmf );
   sb_daysMetaInfos->setSpecialValueText(i18n("(never)"));
   sb_daysMetaInfos->setSuffix(i18n(" day(s)"));

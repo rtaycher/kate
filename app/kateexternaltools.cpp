@@ -297,7 +297,7 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
       "will be expanded:</p>"
       "<ul><li><code>%URL</code> - the URL of the current document."
       "<li><code>%URLs</code> - a list of the URLs of all open documents."
-      "<li><code>%directory</code> - the URL of the direcotry containing "
+      "<li><code>%directory</code> - the URL of the directory containing "
       "the current document."
       "<li><code>filename</code> - the filename of the current document."
       "<li><code>%line</code> - the current line of the text cursor in the "
@@ -322,7 +322,7 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
   if ( tool ) leExecutable->setText( tool->tryexec );
   QWhatsThis::add( leExecutable, i18n(
       "The executable used by the command. This is used to check if a tool "
-      "should be displayed. If not set, the first word of <em>command</em> "
+      "should be displayed; if not set, the first word of <em>command</em> "
       "will be used.") );
 
   leMimetypes = new QLineEdit( w );
@@ -332,8 +332,8 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
   lo->addWidget( l, 4, 1 );
   if ( tool ) leMimetypes->setText( tool->mimetypes.join("; ") );
   QWhatsThis::add( leMimetypes, i18n(
-      "A semicolon separated list of mime types, for which this tool should "
-      "be available. If this is left empty, the tool is allways available."
+      "A semicolon-separated list of mime types for which this tool should "
+      "be available; if this is left empty, the tool is always available."
       "To choose from known mimetypes, press the button on the right.") );
 }
 
