@@ -41,6 +41,20 @@ class KActionSelector;
     allowing to filter the displayed files using a name filter.
 */
 
+
+/* I think this fix for not moving toolbars is better */
+class KateFileSelectorToolBar: public KToolBar
+{
+	Q_OBJECT
+public:
+	KateFileSelectorToolBar(QWidget *parent);
+	virtual ~KateFileSelectorToolBar();
+
+	 virtual void setMovingEnabled( bool b );
+
+};
+
+
 class KateFileSelector : public QWidget
 {
   Q_OBJECT
@@ -83,7 +97,7 @@ class KateFileSelector : public QWidget
     bool eventFilter( QObject *, QEvent * );
 
   private:
-    /*class */KToolBar *toolbar;
+    /*class */KateFileSelectorToolBar *toolbar;
     KActionCollection *mActionCollection;
     class KBookmarkHandler *bookmarkHandler;
     KURLComboBox *cmbPath;
@@ -134,39 +148,6 @@ class KFSConfigPage : public Kate::ConfigPage {
     class QSpinBox *sbPathHistLength, *sbFilterHistLength;
     class QCheckBox *cbSyncOpen, *cbSyncActive, *cbSyncShow;
     class QCheckBox *cbSesLocation, *cbSesFilter;
-};
-
-/*
-    This is a hack to allow to have the toolbar without a resize
-    handle.
-    As it seems QMainWindow(?) recursively sets all toolbars
-    movable according to the global setting in it's polish() method,
-    this class is there mainly to reset that, and to handle resizing.
-    It is required to setTB() before the widget is shown, that is in
-    the parent constructor, or add the toolbar in the constructor,
-    but there is no access to it (which could easily be changed;)
-*/
-class TBContainer : public QFrame {
-  Q_OBJECT
-  public:
-    TBContainer( QWidget *parent=0, KToolBar *toolbar=0 )
-      : QFrame( parent, "toolbar container hack" ), tb( toolbar ){};
-    void setTb( KToolBar *toolbar) { tb = toolbar; };
-  public slots:
-    void polish() {
-      if (tb) {
-        setMinimumHeight( tb->sizeHint().height() );
-        ((QToolBar*)tb)->setMovingEnabled( false );
-      }
-    };
-  protected:
-    void resizeEvent( QResizeEvent *e ) {
-      if( tb ) {
-        tb->resize( e->size() );
-      }
-    }
-  private:
-    KToolBar *tb;
 };
 
 

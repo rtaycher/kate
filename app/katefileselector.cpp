@@ -40,6 +40,8 @@
 #include <qgroupbox.h>
 #include <qcheckbox.h>
 #include <qregexp.h>
+#include <qdockarea.h>
+
 
 #include <kapplication.h>
 #include <kiconloader.h>
@@ -53,6 +55,7 @@
 #include <kaction.h>
 #include <kmessagebox.h>
 #include <ktoolbarbutton.h>
+#include <qtoolbar.h>
 #include <kpopupmenu.h>
 #include <kdialog.h>
 
@@ -61,6 +64,20 @@
 
  // from kfiledialog.cpp - avoid qt warning in STDERR (~/.xsessionerrors)
 static void silenceQToolBar(QtMsgType, const char *){}
+
+
+KateFileSelectorToolBar::KateFileSelectorToolBar(QWidget *parent):KToolBar( parent, "Kate FileSelector Toolbar", true )
+{
+
+}
+
+KateFileSelectorToolBar::~KateFileSelectorToolBar(){}
+
+void KateFileSelectorToolBar::setMovingEnabled( bool)
+{
+	//kdDebug()<<"JoWenn's setMovingEnabled called ******************************"<<endl;
+	KToolBar::setMovingEnabled(false);
+}
 
 //BEGIN Constructor/destructor
 
@@ -74,12 +91,18 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow, KateViewManager 
   
   QVBoxLayout* lo = new QVBoxLayout(this);
 
-  tbparent = new TBContainer( this );
-  lo->addWidget( tbparent );
-  QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar );
-  toolbar = new KToolBar( tbparent, "Kate FileSelector Toolbar", false );
-  qInstallMsgHandler( oldHandler );
-  tbparent->setTb( toolbar );
+ // tbparent = new TBContainer( this );
+//  lo->addWidget( tbparent );
+    QDockArea *tbParentDock=new QDockArea(Horizontal,QDockArea::Reverse,this);
+    lo->addWidget (tbParentDock);
+ // QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar );
+
+  toolbar = new KateFileSelectorToolBar(tbParentDock);
+//  lo->addWidget(toolbar);
+  toolbar->setMovingEnabled(false);
+  toolbar->setFlat(true);
+//  tbparent->setTb( toolbar );
+//  qInstallMsgHandler( oldHandler );
 
   cmbPath = new KURLComboBox( KURLComboBox::Directories, true, this, "path combo" );
   cmbPath->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
