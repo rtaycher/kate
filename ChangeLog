@@ -1,3 +1,6 @@
+2001-03-25 Christoph Cullmann <crossfire@babylon2k.de>
+        * rewrite of plugin API and manager, now loading/unloading nice
+
 2001-03-22 Joseph Wenninger <jowenn@bigfoot.com>
         * single / multi instance mode configurable
           Cullmann's -n option forces a new instance

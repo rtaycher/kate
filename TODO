@@ -3,8 +3,6 @@ TODO:
 
     - Find Text dialog needs ability to hit all documents.
 
-    - feature to open a clicked-on filename in the text
-
     - <Ctrl+Insert> should copy selected text (same as <Shift+Insert> currently pastes)
     - <Alt+Backspace> should undo
     - <Ctrl+Insert> on a blank line should copy the line to the clipboard
