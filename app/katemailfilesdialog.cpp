@@ -109,3 +109,4 @@ void KateMailDialog::slotShowButton()
   setMinimumSize( calculateSize( mw->minimumSize().width(), mw->sizeHint().height() ) );
   resize( width(), minimumHeight() );
 }
+#include "katemailfilesdialog.moc"

@@ -545,3 +545,4 @@ int KActionSelector::insertionIndex( QListBox *lb, InsertionPolicy policy )
 }
 
 //END Private Methods
+#include "kactionselector.moc"
