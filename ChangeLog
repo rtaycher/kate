@@ -1,5 +1,6 @@
 2001-04-08 Christoph Cullmann <crossfire@babylon2k.de>
              * now encoding for files can be selected at settings dialog (not only UTF8, all possible encodings)
+             * dropped old code -> use Waldo's code ;)
 
 2001-04-07 Joseph Wenninger <jowenn@bigfoot.com>
 	* Activated Waldo Bastian's NEW_CODE
@@ -137,3 +138,4 @@
 2001-02-15 Joseph Wenninger <jowenn@bigfoot.com>
         * kateview.cpp                : Tab doesn't jump to next widget anymore, but inserts a tab into the text
         * katemainwindow.*        : F8 / SHIFT-F8 jumps to next / previous widget
+

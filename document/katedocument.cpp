@@ -237,17 +237,8 @@ KateDocument::~KateDocument()
 
 bool KateDocument::openFile()
 {
-#ifdef NEW_CODE
-
   loadFile( m_file, KGlobal::charsets()->codecForName(myEncoding));
 
-#else
-  QFile f( m_file );
-  if ( !f.open( IO_ReadOnly ) )
-    return false;
-
-  loadFile( f );
-#endif
 //  if ( updateHighlight )
   {
     //highlight detection
@@ -260,30 +251,6 @@ bool KateDocument::openFile()
 
     int hl = hlManager->wildcardFind( fn );
 
-#ifndef NEW_CODE
-    if (hl == -1)
-    {
-      // fill the detection buffer with the contents of the text
-      const int HOWMANY = 1024;
-      QByteArray buf(HOWMANY);
-      int bufpos = 0, len;
-      for (TextLine::List::ConstIterator it = contents.begin();
-           it != contents.end();
-           ++it)
-      {
-        TextLine::Ptr textLine = *it;
-        len = textLine->length();
-        if (bufpos + len > HOWMANY)
-          len = HOWMANY - bufpos;
-        memcpy(&buf[bufpos], textLine->getText(), len);
-        bufpos += len;
-        if (bufpos >= HOWMANY)
-          break;
-      }
-      //    hl = hlManager->mimeFind(buf, s.right( s.length() - pos));
-      hl = hlManager->mimeFind( buf, fn );
-    }
-#endif
     setHighlight(hl);
   }
 
@@ -291,27 +258,12 @@ bool KateDocument::openFile()
   updateViews();
   //  setFileName( m_url.path() );
 
-#ifndef NEW_CODE
-  f.close();
-#endif
   return true;
 }
 
 bool KateDocument::saveFile()
 {
-#ifdef NEW_CODE
   return writeFile( m_file, KGlobal::charsets()->codecForName(myEncoding));
-#else
-  QFile f( m_file );
-  if ( !f.open( IO_WriteOnly | IO_Truncate ) )
-    return false;
-
-  writeFile( f );
-
-  f.close();
-  setMTime();
-  return true;
-#endif
 }
 
 KTextEditor::View *KateDocument::createView( QWidget *parent, const char *name )
@@ -371,24 +323,14 @@ QString KateDocument::selection() const
 
 int KateDocument::numLines() const
 {
-#ifdef NEW_CODE
   return buffer->count();
-#else
-  return (int) contents.count();
-#endif
 }
 
 
-TextLine::Ptr KateDocument::getTextLine(int line) const {
-#ifdef NEW_CODE
+TextLine::Ptr KateDocument::getTextLine(int line) const
+{
   // This is a hack to get this stuff working.
   return buffer->line(line);
-#else
-  if (line >= numLines())
-    return 0L;
-
-  return contents[line];
-#endif
 }
 
 int KateDocument::textLength(int line) {
@@ -788,7 +730,6 @@ void KateDocument::insertFile(VConfig &c, QIODevice &dev)
   recordEnd(c);
 }
 
-#ifdef NEW_CODE
 void KateDocument::loadFile(const QString &file, QTextCodec *codec)
 {
   buffer->insertFile(0, file, codec);
@@ -828,50 +769,6 @@ qWarning("writeFile()");
   f.close();
   return (f.status() == IO_Ok);
 }
-#else
-void KateDocument::loadFile(QIODevice &dev) {
-  QChar ch;
-  QChar last = '\0';
-
-  clear();
-
-  TextLine::Ptr textLine = contents.first();
-  QTextStream stream( &dev );
-
-
-  while ( !stream.eof() ) {
-      stream >> ch;
-
-      if (ch.isPrint() || ch == '\t') {
-        textLine->append(&ch, 1);
-      } else if (ch == '\n' || ch == '\r') {
-        if (last != '\r' || ch != '\n') {
-          textLine = new TextLine();
-          contents.append(textLine);
-          if (ch == '\r') eolMode = KateView::eolMacintosh;
-        } else eolMode = KateView::eolDos;
-        last = ch;
-      }
-  }
-//  updateLines();
-}
-
-void KateDocument::writeFile(QIODevice &dev) {
-  TextLine::List::ConstIterator it = contents.begin();
-  QTextStream stream(&dev);
-
-
-  do {
-    TextLine::Ptr textLine = *it;
-    QConstString str((QChar *) textLine->getText(), textLine->length());
-    stream << str.string();
-    ++it;
-    if (it == contents.end()) break;
-    if (eolMode != KateView::eolUnix) dev.putch('\r');
-    if (eolMode != KateView::eolMacintosh) dev.putch('\n');
-  } while (true);
-}
-#endif
 
 int KateDocument::currentColumn(PointStruc &cursor) {
   return getTextLine(cursor.y)->cursorX(cursor.x,tabChars);
@@ -1182,13 +1079,8 @@ void KateDocument::clear() {
   eolMode = KateView::eolUnix;
 
 
-#ifndef NEW_CODE
-  contents.clear();
-  contents.append(longestLine = new TextLine());
-#else
   buffer->clear();
   longestLine = buffer->line(0);
-#endif
 
   maxLength = 0;
 
@@ -2428,9 +2320,8 @@ void KateDocument::doReplace(KateAction *a) {
 
   a->len = a->text.length();
   a->text = oldText;
-#ifdef NEW_CODE
+
   buffer->changeLine(a->cursor.y);
-#endif
 
   tagLine(a->cursor.y);
 }
@@ -2442,10 +2333,8 @@ void KateDocument::doWordWrap(KateAction *a) {
   a->len = textLine->length() - a->cursor.x;
   textLine->wrap(getTextLine(a->cursor.y),a->len);
 
-#ifdef NEW_CODE
   buffer->changeLine(a->cursor.y - 1);
   buffer->changeLine(a->cursor.y);
-#endif
 
   tagLine(a->cursor.y - 1);
   tagLine(a->cursor.y);
@@ -2461,10 +2350,8 @@ void KateDocument::doWordUnWrap(KateAction *a) {
 //  textLine->setLength(a->len);
   textLine->unWrap(a->len, getTextLine(a->cursor.y),a->cursor.x);
 
-#ifdef NEW_CODE
   buffer->changeLine(a->cursor.y - 1);
   buffer->changeLine(a->cursor.y);
-#endif
 
   tagLine(a->cursor.y - 1);
   tagLine(a->cursor.y);
@@ -2478,12 +2365,9 @@ void KateDocument::doNewLine(KateAction *a) {
   textLine = getTextLine(a->cursor.y);
   newLine = new TextLine(textLine->getRawAttr(), textLine->getContext());
   textLine->wrap(newLine,a->cursor.x);
-#ifdef NEW_CODE
+
   buffer->insertLine(a->cursor.y + 1, newLine);
   buffer->changeLine(a->cursor.y);
-#else
-  contents.insert(contents.at(a->cursor.y + 1),newLine);
-#endif
 
   insLine(a->cursor.y + 1);
   tagLine(a->cursor.y);
@@ -2502,12 +2386,9 @@ void KateDocument::doDelLine(KateAction *a) {
   textLine->unWrap(a->cursor.x, nextLine,nextLine->length());
   textLine->setContext(nextLine->getContext());
   if (longestLine == nextLine) longestLine = 0L;
-#ifdef NEW_CODE
+
   buffer->changeLine(a->cursor.y);
   buffer->removeLine(a->cursor.y+1);
-#else
-  contents.remove(contents.at(a->cursor.y+1));
-#endif
 
   tagLine(a->cursor.y);
   delLine(a->cursor.y + 1);
@@ -2517,11 +2398,7 @@ void KateDocument::doDelLine(KateAction *a) {
 
 void KateDocument::doInsLine(KateAction *a) {
 
-#ifdef NEW_CODE
   buffer->insertLine(a->cursor.y, new TextLine());
-#else
-  contents.insert(contents.at(a->cursor.y),new TextLine());
-#endif
 
   insLine(a->cursor.y);
 
@@ -2531,11 +2408,8 @@ void KateDocument::doInsLine(KateAction *a) {
 void KateDocument::doKillLine(KateAction *a) {
   TextLine::Ptr textLine = getTextLine(a->cursor.y);
   if (longestLine == textLine) longestLine = 0L;
-#ifdef NEW_CODE
+
   buffer->removeLine(a->cursor.y);
-#else
-  contents.remove(contents.at(a->cursor.y));
-#endif
 
   delLine(a->cursor.y);
   tagLine(a->cursor.y);
@@ -2690,9 +2564,7 @@ void KateDocument::recordReplace(PointStruc &cursor, int len, const QString &tex
   textLine->replace(cursor.x, len, text.unicode(), text.length());
   a->len += text.length();
 
-#ifdef NEW_CODE
   buffer->changeLine(a->cursor.y);
-#endif
 
   tagLine(a->cursor.y);
 }

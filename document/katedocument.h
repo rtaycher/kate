@@ -228,14 +228,10 @@ class KateDocument : public KateDocumentIface
 
     void insert(VConfig &, const QString &);
     void insertFile(VConfig &, QIODevice &);
-#ifdef NEW_CODE
+
     void loadFile(const QString &file, QTextCodec *codec);
     bool writeFile(const QString &file, QTextCodec *codec);
     void appendData(const QByteArray &data, QTextCodec *codec);
-#else
-    void loadFile(QIODevice &);
-    void writeFile(QIODevice &);
-#endif
 
     int currentColumn(PointStruc &cursor);
     bool insertChars(VConfig &, const QString &chars);

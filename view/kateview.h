@@ -311,7 +311,7 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
     */
     KateView(KateDocument *doc=0L, QWidget *parent = 0L, const char * name = 0, bool HandleOwnURIDrops = true, bool deleteDoc = true);
     /**
-      The destructor does not delete the document
+      The destructor does not ixdelete the document
     */
     ~KateView();
 
@@ -564,15 +564,12 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
 //    enum fileAction{GET, PUT}; //tells us what kind of job kwrite is waiting for
     enum fileResult { OK, CANCEL, RETRY, ERROR };
 
-#ifdef NEW_CODE
     /**
      * Loads a file @p file using @p codec.
      * If insert = false the old contents will be deleted.
      */
     void loadFile(const QString &file, QTextCodec *codec, bool insert);
-#else
-    void loadFile(QIODevice &, bool insert = false);
-#endif
+
     /**
       Writes the document into the given QIODevice
     */
@@ -616,8 +613,8 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
     void newDoc();
     /**
       This will present an open file dialog and open the file specified by
-      the user, if possible. The user will be given a chance to save the
-      current file if it has been modified. This starts the automatic
+      the user, if possible. The user will be given a chance to save the
+      current file if it has been modified. This starts the automatic
       highlight selection.
     */
     void open();
@@ -1088,3 +1085,4 @@ class KateBrowserExtension : public KParts::BrowserExtension
 };
 
 #endif
+

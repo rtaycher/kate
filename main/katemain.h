@@ -19,8 +19,6 @@
 
 #include <config.h>
 
-#define NEW_CODE
-
 class QComboBox;
 class QDateTime;
 class QEvent;

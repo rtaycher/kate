@@ -32,8 +32,6 @@
         uses a 2-dimensional *array[256] to limit memory requirements
  */
 
-#define CACHED_FONT_METRICS
-#ifdef CACHED_FONT_METRICS
 class CachedFontMetrics : public QFontMetrics {
 private:
     short *warray[256];
@@ -60,9 +58,6 @@ public:
     int width(QString s) { return QFontMetrics::width(s); }
 };
 typedef CachedFontMetrics FontMetrics;
-#else
-typedef QFontMetrics FontMetrics;
-#endif
 
 class Attribute {
   public:
@@ -83,3 +78,4 @@ class Attribute {
 };
 
 #endif //_KWATTRIBUTE_H_
+

@@ -2062,7 +2062,6 @@ QString KateView::markedText() {
   return myDoc->markedText(configFlags);
 }
 
-#ifdef NEW_CODE
 void KateView::loadFile(const QString &file, QTextCodec *codec, bool insert)
 {
   VConfig c;
@@ -2080,28 +2079,9 @@ void KateView::loadFile(const QString &file, QTextCodec *codec, bool insert)
 #endif
   }
 }
-#else
-void KateView::loadFile(QIODevice &dev, bool insert) {
-  VConfig c;
-
-  if (!insert) {
-    myDoc->loadFile(dev);
-  } else {
-    myViewInternal->getVConfig(c);
-    if (c.flags & KateView::cfDelOnInput) myDoc->delMarkedText(c);
-    myDoc->insertFile(c, dev);
-    myDoc->updateViews();
-  }
-}
-#endif
 
 void KateView::writeFile(QIODevice &dev) {
-#ifdef NEW_CODE
   // TODO: Not yet implemented.
-#else
-  myDoc->writeFile(dev);
-  myDoc->updateViews();
-#endif
 }
 
 
@@ -2121,18 +2101,10 @@ bool KateView::loadFile(const QString &name, int flags) {
     return false;
   }
 
-#ifdef NEW_CODE
   // TODO: Select a proper codec.
   loadFile(name, QTextCodec::codecForLocale(), flags & KateView::lfInsert);
   return true;
-#else
-  QFile f(name);
-  if (f.open(IO_ReadOnly)) {
-    loadFile(f,flags & KateView::lfInsert);
-    f.close();
-    return true;
-  }
-#endif
+
   KMessageBox::sorry(this, i18n("An error occured while trying to open this document"));
   return false;
 }
@@ -2144,17 +2116,10 @@ bool KateView::writeFile(const QString &name) {
     KMessageBox::sorry(this, i18n("You do not have write permission to this file"));
     return false;
   }
-#ifdef NEW_CODE
+
   if (myDoc->writeFile(name, QTextCodec::codecForLocale()))
      return true; // Success
-#else
-  QFile f(name);
-  if (f.open(IO_WriteOnly | IO_Truncate)) {
-    writeFile(f);
-    f.close();
-    return true;//myDoc->setFileName(name);
-  }
-#endif
+
   KMessageBox::sorry(this, i18n("An error occured while trying to write this document"));
   return false;
 }
@@ -2184,9 +2149,8 @@ void KateView::loadURL(const KURL &url, int flags) {
     KIO::Job *job = KIO::get( url );
     m_mapNetData.insert( job, d );
 
-#ifdef NEW_CODE
     myDoc->clear();
-#endif
+
     connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotJobReadResult( KIO::Job * ) ) );
     connect( job, SIGNAL( data( KIO::Job *, const QByteArray & ) ), this, SLOT( slotJobData( KIO::Job *, const QByteArray & ) ) );
   }
@@ -2296,7 +2260,7 @@ void KateView::slotJobReadResult( KIO::Job *job )
 
     if ( job->error() )
         job->showErrorDialog();
-#ifdef NEW_CODE
+
     QString msg;
 
     if ( flags & KateView::lfInsert )
@@ -2306,53 +2270,16 @@ void KateView::slotJobReadResult( KIO::Job *job )
 
     emit statusMsg( msg );
     // Something else todo?
-#else
-    else
-        loadInternal( data, url, flags );
-#endif
 }
 
 void KateView::loadInternal( const QByteArray &data, const KURL &url, int flags )
 {
-#ifdef NEW_CODE
     // TODO: Not yet supported.
-#else
-    QBuffer buff( data );
-    buff.open( IO_ReadOnly );
-    loadFile( buff, flags );
-
-    QString msg;
-
-    if ( flags & KateView::lfInsert )
-        msg = i18n( "Inserted : %1" ).arg( url.fileName() );
-    else
-    {
-        myDoc->setURL( url, !(flags & KateView::lfNoAutoHl ) );
-        myDoc->updateLines();
-        myDoc->updateViews();
-
-        msg = i18n( "Read : %1" ).arg( url.fileName() );
-    }
-
-    emit statusMsg( msg );
-
-    if ( flags & KateView::lfNewFile )
-        myDoc->setModified( false );
-#endif
 }
 
 void KateView::slotJobData( KIO::Job *job, const QByteArray &data )
 {
-#ifdef NEW_CODE
     myDoc->appendData(data, QTextCodec::codecForLocale());
-#else
-    QMap<KIO::Job *, NetData>::Iterator it = m_mapNetData.find( job );
-    assert( it != m_mapNetData.end() );
-    QBuffer buff( (*it).m_data );
-    buff.open(IO_WriteOnly | IO_Append );
-    buff.writeBlock( data.data(), data.size() );
-    buff.close();
-#endif
 }
 
 bool KateView::canDiscard() {
@@ -3525,4 +3452,5 @@ void KateBrowserExtension::slotSelectionChanged()
 {
   emit enableAction( "copy", m_doc->hasMarkedText() );
 }
+
 
