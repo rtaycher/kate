@@ -1,0 +1,13 @@
+<!DOCTYPE kpartgui>
+<kpartplugin name="kanthtmltools" library="libkanthtmltoolsplugin" version="1">
+<MenuBar>
+ <Menu name="edit"><Text>&amp;Edit</Text>
+    <Action name="edit_HTML_tag" />
+ </Menu>
+</MenuBar>
+<!--
+<ToolBar name="extraToolBar">
+  <Action name="plugin_action"/>
+</ToolBar>
+-->
+</kpartplugin>

@@ -1,49 +1,34 @@
-# $Id$
+SUBDIRS = kwrite app console data document fileselector mainwindow pics project sidebar view pluginmanager plugins
+EXTRA_DIST = piper
 
-INCLUDES = $(all_includes)
+KDE_CXXFLAGS = $(USE_RTTI)  -DQT_CLEAN_NAMESPACE -DQT_NO_COMPAT -DQT_NO_ASCII_CAST
 
-KDE_CXXFLAGS = $(USE_RTTI) -DNO_NEW_CODE
+bin_PROGRAMS = kant
 
-bin_PROGRAMS = kwrite
+kant_SOURCES = kantmain.cpp
+kant_LDADD   = -lktexteditor -lDCOP -lkparts -lkspell -lkfile -lkdeui -lkdecore \
+		$(LIB_QT) $(LIBSOCKET)  ./kwrite/libkwritepart.la\
+		-L./view -L./sidebar -L./project -L./mainwindow -L./fileselector\
+		-L./app -L./pluginmanager  -L./document -L./console\
+		-lkantview -lkantsidebar ./project/kantprojectmanager.o\
+		./project/kantprojectdialog.o -lkantmainwindow	-lkantfileselector\
+		-lkantdocument -lkantconsole\
+		./app/kantapp.o  -lkantpluginmanager\
+		-lkantpluginiface
 
-lib_LTLIBRARIES = libkwritepart.la kwrite.la
-# libkwritepart is a part, but kwrite.la links directly to it, so we can't
-# install it under kde_module
+kant_DEPENDENCIES = ./*/*.a ./*/*.la
 
-libkwritepart_la_SOURCES = highlight.cpp ktextprint.cpp  \
-		           kwdoc.cpp kwview.cpp undohistory.cpp  \
-		           kwdialog.cpp kwrite_factory.cpp \
-                           kwbuffer.cpp kwtextline.cpp kvmallocator.cpp\
-                           kwattribute.cpp kwriteIface.skel syntaxdocument.cpp
 
-libkwritepart_la_LDFLAGS = $(all_libraries) $(KDE_PLUGIN)
-libkwritepart_la_LIBADD = -lktexteditor -lkspell $(LIB_KPARTS)
+EXTRA_DIST = kantmain.cpp kantmain.h
 
-kwrite_la_SOURCES = toplevel.cpp
-
-kwrite_la_LDFLAGS = $(all_libraries) -module -avoid-version
-kwrite_la_LIBADD = libkwritepart.la $(LIB_KFILE)
-
-kwrite_SOURCES = dummy.cpp
-kwrite_LDADD = kwrite.la
-kwrite_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-
-dummy.cpp:
-	echo > dummy.cpp
+INCLUDES= $(all_includes)
 
 METASOURCES = AUTO
 
-appsdir = $(kde_appsdir)/Editors
-apps_DATA = kwrite.desktop
-
-kde_services_DATA = kwrite_component.desktop
-
-rcdir = $(kde_datadir)/kwrite
-rc_DATA = kwrite_browser.rc kwriteui.rc kwrite_shell.rc syntax.xml
-
-KDE_ICON = kwrite
-
-EXTRA_DIST = $(apps_DATA)
+kant_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
 messages: rc.cpp
-	$(XGETTEXT) *.cpp -o $(podir)/kwrite.pot
+	$(XGETTEXT) -C -ki18n -kI18N_NOOP -ktranslate -x $(kde_includes)/kde.pot *.cpp -o $(podir)/kant.pot
+
+rc.cpp:
+	$(EXTRACTRC) *.rc *.ui */*.rc */*.ui */*/*.rc */*/*.ui > rc.cpp
