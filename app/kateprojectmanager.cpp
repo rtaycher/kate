@@ -23,6 +23,7 @@
 
 KateProjectManager::KateProjectManager (QObject *parent) : QObject (parent)
 {
+  m_projects.setAutoDelete (true);
   m_projectManager = new Kate::ProjectManager (this);
   setupPluginList ();
 }
@@ -59,5 +60,9 @@ Kate::Project *KateProjectManager::create (const QString &type, const KURL &url)
     
 Kate::Project *KateProjectManager::open (const KURL &url)
 {
-  return 0;
+  KateProject *project = new KateProject (this, url);
+  
+  m_projects.append (project);
+  
+  return project->project();
 }

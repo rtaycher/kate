@@ -20,6 +20,7 @@
 #define __KATE_PROJECTMANAGER_H__
 
 #include "katemain.h"
+#include "kateproject.h"
 #include "../interfaces/project.h"
 #include "../interfaces/projectmanager.h"
 
@@ -58,6 +59,7 @@ class KateProjectManager : public QObject
     void setupPluginList ();
     
     ProjectPluginList m_pluginList;
+    QPtrList<KateProject> m_projects;
 };
 
 #endif

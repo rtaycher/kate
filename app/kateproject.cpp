@@ -21,8 +21,9 @@
 #include "kateproject.h"
 #include "kateproject.moc"
 
-KateProject::KateProject (QObject *parent) : QObject (parent)
+KateProject::KateProject (QObject *parent, const KURL &url) : QObject (parent)
 {
+  m_url = url;
   m_project = new Kate::Project (this);
 }
 
@@ -38,12 +39,21 @@ QString KateProject::type () const
 
 bool KateProject::save ()
 {
-  m_data->sync();
+  bool b = m_plugin->save ();
+
+  if (b)
+  {
+    m_data->sync();
   
-  return true;
+    return true;
+  }
+  
+  return false;
 }
 
 bool KateProject::close ()
 {
-  return true;
+  bool b = m_plugin->close ();
+  
+  return b;
 }

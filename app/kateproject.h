@@ -31,7 +31,7 @@ class KateProject : public QObject
   Q_OBJECT
 
   public:
-    KateProject (QObject *parent);
+    KateProject (QObject *parent, const KURL &url);
     ~KateProject ();
     
     Kate::Project *project () { return m_project; };
@@ -48,6 +48,7 @@ class KateProject : public QObject
     Kate::Project *m_project;
     Kate::ProjectPlugin *m_plugin;
     KConfig *m_data;
+    KURL m_url;
 };
 
 #endif

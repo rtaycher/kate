@@ -54,7 +54,7 @@ class MainWindow : public QObject
     void projectChanged ();
     
   private:
-    class PrivateMainWindow *d;  
+    class PrivateMainWindow *d;
 };
 
 };
