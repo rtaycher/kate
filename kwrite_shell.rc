@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="kwriteshell" version="6">
+<kpartgui name="kwriteshell" version="7">
 <MenuBar>
   <Menu name="file" noMerge="1"><text>&amp;File</text>
     <Merge />
@@ -20,7 +20,7 @@
 </MenuBar>
 <ToolBar name="mainToolBar" noMerge="1">
  <DefineGroup name="file_operations" />
-<!-- <Action name="file_print" /> -->
+ <Action name="file_print" />
  <Separator />
  <Merge />
  <Separator />
