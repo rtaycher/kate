@@ -37,7 +37,7 @@ static KCmdLineOptions options[] =
 int main( int argc, char **argv )
 {
   KAboutData aboutData ("kant", I18N_NOOP("Kant"), "0.2",
-	I18N_NOOP( "Kant - A MDI Texteditor for KDE" ), KAboutData::License_GPL,
+	I18N_NOOP( "Kant - get an edge in editing" ), KAboutData::License_GPL,
 	 "(c) 2000-2001 The Kant Authors", "http://devel-home.kde.org/~kant");
 
   aboutData.addAuthor("Christoph Cullmann", I18N_NOOP("Project Manager and Core Developer"), "crossfire@babylon2k.de", "http://www.babylon2k.de");
