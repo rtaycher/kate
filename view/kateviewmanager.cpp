@@ -435,15 +435,7 @@ void KateViewManager::slotDocumentOpen ()
 
   for (KURL::List::Iterator i=urls.begin(); i != urls.end(); ++i)
   {
-    if (!cv->doc()->isModified() && cv->doc()->url().isEmpty())
-    {
-      cv->doc()->openURL (*i);
-      cv->doc()->setDocName (cv->doc()->url().filename());
-      setWindowCaption();
-
-    }
-    else
-      openURL( *i );
+    openURL( *i );
 
     kapp->processEvents();
   }
@@ -706,18 +698,27 @@ void KateViewManager::slotUnComment ()
 
 void KateViewManager::openURL (KURL url)
 {
+  KateView *cv = activeView();
+
   if ( !docManager->isOpen( url ) )
-    createView (true, url, 0L);
+  {
+    if (cv && !cv->doc()->isModified() && cv->doc()->url().isEmpty())
+    {
+      if (cv->doc()->openURL (url))
+        ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
+      cv->doc()->setDocName (cv->doc()->url().filename());
+      setWindowCaption();
+    }
+    else
+      createView (true, url, 0L);
+  }
   else
     activateView( docManager->findDoc( url ) );
 }
 
 void KateViewManager::openConstURL (const KURL& url)
 {
-  if ( !docManager->isOpen( url ) )
-    createView (true, url, 0L);
-  else
-    activateView( docManager->findDoc( url ) );
+  openURL (KURL (url));
 }
 
 void KateViewManager::printNow()
