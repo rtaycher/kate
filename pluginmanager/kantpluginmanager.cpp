@@ -27,6 +27,16 @@
 
 KantPluginManager::KantPluginManager(QObject *parent) : QObject(parent)
 {
+  setupPluginList ();
+  loadAllEnabledPlugins ();
+}
+
+KantPluginManager::~KantPluginManager()
+{
+}
+
+void KantPluginManager::setupPluginList ()
+{
   KStandardDirs *dirs = KGlobal::dirs();
 
   QStringList list=dirs->findAllResources("appdata","plugins/*.desktop",false,true);
@@ -38,31 +48,49 @@ KantPluginManager::KantPluginManager(QObject *parent) : QObject(parent)
 
     PluginListItem *info=new PluginListItem;
     info->load = (confFile->readEntry("load","no") =="1");
+
+    info->config = (*it);
+
+    info->relp = QFileInfo(*it).fileName();
+    info->relp = info->relp=info->relp.left(info->relp.length()-8);
+    info->relp=dirs->findResource("appdata","plugins/"+info->relp+"/ui.rc");
+
     info->name = confFile->readEntry("name","no");
     info->description = confFile->readEntry("description","no");
     info->author = confFile->readEntry("author","no");
     myPluginList.append(info);
 
-    if (info->load)
-    {
-      QString relp=QFileInfo(*it).fileName();
-      relp=relp.left(relp.length()-8);
-
-      relp=dirs->findResource("appdata","plugins/"+relp+"/ui.rc");
-
-      KParts::Plugin::PluginInfo plInf;
-      plInf.m_absXMLFileName=relp;
-
-      QFile f( relp );
-      if ( f.open( IO_ReadOnly ) )
-      {
-        if ( plInf.m_document.setContent( &f ) )
-          plugins.append(plInf);
-
-        f.close();
-      }
-    }
-
     delete confFile;
   }
+}
+
+void KantPluginManager::loadAllEnabledPlugins ()
+{
+  for (int i=0; i<myPluginList.count(); i++)
+  {
+    if  (myPluginList.at(i)->load)
+      loadPlugin (myPluginList.at(i));
+  }
+}
+
+bool KantPluginManager::loadPlugin (PluginListItem *item)
+{
+  bool val = false;
+
+  KParts::Plugin::PluginInfo plInf;
+  plInf.m_absXMLFileName=item->relp;
+
+  QFile f( item->relp );
+  if ( f.open( IO_ReadOnly ) )
+  {
+    if ( plInf.m_document.setContent( &f ) )
+    {
+      plugins.append(plInf);
+      val = true;
+    }
+
+    f.close();
+  }
+
+  return val;
 }

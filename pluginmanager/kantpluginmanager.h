@@ -26,6 +26,8 @@
 struct PluginListItem
 {
   bool load;
+  QString config;
+  QString relp;
   QString name;
   QString description;
   QString author;
@@ -42,11 +44,17 @@ class KantPluginManager : public QObject
 
   public:
     KantPluginManager(QObject *parent);
-    ~KantPluginManager(){qDebug("KantPluginManager destroyed");};
+    ~KantPluginManager();
+
+    bool loadPlugin (PluginListItem *item);
 
   private:
-    QValueList<KParts::Plugin::PluginInfo> plugins;
+    void setupPluginList ();
+    void loadAllEnabledPlugins ();
+
     PluginList myPluginList;
+
+    QValueList<KParts::Plugin::PluginInfo> plugins;
 };
 
 #endif
