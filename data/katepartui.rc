@@ -51,10 +51,12 @@
 <Menu name="rb_popup">
   <Action name="file_save"/>
   <Action name="file_save_as"/>
+  <Separator />
   <Action name="edit_cut"/>
   <Action name="edit_copy"/>
   <Action name="edit_paste"/>
-  <Action name="edit_bookmarkToggle" />
+  <Separator />
+  <Action name="bookmarks" />
 </Menu>
 
 <ToolBar name="mainToolBar"><text>Main Toolbar</text>
