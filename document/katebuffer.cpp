@@ -607,7 +607,6 @@ KWBufBlock::swapIn(KVMAllocator *vm)
    assert(b_vmDataValid);
    assert(!b_rawDataValid);
    assert(m_vmblock);   
-   m_rawData2.detach();
    m_rawData2.resize(m_rawSize);
    vm->copy(m_rawData2.data(), m_vmblock, 0, m_rawSize);
    m_rawData2End = m_rawSize;
@@ -652,7 +651,7 @@ qWarning("KWBufBlock: buildStringList this = %p", this);
          p++;
       }
       if (l < e)
-         lastLine = m_codec->toUnicode(l, (e-l)+1);
+         lastLine = m_codec->toUnicode(l, (e-l-1)+1);
    }
 
    if (!m_rawData2.isEmpty())
