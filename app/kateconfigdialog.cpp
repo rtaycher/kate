@@ -278,6 +278,7 @@ void KateConfigDialog::addPluginPage (Kate::Plugin *plugin)
     PluginPageListItem *info=new PluginPageListItem;
     info->plugin = plugin;
     info->page = Kate::pluginConfigInterfaceExtension(plugin)->configPage (i, page);
+    connect( info->page, SIGNAL( changed ), this, SLOT( slotChanged() ) );
     pluginPages.append(info);
   }
 }

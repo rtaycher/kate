@@ -52,6 +52,9 @@ class PluginConfigPage : public QWidget
       Sets default options
     */
     virtual void defaults () = 0;
+
+  signals:
+	void changed();
 };
 
 /*
