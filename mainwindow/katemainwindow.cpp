@@ -209,13 +209,13 @@ void KateMainWindow::setupActions()
   editIndent = new KAction(i18n("&Indent"), "indent", CTRL+Key_I, viewManager, SLOT(slotIndent()), actionCollection(), "edit_indent");
   editUnIndent = new KAction(i18n("&Unindent"), "unindent", CTRL+SHIFT+Key_I, viewManager, SLOT(slotUnIndent()), actionCollection(), "edit_unindent");
 
-  editCmd = new KAction(i18n("E&diting Command"), Qt::Key_F2, viewManager, SLOT(slotEditCommand()),
+  editCmd = new KAction(i18n("Editing Co&mmand"), Qt::CTRL+Qt::Key_M, viewManager, SLOT(slotEditCommand()),
                                   actionCollection(), "edit_cmd");
 
   gotoLine = KStdAction::gotoLine(viewManager, SLOT(slotGotoLine()), actionCollection());
 
-  bookmarkToggle = new KAction(i18n("&Toggle Bookmark"), Qt::CTRL+Qt::Key_M, viewManager, SLOT(toggleBookmark()), actionCollection(), "edit_bookmarkToggle");
-  bookmarkClear = new KAction(i18n("&Clear Bookmarks"), 0, viewManager, SLOT(clearBookmarks()), actionCollection(), "edit_bookmarksClear");
+  bookmarkToggle = new KAction(i18n("Toggle &Bookmark"), Qt::CTRL+Qt::Key_B, viewManager, SLOT(toggleBookmark()), actionCollection(), "edit_bookmarkToggle");
+  bookmarkClear = new KAction(i18n("Clear Bookmarks"), 0, viewManager, SLOT(clearBookmarks()), actionCollection(), "edit_bookmarksClear");
 
   toolsSpell = KStdAction::spelling(viewManager, SLOT(slotSpellcheck()), actionCollection());
 
@@ -261,7 +261,7 @@ void KateMainWindow::setupActions()
   KStdAction::configureToolbars(this, SLOT(slotEditToolbars()), actionCollection(), "set_configure_toolbars");
 
   // toggle sidebar -anders
-  settingsShowSidebar = new KToggleAction(i18n("Show Side&bar"), CTRL+Key_B, this, SLOT(slotSettingsShowSidebar()), actionCollection(), "settings_show_sidebar");
+  settingsShowSidebar = new KToggleAction(i18n("Show Side&bar"), Qt::Key_F7, this, SLOT(slotSettingsShowSidebar()), actionCollection(), "settings_show_sidebar");
   settingsShowConsole = new KToggleAction(i18n("Show &Console"), CTRL+Key_T, this, SLOT(slotSettingsShowConsole()), actionCollection(), "settings_show_console");
   // allow full path in title -anders
   settingsShowFullPath = new KToggleAction(i18n("Show Full &Path in Title"), 0, this, SLOT(slotSettingsShowFullPath()), actionCollection(), "settings_show_full_path");

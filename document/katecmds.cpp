@@ -11,7 +11,7 @@ namespace KateCommands
 
 bool InsertTime::execCmd(QString cmd, KateView *view)
 {
-	if (cmd.left(5) == "time:")
+	if (cmd.left(5) == "time")
 	{
 		view->insertText(QTime::currentTime().toString());
 		return true;
