@@ -121,6 +121,22 @@ class View : public KTextEditor::View
   public:
     // is iconborder visible ?
     virtual bool iconBorder() { return false; };
+
+  public slots:
+     /**
+      Flushes the document of the text widget. The user is given
+      a chance to save the current document if the current document has
+      been modified.
+    */
+    virtual void flush () { ; };
+
+  public:
+    /**
+      Returns true if the current document can be
+      discarded. If the document is modified, the user is asked if he wants
+      to save it. On "cancel" the function returns false.
+    */
+    virtual bool canDiscard() { return false; };
 };
 
 };

@@ -188,7 +188,7 @@ void TopLevel::slotNew()
     t->init();
   }
   else
-    kateView->newDoc();
+    kateView->flush();
 }
 
 void TopLevel::slotOpen()

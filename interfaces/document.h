@@ -60,6 +60,10 @@ class Document : public KTextEditor::Document
     };
 
     virtual QList<Mark> marks () { QList<Mark> l; return l; };
+
+  public slots:
+    // clear buffer/filename - update the views  
+    virtual void flush () { ; };
 };
 
 };

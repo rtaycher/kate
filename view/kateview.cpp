@@ -1439,7 +1439,7 @@ KateView::~KateView()
 
 void KateView::setupActions()
 {
-    KStdAction::close( this, SLOT(newDoc()), actionCollection(), "file_close" );
+    KStdAction::close( this, SLOT(flush()), actionCollection(), "file_close" );
     fileRecent = KStdAction::openRecent(this, SLOT(slotOpenRecent(const KURL&)),
                                         actionCollection());
 
@@ -1998,9 +1998,9 @@ bool KateView::canDiscard() {
   return true;
 }
 
-void KateView::newDoc() {
-
-  if (canDiscard()) clear();
+void KateView::flush()
+{
+  if (canDiscard()) myDoc->flush();
 }
 
 KateView::fileResult KateView::save() {
@@ -2085,16 +2085,6 @@ void KateView::doEditCommand(int cmdNum) {
   VConfig c;
   myViewInternal->getVConfig(c);
   myViewInternal->doEditCommand(c, cmdNum);
-  myDoc->updateViews();
-}
-
-
-void KateView::clear() {
-  if (isReadOnly())
-    return;
-
-  myDoc->clear();
-  myDoc->clearFileName();
   myDoc->updateViews();
 }
 

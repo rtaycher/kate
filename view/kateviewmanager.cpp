@@ -89,8 +89,6 @@ bool KateViewManager::createView ( bool newDoc, KURL url, KateView *origView, Ka
 
   if (newDoc)
   {
-    view->newDoc();
-
     if (!url.isEmpty())
     {
       if (view->doc()->openURL ( url ))

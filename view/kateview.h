@@ -535,7 +535,7 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
     enum fileResult { OK, CANCEL, RETRY, ERROR };
 
     /**
-      Mainly for internal use. Returns true if the current document can be
+      Returns true if the current document can be
       discarded. If the document is modified, the user is asked if he wants
       to save it. On "cancel" the function returns false.
     */
@@ -543,11 +543,11 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
 
   public slots:
     /**
-      Opens a new untitled document in the text widget. The user is given
+      Flushes the document of the text widget. The user is given
       a chance to save the current document if the current document has
       been modified.
     */
-    void newDoc();
+    void flush ();
     /**
       Saves the file if necessary under the current file name. If the current file
       name is Untitled, as it is after a call to newFile(), this routing will
@@ -559,13 +559,6 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
       automatic highlight selection.
     */
     fileResult saveAs();
-
-  public slots:
-    /**
-      Clears the document without any warnings or requesters.
-    */
-    void clear();
-
     /**
       Moves the marked text into the clipboard
     */

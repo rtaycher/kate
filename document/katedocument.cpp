@@ -3050,6 +3050,16 @@ QList<Kate::Mark> KateDocument::marks ()
   return list;
 }
 
+void KateDocument::flush ()
+{
+  if (isReadOnly())
+    return;
+
+  clear();
+  clearFileName();
+  updateViews();
+}
+
 void KateDocument::open (const QString &name)
 {
   openURL (KURL (name));

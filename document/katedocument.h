@@ -490,6 +490,10 @@ class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
   public:
     QList<Kate::Mark> marks ();
 
+  public slots:
+    // clear buffer/filename - update the views
+    void flush ();
+
   // for the DCOP interface
   public:
     void open (const QString &name=0);
