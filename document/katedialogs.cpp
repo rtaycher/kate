@@ -115,7 +115,7 @@ HighlightDialogPage::HighlightDialogPage(HlManager *hlManager, ItemStyleList *st
 
   QFrame *page1 = new QFrame(this);
   addTab(page1,i18n("&Defaults"));
-  QGridLayout *grid = new QGridLayout(page1,2,2,0,KDialog::spacingHint());
+  QGridLayout *grid = new QGridLayout(page1, 1, 1);
 
   QVGroupBox *dvbox1 = new QVGroupBox( i18n("Default Item Styles"), page1 );
   /*QLabel *label = */new QLabel( i18n("Item:"), dvbox1 );
@@ -125,10 +125,7 @@ HighlightDialogPage::HighlightDialogPage(HlManager *hlManager, ItemStyleList *st
     styleCombo->insertItem(i18n(hlManager->defaultStyleName(i)));
   }
   connect(styleCombo, SIGNAL(activated(int)), this, SLOT(defaultChanged(int)));
-  grid->addWidget(dvbox1,0,0);
-
-  grid->setRowStretch(1,1);
-  grid->setColStretch(1,1);
+  grid->addWidget(dvbox1, 0,0);
 
   defaultChanged(0);
 
@@ -136,17 +133,15 @@ HighlightDialogPage::HighlightDialogPage(HlManager *hlManager, ItemStyleList *st
 
   QFrame *page2 = new QFrame(this);
   addTab(page2,i18n("&Highlight Modes"));
-  grid = new QGridLayout(page2,3,2,0,KDialog::spacingHint());
+  grid = new QGridLayout(page2,2,2);
 
   QVGroupBox *vbox1 = new QVGroupBox( i18n("Config Select"), page2 );
-  grid->addWidget(vbox1,0,0);
+  grid->addMultiCellWidget(vbox1,0,0,0,1);
   QVGroupBox *vbox2 = new QVGroupBox( i18n("Item Style"), page2 );
   grid->addWidget(vbox2,1,0);
   QVGroupBox *vbox3 = new QVGroupBox( i18n("Highlight Auto Select"), page2 );
-  grid->addWidget(vbox3,0,1);
+  grid->addWidget(vbox3,1,1);
 
-  grid->setRowStretch(2,1);
-  grid->setColStretch(1,1);
   QLabel *label = new QLabel( i18n("Highlight:"), vbox1 );
   hlCombo = new QComboBox( false, vbox1 );
   QHBox *modHl = new QHBox(vbox1);
