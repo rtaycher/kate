@@ -269,7 +269,8 @@ void KMultiTabBarTab::drawButton(QPainter *paint)
         QPixmap pixmap;
 	if ( iconSet()) 
         	pixmap = iconSet()->pixmap( QIconSet::Small, QIconSet::Normal );
-    paint->fillRect(0, 0, 24, 24, colorGroup().background());
+	paint->fillRect(0, 0, 24, 24, colorGroup().background());
+	
 	if (!isOn())
 	{
 
@@ -281,11 +282,6 @@ void KMultiTabBarTab::drawButton(QPainter *paint)
 			paint->drawLine(0,22,23,22);
 
 			paint->drawPixmap(12-pixmap.width()/2,12-pixmap.height()/2,pixmap);
-
-//			paint->setPen(colorGroup().light());
-//			paint->drawLine(19,21,21,21);
-//			paint->drawLine(21,19,21,21);
-
 
 			paint->setPen(colorGroup().shadow());
 			paint->drawLine(0,0,0,23);
@@ -345,9 +341,19 @@ void KMultiTabBarTab::drawButton(QPainter *paint)
 
 			if (m_showActiveTabText)
 			{
+				if (height()<25+4) return;
+
+				QPixmap tpixmap(height()-25-3, width()-2);
+				QPainter painter(&tpixmap);
+
+				painter.fillRect(0,0,tpixmap.width(),tpixmap.height(),QBrush(colorGroup().light()));
+
+				painter.setPen(colorGroup().text());
+				painter.drawText(0,+width()/2+QFontMetrics(QFont()).height()/2,m_text);
+
 				paint->rotate(90);
-				paint->setPen(colorGroup().text());
-				paint->drawText(25,-width()/2+QFontMetrics(QFont()).height()/2,m_text);
+				kdDebug()<<"tpixmap.width:"<<tpixmap.width()<<endl;
+				paint->drawPixmap(25,-tpixmap.height()+1,tpixmap);
 			}
 
 		}
@@ -379,6 +385,8 @@ void KMultiTabBarTab::drawButton(QPainter *paint)
 		}
 		else
 		{
+
+
 			paint->setPen(colorGroup().shadow());
 			paint->drawLine(0,height()-1,23,height()-1);
 			paint->drawLine(0,height()-2,23,height()-2);
@@ -386,12 +394,23 @@ void KMultiTabBarTab::drawButton(QPainter *paint)
 			paint->drawPixmap(10-pixmap.width()/2,10-pixmap.height()/2,pixmap);
 			if (m_showActiveTabText)
 			{
-				paint->rotate(-90);
-				paint->setPen(colorGroup().text());
-				paint->drawText(-24-QFontMetrics(QFont()).width(m_text),
-					(width()+QFontMetrics(QFont()).height())/2,m_text);
+
+		       		if (height()<25+4) return;
+
+                                QPixmap tpixmap(height()-25-3, width()-2);
+                                QPainter painter(&tpixmap);
+
+                                painter.fillRect(0,0,tpixmap.width(),tpixmap.height(),QBrush(colorGroup().light()));
+
+                                painter.setPen(colorGroup().text());
+                                painter.drawText(tpixmap.width()-QFontMetrics(QFont()).width(m_text),+width()/2+QFontMetrics(QFont()).height()/2,m_text);
+
+                                paint->rotate(-90);
+                                kdDebug()<<"tpixmap.width:"<<tpixmap.width()<<endl;
+                                
+				paint->drawPixmap(-24-tpixmap.width(),2,tpixmap);
+
 			}
-//			paint->rotate(90);
 
 		}
 
