@@ -101,6 +101,5 @@ int main( int argc, char **argv )
   }
       
   KateApp app (newProcess, oldState);
-  app.kateNewInstance ();
   return app.exec();
 }

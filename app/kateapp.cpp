@@ -47,6 +47,7 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
   } 
     
   m_firstStart = true;
+  m_noEventLoop = true;
 
   m_mainWindows.setAutoDelete (false);
   
@@ -86,11 +87,16 @@ KateApp::~KateApp ()
 
 void KateApp::callOnEventLoopEnter()
 {
-	emit onEventLoopEnter();
-	disconnect(this,SIGNAL(onEventLoopEnter()),0,0);
-	emit m_application->onEventLoopEnter();
-	disconnect(m_application,SIGNAL(onEventLoopEnter()),0,0);
-	kdDebug()<<"callOnEventLoopEnter(): "<<kapp->loopLevel()<<"*****************************"<<endl;
+  m_noEventLoop = false;
+  
+  newInstance ();
+
+  emit onEventLoopEnter();
+  disconnect(this,SIGNAL(onEventLoopEnter()),0,0);
+  emit m_application->onEventLoopEnter();
+  disconnect(m_application,SIGNAL(onEventLoopEnter()),0,0);
+
+  kdDebug()<<"callOnEventLoopEnter(): "<<kapp->loopLevel()<<"*****************************"<<endl;
 }
 
 void KateApp::performInit(const QString &libname, const KURL &url)
@@ -120,8 +126,14 @@ Kate::InitPlugin *KateApp::initPlugin() const {return m_initPlugin;}
 
 KURL KateApp::initScript() const {return m_initURL;}
 
-int KateApp::kateNewInstance()
+int KateApp::newInstance()
 {
+  // be sure we call it first while the event loop is allready running ;)
+  if (m_noEventLoop)
+    return 0;
+
+	kdDebug()<<"NO EVENT LOOP: "<<m_noEventLoop<<"*****************************"<<endl;
+
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
     
   if (!m_firstStart && args->isSet ("w"))
@@ -151,8 +163,7 @@ int KateApp::kateNewInstance()
 	performInit(args->getOption("initplugin"),args->url(0));
 	
   }
-  else
-  {
+  
     for (int z=0; z<args->count(); z++)
     {
       m_mainWindows.first()->kateViewManager()->openURL( args->url(z) );
@@ -179,8 +190,7 @@ int KateApp::kateNewInstance()
   
     if (nav)
       m_mainWindows.first()->kateViewManager()->activeView ()->setCursorPosition (line, column);
-
-  }                           
+                     
   m_firstStart = false;
     
   return 0;

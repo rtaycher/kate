@@ -42,7 +42,7 @@ class KateApp : public KUniqueApplication
     Kate::Application *application () { return m_application; };
       
   public:
-    int kateNewInstance();
+    int newInstance();
     
     KatePluginManager *katePluginManager() { return m_pluginManager; };
     KateDocManager *kateDocumentManager () { return m_docManager; };
@@ -77,6 +77,7 @@ class KateApp : public KUniqueApplication
     KatePluginManager *m_pluginManager;
     QPtrList<class KateMainWindow> m_mainWindows;
     bool m_firstStart;  
+    bool m_noEventLoop;
     Kate::InitPlugin *m_initPlugin;
     int m_doNotInitialize;
     KURL m_initURL;
