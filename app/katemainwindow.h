@@ -33,7 +33,7 @@
 
 #include <kparts/part.h>
 #include <kparts/dockmainwindow.h>
-#include <kmdimainfrm.h>
+#include <kmdi/mainwindow.h>
 
 #include <qguardedptr.h>
 
@@ -46,7 +46,7 @@ class KFileItem;
 class KRecentFilesAction;
 class DCOPObject;
 
-class KateMainWindow : public KMdiMainFrm, virtual public KParts::PartBase
+class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
 {
   Q_OBJECT
 
@@ -58,7 +58,7 @@ class KateMainWindow : public KMdiMainFrm, virtual public KParts::PartBase
 
   public:
     KateMainWindow ( KateDocManager *_docManager, KatePluginManager *_pluginManager,
-                     KateProjectManager *projectMan, KMdi::MdiMode guiMode );
+                     KateProjectManager *projectMan );
     ~KateMainWindow();
 
     Kate::MainWindow *mainWindow () { return m_mainWindow; }
@@ -209,8 +209,6 @@ class KateMainWindow : public KMdiMainFrm, virtual public KParts::PartBase
   public:
     void openURL (const QString &name=0L);
 
-    static KMdi::MdiMode defaultMode;
-
   protected:
     bool eventFilter( QObject*, QEvent * );
     static uint uniqueID;
@@ -222,16 +220,16 @@ class KateMainWindow : public KMdiMainFrm, virtual public KParts::PartBase
     KateViewManager *kateViewManager () { return m_viewManager; }
 
   public: //ToolViewManager stuff
-    KMdiToolViewAccessor *addToolView(KDockWidget::DockPosition position, QWidget *widget, const QPixmap &icon, const QString &sname, const QString &tabToolTip = 0, const QString &tabCaption = 0);
+    KMDI::ToolViewAccessor *addToolView(KDockWidget::DockPosition position, QWidget *widget, const QPixmap &icon, const QString &sname, const QString &tabToolTip = 0, const QString &tabCaption = 0);
 
     bool removeToolView(QWidget *);
-    bool removeToolView(KMdiToolViewAccessor *);
+    bool removeToolView(KMDI::ToolViewAccessor *);
 
     bool showToolView(QWidget *);
-    bool showToolView(KMdiToolViewAccessor *);
+    bool showToolView(KMDI::ToolViewAccessor *);
 
     bool hideToolView(QWidget *);
-    bool hideToolView(KMdiToolViewAccessor *);
+    bool hideToolView(KMDI::ToolViewAccessor *);
 
   private slots:
     void pluginHelp ();

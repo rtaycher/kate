@@ -12,7 +12,7 @@ libkateinterfaces_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugin
   katedocmanageriface.skel kateappIface.cpp kateappIface.skel katedocmanageriface.cpp \
   kateexternaltools.cpp
 
-libkateinterfaces_la_LIBADD   = ../interfaces/libkateinterfacesprivate.la -lkscript $(LIB_KUTILS) ../utils/libkateutils.la -lkmdi
+libkateinterfaces_la_LIBADD   = ../interfaces/libkateinterfacesprivate.la -lkscript $(LIB_KUTILS) ../utils/libkateutils.la -lkmdi2
 
 libkateinterfaces_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -no-undefined
 

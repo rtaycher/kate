@@ -36,8 +36,6 @@
 #include <klocale.h>
 #include <ksimpleconfig.h>
 
-#include <kmdidefines.h>
-
 #include <qfile.h>
 #include <qtimer.h>
 #include <qdir.h>
@@ -49,7 +47,6 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState)
  , m_firstStart (true)
  , m_initPlugin (0)
  , m_doNotInitialize (0)
- , m_restoreGUIMode (KMdi::UndefinedMode)
 {
   // we need to call that now, don't ask me, in the first newInstance run it is wrong !
   if (isRestored())
@@ -309,23 +306,7 @@ KateMainWindow *KateApp::newMainWindow ()
 
 KateMainWindow *KateApp::newMainWindow (bool visible)
 {
-  if (KateMainWindow::defaultMode==KMdi::UndefinedMode)
-  {
-    KConfig *cfg=kapp->config();
-
-    QString grp=cfg->group();
-
-    cfg->setGroup("General");
-    KateMainWindow::defaultMode = (KMdi::MdiMode) cfg->readNumEntry("DefaultGUIMode", KMdi::IDEAlMode);
-
-    // only allow ideal or tabpage mode, others don't work right atm
-    if ((KateMainWindow::defaultMode != KMdi::IDEAlMode) && (KateMainWindow::defaultMode != KMdi::TabPageMode))
-      KateMainWindow::defaultMode = KMdi::IDEAlMode;
-
-    cfg->setGroup(grp);
-  }
-  KateMainWindow *mainWindow = new KateMainWindow (m_docManager, m_pluginManager, m_projectManager,
-                                                    (m_restoreGUIMode==KMdi::UndefinedMode)?KateMainWindow::defaultMode:m_restoreGUIMode);
+  KateMainWindow *mainWindow = new KateMainWindow (m_docManager, m_pluginManager, m_projectManager);
   m_mainWindows.append (mainWindow);
 
   if ((mainWindows() > 1) && m_mainWindows.at(m_mainWindows.count()-2)->kateViewManager()->activeView())

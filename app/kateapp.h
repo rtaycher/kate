@@ -95,7 +95,6 @@ class KateApp : public KUniqueApplication
     QString m_initLib;
     QString m_oldInitLib;
     class KateAppDCOPIface *m_obj;
-    KMdi::MdiMode m_restoreGUIMode;
     static KConfig *m_sessionConfig;
     bool m_sessionConfigDelete;
     

@@ -22,7 +22,10 @@
 
 #include <kdockwidget.h>
 
-class KMdiToolViewAccessor;
+namespace KMDI
+{
+  class ToolViewAccessor;
+}
 
 namespace Kate
 {
@@ -35,18 +38,18 @@ class ToolViewManager : public QObject
   friend class PrivateToolViewManager;
 
   Q_OBJECT
-  
+
   public:
     /**
      * Construtor, should not interest, internal usage
      */
     ToolViewManager (void *toolViewManager);
-    
+
     /**
      * Desctructor
      */
     virtual ~ToolViewManager ();
-      
+
   public:
     /**
      * Add a toolview
@@ -56,23 +59,23 @@ class ToolViewManager : public QObject
      * @param sname unique name (used for example for hide/show)
      * @param tabToolTip tooltip for the tab
      * @param tabCaption caption for the tab
-     * @return KMdiToolViewAccessor * generated accessor
+     * @return KMDI::ToolViewAccessor * generated accessor
      */
-    KMdiToolViewAccessor *addToolView (KDockWidget::DockPosition position, QWidget *widget, const QPixmap &icon, const QString &sname, const QString &tabToolTip = 0, const QString &tabCaption = 0);
-    
+    KMDI::ToolViewAccessor *addToolView (KDockWidget::DockPosition position, QWidget *widget, const QPixmap &icon, const QString &sname, const QString &tabToolTip = 0, const QString &tabCaption = 0);
+
     /**
      * Remove a toolview
      * @param toolview widget to remove
      * @return bool success
      */
     bool removeToolView (QWidget *widget);
-    
+
     /**
      * Remove a toolview
      * @param toolview to remove
      * @return bool success
      */
-    bool removeToolView (KMdiToolViewAccessor *accessor);
+    bool removeToolView (KMDI::ToolViewAccessor *accessor);
 
     /**
      * Show the toolview
@@ -80,33 +83,33 @@ class ToolViewManager : public QObject
      * @return bool success
      */
     bool showToolView (QWidget *widget);
-    
+
     /**
      * Show the toolview
      * @param toolview to show
      * @return bool success
      */
-    bool showToolView (KMdiToolViewAccessor *accessor);
-    
+    bool showToolView (KMDI::ToolViewAccessor *accessor);
+
     /**
      * Hide the toolview
      * @param widget to hide
      * @return bool success
      */
     bool hideToolView (QWidget *widget);
-    
+
     /**
      * Hide the toolview
      * @param toolview to hide
      * @return bool success
      */
-    bool hideToolView (KMdiToolViewAccessor *accessor);
+    bool hideToolView (KMDI::ToolViewAccessor *accessor);
 
   private:
     /**
      * REALLY PRIVATE ;)
      */
-    class PrivateToolViewManager *d;  
+    class PrivateToolViewManager *d;
 };
 
 }

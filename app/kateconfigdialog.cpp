@@ -59,8 +59,6 @@
 #include <kwin.h>
 #include <kseparator.h>
 
-#include <kmdidefines.h>
-
 KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
  : KDialogBase ( KDialogBase::TreeList,
                  i18n("Configure"),
@@ -138,29 +136,6 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   // GROUP with the one below: "Appearance"
   bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("&Appearance"), frGeneral );
   lo->addWidget( bgStartup );
-
-  QHBox *hbGM=new QHBox(bgStartup);
-	QLabel *lGM=new QLabel(i18n("Default &GUI mode for new windows:"),hbGM);
-  	combo_guiMode = new QComboBox(hbGM);
-
-        QStringList allgml;
-	allgml<<i18n("Toplevel Mode")<<i18n("Childframe Mode")<<i18n("Tab Page Mode")<<i18n("IDEAL Mode");
-
-        QStringList gml;
-        gml<<i18n("IDEAL Mode")<<i18n("Tab Page Mode");
-
-        combo_guiMode->insertStringList(gml);
-	lGM->setBuddy(combo_guiMode);
-  	switch (KateMainWindow::defaultMode)
-        {
-		case KMdi::TabPageMode:
-			combo_guiMode->setCurrentItem(1);
-			break;
-		case KMdi::IDEAlMode:
-		default:
-			combo_guiMode->setCurrentItem(0);
-	}
-        connect(combo_guiMode,SIGNAL(activated(int)),this,SLOT(slotChanged()));
 
   // show full path in title
   config->setGroup("General");
@@ -373,33 +348,6 @@ void KateConfigDialog::slotOk()
 
     config->writeEntry("Modified Notification", cb_modNotifications->isChecked());
     mainWindow->modNotification = cb_modNotifications->isChecked();
-
-    KMdi::MdiMode tmpMode;
-    switch (combo_guiMode->currentItem()) {
-          case 1:
-                  tmpMode=KMdi::TabPageMode;
-                  break;
-          case 0:
-          default:
-                  tmpMode=KMdi::IDEAlMode;
-                  break;
-    }
-    config->writeEntry("DefaultGUIMode",tmpMode);
-    mainWindow->defaultMode=tmpMode;
-
-    for (uint i=0; i < ((KateApp *)kapp)->mainWindows(); i++)
-    {
-      KateMainWindow *win = ((KateApp *)kapp)->kateMainWindow (i);
-      //win->externalTools->reload();
-      if (tmpMode != win->mdiMode())
-      {
-        if (tmpMode == KMdi::TabPageMode)
-          win->switchToTabPageMode();
-        else
-          win->switchToIDEAlMode();
-      }
-    }
-
 
     mainWindow->syncKonsole = cb_syncKonsole->isChecked();
 

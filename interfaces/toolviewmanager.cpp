@@ -36,12 +36,12 @@ class PrivateToolViewManager
     }
 
     ~PrivateToolViewManager ()
-    {    
-    }          
-        
-    KateMainWindow *toolViewMan; 
+    {
+    }
+
+    KateMainWindow *toolViewMan;
   };
-            
+
 ToolViewManager::ToolViewManager (void *toolViewManager) : QObject ((KateMainWindow*) toolViewManager)
 {
   d = new PrivateToolViewManager ();
@@ -53,7 +53,7 @@ ToolViewManager::~ToolViewManager ()
   delete d;
 }
 
-KMdiToolViewAccessor *ToolViewManager::addToolView(KDockWidget::DockPosition position, QWidget *widget, const QPixmap &icon, const QString &sname, const QString &tabToolTip, const QString &tabCaption)
+KMDI::ToolViewAccessor *ToolViewManager::addToolView(KDockWidget::DockPosition position, QWidget *widget, const QPixmap &icon, const QString &sname, const QString &tabToolTip, const QString &tabCaption)
 {
   return d->toolViewMan->addToolView (position, widget, icon, sname, tabToolTip, tabCaption);
 }
@@ -63,7 +63,7 @@ bool ToolViewManager::removeToolView(QWidget *widget)
   return d->toolViewMan->removeToolView (widget);
 }
 
-bool ToolViewManager::removeToolView(KMdiToolViewAccessor *accessor)
+bool ToolViewManager::removeToolView(KMDI::ToolViewAccessor *accessor)
 {
   return d->toolViewMan->removeToolView (accessor);
 }
@@ -73,7 +73,7 @@ bool ToolViewManager::showToolView(QWidget *widget)
   return d->toolViewMan->showToolView (widget);
 }
 
-bool ToolViewManager::showToolView(KMdiToolViewAccessor *accessor)
+bool ToolViewManager::showToolView(KMDI::ToolViewAccessor *accessor)
 {
   return d->toolViewMan->showToolView (accessor);
 }
@@ -82,8 +82,8 @@ bool ToolViewManager::hideToolView(QWidget *widget)
 {
   return d->toolViewMan->hideToolView (widget);
 }
-    
-bool ToolViewManager::hideToolView(KMdiToolViewAccessor *accessor)
+
+bool ToolViewManager::hideToolView(KMDI::ToolViewAccessor *accessor)
 {
   return d->toolViewMan->hideToolView (accessor);
 }

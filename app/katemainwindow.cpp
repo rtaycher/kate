@@ -38,7 +38,6 @@
 #include "katemainwindowiface.h"
 #include "kateexternaltools.h"
 
-#include <kmdichildview.h>
 #include <dcopclient.h>
 #include <kinstance.h>
 #include <kaboutdata.h>
@@ -82,11 +81,10 @@
 //END
 
 uint KateMainWindow::uniqueID = 1;
-KMdi::MdiMode KateMainWindow::defaultMode=KMdi::UndefinedMode;
 
 KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager *_m_pluginManager,
-	KateProjectManager *projectMan, KMdi::MdiMode guiMode) :
-	KMdiMainFrm (0,(QString("__KateMainWindow#%1").arg(uniqueID)).latin1(),guiMode)
+	KateProjectManager *projectMan) :
+    KMDI::MainWindow (0,(QString("__KateMainWindow#%1").arg(uniqueID)).latin1())
 {
   setToolviewStyle(KMultiTabBar::KDEV3ICON);
   // first the very important id
@@ -123,8 +121,6 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   m_mainWindow = new Kate::MainWindow (this);
   m_toolViewManager = new Kate::ToolViewManager (this);
-  setStandardMDIMenuEnabled(false);
-  setManagedDockPositionModeEnabled(true);
 
   m_dcop = new KateMainWindowDCOPIface (this);
 
@@ -188,16 +184,12 @@ void KateMainWindow::setupMainWindow ()
   greptool->show();
   greptool->hide();
 
-  KMdiChildView* pMDICover = new KMdiChildView("MainDock");
-  pMDICover->setName("MainDock");
-
   //mainDock->setGeometry(100, 100, 100, 100);
-  QBoxLayout *ml=new QHBoxLayout(pMDICover);
-  ml->setAutoAdd(true);
-  m_viewManager = new KateViewManager (pMDICover, m_docManager,this);
-  addWindow(pMDICover);
+ /* QBoxLayout *ml=new QHBoxLayout(centralWidget());
+  ml->setAutoAdd(true);*/
+  m_viewManager = new KateViewManager (getMainDockWidget(), m_docManager,this);
+  getMainDockWidget()->setWidget (m_viewManager);
   m_viewManager->show();
-  pMDICover->show();
 
   filelist = new KateFileList (m_docManager, m_viewManager, this/*filelistDock*/, "filelist");
   addToolView(KDockWidget::DockLeft,filelist,SmallIcon("kmultiple"), i18n("Files"));
@@ -816,10 +808,11 @@ bool KateMainWindow::eventFilter( QObject *o, QEvent *e )
      activeView->setFocus();
      return true;
   }
-  return KMdiMainFrm::eventFilter( o, e );
+
+  return KMDI::MainWindow::eventFilter( o, e );
 }
 
-KMdiToolViewAccessor *KateMainWindow::addToolView(KDockWidget::DockPosition position, QWidget *widget, const QPixmap &icon, const QString &sname, const QString &tabToolTip, const QString &tabCaption)
+KMDI::ToolViewAccessor *KateMainWindow::addToolView(KDockWidget::DockPosition position, QWidget *widget, const QPixmap &icon, const QString &sname, const QString &tabToolTip, const QString &tabCaption)
 {
   widget->setIcon(icon);
   widget->setCaption(sname);
@@ -833,17 +826,17 @@ bool KateMainWindow::removeToolView(QWidget *w)
   return true;
 }
 
-bool KateMainWindow::removeToolView(KMdiToolViewAccessor *accessor)
+bool KateMainWindow::removeToolView(KMDI::ToolViewAccessor *accessor)
 {
   deleteToolWindow (accessor);
   return true;
 }
 
 bool KateMainWindow::showToolView(QWidget *){return false;}
-bool KateMainWindow::showToolView(KMdiToolViewAccessor *){return false;}
+bool KateMainWindow::showToolView(KMDI::ToolViewAccessor *){return false;}
 
 bool KateMainWindow::hideToolView(QWidget *){return false;}
-bool KateMainWindow::hideToolView(KMdiToolViewAccessor *){return false;}
+bool KateMainWindow::hideToolView(KMDI::ToolViewAccessor *){return false;}
 
 void KateMainWindow::slotProjectNew ()
 {
