@@ -71,6 +71,7 @@ class ProjectPlugin : public Plugin
     // default implementations returns true of the following bool methodes
 
     virtual bool save ();
+    virtual bool queryClose ();
     virtual bool close ();
 
     // default implementations don't modify the given list at all

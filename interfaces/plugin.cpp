@@ -136,6 +136,11 @@ bool ProjectPlugin::save ()
   return true;
 }
 
+bool ProjectPlugin::queryClose ()
+{
+  return true;
+}
+
 bool ProjectPlugin::close ()
 {
   return true;

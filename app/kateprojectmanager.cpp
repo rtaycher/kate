@@ -222,6 +222,15 @@ QStringList KateProjectManager::pluginStringList ()
   return list;
 }
 
+bool KateProjectManager::queryCloseAll ()
+{
+  for (uint z=0; z < m_projects.count(); z++)
+    if (!m_projects.at(z)->queryClose())
+      return false;
+
+  return true;
+}
+
 bool KateProjectManager::closeAll ()
 {
   while (!m_projects.isEmpty())

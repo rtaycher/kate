@@ -91,6 +91,7 @@ class KateProjectManager : public QObject
 
     void setCurrentProject (Kate::Project *project);
 
+    bool queryCloseAll ();
     bool closeAll ();
 
     void saveProjectList (class KConfig *config);

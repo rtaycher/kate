@@ -99,6 +99,13 @@ class Project : public QObject
     bool save ();
 
     /**
+     * Query if the project can be closed now, don't close it, only ask questions or
+     * save it, or ...
+     * @return bool success
+     */
+    bool queryClose ();
+    
+    /**
      * Close the project (says the project plugin the app requests a close, prepare for deletion)
      * @return bool success
      */

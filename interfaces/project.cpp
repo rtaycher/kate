@@ -154,6 +154,11 @@ bool Project::save ()
   return d->m_plugin->save ();
 }
 
+bool Project::queryClose ()
+{
+  return d->m_plugin->queryClose ();
+}
+
 bool Project::close ()
 {
   return d->m_plugin->close ();
