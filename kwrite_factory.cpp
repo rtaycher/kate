@@ -3,9 +3,9 @@
 
 #include "kwdoc.h"
 #include "highlight.h"
-#include "kguicommand.h"
 #include "kwview.h"
 
+#include <klocale.h>
 #include <kinstance.h>
 #include <kaboutdata.h>
 
@@ -24,10 +24,6 @@ KWriteFactory::KWriteFactory()
 {
   s_instance = 0; // I don't trust anyone ;-)
   s_aboutData = 0;
-
-  KWrite::addCursorCommands( *KGuiCmdManager::self() );
-  KWrite::addEditCommands(*KGuiCmdManager::self());
-  KWrite::addStateCommands(*KGuiCmdManager::self());
 }
 
 KWriteFactory::~KWriteFactory()

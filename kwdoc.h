@@ -23,8 +23,6 @@
 #ifndef _KWDOC_H_
 #define _KWDOC_H_
 
-#include <list>
-
 #include <qobject.h>
 #include <qlist.h>
 #include <qcolor.h>
@@ -378,6 +376,7 @@ class KWriteDoc : public KTextEditor::Document {
 
   signals:
     void selectionChanged();
+    void highlightChanged();
 
 // highlight
   public:
@@ -506,8 +505,8 @@ class KWriteDoc : public KTextEditor::Document {
 
     int nextUndoType();
     int nextRedoType();
-    void undoTypeList(std::list<int> &lst);
-    void redoTypeList(std::list<int> &lst);
+    void undoTypeList(QValueList<int> &lst);
+    void redoTypeList(QValueList<int> &lst);
     void undo(VConfig &, int count = 1);
     void redo(VConfig &, int count = 1);
     void clearRedo();

@@ -58,7 +58,6 @@
 #include "kwdialog.h"
 #include "undohistory.h"
 #include "ktextprint.h"
-#include "kguicommand.h"
 
 #include "kwview.h"
 #include "kwview.moc"
@@ -131,7 +130,7 @@ KWriteView::KWriteView(KWrite *write, KWriteDoc *doc, bool HandleOwnDND)
 
   kWrite = write;
   kWriteDoc = doc;
-
+    
   QWidget::setCursor(ibeamCursor);
   setBackgroundMode(NoBackground);
   KCursor::setAutoHideCursor( this, true );
@@ -556,8 +555,8 @@ void KWriteView::bottom(VConfig &c) {
 }
 
 // go to the top left corner
-void KWriteView::top_home(VConfig &c) {
-
+void KWriteView::top_home(VConfig &c)
+{
   cursor.y = 0;
   cursor.x = 0;
   cOldXPos = cXPos = 0;
@@ -1504,12 +1503,6 @@ KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const char * name, bool HandleOw
   kWriteView->setFocus();
   resize(parent->width() -4, parent->height() -4);
 
-  // the dispatcher is "inteligent" enough to delete itself when we die
-  m_dispatcher = new KGuiCmdDispatcher( kWriteView, KGuiCmdManager::self() );
-  m_dispatcher->connectCategory( ctCursorCommands, this, SLOT( doCursorCommand( int ) ) );
-  m_dispatcher->connectCategory(ctEditCommands, this, SLOT(doEditCommand(int)));
-  m_dispatcher->connectCategory(ctStateCommands, this, SLOT(doStateCommand(int)));
-
   m_tempSaveFile = 0;
 }
 
@@ -1555,95 +1548,6 @@ void KWrite::getCursorPosition( int *line, int *col )
 
   if ( col )
     *col = currentColumn();
-}
-
-void KWrite::addCursorCommands(KGuiCmdManager &cmdMngr) {
-  cmdMngr.addCategory(ctCursorCommands, I18N_NOOP("Cursor Movement"));
-  cmdMngr.setSelectModifiers(Qt::SHIFT, selectFlag, Qt::ALT, multiSelectFlag);
-  cmdMngr.addCommand(cmLeft,            I18N_NOOP("Left"            ), Qt::Key_Left, Qt::CTRL+Qt::Key_B);
-  cmdMngr.addCommand(cmRight,           I18N_NOOP("Right"           ), Qt::Key_Right, Qt::CTRL+Qt::Key_F);
-  cmdMngr.addCommand(cmWordLeft,        I18N_NOOP("Word Left"       ), Qt::CTRL+Qt::Key_Left);
-  cmdMngr.addCommand(cmWordRight,       I18N_NOOP("Word Right"      ), Qt::CTRL+Qt::Key_Right);
-  cmdMngr.addCommand(cmHome,            I18N_NOOP("Home"            ), Qt::Key_Home, Qt::CTRL+Qt::Key_A, Qt::Key_F27);
-  cmdMngr.addCommand(cmEnd,             I18N_NOOP("End"             ), Qt::Key_End, Qt::CTRL+Qt::Key_E, Qt::Key_F33);
-  cmdMngr.addCommand(cmUp,              I18N_NOOP("Up"              ), Qt::Key_Up, Qt::CTRL+Qt::Key_P);
-  cmdMngr.addCommand(cmDown,            I18N_NOOP("Down"            ), Qt::Key_Down, Qt::CTRL+Qt::Key_N);
-  cmdMngr.addCommand(cmScrollUp,        I18N_NOOP("Scroll Up"       ), Qt::CTRL+Qt::Key_Up);
-  cmdMngr.addCommand(cmScrollDown,      I18N_NOOP("Scroll Down"     ), Qt::CTRL+Qt::Key_Down);
-  cmdMngr.addCommand(cmTopOfView,       I18N_NOOP("Top Of View"     ), Qt::CTRL+Qt::Key_PageUp);
-  cmdMngr.addCommand(cmBottomOfView,    I18N_NOOP("Bottom Of View"  ), Qt::CTRL+Qt::Key_PageDown);
-  cmdMngr.addCommand(cmPageUp,          I18N_NOOP("Page Up"         ), Qt::Key_PageUp, Qt::Key_F29);
-  cmdMngr.addCommand(cmPageDown,        I18N_NOOP("Page Down"       ), Qt::Key_PageDown, Qt::Key_F35);
-//  cmdMngr.addCommand(cmCursorPageUp,    I18N_NOOP("Cursor Page Up"  ));
-//  cmdMngr.addCommand(cmCursorPageDown,  I18N_NOOP("Cursor Page Down"));
-  cmdMngr.addCommand(cmTop,             I18N_NOOP("Top"             ), Qt::CTRL+Qt::Key_Home);
-  cmdMngr.addCommand(cmBottom,          I18N_NOOP("Bottom"          ), Qt::CTRL+Qt::Key_End);
-  cmdMngr.addCommand(cmLeft | selectFlag, I18N_NOOP("Left + Select"  ) , Qt::SHIFT+Qt::Key_F30);//, Qt::SHIFT+Qt::Key_4);
-  cmdMngr.addCommand(cmRight | selectFlag,I18N_NOOP("Right + Select" ) , Qt::SHIFT+Qt::Key_F32);//, Qt::SHIFT+Qt::Key_6);
-  cmdMngr.addCommand(cmUp | selectFlag,   I18N_NOOP("Up + Select"    ) , Qt::SHIFT+Qt::Key_F28);//, Qt::SHIFT+Qt::Key_8);
-  cmdMngr.addCommand(cmDown | selectFlag, I18N_NOOP("Down + Select"  ) , Qt::SHIFT+Qt::Key_F34);//, Qt::SHIFT+Qt::Key_2);
-}
-
-void KWrite::addEditCommands(KGuiCmdManager &cmdMngr) {
-  cmdMngr.addCategory(ctEditCommands, I18N_NOOP("Edit Commands"));
-  cmdMngr.addCommand(cmReturn,          I18N_NOOP("Return"           ), Qt::Key_Return, Qt::Key_Enter);
-  cmdMngr.addCommand(cmDelete,          I18N_NOOP("Delete"           ), Qt::Key_Delete, Qt::CTRL+Qt::Key_D);
-  cmdMngr.addCommand(cmBackspace,       I18N_NOOP("Backspace"        ), Qt::Key_Backspace, Qt::CTRL+Qt::Key_H);
-  cmdMngr.addCommand(cmKillLine,        I18N_NOOP("Kill Line"        ), Qt::CTRL+Qt::Key_K);
-  cmdMngr.addCommand(cmUndo,            I18N_NOOP("&Undo"            ), Qt::CTRL+Qt::Key_Z, Qt::Key_F14);
-  cmdMngr.addCommand(cmRedo,            I18N_NOOP("R&edo"            ), Qt::CTRL+Qt::Key_Y, Qt::Key_F12);
-  cmdMngr.addCommand(cmCut,             I18N_NOOP("Cu&t"             ), Qt::CTRL+Qt::Key_X, Qt::SHIFT+Qt::Key_Delete, Qt::Key_F20);
-  cmdMngr.addCommand(cmCopy,            I18N_NOOP("&Copy"            ), Qt::CTRL+Qt::Key_C, Qt::CTRL+Qt::Key_Insert, Qt::Key_F16);
-  cmdMngr.addCommand(cmPaste,           I18N_NOOP("&Paste"           ), Qt::CTRL+Qt::Key_V, Qt::SHIFT+Qt::Key_Insert, Qt::Key_F18);
-  cmdMngr.addCommand(cmIndent,          I18N_NOOP("&Indent"          ), Qt::CTRL+Qt::Key_I);
-  cmdMngr.addCommand(cmUnindent,        I18N_NOOP("Uninde&nt"        ), Qt::CTRL+Qt::Key_U);
-  cmdMngr.addCommand(cmCleanIndent,     I18N_NOOP("Clean Indent"     ));
-  cmdMngr.addCommand(cmComment,          I18N_NOOP("Comment"          ), Qt::CTRL+Qt::Key_M);
-  cmdMngr.addCommand(cmUncomment,        I18N_NOOP("Uncomment"        ), Qt::CTRL+Qt::ALT+Qt::Key_M);
-  cmdMngr.addCommand(cmSelectAll,       I18N_NOOP("&Select All"      ));
-  cmdMngr.addCommand(cmDeselectAll,     I18N_NOOP("&Deselect All"    ));
-  cmdMngr.addCommand(cmInvertSelection, I18N_NOOP("In&vert Selection"));
-}
-
-void KWrite::addFindCommands(KGuiCmdManager &cmdMngr) {
-  cmdMngr.addCategory(ctFindCommands, I18N_NOOP("Find Commands"));
-  cmdMngr.addCommand(cmFind,            I18N_NOOP("&Find..."        ) , Qt::CTRL+Qt::Key_F, Qt::Key_F19);
-  cmdMngr.addCommand(cmReplace,         I18N_NOOP("&Replace..."     ) , Qt::CTRL+Qt::Key_R);
-  cmdMngr.addCommand(cmFindAgain,       I18N_NOOP("Find &Again"     ) , Qt::Key_F3);
-  cmdMngr.addCommand(cmGotoLine,        I18N_NOOP("&Goto Line..."   ) , Qt::CTRL+Qt::Key_G);
-}
-
-void KWrite::addBookmarkCommands(KGuiCmdManager &cmdMngr) {
-  cmdMngr.addCategory(ctBookmarkCommands, I18N_NOOP("Bookmark Commands"));
-  cmdMngr.addCommand(cmSetBookmark,       I18N_NOOP("&Set Bookmark..."), Qt::ALT+Qt::Key_X);
-  cmdMngr.addCommand(cmAddBookmark,       I18N_NOOP("&Add Bookmark"   ), Qt::ALT+Qt::Key_A);
-  cmdMngr.addCommand(cmClearBookmarks,    I18N_NOOP("&Clear Bookmarks" ), Qt::ALT+Qt::Key_C);
-  cmdMngr.addCommand(cmSetBookmarks +0,   I18N_NOOP("Set Bookmark 1"  ));
-  cmdMngr.addCommand(cmSetBookmarks +1,   I18N_NOOP("Set Bookmark 2"  ));
-  cmdMngr.addCommand(cmSetBookmarks +2,   I18N_NOOP("Set Bookmark 3"  ));
-  cmdMngr.addCommand(cmSetBookmarks +3,   I18N_NOOP("Set Bookmark 4"  ));
-  cmdMngr.addCommand(cmSetBookmarks +4,   I18N_NOOP("Set Bookmark 5"  ));
-  cmdMngr.addCommand(cmSetBookmarks +5,   I18N_NOOP("Set Bookmark 6"  ));
-  cmdMngr.addCommand(cmSetBookmarks +6,   I18N_NOOP("Set Bookmark 7"  ));
-  cmdMngr.addCommand(cmSetBookmarks +7,   I18N_NOOP("Set Bookmark 8"  ));
-  cmdMngr.addCommand(cmSetBookmarks +8,   I18N_NOOP("Set Bookmark 9"  ));
-  cmdMngr.addCommand(cmSetBookmarks +9,   I18N_NOOP("Set Bookmark 10" ));
-  cmdMngr.addCommand(cmGotoBookmarks +0,  I18N_NOOP("Goto Bookmark 1" ), Qt::ALT+Qt::Key_1);
-  cmdMngr.addCommand(cmGotoBookmarks +1,  I18N_NOOP("Goto Bookmark 2" ), Qt::ALT+Qt::Key_2);
-  cmdMngr.addCommand(cmGotoBookmarks +2,  I18N_NOOP("Goto Bookmark 3" ), Qt::ALT+Qt::Key_3);
-  cmdMngr.addCommand(cmGotoBookmarks +3,  I18N_NOOP("Goto Bookmark 4" ), Qt::ALT+Qt::Key_4);
-  cmdMngr.addCommand(cmGotoBookmarks +4,  I18N_NOOP("Goto Bookmark 5" ), Qt::ALT+Qt::Key_5);
-  cmdMngr.addCommand(cmGotoBookmarks +5,  I18N_NOOP("Goto Bookmark 6" ), Qt::ALT+Qt::Key_6);
-  cmdMngr.addCommand(cmGotoBookmarks +6,  I18N_NOOP("Goto Bookmark 7" ), Qt::ALT+Qt::Key_7);
-  cmdMngr.addCommand(cmGotoBookmarks +7,  I18N_NOOP("Goto Bookmark 8" ), Qt::ALT+Qt::Key_8);
-  cmdMngr.addCommand(cmGotoBookmarks +8,  I18N_NOOP("Goto Bookmark 9" ), Qt::ALT+Qt::Key_9);
-  cmdMngr.addCommand(cmGotoBookmarks +9,  I18N_NOOP("Goto Bookmark 10"), Qt::ALT+Qt::Key_0);
-}
-
-void KWrite::addStateCommands(KGuiCmdManager &cmdMngr) {
-  cmdMngr.addCategory(ctStateCommands, I18N_NOOP("State Commands"));
-  cmdMngr.addCommand(cmToggleInsert,   I18N_NOOP("Insert Mode"), Qt::Key_Insert);
-  cmdMngr.addCommand(cmToggleVertical, I18N_NOOP("&Vertical Selections"), Qt::Key_F5);
 }
 
 
@@ -1761,12 +1665,12 @@ int KWrite::nextRedoType() {
   return kWriteDoc->nextRedoType();
 }
 
-void KWrite::undoTypeList(std::list<int> &lst)
+void KWrite::undoTypeList(QValueList<int> &lst)
 {
   kWriteDoc->undoTypeList(lst);
 }
 
-void KWrite::redoTypeList(std::list<int> &lst)
+void KWrite::redoTypeList(QValueList<int> &lst)
 {
   kWriteDoc->redoTypeList(lst);
 }
@@ -1813,16 +1717,6 @@ void KWrite::colDlg() {
   delete dlg;
 }
 
-void KWrite::doStateCommand(int cmdNum) {
-  switch (cmdNum) {
-    case cmToggleInsert:
-      toggleInsert();
-      return;
-    case cmToggleVertical:
-      toggleVertical();
-      return;
-  }
-}
 
 bool KWrite::isOverwriteMode() const
 {
@@ -2035,7 +1929,7 @@ void KWrite::loadURL(const KURL &url, int flags) {
 }
 
 
-void KWrite::writeURL(const KURL &url, int flags) {
+void KWrite::writeURL(const KURL &url, int ) {
 
     // url
     emit statusMsg(i18n("Saving..."));
@@ -2101,9 +1995,9 @@ void KWrite::slotJobReadResult( KIO::Job *job )
 	QBuffer buff( data );
 	buff.open( IO_ReadOnly );
 	loadFile( buff, flags );
-	
+
 	QString msg;
-	
+
 	if ( flags & lfInsert )
 	    msg = i18n( "Inserted : %1" ).arg( url.fileName() );
         	else
@@ -2147,7 +2041,8 @@ void KWrite::slotJobWriteResult( KIO::Job *job )
 	emit statusMsg( i18n( "Wrote %1" ).arg( static_cast<KIO::FileCopyJob *>( job )->destURL().fileName() ) );
 }
 
-void KWrite::slotGETFinished( int id ) {
+void KWrite::slotGETFinished( int )
+{
     /*
   QString *tmpFile = m_sLocal.find( id );
   QString *netFile = m_sNet.find( id );
@@ -2182,7 +2077,7 @@ void KWrite::slotGETFinished( int id ) {
     */
 }
 
-void KWrite::slotPUTFinished( int id ) {
+void KWrite::slotPUTFinished( int ) {
     /*
   QString *tmpFile = m_sLocal.find( id );
   QString *netFile = m_sNet.find( id );
@@ -2801,12 +2696,14 @@ void KWrite::installRBPopup(QPopupMenu *p) {
   popup = p;
 }
 
+/*
 void KWrite::installBMPopup(KGuiCmdPopup *p) {
 
   connect(p, SIGNAL(aboutToShow()), SLOT(updateBMPopup()));
 //  connect(p,SIGNAL(activated(int)),SLOT(gotoBookmark(int)));
 //  bmEntries = p->count();
 }
+*/
 
 void KWrite::setBookmark() {
   QPopupMenu *popup;
@@ -2870,6 +2767,7 @@ void KWrite::gotoBookmark(int n) {
   kWriteDoc->updateViews();
 }
 
+/*
 void KWrite::doBookmarkCommand(int cmdNum) {
   if (cmdNum == cmSetBookmark) {
     setBookmark();
@@ -2883,9 +2781,10 @@ void KWrite::doBookmarkCommand(int cmdNum) {
     gotoBookmark(cmdNum - cmGotoBookmarks);
   }
 }
+*/
 
 void KWrite::updateBMPopup() {
-  KGuiCmdPopup *p;
+/*  KGuiCmdPopup *p;
   KWBookmark *b;
   QString buf;
   int z, id;
@@ -2908,6 +2807,7 @@ void KWrite::updateBMPopup() {
 //      if (z < 9) p->setAccel(ALT+keys[z],z);
     }
   }
+*/
 /*
   while ((int) p->count() > bmEntries) {
     p->removeItemAt(p->count() - 1);
@@ -3224,8 +3124,8 @@ void KWrite::spellcheck()
           this, SLOT (misspelling (QString, QStringList *, unsigned)));
   connect (kspell.kspell, SIGNAL (corrected (QString, QString, unsigned)),
           this, SLOT (corrected (QString, QString, unsigned)));
-  connect (kspell.kspell, SIGNAL (done(const char *)),
-          this, SLOT (spellResult (const char *)));
+  connect (kspell.kspell, SIGNAL (done(const QString&)),
+          this, SLOT (spellResult (const QString&)));
 }
 
 void KWrite::spellcheck2(KSpell *)
@@ -3308,7 +3208,7 @@ void KWrite::corrected (QString originalword, QString newword, unsigned pos)
 
 }
 
-void KWrite::spellResult (const char *)
+void KWrite::spellResult (const QString &)
 {
   deselectAll(); //!!! this should not be done with persistent selections
 

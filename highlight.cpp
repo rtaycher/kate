@@ -28,6 +28,7 @@
 #include <qtextstream.h>
 #include <qregexp.h>
 #include <qfile.h>
+#include <qlabel.h>
 
 #include <qlayout.h>
 #include <qgrid.h>
@@ -1891,7 +1892,7 @@ HlManager *HlManager::self()
   if ( !s_pSelf )
     s_pSelf = new HlManager;
   return s_pSelf;
-} 
+}
 
 Highlight *HlManager::getHl(int n) {
   if (n < 0 || n >= (int) hlList.count()) n = 0;

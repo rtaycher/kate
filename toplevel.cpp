@@ -19,25 +19,28 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <qkeycode.h>
-#include <qtabdialog.h>
 #include <qdropsite.h>
 #include <qdragobject.h>
 #include <qvbox.h>
 
+#include <kiconloader.h>
+#include <kaboutdata.h>
+#include <kstdaction.h>
+#include <kaction.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kapp.h>
 #include <klocale.h>
-#include <kmenubar.h>
-#include <kiconloader.h>
 #include <kurl.h>
-#include <kstdaccel.h>
 #include <kconfig.h>
 #include <kwin.h>
 #include <kcmdlineargs.h>
 #include <kdialogbase.h>
+#include <kkeydialog.h>
+#include <kedittoolbar.h>
 
+#include "ktextprint.h"
+#include "kwdoc.h"
 #include "kwdialog.h"
 #include "highlight.h"
 #include "kwrite_factory.h"
@@ -51,102 +54,72 @@
 #define ID_MODIFIED 3
 #define ID_GENERAL 4
 
-const int toolUndo = 1;
-const int toolRedo = 2;
-const int toolCut = 3;
-const int toolPaste = 4;
-
-//command categories
-const int ctFileCommands = 10;
-//file commands
-const int cmNew             = 1;
-const int cmOpen            = 2;
-const int cmInsert          = 3;
-const int cmSave            = 4;
-const int cmSaveAs          = 5;
-const int cmPrint           = 6;
-const int cmNewWindow       = 7;
-const int cmNewView         = 8;
-const int cmClose           = 9;
-
-
 
 QList<KWriteDoc> docList; //documents
-//HlManager hlManager; //highlight manager
-//KGuiCmdManager cmdMngr; //manager for user -> gui commands
 
 
 TopLevel::TopLevel (KWriteDoc *doc, const QString &path)
-  : KTMainWindow("KWrite") {
-
+  : KMainWindow(0)
+{
   setMinimumSize(180,120);
-
-  recentFiles.setAutoDelete(TRUE);
 
   statusbarTimer = new QTimer(this);
   connect(statusbarTimer,SIGNAL(timeout()),this,SLOT(timeout()));
-
-//  connect(kapp,SIGNAL(kdisplayPaletteChanged()),this,SLOT(set_colors()));
 
   if (!doc) {
     doc = new KWriteDoc(HlManager::self(), path); //new doc with default path
     docList.append(doc);
   }
   setupEditWidget(doc);
-  setupMenuBar();
-  setupToolBar();
+  setupActions();
   setupStatusBar();
-
-//  readConfig();
 
   setAcceptDrops(true);
 }
 
-TopLevel::~TopLevel() {
 
-//  delete file;
-//  delete edit;
-//  delete help;
-//  delete options;
-//  delete recentpopup;
-//  delete toolbar;
+TopLevel::~TopLevel()
+{
   if (kWrite->isLastView()) docList.remove(kWrite->doc());
 }
 
-void TopLevel::init() {
 
-  hideToolBar = !hideToolBar;
-  toggleToolBar();
-  hideStatusBar = !hideStatusBar;
-  toggleStatusBar();
-  showPath = !showPath;
-  togglePath();
+void TopLevel::init()
+{
+  setHighlight->setCurrentItem(kWrite->getHl());
+  setShowPath->setChecked(showPath);
   newCurPos();
   newStatus();
-  newUndo();
 
   show();
 }
 
-bool TopLevel::queryClose() {
+
+void TopLevel::loadURL(const KURL &url, int flags)
+{
+  kWrite->loadURL(url,flags);
+}
+
+
+bool TopLevel::queryClose()
+{
   if (!kWrite->isLastView()) return true;
   return kWrite->canDiscard();
 //  writeConfig();
 }
 
-bool TopLevel::queryExit() {
+
+bool TopLevel::queryExit()
+{
   writeConfig();
   kapp->config()->sync();
 
   return true;
 }
 
-void TopLevel::loadURL(const KURL &url, int flags) {
-  kWrite->loadURL(url,flags);
-}
 
-
-void TopLevel::setupEditWidget(KWriteDoc *doc) {
+void TopLevel::setupEditWidget(KWriteDoc *doc)
+{
   kWrite = new KWrite(doc, this, 0, false);
 
   connect(kWrite,SIGNAL(newCurPos()),this,SLOT(newCurPos()));
@@ -155,310 +128,205 @@ void TopLevel::setupEditWidget(KWriteDoc *doc) {
   connect(kWrite,SIGNAL(fileChanged()),this,SLOT(newCaption()));
   connect(kWrite,SIGNAL(newUndo()),this,SLOT(newUndo()));
   connect(kWrite->view(),SIGNAL(dropEventPass(QDropEvent *)),this,SLOT(slotDropEvent(QDropEvent *)));
+  connect(kWrite->doc(),SIGNAL(highlightChanged()),this,SLOT(slotHighlightChanged()));
 
-  setView(kWrite,FALSE);
+  setCentralWidget(kWrite);
 }
 
-void TopLevel::setupMenuBar() {
-  KMenuBar *menubar;
-  KGuiCmdPopup *find, *bookmarks;
-  QPopupMenu *help, *popup;
-  QPixmap pixmap;
-  int z;
 
-  KGuiCmdDispatcher *dispatcher = kWrite->dispatcher();
-  //  dispatcher = new KGuiCmdDispatcher(this, KGuiCmdManager::self());
-  //  dispatcher->connectCategory(ctCursorCommands, kWrite, SLOT(doCursorCommand(int)));
-  //  dispatcher->connectCategory(ctEditCommands, kWrite, SLOT(doEditCommand(int)));
-  dispatcher->connectCategory(ctBookmarkCommands, kWrite, SLOT(doBookmarkCommand(int)));
-  //  dispatcher->connectCategory(ctStateCommands, kWrite, SLOT(doStateCommand(int)));
+void TopLevel::setupActions()
+{
+  // setup File menu
+  KStdAction::openNew(kWrite, SLOT(newDoc()), actionCollection());
+  KStdAction::open(kWrite, SLOT(open()), actionCollection());
+  fileRecent = KStdAction::openRecent(this, SLOT(openRecent(const KURL&)),
+                                      actionCollection());
+  fileSave = KStdAction::save(kWrite, SLOT(save()), actionCollection());
+  KStdAction::saveAs(kWrite, SLOT(saveAs()), actionCollection());
+  KStdAction::print(this, SLOT(printDlg()), actionCollection());
+  new KAction(i18n("New &Window"), 0, this, SLOT(newWindow()),
+              actionCollection(), "file_newWindow");
+  new KAction(i18n("New &View"), 0, this, SLOT(newView()),
+              actionCollection(), "file_newView");
+  KStdAction::quit(this, SLOT(closeWindow()), actionCollection());
 
-  file =        new KGuiCmdPopup(dispatcher);
-  edit =        new KGuiCmdPopup(dispatcher);
-  find =        new KGuiCmdPopup(dispatcher);
-  bookmarks =   new KGuiCmdPopup(dispatcher);
-  options =     new KGuiCmdPopup(dispatcher);
-  help =        new QPopupMenu();
-  recentPopup = new QPopupMenu();
+  // setup edit menu
+  editUndo = KStdAction::undo(kWrite, SLOT(undo()), actionCollection());
+  editRedo = KStdAction::redo(kWrite, SLOT(redo()), actionCollection());
+  editUndoHist = new KAction(i18n("Undo/Redo &History..."), 0, kWrite, SLOT(undoHistory()),
+                             actionCollection(), "edit_undoHistory");
+  editCut = KStdAction::cut(kWrite, SLOT(cut()), actionCollection());
+  editPaste = KStdAction::copy(kWrite, SLOT(copy()), actionCollection());
+  editReplace = KStdAction::paste(kWrite, SLOT(paste()), actionCollection());
+  KStdAction::selectAll(kWrite, SLOT(selectAll()), actionCollection());
+  new KAction(i18n("&Deselect All"), 0, kWrite, SLOT(deselectAll()),
+              actionCollection(), "edit_deselectAll");
+  new KAction(i18n("&Invert Selection"), 0, kWrite, SLOT(invertSelection()),
+              actionCollection(), "edit_invertSelection");
+  KStdAction::find(kWrite, SLOT(find()), actionCollection());
+  KStdAction::findNext(kWrite, SLOT(findAgain()), actionCollection());
+  KStdAction::replace(kWrite, SLOT(replace()), actionCollection());
+  editInsert = new KAction(i18n("&Insert File..."), 0, kWrite, SLOT(insertFile()),
+                           actionCollection(), "edit_insertFile");
 
-//    int addCommand(int catNum, int cmdNum, QPixmap &pixmap,
-//      const QObject *receiver, const char *member, int id = -1, int index = -1);
+  // setup Go menu
+  KStdAction::gotoLine(kWrite, SLOT(gotoLine()), actionCollection());
+  new KAction(i18n("&Add Marker..."), Qt::CTRL+Qt::Key_M, kWrite, SLOT(addBookmark()),
+              actionCollection(), "go_addMarker");
+  new KAction(i18n("&Set Marker..."), 0, kWrite, SLOT(setBookmark()),
+              actionCollection(), "go_setMarker");
+  new KAction(i18n("&Clear Markers..."), 0, kWrite, SLOT(clearBookmarks()),
+              actionCollection(), "go_clearMarkers");
 
-  pixmap = SmallIcon("filenew");
-  file->addCommand(ctFileCommands, cmNew, pixmap, kWrite, SLOT(newDoc()));
-  pixmap = SmallIcon("fileopen");
-  file->addCommand(ctFileCommands, cmOpen, pixmap, kWrite, SLOT(open()));
-  menuInsert = file->addCommand(ctFileCommands, cmInsert, kWrite, SLOT(insertFile()));
-  file->insertItem(i18n("Open &Recent"), recentPopup);
-  connect(recentPopup, SIGNAL(activated(int)), SLOT(openRecent(int)));
-  file->insertSeparator ();
-  pixmap = SmallIcon("filesave");
-  menuSave = file->addCommand(ctFileCommands, cmSave, pixmap, kWrite, SLOT(save()));
-  file->addCommand(ctFileCommands, cmSaveAs, kWrite, SLOT(saveAs()));
-  file->insertSeparator ();
-  pixmap = SmallIcon("fileprint");
-  file->addCommand(ctFileCommands, cmPrint, pixmap, this, SLOT(printDlg()));
-  file->insertSeparator ();
-  file->addCommand(ctFileCommands, cmNewWindow, this, SLOT(newWindow()));
-  file->addCommand(ctFileCommands, cmNewView, this, SLOT(newView()));
-  file->insertSeparator ();
-  pixmap = SmallIcon("exit");
-  file->addCommand(ctFileCommands, cmClose, pixmap, this, SLOT(closeWindow()));
+  // setup Tools menu
+  toolsSpell = KStdAction::spelling(kWrite, SLOT(spellcheck()), actionCollection());
+  toolsIndent = new KAction(i18n("&Intend"), Qt::CTRL+Qt::Key_I, kWrite, SLOT(indent()),
+                            actionCollection(), "tools_indent");
+  toolsUnindent = new KAction(i18n("&Unintend"), Qt::CTRL+Qt::Key_U, kWrite, SLOT(unIndent()),
+                              actionCollection(), "tools_unindent");
+  toolsCleanIndent = new KAction(i18n("&Clean Indentation"), 0, kWrite, SLOT(cleanIndent()),
+                                 actionCollection(), "tools_cleanIndent");
+  toolsComment = new KAction(i18n("C&omment"), 0, kWrite, SLOT(comment()),
+                             actionCollection(), "tools_comment");
+  toolsUncomment = new KAction(i18n("Unco&mment"), 0, kWrite, SLOT(uncomment()),
+                               actionCollection(), "tools_uncomment");
 
-/*
-  file->insertItem(i18n("&New..."),kWrite,SLOT(newDoc()),keys.openNew());
-  file->insertItem(i18n("&Open..."),kWrite,SLOT(open()),keys.open());
-  menuInsert = file->insertItem(i18n("&Insert..."),kWrite,SLOT(insertFile()));
-  file->insertItem(i18n("Open Recen&t"), recentPopup);
-  connect(recentPopup,SIGNAL(activated(int)),SLOT(openRecent(int)));
-  file->insertSeparator ();
-  menuSave = file->insertItem(i18n("&Save"),kWrite,SLOT(save()),keys.save());
-  file->insertItem(i18n("S&ave as..."),kWrite,SLOT(saveAs()));
-  file->insertSeparator ();
-  file->insertItem(i18n("&Print..."), kWrite,SLOT(print()),keys.print());
-  file->insertSeparator ();
-//  file->insertItem (i18n("&Mail..."),this,SLOT(mail()));
-//  file->insertSeparator ();
-  file->insertItem (i18n("New &Window"),this,SLOT(newWindow()));
-  file->insertItem (i18n("New &View"),this,SLOT(newView()));
-  file->insertSeparator ();
-  file->insertItem(i18n("&Close"),this,SLOT(closeWindow()),keys.close());
-//  file->insertItem (i18n("E&xit"),this,SLOT(quitEditor()),keys.quit());
-*/
+  // setup Settings menu
+  KStdAction::showToolbar(this, SLOT(toggleToolbar()), actionCollection());
+  KStdAction::showStatusbar(this, SLOT(toggleStatusbar()), actionCollection());
+  setShowPath = new KToggleAction(i18n("Show &Path"), 0, this, SLOT(togglePath()),
+                    actionCollection(), "set_showPath");
+  KStdAction::keyBindings(this, SLOT(editKeys()), actionCollection());
+  KStdAction::configureToolbars(this, SLOT(editToolbars()), actionCollection());
+  KStdAction::preferences(this, SLOT(configure()), actionCollection());
+  setVerticalSelection = new KToggleAction(i18n("&Vertical Selection"), 0, kWrite, SLOT(toggleVertical()),
+                             actionCollection(), "set_verticalSelect");
 
-  pixmap = SmallIcon("undo");
-  menuUndo = edit->addCommand(ctEditCommands, cmUndo, pixmap);
-  pixmap = SmallIcon("redo");
-  menuRedo = edit->addCommand(ctEditCommands, cmRedo, pixmap);
-  menuUndoHist = edit->insertItem(i18n("Undo/Redo &History..."),kWrite,SLOT(undoHistory()));
-  edit->insertSeparator();
-  pixmap = SmallIcon("editcut");
-  menuCut = edit->addCommand(ctEditCommands, cmCut, pixmap);
-  pixmap = SmallIcon("editcopy");
-  edit->addCommand(ctEditCommands, cmCopy, pixmap);
-  pixmap = SmallIcon("editpaste");
-  menuPaste = edit->addCommand(ctEditCommands, cmPaste, pixmap);
-//  edit->insertSeparator();
-//  pixmap = SmallIcon("search");
-//  edit->addCommand(ctFindCommands, cmFind, pixmap, kWrite, SLOT(search()));
-//  edit->addCommand(ctFindCommands, cmReplace, kWrite, SLOT(replace()));
-//  edit->addCommand(ctFindCommands, cmFindAgain, kWrite, SLOT(searchAgain()));
-//  edit->addCommand(ctFindCommands, cmGotoLine, kWrite, SLOT(gotoLine()));
-  edit->insertSeparator();
-  edit->addCommand(ctEditCommands, cmIndent);
-  edit->addCommand(ctEditCommands, cmUnindent);
-  edit->addCommand(ctEditCommands, cmCleanIndent);
-  edit->insertSeparator();
-  edit->addCommand(ctEditCommands, cmComment);
-  edit->addCommand(ctEditCommands, cmUncomment);
-  edit->insertSeparator();
-  edit->addCommand(ctEditCommands, cmSelectAll);
-  edit->addCommand(ctEditCommands, cmDeselectAll);
-  edit->addCommand(ctEditCommands, cmInvertSelection);
-  edit->insertSeparator();
-  pixmap = SmallIcon("spellcheck");
-  menuSpell = edit->insertItem(pixmap, i18n("Check Spe&lling..."), kWrite,SLOT(spellcheck()));
+  setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, actionCollection(), "set_highlight");
+  connect(setHighlight, SIGNAL(activated(int)), kWrite, SLOT(setHl(int)));
+  QStringList list;
+  for (int z = 0; z < HlManager::self()->highlights(); z++)
+    list.append(i18n(HlManager::self()->hlName(z)));
+  setHighlight->setItems(list);
+
+  setEndOfLine = new KSelectAction(i18n("&End Of Line"), 0, actionCollection(), "set_eol");
+  connect(setEndOfLine, SIGNAL(activated(int)), kWrite, SLOT(setEol(int)));
+  list.clear();
+  list.append("Unix");
+  list.append("Macintosh");
+  list.append("Windows/Dos");
+  setEndOfLine->setItems(list);
 
 
-  // find dialog
-  pixmap = SmallIcon("find");
-  find->addCommand(ctFindCommands, cmFind, pixmap, kWrite, SLOT(find()));
-  find->addCommand(ctFindCommands, cmReplace, kWrite, SLOT(replace()));
-  find->addCommand(ctFindCommands, cmFindAgain, kWrite, SLOT(findAgain()));
-  find->addCommand(ctFindCommands, cmGotoLine, kWrite, SLOT(gotoLine()));
+  // keyboard actions...
+  KAccel *acc=new KAccel(this);
+  KAction* act;
+  act = new KAction(i18n("Left"), Qt::Key_Left, kWrite, SLOT(cursorLeft()), actionCollection(), "cursor_left");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Left + Select"), Qt::SHIFT+Qt::Key_Left, kWrite, SLOT(shiftCursorLeft()), actionCollection(), "cursor_left_select");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Right"), Qt::Key_Right, kWrite, SLOT(cursorRight()), actionCollection(), "cursor_right");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Right + Select"), Qt::SHIFT+Qt::Key_Right, kWrite, SLOT(shiftCursorRight()), actionCollection(), "cursor_right_select");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Word Left"), Qt::CTRL+Qt::Key_Left, kWrite, SLOT(wordLeft()), actionCollection(), "word_left");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Word Left + Select"), Qt::SHIFT+Qt::CTRL+Qt::Key_Left, kWrite, SLOT(shiftWordLeft()), actionCollection(), "word_left_select");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Word Right"), Qt::CTRL+Qt::Key_Right, kWrite, SLOT(wordRight()), actionCollection(), "word_right");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Word Right + Select"), Qt::SHIFT+Qt::CTRL+Qt::Key_Right, kWrite, SLOT(shiftWordRight()), actionCollection(), "word_right_select");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Home"), Qt::Key_Home, kWrite, SLOT(home()), actionCollection(), "cursor_home");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Home + Select"), Qt::SHIFT+Qt::Key_Home, kWrite, SLOT(shiftHome()), actionCollection(), "cursor_home_select");
+  act->plugAccel(acc);
+  act = new KAction(i18n("End"), Qt::Key_End, kWrite, SLOT(end()), actionCollection(), "cursor_end");
+  act->plugAccel(acc);
+  act = new KAction(i18n("End + Select"), Qt::SHIFT+Qt::Key_End, kWrite, SLOT(shiftEnd()), actionCollection(), "cursor_end_select");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Up"), Qt::Key_Up, kWrite, SLOT(up()), actionCollection(), "cursor_up");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Up + Select"), Qt::SHIFT+Qt::Key_Up, kWrite, SLOT(shiftUp()), actionCollection(), "cursor_up_select");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Down"), Qt::Key_Down, kWrite, SLOT(down()), actionCollection(), "cursor_down");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Down + Select"), Qt::SHIFT+Qt::Key_Down, kWrite, SLOT(shiftDown()), actionCollection(), "cursor_down_select");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Scroll Up"), Qt::CTRL+Qt::Key_Up, kWrite, SLOT(scrollUp()), actionCollection(), "scroll_up");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Scroll Down"), Qt::CTRL+Qt::Key_Down, kWrite, SLOT(scrollDown()), actionCollection(), "scroll_down");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Top Of View"), Qt::CTRL+Qt::Key_PageUp, kWrite, SLOT(topOfView()), actionCollection(), "top_of_view");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Bottom Of View"), Qt::CTRL+Qt::Key_PageDown, kWrite, SLOT(bottomOfView()), actionCollection(), "bottom_of_view");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Page Up"), Qt::Key_PageUp, kWrite, SLOT(pageUp()), actionCollection(), "page_up");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Page Up + Select"), Qt::SHIFT+Qt::Key_PageUp, kWrite, SLOT(shiftPageUp()), actionCollection(), "page_up_select");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Page Down"), Qt::Key_PageDown, kWrite, SLOT(pageDown()), actionCollection(), "page_down");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Page Down + Select"), Qt::SHIFT+Qt::Key_PageDown, kWrite, SLOT(shiftPageDown()), actionCollection(), "page_down_select");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Top"), Qt::CTRL+Qt::Key_Home, kWrite, SLOT(top()), actionCollection(), "top");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Top + Select"), Qt::SHIFT+Qt::CTRL+Qt::Key_Home, kWrite, SLOT(shiftTop()), actionCollection(), "top_select");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Bottom"), Qt::CTRL+Qt::Key_End, kWrite, SLOT(bottom()), actionCollection(), "bottom");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Bottom + Select"), Qt::SHIFT+Qt::CTRL+Qt::Key_End, kWrite, SLOT(shiftBottom()), actionCollection(), "bottom_select");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Return"), Qt::Key_Return, kWrite, SLOT(keyReturn()), actionCollection(), "return");
+  act->plugAccel(acc);
+  // ugly trick, KAction only supports one keybinding
+  act = new KAction(i18n("New Line"), Qt::Key_Enter, kWrite, SLOT(keyReturn()), actionCollection(), "new_line");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Delete"), Qt::Key_Delete, kWrite, SLOT(keyDelete()), actionCollection(), "delete");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Backspace"), Qt::Key_Backspace, kWrite, SLOT(backspace()), actionCollection(), "backspace");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Kill Line"), Qt::CTRL+Qt::Key_K, kWrite, SLOT(killLine()), actionCollection(), "kill_line");
+  act->plugAccel(acc);
+  act = new KAction(i18n("Insert Mode"), Qt::Key_Insert, kWrite, SLOT(toggleInsert()), actionCollection(), "insert_mode");
+  act->plugAccel(acc);
 
-/*
-  menuCut = edit->insertItem(i18n("C&ut"),kWrite,SLOT(cut()),keys.cut());
-  edit->insertItem(i18n("&Copy"),kWrite,SLOT(copy()),keys.copy());
-  menuPaste = edit->insertItem(i18n("&Paste"),kWrite,SLOT(paste()),keys.paste());
-  edit->insertSeparator();
-  edit->insertItem(i18n("C&ut"),kWrite,SLOT(cut()), keys.cut());
-  edit->insertItem(i18n("&Copy"),kWrite,SLOT(copy()), keys.copy());
-  edit->insertItem(i18n("&Paste"),kWrite,SLOT(paste()), keys.paste());
-  edit->insertSeparator();
-  edit->insertItem(i18n("&Find..."),kWrite,SLOT(search()),keys.find());
-  menuReplace = edit->insertItem(i18n("&Replace..."),kWrite,SLOT(replace()),keys.replace());
-  edit->insertItem(i18n("Find &Again"),kWrite,SLOT(searchAgain()),Key_F3);
-  edit->insertItem(i18n("&Goto Line..."),kWrite,SLOT(gotoLine()),CTRL+Key_G);
-  edit->insertSeparator();
-  menuUndo = edit->insertItem(i18n("U&ndo"),kWrite,SLOT(undo()),keys.undo());
-  menuRedo = edit->insertItem(i18n("R&edo"),kWrite,SLOT(redo()),CTRL+Key_Y);
-  menuUndoHist = edit->insertItem(i18n("Undo/Redo &History..."),kWrite,SLOT(undoHistory()));
-  edit->insertSeparator();
-  menuIndent = edit->insertItem(i18n("&Indent"),kWrite,SLOT(indent()),CTRL+Key_I);
-  menuUnindent = edit->insertItem(i18n("Uninden&t"),kWrite,SLOT(unIndent()),CTRL+Key_U);
-  menuCleanIndent = edit->insertItem(i18n("C&lean Indentation"),kWrite,SLOT(cleanIndent()));
-  edit->insertSeparator();
-//  edit->insertItem(i18n("Format..."),kWrite,SLOT(format()));
-//  edit->insertSeparator();
-  edit->insertItem(i18n("&Select All"),kWrite,SLOT(selectAll()));
-  edit->insertItem(i18n("&Deselect All"),kWrite,SLOT(deselectAll()));
-  edit->insertItem(i18n("In&vert Selection"),kWrite,SLOT(invertSelection()));
-  edit->insertSeparator();
-  menuSpell = edit->insertItem(i18n("Spe&llcheck..."), kWrite,SLOT(spellcheck()));
-//  edit->insertSeparator();
-//  edit->insertItem(i18n("Insert &Date"),this,SLOT(insertDate()));
-//  edit->insertItem(i18n("Insert &Time"),this,SLOT(insertTime()));
-*/
+  createGUI();
 
-//  bookmarks->insertItem(i18n("&Set Bookmark..."),kWrite,SLOT(setBookmark()),ALT+Key_S);
-//  bookmarks->insertItem(i18n("&Add Bookmark"),kWrite,SLOT(addBookmark()));
-//  bookmarks->insertItem(i18n("&Clear Bookmarks"),kWrite,SLOT(clearBookmarks()),ALT+Key_C);
-  kWrite->installBMPopup(bookmarks);
-
-  //highlight selector
-  hlPopup = new QPopupMenu();
-  hlPopup->setCheckable(true);
-  for (z = 0; z < HlManager::self()->highlights(); z++) {
-    hlPopup->insertItem(i18n(HlManager::self()->hlName(z)),z);
-  }
-  connect(hlPopup,SIGNAL(activated(int)),kWrite,SLOT(setHl(int)));
-
-  // end of line selector
-  eolPopup = new QPopupMenu();
-  eolPopup->setCheckable(true);
-  eolPopup->insertItem("Unix", eolUnix);
-  eolPopup->insertItem("Macintosh", eolMacintosh);
-  eolPopup->insertItem("Windows/Dos", eolDos);
-  connect(eolPopup,SIGNAL(activated(int)),kWrite,SLOT(setEol(int)));
-
-  options->setCheckable(TRUE);
-  options->insertItem(i18n("Set Highlight"),hlPopup);
-  connect(hlPopup,SIGNAL(aboutToShow()),this,SLOT(showHighlight()));
-  options->insertItem(i18n("&Defaults..."),kWrite,SLOT(hlDef()));
-  options->insertItem(i18n("&Highlight..."),kWrite,SLOT(hlDlg()));
-//  indentID = options->insertItem(i18n("Auto &Indent"),this,SLOT(toggle_indent_mode()));
-//  options->insertSeparator();
-//  options->insertItem(i18n("&Options..."),kWrite,SLOT(optDlg()));
-  options->insertItem(i18n("Colo&rs..."),kWrite,SLOT(colDlg()));
-  options->insertSeparator();
-  options->insertItem(i18n("&Configure..."), this, SLOT(configure()));
-  options->insertItem(i18n("&Keys..."), this, SLOT(keys()));
-  options->insertItem(i18n("End Of Line"),eolPopup);
-  connect(eolPopup,SIGNAL(aboutToShow()),this,SLOT(showEol()));
-//  options->insertItem(i18n("&Keys..."), this, SLOT(keyDlg()));
-  options->insertSeparator();
-  menuVertical = options->addCommand(ctStateCommands, cmToggleVertical);
-    //Item(i18n("&Vertical Selections"),kWrite,SLOT(toggleVertical()),Key_F5);
-  menuShowTB = options->insertItem(i18n("Show &Toolbar"),this,SLOT(toggleToolBar()));
-  menuShowSB = options->insertItem(i18n("Show &Statusbar"),this,SLOT(toggleStatusBar()));
-  menuShowPath = options->insertItem(i18n("Show &Path"),this,SLOT(togglePath()));
-  options->insertItem(i18n("Save Config"),this,SLOT(writeConfig()));
-//  options->insertSeparator();
-//  options->insertItem(i18n("Save Options"),this,SLOT(save_options()));
-
-  help = helpMenu( i18n("KWrite %1\n\nCopyright 1998, 1999\nJochen Wilhelmy\ndigisnap@cs.tu-berlin.de").arg(KWRITE_VERSION),false);
-
-  //right mouse button popup
-  popup = new QPopupMenu();
-
-  pixmap = SmallIcon("fileopen");
-  popup->insertItem(QIconSet(pixmap), i18n("&Open..."),kWrite,SLOT(open()));
-  pixmap = SmallIcon("filefloppy");
-  popup->insertItem(QIconSet(pixmap), i18n("&Save"),kWrite,SLOT(save()));
-  popup->insertItem(i18n("S&ave as..."),kWrite,SLOT(saveAs()));
-  popup->insertSeparator();
-/*  pixmap = SmallIcon("undo");
-  popup->insertItem(QIconSet(pixmap), i18n("&Undo"),kWrite,SLOT(undo()));
-  pixmap = SmallIcon("redo");
-  popup->insertItem(QIconSet(pixmap), i18n("R&edo"),kWrite,SLOT(redo()));
-  popup->insertSeparator();*/
-  pixmap = SmallIcon("editcut");
-  popup->insertItem(QIconSet(pixmap), i18n("C&ut"),kWrite,SLOT(cut()));
-  pixmap = SmallIcon("editcopy");
-  popup->insertItem(QIconSet(pixmap), i18n("&Copy"),kWrite,SLOT(copy()));
-  pixmap = SmallIcon("editpaste");
-  popup->insertItem(QIconSet(pixmap), i18n("&Paste"),kWrite,SLOT(paste()));
-  kWrite->installRBPopup(popup);
-
-  menubar = menuBar();
-  menubar->insertItem(i18n("&File"), file);
-  menubar->insertItem(i18n("&Edit"), edit);
-  menubar->insertItem(i18n("&Search"), find);
-  menubar->insertItem(i18n("&Bookmarks"), bookmarks);
-  menubar->insertItem(i18n("&Options"), options);
-  menubar->insertSeparator();
-  menubar->insertItem(i18n("&Help"), help);
+  kWrite->installRBPopup(static_cast<QPopupMenu *>(factory()->container("rb_popup", this)));
 }
 
-void TopLevel::setupToolBar(){
-  KToolBar *toolbar;
-
-  toolbar = toolBar();//new KToolBar(this);
-
-  toolbar->insertButton("filenew",0,SIGNAL(clicked()),
-    kWrite,SLOT(newDoc()),TRUE,i18n("New"));
-
-  toolbar->insertButton("fileopen",0,SIGNAL(clicked()),
-    kWrite,SLOT(open()),TRUE,i18n("Open"));
-
-  toolbar->insertButton("filesave",0,SIGNAL(clicked()),
-    kWrite,SLOT(save()),TRUE,i18n("Save"));
-
-  toolbar->insertSeparator();
-
-  toolbar->insertButton("editcut",toolCut,SIGNAL(clicked()),
-    kWrite,SLOT(cut()),TRUE,i18n("Cut"));
-
-  toolbar->insertButton("editcopy",0,SIGNAL(clicked()),
-    kWrite,SLOT(copy()),TRUE,i18n("Copy"));
-
-  toolbar->insertButton("editpaste",toolPaste,SIGNAL(clicked()),
-    kWrite,SLOT(paste()),TRUE,i18n("Paste"));
-
-  toolbar->insertSeparator();
-
-  toolbar->insertButton("undo",toolUndo,SIGNAL(clicked()),
-    kWrite,SLOT(undo()),TRUE,i18n("Undo"));
-
-  toolbar->insertButton("redo",toolRedo,SIGNAL(clicked()),
-    kWrite,SLOT(redo()),TRUE,i18n("Redo"));
-
-  toolbar->insertSeparator();
-
-  toolbar->insertButton("fileprint", 0, SIGNAL(clicked()),
-    this, SLOT(printNow()), TRUE, i18n("Print Document"));
-
-/*
-  pixmap = BarIcon("send");
-  toolbar->insertButton(pixmap, 0,
-                      SIGNAL(clicked()), this,
-                      SLOT(mail()), TRUE, i18n("Mail Document"));
-
-*/
-  toolbar->insertSeparator();
-  toolbar->insertButton("help",0,SIGNAL(clicked()),
-    this,SLOT(helpSelected()),TRUE,i18n("Help"));
-
-  //  toolbar->setBarPos(KToolBar::Top);
-}
 
 void TopLevel::setupStatusBar()
 {
-    KStatusBar *statusbar;
-    statusbar = statusBar();
-    statusbar->insertItem(" Line:000000 Col: 000 ", ID_LINE_COLUMN);
-    statusbar->insertItem(" XXX ", ID_INS_OVR);
-    statusbar->insertFixedItem(" * ", ID_MODIFIED);
-    statusbar->insertItem("", ID_GENERAL, 1);
-    statusbar->setItemAlignment( ID_GENERAL, AlignLeft );
+  KStatusBar *statusbar;
+  statusbar = statusBar();
+  statusbar->insertItem(" Line:000000 Col: 000 ", ID_LINE_COLUMN);
+  statusbar->insertItem(" XXX ", ID_INS_OVR);
+  statusbar->insertFixedItem(" * ", ID_MODIFIED);
+  statusbar->insertItem("", ID_GENERAL, 1);
+  statusbar->setItemAlignment( ID_GENERAL, AlignLeft );
 }
 
 
-void TopLevel::openRecent(int id) {
-  if (kWrite->canDiscard()) kWrite->loadURL(recentPopup->text(id));
+void TopLevel::openRecent(const KURL& url)
+{
+  if (kWrite->canDiscard())
+    kWrite->loadURL(url);
 }
 
-void TopLevel::newWindow() {
 
+void TopLevel::newWindow()
+{
   TopLevel *t = new TopLevel(0L, kWrite->doc()->url().fileName());
   t->readConfig();
   t->init();
 //  t->kWrite->doc()->inheritFileName(kWrite->doc());
 }
 
-void TopLevel::newView() {
 
+void TopLevel::newView()
+{
   TopLevel *t = new TopLevel(kWrite->doc());
   t->readConfig();
   t->kWrite->copySettings(kWrite);
@@ -466,18 +334,14 @@ void TopLevel::newView() {
 }
 
 
-void TopLevel::closeWindow() {
+void TopLevel::closeWindow()
+{
   close();
 }
 
 
-void TopLevel::quitEditor() {
-
-//  writeConfig();
-  kapp->quit();
-}
-
-void TopLevel::configure() {
+void TopLevel::configure()
+{
   KWin kwin;
   // I read that no widgets should be created on the stack
   KDialogBase *kd = new KDialogBase(KDialogBase::IconList,
@@ -487,12 +351,12 @@ void TopLevel::configure() {
 				    KDialogBase::Ok, this, "tabdialog");
 
   // indent options
-  QVBox *page=kd->addVBoxPage(i18n("Indent"), QString::null, 
+  QVBox *page=kd->addVBoxPage(i18n("Indent"), QString::null,
 			      BarIcon("rightjust", KIcon::SizeMedium) );
   IndentConfigTab *indentConfig = new IndentConfigTab(page, kWrite);
 
   // select options
-  page=kd->addVBoxPage(i18n("Select"), QString::null, 
+  page=kd->addVBoxPage(i18n("Select"), QString::null,
 		       BarIcon("misc") );
   SelectConfigTab *selectConfig = new SelectConfigTab(page, kWrite);
 
@@ -505,16 +369,7 @@ void TopLevel::configure() {
   page = kd->addVBoxPage( i18n("Spelling"), i18n("Spell checker behavior"),
 			  BarIcon("spellcheck", KIcon::SizeMedium) );
   KSpellConfig *ksc = new KSpellConfig(page, 0L, kWrite->ksConfig(), false );
-  // keys
-  //this still lacks layout management, so the tabdialog does not
-  //make it fit
-//  KGuiCmdConfigTab *keys = new KGuiCmdConfigTab(qtd, &cmdMngr);
-//  qtd->addTab(keys, i18n("Keys"));
 
-  // Is there a _right_ way to do this?
-  // yes: don´t do it :)
-//  qtd->setMinimumSize (ksc.sizeHint().width() + qtd->sizeHint().width(),
-//          ksc.sizeHint().height() + qtd->sizeHint().height());
   kwin.setIcons(kd->winId(), kapp->icon(), kapp->miniIcon());
 
   if (kd->exec()) {
@@ -527,90 +382,59 @@ void TopLevel::configure() {
     // spell checker
     ksc->writeGlobalSettings();
     kWrite->setKSConfig(*ksc);
-    // keys
-//    cmdMngr.changeAccels();
-//    cmdMngr.writeConfig(kapp->config());
-//  } else {
-//    // cancel keys
-//    cmdMngr.restoreAccels();
   }
 
   delete kd;
 }
 
-void TopLevel::keys() {
 
-  KDialogBase *dlg = new KDialogBase(this, "keys", true,
-    i18n("Configure Keybindings"), KDialogBase::Ok | KDialogBase::Cancel,
-    KDialogBase::Ok);
-
-  // keys
-  //this still lacks layout management, so the tabdialog does not
-  //make it fit
-  KGuiCmdConfigTab *keys = new KGuiCmdConfigTab(dlg, KGuiCmdManager::self());
-  keys->resize(450, 290);
-  dlg->setMainWidget(keys);
-  dlg->resize(450, 315);
-
-  if (dlg->exec()) {
-    // change keys
-    KGuiCmdManager::self()->changeAccels();
-    KGuiCmdManager::self()->writeConfig(kapp->config());
-  } else {
-    // cancel keys
-    KGuiCmdManager::self()->restoreAccels();
-  }
-
-  delete dlg;
-}
-
-
-
-void TopLevel::toggleToolBar() {
-
-  options->setItemChecked(menuShowTB,hideToolBar);
-  if (hideToolBar) {
-    hideToolBar = FALSE;
-    enableToolBar(KToolBar::Show);
-  } else {
-    hideToolBar = TRUE;
-    enableToolBar(KToolBar::Hide);
-  }
-}
-/*
-void TopLevel::keyDlg() {
-  QDialog *dlg;
-
-//  cmdMngr.saveAccels();
-  dlg = new KGuiCmdConfig(&cmdMngr, this);
-  dlg->setCaption(i18n("Key Bindings"));
-  if (dlg->exec() == QDialog::Accepted) {
-    cmdMngr.changeAccels();
-    cmdMngr.writeConfig(kapp->config());
-  } else cmdMngr.restoreAccels();
-  delete dlg;
-}
-*/
-void TopLevel::toggleStatusBar() {
-
-  options->setItemChecked(menuShowSB, hideStatusBar);
-  if (hideStatusBar) {
-    hideStatusBar = FALSE;
-    enableStatusBar(KStatusBar::Show);
-  } else {
-    hideStatusBar = TRUE;
-    enableStatusBar(KStatusBar::Hide);
-  }
-}
-
-void TopLevel::togglePath() {
+void TopLevel::togglePath()
+{
   showPath = !showPath;
-  options->setItemChecked(menuShowPath, showPath);
   newCaption();
 }
 
 
-void TopLevel::print(bool dialog) {
+void TopLevel::toggleToolbar()
+{
+  QToolBar *bar = toolBar("mainToolBar");
+  if(bar->isVisible())
+    bar->hide();
+  else
+    bar->show();
+}
+
+
+void TopLevel::toggleStatusbar()
+{
+  if (statusBar()->isVisible())
+    statusBar()->hide();
+  else
+    statusBar()->show();
+}
+
+
+void TopLevel::editKeys()
+{
+  KKeyDialog::configureKeys(actionCollection(), xmlFile());
+}
+
+
+void TopLevel::editToolbars()
+{
+  KEditToolbar *dlg = new KEditToolbar(actionCollection());
+
+  if (dlg->exec())
+    createGUI();
+
+  kWrite->installRBPopup(static_cast<QPopupMenu *>(factory()->container("rb_popup", this)));
+
+  delete dlg;
+}
+
+
+void TopLevel::print(bool dialog)
+{
   QString title = kWrite->doc()->url().fileName();
   if (!showPath) {
     int pos = title.findRev('/');
@@ -623,7 +447,9 @@ void TopLevel::print(bool dialog) {
     kWrite->numLines(), this, SLOT(doPrint(KTextPrint &)));
 }
 
-void TopLevel::doPrint(KTextPrint &printer) {
+
+void TopLevel::doPrint(KTextPrint &printer)
+{
   KWriteDoc *doc = kWrite->doc();
 
   int z, numAttribs;
@@ -673,37 +499,36 @@ void TopLevel::doPrint(KTextPrint &printer) {
   printer.end();
 }
 
-void TopLevel::printNow() {
+
+void TopLevel::printNow()
+{
   print(false);
 }
 
-void TopLevel::printDlg() {
+
+void TopLevel::printDlg()
+{
   print(true);
 }
 
 
-
-void TopLevel::helpSelected() {
-  kapp->invokeHelp( );
-}
-
-void TopLevel::newCurPos() {
+void TopLevel::newCurPos()
+{
   statusBar()->changeItem(i18n(" Line: %1 Col: %2 ")
     .arg(KGlobal::locale()->formatNumber(kWrite->currentLine() + 1, 0))
     .arg(KGlobal::locale()->formatNumber(kWrite->currentColumn() + 1, 0)),
     ID_LINE_COLUMN);
 }
 
-void TopLevel::newStatus() {
-  int config;
-  bool readOnly;
 
+void TopLevel::newStatus()
+{
   newCaption();
 
-  readOnly = kWrite->isReadOnly();
+  bool readOnly = kWrite->isReadOnly();
+  int config = kWrite->config();
 
-  config = kWrite->config();
-  options->setItemChecked(menuVertical,config & cfVerticalSelect);
+  setVerticalSelection->setChecked(config & cfVerticalSelect);
 
   if (readOnly)
     statusBar()->changeItem(i18n(" R/O "),ID_INS_OVR);
@@ -712,37 +537,39 @@ void TopLevel::newStatus() {
 
   statusBar()->changeItem(kWrite->isModified() ? " * " : "",ID_MODIFIED);
 
-  file->setItemEnabled(menuInsert,!readOnly);
-  file->setItemEnabled(menuSave,!readOnly);
-
-  edit->setItemEnabled(menuIndent,!readOnly);
-  edit->setItemEnabled(menuUnindent,!readOnly);
-  edit->setItemEnabled(menuCleanIndent,!readOnly);
-  edit->setItemEnabled(menuComment,!readOnly);
-  edit->setItemEnabled(menuUncomment,!readOnly);
-  edit->setItemEnabled(menuSpell,!readOnly);
-  edit->setItemEnabled(menuCut,!readOnly);
-  edit->setItemEnabled(menuPaste,!readOnly);
-  edit->setItemEnabled(menuReplace,!readOnly);
-
-  toolBar()->setItemEnabled(toolCut,!readOnly);
-  toolBar()->setItemEnabled(toolPaste,!readOnly);
+  fileSave->setEnabled(!readOnly);
+  editInsert->setEnabled(!readOnly);
+  editCut->setEnabled(!readOnly);
+  editPaste->setEnabled(!readOnly);
+  editReplace->setEnabled(!readOnly);
+  toolsIndent->setEnabled(!readOnly);
+  toolsUnindent->setEnabled(!readOnly);
+  toolsCleanIndent->setEnabled(!readOnly);
+  toolsComment->setEnabled(!readOnly);
+  toolsUncomment->setEnabled(!readOnly);
+  toolsSpell->setEnabled(!readOnly);
 
   newUndo();
 }
 
-void TopLevel::statusMsg(const QString &msg) {
+
+void TopLevel::statusMsg(const QString &msg)
+{
   statusbarTimer->stop();
   statusBar()->changeItem(" " + msg, ID_GENERAL);
   statusbarTimer->start(10000, true); //single shot
 }
 
+
 void TopLevel::timeout() {
   statusBar()->changeItem("", ID_GENERAL);
 }
 
+
 void TopLevel::newCaption()
 {
+  setEndOfLine->setCurrentItem(kWrite->getEol());
+
   if (kWrite->doc()->url().fileName().isEmpty()) {
     setCaption(i18n("Untitled"),kWrite->isModified());
   } else {
@@ -753,64 +580,58 @@ void TopLevel::newCaption()
       setCaption(kWrite->doc()->url().fileName(),kWrite->isModified());
 
     //set recent files popup menu
-    QString url = kWrite->doc()->url().url();
-    for ( uint z = 0; z < recentPopup->count(); z++ )
-      if (url == recentPopup->text(recentPopup->idAt(z)))
-        recentPopup->removeItemAt(z);
-    recentPopup->insertItem(url, 0, 0);
-    if (recentPopup->count() > 5)
-      recentPopup->removeItemAt(5);
-    for (uint z = 0; z < 5; z++)
-      recentPopup->setId(z, z);
+    fileRecent->addURL(kWrite->doc()->url());
   }
 }
 
-void TopLevel::newUndo() {
-  int state, uType, rType;
-  QString t;
 
-  state = kWrite->undoState();
+void TopLevel::newUndo()
+{
+  int state = kWrite->undoState();
 
-  edit->setItemEnabled(menuUndoHist,(state & 1 || state & 2));
+  editUndoHist->setEnabled(state & 1 || state & 2);
 
-  t = KGuiCmdManager::self()->getCommand(ctEditCommands, cmUndo)->getName();
+  QString t = i18n("Und&o");   // it would be nicer to fetch the original string
   if (state & 1) {
-    uType = kWrite->nextUndoType();
-    edit->setItemEnabled(menuUndo,true);
-    toolBar()->setItemEnabled(toolUndo,true);
-
+    editUndo->setEnabled(true);
     t += ' ';
-    t += i18n(kWrite->undoTypeName(uType));
+    t += i18n(kWrite->undoTypeName(kWrite->nextUndoType()));
   } else {
-    edit->setItemEnabled(menuUndo,false);
-    toolBar()->setItemEnabled(toolUndo,false);
+    editUndo->setEnabled(false);
   }
-  edit->setText(t, menuUndo);
+  // icons disappear when text is altered, seems to be a bug in KToolbarButton
+  //editUndo->setText(t);
 
-  t = KGuiCmdManager::self()->getCommand(ctEditCommands, cmRedo)->getName();
+  t = i18n("Re&do");   // it would be nicer to fetch the original string
   if (state & 2) {
-    rType = kWrite->nextRedoType();
-    edit->setItemEnabled(menuRedo,true);
-    toolBar()->setItemEnabled(toolRedo,true);
-
+    editRedo->setEnabled(true);
     t += ' ';
-    t += i18n(kWrite->undoTypeName(rType));
+    t += i18n(kWrite->undoTypeName(kWrite->nextRedoType()));
   } else {
-    edit->setItemEnabled(menuRedo,false);
-    toolBar()->setItemEnabled(toolRedo,false);
+    editRedo->setEnabled(false);
   }
-  edit->setText(t, menuRedo);
+  // icons disappear when text is altered, seems to be a bug in KToolbarButton
+  //editRedo->setText(t);
 }
+
+
+void TopLevel::slotHighlightChanged()
+{
+  setHighlight->setCurrentItem(kWrite->getHl());
+}
+
 
 void TopLevel::dragEnterEvent( QDragEnterEvent *event )
 {
   event->accept(QUriDrag::canDecode(event));
 }
 
+
 void TopLevel::dropEvent( QDropEvent *event )
 {
   slotDropEvent(event);
 }
+
 
 void TopLevel::slotDropEvent( QDropEvent *event )
 {
@@ -833,50 +654,22 @@ void TopLevel::slotDropEvent( QDropEvent *event )
   }
 }
 
-void TopLevel::showHighlight() {
-  int hl = kWrite->getHl();
-
-  for (int index = 0; index < (int) hlPopup->count(); index++)
-    hlPopup->setItemChecked(index, hl == index);
-}
-
-void TopLevel::showEol() {
-  int eol = kWrite->getEol();
-
-  for (int index = 0; index < (int) eolPopup->count(); index++)
-    eolPopup->setItemChecked(index, eol == index);
-}
 
 //common config
-void TopLevel::readConfig(KConfig *config) {
-  int z;
-  char name[16];
-  QString s;
-
-  hideToolBar = config->readNumEntry("HideToolBar");
-  hideStatusBar = config->readNumEntry("HideStatusBar");
-  showPath = config->readNumEntry("ShowPath");
-
-  for (z = 0; z < 5; z++) {
-    sprintf(name, "Recent%d", z + 1);
-    s = config->readEntry(name);
-    if (!s.isEmpty()) recentPopup->insertItem(s);
-  }
+void TopLevel::readConfig(KConfig *config)
+{
+  showPath = config->readBoolEntry("ShowPath");
+  fileRecent->loadEntries(config);
 }
 
-void TopLevel::writeConfig(KConfig *config) {
-  int z;
-  char name[16];
 
-  config->writeEntry("HideToolBar",hideToolBar);
-  config->writeEntry("HideStatusBar",hideStatusBar);
+void TopLevel::writeConfig(KConfig *config)
+{
   config->writeEntry("ShowPath",showPath);
 
-  for (z = 0; z < (int) recentPopup->count(); z++) {
-    sprintf(name, "Recent%d", z + 1);
-    config->writeEntry(name, recentPopup->text(recentPopup->idAt(z)));
-  }
+  fileRecent->saveEntries(config);
 }
+
 
 //config file
 void TopLevel::readConfig() {
@@ -891,14 +684,14 @@ void TopLevel::readConfig() {
   resize(w, h);
 
   readConfig(config);
-//  hideToolBar = config->readNumEntry("HideToolBar");
-//  hideStatusBar = config->readNumEntry("HideStatusBar");
 
   kWrite->readConfig(config);
   kWrite->doc()->readConfig(config);
 }
 
-void TopLevel::writeConfig() {
+
+void TopLevel::writeConfig()
+{
   KConfig *config;
 
   config = kapp->config();
@@ -908,16 +701,14 @@ void TopLevel::writeConfig() {
   config->writeEntry("Height", height());
 
   writeConfig(config);
-//  config->writeEntry("HideToolBar",hideToolBar);
-//  config->writeEntry("HideStatusBar",hideStatusBar);
 
   kWrite->writeConfig(config);
   kWrite->doc()->writeConfig(config);
 }
 
 // session management
-void TopLevel::restore(KConfig *config, int n) {
-
+void TopLevel::restore(KConfig *config, int n)
+{
   if (kWrite->isLastView() && kWrite->doc()->url().fileName().isEmpty()) { //in this case first view
     loadURL(kWrite->doc()->url().fileName(), lfNoAutoHl);
   }
@@ -926,14 +717,16 @@ void TopLevel::restore(KConfig *config, int n) {
 //  show();
 }
 
-void TopLevel::readProperties(KConfig *config) {
 
+void TopLevel::readProperties(KConfig *config)
+{
   readConfig(config);
   kWrite->readSessionConfig(config);
 }
 
-void TopLevel::saveProperties(KConfig *config) {
 
+void TopLevel::saveProperties(KConfig *config)
+{
   writeConfig(config);
   config->writeEntry("DocumentNumber",docList.find(kWrite->doc()) + 1);
   kWrite->writeSessionConfig(config);
@@ -943,7 +736,9 @@ void TopLevel::saveProperties(KConfig *config) {
 #endif
 }
 
-void TopLevel::saveData(KConfig *config) { //save documents
+
+void TopLevel::saveData(KConfig *config) //save documents
+{
   int z;
   char buf[16];
   KWriteDoc *doc;
@@ -960,10 +755,9 @@ void TopLevel::saveData(KConfig *config) { //save documents
 }
 
 
-
-
 //restore session
-void restore() {
+void restore()
+{
   KConfig *config;
   int docs, windows, z;
   char buf[16];
@@ -993,47 +787,32 @@ void restore() {
   }
 }
 
+
 static KCmdLineOptions options[] =
 {
   { "+[URL]",   I18N_NOOP("Document to open."), 0 },
   { 0, 0, 0}
 };
 
+
 int main(int argc, char **argv)
 {
-  KCmdLineArgs::init( argc, argv, KWriteFactory::aboutData() );
+  KAboutData aboutData( "kwrite", I18N_NOOP( "KWrite" ),
+                       KWRITE_VERSION,
+                       I18N_NOOP( "Advanced Texteditor" ),
+                       KAboutData::License_GPL,
+                       "(c) 2000, Jochen Wilhelmy" );
+  aboutData.addAuthor( "Jochen Wilhemly", I18N_NOOP( "Author" ), "digisnap@cs.tu-berlin.de" );
+  aboutData.addAuthor("Michael Koch",I18N_NOOP("Port to KParts"), "koch@kde.org");
+  aboutData.addAuthor("Glen Parker",I18N_NOOP("Undo History, Kspell integration"), "glenebob@nwlink.com");
+
+  KCmdLineArgs::init( argc, argv, &aboutData );
   KCmdLineArgs::addCmdLineOptions( options );
 
-  KGuiCmdApp *a = new KGuiCmdApp;
-  //KApplication a(argc,argv);
+  KApplication *a = new KApplication();
 
   //list that contains all documents
   docList.setAutoDelete(false);
-
-  //init commands
-  KWrite::addCursorCommands(*KGuiCmdManager::self());
-
-  KGuiCmdManager::self()->addCategory(ctFileCommands, I18N_NOOP("File Commands"));
-  KGuiCmdManager::self()->addCommand(cmNew,             I18N_NOOP("&New..."    ));
-  KGuiCmdManager::self()->addCommand(cmOpen,            I18N_NOOP("&Open..."   ), Qt::CTRL+Qt::Key_O, Qt::Key_F17);
-  KGuiCmdManager::self()->addCommand(cmInsert,          I18N_NOOP("&Insert..." ));
-  KGuiCmdManager::self()->addCommand(cmSave,            I18N_NOOP("&Save"      ), Qt::CTRL+Qt::Key_S);
-  KGuiCmdManager::self()->addCommand(cmSaveAs,          I18N_NOOP("Save &As..."));
-  KGuiCmdManager::self()->addCommand(cmPrint,           I18N_NOOP("&Print..."  ), Qt::CTRL+Qt::Key_P);
-  KGuiCmdManager::self()->addCommand(cmNewWindow,       I18N_NOOP("New &Window"));
-  KGuiCmdManager::self()->addCommand(cmNewView,         I18N_NOOP("New &View"  ));
-  KGuiCmdManager::self()->addCommand(cmClose,           I18N_NOOP("&Close"     ), Qt::CTRL+Qt::Key_W, Qt::Key_Escape);
-//  cmdMngr.addCommand(cmClose,           "&Quit"      );
-
-  KWrite::addEditCommands(*KGuiCmdManager::self());
-  KWrite::addFindCommands(*KGuiCmdManager::self());
-  KWrite::addBookmarkCommands(*KGuiCmdManager::self());
-  KWrite::addStateCommands(*KGuiCmdManager::self());
-
-
-  //todo: insert reading of kde-global keybinding file here
-  KGuiCmdManager::self()->makeDefault(); //make keybindings default
-  KGuiCmdManager::self()->readConfig(kapp->config());
 
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
@@ -1042,7 +821,8 @@ int main(int argc, char **argv)
   } else {
     TopLevel *t = new TopLevel();
     t->readConfig();
-    if ( args->count() == 1 ) t->loadURL( args->url(0) ,lfNewFile);
+    if ( args->count() == 1 )
+      t->loadURL(args->url(0), lfNewFile);
     t->init();
   }
   int r = a->exec();

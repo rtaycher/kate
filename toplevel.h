@@ -22,27 +22,14 @@
 #ifndef _TOPLEVEL_H_
 #define _TOPLEVEL_H_
 
-#include <qlist.h>
-#include <qstring.h>
-#include <qpopupmenu.h>
-#include <qmenubar.h>
-#include <qapplication.h>
-#include <qdropsite.h>
-#include <qdragobject.h>
+#include <kmainwindow.h>
 
-#include <kapp.h>
-#include <kconfig.h>
-#include <ktoolbar.h>
-#include <kstatusbar.h>
+class KAction;
+class KToggleAction;
+class KSelectAction;
+class KRecentFilesAction;
 
-#include <ktmainwindow.h>
-
-#include "kwview.h"
-#include "kwdoc.h"
-#include "kguicommand.h"
-#include "ktextprint.h"
-
-class TopLevel : public KTMainWindow {
+class TopLevel : public KMainWindow {
     Q_OBJECT
   public:
 
@@ -50,15 +37,14 @@ class TopLevel : public KTMainWindow {
     ~TopLevel();
     void init(); //initialize caption, status and show
 
-    virtual bool queryClose();
-    virtual bool queryExit();
-
     void loadURL(const KURL &url, int flags = 0);
 
   protected:
+    virtual bool queryClose();
+    virtual bool queryExit();
+
     void setupEditWidget(KWriteDoc *);
-    void setupMenuBar();
-    void setupToolBar();
+    void setupActions();
     void setupStatusBar();
 
     virtual void dragEnterEvent( QDragEnterEvent * );
@@ -67,46 +53,39 @@ class TopLevel : public KTMainWindow {
     virtual void dropEvent( QDropEvent * );
 
     KWrite *kWrite;
-    int menuInsert, menuSave;
-    int menuUndo, menuRedo, menuUndoHist,
-        menuIndent, menuUnindent, menuCleanIndent,
-        menuComment, menuUncomment,
-        menuSpell, menuCut, menuPaste, menuReplace;
-    int menuVertical, menuShowTB, menuShowSB, menuShowPath;
-//    int statusID, toolID, verticalID, indentID;
 
-    KGuiCmdPopup *file, *edit, *options;
-    QPopupMenu *recentPopup, *hlPopup, *eolPopup;
+    KAction *fileSave, *editInsert, *editCut, *editPaste,
+            *editReplace, *editUndo, *editRedo, *editUndoHist,
+            *toolsIndent, *toolsUnindent, *toolsCleanIndent,
+            *toolsComment, *toolsUncomment, *toolsSpell;
 
-    QStrList recentFiles;
+    KToggleAction *setShowPath, *setVerticalSelection;
+    KRecentFilesAction *fileRecent;
+    KSelectAction *setHighlight, *setEndOfLine;
 
-    bool hideToolBar;
-    bool hideStatusBar;
     bool showPath;
 
     QTimer *statusbarTimer;
 
   public slots:
-    void openRecent(int);
+    void openRecent(const KURL& url);
     void newWindow();
     void newView();
     void closeWindow();
-    void quitEditor();
-
     void configure();
-    void keys();
-    void toggleToolBar();
-    void toggleStatusBar();
     void togglePath();
+    void toggleToolbar();
+    void toggleStatusbar();
+    void editKeys();
+    void editToolbars();
 
   public:
     void print(bool dialog);
+
   public slots:
     void doPrint(KTextPrint &);
     void printNow();
     void printDlg();
-
-    void helpSelected();
 
     void newCurPos();
     void newStatus();
@@ -114,9 +93,7 @@ class TopLevel : public KTMainWindow {
     void timeout();
     void newCaption();
     void newUndo();
-
-    void showHighlight();
-    void showEol();
+    void slotHighlightChanged();
 
     void slotDropEvent(QDropEvent *);
 

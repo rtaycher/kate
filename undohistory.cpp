@@ -29,8 +29,6 @@
 
 #include <stdio.h>
 
-#include <list>
-
 #include <qwidget.h>
 #include <qdialog.h>
 #include <qlayout.h>
@@ -111,10 +109,8 @@ UndoHistory::~UndoHistory()
 
 void UndoHistory::newUndo()
 {
-  typedef std::list<int>       lst;
-
-  lst             undoList;
-  lst::iterator   it;
+  QValueList<int> undoList;
+  QValueList<int>::Iterator it;
 
   // we don't want a signal storm...
   disconnect(lbUndo, SIGNAL(sigSelected(int)), this, SLOT(slotUndoSelChanged(int)));
@@ -123,6 +119,7 @@ void UndoHistory::newUndo()
   kWrite->undoTypeList(undoList);
 
   lbUndo->clear();
+
   for (it = undoList.begin() ; it != undoList.end() ; it++) {
     lbUndo->insertItem(i18n(kWrite->undoTypeName(*it)));
   }

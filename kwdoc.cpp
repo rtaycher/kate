@@ -25,8 +25,6 @@
 
 #include <stdio.h>
 
-#include <list>
-
 #include <qobject.h>
 #include <qapplication.h>
 #include <qclipboard.h>
@@ -34,6 +32,7 @@
 #include <qpainter.h>
 #include <qfile.h>
 
+#include <klocale.h>
 #include <kcharsets.h>
 #include <kdebug.h>
 
@@ -534,7 +533,7 @@ bool KWriteDoc::saveFile()
   return true;
 }
 
-KTextEditor::View *KWriteDoc::createView( QWidget *parent, const char *name )
+KTextEditor::View *KWriteDoc::createView( QWidget *parent, const char * )
 {
   return new KWrite( this, parent );
 }
@@ -550,11 +549,11 @@ QString KWriteDoc::textLine( int line ) const
   return QConstString( l->getText(), l->length() ).string();
 }
 
-void KWriteDoc::insertLine( const QString &s, int line )
+void KWriteDoc::insertLine( const QString &, int )
 {
 }
 
-void KWriteDoc::insertAt( const QString &s, int line, int col, bool mark )
+void KWriteDoc::insertAt( const QString &s, int line, int col, bool  )
 {
   VConfig c;
   c.view = 0; // ### FIXME
@@ -566,7 +565,7 @@ void KWriteDoc::insertAt( const QString &s, int line, int col, bool mark )
   insert( c, s );
 }
 
-void KWriteDoc::removeLine( int line )
+void KWriteDoc::removeLine( int  )
 {
 }
 
@@ -575,16 +574,18 @@ int KWriteDoc::length() const
   return text().length();
 }
 
-void KWriteDoc::setSelection( int row_from, int col_from, int row_to, int col_t )
+void KWriteDoc::setSelection( int , int , int , int )
 {
 }
 
 bool KWriteDoc::hasSelection() const
 {
+  return false;
 }
 
 QString KWriteDoc::selection() const
 {
+  return QString::null;
 }
 
 TextLine *KWriteDoc::getTextLine(int line) const {
@@ -725,6 +726,7 @@ void KWriteDoc::setHighlight(int n) {
     m_highlight = h;
     makeAttribs();
   }
+  emit(highlightChanged());
 }
 
 void KWriteDoc::makeAttribs() {
@@ -2299,7 +2301,7 @@ void KWriteDoc::printTextLine(QPainter &paint, int line, int xEnd, int y) {
 
 void KWriteDoc::setURL( const KURL &url, bool updateHighlight )
 {
-  int pos, hl;
+  int hl;
   KTextEditor::View *view;
 
   m_url = url;
@@ -2983,34 +2985,18 @@ int KWriteDoc::nextRedoType()
   return g->undoType;
 }
 
-void KWriteDoc::undoTypeList(std::list<int> &lst)
+void KWriteDoc::undoTypeList(QValueList<int> &lst)
 {
-  KWActionGroup *g;
-  int   currUndo = currentUndo;
-
   lst.clear();
-
-  while (1) {
-    if (currUndo <= 0) return;
-    currUndo--;
-    g = undoList.at(currUndo);
-    lst.push_back(g->undoType);
-  }
+  for (int i = currentUndo-1; i>=0 ;i--)
+    lst.append(undoList.at(i)->undoType);
 }
 
-void KWriteDoc::redoTypeList(std::list<int> &lst)
+void KWriteDoc::redoTypeList(QValueList<int> &lst)
 {
-  KWActionGroup *g;
-  int   currUndo = currentUndo;
-
   lst.clear();
-
-  while (1) {
-    if (currUndo+1 > (int)undoList.count()) return;
-    g = undoList.at(currUndo);
-    currUndo++;
-    lst.push_back(g->undoType);
-  }
+  for (int i = currentUndo+1; i<(int)undoList.count(); i++)
+    lst.append(undoList.at(i)->undoType);
 }
 
 void KWriteDoc::undo(VConfig &c, int count) {

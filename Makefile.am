@@ -11,9 +11,8 @@ bin_PROGRAMS = kwrite
 lib_LTLIBRARIES = libkwrite.la
 
 libkwrite_la_SOURCES = highlight.cpp ktextprint.cpp  \
-		       kguicommand.cpp kwdoc.cpp \
-		       kwview.cpp undohistory.cpp kwdialog.cpp \
-		       kwrite_factory.cpp
+		       kwdoc.cpp kwview.cpp undohistory.cpp  \
+		       kwdialog.cpp kwrite_factory.cpp
 
 libkwrite_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) $(KDE_PLUGIN)
 libkwrite_la_LIBADD = -lktexteditor -lkspell $(LIB_KPARTS)
@@ -29,7 +28,7 @@ appsdir = $(kde_appsdir)/Editors
 apps_DATA = kwrite.desktop
 
 rcdir = $(kde_datadir)/kwrite
-rc_DATA = kwrite_browser.rc
+rc_DATA = kwrite_browser.rc kwriteui.rc
 
 KDE_ICON = kwrite
 

@@ -23,8 +23,6 @@
 #ifndef _KWVIEV_H_
 #define _KWVIEV_H_
 
-#include <list>
-
 #include <qscrollbar.h>
 #include <qiodevice.h>
 #include <qpopupmenu.h>
@@ -38,9 +36,7 @@
 #include <kconfig.h>
 #include <kspell.h>
 #include <ksconfig.h>
-
-#include "kguicommand.h"
-#include "ktexteditor.h"
+#include <ktexteditor.h>
 
 namespace KIO { class FileCopyJob; }
 
@@ -49,7 +45,6 @@ class KWriteDoc;
 class Highlight;
 
 class KTextPrint;
-class KGuiCmdDispatcher;
 
 //search flags
 const int sfCaseSensitive     = 1;
@@ -101,9 +96,6 @@ const int cfKeepSelection     = 0x100;
 const int cfOvr               = 0x1000;
 const int cfMark              = 0x2000;
 
-
-
-
 //update flags
 const int ufDocGeometry       = 1;
 const int ufUpdateOnScroll    = 2;
@@ -118,13 +110,6 @@ const int lfNoAutoHl          = 4;
 const int eolUnix             = 0;
 const int eolMacintosh        = 1;
 const int eolDos              = 2;
-
-//command categories
-const int ctCursorCommands    = 0;
-const int ctEditCommands      = 1;
-const int ctFindCommands      = 2;
-const int ctBookmarkCommands  = 3;
-const int ctStateCommands     = 4;
 
 //cursor movement commands
 const int selectFlag          = 0x100000;
@@ -380,19 +365,11 @@ class KWrite : public KTextEditor::View {
     */
     ~KWrite();
 
-    static void addCursorCommands(KGuiCmdManager &);
-    static void addEditCommands(KGuiCmdManager &);
-    static void addFindCommands(KGuiCmdManager &);
-    static void addBookmarkCommands(KGuiCmdManager &);
-    static void addStateCommands(KGuiCmdManager &);
-
     virtual void setCursorPosition( int line, int col, bool mark = false );
     virtual void getCursorPosition( int *line, int *col );
 
     virtual bool isOverwriteMode() const;
     virtual void setOverwriteMode( bool b );
-
-    KGuiCmdDispatcher *dispatcher() const { return m_dispatcher; }
 
 //status and config functions
     /**
@@ -475,11 +452,11 @@ class KWrite : public KTextEditor::View {
     /**
       Returns a list of all available undo types, in undo order.
     */
-    void undoTypeList(std::list<int> &lst);
+    void undoTypeList(QValueList<int> &lst);
     /**
       Returns a list of all available redo types, in redo order.
     */
-    void redoTypeList(std::list<int> &lst);
+    void redoTypeList(QValueList<int> &lst);
     /**
       Returns a short text description of the given undo type,
       which is obtained with nextUndoType(), nextRedoType(), undoTypeList(), and redoTypeList(),
@@ -499,10 +476,7 @@ class KWrite : public KTextEditor::View {
       Presents a color dialog to the user
     */
     void colDlg();
-    /**
-      Executes state command cmdNum
-    */
-    void doStateCommand(int cmdNum);
+
     /**
       Toggles Insert mode
     */
@@ -538,7 +512,8 @@ class KWrite : public KTextEditor::View {
     /**
       Emits messages for the status line
     */
-    void statusMsg(const QString &);
+    void statusMsg(const QString &);    
+
   protected:
     int configFlags;
     int wrapAt;
@@ -643,6 +618,7 @@ class KWrite : public KTextEditor::View {
     void slotGETFinished( int id );
     void slotPUTFinished( int id );
     void slotIOJobError(int, const char *);
+    
   public:
     /**
       Mainly for internal use. Returns true if the current document can be
@@ -689,14 +665,7 @@ class KWrite : public KTextEditor::View {
 
 //command processors
   public slots:
-    /**
-      Does Cursor Command cmdNum
-    */
-    void doCursorCommand(int cmdNum);
-    /**
-      Does Edit Command cmdNum
-    */
-    void doEditCommand(int cmdNum);
+
 
 //edit functions
   public:
@@ -742,15 +711,15 @@ class KWrite : public KTextEditor::View {
     /**
       Moves the current line or the selection one position to the right
     */
-//    void indent();
+    void indent() {doEditCommand(cmIndent);};
     /**
       Moves the current line or the selection one position to the left
     */
-//    void unIndent();
+    void unIndent() {doEditCommand(cmUnindent);};
     /**
       Optimizes the selected indentation, replacing tabs and spaces as needed
     */
-//    void cleanIndent();
+    void cleanIndent() {doEditCommand(cmCleanIndent);};
     /**
       Selects all text
     */
@@ -762,7 +731,51 @@ class KWrite : public KTextEditor::View {
     /**
       Inverts the current selection
     */
-//    void invertSelection();
+    void invertSelection() {doEditCommand(cmInvertSelection);}
+    /**
+      comments out current line
+    */
+    void comment() {doEditCommand(cmComment);};
+    /**
+      removes comment signs in the current line
+    */
+    void uncomment() {doEditCommand(cmUncomment);};
+
+    void keyReturn() {doEditCommand(cmReturn);};
+    void keyDelete() {doEditCommand(cmDelete);};
+    void backspace() {doEditCommand(cmBackspace);};
+    void killLine() {doEditCommand(cmKillLine);};
+
+// cursor commands...
+
+    void cursorLeft() {doCursorCommand(cmLeft);};
+    void shiftCursorLeft() {doCursorCommand(cmLeft | selectFlag);};
+    void cursorRight() {doCursorCommand(cmRight);}
+    void shiftCursorRight() {doCursorCommand(cmRight | selectFlag);}
+    void wordLeft() {doCursorCommand(cmWordLeft);};
+    void shiftWordLeft() {doCursorCommand(cmWordLeft | selectFlag);};
+    void wordRight() {doCursorCommand(cmWordRight);};
+    void shiftWordRight() {doCursorCommand(cmWordRight | selectFlag);};
+    void home() {doCursorCommand(cmHome);};
+    void shiftHome() {doCursorCommand(cmHome | selectFlag);};
+    void end() {doCursorCommand(cmEnd);};
+    void shiftEnd() {doCursorCommand(cmEnd | selectFlag);};
+    void up() {doCursorCommand(cmUp);};
+    void shiftUp() {doCursorCommand(cmUp | selectFlag);};
+    void down() {doCursorCommand(cmDown);};
+    void shiftDown() {doCursorCommand(cmDown | selectFlag);};
+    void scrollUp() {doCursorCommand(cmScrollUp);};
+    void scrollDown() {doCursorCommand(cmScrollDown);};
+    void topOfView() {doCursorCommand(cmTopOfView);};
+    void bottomOfView() {doCursorCommand(cmBottomOfView);};
+    void pageUp() {doCursorCommand(cmPageUp);};
+    void shiftPageUp() {doCursorCommand(cmPageUp | selectFlag);};
+    void pageDown() {doCursorCommand(cmPageDown);};
+    void shiftPageDown() {doCursorCommand(cmPageDown | selectFlag);};
+    void top() {doCursorCommand(cmTop);};
+    void shiftTop() {doCursorCommand(cmTop | selectFlag);};
+    void bottom() {doCursorCommand(cmBottom);};
+    void shiftBottom() {doCursorCommand(cmBottom | selectFlag);};
 
 //search/replace functions
   public slots:
@@ -818,30 +831,27 @@ class KWrite : public KTextEditor::View {
       Install a Bookmark Menu. The bookmark items will be added to the
       end of the menu
     */
-    void installBMPopup(KGuiCmdPopup *);
+    //void installBMPopup(KGuiCmdPopup *);
     /**
       Sets the actual edit position as bookmark number n
     */
-    void setBookmark();
-    void addBookmark();
-    void clearBookmarks();
-    void setBookmark(int n);
-    void gotoBookmark(int n);
+
   public slots:
-    void doBookmarkCommand(int cmdNum);
+	void setBookmark(int n);
+    void gotoBookmark(int n);
 
     /**
       Shows a popup that lets the user choose the bookmark number
     */
-//    void setBookmark();
+    void setBookmark();
     /**
       Adds the actual edit position to the end of the bookmark list
     */
-//    void addBookmark();
+    void addBookmark();
     /**
       Clears all bookmarks
     */
-//    void clearBookmarks();
+    void clearBookmarks();
     /**
       Sets the cursor to the bookmark n
     */
@@ -907,6 +917,9 @@ class KWrite : public KTextEditor::View {
     virtual void paintEvent(QPaintEvent *);
     virtual void resizeEvent(QResizeEvent *);
 
+    void doCursorCommand(int cmdNum);
+    void doEditCommand(int cmdNum);
+
     KWriteView *kWriteView;
     KWriteDoc *kWriteDoc;
 
@@ -927,7 +940,7 @@ class KWrite : public KTextEditor::View {
     void spellcheck2(KSpell*);
     void misspelling (QString word, QStringList *, unsigned pos);
     void corrected (QString originalword, QString newword, unsigned pos);
-    void spellResult (const char *newtext);
+    void spellResult (const QString &newtext);
     void spellCleanDone();
   signals:
     /** This says spellchecking is <i>percent</i> done.
@@ -949,7 +962,6 @@ class KWrite : public KTextEditor::View {
       bool kspellPristine;        // doing spell check on a clean document?
     } kspell;
 
-    KGuiCmdDispatcher *m_dispatcher;
 };
 
 
