@@ -136,8 +136,6 @@ class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOP
  
     KAction* settingsConfigure;
 
-    KToggleAction* settingsShowFullScreen;
-
     KAction* sidebarFocusNext;
    
     QString tagSidebar;
@@ -184,7 +182,6 @@ class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOP
 
     void slotGoNext();
     void slotGoPrev();
-    void slotSettingsShowFullScreen();
 
     void fileSelected(const KFileViewItem *file);
 

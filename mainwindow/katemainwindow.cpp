@@ -267,7 +267,6 @@ void KateMainWindow::setupActions()
   settingsShowFullPath = new KToggleAction(i18n("Show Full &Path in Title"), 0, this, SLOT(slotSettingsShowFullPath()), actionCollection(), "settings_show_full_path");
   settingsShowToolbar = KStdAction::showToolbar(this, SLOT(slotSettingsShowToolbar()), actionCollection(), "settings_show_toolbar");
   settingsConfigure = KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
-  settingsShowFullScreen = new KToggleAction(i18n("Show &Fullscreen"),0,this,SLOT(slotSettingsShowFullScreen()),actionCollection(),"settings_show_fullscreen");
 
   connect(viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
   connect(viewManager,SIGNAL(statChanged()),this,SLOT(slotCurrentDocChanged()));
@@ -856,19 +855,6 @@ void KateMainWindow::slotGoPrev()
   QFocusEvent::setReason(QFocusEvent::Tab);
   /*res= */focusNextPrevChild(false); //TRUE == NEXT , FALSE = PREV
   QFocusEvent::resetReason();
-}
-
-
-void KateMainWindow::slotSettingsShowFullScreen()
-{
-	if (settingsShowFullScreen->isChecked())
-	{
-		showFullScreen();
-	}
-	else
-	{
-		showNormal();
-	}
 }
 
 void KateMainWindow::slotSidebarFocusNext()
