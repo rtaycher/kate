@@ -25,8 +25,26 @@
 class KantPartDocument : public KantDocument
 {
   public:
-    KantPartDocument ();
+    KantPartDocument (bool bSingleViewMode = false, bool bBrowserView = false, QWidget *parentWidget = 0, const char *widgetName = 0, QObject *parent = 0, const char *name = 0);
     ~KantPartDocument ();
+
+  private:
+    m_bSingleViewMode;
+};
+
+class KantPartBrowserExtension : public KParts::BrowserExtension
+{
+  Q_OBJECT
+
+  public:
+    KantPartBrowserExtension( KantPartDocument *doc );
+
+  private slots:
+    void copy();
+    void slotSelectionChanged();
+
+  private:
+    KantPartDocument *m_doc;
 };
 
 #endif

@@ -54,7 +54,7 @@ KParts::Part *KantPartFactory::createPart( QWidget *parentWidget, const char *wi
   bool bWantDocument = ( strcmp( classname, "KTextEditor::Document" ) == 0L );
   bool bWantBrowserView = ( strcmp( classname, "Browser/View" ) == 0L );
 
-  KParts::ReadWritePart *part = new KantPartDocument (  );
+  KParts::ReadWritePart *part = new KantPartDocument ( !bWantDocument, bWantBrowserView, parentWidget, widgetName, parent, name );
 
   if ( bWantBrowserView || ( strcmp( classname, "KParts::ReadOnlyPart" ) == 0 ) )
     part->setReadWrite( false );

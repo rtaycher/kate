@@ -21,7 +21,7 @@
 
 KantPartView::KantPartView (KantDocument *doc, QWidget *parent, const char * name, bool HandleOwnURIDrops):  KantView (doc, parent, name, HandleOwnURIDrops)
 {
-
+  setXMLFile( "kantpartui.rc" );
 }
 
 KantPartView::~KantPartView ()
