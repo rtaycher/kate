@@ -185,7 +185,7 @@ void KateMainWindow::setupActions()
 
   editUndo = KStdAction::undo(viewManager, SLOT(slotUndo()), actionCollection());
   editRedo = KStdAction::redo(viewManager, SLOT(slotRedo()), actionCollection());
-  editUndoHist = new KAction(i18n("Undo/Redo &History..."), 0, viewManager, SLOT(slotUndoHistory()), actionCollection(), "edit_undoHistory");
+  editUndoHist = new KAction(i18n("Undo/Redo &History..."), "history", 0, viewManager, SLOT(slotUndoHistory()), actionCollection(), "edit_undoHistory");
   editCut = KStdAction::cut(viewManager, SLOT(slotCut()), actionCollection());
   editCopy = KStdAction::copy(viewManager, SLOT(slotCopy()), actionCollection()) ;
   editPaste = KStdAction::paste(viewManager, SLOT(slotPaste()), actionCollection());
