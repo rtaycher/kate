@@ -457,9 +457,6 @@ void KateMainWindow::saveOptions(KConfig *config)
   recentProjects->saveEntries (config, "Recent Projects");
 
   writeDockConfig();
-
-  if (m_viewManager->activeView())
-    m_viewManager->activeView()->getDoc()->writeConfig();
 }
 
 void KateMainWindow::slotDocumentChanged()

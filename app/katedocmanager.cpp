@@ -58,6 +58,9 @@ Kate::Document *KateDocManager::createDoc ()
   m_docDict.insert (doc->documentNumber(), (Kate::Document *)doc);
   m_docInfos.insert (doc, new KateDocumentInfo ());
 
+  if (m_docList.count() < 2)
+    ((Kate::Document *)doc)->readConfig(kapp->config());
+
   emit documentCreated ((Kate::Document *)doc);
   emit m_documentManager->documentCreated ((Kate::Document *)doc);
 
@@ -69,6 +72,9 @@ Kate::Document *KateDocManager::createDoc ()
 void KateDocManager::deleteDoc (Kate::Document *doc)
 {
   uint id = doc->documentNumber();
+
+  if (m_docList.count() < 2)
+    doc->writeConfig(kapp->config());
 
   m_docInfos.remove (doc);
   m_docDict.remove (id);
