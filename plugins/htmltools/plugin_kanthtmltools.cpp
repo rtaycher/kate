@@ -38,7 +38,7 @@ extern "C"
 
 KantPluginFactory::KantPluginFactory()
 {
-  s_instance = new KInstance( "htmltools" );
+  s_instance = new KInstance( "kant" );
 }
 
 KantPluginFactory::~KantPluginFactory()
@@ -54,13 +54,15 @@ QObject* KantPluginFactory::createObject( QObject* parent, const char* name, con
 KInstance* KantPluginFactory::s_instance = 0L;
 
 PluginKantHtmlTools::PluginKantHtmlTools( QObject* parent, const char* name )
-    : Plugin( parent, name )
+    : KParts::Part ( parent, name )
 {
     // Instantiate all of your actions here.  These will appear in
     // Konqueror's menu and toolbars.
 
 (void)  new KAction ( i18n("HT&ML Tag..."), "edit_HTML_tag", ALT + Key_Minus, this,
                                 SLOT( slotEditHTMLtag() ), actionCollection(), "edit_HTML_tag" );
+
+   setXMLFile( "plugins/kanthtmltools/ui.rc" );
 
    myParent=(KantPluginIface *)parent;
 }
@@ -79,7 +81,7 @@ void PluginKantHtmlTools::slotEditHTMLtag()
 
   QString text ( KantPrompt ( i18n("HTML Tag"),
                         i18n("Enter HTML tag contents. We will supply the <, > and closing tag"),
-                        (QWidget *)myParent->parent())
+                        (QWidget *)myParent->viewManagerIface()->getActiveView())
                          );
 
   if ( !text.isEmpty () )

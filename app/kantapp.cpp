@@ -28,7 +28,7 @@
 #include <kdebug.h>
 #include <dcopclient.h>
 
-KantApp::KantApp () : KApplication (),DCOPObject ("KantappIface" ) 
+KantApp::KantApp () : KApplication (),DCOPObject ("KantappIface" )
 {
   mainWindows.setAutoDelete (false);
 
@@ -39,8 +39,12 @@ KantApp::KantApp () : KApplication (),DCOPObject ("KantappIface" )
   client->attach();
   client->registerAs("kant");
 
+  pluginIface = new KantMyPluginIface (this);
+
   docManager = new KantDocManager ();
-  pluginManager=new KantPluginManager(this);
+
+  pluginManager = new KantPluginManager (this);
+  pluginManager->loadAllEnabledPlugins ();
 
   newMainWindow ();
 
@@ -93,4 +97,15 @@ void KantApp::removeMainWindow (KantMainWindow *mainWindow)
 long KantApp::mainWindowsCount ()
 {
   return mainWindows.count();
+}
+
+
+KantViewManagerIface *KantMyPluginIface::viewManagerIface ()
+{
+  return ((KantViewManagerIface *)((KantApp *)parent())->mainWindows.at(0)->viewManager);
+}
+
+KantDocManagerIface *KantMyPluginIface::docManagerIface ()
+{
+  return ((KantDocManagerIface *)((KantApp *)parent())->docManager);
 }

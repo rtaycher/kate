@@ -1,4 +1,5 @@
 load=1
+libname=libkanttextfilterplugin
 name=Kant TextFilter
 description=Kant TextFilter - filtern von Text
 author=Phlip

@@ -18,7 +18,10 @@
 #include "kantpluginmanager.h"
 #include "kantpluginmanager.moc"
 
+#include "../app/kantapp.h"
 #include "../mainwindow/kantmainwindow.h"
+
+#include <kparts/factory.h>
 
 #include <kglobal.h>
 #include <kstddirs.h>
@@ -50,29 +53,12 @@ void KantPluginManager::setupPluginList ()
     PluginListItem *info=new PluginListItem;
     info->load = (confFile->readEntry("load","no") =="1");
 
+    info->libname = confFile->readEntry("libname","no");
     info->config = (*it);
-
-    info->relp = QFileInfo(*it).fileName();
-    info->relp = info->relp=info->relp.left(info->relp.length()-8);
-    info->relp=dirs->findResource("appdata","plugins/"+info->relp+"/ui.rc");
 
     info->name = confFile->readEntry("name","no");
     info->description = confFile->readEntry("description","no");
     info->author = confFile->readEntry("author","no");
-
-    KParts::Plugin::PluginInfo plInf;
-    plInf.m_absXMLFileName=info->relp;
-
-    QFile f( info->relp );
-    if ( f.open( IO_ReadOnly ) )
-    {
-      if ( plInf.m_document.setContent( &f ) )
-      {
-        info->pluginInfo.append(plInf);
-      }
-
-      f.close();
-    }
 
     myPluginList.append(info);
 
@@ -80,24 +66,29 @@ void KantPluginManager::setupPluginList ()
   }
 }
 
-void KantPluginManager::loadAllEnabledPlugins (QObject *parent)
+void KantPluginManager::loadAllEnabledPlugins ()
 {
   for (int i=0; i<myPluginList.count(); i++)
   {
     if  (myPluginList.at(i)->load)
-      loadPlugin (myPluginList.at(i), parent);
+      loadPlugin (myPluginList.at(i));
   }
 }
 
-void KantPluginManager::loadPlugin (PluginListItem *item, QObject *parent)
+void KantPluginManager::enabledAllPluginsGUI (KantMainWindow *win)
 {
-  KParts::Plugin::loadPlugins(parent,item->pluginInfo);
   KParts::GUIActivateEvent ev( true );
-  QApplication::sendEvent( parent, &ev );
+  QApplication::sendEvent( ((KantApp*)parent())->pluginIface, &ev );
 
-  QList<KParts::Plugin> plugins = KParts:: Plugin::pluginObjects( parent );
-  QListIterator<KParts::Plugin> pIt( plugins );
+  for (int i=0; i<loadedPlugins.count(); i++)
+  {
+    win->guiFactory()->addClient( loadedPlugins.at(i) );
+  }
+}
 
-  for (; pIt.current(); ++pIt )
-    ((KantMainWindow*)parent->parent())->guiFactory()->addClient( pIt.current() );
+void KantPluginManager::loadPlugin (PluginListItem *item)
+{
+  KLibFactory *factory = KLibLoader::self()->factory( item->libname.latin1() );
+  KParts::Part *plugin = (KParts::Part *)factory->create( ((KantApp*)parent())->pluginIface, "", "KParts::Part" );
+  loadedPlugins.append (plugin);
 }

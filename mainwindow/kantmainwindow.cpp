@@ -76,16 +76,6 @@
 
 #define POP_(x) kdDebug(13000) << #x " = " << flush << x << endl
 
-KantViewManagerIface *KantMyPluginIface::viewManagerIface ()
-{
-  return ((KantViewManagerIface *)((KantMainWindow *)parent())->viewManager);
-}
-
-KantDocManagerIface *KantMyPluginIface::docManagerIface ()
-{
-  return ((KantDocManagerIface *)((KantMainWindow *)parent())->docManager);
-}
-
 KantMainWindow::KantMainWindow(KantDocManager *_docManager, KantPluginManager *_pluginManager) :
 	KDockMainWindow (0, "Main Window"),
              DCOPObject ("KantIface" )
@@ -110,7 +100,7 @@ KantMainWindow::KantMainWindow(KantDocManager *_docManager, KantPluginManager *_
   QPopupMenu* pm_set = (QPopupMenu*)factory()->container("settings", this);
   connect(pm_set, SIGNAL(aboutToShow()), this, SLOT(settingsMenuAboutToShow()));
 
-  pluginManager->loadAllEnabledPlugins (pluginIface);
+  pluginManager->enabledAllPluginsGUI (this);
 }
 
 KantMainWindow::~KantMainWindow()
@@ -149,8 +139,6 @@ void KantMainWindow::setupMainWindow ()
   fileselector->dirOperator()->setView(KFile::Simple);
   sidebar->addWidget (fileselector, i18n("Fileselector"));
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileViewItem*)),this,SLOT(fileSelected(const KFileViewItem*)));
-
-  pluginIface = new KantMyPluginIface (this);
 
   statusBar()->hide();
 }

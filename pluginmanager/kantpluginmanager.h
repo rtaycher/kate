@@ -21,14 +21,14 @@
 
 #include <qobject.h>
 #include <qvaluelist.h>
-#include <kparts/plugin.h>
+#include <qlist.h>
+#include <kparts/part.h>
 
 struct PluginListItem
 {
   bool load;
-  QValueList<KParts::Plugin::PluginInfo> pluginInfo;
+  QString libname;
   QString config;
-  QString relp;
   QString name;
   QString description;
   QString author;
@@ -47,13 +47,15 @@ class KantPluginManager : public QObject
     KantPluginManager(QObject *parent);
     ~KantPluginManager();
 
-    void loadAllEnabledPlugins (QObject *parent);
+    void loadAllEnabledPlugins ();
+    void enabledAllPluginsGUI (KantMainWindow *win);
 
   private:
     void setupPluginList ();
-    void loadPlugin (PluginListItem *item, QObject *parent);
+    void loadPlugin (PluginListItem *item);
 
     PluginList myPluginList;
+    QList<KParts::Part> loadedPlugins;
 };
 
 #endif

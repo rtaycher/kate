@@ -19,15 +19,29 @@
 
 #include "../main/kantmain.h"
 #include "kantappIface.h"
+#include "../interfaces/kantpluginIface.h"
 
 #include <kapp.h>
 #include <qlist.h>
+
+class KantMyPluginIface : public KantPluginIface
+{
+  Q_OBJECT
+
+  public:
+    KantMyPluginIface(QObject *parent):KantPluginIface(parent){;};
+    ~KantMyPluginIface(){;};
+
+    KantViewManagerIface *viewManagerIface ();
+    KantDocManagerIface *docManagerIface ();
+};
 
 class KantApp : public KApplication, public KantAppIface
 {
   Q_OBJECT
 
   friend class KantViewManager;
+  friend class KantMyPluginIface;
 
   public:
     KantApp ();
@@ -39,6 +53,12 @@ class KantApp : public KApplication, public KantAppIface
     void removeMainWindow (KantMainWindow *mainWindow);
     long mainWindowsCount ();
     virtual QString  isSingleInstance(){if (_singleInstance) return "true"; else return "false";};
+
+    KantMyPluginIface *pluginIface;
+
+    KantViewManagerIface *viewManagerIface ();
+    KantDocManagerIface *docManagerIface ();
+
   private:
     bool _singleInstance;
     KantDocManager *docManager;

@@ -20,7 +20,7 @@
 
 #include <qstring.h>
 
-#include <kparts/plugin.h>
+#include <kparts/part.h>
 #include <klibloader.h>
 #include <kantpluginIface.h>
 
@@ -38,7 +38,7 @@ class KantPluginFactory : public KLibFactory
     static KInstance* s_instance;
 };
 
-class PluginKantOpenHeader : public KParts::Plugin
+class PluginKantOpenHeader : public KParts::Part
 {
   Q_OBJECT
 

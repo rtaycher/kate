@@ -24,20 +24,6 @@
 #include <kparts/part.h>
 #include <kxmlgui.h>
 
-#include "../interfaces/kantpluginIface.h"
-
-class KantMyPluginIface : public KantPluginIface
-{
-  Q_OBJECT
-
-  public:
-    KantMyPluginIface(QObject *parent):KantPluginIface(parent){;};
-    ~KantMyPluginIface(){;};
-
-    KantViewManagerIface *viewManagerIface ();
-    KantDocManagerIface *docManagerIface ();
-};
-
 class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtual public KParts::PartBase
 {
   Q_OBJECT
@@ -75,8 +61,6 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
 
     KantFileList *filelist;
     KantFileSelector *fileselector;
-
-    KantMyPluginIface *pluginIface;
 
     virtual QStringList containerTags() const;
     virtual QWidget *createContainer( QWidget *parent, int index,

@@ -40,7 +40,7 @@ extern "C"
 
 KantPluginFactory::KantPluginFactory()
 {
-  s_instance = new KInstance( "textfilter" );
+  s_instance = new KInstance( "kant" );
 }
 
 KantPluginFactory::~KantPluginFactory()
@@ -57,7 +57,7 @@ KInstance* KantPluginFactory::s_instance = 0L;
 
 
 PluginKantTextFilter::PluginKantTextFilter( QObject* parent, const char* name )
-    : Plugin( parent, name ),
+    : Part( parent, name ),
   m_pFilterShellProcess (NULL)
 {
     // Instantiate all of your actions here.  These will appear in
@@ -65,6 +65,8 @@ PluginKantTextFilter::PluginKantTextFilter( QObject* parent, const char* name )
 
 (void)  new KAction ( i18n("Fi&lter Text..."), "edit_filter", CTRL + Key_Backslash, this,
   SLOT( slotEditFilter() ), actionCollection(), "edit_filter" );
+
+   setXMLFile( "plugins/kanttextfilter/ui.rc" );
 
    myParent=(KantPluginIface *)parent;
 }
@@ -251,7 +253,7 @@ PluginKantTextFilter::slotEditFilter ()  //  PCP
 
   QString text ( KantPrompt ( i18n("Filter"),
                         i18n("Enter command to pipe selected text thru"),
-                        (QWidget *)myParent->parent()
+                        (QWidget*)  myParent->viewManagerIface()->getActiveView()
                         ) );
 
   if ( !text.isEmpty () )
