@@ -453,12 +453,66 @@ void KateDocument::setSelection( int , int , int , int )
 
 bool KateDocument::hasSelection() const
 {
-  return false;
+  return (selectEnd >= selectStart);
 }
 
 QString KateDocument::selection() const
 {
-  return QString::null;
+  uint flags = 0;
+  TextLine::Ptr textLine;
+  int len, z, start, end, i;
+
+  len = 1;
+  if (!(flags & KateView::cfVerticalSelect)) {
+    for (z = selectStart; z <= selectEnd; z++) {
+      textLine = getTextLine(z);
+      len += textLine->numSelected();
+      if (textLine->isSelected()) len++;
+    }
+    QString s;
+    len = 0;
+    for (z = selectStart; z <= selectEnd; z++) {
+      textLine = getTextLine(z);
+      end = 0;
+      do {
+        start = textLine->findUnselected(end);
+        end = textLine->findSelected(start);
+        for (i = start; i < end; i++) {
+          s[len] = textLine->getChar(i);
+          len++;
+        }
+      } while (start < end);
+      if (textLine->isSelected()) {
+        s[len] = '\n';
+        len++;
+      }
+    }
+//    s[len] = '\0';
+    return s;
+  } else {
+    for (z = selectStart; z <= selectEnd; z++) {
+      textLine = getTextLine(z);
+      len += textLine->numSelected() + 1;
+    }
+    QString s;
+    len = 0;
+    for (z = selectStart; z <= selectEnd; z++) {
+      textLine = getTextLine(z);
+      end = 0;
+      do {
+        start = textLine->findUnselected(end);
+        end = textLine->findSelected(start);
+        for (i = start; i < end; i++) {
+          s[len] = textLine->getChar(i);
+          len++;
+        }
+      } while (start < end);
+      s[len] = '\n';
+      len++;
+    }
+//    s[len] = '\0';       //  the final \0 is not counted in length()
+    return s;
+  }
 }
 
 int KateDocument::numLines() const
