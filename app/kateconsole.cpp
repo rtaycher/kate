@@ -21,17 +21,20 @@
 #include "kateconsole.h"
 #include "kateconsole.moc"
 
+#include "katemainwindow.h"
+
+#include <kate/view.h>
+#include <kate/document.h>
+
+#include <kde_terminal_interface.h>
+
 #include <kurl.h>
-#include <qlayout.h>
 #include <klibloader.h>
 #include <klocale.h>
 #include <kapplication.h>
 #include <kdebug.h>
 
-#include <kate/view.h>
-#include <kate/document.h>
-
-#include "katemainwindow.h"
+#include <qlayout.h>
 
 KateConsole::KateConsole (QWidget* parent, const char* name, Kate::ViewManager *kvm) : QWidget (parent, name),part(0)
 {
@@ -81,12 +84,29 @@ void KateConsole::loadConsoleIfNeeded()
 
 void KateConsole::showEvent(QShowEvent *)
 {
-	if (!part) loadConsoleIfNeeded();
+  if (!part)
+    loadConsoleIfNeeded();
 }
 
 void KateConsole::cd (KURL url)
 {
-  if (part) part->openURL (url);
+  if (!part)
+    return;
+    
+  part->openURL (url);
+}
+
+void KateConsole::sendInput( const QString& text )
+{
+  if (!part)
+    return;
+    
+  TerminalInterface *t = static_cast<TerminalInterface*>( part->qt_cast( "TerminalInterface" ) );
+  
+  if (!t)
+    return;
+    
+  t->sendInput (text);
 }
 
 void KateConsole::slotDestroyed ()

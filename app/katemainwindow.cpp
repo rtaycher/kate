@@ -23,7 +23,6 @@
 #include "katemainwindow.moc"
 
 #include "kateconfigdialog.h"
-
 #include "kateconsole.h"
 #include "katedocmanager.h"
 #include "katepluginmanager.h"
@@ -34,6 +33,7 @@
 #include "kateprojectviews.h"
 #include "katefileselector.h"
 #include "katefilelist.h"
+#include "kategrepdialog.h"
 #include "katemailfilesdialog.h"
 #include "katemainwindowiface.h"
 
@@ -70,13 +70,10 @@
 #include <kdesktopfile.h>
 #include <khelpmenu.h>
 #include <kmultitabbar.h>
-#include <qlayout.h>
-
 #include <ktip.h>
-
 #include <kmenubar.h>
 
-#include "kategrepdialog.h"
+#include <qlayout.h>
 
 #include <assert.h>
 #include <unistd.h>
@@ -293,6 +290,10 @@ void KateMainWindow::setupActions()
   settingsConfigure = KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
   settingsConfigure->setWhatsThis(i18n("Configure various aspects of this application and the editing component."));
 
+  // pipe to terminal action
+  if (kapp->authorize("shell_access"))
+    new KAction(i18n("&Pipe to Console"), "pipe", 0, this, SLOT(slotPipeToConsole()), actionCollection(), "tools_pipe_to_terminal");
+  
   // tip of the day :-)
   KStdAction::tipOfDay( this, SLOT( tipOfTheDay() ), actionCollection() )->setWhatsThis(i18n("This shows useful tips on the use of this application."));
 
@@ -965,4 +966,20 @@ void KateMainWindow::saveGlobalProperties( KConfig* sessionConfig )
 {
   m_projectManager->saveProjectList (sessionConfig);
   m_docManager->saveDocumentList (sessionConfig);
+}
+
+void KateMainWindow::slotPipeToConsole ()
+{
+  if (!console)
+    return;
+    
+  Kate::View *v = m_viewManager->activeView();
+  
+  if (!v)
+    return;
+    
+  if (v->getDoc()->hasSelection ())
+    console->sendInput (v->getDoc()->selection()); 
+  else
+    console->sendInput (v->getDoc()->text()); 
 }

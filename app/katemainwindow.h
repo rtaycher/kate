@@ -156,6 +156,8 @@ class KateMainWindow : public KMdiMainFrm, virtual public KParts::PartBase
     void slotConfigure();
 
     void slotOpenWithMenuAction(int idx);
+    
+    void slotPipeToConsole ();
 
  private:
      GrepTool * greptool;
