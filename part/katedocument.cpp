@@ -299,6 +299,11 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
     | KateDocument::cfShowTabs | KateDocument::cfSmartHome;     
      
   _searchFlags = 0;     
+  
+  //KSpell initial values
+  kspell.kspell = 0;
+  kspell.ksc = new KSpellConfig; //default KSpellConfig to start
+  kspell.kspellon = FALSE;
      
   m_url = KURL();     
      
@@ -357,15 +362,22 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
 // KateDocument Destructor     
 //     
 KateDocument::~KateDocument()     
-{     
-  m_highlight->release();     
-     
-  if ( !m_bSingleViewMode )     
-  {     
-    myViews.setAutoDelete( true );     
-    myViews.clear();     
-    myViews.setAutoDelete( false );     
+{
+  if ( !m_bSingleViewMode )
+  {
+    myViews.setAutoDelete( true );
+    myViews.clear();
+    myViews.setAutoDelete( false );
   }
+
+  if (kspell.kspell)
+  {
+    kspell.kspell->setAutoDelete(true);
+    kspell.kspell->cleanUp(); // need a way to wait for this to complete
+  }
+  delete kspell.ksc;
+
+  m_highlight->release();
 
   delete [] myAttribs;
 }
@@ -1406,7 +1418,6 @@ bool KateDocument::searchText (unsigned int startLine, unsigned int startCol, co
 // KTextEditor::HighlightingInterface stuff
 //
 
-
 uint KateDocument::hlMode ()
 {
   return hlManager->findHl(m_highlight);
@@ -1428,8 +1439,6 @@ bool KateDocument::internalSetHlMode (uint mode)
 {
   Highlight *h;
 
-//  hlNumber = n;
-
   h = hlManager->getHl(mode);
   if (h == m_highlight) {
     updateLines();
@@ -1446,7 +1455,6 @@ bool KateDocument::internalSetHlMode (uint mode)
 
   return true;
 }
-
 
 uint KateDocument::hlModeCount ()
 {
@@ -1466,6 +1474,174 @@ QString KateDocument::hlModeSectionName (uint mode)
 void KateDocument::setDontChangeHlOnSave()
 {
   hlSetByUser = true;
+}
+
+//
+// KTextEditor::ConfigInterface stuff
+//
+
+void KateDocument::readConfig(KConfig *config)
+{
+  _searchFlags = config->readNumEntry("SearchFlags", KateDocument::sfPrompt);
+  _configFlags = config->readNumEntry("ConfigFlags", _configFlags) & ~KateDocument::cfMark;
+
+  myWordWrap = config->readBoolEntry("Word Wrap On", false);
+  myWordWrapAt = config->readNumEntry("Word Wrap At", 80);
+  if (myWordWrap)
+    wrapText (myWordWrapAt);
+
+  setTabWidth(config->readNumEntry("TabWidth", 8));
+  setUndoSteps(config->readNumEntry("UndoSteps", 50));
+  setFont (config->readFontEntry("Font", &myFont));
+
+  colors[0] = config->readColorEntry("Color Background", &colors[0]);
+  colors[1] = config->readColorEntry("Color Selected", &colors[1]);
+}
+
+void KateDocument::writeConfig(KConfig *config)
+{
+  config->writeEntry("SearchFlags",_searchFlags);
+  config->writeEntry("ConfigFlags",_configFlags);
+
+  config->writeEntry("Word Wrap On", myWordWrap);
+  config->writeEntry("Word Wrap At", myWordWrapAt);
+  config->writeEntry("TabWidth", tabChars);
+  config->writeEntry("Font", myFont);
+  config->writeEntry("Color Background", colors[0]);
+  config->writeEntry("Color Selected", colors[1]);
+}
+
+void KateDocument::readConfig()
+{
+  KConfig *config = KateFactory::instance()->config();
+  config->setGroup("Kate Document");
+  readConfig (config);
+  config->sync();
+}
+
+void KateDocument::writeConfig()
+{
+  KConfig *config = KateFactory::instance()->config();
+  config->setGroup("Kate Document");
+  writeConfig (config);
+  config->sync();
+}
+
+void KateDocument::readSessionConfig(KConfig *config)
+{
+  m_url = config->readEntry("URL"); // ### doesn't this break the encoding? (Simon)
+  internalSetHlMode(hlManager->nameFind(config->readEntry("Highlight")));
+  // anders: restore bookmarks if possible
+  QValueList<int> l = config->readIntListEntry("Bookmarks");
+  if ( l.count() ) {
+    for (uint i=0; i < l.count(); i++) {
+      if ( (int)numLines() < l[i] ) break;
+      getTextLine( l[i] )->addMark( Bookmark );
+    }
+  }
+}
+
+void KateDocument::writeSessionConfig(KConfig *config)
+{
+  config->writeEntry("URL", m_url.url() ); // ### encoding?? (Simon)
+  config->writeEntry("Highlight", m_highlight->name());
+  // anders: save bookmarks
+  QPtrList<Kate::Mark> l = marks();
+  QValueList<int> ml;
+  for (uint i=0; i < l.count(); i++) {
+    if ( l.at(i)->type == 1) // only save bookmarks
+     ml << l.at(i)->line;
+  }
+  if ( ml.count() )
+    config->writeEntry("Bookmarks", ml);
+}
+
+void KateDocument::configDialog()
+{
+  KWin kwin;
+
+  KDialogBase *kd = new KDialogBase(KDialogBase::IconList,
+                                    i18n("Configure Kate Editorpart"),
+                                    KDialogBase::Ok | KDialogBase::Cancel |
+                                    KDialogBase::Help ,
+                                    KDialogBase::Ok, kapp->mainWidget());
+
+  // color options
+  QVBox *page=kd->addVBoxPage(i18n("Colors"), QString::null,
+                              BarIcon("colorize", KIcon::SizeMedium) );
+  ColorConfig *colorConfig = new ColorConfig(page);
+  QColor* colors = colors;
+  colorConfig->setColors(this->colors);
+
+  page = kd->addVBoxPage(i18n("Fonts"), i18n("Fonts Settings"),
+                              BarIcon("fonts", KIcon::SizeMedium) );
+  FontConfig *fontConfig = new FontConfig(page);
+  fontConfig->setFont (getFont());
+
+  // indent options
+  page=kd->addVBoxPage(i18n("Indent"), QString::null,
+                       BarIcon("rightjust", KIcon::SizeMedium) );
+  IndentConfigTab *indentConfig = new IndentConfigTab(page, this);
+
+  // select options
+  page=kd->addVBoxPage(i18n("Select"), QString::null,
+                       BarIcon("misc") );
+  SelectConfigTab *selectConfig = new SelectConfigTab(page, this);
+
+  // edit options
+  page=kd->addVBoxPage(i18n("Edit"), QString::null,
+                       BarIcon("edit", KIcon::SizeMedium ) );
+  EditConfigTab *editConfig = new EditConfigTab(page, this);
+
+  // spell checker
+  page = kd->addVBoxPage( i18n("Spelling"), i18n("Spell checker behavior"),
+                          BarIcon("spellcheck", KIcon::SizeMedium) );
+
+
+  KSpellConfig *ksc = new KSpellConfig(page, 0L, ksConfig(), false );
+
+  kwin.setIcons(kd->winId(), kapp->icon(), kapp->miniIcon());
+
+  HighlightDialogPage *hlPage;
+  HlManager *hlManager;
+  HlDataList hlDataList;
+  ItemStyleList defaultStyleList;
+
+  hlManager = HlManager::self();
+
+  defaultStyleList.setAutoDelete(true);
+  hlManager->getDefaults(defaultStyleList);
+
+  hlDataList.setAutoDelete(true);
+  //this gets the data from the KConfig object
+  hlManager->getHlDataList(hlDataList);
+
+  page=kd->addVBoxPage(i18n("Highlighting"),i18n("Highlighting configuration"),
+                        BarIcon("edit",KIcon::SizeMedium));
+  hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &hlDataList, 0, page);
+
+ if (kd->exec()) {
+    // color options
+    colorConfig->getColors(colors);
+    setFont (fontConfig->getFont());
+
+    tagAll();
+    updateViews();
+    // indent options
+    indentConfig->getData(this);
+    // select options
+    selectConfig->getData(this);
+    // edit options
+    editConfig->getData(this);
+    // spell checker
+    ksc->writeGlobalSettings();
+    setKSConfig(*ksc);
+    hlManager->setHlDataList(hlDataList);
+    hlManager->setDefaults(defaultStyleList);
+    hlPage->saveData();
+  }
+
+  delete kd;
 }
 
 //
@@ -1631,7 +1807,7 @@ void KateDocument::setFont (QFont font)
   myFontBI.setItalic (true);     
      
   myFontMetrics = QFontMetrics (myFont);
-  myFontMetricsBold = QFontMetrics (myFontBold);     
+  myFontMetricsBold = QFontMetrics (myFontBold);
   myFontMetricsItalic = QFontMetrics (myFontItalic);     
   myFontMetricsBI = QFontMetrics (myFontBI);     
   int newwidth=myFontMetrics.width('W'); //Quick & Dirty Hack (by JoWenn)  //Remove in KDE 3.0     
@@ -1706,182 +1882,187 @@ void KateDocument::setTabWidth(int chars) {
       longestLine = textLine;
     }
   }     
-}     
-     
-void KateDocument::setNewDoc( bool m )     
-{     
-  if ( m != newDoc )     
-  {     
-    newDoc = m;     
-  }     
-}     
-     
-bool KateDocument::isNewDoc() const {     
-  return newDoc;     
-}     
-     
-void KateDocument::readConfig(KConfig *config)
-{
-  _searchFlags = config->readNumEntry("SearchFlags", KateDocument::sfPrompt);     
-  _configFlags = config->readNumEntry("ConfigFlags", _configFlags) & ~KateDocument::cfMark;
-     
-  myWordWrap = config->readBoolEntry("Word Wrap On", false);     
-  myWordWrapAt = config->readNumEntry("Word Wrap At", 80);
-  if (myWordWrap)     
-    wrapText (myWordWrapAt);     
-     
-  setTabWidth(config->readNumEntry("TabWidth", 8));
-  setUndoSteps(config->readNumEntry("UndoSteps", 50));     
-  setFont (config->readFontEntry("Font", &myFont));     
-     
-  colors[0] = config->readColorEntry("Color Background", &colors[0]);     
-  colors[1] = config->readColorEntry("Color Selected", &colors[1]);
-}     
-     
-void KateDocument::writeConfig(KConfig *config)
-{
-  config->writeEntry("SearchFlags",_searchFlags);     
-  config->writeEntry("ConfigFlags",_configFlags);
-
-  config->writeEntry("Word Wrap On", myWordWrap);     
-  config->writeEntry("Word Wrap At", myWordWrapAt);     
-  config->writeEntry("TabWidth", tabChars);
-  config->writeEntry("Font", myFont);     
-  config->writeEntry("Color Background", colors[0]);     
-  config->writeEntry("Color Selected", colors[1]);
 }
 
-void KateDocument::readConfig()
+void KateDocument::setNewDoc( bool m )
 {
-  KConfig *config = KateFactory::instance()->config();
-  config->setGroup("Kate Document");
-  readConfig (config);
-  config->sync();
+  if ( m != newDoc )
+  {
+    newDoc = m;
+  }
 }
 
-void KateDocument::writeConfig()
-{
-  KConfig *config = KateFactory::instance()->config();
-  config->setGroup("Kate Document");
-  writeConfig (config);
-  config->sync();
+bool KateDocument::isNewDoc() const {
+  return newDoc;
 }
 
-void KateDocument::readSessionConfig(KConfig *config)
+//  Spellchecking methods
+
+void KateDocument::spellcheck()
 {
-  m_url = config->readEntry("URL"); // ### doesn't this break the encoding? (Simon)
-  internalSetHlMode(hlManager->nameFind(config->readEntry("Highlight")));
-  // anders: restore bookmarks if possible
-  QValueList<int> l = config->readIntListEntry("Bookmarks");
-  if ( l.count() ) {
-    for (uint i=0; i < l.count(); i++) {
-      if ( (int)numLines() < l[i] ) break;
-      getTextLine( l[i] )->addMark( Bookmark );
+  if (!isReadWrite())
+    return;
+
+  kspell.kspell= new KSpell (kapp->mainWidget(), "KateView: Spellcheck", this,
+                      SLOT (spellcheck2 (KSpell *)));
+
+  connect (kspell.kspell, SIGNAL(death()),
+          this, SLOT(spellCleanDone()));
+
+  connect (kspell.kspell, SIGNAL (progress (unsigned int)),
+          this, SIGNAL (spellcheck_progress (unsigned int)) );
+  connect (kspell.kspell, SIGNAL (misspelling (QString , QStringList *, unsigned)),
+          this, SLOT (misspelling (QString, QStringList *, unsigned)));
+  connect (kspell.kspell, SIGNAL (corrected (QString, QString, unsigned)),
+          this, SLOT (corrected (QString, QString, unsigned)));
+  connect (kspell.kspell, SIGNAL (done(const QString&)),
+          this, SLOT (spellResult (const QString&)));
+}
+
+void KateDocument::spellcheck2(KSpell *)
+{
+  setReadWrite (false);
+
+  // this is a hack, setPseudoModal() has been hacked to recognize 0x01
+  // as special (never tries to delete it)
+  // this should either get improved (with a #define or something),
+  // or kspell should provide access to the spell widget.
+  setPseudoModal((QWidget*)0x01);
+
+  kspell.spell_tmptext = text();
+
+  kspell.kspellon = TRUE;
+  kspell.kspellMispellCount = 0;
+  kspell.kspellReplaceCount = 0;
+  kspell.kspellPristine = !isModified();
+
+  kspell.kspell->setProgressResolution (1);
+
+  kspell.kspell->check(kspell.spell_tmptext);
+}
+
+void KateDocument::misspelling (QString origword, QStringList *, unsigned pos)
+{
+  int line;
+  unsigned int cnt;
+
+  // Find pos  -- CHANGEME: store the last found pos's cursor
+  //   and do these searched relative to that to
+  //   (significantly) increase the speed of the spellcheck
+
+  for (cnt = 0, line = 0 ; line <= lastLine() && cnt <= pos ; line++)
+    cnt += getTextLine(line)->length()+1;
+
+  // Highlight the mispelled word
+  KateViewCursor cursor;
+  line--;
+  cursor.col = pos - (cnt - getTextLine(line)->length()) + 1;
+  cursor.line = line;
+//  deselectAll(); // shouldn't the spell check be allowed within selected text?
+  kspell.kspellMispellCount++;
+
+  KateView *view;
+  VConfig c;
+  for (view = myViews.first(); view != 0L; view = myViews.next() )
+  {
+    view->myViewInternal->updateCursor(cursor); //this does deselectAll() if no persistent selections
+    view->myViewInternal->getVConfig(c);
+  }
+
+  selectLength(cursor,origword.length(),c.flags);
+  updateViews();
+}
+
+void KateDocument::corrected (QString originalword, QString newword, unsigned pos)
+{
+  int line;
+  unsigned int cnt=0;
+
+  if(newword != originalword)
+  {
+      // Find pos
+      for (line = 0 ; line <= lastLine() && cnt <= pos ; line++)
+        cnt += getTextLine(line)->length() + 1;
+
+      // Highlight the mispelled word
+      KateViewCursor cursor;
+      line--;
+      cursor.col = pos - (cnt-getTextLine(line)->length()) + 1;
+      cursor.line = line;
+
+      KateView *view;
+      VConfig c;
+       for (view = myViews.first(); view != 0L; view = myViews.next() )
+      {
+        view->myViewInternal->updateCursor(cursor); //this does deselectAll() if no persistent selections
+        view->myViewInternal->getVConfig(c);
+      }
+
+      selectLength(cursor, newword.length(),c.flags);
+
+      removeText (s.cursor.line, s.cursor.col, s.cursor.line, s.cursor.col + originalword.length());
+      insertText (s.cursor.line, s.cursor.col, newword);
+
+      kspell.kspellReplaceCount++;
+    }
+
+}
+
+void KateDocument::spellResult (const QString &)
+{
+  clearSelection ();
+
+  // we know if the check was cancelled
+  // we can safely use the undo mechanism to backout changes
+  // in case of a cancel, because we force the entire spell check
+  // into one group (record)
+  if (kspell.kspell->dlgResult() == 0) {
+    if (kspell.kspellReplaceCount)
+    {
+      undo();
+      // clear the redo list, so the cancelled spell check can't be redo'ed <- say that word ;-)
+      clearRedo();
+      // make sure the modified flag is turned back off
+      // if we started with a clean buffer
+      if (kspell.kspellPristine)
+        setModified(false);
     }
   }
+
+  setPseudoModal(0L);
+  setReadWrite (true);
+
+  updateViews();
+
+  kspell.kspell->cleanUp();
 }
 
-void KateDocument::writeSessionConfig(KConfig *config)
+void KateDocument::spellCleanDone ()
 {
-  config->writeEntry("URL", m_url.url() ); // ### encoding?? (Simon)
-  config->writeEntry("Highlight", m_highlight->name());
-  // anders: save bookmarks
-  QPtrList<Kate::Mark> l = marks();
-  QValueList<int> ml;
-  for (uint i=0; i < l.count(); i++) {
-    if ( l.at(i)->type == 1) // only save bookmarks
-     ml << l.at(i)->line;
+  KSpell::spellStatus status = kspell.kspell->status();
+  kspell.spell_tmptext = "";
+  delete kspell.kspell;
+
+  kspell.kspell = 0;
+  kspell.kspellon = FALSE;
+
+  if (status == KSpell::Error)
+  {
+     KMessageBox::sorry(kapp->mainWidget(), i18n("ISpell could not be started.\n"
+     "Please make sure you have ISpell properly configured and in your PATH."));
   }
-  if ( ml.count() )
-    config->writeEntry("Bookmarks", ml);
-}
+  else if (status == KSpell::Crashed)
+  {
+     setPseudoModal(0L);
+     setReadWrite (true);
 
-void KateDocument::configDialog()
-{
-  KWin kwin;
-
-  KDialogBase *kd = new KDialogBase(KDialogBase::IconList,
-                                    i18n("Configure Kate Editorpart"),
-                                    KDialogBase::Ok | KDialogBase::Cancel |
-                                    KDialogBase::Help ,
-                                    KDialogBase::Ok, kapp->mainWidget());
-
-  // color options
-  QVBox *page=kd->addVBoxPage(i18n("Colors"), QString::null,
-                              BarIcon("colorize", KIcon::SizeMedium) );
-  ColorConfig *colorConfig = new ColorConfig(page);
-  QColor* colors = colors;
-  colorConfig->setColors(colors);
-
- page = kd->addVBoxPage(i18n("Fonts"), i18n("Fonts Settings"),
-                              BarIcon("fonts", KIcon::SizeMedium) );
-  FontConfig *fontConfig = new FontConfig(page);
-  fontConfig->setFont (getFont());
-
-  // indent options
-  page=kd->addVBoxPage(i18n("Indent"), QString::null,
-                       BarIcon("rightjust", KIcon::SizeMedium) );
-  IndentConfigTab *indentConfig = new IndentConfigTab(page, this);
-
-  // select options
-  page=kd->addVBoxPage(i18n("Select"), QString::null,
-                       BarIcon("misc") );
-  SelectConfigTab *selectConfig = new SelectConfigTab(page, this);
-
-  // edit options
-  page=kd->addVBoxPage(i18n("Edit"), QString::null,
-                       BarIcon("edit", KIcon::SizeMedium ) );
-  EditConfigTab *editConfig = new EditConfigTab(page, this);
-
-  // spell checker
-  page = kd->addVBoxPage( i18n("Spelling"), i18n("Spell checker behavior"),
-                          BarIcon("spellcheck", KIcon::SizeMedium) );
-
-
-  //KSpellConfig *ksc = new KSpellConfig(page, 0L, ksConfig(), false );
-
-  kwin.setIcons(kd->winId(), kapp->icon(), kapp->miniIcon());
-
-  HighlightDialogPage *hlPage;
-  HlManager *hlManager;
-  HlDataList hlDataList;
-  ItemStyleList defaultStyleList;
-
-  hlManager = HlManager::self();
-
-  defaultStyleList.setAutoDelete(true);
-  hlManager->getDefaults(defaultStyleList);
-
-  hlDataList.setAutoDelete(true);
-  //this gets the data from the KConfig object
-  hlManager->getHlDataList(hlDataList);
-
-  page=kd->addVBoxPage(i18n("Highlighting"),i18n("Highlighting configuration"),
-                        BarIcon("edit",KIcon::SizeMedium));
-  hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &hlDataList, 0, page);
-
- if (kd->exec()) {
-    // color options
-    colorConfig->getColors(colors);
-    setFont (fontConfig->getFont());
-
-    tagAll();
-    updateViews();
-    // indent options
-    indentConfig->getData(this);
-    // select options
-    selectConfig->getData(this);
-    // edit options
-    editConfig->getData(this);
-    // spell checker
-    //ksc->writeGlobalSettings();
-   // setKSConfig(*ksc);
-    hlManager->setHlDataList(hlDataList);
-    hlManager->setDefaults(defaultStyleList);
-    hlPage->saveData();
+     updateViews();
+     KMessageBox::sorry(kapp->mainWidget(), i18n("ISpell seems to have crashed."));
   }
-
-  delete kd;
+  else
+  {
+     emit spellcheck_done();
+  }
 }
 
 void KateDocument::makeAttribs()
@@ -3263,9 +3444,9 @@ bool KateDocument::doSearch(SConfig &sc, const QString &searchFor) {
      
   line = sc.cursor.line;     
   col = sc.cursor.col;
-  if (!(sc.flags & KateView::sfBackward)) {
+  if (!(sc.flags & KateDocument::sfBackward)) {
     //forward search
-    if (sc.flags & KateView::sfSelected) {
+    if (sc.flags & KateDocument::sfSelected) {
       if (line < selectStartLine) {
         line = selectStartLine;
         col = 0;
@@ -3282,7 +3463,7 @@ bool KateDocument::doSearch(SConfig &sc, const QString &searchFor) {
         t = new QChar[bufLen];
       }
       memcpy(t, textLine->getText(), tlen*sizeof(QChar));
-      /*if (sc.flags & KateView::sfSelected) {
+      /*if (sc.flags & KateDocument::sfSelected) {
         pos = 0;
         do {
           pos = textLine->findSelected(pos);
@@ -3293,7 +3474,7 @@ bool KateDocument::doSearch(SConfig &sc, const QString &searchFor) {
       }*/
 
       QString text(t, tlen);
-      if (sc.flags & KateView::sfWholeWords) {
+      if (sc.flags & KateDocument::sfWholeWords) {
         // Until the end of the line...
         while (col < tlen) {
           // ...find the next match.
@@ -3326,7 +3507,7 @@ bool KateDocument::doSearch(SConfig &sc, const QString &searchFor) {
     }
   } else {
     // backward search
-    if (sc.flags & KateView::sfSelected) {
+    if (sc.flags & KateDocument::sfSelected) {
       if (line > selectEndLine) {
         line = selectEndLine;
         col = -1;
@@ -3343,7 +3524,7 @@ bool KateDocument::doSearch(SConfig &sc, const QString &searchFor) {
         t = new QChar[bufLen];
       }
       memcpy(t, textLine->getText(), tlen*sizeof(QChar));
-      /*if (sc.flags & KateView::sfSelected) {
+      /*if (sc.flags & KateDocument::sfSelected) {
         pos = 0;
         do {
           pos = textLine->findSelected(pos);
@@ -3356,7 +3537,7 @@ bool KateDocument::doSearch(SConfig &sc, const QString &searchFor) {
       if (col < 0 || col > tlen) col = tlen;
 
       QString text(t, tlen);
-      if (sc.flags & KateView::sfWholeWords) {
+      if (sc.flags & KateDocument::sfWholeWords) {
         // Until the beginning of the line...
         while (col >= 0) {
           // ...find the next match.
@@ -3388,12 +3569,12 @@ bool KateDocument::doSearch(SConfig &sc, const QString &searchFor) {
       line--;
     }
   }
-  sc.flags |= KateView::sfWrapped;
+  sc.flags |= KateDocument::sfWrapped;
   return false;
 found:
-  if (sc.flags & KateView::sfWrapped) {
+  if (sc.flags & KateDocument::sfWrapped) {
     if ((line > sc.startCursor.line || (line == sc.startCursor.line && col >= sc.startCursor.col))
-      ^ ((sc.flags & KateView::sfBackward) != 0)) return false;
+      ^ ((sc.flags & KateDocument::sfBackward) != 0)) return false;
   }
   sc.cursor.col = col;
   sc.cursor.line = line;

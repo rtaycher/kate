@@ -642,7 +642,7 @@ void KateViewManager::slotSpellcheck ()
 {
   if (activeView() == 0) return;
 
-  activeView()->spellcheck();
+  activeView()->doc()->spellcheck();
 }
 
 void KateViewManager::slotGotoLine ()

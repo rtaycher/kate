@@ -58,15 +58,15 @@ void CodeCompletion_Impl::showCompletionBox(QValueList<KTextEditor::CompletionEn
   m_complList = complList;
   // align the prefix (begin)
   QValueList<KTextEditor::CompletionEntry>::Iterator it;
-  int maxLen =0;
-  for( it = m_complList.begin(); it != m_complList.end(); ++it ){  
+  uint maxLen =0;
+  for( it = m_complList.begin(); it != m_complList.end(); ++it ){
     if(maxLen < (*it).prefix.length()){
       maxLen = (*it).prefix.length();
     }
   }
-  for( it = m_complList.begin(); it != m_complList.end(); ++it ){  
+  for( it = m_complList.begin(); it != m_complList.end(); ++it ){
     QString fillStr;
-    fillStr.fill(QChar(' '),maxLen - (*it).prefix.length()); // add some spaces 
+    fillStr.fill(QChar(' '),maxLen - (*it).prefix.length()); // add some spaces
     (*it).prefix.append(fillStr);
   }
   // alignt the prefix (end)
@@ -79,11 +79,11 @@ void CodeCompletion_Impl::showCompletionBox(QValueList<KTextEditor::CompletionEn
 }
 
 bool CodeCompletion_Impl::eventFilter( QObject *o, QEvent *e ){
-  
+
   if ( o == m_completionPopup || o == m_completionListBox || o == m_completionListBox->viewport() ) {
     if ( e->type() == QEvent::KeyPress ) {
-      QKeyEvent *ke = (QKeyEvent*)e; 
-      if ( ke->key() == Key_Left || ke->key() == Key_Right || 
+      QKeyEvent *ke = (QKeyEvent*)e;
+      if ( ke->key() == Key_Left || ke->key() == Key_Right ||
 	   ke->key() == Key_Up || ke->key() == Key_Down ||
 	   ke->key() == Key_Home || ke->key() == Key_End ||
 	   ke->key() == Key_Prior || ke->key() == Key_Next ) {

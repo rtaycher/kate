@@ -78,7 +78,20 @@ struct VConfig {
   int flags;
 };
 
-struct SConfig {
+struct LineRange {
+  int start;
+  int end;
+};
+
+struct BracketMark {
+  KateViewCursor cursor;
+  int sXPos;
+  int eXPos;
+};
+
+class SConfig
+{
+  public:
   KateViewCursor cursor;
   KateViewCursor startCursor;
   int flags;
@@ -98,17 +111,6 @@ private:
   // The regular expression corresponding to pattern. Only guaranteed valid if
   // flags has sfRegularExpression set.
   QRegExp m_regExp;
-};
-
-struct LineRange {
-  int start;
-  int end;
-};
-
-struct BracketMark {
-  KateViewCursor cursor;
-  int sXPos;
-  int eXPos;
 };
 
 
@@ -534,7 +536,6 @@ class KateView : public Kate::View
   protected:
     uint searchFlags;
     int replaces;
-    SConfig s;
     QDialog *replacePrompt;
 
 //right mouse button popup menu & bookmark menu
@@ -611,45 +612,6 @@ class KateView : public Kate::View
     KateViewInternal *myViewInternal;
     KateDocument *myDoc;
 
-//spell checker
-  public:
-    /**
-     * Returns the KSpellConfig object
-     */
-    KSpellConfig *ksConfig(void) {return kspell.ksc;}
-    /**
-     * Sets the KSpellConfig object.  (The object is
-     *  copied internally.)
-     */
-    void setKSConfig (const KSpellConfig _ksc) {*kspell.ksc=_ksc;}
-
-  public slots:    //please keep prototypes and implementations in same order
-    void spellcheck();
-    void spellcheck2(KSpell*);
-    void misspelling (QString word, QStringList *, unsigned pos);
-    void corrected (QString originalword, QString newword, unsigned pos);
-    void spellResult (const QString &newtext);
-    void spellCleanDone();
-  signals:
-    /** This says spellchecking is <i>percent</i> done.
-      */
-    void  spellcheck_progress (unsigned int percent);
-    /** Emitted when spellcheck is complete.
-     */
-    void spellcheck_done ();
-
-  protected:
-    // all spell checker data stored in here
-    struct _kspell {
-      KSpell *kspell;
-      KSpellConfig *ksc;
-      QString spell_tmptext;
-      bool kspellon;              // are we doing a spell check?
-      int kspellMispellCount;     // how many words suggested for replacement so far
-      int kspellReplaceCount;     // how many words actually replaced so far
-      bool kspellPristine;        // doing spell check on a clean document?
-    } kspell;
-
     // some kwriteview stuff
   protected:
     void insLine(int line) { myViewInternal->insLine(line); };
@@ -682,20 +644,6 @@ class KateView : public Kate::View
       srNo=10,
       srAll,
       srCancel=QDialog::Rejected};
-
-//search flags
-    enum Search_flags {
-     sfCaseSensitive=1,
-     sfWholeWords=2,
-     sfFromBeginning=4,
-     sfBackward=8,
-     sfSelected=16,
-     sfPrompt=32,
-     sfReplace=64,
-     sfAgain=128,
-     sfWrapped=256,
-     sfFinished=512,
-     sfRegularExpression=1024};
 
 //update flags
     enum Update_flags {

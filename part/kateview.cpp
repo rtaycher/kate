@@ -1310,16 +1310,8 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate
 
   connect(myViewInternal,SIGNAL(dropEventPass(QDropEvent *)),this,SLOT(dropEventPassEmited(QDropEvent *)));
 
-  // some defaults
-  searchFlags = myDoc->_searchFlags;
-
   replacePrompt = 0L;
   rmbMenu = 0L;
-
-  //KSpell initial values
-  kspell.kspell = 0;
-  kspell.ksc = new KSpellConfig; //default KSpellConfig to start
-  kspell.kspellon = FALSE;
 
   setFocusProxy( myViewInternal );
   myViewInternal->setFocus();
@@ -1356,13 +1348,6 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate
 
 KateView::~KateView()
 {
-  if (kspell.kspell)
-  {
-    kspell.kspell->setAutoDelete(true);
-    kspell.kspell->cleanUp(); // need a way to wait for this to complete
-  }
-  delete kspell.ksc;
-
   if (myDoc && !myDoc->m_bSingleViewMode)
     myDoc->removeView( this );
 
@@ -1461,7 +1446,7 @@ void KateView::setupActions()
     new KToggleAction(i18n("Show &Icon Border"), Key_F6, this, SLOT(toggleIconBorder()), actionCollection(), "view_border");
 
     // setup Tools menu
-    KStdAction::spelling(this, SLOT(spellcheck()), actionCollection());
+    KStdAction::spelling(myDoc, SLOT(spellcheck()), actionCollection());
     new KAction(i18n("&Indent"), "indent", Qt::CTRL+Qt::Key_I, this, SLOT(indent()),
                               actionCollection(), "tools_indent");
     new KAction(i18n("&Unindent"), "unindent", Qt::CTRL+Qt::Key_U, this, SLOT(unIndent()),
@@ -1933,10 +1918,10 @@ static void kwview_addToStrList(QStringList &list, const QString &str) {
 void KateView::find() {
   SearchDialog *searchDialog;
 
-  if (!myDoc->hasSelection()) searchFlags &= ~KateView::sfSelected;
+  if (!myDoc->hasSelection()) myDoc->_searchFlags &= ~KateDocument::sfSelected;
 
   searchDialog = new SearchDialog(this, myDoc->searchForList, myDoc->replaceWithList,
-  searchFlags & ~KateView::sfReplace);
+  myDoc->_searchFlags & ~KateDocument::sfReplace);
 
   // If the user has marked some text we use that otherwise
   // use the word under the cursor.
@@ -1959,9 +1944,9 @@ void KateView::find() {
   myViewInternal->focusOutEvent(0L);// QT bug ?
   if (searchDialog->exec() == QDialog::Accepted) {
     kwview_addToStrList(myDoc->searchForList, searchDialog->getSearchFor());
-    searchFlags = searchDialog->getFlags() | (searchFlags & KateView::sfPrompt);
-    initSearch(s, searchFlags);
-    findAgain(s);
+    myDoc->_searchFlags = searchDialog->getFlags() | (myDoc->_searchFlags & KateDocument::sfPrompt);
+    initSearch(myDoc->s, myDoc->_searchFlags);
+    findAgain(myDoc->s);
   }
   delete searchDialog;
 }
@@ -1971,9 +1956,9 @@ void KateView::replace() {
 
   if (!doc()->isReadWrite()) return;
 
-  if (!myDoc->hasSelection()) searchFlags &= ~KateView::sfSelected;
+  if (!myDoc->hasSelection()) myDoc->_searchFlags &= ~KateDocument::sfSelected;
   searchDialog = new SearchDialog(this, myDoc->searchForList, myDoc->replaceWithList,
-    searchFlags | KateView::sfReplace);
+    myDoc->_searchFlags | KateDocument::sfReplace);
 
   // If the user has marked some text we use that otherwise
   // use the word under the cursor.
@@ -1998,8 +1983,8 @@ void KateView::replace() {
 //    myDoc->recordReset();
     kwview_addToStrList(myDoc->searchForList, searchDialog->getSearchFor());
     kwview_addToStrList(myDoc->replaceWithList, searchDialog->getReplaceWith());
-    searchFlags = searchDialog->getFlags();
-    initSearch(s, searchFlags);
+    myDoc->_searchFlags = searchDialog->getFlags();
+    initSearch(myDoc->s, myDoc->_searchFlags);
     replaceAgain();
   }
   delete searchDialog;
@@ -2032,53 +2017,53 @@ void KateView::gotoLineNumber( int linenumber )
 
 void KateView::initSearch(SConfig &s, int flags) {
 
-  s.flags = flags;
-  s.setPattern(myDoc->searchForList.first());
+  myDoc->s.flags = flags;
+  myDoc->s.setPattern(myDoc->searchForList.first());
 
-  if (!(s.flags & KateView::sfFromBeginning)) {
+  if (!(myDoc->s.flags & KateDocument::sfFromBeginning)) {
     // If we are continuing a backward search, make sure we do not get stuck
     // at an existing match.
-    s.cursor = myViewInternal->cursor;
-    TextLine::Ptr textLine = myDoc->getTextLine(s.cursor.line);
+    myDoc->s.cursor = myViewInternal->cursor;
+    TextLine::Ptr textLine = myDoc->getTextLine(myDoc->s.cursor.line);
     QString const txt(textLine->getText(),textLine->length());
     const QString searchFor= myDoc->searchForList.first();
-    int pos = s.cursor.col-searchFor.length()-1;
+    int pos = myDoc->s.cursor.col-searchFor.length()-1;
     if ( pos < 0 ) pos = 0;
-    pos= txt.find(searchFor, pos, s.flags & KateView::sfCaseSensitive);
-    if ( s.flags & KateView::sfBackward )
+    pos= txt.find(searchFor, pos, myDoc->s.flags & KateDocument::sfCaseSensitive);
+    if ( myDoc->s.flags & KateDocument::sfBackward )
     {
-      if ( pos <= s.cursor.col )  s.cursor.col= pos-1;
+      if ( pos <= myDoc->s.cursor.col )  myDoc->s.cursor.col= pos-1;
     }
     else
-      if ( pos == s.cursor.col )  s.cursor.col++;
+      if ( pos == myDoc->s.cursor.col )  myDoc->s.cursor.col++;
   } else {
-    if (!(s.flags & KateView::sfBackward)) {
-      s.cursor.col = 0;
-      s.cursor.line = 0;
+    if (!(myDoc->s.flags & KateDocument::sfBackward)) {
+      myDoc->s.cursor.col = 0;
+      myDoc->s.cursor.line = 0;
     } else {
-      s.cursor.col = -1;
-      s.cursor.line = myDoc->lastLine();
+      myDoc->s.cursor.col = -1;
+      myDoc->s.cursor.line = myDoc->lastLine();
     }
-    s.flags |= KateView::sfFinished;
+    myDoc->s.flags |= KateDocument::sfFinished;
   }
-  if (!(s.flags & KateView::sfBackward)) {
-    if (!(s.cursor.col || s.cursor.line))
-      s.flags |= KateView::sfFinished;
+  if (!(myDoc->s.flags & KateDocument::sfBackward)) {
+    if (!(myDoc->s.cursor.col || myDoc->s.cursor.line))
+      myDoc->s.flags |= KateDocument::sfFinished;
   }
-  s.startCursor = s.cursor;
+  myDoc->s.startCursor = myDoc->s.cursor;
 }
 
 void KateView::continueSearch(SConfig &s) {
 
-  if (!(s.flags & KateView::sfBackward)) {
-    s.cursor.col = 0;
-    s.cursor.line = 0;
+  if (!(myDoc->s.flags & KateDocument::sfBackward)) {
+    myDoc->s.cursor.col = 0;
+    myDoc->s.cursor.line = 0;
   } else {
-    s.cursor.col = -1;
-    s.cursor.line = myDoc->lastLine();
+    myDoc->s.cursor.col = -1;
+    myDoc->s.cursor.line = myDoc->lastLine();
   }
-  s.flags |= KateView::sfFinished;
-  s.flags &= ~KateView::sfAgain;
+  myDoc->s.flags |= KateDocument::sfFinished;
+  myDoc->s.flags &= ~KateDocument::sfAgain;
 }
 
 void KateView::findAgain(SConfig &s) {
@@ -2095,16 +2080,16 @@ void KateView::findAgain(SConfig &s) {
 
   do {
     query = KMessageBox::Cancel;
-    if (myDoc->doSearch(s,searchFor)) {
-      cursor = s.cursor;
-      if (!(s.flags & KateView::sfBackward))
-        s.cursor.col += s.matchedLength;
-      myViewInternal->updateCursor(s.cursor); //does deselectAll()
-      exposeFound(cursor,s.matchedLength,(s.flags & KateView::sfAgain) ? 0 : KateView::ufUpdateOnScroll,false);
+    if (myDoc->doSearch(myDoc->s,searchFor)) {
+      cursor = myDoc->s.cursor;
+      if (!(myDoc->s.flags & KateDocument::sfBackward))
+        myDoc->s.cursor.col += myDoc->s.matchedLength;
+      myViewInternal->updateCursor(myDoc->s.cursor); //does deselectAll()
+      exposeFound(cursor,myDoc->s.matchedLength,(myDoc->s.flags & KateDocument::sfAgain) ? 0 : KateView::ufUpdateOnScroll,false);
     } else {
-      if (!(s.flags & KateView::sfFinished)) {
+      if (!(myDoc->s.flags & KateDocument::sfFinished)) {
         // ask for continue
-        if (!(s.flags & KateView::sfBackward)) {
+        if (!(myDoc->s.flags & KateDocument::sfBackward)) {
           // forward search
           str = i18n("End of document reached.\n"
                 "Continue from the beginning?");
@@ -2133,7 +2118,7 @@ void KateView::replaceAgain() {
     return;
 
   replaces = 0;
-  if (s.flags & KateView::sfPrompt) {
+  if (myDoc->s.flags & KateDocument::sfPrompt) {
     doReplaceAction(-1);
   } else {
     doReplaceAction(KateView::srAll);
@@ -2151,31 +2136,31 @@ void KateView::doReplaceAction(int result, bool found) {
 
   switch (result) {
     case KateView::srYes: //yes
-      myDoc->removeText (s.cursor.line, s.cursor.col, s.cursor.line, s.cursor.col + s.matchedLength);
-      myDoc->insertText (s.cursor.line, s.cursor.col, replaceWith);
+      myDoc->removeText (myDoc->s.cursor.line, myDoc->s.cursor.col, myDoc->s.cursor.line, myDoc->s.cursor.col + myDoc->s.matchedLength);
+      myDoc->insertText (myDoc->s.cursor.line, myDoc->s.cursor.col, replaceWith);
       replaces++;
-      if (s.cursor.line == s.startCursor.line && s.cursor.col < s.startCursor.col)
-        s.startCursor.col += rlen - s.matchedLength;
-      if (!(s.flags & KateView::sfBackward)) s.cursor.col += rlen;
+      if (myDoc->s.cursor.line == myDoc->s.startCursor.line && myDoc->s.cursor.col < myDoc->s.startCursor.col)
+        myDoc->s.startCursor.col += rlen - myDoc->s.matchedLength;
+      if (!(myDoc->s.flags & KateDocument::sfBackward)) myDoc->s.cursor.col += rlen;
       break;
     case KateView::srNo: //no
-      if (!(s.flags & KateView::sfBackward)) s.cursor.col += s.matchedLength;
+      if (!(myDoc->s.flags & KateDocument::sfBackward)) myDoc->s.cursor.col += myDoc->s.matchedLength;
       break;
     case KateView::srAll: //replace all
       deleteReplacePrompt();
       do {
         started = false;
-        while (found || myDoc->doSearch(s,searchFor)) {
+        while (found || myDoc->doSearch(myDoc->s,searchFor)) {
           if (!started) {
             found = false;
             started = true;
           }
-          myDoc->removeText (s.cursor.line, s.cursor.col, s.cursor.line, s.cursor.col + s.matchedLength);
-          myDoc->insertText (s.cursor.line, s.cursor.col, replaceWith);
+          myDoc->removeText (myDoc->s.cursor.line, myDoc->s.cursor.col, myDoc->s.cursor.line, myDoc->s.cursor.col + myDoc->s.matchedLength);
+          myDoc->insertText (myDoc->s.cursor.line, myDoc->s.cursor.col, replaceWith);
           replaces++;
-          if (s.cursor.line == s.startCursor.line && s.cursor.col < s.startCursor.col)
-            s.startCursor.col += rlen - s.matchedLength;
-          if (!(s.flags & KateView::sfBackward)) s.cursor.col += rlen;
+          if (myDoc->s.cursor.line == myDoc->s.startCursor.line && myDoc->s.cursor.col < myDoc->s.startCursor.col)
+            myDoc->s.startCursor.col += rlen - myDoc->s.matchedLength;
+          if (!(myDoc->s.flags & KateDocument::sfBackward)) myDoc->s.cursor.col += rlen;
         }
       } while (!askReplaceEnd());
       return;
@@ -2187,12 +2172,12 @@ void KateView::doReplaceAction(int result, bool found) {
   }
 
   do {
-    if (myDoc->doSearch(s,searchFor)) {
+    if (myDoc->doSearch(myDoc->s,searchFor)) {
       //text found: highlight it, show replace prompt if needed and exit
-      cursor = s.cursor;
-      if (!(s.flags & KateView::sfBackward)) cursor.col += s.matchedLength;
+      cursor = myDoc->s.cursor;
+      if (!(myDoc->s.flags & KateDocument::sfBackward)) cursor.col += myDoc->s.matchedLength;
       myViewInternal->updateCursor(cursor); //does deselectAll()
-      exposeFound(s.cursor,s.matchedLength,(s.flags & KateView::sfAgain) ? 0 : KateView::ufUpdateOnScroll,true);
+      exposeFound(myDoc->s.cursor,myDoc->s.matchedLength,(myDoc->s.flags & KateDocument::sfAgain) ? 0 : KateView::ufUpdateOnScroll,true);
       if (replacePrompt == 0L) {
         replacePrompt = new ReplacePrompt(this);
         myDoc->setPseudoModal(replacePrompt);//disable();
@@ -2246,7 +2231,7 @@ bool KateView::askReplaceEnd() {
   int query;
 
   myDoc->updateViews();
-  if (s.flags & KateView::sfFinished) {
+  if (myDoc->s.flags & KateDocument::sfFinished) {
     // replace finished
     str = i18n("%1 replacement(s) made").arg(replaces);
     KMessageBox::information(this, str, i18n("Replace"));
@@ -2254,7 +2239,7 @@ bool KateView::askReplaceEnd() {
   }
 
   // ask for continue
-  if (!(s.flags & KateView::sfBackward)) {
+  if (!(myDoc->s.flags & KateDocument::sfBackward)) {
     // forward search
     str = i18n("%1 replacement(s) made.\n"
                "End of document reached.\n"
@@ -2270,7 +2255,7 @@ bool KateView::askReplaceEnd() {
                 i18n("Continue"), i18n("Stop"));
   }
   replaces = 0;
-  continueSearch(s);
+  continueSearch(myDoc->s);
   return (query == KMessageBox::No);
 }
 
@@ -2370,174 +2355,6 @@ void KateView::resizeEvent(QResizeEvent *) {
   myViewInternal->updateView(0/*ufNoScroll*/);
 }
 
-
-
-//  Spellchecking methods
-
-void KateView::spellcheck()
-{
-  if (!doc()->isReadWrite())
-    return;
-
-  kspell.kspell= new KSpell (this, "KateView: Spellcheck", this,
-                      SLOT (spellcheck2 (KSpell *)));
-
-  connect (kspell.kspell, SIGNAL(death()),
-          this, SLOT(spellCleanDone()));
-
-  connect (kspell.kspell, SIGNAL (progress (unsigned int)),
-          this, SIGNAL (spellcheck_progress (unsigned int)) );
-  connect (kspell.kspell, SIGNAL (misspelling (QString , QStringList *, unsigned)),
-          this, SLOT (misspelling (QString, QStringList *, unsigned)));
-  connect (kspell.kspell, SIGNAL (corrected (QString, QString, unsigned)),
-          this, SLOT (corrected (QString, QString, unsigned)));
-  connect (kspell.kspell, SIGNAL (done(const QString&)),
-          this, SLOT (spellResult (const QString&)));
-}
-
-void KateView::spellcheck2(KSpell *)
-{
-  myDoc->setReadWrite (false);
-
-  // this is a hack, setPseudoModal() has been hacked to recognize 0x01
-  // as special (never tries to delete it)
-  // this should either get improved (with a #define or something),
-  // or kspell should provide access to the spell widget.
-  myDoc->setPseudoModal((QWidget*)0x01);
-
-  kspell.spell_tmptext = myDoc->text();
-
-
-  kspell.kspellon = TRUE;
-  kspell.kspellMispellCount = 0;
-  kspell.kspellReplaceCount = 0;
-  kspell.kspellPristine = ! myDoc->isModified();
-
-  kspell.kspell->setProgressResolution (1);
-
-  kspell.kspell->check(kspell.spell_tmptext);
-}
-
-void KateView::misspelling (QString origword, QStringList *, unsigned pos)
-{
-  int line;
-  unsigned int cnt;
-
-  // Find pos  -- CHANGEME: store the last found pos's cursor
-  //   and do these searched relative to that to
-  //   (significantly) increase the speed of the spellcheck
-
-  for (cnt = 0, line = 0 ; line <= myDoc->lastLine() && cnt <= pos ; line++)
-    cnt += myDoc->getTextLine(line)->length()+1;
-
-  // Highlight the mispelled word
-  KateViewCursor cursor;
-  line--;
-  cursor.col = pos - (cnt - myDoc->getTextLine(line)->length()) + 1;
-  cursor.line = line;
-//  deselectAll(); // shouldn't the spell check be allowed within selected text?
-  kspell.kspellMispellCount++;
-  myViewInternal->updateCursor(cursor); //this does deselectAll() if no persistent selections
-  VConfig c;
-  myViewInternal->getVConfig(c);
-  myDoc->selectLength(cursor,origword.length(),c.flags);
-  myDoc->updateViews();
-}
-
-void KateView::corrected (QString originalword, QString newword, unsigned pos)
-{
-  //we'll reselect the original word in case the user has played with
-  //the selection
-
-  int line;
-  unsigned int cnt=0;
-
-  if(newword != originalword)
-    {
-
-      // Find pos
-      for (line = 0 ; line <= myDoc->lastLine() && cnt <= pos ; line++)
-        cnt += myDoc->getTextLine(line)->length() + 1;
-
-      // Highlight the mispelled word
-      KateViewCursor cursor;
-      line--;
-      cursor.col = pos - (cnt-myDoc->getTextLine(line)->length()) + 1;
-      cursor.line = line;
-      myViewInternal->updateCursor(cursor);
-      VConfig c;
-      myViewInternal->getVConfig(c);
-      myDoc->selectLength(cursor, newword.length(),c.flags);
-
-      myDoc->removeText (s.cursor.line, s.cursor.col, s.cursor.line, s.cursor.col + originalword.length());
-      myDoc->insertText (s.cursor.line, s.cursor.col, newword);
-
-      kspell.kspellReplaceCount++;
-    }
-
-}
-
-void KateView::spellResult (const QString &)
-{
-  myDoc->clearSelection (); //!!! this should not be done with persistent selections
-
-//  if (kspellReplaceCount) myDoc->recordReset();
-
-  // we know if the check was cancelled
-  // we can safely use the undo mechanism to backout changes
-  // in case of a cancel, because we force the entire spell check
-  // into one group (record)
-  if (kspell.kspell->dlgResult() == 0) {
-    if (kspell.kspellReplaceCount) {
-      // backout the spell check
-      VConfig c;
-      myViewInternal->getVConfig(c);
-      myDoc->undo();
-      // clear the redo list, so the cancelled spell check can't be redo'ed <- say that word ;-)
-      myDoc->clearRedo();
-      // make sure the modified flag is turned back off
-      // if we started with a clean buffer
-      if (kspell.kspellPristine)
-        myDoc->setModified(false);
-    }
-  }
-
-  myDoc->setPseudoModal(0L);
-  myDoc->setReadWrite (true);
-
-  myDoc->updateViews();
-
-  kspell.kspell->cleanUp();
-}
-
-void KateView::spellCleanDone ()
-{
-  KSpell::spellStatus status = kspell.kspell->status();
-  kspell.spell_tmptext = "";
-  delete kspell.kspell;
-
-  kspell.kspell = 0;
-  kspell.kspellon = FALSE;
-
-  if (status == KSpell::Error)
-  {
-     KMessageBox::sorry(this, i18n("ISpell could not be started.\n"
-     "Please make sure you have ISpell properly configured and in your PATH."));
-  }
-  else if (status == KSpell::Crashed)
-  {
-     myDoc->setPseudoModal(0L);
-     myDoc->setReadWrite (true);
-
-     myDoc->updateViews();
-     KMessageBox::sorry(this, i18n("ISpell seems to have crashed."));
-  }
-  else
-  {
-     emit spellcheck_done();
-  }
-}
-
 void KateView::dropEventPassEmited (QDropEvent* e)
 {
   emit dropEventPass(e);
@@ -2570,11 +2387,11 @@ void KateView::printDlg ()
 
 // Applies a new pattern to the search context.
 void SConfig::setPattern(QString &newPattern) {
-  bool regExp = (flags & KateView::sfRegularExpression);
+  bool regExp = (flags & KateDocument::sfRegularExpression);
 
   m_pattern = newPattern;
   if (regExp) {
-    m_regExp.setCaseSensitive(flags & KateView::sfCaseSensitive);
+    m_regExp.setCaseSensitive(flags & KateDocument::sfCaseSensitive);
     m_regExp.setPattern(m_pattern);
   }
 }
@@ -2582,10 +2399,10 @@ void SConfig::setPattern(QString &newPattern) {
 // Applies the search context to the given string, and returns whether a match was found. If one is,
 // the length of the string matched is also returned.
 int SConfig::search(QString &text, int index) {
-  bool regExp = (flags & KateView::sfRegularExpression);
-  bool caseSensitive = (flags & KateView::sfCaseSensitive);
+  bool regExp = (flags & KateDocument::sfRegularExpression);
+  bool caseSensitive = (flags & KateDocument::sfCaseSensitive);
 
-  if (flags & KateView::sfBackward) {
+  if (flags & KateDocument::sfBackward) {
     if (regExp) {
       index = text.findRev(m_regExp, index);
     }
@@ -2659,13 +2476,13 @@ bool KateView::eventFilter (QObject *object, QEvent *event)
 
 void KateView::findAgain (bool back)
 {
-  bool b= (searchFlags & sfBackward) > 0;
-  initSearch(s, (searchFlags & ((b==back)?~sfBackward:~0) & ~sfFromBeginning)  // clear flag for forward searching
-                | sfPrompt | sfAgain | ((b!=back)?sfBackward:0) );
-  if (s.flags & sfReplace)
+  bool b= (myDoc->_searchFlags & KateDocument::sfBackward) > 0;
+  initSearch(myDoc->s, (myDoc->_searchFlags & ((b==back)?~KateDocument::sfBackward:~0) & ~KateDocument::sfFromBeginning)
+                | KateDocument::sfPrompt | KateDocument::sfAgain | ((b!=back)?KateDocument::sfBackward : 0) );
+  if (myDoc->s.flags & KateDocument::sfReplace)
     replaceAgain();
   else
-    KateView::findAgain(s);
+    KateView::findAgain(myDoc->s);
 }
 
 void KateView::slotEditCommand ()

@@ -182,7 +182,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   path << i18n("Editor") << i18n("Spelling");
   page = addVBoxPage( path, i18n("Spell checker behavior"),
                           BarIcon("spellcheck", KIcon::SizeSmall) );
-  ksc = new KSpellConfig(page, 0L, v->ksConfig(), false );
+  ksc = new KSpellConfig(page, 0L, v->doc()->ksConfig(), false );
   colors = v->doc()->colors;
   colorConfig->setColors( colors );
 
@@ -274,6 +274,7 @@ void KateConfigDialog::slotApply()
   v->doc()->setFont (fontConfig->getFont());
 
   ksc->writeGlobalSettings();
+  v->doc()->setKSConfig(*ksc);
   colorConfig->getColors( colors );
   v->doc()->writeConfig();
   v->doc()->tagAll();

@@ -279,6 +279,49 @@ class KateDocument : public Kate::Document
 
   protected:
     bool m_bBrowserView;
+    
+  //
+  // KSpell stuff
+  //
+  public slots:    //please keep prototypes and implementations in same order
+    void spellcheck();
+    void spellcheck2(KSpell*);
+    void misspelling (QString word, QStringList *, unsigned pos);
+    void corrected (QString originalword, QString newword, unsigned pos);
+    void spellResult (const QString &newtext);
+    void spellCleanDone();
+
+  signals:
+    /** This says spellchecking is <i>percent</i> done.
+      */
+    void  spellcheck_progress (unsigned int percent);
+    /** Emitted when spellcheck is complete.
+     */
+    void spellcheck_done ();
+
+  protected:
+    // all spell checker data stored in here
+    struct _kspell {
+      KSpell *kspell;
+      KSpellConfig *ksc;
+      QString spell_tmptext;
+      bool kspellon;              // are we doing a spell check?
+      int kspellMispellCount;     // how many words suggested for replacement so far
+      int kspellReplaceCount;     // how many words actually replaced so far
+      bool kspellPristine;        // doing spell check on a clean document?
+    } kspell;
+
+  //spell checker
+  public:
+    /**
+     * Returns the KSpellConfig object
+     */
+    KSpellConfig *ksConfig(void) {return kspell.ksc;}
+    /**
+     * Sets the KSpellConfig object.  (The object is
+     *  copied internally.)
+     */
+    void setKSConfig (const KSpellConfig _ksc) {*kspell.ksc=_ksc;}
 
   signals:
     void modifiedChanged ();
@@ -554,6 +597,7 @@ class KateDocument : public Kate::Document
   protected:
     uint _configFlags;
     uint _searchFlags;
+    SConfig s;
 
   public:
     enum Config_flags {
@@ -580,14 +624,7 @@ class KateDocument : public Kate::Document
       cfShowTabs= 0x200000,
       cfSpaceIndent= 0x400000,
       cfSmartHome = 0x800000};
-
-    enum Dialog_results {
-      srYes=QDialog::Accepted,
-      srNo=10,
-      srAll,
-      srCancel=QDialog::Rejected};
-
-//search flags
+      
     enum Search_flags {
      sfCaseSensitive=1,
      sfWholeWords=2,
@@ -600,6 +637,12 @@ class KateDocument : public Kate::Document
      sfWrapped=256,
      sfFinished=512,
      sfRegularExpression=1024};
+
+    enum Dialog_results {
+      srYes=QDialog::Accepted,
+      srNo=10,
+      srAll,
+      srCancel=QDialog::Rejected};
 
   private:
     QPtrList<KateUndoGroup> undoItems;

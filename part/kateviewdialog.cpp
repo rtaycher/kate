@@ -82,7 +82,7 @@ SearchDialog::SearchDialog( QWidget *parent, QStringList &searchFor, QStringList
     regexpButton->setEnabled( false );
   }
 
-  if( flags & KateView::sfReplace )
+  if( flags & KateDocument::sfReplace )
   {
     // make it a replace dialog
     setCaption( i18n( "Replace Text" ) );
@@ -113,7 +113,7 @@ SearchDialog::SearchDialog( QWidget *parent, QStringList &searchFor, QStringList
   m_opt4 = new QCheckBox(i18n("Find &Backwards" ), group );
   gbox->addWidget( m_opt4, 1, 1 );
 
-  if( flags & KateView::sfReplace )
+  if( flags & KateDocument::sfReplace )
   {
     m_opt5 = new QCheckBox(i18n("&Selected Text" ), group );
     gbox->addWidget( m_opt5, 2, 1 );
@@ -121,15 +121,15 @@ SearchDialog::SearchDialog( QWidget *parent, QStringList &searchFor, QStringList
     gbox->addWidget( m_opt6, 3, 1 );
     connect(m_opt5, SIGNAL(stateChanged(int)), this, SLOT(selectedStateChanged(int)));
     connect(m_opt6, SIGNAL(stateChanged(int)), this, SLOT(selectedStateChanged(int)));
-    m_opt5->setChecked( flags & KateView::sfSelected );
-    m_opt6->setChecked( flags & KateView::sfPrompt );
+    m_opt5->setChecked( flags & KateDocument::sfSelected );
+    m_opt6->setChecked( flags & KateDocument::sfPrompt );
   }
 
-  m_opt1->setChecked( flags & KateView::sfCaseSensitive );
-  m_opt2->setChecked( flags & KateView::sfWholeWords );
-  m_opt3->setChecked( flags & KateView::sfFromBeginning );
-  m_optRegExp->setChecked( flags & KateView::sfRegularExpression );
-  m_opt4->setChecked( flags & KateView::sfBackward );
+  m_opt1->setChecked( flags & KateDocument::sfCaseSensitive );
+  m_opt2->setChecked( flags & KateDocument::sfWholeWords );
+  m_opt3->setChecked( flags & KateDocument::sfFromBeginning );
+  m_optRegExp->setChecked( flags & KateDocument::sfRegularExpression );
+  m_opt4->setChecked( flags & KateDocument::sfBackward );
 
   m_search->setFocus();
 }
@@ -161,22 +161,22 @@ int SearchDialog::getFlags()
 {
   int flags = 0;
 
-  if( m_opt1->isChecked() ) flags |= KateView::sfCaseSensitive;
-  if( m_opt2->isChecked() ) flags |= KateView::sfWholeWords;
-  if( m_opt3->isChecked() ) flags |= KateView::sfFromBeginning;
-  if( m_opt4->isChecked() ) flags |= KateView::sfBackward;
-  if( m_optRegExp->isChecked() ) flags |= KateView::sfRegularExpression;
+  if( m_opt1->isChecked() ) flags |= KateDocument::sfCaseSensitive;
+  if( m_opt2->isChecked() ) flags |= KateDocument::sfWholeWords;
+  if( m_opt3->isChecked() ) flags |= KateDocument::sfFromBeginning;
+  if( m_opt4->isChecked() ) flags |= KateDocument::sfBackward;
+  if( m_optRegExp->isChecked() ) flags |= KateDocument::sfRegularExpression;
   if( m_replace )
   {
     if( m_opt6->isChecked() )
-      flags |= KateView::sfPrompt;
+      flags |= KateDocument::sfPrompt;
     else
     {
       if( m_opt5->isChecked() )
-        flags |= KateView::sfSelected;
+        flags |= KateDocument::sfSelected;
     }
 
-    flags |= KateView::sfReplace;
+    flags |= KateDocument::sfReplace;
   }
 
   return flags;
@@ -205,7 +205,8 @@ void SearchDialog::slotOk()
 void SearchDialog::slotEditRegExp()
 {
   KRegExpEditorInterface *iface = dynamic_cast<KRegExpEditorInterface *>( m_regExpDialog );
-  Q_ASSERT( iface );
+  if (!iface)
+    return;
 
   iface->setRegExp( m_search->currentText() );
   int ok = m_regExpDialog->exec();
