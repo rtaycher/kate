@@ -9,12 +9,14 @@
       <item> inline </item>
       <item> namespace </item>
       <item> new </item>
-      <item> operator </item>
+      <item> delete </item>
+	  <item> operator </item>
       <item> private </item>
       <item> protected </item>
       <item> public </item>
       <item> reinterpret_cast </item>
       <item> static_cast </item>
+	  <item> dynamic_cast</item>
       <item> template </item>
       <item> this </item>
       <item> throw </item>
@@ -73,6 +75,7 @@
       <item> typedef </item>
       <item> union </item>
       <item> while </item>
+      <item> connect </item>
     </list>
     <list name="datatypes">
       <item> bool </item>
@@ -93,6 +96,14 @@
       <item> unsigned </item>
       <item> void </item>
       <item> volatile </item>
+      <item> int16_t </item>
+      <item> int32_t </item>
+      <item> int8_t </item>
+      <item> int64_t </item>
+      <item> uint16_t </item>
+      <item> uint32_t </item>
+      <item> uint8_t </item>
+      <item> uint64_t </item>
     </list>
     <contexts>
       <context attribute="0" lineEndContext="0" name="Normal">
