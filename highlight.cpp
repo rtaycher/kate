@@ -1453,7 +1453,7 @@ const char *HlCaseInsensitiveKeyword::checkHgl(const char *s) {
   count = words.count();
   for (z = 0; z < count; z++) {
     word = *words.at(z);
-    if (strncasecmp(s,word,word.length()) == 0) {
+    if (strncasecmp(s,word.latin1(),word.length()) == 0) {
       return s + word.length();
     }
   }
