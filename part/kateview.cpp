@@ -1373,6 +1373,7 @@ void KateView::copy () const
 
 void KateView::setupActions()
 {
+    kdDebug() << "KateView::setupActions()" << endl; // delete me -- ellis
     KStdAction::close( this, SLOT(flush()), actionCollection(), "file_close" );
 
     KStdAction::save(this, SLOT(save()), actionCollection());
