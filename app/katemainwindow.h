@@ -62,10 +62,11 @@ class KateMainWindow : public KMdiMainFrm, virtual public KParts::PartBase
 		KMdi::MdiMode guiMode);
     ~KateMainWindow();
 
-    Kate::MainWindow *mainWindow () { return m_mainWindow; };
-    Kate::ToolViewManager *toolViewManager () { return m_toolViewManager; };
+    Kate::MainWindow *mainWindow () { return m_mainWindow; }
+    Kate::ToolViewManager *toolViewManager () { return m_toolViewManager; }
 // #warning FIXME
-    Kate::Project *activeProject () { /*return 0;}//*/return m_project; };
+    //Kate::Project *activeProject () { return 0; }
+    Kate::Project *activeProject () { return m_project; }
 
     /**
      * Creates a new project file at give url of given type + opens it
@@ -87,7 +88,7 @@ class KateMainWindow : public KMdiMainFrm, virtual public KParts::PartBase
      * anders: I add this for use from the file selector. */
     KURL activeDocumentUrl();
 
-    DCOPObject *dcopObject () { return m_dcop; };
+    DCOPObject *dcopObject () { return m_dcop; }
 
     // dockwidgets
     KDockWidget *mainDock;
@@ -121,8 +122,8 @@ class KateMainWindow : public KMdiMainFrm, virtual public KParts::PartBase
     bool modNotification;
 
   public:
-    bool notifyMod() const { return modNotification; };
-    uint mainWindowNumber () const { return myID; };
+    bool notifyMod() const { return modNotification; }
+    uint mainWindowNumber () const { return myID; }
 
   protected:
     KatePluginManager *m_pluginManager;
@@ -226,9 +227,9 @@ class KateMainWindow : public KMdiMainFrm, virtual public KParts::PartBase
     Kate::ToolViewManager *m_toolViewManager;
 
   public:
-    Kate::ViewManager *viewManager () {return m_viewManager->viewManager(); };
-    KateViewManager *kateViewManager () { return m_viewManager; };
-    KDockWidget *centralDock () { return mainDock; };
+    Kate::ViewManager *viewManager () {return m_viewManager->viewManager(); }
+    KateViewManager *kateViewManager () { return m_viewManager; }
+    KDockWidget *centralDock () { return mainDock; }
 
   public: //ToolViewManager stuff
     virtual KDockWidget *addToolViewWidget(KDockWidget::DockPosition pos,QWidget *widget,const QPixmap &icon, const QString& caption);
