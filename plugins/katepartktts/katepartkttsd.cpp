@@ -40,7 +40,7 @@ K_EXPORT_COMPONENT_FACTORY( libkatepartkttsdplugin, KGenericFactory<KatePartPlug
 KatePartPluginKTTSD::KatePartPluginKTTSD( QObject* parent, const char* name, const QStringList& )
     : Plugin( parent, name )
 {
-    (void) new KAction( "&Speak Text",
+    (void) new KAction( i18n("&Speak Text"),
                         "kttsd", 0,
                         this, SLOT(slotReadOut()),
                         actionCollection(), "tools_kttsd" );
