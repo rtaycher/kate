@@ -112,7 +112,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
 
   // How instances should be handled
   cb_singleInstance = new QCheckBox(frGeneral);
-  cb_singleInstance->setText(i18n("Restrict to single instance"));
+  cb_singleInstance->setText(i18n("Restrict to single process (on startup)"));
   gridFrG->addMultiCellWidget(cb_singleInstance,3,3,0,1);
   config->setGroup("startup");
   cb_singleInstance->setChecked(config->readBoolEntry("singleinstance",true));
