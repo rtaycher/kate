@@ -58,9 +58,9 @@ KateFileList::KateFileList (KateDocManager *_docManager,
   connect(docManager,SIGNAL(documentCreated(Kate::Document *)),this,SLOT(slotDocumentCreated(Kate::Document *)));
   connect(docManager,SIGNAL(documentDeleted(uint)),this,SLOT(slotDocumentDeleted(uint)));
 
-  // Honour KDE single/double click setting
-  connect(this,SIGNAL(executed(QListBoxItem *)),this,SLOT(slotActivateView(QListBoxItem *)));
-//  connect(this,SIGNAL(highlighted(QListBoxItem *)),this,SLOT(slotActivateView(QListBoxItem *)));
+  // don't Honour KDE single/double click setting, this files are already open, no need for hassle of considering double-click
+  //connect(this,SIGNAL(executed(QListBoxItem *)),this,SLOT(slotActivateView(QListBoxItem *)));
+  connect(this,SIGNAL(highlighted(QListBoxItem *)),this,SLOT(slotActivateView(QListBoxItem *)));
 
   connect(viewManager,SIGNAL(viewChanged()), this,SLOT(slotViewChanged()));
 
