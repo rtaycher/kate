@@ -1577,14 +1577,18 @@ void KateDocument::setText(const QString &s) {
 
   clear();
 
-  TextLine::Ptr textLine = contents.first();
+  int line=1;
+
+  TextLine::Ptr textLine = buffer->line(0);
   for (pos = 0; pos <= (int) s.length(); pos++) {
     ch = s[pos];
     if (ch.isPrint() || ch == '\t') {
       textLine->append(&ch, 1);
-    } else if (ch == '\n') {
+    } else if (ch == '\n')
+    {
       textLine = new TextLine();
-      contents.append(textLine);
+      buffer->insertLine (line, textLine);
+      line++;
     }
   }
   updateLines();
@@ -1958,13 +1962,10 @@ void KateDocument::setURL( const KURL &url, bool updateHighlight )
 
   if ( updateHighlight )
   {
-    //highlight detection
-    //  pos = fName.findRev('/') +1;
-    //  if (pos >= (int) fName.length()) return; //no filename
-    //  hl = hlManager->wildcardFind(s.right( s.length() - pos ));
     QString fn = m_url.fileName();
     if ( fn.isEmpty() )
         return;
+
     hl = hlManager->wildcardFind( fn );
 
     if (hl == -1) {
@@ -1972,18 +1973,16 @@ void KateDocument::setURL( const KURL &url, bool updateHighlight )
       const int HOWMANY = 1024;
       QByteArray buf(HOWMANY);
       int bufpos = 0, len;
-      for (TextLine::List::ConstIterator it = contents.begin();
-           it != contents.end();
-           ++it)
+      for (int i=0; i < buffer->count(); i++)
       {
-        TextLine::Ptr textLine = *it;
+        TextLine::Ptr textLine = buffer->line(i);
         len = textLine->length();
         if (bufpos + len > HOWMANY) len = HOWMANY - bufpos;
         memcpy(&buf[bufpos], textLine->getText(), len);
         bufpos += len;
         if (bufpos >= HOWMANY) break;
       }
-      //    hl = hlManager->mimeFind(buf, s.right( s.length() - pos));
+
       hl = hlManager->mimeFind( buf, fn );
     }
     setHighlight(hl);

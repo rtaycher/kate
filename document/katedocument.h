@@ -355,7 +355,6 @@ class KateDocument : public KateDocumentIface
   protected:
     long PreHighlightedTill;
     long RequestPreHighlightTill;
-    TextLine::List contents;
     KWBuffer *buffer;
     QColor colors[5];
     HlManager *hlManager;
