@@ -72,9 +72,8 @@ class HlCharDetect : public HlItem {
 class Hl2CharDetect : public HlItem {
   public:
     Hl2CharDetect(int attribute, int context,  QChar ch1, QChar ch2);
-#ifdef PASCAL_SUPPORT
-		Hl2CharDetect(int attribute, int context, const QChar *ch);
-#endif
+   	Hl2CharDetect(int attribute, int context, const QChar *ch);
+
     virtual const QChar *checkHgl(const QChar *);
   protected:
     QChar sChar1;
@@ -124,7 +123,6 @@ class HlKeyword : public HlItemWw {
     QStringList words;
 		QDict<char> Dict;
 };
-#ifdef PASCAL_SUPPORT
 class HlCaseInsensitiveKeyword : public HlKeyword {
   public:
     HlCaseInsensitiveKeyword(int attribute, int context);
@@ -140,7 +138,6 @@ class HlPHex : public HlItemWw {
     HlPHex(int attribute,int context);
     virtual const QChar *checkHgl(const QChar *);
 };
-#endif
 class HlInt : public HlItemWw {
   public:
     HlInt(int attribute, int context);
@@ -463,7 +460,6 @@ class CppHighlight : public CHighlight {
   protected:
     virtual void setKeywords(HlKeyword *keyword, HlKeyword *dataType);
 };
-#ifdef PASCAL_SUPPORT
 class PascalHighlight : public CHighlight {
   public:
     PascalHighlight(const char *name);
@@ -475,7 +471,7 @@ class PascalHighlight : public CHighlight {
     virtual void makeContextList();
     virtual void setKeywords(HlKeyword *keyword, HlKeyword *dataType);
 };
-#endif
+
 
 class ObjcHighlight : public CHighlight {
   public:

@@ -1168,7 +1168,6 @@ void ObjcHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
  dataType->addList(HlManager::self()->syntax->finddata("Objective-C","type"));
 
 }
-#ifdef PASCAL_SUPPORT
 
 Hl2CharDetect::Hl2CharDetect(int attribute, int context, const QChar *s)
   : HlItem(attribute,context) {
@@ -1311,7 +1310,6 @@ void PascalHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
   keyword->addList(HlManager::self()->syntax->finddata("Pascal","keyword"));
   dataType->addList(HlManager::self()->syntax->finddata("Pascal","type"));
 }
-#endif // ifdef PASCAL_SUPPORT
 
 IdlHighlight::IdlHighlight(const char * name) : CHighlight(name) {
   iWildcards = "*.idl";
@@ -1950,9 +1948,7 @@ HlManager::HlManager() : QObject(0L) {
   hlList.append(new BashHighlight(  "Bash"     ));
   hlList.append(new ModulaHighlight("Modula 2" ));
   hlList.append(new AdaHighlight(   "Ada"      ));
-#ifdef PASCAL_SUPPORT
   hlList.append(new PascalHighlight("Pascal"   ));
-#endif
   hlList.append(new PythonHighlight("Python"   ));
   hlList.append(new PerlHighlight(  "Perl"     ));
   hlList.append(new SatherHighlight("Sather"   ));
