@@ -221,7 +221,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   path.clear();
   path << i18n("Application") << i18n("Plugins");
   /*QVBox **/page=addVBoxPage(path,i18n("Plugin Manager"),
-                          BarIcon("misc",KIcon::SizeSmall));
+                          BarIcon("connect_established",KIcon::SizeSmall));
   KateConfigPluginPage *configPluginPage = new KateConfigPluginPage(page, this);
   connect( configPluginPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
 
