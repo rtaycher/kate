@@ -1,3 +1,6 @@
+2001-08-15  christian@kdevelop.org
+  * committed Eiffel language syntax highlighting support 
+
 2001-08-08  rokrau@yahoo.com
   * committed changes to Kate's API necessary for integration of kate as
     a kpart into kdevelop
