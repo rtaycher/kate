@@ -259,8 +259,7 @@ bool KWriteDoc::openFile()
 bool KWriteDoc::saveFile()
 {
 #ifdef NEW_CODE
-  // TODO: Not yet implemented.
-  return false;
+  return writeFile( m_file, QTextCodec::codecForLocale());
 #else
   QFile f( m_file );
   if ( !f.open( IO_WriteOnly | IO_Truncate ) )
@@ -731,9 +730,29 @@ void KWriteDoc::loadFile(const QString &file, QTextCodec *codec)
 qWarning("Linecount = %d", buffer->count());
 }
 
-void KWriteDoc::writeFile(const QString &file, QTextCodec *codec)
+bool KWriteDoc::writeFile(const QString &file, QTextCodec *codec)
 {
-qWarning("NOT YET IMPLEMENTED.");
+qWarning("writeFile()");
+  QFile f( file );
+  if ( !f.open( IO_WriteOnly ) )
+    return false; // Error
+
+  QTextStream stream(&f);
+  stream.setCodec(codec);
+  int maxLine = numLines();
+  int line = 0;
+  while(true)
+  {
+    TextLine::Ptr textLine = getTextLine(line);
+    QConstString str((QChar *) textLine->getText(), textLine->length());
+    stream << str.string();
+    line++;
+    if (line >= maxLine) break;
+    if (eolMode != KWriteView::eolUnix) stream << QChar('\r');
+    if (eolMode != KWriteView::eolMacintosh) stream << QChar('\n');
+  };
+  f.close();
+  return (f.status() == IO_Ok);
 }
 #else
 void KWriteDoc::loadFile(QIODevice &dev) {

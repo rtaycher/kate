@@ -104,7 +104,10 @@ KWBuffer::insertFile(int line, const QString &file, QTextCodec *codec)
 
   int fd = open(QFile::encodeName(file), O_RDONLY);
   if (fd < 0)
+  {
+     qWarning("Error loading file.");
      return; // Do some error propagation here.
+  }
 
   KWBufFileLoader *loader = new KWBufFileLoader;
   loader->fd = fd;
@@ -429,13 +432,18 @@ KWBufBlock::blockFill(int dataStart, QByteArray data1, QByteArray data2, bool la
    if ((last && (e != l)) || 
        (l == 0))
    {
-      b_appendEOL = true;
-      lineNr++;
       l = e;
+      if (!m_rawData1.isEmpty() || !m_rawData2.isEmpty())
+      {
+         b_appendEOL = true;
+         lineNr++;
+      }
    }
 
    m_rawData2End = l - m_rawData2.data();
    m_endState.lineNr = lineNr;
+qWarning("blockFill(%x) beginState = %d endState = %d", this, 
+   m_beginState.lineNr, m_endState.lineNr);
    m_rawSize = m_rawData1.count() - m_rawData1Start + m_rawData2End;
    b_rawDataValid = true;
    return m_rawData2End;

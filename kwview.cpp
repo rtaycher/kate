@@ -2167,13 +2167,17 @@ bool KWrite::writeFile(const QString &name) {
     KMessageBox::sorry(this, i18n("You do not have write permission to this file"));
     return false;
   }
-
+#ifdef NEW_CODE
+  if (kWriteDoc->writeFile(name, QTextCodec::codecForLocale()))
+     return true; // Success
+#else
   QFile f(name);
   if (f.open(IO_WriteOnly | IO_Truncate)) {
     writeFile(f);
     f.close();
     return true;//kWriteDoc->setFileName(name);
   }
+#endif
   KMessageBox::sorry(this, i18n("An error occured while trying to write this document"));
   return false;
 }
