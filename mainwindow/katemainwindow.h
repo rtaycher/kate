@@ -121,7 +121,7 @@ class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOP
 
     KSelectAction* setEndOfLine;
     KAction* documentReload;
-
+    KActionMenu* documentOpenWith;
     KAction *setHighlightConf;
     KSelectAction *setHighlight;
 
@@ -155,6 +155,8 @@ class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOP
     void slotHlConfigure();
 
     void slotSidebarFocusNext();
+    
+    void slotOpenWithMenuAction(int idx);
 
   private:
     void setupMainWindow();
@@ -183,7 +185,7 @@ class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOP
     void slotSettingsShowFullPath();
     void slotDropEvent(QDropEvent *);
     void editKeys();
-
+    void mSlotFixOpenWithMenu();
     void slotGoNext();
     void slotGoPrev();
 

@@ -66,11 +66,14 @@
 #include <kkeydialog.h>
 #include <klistbox.h>
 #include <klocale.h>
+#include <kmimetype.h>
+#include <kopenwith.h>
 #include <kparts/event.h>
 #include <kparts/part.h>
 #include <ksimpleconfig.h>
 #include <kstdaction.h>
 #include <kstddirs.h>
+#include <ktrader.h>
 #include <kuniqueapp.h>
 #include <kurldrag.h>
 
@@ -241,6 +244,10 @@ void KateMainWindow::setupActions()
   setEndOfLine->setItems(list);
 
   documentReload = new KAction(i18n("&Reload"), "reload", Key_F5, viewManager, SLOT(reloadCurrentDoc()), actionCollection(), "document_reload");
+
+  documentOpenWith = new KActionMenu(i18n("O&pen with"), actionCollection(), "document_open_with");
+  connect(documentOpenWith->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(mSlotFixOpenWithMenu()));
+  connect(documentOpenWith->popupMenu(), SIGNAL(activated(int)), this, SLOT(slotOpenWithMenuAction(int)));
 
   setHighlightConf = new KAction(i18n("Configure Highlighti&ng..."), 0, this, SLOT(slotHlConfigure()),actionCollection(), "set_confHighlight");
 
@@ -523,6 +530,7 @@ void KateMainWindow::slotCurrentDocChanged()
   setEndOfLine->plug (documentMenu);
   documentMenu->insertSeparator ();
   documentReload->plug (documentMenu);
+  documentOpenWith->plug (documentMenu);
   documentMenu->insertSeparator ();
 
   uint z=0;
@@ -924,6 +932,44 @@ QWidget *KateMainWindow::createContainer( QWidget *parent, int index,
 
 void KateMainWindow::restore(bool isRestored)
 { viewManager->reopenDocuments(isRestored); }
+
+void KateMainWindow::mSlotFixOpenWithMenu()
+{
+  documentOpenWith->popupMenu()->clear();
+  // get a list of appropriate services.
+  if ( ! docManager->currentDoc() ) return;
+  KMimeType::Ptr mime = KMimeType::findByURL( docManager->currentDoc()->url() );
+  // some checking goes here...
+  KTrader::OfferList offers = KTrader::self()->query(mime->name(), "Type == 'Application'");
+  // for each one, insert a menu item...
+  for(KTrader::OfferList::Iterator it = offers.begin(); it != offers.end(); ++it) {
+    if ((*it)->name() == "Kate") continue;
+    documentOpenWith->popupMenu()->insertItem( SmallIcon( (*it)->icon() ), (*it)->name() );
+  }
+  // append "Other..." to call the KDE "open with" dialog.
+  documentOpenWith->popupMenu()->insertItem(i18n("&Other..."));
+}
+
+void KateMainWindow::slotOpenWithMenuAction(int idx)
+{
+  KURL::List list;
+  list.append( docManager->currentDoc()->url() );
+  QString* appname = new QString( documentOpenWith->popupMenu()->text(idx) );
+  if ( appname->compare(i18n("&Other...")) == 0 ) {
+    // display "open with" dialog
+    KOpenWithDlg* dlg = new KOpenWithDlg(list);
+    if (dlg->exec())
+      KRun::run(*dlg->service(), list);
+    return;
+  }
+  QString qry = QString("((Type == 'Application') and (Name == '%1'))").arg( appname->latin1() );
+  KMimeType::Ptr mime = KMimeType::findByURL( docManager->currentDoc()->url() );
+  KTrader::OfferList offers = KTrader::self()->query(mime->name(), qry);
+  KService::Ptr app = offers.first();
+  // some checking here: pop a wacko message it the app wasn't found.
+  KRun::run(*app, list);
+}
+
 
 
 

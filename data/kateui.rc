@@ -58,6 +58,8 @@
     <Action name="set_highlight"/>
     <Action name="set_eol"/>
     <Separator />
+    <Action name="document_open_with" />
+    <Separator />
     <Action name="document_reload" />
     <Separator />
   </Menu>
