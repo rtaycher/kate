@@ -42,7 +42,7 @@ class TopLevel : public KParts::MainWindow
 
     void init(); //initialize caption, status and show
 
-    void loadURL(const KURL &url, int flags = 0);
+    void loadURL(const KURL &url);
 
   protected:
     virtual bool queryClose();
@@ -109,3 +109,4 @@ class TopLevel : public KParts::MainWindow
 };
 
 #endif
+

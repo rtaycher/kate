@@ -88,8 +88,6 @@
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <kstringhandler.h>
-#include <kio/job.h>
-#include <kio/netaccess.h>
 #include <kaction.h>
 #include <kstdaction.h>
 #include <kparts/event.h>
@@ -100,14 +98,6 @@
 #include "../document/katetextline.h"
 #include "kateviewdialog.h"
 #include "kateundohistory.h"
-
-#ifdef HAVE_PATHS_H
-#include <paths.h>
-#endif
-
-#ifndef _PATH_TMP
-#define _PATH_TMP "/tmp/"
-#endif
 
 struct BufferInfo {
   void *user;
@@ -1466,8 +1456,6 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name, bool H
   myViewInternal->setFocus();
   resize(parent->width() -4, parent->height() -4);
 
-  m_tempSaveFile = 0;
-
   printer = new KPrinter();
 
   myViewInternal->installEventFilter( this );
@@ -1505,14 +1493,6 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name, bool H
 
 KateView::~KateView()
 {
-  QMap<KIO::Job *, NetData>::Iterator it = m_mapNetData.begin();
-  while ( it != m_mapNetData.end() )
-  {
-      KIO::Job *job = it.key();
-      m_mapNetData.remove( it );
-      job->kill();
-      it = m_mapNetData.begin();
-  }
   if (kspell.kspell)
   {
     kspell.kspell->setAutoDelete(true);
@@ -1531,7 +1511,6 @@ KateView::~KateView()
 
   delete myViewInternal;
 
-  delete m_tempSaveFile;
   delete printer;
 }
 
@@ -3260,6 +3239,7 @@ void KateBrowserExtension::slotSelectionChanged()
 {
   emit enableAction( "copy", m_doc->hasMarkedText() );
 }
+
 
 
 

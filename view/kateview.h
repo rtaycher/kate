@@ -67,8 +67,6 @@ class KSelectAction;
 
 class KPrinter;
 
-namespace KIO { class FileCopyJob; }
-
 class KTempFile;
 class KateDocument;
 class Highlight;
@@ -491,20 +489,6 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
 
     int configFlags;
     int wrapAt;
-
-    /*
-     * The source, the destination of the copy, and the flags
-     * for each job being run (job id is the dict key).
-     */
-    struct NetData
-    {
-      KURL m_url;
-      QByteArray m_data;
-      int m_flags;
-    };
-    QMap<KIO::Job *, NetData> m_mapNetData;
-
-    KTempFile *m_tempSaveFile;
 
     /*
      * Check if the given URL already exists. Currently used by both save() and saveAs()
@@ -1071,6 +1055,7 @@ class KateBrowserExtension : public KParts::BrowserExtension
 };
 
 #endif
+
 
 
 

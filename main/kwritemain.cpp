@@ -113,7 +113,7 @@ void TopLevel::init()
 }
 
 
-void TopLevel::loadURL(const KURL &url, int flags)
+void TopLevel::loadURL(const KURL &url)
 {
   kateView->doc()->openURL(url);
 }
@@ -498,7 +498,7 @@ void TopLevel::writeConfig()
 void TopLevel::restore(KConfig *config, int n)
 {
   if (kateView->isLastView() && !kateView->doc()->url().isEmpty()) { //in this case first view
-    loadURL(kateView->doc()->url(), KateView::lfNewFile );
+    loadURL(kateView->doc()->url());
   }
   readPropertiesInternal(config, n);
   init();
@@ -643,5 +643,6 @@ int main(int argc, char **argv)
   args->clear();
 	return r;
 }
+
 
 
