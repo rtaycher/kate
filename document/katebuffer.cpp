@@ -392,7 +392,7 @@ KWBuffer::removeLine(int i)
 void
 KWBuffer::changeLine(int i)
 {
-    kdDebug()<<"changeLine "<< i<<endl;
+    kdDebug(13020)<<"changeLine "<< i<<endl;
    KWBufBlock *buf = findBlock(i);
    assert(buf);
    assert(buf->b_stringListValid);
