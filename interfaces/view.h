@@ -30,6 +30,7 @@
 #include <ktexteditor/document.h>
 #include <ktexteditor/view.h>
 #include <ktexteditor/clipboardinterface.h>
+#include <ktexteditor/popupmenuinterface.h>
 
 class KConfig;
 
@@ -44,7 +45,8 @@ class Mark;
   The Kate::View text editor interface.
   @author Jochen Wilhelmy, modified by rokrau (6/21/01)
 */
-class View : public KTextEditor::View, virtual KTextEditor::ClipboardInterface
+class View : public KTextEditor::View, virtual KTextEditor::ClipboardInterface,
+             virtual KTextEditor::PopupMenuInterface
 {
   Q_OBJECT
 
