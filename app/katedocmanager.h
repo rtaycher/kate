@@ -46,7 +46,7 @@ class KateDocumentInfo
     unsigned char modifiedOnDiscReason;
 };
 
-class KateDocManager : public QObject,virtual public KateDocManagerDCOPIface
+class KateDocManager : public QObject, virtual public KateDocManagerDCOPIface
 {
   Q_OBJECT
 

@@ -79,12 +79,10 @@
 #include "kategrepdialog.h"
 //END
 
-uint KateMainWindow::uniqueID = 0;
-
-
+uint KateMainWindow::uniqueID = 1;
 
 KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager *_m_pluginManager, KateProjectManager *projectMan) :
-	DCOPObject ((QString("KateMainWindow%1").arg(uniqueID)).latin1()),
+	DCOPObject ((QString("KateMainWindow#%1").arg(uniqueID)).latin1()),
 	KMdiMainFrm (0)
 {
   m_mainWindow = new Kate::MainWindow (this);

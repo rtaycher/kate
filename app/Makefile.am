@@ -7,8 +7,9 @@ libkateinterfaces_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugin
 	katemainwindow.cpp katepluginmanager.cpp katesplitter.cpp \
 	kateviewmanager.cpp kateviewspace.cpp kateprojectmanager.cpp \
 	kateIface.skel kategrepdialog.cpp katemailfilesdialog.cpp \
-        kbookmarkhandler.cpp kactionselector.cpp kateprojectlist.cpp \
-        kateprojecttreeview.cpp kateprojectviews.cpp kateprojectdirview.cpp katedocmanageriface.skel
+	kbookmarkhandler.cpp kactionselector.cpp kateprojectlist.cpp \
+	kateprojecttreeview.cpp kateprojectviews.cpp kateprojectdirview.cpp \
+	katedocmanageriface.skel
 
 libkateinterfaces_la_LIBADD   = ../interfaces/libkateinterfacesprivate.la -lkscript $(LIB_KUTILS) ../utils/libkateutils.la -lkmdi
 
