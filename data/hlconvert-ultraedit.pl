@@ -91,8 +91,20 @@ while ($i <= $z)
 
     $s++;
   }
+  if ($file[$i] =~ /\/Delimiters/)
+  {
+    @field = split /Delimiters = #/, $file[$i];
+    $weakdel = @field[1]
+  }
   $i++;
 }
+
+$weakdel =~ s/</\&lt;/gi;
+$weakdel =~ s/>/\&gt;/gi;
+$weakdel =~ s/\&/\&amp;/gi;
+$weakdel =~ s/\"/\&quot;/gi;
+$weakdel =~ s/\n//gi;
+$weakdel =~ s/\r//gi;
 
 $n=0;
 while (($n < $s) && ($file[$sections[$n]] ne ""))
@@ -143,14 +155,21 @@ print FILE "      <context name=\"Normal\" attribute=\"0\" lineEndContext=\"0\">
 $n=0;
 while (($n < $s) && ($file[$sections[$n]] ne ""))
 {
-  $str = $n+3;
-  print FILE "        <keyword attribute=\"$str\" context=\"0\" String=\"$listname[$n]\" />\n";
+  $str = $n+4;
+  if ($weakdel eq "")
+  {
+    print FILE "        <keyword attribute=\"$str\" context=\"0\" String=\"$listname[$n]\" />\n";
+  }
+  else
+  {
+    print FILE "        <keyword attribute=\"$str\" context=\"0\" String=\"$listname[$n]\" weakDelimiter=\"$weakdel\" />\n";
+  }
   $n++;
 }
 
 if ($delimeter ne "")
 {
-  print FILE "      <DetectChar char=\"&quot;\" attribute=\"1\" context=\"1\">\n";
+  print FILE "      <DetectChar char=\"&quot;\" attribute=\"1\" context=\"1\" \/>\n";
 }
 
 print FILE "      </context>\n";
@@ -172,16 +191,34 @@ if ($delimeter ne "")
 
   print FILE "      </context>\n";
 
-  print FILE "<context attribute=\"1\" lineEndContext=\"2\" name=\"Continue\">\n";
-  print FILE "      <RegExpr String=\"^\" attribute=\"1\" context=\"1\"/>";
-  print FILE "      </context>";
+  print FILE "      <context attribute=\"1\" lineEndContext=\"2\" name=\"Continue\">\n";
+  print FILE "        <RegExpr String=\"^\" attribute=\"1\" context=\"1\"/>\n";
+  print FILE "      </context>\n";
 }
+
+if ($linecomment ne "")
+{
+ #     <context attribute="10" lineEndContext="0">
+  #      <RegExpr attribute="3" context="2" String="(FIXME|TODO)" />
+   #   </context>
+}
+
+if (($commentstart ne "") && ($commentend ne ""))
+{
+
+ # <context attribute="10" lineEndContext="3">
+  #      <Detect2Chars attribute="10" context="0" char="*" char1="/"/>
+   #     <RegExpr attribute="3" context="3" String="(FIXME|TODO)" />
+    #  </context>
+}
+
 
 print FILE "    </contexts>\n";
 print FILE "    <itemDatas>\n";
 print FILE "      <itemData name=\"Normal\" defStyleNum=\"dsNormal\"/>\n";
 print FILE "      <itemData name=\"String\"  defStyleNum=\"dsString\"/>\n";
 print FILE "      <itemData name=\"String Char\"  defStyleNum=\"dsChar\"/>\n";
+print FILE "      <itemData name=\"Comment\" defStyleNum=\"dsComment\"/>\n";
 
 $n=0;
 while (($n < $s) && ($file[$sections[$n]] ne ""))
