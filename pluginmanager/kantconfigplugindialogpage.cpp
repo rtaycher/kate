@@ -8,23 +8,21 @@
 
 KantConfigPluginPage::KantConfigPluginPage(QWidget *parent):QHBox(parent)
 {
-  KantPluginManager *myPluginMan=((KantApp*)kapp)->getPluginManager();
+  myPluginMan=((KantApp*)kapp)->getPluginManager();
 
   availableBox=new KListBox(this);
   loadedBox=new KListBox(this);
-
-   availableBox->show();
- // loadedBox->clear();
-  loadedBox->show();
 
   slotUpdate();
 }
 
 void KantConfigPluginPage::slotUpdate ()
 {
-  //availableBox->clear();
+  availableBox->clear();
+  if  (myPluginMan->availablePlugins.count() > 0)
+    availableBox->insertStringList (myPluginMan->availablePlugins);
 
-  availableBox->insertStringList (myPluginMan->availablePlugins);
- // loadedBox->clear();
-  loadedBox->insertStringList (myPluginMan->loadedPlugins);
+  loadedBox->clear();
+  if  (myPluginMan->loadedPlugins.count() > 0)
+    loadedBox->insertStringList (myPluginMan->loadedPlugins);
 }
