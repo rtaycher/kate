@@ -27,24 +27,24 @@
 
 
         <contexts>
-                <context name = "Base" attribute = "0" lineEndContext="0">
-                        <keyword String = "keywords" attribute = "1" context="0"/>
-                        <Int attribute = "2" context="0"/>
-                        <RegExpr String = "$[0-9]+" attribute = "8" context="0"/>
-                        <AnyChar String = "|&lt;&gt;=;" attribute = "9" context="0"/>
-                        <DetectChar char = '"' attribute = "5" context="0"/>
+                <context name = "Base" attribute = "0" lineEndContext="#stay">
+                        <keyword String = "keywords" attribute = "1" context="#stay"/>
+                        <Int attribute = "2" context="#stay"/>
+                        <RegExpr String = "$[0-9]+" attribute = "8" context="#stay"/>
+                        <AnyChar String = "|&lt;&gt;=;" attribute = "9" context="#stay"/>
+                        <DetectChar char = '"' attribute = "5" context="#stay"/>
                         <DetectChar char="`" attribute = "7" context = "2"/>
-			<Detect2Chars attribute="0" context="0" char="\" char1="#"/> 
-                        <RegExpr String= "#.*$" attribute = "6" context="0"/>
+			<Detect2Chars attribute="0" context="#stay" char="\" char1="#"/>
+                        <RegExpr String= "#.*$" attribute = "6" context="#stay"/>
                 </context>
 
-                <context name = "String" attribute = "5" lineEndContext="1">
-                        <HlCChar attribute = "4" context = "1"/>
-                        <DetectChar char = '"' attribute = "5" context = "0"/>
+                <context name = "String" attribute = "5" lineEndContext="#stay">
+                        <HlCChar attribute = "4" context = "#stay"/>
+                        <DetectChar char = '"' attribute = "5" context = "#pop"/>
                 </context>
 
-                <context name = "Substitution" attribute = "7" lineEndContext="2">
-                        <DetectChar char = "`" attribute = "7" context = "0"/>
+                <context name = "Substitution" attribute = "7" lineEndContext="#stay">
+                        <DetectChar char = "`" attribute = "7" context = "#pop"/>
                 </context>
         </contexts>
 

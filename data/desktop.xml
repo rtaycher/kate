@@ -3,12 +3,12 @@
 <language name=".desktop" section="Other" extensions="*.desktop;*.kdelnk" mimetype="application/x-desktop">
   <highlighting>
     <contexts>
-      <context attribute="2" lineEndContext="0" name="Normal">
-        <RegExpr String="^\[.*\]$" attribute="Section" context="0"/>
+      <context attribute="2" lineEndContext="#stay" name="Normal">
+        <RegExpr String="^\[.*\]$" attribute="Section" context="#stay"/>
         <RegExpr String="\[.*\]" attribute="Language" context="1"/>
         <DetectChar char="=" attribute="0" context="1"/>
       </context>
-      <context attribute="0" lineEndContext="0" name="Value"/>
+      <context attribute="0" lineEndContext="#pop" name="Value"/>
     </contexts>
     <itemDatas>
       <itemData name="Normal Text" defStyleNum="dsNormal"/>

@@ -3,8 +3,8 @@
 <language name="ChangeLog" section="Other" extensions="ChangeLog" mimetype="">
         <highlighting>
           <contexts>
-                <context attribute="0" lineEndContext="0">
-                <RegExpr attribute="1" context="0" String="^\d\d\d\d\s*-\s*\d\d\s*-\s*\d\d.*$"/>
+                <context attribute="0" lineEndContext="#stay">
+                <RegExpr attribute="1" context="#stay" String="^\d\d\d\d\s*-\s*\d\d\s*-\s*\d\d.*$"/>
                 </context>
           </contexts>
           <itemDatas>

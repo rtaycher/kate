@@ -612,6 +612,19 @@ signed char *Highlight::generateContextStack(int *ctxNum, int ctx,signed char *c
 	return ctxs;
 }
 
+/*******************************************************************************************
+        Highlight - doHighlight
+        Increase the usage count and trigger initialization if needed
+
+                        * input: signed char *oCtx	Pointer to the "stack" of the previous line
+				 uint *oCtxLen		Size of the stack
+				 TextLine *textline	Current textline to work on
+                        *************
+                        * output: (TextLine *textline)
+                        *************
+                        * return value: signed char*	new context stack at the end of the line
+*******************************************************************************************/
+
 signed char *Highlight::doHighlight(signed char *oCtx, uint *oCtxLen, TextLine *textLine)
 {
   if (noHl)
@@ -633,22 +646,23 @@ signed char *Highlight::doHighlight(signed char *oCtx, uint *oCtxLen, TextLine *
 
   if (oCtxLen==0)
 	{
+		// If the stack is empty, we assume to be in Context 0 (Normal)
 		ctxNum=0;
 		context=contextList[ctxNum];
 		prevLine=-1;
 	}
 	else
 	{
-		ctxNum=ctx[(*oCtxLen)-1];
-		context=contextList[ctxNum];
-		prevLine=(*oCtxLen)-1;
-		ctx=generateContextStack(&ctxNum, context->ctx, ctx, oCtxLen, &prevLine);
-		context=contextList[ctxNum];
+		// There does an old context stack exist -> find the context at the line start
+		ctxNum=ctx[(*oCtxLen)-1]; //context ID of the last character in the previous line
+		context=contextList[ctxNum]; //context structure
+		prevLine=(*oCtxLen)-1;	//position of the last context ID of th previous line within the stack
+		ctx=generateContextStack(&ctxNum, context->ctx, ctx, oCtxLen, &prevLine);	//get stack ID to use
+		context=contextList[ctxNum];	//current context to use
 	}
 
-//  for (int i=0;i<ctx.size();i++) kdDebug()<<QString("%1").arg(ctx[i])<<endl;
-//	  kdDebug()<<QString("------------------")<<endl;
-
+  
+  
   QChar lastChar = ' ';
 
   // first char
@@ -676,7 +690,7 @@ signed char *Highlight::doHighlight(signed char *oCtx, uint *oCtxLen, TextLine *
             textLine->setAttribs(item->attr,s1 - str,s2 - str);
 //   	    kdDebug()<<QString("item->ctx: %1").arg(item->ctx)<<endl;
 
-	    ctx=generateContextStack(&ctxNum, item->ctx,ctx, oCtxLen, &prevLine);
+	    ctx=generateContextStack(&ctxNum, item->ctx,ctx, oCtxLen, &prevLine);  //regenerate context stack
 	//    kdDebug()<<QString("current ctxNum==%1").arg(ctxNum)<<endl;
 	    context=contextList[ctxNum];
 
@@ -1032,7 +1046,11 @@ HlItem *Highlight::createHlItem(syntaxContextData *data, ItemDataList &iDl)
                 // END - Translation of the attribute parameter
 
                 // Info about context switch
-                int context=((HlManager::self()->syntax->groupItemData(data,QString("context"))).toInt());
+		int context;
+		QString tmpcontext=HlManager::self()->syntax->groupItemData(data,QString("context"));
+		if (tmpcontext=="#stay") context=-2;
+		else if (tmpcontext=="#pop") context=-1;
+		else context=tmpcontext.toInt();
 
                 // Get the char parameter (eg DetectChar)
                 char chr;
@@ -1248,9 +1266,15 @@ void Highlight::makeContextList()
             attr=lookupAttrName(tmpAttr,iDl);
           // END - Translation of the attribute parameter
 
+	  QString tmpLineEndContext=HlManager::self()->syntax->groupData(data,QString("lineEndContext"));
+	  int context;
+	  if (tmpLineEndContext=="#stay") context=-2;
+	  	else if (tmpLineEndContext=="#pop") context=-1;
+			else context=tmpLineEndContext.toInt();
+
           contextList[i]=new HlContext(
             attr,
-            (HlManager::self()->syntax->groupData(data,QString("lineEndContext"))).toInt(),
+            context,
             (HlManager::self()->syntax->groupData(data,QString("lineBeginContext"))).isEmpty()?-1:
             (HlManager::self()->syntax->groupData(data,QString("lineBeginContext"))).toInt());
 

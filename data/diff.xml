@@ -4,17 +4,17 @@
   <highlighting>
 
     <contexts>
-      <context attribute="0" lineEndContext="0">
+      <context attribute="0" lineEndContext="#stay">
       	<RegExpr attribute="1" context="1" String="^(\+\+\+|\-\-\-|\*\*\*|diff|\d)" />
 	<RegExpr attribute="4" context="2" String="^(\+|&gt;|!)" />
 	<RegExpr attribute="3" context="3" String="^(\-|&lt;)" />
 	<RegExpr attribute="2" context="4" String="^\@\@" />
       </context>
 
-      <context attribute="1" lineEndContext="0" />
-      <context attribute="4" lineEndContext="0" />
-      <context attribute="3" lineEndContext="0" />
-      <context attribute="2" lineEndContext="0" />
+      <context attribute="1" lineEndContext="#pop" />
+      <context attribute="4" lineEndContext="#pop" />
+      <context attribute="3" lineEndContext="#pop" />
+      <context attribute="2" lineEndContext="#pop" />
 
     </contexts>
 
