@@ -157,7 +157,7 @@ void KantPluginManager::disablePluginGUI (PluginListItem *item)
 
   for (int i=0; i< ((KantApp*)parent())->mainWindows.count(); i++)
   {
-    for (int z=0; i< item->plugin->viewList.count(); i++)
+    for (int z=0; z< item->plugin->viewList.count(); z++)
     {
       ((KantApp*)parent())->mainWindows.at(i)->guiFactory()->removeClient( item->plugin->viewList.at (z) );
     }
