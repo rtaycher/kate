@@ -42,6 +42,8 @@
 #include <kparts/event.h>
 
 #include "ktextprint.h"
+#include "kwattribute.h"
+#include "kwtextline.h"
 #include "kwdoc.h"
 #include "kwdialog.h"
 #include "highlight.h"

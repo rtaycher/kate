@@ -62,6 +62,7 @@
 #include <X11/Xlib.h> //used to have XSetTransientForHint()
 
 #include "kwdoc.h"
+#include "kwtextline.h"
 #include "kwdialog.h"
 #include "undohistory.h"
 #include "ktextprint.h"

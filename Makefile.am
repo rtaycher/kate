@@ -2,7 +2,7 @@
 
 INCLUDES = $(all_includes)
 
-KDE_CXXFLAGS = $(USE_RTTI) -DNEW_CODE
+KDE_CXXFLAGS = $(USE_RTTI) -DNO_NEW_CODE
 
 bin_PROGRAMS = kwrite
 
@@ -11,7 +11,8 @@ lib_LTLIBRARIES = libkwritepart.la kwrite.la
 libkwritepart_la_SOURCES = highlight.cpp ktextprint.cpp  \
 		           kwdoc.cpp kwview.cpp undohistory.cpp  \
 		           kwdialog.cpp kwrite_factory.cpp \
-                           kwbuffer.cpp kwriteIface.skel
+                           kwbuffer.cpp kwtextline.cpp \
+                           kwattribute.cpp kwriteIface.skel
 
 libkwritepart_la_LDFLAGS = $(all_libraries) $(KDE_PLUGIN)
 libkwritepart_la_LIBADD = -lktexteditor -lkspell $(LIB_KPARTS)

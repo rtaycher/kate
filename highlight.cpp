@@ -45,10 +45,11 @@
 #include <kregexp.h>
 #include <kglobalsettings.h>
 #include <kdebug.h>
-
-#include "highlight.h"
-#include "kwdoc.h"
 #include <kstddirs.h>
+
+#include "kwtextline.h"
+#include "kwattribute.h"
+#include "highlight.h"
 
 // general rule for keywords: if one keyword contains another at the beginning,
 // the long one has to come first (eg. "const_cast", "const")
