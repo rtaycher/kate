@@ -42,10 +42,10 @@ class GrepTool : public QWidget
 public:
     GrepTool(class KateMainWindow *parent=0, const char *name=0);
     ~GrepTool();
-    
+
     // only updates if the dir you give to it differs from the last one given to it !
     void updateDirName(const QString &);
-    
+
     void setDirName(const QString &);
 
 
@@ -72,13 +72,13 @@ private:
     void processOutput();
     void finish();
 
-    QLineEdit *template_edit;
-    QComboBox *files_combo, *pattern_combo;
-    KURLRequester *dir_combo;
-    QCheckBox *recursive_box;
-    QCheckBox *casesensitive_box;
-    QListBox *resultbox;
-    QPushButton *search_button, *clear_button;
+    QLineEdit *leTemplate;
+    QComboBox *cmbFiles, *cmbPattern;
+    KURLRequester *cmbDir;
+    QCheckBox *cbRecursive;
+    QCheckBox *cbCasesensitive, *cbRegex;
+    QListBox *lbResult;
+    QPushButton *btnSearch, *btnClear;
     KProcess *childproc;
     QString buf;
     QString errbuf;
