@@ -244,8 +244,12 @@ KateMainWindow *KateApp::newMainWindow ()
     mainWindow->kateViewManager()->openURL ( KURL() );
 
   mainWindow->show ();
-  mainWindow->raise();
-  KWin::setActiveWindow (mainWindow->winId());
+
+  if (!m_firstStart)
+  {
+    mainWindow->raise();
+    KWin::setActiveWindow (mainWindow->winId());
+  }
 
   return mainWindow;
 }
