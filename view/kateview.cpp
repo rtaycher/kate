@@ -106,8 +106,6 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc) : QWidget(
   myView = view;
   myDoc = doc;
 
-  bIsPainting = false;
-
   iconBorderWidth  = 16;
   iconBorderHeight = 800;
 
@@ -540,17 +538,8 @@ void KateViewInternal::changeXPos(int p) {
   if (QABS(dx) < width()) scroll(dx, 0); else update();
 }
 
-void KateViewInternal::scroll( int dx, int dy )
-{
-   bIsPainting= true;
-   QWidget::scroll( dx, dy );
- }
-
 void KateViewInternal::changeYPos(int p) {
   int dy;
-
-   if ( bIsPainting )
-     return;
 
   dy = yPos - p;
   yPos = p;
@@ -1198,11 +1187,7 @@ void KateViewInternal::paintEvent(QPaintEvent *e) {
   int h;
   int line, y, yEnd;
 
-  bIsPainting = true;           // toggle scrolling off
-
   QRect updateR = e->rect();
-//  debug("update rect  = ( %i, %i, %i, %i )",
-//    updateR.x(),updateR.y(), updateR.width(), updateR.height() );
 
   if (!drawBuffer) return;
   if (drawBuffer->isNull()) return;
@@ -1245,8 +1230,6 @@ void KateViewInternal::paintEvent(QPaintEvent *e) {
 
   if (cursorOn) paintCursor();
   if (bm.eXPos > bm.sXPos) paintBracketMark();
-
-  bIsPainting = false;          // toggle scrolling on
 }
 
 void KateViewInternal::resizeEvent(QResizeEvent *)
