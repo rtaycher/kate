@@ -347,7 +347,7 @@ void TopLevel::setupMenuBar() {
 //  options->insertSeparator();
 //  options->insertItem(i18n("Save Options"),this,SLOT(save_options()));
 
-  help = helpMenu( i18n("KWrite 1.0.0\n\nCopyright 1998, 1999\nJochen Wilhelmy\ndigisnap@cs.tu-berlin.de"));
+  help = helpMenu( i18n("KWrite %1\n\nCopyright 1998, 1999\nJochen Wilhelmy\ndigisnap@cs.tu-berlin.de").arg(KWRITE_VERSION),false);
 
   //right mouse button popup
   popup = new QPopupMenu();

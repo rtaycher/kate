@@ -66,12 +66,15 @@ const KAboutData *KWriteFactory::aboutData()
   if ( !s_aboutData )
   {
     s_aboutData = new KAboutData( "kwrite", I18N_NOOP( "KWrite" ),
-				  "2.0", // ### FIXME
+				  KWRITE_VERSION,
 				  I18N_NOOP( "Advanced Texteditor Component" ),
 				  KAboutData::License_GPL,
 
 				  "(c) 2000, Jochen Wilhelmy" );
     s_aboutData->addAuthor( "Jochen Wilhemly", I18N_NOOP( "Author" ), "digisnap@cs.tu-berlin.de" );
+    s_aboutData->addAuthor("Michael Koch",I18N_NOOP("Port to KParts"), "koch@kde.org");
+    s_aboutData->addAuthor("Glen Parker",I18N_NOOP("Undo History, Kspell integration"), "glenebob@nwlink.com");
+
   }
 
   return s_aboutData;

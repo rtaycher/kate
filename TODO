@@ -1,5 +1,3 @@
-- fix remote document loading/saving in KWrite
-  (use the KParts methods openURL and saveToURL)
 - implement all KTextEditor methods
 - use the new kguicommand system from kdelibs/kwrite
 - action'ify KWrite and the shell (TopLevel)

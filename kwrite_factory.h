@@ -3,6 +3,8 @@
 
 #include <kparts/factory.h>
 
+#define KWRITE_VERSION "2.0"
+
 class KInstance;
 class KAboutData;
 

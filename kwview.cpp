@@ -1942,7 +1942,7 @@ bool KWrite::loadFile(const QString &name, int flags) {
     f.close();
     return true;
   }
-  KMessageBox::sorry(this, i18n("An Error occured while trying to open this Document"));
+  KMessageBox::sorry(this, i18n("An error occured while trying to open this document"));
   return false;
 }
 
@@ -1960,7 +1960,7 @@ bool KWrite::writeFile(const QString &name) {
     f.close();
     return true;//kWriteDoc->setFileName(name);
   }
-  KMessageBox::sorry(this, i18n("An Error occured while trying to open this Document"));
+  KMessageBox::sorry(this, i18n("An error occured while trying to write this document"));
   return false;
 }
 
