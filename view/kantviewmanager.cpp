@@ -1037,15 +1037,17 @@ void KantViewManager::reopenDocuments(bool isRestore)
   bool resVC = config->readBoolEntry("restore views", true);
   ////////////////////////////////////////////////////////////////////////
   // RESTORE VIEW CONFIG TEST
-  if ( scfg->hasGroup("splitter0") && (isRestore && resVC) ) {
+  if ( scfg->hasGroup("splitter0") && (isRestore || resVC) ) {
     kdDebug(13030)<<"reopenDocumentw(): calling restoreViewConfig()"<<endl;
-    restoreViewConfig();
+
+    // commented out - tooooooooo buggy
+    //restoreViewConfig();
     return;
   }
   ////////////////////////////////////////////////////////////////////////
   // read the list and loop around it.
   scfg->setGroup("open files");
-  if (config->readBoolEntry("reopen at startup", true) && isRestore )
+  if (config->readBoolEntry("reopen at startup", true) || isRestore )
   {
     QStringList list = /*config*/scfg->readListEntry("list");
 
