@@ -184,7 +184,7 @@ void KateExternalToolsCommand::reload () {
 	  Kate::Document::registerCommand(this);
    }
   else m_inited=true;
- }
+}
 
 bool KateExternalToolsCommand::exec (Kate::View *view, const QString &cmd, QString &msg) {
 	QWidget *wv=dynamic_cast<QWidget*>(view);
@@ -751,7 +751,7 @@ void KateExternalToolsConfigWidget::slotRemove()
   // add the tool action name to a list of removed items,
   // remove the current listbox item
   if ( lbTools->currentItem() > -1 ) {
-    ToolItem *i = static_cast<ToolItem*>(lbTools->selectedItem());
+    ToolItem *i = dynamic_cast<ToolItem*>(lbTools->selectedItem());
     if ( i )
       m_removed << i->tool->acname;
 
