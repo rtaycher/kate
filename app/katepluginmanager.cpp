@@ -26,7 +26,7 @@
 #include <kconfig.h>
 #include <ksimpleconfig.h>
 #include <kglobal.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <qstringlist.h>
 #include <qfileinfo.h>
 #include <qfile.h>

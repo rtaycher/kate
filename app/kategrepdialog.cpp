@@ -17,21 +17,19 @@
 
 #include "kategrepdialog.h"
 #include <qlayout.h>
-#include <qlabel.h>
 #include <qpushbutton.h>
 #include <qlineedit.h>
+#include <qlabel.h>
 #include <qcombobox.h>
 #include <qcheckbox.h>
 #include <qlistbox.h>
 #include <qregexp.h>
-#include <qlabel.h>
 #include <qwhatsthis.h>
 #include <kbuttonbox.h>
 #include <kfiledialog.h>
 #include <kprocess.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <klocale.h>
-#include <kstddirs.h>
 #include <kiconloader.h>
 #include <kwin.h>
 
@@ -267,7 +265,6 @@ void GrepDialog::templateActivated(int index)
 
 
 #include <iostream.h>
-#include <kstddirs.h>
 void GrepDialog::itemSelected(const QString& item)
 {
     int pos;

@@ -40,7 +40,7 @@
 #include <kmessagebox.h>
 #include <ksimpleconfig.h>
 #include <kstdaction.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <qfileinfo.h>
 #include <qlayout.h>
 #include <qobjectlist.h>

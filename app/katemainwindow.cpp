@@ -49,7 +49,7 @@
 #include <dcopclient.h>
 #include <kinstance.h>
 #include <kaction.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <kdialogbase.h>
@@ -73,9 +73,9 @@
 #include <ksimpleconfig.h>
 #include <kstatusbar.h>
 #include <kstdaction.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <ktrader.h>
-#include <kuniqueapp.h>
+#include <kuniqueapplication.h>
 #include <kurldrag.h>
 #include <kdesktopfile.h>
 

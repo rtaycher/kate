@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <klocale.h>
 #include <kcmdlineargs.h>
 #include <kstdaction.h>
