@@ -344,7 +344,7 @@ void KateVSStatusBar::setStatus( int r, int c, int ovr, bool block, int mod, con
 {
   m_lineColLabel->setText(
     i18n(" Line: %1 Col: %2 ").arg(KGlobal::locale()->formatNumber(r+1, 0))
-                              .arg(KGlobal::locale()->formatNumber(c, 0)) );
+                              .arg(KGlobal::locale()->formatNumber(c+1, 0)) );
 
   if (ovr == 0)
     m_insertModeLabel->setText( i18n(" R/O ") );
