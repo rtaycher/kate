@@ -102,8 +102,6 @@ bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, 
   connect(view,SIGNAL(newStatus()),this,SLOT(setWindowCaption()));
   m_viewList.append (view);
 
-#warning "WHAT THE HELL HAS THIS TO DO HERE ?	doc->setEncoding(m_encoding);"
-
   if (newDoc)
   {
     if (!url.isEmpty())
