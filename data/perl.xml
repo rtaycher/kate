@@ -39,7 +39,7 @@
      <list name="operators">
          <item> = </item>
          <item> != </item>
-         <item> ~= </item>
+         <item> =~ </item>
          <item> += </item>
          <item> -= </item>
          <item> *= </item>
