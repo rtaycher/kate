@@ -50,8 +50,8 @@ void PluginKantHtmlTools::slotEditHTMLtag()
   KWrite *kv=myParent->getActiveView();
   if (!kv) return;
  
-  QString text ( KantPrompt ( "HTML Tag",
-                        "Enter HTML tag contents. We will supply the <, > and closing tag",
+  QString text ( KantPrompt ( i18n("HTML Tag"),
+                        i18n("Enter HTML tag contents. We will supply the <, > and closing tag"),
                         myParent
                         ) );
  
@@ -61,32 +61,11 @@ void PluginKantHtmlTools::slotEditHTMLtag()
 }
 
 
-	static void 
-splitString (QString q, char c, QStringList &list)  //  PCP
-{
-
-// screw the OnceAndOnlyOnce Principle!
-
-  int pos;
-  QString item;
-
-  while ( (pos = q.find(c)) >= 0)
-    {
-      item = q.left(pos);
-      list.append(item);
-      q.remove(0,pos+1);
-    }
-  list.append(q);
-}
-
-
-
-
 QString PluginKantHtmlTools::KantPrompt
         (
-        char const     * strTitle,
-        char const     * strPrompt,
-        QWidget        * that
+        QString strTitle,
+        QString strPrompt,
+        QWidget * that
         )
 {
 
@@ -97,8 +76,8 @@ QString PluginKantHtmlTools::KantPrompt
 
   QString text ( QInputDialog::getText
 			(
-			that -> tr( strTitle ),
-			that -> tr( strPrompt ),
+			strTitle,
+			strPrompt,
 			QString::null,
 			&ok,
 			that
@@ -115,16 +94,17 @@ void PluginKantHtmlTools::slipInHTMLtag (KWrite & view, QString text)  //  PCP
 
   //  We must add a <em>heavy</em> elaborate HTML markup system. Not!
 
-  QStringList list;
-  splitString (text, ' ', list);
+  QStringList list = QStringList::split (' ', text);
   QString marked (view.markedText ());
   int preDeleteLine = -1, preDeleteCol = -1;
   view.getCursorPosition (&preDeleteLine, &preDeleteCol);
   assert (preDeleteLine > -1);  assert (preDeleteCol > -1);
 
   //  shoot me for strlen() but it worked better than .length() for some reason...
+  // lukas: BANG! strlen() fucks up non latin1 characters :-)
 
-  if (strlen (marked.latin1()) > 0)  view.keyDelete ();
+  if (marked.length() > 0)
+    view.keyDelete ();
   int line = -1, col = -1;
   view.getCursorPosition (&line, &col);
   assert (line > -1);  assert (col > -1);

@@ -18,6 +18,8 @@
 #ifndef _PLUGIN_KANT_HTMLTOOLS_H
 #define _PLUGIN_KANT_HTMLTOOLS_H
 
+#include <qstring.h>
+
 #include <kparts/plugin.h>
 #include <klibloader.h>
 #include <kantpluginiface.h>
@@ -32,7 +34,7 @@ public:
 private:
   KantPluginIface *myParent;
 
-  QString KantPrompt (char const *strTitle, char const *strPrompt,
+  QString KantPrompt (QString strTitle, QString strPrompt,
 			     QWidget * that);
   void slipInHTMLtag (KWrite & view, QString text);
 
