@@ -1,4 +1,5 @@
 /*
+   $Id$
    This file is part of KWrite
    Copyright (c) 2000 Waldo Bastian <bastian@kde.org>
    
