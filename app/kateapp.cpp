@@ -42,17 +42,26 @@
 #include <qtimer.h>
 #include <kmdidefines.h>
 
+KConfig *KateApp::m_sessionConfig = 0;
+
 KateApp::KateApp (bool forcedNewProcess, bool oldState)
  : KUniqueApplication (true,true,true)
  , m_firstStart (true)
  , m_initPlugin (0)
  , m_doNotInitialize (0)
  , m_restoreGUIMode (KMdi::UndefinedMode)
- , m_sessionConfig (0)
 {
   // we need to call that now, don't ask me, in the first newInstance run it is wrong !
   if (isRestored())
+  {
     m_sessionConfig = sessionConfig ();
+    m_sessionConfigDelete = false;
+  }
+  else // no restoring, use our own katesessionrc from start on !
+  {
+    m_sessionConfig = new KSimpleConfig ("katesessionrc", false);
+    m_sessionConfigDelete = true;
+  }
 
   // Don't handle DCOP requests yet
   kapp->dcopClient()->suspend();
@@ -124,6 +133,10 @@ KateApp::~KateApp ()
 
   // delete this now, or we crash
   delete m_docManager;
+  
+  // our session config is our own one, cleanup
+  if (m_sessionConfigDelete)
+    delete m_sessionConfig;
 }
 
 void KateApp::callOnEventLoopEnter()
@@ -192,24 +205,22 @@ int KateApp::newInstance()
     }
     else
     {
-      KSimpleConfig scfg ("katesessionrc", false);
-
       config()->setGroup("General");
 
       // restore our nice projects if wanted
       if (config()->readBoolEntry("Restore Projects", false))
-        m_projectManager->restoreProjectList (&scfg);
+        m_projectManager->restoreProjectList (kateSessionConfig ());
 
       // reopen our nice files if wanted
       if (config()->readBoolEntry("Restore Documents", false))
-        m_docManager->restoreDocumentList (&scfg);
+        m_docManager->restoreDocumentList (kateSessionConfig ());
 
       KateMainWindow *win=newMainWindow(false);
 
       // window config
       config()->setGroup("General");
       if (config()->readBoolEntry("Restore Window Configuration", false))
-        win->readProperties (&scfg);
+        win->readProperties (kateSessionConfig ());
 
       win->show ();
     }

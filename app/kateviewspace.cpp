@@ -24,6 +24,7 @@
 #include "katemainwindow.h"
 #include "kateviewmanager.h"
 #include "katedocmanager.h"
+#include "kateapp.h"
 
 #include <kiconloader.h>
 #include <klocale.h>
@@ -111,12 +112,13 @@ void KateViewSpace::addView(Kate::View* v, bool show)
     if ( ! fn.isEmpty() )
     {
       QString vgroup = QString("%1 %2").arg(m_group).arg(fn);
-      KConfig *config = new KConfig("katesessionrc");
-      if ( config->hasGroup( vgroup ) ) {
-        config->setGroup( vgroup );
-        v->readSessionConfig( config );
+
+      if ( KateApp::kateSessionConfig()->hasGroup( vgroup ) )
+      {
+        KateApp::kateSessionConfig()->setGroup( vgroup );
+        v->readSessionConfig( KateApp::kateSessionConfig() );
       }
-      delete config; // nessecary? nice?
+
     }
   }
 

@@ -75,6 +75,8 @@ class KateApp : public KUniqueApplication
     virtual void performInit(const QString &, const KURL &);
     virtual Kate::InitPlugin *initPlugin() const;
     virtual KURL initScript() const;
+    
+    static KConfig *kateSessionConfig () { return m_sessionConfig; }
 
   signals:
     void onEventLoopEnter();
@@ -94,7 +96,8 @@ class KateApp : public KUniqueApplication
     QString m_oldInitLib;
     class KateAppDCOPIface *m_obj;
     KMdi::MdiMode m_restoreGUIMode;
-    KConfig *m_sessionConfig;
+    static KConfig *m_sessionConfig;
+    bool m_sessionConfigDelete;
     
   protected slots:
     void performInit();
