@@ -104,11 +104,8 @@ KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_
   
   if (((KateApp *)kapp)->_isSDI)
   {
-    if ( filelistDock->mayBeHide() )
-      filelistDock->undock();
-      
-    if ( fileselectorDock->mayBeHide() )
-      fileselectorDock->undock();
+    filelistDock->undock();
+    fileselectorDock->undock();
   }
 }
 
