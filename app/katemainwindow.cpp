@@ -390,6 +390,7 @@ void KateMainWindow::readOptions(KConfig *config)
 {
   config->setGroup("General");
   syncKonsole =  config->readBoolEntry("Sync Konsole", true);
+  modNotification = config->readBoolEntry("Modified Notification", false);
 
   m_viewManager->setShowFullPath(config->readBoolEntry("Show Full Path in Title", false));
   m_viewManager->setUseOpaqueResize(config->readBoolEntry("Opaque Resize", true));
@@ -896,6 +897,7 @@ void KateMainWindow::slotProjectClose ()
 
 void KateMainWindow::activateProject (Kate::Project *project)
 {
+  kdDebug()<<"activating project "<<project<<endl;
   if (m_project)
     m_projectManager->disableProjectGUI (m_project, this);
 

@@ -65,8 +65,8 @@ class KateMainWindow : public KMdiMainFrm, virtual public KateMainWindowDCOPIfac
 
     Kate::MainWindow *mainWindow () { return m_mainWindow; };
     Kate::ToolViewManager *toolViewManager () { return m_toolViewManager; };
-#warning FIXME
-    Kate::Project *activeProject () { return 0;}//return m_project; };
+// #warning FIXME
+    Kate::Project *activeProject () { /*return 0;}//*/return m_project; };
 
     /**
      * Creates a new project file at give url of given type + opens it
@@ -115,6 +115,9 @@ class KateMainWindow : public KMdiMainFrm, virtual public KateMainWindowDCOPIfac
   private:
     uint myID;
     bool syncKonsole;
+    bool modNotification;
+  public:
+    bool notifyMod() const { return modNotification; };
 
   protected:
     KatePluginManager *m_pluginManager;

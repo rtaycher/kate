@@ -196,6 +196,17 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   QWhatsThis::add( sb_numRecentFiles, youwouldnotbelieveit );
   connect( sb_numRecentFiles, SIGNAL( valueChanged ( int ) ), this, SLOT( slotChanged() ) );
 
+  // modified files notification
+  cb_modNotifications = new QCheckBox(
+      i18n("Wa&rn about files modified by foreign processes"), frGeneral );
+  cb_modNotifications->setChecked( parent->modNotification );
+  lo->addWidget( cb_modNotifications );
+  QWhatsThis::add( cb_modNotifications, i18n(
+      "If enabled, a passive popup message will be displayed whenever a local "
+      "file is modified, created or deleted by another process.") );
+  connect( cb_modNotifications, SIGNAL( toggled( bool ) ),
+           this, SLOT( slotChanged() ) );
+
   lo->addStretch(1); // :-] works correct without autoadd
   // END General page
 
@@ -303,6 +314,9 @@ void KateConfigDialog::slotApply()
   config->writeEntry("Restore Projects", cb_reopenProjects->isChecked());
   config->writeEntry("Restore Documents", cb_reopenFiles->isChecked());
   config->writeEntry("Restore Window Configuration", cb_restoreVC->isChecked());
+
+  config->writeEntry("Modified Notification", cb_modNotifications->isChecked());
+  mainWindow->modNotification = cb_modNotifications->isChecked();
 
   mainWindow->syncKonsole = cb_syncKonsole->isChecked();
 
