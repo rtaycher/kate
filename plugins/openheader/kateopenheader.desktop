@@ -1,4 +1,0 @@
-libname=libkateopenheaderplugin
-name=Kate OpenHeader
-description=Opens the corresponding .h/[.cpp|.c] file
-author=Joseph Wenninger
