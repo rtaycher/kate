@@ -36,7 +36,7 @@
     <DefineGroup name="edit_find_merge"/>
     <Separator/>
   </Menu>
-  
+
   <Menu name="project"><text>&amp;Project</text>
     <Action name="project_new"/>
     <Separator />
@@ -66,7 +66,7 @@
     <Separator />
     <DefineGroup name="view_operations" />
     <Separator />
-    <Action name="view_fullscreen_view" /> 
+    <Action name="view_fullscreen_view" />
   </Menu>
 
   <Merge/>
@@ -75,7 +75,7 @@
     <DefineGroup name="tools_operations" />
     <Action name="scripts"/>
     <Separator />
-    <Action name="edit_find_in_files"/> 
+    <Action name="edit_find_in_files"/>
   </Menu>
 
   <Menu name="settings"><text>&amp;Settings</text>
@@ -111,6 +111,8 @@
   <Action name="go_forward" />
   <Separator />
   <DefineGroup name="file_operations" />
+  <Separator />
+  <DefineGroup name="print_merge" />
   <Separator />
   <Action name="file_close" />
   <Separator />
