@@ -21,7 +21,7 @@
 #include "katetextline.h"
 
 TextLine::TextLine(int attribute, int context)
-  : len(0), size(0), text(0L), attribs(0L), attr(attribute), ctx(context)
+  : len(0), size(0), text(0L), attribs(0L), attr(attribute), ctx(context), myMark (0)
 {
 }
 
@@ -333,6 +333,11 @@ void TextLine::markFound(int pos, int l) {
 void TextLine::unmarkFound() {
   int z;
   for (z = 0; z < len; z++) attribs[z] &= ~taFound;
+}
+
+void TextLine::setMark (uint m)
+{
+  myMark = m;
 }
 
 

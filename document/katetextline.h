@@ -28,8 +28,6 @@
 
 #include <ksharedptr.h>
 
-#define FASTLIST 1
-#ifdef FASTLIST
 /**
   FastValueList: QValueList, but with a faster at() like QList
   FVPrivate is needed so that "const" functions can change the
@@ -142,7 +140,6 @@ public:
     Iterator at( uint i ) { detach(); return fastat(i); }
     ConstIterator at( uint i ) const { return ConstIterator( fastat(i) ); }
 };
-#endif
 
 
 /**
@@ -156,11 +153,8 @@ class TextLine : public KShared
 {
 public:
     typedef KSharedPtr<TextLine> Ptr;
-#ifdef FASTLIST
     typedef FastValueList<Ptr> List;
-#else
-    typedef QValueList<Ptr> List;
-#endif
+
 public:
     /**
       Creates an empty text line with given attribute and syntax highlight
@@ -331,6 +325,10 @@ public:
     */
     void unmarkFound();
 
+    void setMark ( uint m );
+
+    uint mark() { return myMark; };
+
   protected:
     /**
       Length of the text line
@@ -356,6 +354,8 @@ public:
       The syntax highlight context
     */
     int ctx;
+
+    uint myMark;
 };
 
 //text attribute constants

@@ -3397,9 +3397,9 @@ void KateIconBorder::paintLine(int i)
     TextLine *line = myView->doc()->getTextLine(i);
     if (!line)
         return;
-  /*
-    if (line->isBookmarked())
-        p.drawPixmap(2, y, QPixmap(bookmark_xpm));
+
+    if (line->mark() == 1)
+        p.drawPixmap(2, y, QPixmap(bookmark_xpm));      /*
     if (line && (line->breakpointId() != -1)) {
         if (!line->breakpointEnabled())
             p.drawPixmap(2, y, QPixmap(breakpoint_gr_xpm));
@@ -3437,9 +3437,9 @@ void KateIconBorder::paintEvent(QPaintEvent* e)
 
 void KateIconBorder::mousePressEvent(QMouseEvent* e)
 {
- /*   myInternalView->placeCursor( 0, e->y(), 0 );
+    myInternalView->placeCursor( 0, e->y(), 0 );
 
-    KWriteDoc *doc = myView->doc();
+    KateDocument *doc = myView->doc();
     int cursorOnLine = (e->y() + myInternalView->yPos) / doc->fontHeight;
     TextLine *line = doc->getTextLine(cursorOnLine);
 
@@ -3447,15 +3447,18 @@ void KateIconBorder::mousePressEvent(QMouseEvent* e)
     case LeftButton:
         if (!line)
             break;
-        if (lmbSetsBreakpoints)
-            emit myView->toggledBreakpoint(cursorOnLine);
-        else {
-            line->toggleBookmark();
+        else
+        {
+            if (line->mark() == 1)
+              line->setMark (0);
+            else
+              line->setMark (1);
+
             doc->tagLines(cursorOnLine, cursorOnLine);
             doc->updateViews();
         }
         break;
-    case RightButton:
+ /*   case RightButton:
         {
             if (!line)
                 break;
@@ -3499,8 +3502,8 @@ void KateIconBorder::mousePressEvent(QMouseEvent* e)
         line->toggleBookmark();
         doc->tagLines(cursorOnLine, cursorOnLine);
         doc->updateViews();
-        break;
+        break;      */
     default:
         break;
-    }       */
+    }
 }
