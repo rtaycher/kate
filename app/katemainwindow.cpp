@@ -348,9 +348,6 @@ bool KateMainWindow::queryClose()
   if ( KateProjectManager::self()->queryCloseAll () &&
        queryClose_internal() )
   {
-    // first: we detach the dcopclient
-    ((KUniqueApplication *)kapp)->dcopClient()->detach();
-
     KConfig scfg("katesessionrc", false);
 
     KConfig *config = kapp->config();
@@ -364,6 +361,9 @@ bool KateMainWindow::queryClose()
 
     if (config->readBoolEntry("Restore Window Configuration", false))
       saveProperties (&scfg);
+
+    // detach the dcopClient
+    ((KUniqueApplication *)kapp)->dcopClient()->detach();
 
     return true;
   }
