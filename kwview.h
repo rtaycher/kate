@@ -110,8 +110,8 @@ struct BracketMark {
 
 class KWriteView : public QWidget {
     Q_OBJECT
-    friend KWriteDoc;
-    friend KWrite;
+    friend class KWriteDoc;
+    friend class KWrite;
   public:
     // a drop-aware container should set HandleOwnURIDrops = false and handle all URI drops
     // KWriteView will otherwise handle URI drops, but is slightly limited
