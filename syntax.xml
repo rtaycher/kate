@@ -63,18 +63,16 @@
  <keyword> TRUE </keyword>
  <keyword> FALSE </keyword>
 </keywords>
-</language>
-<language name="C++">
 <types>
  <type> bool </type>
  <type> wchar_t </type>
  <type> mutable </type>
  <type> uint </type>
-
 </types>
 </language>
+
 <language name="C">
-  <keywords>
+<keywords>
    <keyword> break </keyword>
    <keyword> case </keyword>
    <keyword> continue </keyword>
@@ -94,7 +92,6 @@
    <keyword> union </keyword>
    <keyword> while </keyword>
 </keywords>
-
 <types>
     <type> auto </type>
     <type> char </type>
@@ -112,6 +109,7 @@
     <type> volatile </type>
 </types>
 </language>
+
 <language name="Objective-C">
 <keywords>
  <keyword> @class </keyword>
@@ -128,7 +126,6 @@
  <keyword> self </keyword>
  <keyword> super </keyword>
 </keywords>
-
 <types>
  <type> auto </type>
  <type> char </type>
@@ -166,7 +163,6 @@
  <keyword> out </keyword>
  <keyword> inout </keyword>
 </keywords>
-
 <types>
   <type> long </type>
   <type> short </type>
@@ -185,7 +181,6 @@
   <type> boolean </type>
 </types>
 </language>
-
 <language name="Java">
 <keywords>
  <keyword> abstract </keyword>
@@ -235,8 +230,6 @@
  <keyword> volatile </keyword>
  <keyword> while </keyword>
 </keywords>
-
-
 <types>
   <type> boolean </type>
   <type> byte </type>
@@ -523,9 +516,6 @@
  <keyword> spread </keyword>
  <keyword> stub </keyword>
 </keywords>
-</language>
-
-<language name="Sather">
 <types>
  <type> $OB </type>
  <type> ARRAY </type>
@@ -647,9 +637,6 @@
  <keyword> new </keyword>
  <keyword> true </keyword>
 </keywords>
-</language>
-
-<language name="Pascal">
 <types>
  <type> Integer </type>
  <type> Cardinal </type>

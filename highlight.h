@@ -112,18 +112,16 @@ class HlKeyword : public HlItemWw {
   public:
     HlKeyword(int attribute, int context);
     virtual ~HlKeyword();
-    void addWord(const QString &);
-		void addList(const QStringList &);
-    void addList(const char **);
+    virtual void addWord(const QString &);
+		virtual void addList(const QStringList &);
+// needed for kdevelop (if they decide to use this code)
+    virtual void addList(const char **);
     virtual const QChar *checkHgl(const QChar *);
-//		QStrVec *getVec() {return &Words;};
 		QStringList getList() { return words;};
-		QDict<char> getDict() {return Dict;};
-		void DumpDict();
-    void DumpList();
+		QDict<char> getDict() { return Dict;};
+		
   protected:
     QStringList words;
-//		QStrVec Words;
 		QDict<char> Dict;
 };
 #ifdef PASCAL_SUPPORT
@@ -133,6 +131,14 @@ class HlCaseInsensitiveKeyword : public HlKeyword {
     virtual ~HlCaseInsensitiveKeyword();
     virtual const char *checkHgl(const char *);
 		virtual const QChar *checkHgl(const QChar *);
+    void addList(const QStringList &);
+    void addList(const char **);
+};
+
+class HlPHex : public HlItemWw {
+  public:
+    HlPHex(int attribute,int context);
+    virtual const QChar *checkHgl(const QChar *);
 };
 #endif
 class HlInt : public HlItemWw {
@@ -435,7 +441,6 @@ class GenHighlight : public Highlight {
 };
 
 
-
 class CHighlight : public GenHighlight {
   public:
     CHighlight(const char * name);
@@ -448,6 +453,7 @@ class CHighlight : public GenHighlight {
     virtual void setKeywords(HlKeyword *keyword, HlKeyword *dataType);
 };
 
+
 class CppHighlight : public CHighlight {
   public:
     CppHighlight(const char * name);
@@ -457,6 +463,19 @@ class CppHighlight : public CHighlight {
   protected:
     virtual void setKeywords(HlKeyword *keyword, HlKeyword *dataType);
 };
+#ifdef PASCAL_SUPPORT
+class PascalHighlight : public CHighlight {
+  public:
+    PascalHighlight(const char *name);
+    virtual ~PascalHighlight();
+    virtual QString getCommentStart() { return QString("//"); };
+    virtual QString getCommentEnd() { return QString(""); };
+  protected:
+    virtual void createItemData(ItemDataList &);
+    virtual void makeContextList();
+    virtual void setKeywords(HlKeyword *keyword, HlKeyword *dataType);
+};
+#endif
 
 class ObjcHighlight : public CHighlight {
   public:
@@ -530,16 +549,7 @@ class AdaHighlight : public GenHighlight {
     virtual void createItemData(ItemDataList &);
     virtual void makeContextList();
 };
-#ifdef PASCAL_SUPPORT
-class PascalHighlight : public GenHighlight {
-  public:
-    PascalHighlight(const char *name);
-    virtual ~PascalHighlight();
-  protected:
-    virtual void createItemData(ItemDataList &);
-    virtual void makeContextList();
-};
-#endif
+
 class PythonHighlight : public GenHighlight {
   public:
     PythonHighlight(const char * name);

@@ -112,13 +112,6 @@ Hl2CharDetect::Hl2CharDetect(int attribute, int context, QChar ch1, QChar ch2)
   sChar1 = ch1;
   sChar2 = ch2;
 }
-#ifdef PASCAL_SUPPORT
-Hl2CharDetect::Hl2CharDetect(int attribute, int context, const QChar *s)
-  : HlItem(attribute,context) {
-  sChar1 = s[0];
-  sChar2 = s[1];
-}
-#endif
 
 const QChar *Hl2CharDetect::checkHgl(const QChar *str) {
   if (str[0] == sChar1 && str[1] == sChar2) return str + 2;
@@ -169,7 +162,10 @@ KeywordData::~KeywordData() {
 HlKeyword::HlKeyword(int attribute, int context)
   : HlItemWw(attribute,context) {
 //  words.setAutoDelete(true);
-	Dict.resize(23);
+// after reading over the docs for Dict
+// 23 is probably too small when we can have > 100 items
+	QDict<char> dict(113);
+	Dict=dict;
 }
 
 HlKeyword::~HlKeyword() {
@@ -186,16 +182,6 @@ void HlKeyword::addList(const QStringList& list)
 {
  words+=list;
  for(uint i=0;i<list.count();i++) Dict.insert(list[i],"dummy");
-// DumpList();
-}
-
-void HlKeyword::DumpDict()
-{
-}
-void HlKeyword::DumpList()
-{
-	for(uint i=0;i<words.count();i++)
-  kdDebug() << words[i] << endl;
 }
 
 void HlKeyword::addList(const char **list) {
@@ -219,16 +205,12 @@ const QChar *HlKeyword::checkHgl(const QChar *s) {
 // this seems to speed up the lookup of keywords somewhat
 // anyway it has to be better than iterating through the list
 
-#ifdef STATS
-	static bool once=false;
-	if(!once) Dict.statistics();
-	once=true;
-#endif
   const QChar *s2=s;
+
   while( !ustrchr("!%&()*+,-./:;<=>?[]^{|}~ ", *s2) && *s2 != '\0') s2++;
-//	while(*s2 != ' ' && *s2 != '\0') s2++;
+// oops didn't increment s2 why do anything else?
+	if(s2 == s) return 0L;
   QString lookup=QString(s,s2-s)+QString::null;
-//	if(!lookup.isEmpty()) kdDebug() << lookup   /*<< QString(s2,100)+QString::null */<< endl;
   return Dict[lookup] ? s2 : 0L;
 #endif
 }
@@ -933,7 +915,7 @@ void Highlight::getItemDataList(ItemDataList &list, KConfig *config) {
   for (p = list.first(); p != 0L; p = list.next()) {
     s = config->readEntry(p->name);
     if (!s.isEmpty()) {
-      sscanf(s.ascii(),"%d,%X,%X,%d,%d,%d,%95[^,],%d,%47[^,]",
+      sscanf(s.latin1(),"%d,%X,%X,%d,%d,%d,%95[^,],%d,%47[^,]",
         &p->defStyle,&col,&selCol,&p->bold,&p->italic,
         &p->defFont,family,&p->size,charset);
       p->col.setRgb(col);
@@ -1088,9 +1070,9 @@ void CHighlight::makeContextList() {
   HlKeyword *keyword, *dataType;
 
   //normal context
-  contextList[0] = c = new HlContext(0,0);
-  c->items.append(keyword = new HlKeyword(1,0));
-  c->items.append(dataType = new HlKeyword(2,0));
+  contextList[0] = c = new HlContext(dsNormal,0);
+  c->items.append(keyword = new HlKeyword(dsKeyword,0));
+  c->items.append(dataType = new HlKeyword(dsDataType,0));
   c->items.append(new HlCFloat(6,0));
   c->items.append(new HlCOct(4,0));
   c->items.append(new HlCHex(5,0));
@@ -1179,21 +1161,68 @@ void ObjcHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
 
 }
 #ifdef PASCAL_SUPPORT
+
+Hl2CharDetect::Hl2CharDetect(int attribute, int context, const QChar *s)
+  : HlItem(attribute,context) {
+  sChar1 = s[0];
+  sChar2 = s[1];
+}
+
 HlCaseInsensitiveKeyword::HlCaseInsensitiveKeyword(int attribute, int context)
   : HlKeyword(attribute,context) {
+// make dictionary case insensitive
+  QDict<char> dict(113,false);
+  Dict=dict;
 }
 
 HlCaseInsensitiveKeyword::~HlCaseInsensitiveKeyword() {
 }
 
+HlPHex::HlPHex(int attribute,int context)
+  : HlItemWw(attribute,context){
+}
+
+const QChar *HlPHex::checkHgl(const QChar *str)
+{
+  const QChar *s;
+  if(str[0] == '$') {
+  str=str+1;
+  s=str;
+  while (s->isDigit() || ((*s&0xdf) >= 'A' && (*s&0xdf) <= 'F')) s++;
+  if(s > str) return s;
+  }
+	return 0L;
+}
+void HlCaseInsensitiveKeyword::addList(const QStringList& lst)
+{
+ words+=lst;
+ for(uint i=0;i<lst.count();i++)
+	Dict.insert(lst[i].lower(),"dummy");
+}
+void HlCaseInsensitiveKeyword::addList(const char **list)
+{
+  while (*list) {
+    words.append(*list);
+    Dict.insert(QString(*list).lower(),"dummy");
+    list++;
+  }
+}
 const QChar *HlCaseInsensitiveKeyword::checkHgl(const QChar *s)
 {
   const QChar *s2=s;
-  while (!s2->isSpace() && *s2 != '\0'&& *s2 != ';' ) s2++; // find space
+  if(*s2=='\0') return 0L;
+  while( !ustrchr("!%&()*+,-./:;<=>?[]^{|}~ ", *s2) && *s2 != '\0') s2++;
+// oops didn't increment s2 why do anything else ?
+  if(s2 == s) return 0L;
   QString lookup=QString(s,s2-s)+QString::null;
   return Dict[lookup.lower()] ? s2 : 0L;
 }
+
+/*
+   Not really tested but I assume it will work
+*/
 const char *HlCaseInsensitiveKeyword::checkHgl(const char *s) {
+#if 0
   int z, count;
   QString word;
 
@@ -1205,9 +1234,13 @@ const char *HlCaseInsensitiveKeyword::checkHgl(const char *s) {
     }
   }
   return 0L;
+#else
+// if s is in dictionary then return s+strlen(s)
+   return Dict[s] ? s+strlen(s) : 0L;
+#endif
 }
 
-PascalHighlight::PascalHighlight(const char *name) : GenHighlight(name) {
+PascalHighlight::PascalHighlight(const char *name) : CHighlight(name) {
   iWildcards = "*.pp;*.pas;*.inc";
   iMimetypes = "text/x-pascal-src";
 }
@@ -1220,48 +1253,53 @@ void PascalHighlight::createItemData(ItemDataList &list) {
   list.append(new ItemData("Keyword",dsKeyword));      // 1
   list.append(new ItemData("Data Type",dsDataType));   // 2
   list.append(new ItemData("Number",dsDecVal));        // 3
-  list.append(new ItemData("String",dsString));        // 4
-  list.append(new ItemData("Directive",dsOthers));     // 5
-  list.append(new ItemData("Comment",dsComment));      // 6
+	list.append(new ItemData("Hex",dsBaseN));				     // 4			
+  list.append(new ItemData("String",dsString));        // 5
+  list.append(new ItemData("Directive",dsOthers));     // 6
+  list.append(new ItemData("Comment",dsComment));      // 7
 }
 
 void PascalHighlight::makeContextList() {
   HlContext *c;
   HlKeyword *keyword, *dataType;
 
-  contextList[0] = c = new HlContext(0,0);
-    c->items.append(keyword = new HlCaseInsensitiveKeyword(1,0));
-    c->items.append(dataType = new HlCaseInsensitiveKeyword(2,0));
-    c->items.append(new HlFloat(3,0));
-    c->items.append(new HlInt(3,0));
-    // TODO: Pascal hex $1234
-    c->items.append(new HlCharDetect(4,1,'\''));
-    c->items.append(new HlStringDetect(5,2,"(*$"));
-    c->items.append(new Hl2CharDetect(5,3,(QChar*)"{$"));
-    c->items.append(new Hl2CharDetect(6,4,(QChar*) "(*"));
-    c->items.append(new HlCharDetect(6,5,'{'));
-    c->items.append(new Hl2CharDetect(6,6,(QChar*) "//"));
-
+  contextList[0] = c = new HlContext(dsNormal,0);
+    c->items.append(keyword = new HlCaseInsensitiveKeyword(dsKeyword,0));
+    c->items.append(dataType = new HlCaseInsensitiveKeyword(dsDataType,0));
+    c->items.append(new HlFloat(dsDecVal,0));
+    c->items.append(new HlInt(dsDecVal,0));
+    c->items.append(new HlPHex(dsBaseN,0));
+    c->items.append(new HlCharDetect(5,1,'\''));
+    c->items.append(new HlStringDetect(6,2,"(*$"));
+    c->items.append(new Hl2CharDetect(6,3,(QChar*)"{$"));
+    c->items.append(new Hl2CharDetect(7,4,(QChar*) "(*"));
+    c->items.append(new HlCharDetect(7,5,'{'));
+    c->items.append(new Hl2CharDetect(7,6,'/','/'));
   // string context
-  contextList[1] = c = new HlContext(4,0);
-    c->items.append(new HlCharDetect(4,0,'\''));
+  contextList[1] = c = new HlContext(5,0);
+    c->items.append(new HlCharDetect(5,0,'\''));
   // TODO: detect '''' or 'Holger''s Jokes are silly'
 
   // (*$ directive context
-  contextList[2] = c = new HlContext(5,2);
-    c->items.append(new Hl2CharDetect(5,0,(QChar*)"*)"));
-  // {$ directive context
-  contextList[3] = c = new HlContext(5,3);
-    c->items.append(new HlCharDetect(5,0,'}'));
-  // (* comment context
-  contextList[4] = c = new HlContext(6,4);
+  contextList[2] = c = new HlContext(6,2);
     c->items.append(new Hl2CharDetect(6,0,(QChar*)"*)"));
-  // { comment context
-  contextList[5] = c = new HlContext(6,5);
+  // {$ directive context
+  contextList[3] = c = new HlContext(6,3);
     c->items.append(new HlCharDetect(6,0,'}'));
+  // (* comment context
+  contextList[4] = c = new HlContext(7,4);
+    c->items.append(new Hl2CharDetect(7,0,(QChar*)"*)"));
+  // { comment context
+  contextList[5] = c = new HlContext(7,5);
+    c->items.append(new HlCharDetect(7,0,'}'));
   // one line context
-  contextList[6] = c = new HlContext(6,0);
+  contextList[6] = c = new HlContext(7,0);
 
+  setKeywords(keyword,dataType);
+
+}
+void PascalHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
+{
   keyword->addList(HlManager::self()->syntax->finddata("Pascal","keyword"));
   dataType->addList(HlManager::self()->syntax->finddata("Pascal","type"));
 }

@@ -34,7 +34,7 @@ class SyntaxDocument : public QDomDocument  {
 	  SyntaxDocument();
 	  ~SyntaxDocument();
 
-	  QStringList& finddata(const QString& langName,const QString& type=QString("Keywords"));
+	  QStringList& finddata(const QString& langName,const QString& type);
 
 	private:
 	  QStringList m_data;
