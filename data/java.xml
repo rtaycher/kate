@@ -83,7 +83,7 @@
         <AnyChar attribute="11" context="0" String="!%&amp;()+,-&lt;=&gt;?[]^{|}~"/>
       </context>
       <context attribute="8" lineEndContext="0" name="String">
-        <LineContinue attribute="8" context="6"/>
+        <LineContinue attribute="8" context="0"/>
         <HlCStringChar attribute="9" context="1"/>
         <DetectChar attribute="8" context="0" char="&quot;"/>
       </context>
