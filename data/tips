@@ -1,7 +1,7 @@
 <tip category="Kate|app">
 <html>
 <p>Kate comes with a nice set of plugins, providing simple
-and advanced features os all sorts.</p>
+and advanced features of all sorts.</p>
 <p>You can enable/disable plugins to suit your needs in the Configure Dialog,
 choose <strong>Settings -&gt;configure</strong> to launch that.</p>
 </html>
@@ -15,14 +15,14 @@ choose <strong>Settings -&gt;configure</strong> to launch that.</p>
 <tip category="Kate|part">
 <html>
 <p>You can export the current document as a HTML file, including
-syntax highlightning.</p>
+syntax highlighting.</p>
 <p>Just choose <strong>File -&gt; Export -&gt; HTML...</strong></p>
 </html>
 </tip>
 <tip category="Kate|app">
 <html>
 <p>You can split the Kate editor as many times as you like and
-in either direction. Each frame has it's own status bar and
+in either direction. Each frame has its own status bar and
 can display any open document.</p>
 <p>Just choose <br><strong>View -&gt; Split [ Horizontal | Vertical ]</strong></p>
 </html>
@@ -52,17 +52,17 @@ Dialog.</p>
 </tip>
 <tip category="Kate|app">
 <html>
-<p>You can open the currently edited file in any other application from inside 
+<p>You can open the currently edited file in any other application from within 
 Kate.</p>
 <p>Choose <strong>File -&gt; Open With</strong> for the list of programs 
 configured
-for the document type, there is also an option <strong>Other...</strong> to 
+for the document type. There is also an option <strong>Other...</strong> to 
 choose any application on your system.</p>
 </html>
 </tip>
 <tip category="Kate|part">
 <html>
-<p>You can configure the editor to allways display the line numbers and/or 
+<p>You can configure the editor to always display the line numbers and/or 
 bookmark panes when started from the <strong>View Defaults</strong> page of the
 Configuration Dialog.</p>
 </html>
@@ -70,14 +70,14 @@ Configuration Dialog.</p>
 <tip category="Kate|part">
 <html>
 <p>You can download new or updated <em>Syntax highlight definitions</em> from 
-the <strong>Highlightning</strong> page in the Configuration Dialog.</p>
+the <strong>Highlighting</strong> page in the Configuration Dialog.</p>
 <p>Just press the <em>Download...</em> button on the <em>Highlight Modes</em>
-tab (You have to be online of cause...)</p>
+tab (You have to be online, of course...).</p>
 </html>
 </tip>
 <tip category="Kate|app">
 <html>
-<p>You cycle through all open documents by pressing <strong>ALT + 
+<p>You can cycle through all open documents by pressing <strong>ALT + 
 Left/Right</strong>. The next/previous document will immediately be displayed in 
 the active frame.</p>
 </html>

@@ -876,7 +876,7 @@ void KateViewManager::reopenDocuments(bool isRestore)
     QString fileCountStr=scfg->readEntry("count");
     int fileCount=fileCountStr.isEmpty() ? 100 : fileCountStr.toInt();
 
-    QProgressDialog *pd=new QProgressDialog(i18n("Reopening files from last session..."),QString::null,fileCount,0,"openprog",true);
+    QProgressDialog *pd=new QProgressDialog(i18n("Reopening files from the last session..."),QString::null,fileCount,0,"openprog",true);
 
     m_docManager->closeAllDocuments();
     int i = 0;

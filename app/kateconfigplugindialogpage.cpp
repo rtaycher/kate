@@ -160,7 +160,7 @@ KateConfigPluginPage::KateConfigPluginPage(QWidget *parent, KateConfigDialog *di
   listView->addColumn(i18n("Description"));
   listView->addColumn(i18n("Author"));
   listView->addColumn(i18n("License"));
-  QWhatsThis::add(listView,i18n("Here you can see all available KATE plugins. Those with a check mark are loaded and will be loaded again the next time KATE is started"));
+  QWhatsThis::add(listView,i18n("Here you can see all available Kate plugins. Those with a check mark are loaded, and will be loaded again the next time Kate is started."));
 
   connect(listView, SIGNAL(stateChange(PluginListItem *, bool)), this, SLOT(stateChange(PluginListItem *, bool)));
       
