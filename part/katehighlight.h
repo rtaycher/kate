@@ -1,17 +1,17 @@
 /***************************************************************************
                           katehighlight.h  -  description
                              -------------------
-    begin                : Mon Jan 15 2001 
+    begin                : Mon Jan 15 2001
     copyright            : (C) 2001 by Christoph Cullmann
 		                       (C) 2001 by Joseph Wenninger
     email                : cullmann@kde.org
 		                       jowenn@kde.org
  ***************************************************************************/
- 
+
 /***************************************************************************
- *                                                                         * 
+ *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  * 
+ *   it under the terms of the GNU General Public License as published by  *
  *   the Free Software Foundation; either version 2 of the License, or     *
  *   (at your option) any later version.                                   *
  *                                                                         *
@@ -252,7 +252,7 @@ class Highlight
   friend class HlManager;
 
   public:
-    Highlight(syntaxModeListItem *def);
+    Highlight(const syntaxModeListItem *def);
     ~Highlight();
 
     void doHighlight(signed char *oCtx, uint oCtxLen, TextLine *);

@@ -88,45 +88,45 @@ class KateUndo
     void redo ();
 
   public:
-    enum types     
+    enum types
     {
       editInsertText,
-      editRemoveText,     
-      editWrapLine,     
-      editUnWrapLine,     
-      editInsertLine,     
+      editRemoveText,
+      editWrapLine,
+      editUnWrapLine,
+      editInsertLine,
       editRemoveLine
-    };     
-     
-  private:     
-    KateDocument *myDoc;     
-    uint type;
-    uint line;     
-    uint col;     
-    uint len;     
-    QString text;     
-};     
+    };
 
-class KateUndoGroup     
-{     
+  private:
+    KateDocument *myDoc;
+    uint type;
+    uint line;
+    uint col;
+    uint len;
+    QString text;
+};
+
+class KateUndoGroup
+{
   public:
-    KateUndoGroup (KateDocument *doc);     
-    ~KateUndoGroup ();     
-     
+    KateUndoGroup (KateDocument *doc);
+    ~KateUndoGroup ();
+
     void undo ();
-    void redo ();     
-     
-    void addItem (KateUndo *undo);     
-     
-  private:     
-    KateDocument *myDoc;     
+    void redo ();
+
+    void addItem (KateUndo *undo);
+
+  private:
+    KateDocument *myDoc;
     QPtrList<KateUndo> items;
 };
-     
-QStringList KateDocument::searchForList = QStringList();     
-QStringList KateDocument::replaceWithList = QStringList();     
 
-KateUndo::KateUndo (KateDocument *doc, uint type, uint line, uint col, uint len, QString text)     
+QStringList KateDocument::searchForList = QStringList();
+QStringList KateDocument::replaceWithList = QStringList();
+
+KateUndo::KateUndo (KateDocument *doc, uint type, uint line, uint col, uint len, QString text)
 {
   this->myDoc = doc;
   this->type = type;
@@ -209,7 +209,7 @@ void KateUndoGroup::undo ()
 {
   if (items.count() == 0)
     return;
-    
+
   bool b = myDoc->editStart (false);
 
   for (int pos=(int)items.count()-1; pos >= 0; pos--)
@@ -225,7 +225,7 @@ void KateUndoGroup::redo ()
 {
   if (items.count() == 0)
     return;
-    
+
   bool b = myDoc->editStart (false);
 
   for (uint pos=0; pos < items.count(); pos++)
@@ -330,19 +330,19 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
 
   newDocGeometry = false;
 
-  readConfig();     
-     
-  if ( m_bSingleViewMode )     
-  {     
-    KTextEditor::View *view = createView( parentWidget, widgetName );     
+  readConfig();
+
+  if ( m_bSingleViewMode )
+  {
+    KTextEditor::View *view = createView( parentWidget, widgetName );
     view->show();
-    setWidget( view );     
-  }     
-}     
-     
-//     
+    setWidget( view );
+  }
+}
+
+//
 // KateDocument Destructor
-//     
+//
 KateDocument::~KateDocument()
 {
   if ( !m_bSingleViewMode )
@@ -357,13 +357,13 @@ KateDocument::~KateDocument()
     kspell.kspell->setAutoDelete(true);
     kspell.kspell->cleanUp(); // need a way to wait for this to complete
   }
-  
+
   if (kspell.ksc)
     delete kspell.ksc;
 
   m_highlight->release();
   myMarks.clear ();
-  
+
   delete printer;
   delete [] myAttribs;
   delete buffer;
@@ -373,10 +373,10 @@ KateDocument::~KateDocument()
 // KTextEditor::Document stuff
 //
 
-KTextEditor::View *KateDocument::createView( QWidget *parent, const char *name )     
+KTextEditor::View *KateDocument::createView( QWidget *parent, const char *name )
 {
-  return new KateView( this, parent, name);     
-}     
+  return new KateView( this, parent, name);
+}
 
 QPtrList<KTextEditor::View> KateDocument::views () const
 {
@@ -419,32 +419,32 @@ QString KateDocument::text ( uint startLine, uint startCol, uint endLine, uint e
 
     if ( i < endLine )
       s.append('\n');
-  }     
-     
+  }
+
   return s;
 }
-     
-QString KateDocument::textLine( uint line ) const     
-{     
-  TextLine::Ptr l = getTextLine( line );     
-     
-  if ( !l )     
-    return QString();     
-     
-  return l->getString();     
+
+QString KateDocument::textLine( uint line ) const
+{
+  TextLine::Ptr l = getTextLine( line );
+
+  if ( !l )
+    return QString();
+
+  return l->getString();
 }
 
-bool KateDocument::setText(const QString &s)     
-{     
+bool KateDocument::setText(const QString &s)
+{
   clear();
-  return insertText (0, 0, s);     
-}     
-     
-bool KateDocument::clear()     
-{     
-  KateTextCursor cursor;     
-  KateView *view;     
-     
+  return insertText (0, 0, s);
+}
+
+bool KateDocument::clear()
+{
+  KateTextCursor cursor;
+  KateView *view;
+
   setPseudoModal(0L);
 
   cursor.col = cursor.line = 0;
@@ -1288,7 +1288,7 @@ bool KateDocument::setBlockSelectionMode (bool on)
     blockSelect = on;
     setSelection (selectStart.line, selectStart.col, selectEnd.line, selectEnd.col);
   }
-  
+
   return true;
 }
 
@@ -1339,34 +1339,34 @@ void KateDocument::redo()
   undoItems.append (redoItems.last());
   redoItems.removeLast ();
 
-  emit undoChanged ();     
+  emit undoChanged ();
 }
-     
-void KateDocument::clearUndo()     
-{     
-  undoItems.setAutoDelete (true);
-  undoItems.clear ();     
-  undoItems.setAutoDelete (false);     
-     
-  emit undoChanged ();     
-}     
-     
-void KateDocument::clearRedo()     
-{     
-  redoItems.setAutoDelete (true);     
-  redoItems.clear ();     
-  redoItems.setAutoDelete (false);     
-     
-  emit undoChanged ();     
-}     
-     
-//     
-// KTextEditor::CursorInterface stuff
-//     
 
-KTextEditor::Cursor *KateDocument::createCursor ( )     
+void KateDocument::clearUndo()
 {
-  return new KateCursor (this);     
+  undoItems.setAutoDelete (true);
+  undoItems.clear ();
+  undoItems.setAutoDelete (false);
+
+  emit undoChanged ();
+}
+
+void KateDocument::clearRedo()
+{
+  redoItems.setAutoDelete (true);
+  redoItems.clear ();
+  redoItems.setAutoDelete (false);
+
+  emit undoChanged ();
+}
+
+//
+// KTextEditor::CursorInterface stuff
+//
+
+KTextEditor::Cursor *KateDocument::createCursor ( )
+{
+  return new KateCursor (this);
 }
 
 QPtrList<KTextEditor::Cursor> KateDocument::cursors () const
@@ -1682,8 +1682,8 @@ void KateDocument::configDialog()
 			    BarIcon("fonts",KIcon::SizeMedium));
   FontConfig *printFontConfig = new FontConfig(page);
   printFontConfig->setFont(getFont(PrintFont));
-  
-  
+
+
   // indent options
   page=kd->addVBoxPage(i18n("Indent"), QString::null,
                        BarIcon("rightjust", KIcon::SizeMedium) );
@@ -1806,7 +1806,7 @@ void KateDocument::clearMark (uint line)
     {
       myMarks.remove(z);
       emit marksChanged ();
-      
+
       tagLines (line,line);
       updateViews ();
     }
@@ -2041,64 +2041,64 @@ void KateDocument::setReadWrite( bool rw )
     }
   }
 }
-     
-bool KateDocument::isReadWrite() const     
-{     
-  return !readOnly;     
-}     
-     
-void KateDocument::setModified(bool m) {     
-  KTextEditor::View *view;     
-     
-  if (m != modified) {     
+
+bool KateDocument::isReadWrite() const
+{
+  return !readOnly;
+}
+
+void KateDocument::setModified(bool m) {
+  KTextEditor::View *view;
+
+  if (m != modified) {
     modified = m;
-    for (view = myViews.first(); view != 0L; view = myViews.next() ) {     
-      emit static_cast<KateView *>( view )->newStatus();     
-    }     
-    emit modifiedChanged ();     
-  }     
-}     
-     
-bool KateDocument::isModified() const {     
-  return modified;     
-}     
-     
-//     
-// Kate specific stuff ;)     
+    for (view = myViews.first(); view != 0L; view = myViews.next() ) {
+      emit static_cast<KateView *>( view )->newStatus();
+    }
+    emit modifiedChanged ();
+  }
+}
+
+bool KateDocument::isModified() const {
+  return modified;
+}
+
+//
+// Kate specific stuff ;)
 //
 
-void KateDocument::setFont (WhichFont wf,QFont font)     
+void KateDocument::setFont (WhichFont wf,QFont font)
 {
   FontStruct *fs=(wf==ViewFont)?&viewFont:&printFont;
-  //kdDebug()<<"Kate:: setFont"<<endl;     
-  int oldwidth=fs->myFontMetrics.width('W');  //Quick & Dirty Hack (by JoWenn) //Remove in KDE 3.0     
-  fs->myFont = font;     
-  fs->myFontBold = QFont (font);     
-  fs->myFontBold.setBold (true);     
-     
-  fs->myFontItalic = QFont (font);     
-  fs->myFontItalic.setItalic (true);     
-     
-  fs->myFontBI = QFont (font);     
-  fs->myFontBI.setBold (true);     
-  fs->myFontBI.setItalic (true);     
+  //kdDebug()<<"Kate:: setFont"<<endl;
+  int oldwidth=fs->myFontMetrics.width('W');  //Quick & Dirty Hack (by JoWenn) //Remove in KDE 3.0
+  fs->myFont = font;
+  fs->myFontBold = QFont (font);
+  fs->myFontBold.setBold (true);
+
+  fs->myFontItalic = QFont (font);
+  fs->myFontItalic.setItalic (true);
+
+  fs->myFontBI = QFont (font);
+  fs->myFontBI.setBold (true);
+  fs->myFontBI.setItalic (true);
 
   fs->myFontMetrics = QFontMetrics (fs->myFont);
   fs->myFontMetricsBold = QFontMetrics (fs->myFontBold);
-  fs->myFontMetricsItalic = QFontMetrics (fs->myFontItalic);     
-  fs->myFontMetricsBI = QFontMetrics (fs->myFontBI);     
-  int newwidth=fs->myFontMetrics.width('W'); //Quick & Dirty Hack (by JoWenn)  //Remove in KDE 3.0     
-  maxLength=maxLength*(float)newwidth/(float)oldwidth; //Quick & Dirty Hack (by JoWenn)  //Remove in KDE 3.0     
-     
+  fs->myFontMetricsItalic = QFontMetrics (fs->myFontItalic);
+  fs->myFontMetricsBI = QFontMetrics (fs->myFontBI);
+  int newwidth=fs->myFontMetrics.width('W'); //Quick & Dirty Hack (by JoWenn)  //Remove in KDE 3.0
+  maxLength=maxLength*(float)newwidth/(float)oldwidth; //Quick & Dirty Hack (by JoWenn)  //Remove in KDE 3.0
+
   fs->updateFontData(tabChars);
   if (wf==ViewFont)
   {
-    updateFontData();     
-    updateViews(); //Quick & Dirty Hack (by JoWenn) //Remove in KDE 3.0     
+    updateFontData();
+    updateViews(); //Quick & Dirty Hack (by JoWenn) //Remove in KDE 3.0
   }
-}     
-     
-uint  KateDocument::needPreHighlight(uint till)     
+}
+
+uint  KateDocument::needPreHighlight(uint till)
 {
   uint max=numLines()-1;
 
@@ -2114,12 +2114,12 @@ uint  KateDocument::needPreHighlight(uint till)
     {
       RequestPreHighlightTill=till;
       if (tmp<=PreHighlightedTill) QTimer::singleShot(10,this,SLOT(doPreHighlight()));
-    }     
+    }
   return RequestPreHighlightTill;
 }
 
-void KateDocument::doPreHighlight()     
-{     
+void KateDocument::doPreHighlight()
+{
   uint from = PreHighlightedTill;
   uint till = PreHighlightedTill+200;
   uint max = numLines()-1;
@@ -2140,21 +2140,21 @@ TextLine::Ptr KateDocument::getTextLine(int line) const
   return buffer->line(line);
 }
 
-int KateDocument::textLength(int line) {     
-  TextLine::Ptr textLine = getTextLine(line);     
+int KateDocument::textLength(int line) {
+  TextLine::Ptr textLine = getTextLine(line);
   if (!textLine) return 0;
-  return textLine->length();     
-}     
-     
-void KateDocument::setTabWidth(int chars) {     
-  if (tabChars == chars) return;     
-  if (chars < 1) chars = 1;     
-  if (chars > 16) chars = 16;     
-  tabChars = chars;     
+  return textLine->length();
+}
+
+void KateDocument::setTabWidth(int chars) {
+  if (tabChars == chars) return;
+  if (chars < 1) chars = 1;
+  if (chars > 16) chars = 16;
+  tabChars = chars;
   printFont.updateFontData(tabChars);
   viewFont.updateFontData(tabChars);
-  updateFontData();     
-     
+  updateFontData();
+
   maxLength = -1;
   for (uint i=0; i < buffer->count(); i++)
   {
@@ -2164,7 +2164,7 @@ void KateDocument::setTabWidth(int chars) {
       maxLength = len;
       longestLine = textLine;
     }
-  }     
+  }
 }
 
 void KateDocument::setNewDoc( bool m )
@@ -2640,88 +2640,88 @@ bool KateDocument::insertChars ( int line, int col, const QString &chars, KateVi
       s = textLine->getText();
       l = textLine->length();
       for (z = myWordWrapAt; z < l; z++) if (!s[z].isSpace()) break; //search for text to wrap
-      if (z >= l) break; // nothing more to wrap     
-      pos = myWordWrapAt;     
-      for (; z >= 0; z--) { //find wrap position     
-        if (s[z].isSpace()) {     
-          pos = z + 1;     
-          break;     
-        }     
-      }     
+      if (z >= l) break; // nothing more to wrap
+      pos = myWordWrapAt;
+      for (; z >= 0; z--) { //find wrap position
+        if (s[z].isSpace()) {
+          pos = z + 1;
+          break;
+        }
+      }
       //pos = wrap position
-     
-      if (line == c.cursor.line && pos <= c.cursor.col) {     
-        //wrap cursor     
+
+      if (line == c.cursor.line && pos <= c.cursor.col) {
+        //wrap cursor
         c.cursor.line++;
-        c.cursor.col -= pos;     
-      }     
-     
-      if (line == lastLine() || (getTextLine(line+1)->length() == 0) ) {     
-        //at end of doc: create new line     
+        c.cursor.col -= pos;
+      }
+
+      if (line == lastLine() || (getTextLine(line+1)->length() == 0) ) {
+        //at end of doc: create new line
         actionCursor.col = pos;
-        actionCursor.line = line;     
-        recordAction(KateUndo::newLine,actionCursor);     
+        actionCursor.line = line;
+        recordAction(KateUndo::newLine,actionCursor);
       } else {
-        //wrap     
-        actionCursor.line = line + 1;     
-        if (!s[l - 1].isSpace()) { //add space in next line if necessary     
-          actionCursor.col = 0;     
-          recordInsert(actionCursor, " ");     
-        }     
-        actionCursor.col = textLine->length() - pos;     
-        recordAction(KateUndo::wordWrap, actionCursor);     
-      }     
+        //wrap
+        actionCursor.line = line + 1;
+        if (!s[l - 1].isSpace()) { //add space in next line if necessary
+          actionCursor.col = 0;
+          recordInsert(actionCursor, " ");
+        }
+        actionCursor.col = textLine->length() - pos;
+        recordAction(KateUndo::wordWrap, actionCursor);
+      }
       line++;
-    } while (true);     
-  } */     
-     
-  return true;     
-}     
+    } while (true);
+  } */
+
+  return true;
+}
 
 QString tabString(int pos, int tabChars)
 {
-  QString s;     
-  while (pos >= tabChars) {     
-    s += '\t';     
-    pos -= tabChars;     
-  }     
-  while (pos > 0) {     
-    s += ' ';     
-    pos--;     
-  }     
-  return s;     
-}     
-     
-void KateDocument::newLine(VConfig &c)     
-{
-     
-  if (!(_configFlags & KateDocument::cfAutoIndent)) {     
-    insertText (c.cursor.line, c.cursor.col, "\n");     
-    c.cursor.line++;
-    c.cursor.col = 0;     
-  } else {     
-    TextLine::Ptr textLine = getTextLine(c.cursor.line);     
-    int pos = textLine->firstChar();     
-    if (c.cursor.col < pos) c.cursor.col = pos; // place cursor on first char if before     
+  QString s;
+  while (pos >= tabChars) {
+    s += '\t';
+    pos -= tabChars;
+  }
+  while (pos > 0) {
+    s += ' ';
+    pos--;
+  }
+  return s;
+}
 
-    int y = c.cursor.line;     
-    while ((y > 0) && (pos < 0)) { // search a not empty text line     
-      textLine = getTextLine(--y);     
-      pos = textLine->firstChar();     
-    }     
-    insertText (c.cursor.line, c.cursor.col, "\n");     
-    c.cursor.line++;     
-    c.cursor.col = 0;     
-    if (pos > 0) {     
-      pos = textLine->cursorX(pos, tabChars);     
-//      if (getTextLine(c.cursor.line)->length() > 0) {     
+void KateDocument::newLine(VConfig &c)
+{
+
+  if (!(_configFlags & KateDocument::cfAutoIndent)) {
+    insertText (c.cursor.line, c.cursor.col, "\n");
+    c.cursor.line++;
+    c.cursor.col = 0;
+  } else {
+    TextLine::Ptr textLine = getTextLine(c.cursor.line);
+    int pos = textLine->firstChar();
+    if (c.cursor.col < pos) c.cursor.col = pos; // place cursor on first char if before
+
+    int y = c.cursor.line;
+    while ((y > 0) && (pos < 0)) { // search a not empty text line
+      textLine = getTextLine(--y);
+      pos = textLine->firstChar();
+    }
+    insertText (c.cursor.line, c.cursor.col, "\n");
+    c.cursor.line++;
+    c.cursor.col = 0;
+    if (pos > 0) {
+      pos = textLine->cursorX(pos, tabChars);
+//      if (getTextLine(c.cursor.line)->length() > 0) {
         QString s = tabString(pos, (_configFlags & KateDocument::cfSpaceIndent) ? 0xffffff : tabChars);
         insertText (c.cursor.line, c.cursor.col, s);
-        pos = s.length();     
-//      }     
-//      recordInsert(c.cursor, QString(textLine->getText(), pos));     
-      c.cursor.col = pos;     
-    }     
+        pos = s.length();
+//      }
+//      recordInsert(c.cursor, QString(textLine->getText(), pos));
+      c.cursor.col = pos;
+    }
   }
 
   c.view->updateCursor(c.cursor);
@@ -2940,80 +2940,80 @@ void KateDocument::optimizeLeadingSpace(int line, int flags, int change) {
     } else break;
   }
 
-  space += change*tabChars; // modify space width     
+  space += change*tabChars; // modify space width
   // if line contains only spaces it will be cleared
-  if (space < 0 || chars == len) space = 0;     
-     
-  extra = space % tabChars; // extra spaces which dont fit the indentation pattern     
-  if (flags & KateDocument::cfKeepExtraSpaces) chars -= extra;     
-     
-  if (flags & KateDocument::cfSpaceIndent) {     
-    space -= extra;     
-    ch = ' ';     
-  } else {     
-    space /= tabChars;     
-    ch = '\t';     
-  }     
-     
-  // dont replace chars which are already ok     
-  cursor.col = QMIN(okLen, QMIN(chars, space));     
-  chars -= cursor.col;     
-  space -= cursor.col;     
-  if (chars == 0 && space == 0) return; //nothing to do     
-     
-  s.fill(ch, space);     
-     
-//printf("chars %d insert %d cursor.col %d\n", chars, insert, cursor.col);     
-  cursor.line = line;     
-  removeText (cursor.line, cursor.col, cursor.line, cursor.col+chars);     
-  insertText(cursor.line, cursor.col, s);     
-}     
-     
-/*     
-  Remove a given string at the begining     
-  of the current line.     
-*/     
-bool KateDocument::removeStringFromBegining(int line, QString &str)     
-{     
-  TextLine* textline = getTextLine(line);     
-     
-  if(textline->startingWith(str))     
-  {     
-    // Get string lenght     
-    int length = str.length();     
-     
-    // Remove some chars     
+  if (space < 0 || chars == len) space = 0;
+
+  extra = space % tabChars; // extra spaces which dont fit the indentation pattern
+  if (flags & KateDocument::cfKeepExtraSpaces) chars -= extra;
+
+  if (flags & KateDocument::cfSpaceIndent) {
+    space -= extra;
+    ch = ' ';
+  } else {
+    space /= tabChars;
+    ch = '\t';
+  }
+
+  // dont replace chars which are already ok
+  cursor.col = QMIN(okLen, QMIN(chars, space));
+  chars -= cursor.col;
+  space -= cursor.col;
+  if (chars == 0 && space == 0) return; //nothing to do
+
+  s.fill(ch, space);
+
+//printf("chars %d insert %d cursor.col %d\n", chars, insert, cursor.col);
+  cursor.line = line;
+  removeText (cursor.line, cursor.col, cursor.line, cursor.col+chars);
+  insertText(cursor.line, cursor.col, s);
+}
+
+/*
+  Remove a given string at the begining
+  of the current line.
+*/
+bool KateDocument::removeStringFromBegining(int line, QString &str)
+{
+  TextLine* textline = getTextLine(line);
+
+  if(textline->startingWith(str))
+  {
+    // Get string lenght
+    int length = str.length();
+
+    // Remove some chars
     removeText (line, 0, line, length);
-     
-    return true;     
-  }     
-     
-  return false;     
-}     
-     
-/*     
-  Remove a given string at the end     
-  of the current line.     
-*/     
-bool KateDocument::removeStringFromEnd(int line, QString &str)     
-{     
-  TextLine* textline = getTextLine(line);     
-     
-  if(textline->endingWith(str))     
-  {     
-    // Get string lenght     
-    int length = str.length();     
-     
-    // Remove some chars     
-    removeText (line, 0, line, length);     
-     
-    return true;     
-  }     
-     
-  return false;     
-}     
-     
-/*     
+
+    return true;
+  }
+
+  return false;
+}
+
+/*
+  Remove a given string at the end
+  of the current line.
+*/
+bool KateDocument::removeStringFromEnd(int line, QString &str)
+{
+  TextLine* textline = getTextLine(line);
+
+  if(textline->endingWith(str))
+  {
+    // Get string lenght
+    int length = str.length();
+
+    // Remove some chars
+    removeText (line, 0, line, length);
+
+    return true;
+  }
+
+  return false;
+}
+
+/*
   Add to the current line a comment line mark at
   the begining.
 */
@@ -3135,7 +3135,7 @@ bool KateDocument::removeStartStopCommentFromSelection()
 
   if (ec-endCommentLen < 0)
     return false;
-  
+
   removeText (el, ec-endCommentLen, el, ec);
   removeText (sl, sc, sl, sc+startCommentLen);
 
@@ -3376,11 +3376,11 @@ void KateDocument::slotBufferChanged() {
 }
 
 void KateDocument::slotBufferHighlight(uint start,uint stop) {
-  //kdDebug(13020)<<"KateDocument::slotBufferHighlight"<<QString("%1-%2").arg(start).arg(stop)<<endl;     
-  updateLines(start,stop);     
-//  buffer->startLoadTimer();     
-}     
-     
+  //kdDebug(13020)<<"KateDocument::slotBufferHighlight"<<QString("%1-%2").arg(start).arg(stop)<<endl;
+  updateLines(start,stop);
+//  buffer->startLoadTimer();
+}
+
 void KateDocument::updateViews(KateView *exclude)
 {
   KateView *view;
@@ -3501,7 +3501,7 @@ void KateDocument::paintTextLine(QPainter &paint, uint line, int y, int xStart, 
   const QChar *s;
   int z, x;
   QChar ch;
-  Attribute *a;
+  Attribute *a = 0;
   int attr, nextAttr;
   int xs;
   int xc, zc;
@@ -3515,7 +3515,7 @@ void KateDocument::paintTextLine(QPainter &paint, uint line, int y, int xStart, 
   }
 
   textLine = getTextLine(line);
-  
+
   if (!textLine)
     return;
 
@@ -3680,7 +3680,7 @@ void KateDocument::paintTextLine(QPainter &paint, uint line, int y, int xStart, 
             x += fs->myFontMetrics.width(s);
           zc = z;
         }
-        
+
         attr = nextAttr;
         a = attribute (attr);
         col = z;
@@ -3909,145 +3909,145 @@ void KateDocument::newBracketMark(KateTextCursor &cursor, BracketMark &bm)
         }
       }
       x++;
-    }     
-  }     
-  else if (bracket == ')' || bracket == ']' || bracket == '}')     
-  {     
-    opposite = '(';     
-    if (bracket == ']') opposite = '[';     
-    if (bracket == '}') opposite = '{';     
-    x--;     
-    while (cursor.line - line < 20) {     
-     
-      while (x < 0) {     
-        line--;     
-        if (line < 0) return;     
-        textLine = getTextLine(line);     
-        x = textLine->length() -1;     
-      }     
-      if (textLine->getAttr(x) == attr) {     
-        ch = textLine->getChar(x);     
-        if (ch == bracket) count++;     
-        if (ch == opposite) {     
-          count--;     
-          if (count < 0) goto found;     
-        }     
-      }     
-      x--;     
-    }     
-  }     
-  return;     
-     
-found:     
-  //cursor position of opposite bracket     
-  bm.cursor.col = x;     
-  bm.cursor.line = line;     
-  //x position (start and end) of related bracket     
-  bm.sXPos = textWidth(textLine, x);     
-  a = attribute(attr);     
-     
-   if (a->bold && a->italic)     
-      bm.eXPos = bm.sXPos + viewFont.myFontMetricsBI.width(bracket);     
-    else if (a->bold)     
-      bm.eXPos = bm.sXPos + viewFont.myFontMetricsBold.width(bracket);     
-    else if (a->italic)     
-      bm.eXPos = bm.sXPos + viewFont.myFontMetricsItalic.width(bracket);     
-    else     
-      bm.eXPos = bm.sXPos + viewFont.myFontMetrics.width(bracket);     
-}     
-     
-void KateDocument::clipboardChanged() { //slot     
-//#if defined(_WS_X11_)     
-  if (_configFlags & KateDocument::cfSingleSelection) {     
-    disconnect(QApplication::clipboard(), SIGNAL(dataChanged()),     
-      this, SLOT(clipboardChanged()));     
-    clearSelection ();     
-    updateViews();     
-  }     
-//#endif     
-}     
-     
-void KateDocument::guiActivateEvent( KParts::GUIActivateEvent *ev )     
-{     
-  KParts::ReadWritePart::guiActivateEvent( ev );     
-  if ( ev->activated() )     
-    emit selectionChanged();     
-}     
-     
-void KateDocument::setDocName (QString docName)     
-{     
-  myDocName = docName;     
-  emit nameChanged (this);     
-}     
-     
-void KateDocument::setMTime()     
-{     
-    if (fileInfo && !fileInfo->fileName().isEmpty()) {     
-      fileInfo->refresh();     
-      mTime = fileInfo->lastModified();     
-    }     
-}     
-     
-void KateDocument::isModOnHD(bool forceReload)     
-{     
-  if (fileInfo && !fileInfo->fileName().isEmpty()) {     
-    fileInfo->refresh();     
-    if (fileInfo->lastModified() > mTime) {     
-      if ( forceReload ||     
-           (KMessageBox::warningContinueCancel(0,     
-               (i18n("The file %1 has changed on disk.\nDo you want to reload it?\n\nIf you cancel you will lose these changes next time you save this file")).arg(url().filename()),     
-               i18n("File has changed on Disk"),     
-               i18n("Yes") ) == KMessageBox::Continue)     
-          )     
-        reloadFile();     
-      else     
-        setMTime();     
-    }     
-  }     
-}     
-     
-void KateDocument::reloadFile()     
-{     
-  if (fileInfo && !fileInfo->fileName().isEmpty()) {     
-    KateDocument::openFile();     
-    setMTime();     
-  }     
-}     
-     
-void KateDocument::slotModChanged()     
-{     
-  emit modStateChanged (this);     
-}     
+    }
+  }
+  else if (bracket == ')' || bracket == ']' || bracket == '}')
+  {
+    opposite = '(';
+    if (bracket == ']') opposite = '[';
+    if (bracket == '}') opposite = '{';
+    x--;
+    while (cursor.line - line < 20) {
 
-void KateDocument::flush ()     
-{     
-  if (!isReadWrite())     
-    return;     
-     
-  m_url = KURL();     
-  fileInfo->setFile (QString());     
-  setMTime();     
-     
-  clear();     
-  updateViews();     
-     
-  emit fileNameChanged ();     
-}     
-     
-void KateDocument::open (const QString &name)     
-{     
-  openURL (KURL (name));     
-}     
-     
-Attribute *KateDocument::attribute (uint pos)     
-{     
-  if (pos < myAttribsLen)     
-    return &myAttribs[pos];     
-     
-  return &myAttribs[0];     
-}     
-     
-void KateDocument::wrapText (uint col)     
+      while (x < 0) {
+        line--;
+        if (line < 0) return;
+        textLine = getTextLine(line);
+        x = textLine->length() -1;
+      }
+      if (textLine->getAttr(x) == attr) {
+        ch = textLine->getChar(x);
+        if (ch == bracket) count++;
+        if (ch == opposite) {
+          count--;
+          if (count < 0) goto found;
+        }
+      }
+      x--;
+    }
+  }
+  return;
+
+found:
+  //cursor position of opposite bracket
+  bm.cursor.col = x;
+  bm.cursor.line = line;
+  //x position (start and end) of related bracket
+  bm.sXPos = textWidth(textLine, x);
+  a = attribute(attr);
+
+   if (a->bold && a->italic)
+      bm.eXPos = bm.sXPos + viewFont.myFontMetricsBI.width(bracket);
+    else if (a->bold)
+      bm.eXPos = bm.sXPos + viewFont.myFontMetricsBold.width(bracket);
+    else if (a->italic)
+      bm.eXPos = bm.sXPos + viewFont.myFontMetricsItalic.width(bracket);
+    else
+      bm.eXPos = bm.sXPos + viewFont.myFontMetrics.width(bracket);
+}
+
+void KateDocument::clipboardChanged() { //slot
+//#if defined(_WS_X11_)
+  if (_configFlags & KateDocument::cfSingleSelection) {
+    disconnect(QApplication::clipboard(), SIGNAL(dataChanged()),
+      this, SLOT(clipboardChanged()));
+    clearSelection ();
+    updateViews();
+  }
+//#endif
+}
+
+void KateDocument::guiActivateEvent( KParts::GUIActivateEvent *ev )
+{
+  KParts::ReadWritePart::guiActivateEvent( ev );
+  if ( ev->activated() )
+    emit selectionChanged();
+}
+
+void KateDocument::setDocName (QString docName)
+{
+  myDocName = docName;
+  emit nameChanged (this);
+}
+
+void KateDocument::setMTime()
+{
+    if (fileInfo && !fileInfo->fileName().isEmpty()) {
+      fileInfo->refresh();
+      mTime = fileInfo->lastModified();
+    }
+}
+
+void KateDocument::isModOnHD(bool forceReload)
+{
+  if (fileInfo && !fileInfo->fileName().isEmpty()) {
+    fileInfo->refresh();
+    if (fileInfo->lastModified() > mTime) {
+      if ( forceReload ||
+           (KMessageBox::warningContinueCancel(0,
+               (i18n("The file %1 has changed on disk.\nDo you want to reload it?\n\nIf you cancel you will lose these changes next time you save this file")).arg(url().filename()),
+               i18n("File has changed on Disk"),
+               i18n("Yes") ) == KMessageBox::Continue)
+          )
+        reloadFile();
+      else
+        setMTime();
+    }
+  }
+}
+
+void KateDocument::reloadFile()
+{
+  if (fileInfo && !fileInfo->fileName().isEmpty()) {
+    KateDocument::openFile();
+    setMTime();
+  }
+}
+
+void KateDocument::slotModChanged()
+{
+  emit modStateChanged (this);
+}
+
+void KateDocument::flush ()
+{
+  if (!isReadWrite())
+    return;
+
+  m_url = KURL();
+  fileInfo->setFile (QString());
+  setMTime();
+
+  clear();
+  updateViews();
+
+  emit fileNameChanged ();
+}
+
+void KateDocument::open (const QString &name)
+{
+  openURL (KURL (name));
+}
+
+Attribute *KateDocument::attribute (uint pos)
+{
+  if (pos < myAttribsLen)
+    return &myAttribs[pos];
+
+  return &myAttribs[0];
+}
+
+void KateDocument::wrapText (uint col)
 {
   uint line = 0;
   int z = 0;
@@ -4078,78 +4078,78 @@ void KateDocument::wrapText (uint col)
   };
 
   newDocGeometry=true;
-  updateLines();     
-  updateViews();     
-}     
-     
-void KateDocument::setPseudoModal(QWidget *w) {     
-//  QWidget *old = pseudoModal;     
-     
-  // (glenebob)     
-  // this is a temporary hack to make the spell checker work a little     
-  // better - as kspell progresses, this sort of thing should become     
-  // obsolete or worked around more cleanly     
-  // this is relied upon *only* by the spell-check code     
-  if (pseudoModal && pseudoModal != (QWidget*)1L)     
-    delete pseudoModal;     
-     
-//  pseudoModal = 0L;     
-//  if (old || w) recordReset();     
-     
-  pseudoModal = w;
-}     
-     
-void KateDocument::setWordWrap (bool on)     
-{
-  if (on != myWordWrap && on)     
-    wrapText (myWordWrapAt);     
-     
-  myWordWrap = on;     
+  updateLines();
+  updateViews();
 }
-     
-void KateDocument::setWordWrapAt (uint col)     
-{     
-  if (myWordWrapAt != col && myWordWrap)     
-    wrapText (myWordWrapAt);     
-     
-  myWordWrapAt = col;     
-}     
-     
-void KateDocument::applyWordWrap ()     
-{     
-  wrapText (myWordWrapAt);     
-}     
-     
-uint KateDocument::configFlags ()     
-{     
-  return _configFlags;     
-}     
-     
-void KateDocument::setConfigFlags (uint flags)     
-{     
-  bool updateView;     
-     
-  if (flags != _configFlags)     
-  {
-    // update the view if visibility of tabs has changed     
-    updateView = (flags ^ _configFlags) & KateDocument::cfShowTabs;     
-    _configFlags = flags;     
-    //emit newStatus();     
-    if (updateView) updateViews ();     
-  }     
-}     
-     
-KateCursor::KateCursor ( KateDocument *doc)     
-{     
-  myDoc = doc;     
-  myDoc->addCursor (this);     
-}     
 
-KateCursor::~KateCursor ( )     
-{     
-  myDoc->removeCursor (this);     
-}     
-     
+void KateDocument::setPseudoModal(QWidget *w) {
+//  QWidget *old = pseudoModal;
+
+  // (glenebob)
+  // this is a temporary hack to make the spell checker work a little
+  // better - as kspell progresses, this sort of thing should become
+  // obsolete or worked around more cleanly
+  // this is relied upon *only* by the spell-check code
+  if (pseudoModal && pseudoModal != (QWidget*)1L)
+    delete pseudoModal;
+
+//  pseudoModal = 0L;
+//  if (old || w) recordReset();
+
+  pseudoModal = w;
+}
+
+void KateDocument::setWordWrap (bool on)
+{
+  if (on != myWordWrap && on)
+    wrapText (myWordWrapAt);
+
+  myWordWrap = on;
+}
+
+void KateDocument::setWordWrapAt (uint col)
+{
+  if (myWordWrapAt != col && myWordWrap)
+    wrapText (myWordWrapAt);
+
+  myWordWrapAt = col;
+}
+
+void KateDocument::applyWordWrap ()
+{
+  wrapText (myWordWrapAt);
+}
+
+uint KateDocument::configFlags ()
+{
+  return _configFlags;
+}
+
+void KateDocument::setConfigFlags (uint flags)
+{
+  bool updateView;
+
+  if (flags != _configFlags)
+  {
+    // update the view if visibility of tabs has changed
+    updateView = (flags ^ _configFlags) & KateDocument::cfShowTabs;
+    _configFlags = flags;
+    //emit newStatus();
+    if (updateView) updateViews ();
+  }
+}
+
+KateCursor::KateCursor ( KateDocument *doc)
+{
+  myDoc = doc;
+  myDoc->addCursor (this);
+}
+
+KateCursor::~KateCursor ( )
+{
+  myDoc->removeCursor (this);
+}
+
 void KateCursor::position ( uint *, uint * ) const
 {
 
