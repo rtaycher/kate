@@ -255,21 +255,11 @@ void KateMainWindow::setupActions()
   connect(documentOpenWith->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(mSlotFixOpenWithMenu()));
   connect(documentOpenWith->popupMenu(), SIGNAL(activated(int)), this, SLOT(slotOpenWithMenuAction(int)));
 
-  setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, actionCollection(), "set_highlight");
-
   setVerticalSelection = new KToggleAction(i18n("&Vertical Selection"), Key_F4, viewManager, SLOT(toggleVertical()),
                                              actionCollection(), "set_verticalSelect");
 
-  connect(setHighlight, SIGNAL(activated(int)), viewManager, SLOT(slotSetHl(int)));
-  connect(setHighlight->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(setHighlightMenuAboutToShow()));
-
   if (pluginManager->myPluginList.count() > 0)
     new KAction(i18n("Contents &Plugins"), 0, this, SLOT(pluginHelp()), actionCollection(), "help_plugins_contents");
-
-  list.clear();
-  for (int z = 0; z < HlManager::self()->highlights(); z++)
-       list.append(HlManager::self()->hlName(z));
-  setHighlight->setItems(list);
 
   KStdAction::keyBindings(this, SLOT(editKeys()), actionCollection());
   KStdAction::configureToolbars(this, SLOT(slotEditToolbars()), actionCollection(), "set_configure_toolbars");
@@ -286,6 +276,9 @@ void KateMainWindow::setupActions()
   connect(viewManager,SIGNAL(statChanged()),this,SLOT(slotCurrentDocChanged()));
 
   sidebarFocusNext = new KAction(i18n("Next Sidebar &Widget"), CTRL+SHIFT+Key_B, this, SLOT(slotSidebarFocusNext()), actionCollection(), "sidebar_focus_next");
+
+  setHighlight = new KActionMenu (i18n("&Highlight Mode"), actionCollection(), "set_highlight");
+  connect(setHighlight->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(setHighlightMenuAboutToShow()));
 
   slotWindowActivated ();
 }
@@ -534,7 +527,39 @@ void KateMainWindow::gotoBookmark (int n)
 
 void KateMainWindow::setHighlightMenuAboutToShow()
 {
-   setHighlight->setCurrentItem( viewManager->activeView()->getHl() );
+  static QStringList subMenusName;
+  static QStringList names;
+  static QList<QPopupMenu> subMenus;
+  int count = HlManager::self()->highlights();
+
+  for (int z=0; z<count; z++)
+  {
+    QString hlName = HlManager::self()->hlName (z);
+    QString hlSection = HlManager::self()->hlSection (z);
+
+    kdDebug()<<hlName<<endl;
+    kdDebug()<<hlSection<<endl;
+
+    if ((hlSection != "") && (names.contains(hlName) < 1))
+    {
+      if (subMenusName.contains(hlSection) < 1)
+      {
+        subMenusName << hlSection;
+        QPopupMenu *menu = new QPopupMenu ();
+        subMenus.append(menu);
+        setHighlight->popupMenu()->insertItem (hlSection, menu);
+      }
+
+      int m = subMenusName.findIndex (hlSection);
+      names << hlName;
+      subMenus.at(m)->insertItem ( hlName, viewManager, SLOT(slotSetHl(int)), 0,  z);
+    }
+    else if (names.contains(hlName) < 1)
+    {
+      names << hlName;
+      setHighlight->popupMenu()->insertItem ( hlName, viewManager, SLOT(slotSetHl(int)), 0,  z);
+    }
+  }
 }
 
 void KateMainWindow::dragEnterEvent( QDragEnterEvent *event )

@@ -31,33 +31,13 @@
 
 SyntaxDocument::SyntaxDocument() : QDomDocument()
 {
-//  QString syntaxPath = locate("data", "kate/syntax.xml");
   currentFile="";
   setupModeList();
-
-/*
-  if( !syntaxPath.isEmpty() )
-  {
-    QFile f( syntaxPath );
-    if ( f.open(IO_ReadOnly) )
-    {
-      setContent(&f);
-      setupModeList();
-    }
-    else
-      KMessageBox::error( 0L, i18n("Can't open %1").arg(syntaxPath) );
-
-    f.close();
-  }
-  else
-    KMessageBox::error( 0L, i18n("File share/apps/kwrite/syntax.xml not found ! Check your installation!") );
-*/
 }
 
 void SyntaxDocument::setIdentifier(const QString& identifier)
 {
- kdDebug()<<"Trying to set identifier to"<<identifier<<endl;
- if (currentFile!=identifier)
+  if (currentFile!=identifier)
    {
        QFile f( identifier );
        if ( f.open(IO_ReadOnly) )
@@ -69,7 +49,7 @@ void SyntaxDocument::setIdentifier(const QString& identifier)
          KMessageBox::error( 0L, i18n("Can't open %1").arg(identifier) );
       f.close();
    }
-} 
+}
 
 SyntaxDocument::~SyntaxDocument()
 {
