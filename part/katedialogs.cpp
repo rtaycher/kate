@@ -339,9 +339,11 @@ void HlEditDialog::initContextOptions(QVBox *co)
         tmp= new QHBox(co);
         (void) new QLabel(i18n("LineEnd:"),tmp);
         ContextLineEnd = new QComboBox(tmp);
-        connect(ContextDescr,SIGNAL(textChanged(const QString&)),this,SLOT(contextDescrChanged(const QString&)));
+	(ContextPopCount=new KIntNumInput(tmp))->setRange(1,20,1,false);
+	connect(ContextDescr,SIGNAL(textChanged(const QString&)),this,SLOT(contextDescrChanged(const QString&)));
         connect(ContextLineEnd,SIGNAL(activated(int)),this,SLOT(contextLineEndChanged(int)));
         connect(ContextAttribute,SIGNAL(activated(int)),this,SLOT(contextAttributeChanged(int)));
+	connect(ContextPopCount,SIGNAL(valueChanged(int)),this,SLOT(ContextPopCountChanged(int)));
     }
    else
      kdDebug(13010)<<"initContextOptions: Widget is 0"<<endl;
@@ -395,6 +397,7 @@ void HlEditDialog::initItemOptions(QVBox *co)
         connect(ItemParameter,SIGNAL(textChanged(const QString&)),this,SLOT(ItemParameterChanged(const QString&)));
         connect(ItemAttribute,SIGNAL(activated(int)),this,SLOT(ItemAttributeChanged(int)));
         connect(ItemContext,SIGNAL(activated(int)),this,SLOT(ItemContextChanged(int)));
+	connect(ItemPopCount,SIGNAL(valueChanged(int)),this,SLOT(ItemPopCountChanged(int)));
     }
   else
     kdDebug(13010)<<"initItemOptions: Widget is 0"<<endl;
@@ -498,10 +501,15 @@ void HlEditDialog::showContext()
     for (QListViewItem *it=contextList->firstChild();it;it=it->nextSibling())
         ContextLineEnd->insertItem(it->text(0));
     ContextLineEnd->setCurrentItem(currentItem->text(3).startsWith("#pop")?0:(currentItem->text(3).contains("#stay")?1:currentItem->text(3).toInt()+2));
-    if (currentItem->text(3).startsWith("#pop"));
+    if (currentItem->text(3).startsWith("#pop"))
     	{
+		QString tmp=currentItem->text(3);
+		int tmpPop;
+		for (tmpPop=0;tmp.startsWith("#pop");tmpPop++,tmp.remove(0,4));
+		ContextPopCount->setValue(tmpPop);
+		ContextPopCount->show();
 		//Do something
-	}
+	} else ContextPopCount->hide();
   }
 
 void HlEditDialog::contextDescrChanged(const QString& name)
@@ -536,6 +544,21 @@ void HlEditDialog::contextLineEndChanged(int id)
      		currentItem->setText(3,QString("%1").arg(id-2));
      }
 }
+
+void HlEditDialog::ContextPopCountChanged(int count)
+{
+	if (currentItem)
+	{
+		if (currentItem->text(3).startsWith("#pop"))
+		{
+			QString tmp="";
+			for (int i=0;i<count;i++) tmp=tmp+"#pop";
+			currentItem->setText(3,tmp);
+		}
+	}
+}
+
+
 
 void HlEditDialog::contextAddNew()
 {
@@ -625,8 +648,39 @@ void HlEditDialog::ItemContextChanged(int cont)
 {
    if (currentItem)
      {
-//       currentItem->setText(3,QString("%1").arg(cont));
+     	if (cont>1)
+	{
+		currentItem->setText(3,QString("%1").arg(cont-2));
+		ItemPopCount->hide();
+	}
+     	else
+	{
+		if (cont==0)
+		{
+			ItemPopCount->setValue(1);
+			currentItem->setText(3,"#pop");
+			ItemPopCount->show();
+		}
+		else
+		{
+			ItemPopCount->hide();
+			currentItem->setText(3,"#push");
+		}
+	}
      }
+}
+
+void HlEditDialog::ItemPopCountChanged(int count)
+{
+	if (currentItem)
+	{
+		if (currentItem->text(3).startsWith("#pop"))
+		{
+			QString tmp="";
+			for (int i=0;i<count;i++) tmp=tmp+"#pop";
+			currentItem->setText(3,tmp);
+		}
+	}
 }
 
 void HlEditDialog::ItemAddNew()

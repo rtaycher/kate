@@ -132,6 +132,7 @@ class HlEditDialog : public KDialogBase
     class QLineEdit *ContextDescr;
     class QComboBox *ContextAttribute;
     class QComboBox *ContextLineEnd;
+    class KIntNumInput *ContextPopCount;
 
     class QComboBox *ItemType;
     class QComboBox *ItemContext;
@@ -148,12 +149,14 @@ class HlEditDialog : public KDialogBase
     void contextDescrChanged(const QString&);
     void contextLineEndChanged(int);
     void contextAttributeChanged(int);
+    void ContextPopCountChanged(int count);        
     void contextAddNew();
 
     void ItemTypeChanged(int id);
     void ItemParameterChanged(const QString& name);
     void ItemAttributeChanged(int attr);
     void ItemContextChanged(int cont);
+    void ItemPopCountChanged(int count);
     void ItemAddNew();
 };
 
