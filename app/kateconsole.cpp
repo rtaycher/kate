@@ -22,11 +22,34 @@
 #include <qlayout.h>
 #include <klibloader.h>
 #include <klocale.h>
+#include <kapplication.h>
+#include <kdebug.h>
 
-KateConsole::KateConsole (QWidget* parent, const char* name) : QWidget (parent, name)
+KateConsole::KateConsole (QWidget* parent, const char* name) : QWidget (parent, name),part(0)
 {
 
-  lo = new QVBoxLayout(this);
+    lo = new QVBoxLayout(this);
+}
+
+KateConsole::~KateConsole ()
+{
+}
+
+
+void KateConsole::loadConsoleIfNeeded()
+{
+  kdDebug()<<"================================ loadConsoleIfNeeded()"<<endl;
+  if (part!=0) return;
+  if (!kapp->loopLevel()) {
+	connect(kapp,SIGNAL(onEventLoopEnter()),this,SLOT(loadConsoleIfNeeded()));
+	return;
+  }
+
+  if (!topLevelWidget() || !parentWidget()) return;
+  if (!topLevelWidget() || !isVisibleTo(topLevelWidget())) return;
+
+  kdDebug()<<"CREATING A CONSOLE PART"<<endl;
+
     KLibFactory *factory = 0;
     factory = KLibLoader::self()->factory("libkonsolepart");
     part = 0L;
@@ -44,31 +67,18 @@ KateConsole::KateConsole (QWidget* parent, const char* name) : QWidget (parent, 
         }
 }
 
-KateConsole::~KateConsole ()
+void KateConsole::showEvent(QShowEvent *)
 {
+	if (!part) loadConsoleIfNeeded();
 }
 
 void KateConsole::cd (KURL url)
 {
-  part->openURL (url);
+  if (part) part->openURL (url);
 }
 
 void KateConsole::slotDestroyed ()
 {
-  if (!topLevelWidget() || !parentWidget()) return;
-  if (!topLevelWidget() || !parentWidget()->isVisible()) return;
-
- KLibFactory *factory = 0;
-    factory = KLibLoader::self()->factory("libkonsolepart");
-      if (factory)
-        {
-          part = static_cast<KParts::ReadOnlyPart *>(factory->create(this,"libkonsolepart",
-		"KParts::ReadOnlyPart"));
-	  if (part)
-	    {
-              part->widget()->show();
-              lo->addWidget(part->widget());
-              connect ( part, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
-            }
-        }
+  part=0;
+  loadConsoleIfNeeded();
 }

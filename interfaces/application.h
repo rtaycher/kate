@@ -59,6 +59,15 @@ class Application : public QObject
 
   private:
     class PrivateApplication *d;
+
+//invention of public signals, like in kparts/browserextension.h
+#undef signals
+#define signals public
+signals:
+#undef signals
+#define signals protected
+
+	void onEventLoopEnter();  
 };
 
 Application *application ();

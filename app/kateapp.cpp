@@ -80,12 +80,22 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
     m_mainWindows.first()->restore( false );
 
   KTipDialog::showTip(m_mainWindows.first());
+  QTimer::singleShot(0,this,SLOT(callOnEventLoopEnter()));
 }
 
 KateApp::~KateApp ()
 {
   m_pluginManager->writeConfig ();
 }          
+
+void KateApp::callOnEventLoopEnter()
+{
+	emit onEventLoopEnter();
+	disconnect(this,SIGNAL(onEventLoopEnter()),0,0);
+	emit m_application->onEventLoopEnter();
+	disconnect(m_application,SIGNAL(onEventLoopEnter()),0,0);
+	kdDebug()<<"callOnEventLoopEnter(): "<<kapp->loopLevel()<<"*****************************"<<endl;
+}
 
 void KateApp::performInit(const QString &libname, const KURL &url)
 {
@@ -122,6 +132,8 @@ int KateApp::newInstance()
     newMainWindow (); 
  
   raiseCurrentMainWindow ();
+
+  kdDebug()<<"******************************************** loop depth"<<kapp->loopLevel()<<endl;
 
   if (m_firstStart && m_initPlugin)
   {

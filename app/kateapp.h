@@ -83,8 +83,12 @@ class KateApp : public KUniqueApplication
     QString m_initLib;
     QString m_oldInitLib;
 
+    signals:
+	void onEventLoopEnter();
+
   protected slots:
     void performInit();
+    void callOnEventLoopEnter();
 };
 
 #endif

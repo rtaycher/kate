@@ -33,10 +33,16 @@ class KateConsole : public QWidget
     void cd (KURL url=0L);
 
   protected:
-    void focusInEvent( QFocusEvent * ) { part->widget()->setFocus(); };
+    void focusInEvent( QFocusEvent * ) { if (part) part->widget()->setFocus(); };
+    virtual void showEvent(QShowEvent *);
+
   private:
     KParts::ReadOnlyPart *part;
     QVBoxLayout* lo;
+
+  public slots:
+    void loadConsoleIfNeeded();
+
 
   // Only needed for Konsole
   private slots:

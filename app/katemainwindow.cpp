@@ -135,6 +135,8 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   mainDock->setDockSite( KDockWidget::DockNone );
   
   setAutoSaveSettings( QString::fromLatin1("MainWindow"), false );
+
+  console->loadConsoleIfNeeded();
 }
 
 KateMainWindow::~KateMainWindow()
