@@ -33,12 +33,17 @@ TextLine::~TextLine()
 
 void TextLine::replace(uint pos, uint delLen, const QChar *insText, uint insLen, uchar *insAttribs)
 {
+  int oldLen = text.length();
   text.replace (pos, delLen, insText, insLen);
 
-  attributes.resize (text.length());
+  if (oldLen<text.length()) attributes.resize (text.length());
 
-  if (attributes.size() < 1) return;
-
+  if (text.length() == 0)
+  {
+    attributes.resize (0);
+    return;
+  }
+  
   int newAtStuff = insLen-delLen;
   for (uint m=pos; m < attributes.size()-1; m++)
   {
@@ -59,6 +64,8 @@ void TextLine::replace(uint pos, uint delLen, const QChar *insText, uint insLen,
     if (m3 < attributes.size()) attributes[m3]=0;
   }
   }
+
+  if (oldLen>text.length()) attributes.resize (text.length());
 }
 
 void TextLine::wrap(TextLine::Ptr nextLine, uint pos)
