@@ -574,37 +574,28 @@ Highlight::~Highlight()
 {
 }
 
-
-
-
-
 signed char *Highlight::generateContextStack(int *ctxNum, int ctx,signed char *ctxs, uint *ctxsLen, int *prevLine)
 {
   if (ctx>=0)
   {
-        //  kdDebug()<<"test1-2-1-1"<<endl;
-
     (*ctxNum) = ctx;
 
-                if (ctxs == 0L)
-                        ctxs = (signed char *) malloc ((*ctxsLen)+1);
-                else
+    if (ctxs == 0L)
+      ctxs = (signed char *) malloc ((*ctxsLen)+1);
+    else
       ctxs = (signed char *) realloc (ctxs, (*ctxsLen)+1);
 
-          (*ctxsLen)++;
+    (*ctxsLen)++;
     ctxs[(*ctxsLen)-1]=(*ctxNum);
-
-        ///     kdDebug()<<"test1-2-1-2"<<endl;
   }
   else
-        {
+  {
     if (ctx<-1)
     {
-                //  kdDebug()<<"test1-2-1-3"<<endl;
-	while (ctx<-1)
-	{
-	      if ((*ctxsLen)==0)
-                    (*ctxNum)=0;
+      while (ctx<-1)
+      {
+        if ((*ctxsLen)==0)
+        (*ctxNum)=0;
 	      else
 	      {
 	        // kdDebug()<<"Truncating 'stack'"<<endl;
