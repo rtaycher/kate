@@ -8,11 +8,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef HAVE_VFORK_H
-#include <vfork.h>
-#endif
-
-
 #include <qbuttongroup.h>
 #include <qlabel.h>
 #include <qpainter.h>
@@ -1239,7 +1234,7 @@ bool KPipe::open(int mode) {
     setStatus(IO_OpenError);
     return false;
   }
-  m_pid = vfork();
+  m_pid = fork();
   if (m_pid == -1) {
     setStatus(IO_OpenError);
     return false;
