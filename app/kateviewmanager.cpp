@@ -553,6 +553,11 @@ void KateViewManager::splitViewSpace( KateViewSpace* vs,
   if (!vs) vs = activeViewSpace();
 
   bool isFirstTime = vs->parentWidget() == this;
+  
+  QValueList<int> psizes;
+  if ( ! isFirstTime )
+    if ( QSplitter *ps = static_cast<QSplitter*>(vs->parentWidget()->qt_cast("QSplitter")) )
+      psizes = ps->sizes();
 
   Qt::Orientation o = isHoriz ? Qt::Vertical : Qt::Horizontal;
   KateSplitter* s = new KateSplitter(o, vs->parentWidget());
@@ -567,17 +572,22 @@ void KateViewManager::splitViewSpace( KateViewSpace* vs,
   }
   vs->reparent( s, 0, QPoint(), true );
   KateViewSpace* vsNew = new KateViewSpace( s );
-  kdDebug(13001)<<"splitViewSpace(): splitter and viewspace created"<<endl;
 
   if (atTop)
     s->moveToFirst( vsNew );
 
   if (isFirstTime)
     m_grid->addWidget(s, 0, 0);
+  else if ( QSplitter *ps = static_cast<QSplitter*>(s->parentWidget()->qt_cast("QSplitter")) )
+    ps->setSizes( psizes );
+    
 
-  kdDebug(13001)<<"splitViewSpace(): calling new splitter->show()"<<endl;
   s->show();
-  kdDebug(13001)<<"splitViewSpace(): splitter->show() was  called, moving on"<<endl;
+  
+  QValueList<int> sizes;
+  int space = 50;//isHoriz ? s->parentWidget()->height()/2 : s->parentWidget()->width()/2;
+  sizes << space << space;
+  s->setSizes( sizes );
 
   connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, QString)), vsNew, SLOT(slotStatusChanged(Kate::View *, int, int,int, bool, int, QString)));
   m_viewSpaceList.append( vsNew );
@@ -585,7 +595,6 @@ void KateViewManager::splitViewSpace( KateViewSpace* vs,
   activeViewSpace()->setActive( false );
   vsNew->setActive( true, true );
   vsNew->show();
-  kdDebug(13001)<<"splitViewSpace(): going to create a view!"<<endl;
   if (!newViewUrl.isValid())
     createView (false, KURL(), (Kate::View *)activeView());
   else {
