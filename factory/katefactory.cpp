@@ -91,6 +91,7 @@ const KAboutData *KateFactory::aboutData()
   data->addAuthor("Scott Manson",I18N_NOOP("KWrite XML Syntax highlighting support"), "sdmanson@alltel.net");
   data->addAuthor("John Firebaugh",I18N_NOOP("Patches and more"), "jfire@uclink.berkeley.edu");
 
+  data->addCredit ("Matteo Merli",I18N_NOOP("Highlighting for RPM Spec-Files"), "merlim@libero.it");
   data->addCredit ("Carsten Presser", I18N_NOOP("Betatest"), "mord-slime@gmx.de");
   data->addCredit ("Jens Haupert", I18N_NOOP("Betatest"), "al_all@gmx.de");
   data->addCredit ("Carsten Pfeiffer", I18N_NOOP("Very nice help"), "");
