@@ -196,7 +196,7 @@ void TopLevel::slotOpen()
 
   if (url.isEmpty()) return;
 
-  if (kateView->isModified() || !kateView->doc()->url().isEmpty())
+  if (kateView->isModified())
   {
     TopLevel *t = new TopLevel();
     t->readConfig();
