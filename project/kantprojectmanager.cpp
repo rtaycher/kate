@@ -18,10 +18,16 @@
 #include "kantprojectmanager.h"
 #include "kantprojectmanager.moc"
 
+#include "kantprojectdialog.h"
+#include "../document/kantdocmanager.h"
+#include "../document/kantdocument.h"
+#include "../view/kantviewmanager.h"
+
+#include <kfiledialog.h>
 #include <iostream.h>
 #include <qtextstream.h>
+#include <kstatusbar.h>
 #include <klocale.h>
-#include "kantprojectdialog.h"
 #include "../piper/piper.cpp"  //  PCP I feel not a scrap of guilt...
 
 KantProjectManager::KantProjectManager (KantDocManager *docManager, KantViewManager *viewManager, KStatusBar *statusBar) : QObject()
@@ -35,7 +41,7 @@ KantProjectManager::~KantProjectManager ()
 {
 }
 
-/* 
+/*
    Open a "new Project" dialog, when pressed ok
    close all open windows (to have a clean workspace)
 */

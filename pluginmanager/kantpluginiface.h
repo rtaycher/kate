@@ -17,8 +17,10 @@
 #ifndef _KANT_PLUGIN_IFACE_
 #define _KANT_PLUGIN_IFACE_
 
-#include <qobject.h>
+#include "../kantmain.h"
 #include "../kwrite/kwview.h"
+
+#include <qwidget.h>
 
 class KantPluginIface : public QWidget
   {

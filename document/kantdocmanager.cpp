@@ -17,6 +17,9 @@
 
 #include "kantdocmanager.h"
 #include "kantdocmanager.moc"
+
+#include "kantdocument.h"
+
 #include <qfileinfo.h>
 
 KantDocManager::KantDocManager () : QObject ()

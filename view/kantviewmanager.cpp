@@ -18,6 +18,38 @@
 #include "kantviewmanager.h"
 #include "kantviewmanager.moc"
 
+#include "../mainwindow/kantmainwindow.h"
+#include "../mainwindow/kantIface.h"
+#include "../sidebar/kantsidebar.h"
+#include "../document/kantdocmanager.h"
+#include "../document/kantdocument.h"
+#include "kantview.h"
+#include "kantviewspace.h"
+#include "../fileselector/kantfileselector.h"
+
+#include "../kwrite/kwview.h"
+#include "../kwrite/kwattribute.h"
+#include "../kwrite/kwdoc.h"
+#include "../kwrite/kwdialog.h"
+#include "../kwrite/highlight.h"
+#include "../kwrite/kwrite_factory.h"
+
+#include <qwidgetstack.h>
+#include <qlayout.h>
+#include <kdiroperator.h>
+#include <kfiledialog.h>
+#include <kdockwidget.h>
+#include <kiconloader.h>
+#include <kstddirs.h>
+#include <kaction.h>
+#include <klocale.h>
+#include <kcmdlineargs.h>
+#include <kstdaction.h>
+#include <qvbox.h>
+#include <qlayout.h>
+#include <qsplitter.h>
+#include <dcopclient.h>
+#include <klistbox.h>
 #include <qobjectlist.h>
 #include <kdebug.h>
 #include <qstringlist.h>

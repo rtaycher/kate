@@ -18,12 +18,11 @@
 #ifndef kant_projectdialog_h
 #define kant_projectdialog_h
 
-#include <kdialog.h>
-#include <kpushbutton.h>
-#include <klineedit.h>
 #include "../kantmain.h"
 #include "../document/kantdocmanager.h"
 #include "../view/kantviewmanager.h"
+
+#include <kdialog.h>
 
 class KantProjectDialog : public KDialog
 {

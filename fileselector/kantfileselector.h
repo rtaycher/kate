@@ -19,19 +19,9 @@
 #define KANTFILESELECTOR_H
 
 #include "../kantmain.h"
-#include "../mainwindow/kantmainwindow.h"
+
 #include <qwidget.h>
-
 #include <kfile.h>
-
-class QGridLayout;
-class KURLComboBox;
-class KHistoryCombo;
-class KDirOperator;
-class KConfig;
-class KURL;
-class QString;
-class QLabel;
 
 class KantFileSelector : public QWidget
 {
@@ -59,6 +49,7 @@ class KantFileSelector : public QWidget
 
   protected:
     void focusInEvent(QFocusEvent*);
+
   private:
     KURLComboBox *cmbPath;
     KHistoryCombo * filter;

@@ -19,6 +19,17 @@
 #include "kantview.h"
 #include "kantview.moc"
 
+#include "../document/kantdocument.h"
+
+#include "../kwrite/kwview.h"
+#include "../kwrite/kwattribute.h"
+#include "../kwrite/kwdoc.h"
+#include "../kwrite/kwdialog.h"
+#include "../kwrite/highlight.h"
+#include "../kwrite/kwrite_factory.h"
+
+#include <kaction.h>
+
 #include <qfocusdata.h>
 #include <kdebug.h>
 #include <kapp.h>

@@ -18,8 +18,14 @@
 #include "kantprojectdialog.h"
 #include "kantprojectdialog.moc"
 
+#include <qlabel.h>
+#include <qvbox.h>
+#include <qhbox.h>
+#include <qgrid.h>
 #include <iostream.h>
 #include <klocale.h>
+#include <kpushbutton.h>
+#include <klineedit.h>
 
 KantProjectDialog::KantProjectDialog(QWidget* parent, const char* name)
 	: KDialog(parent, name, true, 0)

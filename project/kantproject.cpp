@@ -15,7 +15,6 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <iostream.h>
 #include "kantproject.h"
 
 KantProject::KantProject()

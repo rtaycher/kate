@@ -19,14 +19,55 @@
 
 #include <config.h>
 
-class KantSidebar;
-class KantDocument;
-class KantView;
-class KantViewSpace;
-class KantProjectManager;
-class KantDocManager;
-class KantViewManager;
-class KantMainWindow;
+class QComboBox;
+class QDateTime;
+class QEvent;
+class QFileInfo;
+class QGridLayout;
+class QLabel;
+class QListBox;
+class QObject;
+class QPixmap;
+class QVBoxLayout;
+class QString;
+class QWidgetStack;
+
+class KAction;
+class KActionMenu;
+class KConfig;
+class KDirOperator;
+class KEditToolbar;
+class KFileViewItem;
+class KHistoryCombo;
+class KLineEdit;
+class KListBox;
+class KProcess;
+class KPushButton;
+class KRecentFilesAction;
+class KSelectAction;
+class KShellProcess;
+class KStatusBar;
+class KToggleAction;
+class KURL;
+class KURLComboBox;
+
+class KWrite;
+class KWriteDoc;
+class KWriteView;
+
 class KantApp;
+class KantConfigDlg;
+class KantConsole;
+class KantDocManager;
+class KantDocument;
+class KantFileSelector;
+class KantMainWindow;
+class KantPluginManager;
+class KantProject;
+class KantProjectManager;
+class KantSidebar;
+class KantView;
+class KantViewManager;
+class KantViewSpace;
 
 #endif

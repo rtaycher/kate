@@ -18,9 +18,26 @@
 #include "kantmainwindow.h"
 #include "kantmainwindow.moc"
 
+#include "../console/kantconsole.h"
+#include "../document/kantdocument.h"
+#include "../document/kantdocmanager.h"
+#include "../kwrite/kwdialog.h"
+#include "../pluginmanager/kantpluginmanager.h"
+#include "../pluginmanager/kantconfigplugindialogpage.h"
+#include "../project/kantprojectmanager.h"
+#include "../view/kantviewmanager.h"
+#include "../sidebar/kantsidebar.h"
+#include "../fileselector/kantfileselector.h"
+#include "kantmenuitem.h"
+
+#include "../kwrite/kwview.h"
+#include "../kwrite/kwattribute.h"
+#include "../kwrite/kwdoc.h"
+#include "../kwrite/kwdialog.h"
+#include "../kwrite/highlight.h"
+#include "../kwrite/kwrite_factory.h"
+
 #include <cassert>
-//#include <fstream>
-//#include <iostream>
 #include <qcheckbox.h>
 #include <qiconview.h>
 #include <qinputdialog.h>
@@ -36,14 +53,31 @@
 #include <kparts/event.h>
 #include <kparts/part.h>
 #include <kurldrag.h>
-#include "../console/kantconsole.h"
-#include "../document/kantdocmanager.h"
-#include "../kwrite/kwdialog.h"
-#include "../pluginmanager/kantpluginmanager.h"
-#include "../pluginmanager/kantconfigplugindialogpage.h"
-#include "../project/kantprojectmanager.h"
-#include "../view/kantviewmanager.h"
-#include "kantmenuitem.h"
+#include <kstdaction.h>
+#include <qwidgetstack.h>
+#include <qlayout.h>
+#include <kdiroperator.h>
+#include <kfiledialog.h>
+#include <kapp.h>
+#include <kdockwidget.h>
+#include <kuniqueapp.h>
+#include <qsplitter.h>
+#include <kiconloader.h>
+#include <kstddirs.h>
+#include <kaction.h>
+#include <klocale.h>
+#include <kcmdlineargs.h>
+#include <kstdaction.h>
+#include <qvbox.h>
+#include <qlayout.h>
+#include <qsplitter.h>
+#include <dcopclient.h>
+#include <klistbox.h>
+#include <kedittoolbar.h>
+#include <kglobal.h>
+#include <kglobalaccel.h>
+#include <kglobalsettings.h>
+#include <kurldrag.h>
 
 #define POP_(x) kdDebug() << #x " = " << flush << x << endl
 

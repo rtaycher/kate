@@ -19,16 +19,9 @@
 #define kant_view_h
 
 #include "../kantmain.h"
-#include "../document/kantdocument.h"
 
 #include "../kwrite/kwview.h"
-#include "../kwrite/kwattribute.h"
-#include "../kwrite/kwdoc.h"
-#include "../kwrite/kwdialog.h"
-#include "../kwrite/highlight.h"
-#include "../kwrite/kwrite_factory.h"
-
-#include <kaction.h>
+#include <qlist.h>
 
 class KantView : public KWrite
 {

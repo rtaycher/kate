@@ -18,6 +18,7 @@
 #include "kantconsole.h"
 #include "kantconsole.moc"
 
+#include <qlayout.h>
 #include <stdlib.h>
 #include <klibloader.h>
 #include <kparts/part.h>

@@ -18,32 +18,8 @@
 #define kant_viewmanager_h__
 
 #include "../kantmain.h"
-#include "../mainwindow/kantmainwindow.h"
-#include "../mainwindow/kantIface.h"
-#include "../sidebar/kantsidebar.h"
-#include "../document/kantdocmanager.h"
-#include "../document/kantdocument.h"
-#include "kantview.h"
-#include "kantviewspace.h"
-#include "../fileselector/kantfileselector.h"
 #include "../pluginmanager/kantpluginiface.h"
-
-#include <qwidgetstack.h>
-#include <qlayout.h>
-#include <kdiroperator.h>
-#include <kfiledialog.h>
-#include <kdockwidget.h>
-#include <kiconloader.h>
-#include <kstddirs.h>
-#include <kaction.h>
-#include <klocale.h>
-#include <kcmdlineargs.h>
-#include <kstdaction.h>
-#include <qvbox.h>
-#include <qlayout.h>
-#include <qsplitter.h>
-#include <dcopclient.h>
-#include <klistbox.h>
+#include "kantview.h"
 #include "kantlistboxitem.h"
 
 class KantVMListBoxItem : public KantListBoxItem
@@ -202,12 +178,8 @@ class KantViewManager : public KantPluginIface
     void statChanged ();
     void viewChanged ();
 
-
   public:  //KantPluginIface
-  virtual KWrite *getActiveView(){return activeView();};    
-
-
-
+  virtual KWrite *getActiveView(){return activeView();};
 };
 
 #endif

@@ -19,9 +19,10 @@
 #define kant_docmanager_h
 
 #include "../kantmain.h"
-#include "kantdocument.h"
 
-class QFileInfo;
+#include <qlist.h>
+#include <qobject.h>
+
 class KantDocManager : public QObject
 {
   Q_OBJECT

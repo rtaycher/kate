@@ -17,66 +17,12 @@
 #ifndef __kant_mainwindow_h__
 #define __kant_mainwindow_h__
 
-//#include "../kantmain.h"
+#include "../kantmain.h"
 #include "kantIface.h"
-//#include "../sidebar/kantsidebar.h"
-//#include "../document/kantdocmanager.h"
-//#include "../document/kantdocument.h"
-//#include "../view/kantview.h"
-//#include "../view/kantviewspace.h"
-//#include "../view/kantviewmanager.h"
-//#include "../project/kantprojectmanager.h"
-//#include "../console/kantconsole.h"
-//#include "../pluginmanager/kantpluginmanager.h"
 
-//#include <qwidgetstack.h>
-//#include <qlayout.h>
-//#include <kdiroperator.h>
-//#include <kfiledialog.h>
-//#include <kapp.h>
 #include <kdockwidget.h>
-//#include <kuniqueapp.h>
-//#include <qsplitter.h>
-//#include <kiconloader.h>
-//#include <kstddirs.h>
-//#include <kaction.h>
-//#include <klocale.h>
-//#include <kcmdlineargs.h>
-//#include <kstdaction.h>
-//#include <qvbox.h>
-//#include <qlayout.h>
-//#include <qsplitter.h>
-//#include <dcopclient.h>
-//#include <klistbox.h>
-//#include <kedittoolbar.h>
-//#include <kglobal.h>
-//#include <kglobalaccel.h>
-//#include <kglobalsettings.h>
-//#include <kurldrag.h>
-
 #include <kparts/part.h>
 #include <kxmlgui.h>
-
-class KAction;
-class KActionMenu;
-class KantApp;
-class KantConfigDlg;
-class KantConsole;
-class KantDocManager;
-class KantPluginManager;
-class KantProjectManager;
-class KantSidebar;
-class KantViewManager;
-class KEditToolbar;
-class KProcess;
-class KRecentFilesAction;
-class KSelectAction;
-class KShellProcess;
-class KToggleAction;
-class KURL;
-
-//namespace KParts
-//{
 
 class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtual public KParts::PartBase
 {
@@ -250,7 +196,5 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
   protected:
      bool eventFilter (QObject* o, QEvent* e);
 };
-
-//};
 
 #endif

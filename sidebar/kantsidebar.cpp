@@ -14,10 +14,14 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include <kconfig.h>
-#include <kdebug.h>
 #include "kantsidebar.h"
 #include "kantsidebar.moc"
+
+#include <kconfig.h>
+#include <kdebug.h>
+#include <qlayout.h>
+#include <qwidgetstack.h>
+#include <qcombobox.h>
 
 KantSidebar::KantSidebar(QWidget* parent, const char* name)
   : QWidget(parent, name)

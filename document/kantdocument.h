@@ -20,14 +20,8 @@
 
 #include "../kantmain.h"
 
-#include "../kwrite/kwattribute.h"
 #include "../kwrite/kwdoc.h"
-#include "../kwrite/kwdialog.h"
-#include "../kwrite/highlight.h"
-#include "../kwrite/kwrite_factory.h"
 
-class QFileInfo;
-class QDateTime;
 class KantDocument : public KWriteDoc
 {
   Q_OBJECT

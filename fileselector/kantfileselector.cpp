@@ -18,6 +18,8 @@
 #include "kantfileselector.h"
 #include "kantfileselector.moc"
 
+ #include "../mainwindow/kantmainwindow.h"
+
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qhbox.h>

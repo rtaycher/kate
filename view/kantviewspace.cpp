@@ -19,7 +19,12 @@
 #include "kantviewspace.moc"
 
 #include "../mainwindow/kantmainwindow.h"
+#include "../document/kantdocument.h"
+
 #include <kiconloader.h>
+#include <klocale.h>
+#include <kstatusbar.h>
+#include <qwidgetstack.h>
 
 KantViewSpace::KantViewSpace(QWidget* parent, const char* name)
   : QVBox(parent, name)

@@ -15,15 +15,20 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "kantdocument.h"
+#include "kantdocument.moc"
+
+#include "../kwrite/kwattribute.h"
+#include "../kwrite/kwdialog.h"
+#include "../kwrite/highlight.h"
+#include "../kwrite/kwrite_factory.h"
+
 #include <qfileinfo.h>
 #include <qdatetime.h>
 
 #include <kmessagebox.h>
 #include <klocale.h>
 #include <kconfig.h>
-
-#include "kantdocument.h"
-#include "kantdocument.moc"
 
 KantDocument::KantDocument (long docID, QFileInfo* fi)
    : KWriteDoc (HlManager::self (), QString::null)

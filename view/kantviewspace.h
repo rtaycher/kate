@@ -21,10 +21,9 @@
 #include "../kantmain.h"
 #include "kantview.h"
 
-#include <klocale.h>
+#include <qlist.h>
+#include <qwidget.h>
 #include <qvbox.h>
-#include <kstatusbar.h>
-#include <qwidgetstack.h>
 
 class KantVSStatusBar : public QWidget
 {

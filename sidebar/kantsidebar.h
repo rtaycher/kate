@@ -19,11 +19,7 @@
 
 #include "../kantmain.h"
 
-#include <qlayout.h>
-#include <qwidgetstack.h>
-#include <qcombobox.h>
-
-class KConfig;
+#include <qwidget.h>
 
 class KantSidebar : public QWidget
 {
@@ -41,8 +37,6 @@ class KantSidebar : public QWidget
   private:
     QWidgetStack* stack;
     QComboBox* cmb;
-    // TODO: add save/readConfig methods
-    // should remember which widget is visible and restore.
 };
 
 #endif

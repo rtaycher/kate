@@ -20,7 +20,6 @@
 #include "../kantmain.h"
 
 #include <qwidget.h>
-#include <qlayout.h>
 
 class KantConsole : public QWidget
 {

@@ -18,11 +18,10 @@
 #ifndef kant_projectmanager_h
 #define kant_projectmanager_h
 
-#include <kurl.h>
-
 #include "../kantmain.h"
-#include "../document/kantdocmanager.h"
-#include "../view/kantviewmanager.h"
+
+#include <qobject.h>
+#include <kurl.h>
 
 class KantProjectManager : public QObject
 {
