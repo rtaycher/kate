@@ -32,14 +32,12 @@
 #include <qtextcodec.h>     
      
 #include "katevmallocator.h"     
-     
-//#include <katebuffer.moc>     
-     
-#include <assert.h>     
-#include <kdebug.h>     
-#define LOADED_BLOCKS_MAX	10     
-#define DIRTY_BLOCKS_MAX        1     
-#define AVG_BLOCK_SIZE		8192     
+
+#include <assert.h>
+#include <kdebug.h>
+#define LOADED_BLOCKS_MAX	10
+#define DIRTY_BLOCKS_MAX        1
+#define AVG_BLOCK_SIZE		8192
      
 /**     
  * Create an empty buffer.     

@@ -120,8 +120,8 @@ class KateViewManager : public Kate::ViewManager
     bool getShowFullPath() { return showFullPath; }
     void setUseOpaqueResize( bool enable );
 
-    void activateView ( uint docID );
-    void activateView ( int docID ) { activateView((uint) docID); };
+    void activateView ( uint documentNumber );
+    void activateView ( int documentNumber ) { activateView((uint) documentNumber); };
 
     void slotDocumentCloseAll ();
     void slotDocumentSaveAll();

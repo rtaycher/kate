@@ -59,16 +59,16 @@ KateFileList::~KateFileList ()
 
 void KateFileList::slotDocumentCreated (KateDocument *doc)
 {
-  insertItem (new KateFileListItem (doc->docID(), SmallIcon("null"), doc->docName()) );
+  insertItem (new KateFileListItem (doc->documentNumber(), SmallIcon("null"), doc->docName()) );
   connect(doc,SIGNAL(modStateChanged(KateDocument *)),this,SLOT(slotModChanged(KateDocument *)));
   connect(doc,SIGNAL(nameChanged(KateDocument *)),this,SLOT(slotNameChanged(KateDocument *)));
 }
 
-void KateFileList::slotDocumentDeleted (uint docID)
+void KateFileList::slotDocumentDeleted (uint documentNumber)
 {
   for (uint i = 0; i < count(); i++)
   {
-    if (((KateFileListItem *) item (i)) ->docID() == docID)
+    if (((KateFileListItem *) item (i)) ->documentNumber() == documentNumber)
     {
       if (count() > 1)
         removeItem( i );
@@ -80,7 +80,7 @@ void KateFileList::slotDocumentDeleted (uint docID)
 
 void KateFileList::slotActivateView( QListBoxItem *item )
 {
-  viewManager->activateView( ((KateFileListItem *)item)->docID() );
+  viewManager->activateView( ((KateFileListItem *)item)->documentNumber() );
 }
 
 void KateFileList::slotModChanged (KateDocument *doc)
@@ -93,7 +93,7 @@ void KateFileList::slotModChanged (KateDocument *doc)
   {
     for (i = 0; i < count(); i++)
     {
-      if (((KateFileListItem *) item (i)) ->docID() == doc->docID())
+      if (((KateFileListItem *) item (i)) ->documentNumber() == doc->documentNumber())
       {
         ((KateFileListItem *)item(i))->setPixmap(SmallIcon("modified"));
         ((KateFileListItem *)item(i))->setBold(true);
@@ -107,7 +107,7 @@ void KateFileList::slotModChanged (KateDocument *doc)
   {
     for (i = 0; i < count(); i++)
     {
-      if (((KateFileListItem *) item (i)) ->docID() == doc->docID())
+      if (((KateFileListItem *) item (i)) ->documentNumber() == doc->documentNumber())
       {
         ((KateFileListItem *)item(i))->setPixmap(SmallIcon("null"));
         ((KateFileListItem *)item(i))->setBold(false);
@@ -125,7 +125,7 @@ void KateFileList::slotNameChanged (KateDocument *doc)
 
   for (uint i = 0; i < count(); i++)
   {
-    if (((KateFileListItem *) item (i)) ->docID() == doc->docID())
+    if (((KateFileListItem *) item (i)) ->documentNumber() == doc->documentNumber())
     {
       ((KateFileListItem *)item(i))->setText(doc->docName());
       triggerUpdate(false);
@@ -142,7 +142,7 @@ void KateFileList::slotViewChanged ()
 
   for (uint i = 0; i < count(); i++)
   {
-    if (((KateFileListItem *) item (i)) ->docID() == ((KateDocument *)view->doc())->docID())
+    if (((KateFileListItem *) item (i)) ->documentNumber() == ((KateDocument *)view->doc())->documentNumber())
     {
       setCurrentItem (i);
       if ( !isSelected( item(i) ) )
@@ -167,15 +167,15 @@ void KateFileList::tip( const QPoint &p, QRect &r, QString &str )
   r = itemRect( i );
 
   if( i != NULL && r.isValid() )
-    str = docManager->docWithID(i->docID())->url().prettyURL();
+    str = docManager->docWithID(i->documentNumber())->url().prettyURL();
   else
     str = "";
 }
 
-KateFileListItem::KateFileListItem( uint docID, const QPixmap &pix, const QString& text): QListBoxItem()
+KateFileListItem::KateFileListItem( uint documentNumber, const QPixmap &pix, const QString& text): QListBoxItem()
 {
   _bold=false;
-  myDocID = docID;
+  myDocID = documentNumber;
   setPixmap(pix);
   setText( text );
 }
@@ -184,7 +184,7 @@ KateFileListItem::~KateFileListItem()
 {
 }
 
-uint KateFileListItem::docID ()
+uint KateFileListItem::documentNumber ()
 {
   return myDocID;
 }

@@ -119,7 +119,7 @@ bool KateViewManager::createView ( bool newDoc, KURL url, KateView *origView, Ka
     }
     else
     {
-      view->doc()->setDocName (i18n("Untitled %1").arg(doc->docID()));
+      view->doc()->setDocName (i18n("Untitled %1").arg(doc->documentNumber()));
     }
   }
   else
@@ -264,9 +264,9 @@ void KateViewManager::activateView ( KateView *view )
   }
 }
 
-void KateViewManager::activateView( uint docID )
+void KateViewManager::activateView( uint documentNumber )
 {
-  if ( activeViewSpace()->showView(docID) ) {
+  if ( activeViewSpace()->showView(documentNumber) ) {
     activateView( activeViewSpace()->currentView() );
   }
   else
@@ -274,14 +274,14 @@ void KateViewManager::activateView( uint docID )
     QPtrListIterator<KateView> it(viewList);
     for ( ;it.current(); ++it)
     {
-      if ( it.current()->doc()->docID() == docID  )
+      if ( it.current()->doc()->documentNumber() == documentNumber  )
       {
         createView( false, KURL(), it.current() );
         return;
       }
     }
 
-    createView (false, KURL(), 0L, docManager->docWithID(docID));
+    createView (false, KURL(), 0L, docManager->docWithID(documentNumber));
   }
 }
 
@@ -336,14 +336,14 @@ bool KateViewManager::closeDocWithAllViews ( KateView *view )
 
   KateDocument *doc = view->doc();
   QPtrList<KateView> closeList;
-  uint docID = view->doc()->docID();
+  uint documentNumber = view->doc()->documentNumber();
 
   for (uint i=0; i < ((KateApp *)kapp)->mainWindowsCount (); i++ )
   {
     for (uint z=0 ; z < ((KateApp *)kapp)->mainWindows.at(i)->viewManager->viewList.count(); z++)
     {
       KateView* current = ((KateApp *)kapp)->mainWindows.at(i)->viewManager->viewList.at(z);
-      if ( current->doc()->docID() == docID )
+      if ( current->doc()->documentNumber() == documentNumber )
       {
         closeList.append (current);
       }
@@ -411,7 +411,7 @@ void KateViewManager::slotWindowNext()
   if (id < 0)
     id =  docManager->docCount () - 1;
 
-  activateView (docManager->nthDoc(id)->docID());
+  activateView (docManager->nthDoc(id)->documentNumber());
 }
 
 void KateViewManager::slotWindowPrev()
@@ -421,7 +421,7 @@ void KateViewManager::slotWindowPrev()
   if (id >= docManager->docCount () )
     id = 0;
 
-  activateView (docManager->nthDoc(id)->docID());
+  activateView (docManager->nthDoc(id)->documentNumber());
 }
 
 void KateViewManager::slotDocumentNew ()
@@ -529,7 +529,7 @@ void KateViewManager::slotDocumentCloseAll ()
   bool done = false;
   while (closeList.count() > 0)
   {
-    activateView (closeList.at(0)->docID());
+    activateView (closeList.at(0)->documentNumber());
     done = closeDocWithAllViews (activeView());
 
     if (!done) break;
@@ -964,9 +964,9 @@ void KateViewManager::saveAllDocsAtCloseDown()
 
   while ( closeList.count() > 0 )
   {
-    activateView (closeList.at(0)->docID());
+    activateView (closeList.at(0)->documentNumber());
     v = activeView();
-    id = closeList.at(0)->docID();
+    id = closeList.at(0)->documentNumber();
 
     if ( !v->doc()->url().isEmpty() )
     {
@@ -1174,9 +1174,9 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
          else { // if the group has been deleted, we can find a document
            kdDebug(13030)<<"document allready open, creating extra view"<<endl;
            // ahem, tjeck if this document actually exists.
-           int docID = docManager->findDoc( KURL(data[0]) );
-           if (docID >= 0)
-             createView( false, KURL(), 0L, docManager->nthDoc( docID ) );
+           int documentNumber = docManager->findDoc( KURL(data[0]) );
+           if (documentNumber >= 0)
+             createView( false, KURL(), 0L, docManager->nthDoc( documentNumber ) );
          }
          // cursor pos
          KateView* v = activeView();

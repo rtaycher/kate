@@ -490,7 +490,6 @@ class KateDocument : public Kate::Document
       otherwise [default] the user is asked what to do. */
     void isModOnHD(bool forceReload=false);
 
-    uint docID () {return myDocID;};
     QString docName () {return myDocName;};
 
     void setDocName (QString docName);
@@ -664,7 +663,6 @@ class KateDocument : public Kate::Document
     /** updates mTime to reflect file on fs.
      called from constructor and from saveFile. */
     void setMTime();
-    uint myDocID;
     class QFileInfo* fileInfo;
     class QDateTime mTime;
     QString myDocName;
@@ -677,7 +675,6 @@ class KateDocument : public Kate::Document
 
     static QStringList searchForList;
     static QStringList replaceWithList;
-    static uint uniqueID;
 
   // highlight stuff
   private:

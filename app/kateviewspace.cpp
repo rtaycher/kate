@@ -96,13 +96,13 @@ bool KateViewSpace::showView(KateView* v)
    return false;
 }
 
-bool KateViewSpace::showView(uint docID)
+bool KateViewSpace::showView(uint documentNumber)
 {
   QPtrListIterator<KateView> it (mViewList);
 
   it.toLast();
   for( ; it.current(); --it ) {
-    if (((KateDocument*)it.current()->doc())->docID() == docID) {
+    if (((KateDocument*)it.current()->doc())->documentNumber() == documentNumber) {
       KateView* kv = it.current();
       mViewList.removeRef( kv );
       mViewList.append( kv );

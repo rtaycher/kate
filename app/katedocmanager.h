@@ -47,7 +47,7 @@ class KateDocManager : public Kate::DocManager
     KateDocument *docWithID (uint id);
 
     int findDoc (KateDocument *doc);
-    /** Returns the docID of the doc with url URL or -1 if no such doc is found */
+    /** Returns the documentNumber of the doc with url URL or -1 if no such doc is found */
     int findDoc (KURL url);
     bool isOpen(KURL url);
 
@@ -61,7 +61,7 @@ class KateDocManager : public Kate::DocManager
 
   signals:
     void documentCreated (KateDocument *doc);
-    void documentDeleted (uint docID);
+    void documentDeleted (uint documentNumber);
 
   public:
     Kate::Document *getNthDoc (uint n) { return (Kate::Document *)nthDoc (n); };

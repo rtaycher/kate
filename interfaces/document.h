@@ -73,10 +73,6 @@ class Document : public KTextEditor::Document, public KTextEditor::EditInterface
       otherwise [default] the user is asked what to do. */
     virtual void isModOnHD(bool ) { ; };
 
-    /** Returns the document ID.
-    */
-    virtual uint docID () { return 0L; };
-
     /** Returns the document name.
     */
     virtual QString docName () { return 0L; };

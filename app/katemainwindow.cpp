@@ -488,15 +488,15 @@ void KateMainWindow::slotCurrentDocChanged()
     if ( (!docManager->nthDoc(z)->url().isEmpty()) && (docManager->nthDoc(z)->url().filename() != 0) )
       entry=QString("&%1 ").arg(i)+docManager->nthDoc(z)->url().filename();
     else
-      entry=QString("&%1 ").arg(i)+i18n("Untitled %1").arg(docManager->nthDoc(z)->docID());
+      entry=QString("&%1 ").arg(i)+i18n("Untitled %1").arg(docManager->nthDoc(z)->documentNumber());
 
     if (docManager->nthDoc(z)->isModified())
       entry.append (i18n(" - Modified"));
 
-    documentMenu->insertItem ( entry, viewManager, SLOT (activateView (int)), 0,  docManager->nthDoc(z)->docID());
+    documentMenu->insertItem ( entry, viewManager, SLOT (activateView (int)), 0,  docManager->nthDoc(z)->documentNumber());
 
     if (viewManager->activeView())
-      documentMenu->setItemChecked( docManager->nthDoc(z)->docID(), ((KateDocument *)viewManager->activeView()->doc())->docID() == docManager->nthDoc(z)->docID() );
+      documentMenu->setItemChecked( docManager->nthDoc(z)->documentNumber(), ((KateDocument *)viewManager->activeView()->doc())->documentNumber() == docManager->nthDoc(z)->documentNumber() );
 
     z++;
     i++;

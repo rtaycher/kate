@@ -40,7 +40,7 @@ KateDocument *KateDocManager::createDoc ()
 
 void KateDocManager::deleteDoc (KateDocument *doc)
 {
-  uint id = doc->docID();
+  uint id = doc->documentNumber();
 
   if (docList.find(doc) > -1)
     docList.remove (doc);
@@ -74,7 +74,7 @@ KateDocument *KateDocManager::docWithID (uint id)
 
   for (; it.current(); ++it)
   {
-    if ( it.current()->docID()  == id )
+    if ( it.current()->documentNumber()  == id )
       return it.current();
   }
 
@@ -98,7 +98,7 @@ int KateDocManager::findDoc( KURL url )
   for (; it.current(); ++it)
   {
     if ( it.current()->url() == url)
-      return it.current()->docID();
+      return it.current()->documentNumber();
   }
   return -1;
 }

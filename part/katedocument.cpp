@@ -21,64 +21,21 @@
 #include "katefactory.h"
 #include "kateviewdialog.h"
 #include "katedialogs.h"
+#include "katebuffer.h"
+#include "katetextline.h"
+#include "katecmd.h"
 
 #include <qfileinfo.h>
-#include <kmessagebox.h>
-#include <klocale.h>
-#include <kconfig.h>
-#include <qstring.h>
-
-#include <sys/time.h>
-#include <unistd.h>
-
-#include <stdio.h>
-
-#include <kurldrag.h>
+#include <qfile.h>
 #include <qfocusdata.h>
-#include <kdebug.h>
-#include <kprinter.h>
-#include <kapp.h>
-#include <kiconloader.h>
-#include <qscrollbar.h>
-#include <qiodevice.h>
-#include <qclipboard.h>
-#include <qpopupmenu.h>
-#include <kpopupmenu.h>
-#include <qkeycode.h>
-#include <qintdict.h>
-#include <klineeditdlg.h>
-#include <qdropsite.h>
-#include <qdragobject.h>
-#include <kconfig.h>
-#include <ksconfig.h>
 #include <qfont.h>
 #include <qpainter.h>
 #include <qpixmap.h>
-#include <qfileinfo.h>
-#include <qfile.h>
 #include <qevent.h>
-#include <qdir.h>
-#include <qvbox.h>
-#include <qprintdialog.h>
 #include <qpaintdevicemetrics.h>
-#include <qbuffer.h>
-
-#include <qstyle.h>
-#include <kcursor.h>
-#include <klocale.h>
-#include <kglobal.h>
-#include <kcharsets.h>
-#include <kfiledialog.h>
-#include <kmessagebox.h>
-#include <kstringhandler.h>
-#include <kaction.h>
-#include <kstdaction.h>
-#include <kparts/event.h>
-#include <kxmlguifactory.h>
-#include <dcopclient.h>
+#include <qiodevice.h>
+#include <qclipboard.h>
 #include <qregexp.h>
-#include <kwin.h>
-#include <kdialogbase.h>
 #include <qtimer.h>
 #include <qobject.h>
 #include <qapplication.h>
@@ -87,26 +44,40 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtextcodec.h>
-#include <kglobal.h>     
-     
-#include <kcharsets.h>     
-#include <kdebug.h>     
-#include <kinstance.h>     
-     
-#include <kglobalsettings.h>     
-#include <kaction.h>     
-#include <kstdaction.h>     
-#include <qptrstack.h>     
-     
-#include "katebuffer.h"     
-#include "katetextline.h"     
+#include <qptrstack.h>
 
-#include "katecmd.h"
-     
+#include <kmessagebox.h>
+#include <klocale.h>
+#include <kconfig.h>
+#include <kglobal.h>
+#include <kurldrag.h>
+#include <kprinter.h>
+#include <kapp.h>
+#include <kpopupmenu.h>
+#include <klineeditdlg.h>
+#include <kconfig.h>
+#include <ksconfig.h>
+#include <kcursor.h>
+#include <kcharsets.h>
+#include <kfiledialog.h>
+#include <kmessagebox.h>
+#include <kstringhandler.h>
+#include <kaction.h>
+#include <kstdaction.h>
+#include <kparts/event.h>
+#include <kiconloader.h>
+#include <kxmlguifactory.h>
+#include <dcopclient.h>
+#include <kwin.h>
+#include <kdialogbase.h>
+#include <kdebug.h>
+#include <kinstance.h>
+#include <kglobalsettings.h>
+
 class KateUndo     
 {     
   public:     
-    KateUndo (KateDocument *doc, uint type, uint line, uint col, uint len,  QString text);     
+    KateUndo (KateDocument *doc, uint type, uint line, uint col, uint len,  QString text);
     ~KateUndo ();     
      
     void undo ();     
@@ -149,9 +120,7 @@ class KateUndoGroup
      
 QStringList KateDocument::searchForList = QStringList();     
 QStringList KateDocument::replaceWithList = QStringList();     
-     
-uint KateDocument::uniqueID = 0;     
-     
+
 KateUndo::KateUndo (KateDocument *doc, uint type, uint line, uint col, uint len, QString text)     
 {     
   this->myDoc = doc;     
@@ -192,7 +161,7 @@ void KateUndo::undo ()
   {
     myDoc->internalInsertLine (line, text);     
   }     
-}     
+}
      
 void KateUndo::redo ()     
 {     
@@ -235,7 +204,7 @@ void KateUndoGroup::undo ()
 {
   if (items.count() == 0)
     return;     
-     
+
   for (int pos=(int)items.count()-1; pos >= 0; pos--)
   {
     items.at(pos)->undo();
@@ -273,21 +242,21 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   PreHighlightedTill=0;     
   RequestPreHighlightTill=0;     
   setInstance( KateFactory::instance() );     
-     
-  currentUndo = 0L;     
-  pseudoModal = 0L;     
+
+  currentUndo = 0L;
+  pseudoModal = 0L;
   blockSelect = false;
 
-  myAttribs = 0L;     
-  myAttribsLen = 0;     
-     
-  m_bSingleViewMode=bSingleViewMode;     
-  m_bBrowserView = bBrowserView;    
-  
+  myAttribs = 0L;
+  myAttribsLen = 0;
+
+  m_bSingleViewMode=bSingleViewMode;
+  m_bBrowserView = bBrowserView;
+
   myMarks.setAutoDelete (true);
-  
+
   printer = new KPrinter();
-  
+
   selectStartLine = -1;
   selectStartCol = -1;
   selectEndLine = -1;
@@ -296,43 +265,40 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   selectAnchorCol = -1;
 
   // some defaults
-  _configFlags = KateDocument::cfAutoIndent | KateDocument::cfBackspaceIndents     
-    | KateDocument::cfTabIndents | KateDocument::cfKeepIndentProfile     
-    | KateDocument::cfRemoveSpaces     
+  _configFlags = KateDocument::cfAutoIndent | KateDocument::cfBackspaceIndents
+    | KateDocument::cfTabIndents | KateDocument::cfKeepIndentProfile
+    | KateDocument::cfRemoveSpaces
     | KateDocument::cfDelOnInput | KateDocument::cfMouseAutoCopy | KateDocument::cfWrapCursor
-    | KateDocument::cfShowTabs | KateDocument::cfSmartHome;     
-     
-  _searchFlags = 0;     
-  
+    | KateDocument::cfShowTabs | KateDocument::cfSmartHome;
+
+  _searchFlags = 0;
+
   //KSpell initial values
   kspell.kspell = 0;
   kspell.ksc = new KSpellConfig; //default KSpellConfig to start
   kspell.kspellon = FALSE;
-     
-  m_url = KURL();     
-     
-  myEncoding = QString::fromLatin1(QTextCodec::codecForLocale()->name());     
-  maxLength = -1;     
 
-  setFont (KGlobalSettings::fixedFont());     
-     
-  myDocID = uniqueID;     
-  uniqueID++;     
-     
-  myDocName = QString ("");     
-  fileInfo = new QFileInfo ();     
-     
+  m_url = KURL();
+
+  myEncoding = QString::fromLatin1(QTextCodec::codecForLocale()->name());
+  maxLength = -1;
+
+  setFont (KGlobalSettings::fixedFont());
+
+  myDocName = QString ("");
+  fileInfo = new QFileInfo ();
+
   myCmd = new KateCmd (this);
-     
-  connect(this,SIGNAL(modifiedChanged ()),this,SLOT(slotModChanged ()));     
-     
-  buffer = new KateBuffer;     
-  connect(buffer, SIGNAL(linesChanged(int)), this, SLOT(slotBufferChanged()));     
+
+  connect(this,SIGNAL(modifiedChanged ()),this,SLOT(slotModChanged ()));
+
+  buffer = new KateBuffer;
+  connect(buffer, SIGNAL(linesChanged(int)), this, SLOT(slotBufferChanged()));
   connect(buffer, SIGNAL(needHighlight(uint,uint)),this,SLOT(slotBufferHighlight(uint,uint)));
 
   colors[0] = KGlobalSettings::baseColor();
-  colors[1] = KGlobalSettings::highlightColor();     
-     
+  colors[1] = KGlobalSettings::highlightColor();
+
   m_highlight = 0L;     
   tabChars = 8;     
      
@@ -817,11 +783,13 @@ bool KateDocument::internalWrapLine ( uint line, uint col )
     bool b = false;
 
     for (uint z=0; z<myMarks.count(); z++)
+    {
       if (myMarks.at(z)->line > line+1)
       {
         myMarks.at(z)->line = myMarks.at(z)->line+1;
         b = true;
       }
+    }
 
     if (b)
       emit marksChanged ();
@@ -875,6 +843,7 @@ bool KateDocument::internalUnWrapLine ( uint line, uint col)
     bool b = false;
 
     for (uint z=0; z<myMarks.count(); z++)
+    {
       if (myMarks.at(z)->line > line)
       {
         if (myMarks.at(z)->line == line+1)
@@ -883,6 +852,7 @@ bool KateDocument::internalUnWrapLine ( uint line, uint col)
           myMarks.at(z)->line = myMarks.at(z)->line-1;
         b = true;
       }
+    }
 
     if (b)
       emit marksChanged ();
@@ -938,11 +908,13 @@ bool KateDocument::internalInsertLine ( uint line, const QString &s )
     bool b = false;
 
     for (uint z=0; z<myMarks.count(); z++)
-      if (myMarks.at(z)->line >= line)
+    {
+       if (myMarks.at(z)->line >= line)
       {
         myMarks.at(z)->line = myMarks.at(z)->line+1;
         b = true;
       }
+    }
 
     if (b)
       emit marksChanged ();
@@ -985,6 +957,7 @@ bool KateDocument::internalRemoveLine ( uint line )
     bool b = false;
 
     for (uint z=0; z<myMarks.count(); z++)
+    {
       if (myMarks.at(z)->line >= line)
       {
         if (myMarks.at(z)->line == line)
@@ -993,6 +966,7 @@ bool KateDocument::internalRemoveLine ( uint line )
           myMarks.at(z)->line = myMarks.at(z)->line-1;
         b = true;
       }
+    }
 
     if (b)
       emit marksChanged ();
@@ -1861,7 +1835,7 @@ bool KateDocument::printDialog ()
      uint lineCount = 0;
      while (  lineCount <= lastLine()  )
      {
-        if (y+fontHeight >= pdm.height() )
+        if (y+fontHeight >= (uint)pdm.height() )
        {
          printer->newPage();
          y=0;
