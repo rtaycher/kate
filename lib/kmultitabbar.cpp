@@ -2,7 +2,7 @@
                           kmultitabbar.cpp -  description
                              -------------------
     begin                :  2001
-    copyright            : (C) 2001,2002 by Joseph Wenninger <jowenn@kde.org>
+    copyright            : (C) 2001,2002,2003 by Joseph Wenninger <jowenn@kde.org>
  ***************************************************************************/
 
 /***************************************************************************
@@ -263,21 +263,21 @@ void KMultiTabBarTab::updateState()
 		}
 
 		if ((position==KMultiTabBar::Right || position==KMultiTabBar::Left)) {
+			setFixedWidth(24);
 			if ((m_style==KMultiTabBar::KDEV3) || (isOn())) {
 				setFixedHeight(QPushButton::sizeHint().width());
-			} else setFixedHeight(24);
-			setFixedWidth(24);
+			} else setFixedHeight(36);
 		} else {
 			setFixedHeight(24);
 			if ((m_style==KMultiTabBar::KDEV3) || (isOn())) {
 				setFixedWidth(QPushButton::sizeHint().width());
-			} else setFixedWidth(24);
+			} else setFixedWidth(36);
 		}
 	} else {
                 if ((!isOn()) || (!m_showActiveTabText))
                 {
-                        setFixedHeight(24);
-                        setFixedWidth(24);
+	                setFixedWidth(24);
+	                setFixedHeight(24);
                         return;
                 }
                 if ((position==KMultiTabBar::Right || position==KMultiTabBar::Left))
@@ -317,7 +317,7 @@ void KMultiTabBarTab::drawButtonStyled(QPainter *paint) {
 
 	QSize sh;
 	if ((m_style==KMultiTabBar::KDEV3) || (isOn())) sh=QPushButton::sizeHint();	
-	else sh=QSize(24,24);
+	else sh=QSize(36,24);
 	
 	QPixmap pixmap( sh.width(),24); ///,sh.height());
 	pixmap.fill(eraseColor());
