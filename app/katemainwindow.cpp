@@ -84,7 +84,7 @@
 uint KateMainWindow::uniqueID = 1;
 KMdi::MdiMode KateMainWindow::defaultMode=KMdi::UndefinedMode;
 
-KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager *_m_pluginManager, 
+KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager *_m_pluginManager,
 	KateProjectManager *projectMan,KMdi::MdiMode guiMode) :
 	KMdiMainFrm (0,(QString("__KateMainWindow#%1").arg(uniqueID)).latin1(),guiMode)
 {
@@ -152,10 +152,11 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
     console->loadConsoleIfNeeded();
 
   // call it as last thing, must be sure everything is already set up ;)
-  setAutoSaveSettings( QString::fromLatin1("MainWindow"), true );
+  setAutoSaveSettings ("MainWindow Settings");
 
-//  switchToIDEAlMode();
-
+  // init with more usefull size, stolen from konq :)
+  if ( !initialGeometrySet() && !config->hasGroup("MainWindow Settings"))
+      resize( 700, 480 );
 }
 
 KateMainWindow::~KateMainWindow()
@@ -400,7 +401,7 @@ void KateMainWindow::readOptions(KConfig *config)
   filelist->setSortType(config->readNumEntry("Sort Type of File List", KateFileList::sortByID));
 
   recentProjects->loadEntries (config, "Recent Projects");
-  
+
   if (config->hasGroup("MainWindow0-Docking"))
 	  readDockConfig(config,"MainWindow0-Docking");
 }
@@ -815,8 +816,8 @@ KDockWidget *KateMainWindow::addToolViewWidget(KDockWidget::DockPosition pos,QWi
 	widget->setIcon(icon);
 	widget->setCaption(caption);
 //	KDockWidget *dw=addToolView(pos,QString("DOCK%1").arg(widget->name()).latin1(),icon,caption);
-        KMdiToolViewAccessor *tmp=createToolWindow(); 
-                 
+        KMdiToolViewAccessor *tmp=createToolWindow();
+
         tmp->setWidgetToWrap (widget);
 	widget->show(); // I'm not sure, if this is a bug in kdockwidget, which I would better fix there
         tmp->show(pos,getMainDockWidget(),20);
