@@ -451,7 +451,8 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     int fontHeight;
     int fontAscent;
 
-    QPtrList<KateView> views;
+    QPtrList<KateView> myViews;
+    QPtrList<KTextEditor::View> _views;
 
     bool newDocGeometry;
 
@@ -499,6 +500,9 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
   public slots:
     /** Reloads the current document from disk if possible */
     void reloadFile();
+
+  public:
+    QPtrList<KTextEditor::View> views () const { return _views; };
 
   private slots:
     void slotModChanged ();
@@ -548,6 +552,7 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
       can use this to change its caption
     */
     void fileNameChanged ();
+    void textChanged ();
 
   public:
     //end of line settings

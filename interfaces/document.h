@@ -29,7 +29,8 @@
 #include <qglobal.h> /* Only for 2.X and 3.X compatibility */
 
 #include <qptrlist.h>
-#include <ktexteditor.h>
+#include <ktexteditor/document.h>
+#include <ktexteditor/view.h>
 
 class KConfig;
 

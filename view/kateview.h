@@ -944,6 +944,9 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
   protected:
     uint myViewID;
     static uint uniqueID;
+
+  public:
+    KTextEditor::Document *document () const { return (KTextEditor::Document *)myDoc; };
 };
 
 class KateBrowserExtension : public KParts::BrowserExtension

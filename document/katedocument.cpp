@@ -284,9 +284,9 @@ KateDocument::~KateDocument()
 
   if ( !m_bSingleViewMode )
   {
-    m_views.setAutoDelete( true );
-    m_views.clear();
-    m_views.setAutoDelete( false );
+    myViews.setAutoDelete( true );
+    myViews.clear();
+    myViews.setAutoDelete( false );
   }
   delete_d(this);
 }
@@ -589,7 +589,7 @@ void KateDocument::setReadOnly(bool m) {
   if (m != readOnly) {
     readOnly = m;
 //    if (readOnly) recordReset();
-    for (view = m_views.first(); view != 0L; view = m_views.next() ) {
+    for (view = myViews.first(); view != 0L; view = myViews.next() ) {
       emit static_cast<KateView *>( view )->newStatus();
     }
   }
@@ -607,7 +607,7 @@ void KateDocument::setNewDoc( bool m )
   {
     newDoc = m;
 ////    if (readOnly) recordReset();
-//    for (view = m_views.first(); view != 0L; view = m_views.next() ) {
+//    for (view = myViews.first(); view != 0L; view = myViews.next() ) {
 //      emit static_cast<KateView *>( view )->newStatus();
 //    }
   }
@@ -622,7 +622,7 @@ void KateDocument::setModified(bool m) {
 
   if (m != modified) {
     modified = m;
-    for (view = m_views.first(); view != 0L; view = m_views.next() ) {
+    for (view = myViews.first(); view != 0L; view = myViews.next() ) {
       emit static_cast<KateView *>( view )->newStatus();
     }
     emit modifiedChanged ();
@@ -742,7 +742,7 @@ void KateDocument::updateFontData() {
   fontAscent = maxAscent;
   m_tabWidth = tabChars*tabWidth;
 
-  for (view = views.first(); view != 0L; view = views.next() ) {
+  for (view = myViews.first(); view != 0L; view = myViews.next() ) {
     view->myViewInternal->drawBuffer->resize(view->width(),fontHeight);
     view->tagAll();
     view->updateCursor();
@@ -755,54 +755,53 @@ void KateDocument::hlChanged() { //slot
 }
 
 KateView* KateDocument::getFirstView() {
-  return views.first();
+  return myViews.first();
 }
 
 KateView* KateDocument::getNextView() {
-  return views.next();
+  return myViews.next();
 }
 
 KateView* KateDocument::getLastView() {
-  return views.last();
+  return myViews.last();
 }
 
 KateView* KateDocument::getPrevView() {
-  return views.prev();
+  return myViews.prev();
 }
 
 KateView* KateDocument::getCurrentView() {
-  return views.current();
+  return myViews.current();
 }
 
 int KateDocument::getViewCount() {
-  return views.count();
+  return myViews.count();
 }
 
 void KateDocument::addView(KTextEditor::View *view) {
-  views.append( static_cast<KateView *>( view ) );
-  KTextEditor::Document::addView( view );
+  myViews.append( static_cast<KateView *>( view ) );
+  _views.append( view );
   connect( static_cast<KateView *>( view ), SIGNAL( destroyed() ), this, SLOT( slotViewDestroyed() ) );
 }
 
 void KateDocument::removeView(KTextEditor::View *view) {
-//  if (undoView == view) recordReset();
   disconnect( static_cast<KateView *>( view ), SIGNAL( destroyed() ), this, SLOT( slotViewDestroyed() ) );
-  views.removeRef( static_cast<KateView *>( view ) );
-  KTextEditor::Document::removeView( view );
+  myViews.removeRef( static_cast<KateView *>( view ) );
+  _views.removeRef( view  );
 }
 
 void KateDocument::slotViewDestroyed()
 {
-  views.removeRef( static_cast<const KateView *>( sender() ) );
+  myViews.removeRef( static_cast<const KateView *>( sender() ) );
 }
 
 bool KateDocument::ownedView(KateView *view) {
   // do we own the given view?
-  return (views.containsRef(view) > 0);
+  return (myViews.containsRef(view) > 0);
 }
 
 bool KateDocument::isLastView(int numViews) {
-  return ((int) views.count() == numViews);
+  return ((int) myViews.count() == numViews);
 }
 
 int KateDocument::textWidth(const TextLine::Ptr &textLine, int cursorX) {
@@ -1228,7 +1227,7 @@ void KateDocument::clear() {
 
   setPseudoModal(0L);
   cursor.x = cursor.y = 0;
-  for (view = views.first(); view != 0L; view = views.next() ) {
+  for (view = myViews.first(); view != 0L; view = myViews.next() ) {
     view->updateCursor(cursor);
     view->tagAll();
   }
@@ -2173,24 +2172,24 @@ void KateDocument::delMarkedText(VConfig &c/*, bool undo*/) {
 void KateDocument::tagLineRange(int line, int x1, int x2) {
   int z;
 
-  for (z = 0; z < (int) views.count(); z++) {
-    views.at(z)->tagLines(line, line, x1, x2);
+  for (z = 0; z < (int) myViews.count(); z++) {
+    myViews.at(z)->tagLines(line, line, x1, x2);
   }
 }
 
 void KateDocument::tagLines(int start, int end) {
   int z;
 
-  for (z = 0; z < (int) views.count(); z++) {
-    views.at(z)->tagLines(start, end, 0, 0xffffff);
+  for (z = 0; z < (int) myViews.count(); z++) {
+    myViews.at(z)->tagLines(start, end, 0, 0xffffff);
   }
 }
 
 void KateDocument::tagAll() {
   int z;
 
-  for (z = 0; z < (int) views.count(); z++) {
-    views.at(z)->tagAll();
+  for (z = 0; z < (int) myViews.count(); z++) {
+    myViews.at(z)->tagAll();
   }
 }
 
@@ -2279,7 +2278,7 @@ void KateDocument::updateViews(KateView *exclude) {
   bool markState = hasMarkedText();
 
   flags = (newDocGeometry) ? KateView::ufDocGeometry : 0;
-  for (view = views.first(); view != 0L; view = views.next() ) {
+  for (view = myViews.first(); view != 0L; view = myViews.next() ) {
     if (view != exclude) view->updateView(flags);
 
     // notify every view about the changed mark state....
@@ -2658,7 +2657,7 @@ void KateDocument::insLine(int line) {
   if (tagEnd >= line) tagEnd++;
 
   newDocGeometry = true;
-  for (view = views.first(); view != 0L; view = views.next() ) {
+  for (view = myViews.first(); view != 0L; view = myViews.next() ) {
     view->insLine(line);
   }
 }
@@ -2672,7 +2671,7 @@ void KateDocument::delLine(int line) {
   if (tagEnd >= line) tagEnd--;
 
   newDocGeometry = true;
-  for (view = views.first(); view != 0L; view = views.next() ) {
+  for (view = myViews.first(); view != 0L; view = myViews.next() ) {
     view->delLine(line);
   }
 }
@@ -2847,7 +2846,7 @@ void KateDocument::newUndo() {
   if (currentUndo > 0) state |= 1;
   if (currentUndo < (int) undoList.count()) state |= 2;
   undoState = state;
-  for (view = m_views.first(); view != 0L; view = m_views.next() ) {
+  for (view = myViews.first(); view != 0L; view = myViews.next() ) {
     emit static_cast<KateView *>( view )->newUndo();
   }
 }
