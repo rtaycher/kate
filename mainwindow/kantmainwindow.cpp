@@ -149,7 +149,7 @@ void KantMainWindow::setupMainWindow ()
 
   mainDock = createDockWidget( "mainDock", 0 );
   mainDock->setGeometry(100, 100, 100, 100);
-  viewManager = new KantViewManager (mainDock, docManager, sidebar);
+  viewManager = new KantViewManager (mainDock, docManager);
   viewManager->setMinimumSize(200,200);
   mainDock->setWidget(viewManager);
   setView( mainDock );

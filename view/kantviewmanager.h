@@ -20,18 +20,6 @@
 #include "../kantmain.h"
 #include "../pluginmanager/kantpluginiface.h"
 #include "kantview.h"
-#include "kantlistboxitem.h"
-
-class KantVMListBoxItem : public KantListBoxItem
-{
-  public:
-    KantVMListBoxItem (const QPixmap &pixmap,  const QString & text=QString::null, long docID=0 );
-    ~KantVMListBoxItem ();
-    long docID ();
-
-  private:
-    long myDocID;
-};
 
 class KantViewManager : public KantPluginIface
 {
@@ -40,7 +28,7 @@ class KantViewManager : public KantPluginIface
   friend class KantMainWindow;
 
   public:
-    KantViewManager (QWidget *parent=0, KantDocManager *docManager=0, KantSidebar *sidebar=0);
+    KantViewManager (QWidget *parent=0, KantDocManager *docManager=0);
     ~KantViewManager ();
 
   protected:
@@ -58,8 +46,6 @@ class KantViewManager : public KantPluginIface
     long myViewID;
 
     KantDocManager *docManager;
-    KantSidebar *sidebar;
-
     QGridLayout *grid;
 
     bool createView ( bool newDoc=true, KURL url=0L, KantView *origView=0L );
@@ -69,9 +55,6 @@ class KantViewManager : public KantPluginIface
     void moveViewtoStack (KantView *view);
 
     void removeViewSpace (KantViewSpace *viewspace);
-
-    void setUnmodified(long docId, const QString &text);
-    void setModified(long docId, const QString &text);
 
     bool showFullPath;
 
@@ -84,15 +67,10 @@ class KantViewManager : public KantPluginIface
 
   private slots:
     void activateView ( KantView *view );
-    void activateView ( QListBoxItem *item );
     void activateSpace ( KantView* v );
     void slotViewChanged();
 
-    void slotSetModified();
-
   public:
-    KListBox *listbox;
-
     void deleteLastView ();
 
     void splitViewSpace( bool isHoriz=true );

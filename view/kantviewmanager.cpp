@@ -20,7 +20,6 @@
 
 #include "../mainwindow/kantmainwindow.h"
 #include "../mainwindow/kantIface.h"
-#include "../sidebar/kantsidebar.h"
 #include "../document/kantdocmanager.h"
 #include "../document/kantdocument.h"
 #include "kantview.h"
@@ -46,7 +45,6 @@
 #include <qvbox.h>
 #include <qlayout.h>
 #include <dcopclient.h>
-#include <klistbox.h>
 #include <qobjectlist.h>
 #include <kdebug.h>
 #include <qstringlist.h>
@@ -54,21 +52,7 @@
 
 #include "kantsplitter.h"
 
-KantVMListBoxItem::KantVMListBoxItem (const QPixmap &pixmap,const QString &text, long docID) : KantListBoxItem (pixmap, text )
-{
-  myDocID = docID;
-}
-
-KantVMListBoxItem::~KantVMListBoxItem ()
-{
-}
-
-long KantVMListBoxItem::docID ()
-{
-  return myDocID;
-}
-
-KantViewManager::KantViewManager (QWidget *parent, KantDocManager *docManager, KantSidebar *sidebar) : KantPluginIface  (parent)
+KantViewManager::KantViewManager (QWidget *parent, KantDocManager *docManager) : KantPluginIface  (parent)
 {
   // no memleaks
   viewList.setAutoDelete(true);
@@ -77,7 +61,6 @@ KantViewManager::KantViewManager (QWidget *parent, KantDocManager *docManager, K
   myViewID = 0;
 
   this->docManager = docManager;
-  this->sidebar = sidebar;
 
   // sizemanagment
   grid = new QGridLayout( this, 1, 1 );
@@ -88,13 +71,6 @@ KantViewManager::KantViewManager (QWidget *parent, KantDocManager *docManager, K
   vs->installEventFilter( this );
   grid->addWidget( vs, 0, 0);
   viewSpaceList.append(vs);
-
-  listbox = new KListBox (sidebar);
-
-  sidebar->addWidget (listbox, i18n("Files"));
-
-  connect(listbox,SIGNAL(highlighted(QListBoxItem *)),this,SLOT(activateView(QListBoxItem *)));
-  connect(listbox,SIGNAL(selected(QListBoxItem *)),this,SLOT(activateView(QListBoxItem *)));
 
   connect( this, SIGNAL(viewChanged()), this, SLOT(slotViewChanged()) );
 }
@@ -133,7 +109,6 @@ bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView )
   // create view
   KantView *view = new KantView (this, doc, (QString("KantViewIface%1").arg(myViewID)).latin1());
   connect(view,SIGNAL(newStatus()),this,SLOT(setWindowCaption()));
-  connect(view,SIGNAL(newStatus()),this,SLOT(slotSetModified()));
   myViewID++;
   viewList.append (view);
 
@@ -187,10 +162,6 @@ bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView )
     ((KantDocument *)view->doc())->setDocName (((KantDocument *)origView->doc())->docName ());
   }
 
-  // if new document insert KantListItem in listbox
-  if (newDoc)
-    listbox->insertItem (new KantVMListBoxItem (SmallIcon("null"),view->caption(), doc->docID()) );
-
   view->installPopup ((QPopupMenu*)((KMainWindow *)topLevelWidget ())->factory()->container("view_popup", (KMainWindow *)topLevelWidget ()) );
   connect(view,SIGNAL(newCurPos()),this,SLOT(statusMsgOther()));
   connect(view,SIGNAL(newStatus()),this,SLOT(statusMsgOther()));
@@ -231,23 +202,9 @@ bool KantViewManager::deleteView (KantView *view, bool force, bool delViewSpace,
   viewspace->removeView (view);
 
   // Remove hole doc
-  KantDocument *dDoc;
+  KantDocument *dDoc = 0L;
   if (removeDoc)
-  {
-    for (uint i = 0; i < listbox->count(); i++)
-    {
-      if (((KantVMListBoxItem *) listbox->item (i)) ->docID() == ((KantDocument *) view->doc())->docID())
-      {
-        // QT BUGFIX - if you remove the last item of a listbox it crashs after the next insert !!!!!
-        if (listbox->count() > 1)
-          listbox->removeItem( i );
-        else
-          listbox->clear();
-      }
-    }
-
     dDoc = (KantDocument *) view->doc();
-  }
 
   // remove view from list and memory !!
   viewList.remove (view);
@@ -352,18 +309,9 @@ void KantViewManager::activateView ( KantView *view )
 
     setWindowCaption();
     statusMsgOther();
-    for (int i = 0; i < listbox->count(); i++)
-    {
-      if ( ((KantVMListBoxItem *) listbox->item (i))->docID() == ((KantDocument *) view->doc())->docID() )
-        listbox->setCurrentItem( i );
-    }
+
     emit viewChanged ();
   }
-}
-
-void KantViewManager::activateView( QListBoxItem *item )
-{
-  activateView( ((KantVMListBoxItem *)item)->docID() );
 }
 
 void KantViewManager::activateView( int docID )
@@ -498,8 +446,6 @@ void KantViewManager::slotWindowNext()
 
   if (id < 0)
     id =  docManager->docCount () - 1;
-
-  listbox->setCurrentItem( id );
 }
 
 void KantViewManager::slotWindowPrev()
@@ -508,8 +454,6 @@ void KantViewManager::slotWindowPrev()
 
   if (id >= docManager->docCount () )
     id = 0;
-
-  listbox->setCurrentItem( id );
 }
 
 void KantViewManager::slotDocumentNew ()
@@ -527,39 +471,6 @@ void KantViewManager::slotDocumentOpen ()
   }
 }
 
-
-void KantViewManager::setUnmodified(long docId, const QString &text)
-{
-  	   for (uint i = 0; i < listbox->count(); i++)
-    	     {
-	       if (((KantVMListBoxItem *) listbox->item (i)) ->docID() == docId)
-		 {
-           	   ((KantVMListBoxItem *)listbox->item(i))->setPixmap(SmallIcon("null"));
-           	   ((KantVMListBoxItem *)listbox->item(i))->setBold(false);
-		   if (!text.isNull()) ((KantVMListBoxItem *)listbox->item(i))->setText(text);
-           	   listbox->triggerUpdate(false);
-		   break;
-		 }
-             }
-
-}
-
-void KantViewManager::setModified(long docId, const QString &text)
-{
-  	   for (uint i = 0; i < listbox->count(); i++)
-    	     {
-	       if (((KantVMListBoxItem *) listbox->item (i)) ->docID() == docId)
-		 {
-           	   ((KantVMListBoxItem *)listbox->item(i))->setPixmap(SmallIcon("modified"));
-           	   ((KantVMListBoxItem *)listbox->item(i))->setBold(true);
-		   if (!text.isNull()) ((KantVMListBoxItem *)listbox->item(i))->setText(text);
-           	   listbox->triggerUpdate(false);
-		   break;
-		 }
-             }
-
-}
-
 void KantViewManager::slotDocumentSave ()
 {
   if (activeView() == 0) return;
@@ -571,7 +482,6 @@ void KantViewManager::slotDocumentSave ()
     if( !current->doc()->url().isEmpty() && current->doc()->isReadWrite() )
 	{
            current->doc()->save();
-	   setUnmodified(((KantDocument *)current->doc())->docID(),QString());
 	}
     else
       slotDocumentSaveAs();
@@ -588,7 +498,6 @@ void KantViewManager::slotDocumentSaveAll ()
       if( !current->doc()->url().isEmpty() && current->doc()->isReadWrite() )
         {
           current->doc()->save();
-          setUnmodified(((KantDocument *)current->doc())->docID(),QString());
         }
       else
         slotDocumentSaveAs();
@@ -611,12 +520,6 @@ void KantViewManager::slotDocumentSaveAs ()
     ((KantDocument *)current->doc())->setDocName (url.filename());
 
     setWindowCaption();
-
-    for (uint i = 0; i < listbox->count(); i++)
-    {
-      if (((KantVMListBoxItem *) listbox->item (i)) ->docID() == ((KantDocument *) current->doc())->docID())
-        setUnmodified(((KantDocument *)current->doc())->docID(),current->caption());
-    }
   }
 }
 
@@ -646,10 +549,6 @@ void KantViewManager::slotDocumentClose ()
     closeList.remove (view);
 
     if (!done) return;
-  }
-
-  if (activeView()) {
-    listbox->setSelected(listbox->currentItem(), true);
   }
 }
 
@@ -1047,18 +946,6 @@ void KantViewManager::setUseOpaqueResize( bool enable )
   useOpaqueResize = enable;
   // TODO: loop through splitters and set this prop
 }
-
-
-void KantViewManager::slotSetModified()
-{
-  if (!activeView()) return;
-
-  if (  ( ((KantDocument *) activeView()->doc())->isModified() ) )
-    setModified(((KantDocument *) activeView()->doc())->docID(),QString());
-  else
-    setUnmodified(((KantDocument *) activeView()->doc())->docID(),QString());
-}
-
 
 void KantViewManager::saveAllDocsAtCloseDown(KConfig* config)
 {
