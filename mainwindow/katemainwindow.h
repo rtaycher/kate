@@ -19,11 +19,10 @@
 
 #include "../main/katemain.h"
 #include "../interfaces/mainwindow.h"
+#include "../interfaces/document.h"
 #include "kateIface.h"
 
 #include <kparts/part.h>
-
-class KateMark;
 
 class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCOPIface, virtual public KParts::PartBase
 {
@@ -127,7 +126,7 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     KAction* windowPrev;
 
     QPopupMenu *bookmarkMenu, *documentMenu;
-    QList<KateMark> list;
+    QList<Kate::Mark> list;
 
     KToggleAction* settingsShowSidebar;
     KToggleAction* settingsShowFullPath;

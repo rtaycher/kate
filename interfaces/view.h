@@ -26,6 +26,7 @@ namespace Kate
 {
 
 class Document;
+class Mark;
 
 class View : public KTextEditor::View
 {
@@ -101,6 +102,25 @@ class View : public KTextEditor::View
     virtual void shiftTop () { ; };
     virtual void bottom () { ; };
     virtual void shiftBottom () { ; };
+
+  public slots:
+    // edit command popup window
+    virtual void slotEditCommand () { ; };
+
+    // icon border enable/disable
+    virtual void setIconBorder (bool) { ; };
+    virtual void toggleIconBorder () { ; };
+
+    // goto mark
+    virtual void gotoMark (Mark *) { ; };
+
+    // toggle current line bookmark or clear all bookmarks
+    virtual void toggleBookmark () { ; };
+    virtual void clearBookmarks () { ; };
+
+  public:
+    // is iconborder visible ?
+    virtual bool iconBorder() { return false; };
 };
 
 };

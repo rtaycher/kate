@@ -311,7 +311,7 @@ bool KateDocument::saveFile()
 
 KTextEditor::View *KateDocument::createView( QWidget *parent, const char *name )
 {
-  return new KateView( this, parent, name, true);
+  return new KateView( this, parent, name);
 }
 
 QString KateDocument::textLine( int line ) const
@@ -545,7 +545,7 @@ void KateDocument::writeSessionConfig(KConfig *config)
   config->writeEntry("URL", m_url.url() ); // ### encoding?? (Simon)
   config->writeEntry("Highlight", m_highlight->name());
   // anders: save bookmarks
-  QList<KateMark> l = marks();
+  QList<Kate::Mark> l = marks();
   QValueList<int> ml;
   for (uint i=0; i < l.count(); i++) {
     if ( l.at(i)->type == 1) // only save bookmarks
@@ -3049,9 +3049,9 @@ void KateDocument::slotModChanged()
   emit modStateChanged (this);
 }
 
-QList<KateMark> KateDocument::marks ()
+QList<Kate::Mark> KateDocument::marks ()
 {
-  QList<KateMark> list;
+  QList<Kate::Mark> list;
   TextLine::Ptr line;
 
   for (int i=0; i < numLines(); i++)
@@ -3059,7 +3059,7 @@ QList<KateMark> KateDocument::marks ()
     line = getTextLine(i);
     if (line->mark() != 0)
     {
-      KateMark *mark=new KateMark;
+      Kate::Mark *mark=new Kate::Mark;
       mark->line = i;
       mark->type = line->mark();
       list.append (mark);

@@ -25,6 +25,13 @@ class KConfig;
 namespace Kate
 {
 
+class Mark
+{
+  public:
+    uint line;
+    uint type;
+};
+
 class Document : public KTextEditor::Document
 {
   Q_OBJECT
@@ -44,6 +51,15 @@ class Document : public KTextEditor::Document
 
     // docID
     virtual uint docID () { return 0L; };
+
+    // marks
+    enum marks
+    {
+    Bookmark = 1,
+    Breakpoint = 2
+    };
+
+    virtual QList<Mark> marks () { QList<Mark> l; return l; };
 };
 
 };

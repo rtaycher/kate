@@ -100,7 +100,7 @@ bool KateViewManager::createView ( bool newDoc, KURL url, KateView *origView, Ka
   }
 
   // create view
-  KateView *view = new KateView (doc, this, 0L, false);
+  KateView *view = new KateView (doc, this, 0L);
   connect(view,SIGNAL(newStatus()),this,SLOT(setWindowCaption()));
   viewList.append (view);
 
@@ -1250,7 +1250,7 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
    config->deleteGroup( group );
 }
 
-void KateViewManager::gotoMark (KateMark *mark)
+void KateViewManager::gotoMark (Kate::Mark *mark)
 {
   if (!activeView()) return;
 

@@ -133,7 +133,7 @@ bool TopLevel::queryExit()
 
 void TopLevel::setupEditWidget(KateDocument *doc)
 {
-  kateView = new KateView(doc, this, 0, false);
+  kateView = new KateView(doc, this, 0);
 
   connect(kateView,SIGNAL(newCurPos()),this,SLOT(newCurPos()));
   connect(kateView,SIGNAL(newStatus()),this,SLOT(newStatus()));
@@ -283,7 +283,6 @@ void TopLevel::newStatus()
   statusBar()->changeItem(kateView->isModified() ? " * " : "",ID_MODIFIED);
 }
 
-
 void TopLevel::statusMsg(const QString &msg)
 {
   statusbarTimer->stop();
@@ -291,11 +290,9 @@ void TopLevel::statusMsg(const QString &msg)
   statusbarTimer->start(10000, true); //single shot
 }
 
-
 void TopLevel::timeout() {
   statusBar()->changeItem("", ID_GENERAL);
 }
-
 
 void TopLevel::newCaption()
 {

@@ -138,12 +138,6 @@ class KateActionGroup {
     int undoType;
 };
 
-struct KateMark
-{
-  uint line;
-  uint type;
-};
-
 /**
   The text document. It contains the textlines, controls the
   document changing operations and does undo/redo. WARNING: do not change
@@ -497,13 +491,7 @@ class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
     void nameChanged (KateDocument *doc);
 
   public:
-    enum marks
-    {
-    Bookmark = 1,
-    Breakpoint = 2
-    };
-
-    QList<KateMark> marks ();
+    QList<Kate::Mark> marks ();
 
   // for the DCOP interface
   public:

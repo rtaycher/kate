@@ -155,7 +155,7 @@ void releaseBuffer(void *user) {
 }
 
 
-KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc, bool HandleOwnDND) : QWidget(view)
+KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc) : QWidget(view)
 {
   waitForPreHighlight=-1;
   myView = view;
@@ -207,7 +207,6 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc, bool Handl
   bm.eXPos = -1;
 
   setAcceptDrops(true);
-  HandleURIDrops = HandleOwnDND;
   dragInfo.state = diNone;
 }
 
@@ -1346,19 +1345,9 @@ void KateViewInternal::dragEnterEvent( QDragEnterEvent *event )
 void KateViewInternal::dropEvent( QDropEvent *event )
 {
   if ( QUriDrag::canDecode(event) ) {
-    QStrList  urls;
 
-    if (! HandleURIDrops) {
-      // the container should handle this one for us...
       emit dropEventPass(event);
-    }
-    else
-    {
-      KURL::List textlist;
-      if (!KURLDrag::decode(event, textlist)) return;
-      KURL::List::Iterator i=textlist.begin();
-      if (myView->canDiscard()) myDoc->openURL(*i);
-    }
+
   } else if ( QTextDrag::canDecode(event) && ! myView->isReadOnly() ) {
 
     QString   text;
@@ -1413,7 +1402,7 @@ void KateViewInternal::dropEvent( QDropEvent *event )
 
 uint KateView::uniqueID = 0;
 
-KateView::KateView(KateDocument *doc, QWidget *parent, const char * name, bool HandleOwnDND) : Kate::View (doc, parent, name), DCOPObject( (QString("KateView%1-%2").arg(doc->docID()).arg(uniqueID)).latin1())
+KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate::View (doc, parent, name), DCOPObject( (QString("KateView%1-%2").arg(doc->docID()).arg(uniqueID)).latin1())
 {
   setInstance( KateFactory::instance() );
 
@@ -1424,7 +1413,7 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name, bool H
   myIconBorder = false;
 
   myDoc = doc;
-  myViewInternal = new KateViewInternal (this,doc,HandleOwnDND);
+  myViewInternal = new KateViewInternal (this,doc);
   myViewInternal->move(2, 2);
   myViewInternal->leftBorder = new KateIconBorder(this, myViewInternal);
   myViewInternal->leftBorder->setGeometry(2, 2, myViewInternal->iconBorderWidth, myViewInternal->iconBorderHeight);
@@ -3118,7 +3107,7 @@ void KateView::toggleIconBorder ()
   setIconBorder (!myIconBorder);
 }
 
-void KateView::gotoMark (KateMark *mark)
+void KateView::gotoMark (Kate::Mark *mark)
 {
   PointStruc cursor;
 
@@ -3146,7 +3135,7 @@ void KateView::toggleBookmark ()
 
 void KateView::clearBookmarks()
 {
-  QList<KateMark> list = myDoc->marks();
+  QList<Kate::Mark> list = myDoc->marks();
   for (int i=0; (uint) i < list.count(); i++)
   {
     if (list.at(i)->type&KateDocument::Bookmark)

@@ -168,10 +168,7 @@ class KateViewInternal : public QWidget {
     void slotPreHighlightUpdate(long line);
 
   public:
-    // a drop-aware container should set HandleOwnURIDrops = false and handle all URI drops
-    // KateViewInternal will otherwise handle URI drops, but is slightly limited
-    // KateViewInternal always handles text drops
-    KateViewInternal(KateView *view, KateDocument *doc, bool HandleOwnURIDrops);
+    KateViewInternal(KateView *view, KateDocument *doc);
     ~KateViewInternal();
 
     virtual void doCursorCommand(VConfig &, int cmdNum);
@@ -280,8 +277,6 @@ class KateViewInternal : public QWidget {
 
     BracketMark bm;
 
-    bool HandleURIDrops;
-
     enum DragState { diNone, diPending, diDragging };
 
     struct _dragInfo {
@@ -309,15 +304,7 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
     friend class KateIconBorder;
 
   public:
-    /**
-      The document can be used by more than one KateView objects.
-      HandleOwnURIDrops should be set to false for a container that can handle URI drops
-      better than KateViewInternal does.
-    */
-    KateView(KateDocument *doc=0L, QWidget *parent = 0L, const char * name = 0, bool HandleOwnURIDrops = true);
-    /**
-      The destructor does not ixdelete the document
-    */
+    KateView(KateDocument *doc=0L, QWidget *parent = 0L, const char * name = 0);
     ~KateView();
 
     virtual void setCursorPosition( int line, int col, bool mark = false );
@@ -953,7 +940,7 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
   private:
     bool active;
     bool myIconBorder;
-    QList<class KateMark> list;
+    QList<Kate::Mark> list;
 
   public slots:
     virtual void setFocus ();
@@ -971,7 +958,7 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
     void slotEditCommand ();
     void setIconBorder (bool enable);
     void toggleIconBorder ();
-    void gotoMark (class KateMark *mark);
+    void gotoMark (Kate::Mark *mark);
     void toggleBookmark ();
     void clearBookmarks ();
 

@@ -20,6 +20,7 @@
 #include "../main/katemain.h"
 #include "../interfaces/viewmanager.h"
 #include "../interfaces/view.h"
+#include "../interfaces/document.h"
 #include "kateview.h"
 
 class KateSplitter;
@@ -192,7 +193,7 @@ class KateViewManager : public Kate::ViewManager
 
     void toggleVertical();
 
-    void gotoMark (class KateMark *mark);
+    void gotoMark (Kate::Mark *mark);
 
   signals:
     void statusChanged (KateView *, int, int, int, int, QString);
