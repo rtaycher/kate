@@ -75,7 +75,7 @@
 #include <kmultitabbar.h>
 #include <ktip.h>
 #include <kmenubar.h>
-
+#include <kstringhandler.h>
 #include <qlayout.h>
 #include <qptrvector.h>
 
@@ -193,8 +193,8 @@ void KateMainWindow::setupMainWindow ()
   //mainDock->setGeometry(100, 100, 100, 100);
  /* QBoxLayout *ml=new QHBoxLayout(centralWidget());
   ml->setAutoAdd(true);*/
-  m_viewManager = new KateViewManager (tabWidget(), m_docManager,this);
-  tabWidget()->addTab (m_viewManager, "viewmanager");
+  m_viewManager = new KateViewManager (this,tabWidget(), m_docManager);
+  //tabWidget()->addTab (m_viewManager, "viewmanager");
 
   filelist = new KateFileList (m_docManager, m_viewManager, this/*filelistDock*/, "filelist");
   addToolView(KDockWidget::DockLeft,filelist,SmallIcon("kmultiple"), i18n("Files"));
@@ -254,6 +254,7 @@ void KateMainWindow::setupActions()
   a=new KAction(i18n("&New Window"), "window_new", 0, this, SLOT(newWindow()), actionCollection(), "view_new_view");
   a->setWhatsThis(i18n("Create a new Kate view (a new window with the same document list)."));
 
+  a=new KAction (i18n("New Tab"),"view_new_tab",0,m_viewManager,SLOT(slotNewTab()), actionCollection(),"view_new_tab");
   a=new KAction( i18n("Split Ve&rtical"), "view_left_right", CTRL+SHIFT+Key_L, m_viewManager, SLOT( slotSplitViewSpaceVert() ), actionCollection(), "view_split_vert");
   a->setWhatsThis(i18n("Split the currently active view vertically into two views."));
 
@@ -980,21 +981,13 @@ void KateMainWindow::updateCaption (Kate::Document *doc)
   if (m_viewManager->activeView()->getDoc()->url().isEmpty() || (!m_viewManager->getShowFullPath()))
   {
     c = m_viewManager->activeView()->getDoc()->docName();
-
-    //File name shouldn't be too long - Maciek
-    if (c.length() > 64)
-      c = c.left(64) + "...";
   }
   else
   {
     c = m_viewManager->activeView()->getDoc()->url().prettyURL();
-
-    //File name shouldn't be too long - Maciek
-    if (c.length() > 64)
-      c = "..." + c.right(64);
   }
 
-  setCaption( c, m_viewManager->activeView()->getDoc()->isModified());
+  setCaption( KStringHandler::lsqueeze(c,64), m_viewManager->activeView()->getDoc()->isModified());
 }
 
 void KateMainWindow::openConstURLProject (const KURL&url)

@@ -19,7 +19,7 @@
 */
 
 //BEGIN Includes
-#include "kateviewmanager.h"
+#include "kateviewspacecontainer.h"
 #include "kateviewspacecontainer.moc"
 
 #include "katemainwindow.h"
@@ -44,6 +44,7 @@
 #include <kstdaction.h>
 #include <kstandarddirs.h>
 #include <kglobalsettings.h>
+#include <kstringhandler.h>
 
 #include <ktexteditor/encodinginterface.h>
 
@@ -53,13 +54,13 @@
 #include <qvbox.h>
 #include <qtimer.h>
 #include <qfileinfo.h>
+
 //END Includes
 
-KateViewManager::KateViewManager (QWidget *parent, KateDocManager *m_docManager, KateMainWindow *mainWindow)
+KateViewSpaceContainer::KateViewSpaceContainer (QWidget *parent, KateViewManager *viewManager, KateDocManager *m_docManager, KateMainWindow *mainWindow)
  : QWidget  (parent),
-   m_activeViewRunning (false),m_mainWindow(mainWindow)
+   m_viewManager(viewManager),m_activeViewRunning (false),m_mainWindow(mainWindow)
 {
-  m_viewManager = new Kate::ViewManager (this);
 
   m_blockViewCreationAndActivation=false;
 
@@ -83,13 +84,13 @@ KateViewManager::KateViewManager (QWidget *parent, KateDocManager *m_docManager,
   connect(m_docManager, SIGNAL(initialDocumentReplaced()), this, SIGNAL(viewChanged()));
 }
 
-KateViewManager::~KateViewManager ()
+KateViewSpaceContainer::~KateViewSpaceContainer ()
 {
   m_viewList.setAutoDelete(false);
   m_viewSpaceList.setAutoDelete(false);
 }
 
-bool KateViewManager::createView ( Kate::Document *doc )
+bool KateViewSpaceContainer::createView ( Kate::Document *doc )
 {
   if (m_blockViewCreationAndActivation) return false;
 
@@ -123,7 +124,7 @@ bool KateViewManager::createView ( Kate::Document *doc )
   return true;
 }
 
-bool KateViewManager::deleteView (Kate::View *view, bool delViewSpace)
+bool KateViewSpaceContainer::deleteView (Kate::View *view, bool delViewSpace)
 {
   if (!view) return true;
 
@@ -143,7 +144,7 @@ bool KateViewManager::deleteView (Kate::View *view, bool delViewSpace)
   return true;
 }
 
-KateViewSpace* KateViewManager::activeViewSpace ()
+KateViewSpace* KateViewSpaceContainer::activeViewSpace ()
 {
   QPtrListIterator<KateViewSpace> it(m_viewSpaceList);
 
@@ -162,7 +163,7 @@ KateViewSpace* KateViewManager::activeViewSpace ()
   return 0L;
 }
 
-Kate::View* KateViewManager::activeView ()
+Kate::View* KateViewSpaceContainer::activeView ()
 {
   if (m_activeViewRunning)
     return 0L;
@@ -207,7 +208,7 @@ Kate::View* KateViewManager::activeView ()
   return 0L;
 }
 
-void KateViewManager::setActiveSpace ( KateViewSpace* vs )
+void KateViewSpaceContainer::setActiveSpace ( KateViewSpace* vs )
 {
    if (activeViewSpace())
      activeViewSpace()->setActive( false );
@@ -215,7 +216,7 @@ void KateViewManager::setActiveSpace ( KateViewSpace* vs )
    vs->setActive( true, viewSpaceCount() > 1 );
 }
 
-void KateViewManager::setActiveView ( Kate::View* view )
+void KateViewSpaceContainer::setActiveView ( Kate::View* view )
 {
   if (activeView())
     activeView()->setActive( false );
@@ -223,7 +224,7 @@ void KateViewManager::setActiveView ( Kate::View* view )
   view->setActive( true );
 }
 
-void KateViewManager::activateSpace (Kate::View* v)
+void KateViewSpaceContainer::activateSpace (Kate::View* v)
 {
   if (!v) return;
 
@@ -235,7 +236,15 @@ void KateViewManager::activateSpace (Kate::View* v)
   }
 }
 
-void KateViewManager::activateView ( Kate::View *view )
+void KateViewSpaceContainer::reactivateActiveView() {
+  Kate::View *view=activeView();
+  if (view) {
+    view->setActive(false);
+    activateView(view);
+  }
+}
+
+void KateViewSpaceContainer::activateView ( Kate::View *view )
 {
   if (!view) return;
 
@@ -266,13 +275,12 @@ void KateViewManager::activateView ( Kate::View *view )
     statusMsg();
 
     emit viewChanged ();
-    emit m_viewManager->viewChanged ();
   }
 
   m_docManager->setActiveDocument(view->getDoc());
 }
 
-void KateViewManager::activateView( uint documentNumber )
+void KateViewSpaceContainer::activateView( uint documentNumber )
 {
   if ( activeViewSpace()->showView(documentNumber) ) {
     activateView( activeViewSpace()->currentView() );
@@ -294,23 +302,23 @@ void KateViewManager::activateView( uint documentNumber )
   }
 }
 
-uint KateViewManager::viewCount ()
+uint KateViewSpaceContainer::viewCount ()
 {
   return m_viewList.count();
 }
 
-uint KateViewManager::viewSpaceCount ()
+uint KateViewSpaceContainer::viewSpaceCount ()
 {
   return m_viewSpaceList.count();
 }
 
-void KateViewManager::slotViewChanged()
+void KateViewSpaceContainer::slotViewChanged()
 {
   if ( activeView() && !activeView()->hasFocus())
     activeView()->setFocus();
 }
 
-void KateViewManager::activateNextView()
+void KateViewSpaceContainer::activateNextView()
 {
   uint i = m_viewSpaceList.find (activeViewSpace())+1;
 
@@ -321,7 +329,7 @@ void KateViewManager::activateNextView()
   activateView(m_viewSpaceList.at(i)->currentView());
 }
 
-void KateViewManager::activatePrevView()
+void KateViewSpaceContainer::activatePrevView()
 {
   int i = m_viewSpaceList.find (activeViewSpace())-1;
 
@@ -332,12 +340,12 @@ void KateViewManager::activatePrevView()
   activateView(m_viewSpaceList.at(i)->currentView());
 }
 
-void KateViewManager::deleteLastView ()
+void KateViewSpaceContainer::deleteLastView ()
 {
   deleteView (activeView (), true);
 }
 
-void KateViewManager::closeViews(uint documentNumber)
+void KateViewSpaceContainer::closeViews(uint documentNumber)
 {
     QPtrList<Kate::View> closeList;
 
@@ -359,14 +367,15 @@ void KateViewManager::closeViews(uint documentNumber)
 
   if (m_blockViewCreationAndActivation) return;
   QTimer::singleShot(0,this,SIGNAL(viewChanged()));
-  emit m_viewManager->viewChanged ();
+  //emit m_viewManager->viewChanged ();
 }
 
 
-void KateViewManager::openNewIfEmpty()
+void KateViewSpaceContainer::openNewIfEmpty()
 {
+//FIXME move somewhere else multi window handling
   if (m_blockViewCreationAndActivation) return;
-
+#if 0
   for (uint i2=0; i2 < ((KateApp *)kapp)->mainWindows (); i2++ )
   {
     if (((KateApp *)kapp)->kateMainWindow(i2)->kateViewManager()->viewCount() == 0)
@@ -377,12 +386,17 @@ void KateViewManager::openNewIfEmpty()
         ((KateApp *)kapp)->kateMainWindow(i2)->kateViewManager()->createView (m_docManager->document(m_docManager->documents()-1));
     }
   }
+#endif
+  if ((m_viewList.count() < 1) && (m_docManager->documents() < 1) )
+     createView ();
+  else if ((m_viewList.count() < 1) && (m_docManager->documents() > 0) )
+     createView (m_docManager->document(m_docManager->documents()-1));
 
   emit viewChanged ();
-  emit m_viewManager->viewChanged ();
+  //emit m_viewManager->viewChanged ();
 }
 
-void KateViewManager::statusMsg ()
+void KateViewSpaceContainer::statusMsg ()
 {
   if (!activeView()) return;
 
@@ -413,30 +427,23 @@ void KateViewManager::statusMsg ()
   if (v->getDoc()->url().isEmpty() || (!showFullPath))
   {
     c = v->getDoc()->docName();
-
-    //File name shouldn't be too long - Maciek
-    if (c.length() > 64)
-      c = c.left(64) + "...";
   }
   else
   {
     c = v->getDoc()->url().prettyURL();
-
-    //File name shouldn't be too long - Maciek
-    if (c.length() > 64)
-      c = "..." + c.right(64);
   }
 
-  emit statusChanged (v, v->cursorLine(), v->cursorColumn(), ovr,block, mod, c);
+  setCaption(KStringHandler::lsqueeze(c,32)); 
+  emit statusChanged (v, v->cursorLine(), v->cursorColumn(), ovr,block, mod, KStringHandler::lsqueeze(c,64));
   emit statChanged ();
 }
 
-void KateViewManager::slotDocumentNew ()
+void KateViewSpaceContainer::slotDocumentNew ()
 {
   createView ();
 }
 
-void KateViewManager::slotDocumentOpen ()
+void KateViewSpaceContainer::slotDocumentOpen ()
 {
   Kate::View *cv = activeView();
 
@@ -453,13 +460,13 @@ void KateViewManager::slotDocumentOpen ()
     activateView (lastID);
 }
 
-void KateViewManager::slotDocumentSaveAll()
+void KateViewSpaceContainer::slotDocumentSaveAll()
 {
   for( QPtrListIterator<Kate::View> it( m_viewList ); it.current(); ++it )
     it.current()->save();
 }
 
-void KateViewManager::slotDocumentClose ()
+void KateViewSpaceContainer::slotDocumentClose ()
 {
   // no active view, do nothing
   if (!activeView()) return;
@@ -482,7 +489,7 @@ void KateViewManager::slotDocumentClose ()
   openNewIfEmpty();
 }
 
-void KateViewManager::slotDocumentCloseAll ()
+void KateViewSpaceContainer::slotDocumentCloseAll ()
 {
   if (m_docManager->documents () == 0) return;
 
@@ -495,7 +502,7 @@ void KateViewManager::slotDocumentCloseAll ()
   openNewIfEmpty();
 }
 
-uint KateViewManager::openURL (const KURL &url, const QString& encoding, bool activate)
+uint KateViewSpaceContainer::openURL (const KURL &url, const QString& encoding, bool activate)
 {
   uint id = 0;
   Kate::Document *doc = m_docManager->openURL (url, encoding, &id);
@@ -509,12 +516,12 @@ uint KateViewManager::openURL (const KURL &url, const QString& encoding, bool ac
   return id;
 }
 
-void KateViewManager::openURL (const KURL &url)
+void KateViewSpaceContainer::openURL (const KURL &url)
 {
   openURL (url, QString::null);
 }
 
-void KateViewManager::splitViewSpace( KateViewSpace* vs,
+void KateViewSpaceContainer::splitViewSpace( KateViewSpace* vs,
                                       bool isHoriz,
                                       bool atTop)
 {
@@ -570,7 +577,7 @@ void KateViewManager::splitViewSpace( KateViewSpace* vs,
   kdDebug(13001)<<"splitViewSpace() - DONE!"<<endl;
 }
 
-void KateViewManager::removeViewSpace (KateViewSpace *viewspace)
+void KateViewSpaceContainer::removeViewSpace (KateViewSpace *viewspace)
 {
   // abort if viewspace is 0
   if (!viewspace) return;
@@ -659,15 +666,15 @@ void KateViewManager::removeViewSpace (KateViewSpace *viewspace)
     activateView( v );
 
   emit viewChanged();
-  emit m_viewManager->viewChanged ();
+  //emit m_viewManager->viewChanged ();
 }
 
-void KateViewManager::slotCloseCurrentViewSpace()
+void KateViewSpaceContainer::slotCloseCurrentViewSpace()
 {
   removeViewSpace(activeViewSpace());
 }
 
-void KateViewManager::setShowFullPath( bool enable )
+void KateViewSpaceContainer::setShowFullPath( bool enable )
 {
   showFullPath = enable;
   statusMsg ();
@@ -678,7 +685,7 @@ void KateViewManager::setShowFullPath( bool enable )
  * session config functions
  */
 
-void KateViewManager::saveViewConfiguration(KConfig *config,const QString& group)
+void KateViewSpaceContainer::saveViewConfiguration(KConfig *config,const QString& group)
 {
   bool weHaveSplittersAlive (viewSpaceCount() > 1);
 
@@ -705,7 +712,7 @@ void KateViewManager::saveViewConfiguration(KConfig *config,const QString& group
   delete l;
 }
 
-void KateViewManager::restoreViewConfiguration (KConfig *config, const QString& group)
+void KateViewSpaceContainer::restoreViewConfiguration (KConfig *config, const QString& group)
 {
   config->setGroup(group);
   //config->setGroup ("View Configuration");
@@ -741,7 +748,7 @@ void KateViewManager::restoreViewConfiguration (KConfig *config, const QString& 
 }
 
 
-void KateViewManager::saveSplitterConfig( KateSplitter* s, int idx, KConfig* config, const QString& viewConfGrp )
+void KateViewSpaceContainer::saveSplitterConfig( KateSplitter* s, int idx, KConfig* config, const QString& viewConfGrp )
 {
   QString grp = QString(viewConfGrp+"-Splitter %1").arg(idx);
   config->setGroup(grp);
@@ -788,7 +795,7 @@ void KateViewManager::saveSplitterConfig( KateSplitter* s, int idx, KConfig* con
   config->writeEntry("Children", childList);
 }
 
-void KateViewManager::restoreSplitter( KConfig* config, const QString &group, QWidget* parent, const QString& viewConfGrp)
+void KateViewSpaceContainer::restoreSplitter( KConfig* config, const QString &group, QWidget* parent, const QString& viewConfGrp)
 {
   config->setGroup( group );
 
@@ -830,7 +837,7 @@ void KateViewManager::restoreSplitter( KConfig* config, const QString &group, QW
   s->show();
 }
 
-KateMainWindow *KateViewManager::mainWindow() {
+KateMainWindow *KateViewSpaceContainer::mainWindow() {
         return m_mainWindow;
 }
 

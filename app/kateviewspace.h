@@ -64,13 +64,13 @@ class KateVSStatusBar : public KStatusBar
 
 class KateViewSpace : public QVBox
 {
-  friend class KateViewManager;
+  friend class KateViewSpaceContainer;
   friend class KateVSStatusBar;
 
   Q_OBJECT
 
   public:
-    KateViewSpace(KateViewManager *, QWidget* parent=0, const char* name=0);
+    KateViewSpace(KateViewSpaceContainer *, QWidget* parent=0, const char* name=0);
     ~KateViewSpace();
     bool isActiveSpace();
     void setActive(bool b, bool showled=false);
@@ -83,7 +83,7 @@ class KateViewSpace : public QVBox
     int viewCount() const { return mViewList.count(); }
 
     void saveConfig (KConfig* config, int myIndex,const QString& viewConfGrp);
-    void restoreConfig ( class KateViewManager *viewMan, KConfig* config, const QString &group );
+    void restoreConfig ( class KateViewSpaceContainer *viewMan, KConfig* config, const QString &group );
 
 
   protected:
@@ -100,7 +100,7 @@ class KateViewSpace : public QVBox
     QPtrList<Kate::View> mViewList;
     int mViewCount;
     KVSSBSep *sep;
-    KateViewManager *m_viewManager;
+    KateViewSpaceContainer *m_viewManager;
     QString m_group;
 
   private slots:

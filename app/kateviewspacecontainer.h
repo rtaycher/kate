@@ -18,8 +18,8 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef __KATE_VIEWMANAGER_H__
-#define __KATE_VIEWMANAGER_H__
+#ifndef __KATE_VIEWSPACE_CONTAINER_H__
+#define __KATE_VIEWSPACE_CONTAINER_H__
 
 #include "katemain.h"
 #include "../interfaces/viewmanager.h"
@@ -31,7 +31,7 @@ class KateSplitter;
 class KConfig;
 class KateMainWindow;
 
-class KateViewManager : public QWidget
+class KateViewSpaceContainer: public QWidget
 {
   Q_OBJECT
 
@@ -39,10 +39,8 @@ class KateViewManager : public QWidget
   friend class KateVSStatusBar;
 
   public:
-    KateViewManager (QWidget *parent=0, KateDocManager *docManager=0,KateMainWindow* mainWindow=0);
-    ~KateViewManager ();
-
-    Kate::ViewManager *viewManager () const { return m_viewManager; };
+    KateViewSpaceContainer (QWidget *parent,KateViewManager *viewManager, KateDocManager *docManager,KateMainWindow* mainWindow);
+    ~KateViewSpaceContainer ();
 
     inline QPtrList<Kate::View> &viewList () { return m_viewList; };
 
@@ -99,13 +97,14 @@ class KateViewManager : public QWidget
   public:
     void closeViews(uint documentNumber);
     KateMainWindow *mainWindow();
-
+  friend class KateViewManager;
   private slots:
+    
     void activateView ( Kate::View *view );
     void activateSpace ( Kate::View* v );
     void slotViewChanged();
     void openNewIfEmpty();
-
+    void reactivateActiveView();
   public slots:
     void deleteLastView ();
 
@@ -156,7 +155,7 @@ class KateViewManager : public QWidget
     void viewChanged ();
 
   private:
-    Kate::ViewManager *m_viewManager;
+    KateViewManager *m_viewManager;
     QPtrList<KateViewSpace> m_viewSpaceList;
     QPtrList<Kate::View> m_viewList;
 

@@ -28,6 +28,8 @@ class DCOPObject;
 namespace Kate
 {
 
+  class Plugin;
+
 /**
  * Interface to the project
  */
@@ -67,6 +69,8 @@ class Project : public QObject
     KConfig *dirData (const QString &dir = QString::null);
 
     KConfig *fileData (const QString &file = QString::null);
+
+    KConfig *pluginData(Plugin *plugin,const QString& group=QString::null);
 
     /**
      * Return the project type

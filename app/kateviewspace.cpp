@@ -22,7 +22,7 @@
 #include "kateviewspace.moc"
 
 #include "katemainwindow.h"
-#include "kateviewmanager.h"
+#include "kateviewspacecontainer.h"
 #include "katedocmanager.h"
 #include "kateapp.h"
 
@@ -75,7 +75,7 @@ protected:
 //END KVSSBSep
 
 //BEGIN KateViewSpace
-KateViewSpace::KateViewSpace( KateViewManager *viewManager,
+KateViewSpace::KateViewSpace( KateViewSpaceContainer *viewManager,
                               QWidget* parent, const char* name )
   : QVBox(parent, name),
     m_viewManager( viewManager )
@@ -266,7 +266,7 @@ void KateViewSpace::modifiedOnDisc(Kate::Document *, bool, unsigned char)
   mStatusBar->updateMod( currentView()->getDoc()->isModified() );
 }
 
-void KateViewSpace::restoreConfig ( KateViewManager *viewMan, KConfig* config, const QString &group )
+void KateViewSpace::restoreConfig ( KateViewSpaceContainer *viewMan, KConfig* config, const QString &group )
 {
   config->setGroup (group);
   QString fn = config->readEntry( "Active View" );

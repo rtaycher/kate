@@ -125,6 +125,15 @@ KConfig *Project::fileData (const QString &file)
   return d->m_config;
 }
 
+KConfig *Project::pluginData(Plugin *plugin,const QString& group) {
+	if (!plugin) return 0;
+	QString groupName="Plugin:"+QString::fromUtf8(plugin->name());
+	if (!group.isEmpty()) groupName+="/"+group;
+	d->m_config->setGroup(groupName);
+	return d->m_config;
+}
+
+
 QString Project::type ()
 {
   return fileData()->readEntry ("Type", "Default");

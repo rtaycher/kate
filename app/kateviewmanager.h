@@ -24,9 +24,12 @@
 #include "katemain.h"
 #include "../interfaces/viewmanager.h"
 
+#include "kateviewspacecontainer.h"
+
 #include <kate/view.h>
 #include <kate/document.h>
-
+#include <kmdi/tabwidget.h>
+#include <qguardedptr.h>
 class KateSplitter;
 class KConfig;
 class KateMainWindow;
@@ -39,7 +42,7 @@ class KateViewManager : public QWidget
   friend class KateVSStatusBar;
 
   public:
-    KateViewManager (QWidget *parent=0, KateDocManager *docManager=0,KateMainWindow* mainWindow=0);
+    KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWidget, KateDocManager *docManager);
     ~KateViewManager ();
 
     Kate::ViewManager *viewManager () const { return m_viewManager; };
@@ -61,27 +64,7 @@ class KateViewManager : public QWidget
   private:
     bool useOpaqueResize;
   
-    /**
-     * create and activate a new view for doc, if doc == 0, then
-     * create a new document
-     */
-    bool createView ( Kate::Document *doc =0L );
 
-    bool deleteView ( Kate::View *view, bool delViewSpace = true);
-
-    void moveViewtoSplit (Kate::View *view);
-    void moveViewtoStack (Kate::View *view);
-
-    /* Save the configuration of a single splitter.
-     * If child splitters are found, it calls it self with those as the argument.
-     * If a viewspace child is found, it is asked to save its filelist.
-     */
-    void saveSplitterConfig(KateSplitter* s, int idx=0, KConfig* config=0L, const QString& viewConfGrp="");
-
-    /** Restore a single splitter.
-     * This is all the work is done for @see saveSplitterConfig()
-     */
-    void restoreSplitter ( KConfig* config, const QString &group, QWidget* parent , const QString& viewConfGrp);
 
     void removeViewSpace (KateViewSpace *viewspace);
 
@@ -105,7 +88,8 @@ class KateViewManager : public QWidget
     void activateSpace ( Kate::View* v );
     void slotViewChanged();
     void openNewIfEmpty();
-
+ 
+    void tabChanged(QWidget*);
   public slots:
     void deleteLastView ();
 
@@ -137,10 +121,9 @@ class KateViewManager : public QWidget
     void slotSplitViewSpaceHoriz () { splitViewSpace(); }
     /** Splits the active viewspace vertically */
     void slotSplitViewSpaceVert () { splitViewSpace( 0L, false ); }
-
+    void slotNewTab();
     void slotCloseCurrentViewSpace();
 
-    void statusMsg ();
 
     void setActiveSpace ( KateViewSpace* vs );
     void setActiveView ( Kate::View* view );
@@ -157,7 +140,8 @@ class KateViewManager : public QWidget
 
   private:
     Kate::ViewManager *m_viewManager;
-    QPtrList<KateViewSpace> m_viewSpaceList;
+    QPtrList<KateViewSpaceContainer> m_viewSpaceContainerList;
+    KateViewSpaceContainer *m_currentContainer;
     QPtrList<Kate::View> m_viewList;
 
     KateDocManager *m_docManager;
@@ -166,6 +150,10 @@ class KateViewManager : public QWidget
 
     bool m_activeViewRunning;
     KateMainWindow *m_mainWindow;
+    QGuardedPtr<KMDI::TabWidget> m_tabWidget;
+    bool m_init;
+  protected:
+    bool eventFilter(QObject *o,QEvent *e);
 };
 
 #endif
