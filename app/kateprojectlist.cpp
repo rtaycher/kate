@@ -46,6 +46,7 @@ KateProjectList::KateProjectList (KateProjectManager *_projectManager, KateMainW
   for (uint i = 0; i < m_projectManager->projects(); i++)
     projectCreated (m_projectManager->project(i));
     
+  projectChanged ();
     
   connect(m_projectManager->projectManager(),SIGNAL(projectCreated(Kate::Project *)),this,SLOT(projectCreated(Kate::Project *)));
   connect(m_projectManager->projectManager(),SIGNAL(projectDeleted(uint)),this,SLOT(projectDeleted(uint)));
@@ -58,14 +59,35 @@ KateProjectList::~KateProjectList ()
 
 void KateProjectList::projectChanged ()
 {
+  Kate::Project *p = 0;
+
+  if (!(p = m_mainWindow->mainWindow()->activeProject()))
+    return;
+
+  int n = m_numList.findIndex (p->projectNumber());
+  
+  if (n >= 0)
+  {
+    m_projectCombo->setCurrentItem (n);
+  }
 }
 
 void KateProjectList::projectCreated (Kate::Project *project)
 {
-  m_prNumToName.insert (project->projectNumber(), project->name());
+  if (!project)
+    return;
+
+  m_numList.append (project->projectNumber());
   m_projectCombo->insertItem (project->name());
 }
 
 void KateProjectList::projectDeleted (uint projectNumber)
 {
+  int n = m_numList.findIndex (projectNumber);
+  
+  if (n >= 0)
+  {
+    m_numList.remove (projectNumber);
+    m_projectCombo->removeItem (n);
+  }
 }

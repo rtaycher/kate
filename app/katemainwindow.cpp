@@ -92,6 +92,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   m_projectManager = projectMan;
   
   m_project = 0;
+  m_projectNumber = 0;
   
   config = kapp->config();
 
@@ -140,6 +141,8 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   // connect settings menu aboutToshow
   documentMenu = (QPopupMenu*)factory()->container("documents", this);
   connect(documentMenu, SIGNAL(aboutToShow()), this, SLOT(documentMenuAboutToShow()));
+  
+  connect(m_projectManager->projectManager(),SIGNAL(projectDeleted(uint)),this,SLOT(projectDeleted(uint)));
 
   readOptions(config);
 
@@ -947,11 +950,7 @@ void KateMainWindow::slotProjectClose ()
 {
   if (m_project)
   {
-    if (m_projectManager->close ((Kate::Project *)m_project));
-    {
-      m_project = 0;
-      activateProject (0);
-    }
+    m_projectManager->close (m_project);
   }  
 }
 
@@ -965,6 +964,11 @@ void KateMainWindow::activateProject (Kate::Project *project)
   
   m_project = project;
   
+  if (project)
+    m_projectNumber = project->projectNumber ();
+  else
+    m_projectNumber = 0;
+    
   emit m_mainWindow->projectChanged ();
 }
 
@@ -986,4 +990,15 @@ Kate::Project *KateMainWindow::openProject (const QString &filename)
     activateProject (project);
     
   return project;
+}
+
+void KateMainWindow::projectDeleted (uint projectNumber)
+{
+  if (projectNumber == m_projectNumber)
+  {
+    if (m_projectManager->projects() > 0)
+      activateProject (m_projectManager->project(m_projectManager->projects()-1));
+    else
+      activateProject (0);
+  }
 }

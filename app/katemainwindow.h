@@ -138,7 +138,8 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     KConfig* config;
 
   private:
-    Kate::Project *m_project;
+    QGuardedPtr<Kate::Project> m_project;
+    uint m_projectNumber;
     QGuardedPtr<Kate::View> activeView;
   
     KAction *closeCurrentViewSpace;
@@ -253,6 +254,8 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     void slotProjectSave ();
     void slotProjectClose ();
     
+  private slots:
+    void projectDeleted (uint projectNumber);
 };
 
 class KateToggleToolViewAction:public KToggleAction

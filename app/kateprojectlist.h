@@ -28,7 +28,7 @@
 #include <kcombobox.h>
 
 #include <qvbox.h>
-#include <qmap.h>
+#include <qvaluelist.h>
 
 class KateProjectList : public QVBox
 {
@@ -49,7 +49,7 @@ class KateProjectList : public QVBox
     class KateProjectManager *m_projectManager;
     class KateMainWindow *m_mainWindow;
     
-    QMap<uint, QString> m_prNumToName;
+    QValueList<uint> m_numList;
 };
 
 #endif
