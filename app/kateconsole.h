@@ -35,7 +35,7 @@ class KateConsole : public QWidget
     KateConsole (QWidget* parent, const char* name, Kate::ViewManager *);
     ~KateConsole ();
 
-    void cd (KURL url=0L);
+    void cd (KURL url=KURL());
     
     void sendInput( const QString& text );
 
