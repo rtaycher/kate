@@ -130,7 +130,7 @@ const int KateDocument::maxAttribs = 32;
 QStringList KateDocument::searchForList = QStringList();
 QStringList KateDocument::replaceWithList = QStringList();
 
-KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool bBrowserView, bool deleteDoc,
+KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool bBrowserView,
                                            QWidget *parentWidget, const char *widgetName,
                                            QObject *, const char *name)
   : Kate::Document (), DCOPObject(name),
@@ -141,8 +141,6 @@ KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool
   PreHighlightedTill=0;
   RequestPreHighlightTill=0;
   setInstance( KateFactory::instance() );
-
-  myDeleteDoc = deleteDoc;
 
   m_bSingleViewMode=bSingleViewMode;
   m_bBrowserView = bBrowserView;
@@ -312,7 +310,7 @@ bool KateDocument::saveFile()
 
 KTextEditor::View *KateDocument::createView( QWidget *parent, const char *name )
 {
-  return new KateView( this, parent, name, true, myDeleteDoc );
+  return new KateView( this, parent, name, true);
 }
 
 QString KateDocument::textLine( int line ) const

@@ -313,7 +313,7 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
       HandleOwnURIDrops should be set to false for a container that can handle URI drops
       better than KateViewInternal does.
     */
-    KateView(KateDocument *doc=0L, QWidget *parent = 0L, const char * name = 0, bool HandleOwnURIDrops = true, bool deleteDoc = true);
+    KateView(KateDocument *doc=0L, QWidget *parent = 0L, const char * name = 0, bool HandleOwnURIDrops = true);
     /**
       The destructor does not ixdelete the document
     */
@@ -434,9 +434,6 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
     KToggleAction *setVerticalSelection, *viewBorder;
     KRecentFilesAction *fileRecent;
     KSelectAction *setHighlight, *setEndOfLine;
-
-  private:
-    bool myDeleteDoc;
 
   protected slots:
     void slotDropEventPass( QDropEvent * ev );

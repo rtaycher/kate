@@ -1397,11 +1397,10 @@ void KateViewInternal::dropEvent( QDropEvent *event )
   }
 }
 
-KateView::KateView(KateDocument *doc, QWidget *parent, const char * name, bool HandleOwnDND, bool deleteDoc) : Kate::View (doc, parent, name), DCOPObject(name)
+KateView::KateView(KateDocument *doc, QWidget *parent, const char * name, bool HandleOwnDND) : Kate::View (doc, parent, name), DCOPObject(name)
 {
   setInstance( KateFactory::instance() );
 
-  myDeleteDoc = deleteDoc;
   active = false;
   myIconBorder = false;
 
@@ -1478,12 +1477,6 @@ KateView::~KateView()
 
   if (myDoc && !myDoc->m_bSingleViewMode)
     myDoc->removeView( this );
-
-  if ( !myDoc->m_bSingleViewMode )
-  {
-    if ( myDoc->isLastView(0) && myDeleteDoc )
-      delete myDoc;
-  }
 
   delete myViewInternal;
 
