@@ -134,9 +134,10 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   if (m_dockStyle==ModernStyle) mainDock->setDockSite( KDockWidget::DockNone );
   
-  setAutoSaveSettings( QString::fromLatin1("MainWindow"), false );
-
   console->loadConsoleIfNeeded();
+  
+  // call it as last thing, must be sure everything is allready set up ;)
+  setAutoSaveSettings( QString::fromLatin1("MainWindow"), true );
 }
 
 KateMainWindow::~KateMainWindow()
@@ -396,13 +397,7 @@ void KateMainWindow::readOptions(KConfig *config)
   config->setGroup("General");
   syncKonsole =  config->readBoolEntry("Sync Konsole", true);
 
-  QSize tmpSize(600, 400);
-  resize( config->readSizeEntry( "size", &tmpSize ) );
-
   m_viewManager->setShowFullPath(config->readBoolEntry("Show Full Path in Title", false));
-
-  //settingsShowToolbar->setChecked(config->readBoolEntry("Show Toolbar", true));
-  //slotSettingsShowToolbar();
   m_viewManager->setUseOpaqueResize(config->readBoolEntry("Opaque Resize", true));
 
   fileOpenRecent->setMaxItems( config->readNumEntry("Number of recent files", fileOpenRecent->maxItems() ) );
@@ -422,11 +417,9 @@ void KateMainWindow::saveOptions(KConfig *config)
   else
     config->writeEntry("Show Console", false);
 
-  config->writeEntry("size", size());
-
   config->writeEntry("Show Full Path in Title", m_viewManager->getShowFullPath());
-//  config->writeEntry("Show Toolbar", settingsShowToolbar->isChecked());
   config->writeEntry("Opaque Resize", m_viewManager->useOpaqueResize);
+  
   config->writeEntry("Sync Konsole", syncKonsole);
 
   fileOpenRecent->saveEntries(config, "Recent Files");
