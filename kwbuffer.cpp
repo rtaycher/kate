@@ -45,11 +45,11 @@
  */
 KWBuffer::KWBuffer()
 {
-   m_totalLines = 0;
    m_blocks.setAutoDelete(true);
    m_loader.setAutoDelete(true);
    connect( &m_loadTimer, SIGNAL(timeout()), this, SLOT(slotLoadFile()));
-   m_vm = new KVMAllocator;
+   m_vm = 0;
+   clear();
 }
 
 /**
@@ -95,6 +95,27 @@ static void writeBlock(int fd, const QByteArray &buf, int begin, int end)
    }
 }
 
+void
+KWBuffer::clear()
+{
+   delete m_vm;
+   m_vm = new KVMAllocator;
+   m_parsedBlocksClean.clear();
+   m_parsedBlocksDirty.clear();
+   m_loadedBlocks.clear();
+   m_loader.clear();
+   m_blocks.clear();
+   KWBufState state;
+   // Initial state.
+   state.lineNr = 0;
+   KWBufBlock *block = new KWBufBlock(state);
+   m_blocks.insert(0, block);
+   block->b_rawDataValid = true;
+   block->b_appendEOL = true;   
+   block->b_emptyBlock = true;
+   block->m_endState.lineNr++;
+   m_totalLines = block->m_endState.lineNr;
+}
 
 /**
  * Insert a file at line @p line in the buffer.
@@ -183,7 +204,22 @@ void
 KWBuffer::insertData(int line, const QByteArray &data, QTextCodec *codec)
 {
    assert(line == m_totalLines);
-   KWBufBlock *prev_block = m_blocks.last();
+   KWBufBlock *prev_block;
+
+   // Remove all preceding empty blocks.
+   while(true) 
+   {
+      prev_block = m_blocks.last();
+      if (!prev_block || !prev_block->b_emptyBlock)
+         break;
+
+      m_totalLines -= prev_block->m_endState.lineNr - prev_block->m_beginState.lineNr;
+      m_blocks.removeRef(prev_block);
+      m_parsedBlocksClean.removeRef(prev_block);
+      m_parsedBlocksDirty.removeRef(prev_block);
+      m_loadedBlocks.removeRef(prev_block);
+   }
+
    KWBufState state;
    if (prev_block)
    {
@@ -200,9 +236,20 @@ KWBuffer::insertData(int line, const QByteArray &data, QTextCodec *codec)
   m_blocks.append(block);
   m_loadedBlocks.append(block);
   block->m_codec = codec;
-  // TODO:
-  block->blockFill(0, QByteArray(), data, true); // THIS is wrong. 
-  // The above inserts a LF at the end of every block!
+
+  // TODO: We always create a new block.
+  // It would be more correct to collect the data in larger blocks.
+  // We should do that without unnecasserily copying the data though.
+  QByteArray lastData;
+  int lastLine = 0;
+  if (prev_block && prev_block->b_appendEOL && (prev_block->m_codec == codec))
+  {
+     // Take the last line of the previous block and add it to the
+     // the new block.
+     prev_block->truncateEOL(lastLine, lastData);
+     m_totalLines--;
+  }
+  block->blockFill(lastLine, lastData, data, true);
   state = block->m_endState;
   m_totalLines += state.lineNr - startLine;
 }
@@ -384,6 +431,7 @@ void
 KWBuffer::dirtyBlock(KWBufBlock *buf)
 {
 qWarning("dirtyBlock(%p)", buf);
+   buf->b_emptyBlock = false;
    if (m_parsedBlocksDirty.count() > DIRTY_BLOCKS_MAX)
    {
       KWBufBlock *buf2 = m_parsedBlocksDirty.take(0);
@@ -420,6 +468,28 @@ KWBufBlock::KWBufBlock(const KWBufState &beginState)
    b_rawDataValid = false;
    b_vmDataValid = false;
    b_appendEOL = false;
+   b_emptyBlock = false;
+   m_lastLine = 0;
+}
+
+/**
+ * Remove the last line of this block.
+ */
+void
+KWBufBlock::truncateEOL( int &lastLine, QByteArray &data1 )
+{
+   assert(b_appendEOL);
+   assert(b_rawDataValid);      
+
+   data1 = m_rawData2;
+   lastLine = m_lastLine;
+   b_appendEOL = false;
+   m_rawData2End = m_lastLine;
+   m_rawSize = m_rawData1.count() - m_rawData1Start + m_rawData2End;
+
+   m_endState.lineNr--;
+   if (b_stringListValid)
+      m_stringList.remove(m_stringList.last());
 }
 
 /**
@@ -473,12 +543,16 @@ KWBufBlock::blockFill(int dataStart, QByteArray data1, QByteArray data2, bool la
    if ((last && (e != l)) || 
        (l == 0))
    {
-      l = e;
       if (!m_rawData1.isEmpty() || !m_rawData2.isEmpty())
       {
          b_appendEOL = true;
+         if (l)
+            m_lastLine = l - m_rawData2.data();
+         else
+            m_lastLine = 0;
          lineNr++;
       }
+      l = e;
    }
 
    m_rawData2End = l - m_rawData2.data();
@@ -544,7 +618,7 @@ KWBufBlock::buildStringList()
 {
 qWarning("KWBufBlock: buildStringList this = %p", this);
    assert(m_stringList.count() == 0);
-   if (!m_codec)
+   if (!m_codec && !m_rawData2.isEmpty())
    {
       buildStringListFast();
       return;
@@ -604,7 +678,10 @@ qWarning("KWBufBlock: buildStringList this = %p", this);
       // create a line break at the end of the block.
       if (b_appendEOL)
       {
-         QString line = m_codec->toUnicode(l, (e-l)+1);
+qWarning("KWBufBlock: buildStringList this = %p l = %p e = %p (e-l)+1 = %d",
+	this, l, e, (e-l));
+         QString line = m_codec->toUnicode(l, (e-l));
+qWarning("KWBufBlock: line = '%s'", line.latin1());
          if (!lastLine.isEmpty())
          {
             line = lastLine + line;
@@ -612,6 +689,14 @@ qWarning("KWBufBlock: buildStringList this = %p", this);
          }
          TextLine::Ptr textLine = new TextLine();
          textLine->append(line.unicode(), line.length());
+         m_stringList.append(textLine);
+      }
+   }
+   else 
+   {
+      if (b_appendEOL)
+      {
+         TextLine::Ptr textLine = new TextLine();
          m_stringList.append(textLine);
       }
    }

@@ -2092,6 +2092,7 @@ void KWrite::loadFile(const QString &file, QTextCodec *codec, bool insert)
   VConfig c;
 
   if (!insert) {
+    kWriteDoc->clear();
     kWriteDoc->loadFile(file, codec);
   } else {
     // TODO: Not yet supported.
@@ -2207,6 +2208,9 @@ void KWrite::loadURL(const KURL &url, int flags) {
     KIO::Job *job = KIO::get( url );
     m_mapNetData.insert( job, d );
 
+#ifdef NEW_CODE
+    kWriteDoc->clear();
+#endif
     connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotJobReadResult( KIO::Job * ) ) );
     connect( job, SIGNAL( data( KIO::Job *, const QByteArray & ) ), this, SLOT( slotJobData( KIO::Job *, const QByteArray & ) ) );
   }
@@ -2317,7 +2321,15 @@ void KWrite::slotJobReadResult( KIO::Job *job )
     if ( job->error() )
         job->showErrorDialog();
 #ifdef NEW_CODE
-    // Something todo?
+    QString msg;
+
+    if ( flags & KWriteView::lfInsert )
+        msg = i18n( "Inserted : %1" ).arg( url.fileName() );
+    else
+        msg = i18n( "Read : %1" ).arg( url.fileName() );
+
+    emit statusMsg( msg );
+    // Something else todo?
 #else
     else
         loadInternal( data, url, flags );

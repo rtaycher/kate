@@ -7,8 +7,11 @@
 -Glen Parker <glenebob@nwlink.com>
   (undo history, kspell-integration)
 
--Michael Koch <koch@kde.org> 
+-Michael Koch <koch@kde.org>
   (port to KParts)
+
+-Waldo Bastian <bastian@kde.org>
+  (improved buffer handling)
 
 *** patches and bugfixes ***
 

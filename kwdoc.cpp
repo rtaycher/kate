@@ -1130,10 +1130,14 @@ void KWriteDoc::clear() {
 
   eolMode = KWriteView::eolUnix;
 
+
+#ifndef NEW_CODE
   contents.clear();
   contents.append(longestLine = new TextLine());
-
-  buffer->insertLine(0, longestLine);
+#else
+  buffer->clear();
+  longestLine = buffer->line(0);
+#endif
 
   maxLength = 0;
 

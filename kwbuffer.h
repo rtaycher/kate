@@ -91,6 +91,11 @@ public:
     */
    void changeLine(int i);
 
+   /**
+    * Clear the buffer.
+    */
+   void clear();
+    
 signals:
    /**
     * Emitted during loading.
@@ -182,6 +187,13 @@ public:
    int blockFill(int dataStart, QByteArray data1, QByteArray data2, bool last);
 
    /**
+    * Remove the last line from the block. The lastLine is returned
+    * at offset @p lastLine in @p data1
+    * Pre Condition: b_rawDataValid is true.
+    */
+   void truncateEOL( int &lastLine, QByteArray &data1 );
+
+   /**
     * Create a valid stringList.
     * Post Condition: b_stringListValid is true.
     */
@@ -263,6 +275,8 @@ protected:
    bool b_rawDataValid;
    bool b_vmDataValid;
    bool b_appendEOL; // Buffer is not terminated with '\n'.
+   bool b_emptyBlock; // Buffer is empty
+   int m_lastLine; // Start of last line if buffer is without EOL.
    KWBufState m_beginState;
    KWBufState m_endState;
    QTextCodec *m_codec;
