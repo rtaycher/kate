@@ -74,12 +74,12 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow, KateViewManager 
 
   cmbPath = new KURLComboBox( KURLComboBox::Directories, true, this, "path combo" );
   cmbPath->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
-  KURLCompletion* cmpl = new KURLCompletion();
+  KURLCompletion* cmpl = new KURLCompletion(KURLCompletion::DirCompletion);
   cmbPath->setCompletionObject( cmpl );
   lo->addWidget(cmbPath);
 
   dir = new KDirOperator(QString::null, this, "operator");
-  dir->setView(KFile::Simple);
+  dir->setView(KFile::/*Simple*/Detail);
   lo->addWidget(dir);
   lo->setStretchFactor(dir, 2);
 

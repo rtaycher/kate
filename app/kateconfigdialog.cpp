@@ -142,6 +142,10 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   QWhatsThis::add( cb_singleInstance, i18n(
         "If this is checked, you can only start one instance of Kate. If you try, the current "
         "instance will get the focus, and open any files you requested opened.") );
+  
+  // show full path in title
+  cb_fullPath = new QCheckBox( i18n("Show Full &Path in Title"), frGeneral);
+  cb_fullPath->setChecked( config->readBoolEntry("Show Full Path in Title", false ) );
 
   // opaque resize of view splitters
   cb_opaqueResize = new QCheckBox( frGeneral );
@@ -328,6 +332,8 @@ void KateConfigDialog::slotApply()
   v->getDoc()->writeConfig();
   v->getDoc()->readConfig();
 
+  viewManager->setShowFullPath( cb_fullPath->isChecked() ); // hm, stored 2 places :(
+  config->writeEntry( "Show Full Path in Title", cb_fullPath->isChecked() );
   config->sync();
 
   // all docs need to reread config.

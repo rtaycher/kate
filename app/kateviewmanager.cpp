@@ -824,14 +824,12 @@ void KateViewManager::splitViewSpace( KateViewSpace* vs,
                                       bool atTop,
                                       KURL newViewUrl)
 {
+  kdDebug()<<"splitViewSpace()"<<endl;
+  
   if (!activeView()) return;
-  if (!vs)
-    /*KateViewSpace**/ vs = activeViewSpace();
-  bool isFirstTime = vs->parentWidget() == this;
+  if (!vs) vs = activeViewSpace();
 
-  QValueList<int> sizes;
-  if (! isFirstTime)
-    sizes = ((KateSplitter*)vs->parentWidget())->sizes();
+  bool isFirstTime = vs->parentWidget() == this;
 
   Qt::Orientation o = isHoriz ? Qt::Vertical : Qt::Horizontal;
   KateSplitter* s = new KateSplitter(o, vs->parentWidget());
@@ -846,22 +844,17 @@ void KateViewManager::splitViewSpace( KateViewSpace* vs,
   }
   vs->reparent( s, 0, QPoint(), true );
   KateViewSpace* vsNew = new KateViewSpace( s );
+  kdDebug()<<"splitViewSpace(): splitter and viewspace created"<<endl;
 
   if (atTop)
     s->moveToFirst( vsNew );
 
   if (isFirstTime)
     grid->addWidget(s, 0, 0);
-  else
-    ((KateSplitter*)s->parentWidget())->setSizes( sizes );
 
-  sizes.clear();
-  int sz = isHoriz ? s->height()/2 : s->width()/2;
-  sizes.append(sz);
-  sizes.append(sz);
-  s->setSizes( sizes );
-
+  kdDebug()<<"splitViewSpace(): calling new splitter->show()"<<endl;
   s->show();
+  kdDebug()<<"splitViewSpace(): splitter->show() was  called, moving on"<<endl;
 
   connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, QString)), vsNew, SLOT(slotStatusChanged(Kate::View *, int, int,int, bool, int, QString)));
   viewSpaceList.append( vsNew );
@@ -869,6 +862,7 @@ void KateViewManager::splitViewSpace( KateViewSpace* vs,
   activeViewSpace()->setActive( false );
   vsNew->setActive( true, true );
   vsNew->show();
+  kdDebug()<<"splitViewSpace(): going to create a view!"<<endl;
   if (!newViewUrl.isValid())
     createView (false, KURL(), (Kate::View *)activeView());
   else {
@@ -879,6 +873,7 @@ void KateViewManager::splitViewSpace( KateViewSpace* vs,
     else
       createView( true, newViewUrl );
   }
+  kdDebug()<<"splitViewSpace() - DONE!"<<endl;
 }
 
 void KateViewManager::removeViewSpace (KateViewSpace *viewspace)

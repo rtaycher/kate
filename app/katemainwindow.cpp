@@ -280,8 +280,8 @@ void KateMainWindow::setupActions()
   settingsShowFileselector = new KToggleAction(i18n("Show File Selector"), 0, fileselectorDock, SLOT(changeHideShowState()), actionCollection(), "settings_show_fileselector");
   settingsShowConsole = new KToggleAction(i18n("Show Terminal Emulator"), QString::fromLatin1("konsole"), Qt::Key_F7, this, SLOT(slotSettingsShowConsole()), actionCollection(), "settings_show_console");
 
-  // allow full path in title -anders
-  settingsShowFullPath = new KToggleAction(i18n("Show Full &Path in Title"), 0, this, SLOT(slotSettingsShowFullPath()), actionCollection(), "settings_show_full_path");
+  // (now moved to config dialog) show full path in title -anders
+  // settingsShowFullPath = new KToggleAction(i18n("Show Full &Path in Title"), 0, this, SLOT(slotSettingsShowFullPath()), actionCollection(), "settings_show_full_path");
   settingsShowToolbar = KStdAction::showToolbar(this, SLOT(slotSettingsShowToolbar()), actionCollection(), "settings_show_toolbar");
   settingsConfigure = KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
 
@@ -363,7 +363,7 @@ void KateMainWindow::readOptions(KConfig *config)
     resize( config->readSizeEntry( "size", new QSize(600, 400) ) );
 
   viewManager->setShowFullPath(config->readBoolEntry("Show Full Path in Title", false));
-  settingsShowFullPath->setChecked(viewManager->getShowFullPath());
+  //settingsShowFullPath->setChecked(viewManager->getShowFullPath());
   settingsShowToolbar->setChecked(config->readBoolEntry("Show Toolbar", true));
   slotSettingsShowToolbar();
   viewManager->setUseOpaqueResize(config->readBoolEntry("Opaque Resize", true));
@@ -628,11 +628,12 @@ void KateMainWindow::openURL (const QString &name)
   viewManager->openURL (KURL(name));
 }
 
+/* FIXME anders: remove later
 void KateMainWindow::slotSettingsShowFullPath()
 {
   viewManager->setShowFullPath( settingsShowFullPath->isChecked() );
 }
-
+*/
 void KateMainWindow::slotSettingsShowToolbar()
 {
   if (settingsShowToolbar->isChecked())

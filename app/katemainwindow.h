@@ -112,12 +112,12 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
 
     KToggleAction* settingsShowFilelist;
     KToggleAction* settingsShowFileselector;
-    KToggleAction* settingsShowFullPath;
+    //KToggleAction* settingsShowFullPath;
     KToggleAction* settingsShowToolbar;
     KToggleAction* settingsShowConsole;
 
     KAction* settingsConfigure;
-    
+
     KSelectAction* scriptMenu;
     KScriptManager* kscript;
 
@@ -162,7 +162,7 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     void setEOLMenuAboutToShow();
     void bookmarkMenuAboutToShow();
     void settingsMenuAboutToShow();
-    void slotSettingsShowFullPath();
+    //void slotSettingsShowFullPath();
     void slotDropEvent(QDropEvent *);
     void editKeys();
     void mSlotFixOpenWithMenu();

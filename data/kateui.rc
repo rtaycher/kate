@@ -95,9 +95,9 @@
     <Action name="settings_show_fileselector" />
     <Action name="settings_show_console" />
     <Separator />
-    <Action name="settings_show_full_path" />
+<!--    <Action name="settings_show_full_path" />
     <Action name="settings_show_fullscreen" />
-    <Separator />
+    <Separator />//-->
     <Action name="options_configure_keybinding"/>
     <Action name="set_configure_toolbars"/>
     <Action name="settings_configure" />
