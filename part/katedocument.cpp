@@ -376,12 +376,9 @@ QString KateDocument::textLine( uint line ) const
   return l->getString();
 }
 
-bool KateDocument::setText(const QString &s) {
-  int pos;
-  QChar ch;
-
+bool KateDocument::setText(const QString &s)
+{
   clear();
-
   return insertText (0, 0, s);
 }
 
@@ -616,7 +613,8 @@ bool KateDocument::removeLine( uint line )
     newUndo = true;
 	}
 
-  internalRemoveLine (line);
+	if (!internalRemoveLine (line))
+	  return false;
 
   if (tagStart <= tagEnd) {
     optimizeSelection();
@@ -851,6 +849,9 @@ bool KateDocument::internalRemoveLine ( uint line )
   KateView *view;
   int cLine, cCol;
   KateViewCursor c;
+	
+	if (numLines() == 1)
+	  return false;
 
 	if (currentUndo)
 	  currentUndo->addItem (new KateUndo (this, KateUndo::internalRemoveLine, line, 0, getTextLine (line)->getString().length(), getTextLine (line)->getString()));
