@@ -1,6 +1,6 @@
 <?xml version="1.01" encoding="UTF-8"?><!DOCTYPE highlighting>
 <highlighting>
-<language name="C/C++" extensions="*.cpp;*.cc;*.C;*.h" mimetype="text/x-c++-src;text/x-c++-hdr;text/x-c-hdr;text/x-c++-src" casesensitive="1">
+<language name="C++" extensions="*.cpp;*.cc;*.C;*.h" mimetype="text/x-c++-src;text/x-c++-hdr;text/x-c-hdr;text/x-c++-src" casesensitive="1">
 <keywords>
  <keyword> asm </keyword>
  <keyword> catch </keyword>
@@ -62,7 +62,40 @@
  <keyword> Q_CLASSINFO </keyword>
  <keyword> TRUE </keyword>
  <keyword> FALSE </keyword>
-  <keyword> break </keyword>
+</keywords>
+<types>
+ <type> bool </type>
+ <type> wchar_t </type>
+ <type> mutable </type>
+ <type> uint </type>
+</types>
+<contexts>
+  <context attribute="0" lineEndContext="0">
+    <item name="keyword" attribute="1" context="0"/>
+    <item name="dataType" attribute="2" context="0"/>
+    <item name="Float" attribute="4" context="0"/>
+    <item name="Int" attribute="3" context="0"/>
+    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
+    <item name="CharDetect" attribute="5" context="1" char="'"/>
+  </context>
+  <context attribute="5" lineEndContext="0"/>
+  <context attribute="4" lineEditContext="0">
+    <item name="CharDetect" attribute="4" context="0" char="'"/>
+  </context>
+</contexts>
+<itemDatas>
+  <itemData name="Normal Text" defStyleNum="dsNormal"/>
+  <itemData name="Keyword" defStyleNum="dsKeyword"/>
+  <itemData name="Identifier" defStyleNum="dsOthers"/>
+  <itemData name="Types" defStyleNum="dsDataType"/>
+  <itemData name="String" defStyleNum="dsString"/>
+  <itemData name="Comment" defStyleNum="dsComment"/>
+</itemDatas>
+</language>
+
+<language name="C extensions="*.cpp;*.cc;*.C;*.h" mimetype="text/x-c++-src;text/x-c++-hdr;text/x-c-hdr;text/x-c++-src" casesensitive="1"">
+<keywords>
+   <keyword> break </keyword>
    <keyword> case </keyword>
    <keyword> continue </keyword>
    <keyword> default </keyword>
@@ -80,7 +113,50 @@
    <keyword> typedef </keyword>
    <keyword> union </keyword>
    <keyword> while </keyword>
-    <keyword> @class </keyword>
+</keywords>
+<types>
+    <type> auto </type>
+    <type> char </type>
+    <type> const </type>
+    <type> double </type>
+    <type> float </type>
+    <type> int </type>
+    <type> long </type>
+    <type> register </type>
+    <type> short </type>
+    <type> signed </type>
+    <type> static </type>
+    <type> unsigned </type>
+    <type> void </type>
+    <type> volatile </type>
+</types>
+<contexts>
+  <context attribute="0" lineEndContext="0">
+    <item name="keyword" attribute="1" context="0"/>
+    <item name="dataType" attribute="2" context="0"/>
+    <item name="Float" attribute="4" context="0"/>
+    <item name="Int" attribute="3" context="0"/>
+    <item name="CharDetect" attribute="4" context="2" char="quot;"/>
+    <item name="CharDetect" attribute="5" context="1" char="'"/>
+  </context>
+  <context attribute="5" lineEndContext="0"/>
+  <context attribute="4" lineEditContext="0">
+    <item name="CharDetect" attribute="4" context="0" char="'"/>
+  </context>
+</contexts>
+<itemDatas>
+  <itemData name="Normal Text" defStyleNum="dsNormal"/>
+  <itemData name="Keyword" defStyleNum="dsKeyword"/>
+  <itemData name="Identifier" defStyleNum="dsOthers"/>
+  <itemData name="Types" defStyleNum="dsDataType"/>
+  <itemData name="String" defStyleNum="dsString"/>
+  <itemData name="Comment" defStyleNum="dsComment"/>
+</itemDatas>
+</language>
+
+<language name="Objective-C" extensions="*.cpp;*.cc;*.C;*.h" mimetype="text/x-c++-src;text/x-c++-hdr;text/x-c-hdr;text/x-c++-src" casesensitive="1">
+<keywords>
+ <keyword> @class </keyword>
  <keyword> @defs </keyword>
  <keyword> @encode </keyword>
  <keyword> @end </keyword>
@@ -95,24 +171,20 @@
  <keyword> super </keyword>
 </keywords>
 <types>
- <type> bool </type>
- <type> wchar_t </type>
- <type> mutable </type>
- <type> uint </type>
-   <type> auto </type>
-    <type> char </type>
-    <type> const </type>
-    <type> double </type>
-    <type> float </type>
-    <type> int </type>
-    <type> long </type>
-    <type> register </type>
-    <type> short </type>
-    <type> signed </type>
-    <type> static </type>
-    <type> unsigned </type>
-    <type> void </type>
-    <type> volatile </type>
+ <type> auto </type>
+ <type> char </type>
+ <type> const </type>
+ <type> double </type>
+ <type> float </type>
+ <type> int </type>
+ <type> long </type>
+ <type> register </type>
+ <type> short </type>
+ <type> signed </type>
+ <type> static </type>
+ <type> unsigned </type>
+ <type> void </type>
+ <type> volatile </type>
 </types>
 <contexts>
   <context attribute="0" lineEndContext="0">

@@ -2153,15 +2153,15 @@ HlManager::HlManager() : QObject(0L)
   hlList.setAutoDelete(true);
   hlList.append(new Highlight(I18N_NOOP("Normal")));
 
-
+   /* new stuff
  uint i=0;
   while (i < modeList.count())
   {
     hlList.append(new AutoHighlight(modeList.at(i)));
     i++;
-  }
+  }                */
 
-  /*
+
   hlList.append(new CHighlight(     "C"        ));
   hlList.append(new CppHighlight(   "C++"      ));
   hlList.append(new ObjcHighlight(  "Objective-C"));
@@ -2178,7 +2178,6 @@ HlManager::HlManager() : QObject(0L)
   hlList.append(new KBasicHighlight("KBasic"));
   hlList.append(new LatexHighlight( "Latex"    ));
   hlList.append(new IdlHighlight("IDL"));
-   */
 }
 
 HlManager::~HlManager() {
