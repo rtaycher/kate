@@ -82,28 +82,28 @@ class ToolViewManager : public QObject
 
     /**
      * Show the toolview
-     * @parm dockwidget widget to show
+     * @param dockwidget widget to show
      * @return bool success
      */
     bool showToolView (KDockWidget*dockwidget);
     
     /**
      * Show the toolview
-     * @parm sname name of the widget to show
+     * @param sname name of the widget to show
      * @return bool success
      */
     bool showToolView (const QString& sname);
     
     /**
      * Hide the toolview
-     * @parm dockwidget widget to hide
+     * @param dockwidget widget to hide
      * @return bool success
      */
     bool hideToolView (KDockWidget*dockwidget);
     
     /**
      * Hide the toolview
-     * @parm sname name of the widget to hide
+     * @param sname name of the widget to hide
      * @return bool success
      */
     bool hideToolView (const QString& sname);

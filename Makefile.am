@@ -1,5 +1,5 @@
 SUBDIRS = lib utils interfaces app data pics
-EXTRA_DIST = AUTHORS COPYING.LIB ChangeLog DESIGN NEWS README TODO
+EXTRA_DIST = AUTHORS COPYING.LIB ChangeLog DESIGN NEWS README TODO Doxyfile
 
 messages:
 	rm -f tips.cpp
