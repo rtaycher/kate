@@ -98,24 +98,6 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   lo->setAutoAdd( true );
   config->setGroup("General");
 
-  // sdi or mdi?
-  QButtonGroup *bgMode = new QButtonGroup( 1, Qt::Horizontal, i18n("Application Mode"), frGeneral );
-  bgMode->setRadioButtonExclusive( true );
-  rb_modeMDI = new QRadioButton( i18n("Kate &MDI"), bgMode );
-  rb_modeSDI = new QRadioButton( i18n("Kate &SDI"), bgMode );
-  if ( config->readBoolEntry( "sdi", false ) )
-    rb_modeSDI->setChecked( true );
-  else
-    rb_modeMDI->setChecked( true );
-  QWhatsThis::add( bgMode, i18n(
-        "<qt>Choose which interface you like best.<p><strong>Kate MDI</strong> (default):"
-        "<br>All documents are kept within one main window, and you must choose the document "
-        "to edit from the \"Document\" menu, or from the File List."
-        "<p><strong>Kate SDI</strong>:<br>A Single Document Interface opens only one document "
-        "in each window. The File List/File Selector will have it's own window by default. "
-        "You can <code>ALT-TAB</code> your way to the desired document."
-        "<p><strong>Note:</strong> You need to restart Kate for this setting to take effect.</qt>") );
-
   // GROUP with the one below: "At Startup"
   QButtonGroup *bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("At Startup"), frGeneral );
   // reopen files
@@ -191,12 +173,6 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
                           BarIcon("misc",KIcon::SizeSmall));
   (void)new KateConfigPluginPage(page, this);
 
-  for (uint i=0; i<pluginManager->myPluginList.count(); i++)
-  {
-    if  ( pluginManager->myPluginList.at(i)->load && pluginManager->myPluginList.at(i)->plugin->hasConfigPage() )
-      addPluginPage (pluginManager->myPluginList.at(i)->plugin);
-  }
-
   // END General page
   config->setGroup("General");
 
@@ -213,6 +189,12 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
                               KTextEditor::configInterfaceExtension (v->document())->configPagePixmap(i, KIcon::SizeSmall) );
   
     editorPages.append (KTextEditor::configInterfaceExtension (v->document())->configPage(i, page));
+  }           
+  
+  for (uint i=0; i<pluginManager->myPluginList.count(); i++)
+  {
+    if  ( pluginManager->myPluginList.at(i)->load && pluginManager->myPluginList.at(i)->plugin->hasConfigPage() )
+      addPluginPage (pluginManager->myPluginList.at(i)->plugin);
   }
  
   enableButtonSeparator(true);
@@ -267,8 +249,6 @@ void KateConfigDialog::slotApply()
   viewManager->setUseOpaqueResize(cb_opaqueResize->isChecked());
   config->setGroup("KDE");
   config->writeEntry("MultipleInstances",!cb_singleInstance->isChecked());
-  config->setGroup("startup");
-  config->writeEntry("sdi",/*cb_sdi->isChecked()*/rb_modeSDI->isChecked() );
   config->setGroup("General");
   config->writeEntry("reopen at startup", cb_reopenFiles->isChecked());
 

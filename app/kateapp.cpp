@@ -33,9 +33,6 @@ KateApp::KateApp () : Kate::Application ()
 {                            
   m_firstStart = true;
 
-  config()->setGroup("General");                 
-  _isSDI = config()->readBoolEntry( "sdi", false );
-
   mainWindows.setAutoDelete (false);
   
   docManager = new KateDocManager ();
@@ -63,9 +60,6 @@ KateApp::~KateApp ()
 int KateApp::newInstance()
 {
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
-
-  if (m_firstStart && args->isSet ("sdi"))
-    _isSDI = true; 
     
   if (!m_firstStart && args->isSet ("n"))
     newMainWindow (); 

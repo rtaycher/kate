@@ -99,13 +99,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_
   connect(documentMenu, SIGNAL(aboutToShow()), this, SLOT(documentMenuAboutToShow()));
 
   readOptions(config);
-
-  if (((KateApp *)kapp)->_isSDI)
-  {
-    filelistDock->undock();
-    fileselectorDock->undock();
-  }
-
+    
   setAutoSaveSettings( QString::fromLatin1("MainWindow"), false );
 }
 
@@ -195,7 +189,7 @@ void KateMainWindow::setupActions()
   KStdAction::openNew( viewManager, SLOT( slotDocumentNew() ), actionCollection(), "file_new" );
   KStdAction::open( viewManager, SLOT( slotDocumentOpen() ), actionCollection(), "file_open" );
 
-  fileOpenRecent = KStdAction::openRecent (viewManager, SLOT(openConstURL_delayed1 (const KURL&)), actionCollection());
+  fileOpenRecent = KStdAction::openRecent (viewManager, SLOT(openConstURL (const KURL&)), actionCollection());
   new KAction( i18n("Save A&ll"),"save_all", CTRL+Key_L, viewManager, SLOT( slotDocumentSaveAll() ), actionCollection(), "file_save_all" );
   KStdAction::close( viewManager, SLOT( slotDocumentClose() ), actionCollection(), "file_close" );
   new KAction( i18n( "Clos&e All" ), 0, viewManager, SLOT( slotDocumentCloseAll() ), actionCollection(), "file_close_all" );
@@ -307,11 +301,9 @@ void KateMainWindow::readOptions(KConfig *config)
     slotSettingsShowConsole();
   }
 
-  if (!((KateApp *)kapp)->_isSDI)
-    {
-      QSize tmpSize(600, 400);
-      resize( config->readSizeEntry( "size", &tmpSize ) );
-    }
+  QSize tmpSize(600, 400);
+  resize( config->readSizeEntry( "size", &tmpSize ) );
+
   viewManager->setShowFullPath(config->readBoolEntry("Show Full Path in Title", false));
 
   settingsShowToolbar->setChecked(config->readBoolEntry("Show Toolbar", true));
@@ -324,8 +316,7 @@ void KateMainWindow::readOptions(KConfig *config)
   fileselector->readConfig(config, "fileselector");
   fileselector->setView(KFile::Default);
 
-  if (!((KateApp *)kapp)->_isSDI)
-    readDockConfig();
+  readDockConfig();
 }
 
 void KateMainWindow::saveOptions(KConfig *config)
@@ -337,8 +328,7 @@ void KateMainWindow::saveOptions(KConfig *config)
   else
     config->writeEntry("Show Console", false);
 
-  if (!((KateApp *)kapp)->_isSDI)
-    config->writeEntry("size", size());
+  config->writeEntry("size", size());
 
   config->writeEntry("Show Full Path in Title", viewManager->getShowFullPath());
   config->writeEntry("Show Toolbar", settingsShowToolbar->isChecked());
@@ -349,8 +339,7 @@ void KateMainWindow::saveOptions(KConfig *config)
 
   fileselector->writeConfig(config, "fileselector");
 
-  if (!((KateApp *)kapp)->_isSDI)
-    writeDockConfig();
+  writeDockConfig();
 
   if (viewManager->activeView())
     viewManager->activeView()->getDoc()->writeConfig();

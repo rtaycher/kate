@@ -55,8 +55,6 @@ KateViewManager::KateViewManager (QWidget *parent, KateDocManager *docManager) :
   viewList.setAutoDelete(true);
   viewSpaceList.setAutoDelete(true);
 
-  newOne = true;
-
   this->docManager = docManager;
 
 	myEncoding = QString::fromLatin1(QTextCodec::codecForLocale()->name());
@@ -454,10 +452,7 @@ void KateViewManager::slotWindowPrev()
 
 void KateViewManager::slotDocumentNew ()
 {
-  if (((KateApp *)kapp)->_isSDI)
-    ((KateApp *)kapp)->newMainWindow()->viewManager->createView (true, KURL(), 0L);
-  else
-    createView (true, KURL(), 0L);
+  createView (true, KURL(), 0L);
 }
 
 void KateViewManager::slotDocumentOpen ()
@@ -564,21 +559,6 @@ void KateViewManager::slotDocumentCloseAll ()
 
 void KateViewManager::openURL (KURL url)
 {
-  if (!((KateApp *)kapp)->_isSDI)
-    openURLReal (url);
-  else
-  {
-    if (newOne)
-      openURLReal (url);
-    else
-      ((KateApp *)kapp)->newMainWindow()->viewManager->openURLReal (url);
-  }
-
-  newOne = false;
-}
-
-void KateViewManager::openURLReal (KURL url)
-{
   // special handling if still only the first initial doc is there
   if (docManager->myfirstDoc)
   {
@@ -625,25 +605,11 @@ void KateViewManager::openURLReal (KURL url)
   }
   else
     activateView( docManager->findDoc( url ) );
-
-  newOne = false;
 }
 
 void KateViewManager::openConstURL (const KURL& url)
 {
   openURL (KURL (url));
-}
-
-void KateViewManager::openConstURL_delayed1 (const KURL& url)
-{
-	delayedURL=url;
-	QTimer::singleShot(0,this,SLOT(openConstURL_delayed2()));
-//  openURL (KURL (url));
-}
-
-void KateViewManager::openConstURL_delayed2 ()
-{
-	openURL(KURL(delayedURL));
 }
 
 void KateViewManager::splitViewSpace( KateViewSpace* vs,

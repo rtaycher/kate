@@ -50,9 +50,6 @@ class KateApp : public Kate::Application
     Kate::DocManager *getDocManager ();
     Kate::MainWindow *getMainWindow ();
 
-  public:
-    bool _isSDI;
-
   private:
     KateDocManager *docManager;
     KatePluginManager *pluginManager;

@@ -61,13 +61,11 @@ class KateConfigDialog : public KDialogBase
 
     Kate::View* v;
 
-    class QRadioButton *rb_modeMDI, *rb_modeSDI;
     class QCheckBox* cb_opaqueResize;
     class QCheckBox* cb_reopenFiles;
     class QCheckBox* cb_restoreVC;
     class QCheckBox *cb_singleInstance;
     class QCheckBox *cb_fullPath;
-    //class QCheckBox *cb_sdi;
     class QCheckBox *cb_syncKonsole;
     class QSpinBox *sb_numRecentFiles;
 
