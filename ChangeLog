@@ -2,6 +2,7 @@
         * kantpart finished
         * new kwrite using kantpart
         * removed old kwrite and kwritepart !
+        * fixed menu and toolbar problems of the new KWrite app
 
 2001-03-11 Christoph Cullmann <crossfire@babylon2k.de>
         * kwrite stuff merged into kant !!!!!
