@@ -63,6 +63,7 @@
 #include <qtoolbar.h>
 #include <kpopupmenu.h>
 #include <kdialog.h>
+#include <kio/netaccess.h>
 
 #include <kdebug.h>
 //END Includes
@@ -328,7 +329,8 @@ void KateFileSelector::slotFilterChange( const QString & nf )
 }
 void KateFileSelector::setDir( KURL u )
 {
-  dir->setURL(u, true);
+  if (KIO::NetAccess::exists(u))
+    dir->setURL(u, true);
 }
 
 //END Public Slots
