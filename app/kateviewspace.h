@@ -47,6 +47,11 @@ class KateVSStatusBar : public KStatusBar
    public slots:
       void setStatus( int r, int c, int ovr, bool block, int mod, const QString &msg );
       void updateMod( bool );
+      /**
+       * changed the modified icon according to document state.
+       * @since Kate 2.4
+       */
+      void modifiedChanged();
 
    protected:
       virtual bool eventFilter (QObject*,QEvent *);

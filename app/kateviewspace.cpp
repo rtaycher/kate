@@ -1,7 +1,7 @@
 /* This file is part of the KDE project
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
-   Copyright (C) 2001 Anders Lund <anders.lund@lund.tdcadsl.dk>
+   Copyright (C) 2001, 2005 Anders Lund <anders.lund@lund.tdcadsl.dk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -136,42 +136,44 @@ void KateViewSpace::addView(Kate::View* v, bool show)
 
 void KateViewSpace::removeView(Kate::View* v)
 {
-//  mStatusBar->slotClear ();
+  disconnect( v->getDoc(), SIGNAL(modifiedChanged()),
+              mStatusBar, SLOT(modifiedChanged()) );
+
+  bool active = ( v == currentView() );
+
   mViewList.remove (v);
   stack->removeWidget (v);
-// FIXME only if active - focus stack->visibleWidget() or back out
+
+  if ( ! active )
+    return;
+
   if (currentView() != 0L)
-    stack->raiseWidget(mViewList.current());
+    showView(mViewList.current());
   else if (mViewList.count() > 0)
-    stack->raiseWidget(mViewList.last());
+    showView(mViewList.last());
 }
 
 bool KateViewSpace::showView(Kate::View* v)
 {
-  Kate::Document* d = v->getDoc();
-  QPtrListIterator<Kate::View> it (mViewList);
-
-  it.toLast();
-  for( ; it.current(); --it ) {
-    if (it.current()->getDoc() == d) {
-      Kate::View* kv = it.current();
-      mViewList.removeRef( kv );
-      mViewList.append( kv );
-      stack->raiseWidget( kv );
-      kv->show();
-      return true;
-    }
-  }
-  return false;
+  kdDebug()<<k_funcinfo<<endl;
+  return showView( v->getDoc()->documentNumber() );
 }
 
 bool KateViewSpace::showView(uint documentNumber)
 {
+  kdDebug()<<k_funcinfo<<endl;
   QPtrListIterator<Kate::View> it (mViewList);
   it.toLast();
   for( ; it.current(); --it ) {
     if (((Kate::Document*)it.current()->getDoc())->documentNumber() == documentNumber) {
+      if ( currentView() )
+        disconnect( currentView()->getDoc(), SIGNAL(modifiedChanged()),
+                    mStatusBar, SLOT(modifiedChanged()) );
+
       Kate::View* kv = it.current();
+      connect( kv->getDoc(), SIGNAL(modifiedChanged()),
+               mStatusBar, SLOT(modifiedChanged()) );
+
       mViewList.removeRef( kv );
       mViewList.append( kv );
       stack->raiseWidget( kv );
@@ -196,17 +198,18 @@ bool KateViewSpace::isActiveSpace()
   return mIsActiveSpace;
 }
 
-void KateViewSpace::setActive( bool b, bool )
+void KateViewSpace::setActive( bool active, bool )
 {
-  mIsActiveSpace = b;
+  mIsActiveSpace = active;
 
   // change the statusbar palette and make sure it gets updated
   QPalette pal( palette() );
-  if ( ! b )
+  if ( ! active )
   {
     pal.setColor( QColorGroup::Background, pal.active().mid() );
     pal.setColor( QColorGroup::Light, pal.active().midlight() );
   }
+
   mStatusBar->setPalette( pal );
   mStatusBar->update();
   sep->update();
@@ -263,7 +266,8 @@ void KateViewSpace::saveConfig ( KConfig* config, int myIndex ,const QString& vi
 
 void KateViewSpace::modifiedOnDisc(Kate::Document *, bool, unsigned char)
 {
-  mStatusBar->updateMod( currentView()->getDoc()->isModified() );
+  if ( currentView() )
+    mStatusBar->updateMod( currentView()->getDoc()->isModified() );
 }
 
 void KateViewSpace::restoreConfig ( KateViewSpaceContainer *viewMan, KConfig* config, const QString &group )
@@ -353,7 +357,7 @@ void KateVSStatusBar::setStatus( int r, int c, int ovr, bool block, int mod, con
   else if (ovr == 2)
     m_insertModeLabel->setText( i18n(" INS ") );
 
-  updateMod( mod );
+//   updateMod( mod );
 
   m_selectModeLabel->setText( block ? i18n(" BLK ") : i18n(" NORM ") );
 
@@ -362,18 +366,29 @@ void KateVSStatusBar::setStatus( int r, int c, int ovr, bool block, int mod, con
 
 void KateVSStatusBar::updateMod( bool mod )
 {
-  const KateDocumentInfo *info
-      = KateDocManager::self()->documentInfo ( m_viewSpace->currentView()->getDoc() );
+  Kate::View *v = m_viewSpace->currentView();
+  if ( v )
+  {
+    const KateDocumentInfo *info
+      = KateDocManager::self()->documentInfo ( v->getDoc() );
 
-  m_modifiedLabel->setPixmap(
-      mod ?
-        info && info->modifiedOnDisc ?
-          m_modmodPm :
-          m_modPm :
-        info && info->modifiedOnDisc ?
-          m_modDiscPm :
-      m_noPm
-      );
+    m_modifiedLabel->setPixmap(
+        mod ?
+          info && info->modifiedOnDisc ?
+            m_modmodPm :
+            m_modPm :
+          info && info->modifiedOnDisc ?
+            m_modDiscPm :
+        m_noPm
+        );
+  }
+}
+
+void KateVSStatusBar::modifiedChanged()
+{
+  Kate::View *v = m_viewSpace->currentView();
+  if ( v )
+    updateMod( v->getDoc()->isModified() );
 }
 
 void KateVSStatusBar::showMenu()
@@ -397,7 +412,7 @@ bool KateVSStatusBar::eventFilter(QObject*,QEvent *e)
 
     return true;
   }
-  
+
   return false;
 }
 //END KateVSStatusBar
