@@ -150,21 +150,26 @@ while (($n < $s) && ($file[$sections[$n]] ne ""))
 
 print FILE "    </itemDatas>\n";
 print FILE "  </highlighting>\n";
-print FILE "  <general>\n";
-print FILE "    <comments>\n";
 
-if ($linecomment ne "")
+if (($linecomment ne "") || ($commentstart ne "") && ($commentend ne ""))
 {
-  print FILE "      <comment name=\"singleLine\" start=\"$linecomment\" />\n";
+  print FILE "  <general>\n";
+  print FILE "    <comments>\n";
+
+  if ($linecomment ne "")
+  {
+    print FILE "      <comment name=\"singleLine\" start=\"$linecomment\" />\n";
+  }
+
+  if (($commentstart ne "") && ($commentend ne ""))
+  {
+    print FILE "      <comment name=\"multiLine\" start=\"$commentstart\" end=\"$commentend\" />\n";
+  }
+
+  print FILE "    </comments>\n";
+  print FILE "  </general>\n";
 }
 
-if (($commentstart ne "") && ($commentend ne ""))
-{
-  print FILE "      <comment name=\"multiLine\" start=\"$commentstart\" end=\"$commentend\" />\n";
-}
-
-print FILE "    </comments>\n";
-print FILE "  </general>\n";
 print FILE "</language>\n";
 
 close FILE;
