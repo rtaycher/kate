@@ -82,6 +82,8 @@
 #include <kapp.h>
 #include <kcursor.h>
 #include <klocale.h>
+#include <kglobal.h>
+#include <kcharsets.h>
 #include <kfiledialog.h>
 #include <kconfig.h>
 #include <kdebug.h>
@@ -2109,7 +2111,7 @@ bool KateView::loadFile(const QString &name, int flags) {
   }
 
   // TODO: Select a proper codec.
-  loadFile(name, QTextCodec::codecForLocale(), flags & KateView::lfInsert);
+  loadFile(name, KGlobal::charsets()->codecForName(myDoc->myEncoding), flags & KateView::lfInsert);
   return true;
 
   KMessageBox::sorry(this, i18n("An error occured while trying to open this document"));
@@ -2124,7 +2126,7 @@ bool KateView::writeFile(const QString &name) {
     return false;
   }
 
-  if (myDoc->writeFile(name, QTextCodec::codecForLocale()))
+  if (myDoc->writeFile(name, KGlobal::charsets()->codecForName(myDoc->myEncoding)))
      return true; // Success
 
   KMessageBox::sorry(this, i18n("An error occured while trying to write this document"));
@@ -2279,14 +2281,9 @@ void KateView::slotJobReadResult( KIO::Job *job )
     // Something else todo?
 }
 
-void KateView::loadInternal( const QByteArray &data, const KURL &url, int flags )
-{
-    // TODO: Not yet supported.
-}
-
 void KateView::slotJobData( KIO::Job *job, const QByteArray &data )
 {
-    myDoc->appendData(data, QTextCodec::codecForLocale());
+  myDoc->appendData(data, KGlobal::charsets()->codecForName(myDoc->myEncoding));
 }
 
 bool KateView::canDiscard() {
@@ -3459,6 +3456,7 @@ void KateBrowserExtension::slotSelectionChanged()
 {
   emit enableAction( "copy", m_doc->hasMarkedText() );
 }
+
 
 
 
