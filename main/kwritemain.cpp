@@ -583,7 +583,7 @@ int main(int argc, char **argv)
 {
   KLocale::setMainCatalogue("kate");         //lukas: set this to have the kwritepart translated using kate message catalog
 
-  KAboutData aboutData ("kwrite", I18N_NOOP("KWrite"), "0.2",
+  KAboutData aboutData ("kwrite", I18N_NOOP("KWrite"), "3.0",
 	I18N_NOOP( "KWrite - A new KWrite using the Kate Texteditor KPart" ), KAboutData::License_GPL,
 	 "(c) 2000-2001 The Kate Authors", 0, "http://devel-home.kde.org/~kate");
 

@@ -72,7 +72,7 @@ KInstance *KateFactory::instance()
 
 const KAboutData *KateFactory::aboutData()
 {
-  KAboutData *data = new KAboutData  ("kate", I18N_NOOP("Kate"), "0.2",
+  KAboutData *data = new KAboutData  ("kate", I18N_NOOP("Kate"), "1.0",
                                                            I18N_NOOP( "Kate - KDE Advanced Text Editor" ), KAboutData::License_GPL,
                                                            "(c) 2000-2001 The Kate Authors", 0, "http://devel-home.kde.org/~kate");
 
