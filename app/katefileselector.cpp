@@ -590,12 +590,12 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
   */
   QString lhwt( i18n(
         "<p>Decides how many locations to keep in the history of the location "
-        "combo box") );
+        "combo box.") );
   QWhatsThis::add( lbPathHist, lhwt );
   QWhatsThis::add( sbPathHistLength, lhwt );
   QString fhwt( i18n(
         "<p>Decides how many filters to keep in the history of the filter "
-        "combo box") );
+        "combo box.") );
   QWhatsThis::add( lbFilterHist, fhwt );
   QWhatsThis::add( sbFilterHistLength, fhwt );
   QString synwt( i18n(

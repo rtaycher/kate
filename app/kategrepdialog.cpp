@@ -211,7 +211,7 @@ GrepTool::GrepTool(KateMainWindow *parent, const char *name)
      ));
   QWhatsThis::add(cmbFiles,
     i18n("Enter the file name pattern of the files to search here.\n"
-     "You may give several patterns separated by commas"));
+     "You may give several patterns separated by commas."));
   QWhatsThis::add(leTemplate,
     i18n("You can choose a template for the pattern from the combo box\n"
      "and edit it here. The string %s in the template is replaced\n"
@@ -431,7 +431,7 @@ void GrepTool::childExited()
 
   if ( ! errbuf.isEmpty() )
   {
-    KMessageBox::information( parentWidget(), i18n("<strong>Error:</strong><p>") + errbuf, i18n("Grep tool error") );
+    KMessageBox::information( parentWidget(), i18n("<strong>Error:</strong><p>") + errbuf, i18n("Grep Tool Error") );
     errbuf.truncate(0);
   }
   else
