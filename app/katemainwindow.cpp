@@ -87,6 +87,10 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   {
 	config->writeEntry("deleteKDockWidgetConfig",false);
 	config->deleteGroup("dock_setting_default");
+	config->deleteGroup("KateDock::leftDock");
+	config->deleteGroup("KateDock::rightDock");
+	config->deleteGroup("KateDock::bottomDock");
+	config->deleteGroup("KateDock::topDock");
 	config->sync();
   }
 

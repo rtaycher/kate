@@ -32,6 +32,7 @@ private:
 	int oldtab;
   	int m_position; 
 	QMap<KDockWidget*,int> m_map;
+	QStringList itemNames;
 	int m_inserted;
 	int m_delayedRaise;
 	bool m_vertical;

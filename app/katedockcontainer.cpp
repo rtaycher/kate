@@ -93,9 +93,10 @@ void KateDockContainer::insertWidget (KDockWidget *w, QPixmap pixmap, const QStr
 		int dummy=0;
 		tabClicked(tab);
 		KDockContainer::insertWidget(w,pixmap,text,dummy);
+		itemNames.append(w->name());
 	}
         m_ws->raiseWidget(tab);
-	
+		
 }
 
 void KateDockContainer::removeWidget(KDockWidget* w)
@@ -107,6 +108,7 @@ void KateDockContainer::removeWidget(KDockWidget* w)
 	m_tb->removeTab(id);
 	m_map.remove(w);
 	KDockContainer::removeWidget(w);
+	itemNames.remove(w->name());
 }
 
 void KateDockContainer::undockWidget(KDockWidget *w)
@@ -161,11 +163,13 @@ void KateDockContainer::save(KConfig*)
 	
 	QPtrList<KMultiTabBarTab>* tl=m_tb->tabs();
 	QPtrListIterator<KMultiTabBarTab> it(*tl);
+	QStringList::Iterator it2=itemNames.begin();
 	int i=0;
-	for (;it.current()!=0;++it)
+	for (;it.current()!=0;++it,++it2)
 	{
-		cfg->writeEntry(QString("widget%1").arg(i),m_ws->widget(it.current()->id())->name());	
-		kdDebug()<<"****************************************Saving: "<<m_ws->widget(it.current()->id())->name()<<endl;
+//		cfg->writeEntry(QString("widget%1").arg(i),m_ws->widget(it.current()->id())->name());	
+		cfg->writeEntry(QString("widget%1").arg(i),(*it2));
+//		kdDebug()<<"****************************************Saving: "<<m_ws->widget(it.current()->id())->name()<<endl;
 		if (m_tb->isTabRaised(it.current()->id()))
 			cfg->writeEntry(m_ws->widget(it.current()->id())->name(),true);
 	++i;
@@ -179,7 +183,7 @@ void KateDockContainer::load(KConfig*)
 {
 	KConfig *cfg=kapp->config();
 	QString grp=cfg->group();	
-	cfg->setGroup(QString("BLAH::%1").arg(parent()->name()));
+	cfg->setGroup(QString("KateDock::%1").arg(parent()->name()));
 	int i=0;
 	QString raise;
 	while (true)
