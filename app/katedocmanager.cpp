@@ -336,16 +336,13 @@ void KateDocManager::saveDocumentList (KConfig* config)
   int i=0;
   for ( Kate::Document *doc = m_docList.first(); doc; doc = m_docList.next() )
   {
-	if (!doc->url().isEmpty()) {
-	    config->writeEntry( QString("Document %1").arg(i), doc->url().prettyURL() );
+    config->setGroup(QString("Document %1").arg(i));
+    doc->writeSessionConfig(config);
+    config->setGroup(grp);
 
-	    config->setGroup(QString ("Document ")+doc->url().prettyURL() );
-	    doc->writeSessionConfig(config);
-	    config->setGroup(grp);
-
-	    i++;
-	}
+    i++;
   }
+  
   config->setGroup(prevGrp);
 }
 
@@ -364,30 +361,22 @@ void KateDocManager::restoreDocumentList (KConfig* config)
         0,
         "openprog");
 
-  int i = 0;
   bool first = true;
-  while ((i < count) && config->hasKey(QString("Document %1").arg(i)))
+  for (int i=0; i < count; i++)
   {
-    QString fn = config->readEntry( QString("Document %1").arg( i ) );
-
-    if ( !fn.isEmpty() )
+    config->setGroup(QString("Document %1").arg(i));
+    Kate::Document *doc = 0;
+    
+    if (first)
     {
-      config->setGroup( QString ("Document ")+fn );
-      Kate::Document *doc = 0;
-
-      if (first)
-      {
-        first = false;
-        doc = document (0);
-      }
-      else
-        doc = createDoc ();
-
-      doc->readSessionConfig(config);
-      config->setGroup (grp);
+      first = false;
+      doc = document (0);
     }
-
-    i++;
+    else
+      doc = createDoc ();
+  
+    doc->readSessionConfig(config);
+    config->setGroup (grp);
 
     pd->setProgress(pd->progress()+1);
     kapp->processEvents();
