@@ -87,9 +87,6 @@ bool KateViewManager::createView ( bool newDoc, KURL url, KateView *origView, Ka
   connect(view,SIGNAL(newStatus()),this,SLOT(setWindowCaption()));
   viewList.append (view);
 
-  if (!newDoc && origView)
-    view->copySettings(origView);
-
   if (newDoc)
   {
     view->newDoc();

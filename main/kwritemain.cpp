@@ -207,7 +207,6 @@ void TopLevel::newView()
 {
   TopLevel *t = new TopLevel((KateDocument *)kateView->doc());
   t->readConfig();
-  t->kateView->copySettings(kateView);
   t->init();
 }
 
@@ -407,13 +406,11 @@ void TopLevel::restore(KConfig *config, int n)
 //  show();
 }
 
-
 void TopLevel::readProperties(KConfig *config)
 {
   readConfig(config);
   kateView->readSessionConfig(config);
 }
-
 
 void TopLevel::saveProperties(KConfig *config)
 {
@@ -421,7 +418,6 @@ void TopLevel::saveProperties(KConfig *config)
   config->writeEntry("DocumentNumber",docList.find((KateDocument *)kateView->doc()) + 1);
   kateView->writeSessionConfig(config);
 }
-
 
 void TopLevel::saveGlobalProperties(KConfig *config) //save documents
 {
@@ -439,7 +435,6 @@ void TopLevel::saveGlobalProperties(KConfig *config) //save documents
      doc->writeSessionConfig(config);
   }
 }
-
 
 //restore session
 void restore()
@@ -473,13 +468,11 @@ void restore()
   }
 }
 
-
 static KCmdLineOptions options[] =
 {
   { "+[URL]",   I18N_NOOP("Document to open."), 0 },
   { 0, 0, 0}
 };
-
 
 int main(int argc, char **argv)
 {
@@ -555,8 +548,5 @@ int main(int argc, char **argv)
   int r = a->exec();
 
   args->clear();
-	return r;
+  return r;
 }
-
-
-

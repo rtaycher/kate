@@ -402,8 +402,6 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
     */
     const char * undoTypeName(int undoType);
 
-    void copySettings(KateView *);
-
     QColor* getColors();
     void applyColors();
 

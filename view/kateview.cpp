@@ -1891,25 +1891,16 @@ const char * KateView::undoTypeName(int type) {
   return KateActionGroup::typeName(type);
 }
 
-void KateView::copySettings(KateView *w) {
-  configFlags = w->configFlags;
-  wrapAt = w->wrapAt;
-  searchFlags = w->searchFlags;
-}
-
-
 QColor* KateView::getColors()
 {
   return myDoc->colors;
 }
-
 
 void KateView::applyColors()
 {
    myDoc->tagAll();
    myDoc->updateViews();
 }
-
 
 bool KateView::isOverwriteMode() const
 {
