@@ -89,8 +89,8 @@ KateFileList::KateFileList (KateMainWindow *main,
   m_tooltip = new ToolTip( viewport(), this );
 
   // default colors
-  m_viewShade = Qt::blue;
-  m_editShade = Qt::red;
+  m_viewShade = QColor( 51, 204, 255 );
+  m_editShade = QColor( 255, 102, 153 );
   m_enableBgShading = true;
 
   setFocusPolicy ( QWidget::NoFocus  );
@@ -473,7 +473,7 @@ void KateFileListItem::paintCell( QPainter *painter, const QColorGroup & cg, int
       KateFileList *fl = (KateFileList*)listView();
 
       QColor b( cg.base() );
-      if ( m_viewhistpos > 1 )
+      if ( fl->shadingEnabled() && m_viewhistpos > 1 )
       {
         QColor shade = fl->viewShade();
         QColor eshade = fl->editShade();
