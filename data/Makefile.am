@@ -18,3 +18,9 @@ tip_DATA = tips
 
 mime_DATA = x-kate-project.desktop
 mimedir = $(kde_mimedir)/application
+
+updatedir = $(kde_datadir)/kconf_update
+update_DATA = kate-2.4.upd
+
+kde_conf_DATA = katerc
+
