@@ -43,7 +43,7 @@
 #include "../view/kantviewmanager.h"
 #include "kantmenuitem.h"
 
-#define POP_(x) kdDebug() << #x " = " << flush << x << std::endl
+#define POP_(x) kdDebug() << #x " = " << flush << x << endl
 
 KantMainWindow::KantMainWindow(KantPluginManager *_pluginManager) : 
 	KDockMainWindow (0, "Main Window"), 
@@ -447,11 +447,9 @@ slipInFilter (KShellProcess & shell, KantView & view, QString command)
   shell.clearArguments ();
   shell << command.latin1 ();
 
-  bool started (shell.start (KProcess::NotifyOnExit, KProcess::All));
-//  POP_(started);
+  shell.start (KProcess::NotifyOnExit, KProcess::All);
 
-  bool sentDataIn (shell.writeStdin (marked.latin1 (), marked.length ()));
-//  POP_(sentDataIn);
+  shell.writeStdin (marked.latin1 (), marked.length ());
 
   //  TODO: Put up a modal dialog to defend the text from further
   //  keystrokes while the command is out. With a cancel button...  
