@@ -813,60 +813,6 @@ bool KateDocument::insertChars(VConfig &c, const QString &chars) {
         if (ch == '[') buf.insert(pos, ']');
         if (ch == '{') buf.insert(pos, '}');
       }
-      /*
-      if (ch == 'ä') {
-        strcpy(buf,"&auml;");
-        l = z = 6;
-      }
-      if (ch == 'ö') {
-        strcpy(buf,"&ouml;");
-        l = z = 6;
-      }
-      if (ch == 'ü') {
-        strcpy(buf,"&uuml;");
-        l = z = 6;
-      }
-      if (ch == 'Ä') {
-        strcpy(buf,"&Auml;");
-        l = z = 6;
-      }
-      if (ch == 'Ö') {
-        strcpy(buf,"&Ouml;");
-        l = z = 6;
-      }
-      if (ch == 'Ü') {
-        strcpy(buf,"&Uuml;");
-        l = z = 6;
-      }*/
-      /*
-      if (ch == 'ä') {
-        strcpy(buf,"\"a");
-        l = z = 2;
-      }
-      if (ch == 'ö') {
-        strcpy(buf,"\"o");
-        l = z = 2;
-      }
-      if (ch == 'ü') {
-        strcpy(buf,"\"u");
-        l = z = 2;
-      }
-      if (ch == 'Ä') {
-        strcpy(buf,"\"A");
-        l = z = 2;
-      }
-      if (ch == 'Ö') {
-        strcpy(buf,"\"O");
-        l = z = 2;
-      }
-      if (ch == 'Ü') {
-        strcpy(buf,"\"U");
-        l = z = 2;
-      }
-      if (ch == 'ß') {
-        strcpy(buf,"\"s");
-        l = z = 2;
-      }*/
     }
   }
   //pos = cursor increment
@@ -877,25 +823,6 @@ bool KateDocument::insertChars(VConfig &c, const QString &chars) {
   //auto deletion of the marked text occurs not very often and can therefore
   //  be recorded separately
   if (c.flags &KateView:: cfDelOnInput) delMarkedText(c);
-
-/*  //do nothing if spaces will be removed
-  if (onlySpaces && c.flags & cfRemoveSpaces && c.cursor.x >= textLine->length()) {
-    //no trailing space, but move the cursor
-
-    if (c.flags & cfGroupUndo) {
-      //modify last undo step that it includes the cursor motion
-      KateActionGroup *g = undoList.getLast();
-      if (undoCount < 1024 && g != 0L && g->undoType == KateActionGroup::ugInsChar
-        && g->end.x == c.cursor.x && g->end.y == c.cursor.y) {
-
-        g->end.x += pos;
-      }
-    }
-
-    c.cursor.x += pos;
-    c.view->updateCursor(c.cursor);
-    return true;
-  }*/
 
   recordStart(c, KateActionGroup::ugInsChar);
   recordReplace(c/*.cursor*/, (c.flags & KateView::cfOvr) ? buf.length() : 0, buf);
