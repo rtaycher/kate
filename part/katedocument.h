@@ -81,6 +81,7 @@ class KateDocument : public Kate::Document
     friend class KateIconBorder;
 		friend class KateUndoGroup;
 		friend class KateUndo;
+		friend class HlManager;
 
   public:
     KateDocument (bool bSingleViewMode=false, bool bBrowserView=false, QWidget *parentWidget = 0, const char *widgetName = 0, QObject * = 0, const char * = 0);
@@ -253,7 +254,10 @@ class KateDocument : public Kate::Document
 
   // highlight stuff
   private:
-	  QIntDict<Attribute> myAttribs;
+	  Attribute *myAttribs;
+		uint myAttribsLen;
+
+		Attribute attribute (uint pos);
 
 	public:
     Highlight *highlight() { return m_highlight; }

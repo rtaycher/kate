@@ -1386,14 +1386,13 @@ int HlManager::mimeFind(const QByteArray &contents, const QString &fname)
   return -1;
 }
 
-QIntDict<Attribute> HlManager::makeAttribs(Highlight *highlight)
+void HlManager::makeAttribs(KateDocument *doc, Highlight *highlight)
 {
   ItemStyleList defaultStyleList;
   ItemStyle *defaultStyle;
   ItemDataList itemDataList;
   ItemData *itemData;
   int nAttribs, z;
-	QIntDict<Attribute> attribs;
 
   defaultStyleList.setAutoDelete(true);
   getDefaults(defaultStyleList);
@@ -1401,33 +1400,38 @@ QIntDict<Attribute> HlManager::makeAttribs(Highlight *highlight)
   highlight->getItemDataList(itemDataList);
   nAttribs = itemDataList.count();
 
+	if (!doc->myAttribs)
+	  doc->myAttribs = (Attribute *) malloc (sizeof(Attribute) * nAttribs);
+	else
+	  doc->myAttribs = (Attribute *) realloc (doc->myAttribs, sizeof(Attribute) * nAttribs);	
+
+	doc->myAttribsLen = nAttribs;
+
   for (z = 0; z < nAttribs; z++)
 	{
-	  Attribute *n = new Attribute ();
+	  Attribute n;
 
     itemData = itemDataList.at(z);
     if (itemData->defStyle)
 		{
       // default style
       defaultStyle = defaultStyleList.at(itemData->defStyleNum);
-      n->col = defaultStyle->col;
-      n->selCol = defaultStyle->selCol;
-      n->bold = defaultStyle->bold;
-      n->italic = defaultStyle->italic;
+      n.col = defaultStyle->col;
+      n.selCol = defaultStyle->selCol;
+      n.bold = defaultStyle->bold;
+      n.italic = defaultStyle->italic;
     }
 		else
 		{
       // custom style
-      n->col = itemData->col;
-      n->selCol = itemData->selCol;
-      n->bold = itemData->bold;
-      n->italic = itemData->italic;
+      n.col = itemData->col;
+      n.selCol = itemData->selCol;
+      n.bold = itemData->bold;
+      n.italic = itemData->italic;
     }
 
-		attribs.insert (z, n);
+		doc->myAttribs[z] = n;
   }
-
-  return attribs;
 }
 
 int HlManager::defaultStyles() {

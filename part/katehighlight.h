@@ -324,7 +324,7 @@ class HlManager : public QObject {
     int mimeFind(const QByteArray &contents, const QString &fname);
     int findHl(Highlight *h) {return hlList.find(h);}
 
-    QIntDict<Attribute> makeAttribs(Highlight *);
+    void makeAttribs(class KateDocument *, Highlight *);
 
     int defaultStyles();
     QString defaultStyleName(int n);
