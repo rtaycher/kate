@@ -1373,7 +1373,7 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate
   configFlags = KateView::cfAutoIndent | KateView::cfSpaceIndent | KateView::cfBackspaceIndents
     | KateView::cfTabIndents | KateView::cfKeepIndentProfile
     | KateView::cfReplaceTabs | KateView::cfSpaceIndent | KateView::cfRemoveSpaces
-    | KateView::cfDelOnInput | KateView::cfMouseAutoCopy
+    | KateView::cfDelOnInput | KateView::cfMouseAutoCopy | KateView::cfWrapCursor
     | KateView::cfGroupUndo | KateView::cfShowTabs | KateView::cfSmartHome;
   wrapAt = 80;
   searchFlags = 0;
