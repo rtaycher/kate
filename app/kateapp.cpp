@@ -28,6 +28,7 @@
 #include <kcmdlineargs.h>
 #include <dcopclient.h>
 #include <kconfig.h>
+#include <kwin.h>
 
 KateApp::KateApp () : Kate::Application (),DCOPObject ("KateApp" )
 {
@@ -62,6 +63,7 @@ KateApp::KateApp () : Kate::Application (),DCOPObject ("KateApp" )
     }
 
     mainWindows.first()->raise();
+    KWin::setActiveWindow (mainWindows.first()->winId());
   }
 
   if ( mainWindows.first()->viewManager->viewCount () == 0 )
@@ -110,6 +112,9 @@ void KateApp::openURL (const QString &name)
     n=0;
 
   mainWindows.at(n)->viewManager->openURL (KURL(name));
+
+  mainWindows.at(n)->raise();
+  KWin::setActiveWindow (mainWindows.at(n)->winId());
 }
 
 Kate::ViewManager *KateApp::getViewManager ()
