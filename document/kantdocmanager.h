@@ -58,6 +58,10 @@ class KantDocManager : public QObject
 
   private:
     long myDocID;
+
+  signals:
+    void documentCreated (KantDocument *doc);
+    void documentDeleted (long docID);
 };
 
 #endif

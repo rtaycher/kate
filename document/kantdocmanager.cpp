@@ -38,13 +38,18 @@ KantDocument *KantDocManager::createDoc (QFileInfo* fi)
   docList.append(doc);
   myDocID++;
 
+  emit documentCreated (doc);
   return doc;
 }
 
 void KantDocManager::deleteDoc (KantDocument *doc)
 {
+  long id = doc->docID();
+
   if (docList.find(doc) > -1)
     docList.remove (doc);
+
+ emit documentDeleted (id);
 }
 
 KantDocument *KantDocManager::nthDoc (long n)

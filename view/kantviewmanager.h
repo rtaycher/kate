@@ -101,6 +101,8 @@ class KantViewManager : public KantPluginIface
     void setUseOpaqueResize( bool enable );
 
   public slots:
+    void newDoc (KantDocument *doc);
+
     void activateView ( int docID );
 
     void slotDocumentCloseAll ();

@@ -1,4 +1,4 @@
-SUBDIRS = kwrite app console data document fileselector mainwindow pics project sidebar view pluginmanager plugins
+SUBDIRS = app console data document filelist fileselector kwrite mainwindow pics project sidebar view pluginmanager plugins
 EXTRA_DIST = piper AUTHORS COPYING ChangeLog NEWS README TODO 
 
 bin_PROGRAMS = kant
@@ -8,7 +8,7 @@ kant_LDADD   =  ./kwrite/libkwritepart.la ./app/libkantapp.la \
 		./view/libkantview.la ./sidebar/libkantsidebar.la \
 		./mainwindow/libkantmainwindow.la ./project/libkantproject.la \
 		./fileselector/libkantfileselector.la ./document/libkantdocument.la \
-		./console/libkantconsole.la \
+		./console/libkantconsole.la ./filelist/libkantfilelist.la \
 		./pluginmanager/libkantpluginmanager.la ./pluginmanager/libkantpluginiface.la
 kant_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
