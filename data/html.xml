@@ -36,7 +36,7 @@
   </highlighting>
   <general>
     <comments>
-      <comment name="multiLine" start="\<\!--" end="\/\/--\>" />
+      <comment name="multiLine" start="&lt;!--" end="//--&gt;" />
     </comments>
   </general>
 </language>

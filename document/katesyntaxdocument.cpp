@@ -26,7 +26,8 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <qstringlist.h>
-
+#include <kapp.h>
+#include <kconfig.h>
 
 SyntaxDocument::SyntaxDocument() : QDomDocument()
 {
@@ -76,13 +77,29 @@ SyntaxDocument::~SyntaxDocument()
 
 void SyntaxDocument::setupModeList()
 {
+  KConfig *config=kapp->config();
   kdDebug(13010) << k_funcinfo << endl;
   if (myModeList.count() > 0) return;
-
       KStandardDirs *dirs = KGlobal::dirs();
       QStringList list=dirs->findAllResources("data","kate/syntax/*.xml",false,true);
       for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
       {
+	QString Group="Highlighting_Cache"+*it;
+  	if (config->hasGroup(Group))
+	  {
+		      config->setGroup(Group);
+                      syntaxModeListItem *mli=new syntaxModeListItem;
+                      mli->name = config->readEntry("name","");
+                      mli->mimetype = config->readEntry("mimetype","");
+                      mli->extension = config->readEntry("extension","");
+                      mli->casesensitive = config->readEntry("casesensitive","");
+                      if (mli->casesensitive.isEmpty()) mli->casesensitive="1";
+                      mli->identifier = *it;
+                      myModeList.append(mli);
+		kdDebug()<<"Added: "<<Group<<endl;
+          }
+	else
+	{
         QFile f(*it);
         if (f.open(IO_ReadOnly))
           {
@@ -105,11 +122,18 @@ void SyntaxDocument::setupModeList()
                       mli->casesensitive = e.attribute("casesensitive");
                       if (mli->casesensitive.isEmpty()) mli->casesensitive="1";
                       mli->identifier = *it;
+		      config->setGroup(Group);
+		      config->writeEntry("name",mli->name);
+		      config->writeEntry("mimetype",mli->mimetype);
+		      config->writeEntry("extension",mli->extension);
+		      config->writeEntry("casesensitive",mli->casesensitive);
                       myModeList.append(mli);
                    }
                }
       }
   }
+}
+  config->sync();
 }
 
 SyntaxModeList SyntaxDocument::modeList()
