@@ -25,6 +25,7 @@
 #include <kglobalsettings.h>
 
 #include "./app/kantapp.h"
+#include <cstdlib>
 
 static KCmdLineOptions options[] =
 {
@@ -34,7 +35,7 @@ static KCmdLineOptions options[] =
 
 int main( int argc, char **argv )
 {
-  KAboutData aboutData ("kant", "Kant", "0.2.0",
+  KAboutData aboutData ("kant", I18N_NOOP("Kant"), "0.2",
 	I18N_NOOP( "Kant - A MDI Texteditor for KDE" ), KAboutData::License_GPL,
 	 "(c) 2001 Christoph \"Crossfire\" Cullmann", "http://kant.sourceforge.net", "kant-devel@lists.sourceforge.net");
 
