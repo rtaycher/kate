@@ -3111,3 +3111,8 @@ void KateDocument::setWordWrapAt (uint col)
 
   myWordWrapAt = col;
 }
+
+void KateDocument::applyWordWrap ()
+{
+  wrapText (myWordWrapAt);
+}

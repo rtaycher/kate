@@ -182,12 +182,12 @@ void KateMainWindow::setupActions()
 
   fileOpenRecent = KStdAction::openRecent (viewManager, SLOT(openConstURL (const KURL&)), actionCollection());
 
-  fileSave = KStdAction::save( viewManager, SLOT( slotDocumentSave() ), actionCollection(), "file_save" );
-  fileSaveAll = new KAction( i18n("Save A&ll"),"save_all", CTRL+Key_L, viewManager, SLOT( slotDocumentSaveAll() ), actionCollection(), "file_save_all" );
-  fileSaveAs = KStdAction::saveAs( viewManager, SLOT( slotDocumentSaveAs() ), actionCollection(), "file_save_as" );
-  filePrint = KStdAction::print(viewManager, SLOT(printDlg()), actionCollection());
-  fileClose = KStdAction::close( viewManager, SLOT( slotDocumentClose() ), actionCollection(), "file_close" );
-  fileCloseAll = new KAction( i18n( "&Close All" ), 0, viewManager, SLOT( slotDocumentCloseAll() ), actionCollection(), "file_close_all" );
+  KStdAction::save( viewManager, SLOT( slotDocumentSave() ), actionCollection(), "file_save" );
+  new KAction( i18n("Save A&ll"),"save_all", CTRL+Key_L, viewManager, SLOT( slotDocumentSaveAll() ), actionCollection(), "file_save_all" );
+  KStdAction::saveAs( viewManager, SLOT( slotDocumentSaveAs() ), actionCollection(), "file_save_as" );
+  KStdAction::print(viewManager, SLOT(printDlg()), actionCollection());
+  KStdAction::close( viewManager, SLOT( slotDocumentClose() ), actionCollection(), "file_close" );
+  new KAction( i18n( "&Close All" ), 0, viewManager, SLOT( slotDocumentCloseAll() ), actionCollection(), "file_close_all" );
 
   new KAction(i18n("New &Window"), 0, this, SLOT(newWindow()), actionCollection(), "file_newWindow");
 
@@ -196,37 +196,40 @@ void KateMainWindow::setupActions()
   editUndo = KStdAction::undo(viewManager, SLOT(slotUndo()), actionCollection());
   editRedo = KStdAction::redo(viewManager, SLOT(slotRedo()), actionCollection());
   editUndoHist = new KAction(i18n("Undo/Redo &History..."), "history", 0, viewManager, SLOT(slotUndoHistory()), actionCollection(), "edit_undoHistory");
-  editCut = KStdAction::cut(viewManager, SLOT(slotCut()), actionCollection());
-  editCopy = KStdAction::copy(viewManager, SLOT(slotCopy()), actionCollection()) ;
-  editPaste = KStdAction::paste(viewManager, SLOT(slotPaste()), actionCollection());
 
-  editSelectAll = KStdAction::selectAll(viewManager, SLOT(slotSelectAll()), actionCollection());
-  editDeselectAll =new KAction(i18n("&Deselect All"), 0, viewManager, SLOT(slotDeselectAll()), actionCollection(), "edit_deselectAll");
-  editInvertSelection = new KAction(i18n("Invert &Selection"), 0, viewManager, SLOT(slotInvertSelection()), actionCollection(), "edit_invertSelection");
+  KStdAction::cut(viewManager, SLOT(slotCut()), actionCollection());
+  KStdAction::copy(viewManager, SLOT(slotCopy()), actionCollection()) ;
+  KStdAction::paste(viewManager, SLOT(slotPaste()), actionCollection());
 
-  editFind = KStdAction::find(viewManager, SLOT(slotFind()), actionCollection());
-  editFindNext = KStdAction::findNext(viewManager, SLOT(slotFindAgain()), actionCollection());
-  editFindPrev = KStdAction::findPrev(viewManager, SLOT(slotFindAgainB()), actionCollection(), "edit_find_prev");
-  editReplace = KStdAction::replace(viewManager, SLOT(slotReplace()), actionCollection());
+  KStdAction::selectAll(viewManager, SLOT(slotSelectAll()), actionCollection());
+  new KAction(i18n("&Deselect All"), 0, viewManager, SLOT(slotDeselectAll()), actionCollection(), "edit_deselectAll");
+  new KAction(i18n("Invert &Selection"), 0, viewManager, SLOT(slotInvertSelection()), actionCollection(), "edit_invertSelection");
 
-  editIndent = new KAction(i18n("&Indent"), "indent", CTRL+Key_I, viewManager, SLOT(slotIndent()), actionCollection(), "edit_indent");
-  editUnIndent = new KAction(i18n("&Unindent"), "unindent", CTRL+SHIFT+Key_I, viewManager, SLOT(slotUnIndent()), actionCollection(), "edit_unindent");
+  KStdAction::find(viewManager, SLOT(slotFind()), actionCollection());
+  KStdAction::findNext(viewManager, SLOT(slotFindAgain()), actionCollection());
+  KStdAction::findPrev(viewManager, SLOT(slotFindAgainB()), actionCollection(), "edit_find_prev");
+  KStdAction::replace(viewManager, SLOT(slotReplace()), actionCollection());
 
-  editComment= new KAction(i18n("Comme&nt"), "comment", 0, viewManager, SLOT(slotComment()), actionCollection(), "edit_comment");
-  editUnComment = new KAction(i18n("Uncommen&t"), "uncomment", 0, viewManager, SLOT(slotUnComment()), actionCollection(), "edit_uncomment");
+  new KAction(i18n("&Indent"), "indent", CTRL+Key_I, viewManager, SLOT(slotIndent()), actionCollection(), "edit_indent");
+  new KAction(i18n("&Unindent"), "unindent", CTRL+SHIFT+Key_I, viewManager, SLOT(slotUnIndent()), actionCollection(), "edit_unindent");
 
-  editCmd = new KAction(i18n("Editing Co&mmand"), Qt::CTRL+Qt::Key_M, viewManager, SLOT(slotEditCommand()),
+  new KAction(i18n("Comme&nt"), "comment", 0, viewManager, SLOT(slotComment()), actionCollection(), "edit_comment");
+  new KAction(i18n("Uncommen&t"), "uncomment", 0, viewManager, SLOT(slotUnComment()), actionCollection(), "edit_uncomment");
+
+  new KAction(i18n("Apply Word Wrap"), "", 0, viewManager, SLOT(slotApplyWordWrap()), actionCollection(), "edit_apply_wordwrap");
+
+  new KAction(i18n("Editing Co&mmand"), Qt::CTRL+Qt::Key_M, viewManager, SLOT(slotEditCommand()),
                                   actionCollection(), "edit_cmd");
 
-  gotoLine = KStdAction::gotoLine(viewManager, SLOT(slotGotoLine()), actionCollection());
+  KStdAction::gotoLine(viewManager, SLOT(slotGotoLine()), actionCollection());
 
   bookmarkToggle = new KAction(i18n("Toggle &Bookmark"), Qt::CTRL+Qt::Key_B, viewManager, SLOT(toggleBookmark()), actionCollection(), "edit_bookmarkToggle");
   bookmarkClear = new KAction(i18n("Clear Bookmarks"), 0, viewManager, SLOT(clearBookmarks()), actionCollection(), "edit_bookmarksClear");
 
-  toolsSpell = KStdAction::spelling(viewManager, SLOT(slotSpellcheck()), actionCollection());
+  KStdAction::spelling(viewManager, SLOT(slotSpellcheck()), actionCollection());
 
-  viewSplitVert = new KAction( i18n("Split &Vertical"), "view_left_right", CTRL+SHIFT+Key_L, viewManager, SLOT( slotSplitViewSpaceVert() ), actionCollection(), "view_split_vert");
-  viewSplitHoriz = new KAction( i18n("Split &Horizontal"), "view_top_bottom", CTRL+SHIFT+Key_T, viewManager, SLOT( slotSplitViewSpaceHoriz() ), actionCollection(), "view_split_horiz");
+  new KAction( i18n("Split &Vertical"), "view_left_right", CTRL+SHIFT+Key_L, viewManager, SLOT( slotSplitViewSpaceVert() ), actionCollection(), "view_split_vert");
+  new KAction( i18n("Split &Horizontal"), "view_top_bottom", CTRL+SHIFT+Key_T, viewManager, SLOT( slotSplitViewSpaceHoriz() ), actionCollection(), "view_split_horiz");
   closeCurrentViewSpace = new KAction( i18n("Close &Current"), "view_remove", CTRL+SHIFT+Key_R, viewManager, SLOT( slotCloseCurrentViewSpace() ), actionCollection(), "view_close_current_space");
 
   viewBorder =  new KToggleAction(i18n("Show &IconBorder"), Key_F6, viewManager, SLOT(toggleIconBorder()), actionCollection(), "view_border");
@@ -399,83 +402,23 @@ void KateMainWindow::saveOptions(KConfig *config)
 
 void KateMainWindow::slotWindowActivated ()
 {
-  if (viewManager->activeView() == 0)
-  {
-    fileSave->setEnabled(false);
-    fileSaveAs->setEnabled(false);
-    filePrint->setEnabled(false);
-    fileClose->setEnabled(false);
-    editUndo->setEnabled(false);
-    editRedo->setEnabled(false);
-    editUndoHist->setEnabled(false);
-    editCut->setEnabled(false);
-    editCopy->setEnabled(false);
-    editPaste->setEnabled(false);
-    editSelectAll->setEnabled(false);
-    editDeselectAll->setEnabled(false);
-    editInvertSelection->setEnabled(false);
-    editFind->setEnabled(false);
-    editFindNext->setEnabled(false);
-    editReplace->setEnabled(false);
-    toolsSpell->setEnabled(false);
-    setHighlight->setEnabled(false);
-    gotoLine->setEnabled(false);
-    editCmd->setEnabled(false);
-    viewBorder->setEnabled(false);
-  }
-
   if (viewManager->activeView() != 0)
   {
     if (console && syncKonsole)
       console->cd (viewManager->activeView()->doc()->url());
 
-    fileSave->setEnabled(viewManager->activeView()->doc()->isModified()
-                      || viewManager->activeView()->doc()->url().isEmpty());
-    fileSaveAs->setEnabled(true);
-    filePrint->setEnabled(true);
-    fileClose->setEnabled(true);
-    editCut->setEnabled(true);
-    editCopy->setEnabled(true);
-    editPaste->setEnabled(true);
-    editSelectAll->setEnabled(true);
-    editDeselectAll->setEnabled(true);
-    editInvertSelection->setEnabled(true);
-    editFind->setEnabled(true);
-    editFindNext->setEnabled(true);
-    editReplace->setEnabled(true);
-    toolsSpell->setEnabled(true);
-    setHighlight->setEnabled(true);
-    gotoLine->setEnabled(true);
-    editCmd->setEnabled(true);
-    viewBorder->setEnabled(true);
     viewBorder->setChecked(viewManager->activeView()->iconBorder());
   }
 
-  if (viewManager->viewCount () == 0 )
+  if (viewManager->viewCount ()  > 1)
   {
-    fileCloseAll->setEnabled(false);
-    windowNext->setEnabled(false);
-    windowPrev->setEnabled(false);
-    viewSplitVert->setEnabled(false);
-    viewSplitHoriz->setEnabled(false);
+    windowNext->setEnabled(true);
+    windowPrev->setEnabled(true);
   }
   else
   {
-    fileCloseAll->setEnabled(true);
-
-    if (viewManager->viewCount ()  > 1)
-    {
-      windowNext->setEnabled(true);
-      windowPrev->setEnabled(true);
-    }
-    else
-    {
-      windowNext->setEnabled(false);
-      windowPrev->setEnabled(false);
-    }
-
-    viewSplitVert->setEnabled(true);
-    viewSplitHoriz->setEnabled(true);
+    windowNext->setEnabled(false);
+    windowPrev->setEnabled(false);
   }
 
   if (viewManager->viewSpaceCount() == 1)
@@ -488,9 +431,6 @@ void KateMainWindow::slotCurrentDocChanged()
 {
   if (!viewManager->activeView())
     return;
-
-  fileSave->setEnabled( viewManager->activeView()->doc()->isModified()
-                      || viewManager->activeView()->doc()->url().isEmpty() );
 
   if (!(viewManager->activeView()->undoState() & 1))
   {

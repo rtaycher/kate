@@ -404,11 +404,7 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
 
    void setupActions();
 
-    KAction *fileSave, *editCut, *editPaste,
-            *editReplace, *editUndo, *editRedo, *editUndoHist,
-            *toolsIndent, *toolsUnindent, *toolsCleanIndent,
-            *toolsComment, *toolsUncomment, *toolsSpell,
-            *bookmarkToggle, *bookmarkClear;
+    KAction *editUndo, *editRedo, *editUndoHist, *bookmarkToggle, *bookmarkClear;
 
     KActionMenu *bookmarkMenu;
     KToggleAction *setVerticalSelection, *viewBorder;

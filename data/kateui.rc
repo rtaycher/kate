@@ -48,6 +48,7 @@
     <Action name="edit_comment" />
     <Action name="edit_uncomment" />
     <Separator />
+    <Action name="edit_apply_wordwrap"/>
     <Action name="edit_cmd"/>
     <Separator/>
     <Action name="go_goto_line"/>

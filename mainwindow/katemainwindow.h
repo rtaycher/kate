@@ -80,36 +80,12 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     KConfig* config;
 
   private:
-    KAction *fileSave;
-    KAction *fileSaveAll;
-    KAction *fileSaveAs;
-    KAction *filePrint;
-    KAction *fileClose;
-    KAction *fileCloseAll;
     KAction *editUndo;
     KAction *editRedo;
     KAction *editUndoHist;
-    KAction *editCut;
-    KAction *editCopy;
-    KAction *editPaste;
-    KAction *editSelectAll;
-    KAction *editDeselectAll;
-    KAction *editInvertSelection;
-    KAction *editFind;
-    KAction *editFindNext;
-    KAction *editFindPrev;
-    KAction *editReplace;
-    KAction *editIndent;
-    KAction *editUnIndent;
-    KAction *editComment;
-    KAction *editUnComment;
     KAction *bookmarkToggle;
     KAction *bookmarkClear;
-    KAction *toolsSpell;
-    KAction *editCmd;
 
-    KAction *viewSplitVert;
-    KAction *viewSplitHoriz;
     KAction *closeCurrentViewSpace;
     KToggleAction *viewBorder;
 

@@ -28,6 +28,7 @@
     <Action name="edit_find_prev" />
     <Action name="edit_replace" />
     <Separator />
+    <Action name="edit_apply_wordwrap"/>
     <Action name="edit_cmd"/>
   </Menu>
 

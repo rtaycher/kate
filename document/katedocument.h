@@ -518,6 +518,9 @@ class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
   public:
     // wrap the text of the document at the column col
     void wrapText (uint col);
+
+  public slots:
+     void applyWordWrap ();
 };
 
 #endif

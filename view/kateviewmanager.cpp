@@ -1186,4 +1186,9 @@ void KateViewManager::gotoMark (Kate::Mark *mark)
   activeView()->gotoMark (mark);
 }
 
+void KateViewManager::slotApplyWordWrap ()
+{
+  if (!activeView()) return;
 
+  activeView()->doc()->applyWordWrap();
+}

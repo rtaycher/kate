@@ -194,6 +194,8 @@ class KateViewManager : public Kate::ViewManager
 
     void gotoMark (Kate::Mark *mark);
 
+    void slotApplyWordWrap ();
+
   signals:
     void statusChanged (KateView *, int, int, int, int, QString);
     void statChanged ();

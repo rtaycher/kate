@@ -1441,7 +1441,7 @@ void KateView::setupActions()
     fileRecent = KStdAction::openRecent(this, SLOT(slotOpenRecent(const KURL&)),
                                         actionCollection());
 
-    fileSave = KStdAction::save(this, SLOT(save()), actionCollection());
+    KStdAction::save(this, SLOT(save()), actionCollection());
     KStdAction::saveAs(this, SLOT(saveAs()), actionCollection());
 
     // setup edit menu
@@ -1449,9 +1449,9 @@ void KateView::setupActions()
     editRedo = KStdAction::redo(this, SLOT(redo()), actionCollection());
     editUndoHist = new KAction(i18n("Undo/Redo &History..."), 0, this, SLOT(undoHistory()),
                                actionCollection(), "edit_undoHistory");
-    editCut = KStdAction::cut(this, SLOT(cut()), actionCollection());
-    editPaste = KStdAction::copy(this, SLOT(copy()), actionCollection());
-    editReplace = KStdAction::paste(this, SLOT(paste()), actionCollection());
+    KStdAction::cut(this, SLOT(cut()), actionCollection());
+    KStdAction::copy(this, SLOT(copy()), actionCollection());
+    KStdAction::paste(this, SLOT(paste()), actionCollection());
 
     if ( myDoc->hasBrowserExtension() )
     {
@@ -1492,9 +1492,11 @@ void KateView::setupActions()
                 actionCollection(), "decFontSizes");
     }
 
-    KStdAction::replace(this, SLOT(replace()), actionCollection());
+  new KAction(i18n("Apply Word Wrap"), "", 0, myDoc, SLOT(applyWordWrap()), actionCollection(), "edit_apply_wordwrap");
 
-   new KAction(i18n("Editing Co&mmand"), Qt::CTRL+Qt::Key_M, this, SLOT(slotEditCommand()),
+  KStdAction::replace(this, SLOT(replace()), actionCollection());
+
+  new KAction(i18n("Editing Co&mmand"), Qt::CTRL+Qt::Key_M, this, SLOT(slotEditCommand()),
                                   actionCollection(), "edit_cmd");
 
     // setup bookmark menu
@@ -1505,19 +1507,19 @@ void KateView::setupActions()
     bookmarkMenu = new KActionMenu(i18n("&Bookmarks"), actionCollection(), "bookmarks");
     connect(bookmarkMenu->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(bookmarkMenuAboutToShow()));
 
-    viewBorder = new KToggleAction(i18n("Show &IconBorder"), Key_F6, this, SLOT(toggleIconBorder()), actionCollection(), "view_border");
+    new KToggleAction(i18n("Show &IconBorder"), Key_F6, this, SLOT(toggleIconBorder()), actionCollection(), "view_border");
 
     // setup Tools menu
-    toolsSpell = KStdAction::spelling(this, SLOT(spellcheck()), actionCollection());
-    toolsIndent = new KAction(i18n("&Indent"), Qt::CTRL+Qt::Key_I, this, SLOT(indent()),
+    KStdAction::spelling(this, SLOT(spellcheck()), actionCollection());
+    new KAction(i18n("&Indent"), Qt::CTRL+Qt::Key_I, this, SLOT(indent()),
                               actionCollection(), "tools_indent");
-    toolsUnindent = new KAction(i18n("&Unindent"), Qt::CTRL+Qt::Key_U, this, SLOT(unIndent()),
+    new KAction(i18n("&Unindent"), Qt::CTRL+Qt::Key_U, this, SLOT(unIndent()),
                                 actionCollection(), "tools_unindent");
-    toolsCleanIndent = new KAction(i18n("&Clean Indentation"), 0, this, SLOT(cleanIndent()),
+    new KAction(i18n("&Clean Indentation"), 0, this, SLOT(cleanIndent()),
                                    actionCollection(), "tools_cleanIndent");
-    toolsComment = new KAction(i18n("C&omment"), 0, this, SLOT(comment()),
+    new KAction(i18n("C&omment"), 0, this, SLOT(comment()),
                                actionCollection(), "tools_comment");
-    toolsUncomment = new KAction(i18n("Unco&mment"), 0, this, SLOT(uncomment()),
+    new KAction(i18n("Unco&mment"), 0, this, SLOT(uncomment()),
                                  actionCollection(), "tools_uncomment");
 
     setVerticalSelection = new KToggleAction(i18n("&Vertical Selection"), Key_F4, this, SLOT(toggleVertical()),
@@ -1541,20 +1543,8 @@ void KateView::setupActions()
 void KateView::slotUpdate()
 {
     int cfg = config();
-    bool readOnly = isReadOnly();
 
     setVerticalSelection->setChecked(cfg & KateView::cfVerticalSelect);
-
-    fileSave->setEnabled(!readOnly);
-    editCut->setEnabled(!readOnly);
-    editPaste->setEnabled(!readOnly);
-    editReplace->setEnabled(!readOnly);
-    toolsIndent->setEnabled(!readOnly);
-    toolsUnindent->setEnabled(!readOnly);
-    toolsCleanIndent->setEnabled(!readOnly);
-    toolsComment->setEnabled(!readOnly);
-    toolsUncomment->setEnabled(!readOnly);
-    toolsSpell->setEnabled(!readOnly);
 
     slotNewUndo();
 }
