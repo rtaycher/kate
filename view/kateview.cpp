@@ -968,6 +968,9 @@ void KateViewInternal::paintTextLines(int xPos, int yPos) {
   int h;
   LineRange *r;
 
+  if (!drawBuffer) return;
+  if (drawBuffer->isNull()) return;
+
   QPainter paint;
   paint.begin(drawBuffer);
 
@@ -1013,12 +1016,14 @@ void KateViewInternal::paintCursor() {
     paint.drawLine(x, y, x, h);
     paint.drawLine(x-2, y, x+2, y);
     paint.drawLine(x-2, h, x+2, h);
-  } else {
+ paint.end();
+  } else { if (drawBuffer && !drawBuffer->isNull()) {
     paint.begin(drawBuffer);
     myDoc->paintTextLine(paint, cursor.y, cXPos - 2, cXPos + 3, myView->configFlags & KateView::cfShowTabs);
     bitBlt(this,x - 2,y, drawBuffer, 0, 0, 5, h);
+ paint.end(); }
   }
-  paint.end();
+
 }
 
 void KateViewInternal::paintBracketMark() {
@@ -1271,6 +1276,9 @@ void KateViewInternal::paintEvent(QPaintEvent *e) {
   QRect updateR = e->rect();
 //  debug("update rect  = ( %i, %i, %i, %i )",
 //    updateR.x(),updateR.y(), updateR.width(), updateR.height() );
+
+  if (!drawBuffer) return;
+  if (drawBuffer->isNull()) return;
 
   QPainter paint;
   paint.begin(drawBuffer);
@@ -3452,5 +3460,7 @@ void KateBrowserExtension::slotSelectionChanged()
 {
   emit enableAction( "copy", m_doc->hasMarkedText() );
 }
+
+
 
 
