@@ -274,7 +274,6 @@ void GrepDialog::templateActivated(int index)
 }
 
 
-#include <iostream.h>
 void GrepDialog::itemSelected(const QString& item)
 {
     int pos;
