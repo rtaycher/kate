@@ -928,6 +928,21 @@ void KantMainWindow::slotConfigure()
         editConfig->getData( v );
       }
     }
+
+    viewManager->setUseOpaqueResize(cb_opaqueResize->isChecked());
+    config->setGroup("open files");
+    config->writeEntry("reopen at startup", cb_reopenFiles->isChecked());
+
+    if (viewManager->viewCount()) {
+      ksc->writeGlobalSettings();
+      colorConfig->getColors( colors );
+      config->setGroup("kwrite");
+      v->writeConfig( config );
+      v->doc()->writeConfig( config );
+      v->applyColors();
+      config->sync();
+     
+    }
   }
   delete dlg;
   dlg = 0;
