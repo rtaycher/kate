@@ -277,6 +277,10 @@ bool KateDocManager::closeDocument(class Kate::Document *doc,bool closeURL)
   }
 
   deleteDoc (doc);
+  
+  // never ever empty the whole document list
+  if (m_docList.isEmpty())
+    createDoc ();
 
   return true;
 }
@@ -294,10 +298,14 @@ bool KateDocManager::closeDocumentWithID(uint id)
 bool KateDocManager::closeAllDocuments(bool closeURL)
 {
   bool res = true;
+  
+  QPtrList<Kate::Document> docs = m_docList;
 
-  while (!m_docList.isEmpty() && res)
-    if (! closeDocument(m_docList.at(0),closeURL) )
+  while (!docs.isEmpty() && res)
+    if (! closeDocument(docs.at(0),closeURL) )
       res = false;
+    else
+      docs.remove ((uint)0);
 
   return res;
 }

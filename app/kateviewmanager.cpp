@@ -411,10 +411,10 @@ void KateViewManager::slotDocumentClose ()
 {
   // no active view, do nothing
   if (!activeView()) return;
-/*
+
   // prevent close document if only one view alive and the document of
   // it is not modified and empty !!!
-  if ( (m_viewList.count() == 1)
+  if ( (m_docManager->documents() == 1)
        && !activeView()->getDoc()->isModified()
        && activeView()->getDoc()->url().isEmpty()
        && (activeView()->getDoc()->length() == 0) )
@@ -422,7 +422,7 @@ void KateViewManager::slotDocumentClose ()
     activeView()->getDoc()->closeURL();
     return;
   }
-*/
+  
   // close document
   m_docManager->closeDocument (activeView()->getDoc());
 
@@ -431,6 +431,7 @@ void KateViewManager::slotDocumentClose ()
   if (m_currentContainer) {
       m_currentContainer->openNewIfEmpty();
   }
+  
   for (uint i=0;i<m_viewSpaceContainerList.count();i++) {
     if (m_currentContainer!=m_viewSpaceContainerList.at(i))
       m_viewSpaceContainerList.at(i)->openNewIfEmpty();
