@@ -247,8 +247,10 @@ void KateProjectManager::restoreProjectList (class KConfig *config)
 {
   config->setGroup ("Open Projects");
 
+  int count = config->readNumEntry("Count");
+
   int i = 0;
-  while (config->hasKey(QString("Project %1").arg(i)))
+  while ((i < count) && config->hasKey(QString("Project %1").arg(i)))
   {
     QString fn = config->readEntry( QString("Project %1").arg( i ) );
 
