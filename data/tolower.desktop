@@ -1,6 +1,6 @@
 [Desktop Entry]
 Encoding=UTF-8
-Name=Convert file text to lowercase.
+Name=Convert File Text to Lowercase
 Name[af]=skakel om lêer teks aan kleinletters.
 Name[az]=Fayl mətninin kiçik hərflərə çevir.
 Name[bs]=Prebaci tekst datoteku u mala slova
@@ -10,6 +10,7 @@ Name[de]=Dateiinhalt auf Kleinschreibung umstellen
 Name[el]=Μετατροπή του κειμένου του αρχείου σε πεζά γράμματα.
 Name[eo]=Minuskligas dosiertekston.
 Name[es]=Convertir archivos de texto a minúsculas.
+Name[et]=Teksti konvertimine väikesteks tähtedeks.
 Name[fi]=Muuta tiedoston teksti pieniksi kirjaimiksi
 Name[fr]=Convertir le texte du fichier en lettres minuscules
 Name[he]=המר את הטקסט של הקובץ לאותיות קטנות
@@ -47,6 +48,7 @@ Comment[de]=Demo-Skript für die Skript-Schnittstelle von Kate
 Comment[el]=Αυτό είναι ένα παράδειγμα script για να προβάλει τι περιβάλλον scripting του Kate.
 Comment[eo]=Tio estas demonstra programo por prezenti la programinterfacon de Kodredaktilo.
 Comment[es]=Esta es una demo de script para mostar la interfaz de script a Kate
+Comment[et]=Kate'i skriptimise liidese demoskript.
 Comment[fi]=T.mä on esimerkkiskripti, joka esittelee Katen skriptirajapintaa
 Comment[fr]=Ceci est un script d'essai pour illustrer l'interface de scriptage de Kate
 Comment[he]=זהו תסריט הדגמה להצגת ממשק התסריטים של Kate
