@@ -30,8 +30,8 @@ class DocumentManager : public QObject
 {
   friend class PrivateDocumentManager;
 
-  Q_OBJECT   
-  
+  Q_OBJECT
+
   public:
     DocumentManager ( void *documentManager  );
     virtual ~DocumentManager ();
@@ -56,35 +56,35 @@ class DocumentManager : public QObject
 
     /** returns the number of documents managed by this manager.
     */
-    uint documents ();       
+    uint documents ();
 
     /** open a document and return a pointer to the document, if you specify a pointer != 0 to the id parameter
      * you will get the document id returned too
-     */    
+     */
     class Document *openURL(const KURL&url,const QString &encoding=QString::null,uint *id =0);
     /** close a document by pointer
      */
     bool closeDocument(class Document *document);
     /** close a document identified by the index
      */
-    bool closeDocument(uint n = 0); 
+    bool closeDocument(uint n = 0);
     /** close a document identified by the ID
      */
     bool closeDocumentWithID(uint id);
     /** close all documents
      */
-    bool closeAllDocuments();
+    bool closeAllDocuments() const;
 
   #undef signals
   #define signals public
   signals:
   #undef signals
   #define signals protected
-  
+
     void documentChanged ();
     void documentCreated (Kate::Document *document);
-    void documentDeleted (uint documentNumber);  
-    
+    void documentDeleted (uint documentNumber);
+
   private:
     class PrivateDocumentManager *d;
 };

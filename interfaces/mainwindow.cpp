@@ -43,12 +43,12 @@ class PrivateMainWindow
 
     ~PrivateMainWindow ()
     {
-      
-    }          
-    
-    KateMainWindow *win; 
+
+    }
+
+    KateMainWindow *win;
   };
-            
+
 MainWindow::MainWindow (void *mainWindow) : QObject ((KateMainWindow*) mainWindow)
 {
   d = new PrivateMainWindow;
@@ -60,22 +60,22 @@ MainWindow::~MainWindow ()
   delete d;
 }
 
-KXMLGUIFactory *MainWindow::guiFactory()
+KXMLGUIFactory *MainWindow::guiFactory() const
 {
   return d->win->guiFactory();
 }
 
-ViewManager *MainWindow::viewManager ()
+ViewManager *MainWindow::viewManager () const
 {
   return d->win->viewManager ();
 }
 
-ToolViewManager *MainWindow::toolViewManager ()
+ToolViewManager *MainWindow::toolViewManager () const
 {
   return d->win->toolViewManager ();
 }
 
-Project *MainWindow::activeProject ()
+Project *MainWindow::activeProject () const
 {
   return d->win->activeProject ();
 }
@@ -84,7 +84,7 @@ Project *MainWindow::createProject (const QString &type, const QString &name, co
 {
   return d->win->createProject (type, name, filename);
 }
-    
+
 Project *MainWindow::openProject (const QString &filename)
 {
   return d->win->openProject (filename);

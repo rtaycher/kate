@@ -41,12 +41,12 @@ class PrivateDocumentManager
     }
 
     ~PrivateDocumentManager ()
-    {    
-    }          
-        
-    KateDocManager *docMan; 
+    {
+    }
+
+    KateDocManager *docMan;
   };
-            
+
 DocumentManager::DocumentManager (void *documentManager) : QObject ((KateDocManager*) documentManager)
 {
   d = new PrivateDocumentManager ();
@@ -97,18 +97,18 @@ bool DocumentManager::closeDocument(Document *document)
 {
   return d->docMan->closeDocument (document);
 }
-    
+
 bool DocumentManager::closeDocument(uint n)
 {
   return d->docMan->closeDocument (n);
-} 
+}
 
 bool DocumentManager::closeDocumentWithID(uint id)
 {
   return d->docMan->closeDocument (id);
 }
 
-bool DocumentManager::closeAllDocuments()
+bool DocumentManager::closeAllDocuments()  const
 {
   return d->docMan->closeAllDocuments ();
 }

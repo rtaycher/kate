@@ -35,21 +35,21 @@ class MainWindow : public QObject
 
   public:
     MainWindow (void *mainWindow);
-    virtual ~MainWindow ();    
-    
+    virtual ~MainWindow ();
+
   public:
-    KXMLGUIFactory *guiFactory();
-    
-    class ViewManager *viewManager ();
-    
-    class ToolViewManager *toolViewManager();
-    
+    KXMLGUIFactory *guiFactory() const;
+
+    class ViewManager *viewManager () const;
+
+    class ToolViewManager *toolViewManager() const;
+
     /**
      * Returns the active project of this main window
      * @return Project current active project
      */
-    class Project *activeProject ();
-    
+    class Project *activeProject () const;
+
     /**
      * Creates a new project file at give url of given type + opens it
      * @param type projecttype
@@ -57,22 +57,22 @@ class MainWindow : public QObject
      * @return Project new created project object
      */
     class Project *createProject (const QString &type, const QString &name, const QString &filename);
-    
+
     /**
      * @param filename name of the project file
      * @return Project opened project
      */
     class Project *openProject (const QString &filename);
-    
+
   //invention of public signals, like in kparts/browserextension.h
   #undef signals
   #define signals public
   signals:
   #undef signals
-  #define signals protected   
+  #define signals protected
 
     void projectChanged ();
-    
+
   private:
     class PrivateMainWindow *d;
 };
