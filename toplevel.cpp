@@ -482,25 +482,29 @@ void TopLevel::configure() {
   // I read that no widgets should be created on the stack
   KDialogBase *kd = new KDialogBase(KDialogBase::IconList,
 				    i18n("Configure KWrite"),
-				    KDialogBase::Ok | KDialogBase::Cancel,
+				    KDialogBase::Ok | KDialogBase::Cancel |
+				    KDialogBase::Help ,
 				    KDialogBase::Ok, this, "tabdialog");
 
   // indent options
-  QVBox *page=kd->addVBoxPage(i18n("Indent"), QString::null, UserIcon( "misc" ) );
+  QVBox *page=kd->addVBoxPage(i18n("Indent"), QString::null, 
+			      BarIcon("rightjust", KIcon::SizeMedium) );
   IndentConfigTab *indentConfig = new IndentConfigTab(page, kWrite);
 
   // select options
-  page=kd->addVBoxPage(i18n("Select"), QString::null, UserIcon( "misc" ) );
+  page=kd->addVBoxPage(i18n("Select"), QString::null, 
+		       BarIcon("misc") );
   SelectConfigTab *selectConfig = new SelectConfigTab(page, kWrite);
 
   // edit options
-  page=kd->addVBoxPage(i18n("Edit"), QString::null, UserIcon( "misc" ) );
+  page=kd->addVBoxPage(i18n("Edit"), QString::null,
+		       BarIcon("kwrite", KIcon::SizeMedium ) );
   EditConfigTab *editConfig = new EditConfigTab(page, kWrite);
 
   // spell checker
-  page=kd->addVBoxPage(i18n("Spellchecker"), QString::null, UserIcon( "spellcheck" ) );
-  KSpellConfig *ksc = new KSpellConfig(page, 0L, kWrite->ksConfig());
-
+  page = kd->addVBoxPage( i18n("Spelling"), i18n("Spell checker behavior"),
+			  BarIcon("spellcheck", KIcon::SizeMedium) );
+  KSpellConfig *ksc = new KSpellConfig(page, 0L, kWrite->ksConfig(), false );
   // keys
   //this still lacks layout management, so the tabdialog does not
   //make it fit
@@ -599,8 +603,7 @@ void TopLevel::toggleStatusBar() {
   }
 }
 
-void TopLevel::togglePath()
-{
+void TopLevel::togglePath() {
   showPath = !showPath;
   options->setItemChecked(menuShowPath, showPath);
   newCaption();
