@@ -170,6 +170,7 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
   private:
     void setupMainWindow();
     void setupActions();
+    void setupPlugins();
 
     virtual bool queryClose();
 
