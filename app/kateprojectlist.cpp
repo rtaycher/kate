@@ -96,6 +96,7 @@ KateProjectList::KateProjectList (KateProjectManager *_projectManager, KateMainW
   toolbar->setEnableContextMenu( false );
   
   m_projectCombo = new KComboBox (this);
+  m_projectCombo->hide ();
   lo->addWidget(m_projectCombo);
   
   m_freeArea = new QWidget (this);
@@ -172,6 +173,9 @@ void KateProjectList::projectCreated (Kate::Project *project)
 
   m_numList.append (project->projectNumber());
   m_projectCombo->insertItem (project->name());
+  
+  if (m_projectCombo->isHidden())
+    m_projectCombo->show ();
 }
 
 void KateProjectList::projectDeleted (uint projectNumber)
@@ -182,5 +186,11 @@ void KateProjectList::projectDeleted (uint projectNumber)
   {
     m_numList.remove (projectNumber);
     m_projectCombo->removeItem (n);
+  
+    if (m_numList.isEmpty())
+    {
+      if (!m_projectCombo->isHidden())
+        m_projectCombo->hide ();
+    }
   }
 }
