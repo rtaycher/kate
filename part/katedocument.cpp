@@ -55,6 +55,50 @@
 
 #include "katecmd.h"
 
+class KateUndo
+{
+  public:
+    KateUndo (KateDocument *doc, uint type, uint line, uint col, uint len,  QString text);
+    ~KateUndo ();
+
+    void undo ();
+		void redo ();
+
+		enum types
+		{
+      internalInsertText,
+			internalRemoveText,
+			internalWrapLine,
+			internalUnWrapLine,
+			internalInsertLine,
+			internalRemoveLine
+		};
+
+  private:
+	  KateDocument *myDoc;
+	  uint type;
+    uint line;
+	  uint col;
+	  uint len;
+	  QString text;
+};
+
+class KateUndoGroup
+{
+  public:
+	  KateUndoGroup (KateDocument *doc);
+		~KateUndoGroup ();
+
+		void undo ();
+		void redo ();
+
+		void addItem (KateUndo *undo);
+
+  private:
+	  KateDocument *myDoc;
+    QPtrList<KateUndo> items;
+};
+
 const int KateDocument::maxAttribs = 32;
 
 QStringList KateDocument::searchForList = QStringList();
@@ -62,13 +106,13 @@ QStringList KateDocument::replaceWithList = QStringList();
 
 uint KateDocument::uniqueID = 0;
 
-KateUndo::KateUndo (uint type, uint startLine, uint startCol, uint endLine, uint endCol, QString text)
+KateUndo::KateUndo (KateDocument *doc, uint type, uint line, uint col, uint len, QString text)
 {
+  this->myDoc = doc;
   this->type = type;
-  this->startLine = startLine;
-  this->startCol = startCol;
-  this->endLine = endLine;
-  this->endCol = endCol;
+  this->line = line;
+  this->col = col;
+  this->len = len;
 	this->text = text;
 }
 
@@ -78,14 +122,63 @@ KateUndo::~KateUndo ()
 
 void KateUndo::undo ()
 {
+  if (type == KateUndo::internalInsertText)
+	{
+	  myDoc->internalRemoveText (line, col, len);
+  }
+  else if (type == KateUndo::internalRemoveText)
+	{
+	  myDoc->internalInsertText (line, col, text);
+	}
+	else if (type == KateUndo::internalWrapLine)
+	{
+	  myDoc->internalUnWrapLine (line, col);
+  }
+  else if (type == KateUndo::internalUnWrapLine)
+	{
+	  myDoc->internalWrapLine (line, col);
+	}
+	else if (type == KateUndo::internalInsertLine)
+	{
+	  myDoc->internalRemoveLine (line);
+  }
+  else if (type == KateUndo::internalRemoveLine)
+	{
+	  myDoc->internalInsertLine (line, text);
+	}
 }
 
 void KateUndo::redo ()
 {
+  if (type == KateUndo::internalRemoveText)
+	{
+	  myDoc->internalRemoveText (line, col, len);
+  }
+  else if (type == KateUndo::internalInsertText)
+	{
+	  myDoc->internalInsertText (line, col, text);
+	}
+	else if (type == KateUndo::internalUnWrapLine)
+	{
+	  myDoc->internalUnWrapLine (line, col);
+  }
+  else if (type == KateUndo::internalWrapLine)
+	{
+	  myDoc->internalWrapLine (line, col);
+	}
+	else if (type == KateUndo::internalRemoveLine)
+	{
+	  myDoc->internalRemoveLine (line);
+  }
+  else if (type == KateUndo::internalInsertLine)
+	{
+	  myDoc->internalInsertLine (line, text);
+	}
 }
 
-KateUndoGroup::KateUndoGroup ()
+KateUndoGroup::KateUndoGroup (KateDocument *doc)
 {
+  myDoc = doc;
 }
 
 KateUndoGroup::~KateUndoGroup ()
@@ -97,7 +190,7 @@ void KateUndoGroup::undo ()
   if (items.count() == 0)
 	  return;
 
-  for (uint pos=items.count()-1; pos >= 0; pos--)
+  for (int pos=items.count()-1; pos >= 0; pos--)
 	{
     items.at(pos)->undo();
 	}
@@ -108,7 +201,7 @@ void KateUndoGroup::redo ()
   if (items.count() == 0)
 	  return;
 
-  for (uint pos=items.count()-1; pos >= 0; pos--)
+  for (int pos=items.count()-1; pos >= 0; pos--)
 	{
     items.at(pos)->redo();
 	}
@@ -134,6 +227,8 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   PreHighlightedTill=0;
   RequestPreHighlightTill=0;
   setInstance( KateFactory::instance() );
+
+	currentUndo = 0L;
 
   m_bSingleViewMode=bSingleViewMode;
   m_bBrowserView = bBrowserView;
@@ -311,19 +406,25 @@ bool KateDocument::insertText( uint line, uint col, const QString &s )
   uint len = s.length();
   QChar ch;
   QString buf;
-  TextLine::Ptr l, tl;
-  KateView *view;
+	uint endLine, endCol, startLine, startCol;
+
+	startLine = line;
+	startCol = col;
+  endLine = line;
+	endCol = col;
 
   if (s.isEmpty())
     return true;
 
+	bool newUndo = false;
+	if (currentUndo == 0L)
+  {
+	  currentUndo = new KateUndoGroup (this);
+    newUndo = true;
+	}
+
   tagEnd = 0;
   tagStart = 0xffffff;
-
-  l = getTextLine(line);
-
-  if (!l)
-    return false;
 
   for (uint pos = 0; pos < len; pos++)
   {
@@ -331,49 +432,19 @@ bool KateDocument::insertText( uint line, uint col, const QString &s )
 
     if (ch == '\n')
     {
-      if (buf.length() > 0)
-        l->replace(insertPos, 0, buf.unicode(), buf.length());
-
-      tl = new TextLine();
-      if (!tl)
-        return false;
-
-      l->wrap (tl, insertPos + buf.length());
-
-      buffer->insertLine (line+1, tl);
-      buffer->changeLine(line);
-
-      updateMaxLength(l);
-
-      tagLine(line);
-      tagLine(line+1);
+      internalInsertText (line, insertPos, buf);
+      internalWrapLine (line, insertPos + buf.length());
 
       line++;
+			endLine++;
       insertPos = 0;
       buf.truncate(0);
-      l = tl;
-
-      if (selectStart >= line) selectStart++;
-      if (selectEnd >= line) selectEnd++;
-      if (tagStart >= line) tagStart++;
-      if (tagEnd >= line) tagEnd++;
-
-      newDocGeometry = true;
-      for (view = myViews.first(); view != 0L; view = myViews.next() )
-      {
-        view->insLine(line);
-      }
     }
     else
       buf += ch; // append char to buffer
   }
 
-  if (buf.length() > 0)
-    l->replace(insertPos, 0, buf.unicode(), buf.length());
-
-  buffer->changeLine(line);
-  updateMaxLength(l);
-  tagLine(line);
+  internalInsertText (line, insertPos, buf);
 
   if (tagStart <= tagEnd) {
     optimizeSelection();
@@ -383,6 +454,13 @@ bool KateDocument::insertText( uint line, uint col, const QString &s )
 
 	if (_autoUpdate)
   	updateViews();
+
+  if (newUndo)
+	{
+    undoItems.append (currentUndo);
+		currentUndo = 0L;
+		emit undoChanged ();
+	}
 
   emit textChanged ();
 
@@ -407,71 +485,23 @@ bool KateDocument::removeText ( uint startLine, uint startCol, uint endLine, uin
   if (!l)
     return false;
 
+	bool newUndo = false;
+	if (currentUndo == 0L)
+  {
+	  currentUndo = new KateUndoGroup (this);
+    newUndo = true;
+	}
+
   if (startLine == endLine)
   {
-    l->replace (startCol, endCol-startCol, 0, 0);
-    buffer->changeLine(startLine);
-    updateMaxLength(l);
-    tagLine(startLine);
-
-    newDocGeometry = true;
-    for (view = myViews.first(); view != 0L; view = myViews.next() )
-    {
-      view->getCursorPosition (&cLine, &cCol);
-
-			if ( (cLine == startLine) && (cCol > startCol) )
-        cCol = startCol;
-
-      c.line = startLine;
-      c.col = cCol;
-
-      view->updateCursor (c);
-    }
-  }
+    internalRemoveText (startLine, startCol, endCol-startCol);
+	}
   else if ((startLine+1) == endLine)
   {
-    l->truncate(startCol);
-
-    tl = getTextLine(startLine+1);
-
-    if (!tl)
-     	return false;
-
-    tl->replace (0, endCol, 0, 0);
-
-    l->unWrap (startCol, tl, tl->length());
-    l->setContext (tl->getContext());
-
-    if (longestLine == tl)
-     	longestLine = 0L;
-
-    buffer->changeLine(startLine);
-    buffer->removeLine(startLine+1);
-
-    updateMaxLength(l);
-    tagLine(startLine);
-
-    if (selectStart >= (startLine+1) && selectStart > 0) selectStart--;
-    if (selectEnd >= (startLine+1)) selectEnd--;
-    if (tagStart >= (startLine+1) && tagStart > 0) tagStart--;
-    if (tagEnd >= (startLine+1)) tagEnd--;
-
-    newDocGeometry = true;
-    for (view = myViews.first(); view != 0L; view = myViews.next() )
-    {
-     	view->getCursorPosition (&cLine, &cCol);
-
-     	view->delLine(startLine+1);
-
-     	if ( (cLine == (startLine+1)) || ((cLine == startLine) && (cCol >= startCol)) )
-       	cCol = startCol;
-
-      c.line = startLine;
-      c.col = cCol;
-
-      view->updateCursor (c);
-    }
-	}
+    internalRemoveText (startLine, startCol, l->length()-startCol);
+		internalRemoveText (startLine+1, 0, endCol);
+    internalUnWrapLine (startLine, startCol);
+  }
 	else
 	{
     for (line = startLine; line <= endLine; line++)
@@ -480,46 +510,9 @@ bool KateDocument::removeText ( uint startLine, uint startCol, uint endLine, uin
     	{
 			  deletePos = 0;
 
-      	l->truncate(deletePos);
-
-      	tl = getTextLine(startLine+1);
-
-      	if (!tl)
-        	return false;
-
-      	l->unWrap (deletePos, tl, tl->length());
-      	l->setContext (tl->getContext());
-
-      	if (longestLine == tl)
-        	longestLine = 0L;
-
-      	buffer->changeLine(startLine);
-      	buffer->removeLine(startLine+1);
-
-      	updateMaxLength(l);
-      	tagLine(startLine);
-
-      	if (selectStart >= (startLine+1) && selectStart > 0) selectStart--;
-      	if (selectEnd >= (startLine+1)) selectEnd--;
-      	if (tagStart >= (startLine+1) && tagStart > 0) tagStart--;
-      	if (tagEnd >= (startLine+1)) tagEnd--;
-
-      	newDocGeometry = true;
-      	for (view = myViews.first(); view != 0L; view = myViews.next() )
-      	{
-        	view->getCursorPosition (&cLine, &cCol);
-
-        	view->delLine(startLine+1);
-
-        	if ( (cLine == (startLine+1)) || ((cLine == startLine) && (cCol >= deletePos)) )
-          	cCol = deletePos;
-
-        	c.line = startLine;
-        	c.col = cCol;
-
-        	view->updateCursor (c);
-      	}
-    	}
+				internalRemoveText (startLine, deletePos, l->length()-startCol);
+				internalUnWrapLine (startLine, deletePos);
+      }
     	else
     	{
       	if (line == startLine)
@@ -534,24 +527,8 @@ bool KateDocument::removeText ( uint startLine, uint startCol, uint endLine, uin
 				}
 
       	l->replace (deletePos, endPos-deletePos, 0, 0);
-      	buffer->changeLine(startLine);
-      	updateMaxLength(l);
-      	tagLine(startLine);
-
-      	newDocGeometry = true;
-      	for (view = myViews.first(); view != 0L; view = myViews.next() )
-      	{
-        	view->getCursorPosition (&cLine, &cCol);
-
-        	if ( (cLine == startLine) && (cCol > deletePos) )
-          	cCol = deletePos;
-
-        	c.line = startLine;
-        	c.col = cCol;
-
-        	view->updateCursor (c);
-      	}
-    	}
+				internalRemoveText (startLine, deletePos, endPos-deletePos);
+      }
   	}
 	}
 
@@ -564,6 +541,13 @@ bool KateDocument::removeText ( uint startLine, uint startCol, uint endLine, uin
   if (_autoUpdate)
 	  updateViews();
 
+	if (newUndo)
+	{
+    undoItems.append (currentUndo);
+		currentUndo = 0L;
+		emit undoChanged ();
+	}
+
   emit textChanged ();
 
   return true;
@@ -574,28 +558,14 @@ bool KateDocument::insertLine( uint l, const QString &str )
   if (l > buffer->count())
     return false;
 
-  KateView *view;
-
-  TextLine::Ptr TL=new TextLine();
-  TL->append(str.unicode(),str.length());
-  buffer->insertLine(l,TL);
-
-  buffer->changeLine(l);
-
-  updateMaxLength(TL);
-
-  tagLine(l);
-
-  if (selectStart >= l) selectStart++;
-  if (selectEnd >= l) selectEnd++;
-  if (tagStart >= l) tagStart++;
-  if (tagEnd >= l) tagEnd++;
-
-  newDocGeometry = true;
-  for (view = myViews.first(); view != 0L; view = myViews.next() )
+	bool newUndo = false;
+	if (currentUndo == 0L)
   {
-    view->insLine(l);
-  }
+	  currentUndo = new KateUndoGroup (this);
+    newUndo = true;
+	}
+
+  internalInsertLine (l, str);
 
   if (tagStart <= tagEnd) {
     optimizeSelection();
@@ -606,6 +576,13 @@ bool KateDocument::insertLine( uint l, const QString &str )
   if (_autoUpdate)
 	  updateViews();
 
+  if (newUndo)
+	{
+    undoItems.append (currentUndo);
+		currentUndo = 0L;
+		emit undoChanged ();
+	}
+
   emit textChanged ();
 
   return true;
@@ -613,37 +590,14 @@ bool KateDocument::insertLine( uint l, const QString &str )
 
 bool KateDocument::removeLine( uint line )
 {
-  KateView *view;
-  int cLine, cCol;
-  KateViewCursor c;
-
-  if (buffer->count() <= 1)
-    return false;
-
-  if (longestLine == getTextLine (line))
-        longestLine = 0L;
-
-  buffer->removeLine(line);
-
-  if (selectStart >= line && selectStart > 0) selectStart--;
-  if (selectEnd >= line) selectEnd--;
-  if (tagStart >= line && tagStart > 0) tagStart--;
-  if (tagEnd >= line) tagEnd--;
-
-  newDocGeometry = true;
-  for (view = myViews.first(); view != 0L; view = myViews.next() )
+	bool newUndo = false;
+	if (currentUndo == 0L)
   {
-    view->getCursorPosition (&cLine, &cCol);
-    view->delLine(line);
+	  currentUndo = new KateUndoGroup (this);
+    newUndo = true;
+	}
 
-    if ( (cLine == line) )
-      cCol = 0;
-
-    c.line = line;
-    c.col = cCol;
-
-    view->updateCursor (c);
-  }
+  internalRemoveLine (line);
 
   if (tagStart <= tagEnd) {
     optimizeSelection();
@@ -653,6 +607,13 @@ bool KateDocument::removeLine( uint line )
 
 	if (_autoUpdate)
   	updateViews();
+
+  if (newUndo)
+	{
+    undoItems.append (currentUndo);
+		currentUndo = 0L;
+		emit undoChanged ();
+	}
 
   emit textChanged ();
 
@@ -677,6 +638,231 @@ int KateDocument::lineLength ( uint line ) const
     return -1;
 
   return l->length();
+}
+
+//
+// KTextEditor::EditInterface internal stuff
+//
+bool KateDocument::internalInsertText ( uint line, uint col, const QString &s )
+{
+  TextLine::Ptr l;
+
+	l = getTextLine(line);
+
+  if (!l)
+	  return false;
+
+	if (currentUndo)
+	  currentUndo->addItem (new KateUndo (this, KateUndo::internalInsertText, line, col, s.length(), s));
+
+  l->replace(col, 0, s.unicode(), s.length());
+
+  buffer->changeLine(line);
+  updateMaxLength(l);
+  tagLine(line);
+
+  emit textChanged ();
+  return true;
+}
+
+bool KateDocument::internalRemoveText ( uint line, uint col, uint len )
+{
+  TextLine::Ptr l;
+	KateView *view;
+	int cLine, cCol;
+	KateViewCursor c;
+
+	l = getTextLine(line);
+
+  if (!l)
+	  return false;
+
+	if (currentUndo)
+	  currentUndo->addItem (new KateUndo (this, KateUndo::internalRemoveText, line, col, len, l->getString().mid(col, len)));
+
+  l->replace(col, len, 0L, 0);
+
+  buffer->changeLine(line);
+  updateMaxLength(l);
+  tagLine(line);
+
+	newDocGeometry = true;
+  for (view = myViews.first(); view != 0L; view = myViews.next() )
+  {
+    view->getCursorPosition (&cLine, &cCol);
+
+	  if ( (cLine == line) && (cCol > col) )
+      cCol = col;
+
+    c.line = line;
+    c.col = cCol;
+
+    view->updateCursor (c);
+  }
+
+  emit textChanged ();
+	return true;
+}
+
+bool KateDocument::internalWrapLine ( uint line, uint col )
+{
+  TextLine::Ptr l, tl;
+	KateView *view;
+
+	l = getTextLine(line);
+  tl = new TextLine();
+
+	if (!l || !tl)
+	  return false;
+
+	if (currentUndo)
+	  currentUndo->addItem (new KateUndo (this, KateUndo::internalWrapLine, line, col, 0, 0));
+
+  l->wrap (tl, col);
+
+  buffer->insertLine (line+1, tl);
+  buffer->changeLine(line);
+
+  updateMaxLength(l);
+
+  tagLine(line);
+  tagLine(line+1);
+
+  if (selectStart > line) selectStart++;
+  if (selectEnd > line) selectEnd++;
+  if (tagStart > line) tagStart++;
+  if (tagEnd > line) tagEnd++;
+
+  newDocGeometry = true;
+  for (view = myViews.first(); view != 0L; view = myViews.next() )
+  {
+    view->insLine(line+1);
+  }
+
+	emit textChanged ();
+	return true;
+}
+
+bool KateDocument::internalUnWrapLine ( uint line, uint col)
+{
+  TextLine::Ptr l, tl;
+  KateView *view;
+	int cLine, cCol;
+	KateViewCursor c;
+
+	l = getTextLine(line);
+  tl = getTextLine(line+1);
+
+	if (!l || !tl)
+	  return false;
+
+	if (currentUndo)
+	  currentUndo->addItem (new KateUndo (this, KateUndo::internalUnWrapLine, line, col, 0, 0));
+
+  l->unWrap (col, tl, tl->length());
+  l->setContext (tl->getContext());
+
+  if (longestLine == tl)
+    longestLine = 0L;
+
+  buffer->changeLine(line);
+  buffer->removeLine(line+1);
+
+  updateMaxLength(l);
+  tagLine(line);
+
+  if (selectStart > line && selectStart > 0) selectStart--;
+  if (selectEnd > line) selectEnd--;
+  if (tagStart > line && tagStart > 0) tagStart--;
+  if (tagEnd > line) tagEnd--;
+
+  newDocGeometry = true;
+  for (view = myViews.first(); view != 0L; view = myViews.next() )
+  {
+    view->getCursorPosition (&cLine, &cCol);
+
+    view->delLine(line+1);
+
+    if ( (cLine == (line+1)) || ((cLine == line) && (cCol >= col)) )
+     	cCol = col;
+
+    c.line = line;
+    c.col = cCol;
+
+    view->updateCursor (c);
+  }
+
+	emit textChanged ();
+	return true;
+}
+
+bool KateDocument::internalInsertLine ( uint line, const QString &s )
+{
+  KateView *view;
+
+	if (currentUndo)
+	  currentUndo->addItem (new KateUndo (this, KateUndo::internalInsertLine, line, 0, s.length(), s));
+
+  TextLine::Ptr TL=new TextLine();
+  TL->append(s.unicode(),s.length());
+  buffer->insertLine(line,TL);
+  buffer->changeLine(line);
+
+  updateMaxLength(TL);
+
+  tagLine(line);
+
+  if (selectStart >= line) selectStart++;
+  if (selectEnd >= line) selectEnd++;
+  if (tagStart >= line) tagStart++;
+  if (tagEnd >= line) tagEnd++;
+
+  newDocGeometry = true;
+  for (view = myViews.first(); view != 0L; view = myViews.next() )
+  {
+    view->insLine(line);
+  }
+
+  emit textChanged ();
+	return true;
+}
+
+bool KateDocument::internalRemoveLine ( uint line )
+{
+  KateView *view;
+  int cLine, cCol;
+  KateViewCursor c;
+
+	if (currentUndo)
+	  currentUndo->addItem (new KateUndo (this, KateUndo::internalRemoveLine, line, 0, getTextLine (line)->getString().length(), getTextLine (line)->getString()));
+
+  if (longestLine == getTextLine (line))
+    longestLine = 0L;
+
+  buffer->removeLine(line);
+
+  if (selectStart >= line && selectStart > 0) selectStart--;
+  if (selectEnd >= line) selectEnd--;
+  if (tagStart >= line && tagStart > 0) tagStart--;
+  if (tagEnd >= line) tagEnd--;
+
+  newDocGeometry = true;
+  for (view = myViews.first(); view != 0L; view = myViews.next() )
+  {
+    view->getCursorPosition (&cLine, &cCol);
+    view->delLine(line);
+
+    if ( (cLine == line) )
+      cCol = 0;
+
+    c.line = line;
+    c.col = cCol;
+
+    view->updateCursor (c);
+  }
+
+  emit textChanged ();
+	return true;
 }
 
 //
@@ -919,12 +1105,12 @@ bool KateDocument::invertSelection()
 
 uint KateDocument::undoCount () const
 {
-  undoItems.count ();
+  return undoItems.count ();
 }
 
 uint KateDocument::redoCount () const
 {
-  redoItems.count ();
+  return redoItems.count ();
 }
 
 uint KateDocument::undoSteps () const

@@ -92,46 +92,8 @@ class KateCursor : public Kate::Cursor
     class KateDocument *myDoc;
 };
 
-class KateUndo
-{
-  public:
-    KateUndo (uint type, uint startLine, uint startCol, uint endLine, uint endCol, QString text);
-    ~KateUndo ();
-
-    void undo ();
-		void redo ();
-
-		enum types
-		{
-      insertText,
-			removeText,
-			insertLine,
-			removeLine
-		};
-
-  private:
-	  uint type;
-    uint startLine;
-	  uint startCol;
-	  uint endLine;
-	  uint endCol;
-	  QString text;
-};
-
-class KateUndoGroup
-{
-  public:
-	  KateUndoGroup ();
-		~KateUndoGroup ();
-
-		void undo ();
-		void redo ();
-
-		void addItem (KateUndo *undo);
-
-  private:
-    QPtrList<KateUndo> items;
-};
+class KateUndo;
+class KateUndoGroup;
 
 /**
   The text document. It contains the textlines, controls the
@@ -148,6 +110,8 @@ class KateDocument : public Kate::Document
     friend class KateViewInternal;
     friend class KateView;
     friend class KateIconBorder;
+		friend class KateUndoGroup;
+		friend class KateUndo;
 
   public:
     KateDocument (bool bSingleViewMode=false, bool bBrowserView=false, QWidget *parentWidget = 0, const char *widgetName = 0, QObject * = 0, const char * = 0);
@@ -182,6 +146,19 @@ class KateDocument : public Kate::Document
 
 	signals:
 		void textChanged ();
+
+  protected:
+	  //
+		// 6 internal functions (mostly to enable undo/redo atomic )
+		//
+	  bool internalInsertText ( uint line, uint col, const QString &s );
+    bool internalRemoveText ( uint line, uint col, uint len );
+
+		bool internalWrapLine ( uint line, uint col );
+    bool internalUnWrapLine ( uint line, uint col);
+
+		bool internalInsertLine ( uint line, const QString &s );
+    bool internalRemoveLine ( uint line );
 
 	//
 	// KTextEditor::SelectionInterface stuff
@@ -615,6 +592,7 @@ class KateDocument : public Kate::Document
 	  QPtrList<KateUndoGroup> undoItems;
 		QPtrList<KateUndoGroup> redoItems;
 		uint myUndoSteps;
+		KateUndoGroup *currentUndo;
 };
 
 #endif
