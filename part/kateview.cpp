@@ -1753,6 +1753,7 @@ void KateView::setOverwriteMode( bool b )
 
 void KateView::toggleInsert() {
   myDoc->setConfigFlags(myDoc->_configFlags ^ KateDocument::cfOvr);
+  emit cursorPositionChanged();		// update the status bar
 }
 
 QString KateView::currentTextLine() {
