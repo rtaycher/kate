@@ -156,10 +156,10 @@ GrepTool::GrepTool(KateMainWindow *parent, const char *name)
   recursive_box->setChecked(config->readBoolEntry("Recursive", true));
   dir_layout->addWidget(recursive_box);
 
-  ignorecase_box = new QCheckBox(i18n("Ignore case"), this);
-  ignorecase_box->setMinimumWidth(ignorecase_box->sizeHint().width());
-  ignorecase_box->setChecked(config->readBoolEntry("IgnoreCase", true));
-  dir_layout->addWidget(ignorecase_box);
+  casesensitive_box = new QCheckBox(i18n("Case sensitive"), this);
+  casesensitive_box->setMinimumWidth(casesensitive_box->sizeHint().width());
+  casesensitive_box->setChecked(config->readBoolEntry("CaseSensitive", true));
+  dir_layout->addWidget(casesensitive_box);
 
   KButtonBox *actionbox = new KButtonBox(this, Qt::Vertical);
   layout->addWidget(actionbox, 0, 2);
@@ -212,8 +212,8 @@ GrepTool::GrepTool(KateMainWindow *parent, const char *name)
     i18n("Enter the directory which contains the files you want to search in."));
   QWhatsThis::add(recursive_box,
     i18n("Check this box to search in all subdirectories."));
-  QWhatsThis::add(ignorecase_box,
-    i18n("Check this box to ignore case."));
+  QWhatsThis::add(casesensitive_box,
+    i18n("If this option is enabled (the default), the search will be case sensitive."));
   QWhatsThis::add(resultbox,
     i18n("The results of the grep run are listed here. Select a\n"
      "filename/line number combination and press Enter or doubleclick\n"
@@ -328,7 +328,7 @@ void GrepTool::slotSearch()
   childproc = new KShellProcess();
   *childproc << filepattern;
   *childproc << "grep";
-  if (ignorecase_box->isChecked())
+  if (!casesensitive_box->isChecked())
     *childproc << "-i";
   *childproc << "-n";
   *childproc << "-H";
@@ -392,7 +392,7 @@ void GrepTool::finish()
     config->writeEntry("LastSearchPaths", lastSearchPaths);
   }
   config->writeEntry("Recursive", recursive_box->isChecked());
-  config->writeEntry("IgnoreCase", ignorecase_box->isChecked());
+  config->writeEntry("CaseSensitive", casesensitive_box->isChecked());
 }
 
 void GrepTool::slotCancel()
