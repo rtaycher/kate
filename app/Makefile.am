@@ -7,6 +7,7 @@ kate_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugindialogpage.cp
 	kateviewmanager.cpp kateviewspace.cpp katemain.cpp \
 	kateIface.skel kategrepdialog.cpp katefiledialog.cpp katemailfilesdialog.cpp \
         kbookmarkhandler.cpp kactionselector.cpp
+kate_la_METASOURCES = AUTO
 
 kate_la_LIBADD   = ../interfaces/libkateinterfaces.la -lkscript
 kate_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
@@ -14,6 +15,7 @@ kate_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
 kwrite_la_SOURCES = kwritemain.cpp katefiledialog.cpp
 kwrite_la_LIBADD   = -lktexteditor
 kwrite_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
+kwrite_la_METASOURCES = kwritemain.moc katefiledialog.moc
 
 kate_SOURCES = dummy.cpp
 kate_LDADD = kate.la
@@ -28,4 +30,3 @@ dummy.cpp:
 
 INCLUDES= -DKATEPART_NOT_INSTALLED -I../interfaces $(all_includes)
 
-METASOURCES = AUTO
