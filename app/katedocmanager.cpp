@@ -132,11 +132,6 @@ Kate::Document *KateDocManager::documentWithID (uint id)
   return m_docDict[id];
 }
 
-uint KateDocManager::documentID(Kate::Document *doc)
-{
-  return doc->documentNumber();
-}
-
 const KateDocumentInfo *KateDocManager::documentInfo (Kate::Document *doc)
 {
   return m_docInfos[doc];
@@ -166,26 +161,19 @@ int KateDocManager::findDocument ( KURL url )
 
 Kate::Document *KateDocManager::findDocumentByUrl( KURL url )
 {
-  QPtrListIterator<Kate::Document> it(m_docList);
-
-  for (; it.current(); ++it)
+  for (QPtrListIterator<Kate::Document> it(m_docList); it.current(); ++it)
   {
     if ( it.current()->url() == url)
       return it.current();
   }
+  
   return 0L;
 }
 
 bool KateDocManager::isOpen(KURL url)
 {
-  QPtrListIterator<Kate::Document> it(m_docList);
-
-  for (; it.current(); ++it)
-  {
-    if ( it.current()->url() == url)
-      return true;
-  }
-  return false;
+  // return just if we found some document with this url
+  return findDocumentByUrl (url) != 0;
 }
 
 Kate::Document *KateDocManager::openURL (const KURL& url,const QString &encoding, uint *id)
@@ -200,34 +188,25 @@ Kate::Document *KateDocManager::openURL (const KURL& url,const QString &encoding
     doc->openURL (url);
 
     if (id)
-      *id=documentID(doc);
+      *id=doc->documentNumber();
 
     return doc;
  }
 
-  if ( !isOpen( url ) )
+  Kate::Document *doc = findDocumentByUrl (url);
+  if ( !doc )
   {
-    Kate::Document *doc = (Kate::Document *)createDoc ();
-
+    doc = (Kate::Document *)createDoc ();
 
     doc->setEncoding(encoding.isNull() ? Kate::Document::defaultEncoding() : encoding);
 
     doc->openURL(url);
-
-    if (id)
-      *id=documentID(doc);
-
-    return doc;
   }
-  else
-  {
-    Kate::Document *doc1=findDocumentByUrl(url);
+  
+  if (id)
+    *id=doc->documentNumber();
 
-    if (id)
-      *id=documentID(doc1);
-
-    return doc1;
-  }
+  return doc;
 }
 
 bool KateDocManager::closeDocument(class Kate::Document *doc)

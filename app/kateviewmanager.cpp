@@ -470,12 +470,7 @@ void KateViewManager::slotDocumentOpen ()
 
   uint lastID = 0;
   for (KURL::List::Iterator i=r.URLs.begin(); i != r.URLs.end(); ++i)
-  {
-    if (!KIO::NetAccess::exists(*i, true, this))
-      KMessageBox::error (this, i18n("The given file could not be read, check if it exists or if it is readable for the current user."));
-    else
-      lastID = openURL( *i, r.encoding, false );
-  }
+    lastID = openURL( *i, r.encoding, false );
   
   if (lastID > 0)
     activateView (lastID);
@@ -523,17 +518,9 @@ uint KateViewManager::openURL (const KURL &url, const QString& encoding, bool ac
   return id;
 }
 
-void KateViewManager::openConstURLCheck (const KURL& url)
+void KateViewManager::openURL (const KURL &url)
 {
-  if (url.isEmpty()) return;
-
-  if (!KIO::NetAccess::exists(url, true, this))
-  {
-    KMessageBox::error (this, i18n("The given file could not be read, check if it exists or if it is readable for the current user."));
-    return;
-  }
-
-  openURL (KURL (url));
+  openURL (url, QString::null);
 }
 
 void KateViewManager::splitViewSpace( KateViewSpace* vs,

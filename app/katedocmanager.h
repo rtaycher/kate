@@ -69,9 +69,8 @@ class KateDocManager : public QObject
     Kate::Document *firstDocument ();
     Kate::Document *nextDocument ();
 
+    // search document with right documentNumber()
     Kate::Document *documentWithID (uint id);
-
-    uint documentID(Kate::Document *);
 
     const KateDocumentInfo *documentInfo (Kate::Document *doc);
 
@@ -87,11 +86,13 @@ class KateDocManager : public QObject
 
     QPtrList<Kate::Document> &documentList () { return m_docList; };
 
-    virtual class Kate::Document *openURL(const KURL&,const QString &encoding=QString::null,uint *id =0);
-    virtual bool closeDocument(class Kate::Document *);
-    virtual bool closeDocument(uint);
-    virtual bool closeDocumentWithID(uint);
-    virtual bool closeAllDocuments();
+    Kate::Document *openURL(const KURL&,const QString &encoding=QString::null,uint *id =0);
+    
+    bool closeDocument(class Kate::Document *);
+    bool closeDocument(uint);
+    bool closeDocumentWithID(uint);
+    bool closeAllDocuments();
+    
     bool queryCloseDocuments(KateMainWindow *w);
 
     void saveDocumentList (class KConfig *config);
