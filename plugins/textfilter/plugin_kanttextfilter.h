@@ -5,7 +5,7 @@
     copyright            : (C) 2001 by Joseph Wenninger
     email                : jowenn@bigfoot.com
  ***************************************************************************/
- 
+
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,10 +20,11 @@
 
 #include <qstring.h>
 
-#include <kantplugin.h>
-#include <kantappIface.h>
+#include <kantpluginIface.h>
 
 #include <klibloader.h>
+#include <qstring.h>
+#include <kprocess.h>
 
 class KantPluginFactory : public KLibFactory
 {
@@ -39,7 +40,7 @@ class KantPluginFactory : public KLibFactory
     static KInstance* s_instance;
 };
 
-class PluginKantTextFilter : public KantPlugin
+class PluginKantTextFilter : public KantPluginIface
 {
   Q_OBJECT
 
@@ -47,10 +48,9 @@ class PluginKantTextFilter : public KantPlugin
     PluginKantTextFilter( QObject* parent = 0, const char* name = 0 );
     virtual ~PluginKantTextFilter();
 
-    KantPluginView *createView ();
+    KantPluginViewIface *createView ();
 
   private:
-    KantAppIface *myParent;
     QString  m_strFilterOutput;
     KShellProcess * m_pFilterShellProcess;
 

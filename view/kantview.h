@@ -40,6 +40,8 @@
 
 #include "../main/kantmain.h"
 
+#include "../interfaces/kantviewIface.h"
+
 #include <kparts/browserextension.h>
 
 #include <qlist.h>
@@ -56,7 +58,6 @@
 #include <kconfig.h>
 #include <kspell.h>
 #include <ksconfig.h>
-#include <ktexteditor.h>
 #include "kantviewIface.h"
 
 class KToggleAction;
@@ -289,7 +290,7 @@ class KWBookmark {
   @author Jochen Wilhelmy
 */
 
-class KantView : public KTextEditor::View, virtual public KantViewIface
+class KantView : public KantViewIface, virtual public KantViewDCOPIface
 {
     Q_OBJECT
     friend class KantViewInternal;

@@ -1,4 +1,4 @@
-INCLUDES    =  -I$(srcdir)/../../pluginmanager -I$(srcdir)/../../interfaces $(all_includes)
+INCLUDES    =  -I$(srcdir)/../../interfaces $(all_includes)
 METASOURCES = AUTO
 
 KDE_ICON = htmltools
@@ -9,7 +9,7 @@ kde_module_LTLIBRARIES = libkanthtmltoolsplugin.la
 # This is all standard.  Remove the LIB_KHTML reference if you are not
 # using the KHTML Part
 libkanthtmltoolsplugin_la_SOURCES = plugin_kanthtmltools.cpp
-libkanthtmltoolsplugin_la_LIBADD = ../../main/libkant.la ../../interfaces/libkantIface.la
+libkanthtmltoolsplugin_la_LIBADD = ../../interfaces/libkantIface.la
 libkanthtmltoolsplugin_la_LDFLAGS = $(KDE_PLUGIN) $(all_libraries)
 
 # Install the .rc file in the Part's directory (in this case, the part

@@ -190,7 +190,7 @@ class KantViewManager : public KantViewManagerIface
     void viewChanged ();
 
   public:  //KantPluginIface
-  virtual KantView *getActiveView(){return activeView();};
+  virtual KantViewIface *getActiveView(){return (KantViewIface *)activeView();};
 };
 
 #endif

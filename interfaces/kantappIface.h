@@ -17,8 +17,6 @@
 #ifndef _KANT_APP_IFACE_
 #define _KANT_APP_IFACE_
 
-#include "../main/kantmain.h"
-
 #include <kapp.h>
 
 #include "kantdocmanagerIface.h"

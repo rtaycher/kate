@@ -23,7 +23,6 @@
 #include <kinstance.h>
 #include <kmessagebox.h>
 #include <klocale.h>
-#include "../../view/kantview.h"
 #include <cassert>
 #include <kdebug.h>
 #include <qstring.h>
@@ -57,10 +56,9 @@ KInstance* KantPluginFactory::s_instance = 0L;
 
 
 PluginKantTextFilter::PluginKantTextFilter( QObject* parent, const char* name )
-    : KantPlugin ( parent, name ),
+    : KantPluginIface ( parent, name ),
   m_pFilterShellProcess (NULL)
 {
-   myParent=(KantAppIface *)parent;
 }
 
 PluginKantTextFilter::~PluginKantTextFilter()
@@ -68,9 +66,9 @@ PluginKantTextFilter::~PluginKantTextFilter()
   delete m_pFilterShellProcess;
 }
 
-KantPluginView *PluginKantTextFilter::createView ()
+KantPluginViewIface *PluginKantTextFilter::createView ()
 {
-   KantPluginView *view = new KantPluginView ();
+   KantPluginViewIface *view = new KantPluginViewIface ();
 
   (void)  new KAction ( i18n("Fi&lter Text..."), "edit_filter", CTRL + Key_Backslash, this,
   SLOT( slotEditFilter() ), view->actionCollection(), "edit_filter" );
@@ -100,7 +98,7 @@ splitString (QString q, char c, QStringList &list)  //  PCP
 
 
         static void  //  PCP
-slipInNewText (KantView & view, QString pre, QString marked, QString post, bool reselect)
+slipInNewText (KantViewIface & view, QString pre, QString marked, QString post, bool reselect)
 {
 
   int preDeleteLine = -1, preDeleteCol = -1;
@@ -209,7 +207,7 @@ PluginKantTextFilter::slotFilterProcessExited (KProcess * pProcess)
 {
 
 	assert (pProcess == m_pFilterShellProcess);
-	KantView * kv (myParent->viewManagerIface()->getActiveView());
+	KantViewIface * kv (appIface->viewManagerIface()->getActiveView());
 	if (!kv) return;
 	QString marked (kv -> markedText ());
 	if (marked.length() > 0)
@@ -222,7 +220,7 @@ PluginKantTextFilter::slotFilterProcessExited (KProcess * pProcess)
 
 
         static void  //  PCP
-slipInFilter (KShellProcess & shell, KantView & view, QString command)
+slipInFilter (KShellProcess & shell, KantViewIface & view, QString command)
 {
 
   QString marked (view.markedText ());
@@ -252,12 +250,12 @@ PluginKantTextFilter::slotFilterCloseStdin (KProcess * pProcess)
                  void
 PluginKantTextFilter::slotEditFilter ()  //  PCP
 {
-  KantView * kv (myParent->viewManagerIface()->getActiveView());
+  KantViewIface * kv (appIface->viewManagerIface()->getActiveView());
   if (!kv) return;
 
   QString text ( KantPrompt ( i18n("Filter"),
                         i18n("Enter command to pipe selected text thru"),
-                        (QWidget*)  myParent->viewManagerIface()->getActiveView()
+                        (QWidget*)  appIface->viewManagerIface()->getActiveView()
                         ) );
 
   if ( !text.isEmpty () )

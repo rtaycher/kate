@@ -1420,7 +1420,7 @@ KWBookmark::KWBookmark() {
   cursor.y = -1; //mark bookmark as invalid
 }
 
-KantView::KantView(KantDocument *doc, QWidget *parent, const char * name, bool HandleOwnDND, bool deleteDoc) : KTextEditor::View(doc, parent, name), DCOPObject(name)
+KantView::KantView(KantDocument *doc, QWidget *parent, const char * name, bool HandleOwnDND, bool deleteDoc) : KantViewIface (doc, parent, name), DCOPObject(name)
 {
   setInstance( KantFactory::instance() );
 

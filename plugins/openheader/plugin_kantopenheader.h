@@ -20,8 +20,7 @@
 
 #include <qstring.h>
 
-#include <kantplugin.h>
-#include <kantappIface.h>
+#include <kantpluginIface.h>
 
 #include <klibloader.h>
 
@@ -39,7 +38,7 @@ class KantPluginFactory : public KLibFactory
     static KInstance* s_instance;
 };
 
-class PluginKantOpenHeader : public KantPlugin
+class PluginKantOpenHeader : public KantPluginIface
 {
   Q_OBJECT
 
@@ -47,10 +46,7 @@ class PluginKantOpenHeader : public KantPlugin
     PluginKantOpenHeader( QObject* parent = 0, const char* name = 0 );
     virtual ~PluginKantOpenHeader();
 
-    KantPluginView *createView ();
-
-  private:
-    KantAppIface *myParent;
+    KantPluginViewIface *createView ();
 
   public slots:
     void slotOpenHeader ();

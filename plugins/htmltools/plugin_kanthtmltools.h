@@ -20,8 +20,7 @@
 
 #include <qstring.h>
 
-#include <kantplugin.h>
-#include <kantappIface.h>
+#include <kantpluginIface.h>
 
 #include <klibloader.h>
 
@@ -39,21 +38,20 @@ class KantPluginFactory : public KLibFactory
     static KInstance* s_instance;
 };
 
-class PluginKantHtmlTools : public KantPlugin
+class PluginKantHtmlTools : public KantPluginIface
 {
   Q_OBJECT
 public:
   PluginKantHtmlTools( QObject* parent = 0, const char* name = 0 );
   virtual ~PluginKantHtmlTools();
 
-  KantPluginView *createView ();
+  KantPluginViewIface *createView ();
 
 private:
-  KantAppIface *myParent;
 
   QString KantPrompt (QString strTitle, QString strPrompt,
 			     QWidget * that);
-  void slipInHTMLtag (KantView & view, QString text);
+  void slipInHTMLtag (KantViewIface & view, QString text);
 
 public slots:
   void slotEditHTMLtag();

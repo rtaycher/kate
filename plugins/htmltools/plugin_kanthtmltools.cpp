@@ -5,7 +5,7 @@
     copyright            : (C) 2001 by Joseph Wenninger
     email                : jowenn@bigfoot.com
  ***************************************************************************/
- 
+
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -23,7 +23,6 @@
 #include <kinstance.h>
 #include <kmessagebox.h>
 #include <klocale.h>
-#include "../../view/kantview.h"
 #include <cassert>
 #include <kdebug.h>
 #include <qstring.h>
@@ -54,18 +53,17 @@ QObject* KantPluginFactory::createObject( QObject* parent, const char* name, con
 KInstance* KantPluginFactory::s_instance = 0L;
 
 PluginKantHtmlTools::PluginKantHtmlTools( QObject* parent, const char* name )
-    : KantPlugin ( parent, name )
+    : KantPluginIface ( parent, name )
 {
-   myParent=(KantAppIface *)parent;
 }
 
 PluginKantHtmlTools::~PluginKantHtmlTools()
 {
 }
 
-KantPluginView *PluginKantHtmlTools::createView ()
+KantPluginViewIface *PluginKantHtmlTools::createView ()
 {
-   KantPluginView *view = new KantPluginView ();
+   KantPluginViewIface *view = new KantPluginViewIface ();
 
 (void)  new KAction ( i18n("HT&ML Tag..."), "edit_HTML_tag", ALT + Key_Minus, this,
                                 SLOT( slotEditHTMLtag() ), view->actionCollection(), "edit_HTML_tag" );
@@ -78,14 +76,12 @@ KantPluginView *PluginKantHtmlTools::createView ()
 void PluginKantHtmlTools::slotEditHTMLtag()
 //  PCP
 {
-
-  if (!myParent)  return;
-  KantView *kv=myParent->viewManagerIface()->getActiveView();
+  KantViewIface *kv=appIface->viewManagerIface()->getActiveView();
   if (!kv) return;
 
   QString text ( KantPrompt ( i18n("HTML Tag"),
                         i18n("Enter HTML tag contents. We will supply the <, > and closing tag"),
-                        (QWidget *)myParent->viewManagerIface()->getActiveView())
+                        (QWidget *)appIface->viewManagerIface()->getActiveView())
                          );
 
   if ( !text.isEmpty () )
@@ -122,7 +118,7 @@ QString PluginKantHtmlTools::KantPrompt
 }
 
 
-void PluginKantHtmlTools::slipInHTMLtag (KantView & view, QString text)  //  PCP
+void PluginKantHtmlTools::slipInHTMLtag (KantViewIface & view, QString text)  //  PCP
 {
 
   //  We must add a heavy elaborate HTML markup system. Not!

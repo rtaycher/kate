@@ -3,7 +3,7 @@
 
 #include <dcopobject.h>
 
-class KantViewIface : virtual public DCOPObject
+class KantViewDCOPIface : virtual public DCOPObject
 {
    K_DCOP
 

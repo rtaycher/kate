@@ -1,5 +1,5 @@
  /***************************************************************************
-                          kantpluginiface.h  -  description
+                          kantplugin.h  -  description
                              -------------------
     begin                : FRE Feb 23 2001
     copyright            : (C) 2001 by Joseph Wenninger
@@ -14,18 +14,41 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef _KANT_DOCMANAGER_IFACE_
-#define _KANT_DOCMANAGER_IFACE_
+#ifndef _KANT_plugin_
+#define _KANT_plugin_
+
+#include "kantappIface.h"
 
 #include <qobject.h>
+#include <kxmlguiclient.h>
+#include <qlist.h>
+#include <qstring.h>
 
-class KantDocManagerIface : public QObject
+class KantPluginViewIface : virtual public KXMLGUIClient
+{
+  public:
+    KantPluginViewIface () {;};
+    ~KantPluginViewIface () {;};
+
+    void setXML (QString filename)
+      { setXMLFile( filename ); };
+};
+
+class KantPluginIface : public QObject
 {
   Q_OBJECT
 
   public:
-    KantDocManagerIface () : QObject () {;};
-    virtual ~KantDocManagerIface () {;};
+    KantPluginIface (QObject* parent = 0, const char* name = 0) : QObject (parent, name)
+    { appIface = (KantAppIface *) parent; };
+
+    virtual ~KantPluginIface () {;};
+
+    virtual KantPluginViewIface *createView ()=0;
+
+    QList<KantPluginViewIface> viewList;
+
+    KantAppIface *appIface;
 };
 
 #endif

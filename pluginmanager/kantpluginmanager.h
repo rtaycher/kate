@@ -19,7 +19,7 @@
 
 #include "../main/kantmain.h"
 
-class KantPlugin;
+class KantPluginIface;
 
 #include <qobject.h>
 #include <qvaluelist.h>
@@ -32,7 +32,7 @@ struct PluginListItem
   QString name;
   QString description;
   QString author;
-  KantPlugin *plugin;
+  KantPluginIface *plugin;
 };
 
 typedef QList<PluginListItem> PluginList;

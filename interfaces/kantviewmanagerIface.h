@@ -17,10 +17,9 @@
 #ifndef _KANT_VIEWMANAGER_IFACE_
 #define _KANT_VIEWMANAGER_IFACE_
 
-#include "../main/kantmain.h"
-#include "../view/kantview.h"
-
 #include <qwidget.h>
+
+#include "kantviewIface.h"
 
 class KantViewManagerIface : public QWidget
 {
@@ -28,10 +27,10 @@ class KantViewManagerIface : public QWidget
 
   public:
     KantViewManagerIface (QWidget *parent) : QWidget(parent) {;};
-    ~KantViewManagerIface () {;};
+    virtual ~KantViewManagerIface () {;};
 
-    virtual KantView *getActiveView()=0;
-    virtual void openURL (KURL)=0;  
+    virtual KantViewIface *getActiveView()=0;
+    virtual void openURL (KURL)=0;
 };
 
 #endif

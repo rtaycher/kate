@@ -23,14 +23,11 @@
 #include <kinstance.h>
 #include <kmessagebox.h>
 #include <klocale.h>
-#include "../../view/kantview.h"
 #include <cassert>
 #include <kdebug.h>
 #include <qstring.h>
 #include <kurl.h>
 #include <kio/netaccess.h>
-
-#define POP_(x) kdDebug(13000) << #x " = " << flush << x << endl
 
 extern "C"
 {
@@ -58,18 +55,17 @@ QObject* KantPluginFactory::createObject( QObject* parent, const char* name, con
 KInstance* KantPluginFactory::s_instance = 0L;
 
 PluginKantOpenHeader::PluginKantOpenHeader( QObject* parent, const char* name )
-    : KantPlugin ( parent, name )
+    : KantPluginIface ( parent, name )
 {
-   myParent=(KantAppIface *)parent;
 }
 
 PluginKantOpenHeader::~PluginKantOpenHeader()
 {
 }
 
-KantPluginView *PluginKantOpenHeader::createView ()
+KantPluginViewIface *PluginKantOpenHeader::createView ()
 {
-   KantPluginView *view = new KantPluginView ();
+   KantPluginViewIface *view = new KantPluginViewIface ();
 
    (void)  new KAction ( i18n("Open .h/[.cpp.c]"), "file_openheader", 0, this,
   SLOT( slotOpenHeader() ), view->actionCollection(), "file_openheader" );
@@ -82,7 +78,7 @@ KantPluginView *PluginKantOpenHeader::createView ()
 
 void PluginKantOpenHeader::slotOpenHeader ()
 {
-  KantView * kv (myParent->viewManagerIface()->getActiveView());
+  KantViewIface * kv (appIface->viewManagerIface()->getActiveView());
   if (!kv) return;
   KURL url=kv->document()->url();
   if ((url.isMalformed()) || (url.isEmpty())) return;
@@ -96,14 +92,14 @@ void PluginKantOpenHeader::slotOpenHeader ()
   docname=docname.left(docname.length()-len);
   if (showh)
     {
-      if (KIO::NetAccess::exists(docname+".h"))  myParent->viewManagerIface()->openURL(KURL(docname+".h"));
-      else myParent->viewManagerIface()->openURL(KURL(docname+'H'));
+      if (KIO::NetAccess::exists(docname+".h"))  appIface->viewManagerIface()->openURL(KURL(docname+".h"));
+      else appIface->viewManagerIface()->openURL(KURL(docname+'H'));
     }
   else
     {
-      if (KIO::NetAccess::exists(docname+".c"))  myParent->viewManagerIface()->openURL(KURL(docname+".c"));
-      else if (KIO::NetAccess::exists(docname+".cpp"))  myParent->viewManagerIface()->openURL(KURL(docname+".cpp"));
-        else if (KIO::NetAccess::exists(docname+".C"))  myParent->viewManagerIface()->openURL(KURL(docname+".C"));
-          else myParent->viewManagerIface()->openURL(KURL(docname+".CPP"));
+      if (KIO::NetAccess::exists(docname+".c"))  appIface->viewManagerIface()->openURL(KURL(docname+".c"));
+      else if (KIO::NetAccess::exists(docname+".cpp"))  appIface->viewManagerIface()->openURL(KURL(docname+".cpp"));
+        else if (KIO::NetAccess::exists(docname+".C"))  appIface->viewManagerIface()->openURL(KURL(docname+".C"));
+          else appIface->viewManagerIface()->openURL(KURL(docname+".CPP"));
     }
 }

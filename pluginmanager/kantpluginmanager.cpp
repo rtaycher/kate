@@ -18,7 +18,7 @@
 #include "kantpluginmanager.h"
 #include "kantpluginmanager.moc"
 
-#include "kantplugin.h"
+#include "../interfaces/kantpluginIface.h"
 
 #include "../app/kantapp.h"
 #include "../mainwindow/kantmainwindow.h"
@@ -117,7 +117,7 @@ void KantPluginManager::enableAllPluginsGUI (KantMainWindow *win)
 void KantPluginManager::loadPlugin (PluginListItem *item)
 {
   KLibFactory *factory = KLibLoader::self()->factory( item->libname.latin1() );
-  item->plugin = (KantPlugin *)factory->create( (KantAppIface *)parent(), "", "KantPlugin" );
+  item->plugin = (KantPluginIface *)factory->create( (KantAppIface *)parent(), "", "KantPluginIface" );
   item->load = true;
 }
 
