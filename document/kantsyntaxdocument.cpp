@@ -29,7 +29,7 @@
 
 SyntaxDocument::SyntaxDocument() : QDomDocument()
 {
-  QString syntaxPath = locate("data", "kwrite/syntax.xml");
+  QString syntaxPath = locate("data", "kant/syntax.xml");
 
   if( !syntaxPath.isEmpty() )
   {
