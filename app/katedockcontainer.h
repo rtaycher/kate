@@ -34,6 +34,7 @@ private:
 	QMap<KDockWidget*,int> m_map;
 	int m_inserted;
 	int m_delayedRaise;
+	bool m_vertical;
 protected slots:
 	void tabClicked(int);
 	void delayedRaise();

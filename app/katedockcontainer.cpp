@@ -18,7 +18,9 @@ KateDockContainer::KateDockContainer(QWidget *parent, class KateMainWindow *win,
 	m_position = position;
 	
 	QBoxLayout *l;
-	if ((position==KDockWidget::DockTop) || (position==KDockWidget::DockBottom))
+	m_vertical=!((position==KDockWidget::DockTop) || (position==KDockWidget::DockBottom));
+
+	if (!m_vertical)
 	l=new QVBoxLayout(this);
 	else
 	l=new QHBoxLayout(this);
@@ -57,8 +59,11 @@ KateDockContainer::~KateDockContainer()
 
 void KateDockContainer::init()
 {
+	if (m_vertical)
 	parentDockWidget()->setForcedFixedWidth(m_tb->width());	
-	
+	else
+	parentDockWidget()->setForcedFixedHeight(m_tb->height());
+
 }
 
 
@@ -135,8 +140,10 @@ void KateDockContainer::tabClicked(int t)
 //		oldtab=-1;
     m_ws->hide ();
 	kdDebug()<<"Fixed Width:"<<m_tb->width()<<endl;
+	if (m_vertical)
 	parentDockWidget()->setForcedFixedWidth(m_tb->width());
-
+	else
+	parentDockWidget()->setForcedFixedHeight(m_tb->height());
  	}
 }
 
@@ -193,7 +200,10 @@ void KateDockContainer::load(KConfig*)
 	QPtrList<KMultiTabBarTab>* tl=m_tb->tabs();
 	QPtrListIterator<KMultiTabBarTab> it1(*tl);
 	m_ws->hide();
+	if (m_vertical)
 	parentDockWidget()->setForcedFixedWidth(m_tb->width());
+	else
+	parentDockWidget()->setForcedFixedHeight(m_tb->height());
 	for (;it1.current()!=0;++it1)
 	{
 		m_tb->setTab(it1.current()->id(),false);
