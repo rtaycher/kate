@@ -134,7 +134,7 @@ void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool, unsigned char 
     if ( r == 1 )
       a = i18n("was changed on disk by another process.");
     else if ( r == 2 )
-      a = i18n("was created on disk by another proecss.");
+      a = i18n("was created on disk by another process.");
     else if ( r == 3 )
       a = i18n("was deleted from disk by another process");
 
