@@ -353,7 +353,11 @@ bool KantMainWindow::queryClose()
     val = true;
 
   if (val)
+  {
     ((KantApp *)kapp)->removeMainWindow (this);
+    if (consoleDock->isVisible())
+      consoleDock->changeHideShowState();
+  }
 
   return val;
 }
