@@ -299,6 +299,7 @@ KateProjectDialogNew::KateProjectDialogNew (QWidget *parent, KateProjectManager 
   grid->addWidget (new QLabel (i18n("Project file:"), page), 2, 0);
   m_urlRequester = new KURLRequester (page);
   grid->addWidget (m_urlRequester, 2, 1);
+  m_nameEdit->setFocus();
 
   m_urlRequester->setMode (KFile::LocalOnly);
   m_urlRequester->fileDialog()->setOperationMode (KFileDialog::Saving);
