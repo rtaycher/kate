@@ -189,6 +189,8 @@ class KantDocument : public KTextEditor::Document
     bool ownedView(KantView *);
     bool isLastView(int numViews);
 
+    int getTextLineCount() { return contents.count(); }
+
     int textWidth(const TextLine::Ptr &, int cursorX);
     int textWidth(PointStruc &cursor);
     int textWidth(bool wrapCursor, PointStruc &cursor, int xPos);

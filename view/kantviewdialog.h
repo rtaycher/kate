@@ -17,21 +17,19 @@ class KIntNumInput;
 
 class SearchDialog : public KDialogBase
 {
-    Q_OBJECT
+  Q_OBJECT
 
   public:
-
     SearchDialog( QWidget *parent, QStringList &searchFor, QStringList &replaceWith, int flags );
     QString getSearchFor();
     QString getReplaceWith();
     int getFlags();
+    void setSearchText( const QString &searchstr );
 
   protected slots:
-
     void slotOk();
 
   protected:
-
     QComboBox *m_search;
     QComboBox *m_replace;
     QCheckBox *m_opt1;
@@ -132,36 +130,6 @@ class EditConfigTab : public QWidget
     KIntNumInput *e2;
     KIntNumInput *e3;
 };
-
-/*
-class SettingsDialog : public QDialog {
-    Q_OBJECT
-  public:
-    SettingsDialog(int flags, int wrapAt, int tabWidth, int undoSteps,
-      QWidget *parent, const char *name = 0);
-    int getFlags();
-    int getWrapAt();
-    int getTabWidth();
-    int getUndoSteps();
-  protected:
-    QCheckBox *opt1;
-    QCheckBox *opt2;
-    QCheckBox *opt3;
-    QCheckBox *opt4;
-    QCheckBox *opt5;
-    QCheckBox *opt6;
-    QCheckBox *opt7;
-    QCheckBox *opt8;
-    QCheckBox *opt9;
-    QCheckBox *opt10;
-    QCheckBox *opt11;
-    QCheckBox *opt12;
-    QCheckBox *opt13;
-    KIntLineEdit *e1;
-    KIntLineEdit *e2;
-    KIntLineEdit *e3;
-};
-*/
 
 class ColorConfig : public QWidget
 {

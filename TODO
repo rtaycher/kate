@@ -6,9 +6,6 @@ TODO:
 
     - Find Text dialog needs ability to hit all documents.
 
-    - Select text, and tap <Ctrl+F>. The Find Text dialog pops up blank. It should pop up
-       with the selected text in it.
-
     - Put the cursor anywhere on a "word". Don't select it, and tap <Ctrl+F>. The Find Text
        dialog should pop up with the word in it. The definition of "word" is the same as what
        a mouse double click would select.

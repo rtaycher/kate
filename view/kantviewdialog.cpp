@@ -25,10 +25,6 @@
 #include "../document/kantdocument.h"
 #include "kantviewdialog.h"
 
-/*
-Please keep the coding style of existing files
-*/
-
 SearchDialog::SearchDialog( QWidget *parent, QStringList &searchFor, QStringList &replaceWith, int flags )
   : KDialogBase( parent, 0L, true, i18n( "Find Text" ), Ok | Cancel, Ok )
   , m_replace( 0L )
@@ -151,6 +147,13 @@ void SearchDialog::slotOk()
     }
   }
 }
+
+void SearchDialog::setSearchText( const QString &searchstr )
+ {
+   m_search->insertItem( searchstr, 0 );
+   m_search->setCurrentItem( 0 );
+   ((QLineEdit *) (m_search->children()->getFirst()))->selectAll();
+ }
 
 // this dialog is not modal
 ReplacePrompt::ReplacePrompt( QWidget *parent )
@@ -426,190 +429,6 @@ void EditConfigTab::getData(KantView *kWrite)
   kWrite->setTabWidth(e2->value());
   kWrite->setUndoSteps(e3->value());
 }
-
-/*
-SettingsDialog::SettingsDialog(int flags, int wrapAt, int tabWidth, int undoSteps,
-  QWidget *parent, const char *name)
-  : QDialog(parent,name,true) {
-
-  QLabel *label1;
-  QLabel *label2;
-  QLabel *label3;
-  QPushButton *button1, *button2;
-
-  QGroupBox *g1 = new QGroupBox(i18n("Edit Options"),this);
-  opt1 = new QCheckBox(i18n("Auto &Indent"),g1);
-//  opt1->setFixedSize(opt1->sizeHint());
-  opt2 = new QCheckBox(i18n("&Backspace Indent"),g1);
-//  opt2->setFixedSize(opt2->sizeHint());
-  opt3 = new QCheckBox(i18n("&Word Wrap"),g1);
-//  opt3->setFixedSize(opt3->sizeHint());
-  opt4 = new QCheckBox(i18n("Replace &Tabs"),g1);
-//  opt4->setFixedSize(opt4->sizeHint());
-  opt5 = new QCheckBox(i18n("Remove Trailing &Spaces"),g1);
-//  opt5->setFixedSize(opt5->sizeHint());
-  opt6 = new QCheckBox(i18n("Wrap &Cursor"),g1);
-//  opt6->setFixedSize(opt6->sizeHint());
-  opt7 = new QCheckBox(i18n("&Auto Brackets"),g1);
-//  opt7->setFixedSize(opt7->sizeHint());
-  opt13 = new QCheckBox(i18n("Group &Undos"),g1);
-//  opt13->setFixedSize(opt13->sizeHint());
-
-  g1->setMinimumHeight(8+8+8+7*4+8*(opt1->sizeHint().height()));
-
-  opt1->setChecked(flags & cfAutoIndent);
-  opt2->setChecked(flags & cfBackspaceIndent);
-  opt3->setChecked(flags & cfWordWrap);
-  opt4->setChecked(flags & cfReplaceTabs);
-  opt5->setChecked(flags & cfRemoveSpaces);
-  opt6->setChecked(flags & cfWrapCursor);
-  opt7->setChecked(flags & cfAutoBrackets);
-  opt13->setChecked(flags & cfGroupUndo);
-
-  QGroupBox *g2 = new QGroupBox(i18n("Select Options"),this);
-  opt8 = new QCheckBox(i18n("&Persistent Selections"),g2);
-  opt8->setFixedSize( opt8->sizeHint() );
-  opt9 = new QCheckBox(i18n("&Multiple Selections"),g2);
-  opt9->setFixedSize( opt9->sizeHint() );
-  opt10 = new QCheckBox(i18n("&Vertical Selections"),g2);
-  opt10->setFixedSize( opt10->sizeHint() );
-  opt11 = new QCheckBox(i18n("&Delete On Input"),g2);
-  opt11->setFixedSize( opt11->sizeHint() );
-  opt12 = new QCheckBox(i18n("&Toggle Old"),g2);
-  opt12->setFixedSize( opt12->sizeHint() );
-
-  g2->setMinimumHeight(8+8+8+4*4+5*(opt8->sizeHint().height()));
-
-  opt8->setChecked(flags & cfPersistent);
-  opt9->setChecked(flags & cfKeepSelection);
-  opt10->setChecked(flags & cfVerticalSelect);
-  opt11->setChecked(flags & cfDelOnInput);
-  opt12->setChecked(flags & cfXorSelect);
-
-
-  e1 = new KIntLineEdit(wrapAt, this, 20, 200);
-  label1 = new QLabel(e1,i18n("Wrap Words At:"),this);
-  int max = label1->sizeHint().width();
-
-  e2 = new KIntLineEdit(tabWidth, this, 1, 16);
-  label2 = new QLabel(e2,i18n("Tab Width:"),this);
-  if (label2->sizeHint().width()>max)
-    max = label2->sizeHint().width();
-
-  e3 = new KIntLineEdit(undoSteps, this, 5, 30000);
-  label3 = new QLabel(e3,i18n("Undo steps:"),this);
-  if (label3->sizeHint().width()>max)
-    max = label3->sizeHint().width();
-
-  label1->setFixedSize( max, label1->sizeHint().height() );
-  label2->setFixedSize( max, label2->sizeHint().height() );
-  label3->setFixedSize( max, label3->sizeHint().height() );
-
-  e1->setFixedSize( max, e1->sizeHint().height() );
-  e2->setFixedSize( max, e2->sizeHint().height() );
-  e3->setFixedSize( max, e3->sizeHint().height() );
-
-  button1 = new QPushButton(i18n("&OK"),this);
-  button1->setFixedSize(button1->sizeHint());
-  button1->setDefault(true);
-  connect(button1,SIGNAL(clicked()),this,SLOT(accept()));
-
-  button2 = new QPushButton(i18n("Cancel"),this);
-  button2->setFixedSize(button2->sizeHint());
-  connect(button2,SIGNAL(clicked()),this,SLOT(reject()));
-
-
-  QVBoxLayout *mainLayout = new QVBoxLayout(this, 8, 4);
-
-  QHBoxLayout *vbl6 = new QHBoxLayout();
-  mainLayout->addLayout( vbl6 );
-
-  QVBoxLayout *vbl3 = new QVBoxLayout();
-  vbl6->addLayout( vbl3 );
-
-  vbl3->addWidget( g1 );
-
-  QVBoxLayout *vbl1 = new QVBoxLayout(g1, 8, 4);
-  vbl1->addSpacing(8);
-  vbl1->addWidget( opt1,0,AlignLeft );
-  vbl1->addWidget( opt2,0,AlignLeft );
-  vbl1->addWidget( opt3,0,AlignLeft );
-  vbl1->addWidget( opt4,0,AlignLeft );
-  vbl1->addWidget( opt5,0,AlignLeft );
-  vbl1->addWidget( opt6,0,AlignLeft );
-  vbl1->addWidget( opt7,0,AlignLeft );
-  vbl1->addWidget( opt13,0,AlignLeft );
-
-  vbl3->addSpacing( 10 );
-  vbl3->addWidget( g2 );
-
-  QVBoxLayout *vbl2 = new QVBoxLayout(g2, 8, 4);
-  vbl2->addSpacing(8);
-  vbl2->addWidget( opt8,0,AlignLeft );
-  vbl2->addWidget( opt9,0,AlignLeft );
-  vbl2->addWidget( opt10,0,AlignLeft );
-  vbl2->addWidget( opt11,0,AlignLeft );
-  vbl2->addWidget( opt12,0,AlignLeft );
-
-  vbl6->addSpacing( 10 );
-
-  QVBoxLayout *vbl5 = new QVBoxLayout();
-  vbl6->addLayout( vbl5 );
-
-  vbl5->addWidget( label1,0,AlignLeft );
-  vbl5->addWidget( e1,0,AlignLeft );
-  vbl5->addSpacing( 20 );
-  vbl5->addWidget( label2,0,AlignLeft );
-  vbl5->addWidget( e2,0,AlignLeft );
-  vbl5->addSpacing( 20 );
-  vbl5->addWidget( label3,0,AlignLeft );
-  vbl5->addWidget( e3,0,AlignLeft );
-
-  mainLayout->addSpacing( 10 );
-  mainLayout->addStretch( 1 );
-
-  QHBoxLayout *vbl4 = new QHBoxLayout();
-  mainLayout->addLayout( vbl4 );
-  vbl4->addStretch( 1 );
-  vbl4->addWidget(button1);
-  vbl4->addWidget(button2);
-
-  resize(minimumSize());
-}
-
-int SettingsDialog::getFlags() {
-  int flags;
-
-  flags = 0;
-  if (opt1->isChecked()) flags |= cfAutoIndent;
-  if (opt2->isChecked()) flags |= cfBackspaceIndent;
-  if (opt3->isChecked()) flags |= cfWordWrap;
-  if (opt4->isChecked()) flags |= cfReplaceTabs;
-  if (opt5->isChecked()) flags |= cfRemoveSpaces;
-  if (opt6->isChecked()) flags |= cfWrapCursor;
-  if (opt7->isChecked()) flags |= cfAutoBrackets;
-  if (opt13->isChecked()) flags |= cfGroupUndo;
-
-  if (opt8->isChecked()) flags |= cfPersistent;
-  if (opt9->isChecked()) flags |= cfKeepSelection;
-  if (opt10->isChecked()) flags |= cfVerticalSelect;
-  if (opt11->isChecked()) flags |= cfDelOnInput;
-  if (opt12->isChecked()) flags |= cfXorSelect;
-  return flags;
-}
-
-int SettingsDialog::getWrapAt() {
-  return e1->value();
-}
-
-int SettingsDialog::getTabWidth() {
-  return e2->value();
-}
-
-int SettingsDialog::getUndoSteps() {
-  return e3->value();
-}
-*/
 
 ColorConfig::ColorConfig( QWidget *parent, char *name )
   : QWidget( parent, name )

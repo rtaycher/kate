@@ -67,6 +67,7 @@
 #include <kparts/event.h>
 #include <kxmlgui.h>
 #include <dcopclient.h>
+#include <qregexp.h>
 
 #include <X11/Xlib.h> //used to have XSetTransientForHint()
 
@@ -1329,9 +1330,22 @@ void KantViewInternal::paintEvent(QPaintEvent *e) {
   y = line*h - yPos;
   yEnd = updateR.y() + updateR.height();
 
-  while (y < yEnd) {
+  while (y < yEnd)
+  {
+    TextLine *textLine;
+    int ctxNum = 0;
+
+    if ((myDoc->getTextLineCount()-1)>line)
+    {
+      textLine = myDoc->getTextLine(line);
+      if (line > 0)
+        ctxNum = myDoc->getTextLine(line - 1)->getContext();
+
+      ctxNum = myDoc->highlight()->doHighlight(ctxNum,textLine);
+      textLine->setContext(ctxNum);
+    }
+
     myDoc->paintTextLine(paint, line, xStart, xEnd, myView->configFlags & KantView::cfShowTabs);
-//    if (cursorOn && line == cursor.y) paintCursor(paint,cXPos - xStart,h);
     bitBlt(this, updateR.x(), y, drawBuffer, 0, 0, updateR.width(), h);
 
     line++;
@@ -1343,11 +1357,11 @@ void KantViewInternal::paintEvent(QPaintEvent *e) {
   if (bm.eXPos > bm.sXPos) paintBracketMark();
 }
 
-void KantViewInternal::resizeEvent(QResizeEvent *) {
+void KantViewInternal::resizeEvent(QResizeEvent *)
+{
 //  debug("KantViewInternal::resize");
   resizeBuffer(this, width(), myDoc->fontHeight);
-//  update();
-
+  QWidget::update();
 }
 
 void KantViewInternal::timerEvent(QTimerEvent *e) {
@@ -2411,8 +2425,27 @@ void KantView::find() {
   SearchDialog *searchDialog;
 
   if (!myDoc->hasMarkedText()) searchFlags &= ~KantView::sfSelected;
+
   searchDialog = new SearchDialog(this, myDoc->searchForList, myDoc->replaceWithList,
-    searchFlags & ~KantView::sfReplace);
+  searchFlags & ~KantView::sfReplace);
+
+  // If the user has marked some text we use that otherwise
+  // use the word under the cursor.
+   QString str;
+   if (myDoc->hasMarkedText())
+     str = markedText();
+
+   if (str.isEmpty())
+     str = currentWord();
+
+   if (!str.isEmpty())
+   {
+     str.replace(QRegExp("^\n"), "");
+     int pos=str.find("\n");
+     if (pos>-1)
+       str=str.left(pos);
+     searchDialog->setSearchText( str );
+   }
 
   myViewInternal->focusOutEvent(0L);// QT bug ?
   if (searchDialog->exec() == QDialog::Accepted) {
@@ -2432,6 +2465,24 @@ void KantView::replace() {
   if (!myDoc->hasMarkedText()) searchFlags &= ~KantView::sfSelected;
   searchDialog = new SearchDialog(this, myDoc->searchForList, myDoc->replaceWithList,
     searchFlags | KantView::sfReplace);
+
+  // If the user has marked some text we use that otherwise
+  // use the word under the cursor.
+   QString str;
+   if (myDoc->hasMarkedText())
+     str = markedText();
+
+   if (str.isEmpty())
+     str = currentWord();
+
+   if (!str.isEmpty())
+   {
+     str.replace(QRegExp("^\n"), "");
+     int pos=str.find("\n");
+     if (pos>-1)
+       str=str.left(pos);
+     searchDialog->setSearchText( str );
+   }
 
   myViewInternal->focusOutEvent(0L);// QT bug ?
   if (searchDialog->exec() == QDialog::Accepted) {
