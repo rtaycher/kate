@@ -1,5 +1,6 @@
 /***************************************************************************
-                          ,syntaxdocument.h  -  description
+   $Id$
+                          syntaxdocument.h  -  description
                              -------------------
     begin                : Thu Nov 16 2000
     copyright            : (C) 2000 by Maniac
