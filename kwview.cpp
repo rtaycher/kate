@@ -51,6 +51,7 @@
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <kio/job.h>
+#include <kio/netaccess.h>
 
 #include <X11/Xlib.h> //used to have XSetTransientForHint()
 
@@ -1531,9 +1532,6 @@ KWrite::~KWrite() {
   delete kWriteView;
   delete popup; //right mouse button popup
 
-  if ( m_saveJob )
-      m_saveJob->kill();
-
   delete m_tempSaveFile;
 }
 
@@ -1951,9 +1949,6 @@ void KWrite::writeURL(const KURL &url, int ) {
     if (!writeFile(tmpFile)) return;
     }*/
 
-  if ( m_saveJob )
-      m_saveJob->kill();
-
   QString path;
 
   delete m_tempSaveFile;
@@ -1973,10 +1968,23 @@ void KWrite::writeURL(const KURL &url, int ) {
 
   if ( !url.isLocalFile() )
   {
-    KURL localURL;
-    localURL.setPath( m_tempSaveFile->name() );
-    m_saveJob = KIO::file_copy( localURL, url, -1, true );
-    connect( m_saveJob, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotJobWriteResult( KIO::Job * ) ) );
+    emit enableUI( false );
+
+    if ( KIO::NetAccess::upload( m_tempSaveFile->name(), url ) )
+    {
+      kWriteDoc->setModified( false );
+      emit statusMsg( i18n( "Wrote %1" ).arg( url.fileName() ) );
+    }
+    else
+    {
+      emit statusMsg( QString::null );
+      KMessageBox::error( this, KIO::NetAccess::lastErrorString() );
+    }
+
+    delete m_tempSaveFile;
+    m_tempSaveFile = 0;
+
+    emit enableUI( true );
   }
 }
 
@@ -2024,22 +2032,6 @@ void KWrite::slotJobData( KIO::Job *job, const QByteArray &data )
     buff.open(IO_WriteOnly | IO_Append );
     buff.writeBlock( data.data(), data.size() );
     buff.close();
-}
-
-void KWrite::slotJobWriteResult( KIO::Job *job )
-{
-    // this should probably go into the document? (Simon)
-    if ( job->error() )
-        job->showErrorDialog();
-
-    delete m_tempSaveFile;
-    m_tempSaveFile = 0;
-    kWriteDoc->setModified( false );
-
-    if ( job->error() )
-        emit statusMsg( QString::null );
-    else
-        emit statusMsg( i18n( "Wrote %1" ).arg( static_cast<KIO::FileCopyJob *>( job )->destURL().fileName() ) );
 }
 
 void KWrite::slotGETFinished( int )

@@ -331,7 +331,6 @@ class KWriteView : public QWidget {
   signals:
     // emitted when KWriteView is not handling its own URI drops
     void dropEventPass(QDropEvent*);
-
 };
 
 class KWBookmark {
@@ -512,7 +511,10 @@ class KWrite : public KTextEditor::View {
     /**
       Emits messages for the status line
     */
-    void statusMsg(const QString &);    
+    void statusMsg(const QString &);
+
+    // emitted when saving a remote URL with KIO::NetAccess. In that case we have to disable the UI.
+    void enableUI( bool enable );
 
   protected:
     int configFlags;
@@ -530,7 +532,6 @@ class KWrite : public KTextEditor::View {
     };
     QMap<KIO::Job *, NetData> m_mapNetData;
 
-    QGuardedPtr<KIO::FileCopyJob> m_saveJob;
     KTempFile *m_tempSaveFile;
 
 //text access
@@ -611,14 +612,13 @@ class KWrite : public KTextEditor::View {
   protected slots:
     void slotJobReadResult( KIO::Job *job );
     void slotJobData( KIO::Job *job, const QByteArray &data );
-    void slotJobWriteResult( KIO::Job *job );
     /**
       Gets signals from iojob
     */
     void slotGETFinished( int id );
     void slotPUTFinished( int id );
     void slotIOJobError(int, const char *);
-    
+
   public:
     /**
       Mainly for internal use. Returns true if the current document can be
@@ -837,7 +837,7 @@ class KWrite : public KTextEditor::View {
     */
 
   public slots:
-	void setBookmark(int n);
+        void setBookmark(int n);
     void gotoBookmark(int n);
 
     /**

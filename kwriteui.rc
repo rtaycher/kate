@@ -1,9 +1,21 @@
 <!DOCTYPE kpartgui>
-<kpartgui name="kwrite" version="1">
+<kpartgui name="kwrite" version="2">
 <MenuBar>
-  <Menu name="file"><text>&amp;File</text>
+  <Menu name="file" noMerge="1"><text>&amp;File</text>
+    <Action name="file_new" />
+    <Action name="file_open" />
+    <Action name="file_open_recent" />
+    <Separator/>
+    <Action name="file_save"/>
+    <Action name="file_save_as"/>
+    <Action name="file_revert"/>
+    <Separator/>
+    <Action name="file_print"/>
+    <Separator/>
     <Action name="file_newWindow"/>
     <Action name="file_newView"/>
+    <Separator/>
+    <Action name="file_close"/>
   </Menu>
   <Menu name="edit"><text>&amp;Edit</text>
     <Action name="edit_undoHistory" append="edit_undo_merge"/>

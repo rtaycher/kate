@@ -130,6 +130,7 @@ void TopLevel::setupEditWidget(KWriteDoc *doc)
   connect(kWrite,SIGNAL(newUndo()),this,SLOT(newUndo()));
   connect(kWrite->view(),SIGNAL(dropEventPass(QDropEvent *)),this,SLOT(slotDropEvent(QDropEvent *)));
   connect(kWrite->doc(),SIGNAL(highlightChanged()),this,SLOT(slotHighlightChanged()));
+  connect(kWrite, SIGNAL( enableUI( bool ) ), this, SLOT( slotEnableActions( bool ) ) );
 
   setCentralWidget(kWrite);
 }
@@ -149,7 +150,7 @@ void TopLevel::setupActions()
               actionCollection(), "file_newWindow");
   new KAction(i18n("New &View"), 0, this, SLOT(newView()),
               actionCollection(), "file_newView");
-  KStdAction::quit(this, SLOT(closeWindow()), actionCollection());
+  KStdAction::close(this, SLOT(close()), actionCollection());
 
   // setup edit menu
   editUndo = KStdAction::undo(kWrite, SLOT(undo()), actionCollection());
@@ -333,13 +334,6 @@ void TopLevel::newView()
   t->kWrite->copySettings(kWrite);
   t->init();
 }
-
-
-void TopLevel::closeWindow()
-{
-  close();
-}
-
 
 void TopLevel::configure()
 {
@@ -655,6 +649,14 @@ void TopLevel::slotDropEvent( QDropEvent *event )
   }
 }
 
+void TopLevel::slotEnableActions( bool enable )
+{
+    QValueList<KAction *> actions = actionCollection()->actions();
+    QValueList<KAction *>::ConstIterator it = actions.begin();
+    QValueList<KAction *>::ConstIterator end = actions.end();
+    for (; it != end; ++it )
+        (*it)->setEnabled( enable );
+}
 
 //common config
 void TopLevel::readConfig(KConfig *config)

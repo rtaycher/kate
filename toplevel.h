@@ -71,7 +71,6 @@ class TopLevel : public KMainWindow {
     void openRecent(const KURL& url);
     void newWindow();
     void newView();
-    void closeWindow();
     void configure();
     void togglePath();
     void toggleToolbar();
@@ -96,6 +95,8 @@ class TopLevel : public KMainWindow {
     void slotHighlightChanged();
 
     void slotDropEvent(QDropEvent *);
+
+    void slotEnableActions( bool enable );
 
   //config file functions
   public:

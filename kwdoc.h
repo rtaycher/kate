@@ -315,8 +315,8 @@ class KWriteDoc : public KTextEditor::Document {
 
   public:
     KWriteDoc(HlManager *, const QString &path = QString::null,
-	      bool bSingleViewMode = false, bool bBrowserView = false, QWidget *parentWidget = 0, const char *widgetName = 0,
-	      QObject *parent = 0, const char *name = 0);
+              bool bSingleViewMode = false, bool bBrowserView = false, QWidget *parentWidget = 0, const char *widgetName = 0,
+              QObject *parent = 0, const char *name = 0);
     ~KWriteDoc();
 
     virtual bool openFile();
@@ -521,6 +521,9 @@ class KWriteDoc : public KTextEditor::Document {
 
   protected slots:
     void clipboardChanged();
+
+  private slots:
+    void slotViewDestroyed();
 
 // member variables
   protected:

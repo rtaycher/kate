@@ -774,14 +774,24 @@ void KWriteDoc::hlChanged() { //slot
 
 
 void KWriteDoc::addView(KTextEditor::View *view) {
-  views.append( static_cast<KWrite *>( view )->view() );
+  KWriteView *wview = static_cast<KWrite *>( view )->view();
+  views.append( wview );
   KTextEditor::Document::addView( view );
+  connect( wview, SIGNAL( destroyed() ), this, SLOT( slotViewDestroyed() ) );
 }
 
 void KWriteDoc::removeView(KTextEditor::View *view) {
 //  if (undoView == view) recordReset();
-  views.removeRef( static_cast<KWrite *>( view )->view() );
+  KWriteView *wview = static_cast<KWrite *>( view )->view();
+  disconnect( wview, SIGNAL( destroyed() ), this, SLOT( slotViewDestroyed() ) );
+  views.removeRef( wview );
   KTextEditor::Document::removeView( view );
+}
+
+void KWriteDoc::slotViewDestroyed()
+{
+  const KWriteView *view = static_cast<const KWriteView *>( sender() );
+  views.removeRef( view );
 }
 
 bool KWriteDoc::ownedView(KWriteView *view) {
