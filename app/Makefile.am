@@ -1,5 +1,5 @@
-lib_LTLIBRARIES = libkateinterfaces.la kate.la kwrite.la
-bin_PROGRAMS = kate kwrite
+lib_LTLIBRARIES = libkateinterfaces.la
+kdeinit_LTLIBRARIES = kate.la kwrite.la
 
 libkateinterfaces_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugindialogpage.cpp \
 	kateconsole.cpp katedocmanager.cpp katefilelist.cpp katefileselector.cpp \
@@ -19,23 +19,6 @@ kate_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
 kwrite_la_SOURCES = kwritemain.cpp kwritedialogs.cpp
 kwrite_la_LIBADD   = -lktexteditor  ../utils/libkateutils.la
 kwrite_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
-
-kate_SOURCES = dummy_kate.cpp
-kate_LDADD = kate.la
-kate_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-
-kwrite_SOURCES = dummy_kwrite.cpp
-kwrite_LDADD = kwrite.la
-kwrite_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-
-dummy_kate_la.cpp:
-	echo > dummy_kate_la.cpp
-
-dummy_kate.cpp:
-	echo > dummy_kate.cpp
-
-dummy_kwrite.cpp:
-	echo > dummy_kwrite.cpp
 
 METASOURCES = AUTO
 

@@ -40,7 +40,7 @@ static KCmdLineOptions options[] =
     KCmdLineLastOption
 };
 
-int main( int argc, char **argv )
+extern "C" int main( int argc, char **argv )
 {
   KAboutData *s_about = new KAboutData  ("kate", I18N_NOOP("Kate"), "2.2",
                                                            I18N_NOOP( "Kate - Advanced Text Editor" ), KAboutData::License_LGPL_V2,
