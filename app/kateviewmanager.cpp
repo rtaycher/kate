@@ -521,41 +521,20 @@ void KateViewManager::slotDocumentCloseAll ()
 
 void KateViewManager::openURL (KURL url, const QString& encoding)
 {
-   uint id;
-   Kate::Document *doc=m_docManager->openURL(url,encoding,&id);
-   Kate::View *cv = activeView();
-   if (!cv)
-	createView(false,url,0L,doc);
-   activateView( id );
+  uint id;
+  Kate::Document *doc=m_docManager->openURL(url,encoding,&id);
+  
+  if (!doc->url().isEmpty())
+    ((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( doc->url().prettyURL() ) );
+  
+  Kate::View *cv = activeView();
+  
+  if (!cv)
+    createView(false,url,0L,doc);
+  
+  activateView( id );
 
   setWindowCaption();
-
-/*
-		Kate::Document *open_into = 0L;
-
-    if (cv && !cv->getDoc()->isModified() && cv->getDoc()->url().isEmpty())
-      open_into = cv->getDoc(); // replace empty "Untitled" doc
-    else {
-			open_into = (Kate::Document *)m_docManager->createDoc ();
-      createView (true, KURL(), 0L, open_into);
-    	m_docManager->setIsFirstDocument (false);
-    }
-
-    if (encoding!=QString::null)	// default==locale there
-			open_into->setEncoding( encoding );
-
-    if (open_into->openURL (url))
-    	((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
-
-    if (open_into->url().filename() != "")
-      open_into->setDocName (open_into->url().filename());
-
-    setWindowCaption();
-
-	}
-	else
-    activateView( m_docManager->findDocument( url ) );*/
-
 }
 
 void KateViewManager::openConstURL (const KURL& url)
