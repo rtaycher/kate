@@ -41,6 +41,7 @@
 #include <kmdichildview.h>
 #include <dcopclient.h>
 #include <kinstance.h>
+#include <kaboutdata.h>
 #include <kaction.h>
 #include <kapplication.h>
 #include <kcmdlineargs.h>
@@ -540,12 +541,13 @@ void KateMainWindow::slotDropEvent( QDropEvent * event )
 
 void KateMainWindow::editKeys()
 {
-  KKeyDialog dlg( false, this );
+  KKeyDialog dlg ( false, this );
+
   QPtrList<KXMLGUIClient> clients = guiFactory()->clients();
-  for( QPtrListIterator<KXMLGUIClient> it( clients );
-       it.current(); ++it ) {
-    dlg.insert( (*it)->actionCollection() );
-  }
+
+  for( QPtrListIterator<KXMLGUIClient> it( clients ); it.current(); ++it )
+    dlg.insert ( (*it)->actionCollection(), (*it)->instance()->aboutData()->programName() );
+
   dlg.configure();
 }
 
