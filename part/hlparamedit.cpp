@@ -58,7 +58,7 @@ void HLParamEdit::TextParameter(int length, QString text,bool regExp)
 	textEdit->show();
 }
 
-QString &HLParamEdit::text()
+const QString &HLParamEdit::text()
 {
 	if (textEdit) return textEdit->text();
 }
