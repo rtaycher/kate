@@ -778,6 +778,8 @@ KWBufBlock::flushStringList()
    assert(buf-m_rawData2.data() == size); 
    m_codec = 0; // No codec 
    b_rawDataValid = true; 
+   kdDebug()<<"KateBuffer::FlashStringList"<<endl;
+
 } 
  
 /** 
@@ -828,6 +830,7 @@ KWBufBlock::buildStringListFast()
  
       m_stringList.push_back (textLine); 
    } 
+   kdDebug()<<"KateBuffer::buildStringListFast"<<endl;
    //kdDebug(13020)<<"stringList.count = "<< m_stringList.count()<<" should be %ld"<< m_endState.lineNr - m_beginState.lineNr<<endl; 
    assert((int) m_stringList.size() == (m_endState.lineNr - m_beginState.lineNr)); 
    m_stringListIt = m_stringList.begin(); 

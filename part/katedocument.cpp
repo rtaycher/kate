@@ -2700,8 +2700,20 @@ void KateDocument::updateLines(int startLine, int endLine)
 
 	if (line > 0)
 	{
-	  ctxNum = getTextLine(line - 1)->getContext();
-		ctxNumLen = getTextLine(line - 1)->getContextLength();
+//	  ctxNum = getTextLine(line - 1)->getContext();
+//		ctxNumLen = getTextLine(line - 1)->getContextLength();
+
+		ctxNumLen = getTextLine(line-1)->getContextLength();
+		if (ctxNumLen>0) 
+		{
+			if (ctxNum)
+				ctxNum=realloc(ctxNum,ctxNumLen);
+			else
+				ctxNum=malloc(ctxNumLen);
+			memcpy(ctxNum,getTextLine(line-1)->getContext(),ctxNumLen);
+		}
+		else { if (ctxNum) {free(ctxNum); ctxNum=0;}}
+
   }
 
 	bool stillcontinue=false;
@@ -2718,10 +2730,22 @@ void KateDocument::updateLines(int startLine, int endLine)
     endCtx = textLine->getContext();
 		endCtxLen = textLine->getContextLength();
 
+
+	  kdDebug()<<QString("Calling doHighlight for line %1").arg(line)<<endl;
+
 	  m_highlight->doHighlight(ctxNum, ctxNumLen, textLine);
 
-		ctxNum = textLine->getContext();
+		//ctxNum = textLine->getContext();
 		ctxNumLen = textLine->getContextLength();
+		if (ctxNumLen>0) 
+		{
+			if (ctxNum)
+				ctxNum=realloc(ctxNum,ctxNumLen);
+			else
+				ctxNum=malloc(ctxNumLen);
+			memcpy(ctxNum,textLine->getContext(),ctxNumLen);
+		}
+		else { if (ctxNum) {free(ctxNum); ctxNum=0;}}
 
 		//textLine->setContext(ctxNum, ctxNumLen);
 
@@ -2743,6 +2767,9 @@ void KateDocument::updateLines(int startLine, int endLine)
 		line++;
   }
   while ((line <= last_line) && ((line <= endLine) || stillcontinue)); //|| (!(endCtx == ctxNum)));
+  if (ctxNum) free(ctxNum);
+
+  kdDebug()<<"While loop left"<<endl;  
 
   tagLines(startLine, line - 1);
 }
