@@ -471,7 +471,6 @@ void KateViewManager::slotDocumentOpen ()
         (cv?KTextEditor::encodingInterface(cv->document())->encoding():QString::null),
                 i18n("Open File"),KFileDialog::Opening,this,"",true);
         dlg.setMode(KFile::Files);
-        dlg.ops->clearHistory();
             dlg.exec();
         KURL::List urls=dlg.selectedURLs();
   for (KURL::List::Iterator i=urls.begin(); i != urls.end(); ++i)
