@@ -246,7 +246,7 @@ void KantMainWindow::setupActions()
 
   // toggle sidebar -anders
   settingsShowSidebar = new KToggleAction(i18n("Show Side&bar"), CTRL+Key_B, this, SLOT(slotSettingsShowSidebar()), actionCollection(), "settings_show_sidebar");
-  settingsShowConsole = new KToggleAction(i18n("Show &Console"), CTRL+Key_K, this, SLOT(slotSettingsShowConsole()), actionCollection(), "settings_show_console");
+  settingsShowConsole = new KToggleAction(i18n("Show &Console"), CTRL+SHIFT+Key_K, this, SLOT(slotSettingsShowConsole()), actionCollection(), "settings_show_console");
   // allow full path in title -anders
   settingsShowFullPath = new KToggleAction(i18n("Show Full &Path in Title"), 0, this, SLOT(slotSettingsShowFullPath()), actionCollection(), "settings_show_full_path");
   settingsShowToolbar = KStdAction::showToolbar(this, SLOT(slotSettingsShowToolbar()), actionCollection(), "settings_show_toolbar");
@@ -341,10 +341,12 @@ slipInNewText (KantView & view, QString pre, QString marked, QString post, bool 
   assert (preDeleteLine > -1);  assert (preDeleteCol > -1);
 
   //  shoot me for strlen() but it worked better than .length() for some reason...
+  // lukas: BANG! strlen() fucks up non latin1 characters :-)
 
 //  POP_(marked.latin1 ());
 
-  if (strlen (marked.latin1 ()) > 0)  view.keyDelete ();
+  if (marked.length() > 0)
+    view.keyDelete ();
   int line = -1, col = -1;
   view.getCursorPosition (&line, &col);
   assert (line > -1);  assert (col > -1);
@@ -367,14 +369,14 @@ slipInNewText (KantView & view, QString pre, QString marked, QString post, bool 
         {
         view.setCursorPosition (line, col + pre.length () + marked.length () - 1);
 
-        for (int x (strlen (marked.latin1()));  x--;)
+        for (int x (marked.length());  x--;)
                 view.shiftCursorLeft ();
         }
    else
         {
         view.setCursorPosition (line, col += pre.length ());
 
-        for (int x (strlen (marked.latin1()));  x--;)
+        for (int x (marked.length());  x--;)
                 view.shiftCursorRight ();
         }
 
@@ -384,8 +386,8 @@ slipInNewText (KantView & view, QString pre, QString marked, QString post, bool 
         static QString  //  PCP
 KantPrompt
         (
-        char const     * strTitle,
-        char const     * strPrompt,
+        QString strTitle,
+        QString strPrompt,
         KantMainWindow * that
         )
 {
@@ -397,8 +399,8 @@ KantPrompt
 
   QString text ( QInputDialog::getText
                         (
-                        that -> tr( strTitle ),
-                        that -> tr( strPrompt ),
+                        strTitle,
+                        strPrompt,
                         QString::null,
                         &ok,
                         that
@@ -444,7 +446,8 @@ KantMainWindow::slotFilterProcessExited (KProcess * pProcess)
 	KantView * kv (viewManager -> activeView ());
 	if (!kv) return;
 	QString marked (kv -> markedText ());
-	if (strlen (marked.latin1 ()) > 0)  kv -> keyDelete ();
+	if (marked.length() > 0)
+          kv -> keyDelete ();
 	kv -> insertText (m_strFilterOutput);
 //	slipInNewText (*kv, "", m_strFilterOutput, "", false);
 	m_strFilterOutput = "";
@@ -460,11 +463,11 @@ slipInFilter (KShellProcess & shell, KantView & view, QString command)
 
 //  POP_(command.latin1 ());
   shell.clearArguments ();
-  shell << command.latin1 ();
+  shell << command.local8Bit ();
 
   shell.start (KProcess::NotifyOnExit, KProcess::All);
 
-  shell.writeStdin (marked.latin1 (), marked.length ());
+  shell.writeStdin (marked.local8Bit (), marked.length ());
 
   //  TODO: Put up a modal dialog to defend the text from further
   //  keystrokes while the command is out. With a cancel button...  
@@ -487,8 +490,8 @@ KantMainWindow::slotEditFilter ()  //  PCP
   KantView * kv (viewManager -> activeView ());
   if (!kv) return;
 
-  QString text ( KantPrompt ( "Filter",
-                        "Enter command to pipe selected text thru",
+  QString text ( KantPrompt ( i18n("Filter"),
+                        i18n("Enter command to pipe selected text thru"),
                         this
                         ) );
 
@@ -512,7 +515,7 @@ KantMainWindow::slotEditFilter ()  //  PCP
 	connect ( m_pFilterShellProcess, SIGNAL(processExited(KProcess*)),
 		       this, SLOT(slotFilterProcessExited(KProcess*) ) ) ;
       	}
-      
+
       slipInFilter (*m_pFilterShellProcess, *kv, text);
       }
 }
@@ -868,7 +871,7 @@ void KantMainWindow::slotSettingsShowToolbar()
 
 void KantMainWindow::slotConfigure()
 {
-  KDialogBase* dlg = new KDialogBase(KDialogBase::IconList, "Configure Kant", KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok, this, "configdialog");//KantConfigDlg(this);
+  KDialogBase* dlg = new KDialogBase(KDialogBase::IconList, i18n("Configure Kant"), KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok, this, "configdialog");//KantConfigDlg(this);
 
   QFrame* frGeneral = dlg->addPage(i18n("General"), i18n("General Options"), BarIcon("misc", KIcon::SizeMedium));
   QGridLayout* gridFrG = new QGridLayout(frGeneral);
