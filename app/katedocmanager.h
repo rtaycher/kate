@@ -20,7 +20,8 @@
 
 #include "katemain.h"
 #include "../interfaces/docmanager.h"
-#include "../interfaces/document.h"
+
+#include <kate/document.h>
 
 #include <qptrlist.h>
 #include <qobject.h>

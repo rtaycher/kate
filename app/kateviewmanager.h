@@ -20,8 +20,9 @@
 
 #include "katemain.h"
 #include "../interfaces/viewmanager.h"
-#include "../interfaces/view.h"
-#include "../interfaces/document.h"
+
+#include <kate/view.h>
+#include <kate/document.h>
 
 class KateSplitter;
 class KSimpleConfig;

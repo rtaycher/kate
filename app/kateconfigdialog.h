@@ -20,7 +20,9 @@
 #include "katemain.h"
 
 #include "../interfaces/plugin.h"
-#include "../interfaces/document.h"
+
+#include <kate/document.h>
+
 #include <kdialogbase.h>
 
 struct PluginPageListItem

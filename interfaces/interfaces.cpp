@@ -29,17 +29,11 @@
 #include "docmanager.h"
 #include "docmanager.moc"
 
-#include "document.h"
-#include "document.moc"
-
 #include "mainwindow.h"
 #include "mainwindow.moc"
 
 #include "plugin.h"
 #include "plugin.moc"
-
-#include "view.h"
-#include "view.moc"
 
 #include "viewmanager.h"
 #include "viewmanager.moc"
@@ -60,14 +54,6 @@ DocManager::DocManager () : QObject ()
 }
 
 DocManager::~DocManager ()
-{
-}
-
-Document::Document () : KTextEditor::Document (0L, 0L)
-{
-}
-
-Document::~Document ()
 {
 }
 
@@ -112,14 +98,6 @@ Plugin::Plugin (QObject* parent, const char* name) : QObject (parent, name)
 }
 
 Plugin::~Plugin ()
-{
-}
-
-View::View ( KTextEditor::Document *doc, QWidget *parent, const char *name ) : KTextEditor::View (doc, parent, name)
-{
-}
-
-View::~View ()
 {
 }
 

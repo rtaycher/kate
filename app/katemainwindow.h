@@ -20,9 +20,10 @@
 
 #include "katemain.h"
 #include "../interfaces/mainwindow.h"
-#include "../interfaces/document.h"
-#include "../interfaces/view.h"
 #include "kateIface.h"
+
+#include <kate/view.h>
+#include <kate/document.h>
 
 #include <kparts/part.h>
 

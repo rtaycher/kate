@@ -19,7 +19,8 @@
 #define __KATE_FILELIST_H__
 
 #include "katemain.h"
-#include "../interfaces/document.h"
+
+#include <kate/document.h>
 
 #include <klistbox.h>
 #include <qtooltip.h>

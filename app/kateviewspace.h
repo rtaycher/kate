@@ -19,8 +19,9 @@
 #define __KATE_VIEWSPACE_H__
 
 #include "katemain.h"
-#include "../interfaces/view.h"
-#include "../interfaces/document.h"
+
+#include <kate/view.h>
+#include <kate/document.h>
 
 #include <qptrlist.h>
 #include <qwidget.h>
