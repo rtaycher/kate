@@ -68,6 +68,8 @@ class KateApp : public KUniqueApplication
     virtual Kate::InitPlugin *initPlugin() const;
     virtual KURL initScript() const;
     
+    int doNotInitialize(){return m_doNotInitialize;}
+
   private:
     Kate::Application *m_application;
     Kate::InitPluginManager *m_initPluginManager;
@@ -76,7 +78,7 @@ class KateApp : public KUniqueApplication
     QPtrList<class KateMainWindow> m_mainWindows;
     bool m_firstStart;  
     Kate::InitPlugin *m_initPlugin;
-    bool m_doNotInitialize;
+    int m_doNotInitialize;
     KURL m_initURL;
     QString m_initLib;
     QString m_oldInitLib;

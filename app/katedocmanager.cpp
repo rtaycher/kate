@@ -176,7 +176,8 @@ Kate::Document *KateDocManager::openURL(const KURL& url,const QString &encoding,
 			QString::fromLatin1(QTextCodec::codecForLocale()->name()):
 			encoding);
 
-    if (documentList().at(0)->openURL (url))
+
+  /*  if */ (documentList().at(0)->openURL (url));
     {
 #warning FIXME      //((KateMainWindow*)topLevelWidget())->fileOpenRecent->addURL( KURL( url.prettyURL() ) );
     }

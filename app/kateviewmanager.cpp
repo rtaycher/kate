@@ -53,6 +53,8 @@ KateViewManager::KateViewManager (QWidget *parent, KateDocManager *m_docManager)
 {
   m_viewManager = new Kate::ViewManager (this);
 
+  m_blockViewCreationAndActivation=false;
+
   // no memleaks
   m_viewList.setAutoDelete(true);
   m_viewSpaceList.setAutoDelete(true);
@@ -259,6 +261,7 @@ void KateViewManager::activateView ( Kate::View *view, bool checkModified /*=fal
   if( checkModified )
     view->getDoc()->isModOnHD();
 
+
   if (!view->isActive())
   {
     if ( !activeViewSpace()->showView (view) )
@@ -275,6 +278,8 @@ void KateViewManager::activateView ( Kate::View *view, bool checkModified /*=fal
       ((KMainWindow *)topLevelWidget ())->guiFactory()->removeClient ( ((KateMainWindow *)topLevelWidget ())->activeView );
   
     ((KateMainWindow *)topLevelWidget ())->activeView = view;
+   
+    if (!m_blockViewCreationAndActivation)
     ((KMainWindow *)topLevelWidget ())->guiFactory ()->addClient( view );
       
     setWindowCaption();
@@ -399,6 +404,8 @@ void KateViewManager::closeViews(uint documentNumber)
 
 void KateViewManager::openNewIfEmpty()
 {
+  if (m_blockViewCreationAndActivation) return;
+
   for (uint i2=0; i2 < ((KateApp *)kapp)->mainWindows (); i2++ )
   {
     if (((KateApp *)kapp)->kateMainWindow(i2)->kateViewManager()->viewCount() == 0)
@@ -513,6 +520,9 @@ void KateViewManager::slotDocumentCloseAll ()
 {
   if (m_docManager->documents () == 0) return;
 
+  kdDebug()<<"CLOSE ALL DOCUMENTS *****************"<<endl;
+
+#if 0
   QPtrList<Kate::Document> closeList;
 
   for (uint i=0; i < m_docManager->documents(); i++ )
@@ -528,7 +538,13 @@ void KateViewManager::slotDocumentCloseAll ()
 
     closeList.remove (closeList.at(0));
   }
+
+#endif
+  m_blockViewCreationAndActivation=true;
+  m_docManager->closeAllDocuments();  
+  m_blockViewCreationAndActivation=false;
   
+
   openNewIfEmpty();
 }
 
@@ -801,6 +817,7 @@ void KateViewManager::saveAllDocsAtCloseDown(  )
   scfg->setGroup("open files");
   scfg->writeEntry("current file", activeView()->getDoc()->url().prettyURL());
 
+  m_blockViewCreationAndActivation=false;
   while ( closeList.count() > 0 )
   {
     activateView (closeList.at(0)->documentNumber(), false);
@@ -822,6 +839,7 @@ void KateViewManager::saveAllDocsAtCloseDown(  )
     closeList.remove (closeList.at(0));
     id++;
   }
+  m_blockViewCreationAndActivation=false;
 
   scfg->sync();
   kdDebug(13001)<<">>>> saveAllDocsAtCloseDown() DONE"<<endl;
@@ -848,6 +866,26 @@ void KateViewManager::reopenDocuments(bool isRestore)
     QString curfile = scfg->readEntry("current file");
     Kate::View *viewtofocus = 0L;
 
+#if 1
+    if (curfile.isEmpty()) return;
+    m_docManager->closeAllDocuments();
+    int i = 0;
+    QString fn;
+    while (scfg->hasKey(QString("File%1").arg(i)))
+    {
+      fn = scfg->readEntry( QString("File%1").arg( i ) );
+      if ( !fn.isEmpty() ) {
+        kdDebug(13001)<<"reopenDocuments(): opening file : "<<fn<<endl;
+        scfg->setGroup( fn );
+        m_docManager->openURL( KURL( fn ) )->readSessionConfig(scfg);
+	scfg->setGroup("open files");
+      }
+      i++;
+    }
+    openURL(KURL(curfile));
+  }
+#endif
+#if 0
     int i = 0;
     QString fn;
     while ( scfg->hasKey( QString("File%1").arg( i ) )  )
@@ -871,7 +909,7 @@ void KateViewManager::reopenDocuments(bool isRestore)
     }
     if ( viewtofocus ) activateView( viewtofocus );
   }
-
+#endif
   kdDebug(13001)<<">>>> reopenDocuments() DONE"<<endl;
 }
 
