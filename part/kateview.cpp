@@ -1398,9 +1398,6 @@ void KateView::setupActions()
       KStdAction::selectAll(myDoc, SLOT(selectAll()), myDoc->actionCollection(), "select_all");
       new KAction(i18n("&Deselect All"), 0, myDoc, SLOT(clearSelection ()),
                 myDoc->actionCollection(), "unselect_all");
-      new KAction(i18n("Invert &Selection"), 0, myDoc, SLOT(invertSelection()),
-                myDoc->actionCollection(), "invert_select");
-
       new KAction(i18n("Increase Font Sizes"), "viewmag+", 0, this, SLOT(slotIncFontSizes()),
                 myDoc->actionCollection(), "incFontSizes");
       new KAction(i18n("Decrease Font Sizes"), "viewmag-", 0, this, SLOT(slotDecFontSizes()),
@@ -1418,9 +1415,6 @@ void KateView::setupActions()
       KStdAction::selectAll(myDoc, SLOT(selectAll()), actionCollection());
       new KAction(i18n("&Deselect All"), 0, myDoc, SLOT(clearSelection()),
                 actionCollection(), "edit_deselectAll");
-      new KAction(i18n("Invert &Selection"), 0, myDoc, SLOT(invertSelection()),
-                actionCollection(), "edit_invertSelection");
-
       new KAction(i18n("Increase Font Sizes"), "viewmag+", 0, this, SLOT(slotIncFontSizes()),
                 actionCollection(), "incFontSizes");
       new KAction(i18n("Decrease Font Sizes"), "viewmag-", 0, this, SLOT(slotDecFontSizes()),

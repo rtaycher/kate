@@ -59,7 +59,7 @@ class KateCursor : public Kate::Cursor
 
     bool insertText ( const QString& text );
     
-		bool removeText ( uint numberOfCharacters );
+    bool removeText ( uint numberOfCharacters );
 
     QChar currentChar () const;
 
@@ -79,9 +79,9 @@ class KateDocument : public Kate::Document
     friend class KateViewInternal;
     friend class KateView;
     friend class KateIconBorder;
-		friend class KateUndoGroup;
-		friend class KateUndo;
-		friend class HlManager;
+    friend class KateUndoGroup;
+    friend class KateUndo;
+    friend class HlManager;
 
   public:
     KateDocument (bool bSingleViewMode=false, bool bBrowserView=false, QWidget *parentWidget = 0, const char *widgetName = 0, QObject * = 0, const char * = 0);
@@ -97,41 +97,41 @@ class KateDocument : public Kate::Document
   //
   // KTextEditor::EditInterface stuff
   //
-	public slots:
+  public slots:
     QString text ( uint startLine, uint startCol, uint endLine, uint endCol ) const;
     QString textLine ( uint line ) const;
 
     bool setText(const QString &);
     bool clear ();
 
-		bool insertText ( uint line, uint col, const QString &s );
+    bool insertText ( uint line, uint col, const QString &s );
     bool removeText ( uint startLine, uint startCol, uint endLine, uint endCol );
 
     bool insertLine ( uint line, const QString &s );
     bool removeLine ( uint line );
 
-		uint numLines() const;
+    uint numLines() const;
     uint length () const;
     int lineLength ( uint line ) const;
 
-	signals:
-		void textChanged ();
+  signals:
+    void textChanged ();
 
   private:
-	  //
-		// 6 internal functions (mostly to enable undo/redo atomic )
-		//
-	  bool internalInsertText ( uint line, uint col, const QString &s );
+    //
+    // 6 internal functions (mostly to enable undo/redo atomic )
+    //
+    bool internalInsertText ( uint line, uint col, const QString &s );
     bool internalRemoveText ( uint line, uint col, uint len );
 
-		bool internalWrapLine ( uint line, uint col );
+    bool internalWrapLine ( uint line, uint col );
     bool internalUnWrapLine ( uint line, uint col);
 
-		bool internalInsertLine ( uint line, const QString &s );
+    bool internalInsertLine ( uint line, const QString &s );
     bool internalRemoveLine ( uint line );
 
-	//
-	// KTextEditor::SelectionInterface stuff
+  //
+  // KTextEditor::SelectionInterface stuff
   //
   public slots:
     bool setSelection ( uint startLine, uint startCol, uint endLine, uint endCol );
@@ -142,29 +142,28 @@ class KateDocument : public Kate::Document
 
     bool removeSelectedText ();
 
-		bool selectAll();
-    bool invertSelection();
+    bool selectAll();
 
-	signals:
-		void selectionChanged ();
+  signals:
+    void selectionChanged ();
 
-	//
+  //
   // KTextEditor::UndoInterface stuff
   //
-	public slots:
+  public slots:
     void undo ();
     void redo ();
     void clearUndo ();
-		void clearRedo ();
+    void clearRedo ();
 
-		uint undoCount () const;
-		uint redoCount () const;
+    uint undoCount () const;
+    uint redoCount () const;
 
-		uint undoSteps () const;
+    uint undoSteps () const;
     void setUndoSteps ( uint steps );
 
-	signals:
-		void undoChanged ();
+  signals:
+    void undoChanged ();
 
   //
   // KTextEditor::CursorInterface stuff
@@ -176,32 +175,32 @@ class KateDocument : public Kate::Document
   //
   // KTextEditor::SearchInterface stuff
   //
-	public slots:
-		bool searchText (unsigned int startLine, unsigned int startCol, const QString &text, unsigned int *foundAtLine, unsigned int *foundAtCol, unsigned int *matchLen, bool casesensitive = true, bool backwards = false);
-	  bool searchText (unsigned int startLine, unsigned int startCol, const QRegExp &regexp, unsigned int *foundAtLine, unsigned int *foundAtCol, unsigned int *matchLen, bool backwards = false);
+  public slots:
+    bool searchText (unsigned int startLine, unsigned int startCol, const QString &text, unsigned int *foundAtLine, unsigned int *foundAtCol, unsigned int *matchLen, bool casesensitive = true, bool backwards = false);
+    bool searchText (unsigned int startLine, unsigned int startCol, const QRegExp &regexp, unsigned int *foundAtLine, unsigned int *foundAtCol, unsigned int *matchLen, bool backwards = false);
   
-	//
+  //
   // KTextEditor::HighlightingInterface stuff
   //
-	public slots:
-		uint hlMode ();
-		bool setHlMode (uint mode);
+  public slots:
+    uint hlMode ();
+    bool setHlMode (uint mode);
     uint hlModeCount ();
-	  QString hlModeName (uint mode);
+    QString hlModeName (uint mode);
     QString hlModeSectionName (uint mode);
-		
-	private:
-	  bool internalSetHlMode (uint mode);
-		void setDontChangeHlOnSave();
+    
+  private:
+    bool internalSetHlMode (uint mode);
+    void setDontChangeHlOnSave();
 
-	signals:
-	  void hlChanged ();
+  signals:
+    void hlChanged ();
 
-	//
+  //
   // KParts::ReadWrite stuff
   //
   public:
-	  bool openFile ();
+    bool openFile ();
     bool saveFile ();
 
     void setReadWrite( bool );
@@ -216,8 +215,8 @@ class KateDocument : public Kate::Document
     //
     bool insertChars ( int line, int col, const QString &chars, KateView *view );
 
-	private:
-	  bool _autoUpdate;
+  private:
+    bool _autoUpdate;
 
   protected:
     QFont myFont, myFontBold, myFontItalic, myFontBI;
@@ -277,12 +276,12 @@ class KateDocument : public Kate::Document
 
   // highlight stuff
   private:
-	  Attribute *myAttribs;
-		uint myAttribsLen;
+    Attribute *myAttribs;
+    uint myAttribsLen;
 
-		Attribute *attribute (uint pos);
+    Attribute *attribute (uint pos);
 
-	public:
+  public:
     Highlight *highlight() { return m_highlight; }
 
   protected:
@@ -292,7 +291,7 @@ class KateDocument : public Kate::Document
   protected slots:
     void internalHlChanged();
 
-	public:
+  public:
     void addView(KTextEditor::View *);
     void removeView(KTextEditor::View *);
 
@@ -418,7 +417,6 @@ class KateDocument : public Kate::Document
     int selectStartCol;
     int selectEndLine;
     int selectEndCol;
-    bool invertedSelection;
 
     // internal functions to get the selection state of line/col ;)
     bool lineColSelected (int line, int col);
@@ -520,9 +518,9 @@ class KateDocument : public Kate::Document
   private:
     bool hlSetByUser;
 
-	public:
-	  uint configFlags ();
-		void setConfigFlags (uint flags);
+  public:
+    uint configFlags ();
+    void setConfigFlags (uint flags);
 
   protected:
     uint _configFlags;
@@ -544,7 +542,7 @@ class KateDocument : public Kate::Document
       cfXorSelect= 0x800,
       cfOvr= 0x1000,
       cfMark= 0x2000,
-			cfGroupUndo= 0x4000,
+      cfGroupUndo= 0x4000,
       cfKeepIndentProfile= 0x8000,
       cfKeepExtraSpaces= 0x10000,
       cfMouseAutoCopy= 0x20000,
@@ -575,11 +573,11 @@ class KateDocument : public Kate::Document
      sfFinished=512,
      sfRegularExpression=1024};
 
-	private:
-	  QPtrList<KateUndoGroup> undoItems;
-		QPtrList<KateUndoGroup> redoItems;
-		uint myUndoSteps;
-		KateUndoGroup *currentUndo;
+  private:
+    QPtrList<KateUndoGroup> undoItems;
+    QPtrList<KateUndoGroup> redoItems;
+    uint myUndoSteps;
+    KateUndoGroup *currentUndo;
 };
 
 #endif

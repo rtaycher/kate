@@ -65,7 +65,7 @@ class KateUndo
     void redo ();     
      
     enum types     
-    {     
+    {
       internalInsertText,     
       internalRemoveText,     
       internalWrapLine,     
@@ -109,7 +109,7 @@ KateUndo::KateUndo (KateDocument *doc, uint type, uint line, uint col, uint len,
   this->myDoc = doc;     
   this->type = type;     
   this->line = line;     
-  this->col = col;     
+  this->col = col;
   this->len = len;     
   this->text = text;     
 }     
@@ -153,7 +153,7 @@ void KateUndo::redo ()
     myDoc->internalRemoveText (line, col, len);     
   }     
   else if (type == KateUndo::internalInsertText)     
-  {     
+  {
     myDoc->internalInsertText (line, col, text);     
   }     
   else if (type == KateUndo::internalUnWrapLine)     
@@ -197,7 +197,7 @@ void KateUndoGroup::undo ()
 void KateUndoGroup::redo ()     
 {     
   if (items.count() == 0)     
-    return;     
+    return;
      
   for (int pos=0; pos < items.count(); pos++)     
   {     
@@ -239,9 +239,8 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   selectStartCol = -1;
   selectEndLine = -1;
   selectEndCol = -1;
-  invertedSelection = false;
      
-  // some defaults     
+  // some defaults
   _configFlags = KateDocument::cfAutoIndent | KateDocument::cfBackspaceIndents     
     | KateDocument::cfTabIndents | KateDocument::cfKeepIndentProfile     
     | KateDocument::cfRemoveSpaces     
@@ -930,8 +929,7 @@ bool KateDocument::clearSelection ()
   selectStartCol = -1;
   selectEndLine = -1;
   selectEndCol = -1;
-  invertedSelection = false;
-
+  
   updateViews ();
 
   emit selectionChanged();
@@ -948,15 +946,13 @@ QString KateDocument::selection() const
 {
   TextLine::Ptr textLine;
   QString s;
-  
-  if (!invertedSelection)
+
+  for (int z=selectStartLine; z <= selectEndLine; z++)
   {
-    for (int z=selectStartLine; z <= selectEndLine; z++)
-    {
       textLine = getTextLine(z);
       if (!textLine)
         break;
-    
+
       if (!(_configFlags & KateDocument::cfVerticalSelect))
       {
         if ((z > selectStartLine) && (z < selectEndLine))
@@ -968,20 +964,19 @@ QString KateDocument::selection() const
     else if ((z == selectStartLine))
       s.append (textLine->getString().mid(selectStartCol, textLine->length()-selectStartCol));
     else if ((z == selectEndLine))
-      s.append (textLine->getString().mid(0, selectEndCol));    
+      s.append (textLine->getString().mid(0, selectEndCol));
   }
       }
       else
       {
         s.append (textLine->getString().mid(selectStartCol, selectEndCol-selectStartCol));
       }
-      
+
       if (z < selectEndLine)
   s.append (QChar('\n'));
     }
-  }
-  
-  return s;  
+
+  return s;
 }
 
 struct DeleteSelection {
@@ -1004,9 +999,7 @@ bool KateDocument::removeSelectedText ()
 
   _autoUpdate = false;
 
-  if (!invertedSelection)
-  {
-    for (int z=selectStartLine; z <= selectEndLine; z++)
+  for (int z=selectStartLine; z <= selectEndLine; z++)
     {
       textLine = getTextLine(z);
       if (!textLine)
@@ -1049,7 +1042,6 @@ bool KateDocument::removeSelectedText ()
 
       selectedLines.push (curLine);
     }
-  }
 
   while (selectedLines.count() > 0)
   {
@@ -1076,33 +1068,6 @@ bool KateDocument::removeSelectedText ()
 bool KateDocument::selectAll()
 {
   return setSelection (0, 0, lastLine(), getTextLine(lastLine())->length());
-}
-
-bool KateDocument::invertSelection()
-{/*
-  TextLine::Ptr textLine;
-
-  select.col = -1;
-
-//  if (selectStart != 0 || selectEnd != lastLine()) recordReset();
-
-  selectStart = 0;
-  selectEnd = lastLine();
-
-  tagLines(selectStart,selectEnd);
-
-  for (int z = selectStart; z < selectEnd; z++) {
-    textLine = getTextLine(z);
-    textLine->toggleSelectEol(0);
-  }
-  textLine = getTextLine(selectEnd);
-  textLine->toggleSelect(0,textLine->length());
-  optimizeSelection();
-  emit selectionChanged();
-
-  updateViews ();
-
-  return true;*/
 }
 
 //
@@ -2798,79 +2763,64 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int xStart, int xEnd
 
 bool KateDocument::lineColSelected (int line, int col)
 {
-  bool b = false;
-
   if (!(_configFlags & KateDocument::cfVerticalSelect))
   {
     if ((line > selectStartLine) && (line < selectEndLine))
-      b = true;
+      return true;
 
-    if (!b && (line == selectStartLine) && (col >= selectStartCol) && (line < selectEndLine))
-      b = true;
+    if ((line == selectStartLine) && (col >= selectStartCol) && (line < selectEndLine))
+      return true;
 
-    if (!b && (line == selectEndLine) && (col < selectEndCol) && (line > selectStartLine))
-      b = true;
+    if ((line == selectEndLine) && (col < selectEndCol) && (line > selectStartLine))
+      return true;
 
-    if (!b && (line == selectEndLine) && (col < selectEndCol) && (line == selectStartLine) && (col >= selectStartCol))
-      b = true;  
+    if ((line == selectEndLine) && (col < selectEndCol) && (line == selectStartLine) && (col >= selectStartCol))
+      return true;
 
-    if (!b && (line == selectStartLine) && (selectStartCol == 0) && (col < 0))
-      b = true;
+    if ((line == selectStartLine) && (selectStartCol == 0) && (col < 0))
+      return true;
   }
   else
   {
     if ((line >= selectStartLine) && (line <= selectEndLine) && (col >= selectStartCol) && (col < selectEndCol))
-      b = true;
+      return true;
   }
-  
-  if (!invertedSelection)
-    return b;
-  else
-    return !b;
+
+  return false;
 }
 
 bool KateDocument::lineSelected (int line)
 {
-  bool b = false;
-
   if (!(_configFlags & KateDocument::cfVerticalSelect))
     if ((line > selectStartLine) && (line < selectEndLine))
-      b = true;
+      return true;
 
-  if (!invertedSelection)
-    return b;
-  else
-    return !b;
+  return false;
 }
 
 bool KateDocument::lineHasSelected (int line)
 {
-  bool b = false;
-
   if (!(_configFlags & KateDocument::cfVerticalSelect))
   {
     if ((line > selectStartLine) && (line < selectEndLine))
-      b = true;
+      return true;
 
     if ((line == selectStartLine) && (line < selectEndLine))
-      b = true;
+      return true;
 
     if ((line == selectEndLine) && (line > selectStartLine))
-      b = true;
+      return true;
 
     if ((line == selectEndLine) && (line == selectStartLine) && (selectEndCol > selectStartCol))
-      b = true;
+      return true;
   }
   else
   {
     if ((line <= selectEndLine) && (line >= selectStartLine) && (selectEndCol > selectStartCol))
-      b = true;
-  }  
-  
-  if (!invertedSelection)
-    return b;
-  else
-    return !b;
+      return true;
+  }
+
+  return false;
 }
 
 void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, int xEnd, bool showTabs)

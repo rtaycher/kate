@@ -222,7 +222,6 @@ void KateMainWindow::setupActions()
 
   KStdAction::selectAll(viewManager, SLOT(slotSelectAll()), actionCollection());
   new KAction(i18n("&Deselect All"), 0, viewManager, SLOT(slotDeselectAll()), actionCollection(), "edit_deselectAll");
-  new KAction(i18n("Invert &Selection"), 0, viewManager, SLOT(slotInvertSelection()), actionCollection(), "edit_invertSelection");
 
   KStdAction::find(viewManager, SLOT(slotFind()), actionCollection());
   KStdAction::findNext(viewManager, SLOT(slotFindAgain()), actionCollection());

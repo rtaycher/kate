@@ -150,7 +150,6 @@ class KateViewManager : public Kate::ViewManager
 
     void slotSelectAll ();
     void slotDeselectAll ();
-    void slotInvertSelection ();
 
     void slotFind ();
     void slotFindAgain ();

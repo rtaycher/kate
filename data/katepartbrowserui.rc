@@ -7,7 +7,7 @@
  <Menu name="edit"><Text>&amp;Edit</Text>
   <Action name="select_all"/>
   <Action name="unselect_all"/>
-  <Action name="invert_select"/>
+  <Action name="set_verticalSelect"/>
   <Separator/>
   <Action name="find" />
   <Action name="find_again" />

@@ -35,7 +35,7 @@
     <Action name="edit_paste" />
     <Action name="edit_select_all" />
     <Action name="edit_deselectAll"/>
-    <Action name="edit_invertSelection" />
+    <Action name="set_verticalSelect"/>
     <Separator />
     <Action name="edit_find" />
     <Action name="edit_find_next" />
@@ -100,7 +100,6 @@
     <Action name="settings_show_full_path" />
     <Action name="settings_show_fullscreen" />
     <Separator />
-    <Action name="set_verticalSelect"/>
     <Action name="options_configure_keybinding"/>
     <Action name="set_configure_toolbars"/>
     <Action name="settings_configure" />
