@@ -744,13 +744,13 @@ void TopLevel::timeout() {
 void TopLevel::newCaption()
 {
   if (kWrite->doc()->url().fileName().isEmpty()) {
-    setCaption(i18n("Untitled"),kWrite->isModified()));
+    setCaption(i18n("Untitled"),kWrite->isModified());
   } else {
     //set caption
     if (showPath)
-      setCaption(kWrite->doc()->url().prettyURL(),kWrite->isModified()));
+      setCaption(kWrite->doc()->url().prettyURL(),kWrite->isModified());
     else
-      setCaption(kWrite->doc()->url().fileName(),kWrite->isModified()));
+      setCaption(kWrite->doc()->url().fileName(),kWrite->isModified());
 
     //set recent files popup menu
     QString url = kWrite->doc()->url().url();
