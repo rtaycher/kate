@@ -67,7 +67,7 @@ class KateConfigDialog : public KDialogBase
     class QCheckBox *cb_fullPath;
     class QCheckBox *cb_syncKonsole;
     class QSpinBox *sb_numRecentFiles;
-    
+    class QComboBox *cb_mode;
     Kate::ConfigPage *fileSelConfigPage;
 
     QPtrList<PluginPageListItem> pluginPages;

@@ -171,7 +171,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   KSeparator *sep=new KSeparator(frGeneral);
   sep->setOrientation(KSeparator::HLine);
   lo->addWidget(sep);
-  QComboBox *cb_mode=new QComboBox(frGeneral);
+  cb_mode=new QComboBox(frGeneral);
   cb_mode->insertItem(i18n("Classic Mode"));
   cb_mode->insertItem(i18n("IDEAl Mode"));
   lo->addWidget(cb_mode);
@@ -283,6 +283,11 @@ void KateConfigDialog::slotApply()
   config->writeEntry("MultipleInstances",cb_singleInstance->isChecked());
   config->setGroup("General");
   config->writeEntry("reopen at startup", cb_reopenFiles->isChecked());
+  if (((config->readEntry("viewMode","")=="IDEAl")?1:0)!=cb_mode->currentItem())
+  {
+	config->writeEntry("viewMode",(cb_mode->currentItem()==1)?"IDEAl":"Classic");
+	config->writeEntry("deleteKDockWidgetConfig",true);
+  }
 
   mainWindow->syncKonsole = cb_syncKonsole->isChecked();
 

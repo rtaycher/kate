@@ -47,7 +47,6 @@ KateDockContainer::KateDockContainer(QWidget *parent, class KateMainWindow *win,
 
 	l->activate();
 	m_ws->hide();
-//	parentDockWidget()->setForcedFixedWidth(m_tb->width());
 
 }
 
@@ -92,9 +91,6 @@ void KateDockContainer::insertWidget (KDockWidget *w, QPixmap pixmap, const QStr
 	}
         m_ws->raiseWidget(tab);
 	
-	//if (!alreadyThere)
-	//{
-	///}
 }
 
 void KateDockContainer::removeWidget(KDockWidget* w)
@@ -106,7 +102,6 @@ void KateDockContainer::removeWidget(KDockWidget* w)
 	m_tb->removeTab(id);
 	m_map.remove(w);
 	KDockContainer::removeWidget(w);
-//	m_ws->removeWidget(w);
 }
 
 void KateDockContainer::undockWidget(KDockWidget *w)
@@ -129,7 +124,6 @@ void KateDockContainer::tabClicked(int t)
     {                        
        m_ws->show ();
 	parentDockWidget()->restoreFromForcedFixedSize();
-//      parentDockWidget()->manualDock(m_mainWin->centralDock(), KDockWidget::DockLeft,20);
     }
   
 		m_ws->raiseWidget(t);
@@ -140,7 +134,6 @@ void KateDockContainer::tabClicked(int t)
 	{
 //		oldtab=-1;
     m_ws->hide ();
-//    parentDockWidget()->manualDock(m_mainWin->centralDock(), KDockWidget::DockLeft,0);
 	kdDebug()<<"Fixed Width:"<<m_tb->width()<<endl;
 	parentDockWidget()->setForcedFixedWidth(m_tb->width());
 
@@ -156,8 +149,8 @@ void KateDockContainer::save(KConfig*)
 {
 	KConfig *cfg=kapp->config();
 	QString grp=cfg->group();
-	cfg->deleteGroup(QString("BLAH::%1").arg(parent()->name()));
-	cfg->setGroup(QString("BLAH::%1").arg(parent()->name()));
+	cfg->deleteGroup(QString("KateDock::%1").arg(parent()->name()));
+	cfg->setGroup(QString("KateDock::%1").arg(parent()->name()));
 	
 	QPtrList<KMultiTabBarTab>* tl=m_tb->tabs();
 	QPtrListIterator<KMultiTabBarTab> it(*tl);
@@ -177,8 +170,6 @@ void KateDockContainer::save(KConfig*)
   
 void KateDockContainer::load(KConfig*)
 {
-	//m_map.clear();
-	//m_tb->
 	KConfig *cfg=kapp->config();
 	QString grp=cfg->group();	
 	cfg->setGroup(QString("BLAH::%1").arg(parent()->name()));
@@ -224,8 +215,6 @@ void KateDockContainer::load(KConfig*)
 				kapp->syncX();*/
 				m_delayedRaise=it.data();
 				QTimer::singleShot(0,this,SLOT(delayedRaise()));
-				//QTimer::singleShot(0,parentDockWidget(),SLOT(restoreFromForcedFixedSize()));
-				//parentDockWidget()->setForcedFixedWidth(100);
 				kdDebug()<<"************** raising *******: "<<it.key()->name()<<endl;
 				break;
 			}
@@ -241,9 +230,6 @@ void KateDockContainer::delayedRaise()
 {
 				m_tb->setTab(m_delayedRaise,true);
 				tabClicked(m_delayedRaise);
-//	m_ws->raiseWidget(m_delayedRaise);
-//	m_ws->show();
-//	parentDockWidget()->setForcedFixedWidth(100);
 }
 
 #include "katedockcontainer.moc"
