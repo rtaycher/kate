@@ -757,9 +757,14 @@ context=contextList[ctxNum];	//current context to use
 	 
   //set "end of line"-properties 
   textLine->setAttr(context->attr); 
+
+//  if (oCtxLen>0)
+//  kdDebug()<<QString("Last line end context entry: %1").arg((int)ctx[oCtxLen-1])<<endl;
+//  else kdDebug()<<QString("Context stack len:0")<<endl;
+
   textLine->setContext(ctx, oCtxLen); 
- 
 	delete [] ctx; 
+
 } 
  
 KConfig *Highlight::getKConfig() { 

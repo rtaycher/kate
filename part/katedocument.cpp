@@ -2697,8 +2697,19 @@ void KateDocument::updateLines(int startLine, int endLine)
     if (!textLine)
       break;
 
-    endCtx = textLine->getContext();
     endCtxLen = textLine->getContextLength();
+
+    if (endCtxLen>0)
+    {
+      if (endCtx)
+        endCtx=(signed char*)realloc(endCtx,endCtxLen);
+      else
+        endCtx=(signed char*)malloc(endCtxLen);
+      memcpy(endCtx,textLine->getContext(),endCtxLen);
+    }
+    else { if (endCtx) {free(endCtx); endCtx=0;}}
+
+
 
     kdDebug()<<QString("Calling doHighlight for line %1").arg(line)<<endl;
 
@@ -2731,12 +2742,14 @@ void KateDocument::updateLines(int startLine, int endLine)
     }
 
     line++;
+    //kdDebug()<<QString("Next line: %1, last_line %2, endLine %3").arg(line).arg(last_line).arg(endLine)<<endl;
   }
   while ((line <= last_line) && ((line <= endLine) || stillcontinue));
   
   if (ctxNum)
     delete [] ctxNum;
-
+  if (endCtx)
+    delete [] endCtx;
   tagLines(startLine, line - 1);
 }
 
