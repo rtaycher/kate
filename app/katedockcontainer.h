@@ -36,7 +36,7 @@ class KateDockContainer: public QWidget, public KDockContainer
 {
         Q_OBJECT
 public:
-        KateDockContainer(QWidget *parent, class KateMainWindow *win, int position);
+        KateDockContainer(QWidget *parent, QWidget *win, int position);
         virtual ~KateDockContainer();
         KDockWidget *parentDockWidget();
         virtual void insertWidget (KDockWidget *w, QPixmap, const QString &, int &);
@@ -48,7 +48,7 @@ public:
 public slots:
 	void init();
 private:                    
-  class KateMainWindow *m_mainWin;
+  	QWidget *m_mainWin;
 	QWidgetStack *m_ws;
 	KMultiTabBar *m_tb;
 	int mTabCnt;

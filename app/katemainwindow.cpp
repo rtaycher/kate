@@ -815,7 +815,8 @@ KDockWidget *KateMainWindow::addToolView(KDockWidget::DockPosition pos,const cha
 	}
 	else
 	{
-	        dw->setEnableDocking(dw->enableDocking() & ~KDockWidget::DockDesktop);
+        	dw->setDockWindowTransient (this, true);
+	        dw->setEnableDocking(dw->enableDocking()); //& ~KDockWidget::DockDesktop);
 		switch (pos)
 		{
 			case KDockWidget::DockLeft:  dw->manualDock(m_leftDock,KDockWidget::DockCenter,20);

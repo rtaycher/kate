@@ -27,7 +27,6 @@
 #include <kiconloader.h>                       
 #include <kapplication.h>
 #include <kconfig.h>
-#include "katemainwindow.h"
 #include <qtimer.h>
 #include <qtooltip.h>
 #include <klocale.h>
@@ -43,7 +42,7 @@ static const char* const not_close_xpm[]={
 "#####"};
 
 
-KateDockContainer::KateDockContainer(QWidget *parent, class KateMainWindow *win, int position):QWidget(parent),KDockContainer()
+KateDockContainer::KateDockContainer(QWidget *parent, QWidget *win, int position):QWidget(parent),KDockContainer()
 {         
 	m_block=false;
 	m_inserted=-1;
