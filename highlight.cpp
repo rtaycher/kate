@@ -291,7 +291,7 @@ HlKeyword::HlKeyword(int attribute, int context)
   : HlItemWw(attribute,context) {
 //  words.setAutoDelete(true);
 //	Words.resize(100);
-	Dict.resize(113);
+	Dict.resize(79);
 }
 
 HlKeyword::~HlKeyword() {
@@ -342,6 +342,11 @@ const QChar *HlKeyword::checkHgl(const QChar *s) {
   int found=Words.bsearch(lookup);
   return (found > -1) ? s2 : 0L;
 */
+#ifdef STATS
+	static bool once=false;
+	if(!once) Dict.statistics();
+	once=true;
+#endif
   const QChar *s2=s;
   while (!s2->isSpace() && *s2 != '\0' ) s2++; // find space
   QString lookup=QString(s,s2-s)+QString::null;
@@ -527,41 +532,6 @@ const QChar *checkCharHexOct(const QChar *str) {
   }
   return s;
 }
-#if 0
-//checks for C escape chars like \n
-const QChar *checkEscapedChar(const QChar *s) {
-
-  if (s[0] == '\\' && s[1] != '\0' ){
-    s++;
-    if (strchr("abefnrtv\"\'\\",*s)) {
-      s++;
-    } else return checkCharHexOct(s); /*if (*s == 'x') {
-      n = 0;
-      do {
-        s++;
-        n *= 16;
-        if (*s >= '0' && *s <= '9') n += *s - '0';
-        else if (*s >= 'A' && *s <= 'F') n += *s - 'A' + 10;
-        else if (*s >= 'a' && *s <= 'f') n += *s - 'a' + 10;
-        else break;
-        if (n >= 256) return 0L;
-      } while (true);
-      if (s - str == 2) return 0L;
-    } else {
-      if (!(*s >= '0' && *s <= '7')) return 0L;
-      n = *s - '0';
-      do {
-        s++;
-        n *= 8;
-        if (*s >= '0' && *s <= '7') n += *s - '0'; else break;
-        if (n >= 256) return s;
-      } while (s - str < 4);
-    }        */
-    return s;
-  }
-  return 0L;
-}
-#else
 // checks for C escaped chars \n and escaped hex/octal chars
 // this one will eliminate 2 function calls
 // a strchr and the checkCharHexOct function
@@ -608,7 +578,6 @@ const QChar *checkEscapedChar(const QChar *s) {
   }
   return 0L;
 }
-#endif
 
 const QChar *HlCStringChar::checkHgl(const QChar *str) {
   return checkEscapedChar(str);
@@ -1283,58 +1252,46 @@ void CHighlight::makeContextList() {
   setKeywords(keyword, dataType);
 }
 
-void getCKeywords(QStringList configlist) {
+void getKeywords(QStringList& configlist,QString name) {
 	KConfig *config = kapp->config();
-	config->setGroup(QString::fromUtf8("C Highlight") );
-	configlist = config->readListEntry(QString::fromUtf8("CKeywords") );
+	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name) );
+	configlist = config->readListEntry(QString::fromUtf8("%1Keywords").arg(name) );
 }
 
-void getCTypes(QStringList configlist) {
+void getTypes(QStringList& configlist,QString name) {
 	KConfig *config = kapp->config();
-	config->setGroup("C Highlight");
-	configlist = config->readListEntry(QString::fromUtf8("CType") );
+	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name));
+	configlist = config->readListEntry(QString::fromUtf8("%1Type").arg(name) );
 }
 
 
 void CHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
 
 	KConfig *config = kapp->config();
-	config->setGroup(QString("%1 Highlight").arg(name()));
-	QStringList configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name()) );
-
+   QStringList configlist;
+	 getKeywords(configlist,this->name());
 // read config file for list of keywords/data types
-// if there is none count==0  then process normally and save it in config file
-// if there is a list already in config file use that instead of creating one
+// if there is none isEmpty() == True  then process normally and save it in config file
+// if there is a list already in config file use that instead
 
-  if(configlist.count()==0) {
+  if(configlist.isEmpty()) {
     keyword->addList(cKeywords);
+    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
    	config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()) ,keyword->getList());
   }
   else
     keyword->addList(configlist);
 
   configlist.clear();
-  configlist=config->readListEntry(QString::fromUtf8("%1Types").arg(name()));
+	getTypes(configlist,this->name());
 
-  if(configlist.count()==0) {
+  if(configlist.isEmpty()) {
     dataType->addList(cTypes);
+    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
   	config->writeEntry(QString::fromUtf8("%1Types").arg(name()) ,dataType->getList());
  	}
   else
      dataType->addList(configlist);
-/*
-  QStringList *keyList=keyword->getList();
-	QStringList *dataList=dataType->getList();
-	uint i;
-	for(i=0;i<keyList->count();i++)
-	  keyword->getVec()->insert(i,*keyList->at(i));
-
-  for(i=0;i<dataList->count();i++)
-	  dataType->getVec()->insert(i,*dataList->at(i));
-	
-  dataType->getVec()->sort();
-	keyword->getVec()->sort();
-*/	
 }
 
 CppHighlight::CppHighlight(const char * name) : CHighlight(name) {
@@ -1347,88 +1304,53 @@ CppHighlight::~CppHighlight() {
 }
 
 void CppHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
-#if 0
-	uint i;
-  keyword->addList(cKeywords);
-  keyword->addList(cppKeywords);
-	
-	QStringList *tmpList=keyword->getList();
-	for(i=0;i<tmpList->count();i++)
-	keyword->getVec()->insert(i,*tmpList->at(i));
-  keyword->getVec()->sort();
-	
-  dataType->addList(cTypes);
-  dataType->addList(cppTypes);
-
-	tmpList=dataType->getList();
-	for(i=0;i<tmpList->count();i++)
-	dataType->getVec()->insert(i,*tmpList->at(i));
-	dataType->getVec()->sort();
-
-#else
  	KConfig *config = kapp->config();
 	config->setGroup(QString("%1 Highlight").arg(name()));
 
  	
 	QStringList configlist;
-	getCKeywords(configlist);
+	getKeywords(configlist,this->name());
 
-	if ( configlist.count() == 0 ) {
+	if ( configlist.isEmpty() ) {
     keyword->addList( cKeywords );
     config->setGroup(QString::fromUtf8("C Highlight") );
     config->writeEntry(QString::fromUtf8("CKeywords"),keyword->getList());
-  }
-  else {
+  }else
     keyword->addList(configlist);
-  }
+
 
   configlist.clear();
+  config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
   configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name()) );
 
-  if (configlist.count()==0) {
+  if (configlist.isEmpty()) {
     keyword->addList(cppKeywords);
     config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
     config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()) , keyword->getList());
-  }
-  else {
+  }else
     keyword->addList(configlist);
 
-  }
-
   configlist.clear();
-  getCTypes(configlist);
-  if (configlist.count()==0) {
+  config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+  getTypes(configlist,this->name());
+  if (configlist.isEmpty()) {
     dataType->addList(cTypes);
     config->setGroup(QString::fromUtf8("C Highlight") );
     config->writeEntry(QString::fromUtf8("CTypes"),dataType->getList());
-  }
-  else {
+  }else
     dataType->addList(configlist);
-	}
 
 	configlist.clear();
+  config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
   configlist=config->readListEntry(QString::fromUtf8("%1Types").arg(name() ));
 
-	if (configlist.count()==0) {
+	if (configlist.isEmpty()) {
     dataType->addList(cppTypes);
     config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
     config->writeEntry(QString::fromUtf8("%1Types").arg(name() ),dataType->getList());
   }
-  else  {
+  else
     dataType->addList(configlist);
-  }
-/*
-  QStringList *keyList=keyword->getList();
-	QStringList *dataList=dataType->getList();
-	uint i;
-	for(i=0;i<keyList->count();i++)
-	keyword->getVec()->insert(i,*keyList->at(i));
-  for(i=0;i<dataList->count();i++)
-	dataType->getVec()->insert(i,*dataList->at(i));
-	dataType->getVec()->sort();
-	keyword->getVec()->sort();
-*/
-#endif	
 }
 
 ObjcHighlight::ObjcHighlight(const char * name) : CHighlight(name) {
@@ -1446,12 +1368,47 @@ void ObjcHighlight::makeContextList() {
   c = contextList[0];
   c->items.append(new Hl2CharDetect(8,1,'@','"'));
 }
-
+// UNTESTED
 void ObjcHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
-  keyword->addList(cKeywords);
-  keyword->addList(objcKeywords);
-  dataType->addList(cTypes);
-  dataType->addList(objcTypes);
+
+  KConfig *config = kapp->config();
+	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+  QStringList configlist;
+  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
+  if(configlist.isEmpty()) {
+	  keyword->addList(cKeywords);
+	  config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+	  config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()),keyword->getList());
+	}else
+	  keyword->addList(configlist);
+
+  configlist.clear();
+  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
+  if(configlist.isEmpty()) {
+	  keyword->addList(objcKeywords);
+	  config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+	  config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()),keyword->getList());
+	}else
+	  keyword->addList(configlist);
+
+  configlist=config->readListEntry(QString::fromUtf8("%1Types").arg(name() ));
+  if(configlist.isEmpty()) {
+	  dataType->addList(cTypes);
+	  config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+	  config->writeEntry(QString::fromUtf8("%1Types").arg(name()),dataType->getList());
+	}else
+	  keyword->addList(configlist);
+
+  configlist.clear();
+  configlist=config->readListEntry(QString::fromUtf8("%1Types").arg(name() ));
+
+	if(configlist.isEmpty()) {
+	  dataType->addList(objcTypes);
+	  config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+	  config->writeEntry(QString::fromUtf8("%1Types").arg(name()),dataType->getList());
+	}else
+	  keyword->addList(configlist);
+
 }
 
 IdlHighlight::IdlHighlight(const char * name) : CHighlight(name) {
@@ -1463,8 +1420,27 @@ IdlHighlight::~IdlHighlight() {
 }
 
 void IdlHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
-  keyword->addList(idlKeywords);
-  dataType->addList(idlTypes);
+
+  KConfig *config = kapp->config();
+	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+  QStringList configlist;
+  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
+
+	if(configlist.isEmpty()) {
+	keyword->addList(idlKeywords);
+	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+	config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()),keyword->getList());
+	}
+	else 	keyword->addList(configlist);
+
+  configlist.clear();
+	configlist=config->readListEntry(QString::fromUtf8("%1Types").arg(name() ));
+	if (configlist.isEmpty()) {
+    dataType->addList(idlTypes);
+    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+    config->writeEntry(QString::fromUtf8("%1Types").arg(name()),dataType->getList());
+  }
+  else dataType->addList(configlist);
 }
 
 JavaHighlight::JavaHighlight(const char * name) : CHighlight(name) {
@@ -1474,11 +1450,29 @@ JavaHighlight::JavaHighlight(const char * name) : CHighlight(name) {
 
 JavaHighlight::~JavaHighlight() {
 }
+// UNTESTED
+void JavaHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
+{
+  KConfig *config = kapp->config();
+	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+  QStringList configlist;
+  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
 
-void JavaHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
+	if(configlist.isEmpty()) {
+	keyword->addList(javaKeywords);
+	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+	config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()),keyword->getList());
+	}
+	else 	keyword->addList(configlist);
 
-  keyword->addList(javaKeywords);
-  dataType->addList(javaTypes);
+  configlist.clear();
+	configlist=config->readListEntry(QString::fromUtf8("%1Types").arg(name() ));
+	if (configlist.isEmpty()) {
+    dataType->addList(javaTypes);
+    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+    config->writeEntry(QString::fromUtf8("%1Types").arg(name()),dataType->getList());
+  }
+  else dataType->addList(configlist);
 }
 
 
@@ -1554,7 +1548,17 @@ void BashHighlight::makeContextList() {
     c->items.append(new HlCharDetect(4,0,'`'));
   contextList[3] = new HlContext(5,0);
 
-  keyword->addList(bashKeywords);
+  KConfig *config = kapp->config();
+	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+  QStringList configlist;
+  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
+
+	if(configlist.isEmpty()) {
+	keyword->addList(bashKeywords);
+	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+	config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()),keyword->getList());
+	}else
+	keyword->addList(configlist);
 }
 
 
@@ -1576,7 +1580,7 @@ void ModulaHighlight::createItemData(ItemDataList &list) {
   list.append(new ItemData(I18N_NOOP("String"     ),dsString));
   list.append(new ItemData(I18N_NOOP("Comment"    ),dsComment));
 }
-
+// UNTESTED
 void ModulaHighlight::makeContextList() {
   HlContext *c;
   HlKeyword *keyword;
@@ -1593,7 +1597,17 @@ void ModulaHighlight::makeContextList() {
   contextList[2] = c = new HlContext(6,2);
     c->items.append(new Hl2CharDetect(6,0, '*', ')'));
 
-  keyword->addList(modulaKeywords);
+	KConfig *config = kapp->config();
+	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+  QStringList configlist;
+  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
+
+	if(configlist.isEmpty()) {
+	keyword->addList(modulaKeywords);
+	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+	config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()),keyword->getList());
+	}
+	else 	keyword->addList(configlist);
 }
 
 
@@ -1616,7 +1630,7 @@ void AdaHighlight::createItemData(ItemDataList &list) {
   list.append(new ItemData(I18N_NOOP("String"     ),dsString));
   list.append(new ItemData(I18N_NOOP("Comment"    ),dsComment));
 }
-
+// UNTESTED
 void AdaHighlight::makeContextList() {
   HlContext *c;
   HlKeyword *keyword;
@@ -1633,7 +1647,17 @@ void AdaHighlight::makeContextList() {
     c->items.append(new HlCharDetect(6,0,'"'));
   contextList[2] = c = new HlContext(7,0);
 
-  keyword->addList(adaKeywords);
+  KConfig *config = kapp->config();
+	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+  QStringList configlist;
+  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
+
+	if(configlist.isEmpty()) {
+	  keyword->addList(bashKeywords);
+	  config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+	  config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()),keyword->getList());
+	}else
+	  keyword->addList(configlist);
 }
 
 
@@ -1692,7 +1716,17 @@ void PythonHighlight::makeContextList() {
   contextList[6] = new HlContext(0,1);
   contextList[7] = new HlContext(0,2);
 
-  keyword->addList(pythonKeywords);
+  KConfig *config = kapp->config();
+	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+  QStringList configlist;
+  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
+  if(configlist.isEmpty()) {
+	  keyword->addList(pythonKeywords);
+	  config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+	  config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()),keyword->getList());
+	}else
+	  keyword->addList(configlist);
+//  keyword->addList(pythonKeywords);
 }
 
 PerlHighlight::PerlHighlight(const char * name) : Highlight(name) {
@@ -1940,7 +1974,20 @@ int PerlHighlight::doHighlight(int ctxNum, TextLine *textLine) {
 
 void PerlHighlight::init() {
   keyword = new HlKeyword(0,0);
-  keyword->addList(perlKeywords);
+
+	KConfig *config = kapp->config();
+	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+  QStringList configlist;
+  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
+
+	if(configlist.isEmpty()) {
+	  keyword->addList(perlKeywords);
+	  config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+	  config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()),keyword->getList());
+	}
+	else 	
+    keyword->addList(configlist);
+//  keyword->addList(perlKeywords);
 }
 
 void PerlHighlight::done() {
@@ -1970,7 +2017,7 @@ void SatherHighlight::createItemData(ItemDataList &list) {
   list.append(new ItemData(I18N_NOOP("String"             ),dsString)); // 10
   list.append(new ItemData(I18N_NOOP("Comment"            ),dsComment));// 11
 }
-
+// UNTESTED
 void SatherHighlight::makeContextList() {
   HlContext *c;
   HlKeyword *keyword,*spec_class,*spec_feat;
@@ -1991,9 +2038,42 @@ void SatherHighlight::makeContextList() {
   //Comment Context
   contextList[1] = c = new HlContext(11,0);
 
-  keyword->addList(satherKeywords);
-  spec_class->addList(satherSpecClassNames);
-  spec_feat->addList(satherSpecFeatureNames);
+  KConfig *config = kapp->config();
+	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+  QStringList configlist;
+  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
+
+	if(configlist.isEmpty()) {
+	  keyword->addList(satherKeywords);
+	  config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+	  config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()),keyword->getList());
+	}
+	else 	
+    keyword->addList(configlist);
+
+  configlist.clear();
+	configlist=config->readListEntry(QString::fromUtf8("%1SpecClassNames").arg(name() ));
+	if (configlist.isEmpty()) {
+    spec_class->addList(satherSpecClassNames);
+    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+    config->writeEntry(QString::fromUtf8("%1SpecClassNames").arg(name()),spec_class->getList());
+  }
+  else
+    spec_class->addList(configlist);
+
+  configlist.clear();
+	configlist=config->readListEntry(QString::fromUtf8("%1SpecFeatureNames").arg(name() ));
+	if (configlist.isEmpty()) {
+    spec_feat->addList(satherSpecClassNames);
+    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
+    config->writeEntry(QString::fromUtf8("%1SpecFeatureNames").arg(name()),spec_feat->getList());
+  }
+  else
+    spec_feat->addList(configlist);
+
+//  keyword->addList(satherKeywords);
+//  spec_class->addList(satherSpecClassNames);
+//  spec_feat->addList(satherSpecFeatureNames);
 }
 
 LatexHighlight::LatexHighlight(const char * name) : GenHighlight(name) {
