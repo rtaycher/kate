@@ -62,6 +62,63 @@ QStringList KateDocument::replaceWithList = QStringList();
 
 uint KateDocument::uniqueID = 0;
 
+KateUndo::KateUndo (uint type, uint startLine, uint startCol, uint endLine, uint endCol, QString text)
+{
+  this->type = type;
+  this->startLine = startLine;
+  this->startCol = startCol;
+  this->endLine = endLine;
+  this->endCol = endCol;
+	this->text = text;
+}
+
+KateUndo::~KateUndo ()
+{
+}
+
+void KateUndo::undo ()
+{
+}
+
+void KateUndo::redo ()
+{
+}
+
+KateUndoGroup::KateUndoGroup ()
+{
+}
+
+KateUndoGroup::~KateUndoGroup ()
+{
+}
+
+void KateUndoGroup::undo ()
+{
+  if (items.count() == 0)
+	  return;
+
+  for (uint pos=items.count()-1; pos >= 0; pos--)
+	{
+    items.at(pos)->undo();
+	}
+}
+
+void KateUndoGroup::redo ()
+{
+  if (items.count() == 0)
+	  return;
+
+  for (uint pos=items.count()-1; pos >= 0; pos--)
+	{
+    items.at(pos)->redo();
+	}
+}
+
+void KateUndoGroup::addItem (KateUndo *undo)
+{
+  items.append (undo);
+}
+
 //
 // KateDocument Constructor
 //

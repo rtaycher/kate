@@ -92,6 +92,47 @@ class KateCursor : public Kate::Cursor
     class KateDocument *myDoc;
 };
 
+class KateUndo
+{
+  public:
+    KateUndo (uint type, uint startLine, uint startCol, uint endLine, uint endCol, QString text);
+    ~KateUndo ();
+
+    void undo ();
+		void redo ();
+
+		enum types
+		{
+      insertText,
+			removeText,
+			insertLine,
+			removeLine   
+		};
+
+  private:
+	  uint type;
+    uint startLine;
+	  uint startCol;
+	  uint endLine;
+	  uint endCol;
+	  QString text;
+};
+
+class KateUndoGroup
+{
+  public:
+	  KateUndoGroup ();
+		~KateUndoGroup ();
+
+		void undo ();
+		void redo ();
+
+		void addItem (KateUndo *undo);
+
+  private:
+    QPtrList<KateUndo> items;
+};
+
 /**
   The text document. It contains the textlines, controls the
   document changing operations and does undo/redo. WARNING: do not change
