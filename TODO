@@ -7,7 +7,6 @@ TODO:
  - fix kspell (replace doesn't work anymore :(
  - blockwise paste must be done !
  - better indent/unindent
- - Check docs for change on hd when focused, warning dialog: reload? yes/no[/view diff]
  - exhaustive testing of the new highlighting structure
  - porting all .xml files to the new scheme.
     Small help: 
