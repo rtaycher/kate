@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="kate" version="12">
+<kpartgui name="kate" version="14">
 
 <MenuBar noMerge="1">
   <Menu name="file"><text>&amp;File</text>
@@ -66,8 +66,9 @@
   </Menu>
 
   <Menu name="settings"><text>&amp;Settings</text>
-    <Action name="settings_show_toolbar" />
-    <DefineGroup name="show_toolbar_merge" />
+<!--    <Action name="settings_show_toolbar" />
+    <DefineGroup name="show_toolbar_merge" /> -->
+    <Action name="toolbars_showhide" />
     <Menu name="toolviews"><text>&amp;Toolviews</text>
        <Action name="settings_show_filelist" />
        <Action name="settings_show_fileselector" />
