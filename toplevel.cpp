@@ -123,7 +123,6 @@ void TopLevel::init() {
   togglePath();
   newCurPos();
   newStatus();
-//  newCaption();
   newUndo();
 
   show();
@@ -434,24 +433,15 @@ void TopLevel::setupToolBar(){
   //  toolbar->setBarPos(KToolBar::Top);
 }
 
-void TopLevel::setupStatusBar(){
+void TopLevel::setupStatusBar()
+{
     KStatusBar *statusbar;
-    statusbar = statusBar();//new KStatusBar( this );
-    statusbar->insertItem("Line:000000 Col: 000", ID_LINE_COLUMN);
-    statusbar->insertItem("XXX", ID_INS_OVR);
-    statusbar->insertItem("*", ID_MODIFIED);
-    statusbar->insertItem("", ID_GENERAL);
-    statusbar->setItemAlignment( ID_INS_OVR, AlignCenter );
-    statusbar->setItemAlignment( ID_MODIFIED, AlignCenter );
-
-    //    statusbar->setInsertOrder(KStatusBar::RightToLeft);
-    //    statusbar->setAlignment(ID_INS_OVR, AlignCenter);
-    //    statusbar->setAlignment(ID_MODIFIED, AlignCenter);
-
-    //    statusbar->setInsertOrder(KStatusBar::LeftToRight);
-    //    statusbar->setBorderWidth(1);
-
-//    setStatusBar( statusbar );
+    statusbar = statusBar();
+    statusbar->insertItem(" Line:000000 Col: 000 ", ID_LINE_COLUMN);
+    statusbar->insertItem(" XXX ", ID_INS_OVR);
+    statusbar->insertFixedItem(" * ", ID_MODIFIED);
+    statusbar->insertItem("", ID_GENERAL, 1);
+    statusbar->setItemAlignment( ID_GENERAL, AlignLeft );
 }
 
 
@@ -609,8 +599,8 @@ void TopLevel::toggleStatusBar() {
   }
 }
 
-void TopLevel::togglePath() {
-
+void TopLevel::togglePath()
+{
   showPath = !showPath;
   options->setItemChecked(menuShowPath, showPath);
   newCaption();
@@ -695,7 +685,7 @@ void TopLevel::helpSelected() {
 }
 
 void TopLevel::newCurPos() {
-  statusBar()->changeItem(i18n("Line: %1 Col: %2")
+  statusBar()->changeItem(i18n(" Line: %1 Col: %2 ")
     .arg(KGlobal::locale()->formatNumber(kWrite->currentLine() + 1, 0))
     .arg(KGlobal::locale()->formatNumber(kWrite->currentColumn() + 1, 0)),
     ID_LINE_COLUMN);
@@ -713,11 +703,11 @@ void TopLevel::newStatus() {
   options->setItemChecked(menuVertical,config & cfVerticalSelect);
 
   if (readOnly)
-    statusBar()->changeItem(i18n("R/O"),ID_INS_OVR);
+    statusBar()->changeItem(i18n(" R/O "),ID_INS_OVR);
   else
-    statusBar()->changeItem(config & cfOvr ? i18n("OVR") : i18n("INS"),ID_INS_OVR);
+    statusBar()->changeItem(config & cfOvr ? i18n(" OVR ") : i18n(" INS "),ID_INS_OVR);
 
-  statusBar()->changeItem(kWrite->isModified() ? "*" : "",ID_MODIFIED);
+  statusBar()->changeItem(kWrite->isModified() ? " * " : "",ID_MODIFIED);
 
   file->setItemEnabled(menuInsert,!readOnly);
   file->setItemEnabled(menuSave,!readOnly);
@@ -740,7 +730,7 @@ void TopLevel::newStatus() {
 
 void TopLevel::statusMsg(const QString &msg) {
   statusbarTimer->stop();
-  statusBar()->changeItem(msg, ID_GENERAL);
+  statusBar()->changeItem(" " + msg, ID_GENERAL);
   statusbarTimer->start(10000, true); //single shot
 }
 
@@ -748,36 +738,29 @@ void TopLevel::timeout() {
   statusBar()->changeItem("", ID_GENERAL);
 }
 
-void TopLevel::newCaption() {
-  QString caption;
-  int z;
-
+void TopLevel::newCaption()
+{
   if (kWrite->doc()->url().fileName().isEmpty())
-    caption = i18n("Untitled");
+    setCaption(i18n("Untitled"));
 
   else {
-    caption = kWrite->doc()->url().fileName();
-    //set recent files popup menu
-    z = (int) recentPopup->count();
-    while (z > 0) {
-      z--;
-      if (caption == recentPopup->text(recentPopup->idAt(z)))
-      recentPopup->removeItemAt(z);
-    }
-    recentPopup->insertItem(caption, 0, 0);
-    if (recentPopup->count() > 5) recentPopup->removeItemAt(5);
-    for (z = 0; z < 5; z++) recentPopup->setId(z, z);
-
     //set caption
-    if (!showPath) {
-      int pos = caption.findRev('/');
-      if (pos != -1) {
-        caption = caption.right( caption.length() - pos - 1);
-      }
-    }
-  }
+    if (showPath)
+      setCaption(kWrite->doc()->url().prettyURL());
+    else
+      setCaption(kWrite->doc()->url().fileName());
 
-  setCaption(caption, kWrite->isModified());
+    //set recent files popup menu
+    QString url = kWrite->doc()->url().url();
+    for ( uint z = 0; z < recentPopup->count(); z++ )
+      if (url == recentPopup->text(recentPopup->idAt(z)))
+        recentPopup->removeItemAt(z);
+    recentPopup->insertItem(url, 0, 0);
+    if (recentPopup->count() > 5)
+      recentPopup->removeItemAt(5);
+    for (uint z = 0; z < 5; z++)
+      recentPopup->setId(z, z);
+  }
 }
 
 void TopLevel::newUndo() {
