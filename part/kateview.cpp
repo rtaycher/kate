@@ -69,45 +69,15 @@
 #include <dcopclient.h>
 #include <qregexp.h>
 
+#include <kaccel.h>
+
 #include "katetextline.h"
 #include "kateiconborder.h"
 #include "kateexportaction.h"
 
-bool keyListAlreadyLoaded=false;
-bool defaultKeyListAlreadyLoaded=false;
-#define KEY_LEFT		0
-#define KEY_WORD_LEFT		1
-#define KEY_LEFT_SELECT		2
-#define KEY_WORD_LEFT_SELECT	3
-#define KEY_RIGHT		4
-#define KEY_WORD_RIGHT		5
-#define KEY_RIGHT_SELECT	6
-#define KEY_WORD_RIGHT_SELECT	7
-#define KEY_HOME		8
-#define KEY_TOP			9
-#define KEY_HOME_SELECT		10
-#define KEY_TOP_SELECT		11
-#define KEY_END			12
-#define KEY_BOTTOM		13
-#define KEY_END_SELECT		14
-#define KEY_BOTTOM_SELECT	15
-#define KEY_UP			16
-#define KEY_UP_SELECT		17
-#define KEY_SCROLL_UP		18
-#define KEY_DOWN		19
-#define KEY_DOWN_SELECT		20
-#define KEY_SCROLL_DOWN		21
 
 
-editKey editKeys[EditKeyCount];
-editKey defaultEditKeys[EditKeyCount];
-char* editKeyDescriptions[EditKeyCount]={
-I18N_NOOP("Cursor Left"),I18N_NOOP("One Word to the Left"),I18N_NOOP("Cursor Left + SELECT"),I18N_NOOP("One Word to the Left + SELECT"),
-I18N_NOOP("Cursor Right"),I18N_NOOP("One Word to the Right"),I18N_NOOP("Cursor Right + SELECT"),I18N_NOOP("One Word to the Right + SELECT"),
-I18N_NOOP("Home"),I18N_NOOP("First Line"),I18N_NOOP("Home + SELECT"),I18N_NOOP("First Line + SELECT"),
-I18N_NOOP("Line End"),I18N_NOOP("Last Line"),I18N_NOOP("Line End + SELECT"),I18N_NOOP("Last Line + SELECT"),
-I18N_NOOP("Cursor Up"),I18N_NOOP("Cursor Up + SELECT"),I18N_NOOP("Scroll view one line up"),
-I18N_NOOP("Cursor Down"), I18N_NOOP("Cursor Down + SELECT"),I18N_NOOP("Scroll view one line down")};
+
 
 KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc) : QWidget(view)
 {
@@ -1327,6 +1297,7 @@ void KateViewInternal::dropEvent( QDropEvent *event )
 
 KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate::View (doc, parent, name)
 {
+  m_editAccels=0;
   setInstance( KateFactory::instance() );
 
   initCodeCompletionImplementation();
@@ -1364,10 +1335,8 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate
     myDoc->setXMLFile( "katepartbrowserui.rc" );
   }
 
-  setupDefaultEditKeys();
-  setupEditKeys(false);
-
   setupActions();
+  setupEditKeys();
 
   connect( this, SIGNAL( newStatus() ), this, SLOT( slotUpdate() ) );
   connect( doc, SIGNAL( undoChanged() ), this, SLOT( slotNewUndo() ) );
@@ -1382,69 +1351,6 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate
   slotUpdate();
 }
 
-void KateView::setEditKey(int cmd, Qt::Key key, int modifiers, bool valid)
-{
-	defaultEditKeys[cmd].modifiers=(Qt::ButtonState)modifiers;
-	defaultEditKeys[cmd].key=key;
-	defaultEditKeys[cmd].valid=valid;
-}
-
-void KateView::setupEditKeys(bool force)
-{
-	if (force || (!keyListAlreadyLoaded))
-	{
-		for (int i=0;i<EditKeyCount;i++)
-		{
-			editKeys[i].key=defaultEditKeys[i].key;
-			editKeys[i].modifiers=defaultEditKeys[i].modifiers;
-			editKeys[i].valid=defaultEditKeys[i].valid;
-		}
-		keyListAlreadyLoaded=true;
-	}
-}
-
-void KateView::setupDefaultEditKeys()
-{
-	if (!defaultKeyListAlreadyLoaded)
-	{
-		// default values
-		/* left */
-		setEditKey(KEY_LEFT,Qt::Key_Left,Qt::NoButton,true);
-		setEditKey(KEY_WORD_LEFT,Qt::Key_Left,Qt::ControlButton,true);
-		setEditKey(KEY_LEFT_SELECT,Qt::Key_Left,Qt::ShiftButton,true);
-		setEditKey(KEY_WORD_LEFT_SELECT,Qt::Key_Left,Qt::ControlButton|Qt::ShiftButton,true);
-
-		/* right */
-		setEditKey(KEY_RIGHT,Qt::Key_Right,Qt::NoButton,true);
-		setEditKey(KEY_WORD_RIGHT,Qt::Key_Right,Qt::ControlButton,true);
-		setEditKey(KEY_RIGHT_SELECT,Qt::Key_Right,Qt::ShiftButton,true);
-		setEditKey(KEY_WORD_RIGHT_SELECT,Qt::Key_Right,Qt::ControlButton|Qt::ShiftButton,true);
-
-		/* home / top */
-		setEditKey(KEY_HOME,Qt::Key_Home,Qt::NoButton,true);
-		setEditKey(KEY_TOP,Qt::Key_Home,Qt::ControlButton,true);
-		setEditKey(KEY_HOME_SELECT,Qt::Key_Home,Qt::ShiftButton,true);
-		setEditKey(KEY_TOP_SELECT,Qt::Key_Home,Qt::ControlButton|Qt::ShiftButton,true);
-
-		/* end / bottom */
-		setEditKey(KEY_END,Qt::Key_End,Qt::NoButton,true);
-		setEditKey(KEY_BOTTOM,Qt::Key_End,Qt::ControlButton,true);
-		setEditKey(KEY_END_SELECT,Qt::Key_End,Qt::ShiftButton,true);
-		setEditKey(KEY_BOTTOM_SELECT,Qt::Key_End,Qt::ControlButton|Qt::ShiftButton,true);
-
-		/* up */
-		setEditKey(KEY_UP,Qt::Key_Up,Qt::NoButton,true);
-		setEditKey(KEY_UP_SELECT,Qt::Key_Up,Qt::ShiftButton,true);
-		setEditKey(KEY_SCROLL_UP,Qt::Key_Up,Qt::ControlButton,true);
-
-		/* down */
-		setEditKey(KEY_DOWN,Qt::Key_Down,Qt::NoButton,true);
-		setEditKey(KEY_DOWN_SELECT,Qt::Key_Down,Qt::ShiftButton,true);
-		setEditKey(KEY_SCROLL_DOWN,Qt::Key_Down,Qt::ControlButton,true);
-
-		defaultKeyListAlreadyLoaded=true;
-	}
-}
 
 KateView::~KateView()
 {
@@ -1471,6 +1377,43 @@ QPoint KateView::cursorCoordinates()
 void KateView::copy () const
 {
   myDoc->copy(myDoc->_configFlags);
+}
+
+void KateView::setupEditKeys()
+{
+
+  if (m_editAccels) delete m_editAccels;
+  m_editAccels=new KAccel(this);
+  m_editAccels->insertAction("KATE_CURSOR_LEFT",i18n("Cursor left"),"","Left",this,SLOT(cursorLeft()));
+  m_editAccels->insertAction("KATE_WORD_LEFT",i18n("One word left"),"","Ctrl+Left",this,SLOT(wordLeft()));
+  m_editAccels->insertAction("KATE_CURSOR_LEFT_SELECT",i18n("Cursor left + SELECT"),"","Shift+Left",this,SLOT(shiftCursorLeft()));
+  m_editAccels->insertAction("KATE_WORD_LEFT_SELECT",i18n("One word left + SELECT"),"","Shift+Ctrl+Left",this,SLOT(shiftWordLeft()));
+
+
+  m_editAccels->insertAction("KATE_CURSOR_RIGHT",i18n("Cursor right"),"","Right",this,SLOT(cursorRight()));
+  m_editAccels->insertAction("KATE_WORD_RIGHT",i18n("One word right"),"","Ctrl+Right",this,SLOT(wordRight()));
+  m_editAccels->insertAction("KATE_CURSOR_RIGHT_SELECT",i18n("Cursor right + SELECT"),"","Shift+Right",this,SLOT(shiftCursorRight()));
+  m_editAccels->insertAction("KATE_WORD_RIGHT_SELECT",i18n("One word right + SELECT"),"","Shift+Ctrl+Right",this,SLOT(shiftWordRight()));
+
+  m_editAccels->insertAction("KATE_CURSOR_HOME",i18n("Home"),"","Home",this,SLOT(home()));
+  m_editAccels->insertAction("KATE_CURSOR_TOP",i18n("Top"),"","Ctrl+Home",this,SLOT(top()));
+  m_editAccels->insertAction("KATE_CURSOR_HOME_SELECT",i18n("Home + SELECT"),"","Shift+Home",this,SLOT(shiftHome()));
+  m_editAccels->insertAction("KATE_CURSOR_TOP_SELECT",i18n("Top + SELECT"),"","Shift+Ctrl+Home",this,SLOT(shiftTop()));
+
+  m_editAccels->insertAction("KATE_CURSOR_END",i18n("End"),"","End",this,SLOT(end()));
+  m_editAccels->insertAction("KATE_CURSOR_BOTTOM",i18n("Bottom"),"","Ctrl+End",this,SLOT(bottom()));
+  m_editAccels->insertAction("KATE_CURSOR_END_SELECT",i18n("End + SELECT"),"","Shift+End",this,SLOT(shiftEnd()));
+  m_editAccels->insertAction("KATE_CURSOR_BOTTOM_SELECT",i18n("Bottom + SELECT"),"","Shift+Ctrl+End",this,SLOT(shiftBottom()));
+
+  m_editAccels->insertAction("KATE_CURSOR_UP",i18n("Cursor up"),"","Up",this,SLOT(up()));
+  m_editAccels->insertAction("KATE_CURSOR_UP_SELECT",i18n("Cursor up + SELECT"),"","Shift+Up",this,SLOT(shiftUp()));
+  m_editAccels->insertAction("KATE_SCROLL_UP",i18n("Scroll one line up"),"","Ctrl+Up",this,SLOT(scrollUp()));
+
+  m_editAccels->insertAction("KATE_CURSOR_DOWN",i18n("Cursor down"),"","Down",this,SLOT(down()));
+  m_editAccels->insertAction("KATE_CURSOR_DOWN_SELECT",i18n("Cursor down + SELECT"),"","Shift+Down",this,SLOT(shiftDown()));
+  m_editAccels->insertAction("KATE_SCROLL_DOWN",i18n("Scroll one line down"),"","Ctrl+Down",this,SLOT(scrollDown()));
+
+  if (!(myViewInternal->hasFocus())) m_editAccels->setEnabled(false);
 }
 
 void KateView::setupActions()
@@ -1620,53 +1563,11 @@ void KateView::slotDropEventPass( QDropEvent * ev )
         emit ext->openURLRequest( lstDragURLs.first() );
 }
 
-bool KateView::trySpecialKey(int key, Qt::ButtonState state,int id,void (KateView::*myfunc)())
-{
-	static Qt::ButtonState tmpState=(Qt::ButtonState)(Qt::ControlButton | Qt::ShiftButton | Qt::AltButton | Qt::MetaButton);
-	if (!editKeys[id].valid) return false;
-	if (key!=editKeys[id].key) return false;
-	if ((state & tmpState)!=(int)editKeys[id].modifiers) return false;
-	(this->*myfunc)();
-	return true;
-}
 
 void KateView::keyPressEvent( QKeyEvent *ev )
 {
   int key=ev->key();
-  Qt::ButtonState state=ev->state();
-  /* left */
-  if (!trySpecialKey(key,state,KEY_LEFT,&KateView::cursorLeft))
-  if (!trySpecialKey(key,state,KEY_WORD_LEFT,&KateView::wordLeft))
-  if (!trySpecialKey(key,state,KEY_LEFT_SELECT,&KateView::shiftCursorLeft))
-  if (!trySpecialKey(key,state,KEY_WORD_LEFT_SELECT,&KateView::shiftWordLeft))
 
-   /* right */
-  if (!trySpecialKey(key,state,KEY_RIGHT,&KateView::cursorRight))
-  if (!trySpecialKey(key,state,KEY_WORD_RIGHT,&KateView::wordRight))
-  if (!trySpecialKey(key,state,KEY_RIGHT_SELECT,&KateView::shiftCursorRight))
-  if (!trySpecialKey(key,state,KEY_WORD_RIGHT_SELECT,&KateView::shiftWordRight))
-
-   /* home / top */
-  if (!trySpecialKey(key,state,KEY_HOME,&KateView::home))
-  if (!trySpecialKey(key,state,KEY_TOP,&KateView::top))
-  if (!trySpecialKey(key,state,KEY_HOME_SELECT,&KateView::shiftHome))
-  if (!trySpecialKey(key,state,KEY_TOP_SELECT,&KateView::shiftTop))
-
-  /* end / bottom */
-  if (!trySpecialKey(key,state,KEY_END,&KateView::end))
-  if (!trySpecialKey(key,state,KEY_BOTTOM,&KateView::bottom))
-  if (!trySpecialKey(key,state,KEY_END_SELECT,&KateView::shiftEnd))
-  if (!trySpecialKey(key,state,KEY_BOTTOM_SELECT,&KateView::shiftBottom))
-
-  /* up */
-  if (!trySpecialKey(key,state,KEY_UP,&KateView::up))
-  if (!trySpecialKey(key,state,KEY_UP_SELECT,&KateView::shiftUp))
-  if (!trySpecialKey(key,state,KEY_SCROLL_UP,&KateView::scrollUp))
-
-  /* down */
-  if (!trySpecialKey(key,state,KEY_DOWN,&KateView::down))
-  if (!trySpecialKey(key,state,KEY_DOWN_SELECT,&KateView::shiftDown))
-  if (!trySpecialKey(key,state,KEY_SCROLL_DOWN,&KateView::scrollDown))
 
   switch(key)
   {
@@ -2518,7 +2419,15 @@ bool KateView::eventFilter (QObject *object, QEvent *event)
     KCursor::autoHideEventFilter( object, event );
 
   if ( (event->type() == QEvent::FocusIn) )
+  {
+    m_editAccels->setEnabled(true);
     emit gotFocus (this);
+  }
+
+  if ( (event->type() == QEvent::FocusOut) )
+  {
+  	m_editAccels->setEnabled(false);
+  }
 
   if ( (event->type() == QEvent::KeyPress) )
     {

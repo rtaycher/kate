@@ -47,6 +47,10 @@
 #include <kkeybutton.h>
 #include <klistview.h>
 
+#include <kmainwindow.h>
+#include <kaccel.h>
+#include <kkeydialog.h>
+
 #include "katedocument.h"
 #include "kateviewdialog.h"
 
@@ -574,31 +578,53 @@ void FontConfig::slotFontSelected( const QFont &font )
 EditKeyConfiguration::EditKeyConfiguration(QWidget *parent, char *name):QWidget(parent,name)
 {
 	(new QVBoxLayout(this))->setAutoAdd(true);
-	list=new KListView(this);
-	QHBox *tmpBox=new QHBox(this);
-	tmpBox->setSpacing(5);
-	restoreToKateDefault=new QPushButton(i18n("Restore to Kate defaults"),tmpBox);
-	keyButton=new KKeyButton(tmpBox);
-
-	list->addColumn(i18n("Action"));
-	list->addColumn(i18n("Used keys"));
-	for (int i=0;i<EditKeyCount;i++)
-		{
-			QKeyEvent tmpEv(QEvent::KeyPress,editKeys[i].key,0,editKeys[i].modifiers);
-			KKey key(&tmpEv);
-			KShortcut tmpShortcut(key);
-			list->insertItem(new QListViewItem(list,i18n(editKeyDescriptions[i]),tmpShortcut.toString(),QString("%1").arg(i)));
-		}
-	connect(keyButton,SIGNAL(capturedShortcut(KShortcut)),this,SLOT(captured(KShortcut)));
+	tmpWin=new KMainWindow(0);
+	tmpWin->hide();
+	setupEditKeys();
+	new KKeyChooser(m_editAccels->actions(),this);
 }
 
-void EditKeyConfiguration::captured(KShortcut sc)
+void EditKeyConfiguration::dummy()
+{}
+
+
+void EditKeyConfiguration::setupEditKeys()
 {
-	if (list->currentItem()) list->currentItem()->setText(1,sc.toString());
+  m_editAccels=new KAccel(tmpWin);
+  m_editAccels->insertAction("KATE_CURSOR_LEFT",i18n("Cursor left"),"","Left",this,SLOT(dummy()));
+  m_editAccels->insertAction("KATE_WORD_LEFT",i18n("One word left"),"","Ctrl+Left",this,SLOT(dummy()));
+  m_editAccels->insertAction("KATE_CURSOR_LEFT_SELECT",i18n("Cursor left + SELECT"),"","Shift+Left",this,SLOT(dummy()));
+  m_editAccels->insertAction("KATE_WORD_LEFT_SELECT",i18n("One word left + SELECT"),"","Shift+Ctrl+Left",this,SLOT(dummy()));
+
+
+  m_editAccels->insertAction("KATE_CURSOR_RIGHT",i18n("Cursor right"),"","Right",this,SLOT(dummy()));
+  m_editAccels->insertAction("KATE_WORD_RIGHT",i18n("One word right"),"","Ctrl+Right",this,SLOT(dummy()));
+  m_editAccels->insertAction("KATE_CURSOR_RIGHT_SELECT",i18n("Cursor right + SELECT"),"","Shift+Right",this,SLOT(dummy()));
+  m_editAccels->insertAction("KATE_WORD_RIGHT_SELECT",i18n("One word right + SELECT"),"","Shift+Ctrl+Right",this,SLOT(dummy()));
+
+  m_editAccels->insertAction("KATE_CURSOR_HOME",i18n("Home"),"","Home",this,SLOT(dummy()));
+  m_editAccels->insertAction("KATE_CURSOR_TOP",i18n("Top"),"","Ctrl+Home",this,SLOT(dummy()));
+  m_editAccels->insertAction("KATE_CURSOR_HOME_SELECT",i18n("Home + SELECT"),"","Shift+Home",this,SLOT(dummy()));
+  m_editAccels->insertAction("KATE_CURSOR_TOP_SELECT",i18n("Top + SELECT"),"","Shift+Ctrl+Home",this,SLOT(dummy()));
+
+  m_editAccels->insertAction("KATE_CURSOR_END",i18n("End"),"","End",this,SLOT(dummy()));
+  m_editAccels->insertAction("KATE_CURSOR_BOTTOM",i18n("Bottom"),"","Ctrl+End",this,SLOT(dummy()));
+  m_editAccels->insertAction("KATE_CURSOR_END_SELECT",i18n("End + SELECT"),"","Shift+End",this,SLOT(dummy()));
+  m_editAccels->insertAction("KATE_CURSOR_BOTTOM_SELECT",i18n("Bottom + SELECT"),"","Shift+Ctrl+End",this,SLOT(dummy()));
+
+  m_editAccels->insertAction("KATE_CURSOR_UP",i18n("Cursor up"),"","Up",this,SLOT(dummy()));
+  m_editAccels->insertAction("KATE_CURSOR_UP_SELECT",i18n("Cursor up + SELECT"),"","Shift+Up",this,SLOT(dummy()));
+  m_editAccels->insertAction("KATE_SCROLL_UP",i18n("Scroll one line  up"),"","Ctrl+Up",this,SLOT(dummy()));
+
+  m_editAccels->insertAction("KATE_CURSOR_DOWN",i18n("Cursor down"),"","Down",this,SLOT(dummy()));
+  m_editAccels->insertAction("KATE_CURSOR_DOWN_SELECT",i18n("Cursor down + SELECT"),"","Shift+Down",this,SLOT(dummy()));
+  m_editAccels->insertAction("KATE_SCROLL_DOWN",i18n("Scroll one line down"),"","Ctrl+Down",this,SLOT(dummy()));
 }
 
 EditKeyConfiguration::~EditKeyConfiguration()
-{}
+{
+	delete tmpWin;
+}
 
 
 #include "kateviewdialog.moc"

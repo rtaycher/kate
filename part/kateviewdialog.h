@@ -29,6 +29,9 @@ class KComboBox;
 class KRegExpDialog;
 class KKeyButton;
 class KPushButton;
+class KMainWindow;
+class KAccel;
+
 #include <kdialogbase.h>
 #include "kateview.h"
 
@@ -194,11 +197,11 @@ public:
 	EditKeyConfiguration(QWidget *parent=0, char *name=0);
 	~EditKeyConfiguration();
 private:
-	KListView  *list;
-	KKeyButton *keyButton;
-	QPushButton *restoreToKateDefault;
+	KMainWindow *tmpWin;
+	KAccel *m_editAccels;
+	void setupEditKeys();
 protected slots:
-	void captured( KShortcut );
+	void dummy();
 };
 
 #endif

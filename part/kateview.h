@@ -36,18 +36,6 @@
 #include "katecodecompletion_iface_impl.h"
 
 
-/* The keys, needed for editing */
-struct editKey
-{
-	Qt::ButtonState		modifiers;
-	int			key;
-	bool			valid;
-};
-#define EditKeyCount 22
-extern editKey editKeys[EditKeyCount];
-extern editKey defaultEditKeys[EditKeyCount];
-extern char* editKeyDescriptions[EditKeyCount];
-
 class KToggleAction;
 class KActionMenu;
 class KAction;
@@ -468,12 +456,10 @@ class KateView : public Kate::View
 
 
     // cursor commands...
-protected:
-    bool trySpecialKey(int key, Qt::ButtonState state,int id, void (KateView::*myfunc)());
-    static void setEditKey(int cmd, Qt::Key key, int modifiers, bool valid);
-    void setupDefaultEditKeys();
+private:
+    KAccel *m_editAccels;
+    void setupEditKeys();
 public slots:
-    void setupEditKeys(bool);
     void cursorLeft() {doCursorCommand(KateView::cmLeft);};
     void shiftCursorLeft() {doCursorCommand(KateView::cmLeft | selectFlag);};
     void cursorRight() {doCursorCommand(KateView::cmRight);}
