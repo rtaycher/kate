@@ -80,6 +80,7 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow, KateViewManager 
 
   dir = new KDirOperator(QString::null, this, "operator");
   dir->setView(KFile::/*Simple*/Detail);
+  dir->actionCollection()->action( "delete" )->setShortcut (KShortcut (ALT+Key_Delete));
   lo->addWidget(dir);
   lo->setStretchFactor(dir, 2);
 
