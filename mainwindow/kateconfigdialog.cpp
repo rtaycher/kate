@@ -75,8 +75,12 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   setShowIconsInTreeList(true);
 
   path.clear();
+  path << i18n("Kate");
+  setFolderIcon (path, SmallIcon("kate", KIcon::SizeSmall));
+
+  path.clear();
   path << i18n("Kate") << i18n("General");
-  QFrame* frGeneral = addPage(path, i18n("General Options"), BarIcon("misc", KIcon::SizeMedium));
+  QFrame* frGeneral = addPage(path, i18n("General Options"), BarIcon("misc", KIcon::SizeSmall));
   QGridLayout* gridFrG = new QGridLayout(frGeneral);
   gridFrG->setSpacing( 6 );
 
@@ -127,11 +131,16 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   config->setGroup("General");
 
   // editor widgets from kwrite/kwdialog
+
+  path.clear();
+  path << i18n("Editor");
+  setFolderIcon (path, SmallIcon("edit", KIcon::SizeSmall));
+
   // color options
   path.clear();
   path << i18n("Editor") << i18n("Colors");
   QVBox *page = addVBoxPage(path, i18n("Colors"),
-                              BarIcon("colorize", KIcon::SizeMedium) );
+                              BarIcon("colorize", KIcon::SizeSmall) );
   colorConfig = new ColorConfig(page);
   // some kwrite tabs needs a kwrite as an arg!
 
@@ -139,7 +148,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   path.clear();
   path << i18n("Editor") << i18n("Indent");
   page=addVBoxPage(path, i18n("Indent Options"),
-                       BarIcon("rightjust", KIcon::SizeMedium) );
+                       BarIcon("rightjust", KIcon::SizeSmall) );
   indentConfig = new IndentConfigTab(page, v);
 
   // select options
@@ -153,14 +162,14 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   path.clear();
   path << i18n("Editor") << i18n("Edit");
   page=addVBoxPage(path, i18n("Editing Options"),
-                       BarIcon("edit", KIcon::SizeMedium ) );
+                       BarIcon("edit", KIcon::SizeSmall ) );
   editConfig = new EditConfigTab(page, v);
 
   // spell checker
   path.clear();
   path << i18n("Editor") << i18n("Spelling");
   page = addVBoxPage( path, i18n("Spell checker behavior"),
-                          BarIcon("spellcheck", KIcon::SizeMedium) );
+                          BarIcon("spellcheck", KIcon::SizeSmall) );
   ksc = new KSpellConfig(page, 0L, v->ksConfig(), false );
   colors = v->getColors();
   colorConfig->setColors( colors );
@@ -168,7 +177,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   path.clear();
   path << i18n("Plugins") << i18n("Manager");
   page=addVBoxPage(path,i18n("Configure plugins"),
-                          BarIcon("misc",KIcon::SizeMedium));
+                          BarIcon("misc",KIcon::SizeSmall));
   (void)new KateConfigPluginPage(page);
 
   hlManager = HlManager::self();
@@ -183,10 +192,8 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   path.clear();
   path << i18n("Editor") << i18n("Highlighting");
   page=addVBoxPage(path,i18n("Highlighting configuration"),
-                        SmallIcon("highlighting", KIcon::SizeMedium));
-//  setFolderIcon (path, SmallIcon("highlighting", KIcon::SizeMedium));
-  hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &defaultFont, &hlDataList,
-    0, page);
+                        SmallIcon("highlighting", KIcon::SizeSmall));
+  hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &defaultFont, &hlDataList, 0, page);
 }
 
 KateConfigDialog::~KateConfigDialog()
