@@ -34,4 +34,9 @@
       <itemData name="Comment" defStyleNum="dsComment"/>
     </itemDatas>
   </highlighting>
+  <general>
+    <comments>
+      <comment name="multiLine" start="&lt;!--" end="//--&gt;" />
+    </comments>
+  </general>
 </language>
