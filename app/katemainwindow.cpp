@@ -228,7 +228,7 @@ void KateMainWindow::setupActions()
 
   KStdAction::quit( this, SLOT( slotFileQuit() ), actionCollection(), "file_quit" )->setWhatsThis(i18n("Close this window"));
 
-  a=new KAction(i18n("&New View"), 0, this, SLOT(newWindow()), actionCollection(), "view_new_view");
+  a=new KAction(i18n("&New Mainwindow"), 0, this, SLOT(newWindow()), actionCollection(), "view_new_view");
   a->setWhatsThis(i18n("Create a new Kate view (a new window with the same document list)."));
 
   a=new KAction( i18n("Split &Vertical"), "view_left_right", CTRL+SHIFT+Key_L, m_viewManager, SLOT( slotSplitViewSpaceVert() ), actionCollection(), "view_split_vert");
@@ -757,7 +757,7 @@ bool KateMainWindow::event(QEvent* e)
 
 KDockWidget *KateMainWindow::addToolView(KDockWidget::DockPosition pos,const char* name, const QPixmap &icon,const QString& caption)
 {
-	
+
 	KMdiToolViewAccessor *tmp=createToolWindow();
 
 //	KDockWidget *dw=createDockWidget( name,  icon, 0L, caption, caption);
