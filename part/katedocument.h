@@ -531,6 +531,7 @@ class KateDocument : public Kate::Document
     void updateLines(int startLine = 0, int endLine = 0xffffff);
     void updateMaxLength(TextLine::Ptr &);
     void updateViews();
+    void updateEditAccels();
 
     QColor &backCol(int x, int y);
     QColor &cursorCol(int x, int y);

@@ -31,6 +31,7 @@ class KKeyButton;
 class KPushButton;
 class KMainWindow;
 class KAccel;
+class KKeyChooser;
 
 #include <kdialogbase.h>
 #include "kateview.h"
@@ -196,9 +197,11 @@ class EditKeyConfiguration: public QWidget
 public:
 	EditKeyConfiguration(QWidget *parent=0, char *name=0);
 	~EditKeyConfiguration();
+	void save();
 private:
 	KMainWindow *tmpWin;
 	KAccel *m_editAccels;
+	KKeyChooser *chooser;
 	void setupEditKeys();
 protected slots:
 	void dummy();

@@ -1704,8 +1704,8 @@ void KateDocument::configDialog()
                        BarIcon("edit", KIcon::SizeMedium ) );
   EditConfigTab *editConfig = new EditConfigTab(page, this);
 
-  // keyboard options
-  page=kd->addVBoxPage(i18n("Keyboard"), QString::null,
+  // Cursor key options
+  page=kd->addVBoxPage(i18n("Cursor Keys"), QString::null,
                        BarIcon("edit", KIcon::SizeMedium ) );
   EditKeyConfiguration *editKeyConfig = new EditKeyConfiguration(page);
 
@@ -1742,7 +1742,9 @@ void KateDocument::configDialog()
     setFont (ViewFont,fontConfig->getFont());
     setFont (PrintFont,printFontConfig->getFont());
     tagAll();
+    editKeyConfig->save();
     updateViews();
+    updateEditAccels();
     // indent options
     indentConfig->getData(this);
     // select options
@@ -3408,6 +3410,17 @@ void KateDocument::updateViews()
   }
 
   newDocGeometry = false;
+}
+
+void KateDocument::updateEditAccels()
+{
+  KateView *view;
+
+  for (view = myViews.first(); view != 0L; view = myViews.next() )
+  {
+    view->setupEditKeys();
+  }
+
 }
 
 QColor &KateDocument::backCol(int x, int y) {

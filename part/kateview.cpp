@@ -1412,6 +1412,9 @@ void KateView::setupEditKeys()
   m_editAccels->insertAction("KATE_CURSOR_DOWN",i18n("Cursor down"),"","Down",this,SLOT(down()));
   m_editAccels->insertAction("KATE_CURSOR_DOWN_SELECT",i18n("Cursor down + SELECT"),"","Shift+Down",this,SLOT(shiftDown()));
   m_editAccels->insertAction("KATE_SCROLL_DOWN",i18n("Scroll one line down"),"","Ctrl+Down",this,SLOT(scrollDown()));
+  
+  KConfig config("kateeditkeysrc");
+  m_editAccels->readSettings(&config);
 
   if (!(myViewInternal->hasFocus())) m_editAccels->setEnabled(false);
 }

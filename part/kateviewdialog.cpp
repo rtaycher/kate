@@ -46,6 +46,7 @@
 #include <kparts/componentfactory.h>
 #include <kkeybutton.h>
 #include <klistview.h>
+#include <kconfig.h>
 
 #include <kmainwindow.h>
 #include <kaccel.h>
@@ -581,7 +582,7 @@ EditKeyConfiguration::EditKeyConfiguration(QWidget *parent, char *name):QWidget(
 	tmpWin=new KMainWindow(0);
 	tmpWin->hide();
 	setupEditKeys();
-	new KKeyChooser(m_editAccels->actions(),this);
+	chooser=new KKeyChooser(m_editAccels->actions(),this);
 }
 
 void EditKeyConfiguration::dummy()
@@ -619,6 +620,20 @@ void EditKeyConfiguration::setupEditKeys()
   m_editAccels->insertAction("KATE_CURSOR_DOWN",i18n("Cursor down"),"","Down",this,SLOT(dummy()));
   m_editAccels->insertAction("KATE_CURSOR_DOWN_SELECT",i18n("Cursor down + SELECT"),"","Shift+Down",this,SLOT(dummy()));
   m_editAccels->insertAction("KATE_SCROLL_DOWN",i18n("Scroll one line down"),"","Ctrl+Down",this,SLOT(dummy()));
+  
+  
+  KConfig config("kateeditkeysrc");
+  m_editAccels->readSettings(&config);
+
+}
+
+void EditKeyConfiguration::save()
+{
+  chooser->commitChanges();
+  KConfig config("kateeditkeysrc");
+  m_editAccels->updateConnections();
+  m_editAccels->writeSettings(&config);
+  config.sync();
 }
 
 EditKeyConfiguration::~EditKeyConfiguration()
