@@ -27,6 +27,7 @@
 #include <kaction.h>
 #include <kdialogbase.h>
 #include <kate/document.h>
+#include <kmacroexpander.h>
 #include <qpixmap.h>
 
 /**
@@ -77,12 +78,14 @@ class KateExternalToolsMenuAction : public KActionMenu
 /**
  * This Action contains a KateExternalTool
  */
-class KateExternalToolAction : public KAction
+class KateExternalToolAction : public KAction, public KWordMacroExpander
 {
   Q_OBJECT
   public:
     KateExternalToolAction( QObject *parent, const char *name, class KateExternalTool *t );
-    ~KateExternalToolAction() {};
+
+  protected:
+    virtual bool expandMacro( const QString &str, QStringList &ret );
 
   private slots:
     void slotRun();
