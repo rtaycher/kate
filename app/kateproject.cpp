@@ -114,7 +114,7 @@ QStringList KateProject::files (const QString &dir) const
     m_data->setGroup("General");
   else
   {
-    QString groupname = QString ("File ") + dir;
+    QString groupname = QString ("Dir ") + dir;
 
     if (!m_data->hasGroup(groupname))
       return QStringList ();

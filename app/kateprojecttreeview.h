@@ -42,6 +42,8 @@ class KateProjectTreeViewItem : public KListViewItem
     
     QString fullName () { return m_fullName; };
     
+    int compare ( QListViewItem *i, int, bool ) const;
+
   private:
     QString m_name;
     QString m_fullName;

@@ -5,9 +5,11 @@ Subdirs=testit,testmore
 Files=hallo.txt,text.ext
 
 [Dir /testit]
-Subdirs=evenmore, test
+Subdirs=evenmore,test
+Files=testitout.txt
 
 [Dir /testmore]
+Files=hsf.txt,test.sdf
 
 [Dir /testit/evenmore]
 Subdirs=hallo

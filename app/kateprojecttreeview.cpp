@@ -47,6 +47,35 @@ KateProjectTreeViewItem::~KateProjectTreeViewItem ()
 {
 }
 
+int KateProjectTreeViewItem::compare ( QListViewItem *i, int, bool ) const
+{
+  KateProjectTreeViewItem *item = (KateProjectTreeViewItem *) i;
+  
+  if ((m_name == item->m_name) && (m_dir == item->m_dir))
+    return 0;
+    
+  if (m_dir == 0)
+  {
+    if (item->m_dir == 1)
+      return 1;
+      
+    if (m_name < item->m_name)
+      return -1;
+    else
+      return 1;
+  }
+  else
+  {
+    if (item->m_dir == 0)
+      return -1;
+      
+    if (m_name < item->m_name)
+      return -1;
+    else
+      return 1;
+  }
+}
+
 KateProjectTreeView::KateProjectTreeView (Kate::Project *project, QWidget *parent) : KListView (parent)
 {
   m_project = project;
