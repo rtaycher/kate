@@ -44,10 +44,77 @@
 <!ATTLIST contexts
 >
 
-<!ENTITY context (keyword, Float, HlCOct, HlCHex, Int DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ENTITY context (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
 <!ATTLIST context
   attribute CDATA #REQUIRED
   lineEndContext CDATA #REQUIRED
   name CDATA #REQUIRED
 >
 
+<!ENTITY keyword (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ATTLIST keyword
+  attribute CDATA #REQUIRED
+  context CDATA #REQUIRED
+  String CDATA #REQUIRED
+>
+
+<!ENTITY Float (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ATTLIST Float
+  attribute CDATA #REQUIRED
+  context CDATA #REQUIRED
+>
+
+<!ENTITY HlCOct (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ATTLIST HlCOct
+  attribute CDATA #REQUIRED
+  context CDATA #REQUIRED
+>
+
+<!ENTITY HlCHex (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ATTLIST HlCHex
+  attribute CDATA #REQUIRED
+  context CDATA #REQUIRED
+>
+
+<!ENTITY Int (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ATTLIST Int
+  attribute CDATA #REQUIRED
+  context CDATA #REQUIRED
+>
+
+<!ENTITY DetectChar (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ATTLIST DetectChar
+  attribute CDATA #REQUIRED
+  context CDATA #REQUIRED
+  char CDATA #REQUIRED
+>
+
+<!ENTITY Detect2Chars (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ATTLIST Detect2Chars
+  attribute CDATA #REQUIRED
+  context CDATA #REQUIRED
+  char CDATA #REQUIRED
+  char1 CDATA #REQUIRED
+>
+
+<!ENTITY AnyChar (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ATTLIST AnyChar
+  attribute CDATA #REQUIRED
+  context CDATA #REQUIRED
+  String CDATA #REQUIRED
+>
+
+<!ENTITY StringDetect (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ATTLIST StringDetect
+  attribute CDATA #REQUIRED
+  context CDATA #REQUIRED
+  String CDATA #REQUIRED
+  insensitive CDATA #REQUIRED
+>
+
+<!ENTITY RegExpr (keyword, Float, HlCOct, HlCHex, Int, DetectChar, Detect2Chars, AnyChar, StringDetect, RegExpr, LineContinue, HlCStringChar, RangeDetect)>
+<!ATTLIST RegExpr
+  attribute CDATA #REQUIRED
+  context CDATA #REQUIRED
+  String CDATA #REQUIRED
+>
