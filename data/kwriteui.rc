@@ -29,9 +29,9 @@
     <DefineGroup name="view_operations" />
   </Menu>
 
-  <menu name="tools" noMerge="1"><text>&amp;Tools</text>
+  <Menu name="tools" noMerge="1"><text>&amp;Tools</text>
     <DefineGroup name="tools_operations" />
-  </menu>
+  </Menu>
 
   <Merge/>
 
