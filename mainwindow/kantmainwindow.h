@@ -180,8 +180,9 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
 
     virtual bool queryClose();
 
-    virtual void readProperties(KConfig *);
-    virtual void saveProperties(KConfig *);
+    void readOptions(KConfig *);
+    void saveOptions(KConfig *);
+    virtual void saveProperties(KConfig*);
 
     virtual void dragEnterEvent( QDragEnterEvent * );
     virtual void dropEvent( QDropEvent * );

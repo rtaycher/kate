@@ -110,7 +110,7 @@ KantMainWindow::KantMainWindow(KantDocManager *_docManager, KantPluginManager *_
 
   createGUI();
 
-  readProperties(config);
+  readOptions(config);
 
   // connect slot for updating menustatus of "project"
   QPopupMenu* pm_project = (QPopupMenu*)factory()->container("project", this);
@@ -336,7 +336,7 @@ bool KantMainWindow::queryClose()
 
   if ( ((KantApp *)kapp)->mainWindowsCount () < 2 )
   {
-    saveProperties(config);
+    saveOptions(config);
 
     viewManager->saveAllDocsAtCloseDown(  );
 
@@ -357,6 +357,11 @@ bool KantMainWindow::queryClose()
   }
 
   return val;
+}
+// anders: attempt to get session manager to restore kant.
+void KantMainWindow::saveProperties(KConfig* cfg)
+{
+  cfg->writeEntry("hello", "world");
 }
 
 void KantMainWindow::newWindow ()
@@ -587,7 +592,7 @@ void KantMainWindow::slotFileQuit()
   close();
 }
 
-void KantMainWindow::readProperties(KConfig *config)
+void KantMainWindow::readOptions(KConfig *config)
 {
  /* readConfig(config);
   kWrite->readSessionConfig(config);*/
@@ -611,7 +616,7 @@ void KantMainWindow::readProperties(KConfig *config)
   readDockConfig();
 }
 
-void KantMainWindow::saveProperties(KConfig *config)
+void KantMainWindow::saveOptions(KConfig *config)
 {
   config->setGroup("General");
   config->writeEntry("Show Sidebar", sidebar->isVisible());

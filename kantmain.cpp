@@ -23,6 +23,7 @@
 #include <kglobal.h>
 #include <kglobalaccel.h>
 #include <kglobalsettings.h>
+#include <kdebug.h>
 
 #include "./app/kantapp.h"
 #include <cstdlib>
@@ -51,8 +52,10 @@ int main( int argc, char **argv )
   KCmdLineArgs::addCmdLineOptions (options);
   KantApp::addCmdLineOptions ();
 
-  if (!KantApp::start())
+  if (!KantApp::start()) {
+    kdDebug()<<"main: cant start kantapp!"<<endl;
     exit(0);
+  }
 
   KantApp app;
   return app.exec();

@@ -25,6 +25,7 @@
 #include "../view/kantviewmanager.h"
 
 #include <kcmdlineargs.h>
+#include <kdebug.h>
 
 KantApp::KantApp () : KUniqueApplication ()
 {
@@ -36,6 +37,7 @@ KantApp::KantApp () : KUniqueApplication ()
   newMainWindow ();
 
   connect(this, SIGNAL(lastWindowClosed()), SLOT(quit()));
+
 }
 
 KantApp::~KantApp ()
@@ -72,6 +74,8 @@ int KantApp::newInstance ()
 
   mainWindows.first()->restore(isRestored());
 
+  if (isRestored())
+    kdDebug()<<"restored app anybody?"<<endl;
   if (!isRestored())
   {
 
