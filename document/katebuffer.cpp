@@ -5,12 +5,12 @@
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-   
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -36,7 +36,7 @@
 //#include <katebuffer.moc>
 
 #include <assert.h>
-
+#include <kdebug.h>
 #define LOADED_BLOCKS_MAX	10
 #define DIRTY_BLOCKS_MAX        1
 #define AVG_BLOCK_SIZE		8192
@@ -75,7 +75,7 @@ static QByteArray readBlock(int fd, int size)
       bytesRead += n;
       bytesToRead -= n;
    }
-qWarning("Read = %d", bytesRead);
+   kdDebug()<<"Read = "<< bytesRead<<endl;
    result.truncate(bytesRead);
    return result;
 }
@@ -129,7 +129,7 @@ KWBuffer::insertFile(int line, const QString &file, QTextCodec *codec)
   int fd = open(QFile::encodeName(file), O_RDONLY);
   if (fd < 0)
   {
-     qWarning("Error loading file.");
+      kdDebug()<<"Error loading file.\n";
      return; // Do some error propagation here.
   }
 
@@ -176,26 +176,26 @@ KWBuffer::loadFilePart()
      if (m_loadedBlocks.count() > LOADED_BLOCKS_MAX)
      {
         KWBufBlock *buf2 = m_loadedBlocks.take(2);
-qWarning("swapOut(%p)", buf2);
+        kdDebug()<<"swapOut "<<buf2<<endl;
         buf2->swapOut(m_vm);
      }
      block->m_codec = loader->codec;
      loader->dataStart = block->blockFill(loader->dataStart,
                                   loader->lastBlock, currentBlock, eof);
      state = block->m_endState;
-qWarning("current->ref = %d last->ref = %d", currentBlock.nrefs(), loader->lastBlock.nrefs());
+     kdDebug()<<"current->ref ="<<currentBlock.nrefs()<<" last->ref ="<<loader->lastBlock.nrefs()<<endl;
      loader->lastBlock = currentBlock;
      if (eof) break;
   }
   if (eof)
   {
-qWarning("Loading finished.");
+      kdDebug()<<"Loading finished.\n";
      m_loader.removeRef(loader);
 //     emit needHighlight(startLine,state.lineNr);
   }
   if (m_loader.count())
   {
-qWarning("Starting timer...");
+      kdDebug()<<"Starting timer...\n";
      m_loadTimer.start(0, true);
  //JW 0
   }
@@ -212,7 +212,7 @@ KWBuffer::insertData(int line, const QByteArray &data, QTextCodec *codec)
    KWBufBlock *prev_block;
 
    // Remove all preceding empty blocks.
-   while(true) 
+   while(true)
    {
       prev_block = m_blocks.last();
       if (!prev_block || !prev_block->b_emptyBlock)
@@ -265,11 +265,11 @@ KWBuffer::slotLoadFile()
   loadFilePart();
   emit linesChanged(m_totalLines);
 }
-   
+
 /**
  * Return the total number of lines in the buffer.
  */
-int 
+int
 KWBuffer::count()
 {
    return m_totalLines;
@@ -282,7 +282,7 @@ KWBuffer::findBlock(int i)
       return 0;
 
    int lastLine = 0;
-   // This needs a bit of optimisation/caching so that we don't walk 
+   // This needs a bit of optimisation/caching so that we don't walk
    // through the list every time.
    KWBufBlock *buf;
    for(buf = m_blocks.current(); buf; )
@@ -332,7 +332,7 @@ KWBuffer::line(int i)
    if (!buf)
       return 0;
 
-   if (!buf->b_stringListValid) 
+   if (!buf->b_stringListValid)
    {
       parseBlock(buf);
    }
@@ -358,7 +358,7 @@ KWBuffer::insertLine(int i, TextLine::Ptr line)
       buf->b_rawDataValid = true;
    }
 
-   if (!buf->b_stringListValid) 
+   if (!buf->b_stringListValid)
    {
       parseBlock(buf);
    }
@@ -375,7 +375,7 @@ KWBuffer::removeLine(int i)
 {
    KWBufBlock *buf = findBlock(i);
    assert(buf);
-   if (!buf->b_stringListValid) 
+   if (!buf->b_stringListValid)
    {
       parseBlock(buf);
    }
@@ -390,10 +390,10 @@ KWBuffer::removeLine(int i)
 void
 KWBuffer::changeLine(int i)
 {
-qWarning("changeLine(%d)", i);
+    kdDebug()<<"changeLine "<< i<<endl;
    KWBufBlock *buf = findBlock(i);
    assert(buf);
-   assert(buf->b_stringListValid); 
+   assert(buf->b_stringListValid);
    if (buf->b_rawDataValid)
    {
       dirtyBlock(buf);
@@ -403,7 +403,8 @@ qWarning("changeLine(%d)", i);
 void
 KWBuffer::parseBlock(KWBufBlock *buf)
 {
-qWarning("parseBlock(%p)", buf);
+
+    kdDebug()<<"parseBlock "<< buf<<endl;
    if (!buf->b_rawDataValid)
       loadBlock(buf);
    if (m_parsedBlocksClean.count() > 5)
@@ -418,15 +419,15 @@ qWarning("parseBlock(%p)", buf);
 void
 KWBuffer::loadBlock(KWBufBlock *buf)
 {
-qWarning("loadBlock(%p)", buf);
+    kdDebug()<<"loadBlock "<<buf<<endl;
    if (m_loadedBlocks.count() > LOADED_BLOCKS_MAX)
    {
       KWBufBlock *buf2 = m_loadedBlocks.take(2);
-qWarning("swapOut(%p)", buf2);
+      kdDebug()<<"swapOut "<<buf2<<endl;
       buf2->swapOut(m_vm);
    }
 
-qWarning("swapIn(%p)", buf);
+   kdDebug()<<"swapIn "<<buf<<endl;
    buf->swapIn(m_vm);
    m_parsedBlocksClean.append(buf);
    m_loadedBlocks.append(buf);
@@ -435,7 +436,7 @@ qWarning("swapIn(%p)", buf);
 void
 KWBuffer::dirtyBlock(KWBufBlock *buf)
 {
-qWarning("dirtyBlock(%p)", buf);
+    kdDebug()<<"dirtyBlock "<<buf<<endl;
    buf->b_emptyBlock = false;
    if (m_parsedBlocksDirty.count() > DIRTY_BLOCKS_MAX)
    {
@@ -455,7 +456,7 @@ qWarning("dirtyBlock(%p)", buf);
 //-----------------------------------------------------------------
 
 /**
- * The KWBufBlock class contains an amount of data representing 
+ * The KWBufBlock class contains an amount of data representing
  * a certain number of lines.
  */
 
@@ -484,7 +485,7 @@ void
 KWBufBlock::truncateEOL( int &lastLine, QByteArray &data1 )
 {
    assert(b_appendEOL);
-   assert(b_rawDataValid);      
+   assert(b_rawDataValid);
 
    data1 = m_rawData2;
    lastLine = m_lastLine;
@@ -503,13 +504,13 @@ KWBufBlock::truncateEOL( int &lastLine, QByteArray &data1 )
  * If @p last is true, all bytes from @p data2 are stored.
  * @return The number of bytes stored form @p data2
  */
-int 
+int
 KWBufBlock::blockFill(int dataStart, QByteArray data1, QByteArray data2, bool last)
 {
    m_rawData1 = data1;
    m_rawData1Start = dataStart;
    m_rawData2 = data2;
-  
+
    int lineNr = m_beginState.lineNr;
 
    const char *p;
@@ -545,7 +546,7 @@ KWBufBlock::blockFill(int dataStart, QByteArray data1, QByteArray data2, bool la
    // If this is the end of the data OR
    // if the data did not contain any linebreaks up to now
    // create a line break at the end of the block.
-   if ((last && (e != l)) || 
+   if ((last && (e != l)) ||
        (l == 0))
    {
       if (!m_rawData1.isEmpty() || !m_rawData2.isEmpty())
@@ -562,8 +563,7 @@ KWBufBlock::blockFill(int dataStart, QByteArray data1, QByteArray data2, bool la
 
    m_rawData2End = l - m_rawData2.data();
    m_endState.lineNr = lineNr;
-qWarning("blockFill(%p) beginState = %ld endState = %ld", this,
-   m_beginState.lineNr, m_endState.lineNr);
+   kdDebug()<<"blockFill "<<this<<" beginState ="<<m_beginState.lineNr<<"%ld endState ="<< m_endState.lineNr<<endl;
    m_rawSize = m_rawData1.count() - m_rawData1Start + m_rawData2End;
    b_rawDataValid = true;
    return m_rawData2End;
@@ -574,7 +574,7 @@ qWarning("blockFill(%p) beginState = %ld endState = %ld", this,
  * Uses the filedescriptor @p swap_fd and the file-offset @p swap_offset
  * to store m_rawSize bytes.
  */
-void 
+void
 KWBufBlock::swapOut(KVMAllocator *vm)
 {
    assert(b_rawDataValid);
@@ -601,12 +601,12 @@ KWBufBlock::swapOut(KVMAllocator *vm)
  * Swaps m_rawSize bytes in from offset m_vmDataOffset in the file
  * with file-descirptor swap_fd.
  */
-void 
+void
 KWBufBlock::swapIn(KVMAllocator *vm)
 {
    assert(b_vmDataValid);
    assert(!b_rawDataValid);
-   assert(m_vmblock);   
+   assert(m_vmblock);
    m_rawData2.resize(m_rawSize);
    vm->copy(m_rawData2.data(), m_vmblock, 0, m_rawSize);
    m_rawData2End = m_rawSize;
@@ -617,10 +617,10 @@ KWBufBlock::swapIn(KVMAllocator *vm)
 /**
  * Create a valid stringList.
  */
-void 
+void
 KWBufBlock::buildStringList()
 {
-qWarning("KWBufBlock: buildStringList this = %p", this);
+    kdDebug()<<"KWBufBlock: buildStringList this ="<< this<<endl;
    assert(m_stringList.count() == 0);
    if (!m_codec && !m_rawData2.isEmpty())
    {
@@ -682,10 +682,9 @@ qWarning("KWBufBlock: buildStringList this = %p", this);
       // create a line break at the end of the block.
       if (b_appendEOL)
       {
-qWarning("KWBufBlock: buildStringList this = %p l = %p e = %p (e-l)+1 = %d",
-	this, l, e, (e-l));
+          kdDebug()<<"KWBufBlock: buildStringList this ="<<this<<" l ="<< l<<" e ="<<e <<" (e-l)+1 ="<<(e-l)<<endl;
          QString line = m_codec->toUnicode(l, (e-l));
-qWarning("KWBufBlock: line = '%s'", line.latin1());
+         kdDebug()<<"KWBufBlock: line ="<< line.latin1()<<endl;
          if (!lastLine.isEmpty())
          {
             line = lastLine + line;
@@ -717,7 +716,7 @@ qWarning("KWBufBlock: line = '%s'", line.latin1());
 void
 KWBufBlock::flushStringList()
 {
-qWarning("KWBufBlock: flushStringList this = %p", this);
+    kdDebug()<<"KWBufBlock: flushStringList this ="<< this<<endl;
    assert(b_stringListValid);
    assert(!b_rawDataValid);
 
@@ -756,10 +755,10 @@ qWarning("Size = %d", size);
 /**
  * Create a valid stringList from raw data in our own format.
  */
-void 
+void
 KWBufBlock::buildStringListFast()
 {
-qWarning("KWBufBlock: buildStringListFast this = %p", this);
+    kdDebug()<<"KWBufBlock: buildStringListFast this = "<< this<<endl;
    char *buf = m_rawData2.data();
    char *end = buf + m_rawSize;
    while(buf < end)
@@ -773,7 +772,7 @@ qWarning("KWBufBlock: buildStringListFast this = %p", this);
       buf += sizeof(QChar)*l;
       m_stringList.append(textLine);
    }
-qWarning("stringList.count = %d should be %ld", m_stringList.count(), m_endState.lineNr - m_beginState.lineNr);
+   kdDebug()<<"stringList.count = "<< m_stringList.count()<<" should be %ld"<< m_endState.lineNr - m_beginState.lineNr<<endl;
    assert((int) m_stringList.count() == (m_endState.lineNr - m_beginState.lineNr));
    m_stringListIt = m_stringList.begin();
    m_stringListCurrent = 0;
@@ -786,10 +785,10 @@ qWarning("stringList.count = %d should be %ld", m_stringList.count(), m_endState
 void
 KWBufBlock::disposeStringList()
 {
-qWarning("KWBufBlock: disposeStringList this = %p", this);
+    kdDebug()<<"KWBufBlock: disposeStringList this = "<< this<<endl;
    assert(b_rawDataValid || b_vmDataValid);
    m_stringList.clear();
-   b_stringListValid = false;      
+   b_stringListValid = false;
 }
 
 /**
@@ -798,7 +797,7 @@ qWarning("KWBufBlock: disposeStringList this = %p", this);
 void
 KWBufBlock::disposeRawData()
 {
-qWarning("KWBufBlock: disposeRawData this = %p", this);
+    kdDebug()<< "KWBufBlock: disposeRawData this = "<< this<<endl;
    assert(b_stringListValid || b_vmDataValid);
    b_rawDataValid = false;
    m_rawData1 = QByteArray();
@@ -813,7 +812,7 @@ qWarning("KWBufBlock: disposeRawData this = %p", this);
 void
 KWBufBlock::disposeSwap(KVMAllocator *vm)
 {
-qWarning("KWBufBlock: disposeSwap this = %p", this);
+    kdDebug()<<"KWBufBlock: disposeSwap this = "<< this<<endl;
    assert(b_stringListValid || b_rawDataValid);
    vm->free(m_vmblock);
    m_vmblock = 0;
@@ -869,7 +868,7 @@ KWBufBlock::removeLine(int i)
    assert(b_stringListValid);
    assert(i < (int) m_stringList.count());
    seek(i);
-   m_stringListIt = m_stringList.remove(m_stringListIt);  
+   m_stringListIt = m_stringList.remove(m_stringListIt);
    m_stringListCurrent = i;
    m_endState.lineNr--;
 }
