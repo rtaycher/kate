@@ -55,7 +55,7 @@ class KateFileSelector : public QWidget
     KHistoryCombo * filter;
     QLabel* filterIcon;
     KDirOperator * dir;
-    QPushButton *home, *up, *back, *forward, *cfdir;
+    class QPushButton *home, *up, *back, *forward, *cfdir;
 };
 
 #endif //KANTFILESELECTOR_H

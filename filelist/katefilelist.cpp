@@ -29,6 +29,11 @@
 #include <kiconloader.h>
 #include <klocale.h>
 
+#if QT_VERSION < 300
+#else
+#include <qpainter.h>
+#endif
+
 KateFileList::KateFileList (KateDocManager *_docManager, KateViewManager *_viewManager, QWidget * parent, const char * name ):  KListBox (parent, name)
 {
   docManager = _docManager;

@@ -24,8 +24,11 @@
 #include "../interfaces/docmanager.h"
 #include "../interfaces/viewmanager.h"
 
+#if QT_VERSION < 300
 #include <qlist.h>
-
+#else
+#include <qptrlist.h>
+#endif
 class KateApp : public Kate::Application, public KateAppDCOPIface
 {
   Q_OBJECT
@@ -53,7 +56,11 @@ class KateApp : public Kate::Application, public KateAppDCOPIface
     KateDocManager *docManager;
     KatePluginManager *pluginManager;
 
+#if QT_VERSION < 300
     QList<KateMainWindow> mainWindows;
+#else
+    QPtrList<KateMainWindow> mainWindows;
+#endif
 
   public:
     void openURL (const QString &name=0L);

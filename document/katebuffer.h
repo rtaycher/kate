@@ -22,7 +22,11 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
+#if QT_VERSION < 300
 #include <qlist.h>
+#else
+#include <qptrlist.h>
+#endif
 #include <qobject.h>
 #include <qtimer.h>
 
@@ -135,16 +139,33 @@ protected slots:
    
 protected:
    int m_totalLines;
+
+#if QT_VERSION < 300
    QList<KWBufBlock> m_blocks;
    QList<KWBufFileLoader> m_loader;
+#else
+   QPtrList<KWBufBlock> m_blocks;
+   QPtrList<KWBufFileLoader> m_loader;
+#endif
+
    QTimer m_loadTimer;
    
+#if QT_VERSION < 300
    // List of parsed blocks that can be disposed.
    QList<KWBufBlock> m_parsedBlocksClean; 
    // List of parsed blocks that are dirty.
    QList<KWBufBlock> m_parsedBlocksDirty; 
    // List of blocks that can be swapped out.
    QList<KWBufBlock> m_loadedBlocks;
+#else
+   // List of parsed blocks that can be disposed.
+   QPtrList<KWBufBlock> m_parsedBlocksClean; 
+   // List of parsed blocks that are dirty.
+   QPtrList<KWBufBlock> m_parsedBlocksDirty; 
+   // List of blocks that can be swapped out.
+   QPtrList<KWBufBlock> m_loadedBlocks;
+#endif
+
    KVMAllocator *m_vm;
 };
 

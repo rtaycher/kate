@@ -27,6 +27,10 @@
 #include <qwidgetstack.h>
 #include <kdebug.h>
 #include <ksimpleconfig.h>
+#if QT_VERSION < 300
+#else
+#include <qpainter.h>
+#endif
 
 KateViewSpace::KateViewSpace(QWidget* parent, const char* name)
   : QVBox(parent, name)
@@ -79,7 +83,11 @@ void KateViewSpace::removeView(KateView* v)
 bool KateViewSpace::showView(KateView* v)
 {
   KateDocument* d = v->doc();
+#if QT_VERSION < 300
   QListIterator<KateView> it (mViewList);
+#else
+  QPtrListIterator<KateView> it (mViewList);
+#endif
   it.toLast();
   for( ; it.current(); --it ) {
     if (it.current()->doc() == d) {
@@ -96,7 +104,11 @@ bool KateViewSpace::showView(KateView* v)
 
 bool KateViewSpace::showView(uint docID)
 {
+#if QT_VERSION < 300
   QListIterator<KateView> it (mViewList);
+#else
+  QPtrListIterator<KateView> it (mViewList);
+#endif
   it.toLast();
   for( ; it.current(); --it ) {
     if (((KateDocument*)it.current()->doc())->docID() == docID) {
@@ -171,7 +183,11 @@ void KateViewSpace::saveFileList( KSimpleConfig* config, int myIndex )
 {
   config->setGroup( QString("viewspace%1").arg( myIndex ) );
   // Save file list, includeing cursor position in this instance.
+#if QT_VERSION < 300
   QListIterator<KateView> it(mViewList);
+#else
+  QPtrListIterator<KateView> it(mViewList);
+#endif
   QStringList l;
   int idx = 0;
   for (; it.current(); ++it) {

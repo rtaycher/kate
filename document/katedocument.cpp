@@ -692,7 +692,11 @@ void KateDocument::writeSessionConfig(KConfig *config)
   config->writeEntry("URL", m_url.url() ); // ### encoding?? (Simon)
   config->writeEntry("Highlight", m_highlight->name());
   // anders: save bookmarks
+#if QT_VERSION < 300
   QList<Kate::Mark> l = marks();
+#else
+  QPtrList<Kate::Mark> l = marks();
+#endif
   QValueList<int> ml;
   for (uint i=0; i < l.count(); i++) {
     if ( l.at(i)->type == 1) // only save bookmarks
@@ -3368,9 +3372,17 @@ void KateDocument::slotModChanged()
   emit modStateChanged (this);
 }
 
+#if QT_VERSION < 300
 QList<Kate::Mark> KateDocument::marks ()
+#else
+QPtrList<Kate::Mark> KateDocument::marks ()
+#endif
 {
+#if QT_VERSION < 300
   QList<Kate::Mark> list;
+#else
+  QPtrList<Kate::Mark> list;
+#endif
   TextLine::Ptr line;
 
   for (int i=0; i < numLines(); i++)

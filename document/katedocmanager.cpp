@@ -70,7 +70,11 @@ KateDocument *KateDocManager::nextDoc ()
 
 KateDocument *KateDocManager::docWithID (uint id)
 {
+#if QT_VERSION < 300
   QListIterator<KateDocument> it(docList);
+#else
+  QPtrListIterator<KateDocument> it(docList);
+#endif
 
   for (; it.current(); ++it)
   {
@@ -93,7 +97,11 @@ uint KateDocManager::docCount ()
 
 int KateDocManager::findDoc( KURL url )
 {
+#if QT_VERSION < 300
   QListIterator<KateDocument> it(docList);
+#else
+  QPtrListIterator<KateDocument> it(docList);
+#endif
   for (; it.current(); ++it)
   {
     if ( it.current()->url() == url)
@@ -104,7 +112,11 @@ int KateDocManager::findDoc( KURL url )
 
 bool KateDocManager::isOpen(KURL url)
 {
+#if QT_VERSION < 300
   QListIterator<KateDocument> it(docList);
+#else
+  QPtrListIterator<KateDocument> it(docList);
+#endif
   for (; it.current(); ++it)
   {
     if ( it.current()->url() == url)
@@ -115,7 +127,11 @@ bool KateDocManager::isOpen(KURL url)
 
 void KateDocManager::checkAllModOnHD(bool forceReload)
 {
+#if QT_VERSION < 300
   QListIterator<KateDocument> it(docList);
+#else
+  QPtrListIterator<KateDocument> it(docList);
+#endif
   for (; it.current(); ++it) {
     it.current()->isModOnHD(forceReload);
   }

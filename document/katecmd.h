@@ -22,8 +22,11 @@
 
 #include <qobject.h>
 #include <qstring.h>
+#if QT_VERSION <300
 #include <qlist.h>
-
+#else
+#include <qptrlist.h>
+#endif
 class KateCmdParser
 {
   public:
@@ -48,7 +51,11 @@ class KateCmd : public QObject
 
   private:
     KateDocument *myDoc;
+#if QT_VERSION < 300
     QList<KateCmdParser> myParser;
+#else
+    QPtrList<KateCmdParser> myParser;
+#endif
 };
 
 #endif

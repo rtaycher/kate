@@ -29,6 +29,12 @@
 #include <qdialog.h>
 
 #include <kcolorbtn.h>
+#if QT_VERSION < 300
+#else
+#warning "Quick and Dirty hack, I think it's a bug in the QT libs, or qstrvec is deprecated too"
+#include <qptrvector.h>
+#define QVector QPtrVector
+#endif
 #include <qstrvec.h>
 #include <qdict.h>
 

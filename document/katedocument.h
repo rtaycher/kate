@@ -546,8 +546,11 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     void nameChanged (KateDocument *doc);
 
   public:
+#if QT_VERSION < 300
     QList<Kate::Mark> marks ();
-
+#else
+    QPtrList<Kate::Mark> marks ();
+#endif
   public slots:
     // clear buffer/filename - update the views
     void flush ();
