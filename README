@@ -15,4 +15,9 @@ The Kant team
 
 2. Some features are currently not finished. This includes project handling and
    plugin interface.
+
+3. There is no documentation. Use the menus and read the kwrite manual for help.
+
+4. You can not move focus away from the konsole using the keyboard, unless you hide
+   it which will focus your current document.
                  

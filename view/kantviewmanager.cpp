@@ -221,7 +221,10 @@ bool KantViewManager::deleteView (KantView *view, bool force, bool delViewSpace,
   if (createNew && (viewList.count() < 1))
     createView (true, 0L, 0L);
 
-  emit viewChanged ();
+  // anders: I remove this because it makes removeviewspace behave badly.
+  //         All functions that call deleteView() seems to emit the signal
+  //         anyway.
+  //emit viewChanged ();
 
   return true;
 }
@@ -253,19 +256,26 @@ KantView* KantViewManager::activeView ()
       return it.current();
   }
 
+  // if we get to here, no view isActive()
+  // first, try to get one from activeViewSpace()
   KantViewSpace* vs;
-  if ( (vs = activeViewSpace()) )
+  if ( (vs = activeViewSpace()) ) {
+    //kdDebug()<<"Attempting to pick a view from activeViewSpace()"<<endl;
     if ( vs->currentView() ) {
       vs->currentView()->setActive( true );
       return vs->currentView();
     }
+  }
 
+  // last attempt: just pick first
   if (viewList.count() > 0)
   {
+   //kdDebug()<<"desperately choosing first view!"<<endl;
    viewList.first()->setActive( true );
     return viewList.first();
   }
 
+  // no views exists!
   return 0L;
 }
 
@@ -924,6 +934,7 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
   // reparent the other sibling of the parent.
   while (p->children ())
   {
+    //kdDebug()<<"KantViewManager::removeViewSpace(): reparenting something"<<endl;
     QWidget* other = ((QWidget *)(( QList<QObject>*)p->children())->first());
     other->reparent( p->parentWidget(), 0, QPoint(), true );
     // We also need to find the right viewspace to become active,
@@ -931,16 +942,14 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
     if (pIsFirst)
        ((KantSplitter*)p->parentWidget())->moveToFirst( other );
     if ( other->isA("KantViewSpace") ) {
-      activeViewSpace()->setActive( false );
-      ((KantViewSpace*)other)->setActive( true );
+      setActiveSpace( (KantViewSpace*)other );
       if (viewSpaceList.count() == 1)
         grid->addWidget( other, 0, 0);
     }
     else {
       QObjectList* l = other->queryList( "KantViewSpace" );
       if ( l->first() != 0 ) { // I REALLY hope so!
-        activeViewSpace()->setActive( false );
-        ((KantViewSpace*)l->first())->setActive( true );
+        setActiveSpace( (KantViewSpace*)l->first() );
       }
       delete l;
     }

@@ -52,15 +52,13 @@ void KantViewSpace::addView(KantView* v, bool show)
   stack->addWidget(v, id);
   if (show) {
     mViewList.append(v);
-    mViewList.findRef(v);
-    v->show();
-    stack->raiseWidget( v );
+    showView( v );
   }
   else {
     KantView* c = mViewList.current();
+    //kdDebug()<<"KantViewSpace::addView(): showing current view "<< c->doc()->url().path()<<endl;
     mViewList.prepend( v );
-    mViewList.findRef( c );
-    stack->raiseWidget( c );
+    showView( c );
   }
 }
 
@@ -116,13 +114,6 @@ bool KantViewSpace::showView(int docID)
 KantView* KantViewSpace::currentView()
 {
   if (mViewList.count() > 0) {
-    /*
-    //kdDebug()<<mViewList.current()->doc()->url().filename()<<endl;
-    if (mViewList.current() != 0L)
-      return mViewList.current();
-    else
-      return mViewList.last();
-    */
     //kdDebug()<<"KantViewSpace::currentView(): "<<((KantView*)stack->visibleWidget())->doc()->url().filename()<<endl;
     return (KantView*)stack->visibleWidget();
   }
