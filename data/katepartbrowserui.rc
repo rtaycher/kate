@@ -1,4 +1,4 @@
-<!DOCTYPE kpartgui>
+<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
 <kpartgui name="KatePartBrowserView" version="1">
 <MenuBar>
  <Menu name="edit"><Text>&amp;Edit</Text>
