@@ -2609,6 +2609,8 @@ void KateView::readSessionConfig(KConfig *config) {
   cursor.x = config->readNumEntry("CursorX");
   cursor.y = config->readNumEntry("CursorY");
   myViewInternal->updateCursor(cursor);
+  myIconBorder = config->readBoolEntry("IconBorder on");
+  setIconBorder(myIconBorder);
 }
 
 void KateView::writeSessionConfig(KConfig *config) {
@@ -2618,6 +2620,7 @@ void KateView::writeSessionConfig(KConfig *config) {
   config->writeEntry("YPos",myViewInternal->yPos);
   config->writeEntry("CursorX",myViewInternal->cursor.x);
   config->writeEntry("CursorY",myViewInternal->cursor.y);
+  config->writeEntry("IconBorder on", myIconBorder);
 }
 
 void KateView::hlDlg() {
