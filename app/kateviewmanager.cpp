@@ -1040,6 +1040,11 @@ void KateViewManager::saveAllDocsAtCloseDown()
   QStringList list;
 
   KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
+  
+  // save current document, since if we just reopens documents
+  // when restarted, we want that in front.
+  scfg->setGroup("open files");
+  scfg->writeEntry("current file", getActiveView()->getDoc()->url().prettyURL());
 
   while ( closeList.count() > 0 )
   {
@@ -1082,15 +1087,20 @@ void KateViewManager::reopenDocuments(bool isRestore)
   }
 
   scfg->setGroup("open files");
+  // try to focus the file that had focus at close down
+  QString curfile = scfg->readEntry("current file");
+  Kate::View *viewtofocus = 0L;
+
   config->setGroup("open files");
   if (config->readBoolEntry("reopen at startup", true) || isRestore )
   {
     QStringList list = /*config*/scfg->readListEntry("list");
 
-    for ( int i = list.count() - 1; i > -1; i-- )
+    for ( uint i = 0; i < list.count(); i++ )
     {
       scfg->setGroup("open files");
       QString fn = scfg->readEntry(list[i]);
+      if ( fn.isEmpty() ) continue;
       openURL( KURL( fn ) );
       scfg->setGroup( fn );
       Kate::View* v = activeView();
@@ -1098,11 +1108,13 @@ void KateViewManager::reopenDocuments(bool isRestore)
       {
         v->readSessionConfig( scfg );
         v->getDoc()->readSessionConfig( scfg );
+        if ( fn == curfile ) viewtofocus = v;
       }
       scfg->deleteGroup( fn );
     }
   }
 
+  if ( viewtofocus ) activateView( viewtofocus );
   // delete the open files from sessionrc file
   scfg->deleteGroup("open files");
   scfg->sync();
