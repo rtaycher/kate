@@ -57,5 +57,15 @@ ProjectManager::~ProjectManager ()
   delete d;
 }
 
+Project *ProjectManager::create (const QString &type, const KURL &url)
+{
+  return d->projectMan->create (type, url);
+}
+    
+Project *ProjectManager::open (const KURL &url)
+{
+  return d->projectMan->open (url);
+}
+
 };
 

@@ -20,8 +20,10 @@
 
 #include "katemain.h"
 #include "../interfaces/project.h"
+#include "../interfaces/plugin.h"
 
 #include <qobject.h>
+#include <kconfig.h>
 
 class KateProject : public QObject
 {
@@ -32,9 +34,19 @@ class KateProject : public QObject
     ~KateProject ();
     
     Kate::Project *project () { return m_project; };
+    
+    Kate::ProjectPlugin *plugin () { return m_plugin; };
+    
+    QString type () const;
+    
+    bool save ();
+    
+    bool close ();
 
   private:
-    Kate::Project *m_project;  
+    Kate::Project *m_project;
+    Kate::ProjectPlugin *m_plugin;
+    KConfig *m_data;
 };
 
 #endif

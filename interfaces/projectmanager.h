@@ -42,7 +42,11 @@ class ProjectManager : public QObject
   public:
     ProjectManager ( void *projectManager  );
     virtual ~ProjectManager ();
-   
+    
+    class Project *create (const QString &type, const KURL &url);
+    
+    class Project *open (const KURL &url);
+       
   private:
     class PrivateProjectManager *d;
 };

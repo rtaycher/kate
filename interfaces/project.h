@@ -42,7 +42,15 @@ class Project : public QObject
   public:
     Project ( void *project  );
     virtual ~Project ();
+    
+    class ProjectPlugin *plugin ();
    
+    QString type () const;
+    
+    bool save ();
+    
+    bool close ();
+    
   private:
     class PrivateProject *d;
 };

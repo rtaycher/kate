@@ -26,3 +26,21 @@ KateProject::KateProject (QObject *parent) : QObject (parent)
 KateProject::~KateProject()
 {
 }
+
+QString KateProject::type () const
+{
+  m_data->setGroup("General");
+  return m_data->readEntry ("Type", "Default");
+}
+
+bool KateProject::save ()
+{
+  m_data->sync();
+  
+  return true;
+}
+
+bool KateProject::close ()
+{
+  return true;
+}

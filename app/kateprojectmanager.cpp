@@ -42,6 +42,19 @@ void KateProjectManager::setupPluginList ()
     info->service = ptr;
     info->name=info->service->property("X-KATE-InternalName").toString();
     if (info->name.isEmpty()) info->name=info->service->library();
+    
+    info->projectType=info->service->property("X-KATE-ProjectType").toString();
+    
     m_pluginList.append(info);
   }
+}
+
+Kate::Project *KateProjectManager::create (const QString &type, const KURL &url)
+{
+  return 0;
+}
+    
+Kate::Project *KateProjectManager::open (const KURL &url)
+{
+  return 0;
 }

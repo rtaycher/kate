@@ -31,6 +31,7 @@ class ProjectPluginInfo
 {
   public:
     KService::Ptr service;
+    QString projectType;
     QString name;
 };
 
@@ -45,6 +46,10 @@ class KateProjectManager : public QObject
     ~KateProjectManager();
     
     Kate::ProjectManager *projectManager () { return m_projectManager; };
+    
+    Kate::Project *create (const QString &type, const KURL &url);
+    
+    Kate::Project *open (const KURL &url);
 
   private:
     Kate::ProjectManager *m_projectManager;

@@ -51,3 +51,5 @@ Comment[zu]=I-Plugin ye-Kate
 [PropertyDef::X-KATE-InternalName]
 Type=QString
 
+[PropertyDef::X-KATE-ProjectType]
+Type=QString

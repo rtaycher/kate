@@ -26,6 +26,8 @@
 #include "project.h"
 #include "project.moc"
 
+#include "plugin.h"
+
 #include "../app/kateproject.h"
 
 namespace Kate
@@ -54,6 +56,26 @@ Project::Project (void *project) : QObject ((KateProject*) project)
 Project::~Project ()
 {
   delete d;
+}
+
+ProjectPlugin *Project::plugin ()
+{
+  return d->project->plugin ();
+}
+
+QString Project::type () const
+{
+  return d->project->type ();
+}
+
+bool Project::save ()
+{
+  return d->project->save ();
+}
+
+bool Project::close ()
+{
+  return d->project->close ();
 }
 
 };

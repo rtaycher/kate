@@ -74,6 +74,10 @@ class ProjectPlugin : public Plugin
       
     Project *project() const;
     
+    virtual bool save () = 0;
+    
+    virtual bool close () = 0;
+    
   private:
     class PrivateProjectPlugin *d;
     static unsigned int globalProjectPluginNumber;
