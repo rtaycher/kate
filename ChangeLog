@@ -2,6 +2,7 @@
   * implementing and enhancing the new KTextEditor interfaces
   * rewrite the whole internal document/view stuff ;) (hope will be finished
     soon with that old crap ! 
+  * reconstruction of whole katelibs + dirs
 
 2001-10-06 Christoph Cullmann <cullmann@kde.org>
   * myself back again ;)
