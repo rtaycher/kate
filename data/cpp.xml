@@ -106,43 +106,43 @@
       <item> uint64_t </item>
     </list>
     <contexts>
-      <context attribute="0" lineEndContext="0" name="Normal">
-        <keyword attribute="1" context="0" String="keywords" />
-        <keyword attribute="2" context="0" String="types" />
-        <Float attribute="6" context="0">
-          <AnyChar String="fF" attribute="6" context="0"/>
+      <context attribute="0" lineEndContext="#stay" name="Normal">
+        <keyword attribute="1" context="-2" String="keywords" />
+        <keyword attribute="2" context="-2" String="types" />
+        <Float attribute="6" context="-2">
+          <AnyChar String="fF" attribute="6" context="-2"/>
         </Float>
-        <HlCOct attribute="4" context="0"/>
-        <HlCHex attribute="5" context="0"/>
-        <Int attribute="3" context="0" >
-          <StringDetect attribute="3" context="0" String="ULL" insensitive="TRUE"/>
-          <StringDetect attribute="3" context="0" String="LUL" insensitive="TRUE"/>
-          <StringDetect attribute="3" context="0" String="LLU" insensitive="TRUE"/>
-          <StringDetect attribute="3" context="0" String="UL" insensitive="TRUE"/>
-          <StringDetect attribute="3" context="0" String="LU" insensitive="TRUE"/>
-          <StringDetect attribute="3" context="0" String="LL" insensitive="TRUE"/>
-          <StringDetect attribute="3" context="0" String="U" insensitive="TRUE"/>
-          <StringDetect attribute="3" context="0" String="L" insensitive="TRUE"/>
+        <HlCOct attribute="4" context="-2"/>
+        <HlCHex attribute="5" context="-2"/>
+        <Int attribute="3" context="-2" >
+          <StringDetect attribute="3" context="-2" String="ULL" insensitive="TRUE"/>
+          <StringDetect attribute="3" context="-2" String="LUL" insensitive="TRUE"/>
+          <StringDetect attribute="3" context="-2" String="LLU" insensitive="TRUE"/>
+          <StringDetect attribute="3" context="-2" String="UL" insensitive="TRUE"/>
+          <StringDetect attribute="3" context="-2" String="LU" insensitive="TRUE"/>
+          <StringDetect attribute="3" context="-2" String="LL" insensitive="TRUE"/>
+          <StringDetect attribute="3" context="-2" String="U" insensitive="TRUE"/>
+          <StringDetect attribute="3" context="-2" String="L" insensitive="TRUE"/>
         </Int>
-        <HlCChar attribute="7" context="0"/>
+        <HlCChar attribute="7" context="-2"/>
         <DetectChar attribute="8" context="1" char="&quot;"/>
         <Detect2Chars attribute="10" context="2" char="/" char1="/"/>
         <Detect2Chars attribute="10" context="3" char="/" char1="*"/>
-        <AnyChar attribute="11" context="0" String="!%&amp;()+,-&lt;=&gt;?[]^{|}~"/>
+        <AnyChar attribute="11" context="-2" String="!%&amp;()+,-&lt;=&gt;?[]^{|}~"/>
         <StringDetect attribute="10" context="8" String="#if 0" insensitive="FALSE"/>
         <RegExpr attribute="12" context="4" String="^#"/>
       </context>
-      <context attribute="8" lineEndContext="0" name="String">
+      <context attribute="8" lineEndContext="-1" name="String">
         <LineContinue attribute="8" context="6"/>
-        <HlCStringChar attribute="9" context="1"/>
-        <DetectChar attribute="8" context="0" char="&quot;"/>
+        <HlCStringChar attribute="9" context="-2"/>
+        <DetectChar attribute="8" context="-1" char="&quot;"/>
       </context>
-      <context attribute="10" lineEndContext="0" name="Commentar 1">
-        <RegExpr attribute="3" context="2" String="(FIXME|TODO)" />
+      <context attribute="10" lineEndContext="-1" name="Commentar 1">
+        <RegExpr attribute="3" context="-2" String="(FIXME|TODO)" />
       </context>
       <context attribute="10" lineEndContext="3" name="Commentar 2">
-        <RegExpr attribute="3" context="3" String="(FIXME|TODO)" />
-        <Detect2Chars attribute="10" context="0" char="*" char1="/"/>
+        <RegExpr attribute="3" context="-2" String="(FIXME|TODO)" />
+        <Detect2Chars attribute="10" context="-1" char="*" char1="/"/>
       </context>
       <context attribute="12" lineEndContext="0" name="Preprocessor">
         <LineContinue attribute="12" context="7"/>
@@ -152,13 +152,14 @@
         <Detect2Chars attribute="10" context="5" char="/" char1="*"/>
       </context>
       <context attribute="10" lineEndContext="5" name="Commentar/Preprocessor">
-        <Detect2Chars attribute="10" context="4" char="*" char1="/" />
+        <Detect2Chars attribute="10" context="-1" char="*" char1="/" />
       </context>
       <context attribute="0" lineEndContext="1" name="Some Context"/>
       <context attribute="0" lineEndContext="4" name="Some Context2"/>
-      <context attribute="10" lineEndContext="8">
-          <RegExpr attribute="3" context="8" String="(FIXME|TODO)" />
-          <RegExpr attribute="10" context="0" String="^#endif" />
+      <context attribute="10" lineEndContext="-2">
+          <RegExpr attribute="3" context="-2" String="(FIXME|TODO)" />
+	  <RegExpr attribute="10" context="8" String="#if" />
+          <RegExpr attribute="10" context="-1" String="^#endif" />
       </context>
     </contexts>
     <itemDatas>

@@ -574,6 +574,30 @@ Highlight::~Highlight()
 {
 }
 
+int Highlight::generateContextStack(int ctx,TContexts *ctxs)
+{
+	int ctxNum;
+            if (ctx>=0)
+                {
+                    ctxNum = ctx;
+                    ctxs->resize(ctxs->size()+1);
+                    (*ctxs)[ctxs->size()-1]=ctxNum;
+                }
+                else
+                if (ctx==-1)
+                {
+                        if (ctxs->size()==0) ctxNum=0;
+                        else
+                        {   
+                                kdDebug()<<"Truncating 'stack'"<<endl;
+                                ctxs->resize(ctxs->size()-1);
+                                ctxNum = ((ctxs->size()==0)?0:(*ctxs)[ctxs->size()-1]);
+                        }
+                }
+		else if (ctx==-2) ctxNum=((ctxs->size()==0)?0:(*ctxs)[ctxs->size()-1]);
+	return ctxNum;
+}
+
 TContexts Highlight::doHighlight(TContexts oCtx, TextLine *textLine)
 {
   if (noHl)
@@ -589,18 +613,20 @@ TContexts Highlight::doHighlight(TContexts oCtx, TextLine *textLine)
 	
   TContexts ctx=oCtx;
   ctx.detach();
-  int ctxNum=((ctx.size()==0)?0:ctx[ctx.size()-1]);
-  context = contextList[ctxNum];
-  if (ctx.size()==0) kdDebug()<<QString("doHighlight: doCtx.size()==0")<<endl;
-
-
-//TEST
-    ctx.resize(ctx.size()+1);
-    ctxNum=context->ctx;
-    context=contextList[ctxNum];
-    ctx[ctx.size()-1]=ctxNum;
-
-//ENDTEST
+  int ctxNum;
+  
+  if (ctx.size()==0)
+	{
+		ctxNum=0;
+		context=contextList[ctxNum];
+	}
+	else
+	{
+		ctxNum=ctx[ctx.size()-1];
+		context=contextList[ctxNum];
+		ctxNum=generateContextStack(context->ctx,&ctx);
+		context=contextList[ctxNum];
+	}
 
 #if 0
 #warning "Should be moved to the end of this function"
@@ -643,10 +669,12 @@ TContexts Highlight::doHighlight(TContexts oCtx, TextLine *textLine)
         if (s2 > s1)
         {
             textLine->setAttribs(item->attr,s1 - str,s2 - str);
-            ctxNum = item->ctx;
-            context = contextList[ctxNum];
-	    ctx.resize(ctx.size()+1);
-	    ctx[ctx.size()-1]=ctxNum;
+   	    kdDebug()<<QString("item->ctx: %1").arg(item->ctx)<<endl;
+          
+	    ctxNum=generateContextStack(item->ctx,&ctx);
+	    kdDebug()<<QString("current ctxNum==%1").arg(ctxNum)<<endl;
+	    context=contextList[ctxNum];
+
             z = z + s2 - s1 - 1;
             s1 = s2 - 1;
             found = true;
