@@ -62,9 +62,9 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
  : KDialogBase (KDialogBase::TreeList, i18n("Configure Kate"), KDialogBase::Ok|KDialogBase::Apply|KDialogBase::Cancel, KDialogBase::Ok, parent, name)
 {
   config = parent->config;
-  docManager = parent->docManager;
-  viewManager = parent->viewManager;
-  pluginManager = parent->pluginManager;
+  docManager = ((KateApp *)kapp)->kateDocumentManager();
+  viewManager = parent->kateViewManager();
+  pluginManager = ((KateApp *)kapp)->katePluginManager();
   mainWindow = parent;
 
   setMinimumSize(600,400);
@@ -193,7 +193,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   
   for (uint i=0; i<pluginManager->myPluginList.count(); i++)
   {
-    if  ( pluginManager->myPluginList.at(i)->load && pluginManager->myPluginList.at(i)->plugin->hasConfigPage() )
+    if  ( pluginManager->myPluginList.at(i)->load && Kate::pluginConfigInterfaceExtension(pluginManager->myPluginList.at(i)->plugin) )
       addPluginPage (pluginManager->myPluginList.at(i)->plugin);
   }
  
@@ -205,24 +205,26 @@ KateConfigDialog::~KateConfigDialog()
 }
 
 void KateConfigDialog::addPluginPage (Kate::Plugin *plugin)
-{
-  if (!plugin->hasConfigPage()) return;
+{      
+  if (!Kate::pluginConfigInterfaceExtension(plugin))
+    return;
 
   QStringList path;
   path.clear();
-  path << i18n("Plugins") << plugin->configPageName();
-  QVBox *page=addVBoxPage(path, plugin->configPageTitle(), plugin->configPageIcon());
+  path << i18n("Plugins") << Kate::pluginConfigInterfaceExtension(plugin)->configPageName();
+  QVBox *page=addVBoxPage(path, Kate::pluginConfigInterfaceExtension(plugin)->configPageFullName(), Kate::pluginConfigInterfaceExtension(plugin)->configPagePixmap(KIcon::SizeSmall));
 
   PluginPageListItem *info=new PluginPageListItem;
   info->plugin = plugin;
-  info->page = plugin->createConfigPage (page);
+  info->page = Kate::pluginConfigInterfaceExtension(plugin)->configPage (page);
   pluginPages.append(info);
 }
 
 void KateConfigDialog::removePluginPage (Kate::Plugin *plugin)
 {
-  if (!plugin->hasConfigPage()) return;
-
+   if (!Kate::pluginConfigInterfaceExtension(plugin))
+    return;
+    
   for (uint i=0; i<pluginPages.count(); i++)
   {
     if  ( pluginPages.at(i)->plugin == plugin )
@@ -281,6 +283,6 @@ void KateConfigDialog::slotApply()
 
   for (uint i=0; i<pluginPages.count(); i++)
   {
-    pluginPages.at(i)->page->applyConfig();
+    pluginPages.at(i)->page->apply();
   }
 }

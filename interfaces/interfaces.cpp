@@ -26,8 +26,8 @@
 #include "application.h"
 #include "application.moc"
 
-#include "docmanager.h"
-#include "docmanager.moc"
+#include "documentmanager.h"
+#include "documentmanager.moc"
 
 #include "mainwindow.h"
 #include "mainwindow.moc"
@@ -36,11 +36,13 @@
 #include "plugin.moc"
 
 #include "viewmanager.h"
-#include "viewmanager.moc"
+#include "viewmanager.moc"     
+
+#include <kparts/componentfactory.h>
 
 namespace Kate
 {
-
+            
 Application::Application () : KUniqueApplication (true,true,true)
 {
 }
@@ -49,11 +51,11 @@ Application::~Application ()
 {
 }
 
-DocManager::DocManager () : QObject ()
+DocumentManager::DocumentManager () : QObject ()
 {
 }
 
-DocManager::~DocManager ()
+DocumentManager::~DocumentManager ()
 {
 }
 
@@ -65,48 +67,88 @@ MainWindow::~MainWindow ()
 {
 }
 
-PluginConfigPage::PluginConfigPage (QObject* parent, QWidget *parentWidget) : QWidget (parentWidget, 0L)
-{
-  myPlugin = (Plugin *) parent;
-}
-
-PluginConfigPage::~PluginConfigPage ()
-{
-}
-
-PluginView::PluginView (Plugin *plugin, MainWindow *win) : QObject ((QObject *)win)
-{
-  myPlugin = plugin;
-  myMainWindow = win;
-  myPlugin->viewList.append(this);
-}
-
-PluginView::~PluginView ()
-{
-  myPlugin->viewList.remove(this);
-}
-
-void PluginView::setXML (QString filename)
-{
-  setXMLFile( filename );
-};
-
-Plugin::Plugin (QObject* parent, const char* name) : QObject (parent, name)
-{
-  myApp = (class Application *) parent;
-  viewList.setAutoDelete(false);
-}
-
-Plugin::~Plugin ()
-{
-}
-
 ViewManager::ViewManager (QWidget *parent) : QWidget(parent)
 {
 }
 
 ViewManager::~ViewManager ()
 {
+}   
+
+class PrivatePlugin
+  {
+  public:
+    PrivatePlugin ()
+    {
+    }
+
+    ~PrivatePlugin ()
+    {
+    }           
+  };
+  
+  class PrivatePluginViewInterface
+  {
+  public:
+    PrivatePluginViewInterface ()
+    {
+    }
+
+    ~PrivatePluginViewInterface ()
+    {
+    }
+  };
+    
+                        
+unsigned int Plugin::globalPluginNumber = 0;
+unsigned int PluginViewInterface::globalPluginViewInterfaceNumber = 0;
+
+Plugin::Plugin( Application *application, const char *name ) : QObject (application, name )
+{
+  globalPluginNumber++;
+  myPluginNumber = globalPluginNumber; 
+}
+
+Plugin::~Plugin()
+{
+}
+
+unsigned int Plugin::pluginNumber () const
+{
+  return myPluginNumber;
+}     
+
+ Application *Plugin::application () const
+{
+   return ((Kate::Application *)kapp);
+} 
+
+PluginViewInterface::PluginViewInterface()
+{
+  globalPluginViewInterfaceNumber++;
+  myPluginViewInterfaceNumber = globalPluginViewInterfaceNumber;
+}
+
+PluginViewInterface::~PluginViewInterface()
+{
+}
+
+unsigned int PluginViewInterface::pluginViewInterfaceNumber () const
+{
+  return myPluginViewInterfaceNumber;
+}    
+
+Plugin *createPlugin ( const char* libname, Application *application, const char *name )
+{
+  return KParts::ComponentFactory::createInstanceFromLibrary<Plugin>( libname, application, name );
+}
+
+PluginViewInterface *pluginViewInterface (Plugin *plugin)
+{       
+  if (!plugin)
+    return 0;
+
+  return static_cast<PluginViewInterface*>(plugin->qt_cast("Kate::PluginViewInterface"));
 }
 
 };

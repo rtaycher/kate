@@ -41,10 +41,11 @@ class ViewManager : public QWidget
 
   public:
     ViewManager (QWidget *);
-    virtual ~ViewManager ();
-
-    /** Returns a pointer to the currently active KateView */
-    virtual class View *getActiveView() { return 0L; };
+    virtual ~ViewManager ();          
+    
+  public:
+    /** Returns a pointer to the currently active Kate::View */
+    virtual class View *activeView() = 0;
 
     /** Opens the file pointed to by URL */
     virtual void openURL (KURL) { ; };

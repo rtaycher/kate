@@ -130,33 +130,29 @@ void KatePluginManager::unloadPlugin (PluginInfo *item)
 void KatePluginManager::enablePluginGUI (PluginInfo *item, KateMainWindow *win)
 {
   if (!item->plugin) return;
-  if (!item->plugin->hasView()) return;
+  if (!Kate::pluginViewInterface(item->plugin)) return;
 
-  win->guiFactory()->addClient( item->plugin->createView(win) );
+  Kate::pluginViewInterface(item->plugin)->addView(win);
 }
 
 void KatePluginManager::enablePluginGUI (PluginInfo *item)
 {
   if (!item->plugin) return;
-  if (!item->plugin->hasView()) return;
+  if (!Kate::pluginViewInterface(item->plugin)) return;
 
-  for (uint i=0; i< ((KateApp*)parent())->mainWindows.count(); i++)
+  for (uint i=0; i< ((KateApp*)parent())->mainWindows(); i++)
   {
-    ((KateApp*)parent())->mainWindows.at(i)->guiFactory()->addClient( item->plugin->createView(((KateApp*)parent())->mainWindows.at(i)) );
+    Kate::pluginViewInterface(item->plugin)->addView(((KateApp*)parent())->mainWindow(i));
   }
 }
 
 void KatePluginManager::disablePluginGUI (PluginInfo *item)
 {
   if (!item->plugin) return;
-  for (uint i=0; i< ((KateApp*)parent())->mainWindows.count(); i++)
+  if (!Kate::pluginViewInterface(item->plugin)) return;
+  
+  for (uint i=0; i< ((KateApp*)parent())->mainWindows(); i++)
   {
-    for (uint z=0; z< item->plugin->viewList.count(); z++)
-    {
-      ((KateApp*)parent())->mainWindows.at(i)->guiFactory()->removeClient( item->plugin->viewList.at (z) );
-    }
+    Kate::pluginViewInterface(item->plugin)->removeView(((KateApp*)parent())->mainWindow(i));       
   }
-
-  item->plugin->viewList.setAutoDelete (true);
-  item->plugin->viewList.clear ();
 }

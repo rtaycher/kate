@@ -33,12 +33,12 @@ KateApp::KateApp () : Kate::Application ()
 {                            
   m_firstStart = true;
 
-  mainWindows.setAutoDelete (false);
+  m_mainWindows.setAutoDelete (false);
   
-  docManager = new KateDocManager ();
+  m_docManager = new KateDocManager ();
 
-  pluginManager = new KatePluginManager (this);
-  pluginManager->loadAllEnabledPlugins ();
+  m_pluginManager = new KatePluginManager (this);
+  m_pluginManager->loadAllEnabledPlugins ();
 
   newMainWindow ();
 
@@ -47,14 +47,14 @@ KateApp::KateApp () : Kate::Application ()
   processEvents();
 
   if ( isRestored() && KMainWindow::canBeRestored(1) )
-    mainWindows.first()->restore( true );
+    m_mainWindows.first()->restore( true );
   else
-    mainWindows.first()->restore( false );
+    m_mainWindows.first()->restore( false );
 }
 
 KateApp::~KateApp ()
 {
-  pluginManager->writeConfig ();
+  m_pluginManager->writeConfig ();
 }          
 
 int KateApp::newInstance()
@@ -68,11 +68,11 @@ int KateApp::newInstance()
   
   for (int z=0; z<args->count(); z++)
   {
-    mainWindows.first()->viewManager->openURL( args->url(z) );
+    m_mainWindows.first()->kateViewManager()->openURL( args->url(z) );
   }
  
-  if ( mainWindows.first()->viewManager->viewCount () == 0 )
-    mainWindows.first()->viewManager->openURL( KURL() );     
+  if ( m_mainWindows.first()->kateViewManager()->viewCount () == 0 )
+    m_mainWindows.first()->kateViewManager()->openURL( KURL() );     
     
   int line = 0;
   int column = 0;
@@ -91,7 +91,7 @@ int KateApp::newInstance()
   } 
   
   if (nav)
-    mainWindows.first()->viewManager->activeView ()->setCursorPosition (line, column);
+    m_mainWindows.first()->kateViewManager()->activeView ()->setCursorPosition (line, column);
                            
   m_firstStart = false;
     
@@ -100,15 +100,15 @@ int KateApp::newInstance()
 
 KateMainWindow *KateApp::newMainWindow ()
 {
-  KateMainWindow *mainWindow = new KateMainWindow (docManager, pluginManager);
-  mainWindows.append (mainWindow);
+  KateMainWindow *mainWindow = new KateMainWindow (m_docManager, m_pluginManager);
+  m_mainWindows.append (mainWindow);
 
-  if ((mainWindowsCount() > 1) && mainWindows.at(mainWindows.count()-2)->viewManager->activeView())
-    mainWindow->viewManager->activateView ( mainWindows.at(mainWindows.count()-2)->viewManager->activeView()->getDoc()->documentNumber() );
-  else if ((mainWindowsCount() > 1) && (docManager->docCount() > 0))
-    mainWindow->viewManager->activateView ( (docManager->nthDoc(docManager->docCount()-1))->documentNumber() );
-  else if ((mainWindowsCount() > 1) && (docManager->docCount() < 1))
-    mainWindow->viewManager->openURL ( KURL() );
+  if ((mainWindows() > 1) && m_mainWindows.at(m_mainWindows.count()-2)->kateViewManager()->activeView())
+    mainWindow->kateViewManager()->activateView ( m_mainWindows.at(m_mainWindows.count()-2)->kateViewManager()->activeView()->getDoc()->documentNumber() );
+  else if ((mainWindows() > 1) && (m_docManager->documents() > 0))
+    mainWindow->kateViewManager()->activateView ( (m_docManager->document(m_docManager->documents()-1))->documentNumber() );
+  else if ((mainWindows() > 1) && (m_docManager->documents() < 1))
+    mainWindow->kateViewManager()->openURL ( KURL() );
 
   mainWindow->show ();
   mainWindow->raise();
@@ -119,62 +119,42 @@ KateMainWindow *KateApp::newMainWindow ()
 
 void KateApp::removeMainWindow (KateMainWindow *mainWindow)
 {
-  mainWindows.remove (mainWindow);
+  m_mainWindows.remove (mainWindow);
 
-  if (mainWindows.count() == 0)
+  if (m_mainWindows.count() == 0)
     quit();
-}
-
-uint KateApp::mainWindowsCount ()
-{
-  return mainWindows.count();
 }
 
 void KateApp::openURL (const QString &name)
 {
-  int n = mainWindows.find ((KateMainWindow *)activeWindow());
+  int n = m_mainWindows.find ((KateMainWindow *)activeWindow());
 
   if (n < 0)
     n=0;
 
-  mainWindows.at(n)->viewManager->openURL (KURL(name));
+  m_mainWindows.at(n)->kateViewManager()->openURL (KURL(name));
 
-  mainWindows.at(n)->raise();
-  KWin::setActiveWindow (mainWindows.at(n)->winId());
+  m_mainWindows.at(n)->raise();
+  KWin::setActiveWindow (m_mainWindows.at(n)->winId());
 }
 
 void KateApp::raiseCurrentMainWindow ()
 {
-  int n = mainWindows.find ((KateMainWindow *)activeWindow());
+  int n = m_mainWindows.find ((KateMainWindow *)activeWindow());
 
   if (n < 0)
     n=0;
 
-  mainWindows.at(n)->raise();
-  KWin::setActiveWindow (mainWindows.at(n)->winId());
-}
+  m_mainWindows.at(n)->raise();
+  KWin::setActiveWindow (m_mainWindows.at(n)->winId());
+}    
 
-Kate::ViewManager *KateApp::getViewManager ()
+Kate::MainWindow *KateApp::activeMainWindow ()
 {
-  int n = mainWindows.find ((KateMainWindow *)activeWindow());
+  int n = m_mainWindows.find ((KateMainWindow *)activeWindow());
 
   if (n < 0)
     n=0;
 
-  return ((Kate::ViewManager *)mainWindows.at(n)->viewManager);
-}
-
-Kate::DocManager *KateApp::getDocManager ()
-{
-  return ((Kate::DocManager *)docManager);
-}
-
-Kate::MainWindow *KateApp::getMainWindow ()
-{
-  int n = mainWindows.find ((KateMainWindow *)activeWindow());
-
-  if (n < 0)
-    n=0;
-
-  return ((Kate::MainWindow *)mainWindows.at(n));
+  return (Kate::MainWindow*)m_mainWindows.at(n);
 }

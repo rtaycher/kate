@@ -36,10 +36,10 @@ KateFileList::KateFileList (KateDocManager *_docManager, KateViewManager *_viewM
   viewManager = _viewManager;
   tooltip = new KFLToolTip( this );
 
-  for (uint i = 0; i < docManager->docCount(); i++)
+  for (uint i = 0; i < docManager->documents(); i++)
   {
-    slotDocumentCreated (docManager->nthDoc(i));
-    slotModChanged (docManager->nthDoc(i));
+    slotDocumentCreated (docManager->document(i));
+    slotModChanged (docManager->document(i));
   }
 
   connect(docManager,SIGNAL(documentCreated(Kate::Document *)),this,SLOT(slotDocumentCreated(Kate::Document *)));
@@ -173,7 +173,7 @@ void KateFileList::tip( const QPoint &p, QRect &r, QString &str )
   r = itemRect( i );
 
   if( i != NULL && r.isValid() )
-    str = docManager->docWithID(i->documentNumber())->url().prettyURL();
+    str = docManager->documentWithID(i->documentNumber())->url().prettyURL();
   else
     str = "";
 }

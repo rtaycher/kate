@@ -100,7 +100,7 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow, KateViewManager 
   connect( up, SIGNAL( clicked() ), dir, SLOT( cdUp() ) );
   connect( back, SIGNAL( clicked() ), dir, SLOT( back() ) );
   connect( forward, SIGNAL( clicked() ), dir, SLOT( forward() ) );
-  connect( cfdir, SIGNAL( clicked() ), this, SLOT( setCurrentDocDir() ) );
+  connect( cfdir, SIGNAL( clicked() ), this, SLOT( setactiveDocumentDir() ) );
 
   connect( cmbPath, SIGNAL( urlActivated( const KURL&  )),
              this,  SLOT( cmbPathActivated( const KURL& ) ));
@@ -204,9 +204,9 @@ void KateFileSelector::setDir( KURL u )
   dir->setURL(u, true);
 }
 
-void KateFileSelector::setCurrentDocDir()
+void KateFileSelector::setactiveDocumentDir()
 {
-  KURL u = mainwin->currentDocUrl().directory();
+  KURL u = mainwin->activeDocumentUrl().directory();
   if (!u.isEmpty())
     setDir( u );
 }
@@ -215,6 +215,6 @@ void KateFileSelector::kateViewChanged()
 {
   // TODO: make sure the button is disabled if the directory is unreadable, eg the document URL
   //       has protocol http
-  cfdir->setEnabled( ! mainwin->currentDocUrl().directory().isEmpty() );
+  cfdir->setEnabled( ! mainwin->activeDocumentUrl().directory().isEmpty() );
 }
 

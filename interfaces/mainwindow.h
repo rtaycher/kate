@@ -37,14 +37,10 @@ class MainWindow : public KParts::DockMainWindow
 
   public:
     MainWindow ();
-    virtual ~MainWindow ();
-
-    // doc/viewmanager of the mainwindow
-    virtual class ViewManager *getViewManager () { return 0L; };
-    virtual class DocManager *getDocManager () { return 0L; };
-
-    // return the main DockWidget of the mainwindow (the dockwidget in which the kateviews are located)
-    virtual class KDockWidget *getMainDock () { return 0L; };
+    virtual ~MainWindow ();    
+    
+  public:
+    virtual class ViewManager *viewManager () = 0;
 };
 
 };

@@ -151,7 +151,7 @@ void PluginListView::stateChanged(PluginListItem *item, bool b)
 
 KateConfigPluginPage::KateConfigPluginPage(QWidget *parent, KateConfigDialog *dialog):QVBox(parent)
 {
-  myPluginMan=((KateApp*)kapp)->getPluginManager();
+  myPluginMan=((KateApp*)kapp)->katePluginManager();
   myDialog=dialog;
   
   PluginListView* listView = new PluginListView(0, this);

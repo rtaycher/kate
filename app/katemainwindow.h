@@ -50,7 +50,7 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
 
     /** Returns the URL of the current document.
      * anders: I add this for use from the file selector. */
-    KURL currentDocUrl();
+    KURL activeDocumentUrl();
 
     // dockwidgets
     KDockWidget *mainDock;
@@ -62,8 +62,8 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     KateConsole *console;
 
     // managment items
-    KateDocManager *docManager;
-    KateViewManager *viewManager;
+    KateDocManager *m_docManager;
+    KateViewManager *m_viewManager;
 
     // should be protected, and kateviewmanager a friend class.
     KRecentFilesAction *fileOpenRecent;
@@ -77,7 +77,7 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
 
   protected:
 
-    KatePluginManager *pluginManager;
+    KatePluginManager *m_pluginManager;
 
     /** just calls viewmanager */
     void restore(bool isRestored);
@@ -166,11 +166,10 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
   protected:
     static uint uniqueID;
 
-  public:
-    Kate::ViewManager *getViewManager ();
-    Kate::DocManager *getDocManager ();
-    KDockWidget *getMainDock ();
-
+  public:      
+    Kate::ViewManager *viewManager () {return (Kate::ViewManager *)m_viewManager; }; 
+    KateViewManager *kateViewManager () { return m_viewManager; };
+    
   private slots:
     void pluginHelp ();
 };

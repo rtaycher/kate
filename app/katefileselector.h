@@ -50,7 +50,7 @@ class KateFileSelector : public QWidget
     void cmbPathReturnPressed( const QString& u );
     void dirUrlEntered( const KURL& u );
     void dirFinishedLoading();
-    void setCurrentDocDir();
+    void setactiveDocumentDir();
     void kateViewChanged();
 
   protected:

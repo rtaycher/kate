@@ -38,16 +38,16 @@ class Application : public KUniqueApplication
   public:
     Application ();
     virtual ~Application ();
-
-    /** Returns a pointer to the view manager
-    */
-    virtual class ViewManager *getViewManager () { return 0L; };
+    
+  public:
     /** Returns a pointer to the document manager
     */
-    virtual class DocManager *getDocManager () { return 0L; };
-    /** Returns a pointer to the main window
-    */
-    virtual class MainWindow *getMainWindow () { return 0L; };
+    virtual class DocumentManager *documentManager () = 0;
+    
+    virtual class MainWindow *activeMainWindow () = 0;
+    
+    virtual uint mainWindows () = 0;
+    virtual class MainWindow *mainWindow (uint n) = 0;
 };
 
 };

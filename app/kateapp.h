@@ -20,7 +20,7 @@
 #include "katemain.h"
 #include "../interfaces/application.h"
 #include "../interfaces/mainwindow.h"
-#include "../interfaces/docmanager.h"
+#include "../interfaces/documentmanager.h"
 #include "../interfaces/viewmanager.h"
 
 #include <qptrlist.h>
@@ -29,31 +29,32 @@ class KateApp : public Kate::Application
 {
   Q_OBJECT
 
-  friend class KateViewManager;
-  friend class KatePluginManager;
-
   public:
     KateApp ();
     ~KateApp ();         
     
     int newInstance();
     
-    KatePluginManager *getPluginManager(){return pluginManager;};
-
+    KatePluginManager *katePluginManager() { return m_pluginManager; };
+    KateDocManager *kateDocumentManager () { return m_docManager; };
+    
     class KateMainWindow *newMainWindow ();
     void removeMainWindow (KateMainWindow *mainWindow);
-    uint mainWindowsCount ();
     
-    void raiseCurrentMainWindow ();
-
-    Kate::ViewManager *getViewManager ();
-    Kate::DocManager *getDocManager ();
-    Kate::MainWindow *getMainWindow ();
-
+    void raiseCurrentMainWindow ();   
+    
+    Kate::DocumentManager *documentManager () { return (Kate::DocumentManager*)m_docManager; };
+    Kate::MainWindow *activeMainWindow ();
+    
+    uint mainWindows () { return m_mainWindows.count(); };
+    Kate::MainWindow *mainWindow (uint n) { return (Kate::MainWindow *)m_mainWindows.at(n); };
+    
+    KateMainWindow *kateMainWindow (uint n) { return m_mainWindows.at(n); };
+        
   private:
-    KateDocManager *docManager;
-    KatePluginManager *pluginManager;
-    QPtrList<KateMainWindow> mainWindows;
+    KateDocManager *m_docManager;
+    KatePluginManager *m_pluginManager;
+    QPtrList<class KateMainWindow> m_mainWindows;
     bool m_firstStart;
     
   public:

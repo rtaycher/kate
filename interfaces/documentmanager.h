@@ -33,41 +33,35 @@ namespace Kate
 {
 /** This interface provides access to the Kate Document Manager.
 */
-class DocManager : public QObject
+class DocumentManager : public QObject
 {
   Q_OBJECT
 
   public:
-    DocManager ();
-    virtual ~DocManager ();
+    DocumentManager ();
+    virtual ~DocumentManager ();
 
   public:
     /** Returns a pointer to the document indexed by n in the managers internal list.
     */
-    virtual class Document *getNthDoc (uint ) { return 0L; };
+    virtual class Document *document (uint ) { return 0L; };
     /** Returns a pointer to the currently active document or NULL if no document is open.
     */
-    virtual class Document *getCurrentDoc () { return 0L; };
-    /** Returns a pointer to the first document in the managers internal list or NULL if the list is empty.
-    */
-    virtual class Document *getFirstDoc () { return 0L; };
-    /** Returns a pointer to the next document in the managers internal list or NULL if no such doc exists.
-    */
-    virtual class Document *getNextDoc () { return 0L; };
+    virtual class Document *activeDocument () { return 0L; };
     /** Returns a pointer to the document with the given ID or NULL if no such document exists.
     */
-    virtual class Document *getDocWithID (uint ) { return 0L; };
+    virtual class Document *documentWithID (uint ) { return 0L; };
 
     /** Returns the ID of the document located at url if such a document is known by the manager.
      */
-    virtual int findDoc (KURL ) { return 0L; };
+    virtual int findDocument (KURL ) { return 0L; };
     /** Returns true if the document located at url is open, otherwise false.
      */
     virtual bool isOpen (KURL ) { return 0L; };
 
     /** returns the number of documents managed by this manager.
     */
-    virtual uint docCount () { return 0L; };
+    virtual uint documents () { return 0L; };
 };
 
 };

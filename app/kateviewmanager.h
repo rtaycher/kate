@@ -160,9 +160,6 @@ class KateViewManager : public Kate::ViewManager
 
   private:
     QString myEncoding;
-
-  public:  //KatePluginIface
-    virtual Kate::View *getActiveView(){return (Kate::View *)activeView();};
 };
 
 #endif

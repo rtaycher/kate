@@ -63,12 +63,12 @@
 
 uint KateMainWindow::uniqueID = 0;
 
-KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_pluginManager) :
+KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager *_m_pluginManager) :
 	Kate::MainWindow (),
              DCOPObject ((QString("KateMainWindow%1").arg(uniqueID)).latin1())
 {
-  docManager =  _docManager;
-  pluginManager =_pluginManager;
+  m_docManager =  _m_docManager;
+  m_pluginManager =_m_pluginManager;
   config = kapp->config();
 
   myID = uniqueID;
@@ -88,7 +88,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_
   setXMLFile( "kateui.rc" );
   createShellGUI ( true );
   
-  pluginManager->enableAllPluginsGUI (this);
+  m_pluginManager->enableAllPluginsGUI (this);
 
   // connect settings menu aboutToshow
   QPopupMenu* pm_set = (QPopupMenu*)factory()->container("settings", this);
@@ -117,17 +117,17 @@ void KateMainWindow::setupMainWindow ()
   fileselectorDock = createDockWidget( "fileselectorDock", SmallIcon("fileopen"), 0L, "Selector", "");
 
   mainDock->setGeometry(100, 100, 100, 100);
-  viewManager = new KateViewManager (mainDock, docManager);
-  viewManager->setMinimumSize(200,200);
-  mainDock->setWidget(viewManager);
+  m_viewManager = new KateViewManager (mainDock, m_docManager);
+  m_viewManager->setMinimumSize(200,200);
+  mainDock->setWidget(m_viewManager);
 
   setMainDockWidget( mainDock );
   setView( mainDock );
 
-  filelist = new KateFileList (docManager, viewManager, filelistDock, "filelist");
+  filelist = new KateFileList (m_docManager, m_viewManager, filelistDock, "filelist");
   filelistDock->setWidget (filelist);
 
-  fileselector = new KateFileSelector( this, viewManager, fileselectorDock, "operator");
+  fileselector = new KateFileSelector( this, m_viewManager, fileselectorDock, "operator");
   fileselector->dirOperator()->setView(KFile::Simple);
   fileselectorDock->setWidget (fileselector);
 
@@ -152,7 +152,7 @@ bool KateMainWindow::eventFilter(QObject* o, QEvent* e)
   if ( e->type() == QEvent::WindowActivate && o == this ) {
     //kdDebug()<<"YAY!!! this KateMainWindow was activated!"<<endl;
     Kate::Document *doc;
-    for( doc = docManager->firstDoc(); doc; doc = docManager->nextDoc() ) {
+    for( doc = m_docManager->firstDocument(); doc; doc = m_docManager->nextDocument() ) {
       doc->isModOnHD();
     }
   }
@@ -186,13 +186,13 @@ void KateMainWindow::setupActions()
   setupScripts();
   scriptMenu->clear();
   scriptMenu->setItems(kscript->scripts());
-  KStdAction::openNew( viewManager, SLOT( slotDocumentNew() ), actionCollection(), "file_new" );
-  KStdAction::open( viewManager, SLOT( slotDocumentOpen() ), actionCollection(), "file_open" );
+  KStdAction::openNew( m_viewManager, SLOT( slotDocumentNew() ), actionCollection(), "file_new" );
+  KStdAction::open( m_viewManager, SLOT( slotDocumentOpen() ), actionCollection(), "file_open" );
 
-  fileOpenRecent = KStdAction::openRecent (viewManager, SLOT(openConstURL (const KURL&)), actionCollection());
-  new KAction( i18n("Save A&ll"),"save_all", CTRL+Key_L, viewManager, SLOT( slotDocumentSaveAll() ), actionCollection(), "file_save_all" );
-  KStdAction::close( viewManager, SLOT( slotDocumentClose() ), actionCollection(), "file_close" );
-  new KAction( i18n( "Clos&e All" ), 0, viewManager, SLOT( slotDocumentCloseAll() ), actionCollection(), "file_close_all" );
+  fileOpenRecent = KStdAction::openRecent (m_viewManager, SLOT(openConstURL (const KURL&)), actionCollection());
+  new KAction( i18n("Save A&ll"),"save_all", CTRL+Key_L, m_viewManager, SLOT( slotDocumentSaveAll() ), actionCollection(), "file_save_all" );
+  KStdAction::close( m_viewManager, SLOT( slotDocumentClose() ), actionCollection(), "file_close" );
+  new KAction( i18n( "Clos&e All" ), 0, m_viewManager, SLOT( slotDocumentCloseAll() ), actionCollection(), "file_close_all" );
 
   new KAction(i18n("New &Window"), 0, this, SLOT(newWindow()), actionCollection(), "file_newWindow");
 
@@ -200,15 +200,15 @@ void KateMainWindow::setupActions()
 
   new KAction(i18n("Find in Files..."), CTRL+SHIFT+Qt::Key_F, this, SLOT(slotFindInFiles()), actionCollection(),"edit_find_in_files" );
 
-  new KAction( i18n("Split &Vertical"), "view_left_right", CTRL+SHIFT+Key_L, viewManager, SLOT( slotSplitViewSpaceVert() ), actionCollection(), "view_split_vert");
-  new KAction( i18n("Split &Horizontal"), "view_top_bottom", CTRL+SHIFT+Key_T, viewManager, SLOT( slotSplitViewSpaceHoriz() ), actionCollection(), "view_split_horiz");
-  closeCurrentViewSpace = new KAction( i18n("Close &Current"), "view_remove", CTRL+SHIFT+Key_R, viewManager, SLOT( slotCloseCurrentViewSpace() ), actionCollection(), "view_close_current_space");
+  new KAction( i18n("Split &Vertical"), "view_left_right", CTRL+SHIFT+Key_L, m_viewManager, SLOT( slotSplitViewSpaceVert() ), actionCollection(), "view_split_vert");
+  new KAction( i18n("Split &Horizontal"), "view_top_bottom", CTRL+SHIFT+Key_T, m_viewManager, SLOT( slotSplitViewSpaceHoriz() ), actionCollection(), "view_split_horiz");
+  closeCurrentViewSpace = new KAction( i18n("Close &Current"), "view_remove", CTRL+SHIFT+Key_R, m_viewManager, SLOT( slotCloseCurrentViewSpace() ), actionCollection(), "view_close_current_space");
 
-  goNext=new KAction(i18n("Next View"),Key_F8,viewManager, SLOT(activateNextView()),actionCollection(),"go_next");
-  goPrev=new KAction(i18n("Previous View"),SHIFT+Key_F8,viewManager, SLOT(activatePrevView()),actionCollection(),"go_prev");
+  goNext=new KAction(i18n("Next View"),Key_F8,m_viewManager, SLOT(activateNextView()),actionCollection(),"go_next");
+  goPrev=new KAction(i18n("Previous View"),SHIFT+Key_F8,m_viewManager, SLOT(activatePrevView()),actionCollection(),"go_prev");
 
-  windowNext = KStdAction::back(viewManager, SLOT(slotWindowNext()), actionCollection());
-  windowPrev = KStdAction::forward(viewManager, SLOT(slotWindowPrev()), actionCollection());
+  windowNext = KStdAction::back(m_viewManager, SLOT(slotWindowNext()), actionCollection());
+  windowPrev = KStdAction::forward(m_viewManager, SLOT(slotWindowPrev()), actionCollection());
 
   documentOpenWith = new KActionMenu(i18n("Open W&ith"), actionCollection(), "file_open_with");
   connect(documentOpenWith->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(mSlotFixOpenWithMenu()));
@@ -229,10 +229,10 @@ void KateMainWindow::setupActions()
 // Don't call this, KMainWindow does it for us.
 //  new KHelpMenu(this, instance()->aboutData(), true, actionCollection());
   
-  if (pluginManager->myPluginList.count() > 0)
+  if (m_pluginManager->myPluginList.count() > 0)
     new KAction(i18n("Contents &Plugins"), 0, this, SLOT(pluginHelp()), actionCollection(), "help_plugins_contents");
 
-  connect(viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
+  connect(m_viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
 
   slotWindowActivated ();
 }
@@ -242,15 +242,15 @@ bool KateMainWindow::queryClose()
   kdDebug(13000)<<"queryClose()"<<endl;
   bool val = false;
 
-  if ( ((KateApp *)kapp)->mainWindowsCount () < 2 )
+  if ( ((KateApp *)kapp)->mainWindows () < 2 )
   {
     saveOptions(config);
 
-    viewManager->saveAllDocsAtCloseDown(  );
+    m_viewManager->saveAllDocsAtCloseDown(  );
 
-    if ( (!docManager->currentDoc()) || ((!viewManager->activeView()->getDoc()->isModified()) && (docManager->docCount() == 1)))
+    if ( (!m_docManager->activeDocument()) || ((!m_viewManager->activeView()->getDoc()->isModified()) && (m_docManager->documents() == 1)))
     {
-      if (viewManager->activeView()) viewManager->deleteLastView ();
+      if (m_viewManager->activeView()) m_viewManager->deleteLastView ();
       val = true;
     }
   }
@@ -304,11 +304,11 @@ void KateMainWindow::readOptions(KConfig *config)
   QSize tmpSize(600, 400);
   resize( config->readSizeEntry( "size", &tmpSize ) );
 
-  viewManager->setShowFullPath(config->readBoolEntry("Show Full Path in Title", false));
+  m_viewManager->setShowFullPath(config->readBoolEntry("Show Full Path in Title", false));
 
   settingsShowToolbar->setChecked(config->readBoolEntry("Show Toolbar", true));
   slotSettingsShowToolbar();
-  viewManager->setUseOpaqueResize(config->readBoolEntry("Opaque Resize", true));
+  m_viewManager->setUseOpaqueResize(config->readBoolEntry("Opaque Resize", true));
 
   fileOpenRecent->setMaxItems( config->readNumEntry("Number of recent files", fileOpenRecent->maxItems() ) );
   fileOpenRecent->loadEntries(config, "Recent Files");
@@ -330,9 +330,9 @@ void KateMainWindow::saveOptions(KConfig *config)
 
   config->writeEntry("size", size());
 
-  config->writeEntry("Show Full Path in Title", viewManager->getShowFullPath());
+  config->writeEntry("Show Full Path in Title", m_viewManager->getShowFullPath());
   config->writeEntry("Show Toolbar", settingsShowToolbar->isChecked());
-  config->writeEntry("Opaque Resize", viewManager->useOpaqueResize);
+  config->writeEntry("Opaque Resize", m_viewManager->useOpaqueResize);
   config->writeEntry("Sync Konsole", syncKonsole);
 
   fileOpenRecent->saveEntries(config, "Recent Files");
@@ -341,21 +341,21 @@ void KateMainWindow::saveOptions(KConfig *config)
 
   writeDockConfig();
 
-  if (viewManager->activeView())
-    viewManager->activeView()->getDoc()->writeConfig();
+  if (m_viewManager->activeView())
+    m_viewManager->activeView()->getDoc()->writeConfig();
 
-  viewManager->saveViewSpaceConfig();
+  m_viewManager->saveViewSpaceConfig();
 }
 
 void KateMainWindow::slotWindowActivated ()
 {
   static QString path;
   
-  if (viewManager->activeView() != 0)
+  if (m_viewManager->activeView() != 0)
   {                         
     if (console && syncKonsole)
     {
-      QString newPath = viewManager->activeView()->getDoc()->url().directory();
+      QString newPath = m_viewManager->activeView()->getDoc()->url().directory();
 
       if ( newPath != path )
       {
@@ -365,7 +365,7 @@ void KateMainWindow::slotWindowActivated ()
     }
   }
 
-  if (viewManager->viewCount ()  > 1)
+  if (m_viewManager->viewCount ()  > 1)
   {
     windowNext->setEnabled(true);
     windowPrev->setEnabled(true);
@@ -376,7 +376,7 @@ void KateMainWindow::slotWindowActivated ()
     windowPrev->setEnabled(false);
   }
 
-  if (viewManager->viewSpaceCount() == 1)
+  if (m_viewManager->viewSpaceCount() == 1)
     closeCurrentViewSpace->setEnabled(false);
   else
     closeCurrentViewSpace->setEnabled(true);
@@ -393,26 +393,26 @@ void KateMainWindow::documentMenuAboutToShow()
   int i=1;
 
   QString entry;
-  while ( z<docManager->docCount() )
+  while ( z<m_docManager->documents() )
   {
-    if ( (!docManager->nthDoc(z)->url().isEmpty()) && (docManager->nthDoc(z)->url().filename() != 0) )
+    if ( (!m_docManager->document(z)->url().isEmpty()) && (m_docManager->document(z)->url().filename() != 0) )
     {
        //File name shouldn't be too long - Maciek
-       if (docManager->nthDoc(z)->url().filename().length() > 200)
-         entry=QString("&%1 ").arg(i)+"..."+(docManager->nthDoc(z)->url().filename()).right(197);
+       if (m_docManager->document(z)->url().filename().length() > 200)
+         entry=QString("&%1 ").arg(i)+"..."+(m_docManager->document(z)->url().filename()).right(197);
        else
-         entry=QString("&%1 ").arg(i)+docManager->nthDoc(z)->url().filename();
+         entry=QString("&%1 ").arg(i)+m_docManager->document(z)->url().filename();
      }
     else
-      entry=QString("&%1 ").arg(i)+i18n("Untitled %1").arg(docManager->nthDoc(z)->documentNumber());
+      entry=QString("&%1 ").arg(i)+i18n("Untitled %1").arg(m_docManager->document(z)->documentNumber());
 
-    if (docManager->nthDoc(z)->isModified())
+    if (m_docManager->document(z)->isModified())
       entry.append (i18n(" - Modified"));
 
-    documentMenu->insertItem ( entry, viewManager, SLOT (activateView (int)), 0,  docManager->nthDoc(z)->documentNumber());
+    documentMenu->insertItem ( entry, m_viewManager, SLOT (activateView (int)), 0,  m_docManager->document(z)->documentNumber());
 
-    if (viewManager->activeView())
-      documentMenu->setItemChecked( docManager->nthDoc(z)->documentNumber(), ((Kate::Document *)viewManager->activeView()->getDoc())->documentNumber() == docManager->nthDoc(z)->documentNumber() );
+    if (m_viewManager->activeView())
+      documentMenu->setItemChecked( m_docManager->document(z)->documentNumber(), ((Kate::Document *)m_viewManager->activeView()->getDoc())->documentNumber() == m_docManager->document(z)->documentNumber() );
 
     z++;
     i++;
@@ -421,7 +421,7 @@ void KateMainWindow::documentMenuAboutToShow()
 
 void KateMainWindow::slotFindInFiles ()
 {
-  QString d = currentDocUrl().directory();
+  QString d = activeDocumentUrl().directory();
   if ( ! d.isEmpty() )
     grep_dlg->setDirName( d );
   grep_dlg->show();
@@ -432,9 +432,9 @@ void KateMainWindow::slotGrepDialogItemSelected(QString filename,int linenumber)
 {
   KURL fileURL;
   fileURL.setPath( filename );
-  viewManager->openURL( fileURL );
-  if ( viewManager->activeView() == 0 ) return;
-  viewManager->activeView()->gotoLineNumber( linenumber );
+  m_viewManager->openURL( fileURL );
+  if ( m_viewManager->activeView() == 0 ) return;
+  m_viewManager->activeView()->gotoLineNumber( linenumber );
   this->raise();
   this->setActiveWindow();
 }
@@ -456,7 +456,7 @@ void KateMainWindow::slotDropEvent( QDropEvent * event )
 
   for (KURL::List::Iterator i=textlist.begin(); i != textlist.end(); ++i)
   {
-    viewManager->openURL (*i);
+    m_viewManager->openURL (*i);
   }
 }
 
@@ -491,8 +491,8 @@ void KateMainWindow::slotSettingsShowConsole()
   if( consoleDock->isVisible() )
     console->setFocus();
   else
-    if (viewManager->activeView())
-      viewManager->activeView()->setFocus();
+    if (m_viewManager->activeView())
+      m_viewManager->activeView()->setFocus();
 }
 
 void KateMainWindow::settingsMenuAboutToShow()
@@ -506,7 +506,7 @@ void KateMainWindow::settingsMenuAboutToShow()
 
 void KateMainWindow::openURL (const QString &name)
 {
-  viewManager->openURL (KURL(name));
+  m_viewManager->openURL (KURL(name));
 }
 
 void KateMainWindow::slotSettingsShowToolbar()
@@ -540,26 +540,26 @@ void KateMainWindow::slotGoPrev()
   QFocusEvent::resetReason();
 }
 
-KURL KateMainWindow::currentDocUrl()
+KURL KateMainWindow::activeDocumentUrl()
 {
-  return viewManager->activeView()->getDoc()->url();
+  return m_viewManager->activeView()->getDoc()->url();
 }
 
 void KateMainWindow::fileSelected(const KFileItem *file)
 {
-  viewManager->openURL( file->url() );
+  m_viewManager->openURL( file->url() );
 }
 
 void KateMainWindow::restore(bool isRestored)
-{ viewManager->reopenDocuments(isRestored); }
+{ m_viewManager->reopenDocuments(isRestored); }
 
 void KateMainWindow::mSlotFixOpenWithMenu()
 {
   //kdDebug()<<"13000"<<"fixing open with menu"<<endl;
   documentOpenWith->popupMenu()->clear();
   // get a list of appropriate services.
-  KMimeType::Ptr mime = KMimeType::findByURL( viewManager->activeView()->getDoc()->url() );
-  //kdDebug()<<"13000"<<"url: "<<viewManager->activeView()->getDoc()->url().prettyURL()<<"mime type: "<<mime->name()<<endl;
+  KMimeType::Ptr mime = KMimeType::findByURL( m_viewManager->activeView()->getDoc()->url() );
+  //kdDebug()<<"13000"<<"url: "<<m_viewManager->activeView()->getDoc()->url().prettyURL()<<"mime type: "<<mime->name()<<endl;
   // some checking goes here...
   KTrader::OfferList offers = KTrader::self()->query(mime->name(), "Type == 'Application'");
   // for each one, insert a menu item...
@@ -574,7 +574,7 @@ void KateMainWindow::mSlotFixOpenWithMenu()
 void KateMainWindow::slotOpenWithMenuAction(int idx)
 {
   KURL::List list;
-  list.append( viewManager->activeView()->getDoc()->url() );
+  list.append( m_viewManager->activeView()->getDoc()->url() );
   QString* appname = new QString( documentOpenWith->popupMenu()->text(idx) );
   if ( appname->compare(i18n("&Other...")) == 0 ) {
     // display "open with" dialog
@@ -584,26 +584,11 @@ void KateMainWindow::slotOpenWithMenuAction(int idx)
     return;
   }
   QString qry = QString("((Type == 'Application') and (Name == '%1'))").arg( appname->latin1() );
-  KMimeType::Ptr mime = KMimeType::findByURL( viewManager->activeView()->getDoc()->url() );
+  KMimeType::Ptr mime = KMimeType::findByURL( m_viewManager->activeView()->getDoc()->url() );
   KTrader::OfferList offers = KTrader::self()->query(mime->name(), qry);
   KService::Ptr app = offers.first();
   // some checking here: pop a wacko message it the app wasn't found.
   KRun::run(*app, list);
-}
-
-Kate::ViewManager *KateMainWindow::getViewManager ()
-{
-  return ((Kate::ViewManager *)viewManager);
-}
-
-Kate::DocManager *KateMainWindow::getDocManager ()
-{
-  return ((Kate::DocManager *)docManager);
-}
-
-KDockWidget *KateMainWindow::getMainDock ()
-{
-  return mainDock;
 }
 
 void KateMainWindow::pluginHelp()

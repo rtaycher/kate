@@ -18,7 +18,7 @@
 #include "katedocmanager.h"
 #include "katedocmanager.moc"
 
-KateDocManager::KateDocManager () : Kate::DocManager ()
+KateDocManager::KateDocManager () : Kate::DocumentManager ()
 {
   docList.setAutoDelete(true);
   myCurrentDoc = 0L;
@@ -50,32 +50,32 @@ void KateDocManager::deleteDoc (Kate::Document *doc)
  emit documentDeleted (id);
 }
 
-Kate::Document *KateDocManager::nthDoc (uint n)
+Kate::Document *KateDocManager::document (uint n)
 {
   return docList.at(n);
 }
 
-Kate::Document *KateDocManager::currentDoc ()
+Kate::Document *KateDocManager::activeDocument ()
 {
   return myCurrentDoc;
 }
 
-void KateDocManager::setCurrentDoc (Kate::Document *doc)
+void KateDocManager::setActiveDocument (Kate::Document *doc)
 {
   myCurrentDoc = doc;
 }
 
-Kate::Document *KateDocManager::firstDoc ()
+Kate::Document *KateDocManager::firstDocument ()
 {
   return docList.first();
 }
 
-Kate::Document *KateDocManager::nextDoc ()
+Kate::Document *KateDocManager::nextDocument ()
 {
   return docList.next();
 }
 
-Kate::Document *KateDocManager::docWithID (uint id)
+Kate::Document *KateDocManager::documentWithID (uint id)
 {
   QPtrListIterator<Kate::Document> it(docList);
 
@@ -88,17 +88,17 @@ Kate::Document *KateDocManager::docWithID (uint id)
   return 0L;
 }
 
-int KateDocManager::findDoc (Kate::Document *doc)
+int KateDocManager::findDocument (Kate::Document *doc)
 {
   return docList.find (doc);
 }
 
-uint KateDocManager::docCount ()
+uint KateDocManager::documents ()
 {
   return docList.count ();
 }
 
-int KateDocManager::findDoc( KURL url )
+int KateDocManager::findDocument ( KURL url )
 {
   QPtrListIterator<Kate::Document> it(docList);
 
@@ -110,7 +110,7 @@ int KateDocManager::findDoc( KURL url )
   return -1;
 }
 
-Kate::Document *KateDocManager::findDocByUrl( KURL url )
+Kate::Document *KateDocManager::findDocumentByUrl( KURL url )
 {
   QPtrListIterator<Kate::Document> it(docList);
   for (; it.current(); ++it)

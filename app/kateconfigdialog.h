@@ -20,6 +20,8 @@
 #include "katemain.h"
 
 #include "../interfaces/plugin.h"
+#include "../interfaces/pluginconfiginterface.h"
+#include "../interfaces/pluginconfiginterfaceextension.h"         
 
 #include <kate/document.h>
 #include <ktexteditor/configinterfaceextension.h>

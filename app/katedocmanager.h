@@ -19,14 +19,14 @@
 #define __KATE_DOCMANAGER_H__
 
 #include "katemain.h"
-#include "../interfaces/docmanager.h"
+#include "../interfaces/documentmanager.h"
 
 #include <kate/document.h>
 
 #include <qptrlist.h>
 #include <qobject.h>
 
-class KateDocManager : public Kate::DocManager
+class KateDocManager : public Kate::DocumentManager
 {
   Q_OBJECT
 
@@ -41,24 +41,24 @@ class KateDocManager : public Kate::DocManager
     Kate::Document *createDoc ();
     void deleteDoc (Kate::Document *doc);
 
-    Kate::Document *nthDoc (uint n);
+    Kate::Document *document (uint n);
 
-    Kate::Document *currentDoc ();
-    void setCurrentDoc (Kate::Document *doc);
+    Kate::Document *activeDocument ();
+    void setActiveDocument (Kate::Document *doc);
 
-    Kate::Document *firstDoc ();
-    Kate::Document *nextDoc ();
+    Kate::Document *firstDocument ();
+    Kate::Document *nextDocument ();
 
-    Kate::Document *docWithID (uint id);
+    Kate::Document *documentWithID (uint id);
 
-    int findDoc (Kate::Document *doc);
+    int findDocument (Kate::Document *doc);
     /** Returns the documentNumber of the doc with url URL or -1 if no such doc is found */
-    int findDoc (KURL url);
+    int findDocument (KURL url);
     // Anders: The above is not currently stable ?
-    Kate::Document *findDocByUrl( KURL url );
+    Kate::Document *findDocumentByUrl( KURL url );
     bool isOpen(KURL url);
 
-    uint docCount ();
+    uint documents ();
 
   public slots:
     void checkAllModOnHD(bool forceReload=false);
@@ -71,14 +71,6 @@ class KateDocManager : public Kate::DocManager
   signals:
     void documentCreated (Kate::Document *doc);
     void documentDeleted (uint documentNumber);
-
-  public:
-    Kate::Document *getNthDoc (uint n) { return (Kate::Document *)nthDoc (n); };
-    Kate::Document *getCurrentDoc () { return (Kate::Document *)currentDoc (); };
-    Kate::Document *getFirstDoc () { return (Kate::Document *)firstDoc(); };
-    Kate::Document *getNextDoc () { return (Kate::Document *)nextDoc(); };
-
-    Kate::Document *getDocWithID (uint id) { return (Kate::Document *)docWithID (id); };
 };
 
 #endif
