@@ -490,25 +490,25 @@ void TopLevel::quitEditor() {
 void TopLevel::configure() {
   KWin kwin;
   // I read that no widgets should be created on the stack
-  KDialogBase *kd = new KDialogBase(KDialogBase::Tabbed,
+  KDialogBase *kd = new KDialogBase(KDialogBase::IconList,
 				    i18n("Configure KWrite"),
 				    KDialogBase::Ok | KDialogBase::Cancel,
 				    KDialogBase::Ok, this, "tabdialog");
 
   // indent options
-  QVBox *page=kd->addVBoxPage(i18n("Indent"));
+  QVBox *page=kd->addVBoxPage(i18n("Indent"), QString::null, UserIcon( "misc" ) );
   IndentConfigTab *indentConfig = new IndentConfigTab(page, kWrite);
 
   // select options
-  page=kd->addVBoxPage(i18n("Select"));
+  page=kd->addVBoxPage(i18n("Select"), QString::null, UserIcon( "misc" ) );
   SelectConfigTab *selectConfig = new SelectConfigTab(page, kWrite);
 
   // edit options
-  page=kd->addVBoxPage(i18n("Edit"));
+  page=kd->addVBoxPage(i18n("Edit"), QString::null, UserIcon( "misc" ) );
   EditConfigTab *editConfig = new EditConfigTab(page, kWrite);
 
   // spell checker
-  page=kd->addVBoxPage(i18n("Spellchecker"));
+  page=kd->addVBoxPage(i18n("Spellchecker"), QString::null, UserIcon( "spellcheck" ) );
   KSpellConfig *ksc = new KSpellConfig(page, 0L, kWrite->ksConfig());
 
   // keys
