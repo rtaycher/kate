@@ -113,7 +113,7 @@ class KateUndoGroup
     KateUndoGroup (KateDocument *doc);     
     ~KateUndoGroup ();     
      
-    void undo ();     
+    void undo ();
     void redo ();     
      
     void addItem (KateUndo *undo);     
@@ -437,7 +437,7 @@ QString KateDocument::textLine( uint line ) const
 
 bool KateDocument::setText(const QString &s)     
 {     
-  clear();     
+  clear();
   return insertText (0, 0, s);     
 }     
      
@@ -790,13 +790,13 @@ bool KateDocument::editRemoveText ( uint line, uint col, uint len )
         else
           cCol = 0;
       }
-        else
+      else
         cCol = col;
-    }
 
-    v->cursorCache.line = line;
-    v->cursorCache.col = cCol;
-    v->cursorCacheChanged = true;
+      v->cursorCache.line = line;
+      v->cursorCache.col = cCol;
+      v->cursorCacheChanged = true;
+    }
   }
 
   if (b)
@@ -922,11 +922,13 @@ bool KateDocument::editUnWrapLine ( uint line, uint col)
     cCol = view->cursorCache.col;
 
     if ( (cLine == (line+1)) || ((cLine == line) && (cCol >= col)) )
+    {
       cCol = col;
 
-    view->cursorCache.line = line;
-    view->cursorCache.col = cCol;
-    view->cursorCacheChanged = true;
+      view->cursorCache.line = line;
+      view->cursorCache.col = cCol;
+      view->cursorCacheChanged = true;
+    }
   }
 
   if (b)
@@ -1027,16 +1029,18 @@ bool KateDocument::editRemoveLine ( uint line )
   {
     view = myViews.at(z2);
     view->delLine(line);
-    
+
     cLine = view->cursorCache.line;
     cCol = view->cursorCache.col;
 
     if ( (cLine == line) )
+    {
       cCol = 0;
 
-    view->cursorCache.line = line;
-    view->cursorCache.col = cCol;
-    view->cursorCacheChanged = true;
+      view->cursorCache.line = line;
+      view->cursorCache.col = cCol;
+      view->cursorCacheChanged = true;
+    }
   }
 
   if (b)
