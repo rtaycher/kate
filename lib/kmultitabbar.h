@@ -48,7 +48,7 @@ public:
 	~KMultiTabBar(){;}
 
 	enum KMultiTabBarPosition{Left, Right, Top, Bottom};
-	enum KMultiTabBarStyle{VSNET=0, KDEV3=1};
+	enum KMultiTabBarStyle{VSNET=0, KDEV3=1, KONQSBC=2};
  	//int insertButton(QPixmap,int=-1,const QString& =QString::null);
  	int appendButton(const QPixmap &,int=-1,QPopupMenu* =0,const QString& =QString::null);
 	void removeButton(int);
@@ -116,8 +116,8 @@ private:
 protected:
 	void updateState();
 	virtual void drawButton(QPainter *);
-	void drawButtonVSNetLike(QPainter *);
-	void drawButtonKDev3Like(QPainter *);
+	void drawButtonStyled(QPainter *);
+	void drawButtonClassic(QPainter *);
 protected slots:
 	virtual void slotClicked();
 public slots:

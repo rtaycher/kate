@@ -250,30 +250,33 @@ void KMultiTabBarTab::setState(bool b)
 
 void KMultiTabBarTab::updateState()
 {
-	if (m_style==KMultiTabBar::KDEV3) {
+
+	if (m_style!=KMultiTabBar::KONQSBC) {
+		if ((m_style==KMultiTabBar::KDEV3) || (isOn())) {
+			QPushButton::setText(m_text);
+		} else {
+			kdDebug()<<"KMultiTabBarTab::updateState(): setting text to an empty QString"<<endl;
+			QPushButton::setText(QString());
+		}
+
 		if ((position==KMultiTabBar::Right || position==KMultiTabBar::Left)) {
 			setFixedHeight(QPushButton::sizeHint().width());
 			setFixedWidth(24);
-		}
-		else
-		{
+		} else {
 			setFixedHeight(24);
 			setFixedWidth(QPushButton::sizeHint().width());
 		}
-
 	} else {
-		
-		if ((!isOn()) || (!m_showActiveTabText))
-		{
-			setFixedHeight(24);
-			setFixedWidth(24);
-			return;
-		}
-		if ((position==KMultiTabBar::Right || position==KMultiTabBar::Left))
-			setFixedHeight(m_expandedSize);
-		else
-			setFixedWidth(m_expandedSize);
-
+                if ((!isOn()) || (!m_showActiveTabText))
+                {
+                        setFixedHeight(24);
+                        setFixedWidth(24);
+                        return;
+                }
+                if ((position==KMultiTabBar::Right || position==KMultiTabBar::Left))
+                        setFixedHeight(m_expandedSize);
+                else
+                        setFixedWidth(m_expandedSize);
 	}
 
 }
@@ -296,11 +299,11 @@ void KMultiTabBarTab::showActiveTabText(bool show)
 
 void KMultiTabBarTab::drawButton(QPainter *paint)
 {
-	if (m_style==KMultiTabBar::VSNET) drawButtonVSNetLike(paint);
-	else drawButtonKDev3Like(paint);
+	if (m_style!=KMultiTabBar::KONQSBC) drawButtonStyled(paint);
+	else  drawButtonClassic(paint);
 }
 
-void KMultiTabBarTab::drawButtonKDev3Like(QPainter *paint) {
+void KMultiTabBarTab::drawButtonStyled(QPainter *paint) {
 	QSize sh=QPushButton::sizeHint();	
 	
 	QPixmap pixmap( sh.width(),24); ///,sh.height());
@@ -338,7 +341,7 @@ void KMultiTabBarTab::drawButtonKDev3Like(QPainter *paint) {
 	
 }
 
-void KMultiTabBarTab::drawButtonVSNetLike(QPainter *paint)
+void KMultiTabBarTab::drawButtonClassic(QPainter *paint)
 {
         QPixmap pixmap;
 	if ( iconSet()) 
@@ -515,8 +518,9 @@ KMultiTabBar::KMultiTabBar(QWidget *parent,KMultiTabBarBasicMode bm):QWidget(par
 	
 	internal=new KMultiTabBarInternal(this,bm);
 	setPosition((bm==KMultiTabBar::Vertical)?KMultiTabBar::Right:KMultiTabBar::Bottom);
-	//setStyle(VSNET);
-	setStyle(KDEV3);
+	setStyle(VSNET);
+	//	setStyle(KDEV3);
+	//setStyle(KONQSBC);
 	l->insertWidget(0,internal);
 	l->insertWidget(0,btnTabSep=new QFrame(this));
 	btnTabSep->setFixedHeight(4);
