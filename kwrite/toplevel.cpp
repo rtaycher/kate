@@ -41,7 +41,6 @@
 #include <kdebug.h>
 #include <kparts/event.h>
 
-#include "ktextprint.h"
 #include "kwattribute.h"
 #include "kwtextline.h"
 #include "kwdoc.h"
@@ -303,85 +302,15 @@ void TopLevel::editToolbars()
   delete dlg;
 }
 
-
-void TopLevel::print(bool dialog)
-{
-  QString title = kWrite->doc()->url().fileName();
-  if (!showPath) {
-    int pos = title.findRev('/');
-    if (pos != -1) {
-      title = title.right(title.length() - pos - 1);
-    }
-  }
-
-  KTextPrintConfig::print(this, KWriteFactory::instance()->config(), dialog, title,
-    kWrite->numLines(), this, SLOT(doPrint(KTextPrint &)));
-}
-
-
-void TopLevel::doPrint(KTextPrint &printer)
-{
-  KWriteDoc *doc = kWrite->doc();
-
-  int z, numAttribs;
-  Attribute *a;
-  int line, attr, nextAttr, oldZ;
-  TextLine *textLine;
-  const QChar *s;
-
-//  printer.setTitle(kWriteDoc->fileName());
-  printer.setTabWidth(doc->tabWidth());
-
-  numAttribs = doc->numAttribs();
-  a = doc->attribs();
-  for (z = 0; z < numAttribs; z++) {
-    printer.defineColor(z, a[z].col.red(), a[z].col.green(), a[z].col.blue());
-  }
-
-  printer.begin();
-
-  line = 0;
-  attr = -1;
-  while (true) {
-    textLine = doc->getTextLine(line);
-    s = textLine->getText();
-//    printer.print(s, textLine->length());
-    oldZ = 0;
-    for (z = 0; z < textLine->length(); z++) {
-      nextAttr = textLine->getAttr(z);
-      if (nextAttr != attr) {
-        attr = nextAttr;
-        printer.print(&s[oldZ], z - oldZ);
-        printer.setColor(attr);
-        int fontStyle = 0;
-        if (a[attr].font.bold()) fontStyle |= KTextPrint::Bold;
-        if (a[attr].font.italic()) fontStyle |= KTextPrint::Italics;
-        printer.setFontStyle(fontStyle);
-        oldZ = z;
-      }
-    }
-    printer.print(&s[oldZ], z - oldZ);
-
-    line++;
-    if (line == doc->numLines()) break;
-    printer.newLine();
-  }
-
-  printer.end();
-}
-
-
 void TopLevel::printNow()
 {
   kWrite->printDlg ();
 }
 
-
 void TopLevel::printDlg()
 {
   kWrite->printDlg ();
 }
-
 
 void TopLevel::newCurPos()
 {
@@ -390,7 +319,6 @@ void TopLevel::newCurPos()
     .arg(KGlobal::locale()->formatNumber(kWrite->currentColumn() + 1, 0)),
     ID_LINE_COLUMN);
 }
-
 
 void TopLevel::newStatus()
 {

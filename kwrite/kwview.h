@@ -52,8 +52,6 @@ class KTempFile;
 class KWriteDoc;
 class Highlight;
 
-class KTextPrint;
-
 /*
 //dialog results
 const int srYes               = QDialog::Accepted;

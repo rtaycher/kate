@@ -29,12 +29,14 @@ class KToggleAction;
 class KSelectAction;
 class KRecentFilesAction;
 
-class TopLevel : public KParts::MainWindow {
-    Q_OBJECT
-  public:
+class TopLevel : public KParts::MainWindow
+{
+  Q_OBJECT
 
+  public:
     TopLevel(KWriteDoc * = 0L, const QString &path = QString::null);
     ~TopLevel();
+
     void init(); //initialize caption, status and show
 
     void loadURL(const KURL &url, int flags = 0);
@@ -48,12 +50,9 @@ class TopLevel : public KParts::MainWindow {
     void setupStatusBar();
 
     virtual void dragEnterEvent( QDragEnterEvent * );
-//  virtual void dragMoveEvent( QDragMoveEvent * );
-//  virtual void dragLeaveEvent( QDragLeaveEvent * );
     virtual void dropEvent( QDropEvent * );
 
     KWrite *kWrite;
-
 
     KToggleAction *setShowPath;
 
@@ -71,11 +70,7 @@ class TopLevel : public KParts::MainWindow {
     void editKeys();
     void editToolbars();
 
-  public:
-    void print(bool dialog);
-
   public slots:
-    void doPrint(KTextPrint &);
     void printNow();
     void printDlg();
 
@@ -96,16 +91,18 @@ class TopLevel : public KParts::MainWindow {
     void writeConfig(KConfig *);
     //config file
     void readConfig();
+
   public slots:
     void writeConfig();
+
   //session management
   public:
     void restore(KConfig *,int);
+
   protected:
     virtual void readProperties(KConfig *);
     virtual void saveProperties(KConfig *);
     virtual void saveGlobalProperties(KConfig *);
-
 };
 
 #endif

@@ -10,7 +10,7 @@ lib_LTLIBRARIES = libkwritepart.la kwrite.la
 # libkwritepart is a part, but kwrite.la links directly to it, so we can't
 # install it under kde_module
 
-libkwritepart_la_SOURCES = highlight.cpp ktextprint.cpp  \
+libkwritepart_la_SOURCES = highlight.cpp  \
 		           kwdoc.cpp kwview.cpp undohistory.cpp  \
 		           kwdialog.cpp kwrite_factory.cpp \
                            kwbuffer.cpp kwtextline.cpp kvmallocator.cpp\

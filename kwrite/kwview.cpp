@@ -65,7 +65,6 @@
 #include "kwtextline.h"
 #include "kwdialog.h"
 #include "undohistory.h"
-#include "ktextprint.h"
 #include "kwrite_factory.h"
 
 #include "kwview.h"
