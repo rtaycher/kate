@@ -50,6 +50,9 @@ enum Item_styles { dsNormal,dsKeyword,dsDataType,dsDecVal,dsBaseN,dsFloat,dsChar
 static bool trueBool = true;
 static QString stdDeliminator = QString ("!%&()*+,-./:;<=>?[]^{|}~ \t\\");
 
+static QChar *stdDeliminatorChars = stdDeliminator.unicode();
+static int stdDeliminatorLen=stdDeliminator.length();
+
 int getDefStyleNum(QString name)
 {
   if (name=="dsNormal") return dsNormal;
@@ -208,8 +211,7 @@ HlInt::HlInt(int attribute, int context)
 bool HlInt::startEnable(QChar c)
 {
 //  return ustrchr(deliminatorChars, deliminatorLen, c);
-#warning bad performance, store this qchar array in the class
-    return ustrchr(stdDeliminator.unicode(), stdDeliminator.length(), c);
+    return ustrchr(stdDeliminatorChars, stdDeliminatorLen, c);
 }
 
 const QChar *HlInt::checkHgl(const QChar *str, int len, bool) {
@@ -234,6 +236,12 @@ const QChar *HlInt::checkHgl(const QChar *str, int len, bool) {
 
 HlFloat::HlFloat(int attribute, int context)
   : HlItem(attribute,context) {
+}
+
+bool HlFloat::startEnable(QChar c)
+{
+//  return ustrchr(deliminatorChars, deliminatorLen, c);
+    return ustrchr(stdDeliminatorChars, stdDeliminatorLen, c);
 }
 
 const QChar *HlFloat::checkHgl(const QChar *s, int len, bool) {
