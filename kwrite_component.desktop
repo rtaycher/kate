@@ -2,6 +2,31 @@
 # Note: if some app wants to see "Text Editor Component" here, (i.e. not readonly) then 
 # we should separate the desktop files for the read-only and the read-write components.
 Name=Embedded Text Viewer
+Name[ca]=Visor de text encastat
+Name[cs]=Zabudovaný prohlížeč textů
+Name[da]=Indlejret tekst-fremviser
+Name[de]=Eingebetteter Textbetrachter
+Name[eo]=Enkonstruita Tekstvidigilo
+Name[es]=Visor de Texto Empotrado
+Name[et]=Põimitud tekstivaataja
+Name[fi]=Upotettu tekstinäyttäjä
+Name[fr]=Afficheur de texte incorporé
+Name[hu]=Beágyazott szövegnézegető
+Name[is]=Ísetjanleg textasjá
+Name[it]=Visualizzatore testi integrato
+Name[ja]=埋め込みテキストビューア
+Name[nl]=Ingebedde tekstviewer
+Name[no]=Innebygd tekstleser
+Name[no_NY]=Innebygd tekstlesar
+Name[pt]=Visualizador de Texto Embebido
+Name[pt_BR]=Visualizador embutido de texto
+Name[ro]=Vizualizor texte înglobat
+Name[ru]=Встроенный просмотрщик текстов
+Name[sl]=Vgrajen pregledovalnik besedil
+Name[sv]=Inbäddad textvisare
+Name[ta]=¯ûÇ¨Áó¾ ¯¨Ã À¡÷¨ÅÂ¡Ç÷
+Name[tr]=Gömülü Metin Görüntüleyici
+Name[uk]=Вмонтований переглядач текстів
 X-KDE-Library=libkwritepart
 Icon=kwrite
 
