@@ -37,31 +37,11 @@ class StyleChanger : public QWidget {
     QCheckBox *italic;
 };
 
-class FontChanger : public QWidget {
-    Q_OBJECT
-  public:
-    FontChanger(QWidget *parent );
-    void setRef(ItemFont *);
-  protected slots:
-    void familyChanged(const QString &);
-    void sizeChanged(int);
-    void charsetChanged(const QString &);
-  protected:
-    void displayCharsets();
-    ItemFont *font;
-    QComboBox *familyCombo;
-    QComboBox *sizeCombo;
-    QComboBox *charsetCombo;
-};
-
-//--------
-
-
 class HighlightDialogPage : public QTabWidget
 {
     Q_OBJECT
   public:
-    HighlightDialogPage(HlManager *, ItemStyleList *, ItemFont *, HlDataList *, int hlNumber,
+    HighlightDialogPage(HlManager *, ItemStyleList *, HlDataList *, int hlNumber,
                     QWidget *parent=0, const char *name=0);
     void saveData();
 
@@ -75,16 +55,13 @@ class HighlightDialogPage : public QTabWidget
   protected:
     StyleChanger *defaultStyleChanger;
     ItemStyleList *defaultItemStyleList;
-    FontChanger *defaultFontChanger;
 
     void writeback();
     QComboBox *itemCombo, *hlCombo;
     QLineEdit *wildcards;
     QLineEdit *mimetypes;
     QCheckBox *styleDefault;
-    QCheckBox *fontDefault;
     StyleChanger *styleChanger;
-    FontChanger *fontChanger;
 
     HlDataList *hlDataList;
     HlData *hlData;
@@ -100,13 +77,11 @@ class ItemInfo
     int length;
 };
 
-//--------
 class HighlightDialog : public KDialogBase
 {
   Q_OBJECT
   public:
     HighlightDialog( HlManager *hlManager, ItemStyleList *styleList,
-                                  ItemFont *font,
                                   HlDataList *highlightDataList,
                                   int hlNumber, QWidget *parent,
                                   const char *name=0, bool modal=true );

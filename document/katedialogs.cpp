@@ -13,7 +13,6 @@
 #include <qlineedit.h>
 #include <qcombobox.h>
 #include <qcheckbox.h>
-#include <kfontdialog.h>
 #include <kcharsets.h>
 #include <kglobal.h>
 #include <qmap.h>
@@ -88,125 +87,14 @@ void StyleChanger::changed() {
   }
 }
 
-
-char fontSizes[] = {4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,22,24,26,28,32,48,64,0};
-
-
-FontChanger::FontChanger( QWidget *parent )
-  : QWidget(parent)
-{
-  QLabel *label;
-  QStringList fontList;
-
-  QVBoxLayout *vlay = new QVBoxLayout( this, 0, KDialog::spacingHint() );
-  CHECK_PTR(vlay);
-
-  familyCombo = new QComboBox(true,this);
-  CHECK_PTR(familyCombo);
-  label = new QLabel( familyCombo,i18n("Family:"), this );
-  CHECK_PTR(label);
-  vlay->addWidget(label);
-  vlay->addWidget(familyCombo);
-  connect( familyCombo, SIGNAL(activated(const QString&)),
-           this, SLOT(familyChanged(const QString&)));
-  KFontChooser::getFontList(fontList, false);
-  familyCombo->insertStringList(fontList);
-
-
-  sizeCombo = new QComboBox(true,this);
-  CHECK_PTR(sizeCombo);
-  label = new QLabel(sizeCombo,i18n("Size:"),this);
-  CHECK_PTR(label);
-  vlay->addWidget(label);
-  vlay->addWidget(sizeCombo);
-  connect( sizeCombo, SIGNAL(activated(int)),
-           this, SLOT(sizeChanged(int)) );
-  for( int i=0; fontSizes[i] != 0; i++ ){
-    sizeCombo->insertItem(QString().setNum(fontSizes[i]));
-  }
-
-
-  charsetCombo = new QComboBox(true,this);
-  CHECK_PTR(charsetCombo);
-  label = new QLabel(charsetCombo,i18n("Charset:"),this);
-  CHECK_PTR(label);
-  vlay->addWidget(label);
-  vlay->addWidget(charsetCombo);
-  connect( charsetCombo, SIGNAL(activated(const QString&)),
-           this, SLOT(charsetChanged(const QString&)) );
-}
-
-
-void FontChanger::setRef(ItemFont *f) {
-  int z;
-
-  font = f;
-  for (z = 0; z < (int) familyCombo->count(); z++) {
-    if (font->family == familyCombo->text(z)) {
-      familyCombo->setCurrentItem(z);
-      goto found;
-    }
-  }
-  font->family = familyCombo->text(0);
-found:
-
-  for (z = 0; fontSizes[z] > 0; z++) {
-    if (font->size == fontSizes[z]) {
-      sizeCombo->setCurrentItem(z);
-      break;
-    }
-  }
-  displayCharsets();
-}
-
-void FontChanger::familyChanged(const QString& family) {
-
-  font->family = family;
-  displayCharsets();
-}
-
-void FontChanger::sizeChanged(int n) {
-
-  font->size = fontSizes[n];;
-}
-
-void FontChanger::charsetChanged(const QString& charset) {
-
-  font->charset = charset;
-  //KCharset(chset).setQFont(font);
-}
-
-void FontChanger::displayCharsets() {
-  int z;
-  QString charset;
-  KCharsets *charsets;
-
-  charsets = KGlobal::charsets();
-  QStringList lst = charsets->availableCharsetNames(font->family);
-//  QStrList lst = charsets->displayable(font->family);
-  charsetCombo->clear();
-  for(z = 0; z < (int) lst.count(); z++) {
-    charset = *lst.at(z);
-    charsetCombo->insertItem(charset);
-    if (/*(QString)*/ font->charset == charset) charsetCombo->setCurrentItem(z);
-  }
-  charset = "any";
-  charsetCombo->insertItem(charset);
-  if (/*(QString)*/ font->charset == charset) charsetCombo->setCurrentItem(z);
-}
-
-//---------
-
-
 HighlightDialog::HighlightDialog( HlManager *hlManager, ItemStyleList *styleList,
-                                  ItemFont *font,
                                   HlDataList *highlightDataList,
                                   int hlNumber, QWidget *parent,
                                   const char *name, bool modal )
   :KDialogBase(parent,name,modal,i18n("Highlight Settings"), Ok|Cancel, Ok)
 {
   QVBox *page = makeVBoxMainWidget();
-  content=new HighlightDialogPage(hlManager,styleList,font,highlightDataList,hlNumber,page);
+  content=new HighlightDialogPage(hlManager,styleList,highlightDataList,hlNumber,page);
 }
 
 void HighlightDialog::done(int r)
@@ -217,7 +105,7 @@ void HighlightDialog::done(int r)
 }
 
 HighlightDialogPage::HighlightDialogPage(HlManager *hlManager, ItemStyleList *styleList,
-                              ItemFont *font, HlDataList* highlightDataList,
+                              HlDataList* highlightDataList,
                               int hlNumber,QWidget *parent, const char *name)
    :QTabWidget(parent,name),defaultItemStyleList(styleList),hlData(0L)
 
@@ -239,11 +127,6 @@ HighlightDialogPage::HighlightDialogPage(HlManager *hlManager, ItemStyleList *st
   connect(styleCombo, SIGNAL(activated(int)), this, SLOT(defaultChanged(int)));
   grid->addWidget(dvbox1,0,0);
 
-  QVGroupBox *dvbox2 = new QVGroupBox( i18n("Default Font"), page1 );
-  defaultFontChanger = new FontChanger( dvbox2 );
-  defaultFontChanger->setRef(font);
-  grid->addWidget(dvbox2,0,1);
-
   grid->setRowStretch(1,1);
   grid->setColStretch(1,1);
 
@@ -261,8 +144,6 @@ HighlightDialogPage::HighlightDialogPage(HlManager *hlManager, ItemStyleList *st
   grid->addWidget(vbox2,1,0);
   QVGroupBox *vbox3 = new QVGroupBox( i18n("Highlight Auto Select"), page2 );
   grid->addWidget(vbox3,0,1);
-  QVGroupBox *vbox4 = new QVGroupBox( i18n("Item Font"), page2 );
-  grid->addWidget(vbox4,1,1);
 
   grid->setRowStretch(2,1);
   grid->setColStretch(1,1);
@@ -292,11 +173,6 @@ HighlightDialogPage::HighlightDialogPage(HlManager *hlManager, ItemStyleList *st
   styleDefault = new QCheckBox(i18n("Default"), vbox2 );
   connect(styleDefault,SIGNAL(clicked()),SLOT(changed()));
   styleChanger = new StyleChanger( vbox2 );
-
-
-  fontDefault = new QCheckBox(i18n("Default"), vbox4 );
-  connect(fontDefault,SIGNAL(clicked()),SLOT(changed()));
-  fontChanger = new FontChanger( vbox4 );
 
   hlDataList = highlightDataList;
   hlChanged(hlNumber);
@@ -334,15 +210,11 @@ void HighlightDialogPage::itemChanged(int z)
 
   styleDefault->setChecked(itemData->defStyle);
   styleChanger->setRef(itemData);
-
-  fontDefault->setChecked(itemData->defFont);
-  fontChanger->setRef(itemData);
 }
 
 void HighlightDialogPage::changed()
 {
   itemData->defStyle = styleDefault->isChecked();
-  itemData->defFont = fontDefault->isChecked();
 }
 
 void HighlightDialogPage::writeback() {

@@ -65,7 +65,6 @@ class KateConfigDialog : public KDialogBase
     class HlManager *hlManager;
     HlDataList hlDataList;
     ItemStyleList defaultStyleList;
-    ItemFont defaultFont;
 };
 
 #endif

@@ -37,8 +37,6 @@
 #include <kconfig.h>
 #include <kglobal.h>
 #include <kinstance.h>
-#include <kfontdialog.h>
-#include <kcharsets.h>
 #include <kmimemagic.h>
 #include <klocale.h>
 #include <kregexp.h>
@@ -606,17 +604,14 @@ ItemStyle::ItemStyle(const QColor &col, const QColor &selCol,
   : col(col), selCol(selCol), bold(bold), italic(italic) {
 }
 
-ItemFont::ItemFont() : family("courier"), size(12), charset("") {
-}
-
 ItemData::ItemData(const QString  name, int defStyleNum)
-  : name(name), defStyleNum(defStyleNum), defStyle(true), defFont(true) {
+  : name(name), defStyleNum(defStyleNum), defStyle(true) {
 }
 
 ItemData::ItemData(const QString name, int defStyleNum,
   const QColor &col, const QColor &selCol, bool bold, bool italic)
   : ItemStyle(col,selCol,bold,italic), name(name), defStyleNum(defStyleNum),
-  defStyle(false), defFont(true) {
+  defStyle(false) {
 }
 
 HlData::HlData(const QString &wildcards, const QString &mimetypes, const QString &identifier)
@@ -704,8 +699,6 @@ void Highlight::getItemDataList(ItemDataList &list, KConfig *config) {
   ItemData *p;
   QString s;
   QRgb col, selCol;
-  char family[96];
-  char charset[48];
 
   list.clear();
   list.setAutoDelete(true);
@@ -714,13 +707,9 @@ void Highlight::getItemDataList(ItemDataList &list, KConfig *config) {
   for (p = list.first(); p != 0L; p = list.next()) {
     s = config->readEntry(p->name);
     if (!s.isEmpty()) {
-      sscanf(s.latin1(),"%d,%X,%X,%d,%d,%d,%95[^,],%d,%47[^,]",
-        &p->defStyle,&col,&selCol,&p->bold,&p->italic,
-        &p->defFont,family,&p->size,charset);
+      sscanf(s.latin1(),"%d,%X,%X,%d,%d", &p->defStyle,&col,&selCol,&p->bold,&p->italic);
       p->col.setRgb(col);
       p->selCol.setRgb(selCol);
-      p->family = family;
-      p->charset = charset;
     }
   }
 }
@@ -730,9 +719,8 @@ void Highlight::setItemDataList(ItemDataList &list, KConfig *config) {
   QString s;
 
   for (p = list.first(); p != 0L; p = list.next()) {
-    s.sprintf("%d,%X,%X,%d,%d,%d,%1.95s,%d,%1.47s",
-      p->defStyle,p->col.rgb(),p->selCol.rgb(),p->bold,p->italic,
-      p->defFont,p->family.utf8().data(),p->size,p->charset.utf8().data());
+    s.sprintf("%d,%X,%X,%d,%d",
+      p->defStyle,p->col.rgb(),p->selCol.rgb(),p->bold,p->italic);
     config->writeEntry(p->name,s);
   }
 }
@@ -1181,13 +1169,12 @@ int HlManager::mimeFind(const QByteArray &contents, const QString &fname)
 int HlManager::makeAttribs(Highlight *highlight, Attribute *a, int maxAttribs) {
   ItemStyleList defaultStyleList;
   ItemStyle *defaultStyle;
-  ItemFont defaultFont;
   ItemDataList itemDataList;
   ItemData *itemData;
   int nAttribs, z;
 
   defaultStyleList.setAutoDelete(true);
-  getDefaults(defaultStyleList, defaultFont);
+  getDefaults(defaultStyleList);
 
   itemDataList.setAutoDelete(true);
   highlight->getItemDataList(itemDataList);
@@ -1239,7 +1226,7 @@ const char * HlManager::defaultStyleName(int n) {
   return names[n];
 }
 
-void HlManager::getDefaults(ItemStyleList &list, ItemFont &font) {
+void HlManager::getDefaults(ItemStyleList &list) {
   KConfig *config;
   int z;
   ItemStyle *i;
@@ -1270,17 +1257,9 @@ void HlManager::getDefaults(ItemStyleList &list, ItemFont &font) {
       i->selCol.setRgb(selCol);
     }
   }
-
-  config->setGroup("Default Font");
-  QFont defaultFont = KGlobalSettings::fixedFont();
-  font.family = config->readEntry("Family", defaultFont.family());
-//  qDebug("family == %s", font.family.ascii());
-  font.size = config->readNumEntry("Size", defaultFont.pointSize());
-//  qDebug("size == %d", font.size);
-  font.charset = config->readEntry("Charset","ISO-8859-1");
 }
 
-void HlManager::setDefaults(ItemStyleList &list, ItemFont &font) {
+void HlManager::setDefaults(ItemStyleList &list) {
   KConfig *config;
   int z;
   ItemStyle *i;
@@ -1293,11 +1272,6 @@ void HlManager::setDefaults(ItemStyleList &list, ItemFont &font) {
     sprintf(s,"%X,%X,%d,%d",i->col.rgb(),i->selCol.rgb(),i->bold, i->italic);
     config->writeEntry(defaultStyleName(z),s);
   }
-
-  config->setGroup("Default Font");
-  config->writeEntry("Family",font.family);
-  config->writeEntry("Size",font.size);
-  config->writeEntry("Charset",font.charset);
 
   emit changed();
 }

@@ -190,7 +190,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   hlManager = HlManager::self();
 
   defaultStyleList.setAutoDelete(true);
-  hlManager->getDefaults(defaultStyleList,defaultFont);
+  hlManager->getDefaults(defaultStyleList);
 
   hlDataList.setAutoDelete(true);
   //this gets the data from the KConfig object
@@ -200,7 +200,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   path << i18n("Editor") << i18n("Highlighting");
   page=addVBoxPage(path,i18n("Highlighting configuration"),
                         SmallIcon("highlighting", KIcon::SizeSmall));
-  hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &defaultFont, &hlDataList, 0, page);
+  hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &hlDataList, 0, page);
 }
 
 KateConfigDialog::~KateConfigDialog()
@@ -242,7 +242,7 @@ void KateConfigDialog::slotApply()
   v->doc()->writeConfig( config );
   v->applyColors();
   hlManager->setHlDataList(hlDataList);
-  hlManager->setDefaults(defaultStyleList,defaultFont);
+  hlManager->setDefaults(defaultStyleList);
   hlPage->saveData();
   config->sync();
 

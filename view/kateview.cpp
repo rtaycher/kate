@@ -978,7 +978,6 @@ void KateViewInternal::paintCursor() {
   y = h*cursor.y - yPos;
   x = cXPos - (xPos-2);
 
-  //QFont f = myDoc->getTextFont(cursor.x, cursor.y);
   if(myDoc->myFont != font()) setFont(myDoc->myFont);
   if(cx != x || cy != y || ch != h){
     cx = x;
@@ -1030,19 +1029,6 @@ void KateViewInternal::placeCursor(int x, int y, int flags) {
   changeState(c);
 }
 
-// convert the given physical coordinates to logical (line/column within the document)
-/*
-void KateViewInternal::calcLogicalPosition(int &x, int &y) {
-
-  TextLine   line;
-
-  y = (yPos + y)/myDoc->fontHeight;
-
-  line = myDoc->textLine(y);
-
-  x = myDoc->textPos(myDoc->textLine(y), x);
-}
-*/
 // given physical coordinates, report whether the text there is selected
 bool KateViewInternal::isTargetSelected(int x, int y) {
 
@@ -2630,24 +2616,23 @@ void KateView::hlDlg() {
   HlManager *hlManager;
   HlDataList hlDataList;
   ItemStyleList defaultStyleList;
-  ItemFont defaultFont;
 
   hlManager = myDoc->hlManager;
 
   defaultStyleList.setAutoDelete(true);
-  hlManager->getDefaults(defaultStyleList,defaultFont);
+  hlManager->getDefaults(defaultStyleList);
 
   hlDataList.setAutoDelete(true);
   //this gets the data from the KConfig object
   hlManager->getHlDataList(hlDataList);
 
-  dlg = new HighlightDialog(hlManager, &defaultStyleList, &defaultFont, &hlDataList,
+  dlg = new HighlightDialog(hlManager, &defaultStyleList, &hlDataList,
     myDoc->highlightNum(), this);
 //  dlg->hlChanged(myDoc->highlightNum());
   if (dlg->exec() == QDialog::Accepted) {
     //this stores the data into the KConfig object
     hlManager->setHlDataList(hlDataList);
-    hlManager->setDefaults(defaultStyleList,defaultFont);
+    hlManager->setDefaults(defaultStyleList);
   }
   delete dlg;
 }

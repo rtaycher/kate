@@ -266,12 +266,11 @@ void TopLevel::configure()
   HlManager *hlManager;
   HlDataList hlDataList;
   ItemStyleList defaultStyleList;
-  ItemFont defaultFont;
 
   hlManager = HlManager::self();
 
   defaultStyleList.setAutoDelete(true);
-  hlManager->getDefaults(defaultStyleList,defaultFont);
+  hlManager->getDefaults(defaultStyleList);
 
   hlDataList.setAutoDelete(true);
   //this gets the data from the KConfig object
@@ -279,7 +278,7 @@ void TopLevel::configure()
 
   page=kd->addVBoxPage(i18n("Highlighting"),i18n("Highlighting configuration"),
                         BarIcon("edit",KIcon::SizeMedium));
-  hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &defaultFont, &hlDataList,
+  hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &hlDataList,
     /*myDoc->highlightNum()*/0, page);
 
  if (kd->exec()) {
@@ -298,7 +297,7 @@ void TopLevel::configure()
     ksc->writeGlobalSettings();
     kateView->setKSConfig(*ksc);
     hlManager->setHlDataList(hlDataList);
-    hlManager->setDefaults(defaultStyleList,defaultFont);
+    hlManager->setDefaults(defaultStyleList);
     hlPage->saveData();
   }
 

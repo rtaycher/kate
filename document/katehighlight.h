@@ -245,20 +245,8 @@ class ItemStyle {
 
 typedef QList<ItemStyle> ItemStyleList;
 
-//Item Font: family, size, charset
-class ItemFont {
-  public:
-    ItemFont();
-//    ItemFont(const ItemFont &);
-//    ItemFont(const QString & family, int size, const char *charset);
-//    void setData(const ItemFont &);
-    QString family;
-    int size;
-    QString charset;
-};
-
 //Item Properties: name, Item Style, Item Font
-class ItemData : public ItemStyle, public ItemFont {
+class ItemData : public ItemStyle {
   public:
     ItemData(const QString  name, int defStyleNum);
     ItemData(const QString  name, int defStyleNum,
@@ -267,7 +255,6 @@ class ItemData : public ItemStyle, public ItemFont {
     const QString name;
     int defStyleNum;
     int defStyle; //boolean value
-    int defFont;  //boolean value
 };
 
 typedef QList<ItemData> ItemDataList;
@@ -383,8 +370,8 @@ class HlManager : public QObject {
 
     int defaultStyles();
     const char * defaultStyleName(int n);
-    void getDefaults(ItemStyleList &, ItemFont &);
-    void setDefaults(ItemStyleList &, ItemFont &);
+    void getDefaults(ItemStyleList &);
+    void setDefaults(ItemStyleList &);
 
     int highlights();
     const char * hlName(int n);
