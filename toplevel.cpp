@@ -38,6 +38,7 @@
 #include <kdialogbase.h>
 #include <kkeydialog.h>
 #include <kedittoolbar.h>
+#include <kdebug.h>
 
 #include "ktextprint.h"
 #include "kwdoc.h"
@@ -345,29 +346,29 @@ void TopLevel::configure()
   KWin kwin;
   // I read that no widgets should be created on the stack
   KDialogBase *kd = new KDialogBase(KDialogBase::IconList,
-				    i18n("Configure KWrite"),
-				    KDialogBase::Ok | KDialogBase::Cancel |
-				    KDialogBase::Help ,
-				    KDialogBase::Ok, this, "tabdialog");
+                                    i18n("Configure KWrite"),
+                                    KDialogBase::Ok | KDialogBase::Cancel |
+                                    KDialogBase::Help ,
+                                    KDialogBase::Ok, this, "tabdialog");
 
   // indent options
   QVBox *page=kd->addVBoxPage(i18n("Indent"), QString::null,
-			      BarIcon("rightjust", KIcon::SizeMedium) );
+                              BarIcon("rightjust", KIcon::SizeMedium) );
   IndentConfigTab *indentConfig = new IndentConfigTab(page, kWrite);
 
   // select options
   page=kd->addVBoxPage(i18n("Select"), QString::null,
-		       BarIcon("misc") );
+                       BarIcon("misc") );
   SelectConfigTab *selectConfig = new SelectConfigTab(page, kWrite);
 
   // edit options
   page=kd->addVBoxPage(i18n("Edit"), QString::null,
-		       BarIcon("kwrite", KIcon::SizeMedium ) );
+                       BarIcon("kwrite", KIcon::SizeMedium ) );
   EditConfigTab *editConfig = new EditConfigTab(page, kWrite);
 
   // spell checker
   page = kd->addVBoxPage( i18n("Spelling"), i18n("Spell checker behavior"),
-			  BarIcon("spellcheck", KIcon::SizeMedium) );
+                          BarIcon("spellcheck", KIcon::SizeMedium) );
   KSpellConfig *ksc = new KSpellConfig(page, 0L, kWrite->ksConfig(), false );
 
   kwin.setIcons(kd->winId(), kapp->icon(), kapp->miniIcon());
@@ -570,7 +571,7 @@ void TopLevel::newCaption()
 {
   setEndOfLine->setCurrentItem(kWrite->getEol());
 
-  if (kWrite->doc()->url().fileName().isEmpty()) {
+  if (kWrite->doc()->url().isEmpty()) {
     setCaption(i18n("Untitled"),kWrite->isModified());
   } else {
     //set caption
@@ -709,8 +710,8 @@ void TopLevel::writeConfig()
 // session management
 void TopLevel::restore(KConfig *config, int n)
 {
-  if (kWrite->isLastView() && kWrite->doc()->url().fileName().isEmpty()) { //in this case first view
-    loadURL(kWrite->doc()->url().fileName(), lfNoAutoHl);
+  if (kWrite->isLastView() && !kWrite->doc()->url().isEmpty()) { //in this case first view
+    loadURL(kWrite->doc()->url(), lfNewFile );
   }
   readPropertiesInternal(config, n);
   init();
@@ -730,14 +731,10 @@ void TopLevel::saveProperties(KConfig *config)
   writeConfig(config);
   config->writeEntry("DocumentNumber",docList.find(kWrite->doc()) + 1);
   kWrite->writeSessionConfig(config);
-#warning fix session management
-#if 0
-  setUnsavedData(kWrite->isModified());
-#endif
 }
 
 
-void TopLevel::saveData(KConfig *config) //save documents
+void TopLevel::saveGlobalProperties(KConfig *config) //save documents
 {
   int z;
   char buf[16];

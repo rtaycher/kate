@@ -112,7 +112,7 @@ class TopLevel : public KMainWindow {
   protected:
     virtual void readProperties(KConfig *);
     virtual void saveProperties(KConfig *);
-    virtual void saveData(KConfig *);
+    virtual void saveGlobalProperties(KConfig *);
 
 };
 

@@ -130,7 +130,7 @@ KWriteView::KWriteView(KWrite *write, KWriteDoc *doc, bool HandleOwnDND)
 
   kWrite = write;
   kWriteDoc = doc;
-    
+
   QWidget::setCursor(ibeamCursor);
   setBackgroundMode(NoBackground);
   KCursor::setAutoHideCursor( this, true );
@@ -1990,30 +1990,30 @@ void KWrite::slotJobReadResult( KIO::Job *job )
     m_mapNetData.remove( it );
 
     if ( job->error() )
-	job->showErrorDialog();
+        job->showErrorDialog();
     else
     {
-	QBuffer buff( data );
-	buff.open( IO_ReadOnly );
-	loadFile( buff, flags );
+        QBuffer buff( data );
+        buff.open( IO_ReadOnly );
+        loadFile( buff, flags );
 
-	QString msg;
+        QString msg;
 
-	if ( flags & lfInsert )
-	    msg = i18n( "Inserted : %1" ).arg( url.fileName() );
-        	else
-	{
-	    kWriteDoc->setURL( url, !(flags & lfNoAutoHl) );
-	    kWriteDoc->updateLines();
-	    kWriteDoc->updateViews();
+        if ( flags & lfInsert )
+            msg = i18n( "Inserted : %1" ).arg( url.fileName() );
+        else
+        {
+            kWriteDoc->setURL( url, !(flags & lfNoAutoHl ) );
+            kWriteDoc->updateLines();
+            kWriteDoc->updateViews();
 
-	    msg = i18n( "Read : %1" ).arg( url.fileName() );
-	}
-	emit statusMsg( msg );
+            msg = i18n( "Read : %1" ).arg( url.fileName() );
+        }
+        emit statusMsg( msg );
     }
 
     if ( flags & lfNewFile )
-	kWriteDoc->setModified( false );
+        kWriteDoc->setModified( false );
 }
 
 void KWrite::slotJobData( KIO::Job *job, const QByteArray &data )
@@ -2030,16 +2030,16 @@ void KWrite::slotJobWriteResult( KIO::Job *job )
 {
     // this should probably go into the document? (Simon)
     if ( job->error() )
-	job->showErrorDialog();
+        job->showErrorDialog();
 
     delete m_tempSaveFile;
     m_tempSaveFile = 0;
     kWriteDoc->setModified( false );
 
     if ( job->error() )
-	emit statusMsg( QString::null );
+        emit statusMsg( QString::null );
     else
-	emit statusMsg( i18n( "Wrote %1" ).arg( static_cast<KIO::FileCopyJob *>( job )->destURL().fileName() ) );
+        emit statusMsg( i18n( "Wrote %1" ).arg( static_cast<KIO::FileCopyJob *>( job )->destURL().fileName() ) );
 }
 
 void KWrite::slotGETFinished( int )
@@ -2802,7 +2802,7 @@ void KWrite::updateBMPopup() {
       if (p->count() == 3) p->insertSeparator();
       id = p->addCommand(ctBookmarkCommands, cmGotoBookmarks + z);
       buf = i18n("Line: %1")
-	.arg(KGlobal::locale()->formatNumber(b->cursor.y + 1, 0));
+        .arg(KGlobal::locale()->formatNumber(b->cursor.y + 1, 0));
       p->setText(buf, id);
 //      p->insertItem(buf,z);
 //      if (z < 9) p->setAccel(ALT+keys[z],z);

@@ -424,9 +424,9 @@ const char * KWActionGroup::typeName(int type)
 }
 
 KWriteDoc::KWriteDoc(HlManager *hlManager, const QString &path,
-		     bool bSingleViewMode, bool bBrowserView,
-		     QWidget *parentWidget, const char *widgetName,
-		     QObject *parent, const char *name )
+                     bool bSingleViewMode, bool bBrowserView,
+                     QWidget *parentWidget, const char *widgetName,
+                     QObject *parent, const char *name )
   : KTextEditor::Document(parent, name), hlManager(hlManager) {
 
   setInstance( KWriteFactory::instance() );
@@ -698,7 +698,6 @@ void KWriteDoc::writeConfig(KConfig *config) {
 }
 
 void KWriteDoc::readSessionConfig(KConfig *config) {
-
   readConfig(config);
   m_url = config->readEntry("URL"); // ### doesn't this break the encoding? (Simon)
   setHighlight(hlManager->nameFind(config->readEntry("Highlight")));
@@ -3185,7 +3184,7 @@ KWriteBrowserExtension::KWriteBrowserExtension( KWriteDoc *doc )
 {
   m_doc = doc;
   connect( m_doc, SIGNAL( selectionChanged() ),
-	   this, SLOT( slotSelectionChanged() ) );
+           this, SLOT( slotSelectionChanged() ) );
 }
 
 void KWriteBrowserExtension::copy()
