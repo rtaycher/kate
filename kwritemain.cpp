@@ -374,7 +374,7 @@ void TopLevel::slotDropEvent( QDropEvent *event )
   QStrList  urls;
 
   if (QUriDrag::decode(event, urls)) {
-    kdDebug() << "TopLevel:Handling QUriDrag..." << endl;
+    kdDebug(13000) << "TopLevel:Handling QUriDrag..." << endl;
     char *s;
     for (s = urls.first(); s != 0L; s = urls.next()) {
       // Load the first file in this window

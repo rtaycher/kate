@@ -155,7 +155,7 @@ KantDocument::KantDocument(long docID, QFileInfo* fi) : KTextEditor::Document(0L
 KantDocument::~KantDocument()
 {
   m_highlight->release();
-  kdDebug() << "KantDocument::~KantDocument" << endl;
+  kdDebug(13020) << "KantDocument::~KantDocument" << endl;
 }
 
 bool KantDocument::openFile()

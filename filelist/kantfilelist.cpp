@@ -137,14 +137,14 @@ void KantFileList::slotNameChanged (KantDocument *doc)
 void KantFileList::slotViewChanged ()
 {
   if (!viewManager->activeView()) return;
-  //kdDebug()<<"filelist::slotViewChanged(): an active vies was found, attempting to select item"<<endl;
+  //kdDebug(13030)<<"filelist::slotViewChanged(): an active vies was found, attempting to select item"<<endl;
   KantView *view = viewManager->activeView();
 
   for (uint i = 0; i < count(); i++)
   {
     if (((KantFileListItem *) item (i)) ->docID() == ((KantDocument *)view->doc())->docID())
     {
-      //kdDebug()<<"KantFileList::slotViewChanged(): got it!: "<<item(i)->text()<<endl;
+      //kdDebug(13030)<<"KantFileList::slotViewChanged(): got it!: "<<item(i)->text()<<endl;
       setCurrentItem (i);
       if ( !isSelected( item(i) ) )
         setSelected( i, true );

@@ -20,7 +20,7 @@ ShowErrorMessage ( int argc, char** argv, QString strFileName, int nLine, QStrin
 	QCString strObject ("KantIface");
 	QCString strApp ("kant");
 
-	kdDebug() << "sending " << strCommand << " to object " << strObject << " in " << strApp << endl;
+	kdDebug(13000) << "sending " << strCommand << " to object " << strObject << " in " << strApp << endl;
 	QByteArray snd;
 	QByteArray rcv;
 	QCString _type_;
@@ -28,12 +28,12 @@ ShowErrorMessage ( int argc, char** argv, QString strFileName, int nLine, QStrin
 	arg << strFileName << nLine << strMessage;
 
 	if (kapp->dcopClient()->call( strApp, strObject, strCommand, snd, _type_, rcv ))
-		kdDebug() << "okay" << endl;
+		kdDebug(13000) << "okay" << endl;
 	else
-		kdDebug() << "nope" << endl;  //  TODO: Why not?
+		kdDebug(13000) << "nope" << endl;  //  TODO: Why not?
 
-//	kdDebug() << _type_ << endl;
-//	if( _type_ != "void" ) kdDebug() << "void expected, " << _type_.data() << " returned" << endl;
+//	kdDebug(13000) << _type_ << endl;
+//	if( _type_ != "void" ) kdDebug(13000) << "void expected, " << _type_.data() << " returned" << endl;
 
 }
 

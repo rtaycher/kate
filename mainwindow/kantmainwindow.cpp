@@ -73,7 +73,7 @@
 #include <kurldrag.h>
 
 
-#define POP_(x) kdDebug() << #x " = " << flush << x << endl
+#define POP_(x) kdDebug(13000) << #x " = " << flush << x << endl
 
 KantViewManagerIface *KantMyPluginIface::viewManagerIface ()
 {
@@ -187,14 +187,14 @@ bool KantMainWindow::eventFilter(QObject* o, QEvent* e)
                 QKeyEvent *ke=(QKeyEvent*)e;
                 if (ke->key()==goNext->accel())
                         {
-                                kdDebug()<<"Jump next view  registered in Konsole";
+                                kdDebug(13000)<<"Jump next view  registered in Konsole";
 				slotGoNext();
                                 return true;
                         }
 		else
 	                if (ke->key()==goPrev->accel())
         	                {
-                	                kdDebug()<<"Jump prev view  registered in Konsole";
+                	                kdDebug(13000)<<"Jump prev view  registered in Konsole";
                         	        slotGoPrev();
                                 	return true;
 	                        }
@@ -1078,7 +1078,7 @@ void KantMainWindow::slotSidebarFocusNext()
 
 void KantMainWindow::focusInEvent(QFocusEvent*  /* e */)
 {
-  kdDebug()<<"focusIn"<<endl;
+  kdDebug(13000)<<"focusIn"<<endl;
   docManager->checkAllModOnHD();
 }
 
@@ -1095,8 +1095,9 @@ void KantMainWindow::fileSelected(const KFileViewItem *file)
 
 QStringList KantMainWindow::containerTags() const
 {
-  kdDebug()<<"This is KanMainWindow::containerTags()"<<endl;
+  kdDebug(13000)<<"This is KanMainWindow::containerTags()"<<endl;
   QStringList tmp = KDockMainWindow::containerTags();
+
   tmp<<tagSidebar;
   return tmp;
 }    
@@ -1104,10 +1105,10 @@ QStringList KantMainWindow::containerTags() const
 QWidget *KantMainWindow::createContainer( QWidget *parent, int index,
           const QDomElement &element, int &id )
   {
-    kdDebug()<<"************************This is KantMainWindow::createContainer"<<endl;
+    kdDebug(13000)<<"************************This is KantMainWindow::createContainer " << ((parent) ? parent->className() : "Null ") <<endl;
     if (element.tagName().lower()==tagSidebar)
       {
-        kdDebug()<<"****** A sidebar should be created";
+        kdDebug(13000)<<"****** A sidebar should be created";
         KDockWidget *tmp=createDockWidget("TMPDOCK",0);
         tmp->manualDock ( mainDock, KDockWidget::DockRight, 20 );
 	tmp->setWidget(new KListBox(tmp));

@@ -85,10 +85,10 @@ bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView, Ka
     if ( (!url.isEmpty()) && (url.filename() != 0) ) {
       // if this is a local file, get some information
       if ( url.isLocalFile() ) {
-         //kdDebug()<<"local file!"<<endl;
+         //kdDebug(13030)<<"local file!"<<endl;
          fi = new QFileInfo(url.path());
          if (!fi->exists()) {
-           kdDebug()<<QString("createView(): ABORTING: %1 dosen't exist").arg(url.path())<<endl;
+           kdDebug(13030)<<QString("createView(): ABORTING: %1 dosen't exist").arg(url.path())<<endl;
            return false;
          }
       }
@@ -247,7 +247,7 @@ KantView* KantViewManager::activeView ()
   // first, try to get one from activeViewSpace()
   KantViewSpace* vs;
   if ( (vs = activeViewSpace()) ) {
-    //kdDebug()<<"Attempting to pick a view from activeViewSpace()"<<endl;
+    //kdDebug(13030)<<"Attempting to pick a view from activeViewSpace()"<<endl;
     if ( vs->currentView() ) {
       vs->currentView()->setActive( true );
       return vs->currentView();
@@ -257,7 +257,7 @@ KantView* KantViewManager::activeView ()
   // last attempt: just pick first
   if (viewList.count() > 0)
   {
-   //kdDebug()<<"desperately choosing first view!"<<endl;
+   //kdDebug(13030)<<"desperately choosing first view!"<<endl;
    viewList.first()->setActive( true );
     return viewList.first();
   }
@@ -276,7 +276,7 @@ void KantViewManager::setActiveSpace ( KantViewSpace* vs )
 
 void KantViewManager::setActiveView ( KantView* view )
 {
-//kdDebug()<<QString("setActiveView(): " + view->doc()->url().filename())<<endl;
+//kdDebug(13030)<<QString("setActiveView(): " + view->doc()->url().filename())<<endl;
    if (activeView())
      activeView()->setActive( false );
 
@@ -298,18 +298,18 @@ void KantViewManager::activateSpace (KantView* v)
 void KantViewManager::activateView ( KantView *view )
 {
   if (!view) return;
-//kdDebug()<<"activateView"<<endl;
+//kdDebug(13030)<<"activateView"<<endl;
   ((KantDocument*)view->doc())->isModOnHD();
   if (!view->isActive())
   {
     if ( !activeViewSpace()->showView (view) )
     {
       // since it wasn't found, give'em a new one
-      kdDebug()<<"Sometimes things aren't what they seem..."<<endl;
+      kdDebug(13030)<<"Sometimes things aren't what they seem..."<<endl;
       createView (false, 0L, view );
       return;
     }
-//kdDebug()<<"setting view as active"<<endl;
+//kdDebug(13030)<<"setting view as active"<<endl;
     setActiveView (view);
     viewList.findRef (view);
 
@@ -884,7 +884,7 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
   {
     if (viewspace->currentView())
     {
-      //kdDebug()<<QString("removeViewSpace(): %1 views left").arg(vsvc)<<endl;
+      //kdDebug(13030)<<QString("removeViewSpace(): %1 views left").arg(vsvc)<<endl;
       KantView* v = viewspace->currentView();
 
       if (v->isLastView())
@@ -895,7 +895,7 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
       else
       {
         deleteView( v, false, false );
-        //kdDebug()<<"KantViewManager::removeViewSpace(): deleting a view: "<<v->doc()->url().filename()<<endl;
+        //kdDebug(13030)<<"KantViewManager::removeViewSpace(): deleting a view: "<<v->doc()->url().filename()<<endl;
       }
     }
     vsvc = viewspace->viewCount();
@@ -906,7 +906,7 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
   // reparent the other sibling of the parent.
   while (p->children ())
   {
-    //kdDebug()<<"KantViewManager::removeViewSpace(): reparenting something"<<endl;
+    //kdDebug(13030)<<"KantViewManager::removeViewSpace(): reparenting something"<<endl;
     QWidget* other = ((QWidget *)(( QList<QObject>*)p->children())->first());
     other->reparent( p->parentWidget(), 0, QPoint(), true );
     // We also need to find the right viewspace to become active,
@@ -935,7 +935,7 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
   // find the view that is now active.
   KantView* v = activeViewSpace()->currentView();
   if ( v ) {
-    //kdDebug()<<"removeViewSpace(): setting active view: "<<v->doc()->url().filename()<<endl;
+    //kdDebug(13030)<<"removeViewSpace(): setting active view: "<<v->doc()->url().filename()<<endl;
     activateView( v );
   }
 
@@ -1038,7 +1038,7 @@ void KantViewManager::reopenDocuments(bool isRestore)
   ////////////////////////////////////////////////////////////////////////
   // RESTORE VIEW CONFIG TEST
   if ( scfg->hasGroup("splitter0") && (isRestore || resVC) ) {
-    kdDebug()<<"reopenDocumentw(): calling restoreViewConfig()"<<endl;
+    kdDebug(13030)<<"reopenDocumentw(): calling restoreViewConfig()"<<endl;
     restoreViewConfig();
     return;
   }
@@ -1068,7 +1068,7 @@ void KantViewManager::reopenDocuments(bool isRestore)
 void KantViewManager::saveViewSpaceConfig()
 {
    if (viewSpaceCount() == 1) {
-     kdDebug()<<"saveViewSpaceConfig(): only one vs, aborting"<<endl;
+     kdDebug(13030)<<"saveViewSpaceConfig(): only one vs, aborting"<<endl;
      return;
    }
 
@@ -1081,7 +1081,7 @@ void KantViewManager::saveViewSpaceConfig()
    if ( (s = (KantSplitter*)it.current()) != 0 )
      saveSplitterConfig( s, 0, scfg );
    else
-     kdDebug()<<"saveViewSpaceConfig(): PANIC! can't find starting point!"<<endl;
+     kdDebug(13030)<<"saveViewSpaceConfig(): PANIC! can't find starting point!"<<endl;
    delete l;
 
    scfg->sync();
@@ -1162,9 +1162,9 @@ void KantViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
    config->setGroup( group );
 
    // create a splitter with orientation
-   kdDebug()<<"restoreSplitter():creating a splitter: "<<group<<endl;
+   kdDebug(13030)<<"restoreSplitter():creating a splitter: "<<group<<endl;
    if (parent == this)
-     kdDebug()<<"parent is this"<<endl;
+     kdDebug(13030)<<"parent is this"<<endl;
    KantSplitter* s = new KantSplitter((Qt::Orientation)config->readNumEntry("orientation"), parent);
    if ( group.compare("splitter0") == 0 )
      grid->addWidget(s, 0, 0);
@@ -1174,9 +1174,9 @@ void KantViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
      // for a viewspace, create it and open all documents therein.
      // TODO: restore cursor position.
      if ( (*it).startsWith("viewspace") ) {
-       kdDebug()<<"Adding a viewspace: "<<(*it)<<endl;
+       kdDebug(13030)<<"Adding a viewspace: "<<(*it)<<endl;
        KantViewSpace* vs;
-       kdDebug()<<"creating a viewspace for "<<(*it)<<endl;
+       kdDebug(13030)<<"creating a viewspace for "<<(*it)<<endl;
        vs = new KantViewSpace( s );
        connect(this, SIGNAL(statusChanged(KantView *, int, int, int, int, QString)), vs, SLOT(slotStatusChanged(KantView *, int, int, int, int, QString)));
        vs->installEventFilter( this );
@@ -1198,7 +1198,7 @@ void KantViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
            config->deleteGroup( data[0] );
          }
          else { // if the group has been deleted, we can find a document
-           kdDebug()<<"document allready open, creating extra view"<<endl;
+           kdDebug(13030)<<"document allready open, creating extra view"<<endl;
            // ahem, tjeck if this document actually exists.
            long docID = docManager->findDoc( KURL(data[0]) );
            if (docID >= 0)
@@ -1222,7 +1222,7 @@ void KantViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
    }
    // set sizes
    config->setGroup( group );
-   kdDebug()<<QString("splitter has %1 children").arg( s->children()->count() )<<endl;
+   kdDebug(13030)<<QString("splitter has %1 children").arg( s->children()->count() )<<endl;
    s->setSizes( config->readIntListEntry("sizes") );
    s->show();
    config->deleteGroup( group );

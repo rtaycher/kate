@@ -59,7 +59,7 @@ int main( int argc, char **argv )
   KantApp::addCmdLineOptions ();
 
   if (!KantApp::start()) {
-    kdDebug()<<"main: cant start kantapp!"<<endl;
+    kdDebug(13000)<<"main: cant start kantapp!"<<endl;
     exit(0);
   }
 

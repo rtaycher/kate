@@ -107,7 +107,7 @@ HlItem::HlItem(int attribute, int context)
 
 HlItem::~HlItem()
 {
-  kdDebug()<<"In hlItem::~HlItem()"<<endl;
+  kdDebug(13010)<<"In hlItem::~HlItem()"<<endl;
   if (subItems!=0) {subItems->setAutoDelete(true); subItems->clear(); delete subItems;}
 }
 
@@ -406,7 +406,7 @@ HlAnyChar::HlAnyChar(int attribute, int context, char* charList)
 }
 
 const QChar *HlAnyChar::checkHgl(const QChar *s,bool) {
-  //kdDebug()<<"in AnyChar::checkHgl: _charList: "<<_charList<<endl;
+  //kdDebug(13010)<<"in AnyChar::checkHgl: _charList: "<<_charList<<endl;
   if (ustrchr(_charList, *s)) return s +1;
   return 0L;
 }
@@ -428,7 +428,7 @@ HlRegExpr::HlRegExpr(int attribute, int context,QString regexp)
 const QChar *HlRegExpr::checkHgl(const QChar *s,bool lineStart)
 {
   if ((!lineStart) && handlesLinestart) return 0;
-  //kdDebug()<<"Trying to match:"<<Expr->pattern()<<endl;
+  //kdDebug(13010)<<"Trying to match:"<<Expr->pattern()<<endl;
   const QChar *chtmp=s;
   int i;
   for (i=0;(*chtmp)!='\0';chtmp++,i++);
@@ -1244,7 +1244,7 @@ void CppHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
   dataType->addList(HlManager::self()->syntax->finddata("C","type"));
   keyword->addList(HlManager::self()->syntax->finddata("C++","keyword"));
   dataType->addList(HlManager::self()->syntax->finddata("C++","type"));
-//  kdDebug() << "Types " << dataType->getList().count() <<" Keywords " << keyword->getList().count() << endl;
+//  kdDebug(13010) << "Types " << dataType->getList().count() <<" Keywords " << keyword->getList().count() << endl;
 }
 
 ObjcHighlight::ObjcHighlight(const char * name) : CHighlight(name) {
@@ -2164,7 +2164,7 @@ void AutoHighlight::createItemData(ItemDataList &list)
 {
   struct syntaxContextData *data;
 
-  kdDebug()<<"In AutoHighlight::createItemData"<<endl;
+  kdDebug(13010)<<"In AutoHighlight::createItemData"<<endl;
   data=HlManager::self()->syntax->getGroupInfo(iName,"itemData");
   while (HlManager::self()->syntax->nextGroup(data))
     {
@@ -2208,7 +2208,7 @@ HlItem *AutoHighlight::createHlItem(struct syntaxContextData *data, int *res)
                 if (dataname=="AnyChar") return(new HlAnyChar(attr,context,(char*)stringdata.latin1())); else
                 if (dataname=="RegExpr") return(new HlRegExpr(attr,context,stringdata)); else
                   {
-                    kdDebug()<<"***********************************"<<endl<<"Unknown entry for Context:"<<dataname<<endl;
+                    kdDebug(13010)<<"***********************************"<<endl<<"Unknown entry for Context:"<<dataname<<endl;
                     return 0;
                   }
 
@@ -2221,14 +2221,14 @@ void AutoHighlight::makeContextList()
   struct syntaxContextData *data, *datasub;
   HlItem *c;
 
-  kdDebug()<< "AutoHighlight makeContextList()"<<endl;
+  kdDebug(13010)<< "AutoHighlight makeContextList()"<<endl;
   data=HlManager::self()->syntax->getGroupInfo(iName,"context");
   int i=0;
   if (data)
     {
       while (HlManager::self()->syntax->nextGroup(data))
         {
-	kdDebug()<< "In make Contextlist: Group"<<endl;
+	kdDebug(13010)<< "In make Contextlist: Group"<<endl;
           contextList[i]=new HlContext(
             (HlManager::self()->syntax->groupData(data,QString("attribute"))).toInt(),
             (HlManager::self()->syntax->groupData(data,QString("lineEndContext"))).toInt());
@@ -2241,7 +2241,7 @@ void AutoHighlight::makeContextList()
 
             while (HlManager::self()->syntax->nextItem(data))
               {
-		kdDebug()<< "In make Contextlist: Item:"<<endl;
+		kdDebug(13010)<< "In make Contextlist: Item:"<<endl;
 
 		int res;
 		c=createHlItem(data,&res);
@@ -2260,15 +2260,15 @@ void AutoHighlight::makeContextList()
                                         }
 				HlManager::self()->syntax->freeGroupInfo(datasub);
 			}
-		kdDebug()<<"Last line in loop"<<endl;
+		kdDebug(13010)<<"Last line in loop"<<endl;
               }
           i++;
         }
       }
-  kdDebug()<<"After creation loop in AutoHighlight::makeContextList"<<endl;
+  kdDebug(13010)<<"After creation loop in AutoHighlight::makeContextList"<<endl;
   HlManager::self()->syntax->freeGroupInfo(data);
   setKeywords(keyword, dataType);
-  kdDebug()<<"After setKeyWords AutoHighlight::makeContextList"<<endl;
+  kdDebug(13010)<<"After setKeyWords AutoHighlight::makeContextList"<<endl;
 
 }
 
@@ -2293,7 +2293,7 @@ HlManager::HlManager() : QObject(0L)
   }
 
 /*
-  kdDebug()<<"Creating HlList"<<endl;
+  kdDebug(13010)<<"Creating HlList"<<endl;
   hlList.append(new CHighlight(     "C"        ));
   hlList.append(new CppHighlight(   "C++"      ));
   hlList.append(new ObjcHighlight(  "Objective-C"));
@@ -2310,7 +2310,7 @@ HlManager::HlManager() : QObject(0L)
   hlList.append(new KBasicHighlight("KBasic"));
   hlList.append(new LatexHighlight( "Latex"    ));
   hlList.append(new IdlHighlight("IDL"));
-  kdDebug()<<"HlList created"<<endl;
+  kdDebug(13010)<<"HlList created"<<endl;
  */
 }
 

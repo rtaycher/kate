@@ -75,7 +75,7 @@ int KantApp::newInstance ()
   mainWindows.first()->restore(isRestored());
 
   if (isRestored())
-    kdDebug()<<"restored app anybody?"<<endl;
+    kdDebug(13000)<<"restored app anybody?"<<endl;
   if (!isRestored())
   {
 

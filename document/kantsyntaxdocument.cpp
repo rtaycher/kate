@@ -54,6 +54,7 @@ SyntaxDocument::~SyntaxDocument()
 
 void SyntaxDocument::setupModeList()
 {
+  kdDebug(13010) << k_funcinfo << endl;
   if (myModeList.count() > 0) return;
 
   QDomElement docElem = documentElement();
@@ -85,6 +86,7 @@ SyntaxModeList SyntaxDocument::modeList()
 
 bool SyntaxDocument::nextGroup(struct syntaxContextData* data)
 {
+  if(!data) return false;
   if (data->currentGroup.isNull())
     {
       data->currentGroup=data->parent.firstChild().toElement();
@@ -98,6 +100,7 @@ bool SyntaxDocument::nextGroup(struct syntaxContextData* data)
 
 bool SyntaxDocument::nextItem(struct syntaxContextData* data)
 {
+  if(!data) return false;
   if (data->item.isNull())
     {
       data->item=data->currentGroup.firstChild().toElement();
@@ -109,17 +112,19 @@ bool SyntaxDocument::nextItem(struct syntaxContextData* data)
 
 QString SyntaxDocument::groupItemData(struct syntaxContextData* data,QString name)
 {
+  if(!data) return QString::null;
   if (!data->item.isNull()) return data->item.attribute(name); else return QString();
 }
 
 QString SyntaxDocument::groupData(struct syntaxContextData* data,QString name)
 {
+    if(!data) return QString::null;
     if (!data->currentGroup.isNull()) return data->currentGroup.attribute(name); else return QString();
 }
 
 void SyntaxDocument::freeGroupInfo(struct syntaxContextData* data)
 {
-  delete data;
+  if(data)   delete data;
 }
 
 
@@ -142,14 +147,14 @@ struct syntaxContextData* SyntaxDocument::getGroupInfo(const QString& langName, 
 
   while (!n.isNull())
     {
-      kdDebug()<<"in SyntaxDocument::getGroupInfo (outter loop)"<<endl;
+      kdDebug(13010)<<"in SyntaxDocument::getGroupInfo (outer loop) " <<endl;
       QDomElement e=n.toElement();
       if (e.attribute("name").compare(langName)==0 )
         {
           QDomNode n1=e.firstChild();
           while (!n1.isNull())
             {
-      	      kdDebug()<<"in SyntaxDocument::getGroupInfo (inner loop)"<<endl;
+      	      kdDebug(13010)<<"in SyntaxDocument::getGroupInfo (inner loop) " <<endl;
               QDomElement e1=n1.toElement();
               if (e1.tagName()==group+"s")
                 {
@@ -159,10 +164,12 @@ struct syntaxContextData* SyntaxDocument::getGroupInfo(const QString& langName, 
                 }
               n1=e1.nextSibling();
             }
+            kdDebug(13010) << "WARNING :returning null " << k_lineinfo << endl;
           return 0;
         }
       n=e.nextSibling();
     }
+    kdDebug(13010) << "WARNING :returning null " << k_lineinfo << endl;
   return 0;
 }
 

@@ -27,7 +27,7 @@
 
 KantPluginManager::KantPluginManager(QObject *parent):QObject(parent)
   {
-    kdDebug()<<"Constructing KantPluginManager"<<endl;
+    kdDebug(13040)<<"Constructing KantPluginManager"<<endl;
     KStandardDirs *dirs = KGlobal::dirs();
 
     QStringList list=dirs->findAllResources("appdata","plugins/*.desktop",false,true);
@@ -38,10 +38,10 @@ KantPluginManager::KantPluginManager(QObject *parent):QObject(parent)
 	confFile=new KSimpleConfig(*it,true);
 	if (confFile->readEntry("load","no").upper()=="YES")
           {
-	    kdDebug()<<"Cool one  plugin should be loaded"<<endl;
+	    kdDebug(13040)<<"Cool one  plugin should be loaded"<<endl;
             QString relp=QFileInfo(*it).fileName();
 	    relp=relp.left(relp.length()-8);
-	    kdDebug()<<"Found plugin: "<<relp<<endl;
+	    kdDebug(13040)<<"Found plugin: "<<relp<<endl;
 	    relp=dirs->findResource("appdata","plugins/"+relp+"/ui.rc");
 	    KParts::Plugin::PluginInfo plInf;
 	    plInf.m_absXMLFileName=relp;
@@ -60,12 +60,12 @@ KantPluginManager::KantPluginManager(QObject *parent):QObject(parent)
           }
 	else
           { 
-		kdDebug()<<"Plugin skipped"<<endl;
+		kdDebug(13040)<<"Plugin skipped"<<endl;
 	       availablePlugins<<(*it);
 	  }
 	delete confFile;
       }
      //       qDebug((*it).latin1());}
 
-   kdDebug()<<"KantPluginManager initializes"<<endl;
+   kdDebug(13040)<<"KantPluginManager initializes"<<endl;
   }

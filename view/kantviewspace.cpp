@@ -57,7 +57,7 @@ void KantViewSpace::addView(KantView* v, bool show)
   }
   else {
     KantView* c = mViewList.current();
-    //kdDebug()<<"KantViewSpace::addView(): showing current view "<< c->doc()->url().path()<<endl;
+    //kdDebug(13030)<<"KantViewSpace::addView(): showing current view "<< c->doc()->url().path()<<endl;
     mViewList.prepend( v );
     showView( c );
   }
@@ -115,7 +115,7 @@ bool KantViewSpace::showView(int docID)
 KantView* KantViewSpace::currentView()
 {
   if (mViewList.count() > 0) {
-    //kdDebug()<<"KantViewSpace::currentView(): "<<((KantView*)stack->visibleWidget())->doc()->url().filename()<<endl;
+    //kdDebug(13030)<<"KantViewSpace::currentView(): "<<((KantView*)stack->visibleWidget())->doc()->url().filename()<<endl;
     return (KantView*)stack->visibleWidget();
   }
   return 0L;
@@ -177,7 +177,7 @@ void KantViewSpace::saveFileList( KSimpleConfig* config, int myIndex )
   for (; it.current(); ++it) {
     l.clear();
     if ( !it.current()->doc()->url().isEmpty() ) {
-    kdDebug()<<"saving vs data for "<<it.current()->doc()->url().prettyURL()<<endl;
+    kdDebug(13030)<<"saving vs data for "<<it.current()->doc()->url().prettyURL()<<endl;
       l << it.current()->doc()->url().prettyURL();
       l << QString("%1").arg( it.current()->currentLine());
       l << QString("%1").arg( it.current()->currentColumn() );
