@@ -103,6 +103,11 @@ public:
       Gets a C-like null terminated string
     */
     const QChar *getString();
+
+    /*
+      Gets a null terminated pointer to first non space char
+    */
+    const QChar *firstNonSpace();
     /**
       Returns the x position of the cursor at the given position, which
       depends on the number of tab characters

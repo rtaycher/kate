@@ -154,6 +154,13 @@ QChar TextLine::getChar(int pos) const {
   if (pos < len) return text[pos];
   return ' ';
 }
+const QChar *TextLine::firstNonSpace()
+{
+  const QChar *ptr=getString();
+  int first=firstChar();
+  return (first > -1) ? ptr+first : ptr;
+}
+
 
 const QChar* TextLine::getString() {
   QChar ch = QChar('\0');  // this hack makes the string null terminated
