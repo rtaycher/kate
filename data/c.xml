@@ -62,7 +62,7 @@
         <Detect2Chars attribute="10" context="2" char="/" char1="/"/>
         <Detect2Chars attribute="10" context="3" char="/" char1="*"/>
         <AnyChar attribute="11" context="#stay" String="!%&amp;()+,-&lt;=&gt;?[]^{|}~"/>
-        <StringDetect attribute="10" context="8" String="#if 0" insensitive="FALSE"/>
+        <StringDetect attribute="12" context="8" String="#if 0" insensitive="FALSE"/>
         <RegExpr attribute="12" context="4" String="^#"/>
       </context>
       <context attribute="8" lineEndContext="#pop">
@@ -91,8 +91,14 @@
       <context attribute="0" lineEndContext="#pop" />
       <context attribute="10" lineEndContext="#stay">
           <RegExpr attribute="3" context="#stay" String="(FIXME|TODO)" />
-          <RegExpr attribute="10" context="#pop" String="^#endif" />
+	  <RegExpr attribute="10" context="9" String="#if" />
+          <RegExpr attribute="12" context="#pop" String="#endif" />
+	  <RegExpr attribute="12" context="#pop" String="#else" />
       </context>
+      <context attribute="10" lineEndContext="#stay">
+	  <RegExpr attribute="10" context="9" String="#if" />
+          <RegExpr attribute="10" context="#pop" String="#endif" />
+      </context>	
     </contexts>
     <itemDatas>
       <itemData name="Normal Text" defStyleNum="dsNormal"/>

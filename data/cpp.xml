@@ -159,11 +159,12 @@
       <context attribute="10" lineEndContext="-2">
           <RegExpr attribute="3" context="-2" String="(FIXME|TODO)" />
 	  <RegExpr attribute="10" context="9" String="#if" />
-          <RegExpr attribute="12" context="-1" String="^#endif" />
-	  <RegExpr attribute="12" context="-1" String="^#else" />
+          <RegExpr attribute="12" context="-1" String="#endif" />
+	  <RegExpr attribute="12" context="-1" String="#else" />
       </context>
       <context attribute="10" lineEndContext="-2">
-          <RegExpr attribute="10" context="-1" String="^#endif" />
+	  <RegExpr attribute="10" context="9" String="#if" />
+          <RegExpr attribute="10" context="-1" String="#endif" />
       </context>
     </contexts>
     <itemDatas>
