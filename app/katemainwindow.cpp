@@ -233,7 +233,7 @@ void KateMainWindow::setupActions()
   fileOpenRecent->setWhatsThis(i18n("This lists files which you have opened recently, and allows you to easily open them again."));
 
   a=new KAction( i18n("Save A&ll"),"save_all", CTRL+Key_L, KateDocManager::self(), SLOT( saveAll() ), actionCollection(), "file_save_all" );
-  a->setWhatsThis(i18n("Save all open, modified documents to disc."));
+  a->setWhatsThis(i18n("Save all open, modified documents to disk."));
 
   KStdAction::close( m_viewManager, SLOT( slotDocumentClose() ), actionCollection(), "file_close" )->setWhatsThis(i18n("Close the current document."));
 

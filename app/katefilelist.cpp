@@ -288,11 +288,11 @@ void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool, unsigned char 
     QPixmap w( BarIcon("messagebox_warning", 32) );
     QString a;
     if ( r == 1 )
-      a = i18n("The document<br><code>%1</code><br>was changed on disk by another process.");
+      a = i18n("The document<br><code>%1</code><br>was changed on disk by another program.");
     else if ( r == 2 )
-      a = i18n("The document<br><code>%1</code><br>was created on disk by another process.");
+      a = i18n("The document<br><code>%1</code><br>was created on disk by another program.");
     else if ( r == 3 )
-      a = i18n("The document<br><code>%1</code><br>was deleted from disk by another process");
+      a = i18n("The document<br><code>%1</code><br>was deleted from disk by another program.");
 
     if ( ((KateMainWindow*)topLevelWidget())->notifyMod() )
       KPassivePopup::message( i18n("Warning"),
@@ -377,11 +377,11 @@ QString KateFileList::tooltip( QListViewItem *item, int )
   if (info && info->modifiedOnDisc)
   {
     if (info->modifiedOnDiscReason == 1)
-      str += i18n("<b>This file was changed (modified) on disc by another program.</b><br />");
+      str += i18n("<b>This file was changed (modified) on disk by another program.</b><br />");
     else if (info->modifiedOnDiscReason == 2)
-      str += i18n("<b>This file was changed (created) on disc by another program.</b><br />");
+      str += i18n("<b>This file was changed (created) on disk by another program.</b><br />");
     else if (info->modifiedOnDiscReason == 3)
-      str += i18n("<b>This file was changed (deleted) on disc by another program.</b><br />");
+      str += i18n("<b>This file was changed (deleted) on disk by another program.</b><br />");
   }
 
   str += i->document()->url().prettyURL();
@@ -590,19 +590,19 @@ KFLConfigPage::KFLConfigPage( QWidget* parent, const char *name, KateFileList *f
   lo->addMultiCellWidget( cbEnableShading, 1, 1, 0, 1 );
 
   kcbViewShade = new KColorButton( g );
-  lViewShade = new QLabel( kcbViewShade, i18n("&Viewed documents shade:"), g );
+  lViewShade = new QLabel( kcbViewShade, i18n("&Viewed documents' shade:"), g );
   lo->addWidget( lViewShade, 2, 0 );
   lo->addWidget( kcbViewShade, 2, 1 );
 
   kcbEditShade = new KColorButton( g );
-  lEditShade = new QLabel( kcbEditShade, i18n("&Modified documents shade:"), g );
+  lEditShade = new QLabel( kcbEditShade, i18n("&Modified documents' shade:"), g );
   lo->addWidget( lEditShade, 3, 0 );
   lo->addWidget( kcbEditShade, 3, 1 );
 
   lo1->insertStretch( -1, 10 );
 
   QWhatsThis::add( cbEnableShading, i18n(
-      "When background shading is enabled, documents that was viewed "
+      "When background shading is enabled, documents that have been viewed "
       "or edited within the current session will have a shaded background. "
       "The most recent documents have the strongest shade.") );
   QWhatsThis::add( kcbViewShade, i18n(

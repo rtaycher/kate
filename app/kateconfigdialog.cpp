@@ -197,7 +197,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   cb_modNotifications->setChecked( parent->modNotification );
   QWhatsThis::add( cb_modNotifications, i18n(
       "If enabled, a passive popup message will be displayed whenever a local "
-      "file is modified, created or deleted by another process.") );
+      "file is modified, created or deleted by another program.") );
   connect( cb_modNotifications, SIGNAL( toggled( bool ) ),
            this, SLOT( slotChanged() ) );
 
