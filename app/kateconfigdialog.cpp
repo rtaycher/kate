@@ -106,12 +106,12 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   else
     rb_modeMDI->setChecked( true );
   QWhatsThis::add( bgMode, i18n(
-        "<qt>Choose what interface you like the best.<p><strong>Kate MDI</strong> (default):"
+        "<qt>Choose which interface you like best.<p><strong>Kate MDI</strong> (default):"
         "<br>All documents are kept within one main window, and you must choose the document "
-        "to edit from the &quot;Document&quor; menu, or from the File List."
+        "to edit from the \"Document\" menu, or from the File List."
         "<p><strong>Kate SDI</strong>:<br>A Single Document Interface opens only one document "
-        "in each window. The File List/File Selector will have it's own window pr default. "
-        "You can <code>ALT + TAB</code> your way to the desired document."
+        "in each window. The File List/File Selector will have it's own window by default. "
+        "You can <code>ALT-TAB</code> your way to the desired document."
         "<p><strong>Note:</strong> You need to restart Kate for this setting to take effect.</qt>") );
 
   // GROUP with the one below: "At Startup"
@@ -153,11 +153,11 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
 
   // sync the konsole ?
   cb_syncKonsole = new QCheckBox(frGeneral);
-  cb_syncKonsole->setText(i18n("Sync &Konsole with active Document"));
+  cb_syncKonsole->setText(i18n("Sync &Konsole with active document"));
   cb_syncKonsole->setChecked(parent->syncKonsole);
   QWhatsThis::add( cb_syncKonsole, i18n(
         "If this is checked, the built in Konsole will <code>cd</code> to the directory "
-        "of the active document when started and when ever the active document changes, "
+        "of the active document when started and whenever the active document changes, "
         "if the document is a local file.") );
 
   // number of recent files
@@ -168,7 +168,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   lNrf->setBuddy( sb_numRecentFiles );
   QString youwouldnotbelieveit ( i18n(
         "<qt>Sets the number of recent files remembered by Kate.<p><strong>NOTE:</strong>"
-        "If you change this to a lower value than present, the list will be truncated and "
+        "If you set this lower than the current value, the list will be truncated and "
         "some items forgotten.</qt>") );
   QWhatsThis::add( lNrf, youwouldnotbelieveit );
   QWhatsThis::add( sb_numRecentFiles, youwouldnotbelieveit );
