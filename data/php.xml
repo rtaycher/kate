@@ -1,4 +1,5 @@
-<?xml version="1.02" encoding="UTF-8"?><!DOCTYPE language>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
 <language name="PHP" section="Scripts" extensions="*.php;*.php3;*.wml" mimetype="text/x-php4-src;text/x-php3-src;text/vnd.wap.wml">
         <highlighting>
                 <list name="keywords">

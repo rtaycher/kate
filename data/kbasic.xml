@@ -1,4 +1,5 @@
-<?xml version="1.02" encoding="UTF-8"?><!DOCTYPE language>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
 <language name="KBasic"section="Sources" extensions="*.kbasic" mimetype="text/x-kbasic-src">
     <highlighting>
         <list name="keywords">

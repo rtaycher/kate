@@ -1,4 +1,5 @@
-<?xml version="1.02" encoding="UTF-8"?><!DOCTYPE language>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
 <language name="LaTeX" section="Markup" extensions="*.tex;*.TEX;*.bib;*.BIB;*.ltx;*.LTX;*.sty;*.STY;*.cls;*.CLS" mimetype="text/x-tex">
   <highlighting>
     <list name="keywords">

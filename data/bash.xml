@@ -1,5 +1,5 @@
-<?xml version="1.02" encoding="UTF-8"?>
-
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
 <language name="Bash" section="Scripts" extensions="" mimetype="text/x-shellscript">
         <highlighting>
                  <list name = "keywords">

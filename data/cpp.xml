@@ -1,4 +1,4 @@
-<?xml version="1.02" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE language SYSTEM "language.dtd">
 <language name="C++" section="Sources" extensions="*.cxx;*.cpp;*.cc;*.C;*.h" mimetype="text/x-c++-src;text/x-c++-hdr;text/x-c-hdr;text/x-c++-src">
   <highlighting>

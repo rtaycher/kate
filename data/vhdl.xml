@@ -1,4 +1,5 @@
-<?xml version="1.02" encoding="UTF-8"?><!DOCTYPE language>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
 <language name="VHDL" section="Sources" extensions="*.vdhl;*.vhd" mimetype="text/x-vhdl">
     <highlighting>
         <list name="keywords">
