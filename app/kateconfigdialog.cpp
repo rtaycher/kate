@@ -85,18 +85,32 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   QFrame* frGeneral = addPage(path, i18n("General Options"), BarIcon("misc", KIcon::SizeSmall));
   QGridLayout* gridFrG = new QGridLayout(frGeneral);
   gridFrG->setSpacing( 6 );
+  
+  // How instances should be handled
+  cb_singleInstance = new QCheckBox(frGeneral);
+  cb_singleInstance->setText(i18n("Restrict to single instance"));
+  gridFrG->addMultiCellWidget(cb_singleInstance,0,0,0,1);
+  config->setGroup("startup");
+  cb_singleInstance->setChecked(config->readBoolEntry("singleinstance",true));
+
+  // sdi mode
+  cb_sdi = new QCheckBox(frGeneral);
+  cb_sdi->setText(i18n("SDI Mode enabled"));
+  gridFrG->addMultiCellWidget(cb_sdi,1,1,0,1);
+  config->setGroup("startup");
+  cb_sdi->setChecked(config->readBoolEntry("sdi",false));
 
   // opaque resize of view splitters
   cb_opaqueResize = new QCheckBox( frGeneral );
   cb_opaqueResize->setText(i18n("Show &Content when resizing views"));
-  gridFrG->addMultiCellWidget( cb_opaqueResize, 0, 0, 0, 1 );
+  gridFrG->addMultiCellWidget( cb_opaqueResize, 2, 2, 0, 1 );
   cb_opaqueResize->setChecked(viewManager->useOpaqueResize);
   QWhatsThis::add(cb_opaqueResize, i18n("If this is disabled, resizing views will display a <i>rubberband</i> to show the new sizes untill you release the mouse button."));
 
   // reopen files
   cb_reopenFiles = new QCheckBox( frGeneral );
   cb_reopenFiles->setText(i18n("Reopen &Files at startup"));
-  gridFrG->addMultiCellWidget( cb_reopenFiles, 1, 1, 0, 1 );
+  gridFrG->addMultiCellWidget( cb_reopenFiles, 3, 3, 0, 1 );
   config->setGroup("open files");
   cb_reopenFiles->setChecked( config->readBoolEntry("reopen at startup", true) );
   QWhatsThis::add(cb_reopenFiles, i18n("If this is enabled Kate will attempt to reopen files that were open when you closed last time. Cursor position will be recovered if possible. Non-existent files will not be opened."));
@@ -104,18 +118,10 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   // restore view  config
   cb_restoreVC = new QCheckBox( frGeneral );
   cb_restoreVC->setText(i18n("Restore &View Configuration"));
-  gridFrG->addMultiCellWidget( cb_restoreVC, 2, 2, 0, 1 );
+  gridFrG->addMultiCellWidget( cb_restoreVC, 4, 4, 0, 1 );
   config->setGroup("General");
   cb_restoreVC->setChecked( config->readBoolEntry("restore views", false) );
   QWhatsThis::add(cb_restoreVC, i18n("Check this if you want all your views restored each time you open Kate"));
-
-
-  // How instances should be handled
-  cb_singleInstance = new QCheckBox(frGeneral);
-  cb_singleInstance->setText(i18n("Restrict to single process (on startup)"));
-  gridFrG->addMultiCellWidget(cb_singleInstance,3,3,0,1);
-  config->setGroup("startup");
-  cb_singleInstance->setChecked(config->readBoolEntry("singleinstance",true));
 
   // sync the konsole ?
   cb_syncKonsole = new QCheckBox(frGeneral);
@@ -251,6 +257,7 @@ void KateConfigDialog::slotApply()
   viewManager->setUseOpaqueResize(cb_opaqueResize->isChecked());
   config->setGroup("startup");
   config->writeEntry("singleinstance",cb_singleInstance->isChecked());
+  config->writeEntry("sdi",cb_sdi->isChecked());
   config->setGroup("open files");
   config->writeEntry("reopen at startup", cb_reopenFiles->isChecked());
 

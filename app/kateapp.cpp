@@ -32,10 +32,15 @@
 KateApp::KateApp () : Kate::Application (),DCOPObject ("KateApp" )
 {
   mainWindows.setAutoDelete (false);
-  _isSDI = false;
 
   config()->setGroup("startup");
   _singleInstance=config()->readBoolEntry("singleinstance",true);
+  _isSDI=config()->readBoolEntry("sdi",false);
+  
+  KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
+
+  if (args->isSet ("s"))
+    _isSDI = true;
 
   DCOPClient *client = dcopClient();
   client->attach();
@@ -45,9 +50,6 @@ KateApp::KateApp () : Kate::Application (),DCOPObject ("KateApp" )
 
   pluginManager = new KatePluginManager (this);
   pluginManager->loadAllEnabledPlugins ();
-
-  KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
-  _isSDI = args->isSet ("s");
 
   newMainWindow ();
 

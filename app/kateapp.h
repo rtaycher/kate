@@ -43,6 +43,7 @@ class KateApp : public Kate::Application, public KateAppDCOPIface
     void removeMainWindow (KateMainWindow *mainWindow);
     uint mainWindowsCount ();
     virtual QString  isSingleInstance(){if (_singleInstance) return "true"; else return "false";};
+    virtual QString  isSDI(){if (_isSDI) return "true"; else return "false";};
 
     void raiseCurrentMainWindow ();
 
@@ -50,10 +51,8 @@ class KateApp : public Kate::Application, public KateAppDCOPIface
     Kate::DocManager *getDocManager ();
     Kate::MainWindow *getMainWindow ();
 
-  private:
-    bool _singleInstance;
-    
   public:
+    bool _singleInstance;
     bool _isSDI;
 
   private:
