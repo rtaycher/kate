@@ -230,8 +230,8 @@ void KateFileList::slotDocumentDeleted (uint documentNumber)
   while( item ) {
     if ( ((KateFileListItem *)item)->documentNumber() == documentNumber )
     {
-      m_viewHistory.removeRef( (KateFileListItem *)item );
-      m_editHistory.removeRef( (KateFileListItem *)item );
+//       m_viewHistory.removeRef( (KateFileListItem *)item );
+//       m_editHistory.removeRef( (KateFileListItem *)item );
 
       removeItem( item );
 
@@ -424,6 +424,16 @@ void KateFileList::writeConfig( KConfig *config, const QString &group )
   config->writeEntry( "Shading Enabled", m_enableBgShading );
 
   config->setGroup( oldgroup );
+}
+
+void KateFileList::takeItem( QListViewItem *item )
+{
+  if ( item->rtti() == RTTI_KateFileListItem )
+  {
+    m_editHistory.removeRef( (KateFileListItem*)item );
+    m_viewHistory.removeRef( (KateFileListItem*)item );
+  }
+  QListView::takeItem( item );
 }
 //END KateFileList
 

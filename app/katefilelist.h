@@ -104,6 +104,11 @@ class KateFileList : public KListView
     void readConfig( class KConfig *config, const QString &group );
     void writeConfig( class KConfig *config, const QString &group );
 
+    /**
+     * reimplemented to remove the item from the history stacks
+     */
+    void takeItem( QListViewItem * );
+
   public slots:
     void setSortType (int s);
     void slotNextDocument();
