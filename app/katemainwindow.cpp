@@ -460,12 +460,14 @@ void KateMainWindow::slotCurrentDocChanged()
   if (!viewManager->activeView())
     return;
 
-  editUndo->setEnabled(viewManager->activeView()->getDoc()->undoCount() > 0);
-  editRedo->setEnabled(viewManager->activeView()->getDoc()->redoCount() > 0);
+  if ((viewManager->activeView()->getDoc()->undoCount() > 0) != editUndo->isEnabled())
+    editUndo->setEnabled(viewManager->activeView()->getDoc()->undoCount() > 0);
 
+  if ((viewManager->activeView()->getDoc()->redoCount() > 0) != editRedo->isEnabled())
+    editRedo->setEnabled(viewManager->activeView()->getDoc()->redoCount() > 0);
 }
 
- void KateMainWindow::documentMenuAboutToShow()
+void KateMainWindow::documentMenuAboutToShow()
 {
   documentMenu->clear ();
   windowNext->plug (documentMenu);
