@@ -64,6 +64,8 @@
 
 #include <ktip.h>
 
+#include <kmenubar.h>
+
 #include "kategrepdialog.h"
 
 uint KateMainWindow::uniqueID = 0;
@@ -255,6 +257,9 @@ void KateMainWindow::setupActions()
   new KAction( i18n("Split &Vertical"), "view_left_right", CTRL+SHIFT+Key_L, m_viewManager, SLOT( slotSplitViewSpaceVert() ), actionCollection(), "view_split_vert");
   new KAction( i18n("Split &Horizontal"), "view_top_bottom", CTRL+SHIFT+Key_T, m_viewManager, SLOT( slotSplitViewSpaceHoriz() ), actionCollection(), "view_split_horiz");
   closeCurrentViewSpace = new KAction( i18n("Close &Current"), "view_remove", CTRL+SHIFT+Key_R, m_viewManager, SLOT( slotCloseCurrentViewSpace() ), actionCollection(), "view_close_current_space");
+
+  connect(new KToggleAction(i18n("Show &Full-Screen"), QString::fromLatin1("window_fullscreen"),0, actionCollection(), 
+	"view_fullscreen_view"),SIGNAL(toggled(bool)), this,SLOT(slotFullScreen(bool)));
 
   goNext=new KAction(i18n("Next View"),Key_F8,m_viewManager, SLOT(activateNextView()),actionCollection(),"go_next");
   goPrev=new KAction(i18n("Previous View"),SHIFT+Key_F8,m_viewManager, SLOT(activatePrevView()),actionCollection(),"go_prev");
@@ -776,6 +781,12 @@ void KateMainWindow::tipOfTheDay()
 }
 
 
+void KateMainWindow::slotFullScreen(bool t)
+{
+	if (t) showFullScreen(); else showNormal();	
+}
+
+
 KDockWidget *KateMainWindow::addToolView(KDockWidget::DockPosition pos,const char* name, const QPixmap &icon,const QString& caption)
 {
 	KDockWidget *dw=createDockWidget( name,  icon, 0L, caption, "");
@@ -833,20 +844,30 @@ bool KateMainWindow::removeToolViewWidget(QWidget *w)
 	if (w->parent()->qt_cast("KDockWidget"))
 	{
 		KDockWidget *dw=static_cast<KDockWidget*>(w->parent()->qt_cast("KDockWidget"));
-//		if (dw->dockManager()==this)
+		if (dw->dockManager()==manager())
 		{
 
 			dw->undock();
-//			dw->hide();
 			dw->deleteLater();
 			return true;
-		} //else return false;
+		} else return false;
 
 	}
 	else
 	return false;
 }
 
+bool KateMainWindow::removeToolView(KDockWidget *dw)
+{
+	if (dw->dockManager()==manager())
+	{
+
+		dw->undock();
+		dw->deleteLater();
+		return true;
+	} else return false;
+
+}
 
 void* KateMainWindow::interfaces(const QString &name)
 {
@@ -889,7 +910,6 @@ void KateToggleToolViewAction::slotToggled(bool t)
 	if ((!t) && m_dw->mayBeHide() ) m_dw->undock();
     	else
   	if ( t && m_dw->mayBeShow() ) m_mw->makeDockVisible(m_dw);
-
 }
 
 

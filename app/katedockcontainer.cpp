@@ -84,6 +84,7 @@ void KateDockContainer::insertWidget (KDockWidget *w, QPixmap pixmap, const QStr
 	{
 		tab=m_ws->addWidget(w);
 		m_map.insert(w,tab);
+		m_revMap.insert(tab,w);
 		m_tb->insertTab(pixmap.isNull()?SmallIcon("misc"):pixmap,tab);
 		m_tb->setTab(tab,true);
 		connect(m_tb->getTab(tab),SIGNAL(clicked(int)),this,SLOT(tabClicked(int)));
@@ -108,6 +109,7 @@ void KateDockContainer::removeWidget(KDockWidget* w)
 	tabClicked(id);
 	m_tb->removeTab(id);
 	m_map.remove(w);
+	m_revMap.remove(id);
 	KDockContainer::removeWidget(w);
 	itemNames.remove(w->name());
 }
@@ -133,7 +135,11 @@ void KateDockContainer::tabClicked(int t)
        m_ws->show ();
 	parentDockWidget()->restoreFromForcedFixedSize();
     }
-  
+  		if (!m_ws->widget(t))
+		{
+			m_revMap[t]->manualDock(parentDockWidget(),KDockWidget::DockCenter,20);
+			return;
+		}
 		m_ws->raiseWidget(t);
 		if (oldtab!=t) m_tb->setTab(oldtab,false);
 		oldtab=t;	

@@ -191,7 +191,7 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     virtual KDockWidget *addToolViewWidget(KDockWidget::DockPosition pos,QWidget *widget,const QPixmap &icon, const QString& caption);
     virtual bool removeToolViewWidget(QWidget *);
     virtual KDockWidget *addToolView(KDockWidget::DockPosition pos,const char* name,const QPixmap &icon,const QString&);
-    virtual bool removeToolView(KDockWidget *){return false;}
+    virtual bool removeToolView(KDockWidget *);
 
     virtual bool hideToolView(class KDockWidget*);
     virtual bool showToolView(class KDockWidget*);
@@ -201,6 +201,9 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     
   private slots:
     void pluginHelp ();
+    void slotFullScreen(bool);
+
+
 };
 
 class KateToggleToolViewAction:public KToggleAction
