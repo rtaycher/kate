@@ -761,6 +761,9 @@ bool KateDocument::removeSelectedText ()
       curLine->len = end - curLine->deleteStart;
     }
 
+		if (curLine->len > textLine->length())
+		  curLine->len = textLine->length();
+
     if (textLine->isSelected() && (line > selectStart))
     {
       curLine->deleteLine = 1;
