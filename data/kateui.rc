@@ -43,8 +43,7 @@
     <Action name="view_split_vert"/>
     <Action name="view_split_horiz"/>
     <Separator />
-    <Action name="view_border"/>
-    <Action name="view_line_numbers"/>
+    <DefineGroup name="view_operations" />
     <Separator />
     <Action name="view_close_current_space" />
     <Menu name="go"><text>&amp;Go</text>
@@ -59,7 +58,7 @@
 
   <Merge/>
 
-  <Menu name="settings" ><text>&amp;Settings</text>
+  <Menu name="settings" noMerge="1"><text>&amp;Settings</text>
     <Action name="settings_show_toolbar" />
     <DefineGroup name="settings_show_toolbar_group" />
     <Action name="settings_show_filelist" />
