@@ -745,33 +745,6 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
     */
     void installPopup(QPopupMenu *rmb_Menu);
 
-  public slots:
-    void setBookmark(int n);
-    void gotoBookmark(int n);
-    void slotGotoBookmark(); // CAREFUL: relies on sender() !
-
-    /**
-      Shows a popup that lets the user choose the bookmark number
-    */
-    void setBookmark();
-    /**
-      Adds the actual edit position to the end of the bookmark list
-    */
-    void addBookmark();
-    /**
-      Clears all bookmarks
-    */
-    void clearBookmarks();
-    /**
-      Sets the cursor to the bookmark n
-    */
-//    void gotoBookmark(int n);
-  protected slots:
-    /**
-      Updates the bookmark popup menu when it emit aboutToShow()
-    */
-    void updateBookmarks();
-
   protected:
     QList<KWBookmark> bookmarks;
     QPopupMenu *rmbMenu;
@@ -995,7 +968,6 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
     void setActive (bool b);
     bool isActive ();
     QList<KAction> bmActions() { return bookmarkActionList; }
-    void doUpdateBookmarks() { updateBookmarks(); }
 
   private:
     bool active;
@@ -1018,6 +990,7 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
     void toggleIconBorder ();
     void gotoMark (class KateMark *mark);
     void toggleBookmark ();
+    void clearBookmarks ();
 
   public:
     bool iconBorder() { return myIconBorder; } ;

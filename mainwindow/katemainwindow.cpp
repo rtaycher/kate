@@ -566,7 +566,6 @@ void KateMainWindow::bookmarkMenuAboutToShow()
     if (list.at(i)->type == 1)
       bookmarkMenu->insertItem ( QString("Bookmark %1 - Line %2").arg(i).arg(list.at(i)->line), i );
   }
-
 }
 
 void KateMainWindow::setHighlightMenuAboutToShow()

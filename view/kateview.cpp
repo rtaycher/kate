@@ -2608,126 +2608,7 @@ void KateView::replaceSlot() {
 void KateView::installPopup(QPopupMenu *rmb_Menu)
 {
   rmbMenu = rmb_Menu;
-
-  updateBookmarks();
 }
-
-
-void KateView::setBookmark()
-{
-  QPopupMenu *popup;
-  int z;
-
-  popup = new QPopupMenu(0L);
-
-  for (z = 0; z < 9; z++) {
-    if ((z < (int) bookmarks.count())&&(bookmarks.at(z)->cursor.y != -1))
-      popup->insertItem(i18n("&%1 - Line %2").arg(z+1)
-                        .arg(KGlobal::locale()->formatNumber(bookmarks.at(z)->cursor.y + 1, 0)),z);
-    else
-      popup->insertItem(i18n("&%1").arg(z+1),z);
-  }
-  if ((z < (int) bookmarks.count())&&(bookmarks.at(z)->cursor.y != -1))
-     popup->insertItem(i18n("1&0 - Line %1")
-                        .arg(KGlobal::locale()->formatNumber(bookmarks.at(z)->cursor.y + 1, 0)),z);
-  else
-     popup->insertItem(i18n("&10"),z);
-
-  popup->move(mapToGlobal(QPoint((width() - 41/*popup->width()*/)/2,
-    (height() - 211/*popup->height()*/)/2)));
-
-  z = popup->exec();
-//  debug("map %d %d",popup->width(),popup->height());
-  delete popup;
-  if (z >= 0) {
-    setBookmark(z);
-  }
-}
-
-void KateView::addBookmark()
-{
-  int z;
-
-  for (z = 0; z < (int) bookmarks.count(); z++) {
-    if (bookmarks.at(z)->cursor.y == -1) break;
-  }
-  setBookmark(z);
-}
-
-void KateView::clearBookmarks()
-{
-  bookmarks.clear();
-  updateBookmarks();
-}
-
-void KateView::setBookmark(int n)
-{
-  KWBookmark *b;
-
-  if (n >= 10) return;
-  while ((int) bookmarks.count() <= n) bookmarks.append(new KWBookmark());
-  b = bookmarks.at(n);
-  b->xPos = myViewInternal->xPos;
-  b->yPos = myViewInternal->yPos;
-  b->cursor = myViewInternal->cursor;
-
-  updateBookmarks();
-}
-
-void KateView::slotGotoBookmark()
-{
-    QCString nam = sender()->name();
-    gotoBookmark( nam.toInt() );
-}
-
-void KateView::gotoBookmark(int n)
-{
-  KWBookmark *b;
-
-  if (n-666 < 0 || n-666 >= (int) bookmarks.count()) return;
-  b = bookmarks.at(n-666);
-  if (b->cursor.y == -1) return;
-//  myDoc->recordReset();
-  myViewInternal->updateCursor(b->cursor);
-  myViewInternal->setPos(b->xPos, b->yPos);
-//  myViewInternal->updateView(ufPos, b->xPos, b->yPos);
-//  myDoc->updateViews(myViewInternal); //uptade all other views except this one
-  myDoc->updateViews();
-}
-
-
-void KateView::updateBookmarks()
-{
-  KWBookmark *b;
-  int bookCount=0;
-  int keys[] = { Key_1, Key_2, Key_3, Key_4, Key_5, Key_6, Key_7, Key_8, Key_9, Key_0 };
-
-  unplugActionList( "bookmarks" );
-
-  bookmarkActionList.setAutoDelete( true );
-  bookmarkActionList.clear();
-
-  for (int z = 0; z < (int) bookmarks.count(); z++) {
-    b = bookmarks.at(z);
-    if (b->cursor.y >= 0) {
-      ++bookCount;
-
-      QCString nam;
-      nam.setNum( z + 666 );
-
-      KAction *act = new KAction( i18n("Line: %1").arg(KGlobal::locale()->formatNumber(b->cursor.y + 1, 0) ),
-                                  ALT+keys[z], this, SLOT( slotGotoBookmark() ), 0, nam );
-
-      bookmarkActionList.append( act );
-    }
-  }
-
-  plugActionList( "bookmarks", bookmarkActionList );
-
-  emit(bookClearChanged(bookCount>0));
-  emit(bookAddChanged(bookCount<10));
-}
-
 
 void KateView::readConfig(KConfig *config)
 {
@@ -3243,6 +3124,18 @@ void KateView::toggleBookmark ()
     line->setMark(0);
   else
     line->setMark(1);
+
+  myDoc->updateViews();
+}
+
+void KateView::clearBookmarks()
+{
+  QList<KateMark> list = myDoc->marks();
+  for (int i=0; (uint) i < list.count(); i++)
+  {
+    if (list.at(i)->type == 1)
+      myDoc->getTextLine(i)->setMark(0);
+  }
 
   myDoc->updateViews();
 }
