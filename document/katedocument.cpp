@@ -501,6 +501,14 @@ void KateDocument::readSessionConfig(KConfig *config) {
   readConfig(config);
   m_url = config->readEntry("URL"); // ### doesn't this break the encoding? (Simon)
   setHighlight(hlManager->nameFind(config->readEntry("Highlight")));
+  // anders: restore bookmarks if possible
+  QValueList<int> l = config->readIntListEntry("Bookmarks");
+  if ( l.count() ) {
+    for (uint i=0; i < l.count(); i++) {
+      if ( numLines() < l[i] ) break;
+      getTextLine( l[i] )->addMark( Bookmark );
+    }
+  }
 }
 
 void KateDocument::writeSessionConfig(KConfig *config) {
@@ -508,6 +516,15 @@ void KateDocument::writeSessionConfig(KConfig *config) {
   writeConfig(config);
   config->writeEntry("URL", m_url.url() ); // ### encoding?? (Simon)
   config->writeEntry("Highlight", m_highlight->name());
+  // anders: save bookmarks
+  QList<KateMark> l = marks();
+  QValueList<int> ml;
+  for (uint i=0; i < l.count(); i++) {
+    if ( l.at(i)->type == 1) // only save bookmarks
+     ml << l.at(i)->line;
+  }
+  if ( ml.count() )
+    config->writeEntry("Bookmarks", ml);
 }
 
 
