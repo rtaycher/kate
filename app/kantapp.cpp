@@ -46,8 +46,10 @@ void KantApp::newMainWindow ()
 {
   KantMainWindow *mainWindow = new KantMainWindow (docManager, pluginManager);
   mainWindows.append (mainWindow);
-
-  mainWindow->viewManager->openURL( KURL() );
+  // anders: do not force an "Untitled" document on first window!
+  // q: do we want to force it at all if documents are open??
+  if (mainWindowsCount() > 1)
+    mainWindow->viewManager->openURL( KURL() );
   mainWindow->show ();
 }
 
