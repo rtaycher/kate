@@ -67,6 +67,7 @@ const KAboutData *KWriteFactory::aboutData()
     data->addAuthor( "Christian Gebauer", 0, "gebauer@bigfoot.com" );
     data->addAuthor( "Simon Hausmann", 0, "hausmann@kde.org" );
     data->addAuthor("Glen Parker",I18N_NOOP("Undo History, Kspell integration"), "glenebob@nwlink.com");
+    data->addAuthor("Scott Manson",I18N_NOOP("XML Syntax highlighting support"), "sdmanson@alltel.net");
     return data;
 }
 
