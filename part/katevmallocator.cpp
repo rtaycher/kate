@@ -148,29 +148,35 @@ KVMAllocator::free(Block *block_p)
    it = d->free_blocks.replace(block.start, block);
    QMap<off_t,KVMAllocator::Block>::iterator before = it;
    --before;
-   Block &block_before = before.data();
-   if ((block_before.start + block_before.size) == block.start)
+   if (before != d->free_blocks.end())
    {
-      // Merge blocks.
-      kdDebug(13020) << "VM merging: Block "<< (long)block_before.start<<
-                        " with "<< (long)block.start<< " (before)" << endl;
-      block.size += block_before.size;
-      block.start = block_before.start;
-      it.data() = block;
-      d->free_blocks.remove(before);
+      Block &block_before = before.data();
+      if ((block_before.start + block_before.size) == block.start)
+      {
+         // Merge blocks.
+         kdDebug(13020) << "VM merging: Block "<< (long)block_before.start<<
+                           " with "<< (long)block.start<< " (before)" << endl;
+         block.size += block_before.size;
+         block.start = block_before.start;
+         it.data() = block;
+         d->free_blocks.remove(before);
+      }
    }
    
    QMap<off_t,KVMAllocator::Block>::iterator after = it;
    ++after;
-   Block &block_after = after.data();
-   if ((block.start + block.size) == block_after.start)
+   if (after != d->free_blocks.end())
    {
-      // Merge blocks.
-      kdDebug(13020) << "VM merging: Block "<< (long)block.start<<
-                        " with "<< (long)block_after.start<< " (after)" << endl;
-      block.size += block_after.size;
-      it.data() = block;
-      d->free_blocks.remove(after);
+      Block &block_after = after.data();
+      if ((block.start + block.size) == block_after.start)
+      {
+         // Merge blocks.
+         kdDebug(13020) << "VM merging: Block "<< (long)block.start<<
+                           " with "<< (long)block_after.start<< " (after)" << endl;
+         block.size += block_after.size;
+         it.data() = block;
+         d->free_blocks.remove(after);
+      }
    }
 }
 
