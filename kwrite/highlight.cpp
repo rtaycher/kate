@@ -2153,14 +2153,15 @@ HlManager::HlManager() : QObject(0L)
   hlList.setAutoDelete(true);
   hlList.append(new Highlight(I18N_NOOP("Normal")));
 
-  uint i=0;
+
+ uint i=0;
   while (i < modeList.count())
   {
     hlList.append(new AutoHighlight(modeList.at(i)));
     i++;
   }
 
- /*
+  /*
   hlList.append(new CHighlight(     "C"        ));
   hlList.append(new CppHighlight(   "C++"      ));
   hlList.append(new ObjcHighlight(  "Objective-C"));
