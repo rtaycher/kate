@@ -263,12 +263,10 @@ bool KateMainWindow::queryClose()
   if (val)
   {
     ((KateApp *)kapp)->removeMainWindow (this);
+    
     if (consoleDock && console)
       if (consoleDock->isVisible())
         consoleDock->changeHideShowState();
-  
-    if  ( !(((KateApp *)kapp)->mainWindows () < 2) )
-      delete this;
   }
 
   return val;
@@ -294,7 +292,7 @@ void KateMainWindow::slotEditToolbars()
 
 void KateMainWindow::slotFileQuit()
 {
-  queryClose ();
+  close ();
 }
 
 void KateMainWindow::readOptions(KConfig *config)
