@@ -134,7 +134,7 @@ KateProjectTreeView::KateProjectTreeView (Kate::Project *project, KateMainWindow
 
   setOpen (item, true);
 
-  connect(this,SIGNAL(doubleClicked(QListViewItem *, const QPoint &, int)),this,SLOT(slotDoubleClicked(QListViewItem *, const QPoint &, int)));
+  connect(this,SIGNAL(executed(QListViewItem *, const QPoint &, int)),this,SLOT(slotDoubleClicked(QListViewItem *, const QPoint &, int)));
   connect( this, SIGNAL(returnPressed(QListViewItem*)), SLOT(execute(QListViewItem*)) );
   connect(this, SIGNAL( contextMenuRequested( QListViewItem *, const QPoint& , int ) ),
             this, SLOT( slotContextMenuRequested( QListViewItem *, const QPoint &, int ) ) );
@@ -207,7 +207,7 @@ void KateProjectTreeView::dirsAdded (const QString &dir, const QStringList &dirs
     KateProjectTreeViewItem *i = new KateProjectTreeViewItem (&m_dirDict, item, m_project, dirs[z], fullname + dirs[z], true);
     addDir (i, fullname+dirs[z]);
   }
-  
+
   if (dir.isEmpty())
     item->setOpen (true);
 }
@@ -247,7 +247,7 @@ void KateProjectTreeView::filesAdded (const QString &dir, const QStringList &fil
   {
     new KateProjectTreeViewItem (&m_dirDict, item, m_project, files[z], fullname + files[z], false);
   }
-  
+
   if (dir.isEmpty())
     item->setOpen (true);
 }
@@ -353,7 +353,7 @@ void KateProjectTreeViewContainer::qfTextChanged( const QString &t )
 {
   QListViewItem *i ( m_tree->currentItem() );
   if ( ! i ) i = m_tree->firstChild();
-  
+
   if (!i)
     return;
 
