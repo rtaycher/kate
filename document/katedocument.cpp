@@ -114,60 +114,12 @@ QChar KateCursor::currentChar () const
 
 }
 
-KateAction::KateAction(Action a, PointStruc &cursor, int len, const QString &text)
-  : action(a), cursor(cursor), len(len), text(text) {
-}
-
-KateActionGroup::KateActionGroup(PointStruc &aStart, int type)
-  : start(aStart), action(0L), undoType(type) {
-}
-
-KateActionGroup::~KateActionGroup() {
-  KateAction *current, *next;
-
-  current = action;
-  while (current) {
-    next = current->next;
-    delete current;
-    current = next;
-  }
-}
-
-void KateActionGroup::insertAction(KateAction *a) {
-  a->next = action;
-  action = a;
-}
-
-const char * KateActionGroup::typeName(int type)
-{
-  // return a short text description of the given undo group type suitable for a menu
-  // not the lack of i18n's, the caller is expected to handle translation
-  switch (type) {
-  case ugPaste : return "Paste Text";
-  case ugDelBlock : return "Selection Overwrite";
-  case ugIndent : return "Indent";
-  case ugUnindent : return "Unindent";
-  case ugComment : return "Comment";
-  case ugUncomment : return "Uncomment";
-  case ugReplace : return "Text Replace";
-  case ugSpell : return "Spell Check";
-  case ugInsChar : return "Typing";
-  case ugDelChar : return "Delete Text";
-  case ugInsLine : return "New Line";
-  case ugDelLine : return "Delete Line";
-  }
-  return "";
-}
-
 const int KateDocument::maxAttribs = 32;
 
 QStringList KateDocument::searchForList = QStringList();
 QStringList KateDocument::replaceWithList = QStringList();
 
 uint KateDocument::uniqueID = 0;
-
-QPtrDict<KateDocument::KateDocPrivate>* KateDocument::d_ptr = 0;    
-
 
 KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
                                            QWidget *parentWidget, const char *widgetName,
@@ -177,7 +129,7 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
     myFontMetrics (myFont), myFontMetricsBold (myFontBold), myFontMetricsItalic (myFontItalic), myFontMetricsBI (myFontBI),
     hlManager(HlManager::self ())
 {
-  d(this)->hlSetByUser = false;  
+  hlSetByUser = false;
   PreHighlightedTill=0;
   RequestPreHighlightTill=0;
   setInstance( KateFactory::instance() );
@@ -185,10 +137,19 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   m_bSingleViewMode=bSingleViewMode;
   m_bBrowserView = bBrowserView;
 
+  // some defaults
+  configFlags = KateDocument::cfAutoIndent | KateDocument::cfBackspaceIndents
+    | KateDocument::cfTabIndents | KateDocument::cfKeepIndentProfile
+    | KateDocument::cfRemoveSpaces
+    | KateDocument::cfDelOnInput | KateDocument::cfMouseAutoCopy | KateDocument::cfWrapCursor
+    | KateDocument::cfGroupUndo | KateDocument::cfShowTabs | KateDocument::cfSmartHome;
+
+  searchFlags = 0;
+
   m_url = KURL();
 
   // NOTE: QFont::CharSet doesn't provide all the charsets KDE supports
-  // (esp. it doesn't distinguish between UTF-8 and iso10646-1) 
+  // (esp. it doesn't distinguish between UTF-8 and iso10646-1)
   myEncoding = QString::fromLatin1(QTextCodec::codecForLocale()->name());
   maxLength = -1;
 
@@ -225,7 +186,6 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
 
   modified = false;
 
-  undoList.setAutoDelete(true);
   undoState = 0;
   undoSteps = 50;
 
@@ -260,7 +220,7 @@ QPtrList<KTextEditor::Cursor> KateDocument::cursors () const
 
 void KateDocument::setDontChangeHlOnSave()
 {
-  d(this)->hlSetByUser = true;
+  hlSetByUser = true;
 }
 
 void KateDocument::setFont (QFont font)
@@ -334,7 +294,6 @@ KateDocument::~KateDocument()
     myViews.clear();
     myViews.setAutoDelete( false );
   }
-  delete_d(this);
 }
 
 bool KateDocument::openFile()
@@ -412,7 +371,7 @@ bool KateDocument::saveFile()
   fileInfo->setFile (m_file);
   setMTime();
 
-  if (!(d(this)->hlSetByUser))
+  if (!hlSetByUser)
   {
   int hl = hlManager->wildcardFind( m_file );
 
@@ -838,6 +797,9 @@ void KateDocument::readConfig()
   KConfig *config = KateFactory::instance()->config();
   config->setGroup("Kate Document");
 
+  searchFlags = config->readNumEntry("SearchFlags", KateDocument::sfPrompt);
+  configFlags = config->readNumEntry("ConfigFlags", configFlags) & ~KateDocument::cfMark;
+
   myWordWrap = config->readBoolEntry("Word Wrap On", false);
   myWordWrapAt = config->readNumEntry("Word Wrap At", 80);
   if (myWordWrap)
@@ -859,6 +821,9 @@ void KateDocument::writeConfig()
 {
   KConfig *config = KateFactory::instance()->config();
   config->setGroup("Kate Document");
+
+  config->writeEntry("SearchFlags",searchFlags);
+  config->writeEntry("ConfigFlags",configFlags);
 
   config->writeEntry("Word Wrap On", myWordWrap);
   config->writeEntry("Word Wrap At", myWordWrapAt);
@@ -1131,20 +1096,21 @@ int KateDocument::currentColumn(PointStruc &cursor) {
   return getTextLine(cursor.y)->cursorX(cursor.x,tabChars);
 }
 
-bool KateDocument::insertChars(VConfig &c, const QString &chars) {
+bool KateDocument::insertChars ( int line, int col, const QString &chars, KateView *view )
+{
   int z, pos, l;
   bool onlySpaces;
   QChar ch;
   QString buf;
 
-  TextLine::Ptr textLine = getTextLine(c.cursor.y);
+  TextLine::Ptr textLine = getTextLine(line);
 
   pos = 0;
   onlySpaces = true;
   for (z = 0; z < (int) chars.length(); z++) {
     ch = chars[z];
-    if (ch == '\t' && c.flags & KateView::cfReplaceTabs) {
-      l = tabChars - (textLine->cursorX(c.cursor.x, tabChars) % tabChars);
+    if (ch == '\t' && view->config() & KateView::cfReplaceTabs) {
+      l = tabChars - (textLine->cursorX(col, tabChars) % tabChars);
       while (l > 0) {
         buf.insert(pos, ' ');
         pos++;
@@ -1154,7 +1120,7 @@ bool KateDocument::insertChars(VConfig &c, const QString &chars) {
       buf.insert(pos, ch);
       pos++;
       if (ch != ' ') onlySpaces = false;
-      if (c.flags & KateView::cfAutoBrackets) {
+      if (view->config() & KateView::cfAutoBrackets) {
         if (ch == '(') buf.insert(pos, ')');
         if (ch == '[') buf.insert(pos, ']');
         if (ch == '{') buf.insert(pos, '}');
@@ -1168,21 +1134,28 @@ bool KateDocument::insertChars(VConfig &c, const QString &chars) {
 
   //auto deletion of the marked text occurs not very often and can therefore
   //  be recorded separately
-  if (c.flags &KateView:: cfDelOnInput) delMarkedText(c);
+  VConfig v;
+  view->myViewInternal->getVConfig(v);
 
-  if (c.flags & KateView::cfOvr)
-    removeText (c.cursor.y, c.cursor.x, buf.length());
+  if (view->config() &KateView:: cfDelOnInput) delMarkedText(v);
 
-  insertText (c.cursor.y, c.cursor.x, buf);
-  c.cursor.x += pos;
+  if (view->config() & KateView::cfOvr)
+    removeText (line, col, buf.length());
+
+  insertText (line, col, buf);
+  col += pos;
 
   if (tagStart <= tagEnd) {
     optimizeSelection();
-    updateLines(tagStart, tagEnd, c.flags, c.cursor.y);
+    updateLines(tagStart, tagEnd, view->config(), line);
     setModified(true);
   }
 
-  c.view->updateCursor(c.cursor, c.flags);
+  PointStruc c;
+  c.y = line;
+  c.x = col;
+
+  view->updateCursor(c, view->config());
 
 /*
   if (myWordWrap && myWordWrapAt > 0) {
@@ -1217,7 +1190,7 @@ bool KateDocument::insertChars(VConfig &c, const QString &chars) {
         //at end of doc: create new line
         actionCursor.x = pos;
         actionCursor.y = line;
-        recordAction(KateAction::newLine,actionCursor);
+        recordAction(KateUndo::newLine,actionCursor);
       } else {
         //wrap
         actionCursor.y = line + 1;
@@ -1226,7 +1199,7 @@ bool KateDocument::insertChars(VConfig &c, const QString &chars) {
           recordInsert(actionCursor, " ");
         }
         actionCursor.x = textLine->length() - pos;
-        recordAction(KateAction::wordWrap, actionCursor);
+        recordAction(KateUndo::wordWrap, actionCursor);
       }
       line++;
     } while (true);
@@ -1291,11 +1264,11 @@ void KateDocument::newLine(VConfig &c)
 
 void KateDocument::killLine(VConfig &c) {
 
-  //recordStart(c, KateActionGroup::ugDelLine);
+  //recordStart(c, KateUndoGroup::ugDelLine);
  /* c.cursor.x = 0;
   recordDelete(c.cursor, 0xffffff);
   if (c.cursor.y < lastLine()) {
-    recordAction(KateAction::killLine, c.cursor);
+    recordAction(KateUndo::killLine, c.cursor);
   }*/
  // recordEnd(c);
 }
@@ -1338,7 +1311,7 @@ void KateDocument::backspace(VConfig &c) {
 
     c.cursor.y--;
     c.cursor.x = getTextLine(c.cursor.y)->length();
-  //  recordAction(KateAction::delLine,c.cursor);
+  //  recordAction(KateUndo::delLine,c.cursor);
   }
 }
 
@@ -1352,15 +1325,15 @@ void KateDocument::del(VConfig &c) {
   int len =  (c.flags & KateView::cfRemoveSpaces) ? textLine->lastChar() : textLine->length();
   if (c.cursor.x < len/*getTextLine(c.cursor.y)->length()*/) {
     // delete one character
-//    recordStart(c, KateActionGroup::ugDelChar);
+//    recordStart(c, KateUndoGroup::ugDelChar);
     removeText(c.cursor.y, c.cursor.x, 1);
 
   } else {
     if (c.cursor.y < lastLine()) {
       // wrap next line to this line
       textLine->truncate(c.cursor.x); // truncate spaces
-    /*  recordStart(c, KateActionGroup::ugDelLine);
-      recordAction(KateAction::delLine,c.cursor);
+    /*  recordStart(c, KateUndoGroup::ugDelLine);
+      recordAction(KateUndo::delLine,c.cursor);
       recordEnd(c);*/
     }
   }
@@ -1392,7 +1365,6 @@ void KateDocument::clear() {
 
   setModified(false);
 
-  undoList.clear();
   currentUndo = 0;
   newUndo();
 }
@@ -2826,151 +2798,8 @@ void KateDocument::optimizeSelection() {
   }
 }
 
-void KateDocument::doAction(KateAction *a) {
-
-  switch (a->action) {
-    case KateAction::replace:
-      doReplace(a);
-      break;
-    case KateAction::wordWrap:
-      doWordWrap(a);
-      break;
-    case KateAction::wordUnWrap:
-      doWordUnWrap(a);
-      break;
-    case KateAction::newLine:
-      doNewLine(a);
-      break;
-    case KateAction::delLine:
-      doDelLine(a);
-      break;
-    case KateAction::insLine:
-      doInsLine(a);
-      break;
-    case KateAction::killLine:
-      doKillLine(a);
-      break;
-/*    case KateAction::doubleLine:
-      break;
-    case KateAction::removeLine:
-      break;*/
-  }
-}
-
-void KateDocument::doReplace(KateAction *a) {
-  TextLine::Ptr textLine;
-  int l;
-
-  //exchange current text with stored text in KateAction *a
-
-  textLine = getTextLine(a->cursor.y);
-  l = textLine->length() - a->cursor.x;
-  if (l > a->len) l = a->len;
-
-  QString oldText(&textLine->getText()[a->cursor.x], (l < 0) ? 0 : l);
-  textLine->replace(a->cursor.x, a->len, a->text.unicode(), a->text.length());
-
-  a->len = a->text.length();
-  a->text = oldText;
-
-  buffer->changeLine(a->cursor.y);
-
-  tagLine(a->cursor.y);
-}
-
-void KateDocument::doWordWrap(KateAction *a) {
-  TextLine::Ptr textLine;
-
-  textLine = getTextLine(a->cursor.y - 1);
-  a->len = textLine->length() - a->cursor.x;
-  textLine->wrap(getTextLine(a->cursor.y),a->len);
-
-  buffer->changeLine(a->cursor.y - 1);
-  buffer->changeLine(a->cursor.y);
-
-  tagLine(a->cursor.y - 1);
-  tagLine(a->cursor.y);
-  if (selectEnd == a->cursor.y - 1) selectEnd++;
-
-  a->action = KateAction::wordUnWrap;
-}
-
-void KateDocument::doWordUnWrap(KateAction *a) {
-  TextLine::Ptr textLine;
-
-  textLine = getTextLine(a->cursor.y - 1);
-//  textLine->setLength(a->len);
-  textLine->unWrap(a->len, getTextLine(a->cursor.y),a->cursor.x);
-
-  buffer->changeLine(a->cursor.y - 1);
-  buffer->changeLine(a->cursor.y);
-
-  tagLine(a->cursor.y - 1);
-  tagLine(a->cursor.y);
-
-  a->action = KateAction::wordWrap;
-}
-
-void KateDocument::doNewLine(KateAction *a) {
-  TextLine::Ptr textLine, newLine;
-
-  textLine = getTextLine(a->cursor.y);
-  newLine = new TextLine(textLine->getRawAttr(), textLine->getContext());
-  textLine->wrap(newLine,a->cursor.x);
-
-  buffer->insertLine(a->cursor.y + 1, newLine);
-  buffer->changeLine(a->cursor.y);
-
-  insLine(a->cursor.y + 1);
-  tagLine(a->cursor.y);
-  tagLine(a->cursor.y + 1);
-  if (selectEnd == a->cursor.y) selectEnd++;//addSelection(a->cursor.y + 1);
-
-  a->action = KateAction::delLine;
-}
-
-void KateDocument::doDelLine(KateAction *a) {
-  TextLine::Ptr textLine, nextLine;
-
-  textLine = getTextLine(a->cursor.y);
-  nextLine = getTextLine(a->cursor.y+1);
-//  textLine->setLength(a->cursor.x);
-  textLine->unWrap(a->cursor.x, nextLine,nextLine->length());
-  textLine->setContext(nextLine->getContext());
-  if (longestLine == nextLine) longestLine = 0L;
-
-  buffer->changeLine(a->cursor.y);
-  buffer->removeLine(a->cursor.y+1);
-
-  tagLine(a->cursor.y);
-  delLine(a->cursor.y + 1);
-
-  a->action = KateAction::newLine;
-}
-
-void KateDocument::doInsLine(KateAction *a) {
-
-  buffer->insertLine(a->cursor.y, new TextLine());
-
-  insLine(a->cursor.y);
-
-  a->action = KateAction::killLine;
-}
-
-void KateDocument::doKillLine(KateAction *a) {
-  TextLine::Ptr textLine = getTextLine(a->cursor.y);
-  if (longestLine == textLine) longestLine = 0L;
-
-  buffer->removeLine(a->cursor.y);
-
-  delLine(a->cursor.y);
-  tagLine(a->cursor.y);
-
-  a->action = KateAction::insLine;
-}
-
 void KateDocument::newUndo() {
-  KTextEditor::View *view;
+ /* KTextEditor::View *view;
   int state;
 
   state = 0;
@@ -2979,71 +2808,44 @@ void KateDocument::newUndo() {
   undoState = state;
   for (view = myViews.first(); view != 0L; view = myViews.next() ) {
     emit static_cast<KateView *>( view )->newUndo();
-  }
-}
-
-void KateDocument::doActionGroup(KateActionGroup *g, int flags, bool undo) {
-  KateAction *a, *next;
-
-  setPseudoModal(0L);
-  if (!(flags & KateView::cfPersistent)) deselectAll();
-  tagEnd = 0;
-  tagStart = 0xffffff;
-
-  a = g->action;
-  g->action = 0L;
-  while (a) {
-    doAction(a);
-    next = a->next;
-    g->insertAction(a);
-    a = next;
-  }
-  optimizeSelection();
-  if (tagStart <= tagEnd) updateLines(tagStart, tagEnd, flags);
-
-  // the undo/redo functions set undo to true, all others should leave it
-  // alone (default)
-  if (!undo) {
-    setModified(true);
-    newUndo();
-  }
+  }*/
 }
 
 int KateDocument::nextUndoType()
 {
-  KateActionGroup *g;
+  /*KateUndoGroup *g;
 
-  if (currentUndo <= 0) return KateActionGroup::ugNone;
+  if (currentUndo <= 0) return KateUndoGroup::ugNone;
   g = undoList.at(currentUndo - 1);
-  return g->undoType;
+  return g->undoType;*/
 }
 
 int KateDocument::nextRedoType()
 {
-  KateActionGroup *g;
+  /*KateUndoGroup *g;
 
-  if (currentUndo >= (int) undoList.count()) return KateActionGroup::ugNone;
+  if (currentUndo >= (int) undoList.count()) return KateUndoGroup::ugNone;
   g = undoList.at(currentUndo);
-//  if (!g) return KateActionGroup::ugNone;
-  return g->undoType;
+//  if (!g) return KateUndoGroup::ugNone;
+  return g->undoType;*/
 }
 
 void KateDocument::undoTypeList(QValueList<int> &lst)
 {
-  lst.clear();
+/*  lst.clear();
   for (int i = currentUndo-1; i>=0 ;i--)
-    lst.append(undoList.at(i)->undoType);
+    lst.append(undoList.at(i)->undoType);*/
 }
 
 void KateDocument::redoTypeList(QValueList<int> &lst)
 {
-  lst.clear();
+ /* lst.clear();
   for (int i = currentUndo+1; i<(int)undoList.count(); i++)
-    lst.append(undoList.at(i)->undoType);
+    lst.append(undoList.at(i)->undoType);*/
 }
 
 void KateDocument::undo(VConfig &c, int count) {
-  KateActionGroup *g = 0L;
+ /* KateUndoGroup *g = 0L;
   int num;
   bool needUpdate = false; // don't update the cursor until completely done
 
@@ -3064,11 +2866,11 @@ void KateDocument::undo(VConfig &c, int count) {
     c.view->updateCursor(g->start);
     setModified(true);
     newUndo();
-  }
+  }*/
 }
 
 void KateDocument::redo(VConfig &c, int count) {
-  KateActionGroup *g = 0L;
+ /* KateUndoGroup *g = 0L;
   int num;
   bool needUpdate = false; // don't update the cursor until completely done
 
@@ -3089,12 +2891,12 @@ void KateDocument::redo(VConfig &c, int count) {
     c.view->updateCursor(g->end);
     setModified(true);
     newUndo();
-  }
+  }*/
 }
 
 void KateDocument::clearRedo() {
   // disable redos
-  // this was added as an assist to the spell checker
+ /* // this was added as an assist to the spell checker
   bool deleted = false;
 
   while ((int) undoList.count() > currentUndo) {
@@ -3102,7 +2904,7 @@ void KateDocument::clearRedo() {
     undoList.removeLast();
   }
 
-  if (deleted) newUndo();
+  if (deleted) newUndo();*/
 }
 
 void KateDocument::setUndoSteps(int steps) {

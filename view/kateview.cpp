@@ -117,8 +117,6 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc) : QWidget(
   connect(xScroll,SIGNAL(valueChanged(int)),SLOT(changeXPos(int)));
   connect(yScroll,SIGNAL(valueChanged(int)),SLOT(changeYPos(int)));
 
-  connect(yScroll,SIGNAL(valueChanged(int)),myView,SIGNAL(scrollValueChanged(int)));
-
   connect( doc, SIGNAL (preHighlightChanged(long)),this,SLOT(slotPreHighlightUpdate(long)));
 
   xPos = 0;
@@ -1035,7 +1033,7 @@ void KateViewInternal::keyPressEvent(QKeyEvent *e) {
     }
     if ( !(e->state() & ControlButton ) && (e->text())[0].isPrint() )
     {
-      myDoc->insertChars (c, e->text());
+      myDoc->insertChars (c.cursor.y, c.cursor.x, e->text(), this->myView);
       myDoc->updateViews();
       e->accept();
       return;
@@ -1338,13 +1336,9 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate
   connect(myViewInternal,SIGNAL(dropEventPass(QDropEvent *)),this,SLOT(dropEventPassEmited(QDropEvent *)));
 
   // some defaults
-  configFlags = KateView::cfAutoIndent | KateView::cfBackspaceIndents
-    | KateView::cfTabIndents | KateView::cfKeepIndentProfile
-    | KateView::cfRemoveSpaces
-    | KateView::cfDelOnInput | KateView::cfMouseAutoCopy | KateView::cfWrapCursor
-    | KateView::cfGroupUndo | KateView::cfShowTabs | KateView::cfSmartHome;
+  configFlags = myDoc->configFlags;
+  searchFlags = myDoc->searchFlags;
 
-  searchFlags = 0;
   replacePrompt = 0L;
   rmbMenu = 0L;
 
@@ -1383,9 +1377,6 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate
     connect( this, SIGNAL( dropEventPass(QDropEvent*) ), this, SLOT( slotDropEventPass(QDropEvent*) ) );
   }
 
-  readConfig();
-  //setHighlight->slotAboutToShow();
-//  setHighlight->setCurrentItem(getHl());
   slotUpdate();
 }
 
@@ -1851,7 +1842,7 @@ void KateView::redoTypeList(QValueList<int> &lst)
 }
 
 const char * KateView::undoTypeName(int type) {
-  return KateActionGroup::typeName(type);
+  return "";//KateActionGroup::typeName(type);
 }
 
 QColor* KateView::getColors()
@@ -2445,28 +2436,6 @@ void KateView::replaceSlot() {
 void KateView::installPopup(QPopupMenu *rmb_Menu)
 {
   rmbMenu = rmb_Menu;
-}
-
-void KateView::readConfig()
-{
-  KConfig *config = KateFactory::instance()->config();
-  config->setGroup("Kate View");
-
-  searchFlags = config->readNumEntry("SearchFlags", KateView::sfPrompt);
-  configFlags = config->readNumEntry("ConfigFlags", configFlags) & ~KateView::cfMark;
-
-  config->sync();
-}
-
-void KateView::writeConfig()
-{
-  KConfig *config = KateFactory::instance()->config();
-  config->setGroup("Kate View");
-
-  config->writeEntry("SearchFlags",searchFlags);
-  config->writeEntry("ConfigFlags",configFlags);
-
-  config->sync();
 }
 
 void KateView::readSessionConfig(KConfig *config)

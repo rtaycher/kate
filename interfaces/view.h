@@ -301,14 +301,6 @@ class View : public KTextEditor::View
     */
     virtual void installPopup(QPopupMenu *) { ; };
     /**
-      Reads config entries.
-    */
-    virtual void readConfig() { ; };
-    /**
-      Writes config entries.
-    */
-    virtual void writeConfig() { ; };
-    /**
       Reads session config out of the KConfig object. This also includes
       the actual cursor position and the bookmarks.
     */

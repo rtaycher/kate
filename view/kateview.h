@@ -456,7 +456,7 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
     virtual void keyPressEvent( QKeyEvent *ev );
     virtual void customEvent( QCustomEvent *ev );
 
-    int configFlags;
+    uint configFlags;
 
     /*
      * Check if the given URL already exists. Currently used by both save() and saveAs()
@@ -668,7 +668,7 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
   protected slots:
     void replaceSlot();
   protected:
-    int searchFlags;
+    uint searchFlags;
     int replaces;
     SConfig s;
     QDialog *replacePrompt;
@@ -690,14 +690,6 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
 
 //config file / session management functions
   public:
-    /**
-      Reads config entries
-    */
-    void readConfig();
-    /**
-      Writes config entries i
-    */
-    void writeConfig();
     /**
       Reads session config out of the KConfig object. This also includes
       the actual cursor position and the bookmarks.

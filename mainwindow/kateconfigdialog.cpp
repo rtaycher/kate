@@ -273,7 +273,6 @@ void KateConfigDialog::slotApply()
 
   ksc->writeGlobalSettings();
   colorConfig->getColors( colors );
-  v->writeConfig(  );
   v->doc()->writeConfig();
   v->applyColors();
   hlManager->setHlDataList(hlDataList);
@@ -298,7 +297,6 @@ void KateConfigDialog::slotApply()
   }
 
   // repeat some calls: kwrite has a bad design.
-  v->writeConfig( );
   v->doc()->writeConfig( );
   hlPage->saveData();
   config->sync();

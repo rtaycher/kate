@@ -366,7 +366,6 @@ void TopLevel::readConfig() {
   config->setGroup("General Options");
   readConfig(config);
 
-  kateView->readConfig();
   kateView->doc()->readConfig();
 }
 
@@ -380,7 +379,6 @@ void TopLevel::writeConfig()
   config->setGroup("General Options");
   writeConfig(config);
 
-  kateView->writeConfig();
   kateView->doc()->writeConfig();
 }
 

@@ -96,51 +96,6 @@ class Attribute {
     bool italic;
 };
 
-class KateAction {
-  public:
-    enum Action {replace, wordWrap, wordUnWrap, newLine, delLine,
-      insLine, killLine};//, doubleLine, removeLine};
-
-    KateAction(Action, PointStruc &cursor, int len = 0,
-      const QString &text = QString::null);
-
-    Action action;
-    PointStruc cursor;
-    int len;
-    QString text;
-    KateAction *next;
-};
-
-class KateActionGroup {
-  public:
-    // the undo group types
-    enum {  ugNone,         //
-            ugPaste,        // paste
-            ugDelBlock,     // delete/replace selected text
-            ugIndent,       // indent
-            ugUnindent,     // unindent
-            ugComment,      // comment
-            ugUncomment,    // uncomment
-            ugReplace,      // text search/replace
-            ugSpell,        // spell check
-            ugInsChar,      // char type/deleting
-            ugDelChar,      // ''  ''
-            ugInsLine,      // line insert/delete
-            ugDelLine       // ''  ''
-         };
-
-    KateActionGroup(PointStruc &aStart, int type = ugNone);
-    ~KateActionGroup();
-    void insertAction(KateAction *);
-
-    static const char * typeName(int type);
-
-    PointStruc start;
-    PointStruc end;
-    KateAction *action;
-    int undoType;
-};
-
 class KateCursor : public Kate::Cursor
 {
   public:
@@ -178,8 +133,32 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     friend class KateIconBorder;
 
   public:
-    KateDocument(bool bSingleViewMode=false, bool bBrowserView=false, QWidget *parentWidget = 0, const char *widgetName = 0, QObject * = 0, const char * = 0);
-    ~KateDocument();
+    KateDocument (bool bSingleViewMode=false, bool bBrowserView=false, QWidget *parentWidget = 0, const char *widgetName = 0, QObject * = 0, const char * = 0);
+    ~KateDocument ();
+
+    // KTextEditor::Document stuff
+    virtual KTextEditor::View *createView( QWidget *parent, const char *name );
+    QPtrList<KTextEditor::View> views () const { return _views; };
+
+    // KTextEditor::EditInterface stuff
+    virtual QString text ( int line, int col, int len ) const;
+    virtual QString textLine ( int line ) const;
+
+    virtual bool insertText ( int line, int col, const QString &s );
+    virtual bool removeText ( int line, int col, int len );
+
+    virtual bool insertLine ( int line, const QString &s );
+    virtual bool removeLine ( int line );
+
+    virtual int length () const;
+    virtual int lineLength ( int line ) const;
+
+    // KTextEditor::CursorInterface stuff
+    virtual KTextEditor::Cursor *createCursor ();
+    virtual QPtrList<KTextEditor::Cursor> cursors () const;
+
+    // internal edit stuff (mostly for view)
+    bool insertChars ( int line, int col, const QString &chars, KateView *view );
 
   protected:
     QFont myFont, myFontBold, myFontItalic, myFontBI;
@@ -193,23 +172,9 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     virtual bool openFile();
     virtual bool saveFile();
 
-    virtual KTextEditor::View *createView( QWidget *parent, const char *name );
-
-    virtual QString textLine( int line ) const;
-
-    virtual int lineLength ( int line ) const;
-
-    virtual bool insertLine( int line, const QString &s );
-
     void insert_Line(const QString& s,int line=-1, bool update=true);
     void remove_Line(int line,bool update=true);
     void replaceLine(const QString& s,int line=-1);
-    virtual bool insertText( int line, int col, const QString &s );
-    virtual bool removeLine( int line );
-    virtual int length() const;
-
-    virtual QString text ( int line, int col, int len ) const;
-    virtual bool removeText ( int line, int col, int len );
 
     virtual void setSelection( int row_from, int col_from, int row_to, int col_t );
     virtual bool hasSelection() const;
@@ -219,16 +184,6 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     bool m_bSingleViewMode;
 
     QPtrList<KTextEditor::Cursor> myCursors;
-
-    /**
-    * Create a new cursor object
-    */
-    virtual KTextEditor::Cursor *createCursor ( );
-
-    /*
-    * Accessor to the list of views.
-    */
-    virtual QPtrList<KTextEditor::Cursor> cursors () const;
 
 // public interface
     /**
@@ -350,7 +305,6 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     int textHeight();
 
     int currentColumn(PointStruc &cursor);
-    bool insertChars(VConfig &, const QString &chars);
     void newLine(VConfig &);
     void killLine(VConfig &);
     void backspace(VConfig &);
@@ -412,17 +366,7 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     void delLine(int line);
     void optimizeSelection();
 
-    void doAction(KateAction *);
-    void doReplace(KateAction *);
-    void doWordWrap(KateAction *);
-    void doWordUnWrap(KateAction *);
-    void doNewLine(KateAction *);
-    void doDelLine(KateAction *);
-    void doInsLine(KateAction *);
-    void doKillLine(KateAction *);
     void newUndo();
-
-    void doActionGroup(KateActionGroup *, int flags, bool undo = false);
 
     int nextUndoType();
     int nextRedoType();
@@ -503,8 +447,6 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     bool myWordWrap;
     uint myWordWrapAt;
 
-    QPtrList<KateActionGroup> undoList;
-
     int currentUndo;
     int undoState;
     int undoSteps;
@@ -528,9 +470,6 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
   public slots:
     /** Reloads the current document from disk if possible */
     void reloadFile();
-
-  public:
-    QPtrList<KTextEditor::View> views () const { return _views; };
 
   private slots:
     void slotModChanged ();
@@ -598,41 +537,58 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
      void applyWordWrap ();
 
   private:
+    bool hlSetByUser;
 
-	class KateDocPrivate
-	{
-		public:
-	        bool hlSetByUser;
-	};
- 
- 
-// BCI: Add a real d-pointer in the next BIC release
-static QPtrDict<KateDocPrivate>* d_ptr;
-static void cleanup_d_ptr()
-      {
-          delete d_ptr;
-      }
- 
-KateDocPrivate* d( const KateDocument* foo )
-      {
-           if ( !d_ptr ) {
-                     d_ptr = new QPtrDict<KateDocPrivate>;
-                     //qAddPostRoutine( cleanup_d_ptr );
-                }
-                KateDocPrivate* ret = d_ptr->find( (void*) foo );
-                if ( ! ret ) {
-                        ret = new KateDocPrivate;
-                        d_ptr->replace( (void*) foo, ret );
-                }
-                return ret;
-      }
- 
-void delete_d( const KateDocument* foo )
-     {
-          if ( d_ptr )
-              d_ptr->remove( (void*) foo );
-     }
+  protected:
+    uint configFlags;
+    uint searchFlags;
 
+  public:
+    enum Config_flags {
+      cfAutoIndent= 0x1,
+      cfBackspaceIndents= 0x2,
+      cfWordWrap= 0x4,
+      cfReplaceTabs= 0x8,
+      cfRemoveSpaces = 0x10,
+      cfWrapCursor= 0x20,
+      cfAutoBrackets= 0x40,
+      cfPersistent= 0x80,
+      cfKeepSelection= 0x100,
+      cfVerticalSelect= 0x200,
+      cfDelOnInput= 0x400,
+      cfXorSelect= 0x800,
+      cfOvr= 0x1000,
+      cfMark= 0x2000,
+      cfGroupUndo= 0x4000,
+      cfKeepIndentProfile= 0x8000,
+      cfKeepExtraSpaces= 0x10000,
+      cfMouseAutoCopy= 0x20000,
+      cfSingleSelection= 0x40000,
+      cfTabIndents= 0x80000,
+      cfPageUDMovesCursor= 0x100000,
+      cfShowTabs= 0x200000,
+      cfSpaceIndent= 0x400000,
+      cfSmartHome = 0x800000};
+
+    enum Dialog_results {
+      srYes=QDialog::Accepted,
+      srNo=10,
+      srAll,
+      srCancel=QDialog::Rejected};
+
+//search flags
+    enum Search_flags {
+     sfCaseSensitive=1,
+     sfWholeWords=2,
+     sfFromBeginning=4,
+     sfBackward=8,
+     sfSelected=16,
+     sfPrompt=32,
+     sfReplace=64,
+     sfAgain=128,
+     sfWrapped=256,
+     sfFinished=512,
+     sfRegularExpression=1024};
 };
 
 #endif
