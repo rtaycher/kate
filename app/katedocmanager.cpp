@@ -234,7 +234,7 @@ Kate::Document *KateDocManager::openURL (const KURL& url,const QString &encoding
   {
     Kate::Document* doc = documentList().getFirst();
 
-    doc->setEncoding(encoding.isNull() ? Kate::Document::defaultEncoding() : encoding);
+    doc->setEncoding(encoding);
 
     if (!loadMetaInfos(doc, url))
       doc->openURL (url);
