@@ -128,7 +128,6 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
 
     KAction* settingsConfigure;
 
-    //KSelectAction* scriptMenu;
     KActionMenu *scriptMenu;
     KScriptManager* kscript;
 
@@ -166,7 +165,6 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     void slotEditToolbars();
     void slotWindowActivated ();
     void documentMenuAboutToShow();
-    void settingsMenuAboutToShow();
     void slotDropEvent(QDropEvent *);
     void editKeys();
     void mSlotFixOpenWithMenu();
@@ -199,8 +197,6 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     int currentDocumentIfaceNumber();
   
   public: //ToolViewManager stuff
-    virtual void* interfaces(const QString &name);
-
     virtual KDockWidget *addToolViewWidget(KDockWidget::DockPosition pos,QWidget *widget,const QPixmap &icon, const QString& caption);
     virtual bool removeToolViewWidget(QWidget *);
     virtual KDockWidget *addToolView(KDockWidget::DockPosition pos,const char* name,const QPixmap &icon,const QString&);

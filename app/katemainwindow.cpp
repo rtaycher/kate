@@ -127,10 +127,6 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
   m_pluginManager->enableAllPluginsGUI (this);
 
   // connect settings menu aboutToshow
-  QPopupMenu* pm_set = (QPopupMenu*)factory()->container("settings", this);
-  connect(pm_set, SIGNAL(aboutToShow()), this, SLOT(settingsMenuAboutToShow()));
-
-  // connect settings menu aboutToshow
   documentMenu = (QPopupMenu*)factory()->container("documents", this);
   connect(documentMenu, SIGNAL(aboutToShow()), this, SLOT(documentMenuAboutToShow()));
 
@@ -246,13 +242,11 @@ void KateMainWindow::setupActions()
   KAction *a;
 
   kscript = new KScriptManager(this, "scriptmanager");
-  //scriptMenu = new KSelectAction(i18n("KDE Scripts"),0,this,SLOT(runScript()),actionCollection(),"scripts");
   scriptMenu = new KActionMenu( i18n("KDE Scri&pts"), actionCollection(), "scripts");  
   scriptMenu->setWhatsThis(i18n("This shows all available scripts and allows executing them"));
   setupScripts();
   connect( scriptMenu->popupMenu(), SIGNAL(activated( int)), this, SLOT(runScript( int )) );
-  //scriptMenu->clear();
-  //scriptMenu->setItems(kscript->scripts());
+  
   KStdAction::openNew( m_viewManager, SLOT( slotDocumentNew() ), actionCollection(), "file_new" )->setWhatsThis(i18n("Create a new document"));
   KStdAction::open( m_viewManager, SLOT( slotDocumentOpen() ), actionCollection(), "file_open" )->setWhatsThis(i18n("Open an existing document for editing"));
 
@@ -309,19 +303,6 @@ void KateMainWindow::setupActions()
   a=KStdAction::configureToolbars(this, SLOT(slotEditToolbars()), actionCollection(), "set_configure_toolbars");
   a->setWhatsThis(i18n("Configure which items should appear in the toolbar(s)"));
 
-
-
-  // toggle dockwidgets
-//  settingsShowFilelist = new KToggleAction(i18n("Show File List"), 0, filelistDock, SLOT(changeHideShowState()), actionCollection(), "settings_show_filelist");
-//  settingsShowToolViews->insert(settingsShowFilelist);
-
-//  settingsShowFileselector = new KToggleAction(i18n("Show File Selector"), 0, fileselectorDock, SLOT(changeHideShowState()), actionCollection(), "settings_show_fileselector");
-  //settingsShowConsole = new KToggleAction(i18n("Show Terminal Emulator"), QString::fromLatin1("konsole"), Qt::Key_F7, this, SLOT(slotSettingsShowConsole()), actionCollection(), "settings_show_console");
-
-//  settingsShowToolViews->insert(settingsShowFileselector);
-  //m_settingsShowToolViews->insert(settingsShowConsole);
-
-
   if (m_dockStyle==ModernStyle)
   {
 	  KActionMenu *settingsShowToolDocks=new KActionMenu( i18n("Tool Docks"), actionCollection(),"settings_show_tooldocks");
@@ -333,7 +314,6 @@ void KateMainWindow::setupActions()
     	  settingsShowToolDocks->insert(new KateToggleToolViewAction(i18n("Top"),0,m_topDock,actionCollection(),this,"settings_show_topdock"));
   }
 
-  //settingsShowToolbar = KStdAction::showToolbar(this, SLOT(slotSettingsShowToolbar()), actionCollection(), "settings_show_toolbar");
   settingsConfigure = KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
   settingsConfigure->setWhatsThis(i18n("Configure various aspects of this application and the editing component"));
 
@@ -581,25 +561,10 @@ void KateMainWindow::editKeys()
   dlg.configure();
 }
 
-void KateMainWindow::settingsMenuAboutToShow()
-{
-//  settingsShowFilelist->setChecked( filelistDock->isVisible() );
-//  settingsShowFileselector->setChecked( fileselectorDock->isVisible() );
-}
-
 void KateMainWindow::openURL (const QString &name)
 {
   m_viewManager->openURL (KURL(name));
 }
-
-/*
-void KateMainWindow::slotSettingsShowToolbar()
-{
-  if (settingsShowToolbar->isChecked())
-    toolBar()->show();
-  else
-    toolBar()->hide();
-}*/
 
 void KateMainWindow::slotConfigure()
 {
@@ -882,14 +847,6 @@ bool KateMainWindow::removeToolView(KDockWidget *dw)
 	} else return false;
 
 }
-
-void* KateMainWindow::interfaces(const QString &name)
-{
-	if (name=="views") return viewManager();
-	else if (name=="toolViews") return toolViewManager();
-	else return 0;
-}
-
 
 bool KateMainWindow::hideToolView(class KDockWidget*){return false;}
 bool KateMainWindow::showToolView(class KDockWidget*){return false;}
