@@ -54,7 +54,7 @@ Dialog.</p>
 <html>
 <p>You can open the currently edited file in any other application from inside 
 Kate.</p>
-<p>Choose <strong>File -&gt; Open Width</strong> for the list of programs 
+<p>Choose <strong>File -&gt; Open With</strong> for the list of programs 
 configured
 for the document type, there is also an option <strong>Other...</strong> to 
 choose any application on your system.</p>
