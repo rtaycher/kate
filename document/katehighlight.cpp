@@ -703,8 +703,8 @@ int Highlight::doHighlight(int ctxNum, TextLine *textLine)
 
     for (item = context->items.first(); item != 0L; item = context->items.next())
     {
-  //    if (item->startEnable(lastChar))
-     // {
+      if (item->startEnable(lastChar))
+      {
         s2 = item->checkHgl(s1,s1==str);
         if (s2 > s1)
         {
@@ -715,7 +715,7 @@ int Highlight::doHighlight(int ctxNum, TextLine *textLine)
             found = true;
             break;
         }
-   //   }
+      }
     }
 
     // nothing found: set attribute of one char
