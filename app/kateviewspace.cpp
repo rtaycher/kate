@@ -112,7 +112,6 @@ void KateViewSpace::addView(Kate::View* v, bool show)
     if ( ! fn.isEmpty() )
     {
       QString vgroup = QString("%1 %2").arg(m_group).arg(fn);
-
       if ( KateApp::kateSessionConfig()->hasGroup( vgroup ) )
       {
         KateApp::kateSessionConfig()->setGroup( vgroup );
@@ -121,7 +120,6 @@ void KateViewSpace::addView(Kate::View* v, bool show)
 
     }
   }
-
 
   uint id = mViewList.count();
   stack->addWidget(v, id);
@@ -160,6 +158,7 @@ bool KateViewSpace::showView(Kate::View* v)
       mViewList.removeRef( kv );
       mViewList.append( kv );
       stack->raiseWidget( kv );
+      kv->show();
       return true;
     }
   }
@@ -176,6 +175,7 @@ bool KateViewSpace::showView(uint documentNumber)
       mViewList.removeRef( kv );
       mViewList.append( kv );
       stack->raiseWidget( kv );
+      kv->show();
       return true;
     }
   }
