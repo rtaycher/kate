@@ -20,8 +20,6 @@
 
 #include <kapp.h>
 
-class KStatusBar;
-
 namespace Kate
 {
 
@@ -35,7 +33,6 @@ class Application : public KApplication
 
     virtual class ViewManager *getViewManager ()=0;
     virtual class DocManager *getDocManager ()=0;
-    virtual KStatusBar *statusBar ()=0;
 };
 
 };

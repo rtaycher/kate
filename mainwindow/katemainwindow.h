@@ -18,15 +18,14 @@
 #define __kate_mainwindow_h__
 
 #include "../main/katemain.h"
+#include "../interfaces/mainwindow.h"
 #include "kateIface.h"
 
-#include <kdockwidget.h>
 #include <kparts/part.h>
-#include <kxmlgui.h>
 
 class KateMark;
 
-class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOPIface, virtual public KParts::PartBase
+class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCOPIface, virtual public KParts::PartBase
 {
   Q_OBJECT
 
@@ -64,10 +63,6 @@ class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOP
 
     KateFileList *filelist;
     KateFileSelector *fileselector;
-
-    virtual QStringList containerTags() const;
-    virtual QWidget *createContainer( QWidget *parent, int index,
-    const QDomElement &element, int &id );
 
   private:
     uint myID;
@@ -143,8 +138,6 @@ class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOP
     KAction* settingsConfigure;
 
     KAction* sidebarFocusNext;
-   
-    QString tagSidebar;
 
   public slots:
     void newWindow ();
@@ -200,6 +193,10 @@ class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOP
 
   protected:
      bool eventFilter (QObject* o, QEvent* e);
+
+  public:
+    Kate::ViewManager *getViewManager ();
+    Kate::DocManager *getDocManager ();
 };
 
 #endif

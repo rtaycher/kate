@@ -132,12 +132,12 @@ Kate::DocManager *KateApp::getDocManager ()
   return ((Kate::DocManager *)docManager);
 }
 
-KStatusBar *KateApp::statusBar ()
+Kate::MainWindow *KateApp::getMainWindow ()
 {
   int n = mainWindows.find ((KateMainWindow *)activeWindow());
 
   if (n < 0)
     n=0;
 
-  return mainWindows.at(n)->statusBar();
+  return ((Kate::MainWindow *)mainWindows.at(n));
 }

@@ -79,10 +79,9 @@
 #include <kurldrag.h>
 
 KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_pluginManager, uint id, const char *name) :
-	KDockMainWindow (0, "Main Window"),
+	Kate::MainWindow (),
              DCOPObject (name)
 {
-  tagSidebar=QString("sidebar");
   docManager =  _docManager;
   pluginManager =_pluginManager;
   config = KateFactory::instance()->config();
@@ -730,30 +729,6 @@ void KateMainWindow::fileSelected(const KFileViewItem *file)
   viewManager->openURL( u );
 }
 
-QStringList KateMainWindow::containerTags() const
-{
-  kdDebug(13000)<<"This is KanMainWindow::containerTags()"<<endl;
-  QStringList tmp = KDockMainWindow::containerTags();
-
-  tmp<<tagSidebar;
-  return tmp;
-}    
-
-QWidget *KateMainWindow::createContainer( QWidget *parent, int index,
-          const QDomElement &element, int &id )
-  {
-//    kdDebug(13000)<<"************************This is KateMainWindow::createContainer " << ((parent) ? parent->className() : "Null ") <<endl;
-    if (element.tagName().lower()==tagSidebar)
-      {
-//        kdDebug(13000)<<"****** A sidebar should be created";
-        KDockWidget *tmp=createDockWidget("TMPDOCK",0);
-        tmp->manualDock ( mainDock, KDockWidget::DockRight, 20 );
-	tmp->setWidget(new KListBox(tmp));
-	return tmp;
-      }
-    return KDockMainWindow::createContainer(parent,index,element,id);
-  }
-
 void KateMainWindow::restore(bool isRestored)
 { viewManager->reopenDocuments(isRestored); }
 
@@ -795,7 +770,12 @@ void KateMainWindow::slotOpenWithMenuAction(int idx)
   KRun::run(*app, list);
 }
 
+Kate::ViewManager *KateMainWindow::getViewManager ()
+{
+  return ((Kate::ViewManager *)viewManager);
+}
 
-
-
-
+Kate::DocManager *KateMainWindow::getDocManager ()
+{
+  return ((Kate::DocManager *)docManager);
+}

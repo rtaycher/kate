@@ -20,6 +20,7 @@
 #include "../main/katemain.h"
 #include "kateappIface.h"
 #include "../interfaces/application.h"
+#include "../interfaces/mainwindow.h"
 #include "../interfaces/docmanager.h"
 #include "../interfaces/viewmanager.h"
 
@@ -45,7 +46,7 @@ class KateApp : public Kate::Application, public KateAppDCOPIface
 
     Kate::ViewManager *getViewManager ();
     Kate::DocManager *getDocManager ();
-    KStatusBar *statusBar ();
+    Kate::MainWindow *getMainWindow ();
 
   private:
     uint myWinID;

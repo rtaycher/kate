@@ -20,8 +20,6 @@
 
 #include <kdockwidget.h>
 
-class KStatusBar;
-
 namespace Kate
 {
 
@@ -35,7 +33,6 @@ class MainWindow : public KDockMainWindow
 
     virtual class ViewManager *getViewManager ()=0;
     virtual class DocManager *getDocManager ()=0;
-    virtual KStatusBar *statusBar ()=0;
 };
 
 };
