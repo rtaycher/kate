@@ -379,8 +379,8 @@ bool KateViewManager::closeDocWithAllViews ( KateView *view )
 
 void KateViewManager::statusMsg ()
 {
-  if (activeView() == 0) return;
-  // anders: since activeView() loops, lets ask it only once!
+  if (!activeView()) return;
+
   KateView* v = activeView();
 
   bool readOnly =  v->isReadOnly();
@@ -403,11 +403,7 @@ void KateViewManager::statusMsg ()
 
   int mod = (int)v->isModified();
 
-  QString  msg = v->doc()->url().prettyURL();
-  if (msg.isEmpty())
-    msg = ((KateDocument *)v->doc())->docName();
-
-  emit statusChanged (v, v->currentLine() + 1, v->currentColumn() + 1, ovr, mod, msg);
+  emit statusChanged (v, v->currentLine() + 1, v->currentColumn() + 1, ovr, mod, v->doc()->docName());
   emit statChanged ();
 }
 
