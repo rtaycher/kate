@@ -148,7 +148,11 @@ while (($n < $s) && ($file[$sections[$n]] ne ""))
   $n++;
 }
 
-print FILE "      <DetectChar char=\"&quot;\" attribute=\"1\" context=\"1\">\n";
+if ($delimeter ne "")
+{
+  print FILE "      <DetectChar char=\"&quot;\" attribute=\"1\" context=\"1\">\n";
+}
+
 print FILE "      </context>\n";
 
 if ($delimeter ne "")
@@ -167,11 +171,11 @@ if ($delimeter ne "")
   }
 
   print FILE "      </context>\n";
-}
 
-print FILE "<context attribute=\"1\" lineEndContext=\"2\" name=\"Continue\">\n";
-print FILE "      <RegExpr String=\"^\" attribute=\"1\" context=\"1\"/>";
-print FILE "      </context>";
+  print FILE "<context attribute=\"1\" lineEndContext=\"2\" name=\"Continue\">\n";
+  print FILE "      <RegExpr String=\"^\" attribute=\"1\" context=\"1\"/>";
+  print FILE "      </context>";
+}
 
 print FILE "    </contexts>\n";
 print FILE "    <itemDatas>\n";
