@@ -15,3 +15,6 @@ rckwrite_DATA = kwriteui.rc
 
 tipdir = $(kde_datadir)/kate
 tip_DATA = tips
+
+mime_DATA = x-kate-project.desktop
+mimedir = $(kde_mimedir)/application

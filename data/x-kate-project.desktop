@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+MimeType=application/x-kate-project
+Icon=kate
+Patterns=*.kateproject
+X-KDE-AutoEmbed=false
+DefaultApp=kate
+Comment=Kate Project File
+
+[Property::X-KDE-NativeExtension]
+Type=QString
+Value=.kateproject
