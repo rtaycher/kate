@@ -5,8 +5,8 @@ bin_PROGRAMS = kant
 
 kant_SOURCES = kantmain.cpp
 kant_LDADD   =  ./kwrite/libkwritepart.la ./app/libkantapp.la \
-		./view/libkantview.la ./sidebar/libkantsidebar.la \
-		./mainwindow/libkantmainwindow.la ./project/libkantproject.la \
+		./view/libkantview.la ./mainwindow/libkantmainwindow.la \
+		./sidebar/libkantsidebar.la ./project/libkantproject.la \
 		./fileselector/libkantfileselector.la ./document/libkantdocument.la \
 		./console/libkantconsole.la ./filelist/libkantfilelist.la \
 		./pluginmanager/libkantpluginmanager.la ./pluginmanager/libkantpluginiface.la
