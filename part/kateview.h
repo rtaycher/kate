@@ -304,6 +304,9 @@ class KateView : public Kate::View
 		void cursorPosition( uint *line, uint *col ) { getCursorPosition ((int*)line, (int*)col); } ;
 		bool setCursorPosition( uint line, uint col ) { setCursorPosition ((int)line, (int)col, false); } ;
 
+		uint cursorLine () {return (uint) currentLine (); };
+		uint cursorColumn () {return (uint) currentColumn (); };
+
     bool isOverwriteMode() const;
     void setOverwriteMode( bool b );
 
