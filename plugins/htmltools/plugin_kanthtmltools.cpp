@@ -1,4 +1,4 @@
- /***************************************************************************
+/***************************************************************************
                           plugin_kanthtmltools.cpp  -  description
                              -------------------
     begin                : FRE Feb 23 2001
@@ -25,6 +25,7 @@
 #include "../../kwrite/kwview.h"
 #include <cassert>  
 #include <kdebug.h>
+#include <qstring.h>
 
 PluginKantHtmlTools::PluginKantHtmlTools( QObject* parent, const char* name )
     : Plugin( parent, name )
@@ -128,34 +129,18 @@ void PluginKantHtmlTools::slipInHTMLtag (KWrite & view, QString text)  //  PCP
         {
         view.setCursorPosition (line, col + pre.length () + marked.length () - 1);
 
-        for (int x (strlen (marked.latin1()));  x--;)
+        for (int x (marked.length());  x--;)
                 view.shiftCursorLeft ();
         }
     else
         {
         view.setCursorPosition (line, col += pre.length ());
 
-        for (int x (strlen (marked.latin1()));  x--;)
+        for (int x (marked.length());  x--;)
                 view.shiftCursorRight ();
         }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 kanthtmltoolsFactory::kanthtmltoolsFactory()
