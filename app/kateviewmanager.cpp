@@ -350,7 +350,7 @@ void KateViewManager::activateView( uint documentNumber )
         int i( 0 );
         QString fg = QString("file%1").arg( i );
         while ( scfg->hasKey( fg ) ) {
-          if ( scfg->readPathEntry( fg ) == d->url().prettyURL() )
+          if ( scfg->readEntry( fg ) == d->url().prettyURL() )
             break;
           i++;
           fg = QString("file%1").arg( i );
@@ -449,6 +449,7 @@ void KateViewManager::openNewIfEmpty()
         ((KateApp *)kapp)->kateMainWindow(i2)->kateViewManager()->createView (false, KURL(), 0L, (Kate::Document *)m_docManager->document(m_docManager->documents()-1));
     }
   }
+
   emit viewChanged ();
   emit m_viewManager->viewChanged ();
 }
@@ -844,7 +845,7 @@ void KateViewManager::saveAllDocsAtCloseDown(  )
 
   scfg->setGroup("open files");
   scfg->writeEntry("count",m_docManager->documents());
-  scfg->writePathEntry("current file", activeView()->getDoc()->url().prettyURL());
+  scfg->writeEntry("current file", activeView()->getDoc()->url().prettyURL());
   m_docManager->saveDocumentList(scfg);
 
   scfg->sync();
@@ -871,7 +872,7 @@ void KateViewManager::reopenDocuments(bool isRestore)
   {
     scfg->setGroup("open files");
     // try to focus the file that had focus at close down
-    QString curfile = scfg->readPathEntry("current file");
+    QString curfile = scfg->readEntry("current file");
 
     if (curfile.isEmpty()) {
         delete scfg;
@@ -912,9 +913,8 @@ void KateViewManager::reopenDocuments(bool isRestore)
         //kdDebug(13001)<<"reopenDocuments(): opening file : "<<fn<<endl;
         scfg->setGroup( fn );
 
-        Kate::Document *doc = m_docManager->openURL( KURL( fn ) );
-        if (doc)
-          doc->readSessionConfig(scfg);
+        Kate::Document *doc = m_docManager->createDoc ();
+        doc->readSessionConfig(scfg);
 
         scfg->setGroup("open files");
       }
@@ -1075,17 +1075,13 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, const QString &gro
          Kate::View* v;
          KURL url( config->readPathEntry( file ) );
          if ( ! m_docManager->isOpen( url ) ) {
-           openURL( url );
+           Kate::Document *doc = m_docManager->createDoc ();
+
+           config->setGroup( url.prettyURL() );
+           doc->readSessionConfig(config);
+
+           activateView (doc->documentNumber());
            v = activeView();
-           if (v && v->getDoc()->url() == url ) { // this is a wild assumption, but openURL() fails to return a bool :(
-             // doc config is in group "<url.prettyURL()>"
-             config->setGroup( url.prettyURL() );
-             v->getDoc()->readSessionConfig( config );
-           }
-           else {
-             //createView (true, KURL(), 0L);
-             kdDebug(13001)<<"KateViewManager: failed to open document "<<file<<endl;
-           }
          }
          else { // if the group has been deleted, we can find a document
            // ahem, tjeck if this document actually exists.
