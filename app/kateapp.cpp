@@ -93,38 +93,39 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
   {
     config()->setGroup("General");
 
-    KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
+    KSimpleConfig scfg ("katesessionrc", false);
 
     // restore our nice projects if wanted
     if (config()->readBoolEntry("Restore Projects", false))
-      m_projectManager->restoreProjectList (scfg);
+      m_projectManager->restoreProjectList (&scfg);
 
     // reopen our nice files if wanted
     if (config()->readBoolEntry("Restore Documents", false))
-      m_docManager->restoreDocumentList (scfg);
+      m_docManager->restoreDocumentList (&scfg);
 
     // window config
     if (config()->readBoolEntry("Restore Window Configuration", false))
-      win->restoreWindowConfiguration (scfg);
-
-    delete scfg;
+      win->restoreWindowConfiguration (&scfg);
   }
 
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 
   if (args->isSet("initplugin"))
   {
-	QString pluginName=args->getOption("initplugin");
-	m_initURL=args->url(0);
-	m_initPlugin= static_cast<Kate::InitPlugin*>(Kate::createPlugin (QFile::encodeName(pluginName),
-				 (Kate::Application *)kapp)->qt_cast("Kate::InitPlugin"));
-	m_initPlugin->activate(args->url(0));
-	m_doNotInitialize=m_initPlugin->actionsKateShouldNotPerformOnRealStartup();
-        kdDebug()<<"********************loading init plugin in app constructor"<<endl;
-  } else kdDebug()<<"************************no plugin specified"<<endl;
+    QString pluginName=args->getOption("initplugin");
+    
+    m_initURL=args->url(0);
+    
+    m_initPlugin= static_cast<Kate::InitPlugin*>(Kate::createPlugin (QFile::encodeName(pluginName), (Kate::Application *)kapp)->qt_cast("Kate::InitPlugin"));
+    
+    m_initPlugin->activate(args->url(0));
+    
+    m_doNotInitialize=m_initPlugin->actionsKateShouldNotPerformOnRealStartup();
+    
+    kdDebug()<<"********************loading init plugin in app constructor"<<endl;
+  }
 
   processEvents();
-
 
   KTipDialog::showTip(m_mainWindows.first());
 
@@ -152,25 +153,32 @@ void KateApp::callOnEventLoopEnter()
 
 void KateApp::performInit(const QString &libname, const KURL &url)
 {
-	if (m_initPlugin) m_oldInitLib=m_initLib; else m_oldInitLib=QString::null;
-	m_initURL=url;
-	m_initLib=libname;
-	QTimer::singleShot(0,this,SLOT(performInit()));
+  if (m_initPlugin)
+    m_oldInitLib=m_initLib;
+  else
+    m_oldInitLib=QString::null;
+  
+  m_initURL=url;
+  m_initLib=libname;
+  
+  QTimer::singleShot(0,this,SLOT(performInit()));
 }
 
 void KateApp::performInit()
 {
-	if (( m_oldInitLib.isNull()) || (m_oldInitLib!=m_initLib))
-	{
-		if (m_initPlugin) delete m_initPlugin;
-		m_initPlugin=0;
-		if (!m_oldInitLib.isNull()) KLibLoader::self()->unloadLibrary(m_oldInitLib.latin1());
+  if (( m_oldInitLib.isNull()) || (m_oldInitLib!=m_initLib))
+  {
+    delete m_initPlugin;
+    m_initPlugin=0;
+    
+    if (!m_oldInitLib.isNull())
+      KLibLoader::self()->unloadLibrary(m_oldInitLib.latin1());
 
-        	m_initPlugin= static_cast<Kate::InitPlugin*>(Kate::createPlugin (QFile::encodeName(m_initLib),
-                                 (Kate::Application *)kapp)->qt_cast("Kate::InitPlugin"));
-	}
-        m_initPlugin->activate(m_initURL);
-	m_initPlugin->initKate();
+    m_initPlugin = static_cast<Kate::InitPlugin*>(Kate::createPlugin (QFile::encodeName(m_initLib), (Kate::Application *)kapp)->qt_cast("Kate::InitPlugin"));
+  }
+  
+  m_initPlugin->activate(m_initURL);
+  m_initPlugin->initKate();
 }
 
 Kate::InitPlugin *KateApp::initPlugin() const {return m_initPlugin;}
@@ -191,14 +199,13 @@ int KateApp::newInstance()
 
   if (m_firstStart && m_initPlugin)
   {
-	m_initPlugin->initKate();
-        kdDebug()<<"***************************** INIT PLUGIN ON FIRST START"<<endl;
+    m_initPlugin->initKate();
+    kdDebug()<<"***************************** INIT PLUGIN ON FIRST START"<<endl;
   }
   else if (args->isSet("initplugin"))
   {
-        kdDebug()<<"***************************** INIT PLUGIN ON ANY  START"<<endl;
-	performInit(args->getOption("initplugin"),args->url(0));
-
+    kdDebug()<<"***************************** INIT PLUGIN ON ANY  START"<<endl;
+    performInit(args->getOption("initplugin"),args->url(0));
   }
   else
   {
@@ -211,7 +218,7 @@ int KateApp::newInstance()
     Kate::Document::setOpenErrorDialogsActivated (true);
 
     if ( m_mainWindows.first()->kateViewManager()->viewCount () == 0 )
-       m_mainWindows.first()->kateViewManager()->activateView(m_docManager->firstDocument()->documentNumber());
+      m_mainWindows.first()->kateViewManager()->activateView(m_docManager->firstDocument()->documentNumber());
 
     int line = 0;
     int column = 0;
@@ -232,6 +239,8 @@ int KateApp::newInstance()
     if (nav)
       m_mainWindows.first()->kateViewManager()->activeView ()->setCursorPosition (line, column);
   }
+
+  // very important :)
   m_firstStart = false;
 
   return 0;
@@ -239,15 +248,19 @@ int KateApp::newInstance()
 
 KateMainWindow *KateApp::newMainWindow ()
 {
-  if (KateMainWindow::defaultMode==KMdi::UndefinedMode) {
-	KConfig *cfg=kapp->config();
-	QString grp=cfg->group();
-	cfg->setGroup("General");
-	KateMainWindow::defaultMode=(KMdi::MdiMode)cfg->readNumEntry("DefaultGUIMode",KMdi::IDEAlMode);
-	cfg->setGroup(grp);
+  if (KateMainWindow::defaultMode==KMdi::UndefinedMode)
+  {
+    KConfig *cfg=kapp->config();
+    
+    QString grp=cfg->group();
+    
+    cfg->setGroup("General");
+    KateMainWindow::defaultMode=(KMdi::MdiMode)cfg->readNumEntry("DefaultGUIMode",KMdi::IDEAlMode);
+    
+    cfg->setGroup(grp);
   }
   KateMainWindow *mainWindow = new KateMainWindow (m_docManager, m_pluginManager, m_projectManager,
-		(m_restoreGUIMode==KMdi::UndefinedMode)?KateMainWindow::defaultMode:m_restoreGUIMode);
+                                                    (m_restoreGUIMode==KMdi::UndefinedMode)?KateMainWindow::defaultMode:m_restoreGUIMode);
   m_mainWindows.append (mainWindow);
 
   if ((mainWindows() > 1) && m_mainWindows.at(m_mainWindows.count()-2)->kateViewManager()->activeView())
