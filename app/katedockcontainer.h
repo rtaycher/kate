@@ -47,6 +47,7 @@ public:
 	virtual void load(KConfig *);
 public slots:
 	void init();
+        void collapseOverlapped();
 private:                    
   	QWidget *m_mainWin;
 	QWidgetStack *m_ws;

@@ -223,6 +223,7 @@ void KateDockContainer::tabClicked(int t)
 			return;
 		}
 		m_ws->raiseWidget(t);
+		static_cast<KDockWidget*>(m_ws->widget(t)->qt_cast("KDockWidget"))->getWidget()->setFocus();
 		if (oldtab!=t) m_tb->setTab(oldtab,false);
 		oldtab=t;	
 	}
@@ -351,6 +352,21 @@ void KateDockContainer::delayedRaise()
 {
 				m_tb->setTab(m_delayedRaise,true);
 				tabClicked(m_delayedRaise);
+}
+
+void KateDockContainer::collapseOverlapped()
+{
+	if (isOverlapMode()){
+		QPtrList<KMultiTabBarTab>* tl=m_tb->tabs();
+	        QPtrListIterator<KMultiTabBarTab> it(*tl);
+		for(;it.current();++it) {
+			if (it.current()->isOn()) {
+				kdDebug()<<"Lowering TAB"<<endl;
+				it.current()->setState(false);
+				tabClicked(it.current()->id());
+			}
+		}
+	}
 }
 
 #include "katedockcontainer.moc"
