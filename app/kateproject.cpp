@@ -53,14 +53,7 @@ QString KateProject::fileName () const
 
 bool KateProject::save ()
 {
-  bool b = m_plugin->save ();
+  m_data->sync();
 
-  if (b)
-  {
-    m_data->sync();
-  
-    return true;
-  }
-  
-  return false;
+  return m_plugin->save ();
 }
