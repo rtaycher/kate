@@ -28,6 +28,7 @@ class KateDocManager : public KateDocManagerIface
 {
   Q_OBJECT
 
+  friend class KateConfigDialog;
   friend class KateMainWindow;
 
   public:

@@ -30,6 +30,7 @@ class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOP
 {
   Q_OBJECT
 
+  friend class KateConfigDialog;
   friend class KateApp;
   friend class KateViewManager;
   friend class KateView;

@@ -27,6 +27,7 @@ class KateViewManager : public KateViewManagerIface
 {
   Q_OBJECT
 
+  friend class KateConfigDialog;
   friend class KateMainWindow;
 
   public:

@@ -18,6 +18,8 @@
 #include "katemainwindow.h"
 #include "katemainwindow.moc"
 
+#include "kateconfigdialog.h"
+
 #include "../sidebar/katesidebar.h"
 #include "../console/kateconsole.h"
 #include "../document/katedocument.h"
@@ -34,7 +36,6 @@
 #include "../document/katedialogs.h"
 #include "../document/katehighlight.h"
 
-#include <cassert>
 #include <qcheckbox.h>
 #include <qiconview.h>
 #include <qinputdialog.h>
@@ -76,9 +77,6 @@
 #include <ktrader.h>
 #include <kuniqueapp.h>
 #include <kurldrag.h>
-
-
-#define POP_(x) kdDebug(13000) << #x " = " << flush << x << endl
 
 KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_pluginManager, uint id, const char *name) :
 	KDockMainWindow (0, "Main Window"),
@@ -661,12 +659,14 @@ void KateMainWindow::openURL (const QString &name)
   viewManager->openURL (KURL(name));
 }
 
+#define POP_(x) kdDebug(13000) << #x " = " << flush << x << endl
+
 void KateMainWindow::ShowErrorMessage (const QString & strFileName, int nLine, const QString & strMessage)
 {
- // TODO put the error delivery stuff here instead of after the piper
-        POP_(strFileName.latin1());
-        POP_(nLine);
-        POP_(strMessage.latin1());
+  // TODO put the error delivery stuff here instead of after the piper
+  POP_(strFileName.latin1());
+  POP_(nLine);
+  POP_(strMessage.latin1());
 }
 
 void KateMainWindow::slotSettingsShowFullPath()
@@ -684,179 +684,9 @@ void KateMainWindow::slotSettingsShowToolbar()
 
 void KateMainWindow::slotConfigure()
 {
-  KateView* v = 0L;
-  v = viewManager->activeView();
-
-  if (!v) return;
-
-  KDialogBase* dlg = new KDialogBase(KDialogBase::IconList, i18n("Configure Kate"), KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok, this, "configdialog");//KateConfigDlg(this);
-
-  QFrame* frGeneral = dlg->addPage(i18n("General"), i18n("General Options"), BarIcon("misc", KIcon::SizeMedium));
-  QGridLayout* gridFrG = new QGridLayout(frGeneral);
-  gridFrG->setSpacing( 6 );
-
-  // opaque resize of view splitters
-  QCheckBox* cb_opaqueResize = new QCheckBox( frGeneral );
-  cb_opaqueResize->setText(i18n("Show &Content when resizing views"));
-  gridFrG->addMultiCellWidget( cb_opaqueResize, 0, 0, 0, 1 );
-  cb_opaqueResize->setChecked(viewManager->useOpaqueResize);
-  QWhatsThis::add(cb_opaqueResize, i18n("If this is disabled, resizing views will display a <i>rubberband</i> to show the new sizes untill you release the mouse button."));
-
-  // reopen files
-  QCheckBox* cb_reopenFiles = new QCheckBox( frGeneral );
-  cb_reopenFiles->setText(i18n("Reopen &Files at startup"));
-  gridFrG->addMultiCellWidget( cb_reopenFiles, 1, 1, 0, 1 );
-  config->setGroup("open files");
-  cb_reopenFiles->setChecked( config->readBoolEntry("reopen at startup", true) );
-  QWhatsThis::add(cb_reopenFiles, i18n("If this is enabled Kate will attempt to reopen files that was open when you closed last time. Cursor position will be recovered if possible. Non-existing files will not be opened."));
-
-  // restore view  config
-  QCheckBox* cb_restoreVC = new QCheckBox( frGeneral );
-  cb_restoreVC->setText(i18n("Restore &View Configuration"));
-  gridFrG->addMultiCellWidget( cb_restoreVC, 2, 2, 0, 1 );
-  config->setGroup("General");
-  cb_restoreVC->setChecked( config->readBoolEntry("restore views", false) );
-  QWhatsThis::add(cb_restoreVC, i18n("Check this if you want all your views restored each time you open Kate"));
-
-
-  // How instances should be handled
-  QCheckBox *cb_singleInstance = new QCheckBox(frGeneral);
-  cb_singleInstance->setText(i18n("Restrict to single instance"));
-  gridFrG->addMultiCellWidget(cb_singleInstance,3,3,0,1);
-  config->setGroup("startup");
-  cb_singleInstance->setChecked(config->readBoolEntry("singleinstance",true));
-
-  // FileSidebar style
-  QCheckBox *cb_fileSidebarStyle = new QCheckBox(frGeneral);
-  cb_fileSidebarStyle->setText(i18n("Show Filebar in KOffice Workspace style"));
-  gridFrG->addMultiCellWidget(cb_fileSidebarStyle,4,4,0,1);
-  config->setGroup("Sidebar");
-  cb_fileSidebarStyle->setChecked(config->readBoolEntry("KOWStyle",true));
-
-  // sync the konsole ?
-  QCheckBox *cb_syncKonsole = new QCheckBox(frGeneral);
-  cb_syncKonsole->setText(i18n("Sync Konsole with active Document"));
-  gridFrG->addMultiCellWidget(cb_syncKonsole,5,5,0,1);
-  cb_syncKonsole->setChecked(syncKonsole);
-
-  config->setGroup("General");
-
-  // editor widgets from kwrite/kwdialog
-  // color options
-  QStringList path;
-  path << i18n("Editor") << i18n("Colors");
-  QVBox *page = dlg->addVBoxPage(path, i18n("Colors"),
-                              BarIcon("colorize", KIcon::SizeMedium) );
-  ColorConfig *colorConfig = new ColorConfig(page);
-  // some kwrite tabs needs a kwrite as an arg!
-
-  KSpellConfig * ksc = 0L;
-  IndentConfigTab * indentConfig = 0L;
-  SelectConfigTab * selectConfig = 0L;
-  EditConfigTab * editConfig = 0L;
-  QColor* colors = 0L;
-
-  // indent options
-  page=dlg->addVBoxPage(i18n("Indent"), i18n("Indent Options"),
-                       BarIcon("rightjust", KIcon::SizeMedium) );
-  indentConfig = new IndentConfigTab(page, v);
-
-  // select options
-  page=dlg->addVBoxPage(i18n("Select"), QString::null,
-                       BarIcon("misc") );
-  selectConfig = new SelectConfigTab(page, v);
-
-  // edit options
-  page=dlg->addVBoxPage(i18n("Edit"), QString::null,
-                       BarIcon("edit", KIcon::SizeMedium ) );
-  editConfig = new EditConfigTab(page, v);
-
-  // spell checker
-  page = dlg->addVBoxPage( i18n("Spelling"), i18n("Spell checker behavior"),
-                          BarIcon("spellcheck", KIcon::SizeMedium) );
-  ksc = new KSpellConfig(page, 0L, v->ksConfig(), false );
-  colors = v->getColors();
-  colorConfig->setColors( colors );
-
-  page=dlg->addVBoxPage(i18n("Plugins"),i18n("Configure plugins"),
-                          BarIcon("misc",KIcon::SizeMedium));
-  (void)new KateConfigPluginPage(page);
-
-  HighlightDialogPage *hlPage;
-  HlManager *hlManager;
-  HlDataList hlDataList;
-  ItemStyleList defaultStyleList;
-  ItemFont defaultFont;
-
-  hlManager = HlManager::self();
-
-  defaultStyleList.setAutoDelete(true);
-  hlManager->getDefaults(defaultStyleList,defaultFont);
-
-  hlDataList.setAutoDelete(true);
-  //this gets the data from the KConfig object
-  hlManager->getHlDataList(hlDataList);
-
-  page=dlg->addVBoxPage(i18n("Highlighting"),i18n("Highlighting configuration"),
-                        SmallIcon("highlighting", KIcon::SizeMedium));
-  hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &defaultFont, &hlDataList,
-    /*myDoc->highlightNum()*/0, page);
-
-  if (dlg->exec())
-  {
-    viewManager->setUseOpaqueResize(cb_opaqueResize->isChecked());
-    config->setGroup("startup");
-    config->writeEntry("singleinstance",cb_singleInstance->isChecked());
-    config->setGroup("open files");
-    config->writeEntry("reopen at startup", cb_reopenFiles->isChecked());
-
-    config->setGroup("Sidebar");
-    config->writeEntry("KOWStyle",cb_fileSidebarStyle->isChecked());
-    sidebar->setMode(cb_fileSidebarStyle->isChecked());
-
-    syncKonsole = cb_syncKonsole->isChecked();
-
-    config->setGroup("General");
-    config->writeEntry("restore views", cb_restoreVC->isChecked());
-
-    ksc->writeGlobalSettings();
-    colorConfig->getColors( colors );
-    config->setGroup("kwrite");
-    v->writeConfig( config );
-    v->doc()->writeConfig( config );
-    v->applyColors();
-    hlManager->setHlDataList(hlDataList);
-    hlManager->setDefaults(defaultStyleList,defaultFont);
-    hlPage->saveData();
-    config->sync();
-
-    // all docs need to reread config.
-
-    QListIterator<KateDocument> dit (docManager->docList);
-    for (; dit.current(); ++dit)
-    {
-      dit.current()->readConfig( config );
-    }
-
-    QListIterator<KateView> it (viewManager->viewList);
-    for (; it.current(); ++it)
-    {
-      v = it.current();
-      indentConfig->getData( v );
-      selectConfig->getData( v );
-      editConfig->getData( v );
-    }
-
-    // repeat some calls: kwrite has a bad design.
-    config->setGroup("kwrite");
-    v->writeConfig( config );
-    v->doc()->writeConfig( config );
-    hlPage->saveData();
-    config->sync();
-  }
-
+  KateConfigDialog* dlg = new KateConfigDialog (this, "configdialog");
+  dlg->exec();
   delete dlg;
-  dlg = 0;
 }
 
 void KateMainWindow::slotHlConfigure()
