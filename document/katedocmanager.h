@@ -37,19 +37,19 @@ class KateDocManager : public KateDocManagerIface
     KateDocument *createDoc (QFileInfo* fi=0L);
     void deleteDoc (KateDocument *doc);
 
-    KateDocument *nthDoc (long n);
+    KateDocument *nthDoc (uint n);
     KateDocument *currentDoc ();
     KateDocument *firstDoc ();
     KateDocument *nextDoc ();
 
-    KateDocument *docWithID (long id);
+    KateDocument *docWithID (uint id);
 
-    long findDoc (KateDocument *doc);
+    int findDoc (KateDocument *doc);
     /** Returns the docID of the doc with url URL or -1 if no such doc is found */
-    long findDoc (KURL url);
+    int findDoc (KURL url);
     bool isOpen(KURL url);
 
-    long docCount ();
+    uint docCount ();
 
   public slots:
     void checkAllModOnHD(bool forceReload=false);
@@ -58,24 +58,19 @@ class KateDocManager : public KateDocManagerIface
     QList<KateDocument> docList;
 
   private:
-    long myDocID;
+    uint myDocID;
 
   signals:
     void documentCreated (KateDocument *doc);
-    void documentDeleted (long docID);
+    void documentDeleted (uint docID);
 
   public:
-    KateDocumentIface *getNthDoc (long n) { return (KateDocumentIface *)nthDoc (n); };
+    KateDocumentIface *getNthDoc (uint n) { return (KateDocumentIface *)nthDoc (n); };
     KateDocumentIface *getCurrentDoc () { return (KateDocumentIface *)currentDoc (); };
     KateDocumentIface *getFirstDoc () { return (KateDocumentIface *)firstDoc(); };
     KateDocumentIface *getNextDoc () { return (KateDocumentIface *)nextDoc(); };
 
-    KateDocumentIface *getDocWithID (long id) { return (KateDocumentIface *)docWithID (id); };
-
-    long searchDoc (KURL url) { return searchDoc (url); };
-    bool isDocOpen (KURL url) { return isOpen (url); };
-
-    long getDocCount () { return docCount(); };
+    KateDocumentIface *getDocWithID (uint id) { return (KateDocumentIface *)docWithID (id); };
 };
 
 #endif

@@ -271,7 +271,7 @@ void KateProjectManagerView::projectMenuAboutToShow()
   else
     projectSave->setEnabled(true);
 
-  if (pluginIface->appIface->docManagerIface()->getDocCount () == 0)
+  if (pluginIface->appIface->docManagerIface()->docCount () == 0)
    projectSaveAs->setEnabled(false);
   else
     projectSaveAs->setEnabled(true);

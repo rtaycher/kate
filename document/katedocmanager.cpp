@@ -44,7 +44,7 @@ KateDocument *KateDocManager::createDoc (QFileInfo* fi)
 
 void KateDocManager::deleteDoc (KateDocument *doc)
 {
-  long id = doc->docID();
+  uint id = doc->docID();
 
   if (docList.find(doc) > -1)
     docList.remove (doc);
@@ -52,7 +52,7 @@ void KateDocManager::deleteDoc (KateDocument *doc)
  emit documentDeleted (id);
 }
 
-KateDocument *KateDocManager::nthDoc (long n)
+KateDocument *KateDocManager::nthDoc (uint n)
 {
   return docList.at(n);
 }
@@ -72,7 +72,7 @@ KateDocument *KateDocManager::nextDoc ()
   return docList.next();
 }
 
-KateDocument *KateDocManager::docWithID (long id)
+KateDocument *KateDocManager::docWithID (uint id)
 {
   QListIterator<KateDocument> it(docList);
 
@@ -85,17 +85,17 @@ KateDocument *KateDocManager::docWithID (long id)
   return 0L;
 }
 
-long KateDocManager::findDoc (KateDocument *doc)
+int KateDocManager::findDoc (KateDocument *doc)
 {
   return docList.find (doc);
 }
 
-long KateDocManager::docCount ()
+uint KateDocManager::docCount ()
 {
   return docList.count ();
 }
 
-long KateDocManager::findDoc( KURL url )
+int KateDocManager::findDoc( KURL url )
 {
   QListIterator<KateDocument> it(docList);
   for (; it.current(); ++it)

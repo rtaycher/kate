@@ -43,7 +43,7 @@ KateFileList::KateFileList (KateDocManager *_docManager, KateViewManager *_viewM
   }
 
   connect(docManager,SIGNAL(documentCreated(KateDocument *)),this,SLOT(slotDocumentCreated(KateDocument *)));
-  connect(docManager,SIGNAL(documentDeleted(long)),this,SLOT(slotDocumentDeleted(long)));
+  connect(docManager,SIGNAL(documentDeleted(uint)),this,SLOT(slotDocumentDeleted(uint)));
 
   connect(this,SIGNAL(highlighted(QListBoxItem *)),this,SLOT(slotActivateView(QListBoxItem *)));
   connect(this,SIGNAL(selected(QListBoxItem *)), this,SLOT(slotActivateView(QListBoxItem *)));
@@ -65,7 +65,7 @@ void KateFileList::slotDocumentCreated (KateDocument *doc)
   sort();
 }
 
-void KateFileList::slotDocumentDeleted (long docID)
+void KateFileList::slotDocumentDeleted (uint docID)
 {
   for (uint i = 0; i < count(); i++)
   {
@@ -174,7 +174,7 @@ void KateFileList::tip( const QPoint &p, QRect &r, QString &str )
     str = "";
 }
 
-KateFileListItem::KateFileListItem( long docID, const QPixmap &pix, const QString& text): QListBoxItem()
+KateFileListItem::KateFileListItem( uint docID, const QPixmap &pix, const QString& text): QListBoxItem()
 {
   _bold=false;
   myDocID = docID;
@@ -186,7 +186,7 @@ KateFileListItem::~KateFileListItem()
 {
 }
 
-long KateFileListItem::docID ()
+uint KateFileListItem::docID ()
 {
   return myDocID;
 }

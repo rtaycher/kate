@@ -93,7 +93,7 @@ void KateApp::removeMainWindow (KateMainWindow *mainWindow)
     quit();
 }
 
-long KateApp::mainWindowsCount ()
+uint KateApp::mainWindowsCount ()
 {
   return mainWindows.count();
 }

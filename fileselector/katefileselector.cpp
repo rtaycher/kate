@@ -168,7 +168,7 @@ void KateFileSelector::dirUrlEntered( const KURL& u )
    cmbPath->removeURL( u );
    QStringList urls = cmbPath->urls();
    urls.prepend( u.url() );
-   while ( urls.count() >= cmbPath->maxItems() )
+   while ( urls.count() >= (uint)cmbPath->maxItems() )
       urls.remove( urls.last() );
    cmbPath->setURLs( urls );
 }

@@ -75,7 +75,7 @@ void KatePluginManager::loadConfig ()
   KSimpleConfig *config = new KSimpleConfig("katepluginrc", false);
   config->setGroup("Plugins");
 
-  for (int i=0; i<myPluginList.count(); i++)
+  for (uint i=0; i<myPluginList.count(); i++)
   {
     if  (config->readBoolEntry(myPluginList.at(i)->libname, false))
       myPluginList.at(i)->load = true;
@@ -87,7 +87,7 @@ void KatePluginManager::writeConfig ()
   KSimpleConfig *config = new KSimpleConfig("katepluginrc", false);
   config->setGroup("Plugins");
 
-  for (int i=0; i<myPluginList.count(); i++)
+  for (uint i=0; i<myPluginList.count(); i++)
   {
     config->writeEntry(myPluginList.at(i)->libname, myPluginList.at(i)->load);
   }
@@ -98,7 +98,7 @@ void KatePluginManager::writeConfig ()
 
 void KatePluginManager::loadAllEnabledPlugins ()
 {
-  for (int i=0; i<myPluginList.count(); i++)
+  for (uint i=0; i<myPluginList.count(); i++)
   {
     if  (myPluginList.at(i)->load)
       loadPlugin (myPluginList.at(i));
@@ -107,7 +107,7 @@ void KatePluginManager::loadAllEnabledPlugins ()
 
 void KatePluginManager::enableAllPluginsGUI (KateMainWindow *win)
 {
-  for (int i=0; i<myPluginList.count(); i++)
+  for (uint i=0; i<myPluginList.count(); i++)
   {
     if  (myPluginList.at(i)->load)
       enablePluginGUI (myPluginList.at(i), win);
@@ -137,7 +137,7 @@ void KatePluginManager::enablePluginGUI (PluginListItem *item, KateMainWindow *w
 
 void KatePluginManager::enablePluginGUI (PluginListItem *item)
 {
-  for (int i=0; i< ((KateApp*)parent())->mainWindows.count(); i++)
+  for (uint i=0; i< ((KateApp*)parent())->mainWindows.count(); i++)
   {
     ((KateApp*)parent())->mainWindows.at(i)->guiFactory()->addClient( item->plugin->createView() );
   }
@@ -145,9 +145,9 @@ void KatePluginManager::enablePluginGUI (PluginListItem *item)
 
 void KatePluginManager::disablePluginGUI (PluginListItem *item)
 {
-  for (int i=0; i< ((KateApp*)parent())->mainWindows.count(); i++)
+  for (uint i=0; i< ((KateApp*)parent())->mainWindows.count(); i++)
   {
-    for (int z=0; z< item->plugin->viewList.count(); z++)
+    for (uint z=0; z< item->plugin->viewList.count(); z++)
     {
       ((KateApp*)parent())->mainWindows.at(i)->guiFactory()->removeClient( item->plugin->viewList.at (z) );
     }

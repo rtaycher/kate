@@ -27,10 +27,10 @@
 class KateFileListItem : public QListBoxItem
 {
   public:
-    KateFileListItem( long docID, const QPixmap &pix, const QString& text);
+    KateFileListItem( uint docID, const QPixmap &pix, const QString& text);
     ~KateFileListItem();
 
-    long docID ();
+    uint docID ();
 
     const QPixmap *pixmap() const { return &pm; };
 
@@ -47,7 +47,7 @@ class KateFileListItem : public QListBoxItem
     void paint( QPainter *painter );
 
   private:
-    long myDocID;
+    uint myDocID;
     QPixmap pm;
     bool _bold;
 };
@@ -73,7 +73,7 @@ class KateFileList : public KListBox
 
   private slots:
     void slotDocumentCreated (KateDocument *doc);
-    void slotDocumentDeleted (long docID);
+    void slotDocumentDeleted (uint docID);
     void slotActivateView( QListBoxItem *item );
     void slotModChanged (KateDocument *doc);
     void slotNameChanged (KateDocument *doc);

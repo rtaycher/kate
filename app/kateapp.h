@@ -39,7 +39,7 @@ class KateApp : public KateAppIface, public KateAppDCOPIface
 
     void newMainWindow ();
     void removeMainWindow (KateMainWindow *mainWindow);
-    long mainWindowsCount ();
+    uint mainWindowsCount ();
     virtual QString  isSingleInstance(){if (_singleInstance) return "true"; else return "false";};
 
     KateViewManagerIface *viewManagerIface ();

@@ -118,7 +118,7 @@ class KateDocument : public KateDocumentIface
     friend class KateView;
 
   public:
-    KateDocument(long docID, QFileInfo* fi, bool bSingleViewMode=false, bool bBrowserView=false, QWidget *parentWidget = 0, const char *widgetName = 0, QObject *parent = 0, const char *name = 0);
+    KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode=false, bool bBrowserView=false, QWidget *parentWidget = 0, const char *widgetName = 0, QObject * = 0, const char * = 0);
     ~KateDocument();
 
     virtual bool openFile();
@@ -404,7 +404,7 @@ class KateDocument : public KateDocumentIface
       otherwise [default] the user is asked what to do. */
     void isModOnHD(bool forceReload=false);
 
-    long docID () {return myDocID;};
+    uint docID () {return myDocID;};
     QString docName () {return myDocName;};
 
     void setDocName (QString docName);
@@ -420,7 +420,7 @@ class KateDocument : public KateDocumentIface
     /** updates mTime to reflect file on fs.
      called from constructor and from saveFile. */
     void setMTime();
-    long myDocID;
+    uint myDocID;
     QFileInfo* fileinfo;
     QDateTime mTime;
     QString myDocName;

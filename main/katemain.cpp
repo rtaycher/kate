@@ -47,7 +47,7 @@ int main( int argc, char **argv )
 
   bool running = false;
 
-  DCOPClient *client;
+  DCOPClient *client=0L;
   QCString appID = "";
 
   if (!args->isSet ("n"))

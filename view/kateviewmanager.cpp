@@ -320,7 +320,7 @@ void KateViewManager::activateView ( KateView *view )
   }
 }
 
-void KateViewManager::activateView( int docID )
+void KateViewManager::activateView( uint docID )
 {
   if ( activeViewSpace()->showView(docID) ) {
     activateView( activeViewSpace()->currentView() );
@@ -342,12 +342,12 @@ void KateViewManager::activateView( int docID )
   }
 }
 
-long KateViewManager::viewCount ()
+uint KateViewManager::viewCount ()
 {
   return viewList.count();
 }
 
-long KateViewManager::viewSpaceCount ()
+uint KateViewManager::viewSpaceCount ()
 {
   return viewSpaceList.count();
 }
@@ -451,20 +451,24 @@ void KateViewManager::statusMsgOther ()
 
 void KateViewManager::slotWindowNext()
 {
-  long id = docManager->findDoc ((KateDocument *) activeView ()->doc()) - 1;
+  uint id = docManager->findDoc ((KateDocument *) activeView ()->doc());
 
-  if (id < 0)
+  if (id == 0)
     id =  docManager->docCount () - 1;
+  else
+    id--;
 
   activateView (docManager->nthDoc(id)->docID());
 }
 
 void KateViewManager::slotWindowPrev()
 {
-  long id = docManager->findDoc ((KateDocument *) activeView ()->doc()) + 1;
+  uint id = docManager->findDoc ((KateDocument *) activeView ()->doc());
 
-  if (id >= docManager->docCount () )
+  if (id == docManager->docCount () )
     id = 0;
+  else
+    id++;
 
   activateView (docManager->nthDoc(id)->docID());
 }
@@ -542,7 +546,7 @@ void KateViewManager::slotDocumentClose ()
   if (!activeView()) return;
 
   QList<KateView> closeList;
-  long docID = ((KateDocument *)activeView()->doc())->docID();
+  uint docID = ((KateDocument *)activeView()->doc())->docID();
 
 
   for (uint i=0; i < ((KateApp *)kapp)->mainWindowsCount (); i++ )
@@ -848,7 +852,7 @@ void KateViewManager::splitViewSpace( KateViewSpace* vs,
     createView (false, 0L, (KateView *)activeView());
   else {
     // tjeck if doc is allready open
-    long aDocId;
+    uint aDocId;
     if ( (aDocId = docManager->findDoc( newViewUrl )) )
       createView (false, 0L, 0L, docManager->docWithID( aDocId) );
     else
@@ -1004,12 +1008,12 @@ void KateViewManager::reloadCurrentDoc()
 
 void KateViewManager::saveAllDocsAtCloseDown()
 {
-  QValueList<long> seen;
+  QValueList<uint> seen;
   KateView* v;
   int id;
   QStringList list;
   int vc = viewCount();
-  uint i = 0;
+  int i = 0;
   KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
   while ( i <= vc )
   {
@@ -1221,7 +1225,7 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
          else { // if the group has been deleted, we can find a document
            kdDebug(13030)<<"document allready open, creating extra view"<<endl;
            // ahem, tjeck if this document actually exists.
-           long docID = docManager->findDoc( KURL(data[0]) );
+           int docID = docManager->findDoc( KURL(data[0]) );
            if (docID >= 0)
              createView( false, 0L, 0L, docManager->nthDoc( docID ) );
          }

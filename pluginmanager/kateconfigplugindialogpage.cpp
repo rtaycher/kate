@@ -79,7 +79,7 @@ void KateConfigPluginPage::slotUpdate ()
   availableBox->clear();
   loadedBox->clear();
 
-  for (int i=0; i<myPluginMan->myPluginList.count(); i++)
+  for (uint i=0; i<myPluginMan->myPluginList.count(); i++)
   {
     if  (!myPluginMan->myPluginList.at(i)->load)
       availableBox->insertItem (myPluginMan->myPluginList.at(i)->name);
@@ -90,7 +90,7 @@ void KateConfigPluginPage::slotUpdate ()
 
 void KateConfigPluginPage::slotActivatePluginItem (QListBoxItem *item)
 {
-  for (int i=0; i<myPluginMan->myPluginList.count(); i++)
+  for (uint i=0; i<myPluginMan->myPluginList.count(); i++)
   {
     if  (myPluginMan->myPluginList.at(i)->name == item->text())
     {
@@ -105,7 +105,7 @@ void KateConfigPluginPage::loadPlugin ()
 {
   QString text = availableBox->currentText ();
 
-  for (int i=0; i<myPluginMan->myPluginList.count(); i++)
+  for (uint i=0; i<myPluginMan->myPluginList.count(); i++)
   {
     if  (myPluginMan->myPluginList.at(i)->name == text)
     {
@@ -121,7 +121,7 @@ void KateConfigPluginPage::unloadPlugin ()
 {
   QString text = loadedBox->currentText ();
 
-  for (int i=0; i<myPluginMan->myPluginList.count(); i++)
+  for (uint i=0; i<myPluginMan->myPluginList.count(); i++)
   {
     if  (myPluginMan->myPluginList.at(i)->name == text)
     {

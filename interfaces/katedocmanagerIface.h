@@ -30,17 +30,17 @@ class KateDocManagerIface : public QObject
     virtual ~KateDocManagerIface () {;};
 
  public:
-    virtual KateDocumentIface *getNthDoc (long n)=0;
+    virtual KateDocumentIface *getNthDoc (uint n)=0;
     virtual KateDocumentIface *getCurrentDoc ()=0;
     virtual KateDocumentIface *getFirstDoc ()=0;
     virtual KateDocumentIface *getNextDoc ()=0;
 
-    virtual KateDocumentIface *getDocWithID (long id)=0;
+    virtual KateDocumentIface *getDocWithID (uint id)=0;
 
-    virtual long searchDoc (KURL url)=0;
-    virtual bool isDocOpen (KURL url)=0;
+    virtual int findDoc (KURL url)=0;
+    virtual bool isOpen (KURL url)=0;
 
-    virtual long getDocCount ()=0;
+    virtual uint docCount ()=0;
 };
 
 #endif

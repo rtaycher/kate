@@ -50,7 +50,7 @@ class KateViewManager : public KateViewManagerIface
 
   private:
     QList<KateViewSpace> viewSpaceList;
-    long myViewID;
+    uint myViewID;
 
     KateDocManager *docManager;
     QGridLayout *grid;
@@ -87,8 +87,8 @@ class KateViewManager : public KateViewManagerIface
     virtual KateView* activeView ();
     KateViewSpace* activeViewSpace ();
 
-    long viewCount ();
-    long viewSpaceCount ();
+    uint viewCount ();
+    uint viewSpaceCount ();
 
   private slots:
     void activateView ( KateView *view );
@@ -115,7 +115,7 @@ class KateViewManager : public KateViewManagerIface
     void setUseOpaqueResize( bool enable );
 
   public slots:
-    void activateView ( int docID );
+    void activateView ( uint docID );
 
     void slotDocumentCloseAll ();
     void slotDocumentSaveAll();

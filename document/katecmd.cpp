@@ -35,7 +35,7 @@ KateCmd::~KateCmd ()
 
 void KateCmd::execCmd (QString cmd, KateView *view)
 {
-  for (int i=0; i<myParser.count(); i++)
+  for (uint i=0; i<myParser.count(); i++)
   {
     if (myParser.at(i)->execCmd (cmd, view))
       break;

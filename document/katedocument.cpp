@@ -124,9 +124,9 @@ const char * KateActionGroup::typeName(int type)
 
 const int KateDocument::maxAttribs = 32;
 
-KateDocument::KateDocument(long docID, QFileInfo* fi, bool bSingleViewMode, bool bBrowserView,
+KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool bBrowserView,
                                            QWidget *parentWidget, const char *widgetName,
-                                           QObject *parent, const char *name)
+                                           QObject *, const char *)
   : KateDocumentIface (), hlManager(HlManager::self ())
 {
   setInstance( KateFactory::instance() );
