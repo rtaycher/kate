@@ -176,6 +176,9 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
   public:
     Kate::ViewManager *getViewManager ();
     Kate::DocManager *getDocManager ();
+
+  private slots:
+    void pluginHelp ();
 };
 
 #endif

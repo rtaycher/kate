@@ -263,6 +263,9 @@ void KateMainWindow::setupActions()
   connect(setHighlight, SIGNAL(activated(int)), viewManager, SLOT(slotSetHl(int)));
   connect(setHighlight->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(setHighlightMenuAboutToShow()));
 
+  if (pluginManager->myPluginList.count() > 0)
+    new KAction(i18n("Contents &Plugins"), 0, this, SLOT(pluginHelp()), actionCollection(), "help_plugins_contents");
+
   list.clear();
   for (int z = 0; z < HlManager::self()->highlights(); z++)
        list.append(i18n(HlManager::self()->hlName(z)));
@@ -731,4 +734,9 @@ void KateMainWindow::addSidebarWidget (QWidget* widget, const QString & label)
 void KateMainWindow::removeSidebarWidget (QWidget* widget)
 {
   sidebar->removeWidget (widget);
+}
+
+void KateMainWindow::pluginHelp()
+{
+  kapp->invokeHelp (QString::null, "kate-plugins");
 }
