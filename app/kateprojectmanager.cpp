@@ -33,6 +33,8 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 
+#include <kio/netaccess.h>
+
 #include <qfile.h>
 #include <qlayout.h> 
 #include <qlabel.h>
@@ -98,21 +100,42 @@ void KateProjectManager::setCurrentProject (Kate::Project *project)
   emit m_projectManager->projectChanged ();
 }
 
-Kate::Project *KateProjectManager::create (const QString &type, const QString &name, const QString &filename)
+Kate::Project *KateProjectManager::create (const QString &type, const QString &name, const KURL &url)
 {
-  KConfig *c = new KConfig (filename);
+  KTempFile *tmpFile = 0;
+  KConfig *c = 0;
+  
+  if (url.isLocalFile())
+    c = new KConfig (url.path());
+  else
+  {
+    tmpFile = new KTempFile (QString::null, ".kateproject");
+    tmpFile->setAutoDelete (true);
+    QString tmp = tmpFile->name();
+    KIO::NetAccess::download(url, tmp);
+    
+    c = new KConfig (tmpFile->name());
+  }
+
   c->setGroup("General");
   c->writeEntry ("Type", type);
   c->writeEntry ("Name", name);
   c->sync ();
+  
   delete c;
 
-  return open (filename);
+  if (!url.isLocalFile())
+    KIO::NetAccess::upload(tmpFile->name(), url);
+  
+  if (tmpFile)
+    delete tmpFile;
+  
+  return open (url);
 }
     
-Kate::Project *KateProjectManager::open (const QString &filename)
+Kate::Project *KateProjectManager::open (const KURL &url)
 {
-  KateProject *project = new KateProject (this, this, filename);
+  KateProject *project = new KateProject (this, this, url);
   
   m_projects.append (project);
   m_projectsR.append (project->project());
@@ -218,7 +241,7 @@ ProjectInfo *KateProjectManager::newProjectDialog (QWidget *parent)
     info = new ProjectInfo ();
     info->type = dlg->type;
     info->name = dlg->name;
-    info->fileName = dlg->fileName;
+    info->url = KURL (dlg->fileName);
   }
   
   delete dlg;
@@ -262,8 +285,7 @@ KateProjectDialogNew::KateProjectDialogNew (QWidget *parent, KateProjectManager 
   m_urlRequester = new KURLRequester (page);
   grid->addWidget (m_urlRequester, 2, 1);
   
-  m_urlRequester->setMode (KFile::LocalOnly);
-  m_urlRequester->setFilter (QString ("*.kate|") + i18n("Kate Project Files"));
+  m_urlRequester->setFilter (QString ("*.kateproject|") + i18n("Kate Project Files"));
 }
 
 KateProjectDialogNew::~KateProjectDialogNew ()

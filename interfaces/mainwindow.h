@@ -20,7 +20,9 @@
 #define _KATE_MAINWINDOW_INCLUDE_
 
 #include <qobject.h>
+
 #include <kxmlguifactory.h>
+#include <kurl.h>
 
 namespace Kate
 {
@@ -54,13 +56,13 @@ class MainWindow : public QObject
      * @param filename name of the new project file
      * @return Project new created project object
      */
-    class Project *createProject (const QString &type, const QString &name, const QString &filename);
+    class Project *createProject (const QString &type, const QString &name, const KURL &url);
     
     /**
      * @param filename name of the project file
      * @return Project opened project
      */
-    class Project *openProject (const QString &filename);
+    class Project *openProject (const KURL &url);
     
   //invention of public signals, like in kparts/browserextension.h
   #undef signals

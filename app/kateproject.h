@@ -24,7 +24,9 @@
 #include "../interfaces/plugin.h"
 
 #include <qobject.h>
+
 #include <kconfig.h>
+#include <ktempfile.h>
 
 //
 // INTERNAL CLASS FOR PROJECT MANAGER ONLY !!!!!!!!!!!!!
@@ -34,7 +36,7 @@ class KateProject : public QObject
   Q_OBJECT
 
   public:
-    KateProject (class KateProjectManager *proMan, QObject *parent, const QString &filename);
+    KateProject (class KateProjectManager *proMan, QObject *parent, const KURL &url);
     ~KateProject ();
     
     Kate::Project *project () { return m_project; };
@@ -58,16 +60,10 @@ class KateProject : public QObject
     QString name () const;
     
     /**
-     * Return the filename of the project file
-     * @return QString project filename
+     * Return the url of the project file
+     * @return KURL project file url
      */
-    QString fileName () const;
-    
-    /**
-     * Return the project dir
-     * @return QString project dir
-     */
-    QString dir () const;
+    KURL url () const;
     
     /**
      * Saves the project
@@ -76,24 +72,18 @@ class KateProject : public QObject
     bool save ();
     
     /**
-     * top subdirs
-     * @return QStringList list with subdirs
-     */
-    QStringList subdirs () const;
-    
-    /**
      * subdirs of given dir
      * @return QStringList list with subdirs
      */
-    QStringList subdirs (const QString &dir) const;
+    QStringList subdirs (const QString &dir = QString::null) const;
 
   private:
     class KateProjectManager *m_projectMan;
     Kate::Project *m_project;
     Kate::ProjectPlugin *m_plugin;
     KConfig *m_data;
-    QString m_filename;
-    QString m_path;
+    KURL m_url;
+    KTempFile *m_tmpFile;
 };
 
 #endif

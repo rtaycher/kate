@@ -932,16 +932,16 @@ void KateMainWindow::slotProjectNew ()
 
   if (info)
   {
-    createProject (info->type, info->name, info->fileName);
+    createProject (info->type, info->name, info->url);
     delete info;
   }
 }
 
 void KateMainWindow::slotProjectOpen ()
 {
-  QString fileName = KFileDialog::getOpenFileName(QString::null, QString ("*.kate|") + i18n("Kate Project Files"), this, i18n("Open Kate Project"));
+  KURL fileName = KFileDialog::getOpenURL (QString::null, QString ("*.kateproject|") + i18n("Kate Project Files"), this, i18n("Open Kate Project"));
 
-  if (!fileName.isEmpty())
+  if (!fileName.isMalformed())
     openProject (fileName);
 }
 
@@ -980,9 +980,9 @@ void KateMainWindow::activateProject (Kate::Project *project)
   emit m_mainWindow->projectChanged ();
 }
 
-Kate::Project *KateMainWindow::createProject (const QString &type, const QString &name, const QString &filename)
+Kate::Project *KateMainWindow::createProject (const QString &type, const QString &name, const KURL &url)
 {
-  Kate::Project *project = m_projectManager->create (type, name, filename);
+  Kate::Project *project = m_projectManager->create (type, name, url);
   
   if (project)
     activateProject (project);
@@ -990,9 +990,9 @@ Kate::Project *KateMainWindow::createProject (const QString &type, const QString
   return project;
 }
     
-Kate::Project *KateMainWindow::openProject (const QString &filename)
+Kate::Project *KateMainWindow::openProject (const KURL &url)
 {
-  Kate::Project *project = m_projectManager->open (filename);
+  Kate::Project *project = m_projectManager->open (url);
   
   if (project)
     activateProject (project);

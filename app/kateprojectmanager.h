@@ -43,7 +43,7 @@ class ProjectInfo
   public:
     QString type;
     QString name;
-    QString fileName;
+    KURL url;
 };
 
 typedef QPtrList<ProjectPluginInfo> ProjectPluginList;
@@ -58,9 +58,9 @@ class KateProjectManager : public QObject
     
     Kate::ProjectManager *projectManager () { return m_projectManager; };
     
-    Kate::Project *create (const QString &type, const QString &name, const QString &filename);
+    Kate::Project *create (const QString &type, const QString &name, const KURL &url);
     
-    Kate::Project *open (const QString &filename);
+    Kate::Project *open (const KURL &url);
     
     bool close (Kate::Project *project);
     

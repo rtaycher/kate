@@ -77,24 +77,14 @@ QString Project::name () const
   return d->project->name ();
 }
 
-QString Project::fileName () const
+KURL Project::url () const
 {
-  return d->project->fileName ();
-}
-
-QString Project::dir () const
-{
-  return d->project->dir ();
+  return d->project->url ();
 }
 
 bool Project::save ()
 {
   return d->project->save ();
-}
-
-QStringList Project::subdirs () const
-{
-  return d->project->subdirs ();
 }
 
 QStringList Project::subdirs (const QString &dir) const

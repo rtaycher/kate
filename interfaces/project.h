@@ -67,16 +67,10 @@ class Project : public QObject
     QString name () const;
     
     /**
-     * Return the filename of the project file
-     * @return QString project filename
+     * Return the url of the project file
+     * @return KURL project file url
      */
-    QString fileName () const;
-    
-    /**
-     * Return the project dir
-     * @return QString project dir
-     */
-    QString dir () const;
+    KURL url () const;
     
     /**
      * Saves the project
@@ -85,16 +79,10 @@ class Project : public QObject
     bool save ();
     
     /**
-     * top subdirs
-     * @return QStringList list with subdirs
-     */
-    QStringList subdirs () const;
-    
-    /**
      * subdirs of given dir
      * @return QStringList list with subdirs
      */
-    QStringList subdirs (const QString &dir) const;
+    QStringList subdirs (const QString &dir = QString::null) const;
     
   private:
     /**
