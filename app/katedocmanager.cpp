@@ -24,20 +24,20 @@ KateDocManager::KateDocManager () : Kate::DocManager ()
 {
   docList.setAutoDelete(true);
   myCurrentDoc = 0L;
-  factory = KLibLoader::self()->factory( "libkatepart" );
-  
+  partLib = KLibLoader::self()->library( "libkatepart" );
+
   createDoc ();
   myfirstDoc = true;
 }
 
 KateDocManager::~KateDocManager ()
 {
-  //delete factory;
+  partLib->unload();
 }
 
 Kate::Document *KateDocManager::createDoc ()
 {
-  KTextEditor::Document *doc = (KTextEditor::Document *) factory->create (0L, "kate", "KTextEditor::Document");
+  KTextEditor::Document *doc = (KTextEditor::Document *) partLib->factory()->create (0L, "kate", "KTextEditor::Document");
   docList.append((Kate::Document *)doc);
 
   emit documentCreated ((Kate::Document *)doc);

@@ -66,7 +66,7 @@ class KateDocManager : public Kate::DocManager
   private:
     QPtrList<Kate::Document> docList;
     Kate::Document *myCurrentDoc;
-    class KLibFactory *factory;
+    class KLibrary *partLib;
     bool myfirstDoc;
 
   signals:
