@@ -864,7 +864,10 @@ void KateViewManager::restoreViewConfiguration (KConfig *config)
 {
   config->setGroup ("View Configuration");
 
-  // send all views to **** ;)
+  // send all views + their gui to **** ;)
+  for (uint i=0; i < m_viewList.count(); i++)
+    ((KMainWindow *)topLevelWidget ())->guiFactory ()->removeClient (m_viewList.at(i));
+
   m_viewList.clear ();
 
   // no splitters around, ohhh :()
