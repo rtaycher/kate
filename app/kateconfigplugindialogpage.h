@@ -3,7 +3,7 @@
                              -------------------
     begin                : FRE Feb 23 2001
     copyright            : (C) 2001 by Joseph Wenninger
-    email                : jowenn@bigfoot.com
+    email                : jowenn@kde.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef _kate_config_Plugin_Dialog_Page_h_
-#define _kate_config_Plugin_Dialog_Page_h_
+#ifndef __KATE_CONFIGPLUGINDIALOGPAGE_H__
+#define __KATE_CONFIGPLUGINDIALOGPAGE_H__
 
 #include "katemain.h"
 

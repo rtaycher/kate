@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef __kate_view_space_h__
-#define __kate_view_space_h__
+#ifndef __KATE_VIEWSPACE_H__
+#define __KATE_VIEWSPACE_H__
 
 #include "katemain.h"
 #include "../part/kateview.h"

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Mon Feb 5 2001
     copyright            : (C) 2001 by Christoph Cullmann
-    email                : crossfire@babylon2k.de
+    email                : cullmann@kde.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -59,6 +59,4 @@ class KateFileDialog : public KFileDialog
 	  class KComboBox *encoding;
 };
 
-#endif //KWTEXTLINE_H 
-
- 
+#endif

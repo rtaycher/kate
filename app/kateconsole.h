@@ -2,7 +2,7 @@
                           kateconsole.h  -  description
                              -------------------
     begin                : Wed Jan 3 2001
-    copyright            : (C) 2001 by Anders Lund, anders@alweb.dk
+    copyright            : (C) 2001 by Anders Lund
     email                : anders@alweb.dk
  ***************************************************************************/
 
@@ -14,8 +14,8 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef __kate_console_h__
-#define __kate_console_h__
+#ifndef __KATE_CONSOLE_H__
+#define __KATE_CONSOLE_H__
 
 #include "katemain.h"
 

@@ -2,8 +2,8 @@
                           kateIface.h  -  description
                              -------------------
     begin                : Wed Jan 3 2001
-    copyright            : (C) 2001 by Christoph "Crossfire" Cullmann
-    email                : crossfire@babylon2k.de
+    copyright            : (C) 2001 by Christoph Cullmann
+    email                : cullmann@kde.org
  ***************************************************************************/
 
 /***************************************************************************

@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef KANTFILESELECTOR_H
-#define KANTFILESELECTOR_H
+#ifndef __KATE_FILESELECTOR_H__
+#define __KATE_FILESELECTOR_H__
 
 #include "katemain.h"
 

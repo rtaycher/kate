@@ -2,7 +2,7 @@
                           kateconsole.cpp  -  description
                              -------------------
     begin                : Wed Jan 3 2001
-    copyright            : (C) 2001 by Anders Lund, anders@alweb.dk
+    copyright            : (C) 2001 by Anders Lund
     email                : anders@alweb.dk
  ***************************************************************************/
 

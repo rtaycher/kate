@@ -2,7 +2,7 @@
                           katesplitter.h  -  description
                              -------------------
     begin                : Fri Mar 02 2001
-    copyright            : (C) 2001 by Anders Lund, anders@alweb.dk
+    copyright            : (C) 2001 by Anders Lund
     email                : anders@alweb.dk
  ***************************************************************************/
 
@@ -14,11 +14,11 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef _KANTSPLITTER_H_
-#define _KANTSPLITTER_H_
+
+#ifndef __KATE_SPLITTER_H__
+#define __KATE_SPLITTER_H__
 
 #include <qsplitter.h>
-
 
 /** This class is needed because QSplitter cant return an index for a widget. */
 class KateSplitter : public QSplitter

@@ -2,8 +2,8 @@
                           katedocument.cpp  -  description     
                              -------------------     
     begin                : Mon Jan 15 2001     
-    copyright            : (C) 2001 by Christoph "Crossfire" Cullmann     
-    email                : crossfire@babylon2k.de     
+    copyright            : (C) 2001 by Christoph Cullmann     
+    email                : cullmann@kde.org
  ***************************************************************************/     
      
 /***************************************************************************     
@@ -21,7 +21,7 @@
 #include "katefactory.h"     
      
 #include <qfileinfo.h>     
-#include <kmessagebox.h>     
+#include <kmessagebox.h>
 #include <klocale.h>     
 #include <kconfig.h>     
 #include <qstring.h>     
@@ -261,7 +261,7 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
      
   connect(this,SIGNAL(modifiedChanged ()),this,SLOT(slotModChanged ()));     
      
-  buffer = new KWBuffer;     
+  buffer = new KateBuffer;     
   connect(buffer, SIGNAL(linesChanged(int)), this, SLOT(slotBufferChanged()));     
 //  connect(buffer, SIGNAL(textChanged()), this, SIGNAL(textChanged()));     
   connect(buffer, SIGNAL(needHighlight(long,long)),this,SLOT(slotBufferHighlight(long,long)));     
@@ -1620,7 +1620,7 @@ void KateDocument::removeView(KTextEditor::View *view) {
      
 void KateDocument::addCursor(KTextEditor::Cursor *cursor) {     
   myCursors.append( cursor );     
-}     
+}
      
 void KateDocument::removeCursor(KTextEditor::Cursor *cursor) {     
   myCursors.removeRef( cursor  );     
@@ -1667,7 +1667,7 @@ uint KateDocument::textWidth(KateViewCursor &cursor) {
      cursor.line = 0;     
   if (cursor.line >= numLines())     
      cursor.line = lastLine();     
-  return textWidth(getTextLine(cursor.line),cursor.col);     
+  return textWidth(getTextLine(cursor.line),cursor.col);
 }     
      
 uint KateDocument::textWidth(bool wrapCursor, KateViewCursor &cursor, int xPos) {     
@@ -1714,7 +1714,7 @@ uint KateDocument::textPos(const TextLine::Ptr &textLine, int xPos) {
   int z;     
   QChar ch;     
   Attribute *a;     
-     
+
   x = oldX = z = 0;     
   while (x < xPos) { // && z < len) {     
     oldX = x;     
@@ -1757,8 +1757,8 @@ uint KateDocument::currentColumn(KateViewCursor &cursor)
     return t->cursorX(cursor.col,tabChars);     
   else     
     return 0;     
-}     
-     
+}
+
 bool KateDocument::insertChars ( int line, int col, const QString &chars, KateView *view )
 {
   int z, pos, l;
@@ -1795,8 +1795,6 @@ bool KateDocument::insertChars ( int line, int col, const QString &chars, KateVi
   //return false if nothing has to be inserted
   if (buf.isEmpty()) return false;
 
-	_autoUpdate = false;
-
   if (_configFlags & KateDocument::cfDelOnInput)
 	{
 	  if (hasSelection())
@@ -1807,12 +1805,14 @@ bool KateDocument::insertChars ( int line, int col, const QString &chars, KateVi
 		}
 	}
 
+	_autoUpdate = false;
+
   if (_configFlags & KateDocument::cfOvr)
 	{
 		if ((col+buf.length()) <= textLine->length())
       removeText (line, col, line, col+buf.length());
 		else
-      removeText (line, col, line, col+textLine->length()-col);
+      removeText (line, col, line, textLine->length());
 	}
 
   insertText (line, col, buf);
@@ -1833,13 +1833,13 @@ bool KateDocument::insertChars ( int line, int col, const QString &chars, KateVi
     const QChar *s;
 //    int pos;
     KateViewCursor actionCursor;
-     
-    line = c.cursor.line;     
-    do {     
-      textLine = getTextLine(line);     
-      s = textLine->getText();     
-      l = textLine->length();     
-      for (z = myWordWrapAt; z < l; z++) if (!s[z].isSpace()) break; //search for text to wrap     
+
+    line = c.cursor.line;
+    do {
+      textLine = getTextLine(line);
+      s = textLine->getText();
+      l = textLine->length();
+      for (z = myWordWrapAt; z < l; z++) if (!s[z].isSpace()) break; //search for text to wrap
       if (z >= l) break; // nothing more to wrap     
       pos = myWordWrapAt;     
       for (; z >= 0; z--) { //find wrap position     

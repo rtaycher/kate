@@ -3,7 +3,7 @@
                              -------------------
     begin                : Mon Feb 5 2001
     copyright            : (C) 2001 by Christoph Cullmann
-    email                : crossfire@babylon2k.de
+    email                : cullmann@kde.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef KANTFILELIST_H
-#define KANTFILELIST_H
+#ifndef __KATE_FILELIST_H__
+#define __KATE_FILELIST_H__
 
 #include "katemain.h"
 

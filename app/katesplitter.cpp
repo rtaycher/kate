@@ -2,7 +2,7 @@
                           katesplitter.cpp  -  description
                              -------------------
     begin                : Fri Mar 02 2001
-    copyright            : (C) 2001 by Anders Lund, anders@alweb.dk
+    copyright            : (C) 2001 by Anders Lund
     email                : anders@alweb.dk
  ***************************************************************************/
 
@@ -14,6 +14,7 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+
 #include "katesplitter.h"
 #include "katesplitter.moc"
 

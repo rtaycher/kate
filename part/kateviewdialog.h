@@ -1,8 +1,22 @@
-// Dialogs
+/***************************************************************************
+                          kateviewdialog.h  -  description
+                             -------------------
+    begin                : Mon Feb 5 2001
+    copyright            : (C) 2001 by Christoph Cullmann 
+    email                : cullmann@kde.org
+ ***************************************************************************/ 
 
-#ifndef _KWDIALOG_H_
-#define _KWDIALOG_H_
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
 
+#ifndef _KATE_VIEWDIALOG_H_
+#define _KATE_VIEWDIALOG_H_
 
 class QCheckBox;
 class QLineEdit;
@@ -169,4 +183,4 @@ public:
 };
 
 
-#endif //_KWDIALOG_H_
+#endif

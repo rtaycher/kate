@@ -3,7 +3,7 @@
                              -------------------
     begin                : FRE Feb 23 2001
     copyright            : (C) 2001 by Joseph Wenninger
-    email                : jowenn@bigfoot.com
+    email                : jowenn@kde.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -14,8 +14,9 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef _kate_pluginmanager_h_
-#define _kate_pluginmanager_h_
+
+#ifndef __KATE_PLUGINMANAGER_H__
+#define __KATE_PLUGINMANAGER_H__
 
 #include "katemain.h"
 #include "../interfaces/plugin.h"

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Mon Feb 5 2001
     copyright            : (C) 2001 by Christoph Cullmann
-    email                : crossfire@babylon2k.de
+    email                : cullmann@kde.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -73,11 +73,11 @@ const KAboutData *KateFactory::aboutData()
 {
   KAboutData *data = new KAboutData  ("kate", I18N_NOOP("Kate"), "2.0",
                                                            I18N_NOOP( "Kate - KDE Advanced Text Editor" ), KAboutData::License_GPL,
-                                                           "(c) 2000-2001 The Kate Authors", 0, "http://kate.sourceforge.net");
+                                                           I18N_NOOP( "(c) 2000-2001 The Kate Authors" ), 0, "http://kate.sourceforge.net");
 
   data->addAuthor ("Christoph Cullmann", I18N_NOOP("Project Manager and Core Developer"), "cullmann@kde.org", "http://www.babylon2k.de");
   data->addAuthor ("Anders Lund", I18N_NOOP("Core Developer"), "anders@alweb.dk", "http://www.alweb.dk");
-  data->addAuthor ("Joseph Wenninger", I18N_NOOP("Core Developer"), "jowenn@bigfoot.com","http://stud3.tuwien.ac.at/~e9925371");
+  data->addAuthor ("Joseph Wenninger", I18N_NOOP("Core Developer"), "jowenn@kde.org","http://stud3.tuwien.ac.at/~e9925371");
   data->addAuthor ("Michael Bartl", I18N_NOOP("Core Developer"), "michael.bartl1@chello.at");
   data->addAuthor ("Phlip", I18N_NOOP("The Project Compiler"), "phlip_cpp@my-deja.com");
   data->addAuthor ("Waldo Bastian", I18N_NOOP( "The cool buffersystem" ), "bastian@kde.org" );

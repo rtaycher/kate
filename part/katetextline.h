@@ -3,7 +3,7 @@
                              ------------------- 
     begin                : Mon Feb 5 2001 
     copyright            : (C) 2001 by Christoph Cullmann 
-    email                : crossfire@babylon2k.de 
+    email                : cullmann@kde.org
  ***************************************************************************/ 
  
 /*************************************************************************** 
@@ -15,8 +15,8 @@
  *                                                                         * 
  ***************************************************************************/ 
  
-#ifndef _KWTEXTLINE_H_ 
-#define _KWTEXTLINE_H_ 
+#ifndef _KATE_TEXTLINE_H_
+#define _KATE_TEXTLINE_H_ 
  
 #include <stdlib.h> 
 #include <qstring.h> 
@@ -33,8 +33,8 @@
  
 class TextLine : public KShared  
 {  
-  friend class KWBuffer;  
-  friend class KWBufBlock;  
+  friend class KateBuffer;  
+  friend class KateBufBlock;
   
 public: 
     typedef KSharedPtr<TextLine> Ptr; 
@@ -237,7 +237,4 @@ public:
 const int taSelected = 0x40;  
 const int taAttrMask = ~taSelected & 0xFF;  
   
-#endif //KWTEXTLINE_H  
-  
-  
- 
+#endif

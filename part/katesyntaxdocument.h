@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sat 31 March 2001
     copyright            : (C) 2001 by Joseph Wenninger
-    email                : jowenn@bigfoot.com
+    email                : jowenn@kde.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SYNTAXDOCUMENT_H
-#define SYNTAXDOCUMENT_H
+#ifndef _KATE_SYNTAXDOCUMENT_H_
+#define _KATE_SYNTAXDOCUMENT_H_
 
 #include <qdom.h>
 #include <qptrlist.h>

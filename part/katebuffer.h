@@ -1,5 +1,5 @@
 /*
-   This file is part of KWrite
+   This file is part of Kate
    Copyright (c) 2000 Waldo Bastian <bastian@kde.org>
 
    This library is free software; you can redistribute it and/or
@@ -17,8 +17,8 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef _KWBUFFER_H_
-#define _KWBUFFER_H_
+#ifndef _KATE_BUFFER_H_
+#define _KATE_BUFFER_H_
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -29,13 +29,13 @@
 #include "katetextline.h"
 #include "katevmallocator.h"
 
-class KWBufBlock;
-class KWBufFileLoader;
-class KWBufState;
+class KateBufBlock;
+class KateBufFileLoader;
+class KateBufState;
 class QTextCodec;
 
 /**
- * The KWBuffer class maintains a collections of lines.
+ * The KateBuffer class maintains a collections of lines.
  * It allows to maintain state information in a lazy way.
  * It handles swapping out of data using secondary storage.
  *
@@ -44,14 +44,14 @@ class QTextCodec;
  *
  * @author Waldo Bastian <bastian@kde.org>
  */
-class KWBuffer : public QObject
+class KateBuffer : public QObject
 {
    Q_OBJECT
 public:
    /**
     * Create an empty buffer.
     */
-   KWBuffer();
+   KateBuffer();
 
    /**
     * Insert a file at line @p line in the buffer.
@@ -108,22 +108,22 @@ protected:
    /**
     * Make sure @p buf gets loaded.
     */
-   void loadBlock(KWBufBlock *buf);
+   void loadBlock(KateBufBlock *buf);
 
    /**
     * Make sure @p buf gets parsed.
     */
-   void parseBlock(KWBufBlock *buf);
+   void parseBlock(KateBufBlock *buf);
 
    /**
     * Mark @p buf dirty.
     */
-   void dirtyBlock(KWBufBlock *buf);
+   void dirtyBlock(KateBufBlock *buf);
 
    /**
     * Find the block containing line @p i
     */
-   KWBufBlock *findBlock(int i);
+   KateBufBlock *findBlock(int i);
 
    /**
     * Load a part of the file that is currently loading.
@@ -136,22 +136,22 @@ protected slots:
 protected:
    int m_totalLines;
 
-   QPtrList<KWBufBlock> m_blocks;
-   QPtrList<KWBufFileLoader> m_loader;
+   QPtrList<KateBufBlock> m_blocks;
+   QPtrList<KateBufFileLoader> m_loader;
 
    QTimer m_loadTimer;
 
    // List of parsed blocks that can be disposed.
-   QPtrList<KWBufBlock> m_parsedBlocksClean;
+   QPtrList<KateBufBlock> m_parsedBlocksClean;
    // List of parsed blocks that are dirty.
-   QPtrList<KWBufBlock> m_parsedBlocksDirty;
+   QPtrList<KateBufBlock> m_parsedBlocksDirty;
    // List of blocks that can be swapped out.
-   QPtrList<KWBufBlock> m_loadedBlocks;
+   QPtrList<KateBufBlock> m_loadedBlocks;
 
    KVMAllocator *m_vm;
 };
 
-class KWBufFileLoader
+class KateBufFileLoader
 {
 public:
   int fd;
@@ -163,7 +163,7 @@ public:
 
 
 
-class KWBufState
+class KateBufState
 {
 public:
    long lineNr;
@@ -171,17 +171,17 @@ public:
 
 
 /**
- * The KWBufBlock class contains an amount of data representing
+ * The KateBufBlock class contains an amount of data representing
  * a certain number of lines.
  */
-class KWBufBlock
+class KateBufBlock
 {
-   friend class KWBuffer;
+   friend class KateBuffer;
 public:
    /*
     * Create an empty block.
     */
-   KWBufBlock(const KWBufState &beginState);
+   KateBufBlock(const KateBufState &beginState);
 
    /**
     * Fill block with lines from @p data1 and @p data2.
@@ -282,8 +282,8 @@ protected:
    bool b_appendEOL; // Buffer is not terminated with '\n'.
    bool b_emptyBlock; // Buffer is empty
    int m_lastLine; // Start of last line if buffer is without EOL.
-   KWBufState m_beginState;
-   KWBufState m_endState;
+   KateBufState m_beginState;
+   KateBufState m_endState;
    QTextCodec *m_codec;
    KVMAllocator::Block *m_vmblock;
 };

@@ -2,8 +2,8 @@
                           katedocmanager.h  -  description
                              -------------------
     begin                : Mon Jan 15 2001
-    copyright            : (C) 2001 by Christoph "Crossfire" Cullmann
-    email                : crossfire@babylon2k.de
+    copyright            : (C) 2001 by Christoph Cullmann
+    email                : cullmann@kde.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef kate_docmanager_h
-#define kate_docmanager_h
+#ifndef __KATE_DOCMANAGER_H__
+#define __KATE_DOCMANAGER_H__
 
 #include "katemain.h"
 #include "../interfaces/docmanager.h"

@@ -2,8 +2,8 @@
                           katemainwindow.h  -  description
                              -------------------
     begin                : Wed Jan 3 2001
-    copyright            : (C) 2001 by Christoph "Crossfire" Cullmann
-    email                : crossfire@babylon2k.de
+    copyright            : (C) 2001 by Christoph Cullmann
+    email                : cullmann@kde.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -14,8 +14,9 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef __kate_mainwindow_h__
-#define __kate_mainwindow_h__
+
+#ifndef __KATE_MAINWINDOW_H__
+#define __KATE_MAINWINDOW_H__
 
 #include "katemain.h"
 #include "../interfaces/mainwindow.h"

@@ -1,5 +1,23 @@
-#ifndef KATEDIALOGS_H
-#define KATEDIALOGS_H
+/***************************************************************************
+                          katedialogs.cpp  -  description
+                             -------------------
+    begin                : Sat 31 March 2001
+    copyright            : (C) 2001 by Joseph Wenninger
+    email                : jowenn@kde.org
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#ifndef KATE_DIALOGS_H
+#define KATE_DIALOGS_H
+
 #include <kdialog.h>
 #include <kdialogbase.h>
 #include "katesyntaxdocument.h"
@@ -14,12 +32,10 @@ class  KListView;
 class QListViewItem;
 struct syntaxContextData;
 class QCheckBox;
-//class ItemFont;
+
 #define HlEUnknown 0
 #define HlEContext 1
 #define HlEItem 2
- //--------
-
 
 class StyleChanger : public QWidget {
     Q_OBJECT

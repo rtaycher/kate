@@ -69,7 +69,7 @@
 2001-04-27 Christoph Cullmann <cullmann@kde.org>
   * now the pluginconfig pages work ;)
 
-2001-04-24 Joseph Wenninger <jowenn@bigfoot.com>
+2001-04-24 Joseph Wenninger <jowenn@kde.org>
   *  now <keywords> and <types> is replaced by <list name="XXXX">
 
 2001-04-20 Christoph Cullmann <cullmann@kde.org>
@@ -86,21 +86,21 @@
   * now encoding for files can be selected at settings dialog (not only UTF8, all possible encodings)
   * dropped old code -> use Waldo's code ;)
 
-2001-04-07 Joseph Wenninger <jowenn@bigfoot.com>
+2001-04-07 Joseph Wenninger <jowenn@kde.org>
   * Activated Waldo Bastian's NEW_CODE
   * Ported Highlighting to it
 
-2001-04-05 Joseph Wenninger <jowenn@bigfoot.com>
+2001-04-05 Joseph Wenninger <jowenn@kde.org>
   * Highlighting Configuration is now in kate/kwrite settings too
   * Made a cleanup of no longer used classes
 
 2001-04-04 Christoph Cullmann <cullmann@kde.org>
   * sidebar now again restores config
 
-2001-04-03 Joseph Wenninger <jowenn@bigfoot.com>
+2001-04-03 Joseph Wenninger <jowenn@kde.org>
   * Cristi Dumitrescu's PHP keyword / type list added
 
-2001-04-01 Joseph Wenninger <jowenn@bigfoot.com>
+2001-04-01 Joseph Wenninger <jowenn@kde.org>
   * Added a new widget KateStackTabWidget
     Now you can chose between tabbed or an
     KOffice Workspace like view for the file sidebar
@@ -118,7 +118,7 @@
   * console disabled per default
   * console only loaded if enabled
 
-2001-03-28 Joseph Wenninger <jowenn@bigfoot.com>
+2001-03-28 Joseph Wenninger <jowenn@kde.org>
   * -n in kate.desktop removed, now config settings are used
 
 2001-03-27 Christoph Cullmann <cullmann@kde.org>
@@ -126,7 +126,7 @@
   * piper moved to plugins/projectmanager/piper
   * a piper Makefile.am created
 
-2001-03-26 Joseph Wenninger <jowenn@bigfoot.com>
+2001-03-26 Joseph Wenninger <jowenn@kde.org>
   * 2 reimplemented highlighing configs
   * 1 experimental highlighting config
   * preparations for an highlighting editing dialog
@@ -134,7 +134,7 @@
 2001-03-25 Christoph Cullmann <cullmann@kde.org>
   * rewrite of plugin API and manager, now loading/unloading nice
 
-2001-03-22 Joseph Wenninger <jowenn@bigfoot.com>
+2001-03-22 Joseph Wenninger <jowenn@kde.org>
   * single / multi instance mode configurable
     Cullmann's -n option forces a new instance
     Otherwise it uses the configuration from
@@ -152,12 +152,12 @@
   * KateFactory now in use by hole Kate app
   * KatePartView/Doc merged with KateView/Doc (make life more easy)
 
-2001-03-18 Joseph Wenninger <jowenn@bigfoot.com>
+2001-03-18 Joseph Wenninger <jowenn@kde.org>
   * openheader plugin opens the corresponding
     .h file for .cpp or .c, and vice versa
   * Hopefully fixed highlighting dialog for now.
 
-2001-03-17 Joseph Wenninger <jowenn@bigfoot.com>
+2001-03-17 Joseph Wenninger <jowenn@kde.org>
   * Syntaxhighlighting is now defined in cpp.xml, c.xml html.xml ...
     instead of a global syntax.xml.
     (Not ported completely yet)
@@ -188,7 +188,7 @@
   * session managment (Anders Lund)
   * removed some debug stuff
 
-2001-02-26 Joseph Wenninger <jowenn@bigfoot.com>
+2001-02-26 Joseph Wenninger <jowenn@kde.org>
   * First step for a plugin management dialog page
     Soon to come
 
@@ -207,7 +207,7 @@
     we pipe the selected text thru that command, such as "sort", and then
     replace the selection with the result. Impress your friends.
 
-2001-02-21 Joseph Wenninger <jowenn@bigfoot.com>
+2001-02-21 Joseph Wenninger <jowenn@kde.org>
   * Makefile.am's     : correction for linking
   * katemenuitem.h    : Improved menu items added doc-list
   * katelistboxitem.h    : Improved listboxitem files-list
@@ -218,6 +218,6 @@
 2001-02-16 Anders Lund <anders@alweb.dk>
   * katemainwindow.cpp  :fixing read/write options to use maindockwindow functions.
 
-2001-02-15 Joseph Wenninger <jowenn@bigfoot.com>
+2001-02-15 Joseph Wenninger <jowenn@kde.org>
   * kateview.cpp    : Tab doesn't jump to next widget anymore, but inserts a tab into the text
   * katemainwindow.*  : F8 / SHIFT-F8 jumps to next / previous widget
