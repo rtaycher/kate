@@ -90,5 +90,7 @@ const KAboutData *KantFactory::aboutData()
   data->addAuthor("Glen Parker",I18N_NOOP("KWrite Undo History, Kspell integration"), "glenebob@nwlink.com");
   data->addAuthor("Scott Manson",I18N_NOOP("KWrite XML Syntax highlighting support"), "sdmanson@alltel.net");
 
+  data->addCredit ("Carsten Presser, Jens Haupert", I18N_NOOP("Betatest"));
+
   return data;
 }
