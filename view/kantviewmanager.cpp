@@ -34,7 +34,7 @@
 #include "../kwrite/highlight.h"
 #include "../kwrite/kwrite_factory.h"
 
-#include <qwidgetstack.h>
+//#include <qwidgetstack.h>
 #include <qlayout.h>
 #include <kdiroperator.h>
 #include <kfiledialog.h>
@@ -47,7 +47,7 @@
 #include <kstdaction.h>
 #include <qvbox.h>
 #include <qlayout.h>
-#include <qsplitter.h>
+//#include <qsplitter.h>
 #include <dcopclient.h>
 #include <klistbox.h>
 #include <qobjectlist.h>
@@ -55,34 +55,7 @@
 #include <qstringlist.h>
 #include <qfileinfo.h>
 
-/////////////////////////////////////////////////////////////////////
-// kantSplitter : public QSplitter
-// this class is required because qsplitter dosen't have a public method
-// to get the index of a child.
-/*
-class KantSplitter : public QSplitter
-{
-  Q_OBJECT
-
-  public:
-    KantSplitter ( Orientation o, QWidget * parent=0, const char * name=0 );
-    KantSplitter(QWidget* parent=0, const char* name=0);
-    ~KantSplitter()
-    {
-    }
-
-    bool isFirstChild(QWidget* w) { return idAfter(w) > 0; }
-};
-
-KantSplitter::KantSplitter(QWidget* parent, const char* name)
-  : QSplitter(parent, name)
-{
-}
-KantSplitter::KantSplitter ( Orientation o, QWidget * parent, const char * name=0 )
-  : QSplitter( o, parent, name )
-{
-}
-*/
+#include "kantsplitter.h"
 
 KantVMListBoxItem::KantVMListBoxItem (const QPixmap &pixmap,const QString &text, long docID) : KantListBoxItem (pixmap, text )
 {
@@ -918,10 +891,10 @@ void KantViewManager::splitViewSpace(bool isHoriz)
 
   QValueList<int> sizes;
   if (! isFirstTime)
-    sizes = ((QSplitter*)activeViewSpace()->parentWidget())->sizes();
+    sizes = ((KantSplitter*)activeViewSpace()->parentWidget())->sizes();
 
   Qt::Orientation o = isHoriz ? Qt::Vertical : Qt::Horizontal;
-  QSplitter* s = new QSplitter(o, activeViewSpace()->parentWidget());
+  KantSplitter* s = new KantSplitter(o, activeViewSpace()->parentWidget());
   s->setOpaqueResize( useOpaqueResize );
 
   if (! isFirstTime) {
@@ -929,7 +902,7 @@ void KantViewManager::splitViewSpace(bool isHoriz)
     uint at =  viewSpaceList.at();
     if ( (at < (viewSpaceList.count() - 1))
        && (viewSpaceList.at(at +1)->parentWidget() == activeViewSpace()->parentWidget() ) )
-         ((QSplitter*)s->parentWidget())->moveToFirst( s );
+         ((KantSplitter*)s->parentWidget())->moveToFirst( s );
   }
   activeViewSpace()->reparent( s, 0, QPoint(), true );
   KantViewSpace* vs = new KantViewSpace( s );
@@ -937,7 +910,7 @@ void KantViewManager::splitViewSpace(bool isHoriz)
   if (isFirstTime)
     grid->addWidget(s, 0, 0);
   else
-    ((QSplitter*)s->parentWidget())->setSizes( sizes );
+    ((KantSplitter*)s->parentWidget())->setSizes( sizes );
 
   sizes.clear();
   int sz = isHoriz ? s->height()/2 : s->width()/2;
@@ -965,15 +938,20 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
   // abort if this is the last viewspace
   if (viewSpaceList.count() < 2) return;
 
-  QSplitter* p = (QSplitter*)viewspace->parentWidget();
+  KantSplitter* p = (KantSplitter*)viewspace->parentWidget();
+
+  // find out if it is the first child for repositioning
+  // see below
+  bool pIsFirst = false;
 
   // save some size information
-  QSplitter* pp=0L;
+  KantSplitter* pp=0L;
   QValueList<int> ppsizes;
   if (viewSpaceList.count() > 2 && p->parentWidget() != this)
   {
-    pp = (QSplitter*)p->parentWidget();
+    pp = (KantSplitter*)p->parentWidget();
     ppsizes = pp->sizes();
+    pIsFirst = !pp->isLastChild( p ); // simple logic, right-
   }
 
   // Figure out where to put views that are still needed
@@ -1011,11 +989,15 @@ void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
 
   // reparent the other sibling of the parent.
   // here is a bug: they sometimes gets in the wrong place.
-  // requires reimplementation of QSplitter?
+  // requires reimplementation of QSplitter? DONE!!!
   while (p->children ())
   {
     kdDebug()<<"removeViewSpace(): reparenting a splitter"<<endl;
-    ((QWidget *)(( QList<QObject>*)p->children())->first())->reparent( p->parentWidget(), 0, QPoint(), true );
+    QWidget* other = ((QWidget *)(( QList<QObject>*)p->children())->first());
+    other->reparent( p->parentWidget(), 0, QPoint(), true );
+    //
+    if (pIsFirst)
+       ((KantSplitter*)p->parentWidget())->moveToFirst( other );
   }
 
   delete p;
