@@ -42,6 +42,7 @@
 #include <qdragobject.h>
 #include <qiodevice.h>
 #include <qbuffer.h>
+#include <qtextcodec.h>
 
 #include <kapp.h>
 #include <kcursor.h>
@@ -2091,7 +2092,24 @@ QString KWrite::markedText() {
   return kWriteDoc->markedText(configFlags);
 }
 
+#ifdef NEW_CODE
+void KWrite::loadFile(const QString &file, QTextCodec *codec, bool insert) 
+{
+  VConfig c;
 
+  if (!insert) {
+    kWriteDoc->loadFile(file, codec);
+  } else {
+    // TODO: Not yet supported.
+#if 0
+    kWriteView->getVConfig(c);
+    if (c.flags & cfDelOnInput) kWriteDoc->delMarkedText(c);
+    kWriteDoc->insertFile(c, dev);
+    kWriteDoc->updateViews();
+#endif
+  }
+}
+#else
 void KWrite::loadFile(QIODevice &dev, bool insert) {
   VConfig c;
 
@@ -2104,10 +2122,15 @@ void KWrite::loadFile(QIODevice &dev, bool insert) {
     kWriteDoc->updateViews();
   }
 }
+#endif
 
 void KWrite::writeFile(QIODevice &dev) {
+#ifdef NEW_CODE
+  // TODO: Not yet implemented.
+#else
   kWriteDoc->writeFile(dev);
   kWriteDoc->updateViews();
+#endif
 }
 
 
@@ -2127,12 +2150,18 @@ bool KWrite::loadFile(const QString &name, int flags) {
     return false;
   }
 
+#ifdef NEW_CODE
+  // TODO: Select a proper codec.
+  loadFile(name, QTextCodec::codecForLocale(), flags & KWriteView::lfInsert);
+  return true;
+#else
   QFile f(name);
   if (f.open(IO_ReadOnly)) {
     loadFile(f,flags & KWriteView::lfInsert);
     f.close();
     return true;
   }
+#endif
   KMessageBox::sorry(this, i18n("An error occured while trying to open this document"));
   return false;
 }
@@ -2285,6 +2314,9 @@ void KWrite::slotJobReadResult( KIO::Job *job )
 
 void KWrite::loadInternal( const QByteArray &data, const KURL &url, int flags )
 {
+#ifdef NEW_CODE
+    // TODO: Not yet supported.
+#else
     QBuffer buff( data );
     buff.open( IO_ReadOnly );
     loadFile( buff, flags );
@@ -2306,6 +2338,7 @@ void KWrite::loadInternal( const QByteArray &data, const KURL &url, int flags )
 
     if ( flags & KWriteView::lfNewFile )
         kWriteDoc->setModified( false );
+#endif
 }
 
 void KWrite::slotJobData( KIO::Job *job, const QByteArray &data )

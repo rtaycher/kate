@@ -112,12 +112,7 @@ KWBuffer::insertFile(int line, const QString &file)
 
   slotLoadFile();
 }
-void
-KWBuffer::insertFile(int line, const QFile &file)
-{
- insertFile(line,file.name());
 
-}
 void
 KWBuffer::slotLoadFile()
 {

@@ -34,6 +34,7 @@
 #include "kwview.h"
 #include "highlight.h"
 #include "ktexteditor.h"
+#include "kwbuffer.h"
 
 /**
   The TextLine represents a line of text. A text line that contains the
@@ -340,19 +341,22 @@ class KWriteDoc : public KTextEditor::Document {
 
 // public interface
     /**
-      gets the number of lines
-    */
-    virtual int numLines() const {return (int) contents.count();}
+     *  gets the number of lines
+     */
+    virtual int numLines() const;
+
     /**
-      gets the last line number (numLines() -1)
-    */
-    int lastLine() const {return (int) contents.count() -1;}
+     * gets the last line number (numLines() -1)
+     */
+    int lastLine() const {return numLines()-1;}
+
     /**
       gets the given line
       @return  the TextLine object at the given line
       @see     TextLine
     */
     TextLine *getTextLine(int line) const;
+
     /**
       get the length in pixels of the given line
     */
@@ -408,8 +412,13 @@ class KWriteDoc : public KTextEditor::Document {
 
     void insert(VConfig &, const QString &);
     void insertFile(VConfig &, QIODevice &);
+#ifdef NEW_CODE
+    void loadFile(const QString &file, QTextCodec *codec);
+    void writeFile(const QString &file, QTextCodec *codec);
+#else
     void loadFile(QIODevice &);
     void writeFile(QIODevice &);
+#endif
 
     int currentColumn(PointStruc &cursor);
     bool insertChars(VConfig &, const QString &chars);
@@ -529,6 +538,7 @@ class KWriteDoc : public KTextEditor::Document {
 // member variables
   protected:
     QList<TextLine> contents;
+    KWBuffer *buffer;
     QColor colors[5];
     HlManager *hlManager;
     Highlight *m_highlight;

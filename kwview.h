@@ -65,7 +65,7 @@ const int srCancel            = QDialog::Rejected;
 enum Select_flags {
   selectFlag          = 0x100000,
   multiSelectFlag     = 0x200000,
-	};
+};
 //state commands
 enum State_commands {
   cmToggleInsert      = 1,
@@ -537,11 +537,16 @@ class KWrite : public KTextEditor::View, virtual public KWriteIface {
   public:
 //    enum fileAction{GET, PUT}; //tells us what kind of job kwrite is waiting for
     enum fileResult { OK, CANCEL, RETRY, ERROR };
+
+#ifdef NEW_CODE
     /**
-      Loads a file from the given QIODevice. For insert = false the old
-      contents will be lost.
-    */
+     * Loads a file @p file using @p codec. 
+     * If insert = false the old contents will be deleted.
+     */
+    void loadFile(const QString &file, QTextCodec *codec, bool insert);
+#else
     void loadFile(QIODevice &, bool insert = false);
+#endif
     /**
       Writes the document into the given QIODevice
     */

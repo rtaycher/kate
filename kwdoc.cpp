@@ -43,8 +43,10 @@
 
 #include "kwrite_factory.h"
 #include "kwview.h"
+#include "kwbuffer.h"
 #include "kwdoc.h"
 #include "kwdoc.moc"
+
 
 //text attribute constants
 const int taSelected = 0x40;
@@ -438,6 +440,7 @@ KWriteDoc::KWriteDoc(HlManager *hlManager, const QString &path,
   m_bSingleViewMode = bSingleViewMode;
 
   contents.setAutoDelete(true);
+  buffer = new KWBuffer;
 
   colors[0] = white;
   colors[1] = darkBlue;
@@ -509,11 +512,16 @@ KWriteDoc::~KWriteDoc() {
 
 bool KWriteDoc::openFile()
 {
+#ifdef NEW_CODE
+  // TODO: Pass codec around.
+  loadFile( m_file, QTextCodec::codecForLocale());
+#else
   QFile f( m_file );
   if ( !f.open( IO_ReadOnly ) )
     return false;
 
   loadFile( f );
+#endif
 //  if ( updateHighlight )
   {
     //highlight detection
@@ -526,6 +534,7 @@ bool KWriteDoc::openFile()
 
     int hl = hlManager->wildcardFind( fn );
 
+#ifndef NEW_CODE 
     if (hl == -1)
     {
       // fill the detection buffer with the contents of the text
@@ -547,6 +556,7 @@ bool KWriteDoc::openFile()
       //    hl = hlManager->mimeFind(buf, s.right( s.length() - pos));
       hl = hlManager->mimeFind( buf, fn );
     }
+#endif
     setHighlight(hl);
   }
 
@@ -554,12 +564,18 @@ bool KWriteDoc::openFile()
   updateViews();
   //  setFileName( m_url.path() );
 
+#ifndef NEW_CODE
   f.close();
+#endif
   return true;
 }
 
 bool KWriteDoc::saveFile()
 {
+#ifdef NEW_CODE
+  // TODO: Not yet implemented.
+  return false;
+#else
   QFile f( m_file );
   if ( !f.open( IO_WriteOnly | IO_Truncate ) )
     return false;
@@ -568,6 +584,7 @@ bool KWriteDoc::saveFile()
 
   f.close();
   return true;
+#endif
 }
 
 KTextEditor::View *KWriteDoc::createView( QWidget *parent, const char * )
@@ -625,9 +642,28 @@ QString KWriteDoc::selection() const
   return QString::null;
 }
 
+int KWriteDoc::numLines() const
+{
+#ifdef NEW_CODE
+  return buffer->count();
+#else
+  return (int) contents.count();
+#endif
+}
+
+
 TextLine *KWriteDoc::getTextLine(int line) const {
+#ifdef NEW_CODE
+  // This is a hack to get this stuff working.
+  QString s = buffer->line(line);
+  static TextLine *lastLine = 0;
+  delete lastLine;
+  lastLine = new TextLine();
+  lastLine->append(s.unicode(), s.length());
+  return lastLine;
+#else
 //  if (line < 0) line = 0;
-  if (line >= (int)contents.count())
+  if (line >= numLines())
     return 0L;
 
   QListIterator<TextLine> it( contents );
@@ -639,10 +675,13 @@ TextLine *KWriteDoc::getTextLine(int line) const {
 
   kdDebug() << "ARGH, getTextLine returns 0L!" << endl;
   return 0;
+#endif
 }
 
 int KWriteDoc::textLength(int line) {
-  return contents.at(line)->length();
+  TextLine *textLine = getTextLine(line);
+  if (!textLine) return 0;
+  return textLine->length();
 }
 
 void KWriteDoc::setTabWidth(int chars) {
@@ -856,10 +895,13 @@ int KWriteDoc::textWidth(TextLine *textLine, int cursorX) {
 }
 
 int KWriteDoc::textWidth(PointStruc &cursor) {
-  if (cursor.x < 0) cursor.x = 0;
-  if (cursor.y < 0) cursor.y = 0;
-  if (cursor.y >= (int) contents.count()) cursor.y = (int) contents.count() -1;
-  return textWidth(contents.at(cursor.y),cursor.x);
+  if (cursor.x < 0) 
+     cursor.x = 0;
+  if (cursor.y < 0) 
+     cursor.y = 0;
+  if (cursor.y >= numLines()) 
+     cursor.y = lastLine();
+  return textWidth(getTextLine(cursor.y),cursor.x);
 }
 
 int KWriteDoc::textWidth(bool wrapCursor, PointStruc &cursor, int xPos) {
@@ -871,8 +913,8 @@ int KWriteDoc::textWidth(bool wrapCursor, PointStruc &cursor, int xPos) {
   Attribute *a;
 
   if (cursor.y < 0) cursor.y = 0;
-  if (cursor.y >= (int) contents.count()) cursor.y = (int) contents.count() -1;
-  textLine = contents.at(cursor.y);
+  if (cursor.y > lastLine()) cursor.y = lastLine();
+  textLine = getTextLine(cursor.y);
   len = textLine->length();
 
   x = oldX = z = 0;
@@ -928,7 +970,7 @@ int KWriteDoc::textWidth() {
 }
 
 int KWriteDoc::textHeight() {
-  return contents.count()*fontHeight;
+  return numLines()*fontHeight;
 }
 
 void KWriteDoc::insert(VConfig &c, const QString &s) {
@@ -971,7 +1013,7 @@ void KWriteDoc::insert(VConfig &c, const QString &s) {
         c.cursor.y++;
         if (c.cursor.y >= numLines())
           recordAction(KWAction::insLine, c.cursor);
-        c.cursor.x = textPos(contents.at(c.cursor.y), xPos);
+        c.cursor.x = textPos(getTextLine(c.cursor.y), xPos);
       }
       pos++;
     } while (pos < (int) s.length());
@@ -1010,6 +1052,18 @@ void KWriteDoc::insertFile(VConfig &c, QIODevice &dev)
   recordEnd(c);
 }
 
+#ifdef NEW_CODE
+void KWriteDoc::loadFile(const QString &file, QTextCodec *codec)
+{
+  buffer->insertFile(0, file);
+qWarning("Linecount = %d", buffer->count());
+}
+
+void KWriteDoc::writeFile(const QString &file, QTextCodec *codec)
+{
+qWarning("NOT YET IMPLEMENTED.");
+}
+#else
 void KWriteDoc::loadFile(QIODevice &dev) {
   TextLine *textLine;
   QChar ch;
@@ -1051,9 +1105,10 @@ void KWriteDoc::writeFile(QIODevice &dev) {
     if (eolMode != KWriteView::eolMacintosh) dev.putch('\n');
   } while (true);
 }
+#endif
 
 int KWriteDoc::currentColumn(PointStruc &cursor) {
-  return contents.at(cursor.y)->cursorX(cursor.x,tabChars);
+  return getTextLine(cursor.y)->cursorX(cursor.x,tabChars);
 }
 
 bool KWriteDoc::insertChars(VConfig &c, const QString &chars) {
@@ -1063,7 +1118,7 @@ bool KWriteDoc::insertChars(VConfig &c, const QString &chars) {
   QChar ch;
   QString buf;
 
-  textLine = contents.at(c.cursor.y);
+  textLine = getTextLine(c.cursor.y);
 
   pos = 0;
   onlySpaces = true;
@@ -1181,7 +1236,7 @@ bool KWriteDoc::insertChars(VConfig &c, const QString &chars) {
 
     line = c.cursor.y;
     do {
-      textLine = contents.at(line);
+      textLine = getTextLine(line);
       s = textLine->getText();
       l = textLine->length();
       for (z = c.wrapAt; z < l; z++) if (!s[z].isSpace()) break; //search for text to wrap
@@ -1201,7 +1256,11 @@ bool KWriteDoc::insertChars(VConfig &c, const QString &chars) {
         c.cursor.x -= pos;
       }
 
+#ifdef NEW_CODE
+      if (line == lastLine()) {
+#else
       if (textLine == contents.getLast() || contents.next()->length() == 0) {
+#endif
         //at end of doc: create new line
         actionCursor.x = pos;
         actionCursor.y = line;
@@ -1250,7 +1309,7 @@ void KWriteDoc::newLine(VConfig &c) {
     TextLine *textLine;
     int pos;
 
-    textLine = contents.at(c.cursor.y);
+    textLine = getTextLine(c.cursor.y);
     pos = textLine->firstChar();
     if (c.cursor.x < pos) c.cursor.x = pos; // place cursor on first char if before
 
@@ -1264,7 +1323,7 @@ void KWriteDoc::newLine(VConfig &c) {
     c.cursor.x = 0;
     if (pos > 0) {
       pos = textLine->cursorX(pos, tabChars);
-      if (contents.at(c.cursor.y)->length() > 0) {
+      if (getTextLine(c.cursor.y)->length() > 0) {
         QString s = tabString(pos, (c.flags & KWriteView::cfSpaceIndent) ? 0xffffff : tabChars);
         recordInsert(c.cursor, s);
         pos = s.length();
@@ -1282,7 +1341,7 @@ void KWriteDoc::killLine(VConfig &c) {
   recordStart(c, KWActionGroup::ugDelLine);
   c.cursor.x = 0;
   recordDelete(c.cursor, 0xffffff);
-  if (c.cursor.y < (int) contents.count() -1) {
+  if (c.cursor.y < lastLine()) {
     recordAction(KWAction::killLine, c.cursor);
   }
   recordEnd(c);
@@ -1304,7 +1363,7 @@ void KWriteDoc::backspace(VConfig &c) {
       int pos;
       int l = 1; // del one char
 
-      textLine = contents.at(c.cursor.y);
+      textLine = getTextLine(c.cursor.y);
       pos = textLine->firstChar();
       if (pos < 0 || pos >= c.cursor.x) {
         // only spaces on left side of cursor
@@ -1325,7 +1384,7 @@ void KWriteDoc::backspace(VConfig &c) {
     // c.cursor.x == 0: wrap to previous line
     recordStart(c, KWActionGroup::ugDelLine);
     c.cursor.y--;
-    c.cursor.x = contents.at(c.cursor.y)->length();
+    c.cursor.x = getTextLine(c.cursor.y)->length();
     recordAction(KWAction::delLine,c.cursor);
   }
   recordEnd(c);
@@ -1336,15 +1395,15 @@ void KWriteDoc::del(VConfig &c) {
   TextLine *textLine;
   int len;
 
-  textLine = contents.at(c.cursor.y);
+  textLine = getTextLine(c.cursor.y);
   len =  (c.flags & KWriteView::cfRemoveSpaces) ? textLine->lastChar() : textLine->length();
-  if (c.cursor.x < len/*contents.at(c.cursor.y)->length()*/) {
+  if (c.cursor.x < len/*getTextLine(c.cursor.y)->length()*/) {
     // delete one character
     recordStart(c, KWActionGroup::ugDelChar);
     recordDelete(c.cursor, 1);
     recordEnd(c);
   } else {
-    if (c.cursor.y < (int) contents.count() -1) {
+    if (c.cursor.y < lastLine()) {
       // wrap next line to this line
       textLine->truncate(c.cursor.x); // truncate spaces
       recordStart(c, KWActionGroup::ugDelLine);
@@ -1447,7 +1506,7 @@ void KWriteDoc::toggleRect(int start, int end, int x1, int x2) {
     QChar ch;
     Attribute *a;
 
-    textLine = contents.at(line);
+    textLine = getTextLine(line);
 
     //--- speed optimization
     //s = textPos(textLine, x1, newX1);
@@ -1544,7 +1603,7 @@ void KWriteDoc::selectTo(VConfig &c, PointStruc &cursor, int cXPos) {
     if (y < selectStart) selectStart = y;
     if (ey > selectEnd) selectEnd = ey;
 
-    textLine = contents.at(y);
+    textLine = getTextLine(y);
 
     if (c.flags & KWriteView::cfXorSelect) {
       //xor selection with old selection
@@ -1552,7 +1611,7 @@ void KWriteDoc::selectTo(VConfig &c, PointStruc &cursor, int cXPos) {
         textLine->toggleSelectEol(x);
         x = 0;
         y++;
-        textLine = contents.at(y);
+        textLine = getTextLine(y);
       }
       textLine->toggleSelect(x, ex);
     } else {
@@ -1565,7 +1624,7 @@ void KWriteDoc::selectTo(VConfig &c, PointStruc &cursor, int cXPos) {
             textLine->selectEol(sel, x);
             x = 0;
             y++;
-            textLine = contents.at(y);
+            textLine = getTextLine(y);
           }
           textLine->select(sel, x, anchor.x);
           x = anchor.x;
@@ -1576,7 +1635,7 @@ void KWriteDoc::selectTo(VConfig &c, PointStruc &cursor, int cXPos) {
         textLine->selectEol(sel, x);
         x = 0;
         y++;
-        textLine = contents.at(y);
+        textLine = getTextLine(y);
       }
       textLine->select(sel, x, ex);
     }
@@ -1612,10 +1671,10 @@ void KWriteDoc::selectAll() {
   tagLines(selectStart,selectEnd);
 
   for (z = selectStart; z < selectEnd; z++) {
-    textLine = contents.at(z);
+    textLine = getTextLine(z);
     textLine->selectEol(true,0);
   }
-  textLine = contents.at(z);
+  textLine = getTextLine(z);
   textLine->select(true,0,textLine->length());
   emit selectionChanged();
 }
@@ -1633,7 +1692,7 @@ void KWriteDoc::deselectAll() {
   tagLines(selectStart,selectEnd);
 
   for (z = selectStart; z <= selectEnd; z++) {
-    textLine = contents.at(z);
+    textLine = getTextLine(z);
     textLine->selectEol(false,0);
   }
   selectStart = 0xffffff;
@@ -1656,10 +1715,10 @@ void KWriteDoc::invertSelection() {
   tagLines(selectStart,selectEnd);
 
   for (z = selectStart; z < selectEnd; z++) {
-    textLine = contents.at(z);
+    textLine = getTextLine(z);
     textLine->toggleSelectEol(0);
   }
-  textLine = contents.at(z);
+  textLine = getTextLine(z);
   textLine->toggleSelect(0,textLine->length());
   optimizeSelection();
   emit selectionChanged();
@@ -1669,7 +1728,7 @@ void KWriteDoc::selectWord(PointStruc &cursor, int flags) {
   TextLine *textLine;
   int start, end, len;
 
-  textLine = contents.at(cursor.y);
+  textLine = getTextLine(cursor.y);
   len = textLine->length();
   start = end = cursor.x;
   while (start > 0 && m_highlight->isInWord(textLine->getChar(start - 1))) start--;
@@ -1709,7 +1768,7 @@ void KWriteDoc::doIndent(VConfig &c, int change) {
       // unindent so that the existing indent profile doesn´t get screwed
       // if any line we may unindent is already full left, don't do anything
       for (line = selectStart; line <= selectEnd; line++) {
-        textLine = contents.at(line);
+        textLine = getTextLine(line);
         if (textLine->isSelected() || textLine->numSelected()) {
           for (z = 0; z < tabChars; z++) {
             ch = textLine->getChar(z);
@@ -1725,7 +1784,7 @@ void KWriteDoc::doIndent(VConfig &c, int change) {
     }
 
     for (line = selectStart; line <= selectEnd; line++) {
-      textLine = contents.at(line);
+      textLine = getTextLine(line);
       if (textLine->isSelected() || textLine->numSelected()) {
         optimizeLeadingSpace(line, c.flags, change);
       }
@@ -1753,7 +1812,7 @@ void KWriteDoc::optimizeLeadingSpace(int line, int flags, int change) {
   QString s;
   PointStruc cursor;
 
-  textLine = contents.at(line);
+  textLine = getTextLine(line);
   len = textLine->length();
   space = 0; // length of space at the beginning of the textline
   okLen = 0; // length of space which does not have to be replaced
@@ -1807,7 +1866,7 @@ void KWriteDoc::doCommentLine(PointStruc &cursor) {
 
   // Add an end comment mark
   if(endComment != " ") {
-    TextLine* textline = contents.at(cursor.y);
+    TextLine* textline = getTextLine(cursor.y);
     cursor.x = textline->length();
     recordReplace(cursor, 0, endComment);
     cursor.x = 0;
@@ -1827,7 +1886,7 @@ void KWriteDoc::doUncommentLine(PointStruc &cursor) {
   int otherStartCommentLen = otherStartComment.length();
   int endCommentLen = endComment.length();
 
-  TextLine* textline = contents.at(cursor.y);
+  TextLine* textline = getTextLine(cursor.y);
 
   if(textline->startingWith(startComment) && textline->endingWith(endComment)) {
 
@@ -1874,7 +1933,7 @@ void KWriteDoc::doComment(VConfig &c, int change) {
     }
   } else {
     for (c.cursor.y = selectStart; c.cursor.y <= selectEnd; c.cursor.y++) {
-      TextLine* textLine = contents.at(c.cursor.y);
+      TextLine* textLine = getTextLine(c.cursor.y);
       if (textLine->isSelected() || textLine->numSelected()) {
         if(change > 0) {
           //comment selection
@@ -1925,7 +1984,7 @@ QString KWriteDoc::getWord(PointStruc &cursor) {
   TextLine *textLine;
   int start, end, len;
 
-  textLine = contents.at(cursor.y);
+  textLine = getTextLine(cursor.y);
   len = textLine->length();
   start = end = cursor.x;
   while (start > 0 && m_highlight->isInWord(textLine->getChar(start - 1))) start--;
@@ -1962,14 +2021,14 @@ QString KWriteDoc::markedText(int flags) {
   len = 1;
   if (!(flags & KWriteView::cfVerticalSelect)) {
     for (z = selectStart; z <= selectEnd; z++) {
-      textLine = contents.at(z);
+      textLine = getTextLine(z);
       len += textLine->numSelected();
       if (textLine->isSelected()) len++;
     }
     QString s;
     len = 0;
     for (z = selectStart; z <= selectEnd; z++) {
-      textLine = contents.at(z);
+      textLine = getTextLine(z);
       end = 0;
       do {
         start = textLine->findUnselected(end);
@@ -1988,13 +2047,13 @@ QString KWriteDoc::markedText(int flags) {
     return s;
   } else {
     for (z = selectStart; z <= selectEnd; z++) {
-      textLine = contents.at(z);
+      textLine = getTextLine(z);
       len += textLine->numSelected() + 1;
     }
     QString s;
     len = 0;
     for (z = selectStart; z <= selectEnd; z++) {
-      textLine = contents.at(z);
+      textLine = getTextLine(z);
       end = 0;
       do {
         start = textLine->findUnselected(end);
@@ -2026,7 +2085,7 @@ void KWriteDoc::delMarkedText(VConfig &c/*, bool undo*/) {
   recordStart(c, KWActionGroup::ugDelBlock);
 
   for (c.cursor.y = selectEnd; c.cursor.y >= selectStart; c.cursor.y--) {
-    textLine = contents.at(c.cursor.y);
+    textLine = getTextLine(c.cursor.y);
 
     c.cursor.x = textLine->length();
     do {
@@ -2074,17 +2133,17 @@ void KWriteDoc::tagAll() {
 
 void KWriteDoc::updateLines(int startLine, int endLine, int flags, int cursorY) {
   TextLine *textLine;
-  int line, lastLine;
+  int line, last_line;
   int ctxNum, endCtx;
 
-  lastLine = (int) contents.count() -1;
-  if (endLine >= lastLine) endLine = lastLine;
+  last_line = lastLine();
+  if (endLine >= last_line) endLine = last_line;
 
   line = startLine;
   ctxNum = 0;
-  if (line > 0) ctxNum = contents.at(line - 1)->getContext();
+  if (line > 0) ctxNum = getTextLine(line - 1)->getContext();
   do {
-    textLine = contents.at(line);
+    textLine = getTextLine(line);
     if (line <= endLine && line != cursorY) {
       if (flags & KWriteView::cfRemoveSpaces) textLine->removeSpaces();
       updateMaxLength(textLine);
@@ -2093,7 +2152,7 @@ void KWriteDoc::updateLines(int startLine, int endLine, int flags, int cursorY) 
     ctxNum = m_highlight->doHighlight(ctxNum,textLine);
     textLine->setContext(ctxNum);
     line++;
-  } while (line <= lastLine && (line <= endLine || endCtx != ctxNum));
+  } while (line <= last_line && (line <= endLine || endCtx != ctxNum));
   tagLines(startLine, line - 1);
 }
 
@@ -2143,7 +2202,7 @@ QColor &KWriteDoc::cursorCol(int x, int y) {
   int attr;
   Attribute *a;
 
-  textLine = contents.at(y);
+  textLine = getTextLine(y);
   attr = textLine->getRawAttr(x);
   a = &m_attribs[attr & taAttrMask];
   if (attr & taSelectMask) return a->selCol; else return a->col;
@@ -2154,7 +2213,7 @@ QFont &KWriteDoc::getTextFont(int x, int y) {
   int attr;
   Attribute *a;
 
-  textLine = contents.at(y);
+  textLine = getTextLine(y);
   attr = textLine->getRawAttr(x);
   a = &m_attribs[attr & taAttrMask];
   return a->font;
@@ -2179,12 +2238,12 @@ void KWriteDoc::paintTextLine(QPainter &paint, int line, int xStart, int xEnd,
 //  struct timezone tz;
 
   y = 0;//line*fontHeight - yPos;
-  if (line >= (int) contents.count()) {
+  if (line > lastLine()) {
     paint.fillRect(0, y, xEnd - xStart,fontHeight, colors[4]);
     return;
   }
 
-  textLine = contents.at(line);
+  textLine = getTextLine(line);
   len = textLine->length();
   s = textLine->getText();
 
@@ -2305,8 +2364,8 @@ void KWriteDoc::printTextLine(QPainter &paint, int line, int xEnd, int y) {
   char buf[256];
   int bufp;
 
-  if (line >= (int) contents.count()) return;
-  textLine = contents.at(line);
+  if (line > lastLine()) return;
+  textLine = getTextLine(line);
 
   z = 0;
   x = 0;
@@ -2431,7 +2490,7 @@ bool KWriteDoc::doSearch(SConfig &sc, const QString &searchFor) {
     } else searchEnd = lastLine();
 
     while (line <= searchEnd) {
-      textLine = contents.at(line);
+      textLine = getTextLine(line);
       tlen = textLine->length();
       if (tlen > bufLen) {
         delete t;
@@ -2488,7 +2547,7 @@ bool KWriteDoc::doSearch(SConfig &sc, const QString &searchFor) {
     } else searchEnd = 0;;
 
     while (line >= searchEnd) {
-      textLine = contents.at(line);
+      textLine = getTextLine(line);
       tlen = textLine->length();
       if (tlen > bufLen) {
         delete t;
@@ -2550,7 +2609,7 @@ found:
 void KWriteDoc::unmarkFound() {
   if (pseudoModal) return;
   if (foundLine != -1) {
-    contents.at(foundLine)->unmarkFound();
+    getTextLine(foundLine)->unmarkFound();
     tagLines(foundLine,foundLine);
     foundLine = -1;
   }
@@ -2560,10 +2619,10 @@ void KWriteDoc::markFound(PointStruc &cursor, int len) {
 //  unmarkFound();
 //  recordReset();
   if (foundLine != -1) {
-    contents.at(foundLine)->unmarkFound();
+    getTextLine(foundLine)->unmarkFound();
     tagLines(foundLine,foundLine);
   }
-  contents.at(cursor.y)->markFound(cursor.x,len);
+  getTextLine(cursor.y)->markFound(cursor.x,len);
   foundLine = cursor.y;
   tagLines(foundLine,foundLine);
 }
@@ -2607,12 +2666,12 @@ void KWriteDoc::optimizeSelection() {
   TextLine *textLine;
 
   while (selectStart <= selectEnd) {
-    textLine = contents.at(selectStart);
+    textLine = getTextLine(selectStart);
     if (textLine->isSelected() || textLine->numSelected() > 0) break;
     selectStart++;
   }
   while (selectEnd >= selectStart) {
-    textLine = contents.at(selectEnd);
+    textLine = getTextLine(selectEnd);
     if (textLine->isSelected() || textLine->numSelected() > 0) break;
     selectEnd--;
   }
@@ -2659,7 +2718,7 @@ void KWriteDoc::doReplace(KWAction *a) {
 
   //exchange current text with stored text in KWAction *a
 
-  textLine = contents.at(a->cursor.y);
+  textLine = getTextLine(a->cursor.y);
   l = textLine->length() - a->cursor.x;
   if (l > a->len) l = a->len;
 
@@ -2675,7 +2734,7 @@ void KWriteDoc::doReplace(KWAction *a) {
 void KWriteDoc::doWordWrap(KWAction *a) {
   TextLine *textLine;
 
-  textLine = contents.at(a->cursor.y - 1);
+  textLine = getTextLine(a->cursor.y - 1);
   a->len = textLine->length() - a->cursor.x;
   textLine->wrap(contents.next(),a->len);
 
@@ -2689,7 +2748,7 @@ void KWriteDoc::doWordWrap(KWAction *a) {
 void KWriteDoc::doWordUnWrap(KWAction *a) {
   TextLine *textLine;
 
-  textLine = contents.at(a->cursor.y - 1);
+  textLine = getTextLine(a->cursor.y - 1);
 //  textLine->setLength(a->len);
   textLine->unWrap(a->len, contents.next(),a->cursor.x);
 
@@ -2702,7 +2761,7 @@ void KWriteDoc::doWordUnWrap(KWAction *a) {
 void KWriteDoc::doNewLine(KWAction *a) {
   TextLine *textLine, *newLine;
 
-  textLine = contents.at(a->cursor.y);
+  textLine = getTextLine(a->cursor.y);
   newLine = new TextLine(textLine->getRawAttr(), textLine->getContext());
   textLine->wrap(newLine,a->cursor.x);
   contents.insert(a->cursor.y + 1,newLine);
@@ -2718,7 +2777,7 @@ void KWriteDoc::doNewLine(KWAction *a) {
 void KWriteDoc::doDelLine(KWAction *a) {
   TextLine *textLine, *nextLine;
 
-  textLine = contents.at(a->cursor.y);
+  textLine = getTextLine(a->cursor.y);
   nextLine = contents.next();
 //  textLine->setLength(a->cursor.x);
   textLine->unWrap(a->cursor.x, nextLine,nextLine->length());
@@ -2744,7 +2803,7 @@ void KWriteDoc::doInsLine(KWAction *a) {
 void KWriteDoc::doKillLine(KWAction *a) {
   TextLine *textLine;
 
-  textLine = contents.at(a->cursor.y);
+  textLine = getTextLine(a->cursor.y);
   if (longestLine == textLine) longestLine = 0L;
   contents.remove();
 
@@ -2857,7 +2916,7 @@ void KWriteDoc::recordReplace(VConfig &c, int len, const QString &text) {
   TextLine *textLine;
 
   if (c.cursor.x > 0 && !(c.flags & KWriteView::cfSpaceIndent)) {
-    textLine = contents.at(c.cursor.y);
+    textLine = getTextLine(c.cursor.y);
     if (textLine->length() == 0) {
       QString s = tabString(c.cursor.x, tabChars);
       int len = s.length();
@@ -2897,7 +2956,7 @@ void KWriteDoc::recordReplace(PointStruc &cursor, int len, const QString &text) 
   }
 
   //replace
-  textLine = contents.at(cursor.y);
+  textLine = getTextLine(cursor.y);
   l = textLine->length() - cursor.x;
   if (l > len) l = len;
   a->text.insert(a->text.length(), &textLine->getText()[cursor.x], (l < 0) ? 0 : l);
@@ -3141,7 +3200,7 @@ void KWriteDoc::newBracketMark(PointStruc &cursor, BracketMark &bm) {
   if (x < 0) return;
   line = cursor.y; //current line
   count = 0; //bracket counter for nested brackets
-  textLine = contents.at(line);
+  textLine = getTextLine(line);
   bracket = textLine->getChar(x);
   attr = textLine->getAttr(x);
   if (bracket == '(' || bracket == '[' || bracket == '{') {
@@ -3156,7 +3215,7 @@ void KWriteDoc::newBracketMark(PointStruc &cursor, BracketMark &bm) {
       while (x >= textLine->length()) {
         line++;
         if (line > lastLine()) return;
-        textLine = contents.at(line);
+        textLine = getTextLine(line);
         x = 0;
       }
       if (textLine->getAttr(x) == attr) {
@@ -3180,7 +3239,7 @@ void KWriteDoc::newBracketMark(PointStruc &cursor, BracketMark &bm) {
       while (x < 0) {
         line--;
         if (line < 0) return;
-        textLine = contents.at(line);
+        textLine = getTextLine(line);
         x = textLine->length() -1;
       }
       if (textLine->getAttr(x) == attr) {

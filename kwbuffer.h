@@ -56,12 +56,6 @@ public:
    void insertFile(int line, const QString &file);
 
    /**
-    * Overloaded function of insertFile
-    */
-   void insertFile(int line, const QFile &file);
-
-
-   /**
     * Set the codec to decode the buffer with.
     */
    void setCodec(QTextCodec *codec);
