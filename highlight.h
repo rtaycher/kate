@@ -27,6 +27,10 @@
 #include <qdialog.h>
 
 #include <kcolorbtn.h>
+#include <qstrvec.h>
+#include <qdict.h>
+
+
 
 class QCheckBox;
 class QComboBox;
@@ -104,10 +108,16 @@ class HlKeyword : public HlItemWw {
     HlKeyword(int attribute, int context);
     virtual ~HlKeyword();
     void addWord(const QString &);
+		void addList(const QStringList &);
     void addList(const char **);
     virtual const QChar *checkHgl(const QChar *);
+//		QStrVec *getVec() {return &Words;};
+		QStringList *getList() { return &words;};
+		QDict<char> *getDict() {return &Dict;};
   protected:
     QStringList words;
+//		QStrVec Words;
+		QDict<char> Dict;
 };
 
 class HlInt : public HlItemWw {
