@@ -72,6 +72,8 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
 
   QStringList path;
 
+  setShowIconsInTreeList(true);
+
   path.clear();
   path << i18n("Kate") << i18n("General");
   QFrame* frGeneral = addPage(path, i18n("General Options"), BarIcon("misc", KIcon::SizeMedium));
