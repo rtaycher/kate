@@ -292,6 +292,8 @@ void TopLevel::configure()
     // spell checker
     ksc->writeGlobalSettings();
     kWrite->setKSConfig(*ksc);
+    hlManager->setHlDataList(hlDataList);
+    hlManager->setDefaults(defaultStyleList,defaultFont);
     hlPage->saveData();
   }
 

@@ -95,7 +95,6 @@
     <Separator />
     <Action name="options_configure_keybinding"/>
     <Action name="set_configure_toolbars"/>
-    <Action name="set_confHighlight"/>
     <Action name="settings_configure" />
   </Menu>
 

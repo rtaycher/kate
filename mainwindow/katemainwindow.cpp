@@ -789,6 +789,9 @@ void KateMainWindow::slotConfigure()
     v->writeConfig( config );
     v->doc()->writeConfig( config );
     v->applyColors();
+    hlManager->setHlDataList(hlDataList);
+    hlManager->setDefaults(defaultStyleList,defaultFont);
+    hlPage->saveData();
     config->sync();
 
     // all docs need to reread config.
@@ -812,7 +815,7 @@ void KateMainWindow::slotConfigure()
     config->setGroup("kwrite");
     v->writeConfig( config );
     v->doc()->writeConfig( config );
-    hlPage->saveData();    
+    hlPage->saveData();
     config->sync();
   }
 
