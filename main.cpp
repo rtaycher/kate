@@ -41,9 +41,9 @@ int main( int argc, char** argv )
   KAboutData aboutData("kwrite", I18N_NOOP("Advanced Editor"),
     version, description, KAboutData::License_GPL,
     "(c) 1998-2000, KWrite Developers");
-  aboutData.addAuthor("Jochen Wilhelmy","Main Developer", "digisnap@cs.tu-berlin.de");
-  aboutData.addAuthor("Michael Koch","Port to KParts", "koch@kde.org");
-  aboutData.addAuthor("Glen Parker","Undo History, Kspell integration", "glenebob@nwlink.com");
+  aboutData.addAuthor("Jochen Wilhelmy",I18N_NOOP("Main Developer"), "digisnap@cs.tu-berlin.de");
+  aboutData.addAuthor("Michael Koch",I18N_NOOP("Port to KParts"), "koch@kde.org");
+  aboutData.addAuthor("Glen Parker",I18N_NOOP("Undo History, Kspell integration"), "glenebob@nwlink.com");
   
   KCmdLineArgs::init( argc, argv, &aboutData );
 
