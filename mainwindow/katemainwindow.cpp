@@ -144,12 +144,12 @@ void KateMainWindow::setupMainWindow ()
   fileselector->dirOperator()->setView(KFile::Simple);
   fileselectorDock->setWidget (fileselector);
 
-//  disabled because it will be only available in KDE >= 2.2
-//  filelistDock->setDockWindowType (NET::Tool);
- // fileselectorDock->setDockWindowType (NET::Tool);
-//  filelistDock->setDockWindowTransient (true);
-// fileselectorDock->setDockWindowTransient (true);
-
+#ifdef  _KDOCKWIDGET_2_2_
+  filelistDock->setDockWindowType (NET::Tool);
+  fileselectorDock->setDockWindowType (NET::Tool);
+  filelistDock->setDockWindowTransient (this, true);
+  fileselectorDock->setDockWindowTransient (this, true);
+#endif
 
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileViewItem*)),this,SLOT(fileSelected(const KFileViewItem*)));
 
@@ -621,9 +621,10 @@ void KateMainWindow::slotSettingsShowConsole()
     consoleDock->manualDock ( mainDock, KDockWidget::DockBottom, 20 );
     consoleDock->changeHideShowState();
 
-    // disabled because it will be only available in KDE >= 2.2
-    /*consoleDock->setDockWindowType (NET::Tool);
-    consoleDock->setDockWindowTransient (true);*/
+#ifdef  _KDOCKWIDGET_2_2_
+    consoleDock->setDockWindowType (NET::Tool);
+    consoleDock->setDockWindowTransient (this, true);
+#endif
   }
 
   consoleDock->changeHideShowState();
