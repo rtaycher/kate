@@ -1763,7 +1763,7 @@ QString KateDocument::markedText(int flags) {
         len++;
       }
     }
-    s[len] = '\0';
+//    s[len] = '\0';
     return s;
   } else {
     for (z = selectStart; z <= selectEnd; z++) {
@@ -1786,7 +1786,7 @@ QString KateDocument::markedText(int flags) {
       s[len] = '\n';
       len++;
     }
-    s[len] = '\0';
+//    s[len] = '\0';       //  the final \0 is not counted in length()
     return s;
   }
 }

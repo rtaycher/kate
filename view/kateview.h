@@ -764,7 +764,7 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
       Repeasts the last search or replace operation. On replace, the
       user is prompted even if the "Prompt On Replace" option was off.
     */
-    void findAgain();
+//    void findAgain();
     /**
       Presents a "Goto Line" dialog to the user
     */
@@ -772,7 +772,7 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
   protected:
     void initSearch(SConfig &, int flags);
     void continueSearch(SConfig &);
-    void searchAgain(SConfig &);
+    void findAgain(SConfig &);
     void replaceAgain();
     void doReplaceAction(int result, bool found = false);
     void exposeFound(PointStruc &cursor, int slen, int flags, bool replace);
@@ -1051,7 +1051,7 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
 
   public slots:
     virtual void setFocus ();
-    void searchAgain(bool back=false);
+    void findAgain(bool back=false);
 
   protected:
     bool eventFilter(QObject* o, QEvent* e);

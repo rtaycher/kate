@@ -2582,7 +2582,7 @@ void KateView::find() {
     kwview_addToStrList(myDoc->searchForList, searchDialog->getSearchFor());
     searchFlags = searchDialog->getFlags() | (searchFlags & KateView::sfPrompt);
     initSearch(s, searchFlags);
-    searchAgain(s);
+    findAgain(s);
   }
   delete searchDialog;
 }
@@ -2626,18 +2626,6 @@ void KateView::replace() {
   delete searchDialog;
 }
 
-//usleep(50000);
-//XSync(qt_xdisplay(),true);
-//kapp->syncX();
-//debug("xpending %d",XPending(qt_xdisplay()));
-//    myViewInternal->tagAll();
-//    searchAgain();
-
-void KateView::findAgain() {
-  initSearch(s, searchFlags | KateView::sfFromCursor |KateView::sfPrompt | KateView::sfAgain);
-  if (s.flags & KateView::sfReplace) replaceAgain(); else searchAgain(s);
-}
-
 void KateView::gotoLine() {
   GotoLineDialog *dlg;
   PointStruc cursor;
@@ -2666,15 +2654,19 @@ void KateView::initSearch(SConfig &s, int flags) {
   if (s.flags & KateView::sfFromCursor) {
     // If we are continuing a backward search, make sure we do not get stuck
     // at an existing match.
-    if ((s.flags & KateView::sfAgain) &&
-      (s.flags & KateView::sfBackward) &&
-      (s.cursor.x == myViewInternal->cursor.x) &&
-      (s.cursor.y == myViewInternal->cursor.y)) {
-      s.cursor.x--;
+    s.cursor = myViewInternal->cursor;
+    TextLine::Ptr textLine = myDoc->getTextLine(s.cursor.y);
+    QString const txt(textLine->getText(),textLine->length());
+    const QString searchFor= myDoc->searchForList.first();
+    int pos = s.cursor.x-searchFor.length()-1;
+    if ( pos < 0 ) pos = 0;
+    pos= txt.find(searchFor, pos, s.flags & KateView::sfCaseSensitive);
+    if ( s.flags & KateView::sfBackward )
+    {
+      if ( pos <= s.cursor.x )  s.cursor.x= pos-1;
     }
-    else {
-      s.cursor = myViewInternal->cursor;
-    }
+    else
+      if ( pos == s.cursor.x )  s.cursor.x++;
   } else {
     if (!(s.flags & KateView::sfBackward)) {
       s.cursor.x = 0;
@@ -2705,7 +2697,7 @@ void KateView::continueSearch(SConfig &s) {
   s.flags &= ~KateView::sfAgain;
 }
 
-void KateView::searchAgain(SConfig &s) {
+void KateView::findAgain(SConfig &s) {
   int query;
   PointStruc cursor;
   QString str;
@@ -3503,7 +3495,7 @@ bool KateView::eventFilter (QObject *object, QEvent *event)
   return QWidget::eventFilter (object, event);
 }
 
-void KateView::searchAgain (bool back)
+void KateView::findAgain (bool back)
 {
   bool b= (searchFlags & sfBackward) > 0;
   initSearch(s, (searchFlags & ((b==back)?~sfBackward:~0))  // clear flag for forward searching
@@ -3511,7 +3503,7 @@ void KateView::searchAgain (bool back)
   if (s.flags & sfReplace)
     replaceAgain();
   else
-    KateView::searchAgain(s);
+    KateView::findAgain(s);
 }
 
 void KateView::slotEditCommand ()
