@@ -101,7 +101,7 @@ bool defaultKeyListAlreadyLoaded=false;
 
 editKey editKeys[EditKeyCount];
 editKey defaultEditKeys[EditKeyCount];
-extern char* editKeyDescriptions[EditKeyCount]={
+char* editKeyDescriptions[EditKeyCount]={
 I18N_NOOP("Cursor Left"),I18N_NOOP("One Word to the Left"),I18N_NOOP("Cursor Left + SELECT"),I18N_NOOP("One Word to the Left + SELECT"),
 I18N_NOOP("Cursor Right"),I18N_NOOP("One Word to the Right"),I18N_NOOP("Cursor Right + SELECT"),I18N_NOOP("One Word to the Right + SELECT"),
 I18N_NOOP("Home"),I18N_NOOP("First Line"),I18N_NOOP("Home + SELECT"),I18N_NOOP("First Line + SELECT"),
