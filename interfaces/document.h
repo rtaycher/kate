@@ -32,6 +32,7 @@
 #include <ktexteditor/document.h>
 #include <ktexteditor/view.h>
 #include <ktexteditor/editinterface.h>
+#include <ktexteditor/cursorinterface.h>
 
 class KConfig;
 
@@ -48,9 +49,16 @@ class Mark
     uint type;
 };
 
+class Cursor : public KTextEditor::Cursor
+{
+  public:
+    Cursor () { ; };
+    virtual ~Cursor () { ; };
+};
+
 /** This interface provides access to the Kate Document class.
 */
-class Document : public KTextEditor::Document, KTextEditor::EditInterface
+class Document : public KTextEditor::Document, KTextEditor::EditInterface, KTextEditor::CursorInterface
 {
   Q_OBJECT
 

@@ -78,6 +78,42 @@
 
 #include "katecmd.h"
 
+KateCursor::KateCursor ( KateDocument *doc)
+{
+  myDoc = doc;
+  myDoc->addCursor (this);
+}
+
+KateCursor::~KateCursor ( )
+{
+  myDoc->removeCursor (this);
+}
+
+void KateCursor::position ( int *line, int *col ) const
+{
+
+}
+
+bool KateCursor::setPosition ( int line, int col )
+{
+
+}
+
+bool KateCursor::insertText ( const QString& text )
+{
+
+}
+
+bool KateCursor::removeText ( int numberOfCharacters )
+{
+
+}
+
+QChar KateCursor::currentChar () const
+{
+
+}
+
 KateAction::KateAction(Action a, PointStruc &cursor, int len, const QString &text)
   : action(a), cursor(cursor), len(len), text(text) {
 }
@@ -212,6 +248,16 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   }
 }
 
+KTextEditor::Cursor *KateDocument::createCursor ( )
+{
+  return new KateCursor (this);
+}
+
+QPtrList<KTextEditor::Cursor> KateDocument::cursors () const
+{
+  return myCursors;
+}
+
 void KateDocument::setDontChangeHlOnSave()
 {
   d(this)->hlSetByUser = true;
@@ -219,7 +265,7 @@ void KateDocument::setDontChangeHlOnSave()
 
 void KateDocument::setFont (QFont font)
 {
-  kdDebug()<<"Kate:: setFont"<<endl;
+  //kdDebug()<<"Kate:: setFont"<<endl;
   int oldwidth=myFontMetrics.width('W');  //Quick & Dirty Hack (by JoWenn) //Remove in KDE 3.0
   myFont = font;
   myFontBold = QFont (font);
@@ -334,7 +380,7 @@ bool KateDocument::openFile()
   updateViews();
 
   emit fileNameChanged();
-  
+
   return true;
 }
 
@@ -416,7 +462,7 @@ void KateDocument::replaceLine(const QString& s,int line)
   insert_Line(s,line,true);
 }
 
-bool KateDocument::insertLine( const QString &str, int l )
+bool KateDocument::insertLine( int l, const QString &str )
 {
   insert_Line(str,l,true);
   return true;
@@ -424,7 +470,7 @@ bool KateDocument::insertLine( const QString &str, int l )
 
 void KateDocument::insert_Line(const QString& s,int line, bool update)
 {
-  kdDebug(13020)<<"KateDocument::insertLine "<<s<<QString("	%1").arg(line)<<endl;
+  //kdDebug(13020)<<"KateDocument::insertLine "<<s<<QString("	%1").arg(line)<<endl;
   TextLine::Ptr TL=new TextLine();
   TL->append(s.unicode(),s.length());
   buffer->insertLine(line,TL);
@@ -445,15 +491,155 @@ int KateDocument::lineLength ( int line ) const
   return l->getString().length();
 }
 
-bool KateDocument::insertText( const QString &s, int line, int col )
+bool KateDocument::insertText( int line, int col, const QString &s )
 {
-  VConfig c;
-  c.view = 0; // ### FIXME
-  c.cursor.x = col;
-  c.cursor.y = line;
-  c.cXPos = 0; // ### FIXME
-  c.flags = 0; // ### FIXME
-  insert( c, s );
+  int insertPos = col;
+  int len = s.length();
+  QChar ch;
+  QString buf;
+  TextLine::Ptr l, tl;
+  KateView *view;
+
+  if (s.isEmpty())
+    return true;
+
+  tagEnd = 0;
+  tagStart = 0xffffff;
+
+  l = getTextLine(line);
+
+  if (!l)
+    return false;
+
+  for (int pos = 0; pos < len; pos++)
+  {
+    ch = s[pos];
+
+    if (ch == '\n')
+    {
+      if (buf.length() > 0)
+        l->replace(insertPos, 0, buf.unicode(), buf.length());
+
+      tl = new TextLine();
+      if (!tl)
+        return false;
+
+      buffer->insertLine (line+1, tl);
+      l->wrap (tl, insertPos + buf.length());
+
+      buffer->changeLine(line);
+      updateMaxLength(l);
+      tagLine(line);
+
+      line++;
+      insertPos = 0;
+      buf.truncate(0);
+      l = tl;
+
+      if (selectStart >= line) selectStart++;
+      if (selectEnd >= line) selectEnd++;
+      if (tagStart >= line) tagStart++;
+      if (tagEnd >= line) tagEnd++;
+
+      newDocGeometry = true;
+      for (view = myViews.first(); view != 0L; view = myViews.next() )
+      {
+        view->insLine(line);
+      }
+    }
+    else
+      buf += ch; // append char to buffer
+  }
+
+  if (buf.length() > 0)
+    l->replace(insertPos, 0, buf.unicode(), buf.length());
+
+  buffer->changeLine(line);
+  updateMaxLength(l);
+  tagLine(line);
+
+  if (tagStart <= tagEnd) {
+    optimizeSelection();
+    updateLines(tagStart, tagEnd, 0, line);
+    setModified(true);
+  }
+
+  emit textChanged ();
+
+  return true;
+}
+
+bool KateDocument::removeText ( int line, int col, int len )
+{
+  int deletePos = col;
+  TextLine::Ptr l, tl;
+  KateView *view;
+
+  if (len < 1)
+    return true;
+
+  tagEnd = 0;
+  tagStart = 0xffffff;
+
+  l = getTextLine(line);
+
+  if (!l)
+    return false;
+
+  int chars = len;
+  int rchars;
+  while (chars > 0)
+  {
+    if ((deletePos+chars) > (l->length()-deletePos))
+    {
+      rchars = l->length()-deletePos;
+
+      l->truncate(deletePos);
+
+      tl = getTextLine(line+1);
+
+      if (!tl)
+        return false;
+
+      l->unWrap (deletePos, tl, tl->length());
+      buffer->removeLine(line+1);
+
+      buffer->changeLine(line);
+      updateMaxLength(l);
+      tagLine(line);
+
+      if (selectStart >= (line+1)) selectStart--;
+      if (selectEnd >= (line+1)) selectEnd--;
+      if (tagStart >= (line+1)) tagStart--;
+      if (tagEnd >= (line+1)) tagEnd--;
+
+      newDocGeometry = true;
+      for (view = myViews.first(); view != 0L; view = myViews.next() )
+      {
+        view->delLine(line+1);
+      }
+
+      chars=chars-(rchars+1);
+    }
+    else
+    {
+      l->replace (deletePos, chars, 0, 0);
+      buffer->changeLine(line);
+      updateMaxLength(l);
+      tagLine(line);
+
+      chars = 0;
+    }
+  }
+
+  if (tagStart <= tagEnd) {
+    optimizeSelection();
+    updateLines(tagStart, tagEnd, 0, line);
+    setModified(true);
+  }
+
+  emit textChanged ();
+
   return true;
 }
 
@@ -464,8 +650,9 @@ bool KateDocument::removeLine( int line ) {
 
 void KateDocument::remove_Line(int line,bool update)
 {
-  kdDebug(13020)<<"KateDocument::removeLine "<<QString("%1").arg(line)<<endl;
-  buffer->removeLine(line);
+  //kdDebug(13020)<<"KateDocument::removeLine "<<QString("%1").arg(line)<<endl;
+  if (buffer->count() > 1)
+    buffer->removeLine(line);
 //  newDocGeometry=true;
 //  if line==0)
   if (update)
@@ -803,6 +990,14 @@ void KateDocument::removeView(KTextEditor::View *view) {
   _views.removeRef( view  );
 }
 
+void KateDocument::addCursor(KTextEditor::Cursor *cursor) {
+  myCursors.append( cursor );
+}
+
+void KateDocument::removeCursor(KTextEditor::Cursor *cursor) {
+  myCursors.removeRef( cursor  );
+}
+
 void KateDocument::slotViewDestroyed()
 {
   myViews.removeRef( static_cast<const KateView *>( sender() ) );
@@ -932,86 +1127,6 @@ int KateDocument::textHeight() {
   return numLines()*fontHeight;
 }
 
-void KateDocument::insert(VConfig &c, const QString &s) {
-  int pos;
-  QChar ch;
-  QString buf;
-
-  if (s.isEmpty()) return;
-
-  recordStart(c, KateActionGroup::ugPaste);
-
-  pos = 0;
-  if (!(c.flags & KateView::cfVerticalSelect)) {
-    do {
-      ch = s[pos];
-      if (ch.isPrint() || ch == '\t') {
-        buf += ch; // append char to buffer
-      } else if (ch == '\n') {
-        recordAction(KateAction::newLine, c.cursor); // wrap contents behind cursor to new line
-        recordInsert(c, buf); // append to old line
-//        c.cursor.x += buf.length();
-        buf.truncate(0); // clear buffer
-        c.cursor.y++;
-        c.cursor.x = 0;
-      }
-      pos++;
-    } while (pos < (int) s.length());
-  } else {
-    int xPos;
-
-    xPos = textWidth(c.cursor);
-    do {
-      ch = s[pos];
-      if (ch.isPrint() || ch == '\t') {
-        buf += ch;
-      } else if (ch == '\n') {
-        recordInsert(c, buf);
-        c.cursor.x += buf.length();
-        buf.truncate(0);
-        c.cursor.y++;
-        if (c.cursor.y >= numLines())
-          recordAction(KateAction::insLine, c.cursor);
-        c.cursor.x = textPos(getTextLine(c.cursor.y), xPos);
-      }
-      pos++;
-    } while (pos < (int) s.length());
-  }
-  recordInsert(c, buf);
-  c.cursor.x += buf.length();
-  recordEnd(c);
-}
-
-void KateDocument::insertFile(VConfig &c, QIODevice &dev)
-{
-  recordStart(c, KateActionGroup::ugPaste);
-
-  QString buf;
-  QChar ch, last;
-
-  QTextStream stream( &dev );
-
-  while ( !stream.atEnd() ) {
-    stream >> ch;
-
-    if (ch.isPrint() || ch == '\t') {
-        buf += ch;
-    } else if (ch == '\n' || ch == '\r') {
-        if (last != '\r' || ch != '\n') {
-          recordAction(KateAction::newLine, c.cursor);
-          recordInsert(c, buf);
-          buf.truncate(0);
-          c.cursor.y++;
-          c.cursor.x = 0;
-        }
-        last = ch;
-    }
-  }
-
-  recordInsert(c, buf);
-  recordEnd(c);
-}
-
 int KateDocument::currentColumn(PointStruc &cursor) {
   return getTextLine(cursor.y)->cursorX(cursor.x,tabChars);
 }
@@ -1055,10 +1170,21 @@ bool KateDocument::insertChars(VConfig &c, const QString &chars) {
   //  be recorded separately
   if (c.flags &KateView:: cfDelOnInput) delMarkedText(c);
 
-  recordStart(c, KateActionGroup::ugInsChar);
-  recordReplace(c/*.cursor*/, (c.flags & KateView::cfOvr) ? buf.length() : 0, buf);
+  if (c.flags & KateView::cfOvr)
+    removeText (c.cursor.y, c.cursor.x, buf.length());
+
+  insertText (c.cursor.y, c.cursor.x, buf);
   c.cursor.x += pos;
 
+  if (tagStart <= tagEnd) {
+    optimizeSelection();
+    updateLines(tagStart, tagEnd, c.flags, c.cursor.y);
+    setModified(true);
+  }
+
+  c.view->updateCursor(c.cursor, c.flags);
+
+/*
   if (myWordWrap && myWordWrapAt > 0) {
     int line;
     const QChar *s;
@@ -1104,8 +1230,8 @@ bool KateDocument::insertChars(VConfig &c, const QString &chars) {
       }
       line++;
     } while (true);
-  }
-  recordEnd(c);
+  } */
+
   return true;
 }
 
@@ -1122,14 +1248,11 @@ QString tabString(int pos, int tabChars) {
   return s;
 }
 
-void KateDocument::newLine(VConfig &c) {
-
-  //auto deletion of marked text is done by the view to have a more
-  // "low level" KateDocument::newLine method
-  recordStart(c, KateActionGroup::ugInsLine);
+void KateDocument::newLine(VConfig &c)
+{
 
   if (!(c.flags & KateView::cfAutoIndent)) {
-    recordAction(KateAction::newLine,c.cursor);
+    insertText (c.cursor.y, c.cursor.x, "\n");
     c.cursor.y++;
     c.cursor.x = 0;
   } else {
@@ -1142,14 +1265,14 @@ void KateDocument::newLine(VConfig &c) {
       textLine = getTextLine(--y);
       pos = textLine->firstChar();
     }
-    recordAction(KateAction::newLine, c.cursor);
+    insertText (c.cursor.y, c.cursor.x, "\n");
     c.cursor.y++;
     c.cursor.x = 0;
     if (pos > 0) {
       pos = textLine->cursorX(pos, tabChars);
 //      if (getTextLine(c.cursor.y)->length() > 0) {
         QString s = tabString(pos, (c.flags & KateView::cfSpaceIndent) ? 0xffffff : tabChars);
-        recordInsert(c.cursor, s);
+        insertText (c.cursor.y, c.cursor.x, s);
         pos = s.length();
 //      }
 //      recordInsert(c.cursor, QString(textLine->getText(), pos));
@@ -1157,18 +1280,24 @@ void KateDocument::newLine(VConfig &c) {
     }
   }
 
-  recordEnd(c);
+  if (tagStart <= tagEnd) {
+    optimizeSelection();
+    updateLines(tagStart, tagEnd, c.flags, c.cursor.y);
+    setModified(true);
+  }
+
+  c.view->updateCursor(c.cursor, c.flags);
 }
 
 void KateDocument::killLine(VConfig &c) {
 
-  recordStart(c, KateActionGroup::ugDelLine);
-  c.cursor.x = 0;
+  //recordStart(c, KateActionGroup::ugDelLine);
+ /* c.cursor.x = 0;
   recordDelete(c.cursor, 0xffffff);
   if (c.cursor.y < lastLine()) {
     recordAction(KateAction::killLine, c.cursor);
-  }
-  recordEnd(c);
+  }*/
+ // recordEnd(c);
 }
 
 void KateDocument::backspace(VConfig &c) {
@@ -1176,11 +1305,11 @@ void KateDocument::backspace(VConfig &c) {
   if (c.cursor.x <= 0 && c.cursor.y <= 0) return;
 
   if (c.cursor.x > 0) {
-    recordStart(c, KateActionGroup::ugDelChar);
+
     if (!(c.flags & KateView::cfBackspaceIndents)) {
       // ordinary backspace
       c.cursor.x--;
-      recordDelete(c.cursor, 1);
+      removeText(c.cursor.y, c.cursor.x, 1);
     } else {
       // backspace indents: erase to next indent position
       int l = 1; // del one char
@@ -1202,24 +1331,18 @@ void KateDocument::backspace(VConfig &c) {
       }
       // break effectively jumps here
       c.cursor.x -= l;
-      recordDelete(c.cursor, l);
+      removeText(c.cursor.y, c.cursor.x, 1);
     }
   } else {
     // c.cursor.x == 0: wrap to previous line
-    recordStart(c, KateActionGroup::ugDelLine);
+
     c.cursor.y--;
     c.cursor.x = getTextLine(c.cursor.y)->length();
-    recordAction(KateAction::delLine,c.cursor);
+  //  recordAction(KateAction::delLine,c.cursor);
   }
-  recordEnd(c);
 }
 
 QString KateDocument::text ( int line, int col, int len ) const
-{
-
-}
-
-bool KateDocument::removeText ( int line, int col, int len )
 {
 
 }
@@ -1229,16 +1352,16 @@ void KateDocument::del(VConfig &c) {
   int len =  (c.flags & KateView::cfRemoveSpaces) ? textLine->lastChar() : textLine->length();
   if (c.cursor.x < len/*getTextLine(c.cursor.y)->length()*/) {
     // delete one character
-    recordStart(c, KateActionGroup::ugDelChar);
-    recordDelete(c.cursor, 1);
-    recordEnd(c);
+//    recordStart(c, KateActionGroup::ugDelChar);
+    removeText(c.cursor.y, c.cursor.x, 1);
+
   } else {
     if (c.cursor.y < lastLine()) {
       // wrap next line to this line
       textLine->truncate(c.cursor.x); // truncate spaces
-      recordStart(c, KateActionGroup::ugDelLine);
+    /*  recordStart(c, KateActionGroup::ugDelLine);
       recordAction(KateAction::delLine,c.cursor);
-      recordEnd(c);
+      recordEnd(c);*/
     }
   }
 }
@@ -1305,7 +1428,7 @@ void KateDocument::copy(int flags) {
 void KateDocument::paste(VConfig &c) {
   QString s = QApplication::clipboard()->text();
   if (!s.isEmpty()) {
-    insert(c, s);
+    insertText(c.cursor.y, c.cursor.x, s);
   }
 }
 
@@ -1609,9 +1732,6 @@ void KateDocument::doIndent(VConfig &c, int change) {
 
   c.cursor.x = 0;
 
-  recordStart(c, (change < 0) ? KateActionGroup::ugUnindent
-    : KateActionGroup::ugIndent);
-
   if (selectEnd < selectStart) {
     // single line
     optimizeLeadingSpace(c.cursor.y, c.flags, change);
@@ -1622,7 +1742,7 @@ void KateDocument::doIndent(VConfig &c, int change) {
     QChar ch;
 
     if (c.flags & KateView::cfKeepIndentProfile && change < 0) {
-      // unindent so that the existing indent profile doesn´t get screwed
+      // unindent so that the existing indent profile doesnt get screwed
       // if any line we may unindent is already full left, don't do anything
       for (line = selectStart; line <= selectEnd; line++) {
         textLine = getTextLine(line);
@@ -1648,7 +1768,6 @@ void KateDocument::doIndent(VConfig &c, int change) {
     }
   }
   // recordEnd now removes empty undo records
-  recordEnd(c.view, c.cursor, c.flags | KateView::cfPersistent);
 }
 
 /*
@@ -1687,7 +1806,7 @@ void KateDocument::optimizeLeadingSpace(int line, int flags, int change) {
   // if line contains only spaces it will be cleared
   if (space < 0 || chars == len) space = 0;
 
-  extra = space % tabChars; // extra spaces which don´t fit the indentation pattern
+  extra = space % tabChars; // extra spaces which dont fit the indentation pattern
   if (flags & KateView::cfKeepExtraSpaces) chars -= extra;
 
   if (flags & KateView::cfSpaceIndent) {
@@ -1698,7 +1817,7 @@ void KateDocument::optimizeLeadingSpace(int line, int flags, int change) {
     ch = '\t';
   }
 
-  // don´t replace chars which are already ok
+  // dont replace chars which are already ok
   cursor.x = QMIN(okLen, QMIN(chars, space));
   chars -= cursor.x;
   space -= cursor.x;
@@ -1708,11 +1827,12 @@ void KateDocument::optimizeLeadingSpace(int line, int flags, int change) {
 
 //printf("chars %d insert %d cursor.x %d\n", chars, insert, cursor.x);
   cursor.y = line;
-  recordReplace(cursor, chars, s);
+  removeText (cursor.y, cursor.x, chars);
+  insertText(cursor.y, cursor.x, s);
 }
 
 /*
-	Add to the current line a comment line mark at 
+	Add to the current line a comment line mark at
 	the begining.
 */
 void KateDocument::addStartLineCommentToSingleLine(VConfig &c)
@@ -1722,15 +1842,15 @@ void KateDocument::addStartLineCommentToSingleLine(VConfig &c)
   QString commentLineMark = m_highlight->getCommentSingleLineStart() + " ";
 
 	// Save pos on the line
-	int xpos = c.cursor.x; 
+	int xpos = c.cursor.x;
 
 	// Go to the begining of the line
 	c.cursor.x = 0;
 	// Add the comment line mark
-	recordReplace(c.cursor, 0, commentLineMark);
+	insertText (c.cursor.y, c.cursor.x, commentLineMark);
 
 	// Return to the saved pos
-	c.cursor.x = xpos; 
+	c.cursor.x = xpos;
 }
 
 /*
@@ -1755,7 +1875,7 @@ bool KateDocument::removeStringFromBegining(VConfig &c, QString &str)
 		// Go to the begining of the line
 		c.cursor.x = 0;
 		// Remove some chars
-		recordReplace(c.cursor, length, "");
+		removeText (c.cursor.y, c.cursor.x, length);
 
 		// Return to the saved pos
 		c.cursor.x = QMAX(0, xpos - length);
@@ -1786,7 +1906,7 @@ bool KateDocument::removeStringFromEnd(VConfig &c, QString &str)
 		// Go to the end of the line
 		c.cursor.x = textline->length() - length;
 		// Remove some chars
-		recordReplace(c.cursor, length, "");
+		removeText (c.cursor.y, c.cursor.x, length);
 
 		// Return to the saved pos
 		c.cursor.x = QMIN(xpos, c.cursor.x);
@@ -1796,7 +1916,7 @@ bool KateDocument::removeStringFromEnd(VConfig &c, QString &str)
 }
 
 /*
-	Remove from the current line a comment line mark at 
+	Remove from the current line a comment line mark at
 	the begining if there is one.
 */
 bool KateDocument::removeStartLineCommentFromSingleLine(VConfig &c)
@@ -1806,7 +1926,7 @@ bool KateDocument::removeStartLineCommentFromSingleLine(VConfig &c)
   QString shortCommentMark = m_highlight->getCommentSingleLineStart();
 	QString longCommentMark = shortCommentMark + " ";
 
-	// Try to remove the long comment mark first 
+	// Try to remove the long comment mark first
 	bool removed = (removeStringFromBegining(c, longCommentMark)
 									|| removeStringFromBegining(c, shortCommentMark));
 
@@ -1814,7 +1934,7 @@ bool KateDocument::removeStartLineCommentFromSingleLine(VConfig &c)
 }
 
 /*
-	Add to the current line a start comment mark at the 
+	Add to the current line a start comment mark at the
  begining and a stop comment mark at the end.
 */
 void KateDocument::addStartStopCommentToSingleLine(VConfig &c)
@@ -1825,25 +1945,25 @@ void KateDocument::addStartStopCommentToSingleLine(VConfig &c)
   QString stopCommentMark = " " + m_highlight->getCommentEnd();
 
 	// Save pos on the line
-	int xpos = c.cursor.x; 
+	int xpos = c.cursor.x;
 
 	// Go to the begining of the line
 	c.cursor.x = 0;
 	// Add the start comment mark
-	recordReplace(c.cursor, 0, startCommentMark);
+	insertText (c.cursor.y, c.cursor.x, startCommentMark);
 
 	// Go to the end of the line
 	TextLine* textline = getTextLine(c.cursor.y);
 	c.cursor.x = textline->length();
 	// Add the stop comment mark
-	recordReplace(c.cursor, 0, stopCommentMark);
+	insertText (c.cursor.y, c.cursor.x, stopCommentMark);
 
 	// Return to the saved pos
-	c.cursor.x = xpos; 
+	c.cursor.x = xpos;
 }
 
 /*
-	Remove from the current line a start comment mark at 
+	Remove from the current line a start comment mark at
 	the begining and a stop comment mark at the end.
 */
 bool KateDocument::removeStartStopCommentFromSingleLine(VConfig &c)
@@ -1855,11 +1975,11 @@ bool KateDocument::removeStartStopCommentFromSingleLine(VConfig &c)
   QString shortStopCommentMark = m_highlight->getCommentEnd();
   QString longStopCommentMark = " " + shortStopCommentMark;
 
-	// Try to remove the long start comment mark first 
+	// Try to remove the long start comment mark first
 	bool removedStart = (removeStringFromBegining(c, longStartCommentMark)
 											 || removeStringFromBegining(c, shortStartCommentMark));
 
-	// Try to remove the long stop comment mark first 
+	// Try to remove the long stop comment mark first
 	bool removedStop = (removeStringFromEnd(c, longStopCommentMark)
 											|| removeStringFromEnd(c, shortStopCommentMark));
 
@@ -1867,8 +1987,8 @@ bool KateDocument::removeStartStopCommentFromSingleLine(VConfig &c)
 }
 
 /*
-	Add to the current selection a start comment 
- mark at the begining and a stop comment mark 
+	Add to the current selection a start comment
+ mark at the begining and a stop comment mark
  at the end.
 */
 void KateDocument::addStartStopCommentToSelection(VConfig &c)
@@ -1884,15 +2004,15 @@ void KateDocument::addStartStopCommentToSelection(VConfig &c)
 
 	if (marked.length() > 0)
 		c.view->keyDelete ();
-	
+
 	int line = -1, col = -1;
 	c.view->getCursorPosition (&line, &col);
-	
+
 	c.view->insertText (startComment + marked + endComment);
 }
 
 /*
-	Add to the current selection a comment line 
+	Add to the current selection a comment line
  mark at the begining of each line.
 */
 void KateDocument::addStartLineCommentToSelection(VConfig &c)
@@ -1903,22 +2023,22 @@ void KateDocument::addStartLineCommentToSelection(VConfig &c)
 
 	// Go to the begining of the current line
 	c.cursor.x = 0;
-	
+
 	// For each line of the selection
 	for (c.cursor.y = selectStart; c.cursor.y <= selectEnd; c.cursor.y++) {
 		TextLine* textLine = getTextLine(c.cursor.y);
 		if (textLine->isSelected() || textLine->numSelected()) {
 			// Add the comment line mark
-			recordReplace(c.cursor, 0, commentLineMark);
+			insertText (c.cursor.y, c.cursor.x, commentLineMark);
 		}
 	}
-	
+
 	// Go back to the last commented line
 	c.cursor.y--;
 }
 
 /*
-	Remove from the selection a start comment mark at 
+	Remove from the selection a start comment mark at
 	the begining and a stop comment mark at the end.
 */
 bool KateDocument::removeStartStopCommentFromSelection(VConfig &c)
@@ -1943,9 +2063,9 @@ bool KateDocument::removeStartStopCommentFromSelection(VConfig &c)
 		{
 			marked.remove (start, startCommentLen);
 			marked.remove (end-startCommentLen, endCommentLen);
-			
+
 			c.view->keyDelete ();
-			
+
 			int line = -1, col = -1;
 			c.view->getCursorPosition (&line, &col);
 			c.view->insertText (marked);
@@ -1955,7 +2075,7 @@ bool KateDocument::removeStartStopCommentFromSelection(VConfig &c)
 }
 
 /*
-	Remove from the begining of each line of the 
+	Remove from the begining of each line of the
 	selection a start comment line mark.
 */
 bool KateDocument::removeStartLineCommentFromSelection(VConfig &c)
@@ -1975,13 +2095,13 @@ bool KateDocument::removeStartLineCommentFromSelection(VConfig &c)
 	for (c.cursor.y = selectStart; c.cursor.y <= selectEnd; c.cursor.y++) {
 		TextLine* textLine = getTextLine(c.cursor.y);
 		if (textLine->isSelected() || textLine->numSelected()) {
-			// Try to remove the long comment mark first 
+			// Try to remove the long comment mark first
 			removed = (removeStringFromBegining(c, longCommentMark)
 								 || removeStringFromBegining(c, shortCommentMark)
 								 || removed);
 		}
 	}
-	
+
 	// Go back to saved cursor position
 	TextLine* textLine = getTextLine(ypos);
 	c.cursor.x = QMIN(textLine->length(), xpos);
@@ -1991,7 +2111,7 @@ bool KateDocument::removeStartLineCommentFromSelection(VConfig &c)
 }
 
 /*
-	Comment or uncomment the selection or the current 
+	Comment or uncomment the selection or the current
 	line if there is no selection.
 */
 void KateDocument::doComment(VConfig &c, int change)
@@ -2000,11 +2120,8 @@ void KateDocument::doComment(VConfig &c, int change)
 
   c.flags |= KateView::cfPersistent;
 
-  recordStart(c, (change < 0) ? KateActionGroup::ugUncomment
-    : KateActionGroup::ugComment);
-
 	bool hasStartLineCommentMark = !(m_highlight->getCommentSingleLineStart().isEmpty());
-	bool hasStartStopCommentMark = ( !(m_highlight->getCommentStart().isEmpty()) 
+	bool hasStartStopCommentMark = ( !(m_highlight->getCommentStart().isEmpty())
 																	 && !(m_highlight->getCommentEnd().isEmpty()) );
 
 	bool removed = false;
@@ -2018,7 +2135,7 @@ void KateDocument::doComment(VConfig &c, int change)
       else if ( hasStartStopCommentMark )
 				addStartStopCommentToSingleLine(c);
     }
-    else 
+    else
 		{
 			if ( hasStartStopCommentMark )
 				addStartStopCommentToSelection(c);
@@ -2030,21 +2147,19 @@ void KateDocument::doComment(VConfig &c, int change)
   {
     if ( !hasMarkedText() )
     {
-			removed = ( hasStartLineCommentMark 
+			removed = ( hasStartLineCommentMark
 									&& removeStartLineCommentFromSingleLine(c) )
-				|| ( hasStartStopCommentMark 
+				|| ( hasStartStopCommentMark
 						 && removeStartStopCommentFromSingleLine(c) );
     }
     else
     {
-			removed = ( hasStartStopCommentMark 
+			removed = ( hasStartStopCommentMark
 									&& removeStartStopCommentFromSelection(c) )
 				|| ( hasStartLineCommentMark
 						 && removeStartLineCommentFromSelection(c) );
     }
   }
-
-  recordEnd(c.view, c.cursor, c.flags | KateView::cfPersistent);
 }
 
 
@@ -2161,13 +2276,6 @@ void KateDocument::delMarkedText(VConfig &c/*, bool undo*/) {
 
   if (selectEnd < selectStart) return;
 
-  // the caller may have already started an undo record for the current action
-//  if (undo)
-
-  //auto deletion of the marked text occurs not very often and can therefore
-  //  be recorded separately
-  recordStart(c, KateActionGroup::ugDelBlock);
-
   for (c.cursor.y = selectEnd; c.cursor.y >= selectStart; c.cursor.y--) {
     TextLine::Ptr textLine = getTextLine(c.cursor.y);
 
@@ -2176,11 +2284,13 @@ void KateDocument::delMarkedText(VConfig &c/*, bool undo*/) {
       end = textLine->findRevUnselected(c.cursor.x);
       if (end == 0) break;
       c.cursor.x = textLine->findRevSelected(end);
-      recordDelete(c.cursor, end - c.cursor.x);
+      removeText (c.cursor.y, c.cursor.x, end - c.cursor.x);
     } while (true);
     end = c.cursor.x;
     c.cursor.x = textLine->length();
-    if (textLine->isSelected()) recordAction(KateAction::delLine,c.cursor);
+
+    if (textLine->isSelected())
+      removeLine (c.cursor.y);  // CCC !!!!!!!!!
   }
   c.cursor.y++;
   /*if (end < c.cursor.x)*/ c.cursor.x = end;
@@ -2188,7 +2298,6 @@ void KateDocument::delMarkedText(VConfig &c/*, bool undo*/) {
   selectEnd = -1;
   select.x = -1;
 
-  /*if (undo)*/ recordEnd(c);
 }
 
 void KateDocument::tagLineRange(int line, int x1, int x2) {
@@ -2220,14 +2329,14 @@ void KateDocument::updateLines(int startLine, int endLine, int flags, int cursor
   int line, last_line;
   int ctxNum, endCtx;
 
-	kdDebug(13020)<<"******************KateDocument::updateLines Checkpoint 1"<<endl;
+	//kdDebug(13020)<<"******************KateDocument::updateLines Checkpoint 1"<<endl;
 
   if (buffer->line(startLine)==0) {
-		kdDebug(13020)<<"********************No buffer for line " << startLine << " found**************"<<endl; 
+		//kdDebug(13020)<<"********************No buffer for line " << startLine << " found**************"<<endl;
 		return;
 	};
 
-	kdDebug(13020)<<"KateDocument::updateLines Checkpoint 2"<<endl;
+	//kdDebug(13020)<<"KateDocument::updateLines Checkpoint 2"<<endl;
   last_line = lastLine();
 //  if (endLine >= last_line) endLine = last_line;
 
@@ -2235,24 +2344,24 @@ void KateDocument::updateLines(int startLine, int endLine, int flags, int cursor
   ctxNum = 0;
   if (line > 0) ctxNum = getTextLine(line - 1)->getContext();
   do {
-    kdDebug(13020)<<QString("**************Working on line: %1").arg(line)<<endl;
+    //kdDebug(13020)<<QString("**************Working on line: %1").arg(line)<<endl;
     textLine = getTextLine(line);
-    if (textLine==0) kdDebug(13020)<<"****updateLines()>> error textLine==0"<<endl;
-    kdDebug(13020)<<QString("got text line")<<endl;
+    //if (textLine==0) kdDebug(13020)<<"****updateLines()>> error textLine==0"<<endl;
+    //kdDebug(13020)<<QString("got text line")<<endl;
     if (line <= endLine && line != cursorY) {
-			kdDebug(13020)<<QString("removing spaces")<<endl;
+			//kdDebug(13020)<<QString("removing spaces")<<endl;
       if (flags & KateView::cfRemoveSpaces) textLine->removeSpaces();
       updateMaxLength(textLine);
     }
-		kdDebug(13020)<<QString("getting context")<<endl;
+		//kdDebug(13020)<<QString("getting context")<<endl;
     endCtx = textLine->getContext();
-		kdDebug(13020)<<QString("highlighting : %1").arg((int)m_highlight)<<endl;
+		//kdDebug(13020)<<QString("highlighting : %1").arg((int)m_highlight)<<endl;
     ctxNum = m_highlight->doHighlight(ctxNum,textLine);
-		kdDebug(13020)<<QString("set context")<<endl;
+		//kdDebug(13020)<<QString("set context")<<endl;
     textLine->setContext(ctxNum);
     line++;
   } while ((buffer->line(line)!=0) && (line <= endLine || endCtx != ctxNum));
-	kdDebug(13020)<<"updateLines :: while loop left"<<endl;
+	//kdDebug(13020)<<"updateLines :: while loop left"<<endl;
   tagLines(startLine, line - 1);
 }
 
@@ -2289,7 +2398,7 @@ void KateDocument::slotBufferChanged() {
 }
 
 void KateDocument::slotBufferHighlight(long start,long stop) {
-  kdDebug(13020)<<"KateDocument::slotBufferHighlight"<<QString("%1-%2").arg(start).arg(stop)<<endl;
+  //kdDebug(13020)<<"KateDocument::slotBufferHighlight"<<QString("%1-%2").arg(start).arg(stop)<<endl;
   updateLines(start,stop);
 //  buffer->startLoadTimer();
 }
@@ -2872,221 +2981,6 @@ void KateDocument::newUndo() {
     emit static_cast<KateView *>( view )->newUndo();
   }
 }
-
-void KateDocument::recordStart(VConfig &c, int newUndoType) {
-  recordStart(c.view, c.cursor, c.flags, newUndoType);
-}
-
-void KateDocument::recordStart(KateView *, PointStruc &cursor, int flags,
-  int newUndoType, bool keepModal, bool mergeUndo) {
-
-  KateActionGroup *g;
-
-//  if (newUndoType == KateActionGroup::ugNone) {
-    // only a bug would cause this
-//why should someone do this? we can't prevent all programming errors :) (jochen whilhelmy)
-//    debug("KateDocument::recordStart() called with no undo group type!");
-//    return;
-//  }
-
-  if (!keepModal) setPseudoModal(0L);
-
-  //i optimized the group undo stuff a bit (jochen wilhelmy)
-  //  recordReset() is not needed any more
-  g = undoList.getLast();
-  if (g != 0L && ((undoCount < 1024 && flags & KateView::cfGroupUndo
-    && g->end.x == cursor.x && g->end.y == cursor.y) || mergeUndo)) {
-
-    //undo grouping : same actions are put into one undo step
-    //precondition : new action starts where old stops or mergeUndo flag
-    if (g->undoType == newUndoType
-      || (g->undoType == KateActionGroup::ugInsChar
-        && newUndoType == KateActionGroup::ugInsLine)
-      || (g->undoType == KateActionGroup::ugDelChar
-        && newUndoType == KateActionGroup::ugDelLine)) {
-
-      undoCount++;
-      if (g->undoType != newUndoType) undoCount = 0xffffff;
-      return;
-    }
-  }
-  undoCount = 0;
-/*
-  if (undoView != view) {
-    // always kill the current undo group if the editing view changes
-    recordReset();
-    undoType = newUndoType;
-  } else if (newUndoType == undoType) {
-printf("bla!!!\n");
-    // same as current type, keep using it
-    return;
-  } else if  ( (undoType == KateActionGroup::ugInsChar && newUndoType == KateActionGroup::ugInsLine) ||
-               (undoType == KateActionGroup::ugDelChar && newUndoType == KateActionGroup::ugDelLine) ) {
-    // some type combinations can run together...
-    undoType += 1000;
-    return;
-  } else {
-    recordReset();
-    undoType = newUndoType;
-  }
-
-  undoView = view;
-*/
-  while ((int) undoList.count() > currentUndo) undoList.removeLast();
-  while ((int) undoList.count() > undoSteps) {
-    undoList.removeFirst();
-    currentUndo--;
-  }
-
-  g = new KateActionGroup(cursor, newUndoType);
-  undoList.append(g);
-//  currentUndo++;
-
-  tagEnd = 0;
-  tagStart = 0xffffff;
-}
-
-void KateDocument::recordAction(KateAction::Action action, PointStruc &cursor) {
-  KateAction *a;
-
-  a = new KateAction(action, cursor);
-  doAction(a);
-  undoList.getLast()->insertAction(a);
-}
-
-void KateDocument::recordInsert(VConfig &c, const QString &text) {
-  recordReplace(c, 0, text);
-}
-
-void KateDocument::recordReplace(VConfig &c, int len, const QString &text) {
-  if (c.cursor.x > 0 && !(c.flags & KateView::cfSpaceIndent)) {
-    TextLine::Ptr textLine = getTextLine(c.cursor.y);
-    if (textLine->length() == 0) {
-      QString s = tabString(c.cursor.x, tabChars);
-      int len = s.length();
-      s += text;
-      c.cursor.x = 0;
-      recordReplace(c.cursor, len, s);
-      c.cursor.x = len;
-      return;
-    }
-  }
-  recordReplace(c.cursor, len, text);
-}
-
-void KateDocument::recordInsert(PointStruc &cursor, const QString &text) {
-  recordReplace(cursor, 0, text);
-}
-
-void KateDocument::recordDelete(PointStruc &cursor, int len) {
-  recordReplace(cursor, len, QString::null);
-}
-
-void KateDocument::recordReplace(PointStruc &cursor, int len, const QString &text) {
-  KateAction *a;
-  TextLine::Ptr textLine;
-  int l;
-
-  if (len == 0 && text.isEmpty()) return;
-
-  //try to append to last replace action
-  a = undoList.getLast()->action;
-  if (a == 0L || a->action != KateAction::replace
-    || a->cursor.x + a->len != cursor.x || a->cursor.y != cursor.y) {
-
-//if (a != 0L) printf("new %d %d\n", a->cursor.x + a->len, cursor.x);
-    a = new KateAction(KateAction::replace, cursor);
-    undoList.getLast()->insertAction(a);
-  }
-
-  //replace
-  textLine = getTextLine(cursor.y);
-  l = textLine->length() - cursor.x;
-  if (l > len) l = len;
-  a->text.insert(a->text.length(), &textLine->getText()[cursor.x], (l < 0) ? 0 : l);
-  textLine->replace(cursor.x, len, text.unicode(), text.length());
-  a->len += text.length();
-
-  buffer->changeLine(a->cursor.y);
-  updateMaxLength(textLine);
-  tagLine(a->cursor.y);
-}
-
-void KateDocument::recordEnd(VConfig &c) {
-  recordEnd(c.view, c.cursor, c.flags);
-}
-
-void KateDocument::recordEnd(KateView *view, PointStruc &cursor, int flags) {
-  KateActionGroup *g;
-
-  // clear selection if option "persistent selections" is off
-//  if (!(flags & cfPersistent)) deselectAll();
-
-  g = undoList.getLast();
-  if (g->action == 0L) {
-    // no action has been done: remove empty undo record
-    undoList.removeLast();
-    return;
-  }
-  // store end cursor position for redo
-  g->end = cursor;
-  currentUndo = undoList.count();
-
-  if (tagStart <= tagEnd) {
-    optimizeSelection();
-    updateLines(tagStart, tagEnd, flags, cursor.y);
-    setModified(true);
-  }
-
-  view->updateCursor(cursor, flags);
-
-//  newUndo();
-/*
-  undoCount++;
-  // we limit the number of individual undo operations for sanity - is 1K reasonable?
-  // this is also where we handle non-group undo preference
-  // if the undo type is singlular, we always finish it now
-  if ( undoType == KateActionGroup::ugPaste ||
-       undoType == KateActionGroup::ugDelBlock ||
-       undoType > 1000 ||
-       undoCount > 1024 || !(flags & cfGroupUndo) ) {
-printf("recordend %d %d\n", undoType, undoCount);
-    recordReset();
-  }
-*/
-
-  // this should keep the flood of signals down a little...
-  if (undoCount == 0) newUndo();
-  emit textChanged();
-}
-/*
-void KateDocument::recordReset()
-{
-  if (pseudoModal)
-    return;
-
-  // forces the next call of recordStart() to begin a new undo group
-  // not used in normal editing, but used by markFound(), etc.
-  undoType = KateActionGroup::ugNone;
-  undoCount = 0;
-  undoView = NULL;
-  undoReported = false;
-printf("recordreset\n");
-}
-*/
-
-/*
-void KateDocument::recordDel(PointStruc &cursor, TextLine::Ptr &textLine, int l) {
-  int len;
-
-  len = textLine->length() - cursor.x;
-  if (len > l) len = l;
-  if (len > 0) {
-    insertUndo(new KateAction(KateAction::replace,cursor,&textLine->getText()[cursor.x],len));
-  }
-}
-*/
-
 
 void KateDocument::doActionGroup(KateActionGroup *g, int flags, bool undo) {
   KateAction *a, *next;

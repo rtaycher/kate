@@ -228,8 +228,8 @@ void KateViewInternal::doCursorCommand(VConfig &c, int cmdNum) {
   }
 }
 
-void KateViewInternal::doEditCommand(VConfig &c, int cmdNum) {
-
+void KateViewInternal::doEditCommand(VConfig &c, int cmdNum)
+{
   switch (cmdNum) {
     case KateView::cmCopy:
       myDoc->copy(c.flags);
@@ -244,7 +244,9 @@ void KateViewInternal::doEditCommand(VConfig &c, int cmdNum) {
       myDoc->invertSelection();
       return;
   }
+
   if (myView->isReadOnly()) return;
+
   switch (cmdNum) {
     case KateView::cmReturn:
       if (c.flags & KateView::cfDelOnInput) myDoc->delMarkedText(c);
@@ -1016,16 +1018,7 @@ void KateViewInternal::focusOutEvent(QFocusEvent *) {
 
 void KateViewInternal::keyPressEvent(QKeyEvent *e) {
   VConfig c;
-//  int ascii;
-
-/*  if (e->state() & AltButton) {
-    e->ignore();
-    return;
-  }*/
-//  debug("ascii %i, key %i, state %i",e->ascii(), e->key(), e->state());
-
   getVConfig(c);
-//  ascii = e->ascii();
 
   if (!myView->isReadOnly()) {
     if (c.flags & KateView::cfTabIndents && myDoc->hasMarkedText()) {
@@ -1040,7 +1033,9 @@ void KateViewInternal::keyPressEvent(QKeyEvent *e) {
         return;
       }
     }
-    if ( !(e->state() & ControlButton ) && myDoc->insertChars(c, e->text())) {
+    if ( !(e->state() & ControlButton ) && (e->text())[0].isPrint() )
+    {
+      myDoc->insertChars (c, e->text());
       myDoc->updateViews();
       e->accept();
       return;
@@ -1310,7 +1305,7 @@ void KateViewInternal::dropEvent( QDropEvent *event )
           cursor = c.cursor;
         }
       }
-      myDoc->insert(c, text);
+      myDoc->insertText(c.cursor.y, c.cursor.x, text);
       cursor = c.cursor;
 
       updateCursor(cursor);
@@ -1580,7 +1575,7 @@ void KateView::slotDropEventPass( QDropEvent * ev )
 
 void KateView::keyPressEvent( QKeyEvent *ev )
 {
-    switch ( ev->key() )
+  switch ( ev->key() )
     {
         case Key_Left:
             if ( ev->state() & ShiftButton )
@@ -1668,7 +1663,7 @@ void KateView::keyPressEvent( QKeyEvent *ev )
             break;
         case Key_Return:
         case Key_Enter:
-            keyReturn();
+            doEditCommand(KateView::cmReturn);
             break;
         case Key_Delete:
             if ( ev->state() & ControlButton )
@@ -1931,7 +1926,7 @@ void KateView::setText(const QString &s) {
 void KateView::insertText(const QString &s, bool /*mark*/) {
   VConfig c;
   myViewInternal->getVConfig(c);
-  myDoc->insert(c, s);
+  myDoc->insertText(c.cursor.y, c.cursor.x, s);
   myDoc->updateViews();
 }
 
@@ -2320,14 +2315,12 @@ void KateView::doReplaceAction(int result, bool found) {
 
   switch (result) {
     case KateView::srYes: //yes
-      myDoc->recordStart(this, s.cursor, configFlags,
-        KateActionGroup::ugReplace, true);
-      myDoc->recordReplace(s.cursor, s.matchedLength, replaceWith);
+      myDoc->removeText (s.cursor.y, s.cursor.x, s.matchedLength);
+      myDoc->insertText (s.cursor.y, s.cursor.x, replaceWith);
       replaces++;
       if (s.cursor.y == s.startCursor.y && s.cursor.x < s.startCursor.x)
         s.startCursor.x += rlen - s.matchedLength;
       if (!(s.flags & KateView::sfBackward)) s.cursor.x += rlen;
-      myDoc->recordEnd(this, s.cursor, configFlags | KateView::cfPersistent);
       break;
     case KateView::srNo: //no
       if (!(s.flags & KateView::sfBackward)) s.cursor.x += s.matchedLength;
@@ -2339,18 +2332,15 @@ void KateView::doReplaceAction(int result, bool found) {
         while (found || myDoc->doSearch(s,searchFor)) {
           if (!started) {
             found = false;
-            myDoc->recordStart(this, s.cursor, configFlags,
-              KateActionGroup::ugReplace);
             started = true;
           }
-          myDoc->recordReplace(s.cursor, s.matchedLength, replaceWith);
+          myDoc->removeText (s.cursor.y, s.cursor.x, s.matchedLength);
+          myDoc->insertText (s.cursor.y, s.cursor.x, replaceWith);
           replaces++;
           if (s.cursor.y == s.startCursor.y && s.cursor.x < s.startCursor.x)
             s.startCursor.x += rlen - s.matchedLength;
           if (!(s.flags & KateView::sfBackward)) s.cursor.x += rlen;
         }
-        if (started) myDoc->recordEnd(this, s.cursor,
-          configFlags | KateView::cfPersistent);
       } while (!askReplaceEnd());
       return;
     case KateView::srCancel: //cancel
@@ -2766,10 +2756,8 @@ void KateView::corrected (QString originalword, QString newword, unsigned pos)
       myViewInternal->getVConfig(c);
       myDoc->selectLength(cursor, newword.length(),c.flags);
 
-      myDoc->recordStart(this, cursor, configFlags,
-        KateActionGroup::ugSpell, true, kspell.kspellReplaceCount > 0);
-      myDoc->recordReplace(cursor, originalword.length(), newword);
-      myDoc->recordEnd(this, cursor, configFlags | KateView::cfGroupUndo);
+      myDoc->removeText (s.cursor.y, s.cursor.x, originalword.length());
+      myDoc->insertText (s.cursor.y, s.cursor.x, newword);
 
       kspell.kspellReplaceCount++;
     }

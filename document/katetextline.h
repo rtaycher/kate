@@ -176,7 +176,6 @@ public:
       or replace text.
     */
     void replace(uint pos, uint delLen, const QChar *insText, uint insLen, uchar *insAttribs = 0L);
-
     /**
       Appends a string of length l to the textline
     */

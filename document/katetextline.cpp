@@ -30,7 +30,6 @@ TextLine::~TextLine()
 {
 }
 
-
 void TextLine::replace(uint pos, uint delLen, const QChar *insText, uint insLen, uchar *insAttribs)
 {
   uint oldLen = text.length();

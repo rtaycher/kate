@@ -141,6 +141,26 @@ class KateActionGroup {
     int undoType;
 };
 
+class KateCursor : public Kate::Cursor
+{
+  public:
+    KateCursor (KateDocument *doc);
+    ~KateCursor ();
+
+    virtual void position ( int *line, int *col ) const;
+
+    virtual bool setPosition ( int line, int col );
+
+    virtual bool insertText ( const QString& text );
+
+    virtual bool removeText ( int numberOfCharacters );
+
+    virtual QChar currentChar () const;
+
+  private:
+    class KateDocument *myDoc;
+};
+
 /**
   The text document. It contains the textlines, controls the
   document changing operations and does undo/redo. WARNING: do not change
@@ -179,17 +199,17 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
 
     virtual int lineLength ( int line ) const;
 
-    virtual bool insertLine( const QString &s, int line = -1 );
+    virtual bool insertLine( int line, const QString &s );
 
     void insert_Line(const QString& s,int line=-1, bool update=true);
     void remove_Line(int line,bool update=true);
     void replaceLine(const QString& s,int line=-1);
-    virtual bool insertText( const QString &s, int line, int col );
+    virtual bool insertText( int line, int col, const QString &s );
     virtual bool removeLine( int line );
     virtual int length() const;
 
     virtual QString text ( int line, int col, int len ) const;
-    virtual bool removeText ( int line = 0, int col = 0, int len = -1 );
+    virtual bool removeText ( int line, int col, int len );
 
     virtual void setSelection( int row_from, int col_from, int row_to, int col_t );
     virtual bool hasSelection() const;
@@ -197,6 +217,18 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
 
     // only to make part work, don't change it !
     bool m_bSingleViewMode;
+
+    QPtrList<KTextEditor::Cursor> myCursors;
+
+    /**
+    * Create a new cursor object
+    */
+    virtual KTextEditor::Cursor *createCursor ( );
+
+    /*
+    * Accessor to the list of views.
+    */
+    virtual QPtrList<KTextEditor::Cursor> cursors () const;
 
 // public interface
     /**
@@ -299,8 +331,12 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     */
     int getViewCount();
 
-    virtual void addView(KTextEditor::View *);
-    virtual void removeView(KTextEditor::View *);
+    void addView(KTextEditor::View *);
+    void removeView(KTextEditor::View *);
+
+    void addCursor(KTextEditor::Cursor *);
+    void removeCursor(KTextEditor::Cursor *);
+
     bool ownedView(KateView *);
     bool isLastView(int numViews);
 
@@ -310,12 +346,8 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     int textWidth(PointStruc &cursor);
     int textWidth(bool wrapCursor, PointStruc &cursor, int xPos);
     int textPos(const TextLine::Ptr &, int xPos);
-//    int textPos(TextLine::Ptr &, int xPos, int &newXPos);
     int textWidth();
     int textHeight();
-
-    void insert(VConfig &, const QString &);
-    void insertFile(VConfig &, QIODevice &);
 
     int currentColumn(PointStruc &cursor);
     bool insertChars(VConfig &, const QString &chars);
@@ -390,16 +422,6 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     void doKillLine(KateAction *);
     void newUndo();
 
-    void recordStart(VConfig &, int newUndoType);
-    void recordStart(KateView *, PointStruc &, int flags, int newUndoType, bool keepModal = false, bool mergeUndo = false);
-    void recordAction(KateAction::Action, PointStruc &);
-    void recordInsert(VConfig &, const QString &text);
-    void recordReplace(VConfig &, int len, const QString &text);
-    void recordInsert(PointStruc &, const QString &text);
-    void recordDelete(PointStruc &, int len);
-    void recordReplace(PointStruc &, int len, const QString &text);
-    void recordEnd(VConfig &);
-    void recordEnd(KateView *, PointStruc &, int flags);
     void doActionGroup(KateActionGroup *, int flags, bool undo = false);
 
     int nextUndoType();
