@@ -473,6 +473,7 @@ bool KWriteDoc::openFile()
 
   updateLines();
   updateViews();
+  setFileName( m_url.path() );
 
   f.close();
   return true;
@@ -2161,7 +2162,7 @@ void KWriteDoc::setFileName( const QString& s ) {
   //highlight detection
   pos = fName.findRev('/') +1;
   if (pos >= (int) fName.length()) return; //no filename
-  hl = hlManager->wildcardFind(s.right(pos));
+  hl = hlManager->wildcardFind(s.right( s.length() - pos ));
   if (hl == -1) {
     // fill the detection buffer with the contents of the text
     const int HOWMANY = 1024;
@@ -2176,7 +2177,7 @@ void KWriteDoc::setFileName( const QString& s ) {
       bufpos += len;
       if (bufpos >= HOWMANY) break;
     }
-    hl = hlManager->mimeFind(buf, s.right(pos));
+    hl = hlManager->mimeFind(buf, s.right( s.length() - pos));
   }
   setHighlight(hl);
   updateViews();
