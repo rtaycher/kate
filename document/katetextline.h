@@ -152,6 +152,9 @@ public:
 */
 class TextLine : public KShared
 {
+  friend class KWBuffer;
+  friend class KWBufBlock;
+
 public:
     typedef KSharedPtr<TextLine> Ptr;
     typedef FastValueList<Ptr> List;

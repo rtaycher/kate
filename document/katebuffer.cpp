@@ -751,14 +751,14 @@ KWBufBlock::flushStringList()
       buf += sizeof(QChar)*l;
       memcpy(buf, (char *) tl->getAttribs(), l);
       buf += l;
-      uchar a = tl->getAttr();
+      uchar a = tl->attr;
       memcpy(buf, (char *)&a, 1);
       buf += 1;
       uint b[2];
-      b[0] = tl->getContext();
-      b[1] = tl->mark();
+      b[0] = tl->ctx;
+      b[1] = tl->myMark;
       memcpy(buf, (char *)b, sizeof(uint)*2);
-      buf += sizeof(uint)*2; 
+      buf += sizeof(uint)*2;
    }
    assert(buf-m_rawData2.data() == size);
    m_codec = 0; // No codec
@@ -784,12 +784,12 @@ KWBufBlock::buildStringListFast()
       textLine->replace(0, 0, (QChar *) buf, l, (uchar *) (buf + sizeof(QChar)*l));
       buf += sizeof(QChar)*l+l;
       uchar a = *((uchar *) buf++);
-      textLine->setAttr(a);
+      textLine->attr = a;
       uint b[2];
       memcpy((char *)b, buf, sizeof(uint)*2);
       buf += sizeof(uint)*2;
-      textLine->setContext(b[0]);
-      textLine->addMark(b[1]);
+      textLine->ctx = b[0];
+      textLine->myMark = b[1];
       m_stringList.append(textLine);
    }
    kdDebug()<<"stringList.count = "<< m_stringList.count()<<" should be %ld"<< m_endState.lineNr - m_beginState.lineNr<<endl;
