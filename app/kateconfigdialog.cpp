@@ -137,84 +137,11 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, const char *name )
         "Check this if you want all your views and frames restored each time you open Kate"));
   connect( cb_restoreVC, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
-  // How instances should be handled
-  cb_singleInstance = new QCheckBox(frGeneral);
-  lo->addWidget( cb_singleInstance );
-  cb_singleInstance->setText(i18n("Allow Kate to use more than one UN&IX process"));
-  config->setGroup("KDE");
-  cb_singleInstance->setChecked(config->readBoolEntry("MultipleInstances",false));
-  QWhatsThis::add( cb_singleInstance, i18n(
-        "If this is unchecked, Kate will only use one UNIX process. If you try running it again, the current "
-        "process will get the focus, and open any files you requested to be opened. If it is checked, each time "
-        "you start Kate, a new UNIX process will be started.") );
-  connect( cb_singleInstance, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
-
-  // show full path in title
-  config->setGroup("General");
-  cb_fullPath = new QCheckBox( i18n("Show full &path in title"), frGeneral);
-  lo->addWidget( cb_fullPath );
-  cb_fullPath->setChecked( config->readBoolEntry("Show Full Path in Title", false ) );
-  QWhatsThis::add(cb_fullPath,i18n("If this option is checked, the full document path will be shown in the window caption."));
-  connect( cb_fullPath, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
-
-  // opaque resize of view splitters
-  cb_opaqueResize = new QCheckBox( frGeneral );
-  lo->addWidget( cb_opaqueResize );
-  cb_opaqueResize->setText(i18n("&Show content when resizing views"));
-  cb_opaqueResize->setChecked( viewManager->useOpaqueResize );
-  QWhatsThis::add( cb_opaqueResize, i18n(
-        "If this is disabled, resizing views will display a <i>rubberband</i> to show the "
-        "new sizes until you release the mouse button.") );
-  connect( cb_opaqueResize, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
-
-  // sync the konsole ?
-  cb_syncKonsole = new QCheckBox(frGeneral);
-  lo->addWidget( cb_syncKonsole );
-  cb_syncKonsole->setText(i18n("Sync &terminal emulator with active document"));
-  cb_syncKonsole->setChecked(parent->syncKonsole);
-  QWhatsThis::add( cb_syncKonsole, i18n(
-        "If this is checked, the built in Konsole will <code>cd</code> to the directory "
-        "of the active document when started and whenever the active document changes, "
-        "if the document is a local file.") );
-  connect( cb_syncKonsole, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
-
-  // sync the konsole ?
-  cb_sortFiles = new QCheckBox(frGeneral);
-  lo->addWidget( cb_sortFiles );
-  cb_sortFiles->setText(i18n("Sort &files alphabetically in the file list."));
-  cb_sortFiles->setChecked(parent->filelist->sortType() == KateFileList::sortByName);
-  QWhatsThis::add( cb_sortFiles, i18n(
-        "If this is checked, the files in the file list will be sorted alphabetically.") );
-  connect( cb_sortFiles, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
-
-  // number of recent files
-  QHBox *hbNrf = new QHBox( frGeneral );
-  lo->addWidget( hbNrf );
-  QLabel *lNrf = new QLabel( i18n("&Number of recent files:"), hbNrf );
-  sb_numRecentFiles = new QSpinBox( 0, 1000, 1, hbNrf );
-  sb_numRecentFiles->setValue( mainWindow->fileOpenRecent->maxItems() );
-  lNrf->setBuddy( sb_numRecentFiles );
-  QString youwouldnotbelieveit ( i18n(
-        "<qt>Sets the number of recent files remembered by Kate.<p><strong>NOTE: </strong>"
-        "If you set this lower than the current value, the list will be truncated and "
-        "some items forgotten.</qt>") );
-  QWhatsThis::add( lNrf, youwouldnotbelieveit );
-  QWhatsThis::add( sb_numRecentFiles, youwouldnotbelieveit );
-  connect( sb_numRecentFiles, SIGNAL( valueChanged ( int ) ), this, SLOT( slotChanged() ) );
-
-  // modified files notification
-  cb_modNotifications = new QCheckBox(
-      i18n("Wa&rn about files modified by foreign processes"), frGeneral );
-  cb_modNotifications->setChecked( parent->modNotification );
-  lo->addWidget( cb_modNotifications );
-  QWhatsThis::add( cb_modNotifications, i18n(
-      "If enabled, a passive popup message will be displayed whenever a local "
-      "file is modified, created or deleted by another process.") );
-  connect( cb_modNotifications, SIGNAL( toggled( bool ) ),
-           this, SLOT( slotChanged() ) );
-
-  QHBox *hbGM=new QHBox(frGeneral);
-  lo->addWidget(hbGM);
+  // GROUP with the one below: "Appearance"
+  bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("Appearance"), frGeneral );
+  lo->addWidget( bgStartup );
+  
+  QHBox *hbGM=new QHBox(bgStartup);
 	QLabel *lGM=new QLabel(i18n("Default GUI Mode for new windows:"),hbGM);
   	combo_guiMode = new QComboBox(hbGM);
 	QStringList gml;
@@ -236,6 +163,80 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, const char *name )
 			combo_guiMode->setCurrentItem(3);
 	}
         connect(combo_guiMode,SIGNAL(activated(int)),this,SLOT(slotChanged()));
+  
+  // opaque resize of view splitters
+  cb_opaqueResize = new QCheckBox( bgStartup );
+  cb_opaqueResize->setText(i18n("&Show content when resizing views"));
+  cb_opaqueResize->setChecked( viewManager->useOpaqueResize );
+  QWhatsThis::add( cb_opaqueResize, i18n(
+        "If this is disabled, resizing views will display a <i>rubberband</i> to show the "
+        "new sizes until you release the mouse button.") );
+  connect( cb_opaqueResize, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
+	
+  // show full path in title
+  config->setGroup("General");
+  cb_fullPath = new QCheckBox( i18n("Show full &path in title"), bgStartup);
+  cb_fullPath->setChecked( config->readBoolEntry("Show Full Path in Title", false ) );
+  QWhatsThis::add(cb_fullPath,i18n("If this option is checked, the full document path will be shown in the window caption."));
+  connect( cb_fullPath, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
+  
+  // sort filelist ?
+  cb_sortFiles = new QCheckBox(bgStartup);
+  cb_sortFiles->setText(i18n("Sort &files alphabetically in the file list."));
+  cb_sortFiles->setChecked(parent->filelist->sortType() == KateFileList::sortByName);
+  QWhatsThis::add( cb_sortFiles, i18n(
+        "If this is checked, the files in the file list will be sorted alphabetically.") );
+  connect( cb_sortFiles, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
+  
+  // GROUP with the one below: "Behavior"
+  bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("Behavior"), frGeneral );
+  lo->addWidget( bgStartup );
+  
+  // number of recent files
+  QHBox *hbNrf = new QHBox( bgStartup );
+  QLabel *lNrf = new QLabel( i18n("&Number of recent files:"), hbNrf );
+  sb_numRecentFiles = new QSpinBox( 0, 1000, 1, hbNrf );
+  sb_numRecentFiles->setValue( mainWindow->fileOpenRecent->maxItems() );
+  lNrf->setBuddy( sb_numRecentFiles );
+  QString youwouldnotbelieveit ( i18n(
+        "<qt>Sets the number of recent files remembered by Kate.<p><strong>NOTE: </strong>"
+        "If you set this lower than the current value, the list will be truncated and "
+        "some items forgotten.</qt>") );
+  QWhatsThis::add( lNrf, youwouldnotbelieveit );
+  QWhatsThis::add( sb_numRecentFiles, youwouldnotbelieveit );
+  connect( sb_numRecentFiles, SIGNAL( valueChanged ( int ) ), this, SLOT( slotChanged() ) );
+  
+  // How instances should be handled
+  cb_singleInstance = new QCheckBox(bgStartup);
+  cb_singleInstance->setText(i18n("Allow Kate to use more than one UN&IX process"));
+  config->setGroup("KDE");
+  cb_singleInstance->setChecked(config->readBoolEntry("MultipleInstances",false));
+  QWhatsThis::add( cb_singleInstance, i18n(
+        "If this is unchecked, Kate will only use one UNIX process. If you try running it again, the current "
+        "process will get the focus, and open any files you requested to be opened. If it is checked, each time "
+        "you start Kate, a new UNIX process will be started.") );
+  connect( cb_singleInstance, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
+
+  // sync the konsole ?
+  cb_syncKonsole = new QCheckBox(bgStartup);
+  cb_syncKonsole->setText(i18n("Sync &terminal emulator with active document"));
+  cb_syncKonsole->setChecked(parent->syncKonsole);
+  QWhatsThis::add( cb_syncKonsole, i18n(
+        "If this is checked, the built in Konsole will <code>cd</code> to the directory "
+        "of the active document when started and whenever the active document changes, "
+        "if the document is a local file.") );
+  connect( cb_syncKonsole, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
+
+  // modified files notification
+  cb_modNotifications = new QCheckBox(
+      i18n("Wa&rn about files modified by foreign processes"), bgStartup );
+  cb_modNotifications->setChecked( parent->modNotification );
+  QWhatsThis::add( cb_modNotifications, i18n(
+      "If enabled, a passive popup message will be displayed whenever a local "
+      "file is modified, created or deleted by another process.") );
+  connect( cb_modNotifications, SIGNAL( toggled( bool ) ),
+           this, SLOT( slotChanged() ) );
+
   lo->addStretch(1); // :-] works correct without autoadd
   // END General page
 
