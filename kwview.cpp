@@ -1592,11 +1592,11 @@ void KWrite::addEditCommands(KGuiCmdManager &cmdMngr) {
   cmdMngr.addCommand(cmKillLine,        I18N_NOOP("Kill Line"        ), Qt::CTRL+Qt::Key_K);
   cmdMngr.addCommand(cmUndo,            I18N_NOOP("&Undo"            ), Qt::CTRL+Qt::Key_Z, Qt::Key_F14);
   cmdMngr.addCommand(cmRedo,            I18N_NOOP("R&edo"            ), Qt::CTRL+Qt::Key_Y, Qt::Key_F12);
-  cmdMngr.addCommand(cmCut,             I18N_NOOP("C&ut"             ), Qt::CTRL+Qt::Key_X, Qt::SHIFT+Qt::Key_Delete, Qt::Key_F20);
+  cmdMngr.addCommand(cmCut,             I18N_NOOP("Cu&t"             ), Qt::CTRL+Qt::Key_X, Qt::SHIFT+Qt::Key_Delete, Qt::Key_F20);
   cmdMngr.addCommand(cmCopy,            I18N_NOOP("&Copy"            ), Qt::CTRL+Qt::Key_C, Qt::CTRL+Qt::Key_Insert, Qt::Key_F16);
   cmdMngr.addCommand(cmPaste,           I18N_NOOP("&Paste"           ), Qt::CTRL+Qt::Key_V, Qt::SHIFT+Qt::Key_Insert, Qt::Key_F18);
   cmdMngr.addCommand(cmIndent,          I18N_NOOP("&Indent"          ), Qt::CTRL+Qt::Key_I);
-  cmdMngr.addCommand(cmUnindent,        I18N_NOOP("Uninden&t"        ), Qt::CTRL+Qt::Key_U);
+  cmdMngr.addCommand(cmUnindent,        I18N_NOOP("Uninde&nt"        ), Qt::CTRL+Qt::Key_U);
   cmdMngr.addCommand(cmCleanIndent,     I18N_NOOP("Clean Indent"     ));
   cmdMngr.addCommand(cmComment,          I18N_NOOP("Comment"          ), Qt::CTRL+Qt::Key_M);
   cmdMngr.addCommand(cmUncomment,        I18N_NOOP("Uncomment"        ), Qt::CTRL+Qt::ALT+Qt::Key_M);
