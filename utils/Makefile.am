@@ -1,5 +1,7 @@
 INCLUDES = -I$(top_srcdir)/kate/utils $(all_includes)
 
+EXTRA_DIST = README
+
 lib_LTLIBRARIES = libkateutils.la
 
 libkateutils_la_SOURCES = dockviewbase.cpp messageview.cpp listboxview.cpp filedialog.cpp
