@@ -121,7 +121,7 @@ class KateExternalTool
     /**
      * @return true if mimetypes is empty, or the @p mimetype matches.
      */
-    bool valid( QString mimetype ) const;
+    bool valid( const QString &mimetype ) const;
     /**
      * @return true if "tryexec" exists and has the executable bit set, or is
      * empty.

@@ -119,7 +119,7 @@ bool KateExternalTool::checkExec()
   return false;
 }
 
-bool KateExternalTool::valid( QString mt ) const
+bool KateExternalTool::valid( const QString &mt ) const
 {
   return mimetypes.isEmpty() || mimetypes.contains( mt );
 }
@@ -144,7 +144,7 @@ KateExternalToolsCommand *KateExternalToolsCommand::self () {
 void KateExternalToolsCommand::reload () {
   m_list.clear();
   m_map.clear();
-  
+
   KConfig config("externaltools", false, false, "appdata");
   config.setGroup("Global");
   QStringList tools = config.readListEntry("tools");
@@ -154,7 +154,7 @@ void KateExternalToolsCommand::reload () {
   {
     if ( *it == "---" )
       continue;
-   
+
 
     config.setGroup( *it );
 
@@ -322,6 +322,7 @@ void KateExternalToolsMenuAction::reload()
   }
 
   m_actionCollection->readShortcutSettings( "Shortcuts", config );
+  delete config;
 }
 
 void KateExternalToolsMenuAction::slotDocumentChanged()
