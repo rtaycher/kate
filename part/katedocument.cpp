@@ -919,12 +919,12 @@ bool KateDocument::invertSelection()
 
 uint KateDocument::undoCount () const
 {
-
+  undoItems.count ();
 }
 
 uint KateDocument::redoCount () const
 {
-
+  redoItems.count ();
 }
 
 uint KateDocument::undoSteps () const
@@ -935,8 +935,45 @@ uint KateDocument::undoSteps () const
 void KateDocument::setUndoSteps(uint steps)
 {
   myUndoSteps = steps;
+
+	emit undoChanged ();
 }
 
+void KateDocument::undo()
+{
+	undoItems.last()->undo();
+	redoItems.append (undoItems.last());
+	undoItems.removeLast ();
+
+	emit undoChanged ();
+}
+
+void KateDocument::redo()
+{
+  redoItems.last()->redo();
+	undoItems.append (redoItems.last());
+	redoItems.removeLast ();
+
+	emit undoChanged ();
+}
+
+void KateDocument::clearUndo()
+{
+  undoItems.setAutoDelete (true);
+	undoItems.clear ();
+  undoItems.setAutoDelete (false);
+
+	emit undoChanged ();
+}
+
+void KateDocument::clearRedo()
+{
+  redoItems.setAutoDelete (true);
+	redoItems.clear ();
+  redoItems.setAutoDelete (false);
+
+	emit undoChanged ();
+}
 
 //
 // KTextEditor::CursorInterface stuff
@@ -2873,82 +2910,6 @@ void KateDocument::optimizeSelection() {
     selectStart = 0xffffff;
     selectEnd = 0;
   }
-}
-
-void KateDocument::undo() {
- /* KateUndoGroup *g = 0L;
-  int num;
-  bool needUpdate = false; // don't update the cursor until completely done
-
-  if (count <= 0) return;
-
-  for (num = 0 ; num < count ; num++) {
-    if (currentUndo <= 0) break;
-    currentUndo--;
-    g = undoList.at(currentUndo);
-    doActionGroup(g, c.flags, true); // do not setModified() or newUndo()
-    needUpdate = true;
-
-//    if (num == 0) recordReset();
-  }
-
-  if (needUpdate) {
-    // since we told doActionGroup() not to do this stuff, we need to do it now
-    c.view->updateCursor(g->start);
-    setModified(true);
-    newUndo();
-  }*/
-}
-
-void KateDocument::redo() {
- /* KateUndoGroup *g = 0L;
-  int num;
-  bool needUpdate = false; // don't update the cursor until completely done
-
-  if (count <= 0) return;
-
-  for (num = 0 ; num < count ; num++) {
-    if (currentUndo+1 > (int)undoList.count()) break;
-    g = undoList.at(currentUndo);
-    currentUndo++;
-    doActionGroup(g, c.flags, true); // do not setModified() or newUndo()
-    needUpdate = true;
-
-//    if (num == 0) recordReset();
-  }
-
-  if (needUpdate) {
-    // since we told doActionGroup() not to do this stuff, we need to do it now
-    c.view->updateCursor(g->end);
-    setModified(true);
-    newUndo();
-  }*/
-}
-
-void KateDocument::clearUndo() {
-  // disable redos
- /* // this was added as an assist to the spell checker
-  bool deleted = false;
-
-  while ((int) undoList.count() > currentUndo) {
-    deleted = true;
-    undoList.removeLast();
-  }
-
-  if (deleted) newUndo();*/
-}
-
-void KateDocument::clearRedo() {
-  // disable redos
- /* // this was added as an assist to the spell checker
-  bool deleted = false;
-
-  while ((int) undoList.count() > currentUndo) {
-    deleted = true;
-    undoList.removeLast();
-  }
-
-  if (deleted) newUndo();*/
 }
 
 void KateDocument::setPseudoModal(QWidget *w) {
