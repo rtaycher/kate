@@ -1341,8 +1341,8 @@ void JavaHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
 
 
 HtmlHighlight::HtmlHighlight(const char * name) : GenHighlight(name) {
-  iWildcards = "*.html;*.htm";
-  iMimetypes = "text/html";
+  iWildcards = "*.html;*.htm;*.docbook;*.xml;*.sgml";
+  iMimetypes = "text/html;text/sgml;text/xml;text/book";
 }
 
 HtmlHighlight::~HtmlHighlight() {
