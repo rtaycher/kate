@@ -55,7 +55,7 @@ private slots:
     void slotSearch();
     void slotCancel();
     void slotClear();
-
+    void patternTextChanged( const QString &);
 private:
     void processOutput();
     void finish();

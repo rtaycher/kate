@@ -252,6 +252,9 @@ GrepDialog::GrepDialog(QString dirname, QWidget *parent, const char *name)
 	     SLOT(slotClear()) );
     connect( done_button, SIGNAL(clicked()),
         SLOT(accept()) );
+    connect ( pattern_combo->lineEdit(), SIGNAL(textChanged ( const QString & )),
+	      SLOT( patternTextChanged( const QString & )));
+    patternTextChanged( pattern_combo->lineEdit()->text());
 }
 
 
@@ -259,6 +262,11 @@ GrepDialog::~GrepDialog()
 {
     if (childproc)
       delete childproc;
+}
+
+void GrepDialog::patternTextChanged( const QString & _text)
+{
+    search_button->setEnabled( !_text.isEmpty() );
 }
 
 /*
@@ -414,7 +422,7 @@ void GrepDialog::slotCancel()
 void GrepDialog::childExited()
 {
     int status = childproc->exitStatus();
-    
+
     finish();
 
     status_label->setText( (status == 1)
@@ -424,7 +432,7 @@ void GrepDialog::childExited()
                                   : i18n("Ready") );
     if (status != 0)
 	      matches_label->setText("");
-    
+
 }
 
 
