@@ -1,3 +1,8 @@
+2001-03-27 Christoph Cullmann <crossfire@babylon2k.de>
+        * interfaces extended (mainly for projectmanager)
+        * piper moved to plugins/projectmanager/piper
+        * a piper Makefile.am created 
+
 2001-03-26 Joseph Wenninger <jowenn@bigfoot.com>
         * 2 reimplemented highlighing configs
 	* 1 experimental highlighting config

@@ -5,8 +5,6 @@ Todo:
 - let it use STL to store 
 interesting strings, pop many strings instead of one
 
-- integrate the Makefile with the rest of the system
-
 - let 'make test' from the top go down here to build &
  run the test.
 
