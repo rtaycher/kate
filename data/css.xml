@@ -304,8 +304,8 @@
     </list>
     <contexts>
       <context attribute="0" lineEndContext="#stay">
-        <keyword attribute="1" context="#stay" String="keywords" weakDelimiter="-"/>
-        <keyword attribute="2" context="#stay" String="types" weakDelimiter="-"/>
+        <keyword attribute="1" context="#stay" String="keywords" />
+        <keyword attribute="2" context="#stay" String="types" />
       </context>
     </contexts>
     <itemDatas>
@@ -317,6 +317,6 @@
     </itemDatas>
   </highlighting>
   <general>
-    <keywords casesensitive="1" />
+    <keywords casesensitive="1" weakDeliminator="-"/>
   </general>
 </language>

@@ -3556,7 +3556,7 @@ void KateDocument::paintTextLine(QPainter &paint, uint line, int y, int xStart, 
   z = zc;
   y += fs->fontAscent;// -1;
   attr = -1;
-  
+
   while (z < len)
   {
     ch = s[z];
@@ -3652,7 +3652,7 @@ void KateDocument::paintTextLine(QPainter &paint, uint line, int y, int xStart, 
           paint.setFont(fs->myFont);
       }
     }
-    
+
     z++;
   }
 
@@ -3673,11 +3673,11 @@ bool KateDocument::doSearch(SConfig &sc, const QString &searchFor) {
   TextLine::Ptr textLine;
 
   if (searchFor.isEmpty()) return false;
-     
-  bufLen = 0;     
+
+  bufLen = 0;
   t = 0L;
-     
-  line = sc.cursor.line;     
+
+  line = sc.cursor.line;
   col = sc.cursor.col;
   if (!(sc.flags & KateDocument::sfBackward)) {
     //forward search

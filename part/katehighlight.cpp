@@ -1262,8 +1262,9 @@ void Highlight::readGlobalKeywordConfig()
         if (HlManager::self()->syntax->groupItemData(data,QString("casesensitive"))!="0") 
 		casesensitive=true; else {casesensitive=false; kdDebug(13010)<<"Turning on case insensitiveness"<<endl;} 
      //get the weak deliminators 
-     weakDeliminator=(!HlManager::self()->syntax->groupItemData(data,QString("weakDeliminator"))); 
+     weakDeliminator=(HlManager::self()->syntax->groupItemData(data,QString("weakDeliminator"))); 
  
+     kdDebug()<<"weak delimiters are: "<<weakDeliminator<<endl;
      // remove any weakDelimitars (if any) from the default list and store this list. 
      int f; 
      for (uint s=0; s < weakDeliminator.length(); s++)
@@ -1287,6 +1288,7 @@ void Highlight::readGlobalKeywordConfig()
        weakDeliminator=QString("");
     }
 
+  kdDebug()<<"delimiterCharacters are: "<<deliminator<<endl;
 }
 
 /*******************************************************************************************
