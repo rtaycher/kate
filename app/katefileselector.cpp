@@ -191,6 +191,9 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow, KateViewManager 
   connect ( viewmanager, SIGNAL( viewChanged() ),
               this, SLOT( kateViewChanged() ) );
               
+  // Connect the bookmark handler
+  connect(bookmarkHandler, SIGNAL( openURL( const QString& )), this, SLOT( setDir( const QString& ) ) );
+              
   waitingUrl = QString::null;
 
   // whatsthis help
@@ -218,7 +221,8 @@ KateFileSelector::~KateFileSelector()
 void KateFileSelector::readConfig(KConfig *config, const QString & name)
 {
   dir->readConfig(config, name + ":dir");
-
+  dir->setView( KFile::Default );
+  
   config->setGroup( name );
   
   // set up the toolbar

@@ -152,6 +152,7 @@ GrepDialog::GrepDialog(QString dirname, QWidget *parent, const char *name)
     dir_combo = new KURLRequester( new KComboBox(true, this), this, "dir combo" );
     dir_combo->completionObject()->setMode(KURLCompletion::DirCompletion);
     dir_combo->comboBox()->insertStringList(lastSearchPaths);
+    dir_combo->setMode( KFile::Directory|KFile::LocalOnly );
     dir_layout->addWidget(dir_combo);
     dir_label->setBuddy(dir_combo);
 
