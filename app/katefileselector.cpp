@@ -378,12 +378,17 @@ void KateFileSelector::cmbPathActivated( const KURL& u )
 
 void KateFileSelector::cmbPathReturnPressed( const QString& u )
 {
-   QStringList urls = cmbPath->urls();
-   urls.remove( u );
-   urls.prepend( u );
-   cmbPath->setURLs( urls, KURLComboBox::RemoveBottom );
-   dir->setFocus();
-   dir->setURL( KURL(u), true );
+  kdDebug()<<"opening url "<<u<<endl;
+  KURL typedURL( u );
+  if ( typedURL.hasPass() )
+    typedURL.setPass( QString::null );
+
+  QStringList urls = cmbPath->urls();
+  urls.remove( typedURL.url() );
+  urls.prepend( typedURL.url() );
+  cmbPath->setURLs( urls, KURLComboBox::RemoveBottom );
+  dir->setFocus();
+  dir->setURL( KURL(u), true );
 }
 
 void KateFileSelector::dirUrlEntered( const KURL& u )
