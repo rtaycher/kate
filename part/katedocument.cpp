@@ -806,6 +806,21 @@ bool KateDocument::internalWrapLine ( uint line, uint col )
 
   tagLine(line);
   tagLine(line+1);
+  
+  if (!myMarks.isEmpty())
+  {
+    bool b = false;
+
+    for (uint z=0; z<myMarks.count(); z++)
+      if (myMarks.at(z)->line > line+1)
+      {
+        myMarks.at(z)->line = myMarks.at(z)->line+1;
+        b = true;
+      }
+
+    if (b)
+      emit marksChanged ();
+  }
 
   if (tagStart > (int)line) tagStart++;
   if (tagEnd > (int)line) tagEnd++;
@@ -849,6 +864,24 @@ bool KateDocument::internalUnWrapLine ( uint line, uint col)
 
   updateMaxLength(l);
   tagLine(line);
+
+  if (!myMarks.isEmpty())
+  {
+    bool b = false;
+
+    for (uint z=0; z<myMarks.count(); z++)
+      if (myMarks.at(z)->line > line)
+      {
+        if (myMarks.at(z)->line == line+1)
+          myMarks.remove(z);
+        else
+          myMarks.at(z)->line = myMarks.at(z)->line-1;
+        b = true;
+      }
+
+    if (b)
+      emit marksChanged ();
+  }
 
   if (tagStart > (int) line && tagStart > 0) tagStart--;
   if (tagEnd > (int) line) tagEnd--;
@@ -895,6 +928,21 @@ bool KateDocument::internalInsertLine ( uint line, const QString &s )
   if (tagStart >= (int)line) tagStart++;
   if (tagEnd >= (int)line) tagEnd++;
 
+  if (!myMarks.isEmpty())
+  {
+    bool b = false;
+
+    for (uint z=0; z<myMarks.count(); z++)
+      if (myMarks.at(z)->line >= line)
+      {
+        myMarks.at(z)->line = myMarks.at(z)->line+1;
+        b = true;
+      }
+
+    if (b)
+      emit marksChanged ();
+  }
+
   newDocGeometry = true;
   for (view = myViews.first(); view != 0L; view = myViews.next() )
   {
@@ -926,6 +974,24 @@ bool KateDocument::internalRemoveLine ( uint line )
 
   if (tagStart >= (int)line && tagStart > 0) tagStart--;
   if (tagEnd >= (int)line) tagEnd--;
+
+  if (!myMarks.isEmpty())
+  {
+    bool b = false;
+
+    for (uint z=0; z<myMarks.count(); z++)
+      if (myMarks.at(z)->line >= line)
+      {
+        if (myMarks.at(z)->line == line)
+          myMarks.remove(z);
+        else
+          myMarks.at(z)->line = myMarks.at(z)->line-1;
+        b = true;
+      }
+
+    if (b)
+      emit marksChanged ();
+  }
 
   newDocGeometry = true;
   for (view = myViews.first(); view != 0L; view = myViews.next() )
@@ -1648,6 +1714,9 @@ void KateDocument::configDialog()
 
 uint KateDocument::mark (uint line)
 {
+  if (myMarks.isEmpty())
+    return 0;
+
   if (line > lastLine())
     return 0;
 
@@ -1680,15 +1749,26 @@ void KateDocument::setMark (uint line, uint markType)
     myMarks.append (mark);
   }
 
+  emit marksChanged ();
+
   tagLines (line, line);
   updateViews ();
 }
 
 void KateDocument::clearMark (uint line)
 {
+  if (myMarks.isEmpty())
+    return;
+
+  if (line > lastLine())
+    return;
+
   for (uint z=0; z<myMarks.count(); z++)
     if (myMarks.at(z)->line == line)
+    {
       myMarks.remove(z);
+      emit marksChanged ();
+    }
 }
 
 void KateDocument::addMark (uint line, uint markType)
@@ -1713,12 +1793,17 @@ void KateDocument::addMark (uint line, uint markType)
     myMarks.append (mark);
   }
 
+  emit marksChanged ();
+
   tagLines (line, line);
   updateViews ();
 }
 
 void KateDocument::removeMark (uint line, uint markType)
 {
+  if (myMarks.isEmpty())
+    return;
+
   if (line > lastLine())
     return;
 
@@ -1728,6 +1813,8 @@ void KateDocument::removeMark (uint line, uint markType)
       myMarks.at(z)->type=myMarks.at(z)->type & ~markType;
       if (myMarks.at(z)->type == 0)
         myMarks.remove(z);
+        
+      emit marksChanged ();
     }
 
   tagLines (line, line);
@@ -1741,12 +1828,16 @@ QPtrList<KTextEditor::Mark> KateDocument::marks ()
 
 void KateDocument::clearMarks ()
 {
+  if (myMarks.isEmpty())
+    return;
+
   while (myMarks.count() > 0)
   {
     tagLines (myMarks.at (0)->line, myMarks.at (0)->line);
     myMarks.remove((uint)0);
   }
-  
+
+  emit marksChanged ();
   updateViews ();
 }
 
@@ -1924,7 +2015,7 @@ void KateDocument::setFont (QFont font)
 }     
      
 uint  KateDocument::needPreHighlight(uint till)     
-{     
+{
   uint max=numLines()-1;
 
   if (till>max)
@@ -1967,7 +2058,7 @@ TextLine::Ptr KateDocument::getTextLine(int line) const
 
 int KateDocument::textLength(int line) {     
   TextLine::Ptr textLine = getTextLine(line);     
-  if (!textLine) return 0;     
+  if (!textLine) return 0;
   return textLine->length();     
 }     
      
@@ -2049,8 +2140,8 @@ void KateDocument::spellcheck2(KSpell *)
 
 void KateDocument::misspelling (QString origword, QStringList *, unsigned pos)
 {
-  int line;
-  unsigned int cnt;
+  uint line;
+  uint cnt;
 
   // Find pos  -- CHANGEME: store the last found pos's cursor
   //   and do these searched relative to that to
@@ -2081,8 +2172,8 @@ void KateDocument::misspelling (QString origword, QStringList *, unsigned pos)
 
 void KateDocument::corrected (QString originalword, QString newword, unsigned pos)
 {
-  int line;
-  unsigned int cnt=0;
+  uint line;
+  uint cnt=0;
 
   if(newword != originalword)
   {
@@ -2305,7 +2396,7 @@ uint KateDocument::textWidth(bool wrapCursor, KateViewCursor &cursor, int xPos)
   Attribute *a;
 
   if (cursor.line < 0) cursor.line = 0;
-  if (cursor.line > lastLine()) cursor.line = lastLine();
+  if (cursor.line > (int)lastLine()) cursor.line = lastLine();
   TextLine::Ptr textLine = getTextLine(cursor.line);
   len = textLine->length();
 
@@ -2488,7 +2579,7 @@ bool KateDocument::insertChars ( int line, int col, const QString &chars, KateVi
         actionCursor.col = pos;
         actionCursor.line = line;     
         recordAction(KateUndo::newLine,actionCursor);     
-      } else {     
+      } else {
         //wrap     
         actionCursor.line = line + 1;     
         if (!s[l - 1].isSpace()) { //add space in next line if necessary     
@@ -3234,11 +3325,6 @@ QColor &KateDocument::cursorCol(int x, int y)
     return a->col;
 }
 
-void KateDocument::paintTextLine(QPainter &paint, int line, int xStart, int xEnd, bool showTabs)
-{
-  paintTextLine (paint, line, 0, xStart, xEnd, showTabs);
-}
-
 bool KateDocument::lineColSelected (int line, int col)
 {
   if (!blockSelect)
@@ -3317,7 +3403,12 @@ bool KateDocument::lineHasSelected (int line)
   return false;
 }
 
-void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, int xEnd, bool showTabs)
+void KateDocument::paintTextLine(QPainter &paint, uint line, int xStart, int xEnd, bool showTabs)
+{
+  paintTextLine (paint, line, 0, xStart, xEnd, showTabs);
+}
+
+void KateDocument::paintTextLine(QPainter &paint, uint line, int y, int xStart, int xEnd, bool showTabs)
 {
   TextLine::Ptr textLine;
   int len;
@@ -3699,43 +3790,43 @@ void KateDocument::newBracketMark(KateViewCursor &cursor, BracketMark &bm)
   Attribute *a;
 
   bm.eXPos = -1; //mark bracked mark as invalid
-  x = cursor.col -1; // -1 to look at left side of cursor     
-  if (x < 0) return;     
-  line = cursor.line; //current line     
-  count = 0; //bracket counter for nested brackets     
-     
-  textLine = getTextLine(line);     
-  if (!textLine) return;     
-     
-  bracket = textLine->getChar(x);     
-  attr = textLine->getAttr(x);     
-     
-  if (bracket == '(' || bracket == '[' || bracket == '{')     
-  {     
-    //get opposite bracket     
-    opposite = ')';     
-    if (bracket == '[') opposite = ']';     
-    if (bracket == '{') opposite = '}';     
+  x = cursor.col -1; // -1 to look at left side of cursor
+  if (x < 0) return;
+  line = cursor.line; //current line
+  count = 0; //bracket counter for nested brackets
+
+  textLine = getTextLine(line);
+  if (!textLine) return;
+
+  bracket = textLine->getChar(x);
+  attr = textLine->getAttr(x);
+
+  if (bracket == '(' || bracket == '[' || bracket == '{')
+  {
+    //get opposite bracket
+    opposite = ')';
+    if (bracket == '[') opposite = ']';
+    if (bracket == '{') opposite = '}';
     //get attribute of bracket (opposite bracket must have the same attribute)
     x++;
-    while (line - cursor.line < 40) {     
-      //go to next line on end of line     
-      while (x >= (int) textLine->length()) {     
-        line++;     
-        if (line > lastLine()) return;     
-        textLine = getTextLine(line);     
-        x = 0;     
-      }     
-      if (textLine->getAttr(x) == attr) {     
-        //try to find opposite bracked     
-        ch = textLine->getChar(x);     
-        if (ch == bracket) count++; //same bracket : increase counter     
-        if (ch == opposite) {     
-          count--;     
-          if (count < 0) goto found;     
-        }     
-      }     
-      x++;     
+    while (line - cursor.line < 40) {
+      //go to next line on end of line
+      while (x >= (int) textLine->length()) {
+        line++;
+        if (line > (int) lastLine()) return;
+        textLine = getTextLine(line);
+        x = 0;
+      }
+      if (textLine->getAttr(x) == attr) {
+        //try to find opposite bracked
+        ch = textLine->getChar(x);
+        if (ch == bracket) count++; //same bracket : increase counter
+        if (ch == opposite) {
+          count--;
+          if (count < 0) goto found;
+        }
+      }
+      x++;
     }     
   }     
   else if (bracket == ')' || bracket == ']' || bracket == '}')     
@@ -4001,5 +4092,3 @@ QChar KateCursor::currentChar () const
 {
   return QChar();
 }
-
-

@@ -277,7 +277,7 @@ class KateDocument : public Kate::Document
     /**
      * gets the last line number (numLines() -1)
      */
-    int lastLine() const {return numLines()-1;}
+    uint lastLine() const { return numLines()-1;}
 
     /**
       gets the given line
@@ -432,8 +432,8 @@ class KateDocument : public Kate::Document
 
     QColor &backCol(int x, int y);
     QColor &cursorCol(int x, int y);
-    void paintTextLine(QPainter &, int line, int xStart, int xEnd, bool showTabs);
-    void paintTextLine(QPainter &, int line, int y, int xStart, int xEnd, bool showTabs);
+    void paintTextLine(QPainter &, uint line, int xStart, int xEnd, bool showTabs);
+    void paintTextLine(QPainter &, uint line, int y, int xStart, int xEnd, bool showTabs);
 
     bool doSearch(SConfig &s, const QString &searchFor);
 
