@@ -84,8 +84,9 @@
 uint KateMainWindow::uniqueID = 1;
 KMdi::MdiMode KateMainWindow::defaultMode=KMdi::UndefinedMode;
 
-KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager *_m_pluginManager, KateProjectManager *projectMan) :
-	KMdiMainFrm (0,(QString("__KateMainWindow#%1").arg(uniqueID)).latin1(),defaultMode)
+KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager *_m_pluginManager, 
+	KateProjectManager *projectMan,KMdi::MdiMode guiMode) :
+	KMdiMainFrm (0,(QString("__KateMainWindow#%1").arg(uniqueID)).latin1(),guiMode)
 {
   myID = uniqueID;
   uniqueID++;
@@ -399,13 +400,18 @@ void KateMainWindow::readOptions(KConfig *config)
   filelist->setSortType(config->readNumEntry("Sort Type of File List", KateFileList::sortByID));
 
   recentProjects->loadEntries (config, "Recent Projects");
-
-  //readDockConfig();
+  
+  if (config->hasGroup("dock_setting_default"))
+	  readDockConfig();
 }
 
 void KateMainWindow::saveOptions(KConfig *config)
 {
   config->setGroup("General");
+  if (config->readNumEntry("GUIMode",KMdi::UndefinedMode)!=mdiMode()) {
+	config->writeEntry("GUIMode",mdiMode());
+	config->deleteGroup("dock_setting_default");
+  }
 
   if (consoleDock && console)
     config->writeEntry("Show Console", console->isVisible());
@@ -425,7 +431,7 @@ void KateMainWindow::saveOptions(KConfig *config)
 
   recentProjects->saveEntries (config, "Recent Projects");
 
-  //writeDockConfig();
+  writeDockConfig();
 }
 
 void KateMainWindow::slotDocumentChanged()

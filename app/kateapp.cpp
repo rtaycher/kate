@@ -45,6 +45,7 @@
 
 KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (true,true,true),m_initPlugin(0),m_doNotInitialize(0)
 {
+  m_restoreGUIMode=KMdi::UndefinedMode;
   m_application = new Kate::Application (this);
   m_initPluginManager = new Kate::InitPluginManager (this);
 
@@ -72,7 +73,11 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
   m_pluginManager->loadAllEnabledPlugins ();
 
   // first be sure we have at least one window
+#warning Session management ?
+  config()->setGroup("General");
+  m_restoreGUIMode=(KMdi::MdiMode)config()->readNumEntry("GUIMode",KMdi::UndefinedMode);
   KateMainWindow *win = newMainWindow ();
+  m_restoreGUIMode=KMdi::UndefinedMode;
 
   // we restore our great stuff here now ;) super
   if ( isRestored() )
@@ -241,7 +246,8 @@ KateMainWindow *KateApp::newMainWindow ()
 	KateMainWindow::defaultMode=(KMdi::MdiMode)cfg->readNumEntry("DefaultGUIMode",KMdi::IDEAlMode);
 	cfg->setGroup(grp);
   }
-  KateMainWindow *mainWindow = new KateMainWindow (m_docManager, m_pluginManager, m_projectManager);
+  KateMainWindow *mainWindow = new KateMainWindow (m_docManager, m_pluginManager, m_projectManager,
+		(m_restoreGUIMode==KMdi::UndefinedMode)?KateMainWindow::defaultMode:m_restoreGUIMode);
   m_mainWindows.append (mainWindow);
 
   if ((mainWindows() > 1) && m_mainWindows.at(m_mainWindows.count()-2)->kateViewManager()->activeView())

@@ -58,7 +58,8 @@ class KateMainWindow : public KMdiMainFrm, virtual public KParts::PartBase
   friend class KateDocument;
 
   public:
-    KateMainWindow(KateDocManager *_docManager, KatePluginManager *_pluginManager, KateProjectManager *projectMan);
+    KateMainWindow(KateDocManager *_docManager, KatePluginManager *_pluginManager, KateProjectManager *projectMan,
+		KMdi::MdiMode guiMode);
     ~KateMainWindow();
 
     Kate::MainWindow *mainWindow () { return m_mainWindow; };
