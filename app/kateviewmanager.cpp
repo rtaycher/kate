@@ -480,7 +480,12 @@ void KateViewManager::slotDocumentSave ()
   if( current->getDoc()->isModified() || current->getDoc()->url().isEmpty() )
   {
     if( !current->getDoc()->url().isEmpty() && current->getDoc()->isReadWrite() )
+    {
       current->getDoc()->save();
+
+       if ( current->getDoc()->isModified() )
+         KMessageBox::sorry(this, i18n("The file could not be saved. Please check if you have write permission."));
+    }
     else
       slotDocumentSaveAs();
   }
@@ -499,6 +504,9 @@ void KateViewManager::slotDocumentSaveAll ()
       if( !current->getDoc()->url().isEmpty() && current->getDoc()->isReadWrite() )
         {
           current->getDoc()->save();
+
+           if ( current->getDoc()->isModified() )
+             KMessageBox::sorry(this, i18n("The file could not be saved. Please check if you have write permission."));
         }
       else
         slotDocumentSaveAs();
@@ -519,7 +527,7 @@ void KateViewManager::slotDocumentSaveAs ()
   if( !data.url.isEmpty() )
   {
 	  current->getDoc()->setEncoding (data.encoding);
-    if( !current->getDoc()->saveAs( data.url ) ) {
+    if( !current->getDoc()->saveAs( data.url ) || current->getDoc()->isModified() ) {
         KMessageBox::sorry(this, i18n("The file could not be saved. Please check if you have write permission."));
     }
     ((Kate::Document *)current->getDoc())->setDocName (data.url.filename());
