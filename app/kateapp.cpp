@@ -56,9 +56,9 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState)
 
   // Don't handle DCOP requests yet
   kapp->dcopClient()->suspend();
-  
+
   m_mainWindows.setAutoDelete (false);
-  
+
   // uh, we have forced this session to come up via changing config
   // change it back now
   if (forcedNewProcess)
@@ -70,7 +70,7 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState)
 
   // application interface
   m_application = new Kate::Application (this);
-  
+
   // init plugin manager
   m_initPluginManager = new Kate::InitPluginManager (this);
 
@@ -92,21 +92,21 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState)
   if (args->isSet("initplugin"))
   {
     QString pluginName=args->getOption("initplugin");
-    
+
     m_initURL=args->url(0);
-    
+
     m_initPlugin= static_cast<Kate::InitPlugin*>(Kate::createPlugin (QFile::encodeName(pluginName), (Kate::Application *)kapp)->qt_cast("Kate::InitPlugin"));
-    
+
     m_initPlugin->activate(args->url(0));
-    
+
     m_doNotInitialize=m_initPlugin->actionsKateShouldNotPerformOnRealStartup();
-    
+
     kdDebug(13001)<<"********************loading init plugin in app constructor"<<endl;
   }
 
   // Ok. We are ready for DCOP requests.
-  kapp->dcopClient()->resume(); 
-  
+  kapp->dcopClient()->resume();
+
   // notify our self on enter the event loop
   QTimer::singleShot(10,this,SLOT(callOnEventLoopEnter()));
 }
@@ -115,13 +115,13 @@ KateApp::~KateApp ()
 {
   // cu dcop interface
   delete m_obj;
-  
+
   // cu plugin manager
   delete m_pluginManager;
-  
+
   // cu project man
   delete m_projectManager;
-  
+
   // delete this now, or we crash
   delete m_docManager;
 }
@@ -142,10 +142,10 @@ void KateApp::performInit(const QString &libname, const KURL &url)
     m_oldInitLib=m_initLib;
   else
     m_oldInitLib=QString::null;
-  
+
   m_initURL=url;
   m_initLib=libname;
-  
+
   QTimer::singleShot(0,this,SLOT(performInit()));
 }
 
@@ -155,13 +155,13 @@ void KateApp::performInit()
   {
     delete m_initPlugin;
     m_initPlugin=0;
-    
+
     if (!m_oldInitLib.isNull())
       KLibLoader::self()->unloadLibrary(m_oldInitLib.latin1());
 
     m_initPlugin = static_cast<Kate::InitPlugin*>(Kate::createPlugin (QFile::encodeName(m_initLib), (Kate::Application *)kapp)->qt_cast("Kate::InitPlugin"));
   }
-  
+
   m_initPlugin->activate(m_initURL);
   m_initPlugin->initKate();
 }
@@ -179,41 +179,42 @@ int KateApp::newInstance()
   {
     // we restore our great stuff here now ;) super
     if ( restoringSession() )
-    { 
+    {
       // restore the nice projects & files ;) we need it
       m_projectManager->restoreProjectList (sessionConfig());
       m_docManager->restoreDocumentList (sessionConfig());
-             
+
       for (int n=1; KMainWindow::canBeRestored(n); n++)
       {
         KateMainWindow *win=newMainWindow(false);
         win->restore ( n, true );
-      }      
+      }
     }
     else
     {
       KSimpleConfig scfg ("katesessionrc", false);
-    
+
       config()->setGroup("General");
 
       // restore our nice projects if wanted
       if (config()->readBoolEntry("Restore Projects", false))
         m_projectManager->restoreProjectList (&scfg);
-  
+
       // reopen our nice files if wanted
       if (config()->readBoolEntry("Restore Documents", false))
         m_docManager->restoreDocumentList (&scfg);
-         
+
       KateMainWindow *win=newMainWindow(false);
 
       // window config
+      config()->setGroup("General");
       if (config()->readBoolEntry("Restore Window Configuration", false))
         win->readProperties (&scfg);
-        
-      win->show ();    
+
+      win->show ();
     }
   }
-  
+
   // oh, no mainwindow, create one, should not happen, but make sure ;)
   if (mainWindows() == 0)
     newMainWindow ();
@@ -277,11 +278,11 @@ int KateApp::newInstance()
   {
     // very important :)
     m_firstStart = false;
-    
+
     // show the nice tips
-    KTipDialog::showTip(m_mainWindows.first());    
+    KTipDialog::showTip(m_mainWindows.first());
   }
-  
+
   return 0;
 }
 
@@ -295,16 +296,16 @@ KateMainWindow *KateApp::newMainWindow (bool visible)
   if (KateMainWindow::defaultMode==KMdi::UndefinedMode)
   {
     KConfig *cfg=kapp->config();
-    
+
     QString grp=cfg->group();
-    
+
     cfg->setGroup("General");
     KateMainWindow::defaultMode = (KMdi::MdiMode) cfg->readNumEntry("DefaultGUIMode", KMdi::IDEAlMode);
-    
+
     // only allow ideal or tabpage mode, others don't work right atm
     if ((KateMainWindow::defaultMode != KMdi::IDEAlMode) && (KateMainWindow::defaultMode != KMdi::TabPageMode))
       KateMainWindow::defaultMode = KMdi::IDEAlMode;
-    
+
     cfg->setGroup(grp);
   }
   KateMainWindow *mainWindow = new KateMainWindow (m_docManager, m_pluginManager, m_projectManager,
@@ -365,7 +366,7 @@ Kate::MainWindow *KateApp::activeMainWindow ()
 {
   if (!activeKateMainWindow())
     return 0;
-    
+
   return activeKateMainWindow()->mainWindow();
 }
 
