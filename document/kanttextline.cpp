@@ -21,12 +21,13 @@
 #include "kanttextline.h"
 
 TextLine::TextLine(int attribute, int context)
-  : len(0), size(0), text(0L), attribs(0L), attr(attribute), ctx(context) {
+  : len(0), size(0), text(0L), attribs(0L), attr(attribute), ctx(context)
+{
 }
 
-TextLine::~TextLine() {
-  delete [] text;
-  delete [] attribs;
+TextLine::~TextLine()
+{
+  delete [] (uchar*)text;
 }
 
 void TextLine::replace(int pos, int delLen, const QChar *insText, int insLen,
@@ -50,12 +51,16 @@ void TextLine::replace(int pos, int delLen, const QChar *insText, int insLen,
     //reallocate data
     size = size*3 >> 1;
     if (size < newLen) size = newLen;
-    size = (size + 15) & (~15);
 
-    newText = new QChar[size];
-    newAttribs = new uchar[size];
-  ASSERT(newText);
-  ASSERT(newAttribs);
+    // save memory (waste 8 instead of 24 bytes on average)
+    int msize = size*(sizeof(QChar)+sizeof(uchar));
+    msize = (msize + 15) & (~15);
+    size = msize / 3;
+
+    uchar *ptr=new uchar[msize];
+    ASSERT(ptr);
+    newText = (QChar*)ptr;
+    newAttribs = ptr + (size*sizeof(QChar));
 
     i = QMIN(len, pos);
     for (z = 0; z < i; z++) {
@@ -93,8 +98,7 @@ void TextLine::replace(int pos, int delLen, const QChar *insText, int insLen,
   }
 
   if (newText != text) { //delete old stuff on realloc
-    delete [] text;
-    delete [] attribs;
+    delete [] (uchar*) text;
     text = newText;
     attribs = newAttribs;
   }
@@ -330,4 +334,5 @@ void TextLine::unmarkFound() {
   int z;
   for (z = 0; z < len; z++) attribs[z] &= ~taFound;
 }
+
 
