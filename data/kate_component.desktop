@@ -2,7 +2,7 @@
 Name=Embedded KDE Advanced Text Editor Component
 X-KDE-Library=libkatecore
 Icon=kate
-
+MimeType=
 ServiceTypes=Kate/Document
 Type=Service
 InitialPreference=8
