@@ -267,7 +267,8 @@ bool KateMainWindow::queryClose()
       if (consoleDock->isVisible())
         consoleDock->changeHideShowState();
   
-    delete this;
+    if  ( !(((KateApp *)kapp)->mainWindows () < 2) )
+      delete this;
   }
 
   return val;
