@@ -615,11 +615,13 @@ class AutoHighlight : public GenHighlight {
   public:
     AutoHighlight(syntaxModeListItem *def);
     virtual ~AutoHighlight();
+    virtual QString getCommentStart() {return QString("\"");};
+    virtual QString getCommentEnd()  {return QString("");};
   protected:
     QString iName;
     virtual void makeContextList();
     virtual void setKeywords(HlKeyword *keyword,HlKeyword *dataType);
-
+    void createItemData(ItemDataList &list);
 };
 
 //class KWriteDoc;

@@ -2051,8 +2051,64 @@ void AutoHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
   dataType->addList(HlManager::self()->syntax->finddata(iName,"type"));
 }
 
+void AutoHighlight::createItemData(ItemDataList &list)
+{
+  kdDebug()<<"In AutoHighlight::createItemData"<<endl;
+  list.append(new ItemData(I18N_NOOP("Normal Text"),dsNormal));  // 0
+  list.append(new ItemData(I18N_NOOP("Keyword"),dsKeyword)); // 1
+  list.append(new ItemData(I18N_NOOP("Identifier"),dsOthers)); // 2
+  list.append(new ItemData(I18N_NOOP("Types"),dsDataType));  // 3
+  list.append(new ItemData(I18N_NOOP("String"),dsString)); // 4
+  list.append(new ItemData(I18N_NOOP("Comment"),dsComment)); // 5
+}
+
 void AutoHighlight::makeContextList()
 {
+  HlContext *c;
+  HlKeyword *keyword, *dataType;
+  struct syntaxContextData *data;
+ //Normal Context
+  kdDebug()<< "AutoHighlight makeContextList()"<<endl;
+  data=HlManager::self()->syntax->getGroupInfo(iName,"context");
+  int i=0;
+  if (data)
+    {
+      while (HlManager::self()->syntax->nextGroup(data))
+        {
+	kdDebug()<< "In make Contextlist: Group"<<endl;
+          contextList[i]=new HlContext(
+            (HlManager::self()->syntax->groupData(data,QString("attribute"))).toInt(),
+            (HlManager::self()->syntax->groupData(data,QString("lineEndContext"))).toInt());
+
+            while (HlManager::self()->syntax->nextItem(data))
+              {
+		kdDebug()<< "In make Contextlist: Item:"<<endl;
+                QString dataname=HlManager::self()->syntax->groupItemData(data,QString("name"));
+		kdDebug()<<"DataName: "<<dataname<<endl;
+                int attr=((HlManager::self()->syntax->groupItemData(data,QString("attribute"))).toInt());
+		kdDebug()<<"Attribute:"<<attr<<endl;
+                int context=((HlManager::self()->syntax->groupItemData(data,QString("context"))).toInt());
+		kdDebug()<<"context:"<<context<<endl;
+		char chr;
+                if (! HlManager::self()->syntax->groupItemData(data,QString("char")).isEmpty())
+		  chr= (HlManager::self()->syntax->groupItemData(data,QString("char")).latin1())[0];
+		else
+                  chr="\0";
+		kdDebug()<<"Char"<<chr<<endl;
+                if (dataname=="keyword") contextList[i]->items.append(keyword=new HlKeyword(attr,context));
+                if (dataname=="dataType") contextList[i]->items.append(dataType=new HlKeyword(attr,context));
+                if (dataname=="Float") contextList[i]->items.append(new HlFloat(attr,context));
+                if (dataname=="Int") contextList[i]->items.append(new HlInt(attr,context));
+                if (dataname=="CharDetect") contextList[i]->items.append(new HlCharDetect(attr,context,chr));
+		kdDebug()<<"Last line in loop"<<endl;
+              }
+          i++;
+        }
+      }
+  kdDebug()<<"After creation loop in AutoHighlight::makeContextList"<<endl;
+  HlManager::self()->syntax->freeGroupInfo(data);
+  setKeywords(keyword, dataType);
+  kdDebug()<<"After setKeyWords AutoHighlight::makeContextList"<<endl;
 
 }
 
@@ -2077,7 +2133,7 @@ HlManager::HlManager() : QObject(0L) {
   hlList.append(new PythonHighlight("Python"   ));
   hlList.append(new PerlHighlight(  "Perl"     ));
   hlList.append(new SatherHighlight("Sather"   ));
-  hlList.append(new KBasicHighlight("KBasic"));
+//  hlList.append(new KBasicHighlight("KBasic"));
   hlList.append(new LatexHighlight( "Latex"    ));
   hlList.append(new IdlHighlight("IDL"));
 
@@ -2085,12 +2141,11 @@ HlManager::HlManager() : QObject(0L) {
 
   SyntaxModeList modelist=syntax->modeList();
 
-/* Do not remove this part
   syntaxModeListItem *mli=new syntaxModeListItem;
   mli->name="KBasic";
   mli->mimetype="mimetype";
   mli->extension="ext";
-  hlList.append(new AutoHighlight(mli)); */
+  hlList.append(new AutoHighlight(mli));
 }
 
 HlManager::~HlManager() {

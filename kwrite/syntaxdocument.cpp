@@ -83,6 +83,77 @@ SyntaxModeList SyntaxDocument::modeList()
 
 //QStringList& SyntaxDocument::
 
+bool SyntaxDocument::nextGroup(struct syntaxContextData* data)
+{
+  if (data->currentGroup.isNull())
+    {
+      data->currentGroup=data->parent.firstChild().toElement();
+
+    }
+  else
+    data->currentGroup=data->currentGroup.nextSibling().toElement();
+  data->item=QDomElement();
+  if (data->currentGroup.isNull()) return false; else return true;
+}
+
+bool SyntaxDocument::nextItem(struct syntaxContextData* data)
+{
+  if (data->item.isNull())
+    {
+      data->item=data->currentGroup.firstChild().toElement();
+    }
+  else
+    data->item=data->item.nextSibling().toElement();
+  if (data->item.isNull()) return false; else return true;
+}
+
+QString SyntaxDocument::groupItemData(struct syntaxContextData* data,QString name)
+{
+  if (!data->item.isNull()) return data->item.attribute(name); else return QString();
+}
+
+QString SyntaxDocument::groupData(struct syntaxContextData* data,QString name)
+{
+    if (!data->currentGroup.isNull()) return data->currentGroup.attribute(name); else return QString();
+}
+
+void SyntaxDocument::freeGroupInfo(struct syntaxContextData* data)
+{
+  delete data;
+}
+
+struct syntaxContextData* SyntaxDocument::getGroupInfo(const QString& langName, const QString &group)
+{
+  QDomElement docElem = documentElement();
+  QDomNode n = docElem.firstChild();
+
+  while (!n.isNull())
+    {
+      kdDebug()<<"in SyntaxDocument::getGroupInfo (outter loop)"<<endl;
+      QDomElement e=n.toElement();
+      if (e.attribute("name").compare(langName)==0 )
+        {
+          QDomNode n1=e.firstChild();
+          while (!n1.isNull())
+            {
+      	      kdDebug()<<"in SyntaxDocument::getGroupInfo (inner loop)"<<endl;
+              QDomElement e1=n1.toElement();
+              if (e1.tagName()==group+"s")
+                {
+                 struct syntaxContextData *data=new (struct syntaxContextData);
+                 data->parent=e1;
+                 return data;
+                }
+              n1=e1.nextSibling();
+            }
+          return 0;
+        }
+      n=e.nextSibling();
+    }
+  return 0;
+}
+
+
 QStringList& SyntaxDocument::finddata(const QString& langName,const QString& type)
 {
   QDomElement docElem = documentElement();

@@ -32,6 +32,13 @@ struct syntaxModeListItem
   QString extension;
 };
 
+struct syntaxContextData
+{
+  QDomElement parent;
+  QDomElement currentGroup;
+  QDomElement item;
+};
+
 typedef QList<syntaxModeListItem> SyntaxModeList;
 
 class SyntaxDocument : public QDomDocument
@@ -42,6 +49,12 @@ class SyntaxDocument : public QDomDocument
 
     QStringList& finddata(const QString& langName,const QString& type);
     SyntaxModeList modeList();
+    struct syntaxContextData* getGroupInfo(const QString& langName, const QString &group);
+    void freeGroupInfo(struct syntaxContextData* data);
+    bool nextItem(struct syntaxContextData* data);
+    bool nextGroup(struct syntaxContextData* data);
+    QString groupItemData(struct syntaxContextData* data,QString name);
+    QString groupData(struct syntaxContextData* data,QString name);
   private:
     //syntaxModeList modeList();
 
