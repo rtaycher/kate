@@ -56,6 +56,7 @@
 #include <kstdaction.h>
 #include <kparts/event.h>
 #include <kxmlgui.h>
+#include <dcopclient.h>
 
 #include <X11/Xlib.h> //used to have XSetTransientForHint()
 
@@ -1483,7 +1484,7 @@ KWBookmark::KWBookmark() {
 }
 
 KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const char * name, bool HandleOwnDND)
-  : KTextEditor::View(doc, parent, name) {
+  : KTextEditor::View(doc, parent, name), DCOPObject("KWriteIface") {
   setInstance( KWriteFactory::instance() );
   kWriteDoc = doc;
   kWriteView = new KWriteView(this,doc,HandleOwnDND);
@@ -1522,6 +1523,13 @@ KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const char * name, bool HandleOw
   connect( this, SIGNAL( newUndo() ), this, SLOT( slotNewUndo() ) );
   connect( this, SIGNAL( fileChanged() ), this, SLOT( slotFileStatusChanged() ) );
   connect( doc, SIGNAL( highlightChanged() ), this, SLOT( slotHighlightChanged() ) );
+
+  DCOPClient *client = kapp->dcopClient();
+  if (!client->isRegistered())  // just in case we're embeeded
+  {
+    client->attach();
+    client->registerAs("kwrite");
+  }
 }
 
 KWrite::~KWrite() {

@@ -37,6 +37,7 @@
 #include <kspell.h>
 #include <ksconfig.h>
 #include <ktexteditor.h>
+#include "kwriteIface.h"
 
 class KAction;
 class KToggleAction;
@@ -353,7 +354,7 @@ class KWBookmark {
   @author Jochen Wilhelmy
 */
 
-class KWrite : public KTextEditor::View {
+class KWrite : public KTextEditor::View, virtual public KWriteIface {
     Q_OBJECT
     friend KWriteView;
     friend KWriteDoc;
