@@ -135,30 +135,23 @@ QListBox *KActionSelector::selectedListBox()
 
 void KActionSelector::setButtonIcon( const QString &icon, MoveButton button )
 {
-  int isz;
-  if ( d->iconSize == SmallIcon ) isz = IconSize( KIcon::Small );
-  else if ( d->iconSize == Small )  isz = 16;
-  else if ( d->iconSize == Medium ) isz = 22;
-  else if ( d->iconSize == Large )  isz = 32;
-  else if ( d->iconSize == XLarge ) isz = 48;
-  
   switch ( button )
   {
     case ButtonAdd:
     d->addIcon = icon;
-    d->btnAdd->setIconSet( SmallIconSet( icon, isz ) );
+    d->btnAdd->setIconSet( SmallIconSet( icon, d->iconSize ) );
     break;
     case ButtonRemove:
     d->removeIcon = icon;
-    d->btnRemove->setIconSet( SmallIconSet( icon, isz ) );
+    d->btnRemove->setIconSet( SmallIconSet( icon, d->iconSize ) );
     break;
     case ButtonUp:
     d->upIcon = icon;
-    d->btnUp->setIconSet( SmallIconSet( icon, isz ) );
+    d->btnUp->setIconSet( SmallIconSet( icon, d->iconSize ) );
     break;
     case ButtonDown:
     d->downIcon = icon;
-    d->btnDown->setIconSet( SmallIconSet( icon, isz ) );
+    d->btnDown->setIconSet( SmallIconSet( icon, d->iconSize ) );
     break;
     default:
     kdDebug()<<"KActionSelector::setButtonIcon: DAINBREAD!"<<endl;
@@ -488,17 +481,10 @@ void KActionSelector::itemDoubleClicked( QListBoxItem *item )
 
 void KActionSelector::loadIcons()
 {
-  int isz;
-  if ( d->iconSize == SmallIcon ) isz = IconSize( KIcon::Small );
-  else if ( d->iconSize == Small )  isz = 16;
-  else if ( d->iconSize == Medium ) isz = 22;
-  else if ( d->iconSize == Large )  isz = 32;
-  else if ( d->iconSize == XLarge ) isz = 48;
-  
-  d->btnAdd->setIconSet( SmallIconSet( d->addIcon, isz ) ); 
-  d->btnRemove->setIconSet( SmallIconSet( d->removeIcon, isz ) ); 
-  d->btnUp->setIconSet( SmallIconSet( d->upIcon, isz ) ); 
-  d->btnDown->setIconSet( SmallIconSet( d->downIcon, isz ) ); 
+  d->btnAdd->setIconSet( SmallIconSet( d->addIcon, d->iconSize ) ); 
+  d->btnRemove->setIconSet( SmallIconSet( d->removeIcon, d->iconSize ) ); 
+  d->btnUp->setIconSet( SmallIconSet( d->upIcon, d->iconSize ) ); 
+  d->btnDown->setIconSet( SmallIconSet( d->downIcon, d->iconSize ) ); 
 }
 
 void KActionSelector::moveItem( QListBoxItem *item )
