@@ -23,9 +23,9 @@
 #include "katemain.h"
 #include "katepluginmanager.h"
 
-#include <qvbox.h>  
-
 #include <klistview.h>
+
+#include <qvbox.h>  
 
 class KatePluginListItem;
 

@@ -18,8 +18,6 @@
    Boston, MA 02111-1307, USA.
 */
 
-// $Id$
-
 //BEGIN Includes
 #include "kateviewmanager.h"
 #include "kateviewmanager.moc"

@@ -17,8 +17,6 @@
    Boston, MA 02111-1307, USA.
 */
 
-// $Id$
-
 #include <kstandarddirs.h>
 #include <klocale.h>
 #include <kcmdlineargs.h>

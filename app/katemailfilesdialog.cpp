@@ -16,8 +16,6 @@
    Boston, MA 02111-1307, USA.
 */
 
-// $Id$
-
 #include "katemailfilesdialog.h"
 #include "katemainwindow.h"
 #include "kateviewmanager.h"
