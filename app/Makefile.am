@@ -28,5 +28,5 @@ dummy.cpp:
                          
 METASOURCES = AUTO  
   
-INCLUDES= -I../interfaces -I../lib $(all_includes)
+INCLUDES= -I../interfaces -I$(srcdir)/../lib $(all_includes)
 
