@@ -163,7 +163,8 @@ int KateApp::newInstance()
 	performInit(args->getOption("initplugin"),args->url(0));
 	
   }
-  
+  else
+  {  
     for (int z=0; z<args->count(); z++)
     {
       m_mainWindows.first()->kateViewManager()->openURL( args->url(z) );
@@ -190,7 +191,7 @@ int KateApp::newInstance()
   
     if (nav)
       m_mainWindows.first()->kateViewManager()->activeView ()->setCursorPosition (line, column);
-                     
+  }                   
   m_firstStart = false;
     
   return 0;
