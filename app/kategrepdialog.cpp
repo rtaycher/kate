@@ -191,7 +191,7 @@ GrepTool::GrepTool(KateMainWindow *parent, const char *name)
 
   KAcceleratorManager::manage( this );
 
-  QWhatsThis::add(cmbPattern,
+  QWhatsThis::add(lPattern,
     i18n("<p>Enter the expression you want to search for here."
      "<p>If 'regular expression' is unchecked, any non-space letters in your "
      "expression will be escaped with a backslash character."
@@ -214,15 +214,15 @@ GrepTool::GrepTool(KateMainWindow *parent, const char *name)
      "via the notation <code>\\#</code>."
      "<p>See the grep(1) documentation for the full documentation."
      ));
-  QWhatsThis::add(cmbFiles,
+  QWhatsThis::add(lFiles,
     i18n("Enter the file name pattern of the files to search here.\n"
      "You may give several patterns separated by commas."));
-  QWhatsThis::add(leTemplate,
+  QWhatsThis::add(lTemplate,
     i18n("You can choose a template for the pattern from the combo box\n"
      "and edit it here. The string %s in the template is replaced\n"
      "by the pattern input field, resulting in the regular expression\n"
      "to search for."));
-  QWhatsThis::add(cmbDir,
+  QWhatsThis::add(lDir,
     i18n("Enter the directory which contains the files you want to search in."));
   QWhatsThis::add(cbRecursive,
     i18n("Check this box to search in all subdirectories."));
