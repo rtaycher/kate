@@ -88,6 +88,10 @@ class KateViewSpace : public QVBox
 
   private slots:
     void slotStatusChanged (Kate::View *view, int r, int c, int ovr, bool block, int mod, QString msg);
+
+  public slots:
+    void polish();
+  
 };
 
 #endif

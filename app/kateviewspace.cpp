@@ -2,7 +2,7 @@
                           kateviewspace.cpp  -  description
                              -------------------
     begin                : Mon Jan 15 2001
-    copyright            : (C) 2001 by Anders Lund
+    copyright            : (C) 2001, 2002 by Anders Lund
     email                : anders@alweb.dk
  ***************************************************************************/
 
@@ -28,6 +28,43 @@
 #include <qlabel.h>
 #include <qcursor.h>
 
+//BEGIN KVSSBSep
+/*
+   "KateViewSpaceStatusBarSeparator"
+   A 2 px line to separate the statusbar from the view.
+   It is here to compensate for the lack of a frame in the view,
+   I think Kate looks very nice this way, as QScrollView with frame
+   looks slightly clumsy...
+   Slight 3D effect. I looked for suitable QStyle props or methods,
+   but found none, though maybe it should use QStyle::PM_DefaultFrameWidth
+   for height (TRY!).
+   It does look a bit funny with flat styles (Light, .Net) as is,
+   but there are on methods to paint panel lines separately. And,
+   those styles tends to look funny on their own, as a light line
+   in a 3D frame next to a light contents widget is not functional.
+   Also, QStatusBar is up to now completely ignorant to style.
+   -anders
+*/
+class KVSSBSep : public QWidget {
+public:
+  KVSSBSep( QWidget *parent=0) : QWidget(parent)
+  {
+    setFixedHeight( 2 );
+  }
+protected:
+  void paintEvent( QPaintEvent *e )
+  {
+    QPainter p( this );
+    p.setPen( colorGroup().shadow() );
+    p.drawLine( e->rect().topLeft(), e->rect().topRight() );
+    p.setPen( colorGroup().light() );
+    p.drawLine( e->rect().bottomLeft(), e->rect().bottomRight() );
+  }
+};
+//END KVSSBSep
+
+//BEGIN KateViewSpace
+
 KateViewSpace::KateViewSpace(QWidget* parent, const char* name)
   : QVBox(parent, name)
 {
@@ -37,14 +74,19 @@ KateViewSpace::KateViewSpace(QWidget* parent, const char* name)
   setStretchFactor(stack, 1);
   stack->installEventFilter( this );
   stack->setFocus();
+  new KVSSBSep( this );
   mStatusBar = new KateVSStatusBar(this);
-
   mIsActiveSpace = false;
   mViewCount = 0;
 }
 
 KateViewSpace::~KateViewSpace()
 {
+}
+
+void KateViewSpace::polish()
+{
+  mStatusBar->show();
 }
 
 void KateViewSpace::addView(Kate::View* v, bool show)
@@ -175,8 +217,10 @@ void KateViewSpace::saveFileList( KSimpleConfig* config, int myIndex )
     idx++;
   }
 }
+ 
+//END KateViewSpace
 
-
+//BEGIN KateVSStatusBar
 ///////////////////////////////////////////////////////////
 // KateVSStatusBar implementation
 ///////////////////////////////////////////////////////////
@@ -224,9 +268,9 @@ void KateVSStatusBar::setStatus( int r, int c, int ovr, bool block, int mod, QSt
 
   if (ovr == 0)
     m_insertModeLabel->setText( i18n(" R/O ") );
-  if (ovr == 1)
+  else if (ovr == 1)
     m_insertModeLabel->setText( i18n(" OVR ") );
-  if (ovr == 2)
+  else if (ovr == 2)
     m_insertModeLabel->setText( i18n(" INS ") );
 
   if (mod == 1)
@@ -261,3 +305,4 @@ bool KateVSStatusBar::eventFilter(QObject*,QEvent *e)
    return false;
 }
 
+//END KateVSStatusBar
