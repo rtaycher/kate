@@ -739,7 +739,12 @@ void KantMainWindow::docListMenuAboutToShow()
 
 void KantMainWindow::bookmarkMenuAboutToShow()
 {
-
+   bookmarkMenu->popupMenu()->clear();
+   viewManager->activeView()->doUpdateBookmarks();
+   QList<KAction> l =  viewManager->activeView()->bmActions();
+   QListIterator<KAction> it(l);
+   for (; it.current(); ++it)
+     it.current()->plug( bookmarkMenu->popupMenu() );
 }
 
 void KantMainWindow::slotPluginsAdd()
@@ -944,7 +949,7 @@ void KantMainWindow::slotGoNext()
 {
   QFocusEvent::setReason(QFocusEvent::Tab);
   /*res= */focusNextPrevChild(true); //TRUE == NEXT , FALSE = PREV
-  QFocusEvent::resetReason(); 
+  QFocusEvent::resetReason();
 }
 
 //Set focus to previous input element

@@ -28,6 +28,8 @@
 #include "../kwrite/highlight.h"
 #include "../kwrite/kwrite_factory.h"
 
+#include <kaction.h>
+
 class KantView : public KWrite
 {
   Q_OBJECT
@@ -38,7 +40,8 @@ class KantView : public KWrite
 
     void setActive (bool b);
     bool isActive ();
-
+    QList<KAction> bmActions() { return bookmarkActionList; }
+    void doUpdateBookmarks() { updateBookmarks(); }
   private:
     bool active;
 

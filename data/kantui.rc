@@ -45,11 +45,6 @@
     <Separator/>
     <Action name="go_goto_line"/>
     <Separator />
-    <Action name="edit_bookmarkAdd" />
-    <Action name="edit_bookmarkSet" />
-    <Action name="edit_bookmarksClear" />
-    <Action name="edit_bookmarkList" />
-    <Separator />
     <Action name="tools_spelling" />
     <Action name="edit_filter" />
   </Menu>
@@ -72,6 +67,13 @@
     <Action name="go_forward"/>
     <Action name="doc_list"/>
     <Separator />
+    <menu name="bookmarks">
+        <text>&amp;Bookmarks</text>
+        <Action name="edit_bookmarkAdd" />
+        <Action name="edit_bookmarkSet" />
+        <Action name="edit_bookmarksClear" />
+        <Action name="edit_bookmarkList" />
+    </menu>
     <Action name="document_reload" />
   </Menu>
 
