@@ -57,7 +57,7 @@ KateDocManager::KateDocManager (QObject *parent)
   m_docInfos.setAutoDelete(true);
 
   m_dcop = new KateDocManagerDCOPIface (this);
-  
+
   m_metaInfos = new KConfig("metainfos", false, false, "appdata");
   Kate::Document::registerCommand(KateExternalToolsCommand::self());
 
@@ -304,9 +304,11 @@ bool KateDocManager::closeAllDocuments()
 
 bool KateDocManager::queryCloseDocuments(KateMainWindow *w)
 {
-  Kate::Document  *doc;
-  for (QPtrListIterator<Kate::Document> it(m_docList); (doc=it.current())!=0; ++it)
+  uint docCount = m_docList.count();
+  for (QPtrListIterator<Kate::Document> it(m_docList); it.current(); ++it)
   {
+    Kate::Document *doc = it.current();
+
     if (doc->url().isEmpty() && doc->isModified())
     {
       int msgres=KMessageBox::warningYesNoCancel( w,
@@ -340,6 +342,15 @@ bool KateDocManager::queryCloseDocuments(KateMainWindow *w)
       if (!doc->queryClose())
         return false;
     }
+  }
+
+  // document count changed while queryClose, abort and notify user
+  if (m_docList.count() > docCount)
+  {
+    KMessageBox::information (w,
+                          i18n ("New file opened while trying to close Kate, closing aborted."),
+                          i18n ("Closing Aborted"));
+    return false;
   }
 
   return true;
