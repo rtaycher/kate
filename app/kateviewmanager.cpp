@@ -52,13 +52,6 @@
 
 #include "katesplitter.h"
 
-
-//extern "C" {
-//#include <mono/jit/jit.h>
-//}
-
-#undef connect
-
 KateViewManager::KateViewManager (QWidget *parent, KateDocManager *m_docManager) : QWidget  (parent)
 {
   m_viewManager = new Kate::ViewManager (this);
@@ -78,12 +71,12 @@ KateViewManager::KateViewManager (QWidget *parent, KateDocManager *m_docManager)
   m_grid = new QGridLayout( this, 1, 1 );
 
   KateViewSpace* vs = new KateViewSpace( this );
-  QObject::connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, QString)), vs, SLOT(slotStatusChanged(Kate::View *, int, int, int, bool, int, QString)));
+  connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, QString)), vs, SLOT(slotStatusChanged(Kate::View *, int, int, int, bool, int, QString)));
   vs->setActive( true );
   vs->installEventFilter( this );
   m_grid->addWidget( vs, 0, 0);
   m_viewSpaceList.append(vs);
-  QObject::connect( this, SIGNAL(viewChanged()), this, SLOT(slotViewChanged()) );
+  connect( this, SIGNAL(viewChanged()), this, SLOT(slotViewChanged()) );
 }
 
 KateViewManager::~KateViewManager ()
@@ -106,7 +99,7 @@ bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, 
 
   // create view
   Kate::View *view = (Kate::View *)doc->createView (this, 0L);
-  QObject::connect(view,SIGNAL(newStatus()),this,SLOT(setWindowCaption()));
+  connect(view,SIGNAL(newStatus()),this,SLOT(setWindowCaption()));
   m_viewList.append (view);
 
 #warning "WHAT THE HELL HAS THIS TO DO HERE ?	doc->setEncoding(m_encoding);"
@@ -154,11 +147,11 @@ bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, 
   // popup menu
   view->installPopup ((QPopupMenu*)((KMainWindow *)topLevelWidget ())->factory()->container("ktexteditor_popup", (KMainWindow *)topLevelWidget ()) );
   
-  QObject::connect(view,SIGNAL(cursorPositionChanged()),this,SLOT(statusMsg()));
-  QObject::connect(view,SIGNAL(newStatus()),this,SLOT(statusMsg()));
-  QObject::connect(view->getDoc(), SIGNAL(undoChanged()), this, SLOT(statusMsg()));
-  QObject::connect(view,SIGNAL(dropEventPass(QDropEvent *)), (KMainWindow *)topLevelWidget (),SLOT(slotDropEvent(QDropEvent *)));
-  QObject::connect(view,SIGNAL(gotFocus(Kate::View *)),this,SLOT(activateSpace(Kate::View *)));
+  connect(view,SIGNAL(cursorPositionChanged()),this,SLOT(statusMsg()));
+  connect(view,SIGNAL(newStatus()),this,SLOT(statusMsg()));
+  connect(view->getDoc(), SIGNAL(undoChanged()), this, SLOT(statusMsg()));
+  connect(view,SIGNAL(dropEventPass(QDropEvent *)), (KMainWindow *)topLevelWidget (),SLOT(slotDropEvent(QDropEvent *)));
+  connect(view,SIGNAL(gotFocus(Kate::View *)),this,SLOT(activateSpace(Kate::View *)));
 
   activeViewSpace()->addView( view );
   activateView( view );
@@ -483,22 +476,6 @@ void KateViewManager::slotDocumentNew ()
 
 void KateViewManager::slotDocumentOpen ()
 {
-
-//        static MonoDomain *domain=0;
-//        MonoAssembly *assembly;
-	//char file[]="/usr/src/mono/gtk-sharp/sample/gtk-hello-world.exe";
-//	char file[]="/usr/src/mono/qtcsharp/samples/hello.exe";
-	// char file[]="/usr/src/mono/qtcsharp/samples/scribblewindow.exe";
-//	if (!domain)
-//        domain = mono_jit_init (file);
-//	assembly = mono_domain_assembly_open (domain, file);
-//        if (!assembly)
-//	{
-//		kdDebug()<<"ERROR no Assembly"<<endl;
-//		return;
-//        }
-//	mono_jit_exec (domain, assembly, 0, 0);
-
   Kate::View *cv = activeView();
 	KateFileDialog *dialog;
 
@@ -637,7 +614,7 @@ void KateViewManager::splitViewSpace( KateViewSpace* vs,
   s->show();
   kdDebug(13001)<<"splitViewSpace(): splitter->show() was  called, moving on"<<endl;
 
-  QObject::connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, QString)), vsNew, SLOT(slotStatusChanged(Kate::View *, int, int,int, bool, int, QString)));
+  connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, QString)), vsNew, SLOT(slotStatusChanged(Kate::View *, int, int,int, bool, int, QString)));
   m_viewSpaceList.append( vsNew );
   vsNew->installEventFilter( this );
   activeViewSpace()->setActive( false );
@@ -999,7 +976,7 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
      // for a viewspace, create it and open all documents therein.
      if ( (*it).startsWith("viewspace") ) {
        KateViewSpace* vs = new KateViewSpace( s );
-       QObject::connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, QString)), vs, SLOT(slotStatusChanged(Kate::View *, int, int, int, bool, int, QString)));
+       connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, QString)), vs, SLOT(slotStatusChanged(Kate::View *, int, int, int, bool, int, QString)));
        vs->installEventFilter( this );
        m_viewSpaceList.append( vs );
        vs->show();
