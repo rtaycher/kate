@@ -35,7 +35,7 @@ KateDocManager::~KateDocManager ()
 
 KateDocument *KateDocManager::createDoc (QFileInfo* fi)
 {
-  KateDocument *doc = new KateDocument (myDocID, fi, false, false, 0L, 0L, 0L, (QString("KateDocument%1").arg(myDocID)).latin1());
+  KateDocument *doc = new KateDocument (myDocID, fi, false, false, false, 0L, 0L, 0L, (QString("KateDocument%1").arg(myDocID)).latin1());
   docList.append(doc);
   myDocID++;
 

@@ -135,12 +135,13 @@ class KateDocument : public KateDocumentIface, virtual public KateDocumentDCOPIf
     friend class KateIconBorder;
 
   public:
-    KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode=false, bool bBrowserView=false, QWidget *parentWidget = 0, const char *widgetName = 0, QObject * = 0, const char * = 0);
+    KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode=false, bool bBrowserView=false, bool deleteDoc=true, QWidget *parentWidget = 0, const char *widgetName = 0, QObject * = 0, const char * = 0);
     ~KateDocument();
 
   protected:
     QFont myFont;
     QFontMetrics myFontMetrics;
+    bool myDeleteDoc;
 
   public:
     void setFont (QFont font);

@@ -129,7 +129,7 @@ const int KateDocument::maxAttribs = 32;
 QStringList KateDocument::searchForList = QStringList();
 QStringList KateDocument::replaceWithList = QStringList();
 
-KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool bBrowserView,
+KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool bBrowserView, bool deleteDoc,
                                            QWidget *parentWidget, const char *widgetName,
                                            QObject *, const char *name)
   : KateDocumentIface (), DCOPObject(name), myFont (KGlobalSettings::fixedFont()), myFontMetrics (myFont), hlManager(HlManager::self ())
@@ -137,6 +137,8 @@ KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool
   PreHighlightedTill=0;
   RequestPreHighlightTill=0;
   setInstance( KateFactory::instance() );
+
+  myDeleteDoc = deleteDoc;
 
   m_bSingleViewMode=bSingleViewMode;
   m_bBrowserView = bBrowserView;
@@ -287,7 +289,7 @@ bool KateDocument::saveFile()
 
 KTextEditor::View *KateDocument::createView( QWidget *parent, const char *name )
 {
-  return new KateView( this, parent, name );
+  return new KateView( this, parent, name, true, myDeleteDoc );
 }
 
 QString KateDocument::textLine( int line ) const
@@ -478,17 +480,15 @@ void KateDocument::readConfig(KConfig *config) {
   setTabWidth(config->readNumEntry("TabWidth", 8));
   setUndoSteps(config->readNumEntry("UndoSteps", 50));
   m_singleSelection = config->readBoolEntry("SingleSelection", false);
-  //myEncoding = config->readEntry("Encoding", QString::fromLatin1(QTextCodec::locale()));
   myEncoding = config->readEntry("Encoding", KGlobal::charsets()->name(KGlobal::charsets()->charsetForLocale()));
+
+  QFont defaultFont = KGlobalSettings::fixedFont();
+  setFont (QFont (config->readEntry("Family", defaultFont.family()), config->readNumEntry("Size", defaultFont.pointSize()), QFont::Normal, false, KGlobal::charsets()->charsetForEncoding(config->readEntry("Charset",QFont::encodingName(defaultFont.charSet())))));
 
   for (z = 0; z < 5; z++) {
     sprintf(s, "Color%d", z);
     colors[z] = config->readColorEntry(s, &colors[z]);
   }
-
-  config->setGroup("Editor Font");
-  QFont defaultFont = KGlobalSettings::fixedFont();
-  setFont (QFont (config->readEntry("Family", defaultFont.family()), config->readNumEntry("Size", defaultFont.pointSize()), QFont::Normal, false, KGlobal::charsets()->charsetForEncoding(config->readEntry("Charset",QFont::encodingName(defaultFont.charSet())))));
 }
 
 void KateDocument::writeConfig(KConfig *config) {
@@ -499,16 +499,14 @@ void KateDocument::writeConfig(KConfig *config) {
   config->writeEntry("UndoSteps", undoSteps);
   config->writeEntry("SingleSelection", m_singleSelection);
   config->writeEntry("Encoding", myEncoding);
+  config->writeEntry("Family",myFont.family());
+  config->writeEntry("Size",myFont.pointSize());
+  config->writeEntry("Charset",QFont::encodingName(myFont.charSet()));
 
   for (z = 0; z < 5; z++) {
     sprintf(s, "Color%d", z);
     config->writeEntry(s, colors[z]);
   }
-
-  config->setGroup("Editor Font");
-  config->writeEntry("Family",myFont.family());
-  config->writeEntry("Size",myFont.pointSize());
-  config->writeEntry("Charset",QFont::encodingName(myFont.charSet()));
 }
 
 void KateDocument::readSessionConfig(KConfig *config) {
