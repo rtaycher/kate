@@ -38,8 +38,6 @@ void TextLine::replace(uint pos, uint delLen, const QChar *insText, uint insLen,
   text.remove (pos, delLen);
   text.insert (pos, insText, insLen);
 
-  uchar newAttr = (pos < oldLen) ? attributes[pos] : attr;
-
   if (oldLen<text.length()) attributes.resize (text.length());
 
   if (text.length() == 0)
@@ -50,31 +48,34 @@ void TextLine::replace(uint pos, uint delLen, const QChar *insText, uint insLen,
 
   if (pos >= oldLen)
   {
-    for (uint t=oldLen; t < pos; t++)
+    for (uint t=oldLen; t < attributes.size(); t++)
     {
       attributes[t]=0;
     }
   }
 
   int newAtStuff = insLen-delLen;
-  for (uint m=pos; m < attributes.size(); m++)
+  for (uint m=pos+delLen; m < attributes.size(); m++)
   {
-    if (m+newAtStuff < attributes.size()) attributes[m+newAtStuff]=attributes[m];
+    if (m+newAtStuff >= attributes.size()) break;
+    if (m >= attributes.size()) break;
+
+    attributes[m+newAtStuff]=attributes[m];
   }
 
-  if (insAttribs != 0L)
+  if (insAttribs == 0L)
   {
-  for (uint m2=pos; m2 < pos+insLen; m2++)
-  {
-    if (m2 < attributes.size()) attributes[m2]=insAttribs[m2-pos];
-  }
+    for (uint m3=pos; m3 < pos+insLen; m3++)
+    {
+      if (m3 < attributes.size()) attributes[m3]=0;
+    }
   }
   else
   {
-  for (uint m3=pos; m3 < pos+insLen; m3++)
-  {
-    if (m3 < attributes.size()) attributes[m3]=newAttr;
-  }
+    for (uint m2=pos; m2 < pos+insLen; m2++)
+    {
+      if (m2 < attributes.size()) attributes[m2]=insAttribs[m2-pos];
+    }
   }
 
   if (oldLen>text.length()) attributes.resize (text.length());
