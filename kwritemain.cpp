@@ -73,7 +73,7 @@ TopLevel::TopLevel (KantPartDocument *doc, const QString &path)
 
   setAcceptDrops(true);
 
-  setXMLFile( "kwrite_shell.rc" );
+  setXMLFile( "kwriteui.rc" );
   createShellGUI( true );
   guiFactory()->addClient( kWrite );
   KParts::GUIActivateEvent ev( true );
