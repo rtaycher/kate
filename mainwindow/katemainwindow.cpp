@@ -935,10 +935,11 @@ void KateMainWindow::restore(bool isRestored)
 
 void KateMainWindow::mSlotFixOpenWithMenu()
 {
+  //kdDebug()<<"13000"<<"fixing open with menu"<<endl;
   documentOpenWith->popupMenu()->clear();
   // get a list of appropriate services.
-  if ( ! docManager->currentDoc() ) return;
-  KMimeType::Ptr mime = KMimeType::findByURL( docManager->currentDoc()->url() );
+  KMimeType::Ptr mime = KMimeType::findByURL( viewManager->activeView()->doc()->url() );
+  //kdDebug()<<"13000"<<"url: "<<viewManager->activeView()->doc()->url().prettyURL()<<"mime type: "<<mime->name()<<endl;
   // some checking goes here...
   KTrader::OfferList offers = KTrader::self()->query(mime->name(), "Type == 'Application'");
   // for each one, insert a menu item...
@@ -953,7 +954,7 @@ void KateMainWindow::mSlotFixOpenWithMenu()
 void KateMainWindow::slotOpenWithMenuAction(int idx)
 {
   KURL::List list;
-  list.append( docManager->currentDoc()->url() );
+  list.append( viewManager->activeView()->doc()->url() );
   QString* appname = new QString( documentOpenWith->popupMenu()->text(idx) );
   if ( appname->compare(i18n("&Other...")) == 0 ) {
     // display "open with" dialog
@@ -963,7 +964,7 @@ void KateMainWindow::slotOpenWithMenuAction(int idx)
     return;
   }
   QString qry = QString("((Type == 'Application') and (Name == '%1'))").arg( appname->latin1() );
-  KMimeType::Ptr mime = KMimeType::findByURL( docManager->currentDoc()->url() );
+  KMimeType::Ptr mime = KMimeType::findByURL( viewManager->activeView()->doc()->url() );
   KTrader::OfferList offers = KTrader::self()->query(mime->name(), qry);
   KService::Ptr app = offers.first();
   // some checking here: pop a wacko message it the app wasn't found.
