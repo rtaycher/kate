@@ -22,6 +22,7 @@
 #include <kxmlguiclient.h>
 #include <qlist.h>
 #include <qstring.h>
+#include <qpixmap.h>
 #include <qwidget.h>
 
 namespace Kate
@@ -72,10 +73,14 @@ class Plugin : public QObject
     virtual ~Plugin ();
 
     virtual PluginView *createView (class MainWindow *) { return 0L; };
-    virtual bool hasView () { return true; };
+     virtual bool hasView () { return true; };
 
     virtual PluginConfigPage *createConfigPage (QWidget *) { return 0L; };
-    virtual bool hasConfigPage () { return false; };
+     virtual bool hasConfigPage () { return false; };
+     virtual class QString configPageName() { return 0L; };
+    virtual class QString configPageTitle() { return 0L; };
+    virtual class QPixmap configPageIcon() { return 0L; };
+
 
     QList<PluginView> viewList;
     class Application *myApp;

@@ -29,11 +29,12 @@ class KateConfigPluginPage: public QVBox
   Q_OBJECT
 
   public:
-    KateConfigPluginPage(QWidget *parent);
+    KateConfigPluginPage(QWidget *parent, class KateConfigDialog *dialog);
     ~KateConfigPluginPage(){;};
 
   private:
     KatePluginManager *myPluginMan;
+   class KateConfigDialog *myDialog;
 
     KListBox *availableBox;
     KListBox *loadedBox;

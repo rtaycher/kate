@@ -20,19 +20,31 @@
 #include "../main/katemain.h"
 
 #include "../document/katehighlight.h"
+#include "../interfaces/plugin.h"
 #include <kdialogbase.h>
+
+struct PluginPageListItem
+{
+  Kate::Plugin *plugin;
+  Kate::PluginConfigPage *page;
+};
 
 class KateConfigDialog : public KDialogBase
 {
   Q_OBJECT
 
   friend class KateMainWindow;
+  friend class KateConfigPluginPage;
 
   public:
     KateConfigDialog (KateMainWindow *parent, const char * = 0);
     ~KateConfigDialog ();
 
     int exec ();
+
+  private:
+    void addPluginPage (Kate::Plugin *plugin);
+    void removePluginPage (Kate::Plugin *plugin);
 
   protected slots:
     virtual void slotApply();
@@ -65,6 +77,8 @@ class KateConfigDialog : public KDialogBase
     class HlManager *hlManager;
     HlDataList hlDataList;
     ItemStyleList defaultStyleList;
+
+    QList<PluginPageListItem> pluginPages;
 };
 
 #endif

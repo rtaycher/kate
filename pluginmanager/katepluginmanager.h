@@ -41,6 +41,7 @@ class KatePluginManager : public QObject
   Q_OBJECT
 
   friend class KateConfigPluginPage;
+  friend class KateConfigDialog;
   friend class KateMainWindow;
   friend class KateApp;
 

@@ -19,6 +19,7 @@
 #include "kateconfigplugindialogpage.moc"
 
 #include "katepluginmanager.h"
+#include "../mainwindow/kateconfigdialog.h"
 #include <klistbox.h>
 #include "../app/kateapp.h"
 #include <qstringlist.h>
@@ -29,9 +30,10 @@
 #include <qtooltip.h>
 #include <kiconloader.h>
 
-KateConfigPluginPage::KateConfigPluginPage(QWidget *parent):QVBox(parent)
+KateConfigPluginPage::KateConfigPluginPage(QWidget *parent, KateConfigDialog *dialog):QVBox(parent)
 {
   myPluginMan=((KateApp*)kapp)->getPluginManager();
+  myDialog=dialog;
 
   QHBox *hbox = new QHBox (this);
 
@@ -111,6 +113,7 @@ void KateConfigPluginPage::loadPlugin ()
     {
       myPluginMan->loadPlugin (myPluginMan->myPluginList.at(i));
       myPluginMan->enablePluginGUI (myPluginMan->myPluginList.at(i));
+      myDialog->addPluginPage (myPluginMan->myPluginList.at(i)->plugin);
     }
   }
 
@@ -125,6 +128,7 @@ void KateConfigPluginPage::unloadPlugin ()
   {
     if  (myPluginMan->myPluginList.at(i)->name == text)
     {
+      myDialog->removePluginPage (myPluginMan->myPluginList.at(i)->plugin);
       myPluginMan->unloadPlugin (myPluginMan->myPluginList.at(i));
     }
   }

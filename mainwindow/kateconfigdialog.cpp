@@ -71,6 +71,8 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
 
   if (!v) return;
 
+  pluginPages.setAutoDelete (false);
+
   KWin kwin;
   kwin.setIcons(winId(), kapp->icon(), kapp->miniIcon());
 
@@ -189,7 +191,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   path << i18n("Plugins") << i18n("Manager");
   page=addVBoxPage(path,i18n("Configure plugins"),
                           BarIcon("misc",KIcon::SizeSmall));
-  (void)new KateConfigPluginPage(page);
+  (void)new KateConfigPluginPage(page, this);
 
   hlManager = HlManager::self();
 
@@ -205,10 +207,45 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   page=addVBoxPage(path,i18n("Highlighting configuration"),
                         SmallIcon("highlighting", KIcon::SizeSmall));
   hlPage = new HighlightDialogPage(hlManager, &defaultStyleList, &hlDataList, 0, page);
+
+  for (uint i=0; i<pluginManager->myPluginList.count(); i++)
+  {
+    if  ( pluginManager->myPluginList.at(i)->load && pluginManager->myPluginList.at(i)->plugin->hasConfigPage() )
+      addPluginPage (pluginManager->myPluginList.at(i)->plugin);
+  }
 }
 
 KateConfigDialog::~KateConfigDialog()
 {
+}
+
+void KateConfigDialog::addPluginPage (Kate::Plugin *plugin)
+{
+  if (!plugin->hasConfigPage()) return;
+
+  QStringList path;
+  path.clear();
+  path << i18n("Plugins") << plugin->configPageName();
+  QVBox *page=addVBoxPage(path, plugin->configPageTitle(), plugin->configPageIcon());
+
+  PluginPageListItem *info=new PluginPageListItem;
+  info->plugin = plugin;
+  info->page = plugin->createConfigPage (page);
+  pluginPages.append(info);
+}
+
+void KateConfigDialog::removePluginPage (Kate::Plugin *plugin)
+{
+  if (!plugin->hasConfigPage()) return;
+
+  for (uint i=0; i<pluginPages.count(); i++)
+  {
+    if  ( pluginPages.at(i)->plugin == plugin )
+    {
+      delete pluginPages.at(i)->page->parentWidget();
+      pluginPages.remove(pluginPages.at(i));
+    }
+  }
 }
 
 int KateConfigDialog::exec()
@@ -271,4 +308,9 @@ void KateConfigDialog::slotApply()
   v->doc()->writeConfig( );
   hlPage->saveData();
   config->sync();
+
+  for (uint i=0; i<pluginPages.count(); i++)
+  {
+    pluginPages.at(i)->page->applyConfig();
+  }
 }
