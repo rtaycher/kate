@@ -74,6 +74,7 @@
 #include <kmenubar.h>
 
 #include <qlayout.h>
+#include <qptrvector.h>
 
 #include <assert.h>
 #include <unistd.h>
@@ -597,6 +598,7 @@ void KateMainWindow::fileSelected(const KFileItem * /*file*/)
  	//fileSelector->dirOperator()->
 }
 
+// TODO make this work
 void KateMainWindow::mSlotFixOpenWithMenu()
 {
   //kdDebug(13001)<<"13000"<<"fixing open with menu"<<endl;
@@ -746,6 +748,34 @@ void KateMainWindow::slotFullScreen(bool t)
 
 bool KateMainWindow::eventFilter( QObject *o, QEvent *e )
 {
+  if ( e->type() == QEvent::WindowActivate && o == this ) {
+    Kate::Document *doc;
+    typedef QPtrVector<Kate::Document> docvector;
+    docvector list( m_docManager->documents() );
+    uint cnt = 0;
+    for( doc = m_docManager->firstDocument(); doc; doc = m_docManager->nextDocument() )
+    {
+      if ( m_docManager->documentInfo( doc )->modifiedOnDisc )
+      {
+        list.insert( cnt, doc );
+        cnt++;
+      }
+    }
+
+    if ( cnt )
+    {
+      list.resize( cnt );
+
+      // TODO
+      // display a dialog with a list of modified documents,
+      // and options to reload/disguard all, or handle individually
+      for ( uint i=0; i < cnt; i++ )
+      {
+        list.at( i )->slotModifiedOnDisk( activeView );
+      }
+    }
+  }
+
   if ( o == greptool && e->type() == QEvent::Show && activeView )
   {
     if ( activeView->getDoc()->url().isLocalFile() )
