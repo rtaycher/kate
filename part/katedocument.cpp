@@ -74,6 +74,7 @@
 #include <kdebug.h>
 #include <kinstance.h>
 #include <kglobalsettings.h>
+#include <ksavefile.h>
 
 class KateUndo
 {
@@ -4142,6 +4143,154 @@ void KateDocument::setConfigFlags (uint flags)
     if (updateView) updateViews ();
   }
 }
+
+
+
+void KateDocument::exportAs(const QString& filter)
+{
+	if (filter=="kate_html_export")
+	{
+		KSaveFile *savefile=new KSaveFile("/tmp/jw_1000_tmp.html");
+		if (!savefile->status())
+		{
+			if (exportDocumentToHTML(savefile->textStream(),QString("/tmp/jw_1000_tmp.html"))) savefile->close(); else savefile->abort();
+			//if (!savefile->status()) --> Error
+		} else {/*ERROR*/}
+		delete savefile;
+	}
+}
+
+/* For now, this should become an plugin */
+bool KateDocument::exportDocumentToHTML(QTextStream *outputStream,const QString &name)
+{
+	outputStream->setEncoding(QTextStream::UnicodeUTF8);
+	// let's write the HTML header :
+	(*outputStream) << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << endl;
+	(*outputStream) << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"DTD/xhtml1-strict.dtd\">" << endl;
+	(*outputStream) << "<html xmlns=\"http://www.w3.org/1999/xhtml\">" << endl;
+	(*outputStream) << "<head>" << endl;
+	(*outputStream) << "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />" << endl;
+	(*outputStream) << "<meta name=\"Generator\" content=\"Kate, the KDE Advanced Text Editor\" />" << endl;
+	// for the title, we write the name of the file (/usr/local/emmanuel/myfile.cpp -> myfile.cpp)
+	(*outputStream) << "<title>" << name.right(name.length() - name.findRev('/') -1) << "</title>" << endl;
+	(*outputStream) << "</head>" << endl;
+
+	(*outputStream) << "<body><pre>" << endl;
+	// for each line :
+
+	// some variables :
+	bool previousCharacterWasBold = false;
+	bool previousCharacterWasItalic = false;
+	// when entering a new color, we'll close all the <b> & <i> tags,
+	// for HTML compliancy. that means right after that font tag, we'll
+	// need to reinitialize the <b> and <i> tags.
+	bool needToReinitializeTags = false;
+	QColor previousCharacterColor(0,0,0); // default color of HTML characters is black
+	(*outputStream) << "<span style='color=#000000'>";
+
+	for (int curLine=0;curLine<numLines();curLine++)
+	{ // html-export that line :
+		TextLine::Ptr textLine = getTextLine(curLine);
+		//ASSERT(textLine != NULL);
+		// for each character of the line : (curPos is the position in the line)
+		for (int curPos=0;curPos<textLine->length();curPos++)
+		{
+			Attribute *charAttributes = attribute(textLine->getAttr(curPos));
+			//ASSERT(charAttributes != NULL);
+			// let's give the color for that character :
+			if ( (charAttributes->col != previousCharacterColor))
+			{	// the new character has a different color :
+				// if we were in a bold or italic section, close it
+				if (previousCharacterWasBold)
+					(*outputStream) << "</b>";
+				if (previousCharacterWasItalic)
+					(*outputStream) << "</i>";
+
+				// close the previous font tag :
+				(*outputStream) << "</span>";
+				// let's read that color :
+				int red, green, blue;
+				// getting the red, green, blue values of the color :
+				charAttributes->col.rgb(&red, &green, &blue);
+				(*outputStream) << "<span style='color:#"
+							<< ( (red < 0x10)?"0":"")  // need to put 0f, NOT f for instance. don't touch 1f.
+							<< QString::number(red, 16) // html wants the hex value here (hence the 16)
+							<< ( (green < 0x10)?"0":"")
+							<< QString::number(green, 16)
+							<< ( (blue < 0x10)?"0":"")
+							<< QString::number(blue, 16)
+							<< "'>";
+				// we need to reinitialize the bold/italic status, since we closed all the tags
+				needToReinitializeTags = true;
+			}
+			// bold status :
+			if ( (needToReinitializeTags && charAttributes->bold) ||
+			    (!previousCharacterWasBold && charAttributes->bold) )
+				// we enter a bold section
+				(*outputStream) << "<b>";
+			if ( !needToReinitializeTags && (previousCharacterWasBold && !charAttributes->bold) )
+				// we leave a bold section
+				(*outputStream) << "</b>";
+
+			// italic status :
+			if ( (needToReinitializeTags && charAttributes->italic) ||
+			     (!previousCharacterWasItalic && charAttributes->italic) )
+				// we enter an italic section
+				(*outputStream) << "<i>";
+			if ( !needToReinitializeTags && (previousCharacterWasItalic && !charAttributes->italic) )
+				// we leave an italic section
+				(*outputStream) << "</i>";
+
+			// write the actual character :
+			(*outputStream) << HTMLEncode(textLine->getChar(curPos));
+
+			// save status for the next character :
+			previousCharacterWasItalic = charAttributes->italic;
+			previousCharacterWasBold = charAttributes->bold;
+			previousCharacterColor = charAttributes->col;
+			needToReinitializeTags = false;
+		}
+		// finish the line :
+		(*outputStream) << endl;
+	}
+	// HTML document end :
+	(*outputStream) << "</span>";  // i'm guaranteed a span is started (i started one at the beginning of the output).
+	(*outputStream) << "</pre></body>";
+	(*outputStream) << "</html>";
+	// close the file :
+	return true;
+}
+
+QString KateDocument::HTMLEncode(QChar theChar)
+{
+	switch (theChar.latin1())
+	{
+	case '>':
+		return QString("&gt;");
+	case '<':
+		return QString("&lt;");
+	case '&':
+		return QString("&amp;");
+	};
+	return theChar;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 KateCursor::KateCursor ( KateDocument *doc)
 {

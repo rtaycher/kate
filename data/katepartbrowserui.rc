@@ -3,6 +3,7 @@
 <MenuBar>
  <Menu name="file" noMerge="1"><text>&amp;File</text>
     <Action name="file_save_as"/>
+    <Action name="file_export"/>
  </Menu>
  <Menu name="edit"><Text>&amp;Edit</Text>
   <Action name="select_all"/>

@@ -343,7 +343,7 @@ class KateDocument : public Kate::Document
 
   private:
     QPtrList<KTextEditor::Mark> myMarks;
-    
+
   //
   // KTextEditor::PrintInterface
   //
@@ -437,7 +437,12 @@ class KateDocument : public Kate::Document
       bool kspellPristine;        // doing spell check on a clean document?
     } kspell;
 
-
+   //export feature
+   public slots:
+   	void exportAs(const QString&);
+   private: //the following things should become plugins
+   bool exportDocumentToHTML(QTextStream *outputStream,const QString &name);
+   QString HTMLEncode(QChar theChar);
 
   //spell checker
   public:
