@@ -80,11 +80,24 @@ int KateApp::newInstance()
   if ( mainWindows.first()->viewManager->viewCount () == 0 )
     mainWindows.first()->viewManager->openURL( KURL() );     
     
-  if (args -> isSet ("line"))
+  int line = 0;
+  int column = 0;
+  bool nav = false;
+  
+  if (args->isSet ("line"))
   {
-    int line = args->getOption ("line").toInt();
-    mainWindows.first()->viewManager->activeView ()->setCursorPosition (line, 0);
-  }
+    line = args->getOption ("line").toInt();
+    nav = true;
+  } 
+  
+  if (args->isSet ("column"))
+  {
+    column = args->getOption ("column").toInt();
+    nav = true;
+  } 
+  
+  if (nav)
+    mainWindows.first()->viewManager->activeView ()->setCursorPosition (line, column);
                            
   m_firstStart = false;
     
