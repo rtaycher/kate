@@ -1,12 +1,12 @@
-METASOURCES = kateappIface.moc katedocmanagerIface.moc katedocumentIface.moc katepluginIface.moc kateviewIface.moc kateviewmanagerIface.moc
+METASOURCES = application.moc docmanager.moc document.moc plugin.moc view.moc viewmanager.moc
 
-lib_LTLIBRARIES = libkateIface.la
+lib_LTLIBRARIES = libkate.la
 
-libkateIface_la_SOURCES = kateIface.cpp
-libkateIface_la_LIBADD   = -lktexteditor
-libkateIface_la_LDFLAGS = $(all_libraries) $(KDE_RPATH)  $(KDE_PLUGIN)  -module -avoid-version
+libkate_la_SOURCES = interfaces.cpp
+libkate_la_LIBADD   = -lktexteditor
+libkate_la_LDFLAGS = $(all_libraries) $(KDE_RPATH)  $(KDE_PLUGIN)  -module -avoid-version
 
-kateinclude_HEADERS = kateappIface.h katedocmanagerIface.h katedocumentIface.h katepluginIface.h kateviewIface.h kateviewmanagerIface.h
+kateinclude_HEADERS = application.h docmanager.h document.h plugin.h view.h viewmanager.h
 kateincludedir = $(includedir)/kate
 
 INCLUDES= $(all_includes)

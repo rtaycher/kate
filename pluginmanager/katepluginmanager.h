@@ -18,8 +18,7 @@
 #define _kate_pluginmanager_h_
 
 #include "../main/katemain.h"
-
-class KatePluginIface;
+#include "../interfaces/plugin.h"
 
 #include <qobject.h>
 #include <qvaluelist.h>
@@ -32,7 +31,7 @@ struct PluginListItem
   QString name;
   QString description;
   QString author;
-  KatePluginIface *plugin;
+  Kate::Plugin *plugin;
 };
 
 typedef QList<PluginListItem> PluginList;

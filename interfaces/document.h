@@ -1,11 +1,11 @@
- /***************************************************************************
-                          katepluginiface.h  -  description
+/***************************************************************************
+                          document.h -  description
                              -------------------
-    begin                : FRE Feb 23 2001
-    copyright            : (C) 2001 by Joseph Wenninger
-    email                : jowenn@bigfoot.com
+    begin                : Mon Jan 15 2001
+    copyright            : (C) 2001 by Christoph "Crossfire" Cullmann
+    email                : crossfire@babylon2k.de
  ***************************************************************************/
- 
+
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -14,19 +14,24 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef _KANT_DOCUMENT_IFACE_
-#define _KANT_DOCUMENT_IFACE_
+
+#ifndef _KATE_DOCUMENT_INCLUDE_
+#define _KATE_DOCUMENT_INCLUDE_
 
 #include <ktexteditor.h>
-#include <qstring.h>
 
-class KateDocumentIface : public KTextEditor::Document
+namespace Kate
+{
+
+class Document : public KTextEditor::Document
 {
   Q_OBJECT
 
   public:
-    KateDocumentIface( ) : KTextEditor::Document (0L, 0L) {;};
-    virtual ~KateDocumentIface () {;};
+    Document ( ) : KTextEditor::Document (0L, 0L) {;};
+    virtual ~Document () {;};
+};
+
 };
 
 #endif

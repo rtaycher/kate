@@ -49,7 +49,7 @@
 
 uint KateViewManager::myViewID = 0;
 
-KateViewManager::KateViewManager (QWidget *parent, KateDocManager *docManager) : KateViewManagerIface  (parent)
+KateViewManager::KateViewManager (QWidget *parent, KateDocManager *docManager) : Kate::ViewManager  (parent)
 {
   // no memleaks
   viewList.setAutoDelete(true);

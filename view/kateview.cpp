@@ -1393,7 +1393,7 @@ void KateViewInternal::dropEvent( QDropEvent *event )
   }
 }
 
-KateView::KateView(KateDocument *doc, QWidget *parent, const char * name, bool HandleOwnDND, bool deleteDoc) : KateViewIface (doc, parent, name), DCOPObject(name)
+KateView::KateView(KateDocument *doc, QWidget *parent, const char * name, bool HandleOwnDND, bool deleteDoc) : Kate::View (doc, parent, name), DCOPObject(name)
 {
   setInstance( KateFactory::instance() );
 

@@ -1,11 +1,11 @@
- /***************************************************************************
-                          katepluginiface.h  -  description
+/***************************************************************************
+                          view.h -  description
                              -------------------
-    begin                : FRE Feb 23 2001
-    copyright            : (C) 2001 by Joseph Wenninger
-    email                : jowenn@bigfoot.com
+    begin                : Mon Jan 15 2001
+    copyright            : (C) 2001 by Christoph "Crossfire" Cullmann
+    email                : crossfire@babylon2k.de
  ***************************************************************************/
- 
+
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -14,19 +14,22 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef _KANT_VIEW_IFACE_
-#define _KANT_VIEW_IFACE_
+
+#ifndef _KATE_VIEW_INCLUDE_
+#define _KATE_VIEW_INCLUDE_
 
 #include <ktexteditor.h>
-#include <qstring.h>
 
-class KateViewIface : public KTextEditor::View
+namespace Kate
+{
+
+class View : public KTextEditor::View
 {
   Q_OBJECT
 
   public:
-    KateViewIface( KTextEditor::Document *doc, QWidget *parent, const char *name = 0 ) : KTextEditor::View (doc, parent, name) {;};
-    virtual ~KateViewIface () {;};
+    View ( KTextEditor::Document *doc, QWidget *parent, const char *name = 0 ) : KTextEditor::View (doc, parent, name) {;};
+    virtual ~View () {;};
 
     virtual QString markedText()=0;
 
@@ -64,6 +67,8 @@ class KateViewIface : public KTextEditor::View
     virtual void shiftTop() { ; };
     virtual void bottom() { ; };
     virtual void shiftBottom() { ; };
+};
+
 };
 
 #endif

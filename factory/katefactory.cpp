@@ -26,7 +26,7 @@
 
 extern "C"
 {
-  void *init_libkate()
+  void *init_libkatecore()
   {
     return new KateFactory();
   }
@@ -51,9 +51,9 @@ KateFactory::~KateFactory()
 
 KParts::Part *KateFactory::createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const char *classname, const QStringList & )
 {
-  bool bWantDocument = (( strcmp( classname, "KTextEditor::Document" ) == 0L) || (strcmp( classname, "KateDocumentIface" ) == 0L) );
+  bool bWantDocument = (( strcmp( classname, "KTextEditor::Document" ) == 0L) || (strcmp( classname, "Kate::Document" ) == 0L) );
   bool bWantBrowserView = ( strcmp( classname, "Browser/View" ) == 0L );
-  bool bDeleteDocument = ( strcmp( classname, "KateDocumentIface" ) == 0L );
+  bool bDeleteDocument = !( strcmp( classname, "Kate::Document" ) == 0L );
 
   KParts::ReadWritePart *part = new KateDocument (0L, 0L, !bWantDocument, bWantBrowserView, bDeleteDocument, parentWidget, widgetName, parent, name);
 

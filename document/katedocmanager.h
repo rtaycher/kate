@@ -19,12 +19,13 @@
 #define kate_docmanager_h
 
 #include "../main/katemain.h"
-#include "../interfaces/katedocmanagerIface.h"
+#include "../interfaces/docmanager.h"
+#include "../interfaces/document.h"
 
 #include <qlist.h>
 #include <qobject.h>
 
-class KateDocManager : public KateDocManagerIface
+class KateDocManager : public Kate::DocManager
 {
   Q_OBJECT
 
@@ -66,12 +67,12 @@ class KateDocManager : public KateDocManagerIface
     void documentDeleted (uint docID);
 
   public:
-    KateDocumentIface *getNthDoc (uint n) { return (KateDocumentIface *)nthDoc (n); };
-    KateDocumentIface *getCurrentDoc () { return (KateDocumentIface *)currentDoc (); };
-    KateDocumentIface *getFirstDoc () { return (KateDocumentIface *)firstDoc(); };
-    KateDocumentIface *getNextDoc () { return (KateDocumentIface *)nextDoc(); };
+    Kate::Document *getNthDoc (uint n) { return (Kate::Document *)nthDoc (n); };
+    Kate::Document *getCurrentDoc () { return (Kate::Document *)currentDoc (); };
+    Kate::Document *getFirstDoc () { return (Kate::Document *)firstDoc(); };
+    Kate::Document *getNextDoc () { return (Kate::Document *)nextDoc(); };
 
-    KateDocumentIface *getDocWithID (uint id) { return (KateDocumentIface *)docWithID (id); };
+    Kate::Document *getDocWithID (uint id) { return (Kate::Document *)docWithID (id); };
 };
 
 #endif

@@ -1,11 +1,11 @@
- /***************************************************************************
-                          kateIface.cpp  -  description
+/***************************************************************************
+                          interfaces.cpp  -  description
                              -------------------
-    begin                : FRE Feb 23 2001
-    copyright            : (C) 2001 by Joseph Wenninger
-    email                : jowenn@bigfoot.com
+    begin                : Mon Jan 15 2001
+    copyright            : (C) 2001 by Christoph "Crossfire" Cullmann
+    email                : crossfire@babylon2k.de
  ***************************************************************************/
- 
+
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -15,20 +15,20 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "kateappIface.h"
-#include "kateappIface.moc"
+#include "application.h"
+#include "application.moc"
 
-#include "katedocmanagerIface.h"
-#include "katedocmanagerIface.moc"
+#include "docmanager.h"
+#include "docmanager.moc"
 
-#include "katedocumentIface.h"
-#include "katedocumentIface.moc"
+#include "document.h"
+#include "document.moc"
 
-#include "katepluginIface.h"
-#include "katepluginIface.moc"
+#include "plugin.h"
+#include "plugin.moc"
 
-#include "kateviewIface.h"
-#include "kateviewIface.moc"
+#include "view.h"
+#include "view.moc"
 
-#include "kateviewmanagerIface.h"
-#include "kateviewmanagerIface.moc"
+#include "viewmanager.h"
+#include "viewmanager.moc"

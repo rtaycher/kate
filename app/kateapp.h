@@ -19,16 +19,17 @@
 
 #include "../main/katemain.h"
 #include "kateappIface.h"
-#include "../interfaces/kateappIface.h"
+#include "../interfaces/application.h"
+#include "../interfaces/docmanager.h"
+#include "../interfaces/viewmanager.h"
 
 #include <qlist.h>
 
-class KateApp : public KateAppIface, public KateAppDCOPIface
+class KateApp : public Kate::Application, public KateAppDCOPIface
 {
   Q_OBJECT
 
   friend class KateViewManager;
-  friend class KateMyPluginIface;
   friend class KatePluginManager;
 
   public:
@@ -42,8 +43,8 @@ class KateApp : public KateAppIface, public KateAppDCOPIface
     uint mainWindowsCount ();
     virtual QString  isSingleInstance(){if (_singleInstance) return "true"; else return "false";};
 
-    KateViewManagerIface *viewManagerIface ();
-    KateDocManagerIface *docManagerIface ();
+    Kate::ViewManager *getViewManager ();
+    Kate::DocManager *getDocManager ();
     KStatusBar *statusBar ();
 
   private:

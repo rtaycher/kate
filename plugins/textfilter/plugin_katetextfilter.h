@@ -20,7 +20,12 @@
 
 #include <qstring.h>
 
-#include <katepluginIface.h>
+#include "../../interfaces/plugin.h"
+#include "../../interfaces/application.h"
+#include "../../interfaces/view.h"
+#include "../../interfaces/document.h"
+#include "../../interfaces/docmanager.h"
+#include "../../interfaces/viewmanager.h"
 
 #include <klibloader.h>
 #include <qstring.h>
@@ -40,7 +45,7 @@ class KatePluginFactory : public KLibFactory
     static KInstance* s_instance;
 };
 
-class PluginKateTextFilter : public KatePluginIface
+class PluginKateTextFilter : public Kate::Plugin
 {
   Q_OBJECT
 
@@ -48,7 +53,7 @@ class PluginKateTextFilter : public KatePluginIface
     PluginKateTextFilter( QObject* parent = 0, const char* name = 0 );
     virtual ~PluginKateTextFilter();
 
-    KatePluginViewIface *createView ();
+    Kate::PluginView *createView ();
 
   private:
     QString  m_strFilterOutput;

@@ -1,11 +1,11 @@
- /***************************************************************************
-                          katepluginiface.h  -  description
+/***************************************************************************
+                          viewmanager.h -  description
                              -------------------
-    begin                : FRE Feb 23 2001
-    copyright            : (C) 2001 by Joseph Wenninger
-    email                : jowenn@bigfoot.com
+    begin                : Mon Jan 15 2001
+    copyright            : (C) 2001 by Christoph "Crossfire" Cullmann
+    email                : crossfire@babylon2k.de
  ***************************************************************************/
- 
+
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -14,23 +14,27 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef _KANT_VIEWMANAGER_IFACE_
-#define _KANT_VIEWMANAGER_IFACE_
+
+#ifndef _KATE_VIEWMANAGER_INCLUDE_
+#define _KATE_VIEWMANAGER_INCLUDE_
 
 #include <qwidget.h>
 
-#include "kateviewIface.h"
+namespace Kate
+{
 
-class KateViewManagerIface : public QWidget
+class ViewManager : public QWidget
 {
   Q_OBJECT
 
   public:
-    KateViewManagerIface (QWidget *parent) : QWidget(parent) {;};
-    virtual ~KateViewManagerIface () {;};
+    ViewManager (QWidget *parent) : QWidget(parent) {;};
+    virtual ~ViewManager () {;};
 
-    virtual KateViewIface *getActiveView()=0;
+    virtual class View *getActiveView()=0;
     virtual void openURL (KURL)=0;
+};
+
 };
 
 #endif

@@ -1,11 +1,11 @@
- /***************************************************************************
-                          katepluginiface.h  -  description
+/***************************************************************************
+                          docmanager.h -  description
                              -------------------
-    begin                : FRE Feb 23 2001
-    copyright            : (C) 2001 by Joseph Wenninger
-    email                : jowenn@bigfoot.com
+    begin                : Mon Jan 15 2001
+    copyright            : (C) 2001 by Christoph "Crossfire" Cullmann
+    email                : crossfire@babylon2k.de
  ***************************************************************************/
- 
+
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -14,33 +14,37 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef _KANT_DOCMANAGER_IFACE_
-#define _KANT_DOCMANAGER_IFACE_
+
+#ifndef _KATE_DOCMANAGER_INCLUDE_
+#define _KATE_DOCMANAGER_INCLUDE_
 
 #include <qobject.h>
 
-#include "katedocumentIface.h"
+namespace Kate
+{
 
-class KateDocManagerIface : public QObject
+class DocManager : public QObject
 {
   Q_OBJECT
 
   public:
-    KateDocManagerIface () : QObject () {;};
-    virtual ~KateDocManagerIface () {;};
+    DocManager () : QObject () {;};
+    virtual ~DocManager () {;};
 
  public:
-    virtual KateDocumentIface *getNthDoc (uint n)=0;
-    virtual KateDocumentIface *getCurrentDoc ()=0;
-    virtual KateDocumentIface *getFirstDoc ()=0;
-    virtual KateDocumentIface *getNextDoc ()=0;
+    virtual class Document *getNthDoc (uint n)=0;
+    virtual class Document *getCurrentDoc ()=0;
+    virtual class Document *getFirstDoc ()=0;
+    virtual class Document *getNextDoc ()=0;
 
-    virtual KateDocumentIface *getDocWithID (uint id)=0;
+    virtual class Document *getDocWithID (uint id)=0;
 
     virtual int findDoc (KURL url)=0;
     virtual bool isOpen (KURL url)=0;
 
     virtual uint docCount ()=0;
+};
+
 };
 
 #endif

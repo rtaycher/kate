@@ -20,7 +20,12 @@
 
 #include <qstring.h>
 
-#include <katepluginIface.h>
+#include "../../interfaces/plugin.h"
+#include "../../interfaces/application.h"
+#include "../../interfaces/view.h"
+#include "../../interfaces/document.h"
+#include "../../interfaces/docmanager.h"
+#include "../../interfaces/viewmanager.h"
 
 #include <klibloader.h>
 
@@ -38,7 +43,7 @@ class KatePluginFactory : public KLibFactory
     static KInstance* s_instance;
 };
 
-class PluginKateOpenHeader : public KatePluginIface
+class PluginKateOpenHeader : public Kate::Plugin
 {
   Q_OBJECT
 
@@ -46,7 +51,7 @@ class PluginKateOpenHeader : public KatePluginIface
     PluginKateOpenHeader( QObject* parent = 0, const char* name = 0 );
     virtual ~PluginKateOpenHeader();
 
-    KatePluginViewIface *createView ();
+    Kate::PluginView *createView ();
 
   public slots:
     void slotOpenHeader ();

@@ -18,7 +18,12 @@
 #ifndef kate_projectmanager_h
 #define kate_projectmanager_h
 
-#include "katepluginIface.h"
+#include "../../interfaces/plugin.h"
+#include "../../interfaces/application.h"
+#include "../../interfaces/view.h"
+#include "../../interfaces/document.h"
+#include "../../interfaces/docmanager.h"
+#include "../../interfaces/viewmanager.h"
 
 #include <klibloader.h>
 #include <kurl.h>
@@ -39,7 +44,7 @@ class KatePluginFactory : public KLibFactory
     static KInstance* s_instance;
 };
 
-class KateProjectManagerView : public KatePluginViewIface
+class KateProjectManagerView : public Kate::PluginView
 {
   Q_OBJECT
 
@@ -59,7 +64,7 @@ class KateProjectManagerView : public KatePluginViewIface
     void projectMenuAboutToShow();
 };
 
-class KateProjectManager : public KatePluginIface
+class KateProjectManager : public Kate::Plugin
 {
   Q_OBJECT
 
@@ -67,7 +72,7 @@ class KateProjectManager : public KatePluginIface
     KateProjectManager (QObject* parent = 0, const char* name = 0);
     ~KateProjectManager ();
 
-    KatePluginViewIface *createView ();
+    Kate::PluginView *createView ();
 
     KURL projectFile;
 

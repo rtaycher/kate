@@ -132,7 +132,7 @@ QStringList KateDocument::replaceWithList = QStringList();
 KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool bBrowserView, bool deleteDoc,
                                            QWidget *parentWidget, const char *widgetName,
                                            QObject *, const char *name)
-  : KateDocumentIface (), DCOPObject(name), myFont (KGlobalSettings::fixedFont()), myFontMetrics (myFont), hlManager(HlManager::self ())
+  : Kate::Document (), DCOPObject(name), myFont (KGlobalSettings::fixedFont()), myFontMetrics (myFont), hlManager(HlManager::self ())
 {
   PreHighlightedTill=0;
   RequestPreHighlightTill=0;

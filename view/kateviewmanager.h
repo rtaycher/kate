@@ -18,12 +18,13 @@
 #define kate_viewmanager_h__
 
 #include "../main/katemain.h"
-#include "../interfaces/kateviewmanagerIface.h"
+#include "../interfaces/viewmanager.h"
+#include "../interfaces/view.h"
 #include "kateview.h"
 
 class KateSplitter;
 class KSimpleConfig;
-class KateViewManager : public KateViewManagerIface
+class KateViewManager : public Kate::ViewManager
 {
   Q_OBJECT
 
@@ -197,7 +198,7 @@ class KateViewManager : public KateViewManagerIface
     void viewChanged ();
 
   public:  //KatePluginIface
-  virtual KateViewIface *getActiveView(){return (KateViewIface *)activeView();};
+  virtual Kate::View *getActiveView(){return (Kate::View *)activeView();};
 };
 
 #endif

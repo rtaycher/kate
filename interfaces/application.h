@@ -1,11 +1,11 @@
- /***************************************************************************
-                          katepluginiface.h  -  description
+/***************************************************************************
+                          application.h -  description
                              -------------------
-    begin                : FRE Feb 23 2001
-    copyright            : (C) 2001 by Joseph Wenninger
-    email                : jowenn@bigfoot.com
+    begin                : Mon Jan 15 2001
+    copyright            : (C) 2001 by Christoph "Crossfire" Cullmann
+    email                : crossfire@babylon2k.de
  ***************************************************************************/
- 
+
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -14,27 +14,30 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef _KANT_APP_IFACE_
-#define _KANT_APP_IFACE_
+
+#ifndef _KATE_APPLICATION_INCLUDE_
+#define _KATE_APPLICATION_INCLUDE_
 
 #include <kapp.h>
 
 class KStatusBar;
 
-#include "katedocmanagerIface.h"
-#include "kateviewmanagerIface.h"
+namespace Kate
+{
 
-class KateAppIface : public KApplication
+class Application : public KApplication
 {
   Q_OBJECT
 
   public:
-    KateAppIface () : KApplication () {;};
-    virtual ~KateAppIface () {;};
+    Application () : KApplication () {;};
+    virtual ~Application () {;};
 
-    virtual KateViewManagerIface *viewManagerIface ()=0;
-    virtual KateDocManagerIface *docManagerIface ()=0;
+    virtual class ViewManager *getViewManager ()=0;
+    virtual class DocManager *getDocManager ()=0;
     virtual KStatusBar *statusBar ()=0;
+};
+
 };
 
 #endif

@@ -53,7 +53,7 @@ QObject* KatePluginFactory::createObject( QObject* parent, const char* name, con
 KInstance* KatePluginFactory::s_instance = 0L;
 
 PluginKateHtmlTools::PluginKateHtmlTools( QObject* parent, const char* name )
-    : KatePluginIface ( parent, name )
+    : Kate::Plugin ( parent, name )
 {
 }
 
@@ -61,9 +61,9 @@ PluginKateHtmlTools::~PluginKateHtmlTools()
 {
 }
 
-KatePluginViewIface *PluginKateHtmlTools::createView ()
+Kate::PluginView *PluginKateHtmlTools::createView ()
 {
-   KatePluginViewIface *view = new KatePluginViewIface ();
+   Kate::PluginView *view = new Kate::PluginView ();
 
 (void)  new KAction ( i18n("HT&ML Tag..."), "edit_HTML_tag", ALT + Key_Minus, this,
                                 SLOT( slotEditHTMLtag() ), view->actionCollection(), "edit_HTML_tag" );
@@ -76,12 +76,12 @@ KatePluginViewIface *PluginKateHtmlTools::createView ()
 void PluginKateHtmlTools::slotEditHTMLtag()
 //  PCP
 {
-  KateViewIface *kv=appIface->viewManagerIface()->getActiveView();
+  Kate::View *kv=myApp->getViewManager()->getActiveView();
   if (!kv) return;
 
   QString text ( KatePrompt ( i18n("HTML Tag"),
                         i18n("Enter HTML tag contents. We will supply the <, > and closing tag"),
-                        (QWidget *)appIface->viewManagerIface()->getActiveView())
+                        (QWidget *)myApp->getViewManager()->getActiveView())
                          );
 
   if ( !text.isEmpty () )
@@ -118,7 +118,7 @@ QString PluginKateHtmlTools::KatePrompt
 }
 
 
-void PluginKateHtmlTools::slipInHTMLtag (KateViewIface & view, QString text)  //  PCP
+void PluginKateHtmlTools::slipInHTMLtag (Kate::View & view, QString text)  //  PCP
 {
 
   //  We must add a heavy elaborate HTML markup system. Not!

@@ -55,7 +55,7 @@ QObject* KatePluginFactory::createObject( QObject* parent, const char* name, con
 
 KInstance* KatePluginFactory::s_instance = 0L;
 
-KateProjectManager::KateProjectManager (QObject* parent, const char* name) : KatePluginIface(parent, name)
+KateProjectManager::KateProjectManager (QObject* parent, const char* name) : Kate::Plugin(parent, name)
 {
 }
 
@@ -63,9 +63,9 @@ KateProjectManager::~KateProjectManager ()
 {
 }
 
-KatePluginViewIface *KateProjectManager::createView ()
+Kate::PluginView *KateProjectManager::createView ()
 {
-   KatePluginViewIface *view = (KatePluginViewIface *) new KateProjectManagerView (this);
+   Kate::PluginView *view = (Kate::PluginView *) new KateProjectManagerView (this);
 
    viewList.append (view);
    return view;
@@ -112,7 +112,7 @@ void KateProjectManager::slotProjectOpen()
 	{
 		QDomElement e = n.toElement();
 		KURL file_url = e.attribute("path");
-		appIface->viewManagerIface()->openURL(file_url);
+		myApp->getViewManager()->openURL(file_url);
 	}
 
 	projectFile = url;
@@ -130,7 +130,7 @@ void KateProjectManager::slotProjectSave()
 	top.setAttribute("name", "project_name_here");
 	top.setAttribute("version", "1");
 
-	for (KateDocumentIface* k = appIface->docManagerIface()->getFirstDoc(); k != 0; k = appIface->docManagerIface()->getNextDoc())
+	for (Kate::Document* k = myApp->getDocManager()->getFirstDoc(); k != 0; k = myApp->getDocManager()->getNextDoc())
 	{
 		QDomElement file = xml.createElement("file");
 		file.setAttribute("path", k->url().path());
@@ -219,7 +219,7 @@ void KateProjectManager::slotProjectCompile()
   //  insert a line here to save all documents
 
   FILE *fp = NULL;
-  assert (appIface->statusBar());
+  assert (myApp->statusBar());
 
 
   /*  assume the user changed the file & wants to compile it...  */
@@ -229,10 +229,10 @@ void KateProjectManager::slotProjectCompile()
   fp = popen ("./builder.sh", "r");
 
   if (fp)
-    readAnyErrors(fp, *appIface->statusBar());
+    readAnyErrors(fp, *myApp->statusBar());
 }
 
-KateProjectManagerView::KateProjectManagerView(QObject *parent) : KatePluginViewIface (parent)
+KateProjectManagerView::KateProjectManagerView(QObject *parent) : Kate::PluginView (parent)
 {
   setXML( "plugins/kateprojectmanager/ui.rc" );
 
@@ -240,19 +240,19 @@ KateProjectManagerView::KateProjectManagerView(QObject *parent) : KatePluginView
  connect(pm_project->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(projectMenuAboutToShow()));
 
   // KActions for Project
-   projectNew = new KAction(i18n("&New"), 0, (KateProjectManager*)pluginIface,
+   projectNew = new KAction(i18n("&New"), 0, (KateProjectManager*)myPlugin,
          SLOT(slotProjectNew()), actionCollection(),"project_new");
-  projectOpen = new KAction(i18n("&Open"), 0, (KateProjectManager*)pluginIface,
+  projectOpen = new KAction(i18n("&Open"), 0, (KateProjectManager*)myPlugin,
          SLOT(slotProjectOpen()), actionCollection(),"project_open");
-  projectSave = new KAction(i18n("&Save"), 0, (KateProjectManager*)pluginIface,
+  projectSave = new KAction(i18n("&Save"), 0, (KateProjectManager*)myPlugin,
          SLOT(slotProjectSave()), actionCollection(),"project_save");
-  projectSaveAs = new KAction(i18n("&SaveAs"), 0, (KateProjectManager*)pluginIface,
+  projectSaveAs = new KAction(i18n("&SaveAs"), 0, (KateProjectManager*)myPlugin,
          SLOT(slotProjectSaveAs()), actionCollection(),"project_save_as");
-  projectConfigure = new KAction(i18n("&Configure"), 0, (KateProjectManager*)pluginIface,
+  projectConfigure = new KAction(i18n("&Configure"), 0, (KateProjectManager*)myPlugin,
          SLOT(slotProjectConfigure()), actionCollection(),"project_configure");
-  projectCompile = new KAction(i18n("&Compile"), Key_F5, (KateProjectManager*)pluginIface,
+  projectCompile = new KAction(i18n("&Compile"), Key_F5, (KateProjectManager*)myPlugin,
          SLOT(slotProjectCompile()), actionCollection(),"project_compile");
-  projectRun = new KAction(i18n("&Run"), 0, (KateProjectManager*)pluginIface,
+  projectRun = new KAction(i18n("&Run"), 0, (KateProjectManager*)myPlugin,
          SLOT(slotProjectRun()), actionCollection(),"project_run");
 }
 
@@ -266,12 +266,12 @@ void KateProjectManagerView::projectMenuAboutToShow()
   projectConfigure->setEnabled(false);
   projectRun->setEnabled(false);
 
-  if (((KateProjectManager*)pluginIface)->projectFile.isEmpty())
+  if (((KateProjectManager*)myPlugin)->projectFile.isEmpty())
     projectSave->setEnabled(false);
   else
     projectSave->setEnabled(true);
 
-  if (pluginIface->appIface->docManagerIface()->docCount () == 0)
+  if (myPlugin->myApp->getDocManager()->docCount () == 0)
    projectSaveAs->setEnabled(false);
   else
     projectSaveAs->setEnabled(true);

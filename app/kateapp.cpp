@@ -29,7 +29,7 @@
 #include <dcopclient.h>
 #include <kconfig.h>
 
-KateApp::KateApp () : KateAppIface (),DCOPObject ("KateApp" )
+KateApp::KateApp () : Kate::Application (),DCOPObject ("KateApp" )
 {
   myWinID = 0;
   mainWindows.setAutoDelete (false);
@@ -112,19 +112,19 @@ void KateApp::openURL (const QString &name)
   mainWindows.at(n)->viewManager->openURL (KURL(name));
 }
 
-KateViewManagerIface *KateApp::viewManagerIface ()
+Kate::ViewManager *KateApp::getViewManager ()
 {
   int n = mainWindows.find ((KateMainWindow *)activeWindow());
 
   if (n < 0)
     n=0;
 
-  return ((KateViewManagerIface *)mainWindows.at(n)->viewManager);
+  return ((Kate::ViewManager *)mainWindows.at(n)->viewManager);
 }
 
-KateDocManagerIface *KateApp::docManagerIface ()
+Kate::DocManager *KateApp::getDocManager ()
 {
-  return ((KateDocManagerIface *)docManager);
+  return ((Kate::DocManager *)docManager);
 }
 
 KStatusBar *KateApp::statusBar ()

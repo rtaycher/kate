@@ -18,8 +18,6 @@
 #include "katepluginmanager.h"
 #include "katepluginmanager.moc"
 
-#include "../interfaces/katepluginIface.h"
-
 #include "../app/kateapp.h"
 #include "../mainwindow/katemainwindow.h"
 
@@ -117,7 +115,7 @@ void KatePluginManager::enableAllPluginsGUI (KateMainWindow *win)
 void KatePluginManager::loadPlugin (PluginListItem *item)
 {
   KLibFactory *factory = KLibLoader::self()->factory( item->libname.latin1() );
-  item->plugin = (KatePluginIface *)factory->create( (KateAppIface *)parent(), "", "KatePluginIface" );
+  item->plugin = (Kate::Plugin *)factory->create( (Kate::Application *)parent(), "", "Kate::Plugin" );
   item->load = true;
 }
 

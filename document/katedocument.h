@@ -54,7 +54,7 @@
 
 class KateCmd;
 
-#include "../interfaces/katedocumentIface.h"
+#include "../interfaces/document.h"
 #include "./katedocumentIface.h"
 
 class Attribute {
@@ -127,7 +127,7 @@ struct KateMark
   @see TextLine
   @author Jochen Wilhelmy
 */
-class KateDocument : public KateDocumentIface, virtual public KateDocumentDCOPIface
+class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
 {
     Q_OBJECT
     friend class KateViewInternal;

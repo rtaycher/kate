@@ -24,7 +24,7 @@
 
 uint KateDocManager::myDocID = 0;
 
-KateDocManager::KateDocManager () : KateDocManagerIface ()
+KateDocManager::KateDocManager () : Kate::DocManager ()
 {
   docList.setAutoDelete(true);
 }

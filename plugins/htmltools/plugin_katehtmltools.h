@@ -20,7 +20,12 @@
 
 #include <qstring.h>
 
-#include <katepluginIface.h>
+#include "../../interfaces/plugin.h"
+#include "../../interfaces/application.h"
+#include "../../interfaces/view.h"
+#include "../../interfaces/document.h"
+#include "../../interfaces/docmanager.h"
+#include "../../interfaces/viewmanager.h"
 
 #include <klibloader.h>
 
@@ -38,20 +43,20 @@ class KatePluginFactory : public KLibFactory
     static KInstance* s_instance;
 };
 
-class PluginKateHtmlTools : public KatePluginIface
+class PluginKateHtmlTools : public Kate::Plugin
 {
   Q_OBJECT
 public:
   PluginKateHtmlTools( QObject* parent = 0, const char* name = 0 );
   virtual ~PluginKateHtmlTools();
 
-  KatePluginViewIface *createView ();
+  Kate::PluginView *createView ();
 
 private:
 
   QString KatePrompt (QString strTitle, QString strPrompt,
 			     QWidget * that);
-  void slipInHTMLtag (KateViewIface & view, QString text);
+  void slipInHTMLtag (Kate::View & view, QString text);
 
 public slots:
   void slotEditHTMLtag();

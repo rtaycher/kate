@@ -40,7 +40,7 @@
 
 #include "../main/katemain.h"
 
-#include "../interfaces/kateviewIface.h"
+#include "../interfaces/view.h"
 
 #include <kparts/browserextension.h>
 #include <qlist.h>
@@ -299,7 +299,7 @@ class KateViewInternal : public QWidget {
   @author Jochen Wilhelmy
 */
 
-class KateView : public KateViewIface, virtual public KateViewDCOPIface
+class KateView : public Kate::View, virtual public KateViewDCOPIface
 {
     Q_OBJECT
     friend class KateViewInternal;

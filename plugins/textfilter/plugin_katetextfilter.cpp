@@ -56,7 +56,7 @@ KInstance* KatePluginFactory::s_instance = 0L;
 
 
 PluginKateTextFilter::PluginKateTextFilter( QObject* parent, const char* name )
-    : KatePluginIface ( parent, name ),
+    : Kate::Plugin ( parent, name ),
   m_pFilterShellProcess (NULL)
 {
 }
@@ -66,9 +66,9 @@ PluginKateTextFilter::~PluginKateTextFilter()
   delete m_pFilterShellProcess;
 }
 
-KatePluginViewIface *PluginKateTextFilter::createView ()
+Kate::PluginView *PluginKateTextFilter::createView ()
 {
-   KatePluginViewIface *view = new KatePluginViewIface ();
+   Kate::PluginView *view = new Kate::PluginView ();
 
   (void)  new KAction ( i18n("Fi&lter Text..."), "edit_filter", CTRL + Key_Backslash, this,
   SLOT( slotEditFilter() ), view->actionCollection(), "edit_filter" );
@@ -98,7 +98,7 @@ splitString (QString q, char c, QStringList &list)  //  PCP
 
 
         static void  //  PCP
-slipInNewText (KateViewIface & view, QString pre, QString marked, QString post, bool reselect)
+slipInNewText (Kate::View & view, QString pre, QString marked, QString post, bool reselect)
 {
 
   int preDeleteLine = -1, preDeleteCol = -1;
@@ -207,7 +207,7 @@ PluginKateTextFilter::slotFilterProcessExited (KProcess * pProcess)
 {
 
 	assert (pProcess == m_pFilterShellProcess);
-	KateViewIface * kv (appIface->viewManagerIface()->getActiveView());
+	Kate::View * kv (myApp->getViewManager()->getActiveView());
 	if (!kv) return;
 	QString marked (kv -> markedText ());
 	if (marked.length() > 0)
@@ -220,7 +220,7 @@ PluginKateTextFilter::slotFilterProcessExited (KProcess * pProcess)
 
 
         static void  //  PCP
-slipInFilter (KShellProcess & shell, KateViewIface & view, QString command)
+slipInFilter (KShellProcess & shell, Kate::View & view, QString command)
 {
 
   QString marked (view.markedText ());
@@ -250,12 +250,12 @@ PluginKateTextFilter::slotFilterCloseStdin (KProcess * pProcess)
                  void
 PluginKateTextFilter::slotEditFilter ()  //  PCP
 {
-  KateViewIface * kv (appIface->viewManagerIface()->getActiveView());
+  Kate::View * kv (myApp->getViewManager()->getActiveView());
   if (!kv) return;
 
   QString text ( KatePrompt ( i18n("Filter"),
                         i18n("Enter command to pipe selected text thru"),
-                        (QWidget*)  appIface->viewManagerIface()->getActiveView()
+                        (QWidget*)  myApp->getViewManager()->getActiveView()
                         ) );
 
   if ( !text.isEmpty () )
