@@ -130,11 +130,15 @@ void KatePluginManager::unloadPlugin (PluginListItem *item)
 
 void KatePluginManager::enablePluginGUI (PluginListItem *item, KateMainWindow *win)
 {
+  if (!item->plugin->hasView()) return;
+
   win->guiFactory()->addClient( item->plugin->createView(win) );
 }
 
 void KatePluginManager::enablePluginGUI (PluginListItem *item)
 {
+  if (!item->plugin->hasView()) return;
+
   for (uint i=0; i< ((KateApp*)parent())->mainWindows.count(); i++)
   {
     ((KateApp*)parent())->mainWindows.at(i)->guiFactory()->addClient( item->plugin->createView(((KateApp*)parent())->mainWindows.at(i)) );
