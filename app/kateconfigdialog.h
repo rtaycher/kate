@@ -76,7 +76,6 @@ class KateConfigDialog : public KDialogBase
     Kate::ConfigPage *selectConfigPage;
     Kate::ConfigPage *editConfigPage;
     Kate::ConfigPage *keysConfigPage;
-    Kate::ConfigPage *kSpellConfigPage;
     Kate::ConfigPage *hlConfigPage;
 
     QPtrList<PluginPageListItem> pluginPages;

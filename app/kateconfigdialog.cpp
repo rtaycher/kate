@@ -234,13 +234,6 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
                         SmallIcon("edit", KIcon::SizeSmall));
   keysConfigPage = v->getDoc()->keysConfigPage (page);
 
-  // spell checker
-  path.clear();
-  path << i18n("Editor") << i18n("Spelling");
-  page = addVBoxPage( path, i18n("Spell Checker Behavior"),
-                          BarIcon("spellcheck", KIcon::SizeSmall) );
-  kSpellConfigPage = v->getDoc()->kSpellConfigPage (page);
-
   path.clear();
   path << i18n("Editor") << i18n("Highlighting");
   page=addVBoxPage(path,i18n("Highlighting Configuration"),
@@ -330,7 +323,6 @@ void KateConfigDialog::slotApply()
   selectConfigPage->apply();
   editConfigPage->apply();
   keysConfigPage->apply();
-  kSpellConfigPage->apply();
   hlConfigPage->apply();
 
   v->getDoc()->writeConfig();
