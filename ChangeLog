@@ -1,3 +1,6 @@
+2001-04-10 Christoph Cullmann <crossfire@babylon2k.de>
+             * bugfixes for drawBuffer stuff, next/prev viewspace, restoreView
+
 2001-04-08 Christoph Cullmann <crossfire@babylon2k.de>
              * now encoding for files can be selected at settings dialog (not only UTF8, all possible encodings)
              * dropped old code -> use Waldo's code ;)
