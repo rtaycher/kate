@@ -1,5 +1,5 @@
 noinst_LTLIBRARIES =libkateview.la
-libkateview_la_SOURCES = kateviewspace.cpp kateviewmanager.cpp katesplitter.cpp kateview.cpp  kateviewIface.skel kateundohistory.cpp kateviewdialog.cpp
+libkateview_la_SOURCES = kateviewspace.cpp kateviewmanager.cpp katesplitter.cpp kateview.cpp  kateviewIface.skel kateundohistory.cpp kateviewdialog.cpp kateviewhighlightaction.cpp
 
 INCLUDES= $(all_includes)
 

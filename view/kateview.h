@@ -55,6 +55,7 @@
 #include <kspell.h>
 
 #include "kateviewIface.h"
+#include "kateviewhighlightaction.h"
 
 class KToggleAction;
 class KActionMenu;
@@ -410,7 +411,9 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
     KActionMenu *bookmarkMenu;
     KToggleAction *setVerticalSelection, *viewBorder;
     KRecentFilesAction *fileRecent;
-    KSelectAction *setHighlight, *setEndOfLine;
+    KSelectAction *setEndOfLine;
+    KateViewHighlightAction *setHighlight;
+//    KSelectAction *setHighlight, *setEndOfLine;
 
   protected slots:
     void slotDropEventPass( QDropEvent * ev );

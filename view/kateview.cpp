@@ -1398,7 +1398,8 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate
   }
 
   readConfig();
-  setHighlight->setCurrentItem(getHl());
+  //setHighlight->slotAboutToShow();
+//  setHighlight->setCurrentItem(getHl());
   slotUpdate();
 }
 
@@ -1442,7 +1443,8 @@ void KateView::setupActions()
       KStdAction::findPrev(this, SLOT(findPrev()), myDoc->actionCollection(), "find_prev");
       KStdAction::gotoLine(this, SLOT(gotoLine()), myDoc->actionCollection(), "goto_line" );
       new KAction(i18n("&Configure Editor..."), 0, this, SLOT(configDialog()),myDoc->actionCollection(), "set_confdlg");
-      setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, myDoc->actionCollection(), "set_highlight");
+//      setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, myDoc->actionCollection(), "set_highlight");
+	setHighlight = new KateViewHighlightAction(this,i18n("&Highlight Mode"),0,myDoc->actionCollection(),"set_highlight");
       KStdAction::selectAll(this, SLOT(selectAll()), myDoc->actionCollection(), "select_all");
       new KAction(i18n("&Deselect All"), 0, this, SLOT(deselectAll()),
                 myDoc->actionCollection(), "unselect_all");
@@ -1462,7 +1464,8 @@ void KateView::setupActions()
       KStdAction::findPrev(this, SLOT(findPrev()), actionCollection(), "edit_find_prev");
       KStdAction::gotoLine(this, SLOT(gotoLine()), actionCollection());
       new KAction(i18n("&Configure Editor..."), 0, this, SLOT(configDialog()),actionCollection(), "set_confdlg");
-      setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, actionCollection(), "set_highlight");
+//      setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, actionCollection(), "set_highlight");
+      setHighlight = new KateViewHighlightAction(this,i18n("&Highlight Mode"), 0, actionCollection(), "set_highlight");
       KStdAction::selectAll(this, SLOT(selectAll()), actionCollection());
       new KAction(i18n("&Deselect All"), 0, this, SLOT(deselectAll()),
                 actionCollection(), "edit_deselectAll");
@@ -1508,12 +1511,15 @@ void KateView::setupActions()
     setVerticalSelection = new KToggleAction(i18n("&Vertical Selection"), Key_F4, this, SLOT(toggleVertical()),
                                              actionCollection(), "set_verticalSelect");
 
+/*
     connect(setHighlight, SIGNAL(activated(int)), this, SLOT(setHl(int)));
     QStringList list;
     for (int z = 0; z < HlManager::self()->highlights(); z++)
         list.append(HlManager::self()->hlName(z));
     setHighlight->setItems(list);
+*/
 
+    QStringList list;
     setEndOfLine = new KSelectAction(i18n("&End of Line"), 0, actionCollection(), "set_eol");
     connect(setEndOfLine, SIGNAL(activated(int)), this, SLOT(setEol(int)));
     list.clear();
@@ -1567,7 +1573,8 @@ void KateView::slotNewUndo()
 
 void KateView::slotHighlightChanged()
 {
-    setHighlight->setCurrentItem(getHl());
+//	setHighlight->slotAboutToShow();
+//    setHighlight->setCurrentItem(getHl());
 }
 
 void KateView::slotDropEventPass( QDropEvent * ev )
