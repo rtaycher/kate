@@ -529,12 +529,20 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
   acSel->setAvailableLabel( i18n("A&vailable actions:") );
   acSel->setSelectedLabel( i18n("S&elected actions:") );
   lo->addWidget( gbToolbar );
+  connect( acSel, SIGNAL( added( QListBoxItem * ) ), this, SLOT( slotChanged() ) );
+  connect( acSel, SIGNAL( removed( QListBoxItem * ) ), this, SLOT( slotChanged() ) );
+  connect( acSel, SIGNAL( movedUp( QListBoxItem * ) ), this, SLOT( slotChanged() ) );
+  connect( acSel, SIGNAL( movedDown( QListBoxItem * ) ), this, SLOT( slotChanged() ) );
+
   // Sync
   QGroupBox *gbSync = new QGroupBox( 1, Qt::Horizontal, i18n("Auto Synchronization"), this );
   cbSyncActive = new QCheckBox( i18n("When a docu&ment becomes active"), gbSync );
   cbSyncOpen = new QCheckBox( i18n("When a document is o&pened"), gbSync );
   cbSyncShow = new QCheckBox( i18n("When the file selector becomes visible"), gbSync );
   lo->addWidget( gbSync );
+  connect( cbSyncActive, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
+  connect( cbSyncOpen, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
+  connect( cbSyncShow, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
   // Histories
   QHBox *hbPathHist = new QHBox ( this );
@@ -542,18 +550,22 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
   sbPathHistLength = new QSpinBox( hbPathHist );
   lbPathHist->setBuddy( sbPathHistLength );
   lo->addWidget( hbPathHist );
+  connect( sbPathHistLength, SIGNAL( valueChanged ( int ) ), this, SLOT( slotChanged() ) );
 
   QHBox *hbFilterHist = new QHBox ( this );
   QLabel *lbFilterHist = new QLabel( i18n("Remember &filters:"), hbFilterHist );
   sbFilterHistLength = new QSpinBox( hbFilterHist );
   lbFilterHist->setBuddy( sbFilterHistLength );
   lo->addWidget( hbFilterHist );
+  connect( sbFilterHistLength, SIGNAL( valueChanged ( int ) ), this, SLOT( slotChanged() ) );
 
   // Session
   QGroupBox *gbSession = new QGroupBox( 1, Qt::Horizontal, i18n("Session"), this );
   cbSesLocation = new QCheckBox( i18n("Restore loca&tion"), gbSession );
   cbSesFilter = new QCheckBox( i18n("Restore last f&ilter"), gbSession );
   lo->addWidget( gbSession );
+  connect( cbSesLocation, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
+  connect( cbSesFilter, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
   // make it look nice
   lo->addStretch( 1 );

@@ -88,6 +88,9 @@ class KateConfigPluginPage: public QVBox
     KatePluginManager *myPluginMan;
     class KateConfigDialog *myDialog;
 
+  signals:
+    void changed();
+
   private slots:
     void stateChange(PluginListItem *, bool);
     

@@ -164,6 +164,7 @@ KateConfigPluginPage::KateConfigPluginPage(QWidget *parent, KateConfigDialog *di
 		loadPlugin(item);
 	else
 		unloadPlugin(item);
+	emit changed();
 }
                       
 void KateConfigPluginPage::loadPlugin (PluginListItem *item)

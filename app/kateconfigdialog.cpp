@@ -111,6 +111,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
         "If this is enabled Kate will attempt to reopen files that were open when you closed "
         "last time. Cursor position will be recovered if possible. Non-existent files will "
         "not be opened."));
+  connect( cb_reopenFiles, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
   //config->setGroup("General");
   // restore view  config
@@ -119,6 +120,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   cb_restoreVC->setChecked( config->readBoolEntry("restore views", false) );
   QWhatsThis::add(cb_restoreVC, i18n(
         "Check this if you want all your views and frames restored each time you open Kate"));
+  connect( cb_restoreVC, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
   // How instances should be handled
   cb_singleInstance = new QCheckBox(frGeneral);
@@ -130,6 +132,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
         "If this is unchecked, Kate will only use one UNIX process. If you try running it again, the current "
         "process will get the focus, and open any files you requested to be opened. If it is checked, each time "
         "you start Kate, a new UNIX process will be started.") );
+  connect( cb_singleInstance, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
   // show full path in title
   config->setGroup("General");
@@ -137,6 +140,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   lo->addWidget( cb_fullPath );
   cb_fullPath->setChecked( config->readBoolEntry("Show Full Path in Title", false ) );
   QWhatsThis::add(cb_fullPath,i18n("If this option is checked, the full document path will be shown in the window caption."));
+  connect( cb_fullPath, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
   // opaque resize of view splitters
   cb_opaqueResize = new QCheckBox( frGeneral );
@@ -146,6 +150,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   QWhatsThis::add( cb_opaqueResize, i18n(
         "If this is disabled, resizing views will display a <i>rubberband</i> to show the "
         "new sizes until you release the mouse button.") );
+  connect( cb_opaqueResize, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
   // sync the konsole ?
   cb_syncKonsole = new QCheckBox(frGeneral);
@@ -156,6 +161,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
         "If this is checked, the built in Konsole will <code>cd</code> to the directory "
         "of the active document when started and whenever the active document changes, "
         "if the document is a local file.") );
+  connect( cb_syncKonsole, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
   // sync the konsole ?
   cb_sortFiles = new QCheckBox(frGeneral);
@@ -164,6 +170,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   cb_sortFiles->setChecked(parent->filelist->sortType() == KateFileList::sortByName);
   QWhatsThis::add( cb_sortFiles, i18n(
         "If this is checked, the files in the file list will be sorted alphabetically.") );
+  connect( cb_sortFiles, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
   // number of recent files
   QHBox *hbNrf = new QHBox( frGeneral );
@@ -178,6 +185,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
         "some items forgotten.</qt>") );
   QWhatsThis::add( lNrf, youwouldnotbelieveit );
   QWhatsThis::add( sb_numRecentFiles, youwouldnotbelieveit );
+  connect( sb_numRecentFiles, SIGNAL( valueChanged ( int ) ), this, SLOT( slotChanged() ) );
 
   KSeparator *sep=new KSeparator(frGeneral);
   sep->setOrientation(KSeparator::HLine);
@@ -193,6 +201,7 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
 
   config->setGroup("General");
   cb_mode->setCurrentItem((config->readEntry("viewMode",DEFAULT_STYLE)=="Modern")?0:1);
+  connect( cb_mode, SIGNAL( activated ( int ) ), this, SLOT( slotChanged() ) );
 
   lo->addStretch(1); // :-] works correct without autoadd
   // END General page
@@ -207,12 +216,14 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
                               BarIcon("fileopen", KIcon::SizeSmall) );
   fileSelConfigPage = new KFSConfigPage( page, "file selector config page",
                                          mainWindow->fileselector );
+  connect( fileSelConfigPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
 
   path.clear();
   path << i18n("Application") << i18n("Plugins");
   /*QVBox **/page=addVBoxPage(path,i18n("Plugin Manager"),
                           BarIcon("misc",KIcon::SizeSmall));
-  (void)new KateConfigPluginPage(page, this);
+  KateConfigPluginPage *configPluginPage = new KateConfigPluginPage(page, this);
+  connect( configPluginPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
 
   // editor widgets from kwrite/kwdialog
   path.clear();
@@ -226,7 +237,9 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
     /*QVBox **/page = addVBoxPage(path, KTextEditor::configInterfaceExtension (v->document())->configPageFullName (i),
                               KTextEditor::configInterfaceExtension (v->document())->configPagePixmap(i, KIcon::SizeSmall) );
 
-    editorPages.append (KTextEditor::configInterfaceExtension (v->document())->configPage(i, page));
+    KTextEditor::ConfigPage *cPage = KTextEditor::configInterfaceExtension (v->document())->configPage(i, page);
+    connect( cPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
+    editorPages.append (cPage);
   }
 
   #if 0
@@ -241,6 +254,8 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   }
 
   enableButtonSeparator(true);
+  dataChanged = false;
+  enableButton(Apply, false);
 }
 
 KateConfigDialog::~KateConfigDialog()
@@ -283,13 +298,11 @@ void KateConfigDialog::removePluginPage (Kate::Plugin *plugin)
   }
 }
 
-int KateConfigDialog::exec()
+void KateConfigDialog::slotOk()
 {
-  int n = KDialogBase::exec();
-  if (n)
+  if( dataChanged )
     slotApply();
-
-  return n;
+  accept();
 }
 
 void KateConfigDialog::slotApply()
@@ -333,4 +346,12 @@ void KateConfigDialog::slotApply()
   {
     pluginPages.at(i)->page->apply();
   }
+  dataChanged = false;
+  enableButton(Apply, false);
+}
+
+void KateConfigDialog::slotChanged()
+{
+  dataChanged = true;
+  enableButton(Apply, true);
 }

@@ -45,14 +45,14 @@ class KateConfigDialog : public KDialogBase
     KateConfigDialog (KateMainWindow *parent, const char * = 0);
     ~KateConfigDialog ();
 
-    int exec ();
-
   public:
     void addPluginPage (Kate::Plugin *plugin);
     void removePluginPage (Kate::Plugin *plugin);
 
   protected slots:
     virtual void slotApply();
+    virtual void slotOk();
+    void slotChanged();
 
   private:
     class KConfig *config;
@@ -62,6 +62,7 @@ class KateConfigDialog : public KDialogBase
     KateMainWindow *mainWindow;
 
     Kate::View* v;
+    bool dataChanged;
 
     class QCheckBox* cb_opaqueResize;
     class QCheckBox* cb_reopenFiles;
