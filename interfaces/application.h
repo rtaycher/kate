@@ -43,12 +43,16 @@ class Application : public KUniqueApplication
     /** Returns a pointer to the document manager
     */
     virtual class DocumentManager *documentManager () = 0;
+
+    virtual class PluginManager *pluginManager () = 0;
     
     virtual class MainWindow *activeMainWindow () = 0;
     
     virtual uint mainWindows () = 0;
     virtual class MainWindow *mainWindow (uint n) = 0;
   
+    virtual void *topLevelInterfaces(const QString& name)=0; // for later easier BC interface extension.
+	//At the moment there are "documents","plugins","activeWindow" which behave like the methods above
 };
 
 class InitPluginManager

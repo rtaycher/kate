@@ -817,11 +817,28 @@ KDockWidget *KateMainWindow::addToolView(KDockWidget::DockPosition pos,const cha
 
 KDockWidget *KateMainWindow::addToolViewWidget(KDockWidget::DockPosition pos,QWidget *widget, const QPixmap &icon,const QString &caption)
 {
-	KDockWidget *dw=addToolView(pos,widget->name(),icon,caption);
+	KDockWidget *dw=addToolView(pos,QString("DOCK%1").arg(widget->name()).latin1(),icon,caption);
+	kapp->sendPostedEvents();
+	kapp->syncX();
         dw->setWidget (widget);
+	widget->show(); // I'm not sure, if this is a bug in kdockwidget, which I would better fix there
 	return dw;
 
 }
+
+void* KateMainWindow::interfaces(const QString &name)
+{
+	if (name=="views") return viewManager();
+	else if (name=="toolViews") return toolViewManager();
+	else return 0;
+}
+
+
+bool KateMainWindow::hideToolView(class KDockWidget*){return false;}
+bool KateMainWindow::showToolView(class KDockWidget*){return false;}
+bool KateMainWindow::hideToolView(const QString& name){return false;}
+bool KateMainWindow::showToolView(const QString& name){return false;}
+
 
 //-------------------------------------
 
@@ -849,4 +866,5 @@ void KateToggleToolViewAction::slotToggled(bool t)
 	if ((!t) && m_dw->mayBeHide() ) m_dw->undock();
     	else
   	if ( t && m_dw->mayBeShow() ) m_mw->makeDockVisible(m_dw);
+
 }

@@ -186,10 +186,18 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
   public: //ToolViewManager stuff
     Kate::ToolViewManager *toolViewManager() {return(Kate::ToolViewManager*)this;}
 
+    virtual void* interfaces(const QString &name);
+
     virtual KDockWidget *addToolViewWidget(KDockWidget::DockPosition pos,QWidget *widget,const QPixmap &icon, const QString& caption);
     virtual bool removeToolViewWidget(QWidget *){return false;}
     virtual KDockWidget *addToolView(KDockWidget::DockPosition pos,const char* name,const QPixmap &icon,const QString&);
     virtual bool removeToolView(KDockWidget *){return false;}
+
+    virtual bool hideToolView(class KDockWidget*);
+    virtual bool showToolView(class KDockWidget*);
+    virtual bool hideToolView(const QString& name);
+    virtual bool showToolView(const QString& name);
+
     
   private slots:
     void pluginHelp ();

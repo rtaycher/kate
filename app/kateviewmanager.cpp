@@ -362,9 +362,10 @@ bool KateViewManager::closeDocWithAllViews ( Kate::View *view )
 
   if (m_docManager->closeDocument(view->getDoc()))
   {
-    emit viewChanged ();
+    emit viewChanged (); // I think I don't need that anymore
     return true;
   }
+  return false;
 }
 
 void KateViewManager::closeViews(uint documentNumber)

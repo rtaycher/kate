@@ -31,6 +31,10 @@
 namespace Kate
 {
 
+/**
+ I want to stay source compatible, so I don't remove the KParts::DockMainWindow. This will happen in KDE 4.0 though
+ NEVER CALL A KParts::DockMainWindow method directly. Use the ToolViewManager !!!!!
+ **/
 class MainWindow : public KParts::DockMainWindow
 {
   Q_OBJECT
@@ -44,6 +48,7 @@ class MainWindow : public KParts::DockMainWindow
 
     enum DockWidgetMode {ClassicStyle,IDEAlStyle};
     virtual class ToolViewManager *toolViewManager() = 0;
+    virtual void* interfaces(const QString &name)=0; //"views" and "toolViews" at the moment
 };
 
 };

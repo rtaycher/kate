@@ -20,6 +20,7 @@
 
 #include "katemain.h"
 #include "../interfaces/plugin.h"
+#include "../interfaces/pluginmanager.h"
 
 #include <qobject.h>
 #include <qvaluelist.h>
@@ -36,7 +37,7 @@ class PluginInfo
 
 typedef QPtrList<PluginInfo> PluginList;
 
-class KatePluginManager : public QObject
+class KatePluginManager : public Kate::PluginManager
 {
   Q_OBJECT
 
@@ -58,6 +59,11 @@ class KatePluginManager : public QObject
     
     inline PluginList & pluginList () { return m_pluginList; };
     
+    virtual Kate::Plugin *plugin(const QString &name);
+    virtual bool pluginAvailable(const QString &name);
+    virtual class Kate::Plugin *loadPlugin(const QString &name,bool permanent=true);
+    virtual void unloadPlugin(const QString &name,bool permanent=true);
+
   private:
     void setupPluginList ();
     

@@ -40,6 +40,9 @@
 
 #include "toolviewmanager.h"
 
+#include "pluginmanager.h"
+#include "pluginmanager.moc"
+
 #include <kparts/componentfactory.h>
 
 namespace Kate
@@ -60,6 +63,7 @@ DocumentManager::DocumentManager (QObject *parent, const char *name) : QObject (
 DocumentManager::~DocumentManager ()
 {
 }
+
 
 MainWindow::MainWindow () : KParts::DockMainWindow ()
 {
@@ -202,6 +206,16 @@ InitPluginManager *initPluginManager(Application *app)
 	if (!app) return 0;
 	return static_cast<InitPluginManager*>(app->qt_cast("Kate::InitPluginManager"));
 }
+
+
+PluginManager::PluginManager (QObject *parent, const char *name) : QObject (parent, name)
+{
+}
+
+PluginManager::~PluginManager ()
+{
+}
+
 
 
 };

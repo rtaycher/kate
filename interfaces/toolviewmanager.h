@@ -43,10 +43,21 @@ class ToolViewManager /* You can assume that the implementation is always at lea
     virtual ~ToolViewManager ();
       
   public:
+	//The dockwidgets name is "DOCK"+widget->name() Please make sure that this is unique
+	//IMPORTANT: YOU MUST SPECIFY A PIXMAP
     virtual class KDockWidget *addToolViewWidget(KDockWidget::DockPosition,QWidget *widget,const class QPixmap&, const class QString&)=0;
     virtual bool  removeToolViewWidget(QWidget *widget)=0;
-    virtual KDockWidget *addToolView(KDockWidget::DockPosition pos,const char *name,const QPixmap &icon,const QString&)=0;
+
+	//Please make sure that the name is unique
+	//IMPORTANT: YOU MUST SPECIFY A PIXMAP
+    virtual class KDockWidget *addToolView(KDockWidget::DockPosition pos,const char *name,const QPixmap &icon,const QString&)=0;
     virtual bool removeToolView(KDockWidget *)=0;
+
+    /* the following methods aren't used yet */
+    virtual bool hideToolView(class KDockWidget*)=0;
+    virtual bool showToolView(class KDockWidget*)=0;
+    virtual bool hideToolView(const QString& name)=0;
+    virtual bool showToolView(const QString& name)=0;
     
 };
 

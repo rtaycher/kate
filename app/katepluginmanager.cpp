@@ -29,7 +29,7 @@
 #include <qfile.h>
 #include <kmessagebox.h>
 
-KatePluginManager::KatePluginManager(QObject *parent) : QObject(parent)
+KatePluginManager::KatePluginManager(QObject *parent) : Kate::PluginManager(parent)
 {
   setupPluginList ();
   loadConfig ();
@@ -144,3 +144,21 @@ void KatePluginManager::disablePluginGUI (PluginInfo *item)
     Kate::pluginViewInterface(item->plugin)->removeView(((KateApp*)parent())->mainWindow(i));       
   }
 }
+
+Kate::Plugin *KatePluginManager::plugin(const QString &name)
+{
+ for (uint i=0; i<m_pluginList.count(); i++)
+  {
+    if  (m_pluginList.at(i)->service->library()==name)
+    {
+	if (m_pluginList.at(i)->plugin) return m_pluginList.at(i)->plugin; else break;
+    }
+  }
+  return 0;
+}
+
+
+bool KatePluginManager::pluginAvailable(const QString &name){return false;}
+class Kate::Plugin *KatePluginManager::loadPlugin(const QString &name,bool permanent=true){return 0;}
+void KatePluginManager::unloadPlugin(const QString &name,bool permanent=true){;}
+

@@ -85,6 +85,14 @@ KateApp::~KateApp ()
   m_pluginManager->writeConfig ();
 }          
 
+void *KateApp::topLevelInterfaces(const QString& name)
+{
+	if (name=="activeWindow") return activeWindow();
+	else if (name=="documents") return documentManager();
+	else if (name=="plugins") return pluginManager();
+	else return 0;
+}
+
 void KateApp::performInit(const QString &libname, const KURL &url)
 {
 	if (m_initPlugin) m_oldInitLib=m_initLib; else m_oldInitLib=QString::null;

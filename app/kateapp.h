@@ -44,7 +44,10 @@ class KateApp : public Kate::Application, Kate::InitPluginManager
     void raiseCurrentMainWindow ();   
     
     Kate::DocumentManager *documentManager () { return (Kate::DocumentManager*)m_docManager; };
+    Kate::PluginManager *pluginManager () { return (Kate::PluginManager*)m_pluginManager; };
     Kate::MainWindow *activeMainWindow ();
+
+    virtual void *topLevelInterfaces(const QString& name);
     
     uint mainWindows () { return m_mainWindows.count(); };
     Kate::MainWindow *mainWindow (uint n) { return (Kate::MainWindow *)m_mainWindows.at(n); };
