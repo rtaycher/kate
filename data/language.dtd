@@ -14,7 +14,7 @@
 <!ATTLIST comments
 >
 
-<!ENTITY comment (#PCDATA)>
+<!ENTITY comment EMPTY>
 <!ATTLIST comment
   name CDATA #REQUIRED
   start CDATA #REQUIRED
@@ -30,3 +30,17 @@
 <!ENTITY highlighting (list, contexts, itemDatas)>
 <!ATTLIST highlighting
 >
+
+<!ENTITY list (item)>
+<!ATTLIST list
+  name CDATA #REQUIRED
+>
+
+<!ENTITY item (#PCDATA)>
+<!ATTLIST item
+>
+
+<!ENTITY contexts (context)>
+<!ATTLIST contexts
+>
+
