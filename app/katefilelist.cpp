@@ -484,6 +484,9 @@ int KateFileListItem::width( const QFontMetrics &fm, const QListView* /*lv*/, in
 
 void KateFileListItem::paintCell( QPainter *painter, const QColorGroup & cg, int column, int width, int align )
 {
+  KateFileList *fl = (KateFileList*)listView();
+  if ( ! fl ) return;
+
   switch ( column ) {
     case 0:
     {
@@ -493,7 +496,6 @@ void KateFileListItem::paintCell( QPainter *painter, const QColorGroup & cg, int
       static QPixmap modmodPm = SmallIcon("modmod");
 
       const KateDocumentInfo *info = KateDocManager::self()->documentInfo(doc);
-      KateFileList *fl = (KateFileList*)listView();
 
       QColor b( cg.base() );
       if ( fl->shadingEnabled() && m_viewhistpos > 1 )
@@ -509,7 +511,7 @@ void KateFileListItem::paintCell( QPainter *painter, const QColorGroup & cg, int
           int v = hc-m_viewhistpos;
           int e = ec-m_edithistpos+1;
           e = e*e;
-          int n = v + e;
+          int n = QMAX(v + e, 1);
           shade.setRgb(
               ((shade.red()*v) + (eshade.red()*e))/n,
               ((shade.green()*v) + (eshade.green()*e))/n,
