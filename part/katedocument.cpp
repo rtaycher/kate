@@ -2676,6 +2676,9 @@ void KateDocument::killLine(VConfig &c)
 
 void KateDocument::backspace(uint line, uint col)
 {
+  if ((col == 0) && (line == 0))
+    return;
+
   if (col > 0)
   {
     if (!(_configFlags & KateDocument::cfBackspaceIndents))
