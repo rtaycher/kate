@@ -126,7 +126,7 @@ KWriteDoc::KWriteDoc(HlManager *hlManager, const QString &path,
   connect(buffer, SIGNAL(linesChanged(int)), this, SLOT(slotBufferChanged()));
 
   colors[0] = KGlobalSettings::baseColor();
-  colors[1] = KGlobalSettings::highlightedTextColor();
+  colors[1] = KGlobalSettings::highlightColor();
   colors[2] = KGlobalSettings::textColor();
   colors[3] = KGlobalSettings::textColor();
   colors[4] = KGlobalSettings::baseColor();
