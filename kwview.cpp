@@ -3539,7 +3539,10 @@ void KWrite::slotUpdate()
 }
 void KWrite::slotFileStatusChanged()
 {
-    setEndOfLine->setCurrentItem(getEol());
+  int eol = getEol()-1;
+  eol = eol>=0? eol: 0;
+
+    setEndOfLine->setCurrentItem(eol);
 
     if ( !doc()->url().isEmpty() )
         //set recent files popup menu
