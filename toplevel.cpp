@@ -25,6 +25,7 @@
 #include <qdragobject.h>
 #include <qvbox.h>
 
+#include <kdebug.h>
 #include <kglobal.h>
 #include <kapp.h>
 #include <klocale.h>
@@ -834,7 +835,7 @@ void TopLevel::slotDropEvent( QDropEvent *event )
   QStrList  urls;
 
   if (QUriDrag::decode(event, urls)) {
-    debug("TopLevel:Handling QUriDrag...");
+    kdDebug() << "TopLevel:Handling QUriDrag..." << endl;
     char *s;
     for (s = urls.first(); s != 0L; s = urls.next()) {
       // Load the first file in this window
