@@ -51,6 +51,7 @@
 #include "kateviewIface.h"
 
 class KToggleAction;
+class KActionMenu;
 class KAction;
 class KRecentFilesAction;
 class KSelectAction;
@@ -428,7 +429,7 @@ class KateView : public KateViewIface, virtual public KateViewDCOPIface
             *toolsComment, *toolsUncomment, *toolsSpell,
             *bookmarkToggle, *bookmarkClear;
 
-    class QPopupMenu *bookmarkMenu;
+    KActionMenu *bookmarkMenu;
     KToggleAction *setVerticalSelection;
     KRecentFilesAction *fileRecent;
     KSelectAction *setHighlight, *setEndOfLine;

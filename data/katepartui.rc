@@ -29,11 +29,7 @@
     <Action name="edit_cmd"/>
   </Menu>
 
-  <Menu name="bookmarks"><text>&amp;Bookmarks</text>
-    <Action name="edit_bookmarkToggle" />
-    <Action name="edit_bookmarksClear" />
-    <Separator />
-  </Menu>
+  <Action name="bookmarks" />
 
   <Menu name="tools"><text>&amp;Tools</text>
     <Action name="tools_spelling" />

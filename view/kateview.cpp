@@ -54,6 +54,7 @@
 #include <qscrollbar.h>
 #include <qiodevice.h>
 #include <qpopupmenu.h>
+#include <kpopupmenu.h>
 #include <qkeycode.h>
 #include <qintdict.h>
 #include <klineeditdlg.h>
@@ -1557,8 +1558,8 @@ void KateView::setupActions()
     bookmarkClear = new KAction(i18n("&Clear Bookmarks"), 0, this, SLOT(clearBookmarks()), actionCollection(), "edit_bookmarksClear");
 
     // connect settings menu aboutToshow
-  //  bookmarkMenu = (QPopupMenu*)factory()->container("bookmarks", this);
-   // connect(bookmarkMenu, SIGNAL(aboutToShow()), this, SLOT(bookmarkMenuAboutToShow()));
+    bookmarkMenu = new KActionMenu(i18n("&Bookmarks"), actionCollection(), "bookmarks");
+    connect(bookmarkMenu->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(bookmarkMenuAboutToShow()));
 
     // setup Tools menu
     toolsSpell = KStdAction::spelling(this, SLOT(spellcheck()), actionCollection());
@@ -3084,16 +3085,16 @@ void KateView::clearBookmarks()
 
 void KateView::bookmarkMenuAboutToShow()
 {
-  bookmarkMenu->clear ();
-  bookmarkToggle->plug (bookmarkMenu);
-  bookmarkClear->plug (bookmarkMenu);
-  bookmarkMenu->insertSeparator ();
+  bookmarkMenu->popupMenu()->clear ();
+  bookmarkToggle->plug (bookmarkMenu->popupMenu());
+  bookmarkClear->plug (bookmarkMenu->popupMenu());
+  bookmarkMenu->popupMenu()->insertSeparator ();
 
   QList<KateMark> list = myDoc->marks();
   for (int i=0; (uint) i < list.count(); i++)
   {
     if (list.at(i)->type == 1)
-      bookmarkMenu->insertItem ( QString("Bookmark %1 - Line %2").arg(i).arg(list.at(i)->line), i );
+      bookmarkMenu->popupMenu()->insertItem ( QString("Bookmark %1 - Line %2").arg(i).arg(list.at(i)->line), i );
   }
 }
 
