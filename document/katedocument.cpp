@@ -1330,10 +1330,13 @@ bool KateDocument::insertChars ( int line, int col, const QString &chars, KateVi
 
 	_autoUpdate = false;
 
-  if (_configFlags & KateDocument:: cfDelOnInput)
+  if (_configFlags & KateDocument::cfDelOnInput)
 	{
-		removeSelectedText();
-		view->getCursorPosition (&line, &col);
+	  if (hasSelection())
+		{
+		  removeSelectedText();
+		  view->getCursorPosition (&line, &col);
+		}
 	}
 
   if (_configFlags & KateDocument::cfOvr)
