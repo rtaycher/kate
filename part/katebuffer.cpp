@@ -807,8 +807,7 @@ KWBufBlock::buildStringListFast()
         buf += (sizeof(QChar)*l); 
  
         textLine->attributes.duplicate((uchar *)buf, l);
-				textLine->attributes.detach ();
-        buf += l;
+				buf += l;
       }
 
       uchar a = 0;
@@ -824,8 +823,7 @@ KWBufBlock::buildStringListFast()
       if (lctx > 0)
       {
         textLine->ctx.duplicate ((signed char*)buf, lctx);
-				textLine->ctx.detach ();
-        buf += lctx;
+			  buf += lctx;
       }
 
       m_stringList.push_back (textLine);
