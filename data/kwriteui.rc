@@ -2,6 +2,8 @@
 <kpartgui name="kwriteshell" version="8">
 <MenuBar>
   <Menu name="file" noMerge="1"><text>&amp;File</text>
+    <Action name="file_new" />
+    <Action name="file_open" />
     <Merge />
     <Separator />
     <Action name="file_print"/>
@@ -19,6 +21,8 @@
   </Menu>
 </MenuBar>
 <ToolBar name="mainToolBar" noMerge="1"><text>Main Toolbar</text>
+  <Action name="file_new" />
+  <Action name="file_open" />
  <DefineGroup name="file_operations" />
  <Action name="file_print" />
  <Separator />

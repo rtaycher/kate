@@ -156,8 +156,9 @@ void TopLevel::setupActions()
 {
   // setup File menu
   KStdAction::print(this, SLOT(printDlg()), actionCollection());
-  new KAction(i18n("New &Window"), 0, this, SLOT(newWindow()),
-              actionCollection(), "file_newWindow");
+  KStdAction::openNew( this, SLOT(slotNew()), actionCollection(), "file_new" );
+  KStdAction::open( this, SLOT( slotOpen() ), actionCollection(), "file_open" );
+
   new KAction(i18n("New &View"), 0, this, SLOT(newView()),
               actionCollection(), "file_newView");
   KStdAction::quit(this, SLOT(close()), actionCollection());
@@ -185,14 +186,30 @@ void TopLevel::setupStatusBar()
   statusbar->setItemAlignment( ID_GENERAL, AlignLeft );
 }
 
-void TopLevel::newWindow()
+void TopLevel::slotNew()
 {
-  TopLevel *t = new TopLevel();
-  t->readConfig();
-  t->init();
-//  t->kWrite->doc()->inheritFileName(kWrite->doc());
+  if (kWrite->isModified())
+  {
+   TopLevel*t = new TopLevel();
+    t->readConfig();
+    t->init();
+  }
+  else
+    kWrite->newDoc();
 }
 
+void TopLevel::slotOpen()
+{
+  if (kWrite->isModified())
+  {
+    TopLevel *t = new TopLevel();
+    t->readConfig();
+    t->init();
+    t->kWrite->open();
+  }
+  else
+    kWrite->open();
+}
 
 void TopLevel::newView()
 {

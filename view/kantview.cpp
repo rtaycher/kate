@@ -1515,8 +1515,7 @@ KantView::~KantView()
 
 void KantView::setupActions()
 {
-    KStdAction::openNew(this, SLOT(newDoc()), actionCollection());
-    KStdAction::open(this, SLOT(open()), actionCollection());
+    KStdAction::close( this, SLOT(newDoc()), actionCollection(), "file_close" );
     fileRecent = KStdAction::openRecent(this, SLOT(slotOpenRecent(const KURL&)),
                                         actionCollection());
 

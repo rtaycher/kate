@@ -65,7 +65,8 @@ class TopLevel : public KParts::MainWindow
     QTimer *statusbarTimer;
 
   public slots:
-    void newWindow();
+    void slotNew();
+    void slotOpen ();
     void newView();
     void configure();
     void toggleMenuBar();

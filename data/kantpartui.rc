@@ -2,12 +2,11 @@
 <kpartgui name="KantPartView" version="6">
 <MenuBar>
   <Menu name="file" noMerge="1"><text>&amp;File</text>
-    <Action name="file_new" />
-    <Action name="file_open" />
     <Action name="file_open_recent" />
     <Separator/>
     <Action name="file_save"/>
     <Action name="file_save_as"/>
+    <Action name="file_close" />
   </Menu>
   <Menu name="edit"><text>&amp;Edit</text>
     <Action name="edit_undo" />
@@ -55,7 +54,6 @@
 </MenuBar>
 
 <Menu name="rb_popup">
-  <Action name="file_open"/>
   <Action name="file_save"/>
   <Action name="file_save_as"/>
   <Action name="edit_cut"/>
@@ -67,9 +65,8 @@
 </Menu>
 
 <ToolBar name="mainToolBar"><text>Main Toolbar</text>
-  <Action name="file_new" group="file_operations" />
-  <Action name="file_open" group="file_operations" />
   <Action name="file_save" group="file_operations" />
+  <Action name="file_close" group="file_operations" />
   <Action name="edit_undo" />
   <Action name="edit_redo" />
   <Action name="edit_cut" />
