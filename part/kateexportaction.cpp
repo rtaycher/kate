@@ -26,7 +26,7 @@ void KateExportAction::init(QObject *related_)
 {
 	filter.clear();
 	filter<<QString("kate_html_export");
-	popupMenu()->insertItem (i18n("&HTML"),0);
+	popupMenu()->insertItem (i18n("&HTML..."),0);
 	connect(popupMenu(),SIGNAL(activated(int)),this,SLOT(filterChoosen(int)));
 	related=related_;
 //	connect(popupMenu(),SIGNAL(aboutToShow()),this,SLOT(slotAboutToShow()));
