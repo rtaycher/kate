@@ -900,7 +900,7 @@ void KateViewManager::reopenDocuments(bool isRestore)
     // so that the password dialog only appears ones for every remote source
     while (scfg->hasKey(QString("File%1").arg(i)))
     {
-      fn = scfg->readPathEntry( QString("File%1").arg( i ) );
+      fn = scfg->readEntry( QString("File%1").arg( i ) );
       if ( !fn.isEmpty() && !KURL( fn ).isLocalFile() )
           KIO::NetAccess::exists(KURL( fn ), true, this);
       i++;
@@ -908,7 +908,7 @@ void KateViewManager::reopenDocuments(bool isRestore)
     i = 0;
     while (scfg->hasKey(QString("File%1").arg(i)))
     {
-      fn = scfg->readPathEntry( QString("File%1").arg( i ) );
+      fn = scfg->readEntry( QString("File%1").arg( i ) );
       if ( !fn.isEmpty() ) {
         //kdDebug(13001)<<"reopenDocuments(): opening file : "<<fn<<endl;
         scfg->setGroup( fn );
@@ -1073,7 +1073,7 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, const QString &gro
        config->setGroup( (*it) );  // "viewspace<n>"
        while ( config->hasKey( file ) ) {     // FIXME FIXME
          Kate::View* v;
-         KURL url( config->readPathEntry( file ) );
+         KURL url( config->readEntry( file ) );
          if ( ! m_docManager->isOpen( url ) ) {
            Kate::Document *doc = m_docManager->createDoc ();
 
