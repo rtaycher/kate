@@ -640,7 +640,7 @@ void KateExternalToolsConfigWidget::slotEdit()
   if ( editor.exec() /*== KDialogBase::Ok*/ )
   {
 
-    bool iconChanged = ( editor.btnIcon->icon() != t->icon );
+      bool elementChanged = ( ( editor.btnIcon->icon() != t->icon ) || (editor.leName->text() != t->name ) ) ;
 
     t->name = editor.leName->text();
     t->cmdname = editor.leCmdLine->text();
@@ -649,8 +649,8 @@ void KateExternalToolsConfigWidget::slotEdit()
     t->tryexec = editor.leExecutable->text();
     t->mimetypes = QStringList::split( QRegExp("\\s*;\\s*"), editor.leMimetypes->text() );
 
-    //if the icon has changed, I have to renew the listbox item :S
-    if ( iconChanged )
+    //if the icon has changed or name changed, I have to renew the listbox item :S
+    if ( elementChanged )
     {
       int idx = lbTools->index( lbTools->selectedItem() );
       lbTools->removeItem( idx );
