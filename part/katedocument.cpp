@@ -2707,9 +2707,9 @@ void KateDocument::updateLines(int startLine, int endLine)
 		if (ctxNumLen>0) 
 		{
 			if (ctxNum)
-				ctxNum=realloc(ctxNum,ctxNumLen);
+				ctxNum=(signed char*)realloc(ctxNum,ctxNumLen);
 			else
-				ctxNum=malloc(ctxNumLen);
+				ctxNum=(signed char*)malloc(ctxNumLen);
 			memcpy(ctxNum,getTextLine(line-1)->getContext(),ctxNumLen);
 		}
 		else { if (ctxNum) {free(ctxNum); ctxNum=0;}}
@@ -2740,9 +2740,9 @@ void KateDocument::updateLines(int startLine, int endLine)
 		if (ctxNumLen>0) 
 		{
 			if (ctxNum)
-				ctxNum=realloc(ctxNum,ctxNumLen);
+				ctxNum=(signed char*)realloc(ctxNum,ctxNumLen);
 			else
-				ctxNum=malloc(ctxNumLen);
+				ctxNum=(signed char*)malloc(ctxNumLen);
 			memcpy(ctxNum,textLine->getContext(),ctxNumLen);
 		}
 		else { if (ctxNum) {free(ctxNum); ctxNum=0;}}
