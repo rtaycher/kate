@@ -1,35 +1,74 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="kwriteshell" version="8">
+<kpartgui name="kwrite" version="9">
+
 <MenuBar>
   <Menu name="file" noMerge="1"><text>&amp;File</text>
     <Action name="file_new" />
     <Action name="file_open" />
     <Action name="file_open_recent" />
-    <Merge />
-    <Action name="file_close" />
-    <Separator />
-    <Action name="file_print"/>
     <Separator/>
-    <Action name="file_newWindow"/>
-    <Action name="file_newView"/>
+    <DefineGroup name="file_operations" />
+    <Separator/>
+    <DefineGroup name="print_operations" />
+    <Separator/>
+    <Action name="file_close"/>
+    <Separator/>
+    <Action name="file_newWindow" />
+    <Action name="file_newView" />
     <Separator/>
     <Action name="file_quit"/>
   </Menu>
-  <Merge />
-  <Menu name="settings"><text>&amp;Settings</text>
-    <Merge />
-    <Action name="set_showPath" append="show_merge"/>
+
+  <Menu name="edit" noMerge="1"><text>&amp;Edit</text>
+    <DefineGroup name="edit_operations" />
+    <Separator/>
+    <DefineGroup name="find_operations" />
+  </Menu>
+
+  <Menu name="view" noMerge="1"><text>&amp;View</text>
+    <DefineGroup name="view_operations" />
+  </Menu>
+
+  <menu name="tools" noMerge="1"><text>&amp;Tools</text>
+    <DefineGroup name="tools_operations" />
+  </menu>
+
+  <Merge/>
+
+  <Menu name="settings" noMerge="1"><text>&amp;Settings</text>
+    <Action name="settings_show_toolbar" />
+    <Action name="settings_show_statusbar" />
+    <Action name="set_showPath" />
+    <Separator />
+    <Action name="options_configure_keybinding"/>
+    <Action name="set_configure_toolbars"/>
+    <Action name="settings_configure" />
+  </Menu>
+
+  <Menu name="help" noMerge="1"><text>&amp;Help</text>
+    <Action name="help_contents"/>
+    <Action name="help_whats_this"/>
+    <Separator/>
+    <Action name="help_report_bug"/>
+    <Separator/>
+    <Action name="help_about_app"/>
+    <Action name="help_about_kde"/>
   </Menu>
 </MenuBar>
+
 <ToolBar name="mainToolBar" noMerge="1"><text>Main Toolbar</text>
   <Action name="file_new" />
   <Action name="file_open" />
- <DefineGroup name="file_operations" />
- <Action name="file_close" />
- <Action name="file_print" />
- <Separator />
- <Merge />
- <Separator />
- <Action name="help" />
+  <Separator />
+  <DefineGroup name="file_operations" />
+  <Separator />
+  <Action name="file_close" />
+  <Separator />
+  <DefineGroup name="edit_operations" />
+  <Separator />
+  <DefineGroup name="find_operations" />
+  <Separator />
+  <DefineGroup name="zoom_operations" />
 </ToolBar>
+
 </kpartgui>
