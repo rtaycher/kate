@@ -230,6 +230,7 @@ bool KateDocManager::closeDocument(class Kate::Document *doc)
   }
 
   deleteDoc (doc);
+
   return true;
 }
 

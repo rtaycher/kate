@@ -86,6 +86,9 @@ KateViewManager::~KateViewManager ()
 
 bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, Kate::Document *doc )
 {
+  
+  if (m_blockViewCreationAndActivation) return false;
+
   // create doc
   if (newDoc && !doc)
     doc = (Kate::Document *)m_docManager->createDoc ();
