@@ -143,6 +143,11 @@ bool Project::save ()
   return d->m_plugin->save ();
 }
 
+bool Project::close ()
+{
+  return d->m_plugin->close ();
+}
+
 ProjectDirFile::Ptr Project::dirFile (const QString &dir)
 {
   QString fname = d->m_dir + QString ("/");
@@ -167,6 +172,38 @@ ProjectDirFile::Ptr Project::dirFile (const QString &dir)
 KConfig *Project::data ()
 {
   return d->m_config;
+}
+
+bool Project::addDir (const QString &dir)
+{
+  if (!plugin()->addDir (dir))
+    return false;
+
+  return true;
+}
+
+bool Project::removeDir (const QString &dir)
+{
+  if (!plugin()->removeDir (dir))
+    return false;
+
+  return true;
+}
+
+bool Project::addFile (const QString &file)
+{
+  if (!plugin()->addFile (file))
+    return false;
+
+  return true;
+}
+
+bool Project::removeFile (const QString &file)
+{
+  if (!plugin()->removeFile (file))
+    return false;
+
+  return true;
 }
 
 ProjectDirFile::ProjectDirFile (void *projectDirFile) : QObject ()

@@ -38,11 +38,7 @@ class PluginKateDefaultProject : public Kate::ProjectPlugin, Kate::PluginViewInt
 
     void addView (Kate::MainWindow *win);
     void removeView (Kate::MainWindow *win);
-    
-    bool save ();
-    
-    bool close ();
-  
+      
   public slots:
     void slotOpenHeader ();
     void tryOpen( const KURL& url, const QStringList& extensions );   

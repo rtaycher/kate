@@ -165,6 +165,12 @@ class Project : public QObject
     bool save ();
     
     /**
+     * Close the project (says the project plugin the app requests a close, prepare for deletion)
+     * @return bool success
+     */
+    bool close ();
+    
+    /**
      * ProjectDirFile object for the dir dir file in the given dir, QString::null for toplevel dir !
      * @param dir dir name
      * @return ProjectDirFile for given dir
@@ -177,16 +183,22 @@ class Project : public QObject
      */
     KConfig *data ();
     
+    bool addDir (const QString &dir);
+    bool removeDir (const QString &dir);
+    
+    bool addFile (const QString &file);
+    bool removeFile (const QString &file);
+    
   #undef signals
   #define signals public
   signals:
   #undef signals
   #define signals protected
   
-    void dirInserted (const QString &dir);
-    void dirDeleted (const QString &dir);
+    void dirAdded (const QString &dir);
+    void dirRemoved (const QString &dir);
     
-    void fileInserted (const QString &file);
+    void fileAdded (const QString &file);
     void fileRemoved (const QString &file);
     
   private:

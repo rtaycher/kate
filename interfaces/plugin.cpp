@@ -111,6 +111,36 @@ ProjectPlugin::~ProjectPlugin()
   delete d;
 }
 
+bool ProjectPlugin::save ()
+{
+  return true;
+}
+    
+bool ProjectPlugin::close ()
+{
+  return true;
+}
+
+bool ProjectPlugin::addDir (const QString &)
+{
+  return true;
+}
+
+bool ProjectPlugin::removeDir (const QString &)
+{
+  return true;
+}
+
+bool ProjectPlugin::addFile (const QString &)
+{
+  return true;
+}
+
+bool ProjectPlugin::removeFile (const QString &)
+{
+  return true;
+}
+
 InitPlugin :: InitPlugin(Application *application, const char *name):Plugin(application,name)
 {
   globalInitPluginNumber++;

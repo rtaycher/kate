@@ -109,13 +109,3 @@ void PluginKateDefaultProject::tryOpen( const KURL& url, const QStringList& exte
       application()->activeMainWindow()->viewManager()->openURL( newURL );
   }
 }
-
-bool PluginKateDefaultProject::save ()
-{
-  return true;
-}
-
-bool PluginKateDefaultProject::close ()
-{
-  return true;
-}

@@ -68,9 +68,16 @@ class ProjectPlugin : public Plugin
       
     Project *project() const;
     
-    virtual bool save () = 0;
+    // default implementations returns true of the following bool methodes
     
-    virtual bool close () = 0;
+    virtual bool save ();
+    virtual bool close ();
+    
+    virtual bool addDir (const QString &dir);
+    virtual bool removeDir (const QString &dir);
+    
+    virtual bool addFile (const QString &file);
+    virtual bool removeFile (const QString &file);
     
   private:
     class PrivateProjectPlugin *d;

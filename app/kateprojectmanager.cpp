@@ -129,7 +129,7 @@ bool KateProjectManager::close (Kate::Project *project)
 {
   if (project)
   {
-    if (project->plugin()->close())
+    if (project->close())
     {
       uint id = project->projectNumber ();
       int n = m_projects.findRef (project);
