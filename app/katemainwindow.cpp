@@ -133,10 +133,10 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   m_dcop = new KateMainWindowDCOPIface (this);
 
-  setAcceptDrops(true);
-
+  // setup the most important widgets
   setupMainWindow();
-
+  
+  // setup the actions
   setupActions();
   projectlist->setupActions();
 
@@ -162,6 +162,8 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   if (console)
     console->loadConsoleIfNeeded();
+
+  setAcceptDrops(true);
 }
 
 KateMainWindow::~KateMainWindow()
@@ -975,7 +977,7 @@ void KateMainWindow::updateCaption (Kate::Document *doc)
 {
   if (!m_viewManager->activeView())
   {
-    ((KateMainWindow*)topLevelWidget())->setCaption ("", false);
+    setCaption ("", false);
     return;
   }
 
