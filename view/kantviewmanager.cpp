@@ -128,8 +128,19 @@ bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView )
     {
       view->doc()->openURL ( url );
 
-      if (url.filename() != 0)
-        view->setCaption (url.filename());
+      if (url.filename() != 0) {
+        QString name = url.filename();
+        // anders avoid two views w/ same caption
+        QListIterator<KantView> it (viewList);
+        int hassamename = 0;
+        for (; it.current(); ++it) {
+           if ( it.current()->caption().compare( name ) == 0 )
+             hassamename++;
+        }
+        if (hassamename > 0)
+          name = QString(name+"<%1>").arg(hassamename);
+        view->setCaption ( name );
+      }
       else
       {
         view->setCaption (i18n("Untitled %1").arg(doc->docID()));
