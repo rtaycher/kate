@@ -807,12 +807,18 @@ KDockWidget *KateMainWindow::addToolViewWidget(KDockWidget::DockPosition pos,QWi
 {
 	widget->setIcon(icon);
 	widget->setCaption(caption);
-	KDockWidget *dw=addToolView(pos,QString("DOCK%1").arg(widget->name()).latin1(),icon,caption);
-	kapp->sendPostedEvents();
-	kapp->syncX();
-        dw->setWidget (widget);
+//	KDockWidget *dw=addToolView(pos,QString("DOCK%1").arg(widget->name()).latin1(),icon,caption);
+        KMdiToolViewAccessor *tmp=createToolWindow(); 
+                 
+        tmp->setWidgetToWrap (widget);
 	widget->show(); // I'm not sure, if this is a bug in kdockwidget, which I would better fix there
-	return dw;
+        tmp->show(pos,getMainDockWidget(),20);
+        return dynamic_cast<KDockWidget*>(tmp->wrapperWidget());
+
+
+//	kapp->sendPostedEvents();
+//	kapp->syncX();
+//	return dw;
 
 }
 
