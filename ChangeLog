@@ -1,3 +1,8 @@
+2001-03-18 Christoph Cullmann <crossfire@babylon2k.de>
+        * big location changes of source files
+        * KantFactory now in use by hole Kant app
+        * KantPartView/Doc merged with KantView/Doc (make life more easy)
+
 2001-03-18 Joseph Wenninger <jowenn@bigfoot.com>
         * openheader plugin opens the corresponding
           .h file for .cpp or .c, and vice versa
