@@ -80,7 +80,7 @@ void PluginKateDefaultProject::slotOpenHeader ()
   if (!kv) return;
   
   KURL url=kv->document()->url();
-  if ((url.isMalformed()) || (url.isEmpty())) return;
+  if ((!url.isValid()) || (url.isEmpty())) return;
   
   QFileInfo info( url.path() );
   QString extension = info.extension().lower();
