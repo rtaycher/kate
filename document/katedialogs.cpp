@@ -382,7 +382,7 @@ QListViewItem *HlEditDialog::addContextItem(QListViewItem *_parent,QListViewItem
 
                 kdDebug(13010)<<HlManager::self()->syntax->groupItemData(data,QString("name")) << endl;
 
-                QString dataname=HlManager::self()->syntax->groupItemData(data,QString("name"));
+                QString dataname=HlManager::self()->syntax->groupItemData(data,QString(""));
                 QString attr=(HlManager::self()->syntax->groupItemData(data,QString("attribute")));
                 QString context=(HlManager::self()->syntax->groupItemData(data,QString("context")));
 		char chr;

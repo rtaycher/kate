@@ -265,7 +265,7 @@ const QChar *HlKeyword::inSensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw) {
   char empty[]="";
   const char *wk(kw->_weakSep.isEmpty()?empty:kw->_weakSep.latin1());
   if(*s2=='\0') return 0L;
-  while( ((ws=ustrchr(wk,*s2)) ||(!ustrchr("!%&()*+,-./:;<=>?[]^{|}~ ", *s2))) && *s2 != '\0')
+  while( ((ws=ustrchr(wk,*s2)) ||(!ustrchr("!%&()*+,-./:;<=>?[]^{|}~ 	", *s2))) && *s2 != '\0')
         {
            if (ws) stack.push(s2);
            s2++;
@@ -291,7 +291,7 @@ const QChar *HlKeyword::sensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw) {
   char empty[]="";
   const char *wk(kw->_weakSep.isEmpty()?empty:kw->_weakSep.latin1());
   if(*s2=='\0') return 0L;
-  while( ((ws=ustrchr(wk,*s2)) ||(!ustrchr("!%&()*+,-./:;<=>?[]^{|}~ ", *s2))) && *s2 != '\0')
+  while( ((ws=ustrchr(wk,*s2)) ||(!ustrchr("!%&()*+,-./:;<=>?[]^{|}~ 	", *s2))) && *s2 != '\0')
         {
            if (ws) stack.push(s2);
            s2++;
