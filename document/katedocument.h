@@ -57,6 +57,32 @@ class KateCmd;
 #include "../interfaces/document.h"
 #include "./katedocumentIface.h"
 
+class CachedFontMetrics : public QFontMetrics {
+private:
+    short *warray[256];
+public:
+    CachedFontMetrics(const QFont& f) : QFontMetrics(f) {
+        for (int i=0; i<256; i++) warray[i]=0;
+    }
+    ~CachedFontMetrics() {
+        for (int i=0; i<256; i++)
+                if (warray[i]) delete[] warray[i];
+    }
+    int width(QChar c) {
+        uchar cell=c.cell();
+        uchar row=c.row();
+        short *wa=warray[row];
+        if (!wa) {
+                // qDebug("create row: %d",row);
+                wa=warray[row]=new short[256];
+                for (int i=0; i<256; i++) wa[i]=-1;
+        }
+        if (wa[cell]<0) wa[cell]=(short) QFontMetrics::width(c);
+        return (int)wa[cell];
+    }
+    int width(QString s) { return QFontMetrics::width(s); }
+};
+
 class Attribute {
   public:
     Attribute() { ; };
@@ -140,13 +166,13 @@ class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
 
   protected:
     QFont myFont;
-    QFontMetrics myFontMetrics;
+    CachedFontMetrics myFontMetrics;
     bool myDeleteDoc;
 
   public:
     void setFont (QFont font);
     QFont getFont () { return myFont; };
-    QFontMetrics getFontMetrics () { return myFontMetrics; };
+    CachedFontMetrics getFontMetrics () { return myFontMetrics; };
 
     virtual bool openFile();
     virtual bool saveFile();

@@ -209,7 +209,7 @@ KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool
 void KateDocument::setFont (QFont font)
 {
   myFont = font;
-  myFontMetrics = QFontMetrics (myFont);
+  myFontMetrics = CachedFontMetrics (myFont);
   updateFontData();
 }
 
