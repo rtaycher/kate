@@ -19,9 +19,9 @@
 
 #include "../main/kantmain.h"
 
-#include <qwidget.h>
+#include <qtabwidget.h>
 
-class KantSidebar : public QWidget
+class KantSidebar : public QTabWidget
 {
   Q_OBJECT
   public:
@@ -33,10 +33,6 @@ class KantSidebar : public QWidget
     void focusNextWidget();
     void readConfig(KConfig* config, const char* group="Sidebar");
     void saveConfig(KConfig* config, const char* group="Sidebar");
-
-  private:
-    QWidgetStack* stack;
-    QComboBox* cmb;
 };
 
 #endif

@@ -17,20 +17,11 @@
 #include "kantsidebar.h"
 #include "kantsidebar.moc"
 
+#include <qtabbar.h>
 #include <kconfig.h>
-#include <qlayout.h>
-#include <qwidgetstack.h>
-#include <qcombobox.h>
 
-KantSidebar::KantSidebar(QWidget* parent, const char* name) : QWidget(parent, name)
+KantSidebar::KantSidebar(QWidget* parent, const char* name) : QTabWidget (parent, name)
 {
-
-  QVBoxLayout* lo = new QVBoxLayout(this);
-  cmb = new QComboBox( this );
-  lo->addWidget( cmb );
-  stack = new QWidgetStack(this);
-  lo->addWidget( stack );
-  connect(cmb, SIGNAL( activated( int ) ), stack, SLOT( raiseWidget( int ) ) );
 }
 
 KantSidebar::~KantSidebar()
@@ -39,46 +30,38 @@ KantSidebar::~KantSidebar()
 
 void KantSidebar::addWidget(QWidget* widget, const QString & label )
 {
-  int id = cmb->count();
-  stack->addWidget(widget, id);
-  cmb->insertItem(label, id);
-  cmb->setCurrentItem(id);
-  stack->raiseWidget( id );
-  cmb->setFocus();
+  addTab (widget, label);
+  showPage (widget);
   widget->setFocus();
-//  widget->setFocusPolicy(QWidget::ClickFocus);
 }
 
 void KantSidebar::removeWidget(QWidget* widget)
 {
-  cmb->removeItem( stack->id( widget ) );
-  stack->removeWidget( widget );
+  removePage ( widget );
 }
 
 void KantSidebar::focusNextWidget()
 {
-  int id = cmb->currentItem();
+  int id = currentPageIndex ();
 
-  if ( id < cmb->count()-1 )
+  if ( id < tabBar()->count()-1 )
     id++;
   else
     id = 0;
 
-  cmb->setCurrentItem( id );
-  stack->raiseWidget( id );
-  stack->visibleWidget()->setFocus();
+  setCurrentPage ( id );
+  currentPage ()->setFocus ();
 }
 
 void KantSidebar::readConfig(KConfig* config, const char* group)
 {
   config->setGroup(group);
   QString t = config->readEntry("Current", "Files");
-  for (int i=0; i<cmb->count()-1; i++)
+  for (int i=0; i<tabBar()->count()-1; i++)
   {
-    if ( cmb->text( i ).compare( t ) == 0 )
+    setCurrentPage ( i );
+    if ( tabLabel ( currentPage() ).compare( t ) == 0 )
     {
-      cmb->setCurrentItem( i );
-      stack->raiseWidget( i );
       break;
     }
   }
@@ -87,5 +70,5 @@ void KantSidebar::readConfig(KConfig* config, const char* group)
 void KantSidebar::saveConfig(KConfig* config, const char* group)
 {
   config->setGroup(group);
-  config->writeEntry("Current", cmb->currentText());
+  config->writeEntry("Current", tabLabel (currentPage ()));
 }
