@@ -2,7 +2,7 @@
 
 INCLUDES = $(all_includes)
 
-KDE_CXXFLAGS = -DNEW_CODE 
+KDE_CXXFLAGS = $(USE_RTTI) -DNO_NEW_CODE
 
 bin_PROGRAMS = kwrite
 
