@@ -57,8 +57,8 @@ void KatePluginManager::setupPluginList ()
 
     info->load = false;
     info->libname = confFile->readEntry("libname","");
-    info->name = confFile->readEntry("name","");
-    info->description = confFile->readEntry("description","");
+    info->name = confFile->readEntry("Name","");
+    info->description = confFile->readEntry("Comment","");
     info->author = confFile->readEntry("author","");
     info->plugin = 0L;
 
