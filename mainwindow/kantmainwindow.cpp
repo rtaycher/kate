@@ -838,9 +838,11 @@ void KantMainWindow::settingsMenuAboutToShow()
   settingsShowConsole->setChecked( consoleDock->isVisible() );
 }
 
-void KantMainWindow::setEOLAboutToShow()
+void KantMainWindow::setEOLMenuAboutToShow()
 {
-  setEndOfLine->setCurrentItem( viewManager->activeView()->getEol() );
+  int eol = viewManager->activeView()->getEol()-1;
+  eol = eol>=0? eol: 0;
+  setEndOfLine->setCurrentItem( eol );
 }
 
 void KantMainWindow::openURL (const QString &name)

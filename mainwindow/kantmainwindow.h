@@ -218,7 +218,7 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     void slotWindowActivated ();
     void slotCurrentDocChanged();
     void docListMenuAboutToShow();
-    void setEOLAboutToShow();
+    void setEOLMenuAboutToShow();
     void bookmarkMenuAboutToShow();
     void projectMenuAboutToShow();
     void settingsMenuAboutToShow();
