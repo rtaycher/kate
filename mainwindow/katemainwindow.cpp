@@ -210,8 +210,8 @@ void KateMainWindow::setupActions()
   editIndent = new KAction(i18n("&Indent"), "indent", CTRL+Key_I, viewManager, SLOT(slotIndent()), actionCollection(), "edit_indent");
   editUnIndent = new KAction(i18n("&Unindent"), "unindent", CTRL+SHIFT+Key_I, viewManager, SLOT(slotUnIndent()), actionCollection(), "edit_unindent");
 
-  editComment= new KAction(i18n("Comme&nt"), "comment", 0, viewManager, SLOT(slotIndent()), actionCollection(), "edit_comment");
-  editUnComment = new KAction(i18n("Uncommen&t"), "uncomment", 0, viewManager, SLOT(slotUnIndent()), actionCollection(), "edit_uncomment");
+  editComment= new KAction(i18n("Comme&nt"), "comment", 0, viewManager, SLOT(slotComment()), actionCollection(), "edit_comment");
+  editUnComment = new KAction(i18n("Uncommen&t"), "uncomment", 0, viewManager, SLOT(slotUnComment()), actionCollection(), "edit_uncomment");
 
   editCmd = new KAction(i18n("Editing Co&mmand"), Qt::CTRL+Qt::Key_M, viewManager, SLOT(slotEditCommand()),
                                   actionCollection(), "edit_cmd");

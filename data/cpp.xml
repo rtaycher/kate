@@ -166,4 +166,10 @@
       <itemData name="Prep. Lib"  defStyleNum="dsOthers"/> <!--,Qt::darkYellow,Qt::yellow,false,false)); -->
     </itemDatas>
   </highlighting>
+  <general>
+    <comments>
+      <comment name="singleLine" start="//" />
+      <comment name="multiLine" start="/*" end="*/" />
+    </comments>
+  </general>
 </language>

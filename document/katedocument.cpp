@@ -1579,6 +1579,7 @@ void KateDocument::optimizeLeadingSpace(int line, int flags, int change) {
 
 void KateDocument::doCommentLine(PointStruc &cursor) {
 
+  kdDebug()<<"doComment"<<m_highlight->getCommentStart()<<endl;
   QString startComment = m_highlight->getCommentStart() + " ";
   QString endComment = " " + m_highlight->getCommentEnd();
 

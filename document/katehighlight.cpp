@@ -983,16 +983,20 @@ void AutoHighlight::makeContextList()
 
   data=HlManager::self()->syntax->getGroupInfo("general","comment");
   if (data)
-    while (HlManager::self()->syntax->nextGroup(data)) 
+    {
+      kdDebug()<<"COMMENT DATA FOUND"<<endl;
+    while  (HlManager::self()->syntax->nextGroup(data)) 
       {
-        if (HlManager::self()->syntax->groupItemData(data,"name")=="singleLine")
-		cslStart=HlManager::self()->syntax->groupItemData(data,"start");
-	if (HlManager::self()->syntax->groupItemData(data,"name")=="multiLine")
+        kdDebug()<<HlManager::self()->syntax->groupData(data,"name")<<endl;
+        if (HlManager::self()->syntax->groupData(data,"name")=="singleLine")
+		cslStart=HlManager::self()->syntax->groupData(data,"start");
+	if (HlManager::self()->syntax->groupData(data,"name")=="multiLine")
            {
-		cmlStart=HlManager::self()->syntax->groupItemData(data,"start");
-		cmlEnd=HlManager::self()->syntax->groupItemData(data,"end");
+		cmlStart=HlManager::self()->syntax->groupData(data,"start");
+		cmlEnd=HlManager::self()->syntax->groupData(data,"end");
            }
       }
+    }
 
   if (data) HlManager::self()->syntax->freeGroupInfo(data);
   data=0;

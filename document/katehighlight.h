@@ -29,6 +29,7 @@
 #include <qdict.h>
 #include <qregexp.h>
 #include "../qt3back/qregexp3.h"
+#include <kdebug.h>
 
 class SyntaxDocument;
 struct syntaxModeListItem;
@@ -337,9 +338,9 @@ class AutoHighlight : public GenHighlight
   public:
     AutoHighlight(syntaxModeListItem *def);
     virtual ~AutoHighlight();
-    virtual QString getCommentStart() {return cmlStart;};
-    virtual QString getCommentEnd()  {return cmlEnd;};
-    virtual QString getCommentSingleLineStart() { return cslStart;};
+    QString getCommentStart() {kdDebug()<<"*****AutoHighlight::getCommentStart()"<<endl; return cmlStart;};
+    QString getCommentEnd()  {return cmlEnd;};
+    QString getCommentSingleLineStart() { return cslStart;};
 
   protected:
     QString iName;
