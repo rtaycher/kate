@@ -1,44 +1,44 @@
 /***************************************************************************
-                          katedocument.cpp  -  description     
-                             -------------------     
-    begin                : Mon Jan 15 2001     
-    copyright            : (C) 2001 by Christoph Cullmann     
+                          katedocument.cpp  -  description
+                             -------------------
+    begin                : Mon Jan 15 2001
+    copyright            : (C) 2001 by Christoph Cullmann
     email                : cullmann@kde.org
- ***************************************************************************/     
-     
-/***************************************************************************     
- *                                                                         *     
- *   This program is free software; you can redistribute it and/or modify  *     
- *   it under the terms of the GNU General Public License as published by  *     
- *   the Free Software Foundation; either version 2 of the License, or     *     
- *   (at your option) any later version.                                   *     
- *                                                                         *     
- ***************************************************************************/     
-     
-#include "katedocument.h"     
-#include "katedocument.moc"     
-     
-#include "katefactory.h"     
-     
-#include <qfileinfo.h>     
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#include "katedocument.h"
+#include "katedocument.moc"
+
+#include "katefactory.h"
+
+#include <qfileinfo.h>
 #include <kmessagebox.h>
-#include <klocale.h>     
-#include <kconfig.h>     
-#include <qstring.h>     
-     
-#include <sys/time.h>     
-#include <unistd.h>     
-     
-#include <stdio.h>     
-     
-#include <qtimer.h>     
-#include <qobject.h>     
-#include <qapplication.h>     
-#include <qclipboard.h>     
-#include <qpainter.h>     
-#include <qfile.h>     
-#include <qtextstream.h>     
-#include <qtextcodec.h>     
+#include <klocale.h>
+#include <kconfig.h>
+#include <qstring.h>
+
+#include <sys/time.h>
+#include <unistd.h>
+
+#include <stdio.h>
+
+#include <qtimer.h>
+#include <qobject.h>
+#include <qapplication.h>
+#include <qclipboard.h>
+#include <qpainter.h>
+#include <qfile.h>
+#include <qtextstream.h>
+#include <qtextcodec.h>
 #include <kglobal.h>     
      
 #include <kcharsets.h>     
@@ -62,40 +62,40 @@ class KateUndo
     ~KateUndo ();     
      
     void undo ();     
-		void redo ();     
+    void redo ();     
      
-		enum types     
-		{     
+    enum types     
+    {     
       internalInsertText,     
-			internalRemoveText,     
-			internalWrapLine,     
-			internalUnWrapLine,     
-			internalInsertLine,     
-			internalRemoveLine     
-		};     
+      internalRemoveText,     
+      internalWrapLine,     
+      internalUnWrapLine,     
+      internalInsertLine,     
+      internalRemoveLine     
+    };     
      
   private:     
-	  KateDocument *myDoc;     
-	  uint type;     
+    KateDocument *myDoc;     
+    uint type;     
     uint line;     
-	  uint col;     
-	  uint len;     
-	  QString text;     
+    uint col;     
+    uint len;     
+    QString text;     
 };     
      
 class KateUndoGroup     
 {     
   public:     
-	  KateUndoGroup (KateDocument *doc);     
-		~KateUndoGroup ();     
+    KateUndoGroup (KateDocument *doc);     
+    ~KateUndoGroup ();     
      
-		void undo ();     
-		void redo ();     
+    void undo ();     
+    void redo ();     
      
-		void addItem (KateUndo *undo);     
+    void addItem (KateUndo *undo);     
      
   private:     
-	  KateDocument *myDoc;     
+    KateDocument *myDoc;     
     QPtrList<KateUndo> items;     
 };     
      
@@ -111,7 +111,7 @@ KateUndo::KateUndo (KateDocument *doc, uint type, uint line, uint col, uint len,
   this->line = line;     
   this->col = col;     
   this->len = len;     
-	this->text = text;     
+  this->text = text;     
 }     
      
 KateUndo::~KateUndo ()     
@@ -121,57 +121,57 @@ KateUndo::~KateUndo ()
 void KateUndo::undo ()     
 {     
   if (type == KateUndo::internalInsertText)     
-	{     
-	  myDoc->internalRemoveText (line, col, len);     
+  {     
+    myDoc->internalRemoveText (line, col, len);     
   }     
   else if (type == KateUndo::internalRemoveText)     
-	{     
-	  myDoc->internalInsertText (line, col, text);     
-	}     
-	else if (type == KateUndo::internalWrapLine)     
-	{     
-	  myDoc->internalUnWrapLine (line, col);     
+  {     
+    myDoc->internalInsertText (line, col, text);     
+  }     
+  else if (type == KateUndo::internalWrapLine)     
+  {     
+    myDoc->internalUnWrapLine (line, col);     
   }     
   else if (type == KateUndo::internalUnWrapLine)     
-	{     
-	  myDoc->internalWrapLine (line, col);     
-	}     
-	else if (type == KateUndo::internalInsertLine)     
-	{     
-	  myDoc->internalRemoveLine (line);     
+  {     
+    myDoc->internalWrapLine (line, col);     
+  }     
+  else if (type == KateUndo::internalInsertLine)     
+  {     
+    myDoc->internalRemoveLine (line);     
   }     
   else if (type == KateUndo::internalRemoveLine)     
-	{     
-	  myDoc->internalInsertLine (line, text);     
-	}     
+  {     
+    myDoc->internalInsertLine (line, text);     
+  }     
 }     
      
 void KateUndo::redo ()     
 {     
   if (type == KateUndo::internalRemoveText)     
-	{     
-	  myDoc->internalRemoveText (line, col, len);     
+  {     
+    myDoc->internalRemoveText (line, col, len);     
   }     
   else if (type == KateUndo::internalInsertText)     
-	{     
-	  myDoc->internalInsertText (line, col, text);     
-	}     
-	else if (type == KateUndo::internalUnWrapLine)     
-	{     
-	  myDoc->internalUnWrapLine (line, col);     
+  {     
+    myDoc->internalInsertText (line, col, text);     
+  }     
+  else if (type == KateUndo::internalUnWrapLine)     
+  {     
+    myDoc->internalUnWrapLine (line, col);     
   }     
   else if (type == KateUndo::internalWrapLine)     
-	{     
-	  myDoc->internalWrapLine (line, col);     
-	}     
-	else if (type == KateUndo::internalRemoveLine)     
-	{     
-	  myDoc->internalRemoveLine (line);     
+  {     
+    myDoc->internalWrapLine (line, col);     
+  }     
+  else if (type == KateUndo::internalRemoveLine)     
+  {     
+    myDoc->internalRemoveLine (line);     
   }     
   else if (type == KateUndo::internalInsertLine)     
-	{     
-	  myDoc->internalInsertLine (line, text);     
-	}     
+  {     
+    myDoc->internalInsertLine (line, text);     
+  }     
 }     
      
 KateUndoGroup::KateUndoGroup (KateDocument *doc)     
@@ -186,23 +186,23 @@ KateUndoGroup::~KateUndoGroup ()
 void KateUndoGroup::undo ()     
 {     
   if (items.count() == 0)     
-	  return;     
+    return;     
      
   for (int pos=items.count()-1; pos >= 0; pos--)     
-	{     
+  {     
     items.at(pos)->undo();     
-	}     
+  }     
 }     
      
 void KateUndoGroup::redo ()     
 {     
   if (items.count() == 0)     
-	  return;     
+    return;     
      
   for (int pos=0; pos < items.count(); pos++)     
-	{     
+  {     
     items.at(pos)->redo();     
-	}     
+  }     
 }     
      
 void KateUndoGroup::addItem (KateUndo *undo)     
@@ -228,9 +228,9 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
      
   currentUndo = 0L;     
   pseudoModal = 0L;     
-	     
-	myAttribs = 0L;     
-	myAttribsLen = 0;     
+       
+  myAttribs = 0L;     
+  myAttribsLen = 0;     
      
   m_bSingleViewMode=bSingleViewMode;     
   m_bBrowserView = bBrowserView;     
@@ -284,14 +284,14 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
      
   modified = false;     
 
-	clear();     
+  clear();     
 
   internalSetHlMode(0); //calls updateFontData()
   // if the user changes the highlight with the dialog, notify the doc
   connect(hlManager,SIGNAL(changed()),SLOT(internalHlChanged()));     
      
   newDocGeometry = false;     
-	_autoUpdate = true;     
+  _autoUpdate = true;     
      
   readConfig();     
      
@@ -316,8 +316,8 @@ KateDocument::~KateDocument()
     myViews.clear();     
     myViews.setAutoDelete( false );     
   }     
-	     
-	delete [] myAttribs;     
+       
+  delete [] myAttribs;     
 }     
      
 //     
@@ -361,14 +361,14 @@ QString KateDocument::text ( uint startLine, uint startCol, uint endLine, uint e
   {     
     TextLine::Ptr textLine = buffer->line(i);     
      
-		if (i == startLine)     
-		  s.append(textLine->getString().mid (startCol, textLine->length()-startCol));     
-		else if (i == endLine)     
-		  s.append(textLine->getString().mid (0, endCol));     
-		else     
+    if (i == startLine)     
+      s.append(textLine->getString().mid (startCol, textLine->length()-startCol));     
+    else if (i == endLine)     
+      s.append(textLine->getString().mid (0, endCol));     
+    else     
       s.append(textLine->getString());     
      
-		if ( i < endLine )     
+    if ( i < endLine )     
       s.append('\n');     
   }     
      
@@ -425,22 +425,22 @@ bool KateDocument::insertText( uint line, uint col, const QString &s )
   uint len = s.length();
   QChar ch;
   QString buf;
-	uint endLine, endCol, startLine, startCol;
+  uint endLine, endCol, startLine, startCol;
 
-	startLine = line;
-	startCol = col;
+  startLine = line;
+  startCol = col;
   endLine = line;
-	endCol = col;
+  endCol = col;
 
   if (s.isEmpty())
     return true;
 
-	bool newUndo = false;
-	if (currentUndo == 0L)
+  bool newUndo = false;
+  if (currentUndo == 0L)
   {
-	  currentUndo = new KateUndoGroup (this);
+    currentUndo = new KateUndoGroup (this);
     newUndo = true;
-	}
+  }
 
   tagEnd = 0;
   tagStart = 0xffffff;
@@ -455,7 +455,7 @@ bool KateDocument::insertText( uint line, uint col, const QString &s )
       internalWrapLine (line, insertPos + buf.length());
 
       line++;
-			endLine++;
+      endLine++;
       insertPos = 0;
       buf.truncate(0);
     }
@@ -470,15 +470,15 @@ bool KateDocument::insertText( uint line, uint col, const QString &s )
     setModified(true);
   }
 
-	if (_autoUpdate)
-  	updateViews();
+  if (_autoUpdate)
+    updateViews();
 
   if (newUndo)
-	{
+  {
     undoItems.append (currentUndo);
-		currentUndo = 0L;
-		emit undoChanged ();
-	}
+    currentUndo = 0L;
+    emit undoChanged ();
+  }
 
   emit textChanged ();
 
@@ -490,9 +490,9 @@ bool KateDocument::removeText ( uint startLine, uint startCol, uint endLine, uin
   TextLine::Ptr l, tl;
   KateView *view;
   int cLine, cCol;
-	uint deletePos = 0;
-	uint endPos = 0;
-	uint line = 0;
+  uint deletePos = 0;
+  uint endPos = 0;
+  uint line = 0;
   KateViewCursor c;
 
   tagEnd = 0;
@@ -503,52 +503,52 @@ bool KateDocument::removeText ( uint startLine, uint startCol, uint endLine, uin
   if (!l)
     return false;
 
-	bool newUndo = false;
-	if (currentUndo == 0L)
+  bool newUndo = false;
+  if (currentUndo == 0L)
   {
-	  currentUndo = new KateUndoGroup (this);
+    currentUndo = new KateUndoGroup (this);
     newUndo = true;
-	}
+  }
 
   if (startLine == endLine)
   {
     internalRemoveText (startLine, startCol, endCol-startCol);
-	}
+  }
   else if ((startLine+1) == endLine)
   {
     internalRemoveText (startLine, startCol, l->length()-startCol);
-		internalRemoveText (startLine+1, 0, endCol);
+    internalRemoveText (startLine+1, 0, endCol);
     internalUnWrapLine (startLine, startCol);
   }
-	else
-	{
+  else
+  {
     for (line = startLine; line <= endLine; line++)
     {
-    	if ((line > startLine) && (line < endLine))
-    	{
-			  deletePos = 0;
+      if ((line > startLine) && (line < endLine))
+      {
+        deletePos = 0;
 
-				internalRemoveText (startLine, deletePos, l->length()-startCol);
-				internalUnWrapLine (startLine, deletePos);
+        internalRemoveText (startLine, deletePos, l->length()-startCol);
+        internalUnWrapLine (startLine, deletePos);
       }
-    	else
-    	{
-      	if (line == startLine)
-    		{
-			  	deletePos = startCol;
-					endPos = l->length();
-				}
-		 		else
-				{
-			  	deletePos = 0;
-					endPos = endCol;
-				}
+      else
+      {
+        if (line == startLine)
+        {
+          deletePos = startCol;
+          endPos = l->length();
+        }
+         else
+        {
+          deletePos = 0;
+          endPos = endCol;
+        }
 
-      	l->replace (deletePos, endPos-deletePos, 0, 0);
-				internalRemoveText (startLine, deletePos, endPos-deletePos);
+        l->replace (deletePos, endPos-deletePos, 0, 0);
+        internalRemoveText (startLine, deletePos, endPos-deletePos);
       }
-  	}
-	}
+    }
+  }
 
   if (tagStart <= tagEnd) {
     updateLines(tagStart, tagEnd);
@@ -556,14 +556,14 @@ bool KateDocument::removeText ( uint startLine, uint startCol, uint endLine, uin
   }
 
   if (_autoUpdate)
-	  updateViews();
+    updateViews();
 
-	if (newUndo)
-	{
+  if (newUndo)
+  {
     undoItems.append (currentUndo);
-		currentUndo = 0L;
-		emit undoChanged ();
-	}
+    currentUndo = 0L;
+    emit undoChanged ();
+  }
 
   emit textChanged ();
 
@@ -575,12 +575,12 @@ bool KateDocument::insertLine( uint l, const QString &str )
   if (l > buffer->count())
     return false;
 
-	bool newUndo = false;
-	if (currentUndo == 0L)
+  bool newUndo = false;
+  if (currentUndo == 0L)
   {
-	  currentUndo = new KateUndoGroup (this);
+    currentUndo = new KateUndoGroup (this);
     newUndo = true;
-	}
+  }
 
   internalInsertLine (l, str);
 
@@ -590,14 +590,14 @@ bool KateDocument::insertLine( uint l, const QString &str )
   }
 
   if (_autoUpdate)
-	  updateViews();
+    updateViews();
 
   if (newUndo)
-	{
+  {
     undoItems.append (currentUndo);
-		currentUndo = 0L;
-		emit undoChanged ();
-	}
+    currentUndo = 0L;
+    emit undoChanged ();
+  }
 
   emit textChanged ();
 
@@ -606,30 +606,30 @@ bool KateDocument::insertLine( uint l, const QString &str )
 
 bool KateDocument::removeLine( uint line )     
 {     
-	bool newUndo = false;     
-	if (currentUndo == 0L)     
+  bool newUndo = false;     
+  if (currentUndo == 0L)     
   {     
-	  currentUndo = new KateUndoGroup (this);     
+    currentUndo = new KateUndoGroup (this);     
     newUndo = true;     
-	}     
+  }     
      
-	if (!internalRemoveLine (line))     
-	  return false;     
+  if (!internalRemoveLine (line))     
+    return false;     
      
   if (tagStart <= tagEnd) {
     updateLines(tagStart, tagEnd);
     setModified(true);     
   }
      
-	if (_autoUpdate)     
-  	updateViews();     
+  if (_autoUpdate)     
+    updateViews();     
      
   if (newUndo)     
-	{     
+  {     
     undoItems.append (currentUndo);     
-		currentUndo = 0L;
-		emit undoChanged ();     
-	}     
+    currentUndo = 0L;
+    emit undoChanged ();     
+  }     
      
   emit textChanged ();     
      
@@ -650,7 +650,7 @@ int KateDocument::lineLength ( uint line ) const
 {     
   TextLine::Ptr l = getTextLine( line );
 
-	if ( !l )
+  if ( !l )
     return -1;
 
   return l->length();
@@ -663,13 +663,13 @@ bool KateDocument::internalInsertText ( uint line, uint col, const QString &s )
 {
   TextLine::Ptr l;
 
-	l = getTextLine(line);
+  l = getTextLine(line);
 
   if (!l)
-	  return false;
+    return false;
 
-	if (currentUndo)
-	  currentUndo->addItem (new KateUndo (this, KateUndo::internalInsertText, line, col, s.length(), s));
+  if (currentUndo)
+    currentUndo->addItem (new KateUndo (this, KateUndo::internalInsertText, line, col, s.length(), s));
 
   l->replace(col, 0, s.unicode(), s.length());
 
@@ -684,17 +684,17 @@ bool KateDocument::internalInsertText ( uint line, uint col, const QString &s )
 bool KateDocument::internalRemoveText ( uint line, uint col, uint len )
 {
   TextLine::Ptr l;
-	KateView *view;
-	int cLine, cCol;
-	KateViewCursor c;
+  KateView *view;
+  int cLine, cCol;
+  KateViewCursor c;
 
-	l = getTextLine(line);
+  l = getTextLine(line);
 
   if (!l)
-	  return false;
+    return false;
 
-	if (currentUndo)
-	  currentUndo->addItem (new KateUndo (this, KateUndo::internalRemoveText, line, col, len, l->getString().mid(col, len)));
+  if (currentUndo)
+    currentUndo->addItem (new KateUndo (this, KateUndo::internalRemoveText, line, col, len, l->getString().mid(col, len)));
 
   l->replace(col, len, 0L, 0);
 
@@ -702,22 +702,22 @@ bool KateDocument::internalRemoveText ( uint line, uint col, uint len )
   updateMaxLength(l);
   tagLine(line);
 
-	newDocGeometry = true;
+  newDocGeometry = true;
   for (view = myViews.first(); view != 0L; view = myViews.next() )
   {
     view->getCursorPosition (&cLine, &cCol);
     cCol = view->myViewInternal->cursor.col;
 
-	  if ( (cLine == line) && (cCol > col) )
-		{
-  		if ((cCol - len) >= col)
-      	cCol = cCol-len;
-  		else
-  			cCol = col;
-		}
+    if ( (cLine == line) && (cCol > col) )
+    {
+      if ((cCol - len) >= col)
+        cCol = cCol-len;
+      else
+        cCol = col;
+    }
 
-		if (cCol < 0)
-		  cCol = 0;
+    if (cCol < 0)
+      cCol = 0;
 
     c.line = line;
     c.col = cCol;
@@ -726,73 +726,73 @@ bool KateDocument::internalRemoveText ( uint line, uint col, uint len )
   }
 
   emit textChanged ();
-	return true;
+  return true;
 }
 
 bool KateDocument::internalWrapLine ( uint line, uint col )
 {
-  TextLine::Ptr l, tl;     
-	KateView *view;     
-     
-	l = getTextLine(line);     
-  tl = new TextLine();     
-     
-	if (!l || !tl)     
-	  return false;     
-     
-	if (currentUndo)     
-	  currentUndo->addItem (new KateUndo (this, KateUndo::internalWrapLine, line, col, 0, 0));     
-     
-  l->wrap (tl, col);     
-     
-  buffer->insertLine (line+1, tl);     
-  buffer->changeLine(line);     
-     
-  updateMaxLength(l);     
-     
-  tagLine(line);     
-  tagLine(line+1);     
+  TextLine::Ptr l, tl;
+  KateView *view;
 
-  if (tagStart > line) tagStart++;     
-  if (tagEnd > line) tagEnd++;     
-     
-  newDocGeometry = true;     
-  for (view = myViews.first(); view != 0L; view = myViews.next() )     
-  {     
+  l = getTextLine(line);
+  tl = new TextLine();
+
+  if (!l || !tl)
+    return false;
+
+  if (currentUndo)
+    currentUndo->addItem (new KateUndo (this, KateUndo::internalWrapLine, line, col, 0, 0));
+
+  l->wrap (tl, col);
+
+  buffer->insertLine (line+1, tl);
+  buffer->changeLine(line);
+
+  updateMaxLength(l);
+
+  tagLine(line);
+  tagLine(line+1);
+
+  if (tagStart > line) tagStart++;
+  if (tagEnd > line) tagEnd++;
+
+  newDocGeometry = true;
+  for (view = myViews.first(); view != 0L; view = myViews.next() )
+  {
     view->insLine(line+1);
-  }     
-     
-	emit textChanged ();     
-	return true;     
-}     
-     
-bool KateDocument::internalUnWrapLine ( uint line, uint col)     
-{     
-  TextLine::Ptr l, tl;     
-  KateView *view;     
-	int cLine, cCol;     
-	KateViewCursor c;     
-     
-	l = getTextLine(line);     
-  tl = getTextLine(line+1);     
-     
-	if (!l || !tl)     
-	  return false;     
-     
-	if (currentUndo)     
-	  currentUndo->addItem (new KateUndo (this, KateUndo::internalUnWrapLine, line, col, 0, 0));     
-     
-  l->unWrap (col, tl, tl->length());     
-  l->setContext (tl->getContext(), tl->getContextLength());     
-     
+  }
+
+  emit textChanged ();
+  return true;
+}
+
+bool KateDocument::internalUnWrapLine ( uint line, uint col)
+{
+  TextLine::Ptr l, tl;
+  KateView *view;
+  int cLine, cCol;
+  KateViewCursor c;
+
+  l = getTextLine(line);
+  tl = getTextLine(line+1);
+
+  if (!l || !tl)
+    return false;
+
+  if (currentUndo)
+    currentUndo->addItem (new KateUndo (this, KateUndo::internalUnWrapLine, line, col, 0, 0));
+
+  l->unWrap (col, tl, tl->length());
+  l->setContext (tl->getContext(), tl->getContextLength());
+
   if (longestLine == tl)
-    longestLine = 0L;     
-     
-  buffer->changeLine(line);     
-  buffer->removeLine(line+1);     
-     
-  updateMaxLength(l);     
-  tagLine(line);     
+    longestLine = 0L;
+
+  buffer->changeLine(line);
+  buffer->removeLine(line+1);
+
+  updateMaxLength(l);
+  tagLine(line);
 
   if (tagStart > line && tagStart > 0) tagStart--;
   if (tagEnd > line) tagEnd--;
@@ -801,12 +801,12 @@ bool KateDocument::internalUnWrapLine ( uint line, uint col)
   for (view = myViews.first(); view != 0L; view = myViews.next() )
   {
     view->getCursorPosition (&cLine, &cCol);
-		cCol = view->myViewInternal->cursor.col;
+    cCol = view->myViewInternal->cursor.col;
 
     view->delLine(line+1);
 
     if ( (cLine == (line+1)) || ((cLine == line) && (cCol >= col)) )
-     	cCol = col;
+       cCol = col;
 
     c.line = line;
     c.col = cCol;
@@ -814,16 +814,16 @@ bool KateDocument::internalUnWrapLine ( uint line, uint col)
     view->updateCursor (c);
   }
 
-	emit textChanged ();
-	return true;
+  emit textChanged ();
+  return true;
 }
 
 bool KateDocument::internalInsertLine ( uint line, const QString &s )
 {
   KateView *view;
 
-	if (currentUndo)
-	  currentUndo->addItem (new KateUndo (this, KateUndo::internalInsertLine, line, 0, s.length(), s));
+  if (currentUndo)
+    currentUndo->addItem (new KateUndo (this, KateUndo::internalInsertLine, line, 0, s.length(), s));
 
   TextLine::Ptr TL=new TextLine();
   TL->append(s.unicode(),s.length());
@@ -844,7 +844,7 @@ bool KateDocument::internalInsertLine ( uint line, const QString &s )
   }
 
   emit textChanged ();
-	return true;
+  return true;
 }
 
 bool KateDocument::internalRemoveLine ( uint line )
@@ -853,11 +853,11 @@ bool KateDocument::internalRemoveLine ( uint line )
   int cLine, cCol;
   KateViewCursor c;
 
-	if (numLines() == 1)
-	  return false;
+  if (numLines() == 1)
+    return false;
 
-	if (currentUndo)
-	  currentUndo->addItem (new KateUndo (this, KateUndo::internalRemoveLine, line, 0, getTextLine (line)->getString().length(), getTextLine (line)->getString()));
+  if (currentUndo)
+    currentUndo->addItem (new KateUndo (this, KateUndo::internalRemoveLine, line, 0, getTextLine (line)->getString().length(), getTextLine (line)->getString()));
 
   if (longestLine == getTextLine (line))
     longestLine = 0L;
@@ -871,7 +871,7 @@ bool KateDocument::internalRemoveLine ( uint line )
   for (view = myViews.first(); view != 0L; view = myViews.next() )
   {
     view->getCursorPosition (&cLine, &cCol);
-		cCol = view->myViewInternal->cursor.col;
+    cCol = view->myViewInternal->cursor.col;
     view->delLine(line);
 
     if ( (cLine == line) )
@@ -884,7 +884,7 @@ bool KateDocument::internalRemoveLine ( uint line )
   }
 
   emit textChanged ();
-	return true;
+  return true;
 }
 
 //
@@ -961,15 +961,15 @@ QString KateDocument::selection() const
       {
         if ((z > selectStartLine) && (z < selectEndLine))
           s.append (textLine->getString());
-	else
-	{
-	  if ((z == selectStartLine) && (z == selectEndLine))
-	    s.append (textLine->getString().mid(selectStartCol, selectEndCol-selectStartCol));
-	  else if ((z == selectStartLine))
-	    s.append (textLine->getString().mid(selectStartCol, textLine->length()-selectStartCol));
-	  else if ((z == selectEndLine))
-	    s.append (textLine->getString().mid(0, selectEndCol));	  
-	}
+  else
+  {
+    if ((z == selectStartLine) && (z == selectEndLine))
+      s.append (textLine->getString().mid(selectStartCol, selectEndCol-selectStartCol));
+    else if ((z == selectStartLine))
+      s.append (textLine->getString().mid(selectStartCol, textLine->length()-selectStartCol));
+    else if ((z == selectEndLine))
+      s.append (textLine->getString().mid(0, selectEndCol));    
+  }
       }
       else
       {
@@ -977,7 +977,7 @@ QString KateDocument::selection() const
       }
       
       if (z < selectEndLine)
-	s.append (QChar('\n'));
+  s.append (QChar('\n'));
     }
   }
   
@@ -1003,7 +1003,7 @@ bool KateDocument::removeSelectedText ()
   currentUndo = new KateUndoGroup (this);
 
   _autoUpdate = false;
-  
+
   if (!invertedSelection)
   {
     for (int z=selectStartLine; z <= selectEndLine; z++)
@@ -1011,46 +1011,45 @@ bool KateDocument::removeSelectedText ()
       textLine = getTextLine(z);
       if (!textLine)
         break;
-	
+
       DeleteSelection *curLine = new DeleteSelection;
 
       curLine->deleteStart = textLine->length();
       curLine->line = z;
       curLine->lineLen = textLine->length();
-    
-      if (!(_configFlags & KateDocument::cfVerticalSelect))
-      {
-        if ((z > selectStartLine) && (z < selectEndLine))
-          curLine->deleteLine = 1;
-	else
-	{
-	  if ((z == selectStartLine) && (z == selectEndLine))
-	  {
-	    curLine->deleteStart = selectStartCol;
-	    curLine->len = selectEndCol-selectStartCol;
-	  }
-	  else if ((z == selectStartLine))
-	  {
-	    curLine->deleteStart = selectStartCol;
-	    curLine->len = textLine->length()-selectStartCol;
-	  }
-	  else if ((z == selectEndLine))
-	  {
-	    curLine->deleteStart = 0;
-	    curLine->len = selectEndCol;	  
-	  }
-	}
+
+       if (!(_configFlags & KateDocument::cfVerticalSelect))
+       {
+         if ((z > selectStartLine) && (z < selectEndLine))
+           curLine->deleteLine = 1;
+           else
+         {
+            if ((z == selectStartLine) && (z == selectEndLine))
+          {
+            curLine->deleteStart = selectStartCol;
+            curLine->len = selectEndCol-selectStartCol;
+          }
+          else if ((z == selectStartLine))
+          {
+            curLine->deleteStart = selectStartCol;
+            curLine->len = textLine->length()-selectStartCol;
+          }
+           else if ((z == selectEndLine))
+          {
+            curLine->deleteStart = 0;
+            curLine->len = selectEndCol;
+          }
+        }
       }
       else
       {
         curLine->deleteStart = selectStartCol;
-	curLine->len = selectEndCol-selectStartCol;
+        curLine->len = selectEndCol-selectStartCol;
       }
-      
+
       selectedLines.push (curLine);
     }
   }
-
 
   while (selectedLines.count() > 0)
   {
@@ -1060,7 +1059,7 @@ bool KateDocument::removeSelectedText ()
       removeLine (curLine->line);
     else if (curLine->deleteStart+curLine->len > curLine->lineLen)
       removeText (curLine->line, curLine->deleteStart, curLine->line+1, 0);
-		else
+    else
       removeText (curLine->line, curLine->deleteStart, curLine->line, curLine->deleteStart+curLine->len);
   }
 
@@ -1101,9 +1100,9 @@ bool KateDocument::invertSelection()
   optimizeSelection();
   emit selectionChanged();
 
-	updateViews ();
+  updateViews ();
 
-	return true;*/
+  return true;*/
 }
 
 //
@@ -1129,30 +1128,30 @@ void KateDocument::setUndoSteps(uint steps)
 {     
   myUndoSteps = steps;     
      
-	emit undoChanged ();     
+  emit undoChanged ();     
 }     
      
 void KateDocument::undo()     
 {     
-	undoItems.last()->undo();     
-	redoItems.append (undoItems.last());     
-	undoItems.removeLast ();     
+  undoItems.last()->undo();     
+  redoItems.append (undoItems.last());     
+  undoItems.removeLast ();     
      
-	if (tagStart <= tagEnd) {
+  if (tagStart <= tagEnd) {
     updateLines(tagStart, tagEnd);
     setModified(true);
   }
 
   updateViews();
 
-	emit undoChanged ();
+  emit undoChanged ();
 }
 
 void KateDocument::redo()
 {
   redoItems.last()->redo();
-	undoItems.append (redoItems.last());
-	redoItems.removeLast ();
+  undoItems.append (redoItems.last());
+  redoItems.removeLast ();
 
   if (tagStart <= tagEnd) {
     updateLines(tagStart, tagEnd);
@@ -1161,25 +1160,25 @@ void KateDocument::redo()
 
   updateViews();
 
-	emit undoChanged ();     
+  emit undoChanged ();     
 }     
      
 void KateDocument::clearUndo()     
 {     
   undoItems.setAutoDelete (true);
-	undoItems.clear ();     
+  undoItems.clear ();     
   undoItems.setAutoDelete (false);     
      
-	emit undoChanged ();     
+  emit undoChanged ();     
 }     
      
 void KateDocument::clearRedo()     
 {     
   redoItems.setAutoDelete (true);     
-	redoItems.clear ();     
+  redoItems.clear ();     
   redoItems.setAutoDelete (false);     
      
-	emit undoChanged ();     
+  emit undoChanged ();     
 }     
      
 //     
@@ -1205,59 +1204,59 @@ bool KateDocument::searchText (unsigned int startLine, unsigned int startCol, co
   uint line, col, pos;
   uint searchEnd;
   TextLine::Ptr textLine;
-	uint foundAt, myMatchLen;
+  uint foundAt, myMatchLen;
   bool found;
 
   if (text.isEmpty())
-	  return false;
+    return false;
 
-	line = startLine;
-	col = startCol;
+  line = startLine;
+  col = startCol;
 
-	if (!backwards)
-	{
+  if (!backwards)
+  {
     searchEnd = lastLine();
 
     while (line <= searchEnd)
-		{
+    {
       textLine = getTextLine(line);
 
-			found = false;
-			found = textLine->searchText (col, text, &foundAt, &myMatchLen, casesensitive, false);
+      found = false;
+      found = textLine->searchText (col, text, &foundAt, &myMatchLen, casesensitive, false);
 
       if (found)
-			{
+      {
         (*foundAtLine) = line;
-				(*foundAtCol) = foundAt;
-				(*matchLen) = myMatchLen;
-				return true;
+        (*foundAtCol) = foundAt;
+        (*matchLen) = myMatchLen;
+        return true;
       }
 
       col = 0;
       line++;
     }
   }
-	else
-	{
+  else
+  {
     // backward search
     searchEnd = 0;
 
     while (line >= searchEnd)
-		{
+    {
       textLine = getTextLine(line);
 
-			found = false;
-			found = textLine->searchText (col, text, &foundAt, &myMatchLen, casesensitive, true);
+      found = false;
+      found = textLine->searchText (col, text, &foundAt, &myMatchLen, casesensitive, true);
 
         if (found)
-			{
-			  (*foundAtLine) = line;
-				(*foundAtCol) = foundAt;
-				(*matchLen) = myMatchLen;
-				return true;
+      {
+        (*foundAtLine) = line;
+        (*foundAtCol) = foundAt;
+        (*matchLen) = myMatchLen;
+        return true;
       }
 
-			if (line-1 >= 0)
+      if (line-1 >= 0)
         col = getTextLine(line-1)->length();
 
       line--;
@@ -1272,59 +1271,59 @@ bool KateDocument::searchText (unsigned int startLine, unsigned int startCol, co
   uint line, col, pos;
   uint searchEnd;
   TextLine::Ptr textLine;
-	uint foundAt, myMatchLen;
+  uint foundAt, myMatchLen;
   bool found;
 
   if (regexp.isEmpty() || !regexp.isValid())
-	  return false;
+    return false;
 
-	line = startLine;
-	col = startCol;
+  line = startLine;
+  col = startCol;
 
-	if (!backwards)
-	{
+  if (!backwards)
+  {
     searchEnd = lastLine();
 
     while (line <= searchEnd)
-		{
+    {
       textLine = getTextLine(line);
 
-			found = false;
-			found = textLine->searchText (col, regexp, &foundAt, &myMatchLen, false);
+      found = false;
+      found = textLine->searchText (col, regexp, &foundAt, &myMatchLen, false);
 
       if (found)
-			{
+      {
         (*foundAtLine) = line;
-				(*foundAtCol) = foundAt;
-				(*matchLen) = myMatchLen;
-				return true;
+        (*foundAtCol) = foundAt;
+        (*matchLen) = myMatchLen;
+        return true;
       }
 
       col = 0;
       line++;
     }
   }
-	else
-	{
+  else
+  {
     // backward search
     searchEnd = 0;
 
     while (line >= searchEnd)
-		{
+    {
       textLine = getTextLine(line);
 
-			found = false;
-			found = textLine->searchText (col, regexp, &foundAt, &myMatchLen, true);
+      found = false;
+      found = textLine->searchText (col, regexp, &foundAt, &myMatchLen, true);
 
         if (found)
-			{
-			  (*foundAtLine) = line;
-				(*foundAtCol) = foundAt;
-				(*matchLen) = myMatchLen;
-				return true;
+      {
+        (*foundAtLine) = line;
+        (*foundAtCol) = foundAt;
+        (*matchLen) = myMatchLen;
+        return true;
       }
 
-			if (line-1 >= 0)
+      if (line-1 >= 0)
         col = getTextLine(line-1)->length();
 
       line--;
@@ -1347,13 +1346,13 @@ uint KateDocument::hlMode ()
 bool KateDocument::setHlMode (uint mode)
 {
   if (internalSetHlMode (mode))
-	{
-	  setDontChangeHlOnSave();
+  {
+    setDontChangeHlOnSave();
     updateViews();
-		return true;
+    return true;
   }
 
-	return false;
+  return false;
 }
 
 bool KateDocument::internalSetHlMode (uint mode)
@@ -1376,7 +1375,7 @@ bool KateDocument::internalSetHlMode (uint mode)
 
   emit(hlChanged());
 
-	return true;
+  return true;
 }
 
 
@@ -1514,7 +1513,7 @@ void KateDocument::setReadWrite( bool rw )
   KTextEditor::View *view;
      
   if (rw == readOnly)     
-	{     
+  {     
     readOnly = !rw;     
     for (view = myViews.first(); view != 0L; view = myViews.next() ) {     
       emit static_cast<KateView *>( view )->newStatus();     
@@ -1940,24 +1939,24 @@ bool KateDocument::insertChars ( int line, int col, const QString &chars, KateVi
   if (buf.isEmpty()) return false;
 
   if (_configFlags & KateDocument::cfDelOnInput)
-	{
-	  if (hasSelection())
-		{
-		  removeSelectedText();
-		  view->getCursorPosition (&line, &col);
-			col = view->myViewInternal->cursor.col;
-		}
-	}
+  {
+    if (hasSelection())
+    {
+      removeSelectedText();
+      view->getCursorPosition (&line, &col);
+      col = view->myViewInternal->cursor.col;
+    }
+  }
 
-	_autoUpdate = false;
+  _autoUpdate = false;
 
   if (_configFlags & KateDocument::cfOvr)
-	{
-		if ((col+buf.length()) <= textLine->length())
+  {
+    if ((col+buf.length()) <= textLine->length())
       removeText (line, col, line, col+buf.length());
-		else
+    else
       removeText (line, col, line, textLine->length());
-	}
+  }
 
   insertText (line, col, buf);
   col += pos;
@@ -2128,11 +2127,11 @@ void KateDocument::del(VConfig &c)
   if (c.cursor.col < getTextLine(c.cursor.line)->length())     
   {     
     removeText(c.cursor.line, c.cursor.col, c.cursor.line, c.cursor.col+1);
-	}     
+  }     
   else     
-	{     
+  {     
     removeText(c.cursor.line, c.cursor.col, c.cursor.line+1, 0);     
-	}
+  }
 }
      
 void KateDocument::cut(VConfig &c) {     
@@ -2330,52 +2329,52 @@ void KateDocument::optimizeLeadingSpace(int line, int flags, int change) {
 }     
      
 /*     
-	Remove a given string at the begining     
-	of the current line.     
+  Remove a given string at the begining     
+  of the current line.     
 */     
 bool KateDocument::removeStringFromBegining(int line, QString &str)     
 {     
-	TextLine* textline = getTextLine(line);     
+  TextLine* textline = getTextLine(line);     
      
-	if(textline->startingWith(str))     
-	{     
-		// Get string lenght     
-		int length = str.length();     
+  if(textline->startingWith(str))     
+  {     
+    // Get string lenght     
+    int length = str.length();     
      
-		// Remove some chars     
-		removeText (line, 0, line, length);     
-     
-    return true;     
-	}     
-     
-	return false;     
-}     
-     
-/*     
-	Remove a given string at the end     
-	of the current line.     
-*/     
-bool KateDocument::removeStringFromEnd(int line, QString &str)     
-{     
-	TextLine* textline = getTextLine(line);     
-     
-	if(textline->endingWith(str))     
-	{     
-		// Get string lenght     
-		int length = str.length();     
-     
-		// Remove some chars     
-		removeText (line, 0, line, length);     
+    // Remove some chars     
+    removeText (line, 0, line, length);     
      
     return true;     
   }     
      
-	return false;     
+  return false;     
 }     
      
 /*     
-	Add to the current line a comment line mark at     
-	the begining.     
+  Remove a given string at the end     
+  of the current line.     
+*/     
+bool KateDocument::removeStringFromEnd(int line, QString &str)     
+{     
+  TextLine* textline = getTextLine(line);     
+     
+  if(textline->endingWith(str))     
+  {     
+    // Get string lenght     
+    int length = str.length();     
+     
+    // Remove some chars     
+    removeText (line, 0, line, length);     
+     
+    return true;     
+  }     
+     
+  return false;     
+}     
+     
+/*     
+  Add to the current line a comment line mark at     
+  the begining.     
 */     
 void KateDocument::addStartLineCommentToSingleLine(int line)     
 {     
@@ -2384,23 +2383,23 @@ void KateDocument::addStartLineCommentToSingleLine(int line)
 }     
      
 /*     
-	Remove from the current line a comment line mark at     
-	the begining if there is one.     
+  Remove from the current line a comment line mark at     
+  the begining if there is one.     
 */     
 bool KateDocument::removeStartLineCommentFromSingleLine(int line)     
 {     
   QString shortCommentMark = m_highlight->getCommentSingleLineStart();     
-	QString longCommentMark = shortCommentMark + " ";     
+  QString longCommentMark = shortCommentMark + " ";     
      
-	// Try to remove the long comment mark first     
-	bool removed = (removeStringFromBegining(line, longCommentMark)     
-									|| removeStringFromBegining(line, shortCommentMark));     
+  // Try to remove the long comment mark first     
+  bool removed = (removeStringFromBegining(line, longCommentMark)     
+                  || removeStringFromBegining(line, shortCommentMark));     
      
-	return removed;     
+  return removed;     
 }     
      
 /*     
-	Add to the current line a start comment mark at the     
+  Add to the current line a start comment mark at the     
  begining and a stop comment mark at the end.     
 */     
 void KateDocument::addStartStopCommentToSingleLine(int line)     
@@ -2408,41 +2407,41 @@ void KateDocument::addStartStopCommentToSingleLine(int line)
   QString startCommentMark = m_highlight->getCommentStart() + " ";     
   QString stopCommentMark = " " + m_highlight->getCommentEnd();     
      
-	// Add the start comment mark     
-	insertText (line, 0, startCommentMark);     
+  // Add the start comment mark     
+  insertText (line, 0, startCommentMark);     
      
-	// Go to the end of the line     
-	TextLine* textline = getTextLine(line);     
-	int col = textline->length();     
+  // Go to the end of the line     
+  TextLine* textline = getTextLine(line);     
+  int col = textline->length();     
      
-	// Add the stop comment mark     
-	insertText (line, col, stopCommentMark);     
+  // Add the stop comment mark     
+  insertText (line, col, stopCommentMark);     
 }     
      
 /*     
-	Remove from the current line a start comment mark at     
-	the begining and a stop comment mark at the end.     
+  Remove from the current line a start comment mark at     
+  the begining and a stop comment mark at the end.     
 */     
 bool KateDocument::removeStartStopCommentFromSingleLine(int line)     
 {     
   QString shortStartCommentMark = m_highlight->getCommentStart();     
-	QString longStartCommentMark = shortStartCommentMark + " ";     
+  QString longStartCommentMark = shortStartCommentMark + " ";     
   QString shortStopCommentMark = m_highlight->getCommentEnd();     
   QString longStopCommentMark = " " + shortStopCommentMark;     
      
-	// Try to remove the long start comment mark first     
-	bool removedStart = (removeStringFromBegining(line, longStartCommentMark)     
-											 || removeStringFromBegining(line, shortStartCommentMark));     
+  // Try to remove the long start comment mark first     
+  bool removedStart = (removeStringFromBegining(line, longStartCommentMark)     
+                       || removeStringFromBegining(line, shortStartCommentMark));     
      
-	// Try to remove the long stop comment mark first     
-	bool removedStop = (removeStringFromEnd(line, longStopCommentMark)     
-											|| removeStringFromEnd(line, shortStopCommentMark));     
+  // Try to remove the long stop comment mark first     
+  bool removedStop = (removeStringFromEnd(line, longStopCommentMark)     
+                      || removeStringFromEnd(line, shortStopCommentMark));     
      
-	return (removedStart || removedStop);     
+  return (removedStart || removedStop);     
 }     
      
 /*     
-	Add to the current selection a start comment     
+  Add to the current selection a start comment     
  mark at the begining and a stop comment mark     
  at the end.     
 */     
@@ -2451,21 +2450,21 @@ void KateDocument::addStartStopCommentToSelection()
   QString startComment = m_highlight->getCommentStart();     
   QString endComment = m_highlight->getCommentEnd();     
 /*     
-	QString marked (selection());     
-	int preDeleteLine = -1, preDeleteCol = -1;     
-	c.view->getCursorPosition (&preDeleteLine, &preDeleteCol);     
+  QString marked (selection());     
+  int preDeleteLine = -1, preDeleteCol = -1;     
+  c.view->getCursorPosition (&preDeleteLine, &preDeleteCol);     
      
-	if (marked.length() > 0)     
-		c.view->keyDelete ();     
+  if (marked.length() > 0)     
+    c.view->keyDelete ();     
      
-	int line = -1, col = -1;     
-	c.view->getCursorPosition (&line, &col);     
+  int line = -1, col = -1;     
+  c.view->getCursorPosition (&line, &col);     
      
-	c.view->insertText (startComment + marked + endComment);*/     
+  c.view->insertText (startComment + marked + endComment);*/     
 }     
      
 /*     
-	Add to the current selection a comment line     
+  Add to the current selection a comment line     
  mark at the begining of each line.     
 */     
 void KateDocument::addStartLineCommentToSelection()     
@@ -2474,22 +2473,22 @@ void KateDocument::addStartLineCommentToSelection()
   QString commentLineMark = m_highlight->getCommentSingleLineStart() + " ";     
      
 /*     
-	// For each line of the selection     
-	for (c.cursor.line = selectStart; c.cursor.line <= selectEnd; c.cursor.line++) {     
-		TextLine* textLine = getTextLine(c.cursor.line);     
-		if (textLine->isSelected() || textLine->numSelected()) {     
-			// Add the comment line mark     
-			insertText (c.cursor.line, c.cursor.col, commentLineMark);     
-		}     
-	}     
+  // For each line of the selection     
+  for (c.cursor.line = selectStart; c.cursor.line <= selectEnd; c.cursor.line++) {     
+    TextLine* textLine = getTextLine(c.cursor.line);     
+    if (textLine->isSelected() || textLine->numSelected()) {     
+      // Add the comment line mark     
+      insertText (c.cursor.line, c.cursor.col, commentLineMark);     
+    }     
+  }     
      
-	// Go back to the last commented line     
-	c.cursor.line--;*/     
+  // Go back to the last commented line     
+  c.cursor.line--;*/     
 }     
      
 /*     
-	Remove from the selection a start comment mark at     
-	the begining and a stop comment mark at the end.     
+  Remove from the selection a start comment mark at     
+  the begining and a stop comment mark at the end.     
 */     
 bool KateDocument::removeStartStopCommentFromSelection()     
 {     
@@ -2501,109 +2500,109 @@ bool KateDocument::removeStartStopCommentFromSelection()
   int startCommentLen = startComment.length();     
   int endCommentLen = endComment.length();     
      
-	QString marked (c.view->markedText ());     
-	int preDeleteLine = -1, preDeleteCol = -1;     
-	c.view->getCursorPosition (&preDeleteLine, &preDeleteCol);     
+  QString marked (c.view->markedText ());     
+  int preDeleteLine = -1, preDeleteCol = -1;     
+  c.view->getCursorPosition (&preDeleteLine, &preDeleteCol);     
      
-	int start = marked.find (startComment);     
-	int end = marked.findRev (endComment);     
+  int start = marked.find (startComment);     
+  int end = marked.findRev (endComment);     
      
-	bool okRemove = (start > -1) && (end > -1);     
-	if (okRemove)     
-		{     
-			marked.remove (start, startCommentLen);     
-			marked.remove (end-startCommentLen, endCommentLen);     
+  bool okRemove = (start > -1) && (end > -1);     
+  if (okRemove)     
+    {     
+      marked.remove (start, startCommentLen);     
+      marked.remove (end-startCommentLen, endCommentLen);     
      
-			c.view->keyDelete ();     
+      c.view->keyDelete ();     
      
-			int line = -1, col = -1;     
-			c.view->getCursorPosition (&line, &col);     
-			c.view->insertText (marked);     
-		}     
+      int line = -1, col = -1;     
+      c.view->getCursorPosition (&line, &col);     
+      c.view->insertText (marked);     
+    }     
      
-	return okRemove;*/     
+  return okRemove;*/     
 }     
      
 /*     
-	Remove from the begining of each line of the     
-	selection a start comment line mark.     
+  Remove from the begining of each line of the     
+  selection a start comment line mark.     
 */     
 bool KateDocument::removeStartLineCommentFromSelection()     
 {     
   // kdDebug(13020)<<"KateDocument::removeStartLineCommentFromSelection"<<endl;     
 /*     
   QString shortCommentMark = m_highlight->getCommentSingleLineStart();     
-	QString longCommentMark = shortCommentMark + " ";     
+  QString longCommentMark = shortCommentMark + " ";     
      
-	// Save cursor position     
-	int xpos = c.cursor.col;     
-	int ypos = c.cursor.line;     
+  // Save cursor position     
+  int xpos = c.cursor.col;     
+  int ypos = c.cursor.line;     
      
-	bool removed = false;     
+  bool removed = false;     
      
-	// For each line of the selection     
-	for (c.cursor.line = selectStart; c.cursor.line <= selectEnd; c.cursor.line++) {     
-		TextLine* textLine = getTextLine(c.cursor.line);     
-		if (textLine->isSelected() || textLine->numSelected()) {     
-			// Try to remove the long comment mark first     
-			removed = (removeStringFromBegining(c, longCommentMark)     
-								 || removeStringFromBegining(c, shortCommentMark)     
-								 || removed);     
-		}     
-	}     
+  // For each line of the selection     
+  for (c.cursor.line = selectStart; c.cursor.line <= selectEnd; c.cursor.line++) {     
+    TextLine* textLine = getTextLine(c.cursor.line);     
+    if (textLine->isSelected() || textLine->numSelected()) {     
+      // Try to remove the long comment mark first     
+      removed = (removeStringFromBegining(c, longCommentMark)     
+                 || removeStringFromBegining(c, shortCommentMark)     
+                 || removed);     
+    }     
+  }     
      
-	// Go back to saved cursor position     
-	TextLine* textLine = getTextLine(ypos);     
-	c.cursor.col = QMIN(textLine->length(), xpos);     
-	c.cursor.line = ypos;     
+  // Go back to saved cursor position     
+  TextLine* textLine = getTextLine(ypos);     
+  c.cursor.col = QMIN(textLine->length(), xpos);     
+  c.cursor.line = ypos;     
      
-	return removed;*/     
+  return removed;*/     
 }     
      
 /*     
-	Comment or uncomment the selection or the current     
-	line if there is no selection.     
+  Comment or uncomment the selection or the current     
+  line if there is no selection.     
 */     
 void KateDocument::doComment(VConfig &c, int change)     
 {     
-	bool hasStartLineCommentMark = !(m_highlight->getCommentSingleLineStart().isEmpty());     
-	bool hasStartStopCommentMark = ( !(m_highlight->getCommentStart().isEmpty())     
-																	 && !(m_highlight->getCommentEnd().isEmpty()) );     
+  bool hasStartLineCommentMark = !(m_highlight->getCommentSingleLineStart().isEmpty());     
+  bool hasStartStopCommentMark = ( !(m_highlight->getCommentStart().isEmpty())     
+                                   && !(m_highlight->getCommentEnd().isEmpty()) );     
      
-	bool removed = false;     
+  bool removed = false;     
      
   if (change > 0)     
   {     
     if ( !hasSelection() )     
     {     
       if ( hasStartLineCommentMark )     
-				addStartLineCommentToSingleLine(c.cursor.line);     
+        addStartLineCommentToSingleLine(c.cursor.line);     
       else if ( hasStartStopCommentMark )     
-				addStartStopCommentToSingleLine(c.cursor.line);     
+        addStartStopCommentToSingleLine(c.cursor.line);     
     }     
     else     
-		{     
-			if ( hasStartStopCommentMark )     
-				addStartStopCommentToSelection();     
-			else if ( hasStartLineCommentMark )     
-  			addStartLineCommentToSelection();
+    {     
+      if ( hasStartStopCommentMark )     
+        addStartStopCommentToSelection();     
+      else if ( hasStartLineCommentMark )     
+        addStartLineCommentToSelection();
     }     
   }     
   else     
   {     
     if ( !hasSelection() )     
     {     
-			removed = ( hasStartLineCommentMark     
-									&& removeStartLineCommentFromSingleLine(c.cursor.line) )
-				|| ( hasStartStopCommentMark     
-						 && removeStartStopCommentFromSingleLine(c.cursor.line) );     
+      removed = ( hasStartLineCommentMark     
+                  && removeStartLineCommentFromSingleLine(c.cursor.line) )
+        || ( hasStartStopCommentMark     
+             && removeStartStopCommentFromSingleLine(c.cursor.line) );     
     }     
     else     
     {     
-			removed = ( hasStartStopCommentMark     
-									&& removeStartStopCommentFromSelection() )     
-				|| ( hasStartLineCommentMark     
-						 && removeStartLineCommentFromSelection() );     
+      removed = ( hasStartStopCommentMark     
+                  && removeStartStopCommentFromSelection() )     
+        || ( hasStartLineCommentMark     
+             && removeStartLineCommentFromSelection() );     
     }     
   }
 }     
@@ -2639,7 +2638,7 @@ void KateDocument::tagLines(int start, int end) {
 void KateDocument::tagAll() {     
   int z;     
 
-  for (z = 0; z < (int) myViews.count(); z++) {     
+  for (z = 0; z < (int) myViews.count(); z++) {
     myViews.at(z)->tagAll();
   }
 }
@@ -2650,91 +2649,82 @@ void KateDocument::updateLines(int startLine, int endLine)
   uint line, last_line, ctxNumLen, endCtxLen;
   signed char *ctxNum, *endCtx;
 
-	ctxNum = 0L;
-	endCtx = 0L;
+  ctxNum = 0L;
+  endCtx = 0L;
 
   ctxNumLen = 0;
-	endCtxLen = 0;
+  endCtxLen = 0;
 
   if (!buffer->line(startLine))
-	  return;
+    return;
 
-	last_line = lastLine();
+  last_line = lastLine();
 
   line = startLine;
 
-	if (line > 0)
-	{
-//	  ctxNum = getTextLine(line - 1)->getContext();
-//		ctxNumLen = getTextLine(line - 1)->getContextLength();
-
-		ctxNumLen = getTextLine(line-1)->getContextLength();
-		if (ctxNumLen>0) 
-		{
-			if (ctxNum)
-				ctxNum=(signed char*)realloc(ctxNum,ctxNumLen);
-			else
-				ctxNum=(signed char*)malloc(ctxNumLen);
-			memcpy(ctxNum,getTextLine(line-1)->getContext(),ctxNumLen);
-		}
-		else { if (ctxNum) {free(ctxNum); ctxNum=0;}}
+  if (line > 0)
+  {
+    ctxNumLen = getTextLine(line-1)->getContextLength();
+    if (ctxNumLen>0)
+    {
+      if (ctxNum)
+        ctxNum=(signed char*)realloc(ctxNum,ctxNumLen);
+      else
+        ctxNum=(signed char*)malloc(ctxNumLen);
+      memcpy(ctxNum,getTextLine(line-1)->getContext(),ctxNumLen);
+    }
+    else { if (ctxNum) {free(ctxNum); ctxNum=0;}}
 
   }
 
-	bool stillcontinue=false;
+  bool stillcontinue=false;
 
-	// have changed here some stuff, there was a endless loop (mostly on bigger files)
-
-	do
-	{
+  do
+  {
     textLine = getTextLine(line);
 
-		if (!textLine)
-		  break;
+    if (!textLine)
+      break;
 
     endCtx = textLine->getContext();
-		endCtxLen = textLine->getContextLength();
+    endCtxLen = textLine->getContextLength();
 
+    kdDebug()<<QString("Calling doHighlight for line %1").arg(line)<<endl;
 
-	  kdDebug()<<QString("Calling doHighlight for line %1").arg(line)<<endl;
+    m_highlight->doHighlight(ctxNum, ctxNumLen, textLine);
 
-	  m_highlight->doHighlight(ctxNum, ctxNumLen, textLine);
+    ctxNumLen = textLine->getContextLength();
+    if (ctxNumLen>0)
+    {
+      if (ctxNum)
+        ctxNum=(signed char*)realloc(ctxNum,ctxNumLen);
+      else
+        ctxNum=(signed char*)malloc(ctxNumLen);
+      memcpy(ctxNum,textLine->getContext(),ctxNumLen);
+    }
+    else { if (ctxNum) {free(ctxNum); ctxNum=0;}}
 
-		//ctxNum = textLine->getContext();
-		ctxNumLen = textLine->getContextLength();
-		if (ctxNumLen>0) 
-		{
-			if (ctxNum)
-				ctxNum=(signed char*)realloc(ctxNum,ctxNumLen);
-			else
-				ctxNum=(signed char*)malloc(ctxNumLen);
-			memcpy(ctxNum,textLine->getContext(),ctxNumLen);
-		}
-		else { if (ctxNum) {free(ctxNum); ctxNum=0;}}
-
-		//textLine->setContext(ctxNum, ctxNumLen);
-
-		if (endCtxLen != ctxNumLen)
-		  stillcontinue = true;
-		else
-		{
-		  stillcontinue = false;
-		  for (uint z=0; z < ctxNumLen; z++)
-			{
-			  if (ctxNum[z] != endCtx[z])
-				{
-				  stillcontinue = true;
-					break;
-				}
-			}
+    if (endCtxLen != ctxNumLen)
+      stillcontinue = true;
+    else
+    {
+      stillcontinue = false;
+      for (uint z=0; z < ctxNumLen; z++)
+      {
+        if (ctxNum[z] != endCtx[z])
+        {
+          stillcontinue = true;
+          break;
+        }
+      }
     }
 
-		line++;
+    line++;
   }
-  while ((line <= last_line) && ((line <= endLine) || stillcontinue)); //|| (!(endCtx == ctxNum)));
-  if (ctxNum) free(ctxNum);
-
-  kdDebug()<<"While loop left"<<endl;  
+  while ((line <= last_line) && ((line <= endLine) || stillcontinue));
+  
+  if (ctxNum)
+    delete [] ctxNum;
 
   tagLines(startLine, line - 1);
 }
@@ -2843,8 +2833,9 @@ bool KateDocument::lineSelected (int line)
 {
   bool b = false;
 
-  if ((line > selectStartLine) && (line < selectEndLine))
-    b = true;
+  if (!(_configFlags & KateDocument::cfVerticalSelect))
+    if ((line > selectStartLine) && (line < selectEndLine))
+      b = true;
 
   if (!invertedSelection)
     return b;
@@ -2901,6 +2892,10 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
   }
 
   textLine = getTextLine(line);
+  
+  if (!textLine)
+    return;
+
   len = textLine->length();
   s = textLine->getText();
 
@@ -2911,21 +2906,25 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
   {
     xc = x;
     zc = z;
-    if (z == len) break;
-    ch = s[z];//textLine->getChar(z);
-    if (ch == '\t') {
-      x += m_tabWidth - (x % m_tabWidth);
-    } else {
-     a = attribute(textLine->getAttr(z));
 
-   if (a->bold && a->italic)
-      x += myFontMetricsBI.width(ch);
-    else if (a->bold)
-      x += myFontMetricsBold.width(ch);
-    else if (a->italic)
-      x += myFontMetricsItalic.width(ch);
+    if (z == len) break;
+
+    ch = s[z];
+
+    if (ch == '\t')
+      x += m_tabWidth - (x % m_tabWidth);
     else
-      x += myFontMetrics.width(ch);
+    {
+      a = attribute(textLine->getAttr(z));
+
+      if (a->bold && a->italic)
+       x += myFontMetricsBI.width(ch);
+      else if (a->bold)
+        x += myFontMetricsBold.width(ch);
+      else if (a->italic)
+        x += myFontMetricsItalic.width(ch);
+      else
+        x += myFontMetrics.width(ch);
     }
     z++;
   }
@@ -2936,26 +2935,21 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
   int col = zc;
   while (x < xEnd)
   {
-    if (lineColSelected(line, col) != lineColSelected(line, z))     
-    {     
-      if (lineColSelected(line, col))     
-        paint.fillRect(xs - xStart, y, x - xs, fontHeight, colors[1]);     
-      else     
-        paint.fillRect(xs - xStart, y, x - xs, fontHeight, colors[0]);
-     
-      xs = x;     
-      col = z;     
-    }     
-    
-    nextAttr = textLine->getAttr(z);
-    if (nextAttr != attr)
-      attr = nextAttr;
-   
+    if (lineColSelected(line, col))
+      paint.fillRect(xs - xStart, y, x - xs, fontHeight, colors[1]);
+    else
+      paint.fillRect(xs - xStart, y, x - xs, fontHeight, colors[0]);
+
+    xs = x;
+    col = z;
+
+    attr = textLine->getAttr(z);
+
     if (z == len) break;
 
     ch = s[z];
 
-    if (ch == '\t')
+    if (ch == QChar('\t'))
       x += m_tabWidth - (x % m_tabWidth);
     else
     {
@@ -2973,105 +2967,123 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
     z++;
   }
 
-  if ((line >= selectStartLine) && (line < selectEndLine))
+  // is whole line selected ??
+  if (lineSelected(line))
     paint.fillRect(xs - xStart, y, xEnd - xs, fontHeight, colors[1]);
   else
     paint.fillRect(xs - xStart, y, xEnd - xs, fontHeight, colors[0]);
 
-  len = z; //reduce length to visible length
+  //reduce length to visible length
+  len = z;
 
   // draw text
   x = xc;
   z = zc;
   y += fontAscent;// -1;
   attr = -1;
-  while (z < len) {
-    ch = s[z];//textLine->getChar(z);
-    if (ch == '\t') {     
-      if (z > zc) {     
-        //this should cause no copy at all     
-        QConstString str((QChar *) &s[zc], z - zc /*+1*/);     
-        QString s = str.string();     
-        paint.drawText(x - xStart, y, s);     
-     
-   if (a->bold && a->italic)     
-      x += myFontMetricsBI.width(s);     
-    else if (a->bold)     
-      x += myFontMetricsBold.width(s);     
-    else if (a->italic)     
-      x += myFontMetricsItalic.width(s);
-    else
-      x += myFontMetrics.width(s);     
-      }     
-      zc = z +1;     
-     
-      if (showTabs) {     
+  
+  while (z < len)
+  {
+    ch = s[z];
+
+    if (ch == QChar('\t'))
+    {
+      if (z > zc)
+      {
+        QConstString str((QChar *) &s[zc], z - zc /*+1*/);
+        QString s = str.string();
+        paint.drawText(x - xStart, y, s);
+
+         if (a->bold && a->italic)
+          x += myFontMetricsBI.width(s);
+        else if (a->bold)
+          x += myFontMetricsBold.width(s);
+        else if (a->italic)
+          x += myFontMetricsItalic.width(s);
+        else
+          x += myFontMetrics.width(s);
+      }
+      zc = z +1;
+
+      if (showTabs)
+      {
         nextAttr = textLine->getAttr(z);
-        if ((nextAttr != attr) || (lineColSelected(line, col) != lineColSelected(line, z)))
-	{
+
+          if ((nextAttr != attr) || (lineColSelected(line, col) != lineColSelected(line, z)))
+        {
           attr = nextAttr;
           a = attribute (attr);
-	  col = z;
+          col = z;
 
-          if (lineColSelected(line, col)) paint.setPen(a->selCol);
-            else paint.setPen(a->col);     
-     
-   if (a->bold && a->italic)     
-     paint.setFont(myFontBI);     
-    else if (a->bold)
-      paint.setFont(myFontBold);     
-    else if (a->italic)     
-      paint.setFont(myFontItalic);     
-    else     
-      paint.setFont(myFont);     
-        }     
-     
-//        paint.drawLine(x - xStart, y -2, x - xStart, y);     
-//        paint.drawLine(x - xStart, y, x - xStart + 2, y);     
-        paint.drawPoint(x - xStart, y);     
+          if (lineColSelected(line, col))
+            paint.setPen(a->selCol);
+          else
+            paint.setPen(a->col);
+
+            if (a->bold && a->italic)
+            paint.setFont(myFontBI);
+            else if (a->bold)
+            paint.setFont(myFontBold);
+            else if (a->italic)
+            paint.setFont(myFontItalic);
+            else
+            paint.setFont(myFont);
+        }
+        paint.drawPoint(x - xStart, y);
         paint.drawPoint(x - xStart +1, y);
-        paint.drawPoint(x - xStart, y -1);     
-      }     
-      x += m_tabWidth - (x % m_tabWidth);     
-    } else {
+        paint.drawPoint(x - xStart, y -1);
+      }
+      x += m_tabWidth - (x % m_tabWidth);
+    }
+    else
+    {
       nextAttr = textLine->getAttr(z);
-      if ((nextAttr != attr) || (lineColSelected(line, col) != lineColSelected(line, z))) {
-        if (z > zc) {
+
+      if ((nextAttr != attr) || (lineColSelected(line, col) != lineColSelected(line, z)))
+      {
+        if (z > zc)
+        {
           QConstString str((QChar *) &s[zc], z - zc /*+1*/);
           QString s = str.string();
           paint.drawText(x - xStart, y, s);
 
-   if (a->bold && a->italic)
-      x += myFontMetricsBI.width(s);
-    else if (a->bold)
-      x += myFontMetricsBold.width(s);
-    else if (a->italic)
-      x += myFontMetricsItalic.width(s);
-    else
-      x += myFontMetrics.width(s);
+          if (a->bold && a->italic)
+            x += myFontMetricsBI.width(s);
+          else if (a->bold)
+            x += myFontMetricsBold.width(s);
+        else if (a->italic)
+            x += myFontMetricsItalic.width(s);
+         else
+            x += myFontMetrics.width(s);
           zc = z;
         }
+        
         attr = nextAttr;
         a = attribute (attr);
-	col = z;
+        col = z;
 
-        if (lineColSelected(line, col)) paint.setPen(a->selCol);
-          else paint.setPen(a->col);
+        if (lineColSelected(line, col))
+          paint.setPen(a->selCol);
+        else
+          paint.setPen(a->col);
 
-   if (a->bold && a->italic)
-     paint.setFont(myFontBI);
-    else if (a->bold)
-      paint.setFont(myFontBold);
-    else if (a->italic)
-      paint.setFont(myFontItalic);
-    else
-      paint.setFont(myFont);
+        if (a->bold && a->italic)
+         paint.setFont(myFontBI);
+        else if (a->bold)
+          paint.setFont(myFontBold);
+        else if (a->italic)
+          paint.setFont(myFontItalic);
+        else
+          paint.setFont(myFont);
       }
     }
+    
     z++;
   }
-  if (z > zc) {
-    QConstString str((QChar *) &s[zc], z - zc /*+1*/);
+
+  if (z > zc)
+  {
+    QConstString str((QChar *) &s[zc], z - zc);
     paint.drawText(x - xStart, y, str.string());
   }
 }
@@ -3084,9 +3096,9 @@ bool KateDocument::doSearch(SConfig &sc, const QString &searchFor) {
   int bufLen, tlen;
   QChar *t;
   TextLine::Ptr textLine;
-  int pos, newPos;     
-     
-  if (searchFor.isEmpty()) return false;     
+  int pos, newPos;
+
+  if (searchFor.isEmpty()) return false;
      
   bufLen = 0;     
   t = 0L;     
@@ -3434,9 +3446,9 @@ void KateDocument::open (const QString &name)
 Attribute *KateDocument::attribute (uint pos)     
 {     
   if (pos < myAttribsLen)     
-	  return &myAttribs[pos];     
+    return &myAttribs[pos];     
      
-	return &myAttribs[0];     
+  return &myAttribs[0];     
 }     
      
 void KateDocument::wrapText (uint col)     
@@ -3497,7 +3509,7 @@ void KateDocument::setWordWrap (bool on)
     wrapText (myWordWrapAt);     
      
   myWordWrap = on;     
-}     
+}
      
 void KateDocument::setWordWrapAt (uint col)     
 {     
@@ -3522,7 +3534,7 @@ void KateDocument::setConfigFlags (uint flags)
   bool updateView;     
      
   if (flags != _configFlags)     
-	{     
+  {
     // update the view if visibility of tabs has changed     
     updateView = (flags ^ _configFlags) & KateDocument::cfShowTabs;     
     _configFlags = flags;     

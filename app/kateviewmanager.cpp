@@ -400,7 +400,7 @@ void KateViewManager::statusMsg ()
 
   int mod = (int)v->doc()->isModified();
 
-  emit statusChanged (v, v->currentLine() + 1, v->currentColumn() + 1, ovr, mod, v->doc()->docName());
+  emit statusChanged (v, v->currentLine(), v->currentColumn(), ovr, mod, v->doc()->docName());
   emit statChanged ();
 }
 
