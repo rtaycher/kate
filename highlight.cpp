@@ -51,168 +51,9 @@
 #include "kwattribute.h"
 #include "kwrite_factory.h"
 #include "highlight.h"
+#include "syntaxdocument.h"
 
-
-
-// general rule for keywords: if one keyword contains another at the beginning,
-// the long one has to come first (eg. "const_cast", "const")
-
-// ISO/IEC 9899:1990 (aka ANSI C)
-// "interrupt" isn´t an ANSI keyword, but an extension of some C compilers
-const char *cKeywords[] = { // 18 words
-  "break", "case", "continue", "default", "do", "else", "enum", "extern",
-  "for", "goto", "if", /*"interrupt",*/  "return", "sizeof", "struct",
-  "switch", "typedef", "union", "while", 0L};
-
-const char *cTypes[] = {    // 14 words
-  "auto", "char", "const", "double", "float", "int", "long", "register",
-  "short", "signed", "static", "unsigned", "void", "volatile", 0L};
-
-// ISO/IEC 14882:1998 . Sec. 2.11.1 (aka ANSI C++)
-// keyword "const" (apart from a type spec.) is also a keyword, so it is named inside this array
-// what about typeof?
-const char *cppKeywords[] = { // 40 words 58 with QT_SUPPORT
-  "asm", "catch", "class", "const_cast", "const", "delete", "dynamic_cast",
-  "explicit", "export", "false", "friend", "inline", "namespace", "new",
-  "operator", "private", "protected", "public", "reinterpret_cast",
-  "static_cast", "template", "this", "throw", "true", "try", "typeid",
-  "typename", "using", "virtual",
-  // alternative representations  (these words are reserved and shall not be used otherwise)
-  //  ISO/IEC 14882:1998 . Sec. 2.11.2
-  "and_eq", "and", "bitand", "bitor", "compl", "not_eq", "not", "or_eq", "or",
-  "xor_eq", "xor",
-#ifdef QT_SUPPORT
-   "bad_cast", "bad_typeid","except","finally","type_info", "xalloc",
- // ADDED FOR TESTING
- "Q_EXPORT","Q_OBJECT","K_DCOP","SLOT","SIGNAL", "slots","signals",
- // QT 2.1 macros
- "Q_PROPERTY", "Q_ENUMS","Q_SETS","Q_OVERRIDE","Q_CLASSINFO",
-#endif
-  0L};
-
-
-
-const char *cppTypes[] = {  //3 words
-  "bool", "wchar_t", "mutable", 0L};
-
-const char *objcKeywords[] = { // 13 words
-  "@class", "@defs", "@encode", "@end", "@implementation", "@interface", "@private", "@protected",
-  "@protocol", "@public","@selector", "self", "super", 0L};
-
-const char *objcTypes[] = {  // 14 words
-  "auto", "char", "const", "double", "float", "int", "long", "register",
-  "short", "signed", "static",
-  "unsigned", "void", "volatile",
-  0L};
-
-const char *idlKeywords[] = { // 16 words
-  "module", "interface", "struct", "case", "enum", "typedef","signal", "slot",
-  "attribute", "readonly", "context", "oneway", "union", "in", "out", "inout",
-  0L};
-
-const char *idlTypes[] = {  // 15 words
-  "long", "short", "unsigned", "double", "octet", "sequence", "char", "wchar",
-  "string", "wstring", "any", "fixed", "Object", "void", "boolean", 0L};
-
-const char *javaKeywords[] = { // 46 words
-  "abstract", "break", "case", "cast", "catch", "class", "continue",
-  "default", "do", "else", "extends", "false", "finally", "for", "future",
-  "generic", "goto", "if", "implements", "import", "inner", "instanceof",
-  "interface", "native", "new", "null", "operator", "outer", "package",
-  "private", "protected", "public", "rest", "return", "super", "switch",
-  "synchronized", "this", "throws", "throw", "transient", "true", "try",
-  "var", "volatile", "while", 0L};
-
-const char *javaTypes[] = {  // 12 words
-  "boolean", "byte", "char", "const", "double", "final", "float", "int",
-  "long", "short", "static", "void", 0L};
-
-const char *bashKeywords[] = {  // 20 words
-  "break","case","done","do","elif","else","esac","exit","export","fi","for",
-  "function","if","in","return","select","then","until","while",".",0L};
-
-const char *modulaKeywords[] = { // 25 words
-  "BEGIN","CONST","DEFINITION","DIV","DO","ELSE","ELSIF","END","FOR","FROM",
-  "IF","IMPLEMENTATION","IMPORT","MODULE","MOD","PROCEDURE","RECORD","REPEAT",
-  "RETURN","THEN","TYPE","VAR","WHILE","WITH","|",0L};
-
-const char *adaKeywords[] = { // 63 words
-  "abort","abs","accept","access","all","and","array","at","begin","body",
-  "case","constant","declare","delay","delta","digits","do","else","elsif",
-  "end","entry","exception","exit","for", "function","generic","goto","if",
-  "in","is","limited","loop","mod","new", "not","null","of","or","others",
-  "out","package","pragma","private","procedure", "raise","range","rem",
-  "record","renames","return","reverse","select","separate","subtype", "task",
-  "terminate","then","type","use","when","while","with","xor",0L};
-
-const char *pythonKeywords[] = { // 28 words
-  "and","assert","break","class","continue","def","del","elif","else",
-  "except","exec"," finally","for","from","global","if","import","in","is",
-  "lambda","not","or","pass","print","raise","return","try","while",0L};
-
-const char *perlKeywords[] = {  // 51 words
-  "and","&&", "bless","caller","cmp","continue","dbmclose","dbmopen","do",
-  "die", "dump", "each", "else", "elsif","eq","eval", "exit", "foreach",
-  "for", "ge", "goto", "gt", "if", "import", "last", "le", "local", "lt",
-  "my", "next", "ne", "not", "no", "!", "or", "||", "package", "ref",
-  "redo", "require","return","sub", "tied", "tie", "unless",
-  "until", "untie", "use", "wantarray", "while", "xor", 0L};
-
-const char *satherKeywords[] = { // 60 words
-  "and","assert","attr","break!","case","class","const","else","elsif",
-  "end","exception","external","false","if","include","initial","is","ITER",
-  "loop","new","or","post","pre","private","protect","quit","raise",
-  "readonly","result","return","ROUT","SAME","self","shared","then","true",
-  "typecase","type","until!","value","void","when","while!","yield",
-// new in 1.1 and pSather:
-  "abstract","any","bind","fork","guard","immutable","inout","in","lock",
-  "once","out","parloop","partial","par","spread","stub", 0L};
-
-// are those Sather keywords, too?
-//     "nil","do@", "do"
-
-const char *satherSpecClassNames[] = {  // 17 words
-  "$OB","ARRAY","AREF","AVAL","BOOL","CHAR","EXT_OB","FLTDX","FLTD","FLTX",
-  "FLTI","FLT","INTI","INT","$REHASH","STR","SYS",0L};
-
-const char *satherSpecFeatureNames[] = {  // 19 words
-// real special features
-  "create","invariant","main",
-// sugar feature names
-  "aget","aset","div","is_eq","is_geq","is_gt","is_leq","is_lt","is_neq",
-  "minus","mod","negate","not","plus","pow","times", 0L};
-#ifdef PASCAL_SUPPORT
-const char *pascalKeywords[] = { // 79 words
-  // Ancient DOS Turbo Pascal keywords:
-  //"absolute", "out",
-  // Generic pascal keywords:
-  "and", "array", "asm", "begin", "case", "const", "div", "do", "downto", "else",
-  "end", "for", "function", "goto", "if", "implementation", "in", "interface",
-  "label", "mod", "nil", "not", "of", "on", "operator", "or", "packed",
-  "procedure", "program", "record", "repeat", "self", "set", "shl", "shr", "then",
-  "to", "type", "unit", "until", "uses", "var", "while", "with", "xor",
-  // Borland pascal keywords:
-  "break", "continue", "constructor", "destructor", "inherited", "inline", "object",
-  "private","protected" , "public",
-  // Borland Delphi keywords
-  "as", "at", "automated", "class", "dispinterface", "except", "exports",
-  "finalization", "finally", "initialization", "is", "library", "on", "property",
-  "published", "raise", "resourcestring", "threadvar", "try",
-  // FPC keywords (www.freepascal.org)
-  "dispose", "exit", "false", "new", "true",
-  0L};
-
-const char *pascalTypes[] = { // 31 words
-  "Integer", "Cardinal",
-  "ShortInt", "SmallInt", "LongInt", "Int64", "Byte", "Word", "LongWord",
-  "Char", "AnsiChar", "WideChar",
-  "Boolean", "ByteBool", "WordBool", "LongBool",
-  "Single", "Double", "Extended", "Comp",  "Currency", "Real", "Real48"
-  "String", "ShortString", "AnsiString", "WideString",
-  "Pointer", "Variant",
-  "File", "Text",
-  0L};
-#endif
+HlManager *HlManager::s_pSelf = 0;
 
 char fontSizes[] = {4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,22,24,26,28,32,48,64,0};
 
@@ -243,6 +84,10 @@ bool ustrchr(const char *s, QChar c) {
   }
   return false;
 }
+
+
+
+
 
 HlItem::HlItem(int attribute, int context)
   : attr(attribute), ctx(context) {
@@ -324,7 +169,7 @@ KeywordData::~KeywordData() {
 HlKeyword::HlKeyword(int attribute, int context)
   : HlItemWw(attribute,context) {
 //  words.setAutoDelete(true);
-	Dict.resize(83);
+	Dict.resize(23);
 }
 
 HlKeyword::~HlKeyword() {
@@ -341,6 +186,16 @@ void HlKeyword::addList(const QStringList& list)
 {
  words+=list;
  for(uint i=0;i<list.count();i++) Dict.insert(list[i],"dummy");
+// DumpList();
+}
+
+void HlKeyword::DumpDict()
+{
+}
+void HlKeyword::DumpList()
+{
+	for(uint i=0;i<words.count();i++)
+  kdDebug() << words[i] << endl;
 }
 
 void HlKeyword::addList(const char **list) {
@@ -371,9 +226,10 @@ const QChar *HlKeyword::checkHgl(const QChar *s) {
 #endif
   const QChar *s2=s;
   while( !ustrchr("!%&()*+,-./:;<=>?[]^{|}~ ", *s2) && *s2 != '\0') s2++;
+//	while(*s2 != ' ' && *s2 != '\0') s2++;
   QString lookup=QString(s,s2-s)+QString::null;
+//	if(!lookup.isEmpty()) kdDebug() << lookup   /*<< QString(s2,100)+QString::null */<< endl;
   return Dict[lookup] ? s2 : 0L;
-
 #endif
 }
 
@@ -989,10 +845,14 @@ HlData::HlData(const QString &wildcards, const QString &mimetypes)
   itemDataList.setAutoDelete(true);
 }
 
-Highlight::Highlight(const char * name) : iName(name), refCount(0) {
+Highlight::Highlight(const char * name) : iName(name), refCount(0)
+{
+
+
 }
 
 Highlight::~Highlight() {
+	
 }
 
 KConfig *Highlight::getKConfig() {
@@ -1267,48 +1127,14 @@ void CHighlight::makeContextList() {
   contextList[7] = new HlContext(0,4);
 
   setKeywords(keyword, dataType);
+//  keyword->addList(HlManager::self()->syntax->finddata("C","keyword"));
+//  dataType->addList(HlManager::self()->syntax->finddata("C","type"));
+
 }
-
-void getKeywords(QStringList& configlist,QString name) {
-	KConfig *config = KWriteFactory::instance()->config();
-	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name) );
-	configlist = config->readListEntry(QString::fromUtf8("%1Keywords").arg(name) );
-}
-
-void getTypes(QStringList& configlist,QString name) {
-	KConfig *config = KWriteFactory::instance()->config();
-	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name));
-	configlist = config->readListEntry(QString::fromUtf8("%1Type").arg(name) );
-}
-
-
 void CHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
 
-   KConfig *config = KWriteFactory::instance()->config();
-   QStringList configlist;
-   getKeywords(configlist,this->name());
-// read config file for list of keywords/data types
-// if there is none isEmpty() == True  then process normally and save it in config file
-// if there is a list already in config file use that instead
-
-  if(configlist.isEmpty()) {
-    keyword->addList(cKeywords);
-    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-   	config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()) ,keyword->getList());
-  }
-  else
-    keyword->addList(configlist);
-
-  configlist.clear();
-  getTypes(configlist,this->name());
-
-  if(configlist.isEmpty()) {
-    dataType->addList(cTypes);
-    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-  	config->writeEntry(QString::fromUtf8("%1Types").arg(name()) ,dataType->getList());
- 	}
-  else
-     dataType->addList(configlist);
+  keyword->addList(HlManager::self()->syntax->finddata("C","keyword"));
+  dataType->addList(HlManager::self()->syntax->finddata("C","type"));
 }
 
 CppHighlight::CppHighlight(const char * name) : CHighlight(name) {
@@ -1321,54 +1147,11 @@ CppHighlight::~CppHighlight() {
 }
 
 void CppHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
-
-  KConfig *config = KWriteFactory::instance()->config();
-  config->setGroup(QString("%1 Highlight").arg(name()));
-
-
-  QStringList configlist;
-  getKeywords(configlist,"C");
-
-  if ( configlist.isEmpty() ) {
-    keyword->addList( cKeywords );
-    config->setGroup(QString::fromUtf8("C Highlight") );
-    config->writeEntry(QString::fromUtf8("CKeywords"),keyword->getList());
-  } else
-    keyword->addList(configlist);
-
-
-  configlist.clear();
-//  config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-//  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name()) );
-  getKeywords(configlist,name());
-  if (configlist.isEmpty()) {
-    keyword->addList(cppKeywords);
-    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-    config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()) , keyword->getList());
-  }else
-    keyword->addList(configlist);
-
-  configlist.clear();
-  config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-  getTypes(configlist,"C");
-  if (configlist.isEmpty()) {
-    dataType->addList(cTypes);
-    config->setGroup(QString::fromUtf8("C Highlight") );
-    config->writeEntry(QString::fromUtf8("CTypes"),dataType->getList());
-  }else
-    dataType->addList(configlist);
-
-	configlist.clear();
-//  config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-//  configlist=config->readListEntry(QString::fromUtf8("%1Types").arg(name() ));
-    getTypes(configlist,name());
-	if (configlist.isEmpty()) {
-    dataType->addList(cppTypes);
-    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-    config->writeEntry(QString::fromUtf8("%1Types").arg(name() ),dataType->getList());
-  }
-  else
-    dataType->addList(configlist);
+  keyword->addList(HlManager::self()->syntax->finddata("C","keyword"));
+  dataType->addList(HlManager::self()->syntax->finddata("C","type"));
+  keyword->addList(HlManager::self()->syntax->finddata("C++","keyword"));
+  dataType->addList(HlManager::self()->syntax->finddata("C++","type"));
+//  kdDebug() << "Types " << dataType->getList().count() <<" Keywords " << keyword->getList().count() << endl;
 }
 
 ObjcHighlight::ObjcHighlight(const char * name) : CHighlight(name) {
@@ -1389,47 +1172,10 @@ void ObjcHighlight::makeContextList() {
 // UNTESTED
 void ObjcHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
 
-  KConfig *config = KWriteFactory::instance()->config();
-// config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-  QStringList configlist;
-//  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
-  getKeywords(configlist,"C");
-
-  if(configlist.isEmpty()) {
-	  keyword->addList(cKeywords);
-	  config->setGroup(QString::fromUtf8("C Highlight"));
-	  config->writeEntry(QString::fromUtf8("CKeywords"),keyword->getList());
-	}else
-	  keyword->addList(configlist);
-
-  configlist.clear();
-//  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
-  getKeywords(configlist,name());
-  if(configlist.isEmpty()) {
-	  keyword->addList(objcKeywords);
-	  config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-	  config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()),keyword->getList());
-	}else
-	  keyword->addList(configlist);
-
-  //configlist=config->readListEntry(QString::fromUtf8("%1Types").arg(name() ));
-  getKeywords(configlist,"C");
-  if(configlist.isEmpty()) {
-	  dataType->addList(cTypes);
-	  config->setGroup(QString::fromUtf8("C Highlight"));
-	  config->writeEntry(QString::fromUtf8("CTypes"),dataType->getList());
-	}else
-	  keyword->addList(configlist);
-
-  configlist.clear();
-  //configlist=config->readListEntry(QString::fromUtf8("%1Types").arg(name() ));
-  getTypes(configlist,name());
-	if(configlist.isEmpty()) {
-	  dataType->addList(objcTypes);
-	  config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-	  config->writeEntry(QString::fromUtf8("%1Types").arg(name()),dataType->getList());
-	}else
-	  keyword->addList(configlist);
+ keyword->addList(HlManager::self()->syntax->finddata("C","keyword"));
+ dataType->addList(HlManager::self()->syntax->finddata("C","type"));
+ keyword->addList(HlManager::self()->syntax->finddata("Objective-C","keyword"));
+ dataType->addList(HlManager::self()->syntax->finddata("Objective-C","type"));
 
 }
 #ifdef PASCAL_SUPPORT
@@ -1516,27 +1262,10 @@ void PascalHighlight::makeContextList() {
   // one line context
   contextList[6] = c = new HlContext(6,0);
 
-  QStringList configlist;
-  KConfig *config=KWriteFactory::instance()->config();
-  getKeywords(configlist,name());
-  if(configlist.isEmpty()) {
-    keyword->addList(pascalKeywords);
-    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-    config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()),keyword->getList());
-  } else
-    keyword->addList(configlist);
-
-  configlist.clear();
-  getTypes(configlist,name());
-
-  if(configlist.isEmpty()) {
-    dataType->addList(pascalKeywords);
-    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-    config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()),dataType->getList());
-  } else
-  dataType->addList(pascalTypes);
+  keyword->addList(HlManager::self()->syntax->finddata("Pascal","keyword"));
+  dataType->addList(HlManager::self()->syntax->finddata("Pascal","type"));
 }
-#endif
+#endif // ifdef PASCAL_SUPPORT
 
 IdlHighlight::IdlHighlight(const char * name) : CHighlight(name) {
   iWildcards = "*.idl";
@@ -1549,29 +1278,8 @@ IdlHighlight::~IdlHighlight() {
 
 void IdlHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType) {
 
-  KConfig *config = KWriteFactory::instance()->config();
-  //config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-  QStringList configlist;
-  //configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
-    getKeywords(configlist,name());
-	if(configlist.isEmpty()) {
-	keyword->addList(idlKeywords);
-	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-	config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()),keyword->getList());
-	}
-	else
-    keyword->addList(configlist);
-
-  configlist.clear();
-  //configlist=config->readListEntry(QString::fromUtf8("%1Types").arg(name() ));
-  getTypes(configlist,name());
-  if (configlist.isEmpty()) {
-    dataType->addList(idlTypes);
-    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-    config->writeEntry(QString::fromUtf8("%1Types").arg(name()),dataType->getList());
-  }
-  else
-  dataType->addList(configlist);
+ keyword->addList(HlManager::self()->syntax->finddata("IDL","keyword"));
+ dataType->addList(HlManager::self()->syntax->finddata("IDL","type"));
 }
 
 JavaHighlight::JavaHighlight(const char * name) : CHighlight(name) {
@@ -1585,29 +1293,8 @@ JavaHighlight::~JavaHighlight() {
 // UNTESTED
 void JavaHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
 {
-  KConfig *config = KWriteFactory::instance()->config();
-//	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-  QStringList configlist;
-//  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
-    getKeywords(configlist,name());
-
-  if(configlist.isEmpty()) {
-    keyword->addList(javaKeywords);
-    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-    config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()),keyword->getList());
-  }
-  else
-  keyword->addList(configlist);
-
-  configlist.clear();
-//  configlist=config->readListEntry(QString::fromUtf8("%1Types").arg(name() ));
-  getTypes(configlist,name());
-  if (configlist.isEmpty()) {
-    dataType->addList(javaTypes);
-    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-    config->writeEntry(QString::fromUtf8("%1Types").arg(name()),dataType->getList());
-  }
-  else dataType->addList(configlist);
+ keyword->addList(HlManager::self()->syntax->finddata("Java","keyword"));
+ dataType->addList(HlManager::self()->syntax->finddata("Java","type"));
 }
 
 
@@ -1684,18 +1371,7 @@ void BashHighlight::makeContextList() {
     c->items.append(new HlCharDetect(4,0,'`'));
   contextList[3] = new HlContext(5,0);
 
-  KConfig *config = KWriteFactory::instance()->config();
-//config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-  QStringList configlist;
-//  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
-  getKeywords(configlist,name());
-  if(configlist.isEmpty()) {
-    keyword->addList(bashKeywords);
-    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-    config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()),keyword->getList());
-  }
-  else
-    keyword->addList(configlist);
+  keyword->addList(HlManager::self()->syntax->finddata("Bash","keyword"));
 }
 
 
@@ -1721,7 +1397,6 @@ void ModulaHighlight::createItemData(ItemDataList &list) {
 void ModulaHighlight::makeContextList() {
   HlContext *c;
   HlKeyword *keyword;
-
   contextList[0] = c = new HlContext(0,0);
     c->items.append(keyword = new HlKeyword(1,0));
     c->items.append(new HlFloat(4,0));
@@ -1734,18 +1409,7 @@ void ModulaHighlight::makeContextList() {
   contextList[2] = c = new HlContext(6,2);
     c->items.append(new Hl2CharDetect(6,0, '*', ')'));
 
-  KConfig *config = KWriteFactory::instance()->config();
-//config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-  QStringList configlist;
-//  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
-    getKeywords(configlist,name());
-  if(configlist.isEmpty()) {
-    keyword->addList(modulaKeywords);
-    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-    config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()),keyword->getList());
-  }
-  else
-  keyword->addList(configlist);
+  keyword->addList(HlManager::self()->syntax->finddata("Modula","keyword"));
 }
 
 
@@ -1785,17 +1449,8 @@ void AdaHighlight::makeContextList() {
     c->items.append(new HlCharDetect(6,0,'"'));
   contextList[2] = c = new HlContext(7,0);
 
-  KConfig *config = KWriteFactory::instance()->config();
-//config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-  QStringList configlist;
-//  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
-  getKeywords(configlist,name());
-  if(configlist.isEmpty()) {
-    keyword->addList(bashKeywords);
-    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-    config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()),keyword->getList());
-  } else
-    keyword->addList(configlist);
+//  HlManager *manager=HlManager::self();
+  keyword->addList(HlManager::self()->syntax->finddata("C"));
 }
 
 
@@ -1855,18 +1510,8 @@ void PythonHighlight::makeContextList() {
   contextList[6] = new HlContext(0,1);
   contextList[7] = new HlContext(0,2);
 
-  KConfig *config = KWriteFactory::instance()->config();
-//	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-  QStringList configlist;
-//  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
-  getKeywords(configlist,name());
-  if(configlist.isEmpty()) {
-    keyword->addList(pythonKeywords);
-    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-    config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()),keyword->getList());
-  } else
-    keyword->addList(configlist);
-
+  keyword->addList(HlManager::self()->syntax->finddata("Python","keyword"));
+//  dataType->addList(HlManager::self()->syntax->finddata("Python","type"));
 }
 
 PerlHighlight::PerlHighlight(const char * name) : Highlight(name) {
@@ -2115,19 +1760,7 @@ int PerlHighlight::doHighlight(int ctxNum, TextLine *textLine) {
 void PerlHighlight::init() {
   keyword = new HlKeyword(0,0);
 
-  KConfig *config = KWriteFactory::instance()->config();
-//config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-  QStringList configlist;
-//  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
-  getKeywords(configlist,name());
-  if(configlist.isEmpty()) {
-    keyword->addList(perlKeywords);
-    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-    config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()),keyword->getList());
-  }
-  else
-    keyword->addList(configlist);
-//  keyword->addList(perlKeywords);
+  keyword->addList(HlManager::self()->syntax->finddata("Perl","keyword"));
 }
 
 void PerlHighlight::done() {
@@ -2178,42 +1811,9 @@ void SatherHighlight::makeContextList() {
   //Comment Context
   contextList[1] = c = new HlContext(11,0);
 
-  KConfig *config = KWriteFactory::instance()->config();
-//	config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-  QStringList configlist;
-//  configlist=config->readListEntry(QString::fromUtf8("%1Keywords").arg(name() ));
-  getKeywords(configlist,name());
-  if(configlist.isEmpty()) {
-    keyword->addList(satherKeywords);
-    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-    config->writeEntry(QString::fromUtf8("%1Keywords").arg(name()),keyword->getList());
-  }
-   else
-    keyword->addList(configlist);
-
-  configlist.clear();
-  configlist=config->readListEntry(QString::fromUtf8("%1SpecClassNames").arg(name() ));
-  if (configlist.isEmpty()) {
-    spec_class->addList(satherSpecClassNames);
-    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-    config->writeEntry(QString::fromUtf8("%1SpecClassNames").arg(name()),spec_class->getList());
-  }
-  else
-    spec_class->addList(configlist);
-
-  configlist.clear();
-  configlist=config->readListEntry(QString::fromUtf8("%1SpecFeatureNames").arg(name() ));
-  if (configlist.isEmpty()) {
-    spec_feat->addList(satherSpecClassNames);
-    config->setGroup(QString::fromUtf8("%1 Highlight").arg(name()));
-    config->writeEntry(QString::fromUtf8("%1SpecFeatureNames").arg(name()),spec_feat->getList());
-  }
-  else
-    spec_feat->addList(configlist);
-
-//  keyword->addList(satherKeywords);
-//  spec_class->addList(satherSpecClassNames);
-//  spec_feat->addList(satherSpecFeatureNames);
+// I combined spec_class and spec_feat in XML file
+  keyword->addList(HlManager::self()->syntax->finddata("Sather","keyword"));
+  spec_class->addList(HlManager::self()->syntax->finddata("Sather","type"));
 }
 
 LatexHighlight::LatexHighlight(const char * name) : GenHighlight(name) {
@@ -2290,7 +1890,7 @@ void LatexHighlight::makeContextList() {
 
 //--------
 
-HlManager *HlManager::s_pSelf = 0;
+
 
 HlManager::HlManager() : QObject(0L) {
 
@@ -2312,9 +1912,12 @@ HlManager::HlManager() : QObject(0L) {
   hlList.append(new SatherHighlight("Sather"   ));
   hlList.append(new LatexHighlight( "Latex"    ));
   hlList.append(new IdlHighlight("IDL"));
+
+  syntax=new SyntaxDocument();
 }
 
 HlManager::~HlManager() {
+  if(syntax) delete syntax;
 }
 
 HlManager *HlManager::self()

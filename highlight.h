@@ -31,12 +31,15 @@
 #include <qdict.h>
 
 
+class SyntaxDocument;
+
 class QCheckBox;
 class QComboBox;
 class QLineEdit;
 
 class TextLine;
 class Attribute;
+
 
 bool isInWord(QChar); //true for '_','0'-'9','A'-'Z','a'-'z'
 
@@ -116,6 +119,8 @@ class HlKeyword : public HlItemWw {
 //		QStrVec *getVec() {return &Words;};
 		QStringList getList() { return words;};
 		QDict<char> getDict() {return Dict;};
+		void DumpDict();
+    void DumpList();
   protected:
     QStringList words;
 //		QStrVec Words;
@@ -399,7 +404,6 @@ class Highlight {
     virtual void createItemData(ItemDataList &);
     virtual void init();
     virtual void done();
-
     const char * iName;
     QString iWildcards;
     QString iMimetypes;
@@ -608,11 +612,13 @@ class HlManager : public QObject {
     const char * hlName(int n);
     void getHlDataList(HlDataList &);
     void setHlDataList(HlDataList &);
+
+    SyntaxDocument *syntax;
+
   signals:
     void changed();
   protected:
     QList<Highlight> hlList;
-
     static HlManager *s_pSelf;
 };
 

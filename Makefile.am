@@ -12,7 +12,7 @@ libkwritepart_la_SOURCES = highlight.cpp ktextprint.cpp  \
 		           kwdoc.cpp kwview.cpp undohistory.cpp  \
 		           kwdialog.cpp kwrite_factory.cpp \
                            kwbuffer.cpp kwtextline.cpp \
-                           kwattribute.cpp kwriteIface.skel
+                           kwattribute.cpp kwriteIface.skel syntaxdocument.cpp
 
 libkwritepart_la_LDFLAGS = $(all_libraries) $(KDE_PLUGIN)
 libkwritepart_la_LIBADD = -lktexteditor -lkspell $(LIB_KPARTS)
@@ -37,7 +37,7 @@ apps_DATA = kwrite.desktop
 kde_services_DATA = kwrite_component.desktop
 
 rcdir = $(kde_datadir)/kwrite
-rc_DATA = kwrite_browser.rc kwriteui.rc kwrite_shell.rc
+rc_DATA = kwrite_browser.rc kwriteui.rc kwrite_shell.rc syntax.xml
 
 KDE_ICON = kwrite
 

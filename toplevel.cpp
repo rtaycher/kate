@@ -58,7 +58,6 @@
 #define ID_MODIFIED 3
 #define ID_GENERAL 4
 
-
 QList<KWriteDoc> docList; //documents
 
 
@@ -628,7 +627,6 @@ int main(int argc, char **argv)
   docList.setAutoDelete(false);
 
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-
   if (kapp->isRestored()) {
     restore();
   } else {
@@ -651,9 +649,9 @@ int main(int argc, char **argv)
         }
     }
   }
+
   int r = a->exec();
 
   args->clear();
-
-  return r;
+	return r;
 }
