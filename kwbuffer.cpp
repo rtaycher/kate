@@ -118,7 +118,7 @@ void
 KWBuffer::loadFilePart()
 {
   const int blockSize = AVG_BLOCK_SIZE;
-  const int blockRead = 5; // Read 5 blocks in a row
+  const int blockRead = 3; // Read 5 blocks in a row
 
   KWBufFileLoader *loader = m_loader.first();
 
@@ -192,20 +192,30 @@ KWBuffer::findBlock(int i)
    // This needs a bit of optimisation/caching so that we don't walk 
    // through the list every time.
    KWBufBlock *buf;
-   for(buf = m_blocks.first(); buf; buf = m_blocks.next())
+   for(buf = m_blocks.current(); buf; )
    {
-      // Adjust line numbering....
-      if (buf->m_beginState.lineNr != lastLine)
-      {
-         int offset = lastLine - buf->m_beginState.lineNr;
-         buf->m_beginState.lineNr += offset;
-         buf->m_endState.lineNr += offset;
-      }
       lastLine = buf->m_endState.lineNr;
-      if ((i >= buf->m_beginState.lineNr) && (i < lastLine))
+      if (i < buf->m_beginState.lineNr)
+      {
+         // Search backwards
+         buf = m_blocks.prev();
+      }
+      else if ((i >= buf->m_beginState.lineNr) && (i < lastLine))
       {
          // We found the block.
          break;
+      }
+      else
+      {
+         // Search forwards
+         buf = m_blocks.next();
+         // Adjust line numbering....
+         if (buf->m_beginState.lineNr != lastLine)
+         {
+            int offset = lastLine - buf->m_beginState.lineNr;
+            buf->m_beginState.lineNr += offset;
+            buf->m_endState.lineNr += offset;
+         }
       }
    }   
 
@@ -541,6 +551,8 @@ KWBufBlock::buildStringList()
       }
    }
    assert(m_stringList.count() == (m_endState.lineNr - m_beginState.lineNr));
+   m_stringListIt = m_stringList.begin();
+   m_stringListCurrent = 0;
    b_stringListValid = true;
 }
 
@@ -555,6 +567,24 @@ KWBufBlock::disposeStringList()
    b_stringListValid = false;      
 }
 
+/**
+ * Make line @p i the current line
+ */
+void KWBufBlock::seek(int i)
+{
+   if (m_stringListCurrent == i)
+      return;
+   while(m_stringListCurrent < i)
+   {
+      ++m_stringListCurrent;
+      ++m_stringListIt;
+   }
+   while(m_stringListCurrent > i)
+   {
+      --m_stringListCurrent;
+      --m_stringListIt;
+   }
+}
 
 /**
  * Return line @p i
@@ -565,7 +595,8 @@ KWBufBlock::line(int i)
 {
    assert(b_stringListValid);
    assert(i < m_stringList.count());
-   return m_stringList[i];
+   seek(i);
+   return *m_stringListIt;
 }
 
 void
@@ -573,7 +604,9 @@ KWBufBlock::insertLine(int i, TextLine::Ptr line)
 {
    assert(b_stringListValid);
    assert(i <= m_stringList.count());
-   m_stringList.insert(m_stringList.at(i), line);  
+   seek(i);
+   m_stringListIt = m_stringList.insert(m_stringListIt, line);
+   m_stringListCurrent = i;
    m_endState.lineNr++;
 }
 
@@ -582,7 +615,9 @@ KWBufBlock::removeLine(int i)
 {
    assert(b_stringListValid);
    assert(i < m_stringList.count());
-   m_stringList.remove(m_stringList.at(i));  
+   seek(i);
+   m_stringListIt = m_stringList.remove(m_stringListIt);  
+   m_stringListCurrent = i;
    m_endState.lineNr--;
 }
 

@@ -215,7 +215,16 @@ public:
    void removeLine(int i);
   
 protected:
+   /**
+    * Make line @p i the current line
+    */
+   void seek(int i);
+
+protected:
    TextLine::List m_stringList;
+   TextLine::List::Iterator m_stringListIt;
+   int m_stringListCurrent;
+   
    QByteArray m_rawData1;   
    int m_rawData1Start;
    QByteArray m_rawData2;   
