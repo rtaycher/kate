@@ -100,61 +100,6 @@
 #include "kateviewdialog.h"
 #include "kateundohistory.h"
 
-struct BufferInfo {
-  void *user;
-  int w;
-  int h;
-};
-
-QList<BufferInfo> bufferInfoList;
-QPixmap *buffer = 0;
-
-QPixmap *getBuffer(void *user) {
-  BufferInfo *info;
-
-  if (!buffer) buffer = new QPixmap;
-  info = new BufferInfo;
-  info->user = user;
-  info->w = 0;
-  info->h = 0;
-  bufferInfoList.append(info);
-  return buffer;
-}
-
-void resizeBuffer(void *user, int w, int h) {
-  int z;
-  BufferInfo *info;
-  int maxW, maxH;
-
-  maxW = w;
-  maxH = h;
-  for (z = 0; z < (int) bufferInfoList.count(); z++) {
-    info = bufferInfoList.at(z);
-    if (info->user == user) {
-      info->w = w;
-      info->h = h;
-    } else {
-      if (info->w > maxW) maxW = info->w;
-      if (info->h > maxH) maxH = info->h;
-    }
-  }
-  if (maxW != buffer->width() || maxH != buffer->height()) {
-    buffer->resize(maxW,maxH);
-  }
-}
-
-void releaseBuffer(void *user) {
-  int z;
-  BufferInfo *info;
-
-  for (z = (int) bufferInfoList.count() -1; z >= 0 ; z--) {
-    info = bufferInfoList.at(z);
-    if (info->user == user) bufferInfoList.remove(z);
-  }
-  resizeBuffer(0,0,0);
-}
-
-
 KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc) : QWidget(view)
 {
   waitForPreHighlight=-1;
@@ -201,7 +146,8 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc) : QWidget(
   newXPos = -1;
   newYPos = -1;
 
-  drawBuffer = getBuffer(this);
+  drawBuffer = new QPixmap ();
+  drawBuffer->setOptimization (QPixmap::BestOptim);
 
   bm.sXPos = 0;
   bm.eXPos = -1;
@@ -214,7 +160,7 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc) : QWidget(
 KateViewInternal::~KateViewInternal()
 {
   delete [] lineRanges;
-  releaseBuffer(this);
+  delete drawBuffer;
 }
 
 
@@ -1307,7 +1253,7 @@ void KateViewInternal::paintEvent(QPaintEvent *e) {
 
 void KateViewInternal::resizeEvent(QResizeEvent *)
 {
-  resizeBuffer(this, width(), myDoc->fontHeight);
+  drawBuffer->resize (width(), myDoc->fontHeight);
   leftBorder->resize(iconBorderWidth, height());
 }
 

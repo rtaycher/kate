@@ -280,33 +280,52 @@ KateDocument::~KateDocument()
 
 bool KateDocument::openFile()
 {
-  loadFile( m_file );
+  fileInfo->setFile (m_file);
+  setMTime();
 
-//  if ( updateHighlight )
-  {
-    //highlight detection
-    //  pos = fName.findRev('/') +1;
-    //  if (pos >= (int) fName.length()) return; //no filename
-    //  hl = hlManager->wildcardFind(s.right( s.length() - pos ));
-    QString fn = m_url.fileName();
-    if ( fn.isEmpty() )
-        return false;
+  if (!fileInfo->exists() || !fileInfo->isReadable())
+    return false;
 
-    int hl = hlManager->wildcardFind( fn );
+  buffer->clear();
+  buffer->insertFile(0, m_file, KGlobal::charsets()->codecForName(myEncoding));
 
-    setHighlight(hl);
-  }
+  setMTime();
+
+  setHighlight(hlManager->wildcardFind (m_file));
 
   updateLines();
   updateViews();
-  //  setFileName( m_url.path() );
 
   return true;
 }
 
 bool KateDocument::saveFile()
 {
-  return writeFile( m_file );
+  QFile f( m_file );
+  if ( !f.open( IO_WriteOnly ) )
+    return false; // Error
+
+  QTextStream stream(&f);
+
+  stream.setCodec(KGlobal::charsets()->codecForName(myEncoding));
+  stream.setEncoding(QTextStream::Locale); //lukas: lets see, not sure if it doesn't clash with the above line...
+
+  int maxLine = numLines();
+  int line = 0;
+  while(true)
+  {
+    stream << getTextLine(line)->getString();
+    line++;
+    if (line >= maxLine) break;
+    if (eolMode != KateView::eolUnix) stream << QChar('\r');
+    if (eolMode != KateView::eolMacintosh) stream << QChar('\n');
+  };
+  f.close();
+
+  fileInfo->setFile (m_file);
+  setMTime();
+
+  return (f.status() == IO_Ok);
 }
 
 KTextEditor::View *KateDocument::createView( QWidget *parent, const char *name )
@@ -596,7 +615,7 @@ void KateDocument::updateFontData() {
   m_tabWidth = tabChars*tabWidth;
 
   for (view = views.first(); view != 0L; view = views.next() ) {
-    resizeBuffer(view,view->width(),fontHeight);
+    view->myViewInternal->drawBuffer->resize(view->width(),fontHeight);
     view->tagAll();
     view->updateCursor();
   }
@@ -828,44 +847,6 @@ void KateDocument::insertFile(VConfig &c, QIODevice &dev)
 
   recordInsert(c, buf);
   recordEnd(c);
-}
-
-void KateDocument::loadFile(const QString &file)
-{
-  buffer->clear();
-  buffer->insertFile(0, file, KGlobal::charsets()->codecForName(myEncoding));
-
-  fileInfo->setFile (file);
-  setMTime();
-}
-
-bool KateDocument::writeFile(const QString &file)
-{
-  QFile f( file );
-  if ( !f.open( IO_WriteOnly ) )
-    return false; // Error
-
-  QTextStream stream(&f);
-
-  stream.setCodec(KGlobal::charsets()->codecForName(myEncoding));
-  stream.setEncoding(QTextStream::Locale); //lukas: lets see, not sure if it doesn't clash with the above line...
-
-  int maxLine = numLines();
-  int line = 0;
-  while(true)
-  {
-    stream << getTextLine(line)->getString();
-    line++;
-    if (line >= maxLine) break;
-    if (eolMode != KateView::eolUnix) stream << QChar('\r');
-    if (eolMode != KateView::eolMacintosh) stream << QChar('\n');
-  };
-  f.close();
-
-  fileInfo->setFile (file);
-  setMTime();
-
-  return (f.status() == IO_Ok);
 }
 
 int KateDocument::currentColumn(PointStruc &cursor) {

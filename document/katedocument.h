@@ -280,9 +280,6 @@ class KateDocument : public Kate::Document, virtual public KateDocumentDCOPIface
     void insert(VConfig &, const QString &);
     void insertFile(VConfig &, QIODevice &);
 
-    void loadFile(const QString &file);
-    bool writeFile(const QString &file);
-
     int currentColumn(PointStruc &cursor);
     bool insertChars(VConfig &, const QString &chars);
     void newLine(VConfig &);

@@ -81,9 +81,6 @@ enum State_commands {
   cmToggleVertical    = 2
 };
 
-
-void resizeBuffer(void *user, int w, int h);
-
 class KateViewInternal;
 class KateView;
 
