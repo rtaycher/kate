@@ -19,7 +19,7 @@
 #include "kateview.h"
 #include "katedocument.h"
 #include "kateiconborder.moc"
-
+#include <kdebug.h>
 #include <qpainter.h>
 
 const char*bookmark_xpm[]={
@@ -203,18 +203,34 @@ void KateIconBorder::paintEvent(QPaintEvent* e)
 
   QRect updateR = e->rect();
 
+  // anders: drawing the background pr line is PAINFULLY slooow!!
+  QPainter p(this);
+
+  p.fillRect(0, updateR.y(), myInternalView->iconBorderWidth-2, updateR.height(), colorGroup().background());
+  p.setPen(white);
+  p.drawLine(myInternalView->iconBorderWidth-2, updateR.y(), myInternalView->iconBorderWidth-2, updateR.height());
+  p.setPen(QColor(colorGroup().background()).dark());
+  p.drawLine(myInternalView->iconBorderWidth-1, updateR.y(), myInternalView->iconBorderWidth-1, updateR.height());
+
+
+
   KateDocument *doc = myView->doc();
   int h = doc->viewFont.fontHeight;
   int yPos = myInternalView->yPos;
 
   if (h)
   {
-      lineStart = (yPos + updateR.y()) / h;
-        lineEnd = QMAX((yPos + updateR.y() + updateR.height()) / h, (int)doc->numLines());
-    }
+    lineStart = (yPos + updateR.y()) / h;
+    // anders: why paint below what is visible???
+    int vl = (myView->myViewInternal->height()-4)+1; // number of lines the view can display +1 (to compensate for half lines)
+    lineEnd = QMAX(((yPos + updateR.y() + updateR.height()) / h), QMIN(vl,(int)doc->numLines()));
+  }
 
   for(int i = lineStart; i <= lineEnd; ++i)
-    paintLine(i);
+    //paintLine(i);
+    // anders: the paintLine function is SLOW!!!
+    if ( myView->myDoc->mark(i) & KateDocument::markType01 )
+      p.drawPixmap(2, (i - lineStart)*h, QPixmap(bookmark_xpm));
 }
 
 
