@@ -32,6 +32,8 @@ class KateConsole : public QWidget
 
     void cd (KURL url=0L);
 
+  protected:
+    void focusInEvent( QFocusEvent * ) { part->widget()->setFocus(); };
   private:
     KParts::ReadOnlyPart *part;
     QVBoxLayout* lo;
