@@ -708,7 +708,7 @@ bool KateDocument::internalRemoveText ( uint line, uint col, uint len )
 {
   TextLine::Ptr l;
   KateView *view;
-  int cLine, cCol;
+  uint cLine, cCol;
   KateViewCursor c;
 
   l = getTextLine(line);
@@ -728,19 +728,20 @@ bool KateDocument::internalRemoveText ( uint line, uint col, uint len )
   newDocGeometry = true;
   for (view = myViews.first(); view != 0L; view = myViews.next() )
   {
-    view->getCursorPosition (&cLine, &cCol);
-    cCol = view->myViewInternal->cursor.col;
+    view->cursorPositionReal (&cLine, &cCol);
 
-    if ( (cLine == (int)line) && (cCol > (int)col) )
+    if ( (cLine == line) && (cCol > col) )
     {
-      if ((cCol - (int)len) >= (int)col)
-        cCol = cCol-(int)len;
-      else
+      if ((cCol - len) >= col)
+      {
+        if ((cCol - len) > 0)
+          cCol = cCol-len;
+        else
+          cCol = 0;
+      }
+        else
         cCol = col;
     }
-
-    if (cCol < 0)
-      cCol = 0;
 
     c.line = line;
     c.col = cCol;
@@ -777,7 +778,7 @@ bool KateDocument::internalWrapLine ( uint line, uint col )
 
   tagLine(line);
   tagLine(line+1);
-  
+
   if (!myMarks.isEmpty())
   {
     bool b = false;
@@ -814,7 +815,7 @@ bool KateDocument::internalUnWrapLine ( uint line, uint col)
 {
   TextLine::Ptr l, tl;
   KateView *view;
-  int cLine, cCol;
+  uint cLine, cCol;
   KateViewCursor c;
 
   l = getTextLine(line);
@@ -864,15 +865,14 @@ bool KateDocument::internalUnWrapLine ( uint line, uint col)
   newDocGeometry = true;
   for (view = myViews.first(); view != 0L; view = myViews.next() )
   {
-    view->getCursorPosition (&cLine, &cCol);
-    cCol = view->myViewInternal->cursor.col;
+    view->cursorPositionReal (&cLine, &cCol);
 
     view->delLine(line+1);
 
-    if ( (cLine == (int)(line+1)) || ((cLine == (int)line) && (cCol >= (int)col)) )
-       cCol = (int)col;
+    if ( (cLine == (line+1)) || ((cLine == line) && (cCol >= col)) )
+       cCol = col;
 
-    c.line = (int)line;
+    c.line = line;
     c.col = cCol;
 
     view->updateCursor (c);
@@ -935,7 +935,7 @@ bool KateDocument::internalInsertLine ( uint line, const QString &s )
 bool KateDocument::internalRemoveLine ( uint line )
 {
   KateView *view;
-  int cLine, cCol;
+  uint cLine, cCol;
   KateViewCursor c;
 
   if (numLines() == 1)
@@ -975,11 +975,10 @@ bool KateDocument::internalRemoveLine ( uint line )
   newDocGeometry = true;
   for (view = myViews.first(); view != 0L; view = myViews.next() )
   {
-    view->getCursorPosition (&cLine, &cCol);
-    cCol = view->myViewInternal->cursor.col;
+    view->cursorPositionReal (&cLine, &cCol);
     view->delLine(line);
 
-    if ( (cLine == (int)line) )
+    if ( (cLine == line) )
       cCol = 0;
 
     c.line = line;
@@ -2535,8 +2534,7 @@ bool KateDocument::insertChars ( int line, int col, const QString &chars, KateVi
     if (hasSelection())
     {
       removeSelectedText();
-      view->getCursorPosition (&line, &col);
-      col = view->myViewInternal->cursor.col;
+      view->cursorPositionReal (&(uint)line, &(uint)col);
     }
   }
 

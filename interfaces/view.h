@@ -73,20 +73,6 @@ class View : public KTextEditor::View, public KTextEditor::ClipboardInterface,
     */
     virtual void setOverwriteMode( bool ) { ; };
     /**
-      Returns the current line number, that is the line the cursor is on.
-      For the first line it returns 0. Signal newCurPos() is emitted on
-      cursor position changes.
-    */
-    virtual int currentLine() { return 0L; };
-    /** Returns the current column number. It handles tab's correctly.
-      For the first column it returns 0.
-    */
-    virtual int currentColumn() { return 0L; };
-    /**
-      Returns the number of the character, that the cursor is on (cursor x)
-    */
-    virtual int currentCharNum() { return 0L; };
-    /**
       Gets the text line where the cursor is on
     */
     virtual QString currentTextLine() { return 0L; };

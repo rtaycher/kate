@@ -72,7 +72,7 @@ void CodeCompletion_Impl::showCompletionBox(QValueList<KTextEditor::CompletionEn
   // alignt the prefix (end)
 
   m_offset = offset;
-  m_view->getCursorPosition(&m_lineCursor, &m_colCursor);
+  m_view->cursorPositionReal(&m_lineCursor, &m_colCursor);
   m_colCursor = m_colCursor - offset; // calculate the real start of the code completion text
   updateBox(true);
 
@@ -95,7 +95,7 @@ bool CodeCompletion_Impl::eventFilter( QObject *o, QEvent *e ){
 	if(item !=0){
 	  QString text = item->m_entry.text;
 	  QString currentLine = m_view->currentTextLine();
-	  int len = m_view->currentColumn() - m_colCursor;
+	  int len = m_view->cursorColumnReal() - m_colCursor;
 	  QString currentComplText = currentLine.mid(m_colCursor,len);
 	  QString add = text.mid(currentComplText.length());
 	  if(item->m_entry.postfix == "()"){ // add (
@@ -122,7 +122,7 @@ bool CodeCompletion_Impl::eventFilter( QObject *o, QEvent *e ){
       }
 
       QApplication::sendEvent(m_view, e ); // redirect the event to the editor
-      if(m_colCursor+m_offset > m_view->currentColumn()){ // the cursor is to far left
+      if(m_colCursor+m_offset > m_view->cursorColumnReal()){ // the cursor is to far left
 	m_completionPopup->hide();
 	m_view->setFocus();
 	emit completionAborted();
@@ -145,8 +145,8 @@ void CodeCompletion_Impl::updateBox(bool newCoordinate){
   QString currentLine = m_view->currentTextLine();
   kdDebug() << "Column:" << m_colCursor<<endl;
   kdDebug() <<"Line:" << currentLine<<endl;
-  kdDebug() << "CurrentColumn:" << m_view->currentColumn()<<endl;
-  int len = m_view->currentColumn() - m_colCursor;
+  kdDebug() << "CurrentColumn:" << m_view->cursorColumnReal()<<endl;
+  int len = m_view->cursorColumnReal() - m_colCursor;
   kdDebug()<< "Len:" << len<<endl;
   QString currentComplText = currentLine.mid(m_colCursor,len);
   kdDebug() << "TEXT:" << currentComplText<<endl;
@@ -203,8 +203,5 @@ void CodeCompletion_Impl::showArgHint ( QStringList functionList, const QString&
 
 void CodeCompletion_Impl::slotCursorPosChanged()
 {
-	m_pArgHint->cursorPositionChanged ( m_view, m_view->currentLine(), m_view->currentColumn() );
+	m_pArgHint->cursorPositionChanged ( m_view, m_view->cursorLine(), m_view->cursorColumnReal() );
 }
-
-
-//#include "codecompletion_iface_impl.moc"

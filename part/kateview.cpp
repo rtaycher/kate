@@ -1284,16 +1284,11 @@ void KateViewInternal::dropEvent( QDropEvent *event )
   }
 }
 
-uint KateView::uniqueID = 0;
-
 KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate::View (doc, parent, name)
 {
   setInstance( KateFactory::instance() );
   
   initCodeCompletionImplementation();
-
-  myViewID = uniqueID;
-  uniqueID++;
 
   active = false;
   myIconBorder = false;
@@ -1656,44 +1651,45 @@ void KateView::customEvent( QCustomEvent *ev )
     return;
 }
 
-void KateView::setCursorPosition( int line, int col, bool /*mark*/ )
+bool KateView::setCursorPosition( uint line, uint col )
 {
   setCursorPositionInternal( line, col, tabWidth() );
+  return true;
 }
 
-void KateView::setCursorPositionReal( int line, int col, bool /*mark*/ )
+bool KateView::setCursorPositionReal( uint line, uint col)
 {
   setCursorPositionInternal( line, col, 1 );
+  return true;
 }
 
-void KateView::getCursorPosition( int *line, int *col )
+void KateView::cursorPosition( uint *line, uint *col )
 {
   if ( line )
-    *line = currentLine();
+    *line = cursorLine();
 
   if ( col )
-    *col = currentColumn();
+    *col = cursorColumn();
 }
 
-void KateView::getCursorPositionReal( int *line, int *col )
+void KateView::cursorPositionReal( uint *line, uint *col )
 {
   if ( line )
-    *line = currentLine();
+    *line = cursorLine();
 
   if ( col )
-    *col = currentCharNum();
+    *col = cursorColumnReal();
 }
 
-
-int KateView::currentLine() {
+uint KateView::cursorLine() {
   return myViewInternal->cursor.line;
 }
 
-int KateView::currentColumn() {
+uint KateView::cursorColumn() {
   return myDoc->currentColumn(myViewInternal->cursor);
 }
 
-int KateView::currentCharNum() {
+uint KateView::cursorColumnReal() {
   return myViewInternal->cursor.col;
 }
 

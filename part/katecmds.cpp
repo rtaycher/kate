@@ -229,7 +229,7 @@ bool SedReplace::execCmd(QString cmd, KateView *view)
 	else
 	{ // just this line
 		QString textLine=view->currentTextLine();
-		int line=view->currentLine();
+		int line=view->cursorLine();
 		textLine=sedMagic(textLine, find, replace, noCase, repeat);
 		setLineText(view, line, textLine);
 	}

@@ -28,8 +28,8 @@ private:
   QVBox *m_completionPopup;
   QListBox *m_completionListBox;
   QValueList<KTextEditor::CompletionEntry> m_complList;
-  int m_lineCursor;
-  int m_colCursor;
+  uint m_lineCursor;
+  uint m_colCursor;
   int m_offset;
 
 public slots:

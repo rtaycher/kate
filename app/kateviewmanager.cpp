@@ -400,7 +400,7 @@ void KateViewManager::statusMsg ()
 
   int mod = (int)v->doc()->isModified();
 
-  emit statusChanged (v, v->currentLine(), v->currentColumn(), ovr, mod, v->doc()->docName());
+  emit statusChanged (v, v->cursorLine(), v->cursorColumn(), ovr, mod, v->doc()->docName());
   emit statChanged ();
 }
 
@@ -937,11 +937,11 @@ void KateViewManager::reloadCurrentDoc()
     return;
   KateView* v = activeView();
   // save cursor position
-  int cl = v->currentLine();
-  int cc = v->currentColumn();
+  uint cl = v->cursorLine();
+  uint cc = v->cursorColumn();
   // save bookmarks
   ((KateDocument*)v->doc())->reloadFile();
-  if (v->doc()->numLines() >= (uint)cl)
+  if (v->doc()->numLines() >= cl)
     v->setCursorPosition( cl, cc );
 }
 

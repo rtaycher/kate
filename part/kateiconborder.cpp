@@ -222,7 +222,7 @@ void KateIconBorder::mousePressEvent(QMouseEvent* e)
 {
     myInternalView->placeCursor( 0, e->y(), 0 );
 
-    int cursorOnLine = (e->y() + myInternalView->yPos) / myView->myDoc->fontHeight;
+    uint cursorOnLine = (e->y() + myInternalView->yPos) / myView->myDoc->fontHeight;
 
     if (cursorOnLine > myView->myDoc->lastLine())
       return;

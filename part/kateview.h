@@ -273,7 +273,7 @@ class KateView : public Kate::View
   // KTextEditor::ClipboardInterface stuff
   //
   public slots:
-	  /**
+    /**
       Moves the marked text into the clipboard
     */
     void cut() {doEditCommand(KateView::cmCut);}
@@ -285,52 +285,45 @@ class KateView : public Kate::View
       Inserts text from the clipboard at the actual cursor position
     */
     void paste() {doEditCommand(KateView::cmPaste);}
+    
+  //
+  // KTextEditor::ViewCursorInterface stuff
+  //
+  public slots:
+    /** Get the current cursor coordinates in pixels. */
+    QPoint cursorCoordinates ();
+
+    /** Get the cursor position */
+    void cursorPosition (uint *line, uint *col);
+
+    /** Get the cursor position, calculated with 1 character per tab */
+    void cursorPositionReal (uint *line, uint *col);
+
+    /** Set the cursor position */
+    bool setCursorPosition (uint line, uint col);
+
+    /** Set the cursor position, use 1 character per tab */
+    bool setCursorPositionReal (uint line, uint col);
+
+    uint cursorLine ();
+    uint cursorColumn ();
+    uint cursorColumnReal ();
+    
+  private:
+    /**
+      Sets the current cursor position (only for internal use)
+    */
+    void setCursorPositionInternal(int line, int col, int tabwidth);
+
+  signals:
+    void cursorPositionChanged ();
 
   //
   // internal KateView stuff
   //
   public:
-    QPoint cursorCoordinates();
-    void setCursorPosition( int line, int col, bool mark = false );
-    void setCursorPositionReal( int line, int col, bool mark = false );
-
-    void getCursorPosition( int *line, int *col );
-
-    /** Gets the cursor position with tabwidth=1 */
-    void getCursorPositionReal( int *line, int *col );
-
-		void cursorPosition( uint *line, uint *col ) { getCursorPosition ((int*)line, (int*)col); } ;
-		void cursorPositionReal( uint *line, uint *col ) { getCursorPositionReal((int*)line, (int*)col); } ;
-
-		bool setCursorPosition( uint line, uint col ) { setCursorPosition ((int)line, (int)col, false); return true; } ;
-		bool setCursorPositionReal( uint line, uint col ) { setCursorPositionReal ((int)line, (int)col, false); return true; } ;
-
-		uint cursorLine () {return (uint) currentLine (); };
-		uint cursorColumn () {return (uint) currentColumn (); };
-
     bool isOverwriteMode() const;
     void setOverwriteMode( bool b );
-
-//status and config functions
-    /**
-      Returns the current line number, that is the line the cursor is on.
-      For the first line it returns 0. Signal newCurPos() is emitted on
-      cursor position changes.
-    */
-    int currentLine();
-    /**
-      Returns the current column number. It handles tab's correctly.
-      For the first column it returns 0.
-    */
-    int currentColumn();
-    /**
-      Returns the number of the character, that the cursor is on (cursor x)
-    */
-    int currentCharNum();
-    /**
-      Sets the current cursor position
-    */
-    void setCursorPositionInternal(int line, int col, int tabwidth);
 
     int tabWidth();
     void setTabWidth(int);
@@ -370,17 +363,9 @@ class KateView : public Kate::View
     void toggleInsert();
   signals:
     /**
-      The cursor position has changed. Get the values with currentLine()
-      and currentColumn()
-    */
-    void cursorPositionChanged();
-    /**
       Modified flag or config flags have changed
     */
     void newStatus();
-
-    // emitted when saving a remote URL with KIO::NetAccess. In that case we have to disable the UI.
-    void enableUI( bool enable );
 
   protected:
     void keyPressEvent( QKeyEvent *ev );
@@ -584,7 +569,7 @@ class KateView : public Kate::View
     void writeSessionConfig(KConfig *);
 
   // syntax highlight
-  public slots:   
+  public slots:
     /**
       Get the end of line mode (Unix, Macintosh or Dos)
     */
@@ -624,12 +609,10 @@ class KateView : public Kate::View
     // to send dropEventPass
     void dropEventPassEmited (QDropEvent* e);
 
-
    signals:
     // emitted when KateViewInternal is not handling its own URI drops
     void dropEventPass(QDropEvent*);
   // end of kwriteview stuff
-
 
   public:
     enum Dialog_results {
@@ -704,10 +687,6 @@ class KateView : public Kate::View
   public slots:
     void slotIncFontSizes ();
     void slotDecFontSizes ();
-
-  protected:
-    uint myViewID;
-    static uint uniqueID;
 
   public:
     KTextEditor::Document *document () const { return (KTextEditor::Document *)myDoc; };

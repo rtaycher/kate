@@ -184,8 +184,8 @@ void KateViewSpace::saveFileList( KSimpleConfig* config, int myIndex )
     if ( !it.current()->doc()->url().isEmpty() ) {
     kdDebug(13030)<<"saving vs data for "<<it.current()->doc()->url().prettyURL()<<endl;
       l << it.current()->doc()->url().prettyURL();
-      l << QString("%1").arg( it.current()->currentLine());
-      l << QString("%1").arg( it.current()->currentColumn() );
+      l << QString("%1").arg( it.current()->cursorLine());
+      l << QString("%1").arg( it.current()->cursorColumn() );
       config->writeEntry(QString("file%1").arg( idx ), l);
     }
     idx++;
