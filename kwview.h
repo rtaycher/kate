@@ -181,7 +181,7 @@ class KWriteView : public QWidget {
       cfSingleSelection= 0x40000,
       cfTabIndents= 0x80000,
       cfPageUDMovesCursor= 0x100000,
-      cfShowTabs= 0x400000,
+      cfShowTabs= 0x200000,
       cfSpaceIndent= 0x400000,
       cfSmartHome = 0x800000};
 
