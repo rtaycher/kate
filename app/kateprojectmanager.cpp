@@ -303,7 +303,8 @@ KateProjectDialogNew::KateProjectDialogNew (QWidget *parent, KateProjectManager 
 
   m_urlRequester->setMode (KFile::LocalOnly);
   m_urlRequester->fileDialog()->setOperationMode (KFileDialog::Saving);
-  m_urlRequester->setFilter (QString ("*.kateproject|") + i18n("Kate Project Files"));
+  m_urlRequester->setFilter (QString ("*.kateproject|")
+                             + i18n("Kate Project Files") + QString (" (*.kateproject)"));
   connect( m_urlRequester->lineEdit(), SIGNAL( textChanged ( const QString & )),this,SLOT(slotTextChanged()));
   slotTextChanged();
 }

@@ -176,9 +176,8 @@ void KateMainWindow::setupMainWindow ()
   greptool->installEventFilter( this );
   connect(greptool, SIGNAL(itemSelected(const QString &,int)), this, SLOT(slotGrepToolItemSelected(const QString &,int)));
 
-    KMdiChildView* pMDICover = new KMdiChildView("MainDock");
-    pMDICover->setName("MainDock");
-
+  KMdiChildView* pMDICover = new KMdiChildView("MainDock");
+  pMDICover->setName("MainDock");
 
   //mainDock->setGeometry(100, 100, 100, 100);
   QBoxLayout *ml=new QHBoxLayout(pMDICover);
@@ -871,7 +870,7 @@ void KateMainWindow::slotProjectNew ()
 
 void KateMainWindow::slotProjectOpen ()
 {
-  QString fileName = KFileDialog::getOpenFileName (QString::null, QString ("*.kateproject|") + i18n("Kate Project Files"), this, i18n("Open Kate Project"));
+  QString fileName = KFileDialog::getOpenFileName (QString::null, QString ("*.kateproject|") + i18n("Kate Project Files") + QString (" (*.kateproject)"), this, i18n("Open Kate Project"));
 
   if (!fileName.isEmpty())
     openProject (fileName);
