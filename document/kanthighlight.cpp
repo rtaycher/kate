@@ -429,7 +429,7 @@ HlRegExpr::HlRegExpr(int attribute, int context,QString regexp)
          if (regexp.at(0)=='^') handlesLinestart=true;
            else regexp='^'+regexp;
        }
-     Expr=new QRegExp(regexp);
+     Expr=new QRegExp3(regexp);
    }
 }
 
