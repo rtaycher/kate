@@ -24,10 +24,7 @@
 
 #include "katemainwindow.h"
 #include "katedocmanager.h"
-#include "kateapp.h"
-#include "katesplitter.h"
 #include "kateviewspacecontainer.h"
-#include "kateviewspace.h"
 
 #include <dcopclient.h>
 #include <kaction.h>
@@ -49,32 +46,26 @@
 
 #include <ktexteditor/encodinginterface.h>
 
-#include <qlayout.h>
 #include <qobjectlist.h>
 #include <qstringlist.h>
-#include <qvbox.h>
-#include <qtimer.h>
 #include <qfileinfo.h>
 //END Includes
 
 KateViewManager::KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWidget, KateDocManager *docManager)
  : QWidget  (parent),
-  showFullPath(false), m_activeViewRunning (false),m_mainWindow(parent),m_tabWidget(tabWidget)
+  showFullPath(false), m_docManager (docManager), m_mainWindow(parent), m_tabWidget(tabWidget)
 {
   setupActions ();
 
   guiMergedView=0;
   m_init=true;
-  m_docManager = docManager;
   m_viewManager = new Kate::ViewManager (this);
   m_currentContainer=0;
  connect(m_tabWidget,SIGNAL(currentChanged(QWidget*)),this,SLOT(tabChanged(QWidget*)));
  slotNewTab();
  tabChanged(m_tabWidget->currentPage());
-  m_blockViewCreationAndActivation=false;
 
   // no memleaks
-  m_viewList.setAutoDelete(true);
   m_viewSpaceContainerList.setAutoDelete(true);
 
   m_init=false;
@@ -82,7 +73,6 @@ KateViewManager::KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWi
 
 KateViewManager::~KateViewManager ()
 {
-  m_viewList.setAutoDelete(false);
   m_viewSpaceContainerList.setAutoDelete(false);
 }
 
@@ -319,8 +309,6 @@ void KateViewManager::setViewActivationBlocked (bool block)
 {
   for (uint i=0;i<m_viewSpaceContainerList.count();i++)
     m_viewSpaceContainerList.at(i)->m_blockViewCreationAndActivation=block;
-    
-  m_blockViewCreationAndActivation = block;
 }
 
 void KateViewManager::slotViewChanged()
@@ -343,13 +331,6 @@ void KateViewManager::activatePrevView()
   if (m_currentContainer) {
     m_currentContainer->activatePrevView();
   }
-}
-
-void KateViewManager::deleteLastView ()
-{
-#if 0
-  deleteView (activeView (), true);
-#endif
 }
 
 void KateViewManager::closeViews(uint documentNumber)
@@ -431,15 +412,6 @@ void KateViewManager::openURL (const KURL &url)
   openURL (url, QString::null);
 }
 
-void KateViewManager::splitViewSpace( KateViewSpace* vs,
-                                      bool isHoriz,
-                                      bool atTop)
-{
-  if (m_currentContainer) {
-   m_currentContainer->splitViewSpace(vs,isHoriz,atTop);
-  }
-}
-
 void KateViewManager::removeViewSpace (KateViewSpace *viewspace)
 {
   if (m_currentContainer) {
@@ -451,6 +423,20 @@ void KateViewManager::slotCloseCurrentViewSpace()
 {
   if (m_currentContainer) {
     m_currentContainer->slotCloseCurrentViewSpace();
+  }
+}
+
+void KateViewManager::slotSplitViewSpaceVert()
+{
+  if (m_currentContainer) {
+    m_currentContainer->slotSplitViewSpaceVert();
+  }
+}
+
+void KateViewManager::slotSplitViewSpaceHoriz()
+{
+  if (m_currentContainer) {
+    m_currentContainer->slotSplitViewSpaceHoriz();
   }
 }
 
@@ -487,7 +473,6 @@ void KateViewManager::restoreViewConfiguration (KConfig *config, const QString& 
     m_viewSpaceContainerList.at(i)->restoreViewConfiguration(config,group+QString(":ViewSpaceContainer-%1:").arg(i));
   }
 }
-
 
 KateMainWindow *KateViewManager::mainWindow() {
         return m_mainWindow;

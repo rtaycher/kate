@@ -51,11 +51,6 @@ class KateViewSpaceContainer: public QWidget
     /* restore it */
     void restoreViewConfiguration (KConfig *config,const QString& group);
 
-    uint openURL (const KURL &url, const QString& encoding, bool activate = true);
-    
-  public slots:
-    void openURL (const KURL &url);
-
   private:
     bool useOpaqueResize;
   
@@ -110,8 +105,6 @@ class KateViewSpaceContainer: public QWidget
     void documentDeleted (uint docNumber);
     
   public slots:
-    void deleteLastView ();
-
      /* Splits a KateViewSpace into two.
       * The operation is performed by creating a KateSplitter in the parent of the KateViewSpace to be split,
       * which is then moved to that splitter. Then a new KateViewSpace is created and added to the splitter,

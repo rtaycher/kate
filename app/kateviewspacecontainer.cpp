@@ -24,7 +24,6 @@
 
 #include "katemainwindow.h"
 #include "katedocmanager.h"
-#include "kateapp.h"
 #include "katesplitter.h"
 #include "kateviewspace.h"
 
@@ -365,11 +364,6 @@ void KateViewSpaceContainer::activatePrevView()
   activateView(m_viewSpaceList.at(i)->currentView());
 }
 
-void KateViewSpaceContainer::deleteLastView ()
-{
-  deleteView (activeView (), true);
-}
-
 void KateViewSpaceContainer::closeViews(uint documentNumber)
 {
     QPtrList<Kate::View> closeList;
@@ -448,25 +442,6 @@ void KateViewSpaceContainer::statusMsg ()
   setCaption(KStringHandler::lsqueeze(c,32)); 
   emit statusChanged (v, v->cursorLine(), v->cursorColumn(), ovr,block, mod, KStringHandler::lsqueeze(c,64));
   emit statChanged ();
-}
-
-uint KateViewSpaceContainer::openURL (const KURL &url, const QString& encoding, bool activate)
-{
-  uint id = 0;
-  Kate::Document *doc = m_docManager->openURL (url, encoding, &id);
-
-  if (!doc->url().isEmpty())
-    m_mainWindow->fileOpenRecent->addURL( doc->url() );
-
-  if (activate)
-    activateView( id );
-
-  return id;
-}
-
-void KateViewSpaceContainer::openURL (const KURL &url)
-{
-  openURL (url, QString::null);
 }
 
 void KateViewSpaceContainer::splitViewSpace( KateViewSpace* vs,

@@ -46,8 +46,6 @@ class KateViewManager : public QWidget
     ~KateViewManager ();
 
     Kate::ViewManager *viewManager () const { return m_viewManager; };
-
-    inline QPtrList<Kate::View> &viewList () { return m_viewList; };
     
     KateViewSpaceContainer *activeContainer () { return m_currentContainer; }
 
@@ -88,7 +86,6 @@ class KateViewManager : public QWidget
     uint viewSpaceCount ();
 
     void setViewActivationBlocked (bool block);
-    bool isViewActivationBlocked(){return m_blockViewCreationAndActivation;};
 
   public:
     void closeViews(uint documentNumber);
@@ -102,21 +99,6 @@ class KateViewManager : public QWidget
     void tabChanged(QWidget*);
 
   public slots:
-    void deleteLastView ();
-
-     /* Splits a KateViewSpace into two.
-      * The operation is performed by creating a KateSplitter in the parent of the KateViewSpace to be split,
-      * which is then moved to that splitter. Then a new KateViewSpace is created and added to the splitter,
-      * and a KateView is created to populate the new viewspace. The new KateView is made the active one,
-      * because createView() does that.
-      * If no viewspace is provided, the result of activeViewSpace() is used.
-      * The isHoriz, true pr default, decides the orientation of the splitting action.
-      * If atTop is true, the new viewspace will be moved to the first position in the new splitter.
-      * If a newViewUrl is provided, the new view will show the document in that URL if any, otherwise
-      * the document of the current view in the viewspace to be split is used.
-      */
-    void splitViewSpace( KateViewSpace* vs=0L, bool isHoriz=true, bool atTop=false );
-
     bool getShowFullPath() const { return showFullPath; }
 
     void activateView ( uint documentNumber );
@@ -129,9 +111,9 @@ class KateViewManager : public QWidget
     void slotDocumentClose ();
     
     /** Splits the active viewspace horizontally */
-    void slotSplitViewSpaceHoriz () { splitViewSpace(); }
+    void slotSplitViewSpaceHoriz ();
     /** Splits the active viewspace vertically */
-    void slotSplitViewSpaceVert () { splitViewSpace( 0L, false ); }
+    void slotSplitViewSpaceVert ();
 
     void slotNewTab();
     void slotCloseTab ();
@@ -157,13 +139,8 @@ class KateViewManager : public QWidget
     Kate::ViewManager *m_viewManager;
     QPtrList<KateViewSpaceContainer> m_viewSpaceContainerList;
     KateViewSpaceContainer *m_currentContainer;
-    QPtrList<Kate::View> m_viewList;
 
     KateDocManager *m_docManager;
-    QGridLayout *m_grid;
-    bool m_blockViewCreationAndActivation;
-
-    bool m_activeViewRunning;
     KateMainWindow *m_mainWindow;
     QGuardedPtr<KMDI::TabWidget> m_tabWidget;
     bool m_init;
