@@ -422,7 +422,6 @@ void KateDocument::insertAt( const QString &s, int line, int col, bool  )
   c.cursor.y = line;
   c.cXPos = 0; // ### FIXME
   c.flags = 0; // ### FIXME
-  c.wrapAt = 80; // ### FIXME
   insert( c, s );
 }
 

@@ -572,7 +572,6 @@ void KateViewInternal::getVConfig(VConfig &c) {
   c.cursor = cursor;
   c.cXPos = cXPos;
   c.flags = myView->configFlags;
-  c.wrapAt = myView->wrapAt;
 }
 
 void KateViewInternal::changeState(VConfig &c) {
@@ -1374,7 +1373,7 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate
     | KateView::cfReplaceTabs | KateView::cfSpaceIndent | KateView::cfRemoveSpaces
     | KateView::cfDelOnInput | KateView::cfMouseAutoCopy | KateView::cfWrapCursor
     | KateView::cfGroupUndo | KateView::cfShowTabs | KateView::cfSmartHome;
-  wrapAt = 80;
+
   searchFlags = 0;
   replacePrompt = 0L;
   rmbMenu = 0L;
@@ -2505,7 +2504,6 @@ void KateView::readConfig()
 
   searchFlags = config->readNumEntry("SearchFlags", KateView::sfPrompt);
   configFlags = config->readNumEntry("ConfigFlags", configFlags) & ~KateView::cfMark;
-  wrapAt = config->readNumEntry("WrapAt", wrapAt);
 
   config->sync();
 }
@@ -2517,7 +2515,6 @@ void KateView::writeConfig()
 
   config->writeEntry("SearchFlags",searchFlags);
   config->writeEntry("ConfigFlags",configFlags);
-  config->writeEntry("WrapAt",wrapAt);
 
   config->sync();
 }

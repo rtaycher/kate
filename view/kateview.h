@@ -94,7 +94,6 @@ struct VConfig {
   PointStruc cursor;
   int cXPos;
   int flags;
-  int wrapAt;
 };
 
 struct SConfig {
@@ -339,8 +338,6 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
     */
     void setConfig(int);
 
-    int wordWrapAt() {return wrapAt;}
-    void setWordWrapAt(int at) {wrapAt = at;}
     int tabWidth();
     void setTabWidth(int);
     void setEncoding (QString e);
@@ -467,7 +464,6 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
     virtual void customEvent( QCustomEvent *ev );
 
     int configFlags;
-    int wrapAt;
 
     /*
      * Check if the given URL already exists. Currently used by both save() and saveAs()
