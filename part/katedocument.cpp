@@ -1632,7 +1632,7 @@ uint KateDocument::textWidth(const TextLine::Ptr &textLine, int cursorX) {
   int x;
   int z;
   QChar ch;
-  Attribute a;
+  Attribute *a;
 
   x = 0;
   for (z = 0; z < cursorX; z++) {
@@ -1641,11 +1641,11 @@ uint KateDocument::textWidth(const TextLine::Ptr &textLine, int cursorX) {
 
     if (ch == '\t')
       x += m_tabWidth - (x % m_tabWidth);
-    else if (a.bold && a.italic)
+    else if (a->bold && a->italic)
       x += myFontMetricsBI.width(ch);
-    else if (a.bold)
+    else if (a->bold)
       x += myFontMetricsBold.width(ch);
-    else if (a.italic)
+    else if (a->italic)
       x += myFontMetricsItalic.width(ch);
     else
       x += myFontMetrics.width(ch);
@@ -1668,7 +1668,7 @@ uint KateDocument::textWidth(bool wrapCursor, KateViewCursor &cursor, int xPos) 
   int x, oldX;
   int z;
   QChar ch;
-  Attribute a;
+  Attribute *a;
 
   if (cursor.line < 0) cursor.line = 0;
   if (cursor.line > lastLine()) cursor.line = lastLine();
@@ -1683,11 +1683,11 @@ uint KateDocument::textWidth(bool wrapCursor, KateViewCursor &cursor, int xPos) 
 
     if (ch == '\t')
       x += m_tabWidth - (x % m_tabWidth);
-    else if (a.bold && a.italic)
+    else if (a->bold && a->italic)
       x += myFontMetricsBI.width(ch);
-    else if (a.bold)
+    else if (a->bold)
       x += myFontMetricsBold.width(ch);
-    else if (a.italic)
+    else if (a->italic)
       x += myFontMetricsItalic.width(ch);
     else
       x += myFontMetrics.width(ch);
@@ -1706,7 +1706,7 @@ uint KateDocument::textPos(const TextLine::Ptr &textLine, int xPos) {
   int x, oldX;
   int z;
   QChar ch;
-  Attribute a;
+  Attribute *a;
 
   x = oldX = z = 0;
   while (x < xPos) { // && z < len) {
@@ -1716,11 +1716,11 @@ uint KateDocument::textPos(const TextLine::Ptr &textLine, int xPos) {
 
     if (ch == '\t')
       x += m_tabWidth - (x % m_tabWidth);
-    else if (a.bold && a.italic)
+    else if (a->bold && a->italic)
       x += myFontMetricsBI.width(ch);
-    else if (a.bold)
+    else if (a->bold)
       x += myFontMetricsBold.width(ch);
-    else if (a.italic)
+    else if (a->italic)
       x += myFontMetricsItalic.width(ch);
     else
       x += myFontMetrics.width(ch);
@@ -2038,7 +2038,7 @@ void KateDocument::toggleRect(int start, int end, int x1, int x2) {
   for (line = start; line < end; line++) {
     int x, oldX, s, e, newX1, newX2;
     QChar ch;
-    Attribute a;
+    Attribute *a;
 
     TextLine::Ptr textLine = getTextLine(line);
 
@@ -2052,11 +2052,11 @@ void KateDocument::toggleRect(int start, int end, int x1, int x2) {
 
     if (ch == '\t')
       x += m_tabWidth - (x % m_tabWidth);
-    else if (a.bold && a.italic)
+    else if (a->bold && a->italic)
       x += myFontMetricsBI.width(ch);
-    else if (a.bold)
+    else if (a->bold)
       x += myFontMetricsBold.width(ch);
-    else if (a.italic)
+    else if (a->italic)
       x += myFontMetricsItalic.width(ch);
     else
       x += myFontMetrics.width(ch);
@@ -2076,11 +2076,11 @@ void KateDocument::toggleRect(int start, int end, int x1, int x2) {
 
     if (ch == '\t')
       x += m_tabWidth - (x % m_tabWidth);
-    else if (a.bold && a.italic)
+    else if (a->bold && a->italic)
       x += myFontMetricsBI.width(ch);
-    else if (a.bold)
+    else if (a->bold)
       x += myFontMetricsBold.width(ch);
-    else if (a.italic)
+    else if (a->italic)
       x += myFontMetricsItalic.width(ch);
     else
       x += myFontMetrics.width(ch);
@@ -2791,9 +2791,9 @@ QColor &KateDocument::cursorCol(int x, int y) {
 
   TextLine::Ptr textLine = getTextLine(y);
   attr = textLine->getRawAttr(x);
-	Attribute a = attribute(attr & taAttrMask);
-  if (attr & taSelected) return a.selCol;
-	else return a.col;
+	Attribute *a = attribute(attr & taAttrMask);
+  if (attr & taSelected) return a->selCol;
+	else return a->col;
 }
 
 void KateDocument::paintTextLine(QPainter &paint, int line, int xStart, int xEnd, bool showTabs)
@@ -2808,7 +2808,7 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
   const QChar *s;
   int z, x;
   QChar ch;
-  Attribute a;
+  Attribute *a;
   int attr, nextAttr;
   int xs;
   int xc, zc;
@@ -2835,11 +2835,11 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
     } else {
      a = attribute(textLine->getAttr(z));
 
-   if (a.bold && a.italic)
+   if (a->bold && a->italic)
       x += myFontMetricsBI.width(ch);
-    else if (a.bold)
+    else if (a->bold)
       x += myFontMetricsBold.width(ch);
-    else if (a.italic)
+    else if (a->italic)
       x += myFontMetricsItalic.width(ch);
     else
       x += myFontMetrics.width(ch);
@@ -2874,11 +2874,11 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
     {
       a = attribute(textLine->getAttr(z));
 
-      if (a.bold && a.italic)
+      if (a->bold && a->italic)
         x += myFontMetricsBI.width(ch);
-      else if (a.bold)
+      else if (a->bold)
         x += myFontMetricsBold.width(ch);
-      else if (a.italic)
+      else if (a->italic)
         x += myFontMetricsItalic.width(ch);
       else
         x += myFontMetrics.width(ch);
@@ -2907,11 +2907,11 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
         QString s = str.string();
         paint.drawText(x - xStart, y, s);
 
-   if (a.bold && a.italic)
+   if (a->bold && a->italic)
       x += myFontMetricsBI.width(s);
-    else if (a.bold)
+    else if (a->bold)
       x += myFontMetricsBold.width(s);
-    else if (a.italic)
+    else if (a->italic)
       x += myFontMetricsItalic.width(s);
     else
       x += myFontMetrics.width(s);
@@ -2924,14 +2924,14 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
           attr = nextAttr;
           a = attribute (attr & taAttrMask);
 
-          if (attr & taSelected) paint.setPen(a.selCol);
-            else paint.setPen(a.col);
+          if (attr & taSelected) paint.setPen(a->selCol);
+            else paint.setPen(a->col);
 
-   if (a.bold && a.italic)
+   if (a->bold && a->italic)
      paint.setFont(myFontBI);
-    else if (a.bold)
+    else if (a->bold)
       paint.setFont(myFontBold);
-    else if (a.italic)
+    else if (a->italic)
       paint.setFont(myFontItalic);
     else
       paint.setFont(myFont);
@@ -2952,11 +2952,11 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
           QString s = str.string();
           paint.drawText(x - xStart, y, s);
 
-   if (a.bold && a.italic)
+   if (a->bold && a->italic)
       x += myFontMetricsBI.width(s);
-    else if (a.bold)
+    else if (a->bold)
       x += myFontMetricsBold.width(s);
-    else if (a.italic)
+    else if (a->italic)
       x += myFontMetricsItalic.width(s);
     else
       x += myFontMetrics.width(s);
@@ -2965,14 +2965,14 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, i
         attr = nextAttr;
         a = attribute (attr & taAttrMask);
 
-        if (attr & taSelected) paint.setPen(a.selCol);
-          else paint.setPen(a.col);
+        if (attr & taSelected) paint.setPen(a->selCol);
+          else paint.setPen(a->col);
 
-   if (a.bold && a.italic)
+   if (a->bold && a->italic)
      paint.setFont(myFontBI);
-    else if (a.bold)
+    else if (a->bold)
       paint.setFont(myFontBold);
-    else if (a.italic)
+    else if (a->italic)
       paint.setFont(myFontItalic);
     else
       paint.setFont(myFont);
@@ -3170,7 +3170,7 @@ void KateDocument::newBracketMark(KateViewCursor &cursor, BracketMark &bm)
   TextLine::Ptr textLine;
   int x, line, count, attr;
   QChar bracket, opposite, ch;
-  Attribute a;
+  Attribute *a;
 
   bm.eXPos = -1; //mark bracked mark as invalid
   x = cursor.col -1; // -1 to look at left side of cursor
@@ -3247,11 +3247,11 @@ found:
   bm.sXPos = textWidth(textLine, x);
   a = attribute(attr);
 
-   if (a.bold && a.italic)
+   if (a->bold && a->italic)
       bm.eXPos = bm.sXPos + myFontMetricsBI.width(bracket);
-    else if (a.bold)
+    else if (a->bold)
       bm.eXPos = bm.sXPos + myFontMetricsBold.width(bracket);
-    else if (a.italic)
+    else if (a->italic)
       bm.eXPos = bm.sXPos + myFontMetricsItalic.width(bracket);
     else
       bm.eXPos = bm.sXPos + myFontMetrics.width(bracket);
@@ -3360,12 +3360,12 @@ void KateDocument::open (const QString &name)
   openURL (KURL (name));
 }
 
-Attribute KateDocument::attribute (uint pos)
+Attribute *KateDocument::attribute (uint pos)
 {
   if (pos < myAttribsLen)
-	  return myAttribs[pos];
+	  return &myAttribs[pos];
 
-	return Attribute();
+	return &myAttribs[0];
 }
 
 void KateDocument::wrapText (uint col)

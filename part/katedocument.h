@@ -257,7 +257,7 @@ class KateDocument : public Kate::Document
 	  Attribute *myAttribs;
 		uint myAttribsLen;
 
-		Attribute attribute (uint pos);
+		Attribute *attribute (uint pos);
 
 	public:
     Highlight *highlight() { return m_highlight; }
