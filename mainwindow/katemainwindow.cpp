@@ -126,8 +126,8 @@ KateMainWindow::~KateMainWindow()
 void KateMainWindow::setupMainWindow ()
 {
   mainDock = createDockWidget( "mainDock", 0 );
-  filelistDock =  createDockWidget( "Open Files",  UserIcon("openfiles"),     this, "" );
-  fileselectorDock = createDockWidget( "Selector",  UserIcon("fileselector"),     this, "");
+  filelistDock =  createDockWidget( "Open Files",  UserIcon("openfiles"));
+  fileselectorDock = createDockWidget( "Selector",  UserIcon("fileselector"));
 
   mainDock->setGeometry(100, 100, 100, 100);
   viewManager = new KateViewManager (mainDock, docManager);
@@ -144,16 +144,17 @@ void KateMainWindow::setupMainWindow ()
   fileselector->dirOperator()->setView(KFile::Simple);
   fileselectorDock->setWidget (fileselector);
 
-#ifdef _KDOCKWIDGET_2_2_
 //  disabled because it will be only available in KDE >= 2.2
-  filelistDock->setDockWindowType (NET::Tool);
-  fileselectorDock->setDockWindowType (NET::Tool);
-  filelistDock->setDockWindowTransient (true);
-  fileselectorDock->setDockWindowTransient (true);
-#endif
+//  filelistDock->setDockWindowType (NET::Tool);
+ // fileselectorDock->setDockWindowType (NET::Tool);
+//  filelistDock->setDockWindowTransient (true);
+// fileselectorDock->setDockWindowTransient (true);
+
+
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileViewItem*)),this,SLOT(fileSelected(const KFileViewItem*)));
 
   mainDock->setEnableDocking ( KDockWidget::DockNone );
+  mainDock->setDockSite( KDockWidget::DockCorner );
 
   filelistDock->manualDock ( mainDock, KDockWidget::DockLeft, 20 );
   fileselectorDock ->manualDock(filelistDock, KDockWidget::DockCenter);
@@ -612,7 +613,7 @@ void KateMainWindow::slotSettingsShowConsole()
 {
   if (!consoleDock && !console)
   {
-    consoleDock = createDockWidget( "consoleDock", 0, this );
+    consoleDock = createDockWidget( "consoleDock", 0 );
     console = new KateConsole (consoleDock, "console");
     console->installEventFilter( this );
     console->setMinimumSize(50,50);
