@@ -413,7 +413,7 @@ EditConfigTab::EditConfigTab(QWidget *parent, KateView *view)
   e2->setRange(1, 16, 1, false);
   e2->setLabel(i18n("Tab/Indent Width:"));
 
-  e3 = new KIntNumInput(e2, view->undoSteps(), this);
+  e3 = new KIntNumInput(e2, view->doc()->undoSteps(), this);
   e3->setRange(5, 30000, 1, false);
   e3->setLabel(i18n("Undo steps:"));
 
@@ -463,7 +463,7 @@ void EditConfigTab::getData(KateView *view)
   view->doc()->setWordWrapAt(e1->value());
   view->doc()->setWordWrap (opt[0]->isChecked());
   view->setTabWidth(e2->value());
-  view->setUndoSteps(e3->value());
+  view->doc()->setUndoSteps(e3->value());
 }
 
 ColorConfig::ColorConfig( QWidget *parent, char *name )

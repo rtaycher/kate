@@ -91,11 +91,6 @@ class View : public KTextEditor::View
     */
     virtual int currentCharNum() { return 0L; };
     /**
-      Bit 0 : undo possible, Bit 1 : redo possible.
-      Used to enable/disable undo/redo menu items and toolbar buttons
-    */
-    virtual int undoState() { return 0L; };
-    /**
       Gets the text line where the cursor is on
     */
     virtual QString currentTextLine() { return 0L; };
@@ -149,24 +144,6 @@ class View : public KTextEditor::View
      Inserts text from the clipboard at the actual cursor position.
     */
     virtual void paste() { ; };
-    /**
-      Undoes the last operation. The number of undo steps is configurable.
-    */
-    virtual void undo() { ; };
-    /**
-     Repeats an operation which has been undone before.
-    */
-    virtual void redo() { ; };
-    /**
-      Undoes <count> operations.
-      Called by slot undo().
-    */
-    virtual void undoMultiple(int ) { ; };
-    /**
-      Repeats <count> operation which have been undone before.
-      Called by slot redo().
-    */
-    virtual void redoMultiple(int ) { ; };
     /**
       Moves the current line or the selection one position to the right.
     */

@@ -248,13 +248,7 @@ void KateViewInternal::doEditCommand(VConfig &c, int cmdNum)
     case KateView::cmPaste:
       if (c.flags & KateView::cfDelOnInput) myDoc->removeSelectedText();
       myDoc->paste(c);
-      return;
-    case KateView::cmUndo:
-      myDoc->undo(c);
-      return;
-    case KateView::cmRedo:
-      myDoc->redo(c);
-      return;
+      return; 
     case KateView::cmIndent:
       myDoc->indent(c);
       return;
@@ -1344,7 +1338,7 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate
   setupActions();
 
   connect( this, SIGNAL( newStatus() ), this, SLOT( slotUpdate() ) );
-  connect( this, SIGNAL( newUndo() ), this, SLOT( slotNewUndo() ) );
+  //connect( this, SIGNAL( newUndo() ), this, SLOT( slotNewUndo() ) );
   connect( doc, SIGNAL( fileNameChanged() ), this, SLOT( slotFileStatusChanged() ) );
   connect( doc, SIGNAL( highlightChanged() ), this, SLOT( slotHighlightChanged() ) );
 
@@ -1380,8 +1374,8 @@ void KateView::setupActions()
     KStdAction::save(this, SLOT(save()), actionCollection());
 
     // setup edit menu
-    editUndo = KStdAction::undo(this, SLOT(undo()), actionCollection());
-    editRedo = KStdAction::redo(this, SLOT(redo()), actionCollection());
+    editUndo = KStdAction::undo(myDoc, SLOT(undo()), actionCollection());
+    editRedo = KStdAction::redo(myDoc, SLOT(redo()), actionCollection());
 
     KStdAction::cut(this, SLOT(cut()), actionCollection());
     KStdAction::copy(this, SLOT(copy()), actionCollection());
@@ -1487,7 +1481,7 @@ void KateView::slotUpdate()
 
     setVerticalSelection->setChecked(cfg & KateView::cfVerticalSelect);
 
-    slotNewUndo();
+   // slotNewUndo();
 }
 void KateView::slotFileStatusChanged()
 {
@@ -1496,9 +1490,11 @@ void KateView::slotFileStatusChanged()
 
     setEndOfLine->setCurrentItem(eol);
 }
-void KateView::slotNewUndo()
+
+/*void KateView::slotNewUndo()
 {
-    int state = undoState();
+
+    int state = 0; //undoState();
 
     QString t = i18n("Und&o");   // it would be nicer to fetch the original string
     if (state & 1) {
@@ -1519,7 +1515,7 @@ void KateView::slotNewUndo()
         editRedo->setEnabled(false);
     }
     editRedo->setText(t);
-}
+}*/
 
 void KateView::slotHighlightChanged()
 {
@@ -1757,49 +1753,12 @@ void KateView::setEncoding (QString e) {
   myDoc->updateViews();
 }
 
-int KateView::undoSteps() {
-  return myDoc->undoSteps;
-}
-
-void KateView::setUndoSteps(int s) {
-  myDoc->setUndoSteps(s);
-}
-
 bool KateView::isLastView() {
   return myDoc->isLastView(1);
 }
 
 KateDocument *KateView::doc() {
   return myDoc;
-}
-
-int KateView::undoState() {
-  if (doc()->isReadOnly())
-    return 0;
-  else
-    return myDoc->undoState;
-}
-
-int KateView::nextUndoType() {
-  return myDoc->nextUndoType();
-}
-
-int KateView::nextRedoType() {
-  return myDoc->nextRedoType();
-}
-
-void KateView::undoTypeList(QValueList<int> &lst)
-{
-  myDoc->undoTypeList(lst);
-}
-
-void KateView::redoTypeList(QValueList<int> &lst)
-{
-  myDoc->redoTypeList(lst);
-}
-
-const char * KateView::undoTypeName(int type) {
-  return "";//KateActionGroup::typeName(type);
 }
 
 QColor* KateView::getColors()
@@ -1968,26 +1927,6 @@ void KateView::doEditCommand(int cmdNum) {
   VConfig c;
   myViewInternal->getVConfig(c);
   myViewInternal->doEditCommand(c, cmdNum);
-  myDoc->updateViews();
-}
-
-void KateView::undoMultiple(int count) {
-  if (doc()->isReadOnly())
-    return;
-
-  VConfig c;
-  myViewInternal->getVConfig(c);
-  myDoc->undo(c, count);
-  myDoc->updateViews();
-}
-
-void KateView::redoMultiple(int count) {
-  if (doc()->isReadOnly())
-    return;
-
-  VConfig c;
-  myViewInternal->getVConfig(c);
-  myDoc->redo(c, count);
   myDoc->updateViews();
 }
 
@@ -2661,7 +2600,7 @@ void KateView::spellResult (const QString &)
       // backout the spell check
       VConfig c;
       myViewInternal->getVConfig(c);
-      myDoc->undo(c);
+      myDoc->undo();
       // clear the redo list, so the cancelled spell check can't be redo'ed <- say that word ;-)
       myDoc->clearRedo();
       // make sure the modified flag is turned back off

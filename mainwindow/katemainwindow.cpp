@@ -442,7 +442,7 @@ void KateMainWindow::slotCurrentDocChanged()
   if (!viewManager->activeView())
     return;
 
-  if (!(viewManager->activeView()->undoState() & 1))
+  if (viewManager->activeView()->doc()->undoCount() > 0)
   {
     editUndo->setEnabled(false);
   }
@@ -451,7 +451,7 @@ void KateMainWindow::slotCurrentDocChanged()
     editUndo->setEnabled(true);
   }
 
-  if (!(viewManager->activeView()->undoState() & 2))
+  if (viewManager->activeView()->doc()->redoCount() > 0)
   {
     editRedo->setEnabled(false);
   }

@@ -319,8 +319,6 @@ class KateView : public Kate::View
     int tabWidth();
     void setTabWidth(int);
     void setEncoding (QString e);
-    int undoSteps();
-    void setUndoSteps(int);
 
     /**
       Returns true if this editor is the only owner of its document
@@ -330,35 +328,6 @@ class KateView : public Kate::View
       Returns the document object
     */
     KateDocument *doc();
-
-    /**
-      Bit 0 : undo possible, Bit 1 : redo possible.
-      Used to enable/disable undo/redo menu items and toolbar buttons
-    */
-    int undoState();
-    /**
-      Returns the type of the next undo group.
-    */
-    int nextUndoType();
-    /**
-      Returns the type of the next redo group.
-    */
-    int nextRedoType();
-    /**
-      Returns a list of all available undo types, in undo order.
-    */
-    void undoTypeList(QValueList<int> &lst);
-    /**
-      Returns a list of all available redo types, in redo order.
-    */
-    void redoTypeList(QValueList<int> &lst);
-    /**
-      Returns a short text description of the given undo type,
-      which is obtained with nextUndoType(), nextRedoType(), undoTypeList(), and redoTypeList(),
-      suitable for display in a menu entry.  It is not translated;
-      use i18n() before displaying this string.
-    */
-    const char * undoTypeName(int undoType);
 
     QColor* getColors();
     void applyColors();
@@ -372,7 +341,6 @@ class KateView : public Kate::View
     KRecentFilesAction *fileRecent;
     KSelectAction *setEndOfLine;
     KateViewHighlightAction *setHighlight;
-//    KSelectAction *setHighlight, *setEndOfLine;
 
   protected slots:
     void slotDropEventPass( QDropEvent * ev );
@@ -380,7 +348,6 @@ class KateView : public Kate::View
   public slots:
     void slotUpdate();
     void slotFileStatusChanged();
-    void slotNewUndo();
     void slotHighlightChanged();
 
   public slots:
@@ -401,11 +368,7 @@ class KateView : public Kate::View
     /**
       Modified flag or config flags have changed
     */
-    void newStatus();
-    /**
-      The undo/redo enable status has changed
-    */
-    void newUndo();
+    void newStatus(); 
     /**
       The marked text state has changed. This can be used to enable/disable
       cut and copy
@@ -489,24 +452,6 @@ class KateView : public Kate::View
       Inserts text from the clipboard at the actual cursor position
     */
     void paste() {doEditCommand(KateView::cmPaste);}
-    /**
-      Undoes the last operation. The number of undo steps is configurable
-    */
-    void undo() {doEditCommand(KateView::cmUndo);}
-    /**
-      Repeats an operation which has been undone before.
-    */
-    void redo() {doEditCommand(KateView::cmRedo);}
-    /**
-      Undoes <count> operations.
-      Called by slot undo().
-    */
-    void undoMultiple(int count);
-    /**
-      Repeats <count> operation which have been undone before.
-      Called by slot redo().
-    */
-    void redoMultiple(int count);
     /**
       Moves the current line or the selection one position to the right
     */
@@ -761,7 +706,7 @@ class KateView : public Kate::View
       cfXorSelect= 0x800,
       cfOvr= 0x1000,
       cfMark= 0x2000,
-      cfGroupUndo= 0x4000,
+			cfGroupUndo= 0x4000,
       cfKeepIndentProfile= 0x8000,
       cfKeepExtraSpaces= 0x10000,
       cfMouseAutoCopy= 0x20000,
@@ -813,8 +758,8 @@ class KateView : public Kate::View
        cmTop,cmBottom};
 //edit commands
     enum Edit_commands {
-		    cmReturn=1,cmDelete,cmBackspace,cmKillLine,cmUndo,
-        cmRedo,cmCut,cmCopy,cmPaste,cmIndent,cmUnindent,cmCleanIndent,
+		    cmReturn=1,cmDelete,cmBackspace,cmKillLine,
+        cmCut,cmCopy,cmPaste,cmIndent,cmUnindent,cmCleanIndent,
         cmSelectAll,cmDeselectAll,cmInvertSelection,cmComment,
         cmUncomment};
 //find commands

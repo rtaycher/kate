@@ -87,7 +87,7 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
     | KateDocument::cfTabIndents | KateDocument::cfKeepIndentProfile
     | KateDocument::cfRemoveSpaces
     | KateDocument::cfDelOnInput | KateDocument::cfMouseAutoCopy | KateDocument::cfWrapCursor
-    | KateDocument::cfGroupUndo | KateDocument::cfShowTabs | KateDocument::cfSmartHome;
+    | KateDocument::cfShowTabs | KateDocument::cfSmartHome;
 
   searchFlags = 0;
 
@@ -130,9 +130,6 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   newDoc = false;
 
   modified = false;
-
-  undoState = 0;
-  undoSteps = 50;
 
   pseudoModal = 0L;
   clear();
@@ -221,23 +218,7 @@ bool KateDocument::setText(const QString &s) {
 
   clear();
 
-  int line=1;
-
-  TextLine::Ptr textLine = buffer->line(0);
-  for (pos = 0; pos <= (int) s.length(); pos++) {
-    ch = s[pos];
-    if (ch.isPrint() || ch == '\t') {
-      textLine->append(&ch, 1);
-    } else if (ch == '\n')
-    {
-      textLine = new TextLine();
-      buffer->insertLine (line, textLine);
-      line++;
-    }
-  }
-  updateLines();
-
-  return true;
+  return insertText (0, 0, s);
 }
 
 bool KateDocument::clear() {
@@ -265,10 +246,7 @@ bool KateDocument::clear() {
   oldMarkState = false;
 
   setModified(false);
-
-  currentUndo = 0;
-  newUndo();
-
+ 
   return true;
 }
 
@@ -717,6 +695,25 @@ bool KateDocument::removeSelectedText ()
 }
 
 //
+// KTextEditor::UndoInterface stuff
+//
+
+int KateDocument::undoCount () const
+{
+
+}
+
+int KateDocument::redoCount () const
+{
+
+}
+
+int KateDocument::undoSteps () const
+{
+
+}
+
+//
 // KTextEditor::CursorInterface stuff
 //
 
@@ -1032,7 +1029,7 @@ void KateDocument::writeConfig()
   config->writeEntry("Word Wrap On", myWordWrap);
   config->writeEntry("Word Wrap At", myWordWrapAt);
   config->writeEntry("TabWidth", tabChars);
-  config->writeEntry("UndoSteps", undoSteps);
+  //config->writeEntry("UndoSteps", undoSteps);
   config->writeEntry("SingleSelection", m_singleSelection);
   config->writeEntry("Encoding", myEncoding);
   config->writeEntry("Font", myFont);
@@ -2748,53 +2745,7 @@ void KateDocument::optimizeSelection() {
   }
 }
 
-void KateDocument::newUndo() {
- /* KTextEditor::View *view;
-  int state;
-
-  state = 0;
-  if (currentUndo > 0) state |= 1;
-  if (currentUndo < (int) undoList.count()) state |= 2;
-  undoState = state;
-  for (view = myViews.first(); view != 0L; view = myViews.next() ) {
-    emit static_cast<KateView *>( view )->newUndo();
-  }*/
-}
-
-int KateDocument::nextUndoType()
-{
-  /*KateUndoGroup *g;
-
-  if (currentUndo <= 0) return KateUndoGroup::ugNone;
-  g = undoList.at(currentUndo - 1);
-  return g->undoType;*/
-}
-
-int KateDocument::nextRedoType()
-{
-  /*KateUndoGroup *g;
-
-  if (currentUndo >= (int) undoList.count()) return KateUndoGroup::ugNone;
-  g = undoList.at(currentUndo);
-//  if (!g) return KateUndoGroup::ugNone;
-  return g->undoType;*/
-}
-
-void KateDocument::undoTypeList(QValueList<int> &lst)
-{
-/*  lst.clear();
-  for (int i = currentUndo-1; i>=0 ;i--)
-    lst.append(undoList.at(i)->undoType);*/
-}
-
-void KateDocument::redoTypeList(QValueList<int> &lst)
-{
- /* lst.clear();
-  for (int i = currentUndo+1; i<(int)undoList.count(); i++)
-    lst.append(undoList.at(i)->undoType);*/
-}
-
-void KateDocument::undo(VConfig &c, int count) {
+void KateDocument::undo() {
  /* KateUndoGroup *g = 0L;
   int num;
   bool needUpdate = false; // don't update the cursor until completely done
@@ -2819,7 +2770,7 @@ void KateDocument::undo(VConfig &c, int count) {
   }*/
 }
 
-void KateDocument::redo(VConfig &c, int count) {
+void KateDocument::redo() {
  /* KateUndoGroup *g = 0L;
   int num;
   bool needUpdate = false; // don't update the cursor until completely done
@@ -2844,6 +2795,19 @@ void KateDocument::redo(VConfig &c, int count) {
   }*/
 }
 
+void KateDocument::clearUndo() {
+  // disable redos
+ /* // this was added as an assist to the spell checker
+  bool deleted = false;
+
+  while ((int) undoList.count() > currentUndo) {
+    deleted = true;
+    undoList.removeLast();
+  }
+
+  if (deleted) newUndo();*/
+}
+
 void KateDocument::clearRedo() {
   // disable redos
  /* // this was added as an assist to the spell checker
@@ -2859,7 +2823,7 @@ void KateDocument::clearRedo() {
 
 void KateDocument::setUndoSteps(int steps) {
   if (steps < 5) steps = 5;
-  undoSteps = steps;
+//  undoSteps = steps;
 }
 
 void KateDocument::setPseudoModal(QWidget *w) {

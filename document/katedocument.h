@@ -112,61 +112,85 @@ class KateDocument : public Kate::Document
     KateDocument (bool bSingleViewMode=false, bool bBrowserView=false, QWidget *parentWidget = 0, const char *widgetName = 0, QObject * = 0, const char * = 0);
     ~KateDocument ();
 
+  //
+  // KTextEditor::Document stuff
+  //
   public:
-    //
-    // KTextEditor::Document stuff
-    //
-    virtual KTextEditor::View *createView( QWidget *parent, const char *name );
+    KTextEditor::View *createView( QWidget *parent, const char *name );
     QPtrList<KTextEditor::View> views () const;
 
+  //
+  // KTextEditor::EditInterface stuff
+  //
+	public slots:
+    QString text ( int line, int col, int len ) const;
+    QString textLine ( int line ) const;
+
+    bool setText(const QString &);
+    bool clear ();
+    
+		bool insertText ( int line, int col, const QString &s );
+    bool removeText ( int line, int col, int len );
+
+    bool insertLine ( int line, const QString &s );
+    bool removeLine ( int line );
+   
+		int numLines() const;
+    int length () const;
+    int lineLength ( int line ) const;
+
+	signals:
+		void textChanged ();
+
+	//
+	// KTextEditor::SelectionInterface stuff
+  //
   public slots:
-    //
-    // KTextEditor::EditInterface stuff
-    //
-    virtual QString text ( int line, int col, int len ) const;
-    virtual QString textLine ( int line ) const;
+    bool setSelection ( int line_start, int col_start, int line_end, int col_end );
+    bool clearSelection ();
 
-    virtual bool setText(const QString &);
-    virtual bool clear ();
+    bool hasSelection () const;
+    QString selection () const ;
 
-    virtual bool insertText ( int line, int col, const QString &s );
-    virtual bool removeText ( int line, int col, int len );
+    bool removeSelectedText ();
+	
+	signals:
+		void selectionChanged ();
 
-    virtual bool insertLine ( int line, const QString &s );
-    virtual bool removeLine ( int line );
+	//
+  // KTextEditor::UndoInterface stuff
+  //
+	public slots:
+    void undo ();
+    void redo ();
+    void clearUndo ();
+		void clearRedo ();
 
-    virtual int numLines() const;
-    virtual int length () const;
-    virtual int lineLength ( int line ) const;
+		int undoCount () const;
+		int redoCount () const;
 
-  public slots:
-    //
-    // KTextEditor::SelectionInterface stuff
-    //
-    virtual bool setSelection ( int line_start, int col_start, int line_end, int col_end );
-    virtual bool clearSelection ();
+		int undoSteps () const;
+    void setUndoSteps ( int steps );
 
-    virtual bool hasSelection () const;
-    virtual QString selection () const ;
+	signals:
+		void undoChanged ();
 
-    virtual bool removeSelectedText ();
-
+  //
+  // KTextEditor::CursorInterface stuff
+  //
   public:
-    //
-    // KTextEditor::CursorInterface stuff
-    //
-    virtual KTextEditor::Cursor *createCursor ();
-    virtual QPtrList<KTextEditor::Cursor> cursors () const;
+    KTextEditor::Cursor *createCursor ();
+    QPtrList<KTextEditor::Cursor> cursors () const;
 
+	//
+  // KParts::ReadWrite stuff
+  //
   public:
-    //
-    //  KParts::ReadWrite stuff
-    //
-    virtual void setReadWrite( bool );
-    virtual bool isReadWrite() const;
+    void setReadWrite( bool );
+    bool isReadWrite() const;
 
-    virtual void setModified(bool);
-    virtual bool isModified() const;
+    void setModified(bool);
+    bool isModified() const;
 
 
   protected:
@@ -229,8 +253,7 @@ class KateDocument : public Kate::Document
   protected:
     bool m_bBrowserView;
 
-  signals:
-    void selectionChanged();
+  signals: 
     void highlightChanged();
     void modifiedChanged ();
     void preHighlightChanged(long);
@@ -355,16 +378,7 @@ class KateDocument : public Kate::Document
     void tagLine(int line);
     void optimizeSelection();
 
-    void newUndo();
-
-    int nextUndoType();
-    int nextRedoType();
-    void undoTypeList(QValueList<int> &lst);
-    void redoTypeList(QValueList<int> &lst);
-    void undo(VConfig &, int count = 1);
-    void redo(VConfig &, int count = 1);
-    void clearRedo();
-    void setUndoSteps(int steps);
+	public:
 
     void setPseudoModal(QWidget *);
 
@@ -443,12 +457,8 @@ class KateDocument : public Kate::Document
     bool myWordWrap;
     uint myWordWrapAt;
 
-    int currentUndo;
-    int undoState;
-    int undoSteps;
     int tagStart;
-    int tagEnd;
-    int undoCount;          //counts merged undo steps
+    int tagEnd;  
 
     QWidget *pseudoModal;   //the replace prompt is pseudo modal
 
@@ -515,7 +525,6 @@ class KateDocument : public Kate::Document
       can use this to change its caption
     */
     void fileNameChanged ();
-    void textChanged ();
 
   public:
     //end of line settings
@@ -554,8 +563,7 @@ class KateDocument : public Kate::Document
       cfDelOnInput= 0x400,
       cfXorSelect= 0x800,
       cfOvr= 0x1000,
-      cfMark= 0x2000,
-      cfGroupUndo= 0x4000,
+      cfMark= 0x2000,   
       cfKeepIndentProfile= 0x8000,
       cfKeepExtraSpaces= 0x10000,
       cfMouseAutoCopy= 0x20000,
