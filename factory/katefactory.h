@@ -30,7 +30,7 @@ public:
   KateFactory();
   virtual ~KateFactory();
 
-  virtual KParts::Part *createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const char *classname, const QStringList &args );
+  virtual KParts::Part *createPartObject( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const char *classname, const QStringList &args );
 
   static const KAboutData *aboutData();
   static KInstance *instance();
