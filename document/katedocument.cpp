@@ -1883,7 +1883,7 @@ void KateDocument::updateLines(int startLine, int endLine, int flags, int cursor
   ctxNum = 0;
   if (line > 0) ctxNum = getTextLine(line - 1)->getContext();
   do {
-    kdDebug()<<QString("**************Working on line: %1").arg(line)<<endl;
+//    kdDebug()<<QString("**************Working on line: %1").arg(line)<<endl;
     textLine = getTextLine(line);
     if (textLine==0) kdDebug()<<"****updateLines()>> error textLine==0"<<endl;
     if (line <= endLine && line != cursorY) {

@@ -112,7 +112,7 @@ HlCharDetect::HlCharDetect(int attribute, int context, QChar c)
   : HlItem(attribute,context), sChar(c) {
 }
 
-const QChar *HlCharDetect::checkHgl(const QChar *str,bool) {
+const QChar *HlCharDetect::checkHgl(const QChar *str, int len, bool) {
   if (*str == sChar) return str + 1;
   return 0L;
 }
@@ -123,7 +123,7 @@ Hl2CharDetect::Hl2CharDetect(int attribute, int context, QChar ch1, QChar ch2)
   sChar2 = ch2;
 }
 
-const QChar *Hl2CharDetect::checkHgl(const QChar *str,bool) {
+const QChar *Hl2CharDetect::checkHgl(const QChar *str, int len, bool) {
   if (str[0] == sChar1 && str[1] == sChar2) return str + 2;
   return 0L;
 }
@@ -135,7 +135,7 @@ HlStringDetect::HlStringDetect(int attribute, int context, const QString &s, boo
 HlStringDetect::~HlStringDetect() {
 }
 
-const QChar *HlStringDetect::checkHgl(const QChar *s,bool) {
+const QChar *HlStringDetect::checkHgl(const QChar *s, int len, bool) {
   if (!_inSensitive) {if (memcmp(s, str.unicode(), str.length()*sizeof(QChar)) == 0) return s + str.length();}
      else
        {
@@ -152,7 +152,7 @@ HlRangeDetect::HlRangeDetect(int attribute, int context, QChar ch1, QChar ch2)
   sChar2 = ch2;
 }
 
-const QChar *HlRangeDetect::checkHgl(const QChar *s,bool) {
+const QChar *HlRangeDetect::checkHgl(const QChar *s, int len, bool) {
   if (*s == sChar1) {
     do {
       s++;
@@ -231,13 +231,15 @@ void HlKeyword::addList(const char **list) {
   }
 }
 
-const QChar *HlKeyword::checkHgl(const QChar *s,bool b)
+const QChar *HlKeyword::checkHgl(const QChar *s, int len, bool b)
 {
-  return doCheckHgl(s,b,this);
+  return doCheckHgl(s, len, b,this);
   //sensitiveCheckHgl(s,b);
 }
 
-const QChar *HlKeyword::inSensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw) {
+const QChar *HlKeyword::inSensitiveCheckHgl(const QChar *s, int len, bool,HlKeyword *kw) {
+  if(len==0) return 0L;
+
   const QChar *s2=s;
   QChar *s3;
   bool ws;
@@ -246,13 +248,14 @@ const QChar *HlKeyword::inSensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw) {
 
   const QChar *wk = kw->_weakSep.unicode();
 
-  if(*s2=='\0') return 0L;
-  while( ((ws=ustrchr(wk,*s2)) || ( s2->isLetterOrNumber()) ) && *s2 != '\0')
-        {
-           if (ws) stack.push(s2);
-           s2++;
-        }
+  while( (len > 0)  && ((ws=ustrchr(wk,*s2)) || ( s2->isLetterOrNumber())) )
+  {
+    if (ws) stack.push(s2);
+    s2++;
+    len--;
+  }
   stack.push(s2);
+
 // oops didn't increment s2 why do anything else ?
   if (s2 == s) return 0L;
   while (s3=stack.pop())
@@ -264,7 +267,10 @@ const QChar *HlKeyword::inSensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw) {
 
 }
 
-const QChar *HlKeyword::sensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw) {
+const QChar *HlKeyword::sensitiveCheckHgl(const QChar *s, int len, bool,HlKeyword *kw)
+{
+  if(len==0) return 0L;
+
   const QChar *s2=s;
   QChar *s3;
   bool ws;
@@ -273,12 +279,13 @@ const QChar *HlKeyword::sensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw) {
 
   const QChar *wk = kw->_weakSep.unicode();
 
-  if(*s2=='\0') return 0L;
-  while( ((ws=ustrchr(wk,*s2)) || ( s2->isLetterOrNumber()) ) && *s2 != '\0')
-        {
-           if (ws) stack.push(s2);
-           s2++;
-        }
+  while( (len > 0)  && ((ws=ustrchr(wk,*s2)) || ( s2->isLetterOrNumber())) )
+  {
+    if (ws) stack.push(s2);
+    s2++;
+    len--;
+  }
+
   stack.push(s2);
 // oops didn't increment s2 why do anything else ?
   if (s2 == s) return 0L;
@@ -296,7 +303,7 @@ HlInt::HlInt(int attribute, int context)
   : HlItem(attribute,context) {
 }
 
-const QChar *HlInt::checkHgl(const QChar *str,bool) {
+const QChar *HlInt::checkHgl(const QChar *str, int len, bool) {
   const QChar *s,*s1;
 
   s = str;
@@ -307,7 +314,7 @@ const QChar *HlInt::checkHgl(const QChar *str,bool) {
        {
 	 for (HlItem *it=subItems->first();it;it=subItems->next())
           {
-            s1=it->checkHgl(s,false);
+            s1=it->checkHgl(s, len, false);
 	    if (s1) return s1;
           }
        }
@@ -320,7 +327,7 @@ HlFloat::HlFloat(int attribute, int context)
   : HlItem(attribute,context) {
 }
 
-const QChar *HlFloat::checkHgl(const QChar *s,bool) {
+const QChar *HlFloat::checkHgl(const QChar *s, int len, bool) {
   bool b, p;
   const QChar *s1;
 
@@ -346,7 +353,7 @@ const QChar *HlFloat::checkHgl(const QChar *s,bool) {
             {
 	      for (HlItem *it=subItems->first();it;it=subItems->next())
                 {
-                  s1=it->checkHgl(s,false);
+                  s1=it->checkHgl(s, len, false);
 	          if (s1) return s1;
                 }
             }
@@ -364,7 +371,7 @@ const QChar *HlFloat::checkHgl(const QChar *s,bool) {
         {
           for (HlItem *it=subItems->first();it;it=subItems->next())
             {
-              s1=it->checkHgl(s,false);
+              s1=it->checkHgl(s, len, false);
               if (s1) return s1;
             }
         }
@@ -378,10 +385,10 @@ HlCInt::HlCInt(int attribute, int context)
   : HlInt(attribute,context) {
 }
 
-const QChar *HlCInt::checkHgl(const QChar *s,bool lineStart) {
+const QChar *HlCInt::checkHgl(const QChar *s, int len, bool lineStart) {
 
 //  if (*s == '0') s++; else s = HlInt::checkHgl(s);
-  s = HlInt::checkHgl(s,lineStart);
+  s = HlInt::checkHgl(s, len, lineStart);
   if (s != 0L) {
     int l = 0;
     int u = 0;
@@ -408,7 +415,7 @@ HlCOct::HlCOct(int attribute, int context)
   : HlItem(attribute,context) {
 }
 
-const QChar *HlCOct::checkHgl(const QChar *str,bool) {
+const QChar *HlCOct::checkHgl(const QChar *str, int len, bool) {
   const QChar *s;
 
   if (*str == '0') {
@@ -427,7 +434,7 @@ HlCHex::HlCHex(int attribute, int context)
   : HlItem(attribute,context) {
 }
 
-const QChar *HlCHex::checkHgl(const QChar *str,bool) {
+const QChar *HlCHex::checkHgl(const QChar *str, int len, bool) {
   const QChar *s=str;
 #if 0
   int i;
@@ -457,9 +464,9 @@ HlCFloat::HlCFloat(int attribute, int context)
   : HlFloat(attribute,context) {
 }
 
-const QChar *HlCFloat::checkHgl(const QChar *s,bool lineStart) {
+const QChar *HlCFloat::checkHgl(const QChar *s, int len, bool lineStart) {
 
-  s = HlFloat::checkHgl(s,lineStart);
+  s = HlFloat::checkHgl(s, len, lineStart);
   if (s && ((*s&0xdf) == 'F' )) s++;
   return s;
 }
@@ -469,7 +476,7 @@ HlAnyChar::HlAnyChar(int attribute, int context, const QChar* charList)
   _charList=charList;
 }
 
-const QChar *HlAnyChar::checkHgl(const QChar *s,bool)
+const QChar *HlAnyChar::checkHgl(const QChar *s, int len, bool)
 {
   if (ustrchr(_charList, *s)) return s +1;
   return 0L;
@@ -483,7 +490,7 @@ HlRegExpr::HlRegExpr(int attribute, int context,QString regexp)
     Expr=new QRegExp3(regexp);
 }
 
-const QChar *HlRegExpr::checkHgl(const QChar *s,bool lineStart)
+const QChar *HlRegExpr::checkHgl(const QChar *s, int len, bool lineStart)
 {
   if ((!lineStart) && handlesLinestart) return 0;
   //kdDebug(13010)<<"Trying to match:"<<Expr->pattern()<<endl;
@@ -502,7 +509,7 @@ HlLineContinue::HlLineContinue(int attribute, int context)
   : HlItem(attribute,context) {
 }
 
-const QChar *HlLineContinue::checkHgl(const QChar *s,bool) {
+const QChar *HlLineContinue::checkHgl(const QChar *s, int len, bool) {
   
  // kdDebug()<<"Interesting:"<<QString("%1").arg(s[1])<<endl;
 //  qDebug(">>>>%d %d %c<<<<<",s[0].latin1(),s[1].latin1(),s[0].latin1());
@@ -592,7 +599,7 @@ const QChar *checkEscapedChar(const QChar *s) {
   return 0L;
 }
 
-const QChar *HlCStringChar::checkHgl(const QChar *str,bool) {
+const QChar *HlCStringChar::checkHgl(const QChar *str, int len, bool) {
   return checkEscapedChar(str);
 }
 
@@ -601,7 +608,7 @@ HlCChar::HlCChar(int attribute, int context)
   : HlItem(attribute,context) {
 }
 
-const QChar *HlCChar::checkHgl(const QChar *str,bool) {
+const QChar *HlCChar::checkHgl(const QChar *str, int len, bool) {
   const QChar *s;
 
   if (str[0] == '\'' && str[1] != '\0' && str[1] != '\'') {
@@ -684,31 +691,30 @@ int Highlight::doHighlight(int ctxNum, TextLine *textLine)
   }
 
   HlContext *context;
-  const QChar *str, *s1, *s2;
-  QChar lastChar;
+  const QChar *s2;
   HlItem *item;
 
   context = contextList[ctxNum];
   if (context->lineBeginContext!=-1)
-	{
-		ctxNum=context->lineBeginContext;
-		context=contextList[ctxNum];
-		kdDebug()<<"lineBeginContext found"<<endl;
-	}
-  kdDebug()<<ctxNum<<endl;
-  str = textLine->getText();
+  {
+    ctxNum=context->lineBeginContext;
+    context=contextList[ctxNum];
+  }
 
-  lastChar = '\0';
+  QChar lastChar = '\0';
 
-  // this causes the while loop to skip any spaces at beginning of line
-  // while still allowing the highlighting to continue
-  // On limited tests I got a 5-10% reduction in number of times in while loop
-  // Anything helps :)
-  s1=textLine->firstNonSpace();
+  // first char
+  const QChar *str = textLine->getText();
 
-  uint z = 0;
+  // non space char - index of that char
+  const QChar *s1 = textLine->firstNonSpace();
+  uint z = textLine->firstChar();
+
+  // length of textline
+  uint len = textLine->length();
+
   bool found = false;
-  while (z < textLine->length())
+  while (z < len)
   {
     found = false;
 
@@ -716,13 +722,14 @@ int Highlight::doHighlight(int ctxNum, TextLine *textLine)
     {
       if (item->startEnable(lastChar))
       {
-        s2 = item->checkHgl(s1,s1==str);
+        s2 = item->checkHgl(s1, len-z, z==0);
         if (s2 > s1)
         {
             textLine->setAttribs(item->attr,s1 - str,s2 - str);
             ctxNum = item->ctx;
             context = contextList[ctxNum];
             s1 = s2 - 1;
+            z = z + s2 - s1 - 1;
             found = true;
             break;
         }
@@ -740,6 +747,7 @@ int Highlight::doHighlight(int ctxNum, TextLine *textLine)
 
   //set "end of line"-properties
   textLine->setAttr(context->attr);
+
   //return new context
   return context->ctx;
 }
@@ -970,7 +978,7 @@ HlItem *Highlight::createHlItem(syntaxContextData *data, int *res)
 	  if(dataname=="HlCStringChar") return (new HlCStringChar(attr,context)); else
 
                   {
-//                    kdDebug(13010)<< k_lineinfo "****************** "<<endl<<"Unknown entry for Context:"<<dataname<<endl;
+//                  //  kdDebug(13010)<< k_lineinfo "****************** "<<endl<<"Unknown entry for Context:"<<dataname<<endl;
                     return 0;
                   }
 
@@ -991,7 +999,7 @@ void Highlight::makeContextList()
   syntaxContextData *data, *datasub;
   HlItem *c;
 
-  kdDebug(13010)<< "AutoHighlight makeContextList()"<<endl;
+//  kdDebug(13010)<< "AutoHighlight makeContextList()"<<endl;
   HlManager::self()->syntax->setIdentifier(identifier);
 
   cslStart = "";
@@ -999,10 +1007,10 @@ void Highlight::makeContextList()
   data=HlManager::self()->syntax->getGroupInfo("general","comment");
   if (data)
     {
-      kdDebug()<<"COMMENT DATA FOUND"<<endl;
+//      kdDebug()<<"COMMENT DATA FOUND"<<endl;
     while  (HlManager::self()->syntax->nextGroup(data))
       {
-        kdDebug()<<HlManager::self()->syntax->groupData(data,"name")<<endl;
+    //    kdDebug()<<HlManager::self()->syntax->groupData(data,"name")<<endl;
         if (HlManager::self()->syntax->groupData(data,"name")=="singleLine")
 		cslStart=HlManager::self()->syntax->groupData(data,"start");
 	if (HlManager::self()->syntax->groupData(data,"name")=="multiLine")

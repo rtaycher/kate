@@ -47,7 +47,7 @@ class HlItem {
     HlItem(int attribute, int context);
     virtual ~HlItem();
     virtual bool startEnable(QChar);
-    virtual const QChar *checkHgl(const QChar *,bool) = 0;
+    virtual const QChar *checkHgl(const QChar *, int len, bool) = 0;
     QList<HlItem> *subItems;
     int attr;
     int ctx;
@@ -56,7 +56,7 @@ class HlItem {
 class HlCharDetect : public HlItem {
   public:
     HlCharDetect(int attribute, int context, QChar);
-    virtual const QChar *checkHgl(const QChar *,bool);
+    virtual const QChar *checkHgl(const QChar *, int len, bool);
   protected:
     QChar sChar;
 };
@@ -66,7 +66,7 @@ class Hl2CharDetect : public HlItem {
     Hl2CharDetect(int attribute, int context,  QChar ch1, QChar ch2);
    	Hl2CharDetect(int attribute, int context, const QChar *ch);
 
-    virtual const QChar *checkHgl(const QChar *,bool);
+    virtual const QChar *checkHgl(const QChar *, int len, bool);
   protected:
     QChar sChar1;
     QChar sChar2;
@@ -76,7 +76,7 @@ class HlStringDetect : public HlItem {
   public:
     HlStringDetect(int attribute, int context, const QString &, bool inSensitive=false);
     virtual ~HlStringDetect();
-    virtual const QChar *checkHgl(const QChar *,bool);
+    virtual const QChar *checkHgl(const QChar *, int len, bool);
   protected:
     const QString str;
     bool _inSensitive;
@@ -85,7 +85,7 @@ class HlStringDetect : public HlItem {
 class HlRangeDetect : public HlItem {
   public:
     HlRangeDetect(int attribute, int context, QChar ch1, QChar ch2);
-    virtual const QChar *checkHgl(const QChar *,bool);
+    virtual const QChar *checkHgl(const QChar *, int len, bool);
   protected:
     QChar sChar1;
     QChar sChar2;
@@ -99,7 +99,7 @@ class HlKeyword : public HlItem {
 		virtual void addList(const QStringList &);
 // needed for kdevelop (if they decide to use this code)
     virtual void addList(const char **);
-    virtual const QChar *checkHgl(const QChar *,bool);
+    virtual const QChar *checkHgl(const QChar *, int len, bool);
 		QStringList getList() { return words;};
 		QDict<char> getDict() { return Dict;};
 
@@ -108,76 +108,76 @@ class HlKeyword : public HlItem {
     QDict<char> Dict;
     bool _caseSensitive;
     QString _weakSep;
-    const QChar*  (*doCheckHgl)(const QChar* ,bool,HlKeyword*);
+    const QChar*  (*doCheckHgl)(const QChar* , int, bool,HlKeyword*);
     virtual bool startEnable(QChar c);
-    static const QChar* sensitiveCheckHgl(const QChar*,bool,HlKeyword *kw);
-    static const QChar *inSensitiveCheckHgl(const QChar *s,bool,HlKeyword *kw);
+    static const QChar* sensitiveCheckHgl(const QChar*, int len, bool,HlKeyword *kw);
+    static const QChar *inSensitiveCheckHgl(const QChar *s, int len, bool,HlKeyword *kw);
 };
 
 class HlPHex : public HlItem {
   public:
     HlPHex(int attribute,int context);
-    virtual const QChar *checkHgl(const QChar *,bool);
+    virtual const QChar *checkHgl(const QChar *, int len, bool);
 };
 class HlInt : public HlItem {
   public:
     HlInt(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *,bool);
+    virtual const QChar *checkHgl(const QChar *, int len, bool);
 };
 
 class HlFloat : public HlItem {
   public:
     HlFloat(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *,bool);
+    virtual const QChar *checkHgl(const QChar *, int len, bool);
 };
 
 class HlCInt : public HlInt {
   public:
     HlCInt(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *,bool);
+    virtual const QChar *checkHgl(const QChar *, int len, bool);
 };
 
 class HlCOct : public HlItem {
   public:
     HlCOct(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *,bool);
+    virtual const QChar *checkHgl(const QChar *, int len, bool);
 };
 
 class HlCHex : public HlItem {
   public:
     HlCHex(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *,bool);
+    virtual const QChar *checkHgl(const QChar *, int len, bool);
 };
 
 class HlCFloat : public HlFloat {
   public:
     HlCFloat(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *,bool);
+    virtual const QChar *checkHgl(const QChar *, int len, bool);
 };
 
 class HlLineContinue : public HlItem {
   public:
     HlLineContinue(int attribute, int context);
     virtual bool endEnable(QChar c) {return c == '\0';}
-    virtual const QChar *checkHgl(const QChar *,bool);
+    virtual const QChar *checkHgl(const QChar *, int len, bool);
 };
 
 class HlCStringChar : public HlItem {
   public:
     HlCStringChar(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *,bool);
+    virtual const QChar *checkHgl(const QChar *, int len, bool);
 };
 
 class HlCChar : public HlItem {
   public:
     HlCChar(int attribute, int context);
-    virtual const QChar *checkHgl(const QChar *,bool);
+    virtual const QChar *checkHgl(const QChar *, int len, bool);
 };
 
 class HlAnyChar : public HlItem {
   public:
     HlAnyChar(int attribute, int context, const QChar* charList);
-    virtual const QChar *checkHgl(const QChar *,bool);
+    virtual const QChar *checkHgl(const QChar *, int len, bool);
     const QChar* _charList;
 };
 
@@ -185,7 +185,7 @@ class HlRegExpr : public HlItem {
   public:
   HlRegExpr(int attribute, int context,QString expr);
   ~HlRegExpr(){delete Expr;};
-  virtual const QChar *checkHgl(const QChar *,bool);
+  virtual const QChar *checkHgl(const QChar *, int len, bool);
   QRegExp3 *Expr;
   bool handlesLinestart;
 };
