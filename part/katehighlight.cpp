@@ -50,7 +50,7 @@ enum Item_styles { dsNormal,dsKeyword,dsDataType,dsDecVal,dsBaseN,dsFloat,dsChar
 static bool trueBool = true;
 static QString stdDeliminator = QString ("!%&()*+,-./:;<=>?[]^{|}~ \t\\");
 
-static QChar *stdDeliminatorChars = stdDeliminator.unicode();
+static const QChar *stdDeliminatorChars = stdDeliminator.unicode();
 static int stdDeliminatorLen=stdDeliminator.length();
 
 int getDefStyleNum(QString name)
