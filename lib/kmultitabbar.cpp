@@ -136,12 +136,12 @@ int KMultiTabBarInternal::appendTab(QPixmap pic ,int id,const QString& text)
 	if (m_showActiveTabTexts)
 	{
 		int size=0;
-		for (int i=0;i<m_tabs.count();i++)
+		for (uint i=0;i<m_tabs.count();i++)
 		{
 			int tmp=m_tabs.at(i)->neededSize();
 			size=(size<tmp)?tmp:size;
 		}
-		for (int i=0;i<m_tabs.count();i++) m_tabs.at(i)->setSize(size);
+		for (uint i=0;i<m_tabs.count();i++) m_tabs.at(i)->setSize(size);
 	}
 	tab->show();
 	return 0;
