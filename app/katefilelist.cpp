@@ -18,6 +18,7 @@
    Boston, MA 02111-1307, USA.
 */
 
+//BEGIN Includes
 #include "katefilelist.h"
 #include "katefilelist.moc"
 
@@ -28,28 +29,67 @@
 #include <qapplication.h>
 #include <qpainter.h>
 #include <qpopupmenu.h>
+#include <qheader.h>
 
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kglobalsettings.h>
 #include <kpassivepopup.h>
-// #include <knotifyclient.h>
 #include <kdebug.h>
 #include <kapplication.h>
+#include <kstringhandler.h>
+//END Includes
 
+//BEGIN ToolTip
+class ToolTip : public QToolTip
+{
+  public:
+    ToolTip( QWidget *parent, KateFileList *lv )
+      : QToolTip( parent ),
+    m_listView( lv )
+    {
+    }
+    virtual ~ToolTip() {};
+
+    void maybeTip( const QPoint &pos )
+    {
+      QListViewItem *i = m_listView->itemAt( pos );
+      if ( ! i ) return;
+
+      KateFileListItem *item = ((KateFileListItem*)i);
+      if ( ! item ) return;
+
+      tip( m_listView->itemRect( i ), m_listView->tooltip( item, 0 ) );
+
+    }
+
+  private:
+    KateFileList *m_listView;
+};
+
+//END ToolTip
+
+//BEGIN KateFileList
 KateFileList::KateFileList (KateMainWindow *main,
                             KateViewManager *_viewManager,
                             QWidget * parent, const char * name )
-    :  KListBox (parent, name)
+    :  KListView (parent, name)
     , m_sort( KateFileList::sortByID )
 {
   m_main = main;
-  
-  setFocusPolicy ((QWidget::FocusPolicy)0);
+  m_tooltip = new ToolTip( viewport(), this );
+
+  setFocusPolicy ( QWidget::NoFocus  );
 
   viewManager = _viewManager;
-  tooltip = new KFLToolTip( this );
-  
+
+  header()->hide();
+  addColumn("Document Name");
+
+  setSelectionMode( QListView::Single );
+  setSorting( 0, true );
+  setShowToolTips( false );
+
   setupActions ();
 
   for (uint i = 0; i < KateDocManager::self()->documents(); i++)
@@ -58,26 +98,35 @@ KateFileList::KateFileList (KateMainWindow *main,
     slotModChanged (KateDocManager::self()->document(i));
   }
 
-  connect(KateDocManager::self(),SIGNAL(documentCreated(Kate::Document *)),this,SLOT(slotDocumentCreated(Kate::Document *)));
-  connect(KateDocManager::self(),SIGNAL(documentDeleted(uint)),this,SLOT(slotDocumentDeleted(uint)));
+  connect(KateDocManager::self(),SIGNAL(documentCreated(Kate::Document *)),
+	  this,SLOT(slotDocumentCreated(Kate::Document *)));
+  connect(KateDocManager::self(),SIGNAL(documentDeleted(uint)),
+	  this,SLOT(slotDocumentDeleted(uint)));
 
-  // don't Honour KDE single/double click setting, this files are already open, no need for hassle of considering double-click
-  connect(this,SIGNAL(highlighted(QListBoxItem *)),this,SLOT(slotActivateView(QListBoxItem *)));
-
+  // don't Honour KDE single/double click setting, this files are already open,
+  // no need for hassle of considering double-click
+  connect(this,SIGNAL(selectionChanged(QListViewItem *)),
+	  this,SLOT(slotActivateView(QListViewItem *)));
   connect(viewManager,SIGNAL(viewChanged()), this,SLOT(slotViewChanged()));
-
-  connect(this,SIGNAL(contextMenuRequested ( QListBoxItem *, const QPoint & )), this,SLOT(slotMenu ( QListBoxItem *, const QPoint & )));
+  connect(this,SIGNAL(contextMenuRequested( QListViewItem *, const QPoint &, int )),
+	  this,SLOT(slotMenu ( QListViewItem *, const QPoint &, int )));
 }
 
 KateFileList::~KateFileList ()
 {
-  delete tooltip;
+  delete m_tooltip;
 }
 
 void KateFileList::setupActions ()
 {
   windowNext = KStdAction::back(this, SLOT(slotPrevDocument()), m_main->actionCollection());
   windowPrev = KStdAction::forward(this, SLOT(slotNextDocument()), m_main->actionCollection());
+  KSelectAction *a = new KSelectAction( i18n("Sort &by"), 0,
+      m_main->actionCollection(), "filelist_sortby"  );
+  QStringList l;
+  l << i18n("Opening Order") << i18n("Document Name") << i18n("URL");
+  a->setItems( l );
+  connect( a, SIGNAL(activated(int)), this, SLOT(setSortType(int)) );
 }
 
 void KateFileList::updateActions ()
@@ -90,70 +139,97 @@ void KateFileList::keyPressEvent(QKeyEvent *e) {
   if ( ( e->key() == Key_Return ) || ( e->key() == Key_Enter ) )
   {
     e->accept();
-    slotActivateView(item(currentItem()));
+    slotActivateView( currentItem() );
   }
   else
   {
-    KListBox::keyPressEvent(e);
+    KListView::keyPressEvent(e);
   }
+}
+
+// Protect single mode selection: don't let them
+// leftclick outside items.
+// ### if we get to accept keyboard navigation, set focus before
+// returning
+void KateFileList::contentsMousePressEvent( QMouseEvent *e )
+{
+  if ( (e->button() == LeftButton) && ! itemAt(  e->pos() ) )
+    return;
+
+  KListView::contentsMousePressEvent( e );
+}
+
+void KateFileList::resizeEvent( QResizeEvent *e )
+{
+  KListView::resizeEvent( e );
+
+  // ### We may want to actually calculate the widest field,
+  // since it's not automatically scrinked. If I add support for
+  // tree or marks, the changes of the required width will vary
+  // a lot with opening/closing of files and display changes for
+  // the mark branches.
+  int w = viewport()->width();
+  if ( columnWidth( 0 ) < w )
+    setColumnWidth( 0, w );
 }
 
 void KateFileList::slotNextDocument()
 {
-  int c = currentItem ();
-
-  if ((c == -1) || (count() == 0))
+  if ( ! currentItem() || childCount() == 0 )
     return;
 
-  if (uint(c+1) < count())
-    viewManager->activateView( ((KateFileListItem *)item(c+1))->documentNumber() );
+  // ### more checking once more item types are added
+
+  if ( currentItem()->nextSibling() )
+    viewManager->activateView( ((KateFileListItem*)currentItem()->nextSibling())->documentNumber() );
   else
-    viewManager->activateView( ((KateFileListItem *)item(0))->documentNumber() );
+    viewManager->activateView( ((KateFileListItem *)firstChild())->documentNumber() );
 }
 
 void KateFileList::slotPrevDocument()
 {
-  int c = currentItem ();
-
-  if ((c == -1) || (count() == 0))
+  if ( ! currentItem() || childCount() == 0 )
     return;
 
-  if ((c-1) >= 0)
-    viewManager->activateView( ((KateFileListItem *)item(c-1))->documentNumber() );
-  else
-    viewManager->activateView( ((KateFileListItem *)item(count()-1))->documentNumber() );
+  // ### more checking once more item types are added
 
+  if ( currentItem()->itemAbove() )
+    viewManager->activateView( ((KateFileListItem*)currentItem()->itemAbove())->documentNumber() );
+  else
+    viewManager->activateView( ((KateFileListItem *)lastItem())->documentNumber() );
 }
 
 void KateFileList::slotDocumentCreated (Kate::Document *doc)
 {
-  insertItem (new KateFileListItem (doc, doc->documentNumber(), doc->docName()) );
+  new KateFileListItem( this, doc/*, doc->documentNumber()*/ );
   connect(doc,SIGNAL(modStateChanged(Kate::Document *)),this,SLOT(slotModChanged(Kate::Document *)));
   connect(doc,SIGNAL(nameChanged(Kate::Document *)),this,SLOT(slotNameChanged(Kate::Document *)));
   connect(doc,SIGNAL(modifiedOnDisc(Kate::Document *, bool, unsigned char)),this,SLOT(slotModifiedOnDisc(Kate::Document *, bool, unsigned char)));
 
-  updateSort ();
+  sort();
   updateActions ();
 }
 
 void KateFileList::slotDocumentDeleted (uint documentNumber)
 {
-  for (uint i = 0; i < count(); i++)
-  {
-    if (((KateFileListItem *) item (i)) ->documentNumber() == documentNumber)
+  QListViewItem * item = firstChild();
+  while( item ) {
+    if ( ((KateFileListItem *)item)->documentNumber() == documentNumber )
     {
-      if (count() > 1)
-        removeItem( i );
-      else
-        clear();
+      delete item;
+      break;
     }
+    item = item->nextSibling();
   }
-  
+
   updateActions ();
 }
 
-void KateFileList::slotActivateView( QListBoxItem *item )
+void KateFileList::slotActivateView( QListViewItem *item )
 {
+  if ( ! item || item->rtti() != RTTI_KateFileListItem )
+    return;
+
   viewManager->activateView( ((KateFileListItem *)item)->documentNumber() );
 }
 
@@ -161,26 +237,20 @@ void KateFileList::slotModChanged (Kate::Document *doc)
 {
   if (!doc) return;
 
-  for (uint i = 0; i < count(); i++)
-  {
-    if (((KateFileListItem *) item (i)) ->documentNumber() == doc->documentNumber())
+  QListViewItem * item = firstChild();
+  while( item ) {
+    if ( ((KateFileListItem *)item)->documentNumber() == doc->documentNumber() )
     {
-      triggerUpdate(false);
+      repaintItem( item );
       break;
     }
+    item = item->nextSibling();
   }
 }
 
 void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool, unsigned char r)
 {
-  for (uint i = 0; i < count(); i++)
-  {
-    if (((KateFileListItem *) item (i)) ->documentNumber() == doc->documentNumber())
-    {
-      triggerUpdate(false);
-      break;
-    }
-  }
+  slotModChanged( doc );
 
   if ( r != 0 )
   {
@@ -193,10 +263,6 @@ void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool, unsigned char 
     else if ( r == 3 )
       a = i18n("The document<br><code>%1</code><br>was deleted from disk by another process");
 
-//     KNotifyClient::instance();
-//     int n = KNotifyClient::event( "file_modified_on_disc",
-//           i18n("The document<br><code>%1</code><br>%2").arg( doc->url().prettyURL() ).arg( a ) );
-//     kdDebug(13001)<<"The BASTARD returned "<<n<<endl;
     if ( ((KateMainWindow*)topLevelWidget())->notifyMod() )
       KPassivePopup::message( i18n("Warning"),
                               a.arg( doc->url().prettyURL() ),
@@ -208,23 +274,19 @@ void KateFileList::slotNameChanged (Kate::Document *doc)
 {
   if (!doc) return;
 
-  for (uint i = 0; i < count(); i++)
-  {
-    if (((KateFileListItem *) item (i)) ->documentNumber() == doc->documentNumber())
+  // ### using nextSibling to *only* look at toplevel items.
+  // child items could be marks for example
+  QListViewItem * item = firstChild();
+  while( item ) {
+    if ( ((KateFileListItem *)item)->documentNumber() == doc->documentNumber() )
     {
-      //File name shouldn't be too long - Maciek
-     QString c = doc -> docName();
-     if (c.length() > 200)
-       c = "..." + c.right(197);
-
-     ((KateFileListItem *)item(i))->setText(c);
-
-      triggerUpdate(false);
+      item->setText( 0, doc->docName() );
+      repaintItem( item );
       break;
     }
+    item = item->nextSibling();
   }
-
-  updateSort ();
+  updateSort();
 }
 
 void KateFileList::slotViewChanged ()
@@ -232,20 +294,21 @@ void KateFileList::slotViewChanged ()
   if (!viewManager->activeView()) return;
 
   Kate::View *view = viewManager->activeView();
+  uint dn = view->getDoc()->documentNumber();
 
-  for (uint i = 0; i < count(); i++)
-  {
-    if (((KateFileListItem *) item (i)) ->documentNumber() == ((Kate::Document *)view->getDoc())->documentNumber())
+  QListViewItem * item = firstChild();
+  while( item ) {
+    if ( ((KateFileListItem *)item)->documentNumber() == dn )
     {
-      setCurrentItem (i);
-      if ( !isSelected( item(i) ) )
-        setSelected( i, true );
+      setCurrentItem( item );
+      item->setSelected( true );
       break;
     }
+    item = item->nextSibling();
   }
 }
 
-void KateFileList::slotMenu ( QListBoxItem *item, const QPoint &p )
+void KateFileList::slotMenu ( QListViewItem *item, const QPoint &p, int /*col*/ )
 {
   if (!item)
     return;
@@ -256,21 +319,13 @@ void KateFileList::slotMenu ( QListBoxItem *item, const QPoint &p )
     menu->exec(p);
 }
 
-void KateFileList::tip( const QPoint &p, QRect &r, QString &str )
+QString KateFileList::tooltip( QListViewItem *item, int )
 {
-  KateFileListItem *i = (KateFileListItem*)itemAt( p );
-  r = itemRect( i );
-  str = "";
+  KateFileListItem *i = ((KateFileListItem*)item);
+  if ( ! i ) return QString::null;
 
-  if ( !i || !r.isValid() )
-    return;
-
-  Kate::Document *doc = KateDocManager::self()->documentWithID(i->documentNumber());
-
-  if (!doc)
-    return;
-
-  const KateDocumentInfo *info = KateDocManager::self()->documentInfo(doc);
+  QString str;
+  const KateDocumentInfo *info = KateDocManager::self()->documentInfo(i->document());
 
   if (info && info->modifiedOnDisc)
   {
@@ -282,97 +337,10 @@ void KateFileList::tip( const QPoint &p, QRect &r, QString &str )
       str += i18n("<b>This file was changed (deleted) on disc by another program.</b><br />");
   }
 
-  str += doc->url().prettyURL();
+  str += i->document()->url().prettyURL();
+  return str;
 }
 
-KateFileListItem::KateFileListItem( Kate::Document *doc, uint documentNumber, const QString& text): QListBoxItem()
-{
-  this->doc = doc;
-  myDocID = documentNumber;
-  setText( text );
-}
-
-KateFileListItem::~KateFileListItem()
-{
-}
-
-uint KateFileListItem::documentNumber ()
-{
-  return myDocID;
-}
-
-void KateFileListItem::setText(const QString &text)
-{
-  QListBoxItem::setText(text);
-}
-
-int KateFileListItem::height( const QListBox* lb ) const
-{
-  int h;
-
-  if ( text().isEmpty() )
-    h = 16;
-  else
-    h = QMAX( 16, lb->fontMetrics().lineSpacing() + 1 );
-
-  return QMAX( h, QApplication::globalStrut().height() );
-}
-
-int KateFileListItem::width( const QListBox* lb ) const
-{
-  if ( text().isEmpty() )
-    return QMAX( 16 + 6, QApplication::globalStrut().width() );
-
-  return QMAX( 16 + lb->fontMetrics().width( text() ) + 6, QApplication::globalStrut().width() );
-}
-
-void KateFileListItem::paint( QPainter *painter )
-{
-  static QPixmap noPm = SmallIcon ("null");
-  static QPixmap modPm = SmallIcon("modified");
-  static QPixmap discPm = SmallIcon("modonhd");
-  static QPixmap modmodPm = SmallIcon("modmod");
-
-  const KateDocumentInfo *info = KateDocManager::self()->documentInfo (doc);
-
-  if (info && info->modifiedOnDisc)
-    painter->drawPixmap( 3, 0, doc->isModified() ? modmodPm : discPm );
-  else
-    painter->drawPixmap( 3, 0, doc->isModified() ? modPm : noPm );
-
-  if ( !text().isEmpty() )
-  {
-    QFontMetrics fm = painter->fontMetrics();
-
-    int yPos;                       // vertical text position
-
-     if ( 16 < fm.height() )
-      yPos = fm.ascent() + fm.leading()/2;
-    else
-      yPos = 16/2 - fm.height()/2 + fm.ascent();
-
-    painter->drawText( 16 + 4, yPos, text() );
-  }
-}
-
-/////////////////////////////////////////////////////////////////////
-// KateFileList::KFLToolTip implementation
-
-KateFileList::KFLToolTip::KFLToolTip( QWidget *parent )
-  : QToolTip( parent )
-{
-}
-
-void KateFileList::KFLToolTip::maybeTip( const QPoint &p )
-{
-  QString str;
-  QRect r;
-
-  ((KateFileList*)parentWidget())->tip( p, r, str );
-
-  if( !str.isEmpty() && r.isValid() )
-    tip( r, str );
-}
 
 void KateFileList::setSortType (int s)
 {
@@ -382,6 +350,107 @@ void KateFileList::setSortType (int s)
 
 void KateFileList::updateSort ()
 {
-  if (m_sort == KateFileList::sortByName)
-    sort ();
+  sort ();
 }
+
+//END KateFileList
+
+//BEGIN KateFileListItem
+KateFileListItem::KateFileListItem( QListView* lv,
+				    Kate::Document *_doc )
+  : QListViewItem( lv, _doc->docName() ),
+    doc( _doc )
+{
+}
+
+KateFileListItem::~KateFileListItem()
+{
+}
+
+int KateFileListItem::height() const
+{
+  int h;
+
+  if ( text( 0 ).isEmpty() )
+    h = 16;
+  else
+    h = QMAX( 16, listView()->fontMetrics().lineSpacing() + 1 );
+
+  return QMAX( h, QApplication::globalStrut().height() );
+}
+
+int KateFileListItem::width( const QFontMetrics &fm, const QListView* /*lv*/, int column ) const
+{
+  if ( text( 0 ).isEmpty() )
+    return QMAX( 16 + 6, QApplication::globalStrut().width() );
+
+  return QMAX( 16 + fm.width( text(column) ) + 6, QApplication::globalStrut().width() );
+}
+
+void KateFileListItem::paintCell( QPainter *painter, const QColorGroup & cg, int column, int width, int align )
+{
+  switch ( column ) {
+    case 0:
+    {
+      static QPixmap noPm = SmallIcon ("null");
+      static QPixmap modPm = SmallIcon("modified");
+      static QPixmap discPm = SmallIcon("modonhd");
+      static QPixmap modmodPm = SmallIcon("modmod");
+
+      const KateDocumentInfo *info = KateDocManager::self()->documentInfo (doc);
+
+      painter->fillRect( 0, 0, width, height(), isSelected() ? cg.highlight() : cg.base()  );
+
+      if (info && info->modifiedOnDisc)
+	painter->drawPixmap( 3, 0, doc->isModified() ? modmodPm : discPm );
+      else
+	painter->drawPixmap( 3, 0, doc->isModified() ? modPm : noPm );
+
+      if ( !text( 0 ).isEmpty() )
+      {
+	QFontMetrics fm = painter->fontMetrics();
+	painter->setPen( isSelected() ? cg.highlightedText() : cg.text() );
+
+	int yPos;                       // vertical text position
+
+	if ( 16 < fm.height() )
+	  yPos = fm.ascent() + fm.leading()/2;
+	else
+	  yPos = 16/2 - fm.height()/2 + fm.ascent();
+
+	painter->drawText( 16 + 4, yPos,
+			   KStringHandler::rPixelSqueeze( text(0), painter->fontMetrics(), width - 20 ) );
+      }
+      break;
+    }
+    default:
+      QListViewItem::paintCell( painter, cg, column, width, align );
+  }
+}
+
+int KateFileListItem::compare ( QListViewItem * i, int col, bool ascending ) const
+{
+  if ( i->rtti() == RTTI_KateFileListItem )
+  {
+    switch( ((KateFileList*)listView())->sortType() )
+    {
+      case KateFileList::sortByID:
+      {
+
+        int d = (int)doc->documentNumber() - ((KateFileListItem*)i)->documentNumber();
+        return ascending ? d : -d;
+        break;
+      }
+      case KateFileList::sortByURL:
+        return doc->url().prettyURL().compare( ((KateFileListItem*)i)->document()->url().prettyURL() );
+        break;
+      default:
+        return QListViewItem::compare( i, col, ascending );
+    }
+  }
+  return 0;
+}
+//END KateFileListItem
+
+
+// kate: space-indent on; indent-width 2; replace-tabs on;

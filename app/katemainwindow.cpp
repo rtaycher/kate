@@ -463,15 +463,17 @@ void KateMainWindow::documentMenuAboutToShow()
 {
   documentMenu->clear ();
 
-  for (uint z=0; z < filelist->count(); z++)
-  {
-    documentMenu->insertItem (filelist->item(z)->text(),
-                              m_viewManager, SLOT (activateView (int)), 0,
-                              ((KateFileListItem *)filelist->item (z))->documentNumber ());
+  QListViewItem * item = filelist->firstChild();
+  while( item ) {
+    documentMenu->insertItem (
+	  KStringHandler::rsqueeze( ((KateFileListItem *)item)->document()->docName(), 150 ), // would it be saner to use the screen width as a limit that some random number??
+          m_viewManager, SLOT (activateView (int)), 0,
+	  ((KateFileListItem *)item)->documentNumber () );
 
-    if (m_viewManager->activeView())
-      documentMenu->setItemChecked ( m_viewManager->activeView()->getDoc()->documentNumber(), true);
+    item = item->nextSibling();
   }
+  if (m_viewManager->activeView())
+    documentMenu->setItemChecked ( m_viewManager->activeView()->getDoc()->documentNumber(), true);
 }
 
 void KateMainWindow::slotGrepToolItemSelected(const QString &filename,int linenumber)
