@@ -9,6 +9,8 @@
 #include <kdebug.h>
 #include <qdom.h>
 #include <kio/netaccess.h>
+#include <kglobal.h>
+#include <kstandarddirs.h>
 
 HlDownloadDialog::HlDownloadDialog(QWidget *parent, const char *name, bool modal)
   :KDialogBase(KDialogBase::Swallow, i18n("Highlight Download"), User1|Cancel, User1, parent, name, modal,false,i18n("Install"))
@@ -56,13 +58,16 @@ void HlDownloadDialog::listDataReceived(KIO::Job *, const QByteArray &data)
 
 void HlDownloadDialog::slotUser1()
 {
+	QString destdir=KGlobal::dirs()->saveLocation("data","kate/syntax/");
 	for (QListViewItem *it=list->firstChild();it;it=it->nextSibling())
 	{
 		if (list->isSelected(it))
 		{
 			KURL src(it->text(3));
 			QString filename=src.filename(false);
-			QString dest = QString("/tmp/jwtmp/")+filename;
+			QString dest = destdir+filename;
+	
+
 			KIO::NetAccess::download(src,dest);
 		}
 	}
