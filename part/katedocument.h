@@ -106,7 +106,7 @@ class KateUndo
       insertText,
 			removeText,
 			insertLine,
-			removeLine   
+			removeLine
 		};
 
   private:
@@ -610,6 +610,10 @@ class KateDocument : public Kate::Document
      sfWrapped=256,
      sfFinished=512,
      sfRegularExpression=1024};
+
+	private:
+	  QPtrList<KateUndoGroup> undoItems;
+		QPtrList<KateUndoGroup> redoItems;
 };
 
 #endif
