@@ -812,7 +812,7 @@ void KateViewManager::saveAllDocsAtCloseDown(  )
 
   scfg->setGroup("open files");
   scfg->writeEntry("count",m_docManager->documents());
-  scfg->writeEntry("current file", activeView()->getDoc()->url().prettyURL());
+  scfg->writePathEntry("current file", activeView()->getDoc()->url().prettyURL());
   m_docManager->saveDocumentList(scfg);
 
   scfg->sync();
@@ -839,7 +839,7 @@ void KateViewManager::reopenDocuments(bool isRestore)
   {
     scfg->setGroup("open files");
     // try to focus the file that had focus at close down
-    QString curfile = scfg->readEntry("current file");
+    QString curfile = scfg->readPathEntry("current file");
 
     if (curfile.isEmpty()) {
         delete scfg;
@@ -868,7 +868,7 @@ void KateViewManager::reopenDocuments(bool isRestore)
     // so that the password dialog only appears ones for every remote source
     while (scfg->hasKey(QString("File%1").arg(i)))
     {
-      fn = scfg->readEntry( QString("File%1").arg( i ) );
+      fn = scfg->readPathEntry( QString("File%1").arg( i ) );
       if ( !fn.isEmpty() && !KURL( fn ).isLocalFile() )
           KIO::NetAccess::exists(KURL( fn ), true, this);
       i++;
@@ -876,7 +876,7 @@ void KateViewManager::reopenDocuments(bool isRestore)
     i = 0;
     while (scfg->hasKey(QString("File%1").arg(i)))
     {
-      fn = scfg->readEntry( QString("File%1").arg( i ) );
+      fn = scfg->readPathEntry( QString("File%1").arg( i ) );
       if ( !fn.isEmpty() ) {
         kdDebug(13001)<<"reopenDocuments(): opening file : "<<fn<<endl;
         scfg->setGroup( fn );
@@ -1042,7 +1042,7 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, const QString &gro
        config->setGroup( (*it) );  // "viewspace<n>"
        while ( config->hasKey( file ) ) {     // FIXME FIXME
          Kate::View* v;
-         KURL url( config->readEntry( file ) );
+         KURL url( config->readPathEntry( file ) );
          if ( ! m_docManager->isOpen( url ) ) {
            openURL( url );
            v = activeView();

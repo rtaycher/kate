@@ -280,7 +280,7 @@ void KateDocManager::saveDocumentList(KConfig* cfg)
   
   for ( Kate::Document *doc = m_docList.first(); doc; doc = m_docList.next() )
   {
-    cfg->writeEntry( QString("File%1").arg(i), doc->url().prettyURL() );
+    cfg->writePathEntry( QString("File%1").arg(i), doc->url().prettyURL() );
     cfg->setGroup(doc->url().prettyURL() );
     doc->writeSessionConfig(cfg);
     cfg->setGroup(grp);

@@ -233,10 +233,10 @@ void KateFileSelector::readConfig(KConfig *config, const QString & name)
   setupToolbar( config );
 
   cmbPath->setMaxItems( config->readNumEntry( "pathcombo history len", 9 ) );
-  cmbPath->setURLs( config->readListEntry("dir history") );
+  cmbPath->setURLs( config->readPathListEntry( "dir history" ) );
   // if we restore history
   if ( config->readBoolEntry( "restore location", true ) || kapp->isRestored() ) {
-    QString loc( config->readEntry( "location" ) );
+    QString loc( config->readPathEntry( "location" ) );
     if ( ! loc.isEmpty() ) {
 //       waitingDir = loc;
 //       QTimer::singleShot(0, this, SLOT(initialDirChangeHack()));
@@ -303,8 +303,8 @@ void KateFileSelector::writeConfig(KConfig *config, const QString & name)
   for (int i = 0; i < cmbPath->count(); i++) {
     l.append( cmbPath->text( i ) );
   }
-  config->writeEntry("dir history", l );
-  config->writeEntry( "location", cmbPath->currentText() );
+  config->writePathEntry( "dir history", l );
+  config->writePathEntry( "location", cmbPath->currentText() );
 
   config->writeEntry( "filter history len", filter->maxCount() );
   config->writeEntry( "filter history", filter->historyItems() );

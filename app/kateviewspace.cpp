@@ -222,7 +222,7 @@ void KateViewSpace::saveFileList( KSimpleConfig* config, int myIndex )
     {
       // filenames, group: "splitter<n>"
       config->setGroup( group );
-      config->writeEntry( QString("file%1").arg( idx ), it.current()->getDoc()->url().prettyURL() );
+      config->writePathEntry( QString("file%1").arg( idx ), it.current()->getDoc()->url().prettyURL() );
       // view config, group: "splitter<n>:file<m>"
       QString vgroup = QString("%1:file%2").arg(group).arg( idx );
       config->setGroup( vgroup );

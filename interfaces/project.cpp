@@ -141,7 +141,7 @@ QString Project::dir () const
 QString Project::dirFilesName () const
 {
   d->m_config->setGroup("General");
-  return d->m_config->readEntry ("DirFilesName", ".katedir");
+  return d->m_config->readPathEntry ("DirFilesName", ".katedir");
 }
 
 bool Project::save ()
@@ -230,7 +230,7 @@ QStringList ProjectDirFile::dirs () const
 QStringList ProjectDirFile::files () const
 {
   d->m_config->setGroup("General");
-  return d->m_config->readListEntry ("Files", '/');
+  return d->m_config->readPathListEntry ("Files", '/');
 }
 
 QString ProjectDirFile::fileName () const
@@ -299,15 +299,15 @@ QStringList ProjectDirFile::addDirs (const QStringList &dirs)
   project()->plugin()->addDirs (this, newDirs);
   
   d->m_config->setGroup("General");
-  d->m_config->writeEntry ("Dirs", newDirs + existingDirs, '/');
+  d->m_config->writePathEntry ("Dirs", newDirs + existingDirs, '/');
   d->m_config->sync ();
   
   for (uint z=0; z < newDirs.count(); z++)
   {
     KConfig config (absDir() + QString ("/") + newDirs[z] + QString ("/") + d->m_data->project->dirFilesName (), false, false);
     config.setGroup ("General");
-    config.writeEntry ("Dirs", QStringList(), '/');
-    config.writeEntry ("Files", QStringList(), '/');
+    config.writePathEntry ("Dirs", QStringList(), '/');
+    config.writePathEntry ("Files", QStringList(), '/');
     config.sync ();
   }
   
@@ -342,7 +342,7 @@ QStringList ProjectDirFile::removeDirs (const QStringList &dirs)
   }
   
   d->m_config->setGroup("General");
-  d->m_config->writeEntry ("Dirs", saveList, '/');
+  d->m_config->writePathEntry ("Dirs", saveList, '/');
   d->m_config->sync ();
   
   emit dirsRemoved (removeDirs);
@@ -371,7 +371,7 @@ QStringList ProjectDirFile::addFiles (const QStringList &files)
   project()->plugin()->addFiles (this, newFiles);
   
   d->m_config->setGroup("General");
-  d->m_config->writeEntry ("Files", newFiles + existingFiles, '/');
+  d->m_config->writePathEntry ("Files", newFiles + existingFiles, '/');
   d->m_config->sync ();
    
   emit filesAdded (newFiles);
@@ -405,7 +405,7 @@ QStringList ProjectDirFile::removeFiles (const QStringList &files)
   }
   
   d->m_config->setGroup("General");
-  d->m_config->writeEntry ("Files", saveList, '/');
+  d->m_config->writePathEntry ("Files", saveList, '/');
   d->m_config->sync ();
   
   emit filesRemoved (removeFiles);
