@@ -57,7 +57,8 @@ class KateApp : public Kate::Application
     KateDocManager *docManager;
     KatePluginManager *pluginManager;
     QPtrList<KateMainWindow> mainWindows;
-
+    bool m_firstStart;
+    
   public:
     void openURL (const QString &name=0L);
 };

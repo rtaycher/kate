@@ -25,6 +25,7 @@
 
 static KCmdLineOptions options[] =
 {
+    { "n", I18N_NOOP("open a new Kate Window (off by default)"), 0 },
     { "s", I18N_NOOP("start Kate in SDI mode (off by default)"), 0 },
     { "+file(s)",          I18N_NOOP("Files to load"), 0 },
     { 0,0,0 }

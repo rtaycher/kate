@@ -30,7 +30,9 @@
 #include <kwin.h>
 
 KateApp::KateApp () : Kate::Application ()
-{        
+{                            
+  m_firstStart = true;
+
   config()->setGroup("General");                 
   _isSDI = config()->readBoolEntry( "sdi", false );
 
@@ -64,6 +66,9 @@ int KateApp::newInstance()
 
   if (args->isSet ("s"))
     _isSDI = true; 
+    
+  if (!m_firstStart && args->isSet ("n"))
+    newMainWindow (); 
  
   raiseCurrentMainWindow ();
   
@@ -74,6 +79,8 @@ int KateApp::newInstance()
  
   if ( mainWindows.first()->viewManager->viewCount () == 0 )
     mainWindows.first()->viewManager->openURL( KURL() );
+                          
+  m_firstStart = false;
     
   return 0;
 }
@@ -91,6 +98,8 @@ KateMainWindow *KateApp::newMainWindow ()
     mainWindow->viewManager->openURL ( KURL() );
 
   mainWindow->show ();
+  mainWindow->raise();
+  KWin::setActiveWindow (mainWindow->winId());
   
   return mainWindow;
 }
