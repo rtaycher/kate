@@ -3,7 +3,7 @@ TODO:
  - dynamic word wrap
  - code folding
  - code completion
- - search/replace in selection
+ - search whole words
  - static word wrap
  - blockwise paste must be done !
  - better indent/unindent
