@@ -390,11 +390,6 @@ class KateView : public Kate::View
       Modified flag or config flags have changed
     */
     void newStatus();
-    /**
-      The marked text state has changed. This can be used to enable/disable
-      cut and copy
-    */
-    void newMarkStatus();
 
     // emitted when saving a remote URL with KIO::NetAccess. In that case we have to disable the UI.
     void enableUI( bool enable );

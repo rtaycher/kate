@@ -16,103 +16,103 @@
  ***************************************************************************/      
          
 #include "katetextline.h"         
-#include <kdebug.h>         
-         
-TextLine::TextLine()     
-  : text(0L), attributes(0L), textLen(0), ctx(0L), ctxLen(0), attr(0), myMark (0)     
-{     
-}      
-      
-TextLine::~TextLine()      
-{      
-  delete [] text;     
-  delete [] attributes;     
-  delete [] ctx;     
-}     
-     
-void TextLine::replace(uint pos, uint delLen, const QChar *insText, uint insLen, uchar *insAttribs)      
-{      
-  int newLen, i, z;  
-  uchar newAttr; 
-  
-  //find new length  
-  newLen = textLen - delLen;  
-    
-  if (newLen < pos) newLen = pos;  
-  newLen += insLen; 
-  newAttr = (pos < textLen) ? attributes[pos] : attr;  
-  
-  if (newLen > textLen) 
-  {  
-    if (text == 0L) 
-      text = (QChar *) malloc (sizeof (QChar)*newLen); 
-    else 
-      text = (QChar *) realloc(text, sizeof (QChar)*newLen); 
- 
-    if (attributes == 0L) 
-      attributes = (uchar *) malloc (sizeof (uchar)*newLen); 
-    else 
-      attributes = (uchar *) realloc(attributes, sizeof (uchar)*newLen); 
-  } 
-  
-  //fill up with spaces and attribute  
-  for (z = textLen; z < pos; z++) {  
-    text[z] = QChar(' ');  
-    attributes[z] = attr;  
-  }  
-  
-  i = (insLen - delLen);  
-  
-  // realloc has gone - no idea why it was here  
-  if (i != 0)  
-  {  
-    if (i <= 0)  
-    {  
-      //text to replace longer than new text  
-      for (z = pos + delLen; z < textLen; z++) {  
-        if ((z+i) >= newLen) break;  
-        text[z + i] = text[z];  
-        attributes[z + i] = attributes[z];  
-      }  
-  
-  
-    } else {  
-      //text to replace shorter than new text  
-      for (z = textLen-1; z >= pos + delLen; z--) {  
-        if (z < 0) break;  
-        text[z + i] = text[z];  
-        attributes[z + i] = attributes[z];  
-      }  
-    }  
-  }  
-   
-  if (insAttribs == 0L) {  
-    for (z = 0; z < insLen; z++) {  
-      text[pos + z] = insText[z];  
-      attributes[pos + z] = newAttr;  
-    }  
-  } else {  
-    for (z = 0; z < insLen; z++) {  
-      text[pos + z] = insText[z];  
-      attributes[pos + z] = insAttribs[z];  
-    }  
-  }  
- 
-  if (newLen < textLen) 
-  {  
+#include <kdebug.h>
+
+TextLine::TextLine()
+  : text(0L), attributes(0L), textLen(0), ctx(0L), ctxLen(0), attr(0), myMark (0)
+{
+}
+
+TextLine::~TextLine()
+{
+  delete [] text;
+  delete [] attributes;
+  delete [] ctx;
+}
+
+void TextLine::replace(uint pos, uint delLen, const QChar *insText, uint insLen, uchar *insAttribs)
+{
+  int newLen, i, z;
+  uchar newAttr;
+
+  //find new length
+  newLen = textLen - delLen;
+
+  if (newLen < pos) newLen = pos;
+  newLen += insLen;
+  newAttr = (pos < textLen) ? attributes[pos] : attr;
+
+  if (newLen > textLen)
+  {
+    if (text == 0L)
+      text = (QChar *) malloc (sizeof (QChar)*newLen);
+    else
+      text = (QChar *) realloc(text, sizeof (QChar)*newLen);
+
+    if (attributes == 0L)
+      attributes = (uchar *) malloc (sizeof (uchar)*newLen);
+    else
+      attributes = (uchar *) realloc(attributes, sizeof (uchar)*newLen);
+  }
+
+  //fill up with spaces and attribute
+  for (z = textLen; z < pos; z++) {
+    text[z] = QChar(' ');
+    attributes[z] = attr;
+  }
+
+  i = (insLen - delLen);
+
+  // realloc has gone - no idea why it was here
+  if (i != 0)
+  {
+    if (i <= 0)
+    {
+      //text to replace longer than new text
+      for (z = pos + delLen; z < textLen; z++) {
+        if ((z+i) >= newLen) break;
+        text[z + i] = text[z];
+        attributes[z + i] = attributes[z];
+      }
+
+
+    } else {
+      //text to replace shorter than new text
+      for (z = textLen-1; z >= pos + delLen; z--) {
+        if (z < 0) break;
+        text[z + i] = text[z];
+        attributes[z + i] = attributes[z];
+      }
+    }
+  }
+
+  if (insAttribs == 0L) {
+    for (z = 0; z < insLen; z++) {
+      text[pos + z] = insText[z];
+      attributes[pos + z] = newAttr;
+    }
+  } else {
+    for (z = 0; z < insLen; z++) {
+      text[pos + z] = insText[z];
+      attributes[pos + z] = insAttribs[z];
+    }
+  }
+
+  if (newLen < textLen)
+  {
     text = (QChar *) realloc(text, sizeof (QChar)*newLen);
     attributes = (uchar *) realloc(attributes, sizeof (uchar)*newLen);
-  } 
- 
-  textLen = newLen;  
-}      
-      
-void TextLine::append(const QChar *s, uint l)      
-{      
-  replace(textLen, 0, s, l);       
-}      
-      
-void TextLine::truncate(uint newLen)      
+  }
+
+  textLen = newLen;
+}
+
+void TextLine::append(const QChar *s, uint l)
+{
+  replace(textLen, 0, s, l);
+}
+
+void TextLine::truncate(uint newLen)
 {
   if (newLen < textLen)
   {
@@ -137,7 +137,7 @@ void TextLine::wrap(TextLine::Ptr nextLine, uint pos)
 void TextLine::unWrap(uint pos, TextLine::Ptr nextLine, uint len) {
 
   replace(pos, 0, nextLine->text, len, nextLine->attributes);
-  attr = nextLine->getRawAttr(len);
+  attr = nextLine->getAttr(len);
   nextLine->replace(0, len, 0L, 0);
 }
 
@@ -219,121 +219,35 @@ void TextLine::setAttribs(uchar attribute, uint start, uint end) {
   uint z;
 
   if (end > textLen) end = textLen;
-  for (z = start; z < end; z++) attributes[z] = (attributes[z] & taSelected) | attribute;
+  for (z = start; z < end; z++) attributes[z] = attribute;
 }
 
 void TextLine::setAttr(uchar attribute) {
-  attr = (attr & taSelected) | attribute;
+  attr = attribute;
 }
 
 uchar TextLine::getAttr(uint pos) const {
-  if (pos < textLen) return attributes[pos] & taAttrMask;
-  return attr & taAttrMask;
+  if (pos < textLen) return attributes[pos];
+  return attr;
 }
 
 uchar TextLine::getAttr() const {
-  return attr & taAttrMask;
+  return attr;
 }
 
-uchar TextLine::getRawAttr(uint pos) const {
-  if (pos < textLen) return attributes[pos];
-  return (attr & taSelected) ? attr : attr | 256;
+void TextLine::setContext(signed char *newctx, uint len)
+{
+  ctxLen = len;
+
+	if (ctx == 0L)
+    ctx = (signed char*)malloc (len);
+  else
+    ctx = (signed char*)realloc (ctx, len);
+
+  for (uint z=0; z < len; z++) ctx[z] = newctx[z];
 }
 
-uchar TextLine::getRawAttr() const {      
-  return attr;      
-}      
-      
-void TextLine::setContext(signed char *newctx, uint len)      
-{      
-  ctxLen = len;      
-	     
-	if (ctx == 0L)     
-    ctx = (signed char*)malloc (len);     
-  else     
-    ctx = (signed char*)realloc (ctx, len);     
-     
-  for (uint z=0; z < len; z++) ctx[z] = newctx[z];     
-}      
-      
-void TextLine::select(bool sel, uint start, uint end) {      
-  uint z;      
-      
-  if (end > textLen) end = textLen;        
-  if (sel) {      
-    for (z = start; z < end; z++) attributes[z] |= taSelected;      
-  } else {      
-    for (z = start; z < end; z++) attributes[z] &= ~taSelected;      
-  }      
-}      
-      
-void TextLine::selectEol(bool sel, uint pos) {      
-  uint z;      
-      
-  if (sel) {      
-    for (z = pos; z < textLen; z++) attributes[z] |= taSelected;       
-    attr |= taSelected;      
-  } else {      
-    for (z = pos; z < textLen; z++) attributes[z] &= ~taSelected;       
-    attr &= ~taSelected;      
-  }      
-}      
-      
-      
-void TextLine::toggleSelect(uint start, uint end) {      
-  uint z;      
-      
-  if (end > textLen) end = textLen;        
-  for (z = start; z < end; z++) attributes[z] = attributes[z] ^ taSelected;      
-}      
-      
-      
-void TextLine::toggleSelectEol(uint pos) {      
-  uint z;      
-      
-  for (z = pos; z < textLen; z++) attributes[z] = attributes[z] ^ taSelected;       
-  attr = attr ^ taSelected;      
-}      
-      
-      
-int TextLine::numSelected() const {      
-  uint z, n;      
-      
-  n = 0;      
-  for (z = 0; z < textLen; z++) if (attributes[z] & taSelected) n++;       
-  return n;      
-}      
-      
-bool TextLine::isSelected(uint pos) const {      
-  if (pos < textLen) return (attributes[pos] & taSelected);       
-  return (attr & taSelected);      
-}      
-      
-bool TextLine::isSelected() const {      
-  return (attr & taSelected);      
-}      
-      
-int TextLine::findSelected(uint pos) const {      
-  while (pos < textLen && attributes[pos] & taSelected) pos++;       
-  return pos;      
-}      
-      
-int TextLine::findUnselected(uint pos) const {      
-  while (pos < textLen && !(attributes[pos] & taSelected)) pos++;       
-  return pos;      
-}      
-      
-int TextLine::findRevSelected(uint pos) const {      
-  while (pos > 0 && attributes[pos - 1] & taSelected) pos--;      
-  return pos;      
-}      
-      
-int TextLine::findRevUnselected(uint pos) const {      
-  while (pos > 0 && !(attributes[pos - 1] & taSelected)) pos--;      
-  return pos;      
-}      
-      
-void TextLine::addMark (uint m)      
+void TextLine::addMark (uint m)
 {      
   myMark = myMark | m;      
 }      

@@ -318,7 +318,6 @@ class KateDocument : public Kate::Document
     void copy(int flags);
     void paste(VConfig &);
 
-    void toggleRect(int, int, int, int);
     void selectTo(VConfig &c, KateViewCursor &cursor, int cXPos);
     void selectWord(KateViewCursor &cursor, int flags);
     void selectLength(KateViewCursor &cursor, int length, int flags);
@@ -357,10 +356,8 @@ class KateDocument : public Kate::Document
 
 // internal
     void tagLine(int line);
-    void optimizeSelection();
 
-	public:
-
+  public:
     void setPseudoModal(QWidget *);
 
     void newBracketMark(KateViewCursor &, BracketMark &);
@@ -417,12 +414,14 @@ class KateDocument : public Kate::Document
     TextLine::Ptr longestLine;
     float maxLength;
 
-    KateViewCursor select;
-    KateViewCursor anchor;
-    int aXPos;
-    int selectStart;
-    int selectEnd;
-    bool oldMarkState;
+    int selectStartLine;
+    int selectStartCol;
+    int selectEndLine;
+    int selectEndCol;
+
+    bool lineColSelected (int line, int col);
+    bool lineSelected (int line);
+    bool lineHasSelected (int line);
 
     bool readOnly;
     bool newDoc;          // True if the file is a new document (used to determine whether
@@ -437,7 +436,7 @@ class KateDocument : public Kate::Document
 
     QWidget *pseudoModal;   //the replace prompt is pseudo modal
 
-	public:
+  public:
     /** Checks if the file on disk is newer than document contents.
       If forceReload is true, the document is reloaded without asking the user,
       otherwise [default] the user is asked what to do. */

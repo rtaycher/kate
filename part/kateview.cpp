@@ -953,7 +953,7 @@ bool KateViewInternal::isTargetSelected(int x, int y) {
 
   x = myDoc->textPos(line, x);
 
-  return line->isSelected(x);
+  return myDoc->lineColSelected(y, x);
 }
 
 void KateViewInternal::focusInEvent(QFocusEvent *) {

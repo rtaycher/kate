@@ -117,8 +117,7 @@ public:
       Is the line ending with the given string
     */
     bool endingWith(const QString& match) const;
-  
-    /**  
+    /**
       Sets the attributes from start to end -1  
     */  
     void setAttribs(uchar attribute, uint start, uint end); 
@@ -133,18 +132,8 @@ public:
     /**  
       Gets the attribute for the free space behind the last character  
     */  
-    uchar getAttr() const;  
-    /**  
-      Gets the attribute, including the select state, at the given position  
-    */  
-    uchar getRawAttr(uint pos) const;  
-    /**  
-      Gets the attribute, including the select state, for the free space  
-      behind the last character  
-    */  
-    uchar getRawAttr() const;  
-  
-    /**  
+    uchar getAttr() const;
+    /**
       Sets the syntax highlight context number  
     */  
     void setContext(signed char *newctx, uint len); 
@@ -153,66 +142,19 @@ public:
     */ 
     signed char *getContext() const { return ctx; }; 
 		/** 
-      Gets the syntax highlight context number 
-    */ 
-    uint getContextLength() const { return ctxLen; }; 
-  
-    /**  
-      Sets the select state from start to end -1  
-    */  
-    void select(bool sel, uint start, uint end);  
-    /**  
-      Sets the select state from the given position to the end, including  
-      the free space behind the last character  
-    */  
-    void selectEol(bool sel, uint pos);  
-    /**  
-      Toggles the select state from start to end -1  
-    */  
-    void toggleSelect(uint start, uint end);  
-    /**  
-      Toggles the select state from the given position to the end, including  
-      the free space behind the last character  
-    */  
-    void toggleSelectEol(uint pos);  
-    /**  
-      Returns the number of selected characters  
-    */  
-    int numSelected() const;  
-    /**  
-      Returns if the character at the given position is selected  
-    */  
-    bool isSelected(uint pos) const;  
-    /** 
-      Returns true if the free space behind the last character is selected 
-    */ 
-    bool isSelected() const; 
-    /** 
-      Finds the next selected character, starting at the given position 
-    */ 
-    int findSelected(uint pos) const; 
-    /** 
-      Finds the next unselected character, starting at the given position 
-    */ 
-    int findUnselected(uint pos) const; 
-    /** 
-      Finds the previous selected character, starting at the given position 
-    */ 
-    int findRevSelected(uint pos) const; 
-    /** 
-      Finds the previous unselected character, starting at the given position
-    */ 
-    int findRevUnselected(uint pos) const;
+      Gets the syntax highlight context number
+    */
+    uint getContextLength() const { return ctxLen; };
 
-		bool searchText (unsigned int startCol, const QString &text, unsigned int *foundAtCol, unsigned int *matchLen, bool casesensitive = true, bool backwards = false);
-		bool searchText (unsigned int startCol, const QRegExp &regexp, unsigned int *foundAtCol, unsigned int *matchLen, bool backwards = false);
+    bool searchText (unsigned int startCol, const QString &text, unsigned int *foundAtCol, unsigned int *matchLen, bool casesensitive = true, bool backwards = false);
+    bool searchText (unsigned int startCol, const QRegExp &regexp, unsigned int *foundAtCol, unsigned int *matchLen, bool backwards = false);
 
-    void clearMark () { myMark = 0; }; 
+    void clearMark () { myMark = 0; };
     void addMark ( uint m );
     void delMark ( uint m );
     uint mark() { return myMark; };
- 
-    uchar *getAttribs() { return attributes; } 
+
+    uchar *getAttribs() { return attributes; }
  
   protected: 
     /** 
@@ -230,15 +172,12 @@ public:
       The syntax highlight context 
     */ 
     signed char *ctx; 
-		uint ctxLen; 
-    /** 
+    uint ctxLen;
+    
+    /**
       The marks of the current line  
     */  
     uint myMark; 
 };  
-  
-//text attribute constants  
-const int taSelected = 0x40;  
-const int taAttrMask = ~taSelected & 0xFF;  
-  
+
 #endif
