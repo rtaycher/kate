@@ -194,6 +194,7 @@ uchar TextLine::getRawAttr() const {
 
 void TextLine::setContext(TContexts context) {
   if (ctx) delete ctx;
+  ctx=0;
   ctx=new TContexts(context);
   ctx->detach();
 }
