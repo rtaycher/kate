@@ -59,15 +59,15 @@ KateViewManager::KateViewManager (KateMainWindow *parent, KMDI::TabWidget *tabWi
 {
   // while init
   m_init=true;
-  
+
   // some stuff for the tabwidget
   m_tabWidget->setTabReorderingEnabled( true );
-  
+
   // important, set them up, as we use them in other methodes
   setupActions ();
 
   guiMergedView=0;
-  
+
   m_viewManager = new Kate::ViewManager (this);
   m_currentContainer=0;
  connect(m_tabWidget,SIGNAL(currentChanged(QWidget*)),this,SLOT(tabChanged(QWidget*)));
@@ -136,7 +136,7 @@ void KateViewManager::setupActions ()
   goPrev=new KAction(i18n("Previous View"),SHIFT+Key_F8, this, SLOT(activatePrevView()),m_mainWindow->actionCollection(),"go_prev");
 
   goPrev->setWhatsThis(i18n("Make the previous split view the active one."));
-  
+
   /**
    * buttons for tabbing
    */
@@ -147,7 +147,7 @@ void KateViewManager::setupActions ()
   b->adjustSize();
   QToolTip::add(b, i18n("Open a new tab"));
   m_tabWidget->setCornerWidget( b, TopLeft );
-  
+
   b = m_closeTabButton = new QToolButton( m_tabWidget );
   connect( b, SIGNAL( clicked() ),
             this, SLOT( slotCloseTab() ) );
@@ -160,7 +160,7 @@ void KateViewManager::setupActions ()
 void KateViewManager::updateViewSpaceActions ()
 {
   if (!m_currentContainer) return;
-  
+
   m_closeView->setEnabled (m_currentContainer->viewSpaceCount() > 1);
   goNext->setEnabled (m_currentContainer->viewSpaceCount() > 1);
   goPrev->setEnabled (m_currentContainer->viewSpaceCount() > 1);
@@ -180,7 +180,7 @@ void KateViewManager::tabChanged(QWidget* widget) {
   m_activateNextTab->setEnabled(m_tabWidget->count() > 1);
   m_activatePrevTab->setEnabled(m_tabWidget->count() > 1);
   m_closeTabButton->setEnabled (m_tabWidget->count() > 1);
-  
+
   updateViewSpaceActions ();
 }
 
@@ -416,7 +416,7 @@ void KateViewManager::slotDocumentClose ()
     activeView()->getDoc()->closeURL();
     return;
   }
-  
+
   // close document
   KateDocManager::self()->closeDocument (activeView()->getDoc());
 }
@@ -485,6 +485,7 @@ void KateViewManager::saveViewConfiguration(KConfig *config,const QString& group
 {
   config->setGroup(group);
   config->writeEntry("ViewSpaceContainers",m_viewSpaceContainerList.count());
+  config->writeEntry("Active ViewSpaceContainer", m_tabWidget->currentPageIndex());
   for (uint i=0;i<m_viewSpaceContainerList.count();i++) {
     m_viewSpaceContainerList.at(i)->saveViewConfiguration(config,group+QString(":ViewSpaceContainer-%1:").arg(i));
   }
@@ -494,12 +495,16 @@ void KateViewManager::restoreViewConfiguration (KConfig *config, const QString& 
 {
   config->setGroup(group);
   uint tabCount=config->readNumEntry("ViewSpaceContainers",0);
+  uint activeOne=config->readNumEntry("Active ViewSpaceContainer",0);
   if (tabCount==0) return;
   m_viewSpaceContainerList.at(0)->restoreViewConfiguration(config,group+QString(":ViewSpaceContainer-0:"));
   for (uint i=1;i<tabCount;i++) {
     slotNewTab();
     m_viewSpaceContainerList.at(i)->restoreViewConfiguration(config,group+QString(":ViewSpaceContainer-%1:").arg(i));
   }
+
+  if (activeOne != m_tabWidget->currentPageIndex())
+    m_tabWidget->setCurrentPage (activeOne);
 }
 
 KateMainWindow *KateViewManager::mainWindow() {
