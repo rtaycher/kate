@@ -794,7 +794,7 @@ KDockWidget *KateMainWindow::addToolView(KDockWidget::DockPosition pos,const cha
 //	KDockWidget *dw=createDockWidget( name,  icon, 0L, caption, caption);
 
 	tmp->wrapperWidget();
-	tmp->show(pos,getMainDockWidget(),20);
+	tmp->place(pos,getMainDockWidget(),20);
 	return dynamic_cast<KDockWidget*>(tmp->wrapperWidget());
 #if 0
 //        	dw->setDockWindowTransient (this, true);
@@ -830,7 +830,7 @@ KDockWidget *KateMainWindow::addToolViewWidget(KDockWidget::DockPosition pos,QWi
 
         tmp->setWidgetToWrap (widget);
 	widget->show(); // I'm not sure, if this is a bug in kdockwidget, which I would better fix there
-        tmp->show(pos,getMainDockWidget(),20);
+        tmp->place(pos,getMainDockWidget(),20);
         return dynamic_cast<KDockWidget*>(tmp->wrapperWidget());
 
 
