@@ -206,7 +206,7 @@ void KateMainWindow::setupMainWindow ()
   
   if (kapp->authorize("shell_access"))
   {
-     console = new KateConsole (this, "console");
+     console = new KateConsole (this, "console",viewManager());
      console->installEventFilter( this );
      consoleDock = addToolViewWidget(KDockWidget::DockBottom,console, SmallIcon("konsole"),"Terminal");
   }     

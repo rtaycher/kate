@@ -25,10 +25,14 @@
 #include <kapplication.h>
 #include <kdebug.h>
 
-KateConsole::KateConsole (QWidget* parent, const char* name) : QWidget (parent, name),part(0)
+#include <kate/view.h>
+#include <kate/document.h>
+
+KateConsole::KateConsole (QWidget* parent, const char* name, Kate::ViewManager *kvm) : QWidget (parent, name),part(0)
 {
 
     lo = new QVBoxLayout(this);
+    m_kvm=kvm;
 }
 
 KateConsole::~KateConsole ()
@@ -63,6 +67,9 @@ void KateConsole::loadConsoleIfNeeded()
               part->widget()->show();
               lo->addWidget(part->widget());
               connect ( part, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
+	      if (m_kvm->activeView())
+	      	if (m_kvm->activeView()->getDoc()->url().isValid())
+			cd(m_kvm->activeView()->getDoc()->url().path());
             }
         }
 }

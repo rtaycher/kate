@@ -18,6 +18,7 @@
 #define __KATE_CONSOLE_H__
 
 #include "katemain.h"
+#include "../interfaces/viewmanager.h"
 
 #include <qwidget.h>
 #include <kparts/part.h>
@@ -27,7 +28,7 @@ class KateConsole : public QWidget
   Q_OBJECT
 
   public:
-    KateConsole (QWidget* parent=0, const char* name=0);
+    KateConsole (QWidget* parent, const char* name, Kate::ViewManager *);
     ~KateConsole ();
 
     void cd (KURL url=0L);
@@ -39,6 +40,7 @@ class KateConsole : public QWidget
   private:
     KParts::ReadOnlyPart *part;
     QVBoxLayout* lo;
+    Kate::ViewManager *m_kvm;
 
   public slots:
     void loadConsoleIfNeeded();
