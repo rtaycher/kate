@@ -48,17 +48,6 @@ class Attribute {
     bool italic;
 };
 
-class KateViewCursorCache
-{
-  public:
-    KateViewCursorCache () { ; };
-
-    uint line;
-    uint col;
-    bool changed;
-    KateView *view;
-};
-
 class KateCursor : public Kate::Cursor
 {
   public:
@@ -181,7 +170,6 @@ class KateDocument : public Kate::Document
     uint editTagLineStart;
     uint editTagLineEnd;
     KateUndoGroup *editCurrentUndo;
-    QPtrList<KateViewCursorCache> editCursorCache;
 
     //
     // functions for insert/remove stuff (atomic)
@@ -454,16 +442,16 @@ class KateDocument : public Kate::Document
     bool isLastView(int numViews);
 
     int charWidth(const TextLine::Ptr &textLine, int cursorX,WhichFont wf=ViewFont);
-    int charWidth(KateViewCursor &cursor);
+    int charWidth(KateTextCursor &cursor);
 
     uint textWidth(const TextLine::Ptr &, int cursorX,WhichFont wf=ViewFont);
-    uint textWidth(KateViewCursor &cursor);
-    uint textWidth(bool wrapCursor, KateViewCursor &cursor, int xPos,WhichFont wf=ViewFont);
+    uint textWidth(KateTextCursor &cursor);
+    uint textWidth(bool wrapCursor, KateTextCursor &cursor, int xPos,WhichFont wf=ViewFont);
     uint textPos(const TextLine::Ptr &, int xPos,WhichFont wf=ViewFont);
     uint textWidth();
     uint textHeight(WhichFont wf=ViewFont);
 
-    uint currentColumn(KateViewCursor &cursor);
+    uint currentColumn(KateTextCursor &cursor);
     void newLine(VConfig &);
     void killLine(VConfig &);
     void backspace(uint line, uint col);
@@ -472,9 +460,9 @@ class KateDocument : public Kate::Document
     void copy(int flags);
     void paste(VConfig &);
 
-    void selectTo(VConfig &c, KateViewCursor &cursor, int cXPos);
-    void selectWord(KateViewCursor &cursor, int flags);
-    void selectLength(KateViewCursor &cursor, int length, int flags);
+    void selectTo(VConfig &c, KateTextCursor &cursor, int cXPos);
+    void selectWord(KateTextCursor &cursor, int flags);
+    void selectLength(KateTextCursor &cursor, int length, int flags);
 
     void indent(VConfig &c) {doIndent(c, 1);}
     void unIndent(VConfig &c) {doIndent(c, -1);}
@@ -490,7 +478,7 @@ class KateDocument : public Kate::Document
     void doComment(VConfig &, int change);
 
     virtual QString text() const;
-    QString getWord(KateViewCursor &cursor);
+    QString getWord(KateTextCursor &cursor);
 
   public:
     uint needPreHighlight(uint till);
@@ -512,7 +500,7 @@ class KateDocument : public Kate::Document
   public:
     void setPseudoModal(QWidget *);
 
-    void newBracketMark(KateViewCursor &, BracketMark &);
+    void newBracketMark(KateTextCursor &, BracketMark &);
 
   protected:
     virtual void guiActivateEvent( KParts::GUIActivateEvent *ev );

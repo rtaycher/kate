@@ -610,7 +610,7 @@ void KateViewInternal::updateCursor()
 }
 
 
-void KateViewInternal::updateCursor(KateViewCursor &newCursor)
+void KateViewInternal::updateCursor(KateTextCursor &newCursor)
 {
   if (!(myDoc->_configFlags & KateDocument::cfPersistent)) myDoc->clearSelection();
 
@@ -1255,7 +1255,7 @@ void KateViewInternal::dropEvent( QDropEvent *event )
       }
 
       VConfig c;
-      KateViewCursor cursor;
+      KateTextCursor cursor;
 
       getVConfig(c);
       cursor = c.cursor;
@@ -1698,7 +1698,7 @@ uint KateView::cursorColumnReal() {
 }
 
 void KateView::setCursorPositionInternal(int line, int col, int tabwidth) {
-  KateViewCursor cursor;
+  KateTextCursor cursor;
 
   TextLine::Ptr textLine = myDoc->getTextLine(line);
   QString line_str = QString(textLine->getText(), textLine->length());
@@ -1767,7 +1767,7 @@ QString KateView::currentWord() {
 }
 
 QString KateView::word(int x, int y) {
-  KateViewCursor cursor;
+  KateTextCursor cursor;
   cursor.line = (myViewInternal->yPos + y)/myDoc->viewFont.fontHeight;
   if (cursor.line < 0 || cursor.line > myDoc->lastLine()) return QString();
   cursor.col = myDoc->textPos(myDoc->getTextLine(cursor.line), myViewInternal->xPos-2 + x);
@@ -1999,7 +1999,7 @@ void KateView::gotoLine()
 
 void KateView::gotoLineNumber( int linenumber ) 
 {
-  KateViewCursor cursor;
+  KateTextCursor cursor;
 
   cursor.col = 0;
   cursor.line = linenumber;
@@ -2063,7 +2063,7 @@ void KateView::continueSearch(SConfig &s) {
 
 void KateView::findAgain(SConfig &s) {
   int query;
-  KateViewCursor cursor;
+  KateTextCursor cursor;
   QString str;
 
   QString searchFor = myDoc->searchForList.first();
@@ -2122,7 +2122,7 @@ void KateView::replaceAgain() {
 
 void KateView::doReplaceAction(int result, bool found) {
   int rlen;
-  KateViewCursor cursor;
+  KateTextCursor cursor;
   bool started;
 
   QString searchFor = myDoc->searchForList.first();
@@ -2186,7 +2186,7 @@ void KateView::doReplaceAction(int result, bool found) {
   deleteReplacePrompt();
 }
 
-void KateView::exposeFound(KateViewCursor &cursor, int slen, int flags, bool replace) {
+void KateView::exposeFound(KateTextCursor &cursor, int slen, int flags, bool replace) {
   int x1, x2, y1, y2, xPos, yPos;
 
   VConfig c;
@@ -2265,7 +2265,7 @@ void KateView::installPopup(QPopupMenu *rmb_Menu)
 
 void KateView::readSessionConfig(KConfig *config)
 {
-  KateViewCursor cursor;
+  KateTextCursor cursor;
 
   myViewInternal->xPos = config->readNumEntry("XPos");
   myViewInternal->yPos = config->readNumEntry("YPos");
@@ -2487,7 +2487,7 @@ void KateView::toggleIconBorder ()
 
 void KateView::gotoMark (KTextEditor::Mark *mark)
 {
-  KateViewCursor cursor;
+  KateTextCursor cursor;
 
   cursor.col = 0;
   cursor.line = mark->line;

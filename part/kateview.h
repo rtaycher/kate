@@ -23,6 +23,8 @@
 #include "../interfaces/view.h"
 #include "../interfaces/document.h"
 
+#include "kateglobal.h"
+
 #include <kparts/browserextension.h>
 #include <qptrlist.h>
 #include <qregexp.h>
@@ -43,15 +45,6 @@ class KPrinter;
 class Highlight;
 class KateIconBorder;
 class KateDocument;
-/*
-//dialog results
-const int srYes               = QDialog::Accepted;
-const int srNo                = 10;
-const int srAll               = 11;
-const int srCancel            = QDialog::Rejected;
-*/
-// --- config flags ---
-// indent
 
 enum Select_flags {
   selectFlag          = 0x100000,
@@ -66,14 +59,9 @@ enum State_commands {
 class KateViewInternal;
 class KateView;
 
-struct KateViewCursor {
-  int col;
-  int line;
-};
-
 struct VConfig {
   KateView *view;
-  KateViewCursor cursor;
+  KateTextCursor cursor;
   int cXPos;
   int flags;
 };
@@ -84,7 +72,7 @@ struct LineRange {
 };
 
 struct BracketMark {
-  KateViewCursor cursor;
+  KateTextCursor cursor;
   int sXPos;
   int eXPos;
 };
@@ -92,8 +80,8 @@ struct BracketMark {
 class SConfig
 {
   public:
-  KateViewCursor cursor;
-  KateViewCursor startCursor;
+  KateTextCursor cursor;
+  KateTextCursor startCursor;
   int flags;
 
   // Set the pattern to be used for searching.
@@ -167,7 +155,7 @@ class KateViewInternal : public QWidget {
     void insLine(int line);
     void delLine(int line);
     void updateCursor();
-    void updateCursor(KateViewCursor &newCursor);
+    void updateCursor(KateTextCursor &newCursor);
     void clearDirtyCache(int height);
     void tagLines(int start, int end, int x1, int x2);
     void tagAll();
@@ -219,7 +207,7 @@ class KateViewInternal : public QWidget {
     int scrollY;
     int scrollTimer;
 
-    KateViewCursor cursor;
+    KateTextCursor cursor;
     bool cursorOn;
     int cursorTimer;
     int cXPos;
@@ -243,7 +231,7 @@ class KateViewInternal : public QWidget {
 
     struct _dragInfo {
       DragState       state;
-      KateViewCursor      start;
+      KateTextCursor      start;
       QTextDrag       *dragObject;
     } dragInfo;
 
@@ -530,7 +518,7 @@ class KateView : public Kate::View
     void findAgain(SConfig &);
     void replaceAgain();
     void doReplaceAction(int result, bool found = false);
-    void exposeFound(KateViewCursor &cursor, int slen, int flags, bool replace);
+    void exposeFound(KateTextCursor &cursor, int slen, int flags, bool replace);
     void deleteReplacePrompt();
     bool askReplaceEnd();
   protected slots:
@@ -602,7 +590,7 @@ class KateView : public Kate::View
     void insLine(int line) { myViewInternal->insLine(line); };
     void delLine(int line) { myViewInternal->delLine(line); };
     void updateCursor() { myViewInternal->updateCursor(); };
-    void updateCursor(KateViewCursor &newCursor) { myViewInternal->updateCursor(newCursor); };
+    void updateCursor(KateTextCursor &newCursor) { myViewInternal->updateCursor(newCursor); };
 
     void clearDirtyCache(int height) { myViewInternal->clearDirtyCache(height); };
     void tagLines(int start, int end, int x1, int x2) { myViewInternal->tagLines(start, end, x1, x2); };
@@ -696,6 +684,14 @@ class KateView : public Kate::View
 
   public:
     KTextEditor::Document *document () const { return (KTextEditor::Document *)myDoc; };
+    
+  //
+  // cursor cache for document
+  // here stores the document the view's cursor pos while editing before update
+  //
+  private:
+    KateTextCursor cursorCache;
+    bool cursorCacheChanged;
 };
 
 class KateBrowserExtension : public KParts::BrowserExtension

@@ -24,6 +24,7 @@
 #include "katebuffer.h"
 #include "katetextline.h"
 #include "katecmd.h"
+#include "kateglobal.h"
 
 #include <qfileinfo.h>
 #include <qfile.h>
@@ -257,7 +258,6 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   editIsRunning = false;
   editCurrentUndo = 0L;
   editWithUndo = false;
-  editCursorCache.setAutoDelete (true);
 
   pseudoModal = 0L;
   blockSelect = false;
@@ -443,7 +443,7 @@ bool KateDocument::setText(const QString &s)
      
 bool KateDocument::clear()     
 {     
-  KateViewCursor cursor;     
+  KateTextCursor cursor;     
   KateView *view;     
      
   setPseudoModal(0L);
@@ -643,15 +643,11 @@ bool KateDocument::editStart (bool withUndo)
   else
     editCurrentUndo = 0L;
 
-  editCursorCache.clear();
   for (uint z = 0; z < myViews.count(); z++)
   {
-    KateViewCursorCache* n = new KateViewCursorCache ();
-    myViews.at(z)->cursorPositionReal (&(n->line), &(n->col));
-    n->changed = false;
-    n->view = myViews.at(z);
-
-    editCursorCache.append (n);
+    KateView *v = myViews.at(z);
+    v->cursorCacheChanged = false;
+    v->cursorCache = v->myViewInternal->cursor;
   }
 
   return true;
@@ -675,20 +671,13 @@ void KateDocument::editEnd ()
     emit undoChanged ();
   }
 
-  for (uint z = 0; z < editCursorCache.count(); z++)
+  for (uint z = 0; z < myViews.count(); z++)
   {
-    KateViewCursorCache* n = editCursorCache.at(z);
+    KateView *v = myViews.at(z);
 
-    if (n->changed && n->view)
-    {
-      KateViewCursor c;
-      c.line = n->line;
-      c.col = n->col;
-
-      n->view->updateCursor (c);
-    }
+     if (v->cursorCacheChanged)
+      v->updateCursor (v->cursorCache);
   }
-  editCursorCache.clear();
 
   setModified(true);
   emit textChanged ();
@@ -785,12 +774,12 @@ bool KateDocument::editRemoveText ( uint line, uint col, uint len )
 
   newDocGeometry = true;
 
-  for (uint z = 0; z < editCursorCache.count(); z++)
+  for (uint z = 0; z < myViews.count(); z++)
   {
-    KateViewCursorCache* n = editCursorCache.at(z);
+    KateView *v = myViews.at(z);
 
-    cLine = n->line;
-    cCol = n->col;
+    cLine = v->cursorCache.line;
+    cCol = v->cursorCache.col;
 
     if ( (cLine == line) && (cCol > col) )
     {
@@ -805,9 +794,9 @@ bool KateDocument::editRemoveText ( uint line, uint col, uint len )
         cCol = col;
     }
 
-    n->line = line;
-    n->col = cCol;
-    n->changed = true;
+    v->cursorCache.line = line;
+    v->cursorCache.col = cCol;
+    v->cursorCacheChanged = true;
   }
 
   if (b)
@@ -928,21 +917,16 @@ bool KateDocument::editUnWrapLine ( uint line, uint col)
   {
     view = myViews.at(z2);
     view->delLine(line+1);
-  }
 
-  for (uint z = 0; z < editCursorCache.count(); z++)
-  {
-    KateViewCursorCache* n = editCursorCache.at(z);
-
-    cLine = n->line;
-    cCol = n->col;
+    cLine = view->cursorCache.line;
+    cCol = view->cursorCache.col;
 
     if ( (cLine == (line+1)) || ((cLine == line) && (cCol >= col)) )
       cCol = col;
 
-    n->line = line;
-    n->col = cCol;
-    n->changed = true;
+    view->cursorCache.line = line;
+    view->cursorCache.col = cCol;
+    view->cursorCacheChanged = true;
   }
 
   if (b)
@@ -1043,21 +1027,16 @@ bool KateDocument::editRemoveLine ( uint line )
   {
     view = myViews.at(z2);
     view->delLine(line);
-  }
-
-  for (uint z = 0; z < editCursorCache.count(); z++)
-  {
-    KateViewCursorCache* n = editCursorCache.at(z);
-
-    cLine = n->line;
-    cCol = n->col;
+    
+    cLine = view->cursorCache.line;
+    cCol = view->cursorCache.col;
 
     if ( (cLine == line) )
       cCol = 0;
 
-    n->line = line;
-    n->col = cCol;
-    n->changed = true;
+    view->cursorCache.line = line;
+    view->cursorCache.col = cCol;
+    view->cursorCacheChanged = true;
   }
 
   if (b)
@@ -2240,7 +2219,7 @@ void KateDocument::misspelling (QString origword, QStringList *, unsigned pos)
     cnt += getTextLine(line)->length()+1;
 
   // Highlight the mispelled word
-  KateViewCursor cursor;
+  KateTextCursor cursor;
   line--;
   cursor.col = pos - (cnt - getTextLine(line)->length()) + 1;
   cursor.line = line;
@@ -2271,7 +2250,7 @@ void KateDocument::corrected (QString originalword, QString newword, unsigned po
         cnt += getTextLine(line)->length() + 1;
 
       // Highlight the mispelled word
-      KateViewCursor cursor;
+      KateTextCursor cursor;
       line--;
       cursor.col = pos - (cnt-getTextLine(line)->length()) + 1;
       cursor.line = line;
@@ -2420,7 +2399,7 @@ int KateDocument::charWidth(const TextLine::Ptr &textLine, int cursorX,WhichFont
   return x;
 }
 
-int KateDocument::charWidth(KateViewCursor &cursor) {
+int KateDocument::charWidth(KateTextCursor &cursor) {
   if (cursor.col < 0)
      cursor.col = 0;
   if (cursor.line < 0)
@@ -2457,7 +2436,7 @@ uint KateDocument::textWidth(const TextLine::Ptr &textLine, int cursorX,WhichFon
   return x;
 }
 
-uint KateDocument::textWidth(KateViewCursor &cursor)
+uint KateDocument::textWidth(KateTextCursor &cursor)
 {
   if (cursor.col < 0)
      cursor.col = 0;
@@ -2468,7 +2447,7 @@ uint KateDocument::textWidth(KateViewCursor &cursor)
   return textWidth(getTextLine(cursor.line),cursor.col);
 }
 
-uint KateDocument::textWidth(bool wrapCursor, KateViewCursor &cursor, int xPos,WhichFont wf)
+uint KateDocument::textWidth(bool wrapCursor, KateTextCursor &cursor, int xPos,WhichFont wf)
 {
   int len;
   int x, oldX;
@@ -2552,7 +2531,7 @@ uint KateDocument::textHeight(WhichFont wf) {
   return numLines()*((wf==ViewFont)?viewFont.fontHeight:printFont.fontHeight);
 }
 
-uint KateDocument::currentColumn(KateViewCursor &cursor)
+uint KateDocument::currentColumn(KateTextCursor &cursor)
 {
   TextLine::Ptr t = getTextLine(cursor.line);
 
@@ -2623,7 +2602,7 @@ bool KateDocument::insertChars ( int line, int col, const QString &chars, KateVi
   if (b)
     editEnd ();
 
-  KateViewCursor c;
+  KateTextCursor c;
   c.line = line;
   c.col = col;
 
@@ -2634,7 +2613,7 @@ bool KateDocument::insertChars ( int line, int col, const QString &chars, KateVi
     int line;
     const QChar *s;
 //    int pos;
-    KateViewCursor actionCursor;
+    KateTextCursor actionCursor;
 
     line = c.cursor.line;
     do {
@@ -2833,7 +2812,7 @@ void KateDocument::paste (VConfig &c)
   }
 }
 
-void KateDocument::selectTo(VConfig &c, KateViewCursor &cursor, int )
+void KateDocument::selectTo(VConfig &c, KateTextCursor &cursor, int )
 {
   if (selectAnchorLine == -1)
   {
@@ -2844,7 +2823,7 @@ void KateDocument::selectTo(VConfig &c, KateViewCursor &cursor, int )
   setSelection (selectAnchorLine, selectAnchorCol, cursor.line, cursor.col);
 }
 
-void KateDocument::selectWord(KateViewCursor &cursor, int flags) {
+void KateDocument::selectWord(KateTextCursor &cursor, int flags) {
   int start, end, len;
 
   TextLine::Ptr textLine = getTextLine(cursor.line);
@@ -2858,7 +2837,7 @@ void KateDocument::selectWord(KateViewCursor &cursor, int flags) {
   setSelection (cursor.line, start, cursor.line, end);
 }
 
-void KateDocument::selectLength(KateViewCursor &cursor, int length, int flags) {
+void KateDocument::selectLength(KateTextCursor &cursor, int length, int flags) {
   int start, end;
 
   TextLine::Ptr textLine = getTextLine(cursor.line);
@@ -2925,7 +2904,7 @@ void KateDocument::optimizeLeadingSpace(int line, int flags, int change) {
   QChar ch;
   int extra;
   QString s;
-  KateViewCursor cursor;
+  KateTextCursor cursor;
 
   TextLine::Ptr textLine = getTextLine(line);
   len = textLine->length();
@@ -3218,7 +3197,7 @@ void KateDocument::doComment(VConfig &c, int change)
   }
 }
 
-QString KateDocument::getWord(KateViewCursor &cursor) {
+QString KateDocument::getWord(KateTextCursor &cursor) {
   int start, end, len;
 
   TextLine::Ptr textLine = getTextLine(cursor.line);
@@ -3866,7 +3845,7 @@ found:
   return true;
 }
 
-void KateDocument::newBracketMark(KateViewCursor &cursor, BracketMark &bm)
+void KateDocument::newBracketMark(KateTextCursor &cursor, BracketMark &bm)
 {
   TextLine::Ptr textLine;
   int x, line, count, attr;
