@@ -52,6 +52,7 @@ KateFileList::KateFileList (KateDocManager *_docManager, KateViewManager *_viewM
 
   // Honour KDE single/double click setting
   connect(this,SIGNAL(executed(QListBoxItem *)),this,SLOT(slotActivateView(QListBoxItem *)));
+  connect(this,SIGNAL(highlighted(QListBoxItem *)),this,SLOT(slotActivateView(QListBoxItem *)));
 
   connect(viewManager,SIGNAL(viewChanged()), this,SLOT(slotViewChanged()));
 
