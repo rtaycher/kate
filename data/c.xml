@@ -1,5 +1,5 @@
 <?xml version="1.02" encoding="UTF-8"?><!DOCTYPE language>
-<language name="C"section="Sources" extensions="*.c;*.cpp;*.cc;*.C;*.h" mimetype="text/x-c++-src;text/x-c++-hdr;text/x-c-hdr;text/x-c++-src" casesensitive="1">
+<language name="C"section="Sources" extensions="*.c;*.cpp;*.cc;*.C;*.h" mimetype="text/x-c++-src;text/x-c++-hdr;text/x-c-hdr;text/x-c++-src">
   <highlighting>
     <list name="keywords">
       <item> break </item>
@@ -114,5 +114,6 @@
     <comments>
       <comment name="multiLine" start="/*" end="*/" />
     </comments>
+    <keywords casesensitive="1" />
   </general>
 </language>

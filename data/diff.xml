@@ -1,5 +1,5 @@
 <?xml version="1.01" encoding="UTF-8"?><!DOCTYPE language>
-<language name="Diff" section="Other" extensions="*.diff;*patch" mimetype="text/plain; text/x-c++-src;text/x-c++-hdr;text/x-c-hdr;text/x-c++-src" casesensitive="1">
+<language name="Diff" section="Other" extensions="*.diff;*patch" mimetype="text/plain; text/x-c++-src;text/x-c++-hdr;text/x-c-hdr;text/x-c++-src">
   <highlighting>
 
     <contexts>
@@ -26,4 +26,7 @@
       <itemData name="Comment"  defStyleNum="dsComment"/>
     </itemDatas>
   </highlighting>
+  <general>
+    <keywords casesensitive="1" />
+  </general>
 </language>

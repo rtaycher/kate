@@ -1,5 +1,5 @@
 <?xml version="1.02" encoding="UTF-8"?><!DOCTYPE language>
-<language name="LaTeX" section="Markup" extensions="*.tex;*.TEX;*.bib;*.BIB;*.ltx;*.LTX;*.sty;*.STY;*.cls;*.CLS" mimetype="text/x-tex" casesensitive="1">
+<language name="LaTeX" section="Markup" extensions="*.tex;*.TEX;*.bib;*.BIB;*.ltx;*.LTX;*.sty;*.STY;*.cls;*.CLS" mimetype="text/x-tex">
   <highlighting>
     <list name="keywords">
       <item> begin</item>
@@ -310,5 +310,6 @@
     <comments>
       <comment name="singleLine" start="%" />
     </comments>
+    <keywords casesensitive="1" />
   </general>
 </language>

@@ -1,5 +1,5 @@
 <?xml version="1.02" encoding="UTF-8"?><!DOCTYPE language>
-<language name="Ada" section="Sources" extensions="*.a" mimetype="text/x-ada-src" casesensitive="1">
+<language name="Ada" section="Sources" extensions="*.a" mimetype="text/x-ada-src">
         <highlighting>
                 <list name="keywords">
                         <item> abort </item>
@@ -91,5 +91,8 @@
                         <itemData name="String"      defStyleNum="dsString" />
                         <itemData name="Comment"     defStyleNum="dsComment" />
                 </itemDatas>
-	</highlighting>
+  </highlighting>
+  <general>
+    <keywords casesensitive="1" />
+  </general>
 </language>

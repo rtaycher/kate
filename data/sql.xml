@@ -1,5 +1,5 @@
 <?xml version="1.02" encoding="UTF-8"?><!DOCTYPE language>
-<language name="SQL" section="Sources" extensions="*.sql;*.SQL" mimetype="text/x-sql" casesensitive="0">
+<language name="SQL" section="Sources" extensions="*.sql;*.SQL" mimetype="text/x-sql">
   <highlighting>
     <list name="keywords">
       <item> ABS </item>
@@ -776,4 +776,7 @@
       <itemData name="Identifier" defStyleNum="dsOthers"/>
     </itemDatas>
   </highlighting>
+  <general>
+    <keywords casesensitive="0" />
+  </general>
 </language>

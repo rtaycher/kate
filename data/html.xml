@@ -1,5 +1,5 @@
 <?xml version="1.02" encoding="UTF-8"?><!DOCTYPE language>
-<language name="HTML" section="Markup" extensions="*.html;*.htm;*.shtml;*.shtm" mimetype="text/html" casesensitive="0">
+<language name="HTML" section="Markup" extensions="*.html;*.htm;*.shtml;*.shtm" mimetype="text/html">
   <highlighting>
     <contexts>
        <context attribute="0" lineEndContext="0">
@@ -38,5 +38,6 @@
     <comments>
       <comment name="multiLine" start="&lt;!--" end="//--&gt;" />
     </comments>
+    <keywords casesensitive="0" />
   </general>
 </language>

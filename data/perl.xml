@@ -1,5 +1,5 @@
 <?xml version="1.02" encoding="UTF-8"?><!DOCTYPE language>
-<language name="Perl" section="Scripts" extensions="*.pl;*.pm" mimetype="" casesensitive="1">
+<language name="Perl" section="Scripts" extensions="*.pl;*.pm" mimetype="">
 <highlighting>
 	<list name="keywords">
 		<item> sub </item>
@@ -162,5 +162,11 @@
 		<itemData name="Symbol"  defStyleNum="dsNormal"/>
 		<itemData name="Pattern"  defStyleNum="dsOthers"/>
 	</itemDatas>
-</highlighting>
+  </highlighting>
+  <general>
+    <comments>
+      <comment name="singleLine" start="#" />
+    </comments>
+    <keywords casesensitive="1" />
+  </general>
 </language>

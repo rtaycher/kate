@@ -1,5 +1,5 @@
 <?xml version="1.02" encoding="UTF-8"?><!DOCTYPE language>
-<language name="KBasic"section="Sources" extensions="*.kbasic" mimetype="text/x-kbasic-src" casesensitive="1">
+<language name="KBasic"section="Sources" extensions="*.kbasic" mimetype="text/x-kbasic-src">
     <highlighting>
         <list name="keywords">
         <item> For </item>
@@ -85,5 +85,12 @@
         <itemData name="String" defStyleNum="dsString"/>
         <itemData name="Comment" defStyleNum="dsComment"/>
         </itemDatas>
- </highlighting>
+  </highlighting>
+  <general>
+    <comments>
+      <comment name="singleLine" start="//" />
+      <comment name="multiLine" start="/*" end="*/" />
+    </comments>
+    <keywords casesensitive="1" />
+  </general>
 </language>
