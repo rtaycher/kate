@@ -282,7 +282,7 @@ void GrepTool::itemSelected(const QString& item)
     str = str.mid(pos+1);
     if ( (pos = str.find(':')) != -1)
     {
-      filename = m_workingDir + "/" + filename;
+      filename = m_workingDir + QDir::separator() + filename;
       linenumber = str.left(pos);
       emit itemSelected(filename,linenumber.toInt()-1);
     }
@@ -304,17 +304,29 @@ void GrepTool::processOutput()
 
 void GrepTool::slotSearch()
 {
+  if ( cmbPattern->currentText().isEmpty() )
+  {
+    cmbPattern->setFocus();
+    return;
+  }
+
+  if ( cmbDir->url().isEmpty() || ! QDir(cmbDir->url()).exists() )
+  {
+    cmbDir->setFocus();
+    return;
+  }
+
+  if ( ! leTemplate->text().contains("%s") )
+  {
+    leTemplate->setFocus();
+    return;
+  }
+
   if ( childproc && childproc->isRunning() )
   {
     childproc->kill();
     return;
   }
-
-  if ( cmbPattern->currentText().isEmpty() )
-    return;
-
-  if ( ! QDir(cmbDir->url()).exists() )
-    return;
 
   slotClear ();
 
@@ -325,7 +337,6 @@ void GrepTool::slotSearch()
     s.replace( QRegExp( "([^\\w'])" ), "\\\\1" );
   QString pattern = leTemplate->text();
   pattern.replace( "%s", s );
-//   pattern.replace("'", "'\\''"); ### what?
 
   childproc = new KProcess();
   childproc->setUseShell( true );
@@ -333,28 +344,22 @@ void GrepTool::slotSearch()
   *childproc << "find" << ".";
   if (!cbRecursive->isChecked())
     *childproc << "-maxdepth" << "1";
-  if ( cmbFiles->currentText() != "" )
+  if (!cmbFiles->currentText().isEmpty() )
   {
     QStringList files = QStringList::split ( ",", cmbFiles->currentText(), FALSE );
-    *childproc << "'('";
-    for ( QStringList::Iterator it = files.begin();
-          it != files.end();
-          it++ )
-    {
-      if ( it != files.begin() )
-        *childproc << "-o";
-      *childproc << "-name" << KProcess::quote(*it);
-    }
+    *childproc << "'('" << "-false";
+    for ( QStringList::Iterator it = files.begin(); it != files.end(); ++it )
+      *childproc << "-o" << "-name" << KProcess::quote(*it);
     *childproc << "')'";
   }
   *childproc << "-exec" << "grep";
   if (!cbCasesensitive->isChecked())
     *childproc << "-i";
   *childproc << "-n";
-  *childproc << "-H";
+  *childproc << "-H"; // gnu option, should we really assume gnu?
   *childproc << "-e" << KProcess::quote(pattern);
   *childproc << "{}";
-  *childproc << "/dev/null";
+  *childproc << "/dev/null"; //trick to have grep always display the filename
   *childproc << "';'";
 
   connect( childproc, SIGNAL(processExited(KProcess *)),
@@ -473,18 +478,7 @@ bool GrepTool::eventFilter( QObject *o, QEvent *e )
        ((QKeyEvent*)e)->key() == Qt::Key_Return ||
        ((QKeyEvent*)e)->key() == Qt::Key_Enter ) )
   {
-    if ( cmbPattern->currentText().isEmpty() )
-      cmbPattern->setFocus();
-    else if ( leTemplate->text().isEmpty() )
-      leTemplate->setFocus();
-    else if ( cmbFiles->currentText().isEmpty() )
-      cmbFiles->setFocus();
-    else if ( cmbDir->url().isEmpty() )
-      cmbDir->setFocus();
-
-    else
-      slotSearch();
-
+    slotSearch();
     return true;
   }
 
