@@ -41,6 +41,7 @@
 #include "qstringlist.h"
 #endif // QT_H
 
+#include <qglobal.h>
 
 #if QT_VERSION >=300
 #include <qregexp.h>

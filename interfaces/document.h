@@ -26,7 +26,13 @@
 #ifndef _KATE_DOCUMENT_INCLUDE_
 #define _KATE_DOCUMENT_INCLUDE_
 
+#include <qglobal.h> /* Only for 2.X and 3.X compatibility */
+
+#if QT_VERSION < 300
 #include <qlist.h>
+#else
+#include <qptrlist.h>
+#endif
 #include <ktexteditor.h>
 
 class KConfig;
@@ -138,8 +144,11 @@ class Document : public KTextEditor::Document
 
     /** A list of all marks in a document. Use binary comparing to find marks of a specific type.
     */
+#if QT_VERSION< 300
     virtual QList<Mark> marks () { QList<Mark> l; return l; };
-
+#else
+    virtual QPtrList<Mark> marks() {QPtrList<Mark> l; return l;};
+#endif
   public slots:
     // clear buffer/filename - update the views
     virtual void flush () { ; };

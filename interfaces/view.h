@@ -27,7 +27,7 @@
 #define _KATE_VIEW_INCLUDE_
 
 #include <ktexteditor.h>
-
+#include <qpopupmenu.h>
 class KConfig;
 
 namespace Kate

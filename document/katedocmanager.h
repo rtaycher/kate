@@ -22,7 +22,11 @@
 #include "../interfaces/docmanager.h"
 #include "../interfaces/document.h"
 
+#if QT_VERSION < 300
 #include <qlist.h>
+#else
+#include <qptrlist.h>
+#endif
 #include <qobject.h>
 
 class KateDocManager : public Kate::DocManager
@@ -57,7 +61,11 @@ class KateDocManager : public Kate::DocManager
     void checkAllModOnHD(bool forceReload=false);
 
   protected:
+#if QT_VERSION < 300
     QList<KateDocument> docList;
+#else
+    QPtrList<KateDocument> docList;
+#endif
 
   signals:
     void documentCreated (KateDocument *doc);

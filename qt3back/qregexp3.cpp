@@ -34,9 +34,10 @@
 ** not clear to you.
 **
 **********************************************************************/
+#include <qglobal.h>
 #if QT_VERSION >=300
-#error QRegExp3 is now in QT 3 use QRegExp instead
-#endif
+#warning QRegExp3 is now in QT 3 use QRegExp instead
+#else
 
 #include "qarray.h"
 #include "qbitarray.h"
@@ -3765,3 +3766,5 @@ void QRegExp3::compile( bool caseSensitive )
     priv->captured.detach();
     priv->captured.fill( -1, 2 + 2 * eng->numCaptures() );
 }
+
+#endif

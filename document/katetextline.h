@@ -24,7 +24,11 @@
 #include <stdlib.h>
 
 #include <qstring.h>
+#if QT_VERSION < 300
 #include <qarray.h>
+#else
+#include <qmemarray.h>
+#endif
 #include <qvaluelist.h>
 
 #include <ksharedptr.h>
@@ -334,7 +338,11 @@ public:
     /**
       The attributes
     */
+#if QT_VERSION < 300
     QArray<uchar> attributes;
+#else
+    QMemArray<uchar> attributes;
+#endif
     /**
       The attribute of the free space behind the end
     */

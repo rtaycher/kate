@@ -21,7 +21,12 @@
 #include "../main/katemain.h"
 #include "kateview.h"
 
+#if QT_VERSION < 300
 #include <qlist.h>
+#else
+#include <qptrlist.h>
+#endif
+
 #include <qwidget.h>
 #include <qvbox.h>
 
@@ -83,7 +88,11 @@ class KateViewSpace : public QVBox
     QLabel* l;
     QPixmap i_active;
     QPixmap i_empty;
+#if QT_VERSION < 300
     QList<KateView> mViewList;
+#else
+    QPtrList<KateView> mViewList;
+#endif
     int mViewCount;
 
   private slots:
