@@ -136,13 +136,21 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     KateDocument (bool bSingleViewMode=false, bool bBrowserView=false, QWidget *parentWidget = 0, const char *widgetName = 0, QObject * = 0, const char * = 0);
     ~KateDocument ();
 
+  public:
+    //
     // KTextEditor::Document stuff
+    //
     virtual KTextEditor::View *createView( QWidget *parent, const char *name );
-    QPtrList<KTextEditor::View> views () const { return _views; };
+    QPtrList<KTextEditor::View> views () const;
 
+  public slots:
+    //
     // KTextEditor::EditInterface stuff
+    //
     virtual QString text ( int line, int col, int len ) const;
     virtual QString textLine ( int line ) const;
+
+    virtual void setText(const QString &);
 
     virtual bool insertText ( int line, int col, const QString &s );
     virtual bool removeText ( int line, int col, int len );
@@ -153,11 +161,17 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     virtual int length () const;
     virtual int lineLength ( int line ) const;
 
+  public:
+    //
     // KTextEditor::CursorInterface stuff
+    //
     virtual KTextEditor::Cursor *createCursor ();
     virtual QPtrList<KTextEditor::Cursor> cursors () const;
 
+  protected:
+    //
     // internal edit stuff (mostly for view)
+    //
     bool insertChars ( int line, int col, const QString &chars, KateView *view );
 
   protected:
@@ -171,10 +185,6 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
 
     virtual bool openFile();
     virtual bool saveFile();
-
-    void insert_Line(const QString& s,int line=-1, bool update=true);
-    void remove_Line(int line,bool update=true);
-    void replaceLine(const QString& s,int line=-1);
 
     virtual void setSelection( int row_from, int col_from, int row_to, int col_t );
     virtual bool hasSelection() const;
@@ -337,9 +347,6 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
 
     virtual QString text() const;
     QString getWord(PointStruc &cursor);
-
-  public slots:
-    virtual void setText(const QString &);
 
   public:
     long needPreHighlight(long till);

@@ -78,42 +78,6 @@
 
 #include "katecmd.h"
 
-KateCursor::KateCursor ( KateDocument *doc)
-{
-  myDoc = doc;
-  myDoc->addCursor (this);
-}
-
-KateCursor::~KateCursor ( )
-{
-  myDoc->removeCursor (this);
-}
-
-void KateCursor::position ( int *line, int *col ) const
-{
-
-}
-
-bool KateCursor::setPosition ( int line, int col )
-{
-
-}
-
-bool KateCursor::insertText ( const QString& text )
-{
-
-}
-
-bool KateCursor::removeText ( int numberOfCharacters )
-{
-
-}
-
-QChar KateCursor::currentChar () const
-{
-
-}
-
 const int KateDocument::maxAttribs = 32;
 
 QStringList KateDocument::searchForList = QStringList();
@@ -121,6 +85,9 @@ QStringList KateDocument::replaceWithList = QStringList();
 
 uint KateDocument::uniqueID = 0;
 
+//
+// KateDocument Constructor
+//
 KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
                                            QWidget *parentWidget, const char *widgetName,
                                            QObject *, const char *)
@@ -208,6 +175,327 @@ KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
   }
 }
 
+//
+// KateDocument Destructor
+//
+KateDocument::~KateDocument()
+{
+  m_highlight->release();
+
+  if ( !m_bSingleViewMode )
+  {
+    myViews.setAutoDelete( true );
+    myViews.clear();
+    myViews.setAutoDelete( false );
+  }
+}
+
+//
+// KTextEditor::Document stuff
+//
+
+KTextEditor::View *KateDocument::createView( QWidget *parent, const char *name )
+{
+  return new KateView( this, parent, name);
+}
+
+QPtrList<KTextEditor::View> KateDocument::views () const
+{
+  return _views;
+};
+
+//
+// KTextEditor::EditInterface stuff
+//
+
+QString KateDocument::text() const
+{
+  QString s;
+
+  for (int i=0; i < buffer->count(); i++)
+  {
+    TextLine::Ptr textLine = buffer->line(i);
+    s.insert(s.length(), textLine->getText(), textLine->length());
+    if ( (i < (buffer->count()-1)) )
+      s.append('\n');
+  }
+
+  return s;
+}
+
+QString KateDocument::text ( int line, int col, int len ) const
+{
+
+}
+
+QString KateDocument::textLine( int line ) const
+{
+  TextLine::Ptr l = getTextLine( line );
+  if ( !l )
+    return QString();
+
+  return l->getString();
+}
+
+void KateDocument::setText(const QString &s) {
+  int pos;
+  QChar ch;
+
+  clear();
+
+  int line=1;
+
+  TextLine::Ptr textLine = buffer->line(0);
+  for (pos = 0; pos <= (int) s.length(); pos++) {
+    ch = s[pos];
+    if (ch.isPrint() || ch == '\t') {
+      textLine->append(&ch, 1);
+    } else if (ch == '\n')
+    {
+      textLine = new TextLine();
+      buffer->insertLine (line, textLine);
+      line++;
+    }
+  }
+  updateLines();
+}
+
+bool KateDocument::insertText( int line, int col, const QString &s )
+{
+  int insertPos = col;
+  int len = s.length();
+  QChar ch;
+  QString buf;
+  TextLine::Ptr l, tl;
+  KateView *view;
+
+  if (s.isEmpty())
+    return true;
+
+  tagEnd = 0;
+  tagStart = 0xffffff;
+
+  l = getTextLine(line);
+
+  if (!l)
+    return false;
+
+  for (int pos = 0; pos < len; pos++)
+  {
+    ch = s[pos];
+
+    if (ch == '\n')
+    {
+      if (buf.length() > 0)
+        l->replace(insertPos, 0, buf.unicode(), buf.length());
+
+      tl = new TextLine();
+      if (!tl)
+        return false;
+
+      l->wrap (tl, insertPos + buf.length());
+
+      buffer->insertLine (line+1, tl);
+      buffer->changeLine(line);
+
+      updateMaxLength(l);
+
+      insLine(line);
+      tagLine(line);
+      tagLine(line+1);
+
+      line++;
+      insertPos = 0;
+      buf.truncate(0);
+      l = tl;
+
+      if (selectStart >= line) selectStart++;
+      if (selectEnd >= line) selectEnd++;
+      if (tagStart >= line) tagStart++;
+      if (tagEnd >= line) tagEnd++;
+
+      newDocGeometry = true;
+      for (view = myViews.first(); view != 0L; view = myViews.next() )
+      {
+        view->insLine(line);
+      }
+    }
+    else
+      buf += ch; // append char to buffer
+  }
+
+  if (buf.length() > 0)
+    l->replace(insertPos, 0, buf.unicode(), buf.length());
+
+  buffer->changeLine(line);
+  updateMaxLength(l);
+  tagLine(line);
+
+  if (tagStart <= tagEnd) {
+    optimizeSelection();
+    updateLines(tagStart, tagEnd, 0, line);
+    setModified(true);
+  }
+
+  emit textChanged ();
+
+  return true;
+}
+
+bool KateDocument::removeText ( int line, int col, int len )
+{
+  int deletePos = col;
+  TextLine::Ptr l, tl;
+  KateView *view;
+  int cLine, cCol;
+  PointStruc c;
+
+  if (len < 1)
+    return true;
+
+  tagEnd = 0;
+  tagStart = 0xffffff;
+
+  l = getTextLine(line);
+
+  if (!l)
+    return false;
+
+  int chars = len;
+  int rchars;
+  while (chars > 0)
+  {
+    if ((deletePos+chars) > (l->length()-deletePos))
+    {
+      rchars = l->length()-deletePos;
+
+      l->truncate(deletePos);
+
+      tl = getTextLine(line+1);
+
+      if (!tl)
+        return false;
+
+      l->unWrap (deletePos, tl, tl->length());
+      l->setContext (tl->getContext());
+
+      if (longestLine == tl)
+        longestLine = 0L;
+
+      buffer->changeLine(line);
+      buffer->removeLine(line+1);
+
+      updateMaxLength(l);
+      tagLine(line);
+      delLine (line+1);
+
+      if (selectStart >= (line+1) && selectStart > 0) selectStart--;
+      if (selectEnd >= (line+1)) selectEnd--;
+      if (tagStart >= (line+1) && tagStart > 0) tagStart--;
+      if (tagEnd >= (line+1)) tagEnd--;
+
+      newDocGeometry = true;
+      for (view = myViews.first(); view != 0L; view = myViews.next() )
+      {
+        view->getCursorPosition (&cLine, &cCol);
+        view->delLine(line+1);
+
+        if ( (cLine == (line+1)) || ((cLine == line) && (cCol > deletePos)) )
+          cCol = deletePos;
+
+        c.y = line;
+        c.x = cCol;
+
+        view->updateCursor (c);
+      }
+
+      chars=chars-(rchars+1);
+    }
+    else
+    {
+      l->replace (deletePos, chars, 0, 0);
+      buffer->changeLine(line);
+      updateMaxLength(l);
+      tagLine(line);
+
+      newDocGeometry = true;
+      for (view = myViews.first(); view != 0L; view = myViews.next() )
+      {
+        view->getCursorPosition (&cLine, &cCol);
+
+        if ( (cLine == line) && (cCol > deletePos) )
+          cCol = deletePos;
+
+
+        c.y = line;
+        c.x = cCol;
+
+        view->updateCursor (c);
+      }
+
+      chars = 0;
+    }
+  }
+
+  if (tagStart <= tagEnd) {
+    optimizeSelection();
+    updateLines(tagStart, tagEnd, 0, line);
+    setModified(true);
+  }
+
+  emit textChanged ();
+
+  return true;
+}
+
+bool KateDocument::insertLine( int l, const QString &str )
+{
+  if (l > buffer->count())
+    return false;
+
+  TextLine::Ptr TL=new TextLine();
+  TL->append(str.unicode(),str.length());
+  buffer->insertLine(l,TL);
+
+  newDocGeometry=true;
+  updateLines(l);
+  updateViews();
+
+  return true;
+}
+
+bool KateDocument::removeLine( int line )
+{
+  if (buffer->count() <= 1)
+    return false;
+
+  buffer->removeLine(line);
+
+  newDocGeometry=true;
+  updateLines(line);
+  updateViews();
+
+  return true;
+}
+
+int KateDocument::length() const
+{
+  return text().length();
+}
+
+int KateDocument::lineLength ( int line ) const
+{
+  TextLine::Ptr l = getTextLine( line );
+  if ( !l )
+    return -1;
+
+  return l->getString().length();
+}
+
+//
+// KTextEditor::CursorInterface stuff
+//
+
 KTextEditor::Cursor *KateDocument::createCursor ( )
 {
   return new KateCursor (this);
@@ -217,6 +505,10 @@ QPtrList<KTextEditor::Cursor> KateDocument::cursors () const
 {
   return myCursors;
 }
+
+//
+// Kate specific stuff ;)
+//
 
 void KateDocument::setDontChangeHlOnSave()
 {
@@ -282,18 +574,6 @@ void KateDocument::doPreHighlight()
   emit preHighlightChanged(PreHighlightedTill);
   if (PreHighlightedTill<RequestPreHighlightTill)
     QTimer::singleShot(10,this,SLOT(doPreHighlight()));
-}
-
-KateDocument::~KateDocument()
-{
-  m_highlight->release();
-
-  if ( !m_bSingleViewMode )
-  {
-    myViews.setAutoDelete( true );
-    myViews.clear();
-    myViews.setAutoDelete( false );
-  }
 }
 
 bool KateDocument::openFile()
@@ -399,231 +679,6 @@ bool KateDocument::saveFile()
   emit fileNameChanged ();
 
   return (f.status() == IO_Ok);
-}
-
-KTextEditor::View *KateDocument::createView( QWidget *parent, const char *name )
-{
-  return new KateView( this, parent, name);
-}
-
-QString KateDocument::textLine( int line ) const
-{
-  TextLine::Ptr l = getTextLine( line );
-  if ( !l )
-    return QString();
-
-  return l->getString();
-}
-
-void KateDocument::replaceLine(const QString& s,int line)
-{
-  remove_Line(line,false);
-  insert_Line(s,line,true);
-}
-
-bool KateDocument::insertLine( int l, const QString &str )
-{
-  insert_Line(str,l,true);
-  return true;
-}
-
-void KateDocument::insert_Line(const QString& s,int line, bool update)
-{
-  //kdDebug(13020)<<"KateDocument::insertLine "<<s<<QString("	%1").arg(line)<<endl;
-  TextLine::Ptr TL=new TextLine();
-  TL->append(s.unicode(),s.length());
-  buffer->insertLine(line,TL);
-  if (update)
-  {
-    newDocGeometry=true;
-    updateLines(line);
-    updateViews();
-  }
-}
-
-int KateDocument::lineLength ( int line ) const
-{
-  TextLine::Ptr l = getTextLine( line );
-  if ( !l )
-    return -1;
-
-  return l->getString().length();
-}
-
-bool KateDocument::insertText( int line, int col, const QString &s )
-{
-  int insertPos = col;
-  int len = s.length();
-  QChar ch;
-  QString buf;
-  TextLine::Ptr l, tl;
-  KateView *view;
-
-  if (s.isEmpty())
-    return true;
-
-  tagEnd = 0;
-  tagStart = 0xffffff;
-
-  l = getTextLine(line);
-
-  if (!l)
-    return false;
-
-  for (int pos = 0; pos < len; pos++)
-  {
-    ch = s[pos];
-
-    if (ch == '\n')
-    {
-      if (buf.length() > 0)
-        l->replace(insertPos, 0, buf.unicode(), buf.length());
-
-      tl = new TextLine();
-      if (!tl)
-        return false;
-
-      buffer->insertLine (line+1, tl);
-      l->wrap (tl, insertPos + buf.length());
-
-      buffer->changeLine(line);
-      updateMaxLength(l);
-      tagLine(line);
-
-      line++;
-      insertPos = 0;
-      buf.truncate(0);
-      l = tl;
-
-      if (selectStart >= line) selectStart++;
-      if (selectEnd >= line) selectEnd++;
-      if (tagStart >= line) tagStart++;
-      if (tagEnd >= line) tagEnd++;
-
-      newDocGeometry = true;
-      for (view = myViews.first(); view != 0L; view = myViews.next() )
-      {
-        view->insLine(line);
-      }
-    }
-    else
-      buf += ch; // append char to buffer
-  }
-
-  if (buf.length() > 0)
-    l->replace(insertPos, 0, buf.unicode(), buf.length());
-
-  buffer->changeLine(line);
-  updateMaxLength(l);
-  tagLine(line);
-
-  if (tagStart <= tagEnd) {
-    optimizeSelection();
-    updateLines(tagStart, tagEnd, 0, line);
-    setModified(true);
-  }
-
-  emit textChanged ();
-
-  return true;
-}
-
-bool KateDocument::removeText ( int line, int col, int len )
-{
-  int deletePos = col;
-  TextLine::Ptr l, tl;
-  KateView *view;
-
-  if (len < 1)
-    return true;
-
-  tagEnd = 0;
-  tagStart = 0xffffff;
-
-  l = getTextLine(line);
-
-  if (!l)
-    return false;
-
-  int chars = len;
-  int rchars;
-  while (chars > 0)
-  {
-    if ((deletePos+chars) > (l->length()-deletePos))
-    {
-      rchars = l->length()-deletePos;
-
-      l->truncate(deletePos);
-
-      tl = getTextLine(line+1);
-
-      if (!tl)
-        return false;
-
-      l->unWrap (deletePos, tl, tl->length());
-      buffer->removeLine(line+1);
-
-      buffer->changeLine(line);
-      updateMaxLength(l);
-      tagLine(line);
-
-      if (selectStart >= (line+1)) selectStart--;
-      if (selectEnd >= (line+1)) selectEnd--;
-      if (tagStart >= (line+1)) tagStart--;
-      if (tagEnd >= (line+1)) tagEnd--;
-
-      newDocGeometry = true;
-      for (view = myViews.first(); view != 0L; view = myViews.next() )
-      {
-        view->delLine(line+1);
-      }
-
-      chars=chars-(rchars+1);
-    }
-    else
-    {
-      l->replace (deletePos, chars, 0, 0);
-      buffer->changeLine(line);
-      updateMaxLength(l);
-      tagLine(line);
-
-      chars = 0;
-    }
-  }
-
-  if (tagStart <= tagEnd) {
-    optimizeSelection();
-    updateLines(tagStart, tagEnd, 0, line);
-    setModified(true);
-  }
-
-  emit textChanged ();
-
-  return true;
-}
-
-bool KateDocument::removeLine( int line ) {
-  remove_Line(line,true);
-  return true;
-}
-
-void KateDocument::remove_Line(int line,bool update)
-{
-  //kdDebug(13020)<<"KateDocument::removeLine "<<QString("%1").arg(line)<<endl;
-  if (buffer->count() > 1)
-    buffer->removeLine(line);
-//  newDocGeometry=true;
-//  if line==0)
-  if (update)
-  {
-    updateLines(line);
-    updateViews();
-  }
-}
-
-int KateDocument::length() const
-{
-  return text().length();
 }
 
 void KateDocument::setSelection( int , int , int , int )
@@ -747,7 +802,6 @@ void KateDocument::setReadOnly(bool m) {
 
   if (m != readOnly) {
     readOnly = m;
-//    if (readOnly) recordReset();
     for (view = myViews.first(); view != 0L; view = myViews.next() ) {
       emit static_cast<KateView *>( view )->newStatus();
     }
@@ -760,15 +814,9 @@ bool KateDocument::isReadOnly() const {
 
 void KateDocument::setNewDoc( bool m )
 {
-//  KTextEditor::View *view;
-
   if ( m != newDoc )
   {
     newDoc = m;
-////    if (readOnly) recordReset();
-//    for (view = myViews.first(); view != 0L; view = myViews.next() ) {
-//      emit static_cast<KateView *>( view )->newStatus();
-//    }
   }
 }
 
@@ -1132,8 +1180,6 @@ bool KateDocument::insertChars ( int line, int col, const QString &chars, KateVi
   //return false if nothing has to be inserted
   if (buf.isEmpty()) return false;
 
-  //auto deletion of the marked text occurs not very often and can therefore
-  //  be recorded separately
   VConfig v;
   view->myViewInternal->getVConfig(v);
 
@@ -1264,6 +1310,7 @@ void KateDocument::newLine(VConfig &c)
 
 void KateDocument::killLine(VConfig &c) {
 
+  removeLine (c.cursor.y);
   //recordStart(c, KateUndoGroup::ugDelLine);
  /* c.cursor.x = 0;
   recordDelete(c.cursor, 0xffffff);
@@ -1311,32 +1358,27 @@ void KateDocument::backspace(VConfig &c) {
 
     c.cursor.y--;
     c.cursor.x = getTextLine(c.cursor.y)->length();
-  //  recordAction(KateUndo::delLine,c.cursor);
+    removeText (c.cursor.y, c.cursor.x, 1);
   }
-}
-
-QString KateDocument::text ( int line, int col, int len ) const
-{
-
 }
 
 void KateDocument::del(VConfig &c) {
   TextLine::Ptr textLine = getTextLine(c.cursor.y);
   int len =  (c.flags & KateView::cfRemoveSpaces) ? textLine->lastChar() : textLine->length();
-  if (c.cursor.x < len/*getTextLine(c.cursor.y)->length()*/) {
-    // delete one character
-//    recordStart(c, KateUndoGroup::ugDelChar);
-    removeText(c.cursor.y, c.cursor.x, 1);
 
-  } else {
+ /* if (c.cursor.x < len)
+  {*/
+    // delete one character
+    removeText(c.cursor.y, c.cursor.x, 1);
+/*  } else {
     if (c.cursor.y < lastLine()) {
       // wrap next line to this line
       textLine->truncate(c.cursor.x); // truncate spaces
-    /*  recordStart(c, KateUndoGroup::ugDelLine);
+      removeText (c.cursor.y, c.cursor.x, 1);
       recordAction(KateUndo::delLine,c.cursor);
-      recordEnd(c);*/
+      recordEnd(c);
     }
-  }
+  }*/
 }
 
 void KateDocument::clear() {
@@ -2134,22 +2176,6 @@ void KateDocument::doComment(VConfig &c, int change)
   }
 }
 
-
-QString KateDocument::text() const
-{
-  QString s;
-
-  for (int i=0; i < buffer->count(); i++)
-  {
-    TextLine::Ptr textLine = buffer->line(i);
-    s.insert(s.length(), textLine->getText(), textLine->length());
-    if ( (i < (buffer->count()-1)) )
-      s.append('\n');
-  }
-
-  return s;
-}
-
 QString KateDocument::getWord(PointStruc &cursor) {
   int start, end, len;
 
@@ -2161,30 +2187,6 @@ QString KateDocument::getWord(PointStruc &cursor) {
   len = end - start;
   return QString(&textLine->getText()[start], len);
 }
-
-void KateDocument::setText(const QString &s) {
-  int pos;
-  QChar ch;
-
-  clear();
-
-  int line=1;
-
-  TextLine::Ptr textLine = buffer->line(0);
-  for (pos = 0; pos <= (int) s.length(); pos++) {
-    ch = s[pos];
-    if (ch.isPrint() || ch == '\t') {
-      textLine->append(&ch, 1);
-    } else if (ch == '\n')
-    {
-      textLine = new TextLine();
-      buffer->insertLine (line, textLine);
-      line++;
-    }
-  }
-  updateLines();
-}
-
 
 QString KateDocument::markedText(int flags) {
   TextLine::Ptr textLine;
@@ -3179,4 +3181,40 @@ void KateDocument::setWordWrapAt (uint col)
 void KateDocument::applyWordWrap ()
 {
   wrapText (myWordWrapAt);
+}
+
+KateCursor::KateCursor ( KateDocument *doc)
+{
+  myDoc = doc;
+  myDoc->addCursor (this);
+}
+
+KateCursor::~KateCursor ( )
+{
+  myDoc->removeCursor (this);
+}
+
+void KateCursor::position ( int *line, int *col ) const
+{
+
+}
+
+bool KateCursor::setPosition ( int line, int col )
+{
+
+}
+
+bool KateCursor::insertText ( const QString& text )
+{
+
+}
+
+bool KateCursor::removeText ( int numberOfCharacters )
+{
+
+}
+
+QChar KateCursor::currentChar () const
+{
+
 }
