@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="kwriteview" version="5">
+<kpartgui name="kwriteview" version="6">
 <MenuBar>
   <Menu name="file" noMerge="1"><text>&amp;File</text>
     <Action name="file_new" />
@@ -66,7 +66,7 @@
   <ActionList name="bookmarks" />
 </Menu>
 
-<ToolBar name="mainToolBar">
+<ToolBar name="mainToolBar"><text>Main Toolbar</text>
   <Action name="file_new" group="file_operations" />
   <Action name="file_open" group="file_operations" />
   <Action name="file_save" group="file_operations" />
