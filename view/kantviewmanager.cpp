@@ -25,7 +25,6 @@
 #include "../document/kantdocument.h"
 #include "kantview.h"
 #include "kantviewspace.h"
-#include "../fileselector/kantfileselector.h"
 
 #include "../kwrite/kwview.h"
 #include "../kwrite/kwattribute.h"
@@ -34,7 +33,6 @@
 #include "../kwrite/highlight.h"
 #include "../kwrite/kwrite_factory.h"
 
-//#include <qwidgetstack.h>
 #include <qlayout.h>
 #include <kdiroperator.h>
 #include <kfiledialog.h>
@@ -47,7 +45,6 @@
 #include <kstdaction.h>
 #include <qvbox.h>
 #include <qlayout.h>
-//#include <qsplitter.h>
 #include <dcopclient.h>
 #include <klistbox.h>
 #include <qobjectlist.h>
@@ -93,16 +90,11 @@ KantViewManager::KantViewManager (QWidget *parent, KantDocManager *docManager, K
   viewSpaceList.append(vs);
 
   listbox = new KListBox (sidebar);
-  fileselector = new KantFileSelector(0, "operator");
-  fileselector->dirOperator()->setView(KFile::Simple);
 
-  sidebar->addWidget (fileselector, i18n("Fileselector"));
   sidebar->addWidget (listbox, i18n("Files"));
 
   connect(listbox,SIGNAL(highlighted(QListBoxItem *)),this,SLOT(activateView(QListBoxItem *)));
   connect(listbox,SIGNAL(selected(QListBoxItem *)),this,SLOT(activateView(QListBoxItem *)));
-
-  connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileViewItem*)),this,SLOT(fileSelected(const KFileViewItem*)));
 
   connect( this, SIGNAL(viewChanged()), this, SLOT(slotViewChanged()) );
 }
@@ -491,12 +483,6 @@ void KantViewManager::statusMsgOther ()
 
   emit statusChanged (v, v->currentLine() + 1, v->currentColumn() + 1, ovr, mod, msg);
   emit statChanged ();
-}
-
-void KantViewManager::fileSelected(const KFileViewItem *file)
-{
-  KURL u(file->urlString());
-  openURL( u );
 }
 
 void KantViewManager::slotWindowNext()

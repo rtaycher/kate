@@ -92,7 +92,6 @@ class KantViewManager : public KantPluginIface
 
   public:
     KListBox *listbox;
-    KantFileSelector *fileselector;
 
     void deleteLastView ();
 
@@ -151,8 +150,6 @@ class KantViewManager : public KantPluginIface
 
     void statusMsg (const QString &msg);
     void statusMsgOther ();
-
-    void fileSelected(const KFileViewItem *file);
 
     void printNow();
     void printDlg();

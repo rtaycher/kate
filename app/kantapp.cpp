@@ -19,6 +19,7 @@
 #include "kantapp.moc"
 
 #include "../mainwindow/kantIface.h"
+#include "../document/kantdocmanager.h"
 #include "../pluginmanager/kantpluginmanager.h"
 #include "../mainwindow/kantmainwindow.h"
 #include "../view/kantviewmanager.h"
@@ -27,9 +28,12 @@
 
 KantApp::KantApp () : KUniqueApplication ()
 {
+  mainWindows.setAutoDelete (false);
+
+  docManager = new KantDocManager ();
   pluginManager=new KantPluginManager(this);
-  mainWindow = new KantMainWindow (pluginManager);
-  mainWindow->show ();
+
+  newMainWindow ();
 
   connect(this, SIGNAL(lastWindowClosed()), SLOT(quit()));
 }
@@ -38,25 +42,47 @@ KantApp::~KantApp ()
 {
 }
 
+void KantApp::newMainWindow ()
+{
+  KantMainWindow *mainWindow = new KantMainWindow (docManager, pluginManager);
+  mainWindows.append (mainWindow);
+
+  mainWindow->viewManager->openURL( KURL() );
+  mainWindow->show ();
+}
+
+void KantApp::removeMainWindow (KantMainWindow *mainWindow)
+{
+  mainWindows.remove (mainWindow);
+
+  if (mainWindows.count() == 0)
+    quit();
+}
+
+long KantApp::mainWindowsCount ()
+{
+  return mainWindows.count();
+}
+
 int KantApp::newInstance ()
 {
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 
-  mainWindow->reopenDocuments(isRestored());
+  mainWindows.first()->reopenDocuments(isRestored());
 
   if (!isRestored())
   {
 
     for (int z=0; z<args->count(); z++)
     {
-      mainWindow->viewManager->openURL( args->url(z) );
+      mainWindows.first()->viewManager->openURL( args->url(z) );
     }
 
-    mainWindow->raise();
+    mainWindows.first()->raise();
   }
 
-  if ( mainWindow->viewManager->viewCount () == 0 )
-    mainWindow->viewManager->openURL( KURL() );
+  if ( mainWindows.first()->viewManager->viewCount () == 0 )
+    mainWindows.first()->viewManager->openURL( KURL() );
 
   return 0;
 }

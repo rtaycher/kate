@@ -20,6 +20,7 @@
 #include "../kantmain.h"
 
 #include <kuniqueapp.h>
+#include <qlist.h>
 
 class KantApp : public KUniqueApplication
 {
@@ -32,8 +33,15 @@ class KantApp : public KUniqueApplication
     virtual int newInstance ();
     KantPluginManager *getPluginManager(){return pluginManager;};
 
+    void newMainWindow ();
+    void removeMainWindow (KantMainWindow *mainWindow);
+    long mainWindowsCount ();
+
+  private:
+    KantDocManager *docManager;
     KantPluginManager *pluginManager;
-    KantMainWindow *mainWindow;
+
+    QList<KantMainWindow> mainWindows;
 };
 
 #endif

@@ -34,7 +34,7 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
   friend class KantDocument;
 
   public:
-    KantMainWindow(KantPluginManager *_pluginManager);
+    KantMainWindow(KantDocManager *_docManager, KantPluginManager *_pluginManager);
     ~KantMainWindow();
 
     /** Returns the URL of the current document.
@@ -58,6 +58,8 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     KantProjectManager *projectManager;
     // should be protected, and kantviewmanager a friend class.
     KRecentFilesAction *fileOpenRecent;
+
+    KantFileSelector *fileselector;
 
   protected:
     /** reopens documents that was open last time kant was shut down*/
@@ -187,6 +189,8 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     void slotGoNext();
     void slotGoPrev();
     void slotSettingsShowFullScreen();
+
+    void fileSelected(const KFileViewItem *file);
 
   public:
     void openURL (const QString &name=0L);

@@ -26,6 +26,7 @@
 #include "../pluginmanager/kantconfigplugindialogpage.h"
 #include "../project/kantprojectmanager.h"
 #include "../view/kantviewmanager.h"
+#include "../app/kantapp.h"
 #include "../sidebar/kantsidebar.h"
 #include "../fileselector/kantfileselector.h"
 #include "kantmenuitem.h"
@@ -66,6 +67,7 @@
 #include <kstddirs.h>
 #include <kaction.h>
 #include <klocale.h>
+#include <kdiroperator.h>
 #include <kcmdlineargs.h>
 #include <kstdaction.h>
 #include <qvbox.h>
@@ -81,12 +83,13 @@
 
 #define POP_(x) kdDebug() << #x " = " << flush << x << endl
 
-KantMainWindow::KantMainWindow(KantPluginManager *_pluginManager) : 
-	KDockMainWindow (0, "Main Window"), 
+KantMainWindow::KantMainWindow(KantDocManager *_docManager, KantPluginManager *_pluginManager) :
+	KDockMainWindow (0, "Main Window"),
              DCOPObject ("KantIface" ),
 	m_pFilterShellProcess (NULL)
 {
-  pluginManager=_pluginManager;
+  docManager =  _docManager;
+  pluginManager =_pluginManager;
   config = kapp->config();
 
   setXMLFile( "kantui.rc" );
@@ -132,8 +135,6 @@ KantMainWindow::~KantMainWindow()
 
 void KantMainWindow::setupMainWindow ()
 {
-  docManager = new KantDocManager ();
-
   sidebarDock =  createDockWidget( "sidebarDock", 0 );
   sidebar = new KantSidebar (sidebarDock);
   sidebar->setMinimumSize(100,100);
@@ -161,6 +162,11 @@ void KantMainWindow::setupMainWindow ()
   consoleDock->setFocusPolicy(QWidget::ClickFocus);
 
   projectManager = new KantProjectManager (docManager, viewManager, statusBar());
+
+  fileselector = new KantFileSelector(0, "operator");
+  fileselector->dirOperator()->setView(KFile::Simple);
+  sidebar->addWidget (fileselector, i18n("Fileselector"));
+  connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileViewItem*)),this,SLOT(fileSelected(const KFileViewItem*)));
 
   statusBar()->hide();
 }
@@ -317,24 +323,32 @@ void KantMainWindow::setupActions()
 
 bool KantMainWindow::queryClose()
 {
+  bool val = false;
+
   saveProperties(config);
-//  viewManager->slotDocumentCloseAll();
-  viewManager->saveAllDocsAtCloseDown( config );
 
-  if ( (!docManager->currentDoc()) || ((!viewManager->activeView()->doc()->isModified()) && (docManager->docCount() == 1)))
+  if ( ((KantApp *)kapp)->mainWindowsCount () < 2 )
   {
-    if (viewManager->activeView()) viewManager->deleteLastView ();
-    return true;
-  }
+    viewManager->saveAllDocsAtCloseDown( config );
 
-  return false;
+    if ( (!docManager->currentDoc()) || ((!viewManager->activeView()->doc()->isModified()) && (docManager->docCount() == 1)))
+    {
+      if (viewManager->activeView()) viewManager->deleteLastView ();
+      val = true;
+    }
+  }
+  else
+    val = true;
+
+  if (val)
+    ((KantApp *)kapp)->removeMainWindow (this);
+
+  return val;
 }
 
 void KantMainWindow::newWindow ()
 {
-  KantMainWindow *newWin = new KantMainWindow (pluginManager);
-  newWin->viewManager->openURL( KURL() );
-  newWin->show ();
+  ((KantApp *)kapp)->newMainWindow ();
 }
 
 void KantMainWindow::slotEditToolbars()
@@ -574,8 +588,8 @@ void KantMainWindow::readProperties(KConfig *config)
 
   fileOpenRecent->loadEntries(config, "Recent Files");
 
-  viewManager->fileselector->readConfig(config, "fileselector");
-  viewManager->fileselector->setView(KFile::Default);
+  fileselector->readConfig(config, "fileselector");
+  fileselector->setView(KFile::Default);
 
   sidebar->readConfig( config );
 
@@ -593,7 +607,7 @@ void KantMainWindow::saveProperties(KConfig *config)
 
   fileOpenRecent->saveEntries(config, "Recent Files");
 
-  viewManager->fileselector->saveConfig(config, "fileselector");
+  fileselector->saveConfig(config, "fileselector");
   sidebar->saveConfig( config );
   writeDockConfig();
 }
@@ -1063,4 +1077,10 @@ void KantMainWindow::focusInEvent(QFocusEvent*  /* e */)
 KURL KantMainWindow::currentDocUrl()
 {
   return viewManager->activeView()->doc()->url();
+}
+
+void KantMainWindow::fileSelected(const KFileViewItem *file)
+{
+  KURL u(file->urlString());
+  viewManager->openURL( u );
 }
