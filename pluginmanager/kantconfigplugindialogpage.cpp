@@ -68,6 +68,9 @@ KantConfigPluginPage::KantConfigPluginPage(QWidget *parent):QVBox(parent)
   connect(loadedBox,SIGNAL(highlighted(QListBoxItem *)),this,SLOT(slotActivatePluginItem (QListBoxItem *)));
   connect(loadedBox,SIGNAL(selected(QListBoxItem *)), this,SLOT(slotActivatePluginItem (QListBoxItem *)));
 
+  connect( unloadButton, SIGNAL( clicked() ), this, SLOT( unloadPlugin() ) );
+  connect( loadButton, SIGNAL( clicked() ), this, SLOT( loadPlugin() ) );
+
   slotUpdate();
 }
 
@@ -96,4 +99,35 @@ void KantConfigPluginPage::slotActivatePluginItem (QListBoxItem *item)
       label->setText (i18n("Name: ") + myPluginMan->myPluginList.at(i)->name + i18n ("\nAuthor: ") + myPluginMan->myPluginList.at(i)->author + i18n ("\nDescription: ") + myPluginMan->myPluginList.at(i)->description);
     }
   }
+}
+
+void KantConfigPluginPage::loadPlugin ()
+{
+  QString text = availableBox->currentText ();
+
+  for (int i=0; i<myPluginMan->myPluginList.count(); i++)
+  {
+    if  (myPluginMan->myPluginList.at(i)->name == text)
+    {
+      myPluginMan->loadPlugin (myPluginMan->myPluginList.at(i));
+      myPluginMan->enablePluginGUI (myPluginMan->myPluginList.at(i));
+    }
+  }
+
+  slotUpdate();
+}
+
+void KantConfigPluginPage::unloadPlugin ()
+{
+  QString text = loadedBox->currentText ();
+
+  for (int i=0; i<myPluginMan->myPluginList.count(); i++)
+  {
+    if  (myPluginMan->myPluginList.at(i)->name == text)
+    {
+      myPluginMan->unloadPlugin (myPluginMan->myPluginList.at(i));
+    }
+  }
+
+  slotUpdate();
 }

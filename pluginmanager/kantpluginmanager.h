@@ -33,6 +33,7 @@ struct PluginListItem
   QString name;
   QString description;
   QString author;
+  KantPlugin *plugin;
 };
 
 typedef QList<PluginListItem> PluginList;
@@ -43,20 +44,26 @@ class KantPluginManager : public QObject
 
   friend class KantConfigPluginPage;
   friend class KantMainWindow;
+  friend class KantApp;
 
   public:
     KantPluginManager(QObject *parent);
     ~KantPluginManager();
 
     void loadAllEnabledPlugins ();
-    void enabledAllPluginsGUI (KantMainWindow *win);
+    void enableAllPluginsGUI (KantMainWindow *win);
 
   private:
     void setupPluginList ();
+    void loadConfig ();
+    void writeConfig ();
+
     void loadPlugin (PluginListItem *item);
+    void unloadPlugin (PluginListItem *item);
+    void enablePluginGUI (PluginListItem *item, KantMainWindow *win);
+    void enablePluginGUI (PluginListItem *item);
 
     PluginList myPluginList;
-    QList<KantPlugin> loadedPlugins;
 };
 
 #endif

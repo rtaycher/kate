@@ -73,6 +73,7 @@ KantApp::KantApp () : KApplication (),DCOPObject ("KantappIface" )
 
 KantApp::~KantApp ()
 {
+  pluginManager->writeConfig ();
 }
 
 void KantApp::newMainWindow ()

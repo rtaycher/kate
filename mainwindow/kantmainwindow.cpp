@@ -100,7 +100,7 @@ KantMainWindow::KantMainWindow(KantDocManager *_docManager, KantPluginManager *_
   QPopupMenu* pm_set = (QPopupMenu*)factory()->container("settings", this);
   connect(pm_set, SIGNAL(aboutToShow()), this, SLOT(settingsMenuAboutToShow()));
 
-  pluginManager->enabledAllPluginsGUI (this);
+  pluginManager->enableAllPluginsGUI (this);
 }
 
 KantMainWindow::~KantMainWindow()

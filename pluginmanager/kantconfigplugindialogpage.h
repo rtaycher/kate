@@ -45,6 +45,9 @@ class KantConfigPluginPage: public QVBox
   private slots:
     void slotUpdate ();
     void slotActivatePluginItem (QListBoxItem *item);
+
+    void loadPlugin ();
+    void unloadPlugin ();
 };
 
 #endif

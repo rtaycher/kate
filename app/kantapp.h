@@ -42,6 +42,7 @@ class KantApp : public KApplication, public KantAppIface
 
   friend class KantViewManager;
   friend class KantMyPluginIface;
+  friend class KantPluginManager;
 
   public:
     KantApp ();

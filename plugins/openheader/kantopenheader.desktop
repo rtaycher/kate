@@ -1,4 +1,3 @@
-load=1
 libname=libkantopenheaderplugin
 name=Kant OpenHeader
 description=Opens the corresponding .h/[.cpp|.c] file
