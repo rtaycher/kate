@@ -307,7 +307,7 @@
     </contexts>
     <itemDatas>
       <itemData name="Normal Text" defStyleNum="dsNormal"/>
-      <itemData name="Keyword" defStyleNum="dsKeyword"/>
+      <itemData name="Keyword" defStyleNum="dsKeyword" color="#00ff00" selColor="#ff0000" bold="1" italic="1"/>
       <itemData name="Comment" defStyleNum="dsComment"/>
     </itemDatas>
   </highlighting>

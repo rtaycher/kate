@@ -944,6 +944,10 @@ void AutoHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
 
 void AutoHighlight::createItemData(ItemDataList &list)
 {
+  QString color;
+  QString selColor;
+  QString bold;
+  QString italic;
   if (internalIDList.count()==0)
   {
     internalIDList.setAutoDelete(true);
@@ -952,10 +956,25 @@ void AutoHighlight::createItemData(ItemDataList &list)
     data=HlManager::self()->syntax->getGroupInfo("highlighting","itemData");
     while (HlManager::self()->syntax->nextGroup(data))
       {
-	internalIDList.append(new ItemData(
-          HlManager::self()->syntax->groupData(data,QString("name")),
-          getDefStyleNum(HlManager::self()->syntax->groupData(data,QString("defStyleNum")))));
+        color=HlManager::self()->syntax->groupData(data,QString("color"));
+        selColor=HlManager::self()->syntax->groupData(data,QString("selColor"));
+        bold=HlManager::self()->syntax->groupData(data,QString("bold"));
+        italic=HlManager::self()->syntax->groupData(data,QString("italic"));
+        if ( (!color.isEmpty()) && (!selColor.isEmpty()) && (!bold.isEmpty()) && (!italic.isEmpty()))
+                {
+                        internalIDList.append(new ItemData(
+                                HlManager::self()->syntax->groupData(data,QString("name")),
+                                getDefStyleNum(HlManager::self()->syntax->groupData(data,QString("defStyleNum"))),
+                                QColor(color),QColor(selColor),(bold=="true") || (bold=="1"), (italic=="true") || (italic=="1")
+                                ));
+                }
+        else
+                {
+                        internalIDList.append(new ItemData(
+                                HlManager::self()->syntax->groupData(data,QString("name")),
+                                getDefStyleNum(HlManager::self()->syntax->groupData(data,QString("defStyleNum")))));
 
+                }
       }
     if (data) HlManager::self()->syntax->freeGroupInfo(data);
   }
