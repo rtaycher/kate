@@ -388,7 +388,7 @@ void KateMainWindow::readOptions(KConfig *config)
   syncKonsole =  config->readBoolEntry("Sync Konsole", true);
   modNotification = config->readBoolEntry("Modified Notification", false);
   m_docManager->setSaveMetaInfos(config->readBoolEntry("Save Meta Infos", true));
-  m_docManager->setDaysMetaInfos(config->readBoolEntry("Days Meta Infos", 0));
+  m_docManager->setDaysMetaInfos(config->readNumEntry("Days Meta Infos", 30));
 
   m_viewManager->setShowFullPath(config->readBoolEntry("Show Full Path in Title", false));
 
