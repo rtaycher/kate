@@ -6,6 +6,7 @@
     <Action name="file_new" />
     <Action name="file_open" />
     <Action name="file_open_recent" />
+    <Action name="file_open_with" />
     <Separator/>
     <DefineGroup name="file_operations" />
     <Action name="file_save_all"/>
@@ -15,9 +16,6 @@
     <Action name="file_close"/>
     <Action name="file_close_all"/>
     <Separator />
-    <Action name="file_reload" />
-    <Action name="file_open_with" />
-    <Separator/>
     <Action name="file_newWindow"/>
     <Separator/>
     <Action name="file_quit"/>

@@ -60,7 +60,6 @@ class KateViewManager : public Kate::ViewManager
     void openConstURL_delayed1 (const KURL& url=0L);
     void openConstURL_delayed2();
     void openConstURL (const KURL&url=0L);
-    void reloadCurrentDoc();
 
   private:
     QPtrList<KateViewSpace> viewSpaceList;

@@ -835,22 +835,6 @@ void KateViewManager::setUseOpaqueResize( bool enable )
   // TODO: loop through splitters and set this prop
 }
 
-void KateViewManager::reloadCurrentDoc()
-{
-  if (! activeView() )
-    return;
-  if (! activeView()->canDiscard())
-    return;
-  Kate::View* v = activeView();
-  // save cursor position
-  uint cl = v->cursorLine();
-  uint cc = v->cursorColumn();
-  // save bookmarks
-  ((Kate::Document*)v->getDoc())->reloadFile();
-  if (v->getDoc()->numLines() >= cl)
-    v->setCursorPosition( cl, cc );
-}
-
 ///////////////////////////////////////////////////////////
 // session config functions
 ///////////////////////////////////////////////////////////

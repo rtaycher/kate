@@ -220,8 +220,6 @@ void KateMainWindow::setupActions()
   windowNext = KStdAction::back(viewManager, SLOT(slotWindowNext()), actionCollection());
   windowPrev = KStdAction::forward(viewManager, SLOT(slotWindowPrev()), actionCollection());
 
-  documentReload = new KAction(i18n("Reloa&d"), "reload", Key_F5, viewManager, SLOT(reloadCurrentDoc()), actionCollection(), "file_reload");
-
   documentOpenWith = new KActionMenu(i18n("Open W&ith"), actionCollection(), "file_open_with");
   connect(documentOpenWith->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(mSlotFixOpenWithMenu()));
   connect(documentOpenWith->popupMenu(), SIGNAL(activated(int)), this, SLOT(slotOpenWithMenuAction(int)));

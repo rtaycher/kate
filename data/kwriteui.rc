@@ -13,7 +13,6 @@
     <Separator/>
     <Action name="file_close"/>
     <Separator/>
-    <Action name="file_newWindow" />
     <Action name="file_newView" />
     <Separator/>
     <Action name="file_quit"/>

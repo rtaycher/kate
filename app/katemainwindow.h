@@ -94,7 +94,6 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     KAction *goNext;
     KAction *goPrev;
 
-    KAction* documentReload;
     KActionMenu* documentOpenWith;
 
     KAction *gotoLine;
