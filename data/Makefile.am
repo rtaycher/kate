@@ -1,3 +1,6 @@
+servicetypedir = $(kde_servicetypesdir)
+servicetype_DATA = kateplugin.desktop
+
 katescriptsdir = $(kde_datadir)/kate/scripts
 katescripts_DATA = sample.desktop sample.sh tolower.desktop tolower.sh
 

@@ -184,6 +184,18 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   //lo->addItem( new QSpacerItem( 0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding ) );
   QWidget *qLayoutSeemsBroken = new QWidget( frGeneral, "a working spacer" );
   lo->setStretchFactor( qLayoutSeemsBroken, 100 );
+                                      
+  path.clear();
+  path << i18n("Kate") << i18n("Plugins");
+  QVBox *page=addVBoxPage(path,i18n("Plugin Manager"),
+                          BarIcon("misc",KIcon::SizeSmall));
+  (void)new KateConfigPluginPage(page, this);
+
+  for (uint i=0; i<pluginManager->myPluginList.count(); i++)
+  {
+    if  ( pluginManager->myPluginList.at(i)->load && pluginManager->myPluginList.at(i)->plugin->hasConfigPage() )
+      addPluginPage (pluginManager->myPluginList.at(i)->plugin);
+  }
 
   // END General page
   config->setGroup("General");
@@ -203,18 +215,6 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
     editorPages.append (KTextEditor::configInterfaceExtension (v->document())->configPage(i, page));
   }
  
-  path.clear();
-  path << i18n("Plugins") << i18n("Manager");
-  QVBox *page=addVBoxPage(path,i18n("Configure Plugins"),
-                          BarIcon("misc",KIcon::SizeSmall));
-  (void)new KateConfigPluginPage(page, this);
-
-  for (uint i=0; i<pluginManager->myPluginList.count(); i++)
-  {
-    if  ( pluginManager->myPluginList.at(i)->load && pluginManager->myPluginList.at(i)->plugin->hasConfigPage() )
-      addPluginPage (pluginManager->myPluginList.at(i)->plugin);
-  }
-
   enableButtonSeparator(true);
 }
 

@@ -24,18 +24,17 @@
 #include <qobject.h>
 #include <qvaluelist.h>
 #include <qptrlist.h>
+#include <ktrader.h>
 
-struct PluginListItem
+class PluginInfo
 {
-  bool load;
-  QString libname;
-  QString name;
-  QString description;
-  QString author;
-  Kate::Plugin *plugin;
+  public:
+    bool load;
+    KService::Ptr service;
+    Kate::Plugin *plugin;
 };
 
-typedef QPtrList<PluginListItem> PluginList;
+typedef QPtrList<PluginInfo> PluginList;
 
 class KatePluginManager : public QObject
 {
@@ -58,11 +57,11 @@ class KatePluginManager : public QObject
     void loadConfig ();
     void writeConfig ();
 
-    void loadPlugin (PluginListItem *item);
-    void unloadPlugin (PluginListItem *item);
-    void enablePluginGUI (PluginListItem *item, KateMainWindow *win);
-    void enablePluginGUI (PluginListItem *item);
-    void disablePluginGUI (PluginListItem *item);
+    void loadPlugin (PluginInfo *item);
+    void unloadPlugin (PluginInfo *item);
+    void enablePluginGUI (PluginInfo *item, KateMainWindow *win);
+    void enablePluginGUI (PluginInfo *item);
+    void disablePluginGUI (PluginInfo *item);
 
     PluginList myPluginList;
 };

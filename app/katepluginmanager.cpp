@@ -42,28 +42,21 @@ KatePluginManager::~KatePluginManager()
 }
 
 void KatePluginManager::setupPluginList ()
-{
-  KStandardDirs *dirs = KGlobal::dirs();
-
-  QStringList list=dirs->findAllResources("appdata","plugins/*.desktop",false,true);
-
-  KSimpleConfig *confFile;
-  for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
+{    
+  QValueList<KService::Ptr> traderList= KTrader::self()->query("Kate/Plugin");
+                                        
+  KTrader::OfferList::Iterator it(traderList.begin());
+  for( ; it != traderList.end(); ++it)
   {
-    confFile=new KSimpleConfig(*it,true);
-
-    PluginListItem *info=new PluginListItem;
+    KService::Ptr ptr = (*it);        
+        
+    PluginInfo *info=new PluginInfo;
 
     info->load = false;
-    info->libname = confFile->readEntry("libname","");
-    info->name = confFile->readEntry("Name","");
-    info->description = confFile->readEntry("Comment","");
-    info->author = confFile->readEntry("author","");
+    info->service = ptr;
     info->plugin = 0L;
 
     myPluginList.append(info);
-
-    delete confFile;
   }
 }
 
@@ -74,7 +67,7 @@ void KatePluginManager::loadConfig ()
 
   for (uint i=0; i<myPluginList.count(); i++)
   {
-    if  (config->readBoolEntry(myPluginList.at(i)->libname, false))
+    if  (config->readBoolEntry(myPluginList.at(i)->service->library(), false))
       myPluginList.at(i)->load = true;
   }
 }
@@ -86,7 +79,7 @@ void KatePluginManager::writeConfig ()
 
   for (uint i=0; i<myPluginList.count(); i++)
   {
-    config->writeEntry(myPluginList.at(i)->libname, myPluginList.at(i)->load);
+    config->writeEntry(myPluginList.at(i)->service->library(), myPluginList.at(i)->load);
   }
 
   config->sync();
@@ -111,20 +104,22 @@ void KatePluginManager::enableAllPluginsGUI (KateMainWindow *win)
   }
 }
 
-void KatePluginManager::loadPlugin (PluginListItem *item)
+void KatePluginManager::loadPlugin (PluginInfo *item)
 {
-  KLibFactory *factory = KLibLoader::self()->factory( QFile::encodeName(item->libname) );
+  KLibFactory *factory = KLibLoader::self()->factory( QFile::encodeName(item->service->library()) );
+  
   if (!factory)
   {
      KMessageBox::sorry(0,KLibLoader::self()->lastErrorMessage());
      item->load=false;
      return;
   }
+  
   item->plugin = (Kate::Plugin *)factory->create( (Kate::Application *)parent(), "", "Kate::Plugin" );
   item->load = true;
 }
 
-void KatePluginManager::unloadPlugin (PluginListItem *item)
+void KatePluginManager::unloadPlugin (PluginInfo *item)
 {
   disablePluginGUI (item);
   if (item->plugin) delete item->plugin;
@@ -132,7 +127,7 @@ void KatePluginManager::unloadPlugin (PluginListItem *item)
   item->load = false;
 }
 
-void KatePluginManager::enablePluginGUI (PluginListItem *item, KateMainWindow *win)
+void KatePluginManager::enablePluginGUI (PluginInfo *item, KateMainWindow *win)
 {
   if (!item->plugin) return;
   if (!item->plugin->hasView()) return;
@@ -140,7 +135,7 @@ void KatePluginManager::enablePluginGUI (PluginListItem *item, KateMainWindow *w
   win->guiFactory()->addClient( item->plugin->createView(win) );
 }
 
-void KatePluginManager::enablePluginGUI (PluginListItem *item)
+void KatePluginManager::enablePluginGUI (PluginInfo *item)
 {
   if (!item->plugin) return;
   if (!item->plugin->hasView()) return;
@@ -151,7 +146,7 @@ void KatePluginManager::enablePluginGUI (PluginListItem *item)
   }
 }
 
-void KatePluginManager::disablePluginGUI (PluginListItem *item)
+void KatePluginManager::disablePluginGUI (PluginInfo *item)
 {
   if (!item->plugin) return;
   for (uint i=0; i< ((KateApp*)parent())->mainWindows.count(); i++)
