@@ -307,9 +307,11 @@ bool KateMainWindow::queryClose()
   if ( ((KateApp *)kapp)->mainWindows () < 2 )
   {
     // store the stuff
-    KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
+    KSimpleConfig* scfg = 0;
+    if (!kapp->sessionSaving())
+      scfg = new KSimpleConfig("katesessionrc", false);
 
-    if (kapp->sessionSaving())
+    if (!scfg)
       m_projectManager->saveProjectList (kapp->sessionConfig());
     else
       m_projectManager->saveProjectList (scfg);
@@ -321,7 +323,7 @@ bool KateMainWindow::queryClose()
       // first ask if something has changed
       m_viewManager->queryModified();
 
-      if (kapp->sessionSaving())
+      if (!scfg)
       {
         m_docManager->saveDocumentList (kapp->sessionConfig());
         saveWindowConfiguration (kapp->sessionConfig());
@@ -342,11 +344,6 @@ bool KateMainWindow::queryClose()
         val = true;
       }
     }
-
-    if (kapp->sessionSaving())
-      kapp->sessionConfig()->sync();
-    else
-      scfg->sync();
 
     delete scfg;
   }
