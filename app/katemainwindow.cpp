@@ -93,9 +93,26 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 	KateProjectManager *projectMan,KMdi::MdiMode guiMode) :
 	KMdiMainFrm (0,(QString("__KateMainWindow#%1").arg(uniqueID)).latin1(),guiMode)
 {
+  // first the very important id
   myID = uniqueID;
   uniqueID++;
 
+  // now the config
+  config = kapp->config();
+  
+  // init with more usefull size, stolen from konq :)
+  if (!initialGeometrySet() && !config->hasGroup("MainWindow Settings"))
+    resize( 700, 480 );
+  else
+  {
+    QString oldGroup = config->group ();
+    
+    config->setGroup("MainWindow Settings");
+    restoreWindowSize (config);
+    
+    config->setGroup (oldGroup);
+  }
+  
   m_mainWindow = new Kate::MainWindow (this);
   m_toolViewManager = new Kate::ToolViewManager (this);
   setStandardMDIMenuEnabled();
@@ -109,8 +126,6 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   m_project = 0;
   m_projectNumber = 0;
-
-  config = kapp->config();
 
   activeView = 0;
 
@@ -147,17 +162,11 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   readOptions(config);
 
-  //mainDock->setDockSite( KDockWidget::DockNone );
-
   if (console)
     console->loadConsoleIfNeeded();
 
   // call it as last thing, must be sure everything is already set up ;)
-  setAutoSaveSettings ("MainWindow Settings");
-
-  // init with more usefull size, stolen from konq :)
-  if ( !initialGeometrySet() && !config->hasGroup("MainWindow Settings"))
-      resize( 700, 480 );
+  setAutoSaveSettings ("MainWindow Settings");//mainDock->setDockSite( KDockWidget::DockNone );
 }
 
 KateMainWindow::~KateMainWindow()
@@ -399,18 +408,11 @@ void KateMainWindow::readOptions(KConfig *config)
   filelist->setSortType(config->readNumEntry("Sort Type of File List", KateFileList::sortByID));
 
   recentProjects->loadEntries (config, "Recent Projects");
-
-  //if (config->hasGroup("MainWindow0-Docking"))
-//	  readDockConfig(config,"MainWindow0-Docking");
 }
 
 void KateMainWindow::saveOptions(KConfig *config)
 {
   config->setGroup("General");
-/*  if (config->readNumEntry("GUIMode",KMdi::UndefinedMode)!=mdiMode()) {
-	config->writeEntry("GUIMode",mdiMode());
-	config->deleteGroup("MainWindow0-Docking");
-  }*/
 
   if (consoleDock && console)
     config->writeEntry("Show Console", console->isVisible());
@@ -428,8 +430,6 @@ void KateMainWindow::saveOptions(KConfig *config)
   config->writeEntry("Sort Type of File List", filelist->sortType());
 
   recentProjects->saveEntries (config, "Recent Projects");
-
-  //writeDockConfig(config,"MainWindow0-Docking");
 }
 
 void KateMainWindow::slotDocumentChanged()
