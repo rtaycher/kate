@@ -126,8 +126,8 @@ KateMainWindow::~KateMainWindow()
 void KateMainWindow::setupMainWindow ()
 {
   mainDock = createDockWidget( "mainDock", 0 );
-  filelistDock =  createDockWidget( "Open Files",  UserIcon("openfiles"),     0L, "" );
-  fileselectorDock = createDockWidget( "Selector",  UserIcon("fileselector"),     0L, "");
+  filelistDock =  createDockWidget( "Open Files",  UserIcon("openfiles"),     this, "" );
+  fileselectorDock = createDockWidget( "Selector",  UserIcon("fileselector"),     this, "");
 
   mainDock->setGeometry(100, 100, 100, 100);
   viewManager = new KateViewManager (mainDock, docManager);
@@ -145,8 +145,10 @@ void KateMainWindow::setupMainWindow ()
   fileselectorDock->setWidget (fileselector);
 
   // disabled because it will be only available in KDE >= 2.2
-  // filelistDock->setDockWindowType (NET::Tool);
-  // fileselectorDock->setDockWindowType (NET::Tool);
+  /*filelistDock->setDockWindowType (NET::Tool);
+  fileselectorDock->setDockWindowType (NET::Tool);
+  filelistDock->setDockWindowTransient (true);
+  fileselectorDock->setDockWindowTransient (true);*/
 
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileViewItem*)),this,SLOT(fileSelected(const KFileViewItem*)));
 
@@ -609,13 +611,17 @@ void KateMainWindow::slotSettingsShowConsole()
 {
   if (!consoleDock && !console)
   {
-    consoleDock = createDockWidget( "consoleDock", 0 );
+    consoleDock = createDockWidget( "consoleDock", 0, this );
     console = new KateConsole (consoleDock, "console");
     console->installEventFilter( this );
     console->setMinimumSize(50,50);
     consoleDock->setWidget( console );
     consoleDock->manualDock ( mainDock, KDockWidget::DockBottom, 20 );
     consoleDock->changeHideShowState();
+
+    // disabled because it will be only available in KDE >= 2.2
+    /*consoleDock->setDockWindowType (NET::Tool);
+    consoleDock->setDockWindowTransient (true);*/
   }
 
   consoleDock->changeHideShowState();
