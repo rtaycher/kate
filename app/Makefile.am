@@ -1,9 +1,7 @@
-KDE_CXXFLAGS = $(USE_RTTI)  -DQT_CLEAN_NAMESPACE -DQT_NO_COMPAT -DQT_NO_ASCII_CAST
 
-noinst_LIBRARIES = libkantapp.a
-libkantapp_a_SOURCES = kantapp.cpp
-
-EXTRA_DIST = kantapp.cpp kantapp.h
+noinst_LTLIBRARIES = libkantapp.la
+libkantapp_la_SOURCES = kantapp.cpp
+libkantapp_la_METASOURCES = AUTO
 
 INCLUDES= $(all_includes)
 

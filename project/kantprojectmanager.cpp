@@ -19,12 +19,12 @@
 #include "kantprojectmanager.moc"
 
 #include <iostream.h>
+#include <qtextstream.h>
 #include "kantprojectdialog.h"
 #include "../piper/piper.cpp"  //  PCP I feel not a scrap of guilt...
 
 KantProjectManager::KantProjectManager (KantDocManager *docManager, KantViewManager *viewManager, KStatusBar *statusBar) : QObject()
 {
-  projectFile = new KURL();
   this->docManager = docManager;
   this->viewManager = viewManager;
   this->statusBar = statusBar;
@@ -78,7 +78,7 @@ void KantProjectManager::slotProjectOpen()
 		viewManager->openURL(file_url);
 	}
 
-	*projectFile = url;
+	projectFile = url;
 }
 
 /*
@@ -103,7 +103,7 @@ void KantProjectManager::slotProjectSave()
 	// append the whole tree
 	xml.appendChild(top);
 
-	QFile f(projectFile->path());	// make a file reference
+	QFile f(projectFile.path());	// make a file reference
 	f.open(IO_WriteOnly);		// open it for writing
 	QTextStream t(&f);		// access it with a textstream
 	t << xml.toString();		// pipe xml-doc into textstream
@@ -118,7 +118,7 @@ void KantProjectManager::slotProjectSaveAs()
 
 	if (!url.isEmpty())
 	{
-		*projectFile = url;
+		projectFile = url;
 		slotProjectSave();
 	}
 }

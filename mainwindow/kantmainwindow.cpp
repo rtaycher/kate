@@ -738,7 +738,7 @@ void KantMainWindow::projectMenuAboutToShow()
   projectConfigure->setEnabled(false);
   projectRun->setEnabled(false);
 
-  if (projectManager->projectFile->isEmpty())
+  if (projectManager->projectFile.isEmpty())
     projectSave->setEnabled(false);
   else
     projectSave->setEnabled(true);

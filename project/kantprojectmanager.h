@@ -18,6 +18,8 @@
 #ifndef kant_projectmanager_h
 #define kant_projectmanager_h
 
+#include <kurl.h>
+
 #include "../kantmain.h"
 #include "../document/kantdocmanager.h"
 #include "../view/kantviewmanager.h"
@@ -30,7 +32,7 @@ class KantProjectManager : public QObject
     KantProjectManager (KantDocManager *docManager=0, KantViewManager *viewManager=0, KStatusBar *statusBar=0);
     ~KantProjectManager ();
 
-    KURL *projectFile;
+    KURL projectFile;
 
   private:
     KantDocManager *docManager;

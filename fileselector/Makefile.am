@@ -1,9 +1,6 @@
-KDE_CXXFLAGS = $(USE_RTTI)  -DQT_CLEAN_NAMESPACE -DQT_NO_COMPAT -DQT_NO_ASCII_CAST
 
-noinst_LIBRARIES = libkantfileselector.a
-libkantfileselector_a_SOURCES = kantfileselector.cpp
-
-EXTRA_DIST = kantfileselector.cpp kantfileselector.h
+noinst_LTLIBRARIES = libkantfileselector.la
+libkantfileselector_la_SOURCES = kantfileselector.cpp
 
 INCLUDES= $(all_includes)
 
