@@ -282,6 +282,7 @@ int KateApp::newInstance()
     QTextCodec *codec = args->isSet("encoding") ? QTextCodec::codecForName(args->getOption("encoding")) : 0;
 
     Kate::Document::setOpenErrorDialogsActivated (false);
+    uint id = 0;
     for (int z=0; z<args->count(); z++)
     {
       // this file is no local dir, open it, else warn
@@ -296,15 +297,19 @@ int KateApp::newInstance()
           // open a normal file
 
           if (codec)
-            m_mainWindows.first()->kateViewManager()->openURL( args->url(z), codec->name() );
+            id = m_mainWindows.first()->kateViewManager()->openURL( args->url(z), codec->name(), false );
           else
-            m_mainWindows.first()->kateViewManager()->openURL( args->url(z) );
+            id = m_mainWindows.first()->kateViewManager()->openURL( args->url(z), QString::null, false );
         }
       }
       else
         KMessageBox::sorry( m_mainWindows.first(),
                             i18n("The file '%1' could not be opened: it is not a normal file, it is a folder.").arg(args->url(z).url()) );
     }
+
+    if ( id )
+      m_mainWindows.first()->kateViewManager()->activateView( id );
+
     Kate::Document::setOpenErrorDialogsActivated (true);
 
     if ( m_mainWindows.first()->kateViewManager()->viewCount () == 0 )
@@ -364,6 +369,7 @@ KateMainWindow *KateApp::newMainWindow (bool visible)
   if (visible)
     mainWindow->show ();
 
+
   if (!m_firstStart)
   {
     mainWindow->raise();
@@ -411,3 +417,5 @@ Kate::MainWindow *KateApp::activeMainWindow ()
 
   return activeKateMainWindow()->mainWindow();
 }
+
+// kate: space-indent on; indent-width 2; replace-tabs on;
