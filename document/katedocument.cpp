@@ -132,8 +132,8 @@ QStringList KateDocument::replaceWithList = QStringList();
 
 KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool bBrowserView,
                                            QWidget *parentWidget, const char *widgetName,
-                                           QObject *, const char *)
-  : KateDocumentIface (), hlManager(HlManager::self ())
+                                           QObject *, const char *name)
+  : KateDocumentIface (), DCOPObject(name), hlManager(HlManager::self ())
 {
   PreHighlightedTill=0;
   RequestPreHighlightTill=0; 
@@ -2894,4 +2894,8 @@ void KateDocument::slotModChanged()
   emit modStateChanged (this);
 }
 
+void KateDocument::open (const QString &name)
+{
+  openURL (KURL (name));
+}
 

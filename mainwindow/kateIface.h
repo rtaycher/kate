@@ -14,12 +14,12 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef _kate_Iface_h_
-#define _kate_Iface_h_
+#ifndef _katemainwindow_Iface_h_
+#define _katemainwindow_Iface_h_
 
 #include <dcopobject.h>
 
-class KateIface : virtual public DCOPObject
+class KateMainWindowDCOPIface : virtual public DCOPObject
 {
   K_DCOP
 

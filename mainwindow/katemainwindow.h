@@ -24,7 +24,7 @@
 #include <kparts/part.h>
 #include <kxmlgui.h>
 
-class KateMainWindow : public KDockMainWindow, virtual public KateIface , virtual public KParts::PartBase
+class KateMainWindow : public KDockMainWindow, virtual public KateMainWindowDCOPIface, virtual public KParts::PartBase
 {
   Q_OBJECT
 
@@ -34,7 +34,7 @@ class KateMainWindow : public KDockMainWindow, virtual public KateIface , virtua
   friend class KateDocument;
 
   public:
-    KateMainWindow(KateDocManager *_docManager, KatePluginManager *_pluginManager);
+    KateMainWindow(KateDocManager *_docManager, KatePluginManager *_pluginManager, uint id, const char * = 0);
     ~KateMainWindow();
 
     /** Returns the URL of the current document.
@@ -65,6 +65,10 @@ class KateMainWindow : public KDockMainWindow, virtual public KateIface , virtua
     virtual QStringList containerTags() const;
     virtual QWidget *createContainer( QWidget *parent, int index,
       const QDomElement &element, int &id );
+
+  private:
+    uint myID;
+
   protected:
 
     KatePluginManager *pluginManager;

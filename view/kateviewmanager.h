@@ -50,7 +50,7 @@ class KateViewManager : public KateViewManagerIface
 
   private:
     QList<KateViewSpace> viewSpaceList;
-    uint myViewID;
+    static uint myViewID;
 
     KateDocManager *docManager;
     QGridLayout *grid;

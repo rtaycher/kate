@@ -78,14 +78,16 @@
 
 #define POP_(x) kdDebug(13000) << #x " = " << flush << x << endl
 
-KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_pluginManager) :
+KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_pluginManager, uint id, const char *name) :
 	KDockMainWindow (0, "Main Window"),
-             DCOPObject ("KateIface" )
+             DCOPObject (name)
 {
   tagSidebar=QString("sidebar");
   docManager =  _docManager;
   pluginManager =_pluginManager;
   config = KateFactory::instance()->config();
+
+  myID = id;
 
   consoleDock = 0L;
   console = 0L;

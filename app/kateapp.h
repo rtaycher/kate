@@ -47,11 +47,15 @@ class KateApp : public KateAppIface, public KateAppDCOPIface
     KStatusBar *statusBar ();
 
   private:
+    uint myWinID;
     bool _singleInstance;
     KateDocManager *docManager;
     KatePluginManager *pluginManager;
 
     QList<KateMainWindow> mainWindows;
+
+  public:
+    void openURL (const QString &name=0L);
 };
 
 #endif

@@ -28,8 +28,9 @@
 #include <kdebug.h>
 #include <dcopclient.h>
 
-KateApp::KateApp () : KateAppIface (),DCOPObject ("KateappIface" )
+KateApp::KateApp () : KateAppIface (),DCOPObject ("KateApp" )
 {
+  myWinID = 0;
   mainWindows.setAutoDelete (false);
 
   config()->setGroup("startup");
@@ -76,8 +77,10 @@ KateApp::~KateApp ()
 
 void KateApp::newMainWindow ()
 {
-  KateMainWindow *mainWindow = new KateMainWindow (docManager, pluginManager);
+  KateMainWindow *mainWindow = new KateMainWindow (docManager, pluginManager, myWinID, (QString("KateMainWindow%1").arg(myWinID)).latin1());
   mainWindows.append (mainWindow);
+  myWinID++;
+
   // anders: do not force an "Untitled" document on first window!
   // q: do we want to force it at all if documents are open??
   if (mainWindowsCount() > 1)
@@ -98,6 +101,10 @@ uint KateApp::mainWindowsCount ()
   return mainWindows.count();
 }
 
+void KateApp::openURL (const QString &name)
+{
+  mainWindows.at(0)->viewManager->openURL (KURL(name));
+}
 
 KateViewManagerIface *KateApp::viewManagerIface ()
 {

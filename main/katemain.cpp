@@ -64,7 +64,7 @@ int main( int argc, char **argv )
         kdDebug()<<appID;
         QByteArray ba,da;
         QCString replyType;
-        if (!(client->call(appID,"KateappIface","isSingleInstance()",da,replyType,ba,true)))
+        if (!(client->call(appID,"KateApp","isSingleInstance()",da,replyType,ba,true)))
 	  running = false;
         else
           {
@@ -91,7 +91,7 @@ int main( int argc, char **argv )
       QDataStream arg(data, IO_WriteOnly);
 
       arg << args->url(z).url();
-      client->send (appID, "KateIface", "openURL(QString)", data);
+      client->send (appID, "KateApp", "openURL(QString)", data);
     }
   }
   else

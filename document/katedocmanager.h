@@ -58,7 +58,7 @@ class KateDocManager : public KateDocManagerIface
     QList<KateDocument> docList;
 
   private:
-    uint myDocID;
+    static uint myDocID;
 
   signals:
     void documentCreated (KateDocument *doc);

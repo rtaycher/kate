@@ -47,13 +47,13 @@
 
 #include "katesplitter.h"
 
+uint KateViewManager::myViewID = 0;
+
 KateViewManager::KateViewManager (QWidget *parent, KateDocManager *docManager) : KateViewManagerIface  (parent)
 {
   // no memleaks
   viewList.setAutoDelete(true);
   viewSpaceList.setAutoDelete(true);
-
-  myViewID = 0;
 
   this->docManager = docManager;
 
@@ -103,7 +103,7 @@ bool KateViewManager::createView ( bool newDoc, KURL url, KateView *origView, Ka
   }
 
   // create view
-  KateView *view = new KateView (doc, this, (QString("KateViewIface%1").arg(myViewID)).latin1(), false, false);
+  KateView *view = new KateView (doc, this, (QString("KateView%1").arg(myViewID)).latin1(), false, false);
   connect(view,SIGNAL(newStatus()),this,SLOT(setWindowCaption()));
   myViewID++;
   viewList.append (view);

@@ -54,6 +54,7 @@
 class KateCmd;
 
 #include "../interfaces/katedocumentIface.h"
+#include "./katedocumentIface.h"
 
 class Attribute;
 
@@ -111,7 +112,7 @@ class KateActionGroup {
   @see TextLine
   @author Jochen Wilhelmy
 */
-class KateDocument : public KateDocumentIface
+class KateDocument : public KateDocumentIface, virtual public KateDocumentDCOPIface
 {
     Q_OBJECT
     friend class KateViewInternal;
@@ -446,6 +447,10 @@ class KateDocument : public KateDocumentIface
   signals:
     void modStateChanged (KateDocument *doc);
     void nameChanged (KateDocument *doc);
+
+  // for the DCOP interface
+  public:
+    void open (const QString &name=0);
 };
 
 #endif
