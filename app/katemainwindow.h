@@ -127,9 +127,16 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
      * anders: I add this for use from the file selector. */
     KURL activeDocumentUrl();
 
-    bool notifyMod() const { return modNotification; }
-
     uint mainWindowNumber () const { return myID; }
+
+    /**
+     * Prompts the user for what to do with files that are modified on disk if any.
+     * This is optionally run when the window receives focus, and when the last
+     * window is closed.
+     * @return true if no documents are modified on disk, or all documents were
+     * handled by the dialog; otherwise (the dialog was canceled) false.
+     */
+    bool showModOnDiskPrompt();
 
   public:
     void readProperties(KConfig *config);
@@ -191,6 +198,7 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
 
   protected:
     bool eventFilter( QObject*, QEvent * );
+    bool event( QEvent * );
 
   // slots for the project GUI actions: new/open/save/close
   public slots:
@@ -253,9 +261,10 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
 
     KateExternalToolsMenuAction *externalTools;
     GrepTool * greptool;
-    bool m_modignore;
+    bool m_modignore, m_grrr;
 };
 
 #endif
+// kate: space-indent on; indent-width 2; replace-tabs on;
 
 
