@@ -411,6 +411,17 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
 
   protected:
     virtual void guiActivateEvent( KParts::GUIActivateEvent *ev );
+		// Comment, uncomment methods
+		bool removeStringFromBegining(VConfig &c, QString &str);
+		bool removeStringFromEnd(VConfig &c, QString &str);
+		void addStartLineCommentToSingleLine(VConfig &c);
+		bool removeStartLineCommentFromSingleLine(VConfig &c);
+		void addStartStopCommentToSingleLine(VConfig &c);
+		bool removeStartStopCommentFromSingleLine(VConfig &c);
+		void addStartStopCommentToSelection(VConfig &c);
+		void addStartLineCommentToSelection(VConfig &c);
+		bool removeStartStopCommentFromSelection(VConfig &c);
+		bool removeStartLineCommentFromSelection(VConfig &c);
 
   protected slots:
     void clipboardChanged();
