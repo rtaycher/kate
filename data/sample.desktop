@@ -15,13 +15,14 @@ Name[el]=Έλεγχος σεναρίου κελύφους
 Name[eo]=Testkomando
 Name[es]=Script de prueba del intérprete de comandos
 Name[et]=Test shelliskript
+Name[eu]=Frogarako shelleko script-a
 Name[fa]=آزمایش نگاره‌ی پوسته
 Name[fi]=Testiskripti
 Name[fo]=Nároyn skeljarit
 Name[fr]=Script shell de test
 Name[gl]=Probar Guión de Shell
 Name[he]=תסריט מעטפת ניסיוני
-Name[hi]=शैल स्क्रिप्ट जाँचें
+Name[hi]=शेल स्क्रिप्ट जाँचें
 Name[hr]=Probna shell-skripta
 Name[hu]=Teszt-parancsfájl
 Name[is]=Prófunar skeljarskrifta
@@ -30,9 +31,11 @@ Name[ja]=テストシェルスクリプト
 Name[lo]=ທົດສອບສະຄລິບເຊວ
 Name[lt]=Testinis apvalkalo skriptas
 Name[lv]=Testēt Čaulas Skriptu
+Name[mk]=Тест на скрипта од школката
 Name[mn]=Shell-Скрипт шалгагч
 Name[mt]=Eżempju ta' skritt
 Name[nb]=Testskallskript
+Name[nds]=Test-Shellskript
 Name[nn]=Testskript
 Name[nso]=Leka Tshwaelo ya Legapi
 Name[pa]=ਜਾਂਚ ਸ਼ੈਲ ਸਕ੍ਰਿਪਟ
@@ -76,13 +79,13 @@ Comment[el]=Αυτό είναι ένα σενάριο επίδειξης για 
 Comment[eo]=Tio estas demonstra programo por prezenti la programinterfacon de Kodredaktilo.
 Comment[es]=Esta es una demo de script para mostar la interfaz de script a Kate
 Comment[et]=Kate skriptimise liidese demoskript.
-Comment[eu]=Hau demo script bat da Kate-ren scritpting interfazea ezkutatzeko.
+Comment[eu]=Hau demo script bat da Kateren scritpting interfazea ezkutatzeko.
 Comment[fa]=این یک نگاره‌ی نمایشی برای نشان دادن واسط نگاره‌ی کیت است.
 Comment[fi]=T.mä on esimerkkiskripti, joka esittelee Katen skriptirajapintaa
 Comment[fr]=Ceci est un script d'essai pour illustrer l'interface de scriptage de Kate
 Comment[gl]=Este é un guión de demostración para ocultar a interface de scripting de Kate.
 Comment[he]=זהו תסריט הדגמה המציג את ממשק התסריטים של Kate
-Comment[hi]=यह स्क्रिप्ट केएटीई के स्क्रिप्टिंग इंटरफेस को दिखाने के लिए है.
+Comment[hi]=यह स्क्रिप्ट के-एटीई के स्क्रिप्टिंग इंटरफेस को दिखाने के लिए है.
 Comment[hr]=Ovo je demonstracijska skripta koja pokazuje Kate sučelje za skripte.
 Comment[hu]=Ez egy mintafjl a Kate szkript-kezelés lehetőségeinek bemutatásához
 Comment[is]=Þessi skrifta er bara sýnishorn til að státa af skriftueiginleikum Kate ritilsins
@@ -91,13 +94,15 @@ Comment[ja]=Kateのスクリプトインターフェースのデモスクリプ�
 Comment[lo]=ນີ້ເປັນສະຄລິບຕົວຢ່າງເພືອ່ສະແດງການຕິດຕໍ່ສະຄລິບໄປຍັງKate
 Comment[lt]=Tai yra demo skriptas, skirtas parodyti Kate skriptų sąsają.
 Comment[lv]=Šis ir demo skripts, lai parādītu skriptēšanas saskarsmes virsmu uz Kate.
+Comment[mk]=Ова е демо скрипта за да се прикаже интерфејсот за скриптирање на Kate
 Comment[mn]= Kate-н скрипт-холболтыг харуулах туршилтын скрипт
 Comment[mt]=Dan huwa skritt li jagħti dimostrazzjoni tal-interfaċċja għall-iskritti ta' Kate
 Comment[nb]=Dette er et demoskript for å vise skriptgrensesnittet til Kate.
+Comment[nds]=Demo-Skript, dat dat Skript-Interface vun Kate wiest.
 Comment[nl]=Dit is een demo-script om de scripting-interface van Kate te tonen.
 Comment[nn]=Dette er eit demoskript som viser skriptgrensesnittet mot Kate.
 Comment[nso]=Ye ke tshwaelo ya demo go bontsha sefahlego sa tshwaelo go Kate.
-Comment[pa]=ਇਹ ਫਰਜ਼ੀ ਸਕ੍ਰਿਪਟ ਹੈ ਜੋ ਕਿ ਇਹ ਵਿਖਾ ਰਹੀ ਹੈ ਕਿ ਕੇਂਟ ਵਿੱਚ ਸਕ੍ਰਿਪਟ ਇੰਟਰਫੇਸ ਕਿਸਤਰਾਂ ਹੈ|
+Comment[pa]=ਇਹ ਫਰਜ਼ੀ ਸਕ੍ਰਿਪਟ ਹੈ ਜੋ ਕਿ ਇਹ ਵਿਖਾ ਰਹੀ ਹੈ ਕਿ ਕੇਂਟ ਵਿੱਚ ਸਕ੍ਰਿਪਟ ਇੰਟਰਫੇਸ ਕਿਸਤਰਾਂ ਹੈ।
 Comment[pl]=Skrypt demonstrujący możliwości skryptowe Kate.
 Comment[pt]=Este é um script para demonstrar a interface de 'scripting' do Kate.
 Comment[pt_BR]=Este é um script de teste para exibir a interface de scripts para o Kate.
