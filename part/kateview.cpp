@@ -643,7 +643,7 @@ void KateViewInternal::clearDirtyCache(int height) {
   if (lines > numLines) { // resize the dirty cache
     numLines = lines*2;
     delete [] lineRanges;
-    lineRanges = new LineRange[numLines];
+    lineRanges = new KateLineRange[numLines];
   }
 
   for (z = 0; z < lines; z++) { // clear all lines
@@ -654,7 +654,7 @@ void KateViewInternal::clearDirtyCache(int height) {
 }
 
 void KateViewInternal::tagLines(int start, int end, int x1, int x2) {
-  LineRange *r;
+  KateLineRange *r;
   int z;
 
   start -= startLine;
@@ -858,7 +858,7 @@ void KateViewInternal::paintTextLines(int xPos, int yPos) {
 //  int xStart, xEnd;
   int line;//, z;
   int h;
-  LineRange *r;
+  KateLineRange *r;
 
   if (!drawBuffer) return;
   if (drawBuffer->isNull()) return;

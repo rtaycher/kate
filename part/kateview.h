@@ -66,11 +66,6 @@ struct VConfig {
   int flags;
 };
 
-struct LineRange {
-  int start;
-  int end;
-};
-
 struct BracketMark {
   KateTextCursor cursor;
   int sXPos;
@@ -219,7 +214,7 @@ class KateViewInternal : public QWidget {
     bool exposeCursor;
     int updateState;
     int numLines;
-    LineRange *lineRanges;
+    KateLineRange *lineRanges;
     int newXPos;
     int newYPos;
 
