@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="kwrite" version="13">
+<kpartgui name="kwrite" version="14">
 
 <MenuBar>
   <Menu name="file" noMerge="1"><text>&amp;File</text>
@@ -76,6 +76,8 @@
   <Action name="file_open" />
   <Separator />
   <DefineGroup name="file_operations" />
+  <Separator />
+  <DefineGroup name="print_merge" />
   <Separator />
   <Action name="file_close" />
   <Separator />

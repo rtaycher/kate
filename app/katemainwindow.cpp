@@ -231,7 +231,7 @@ void KateMainWindow::setupActions()
   KAction *a;
 
   kscript = new KScriptManager(this, "scriptmanager");
-  scriptMenu = new KActionMenu( i18n("KDE Scri&pts"), actionCollection(), "scripts");
+  scriptMenu = new KActionMenu( i18n("&KDE Scripts"), actionCollection(), "scripts");
   scriptMenu->setWhatsThis(i18n("This shows all available scripts and allows them to be executed."));
   setupScripts();
   connect( scriptMenu->popupMenu(), SIGNAL(activated( int)), this, SLOT(runScript( int )) );
@@ -257,13 +257,13 @@ void KateMainWindow::setupActions()
   a=new KAction(i18n("&New Window"), "window_new", 0, this, SLOT(newWindow()), actionCollection(), "view_new_view");
   a->setWhatsThis(i18n("Create a new Kate view (a new window with the same document list)."));
 
-  a=new KAction( i18n("Split &Vertical"), "view_left_right", CTRL+SHIFT+Key_L, m_viewManager, SLOT( slotSplitViewSpaceVert() ), actionCollection(), "view_split_vert");
+  a=new KAction( i18n("Split Ve&rtical"), "view_left_right", CTRL+SHIFT+Key_L, m_viewManager, SLOT( slotSplitViewSpaceVert() ), actionCollection(), "view_split_vert");
   a->setWhatsThis(i18n("Split the currently active view vertically into two views."));
 
   a=new KAction( i18n("Split &Horizontal"), "view_top_bottom", CTRL+SHIFT+Key_T, m_viewManager, SLOT( slotSplitViewSpaceHoriz() ), actionCollection(), "view_split_horiz");
   a->setWhatsThis(i18n("Split the currently active view horizontally into two views."));
 
-  a=closeCurrentViewSpace = new KAction( i18n("Close &Current View"), "view_remove", CTRL+SHIFT+Key_R, m_viewManager, SLOT( slotCloseCurrentViewSpace() ), actionCollection(), "view_close_current_space");
+  a=closeCurrentViewSpace = new KAction( i18n("Cl&ose Current View"), "view_remove", CTRL+SHIFT+Key_R, m_viewManager, SLOT( slotCloseCurrentViewSpace() ), actionCollection(), "view_close_current_space");
   a->setWhatsThis(i18n("Close the currently active splitted view"));
 
   externalTools = new KateExternalToolsMenuAction( i18n("External Tools"), actionCollection(), "tools_external", this );
