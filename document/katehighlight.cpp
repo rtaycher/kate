@@ -436,6 +436,7 @@ const QChar *HlLineContinue::checkHgl(const QChar *s, int len, bool) {
 //  qDebug(">>>>%d %d %c<<<<<",s[0].latin1(),s[1].latin1(),s[0].latin1());
 //  qDebug(">>>>%d %d %c<<<<<",s[0].latin1(),s[1].latin1(),s[0].latin1());
 //  qDebug(">>>>%d %d %c<<<<<",s[0].latin1(),s[1].latin1(),s[0].latin1());
+  if (s[0].latin1() =='\\') kdDebug()<<QString("Found \\ %1").arg(len)<<endl;
   if ((s[0].latin1() == '\\') && (len == 1))
 	{
 //	   kdDebug()<<"\\ found"<<endl;
@@ -650,8 +651,8 @@ int Highlight::doHighlight(int ctxNum, TextLine *textLine)
             textLine->setAttribs(item->attr,s1 - str,s2 - str);
             ctxNum = item->ctx;
             context = contextList[ctxNum];
-            s1 = s2 - 1;
             z = z + s2 - s1 - 1;
+            s1 = s2 - 1;
             found = true;
             break;
         }
