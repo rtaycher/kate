@@ -92,7 +92,7 @@ KateDocManager::~KateDocManager ()
 Kate::Document *KateDocManager::createDoc ()
 {
   KTextEditor::Document *doc = (KTextEditor::Document *) m_factory->createPart (0, "", this, "", "KTextEditor::Document");
-  
+
   m_docList.append((Kate::Document *)doc);
   m_docDict.insert (doc->documentNumber(), (Kate::Document *)doc);
   m_docInfos.insert (doc, new KateDocumentInfo ());
@@ -130,7 +130,7 @@ void KateDocManager::deleteDoc (Kate::Document *doc)
   {
     // special case of documentChanged, no longer any doc here !
     m_currentDoc = 0;
-    
+
     emit documentChanged ();
     emit m_documentManager->documentChanged ();
   }
@@ -155,7 +155,7 @@ void KateDocManager::setActiveDocument (Kate::Document *doc)
     return;
 
   m_currentDoc = doc;
-  
+
   emit documentChanged ();
   emit m_documentManager->documentChanged ();
 }
@@ -209,7 +209,7 @@ Kate::Document *KateDocManager::findDocumentByUrl( KURL url )
     if ( it.current()->url() == url)
       return it.current();
   }
-  
+
   return 0L;
 }
 
@@ -235,7 +235,7 @@ Kate::Document *KateDocManager::openURL (const KURL& url,const QString &encoding
       *id=doc->documentNumber();
 
     connect(doc, SIGNAL(modStateChanged(Kate::Document *)), this, SLOT(slotModChanged(Kate::Document *)));
-    
+
     emit initialDocumentReplaced();
 
     return doc;
@@ -251,7 +251,7 @@ Kate::Document *KateDocManager::openURL (const KURL& url,const QString &encoding
     if (!loadMetaInfos(doc, url))
       doc->openURL (url);
   }
-  
+
   if (id)
     *id=doc->documentNumber();
 
@@ -301,7 +301,7 @@ bool KateDocManager::closeAllDocuments()
 }
 
 bool KateDocManager::queryCloseDocuments(KateMainWindow *w)
-{  
+{
   Kate::Document  *doc;
   for (QPtrListIterator<Kate::Document> it(m_docList); (doc=it.current())!=0; ++it)
   {
@@ -309,23 +309,23 @@ bool KateDocManager::queryCloseDocuments(KateMainWindow *w)
     {
       int msgres=KMessageBox::warningYesNoCancel( w,
                   i18n("<p>The document '%1' has been modified, but not saved."
-                       "<p>Do you want to keep it?").arg( doc->docName() ),
-                    i18n("Unsaved Document") );
-  
+                       "<p>Do you want to save your changes or discard them?").arg( doc->docName() ),
+                    i18n("Close Document"), KStdGuiItem::save(), KStdGuiItem::discard() );
+
       if (msgres==KMessageBox::Cancel)
         return false;
-      
+
       if (msgres==KMessageBox::Yes)
       {
         KEncodingFileDialog::Result r=KEncodingFileDialog::getSaveURLAndEncoding(
               KTextEditor::encodingInterface(doc)->encoding(),QString::null,QString::null,w,i18n("Save As"));
 
         doc->setEncoding( r.encoding );
-        
+
         if (!r.URLs.isEmpty())
         {
           KURL tmp = r.URLs.first();
-          
+
           if ( !doc->saveAs( tmp ) )
             return false;
         }
@@ -339,7 +339,7 @@ bool KateDocManager::queryCloseDocuments(KateMainWindow *w)
         return false;
     }
   }
-  
+
   return true;
 }
 
@@ -361,7 +361,7 @@ void KateDocManager::saveDocumentList (KConfig* config)
 
     i++;
   }
-  
+
   config->setGroup(prevGrp);
 }
 
@@ -385,7 +385,7 @@ void KateDocManager::restoreDocumentList (KConfig* config)
   {
     config->setGroup(QString("Document %1").arg(i));
     Kate::Document *doc = 0;
-    
+
     if (first)
     {
       first = false;
@@ -393,7 +393,7 @@ void KateDocManager::restoreDocumentList (KConfig* config)
     }
     else
       doc = createDoc ();
-  
+
     doc->readSessionConfig(config);
     config->setGroup (grp);
 
