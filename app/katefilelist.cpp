@@ -444,25 +444,21 @@ KateFileListItem::~KateFileListItem()
 {
 }
 
-int KateFileListItem::height() const
+const QPixmap *KateFileListItem::pixmap ( int column ) const
 {
-  int h;
-  static int iSize = IconSize( KIcon::Small );
-  if ( text( 0 ).isEmpty() )
-    h = iSize;
-  else
-    h = QMAX( iSize, listView()->fontMetrics().lineSpacing() + 1 );
+  if ( column == 0) {
+    static QPixmap noPm = SmallIcon ("null");
+    static QPixmap modPm = SmallIcon("modified");
+    static QPixmap discPm = SmallIcon("modonhd");
+    static QPixmap modmodPm = SmallIcon("modmod");
 
-  return QMAX( h, QApplication::globalStrut().height() );
-}
+    const KateDocumentInfo *info = KateDocManager::self()->documentInfo(doc);
 
-int KateFileListItem::width( const QFontMetrics &fm, const QListView* /*lv*/, int column ) const
-{
-  static int iSize = IconSize( KIcon::Small );
-  if ( text( 0 ).isEmpty() )
-    return QMAX( iSize + 6, QApplication::globalStrut().width() );
-
-  return QMAX( iSize + fm.width( text(column) ) + 6, QApplication::globalStrut().width() );
+    if (info && info->modifiedOnDisc)
+      return doc->isModified() ? &modmodPm : &discPm;
+    else
+      return doc->isModified() ? &modPm : &noPm;
+  }
 }
 
 void KateFileListItem::paintCell( QPainter *painter, const QColorGroup & cg, int column, int width, int align )
@@ -470,75 +466,49 @@ void KateFileListItem::paintCell( QPainter *painter, const QColorGroup & cg, int
   KateFileList *fl = (KateFileList*)listView();
   if ( ! fl ) return;
 
-  switch ( column ) {
-    case 0:
+  if ( column == 0 )
+  {
+    QColorGroup cgNew = cg;
+
+    // replace the base color with a different shading if necessary...
+    if ( fl->shadingEnabled() && m_viewhistpos > 1 )
     {
-      static QPixmap noPm = SmallIcon ("null");
-      static QPixmap modPm = SmallIcon("modified");
-      static QPixmap discPm = SmallIcon("modonhd");
-      static QPixmap modmodPm = SmallIcon("modmod");
-
-      const KateDocumentInfo *info = KateDocManager::self()->documentInfo(doc);
-
       QColor b( cg.base() );
-      if ( fl->shadingEnabled() && m_viewhistpos > 1 )
+
+      QColor shade = fl->viewShade();
+      QColor eshade = fl->editShade();
+      int hc = fl->histCount();
+      // If this file is in the edit history, blend in the eshade
+      // color. The blend is weighted by the position in the editing history
+      if ( fl->shadingEnabled() && m_edithistpos > 0 )
       {
-        QColor shade = fl->viewShade();
-        QColor eshade = fl->editShade();
-        int hc = fl->histCount();
-        // If this file is in the edit history, blend in the eshade
-        // color. The blend is weighted by the position in the editing history
-        if ( fl->shadingEnabled() && m_edithistpos > 0 )
-        {
-          int ec = fl->editHistCount();
-          int v = hc-m_viewhistpos;
-          int e = ec-m_edithistpos+1;
-          e = e*e;
-          int n = QMAX(v + e, 1);
-          shade.setRgb(
-              ((shade.red()*v) + (eshade.red()*e))/n,
-              ((shade.green()*v) + (eshade.green()*e))/n,
-              ((shade.blue()*v) + (eshade.blue()*e))/n
-                      );
-        }
-        // blend in the shade color.
-        // max transperancy < .5, latest is most colored.
-        float t = (0.5/hc)*(hc-m_viewhistpos+1);
-        b.setRgb(
-            (int)((b.red()*(1-t)) + (shade.red()*t)),
-            (int)((b.green()*(1-t)) + (shade.green()*t)),
-            (int)((b.blue()*(1-t)) + (shade.blue()*t))
-                );
+        int ec = fl->editHistCount();
+        int v = hc-m_viewhistpos;
+        int e = ec-m_edithistpos+1;
+        e = e*e;
+        int n = QMAX(v + e, 1);
+        shade.setRgb(
+            ((shade.red()*v) + (eshade.red()*e))/n,
+            ((shade.green()*v) + (eshade.green()*e))/n,
+            ((shade.blue()*v) + (eshade.blue()*e))/n
+                    );
       }
+      // blend in the shade color.
+      // max transperancy < .5, latest is most colored.
+      float t = (0.5/hc)*(hc-m_viewhistpos+1);
+      b.setRgb(
+          (int)((b.red()*(1-t)) + (shade.red()*t)),
+          (int)((b.green()*(1-t)) + (shade.green()*t)),
+          (int)((b.blue()*(1-t)) + (shade.blue()*t))
+              );
 
-      painter->fillRect( 0, 0, width, height(), isSelected() ? cg.highlight() : b  );
-
-      if (info && info->modifiedOnDisc)
-        painter->drawPixmap( 3, 0, doc->isModified() ? modmodPm : discPm );
-      else
-        painter->drawPixmap( 3, 0, doc->isModified() ? modPm : noPm );
-
-      if ( !text( 0 ).isEmpty() )
-      {
-        QFontMetrics fm = painter->fontMetrics();
-        painter->setPen( isSelected() ? cg.highlightedText() : cg.text() );
-
-        static int iSize = IconSize( KIcon::Small );
-        int yPos;                       // vertical text position
-
-        if ( iSize < fm.height() )
-          yPos = fm.ascent() + fm.leading()/2;
-        else
-          yPos = iSize/2 - fm.height()/2 + fm.ascent();
-
-        painter->drawText( iSize + 4, yPos,
-                           KStringHandler::rPixelSqueeze( text(0), painter->fontMetrics(), width - 20 ) );
-      }
-      break;
+      cgNew.setColor(QColorGroup::Base, b);
     }
-    default:
-      QListViewItem::paintCell( painter, cg, column, width, align );
+
+    QListViewItem::paintCell( painter, cgNew, column, width, align );
   }
+  else
+    QListViewItem::paintCell( painter, cg, column, width, align );
 }
 
 int KateFileListItem::compare ( QListViewItem * i, int col, bool ascending ) const

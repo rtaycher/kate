@@ -47,8 +47,6 @@ class KateFileListItem : public QListViewItem
     inline uint documentNumber () { return m_docNumber; }
     inline Kate::Document * document() { return doc; }
 
-    int height() const;
-    int width( const QFontMetrics &fm, const QListView* lv, int column ) const;
     int rtti() const { return RTTI_KateFileListItem; }
 
     /**
@@ -61,6 +59,7 @@ class KateFileListItem : public QListViewItem
     void setEditHistPos( int p ) { m_edithistpos = p; }
 
   protected:
+    virtual const QPixmap *pixmap ( int column ) const;
     void paintCell( QPainter *painter, const QColorGroup & cg, int column, int width, int align );
     /**
      * Reimplemented so we can sort by a number of different document properties.
