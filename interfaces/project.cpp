@@ -34,6 +34,10 @@ KateProjectDCOPIface::KateProjectDCOPIface (Kate::Project *p)
 {
 }
 
+void KateProjectDCOPIface::test ()
+{
+}
+
 namespace Kate
 {
 
@@ -90,7 +94,7 @@ unsigned int Project::projectNumber () const
 
 DCOPObject *Project::dcopObject ()
 {
-  return 0;
+  return d->m_dcop;
 }
 
 ProjectPlugin *Project::plugin () const

@@ -32,8 +32,10 @@ DCOPRef KateAppDCOPIface::documentManager ()
 
 DCOPRef KateAppDCOPIface::activeMainWindow ()
 {
-  if (m_app->activeKateMainWindow())
-    return DCOPRef (m_app->activeKateMainWindow()->dcopObject ());
+  KateMainWindow *win = m_app->activeKateMainWindow();
+
+  if (win)
+    return DCOPRef (win->dcopObject ());
 
   return DCOPRef ();
 }
@@ -45,8 +47,10 @@ uint KateAppDCOPIface::mainWindows ()
 
 DCOPRef KateAppDCOPIface::mainWindow (uint n)
 {
-  if (m_app->kateMainWindow(n))
-    return DCOPRef (m_app->kateMainWindow(n)->dcopObject ());
+  KateMainWindow *win = m_app->kateMainWindow(n);
+
+  if (win)
+    return DCOPRef (win->dcopObject ());
 
   return DCOPRef ();
 }

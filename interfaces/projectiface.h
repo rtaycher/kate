@@ -36,7 +36,7 @@ class KateProjectDCOPIface : public DCOPObject
     KateProjectDCOPIface (Kate::Project *p);
 
   k_dcop:
-
+    void test ();
 
   private:
     Kate::Project *m_p;
