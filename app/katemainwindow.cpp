@@ -87,7 +87,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_
 
   setXMLFile( "kateui.rc" );
   
-  createGUI();
+  guiFactory()->addClient( this );
   
   pluginManager->enableAllPluginsGUI (this);
 
@@ -290,8 +290,7 @@ void KateMainWindow::slotEditToolbars()
 {
   KEditToolbar dlg(factory());
 
-  if (dlg.exec())
-    createGUI();
+  dlg.exec();
 }
 
 void KateMainWindow::slotFileQuit()
