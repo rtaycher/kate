@@ -5,7 +5,7 @@ katescriptsdir = $(kde_datadir)/kate/scripts
 katescripts_DATA = sample.desktop sample.sh tolower.desktop tolower.sh
 
 kdelnk_DATA = kate.desktop kwrite.desktop
-kdelnkdir = ${prefix}/share/applications
+kdelnkdir = $(prefix)/share/applications
 
 rckatedir = $(kde_datadir)/kate
 rckate_DATA = kateui.rc
