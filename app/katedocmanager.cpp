@@ -107,14 +107,10 @@ Kate::Document *KateDocManager::activeDocument ()
 
 void KateDocManager::setActiveDocument (Kate::Document *doc)
 {
-  if ( (m_currentDoc && !doc) || (!m_currentDoc && doc)
-       || (m_currentDoc->documentNumber() != doc->documentNumber()) )
-  {
-    emit documentChanged ();
-    emit m_documentManager->documentChanged ();
-  }
-
   m_currentDoc = doc;
+  
+  emit documentChanged ();
+  emit m_documentManager->documentChanged ();
 }
 
 Kate::Document *KateDocManager::firstDocument ()
