@@ -1,4 +1,4 @@
-/*************************************************************************** 
+/***************************************************************************
                           katedocument.cpp  -  description 
                              ------------------- 
     begin                : Mon Jan 15 2001 
@@ -565,90 +565,90 @@ Highlight::Highlight(syntaxModeListItem *def) : refCount(0)
   } 
   deliminator = stdDeliminator; 
   deliminatorChars = deliminator.unicode(); 
-  deliminatorLen = deliminator.length(); 
-} 
- 
-Highlight::~Highlight() 
-{ 
-} 
- 
-signed char *Highlight::generateContextStack(int *ctxNum, int ctx,signed char *ctxs, uint *ctxsLen, int *prevLine) 
-{ 
-  if (ctx>=0) 
-  { 
-	//  kdDebug()<<"test1-2-1-1"<<endl; 
- 
-    (*ctxNum) = ctx; 
- 
-		if (ctxs == 0L) 
-			ctxs = (signed char *) malloc ((*ctxsLen)+1); 
-		else 
-      ctxs = (signed char *) realloc (ctxs, (*ctxsLen)+1); 
- 
-	  (*ctxsLen)++; 
-    ctxs[(*ctxsLen)-1]=(*ctxNum); 
-		 
-	//	kdDebug()<<"test1-2-1-2"<<endl; 
-  } 
-  else 
-	{ 
-    if (ctx==-1) 
-    { 
-		//  kdDebug()<<"test1-2-1-3"<<endl; 
- 
-      if ((*ctxsLen)==0) 
-		    (*ctxNum)=0; 
-      else 
-      { 
-        // kdDebug()<<"Truncating 'stack'"<<endl; 
-        ctxs = (signed char *) realloc (ctxs, (*ctxsLen)-1); 
-			  (*ctxsLen)--; 
-        (*ctxNum) = (((*ctxsLen)==0)?0:ctxs[(*ctxsLen)-1]); 
-      } 
-			 
-		//	kdDebug()<<"test1-2-1-4"<<endl; 
-		} 
- 
-	  if ((*prevLine)>=(*ctxsLen)-1) 
-		{ 
-		//  kdDebug()<<"test1-2-1-5"<<endl; 
- 
-		  *prevLine=(*ctxsLen)-1; 
-		  if ((*ctxsLen)==0) return ctxs; 
-		  if (contextList[ctxs[(*ctxsLen)-1]]->ctx!=-2) 
- 
-			return generateContextStack(ctxNum, contextList[ctxs[(*ctxsLen)-1]]->ctx,ctxs,ctxsLen, prevLine); 
-			 
-		//	kdDebug()<<"test1-2-1-6"<<endl; 
-		} 
-	  else 
-   	{ 
-	    if (ctx==-2) (*ctxNum)=(((*ctxsLen)==0)?0:ctxs[(*ctxsLen)-1]); 
-    } 
-  } 
-	 
-	//kdDebug()<<"test1-2-1-end"<<endl; 
- 
-	return ctxs; 
-} 
- 
-/******************************************************************************************* 
-        Highlight - doHighlight 
-        Increase the usage count and trigger initialization if needed 
- 
-                        * input: signed char *oCtx	Pointer to the "stack" of the previous line 
-				 uint *oCtxLen		Size of the stack 
-				 TextLine *textline	Current textline to work on 
-                        ************* 
-                        * output: (TextLine *textline) 
-                        ************* 
-                        * return value: signed char*	new context stack at the end of the line 
-*******************************************************************************************/ 
- 
-void Highlight::doHighlight(signed char *oCtx, uint oCtxLen, TextLine *textLine) 
-{ 
-  if (!textLine) 
-    return; 
+  deliminatorLen = deliminator.length();
+}
+
+Highlight::~Highlight()
+{
+}
+
+signed char *Highlight::generateContextStack(int *ctxNum, int ctx,signed char *ctxs, uint *ctxsLen, int *prevLine)
+{
+  if (ctx>=0)
+  {
+	//  kdDebug()<<"test1-2-1-1"<<endl;
+
+    (*ctxNum) = ctx;
+
+		if (ctxs == 0L)
+			ctxs = (signed char *) malloc ((*ctxsLen)+1);
+		else
+      ctxs = (signed char *) realloc (ctxs, (*ctxsLen)+1);
+
+	  (*ctxsLen)++;
+    ctxs[(*ctxsLen)-1]=(*ctxNum);
+
+	///	kdDebug()<<"test1-2-1-2"<<endl;
+  }
+  else
+	{
+    if (ctx==-1)
+    {
+		//  kdDebug()<<"test1-2-1-3"<<endl;
+
+      if ((*ctxsLen)==0)
+		    (*ctxNum)=0;
+      else
+      {
+        // kdDebug()<<"Truncating 'stack'"<<endl;
+        ctxs = (signed char *) realloc (ctxs, (*ctxsLen)-1);
+			  (*ctxsLen)--;
+        (*ctxNum) = (((*ctxsLen)==0)?0:ctxs[(*ctxsLen)-1]);
+      }
+
+		//	kdDebug()<<"test1-2-1-4"<<endl;
+		}
+
+	  if ((*prevLine)>=(*ctxsLen)-1)
+		{
+		//  kdDebug()<<"test1-2-1-5"<<endl;
+
+		  *prevLine=(*ctxsLen)-1;
+		  if ((*ctxsLen)==0) return ctxs;
+		  
+			if (contextList[ctxs[(*ctxsLen)-1]] && (contextList[ctxs[(*ctxsLen)-1]]->ctx!=-2))
+			  return generateContextStack(ctxNum, contextList[ctxs[(*ctxsLen)-1]]->ctx,ctxs,ctxsLen, prevLine);
+
+		//	kdDebug()<<"test1-2-1-6"<<endl;
+		}
+	  else
+   	{
+	    if (ctx==-2) (*ctxNum)=(((*ctxsLen)==0)?0:ctxs[(*ctxsLen)-1]);
+    }
+  }
+
+	//kdDebug()<<"test1-2-1-end"<<endl;
+
+	return ctxs;
+}
+
+/*******************************************************************************************
+        Highlight - doHighlight
+        Increase the usage count and trigger initialization if needed
+
+                        * input: signed char *oCtx	Pointer to the "stack" of the previous line
+				 uint *oCtxLen		Size of the stack
+				 TextLine *textline	Current textline to work on
+                        *************
+                        * output: (TextLine *textline)
+                        *************
+                        * return value: signed char*	new context stack at the end of the line
+*******************************************************************************************/
+
+void Highlight::doHighlight(signed char *oCtx, uint oCtxLen, TextLine *textLine)
+{
+  if (!textLine)
+    return;
  
   if (noHl) 
   { 
