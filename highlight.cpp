@@ -492,7 +492,7 @@ const QChar *checkCharHexOct(const QChar *str) {
   }
   return s;
 }
-#if 1
+#if 0
 //checks for C escape chars like \n
 const QChar *checkEscapedChar(const QChar *s) {
 
@@ -536,8 +536,9 @@ const QChar *checkEscapedChar(const QChar *s) {
 // while the orginal was 9-12 mu secs K6-2 500
 // compiled with -O3
 const QChar *checkEscapedChar(const QChar *s) {
-
-  if (s[0] == '\\' && s[1] != '\0' ) s++;
+  int i;
+  if (s[0] == '\\' && s[1] != '\0' ) {
+  	s++;
 	switch(*s){
   		case  'a': // checks for control chars
 		case  'b': // we want to fall through
@@ -549,6 +550,7 @@ const QChar *checkEscapedChar(const QChar *s) {
 		case  'v':
 		case '\'':
 		case '\"':
+		case '?' : // added ? ANSI C classifies this as an escaped char
 		case '\\': s++;
        		           break;
 		case 'x': // if it's like \xff
@@ -557,15 +559,19 @@ const QChar *checkEscapedChar(const QChar *s) {
 			// replaced with something else but
 			// for right now they work
 			// check for hexdigits
-                        for(int i=0;i<2&&(*s>='0' && *s<='9'|| *s >= 'a' && *s <='f'|| *s>='A' && *s<='F');i++,s++);
+                        for(i=0;i<2&&(*s>='0' && *s<='9'|| *s >= 'a' && *s <='f'|| *s>='A' && *s<='F');i++,s++);
+                        if(i==0) return 0L; // takes care of case '\x'                        	
 			break;
-		case '0': // if it's like \0777
-			s++;  // eat the 0 NOT SURE
-     	  		for(int i=0;i < 3 &&(*s >='0'&& *s<='7');i++,s++);
+			
+		case '0': case '1': case '2': case '3' :
+		case '4': case '5': case '6': case '7' :
+     	  		for(i=0;i < 3 &&(*s >='0'&& *s<='7');i++,s++);
 			break;
 			default: return 0L;
 	}
   return s;
+  }
+  return 0L;
 }
 #endif
 
