@@ -91,6 +91,13 @@ void KateProjectManager::setupPluginList ()
   }
 }
 
+void KateProjectManager::setCurrentProject (Kate::Project *project)
+{
+  m_currentProject = project;
+  
+  emit m_projectManager->projectChanged ();
+}
+
 Kate::Project *KateProjectManager::create (const QString &type, const QString &name, const QString &filename)
 {
   KConfig *c = new KConfig (filename);

@@ -965,7 +965,10 @@ void KateMainWindow::activateProject (Kate::Project *project)
   m_project = project;
   
   if (project)
+  {
+    m_projectManager->setCurrentProject (project);
     m_projectNumber = project->projectNumber ();
+  }
   else
     m_projectNumber = 0;
     

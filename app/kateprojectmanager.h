@@ -28,6 +28,7 @@
 #include <qptrlist.h>
 #include <qstringlist.h>
 #include <ktrader.h>
+#include <qguardedptr.h>
 
 class ProjectPluginInfo
 {
@@ -76,6 +77,8 @@ class KateProjectManager : public QObject
 
     QStringList pluginStringList ();    
     
+    void setCurrentProject (Kate::Project *project);
+    
   private:
     Kate::ProjectManager *m_projectManager;
     
@@ -86,6 +89,7 @@ class KateProjectManager : public QObject
     // INTERNAL USE OF KateProject !!!
     QPtrList<class KateProject> m_projects;
     QPtrList<Kate::Project> m_projectsR;
+    QGuardedPtr<Kate::Project> m_currentProject;
 };
 
 #endif

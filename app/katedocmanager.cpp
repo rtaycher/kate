@@ -80,7 +80,7 @@ Kate::Document *KateDocManager::activeDocument ()
 }
 
 void KateDocManager::setActiveDocument (Kate::Document *doc)
-{                      
+{
   if (m_currentDoc != doc)
   {
     emit documentChanged ();
