@@ -274,11 +274,11 @@ EditConfigTab::EditConfigTab(QWidget *parent, KWrite *kWrite)
   QHBoxLayout *mainLayout;
   QVBoxLayout *cbLayout, *leLayout;
   int configFlags;
-  static const char *labels[numFlags] = {I18N_NOOP("&Word Wrap"),
-    I18N_NOOP("Replace &Tabs By Spaces"), I18N_NOOP("&Remove Trailing Spaces"),
-    I18N_NOOP("&Auto Brackets"), I18N_NOOP("Group &Undos"), I18N_NOOP("&Show Tabs"),
-    I18N_NOOP("Smart &Home"),
-    I18N_NOOP("&Page Up/Down Moves Cursor"), I18N_NOOP("Wrap &Cursor")};
+  static const char *labels[numFlags] = {I18N_NOOP("&Word wrap"),
+    I18N_NOOP("Replace &tabs with spaces"), I18N_NOOP("&Remove trailing spaces"),
+    I18N_NOOP("&Auto brackets"), I18N_NOOP("Group &undos"), I18N_NOOP("&Show tabs"),
+    I18N_NOOP("Smart &home"),
+    I18N_NOOP("&Page up/down moves cursor"), I18N_NOOP("Wrap &cursor")};
   int z;
 
   mainLayout = new QHBoxLayout(this, 0, KDialog::spacingHint() );
