@@ -777,7 +777,7 @@ bool KateDocument::internalUnWrapLine ( uint line, uint col)
 	  currentUndo->addItem (new KateUndo (this, KateUndo::internalUnWrapLine, line, col, 0, 0));
 
   l->unWrap (col, tl, tl->length());
-  l->setContext (tl->getContext());
+  l->setContext (tl->getContext(), tl->getContextLength());
 
   if (longestLine == tl)
     longestLine = 0L;
@@ -2669,8 +2669,8 @@ void KateDocument::tagAll() {
 void KateDocument::updateLines(int startLine, int endLine)
 {
   TextLine::Ptr textLine;
-  uint line, last_line;
-  TContexts ctxNum, endCtx;
+  uint line, last_line, ctxNumLen, endCtxLen;
+  signed char *ctxNum, *endCtx;
 
   if (!buffer->line(startLine))
 	  return;
@@ -2682,7 +2682,12 @@ void KateDocument::updateLines(int startLine, int endLine)
 	if (line > 0)
 	{
 	  ctxNum = getTextLine(line - 1)->getContext();
+		ctxNumLen = getTextLine(line - 1)->getContextLength();
   }
+	else
+	{
+		ctxNumLen = 0;
+	}
 
 	bool stillcontinue=false;
 
@@ -2696,21 +2701,30 @@ void KateDocument::updateLines(int startLine, int endLine)
 		  break;
 
     endCtx = textLine->getContext();
-	  ctxNum = m_highlight->doHighlight(ctxNum,textLine);
-		textLine->setContext(ctxNum);
+		endCtxLen = textLine->getContextLength();
+	  ctxNum = m_highlight->doHighlight(ctxNum, &ctxNumLen, textLine);
+		//textLine->setContext(ctxNum, ctxNumLen);
 
-		stillcontinue = !(endCtx == ctxNum);
-
- //   stillcontinue = (endCtx.size()!=ctxNum.size());
- //   if ((endCtx.size()!=0) && (ctxNum.size()!=0)) stillcontinue |= (!(ctxNum==endCtx));
+		if (endCtxLen != ctxNumLen)
+		  stillcontinue = false;
+		else
+		{
+		  stillcontinue = true;
+		  for (uint z=0; z < ctxNumLen; z++)
+			{
+			  if (ctxNum[z] != endCtx[z])
+				{
+				  stillcontinue = false;
+					break;
+				}
+			}
+    }
 
 		line++;
-		//kdDebug()<<"endless loop har har har harh arh ahraaskldhsjkhsdjkhkjs"<<endl;
   }
- while ((line <= last_line) && ((line <= endLine) || stillcontinue)); //|| (!(endCtx == ctxNum)));
+  while ((line <= last_line) && ((line <= endLine) || stillcontinue)); //|| (!(endCtx == ctxNum)));
 
   tagLines(startLine, line - 1);
-
 }
 
 

@@ -253,7 +253,7 @@ class Highlight
     Highlight(syntaxModeListItem *def);
     ~Highlight();
 
-    TContexts doHighlight(TContexts ctxNum, TextLine *);
+    signed char *doHighlight(signed char *oCtx, uint *oCtxLen, TextLine *);
 
     KConfig *getKConfig();
     QString getWildcards();
@@ -281,7 +281,7 @@ class Highlight
     void readGlobalKeywordConfig();
     void readCommentConfig();
 
-    int generateContextStack(int ctx,TContexts *ctxs,int *posPrevLine);
+    signed char *generateContextStack(int *ctxNum, int ctx,signed char *ctxs, uint *ctxsLen, int *posPrevLine);
 
     HlItem *createHlItem(struct syntaxContextData *data, ItemDataList &iDl);
     int lookupAttrName(const QString& name, ItemDataList &iDl);

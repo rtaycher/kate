@@ -738,75 +738,76 @@ KWBufBlock::flushStringList()
        it != m_stringList.end(); ++it)
    {
       uint l = (*it)->length();
-      uint lctx = (*it)->ctx.size();    
-      size += (2*sizeof(uint)) + (l*sizeof(QChar)) + l + 1 + sizeof(uint) + (lctx * sizeof(signed char));    
-   }    
-   //kdDebug(13020)<<"Size = "<< size<<endl;    
-   m_rawData2 = QByteArray(size);    
-   m_rawData2End = size;    
-   m_rawSize = size;    
-   char *buf = m_rawData2.data();    
-   // Copy data    
-   for(TextLine::List::iterator it = m_stringList.begin();    
-       it != m_stringList.end(); ++it)    
-   {    
-      TextLine *tl = (*it).data();    
-      uint l = tl->length();    
-      uint lctx = tl->ctx.size();    
-   
-      memcpy(buf, &l, sizeof(uint));    
-      buf += sizeof(uint);    
-       
-      memcpy(buf, &lctx, sizeof(uint));    
-      buf += sizeof(uint);    
-    
-      memcpy(buf, (char *) tl->text.unicode(), sizeof(QChar)*l);    
-      buf += sizeof(QChar)*l;    
-    
-      memcpy(buf, (char *) tl->attributes.data(), l);    
-      buf += l;    
-    
-      memcpy(buf, (char *)&tl->attr, 1);    
-      buf += 1;
-     
-      memcpy(buf, &tl->myMark, sizeof(uint));    
-      buf += sizeof(uint);    
- 
-      memcpy(buf, (signed char *)tl->ctx.data(), lctx);    
-      buf += sizeof (signed char) * lctx;    
-   }    
-   assert(buf-m_rawData2.data() == size);    
-   m_codec = 0; // No codec    
-   b_rawDataValid = true;    
-}    
-    
-/**    
- * Create a valid stringList from raw data in our own format.    
- */    
-void    
-KWBufBlock::buildStringListFast()    
-{    
-    //kdDebug(13020)<<"KWBufBlock: buildStringListFast this = "<< this<<endl;    
-   char *buf = m_rawData2.data();    
-   char *end = buf + m_rawSize;    
-   while(buf < end)    
-   {    
-      uint l = 0;    
-      uint lctx = 0; 
-   
-      memcpy((char *) &l, buf, sizeof(uint)); 
-      buf += sizeof(uint); 
-      memcpy((char *) &lctx, buf, sizeof(uint)); 
+      uint lctx = (*it)->ctxLen;
+      size += (2*sizeof(uint)) + (l*sizeof(QChar)) + l + 1 + sizeof(uint) + (lctx * sizeof(signed char));
+   }
+   //kdDebug(13020)<<"Size = "<< size<<endl;
+   m_rawData2 = QByteArray(size);
+   m_rawData2End = size;
+   m_rawSize = size;
+   char *buf = m_rawData2.data();
+   // Copy data
+   for(TextLine::List::iterator it = m_stringList.begin();
+       it != m_stringList.end(); ++it)
+   {
+      TextLine *tl = (*it).data();
+      uint l = tl->length();
+      uint lctx = tl->ctxLen;
+
+      memcpy(buf, &l, sizeof(uint));
       buf += sizeof(uint);
-    
-      TextLine::Ptr textLine = new TextLine(); 
-       
-      if (l > 0) 
-      { 
-        textLine->text.setUnicode ((QChar *) buf, l); 
-        buf += (sizeof(QChar)*l); 
- 
-        textLine->attributes.duplicate((uchar *)buf, l);
+
+      memcpy(buf, &lctx, sizeof(uint));
+      buf += sizeof(uint);
+
+      memcpy(buf, (char *) tl->text.unicode(), sizeof(QChar)*l);
+      buf += sizeof(QChar)*l;
+
+      memcpy(buf, (char *) tl->attributes, l);
+      buf += l;
+
+      memcpy(buf, (char *)&tl->attr, 1);
+      buf += 1;
+
+      memcpy(buf, &tl->myMark, sizeof(uint));
+      buf += sizeof(uint);
+
+      memcpy(buf, (signed char *)tl->ctx, lctx);
+      buf += sizeof (signed char) * lctx;
+   }
+   assert(buf-m_rawData2.data() == size);
+   m_codec = 0; // No codec
+   b_rawDataValid = true;
+}
+
+/**
+ * Create a valid stringList from raw data in our own format.
+ */
+void
+KWBufBlock::buildStringListFast()
+{
+    //kdDebug(13020)<<"KWBufBlock: buildStringListFast this = "<< this<<endl;
+   char *buf = m_rawData2.data();
+   char *end = buf + m_rawSize;
+   while(buf < end)
+   {
+      uint l = 0;
+      uint lctx = 0;
+
+      memcpy((char *) &l, buf, sizeof(uint));
+      buf += sizeof(uint);
+      memcpy((char *) &lctx, buf, sizeof(uint));
+      buf += sizeof(uint);
+
+      TextLine::Ptr textLine = new TextLine();
+
+      if (l > 0)
+      {
+        textLine->text.setUnicode ((QChar *) buf, l);
+        buf += (sizeof(QChar)*l);
+
+        textLine->attributes = (uchar *)malloc (l);
+				memcpy((uchar *)textLine->attributes, buf, l);
 				buf += l;
       }
 
@@ -822,28 +823,29 @@ KWBufBlock::buildStringListFast()
 
       if (lctx > 0)
       {
-        textLine->ctx.duplicate ((signed char*)buf, lctx);
-			  buf += lctx;
+			  textLine->ctx = (signed char *)malloc (lctx);
+				memcpy((signed char *)textLine->ctx, buf, lctx);
+        buf += lctx;
       }
 
       m_stringList.push_back (textLine);
    }
-   //kdDebug(13020)<<"stringList.count = "<< m_stringList.count()<<" should be %ld"<< m_endState.lineNr - m_beginState.lineNr<<endl;    
-   assert((int) m_stringList.size() == (m_endState.lineNr - m_beginState.lineNr));    
-   m_stringListIt = m_stringList.begin();    
-   m_stringListCurrent = 0;    
-   b_stringListValid = true;    
-}    
-    
-/**    
- * Dispose of a stringList.    
- */    
-void    
-KWBufBlock::disposeStringList()    
-{    
-    //kdDebug(13020)<<"KWBufBlock: disposeStringList this = "<< this<<endl;    
-   assert(b_rawDataValid || b_vmDataValid);    
-   m_stringList.clear();    
+   //kdDebug(13020)<<"stringList.count = "<< m_stringList.count()<<" should be %ld"<< m_endState.lineNr - m_beginState.lineNr<<endl;
+   assert((int) m_stringList.size() == (m_endState.lineNr - m_beginState.lineNr));
+   m_stringListIt = m_stringList.begin();
+   m_stringListCurrent = 0;
+   b_stringListValid = true;
+}
+
+/**
+ * Dispose of a stringList.
+ */
+void
+KWBufBlock::disposeStringList()
+{
+    //kdDebug(13020)<<"KWBufBlock: disposeStringList this = "<< this<<endl;
+   assert(b_rawDataValid || b_vmDataValid);
+   m_stringList.clear();
    b_stringListValid = false;    
 }    
     

@@ -571,40 +571,48 @@ Highlight::~Highlight()
 {
 }
 
-int Highlight::generateContextStack(int ctx,TContexts *ctxs, int *prevLine)
+signed char *Highlight::generateContextStack(int *ctxNum, int ctx,signed char *ctxs, uint *ctxsLen, int *prevLine)
 {
-	int ctxNum;
-            if (ctx>=0)
-                {
-                    ctxNum = ctx;
-                    ctxs->resize(ctxs->size()+1);
-                    (*ctxs)[ctxs->size()-1]=ctxNum;
-                }
-                else
-                if (ctx==-1)
-                {
-                        if (ctxs->size()==0) ctxNum=0;
-                        else
-                        {   
-//                                kdDebug()<<"Truncating 'stack'"<<endl;
-                                ctxs->resize(ctxs->size()-1);
-                                ctxNum = ((ctxs->size()==0)?0:(*ctxs)[ctxs->size()-1]);
-                        }
+  if (ctx>=0)
+  {
+    (*ctxNum) = ctx;
+    ctxs = (signed char *) realloc (ctxs, (*ctxsLen)+1);
+	  (*ctxsLen)++;
+    ctxs[(*ctxsLen)-1]=(*ctxNum);
+  }
+  else
+	{
+    if (ctx==-1)
+    {
+      if ((*ctxsLen)==0)
+		    (*ctxNum)=0;
+      else
+      {
+        // kdDebug()<<"Truncating 'stack'"<<endl;
+        ctxs = (signed char *) realloc (ctxs, (*ctxsLen)-1);
+			  (*ctxsLen)--;
+        (*ctxNum) = (((*ctxsLen)==0)?0:ctxs[(*ctxsLen)-1]);
+      }
+		}
 
-			if ((*prevLine)>=ctxs->size()-1)
-			{
-				*prevLine=ctxs->size()-1;
-				if (ctxs->size()==0) return ctxNum;
-				if (contextList[(*ctxs)[ctxs->size()-1]]->ctx!=-2)
-				return generateContextStack(contextList[(*ctxs)[ctxs->size()-1]]->ctx,ctxs,prevLine);
-			}
-                }
-		else if (ctx==-2) ctxNum=((ctxs->size()==0)?0:(*ctxs)[ctxs->size()-1]);
+	  if ((*prevLine)>=(*ctxsLen)-1)
+		{
+		  *prevLine=(*ctxsLen)-1;
+		  if ((*ctxsLen)==0) return ctxs;
+		  if (contextList[ctxs[(*ctxsLen)-1]]->ctx!=-2)
 
-	return ctxNum;
+			return generateContextStack(ctxNum, contextList[ctxs[(*ctxsLen)-1]]->ctx,ctxs,ctxsLen, prevLine);
+		}
+	  else
+   	{
+	    if (ctx==-2) (*ctxNum)=(((*ctxsLen)==0)?0:ctxs[(*ctxsLen)-1]);
+    }
+  }
+
+	return ctxs;
 }
 
-TContexts Highlight::doHighlight(TContexts oCtx, TextLine *textLine)
+signed char *Highlight::doHighlight(signed char *oCtx, uint *oCtxLen, TextLine *textLine)
 {
   if (noHl)
   {
@@ -616,24 +624,25 @@ TContexts Highlight::doHighlight(TContexts oCtx, TextLine *textLine)
   HlContext *context;
   const QChar *s2;
   HlItem *item;
-	
-  TContexts ctx=oCtx;
-  ctx.detach();
+
   int ctxNum;
   int prevLine;
-  
-  if (ctx.size()==0)
+
+	signed char *ctx = (signed char*) malloc ((*oCtxLen));
+	for (uint z1=0; z1 < (*oCtxLen); z1++) ctx[z1] = oCtx[z1];
+
+  if (oCtxLen==0)
 	{
 		ctxNum=0;
 		context=contextList[ctxNum];
-		int prevLine=-1;
+		prevLine=-1;
 	}
 	else
 	{
-		ctxNum=ctx[ctx.size()-1];
+		ctxNum=ctx[(*oCtxLen)-1];
 		context=contextList[ctxNum];
-		prevLine=ctx.size()-1;
-		ctxNum=generateContextStack(context->ctx,&ctx,&prevLine);
+		prevLine=(*oCtxLen)-1;
+		ctx=generateContextStack(&ctxNum, context->ctx, ctx, oCtxLen, &prevLine);
 		context=contextList[ctxNum];
 	}
 
@@ -666,9 +675,9 @@ TContexts Highlight::doHighlight(TContexts oCtx, TextLine *textLine)
         {
             textLine->setAttribs(item->attr,s1 - str,s2 - str);
 //   	    kdDebug()<<QString("item->ctx: %1").arg(item->ctx)<<endl;
-          
-	    ctxNum=generateContextStack(item->ctx,&ctx,&prevLine);
-//	    kdDebug()<<QString("current ctxNum==%1").arg(ctxNum)<<endl;
+
+	    ctx=generateContextStack(&ctxNum, item->ctx,ctx, oCtxLen, &prevLine);
+	//    kdDebug()<<QString("current ctxNum==%1").arg(ctxNum)<<endl;
 	    context=contextList[ctxNum];
 
             z = z + s2 - s1 - 1;
@@ -690,11 +699,12 @@ TContexts Highlight::doHighlight(TContexts oCtx, TextLine *textLine)
 
   //set "end of line"-properties
   textLine->setAttr(context->attr);
-//  textLine->setContext(ctx);
+  textLine->setContext(ctx, (*oCtxLen));
+
+	delete [] ctx;
 
   //return new context
-
-  return ctx;
+  return textLine->getContext ();
 }
 
 KConfig *Highlight::getKConfig() {

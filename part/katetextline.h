@@ -34,7 +34,7 @@
   and also if a character is selected. 
 */ 
  
-typedef QMemArray<signed char> TContexts; 
+typedef QMemArray<signed char> TContexts;
  
 class TextLine : public KShared 
 { 
@@ -50,7 +50,7 @@ public:
       Creates an empty text line with given attribute and syntax highlight 
       context 
     */ 
-    TextLine(uchar attribute = 0, TContexts context = TContexts()); 
+    TextLine(uchar attribute = 0);
     ~TextLine(); 
  
     /** 
@@ -64,9 +64,9 @@ public:
     void replace(uint pos, uint delLen, const QChar *insText, uint insLen, uchar *insAttribs = 0L); 
     /** 
       Appends a string of length l to the textline 
-    */ 
-    void append(const QChar *s, uint l) {replace(text.length(), 0, s, l);} 
-    /** 
+    */
+    void append(const QChar *s, uint l);
+		/**
       Wraps the text from the given position to the end to the next line 
     */ 
     void wrap(TextLine::Ptr nextLine, uint pos); 
@@ -77,9 +77,9 @@ public:
     void unWrap(uint pos, TextLine::Ptr nextLine, uint len); 
     /** 
       Truncates the textline to the new length 
-    */ 
-    void truncate(uint newLen) { text.truncate(newLen); attributes.resize(text.length()); } 
-    /** 
+    */
+    void truncate(uint newLen);
+		/**
       Returns the position of the first character which is not a white space 
     */ 
     int firstChar() const; 
@@ -125,11 +125,11 @@ public:
     /** 
       Sets the attributes from start to end -1 
     */ 
-    void setAttribs(uchar attribute, uint start, uint end); 
+    void setAttribs(uchar attribute, uint start, uint end);
     /** 
       Sets the attribute for the free space behind the last character 
     */ 
-    void setAttr(uchar attribute); 
+    void setAttr(uchar attribute);
     /** 
       Gets the attribute at the given position 
     */ 
@@ -151,11 +151,15 @@ public:
     /** 
       Sets the syntax highlight context number 
     */ 
-    void setContext(TContexts context); 
-    /** 
-      Gets the syntax highlight context number 
-    */ 
-    TContexts getContext() const; 
+    void setContext(signed char *newctx, uint len);
+    /**
+      Gets the syntax highlight context number
+    */
+    signed char *getContext() const { return ctx; };
+		/**
+      Gets the syntax highlight context number
+    */
+    uint getContextLength() const { return ctxLen; };
  
     /** 
       Sets the select state from start to end -1 
@@ -183,55 +187,56 @@ public:
       Returns if the character at the given position is selected 
     */ 
     bool isSelected(uint pos) const; 
-    /** 
-      Returns true if the free space behind the last character is selected 
-    */ 
-    bool isSelected() const; 
-    /** 
-      Finds the next selected character, starting at the given position 
-    */ 
-    int findSelected(uint pos) const; 
-    /** 
-      Finds the next unselected character, starting at the given position 
-    */ 
-    int findUnselected(uint pos) const; 
-    /** 
-      Finds the previous selected character, starting at the given position 
-    */ 
-    int findRevSelected(uint pos) const; 
-    /** 
-      Finds the previous unselected character, starting at the given position 
-    */ 
-    int findRevUnselected(uint pos) const; 
- 
-    void clearMark () { myMark = 0; }; 
-    void addMark ( uint m ); 
-    void delMark ( uint m ); 
-    uint mark() { return myMark; }; 
- 
-    uchar *getAttribs() { return attributes.data(); } 
- 
-  protected: 
-    /** 
-      The text 
-    */ 
-    QString text; 
-    /** 
-      The attributes 
-    */ 
-    QMemArray<uchar> attributes; 
-    /** 
-      The attribute of the free space behind the end 
-    */ 
-    uchar attr; 
-    /** 
-      The syntax highlight context 
-    */ 
-    TContexts ctx; 
-    /** 
+    /**
+      Returns true if the free space behind the last character is selected
+    */
+    bool isSelected() const;
+    /**
+      Finds the next selected character, starting at the given position
+    */
+    int findSelected(uint pos) const;
+    /**
+      Finds the next unselected character, starting at the given position
+    */
+    int findUnselected(uint pos) const;
+    /**
+      Finds the previous selected character, starting at the given position
+    */
+    int findRevSelected(uint pos) const;
+    /**
+      Finds the previous unselected character, starting at the given position
+    */
+    int findRevUnselected(uint pos) const;
+
+    void clearMark () { myMark = 0; };
+    void addMark ( uint m );
+    void delMark ( uint m );
+    uint mark() { return myMark; };
+
+    uchar *getAttribs() { return attributes; }
+
+  protected:
+    /**
+      The text
+    */
+    QString text;
+    /**
+      The attributes
+    */
+    uchar *attributes;
+    /**
+      The attribute of the free space behind the end
+    */
+    uchar attr;
+    /**
+      The syntax highlight context
+    */
+    signed char *ctx;
+		uint ctxLen;
+    /**
       The marks of the current line 
     */ 
-    uint myMark; 
+    uint myMark;
 }; 
  
 //text attribute constants 
