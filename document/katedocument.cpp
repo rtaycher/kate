@@ -3076,6 +3076,8 @@ void KateDocument::open (const QString &name)
 void KateDocument::wrapText (uint col)
 {
   int line = 0;
+  int z = 0;
+
   while(true)
   {
     TextLine::Ptr l = getTextLine(line);
@@ -3084,7 +3086,17 @@ void KateDocument::wrapText (uint col)
     {
       TextLine::Ptr tl = new TextLine();
       buffer->insertLine(line+1,tl);
-      l->wrap (tl, col);
+      const QChar *text = l->getText();
+
+      for (z=col; z>0; z--)
+      {
+        if (z < 1) break;
+        if (text[z].isSpace()) break;
+      }
+
+      if (z < 1) z=col;
+
+      l->wrap (tl, z);
     }
 
     line++;
