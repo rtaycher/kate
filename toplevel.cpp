@@ -330,7 +330,7 @@ void TopLevel::setupMenuBar() {
 //  indentID = options->insertItem(i18n("Auto &Indent"),this,SLOT(toggle_indent_mode()));
 //  options->insertSeparator();
 //  options->insertItem(i18n("&Options..."),kWrite,SLOT(optDlg()));
-  options->insertItem(i18n("&Colors..."),kWrite,SLOT(colDlg()));
+  options->insertItem(i18n("Colo&rs..."),kWrite,SLOT(colDlg()));
   options->insertSeparator();
   options->insertItem(i18n("&Configure..."), this, SLOT(configure()));
   options->insertItem(i18n("&Keys..."), this, SLOT(keys()));
