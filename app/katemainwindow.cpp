@@ -220,7 +220,7 @@ void KateMainWindow::setupMainWindow ()
   projectlist = new KateProjectList (m_projectManager, this, this/*filelistDock*/, "projectlist");
   projectlistDock=addToolViewWidget(KDockWidget::DockLeft,projectlist,SmallIcon("view_choose"), i18n("Projects"));
   
-  projectviews = new KateProjectList (m_projectManager, this, this/*filelistDock*/, "projectviews");
+  projectviews = new KateProjectViews (m_projectManager, this, this/*filelistDock*/, "projectviews");
   projectviews=addToolViewWidget(KDockWidget::DockLeft,projectviews,SmallIcon("view_tree"), i18n("Project View"));
   
   fileselector = new KateFileSelector( this, m_viewManager, /*fileselectorDock*/ this, "operator");
