@@ -97,21 +97,15 @@ class HlKeyword : public HlItem {
     virtual ~HlKeyword();
     virtual void addWord(const QString &);
 		virtual void addList(const QStringList &);
-// needed for kdevelop (if they decide to use this code)
-    virtual void addList(const char **);
     virtual const QChar *checkHgl(const QChar *, int len, bool);
 		QStringList getList() { return words;};
-		QDict<char> getDict() { return Dict;};
 
   protected:
     QStringList words;
-    QDict<char> Dict;
+    QDict<bool> dict;
     bool _caseSensitive;
     QString _weakSep;
-    const QChar*  (*doCheckHgl)(const QChar* , int, bool,HlKeyword*);
     virtual bool startEnable(QChar c);
-    static const QChar* sensitiveCheckHgl(const QChar*, int len, bool,HlKeyword *kw);
-    static const QChar *inSensitiveCheckHgl(const QChar *s, int len, bool,HlKeyword *kw);
 };
 
 class HlPHex : public HlItem {

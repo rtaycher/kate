@@ -63,6 +63,7 @@ HlManager *HlManager::s_pSelf = 0;
 enum Item_styles { dsNormal,dsKeyword,dsDataType,dsDecVal,dsBaseN,dsFloat,dsChar,dsString,dsComment,dsOthers};
 
 static const QChar nullChr = QChar ('\0');
+static bool trueBool = true;
 
 int getDefStyleNum(QString name)
 {
@@ -153,34 +154,26 @@ HlRangeDetect::HlRangeDetect(int attribute, int context, QChar ch1, QChar ch2)
 }
 
 const QChar *HlRangeDetect::checkHgl(const QChar *s, int len, bool) {
-  if (*s == sChar1) {
-    do {
+  if (*s == sChar1)
+  {
+    do
+    {
       s++;
-      if (*s == '\0') return 0L;
-    } while (*s != sChar2);
+      len--;
+      if (len == 0) return 0L;
+    }
+    while (*s != sChar2);
+
     return s + 1;
   }
   return 0L;
 }
 
 HlKeyword::HlKeyword(int attribute, int context,bool casesensitive,QString weakSep)
-  : HlItem(attribute,context) {
-//  words.setAutoDelete(true);
-// after reading over the docs for Dict
-// 23 is probably too small when we can have > 100 items
-        _weakSep=weakSep;
-        if (casesensitive)
-          {
-            kdDebug() << "Case Sensitive KeyWord" << endl;
-            doCheckHgl=&HlKeyword::sensitiveCheckHgl;
-          } else
-          {
-            kdDebug() << "Case insensitive Keyword" << endl;
-            doCheckHgl=&inSensitiveCheckHgl;
-          }
-        _caseSensitive=casesensitive;
-        QDict<char> dict(113,casesensitive);
-	Dict=dict;
+  : HlItem(attribute,context), dict (113, casesensitive)
+{
+  _weakSep=weakSep;
+  _caseSensitive=casesensitive;
 }
 
 HlKeyword::~HlKeyword() {
@@ -198,46 +191,18 @@ bool HlKeyword::startEnable(QChar c)
 void HlKeyword::addWord(const QString &word)
 {
   words.append(word);
-  Dict.insert(word,"dummy");
+  dict.insert(word,&trueBool);
 }
 
 void HlKeyword::addList(const QStringList& list)
 {
- if (_caseSensitive)
- {
- words+=list;
- for(uint i=0;i<list.count();i++) Dict.insert(list[i],"dummy");
- }
- else
- {
- words+=list;
- for(uint i=0;i<list.count();i++)
-	Dict.insert(list[i].lower(),"dummy");
- }
-}
 
-void HlKeyword::addList(const char **list) {
-  if (_caseSensitive)
-  while (*list) {
-    words.append(*list);
-    Dict.insert(*list,"dummy");
-    list++;
-  }
-  else
-  while (*list) {
-    words.append(*list);
-    Dict.insert(QString(*list).lower(),"dummy");
-    list++;
-  }
+ words+=list;
+ for(uint i=0;i<list.count();i++) dict.insert(list[i], &trueBool);
 }
 
 const QChar *HlKeyword::checkHgl(const QChar *s, int len, bool b)
 {
-  return doCheckHgl(s, len, b,this);
-  //sensitiveCheckHgl(s,b);
-}
-
-const QChar *HlKeyword::inSensitiveCheckHgl(const QChar *s, int len, bool,HlKeyword *kw) {
   if(len==0) return 0L;
 
   const QChar *s2=s;
@@ -246,7 +211,7 @@ const QChar *HlKeyword::inSensitiveCheckHgl(const QChar *s, int len, bool,HlKeyw
   QStack<QChar> stack;
   stack.setAutoDelete(false);
 
-  const QChar *wk = kw->_weakSep.unicode();
+  const QChar *wk = _weakSep.unicode();
 
   while( (len > 0)  && ((ws=ustrchr(wk,*s2)) || ( s2->isLetterOrNumber())) )
   {
@@ -260,44 +225,12 @@ const QChar *HlKeyword::inSensitiveCheckHgl(const QChar *s, int len, bool,HlKeyw
   if (s2 == s) return 0L;
   while (s3=stack.pop())
         {
-          QString lookup=QString(s,s3-s)+QString::null;
-          if (kw->Dict[lookup.lower()]) return s3;
+          QString lookup=QString(s,s3-s);
+          if (dict.find(lookup)) return s3;
         }
   return 0L;
 
 }
-
-const QChar *HlKeyword::sensitiveCheckHgl(const QChar *s, int len, bool,HlKeyword *kw)
-{
-  if(len==0) return 0L;
-
-  const QChar *s2=s;
-  QChar *s3;
-  bool ws;
-  QStack<QChar> stack;
-  stack.setAutoDelete(false);
-
-  const QChar *wk = kw->_weakSep.unicode();
-
-  while( (len > 0)  && ((ws=ustrchr(wk,*s2)) || ( s2->isLetterOrNumber())) )
-  {
-    if (ws) stack.push(s2);
-    s2++;
-    len--;
-  }
-
-  stack.push(s2);
-// oops didn't increment s2 why do anything else ?
-  if (s2 == s) return 0L;
-  while (s3=stack.pop())
-        {
-          QString lookup=QString(s,s3-s)+QString::null;
-          if (kw->Dict[lookup]) return s3;
-        }
-  return 0L;
-
-}
-
 
 HlInt::HlInt(int attribute, int context)
   : HlItem(attribute,context) {
@@ -556,9 +489,9 @@ const QChar *checkCharHexOct(const QChar *str) {
   return s;
 }
 // checks for C escaped chars \n and escaped hex/octal chars
-const QChar *checkEscapedChar(const QChar *s) {
+const QChar *checkEscapedChar(const QChar *s, int len) {
   int i;
-  if (s[0] == '\\' && s[1] != '\0' ) {
+  if (s[0] == '\\' && (len > 1) ) {
         s++;
         switch(*s){
                 case  'a': // checks for control chars
@@ -597,7 +530,7 @@ const QChar *checkEscapedChar(const QChar *s) {
 }
 
 const QChar *HlCStringChar::checkHgl(const QChar *str, int len, bool) {
-  return checkEscapedChar(str);
+  return checkEscapedChar(str, len);
 }
 
 
@@ -608,8 +541,9 @@ HlCChar::HlCChar(int attribute, int context)
 const QChar *HlCChar::checkHgl(const QChar *str, int len, bool) {
   const QChar *s;
 
-  if (str[0] == '\'' && str[1] != '\0' && str[1] != '\'') {
-    s = checkEscapedChar(&str[1]); //try to match escaped char
+  if ((len > 1) && (str[0] == '\'') && (str[1] != '\''))
+  {
+    s = checkEscapedChar(&str[1], len); //try to match escaped char
     if (!s) s = &str[2];           //match single non-escaped char
     if (*s == '\'') return s + 1;
   }
