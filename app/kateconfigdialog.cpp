@@ -222,10 +222,11 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
     editorPages.append (KTextEditor::configInterfaceExtension (v->document())->configPage(i, page));
   }              
   
+  #if 0
   path.clear();
   path << i18n("Plugins");
   setFolderIcon (path, SmallIcon("kate", KIcon::SizeSmall));
-  
+  #endif
   for (uint i=0; i<pluginManager->pluginList().count(); i++)
   {
     if  ( pluginManager->pluginList().at(i)->load && Kate::pluginConfigInterfaceExtension(pluginManager->pluginList().at(i)->plugin) )
@@ -248,7 +249,7 @@ void KateConfigDialog::addPluginPage (Kate::Plugin *plugin)
   {
     QStringList path;
     path.clear();
-    path << i18n("Plugins") << Kate::pluginConfigInterfaceExtension(plugin)->configPageName(i);
+    path << i18n("Application")<<i18n("Plugins") << Kate::pluginConfigInterfaceExtension(plugin)->configPageName(i);
     QVBox *page=addVBoxPage(path, Kate::pluginConfigInterfaceExtension(plugin)->configPageFullName(i), Kate::pluginConfigInterfaceExtension(plugin)->configPagePixmap(i, KIcon::SizeSmall));
 
     PluginPageListItem *info=new PluginPageListItem;
