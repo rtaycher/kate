@@ -981,16 +981,17 @@ void AutoHighlight::makeContextList()
   kdDebug(13010)<< "AutoHighlight makeContextList()"<<endl;
   HlManager::self()->syntax->setIdentifier(identifier);
 
+  cslStart = "";
+
   data=HlManager::self()->syntax->getGroupInfo("general","comment");
   if (data)
     {
       kdDebug()<<"COMMENT DATA FOUND"<<endl;
-    while  (HlManager::self()->syntax->nextGroup(data)) 
+    while  (HlManager::self()->syntax->nextGroup(data))
       {
         kdDebug()<<HlManager::self()->syntax->groupData(data,"name")<<endl;
         if (HlManager::self()->syntax->groupData(data,"name")=="singleLine")
 		cslStart=HlManager::self()->syntax->groupData(data,"start");
-       else cslStart = "";
 	if (HlManager::self()->syntax->groupData(data,"name")=="multiLine")
            {
 		cmlStart=HlManager::self()->syntax->groupData(data,"start");
