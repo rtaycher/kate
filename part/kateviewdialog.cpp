@@ -71,7 +71,7 @@ SearchDialog::SearchDialog( QWidget *parent, QStringList &searchFor, QStringList
   regexpLayout->addWidget( m_optRegExp );
 
   // Add the Edit button if KRegExp exists.
-  m_regExpDialog = KParts::ComponentFactory::createInstanceFromQuery<QDialog>( "KRegExpEditor/KRegExpEditor" );
+  m_regExpDialog = KParts::ComponentFactory::createInstanceFromQuery<QDialog>( "KRegExpEditor/KRegExpEditor", QString::null, this );
   if ( m_regExpDialog ) {
     QPushButton* regexpButton = new QPushButton( i18n("Edit"), page );
 
