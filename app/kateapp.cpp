@@ -230,7 +230,7 @@ int KateApp::newInstance()
       if (!KIO::NetAccess::mimetype( args->url(z), m_mainWindows.first() ).startsWith(QString ("inode/directory")))
         m_mainWindows.first()->kateViewManager()->openURL( args->url(z) );
       else
-        KMessageBox::sorry( m_mainWindows.first(), i18n("The file '%1' could not be opened, it is not a normal file, it is a directory!").arg(args->url(z).url()) );
+        KMessageBox::sorry( m_mainWindows.first(), i18n("The file '%1' could not be opened, it is not a normal file, it is a folder!").arg(args->url(z).url()) );
     }
     Kate::Document::setOpenErrorDialogsActivated (true);
 

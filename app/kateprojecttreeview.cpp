@@ -131,7 +131,7 @@ KateProjectTreeView::KateProjectTreeView (Kate::Project *project, KateMainWindow
   addColumn(i18n("Project: ") + m_project->name());
   header()->hide ();
 
-  KateProjectTreeViewItem *item = new KateProjectTreeViewItem (&m_dirDict, this, m_project, i18n("Project Directory"), QString::null, true);
+  KateProjectTreeViewItem *item = new KateProjectTreeViewItem (&m_dirDict, this, m_project, i18n("Project Folder"), QString::null, true);
   addDir (item, QString::null);
 
   setOpen (item, true);
@@ -278,10 +278,10 @@ void KateProjectTreeView::slotContextMenuRequested ( QListViewItem * item, const
   QPopupMenu *menu = new QPopupMenu (this);
 
   if (i->isDir())
-    menu->insertItem (i18n("Add Directories/Files"), this, SLOT(addIt()));
+    menu->insertItem (i18n("Add Folders/Files"), this, SLOT(addIt()));
 
   if (!i->fullName().isNull())
-    menu->insertItem (i->isDir() ? i18n("Remove Directory") : i18n("Remove File"), this, SLOT(removeIt()));
+    menu->insertItem (i->isDir() ? i18n("Remove Folder") : i18n("Remove File"), this, SLOT(removeIt()));
 
   menu->exec(pos);
 }

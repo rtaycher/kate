@@ -175,7 +175,7 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow,
            filter, SLOT( addToHistory(const QString&) ) );
 
   // kaction for the dir sync method
-  acSyncDir = new KAction( i18n("Current Document Directory"), "curfiledir", 0,
+  acSyncDir = new KAction( i18n("Current Document Folder"), "curfiledir", 0,
         this, SLOT( setActiveDocumentDir() ), mActionCollection, "sync_dir" );
   toolbar->setIconText( KToolBar::IconOnly );
   toolbar->setIconSize( 16 );
@@ -203,9 +203,9 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow,
 
   // whatsthis help
   QWhatsThis::add( cmbPath,
-       i18n("<p>Here you can enter a path for a directory to display."
-            "<p>To go to a directory previously entered, press the arrow on "
-            "the right and choose one. <p>The entry has directory "
+       i18n("<p>Here you can enter a path for a folder to display."
+            "<p>To go to a folder previously entered, press the arrow on "
+            "the right and choose one. <p>The entry has folder "
             "completion. Right-click to choose how completion should behave.") );
   QWhatsThis::add( filter,
         i18n("<p>Here you can enter a name filter to limit which files are displayed."
@@ -605,7 +605,7 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
   QWhatsThis::add( sbFilterHistLength, fhwt );
   QString synwt( i18n(
         "<p>These options allow you to have the File Selector automatically "
-        "change location to the directory of the active document on certain "
+        "change location to the folder of the active document on certain "
         "events."
         "<p>Auto synchronization is <em>lazy</em>, meaning it will not take "
         "effect until the file selector is visible."
