@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=Kate/Plugin
+X-KDE-Library=katekttsdplugin
+Name=KTTSD Plugin for Kate
+Comment=Adds a menu entry for reading out the text
+Icon=kttsd
+author=Olaf Jan Schmidt, ojschmidt@kde.org
