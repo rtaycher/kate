@@ -67,4 +67,4 @@ DocPath=kate/index.html
 Type=Application
 Terminal=0
 X-DCOP-ServiceType=Multi
-Categories=QT;KDE;TextEditor
+Categories=Qt;KDE;TextEditor
