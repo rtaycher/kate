@@ -204,7 +204,7 @@ void KateMainWindow::setupMainWindow ()
   
   console = new KateConsole (this, "console");
   console->installEventFilter( this );
-  consoleDock = addToolViewWidget(KDockWidget::DockBottom,console, SmallIcon("konsole"),"Konsole");
+  consoleDock = addToolViewWidget(KDockWidget::DockBottom,console, SmallIcon("konsole"),"Terminal");
   
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileItem*)),this,SLOT(fileSelected(const KFileItem*)));
 }
@@ -272,7 +272,7 @@ void KateMainWindow::setupActions()
   a=new KAction(i18n("Find in Files..."), CTRL+SHIFT+Qt::Key_F, this, SLOT(slotFindInFiles()), actionCollection(),"edit_find_in_files" );
   a->setWhatsThis(i18n("Look up text in a selection of files in a given directory (and below)."));
 
-  a=new KAction(i18n("New &View"), 0, this, SLOT(newWindow()), actionCollection(), "view_new_view");
+  a=new KAction(i18n("&New View"), 0, this, SLOT(newWindow()), actionCollection(), "view_new_view");
   a->setWhatsThis(i18n("Create a new Kate view (a new window with the same document list)."));
 
   a=new KAction( i18n("Split &Vertical"), "view_left_right", CTRL+SHIFT+Key_L, m_viewManager, SLOT( slotSplitViewSpaceVert() ), actionCollection(), "view_split_vert");
@@ -282,7 +282,7 @@ void KateMainWindow::setupActions()
   a->setWhatsThis(i18n("Split the currently active view horizontally into two views."));
 
   a=closeCurrentViewSpace = new KAction( i18n("Close &Current"), "view_remove", CTRL+SHIFT+Key_R, m_viewManager, SLOT( slotCloseCurrentViewSpace() ), actionCollection(), "view_close_current_space");
-  a->setWhatsThis(i18n("Close the currently active splitted view")); 
+  a->setWhatsThis(i18n("Close the currently active splitted view"));
 
   connect(new KToggleAction(i18n("Show &Full-Screen"), QString::fromLatin1("window_fullscreen"),0, actionCollection(), 
 	"view_fullscreen_view"),SIGNAL(toggled(bool)), this,SLOT(slotFullScreen(bool)));
@@ -693,7 +693,7 @@ void KateMainWindow::slotMail()
               i18n("<p>The current document has not beed saved, and can "
               "not be atthatched to a email message."
               "<p>Do you want to save it and proceed?"),
-              i18n("Can not send unsaved file") );
+              i18n("Cannot Send Unsaved File") );
       if ( r == KMessageBox::Yes ) {
         Kate::View *v = (Kate::View*)doc->views().first();
         int sr = v->saveAs();

@@ -508,7 +508,7 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
   lo->setSpacing( spacing );
 
   // Toolbar - a lot for a little...
-  QGroupBox *gbToolbar = new QGroupBox( 1, Qt::Vertical, i18n("&Toolbar"), this );
+  QGroupBox *gbToolbar = new QGroupBox( 1, Qt::Vertical, i18n("Toolbar"), this );
   acSel = new KActionSelector( gbToolbar );
   acSel->setAvailableLabel( i18n("A&vailable Actions") );
   acSel->setSelectedLabel( i18n("S&elected Actions") );
@@ -516,7 +516,7 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
   // Sync
   QGroupBox *gbSync = new QGroupBox( 1, Qt::Horizontal, i18n("Auto Synchronization"), this );
   cbSyncActive = new QCheckBox( i18n("When a docu&ment becomes active"), gbSync );
-  cbSyncOpen = new QCheckBox( i18n("When a document is &opened"), gbSync );
+  cbSyncOpen = new QCheckBox( i18n("When a document is o&pened"), gbSync );
   cbSyncShow = new QCheckBox( i18n("When the file selector becomes visible"), gbSync );
   lo->addWidget( gbSync );
 
@@ -535,7 +535,7 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
 
   // Session
   QGroupBox *gbSession = new QGroupBox( 1, Qt::Horizontal, i18n("Session"), this );
-  cbSesLocation = new QCheckBox( i18n("Restore l&ocation"), gbSession );
+  cbSesLocation = new QCheckBox( i18n("Restore loca&tion"), gbSession );
   cbSesFilter = new QCheckBox( i18n("Restore last f&ilter"), gbSession );
   lo->addWidget( gbSession );
 
