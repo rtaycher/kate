@@ -1,0 +1,48 @@
+[Desktop Entry]
+# Note: if some app wants to see "Text Editor Component" here, (i.e. not readonly) then
+# we should separate the desktop files for the read-only and the read-write components.
+Name=Embedded Text Viewer
+Name[ca]=Visor de text encastat
+Name[cs]=ZabudovanÃ½ prohlÃ­Å¾eÄ textÅ¯
+Name[da]=Indlejret tekst-fremviser
+Name[de]=Eingebetteter Textbetrachter
+Name[el]=ÎÎ½ÏÏÎ¼Î±ÏÏÎ¼Î­Î½Î· Î ÏÎ¿Î²Î¿Î»Î® ÎÎµÎ¹Î¼Î­Î½Î¿Ï
+Name[eo]=Enkonstruita Tekstvidigilo
+Name[es]=Visor de Textos Incrustado
+Name[et]=PÃµimitud tekstivaataja
+Name[fi]=Upotettu tekstinÃ¤yttÃ¤jÃ¤
+Name[fr]=Afficheur de texte incorporÃ©
+Name[gl]=Visualizador de Textos Embebido
+Name[he]=×¢××××× ××¡×§×× ×××¦×
+Name[hu]=BeÃ¡gyazott szÃ¶vegnÃ©zegetÅ
+Name[is]=Ãsetjanleg textasjÃ¡
+Name[it]=Visualizzatore testi integrato
+Name[ja]=åãè¾¼ã¿ãã­ã¹ããã¥ã¼ã¢
+Name[ko]=ë¤ë¥¸ ê³³ì ë¼ìì ¸ì ì¤íëë ê¸ì ë³´ê¸°
+Name[lv]=IebÅ«vÄts Teksta SkatÄ«tÄjs
+Name[mk]=ĞĞ³ÑĞ°Ğ´Ğ»Ğ¸Ğ² ÑĞµĞºÑÑ Ğ³Ğ»ĞµĞ´Ğ°Ñ
+Name[nl]=Ingebedde tekstviewer
+Name[no]=Innebygd tekstleser
+Name[no_NY]=Innebygd tekstlesar
+Name[pl]=Wbudowana przeglÄdarka do tekstÃ³w
+Name[pt]=Visualizador de Texto Embebido
+Name[pt_BR]=Visualizador embutido de texto
+Name[ro]=Vizualizor texte Ã®nglobat
+Name[ru]=ĞÑÑÑĞ¾ĞµĞ½Ğ½ÑĞ¹ Ğ¿ÑĞ¾ÑĞ¼Ğ¾ÑÑÑĞ¸Ğº ÑĞµĞºÑÑĞ¾Ğ²
+Name[sk]=PrehliadaÄ textov
+Name[sl]=Vgrajen pregledovalnik besedil
+Name[sr]=UgraÄeni prikazivaÄ teksta
+Name[sv]=InbÃ¤ddad textvisare
+Name[ta]=Â¯Ã»ÃÂ¨ÃÃ³Â¾ Â¯Â¨Ã ÃÂ¡Ã·Â¨ÃÃÂ¡ÃÃ·
+Name[tr]=GÃ¶mÃ¼lÃ¼ Metin GÃ¶rÃ¼ntÃ¼leyici
+Name[uk]=ĞĞ¼Ğ¾Ğ½ÑĞ¾Ğ²Ğ°Ğ½Ğ¸Ğ¹ Ğ¿ĞµÑĞµĞ³Ğ»ÑĞ´Ğ°Ñ ÑĞµĞºÑÑÑĞ²
+Name[zh_CN.GB2312]=åµå¥ææ¬æ¥çå¨
+Name[zh_TW.Big5]=åµå¥å¼æå­æª¢è¦å¨
+X-KDE-Library=libkantpart
+Icon=kant
+
+MimeType=text/english;text/plain;text/x-makefile;text/x-c++hdr;text/x-c++src;text/x-chdr;text/x-csrc;text/x-java;text/x-moc;text/x-pascal;text/x-tcl;text/x-tex;application/x-shellscript;text/x-c;text/x-c++;text/x-diff;
+
+ServiceTypes=KParts/ReadWritePart,Browser/View,KTextEditor/Document
+Type=Service
+InitialPreference=8
