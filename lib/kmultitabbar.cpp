@@ -24,6 +24,8 @@
 
 #include "kmultitabbar.h"
 #include "kmultitabbar.moc"
+#include "kmultitabbar_p.h"
+#include "kmultitabbar_p.moc"
 #include <qbutton.h>
 #include <qpopupmenu.h>
 #include <qlayout.h>
@@ -34,6 +36,7 @@
 
 #include <kiconloader.h>
 #include <kdebug.h>
+
 
 KMultiTabBarInternal::KMultiTabBarInternal(QWidget *parent, KMultiTabBar::KMultiTabBarBasicMode bm):QScrollView(parent)
 	{
@@ -256,15 +259,19 @@ void KMultiTabBarTab::updateState()
 			QPushButton::setText(m_text);
 		} else {
 			kdDebug()<<"KMultiTabBarTab::updateState(): setting text to an empty QString"<<endl;
-			QPushButton::setText(QString());
+			QPushButton::setText(QString(""));
 		}
 
 		if ((position==KMultiTabBar::Right || position==KMultiTabBar::Left)) {
-			setFixedHeight(QPushButton::sizeHint().width());
+			if ((m_style==KMultiTabBar::KDEV3) || (isOn())) {
+				setFixedHeight(QPushButton::sizeHint().width());
+			} else setFixedHeight(24);
 			setFixedWidth(24);
 		} else {
 			setFixedHeight(24);
-			setFixedWidth(QPushButton::sizeHint().width());
+			if ((m_style==KMultiTabBar::KDEV3) || (isOn())) {
+				setFixedWidth(QPushButton::sizeHint().width());
+			} else setFixedWidth(24);
 		}
 	} else {
                 if ((!isOn()) || (!m_showActiveTabText))
@@ -297,6 +304,9 @@ void KMultiTabBarTab::showActiveTabText(bool show)
 	m_showActiveTabText=show;
 }
 
+void KMultiTabBarTab::drawButtonLabel(QPainter *p) {
+	drawButton(p);
+}
 void KMultiTabBarTab::drawButton(QPainter *paint)
 {
 	if (m_style!=KMultiTabBar::KONQSBC) drawButtonStyled(paint);
@@ -304,9 +314,13 @@ void KMultiTabBarTab::drawButton(QPainter *paint)
 }
 
 void KMultiTabBarTab::drawButtonStyled(QPainter *paint) {
-	QSize sh=QPushButton::sizeHint();	
+
+	QSize sh;
+	if ((m_style==KMultiTabBar::KDEV3) || (isOn())) sh=QPushButton::sizeHint();	
+	else sh=QSize(24,24);
 	
 	QPixmap pixmap( sh.width(),24); ///,sh.height());
+	pixmap.fill(eraseColor());
 	QPainter painter(&pixmap);
 
 
