@@ -4,28 +4,27 @@
 <MenuBar noMerge="1">
   <Menu name="file"><text>&amp;File</text>
     <Action name="file_new"/>
-    <DefineGroup name="new_merge" append="new_merge" />
+    <DefineGroup name="new_merge" />
     <Action name="file_newWindow" />
+    <Separator />
     <Action name="file_open"/>
     <Action name="file_open_recent"/>
     <Action name="file_open_with"/>
-    <DefineGroup name="open_merge" append="open_merge" />
+    <DefineGroup name="open_merge" />
     <Separator/>
-    <DefineGroup name="save_merge" append="save_merge" />
+    <DefineGroup name="save_merge" />
     <Action name="file_save_all"/>
-    <DefineGroup name="revert_merge" append="revert_merge"/>
+    <DefineGroup name="revert_merge" />
     <Action name="file_revert_all"/>
     <Separator/>
     <Action name="file_mail" />
-    <DefineGroup name="print_merge" append="print_merge"/>
-    <Merge/>
+    <DefineGroup name="print_merge" />
     <Separator/>
     <Action name="file_close"/>
-    <DefineGroup name="close_merge" append="close_merge"/>
+    <DefineGroup name="close_merge" />
     <Action name="file_close_all"/>
     <Separator/>
     <Action name="file_quit"/>
-    <Merge/>
   </Menu>
 
   <Menu name="edit"><text>&amp;Edit</text>
@@ -36,9 +35,7 @@
     <DefineGroup name="edit_select_merge"/>
     <Separator/>
     <DefineGroup name="edit_find_merge"/>
-    <Action name="edit_find_in_files"/> 
     <Separator/>
-    <Merge/>
   </Menu>
 
   <Menu name="documents"><text>&amp;Document</text>
@@ -62,8 +59,9 @@
 
   <Menu name="tools"><text>&amp;Tools</text>
     <DefineGroup name="tools_operations" />
-    <Separator />
     <Action name="scripts"/>
+    <Separator />
+    <Action name="edit_find_in_files"/> 
   </Menu>
 
   <Menu name="settings"><text>&amp;Settings</text>
@@ -88,6 +86,7 @@
     <Action name="help_contents"/>
     <Action name="help_plugins_contents"/>
     <Action name="help_whats_this"/>
+    <Action name="help_tipoftheday" />
     <Separator/>
     <Action name="help_report_bug"/>
     <Separator/>
