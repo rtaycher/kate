@@ -134,7 +134,7 @@ bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, 
   view->actionCollection()->remove (view->actionCollection()->action( "set_confdlg" ));
     
   // popup menu
-  view->installPopup ((QPopupMenu*)((KMainWindow *)topLevelWidget ())->factory()->container("katepart_popup", (KMainWindow *)topLevelWidget ()) );
+  view->installPopup ((QPopupMenu*)((KMainWindow *)topLevelWidget ())->factory()->container("ktexteditor_popup", (KMainWindow *)topLevelWidget ()) );
   
   connect(view,SIGNAL(cursorPositionChanged()),this,SLOT(statusMsg()));
   connect(view,SIGNAL(newStatus()),this,SLOT(statusMsg()));
