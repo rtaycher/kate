@@ -18,7 +18,6 @@
 #define _KANT_DOCMANAGER_IFACE_
 
 #include "../kantmain.h"
-#include "../kwrite/kwview.h"
 
 #include <qobject.h>
 

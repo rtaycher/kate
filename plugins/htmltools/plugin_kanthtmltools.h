@@ -36,7 +36,7 @@ private:
 
   QString KantPrompt (QString strTitle, QString strPrompt,
 			     QWidget * that);
-  void slipInHTMLtag (KWrite & view, QString text);
+  void slipInHTMLtag (KantView & view, QString text);
 
 public slots:
   void slotEditHTMLtag();

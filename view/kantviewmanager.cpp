@@ -26,13 +26,6 @@
 #include "kantview.h"
 #include "kantviewspace.h"
 
-#include "../kwrite/kwview.h"
-#include "../kwrite/kwattribute.h"
-#include "../kwrite/kwdoc.h"
-#include "../kwrite/kwdialog.h"
-#include "../kwrite/highlight.h"
-#include "../kwrite/kwrite_factory.h"
-
 #include <dcopclient.h>
 #include <kaction.h>
 #include <kcmdlineargs.h>
@@ -85,6 +78,8 @@ KantViewManager::~KantViewManager ()
 
 bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView, KantDocument *doc )
 {
+    kdDebug()<<">> view initialized 0"<<endl;
+
   // create doc
   if (newDoc && !doc)
   {
@@ -108,23 +103,33 @@ bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView, Ka
     if (!doc)
       doc = (KantDocument *)origView->doc();
   }
+  kdDebug()<<">> view initialized 1"<<endl;
 
   // create view
   KantView *view = new KantView (this, doc, (QString("KantViewIface%1").arg(myViewID)).latin1());
   connect(view,SIGNAL(newStatus()),this,SLOT(setWindowCaption()));
   myViewID++;
   viewList.append (view);
+   kdDebug()<<">> view initialized 2"<<endl;
 
   KConfig *config = ((KantMainWindow*)topLevelWidget())->config;
   config->setGroup("kwrite");
+
+
   doc->readConfig( config );
+
+   kdDebug()<<">> view initialized 3"<<endl;
+
   view->readConfig( config );
+  kdDebug()<<">> view initialized 4"<<endl;
 
   if (!newDoc && origView)
     view->copySettings(origView);
-
+ kdDebug()<<">> view initialized 5"<<endl;
   view->init();
-  //kdDebug()<<">> view initialized"<<endl;
+
+
+  kdDebug()<<">> view initialized"<<endl;
   if (newDoc)
   {
     view->newDoc();
@@ -165,17 +170,20 @@ bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView, Ka
     ((KantDocument *)view->doc())->setDocName (doc->docName ());
   }
 
-  view->installPopup ((QPopupMenu*)((KMainWindow *)topLevelWidget ())->factory()->container("view_popup", (KMainWindow *)topLevelWidget ()) );
+  kdDebug()<<">> view initialized 12"<<endl;
+
+ /* view->installPopup ((QPopupMenu*)((KMainWindow *)topLevelWidget ())->factory()->container("view_popup", (KMainWindow *)topLevelWidget ()) );
   connect(view,SIGNAL(newCurPos()),this,SLOT(statusMsgOther()));
   connect(view,SIGNAL(newStatus()),this,SLOT(statusMsgOther()));
   connect(view, SIGNAL(newUndo()), this, SLOT(statusMsgOther()));
   connect(view,SIGNAL(statusMsg(const QString &)),this,SLOT(statusMsg(const QString &)));
-  connect(view,SIGNAL(dropEventPass(QDropEvent *)), (KMainWindow *)topLevelWidget (),SLOT(slotDropEvent(QDropEvent *)));
+  connect(view,SIGNAL(dropEventPass(QDropEvent *)), (KMainWindow *)topLevelWidget (),SLOT(slotDropEvent(QDropEvent *)));   */
   connect(view,SIGNAL(gotFocus(KantView *)),this,SLOT(activateSpace(KantView *)));
-
+       kdDebug()<<">> view initialized 113"<<endl;
   activeViewSpace()->addView( view );
+       kdDebug()<<">> view initialized 11300"<<endl;
   activateView( view );
-
+    kdDebug()<<">> view initialized 13"<<endl;
   return true;
 }
 
@@ -410,7 +418,7 @@ void KantViewManager::statusMsg (const QString &msg)
     ovr = 0;
   else
   {
-    if (config & KWrite::cfOvr)
+    if (config & KantView::cfOvr)
     {
       ovr=1;
     }
@@ -443,7 +451,7 @@ void KantViewManager::statusMsgOther ()
     ovr = 0;
   else
   {
-    if (config & KWrite::cfOvr)
+    if (config & KantView::cfOvr)
     {
       ovr=1;
     }
@@ -689,7 +697,7 @@ void KantViewManager::slotFindAgainB ()
 {
   if (activeView() == 0) return;
 
-  activeView()->searchAgain(true);
+  //activeView()->searchAgain(true);
 }
 
 
@@ -743,13 +751,13 @@ void KantViewManager::slotHlDlg ()
 
   activeView()->hlDlg();
 
-  KWriteFactory::instance()->config()->sync();
+// KWriteFactory::instance()->config()->sync();
 
-  KConfig *config = KWriteFactory::instance()->config();
+  KConfig *config = new KConfig("kwriterc");
   activeView()->writeConfig(config);
   activeView()->doc()->writeConfig(config);
 
-  KWriteFactory::instance()->config()->sync();
+//  KWriteFactory::instance()->config()->sync();
 }
 
 void KantViewManager::setEol(int which)

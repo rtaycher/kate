@@ -78,7 +78,7 @@ void KantViewSpace::removeView(KantView* v)
 
 bool KantViewSpace::showView(KantView* v)
 {
-  KWriteDoc* d = v->doc();
+  KantDocument* d = v->doc();
   QListIterator<KantView> it (mViewList);
   it.toLast();
   for( ; it.current(); --it ) {

@@ -31,13 +31,7 @@
 #include "../filelist/kantfilelist.h"
 #include "kantmenuitem.h"
 
-#include "../kwrite/kwview.h"
-#include "../kwrite/kwattribute.h"
-#include "../kwrite/kwdoc.h"
-#include "../kwrite/kwdialog.h"
-#include "../kwrite/highlight.h"
-#include "../kwrite/kwrite_factory.h"
-
+#include "../view/kantviewdialog.h"
 
 #include <cassert>
 #include <qcheckbox.h>

@@ -18,7 +18,7 @@
 #define _KANT_VIEWMANAGER_IFACE_
 
 #include "../kantmain.h"
-#include "../kwrite/kwview.h"
+#include "../view/kantview.h"
 
 #include <qwidget.h>
 
@@ -30,7 +30,7 @@ class KantViewManagerIface : public QWidget
     KantViewManagerIface (QWidget *parent) : QWidget(parent) {;};
     ~KantViewManagerIface () {;};
 
-    virtual KWrite *getActiveView()=0;
+    virtual KantView *getActiveView()=0;
 };
 
 #endif

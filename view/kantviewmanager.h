@@ -191,7 +191,7 @@ class KantViewManager : public KantViewManagerIface
     void viewChanged ();
 
   public:  //KantPluginIface
-  virtual KWrite *getActiveView(){return activeView();};
+  virtual KantView *getActiveView(){return activeView();};
 };
 
 #endif

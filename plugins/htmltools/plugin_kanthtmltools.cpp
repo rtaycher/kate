@@ -22,7 +22,7 @@
 #include <kinstance.h>
 #include <kmessagebox.h>
 #include <klocale.h>
-#include "../../kwrite/kwview.h"
+#include "../../view/kantview.h"
 #include <cassert>  
 #include <kdebug.h>
 #include <qstring.h>
@@ -48,7 +48,7 @@ void PluginKantHtmlTools::slotEditHTMLtag()
 {
 
   if (!myParent)  return;
-  KWrite *kv=myParent->viewManagerIface()->getActiveView();
+  KantView *kv=myParent->viewManagerIface()->getActiveView();
   if (!kv) return;
 
   QString text ( KantPrompt ( i18n("HTML Tag"),
@@ -90,7 +90,7 @@ QString PluginKantHtmlTools::KantPrompt
 }
 
 
-void PluginKantHtmlTools::slipInHTMLtag (KWrite & view, QString text)  //  PCP
+void PluginKantHtmlTools::slipInHTMLtag (KantView & view, QString text)  //  PCP
 {
 
   //  We must add a <em>heavy</em> elaborate HTML markup system. Not!
