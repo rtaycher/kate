@@ -99,8 +99,9 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
   }
   else
   {
+    win=newMainWindow(false);
     config()->setGroup("General");
-
+    
     KSimpleConfig scfg ("katesessionrc", false);
 
     // restore our nice projects if wanted
@@ -110,14 +111,12 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
     // reopen our nice files if wanted
     if (config()->readBoolEntry("Restore Documents", false))
       m_docManager->restoreDocumentList (&scfg);
-
-    win=newMainWindow(false);
-      
+  
     // window config
     if (config()->readBoolEntry("Restore Window Configuration", false))
       win->restoreWindowConfiguration (&scfg);
       
-    win->show ();
+    win->show ();    
   }
 
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
