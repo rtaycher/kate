@@ -29,6 +29,7 @@ class SearchDialog : public KDialogBase
 
   protected slots:
     void slotOk();
+    void selectedStateChanged (int);
 
   protected:
     QComboBox *m_search;

@@ -57,10 +57,8 @@ SearchDialog::SearchDialog( QWidget *parent, QStringList &searchFor, QStringList
     m_replace->insertStringList( replaceWith );
     m_replace->setMinimumWidth( m_search->sizeHint().width() );
     label = new QLabel( m_replace, i18n( "&Replace With:" ), page );
-    //m_optPlaceholders = new QCheckBox( i18n( "&Use Placeholders" ), page );
     topLayout->addWidget( label );
     topLayout->addWidget( m_replace );
-    //topLayout->addWidget( m_optPlaceholders );
   }
 
   QGroupBox *group = new QGroupBox( i18n( "Options" ), page );
@@ -82,22 +80,23 @@ SearchDialog::SearchDialog( QWidget *parent, QStringList &searchFor, QStringList
   m_opt4 = new QCheckBox(i18n("Find &Backwards" ), group );
   gbox->addWidget( m_opt4, 1, 1 );
 
-  m_opt5 = new QCheckBox(i18n("&Selected Text" ), group );
-  gbox->addWidget( m_opt5, 2, 1 );
+  if( flags & KateView::sfReplace )
+  {
+    m_opt5 = new QCheckBox(i18n("&Selected Text" ), group );
+    gbox->addWidget( m_opt5, 2, 1 );
+    m_opt6 = new QCheckBox( i18n( "&Prompt On Replace" ), group );
+    gbox->addWidget( m_opt6, 3, 1 );
+    connect(m_opt5, SIGNAL(stateChanged(int)), this, SLOT(selectedStateChanged(int)));
+    connect(m_opt6, SIGNAL(stateChanged(int)), this, SLOT(selectedStateChanged(int)));
+    m_opt5->setChecked( flags & KateView::sfSelected );
+    m_opt6->setChecked( flags & KateView::sfPrompt );
+  }
 
   m_opt1->setChecked( flags & KateView::sfCaseSensitive );
   m_opt2->setChecked( flags & KateView::sfWholeWords );
   m_opt3->setChecked( flags & KateView::sfFromBeginning );
   m_optRegExp->setChecked( flags & KateView::sfRegularExpression );
   m_opt4->setChecked( flags & KateView::sfBackward );
-  m_opt5->setChecked( flags & KateView::sfSelected );
-
-  if( m_replace )
-  {
-    m_opt6 = new QCheckBox( i18n( "&Prompt On Replace" ), group );
-    m_opt6->setChecked( flags & KateView::sfPrompt );
-    gbox->addWidget( m_opt6, 3, 1 );
-  }
 
   m_search->setFocus();
 }
@@ -105,6 +104,19 @@ SearchDialog::SearchDialog( QWidget *parent, QStringList &searchFor, QStringList
 QString SearchDialog::getSearchFor()
 {
   return m_search->currentText();
+}
+
+void SearchDialog::selectedStateChanged (int)
+{
+  if (m_opt6->isChecked())
+    m_opt5->setEnabled (false);
+  else
+    m_opt5->setEnabled (true);
+
+  if (m_opt5->isChecked())
+    m_opt6->setEnabled (false);
+  else
+    m_opt6->setEnabled (true);
 }
 
 QString SearchDialog::getReplaceWith()
@@ -120,12 +132,16 @@ int SearchDialog::getFlags()
   if( m_opt2->isChecked() ) flags |= KateView::sfWholeWords;
   if( m_opt3->isChecked() ) flags |= KateView::sfFromBeginning;
   if( m_opt4->isChecked() ) flags |= KateView::sfBackward;
-  if( m_opt5->isChecked() ) flags |= KateView::sfSelected;
   if( m_optRegExp->isChecked() ) flags |= KateView::sfRegularExpression;
   if( m_replace )
   {
     if( m_opt6->isChecked() )
       flags |= KateView::sfPrompt;
+    else
+    {
+      if( m_opt5->isChecked() )
+        flags |= KateView::sfSelected;
+    }
 
     flags |= KateView::sfReplace;
   }
