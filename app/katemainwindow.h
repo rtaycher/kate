@@ -26,8 +26,7 @@
 
 #include <kparts/part.h>
 
-#include <kscript/scriptloader.h>
-#include <kscript/scriptinterface.h>
+#include <scriptmanager.h>
 
 class GrepDialog;
 class KFileItem;
@@ -117,7 +116,7 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     KAction* settingsConfigure;
     
     KSelectAction* scriptMenu;
-    ScriptLoader* kscript;
+    KScriptManager* kscript;
 
   public slots:
     void newWindow ();
@@ -140,7 +139,7 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     void setupMainWindow();
     void setupActions();
 //    void setupPlugins();
-
+    void setupScripts();
     virtual bool queryClose();
 
     void readOptions(KConfig *);

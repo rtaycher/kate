@@ -194,9 +194,11 @@ bool KateMainWindow::eventFilter(QObject* o, QEvent* e)
 
 void KateMainWindow::setupActions()
 {
-  kscript = new ScriptLoader(this);
-  scriptMenu = kscript->getScripts();
-
+  kscript = new KScriptManager(this, "scriptmanager");
+  scriptMenu = new KSelectAction(i18n("KDE Scripts"),0,this,SLOT(runScript()),actionCollection(),"scripts");
+  setupScripts();
+  scriptMenu->clear();
+  scriptMenu->setItems(kscript->scripts());
   KStdAction::openNew( viewManager, SLOT( slotDocumentNew() ), actionCollection(), "file_new" );
   KStdAction::open( viewManager, SLOT( slotDocumentOpen() ), actionCollection(), "file_open" );
 
@@ -721,4 +723,9 @@ KDockWidget *KateMainWindow::getMainDock ()
 void KateMainWindow::pluginHelp()
 {
   kapp->invokeHelp (QString::null, "kate-plugins");
+}
+
+void KateMainWindow::setupScripts()
+{
+
 }
