@@ -743,6 +743,7 @@ void KateViewInternal::updateView(int flags) {
   int cXPosMin, cXPosMax, cYPosMin, cYPosMax;
   int dx, dy;
   int pageScroll;
+  int scrollbarWidth = style().scrollBarExtent().width();
 
 //debug("upView %d %d %d %d %d", exposeCursor, updateState, flags, newXPos, newYPos);
   if (exposeCursor || flags & KateView::ufDocGeometry) {
@@ -777,14 +778,14 @@ void KateViewInternal::updateView(int flags) {
 
     xMax = myDoc->textWidth() - w;
     b = (xPos > 0 || xMax > 0);
-    if (b) h -= 16;
+    if (b) h -= scrollbarWidth;
     yMax = myDoc->textHeight() - h;
     if (yPos > 0 || yMax > 0) {
-      w -= 16;
-      xMax += 16;
+      w -= scrollbarWidth;
+      xMax += scrollbarWidth;
       if (!b && xMax > 0) {
-        h -= 16;
-        yMax += 16;
+        h -= scrollbarWidth;
+        yMax += scrollbarWidth;
       }
     }
 
@@ -830,7 +831,7 @@ void KateViewInternal::updateView(int flags) {
       pageScroll = fontHeight;
 
     xScroll->blockSignals(true);
-    xScroll->setGeometry(2,h + 2,w,16);
+    xScroll->setGeometry(2,h + 2,w,scrollbarWidth);
     xScroll->setRange(0,xMax);
     xScroll->setValue(xPos);
     xScroll->setSteps(fontHeight,pageScroll);
@@ -844,7 +845,7 @@ void KateViewInternal::updateView(int flags) {
       pageScroll = fontHeight;
 
     yScroll->blockSignals(true);
-    yScroll->setGeometry(w + 2,2,16,h);
+    yScroll->setGeometry(w + 2,2,scrollbarWidth,h);
     yScroll->setRange(0,yMax);
     yScroll->setValue(yPos);
     yScroll->setSteps(fontHeight,pageScroll);
