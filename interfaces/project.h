@@ -90,6 +90,18 @@ class Project : public QObject
      */
     QStringList files (const QString &dir = QString::null) const;
     
+  #undef signals
+  #define signals public
+  signals:
+  #undef signals
+  #define signals protected
+  
+    void dirInserted (const QString &dir);
+    void dirDeleted (const QString &dir);
+    
+    void fileInserted (const QString &file);
+    void fileRemoved (const QString &file);
+    
   private:
     /**
      * REALLY PRIVATE ;)
