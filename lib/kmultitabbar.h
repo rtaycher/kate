@@ -76,6 +76,8 @@ public:
 		int id,QWidget *parent, KMultiTabBar::KMultiTabBarPosition pos);
 	~KMultiTabBarButton(){;}
 	int id(){return m_id;}
+
+public slots:
 	void setPosition(KMultiTabBar::KMultiTabBarPosition);
 	void setText(const QString &);
 	
