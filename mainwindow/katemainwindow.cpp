@@ -202,7 +202,7 @@ void KateMainWindow::setupActions()
   editIndent = new KAction(i18n("&Indent"), "indent", CTRL+Key_I, viewManager, SLOT(slotIndent()), actionCollection(), "edit_indent");
   editUnIndent = new KAction(i18n("&Unindent"), "unindent", CTRL+SHIFT+Key_I, viewManager, SLOT(slotUnIndent()), actionCollection(), "edit_unindent");
 
-  editCmd = new KAction(i18n("E&diting Command"), Qt::CTRL+Qt::Key_D, viewManager, SLOT(slotEditCommand()),
+  editCmd = new KAction(i18n("E&diting Command"), Qt::Key_F2, viewManager, SLOT(slotEditCommand()),
                                   actionCollection(), "edit_cmd");
 
   gotoLine = KStdAction::gotoLine(viewManager, SLOT(slotGotoLine()), actionCollection());
@@ -219,7 +219,7 @@ void KateMainWindow::setupActions()
   viewSplitHoriz = new KAction( i18n("Split &Horizontal"), "view_top_bottom", CTRL+SHIFT+Key_T, viewManager, SLOT( slotSplitViewSpaceHoriz() ), actionCollection(), "view_split_horiz");
   closeCurrentViewSpace = new KAction( i18n("Close &Current"), "view_remove", CTRL+SHIFT+Key_R, viewManager, SLOT( slotCloseCurrentViewSpace() ), actionCollection(), "view_close_current_space");
 
-  viewBorder =  new KToggleAction(i18n("Show &IconBorder"), 0, viewManager, SLOT(toggleIconBorder()), actionCollection(), "view_border");
+  viewBorder =  new KToggleAction(i18n("Show &IconBorder"), Key_F6, viewManager, SLOT(toggleIconBorder()), actionCollection(), "view_border");
 
   goNext=new KAction(i18n("Next View"),Key_F8,viewManager, SLOT(activateNextView()),actionCollection(),"go_next");
   goPrev=new KAction(i18n("Previous View"),SHIFT+Key_F8,viewManager, SLOT(activatePrevView()),actionCollection(),"go_prev");
