@@ -508,8 +508,8 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
   if ( tool ) cmbSave->setCurrentItem( tool->save );
   QWhatsThis::add( cmbSave, i18n(
       "You can elect to save the current or all [modified] documents prior to "
-      "running the command. This is helpfull if you want to pass URLs to "
-      "an application like for example a FTP client.") );
+      "running the command. This is helpful if you want to pass URLs to "
+      "an application like, for example, an FTP client.") );
 
 
   leCmdLine = new QLineEdit( w );
