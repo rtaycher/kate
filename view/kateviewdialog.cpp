@@ -267,7 +267,7 @@ void IndentConfigTab::getData(KateView *view) {
   int configFlags, z;
 
   configFlags = view->config();
-  for (z = 0; z < numFlags; z++) {
+  for (z = 0; z < numFlags; z++) {
     configFlags &= ~flags[z];
     if (opt[z]->isChecked()) configFlags |= flags[z];
   }
