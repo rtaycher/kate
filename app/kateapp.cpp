@@ -63,9 +63,6 @@ KateApp::KateApp () : Kate::Application (),DCOPObject ("KateApp" )
       mainWindows.first()->viewManager->openURL( args->url(z) );
       processEvents();
     }
-
-    mainWindows.first()->raise();
-    KWin::setActiveWindow (mainWindows.first()->winId());
   }
 
   if ( mainWindows.first()->viewManager->viewCount () == 0 )
