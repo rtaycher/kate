@@ -596,6 +596,19 @@ class LatexHighlight : public GenHighlight {
     virtual void makeContextList();
 };
 
+class KBasicHighlight : public GenHighlight {
+  public:
+    KBasicHighlight(const char *name);
+    virtual ~KBasicHighlight();
+    virtual QString getCommentStart() {return QString("\"");};
+    virtual QString getCommentEnd()  {return QString("");};
+
+  protected:
+    virtual void createItemData(ItemDataList &);
+    virtual void makeContextList();
+    virtual void setKeywords(HlKeyword *keyword,HlKeyword *dataType);
+};
+
 //class KWriteDoc;
 
 class HlManager : public QObject {

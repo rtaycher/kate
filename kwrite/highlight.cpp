@@ -1911,6 +1911,54 @@ void SatherHighlight::makeContextList() {
   spec_class->addList(HlManager::self()->syntax->finddata("Sather","type"));
 }
 
+KBasicHighlight::KBasicHighlight(const char *name) : GenHighlight(name)
+{
+  iWildcards = "*.kbasic";
+  iMimetypes = "text/x-kbasic-src";
+}
+
+KBasicHighlight::~KBasicHighlight()
+{
+}
+
+void KBasicHighlight::createItemData(ItemDataList &list)
+{
+  list.append(new ItemData(I18N_NOOP("Normal Text"),dsNormal));  // 0
+  list.append(new ItemData(I18N_NOOP("Keyword"),dsKeyword)); // 1
+  list.append(new ItemData(I18N_NOOP("Identifier"),dsOthers)); // 2
+  list.append(new ItemData(I18N_NOOP("Types"),dsDataType));  // 3
+  list.append(new ItemData(I18N_NOOP("String"),dsString)); // 4
+  list.append(new ItemData(I18N_NOOP("Comment"),dsComment)); // 5
+}
+
+void KBasicHighlight::makeContextList()
+{
+  HlContext *c;
+  HlKeyword *keyword, *dataType;
+
+ //Normal Context
+  contextList[0] = c = new HlContext(0,0);
+  c->items.append(keyword = new HlKeyword(1,0));
+  c->items.append(dataType = new HlKeyword(2,0));
+  c->items.append(new HlFloat(4,0)); // check float before int
+  c->items.append(new HlInt(3,0));
+  c->items.append(new HlCharDetect(4,2,'\"'));
+  c->items.append(new HlCharDetect(5,1, '\''));
+//Comment Context
+  contextList[1] = c = new HlContext(5,0);
+
+  contextList[2] = c = new HlContext(4,0);
+  c->items.append(new HlCharDetect(4,0,'"'));
+
+  setKeywords(keyword, dataType);
+}
+
+void KBasicHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
+{
+  keyword->addList(HlManager::self()->syntax->finddata("KBasic","keyword"));
+  dataType->addList(HlManager::self()->syntax->finddata("KBasic","type"));
+}
+
 LatexHighlight::LatexHighlight(const char * name) : GenHighlight(name) {
   iWildcards = "*.tex;*.sty";
   iMimetypes = "text/x-tex";
@@ -2004,6 +2052,7 @@ HlManager::HlManager() : QObject(0L) {
   hlList.append(new PythonHighlight("Python"   ));
   hlList.append(new PerlHighlight(  "Perl"     ));
   hlList.append(new SatherHighlight("Sather"   ));
+  hlList.append(new KBasicHighlight("KBasic"));
   hlList.append(new LatexHighlight( "Latex"    ));
   hlList.append(new IdlHighlight("IDL"));
 

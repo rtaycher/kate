@@ -1006,6 +1006,71 @@
 </keywords>
 </language>
 
+<language name='KBasic' >
+  <keywords>
+  <keyword> For </keyword>
+  <keyword> Next</keyword>
+  <keyword> Do </keyword>
+  <keyword> Loop </keyword>
+  <keyword> While </keyword>
+  <keyword> Wend </keyword>
+  <keyword> Until </keyword>
+  <keyword> If </keyword>
+  <keyword> Else </keyword>
+  <keyword> End  </keyword>
+  <keyword> Function </keyword>
+  <keyword> Goto </keyword>
+  <keyword> Sub  </keyword>
+  <keyword> Implements </keyword>
+  <keyword> In  </keyword>
+  <keyword> Sub </keyword>
+  <keyword> Private </keyword>
+  <keyword> Public  </keyword>
+  <keyword> Global </keyword>
+  <keyword> As  </keyword>
+  <keyword> Dim </keyword>
+  <keyword> Set </keyword>
+  <keyword> Let </keyword>
+  <keyword> Get </keyword>
+  <keyword> To </keyword>
+  <keyword> Property </keyword>
+  <keyword> True </keyword>
+  <keyword> False </keyword>
+  <keyword> Or  </keyword>
+  <keyword> Not </keyword>
+  <keyword> Xor  </keyword>
+  <keyword> And  </keyword>
+  <keyword> Then </keyword>
+  <keyword> Exit </keyword>
+  <keyword> Put </keyword>
+  <keyword> Open </keyword>
+  <keyword> Close </keyword>
+  <keyword> Seek </keyword>
+  <keyword> Print </keyword>
+  <keyword> Input</keyword>
+  <keyword> Output </keyword>
+  <keyword> Repeat </keyword>
+  <keyword> Load </keyword>
+  <keyword> Unload </keyword>
+  <keyword> Declare </keyword>
+  <keyword> Option </keyword>
+  <keyword> Explicit </keyword>
+  </keywords>
+  <types>
+  <type>Integer </types>
+  <type>Long </types>
+  <type>Byte </types>
+  <type>Boolean </types>
+  <type>Variant </types>
+  <type>Single </types>
+  <type>Double </types>
+  <type>Currency </types>
+  <type>String </types>
+  <type>Object </types>
+  <type>Control </types>
+  </types>
+</language>
+
 </highlighting>
 
 
