@@ -41,6 +41,7 @@
 #include "qstringlist.h"
 #endif // QT_H
 
+
 #if QT_VERSION >=300
 #include <qregexp.h>
 #else
@@ -81,6 +82,16 @@ public:
 #endif
     int search( const QString& str, int start = 0 );
     int search( const QString& str, int start = 0 ) const;
+// QChar versions
+#ifdef QCHAR_SUPPORT
+    int search(const QChar *str,int start=0);
+    int search(const QChar *str,int start=0) const;
+    int searchRev(const QChar *str,int start=-1);
+    int searchRev(const QChar *str,int start=-1) const ;
+    bool exactMatch(const QChar *str);
+    bool exactMatch(const QChar *str) const;
+// end QChar versions	
+#endif
     int searchRev( const QString& str, int start = -1 );
     int searchRev( const QString& str, int start = -1 ) const;
     int matchedLength();

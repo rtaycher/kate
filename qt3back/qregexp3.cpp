@@ -3482,6 +3482,46 @@ int QRegExp3::match( const QString& str, int index, int *len,
 
   \sa searchRev() match() matchedLength() capturedTexts()
 */
+// QChar versions
+
+#ifdef QCHAR_SUPPORT
+const QString makeString(const QChar *str)
+{
+// A sentinel value checked in case the QChar *ptr is never null terminated
+    const uint MAXLENGTH=65535; 	
+
+	const QChar *s=str;
+	uint i=0;
+	while(i < MAXLENGTH && *s != QChar::null) {  i++;s++ ;}
+    return QString(str,i);
+
+}
+int QRegExp3::search(const QChar *str,int start)
+{
+	return search(makeString(str),start);
+}
+int QRegExp3::search(const QChar *str,int start) const
+{
+	return search(makeString(str),start);
+}
+int QRegExp3::searchRev(const QChar *str,int start)
+{
+	return searchRev(makeString(str),start);
+}
+int QRegExp3::searchRev(const QChar *str,int start) const
+{
+	return searchRev(makeString(str),start);
+}
+bool QRegExp3::exactMatch(const QChar *str)
+{
+ 	return exactMatch(makeString(str));
+}
+bool QRegExp3::exactMatch(const QChar *str) const
+{
+ 	return exactMatch(makeString(str));
+}
+#endif // QCHAR_SUPPORT
+
 int QRegExp3::search( const QString& str, int start )
 {
     if ( start < 0 )

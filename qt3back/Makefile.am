@@ -1,4 +1,5 @@
 INCLUDES = $(all_includes)
+KDE_CXXFLAGS= -DQCHAR_SUPPORT
 
 libqregexp3_la_METASOURCES = AUTO
 
