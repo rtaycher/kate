@@ -136,6 +136,8 @@ void KateMainWindow::setupMainWindow ()
   sidebar->addWidget (fileselector, i18n("Fileselector"));
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileViewItem*)),this,SLOT(fileSelected(const KFileViewItem*)));
   statusBar()->hide();
+
+  sidebar->showPage(0);
 }
 
 bool KateMainWindow::eventFilter(QObject* o, QEvent* e)
