@@ -117,7 +117,7 @@ bool SedReplace::execCmd(QString cmd, KateView *view)
 	bool noCase=cmd[cmd.length()-1]=='i';
 	bool onlySelect=cmd[0]=='$';
 
-	QRegExp3 splitter("^[$%]?s/([^\\\\]*(?:(?:\\\\\\\\)+|[^\\\\\\\\]))/(.*(?:(?:\\\\\\\\)+|[^\\\\\\\\]))/[i]?$");
+	QRegExp3 splitter("^[$%]?s/(.*(?:(?:\\\\\\\\)+|[^\\\\\\\\]))/(.*(?:(?:\\\\\\\\)*|[^\\\\\\\\]))/[i]?$");
 	splitter.search(cmd);
 	
 	QString find=splitter.cap(1);
