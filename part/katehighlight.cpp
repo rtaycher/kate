@@ -571,7 +571,7 @@ Highlight::~Highlight()
 {
 }
 
-int Highlight::generateContextStack(int ctx,TContexts *ctxs)
+int Highlight::generateContextStack(int ctx,TContexts *ctxs, int *prevLine)
 {
 	int ctxNum;
             if (ctx>=0)
@@ -592,6 +592,12 @@ int Highlight::generateContextStack(int ctx,TContexts *ctxs)
                         }
                 }
 		else if (ctx==-2) ctxNum=((ctxs->size()==0)?0:(*ctxs)[ctxs->size()-1]);
+	if ((*prevLine)>=ctxs->size()-1)
+	{
+		*prevLine=ctxs->size()-1;
+		if (contextList[(*ctxs)[ctxs->size()-1]]->ctx!=-2)
+			return generateContextStack(contextList[(*ctxs)[ctxs->size()-1]]->ctx,ctxs,prevLine);
+	}
 	return ctxNum;
 }
 
@@ -611,32 +617,22 @@ TContexts Highlight::doHighlight(TContexts oCtx, TextLine *textLine)
   TContexts ctx=oCtx;
   ctx.detach();
   int ctxNum;
+  int prevLine;
   
   if (ctx.size()==0)
 	{
 		ctxNum=0;
 		context=contextList[ctxNum];
+		int prevLine=-1;
 	}
 	else
 	{
 		ctxNum=ctx[ctx.size()-1];
 		context=contextList[ctxNum];
-		ctxNum=generateContextStack(context->ctx,&ctx);
+		prevLine=ctx.size()-1;
+		ctxNum=generateContextStack(context->ctx,&ctx,&prevLine);
 		context=contextList[ctxNum];
 	}
-
-#if 0
-#warning "Should be moved to the end of this function"
- if (context->lineBeginContext!=-1)
-  {
-//This is wrong, it's just for testing
-    ctx.resize(ctx.size()+1);
-    ctxNum=context->lineBeginContext;
-    context=contextList[ctxNum];
-    ctx[ctx.size()-1]=ctxNum;
-  }
-#warning "End of block"
-#endif
 
 //  for (int i=0;i<ctx.size();i++) kdDebug()<<QString("%1").arg(ctx[i])<<endl;
 //	  kdDebug()<<QString("------------------")<<endl;
@@ -668,7 +664,7 @@ TContexts Highlight::doHighlight(TContexts oCtx, TextLine *textLine)
             textLine->setAttribs(item->attr,s1 - str,s2 - str);
 //   	    kdDebug()<<QString("item->ctx: %1").arg(item->ctx)<<endl;
           
-	    ctxNum=generateContextStack(item->ctx,&ctx);
+	    ctxNum=generateContextStack(item->ctx,&ctx,&prevLine);
 //	    kdDebug()<<QString("current ctxNum==%1").arg(ctxNum)<<endl;
 	    context=contextList[ctxNum];
 

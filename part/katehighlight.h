@@ -281,7 +281,7 @@ class Highlight
     void readGlobalKeywordConfig();
     void readCommentConfig();
 
-    int generateContextStack(int ctx,TContexts *ctxs);
+    int generateContextStack(int ctx,TContexts *ctxs,int *posPrevLine);
 
     HlItem *createHlItem(struct syntaxContextData *data, ItemDataList &iDl);
     int lookupAttrName(const QString& name, ItemDataList &iDl);
