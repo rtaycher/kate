@@ -376,7 +376,9 @@ HlEditDialog::HlEditDialog(HlManager *,QWidget *parent, const char *name, bool m
     contextList->setRootIsDecorated(true);
     contextList->addColumn(i18n("Syntax structure"));
     contextList->setSorting(-1);
-    QPushButton *addContext=new QPushButton(i18n("New Context"),lbox);
+    QHBox *bbox=new QHBox(lbox);
+    QPushButton *addContext=new QPushButton(i18n("New Context"),bbox);
+    QPushButton *addItem=new QPushButton(i18n("New Item"),bbox);
     QVGroupBox *opt  = new QVGroupBox( i18n("Options"), wid);
     stack=new QWidgetStack(opt);
     initContextOptions(contextOptions=new QVBox(stack));
@@ -387,6 +389,7 @@ HlEditDialog::HlEditDialog(HlManager *,QWidget *parent, const char *name, bool m
     setMainWidget(wid);
     if (data!=0) loadFromDocument(data);
     connect(contextList,SIGNAL(currentChanged( QListViewItem*)),this,SLOT(currentSelectionChanged ( QListViewItem * )));
+    connect(addContext,SIGNAL(clickeD()),this,SLOT(contextAddNew()));
 }
 
 void HlEditDialog::initContextOptions(QVBox *co)
@@ -403,6 +406,8 @@ void HlEditDialog::initContextOptions(QVBox *co)
         (void) new QLabel(i18n("LineEnd:"),tmp);
         ContextLineEnd = new QComboBox(tmp);
         connect(ContextDescr,SIGNAL(textChanged(const QString&)),this,SLOT(contextDescrChanged(const QString&)));
+        connect(ContextLineEnd,SIGNAL(activated(int)),this,SLOT(contextLineEndChanged(int)));
+        connect(ContextAttribute,SIGNAL(activated(int)),this,SLOT(contextAttributeChanged(int)));
     }
    else
      kdDebug()<<"initContextOptions: Widget is 0"<<endl;
@@ -434,6 +439,8 @@ void HlEditDialog::initItemOptions(QVBox *co)
         ItemAttribute= new QComboBox(tmp);
         (void) new QLabel(i18n("Context switch:"),tmp);
         ItemContext = new QComboBox(tmp);
+        co->setSpacing(15);
+        QPushButton *delItem=new QPushButton(i18n("Delete this item"),co);
 
 	/* init translation lists */
 	insertTranslationList("CharDetect",i18n("CharDetect"),1);
@@ -448,6 +455,10 @@ void HlEditDialog::initItemOptions(QVBox *co)
 	insertTranslationList("dataType",i18n("dataType"),0);
         ItemType->clear();
         for (int i=0; i<transTableCnt; i++) ItemType->insertItem(id2info[i].trans_i18n);
+        connect(ItemType,SIGNAL(activated(int)),this,SLOT(ItemTypeChanged(int)));
+        connect(ItemParameter,SIGNAL(textChanged(const QString&)),this,SLOT(ItemParameterChanged(const QString&)));
+        connect(ItemAttribute,SIGNAL(activated(int)),this,SLOT(ItemAttributeChanged(int)));
+        connect(ItemContext,SIGNAL(activated(int)),this,SLOT(ItemContextChanged(int)));
     }
   else
     kdDebug()<<"initItemOptions: Widget is 0"<<endl;
@@ -533,6 +544,12 @@ void HlEditDialog::currentSelectionChanged ( QListViewItem *it)
         else showItem();
   }
 
+
+/****************************************************************************/
+/*                              CONTEXTS                                    */
+/****************************************************************************/
+
+
 void HlEditDialog::showContext()
   {
     stack->raiseWidget(HlEContext);
@@ -554,6 +571,34 @@ void HlEditDialog::contextDescrChanged(const QString& name)
         ContextLineEnd->changeItem(name,currentItem->text(3).toInt());
       }
   }
+
+void HlEditDialog::contextAttributeChanged(int id)
+{
+  if (currentItem)
+     {
+     currentItem->setText(2,QString("%1").arg(id));
+     }
+}
+
+void HlEditDialog::contextLineEndChanged(int id)
+{
+  kdDebug()<<"contextLineEndChanged"<<endl;
+  if (currentItem)
+     {
+     currentItem->setText(3,QString("%1").arg(id));
+     }
+}
+
+void HlEditDialog::contextAddNew()
+{
+  QListViewItem *it=contextList->firstChild();
+  for (;it->nextSibling()!=0;it=it->nextSibling());
+  it=new QListViewItem(contextList,it,i18n("New Context"),QString("%1").arg(it->text(1).toInt()),"0","0");
+}
+
+/****************************************************************************/
+/*                              ITEMS                                       */
+/****************************************************************************/
 
 void HlEditDialog::showItem()
   {
@@ -579,3 +624,38 @@ void HlEditDialog::showItem()
       }
 
   }
+
+void HlEditDialog::ItemTypeChanged(int id)
+{
+  if (currentItem)
+     {
+     currentItem->setText(1,id2tag[id]);
+     ItemParameter->setMaxLength(id2info[id].length);
+     ItemParameterChanged(ItemParameter->text());
+     }
+}
+
+void HlEditDialog::ItemParameterChanged(const QString& name)
+{
+  if (currentItem)
+    {
+      currentItem->setText(2,name);
+      currentItem->setText(0,id2info[ItemType->currentItem()].trans_i18n+" "+currentItem->text(2));
+    }
+}
+
+void HlEditDialog::ItemAttributeChanged(int attr)
+{
+   if (currentItem)
+     {
+       currentItem->setText(3,QString("%1").arg(attr));
+     }
+}
+
+void HlEditDialog::ItemContextChanged(int cont)
+{
+   if (currentItem)
+     {
+       currentItem->setText(4,QString("%1").arg(cont));
+     }
+}

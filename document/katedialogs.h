@@ -151,7 +151,14 @@ class HlEditDialog : public KDialogBase
   protected slots:
     void currentSelectionChanged ( QListViewItem * );
     void contextDescrChanged(const QString&);
-};
+    void contextLineEndChanged(int);
+    void contextAttributeChanged(int);
+    void contextAddNew();
 
+    void ItemTypeChanged(int id);
+    void ItemParameterChanged(const QString& name);
+    void ItemAttributeChanged(int attr);
+    void ItemContextChanged(int cont);
+};
 
 #endif
