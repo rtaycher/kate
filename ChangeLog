@@ -1,3 +1,7 @@
+2003-08-28 Christoph Cullmann <cullmann@kde.org>
+  * jowenn switch kate over to use kmdi, seems to work well
+    for the first port, but still needs some fixes ;)
+
 2002-07-19 Christoph Cullmann <cullmann@kde.org>
   * new interface structure implemented
     this is BIC and source incompatible to 2.x and 3.0.x plugins
