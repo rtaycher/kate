@@ -635,21 +635,104 @@ HlData::HlData(const QString &wildcards, const QString &mimetypes, const QString
 //JW  itemDataList.setAutoDelete(true);
 }
 
-Highlight::Highlight(const char * name) : iName(name), refCount(0)
-{
-
-
+HlContext::HlContext(int attribute, int lineEndContext)
+  : attr(attribute), ctx(lineEndContext) {
+  items.setAutoDelete(true);
 }
 
-Highlight::~Highlight() {
+Hl2CharDetect::Hl2CharDetect(int attribute, int context, const QChar *s)
+  : HlItem(attribute,context) {
+  sChar1 = s[0];
+  sChar2 = s[1];
+}
 
+Highlight::Highlight(syntaxModeListItem *def) : refCount(0)
+{
+  noHl = false;
+
+  if (def == 0)
+  {
+    noHl = true;
+    iName = I18N_NOOP("Normal");
+    iSection = "";
+  }
+  else
+  {
+    iName = def->name;
+    iSection = def->section;
+    iWildcards = def->extension;
+    iMimetypes = def->mimetype;
+    identifier = def->identifier;
+    casesensitive = def->casesensitive;
+  }
+}
+
+Highlight::~Highlight()
+{
+}
+
+int Highlight::doHighlight(int ctxNum, TextLine *textLine)
+{
+  if (noHl)
+  {
+    textLine->setAttribs(0,0,textLine->length());
+    textLine->setAttr(0);
+    return 0;
+  }
+
+  HlContext *context;
+  const QChar *str, *s1, *s2;
+  QChar lastChar;
+  HlItem *item;
+
+  context = contextList[ctxNum];
+  str = textLine->getText();
+
+  lastChar = '\0';
+
+  // this causes the while loop to skip any spaces at beginning of line
+  // while still allowing the highlighting to continue
+  // On limited tests I got a 5-10% reduction in number of times in while loop
+  // Anything helps :)
+  s1=textLine->firstNonSpace();
+
+  uint z = 0;
+  while (z < textLine->length())
+  {
+    for (item = context->items.first(); item != 0L; item = context->items.next()) {
+      if (item->startEnable(lastChar)) {
+        s2 = item->checkHgl(s1,s1==str);
+        if (s2 > s1) {
+          if (item->endEnable(*s2)) { //jowenn: Here I've to change a lot
+            textLine->setAttribs(item->attr,s1 - str,s2 - str);
+            ctxNum = item->ctx;
+            context = contextList[ctxNum];
+            s1 = s2 - 1;
+            goto found;
+          }
+        }
+      }
+    }
+    // nothing found: set attribute of one char
+    textLine->setAttribs(context->attr,s1 - str,s1 - str + 1);
+
+    found:
+      lastChar = *s1;
+      s1++;
+      z++;
+  }
+
+  //set "end of line"-properties
+  textLine->setAttr(context->attr);
+  //return new context
+  return context->ctx;
 }
 
 KConfig *Highlight::getKConfig() {
   KConfig *config;
 
   config = KateFactory::instance()->config();
-  config->setGroup(QString::fromUtf8(iName) + QString::fromUtf8(" Highlight"));
+  config->setGroup(iName + QString(" Highlight"));
   return config;
 }
 
@@ -740,194 +823,52 @@ void Highlight::setItemDataList(ItemDataList &list, KConfig *config) {
   }
 }
 
-void Highlight::use() {
+void Highlight::use()
+{
   if (refCount == 0) init();
   refCount++;
 }
 
-void Highlight::release() {
+void Highlight::release()
+{
   refCount--;
   if (refCount == 0) done();
 }
 
-/*
-bool Highlight::isInWord(char ch) {
-  static char data[] = {0,0,0,0,0,0,255,3,254,255,255,135,254,255,255,7};
-  if (ch & 128) return true;
-  return data[ch >> 3] & (1 << (ch & 7));
-}
-*/
-int Highlight::doHighlight(int, TextLine *textLine) {
+void Highlight::init()
+{
+  if (noHl)
+    return;
 
-  textLine->setAttribs(0,0,textLine->length());
-  textLine->setAttr(0);
-  return 0;
-}
-
-void Highlight::createItemData(ItemDataList &list) {
-
-  list.append(new ItemData(I18N_NOOP("Normal Text"), dsNormal));
-}
-
-
-void Highlight::init() {
-}
-
-void Highlight::done() {
-}
-
-
-HlContext::HlContext(int attribute, int lineEndContext)
-  : attr(attribute), ctx(lineEndContext) {
-  items.setAutoDelete(true);
-}
-
-
-GenHighlight::GenHighlight(const char * name) : Highlight(name) {
-}
-
-
-int GenHighlight::doHighlight(int ctxNum, TextLine *textLine) {
-  HlContext *context;
-  const QChar *str, *s1, *s2;
-  QChar lastChar;
-  HlItem *item;
-
-  context = contextList[ctxNum];
-  str = textLine->getText();
-
-  lastChar = '\0';
-
-  // this causes the while loop to skip any spaces at beginning of line
-  // while still allowing the highlighting to continue
-  // On limited tests I got a 5-10% reduction in number of times in while loop
-  // Anything helps :)
-  s1=textLine->firstNonSpace();
-
-  uint z = 0;
-  while (z < textLine->length())
-  {
-    for (item = context->items.first(); item != 0L; item = context->items.next()) {
-      if (item->startEnable(lastChar)) {
-        s2 = item->checkHgl(s1,s1==str);
-        if (s2 > s1) {
-          if (item->endEnable(*s2)) { //jowenn: Here I've to change a lot
-            textLine->setAttribs(item->attr,s1 - str,s2 - str);
-            ctxNum = item->ctx;
-            context = contextList[ctxNum];
-            s1 = s2 - 1;
-            goto found;
-          }
-        }
-      }
-    }
-    // nothing found: set attribute of one char
-    textLine->setAttribs(context->attr,s1 - str,s1 - str + 1);
-
-    found:
-      lastChar = *s1;
-      s1++;
-      z++;
-  }
-
-  //set "end of line"-properties
-  textLine->setAttr(context->attr);
-  //return new context
-  return context->ctx;
-}
-
-void GenHighlight::init() {
-  int z;
-
-  for (z = 0; z < nContexts; z++) contextList[z] = 0L;
+  for (int z = 0; z < nContexts; z++) contextList[z] = 0L;
   makeContextList();
 }
 
-void GenHighlight::done() {
-  int z;
-
-  for (z = 0; z < nContexts; z++) delete contextList[z];
-}
-
-
-Hl2CharDetect::Hl2CharDetect(int attribute, int context, const QChar *s)
-  : HlItem(attribute,context) {
-  sChar1 = s[0];
-  sChar2 = s[1];
-}
-
-#if 0
-HlCaseInsensitiveKeyword::HlCaseInsensitiveKeyword(int attribute, int context)
-  : HlKeyword(attribute,context) {
-// make dictionary case insensitive
-  QDict<char> dict(113,false);
-  Dict=dict;
-}
-
-HlCaseInsensitiveKeyword::~HlCaseInsensitiveKeyword() {
-}
-
-void HlCaseInsensitiveKeyword::addList(const QStringList& lst)
+void Highlight::done()
 {
- words+=lst;
- for(uint i=0;i<lst.count();i++)
-	Dict.insert(lst[i].lower(),"dummy");
+  if (noHl)
+    return;
+
+  for (int z = 0; z < nContexts; z++) delete contextList[z];
 }
-void HlCaseInsensitiveKeyword::addList(const char **list)
+
+void Highlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
 {
-  while (*list) {
-    words.append(*list);
-    Dict.insert(QString(*list).lower(),"dummy");
-    list++;
-  }
+  if (noHl)
+    return;
+
+  if (keyword) keyword->addList(HlManager::self()->syntax->finddata("highlighting","keywords"));
+  if (dataType) dataType->addList(HlManager::self()->syntax->finddata("highlighting","types"));
 }
-const QChar *HlCaseInsensitiveKeyword::checkHgl(const QChar *s,bool)
+
+void Highlight::createItemData(ItemDataList &list)
 {
-  const QChar *s2=s;
-  if(*s2=='\0') return 0L;
-  while( !ustrchr("!%&()*+,-./:;<=>?[]^{|}~ ", *s2) && *s2 != '\0') s2++;
-// oops didn't increment s2 why do anything else ?
-  if(s2 == s) return 0L;
-  QString lookup=QString(s,s2-s)+QString::null;
-  return Dict[lookup.lower()] ? s2 : 0L;
-}
-
-/*
-   Not really tested but I assume it will work
-*/
-const char *HlCaseInsensitiveKeyword::checkHgl(const char *s,bool) {
-
-// if s is in dictionary then return s+strlen(s)
-   return Dict[s] ? s+strlen(s) : 0L;
-}
-
-#endif
-
-AutoHighlight::AutoHighlight(syntaxModeListItem *def):GenHighlight(def->name.latin1())
-{
-//  syntaxContextData *data;
-  iName = def->name;
-  iWildcards = def->extension;
-  iMimetypes = def->mimetype;
-  identifier = def->identifier;
-  casesensitive = def->casesensitive;
-}
-
-AutoHighlight::~AutoHighlight()
-{
-}
-
-void AutoHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
-{
-//  if (casesensitive=="1")
+  if (noHl)
   {
-   if (keyword) keyword->addList(HlManager::self()->syntax->finddata("highlighting","keywords"));
-   if (dataType) dataType->addList(HlManager::self()->syntax->finddata("highlighting","types"));
+     list.append(new ItemData(I18N_NOOP("Normal Text"), dsNormal));
+     return;
   }
-}
 
-void AutoHighlight::createItemData(ItemDataList &list)
-{
   QString color;
   QString selColor;
   QString bold;
@@ -967,8 +908,11 @@ void AutoHighlight::createItemData(ItemDataList &list)
 //	list.append(new ItemData(internalIDList.at(i)));
 }
 
-HlItem *AutoHighlight::createHlItem(struct syntaxContextData *data, int *res)
+HlItem *Highlight::createHlItem(struct syntaxContextData *data, int *res)
 {
+  if (noHl)
+    return 0;
+
 
                 QString dataname=HlManager::self()->syntax->groupItemData(data,QString(""));
                 int attr=((HlManager::self()->syntax->groupItemData(data,QString("attribute"))).toInt());
@@ -1017,8 +961,11 @@ HlItem *AutoHighlight::createHlItem(struct syntaxContextData *data, int *res)
 
 }
 
-void AutoHighlight::makeContextList()
+void Highlight::makeContextList()
 {
+  if (noHl)
+    return;
+
   HlKeyword *keyword=0, *dataType=0;
   struct syntaxContextData *data, *datasub;
   HlItem *c;
@@ -1093,46 +1040,20 @@ void AutoHighlight::makeContextList()
 
 }
 
-//--------
-
-
-
 HlManager::HlManager() : QObject(0L)
 {
   syntax = new SyntaxDocument();
   SyntaxModeList modeList = syntax->modeList();
 
   hlList.setAutoDelete(true);
-  hlList.append(new Highlight(I18N_NOOP("Normal")));
+  hlList.append(new Highlight(0));
 
-   /* new stuff*/
- uint i=0;
+  uint i=0;
   while (i < modeList.count())
   {
-    hlList.append(new AutoHighlight(modeList.at(i)));
+    hlList.append(new Highlight(modeList.at(i)));
     i++;
   }
-
-/*
-  kdDebug(13010)<<"Creating HlList"<<endl;
-  hlList.append(new CHighlight(     "C"        ));
-  hlList.append(new CppHighlight(   "C++"      ));
-  hlList.append(new ObjcHighlight(  "Objective-C"));
-  hlList.append(new JavaHighlight(  "Java"     ));
-  hlList.append(new HtmlHighlight(  "HTML"     ));
-  hlList.append(new BashHighlight(  "Bash"     ));
-  hlList.append(new ModulaHighlight("Modula 2" ));
-  hlList.append(new AdaHighlight(   "Ada"      ));
-  hlList.append(new PascalHighlight("Pascal"   ));
-  hlList.append(new PovrayHighlight("Povray"   ));
-  hlList.append(new PythonHighlight("Python"   ));
-  hlList.append(new PerlHighlight(  "Perl"     ));
-  hlList.append(new SatherHighlight("Sather"   ));
-  hlList.append(new KBasicHighlight("KBasic"));
-  hlList.append(new LatexHighlight( "Latex"    ));
-  hlList.append(new IdlHighlight("IDL"));
-  kdDebug(13010)<<"HlList created"<<endl;
- */
 }
 
 HlManager::~HlManager() {
@@ -1191,23 +1112,6 @@ int HlManager::wildcardFind(const QString &fileName) {
 
 int HlManager::mimeFind(const QByteArray &contents, const QString &fname)
 {
-/*
-  // fill the detection buffer with the contents of the text
-  const int HOWMANY = 1024;
-  char buffer[HOWMANY];
-  int number=0, len;
-
-  for (int index=0; index<doc->lastLine(); index++)
-  {
-    len = doc->textLength(index);
-
-    if (number+len > HOWMANY)
-      break;
-
-    memcpy(&buffer[number], doc->textLine(index)->getText(), len);
-    number += len;
-  }
-*/
   // detect the mime type
   KMimeMagicResult *result;
   result = KMimeMagic::self()->findBufferFileType(contents, fname);
@@ -1350,8 +1254,12 @@ int HlManager::highlights() {
   return (int) hlList.count();
 }
 
-const char * HlManager::hlName(int n) {
+QString HlManager::hlName(int n) {
   return hlList.at(n)->iName;
+}
+
+QString HlManager::hlSection(int n) {
+  return hlList.at(n)->iSection;
 }
 
 void HlManager::getHlDataList(HlDataList &list) {

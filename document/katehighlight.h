@@ -254,7 +254,7 @@ class ItemData : public ItemStyle {
     ItemData(const QString  name, int defStyleNum);
     ItemData(const QString  name, int defStyleNum,
       const QColor&, const QColor&, bool bold, bool italic);
-    ItemData(ItemData 
+    ItemData(ItemData
 *itd):ItemStyle((ItemStyle*)itd),name(itd->name),defStyleNum(itd->defStyleNum),defStyle(itd->defStyle){;}
     const QString name;
     int defStyleNum;
@@ -277,41 +277,6 @@ typedef QList<HlData> HlDataList;
 class HlManager;
 class KConfig;
 
-class Highlight {
-    friend class HlManager;
-  public:
-    Highlight(const char * name);
-    virtual ~Highlight();
-    KConfig *getKConfig();
-    QString getWildcards();
-    QString getMimetypes();
-    HlData *getData();
-    void setData(HlData *);
-    void getItemDataList(ItemDataList &);
-    virtual void getItemDataList(ItemDataList &, KConfig *);
-    virtual void setItemDataList(ItemDataList &, KConfig *);
-    const char * name() {return iName;}
-//    QString extensions();
-//    QString mimetypes();
-    void use();
-    void release();
-    virtual bool isInWord(QChar c) {return ::isInWord(c);}
-    virtual int doHighlight(int ctxNum, TextLine *textLine);
-    virtual QString getCommentStart() { return QString(""); };
-    virtual QString getCommentEnd() { return QString(""); };
-    virtual QString getCommentSingleLineStart() { return QString("");};
-  protected:
-    virtual void createItemData(ItemDataList &);
-    virtual void init();
-    virtual void done();
-    const char * iName;
-    QString iWildcards;
-    QString iMimetypes;
-    QString identifier;
-    int refCount;
-};
-
-
 //context
 class HlContext {
   public:
@@ -321,44 +286,58 @@ class HlContext {
     int ctx;
 };
 
-class GenHighlight : public Highlight {
-  public:
-    GenHighlight(const char * name);
-
-    virtual int doHighlight(int ctxNum, TextLine *);
-  protected:
-    virtual void makeContextList() = 0;
-    virtual void init();
-    virtual void done();
-
-    static const int nContexts = 32;
-    HlContext *contextList[nContexts];
-};
-
-
-class AutoHighlight : public GenHighlight
+class Highlight
 {
+  friend class HlManager;
+
   public:
-    AutoHighlight(syntaxModeListItem *def);
-    virtual ~AutoHighlight();
-    QString getCommentStart() {kdDebug()<<"*****AutoHighlight::getCommentStart()"<<endl; return cmlStart;};
+    Highlight(syntaxModeListItem *def);
+    ~Highlight();
+
+    int doHighlight(int ctxNum, TextLine *);
+
+    KConfig *getKConfig();
+    QString getWildcards();
+    QString getMimetypes();
+    HlData *getData();
+    void setData(HlData *);
+    void getItemDataList(ItemDataList &);
+    void getItemDataList(ItemDataList &, KConfig *);
+    void setItemDataList(ItemDataList &, KConfig *);
+    QString name() {return iName;}
+    QString section() {return iSection;}
+    void use();
+    void release();
+    bool isInWord(QChar c) {return ::isInWord(c);}
+
+    QString getCommentStart() {return cmlStart;};
     QString getCommentEnd()  {return cmlEnd;};
     QString getCommentSingleLineStart() { return cslStart;};
 
   protected:
-    QString iName;
+    void init();
+    void done();
+    void makeContextList ();
+    void setKeywords (HlKeyword *keyword,HlKeyword *dataType);
+    void createItemData (ItemDataList &list);
+    HlItem *createHlItem(struct syntaxContextData *data, int *res);
+    ItemDataList internalIDList;
+
+    static const int nContexts = 32;
+    HlContext *contextList[nContexts];
+
+    bool noHl;
     QString casesensitive;
     QString cmlStart;
     QString cmlEnd;
     QString cslStart;
-    virtual void makeContextList ();
-    virtual void setKeywords (HlKeyword *keyword,HlKeyword *dataType);
-    virtual void createItemData (ItemDataList &list);
-    HlItem *createHlItem(struct syntaxContextData *data, int *res);
-    ItemDataList internalIDList;
+    QString iName;
+    QString iSection;
+    QString iWildcards;
+    QString iMimetypes;
+    QString identifier;
+    int refCount;
 };
-
-//class KWriteDoc;
 
 class HlManager : public QObject {
     Q_OBJECT
@@ -384,7 +363,8 @@ class HlManager : public QObject {
     void setDefaults(ItemStyleList &);
 
     int highlights();
-    const char * hlName(int n);
+    QString hlName(int n);
+    QString hlSection(int n);
     void getHlDataList(HlDataList &);
     void setHlDataList(HlDataList &);
 

@@ -90,6 +90,7 @@ void SyntaxDocument::setupModeList()
 		      config->setGroup(Group);
                       syntaxModeListItem *mli=new syntaxModeListItem;
                       mli->name = config->readEntry("name","");
+                      mli->section = config->readEntry("section","");
                       mli->mimetype = config->readEntry("mimetype","");
                       mli->extension = config->readEntry("extension","");
                       mli->casesensitive = config->readEntry("casesensitive","");
@@ -117,6 +118,7 @@ void SyntaxDocument::setupModeList()
                       kdDebug(13010)<<"language found"<<endl;
                       syntaxModeListItem *mli=new syntaxModeListItem;
                       mli->name = e.attribute("name");
+                     mli->section = e.attribute("section");
                       mli->mimetype = e.attribute("mimetype");
                       mli->extension = e.attribute("extensions");
                       mli->casesensitive = e.attribute("casesensitive");
@@ -124,6 +126,7 @@ void SyntaxDocument::setupModeList()
                       mli->identifier = *it;
 		      config->setGroup(Group);
 		      config->writeEntry("name",mli->name);
+          config->writeEntry("section",mli->section);
 		      config->writeEntry("mimetype",mli->mimetype);
 		      config->writeEntry("extension",mli->extension);
 		      config->writeEntry("casesensitive",mli->casesensitive);

@@ -1,5 +1,5 @@
-<?xml version="1.01" encoding="UTF-8"?><!DOCTYPE language>
-<language name="KBasic" extensions="*.kbasic" mimetype="text/x-kbasic-src" casesensitive="1">
+<?xml version="1.02" encoding="UTF-8"?><!DOCTYPE language>
+<language name="KBasic"section="Sources" extensions="*.kbasic" mimetype="text/x-kbasic-src" casesensitive="1">
     <highlighting>
         <list name="keywords">
         <item> For </item>

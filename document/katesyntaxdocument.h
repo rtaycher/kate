@@ -28,6 +28,7 @@ class QStringList;
 struct syntaxModeListItem
 {
   QString name;
+  QString section;
   QString mimetype;
   QString extension;
   QString casesensitive;

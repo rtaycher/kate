@@ -268,7 +268,7 @@ void KateMainWindow::setupActions()
 
   list.clear();
   for (int z = 0; z < HlManager::self()->highlights(); z++)
-       list.append(i18n(HlManager::self()->hlName(z)));
+       list.append(HlManager::self()->hlName(z));
   setHighlight->setItems(list);
 
   KStdAction::keyBindings(this, SLOT(editKeys()), actionCollection());

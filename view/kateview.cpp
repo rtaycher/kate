@@ -1511,7 +1511,7 @@ void KateView::setupActions()
     connect(setHighlight, SIGNAL(activated(int)), this, SLOT(setHl(int)));
     QStringList list;
     for (int z = 0; z < HlManager::self()->highlights(); z++)
-        list.append(i18n(HlManager::self()->hlName(z)));
+        list.append(HlManager::self()->hlName(z));
     setHighlight->setItems(list);
 
     setEndOfLine = new KSelectAction(i18n("&End Of Line"), 0, actionCollection(), "set_eol");
