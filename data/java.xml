@@ -5,7 +5,6 @@
       <keyword> abstract </keyword>
       <keyword> break </keyword>
       <keyword> case </keyword>
-      <keyword> cast </keyword>
       <keyword> catch </keyword>
       <keyword> class </keyword>
       <keyword> continue </keyword>
@@ -16,27 +15,22 @@
       <keyword> false </keyword>
       <keyword> finally </keyword>
       <keyword> for </keyword>
-      <keyword> future </keyword>
-      <keyword> generic </keyword>
       <keyword> goto </keyword>
       <keyword> if </keyword>
       <keyword> implements </keyword>
       <keyword> import </keyword>
-      <keyword> inner </keyword>
       <keyword> instanceof </keyword>
       <keyword> interface </keyword>
       <keyword> native </keyword>
       <keyword> new </keyword>
       <keyword> null </keyword>
-      <keyword> operator </keyword>
-      <keyword> outer </keyword>
       <keyword> package </keyword>
       <keyword> private </keyword>
       <keyword> protected </keyword>
       <keyword> public </keyword>
-      <keyword> rest </keyword>
       <keyword> return </keyword>
       <keyword> super </keyword>
+      <keyword> strictfp </keyword>
       <keyword> switch </keyword>
       <keyword> synchronized </keyword>
       <keyword> this </keyword>
@@ -45,7 +39,6 @@
       <keyword> transient </keyword>
       <keyword> true </keyword>
       <keyword> try </keyword>
-      <keyword> var </keyword>
       <keyword> volatile </keyword>
       <keyword> while </keyword>
     </keywords>
