@@ -69,7 +69,7 @@
 #include <kurldrag.h>
 #include <kdesktopfile.h>
 #include <khelpmenu.h>
-
+#include <kmultitabbar.h>
 #include <qlayout.h>
 
 #include <ktip.h>
@@ -89,6 +89,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 	KateProjectManager *projectMan, KMdi::MdiMode guiMode) :
 	KMdiMainFrm (0,(QString("__KateMainWindow#%1").arg(uniqueID)).latin1(),guiMode)
 {
+  setIDEAlModeStyle(KMultiTabBar::KDEV3ICON);
   // first the very important id
   myID = uniqueID;
   uniqueID++;
