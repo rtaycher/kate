@@ -1,8 +1,9 @@
 [Global]
-tools=externaltool_CVSLogforCurrentDocument,externaltool_CervisiaDirectoryofCurrentDocument,externaltool_CompareCurrentDocumenttoCVS,externaltool_CompareDirectoryofCurrentDocumenttoCVS,externaltool_EmailCVSDiffforCurrentDocument,---,externaltool_GoogleSelection
+tools=externaltool_CVSLogforCurrentDocument,externaltool_CervisiaDirectoryofCurrentDocument,externaltool_CompareCurrentDocumenttoCVS,externaltool_CompareDirectoryofCurrentDocumenttoCVS,externaltool_EmailCVSDiffforCurrentDocument,---,externaltool_RunScript,---,externaltool_GoogleSelection
 
 [Shortcuts]
 externaltool_CompareCurrentDocumenttoCVS=Shift+F11
+externaltool_RunScript=Ctrl+Shift+X
 
 [externaltool_CVSLogforCurrentDocument]
 acname=externaltool_CVSLogforCurrentDocument
@@ -43,6 +44,14 @@ executable=kfmclient
 icon=globe
 mimetypes=
 name=Google Selection
+
+[externaltool_RunScript]
+acname=externaltool_RunScript
+command=cd "%directory" && chmod u+x "%filename" && konsole -e "./%filename"
+executable=konsole
+icon=run
+mimetypes=
+name=Run Script
 
 [externaltool_CompareDirectoryofCurrentDocumenttoCVS]
 acname=externaltool_comparedirectoryofcurrentdocumenttoCVS
