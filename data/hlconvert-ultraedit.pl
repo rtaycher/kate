@@ -62,6 +62,11 @@ $commentstart = @field[1];
 @field = split / /, @field[1];
 $commentend = @field[1];
 
+# get the string delimeter
+@field = split /String Chars =/, $file[0];
+@field = split / /, @field[1];
+$delimeter = @field[1];
+
 print FILE "<language name=\"$hlname\" extensions=\"$ext\" mimetype=\"\" casesensitive=\"$case\">\n";
 print FILE "  <highlighting>\n";
 
@@ -133,20 +138,42 @@ while (($n < $s) && ($file[$sections[$n]] ne ""))
 }
 
 print FILE "    <contexts>\n";
+
+if ($delimeter ne "")
+{
+  print FILE "      <context attribute=\"1\" lineEndContext=\"0\" name=\"String\">\n";
+  print FILE "        <LineContinue attribute=\"1\" context=\"6\"/>\n";
+
+  if ($delimeter =~ /'/)
+  {
+    print FILE "        <HlCStringChar attribute=\"2\" context=\"1\"/>\n";
+  }
+
+  if ($delimeter =~ /\"/)
+  {
+    print FILE "        <DetectChar attribute=\"1\" context=\"0\" char=\"&quot;\"/>\n";
+  }
+
+  print FILE "      </context>\n";
+}
+
 print FILE "      <context name=\"Normal\" attribute=\"0\" lineEndContext=\"0\">\n";
 
 $n=0;
 while (($n < $s) && ($file[$sections[$n]] ne ""))
 {
-  $str = $n+1;
+  $str = $n+3;
   print FILE "        <keyword attribute=\"$str\" context=\"0\" String=\"$listname[$n]\" />\n";
   $n++;
 }
 
 print FILE "      </context>\n";
+
 print FILE "    </contexts>\n";
 print FILE "    <itemDatas>\n";
 print FILE "      <itemData name=\"Normal\" defStyleNum=\"dsNormal\"/>\n";
+print FILE "      <itemData name=\"String\"  defStyleNum=\"dsString\"/>\n";
+print FILE "      <itemData name=\"String Char\"  defStyleNum=\"dsChar\"/>\n";
 
 $n=0;
 while (($n < $s) && ($file[$sections[$n]] ne ""))
