@@ -82,19 +82,15 @@ void SyntaxDocument::setupModeList(bool force)
 
       if (f.open(IO_ReadOnly))
       {
-        kdDebug(13010)<<"Parsing: "<< *it<< endl;
         setContent(&f);
         f.close();
         QDomElement n = documentElement();
         if (!n.isNull())
         {
-          kdDebug(13010)<<"Node not null"<<endl;
           QDomElement e=n.toElement();
-          kdDebug(13010)<<"Tagname: "<<e.tagName()<<endl;
 
           if (e.tagName()=="language")
           {
-            kdDebug(13010)<<"language found"<<endl;
             syntaxModeListItem *mli=new syntaxModeListItem;
             mli->name = e.attribute("name");
             mli->section = e.attribute("section");
@@ -102,7 +98,7 @@ void SyntaxDocument::setupModeList(bool force)
             mli->extension = e.attribute("extensions");
 
             if (mli->section.isEmpty())
-              mli->section="Other";
+              mli->section=i18n("Other");
 
             mli->identifier = *it;
 
