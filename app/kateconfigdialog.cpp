@@ -33,7 +33,6 @@
 #include "katefileselector.h"
 #include "katefilelist.h"
 
-#include <qlayout.h>
 #include <qbuttongroup.h>
 #include <qcheckbox.h>
 #include <qhbox.h>
