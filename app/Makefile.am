@@ -11,7 +11,7 @@ kate_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugindialogpage.cp
 kate_la_LIBADD   = ../interfaces/libkateinterfaces.la -lkscript
 kate_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
 
-kwrite_la_SOURCES = kwritemain.cpp katefiledialog.cpp
+kwrite_la_SOURCES = kwritemain.cpp katefiledialog.cpp kwritedialogs.cpp
 kwrite_la_LIBADD   = -lktexteditor
 kwrite_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
 
