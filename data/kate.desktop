@@ -57,6 +57,7 @@ Name[ru]=Редактор Kate
 Name[xx]=xxKatexx
 MimeType=text/plain;application/x-kate-project
 Exec=kate %u
+X-KDE-StartupNotify=true
 TerminalOptions=
 Icon=kate
 Path=
