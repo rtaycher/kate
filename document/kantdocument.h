@@ -42,6 +42,9 @@ class KantDocument : public KWriteDoc
     /** Reloads the current document from disk if possible */
     void reloadFile();
 
+  private slots:
+    void slotModChanged ();
+
   private:
     /** updates mTime to reflect file on fs.
      called from constructor and from saveFile. */
@@ -49,6 +52,9 @@ class KantDocument : public KWriteDoc
     long myDocID;
     QFileInfo* fileinfo;
     QDateTime mTime;
+
+  signals:
+    void modStateChanged (KantDocument *doc);
 };
 
 #endif

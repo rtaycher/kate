@@ -164,10 +164,10 @@ void KantMainWindow::setupMainWindow ()
 
   projectManager = new KantProjectManager (docManager, viewManager, statusBar());
 
-  filelist = new KantFileList (docManager, 0, "filelist");
+  filelist = new KantFileList (docManager, viewManager, 0L, "filelist");
   sidebar->addWidget (filelist, i18n("Filelist"));
 
-  fileselector = new KantFileSelector(0, "operator");
+  fileselector = new KantFileSelector(0L, "operator");
   fileselector->dirOperator()->setView(KFile::Simple);
   sidebar->addWidget (fileselector, i18n("Fileselector"));
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileViewItem*)),this,SLOT(fileSelected(const KFileViewItem*)));

@@ -56,14 +56,18 @@ class KantFileList : public KListBox
   Q_OBJECT
 
   public:
-    KantFileList (KantDocManager *_docManager, QWidget * parent = 0, const char * name = 0 );
+    KantFileList (KantDocManager *_docManager, KantViewManager *_viewManager, QWidget * parent = 0, const char * name = 0 );
     ~KantFileList ();
 
   private:
     KantDocManager *docManager;
+    KantViewManager *viewManager;
 
   private slots:
       void slotDocumentCreated (KantDocument *doc);
+      void slotDocumentDeleted (long docID);
+      void slotActivateView( QListBoxItem *item );
+      void slotModChanged (KantDocument *doc);
 };
 
 #endif

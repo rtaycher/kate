@@ -36,6 +36,8 @@ KantDocument::KantDocument (long docID, QFileInfo* fi)
   myDocID = docID;
   fileinfo = fi;
   setMTime();
+
+  connect(this,SIGNAL(modifiedChanged ()),this,SLOT(slotModChanged ()));
 }
 
 KantDocument::~KantDocument ()
@@ -88,4 +90,9 @@ void KantDocument::reloadFile()
     KWriteDoc::openFile();
     setMTime();
   }
+}
+
+void KantDocument::slotModChanged()
+{
+  emit modStateChanged (this);
 }
