@@ -22,7 +22,7 @@
 #include <kdebug.h>
 
 TextLine::TextLine(int attribute, int context)
-  : size(0), text(0L), attributes(0L), attr(attribute), ctx(context), myMark (0)
+  : text(0L), attributes(0L), attr(attribute), ctx(context), myMark (0)
 {
 }
 
@@ -31,8 +31,7 @@ TextLine::~TextLine()
 }
 
 
-void TextLine::replace(int pos, int delLen, const QChar *insText, int insLen,
-  uchar *insAttribs)
+void TextLine::replace(uint pos, uint delLen, const QChar *insText, uint insLen, uchar *insAttribs)
 {
   text.replace (pos, delLen, insText, insLen);
 
@@ -41,38 +40,40 @@ void TextLine::replace(int pos, int delLen, const QChar *insText, int insLen,
   if (attributes.size() < 1) return;
 
   int newAtStuff = insLen-delLen;
-  for (int m=pos; m < attributes.size()-1; m++)
+  for (uint m=pos; m < attributes.size()-1; m++)
   {
     if (m+newAtStuff < attributes.size()) attributes[m+newAtStuff]=attributes[m];
   }
 
   if (insAttribs != 0L)
   {
-  for (int m2=pos; m2 < pos+insLen; m2++)
+  for (uint m2=pos; m2 < pos+insLen; m2++)
   {
     if (m2 < attributes.size()) attributes[m2]=insAttribs[m2-pos];
   }
   }
   else
   {
-  for (int m3=pos; m3 < pos+insLen; m3++)
+  for (uint m3=pos; m3 < pos+insLen; m3++)
   {
     if (m3 < attributes.size()) attributes[m3]=0;
   }
   }
 }
 
-void TextLine::wrap(TextLine::Ptr nextLine, int pos) {
-  int l;
+void TextLine::wrap(TextLine::Ptr nextLine, uint pos)
+{
+  int l = text.length() - pos;
 
-  l = text.length() - pos;
-  if (l > 0) {
+  if (l > 0)
+  {
     nextLine->replace(0, 0, &text.unicode()[pos], l, &attributes[pos]);
     attr = attributes[pos];
+    truncate(pos);
   }
 }
 
-void TextLine::unWrap(int pos, TextLine::Ptr nextLine, int len) {
+void TextLine::unWrap(uint pos, TextLine::Ptr nextLine, uint len) {
 
   replace(pos, 0, nextLine->text.unicode(), len, nextLine->attributes.data());
   attr = nextLine->getRawAttr(len);
@@ -80,14 +81,18 @@ void TextLine::unWrap(int pos, TextLine::Ptr nextLine, int len) {
 }
 
 int TextLine::firstChar() const {
-  int z = 0;
+  uint z = 0;
 
   while (z < text.length() && text[z].isSpace()) z++;
-  return (z < text.length()) ? z : -1;
+
+  if (z < text.length())
+    return z;
+  else
+    return -1;
 }
 
 int TextLine::lastChar() const {
-  int z = text.length();
+  uint z = text.length();
 
   while (z > 0 && text[z - 1].isSpace()) z--;
   return z;
@@ -98,7 +103,7 @@ void TextLine::removeSpaces() {
   while (text.length() > 0 && text[text.length() - 1].isSpace()) text.truncate (text.length()-1);
 }
 
-QChar TextLine::getChar(int pos) const {
+QChar TextLine::getChar(uint pos) const {
   if (pos < text.length()) return text.constref(pos);
   return ' ';
 }
@@ -129,7 +134,7 @@ bool TextLine::endingWith(QString& match) {
   return (lastChars == match);
 }
 
-int TextLine::cursorX(int pos, int tabChars) const {
+int TextLine::cursorX(uint pos, uint tabChars) const {
   int l, x, z;
 
   l = (pos < text.length()) ? pos : text.length();
@@ -141,8 +146,8 @@ int TextLine::cursorX(int pos, int tabChars) const {
   return x;
 }
 
-void TextLine::setAttribs(int attribute, int start, int end) {
-  int z;
+void TextLine::setAttribs(int attribute, uint start, uint end) {
+  uint z;
 
   if (end > text.length()) end = text.length();
   for (z = start; z < end; z++) attributes[z] = (attributes[z] & taSelected) | attribute;
@@ -152,7 +157,7 @@ void TextLine::setAttr(int attribute) {
   attr = (attr & taSelected) | attribute;
 }
 
-int TextLine::getAttr(int pos) const {
+int TextLine::getAttr(uint pos) const {
   if (pos < text.length()) return attributes[pos] & taAttrMask;
   return attr & taAttrMask;
 }
@@ -161,7 +166,7 @@ int TextLine::getAttr() const {
   return attr & taAttrMask;
 }
 
-int TextLine::getRawAttr(int pos) const {
+int TextLine::getRawAttr(uint pos) const {
   if (pos < text.length()) return attributes[pos];
   return (attr & taSelected) ? attr : attr | 256;
 }
@@ -179,8 +184,8 @@ int TextLine::getContext() const {
 }
 
 
-void TextLine::select(bool sel, int start, int end) {
-  int z;
+void TextLine::select(bool sel, uint start, uint end) {
+  uint z;
 
   if (end > text.length()) end = text.length();
   if (sel) {
@@ -190,8 +195,8 @@ void TextLine::select(bool sel, int start, int end) {
   }
 }
 
-void TextLine::selectEol(bool sel, int pos) {
-  int z;
+void TextLine::selectEol(bool sel, uint pos) {
+  uint z;
 
   if (sel) {
     for (z = pos; z < text.length(); z++) attributes[z] |= taSelected;
@@ -203,16 +208,16 @@ void TextLine::selectEol(bool sel, int pos) {
 }
 
 
-void TextLine::toggleSelect(int start, int end) {
-  int z;
+void TextLine::toggleSelect(uint start, uint end) {
+  uint z;
 
   if (end > text.length()) end = text.length();
   for (z = start; z < end; z++) attributes[z] = attributes[z] ^ taSelected;
 }
 
 
-void TextLine::toggleSelectEol(int pos) {
-  int z;
+void TextLine::toggleSelectEol(uint pos) {
+  uint z;
 
   for (z = pos; z < text.length(); z++) attributes[z] = attributes[z] ^ taSelected;
   attr = attr ^ taSelected;
@@ -220,14 +225,14 @@ void TextLine::toggleSelectEol(int pos) {
 
 
 int TextLine::numSelected() const {
-  int z, n;
+  uint z, n;
 
   n = 0;
   for (z = 0; z < text.length(); z++) if (attributes[z] & taSelected) n++;
   return n;
 }
 
-bool TextLine::isSelected(int pos) const {
+bool TextLine::isSelected(uint pos) const {
   if (pos < text.length()) return (attributes[pos] & taSelected);
   return (attr & taSelected);
 }
@@ -236,22 +241,22 @@ bool TextLine::isSelected() const {
   return (attr & taSelected);
 }
 
-int TextLine::findSelected(int pos) const {
+int TextLine::findSelected(uint pos) const {
   while (pos < text.length() && attributes[pos] & taSelected) pos++;
   return pos;
 }
 
-int TextLine::findUnselected(int pos) const {
+int TextLine::findUnselected(uint pos) const {
   while (pos < text.length() && !(attributes[pos] & taSelected)) pos++;
   return pos;
 }
 
-int TextLine::findRevSelected(int pos) const {
+int TextLine::findRevSelected(uint pos) const {
   while (pos > 0 && attributes[pos - 1] & taSelected) pos--;
   return pos;
 }
 
-int TextLine::findRevUnselected(int pos) const {
+int TextLine::findRevUnselected(uint pos) const {
   while (pos > 0 && !(attributes[pos - 1] & taSelected)) pos--;
   return pos;
 }

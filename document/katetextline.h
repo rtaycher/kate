@@ -172,26 +172,25 @@ public:
       Universal text manipulation method. It can be used to insert, delete
       or replace text.
     */
-    void replace(int pos, int delLen, const QChar *insText, int insLen,
-      uchar *insAttribs = 0L);
+    void replace(uint pos, uint delLen, const QChar *insText, uint insLen, uchar *insAttribs = 0L);
 
     /**
       Appends a string of length l to the textline
     */
-    void append(const QChar *s, int l) {replace(text.length(), 0, s, l);}
+    void append(const QChar *s, uint l) {replace(text.length(), 0, s, l);}
     /**
       Wraps the text from the given position to the end to the next line
     */
-    void wrap(TextLine::Ptr nextLine, int pos);
+    void wrap(TextLine::Ptr nextLine, uint pos);
     /**
       Wraps the text of given length from the beginning of the next line to
       this line at the given position
     */
-    void unWrap(int pos, TextLine::Ptr nextLine, int len);
+    void unWrap(uint pos, TextLine::Ptr nextLine, uint len);
     /**
       Truncates the textline to the new length
     */
-    void truncate(uint newLen) { text.truncate(newLen);}
+    void truncate(uint newLen) { text.truncate(newLen); attributes.resize(text.length()); }
     /**
       Returns the position of the first character which is not a white space
     */
@@ -207,7 +206,7 @@ public:
     /**
       Gets the char at the given position
     */
-    QChar getChar(int pos) const;
+    QChar getChar(uint pos) const;
     /**
       Gets the text. WARNING: it is not null terminated
     */
@@ -225,7 +224,7 @@ public:
       Returns the x position of the cursor at the given position, which
       depends on the number of tab characters
     */
-    int cursorX(int pos, int tabChars) const;
+    int cursorX(uint pos, uint tabChars) const;
     /**
       Is the line starting with the given string
     */
@@ -238,7 +237,7 @@ public:
     /**
       Sets the attributes from start to end -1
     */
-    void setAttribs(int attribute, int start, int end);
+    void setAttribs(int attribute, uint start, uint end);
     /**
       Sets the attribute for the free space behind the last character
     */
@@ -246,7 +245,7 @@ public:
     /**
       Gets the attribute at the given position
     */
-    int getAttr(int pos) const;
+    int getAttr(uint pos) const;
     /**
       Gets the attribute for the free space behind the last character
     */
@@ -254,7 +253,7 @@ public:
     /**
       Gets the attribute, including the select state, at the given position
     */
-    int getRawAttr(int pos) const;
+    int getRawAttr(uint pos) const;
     /**
       Gets the attribute, including the select state, for the free space
       behind the last character
@@ -273,21 +272,21 @@ public:
     /**
       Sets the select state from start to end -1
     */
-    void select(bool sel, int start, int end);
+    void select(bool sel, uint start, uint end);
     /**
       Sets the select state from the given position to the end, including
       the free space behind the last character
     */
-    void selectEol(bool sel, int pos);
+    void selectEol(bool sel, uint pos);
     /**
       Toggles the select state from start to end -1
     */
-    void toggleSelect(int start, int end);
+    void toggleSelect(uint start, uint end);
     /**
       Toggles the select state from the given position to the end, including
       the free space behind the last character
     */
-    void toggleSelectEol(int pos);
+    void toggleSelectEol(uint pos);
     /**
       Returns the number of selected characters
     */
@@ -295,7 +294,7 @@ public:
     /**
       Returns if the character at the given position is selected
     */
-    bool isSelected(int pos) const;
+    bool isSelected(uint pos) const;
     /**
       Returns true if the free space behind the last character is selected
     */
@@ -303,19 +302,19 @@ public:
     /**
       Finds the next selected character, starting at the given position
     */
-    int findSelected(int pos) const;
+    int findSelected(uint pos) const;
     /**
       Finds the next unselected character, starting at the given position
     */
-    int findUnselected(int pos) const;
+    int findUnselected(uint pos) const;
     /**
       Finds the previous selected character, starting at the given position
     */
-    int findRevSelected(int pos) const;
+    int findRevSelected(uint pos) const;
     /**
       Finds the previous unselected character, starting at the given position
     */
-    int findRevUnselected(int pos) const;
+    int findRevUnselected(uint pos) const;
 
     void clearMark () { myMark = 0; };
     void addMark ( uint m );
@@ -323,10 +322,6 @@ public:
     uint mark() { return myMark; };
 
   protected:
-    /**
-      Memory Size of the text line
-    */
-    int size;
     /**
       The text
     */
@@ -343,7 +338,9 @@ public:
       The syntax highlight context
     */
     int ctx;
-
+    /**
+      The marks of the current line
+    */
     uint myMark;
 };
 
