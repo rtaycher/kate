@@ -26,10 +26,15 @@
 
 #include <kcmdlineargs.h>
 #include <kdebug.h>
+#include <dcopclient.h>
 
-KantApp::KantApp () : KUniqueApplication ()
+KantApp::KantApp () : KApplication ()
 {
   mainWindows.setAutoDelete (false);
+
+  DCOPClient *client = dcopClient();
+  client->attach();
+  client->registerAs("kant");
 
   docManager = new KantDocManager ();
   pluginManager=new KantPluginManager(this);
@@ -38,6 +43,25 @@ KantApp::KantApp () : KUniqueApplication ()
 
   connect(this, SIGNAL(lastWindowClosed()), SLOT(quit()));
 
+  KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
+
+  mainWindows.first()->restore(isRestored());
+
+  if (isRestored())
+    kdDebug(13000)<<"restored app anybody?"<<endl;
+  if (!isRestored())
+  {
+
+    for (int z=0; z<args->count(); z++)
+    {
+      mainWindows.first()->viewManager->openURL( args->url(z) );
+    }
+
+    mainWindows.first()->raise();
+  }
+
+  if ( mainWindows.first()->viewManager->viewCount () == 0 )
+    mainWindows.first()->viewManager->openURL( KURL() );
 }
 
 KantApp::~KantApp ()
@@ -66,29 +90,4 @@ void KantApp::removeMainWindow (KantMainWindow *mainWindow)
 long KantApp::mainWindowsCount ()
 {
   return mainWindows.count();
-}
-
-int KantApp::newInstance ()
-{
-  KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
-
-  mainWindows.first()->restore(isRestored());
-
-  if (isRestored())
-    kdDebug(13000)<<"restored app anybody?"<<endl;
-  if (!isRestored())
-  {
-
-    for (int z=0; z<args->count(); z++)
-    {
-      mainWindows.first()->viewManager->openURL( args->url(z) );
-    }
-
-    mainWindows.first()->raise();
-  }
-
-  if ( mainWindows.first()->viewManager->viewCount () == 0 )
-    mainWindows.first()->viewManager->openURL( KURL() );
-
-  return 0;
 }

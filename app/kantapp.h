@@ -19,10 +19,10 @@
 
 #include "../main/kantmain.h"
 
-#include <kuniqueapp.h>
+#include <kapp.h>
 #include <qlist.h>
 
-class KantApp : public KUniqueApplication
+class KantApp : public KApplication
 {
   Q_OBJECT
 
@@ -32,7 +32,6 @@ class KantApp : public KUniqueApplication
     KantApp ();
     ~KantApp ();
 
-    virtual int newInstance ();
     KantPluginManager *getPluginManager(){return pluginManager;};
 
     void newMainWindow ();

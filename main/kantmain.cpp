@@ -40,12 +40,6 @@ int main( int argc, char **argv )
   KCmdLineArgs::addCmdLineOptions (options);
   KantApp::addCmdLineOptions ();
 
-  if (!KantApp::start())
-  {
-    kdDebug(13000)<<"main: cant start kantapp!"<<endl;
-    return 1;
-  }
-
   KantApp app;
   return app.exec();
 }
