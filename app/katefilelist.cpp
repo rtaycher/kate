@@ -282,23 +282,6 @@ void KateFileList::slotModChanged (Kate::Document *doc)
 void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool, unsigned char r)
 {
   slotModChanged( doc );
-
-  if ( r != 0 )
-  {
-    QPixmap w( BarIcon("messagebox_warning", 32) );
-    QString a;
-    if ( r == 1 )
-      a = i18n("The document<br><code>%1</code><br>was changed on disk by another program.");
-    else if ( r == 2 )
-      a = i18n("The document<br><code>%1</code><br>was created on disk by another program.");
-    else if ( r == 3 )
-      a = i18n("The document<br><code>%1</code><br>was deleted from disk by another program.");
-
-    if ( ((KateMainWindow*)topLevelWidget())->notifyMod() )
-      KPassivePopup::message( i18n("Warning"),
-                              a.arg( doc->url().prettyURL() ),
-                              w, topLevelWidget() );
-  }
 }
 
 void KateFileList::slotNameChanged (Kate::Document *doc)
