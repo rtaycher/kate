@@ -21,15 +21,18 @@
 #define SYNTAXDOCUMENT_H
 
 #include <qdom.h>
+#include <qlist.h>
 
 class QStringList;
 
-struct syntaxModeList
+struct syntaxModeListItem
 {
-  QStringList name;
-  QStringList mimetype;
-  QStringList extensions;
+  QString name;
+  QString mimetype;
+  QString extension;
 };
+
+typedef QList<syntaxModeListItem> SyntaxModeList;
 
 class SyntaxDocument : public QDomDocument
 {
@@ -38,11 +41,11 @@ class SyntaxDocument : public QDomDocument
     ~SyntaxDocument();
 
     QStringList& finddata(const QString& langName,const QString& type);
-
+    SyntaxModeList modeList();
   private:
-    syntaxModeList modeList();
+    //syntaxModeList modeList();
 
-    syntaxModeList myModeList;
+    SyntaxModeList myModeList;
     QStringList m_data;
 };
 

@@ -1006,7 +1006,7 @@
 </keywords>
 </language>
 
-<language name='KBasic' >
+<language name='KBasic' extensions="*.kbasic" mimetype="text/x-kbasic-src">
   <keywords>
   <keyword> For </keyword>
   <keyword> Next</keyword>

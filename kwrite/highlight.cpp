@@ -1885,6 +1885,7 @@ void SatherHighlight::createItemData(ItemDataList &list) {
   list.append(new ItemData(I18N_NOOP("String"             ),dsString)); // 10
   list.append(new ItemData(I18N_NOOP("Comment"            ),dsComment));// 11
 }
+
 // UNTESTED
 void SatherHighlight::makeContextList() {
   HlContext *c;
@@ -1911,6 +1912,7 @@ void SatherHighlight::makeContextList() {
   spec_class->addList(HlManager::self()->syntax->finddata("Sather","type"));
 }
 
+
 KBasicHighlight::KBasicHighlight(const char *name) : GenHighlight(name)
 {
   iWildcards = "*.kbasic";
@@ -1920,6 +1922,7 @@ KBasicHighlight::KBasicHighlight(const char *name) : GenHighlight(name)
 KBasicHighlight::~KBasicHighlight()
 {
 }
+
 
 void KBasicHighlight::createItemData(ItemDataList &list)
 {
@@ -2031,6 +2034,21 @@ void LatexHighlight::makeContextList() {
     c->items.append(new HlCharDetect(3,4, '}'));
 }
 
+AutoHighlight::AutoHighlight(syntaxModeListItem *def):GenHighlight(def->name.latin1())
+{
+  iName = def->name;
+  iWildcards = def->extension;
+  iMimetypes = def->mimetype;
+}
+
+AutoHighlight::~AutoHighlight()
+{
+}
+
+void AutoHighlight::makeContextList()
+{
+}    
+
 //--------
 
 
@@ -2057,6 +2075,16 @@ HlManager::HlManager() : QObject(0L) {
   hlList.append(new IdlHighlight("IDL"));
 
   syntax=new SyntaxDocument();
+
+/* 
+ Don't remove this part:
+  SyntaxModeList modelist=syntax->modeList();
+
+  syntaxModeListItem *mli=new syntaxModeListItem;
+  mli->name="KBasic";
+  mli->mimetype="mimetype";
+  mli->extension="ext";
+  hlList.append(new AutoHighlight(mli)); */
 }
 
 HlManager::~HlManager() {

@@ -52,30 +52,36 @@ SyntaxDocument::~SyntaxDocument()
 {
 }
 
-syntaxModeList SyntaxDocument::modeList()
+SyntaxModeList SyntaxDocument::modeList()
 {
+
+  if (!myModeList.count()) return myModeList;
   QDomElement docElem = documentElement();
-  QDomNode n = docElem.firstChild();
+  QDomNodeList nL = docElem.elementsByTagName("language");
 
-  syntaxModeList modeList;
+  //syntaxModeList modeList;
 
-  while ( !n.isNull() )
+ for (int i=0;i<nL.count();i++)
   {
+    QDomNode n=nL.item(i);
     if ( n.isElement())
     {
       QDomElement e = n.toElement();
       //kdDebug() << e.attribute("name") << endl;
-      modeList.name += e.attribute("name");
-      modeList.mimetype += e.attribute("mimetype");
-      modeList.extensions += e.attribute("extensions");
+      syntaxModeListItem *mli=new syntaxModeListItem;
+      mli->name = e.attribute("name");
+      mli->mimetype = e.attribute("mimetype");
+      mli->extension = e.attribute("extensions");
+      myModeList.append(mli);
     }
-
-    n = n.nextSibling();
+   //    n = n.nextSibling();
   }
 
-  return modeList;
+  return myModeList;
 }
 
+
+//QStringList& SyntaxDocument::
 
 QStringList& SyntaxDocument::finddata(const QString& langName,const QString& type)
 {

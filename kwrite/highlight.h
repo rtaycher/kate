@@ -30,6 +30,7 @@
 
 
 class SyntaxDocument;
+struct syntaxModeListItem;
 
 class QCheckBox;
 class QComboBox;
@@ -458,6 +459,7 @@ class CppHighlight : public CHighlight {
   protected:
     virtual void setKeywords(HlKeyword *keyword, HlKeyword *dataType);
 };
+
 class PascalHighlight : public CHighlight {
   public:
     PascalHighlight(const char *name);
@@ -607,6 +609,16 @@ class KBasicHighlight : public GenHighlight {
     virtual void createItemData(ItemDataList &);
     virtual void makeContextList();
     virtual void setKeywords(HlKeyword *keyword,HlKeyword *dataType);
+};
+
+class AutoHighlight : public GenHighlight {
+  public:
+    AutoHighlight(syntaxModeListItem *def); 
+    virtual ~AutoHighlight();    
+  protected:
+    QString iName;
+    virtual void makeContextList();
+
 };
 
 //class KWriteDoc;
