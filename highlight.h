@@ -24,12 +24,12 @@
 #define _HIGHLIGHT_H_
 
 #include <qlist.h>
-//#include <qlistbox.h>
-#include <qcheckbox.h>
-#include <qcombobox.h>
 #include <qdialog.h>
 
 #include <kcolorbtn.h>
+
+class QCheckBox;
+class QComboBox;
 
 class TextLine;
 class Attribute;

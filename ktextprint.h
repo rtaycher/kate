@@ -6,18 +6,19 @@
 #include <sys/types.h> // pid_t
 #include <signal.h> // struct sigaction
 
-#include <qgroupbox.h>
-#include <qpushbutton.h>
-#include <qradiobutton.h>
-#include <qcheckbox.h>
-#include <qcombobox.h>
-#include <qlineedit.h>
-#include <qspinbox.h>
-#include <qlayout.h>
+class QGroupBox;
+class QPushButton;
+class QRadioButton;
+class QCheckBox;
+class QComboBox;
+class QLineEdit;
+class QSpinBox;
+
+class KConfig;
+
 #include <qtextstream.h>
 
 #include <kdialogbase.h>
-#include <kconfig.h>
 
 
 struct KTextPrintConfigData;

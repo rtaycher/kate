@@ -18,6 +18,10 @@
 #include <qpainter.h>
 #include <qfile.h>
 #include <qregexp.h>
+#include <qlayout.h>
+#include <qradiobutton.h>
+#include <qspinbox.h>
+#include <qcheckbox.h>
 
 #include <kapp.h>
 #include <klocale.h>

@@ -22,7 +22,8 @@
 
 #include <string.h>
 
-//#include <qcombobox.h>
+#include <qcheckbox.h>
+#include <qcombobox.h>
 #include <qgroupbox.h>
 #include <qtextstream.h>
 #include <qregexp.h>
