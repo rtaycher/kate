@@ -64,7 +64,7 @@ int KateApp::newInstance()
 {
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 
-  if (args->isSet ("s"))
+  if (m_firstStart && args->isSet ("sdi"))
     _isSDI = true; 
     
   if (!m_firstStart && args->isSet ("n"))
