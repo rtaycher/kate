@@ -46,7 +46,6 @@
     <Action name="go_goto_line"/>
     <Separator />
     <Action name="tools_spelling" />
-    <Action name="edit_filter" />
   </Menu>
 
   <Menu name="view"><text>&amp;View</text>

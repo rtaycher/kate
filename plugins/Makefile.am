@@ -1,1 +1,1 @@
-SUBDIRS = htmltools
+SUBDIRS = htmltools textfilter

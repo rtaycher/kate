@@ -156,9 +156,6 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     KToggleAction* settingsShowFullScreen;
 
     KAction* sidebarFocusNext;
-
-    QString  m_strFilterOutput;
-    KShellProcess * m_pFilterShellProcess;
    
     QString tagSidebar;
 
@@ -201,11 +198,6 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     void setHighlightMenuAboutToShow();
     void slotSettingsShowFullPath();
     void slotDropEvent(QDropEvent *);
-    void slotEditFilter ();
-    void slotFilterReceivedStdout (KProcess * pProcess, char * got, int len);
-    void slotFilterReceivedStderr (KProcess * pProcess, char * got, int len);
-    void slotFilterProcessExited (KProcess * pProcess);
-    void slotFilterCloseStdin (KProcess *);
     void editKeys();
 
     void slotGoNext();

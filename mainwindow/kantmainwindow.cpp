@@ -89,8 +89,7 @@ KantDocManagerIface *KantMyPluginIface::docManagerIface ()
 
 KantMainWindow::KantMainWindow(KantDocManager *_docManager, KantPluginManager *_pluginManager) :
 	KDockMainWindow (0, "Main Window"),
-             DCOPObject ("KantIface" ),
-	m_pFilterShellProcess (NULL)
+             DCOPObject ("KantIface" )
 {
   tagSidebar=QString("sidebar");
   docManager =  _docManager;
@@ -115,13 +114,12 @@ KantMainWindow::KantMainWindow(KantDocManager *_docManager, KantPluginManager *_
   // connect settings menu aboutToshow
   QPopupMenu* pm_set = (QPopupMenu*)factory()->container("settings", this);
   connect(pm_set, SIGNAL(aboutToShow()), this, SLOT(settingsMenuAboutToShow()));
-  
+
   setupPlugins();
 }
 
 KantMainWindow::~KantMainWindow()
 {
-  delete m_pFilterShellProcess;
 }
 
 void KantMainWindow::setupMainWindow ()
@@ -148,7 +146,6 @@ void KantMainWindow::setupMainWindow ()
   mainDock->setEnableDocking ( KDockWidget::DockNone );
   sidebarDock->manualDock ( mainDock, KDockWidget::DockLeft, 20 );
   consoleDock->manualDock ( mainDock, KDockWidget::DockBottom, 20 );
-
 
   projectManager = new KantProjectManager (docManager, viewManager, statusBar());
 
@@ -253,8 +250,6 @@ void KantMainWindow::setupActions()
 
   toolsSpell = KStdAction::spelling(viewManager, SLOT(slotSpellcheck()), actionCollection());
 
-  new KAction ( i18n("Fi&lter Text..."), "edit_filter", CTRL + Key_Backslash, this,
-  SLOT( slotEditFilter() ), actionCollection(), "edit_filter" );
   viewSplitVert = new KAction( i18n("Split &Vertical"), "view_left_right", CTRL+SHIFT+Key_L, viewManager, SLOT( slotSplitViewSpaceVert() ), actionCollection(), "view_split_vert");
   viewSplitHoriz = new KAction( i18n("Split &Horizontal"), "view_top_bottom", CTRL+SHIFT+Key_T, viewManager, SLOT( slotSplitViewSpaceHoriz() ), actionCollection(), "view_split_horiz");
   closeCurrentViewSpace = new KAction( i18n("Close &Current"), "view_remove", CTRL+SHIFT+Key_R, viewManager, SLOT( slotCloseCurrentViewSpace() ), actionCollection(), "view_close_current_space");
@@ -371,213 +366,6 @@ void KantMainWindow::slotEditToolbars()
 
   if (dlg.exec())
     createGUI();
-}
-
-        void
-splitString (QString q, char c, QStringList &list)  //  PCP
-{
-
-// screw the OnceAndOnlyOnce Principle!
-
-  int pos;
-  QString item;
-
-  while ( (pos = q.find(c)) >= 0)
-    {
-      item = q.left(pos);
-      list.append(item);
-      q.remove(0,pos+1);
-    }
-  list.append(q);
-}
-
-
-        static void  //  PCP
-slipInNewText (KantView & view, QString pre, QString marked, QString post, bool reselect)
-{
-
-  int preDeleteLine = -1, preDeleteCol = -1;
-  view.getCursorPosition (&preDeleteLine, &preDeleteCol);
-  assert (preDeleteLine > -1);  assert (preDeleteCol > -1);
-
-  //  shoot me for strlen() but it worked better than .length() for some reason...
-  // lukas: BANG! strlen() fucks up non latin1 characters :-)
-
-//  POP_(marked.latin1 ());
-
-  if (marked.length() > 0)
-    view.keyDelete ();
-  int line = -1, col = -1;
-  view.getCursorPosition (&line, &col);
-  assert (line > -1);  assert (col > -1);
-  view.insertText (pre + marked + post);
-
-  //  all this muck to leave the cursor exactly where the user
-  //  put it...
-
-  //  Someday we will can all this (unless if it already
-  //  is canned and I didn't find it...)
-
-  //  The second part of the if disrespects the display bugs
-  //  when we try to reselect. TODO: fix those bugs, and we can
-  //  un-break this if...
-
-  //  TODO: fix OnceAndOnlyOnce between this module and plugin_kanthtmltools.cpp
-
-  if (reselect && preDeleteLine == line && -1 == marked.find ('\n'))
-    if (preDeleteLine == line && preDeleteCol == col)
-        {
-        view.setCursorPosition (line, col + pre.length () + marked.length () - 1);
-
-        for (int x (marked.length());  x--;)
-                view.shiftCursorLeft ();
-        }
-   else
-        {
-        view.setCursorPosition (line, col += pre.length ());
-
-        for (int x (marked.length());  x--;)
-                view.shiftCursorRight ();
-        }
-
-}
-
-
-        static QString  //  PCP
-KantPrompt
-        (
-        QString strTitle,
-        QString strPrompt,
-        KantMainWindow * that
-        )
-{
-
-  bool ok (false);
-
-  //  TODO: Make this a "memory edit" field with a combo box
-  //  containing prior entries
-
-  QString text ( QInputDialog::getText
-                        (
-                        strTitle,
-                        strPrompt,
-                        QString::null,
-                        &ok,
-                        that
-                        ) );
-
-  if (!ok)  text = "";
-  return text;
-
-}
-
-
-	void
-KantMainWindow::slotFilterReceivedStdout (KProcess * pProcess, char * got, int len)
-{
-
-	assert (pProcess == m_pFilterShellProcess);
-	
-	if (got && len)
-		{
-		
-  //  TODO: got a better idea?
-
-  		while (len--)  m_strFilterOutput += *got++;
-//		POP_(m_strFilterOutput);
-		}
-
-}
-
-
-	void
-KantMainWindow::slotFilterReceivedStderr (KProcess * pProcess, char * got, int len)
-	{
-	slotFilterReceivedStdout (pProcess, got, len);
-	}
-
-
-	void
-KantMainWindow::slotFilterProcessExited (KProcess * pProcess)
-{
-
-	assert (pProcess == m_pFilterShellProcess);
-	if (!viewManager)  return;
-	KantView * kv (viewManager -> activeView ());
-	if (!kv) return;
-	QString marked (kv -> markedText ());
-	if (marked.length() > 0)
-          kv -> keyDelete ();
-	kv -> insertText (m_strFilterOutput);
-//	slipInNewText (*kv, "", m_strFilterOutput, "", false);
-	m_strFilterOutput = "";
-
-}
-
-
-        static void  //  PCP
-slipInFilter (KShellProcess & shell, KantView & view, QString command)
-{
-
-  QString marked (view.markedText ());
-
-//  POP_(command.latin1 ());
-  shell.clearArguments ();
-  shell << command.local8Bit ();
-
-  shell.start (KProcess::NotifyOnExit, KProcess::All);
-
-  shell.writeStdin (marked.local8Bit (), marked.length ());
-
-  //  TODO: Put up a modal dialog to defend the text from further
-  //  keystrokes while the command is out. With a cancel button...
-
-}
-
-
-	void
-KantMainWindow::slotFilterCloseStdin (KProcess * pProcess)
-	{
-	assert (pProcess == m_pFilterShellProcess);
-	pProcess -> closeStdin ();
-	}
-
-
-                 void
-KantMainWindow::slotEditFilter ()  //  PCP
-{
-  if (!viewManager)  return;
-  KantView * kv (viewManager -> activeView ());
-  if (!kv) return;
-
-  QString text ( KantPrompt ( i18n("Filter"),
-                        i18n("Enter command to pipe selected text thru"),
-                        this
-                        ) );
-
-  if ( !text.isEmpty () )
-      {
-      m_strFilterOutput = "";
-
-      if (!m_pFilterShellProcess)
-      	{
-      	m_pFilterShellProcess = new KShellProcess;
-
-	connect ( m_pFilterShellProcess, SIGNAL(wroteStdin(KProcess *)),
-			   this, SLOT(slotFilterCloseStdin (KProcess *)));
-
-	connect ( m_pFilterShellProcess, SIGNAL(receivedStdout(KProcess*,char*,int)),
-	  	       this, SLOT(slotFilterReceivedStdout(KProcess*,char*,int)) );
-
-	connect ( m_pFilterShellProcess, SIGNAL(receivedStderr(KProcess*,char*,int)),
-	 	       this, SLOT(slotFilterReceivedStderr(KProcess*,char*,int)) );
-
-	connect ( m_pFilterShellProcess, SIGNAL(processExited(KProcess*)),
-		       this, SLOT(slotFilterProcessExited(KProcess*) ) ) ;
-      	}
-
-      slipInFilter (*m_pFilterShellProcess, *kv, text);
-      }
 }
 
 void KantMainWindow::slotFileQuit()
