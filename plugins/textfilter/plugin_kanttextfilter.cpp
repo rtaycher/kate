@@ -70,7 +70,7 @@ PluginKantTextFilter::~PluginKantTextFilter()
 
 KantPluginView *PluginKantTextFilter::createView ()
 {
-   KantPluginView *view = new KantPluginView (this);
+   KantPluginView *view = new KantPluginView ();
 
   (void)  new KAction ( i18n("Fi&lter Text..."), "edit_filter", CTRL + Key_Backslash, this,
   SLOT( slotEditFilter() ), view->actionCollection(), "edit_filter" );

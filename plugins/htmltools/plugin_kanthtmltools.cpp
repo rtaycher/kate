@@ -65,7 +65,7 @@ PluginKantHtmlTools::~PluginKantHtmlTools()
 
 KantPluginView *PluginKantHtmlTools::createView ()
 {
-   KantPluginView *view = new KantPluginView (this);
+   KantPluginView *view = new KantPluginView ();
 
 (void)  new KAction ( i18n("HT&ML Tag..."), "edit_HTML_tag", ALT + Key_Minus, this,
                                 SLOT( slotEditHTMLtag() ), view->actionCollection(), "edit_HTML_tag" );

@@ -20,18 +20,16 @@
 #include "../main/kantmain.h"
 
 #include <qobject.h>
-#include <kparts/part.h>
+#include <kxmlguiclient.h>
 #include <qlist.h>
 #include <qstring.h>
 
-class KantPluginView : public KParts::Part
+class KantPluginView : virtual public KXMLGUIClient
 {
-  Q_OBJECT
-
   friend class KantPluginManager;
 
   public:
-    KantPluginView (QObject* parent = 0) : KParts::Part (parent) {;};
+    KantPluginView () {;};
     ~KantPluginView () {;};
 
     void setXML (QString filename)

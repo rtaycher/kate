@@ -69,7 +69,7 @@ PluginKantOpenHeader::~PluginKantOpenHeader()
 
 KantPluginView *PluginKantOpenHeader::createView ()
 {
-   KantPluginView *view = new KantPluginView (this);
+   KantPluginView *view = new KantPluginView ();
 
    (void)  new KAction ( i18n("Open .h/[.cpp.c]"), "file_openheader", 0, this,
   SLOT( slotOpenHeader() ), view->actionCollection(), "file_openheader" );
