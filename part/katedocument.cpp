@@ -3714,7 +3714,7 @@ bool KateDocument::doSearch(SConfig &sc, const QString &searchFor) {
 
       uint fCol = 0;
       uint mlen = 0;
-      
+
       bool found = false;
 
       if (sc.flags & KateDocument::sfRegularExpression)
@@ -3722,13 +3722,32 @@ bool KateDocument::doSearch(SConfig &sc, const QString &searchFor) {
       else
         found = textLine->searchText (col, sc.m_pattern, &fCol, &mlen, sc.flags & KateDocument::sfCaseSensitive, false);
 
-      if ((sc.flags & KateDocument::sfSelected) && blockSelectionMode())
+      if (found && (sc.flags & KateDocument::sfSelected) && blockSelectionMode())
         if (fCol+mlen > selectEnd.col)
           found = false;
 
-      if ((sc.flags & KateDocument::sfSelected) && (line == selectEnd.line))
+      if (found && (sc.flags & KateDocument::sfSelected) && (line == selectEnd.line))
         if (fCol+mlen > selectEnd.col)
           found = false;
+
+      if (found && (sc.flags & KateDocument::sfWholeWords))
+      {
+        bool left = false;
+        bool right = false;
+
+        if (fCol == 0)
+          left = true;
+        else
+          left = !textLine->getChar(fCol-1).isLetterOrNumber();
+
+        if (fCol+mlen >= textLine->length())
+          right = true;
+        else
+          right = !textLine->getChar(fCol+mlen+1).isLetterOrNumber();
+
+        if (!(left && right))
+          found = false;
+      }
 
       if (found)
       {
@@ -3776,14 +3795,32 @@ bool KateDocument::doSearch(SConfig &sc, const QString &searchFor) {
       else
         found = textLine->searchText (col, sc.m_pattern, &fCol, &mlen, sc.flags & KateDocument::sfCaseSensitive, true);
 
-
-      if ((sc.flags & KateDocument::sfSelected) && blockSelectionMode())
+      if (found && (sc.flags & KateDocument::sfSelected) && blockSelectionMode())
         if (fCol < selectStart.col)
           found = false;
 
-      if ((sc.flags & KateDocument::sfSelected) && (line == selectStart.line))
+      if (found && (sc.flags & KateDocument::sfSelected) && (line == selectStart.line))
         if (fCol < selectStart.col)
           found = false;
+
+      if (found && (sc.flags & KateDocument::sfWholeWords))
+      {
+        bool left = false;
+        bool right = false;
+
+        if (fCol == 0)
+          left = true;
+        else
+          left = !textLine->getChar(fCol-1).isLetterOrNumber();
+
+        if (fCol+mlen >= textLine->length())
+          right = true;
+        else
+          right = !textLine->getChar(fCol+mlen+1).isLetterOrNumber();
+
+        if (!(left && right))
+          found = false;
+      }
 
       if (found)
       {
@@ -3801,8 +3838,6 @@ bool KateDocument::doSearch(SConfig &sc, const QString &searchFor) {
       line--;
     }
   }
-
-// old stuff
 
   //    if (sc.flags & KateDocument::sfWholeWords) {
 
