@@ -22,14 +22,14 @@
 #ifndef _TOPLEVEL_H_
 #define _TOPLEVEL_H_
 
-#include <kmainwindow.h>
+#include <kparts/mainwindow.h>
 
 class KAction;
 class KToggleAction;
 class KSelectAction;
 class KRecentFilesAction;
 
-class TopLevel : public KMainWindow {
+class TopLevel : public KParts::MainWindow {
     Q_OBJECT
   public:
 
@@ -54,21 +54,14 @@ class TopLevel : public KMainWindow {
 
     KWrite *kWrite;
 
-    KAction *fileSave, *editInsert, *editCut, *editPaste,
-            *editReplace, *editUndo, *editRedo, *editUndoHist,
-            *toolsIndent, *toolsUnindent, *toolsCleanIndent,
-            *toolsComment, *toolsUncomment, *toolsSpell;
 
-    KToggleAction *setShowPath, *setVerticalSelection;
-    KRecentFilesAction *fileRecent;
-    KSelectAction *setHighlight, *setEndOfLine;
+    KToggleAction *setShowPath;
 
     bool showPath;
 
     QTimer *statusbarTimer;
 
   public slots:
-    void openRecent(const KURL& url);
     void newWindow();
     void newView();
     void configure();

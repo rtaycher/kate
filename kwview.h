@@ -38,6 +38,11 @@
 #include <ksconfig.h>
 #include <ktexteditor.h>
 
+class KAction;
+class KToggleAction;
+class KRecentFilesAction;
+class KSelectAction;
+
 namespace KIO { class FileCopyJob; }
 
 class KTempFile;
@@ -370,6 +375,7 @@ class KWrite : public KTextEditor::View {
     virtual bool isOverwriteMode() const;
     virtual void setOverwriteMode( bool b );
 
+    void setupActions();
 //status and config functions
     /**
       Returns the current line number, that is the line the cursor is on.
@@ -471,6 +477,8 @@ class KWrite : public KTextEditor::View {
 
   public slots:
 
+    void slotOpenRecent( const KURL & );
+
     /**
       Toggles Insert mode
     */
@@ -512,6 +520,8 @@ class KWrite : public KTextEditor::View {
     void enableUI( bool enable );
 
   protected:
+    virtual void customEvent( QCustomEvent *ev );
+
     int configFlags;
     int wrapAt;
 
@@ -609,14 +619,14 @@ class KWrite : public KTextEditor::View {
   protected slots:
     void slotJobReadResult( KIO::Job *job );
     void slotJobData( KIO::Job *job, const QByteArray &data );
-    /**
-      Gets signals from iojob
-    */
-    void slotGETFinished( int id );
-    void slotPUTFinished( int id );
-    void slotIOJobError(int, const char *);
+
+    void slotUpdate();
+    void slotFileStatusChanged(); // something is wrong here! the corresponding signal should be in the doc! (Simon)
+    void slotNewUndo();
+    void slotHighlightChanged();
 
   public:
+    void init();
     /**
       Mainly for internal use. Returns true if the current document can be
       discarded. If the document is modified, the user is asked if he wants
@@ -818,11 +828,12 @@ class KWrite : public KTextEditor::View {
       Install a Popup Menu. The Popup Menu will be activated on
       a right mouse button press event.
     */
-    void installPopups(QPopupMenu *rmb_Menu, QPopupMenu *bm_Menu);
+    void installPopup(QPopupMenu *rmb_Menu);
 
   public slots:
     void setBookmark(int n);
     void gotoBookmark(int n);
+    void slotGotoBookmark(); // CAREFUL: relies on sender() !
 
     /**
       Shows a popup that lets the user choose the bookmark number
@@ -848,8 +859,8 @@ class KWrite : public KTextEditor::View {
 
   protected:
     QList<KWBookmark> bookmarks;
-    QPopupMenu *rmbMenu, *bmMenu;
-    int bmMenuOrgCount,rmbMenuOrgCount;
+    QPopupMenu *rmbMenu;
+    QList<KAction> bookmarkActionList;
 
   signals:
     void bookAddChanged(bool enabled);
@@ -948,6 +959,14 @@ class KWrite : public KTextEditor::View {
       bool kspellPristine;        // doing spell check on a clean document?
     } kspell;
 
+    KAction *fileSave, *editInsert, *editCut, *editPaste,
+            *editReplace, *editUndo, *editRedo, *editUndoHist,
+            *toolsIndent, *toolsUnindent, *toolsCleanIndent,
+            *toolsComment, *toolsUncomment, *toolsSpell;
+
+    KToggleAction *setVerticalSelection;
+    KRecentFilesAction *fileRecent;
+    KSelectAction *setHighlight, *setEndOfLine;
 };
 
 

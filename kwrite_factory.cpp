@@ -18,22 +18,20 @@ extern "C"
 }
 
 KInstance *KWriteFactory::s_instance = 0;
-KAboutData *KWriteFactory::s_aboutData = 0;
 
 KWriteFactory::KWriteFactory()
 {
   s_instance = 0; // I don't trust anyone ;-)
-  s_aboutData = 0;
 }
 
 KWriteFactory::~KWriteFactory()
 {
   if ( s_instance )
+  {
+    delete s_instance->aboutData();
     delete s_instance;
-  if ( s_aboutData )
-    delete s_aboutData;
+  }
   s_instance = 0;
-  s_aboutData = 0;
 }
 
 KParts::Part *KWriteFactory::createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const char *classname, const QStringList & )
@@ -59,21 +57,17 @@ KInstance *KWriteFactory::instance()
 
 const KAboutData *KWriteFactory::aboutData()
 {
-  if ( !s_aboutData )
-  {
-    s_aboutData = new KAboutData( "kwrite", I18N_NOOP( "KWrite" ),
-				  KWRITE_VERSION,
-				  I18N_NOOP( "Advanced Texteditor Component" ),
-				  KAboutData::License_GPL,
-
-				  "(c) 2000, Jochen Wilhelmy" );
-    s_aboutData->addAuthor( "Jochen Wilhemly", I18N_NOOP( "Author" ), "digisnap@cs.tu-berlin.de" );
-    s_aboutData->addAuthor("Michael Koch",I18N_NOOP("Port to KParts"), "koch@kde.org");
-    s_aboutData->addAuthor("Glen Parker",I18N_NOOP("Undo History, Kspell integration"), "glenebob@nwlink.com");
-
-  }
-
-  return s_aboutData;
+    KAboutData *data = new KAboutData( "kwrite", I18N_NOOP( "KWrite" ),
+                                       KWRITE_VERSION,
+                                       I18N_NOOP( "Advanced Texteditor Component" ),
+                                       KAboutData::License_GPL,
+                                       "(c) 2000, Jochen Wilhelmy" );
+    data->addAuthor( "Jochen Wilhemly", I18N_NOOP( "Author" ), "digisnap@cs.tu-berlin.de" );
+    data->addAuthor( "Michael Koch",I18N_NOOP("Port to KParts"), "koch@kde.org");
+    data->addAuthor( "Christian Gebauer", 0, "gebauer@bigfoot.com" );
+    data->addAuthor( "Simon Hausmann", 0, "hausmann@kde.org" );
+    data->addAuthor("Glen Parker",I18N_NOOP("Undo History, Kspell integration"), "glenebob@nwlink.com");
+    return data;
 }
 
 #include "kwrite_factory.moc"
