@@ -10,4 +10,7 @@ syntaxkate_DATA = cpp.xml c.xml html.xml kbasic.xml objectivec.xml changelog.xml
 rckwritedir = $(kde_datadir)/kwrite
 rckwrite_DATA = kwriteui.rc
 
-kde_services_DATA = kwrite_component.desktop
+servicetypedir = $(kde_servicetypesdir)
+servicetype_DATA = kate_servicetype.desktop
+
+kde_services_DATA = kate_component.desktop kwrite_component.desktop

@@ -1,0 +1,4 @@
+[Desktop Entry]
+Type=ServiceType
+X-KDE-ServiceType=Kate/Document
+Comment=Embeddable KDE Advanced Text Editor Component

@@ -1,6 +1,4 @@
 [Desktop Entry]
-# Note: if some app wants to see "Text Editor Component" here, (i.e. not readonly) then
-# we should separate the desktop files for the read-only and the read-write components.
 Name=Embedded Text Viewer
 Name[az]=Daxili Mətn Nümayişçisi
 Name[ca]=Visor de text encastat
