@@ -218,9 +218,6 @@ KateMainWindow *KateApp::newMainWindow ()
 void KateApp::removeMainWindow (KateMainWindow *mainWindow)
 {
   m_mainWindows.remove (mainWindow);
-
- // if (m_mainWindows.count() == 0)
-   // quit();
 }
 
 void KateApp::openURL (const QString &name)
