@@ -75,6 +75,7 @@ class KateProjectList : public QWidget
     void projectChanged ();
     void projectCreated (Kate::Project *project);
     void projectDeleted (uint projectNumber);
+    void projectActivated (int num);
 
   private:
     KComboBox *m_projectCombo;

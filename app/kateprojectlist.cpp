@@ -113,6 +113,7 @@ KateProjectList::KateProjectList (KateProjectManager *_projectManager, KateMainW
   connect(m_projectManager->projectManager(),SIGNAL(projectCreated(Kate::Project *)),this,SLOT(projectCreated(Kate::Project *)));
   connect(m_projectManager->projectManager(),SIGNAL(projectDeleted(uint)),this,SLOT(projectDeleted(uint)));
   connect(m_mainWindow->mainWindow(),SIGNAL(projectChanged()),this,SLOT(projectChanged()));
+  connect(m_projectCombo,SIGNAL(activated(int)),this,SLOT(projectActivated(int)));
 }
 
 KateProjectList::~KateProjectList ()
@@ -132,6 +133,21 @@ void KateProjectList::setupActions ()
     if ( ac )
       ac->plug( toolbar );
   }
+}
+
+void KateProjectList::projectActivated (int num)
+{
+  if (num >= m_numList.count())
+    return;
+  
+  uint id = m_numList[num];
+  
+  for (uint i = 0; i < m_projectManager->projects(); i++)
+    if (m_projectManager->project(i)->projectNumber() == id)
+    {
+      m_mainWindow->activateProject (m_projectManager->project(i));
+      return;
+    }
 }
 
 void KateProjectList::projectChanged ()
