@@ -59,18 +59,18 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
   public:
     KateMainWindow(KateDocManager *_docManager, KatePluginManager *_pluginManager, KateProjectManager *projectMan);
     ~KateMainWindow();
-    
+
     enum DockWidgetMode
     {
       ModernStyle,
       ClassicStyle
     };
-    
+
     Kate::MainWindow *mainWindow () { return m_mainWindow; };
     Kate::ToolViewManager *toolViewManager () { return m_toolViewManager; };
-    
+
     Kate::Project *activeProject () { return m_project; };
-    
+
     /**
      * Creates a new project file at give url of given type + opens it
      * @param type projecttype
@@ -78,15 +78,15 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
      * @return Project new created project object
      */
      Kate::Project *createProject (const QString &type, const QString &name, const QString &filename);
-    
+
     /**
      * @param filename name of the project file
      * @return Project opened project
      */
     Kate::Project *openProject (const QString &filename);
-    
+
     void activateProject (Kate::Project *project);
-    
+
     /** Returns the URL of the current document.
      * anders: I add this for use from the file selector. */
     KURL activeDocumentUrl();
@@ -98,6 +98,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     KDockWidget *projectlistDock;
     KDockWidget *fileselectorDock;
     KDockWidget *projectviewsDock;
+    KDockWidget *grepWidgetDock;
 
     KDockWidget *m_leftDock;
     KDockWidget *m_rightDock;
@@ -123,7 +124,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
   private:
     uint myID;
     bool syncKonsole;
-  
+
     enum DockWidgetMode m_dockStyle;
 
   public:
@@ -143,12 +144,12 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     QGuardedPtr<Kate::Project> m_project;
     uint m_projectNumber;
     QGuardedPtr<Kate::View> activeView;
-  
+
     KAction *closeCurrentViewSpace;
 
     KAction *goNext;
     KAction *goPrev;
-    
+
     KAction *saveProject;
     KAction *closeProject;
 
@@ -180,7 +181,6 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
 
   public slots:
     void slotGrepDialogItemSelected ( const QString &filename, int linenumber );
-    void slotFindInFiles ();
     void runScript( int menuItemId);
     void slotMail();
 
@@ -210,12 +210,12 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     void slotGoPrev();
 
     void fileSelected(const KFileItem *file);
-    
+
     void tipOfTheDay();
 
   public:
     void openURL (const QString &name=0L);
-    
+
   protected:
      bool eventFilter (QObject* o, QEvent* e);
 
@@ -224,16 +224,16 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     Kate::MainWindow *m_mainWindow;
     Kate::ToolViewManager *m_toolViewManager;
 
-  public:      
-    Kate::ViewManager *viewManager () {return m_viewManager->viewManager(); }; 
+  public:
+    Kate::ViewManager *viewManager () {return m_viewManager->viewManager(); };
     KateViewManager *kateViewManager () { return m_viewManager; };
     KDockWidget *centralDock () { return mainDock; };
-    
+
   // For dcop interface. -anders
   public:
     /** @return the interface number for the current document */
     int currentDocumentIfaceNumber();
-  
+
   public: //ToolViewManager stuff
     virtual KDockWidget *addToolViewWidget(KDockWidget::DockPosition pos,QWidget *widget,const QPixmap &icon, const QString& caption);
     virtual bool removeToolViewWidget(QWidget *);
@@ -245,7 +245,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     virtual bool hideToolView(const QString& name);
     virtual bool showToolView(const QString& name);
 
-    
+
   private slots:
     void pluginHelp ();
     void slotFullScreen(bool);
@@ -256,7 +256,7 @@ class KateMainWindow : public KParts::DockMainWindow, virtual public KateMainWin
     void slotProjectOpen ();
     void slotProjectSave ();
     void slotProjectClose ();
-    
+
   private slots:
     void projectDeleted (uint projectNumber);
 };
@@ -267,7 +267,7 @@ Q_OBJECT
 public:
 	KateToggleToolViewAction( const QString& text, const KShortcut& cut = KShortcut(),KDockWidget *dw=0, QObject* parent = 0, KateMainWindow* mw=0, const char* name = 0 );
 	virtual ~KateToggleToolViewAction();
-	
+
 private:
 	KDockWidget *m_dw;
 	KateMainWindow *m_mw;

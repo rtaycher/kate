@@ -34,23 +34,22 @@ class KProcess;
 class KConfig;
 class KURLRequester;
 
-class GrepDialog : public KDialog
+class GrepDialog : public QWidget
 {
     Q_OBJECT
 
 public:
-    GrepDialog(const QString &dirname, QWidget *parent=0, const char *name=0);
+    GrepDialog(const QString &dirname, class KateMainWindow *parent=0, const char *name=0);
   ~GrepDialog();
   void  setDirName(const QString &);
 
 signals:
     void itemSelected(const QString &abs_filename, int line);
-    
+
 public slots:
 		void slotSearchFor(const QString &pattern);
-		
+
 private slots:
-    //void dirButtonClicked();
     void templateActivated(int index);
     void childExited();
     void receivedOutput(KProcess *proc, char *buffer, int buflen);
@@ -62,14 +61,13 @@ private slots:
 private:
     void processOutput();
     void finish();
-    
+
     QLineEdit *template_edit;
-    QComboBox *files_combo, *pattern_combo/*, *dir_combo*/;
+    QComboBox *files_combo, *pattern_combo;
     KURLRequester *dir_combo;
     QCheckBox *recursive_box;
     QListBox *resultbox;
-    QPushButton *search_button, *cancel_button;
-    QLabel *status_label, *matches_label;
+    QPushButton *search_button;
     KProcess *childproc;
     QString buf;
     KConfig* config;

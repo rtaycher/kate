@@ -227,6 +227,8 @@ void KateMainWindow::setupMainWindow ()
   fileselector = new KateFileSelector( this, m_viewManager, /*fileselectorDock*/ this, "operator");
   fileselectorDock=addToolViewWidget(KDockWidget::DockLeft,fileselector, SmallIcon("fileopen"), i18n("Selector"));
 
+  // TEST
+  grepWidgetDock = addToolViewWidget( KDockWidget::DockBottom, grep_dlg, SmallIcon("filefind"), i18n("Find in files") );
   if (kapp->authorize("shell_access"))
   {
      console = new KateConsole (this, "console",viewManager());
@@ -297,9 +299,6 @@ void KateMainWindow::setupActions()
   KStdAction::mail( this, SLOT(slotMail()), actionCollection() )->setWhatsThis(i18n("Send one or more of the open documents as email attachments."));
 
   KStdAction::quit( this, SLOT( slotFileQuit() ), actionCollection(), "file_quit" )->setWhatsThis(i18n("Close this window"));
-
-  a=new KAction(i18n("Find in Files..."), CTRL+SHIFT+Qt::Key_F, this, SLOT(slotFindInFiles()), actionCollection(),"edit_find_in_files" );
-  a->setWhatsThis(i18n("Look up text in a selection of files in a given directory (and below)."));
 
   a=new KAction(i18n("&New View"), 0, this, SLOT(newWindow()), actionCollection(), "view_new_view");
   a->setWhatsThis(i18n("Create a new Kate view (a new window with the same document list)."));
@@ -548,15 +547,6 @@ void KateMainWindow::documentMenuAboutToShow()
     z++;
     i++;
   }
-}
-
-void KateMainWindow::slotFindInFiles ()
-{
-  QString d = activeDocumentUrl().directory();
-  if ( ! d.isEmpty() )
-    grep_dlg->setDirName( d );
-  grep_dlg->show();
-  grep_dlg->raise();
 }
 
 void KateMainWindow::slotGrepDialogItemSelected(const QString &filename,int linenumber)
