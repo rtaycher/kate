@@ -62,7 +62,6 @@ void KateFileList::slotDocumentCreated (KateDocument *doc)
   insertItem (new KateFileListItem (doc->docID(), SmallIcon("null"), doc->docName()) );
   connect(doc,SIGNAL(modStateChanged(KateDocument *)),this,SLOT(slotModChanged(KateDocument *)));
   connect(doc,SIGNAL(nameChanged(KateDocument *)),this,SLOT(slotNameChanged(KateDocument *)));
-  sort();
 }
 
 void KateFileList::slotDocumentDeleted (uint docID)
@@ -133,7 +132,6 @@ void KateFileList::slotNameChanged (KateDocument *doc)
       break;
     }
   }
-  sort();
 }
 
 void KateFileList::slotViewChanged ()

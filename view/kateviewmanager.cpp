@@ -461,7 +461,7 @@ void KateViewManager::slotWindowNext()
 
 void KateViewManager::slotWindowPrev()
 {
-  int id = docManager->findDoc ((KateDocument *) activeView ()->doc()) + 1;
+  uint id = docManager->findDoc ((KateDocument *) activeView ()->doc()) + 1;
 
   if (id >= docManager->docCount () )
     id = 0;
@@ -1043,18 +1043,15 @@ void KateViewManager::reopenDocuments(bool isRestore)
   KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
   KConfig* config = kapp->config();
   config->setGroup("General");
-  bool resVC = config->readBoolEntry("restore views", true);
-  ////////////////////////////////////////////////////////////////////////
-  // RESTORE VIEW CONFIG TEST
-  if ( scfg->hasGroup("splitter0") && (isRestore || resVC) ) {
+
+  if ( scfg->hasGroup("splitter0") && (isRestore || config->readBoolEntry("restore views", false)) )
+  {
     kdDebug(13030)<<"reopenDocumentw(): calling restoreViewConfig()"<<endl;
 
-    // commented out - tooooooooo buggy
-    //restoreViewConfig();
+    restoreViewConfig();
     return;
   }
-  ////////////////////////////////////////////////////////////////////////
-  // read the list and loop around it.
+
   scfg->setGroup("open files");
   if (config->readBoolEntry("reopen at startup", true) || isRestore )
   {
@@ -1074,7 +1071,8 @@ void KateViewManager::reopenDocuments(bool isRestore)
       scfg->deleteGroup( fn );
     }
   }
-  // truncate sessionconfig file.
+
+  // delete the open files from sessionrc file
   scfg->deleteGroup("open files");
   scfg->sync();
 }
@@ -1158,6 +1156,7 @@ void KateViewManager::restoreViewConfig()
      //reopenDocuments();
      return;
    }
+
    // remove the initial viewspace.
    viewSpaceList.clear();
    // call restoreSplitter for splitter0

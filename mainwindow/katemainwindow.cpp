@@ -200,7 +200,7 @@ void KateMainWindow::setupActions()
   editIndent = new KAction(i18n("&Indent"), "indent", CTRL+Key_I, viewManager, SLOT(slotIndent()), actionCollection(), "edit_indent");
   editUnIndent = new KAction(i18n("&Unindent"), "unindent", CTRL+SHIFT+Key_I, viewManager, SLOT(slotUnIndent()), actionCollection(), "edit_unindent");
 
-  editCmd = new KAction(i18n("&Editing Command"), Qt::CTRL+Qt::Key_D, viewManager, SLOT(slotEditCommand()),
+  editCmd = new KAction(i18n("&Editing Command"), Qt::CTRL+Qt::Key_D, viewManager, SLOT(slotEditCommand()),
                                   actionCollection(), "edit_cmd");
 
   editInsert = new KAction(i18n("I&nsert File..."), 0, viewManager, SLOT(slotInsertFile()), actionCollection(), "edit_insertFile");
@@ -687,7 +687,7 @@ void KateMainWindow::slotConfigure()
   cb_restoreVC->setText(i18n("Restore &View Configuration"));
   gridFrG->addMultiCellWidget( cb_restoreVC, 2, 2, 0, 1 );
   config->setGroup("General");
-  cb_restoreVC->setChecked( config->readBoolEntry("restore views", true) );
+  cb_restoreVC->setChecked( config->readBoolEntry("restore views", false) );
   QWhatsThis::add(cb_restoreVC, i18n("Check this if you want all your views restored each time you open Kate"));
 
 
@@ -910,3 +910,4 @@ QWidget *KateMainWindow::createContainer( QWidget *parent, int index,
 
 void KateMainWindow::restore(bool isRestored)
 { viewManager->reopenDocuments(isRestored); }
+
