@@ -328,10 +328,10 @@ bool KantMainWindow::queryClose()
 {
   bool val = false;
 
-  saveProperties(config);
-
   if ( ((KantApp *)kapp)->mainWindowsCount () < 2 )
   {
+    saveProperties(config);
+
     viewManager->saveAllDocsAtCloseDown( config );
 
     if ( (!docManager->currentDoc()) || ((!viewManager->activeView()->doc()->isModified()) && (docManager->docCount() == 1)))

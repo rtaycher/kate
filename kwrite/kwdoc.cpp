@@ -273,7 +273,7 @@ bool KWriteDoc::saveFile()
 
 KTextEditor::View *KWriteDoc::createView( QWidget *parent, const char *name )
 {
-  return new KWrite( this, parent, name, true, true );
+  return new KWrite( this, parent, name, true, false );
 }
 
 QString KWriteDoc::textLine( int line ) const
