@@ -56,14 +56,12 @@
 
 //END Includes
 
-KateViewSpaceContainer::KateViewSpaceContainer (QWidget *parent, KateViewManager *viewManager,
-                                                KateMainWindow *mainWindow)
+KateViewSpaceContainer::KateViewSpaceContainer (QWidget *parent, KateViewManager *viewManager)
  : QWidget  (parent)
  , m_viewManager(viewManager)
  , m_grid (new QGridLayout( this, 1, 1 ))
  , m_blockViewCreationAndActivation (false)
  , m_activeViewRunning (false)
- , m_mainWindow(mainWindow)
  , m_pendingViewCreation(false)
 {
   // no memleaks
@@ -91,7 +89,7 @@ KateViewSpaceContainer::~KateViewSpaceContainer ()
 void KateViewSpaceContainer::documentCreated (Kate::Document *doc)
 {
   if (m_blockViewCreationAndActivation) return;
-  
+
   if (!activeView())
     activateView (doc->documentNumber());
 }
@@ -99,7 +97,7 @@ void KateViewSpaceContainer::documentCreated (Kate::Document *doc)
 void KateViewSpaceContainer::documentDeleted (uint docNumber)
 {
   if (m_blockViewCreationAndActivation) return;
-  
+
   // just for the case we close a document out of many and this was the active one
   // if all docs are closed, this will be handled by the documentCreated
   if (!activeView() && (KateDocManager::self()->documents() > 0))
@@ -123,13 +121,13 @@ bool KateViewSpaceContainer::createView ( Kate::Document *doc )
   view->actionCollection()->remove (view->actionCollection()->action( "set_confdlg" ));
 
   // popup menu
-  view->installPopup ((QPopupMenu*)(m_mainWindow->factory()->container("ktexteditor_popup", m_mainWindow)) );
+  view->installPopup ((QPopupMenu*)(mainWindow()->factory()->container("ktexteditor_popup", mainWindow())) );
 
   connect(view->getDoc(),SIGNAL(nameChanged(Kate::Document *)),this,SLOT(statusMsg()));
   connect(view,SIGNAL(cursorPositionChanged()),this,SLOT(statusMsg()));
   connect(view,SIGNAL(newStatus()),this,SLOT(statusMsg()));
   connect(view->getDoc(), SIGNAL(undoChanged()), this, SLOT(statusMsg()));
-  connect(view,SIGNAL(dropEventPass(QDropEvent *)), m_mainWindow,SLOT(slotDropEvent(QDropEvent *)));
+  connect(view,SIGNAL(dropEventPass(QDropEvent *)), mainWindow(),SLOT(slotDropEvent(QDropEvent *)));
   connect(view,SIGNAL(gotFocus(Kate::View *)),this,SLOT(activateSpace(Kate::View *)));
 
   activeViewSpace()->addView( view );
@@ -148,7 +146,7 @@ bool KateViewSpaceContainer::deleteView (Kate::View *view, bool delViewSpace)
 
   viewspace->removeView (view);
 
-  m_mainWindow->guiFactory ()->removeClient (view);
+  mainWindow()->guiFactory ()->removeClient (view);
 
   // remove view from list and memory !!
   m_viewList.remove (view);
@@ -280,17 +278,17 @@ void KateViewSpaceContainer::activateView ( Kate::View *view )
     setActiveView (view);
     m_viewList.findRef (view);
 
-   m_mainWindow->toolBar ()->setUpdatesEnabled (false);
+    mainWindow()->toolBar ()->setUpdatesEnabled (false);
 
     if (m_viewManager->guiMergedView)
-      m_mainWindow->guiFactory()->removeClient (m_viewManager->guiMergedView );
+      mainWindow()->guiFactory()->removeClient (m_viewManager->guiMergedView );
 
     m_viewManager->guiMergedView = view;
 
     if (!m_blockViewCreationAndActivation)
-      m_mainWindow->guiFactory ()->addClient( view );
+      mainWindow()->guiFactory ()->addClient( view );
 
-    m_mainWindow->toolBar ()->setUpdatesEnabled (true);
+    mainWindow()->toolBar ()->setUpdatesEnabled (true);
 
     statusMsg();
 
@@ -395,7 +393,7 @@ void KateViewSpaceContainer::slotPendingDocumentNameChanged() {
           {
             c = m_pendingDocument->url().prettyURL();
           }
-          setCaption(KStringHandler::lsqueeze(c,32)); 
+          setCaption(KStringHandler::lsqueeze(c,32));
 }
 
 void KateViewSpaceContainer::statusMsg ()
@@ -435,7 +433,7 @@ void KateViewSpaceContainer::statusMsg ()
     c = v->getDoc()->url().prettyURL();
   }
 
-  setCaption(KStringHandler::lsqueeze(c,32)); 
+  setCaption(KStringHandler::lsqueeze(c,32));
   emit statusChanged (v, v->cursorLine(), v->cursorColumn(), ovr,block, mod, KStringHandler::lsqueeze(c,64));
   emit statChanged ();
 }
@@ -492,7 +490,7 @@ void KateViewSpaceContainer::splitViewSpace( KateViewSpace* vs,
   vsNew->show();
 
   createView (activeView()->getDoc());
-  
+
   if (this == m_viewManager->activeContainer())
     m_viewManager->updateViewSpaceActions ();
 
@@ -586,7 +584,7 @@ void KateViewSpaceContainer::removeViewSpace (KateViewSpace *viewspace)
   Kate::View* v = activeViewSpace()->currentView();
   if ( v )
     activateView( v );
-  
+
   if (this == m_viewManager->activeContainer())
     m_viewManager->updateViewSpaceActions ();
 
@@ -651,7 +649,7 @@ void KateViewSpaceContainer::restoreViewConfiguration (KConfig *config, const QS
   {
     // send all views + their gui to **** ;)
     for (uint i=0; i < m_viewList.count(); i++)
-      m_mainWindow->guiFactory ()->removeClient (m_viewList.at(i));
+      mainWindow()->guiFactory ()->removeClient (m_viewList.at(i));
 
     m_viewList.clear ();
 
@@ -762,7 +760,7 @@ void KateViewSpaceContainer::restoreSplitter( KConfig* config, const QString &gr
 }
 
 KateMainWindow *KateViewSpaceContainer::mainWindow() {
-        return m_mainWindow;
+  return m_viewManager->mainWindow();
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

@@ -190,7 +190,7 @@ void KateViewManager::slotNewTab()
   if (m_currentContainer) {
     if (m_currentContainer->activeView()) documentNumber=m_currentContainer->activeView()->getDoc()->documentNumber();
   }
-  KateViewSpaceContainer *container=new KateViewSpaceContainer (m_mainWindow->tabWidget(), this, m_mainWindow);
+  KateViewSpaceContainer *container=new KateViewSpaceContainer (m_mainWindow->tabWidget(), this);
   m_viewSpaceContainerList.append(container);
   m_mainWindow->tabWidget()->addTab (container, "");
   Q_ASSERT (m_currentContainer==container);
@@ -487,7 +487,7 @@ void KateViewManager::restoreViewConfiguration (KConfig *config, const QString& 
 {
   config->setGroup(group);
   uint tabCount=config->readNumEntry("ViewSpaceContainers",0);
-  uint activeOne=config->readNumEntry("Active ViewSpaceContainer",0);
+  int activeOne=config->readNumEntry("Active ViewSpaceContainer",0);
   if (tabCount==0) return;
   m_viewSpaceContainerList.at(0)->restoreViewConfiguration(config,group+QString(":ViewSpaceContainer-0:"));
   for (uint i=1;i<tabCount;i++) {

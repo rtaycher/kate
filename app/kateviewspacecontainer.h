@@ -39,8 +39,7 @@ class KateViewSpaceContainer: public QWidget
   friend class KateVSStatusBar;
 
   public:
-    KateViewSpaceContainer (QWidget *parent, KateViewManager *viewManager,
-                            KateMainWindow* mainWindow);
+    KateViewSpaceContainer (QWidget *parent, KateViewManager *viewManager);
 
     ~KateViewSpaceContainer ();
 
@@ -93,17 +92,17 @@ class KateViewSpaceContainer: public QWidget
     void closeViews(uint documentNumber);
     KateMainWindow *mainWindow();
   friend class KateViewManager;
-  
+
   private slots:
     void activateView ( Kate::View *view );
     void activateSpace ( Kate::View* v );
     void slotViewChanged();
     void reactivateActiveView();
     void slotPendingDocumentNameChanged();
-    
+
     void documentCreated (Kate::Document *doc);
     void documentDeleted (uint docNumber);
-    
+
   public slots:
      /* Splits a KateViewSpace into two.
       * The operation is performed by creating a KateSplitter in the parent of the KateViewSpace to be split,
@@ -154,8 +153,7 @@ class KateViewSpaceContainer: public QWidget
     bool m_blockViewCreationAndActivation;
 
     bool m_activeViewRunning;
-    KateMainWindow *m_mainWindow;
-    
+
     bool m_pendingViewCreation;
     QGuardedPtr<Kate::Document> m_pendingDocument;
 };
