@@ -1,16 +1,16 @@
 /*
    This file is part of KWrite
    Copyright (c) 2000 Waldo Bastian <bastian@kde.org>
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-   
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -36,7 +36,7 @@ class QTextCodec;
 
 /**
  * The KWBuffer class maintains a collections of lines.
- * It allows to maintain state information in a lazy way. 
+ * It allows to maintain state information in a lazy way.
  * It handles swapping out of data using secondary storage.
  *
  * It is designed to handle large amounts of text-data efficiently
@@ -119,7 +119,7 @@ protected:
     * Mark @p buf dirty.
     */
    void dirtyBlock(KWBufBlock *buf);
-   
+
    /**
     * Find the block containing line @p i
     */
@@ -129,10 +129,10 @@ protected:
     * Load a part of the file that is currently loading.
     */
    void loadFilePart();
-   
+
 protected slots:
    void slotLoadFile();
-   
+
 protected:
    int m_totalLines;
 
@@ -142,9 +142,9 @@ protected:
    QTimer m_loadTimer;
 
    // List of parsed blocks that can be disposed.
-   QPtrList<KWBufBlock> m_parsedBlocksClean; 
+   QPtrList<KWBufBlock> m_parsedBlocksClean;
    // List of parsed blocks that are dirty.
-   QPtrList<KWBufBlock> m_parsedBlocksDirty; 
+   QPtrList<KWBufBlock> m_parsedBlocksDirty;
    // List of blocks that can be swapped out.
    QPtrList<KWBufBlock> m_loadedBlocks;
 
@@ -157,7 +157,7 @@ public:
   int fd;
   QByteArray lastBlock;
   int dataStart;
-  int blockNr;  
+  int blockNr;
   QTextCodec *codec;
 };
 
@@ -171,7 +171,7 @@ public:
 
 
 /**
- * The KWBufBlock class contains an amount of data representing 
+ * The KWBufBlock class contains an amount of data representing
  * a certain number of lines.
  */
 class KWBufBlock
@@ -238,7 +238,7 @@ public:
     * Post Condition: b_vmDataValid is false.
     */
    void disposeSwap(KVMAllocator *vm);
-    
+
    /**
     * Return line @p i
     * The first line of this block is line 0.
@@ -254,7 +254,7 @@ public:
     * Remove line @p i
     */
    void removeLine(int i);
-  
+
 protected:
    /**
     * Make line @p i the current line
@@ -268,12 +268,12 @@ protected:
 
 protected:
    TextLine::List m_stringList;
-   TextLine::List::Iterator m_stringListIt;
+   TextLine::List::iterator m_stringListIt;
    int m_stringListCurrent;
-   
-   QByteArray m_rawData1;   
+
+   QByteArray m_rawData1;
    int m_rawData1Start;
-   QByteArray m_rawData2;   
+   QByteArray m_rawData2;
    int m_rawData2End;
    long m_rawSize;
    bool b_stringListValid;

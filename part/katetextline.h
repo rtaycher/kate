@@ -26,122 +26,8 @@
 #include <qstring.h>
 #include <qmemarray.h>
 #include <qvaluelist.h>
-
+#include <qvaluevector.h>
 #include <ksharedptr.h>
-
-/**
-  FastValueList: QValueList, but with a faster at() like QList
-  FVPrivate is needed so that "const" functions can change the
-  current position
-*/
-template<class T>
-class FVPrivate
-{
-public:
-    int curpos;
-    typedef QValueListConstIterator<T> Iterator;
-    Iterator curit;
-
-    FVPrivate() { curpos=-1; };
-};
-
-template<class T>
-class FastValueList : public QValueList<T>
-{
-public:
-    typedef QValueListIterator<T> Iterator;
-    typedef QValueListConstIterator<T> ConstIterator;
-protected:
-    FVPrivate<T> *fvp;
-
-    Iterator fastat( uint i ) {
-        uint num=count();
-        if (i>=num) {return end();}
-        if (fvp->curpos<0) { fvp->curpos=0; fvp->curit=begin(); }
-        uint curpos=(uint) fvp->curpos;
-        Iterator curit(fvp->curit.node);
-        if (curpos==i) return curit;
-
-        int diff=i-curpos;
-        bool forward;
-        if (diff<0) diff=-diff;
-        if (((uint)diff < i) && ((uint)diff < num-i)) { // start from current node
-                forward=i > (uint)curpos;
-        } else if (i < num - i) { // start from first node
-                curit=begin(); diff=i; forward=TRUE;
-        } else {                  // start from last node
-                curit=fromLast(); diff=num - i - 1;
-                if (diff<0) diff=0;
-                forward=FALSE;
-        }
-        if (forward) {
-                while(diff--) curit++;
-        } else {
-                while(diff--) curit--;
-        }
-        fvp->curpos=i; fvp->curit=curit;
-        return curit;
-    }
-    ConstIterator fastat( uint i ) const {
-        uint num=count();
-        if (i>=num) {return end();}
-        if (fvp->curpos<0) { fvp->curpos=0; fvp->curit=begin(); }
-        uint curpos=(uint) fvp->curpos;
-        ConstIterator curit=fvp->curit;
-        if (curpos==i) return curit;
-
-        int diff=i-curpos;
-        bool forward;
-        if (diff<0) diff=-diff;
-        if (((uint)diff < i) && ((uint)diff < num-i)) { // start from current node
-                forward=i > (uint)curpos;
-        } else if (i < num - i) { // start from first node
-                curit=begin(); diff=i; forward=TRUE;
-        } else {                  // start from last node
-                curit=fromLast(); diff=num - i - 1;
-                if (diff<0) diff=0;
-                forward=FALSE;
-        }
-        if (forward) {
-                while(diff--) curit++;
-        } else {
-                while(diff--) curit--;
-        }
-        fvp->curpos=i; fvp->curit=curit;
-        return curit;
-    }
-
-public:
-    FastValueList() : QValueList<T>()
-    { fvp=new FVPrivate<T>(); }
-    FastValueList(const FastValueList<T>& l) : QValueList<T>(l)
-    { fvp=new FVPrivate<T>(); }
-    ~FastValueList() { delete fvp; }
-
-    Iterator insert( Iterator it, const T& x ) {
-      fvp->curpos=-1; return QValueList<T>::insert(it, x);
-    }
-
-    Iterator append( const T& x ) {
-      fvp->curpos=-1; return QValueList<T>::append( x );
-    }
-    Iterator prepend( const T& x ) {
-      fvp->curpos=-1; return QValueList<T>::prepend( x );
-    }
-
-    Iterator remove( Iterator it ) {
-      fvp->curpos=-1; return QValueList<T>::remove( it );
-    }
-    void remove( const T& x ) {
-      fvp->curpos=-1; QValueList<T>::remove( x );
-    }
-
-    T& operator[] ( uint i ) { detach(); return fastat(i); }
-    const T& operator[] ( uint i ) const { return *fastat(i); }
-    Iterator at( uint i ) { detach(); return fastat(i); }
-    ConstIterator at( uint i ) const { return ConstIterator( fastat(i) ); }
-};
-
 
 /**
   The TextLine represents a line of text. A text line that contains the
@@ -157,7 +43,7 @@ class TextLine : public KShared
 
 public:
     typedef KSharedPtr<TextLine> Ptr;
-    typedef FastValueList<Ptr> List;
+    typedef QValueVector<Ptr> List;
 
 public:
     /**

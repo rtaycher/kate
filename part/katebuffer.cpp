@@ -504,7 +504,7 @@ KWBufBlock::truncateEOL( int &lastLine, QByteArray &data1 )
 
    m_endState.lineNr--;
    if (b_stringListValid)
-      m_stringList.remove(m_stringList.last());
+      m_stringList.pop_back();
 }
 
 /**
@@ -630,7 +630,7 @@ void
 KWBufBlock::buildStringList()
 {
     //kdDebug(13020)<<"KWBufBlock: buildStringList this ="<< this<<endl;
-   assert(m_stringList.count() == 0);
+   assert(m_stringList.empty());
    if (!m_codec && !m_rawData2.isEmpty())
    {
       buildStringListFast();
@@ -654,7 +654,7 @@ KWBufBlock::buildStringList()
             QString line = m_codec->toUnicode(l, (p-l-1)+1);
             TextLine::Ptr textLine = new TextLine();
             textLine->append(line.unicode(), line.length());
-            m_stringList.append(textLine);
+            m_stringList.push_back(textLine);
             l = p+1;
          }
          p++;
@@ -680,7 +680,7 @@ KWBufBlock::buildStringList()
             }
             TextLine::Ptr textLine = new TextLine();
             textLine->append(line.unicode(), line.length());
-            m_stringList.append(textLine);
+            m_stringList.push_back(textLine);
             l = p+1;
          }
          p++;
@@ -701,7 +701,7 @@ KWBufBlock::buildStringList()
          }
          TextLine::Ptr textLine = new TextLine();
          textLine->append(line.unicode(), line.length());
-         m_stringList.append(textLine);
+         m_stringList.push_back (textLine);
       }
    }
    else
@@ -709,10 +709,10 @@ KWBufBlock::buildStringList()
       if (b_appendEOL)
       {
          TextLine::Ptr textLine = new TextLine();
-         m_stringList.append(textLine);
+         m_stringList.push_back (textLine);
       }
    }
-   assert((int) m_stringList.count() == (m_endState.lineNr - m_beginState.lineNr));
+   assert((int) m_stringList.size() == (m_endState.lineNr - m_beginState.lineNr));
    m_stringListIt = m_stringList.begin();
    m_stringListCurrent = 0;
    b_stringListValid = true;
@@ -734,7 +734,7 @@ KWBufBlock::flushStringList()
 
    // Calculate size.
    int size = 0;
-   for(TextLine::List::ConstIterator it = m_stringList.begin();
+   for(TextLine::List::const_iterator it = m_stringList.begin();
        it != m_stringList.end(); ++it)
    {
       int l = (*it)->length();
@@ -746,7 +746,7 @@ KWBufBlock::flushStringList()
    m_rawSize = size;
    char *buf = m_rawData2.data();
    // Copy data
-   for(TextLine::List::Iterator it = m_stringList.begin();
+   for(TextLine::List::iterator it = m_stringList.begin();
        it != m_stringList.end(); ++it)
    {
       TextLine *tl = (*it).data();
@@ -797,10 +797,10 @@ KWBufBlock::buildStringListFast()
       buf += sizeof(uint)*2;
       textLine->ctx = b[0];
       textLine->myMark = b[1];
-      m_stringList.append(textLine);
+      m_stringList.push_back (textLine);
    }
    //kdDebug(13020)<<"stringList.count = "<< m_stringList.count()<<" should be %ld"<< m_endState.lineNr - m_beginState.lineNr<<endl;
-   assert((int) m_stringList.count() == (m_endState.lineNr - m_beginState.lineNr));
+   assert((int) m_stringList.size() == (m_endState.lineNr - m_beginState.lineNr));
    m_stringListIt = m_stringList.begin();
    m_stringListCurrent = 0;
    b_stringListValid = true;
@@ -873,7 +873,7 @@ TextLine::Ptr
 KWBufBlock::line(int i)
 {
    assert(b_stringListValid);
-   assert(i < (int) m_stringList.count());
+   assert(i < (int) m_stringList.size());
    seek(i);
    return *m_stringListIt;
 }
@@ -882,7 +882,7 @@ void
 KWBufBlock::insertLine(int i, TextLine::Ptr line)
 {
    assert(b_stringListValid);
-   assert(i <= (int) m_stringList.count());
+   assert(i <= (int) m_stringList.size());
    seek(i);
    m_stringListIt = m_stringList.insert(m_stringListIt, line);
    m_stringListCurrent = i;
@@ -893,9 +893,9 @@ void
 KWBufBlock::removeLine(int i)
 {
    assert(b_stringListValid);
-   assert(i < (int) m_stringList.count());
+   assert(i < (int) m_stringList.size());
    seek(i);
-   m_stringListIt = m_stringList.remove(m_stringListIt);
+   m_stringListIt = m_stringList.erase(m_stringListIt);
    m_stringListCurrent = i;
    m_endState.lineNr--;
 }
