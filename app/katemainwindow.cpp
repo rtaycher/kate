@@ -134,6 +134,13 @@ KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager 
 
   connect(m_projectManager->projectManager(),SIGNAL(projectDeleted(uint)),this,SLOT(projectDeleted(uint)));
 
+  // caption update
+
+  for (uint i = 0; i < m_docManager->documents(); i++)
+  {
+    slotDocumentCreated (m_docManager->document(i));
+  }
+
   connect(m_docManager,SIGNAL(documentCreated(Kate::Document *)),this,SLOT(slotDocumentCreated(Kate::Document *)));
 
   readOptions(config);
