@@ -63,7 +63,7 @@ KateFileSelector::KateFileSelector( QWidget * parent, const char * name ): QWidg
 
   cfdir = new QPushButton( ""/*i18n("&Next")*/, hlow );
   cfdir->setPixmap(BarIcon("curfiledir"));
-  QToolTip::add(cfdir, i18n("Current Document Direcotry"));
+  QToolTip::add(cfdir, i18n("Current Document Directory"));
 
   cmbPath = new KURLComboBox( KURLComboBox::Directories, true, this, "path combo" );
   cmbPath->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
