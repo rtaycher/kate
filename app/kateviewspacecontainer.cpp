@@ -82,12 +82,33 @@ KateViewSpaceContainer::KateViewSpaceContainer (QWidget *parent, KateViewManager
   m_viewSpaceList.append(vs);
   connect( this, SIGNAL(viewChanged()), this, SLOT(slotViewChanged()) );
   connect(m_docManager, SIGNAL(initialDocumentReplaced()), this, SIGNAL(viewChanged()));
+
+  connect(m_docManager,SIGNAL(documentCreated(Kate::Document *)),this,SLOT(documentCreated(Kate::Document *)));
+  connect(m_docManager,SIGNAL(documentDeleted(uint)),this,SLOT(documentDeleted(uint)));
 }
 
 KateViewSpaceContainer::~KateViewSpaceContainer ()
 {
   m_viewList.setAutoDelete(false);
   m_viewSpaceList.setAutoDelete(false);
+}
+
+void KateViewSpaceContainer::documentCreated (Kate::Document *doc)
+{
+  if (m_blockViewCreationAndActivation) return;
+  
+  if (!activeView())
+    activateView (doc->documentNumber());
+}
+
+void KateViewSpaceContainer::documentDeleted (uint docNumber)
+{
+  if (m_blockViewCreationAndActivation) return;
+  
+  // just for the case we close a document out of many and this was the active one
+  // if all docs are closed, this will be handled by the documentCreated
+  if (!activeView() && (m_docManager->documents() > 0))
+    createView (m_docManager->document(m_docManager->documents()-1));
 }
 
 bool KateViewSpaceContainer::createView ( Kate::Document *doc )
@@ -374,47 +395,6 @@ void KateViewSpaceContainer::closeViews(uint documentNumber)
   //emit m_viewManager->viewChanged ();
 }
 
-
-void KateViewSpaceContainer::openNewIfEmpty()
-{
-//FIXME move somewhere else multi window handling
-  if (m_blockViewCreationAndActivation) return;
-#if 0
-  for (uint i2=0; i2 < ((KateApp *)kapp)->mainWindows (); i2++ )
-  {
-    if (((KateApp *)kapp)->kateMainWindow(i2)->kateViewManager()->viewCount() == 0)
-    {
-      if ((m_viewList.count() < 1) && (m_docManager->documents() < 1) )
-        ((KateApp *)kapp)->kateMainWindow(i2)->kateViewManager()->createView ();
-      else if ((m_viewList.count() < 1) && (m_docManager->documents() > 0) )
-        ((KateApp *)kapp)->kateMainWindow(i2)->kateViewManager()->createView (m_docManager->document(m_docManager->documents()-1));
-    }
-  }
-#endif
-  if (m_viewManager->m_currentContainer!=this) {
-    m_pendingViewCreation=true;
-    if (m_viewList.count()<1) {
-        if (!m_pendingDocument) {
-          m_pendingDocument=m_docManager->document(m_docManager->documents()-1);
-          connect(m_pendingDocument,SIGNAL(nameChanged(Kate::Document *)),this,SLOT(slotPendingDocumentNameChanged()));
-          slotPendingDocumentNameChanged();
-        return;
-    }
-   }
-    else {
-      emit viewChanged();
-      return;
-    }
-  }
-  if ((m_viewList.count() < 1) && (m_docManager->documents() < 1) )
-     createView ();
-  else if ((m_viewList.count() < 1) && (m_docManager->documents() > 0) )
-     createView (m_docManager->document(m_docManager->documents()-1));
-
-  emit viewChanged ();
-  //emit m_viewManager->viewChanged ();
-}
-
 void KateViewSpaceContainer::slotPendingDocumentNameChanged() {
           QString c;
           if (m_pendingDocument->url().isEmpty() || (!showFullPath))
@@ -468,70 +448,6 @@ void KateViewSpaceContainer::statusMsg ()
   setCaption(KStringHandler::lsqueeze(c,32)); 
   emit statusChanged (v, v->cursorLine(), v->cursorColumn(), ovr,block, mod, KStringHandler::lsqueeze(c,64));
   emit statChanged ();
-}
-
-void KateViewSpaceContainer::slotDocumentNew ()
-{
-  createView ();
-}
-
-void KateViewSpaceContainer::slotDocumentOpen ()
-{
-  Kate::View *cv = activeView();
-
-  KEncodingFileDialog::Result r=KEncodingFileDialog::getOpenURLsAndEncoding(
-     (cv ? KTextEditor::encodingInterface(cv->document())->encoding() : Kate::Document::defaultEncoding()),
-     (cv ? cv->document()->url().url() : QString::null),
-     QString::null,this,i18n("Open File"));
-
-  uint lastID = 0;
-  for (KURL::List::Iterator i=r.URLs.begin(); i != r.URLs.end(); ++i)
-    lastID = openURL( *i, r.encoding, false );
-
-  if (lastID > 0)
-    activateView (lastID);
-}
-
-void KateViewSpaceContainer::slotDocumentSaveAll()
-{
-  for( QPtrListIterator<Kate::View> it( m_viewList ); it.current(); ++it )
-    it.current()->save();
-}
-
-void KateViewSpaceContainer::slotDocumentClose ()
-{
-  // no active view, do nothing
-  if (!activeView()) return;
-
-  // prevent close document if only one view alive and the document of
-  // it is not modified and empty !!!
-  if ( (m_viewList.count() == 1)
-       && !activeView()->getDoc()->isModified()
-       && activeView()->getDoc()->url().isEmpty()
-       && (activeView()->getDoc()->length() == 0) )
-  {
-    activeView()->getDoc()->closeURL();
-    return;
-  }
-
-  // close document
-  m_docManager->closeDocument (activeView()->getDoc());
-
-  // create new one, if none alive
-  openNewIfEmpty();
-}
-
-void KateViewSpaceContainer::slotDocumentCloseAll ()
-{
-  if (m_docManager->documents () == 0) return;
-
-  kdDebug(13001)<<"CLOSE ALL DOCUMENTS *****************"<<endl;
-
-  m_blockViewCreationAndActivation=true;
-  m_docManager->closeAllDocuments();
-  m_blockViewCreationAndActivation=false;
-
-  openNewIfEmpty();
 }
 
 uint KateViewSpaceContainer::openURL (const KURL &url, const QString& encoding, bool activate)

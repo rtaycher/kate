@@ -51,6 +51,8 @@ class KateViewManager : public QWidget
     
     KateViewSpaceContainer *activeContainer () { return m_currentContainer; }
 
+    QPtrList<KateViewSpaceContainer> *containers() { return &m_viewSpaceContainerList; }
+    
     void updateViewSpaceActions ();
     
   private:
@@ -85,6 +87,7 @@ class KateViewManager : public QWidget
     uint viewCount ();
     uint viewSpaceCount ();
 
+    void setViewActivationBlocked (bool block);
     bool isViewActivationBlocked(){return m_blockViewCreationAndActivation;};
 
   public:
@@ -95,7 +98,6 @@ class KateViewManager : public QWidget
     void activateView ( Kate::View *view );
     void activateSpace ( Kate::View* v );
     void slotViewChanged();
-    void openNewIfEmpty();
 
     void tabChanged(QWidget*);
 
@@ -120,26 +122,23 @@ class KateViewManager : public QWidget
     void activateView ( uint documentNumber );
     void activateView ( int documentNumber ) { activateView((uint) documentNumber); };
 
-    void slotDocumentCloseAll ();
     void slotDocumentSaveAll();
 
     void slotDocumentNew ();
     void slotDocumentOpen ();
     void slotDocumentClose ();
+    
     /** Splits the active viewspace horizontally */
     void slotSplitViewSpaceHoriz () { splitViewSpace(); }
     /** Splits the active viewspace vertically */
     void slotSplitViewSpaceVert () { splitViewSpace( 0L, false ); }
-
 
     void slotNewTab();
     void slotCloseTab ();
     void activateNextTab ();
     void activatePrevTab ();
 
-
     void slotCloseCurrentViewSpace();
-
 
     void setActiveSpace ( KateViewSpace* vs );
     void setActiveView ( Kate::View* view );

@@ -304,7 +304,7 @@ void KateMainWindow::setupActions()
 
 void KateMainWindow::slotDocumentCloseAll() {
 	if (queryClose_internal())
-		m_viewManager->slotDocumentCloseAll();
+    m_docManager->closeAllDocuments(false);
 }
 
 bool KateMainWindow::queryClose_internal() {

@@ -300,6 +300,11 @@ bool KateDocManager::closeAllDocuments(bool closeURL)
   bool res = true;
   
   QPtrList<Kate::Document> docs = m_docList;
+  
+  for (uint i=0; i < ((KateApp *)kapp)->mainWindows (); i++ )
+  {
+    ((KateApp *)kapp)->kateMainWindow(i)->kateViewManager()->setViewActivationBlocked(true);
+  }
 
   while (!docs.isEmpty() && res)
     if (! closeDocument(docs.at(0),closeURL) )
@@ -307,6 +312,14 @@ bool KateDocManager::closeAllDocuments(bool closeURL)
     else
       docs.remove ((uint)0);
 
+  for (uint i=0; i < ((KateApp *)kapp)->mainWindows (); i++ )
+  {
+    ((KateApp *)kapp)->kateMainWindow(i)->kateViewManager()->setViewActivationBlocked(false);
+    
+    for (uint s=0; s < ((KateApp *)kapp)->kateMainWindow(i)->kateViewManager()->containers()->count(); s++)
+      ((KateApp *)kapp)->kateMainWindow(i)->kateViewManager()->containers()->at(s)->activateView (m_docList.at(0)->documentNumber());
+  }
+    
   return res;
 }
 

@@ -98,14 +98,17 @@ class KateViewSpaceContainer: public QWidget
     void closeViews(uint documentNumber);
     KateMainWindow *mainWindow();
   friend class KateViewManager;
+  
   private slots:
-    
     void activateView ( Kate::View *view );
     void activateSpace ( Kate::View* v );
     void slotViewChanged();
-    void openNewIfEmpty();
     void reactivateActiveView();
     void slotPendingDocumentNameChanged();
+    
+    void documentCreated (Kate::Document *doc);
+    void documentDeleted (uint docNumber);
+    
   public slots:
     void deleteLastView ();
 
@@ -127,12 +130,6 @@ class KateViewSpaceContainer: public QWidget
     void activateView ( uint documentNumber );
     void activateView ( int documentNumber ) { activateView((uint) documentNumber); };
 
-    void slotDocumentCloseAll ();
-    void slotDocumentSaveAll();
-
-    void slotDocumentNew ();
-    void slotDocumentOpen ();
-    void slotDocumentClose ();
     /** Splits the active viewspace horizontally */
     void slotSplitViewSpaceHoriz () { splitViewSpace(); }
     /** Splits the active viewspace vertically */

@@ -315,6 +315,14 @@ uint KateViewManager::viewSpaceCount ()
   return viewSpaceCount;
 }
 
+void KateViewManager::setViewActivationBlocked (bool block)
+{
+  for (uint i=0;i<m_viewSpaceContainerList.count();i++)
+    m_viewSpaceContainerList.at(i)->m_blockViewCreationAndActivation=block;
+    
+  m_blockViewCreationAndActivation = block;
+}
+
 void KateViewManager::slotViewChanged()
 {
 #if 0
@@ -351,29 +359,6 @@ void KateViewManager::closeViews(uint documentNumber)
   }
   tabChanged(m_currentContainer);
 }
-
-
-void KateViewManager::openNewIfEmpty()
-{
-#if 0
-  if (m_blockViewCreationAndActivation) return;
-
-  for (uint i2=0; i2 < ((KateApp *)kapp)->mainWindows (); i2++ )
-  {
-    if (((KateApp *)kapp)->kateMainWindow(i2)->kateViewManager()->viewCount() == 0)
-    {
-      if ((m_viewList.count() < 1) && (m_docManager->documents() < 1) )
-        ((KateApp *)kapp)->kateMainWindow(i2)->kateViewManager()->createView ();
-      else if ((m_viewList.count() < 1) && (m_docManager->documents() > 0) )
-        ((KateApp *)kapp)->kateMainWindow(i2)->kateViewManager()->createView (m_docManager->document(m_docManager->documents()-1));
-    }
-  }
-
-  emit viewChanged ();
-  emit m_viewManager->viewChanged ();
-#endif
-}
-
 
 void KateViewManager::slotDocumentNew ()
 {
@@ -425,41 +410,6 @@ void KateViewManager::slotDocumentClose ()
   
   // close document
   m_docManager->closeDocument (activeView()->getDoc());
-
-  // create new one, if none alive
-  //openNewIfEmpty();
-  if (m_currentContainer) {
-      m_currentContainer->openNewIfEmpty();
-  }
-  
-  for (uint i=0;i<m_viewSpaceContainerList.count();i++) {
-    if (m_currentContainer!=m_viewSpaceContainerList.at(i))
-      m_viewSpaceContainerList.at(i)->openNewIfEmpty();
-  }
-}
-
-void KateViewManager::slotDocumentCloseAll ()
-{
-  if (m_docManager->documents () == 0) return;
-
-  kdDebug(13001)<<"CLOSE ALL DOCUMENTS *****************"<<endl;
-
-#warning fixme for more than one main window
-
-  for (uint i=0;i<m_viewSpaceContainerList.count();i++) {
-    m_viewSpaceContainerList.at(i)->m_blockViewCreationAndActivation=true;
-  }
-  m_docManager->closeAllDocuments(false);
-
-  m_currentContainer->m_blockViewCreationAndActivation=false;
-  m_currentContainer->openNewIfEmpty();
-  for (uint i=0;i<m_viewSpaceContainerList.count();i++) {
-    if (m_currentContainer!=m_viewSpaceContainerList.at(i)) {
-      m_viewSpaceContainerList.at(i)->m_blockViewCreationAndActivation=false;
-      m_viewSpaceContainerList.at(i)->openNewIfEmpty();
-    }
-  }
-  tabChanged(m_currentContainer);
 }
 
 uint KateViewManager::openURL (const KURL &url, const QString& encoding, bool activate)
