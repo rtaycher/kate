@@ -158,6 +158,13 @@ void KateMainWindow::setupMainWindow ()
 
 bool KateMainWindow::eventFilter(QObject* o, QEvent* e)
 {
+  if ( e->type() == QEvent::WindowActivate && o == this ) {
+    //kdDebug()<<"YAY!!! this KateMainWindow was activated!"<<endl;
+    Kate::Document *doc;
+    for( doc = docManager->firstDoc(); doc; doc = docManager->nextDoc() ) {
+      doc->isModOnHD();
+    }
+  }
   if (e->type() == QEvent::KeyPress)
   {
     QKeyEvent *ke = (QKeyEvent*)e;
