@@ -1,3 +1,6 @@
+2001-08-24  christian@kdevelop.org
+  * reimplement the commenting of selections on some languages
+
 2001-08-19  christian@kdevelop.org
   * added back Sather highlighting support
   * improved Eiffel language syntax highlighting support
