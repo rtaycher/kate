@@ -1,0 +1,13 @@
+[Desktop Entry]
+# Note: if some app wants to see "Text Editor Component" here, (i.e. not readonly) then 
+# we should separate the desktop files for the read-only and the read-write components.
+Name=Embedded Text Viewer
+X-KDE-Library=libkwritepart
+Icon=kwrite
+
+# Keep in sync with kwrite.desktop
+MimeType=text/english;text/plain;text/x-makefile;text/x-c++hdr;text/x-c++src;text/x-chdr;text/x-csrc;text/x-java;text/x-moc;text/x-pascal;text/x-tcl;text/x-tex;application/x-shellscript;text/x-c;text/x-c++
+
+ServiceTypes=KParts/ReadOnlyPart,KParts/ReadWritePart,Browser/View,KTextEditor/Document
+Type=Service
+InitialPreference=8

@@ -32,6 +32,8 @@ METASOURCES = AUTO
 appsdir = $(kde_appsdir)/Editors
 apps_DATA = kwrite.desktop
 
+kde_services_DATA = kwrite_component.desktop
+
 rcdir = $(kde_datadir)/kwrite
 rc_DATA = kwrite_browser.rc kwriteui.rc kwrite_shell.rc
 
