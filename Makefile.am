@@ -31,4 +31,4 @@ KDE_ICON = kwrite
 EXTRA_DIST = $(apps_DATA)
 
 messages: rc.cpp
-	$(XGETTEXT) -ki18nop *.cpp -o $(podir)/kwrite.pot
+	$(XGETTEXT) *.cpp -o $(podir)/kwrite.pot

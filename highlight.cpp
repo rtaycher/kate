@@ -1051,7 +1051,7 @@ int Highlight::doHighlight(int, TextLine *textLine) {
 
 void Highlight::createItemData(ItemDataList &list) {
 
-  list.append(new ItemData(i18nop("Normal Text"), dsNormal));
+  list.append(new ItemData(I18N_NOOP("Normal Text"), dsNormal));
 }
 
 
@@ -1135,20 +1135,20 @@ CHighlight::~CHighlight() {
 
 void CHighlight::createItemData(ItemDataList &list) {
 
-  list.append(new ItemData(i18nop("Normal Text" ),dsNormal));
-  list.append(new ItemData(i18nop("Keyword"     ),dsKeyword));
-  list.append(new ItemData(i18nop("Data Type"   ),dsDataType));
-  list.append(new ItemData(i18nop("Decimal"     ),dsDecVal));
-  list.append(new ItemData(i18nop("Octal"       ),dsBaseN));
-  list.append(new ItemData(i18nop("Hex"         ),dsBaseN));
-  list.append(new ItemData(i18nop("Float"       ),dsFloat));
-  list.append(new ItemData(i18nop("Char"        ),dsChar));
-  list.append(new ItemData(i18nop("String"      ),dsString));
-  list.append(new ItemData(i18nop("String Char" ),dsChar));
-  list.append(new ItemData(i18nop("Comment"     ),dsComment));
-  list.append(new ItemData(i18nop("Symbol"      ),dsNormal));
-  list.append(new ItemData(i18nop("Preprocessor"),dsOthers));
-  list.append(new ItemData(i18nop("Prep. Lib"   ),dsOthers,Qt::darkYellow,Qt::yellow,false,false));
+  list.append(new ItemData(I18N_NOOP("Normal Text" ),dsNormal));
+  list.append(new ItemData(I18N_NOOP("Keyword"     ),dsKeyword));
+  list.append(new ItemData(I18N_NOOP("Data Type"   ),dsDataType));
+  list.append(new ItemData(I18N_NOOP("Decimal"     ),dsDecVal));
+  list.append(new ItemData(I18N_NOOP("Octal"       ),dsBaseN));
+  list.append(new ItemData(I18N_NOOP("Hex"         ),dsBaseN));
+  list.append(new ItemData(I18N_NOOP("Float"       ),dsFloat));
+  list.append(new ItemData(I18N_NOOP("Char"        ),dsChar));
+  list.append(new ItemData(I18N_NOOP("String"      ),dsString));
+  list.append(new ItemData(I18N_NOOP("String Char" ),dsChar));
+  list.append(new ItemData(I18N_NOOP("Comment"     ),dsComment));
+  list.append(new ItemData(I18N_NOOP("Symbol"      ),dsNormal));
+  list.append(new ItemData(I18N_NOOP("Preprocessor"),dsOthers));
+  list.append(new ItemData(I18N_NOOP("Prep. Lib"   ),dsOthers,Qt::darkYellow,Qt::yellow,false,false));
 
 }
 
@@ -1283,12 +1283,12 @@ HtmlHighlight::~HtmlHighlight() {
 
 void HtmlHighlight::createItemData(ItemDataList &list) {
 
-  list.append(new ItemData(i18nop("Normal Text"),dsNormal));
-  list.append(new ItemData(i18nop("Char"       ),dsChar,Qt::darkGreen,Qt::green,false,false));
-  list.append(new ItemData(i18nop("Comment"    ),dsComment));
-  list.append(new ItemData(i18nop("Tag Text"   ),dsOthers,Qt::black,Qt::white,true,false));
-  list.append(new ItemData(i18nop("Tag"        ),dsKeyword,Qt::darkMagenta,Qt::magenta,true,false));
-  list.append(new ItemData(i18nop("Tag Value"  ),dsDecVal,Qt::darkCyan,Qt::cyan,false,false));
+  list.append(new ItemData(I18N_NOOP("Normal Text"),dsNormal));
+  list.append(new ItemData(I18N_NOOP("Char"       ),dsChar,Qt::darkGreen,Qt::green,false,false));
+  list.append(new ItemData(I18N_NOOP("Comment"    ),dsComment));
+  list.append(new ItemData(I18N_NOOP("Tag Text"   ),dsOthers,Qt::black,Qt::white,true,false));
+  list.append(new ItemData(I18N_NOOP("Tag"        ),dsKeyword,Qt::darkMagenta,Qt::magenta,true,false));
+  list.append(new ItemData(I18N_NOOP("Tag Value"  ),dsDecVal,Qt::darkCyan,Qt::cyan,false,false));
 }
 
 void HtmlHighlight::makeContextList() {
@@ -1321,12 +1321,12 @@ BashHighlight::~BashHighlight() {
 
 void BashHighlight::createItemData(ItemDataList &list) {
 
-  list.append(new ItemData(i18nop("Normal Text" ),dsNormal));
-  list.append(new ItemData(i18nop("Keyword"     ),dsKeyword));
-  list.append(new ItemData(i18nop("Integer"     ),dsDecVal));
-  list.append(new ItemData(i18nop("String"      ),dsString));
-  list.append(new ItemData(i18nop("Substitution"),dsOthers));//darkCyan,cyan,false,false);
-  list.append(new ItemData(i18nop("Comment"     ),dsComment));
+  list.append(new ItemData(I18N_NOOP("Normal Text" ),dsNormal));
+  list.append(new ItemData(I18N_NOOP("Keyword"     ),dsKeyword));
+  list.append(new ItemData(I18N_NOOP("Integer"     ),dsDecVal));
+  list.append(new ItemData(I18N_NOOP("String"      ),dsString));
+  list.append(new ItemData(I18N_NOOP("Substitution"),dsOthers));//darkCyan,cyan,false,false);
+  list.append(new ItemData(I18N_NOOP("Comment"     ),dsComment));
 }
 
 void BashHighlight::makeContextList() {
@@ -1359,13 +1359,13 @@ ModulaHighlight::~ModulaHighlight() {
 
 void ModulaHighlight::createItemData(ItemDataList &list) {
 
-  list.append(new ItemData(i18nop("Normal Text"),dsNormal));
-  list.append(new ItemData(i18nop("Keyword"    ),dsKeyword));
-  list.append(new ItemData(i18nop("Decimal"    ),dsDecVal));
-  list.append(new ItemData(i18nop("Hex"        ),dsBaseN));
-  list.append(new ItemData(i18nop("Float"      ),dsFloat));
-  list.append(new ItemData(i18nop("String"     ),dsString));
-  list.append(new ItemData(i18nop("Comment"    ),dsComment));
+  list.append(new ItemData(I18N_NOOP("Normal Text"),dsNormal));
+  list.append(new ItemData(I18N_NOOP("Keyword"    ),dsKeyword));
+  list.append(new ItemData(I18N_NOOP("Decimal"    ),dsDecVal));
+  list.append(new ItemData(I18N_NOOP("Hex"        ),dsBaseN));
+  list.append(new ItemData(I18N_NOOP("Float"      ),dsFloat));
+  list.append(new ItemData(I18N_NOOP("String"     ),dsString));
+  list.append(new ItemData(I18N_NOOP("Comment"    ),dsComment));
 }
 
 void ModulaHighlight::makeContextList() {
@@ -1398,14 +1398,14 @@ AdaHighlight::~AdaHighlight() {
 
 void AdaHighlight::createItemData(ItemDataList &list) {
 
-  list.append(new ItemData(i18nop("Normal Text"),dsNormal));
-  list.append(new ItemData(i18nop("Keyword"    ),dsKeyword));
-  list.append(new ItemData(i18nop("Decimal"    ),dsDecVal));
-  list.append(new ItemData(i18nop("Base-N"     ),dsBaseN));
-  list.append(new ItemData(i18nop("Float"      ),dsFloat));
-  list.append(new ItemData(i18nop("Char"       ),dsChar));
-  list.append(new ItemData(i18nop("String"     ),dsString));
-  list.append(new ItemData(i18nop("Comment"    ),dsComment));
+  list.append(new ItemData(I18N_NOOP("Normal Text"),dsNormal));
+  list.append(new ItemData(I18N_NOOP("Keyword"    ),dsKeyword));
+  list.append(new ItemData(I18N_NOOP("Decimal"    ),dsDecVal));
+  list.append(new ItemData(I18N_NOOP("Base-N"     ),dsBaseN));
+  list.append(new ItemData(I18N_NOOP("Float"      ),dsFloat));
+  list.append(new ItemData(I18N_NOOP("Char"       ),dsChar));
+  list.append(new ItemData(I18N_NOOP("String"     ),dsString));
+  list.append(new ItemData(I18N_NOOP("Comment"    ),dsComment));
 }
 
 void AdaHighlight::makeContextList() {
@@ -1438,16 +1438,16 @@ PythonHighlight::~PythonHighlight() {
 
 void PythonHighlight::createItemData(ItemDataList &list) {
 
-  list.append(new ItemData(i18nop("Normal Text"),dsNormal));
-  list.append(new ItemData(i18nop("Keyword"    ),dsKeyword));
-  list.append(new ItemData(i18nop("Decimal"    ),dsDecVal));
-  list.append(new ItemData(i18nop("Octal"      ),dsBaseN));
-  list.append(new ItemData(i18nop("Hex"        ),dsBaseN));
-  list.append(new ItemData(i18nop("Float"      ),dsFloat));
-  list.append(new ItemData(i18nop("Char"       ),dsChar));
-  list.append(new ItemData(i18nop("String"     ),dsString));
-  list.append(new ItemData(i18nop("String Char"),dsChar));
-  list.append(new ItemData(i18nop("Comment"    ),dsComment));
+  list.append(new ItemData(I18N_NOOP("Normal Text"),dsNormal));
+  list.append(new ItemData(I18N_NOOP("Keyword"    ),dsKeyword));
+  list.append(new ItemData(I18N_NOOP("Decimal"    ),dsDecVal));
+  list.append(new ItemData(I18N_NOOP("Octal"      ),dsBaseN));
+  list.append(new ItemData(I18N_NOOP("Hex"        ),dsBaseN));
+  list.append(new ItemData(I18N_NOOP("Float"      ),dsFloat));
+  list.append(new ItemData(I18N_NOOP("Char"       ),dsChar));
+  list.append(new ItemData(I18N_NOOP("String"     ),dsString));
+  list.append(new ItemData(I18N_NOOP("String Char"),dsChar));
+  list.append(new ItemData(I18N_NOOP("Comment"    ),dsComment));
 }
 
 void PythonHighlight::makeContextList() {
@@ -1493,14 +1493,14 @@ PerlHighlight::PerlHighlight(const QString &name) : Highlight(name) {
 
 void PerlHighlight::createItemData(ItemDataList &list) {
 
-  list.append(new ItemData(i18nop("Normal Text"),dsNormal));
-  list.append(new ItemData(i18nop("Keyword"    ),dsKeyword));
-  list.append(new ItemData(i18nop("Variable"   ),dsDecVal));
-  list.append(new ItemData(i18nop("Operator"   ),dsOthers));
-  list.append(new ItemData(i18nop("String"     ),dsString));
-  list.append(new ItemData(i18nop("String Char"),dsChar));
-  list.append(new ItemData(i18nop("Comment"    ),dsComment));
-  list.append(new ItemData(i18nop("Pod"        ),dsOthers, Qt::darkYellow, Qt::yellow, false, true));
+  list.append(new ItemData(I18N_NOOP("Normal Text"),dsNormal));
+  list.append(new ItemData(I18N_NOOP("Keyword"    ),dsKeyword));
+  list.append(new ItemData(I18N_NOOP("Variable"   ),dsDecVal));
+  list.append(new ItemData(I18N_NOOP("Operator"   ),dsOthers));
+  list.append(new ItemData(I18N_NOOP("String"     ),dsString));
+  list.append(new ItemData(I18N_NOOP("String Char"),dsChar));
+  list.append(new ItemData(I18N_NOOP("Comment"    ),dsComment));
+  list.append(new ItemData(I18N_NOOP("Pod"        ),dsOthers, Qt::darkYellow, Qt::yellow, false, true));
 }
 
 
@@ -1748,18 +1748,18 @@ SatherHighlight::~SatherHighlight() {
 
 void SatherHighlight::createItemData(ItemDataList &list) {
 
-  list.append(new ItemData(i18nop("Normal Text"        ),dsNormal)); // 0
-  list.append(new ItemData(i18nop("Keyword"            ),dsKeyword));// 1
-  list.append(new ItemData(i18nop("Special Classname"  ), dsNormal));// 2
-  list.append(new ItemData(i18nop("Classname"          ),dsNormal)); // 3
-  list.append(new ItemData(i18nop("Special Featurename"),dsOthers)); // 4
-  list.append(new ItemData(i18nop("Identifier"         ),dsOthers)); // 5
-  list.append(new ItemData(i18nop("Decimal"            ),dsDecVal)); // 6
-  list.append(new ItemData(i18nop("Base-N"             ),dsBaseN));  // 7
-  list.append(new ItemData(i18nop("Float"              ),dsFloat));  // 8
-  list.append(new ItemData(i18nop("Char"               ),dsChar));   // 9
-  list.append(new ItemData(i18nop("String"             ),dsString)); // 10
-  list.append(new ItemData(i18nop("Comment"            ),dsComment));// 11
+  list.append(new ItemData(I18N_NOOP("Normal Text"        ),dsNormal)); // 0
+  list.append(new ItemData(I18N_NOOP("Keyword"            ),dsKeyword));// 1
+  list.append(new ItemData(I18N_NOOP("Special Classname"  ), dsNormal));// 2
+  list.append(new ItemData(I18N_NOOP("Classname"          ),dsNormal)); // 3
+  list.append(new ItemData(I18N_NOOP("Special Featurename"),dsOthers)); // 4
+  list.append(new ItemData(I18N_NOOP("Identifier"         ),dsOthers)); // 5
+  list.append(new ItemData(I18N_NOOP("Decimal"            ),dsDecVal)); // 6
+  list.append(new ItemData(I18N_NOOP("Base-N"             ),dsBaseN));  // 7
+  list.append(new ItemData(I18N_NOOP("Float"              ),dsFloat));  // 8
+  list.append(new ItemData(I18N_NOOP("Char"               ),dsChar));   // 9
+  list.append(new ItemData(I18N_NOOP("String"             ),dsString)); // 10
+  list.append(new ItemData(I18N_NOOP("Comment"            ),dsComment));// 11
 }
 
 void SatherHighlight::makeContextList() {
@@ -1797,14 +1797,14 @@ LatexHighlight::~LatexHighlight() {
 
 void LatexHighlight::createItemData(ItemDataList &list) {
 
-  list.append(new ItemData(i18nop("Normal Text"), dsNormal));
-  list.append(new ItemData(i18nop("Tag/Keyword"), dsKeyword));
- list.append(new ItemData(i18nop("Optional Argument"), dsKeyword));
- list.append(new ItemData(i18nop("Mandatory Argument"), dsKeyword));
- list.append(new ItemData(i18nop("Inline Maths"), dsDecVal));
-  list.append(new ItemData(i18nop("Char"       ), dsChar));
-  list.append(new ItemData(i18nop("Parameter"  ), dsDecVal));
-  list.append(new ItemData(i18nop("Comment"    ), dsComment));
+  list.append(new ItemData(I18N_NOOP("Normal Text"), dsNormal));
+  list.append(new ItemData(I18N_NOOP("Tag/Keyword"), dsKeyword));
+ list.append(new ItemData(I18N_NOOP("Optional Argument"), dsKeyword));
+ list.append(new ItemData(I18N_NOOP("Mandatory Argument"), dsKeyword));
+ list.append(new ItemData(I18N_NOOP("Inline Maths"), dsDecVal));
+  list.append(new ItemData(I18N_NOOP("Char"       ), dsChar));
+  list.append(new ItemData(I18N_NOOP("Parameter"  ), dsDecVal));
+  list.append(new ItemData(I18N_NOOP("Comment"    ), dsComment));
 }
 
 void LatexHighlight::makeContextList() {
@@ -1866,7 +1866,7 @@ HlManager *HlManager::s_pSelf = 0;
 HlManager::HlManager() : QObject(0L) {
 
   hlList.setAutoDelete(true);
-  hlList.append(new Highlight(i18nop("Normal")));
+  hlList.append(new Highlight(I18N_NOOP("Normal")));
   hlList.append(new CHighlight(     "C"        ));
   hlList.append(new CppHighlight(   "C++"      ));
   hlList.append(new ObjcHighlight(  "Objective-C"));
@@ -2037,16 +2037,16 @@ int HlManager::defaultStyles() {
 
 QString HlManager::defaultStyleName(int n) {
   static const char *names[] = {
-    i18nop("Normal"),
-    i18nop("Keyword"),
-    i18nop("Data Type"),
-    i18nop("Decimal/Value"),
-    i18nop("Base-N Integer"),
-    i18nop("Floating Point"),
-    i18nop("Character"),
-    i18nop("String"),
-    i18nop("Comment"),
-    i18nop("Others")};
+    I18N_NOOP("Normal"),
+    I18N_NOOP("Keyword"),
+    I18N_NOOP("Data Type"),
+    I18N_NOOP("Decimal/Value"),
+    I18N_NOOP("Base-N Integer"),
+    I18N_NOOP("Floating Point"),
+    I18N_NOOP("Character"),
+    I18N_NOOP("String"),
+    I18N_NOOP("Comment"),
+    I18N_NOOP("Others")};
 
   return QString(names[n]);
 }

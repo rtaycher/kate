@@ -1026,16 +1026,16 @@ int main(int argc, char **argv)
   //init commands
   KWrite::addCursorCommands(*KGuiCmdManager::self());
 
-  KGuiCmdManager::self()->addCategory(ctFileCommands, i18nop("File Commands"));
-  KGuiCmdManager::self()->addCommand(cmNew,             i18nop("&New..."    ));
-  KGuiCmdManager::self()->addCommand(cmOpen,            i18nop("&Open..."   ), Qt::CTRL+Qt::Key_O, Qt::Key_F17);
-  KGuiCmdManager::self()->addCommand(cmInsert,          i18nop("&Insert..." ));
-  KGuiCmdManager::self()->addCommand(cmSave,            i18nop("&Save"      ), Qt::CTRL+Qt::Key_S);
-  KGuiCmdManager::self()->addCommand(cmSaveAs,          i18nop("Save &As..."));
-  KGuiCmdManager::self()->addCommand(cmPrint,           i18nop("&Print..."  ), Qt::CTRL+Qt::Key_P);
-  KGuiCmdManager::self()->addCommand(cmNewWindow,       i18nop("New &Window"));
-  KGuiCmdManager::self()->addCommand(cmNewView,         i18nop("New &View"  ));
-  KGuiCmdManager::self()->addCommand(cmClose,           i18nop("&Close"     ), Qt::CTRL+Qt::Key_W, Qt::Key_Escape);
+  KGuiCmdManager::self()->addCategory(ctFileCommands, I18N_NOOP("File Commands"));
+  KGuiCmdManager::self()->addCommand(cmNew,             I18N_NOOP("&New..."    ));
+  KGuiCmdManager::self()->addCommand(cmOpen,            I18N_NOOP("&Open..."   ), Qt::CTRL+Qt::Key_O, Qt::Key_F17);
+  KGuiCmdManager::self()->addCommand(cmInsert,          I18N_NOOP("&Insert..." ));
+  KGuiCmdManager::self()->addCommand(cmSave,            I18N_NOOP("&Save"      ), Qt::CTRL+Qt::Key_S);
+  KGuiCmdManager::self()->addCommand(cmSaveAs,          I18N_NOOP("Save &As..."));
+  KGuiCmdManager::self()->addCommand(cmPrint,           I18N_NOOP("&Print..."  ), Qt::CTRL+Qt::Key_P);
+  KGuiCmdManager::self()->addCommand(cmNewWindow,       I18N_NOOP("New &Window"));
+  KGuiCmdManager::self()->addCommand(cmNewView,         I18N_NOOP("New &View"  ));
+  KGuiCmdManager::self()->addCommand(cmClose,           I18N_NOOP("&Close"     ), Qt::CTRL+Qt::Key_W, Qt::Key_Escape);
 //  cmdMngr.addCommand(cmClose,           "&Quit"      );
 
   KWrite::addEditCommands(*KGuiCmdManager::self());

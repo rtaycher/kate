@@ -23,8 +23,6 @@
 #ifndef _KWVIEV_H_
 #define _KWVIEV_H_
 
-#define i18nop // a no-operation i18n()
-
 #include <list>
 
 #include <qscrollbar.h>

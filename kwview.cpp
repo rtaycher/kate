@@ -1537,92 +1537,92 @@ void KWrite::getCursorPosition( int *line, int *col )
 }
 
 void KWrite::addCursorCommands(KGuiCmdManager &cmdMngr) {
-  cmdMngr.addCategory(ctCursorCommands, i18nop("Cursor Movement"));
+  cmdMngr.addCategory(ctCursorCommands, I18N_NOOP("Cursor Movement"));
   cmdMngr.setSelectModifiers(Qt::SHIFT, selectFlag, Qt::ALT, multiSelectFlag);
-  cmdMngr.addCommand(cmLeft,            i18nop("Left"            ), Qt::Key_Left, Qt::CTRL+Qt::Key_B);
-  cmdMngr.addCommand(cmRight,           i18nop("Right"           ), Qt::Key_Right, Qt::CTRL+Qt::Key_F);
-  cmdMngr.addCommand(cmWordLeft,        i18nop("Word Left"       ), Qt::CTRL+Qt::Key_Left);
-  cmdMngr.addCommand(cmWordRight,       i18nop("Word Right"      ), Qt::CTRL+Qt::Key_Right);
-  cmdMngr.addCommand(cmHome,            i18nop("Home"            ), Qt::Key_Home, Qt::CTRL+Qt::Key_A, Qt::Key_F27);
-  cmdMngr.addCommand(cmEnd,             i18nop("End"             ), Qt::Key_End, Qt::CTRL+Qt::Key_E, Qt::Key_F33);
-  cmdMngr.addCommand(cmUp,              i18nop("Up"              ), Qt::Key_Up, Qt::CTRL+Qt::Key_P);
-  cmdMngr.addCommand(cmDown,            i18nop("Down"            ), Qt::Key_Down, Qt::CTRL+Qt::Key_N);
-  cmdMngr.addCommand(cmScrollUp,        i18nop("Scroll Up"       ), Qt::CTRL+Qt::Key_Up);
-  cmdMngr.addCommand(cmScrollDown,      i18nop("Scroll Down"     ), Qt::CTRL+Qt::Key_Down);
-  cmdMngr.addCommand(cmTopOfView,       i18nop("Top Of View"     ), Qt::CTRL+Qt::Key_PageUp);
-  cmdMngr.addCommand(cmBottomOfView,    i18nop("Bottom Of View"  ), Qt::CTRL+Qt::Key_PageDown);
-  cmdMngr.addCommand(cmPageUp,          i18nop("Page Up"         ), Qt::Key_PageUp, Qt::Key_F29);
-  cmdMngr.addCommand(cmPageDown,        i18nop("Page Down"       ), Qt::Key_PageDown, Qt::Key_F35);
-//  cmdMngr.addCommand(cmCursorPageUp,    i18nop("Cursor Page Up"  ));
-//  cmdMngr.addCommand(cmCursorPageDown,  i18nop("Cursor Page Down"));
-  cmdMngr.addCommand(cmTop,             i18nop("Top"             ), Qt::CTRL+Qt::Key_Home);
-  cmdMngr.addCommand(cmBottom,          i18nop("Bottom"          ), Qt::CTRL+Qt::Key_End);
-  cmdMngr.addCommand(cmLeft | selectFlag, i18nop("Left + Select"  ) , Qt::SHIFT+Qt::Key_F30);//, Qt::SHIFT+Qt::Key_4);
-  cmdMngr.addCommand(cmRight | selectFlag,i18nop("Right + Select" ) , Qt::SHIFT+Qt::Key_F32);//, Qt::SHIFT+Qt::Key_6);
-  cmdMngr.addCommand(cmUp | selectFlag,   i18nop("Up + Select"    ) , Qt::SHIFT+Qt::Key_F28);//, Qt::SHIFT+Qt::Key_8);
-  cmdMngr.addCommand(cmDown | selectFlag, i18nop("Down + Select"  ) , Qt::SHIFT+Qt::Key_F34);//, Qt::SHIFT+Qt::Key_2);
+  cmdMngr.addCommand(cmLeft,            I18N_NOOP("Left"            ), Qt::Key_Left, Qt::CTRL+Qt::Key_B);
+  cmdMngr.addCommand(cmRight,           I18N_NOOP("Right"           ), Qt::Key_Right, Qt::CTRL+Qt::Key_F);
+  cmdMngr.addCommand(cmWordLeft,        I18N_NOOP("Word Left"       ), Qt::CTRL+Qt::Key_Left);
+  cmdMngr.addCommand(cmWordRight,       I18N_NOOP("Word Right"      ), Qt::CTRL+Qt::Key_Right);
+  cmdMngr.addCommand(cmHome,            I18N_NOOP("Home"            ), Qt::Key_Home, Qt::CTRL+Qt::Key_A, Qt::Key_F27);
+  cmdMngr.addCommand(cmEnd,             I18N_NOOP("End"             ), Qt::Key_End, Qt::CTRL+Qt::Key_E, Qt::Key_F33);
+  cmdMngr.addCommand(cmUp,              I18N_NOOP("Up"              ), Qt::Key_Up, Qt::CTRL+Qt::Key_P);
+  cmdMngr.addCommand(cmDown,            I18N_NOOP("Down"            ), Qt::Key_Down, Qt::CTRL+Qt::Key_N);
+  cmdMngr.addCommand(cmScrollUp,        I18N_NOOP("Scroll Up"       ), Qt::CTRL+Qt::Key_Up);
+  cmdMngr.addCommand(cmScrollDown,      I18N_NOOP("Scroll Down"     ), Qt::CTRL+Qt::Key_Down);
+  cmdMngr.addCommand(cmTopOfView,       I18N_NOOP("Top Of View"     ), Qt::CTRL+Qt::Key_PageUp);
+  cmdMngr.addCommand(cmBottomOfView,    I18N_NOOP("Bottom Of View"  ), Qt::CTRL+Qt::Key_PageDown);
+  cmdMngr.addCommand(cmPageUp,          I18N_NOOP("Page Up"         ), Qt::Key_PageUp, Qt::Key_F29);
+  cmdMngr.addCommand(cmPageDown,        I18N_NOOP("Page Down"       ), Qt::Key_PageDown, Qt::Key_F35);
+//  cmdMngr.addCommand(cmCursorPageUp,    I18N_NOOP("Cursor Page Up"  ));
+//  cmdMngr.addCommand(cmCursorPageDown,  I18N_NOOP("Cursor Page Down"));
+  cmdMngr.addCommand(cmTop,             I18N_NOOP("Top"             ), Qt::CTRL+Qt::Key_Home);
+  cmdMngr.addCommand(cmBottom,          I18N_NOOP("Bottom"          ), Qt::CTRL+Qt::Key_End);
+  cmdMngr.addCommand(cmLeft | selectFlag, I18N_NOOP("Left + Select"  ) , Qt::SHIFT+Qt::Key_F30);//, Qt::SHIFT+Qt::Key_4);
+  cmdMngr.addCommand(cmRight | selectFlag,I18N_NOOP("Right + Select" ) , Qt::SHIFT+Qt::Key_F32);//, Qt::SHIFT+Qt::Key_6);
+  cmdMngr.addCommand(cmUp | selectFlag,   I18N_NOOP("Up + Select"    ) , Qt::SHIFT+Qt::Key_F28);//, Qt::SHIFT+Qt::Key_8);
+  cmdMngr.addCommand(cmDown | selectFlag, I18N_NOOP("Down + Select"  ) , Qt::SHIFT+Qt::Key_F34);//, Qt::SHIFT+Qt::Key_2);
 }
 
 void KWrite::addEditCommands(KGuiCmdManager &cmdMngr) {
-  cmdMngr.addCategory(ctEditCommands, i18nop("Edit Commands"));
-  cmdMngr.addCommand(cmReturn,          i18nop("Return"           ), Qt::Key_Return, Qt::Key_Enter);
-  cmdMngr.addCommand(cmDelete,          i18nop("Delete"           ), Qt::Key_Delete, Qt::CTRL+Qt::Key_D);
-  cmdMngr.addCommand(cmBackspace,       i18nop("Backspace"        ), Qt::Key_Backspace, Qt::CTRL+Qt::Key_H);
-  cmdMngr.addCommand(cmKillLine,        i18nop("Kill Line"        ), Qt::CTRL+Qt::Key_K);
-  cmdMngr.addCommand(cmUndo,            i18nop("&Undo"            ), Qt::CTRL+Qt::Key_Z, Qt::Key_F14);
-  cmdMngr.addCommand(cmRedo,            i18nop("R&edo"            ), Qt::CTRL+Qt::Key_Y, Qt::Key_F12);
-  cmdMngr.addCommand(cmCut,             i18nop("C&ut"             ), Qt::CTRL+Qt::Key_X, Qt::SHIFT+Qt::Key_Delete, Qt::Key_F20);
-  cmdMngr.addCommand(cmCopy,            i18nop("&Copy"            ), Qt::CTRL+Qt::Key_C, Qt::CTRL+Qt::Key_Insert, Qt::Key_F16);
-  cmdMngr.addCommand(cmPaste,           i18nop("&Paste"           ), Qt::CTRL+Qt::Key_V, Qt::SHIFT+Qt::Key_Insert, Qt::Key_F18);
-  cmdMngr.addCommand(cmIndent,          i18nop("&Indent"          ), Qt::CTRL+Qt::Key_I);
-  cmdMngr.addCommand(cmUnindent,        i18nop("Uninden&t"        ), Qt::CTRL+Qt::Key_U);
-  cmdMngr.addCommand(cmCleanIndent,     i18nop("Clean Indent"     ));
-  cmdMngr.addCommand(cmComment,          i18nop("Comment"          ), Qt::CTRL+Qt::Key_M);
-  cmdMngr.addCommand(cmUncomment,        i18nop("Uncomment"        ), Qt::CTRL+Qt::ALT+Qt::Key_M);
-  cmdMngr.addCommand(cmSelectAll,       i18nop("&Select All"      ));
-  cmdMngr.addCommand(cmDeselectAll,     i18nop("&Deselect All"    ));
-  cmdMngr.addCommand(cmInvertSelection, i18nop("In&vert Selection"));
+  cmdMngr.addCategory(ctEditCommands, I18N_NOOP("Edit Commands"));
+  cmdMngr.addCommand(cmReturn,          I18N_NOOP("Return"           ), Qt::Key_Return, Qt::Key_Enter);
+  cmdMngr.addCommand(cmDelete,          I18N_NOOP("Delete"           ), Qt::Key_Delete, Qt::CTRL+Qt::Key_D);
+  cmdMngr.addCommand(cmBackspace,       I18N_NOOP("Backspace"        ), Qt::Key_Backspace, Qt::CTRL+Qt::Key_H);
+  cmdMngr.addCommand(cmKillLine,        I18N_NOOP("Kill Line"        ), Qt::CTRL+Qt::Key_K);
+  cmdMngr.addCommand(cmUndo,            I18N_NOOP("&Undo"            ), Qt::CTRL+Qt::Key_Z, Qt::Key_F14);
+  cmdMngr.addCommand(cmRedo,            I18N_NOOP("R&edo"            ), Qt::CTRL+Qt::Key_Y, Qt::Key_F12);
+  cmdMngr.addCommand(cmCut,             I18N_NOOP("C&ut"             ), Qt::CTRL+Qt::Key_X, Qt::SHIFT+Qt::Key_Delete, Qt::Key_F20);
+  cmdMngr.addCommand(cmCopy,            I18N_NOOP("&Copy"            ), Qt::CTRL+Qt::Key_C, Qt::CTRL+Qt::Key_Insert, Qt::Key_F16);
+  cmdMngr.addCommand(cmPaste,           I18N_NOOP("&Paste"           ), Qt::CTRL+Qt::Key_V, Qt::SHIFT+Qt::Key_Insert, Qt::Key_F18);
+  cmdMngr.addCommand(cmIndent,          I18N_NOOP("&Indent"          ), Qt::CTRL+Qt::Key_I);
+  cmdMngr.addCommand(cmUnindent,        I18N_NOOP("Uninden&t"        ), Qt::CTRL+Qt::Key_U);
+  cmdMngr.addCommand(cmCleanIndent,     I18N_NOOP("Clean Indent"     ));
+  cmdMngr.addCommand(cmComment,          I18N_NOOP("Comment"          ), Qt::CTRL+Qt::Key_M);
+  cmdMngr.addCommand(cmUncomment,        I18N_NOOP("Uncomment"        ), Qt::CTRL+Qt::ALT+Qt::Key_M);
+  cmdMngr.addCommand(cmSelectAll,       I18N_NOOP("&Select All"      ));
+  cmdMngr.addCommand(cmDeselectAll,     I18N_NOOP("&Deselect All"    ));
+  cmdMngr.addCommand(cmInvertSelection, I18N_NOOP("In&vert Selection"));
 }
 
 void KWrite::addFindCommands(KGuiCmdManager &cmdMngr) {
-  cmdMngr.addCategory(ctFindCommands, i18nop("Find Commands"));
-  cmdMngr.addCommand(cmFind,            i18nop("&Find..."        ) , Qt::CTRL+Qt::Key_F, Qt::Key_F19);
-  cmdMngr.addCommand(cmReplace,         i18nop("&Replace..."     ) , Qt::CTRL+Qt::Key_R);
-  cmdMngr.addCommand(cmFindAgain,       i18nop("Find &Again"     ) , Qt::Key_F3);
-  cmdMngr.addCommand(cmGotoLine,        i18nop("&Goto Line..."   ) , Qt::CTRL+Qt::Key_G);
+  cmdMngr.addCategory(ctFindCommands, I18N_NOOP("Find Commands"));
+  cmdMngr.addCommand(cmFind,            I18N_NOOP("&Find..."        ) , Qt::CTRL+Qt::Key_F, Qt::Key_F19);
+  cmdMngr.addCommand(cmReplace,         I18N_NOOP("&Replace..."     ) , Qt::CTRL+Qt::Key_R);
+  cmdMngr.addCommand(cmFindAgain,       I18N_NOOP("Find &Again"     ) , Qt::Key_F3);
+  cmdMngr.addCommand(cmGotoLine,        I18N_NOOP("&Goto Line..."   ) , Qt::CTRL+Qt::Key_G);
 }
 
 void KWrite::addBookmarkCommands(KGuiCmdManager &cmdMngr) {
-  cmdMngr.addCategory(ctBookmarkCommands, i18nop("Bookmark Commands"));
-  cmdMngr.addCommand(cmSetBookmark,       i18nop("&Set Bookmark..."), Qt::ALT+Qt::Key_X);
-  cmdMngr.addCommand(cmAddBookmark,       i18nop("&Add Bookmark"   ), Qt::ALT+Qt::Key_A);
-  cmdMngr.addCommand(cmClearBookmarks,    i18nop("&Clear Bookmarks" ), Qt::ALT+Qt::Key_C);
-  cmdMngr.addCommand(cmSetBookmarks +0,   i18nop("Set Bookmark 1"  ));
-  cmdMngr.addCommand(cmSetBookmarks +1,   i18nop("Set Bookmark 2"  ));
-  cmdMngr.addCommand(cmSetBookmarks +2,   i18nop("Set Bookmark 3"  ));
-  cmdMngr.addCommand(cmSetBookmarks +3,   i18nop("Set Bookmark 4"  ));
-  cmdMngr.addCommand(cmSetBookmarks +4,   i18nop("Set Bookmark 5"  ));
-  cmdMngr.addCommand(cmSetBookmarks +5,   i18nop("Set Bookmark 6"  ));
-  cmdMngr.addCommand(cmSetBookmarks +6,   i18nop("Set Bookmark 7"  ));
-  cmdMngr.addCommand(cmSetBookmarks +7,   i18nop("Set Bookmark 8"  ));
-  cmdMngr.addCommand(cmSetBookmarks +8,   i18nop("Set Bookmark 9"  ));
-  cmdMngr.addCommand(cmSetBookmarks +9,   i18nop("Set Bookmark 10" ));
-  cmdMngr.addCommand(cmGotoBookmarks +0,  i18nop("Goto Bookmark 1" ), Qt::ALT+Qt::Key_1);
-  cmdMngr.addCommand(cmGotoBookmarks +1,  i18nop("Goto Bookmark 2" ), Qt::ALT+Qt::Key_2);
-  cmdMngr.addCommand(cmGotoBookmarks +2,  i18nop("Goto Bookmark 3" ), Qt::ALT+Qt::Key_3);
-  cmdMngr.addCommand(cmGotoBookmarks +3,  i18nop("Goto Bookmark 4" ), Qt::ALT+Qt::Key_4);
-  cmdMngr.addCommand(cmGotoBookmarks +4,  i18nop("Goto Bookmark 5" ), Qt::ALT+Qt::Key_5);
-  cmdMngr.addCommand(cmGotoBookmarks +5,  i18nop("Goto Bookmark 6" ), Qt::ALT+Qt::Key_6);
-  cmdMngr.addCommand(cmGotoBookmarks +6,  i18nop("Goto Bookmark 7" ), Qt::ALT+Qt::Key_7);
-  cmdMngr.addCommand(cmGotoBookmarks +7,  i18nop("Goto Bookmark 8" ), Qt::ALT+Qt::Key_8);
-  cmdMngr.addCommand(cmGotoBookmarks +8,  i18nop("Goto Bookmark 9" ), Qt::ALT+Qt::Key_9);
-  cmdMngr.addCommand(cmGotoBookmarks +9,  i18nop("Goto Bookmark 10"), Qt::ALT+Qt::Key_0);
+  cmdMngr.addCategory(ctBookmarkCommands, I18N_NOOP("Bookmark Commands"));
+  cmdMngr.addCommand(cmSetBookmark,       I18N_NOOP("&Set Bookmark..."), Qt::ALT+Qt::Key_X);
+  cmdMngr.addCommand(cmAddBookmark,       I18N_NOOP("&Add Bookmark"   ), Qt::ALT+Qt::Key_A);
+  cmdMngr.addCommand(cmClearBookmarks,    I18N_NOOP("&Clear Bookmarks" ), Qt::ALT+Qt::Key_C);
+  cmdMngr.addCommand(cmSetBookmarks +0,   I18N_NOOP("Set Bookmark 1"  ));
+  cmdMngr.addCommand(cmSetBookmarks +1,   I18N_NOOP("Set Bookmark 2"  ));
+  cmdMngr.addCommand(cmSetBookmarks +2,   I18N_NOOP("Set Bookmark 3"  ));
+  cmdMngr.addCommand(cmSetBookmarks +3,   I18N_NOOP("Set Bookmark 4"  ));
+  cmdMngr.addCommand(cmSetBookmarks +4,   I18N_NOOP("Set Bookmark 5"  ));
+  cmdMngr.addCommand(cmSetBookmarks +5,   I18N_NOOP("Set Bookmark 6"  ));
+  cmdMngr.addCommand(cmSetBookmarks +6,   I18N_NOOP("Set Bookmark 7"  ));
+  cmdMngr.addCommand(cmSetBookmarks +7,   I18N_NOOP("Set Bookmark 8"  ));
+  cmdMngr.addCommand(cmSetBookmarks +8,   I18N_NOOP("Set Bookmark 9"  ));
+  cmdMngr.addCommand(cmSetBookmarks +9,   I18N_NOOP("Set Bookmark 10" ));
+  cmdMngr.addCommand(cmGotoBookmarks +0,  I18N_NOOP("Goto Bookmark 1" ), Qt::ALT+Qt::Key_1);
+  cmdMngr.addCommand(cmGotoBookmarks +1,  I18N_NOOP("Goto Bookmark 2" ), Qt::ALT+Qt::Key_2);
+  cmdMngr.addCommand(cmGotoBookmarks +2,  I18N_NOOP("Goto Bookmark 3" ), Qt::ALT+Qt::Key_3);
+  cmdMngr.addCommand(cmGotoBookmarks +3,  I18N_NOOP("Goto Bookmark 4" ), Qt::ALT+Qt::Key_4);
+  cmdMngr.addCommand(cmGotoBookmarks +4,  I18N_NOOP("Goto Bookmark 5" ), Qt::ALT+Qt::Key_5);
+  cmdMngr.addCommand(cmGotoBookmarks +5,  I18N_NOOP("Goto Bookmark 6" ), Qt::ALT+Qt::Key_6);
+  cmdMngr.addCommand(cmGotoBookmarks +6,  I18N_NOOP("Goto Bookmark 7" ), Qt::ALT+Qt::Key_7);
+  cmdMngr.addCommand(cmGotoBookmarks +7,  I18N_NOOP("Goto Bookmark 8" ), Qt::ALT+Qt::Key_8);
+  cmdMngr.addCommand(cmGotoBookmarks +8,  I18N_NOOP("Goto Bookmark 9" ), Qt::ALT+Qt::Key_9);
+  cmdMngr.addCommand(cmGotoBookmarks +9,  I18N_NOOP("Goto Bookmark 10"), Qt::ALT+Qt::Key_0);
 }
 
 void KWrite::addStateCommands(KGuiCmdManager &cmdMngr) {
-  cmdMngr.addCategory(ctStateCommands, i18nop("State Commands"));
-  cmdMngr.addCommand(cmToggleInsert,   i18nop("Insert Mode"), Qt::Key_Insert);
-  cmdMngr.addCommand(cmToggleVertical, i18nop("&Vertical Selections"), Qt::Key_F5);
+  cmdMngr.addCategory(ctStateCommands, I18N_NOOP("State Commands"));
+  cmdMngr.addCommand(cmToggleInsert,   I18N_NOOP("Insert Mode"), Qt::Key_Insert);
+  cmdMngr.addCommand(cmToggleVertical, I18N_NOOP("&Vertical Selections"), Qt::Key_F5);
 }
 
 
