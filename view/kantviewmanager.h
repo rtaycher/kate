@@ -191,6 +191,10 @@ class KantViewManager : public KantPluginIface
     void activateNextView();
     void activatePrevView();
 
+    void addBookmark();
+    void setBookmark();
+    void clearBookmarks();
+
   signals:
     void statusChanged (KantView *, int, int, int, int, QString);
     void statChanged ();

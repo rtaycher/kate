@@ -769,6 +769,27 @@ void KantViewManager::slotSetHl (int n)
   activeView()->setHl(n);
 }
 
+void KantViewManager::addBookmark ()
+{
+  if (activeView() == 0) return;
+
+  activeView()->addBookmark();
+}
+
+void KantViewManager::setBookmark ()
+{
+  if (activeView() == 0) return;
+
+  activeView()->setBookmark();
+}
+
+void KantViewManager::clearBookmarks ()
+{
+  if (activeView() == 0) return;
+
+  activeView()->clearBookmarks();
+}
+
 void KantViewManager::openURL (KURL url)
 {
   if ( !docManager->isOpen( url ) )

@@ -191,6 +191,13 @@ void KantMainWindow::setupActions()
   editInsert = new KAction(i18n("I&nsert File..."), 0, viewManager, SLOT(slotInsertFile()), actionCollection(), "edit_insertFile");
 
   gotoLine = KStdAction::gotoLine(viewManager, SLOT(slotGotoLine()), actionCollection());
+
+  bookmarkAdd = new KAction(i18n("&Add Marker"), Qt::CTRL+Qt::Key_M, viewManager, SLOT(addBookmark()), actionCollection(), "edit_bookmarkAdd");
+  bookmarkSet = new KAction(i18n("&Set Marker..."), 0, viewManager, SLOT(setBookmark()), actionCollection(), "edit_bookmarkSet");
+  bookmarkClear = new KAction(i18n("&Clear Markers"), 0, viewManager, SLOT(clearBookmarks()), actionCollection(), "edit_bookmarksClear");
+  bookmarkMenu = new KActionMenu(i18n("&List of Markers"), actionCollection(), "edit_bookmarkList");
+  connect(bookmarkMenu->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(bookmarkMenuAboutToShow()));
+
   toolsSpell = KStdAction::spelling(viewManager, SLOT(slotSpellcheck()), actionCollection());
 
   new KAction ( i18n("Fi&lter Text..."), "edit_filter", CTRL + Key_Backslash, this,
@@ -726,6 +733,11 @@ void KantMainWindow::docListMenuAboutToShow()
     z++;
     i++;
   }
+}
+
+void KantMainWindow::bookmarkMenuAboutToShow()
+{
+
 }
 
 void KantMainWindow::slotPluginsAdd()

@@ -136,6 +136,9 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     KAction *editIndent;
     KAction *editUnIndent;
     KAction *editInsert;
+    KAction *bookmarkAdd;
+    KAction *bookmarkSet;
+    KAction *bookmarkClear;
     KAction *toolsSpell;
     KAction *projectNew;
     KAction *projectOpen;
@@ -163,6 +166,7 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     KAction* windowNext;
     KAction* windowPrev;
     KActionMenu *docListMenu;
+    KActionMenu *bookmarkMenu;
 
     KToggleAction* settingsShowSidebar;
     KToggleAction* settingsShowFullPath;
@@ -187,8 +191,6 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
 
     void slotConfigure();
 
-    /** Asks the sidebar to go to next widget if it is visible,
-      otherwise calls slotSettingsShowSidebar() */
     void slotSidebarFocusNext();
 
   private:
@@ -210,6 +212,7 @@ class KantMainWindow : public KDockMainWindow, virtual public KantIface , virtua
     void slotWindowActivated ();
     void slotCurrentDocChanged();
     void docListMenuAboutToShow();
+    void bookmarkMenuAboutToShow();
     void projectMenuAboutToShow();
     void settingsMenuAboutToShow();
     void slotPluginsAdd();
