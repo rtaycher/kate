@@ -125,7 +125,7 @@ const int KantDocument::maxAttribs = 32;
 KantDocument::KantDocument(long docID, QFileInfo* fi, bool bSingleViewMode, bool bBrowserView,
                                            QWidget *parentWidget, const char *widgetName,
                                            QObject *parent, const char *name)
-  : KTextEditor::Document(0L, 0L), hlManager(HlManager::self ())
+  : KantDocumentIface (), hlManager(HlManager::self ())
 {
   setInstance( KantFactory::instance() );
 

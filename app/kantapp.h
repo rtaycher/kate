@@ -44,6 +44,7 @@ class KantApp : public KantAppIface, public KantAppDCOPIface
 
     KantViewManagerIface *viewManagerIface ();
     KantDocManagerIface *docManagerIface ();
+    KStatusBar *statusBar ();
 
   private:
     bool _singleInstance;

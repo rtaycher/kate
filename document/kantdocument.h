@@ -48,9 +48,10 @@
 
 #include "../view/kantview.h"
 #include "kanthighlight.h"
-#include <ktexteditor.h>
 #include "kantbuffer.h"
 #include "kanttextline.h"
+
+#include "../interfaces/kantdocumentIface.h"
 
 class Attribute;
 
@@ -108,7 +109,7 @@ class KantActionGroup {
   @see TextLine
   @author Jochen Wilhelmy
 */
-class KantDocument : public KTextEditor::Document
+class KantDocument : public KantDocumentIface
 {
     Q_OBJECT
     friend class KantViewInternal;

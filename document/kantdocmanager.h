@@ -63,6 +63,19 @@ class KantDocManager : public KantDocManagerIface
   signals:
     void documentCreated (KantDocument *doc);
     void documentDeleted (long docID);
+
+  public:
+    KantDocumentIface *getNthDoc (long n) { return (KantDocumentIface *)nthDoc (n); };
+    KantDocumentIface *getCurrentDoc () { return (KantDocumentIface *)currentDoc (); };
+    KantDocumentIface *getFirstDoc () { return (KantDocumentIface *)firstDoc(); };
+    KantDocumentIface *getNextDoc () { return (KantDocumentIface *)nextDoc(); };
+
+    KantDocumentIface *getDocWithID (long id) { return (KantDocumentIface *)docWithID (id); };
+
+    long searchDoc (KURL url) { return searchDoc (url); };
+    bool isDocOpen (KURL url) { return isOpen (url); };
+
+    long getDocCount () { return docCount(); };
 };
 
 #endif

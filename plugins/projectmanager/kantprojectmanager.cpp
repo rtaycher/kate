@@ -19,15 +19,13 @@
 #include "kantprojectmanager.moc"
 
 #include "kantprojectdialog.h"
-#include "../../document/kantdocmanager.h"
-#include "../../document/kantdocument.h"
-#include "../../view/kantviewmanager.h"
 
 #include <kfiledialog.h>
 #include <iostream.h>
 #include <qtextstream.h>
 #include <kstatusbar.h>
 #include <klocale.h>
+#include <kaction.h>
 #include "../../piper/piper.cpp"  //  PCP I feel not a scrap of guilt...
 
 extern "C"
@@ -55,20 +53,17 @@ QObject* KantPluginFactory::createObject( QObject* parent, const char* name, con
 
 KInstance* KantPluginFactory::s_instance = 0L;
 
-KantProjectManager::KantProjectManager (QObject* parent, const char* name) : KantPlugin(parent, name)
+KantProjectManager::KantProjectManager (QObject* parent, const char* name) : KantPluginIface(parent, name)
 {
-/* this->docManager = docManager;
-  this->viewManager = viewManager;
-  this->statusBar = statusBar;    */
 }
 
 KantProjectManager::~KantProjectManager ()
 {
 }
 
-KantPluginView *KantProjectManager::createView ()
+KantPluginViewIface *KantProjectManager::createView ()
 {
-   KantPluginView *view = new KantPluginView ();
+   KantPluginViewIface *view = new KantPluginViewIface ();
 
 (void)  new KAction ( i18n("HT&ML Tag..."), "edit_HTML_tag", ALT + Key_Minus, this,
                                 SLOT( slotEditHTMLtag() ), view->actionCollection(), "edit_HTML_tag" );
@@ -119,7 +114,7 @@ void KantProjectManager::slotProjectOpen()
 	{
 		QDomElement e = n.toElement();
 		KURL file_url = e.attribute("path");
-		viewManager->openURL(file_url);
+		appIface->viewManagerIface()->openURL(file_url);
 	}
 
 	projectFile = url;
@@ -137,7 +132,7 @@ void KantProjectManager::slotProjectSave()
 	top.setAttribute("name", "project_name_here");
 	top.setAttribute("version", "1");
 
-	for (KantDocument* k = docManager->firstDoc(); k != 0; k = docManager->nextDoc())
+	for (KantDocumentIface* k = appIface->docManagerIface()->getFirstDoc(); k != 0; k = appIface->docManagerIface()->getNextDoc())
 	{
 		QDomElement file = xml.createElement("file");
 		file.setAttribute("path", k->url().path());
@@ -226,7 +221,7 @@ void KantProjectManager::slotProjectCompile()
   //  insert a line here to save all documents
 
   FILE *fp = NULL;
-  assert (statusBar);
+  assert (appIface->statusBar());
 
 
   /*  assume the user changed the file & wants to compile it...  */
@@ -236,5 +231,5 @@ void KantProjectManager::slotProjectCompile()
   fp = popen ("./builder.sh", "r");
 
   if (fp)
-    readAnyErrors(fp, *statusBar);
+    readAnyErrors(fp, *appIface->statusBar());
 }

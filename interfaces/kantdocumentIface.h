@@ -1,11 +1,11 @@
-/***************************************************************************
-                          kantprojectmanager.h  -  description
+ /***************************************************************************
+                          kantpluginiface.h  -  description
                              -------------------
-    begin                : Mon Jan 15 2001
-    copyright            : (C) 2001 by Christoph "Crossfire" Cullmann
-    email                : crossfire@babylon2k.de
+    begin                : FRE Feb 23 2001
+    copyright            : (C) 2001 by Joseph Wenninger
+    email                : jowenn@bigfoot.com
  ***************************************************************************/
-
+ 
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -14,31 +14,19 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#ifndef _KANT_DOCUMENT_IFACE_
+#define _KANT_DOCUMENT_IFACE_
 
-#ifndef kant_projectdialog_h
-#define kant_projectdialog_h
+#include <ktexteditor.h>
+#include <qstring.h>
 
-#include <kdialog.h>
-
-class KLineEdit;
-class KPushButton;
-
-class KantProjectDialog : public KDialog
+class KantDocumentIface : public KTextEditor::Document
 {
   Q_OBJECT
 
   public:
-    KantProjectDialog(QWidget* parent = 0, const char* name = 0);
-    ~KantProjectDialog();
-
-  private:
-    KLineEdit* e_name;
-    KLineEdit* e_workdir;
-    KLineEdit* e_compile;
-    KLineEdit* e_run;
-
-    KPushButton* b_ok;
-    KPushButton* b_cancel;
+    KantDocumentIface( ) : KTextEditor::Document (0L, 0L) {;};
+    virtual ~KantDocumentIface () {;};
 };
 
 #endif

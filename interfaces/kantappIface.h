@@ -19,6 +19,8 @@
 
 #include <kapp.h>
 
+class KStatusBar;
+
 #include "kantdocmanagerIface.h"
 #include "kantviewmanagerIface.h"
 
@@ -32,6 +34,7 @@ class KantAppIface : public KApplication
 
     virtual KantViewManagerIface *viewManagerIface ()=0;
     virtual KantDocManagerIface *docManagerIface ()=0;
+    virtual KStatusBar *statusBar ()=0;
 };
 
 #endif

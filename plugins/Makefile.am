@@ -1,1 +1,1 @@
-SUBDIRS = htmltools openheader textfilter
+SUBDIRS = htmltools openheader projectmanager textfilter

@@ -18,13 +18,12 @@
 #ifndef kant_projectmanager_h
 #define kant_projectmanager_h
 
-#include "../../main/kantmain.h"
-
-#include "../../pluginmanager/kantplugin.h"
+#include "kantpluginIface.h"
 
 #include <klibloader.h>
-#include <kantpluginIface.h>
 #include <kurl.h>
+
+class KAction;
 
 class KantPluginFactory : public KLibFactory
 {
@@ -41,7 +40,7 @@ class KantPluginFactory : public KLibFactory
 };
 
 
-class KantProjectManager : public KantPlugin
+class KantProjectManager : public KantPluginIface
 {
   Q_OBJECT
 
@@ -49,14 +48,9 @@ class KantProjectManager : public KantPlugin
     KantProjectManager (QObject* parent = 0, const char* name = 0);
     ~KantProjectManager ();
 
-    KantPluginView *createView ();
+    KantPluginViewIface *createView ();
 
     KURL projectFile;
-
-  private:
-    KantDocManager *docManager;
-    KantViewManager *viewManager;
-    KStatusBar *statusBar;
 
   public slots:
     void slotProjectNew();
