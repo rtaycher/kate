@@ -3076,6 +3076,11 @@ QString KateView::getHlName (int z)
   return HlManager::self()->hlName(z);
 }
 
+QString KateView::getHlSection (int z)
+{
+  return HlManager::self()->hlSection (z);
+}
+
 void KateView::slotIncFontSizes ()
 {
   QFont font = myDoc->getFont();

@@ -64,6 +64,7 @@ class View : public KTextEditor::View
     virtual int getHl () { return 0; };
     virtual int getHlCount () { return 0; };
     virtual QString getHlName (int) { return 0L; };
+    virtual QString getHlSection (int) { return 0L; };
 
     // undo/redo stuff
     virtual void undo () { ; };
