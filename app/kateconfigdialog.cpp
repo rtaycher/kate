@@ -93,7 +93,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
 
   path.clear();
 
-  // General page
+  //BEGIN General page
   path << i18n("Application") << i18n("General");
   QFrame* frGeneral = addPage(path, i18n("General Options"), BarIcon("gohome", KIcon::SizeSmall));
 
@@ -228,7 +228,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   connect( sb_daysMetaInfos, SIGNAL( valueChanged ( int ) ), this, SLOT( slotChanged() ) );
 
   lo->addStretch(1); // :-] works correct without autoadd
-  // END General page
+  //END General page
 
   path.clear();
 
