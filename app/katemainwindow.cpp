@@ -108,7 +108,6 @@ KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_
   }
 
   setAutoSaveSettings( QString::fromLatin1("MainWindow"), false );
-  statusBar()->hide();
 }
 
 KateMainWindow::~KateMainWindow()

@@ -64,7 +64,7 @@ void KateViewSpace::addView(Kate::View* v, bool show)
 
 void KateViewSpace::removeView(Kate::View* v)
 {
-  mStatusBar->slotClear ();
+//  mStatusBar->slotClear ();
   mViewList.remove (v);
   stack->removeWidget (v);
 
@@ -85,7 +85,7 @@ bool KateViewSpace::showView(Kate::View* v)
       Kate::View* kv = it.current();
       mViewList.removeRef( kv );
       mViewList.append( kv );
-      kv->show();
+//      kv->show();
       stack->raiseWidget( kv );
       return true;
     }
@@ -103,7 +103,7 @@ bool KateViewSpace::showView(uint documentNumber)
       Kate::View* kv = it.current();
       mViewList.removeRef( kv );
       mViewList.append( kv );
-      kv->show();
+//      kv->show();
       stack->raiseWidget( kv );
       return true;
     }
@@ -125,12 +125,12 @@ bool KateViewSpace::isActiveSpace()
   return mIsActiveSpace;
 }
 
-void KateViewSpace::setActive(bool b,  bool showled)
+void KateViewSpace::setActive( bool b, bool )
 {
   mIsActiveSpace = b;
 
   // enable the painting of the icon and repaint it ;-)
-  mStatusBar->showActiveViewIndicator( showled );
+  // mStatusBar->showActiveViewIndicator( showled );
 }
 
 bool KateViewSpace::eventFilter(QObject* o, QEvent* e)
@@ -146,26 +146,7 @@ void KateViewSpace::slotStatusChanged (Kate::View *view, int r, int c, int ovr, 
 {
   if ((QWidgetStack *)view->parentWidget() != stack)
     return;
-  //if (!mIsActiveSpace) return;
-  QString s1 = i18n("Line: %1").arg(KGlobal::locale()->formatNumber(r+1, 0));
-  QString s2 = i18n("Col: %1").arg(KGlobal::locale()->formatNumber(c, 0));
-
-  QString ovrstr;
-  if (ovr == 0)
-    ovrstr = i18n(" R/O ");
-  if (ovr == 1)
-     ovrstr = i18n(" OVR ");
-  if (ovr == 2)
-    ovrstr = i18n(" INS ");
-
-  QString modstr;
-  if (mod == 1)
-    modstr = QString (" * ");
-  else
-    modstr = QString ("   ");
-  QString blockstr;
-  blockstr=block ? i18n(" BLK ") : i18n("NORM");
-  mStatusBar->slotDisplayStatusText (" " + s1 + " " + s2 + " " + ovrstr + " " + blockstr+ " " + modstr + " " + msg);
+  mStatusBar->setStatus( r, c, ovr, block, mod, msg );
 }
 
 void KateViewSpace::saveFileList( KSimpleConfig* config, int myIndex )
@@ -200,32 +181,63 @@ void KateViewSpace::saveFileList( KSimpleConfig* config, int myIndex )
 // KateVSStatusBar implementation
 ///////////////////////////////////////////////////////////
 
-KateVSStatusBar::KateVSStatusBar ( KateViewSpace *parent, const char *name ) : QWidget( parent, name )
-,m_yOffset(0)
-,m_showLed( false )
+KateVSStatusBar::KateVSStatusBar ( KateViewSpace *parent, const char *name )
+  : KStatusBar( parent, name )
 {
-   viewspace = parent;
+   m_lineColLabel = new QLabel( i18n(" Line: 1 Col: 0 "), this );
+   addWidget( m_lineColLabel, 0, true );
+   m_lineColLabel->setAlignment( Qt::AlignCenter );
+   m_lineColLabel->installEventFilter( this );
+      
+   m_modifiedLabel = new QLabel( QString(" * "), this );
+   addWidget( m_modifiedLabel, 0, true );
+   m_modifiedLabel->setAlignment( Qt::AlignCenter );
+   m_modifiedLabel->installEventFilter( this );
+   
+   m_insertModeLabel = new QLabel( i18n(" INS "), this );
+   addWidget( m_insertModeLabel, 0, true );
+   m_insertModeLabel->setAlignment( Qt::AlignCenter );
+   m_insertModeLabel->installEventFilter( this );
+
+   m_selectModeLabel = new QLabel( i18n(" NORM "), this );
+   addWidget( m_selectModeLabel, 0, true );
+   m_selectModeLabel->setAlignment( Qt::AlignCenter );
+   m_selectModeLabel->installEventFilter( this );
+   
    installEventFilter( this );
-   m_pStatusLabel = new QLabel( this );
-   m_pStatusLabel->show();
-   m_pStatusLabel->installEventFilter(this);
-
-   int h=fontMetrics().height()+2;
-   if (h<13 ) h=13;
-   setFixedHeight(h);
-   m_yOffset=(h-13)/2;
-
-   m_pStatusLabel->setGeometry(40,0,50,h);
 }
 
 KateVSStatusBar::~KateVSStatusBar ()
 {
 }
 
+void KateVSStatusBar::setStatus( int r, int c, int ovr, bool block, int mod, QString msg )
+{
+  m_lineColLabel->setText(
+    i18n(" Line: %1 Col: %1 ").arg(KGlobal::locale()->formatNumber(r+1, 0))
+                              .arg(KGlobal::locale()->formatNumber(c, 0)) );
+
+  if (ovr == 0)
+    m_insertModeLabel->setText( i18n(" R/O ") );
+  if (ovr == 1)
+    m_insertModeLabel->setText( i18n(" OVR ") );
+  if (ovr == 2)
+    m_insertModeLabel->setText( i18n(" INS ") );
+
+  if (mod == 1)
+    m_modifiedLabel->setText( QString(" * ") );
+  else
+    m_modifiedLabel->setText( QString("   ") );
+  
+  m_selectModeLabel->setText( block ? i18n(" BLK ") : i18n(" NORM ") );
+  
+  message( msg );
+}
 
 void KateVSStatusBar::showMenu()
 {
-   QPopupMenu *menu = (QPopupMenu*) ((KMainWindow *)topLevelWidget ())->factory()->container("viewspace_popup", (KMainWindow *)topLevelWidget ());
+   KMainWindow* mainWindow = static_cast<KMainWindow*>( topLevelWidget() );
+   QPopupMenu* menu = static_cast<QPopupMenu*>( mainWindow->factory()->container("viewspace_popup", mainWindow ) );
    menu->exec(QCursor::pos());
 }
 
@@ -233,9 +245,6 @@ bool KateVSStatusBar::eventFilter(QObject*,QEvent *e)
 {
    if (e->type()==QEvent::MouseButtonPress)
    {
-      emit clicked();
-      update();
-
       if ( ((KateViewSpace*)parentWidget())->currentView() )
         ((KateViewSpace*)parentWidget())->currentView()->setFocus();
 
@@ -247,35 +256,3 @@ bool KateVSStatusBar::eventFilter(QObject*,QEvent *e)
    return false;
 }
 
-void KateVSStatusBar::slotDisplayStatusText (const QString& text)
-{
-   m_pStatusLabel->resize(fontMetrics().width(text),fontMetrics().height());
-   m_pStatusLabel->setText(text);
-}
-
-void KateVSStatusBar::slotClear()
-{
-  slotDisplayStatusText( "" );
-}
-
-void KateVSStatusBar::showActiveViewIndicator( bool b )
-{
-    m_showLed = b;
-    repaint();
-}
-
-void KateVSStatusBar::paintEvent(QPaintEvent* e)
-{
-   static QPixmap indicator_viewactive( UserIcon( "indicator_viewactive" ) );
-   static QPixmap indicator_empty( UserIcon( "indicator_empty" ) );
-
-   if (!isVisible()) return;
-
-   QWidget::paintEvent(e);
-
-   if (m_showLed)
-   {
-     QPainter p(this);
-     p.drawPixmap(4,m_yOffset,viewspace->isActiveSpace() ? indicator_viewactive : indicator_empty);
-   }
-}

@@ -26,34 +26,29 @@
 #include <qptrlist.h>
 #include <qwidget.h>
 #include <qvbox.h>
+#include <kstatusbar.h>
 
 class KSimpleConfig;
-class KateVSStatusBar : public QWidget
+class KateVSStatusBar : public KStatusBar
 {
   Q_OBJECT
 
    public:
       KateVSStatusBar ( KateViewSpace *parent = 0L, const char *name = 0L );
       virtual ~KateVSStatusBar ();
-
-      void showActiveViewIndicator ( bool b );
-
+      
    public slots:
-      void slotDisplayStatusText (const QString& text);
-      void slotClear ();
-
-   signals:
-      void clicked();
-
+      void setStatus( int r, int c, int ovr, bool block, int mod, QString msg );
+      
    protected:
       virtual bool eventFilter (QObject*,QEvent *);
       virtual void showMenu ();
-
-      virtual void paintEvent (QPaintEvent *e);
-      KateViewSpace* viewspace;
-      QLabel *m_pStatusLabel;
-      int m_yOffset;
-      bool m_showLed;
+      
+   private:
+      QLabel* m_lineColLabel;
+      QLabel* m_modifiedLabel;
+      QLabel* m_insertModeLabel;
+      QLabel* m_selectModeLabel;
 };
 
 class KateViewSpace : public QVBox
