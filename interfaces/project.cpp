@@ -27,8 +27,17 @@
 
 #include <kconfig.h>
 
+#include <qfile.h>
+
 namespace Kate
 {
+
+class PrivateProjectDirFileData
+{
+  public:
+    QString fileName;
+    Project *project;
+};
 
 class PrivateProject
   {
@@ -39,25 +48,30 @@ class PrivateProject
 
     ~PrivateProject ()
     {    
-      delete data;
       delete m_data;
+      delete m_config;
     }          
         
-    KateInternalProjectData *data;
+    KateInternalProjectData *m_data;
     Kate::ProjectPlugin *m_plugin;
-    KConfig *m_data;
+    KConfig *m_config;
+    QString m_dir;
   };
   
-class PrivateProjectFile
+class PrivateProjectDirFile
   {
   public:
-    PrivateProjectFile ()
+    PrivateProjectDirFile ()
     {
     }
 
-    ~PrivateProjectFile ()
-    {    
+    ~PrivateProjectDirFile ()
+    {
+      delete m_data;
     }
+    
+    PrivateProjectDirFileData *m_data;
+    KConfig *m_config;
   };
 
             
@@ -67,11 +81,15 @@ Project::Project (void *project) : QObject (((KateInternalProjectData*) project)
 {
   globalProjectNumber++;
   myProjectNumber = globalProjectNumber; 
-  
 
   d = new PrivateProject ();
-  d->data = ((KateInternalProjectData*) project);
-  d->m_plugin = d->data->proMan->createPlugin (this);
+  d->m_data = ((KateInternalProjectData*) project);
+  
+  d->m_config = new KConfig (d->m_data->fileName);
+  d->m_dir = d->m_data->fileName.left (d->m_data->fileName.findRev (QChar ('/')));
+  
+  // LAST STEP, IMPORTANT, LOAD PLUGIN AFTER ALL OTHER WORK IS DONE !
+  d->m_plugin = d->m_data->proMan->createPlugin (this);
 }
 
 Project::~Project ()
@@ -91,56 +109,96 @@ ProjectPlugin *Project::plugin () const
 
 QString Project::type () const
 {
-  d->m_data->setGroup("General");
-  return d->m_data->readEntry ("Type", "Default");
+  d->m_config->setGroup("General");
+  return d->m_config->readEntry ("Type", "Default");
 }
 
 QString Project::name () const
 {
-  d->m_data->setGroup("General");
-  return d->m_data->readEntry ("Name", "");
+  d->m_config->setGroup("General");
+  return d->m_config->readEntry ("Name", "Untitled");
 }
 
 QString Project::fileName () const
 {
-  d->data->fileName;
+  return d->m_data->fileName;
 }
 
-KURL Project::url () const
+QString Project::dir () const
 {
-  return KURL ();
+  return d->m_dir;
 }
 
-KURL Project::baseurl (bool _strip_trailing_slash_from_result) const
+QString Project::dirFilesName () const
 {
-  return KURL ();
+  d->m_config->setGroup("General");
+  return d->m_config->readEntry ("DirFilesName", ".katedir");
 }
 
 bool Project::save ()
 {
-  d->m_data->sync();
+  d->m_config->sync();
 
   return d->m_plugin->save ();
 }
 
-QStringList Project::subdirs (const QString &dir) const
+ProjectDirFile *Project::dirFile (const QString &dir) const
 {
-  return QStringList ();
+  QString fname = d->m_dir + QString ("/");
+  
+  if (!dir.isNull ())
+    fname += dir + QString ("/") + dirFilesName ();
+   else
+    fname += dirFilesName ();
+    
+  if (!QFile::exists (fname))
+    return 0;
+    
+  PrivateProjectDirFileData *data = new PrivateProjectDirFileData ();
+  data->fileName = fname;
+  data->project = this;
+  
+  return new ProjectDirFile ((void *)data);
 }
 
-QStringList Project::files (const QString &dir) const
+KConfig *Project::data () const
 {
-  return QStringList ();
+  return d->m_config;
 }
 
-ProjectFile::ProjectFile (void *projectFile) : QObject ()
+ProjectDirFile::ProjectDirFile (void *projectDirFile) : QObject ()
 {
-  d = new PrivateProjectFile ();
+  d = new PrivateProjectDirFile ();
+  d->m_data = (PrivateProjectDirFileData *) projectDirFile;
+  
+  d->m_config = new KConfig (d->m_data->fileName);
 }
 
-ProjectFile::~ProjectFile ()
+ProjectDirFile::~ProjectDirFile ()
 {
   delete d;
+}
+
+Project *ProjectDirFile::project () const
+{
+  return d->m_data->project;
+}
+
+KConfig *ProjectDirFile::data () const
+{
+  return d->m_config;
+}
+
+QStringList ProjectDirFile::dirs () const
+{
+  d->m_config->setGroup("General");
+  return d->m_config->readListEntry ("Dirs");
+}
+     
+QStringList ProjectDirFile::files () const
+{
+  d->m_config->setGroup("General");
+  return d->m_config->readListEntry ("Files");
 }
 
 };

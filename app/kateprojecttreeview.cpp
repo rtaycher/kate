@@ -88,7 +88,7 @@ KateProjectTreeView::KateProjectTreeView (Kate::Project *project, KateMainWindow
   header()->setStretchEnabled (true);
   addColumn(i18n("Project: ") + m_project->name());
 
-  addDir (0, QString ("."));
+  addDir (0, QString::null);
   
   connect(this,SIGNAL(executed (QListViewItem*)),this,SLOT(slotExecuted (QListViewItem*)));
 }
@@ -99,9 +99,17 @@ KateProjectTreeView::~KateProjectTreeView ()
 
 void KateProjectTreeView::addDir (KateProjectTreeViewItem *parent, const QString &dir)
 {
-  QString base = dir + QString ("/");
+  Kate::ProjectDirFile *f = m_project->dirFile (dir);
 
-  QStringList dirs = m_project->subdirs (dir);
+  if (!f)
+    return;
+  
+  QString base = dir;
+
+  if (!dir.isNull())
+    base += QString ("/");
+     
+  QStringList dirs = f->dirs ();
   
   for (uint z=0; z < dirs.count(); z++)
   {
@@ -114,7 +122,7 @@ void KateProjectTreeView::addDir (KateProjectTreeViewItem *parent, const QString
     addDir (item, base + dirs[z]);
   }
   
-  QStringList files = m_project->files (dir);
+  QStringList files = f->files ();
   
   for (uint z=0; z < files.count(); z++)
   {
@@ -123,6 +131,8 @@ void KateProjectTreeView::addDir (KateProjectTreeViewItem *parent, const QString
     else
       new KateProjectTreeViewItem (this, files[z], base + files[z], false);
   }
+  
+  delete f;
 }
 
 void KateProjectTreeView::slotExecuted ( QListViewItem *i )
@@ -131,7 +141,7 @@ void KateProjectTreeView::slotExecuted ( QListViewItem *i )
   
   if (item)
   {
-    m_mainWin->viewManager()->openURL (KURL (m_project->baseurl(false), item->fullName()));
+   // m_mainWin->viewManager()->openURL (KURL (m_project->baseurl(false), item->fullName()));
   }
 }
 

@@ -23,15 +23,19 @@
 #include <kurl.h>
 #include <qstringlist.h>
 
+class KConfig;
+
 namespace Kate
 {
+
+class Project;
 
 /**
  * Interface to the project
  */
-class ProjectFile : public QObject
+class ProjectDirFile : public QObject
 {
-  friend class PrivateProjectFile;
+  friend class PrivateProjectDirFile;
 
   Q_OBJECT   
   
@@ -39,18 +43,30 @@ class ProjectFile : public QObject
     /**
      * Construtor, should not interest, internal usage
      */
-    ProjectFile (void *projectFile);
+    ProjectDirFile (void *projectDirFile);
     
     /**
      * Desctructor
      */
-    virtual ~ProjectFile ();
+    virtual ~ProjectDirFile ();
+    
+    Project *project () const;
+    
+    /**
+     * Raw access to config file
+     * @return KConfig config data
+     */
+     KConfig *data () const;
+     
+     QStringList dirs () const;
+     
+     QStringList files () const;
 
   private:
     /**
      * REALLY PRIVATE ;)
      */
-    class PrivateProjectFile *d;
+    class PrivateProjectDirFile *d;
 };
 
 /**
@@ -94,22 +110,22 @@ class Project : public QObject
     QString name () const;
     
     /**
-     * Return the project name
-     * @return QString project name
+     * Return the filename of the project file
+     * @return QString project filename
      */
     QString fileName () const;
     
     /**
-     * Return the url of the project file
-     * @return KURL project file url
+     * Return the dir of the project
+     * @return QString project dir
      */
-    KURL url () const;
+    QString dir () const;
     
     /**
-     * Return the url of the project dir
-     * @return KURL project dir url
+     * Return the name of the dir project files
+     * @return QString dir project file naming
      */
-    KURL baseurl (bool _strip_trailing_slash_from_result = true) const;
+    QString dirFilesName () const;
     
     /**
      * Saves the project
@@ -118,16 +134,16 @@ class Project : public QObject
     bool save ();
     
     /**
-     * subdirs of given dir
-     * @return QStringList list with subdirs
+     * ProjectDirFile object for the dir project file in the given dir, QString::null for toplevel dir !
+     * @return ProjectDirFile for given dir
      */
-    QStringList subdirs (const QString &dir = QString (".")) const;
+    ProjectDirFile *dirFile (const QString &dir = QString::null) const;
     
     /**
-     * files of given dir
-     * @return QStringList list with files
+     * Raw access to config file
+     * @return KConfig config data
      */
-    QStringList files (const QString &dir = QString (".")) const;
+     KConfig *data () const;
     
   #undef signals
   #define signals public
