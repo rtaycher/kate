@@ -33,8 +33,8 @@ class KantPluginIface : public QObject
     KantPluginIface (QObject *parent) : QObject (parent) {;};
     ~KantPluginIface () {;};
 
-    virtual KantViewManagerIface *viewManagerIface ()=0L;
-    virtual KantDocManagerIface *docManagerIface ()=0L;
+    virtual KantViewManagerIface *viewManagerIface ()=0;
+    virtual KantDocManagerIface *docManagerIface ()=0;
 };
 
 #endif
