@@ -223,9 +223,9 @@ GrepTool::GrepTool(KateMainWindow *parent, const char *name)
      "by the pattern input field, resulting in the regular expression\n"
      "to search for."));
   QWhatsThis::add(lDir,
-    i18n("Enter the directory which contains the files you want to search in."));
+    i18n("Enter the folder which contains the files you want to search in."));
   QWhatsThis::add(cbRecursive,
-    i18n("Check this box to search in all subdirectories."));
+    i18n("Check this box to search in all subfolders."));
   QWhatsThis::add(cbCasesensitive,
     i18n("If this option is enabled (the default), the search will be case sensitive."));
   QWhatsThis::add( cbRegex, i18n(
@@ -319,7 +319,7 @@ void GrepTool::slotSearch()
   {
     cmbDir->setFocus();
     KMessageBox::information( this, i18n(
-        "You must enter an existing local directory in the 'Folder' entry."),
+        "You must enter an existing local folder in the 'Folder' entry."),
         i18n("Invalid Folder"), "Kate grep tool: invalid folder" );
     return;
   }
