@@ -2530,7 +2530,7 @@ void KateDocument::recordReplace(PointStruc &cursor, int len, const QString &tex
   a->len += text.length();
 
   buffer->changeLine(a->cursor.y);
-
+  updateMaxLength(textLine);
   tagLine(a->cursor.y);
 }
 
