@@ -33,6 +33,8 @@
 #include <kate/view.h>
 #include <kate/document.h>
 
+#include "katemainwindow.h"
+
 KateConsole::KateConsole (QWidget* parent, const char* name, Kate::ViewManager *kvm) : QWidget (parent, name),part(0)
 {
 
@@ -92,5 +94,4 @@ void KateConsole::cd (KURL url)
 void KateConsole::slotDestroyed ()
 {
   part=0;
-  loadConsoleIfNeeded();
 }
