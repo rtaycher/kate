@@ -596,52 +596,37 @@ signed char *Highlight::generateContextStack(int *ctxNum, int ctx,signed char *c
       {
         if ((*ctxsLen)==0)
         (*ctxNum)=0;
-	      else
-	      {
-	        // kdDebug()<<"Truncating 'stack'"<<endl;
-	        ctxs = (signed char *) realloc (ctxs, (*ctxsLen)-1);
-	                          (*ctxsLen)--;
-	        (*ctxNum) = (((*ctxsLen)==0)?0:ctxs[(*ctxsLen)-1]);
-	      }
-		ctx++;
-	}
-	ctx=0;
-	                //      kdDebug()<<"test1-2-1-4"<<endl;
+        else
+        {
+          ctxs = (signed char *) realloc (ctxs, (*ctxsLen)-1);
+          (*ctxsLen)--;
+          (*ctxNum) = (((*ctxsLen)==0)?0:ctxs[(*ctxsLen)-1]);
+        }
+      ctx++;
     }
 
-          if ((*prevLine)>=(int)(*ctxsLen)-1)
-                {
-                //  kdDebug()<<"test1-2-1-5"<<endl;
-
-                  *prevLine=(*ctxsLen)-1;
-                  if ((*ctxsLen)==0) return ctxs;
-
-                        if (contextList[ctxs[(*ctxsLen)-1]] && (contextList[ctxs[(*ctxsLen)-1]]->ctx!=-1))
-                          return generateContextStack(ctxNum, contextList[ctxs[(*ctxsLen)-1]]->ctx,ctxs,ctxsLen, prevLine);
-
-                //      kdDebug()<<"test1-2-1-6"<<endl;
-                }
-
-          else
-	{
-            if (ctx==-1) (*ctxNum)=(((*ctxsLen)==0)?0:ctxs[(*ctxsLen)-1]);
+    ctx=0;
     }
 
-}
-        //kdDebug()<<"test1-2-1-end"<<endl;
+    if ((*prevLine)>=(int)(*ctxsLen)-1)
+    {
+      *prevLine=(*ctxsLen)-1;
 
+      if ((*ctxsLen)==0)
         return ctxs;
+
+      if (contextList[ctxs[(*ctxsLen)-1]] && (contextList[ctxs[(*ctxsLen)-1]]->ctx!=-1))
+        return generateContextStack(ctxNum, contextList[ctxs[(*ctxsLen)-1]]->ctx,ctxs,ctxsLen, prevLine);
+    }
+    else
+    {
+      if (ctx==-1)
+        (*ctxNum)=(((*ctxsLen)==0)?0:ctxs[(*ctxsLen)-1]);
+    }
+  }
+
+  return ctxs;
 }
-
-
-
-
-
-
-
-
-
-
 
 
 /*******************************************************************************************
