@@ -38,7 +38,7 @@ class KateViewManager : public QWidget
     KateViewManager (QWidget *parent=0, KateDocManager *docManager=0);
     ~KateViewManager ();
 
-    Kate::ViewManager *viewManager () { return m_viewManager; };
+    Kate::ViewManager *viewManager () const { return m_viewManager; };
 
     inline QPtrList<Kate::View> &viewList () { return m_viewList; };
 
@@ -119,7 +119,7 @@ class KateViewManager : public QWidget
       */
     void splitViewSpace( KateViewSpace* vs=0L, bool isHoriz=true, bool atTop=false, KURL newViewUrl=0L );
 
-    bool getShowFullPath() { return showFullPath; }
+    bool getShowFullPath() const { return showFullPath; }
     void setUseOpaqueResize( bool enable );
 
     void activateView ( uint documentNumber );

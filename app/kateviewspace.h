@@ -39,14 +39,14 @@ class KateVSStatusBar : public KStatusBar
    public:
       KateVSStatusBar ( KateViewSpace *parent = 0L, const char *name = 0L );
       virtual ~KateVSStatusBar ();
-      
+
    public slots:
       void setStatus( int r, int c, int ovr, bool block, int mod, const QString &msg );
-      
+
    protected:
       virtual bool eventFilter (QObject*,QEvent *);
       virtual void showMenu ();
-      
+
    private:
       QLabel* m_lineColLabel;
       QLabel* m_modifiedLabel;
@@ -71,14 +71,14 @@ class KateViewSpace : public QVBox
     bool showView(Kate::View* v);
     bool showView(uint docID);
     Kate::View* currentView();
-    int viewCount() { return mViewList.count(); }
+    int viewCount() const { return mViewList.count(); }
     /** Saves the list of documents represented in this viewspace.
      * Documents with an invalid URL is discarded.
      * myIndex is used as identifyer for a config group.
      */
     void saveFileList(KSimpleConfig* config, int myIndex);
   protected:
-    /** reimplemented to catch QEvent::PaletteChange, 
+    /** reimplemented to catch QEvent::PaletteChange,
     since we use a modified palette for the statusbar */
     bool event( QEvent * );
 
@@ -96,7 +96,7 @@ class KateViewSpace : public QVBox
 
   public slots:
     void polish();
-  
+
 };
 
 #endif

@@ -72,7 +72,7 @@ class KateFileList : public KListBox
     void tip( const QPoint &p, QRect &r, QString &str );
 
     void setSortType (int s);
-    int sortType () { return m_sort; };
+    int sortType () const { return m_sort; };
     void updateSort ();
 
     enum sorting {
