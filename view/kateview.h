@@ -1073,16 +1073,19 @@ class KateBrowserExtension : public KParts::BrowserExtension
   Q_OBJECT
 
   public:
-    KateBrowserExtension( KateDocument *doc );
+    KateBrowserExtension( KateDocument *doc, KateView *view );
 
-  private slots:
+  public slots:
     void copy();
     void slotSelectionChanged();
+    void print();
 
   private:
     KateDocument *m_doc;
+    KateView *m_view;
 };
 
 #endif
+
 
 

@@ -1479,7 +1479,7 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name, bool H
   }
   else
   {
-    (void)new KateBrowserExtension( myDoc );
+    (void)new KateBrowserExtension( myDoc, this );
     myDoc->setXMLFile( "katepartbrowserui.rc" );
   }
 
@@ -1545,11 +1545,6 @@ void KateView::setupActions()
     editCut = KStdAction::cut(this, SLOT(cut()), actionCollection());
     editPaste = KStdAction::copy(this, SLOT(copy()), actionCollection());
     editReplace = KStdAction::paste(this, SLOT(paste()), actionCollection());
-    KStdAction::selectAll(this, SLOT(selectAll()), actionCollection());
-    new KAction(i18n("&Deselect All"), 0, this, SLOT(deselectAll()),
-                actionCollection(), "edit_deselectAll");
-    new KAction(i18n("Invert &Selection"), 0, this, SLOT(invertSelection()),
-                actionCollection(), "edit_invertSelection");
 
     if ( myDoc->hasBrowserExtension() )
     {
@@ -1558,6 +1553,11 @@ void KateView::setupActions()
       KStdAction::gotoLine(this, SLOT(gotoLine()), myDoc->actionCollection(), "goto_line" );
       new KAction(i18n("Configure Highlighti&ng..."), 0, this, SLOT(hlDlg()),myDoc->actionCollection(), "set_confHighlight");
       setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, myDoc->actionCollection(), "set_highlight");
+      KStdAction::selectAll(this, SLOT(selectAll()), myDoc->actionCollection(), "select_all");
+      new KAction(i18n("&Deselect All"), 0, this, SLOT(deselectAll()),
+                myDoc->actionCollection(), "unselect_all");
+      new KAction(i18n("Invert &Selection"), 0, this, SLOT(invertSelection()),
+                myDoc->actionCollection(), "invert_select");
     }
     else
     {
@@ -1565,6 +1565,11 @@ void KateView::setupActions()
       KStdAction::findNext(this, SLOT(findAgain()), actionCollection());
       KStdAction::gotoLine(this, SLOT(gotoLine()), actionCollection());
       setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, actionCollection(), "set_highlight");
+      KStdAction::selectAll(this, SLOT(selectAll()), actionCollection());
+      new KAction(i18n("&Deselect All"), 0, this, SLOT(deselectAll()),
+                actionCollection(), "edit_deselectAll");
+      new KAction(i18n("Invert &Selection"), 0, this, SLOT(invertSelection()),
+                actionCollection(), "edit_invertSelection");
     }
 
     KStdAction::replace(this, SLOT(replace()), actionCollection());
@@ -3440,11 +3445,13 @@ void KateView::slotEditCommand ()
     myDoc->cmd()->execCmd (cmd, this);
 }
 
-KateBrowserExtension::KateBrowserExtension( KateDocument *doc )
+KateBrowserExtension::KateBrowserExtension( KateDocument *doc, KateView *view )
 : KParts::BrowserExtension( doc, "katepartbrowserextension" )
 {
   m_doc = doc;
+  m_view = view;
   connect( m_doc, SIGNAL( selectionChanged() ), this, SLOT( slotSelectionChanged() ) );
+  emit enableAction( "print", true ); 
 }
 
 void KateBrowserExtension::copy()
@@ -3452,10 +3459,16 @@ void KateBrowserExtension::copy()
   m_doc->copy( 0 );
 }
 
+void KateBrowserExtension::print()
+{
+  m_view->printDlg ();  
+}
+
 void KateBrowserExtension::slotSelectionChanged()
 {
   emit enableAction( "copy", m_doc->hasMarkedText() );
 }
+
 
 
 
