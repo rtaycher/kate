@@ -52,15 +52,15 @@ public:
     * Create an empty buffer.
     */
    KWBuffer();
-   
+
    /**
-    * Insert a file at line @p line in the buffer. 
+    * Insert a file at line @p line in the buffer.
     * Using @p codec to decode the file.
     */
    void insertFile(int line, const QString &file, QTextCodec *codec);
 
    /**
-    * Insert a block of data at line @p line in the buffer. 
+    * Insert a block of data at line @p line in the buffer.
     * Using @p codec to decode the file.
     */
    void insertData(int line, const QByteArray &data, QTextCodec *codec);
@@ -69,12 +69,12 @@ public:
     * Return the total number of lines in the buffer.
     */
    int count();
-   
+
    /**
     * Return line @p i
     */
    TextLine::Ptr line(int i);
-   
+
    /**
     * Insert @p line in front of line @p i
     */
@@ -94,12 +94,13 @@ public:
     * Clear the buffer.
     */
    void clear();
-    
+
 signals:
    /**
     * Emitted during loading.
     */
    void linesChanged(int lines);
+   void needHighlight(long,long);
 
 protected:
    /**

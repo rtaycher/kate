@@ -35,6 +35,9 @@
     Boston, MA 02111-1307, USA.
 */
 
+#define NEW_CODE
+
+
 #include "kateview.h"
 #include "kateview.moc"
 
@@ -1263,11 +1266,13 @@ void KateViewInternal::paintEvent(QPaintEvent *e) {
   line = (yPos + updateR.y()) / h;
   y = line*h - yPos;
   yEnd = updateR.y() + updateR.height();
-
+  myDoc->needPreHighlight(y);
   while (y < yEnd)
   {
     TextLine *textLine;
     int ctxNum = 0;
+
+//    kdDebug()<<QString("KateViewInternal::paintEvent: line:%1.count%2").arg(line).arg(myDoc->getTextLineCount()-1)<<endl;
 
     if ((myDoc->getTextLineCount()-1)>line)
     {

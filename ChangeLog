@@ -1,3 +1,7 @@
+2001-04-07 Joseph Wenninger <jowenn@bigfoot.com>
+	* Activated Waldo Bastian's NEW_CODE
+	* Ported Highlighting to it
+
 2001-04-05 Joseph Wenninger <jowenn@bigfoot.com>
 	* Highlighting Configuration is now in kate/kwrite settings too
 	* Made a cleanup of no longer used classes

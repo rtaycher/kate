@@ -215,7 +215,7 @@ class KateDocument : public KateDocumentIface
     bool ownedView(KateView *);
     bool isLastView(int numViews);
 
-    int getTextLineCount() { return contents.count(); }
+    int getTextLineCount() {return numLines();}
 
     int textWidth(const TextLine::Ptr &, int cursorX);
     int textWidth(PointStruc &cursor);
@@ -277,6 +277,7 @@ class KateDocument : public KateDocumentIface
     virtual void setText(const QString &);
 
   public:
+    void needPreHighlight(long till);
     bool hasMarkedText() {return (selectEnd >= selectStart);}
     QString markedText(int flags);
     void delMarkedText(VConfig &/*, bool undo = true*/);
@@ -347,12 +348,14 @@ class KateDocument : public KateDocumentIface
   protected slots:
     void clipboardChanged();
     void slotBufferChanged();
+    void slotBufferHighlight(long,long);
 
   private slots:
     void slotViewDestroyed();
 
 // member variables
   protected:
+    long PreHighlightedTill;
     TextLine::List contents;
     KWBuffer *buffer;
     QColor colors[5];

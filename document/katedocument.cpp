@@ -35,6 +35,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#define NEW_CODE
+
 #include "katedocument.h"
 #include "katedocument.moc"
 
@@ -129,6 +131,7 @@ KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool
                                            QObject *, const char *)
   : KateDocumentIface (), hlManager(HlManager::self ())
 {
+  PreHighlightedTill=0;
   setInstance( KateFactory::instance() );
 
   m_bSingleViewMode=bSingleViewMode;
@@ -149,6 +152,7 @@ KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool
 
   buffer = new KWBuffer;
   connect(buffer, SIGNAL(linesChanged(int)), this, SLOT(slotBufferChanged()));
+  connect(buffer, SIGNAL(needHighlight(long,long)),this,SLOT(slotBufferHighlight(long,long)));
 
   colors[0] = KGlobalSettings::baseColor();
   colors[1] = KGlobalSettings::highlightColor();
@@ -191,6 +195,16 @@ KateDocument::KateDocument(uint docID, QFileInfo* fi, bool bSingleViewMode, bool
     view->show();
     setWidget( view );
   }
+}
+
+void KateDocument::needPreHighlight(long till)
+{
+  if (PreHighlightedTill<till)
+    {
+      kdDebug()<<"Prehighlighting"<<endl;
+      updateLines(PreHighlightedTill,till);
+      PreHighlightedTill=till;
+    }
 }
 
 KateDocument::~KateDocument()
@@ -1866,15 +1880,19 @@ void KateDocument::updateLines(int startLine, int endLine, int flags, int cursor
   TextLine::Ptr textLine;
   int line, last_line;
   int ctxNum, endCtx;
-
+  kdDebug()<<"******************KateDocument::updateLines Checkpoint 1"<<endl;
+  if (buffer->line(startLine)==0) {kdDebug()<<"********************No buffer for line found**************"<<endl; return;};
+  kdDebug()<<"KateDocument::updateLines Checkpoint 2"<<endl;
   last_line = lastLine();
-  if (endLine >= last_line) endLine = last_line;
+//  if (endLine >= last_line) endLine = last_line;
 
   line = startLine;
   ctxNum = 0;
   if (line > 0) ctxNum = getTextLine(line - 1)->getContext();
   do {
+    kdDebug()<<QString("**************Working on line: %1").arg(line)<<endl;
     textLine = getTextLine(line);
+    if (textLine==0) kdDebug()<<"****updateLines()>> error textLine==0"<<endl;
     if (line <= endLine && line != cursorY) {
       if (flags & KateView::cfRemoveSpaces) textLine->removeSpaces();
       updateMaxLength(textLine);
@@ -1883,7 +1901,8 @@ void KateDocument::updateLines(int startLine, int endLine, int flags, int cursor
     ctxNum = m_highlight->doHighlight(ctxNum,textLine);
     textLine->setContext(ctxNum);
     line++;
-  } while (line <= last_line && (line <= endLine || endCtx != ctxNum));
+  } while ((buffer->line(line)!=0) && (line <= endLine || endCtx != ctxNum));
+  kdDebug()<<"updateLines :: while loop left"<<endl;
   tagLines(startLine, line - 1);
 }
 
@@ -1915,7 +1934,14 @@ void KateDocument::updateMaxLength(TextLine::Ptr &textLine) {
 
 void KateDocument::slotBufferChanged() {
   newDocGeometry = true;
+  //updateLines();//JW
   updateViews();
+}
+
+void KateDocument::slotBufferHighlight(long start,long stop) {
+  kdDebug()<<"KateDocument::slotBufferHighlight"<<QString("%1-%2").arg(start).arg(stop)<<endl;
+  updateLines(start,stop);
+//  buffer->startLoadTimer();
 }
 
 void KateDocument::updateViews(KateView *exclude) {

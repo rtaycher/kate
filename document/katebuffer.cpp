@@ -1,7 +1,7 @@
 ;/*
    This file is part of KWrite
    Copyright (c) 2000 Waldo Bastian <bastian@kde.org>
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
@@ -112,7 +112,7 @@ KWBuffer::clear()
    KWBufBlock *block = new KWBufBlock(state);
    m_blocks.insert(0, block);
    block->b_rawDataValid = true;
-   block->b_appendEOL = true;   
+   block->b_appendEOL = true;
    block->b_emptyBlock = true;
    block->m_endState.lineNr++;
    m_totalLines = block->m_endState.lineNr;
@@ -164,8 +164,8 @@ KWBuffer::loadFilePart()
   }
   int startLine = state.lineNr;
   bool eof = false;
- 
- 
+
+
   for(int i = 0; i < blockRead; i++)
   {
      QByteArray currentBlock = readBlock(loader->fd, blockSize);
@@ -180,7 +180,7 @@ qWarning("swapOut(%p)", buf2);
         buf2->swapOut(m_vm);
      }
      block->m_codec = loader->codec;
-     loader->dataStart = block->blockFill(loader->dataStart, 
+     loader->dataStart = block->blockFill(loader->dataStart,
                                   loader->lastBlock, currentBlock, eof);
      state = block->m_endState;
 qWarning("current->ref = %d last->ref = %d", currentBlock.nrefs(), loader->lastBlock.nrefs());
@@ -191,15 +191,19 @@ qWarning("current->ref = %d last->ref = %d", currentBlock.nrefs(), loader->lastB
   {
 qWarning("Loading finished.");
      m_loader.removeRef(loader);
+//     emit needHighlight(startLine,state.lineNr);
   }
   if (m_loader.count())
   {
 qWarning("Starting timer...");
      m_loadTimer.start(0, true);
+ //JW 0
   }
 
   m_totalLines += state.lineNr - startLine;
+//    emit needHighlight(startLine,state.lineNr);
 }
+
 
 void
 KWBuffer::insertData(int line, const QByteArray &data, QTextCodec *codec)
@@ -306,7 +310,7 @@ KWBuffer::findBlock(int i)
             buf->m_endState.lineNr += offset;
          }
       }
-   }   
+   }
 
    if (!buf)
    {
@@ -317,7 +321,7 @@ KWBuffer::findBlock(int i)
    }
    return buf;
 }
-   
+
 /**
  * Return line @p i
  */
@@ -462,7 +466,7 @@ KWBufBlock::KWBufBlock(const KWBufState &beginState)
  : m_beginState(beginState), m_endState(beginState)
 {
    m_rawData1Start = 0;
-   m_rawData2End = 0;  
+   m_rawData2End = 0;
    m_rawSize = 0;
    m_vmblock = 0;
    b_stringListValid = false;
@@ -538,7 +542,7 @@ KWBufBlock::blockFill(int dataStart, QByteArray data1, QByteArray data2, bool la
       p++;
    }
 
-   // If this is the end of the data OR 
+   // If this is the end of the data OR
    // if the data did not contain any linebreaks up to now
    // create a line break at the end of the block.
    if ((last && (e != l)) || 
@@ -674,7 +678,7 @@ qWarning("KWBufBlock: buildStringList this = %p", this);
          p++;
       }
 
-      // If this is the end of the data OR 
+      // If this is the end of the data OR
       // if the data did not contain any linebreaks up to now
       // create a line break at the end of the block.
       if (b_appendEOL)
@@ -693,7 +697,7 @@ qWarning("KWBufBlock: line = '%s'", line.latin1());
          m_stringList.append(textLine);
       }
    }
-   else 
+   else
    {
       if (b_appendEOL)
       {
