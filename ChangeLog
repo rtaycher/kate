@@ -1,3 +1,9 @@
+2001-03-17 Joseph Wenninger <jowenn@bigfoot.com>
+        * Syntaxhighlighting is now defined in cpp.xml, c.xml html.xml ...
+          instead of a global syntax.xml.
+          (Not ported completely yet)
+        * Some simple reg expression work (see html.xml)
+
 2001-03-17 Christoph Cullmann <crossfire@babylon2k.de>
         * moved textfilter stuff to a own plugin "textfilter"
         * cleaned up kantmainwindow.*

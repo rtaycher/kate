@@ -31,6 +31,7 @@ struct syntaxModeListItem
   QString mimetype;
   QString extension;
   QString casesensitive;
+  QString identifier;
 };
 
 struct syntaxContextData
@@ -47,8 +48,7 @@ class SyntaxDocument : public QDomDocument
   public:
     SyntaxDocument();
     ~SyntaxDocument();
-
-    QStringList& finddata(const QString& langName,const QString& type,bool clearList=true);
+    QStringList& finddata(const QString& mainGroupName,const QString& type,bool clearList=true);
     SyntaxModeList modeList();
 
     struct syntaxContextData* getGroupInfo(const QString& langName, const QString &group);
@@ -58,9 +58,10 @@ class SyntaxDocument : public QDomDocument
     struct syntaxContextData* getSubItems(struct syntaxContextData* data);
     QString groupItemData(struct syntaxContextData* data,QString name);
     QString groupData(struct syntaxContextData* data,QString name);
+    void setIdentifier(const QString& identifier);
   private:
      void setupModeList();
-
+     QString currentFile;
     SyntaxModeList myModeList;
     QStringList m_data;
 };

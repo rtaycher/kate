@@ -27,10 +27,14 @@
 #include <kmessagebox.h>
 #include <qstringlist.h>
 
+
 SyntaxDocument::SyntaxDocument() : QDomDocument()
 {
-  QString syntaxPath = locate("data", "kant/syntax.xml");
+//  QString syntaxPath = locate("data", "kant/syntax.xml");
+  currentFile="";
+  setupModeList();
 
+/*
   if( !syntaxPath.isEmpty() )
   {
     QFile f( syntaxPath );
@@ -46,7 +50,25 @@ SyntaxDocument::SyntaxDocument() : QDomDocument()
   }
   else
     KMessageBox::error( 0L, i18n("File share/apps/kwrite/syntax.xml not found ! Check your installation!") );
+*/
 }
+
+void SyntaxDocument::setIdentifier(const QString& identifier)
+{
+ kdDebug()<<"Trying to set identifier to"<<identifier<<endl;
+ if (currentFile!=identifier)
+   {
+       QFile f( identifier );
+       if ( f.open(IO_ReadOnly) )
+         {
+           setContent(&f);
+           currentFile=identifier;
+         }
+       else
+         KMessageBox::error( 0L, i18n("Can't open %1").arg(identifier) );
+      f.close();
+   }
+} 
 
 SyntaxDocument::~SyntaxDocument()
 {
@@ -57,22 +79,35 @@ void SyntaxDocument::setupModeList()
   kdDebug(13010) << k_funcinfo << endl;
   if (myModeList.count() > 0) return;
 
-  QDomElement docElem = documentElement();
-  QDomNodeList nL = docElem.elementsByTagName("language");
-
- for (int i=0;i<nL.count();i++)
-  {
-    QDomNode n=nL.item(i);
-    if ( n.isElement())
-    {
-      QDomElement e = n.toElement();
-      syntaxModeListItem *mli=new syntaxModeListItem;
-      mli->name = e.attribute("name");
-      mli->mimetype = e.attribute("mimetype");
-      mli->extension = e.attribute("extensions");
-      mli->casesensitive = e.attribute("casesensitive");
-      myModeList.append(mli);
-    }
+      KStandardDirs *dirs = KGlobal::dirs();
+      QStringList list=dirs->findAllResources("appdata","syntax/*.xml",false,true);
+      for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
+      {
+        QFile f(*it);
+        if (f.open(IO_ReadOnly))
+          {
+             kdDebug(13010)<<"Parsing: "<< *it<< endl;
+             setContent(&f);
+             f.close();
+             QDomElement n = documentElement();
+             if (!n.isNull())
+               {
+                 kdDebug(13010)<<"Node not null"<<endl;
+                 QDomElement e=n.toElement();
+		 kdDebug(13010)<<"Tagname: "<<e.tagName()<<endl;
+                 if (e.tagName()=="language")
+                   {
+                      kdDebug(13010)<<"language found"<<endl;
+                      syntaxModeListItem *mli=new syntaxModeListItem;
+                      mli->name = e.attribute("name");
+                      mli->mimetype = e.attribute("mimetype");
+                      mli->extension = e.attribute("extensions");
+                      mli->casesensitive = e.attribute("casesensitive");
+                      mli->identifier = *it;
+                      myModeList.append(mli);
+                   }
+               }
+      }
   }
 }
 
@@ -140,16 +175,15 @@ struct syntaxContextData* SyntaxDocument::getSubItems(struct syntaxContextData* 
   return retval;
 }
 
-struct syntaxContextData* SyntaxDocument::getGroupInfo(const QString& langName, const QString &group)
+struct syntaxContextData* SyntaxDocument::getGroupInfo(const QString& mainGroupName, const QString &group)
 {
   QDomElement docElem = documentElement();
   QDomNode n = docElem.firstChild();
-
   while (!n.isNull())
     {
       kdDebug(13010)<<"in SyntaxDocument::getGroupInfo (outer loop) " <<endl;
       QDomElement e=n.toElement();
-      if (e.attribute("name").compare(langName)==0 )
+      if (e.tagName().compare(mainGroupName)==0 )
         {
           QDomNode n1=e.firstChild();
           while (!n1.isNull())

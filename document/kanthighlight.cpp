@@ -2146,6 +2146,7 @@ AutoHighlight::AutoHighlight(syntaxModeListItem *def):GenHighlight(def->name.lat
   iName = def->name;
   iWildcards = def->extension;
   iMimetypes = def->mimetype;
+  identifier = def->identifier;
   casesensitive = def->casesensitive;
 }
 
@@ -2165,9 +2166,9 @@ void AutoHighlight::setKeywords(HlKeyword *keyword, HlKeyword *dataType)
 void AutoHighlight::createItemData(ItemDataList &list)
 {
   struct syntaxContextData *data;
-
   kdDebug(13010)<<"In AutoHighlight::createItemData"<<endl;
-  data=HlManager::self()->syntax->getGroupInfo(iName,"itemData");
+  HlManager::self()->syntax->setIdentifier(identifier);     
+  data=HlManager::self()->syntax->getGroupInfo("highlighting","itemData");
   while (HlManager::self()->syntax->nextGroup(data))
     {
 	list.append(new ItemData(
@@ -2197,7 +2198,6 @@ HlItem *AutoHighlight::createHlItem(struct syntaxContextData *data, int *res)
                   chr1=0;
 		bool insensitive=(HlManager::self()->syntax->groupItemData(data,QString("insensitive"))==QString("TRUE"));
 		*res=0;
-
                 if (dataname=="keyword") {*res=1; return(new HlKeyword(attr,context));} else
                 if (dataname=="dataType") {*res=2; return new HlKeyword(attr,context);} else
                 if (dataname=="Float") return (new HlFloat(attr,context)); else
@@ -2224,7 +2224,8 @@ void AutoHighlight::makeContextList()
   HlItem *c;
 
   kdDebug(13010)<< "AutoHighlight makeContextList()"<<endl;
-  data=HlManager::self()->syntax->getGroupInfo(iName,"context");
+  HlManager::self()->syntax->setIdentifier(identifier);
+  data=HlManager::self()->syntax->getGroupInfo("highlighting","context");
   int i=0;
   if (data)
     {

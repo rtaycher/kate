@@ -643,7 +643,7 @@ class AutoHighlight : public GenHighlight
   protected:
     QString iName;
     QString casesensitive;
-
+    QString identifier;
     virtual void makeContextList ();
     virtual void setKeywords (HlKeyword *keyword,HlKeyword *dataType);
     virtual void createItemData (ItemDataList &list);

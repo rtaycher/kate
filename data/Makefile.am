@@ -4,6 +4,10 @@ kdelnkdir = $(kde_appsdir)/Editors
 rckantdir = $(kde_datadir)/kant
 rckant_DATA = kantui.rc syntax.xml kantpartui.rc kantpartbrowserui.rc
 
+syntaxkantdir = $(kde_datadir)/kant/syntax
+syntaxkant_DATA = cpp.xml c.xml html.xml
+
+
 rckwritedir = $(kde_datadir)/kwrite
 rckwrite_DATA = kwriteui.rc
 
