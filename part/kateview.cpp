@@ -2496,15 +2496,12 @@ void KateView::gotoMark (KTextEditor::Mark *mark)
 
 void KateView::toggleBookmark ()
 {
-  /*TextLine::Ptr line = myDoc->getTextLine (currentLine());
+  uint mark = myDoc->mark (cursorLine());
 
-  if (line->mark()&KateDocument::markType01)
-    line->delMark(KateDocument::markType01));
+  if (mark&KateDocument::markType01)
+    myDoc->removeMark (cursorLine(), KateDocument::markType01);
   else
-    line->addMark(KateDocument::Bookmark);
-
-  myDoc->tagLines (currentLine(), currentLine());
-  myDoc->updateViews();*/
+    myDoc->addMark (cursorLine(), KateDocument::markType01);
 }
 
 void KateView::bookmarkMenuAboutToShow()

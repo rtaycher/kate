@@ -235,9 +235,6 @@ void KateIconBorder::mousePressEvent(QMouseEvent* e)
               myView->myDoc->removeMark (cursorOnLine, KateDocument::markType01);
             else
               myView->myDoc->addMark (cursorOnLine, KateDocument::markType01);
-
-            myView->myDoc->tagLines(cursorOnLine, cursorOnLine);
-            myView->myDoc->updateViews();
         break;
  /*   case RightButton:
         {

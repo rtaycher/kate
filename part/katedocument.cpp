@@ -1735,7 +1735,7 @@ void KateDocument::setMark (uint line, uint markType)
 
   emit marksChanged ();
 
-  tagLines (line, line);
+  tagLine (line);
   updateViews ();
 }
 
@@ -1752,6 +1752,9 @@ void KateDocument::clearMark (uint line)
     {
       myMarks.remove(z);
       emit marksChanged ();
+      
+      tagLine (line);
+      updateViews ();
     }
 }
 
@@ -1779,7 +1782,7 @@ void KateDocument::addMark (uint line, uint markType)
 
   emit marksChanged ();
 
-  tagLines (line, line);
+  tagLine (line);
   updateViews ();
 }
 
@@ -1797,11 +1800,11 @@ void KateDocument::removeMark (uint line, uint markType)
       myMarks.at(z)->type=myMarks.at(z)->type & ~markType;
       if (myMarks.at(z)->type == 0)
         myMarks.remove(z);
-        
+
       emit marksChanged ();
     }
 
-  tagLines (line, line);
+  tagLine (line);
   updateViews ();
 }
 
