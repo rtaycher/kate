@@ -51,9 +51,10 @@ public:
 template<class T>
 class FastValueList : public QValueList<T>
 {
-protected:
+public:
     typedef QValueListIterator<T> Iterator;
     typedef QValueListConstIterator<T> ConstIterator;
+protected:
     FVPrivate<T> *fvp;
 
     Iterator fastat( uint i ) {
