@@ -225,7 +225,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
 
   path << i18n("Application") << i18n("Document List");
   page = addVBoxPage( path, i18n("Document List Settings"),
-  BarIcon("documents", KIcon::SizeSmall) );
+  BarIcon("view_text", KIcon::SizeSmall) );
   filelistConfigPage = new KFLConfigPage( page, "file list config page",
 					  mainWindow->filelist );
   connect( filelistConfigPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
