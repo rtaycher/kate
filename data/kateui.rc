@@ -112,7 +112,7 @@
   <Action name="view_close_current_space" />
 </ToolBar>
 
-<Menu name="katepart_popup" noMerge="1">
+<Menu name="ktexteditor_popup" noMerge="1">
   <DefineGroup name="popup_operations" />
   <Separator />
   <Action name="go_back"/>
