@@ -776,6 +776,7 @@ void KateViewManager::saveAllDocsAtCloseDown(  )
   m_blockViewCreationAndActivation=false;
 
   kdDebug(13001)<<">>>> saveAllDocsAtCloseDown() DONE"<<endl;
+  delete scfg;
 }
 
 void KateViewManager::reopenDocuments(bool isRestore)
@@ -794,7 +795,11 @@ void KateViewManager::reopenDocuments(bool isRestore)
     // try to focus the file that had focus at close down
     QString curfile = scfg->readEntry("current file");
 
-    if (curfile.isEmpty()) {m_reopening=false; return;}
+    if (curfile.isEmpty()) {
+        delete scfg;
+        m_reopening=false;
+        return;
+    }
 
     QString fileCountStr=scfg->readEntry("count");
     int fileCount=fileCountStr.isEmpty() ? 100 : fileCountStr.toInt();
@@ -834,6 +839,7 @@ void KateViewManager::reopenDocuments(bool isRestore)
   }
   m_reopening=false;
   kdDebug(13001)<<">>>> reopenDocuments() DONE"<<endl;
+  delete scfg;
 }
 
 void KateViewManager::saveViewSpaceConfig()
@@ -864,6 +870,7 @@ void KateViewManager::saveViewSpaceConfig()
    }
 
    scfg->sync();
+   delete scfg;
    kdDebug(13001)<<">>>> saveViewSpaceConfig() DONE"<<endl;
 }
 
@@ -923,6 +930,7 @@ void KateViewManager::restoreViewConfig()
    // if group splitter0 does not exist, call reopenDocuments() and return
    if ( ! scfg->hasGroup("splitter0") ) {
      //reopenDocuments();
+       delete scfg;
      return;
    }
 
@@ -936,6 +944,7 @@ void KateViewManager::restoreViewConfig()
    KateViewSpace *vs = m_viewSpaceList.at( scfg->readNumEntry("activeviewspace") );
    if ( vs ) // better be sure ;}
      activateSpace( vs->currentView() );
+   delete scfg;
 }
 
 void KateViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWidget* parent)
