@@ -137,6 +137,10 @@ bool KateViewManager::createView ( bool newDoc, KURL url, Kate::View *origView, 
   }
   else
   {
+    // when reopening files from an empty session, this is needed to
+    // get a name for the automatic document. FIXME why, niceify
+    if ( doc->docName().isEmpty() )
+      doc->setDocName( i18n("Untitled %1").arg( doc->documentNumber() ) );
     view->getDoc()->setDocName (doc->docName ());
   }
 
@@ -479,18 +483,18 @@ void KateViewManager::slotDocumentNew ()
 void KateViewManager::slotDocumentOpen ()
 {
   Kate::View *cv = activeView();
-	Kate::FileDialog *dialog;
+        Kate::FileDialog *dialog;
 
-	//TODO: move to kdelibs
-	QString DEFAULT_ENCODING = QString::fromLatin1(KGlobal::locale()->encoding());
+        //TODO: move to kdelibs
+        QString DEFAULT_ENCODING = QString::fromLatin1(KGlobal::locale()->encoding());
 
   if (cv)
-	  dialog = new Kate::FileDialog (cv->getDoc()->url().url(),cv->getDoc()->encoding(), this, i18n ("Open File"));
-	else
-	  dialog = new Kate::FileDialog (QString::null, DEFAULT_ENCODING, this, i18n ("Open File"));
+          dialog = new Kate::FileDialog (cv->getDoc()->url().url(),cv->getDoc()->encoding(), this, i18n ("Open File"));
+        else
+          dialog = new Kate::FileDialog (QString::null, DEFAULT_ENCODING, this, i18n ("Open File"));
 
-	Kate::FileDialogData data = dialog->exec ();
-	delete dialog;
+        Kate::FileDialogData data = dialog->exec ();
+        delete dialog;
 
   for (KURL::List::Iterator i=data.urls.begin(); i != data.urls.end(); ++i)
   {
@@ -777,28 +781,29 @@ void KateViewManager::saveAllDocsAtCloseDown(  )
       // else, close doc.
       bool keep( false );
       if ( KMessageBox::warningYesNo( this,
-	      i18n("<p>The document '%1' has been modified, but not saved."
-		   "<p>Do you want to keep it?").arg( d->docName() ),
-	      i18n("Unsaved Document") ) == KMessageBox::Yes )
+              i18n("<p>The document '%1' has been modified, but not saved."
+                   "<p>Do you want to keep it?").arg( d->docName() ),
+              i18n("Unsaved Document") ) == KMessageBox::Yes )
       { // FIXME add some nicer constructors to the file dialog
-	Kate::FileDialogData fdd = (new Kate::FileDialog( QString::null,
-	                               QString::fromLatin1( KGlobal::locale()->encoding() ),
-				       this,
-				       i18n("Save As"),
-				       Kate::FileDialog::saveDialog ))->exec();
-	d->setEncoding( fdd.encoding );
-	if ( d->saveAs( fdd.url ) )
-	  keep = true;
+        Kate::FileDialogData fdd = (new Kate::FileDialog( QString::null,
+                                       QString::fromLatin1( KGlobal::locale()->encoding() ),
+                                       this,
+                                       i18n("Save As"),
+                                       Kate::FileDialog::saveDialog ))->exec();
+        d->setEncoding( fdd.encoding );
+        if ( d->saveAs( fdd.url ) )
+          keep = true;
       }
       if ( ! keep )
       {
-	closeViews( d->documentNumber() );
-	m_docManager->deleteDoc( d );
+        closeViews( d->documentNumber() );
+        m_docManager->deleteDoc( d );
       }
     }
     d = m_docManager->nextDocument();
   }
 
+  if ( ! m_docManager->documents() ) return;
 
   KSimpleConfig* scfg = new KSimpleConfig("katesessionrc", false);
 
@@ -845,7 +850,13 @@ void KateViewManager::reopenDocuments(bool isRestore)
     QString fileCountStr=scfg->readEntry("count");
     int fileCount=fileCountStr.isEmpty() ? 100 : fileCountStr.toInt();
 
-    QProgressDialog *pd=new QProgressDialog(i18n("Reopening files from the last session..."),QString::null,fileCount,0,"openprog",true);
+    QProgressDialog *pd=new QProgressDialog(
+        i18n("Reopening files from the last session..."),
+        QString::null,
+        fileCount,
+        0,
+        "openprog",
+        true);
 
     m_blockViewCreationAndActivation=true;
     m_docManager->closeAllDocuments();
@@ -871,10 +882,10 @@ void KateViewManager::reopenDocuments(bool isRestore)
         scfg->setGroup( fn );
 
         Kate::Document *doc = m_docManager->openURL( KURL( fn ) );
-	if (doc)
-	  doc->readSessionConfig(scfg);
+        if (doc)
+          doc->readSessionConfig(scfg);
 
-	scfg->setGroup("open files");
+        scfg->setGroup("open files");
       }
       i++;
 
@@ -1087,3 +1098,5 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, const QString &gro
    s->show();
    kdDebug(13001)<<"Bye from KateViewManager::restoreSplitter() ("<<group<<")"<<endl;
 }
+
+// kate: space-indent on; indent-width 2; replace-tabs on;
