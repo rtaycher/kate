@@ -166,7 +166,7 @@ void KateExternalToolsCommand::reload () {
         config.readListEntry( "mimetypes" ),
         config.readEntry( "acname", "" ),
         config.readEntry( "cmdname", "" ) );
-
+    // FIXME test for a command name first!
 	if ( t.hasexec && (!t.cmdname.isEmpty())) {
 		m_list.append("exttool-"+t.cmdname);
 		m_map.insert("exttool-"+t.cmdname,t.acname);
@@ -279,7 +279,7 @@ KateExternalToolsMenuAction::KateExternalToolsMenuAction( const QString &text,
 
   m_actionCollection = new KActionCollection( this );
 
-//   connect(mw->m_docManager,SIGNAL(documentChanged()),this,SLOT(slotDocumentChanged()));
+  connect(mw->m_docManager,SIGNAL(documentChanged()),this,SLOT(slotDocumentChanged()));
 
   reload();
 }
@@ -322,22 +322,32 @@ void KateExternalToolsMenuAction::reload()
   }
 
   m_actionCollection->readShortcutSettings( "Shortcuts", config );
+  slotDocumentChanged();
   delete config;
 }
 
 void KateExternalToolsMenuAction::slotDocumentChanged()
 {
-//   // enable/disable to match current mime type
-//   QString mt = mainwindow->m_docManager->activeDocument()->mimeType();
-//
-//   KActionPtrList actions = m_actionCollection->actions();
-//   for (KActionPtrList::iterator it = actions.begin(); it != actions.end(); ++it )
-//   {
-//     if ( (KateExternalToolAction *a = dynamic_cast<KateExternalToolAction*>(*it)) )
-//     {
-//       a->setEnabled a->tool->mimetypes.contain( mt );
-//     }
-//   }
+  // try to enable/disable to match current mime type
+  Kate::DocumentExt *de = documentExt( mainwindow->m_docManager->activeDocument() );
+  if ( de )
+  {
+    QString mt = de->mimeType();
+    QStringList l;
+    bool b;
+
+    KActionPtrList actions = m_actionCollection->actions();
+    for (KActionPtrList::iterator it = actions.begin(); it != actions.end(); ++it )
+    {
+      KateExternalToolAction *action = dynamic_cast<KateExternalToolAction*>(*it);
+      if ( action )
+      {
+        l = action->tool->mimetypes;
+        b = ( ! l.count() || l.contains( mt ) );
+        action->setEnabled( b );
+      }
+    }
+  }
 }
 //END KateExternalToolsMenuAction
 
@@ -386,7 +396,7 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
 
   leCommand = new QLineEdit( w );
   lo->addWidget( leCommand, 2, 2 );
-  l = new QLabel( leCommand, i18n("Co&mmand:"), w );
+  l = new QLabel( leCommand, i18n("Comma&nd:"), w );
   l->setAlignment( l->alignment()|Qt::AlignRight );
   lo->addWidget( l, 2, 1 );
   if ( tool ) leCommand->setText( tool->command );
@@ -435,6 +445,7 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
       "To choose from known mimetypes, press the button on the right.") );
 
 
+
   leCmdLine = new QLineEdit( w );
   lo->addWidget( leCmdLine, 5, 2 );
   l = new QLabel( leCmdLine, i18n("&Command line name:"), w );
@@ -445,6 +456,7 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
       "If you specify a name here, you can invoke the command from the view "
       "command lines with exttool-the_name_you_specified_here. "
       "Please do not use spaces or tabs in the name."));
+
 }
 
 void KateExternalToolServiceEditor::slotOk()

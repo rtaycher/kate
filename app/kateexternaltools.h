@@ -34,21 +34,21 @@
  * The external tools action
  * This action creates a menu, in which each item will launch a process
  * with the provided arguments, which may include the following macros:
- * 	%URLS: the URLs of all open documents.
- *	%URL: The URL of the active document.
- *	%filedir: The directory of the current document, if that is a local file.
- *	%selection: The selection of the active document.
- *      %text: The text of the active document.
- *	%line: The line number of the cursor in the active view.
- *	%column: The column of the cursor in the active view.
+ * - %URLS: the URLs of all open documents.
+ * - %URL: The URL of the active document.
+ * - %filedir: The directory of the current document, if that is a local file.
+ * - %selection: The selection of the active document.
+ * - %text: The text of the active document.
+ * - %line: The line number of the cursor in the active view.
+ * - %column: The column of the cursor in the active view.
  *
  * Each item has the following properties:
- *	Name: The friendly text for the menu
- *	Exec: The command to execute, including arguments.
- *	TryExec: the name of the executable, if not available, the
- *		item will not be displayed.
- *	MimeTypes: An optional list of mimetypes. The item will be disabled or
- *		hidden if the current file is not of one of the indicated types.
+ * - Name: The friendly text for the menu
+ * - Exec: The command to execute, including arguments.
+ * - TryExec: the name of the executable, if not available, the
+ *       item will not be displayed.
+ * - MimeTypes: An optional list of mimetypes. The item will be disabled or
+ *       hidden if the current file is not of one of the indicated types.
  *
  */
 class KateExternalToolsMenuAction : public KActionMenu
@@ -90,7 +90,7 @@ class KateExternalToolAction : public KAction, public KWordMacroExpander
   private slots:
     void slotRun();
 
-  private:
+  public:
     class KateExternalTool *tool;
 };
 
@@ -171,7 +171,7 @@ class KateExternalToolsConfigWidget : public Kate::ConfigPage
 /**
  * A Singleton class for invoking external tools with the view command line
  */
- class KateExternalToolsCommand: public Kate::Command {
+ class KateExternalToolsCommand : public Kate::Command {
  public:
     KateExternalToolsCommand ();
     virtual ~KateExternalToolsCommand () {};
