@@ -315,16 +315,16 @@ void HlEditDialog::initItemOptions(QVBox *co)
         QPushButton *delItem=new QPushButton(i18n("Delete this item"),co);
 
 	/* init translation lists */
-	insertTranslationList("CharDetect",i18n("CharDetect"),1);
-        insertTranslationList("2CharDetect",i18n("2CharDetect"),2);
-	insertTranslationList("RangeDetect",i18n("RangeDetect"),2);
-	insertTranslationList("StringDetect",i18n("StringDetect"),-1);
-	insertTranslationList("AnyChar",i18n("AnyChar"),-1);
-	insertTranslationList("RegExpr",i18n("RegExpr"),-1);
-	insertTranslationList("Int",i18n("Int"),0);
-	insertTranslationList("Float",i18n("Float"),0);
-	insertTranslationList("keyword",i18n("keyword"),0);
-	insertTranslationList("dataType",i18n("dataType"),0);
+	insertTranslationList("CharDetect","CharDetect",1);
+        insertTranslationList("2CharDetect","2CharDetect",2);
+	insertTranslationList("RangeDetect","RangeDetect",2);
+	insertTranslationList("StringDetect","StringDetect",-1);
+	insertTranslationList("AnyChar","AnyChar",-1);
+	insertTranslationList("RegExpr","RegExpr",-1);
+	insertTranslationList("Int","Int",0);
+	insertTranslationList("Float","Float",0);
+	insertTranslationList("keyword","keyword",0);
+	insertTranslationList("dataType","dataType",0);
         ItemType->clear();
         for (int i=0; i<transTableCnt; i++) ItemType->insertItem(id2info[i].trans_i18n);
         connect(ItemType,SIGNAL(activated(int)),this,SLOT(ItemTypeChanged(int)));
@@ -542,6 +542,6 @@ void HlEditDialog::ItemAddNew()
         else
           it=currentItem;
       if (it) for (;it->nextSibling();it=it->nextSibling());
-      (void) new QListViewItem(it ? it->parent() : currentItem,it,i18n("StringDetect")+" "+i18n("New Item"),"StringDetect",i18n("New Item"),0,it ? it->parent()->text(1) : currentItem->text(1));
+      (void) new QListViewItem(it ? it->parent() : currentItem,it,"StringDetect "+i18n("New Item"),"StringDetect",i18n("New Item"),0,it ? it->parent()->text(1) : currentItem->text(1));
     }
 }
