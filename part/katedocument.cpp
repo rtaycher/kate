@@ -1001,48 +1001,51 @@ bool KateDocument::removeSelectedText ()
   _autoUpdate = false;
 
   for (int z=selectStartLine; z <= selectEndLine; z++)
+  {
+    textLine = getTextLine(z);
+    if (!textLine)
+      break;
+
+    DeleteSelection *curLine = new DeleteSelection;
+
+    curLine->deleteStart = textLine->length();
+    curLine->line = z;
+    curLine->lineLen = textLine->length();
+
+    if (!blockSelect)
     {
-      textLine = getTextLine(z);
-      if (!textLine)
-        break;
-
-      DeleteSelection *curLine = new DeleteSelection;
-
-      curLine->deleteStart = textLine->length();
-      curLine->line = z;
-      curLine->lineLen = textLine->length();
-
-       if (!blockSelect)
-       {
-         if ((z > selectStartLine) && (z < selectEndLine))
-           curLine->deleteLine = 1;
-           else
-         {
-            if ((z == selectStartLine) && (z == selectEndLine))
-          {
-            curLine->deleteStart = selectStartCol;
-            curLine->len = selectEndCol-selectStartCol;
-          }
-          else if ((z == selectStartLine))
-          {
-            curLine->deleteStart = selectStartCol;
-            curLine->len = textLine->length()-selectStartCol;
-          }
-           else if ((z == selectEndLine))
-          {
-            curLine->deleteStart = 0;
-            curLine->len = selectEndCol;
-          }
-        }
-      }
+      if (lineSelected(z))
+        curLine->deleteLine = 1;
       else
       {
-        curLine->deleteStart = selectStartCol;
-        curLine->len = selectEndCol-selectStartCol;
-      }
+        if ((z == selectStartLine) && (z == selectEndLine))
+        {
+          curLine->deleteStart = selectStartCol;
+          curLine->len = selectEndCol-selectStartCol;
+        }
+        else if ((z == selectStartLine))
+        {
+          curLine->deleteStart = selectStartCol;
+          curLine->len = textLine->length()-selectStartCol;
 
-      selectedLines.push (curLine);
+          if (selectStartLine < selectEndLine)
+            curLine->len++;
+        }
+        else if ((z == selectEndLine))
+        {
+          curLine->deleteStart = 0;
+          curLine->len = selectEndCol;
+        }
+      }
     }
+    else
+    {
+      curLine->deleteStart = selectStartCol;
+      curLine->len = selectEndCol-selectStartCol;
+    }
+
+    selectedLines.push (curLine);
+  }
 
   while (selectedLines.count() > 0)
   {
@@ -1054,6 +1057,9 @@ bool KateDocument::removeSelectedText ()
       removeText (curLine->line, curLine->deleteStart, curLine->line+1, 0);
     else
       removeText (curLine->line, curLine->deleteStart, curLine->line, curLine->deleteStart+curLine->len);
+    
+    if (curLine)
+      delete curLine;
   }
 
   _autoUpdate = true;
