@@ -271,7 +271,7 @@ class KateViewInternal : public QWidget {
   @author Jochen Wilhelmy
 */
 
-class KateView : public Kate::View, virtual public KateViewDCOPIface
+class KateView : public Kate::View
 {
     Q_OBJECT
     friend class KateViewInternal;
@@ -323,22 +323,6 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
     int undoSteps();
     void setUndoSteps(int);
 
-    /**
-      Returns true if the document is in read only mode.
-    */
-    bool isReadOnly();
-    /**
-      Returns true if the document has been modified.
-    */
-    bool isModified();
-    /**
-      Sets the read-only flag of the document
-    */
-    void setReadOnly(bool);
-    /**
-      Sets the modification status of the document
-    */
-    void setModified(bool m = true);
     /**
       Returns true if this editor is the only owner of its document
     */
@@ -449,21 +433,9 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
 //text access
   public:
      /**
-       Gets the number of text lines;
-     */
-     int numLines();
-     /**
-       Gets the complete document content as string
-     */
-     QString text();
-     /**
        Gets the text line where the cursor is on
      */
      QString currentTextLine();
-     /**
-       Gets a text line
-     */
-     QString textLine(int num);
      /**
        Gets the word where the cursor is on
      */
@@ -474,22 +446,10 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
      */
      QString word(int x, int y);
      /**
-       Discard old text without warning and set new text
-     */
-     void setText(const QString &);
-     /**
        Insert text at the current cursor position.
        The parameter @param mark is unused.
      */
      virtual void insertText(const QString &, bool = false );
-     /**
-       Queries if there is marked text
-     */
-     bool hasMarkedText();
-     /**
-       Gets the marked text as string
-     */
-     QString markedText();
 
   public:
 

@@ -91,42 +91,14 @@ class View : public KTextEditor::View
     */
     virtual int currentCharNum() { return 0L; };
     /**
-      Returns true if the document is in read only mode.
-    */
-    virtual bool isReadOnly() { return false; };
-    /**
-      Returns true if the document has been modified.
-    */
-    virtual bool isModified() { return false; };
-    /**
-      Sets the read-only flag of the document
-    */
-    virtual void setReadOnly(bool) { ; };
-    /**
-      Sets the modification status of the document
-    */
-    virtual void setModified(bool ) { ; };
-    /**
       Bit 0 : undo possible, Bit 1 : redo possible.
       Used to enable/disable undo/redo menu items and toolbar buttons
     */
     virtual int undoState() { return 0L; };
     /**
-      Returns the number of lines
-    */
-    virtual int numLines() { return 0L; };
-    /**
-      Gets the complete document content as string
-    */
-    virtual QString text() { return 0L; };
-    /**
       Gets the text line where the cursor is on
     */
     virtual QString currentTextLine() { return 0L; };
-    /**
-      Gets a text line
-    */
-    virtual QString textLine(int ) { return 0L; };
     /**
       Gets the word where the cursor is on
     */
@@ -137,22 +109,10 @@ class View : public KTextEditor::View
     */
     virtual QString word(int , int ) { return 0L; };
     /**
-      Discard old text without warning and set new text
-    */
-    virtual void setText(const QString &) { ; };
-    /**
       Insert text at the current cursor position.
       The parameter @param mark is unused.
     */
     virtual void insertText(const QString &, bool mark = false ) { ; };
-    /**
-      Queries if there is marked text
-    */
-    virtual bool hasMarkedText() { return false; };
-    /**
-      Gets the marked text as string
-    */
-    virtual QString markedText() { return 0L; };
     /**
       Returns true if the current document can be
       discarded. If the document is modified, the user is asked if he wants

@@ -176,7 +176,7 @@ void TopLevel::setupStatusBar()
 
 void TopLevel::slotNew()
 {
-  if (kateView->isModified() || !kateView->doc()->url().isEmpty())
+  if (kateView->doc()->isModified() || !kateView->doc()->url().isEmpty())
   {
    TopLevel*t = new TopLevel();
     t->readConfig();
@@ -195,7 +195,7 @@ void TopLevel::slotOpen( const KURL& url )
 {
   if (url.isEmpty()) return;
 
-  if (kateView->isModified() || !kateView->doc()->url().isEmpty())
+  if (kateView->doc()->isModified() || !kateView->doc()->url().isEmpty())
   {
     TopLevel *t = new TopLevel();
     t->readConfig();
@@ -274,7 +274,7 @@ void TopLevel::newStatus()
 {
   newCaption();
 
-  bool readOnly = kateView->isReadOnly();
+  bool readOnly = kateView->doc()->isReadOnly();
   int config = kateView->config();
 
   if (readOnly)
@@ -282,7 +282,7 @@ void TopLevel::newStatus()
   else
     statusBar()->changeItem(config & KateView::cfOvr ? i18n(" OVR ") : i18n(" INS "),ID_INS_OVR);
 
-  statusBar()->changeItem(kateView->isModified() ? " * " : "",ID_MODIFIED);
+  statusBar()->changeItem(kateView->doc()->isModified() ? " * " : "",ID_MODIFIED);
 }
 
 void TopLevel::timeout() {
@@ -292,13 +292,13 @@ void TopLevel::timeout() {
 void TopLevel::newCaption()
 {
   if (kateView->doc()->url().isEmpty()) {
-    setCaption(i18n("Untitled"),kateView->isModified());
+    setCaption(i18n("Untitled"),kateView->doc()->isModified());
   } else {
     //set caption
     if ( m_paShowPath->isChecked() )
-      setCaption(kateView->doc()->url().prettyURL(),kateView->isModified());
+      setCaption(kateView->doc()->url().prettyURL(),kateView->doc()->isModified());
     else
-      setCaption(kateView->doc()->url().fileName(),kateView->isModified());
+      setCaption(kateView->doc()->url().fileName(),kateView->doc()->isModified());
   }
 }
 

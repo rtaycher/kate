@@ -116,7 +116,7 @@ QString SedReplace::sedMagic(QString textLine, QString find, QString rep, bool n
 	while (start!=-1)
 	{
 		start=matcher.search(textLine, start);
-		
+
 		if (start==-1) break;
 		
 		int length=matcher.matchedLength();
@@ -172,7 +172,7 @@ bool SedReplace::execCmd(QString cmd, KateView *view)
 
 	if (QRegExp("[$%]?s/.+/.*/[ig]*").search(cmd, 0)==-1)
 		return false;
-	
+
 	bool fullFile=cmd[0]=='%';
 	bool noCase=cmd[cmd.length()-1]=='i' || cmd[cmd.length()-2]=='i';
 	bool repeat=cmd[cmd.length()-1]=='g' || cmd[cmd.length()-2]=='g';
@@ -181,21 +181,21 @@ bool SedReplace::execCmd(QString cmd, KateView *view)
 
 	QRegExp splitter("^[$%]?s/((?:[^\\\\/]|\\\\[\\\\/\\$0-9tadDsSwW])*)/((?:[^\\\\/]|\\\\[\\\\/\\$0-9tadDsSwW])*)/[ig]*$");
 	if (splitter.search(cmd)<0) return false;
-	
+
 	QString find=splitter.cap(1);
 	kdDebug(13010)<< "SedReplace: find=" << find.latin1() <<endl;
 
 	QString replace=splitter.cap(2);
 	exchangeAbbrevs(replace);
 	kdDebug(13010)<< "SedReplace: replace=" << replace.latin1() <<endl;
-	
-	
+
+
 	if (fullFile)
 	{
 		int numLines=view->doc()->numLines();
 		for (int line=0; line < numLines; line++)
 		{
-			QString text=view->textLine(line);
+			QString text=view->doc()->textLine(line);
 			text=sedMagic(text, find, replace, noCase, repeat);
 			setLineText(view, line, text);
 		}
@@ -223,7 +223,7 @@ bool Character::execCmd(QString cmd, KateView *view)
 	cmd=num.cap(1);
 
 	// identify the base
-	
+
 	unsigned short int number=0;
 	int base=10;
 	if (cmd[0]=='x' || cmd.left(2)=="0x")

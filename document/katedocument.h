@@ -105,7 +105,7 @@ class KateCursor : public Kate::Cursor
   @see TextLine
   @author Jochen Wilhelmy
 */
-class KateDocument : public Kate::Document, public KateDocumentDCOPIface
+class KateDocument : public Kate::Document
 {
     Q_OBJECT
     friend class KateViewInternal;
@@ -162,6 +162,17 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     virtual KTextEditor::Cursor *createCursor ();
     virtual QPtrList<KTextEditor::Cursor> cursors () const;
 
+  public:
+    //
+    //  KParts::ReadWrite stuff
+    //
+    virtual void setReadWrite( bool );
+    virtual bool isReadWrite() const;
+
+    virtual void setModified(bool);
+    virtual bool isModified() const;
+
+
   protected:
     //
     // internal edit stuff (mostly for view)
@@ -208,10 +219,7 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     bool isReadOnly() const;
     void setNewDoc( bool );
     bool isNewDoc() const;
-    virtual void setReadWrite( bool );
-    virtual bool isReadWrite() const;
-    virtual void setModified(bool);
-    virtual bool isModified() const;
+
     void setSingleSelection(bool ss) {m_singleSelection = ss;}
     bool singleSelection() {return m_singleSelection;}
 

@@ -37,10 +37,7 @@ k_dcop:
    virtual void bottom()=0;
    virtual void shiftBottom()=0;
 
-   virtual int numLines()=0;
-   virtual QString text()=0;
    virtual QString currentTextLine()=0;
-   virtual QString textLine(int num)=0;
    virtual QString currentWord()=0;
    virtual QString word(int x, int y)=0;
    virtual void insertText( const QString &txt, bool mark )=0;

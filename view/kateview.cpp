@@ -221,7 +221,7 @@ void KateViewInternal::doEditCommand(VConfig &c, int cmdNum)
       return;
   }
 
-  if (myView->isReadOnly()) return;
+  if (myView->doc()->isReadOnly()) return;
 
   switch (cmdNum) {
     case KateView::cmReturn:
@@ -996,7 +996,7 @@ void KateViewInternal::keyPressEvent(QKeyEvent *e) {
   VConfig c;
   getVConfig(c);
 
-  if (!myView->isReadOnly()) {
+  if (!myView->doc()->isReadOnly()) {
     if (c.flags & KateView::cfTabIndents && myDoc->hasMarkedText()) {
       if (e->key() == Qt::Key_Tab) {
         myDoc->indent(c);
@@ -1050,7 +1050,7 @@ void KateViewInternal::mousePressEvent(QMouseEvent *e) {
   }
   if (e->button() == MidButton) {
     placeCursor(e->x(), e->y());
-    if (! myView->isReadOnly())
+    if (! myView->doc()->isReadOnly())
       myView->paste();
   }
   if (myView->rmbMenu && e->button() == RightButton) {
@@ -1228,7 +1228,7 @@ void KateViewInternal::doDrag()
 
 void KateViewInternal::dragEnterEvent( QDragEnterEvent *event )
 {
-  event->accept( (QTextDrag::canDecode(event) && ! myView->isReadOnly()) || QUriDrag::canDecode(event) );
+  event->accept( (QTextDrag::canDecode(event) && ! myView->doc()->isReadOnly()) || QUriDrag::canDecode(event) );
 }
 
 void KateViewInternal::dropEvent( QDropEvent *event )
@@ -1237,7 +1237,7 @@ void KateViewInternal::dropEvent( QDropEvent *event )
 
       emit dropEventPass(event);
 
-  } else if ( QTextDrag::canDecode(event) && ! myView->isReadOnly() ) {
+  } else if ( QTextDrag::canDecode(event) && ! myView->doc()->isReadOnly() ) {
 
     QString   text;
 
@@ -1291,7 +1291,7 @@ void KateViewInternal::dropEvent( QDropEvent *event )
 
 uint KateView::uniqueID = 0;
 
-KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate::View (doc, parent, name), DCOPObject( (QString("KateView%1-%2").arg(doc->docID()).arg(uniqueID)).latin1())
+KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate::View (doc, parent, name)
 {
   setInstance( KateFactory::instance() );
 
@@ -1769,22 +1769,6 @@ void KateView::setUndoSteps(int s) {
   myDoc->setUndoSteps(s);
 }
 
-bool KateView::isReadOnly() {
-  return myDoc->readOnly;
-}
-
-bool KateView::isModified() {
-  return myDoc->modified;
-}
-
-void KateView::setReadOnly(bool m) {
-  myDoc->setReadOnly(m);
-}
-
-void KateView::setModified(bool m) {
-  myDoc->setModified(m);
-}
-
 bool KateView::isLastView() {
   return myDoc->isLastView(1);
 }
@@ -1794,7 +1778,7 @@ KateDocument *KateView::doc() {
 }
 
 int KateView::undoState() {
-  if (isReadOnly())
+  if (doc()->isReadOnly())
     return 0;
   else
     return myDoc->undoState;
@@ -1855,22 +1839,8 @@ void KateView::toggleVertical()
   setConfig(configFlags ^ KateView::cfVerticalSelect);
 }
 
-
-int KateView::numLines() {
-  return myDoc->numLines();
-}
-
-QString KateView::text() {
-  return myDoc->text();
-}
-
 QString KateView::currentTextLine() {
   TextLine::Ptr textLine = myDoc->getTextLine(myViewInternal->cursor.y);
-  return QString(textLine->getText(), textLine->length());
-}
-
-QString KateView::textLine(int num) {
-  TextLine::Ptr textLine = myDoc->getTextLine(num);
   return QString(textLine->getText(), textLine->length());
 }
 
@@ -1886,11 +1856,6 @@ QString KateView::word(int x, int y) {
   return myDoc->getWord(cursor);
 }
 
-void KateView::setText(const QString &s) {
-  myDoc->setText(s);
-  myDoc->updateViews();
-}
-
 void KateView::insertText(const QString &s, bool /*mark*/) {
   VConfig c;
   myViewInternal->getVConfig(c);
@@ -1898,24 +1863,16 @@ void KateView::insertText(const QString &s, bool /*mark*/) {
   myDoc->updateViews();
 }
 
-bool KateView::hasMarkedText() {
-  return myDoc->hasMarkedText();
-}
-
-QString KateView::markedText() {
-  return myDoc->markedText(configFlags);
-}
-
 bool KateView::canDiscard() {
   int query;
 
-  if (isModified()) {
+  if (doc()->isModified()) {
     query = KMessageBox::warningYesNoCancel(this,
       i18n("The current Document has been modified.\nWould you like to save it?"));
     switch (query) {
       case KMessageBox::Yes: //yes
         if (save() == SAVE_CANCEL) return false;
-        if (isModified()) {
+        if (doc()->isModified()) {
             query = KMessageBox::warningContinueCancel(this,
                i18n("Could not save the document.\nDiscard it and continue?"),
            QString::null, i18n("&Discard"));
@@ -1936,8 +1893,8 @@ void KateView::flush()
 
 KateView::saveResult KateView::save() {
   int query = KMessageBox::Yes;
-  if (isModified()) {
-    if (!myDoc->url().fileName().isEmpty() && ! isReadOnly()) {
+  if (doc()->isModified()) {
+    if (!myDoc->url().fileName().isEmpty() && ! doc()->isReadOnly()) {
       // If document is new but has a name, check if saving it would
       // overwrite a file that has been created since the new doc
       // was created:
@@ -2019,7 +1976,7 @@ void KateView::doEditCommand(int cmdNum) {
 }
 
 void KateView::undoMultiple(int count) {
-  if (isReadOnly())
+  if (doc()->isReadOnly())
     return;
 
   VConfig c;
@@ -2029,7 +1986,7 @@ void KateView::undoMultiple(int count) {
 }
 
 void KateView::redoMultiple(int count) {
-  if (isReadOnly())
+  if (doc()->isReadOnly())
     return;
 
   VConfig c;
@@ -2077,8 +2034,8 @@ void KateView::find() {
   // If the user has marked some text we use that otherwise
   // use the word under the cursor.
    QString str;
-   if (myDoc->hasMarkedText())
-     str = markedText();
+   if (myDoc->hasSelection())
+     str = myDoc->selection();
 
    if (str.isEmpty())
      str = currentWord();
@@ -2105,7 +2062,7 @@ void KateView::find() {
 void KateView::replace() {
   SearchDialog *searchDialog;
 
-  if (isReadOnly()) return;
+  if (doc()->isReadOnly()) return;
 
   if (!myDoc->hasMarkedText()) searchFlags &= ~KateView::sfSelected;
   searchDialog = new SearchDialog(this, myDoc->searchForList, myDoc->replaceWithList,
@@ -2114,8 +2071,8 @@ void KateView::replace() {
   // If the user has marked some text we use that otherwise
   // use the word under the cursor.
    QString str;
-   if (myDoc->hasMarkedText())
-     str = markedText();
+   if (myDoc->hasSelection())
+     str = myDoc->selection();
 
    if (str.isEmpty())
      str = currentWord();
@@ -2261,7 +2218,7 @@ void KateView::findAgain(SConfig &s) {
 }
 
 void KateView::replaceAgain() {
-  if (isReadOnly())
+  if (doc()->isReadOnly())
     return;
 
   replaces = 0;
@@ -2542,7 +2499,7 @@ int KateView::getEol() {
 }
 
 void KateView::setEol(int eol) {
-  if (isReadOnly())
+  if (doc()->isReadOnly())
     return;
 
   myDoc->eolMode = eol;
@@ -2609,7 +2566,7 @@ void KateView::resizeEvent(QResizeEvent *) {
 
 void KateView::spellcheck()
 {
-  if (isReadOnly())
+  if (doc()->isReadOnly())
     return;
 
   kspell.kspell= new KSpell (this, "KateView: Spellcheck", this,
@@ -2638,7 +2595,7 @@ void KateView::spellcheck2(KSpell *)
   // or kspell should provide access to the spell widget.
   myDoc->setPseudoModal((QWidget*)0x01);
 
-  kspell.spell_tmptext = text();
+  kspell.spell_tmptext = myDoc->text();
 
 
   kspell.kspellon = TRUE;
@@ -2985,7 +2942,7 @@ void KateView::bookmarkMenuAboutToShow()
   {
     if (list.at(i)->type&KateDocument::Bookmark)
     {
-      QString bText = textLine(list.at(i)->line);
+      QString bText = myDoc->textLine(list.at(i)->line);
       bText.truncate(32);
       bText.append ("...");
       bookmarkMenu->popupMenu()->insertItem ( QString("%1 - \"%2\"").arg(list.at(i)->line).arg(bText), this, SLOT (gotoBookmark(int)), 0, i );

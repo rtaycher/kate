@@ -517,7 +517,7 @@ void KateMainWindow::bookmarkMenuAboutToShow()
   {
     if (list.at(i)->type&KateDocument::Bookmark)
     {
-      QString bText = viewManager->activeView()->textLine(list.at(i)->line);
+      QString bText = viewManager->activeView()->doc()->textLine(list.at(i)->line);
       bText.truncate(32);
       bText.append ("...");
       bookmarkMenu->insertItem ( QString("%1 - \"%2\"").arg(list.at(i)->line).arg(bText), this, SLOT (gotoBookmark(int)), 0, i );

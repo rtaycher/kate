@@ -71,7 +71,7 @@ uint KateDocument::uniqueID = 0;
 KateDocument::KateDocument(bool bSingleViewMode, bool bBrowserView,
                                            QWidget *parentWidget, const char *widgetName,
                                            QObject *, const char *)
-  : Kate::Document (), DCOPObject ((QString("KateDocument%1").arg(uniqueID)).latin1()),
+  : Kate::Document (),
     myFont(KGlobalSettings::fixedFont()), myFontBold(KGlobalSettings::fixedFont()), myFontItalic(KGlobalSettings::fixedFont()), myFontBI(KGlobalSettings::fixedFont()),
     myFontMetrics (myFont), myFontMetricsBold (myFontBold), myFontMetricsItalic (myFontItalic), myFontMetricsBI (myFontBI),
     hlManager(HlManager::self ())

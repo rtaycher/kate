@@ -374,7 +374,7 @@ void KateViewManager::statusMsg ()
 
   KateView* v = activeView();
 
-  bool readOnly =  v->isReadOnly();
+  bool readOnly =  v->doc()->isReadOnly();
   int config =  v->config();
 
   int ovr = 0;
@@ -392,7 +392,7 @@ void KateViewManager::statusMsg ()
     }
   }
 
-  int mod = (int)v->isModified();
+  int mod = (int)v->doc()->isModified();
 
   emit statusChanged (v, v->currentLine() + 1, v->currentColumn() + 1, ovr, mod, v->doc()->docName());
   emit statChanged ();
@@ -917,7 +917,7 @@ void KateViewManager::setWindowCaption()
     else
       c = activeView()->doc()->url().prettyURL();
 
-    ((KateMainWindow*)topLevelWidget())->setCaption( c,activeView()->isModified());
+    ((KateMainWindow*)topLevelWidget())->setCaption( c,activeView()->doc()->isModified());
   }
 }
 
@@ -945,7 +945,7 @@ void KateViewManager::reloadCurrentDoc()
   int cc = v->currentColumn();
   // save bookmarks
   ((KateDocument*)v->doc())->reloadFile();
-  if (v->numLines() >= cl)
+  if (v->doc()->numLines() >= cl)
     v->setCursorPosition( cl, cc );
 }
 
