@@ -73,7 +73,18 @@ class KantViewManager : public KantViewManagerIface
   public:
     void deleteLastView ();
 
-    void splitViewSpace( bool isHoriz=true );
+    /** Splits a KantViewSpace into two.
+      * The operation is performed by creating a KantSplitter in the parent of the KantViewSpace to be split,
+      * which is then moved to that splitter. Then a new KantViewSpace is created and added to the splitter,
+      * and a KantView is created to populate the new viewspace. The new KantView is made the active one,
+      * because createView() does that.
+      * If no viewspace is provided, the result of activeViewSpace() is used.
+      * The isHoriz, true pr default, decides the orientation of the splitting action.
+      * If atTop is true, the new viewspace will be moved to the first position in the new splitter.
+      * If a newViewUrl is provided, the new view will show the document in that URL if any, otherwise
+      * the document of the current view in the viewspace to be split is used.
+      */
+    void splitViewSpace( KantViewSpace* vs=0L, bool isHoriz=true, bool atTop=false, KURL newViewUrl=0L );
 
     bool getShowFullPath() { return showFullPath; }
     void setUseOpaqueResize( bool enable );
@@ -92,9 +103,10 @@ class KantViewManager : public KantViewManagerIface
     void slotDocumentSave ();
     void slotDocumentSaveAs ();
     void slotDocumentClose ();
-
+    /** Splits the active viewspace horizontally */
     void slotSplitViewSpaceHoriz () { splitViewSpace(); }
-    void slotSplitViewSpaceVert () { splitViewSpace( false ); }
+    /** Splits the active viewspace vertically */
+    void slotSplitViewSpaceVert () { splitViewSpace( 0L, false ); }
 
     void slotCloseCurrentViewSpace();
 

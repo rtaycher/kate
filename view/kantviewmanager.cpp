@@ -796,11 +796,14 @@ void KantViewManager::printDlg()
   activeView()->printDlg ();
 }
 
-void KantViewManager::splitViewSpace(bool isHoriz)
+void KantViewManager::splitViewSpace( KantViewSpace* vs,
+                                      bool isHoriz,
+                                      bool atTop,
+                                      KURL newViewUrl)
 {
   if (!activeView()) return;
-
-  KantViewSpace* vs = activeViewSpace();
+  if (!vs)
+    /*KantViewSpace**/ vs = activeViewSpace();
   bool isFirstTime = vs->parentWidget() == this;
 
   QValueList<int> sizes;
@@ -821,6 +824,9 @@ void KantViewManager::splitViewSpace(bool isHoriz)
   vs->reparent( s, 0, QPoint(), true );
   KantViewSpace* vsNew = new KantViewSpace( s );
 
+  if (atTop)
+    s->moveToFirst( vsNew );
+
   if (isFirstTime)
     grid->addWidget(s, 0, 0);
   else
@@ -840,7 +846,16 @@ void KantViewManager::splitViewSpace(bool isHoriz)
   activeViewSpace()->setActive( false );
   vsNew->setActive( true );
   vsNew->show();
-  createView (false, 0L, (KantView *)activeView());
+  if (!newViewUrl.isValid())
+    createView (false, 0L, (KantView *)activeView());
+  else {
+    // tjeck if doc is allready open
+    long aDocId;
+    if ( (aDocId = docManager->findDoc( newViewUrl )) )
+      createView (false, 0L, 0L, docManager->docWithID( aDocId) );
+    else
+      createView( true, newViewUrl );
+  }
 }
 
 void KantViewManager::removeViewSpace (KantViewSpace *viewspace)
