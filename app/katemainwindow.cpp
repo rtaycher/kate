@@ -826,6 +826,24 @@ KDockWidget *KateMainWindow::addToolViewWidget(KDockWidget::DockPosition pos,QWi
 
 }
 
+bool KateMainWindow::removeToolViewWidget(QWidget *w)
+{
+	if (w->parent()->qt_cast("KDockWidget"))
+	{
+		KDockWidget *dw=static_cast<KDockWidget*>(w->parent()->qt_cast("KDockWidget"));
+		if (dw->dockManager()==this)
+		{
+			delete w;
+			delete dw;
+			return true;
+		} else return false;
+		
+	}
+	else
+	return false;
+}
+
+
 void* KateMainWindow::interfaces(const QString &name)
 {
 	if (name=="views") return viewManager();
@@ -847,6 +865,7 @@ KateToggleToolViewAction::KateToggleToolViewAction( const QString& text, const K
 {
 	connect(this,SIGNAL(toggled(bool)),this,SLOT(slotToggled(bool)));
 	connect(m_dw->dockManager(),SIGNAL(change()),this,SLOT(anDWChanged()));
+	connect(m_dw,SIGNAL(destroyed()),this,SLOT(slotWidgetDestroyed()));
 	setChecked(m_dw->mayBeHide());
 }
 
@@ -868,3 +887,11 @@ void KateToggleToolViewAction::slotToggled(bool t)
   	if ( t && m_dw->mayBeShow() ) m_mw->makeDockVisible(m_dw);
 
 }
+
+
+void KateToggleToolViewAction::slotWidgetDestroyed()
+{
+	unplugAll();
+	deleteLater();
+}
+

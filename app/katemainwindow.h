@@ -189,7 +189,7 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     virtual void* interfaces(const QString &name);
 
     virtual KDockWidget *addToolViewWidget(KDockWidget::DockPosition pos,QWidget *widget,const QPixmap &icon, const QString& caption);
-    virtual bool removeToolViewWidget(QWidget *){return false;}
+    virtual bool removeToolViewWidget(QWidget *);
     virtual KDockWidget *addToolView(KDockWidget::DockPosition pos,const char* name,const QPixmap &icon,const QString&);
     virtual bool removeToolView(KDockWidget *){return false;}
 
@@ -209,12 +209,14 @@ Q_OBJECT
 public:
 	KateToggleToolViewAction( const QString& text, const KShortcut& cut = KShortcut(),KDockWidget *dw=0, QObject* parent = 0, KateMainWindow* mw=0, const char* name = 0 );
 	virtual ~KateToggleToolViewAction();
+	
 private:
 	KDockWidget *m_dw;
 	KateMainWindow *m_mw;
 protected slots:
 	void slotToggled(bool);
 	void anDWChanged();
+	void slotWidgetDestroyed();
 };
 
 #endif

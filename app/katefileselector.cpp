@@ -68,7 +68,7 @@ static void silenceQToolBar(QtMsgType, const char *){}
 
 KateFileSelectorToolBar::KateFileSelectorToolBar(QWidget *parent):KToolBar( parent, "Kate FileSelector Toolbar", true )
 {
-
+	setMinimumWidth(10);
 }
 
 KateFileSelectorToolBar::~KateFileSelectorToolBar(){}
@@ -78,6 +78,25 @@ void KateFileSelectorToolBar::setMovingEnabled( bool)
 	//kdDebug()<<"JoWenn's setMovingEnabled called ******************************"<<endl;
 	KToolBar::setMovingEnabled(false);
 }
+
+
+KateFileSelectorToolBarParent::KateFileSelectorToolBarParent(QWidget *parent)
+	:QFrame(parent),m_tb(0){}
+KateFileSelectorToolBarParent::~KateFileSelectorToolBarParent(){}
+void KateFileSelectorToolBarParent::setToolBar(KateFileSelectorToolBar *tb)
+{
+	m_tb=tb;
+}
+
+void KateFileSelectorToolBarParent::resizeEvent ( QResizeEvent * )
+{
+	if (m_tb)
+	{
+		setMinimumHeight(m_tb->sizeHint().height());
+		m_tb->resize(width(),height());
+	}
+}
+
 
 //BEGIN Constructor/destructor
 
@@ -93,16 +112,20 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow, KateViewManager 
 
  // tbparent = new TBContainer( this );
 //  lo->addWidget( tbparent );
-    QDockArea *tbParentDock=new QDockArea(Horizontal,QDockArea::Reverse,this);
-    lo->addWidget (tbParentDock);
- // QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar );
-
-  toolbar = new KateFileSelectorToolBar(tbParentDock);
+//    QDockArea *tbParentDock=new QDockArea(Horizontal,QDockArea::Reverse,this);
+//    lo->addWidget (tbParentDock);
+  QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar );
+ 
+  KateFileSelectorToolBarParent *tbp=new KateFileSelectorToolBarParent(this);
+  toolbar = new KateFileSelectorToolBar(tbp);
+  tbp->setToolBar(toolbar);
+  lo->addWidget(tbp);
+//  lo->addWidget(toolbar);
 //  lo->addWidget(toolbar);
   toolbar->setMovingEnabled(false);
   toolbar->setFlat(true);
 //  tbparent->setTb( toolbar );
-//  qInstallMsgHandler( oldHandler );
+  qInstallMsgHandler( oldHandler );
 
   cmbPath = new KURLComboBox( KURLComboBox::Directories, true, this, "path combo" );
   cmbPath->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));

@@ -51,7 +51,19 @@ public:
 	virtual ~KateFileSelectorToolBar();
 
 	 virtual void setMovingEnabled( bool b );
+};
 
+class KateFileSelectorToolBarParent: public QFrame
+{
+	Q_OBJECT
+public:
+	KateFileSelectorToolBarParent(QWidget *parent);
+	~KateFileSelectorToolBarParent();
+	void setToolBar(KateFileSelectorToolBar *tb);
+private:
+	KateFileSelectorToolBar *m_tb;
+protected:
+	virtual void resizeEvent ( QResizeEvent * );
 };
 
 
