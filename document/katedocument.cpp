@@ -754,6 +754,29 @@ void KateDocument::hlChanged() { //slot
   updateViews();
 }
 
+KateView* KateDocument::getFirstView() {
+  return views.first();
+}
+
+KateView* KateDocument::getNextView() {
+  return views.next();
+}
+
+KateView* KateDocument::getLastView() {
+  return views.last();
+}
+
+KateView* KateDocument::getPrevView() {
+  return views.prev();
+}
+
+KateView* KateDocument::getCurrentView() {
+  return views.current();
+}
+
+int KateDocument::getViewCount() {
+  return views.count();
+}
 
 void KateDocument::addView(KTextEditor::View *view) {
   views.append( static_cast<KateView *>( view ) );

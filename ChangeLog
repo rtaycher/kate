@@ -1,3 +1,7 @@
+2001-08-08  rokrau@yahoo.com
+  * committed changes to Kate's API necessary for integration of kate as
+    a kpart into kdevelop
+
 2001-05-13 Christoph Cullmann <crossfire@babylon2k.de>
   * after some time of learning for my "Abitur" now again some fixes ;):
     textlines stuff rewritten, selection fixed + +/- font zoom buttons in the part

@@ -285,7 +285,7 @@ class KateViewInternal : public QWidget {
 
 /**
   The KateView text editor widget. It has many options, document/view
-  architecture and syntax highlight.
+  architecture and syntax highlighting.
   @author Jochen Wilhelmy
 */
 
@@ -341,7 +341,6 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
     int undoSteps();
     void setUndoSteps(int);
 
-  //    bool isOverwriteMode();
     /**
       Returns true if the document is in read only mode.
     */
@@ -367,7 +366,7 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
     */
     KateDocument *doc();
 
-    /*
+    /**
       Bit 0 : undo possible, Bit 1 : redo possible.
       Used to enable/disable undo/redo menu items and toolbar buttons
     */
@@ -399,7 +398,7 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
     QColor* getColors();
     void applyColors();
 
-   void setupActions();
+    void setupActions();
 
     KAction *editUndo, *editRedo, *editUndoHist, *bookmarkToggle, *bookmarkClear;
 
@@ -495,10 +494,10 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
      */
      void setText(const QString &);
      /**
-       Insert text at the current cursor position. If length is a positive
-       number, it restricts the number of inserted characters
+       Insert text at the current cursor position.
+       The parameter @param mark is unused.
      */
-     virtual void insertText(const QString &, bool mark = false);
+     virtual void insertText(const QString &, bool = false );
      /**
        Queries if there is marked text
      */
@@ -509,7 +508,6 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
      QString markedText();
 
   public:
-    enum fileResult { OK, CANCEL, RETRY, ERROR };
 
     /**
       Returns true if the current document can be
@@ -527,15 +525,15 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
     void flush ();
     /**
       Saves the file if necessary under the current file name. If the current file
-      name is Untitled, as it is after a call to newFile(), this routing will
+      name is Untitled, as it is after a call to newFile(), this routine will
       call saveAs().
     */
-    fileResult save();
+    saveResult save();
     /**
       Allows the user to save the file under a new name. This starts the
       automatic highlight selection.
     */
-    fileResult saveAs();
+    saveResult saveAs();
     /**
       Moves the marked text into the clipboard
     */

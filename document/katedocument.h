@@ -268,6 +268,31 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
 
 // view interaction
   public:
+    /** Returns the first view in the documents list of views.
+    *   see @ref QList
+    */
+    KateView* getFirstView();
+    /** Returns the next view in the documents list of views.
+    *   see @ref QList
+    */
+    KateView* getNextView();
+    /** Returns the last view in the documents list of views.
+    *   see @ref QList
+    */
+    KateView* getLastView();
+    /** Returns the previous view in the documents list of views.
+    *   see @ref QList
+    */
+    KateView* getPrevView();
+    /** Returns the current view in the documents list of views.
+    *   see @ref QList
+    */
+    KateView* getCurrentView();
+    /** Returns the number of views for the document.
+    *   see @ref QList
+    */
+    int getViewCount();
+
     virtual void addView(KTextEditor::View *);
     virtual void removeView(KTextEditor::View *);
     bool ownedView(KateView *);
@@ -448,7 +473,7 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     QWidget *pseudoModal;   //the replace prompt is pseudo modal
 
     public:
-    /** Tjecks if the file on disk is newer than document contents.
+    /** Checks if the file on disk is newer than document contents.
       If forceReload is true, the document is reloaded without asking the user,
       otherwise [default] the user is asked what to do. */
     void isModOnHD(bool forceReload=false);

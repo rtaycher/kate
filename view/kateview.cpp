@@ -596,7 +596,7 @@ void KateViewInternal::changeState(VConfig &c) {
     // remove trailing spaces when leaving a line
     if (c.flags & KateView::cfRemoveSpaces && cursor.y != c.cursor.y) {
       TextLine::Ptr textLine = myDoc->getTextLine(c.cursor.y);
-      int newLen = textLine->lastChar();
+      unsigned int newLen = textLine->lastChar();
       if (newLen != textLine->length()) {
         textLine->truncate(newLen);
         // if some spaces are removed, tag the line as dirty
@@ -1207,8 +1207,8 @@ void KateViewInternal::paintEvent(QPaintEvent *e) {
 
   while (y < yEnd)
   {
-    TextLine *textLine;
-    int ctxNum = 0;
+    //TextLine *textLine;
+    //int ctxNum = 0;
     myDoc->paintTextLine(paint, line, xStart, xEnd, myView->configFlags & KateView::cfShowTabs);
     bitBlt(this, updateR.x(), y, drawBuffer, 0, 0, updateR.width(), h);
     leftBorder->paintLine(line);
@@ -1941,11 +1941,11 @@ bool KateView::canDiscard() {
       i18n("The current Document has been modified.\nWould you like to save it?"));
     switch (query) {
       case KMessageBox::Yes: //yes
-        if (save() == CANCEL) return false;
+        if (save() == SAVE_CANCEL) return false;
         if (isModified()) {
             query = KMessageBox::warningContinueCancel(this,
                i18n("Could not save the document.\nDiscard it and continue?"),
-	       QString::null, i18n("&Discard"));
+           QString::null, i18n("&Discard"));
           if (query == KMessageBox::Cancel) return false;
         }
         break;
@@ -1961,7 +1961,7 @@ void KateView::flush()
   if (canDiscard()) myDoc->flush();
 }
 
-KateView::fileResult KateView::save() {
+KateView::saveResult KateView::save() {
   int query = KMessageBox::Yes;
   if (isModified()) {
     if (!myDoc->url().fileName().isEmpty() && ! isReadOnly()) {
@@ -1972,7 +1972,7 @@ KateView::fileResult KateView::save() {
       {
         query = checkOverwrite( myDoc->url() );
         if( query == KMessageBox::Cancel )
-          return CANCEL;
+          return SAVE_CANCEL;
       }
       if( query == KMessageBox::Yes )
       myDoc->saveAs(myDoc->url());
@@ -1982,7 +1982,7 @@ KateView::fileResult KateView::save() {
     else
       return saveAs();
   }
-  return OK;
+  return SAVE_OK;
 }
 
 /*
@@ -2007,7 +2007,7 @@ int KateView::checkOverwrite( KURL u )
   return query;
 }
 
-KateView::fileResult KateView::saveAs() {
+KateView::saveResult KateView::saveAs() {
   KURL url;
   int query;
 
@@ -2015,17 +2015,17 @@ KateView::fileResult KateView::saveAs() {
     query = KMessageBox::Yes;
 
     url = KFileDialog::getSaveURL(myDoc->url().url(), QString::null,this);
-    if (url.isEmpty()) return CANCEL;
+    if (url.isEmpty()) return SAVE_CANCEL;
 
     query = checkOverwrite( url );
   }
   while (query != KMessageBox::Yes);
 
   if( query == KMessageBox::Cancel )
-    return CANCEL;
+    return SAVE_CANCEL;
 
   myDoc->saveAs(url);
-  return OK;
+  return SAVE_OK;
 }
 
 void KateView::doCursorCommand(int cmdNum) {
@@ -2424,7 +2424,7 @@ bool KateView::askReplaceEnd() {
                "End of document reached.\n"
                "Continue from the beginning?").arg(replaces);
     query = KMessageBox::questionYesNo(this, str, i18n("Replace"),
-		i18n("Continue"), i18n("Stop"));
+        i18n("Continue"), i18n("Stop"));
   } else {
     // backward search
     str = i18n("%1 replacement(s) made.\n"
@@ -2834,27 +2834,27 @@ void KateView::dropEventPassEmited (QDropEvent* e)
 
 void KateView::printDlg ()
 {
-  if ( printer->setup( this ) )
-  {
-    QPainter paint( printer );
-    QPaintDeviceMetrics pdm( printer );
+   if ( printer->setup( this ) )
+   {
+     QPainter paint( printer );
+     QPaintDeviceMetrics pdm( printer );
 
-    int y = 0;
-    int lineCount = 0;
-    while (  lineCount <= myDoc->lastLine()  )
-    {
-       if (y+myDoc->fontHeight >= pdm.height() )
-      {
-        printer->newPage();
-        y=0;
-      }
+     int y = 0;
+     int lineCount = 0;
+     while (  lineCount <= myDoc->lastLine()  )
+     {
+        if (y+myDoc->fontHeight >= pdm.height() )
+       {
+         printer->newPage();
+         y=0;
+       }
 
-      myDoc->paintTextLine ( paint, lineCount, y, 0, pdm.width(), false );
-      y += myDoc->fontHeight;
+       myDoc->paintTextLine ( paint, lineCount, y, 0, pdm.width(), false );
+       y += myDoc->fontHeight;
 
-      lineCount++;
-    }
-  }
+       lineCount++;
+     }
+   }
 }
 
 // Applies a new pattern to the search context.
@@ -3282,7 +3282,7 @@ void KateIconBorder::paintEvent(QPaintEvent* e)
     int h = doc->fontHeight;
     int yPos = myInternalView->yPos;
     if (h) {
-  	lineStart = (yPos + updateR.y()) / h;
+      lineStart = (yPos + updateR.y()) / h;
         lineEnd = QMAX((yPos + updateR.y() + updateR.height()) / h, (int)doc->numLines());
     }
 

@@ -26,12 +26,15 @@
 #ifndef _KATE_DOCUMENT_INCLUDE_
 #define _KATE_DOCUMENT_INCLUDE_
 
+#include <qlist.h>
 #include <ktexteditor.h>
 
 class KConfig;
 
 namespace Kate
 {
+
+class View;
 
 /** internal class for document bookmarks. */
 class Mark
@@ -41,7 +44,7 @@ class Mark
     uint type;
 };
 
-/** This interface provedes access to the Kate Document class.
+/** This interface provides access to the Kate Document class.
 */
 class Document : public KTextEditor::Document
 {
@@ -52,6 +55,15 @@ class Document : public KTextEditor::Document
     virtual ~Document ();
 
   public:
+    /** Opens and reads the current file into the document
+    */
+    virtual bool openFile() { return false; };
+    /** Saves the current document to file
+    */
+    virtual bool saveFile() { return false; };
+
+    virtual KTextEditor::View* createView( QWidget *, const char *) { return 0L; };
+
     /** Read document config.
     */
     virtual void readConfig () { ; };
@@ -66,9 +78,46 @@ class Document : public KTextEditor::Document
     */
     virtual void writeSessionConfig (KConfig *) { ; };
 
+    /** Checks if the file on disk is newer than document contents.
+      If forceReload is true, the document is reloaded without asking the user,
+      otherwise [default] the user is asked what to do. */
+    virtual void isModOnHD(bool ) { ; };
+
     /** Returns the document ID.
     */
     virtual uint docID () { return 0L; };
+
+    /** Returns the document name.
+    */
+    virtual QString docName () { return 0L; };
+
+    /** Sets the document name.
+    */
+    virtual void setDocName (QString /*docName*/) { ; };
+
+    /** Returns the first view in the documents list of views.
+    */
+    virtual Kate::View* getFirstView() { return 0L; };
+
+    /** Returns the next view in the documents list of views.
+    */
+    virtual Kate::View* getNextView() { return 0L; };
+
+    /** Returns the last view in the documents list of views.
+    */
+    virtual Kate::View* getLastView() { return 0L; };
+
+    /** Returns the previous view in the documents list of views.
+    */
+    virtual Kate::View* getPrevView() { return 0L; };
+
+    /** Returns the current view in the documents list of views.
+    */
+    virtual Kate::View* getCurrentView() { return 0L; };
+
+    /** Returns the number of views for the document.
+    */
+    virtual int getViewCount() { return 0L; };
 
     /** Defines possible mark types. A line can have marks of different types.
     */

@@ -1,6 +1,5 @@
 #include "katecmds.h"
 #include <qregexp.h>
-#include <qregexp3.h>
 #include <qdatetime.h>
 #include "katedocument.h"
 #include <kdebug.h>
