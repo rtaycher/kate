@@ -5,7 +5,7 @@ rckatedir = $(kde_datadir)/kate
 rckate_DATA = kateui.rc syntax.xml katepartui.rc katepartbrowserui.rc
 
 syntaxkatedir = $(kde_datadir)/kate/syntax
-syntaxkate_DATA = cpp.xml c.xml html.xml kbasic.xml objectivec.xml changelog.xml ada.xml
+syntaxkate_DATA = cpp.xml c.xml html.xml kbasic.xml objectivec.xml changelog.xml ada.xml php.xml
 
 rckwritedir = $(kde_datadir)/kwrite
 rckwrite_DATA = kwriteui.rc
