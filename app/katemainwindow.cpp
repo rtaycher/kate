@@ -20,6 +20,7 @@
 
 // $Id$
 
+//BEGIN Includes
 #include "katemainwindow.h"
 #include "katemainwindow.moc"
 
@@ -74,6 +75,7 @@
 #include <kmenubar.h>
 
 #include "kategrepdialog.h"
+//END
 
 uint KateMainWindow::uniqueID = 0;
 
@@ -244,6 +246,7 @@ bool KateMainWindow::eventFilter(QObject* o, QEvent* e)
       doc->isModOnHD();
     }
   }
+  /* FIXME this never worked - can i delete it?
   if (e->type() == QEvent::KeyPress)
   {
     QKeyEvent *ke = (QKeyEvent*)e;
@@ -263,6 +266,7 @@ bool KateMainWindow::eventFilter(QObject* o, QEvent* e)
       return true;
     }
   }
+  */
 
   return QWidget::eventFilter(o,e);
 }
