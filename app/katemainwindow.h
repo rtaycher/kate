@@ -180,6 +180,7 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
   public:      
     Kate::ViewManager *viewManager () {return (Kate::ViewManager *)m_viewManager; }; 
     KateViewManager *kateViewManager () { return m_viewManager; };
+    KDockWidget *centralDock () { return mainDock; };
 
   public: //ToolViewManager stuff
     Kate::ToolViewManager *toolViewManager() {return(Kate::ToolViewManager*)this;}

@@ -3,12 +3,16 @@
 #include <qlayout.h>
 #include <kmultiverttabbar.h>
 #include <kdebug.h>
-#include <kiconloader.h>
+#include <kiconloader.h>                       
 
-KateDockContainer::KateDockContainer(QWidget *parent):QWidget(parent),KDockContainer()
-{
+#include "katemainwindow.h"
+
+KateDockContainer::KateDockContainer(QWidget *parent, class KateMainWindow *win, int position):QWidget(parent),KDockContainer()
+{         
+  m_mainWin = win;
 	oldtab=-1;
 	mTabCnt=0;
+  m_position = position;
 
 	QHBoxLayout *l=new QHBoxLayout(this);
 
@@ -20,7 +24,7 @@ KateDockContainer::KateDockContainer(QWidget *parent):QWidget(parent),KDockConta
 	m_ws=new QWidgetStack(this);
 
 	m_ws->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
-
+ 
 	l->add(m_ws);
 
 	l->activate();
@@ -53,7 +57,13 @@ void KateDockContainer::tabClicked(int t)
 	kdDebug()<<"KateDockContainer::tabClicked()"<<endl;
 
 	if (m_tb->isTabRaised(t))
-	{
+	{         
+    if (m_ws->isHidden())
+    {                        
+       m_ws->show ();
+      parentDockWidget()->manualDock(m_mainWin->centralDock(), KDockWidget::DockLeft,20);
+    }
+  
 		m_ws->raiseWidget(t);
 		m_tb->setTab(oldtab,false);
 		oldtab=t;	
@@ -61,8 +71,9 @@ void KateDockContainer::tabClicked(int t)
 	else
 	{
 		oldtab=-1;
-		//parentDockWidget()->resize(20,parentDockWidget()->height());
-	}
+    m_ws->hide ();
+    parentDockWidget()->manualDock(m_mainWin->centralDock(), KDockWidget::DockLeft,0);
+ 	}
 }
 
 void KateDockContainer::setToolTip (KDockWidget *, QString &)

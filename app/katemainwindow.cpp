@@ -148,20 +148,20 @@ void KateMainWindow::setupMainWindow ()
 
   if (m_dockStyle==IDEAlStyle)
   {
-    m_leftDock->setWidget(new KateDockContainer(m_leftDock));
-    m_rightDock->setWidget(new KateDockContainer(m_rightDock));
-    m_topDock->setWidget(new KateDockContainer(m_topDock));
-    m_bottomDock->setWidget(new KateDockContainer(m_bottomDock));
+    m_leftDock->setWidget(new KateDockContainer(m_leftDock, this, KDockWidget::DockLeft));
+    m_rightDock->setWidget(new KateDockContainer(m_rightDock, this, KDockWidget::DockRight));
+    m_topDock->setWidget(new KateDockContainer(m_topDock, this, KDockWidget::DockTop));
+    m_bottomDock->setWidget(new KateDockContainer(m_bottomDock, this, KDockWidget::DockBottom));
   }
 
 
   if (m_dockStyle==IDEAlStyle)
   {
-     m_leftDock->manualDock(mainDock, KDockWidget::DockLeft,20);
-     m_rightDock->manualDock(mainDock, KDockWidget::DockRight,20);
-     m_topDock->manualDock(mainDock, KDockWidget::DockTop,20);
-     m_bottomDock->manualDock(mainDock, KDockWidget::DockBottom,20);
-     m_rightDock->undock();
+     m_leftDock->manualDock(mainDock, KDockWidget::DockLeft,0);
+     m_rightDock->manualDock(mainDock, KDockWidget::DockRight,100);
+     m_topDock->manualDock(mainDock, KDockWidget::DockTop,0);
+     m_bottomDock->manualDock(mainDock, KDockWidget::DockBottom,100);
+     m_bottomDock->undock();
      m_topDock->undock();
   }
 
@@ -362,7 +362,7 @@ void KateMainWindow::readOptions(KConfig *config)
   fileselector->readConfig(config, "fileselector");
   //fileselector->setView(KFile::Default); grr - the file selector reads the config and does this!!
 
-  readDockConfig();
+ // readDockConfig();
 }
 
 void KateMainWindow::saveOptions(KConfig *config)
