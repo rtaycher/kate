@@ -24,8 +24,37 @@
 #include "katemainwindow.h"
 
 #include <kconfig.h>
+#include <kcombobox.h>
+#include <kdialogbase.h>
+#include <kurlrequester.h>
+#include <klineedit.h>
+#include <klocale.h>
+#include <kmessagebox.h>
 
 #include <qfile.h>
+#include <qlayout.h> 
+#include <qlabel.h>
+
+class KateProjectDialogNew : public KDialogBase
+{
+  public:
+    KateProjectDialogNew (QWidget *parent, KateProjectManager *projectMan);
+    ~KateProjectDialogNew ();
+    
+    int exec();
+    
+  private:
+    KateProjectManager *m_projectMan;
+
+    KComboBox *m_typeCombo;
+    KLineEdit *m_nameEdit;
+    KURLRequester *m_urlRequester;
+  
+  public:
+    QString type;
+    QString name;
+    QString fileName;
+};
 
 KateProjectManager::KateProjectManager (QObject *parent) : QObject (parent)
 {
@@ -134,4 +163,88 @@ void KateProjectManager::disableProjectGUI (Kate::Project *project, KateMainWind
   if (!Kate::pluginViewInterface(project->plugin())) return;
 
   Kate::pluginViewInterface(project->plugin())->removeView(win->mainWindow());
+}
+
+ProjectInfo *KateProjectManager::newProjectDialog (QWidget *parent)
+{
+  ProjectInfo *info = 0;
+  
+  KateProjectDialogNew* dlg = new KateProjectDialogNew (parent, this);
+  
+  int n = dlg->exec();
+  
+  if (n)
+  {
+    info = new ProjectInfo ();
+    info->type = dlg->type;
+    info->name = dlg->name;
+    info->fileName = dlg->fileName;
+  }
+  
+  delete dlg;
+  return info;
+}
+
+QStringList KateProjectManager::pluginStringList ()
+{
+  QStringList list;
+  
+  for (uint i=0; i<m_pluginList.count(); i++)
+    list.push_back (m_pluginList.at(i)->projectType);
+  
+  return list;
+}
+
+//
+// "New Project" Dialog
+//
+
+KateProjectDialogNew::KateProjectDialogNew (QWidget *parent, KateProjectManager *projectMan) : KDialogBase (parent, "project_new", true, i18n ("New Project"), KDialogBase::Ok|KDialogBase::Cancel)
+{
+  m_projectMan = projectMan;
+  
+  QWidget *page = new QWidget( this );
+  setMainWidget(page);
+  
+  QGridLayout *grid = new QGridLayout (page, 3, 2, 0, spacingHint());
+  
+  grid->addWidget (new QLabel (i18n("Project Type:"), page), 0, 0);
+  m_typeCombo = new KComboBox (page);
+  grid->addWidget (m_typeCombo, 0, 1);
+  
+  m_typeCombo->insertStringList (m_projectMan->pluginStringList ());
+  
+  grid->addWidget (new QLabel (i18n("Project Name:"), page), 1, 0);
+  m_nameEdit = new KLineEdit (page);
+  grid->addWidget (m_nameEdit, 1, 1);
+  
+  grid->addWidget (new QLabel (i18n("Project File:"), page), 2, 0);
+  m_urlRequester = new KURLRequester (page);
+  grid->addWidget (m_urlRequester, 2, 1);
+  
+  m_urlRequester->setMode (KFile::LocalOnly);
+  m_urlRequester->setFilter (QString ("*.kate|") + i18n("Kate Project Files"));
+}
+
+KateProjectDialogNew::~KateProjectDialogNew ()
+{
+}
+
+int KateProjectDialogNew::exec()
+{
+  int n = 0;
+  
+  while ((n = KDialogBase::exec()))
+  {
+    type = m_typeCombo->currentText ();
+    name = m_nameEdit->text ();
+    fileName = m_urlRequester->url ();
+    
+    if (!name.isEmpty() && !fileName.isEmpty())
+      break;
+    else
+      KMessageBox::sorry (this, i18n ("You must enter a project name and file"));
+  }
+
+  return n;
 }

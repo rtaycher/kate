@@ -922,10 +922,13 @@ void KateToggleToolViewAction::slotWidgetDestroyed()
 
 void KateMainWindow::slotProjectNew ()
 {
-  QString fileName = KFileDialog::getSaveFileName(QString::null, QString ("*.kate|") + i18n("Kate Project Files"), this, i18n("New Kate Project"));
+  ProjectInfo *info = m_projectManager->newProjectDialog (this);
 
-  if (!fileName.isEmpty())
-    createProject (QString ("Default"), QString("Test"), fileName);
+  if (info)
+  {
+    createProject (info->type, info->name, info->fileName);
+    delete info;
+  }
 }
 
 void KateMainWindow::slotProjectOpen ()

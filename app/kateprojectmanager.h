@@ -27,6 +27,7 @@
 #include <qobject.h>
 #include <qvaluelist.h>
 #include <qptrlist.h>
+#include <qstringlist.h>
 #include <ktrader.h>
 
 class ProjectPluginInfo
@@ -35,6 +36,14 @@ class ProjectPluginInfo
     KService::Ptr service;
     QString projectType;
     QString name;
+};
+
+class ProjectInfo
+{
+  public:
+    QString type;
+    QString name;
+    QString fileName;
 };
 
 typedef QPtrList<ProjectPluginInfo> ProjectPluginList;
@@ -59,6 +68,10 @@ class KateProjectManager : public QObject
     
     void enableProjectGUI (Kate::Project *project, class KateMainWindow *win);
     void disableProjectGUI (Kate::Project *project, class KateMainWindow *win);
+    
+    ProjectInfo *newProjectDialog (QWidget *parent);
+
+    QStringList pluginStringList ();    
     
   private:
     Kate::ProjectManager *m_projectManager;
