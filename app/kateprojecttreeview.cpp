@@ -56,13 +56,7 @@ KateProjectTreeView::KateProjectTreeView (Kate::Project *project, QWidget *paren
   header()->setStretchEnabled (true);
   addColumn(i18n("Project Tree"));
 
-  QStringList topdirs = m_project->subdirs ();
-  
-  for (uint z=0; z < topdirs.count(); z++)
-  {
-    KateProjectTreeViewItem *item = new KateProjectTreeViewItem (this, topdirs[z], QString ("/") + topdirs[z], true);
-    addDir (item, QString ("/") + topdirs[z]);
-  }
+  addDir (0, QString::null);
 }
 
 KateProjectTreeView::~KateProjectTreeView ()
@@ -75,7 +69,22 @@ void KateProjectTreeView::addDir (KateProjectTreeViewItem *parent, const QString
   
   for (uint z=0; z < dirs.count(); z++)
   {
-    KateProjectTreeViewItem *item = new KateProjectTreeViewItem (parent, dirs[z], dir + QString ("/") + dirs[z], true);
+    KateProjectTreeViewItem *item = 0;
+    if (parent)
+      item = new KateProjectTreeViewItem (parent, dirs[z], dir + QString ("/") + dirs[z], true);
+    else
+      item = new KateProjectTreeViewItem (this, dirs[z], dir + QString ("/") + dirs[z], true);
+      
     addDir (item, dir + QString ("/") + dirs[z]);
+  }
+  
+  QStringList files = m_project->files (dir);
+  
+  for (uint z=0; z < files.count(); z++)
+  {
+    if (parent)
+      new KateProjectTreeViewItem (parent, files[z], dir + QString ("/") + files[z], false);
+    else
+      new KateProjectTreeViewItem (this, files[z], dir + QString ("/") + files[z], false);
   }
 }

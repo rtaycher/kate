@@ -84,6 +84,12 @@ class Project : public QObject
      */
     QStringList subdirs (const QString &dir = QString::null) const;
     
+    /**
+     * files of given dir
+     * @return QStringList list with files
+     */
+    QStringList files (const QString &dir = QString::null) const;
+    
   private:
     /**
      * REALLY PRIVATE ;)

@@ -2,6 +2,7 @@
 Type=Default
 Name=Test Project
 Subdirs=testit,testmore
+Files=hallo.txt,text.ext
 
 [Dir /testit]
 Subdirs=evenmore, test
@@ -14,3 +15,4 @@ Subdirs=hallo
 [Dir /testit/test]
 
 [Dir /testit/evenmore/hallo]
+Files=MUHHHHHHHHHHHHHHH.pas

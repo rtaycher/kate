@@ -107,3 +107,20 @@ QStringList KateProject::subdirs (const QString &dir) const
   
   return m_data->readListEntry ("Subdirs");
 }
+
+QStringList KateProject::files (const QString &dir) const
+{
+  if (dir.isNull())
+    m_data->setGroup("General");
+  else
+  {
+    QString groupname = QString ("File ") + dir;
+
+    if (!m_data->hasGroup(groupname))
+      return QStringList ();
+
+    m_data->setGroup(groupname);
+  }
+  
+  return m_data->readListEntry ("Files");
+}

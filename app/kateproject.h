@@ -76,6 +76,12 @@ class KateProject : public QObject
      * @return QStringList list with subdirs
      */
     QStringList subdirs (const QString &dir = QString::null) const;
+    
+    /**
+     * files of given dir
+     * @return QStringList list with files
+     */
+    QStringList files (const QString &dir = QString::null) const;
 
   private:
     class KateProjectManager *m_projectMan;

@@ -92,5 +92,10 @@ QStringList Project::subdirs (const QString &dir) const
   return d->project->subdirs (dir);
 }
 
+QStringList Project::files (const QString &dir) const
+{
+  return d->project->files (dir);
+}
+
 };
 
