@@ -6,7 +6,8 @@ KDE_CXXFLAGS = $(USE_RTTI) -DNO_NEW_CODE
 
 bin_PROGRAMS = kwrite
 
-lib_LTLIBRARIES = libkwritepart.la kwrite.la
+lib_LTLIBRARIES = kwrite.la
+kde_module_LTLIBRARIES = libkwritepart.la
 
 libkwritepart_la_SOURCES = highlight.cpp ktextprint.cpp  \
 		           kwdoc.cpp kwview.cpp undohistory.cpp  \
