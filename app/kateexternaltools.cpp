@@ -21,7 +21,7 @@
 // TODO
 // Icons
 // Direct shortcut setting
-
+//BEGIN Includes
 #include "kateexternaltools.h"
 #include "kateexternaltools.moc"
 #include "katedocmanager.h"
@@ -36,11 +36,13 @@
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
+#include <kmimetypechooser.h>
 #include <kconfig.h>
 #include <krun.h>
 #include <kicondialog.h>
 
 #include <qbitmap.h>
+#include <qcombobox.h>
 #include <qfile.h>
 #include <qpushbutton.h>
 #include <qlineedit.h>
@@ -49,6 +51,8 @@
 #include <qlistbox.h>
 #include <qmap.h>
 #include <qregexp.h>
+#include <qtextedit.h>
+#include <qtoolbutton.h>
 #include <qwhatsthis.h>
 
 #include <stdlib.h>
@@ -57,6 +61,7 @@
 #include <kdebug.h>
 #include <kapplication.h>
 #include <kmdi/mainwindow.h>
+//END Includes
 
 KateExternalToolsCommand *KateExternalToolsCommand::s_self=0;
 
@@ -67,14 +72,16 @@ KateExternalTool::KateExternalTool( const QString &name,
                       const QString &tryexec,
                       const QStringList &mimetypes,
                       const QString &acname,
-                      const QString &cmdname )
+                      const QString &cmdname,
+                      int save )
   : name ( name ),
     command ( command ),
     icon ( icon ),
     tryexec ( tryexec ),
     mimetypes ( mimetypes ),
     acname ( acname ),
-    cmdname (cmdname)
+    cmdname ( cmdname ),
+    save ( save )
 {
   //if ( ! tryexec.isEmpty() )
     hasexec = checkExec();
@@ -182,25 +189,25 @@ void KateExternalToolsCommand::reload () {
 bool KateExternalToolsCommand::exec (Kate::View *view, const QString &cmd, QString &msg) {
 	QWidget *wv=dynamic_cast<QWidget*>(view);
 	if (!wv) {
-		kdDebug()<<"KateExternalToolsCommand::exec: Could not get view widget"<<endl;
+		kdDebug(13001)<<"KateExternalToolsCommand::exec: Could not get view widget"<<endl;
 		return false;
 	}
   KMDI::MainWindow *dmw=dynamic_cast<KMDI::MainWindow*>(wv->topLevelWidget());
 	if (!dmw) {
-		kdDebug()<<"KateExternalToolsCommand::exec: Could not get main window"<<endl;
+		kdDebug(13001)<<"KateExternalToolsCommand::exec: Could not get main window"<<endl;
 		return false;
 	}
-	kdDebug()<<"cmd="<<cmd.stripWhiteSpace()<<endl;
+	kdDebug(13001)<<"cmd="<<cmd.stripWhiteSpace()<<endl;
 	QString actionName=m_map[cmd.stripWhiteSpace()];
 	if (actionName.isEmpty()) return false;
-	kdDebug()<<"actionName is not empty:"<<actionName<<endl;
+	kdDebug(13001)<<"actionName is not empty:"<<actionName<<endl;
 	KateExternalToolsMenuAction *a=
 		dynamic_cast<KateExternalToolsMenuAction*>(dmw->action("tools_external"));
 	if (!a) return false;
-	kdDebug()<<"trying to find action"<<endl;
+	kdDebug(13001)<<"trying to find action"<<endl;
 	KAction *a1=a->actionCollection()->action(actionName.utf8());
 	if (!a1) return false;
-	kdDebug()<<"activating action"<<endl;
+	kdDebug(13001)<<"activating action"<<endl;
 	a1->activate();
 	return true;
 }
@@ -263,7 +270,15 @@ void KateExternalToolAction::slotRun()
 
   expandMacrosShellQuote( cmd );
 
-  kdDebug()<<"=== Running command: "<<cmd<<endl;
+  kdDebug(13001)<<"externaltools: Running command: "<<cmd<<endl;
+
+  // save documents if requested
+  KateMainWindow *mw = ((KateExternalToolsMenuAction*)parent()->parent())->mainwindow;
+  if ( tool->save == 1 )
+    mw->viewManager()->activeView()->document()->save();
+  else if ( tool->save == 2 )
+    mw->actionCollection()->action("file_save_all")->activate();
+
   KRun::runCommand( cmd, tool->tryexec, tool->icon );
 }
 //END KateExternalToolAction
@@ -291,11 +306,40 @@ void KateExternalToolsMenuAction::reload()
   popupMenu()->clear();
 
   // load all the tools, and create a action for each of them
-  KConfig *config = new KConfig("externaltools", false, false, "appdata");
-  config->setGroup("Global");
-  QStringList tools = config->readListEntry("tools");
+  KConfig *config = new KConfig( "externaltools", false, false, "appdata" );
+  config->setGroup( "Global" );
+  QStringList tools = config->readListEntry( "tools" );
 
-//   QRegExp re_nw("\\W");
+  // if there are tools that are present but not explicitly removed,
+  // add them to the end of the list
+  config->setReadDefaults( true );
+  QStringList dtools = config->readListEntry( "tools" );
+  int gver = config->readNumEntry( "version", 1 );
+  config->setReadDefaults( false );
+
+  int ver = config->readNumEntry( "version" );
+  if ( ver < gver )
+  {
+    QStringList removed = config->readListEntry( "removed" );
+    bool sepadded = false;
+    for (QStringList::iterator itg = dtools.begin(); itg != dtools.end(); ++itg )
+    {
+      if ( ! tools.contains( *itg ) &&
+            ! removed.contains( *itg ) )
+      {
+        if ( ! sepadded )
+        {
+          tools << "---";
+          sepadded = true;
+        }
+        tools << *itg;
+      }
+    }
+
+    config->writeEntry( "tools", tools );
+    config->sync();
+    config->writeEntry( "version", gver );
+  }
 
   for( QStringList::Iterator it = tools.begin(); it != tools.end(); ++it )
   {
@@ -315,7 +359,8 @@ void KateExternalToolsMenuAction::reload()
         config->readEntry( "executable", ""),
         config->readListEntry( "mimetypes" ),
         config->readEntry( "acname", "" ),
-        config->readEntry( "cmdname", "" ) );
+        config->readEntry( "cmdname", "" ),
+        config->readNumEntry( "save", 0 ) );
 
     if ( t->hasexec )
       insert( new KateExternalToolAction( m_actionCollection, t->acname.ascii(), t ) );
@@ -387,21 +432,28 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
 
   leName = new QLineEdit( w );
   lo->addWidget( leName, 1, 2 );
-  l = new QLabel( leName, i18n("&Name:"), w );
+  l = new QLabel( leName, i18n("&Label:"), w );
   l->setAlignment( l->alignment()|Qt::AlignRight );
   lo->addWidget( l, 1, 1 );
   if ( tool ) leName->setText( tool->name );
   QWhatsThis::add( leName, i18n(
       "The name will be displayed in the 'Tools->External' menu") );
 
-  leCommand = new QLineEdit( w );
-  lo->addWidget( leCommand, 2, 2 );
-  l = new QLabel( leCommand, i18n("Comma&nd:"), w );
-  l->setAlignment( l->alignment()|Qt::AlignRight );
+  btnIcon = new KIconButton( w );
+  btnIcon->setIconSize( KIcon::SizeSmall );
+  lo->addWidget( btnIcon, 1, 3 );
+  if ( tool && !tool->icon.isEmpty() )
+    btnIcon->setIcon( tool->icon );
+
+  teCommand = new QTextEdit( w );
+  lo->addMultiCellWidget( teCommand, 2, 2, 2, 3 );
+  l = new QLabel( teCommand, i18n("S&cript:"), w );
+  l->setAlignment( Qt::AlignTop|Qt::AlignRight );
   lo->addWidget( l, 2, 1 );
-  if ( tool ) leCommand->setText( tool->command );
-  QWhatsThis::add( leCommand, i18n(
-      "<p>The command to execute to invoke the tool. The following macros "
+  if ( tool ) teCommand->setText( tool->command );
+  QWhatsThis::add( teCommand, i18n(
+      "<p>The script to execute to invoke the tool. The script is passed "
+      "to /bin/sh for execution. The following macros "
       "will be expanded:</p>"
       "<ul><li><code>%URL</code> - the URL of the current document."
       "<li><code>%URLs</code> - a list of the URLs of all open documents."
@@ -415,15 +467,9 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
       "<li><code>%selection</code> - the selected text in the current view."
       "<li><code>%text</code> - the text of the current document.</ul>" ) );
 
-  btnIcon = new KIconButton( w );
-  btnIcon->setIconSize( KIcon::SizeMedium );
-  lo->addMultiCellWidget( btnIcon, 1, 2, 3, 3 );
-  if ( tool && !tool->icon.isEmpty() )
-    btnIcon->setIcon( tool->icon );
-
 
   leExecutable = new QLineEdit( w );
-  lo->addWidget( leExecutable, 3, 2 );
+  lo->addMultiCellWidget( leExecutable, 3, 3, 2, 3 );
   l = new QLabel( leExecutable, i18n("&Executable:"), w );
   l->setAlignment( l->alignment()|Qt::AlignRight );
   lo->addWidget( l, 3, 1 );
@@ -444,13 +490,33 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
       "be available; if this is left empty, the tool is always available. "
       "To choose from known mimetypes, press the button on the right.") );
 
+  QToolButton *btnMTW = new QToolButton(w);
+  lo->addWidget( btnMTW, 4, 3 );
+  btnMTW->setIconSet(QIconSet(SmallIcon("wizard")));
+  connect(btnMTW, SIGNAL(clicked()), this, SLOT(showMTDlg()));
+  QWhatsThis::add( btnMTW, i18n(
+      "Click for a dialog that can help you creating a list of mimetypes.") );
+
+  cmbSave = new QComboBox(w);
+  lo->addMultiCellWidget( cmbSave, 5, 5, 2, 3 );
+  l = new QLabel( cmbSave, i18n("&Save:"), w );
+  l->setAlignment( l->alignment()|Qt::AlignRight );
+  lo->addWidget( l, 5, 1 );
+  QStringList sl;
+  sl << i18n("None") << i18n("Current Document") << i18n("All Documents");
+  cmbSave->insertStringList( sl );
+  if ( tool ) cmbSave->setCurrentItem( tool->save );
+  QWhatsThis::add( cmbSave, i18n(
+      "You can elect to save the current or all [modified] documents prior to "
+      "running the command. This is helpfull if you want to pass URLs to "
+      "an application like for example a FTP client.") );
 
 
   leCmdLine = new QLineEdit( w );
-  lo->addWidget( leCmdLine, 5, 2 );
+  lo->addMultiCellWidget( leCmdLine, 6, 6, 2, 3 );
   l = new QLabel( leCmdLine, i18n("&Command line name:"), w );
   l->setAlignment( l->alignment()|Qt::AlignRight );
-  lo->addWidget( l, 5, 1 );
+  lo->addWidget( l, 6, 1 );
   if ( tool ) leCmdLine->setText( tool->cmdname );
   QWhatsThis::add( leCmdLine, i18n(
       "If you specify a name here, you can invoke the command from the view "
@@ -462,13 +528,23 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
 void KateExternalToolServiceEditor::slotOk()
 {
   if ( leName->text().isEmpty() ||
-       leCommand->text().isEmpty() )
+       teCommand->text().isEmpty() )
   {
     KMessageBox::information( this, i18n("You must specify at least a name and a command") );
     return;
   }
 
   KDialogBase::slotOk();
+}
+
+void KateExternalToolServiceEditor::showMTDlg()
+{
+  QString text = i18n("Select the MimeTypes for which to enable this tool.");
+  QStringList list = QStringList::split( QRegExp("\\s*;\\s*"), leMimetypes->text() );
+  KMimeTypeChooserDialog *d = new KMimeTypeChooserDialog( i18n("Select Mime Types"), text, list, "text", this );
+  if ( d->exec() == KDialogBase::Accepted ) {
+    leMimetypes->setText( d->chooser()->mimeTypes().join(";") );
+  }
 }
 //END KateExternalToolServiceEditor
 
@@ -520,8 +596,14 @@ KateExternalToolsConfigWidget::KateExternalToolsConfigWidget( QWidget *parent, c
 
 
 
+  config = new KConfig("externaltools", false, false, "appdata");
   reload();
   slotSelectionChanged();
+}
+
+KateExternalToolsConfigWidget::~KateExternalToolsConfigWidget()
+{
+  delete config;
 }
 
 void KateExternalToolsConfigWidget::reload()
@@ -530,7 +612,6 @@ void KateExternalToolsConfigWidget::reload()
   lbTools->clear();
 
   // load the files from a KConfig
-  KConfig *config = new KConfig("externaltools", false, false, "appdata");
   config->setGroup( "Global" );
   QStringList tools = config->readListEntry("tools");
 
@@ -551,14 +632,13 @@ void KateExternalToolsConfigWidget::reload()
           config->readEntry( "executable", ""),
           config->readListEntry( "mimetypes" ),
           config->readEntry( "acname" ),
-	  config->readEntry( "cmdname") );
+	  config->readEntry( "cmdname"),
+          config->readNumEntry( "save", 0 ) );
 
       if ( t->hasexec ) // we only show tools that are also in the menu.
         new ToolItem( lbTools, t->icon.isEmpty() ? blankIcon() : SmallIcon( t->icon ), t );
     }
   }
-  delete config;
-
 }
 
 QPixmap KateExternalToolsConfigWidget::blankIcon()
@@ -571,7 +651,6 @@ QPixmap KateExternalToolsConfigWidget::blankIcon()
 
 void KateExternalToolsConfigWidget::apply()
 {
-  KConfig *config = new KConfig("externaltools", false, false, "appdata");
   // save a new list
   // save each item
   QStringList tools;
@@ -583,7 +662,7 @@ void KateExternalToolsConfigWidget::apply()
       continue;
     }
     KateExternalTool *t = ((ToolItem*)lbTools->item( i ))->tool;
-    kdDebug()<<"adding tool: "<<t->name<<endl;
+//     kdDebug(13001)<<"adding tool: "<<t->name<<endl;
     tools << t->acname;
 
     config->setGroup( t->acname );
@@ -594,13 +673,36 @@ void KateExternalToolsConfigWidget::apply()
     config->writeEntry( "mimetypes", t->mimetypes );
     config->writeEntry( "acname", t->acname );
     config->writeEntry( "cmdname", t->cmdname );
+    config->writeEntry( "save", t->save );
   }
 
   config->setGroup("Global");
   config->writeEntry( "tools", tools );
 
+  // if any tools was removed, try to delete their groups, and
+  // add the group names to the list of removed items.
+  if ( m_removed.count() )
+  {
+    for ( QStringList::iterator it = m_removed.begin(); it != m_removed.end(); ++it )
+    {
+      if ( config->hasGroup( *it ) )
+        config->deleteGroup( *it  );
+    }
+    QStringList removed = config->readListEntry( "removed" );
+    removed += m_removed;
+
+    // clean up the list of removed items, so that it does not contain
+    // non-existing groups (we can't remove groups from a non-owned global file).
+    config->sync();
+    for ( QStringList::iterator it1 = removed.begin(); it1 != removed.end(); ++it1 )
+    {
+      if ( ! config->hasGroup( *it1 ) )
+        removed.remove( *it1 );
+    }
+    config->writeEntry( "removed", removed );
+  }
+
   config->sync();
-  delete config;
 }
 
 void KateExternalToolsConfigWidget::slotSelectionChanged()
@@ -623,7 +725,7 @@ void KateExternalToolsConfigWidget::slotNew()
   {
     KateExternalTool *t = new KateExternalTool(
       editor.leName->text(),
-      editor.leCommand->text(),
+      editor.teCommand->text(),
       editor.btnIcon->icon(),
       editor.leExecutable->text(),
       QStringList::split( QRegExp("\\s*;\\s*"), editor.leMimetypes->text() ) );
@@ -640,8 +742,13 @@ void KateExternalToolsConfigWidget::slotNew()
 
 void KateExternalToolsConfigWidget::slotRemove()
 {
-  // just remove the current listbox item
+  // add the tool action name to a list of removed items,
+  // remove the current listbox item
   if ( lbTools->currentItem() > -1 ) {
+    ToolItem *i = static_cast<ToolItem*>(lbTools->selectedItem());
+    if ( i )
+      m_removed << i->tool->acname;
+
     lbTools->removeItem( lbTools->currentItem() );
     slotChanged();
   }
@@ -652,6 +759,8 @@ void KateExternalToolsConfigWidget::slotEdit()
   // show the item in an editor
   KateExternalTool *t = ((ToolItem*)lbTools->selectedItem())->tool;
   KateExternalToolServiceEditor editor( t, this);
+  config->setGroup( "Editor" );
+  editor.resize( config->readSizeEntry( "Size" ) );
   if ( editor.exec() /*== KDialogBase::Ok*/ )
   {
 
@@ -659,10 +768,11 @@ void KateExternalToolsConfigWidget::slotEdit()
 
     t->name = editor.leName->text();
     t->cmdname = editor.leCmdLine->text();
-    t->command = editor.leCommand->text();
+    t->command = editor.teCommand->text();
     t->icon = editor.btnIcon->icon();
     t->tryexec = editor.leExecutable->text();
     t->mimetypes = QStringList::split( QRegExp("\\s*;\\s*"), editor.leMimetypes->text() );
+    t->save = editor.cmbSave->currentItem();
 
     //if the icon has changed or name changed, I have to renew the listbox item :S
     if ( elementChanged )
@@ -674,6 +784,10 @@ void KateExternalToolsConfigWidget::slotEdit()
 
     slotChanged();
   }
+
+  config->setGroup( "Editor" );
+  config->writeEntry( "Size", editor.size() );
+  config->sync();
 }
 
 void KateExternalToolsConfigWidget::slotInsertSeparator()

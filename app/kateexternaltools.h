@@ -106,7 +106,8 @@ class KateExternalTool
                       const QString &tryexec=QString::null,
                       const QStringList &mimetypes=QStringList(),
                       const QString &acname=QString::null,
-                      const QString &cmdname=QString::null );
+                      const QString &cmdname=QString::null,
+                      int save=0 );
     ~KateExternalTool() {};
 
     QString name; ///< The name used in the menu.
@@ -117,6 +118,7 @@ class KateExternalTool
     bool hasexec; ///< This is set by the constructor by calling checkExec(), if a value is present.
     QString acname; ///< The name for the action. This is generated first time the action is is created.
     QString cmdname; ///< The name for the commandline.
+    int save; ///< We can save documents prior to activating the tool command: 0 = nothing, 1 = current document, 2 = all documents.
 
     /**
      * @return true if mimetypes is empty, or the @p mimetype matches.
@@ -143,7 +145,7 @@ class KateExternalToolsConfigWidget : public Kate::ConfigPage
   Q_OBJECT
   public:
     KateExternalToolsConfigWidget( QWidget *parent, const char* name);
-    virtual ~KateExternalToolsConfigWidget() {};
+    virtual ~KateExternalToolsConfigWidget();
 
     virtual void apply();
     virtual void reload();
@@ -164,8 +166,12 @@ class KateExternalToolsConfigWidget : public Kate::ConfigPage
   private:
     QPixmap blankIcon();
 
+    QStringList m_removed;
+
     class KListBox *lbTools;
     class QPushButton *btnNew, *btnRemove, *btnEdit, *btnMoveUp, *btnMoveDwn;
+
+    class KConfig *config;
 };
 
 /**
@@ -200,14 +206,20 @@ class KateExternalToolServiceEditor : public KDialogBase
     KateExternalToolServiceEditor( KateExternalTool *tool=0,
     				   QWidget *parent=0, const char *name=0 );
 
-    class QLineEdit *leName, *leCommand, *leExecutable, *leMimetypes,*leCmdLine;
+    class QLineEdit *leName, *leExecutable, *leMimetypes,*leCmdLine;
+    class QTextEdit *teCommand;
     class KIconButton *btnIcon;
+    class QComboBox *cmbSave;
 
   private slots:
     /**
      * Run when the OK button is clicked, to ensure critical values are provided
      */
     void slotOk();
+    /**
+     * show a mimetype chooser dialog
+     */
+    void showMTDlg();
 
   private:
     KateExternalTool *tool;
