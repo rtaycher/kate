@@ -1704,6 +1704,11 @@ void KateDocument::configDialog()
                        BarIcon("edit", KIcon::SizeMedium ) );
   EditConfigTab *editConfig = new EditConfigTab(page, this);
 
+  // keyboard options
+  page=kd->addVBoxPage(i18n("Keyboard"), QString::null,
+                       BarIcon("edit", KIcon::SizeMedium ) );
+  EditKeyConfiguration *editKeyConfig = new EditKeyConfiguration(page);
+
   // spell checker
   page = kd->addVBoxPage( i18n("Spelling"), i18n("Spell checker behavior"),
                           BarIcon("spellcheck", KIcon::SizeMedium) );

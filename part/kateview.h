@@ -35,6 +35,19 @@
 #include "kateviewhighlightaction.h"
 #include "katecodecompletion_iface_impl.h"
 
+
+/* The keys, needed for editing */
+struct editKey
+{
+	Qt::ButtonState		modifiers;
+	int			key;
+	bool			valid;
+};
+#define EditKeyCount 22
+extern editKey editKeys[EditKeyCount];
+extern editKey defaultEditKeys[EditKeyCount];
+extern char* editKeyDescriptions[EditKeyCount];
+
 class KToggleAction;
 class KActionMenu;
 class KAction;
@@ -272,7 +285,7 @@ class KateView : public Kate::View
       Inserts text from the clipboard at the actual cursor position
     */
     void paste() {doEditCommand(KateView::cmPaste);}
-    
+
   //
   // KTextEditor::ViewCursorInterface stuff
   //
@@ -453,8 +466,14 @@ class KateView : public Kate::View
     void backspace() {doEditCommand(KateView::cmBackspace);};
     void killLine() {doEditCommand(KateView::cmKillLine);};
 
-// cursor commands...
 
+    // cursor commands...
+protected:
+    bool trySpecialKey(int key, Qt::ButtonState state,int id, void (KateView::*myfunc)());
+    static void setEditKey(int cmd, Qt::Key key, int modifiers, bool valid);
+    void setupDefaultEditKeys();
+public slots:
+    void setupEditKeys(bool);
     void cursorLeft() {doCursorCommand(KateView::cmLeft);};
     void shiftCursorLeft() {doCursorCommand(KateView::cmLeft | selectFlag);};
     void cursorRight() {doCursorCommand(KateView::cmRight);}

@@ -44,9 +44,12 @@
 #include <kregexpeditorinterface.h>
 #include <qdialog.h>
 #include <kparts/componentfactory.h>
+#include <kkeybutton.h>
+#include <klistview.h>
 
 #include "katedocument.h"
 #include "kateviewdialog.h"
+
 
 SearchDialog::SearchDialog( QWidget *parent, QStringList &searchFor, QStringList &replaceWith, int flags )
   : KDialogBase( parent, 0L, true, i18n( "Find Text" ), Ok | Cancel, Ok )
@@ -565,6 +568,38 @@ void FontConfig::slotFontSelected( const QFont &font )
 {
   myFont = font;
 }
+
+
+
+EditKeyConfiguration::EditKeyConfiguration(QWidget *parent, char *name):QWidget(parent,name)
+{
+	(new QVBoxLayout(this))->setAutoAdd(true);
+	list=new KListView(this);
+	QHBox *tmpBox=new QHBox(this);
+	tmpBox->setSpacing(5);
+	restoreToKateDefault=new QPushButton(i18n("Restore to Kate defaults"),tmpBox);
+	keyButton=new KKeyButton(tmpBox);
+
+	list->addColumn(i18n("Action"));
+	list->addColumn(i18n("Used keys"));
+	for (int i=0;i<EditKeyCount;i++)
+		{
+			QKeyEvent tmpEv(QEvent::KeyPress,editKeys[i].key,0,editKeys[i].modifiers);
+			KKey key(&tmpEv);
+			KShortcut tmpShortcut(key);
+			list->insertItem(new QListViewItem(list,i18n(editKeyDescriptions[i]),tmpShortcut.toString(),QString("%1").arg(i)));
+		}
+	connect(keyButton,SIGNAL(capturedShortcut(KShortcut)),this,SLOT(captured(KShortcut)));
+}
+
+void EditKeyConfiguration::captured(KShortcut sc)
+{
+	if (list->currentItem()) list->currentItem()->setText(1,sc.toString());
+}
+
+EditKeyConfiguration::~EditKeyConfiguration()
+{}
+
 
 #include "kateviewdialog.moc"
 

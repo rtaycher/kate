@@ -73,6 +73,42 @@
 #include "kateiconborder.h"
 #include "kateexportaction.h"
 
+bool keyListAlreadyLoaded=false;
+bool defaultKeyListAlreadyLoaded=false;
+#define KEY_LEFT		0
+#define KEY_WORD_LEFT		1
+#define KEY_LEFT_SELECT		2
+#define KEY_WORD_LEFT_SELECT	3
+#define KEY_RIGHT		4
+#define KEY_WORD_RIGHT		5
+#define KEY_RIGHT_SELECT	6
+#define KEY_WORD_RIGHT_SELECT	7
+#define KEY_HOME		8
+#define KEY_TOP			9
+#define KEY_HOME_SELECT		10
+#define KEY_TOP_SELECT		11
+#define KEY_END			12
+#define KEY_BOTTOM		13
+#define KEY_END_SELECT		14
+#define KEY_BOTTOM_SELECT	15
+#define KEY_UP			16
+#define KEY_UP_SELECT		17
+#define KEY_SCROLL_UP		18
+#define KEY_DOWN		19
+#define KEY_DOWN_SELECT		20
+#define KEY_SCROLL_DOWN		21
+
+
+editKey editKeys[EditKeyCount];
+editKey defaultEditKeys[EditKeyCount];
+extern char* editKeyDescriptions[EditKeyCount]={
+I18N_NOOP("Cursor Left"),I18N_NOOP("One Word to the Left"),I18N_NOOP("Cursor Left + SELECT"),I18N_NOOP("One Word to the Left + SELECT"),
+I18N_NOOP("Cursor Right"),I18N_NOOP("One Word to the Right"),I18N_NOOP("Cursor Right + SELECT"),I18N_NOOP("One Word to the Right + SELECT"),
+I18N_NOOP("Home"),I18N_NOOP("First Line"),I18N_NOOP("Home + SELECT"),I18N_NOOP("First Line + SELECT"),
+I18N_NOOP("Line End"),I18N_NOOP("Last Line"),I18N_NOOP("Line End + SELECT"),I18N_NOOP("Last Line + SELECT"),
+I18N_NOOP("Cursor Up"),I18N_NOOP("Cursor Up + SELECT"),I18N_NOOP("Scroll view one line up"),
+I18N_NOOP("Cursor Down"), I18N_NOOP("Cursor Down + SELECT"),I18N_NOOP("Scroll view one line down")};
+
 KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc) : QWidget(view)
 {
   waitForPreHighlight=0;
@@ -1328,6 +1364,9 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate
     myDoc->setXMLFile( "katepartbrowserui.rc" );
   }
 
+  setupDefaultEditKeys();
+  setupEditKeys(false);
+
   setupActions();
 
   connect( this, SIGNAL( newStatus() ), this, SLOT( slotUpdate() ) );
@@ -1341,6 +1380,70 @@ KateView::KateView(KateDocument *doc, QWidget *parent, const char * name) : Kate
   }
 
   slotUpdate();
+}
+
+void KateView::setEditKey(int cmd, Qt::Key key, int modifiers, bool valid)
+{
+	defaultEditKeys[cmd].modifiers=modifiers;
+	defaultEditKeys[cmd].key=key;
+	defaultEditKeys[cmd].valid=valid;
+}
+
+void KateView::setupEditKeys(bool force)
+{
+	if (force || (!keyListAlreadyLoaded))
+	{
+		for (int i=0;i<EditKeyCount;i++)
+		{
+			editKeys[i].key=defaultEditKeys[i].key;
+			editKeys[i].modifiers=defaultEditKeys[i].modifiers;
+			editKeys[i].valid=defaultEditKeys[i].valid;
+		}
+		keyListAlreadyLoaded=true;
+	}
+}
+
+void KateView::setupDefaultEditKeys()
+{
+	if (!defaultKeyListAlreadyLoaded)
+	{
+		// default values
+		/* left */
+		setEditKey(KEY_LEFT,Qt::Key_Left,Qt::NoButton,true);
+		setEditKey(KEY_WORD_LEFT,Qt::Key_Left,Qt::ControlButton,true);
+		setEditKey(KEY_LEFT_SELECT,Qt::Key_Left,Qt::ShiftButton,true);
+		setEditKey(KEY_WORD_LEFT_SELECT,Qt::Key_Left,Qt::ControlButton|Qt::ShiftButton,true);
+
+		/* right */
+		setEditKey(KEY_RIGHT,Qt::Key_Right,Qt::NoButton,true);
+		setEditKey(KEY_WORD_RIGHT,Qt::Key_Right,Qt::ControlButton,true);
+		setEditKey(KEY_RIGHT_SELECT,Qt::Key_Right,Qt::ShiftButton,true);
+		setEditKey(KEY_WORD_RIGHT_SELECT,Qt::Key_Right,Qt::ControlButton|Qt::ShiftButton,true);
+
+		/* home / top */
+		setEditKey(KEY_HOME,Qt::Key_Home,Qt::NoButton,true);
+		setEditKey(KEY_TOP,Qt::Key_Home,Qt::ControlButton,true);
+		setEditKey(KEY_HOME_SELECT,Qt::Key_Home,Qt::ShiftButton,true);
+		setEditKey(KEY_TOP_SELECT,Qt::Key_Home,Qt::ControlButton|Qt::ShiftButton,true);
+
+		/* end / bottom */
+		setEditKey(KEY_END,Qt::Key_End,Qt::NoButton,true);
+		setEditKey(KEY_BOTTOM,Qt::Key_End,Qt::ControlButton,true);
+		setEditKey(KEY_END_SELECT,Qt::Key_End,Qt::ShiftButton,true);
+		setEditKey(KEY_BOTTOM_SELECT,Qt::Key_End,Qt::ControlButton|Qt::ShiftButton,true);
+
+		/* up */
+		setEditKey(KEY_UP,Qt::Key_Up,Qt::NoButton,true);
+		setEditKey(KEY_UP_SELECT,Qt::Key_Up,Qt::ShiftButton,true);
+		setEditKey(KEY_SCROLL_UP,Qt::Key_Up,Qt::ControlButton,true);
+
+		/* down */
+		setEditKey(KEY_DOWN,Qt::Key_Down,Qt::NoButton,true);
+		setEditKey(KEY_DOWN_SELECT,Qt::Key_Down,Qt::ShiftButton,true);
+		setEditKey(KEY_SCROLL_DOWN,Qt::Key_Down,Qt::ControlButton,true);
+
+		defaultKeyListAlreadyLoaded=true;
+	}
 }
 
 KateView::~KateView()
@@ -1517,78 +1620,56 @@ void KateView::slotDropEventPass( QDropEvent * ev )
         emit ext->openURLRequest( lstDragURLs.first() );
 }
 
+bool KateView::trySpecialKey(int key, Qt::ButtonState state,int id,void (KateView::*myfunc)())
+{
+	static Qt::ButtonState tmpState=Qt::ControlButton | Qt::ShiftButton | Qt::AltButton | Qt::MetaButton;
+	if (!editKeys[id].valid) return false;
+	if (key!=editKeys[id].key) return false;
+	if ((state & tmpState)!=(int)editKeys[id].modifiers) return false;
+	(this->*myfunc)();
+	return true;
+}
+
 void KateView::keyPressEvent( QKeyEvent *ev )
 {
-  switch ( ev->key() )
-    {
-        case Key_Left:
-            if ( ev->state() & ShiftButton )
-            {
-                if ( ev->state() & ControlButton )
-                    shiftWordLeft();
-                else
-                    shiftCursorLeft();
-            }
-            else if ( ev->state() & ControlButton )
-                wordLeft();
-            else
-                cursorLeft();
-            break;
-        case Key_Right:
-            if ( ev->state() & ShiftButton )
-            {
-                if ( ev->state() & ControlButton )
-                    shiftWordRight();
-                else
-                    shiftCursorRight();
-            }
-            else if ( ev->state() & ControlButton )
-                wordRight();
-            else
-                cursorRight();
-            break;
-        case Key_Home:
-            if ( ev->state() & ShiftButton )
-            {
-                if ( ev->state() & ControlButton )
-                    shiftTop();
-                else
-                    shiftHome();
-            }
-            else if ( ev->state() & ControlButton )
-                top();
-            else
-                home();
-            break;
-        case Key_End:
-            if ( ev->state() & ShiftButton )
-            {
-                if ( ev->state() & ControlButton )
-                    shiftBottom();
-                else
-                    shiftEnd();
-            }
-            else if ( ev->state() & ControlButton )
-                bottom();
-            else
-                end();
-            break;
-        case Key_Up:
-            if ( ev->state() & ShiftButton )
-                shiftUp();
-            else if ( ev->state() & ControlButton )
-                scrollUp();
-            else
-                up();
-            break;
-        case Key_Down:
-            if ( ev->state() & ShiftButton )
-                shiftDown();
-            else if ( ev->state() & ControlButton )
-                scrollDown();
-            else
-                down();
-            break;
+  int key=ev->key();
+  Qt::ButtonState state=ev->state();
+  /* left */
+  if (!trySpecialKey(key,state,KEY_LEFT,&KateView::cursorLeft))
+  if (!trySpecialKey(key,state,KEY_WORD_LEFT,&KateView::wordLeft))
+  if (!trySpecialKey(key,state,KEY_LEFT_SELECT,&KateView::shiftCursorLeft))
+  if (!trySpecialKey(key,state,KEY_WORD_LEFT_SELECT,&KateView::shiftWordLeft))
+
+   /* right */
+  if (!trySpecialKey(key,state,KEY_RIGHT,&KateView::cursorRight))
+  if (!trySpecialKey(key,state,KEY_WORD_RIGHT,&KateView::wordRight))
+  if (!trySpecialKey(key,state,KEY_RIGHT_SELECT,&KateView::shiftCursorRight))
+  if (!trySpecialKey(key,state,KEY_WORD_RIGHT_SELECT,&KateView::shiftWordRight))
+
+   /* home / top */
+  if (!trySpecialKey(key,state,KEY_HOME,&KateView::home))
+  if (!trySpecialKey(key,state,KEY_TOP,&KateView::top))
+  if (!trySpecialKey(key,state,KEY_HOME_SELECT,&KateView::shiftHome))
+  if (!trySpecialKey(key,state,KEY_TOP_SELECT,&KateView::shiftTop))
+
+  /* end / bottom */
+  if (!trySpecialKey(key,state,KEY_END,&KateView::end))
+  if (!trySpecialKey(key,state,KEY_BOTTOM,&KateView::bottom))
+  if (!trySpecialKey(key,state,KEY_END_SELECT,&KateView::shiftEnd))
+  if (!trySpecialKey(key,state,KEY_BOTTOM_SELECT,&KateView::shiftBottom))
+
+  /* up */
+  if (!trySpecialKey(key,state,KEY_UP,&KateView::up))
+  if (!trySpecialKey(key,state,KEY_UP_SELECT,&KateView::shiftUp))
+  if (!trySpecialKey(key,state,KEY_SCROLL_UP,&KateView::scrollUp))
+
+  /* down */
+  if (!trySpecialKey(key,state,KEY_DOWN,&KateView::down))
+  if (!trySpecialKey(key,state,KEY_DOWN_SELECT,&KateView::shiftDown))
+  if (!trySpecialKey(key,state,KEY_SCROLL_DOWN,&KateView::scrollDown))
+
+  switch(key)
+  {
         case Key_PageUp:
             if ( ev->state() & ShiftButton )
                 shiftPageUp();

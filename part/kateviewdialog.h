@@ -2,9 +2,9 @@
                           kateviewdialog.h  -  description
                              -------------------
     begin                : Mon Feb 5 2001
-    copyright            : (C) 2001 by Christoph Cullmann 
+    copyright            : (C) 2001 by Christoph Cullmann
     email                : cullmann@kde.org
- ***************************************************************************/ 
+ ***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -27,7 +27,8 @@ class KColorButton;
 class KIntNumInput;
 class KComboBox;
 class KRegExpDialog;
-
+class KKeyButton;
+class KPushButton;
 #include <kdialogbase.h>
 #include "kateview.h"
 
@@ -185,5 +186,19 @@ public:
     void slotFontSelected( const QFont &font );
 };
 
+
+class EditKeyConfiguration: public QWidget
+{
+	Q_OBJECT
+public:
+	EditKeyConfiguration(QWidget *parent=0, char *name=0);
+	~EditKeyConfiguration();
+private:
+	KListView  *list;
+	KKeyButton *keyButton;
+	QPushButton *restoreToKateDefault;
+protected slots:
+	void captured( KShortcut );
+};
 
 #endif
