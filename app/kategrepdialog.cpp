@@ -36,6 +36,7 @@
 #include <qwhatsthis.h>
 #include <qcursor.h>
 
+#include <kapplication.h>
 #include <kaccelmanager.h>
 #include <kbuttonbox.h>
 #include <kfiledialog.h>
@@ -277,6 +278,7 @@ void GrepTool::processOutput()
       resultbox->insertItem(item);
     buf = buf.right(buf.length()-pos-1);
   }
+  kapp->processEvents();
 }
 
 void GrepTool::slotSearch()

@@ -195,6 +195,7 @@ void KateMainWindow::setupMainWindow ()
   if (kapp->authorize("shell_access"))
   {
      console = new KateConsole (this, "console",viewManager());
+     console->installEventFilter( this );
      consoleDock = addToolViewWidget(KDockWidget::DockBottom,console, SmallIcon("konsole"), i18n("Terminal"));
   }
 
@@ -766,6 +767,12 @@ bool KateMainWindow::eventFilter( QObject *o, QEvent *e )
       greptool->setDirName( dir );
          return true;
     }
+  }
+  if ( ( o == greptool || o == console ) &&
+      e->type() == QEvent::Hide && activeView )
+  {
+     activeView->setFocus();
+     return true;
   }
   return KMdiMainFrm::eventFilter( o, e );
 }
