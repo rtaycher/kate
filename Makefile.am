@@ -2,12 +2,13 @@
 
 INCLUDES = $(all_includes)
 
-KDE_CXXFLAGS = $(USE_RTTI) -DNO_NEW_CODE 
+KDE_CXXFLAGS = -DNEW_CODE 
 
 bin_PROGRAMS = kwrite
 
-lib_LTLIBRARIES = kwrite.la
-kde_module_LTLIBRARIES = libkwritepart.la
+lib_LTLIBRARIES = kwrite.la libkwritepart.la
+# libkwritepart is a part, but kwrite.la links directly to it, so we can't
+# install it under kde_module
 
 libkwritepart_la_SOURCES = highlight.cpp ktextprint.cpp  \
 		           kwdoc.cpp kwview.cpp undohistory.cpp  \
