@@ -139,7 +139,8 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow,
 
   dir = new KDirOperator(KURL(), this, "operator");
   dir->setView(KFile::/* Simple */Detail);
-
+  dir->view()->setSelectionMode(KFile::Multi);
+  
   KActionCollection *coll = dir->actionCollection();
   // some shortcuts of diroperator that clashes with Kate
   coll->action( "delete" )->setShortcut( KShortcut( ALT + Key_Delete ) );
@@ -229,7 +230,7 @@ void KateFileSelector::readConfig(KConfig *config, const QString & name)
   dir->setViewConfig( config, name + ":view" );
   dir->readConfig(config, name + ":dir");
   dir->setView( KFile::Default );
-
+  dir->view()->setSelectionMode(KFile::Multi);
   config->setGroup( name );
 
   // set up the toolbar
@@ -310,6 +311,7 @@ void KateFileSelector::writeConfig(KConfig *config, const QString & name)
 void KateFileSelector::setView(KFile::FileView view)
 {
   dir->setView(view);
+  dir->view()->setSelectionMode(KFile::Multi);
 }
 
 //END Public Methods

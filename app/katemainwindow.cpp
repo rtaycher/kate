@@ -584,7 +584,17 @@ KURL KateMainWindow::activeDocumentUrl()
 
 void KateMainWindow::fileSelected(const KFileItem *file)
 {
-  m_viewManager->openURL( file->url() );
+  /*if (file) {
+  	m_viewManager->openURL( file->url() );
+ } else */{
+ 	const KFileItemList *list=fileselector->dirOperator()->selectedItems();
+	KFileItem *tmp;
+	for (KFileItemListIterator it(*list); (tmp = it.current()); ++it) {
+		m_viewManager->openURL(tmp->url());
+		fileselector->dirOperator()->view()->setSelected(tmp,false);
+	}
+ }
+ 	//fileSelector->dirOperator()->
 }
 
 void KateMainWindow::mSlotFixOpenWithMenu()
