@@ -28,6 +28,8 @@
 #include "kateviewmanager.h"
 #include "kbookmarkhandler.h"
 
+#include <kio/netaccess.h>
+
 #include "kactionselector.h"
 
 #include <qlayout.h>
@@ -346,7 +348,14 @@ void KateFileSelector::slotFilterChange( const QString & nf )
 }
 void KateFileSelector::setDir( KURL u )
 {
-    dir->setURL(u, true);
+  // this check is needed, or we will get annoying warning dialogs on startup
+  // if the old dir was moved, and it would be senseless to try to set the
+  // dir to some none existing dir or file
+  if ( !KIO::NetAccess::exists (u, true, topLevelWidget()) ||
+       (KIO::NetAccess::mimetype (u, topLevelWidget()) != "inode/directory") )
+     u.setPath( QDir::homeDirPath() );
+
+  dir->setURL(u, true);
 }
 
 //END Public Slots
