@@ -196,6 +196,14 @@ KantDocument::KantDocument(long docID, QFileInfo* fi, bool bSingleViewMode, bool
       KStdAction::find( view, SLOT( find() ), actionCollection(), "find" );
       KStdAction::findNext( view, SLOT( findAgain() ), actionCollection(), "find_again" );
       KStdAction::gotoLine( view, SLOT( gotoLine() ), actionCollection(), "goto_line" );
+      new KAction(i18n("Configure Highlighti&ng..."), 0, view, SLOT(hlDlg()),actionCollection(), "set_confHighlight");
+
+      KSelectAction *setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, actionCollection(), "set_highlight");
+      connect(setHighlight, SIGNAL(activated(int)), view, SLOT(setHl(int)));
+      QStringList list;
+      for (int z = 0; z < HlManager::self()->highlights(); z++)
+        list.append(i18n(HlManager::self()->hlName(z)));
+      setHighlight->setItems(list);
     }
   }
 }
