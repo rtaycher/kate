@@ -50,7 +50,7 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
   } 
     
   m_firstStart = true;
-  m_noEventLoop = true;
+  kapp->dcopClient()->suspend(); // Don't handle DCOP requests yet
 
   m_mainWindows.setAutoDelete (false);
   
@@ -80,7 +80,10 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (tr
 
 
   KTipDialog::showTip(m_mainWindows.first());
-  QTimer::singleShot(0,this,SLOT(callOnEventLoopEnter()));
+
+  kapp->dcopClient()->resume(); // Ok. We are ready for DCOP requests.
+
+  QTimer::singleShot(10,this,SLOT(callOnEventLoopEnter()));
 }
 
 KateApp::~KateApp ()
@@ -90,10 +93,6 @@ KateApp::~KateApp ()
 
 void KateApp::callOnEventLoopEnter()
 {
-  m_noEventLoop = false;
-  
-  newInstance ();
-
   emit onEventLoopEnter();
   disconnect(this,SIGNAL(onEventLoopEnter()),0,0);
   emit m_application->onEventLoopEnter();
@@ -131,12 +130,6 @@ KURL KateApp::initScript() const {return m_initURL;}
 
 int KateApp::newInstance()
 {
-  // be sure we call it first while the event loop is allready running ;)
-  if (m_noEventLoop)
-    return 0;
-
-	kdDebug()<<"NO EVENT LOOP: "<<m_noEventLoop<<"*****************************"<<endl;
-
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
     
   if (!m_firstStart && args->isSet ("w"))
