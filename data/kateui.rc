@@ -39,7 +39,7 @@
     <Separator />
   </Menu>
 
-  <Menu name="view"><text>&amp;View</text>
+  <Menu name="view" noMerge="1"><text>&amp;View</text>
     <Action name="view_split_vert"/>
     <Action name="view_split_horiz"/>
     <Separator />
@@ -53,15 +53,8 @@
     </Menu>
   </Menu>
 
-  <menu name="tools"><text>&amp;Tools</text>
-    <Action name="edit_cmd"/>
-    <merge />
-    <separator />
-    <Action name="edit_find_in_files" />
-    <Separator />
-    <Action name="edit_apply_wordwrap"/>
-    <Separator />
-    <Action name="tools_spelling" />
+  <menu name="tools" noMerge="1"><text>&amp;Tools</text>
+    <DefineGroup name="tools_operations" />
   </menu>
 
   <Merge/>
@@ -114,17 +107,7 @@
 </ToolBar>
 
 <Menu name="katepart_popup" noMerge="1">
-  <Action name="edit_undo" />
-  <Action name="edit_redo" />
-  <Action name="edit_undoHistory" />
-  <Separator />
-  <Action name="edit_cut"/>
-  <Action name="edit_copy"/>
-  <Action name="edit_paste"/>
-  <Separator />
-  <Action name="set_highlight"/>
-  <Separator />
-  <Action name="view_border"/>
+  <DefineGroup name="popup_operations" />
   <Separator />
   <Action name="go_back"/>
   <Action name="go_forward"/>
