@@ -41,13 +41,16 @@
 #include <kcharsets.h>
 #include <qvbox.h>
 #include <kfontdialog.h>
+#include <kregexpeditorinterface.h>
+#include <qdialog.h>
+#include <kparts/componentfactory.h>
 
 #include "katedocument.h"
 #include "kateviewdialog.h"
 
 SearchDialog::SearchDialog( QWidget *parent, QStringList &searchFor, QStringList &replaceWith, int flags )
   : KDialogBase( parent, 0L, true, i18n( "Find Text" ), Ok | Cancel, Ok )
-  , m_replace( 0L )
+    , m_replace( 0L ), m_regExpDialog( 0L )
 {
   QWidget *page = new QWidget( this );
   setMainWidget( page );
@@ -60,9 +63,24 @@ SearchDialog::SearchDialog( QWidget *parent, QStringList &searchFor, QStringList
   m_search->lineEdit()->selectAll();
   QLabel *label = new QLabel( m_search, i18n( "&Text To Find:" ), page );
   m_optRegExp = new QCheckBox( i18n( "&Regular Expression" ), page );
+  QPushButton* regexpButton = new QPushButton( i18n("Edit"), page );
+  
   topLayout->addWidget( label );
   topLayout->addWidget( m_search );
-  topLayout->addWidget( m_optRegExp );
+
+  QHBoxLayout* regexpLayout = new QHBoxLayout( topLayout );
+  regexpLayout->addWidget( m_optRegExp );
+
+  // Add the Edit button if KRegExp exists.
+  m_regExpDialog = KParts::ComponentFactory::createInstanceFromQuery<QDialog>( "KRegExpEditor/KRegExpEditor" );
+  if ( m_regExpDialog ) {
+    regexpLayout->addWidget( regexpButton );
+    regexpLayout->addStretch(1);
+    
+    connect( regexpButton, SIGNAL( clicked() ), this, SLOT( slotEditRegExp() ) );
+    connect( m_optRegExp, SIGNAL( toggled(bool) ), regexpButton, SLOT( setEnabled(bool) ) );
+    regexpButton->setEnabled( false );
+  }
 
   if( flags & KateView::sfReplace )
   {
@@ -184,8 +202,22 @@ void SearchDialog::slotOk()
   }
 }
 
+void SearchDialog::slotEditRegExp()
+{
+  KRegExpEditorInterface *iface = dynamic_cast<KRegExpEditorInterface *>( m_regExpDialog );
+  Q_ASSERT( iface );
+
+  iface->setRegExp( m_search->currentText() );
+  int ok = m_regExpDialog->exec();
+  if (ok == QDialog::Accepted) {
+    m_search->setCurrentText( iface->regExp() );    
+  }
+}
+
+
+
 void SearchDialog::setSearchText( const QString &searchstr )
- {
+  {
    m_search->insertItem( searchstr, 0 );
    m_search->setCurrentItem( 0 );
    m_search->lineEdit()->selectAll();

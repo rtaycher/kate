@@ -26,6 +26,7 @@ class QSpinBox;
 class KColorButton;
 class KIntNumInput;
 class KComboBox;
+class KRegExpDialog;
 
 #include <kdialogbase.h>
 #include "kateview.h"
@@ -44,6 +45,7 @@ class SearchDialog : public KDialogBase
   protected slots:
     void slotOk();
     void selectedStateChanged (int);
+    void slotEditRegExp();
 
   protected:
     KComboBox *m_search;
@@ -55,6 +57,7 @@ class SearchDialog : public KDialogBase
     QCheckBox *m_opt4;
     QCheckBox *m_opt5;
     QCheckBox *m_opt6;
+    QDialog *m_regExpDialog;
 };
 
 class ReplacePrompt : public KDialogBase
