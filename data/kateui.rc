@@ -82,13 +82,13 @@
     <Merge name="KMDIViewActions"/>
     <Action name="settings_show_tooldocks" />
     <DefineGroup name="show_merge" />
+    <DefineGroup name="configure_merge" />
     <Separator />
     <Action name="fullscreen" />
     <Separator />
     <Action name="options_configure_keybinding"/>
     <Action name="set_configure_toolbars"/>
     <Action name="settings_configure" />
-    <DefineGroup name="configure_merge" />
   </Menu>
 
   <Menu name="help"><text>&amp;Help</text>
