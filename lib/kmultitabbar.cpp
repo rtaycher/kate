@@ -202,7 +202,7 @@ KMultiTabBarButton::KMultiTabBarButton(const QPixmap& pic,const QString& text, Q
 KMultiTabBarButton::~KMultiTabBarButton() {
 }
 
-int KMultiTabBarButton::id() {
+int KMultiTabBarButton::id() const{
 	return m_id;
 }
 
@@ -524,7 +524,7 @@ void KMultiTabBarTab::drawButtonClassic(QPainter *paint)
 
 
 
-KMultiTabBar::KMultiTabBar(QWidget *parent,KMultiTabBarMode bm,const char *name):QWidget(parent,name)
+KMultiTabBar::KMultiTabBar(KMultiTabBarMode bm, QWidget *parent,const char *name):QWidget(parent,name)
 {
 	m_buttons.setAutoDelete(false);
 	if (bm==Vertical)

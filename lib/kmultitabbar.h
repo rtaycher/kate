@@ -64,8 +64,8 @@ public:
 	 */
 	enum KMultiTabBarStyle{VSNET=0, KDEV3=1, KONQSBC=2,STYLELAST=0xffff};
 
-	KMultiTabBar(QWidget *parent,KMultiTabBarMode bm,const char *name=0);
-	~KMultiTabBar();
+	KMultiTabBar(KMultiTabBarMode bm,QWidget *parent=0,const char *name=0);
+	virtual ~KMultiTabBar();
 
 	/**
  	 * append  a new button to the button area. The button can later on be accessed with button(ID)
@@ -153,8 +153,8 @@ class KMultiTabBarButton: public QPushButton
 public:
 	KMultiTabBarButton(const QPixmap& pic,const QString&, QPopupMenu *popup,
 		int id,QWidget *parent, KMultiTabBar::KMultiTabBarPosition pos, KMultiTabBar::KMultiTabBarStyle style);
-	~KMultiTabBarButton();
-	int id();
+	virtual  ~KMultiTabBarButton();
+	int id() const;
 
 public slots:
 	/**
@@ -200,7 +200,7 @@ class KMultiTabBarTab: public KMultiTabBarButton
 public:
 	KMultiTabBarTab(const QPixmap& pic,const QString&,int id,QWidget *parent,
 		KMultiTabBar::KMultiTabBarPosition pos,KMultiTabBar::KMultiTabBarStyle style);
-	~KMultiTabBarTab();
+	virtual ~KMultiTabBarTab();
 	/**
 	 * set the active state of the tab
 	 * @param  state true==active false==not active
