@@ -94,6 +94,9 @@
                 </itemDatas>
   </highlighting>
   <general>
+    <comments>
+      <comment name="singleLine" start="--" />
+    </comments>
     <keywords casesensitive="1" />
   </general>
 </language>

@@ -1,3 +1,8 @@
+2001-08-19  christian@kdevelop.org
+  * improved Eiffel language syntax highlighting support
+  * added Eiffel language comment directive in eiffel.xml
+  * added Ada language comment directive in ada.xml 
+
 2001-08-15  christian@kdevelop.org
   * committed Eiffel language syntax highlighting support 
 
