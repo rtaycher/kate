@@ -71,9 +71,10 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
 
   v = viewManager->activeView();
 
-  if (!v) return;
-
+  if (!v) return;       
+  
   pluginPages.setAutoDelete (false);
+  editorPages.setAutoDelete (false);
 
   KWin kwin;
   kwin.setIcons(winId(), kapp->icon(), kapp->miniIcon());
@@ -188,61 +189,23 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   config->setGroup("General");
 
   // editor widgets from kwrite/kwdialog
-
   path.clear();
   path << i18n("Editor");
-  setFolderIcon (path, SmallIcon("edit", KIcon::SizeSmall));
-
-  // color options
-  path.clear();
-  path << i18n("Editor") << i18n("Colors");
-  QVBox *page = addVBoxPage(path, i18n("Colors"),
-                              BarIcon("colorize", KIcon::SizeSmall) );
-  colorConfigPage = v->getDoc()->colorConfigPage(page);
-
-  // font options
-  path.clear();
-  path << i18n("Editor") << i18n("Fonts");
-  page = addVBoxPage(path, i18n("Fonts Settings"),
-                              BarIcon("fonts", KIcon::SizeSmall) );
-  fontConfigPage = v->getDoc()->fontConfigPage(page);
-
-  // indent options
-  path.clear();
-  path << i18n("Editor") << i18n("Indent");
-  page=addVBoxPage(path, i18n("Indent Options"),
-                       BarIcon("rightjust", KIcon::SizeSmall) );
-  indentConfigPage = v->getDoc()->indentConfigPage(page);
-
-  // select options
-  path.clear();
-  path << i18n("Editor") << i18n("Select");
-  page=addVBoxPage(path, i18n("Selection Behavior"),
-                       BarIcon("misc") );
-  selectConfigPage = v->getDoc()->selectConfigPage(page);
-
-  // edit options
-  path.clear();
-  path << i18n("Editor") << i18n("Edit");
-  page=addVBoxPage(path, i18n("Editing Options"),
-                       BarIcon("edit", KIcon::SizeSmall ) );
-  editConfigPage = v->getDoc()->editConfigPage (page);
-
-  path.clear();
-  path << i18n("Editor") << i18n("Keyboard");
-  page=addVBoxPage(path,i18n("Keyboard Configuration"),
-                        SmallIcon("edit", KIcon::SizeSmall));
-  keysConfigPage = v->getDoc()->keysConfigPage (page);
-
-  path.clear();
-  path << i18n("Editor") << i18n("Highlighting");
-  page=addVBoxPage(path,i18n("Highlighting Configuration"),
-                        SmallIcon("highlighting", KIcon::SizeSmall));
-  hlConfigPage = v->getDoc()->hlConfigPage (page);
-
+  setFolderIcon (path, SmallIcon("edit", KIcon::SizeSmall));    
+    
+  for (uint i = 0; i < KTextEditor::configInterfaceExtension (v->document())->configPages (); i++)
+  {
+    path.clear();
+    path << i18n("Editor") << KTextEditor::configInterfaceExtension (v->document())->configPageName (i);
+    QVBox *page = addVBoxPage(path, KTextEditor::configInterfaceExtension (v->document())->configPageFullName (i),
+                              KTextEditor::configInterfaceExtension (v->document())->configPagePixmap(i, KIcon::SizeSmall) );
+  
+    editorPages.append (KTextEditor::configInterfaceExtension (v->document())->configPage(i, page));
+  }
+ 
   path.clear();
   path << i18n("Plugins") << i18n("Manager");
-  page=addVBoxPage(path,i18n("Configure Plugins"),
+  QVBox *page=addVBoxPage(path,i18n("Configure Plugins"),
                           BarIcon("misc",KIcon::SizeSmall));
   (void)new KateConfigPluginPage(page, this);
 
@@ -315,16 +278,12 @@ void KateConfigDialog::slotApply()
 
   config->writeEntry( "Number of recent files", sb_numRecentFiles->value() );
   mainWindow->fileOpenRecent->setMaxItems( sb_numRecentFiles->value() );
-
-
-  colorConfigPage->apply();
-  fontConfigPage->apply();
-  indentConfigPage->apply();
-  selectConfigPage->apply();
-  editConfigPage->apply();
-  keysConfigPage->apply();
-  hlConfigPage->apply();
-
+  
+  for (uint i=0; i<editorPages.count(); i++)
+  {
+    editorPages.at(i)->apply();
+  }
+  
   v->getDoc()->writeConfig();
   v->getDoc()->readConfig();
 

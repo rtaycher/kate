@@ -22,6 +22,7 @@
 #include "../interfaces/plugin.h"
 
 #include <kate/document.h>
+#include <ktexteditor/configinterfaceextension.h>
 
 #include <kdialogbase.h>
 
@@ -70,15 +71,8 @@ class KateConfigDialog : public KDialogBase
     class QCheckBox *cb_syncKonsole;
     class QSpinBox *sb_numRecentFiles;
 
-    Kate::ConfigPage *colorConfigPage;
-    Kate::ConfigPage *fontConfigPage;
-    Kate::ConfigPage *indentConfigPage;
-    Kate::ConfigPage *selectConfigPage;
-    Kate::ConfigPage *editConfigPage;
-    Kate::ConfigPage *keysConfigPage;
-    Kate::ConfigPage *hlConfigPage;
-
     QPtrList<PluginPageListItem> pluginPages;
+    QPtrList<KTextEditor::ConfigPage> editorPages;
 };
 
 #endif
