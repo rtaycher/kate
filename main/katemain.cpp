@@ -34,7 +34,7 @@
 
 static KCmdLineOptions options[] =
 {
-    { "n", I18N_NOOP("start a new Kate, don't use a allready running Kate (off by default)"), 0 },
+    { "n", I18N_NOOP("start a new Kate (off by default)"), 0 },
     { "+file(s)",          I18N_NOOP("Files to load"), 0 },
     { 0,0,0 }
 };
