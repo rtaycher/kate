@@ -1,4 +1,4 @@
-INCLUDES    = $(all_includes) -I../../pluginmanager
+INCLUDES    = $(all_includes) -I$(srcdir)/../../pluginmanager
 METASOURCES = AUTO
 
 KDE_ICON = htmltools
