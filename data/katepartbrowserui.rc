@@ -1,6 +1,9 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
 <kpartgui name="KatePartBrowserView" version="1">
 <MenuBar>
+ <Menu name="file" noMerge="1"><text>&amp;File</text>
+    <Action name="file_save_as"/>
+ </Menu>
  <Menu name="edit"><Text>&amp;Edit</Text>
   <Action name="select_all"/>
   <Action name="unselect_all"/>

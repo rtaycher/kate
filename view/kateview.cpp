@@ -1425,7 +1425,6 @@ void KateView::setupActions()
                                         actionCollection());
 
     KStdAction::save(this, SLOT(save()), actionCollection());
-    KStdAction::saveAs(this, SLOT(saveAs()), actionCollection());
 
     // setup edit menu
     editUndo = KStdAction::undo(this, SLOT(undo()), actionCollection());
@@ -1438,6 +1437,7 @@ void KateView::setupActions()
 
     if ( myDoc->hasBrowserExtension() )
     {
+      KStdAction::saveAs(this, SLOT(saveAs()), myDoc->actionCollection());
       KStdAction::find(this, SLOT(find()), myDoc->actionCollection(), "find");
       KStdAction::findNext(this, SLOT(findAgain()), myDoc->actionCollection(), "find_again");
       KStdAction::findPrev(this, SLOT(findPrev()), myDoc->actionCollection(), "find_prev");
@@ -1457,6 +1457,7 @@ void KateView::setupActions()
     }
     else
     {
+      KStdAction::saveAs(this, SLOT(saveAs()), actionCollection());
       KStdAction::find(this, SLOT(find()), actionCollection());
       KStdAction::findNext(this, SLOT(findAgain()), actionCollection());
       KStdAction::findPrev(this, SLOT(findPrev()), actionCollection(), "edit_find_prev");
