@@ -140,6 +140,9 @@ KateMainWindow::KateMainWindow () :
 
   KatePluginManager::self()->enableAllPluginsGUI (this);
 
+  if ( kapp->authorize("shell_access") )
+    Kate::Document::registerCommand(KateExternalToolsCommand::self());
+
   // connect settings menu aboutToshow
   documentMenu = (QPopupMenu*)factory()->container("documents", this);
   connect(documentMenu, SIGNAL(aboutToShow()), this, SLOT(documentMenuAboutToShow()));
@@ -248,8 +251,11 @@ void KateMainWindow::setupActions()
   a=new KAction(i18n("&New Window"), "window_new", 0, this, SLOT(newWindow()), actionCollection(), "view_new_view");
   a->setWhatsThis(i18n("Create a new Kate view (a new window with the same document list)."));
 
-  externalTools = new KateExternalToolsMenuAction( i18n("External Tools"), actionCollection(), "tools_external", this );
-  externalTools->setWhatsThis( i18n("Launch external helper applications") );
+  if ( kapp->authorize("shell_access") )
+  {
+    externalTools = new KateExternalToolsMenuAction( i18n("External Tools"), actionCollection(), "tools_external", this );
+    externalTools->setWhatsThis( i18n("Launch external helper applications") );
+  }
 
   showFullScreenAction = KStdAction::fullScreen( 0, 0, actionCollection(),this);
   connect( showFullScreenAction,SIGNAL(toggled(bool)), this,SLOT(slotFullScreen(bool)));
@@ -469,9 +475,9 @@ void KateMainWindow::documentMenuAboutToShow()
   QListViewItem * item = filelist->firstChild();
   while( item ) {
     documentMenu->insertItem (
-	  KStringHandler::rsqueeze( ((KateFileListItem *)item)->document()->docName(), 150 ), // would it be saner to use the screen width as a limit that some random number??
+          KStringHandler::rsqueeze( ((KateFileListItem *)item)->document()->docName(), 150 ), // would it be saner to use the screen width as a limit that some random number??
           m_viewManager, SLOT (activateView (int)), 0,
-	  ((KateFileListItem *)item)->documentNumber () );
+          ((KateFileListItem *)item)->documentNumber () );
 
     item = item->nextSibling();
   }
@@ -633,9 +639,9 @@ void KateMainWindow::setupScripts()
 
 void KateMainWindow::runScript( int mIId )
 {
-	//kdDebug(13001) << "Starting script engine..." << endl;
-//         kdDebug(13001)<<"runScript( "<<mIId<<" ) ["<<scriptMenu->popupMenu()->text( mIId )<<"]"<<endl;
-	kscript->runScript( scriptMenu->popupMenu()->text( mIId ) );
+//  kdDebug(13001) << "Starting script engine..." << endl;
+//  kdDebug(13001)<<"runScript( "<<mIId<<" ) ["<<scriptMenu->popupMenu()->text( mIId )<<"]"<<endl;
+  kscript->runScript( scriptMenu->popupMenu()->text( mIId ) );
 }
 
 void KateMainWindow::slotMail()

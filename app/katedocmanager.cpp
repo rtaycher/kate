@@ -60,7 +60,6 @@ KateDocManager::KateDocManager (QObject *parent)
   m_dcop = new KateDocManagerDCOPIface (this);
 
   m_metaInfos = new KConfig("metainfos", false, false, "appdata");
-  Kate::Document::registerCommand(KateExternalToolsCommand::self());
 
   createDoc ();
 }
