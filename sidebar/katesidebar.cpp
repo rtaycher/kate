@@ -18,6 +18,7 @@
 #include "katesidebar.moc"
 
 #include <kconfig.h>
+#include <qwidgetstack.h>
 
 KateSidebar::KateSidebar(QWidget* parent, const char* name,bool stacked) : KateStackTabWidget (parent, name,stacked)
 {
@@ -55,21 +56,14 @@ void KateSidebar::focusNextWidget()
 void KateSidebar::readConfig(KConfig* config, const char* group)
 {
   config->setGroup(group);
-  QString t = config->readEntry("Current", "Files");
+  int c = config->readNumEntry("Current", 0);
+
   setMode(config->readBoolEntry("KOWStyle",true));
-/*  for (int i=0; i<tabBar()->count()-1; i++)
-  {
-    setCurrentPage ( i );
-    if ( tabLabel ( currentPage() ).compare( t ) == 0 )
-    {
-      break;
-    }
-  } */
+  showPage(c);
 }
 
 void KateSidebar::saveConfig(KConfig* config, const char* group)
 {
-/*
   config->setGroup(group);
-  config->writeEntry("Current", tabLabel (currentPage ()));*/
+  config->writeEntry("Current", stack()->id(stack()->visibleWidget()));
 }

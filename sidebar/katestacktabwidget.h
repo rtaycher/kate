@@ -28,12 +28,15 @@ class KateStackTabWidgetButton;
 class KateStackTabWidget : public QWidget
 {
 	Q_OBJECT
-	public:
+
+        public:
 		KateStackTabWidget(QWidget *parent, const char* name,bool stacked=true);
                 void addPage(QWidget *wid, QString header);
                 void showPage(QWidget *wid);
                 void showPage(int id);
 	        void setMode(bool mode);
+
+
 	private:
 		class QWidgetStack *internalView;
 		QList<KateStackTabWidgetButton> buttons;
@@ -47,6 +50,9 @@ class KateStackTabWidget : public QWidget
         private slots:
                 void selected_tabbar(int id);
                 void selected_button(int id);
+
+  public:
+     QWidgetStack *stack ()  { return internalView; };
 };
 
 class KateStackTabWidgetButton : public QPushButton

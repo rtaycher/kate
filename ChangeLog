@@ -1,3 +1,6 @@
+2001-04-24 Christoph Cullmann <crossfire@babylon2k.de>
+             * sidebar now again restores config
+
 2001-04-03 Joseph Wenninger <jowenn@bigfoot.com>
 	* Cristi Dumitrescu's PHP keyword / type list added
 
@@ -15,7 +18,7 @@
           wit one addtion (see qt3back/README)
                 hopefully this will give us more flexibility for syntax
                 highlighting
-           
+
 2001-03-27 Christoph Cullmann <crossfire@babylon2k.de>
              * console disabled per default
              * console only loaded if enabled
