@@ -66,7 +66,7 @@ while ($i <= $z)
   {
     $sections[$s] = $i;
 
-    @field = split /\"/, $file[$sections[$n]];
+    @field = split /\"/, $file[$sections[$s]];
     $listname[$s] = @field[1];
     if ($listname[$s] eq "")
     {
