@@ -50,16 +50,7 @@ class KateFileListItem : public QListViewItem
     int height() const;
     int width( const QFontMetrics &fm, const QListView* lv, int column ) const;
     int rtti() const { return RTTI_KateFileListItem; }
-// #if 0
-//     /**
-//      * Sets the view history position.
-//      */
-//     void setViewHistPos( int p ) {  m_viewhistpos = p; }
-//     /**
-//      * Sets the edit history position.
-//      */
-//     void setEditHistPos( int p ) { m_edithistpos = p; }
-// #if
+
   protected:
     void paintCell( QPainter *painter, const QColorGroup & cg, int column, int width, int align );
     /**
@@ -139,12 +130,6 @@ class KateFileList : public KListView
 
     KAction* windowNext;
     KAction* windowPrev;
-
-    QPtrList<KateFileListItem> m_viewHistory;
-    QPtrList<KateFileListItem> m_editHistory;
-
-    QColor m_viewShade, m_editShade;
-    bool m_enableBgShading;
 
     class ToolTip *m_tooltip;
 };
