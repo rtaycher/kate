@@ -694,7 +694,7 @@ TContexts Highlight::doHighlight(TContexts oCtx, TextLine *textLine)
 
   //set "end of line"-properties
   textLine->setAttr(context->attr);
-  textLine->setContext(ctx);
+//  textLine->setContext(ctx);
 
   //return new context
 

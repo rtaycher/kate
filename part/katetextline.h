@@ -230,7 +230,7 @@ public:
     /**
       The syntax highlight context
     */
-    TContexts ctx;
+    TContexts *ctx;
     /**
       The marks of the current line
     */

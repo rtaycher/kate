@@ -22,13 +22,15 @@
 #include <kdebug.h>
 
 TextLine::TextLine(uchar attribute, TContexts context)
-  : text(0L), attributes(0L), attr(attribute), ctx(context), myMark (0)
+  : text(0L), attributes(0L), attr(attribute), myMark (0)
 {
-	ctx.detach();
+	ctx=0;
+	setContext(context);
 }
 
 TextLine::~TextLine()
 {
+  if (ctx) delete ctx;
 }
 
 void TextLine::replace(uint pos, uint delLen, const QChar *insText, uint insLen, uchar *insAttribs)
@@ -191,12 +193,15 @@ uchar TextLine::getRawAttr() const {
 }
 
 void TextLine::setContext(TContexts context) {
-  ctx = context;
-  ctx.detach();
+  if (ctx) delete ctx;
+  ctx=new TContexts(context);
+  ctx->detach();
 }
 
 TContexts TextLine::getContext() const {
-  return ctx;
+  if (ctx)
+  return TContexts(*ctx);
+  else return TContexts();
 }
 
 

@@ -2690,6 +2690,7 @@ void KateDocument::updateLines(int startLine, int endLine) {
   }	while ((buffer->line(line)!=0) && (line <= endLine)); //|| (!(endCtx == ctxNum)));
 
   tagLines(startLine, line - 1);
+
 }
 
 

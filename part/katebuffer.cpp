@@ -795,7 +795,7 @@ KWBufBlock::buildStringListFast()
       uint b[2];
       memcpy((char *)b, buf, sizeof(uint)*2);
       buf += sizeof(uint)*2;
-      textLine->ctx = b[0];
+#warning FIXME      textLine->ctx = b[0];
       textLine->myMark = b[1];
       m_stringList.push_back (textLine);
    }
