@@ -1082,8 +1082,8 @@ bool KateDocument::removeSelectedText ()
       internalRemoveText (z, delStart, textLine->length()-delStart);
       internalUnWrapLine (z, delStart);
     }
-     else
-      internalRemoveText (z, delStart, delStart+delLen);
+    else
+      internalRemoveText (z, delStart, delLen);
   }
 
   _autoUpdate = true;
