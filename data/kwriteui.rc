@@ -3,27 +3,36 @@
 
 <MenuBar>
   <Menu name="file" noMerge="1"><text>&amp;File</text>
-    <Action name="file_new" />
-    <Action name="file_open" />
-    <Action name="file_open_recent" />
+    <Action name="file_new"/>
+    <DefineGroup name="new_merge" append="new_merge" />
+    <Action name="file_open"/>
+    <Action name="file_open_recent"/>
+    <Action name="file_open_with"/>
+    <DefineGroup name="open_merge" append="open_merge" />
     <Separator/>
-    <DefineGroup name="file_operations" />
+    <DefineGroup name="save_merge" append="save_merge" />
+    <DefineGroup name="revert_merge" append="revert_merge"/>
     <Separator/>
-    <DefineGroup name="save_operations" />
-    <Separator/>
-    <DefineGroup name="print_operations" />
+    <DefineGroup name="print_merge" append="print_merge"/>
+    <Merge/>
     <Separator/>
     <Action name="file_close"/>
-    <Separator/>
-    <Action name="file_newView" />
+    <DefineGroup name="close_merge" append="close_merge"/>
     <Separator/>
     <Action name="file_quit"/>
+    <Merge/>
   </Menu>
 
   <Menu name="edit" noMerge="1"><text>&amp;Edit</text>
-    <DefineGroup name="edit_operations" />
+    <DefineGroup name="edit_undo_merge"/>
     <Separator/>
-    <DefineGroup name="find_operations" />
+    <DefineGroup name="edit_paste_merge"/>
+    <Separator/>
+    <DefineGroup name="edit_select_merge"/>
+    <Separator/>
+    <DefineGroup name="edit_find_merge"/>
+    <Separator/>
+    <Merge/>
   </Menu>
 
   <Menu name="view" noMerge="1"><text>&amp;View</text>
@@ -38,12 +47,15 @@
 
   <Menu name="settings" noMerge="1"><text>&amp;Settings</text>
     <Action name="settings_show_toolbar" />
+    <DefineGroup name="show_toolbar_merge" />
     <Action name="settings_show_statusbar" />
     <Action name="set_showPath" />
+    <DefineGroup name="show_merge" />
     <Separator />
     <Action name="options_configure_keybinding"/>
     <Action name="set_configure_toolbars"/>
     <Action name="settings_configure" />
+    <DefineGroup name="configure_merge" />
   </Menu>
 
   <Menu name="help" noMerge="1"><text>&amp;Help</text>
