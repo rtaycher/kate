@@ -67,6 +67,7 @@
       <item>displaymath</item>
       <item>displaystyle</item>
       <item>document</item>
+      <item>documentclass</item>
       <item>documentstyle</item>
       <item>dot</item>
       <item>dotfill</item>
@@ -132,6 +133,7 @@
       <item>Large</item>
       <item>large</item>
       <item>LaTeX</item>
+      <item>LaTeXe</item>
       <item>letter</item>
       <item>line</item>
       <item>linebreak</item>
@@ -154,6 +156,36 @@
       <item>minipage</item>
       <item>multicolumn</item>
       <item>multiput</item>
+      <item>name</item>
+      <item>newcommand</item>
+      <item>newcounter</item>
+      <item>newenvironment</item>
+      <item>newfont</item>
+      <item>newlength</item>
+      <item>newline</item>
+      <item>newpage</item>
+      <item>newsavebox</item>
+      <item>newtheorem</item>
+      <item>noindent</item>
+      <item>nolinebreak</item>
+      <item>nonfrenchspacing</item>
+      <item>nonumber</item>
+      <item>nopagebreak</item>
+      <item>normalmarginpar</item>
+      <item>normalsize</item>
+      <item>numberline</item>
+      <item>oddsidemargin</item>
+      <item>onecolumn</item>
+      <item>opening</item>
+      <item>oval</item>
+      <item>overbrace</item>
+      <item>overline</item>
+      <item>pagebreak</item>
+      <item>pagenumbering</item>
+      <item>pageref</item>
+      <item>pagestyle</item>
+      <item>par</item>
+      <item>paragraph</item>
       <item>parbox</item>
       <item>parindent</item>
       <item>parsep</item>
@@ -216,10 +248,13 @@
       <item>tableofcontents</item>
       <item>tabular</item>
       <item>TeX</item>
+      <item>textbf</item>
+      <item>textit</item>
       <item>textfraction</item>
       <item>textfloatsep</item>
       <item>textheight</item>
       <item>textstyle</item>
+      <item>texttt</item>
       <item>textwidth</item>
       <item>thanks</item>
       <item>thebibliography</item>
@@ -246,6 +281,7 @@
       <item>underline</item>
       <item>unitlength</item>
       <item>usebox</item>
+      <item>usepackage</item>
       <item>value</item>
       <item>vec</item>
       <item>vector</item>
@@ -258,38 +294,6 @@
       <item>vspace</item>
       <item>widehat</item>
       <item>widetilde</item>
-      </list>
-    <list name="funcword">
-      <item>name</item>
-      <item>newcommand</item>
-      <item>newcounter</item>
-      <item>newenvironment</item>
-      <item>newfont</item>
-      <item>newlength</item>
-      <item>newline</item>
-      <item>newpage</item>
-      <item>newsavebox</item>
-      <item>newtheorem</item>
-      <item>noindent</item>
-      <item>nolinebreak</item>
-      <item>nonfrenchspacing</item>
-      <item>nonumber</item>
-      <item>nopagebreak</item>
-      <item>normalmarginpar</item>
-      <item>normalsize</item>
-      <item>numberline</item>
-      <item>oddsidemargin</item>
-      <item>onecolumn</item>
-      <item>opening</item>
-      <item>oval</item>
-      <item>overbrace</item>
-      <item>overline</item>
-      <item>pagebreak</item>
-      <item>pagenumbering</item>
-      <item>pageref</item>
-      <item>pagestyle</item>
-      <item>par</item>
-      <item>paragraph</item>
       </list>
     <contexts>
 	<context attribute="0" lineEndContext="0">
@@ -309,7 +313,6 @@
     <itemDatas>
       <itemData name="Normal Text" defStyleNum="dsNormal"/>
       <itemData name="Keyword" defStyleNum="dsNormal" color="#0000ff" selColor="#ff0000" bold="1" italic="1"/>
-      <itemData name="funcword" defStyleNum="dsNormal" color="#ff0000" selColor="#ff0000" bold="1" italic="1"/>
       <itemData name="Comment" defStyleNum="dsComment"/>
       <itemData name="Begin End" defStyleNum="dsNormal" color="#000000" selColor="#ffffff" bold="1" italic="1"/>
 
