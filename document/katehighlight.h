@@ -241,10 +241,11 @@ class KConfig;
 //context
 class HlContext {
   public:
-    HlContext(int attribute, int lineEndContext);
+    HlContext(int attribute, int lineEndContext,int _lineBeginContext);
     QList<HlItem> items;
     int attr;
     int ctx;
+    int lineBeginContext;
 };
 
 class Highlight

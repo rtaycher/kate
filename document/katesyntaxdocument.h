@@ -63,8 +63,8 @@ class SyntaxDocument : public QDomDocument
     void setIdentifier(const QString& identifier);
 
   private:
-    void setupModeList();
-    QString currentFile;
+     void setupModeList(bool force=false);
+     QString currentFile;
     SyntaxModeList myModeList;
     QStringList m_data;
 };

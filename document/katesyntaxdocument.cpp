@@ -52,7 +52,7 @@ SyntaxDocument::~SyntaxDocument()
 {
 }
 
-void SyntaxDocument::setupModeList()
+void SyntaxDocument::setupModeList(bool force)
 {
   if (myModeList.count() > 0) return;
 
@@ -65,7 +65,7 @@ void SyntaxDocument::setupModeList()
   {
     QString Group="Highlighting_Cache"+*it;
 
-    if (config->hasGroup(Group))
+    if ((config->hasGroup(Group)) && (!force))
     {
       config->setGroup(Group);
       syntaxModeListItem *mli=new syntaxModeListItem;

@@ -369,7 +369,7 @@ const QChar *HlFloat::checkHgl(const QChar *s,bool) {
             }
         }
       return s;
-    }
+   }
    else return 0L;
 }
 
@@ -493,14 +493,8 @@ const QChar *HlRegExpr::checkHgl(const QChar *s,bool lineStart)
   QString line(s,i);
   int pos = Expr->search( line, 0 );
   if (pos==-1) return 0L;
-    else return (s+Expr->matchedLength());
-
-/*  int len;
-  if (Expr->match(line,0,&len)!=-1)
-   {
-     return s+len;
-   }
-  return 0L;*/
+    else
+	 return (s+Expr->matchedLength());
 };
 
 
@@ -509,7 +503,17 @@ HlLineContinue::HlLineContinue(int attribute, int context)
 }
 
 const QChar *HlLineContinue::checkHgl(const QChar *s,bool) {
-  if (*s == '\\') return s + 1;
+  
+  kdDebug()<<"Interesting:"<<QString("%1").arg(s[1])<<endl;
+  qDebug(">>>>%d %d %c<<<<<",s[0].latin1(),s[1].latin1(),s[0].latin1());
+  qDebug(">>>>%d %d %c<<<<<",s[0].latin1(),s[1].latin1(),s[0].latin1());
+  qDebug(">>>>%d %d %c<<<<<",s[0].latin1(),s[1].latin1(),s[0].latin1());
+  if ((s[0].latin1() == '\\') && (s[1].latin1()=='\0'))
+	{
+	   kdDebug()<<"\\ found"<<endl;
+           return s + 1;
+	}
+  kdDebug()<<"No LineEnd Found"<<endl;
   return 0L;
 }
 
@@ -634,8 +638,8 @@ HlData::HlData(const QString &wildcards, const QString &mimetypes, const QString
 //JW  itemDataList.setAutoDelete(true);
 }
 
-HlContext::HlContext(int attribute, int lineEndContext)
-  : attr(attribute), ctx(lineEndContext) {
+HlContext::HlContext(int attribute, int lineEndContext, int _lineBeginContext)
+  : attr(attribute), ctx(lineEndContext),lineBeginContext(_lineBeginContext) {
   items.setAutoDelete(true);
 }
 
@@ -685,6 +689,13 @@ int Highlight::doHighlight(int ctxNum, TextLine *textLine)
   HlItem *item;
 
   context = contextList[ctxNum];
+  if (context->lineBeginContext!=-1)
+	{
+		ctxNum=context->lineBeginContext;
+		context=contextList[ctxNum];
+		kdDebug()<<"lineBeginContext found"<<endl;
+	}
+  kdDebug()<<ctxNum<<endl;
   str = textLine->getText();
 
   lastChar = '\0';
@@ -1014,7 +1025,9 @@ void Highlight::makeContextList()
 //	kdDebug(13010)<< "In make Contextlist: Group"<<endl;
           contextList[i]=new HlContext(
             (HlManager::self()->syntax->groupData(data,QString("attribute"))).toInt(),
-            (HlManager::self()->syntax->groupData(data,QString("lineEndContext"))).toInt());
+            (HlManager::self()->syntax->groupData(data,QString("lineEndContext"))).toInt(),
+            (HlManager::self()->syntax->groupData(data,QString("lineBeginContext"))).isEmpty()?-1:
+            (HlManager::self()->syntax->groupData(data,QString("lineBeginContext"))).toInt());
 
 
             while (HlManager::self()->syntax->nextItem(data))
