@@ -194,6 +194,9 @@ bool KateMainWindow::eventFilter(QObject* o, QEvent* e)
 
 void KateMainWindow::setupActions()
 {
+  kscript = new ScriptLoader(this);
+  scriptMenu = kscript->getScripts();
+
   KStdAction::openNew( viewManager, SLOT( slotDocumentNew() ), actionCollection(), "file_new" );
   KStdAction::open( viewManager, SLOT( slotDocumentOpen() ), actionCollection(), "file_open" );
 

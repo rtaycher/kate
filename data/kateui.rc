@@ -85,6 +85,10 @@
     <Separator />
   </Menu>
 
+  <Menu name="scripts"><text>Scripts</text>
+  	<Action name="scripts"/>
+  </Menu>
+
   <Merge/>
 
   <Menu name="settings" noMerge="1"><text>&amp;Settings</text>
@@ -139,6 +143,8 @@
   <Action name="view_split_horiz"/>
   <Separator />
   <Action name="view_close_current_space" />
+  <Separator />
+  <Action name="scripts"/>
 </ToolBar>
 
 <Menu name="view_popup" noMerge="1">

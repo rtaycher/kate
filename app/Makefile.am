@@ -16,7 +16,7 @@ kwrite_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
 
 kate_SOURCES = dummy.cpp
 kate_LDADD = kate.la
-kate_LDFLAGS = $(KDE_RPATH) $(all_libraries)
+kate_LDFLAGS = $(KDE_RPATH) $(all_libraries) -lkscriptloader
 
 kwrite_SOURCES = dummy.cpp
 kwrite_LDADD = kwrite.la

@@ -26,6 +26,9 @@
 
 #include <kparts/part.h>
 
+#include <scriptloader.h>
+#include <scriptinterface.h>
+
 class GrepDialog;
 class KFileItem;
 
@@ -113,6 +116,9 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
     KToggleAction* setVerticalSelection;
 
     KAction* settingsConfigure;
+    
+    KSelectAction* scriptMenu;
+    ScriptLoader* kscript;
 
   public slots:
     void newWindow ();
