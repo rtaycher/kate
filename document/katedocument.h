@@ -51,6 +51,8 @@
 #include "katebuffer.h"
 #include "katetextline.h"
 
+class KateCmd;
+
 #include "../interfaces/katedocumentIface.h"
 
 class Attribute;
@@ -425,6 +427,10 @@ class KateDocument : public KateDocumentIface
     QFileInfo* fileinfo;
     QDateTime mTime;
     QString myDocName;
+    KateCmd *myCmd;
+
+  public:
+    KateCmd *cmd () { return myCmd; };
 
   signals:
     void modStateChanged (KateDocument *doc);

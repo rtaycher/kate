@@ -75,6 +75,8 @@
 #include "katetextline.h"
 #include "kateattribute.h"
 
+#include "katecmd.h"
+
 KateAction::KateAction(Action a, PointStruc &cursor, int len, const QString &text)
   : action(a), cursor(cursor), len(len), text(text) {
 }
@@ -138,6 +140,8 @@ KateDocument::KateDocument(long docID, QFileInfo* fi, bool bSingleViewMode, bool
   myDocName = QString ("");
   fileinfo = fi;
   setMTime();
+
+  myCmd = new KateCmd (this);
 
   connect(this,SIGNAL(modifiedChanged ()),this,SLOT(slotModChanged ()));
 

@@ -39,6 +39,7 @@
 #include "kateview.moc"
 
 #include "../document/katedocument.h"
+#include "../document/katecmd.h"
 #include "../factory/katefactory.h"
 
 #include "../document/katedialogs.h"
@@ -3512,6 +3513,9 @@ void KateView::slotEditCommand ()
 {
   bool ok;
   QString cmd = KLineEditDlg::getText("Editing Command", "", &ok, this);
+
+  if (ok)
+    myDoc->cmd()->execCmd (cmd, currentLine(), currentColumn(), this);
 }
 
 KateBrowserExtension::KateBrowserExtension( KateDocument *doc )
