@@ -23,7 +23,6 @@
 #include <kglobal.h>
 #include <kglobalaccel.h>
 #include <kglobalsettings.h>
-#include <kdebug.h>
 #include <dcopclient.h>
 #include <kurl.h>
 
@@ -61,7 +60,7 @@ int main( int argc, char **argv )
       if  ((*it).contains ("kate") > 0)
       {
         appID = (*it);
-        kdDebug()<<appID;
+
         QByteArray ba,da;
         QCString replyType;
         if (!(client->call(appID,"KateApp","isSingleInstance()",da,replyType,ba,true)))
@@ -74,7 +73,6 @@ int main( int argc, char **argv )
 		   QDataStream reply(ba, IO_ReadOnly);
                    QString result;
                    reply>>result;
-		   kdDebug()<<"Result was: "<<result<<endl;
 		   running=(result=="true");
                 }
           }
