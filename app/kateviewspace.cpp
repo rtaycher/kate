@@ -185,23 +185,28 @@ KateVSStatusBar::KateVSStatusBar ( KateViewSpace *parent, const char *name )
   : KStatusBar( parent, name )
 {
    m_lineColLabel = new QLabel( i18n(" Line: 1 Col: 0 "), this );
-   addWidget( m_lineColLabel, 0, true );
+   addWidget( m_lineColLabel, 0, false );
    m_lineColLabel->setAlignment( Qt::AlignCenter );
    m_lineColLabel->installEventFilter( this );
       
    m_modifiedLabel = new QLabel( QString("   "), this );
-   addWidget( m_modifiedLabel, 0, true );
+   addWidget( m_modifiedLabel, 0, false );
    m_modifiedLabel->setAlignment( Qt::AlignCenter );
    m_modifiedLabel->installEventFilter( this );
    
    m_insertModeLabel = new QLabel( i18n(" INS "), this );
-   addWidget( m_insertModeLabel, 0, true );
+   addWidget( m_insertModeLabel, 0, false );
    m_insertModeLabel->setAlignment( Qt::AlignCenter );
    m_insertModeLabel->installEventFilter( this );
 
    m_selectModeLabel = new QLabel( i18n(" NORM "), this );
-   addWidget( m_selectModeLabel, 0, true );
+   addWidget( m_selectModeLabel, 0, false );
    m_selectModeLabel->setAlignment( Qt::AlignCenter );
+   m_selectModeLabel->installEventFilter( this );
+   
+   m_fileNameLabel=new QLabel("",this);
+   addWidget(m_fileNameLabel,0,true);
+   m_selectModeLabel->setAlignment( Qt::AlignRight );
    m_selectModeLabel->installEventFilter( this );
    
    installEventFilter( this );
@@ -231,7 +236,7 @@ void KateVSStatusBar::setStatus( int r, int c, int ovr, bool block, int mod, QSt
   
   m_selectModeLabel->setText( block ? i18n(" BLK ") : i18n(" NORM ") );
   
-  message( msg );
+  m_fileNameLabel->setText( msg );
 }
 
 void KateVSStatusBar::showMenu()

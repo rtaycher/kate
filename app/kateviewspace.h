@@ -49,6 +49,7 @@ class KateVSStatusBar : public KStatusBar
       QLabel* m_modifiedLabel;
       QLabel* m_insertModeLabel;
       QLabel* m_selectModeLabel;
+      QLabel* m_fileNameLabel;
 };
 
 class KateViewSpace : public QVBox
