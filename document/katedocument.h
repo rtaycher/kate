@@ -286,14 +286,14 @@ class KateDocument : public KateDocumentIface
     void tagLineRange(int line, int x1, int x2);
     void tagLines(int start, int end);
     void tagAll();
-    void updateLines(int startLine = 0, int endLine = 0xffffff, int flags = 0,
-      int cursorY = -1);
+    void updateLines(int startLine = 0, int endLine = 0xffffff, int flags = 0, int cursorY = -1);
     void updateMaxLength(TextLine::Ptr &);
     void updateViews(KateView *exclude = 0L);
 
     QColor &cursorCol(int x, int y);
     QFont &getTextFont(int x, int y);
     void paintTextLine(QPainter &, int line, int xStart, int xEnd, bool showTabs);
+    void paintTextLine(QPainter &, int line, int y, int xStart, int xEnd, bool showTabs);
 
     void setURL( const KURL &url, bool updateHighlight );
     void clearFileName();

@@ -1847,11 +1847,13 @@ QFont &KateDocument::getTextFont(int x, int y) {
   return a->font;
 }
 
+void KateDocument::paintTextLine(QPainter &paint, int line, int xStart, int xEnd, bool showTabs)
+{
+  paintTextLine (paint, line, 0, xStart, xEnd, showTabs);
+}
 
-void KateDocument::paintTextLine(QPainter &paint, int line, int xStart, int xEnd,
-  bool showTabs) {
-
-  int y;
+void KateDocument::paintTextLine(QPainter &paint, int line, int y, int xStart, int xEnd, bool showTabs)
+{
   TextLine::Ptr textLine;
   int len;
   const QChar *s;
@@ -1862,10 +1864,6 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int xStart, int xEnd
   int xs;
   int xc, zc;
 
-//  struct timeval tv1, tv2, tv3; //for profiling
-//  struct timezone tz;
-
-  y = 0;//line*fontHeight - yPos;
   if (line > lastLine()) {
     paint.fillRect(0, y, xEnd - xStart,fontHeight, colors[4]);
     return;
@@ -1892,8 +1890,6 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int xStart, int xEnd
     z++;
   } while (x <= xStart);
 
-//gettimeofday(&tv1, &tz);
-
   // draw background
   xs = xStart;
   attr = textLine->getRawAttr(zc);
@@ -1916,8 +1912,6 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int xStart, int xEnd
   }
   paint.fillRect(xs - xStart, y, xEnd - xs, fontHeight, colors[attr >> taShift]);
   len = z; //reduce length to visible length
-
-//gettimeofday(&tv2, &tz);
 
   // draw text
   x = xc;
@@ -1978,8 +1972,6 @@ void KateDocument::paintTextLine(QPainter &paint, int line, int xStart, int xEnd
     QConstString str((QChar *) &s[zc], z - zc /*+1*/);
     paint.drawText(x - xStart, y, str.string());
   }
-//gettimeofday(&tv3, &tz);
-//printf(" %d %d\n", tv2.tv_usec - tv1.tv_usec, tv3.tv_usec - tv2.tv_usec);
 }
 
 void KateDocument::setURL( const KURL &url, bool updateHighlight )

@@ -3062,41 +3062,24 @@ void KateView::printDlg ()
   if ( printer->setup( this ) )
   {
     QPainter paint( printer );
+    QPaintDeviceMetrics pdm( printer );
 
     int y = 0;
-
-
-    QPaintDeviceMetrics pdm( printer );
-    int max = pdm.height();
-
-
-     QFont font( "Helvetica", 8 );
-     paint.setFont( font );
-     QFontMetrics fm = paint.fontMetrics();
-
     int lineCount = 0;
     while (  lineCount <= myDoc->lastLine()  )
     {
-
-
-
-       if (y+fm.ascent()+fm.descent() >= max )
+       if (y+myDoc->fontHeight >= pdm.height() )
       {
         printer->newPage();
         y=0;
       }
 
-     y += fm.ascent();
-     paint.drawText( 10, y, myDoc-> textLine(lineCount) );
-     y += fm.descent();
-
-
-
-
+      myDoc->paintTextLine ( paint, lineCount, y, 0, pdm.width(), false );
+      y += myDoc->fontHeight;
 
       lineCount++;
     }
-    }
+  }
 }
 
 // Applies a new pattern to the search context.
