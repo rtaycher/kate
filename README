@@ -23,5 +23,5 @@ written by Jochen, too).
 Homepage: http://kate.sf.net (is shipping with kate/kdebase)
 
 Licensing:
-The Kate app + part and KWrite app are licensed under the GPL.
+The Kate app and KWrite app are licensed under the GPL.
 The Kate interfaces (libkateinterfaces.la) is licensed under the LGPL.
