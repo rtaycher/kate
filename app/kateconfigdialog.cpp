@@ -196,8 +196,9 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
       i18n("Wa&rn about files modified by foreign processes"), bgStartup );
   cb_modNotifications->setChecked( parent->modNotification );
   QWhatsThis::add( cb_modNotifications, i18n(
-      "If enabled, a passive popup message will be displayed whenever a local "
-      "file is modified, created or deleted by another program.") );
+      "If enabled, a you will be prompted what to do with files modified on the"
+      "harddisk when Kate receives focus. If not enabled, you will be prompted "
+      "for what to do when individual files receives focus.") );
   connect( cb_modNotifications, SIGNAL( toggled( bool ) ),
            this, SLOT( slotChanged() ) );
 
