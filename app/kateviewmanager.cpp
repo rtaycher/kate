@@ -44,13 +44,14 @@
 #include <kstdaction.h>
 #include <kstandarddirs.h>
 #include <qfileinfo.h>
+
+#include <kio/netaccess.h>
+
 #include <qlayout.h>
 #include <qobjectlist.h>
 #include <qstringlist.h>
 #include <qvbox.h>
-
 #include <qtimer.h>
-
 #include <qprogressdialog.h>
 
 #include "katesplitter.h"
@@ -490,8 +491,12 @@ void KateViewManager::slotDocumentOpen ()
 	delete dialog;
 
   for (KURL::List::Iterator i=data.urls.begin(); i != data.urls.end(); ++i)
-    openURL( *i, data.encoding );
-
+  {
+    if (!KIO::NetAccess::exists(*i, true, this))
+      KMessageBox::error (this, i18n("The given file could not be read, check if it exists or if it is readable for the current user."));
+    else
+      openURL( *i, data.encoding );
+  }
 }
 
 void KateViewManager::slotDocumentSaveAll()
