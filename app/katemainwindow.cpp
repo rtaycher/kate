@@ -564,11 +564,11 @@ void KateMainWindow::editKeys()
   dlg.configure();
 
   QPtrList<Kate::Document>  l=m_docManager->documentList();
-  for (int i=0;i<l.count();i++) {
+  for (uint i=0;i<l.count();i++) {
 	kdDebug()<<"reloading Keysettings for document "<<i<<endl;
 	l.at(i)->reloadXML();
 	QPtrList<class KTextEditor::View> l1=l.at(i)->views ();//KTextEditor::Document
-	for (int i1=0;i1<l1.count();i1++) {
+	for (uint i1=0;i1<l1.count();i1++) {
 		l1.at(i1)->reloadXML();
 		kdDebug()<<"reloading Keysettings for view "<<i<<"/"<<i1<<endl;
 
