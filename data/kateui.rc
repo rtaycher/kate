@@ -1,22 +1,22 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="kate" version="9">
+<kpartgui name="kate" version="10">
 
 <MenuBar>
   <Menu name="file" noMerge="1"><text>&amp;File</text>
     <Action name="file_new" />
+    <Action name="file_newWindow"/>
     <Action name="file_open" />
     <Action name="file_open_recent" />
     <Action name="file_open_with" />
     <Separator/>
-    <DefineGroup name="file_operations" />
+    <DefineGroup name="save_operations" />
     <Action name="file_save_all"/>
     <Separator/>
+    <DefineGroup name="file_operations" />
     <DefineGroup name="print_operations" />
     <Separator/>
     <Action name="file_close"/>
     <Action name="file_close_all"/>
-    <Separator />
-    <Action name="file_newWindow"/>
     <Separator/>
     <Action name="file_quit"/>
   </Menu>
@@ -40,10 +40,8 @@
     <DefineGroup name="view_operations" />
     <Separator />
     <Action name="view_close_current_space" />
-    <Menu name="go"><text>&amp;Go</text>
-      <Action name="go_next"/>
-      <Action name="go_prev"/>
-    </Menu>
+    <Action name="go_next"/>
+    <Action name="go_prev"/>
   </Menu>
 
   <Menu name="tools" noMerge="1"><text>&amp;Tools</text>
