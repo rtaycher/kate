@@ -25,6 +25,7 @@
 #include <kstddirs.h>
 #include <klocale.h>
 #include <kmessagebox.h>
+#include <qstringlist.h>
 
 SyntaxDocument::SyntaxDocument() : QDomDocument()
 {
@@ -57,22 +58,22 @@ SyntaxDocument::~SyntaxDocument()
 
 */
 
-QStringList SyntaxDocument::modesList()
+syntaxModeList SyntaxDocument::modeList()
 {
   QDomElement docElem = documentElement();
   QDomNode n = docElem.firstChild();
 
-  QStringList modeList;
+  syntaxModeList modeList;
 
   while ( !n.isNull() )
   {
     if ( n.isElement())
     {
-      QDomElement e = n.toElement(); //e.tagName is language
-      QDomNode child=e.firstChild(); // child.toElement().tagname() is keywords/types
-      QDomNode grandchild=child.firstChild(); // grandchild.tagname is keyword/type
+      QDomElement e = n.toElement();
       kdDebug() << e.attribute("name") << endl;
-      modeList += e.attribute("name");
+      modeList.name += e.attribute("name");
+      modeList.name += e.attribute("mimetype");
+      modeList.name += e.attribute("extensions");
     }
 
     n = n.nextSibling();
@@ -84,6 +85,8 @@ QStringList SyntaxDocument::modesList()
 
 QStringList& SyntaxDocument::finddata(const QString& langName,const QString& type)
 {
+  modeList ();
+
   QDomElement docElem = documentElement();
   QDomNode n = docElem.firstChild();
 

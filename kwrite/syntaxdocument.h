@@ -21,23 +21,31 @@
 #define SYNTAXDOCUMENT_H
 
 #include <qdom.h>
-#include <qstringlist.h>
+
+class QStringList;
+
+struct syntaxModeList
+{
+  QStringList name;
+  QStringList mimeTyp;
+  QStringList extensions;
+};
 
 /**
   *@author Maniac
   */
 
-class SyntaxDocument : public QDomDocument  {
+class SyntaxDocument : public QDomDocument
+{
   public:
-	  SyntaxDocument();
-	  ~SyntaxDocument();
+    SyntaxDocument();
+    ~SyntaxDocument();
 
-          QStringList modesList();
-          QStringList& finddata(const QString& langName,const QString& type);
+    syntaxModeList modeList();
+    QStringList& finddata(const QString& langName,const QString& type);
 
-	private:
-	  QStringList m_data;
-
+  private:
+    QStringList m_data;
 };
 
 #endif
