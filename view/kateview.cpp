@@ -78,6 +78,11 @@
 #include <qiodevice.h>
 #include <qbuffer.h>
 #include <qfocusdata.h>
+
+#if QT_VERSION < 300
+#else
+#include <qstyle.h>
+#endif
 #include <kcursor.h>
 #include <klocale.h>
 #include <kglobal.h>
@@ -2895,8 +2900,15 @@ int SConfig::search(QString &text, int index) {
   if (index != -1)
   {
     if (regExp) {
-      m_regExp.match(text, index, &matchedLength, false);
-    }
+#if QT_VERSION < 300
+						m_regExp.match(text, index, &matchedLength, false);
+#else
+//			  from what I can we don't care about the position just
+//			  whether it matched
+					int pos = m_regExp.search(text, index); // &matchedLength, false);
+					if(pos >-1)	matchedLength=m_regExp.matchedLength();
+#endif
+		}
     else {
       matchedLength = m_pattern.length();
     }
@@ -3011,8 +3023,12 @@ void KateView::toggleBookmark ()
 
 void KateView::clearBookmarks()
 {
-  QList<Kate::Mark> list = myDoc->marks();
-  for (int i=0; (uint) i < list.count(); i++)
+#if QT_VERSION < 300
+				QList<Kate::Mark> list = myDoc->marks();
+#else
+				QPtrList<Kate::Mark> list = myDoc->marks();
+#endif
+				for (int i=0; (uint) i < list.count(); i++)
   {
     if (list.at(i)->type&KateDocument::Bookmark)
     {

@@ -917,7 +917,7 @@ int KateDocument::textPos(const TextLine::Ptr &textLine, int xPos) {
 }
 
 int KateDocument::textWidth() {
-  return maxLength + 8;
+  return (int) maxLength + 8;
 }
 
 int KateDocument::textHeight() {

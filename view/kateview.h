@@ -909,7 +909,7 @@ class KateView : public Kate::View, virtual public KateViewDCOPIface
   public slots:
     virtual void setFocus ();
     void findAgain(bool back=false);
-    void findAgain () { findAgain(false); };
+//    void findAgain () { findAgain(false); };
     void findPrev () { findAgain(true); };
 
   protected:
