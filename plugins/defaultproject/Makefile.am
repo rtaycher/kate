@@ -1,4 +1,4 @@
-INCLUDES    =   -I../../interfaces $(all_includes)
+INCLUDES = -I$(top_srcdir)/kate/interfaces $(all_includes)
 METASOURCES = AUTO
 
 # Install this plugin in the KDE modules directory
