@@ -10,7 +10,8 @@ libkateinterfaces_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugin
   katemailfilesdialog.cpp kbookmarkhandler.cpp kateprojectlist.cpp \
   kateprojecttreeview.cpp kateprojectviews.cpp kateprojectdirview.cpp \
   katedocmanageriface.skel kateappIface.cpp kateappIface.skel katedocmanageriface.cpp \
-  kateexternaltools.cpp katesavemodifieddialog.cpp kateviewspacecontainer.cpp
+  kateexternaltools.cpp katesavemodifieddialog.cpp kateviewspacecontainer.cpp \
+  katemwmodonhddialog.cpp
 
 libkateinterfaces_la_LIBADD   = ../interfaces/libkateinterfacesprivate.la -lkscript $(LIB_KUTILS) ../utils/libkateutils.la -lkmdi2
 
