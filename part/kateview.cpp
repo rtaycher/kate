@@ -273,8 +273,8 @@ void KateViewInternal::cursorLeft(VConfig &c) {
 void KateViewInternal::cursorRight(VConfig &c) {
 
   if (c.flags & KateDocument::cfWrapCursor) {
-    if (cursor.col >= myDoc->textLength(cursor.line)) {
-      if (cursor.line == myDoc->lastLine()) return;
+    if (cursor.col >= (int) myDoc->textLength(cursor.line)) {
+      if (cursor.line == (int)myDoc->lastLine()) return;
       cursor.line++;
       cursor.col = -1;
     }

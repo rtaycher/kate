@@ -40,7 +40,7 @@ class KateCmd;
 
 class Attribute {
   public:
-    Attribute() { ; };
+    Attribute () { ; };
 
     QColor col;
     QColor selCol;
@@ -48,6 +48,16 @@ class Attribute {
     bool italic;
 };
 
+class KateViewCursorCache
+{
+  public:
+    KateViewCursorCache () { ; };
+
+    uint line;
+    uint col;
+    bool changed;
+    KateView *view;
+};
 
 class KateCursor : public Kate::Cursor
 {
@@ -157,7 +167,19 @@ class KateDocument : public Kate::Document
 
   private:
     //
-    // 6 internal functions (mostly to enable undo/redo atomic )
+    // start edit / end edit (start/end undo, cursor update, view update)
+    //
+    bool editStart (bool withUndo = true);
+    void editEnd ();
+    void editAddUndo (KateUndo *undo);
+    
+    bool editIsRunning;
+    bool editWithUndo;
+    KateUndoGroup *editCurrentUndo;
+    QPtrList<KateViewCursorCache> editCursorCache;
+
+    //
+    // 6 internal functions for insert/remove stuff
     //
     bool internalInsertText ( uint line, uint col, const QString &s );
     bool internalRemoveText ( uint line, uint col, uint len );
@@ -224,7 +246,6 @@ class KateDocument : public Kate::Document
     QPtrList<KateUndoGroup> undoItems;
     QPtrList<KateUndoGroup> redoItems;
     uint myUndoSteps;
-    KateUndoGroup *currentUndo;
 
   signals:
     void undoChanged ();
@@ -321,9 +342,6 @@ class KateDocument : public Kate::Document
     // internal edit stuff (mostly for view)
     //
     bool insertChars ( int line, int col, const QString &chars, KateView *view );
-
-  private:
-    bool _autoUpdate;
 
   protected:
     FontStruct viewFont;
