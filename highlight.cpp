@@ -43,10 +43,6 @@
 #include <kmimemagic.h>
 #include <klocale.h>
 #include <kregexp.h>
-#include <X11/Xlib.h> //used in getXFontList()
-
-#undef Unsorted
-#undef GrayScale
 
 #include "highlight.h"
 #include "kwdoc.h"
@@ -2191,65 +2187,6 @@ void HlManager::setHlDataList(HlDataList &list) {
   emit changed();
 }
 
-void getXFontList(QStringList &fontList) {
-  Display *kde_display;
-  int numFonts;
-  char** fontNames;
-  char* fontName;
-  QString qfontname;
-  int i, dash, dash_two;
-
-  kde_display = XOpenDisplay( 0L );
-  fontNames = XListFonts(kde_display, "*", 32767, &numFonts);
-
-  for(i = 0; i < numFonts; i++) {
-    fontName = fontNames[i];
-    if (*fontName != '-') {
-      // The font name doesn't start with a dash -- an alias
-      // so we ignore it. It is debatable whether this is the right
-      // behaviour so I leave the following snippet of code around.
-      // Just uncomment it if you want those aliases to be inserted as well.
-
-//      qfontname = fontName;
-//      if(fontlist.find(qfontname) == -1) fontlist.inSort(qfontname);
-      continue;
-    }
-
-    qfontname = fontName;
-    dash = qfontname.find ('-', 1); // find next dash
-    if (dash == -1) continue; // No dash such next dash -- this shouldn't happen.
-                              // but what do I care -- lets skip it.
-
-    // the font name is between the second and third dash so:
-    // let's find the third dash:
-    dash_two = qfontname.find ('-', dash + 1);
-    if (dash == -1) continue; // No such next dash -- this shouldn't happen.
-                              // but what do I care -- lets skip it.
-
-    // fish the name of the font info string
-    qfontname = qfontname.mid(dash +1, dash_two - dash -1);
-    if (!qfontname.contains("open look", TRUE)) {
-      if (qfontname != "nil") {
-        if (!fontList.contains(qfontname)) fontList.append(qfontname);
-      }
-    }
-  }
-
-  XFreeFontNames(fontNames);
-  XCloseDisplay(kde_display);
-  fontList.sort();
-}
-
-void getFontList(QStringList &fontList) {
-
-  //try to get KDE fonts
-  if (kapp->kdeFonts(fontList)) return;
-  //not successful: get X fonts
-  getXFontList(fontList);
-}
-
-
-
 StyleChanger::StyleChanger( QWidget *parent )
   : QWidget(parent)
 {
@@ -2336,7 +2273,7 @@ FontChanger::FontChanger( QWidget *parent )
   vlay->addWidget(familyCombo);
   connect( familyCombo, SIGNAL(activated(const QString&)),
            this, SLOT(familyChanged(const QString&)));
-  getFontList(fontList);
+  KFontChooser::getFontList(fontList, false);
   familyCombo->insertStringList(fontList);
 
 
