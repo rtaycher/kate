@@ -189,7 +189,7 @@ KateVSStatusBar::KateVSStatusBar ( KateViewSpace *parent, const char *name )
    m_lineColLabel->setAlignment( Qt::AlignCenter );
    m_lineColLabel->installEventFilter( this );
       
-   m_modifiedLabel = new QLabel( QString(" * "), this );
+   m_modifiedLabel = new QLabel( QString("   "), this );
    addWidget( m_modifiedLabel, 0, true );
    m_modifiedLabel->setAlignment( Qt::AlignCenter );
    m_modifiedLabel->installEventFilter( this );
