@@ -431,6 +431,7 @@ void KWriteDoc::setModified(bool m) {
     for (view = m_views.first(); view != 0L; view = m_views.next() ) {
       emit static_cast<KWrite *>( view )->newStatus();
     }
+    emit modifiedChanged ();
   }
 }
 

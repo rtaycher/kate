@@ -167,6 +167,7 @@ class KWriteDoc : public KTextEditor::Document {
   signals:
     void selectionChanged();
     void highlightChanged();
+    void modifiedChanged ();
 
 // highlight
   public:
