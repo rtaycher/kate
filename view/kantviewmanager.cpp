@@ -167,23 +167,30 @@ bool KantViewManager::createView ( bool newDoc, KURL url, KantView *origView )
         if (hassamename > 1)
           name = QString(name+"<%1>").arg(hassamename);
         view->setCaption ( name );
+        ((KantDocument *)view->doc())->setDocName (name);
       }
       else
       {
         view->setCaption (i18n("Untitled %1").arg(doc->docID()));
+        ((KantDocument *)view->doc())->setDocName (i18n("Untitled %1").arg(doc->docID()));
       }
     }
     else
     {
       view->setCaption (i18n("Untitled %1").arg(doc->docID()));
+      ((KantDocument *)view->doc())->setDocName (i18n("Untitled %1").arg(doc->docID()));
     }
   }
   else
+  {
     view->setCaption (origView->caption());
+    ((KantDocument *)view->doc())->setDocName (((KantDocument *)origView->doc())->docName ());
+  }
 
   // if new document insert KantListItem in listbox
   if (newDoc)
     listbox->insertItem (new KantVMListBoxItem (SmallIcon("null"),view->caption(), doc->docID()) );
+
   view->installPopup ((QPopupMenu*)((KMainWindow *)topLevelWidget ())->factory()->container("view_popup", (KMainWindow *)topLevelWidget ()) );
   connect(view,SIGNAL(newCurPos()),this,SLOT(statusMsgOther()));
   connect(view,SIGNAL(newStatus()),this,SLOT(statusMsgOther()));
@@ -601,6 +608,7 @@ void KantViewManager::slotDocumentSaveAs ()
   {
     current->doc()->saveAs( url );
     current->setCaption (url.filename());
+    ((KantDocument *)current->doc())->setDocName (url.filename());
 
     setWindowCaption();
 

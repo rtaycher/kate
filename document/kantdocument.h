@@ -30,13 +30,18 @@ class KantDocument : public KWriteDoc
     KantDocument(long docID, QFileInfo* fi);
     ~KantDocument();
 
-    long docID ();
+
     /** anders: reimplemented from kwdoc to update mTime */
     virtual bool saveFile();
     /** Tjecks if the file on disk is newer than document contents.
       If forceReload is true, the document is reloaded without asking the user,
       otherwise [default] the user is asked what to do. */
     void isModOnHD(bool forceReload=false);
+
+    long docID () {return myDocID;};
+    QString docName () {return myDocName;};
+
+    void setDocName (QString docName);
 
   public slots:
     /** Reloads the current document from disk if possible */
@@ -52,9 +57,11 @@ class KantDocument : public KWriteDoc
     long myDocID;
     QFileInfo* fileinfo;
     QDateTime mTime;
+    QString myDocName;
 
   signals:
     void modStateChanged (KantDocument *doc);
+    void nameChanged (KantDocument *doc);
 };
 
 #endif

@@ -29,11 +29,13 @@
 #include <kmessagebox.h>
 #include <klocale.h>
 #include <kconfig.h>
+#include <qstring.h>
 
 KantDocument::KantDocument (long docID, QFileInfo* fi)
    : KWriteDoc (HlManager::self (), QString::null)
 {
   myDocID = docID;
+  myDocName = QString ("");
   fileinfo = fi;
   setMTime();
 
@@ -44,9 +46,10 @@ KantDocument::~KantDocument ()
 {
 }
 
-long KantDocument::docID ()
+void KantDocument::setDocName (QString docName)
 {
-  return myDocID;
+  myDocName = docName;
+  emit nameChanged (this);
 }
 
 bool KantDocument::saveFile()

@@ -50,8 +50,9 @@ KantFileList::~KantFileList ()
 
 void KantFileList::slotDocumentCreated (KantDocument *doc)
 {
-  insertItem (new KantFileListItem (doc->docID(), SmallIcon("null"), QString ("test")) );
+  insertItem (new KantFileListItem (doc->docID(), SmallIcon("null"), doc->docName()) );
   connect(doc,SIGNAL(modStateChanged(KantDocument *)),this,SLOT(slotModChanged(KantDocument *)));
+  connect(doc,SIGNAL(nameChanged(KantDocument *)),this,SLOT(slotNameChanged(KantDocument *)));
 }
 
 void KantFileList::slotDocumentDeleted (long docID)
@@ -108,6 +109,21 @@ void KantFileList::slotModChanged (KantDocument *doc)
 		   break;
 		 }
              }
+  }
+}
+
+void KantFileList::slotNameChanged (KantDocument *doc)
+{
+  if (!doc) return;
+
+  for (uint i = 0; i < count(); i++)
+  {
+    if (((KantFileListItem *) item (i)) ->docID() == doc->docID())
+    {
+      ((KantFileListItem *)item(i))->setText(doc->docName());
+      triggerUpdate(false);
+      break;
+    }
   }
 }
 
