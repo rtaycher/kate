@@ -63,7 +63,7 @@ KateViewManager::KateViewManager (QWidget *parent, KateDocManager *docManager) :
   grid = new QGridLayout( this, 1, 1 );
 
   KateViewSpace* vs = new KateViewSpace( this );
-  connect(this, SIGNAL(statusChanged(KateView *, int, int, int, int, QString)), vs, SLOT(slotStatusChanged(KateView *, int, int, int, int, QString)));
+  connect(this, SIGNAL(statusChanged(KateView *, int, int, int, bool, int, QString)), vs, SLOT(slotStatusChanged(KateView *, int, int, int, bool, int, QString)));
   vs->setActive( true );
   vs->installEventFilter( this );
   grid->addWidget( vs, 0, 0);
@@ -400,14 +400,14 @@ void KateViewManager::statusMsg ()
   }
 
   int mod = (int)v->doc()->isModified();
-  
+  bool block=v->doc()->blockSelectionMode();
   
   QString c = v -> doc()->docName();
    //File name shouldn't be too long - Maciek
    if (c.length() > 200)
      c = "..." + c.right(197);
 
-  emit statusChanged (v, v->cursorLine(), v->cursorColumn(), ovr, mod, c);
+  emit statusChanged (v, v->cursorLine(), v->cursorColumn(), ovr,block, mod, c);
   emit statChanged ();
 }
 
@@ -797,7 +797,7 @@ void KateViewManager::splitViewSpace( KateViewSpace* vs,
 
   s->show();
 
-  connect(this, SIGNAL(statusChanged(KateView *, int, int, int, int, QString)), vsNew, SLOT(slotStatusChanged(KateView *, int, int, int, int, QString)));
+  connect(this, SIGNAL(statusChanged(KateView *, int, int, int, bool, int, QString)), vsNew, SLOT(slotStatusChanged(KateView *, int, int,int, bool, int, QString)));
   viewSpaceList.append( vsNew );
   vsNew->installEventFilter( this );
   activeViewSpace()->setActive( false );

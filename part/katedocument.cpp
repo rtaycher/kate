@@ -1287,6 +1287,10 @@ bool KateDocument::setBlockSelectionMode (bool on)
   {
     blockSelect = on;
     setSelection (selectStart.line, selectStart.col, selectEnd.line, selectEnd.col);
+    KTextEditor::View *view;
+    for (view = myViews.first(); view != 0L; view = myViews.next() ) {
+      emit static_cast<KateView *>( view )->newStatus();
+    }
   }
 
   return true;

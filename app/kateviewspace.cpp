@@ -147,7 +147,7 @@ bool KateViewSpace::eventFilter(QObject* o, QEvent* e)
   return QWidget::eventFilter(o, e);
 }
 
-void KateViewSpace::slotStatusChanged (KateView *view, int r, int c, int ovr, int mod, QString msg)
+void KateViewSpace::slotStatusChanged (KateView *view, int r, int c, int ovr, bool block, int mod, QString msg)
 {
   if ((QWidgetStack *)view->parentWidget() != stack)
     return;
@@ -168,7 +168,9 @@ void KateViewSpace::slotStatusChanged (KateView *view, int r, int c, int ovr, in
     modstr = QString (" * ");
   else
     modstr = QString ("   ");
-  mStatusBar->slotDisplayStatusText (" " + s1 + " " + s2 + " " + ovrstr + " " + modstr + " " + msg);
+  QString blockstr;
+  blockstr=block ? i18n(" BLK ") : i18n("NORM");
+  mStatusBar->slotDisplayStatusText (" " + s1 + " " + s2 + " " + ovrstr + " " + blockstr+ " " + modstr + " " + msg);
 }
 
 void KateViewSpace::saveFileList( KSimpleConfig* config, int myIndex )

@@ -89,7 +89,7 @@ class KateViewSpace : public QVBox
     int mViewCount;
 
   private slots:
-    void slotStatusChanged (KateView *view, int r, int c, int ovr, int mod, QString msg);
+    void slotStatusChanged (KateView *view, int r, int c, int ovr, bool block, int mod, QString msg);
 };
 
 #endif

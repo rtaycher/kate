@@ -197,7 +197,7 @@ class KateViewManager : public Kate::ViewManager
     void slotApplyWordWrap ();
 
   signals:
-    void statusChanged (KateView *, int, int, int, int, QString);
+    void statusChanged (KateView *, int, int, int, bool, int, QString);
     void statChanged ();
     void viewChanged ();
 		
