@@ -360,24 +360,22 @@ void KateViewManager::slotViewChanged()
 
 void KateViewManager::activateNextView()
 {
-  viewList.findRef (activeView());
-  viewList.next();
+  uint i = viewSpaceList.find (activeViewSpace())+1;
+ 
+  if (i >= viewSpaceList.count())
+    i=0;
 
-  if (viewList.current())
-    viewList.current()->setFocus();
-  else
-    viewList.first();
+  activateView(viewSpaceList.at(i)->currentView());
 }
 
 void KateViewManager::activatePrevView()
 {
-  viewList.findRef (activeView());
-  viewList.prev();
+  int i = viewSpaceList.find (activeViewSpace())-1;
+ 
+  if (i < 0)
+    i=viewSpaceList.count()-1;
 
-  if (viewList.current())
-    viewList.current()->setFocus();
-  else
-    viewList.last();
+  activateView(viewSpaceList.at(i)->currentView());  
 }
 
 void KateViewManager::deleteLastView ()
@@ -1247,3 +1245,4 @@ void KateViewManager::restoreSplitter( KSimpleConfig* config, QString group, QWi
    s->show();
    config->deleteGroup( group );
 }
+
