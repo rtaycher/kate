@@ -233,7 +233,10 @@ KateExternalToolAction::KateExternalToolAction( QObject *parent,
 bool KateExternalToolAction::expandMacro( const QString &str, QStringList &ret )
 {
   KateMainWindow *mw = (KateMainWindow*)parent()->parent();
+
   Kate::View *view = mw->viewManager()->activeView();
+  if ( ! view ) return false;
+
 
   if ( str == "URL" )
     ret += mw->activeDocumentUrl().url();
@@ -268,8 +271,13 @@ void KateExternalToolAction::slotRun()
   // and construct a command with an absolute path
   QString cmd = tool->command;
 
-  expandMacrosShellQuote( cmd );
-
+  if ( ! expandMacrosShellQuote( cmd ) )
+  {
+    KMessageBox::sorry( (KateMainWindow*)parent()->parent(),
+                         i18n("Failed expanding the command '%1'."),
+                         i18n( "Kate External Tools").arg( cmd ) );
+    return;
+  }
   kdDebug(13001)<<"externaltools: Running command: "<<cmd<<endl;
 
   // save documents if requested
@@ -848,3 +856,4 @@ void KateExternalToolsConfigWidget::slotMoveDown()
   slotChanged();
 }
 //END KateExternalToolsConfigWidget
+// kate: space-indent on; indent-width 2; replace-tabs on;
