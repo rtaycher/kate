@@ -80,14 +80,14 @@ Project *MainWindow::activeProject ()
   return d->win->activeProject ();
 }
 
-Project *MainWindow::createProject (const QString &type, const QString &name, const KURL &url)
+Project *MainWindow::createProject (const QString &type, const QString &name, const QString &filename)
 {
-  return d->win->createProject (type, name, url);
+  return d->win->createProject (type, name, filename);
 }
     
-Project *MainWindow::openProject (const KURL &url)
+Project *MainWindow::openProject (const QString &filename)
 {
-  return d->win->openProject (url);
+  return d->win->openProject (filename);
 }
 
 };

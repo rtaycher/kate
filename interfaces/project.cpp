@@ -23,7 +23,9 @@
 
 #include "plugin.h"
 
-#include "../app/kateproject.h"
+#include "../app/kateprojectmanager.h"
+
+#include <kconfig.h>
 
 namespace Kate
 {
@@ -37,19 +39,26 @@ class PrivateProject
 
     ~PrivateProject ()
     {    
+      delete data;
+      delete m_data;
     }          
         
-    KateProject *project; 
+    KateInternalProjectData *data;
+    Kate::ProjectPlugin *m_plugin;
+    KConfig *m_data;
   };
             
 unsigned int Project::globalProjectNumber = 0;
   
-Project::Project (void *project) : QObject ((KateProject*) project)
+Project::Project (void *project) : QObject (((KateInternalProjectData*) project)->proMan)
 {
   globalProjectNumber++;
   myProjectNumber = globalProjectNumber; 
+  
+
   d = new PrivateProject ();
-  d->project = (KateProject*) project;
+  d->data = ((KateInternalProjectData*) project);
+  d->m_plugin = d->data->proMan->createPlugin (this);
 }
 
 Project::~Project ()
@@ -64,42 +73,46 @@ unsigned int Project::projectNumber () const
 
 ProjectPlugin *Project::plugin () const
 {
-  return d->project->plugin ();
+  return d->m_plugin;
 }
 
 QString Project::type () const
 {
-  return d->project->type ();
+  d->m_data->setGroup("General");
+  return d->m_data->readEntry ("Type", "Default");
 }
 
 QString Project::name () const
 {
-  return d->project->name ();
+  d->m_data->setGroup("General");
+  return d->m_data->readEntry ("Name", "");
 }
 
 KURL Project::url () const
 {
-  return d->project->url ();
+  return KURL ();
 }
 
 KURL Project::baseurl (bool _strip_trailing_slash_from_result) const
 {
-  return d->project->baseurl (_strip_trailing_slash_from_result);
+  return KURL ();
 }
 
 bool Project::save ()
 {
-  return d->project->save ();
+  d->m_data->sync();
+
+  return d->m_plugin->save ();
 }
 
 QStringList Project::subdirs (const QString &dir) const
 {
-  return d->project->subdirs (dir);
+  return QStringList ();
 }
 
 QStringList Project::files (const QString &dir) const
 {
-  return d->project->files (dir);
+  return QStringList ();
 }
 
 };

@@ -4,7 +4,7 @@ bin_PROGRAMS = kate kwrite
 libkateinterfaces_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugindialogpage.cpp \
 	kateconsole.cpp katedocmanager.cpp katefilelist.cpp katefileselector.cpp \
 	katemainwindow.cpp katepluginmanager.cpp katesplitter.cpp \
-	kateviewmanager.cpp kateviewspace.cpp kateprojectmanager.cpp kateproject.cpp \
+	kateviewmanager.cpp kateviewspace.cpp kateprojectmanager.cpp \
 	kateIface.skel kategrepdialog.cpp katemailfilesdialog.cpp \
         kbookmarkhandler.cpp kactionselector.cpp katedockcontainer.cpp kateprojectlist.cpp \
         kateprojecttreeview.cpp kateprojectviews.cpp

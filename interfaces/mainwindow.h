@@ -56,13 +56,13 @@ class MainWindow : public QObject
      * @param filename name of the new project file
      * @return Project new created project object
      */
-    class Project *createProject (const QString &type, const QString &name, const KURL &url);
+    class Project *createProject (const QString &type, const QString &name, const QString &filename);
     
     /**
      * @param filename name of the project file
      * @return Project opened project
      */
-    class Project *openProject (const KURL &url);
+    class Project *openProject (const QString &filename);
     
   //invention of public signals, like in kparts/browserextension.h
   #undef signals

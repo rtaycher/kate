@@ -51,13 +51,13 @@ class ProjectManager : public QObject
      * @param filename name of the new project file
      * @return Project new created project object
      */
-    class Project *create (const QString &type, const QString &name, const KURL &url);
+    class Project *create (const QString &type, const QString &name, const QString &filename);
     
     /**
      * @param filename name of the project file
      * @return Project opened project
      */
-    class Project *open (const KURL &url);
+    class Project *open (const QString &filename);
     
     bool close (Kate::Project *project);
     

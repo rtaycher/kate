@@ -21,7 +21,6 @@
 #include "kateprojectmanager.h"
 #include "kateprojectmanager.moc"
 
-#include "kateproject.h"
 #include "kateapp.h"
 #include "katemainwindow.h"
 
@@ -32,8 +31,6 @@
 #include <klineedit.h>
 #include <klocale.h>
 #include <kmessagebox.h>
-
-#include <kio/netaccess.h>
 
 #include <qfile.h>
 #include <qlayout.h> 
@@ -63,7 +60,6 @@ class KateProjectDialogNew : public KDialogBase
 KateProjectManager::KateProjectManager (QObject *parent) : QObject (parent)
 {
   m_projects.setAutoDelete (true);
-  m_projectsR.setAutoDelete (false);
   m_projectManager = new Kate::ProjectManager (this);
   setupPluginList ();
 }
@@ -100,22 +96,9 @@ void KateProjectManager::setCurrentProject (Kate::Project *project)
   emit m_projectManager->projectChanged ();
 }
 
-Kate::Project *KateProjectManager::create (const QString &type, const QString &name, const KURL &url)
+Kate::Project *KateProjectManager::create (const QString &type, const QString &name, const QString &filename)
 {
-  KTempFile *tmpFile = 0;
-  KConfig *c = 0;
-  
-  if (url.isLocalFile())
-    c = new KConfig (url.path());
-  else
-  {
-    tmpFile = new KTempFile (QString::null, ".kateproject");
-    tmpFile->setAutoDelete (true);
-    QString tmp = tmpFile->name();
-    KIO::NetAccess::download(url, tmp);
-    
-    c = new KConfig (tmpFile->name());
-  }
+  KConfig *c = new KConfig (filename);
 
   c->setGroup("General");
   c->writeEntry ("Type", type);
@@ -123,26 +106,23 @@ Kate::Project *KateProjectManager::create (const QString &type, const QString &n
   c->sync ();
   
   delete c;
-
-  if (!url.isLocalFile())
-    KIO::NetAccess::upload(tmpFile->name(), url);
-  
-  if (tmpFile)
-    delete tmpFile;
-  
-  return open (url);
+ 
+  return open (filename);
 }
     
-Kate::Project *KateProjectManager::open (const KURL &url)
+Kate::Project *KateProjectManager::open (const QString &filename)
 {
-  KateProject *project = new KateProject (this, this, url);
+  KateInternalProjectData *data = new KateInternalProjectData ();
+  data->proMan = this;
+  data->fileName = filename;
+
+  Kate::Project *project = new Kate::Project ((void *) data);
   
   m_projects.append (project);
-  m_projectsR.append (project->project());
   
-  emit m_projectManager->projectCreated (project->project ());
+  emit m_projectManager->projectCreated (project);
   
-  return project->project();
+  return project;
 }
 
 bool KateProjectManager::close (Kate::Project *project)
@@ -152,7 +132,7 @@ bool KateProjectManager::close (Kate::Project *project)
     if (project->plugin()->close())
     {
       uint id = project->projectNumber ();
-      int n = m_projectsR.findRef (project);
+      int n = m_projects.findRef (project);
       
       if (n >= 0)
       {
@@ -163,8 +143,7 @@ bool KateProjectManager::close (Kate::Project *project)
             Kate::pluginViewInterface(project->plugin())->removeView(((KateApp*)parent())->mainWindow(i));
           }
         }
-        
-        m_projectsR.remove (n);
+
         m_projects.remove (n);
         
         emit m_projectManager->projectDeleted (id);
@@ -177,17 +156,17 @@ bool KateProjectManager::close (Kate::Project *project)
   return false;
 }
 
-Kate::Project *KateProjectManager::project (uint n = 0)
+Kate::Project *KateProjectManager::project (uint n)
 {
-  if (n >= m_projectsR.count())
+  if (n >= m_projects.count())
     return 0;
     
-  return m_projectsR.at(n);
+  return m_projects.at(n);
 }
     
 uint KateProjectManager::projects ()
 {
-  return m_projectsR.count ();
+  return m_projects.count ();
 }
 
 Kate::ProjectPlugin *KateProjectManager::createPlugin (Kate::Project *project)
@@ -241,7 +220,7 @@ ProjectInfo *KateProjectManager::newProjectDialog (QWidget *parent)
     info = new ProjectInfo ();
     info->type = dlg->type;
     info->name = dlg->name;
-    info->url = KURL (dlg->fileName);
+    info->fileName = dlg->fileName;
   }
   
   delete dlg;

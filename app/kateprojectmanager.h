@@ -30,6 +30,13 @@
 #include <ktrader.h>
 #include <qguardedptr.h>
 
+class KateInternalProjectData
+{
+  public:
+    class KateProjectManager *proMan;
+    QString fileName;
+};
+
 class ProjectPluginInfo
 {
   public:
@@ -43,7 +50,7 @@ class ProjectInfo
   public:
     QString type;
     QString name;
-    KURL url;
+    QString fileName;
 };
 
 typedef QPtrList<ProjectPluginInfo> ProjectPluginList;
@@ -58,9 +65,9 @@ class KateProjectManager : public QObject
     
     Kate::ProjectManager *projectManager () { return m_projectManager; };
     
-    Kate::Project *create (const QString &type, const QString &name, const KURL &url);
+    Kate::Project *create (const QString &type, const QString &name, const QString &filename);
     
-    Kate::Project *open (const KURL &url);
+    Kate::Project *open (const QString &filename);
     
     bool close (Kate::Project *project);
     
@@ -87,8 +94,7 @@ class KateProjectManager : public QObject
     ProjectPluginList m_pluginList;
     
     // INTERNAL USE OF KateProject !!!
-    QPtrList<class KateProject> m_projects;
-    QPtrList<Kate::Project> m_projectsR;
+    QPtrList<Kate::Project> m_projects;
     QGuardedPtr<Kate::Project> m_currentProject;
 };
 

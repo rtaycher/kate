@@ -24,7 +24,6 @@
 #include "application.h"
 
 #include "../app/kateprojectmanager.h"
-#include "../app/kateproject.h"
 
 namespace Kate
 {
@@ -54,14 +53,14 @@ ProjectManager::~ProjectManager ()
   delete d;
 }
 
-Project *ProjectManager::create (const QString &type, const QString &name, const KURL &url)
+Project *ProjectManager::create (const QString &type, const QString &name, const QString &filename)
 {
-  return d->projectMan->create (type, name, url);
+  return d->projectMan->create (type, name, filename);
 }
     
-Project *ProjectManager::open (const const KURL &url)
+Project *ProjectManager::open (const QString &filename)
 {
-  return d->projectMan->open (url);
+  return d->projectMan->open (filename);
 }
 
 bool ProjectManager::close (Kate::Project *project)
