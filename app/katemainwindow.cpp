@@ -179,7 +179,6 @@ void KateMainWindow::setupMainWindow ()
 
   mainDock->setGeometry(100, 100, 100, 100);
   m_viewManager = new KateViewManager (mainDock, m_docManager);
-  m_viewManager->setMinimumSize(200,200);
   mainDock->setWidget(m_viewManager);
 
   setMainDockWidget( mainDock );
