@@ -714,8 +714,7 @@ void KateMainWindow::slotMail()
       if ( r == KMessageBox::Yes ) {
         Kate::View *v = (Kate::View*)doc->views().first();
         int sr = v->saveAs();
-        if ( sr == Kate::View::SAVE_OK ) {
-          doc->setDocName( doc->url().fileName() );
+        if ( sr == Kate::View::SAVE_OK ) { ;
         }
         else {
           if ( sr != Kate::View::SAVE_CANCEL ) // ERROR or RETRY(?)
