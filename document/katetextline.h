@@ -321,6 +321,8 @@ public:
     void delMark ( uint m );
     uint mark() { return myMark; };
 
+    uchar *getAttribs() { return attributes.data(); }
+
   protected:
     /**
       The text

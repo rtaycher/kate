@@ -728,10 +728,10 @@ KWBufBlock::flushStringList()
    for(TextLine::List::ConstIterator it = m_stringList.begin();
        it != m_stringList.end(); ++it)
    {
-      size += (*it)->length()+1;
+      int l = (*it)->length();
+      size += (l+1)*sizeof(QChar)+l+1 + sizeof(uint)*2;
    }
    kdDebug()<<"Size = "<< size<<endl;
-   size = size*sizeof(QChar);
    m_rawData2 = QByteArray(size);
    m_rawData2End = size;
    m_rawSize = size;
@@ -740,12 +740,23 @@ KWBufBlock::flushStringList()
    for(TextLine::List::ConstIterator it = m_stringList.begin();
        it != m_stringList.end(); ++it)
    {
-      ushort l = (*it)->length();
+      TextLine *tl = (*it).data();
+      ushort l = tl->length();
       QChar cSize(l);
       memcpy(buf, &cSize, sizeof(QChar));
       buf += sizeof(QChar);
-      memcpy(buf, (char *)(*it)->getText(), sizeof(QChar)*l);
+      memcpy(buf, (char *) tl->getText(), sizeof(QChar)*l);
       buf += sizeof(QChar)*l;
+      memcpy(buf, (char *) tl->getAttribs(), l);
+      buf += l;
+      uchar a = tl->getAttr();
+      memcpy(buf, (char *)&a, 1);
+      buf += 1;
+      uint b[2];
+      b[0] = tl->getContext();
+      b[1] = tl->mark();
+      memcpy(buf, (char *)b, sizeof(uint)*2);
+      buf += sizeof(uint)*2; 
    }
    assert(buf-m_rawData2.data() == size);
    m_codec = 0; // No codec
@@ -768,8 +779,15 @@ KWBufBlock::buildStringListFast()
       buf += sizeof(QChar);
       uint l = cSize.unicode();
       TextLine::Ptr textLine = new TextLine();
-      textLine->append((QChar *) buf, l);
-      buf += sizeof(QChar)*l;
+      textLine->replace(0, 0, (QChar *) buf, l, (uchar *) (buf + sizeof(QChar)*l));
+      buf += sizeof(QChar)*l+l;
+      uchar a = *((uchar *) buf++);
+      textLine->setAttr(a);
+      uint b[2];
+      memcpy((char *)b, buf, sizeof(uint)*2);
+      buf += sizeof(uint)*2;
+      textLine->setContext(b[0]);
+      textLine->addMark(b[1]);
       m_stringList.append(textLine);
    }
    kdDebug()<<"stringList.count = "<< m_stringList.count()<<" should be %ld"<< m_endState.lineNr - m_beginState.lineNr<<endl;
