@@ -110,6 +110,7 @@ bool KateViewManager::createView ( Kate::Document *doc )
   // popup menu
   view->installPopup ((QPopupMenu*)(m_mainWindow->factory()->container("ktexteditor_popup", m_mainWindow)) );
 
+  connect(view->getDoc(),SIGNAL(nameChanged(Kate::Document *)),this,SLOT(statusMsg()));
   connect(view,SIGNAL(cursorPositionChanged()),this,SLOT(statusMsg()));
   connect(view,SIGNAL(newStatus()),this,SLOT(statusMsg()));
   connect(view->getDoc(), SIGNAL(undoChanged()), this, SLOT(statusMsg()));
