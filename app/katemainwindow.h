@@ -27,6 +27,7 @@
 #include <kparts/part.h>
 
 class GrepDialog;
+class KFileItem;
 
 class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCOPIface, virtual public KParts::PartBase
 {
@@ -162,7 +163,7 @@ class KateMainWindow : public Kate::MainWindow, virtual public KateMainWindowDCO
 
     void gotoBookmark (int n);
 
-    void fileSelected(const KFileViewItem *file);
+    void fileSelected(const KFileItem *file);
 
   public:
     void openURL (const QString &name=0L);

@@ -156,7 +156,7 @@ void KateMainWindow::setupMainWindow ()
   filelistDock->setDockWindowTransient (this, true);
   fileselectorDock->setDockWindowTransient (this, true);
 
-  connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileViewItem*)),this,SLOT(fileSelected(const KFileViewItem*)));
+  connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileItem*)),this,SLOT(fileSelected(const KFileItem*)));
 
   mainDock->setEnableDocking ( KDockWidget::DockNone );
   mainDock->setDockSite( KDockWidget::DockCorner );
@@ -396,7 +396,7 @@ void KateMainWindow::saveOptions(KConfig *config)
 
   fileOpenRecent->saveEntries(config, "Recent Files");
 
-  fileselector->saveConfig(config, "fileselector");
+  fileselector->writeConfig(config, "fileselector");
 
   writeDockConfig();
 
@@ -657,10 +657,9 @@ KURL KateMainWindow::currentDocUrl()
   return viewManager->activeView()->doc()->url();
 }
 
-void KateMainWindow::fileSelected(const KFileViewItem *file)
+void KateMainWindow::fileSelected(const KFileItem *file)
 {
-  KURL u(file->urlString());
-  viewManager->openURL( u );
+  viewManager->openURL( file->url() );
 }
 
 void KateMainWindow::restore(bool isRestored)

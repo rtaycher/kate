@@ -32,7 +32,7 @@ class KateFileSelector : public QWidget
     ~KateFileSelector();
 
     void readConfig(KConfig *, const QString &);
-    void saveConfig(KConfig *, const QString &);
+    void writeConfig(KConfig *, const QString &);
     void setView(KFile::FileView);
     KDirOperator * dirOperator(){return dir;}
 

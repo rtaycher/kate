@@ -126,9 +126,9 @@ void KateFileSelector::readConfig(KConfig *config, const QString & name)
   slotFilterChange( filter->currentText() );
 }
 
-void KateFileSelector::saveConfig(KConfig *config, const QString & name)
+void KateFileSelector::writeConfig(KConfig *config, const QString & name)
 {
-  dir->saveConfig(config,name + ":dir");
+  dir->writeConfig(config,name + ":dir");
 
   config->setGroup( name );
   QStringList l;
