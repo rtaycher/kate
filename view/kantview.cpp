@@ -1463,7 +1463,12 @@ KantView::KantView(KantDocument *doc, QWidget *parent, const char * name, bool H
 
   setupActions();
 
-  setXMLFile( "kantpartui.rc" );
+  (void)new KantBrowserExtension( myDoc );
+
+  if (!doc->hasBrowserExtension())
+    setXMLFile( "kantpartui.rc" );
+  else
+    setXMLFile( "kantpartbrowserui.rc" );
 
   connect( this, SIGNAL( newStatus() ), this, SLOT( slotUpdate() ) );
   connect( this, SIGNAL( newUndo() ), this, SLOT( slotNewUndo() ) );
@@ -3480,4 +3485,22 @@ void KantView::searchAgain (bool back)
     replaceAgain();
   else
     KantView::searchAgain(s);
+}
+
+KantBrowserExtension::KantBrowserExtension( KantDocument *doc )
+: KParts::BrowserExtension( doc, "kantpartbrowserextension" )
+{
+  m_doc = doc;
+  emit enableAction( "print", true);
+  connect( m_doc, SIGNAL( selectionChanged() ), this, SLOT( slotSelectionChanged() ) );
+}
+
+void KantBrowserExtension::copy()
+{
+  m_doc->copy( 0 );
+}
+
+void KantBrowserExtension::slotSelectionChanged()
+{
+  emit enableAction( "copy", m_doc->hasMarkedText() );
 }

@@ -46,8 +46,6 @@
 #include <qfont.h>
 #include <qfontmetrics.h>
 
-#include <kparts/browserextension.h>
-
 #include "../view/kantview.h"
 #include "kanthighlight.h"
 #include <ktexteditor.h>
@@ -430,21 +428,6 @@ class KantDocument : public KTextEditor::Document
   signals:
     void modStateChanged (KantDocument *doc);
     void nameChanged (KantDocument *doc);
-};
-
-class KantBrowserExtension : public KParts::BrowserExtension
-{
-  Q_OBJECT
-
-  public:
-    KantBrowserExtension( KantDocument *doc );
-
-  private slots:
-    void copy();
-    void slotSelectionChanged();
-
-  private:
-    KantDocument *m_doc;
 };
 
 #endif

@@ -40,6 +40,7 @@
 
 #include "../main/kantmain.h"
 
+#include <kparts/browserextension.h>
 
 #include <qlist.h>
 #include <qscrollbar.h>
@@ -1055,6 +1056,21 @@ class KantView : public KTextEditor::View, virtual public KantViewIface
 
   signals:
     void gotFocus (KantView *);
+};
+
+class KantBrowserExtension : public KParts::BrowserExtension
+{
+  Q_OBJECT
+
+  public:
+    KantBrowserExtension( KantDocument *doc );
+
+  private slots:
+    void copy();
+    void slotSelectionChanged();
+
+  private:
+    KantDocument *m_doc;
 };
 
 #endif

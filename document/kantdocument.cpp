@@ -184,27 +184,6 @@ KantDocument::KantDocument(long docID, QFileInfo* fi, bool bSingleViewMode, bool
     KTextEditor::View *view = createView( parentWidget, widgetName );
     view->show();
     setWidget( view );
-
-    if ( m_bBrowserView )
-    {
-      // We are embedded in konqueror, let's provide an XML file and actions.
-      (void)new KantBrowserExtension( this );
-      setXMLFile( "kantpartbrowserui.rc" );
-
-      KStdAction::selectAll( view, SLOT( selectAll() ), actionCollection(), "select_all" );
-      (void)new KAction( i18n( "Unselect all" ), 0, view, SLOT( deselectAll() ), actionCollection(), "unselect_all" );
-      KStdAction::find( view, SLOT( find() ), actionCollection(), "find" );
-      KStdAction::findNext( view, SLOT( findAgain() ), actionCollection(), "find_again" );
-      KStdAction::gotoLine( view, SLOT( gotoLine() ), actionCollection(), "goto_line" );
-      new KAction(i18n("Configure Highlighti&ng..."), 0, view, SLOT(hlDlg()),actionCollection(), "set_confHighlight");
-
-      KSelectAction *setHighlight = new KSelectAction(i18n("&Highlight Mode"), 0, actionCollection(), "set_highlight");
-      connect(setHighlight, SIGNAL(activated(int)), view, SLOT(setHl(int)));
-      QStringList list;
-      for (int z = 0; z < HlManager::self()->highlights(); z++)
-        list.append(i18n(HlManager::self()->hlName(z)));
-      setHighlight->setItems(list);
-    }
   }
 }
 
@@ -3029,21 +3008,4 @@ void KantDocument::reloadFile()
 void KantDocument::slotModChanged()
 {
   emit modStateChanged (this);
-}
-
-KantBrowserExtension::KantBrowserExtension( KantDocument *doc )
-: KParts::BrowserExtension( doc, "kantpartbrowserextension" )
-{
-  m_doc = doc;
-  connect( m_doc, SIGNAL( selectionChanged() ), this, SLOT( slotSelectionChanged() ) );
-}
-
-void KantBrowserExtension::copy()
-{
-  m_doc->copy( 0 );
-}
-
-void KantBrowserExtension::slotSelectionChanged()
-{
-  emit enableAction( "copy", m_doc->hasMarkedText() );
 }
