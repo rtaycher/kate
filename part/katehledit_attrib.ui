@@ -3,6 +3,7 @@
 <include>klistview.h</include>
 <include>kcolorcombo.h</include>
 <include>klineedit.h</include>
+<include>kcombobox.h</include>
 
 <widget class="QWidget">
     <property name="name">
