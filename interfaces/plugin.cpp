@@ -121,19 +121,19 @@ bool ProjectPlugin::close ()
   return true;
 }
 
-void ProjectPlugin::addDirs (ProjectDirFile *, QStringList &l)
+void ProjectPlugin::addDirs (ProjectDirFile *, QStringList &)
 {
 }
 
-void ProjectPlugin::removeDirs (ProjectDirFile *, QStringList &l)
+void ProjectPlugin::removeDirs (ProjectDirFile *, QStringList &)
 {
 }
 
-void ProjectPlugin::addFiles (ProjectDirFile *, QStringList &l)
+void ProjectPlugin::addFiles (ProjectDirFile *, QStringList &)
 {
 }
 
-void ProjectPlugin::removeFiles (ProjectDirFile *, QStringList &l)
+void ProjectPlugin::removeFiles (ProjectDirFile *, QStringList &)
 {
 }
 
