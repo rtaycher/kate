@@ -2815,10 +2815,11 @@ void KWrite::setBookmark() {
 
   popup = new QPopupMenu(0L);
 
-  for (z = 1; z <= 10; z++) {
+  for (z = 1; z <= 9; z++) {
     sprintf(s,"&%d",z);
     popup->insertItem(s,z);
   }
+  popup->insertItem("1&0",z);
 
   popup->move(mapToGlobal(QPoint((width() - 41/*popup->width()*/)/2,
     (height() - 211/*popup->height()*/)/2)));
