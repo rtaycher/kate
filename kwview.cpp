@@ -44,6 +44,7 @@
 #include <qbuffer.h>
 
 #include <kapp.h>
+#include <kcursor.h>
 #include <klocale.h>
 #include <kfiledialog.h>
 #include <kconfig.h>
@@ -133,6 +134,7 @@ KWriteView::KWriteView(KWrite *write, KWriteDoc *doc, bool HandleOwnDND)
 
   QWidget::setCursor(ibeamCursor);
   setBackgroundMode(NoBackground);
+  KCursor::setAutoHideCursor( this, true );
 
   setFocusPolicy(StrongFocus);
   move(2,2);
