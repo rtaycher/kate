@@ -174,16 +174,22 @@ class KateDocument : public Kate::Document, public KateDocumentDCOPIface
     virtual bool saveFile();
 
     virtual KTextEditor::View *createView( QWidget *parent, const char *name );
+
     virtual QString textLine( int line ) const;
 
-    virtual void insertLine( const QString &s, int line = -1 );
+    virtual int lineLength ( int line ) const;
+
+    virtual bool insertLine( const QString &s, int line = -1 );
 
     void insert_Line(const QString& s,int line=-1, bool update=true);
     void remove_Line(int line,bool update=true);
-    void replaceLine(const QString& s,int line=-1);   
-    virtual void insertAt( const QString &s, int line, int col, bool mark = FALSE );
-    virtual void removeLine( int line );
+    void replaceLine(const QString& s,int line=-1);
+    virtual bool insertText( const QString &s, int line, int col );
+    virtual bool removeLine( int line );
     virtual int length() const;
+
+    virtual QString text ( int line, int col, int len ) const;
+    virtual bool removeText ( int line = 0, int col = 0, int len = -1 );
 
     virtual void setSelection( int row_from, int col_from, int row_to, int col_t );
     virtual bool hasSelection() const;

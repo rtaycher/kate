@@ -31,6 +31,7 @@
 #include <qptrlist.h>
 #include <ktexteditor/document.h>
 #include <ktexteditor/view.h>
+#include <ktexteditor/editinterface.h>
 
 class KConfig;
 
@@ -49,7 +50,7 @@ class Mark
 
 /** This interface provides access to the Kate Document class.
 */
-class Document : public KTextEditor::Document
+class Document : public KTextEditor::Document, KTextEditor::EditInterface
 {
   Q_OBJECT
 

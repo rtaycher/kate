@@ -416,8 +416,10 @@ void KateDocument::replaceLine(const QString& s,int line)
   insert_Line(s,line,true);
 }
 
-void KateDocument::insertLine( const QString &str, int l ) {
+bool KateDocument::insertLine( const QString &str, int l )
+{
   insert_Line(str,l,true);
+  return true;
 }
 
 void KateDocument::insert_Line(const QString& s,int line, bool update)
@@ -434,7 +436,16 @@ void KateDocument::insert_Line(const QString& s,int line, bool update)
   }
 }
 
-void KateDocument::insertAt( const QString &s, int line, int col, bool  )
+int KateDocument::lineLength ( int line ) const
+{
+  TextLine::Ptr l = getTextLine( line );
+  if ( !l )
+    return -1;
+
+  return l->getString().length();
+}
+
+bool KateDocument::insertText( const QString &s, int line, int col )
 {
   VConfig c;
   c.view = 0; // ### FIXME
@@ -443,10 +454,12 @@ void KateDocument::insertAt( const QString &s, int line, int col, bool  )
   c.cXPos = 0; // ### FIXME
   c.flags = 0; // ### FIXME
   insert( c, s );
+  return true;
 }
 
-void KateDocument::removeLine( int line ) {
+bool KateDocument::removeLine( int line ) {
   remove_Line(line,true);
+  return true;
 }
 
 void KateDocument::remove_Line(int line,bool update)
@@ -1201,6 +1214,15 @@ void KateDocument::backspace(VConfig &c) {
   recordEnd(c);
 }
 
+QString KateDocument::text ( int line, int col, int len ) const
+{
+
+}
+
+bool KateDocument::removeText ( int line, int col, int len )
+{
+
+}
 
 void KateDocument::del(VConfig &c) {
   TextLine::Ptr textLine = getTextLine(c.cursor.y);
