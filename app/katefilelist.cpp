@@ -135,7 +135,7 @@ void KateFileList::setupActions ()
 {
   windowNext = KStdAction::back(this, SLOT(slotPrevDocument()), m_main->actionCollection());
   windowPrev = KStdAction::forward(this, SLOT(slotNextDocument()), m_main->actionCollection());
-  KSelectAction *a = new KSelectAction( i18n("Sort &by"), 0,
+  KSelectAction *a = new KSelectAction( i18n("Sort &By"), 0,
       m_main->actionCollection(), "filelist_sortby"  );
   QStringList l;
   l << i18n("Opening Order") << i18n("Document Name") << i18n("URL");
@@ -571,16 +571,16 @@ KFLConfigPage::KFLConfigPage( QWidget* parent, const char *name, KateFileList *f
 
   QWidget *g = new QWidget( gb );
   QGridLayout *lo = new QGridLayout( g, 3, 2 );
-  cbEnableShading = new QCheckBox( i18n("&Enable Background Shading"), g );
+  cbEnableShading = new QCheckBox( i18n("&Enable background shading"), g );
   lo->addMultiCellWidget( cbEnableShading, 1, 1, 1, 2 );
 
   kcbViewShade = new KColorButton( g );
-  QLabel *l = new QLabel( kcbViewShade, i18n("&Viewed documents"), g );
+  QLabel *l = new QLabel( kcbViewShade, i18n("&Viewed documents:"), g );
   lo->addWidget( l, 2, 1 );
   lo->addWidget( kcbViewShade, 2, 2 );
 
   kcbEditShade = new KColorButton( g );
-  l = new QLabel( kcbEditShade, i18n("&Edited documents"), g );
+  l = new QLabel( kcbEditShade, i18n("&Edited documents:"), g );
   lo->addWidget( l, 3, 1 );
   lo->addWidget( kcbEditShade, 3, 2 );
 

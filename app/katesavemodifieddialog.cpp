@@ -128,14 +128,14 @@ KateSaveModifiedDialog::KateSaveModifiedDialog(QWidget *parent, QPtrList<Kate::D
 	KDialogBase( parent, "KateSaveModifiedDialog", true, i18n("Save Documents"), Yes | No | Cancel) {
 
 	KGuiItem yesItem=KStdGuiItem::yes();
-	yesItem.setText(i18n("&Save selected"));
+	yesItem.setText(i18n("&Save Selected"));
 	setButtonGuiItem(KDialogBase::Yes,yesItem);
 
 	KGuiItem noItem=KStdGuiItem::dontSave();
 	setButtonGuiItem(KDialogBase::No,noItem);
 
 	KGuiItem cancelItem=KStdGuiItem::close();
-	cancelItem.setText(i18n("&Abort closing"));
+	cancelItem.setText(i18n("&Abort Closing"));
 	setButtonGuiItem(KDialogBase::Cancel,cancelItem);
 
 	QVBox *box=makeVBoxMainWidget();

@@ -202,7 +202,7 @@ void KateMainWindow::setupMainWindow ()
   projectviews->show ();
 
   fileselector = new KateFileSelector( this, m_viewManager, /*fileselectorDock*/ this, "operator");
-  addToolView(KDockWidget::DockLeft,fileselector, SmallIcon("fileopen"), i18n("Filesystem browser"));
+  addToolView(KDockWidget::DockLeft,fileselector, SmallIcon("fileopen"), i18n("Filesystem Browser"));
 
   // TEST
   addToolView( KDockWidget::DockBottom, greptool, SmallIcon("filefind"), i18n("Find in Files") );
