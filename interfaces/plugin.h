@@ -36,7 +36,9 @@ namespace Kate
 {
                            
 class Application;
+class Project;
 class MainWindow;
+
                   
 class Plugin : public QObject
 {
@@ -56,6 +58,26 @@ class Plugin : public QObject
     class PrivatePlugin *d;
     static unsigned int globalPluginNumber;
     unsigned int myPluginNumber;
+};
+
+class ProjectPlugin : public Plugin
+{
+  friend class PrivateProjectPlugin;
+
+  Q_OBJECT
+
+  public:
+    ProjectPlugin (Project *project = 0, const char *name = 0 );
+    virtual ~ProjectPlugin ();
+    
+    unsigned int projectPluginNumber () const;
+      
+    Project *project() const;
+    
+  private:
+    class PrivateProjectPlugin *d;
+    static unsigned int globalProjectPluginNumber;
+    unsigned int myProjectPluginNumber;
 };
    
 class InitPlugin : public Plugin
@@ -107,6 +129,7 @@ class InitPlugin : public Plugin
 };
 
 Plugin *createPlugin ( const char* libname, Application *application = 0, const char *name = 0,const QStringList &args = QStringList() );
+ProjectPlugin *createProjectPlugin ( const char* libname, Project *project = 0, const char *name = 0,const QStringList &args = QStringList() );
 
 /*
  * view plugin class

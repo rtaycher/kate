@@ -24,6 +24,7 @@
  ***************************************************************************/
 
  #include "application.h"
+ #include "project.h"
  
 #include "plugin.h"
 #include "plugin.moc"
@@ -33,7 +34,7 @@
 namespace Kate
 {
             
-class PrivatePlugin
+  class PrivatePlugin
   {
   public:
     PrivatePlugin ()
@@ -43,6 +44,20 @@ class PrivatePlugin
     ~PrivatePlugin ()
     {
     }           
+  };
+  
+  class PrivateProjectPlugin
+  {
+  public:
+    PrivateProjectPlugin ()
+    {
+    }
+
+    ~PrivateProjectPlugin ()
+    {
+    }
+    
+    Project *m_project;           
   };
   
   class PrivateInitPlugin
@@ -71,9 +86,9 @@ class PrivatePlugin
     }
     
   };
-    
-                        
+                
 unsigned int Plugin::globalPluginNumber = 0;
+unsigned int ProjectPlugin::globalProjectPluginNumber = 0;
 unsigned int InitPlugin::globalInitPluginNumber = 0;
 unsigned int PluginViewInterface::globalPluginViewInterfaceNumber = 0;
 
@@ -87,6 +102,19 @@ Plugin::~Plugin()
 {
 }
 
+ProjectPlugin::ProjectPlugin( Project *project, const char *name ) : Plugin (Kate::application(), name )
+{
+  globalProjectPluginNumber++;
+  myProjectPluginNumber = globalProjectPluginNumber;
+  
+  d = new PrivateProjectPlugin ();
+  d->m_project = project;
+}
+
+ProjectPlugin::~ProjectPlugin()
+{
+  delete d;
+}
 
 InitPlugin :: InitPlugin(Application *application, const char *name):Plugin(application,name)
 {
@@ -138,6 +166,16 @@ unsigned int Plugin::pluginNumber () const
   return Kate::application();
 } 
 
+unsigned int ProjectPlugin::projectPluginNumber () const
+{
+  return myProjectPluginNumber;
+}     
+
+ Project *ProjectPlugin::project () const
+{
+  return d->m_project;
+} 
+
 PluginViewInterface::PluginViewInterface()
 {
   globalPluginViewInterfaceNumber++;
@@ -156,6 +194,11 @@ unsigned int PluginViewInterface::pluginViewInterfaceNumber () const
 Plugin *createPlugin ( const char* libname, Application *application, const char *name, const QStringList &args )
 {
   return KParts::ComponentFactory::createInstanceFromLibrary<Plugin>( libname, application, name, args);
+}
+
+ProjectPlugin *createProjectPlugin ( const char* libname, Project *project, const char *name, const QStringList &args )
+{
+  return KParts::ComponentFactory::createInstanceFromLibrary<ProjectPlugin>( libname, project, name, args);
 }
 
 PluginViewInterface *pluginViewInterface (Plugin *plugin)
