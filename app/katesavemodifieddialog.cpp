@@ -157,8 +157,9 @@ KateSaveModifiedDialog::KateSaveModifiedDialog(QWidget *parent, QPtrList<Kate::D
 	} else m_documentRoot=0;
 	//FIXME - How on earth do I do this correctly?  There's no correct signal damnit.  Maybe with events?
 //	connect(m_list, SIGNAL(executed(QListViewItem *)), SLOT(slotItemSelected()));
-//	connect(m_list, SIGNAL(clicked(QListViewItem *)), SLOT(slotItemSelected()));
-//	connect(m_list, SIGNAL(spacePressed(QListViewItem *)), SLOT(slotItemSelected()));
+	connect(m_list, SIGNAL(clicked(QListViewItem *)), SLOT(slotItemSelected()));
+	connect(m_list, SIGNAL(doubleclicked(QListViewItem *)), SLOT(slotItemSelected()));
+	connect(m_list, SIGNAL(spacePressed(QListViewItem *)), SLOT(slotItemSelected()));
 	if(documents.count()>3) { //For 3 or less, it would be quicker just to tick or untick them yourself, so don't clutter the gui.
 		connect(new QPushButton(i18n("Select All"),box),SIGNAL(clicked()),this,SLOT(slotSelectAll()));
 	}
@@ -188,6 +189,7 @@ static void selectItems(QListViewItem *root) {
 
 void KateSaveModifiedDialog::slotSelectAll() {
 	selectItems(m_documentRoot);
+	slotItemSelected();
 }
 
 
