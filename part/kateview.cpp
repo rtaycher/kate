@@ -703,6 +703,7 @@ void KateViewInternal::updateView(int flags) {
   int dx, dy;
   int pageScroll;
   int scrollbarWidth = style().scrollBarExtent().width();
+  int bw = 0; // width of borders
 
 //debug("upView %d %d %d %d %d", exposeCursor, updateState, flags, newXPos, newYPos);
   if (exposeCursor || flags & KateView::ufDocGeometry) {
@@ -730,12 +731,14 @@ void KateViewInternal::updateView(int flags) {
   fontHeight = myDoc->viewFont.fontHeight;
   cYPos = cursor.line*fontHeight;
 
+  if (myView->myIconBorder) bw += iconBorderWidth;
+
   z = 0;
   do {
     w = myView->width() - 4;
     h = myView->height() - 4;
 
-    xMax = myDoc->textWidth() - w;
+    xMax = myDoc->textWidth() - w - bw;
     b = (xPos > 0 || xMax > 0);
     if (b) h -= scrollbarWidth;
     yMax = myDoc->textHeight() - h;
@@ -758,7 +761,7 @@ void KateViewInternal::updateView(int flags) {
       cYPosMax = yPos + ((h - fontHeight)*2)/3;
     } else {*/
       cXPosMin = xPos + 4;
-      cXPosMax = xPos + w - 8;
+      cXPosMax = xPos + w - 8 - bw;
       cYPosMin = yPos;
       cYPosMax = yPos + (h - fontHeight);
 //    }
@@ -812,6 +815,7 @@ void KateViewInternal::updateView(int flags) {
     yScroll->show();
   } else yScroll->hide();
 
+  w -= bw;
   if (w != width() || h != height()) {
     clearDirtyCache(h);
     resize(w,h);
