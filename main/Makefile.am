@@ -20,7 +20,7 @@ kwrite_la_LIBADD   = libkatecore.la
 kwrite_la_LDFLAGS = $(all_libraries) $(KDE_RPATH)  -module -avoid-version
 
 kate_SOURCES = dummy.cpp
-kate_LDADD = katemain.la
+kate_LDADD = kate.la
 kate_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 kwrite_SOURCES = dummy.cpp
