@@ -70,6 +70,7 @@ class KateConfigDialog : public KDialogBase
     class QCheckBox *cb_saveMetaInfos;
     class QSpinBox *sb_daysMetaInfos;
     Kate::ConfigPage *fileSelConfigPage;
+    Kate::ConfigPage *filelistConfigPage;
     Kate::ConfigPage *configExternalToolsPage;
     QPtrList<PluginPageListItem> pluginPages;
     QPtrList<KTextEditor::ConfigPage> editorPages;

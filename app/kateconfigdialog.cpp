@@ -29,6 +29,7 @@
 #include "kateviewmanager.h"
 #include "kateapp.h"
 #include "katefileselector.h"
+#include "katefilelist.h"
 #include "kateexternaltools.h"
 
 #include <qbuttongroup.h>
@@ -220,8 +221,16 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   fileSelConfigPage = new KFSConfigPage( page, "file selector config page",
                                          mainWindow->fileselector );
   connect( fileSelConfigPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
-
   path.clear();
+
+  path << i18n("Application") << i18n("Document List");
+  page = addVBoxPage( path, i18n("Document List Settings"),
+  BarIcon("documents", KIcon::SizeSmall) );
+  filelistConfigPage = new KFLConfigPage( page, "file list config page",
+					  mainWindow->filelist );
+  connect( filelistConfigPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
+  path.clear();
+
   path << i18n("Application") << i18n("Plugins");
   /*QVBox **/page=addVBoxPage(path,i18n("Plugin Manager"),
                           BarIcon("connect_established",KIcon::SizeSmall));
@@ -339,6 +348,8 @@ void KateConfigDialog::slotApply()
     mainWindow->syncKonsole = cb_syncKonsole->isChecked();
 
     fileSelConfigPage->apply();
+
+    filelistConfigPage->apply();
 
     configExternalToolsPage->apply();
     for (uint i=0; i < ((KateApp *)kapp)->mainWindows(); i++)
