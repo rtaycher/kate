@@ -100,8 +100,7 @@ KateMainWindow::KateMainWindow(KateDocManager *_docManager, KatePluginManager *_
   connect(bookmarkMenu, SIGNAL(aboutToShow()), this, SLOT(bookmarkMenuAboutToShow()));
 
   readOptions(config);
-  
-  
+
   if (((KateApp *)kapp)->_isSDI)
   {
     filelistDock->undock();
@@ -390,7 +389,8 @@ void KateMainWindow::saveOptions(KConfig *config)
 
   fileselector->writeConfig(config, "fileselector");
 
-  writeDockConfig();
+  if (!((KateApp *)kapp)->_isSDI)
+    writeDockConfig();
 
   if (viewManager->activeView())
     viewManager->activeView()->getDoc()->writeConfig();

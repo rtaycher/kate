@@ -32,7 +32,7 @@
 KateApp::KateApp () : Kate::Application (),DCOPObject ("KateApp" )
 {
   mainWindows.setAutoDelete (false);
-  _isSDI = true;
+  _isSDI = false;
 
   config()->setGroup("startup");
   _singleInstance=config()->readBoolEntry("singleinstance",true);
@@ -46,11 +46,12 @@ KateApp::KateApp () : Kate::Application (),DCOPObject ("KateApp" )
   pluginManager = new KatePluginManager (this);
   pluginManager->loadAllEnabledPlugins ();
 
+  KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
+  _isSDI = args->isSet ("s");
+
   newMainWindow ();
 
   connect(this, SIGNAL(lastWindowClosed()), SLOT(quit()));
-
-  KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 
   processEvents();
 
