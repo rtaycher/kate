@@ -33,8 +33,3 @@ INCLUDES= $(all_includes)
 
 METASOURCES = AUTO
 
-messages: rc.cpp
-	$(XGETTEXT) `find . -name "*.cpp"` -o $(podir)/kant.pot
-
-rc.cpp:
-	$(EXTRACTRC) *.rc *.ui */*.rc */*.ui */*/*.rc */*/*.ui > rc.cpp
