@@ -55,6 +55,7 @@
     <Action name="options_configure_keybinding"/>
     <Action name="set_configure_toolbars"/>
     <Action name="settings_configure" />
+    <Action name="settings_choose_editor" />
     <DefineGroup name="configure_merge" />
   </Menu>
 
