@@ -20,6 +20,7 @@
 
 #include "../mainwindow/kateIface.h"
 #include "../document/katedocmanager.h"
+#include "../document/katedocument.h"
 #include "../pluginmanager/katepluginmanager.h"
 #include "../mainwindow/katemainwindow.h"
 #include "../view/kateviewmanager.h"
@@ -81,10 +82,9 @@ void KateApp::newMainWindow ()
   mainWindows.append (mainWindow);
   myWinID++;
 
-  // anders: do not force an "Untitled" document on first window!
-  // q: do we want to force it at all if documents are open??
   if (mainWindowsCount() > 1)
-    mainWindow->viewManager->openURL( KURL() );
+    mainWindow->viewManager->activateView ( mainWindows.at(mainWindows.count()-2)->viewManager->activeView()->doc()->docID() );
+
   mainWindow->show ();
 }
 
@@ -125,7 +125,6 @@ KateDocManagerIface *KateApp::docManagerIface ()
 {
   return ((KateDocManagerIface *)docManager);
 }
-
 
 KStatusBar *KateApp::statusBar ()
 {
