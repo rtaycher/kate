@@ -80,10 +80,10 @@ class Plugin : public QObject
 
     // create a configpage / can plugin create a configpage ?
     virtual PluginConfigPage *createConfigPage (QWidget *) { return 0L; };
-     virtual bool hasConfigPage () { return false; };
+    virtual bool hasConfigPage () { return false; };
 
-     // name / title / icon of the configpage (if you have a page, you must have these stuff too)
-     virtual class QString configPageName() { return 0L; };
+    // name / title / icon of the configpage (if you have a page, you must have these stuff too)
+    virtual class QString configPageName() { return 0L; };
     virtual class QString configPageTitle() { return 0L; };
     virtual class QPixmap configPageIcon() { return 0L; };
 

@@ -36,6 +36,7 @@
 #include "../document/katedialogs.h"
 #include "../document/katehighlight.h"
 
+#include <qabstractlayout.h>
 #include <qcheckbox.h>
 #include <qinputdialog.h>
 #include <qlayout.h>
@@ -133,6 +134,10 @@ KateConfigDialog::KateConfigDialog (KateMainWindow *parent, const char *name)
   cb_syncKonsole->setText(i18n("Sync Konsole with active Document"));
   gridFrG->addMultiCellWidget(cb_syncKonsole,5,5,0,1);
   cb_syncKonsole->setChecked(parent->syncKonsole);
+
+  //QSpacerItem *sp = new QSpacerItem(frGeneral);
+  gridFrG->addMultiCell( new QSpacerItem(0,0), 6,6,0,1);
+  gridFrG->setRowStretch(6,1);
 
   config->setGroup("General");
 
