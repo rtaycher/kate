@@ -263,12 +263,9 @@ class KateViewInternal : public QWidget {
     void dropEventPass(QDropEvent*);
 };
 
-/**
-  The KateView text editor widget. It has many options, document/view
-  architecture and syntax highlighting.
-  @author Jochen Wilhelmy
-*/
-
+//
+// Kate KTextEditor::View class ;)
+//
 class KateView : public Kate::View
 {
     Q_OBJECT

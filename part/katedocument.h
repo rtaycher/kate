@@ -25,6 +25,7 @@
 #include <qcolor.h>
 #include <qfont.h>
 #include <qfontmetrics.h>
+#include <qintdict.h>
 #include <qdatetime.h>
 
 #include "kateview.h"
@@ -35,32 +36,6 @@
 class KateCmd;
 
 #include "../interfaces/document.h"
-
-class CachedFontMetrics : public QFontMetrics {
-private:
-    short *warray[256];
-public:
-    CachedFontMetrics(const QFont& f) : QFontMetrics(f) {
-        for (int i=0; i<256; i++) warray[i]=0;
-    }
-    ~CachedFontMetrics() {
-        for (int i=0; i<256; i++)
-                if (warray[i]) delete[] warray[i];
-    }
-    int width(QChar c) {
-        uchar cell=c.cell();
-        uchar row=c.row();
-        short *wa=warray[row];
-        if (!wa) {
-                // qDebug("create row: %d",row);
-                wa=warray[row]=new short[256];
-                for (int i=0; i<256; i++) wa[i]=-1;
-        }
-        if (wa[cell]<0) wa[cell]=(short) QFontMetrics::width(c);
-        return (int)wa[cell];
-    }
-    int width(QString s) { return QFontMetrics::width(s); }
-};
 
 class Attribute {
   public:
@@ -95,15 +70,9 @@ class KateCursor : public Kate::Cursor
 class KateUndo;
 class KateUndoGroup;
 
-/**
-  The text document. It contains the textlines, controls the
-  document changing operations and does undo/redo. WARNING: do not change
-  the text contents directly in methods where this is not explicitly
-  permitted. All changes have to be made with some basic operations,
-  which are recorded by the undo/redo system.
-  @see TextLine
-  @author Jochen Wilhelmy
-*/
+//
+// Kate KTextEditor::Document class ;)
+//
 class KateDocument : public Kate::Document
 {
     Q_OBJECT
@@ -227,12 +196,12 @@ class KateDocument : public Kate::Document
 
   protected:
     QFont myFont, myFontBold, myFontItalic, myFontBI;
-    CachedFontMetrics myFontMetrics, myFontMetricsBold, myFontMetricsItalic, myFontMetricsBI;
+    QFontMetrics myFontMetrics, myFontMetricsBold, myFontMetricsItalic, myFontMetricsBI;
 
   public:
     void setFont (QFont font);
     QFont getFont () { return myFont; };
-    CachedFontMetrics getFontMetrics () { return myFontMetrics; };
+    QFontMetrics getFontMetrics () { return myFontMetrics; };
 
     // only to make part work, don't change it !
     bool m_bSingleViewMode;
@@ -283,12 +252,13 @@ class KateDocument : public Kate::Document
     static uint uniqueID;
 
   // highlight stuff
-  public:
-    Highlight *highlight() {return m_highlight;}
-    int highlightNum() {return hlManager->findHl(m_highlight);}
-    int numAttribs() {return m_numAttribs;}
-    Attribute *attribs() {return m_attribs;}
-    void setDontChangeHlOnSave();
+  private:
+	  QIntDict<Attribute> myAttribs;
+
+	public:
+    Highlight *highlight() { return m_highlight; }
+    int highlightNum() { return hlManager->findHl(m_highlight); }
+		void setDontChangeHlOnSave();
 
   protected:
     void setHighlight(int n);
@@ -298,8 +268,7 @@ class KateDocument : public Kate::Document
   protected slots:
     void hlChanged();
 
-// view interaction
-  public:
+	public:
     void addView(KTextEditor::View *);
     void removeView(KTextEditor::View *);
 
@@ -309,16 +278,14 @@ class KateDocument : public Kate::Document
     bool ownedView(KateView *);
     bool isLastView(int numViews);
 
-    int getTextLineCount() {return numLines();}
+    uint textWidth(const TextLine::Ptr &, int cursorX);
+    uint textWidth(KateViewCursor &cursor);
+    uint textWidth(bool wrapCursor, KateViewCursor &cursor, int xPos);
+    uint textPos(const TextLine::Ptr &, int xPos);
+    uint textWidth();
+    uint textHeight();
 
-    int textWidth(const TextLine::Ptr &, int cursorX);
-    int textWidth(KateViewCursor &cursor);
-    int textWidth(bool wrapCursor, KateViewCursor &cursor, int xPos);
-    int textPos(const TextLine::Ptr &, int xPos);
-    int textWidth();
-    int textHeight();
-
-    int currentColumn(KateViewCursor &cursor);
+    uint currentColumn(KateViewCursor &cursor);
     void newLine(VConfig &);
     void killLine(VConfig &);
     void backspace(VConfig &);
@@ -411,12 +378,8 @@ class KateDocument : public Kate::Document
     QColor colors[2];
     HlManager *hlManager;
     Highlight *m_highlight;
-    int m_numAttribs;
-    static const int maxAttribs;
-    Attribute *m_attribs;
 
     int eolMode;
-
     int tabChars;
     int m_tabWidth;
     int fontHeight;
@@ -436,7 +399,6 @@ class KateDocument : public Kate::Document
     int selectStart;
     int selectEnd;
     bool oldMarkState;
-    bool m_singleSelection; // false: windows-like, true: X11-like
 
     bool readOnly;
     bool newDoc;          // True if the file is a new document (used to determine whether
@@ -451,7 +413,7 @@ class KateDocument : public Kate::Document
 
     QWidget *pseudoModal;   //the replace prompt is pseudo modal
 
-    public:
+	public:
     /** Checks if the file on disk is newer than document contents.
       If forceReload is true, the document is reloaded without asking the user,
       otherwise [default] the user is asked what to do. */

@@ -1,22 +1,19 @@
-/*
-   Copyright (C) 1998, 1999 Jochen Wilhelmy
-                            digisnap@cs.tu-berlin.de
+/***************************************************************************
+                          katedocument.cpp  -  description
+                             -------------------
+    begin                : Mon Jan 15 2001
+    copyright            : (C) 2001 by Christoph "Crossfire" Cullmann
+    email                : crossfire@babylon2k.de
+ ***************************************************************************/
 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Library General Public License for more details.
-
-    You should have received a copy of the GNU Library General Public License
-    along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
-*/
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
 
 #include <string.h>
 
@@ -1380,44 +1377,48 @@ int HlManager::mimeFind(const QByteArray &contents, const QString &fname)
   return -1;
 }
 
-int HlManager::makeAttribs(Highlight *highlight, Attribute *a, int maxAttribs) {
+QIntDict<Attribute> HlManager::makeAttribs(Highlight *highlight)
+{
   ItemStyleList defaultStyleList;
   ItemStyle *defaultStyle;
   ItemDataList itemDataList;
   ItemData *itemData;
   int nAttribs, z;
+	QIntDict<Attribute> attribs;
 
   defaultStyleList.setAutoDelete(true);
   getDefaults(defaultStyleList);
 
-//  itemDataList.setAutoDelete(true);
   highlight->getItemDataList(itemDataList);
   nAttribs = itemDataList.count();
-  for (z = 0; z < nAttribs; z++) {
+
+  for (z = 0; z < nAttribs; z++)
+	{
+	  Attribute *n = new Attribute ();
+
     itemData = itemDataList.at(z);
-    if (itemData->defStyle) {
+    if (itemData->defStyle)
+		{
       // default style
       defaultStyle = defaultStyleList.at(itemData->defStyleNum);
-      a[z].col = defaultStyle->col;
-      a[z].selCol = defaultStyle->selCol;
-      a[z].bold = defaultStyle->bold;
-      a[z].italic = defaultStyle->italic;
-    } else {
-      // custom style
-      a[z].col = itemData->col;
-      a[z].selCol = itemData->selCol;
-      a[z].bold = itemData->bold;
-      a[z].italic = itemData->italic;
+      n->col = defaultStyle->col;
+      n->selCol = defaultStyle->selCol;
+      n->bold = defaultStyle->bold;
+      n->italic = defaultStyle->italic;
     }
+		else
+		{
+      // custom style
+      n->col = itemData->col;
+      n->selCol = itemData->selCol;
+      n->bold = itemData->bold;
+      n->italic = itemData->italic;
+    }
+
+		attribs.insert (z, n);
   }
 
-  for (; z < maxAttribs; z++) {
-    a[z].col = black;
-    a[z].selCol = black;
-    a[z].bold = defaultStyle->bold;
-    a[z].italic = defaultStyle->italic;
-  }
-  return nAttribs;
+  return attribs;
 }
 
 int HlManager::defaultStyles() {

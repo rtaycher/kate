@@ -61,10 +61,6 @@ class ReplacePrompt : public KDialogBase
     void slotUser2( void ); // No
     void slotUser3( void ); // Yes
     virtual void done(int);
-
-  protected:
-
-    void closeEvent(QCloseEvent *);
 };
 
 class GotoLineDialog : public KDialogBase

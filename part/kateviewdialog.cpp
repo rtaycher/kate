@@ -178,7 +178,7 @@ void SearchDialog::setSearchText( const QString &searchstr )
 
 // this dialog is not modal
 ReplacePrompt::ReplacePrompt( QWidget *parent )
-  : KDialogBase(parent, 0L, false, i18n( "Replace Text" ),
+  : KDialogBase(parent, 0L, true, i18n( "Replace Text" ),
   User3 | User2 | User1 | Close, User3, true,
   i18n("&All"), i18n("&No"), i18n("&Yes")) {
 
@@ -205,10 +205,6 @@ void ReplacePrompt::slotUser3( void ) { // Yes
 void ReplacePrompt::done(int r) {
   setResult(r);
   emit clicked();
-}
-
-void ReplacePrompt::closeEvent(QCloseEvent *) {
-  reject();
 }
 
 GotoLineDialog::GotoLineDialog(QWidget *parent, int line, int max)
