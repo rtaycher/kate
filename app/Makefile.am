@@ -7,7 +7,7 @@ kate_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugindialogpage.cp
 	kateviewmanager.cpp kateviewspace.cpp katemain.cpp \
 	kateappIface.skel kateIface.skel kategrepdialog.cpp
 
-kate_la_LIBADD   = ../interfaces/libkateinterfaces.la ../part/libkatepart.la
+kate_la_LIBADD   = ../interfaces/libkateinterfaces.la ../part/libkatepart.la -lkscript
 kate_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
 
 kwrite_la_SOURCES = kwritemain.cpp
@@ -16,7 +16,7 @@ kwrite_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
 
 kate_SOURCES = dummy.cpp
 kate_LDADD = kate.la
-kate_LDFLAGS = $(KDE_RPATH) $(all_libraries) -lkscript
+kate_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 kwrite_SOURCES = dummy.cpp
 kwrite_LDADD = kwrite.la
