@@ -38,8 +38,8 @@
 #include <ktexteditor.h>
 #include "kantviewIface.h"
 
-class KAction;
 class KToggleAction;
+class KAction;
 class KRecentFilesAction;
 class KSelectAction;
 
@@ -292,7 +292,6 @@ class KantView : public KTextEditor::View, virtual public KantViewIface {
     virtual bool isOverwriteMode() const;
     virtual void setOverwriteMode( bool b );
 
-    void setupActions();
 //status and config functions
     /**
       Returns the current line number, that is the line the cursor is on.
@@ -547,11 +546,6 @@ class KantView : public KTextEditor::View, virtual public KantViewIface {
   protected slots:
     void slotJobReadResult( KIO::Job *job );
     void slotJobData( KIO::Job *job, const QByteArray &data );
-
-    void slotUpdate();
-    void slotFileStatusChanged(); // something is wrong here! the corresponding signal should be in the doc! (Simon)
-    void slotNewUndo();
-    void slotHighlightChanged();
 
   public:
     void init();
@@ -891,11 +885,6 @@ class KantView : public KTextEditor::View, virtual public KantViewIface {
       int kspellReplaceCount;     // how many words actually replaced so far
       bool kspellPristine;        // doing spell check on a clean document?
     } kspell;
-
-    KAction *fileSave, *editInsert, *editCut, *editPaste,
-            *editReplace, *editUndo, *editRedo, *editUndoHist,
-            *toolsIndent, *toolsUnindent, *toolsCleanIndent,
-            *toolsComment, *toolsUncomment, *toolsSpell;
 
     KToggleAction *setVerticalSelection;
     KRecentFilesAction *fileRecent;
