@@ -319,7 +319,7 @@ void GrepTool::slotSearch()
   {
     cmbDir->setFocus();
     KMessageBox::information( this, i18n(
-        "You must enter a existing local directory in the 'Directory' entry."),
+        "You must enter an existing local directory in the 'Directory' entry."),
         i18n("Invalid Directory"), "Kate grep tool: invalid directory" );
     return;
   }
