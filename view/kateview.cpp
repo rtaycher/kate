@@ -74,11 +74,7 @@
 #include <qvbox.h>
 #include <qprintdialog.h>
 #include <qpaintdevicemetrics.h>
-#include <qdropsite.h>
-#include <qdragobject.h>
-#include <qiodevice.h>
 #include <qbuffer.h>
-#include <qfocusdata.h>
 
 #include <qstyle.h>
 #include <kcursor.h>
@@ -86,8 +82,6 @@
 #include <kglobal.h>
 #include <kcharsets.h>
 #include <kfiledialog.h>
-#include <kconfig.h>
-#include <kdebug.h>
 #include <kmessagebox.h>
 #include <kstringhandler.h>
 #include <kaction.h>
@@ -100,7 +94,6 @@
 #include <kdialogbase.h>
 
 #include "../document/katetextline.h"
-#include "kateviewdialog.h"
 #include "kateundohistory.h"
 
 KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc) : QWidget(view)

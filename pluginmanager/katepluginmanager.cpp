@@ -30,7 +30,6 @@
 #include <qstringlist.h>
 #include <qfileinfo.h>
 #include <qfile.h>
-#include <ksimpleconfig.h>
 
 KatePluginManager::KatePluginManager(QObject *parent) : QObject(parent)
 {

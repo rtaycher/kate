@@ -36,7 +36,6 @@
 #include <kcmdlineargs.h>
 #include <kkeydialog.h>
 #include <kedittoolbar.h>
-#include <kdebug.h>
 #include <kparts/event.h>
 #include <kmenubar.h>
 

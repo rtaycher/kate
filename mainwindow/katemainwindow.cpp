@@ -39,9 +39,7 @@
 #include <qiconview.h>
 #include <qinputdialog.h>
 #include <qlayout.h>
-#include <qlayout.h>
 #include <qptrlist.h>
-#include <qsplitter.h>
 #include <qsplitter.h>
 #include <qvbox.h>
 #include <qwhatsthis.h>
