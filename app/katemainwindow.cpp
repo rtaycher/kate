@@ -82,8 +82,8 @@ uint KateMainWindow::uniqueID = 0;
 
 
 KateMainWindow::KateMainWindow(KateDocManager *_m_docManager, KatePluginManager *_m_pluginManager, KateProjectManager *projectMan) :
-	KParts::DockMainWindow (),
-             DCOPObject ((QString("KateMainWindow%1").arg(uniqueID)).latin1())
+	DCOPObject ((QString("KateMainWindow%1").arg(uniqueID)).latin1()),
+	KParts::DockMainWindow ()
 {
   m_mainWindow = new Kate::MainWindow (this);
   m_toolViewManager = new Kate::ToolViewManager (this);
@@ -882,8 +882,8 @@ bool KateMainWindow::removeToolView(KDockWidget *dw)
 
 bool KateMainWindow::hideToolView(class KDockWidget*){return false;}
 bool KateMainWindow::showToolView(class KDockWidget*){return false;}
-bool KateMainWindow::hideToolView(const QString& name){return false;}
-bool KateMainWindow::showToolView(const QString& name){return false;}
+bool KateMainWindow::hideToolView(const QString& ){return false;}
+bool KateMainWindow::showToolView(const QString& ){return false;}
 
 
 //-------------------------------------
