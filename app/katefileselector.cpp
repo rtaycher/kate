@@ -49,6 +49,7 @@
 #include <qregexp.h>
 #include <qdockarea.h>
 #include <qtimer.h>
+#include <qdir.h>
 
 #include <kapplication.h>
 #include <kiconloader.h>
@@ -346,16 +347,35 @@ void KateFileSelector::slotFilterChange( const QString & nf )
   btnFilter->setEnabled( !( empty && lastFilter.isEmpty() ) );
 
 }
+
+bool kateFileSelectorIsReadable ( const KURL& url )
+{
+  if ( !url.isLocalFile() )
+    return true; // what else can we say?
+
+  QDir dir (url.path());
+  return dir.exists ();
+}
+
 void KateFileSelector::setDir( KURL u )
 {
-  // this check is needed, or we will get annoying warning dialogs on startup
-  // if the old dir was moved, and it would be senseless to try to set the
-  // dir to some none existing dir or file
-  if ( !KIO::NetAccess::exists (u, true, topLevelWidget()) ||
-       (KIO::NetAccess::mimetype (u, topLevelWidget()) != "inode/directory") )
-     u.setPath( QDir::homeDirPath() );
+  KURL newurl;
 
-  dir->setURL(u, true);
+  if ( !u.isValid() )
+    newurl.setPath( QDir::homeDirPath() );
+  else
+    newurl = u;
+  
+  QString pathstr = newurl.path(+1);
+  newurl.setPath(pathstr);
+
+  if ( !kateFileSelectorIsReadable ( newurl ) )
+    newurl.cd(QString::fromLatin1(".."));
+
+  if ( !kateFileSelectorIsReadable (newurl) )
+     newurl.setPath( QDir::homeDirPath() );
+
+  dir->setURL(newurl, true);
 }
 
 //END Public Slots
