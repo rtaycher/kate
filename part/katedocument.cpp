@@ -1809,12 +1809,6 @@ bool KateDocument::insertChars ( int line, int col, const QString &chars, KateVi
   insertText (line, col, buf);
   col += pos;
 
-  KateViewCursor c;
-  c.line = line;
-  c.col = col;
-
-  view->updateCursor(c);
-
 	_autoUpdate = true;
 	updateViews ();
 
