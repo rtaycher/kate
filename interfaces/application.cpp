@@ -24,7 +24,6 @@
  ***************************************************************************/
 
 #include "application.h"
-#include "application_p.h"
 #include "application.moc"
 
 #include "documentmanager.h"
@@ -34,57 +33,66 @@
 #include "toolviewmanager.h"
 #include "pluginmanager.h"
 
+#include "../app/kateapp.h"
+
 #include <kapplication.h>
 
 namespace Kate
 {
+
+class PrivateApplication
+  {
+  public:
+    PrivateApplication ()
+    {
+    }
+
+    ~PrivateApplication ()
+    {
+      
+    }          
+    
+    KateApp *app; 
+  };
             
-Application::Application (class PrivateApplication *d) : QObject ()
+Application::Application (void *application) : QObject ((KateApp *) application)
 {
-  this->d = d;
+  d = new PrivateApplication;
+  d->app = (KateApp *) application;
 }
 
 Application::~Application ()
 {
 }
 
-PrivateApplication::PrivateApplication ()
-{
-  
-}
-
-PrivateApplication::~PrivateApplication ()
-{
-}
-
 DocumentManager *Application::documentManager ()
 {
-  return d->documentManager ();
+  return d->app->documentManager ();
 }
 
 PluginManager *Application::pluginManager ()
 {
-  return d->pluginManager ();
+  return d->app->pluginManager ();
 }
     
 MainWindow *Application::activeMainWindow ()
 {
-  return d->activeMainWindow ();
+  return d->app->activeMainWindow ();
 }
     
 uint Application::mainWindows ()
 {
-  return d->mainWindows ();
+  return d->app->mainWindows ();
 }
  
 MainWindow *Application::mainWindow (uint n)
 {
-  return d->mainWindow (n);
+  return d->app->mainWindow (n);
 }
 
 Application *application ()
 {
-  return ((PrivateApplication *)kapp)->application ();
+  return ((KateApp *)kapp)->application ();
 }
 
 };

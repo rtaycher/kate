@@ -35,12 +35,10 @@ namespace Kate
 /** This interface provides access to the central Kate objects */
 class Application : public QObject
 {
-  friend class PrivateApplication;
-
   Q_OBJECT
 
   public:
-    Application (class PrivateApplication *d);
+    Application (void *application);
     ~Application ();
     
   public:

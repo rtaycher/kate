@@ -19,7 +19,6 @@
 
 #include "katemain.h"
 #include "../interfaces/application.h"
-#include "../interfaces/application_p.h"
 #include "../interfaces/mainwindow.h"
 #include "../interfaces/documentmanager.h"
 #include "../interfaces/viewmanager.h"
@@ -28,7 +27,7 @@
 
 #include <kuniqueapplication.h>
 
-class KateApp : public KUniqueApplication, Kate::PrivateApplication, Kate::InitPluginManager
+class KateApp : public KUniqueApplication, Kate::InitPluginManager
 {
   Q_OBJECT
 
@@ -52,8 +51,6 @@ class KateApp : public KUniqueApplication, Kate::PrivateApplication, Kate::InitP
     Kate::DocumentManager *documentManager () { return (Kate::DocumentManager*)m_docManager; };
     Kate::PluginManager *pluginManager () { return (Kate::PluginManager*)m_pluginManager; };
     Kate::MainWindow *activeMainWindow ();
-
-    virtual void *topLevelInterfaces(const QString& name);
     
     uint mainWindows () { return m_mainWindows.count(); };
     Kate::MainWindow *mainWindow (uint n) { return (Kate::MainWindow *)m_mainWindows.at(n); };

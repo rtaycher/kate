@@ -35,7 +35,7 @@
 #include <qfile.h>
 #include <qtimer.h>
 
-KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (true,true,true), Kate::PrivateApplication (), Kate::InitPluginManager(),m_initPlugin(0),m_doNotInitialize(0)
+KateApp::KateApp (bool forcedNewProcess, bool oldState) : KUniqueApplication (true,true,true), Kate::InitPluginManager(),m_initPlugin(0),m_doNotInitialize(0)
 {       
   m_application = new Kate::Application (this);
               
@@ -86,14 +86,6 @@ KateApp::~KateApp ()
 {
   m_pluginManager->writeConfig ();
 }          
-
-void *KateApp::topLevelInterfaces(const QString& name)
-{
-	if (name=="activeWindow") return activeWindow();
-	else if (name=="documents") return documentManager();
-	else if (name=="plugins") return pluginManager();
-	else return 0;
-}
 
 void KateApp::performInit(const QString &libname, const KURL &url)
 {
