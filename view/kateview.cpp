@@ -2956,7 +2956,7 @@ void KateView::findAgain (bool back)
 void KateView::slotEditCommand ()
 {
   bool ok;
-  QString cmd = KLineEditDlg::getText("Editing Command", "", &ok, this);
+  QString cmd = KLineEditDlg::getText(i18n("Editing Command"), "", &ok, this);
 
   if (ok)
     myDoc->cmd()->execCmd (cmd, this);
