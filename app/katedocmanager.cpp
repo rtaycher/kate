@@ -36,6 +36,8 @@ KateDocManager::KateDocManager (QObject *parent) : QObject (parent)
 {
   m_documentManager = new Kate::DocumentManager (this);
   m_docList.setAutoDelete(true);
+  m_docDict.setAutoDelete(false);
+  m_docInfos.setAutoDelete(true);
   m_currentDoc = 0L;
 
   createDoc ();
@@ -50,9 +52,13 @@ Kate::Document *KateDocManager::createDoc ()
 {
   KTextEditor::Document *doc = KTextEditor::createDocument ("libkatepart", this, "Kate::Document");
   m_docList.append((Kate::Document *)doc);
+  m_docDict.insert (doc->documentNumber(), (Kate::Document *)doc);
+  m_docInfos.insert (doc, new KateDocumentInfo ());
 
   emit documentCreated ((Kate::Document *)doc);
   emit m_documentManager->documentCreated ((Kate::Document *)doc);
+
+  connect(doc,SIGNAL(modifiedOnDisc(Kate::Document *, bool, unsigned char)),this,SLOT(slotModifiedOnDisc(Kate::Document *, bool, unsigned char)));
 
   return (Kate::Document *)doc;
 }
@@ -61,11 +67,12 @@ void KateDocManager::deleteDoc (Kate::Document *doc)
 {
   uint id = doc->documentNumber();
 
-  if (m_docList.find(doc) > -1)
-    m_docList.remove (doc);
+  m_docInfos.remove (doc);
+  m_docDict.remove (id);
+  m_docList.remove (doc);
 
- emit documentDeleted (id);
- emit m_documentManager->documentDeleted (id);
+  emit documentDeleted (id);
+  emit m_documentManager->documentDeleted (id);
 }
 
 Kate::Document *KateDocManager::document (uint n)
@@ -101,20 +108,17 @@ Kate::Document *KateDocManager::nextDocument ()
 
 Kate::Document *KateDocManager::documentWithID (uint id)
 {
-  QPtrListIterator<Kate::Document> it(m_docList);
-
-  for (; it.current(); ++it)
-  {
-    if ( it.current()->documentNumber()  == id )
-      return it.current();
-  }
-
-  return 0L;
+  return m_docDict[id];
 }
 
 uint KateDocManager::documentID(Kate::Document *doc)
 {
   return doc->documentNumber();
+}
+
+const KateDocumentInfo *KateDocManager::documentInfo (Kate::Document *doc)
+{
+  return m_docInfos[doc];
 }
 
 int KateDocManager::findDocument (Kate::Document *doc)
@@ -277,5 +281,14 @@ void KateDocManager::saveDocumentList(KConfig* cfg)
     cfg->setGroup(grp);
 
     i++;
+  }
+}
+
+void KateDocManager::slotModifiedOnDisc (Kate::Document *doc, bool b, unsigned char reason)
+{
+  if (m_docInfos[doc])
+  {
+    m_docInfos[doc]->modifiedOnDisc = b;
+    m_docInfos[doc]->modifiedOnDiscReason = reason;
   }
 }

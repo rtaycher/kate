@@ -33,19 +33,12 @@
 class KateFileListItem : public QListBoxItem
 {
   public:
-    KateFileListItem( uint documentNumber, const QPixmap &pix, const QString& text, const QColor &col);
+    KateFileListItem( KateDocManager *_docManager, Kate::Document *doc, uint documentNumber, const QString& text);
     ~KateFileListItem();
 
     uint documentNumber ();
 
-    const QPixmap *pixmap() const { return &pm; };
-
     void setText(const QString &text);
-    void setPixmap(const QPixmap &pixmap);
-
-    void setBold(bool bold);
-
-    void setColor (const QColor &col);
 
     int height( const QListBox* lb ) const;
 
@@ -56,9 +49,8 @@ class KateFileListItem : public QListBoxItem
 
   private:
     uint myDocID;
-    QPixmap pm;
-    bool _bold;
-    QColor _color;
+    Kate::Document *doc;
+    KateDocManager *docManager;
 };
 
 class KateFileList : public KListBox

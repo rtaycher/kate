@@ -69,7 +69,7 @@ KateFileList::~KateFileList ()
 
 void KateFileList::slotDocumentCreated (Kate::Document *doc)
 {
-  insertItem (new KateFileListItem (doc->documentNumber(), SmallIcon("null"), doc->docName(), KGlobalSettings::textColor()) );
+  insertItem (new KateFileListItem (docManager, doc, doc->documentNumber(), doc->docName()) );
   connect(doc,SIGNAL(modStateChanged(Kate::Document *)),this,SLOT(slotModChanged(Kate::Document *)));
   connect(doc,SIGNAL(nameChanged(Kate::Document *)),this,SLOT(slotNameChanged(Kate::Document *)));
   connect(doc,SIGNAL(modifiedOnDisc(Kate::Document *, bool, unsigned char)),this,SLOT(slotModifiedOnDisc(Kate::Document *, bool, unsigned char)));
@@ -100,50 +100,25 @@ void KateFileList::slotModChanged (Kate::Document *doc)
 {
   if (!doc) return;
 
-  uint i;
-
-  if( doc->isModified() )
+  for (uint i = 0; i < count(); i++)
   {
-    for (i = 0; i < count(); i++)
+    if (((KateFileListItem *) item (i)) ->documentNumber() == doc->documentNumber())
     {
-      if (((KateFileListItem *) item (i)) ->documentNumber() == doc->documentNumber())
-      {
-        ((KateFileListItem *)item(i))->setPixmap(SmallIcon("modified"));
-        ((KateFileListItem *)item(i))->setBold(true);
-
-        triggerUpdate(false);
-        break;
-      }
+      triggerUpdate(false);
+      break;
     }
   }
-  else
-  {
-    for (i = 0; i < count(); i++)
-    {
-      if (((KateFileListItem *) item (i)) ->documentNumber() == doc->documentNumber())
-      {
-        ((KateFileListItem *)item(i))->setPixmap(SmallIcon("null"));
-        ((KateFileListItem *)item(i))->setBold(false);
 
-        triggerUpdate(false);
-        break;
-      }
-    }
-  }
 
   updateCaption ();
 }
 
-void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool b, unsigned char reason)
+void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool, unsigned char)
 {
   for (uint i = 0; i < count(); i++)
   {
     if (((KateFileListItem *) item (i)) ->documentNumber() == doc->documentNumber())
     {
-     ((KateFileListItem *)item(i))->setColor (b ? QColor ("red") : KGlobalSettings::textColor());
-
-      kdDebug() << "testing mod works" << endl;
-
       triggerUpdate(false);
       break;
     }
@@ -230,26 +205,45 @@ void KateFileList::slotMenu ( QListBoxItem *item, const QPoint &p )
     return;
 
   QPopupMenu *menu = (QPopupMenu*) ((KMainWindow *)(viewManager->topLevelWidget)())->factory()->container("filelist_popup", (KMainWindow *)(viewManager->topLevelWidget ()));
-  menu->exec(p);
+
+  if (menu)
+    menu->exec(p);
 }
 
 void KateFileList::tip( const QPoint &p, QRect &r, QString &str )
 {
   KateFileListItem *i = (KateFileListItem*)itemAt( p );
   r = itemRect( i );
+  str = "";
 
-  if( i != NULL && r.isValid() )
-    str = docManager->documentWithID(i->documentNumber())->url().prettyURL();
-  else
-    str = "";
+  if ( !i || !r.isValid() )
+    return;
+
+  Kate::Document *doc = docManager->documentWithID(i->documentNumber());
+
+  if (!doc)
+    return;
+
+  const KateDocumentInfo *info = docManager->documentInfo(doc);
+
+  if (info && info->modifiedOnDisc)
+  {
+    if (info->modifiedOnDiscReason == 1)
+      str += i18n("<b>This File was changed (modifiec) on disc by an other program !</b><br />");
+    else if (info->modifiedOnDiscReason == 2)
+      str += i18n("<b>This File was changed (created) on disc by an other program !</b><br />");
+    else if (info->modifiedOnDiscReason == 3)
+      str += i18n("<b>This File was changed (deleted) on disc by an other program !</b><br />");
+  }
+
+  str += doc->url().prettyURL();
 }
 
-KateFileListItem::KateFileListItem( uint documentNumber, const QPixmap &pix, const QString& text, const QColor &col): QListBoxItem()
+KateFileListItem::KateFileListItem( KateDocManager *_docManager, Kate::Document *doc, uint documentNumber, const QString& text): QListBoxItem()
 {
-  _bold=false;
-  _color = col;
+  this->doc = doc;
   myDocID = documentNumber;
-  setPixmap(pix);
+  docManager = _docManager;
   setText( text );
 }
 
@@ -262,25 +256,9 @@ uint KateFileListItem::documentNumber ()
   return myDocID;
 }
 
-
 void KateFileListItem::setText(const QString &text)
 {
   QListBoxItem::setText(text);
-}
-
-void KateFileListItem::setColor (const QColor &col)
-{
-  _color = col;
-}
-
-void KateFileListItem::setPixmap(const QPixmap &pixmap)
-{
-  pm=pixmap;
-}
-
-void KateFileListItem::setBold(bool bold)
-{
-  bold=bold;
 }
 
 int KateFileListItem::height( const QListBox* lb ) const
@@ -288,9 +266,9 @@ int KateFileListItem::height( const QListBox* lb ) const
   int h;
 
   if ( text().isEmpty() )
-    h = pm.height();
+    h = 16;
   else
-    h = QMAX( pm.height(), lb->fontMetrics().lineSpacing() + 1 );
+    h = QMAX( 16, lb->fontMetrics().lineSpacing() + 1 );
 
   return QMAX( h, QApplication::globalStrut().height() );
 }
@@ -298,30 +276,37 @@ int KateFileListItem::height( const QListBox* lb ) const
 int KateFileListItem::width( const QListBox* lb ) const
 {
   if ( text().isEmpty() )
-    return QMAX( pm.width() + 6, QApplication::globalStrut().width() );
+    return QMAX( 16 + 6, QApplication::globalStrut().width() );
 
-  return QMAX( pm.width() + lb->fontMetrics().width( text() ) + 6, QApplication::globalStrut().width() );
+  return QMAX( 16 + lb->fontMetrics().width( text() ) + 6, QApplication::globalStrut().width() );
 }
 
 void KateFileListItem::paint( QPainter *painter )
 {
-  painter->drawPixmap( 3, 0, pm );
-  QFont f=painter->font();
-  f.setBold(_bold);
-  painter->setFont(f);
+  static QPixmap noPm = SmallIcon ("null");
+  static QPixmap modPm = SmallIcon("modified");
+  static QPixmap discPm = SmallIcon("modonhd");
+  static QPixmap modmodPm = SmallIcon("modmod");
+
+  const KateDocumentInfo *info = docManager->documentInfo (doc);
+
+  if (info && info->modifiedOnDisc)
+    painter->drawPixmap( 3, 0, doc->isModified() ? modmodPm : discPm );
+  else
+    painter->drawPixmap( 3, 0, doc->isModified() ? modPm : noPm );
 
   if ( !text().isEmpty() )
   {
     QFontMetrics fm = painter->fontMetrics();
+
     int yPos;                       // vertical text position
 
-    if ( pm.height() < fm.height() )
+     if ( 16 < fm.height() )
       yPos = fm.ascent() + fm.leading()/2;
     else
-      yPos = pm.height()/2 - fm.height()/2 + fm.ascent();
+      yPos = 16/2 - fm.height()/2 + fm.ascent();
 
-    painter->setPen (_color);
-    painter->drawText( pm.width() + 5, yPos, text() );
+    painter->drawText( 16 + 4, yPos, text() );
   }
 }
 

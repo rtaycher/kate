@@ -27,8 +27,23 @@
 
 #include <qptrlist.h>
 #include <qobject.h>
+#include <qptrdict.h>
+#include <qintdict.h>
 
 class KConfig;
+
+class KateDocumentInfo
+{
+  public:
+    KateDocumentInfo ()
+     : modifiedOnDisc (false),
+       modifiedOnDiscReason (0)
+    {
+    }
+
+    bool modifiedOnDisc;
+    unsigned char modifiedOnDiscReason;
+};
 
 class KateDocManager : public QObject
 {
@@ -55,6 +70,8 @@ class KateDocManager : public QObject
 
     uint documentID(Kate::Document *);
 
+    const KateDocumentInfo *documentInfo (Kate::Document *doc);
+
     int findDocument (Kate::Document *doc);
     /** Returns the documentNumber of the doc with url URL or -1 if no such doc is found */
     int findDocument (KURL url);
@@ -78,9 +95,14 @@ class KateDocManager : public QObject
     void documentDeleted (uint documentNumber);
     void documentChanged ();
 
+  private slots:
+    void slotModifiedOnDisc (Kate::Document *doc, bool b, unsigned char reason);
+
   private:
     Kate::DocumentManager *m_documentManager;
     QPtrList<Kate::Document> m_docList;
+    QIntDict<Kate::Document> m_docDict;
+    QPtrDict<KateDocumentInfo> m_docInfos;
     Kate::Document *m_currentDoc;
 };
 
