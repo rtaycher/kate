@@ -1495,6 +1495,7 @@ KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const QString &name, bool Handle
   kspell.ksc = new KSpellConfig; //default KSpellConfig to start
   kspell.kspellon = FALSE;
 
+  setFocusProxy( kWriteView );
   kWriteView->setFocus();
   resize(parent->width() -4, parent->height() -4);
 
