@@ -1010,6 +1010,13 @@ void KateMainWindow::slotPipeToConsole ()
   if (!console)
     return;
 
+  if (KMessageBox::warningYesNo
+       (this
+        , i18n ("Do you really want to pipe the text to the console? This will execute any contained commands with your user rights!")
+        , i18n ("Pipe to Console?")
+        , KStdGuiItem::yes(), KStdGuiItem::no(), "Pipe To Console Warning") != KMessageBox::Yes)
+    return;
+
   Kate::View *v = m_viewManager->activeView();
 
   if (!v)
