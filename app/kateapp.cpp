@@ -50,6 +50,11 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState)
  , m_initPlugin (0)
  , m_doNotInitialize (0)
 {
+  // session manager up
+  m_sessionManager = new KateSessionManager (this);
+
+  KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
+
   // we need to call that now, don't ask me, in the first newInstance run it is wrong !
   if (isRestored())
   {
@@ -58,7 +63,13 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState)
   }
   else // no restoring, use our own katesessionrc from start on !
   {
-    m_sessionConfig = new KSimpleConfig ("katesessionrc", false);
+    QString session ("katesessionrc");
+    if (args->isSet("s"))
+    {
+      session = args->getOption("s");
+    }
+
+    m_sessionConfig = new KSimpleConfig (session, false);
     m_sessionConfigDelete = true;
   }
 
@@ -94,8 +105,6 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState)
 
   // init all normal plugins
   m_pluginManager = new KatePluginManager (this);
-
-  KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 
   if (args->isSet("initplugin"))
   {

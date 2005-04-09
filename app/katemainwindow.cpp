@@ -354,19 +354,17 @@ bool KateMainWindow::queryClose()
   if ( KateProjectManager::self()->queryCloseAll () &&
        queryClose_internal() )
   {
-    KConfig scfg("katesessionrc", false);
-
     KConfig *config = kapp->config();
     config->setGroup("General");
 
     if (config->readBoolEntry("Restore Projects", false))
-      KateProjectManager::self()->saveProjectList (&scfg);
+      KateProjectManager::self()->saveProjectList (((KateApp *)kapp)->kateSessionConfig());
 
     if (config->readBoolEntry("Restore Documents", false))
-      KateDocManager::self()->saveDocumentList (&scfg);
+      KateDocManager::self()->saveDocumentList (((KateApp *)kapp)->kateSessionConfig());
 
     if (config->readBoolEntry("Restore Window Configuration", false))
-      saveProperties (&scfg);
+      saveProperties (((KateApp *)kapp)->kateSessionConfig());
 
     // detach the dcopClient
     ((KUniqueApplication *)kapp)->dcopClient()->detach();

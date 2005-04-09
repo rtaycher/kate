@@ -32,6 +32,7 @@
 #include "katedocmanager.h"
 #include "kateprojectmanager.h"
 #include "katepluginmanager.h"
+#include "katesession.h"
 
 #include <kuniqueapplication.h>
 
@@ -50,9 +51,10 @@ class KDE_EXPORT KateApp : public KUniqueApplication
   public:
     int newInstance();
 
-    KatePluginManager *katePluginManager() { return m_pluginManager; };
-    KateDocManager *kateDocumentManager () { return m_docManager; };
-    KateProjectManager *kateProjectManager () { return m_projectManager; };
+    KatePluginManager *katePluginManager() { return m_pluginManager; }
+    KateDocManager *kateDocumentManager () { return m_docManager; }
+    KateProjectManager *kateProjectManager () { return m_projectManager; }
+    KateSessionManager *kateSessionManager () { return m_sessionManager; }
 
     class KateMainWindow *newMainWindow ();
     class KateMainWindow *newMainWindow (bool visible);
@@ -88,6 +90,7 @@ class KDE_EXPORT KateApp : public KUniqueApplication
     KateDocManager *m_docManager;
     KateProjectManager *m_projectManager;
     KatePluginManager *m_pluginManager;
+    KateSessionManager *m_sessionManager;
     QPtrList<class KateMainWindow> m_mainWindows;
     bool m_firstStart;
     Kate::InitPlugin *m_initPlugin;

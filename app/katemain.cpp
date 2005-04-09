@@ -31,6 +31,7 @@ static KCmdLineOptions options[] =
 {
     { "n", I18N_NOOP("Start a new Kate process (off by default)"), 0 },
     { "w", I18N_NOOP("Open a new Kate window"), 0 },
+    { "s <argument>",      I18N_NOOP("Start Kate with a given session"), 0 },
     { "initplugin <argument>",	I18N_NOOP("Allow Kate to be initialized by a plugin. You most probably have to specify a file too."),0},
     { "encoding <argument>",      I18N_NOOP("Set encoding for the file to open"), 0 },
     { "line <argument>",      I18N_NOOP("Navigate to this line"), 0 },
