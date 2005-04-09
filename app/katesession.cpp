@@ -27,9 +27,21 @@
 #include <klocale.h>
 #include <kdebug.h>
 
+KateSession::KateSession (const QString &fileName)
+  : m_sessionFile (fileName)
+{
+  KSimpleConfig config (m_sessionFile, true);
+  config.setGroup ("General");
+  m_sessionName = config.readEntry ("Name", i18n ("Unknown"));
+}
+
+KateSession::~KateSession ()
+{
+}
+
 KateSessionManager::KateSessionManager(QObject *parent) : QObject (parent)
 {
-  setupSessionList ();
+  updateSessionList ();
 }
 
 KateSessionManager::~KateSessionManager()
@@ -43,24 +55,29 @@ KateSessionManager *KateSessionManager::self()
   return KateApp::self()->kateSessionManager ();
 }
 
-void KateSessionManager::setupSessionList ()
+void KateSessionManager::updateSessionList ()
 {
+  // clear the list ;)
+  for (unsigned int i=0; i < m_sessionList.size(); ++i)
+    delete m_sessionList[i];
+
+  m_sessionList.clear ();
+
   // Let's get a list of all session we have atm
   QStringList listRel;
   QStringList list = KGlobal::dirs()->findAllResources("data", "kate/sessions/*.katesession", false, true, listRel);
 
   for (unsigned int i=0; i < list.count(); ++i)
   {
-    KateSession *session = new KateSession ();
-    session->sessionFile = list[i];
-    session->sessionFileLocal = locateLocal( "data", listRel[i]);
+    QString realFile = locateLocal( "data", listRel[i]);
 
-    KSimpleConfig config (session->sessionFile, true);
-    config.setGroup ("General");
-    session->sessionName = config.readEntry ("Name", i18n ("Unknown"));
+    // we only want to locate existing local session files we can actually write to
+    if (KGlobal::dirs()->exists (realFile))
+    {
+      KateSession *session = new KateSession (realFile);
+      m_sessionList.append (session);
 
-    m_sessionList.append (session);
-
-    kdDebug () << "FOUND SESSION: " << session->sessionName << " FILE TO SAVE: " << session->sessionFileLocal << endl;
+    kdDebug () << "FOUND SESSION: " << session->sessionName() << " FILE: " << session->sessionFile() << endl;
+    }
   }
 }

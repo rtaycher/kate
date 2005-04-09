@@ -27,14 +27,18 @@
 class KateSession
 {
   public:
-    // session filename, absolute, as found by the findAllResources
-    QString sessionFile;
+    KateSession (const QString &fileName);
+    ~KateSession ();
 
+    const QString &sessionFile () const { return m_sessionFile; }
+    const QString &sessionName () const { return m_sessionName; }
+
+  private:
     // session filename, in local location we can write to
-    QString sessionFileLocal;
+    QString m_sessionFile;
 
     // session name, extracted from the file, to display to the user
-    QString sessionName;
+    QString m_sessionName;
 };
 
 typedef QValueList<KateSession *> KateSessionList;
@@ -49,12 +53,15 @@ class KateSessionManager : public QObject
 
     static KateSessionManager *self();
 
-    inline KateSessionList & sessionList () { return m_sessionList; };
+    inline KateSessionList & sessionList () { return m_sessionList; }
+
+    void updateSessionList ();
+
+    inline KateSession *activeSession () { return m_activeSession; }
 
   private:
-    void setupSessionList ();
-
     KateSessionList m_sessionList;
+    KateSession *m_activeSession;
 };
 
 #endif
