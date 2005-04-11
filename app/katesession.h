@@ -22,6 +22,7 @@
 #include "katemain.h"
 
 #include <kdialogbase.h>
+#include <ksimpleconfig.h>
 
 #include <qobject.h>
 #include <qvaluelist.h>
@@ -54,6 +55,12 @@ class KateSession
     QString sessionFile () const;
 
     /**
+     * relative session filename
+     * @return relative filename for this session
+     */
+    const QString &sessionFileRelative () const { return m_sessionFileRel; }
+
+    /**
      * session name
      * @return name for this session
      */
@@ -64,6 +71,20 @@ class KateSession
      * the active one
      */
     bool isValid () const { return !(m_sessionFileRel.isEmpty() || m_sessionName.isEmpty()); }
+
+    /**
+     * config to read
+     * YOU MUST DELETE THE POINTER
+     * @return config to read from
+     */
+    KConfig *configRead ();
+
+    /**
+     * config to write
+     * YOU MUST DELETE THE POINTER
+     * @return config to write from
+     */
+    KConfig *configWrite ();
 
   private:
     /**
@@ -109,9 +130,15 @@ class KateSessionManager : public QObject
      * activate a session
      * first, it will look if a session with this name exists in list
      * if yes, it will use this session, else it will create a new session file
-     * @param name session name to activate
+     * @param session session to activate
      */
-    void activateSession (const QString &name);
+    void activateSession (const KateSession &session);
+
+    /**
+     * create a new session
+     * @param name session name
+     */
+    KateSession createSession (const QString &name);
 
     /**
      * return the current active session
@@ -125,6 +152,11 @@ class KateSessionManager : public QObject
      * @return global session dir
      */
     inline const QString &sessionsDir () const { return m_sessionsDir; }
+
+    /**
+     * initial session chooser, on app start
+     */
+    void chooseSession ();
 
   private slots:
     void dirty (const QString &path);
@@ -159,8 +191,32 @@ class KateSessionChooser : public KDialogBase
   Q_OBJECT
 
   public:
-    KateSessionChooser (QWidget *parent = 0);
+    KateSessionChooser (QWidget *parent, const QString &lastSession);
     ~KateSessionChooser ();
+
+    KateSession *selectedSession ();
+
+    enum {
+      resultOpen,
+      resultNew,
+      resultNone
+    };
+
+  protected slots:
+    /**
+     * replace all pressed
+     */
+    void slotUser1 ();
+
+    /**
+     * last pressed
+     */
+    void slotUser2 ();
+
+    /**
+     * Yes pressed
+     */
+    void slotUser3 ();
 
   private:
     KListView *m_sessions;

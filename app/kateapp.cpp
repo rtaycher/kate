@@ -218,27 +218,23 @@ int KateApp::newInstance()
     }
     else
     {
-     /* KateSessionChooser *chooser = new KateSessionChooser ();
-      chooser->exec ();
-      delete chooser;
-*/
+      // let the user choose session if possible
+      kateSessionManager()->chooseSession ();
+
       Kate::Document::setOpenErrorDialogsActivated (false);
-      config()->setGroup("General");
 
-      // restore our nice projects if wanted
-      if (config()->readBoolEntry("Restore Projects", false))
-        m_projectManager->restoreProjectList (kateSessionConfig ());
+      KConfig *sc = kateSessionManager()->activeSession().configRead();
 
-      // reopen our nice files if wanted
-      if (config()->readBoolEntry("Restore Documents", false))
-        m_docManager->restoreDocumentList (kateSessionConfig ());
+      if (sc)
+        m_docManager->restoreDocumentList (sc);
 
-      KateMainWindow *win=newMainWindow(false);
+      KateMainWindow *win = newMainWindow(false);
 
       // window config
-      config()->setGroup("General");
-      if (config()->readBoolEntry("Restore Window Configuration", false))
-        win->readProperties (kateSessionConfig ());
+      if (sc)
+        win->readProperties (sc);
+
+      delete sc;
 
       Kate::Document::setOpenErrorDialogsActivated (true);
       win->show ();

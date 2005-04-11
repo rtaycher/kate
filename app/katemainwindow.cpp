@@ -39,6 +39,7 @@
 #include "kateexternaltools.h"
 #include "katesavemodifieddialog.h"
 #include "katemwmodonhddialog.h"
+#include "katesession.h"
 
 #include <kmdi/tabwidget.h>
 
@@ -354,17 +355,16 @@ bool KateMainWindow::queryClose()
   if ( KateProjectManager::self()->queryCloseAll () &&
        queryClose_internal() )
   {
-    KConfig *config = kapp->config();
-    config->setGroup("General");
+    KConfig *sc = ((KateApp *)kapp)->kateSessionManager()->activeSession().configWrite();
 
-    if (config->readBoolEntry("Restore Projects", false))
-      KateProjectManager::self()->saveProjectList (((KateApp *)kapp)->kateSessionConfig());
+    if (sc)
+    {
+      KateDocManager::self()->saveDocumentList (sc);
+      saveProperties (sc);
+    }
 
-    if (config->readBoolEntry("Restore Documents", false))
-      KateDocManager::self()->saveDocumentList (((KateApp *)kapp)->kateSessionConfig());
-
-    if (config->readBoolEntry("Restore Window Configuration", false))
-      saveProperties (((KateApp *)kapp)->kateSessionConfig());
+    sc->sync();
+    delete sc;
 
     // detach the dcopClient
     ((KUniqueApplication *)kapp)->dcopClient()->detach();
