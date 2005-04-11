@@ -244,7 +244,7 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
                   , true
                   , i18n ("Session Chooser")
                   , KDialogBase::User1 | KDialogBase::User2 |KDialogBase::User3
-                  , KDialogBase::User1
+                  , lastSession.isEmpty() ? KDialogBase::User3 : KDialogBase::User1
                   , false
                   , KGuiItem (i18n ("Open Session"), "fileopen")
                   , KGuiItem (i18n ("New Session"), "filenew")
@@ -267,24 +267,15 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
   m_sessions->setSelectionMode (QListView::Single);
 
   KateSessionList &slist (KateSessionManager::self()->sessionList());
-  KateSessionChooserItem *def = 0;
-  bool sel = false;
   for (unsigned int i=0; i < slist.count(); ++i)
   {
     KateSessionChooserItem *item = new KateSessionChooserItem (m_sessions, slist[i]);
 
-    if (slist[i]->sessionFileRelative() == "default.katesession")
-      def = item;
-
     if (slist[i]->sessionFileRelative() == lastSession)
     {
       item->setSelected (true);
-      sel = true;
     }
   }
-
-  if (def && !sel)
-    def->setSelected (true);
 
   m_sessions->show ();
 

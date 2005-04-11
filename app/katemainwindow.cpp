@@ -361,10 +361,14 @@ bool KateMainWindow::queryClose()
     {
       KateDocManager::self()->saveDocumentList (sc);
       saveProperties (sc);
+      sc->sync();
     }
 
-    sc->sync();
     delete sc;
+
+    KConfig *c = kapp->config();
+    c->setGroup("General");
+    c->writeEntry ("Last Session", ((KateApp *)kapp)->kateSessionManager()->activeSession().sessionFileRelative());
 
     // detach the dcopClient
     ((KUniqueApplication *)kapp)->dcopClient()->detach();
