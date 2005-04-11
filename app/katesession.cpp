@@ -49,16 +49,26 @@ KateSession::KateSession (KateSessionManager *manager, const QString &fileName, 
   {
     if (m_sessionName.isEmpty())
     {
-      KSimpleConfig config (sessionFile (), true);
-      config.setGroup ("General");
-      m_sessionName = config.readEntry ("Name", i18n ("Unnamed Session"));
+      if (fileName == "default.katesession")
+        m_sessionName = i18n("Default Session");
+      else
+      {
+        KSimpleConfig config (sessionFile (), true);
+        config.setGroup ("General");
+        m_sessionName = config.readEntry ("Name", i18n ("Unnamed Session"));
+      }
     }
   }
   else if (!fileName.isEmpty())
   {
     // create the file, write name to it!
     if (m_sessionName.isEmpty())
-      m_sessionName =  i18n ("Unnamed Session");
+    {
+      if (fileName == "default.katesession")
+        m_sessionName = i18n("Default Session");
+      else
+        m_sessionName =  i18n ("Unnamed Session");
+    }
 
     KSimpleConfig config (sessionFile ());
     config.setGroup ("General");
