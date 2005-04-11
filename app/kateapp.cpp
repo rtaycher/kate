@@ -24,6 +24,7 @@
 #include "katepluginmanager.h"
 #include "kateviewmanager.h"
 #include "kateappIface.h"
+#include "katesession.h"
 
 #include <kcmdlineargs.h>
 #include <dcopclient.h>
@@ -217,6 +218,10 @@ int KateApp::newInstance()
     }
     else
     {
+     /* KateSessionChooser *chooser = new KateSessionChooser ();
+      chooser->exec ();
+      delete chooser;
+*/
       Kate::Document::setOpenErrorDialogsActivated (false);
       config()->setGroup("General");
 

@@ -21,12 +21,15 @@
 
 #include "katemain.h"
 
+#include <kdialogbase.h>
+
 #include <qobject.h>
 #include <qvaluelist.h>
 
 class KateSessionManager;
 
 class KDirWatch;
+class KListView;
 
 class KateSession
 {
@@ -149,6 +152,18 @@ class KateSessionManager : public QObject
      * current active session
      */
     KateSession m_activeSession;
+};
+
+class KateSessionChooser : public KDialogBase
+{
+  Q_OBJECT
+
+  public:
+    KateSessionChooser (QWidget *parent = 0);
+    ~KateSessionChooser ();
+
+  private:
+    KListView *m_sessions;
 };
 
 #endif

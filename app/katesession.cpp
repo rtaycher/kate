@@ -27,8 +27,12 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
+#include <klistview.h>
 
 #include <qdir.h>
+#include <qlabel.h>
+#include <qlayout.h>
+#include <qvbox.h>
 
 KateSession::KateSession (KateSessionManager *manager, const QString &fileName, const QString &name)
   : m_sessionFileRel (fileName)
@@ -98,7 +102,7 @@ KateSessionManager *KateSessionManager::self()
   return KateApp::self()->kateSessionManager ();
 }
 
-void KateSessionManager::dirty (const QString &path)
+void KateSessionManager::dirty (const QString &)
 {
   updateSessionList ();
 }
@@ -113,15 +117,71 @@ void KateSessionManager::updateSessionList ()
   // Let's get a list of all session we have atm
   QDir dir (m_sessionsDir, "*.katesession");
 
+  bool foundDefault = false;
   for (unsigned int i=0; i < dir.count(); ++i)
   {
     KateSession *session = new KateSession (this, dir[i], "");
     m_sessionList.append (session);
 
     kdDebug () << "FOUND SESSION: " << session->sessionName() << " FILE: " << session->sessionFile() << endl;
+
+    if (!foundDefault && (dir[i] == "default.katesession"))
+      foundDefault = true;
   }
+
+  // add default session, if not there
+  if (!foundDefault)
+    m_sessionList.append (new KateSession (this, "default.katesession", i18n("Default Session")));
 }
 
 void KateSessionManager::activateSession (const QString &name)
 {
 }
+
+//BEGIN CHOOSER DIALOG
+
+class KateSessionChooserItem : public QListViewItem
+{
+  public:
+    KateSessionChooserItem (KListView *lv, KateSession *s)
+     : QListViewItem (lv, s->sessionName())
+     , session (*s)
+    {
+    }
+
+  private:
+    KateSession session;
+};
+
+KateSessionChooser::KateSessionChooser (QWidget *parent)
+ : KDialogBase (  parent
+                  , ""
+                  , true
+                  , i18n ("Session Chooser")
+                  , KDialogBase::User1 | KDialogBase::User2
+                  , KDialogBase::User1
+                  , true
+                  , KGuiItem (i18n ("Open Session"), "fileopen")
+                  , KGuiItem (i18n ("New Session"), "filenew")
+                )
+{
+  QVBox *page = new QVBox (this);
+  page->setMinimumSize (400, 200);
+  setMainWidget(page);
+
+  m_sessions = new KListView (page);
+  m_sessions->addColumn (i18n("Session Name"));
+
+  KateSessionList &slist (KateSessionManager::self()->sessionList());
+  for (unsigned int i=0; i < slist.count(); ++i)
+  {    new KateSessionChooserItem (m_sessions, slist[i]);
+  }
+
+  m_sessions->show ();
+}
+
+KateSessionChooser::~KateSessionChooser ()
+{
+}
+
+//END CHOOSER DIALOG
