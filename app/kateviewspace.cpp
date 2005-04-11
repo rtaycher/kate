@@ -176,6 +176,7 @@ bool KateViewSpace::showView(uint documentNumber)
       mViewList.append( kv );
       stack->raiseWidget( kv );
       kv->show();
+      mStatusBar->modifiedChanged();
       return true;
     }
   }
