@@ -1,4 +1,4 @@
-SUBDIRS = utils interfaces app data pics plugins
+SUBDIRS = utils interfaces app data pics
 EXTRA_DIST = AUTHORS COPYING.LIB ChangeLog DESIGN NEWS README TODO 
 
 messages:

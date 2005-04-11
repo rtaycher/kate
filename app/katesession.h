@@ -24,21 +24,60 @@
 #include <qobject.h>
 #include <qvaluelist.h>
 
+class KateSessionManager;
+
+class KDirWatch;
+
 class KateSession
 {
   public:
-    KateSession (const QString &fileName);
+    /**
+     * create a session from given file
+     * @param fileName session filename, relative
+     * @param name session name
+     * @param manager pointer to the manager
+     */
+    KateSession (KateSessionManager *manager, const QString &fileName, const QString &name);
+
+    /**
+     * destruct me
+     */
     ~KateSession ();
 
-    const QString &sessionFile () const { return m_sessionFile; }
+    /**
+     * session filename, absolute, calculated out of relative filename + session dir
+     * @return absolute path to session file
+     */
+    QString sessionFile () const;
+
+    /**
+     * session name
+     * @return name for this session
+     */
     const QString &sessionName () const { return m_sessionName; }
 
-  private:
-    // session filename, in local location we can write to
-    QString m_sessionFile;
+    /**
+     * is this a valid session? if not, don't use any session if this is
+     * the active one
+     */
+    bool isValid () const { return !(m_sessionFileRel.isEmpty() || m_sessionName.isEmpty()); }
 
-    // session name, extracted from the file, to display to the user
+  private:
+    /**
+     * session filename, in local location we can write to
+     * relative filename to the session dirs :)
+     */
+    QString m_sessionFileRel;
+
+    /**
+     * session name, extracted from the file, to display to the user
+     */
     QString m_sessionName;
+
+    /**
+     * KateSessionMananger
+     */
+    KateSessionManager *m_manager;
 };
 
 typedef QValueList<KateSession *> KateSessionList;
@@ -51,17 +90,65 @@ class KateSessionManager : public QObject
     KateSessionManager(QObject *parent);
     ~KateSessionManager();
 
+    /**
+     * allow access to this :)
+     * @return instance of the session manager
+     */
     static KateSessionManager *self();
 
+    /**
+     * allow access to the session list
+     * kept up to date by watching the dir
+     */
     inline KateSessionList & sessionList () { return m_sessionList; }
 
-    void updateSessionList ();
+    /**
+     * activate a session
+     * first, it will look if a session with this name exists in list
+     * if yes, it will use this session, else it will create a new session file
+     * @param name session name to activate
+     */
+    void activateSession (const QString &name);
 
-    inline KateSession *activeSession () { return m_activeSession; }
+    /**
+     * return the current active session
+     * sessionFile == empty means we have no session around for this instance of kate
+     * @return session active atm
+     */
+    inline KateSession & activeSession () { return m_activeSession; }
+
+    /**
+     * session dir
+     * @return global session dir
+     */
+    inline const QString &sessionsDir () const { return m_sessionsDir; }
+
+  private slots:
+    void dirty (const QString &path);
 
   private:
+    void updateSessionList ();
+
+  private:
+    /**
+     * absolute path to dir in home dir where to store the sessions
+     */
+    QString m_sessionsDir;
+
+    /**
+     * dirwatch object to keep track of this dir
+     */
+    KDirWatch *m_dirWatch;
+
+    /**
+     * list of current available sessions
+     */
     KateSessionList m_sessionList;
-    KateSession *m_activeSession;
+
+    /**
+     * current active session
+     */
+    KateSession m_activeSession;
 };
 
 #endif

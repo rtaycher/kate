@@ -26,21 +26,64 @@
 #include <kstandarddirs.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <kdirwatch.h>
 
-KateSession::KateSession (const QString &fileName)
-  : m_sessionFile (fileName)
+#include <qdir.h>
+
+KateSession::KateSession (KateSessionManager *manager, const QString &fileName, const QString &name)
+  : m_sessionFileRel (fileName)
+  , m_sessionName (name)
+  , m_manager (manager)
 {
-  KSimpleConfig config (m_sessionFile, true);
-  config.setGroup ("General");
-  m_sessionName = config.readEntry ("Name", i18n ("Unknown"));
+  bool ex (!fileName.isEmpty() && KGlobal::dirs()->exists(sessionFile ()));
+
+  if (ex)
+  {
+    if (m_sessionName.isEmpty())
+    {
+      KSimpleConfig config (sessionFile (), true);
+      config.setGroup ("General");
+      m_sessionName = config.readEntry ("Name", i18n ("Unnamed Session"));
+    }
+  }
+  else if (!fileName.isEmpty())
+  {
+    // create the file, write name to it!
+    if (m_sessionName.isEmpty())
+      m_sessionName =  i18n ("Unnamed Session");
+
+    KSimpleConfig config (sessionFile ());
+    config.setGroup ("General");
+    config.writeEntry ("Name", m_sessionName);
+    config.sync ();
+  }
 }
 
 KateSession::~KateSession ()
 {
 }
 
-KateSessionManager::KateSessionManager(QObject *parent) : QObject (parent)
+QString KateSession::sessionFile () const
 {
+  return m_manager->sessionsDir() + "/" + m_sessionFileRel;
+}
+
+KateSessionManager::KateSessionManager (QObject *parent)
+ : QObject (parent)
+ , m_sessionsDir (locateLocal( "data", "kate/sessions"))
+ , m_dirWatch (new KDirWatch (this))
+ , m_activeSession (this, "", "")
+{
+  kdDebug() << "LOCAL SESSION DIR: " << m_sessionsDir << endl;
+
+  // create dir if needed
+  KGlobal::dirs()->makeDir (m_sessionsDir);
+
+  // add this dir to the watch
+  connect (m_dirWatch, SIGNAL(dirty (const QString &)), this, SLOT(dirty (const QString &)));
+  m_dirWatch->addDir (m_sessionsDir);
+
+  // initial setup of the sessions list
   updateSessionList ();
 }
 
@@ -55,29 +98,30 @@ KateSessionManager *KateSessionManager::self()
   return KateApp::self()->kateSessionManager ();
 }
 
+void KateSessionManager::dirty (const QString &path)
+{
+  updateSessionList ();
+}
+
 void KateSessionManager::updateSessionList ()
 {
-  // clear the list ;)
   for (unsigned int i=0; i < m_sessionList.size(); ++i)
     delete m_sessionList[i];
 
   m_sessionList.clear ();
 
   // Let's get a list of all session we have atm
-  QStringList listRel;
-  QStringList list = KGlobal::dirs()->findAllResources("data", "kate/sessions/*.katesession", false, true, listRel);
+  QDir dir (m_sessionsDir, "*.katesession");
 
-  for (unsigned int i=0; i < list.count(); ++i)
+  for (unsigned int i=0; i < dir.count(); ++i)
   {
-    QString realFile = locateLocal( "data", listRel[i]);
-
-    // we only want to locate existing local session files we can actually write to
-    if (KGlobal::dirs()->exists (realFile))
-    {
-      KateSession *session = new KateSession (realFile);
-      m_sessionList.append (session);
+    KateSession *session = new KateSession (this, dir[i], "");
+    m_sessionList.append (session);
 
     kdDebug () << "FOUND SESSION: " << session->sessionName() << " FILE: " << session->sessionFile() << endl;
-    }
   }
+}
+
+void KateSessionManager::activateSession (const QString &name)
+{
 }
