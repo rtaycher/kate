@@ -280,7 +280,7 @@ void KateFileList::slotModChanged (Kate::Document *doc)
     repaintItem( item );
 }
 
-void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool, unsigned char r)
+void KateFileList::slotModifiedOnDisc (Kate::Document *doc, bool, unsigned char)
 {
   slotModChanged( doc );
 }

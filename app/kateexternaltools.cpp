@@ -186,7 +186,7 @@ void KateExternalToolsCommand::reload () {
   else m_inited=true;
 }
 
-bool KateExternalToolsCommand::exec (Kate::View *view, const QString &cmd, QString &msg) {
+bool KateExternalToolsCommand::exec (Kate::View *view, const QString &cmd, QString &) {
 	QWidget *wv=dynamic_cast<QWidget*>(view);
 	if (!wv) {
 // 		kdDebug(13001)<<"KateExternalToolsCommand::exec: Could not get view widget"<<endl;
@@ -212,7 +212,7 @@ bool KateExternalToolsCommand::exec (Kate::View *view, const QString &cmd, QStri
 	return true;
 }
 
-bool KateExternalToolsCommand::help (Kate::View *view, const QString &cmd, QString &msg) {
+bool KateExternalToolsCommand::help (Kate::View *, const QString &, QString &) {
 	return false;
 }
 //END KateExternalToolsCommand

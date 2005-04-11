@@ -94,7 +94,7 @@ void KateViewSpaceContainer::documentCreated (Kate::Document *doc)
     activateView (doc->documentNumber());
 }
 
-void KateViewSpaceContainer::documentDeleted (uint docNumber)
+void KateViewSpaceContainer::documentDeleted (uint)
 {
   if (m_blockViewCreationAndActivation) return;
 

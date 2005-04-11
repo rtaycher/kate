@@ -342,7 +342,7 @@ KateVSStatusBar::~KateVSStatusBar ()
 {
 }
 
-void KateVSStatusBar::setStatus( int r, int c, int ovr, bool block, int mod, const QString &msg )
+void KateVSStatusBar::setStatus( int r, int c, int ovr, bool block, int, const QString &msg )
 {
   m_lineColLabel->setText(
     i18n(" Line: %1 Col: %2 ").arg(KGlobal::locale()->formatNumber(r+1, 0))
