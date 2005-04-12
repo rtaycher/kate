@@ -281,7 +281,11 @@ void KateSessionManager::chooseSession ()
 
       case KateSessionChooser::resultNew:
       {
-        QString name = KInputDialog::getText (i18n("Specify a Name for New Session"), i18n("Session Name"));
+        bool ok = false;
+        QString name = KInputDialog::getText (i18n("Specify a Name for New Session"), i18n("Session Name"), "", &ok);
+
+        if (!ok)
+          break;
 
         if (name.isEmpty())
         {
@@ -309,7 +313,11 @@ void KateSessionManager::chooseSession ()
 
 void KateSessionManager::sessionNew ()
 {
-  QString name = KInputDialog::getText (i18n("Specify a Name for New Session"), i18n("Session Name"));
+  bool ok = false;
+  QString name = KInputDialog::getText (i18n("Specify a Name for New Session"), i18n("Session Name"), "", &ok);
+
+  if (!ok)
+    return;
 
   if (name.isEmpty())
   {
@@ -378,7 +386,7 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
       m_sessions->setSelected (item, true);
   }
 
-  m_useLast = new QCheckBox (i18n ("&Don't ask again"), vb);
+  m_useLast = new QCheckBox (i18n ("&Don't ask again on start"), vb);
   m_useLast->setChecked (reopenLast);
 
   setResult (resultNone);
