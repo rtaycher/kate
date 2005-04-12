@@ -308,9 +308,7 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
     KateSessionChooserItem *item = new KateSessionChooserItem (m_sessions, slist[i]);
 
     if (slist[i]->sessionFileRelative() == lastSession)
-    {
-      item->setSelected (true);
-    }
+      m_sessions->setSelected (item, true);
   }
 
   m_useLast = new QCheckBox (i18n ("&Don't ask again"), vb);
