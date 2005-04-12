@@ -433,7 +433,9 @@ void KateMainWindow::slotUpdateOpenWith()
 
 void KateMainWindow::documentMenuAboutToShow()
 {
-  documentMenu->clear ();
+  // remove documents
+  while (documentMenu->count() > 3)
+    documentMenu->removeItemAt (3);
 
   QListViewItem * item = filelist->firstChild();
   while( item ) {
