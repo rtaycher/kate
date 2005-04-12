@@ -429,7 +429,13 @@ void KateDocManager::restoreDocumentList (KConfig* config)
   config->setGroup ("Open Documents");
   QString grp = config->group();
 
-  int count = config->readNumEntry("Count");
+  unsigned int count = config->readUnsignedNumEntry("Count", 0);
+
+  if (count == 0)
+  {
+    config->setGroup(prevGrp);
+    return;
+  }
 
   QProgressDialog *pd=new QProgressDialog(
         i18n("Reopening files from the last session..."),
@@ -441,7 +447,7 @@ void KateDocManager::restoreDocumentList (KConfig* config)
   pd->setCaption (kapp->makeStdCaption(i18n("Starting up")));
 
   bool first = true;
-  for (int i=0; i < count; i++)
+  for (unsigned int i=0; i < count; i++)
   {
     config->setGroup(QString("Document %1").arg(i));
     Kate::Document *doc = 0;

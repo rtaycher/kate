@@ -32,6 +32,8 @@ class KateSessionManager;
 class KDirWatch;
 class KListView;
 
+class QCheckBox;
+
 class KateSession
 {
   public:
@@ -86,6 +88,12 @@ class KateSession
      */
     KConfig *configWrite ();
 
+    /**
+     * count of documents in this session
+     * @return documents count
+     */
+    unsigned int documents () const { return m_documents; }
+
   private:
     /**
      * session filename, in local location we can write to
@@ -97,6 +105,11 @@ class KateSession
      * session name, extracted from the file, to display to the user
      */
     QString m_sessionName;
+
+    /**
+     * number of document of this session
+     */
+    unsigned int m_documents;
 
     /**
      * KateSessionMananger
@@ -191,10 +204,12 @@ class KateSessionChooser : public KDialogBase
   Q_OBJECT
 
   public:
-    KateSessionChooser (QWidget *parent, const QString &lastSession);
+    KateSessionChooser (QWidget *parent, const QString &lastSession, bool reopenLast);
     ~KateSessionChooser ();
 
     KateSession *selectedSession ();
+
+    bool reopenLastSession ();
 
     enum {
       resultOpen,
@@ -220,6 +235,7 @@ class KateSessionChooser : public KDialogBase
 
   private:
     KListView *m_sessions;
+    QCheckBox *m_useLast;
 };
 
 #endif

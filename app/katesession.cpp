@@ -37,10 +37,12 @@
 #include <qlayout.h>
 #include <qvbox.h>
 #include <qhbox.h>
+#include <qcheckbox.h>
 
 KateSession::KateSession (KateSessionManager *manager, const QString &fileName, const QString &name)
   : m_sessionFileRel (fileName)
   , m_sessionName (name)
+  , m_documents (0)
   , m_manager (manager)
 {
   bool ex (!fileName.isEmpty() && KGlobal::dirs()->exists(sessionFile ()));
@@ -49,14 +51,20 @@ KateSession::KateSession (KateSessionManager *manager, const QString &fileName, 
   {
     if (m_sessionName.isEmpty())
     {
+      KSimpleConfig config (sessionFile (), true);
+
+      // get the name out of the file
       if (fileName == "default.katesession")
         m_sessionName = i18n("Default Session");
       else
       {
-        KSimpleConfig config (sessionFile (), true);
         config.setGroup ("General");
         m_sessionName = config.readEntry ("Name", i18n ("Unnamed Session"));
       }
+
+      // get the document count
+      config.setGroup ("Open Documents");
+      m_documents = config.readUnsignedNumEntry("Count", 0);
     }
   }
   else if (!fileName.isEmpty())
@@ -184,8 +192,16 @@ void KateSessionManager::chooseSession ()
 
   // get last used session, default to default session
   QString lastSession (c->readEntry ("Last Session", "default.katesession"));
+  bool reopenLast (c->readBoolEntry ("Auto Open Last Session", false));
 
-  KateSessionChooser *chooser = new KateSessionChooser (0, lastSession);
+  // uhh, just open last used session, show no chooser
+  if (reopenLast)
+  {
+    activateSession (KateSession (this, lastSession, ""));
+    return;
+  }
+
+  KateSessionChooser *chooser = new KateSessionChooser (0, lastSession, reopenLast);
 
   bool retry = true;
   while (retry)
@@ -231,6 +247,9 @@ void KateSessionManager::chooseSession ()
     }
   }
 
+  // write back our nice boolean :)
+  c->writeEntry ("Auto Open Last Session", chooser->reopenLastSession ());
+
   delete chooser;
 }
 
@@ -243,12 +262,15 @@ class KateSessionChooserItem : public QListViewItem
      : QListViewItem (lv, s->sessionName())
      , session (*s)
     {
+      QString docs;
+      docs.setNum (s->documents());
+      setText (1, docs);
     }
 
     KateSession session;
 };
 
-KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSession)
+KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSession, bool reopenLast)
  : KDialogBase (  parent
                   , ""
                   , true
@@ -261,7 +283,7 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
                   , KGuiItem (i18n ("Skip"), "fileclose")
                 )
 {
-  QVBox *page = new QVBox (this);
+  QHBox *page = new QHBox (this);
   page->setMinimumSize (400, 200);
   setMainWidget(page);
 
@@ -271,10 +293,14 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
   label->setPixmap (BarIcon("kate",64));
   label->setMargin (16);
 
-  m_sessions = new KListView (hb);
+  QVBox *vb = new QVBox (hb);
+
+  m_sessions = new KListView (vb);
   m_sessions->addColumn (i18n("Session Name"));
+  m_sessions->addColumn (i18n("Open Documents"));
   m_sessions->setResizeMode (QListView::AllColumns);
   m_sessions->setSelectionMode (QListView::Single);
+  m_sessions->setAllColumnsShowFocus (true);
 
   KateSessionList &slist (KateSessionManager::self()->sessionList());
   for (unsigned int i=0; i < slist.count(); ++i)
@@ -287,7 +313,8 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
     }
   }
 
-  m_sessions->show ();
+  m_useLast = new QCheckBox (i18n ("&Don't ask again"), vb);
+  m_useLast->setChecked (reopenLast);
 
   setResult (resultNone);
 }
@@ -304,6 +331,11 @@ KateSession *KateSessionChooser::selectedSession ()
     return 0;
 
   return &item->session;
+}
+
+bool KateSessionChooser::reopenLastSession ()
+{
+  return m_useLast->isChecked ();
 }
 
 void KateSessionChooser::slotUser1 ()
