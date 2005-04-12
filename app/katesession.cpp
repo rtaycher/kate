@@ -277,7 +277,7 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
                   , i18n ("Session Chooser")
                   , KDialogBase::User1 | KDialogBase::User2 |KDialogBase::User3
                   , lastSession.isEmpty() ? KDialogBase::User3 : KDialogBase::User1
-                  , false
+                  , true
                   , KGuiItem (i18n ("Open Session"), "fileopen")
                   , KGuiItem (i18n ("New Session"), "filenew")
                   , KGuiItem (i18n ("Skip"), "fileclose")
