@@ -215,24 +215,6 @@ int KateApp::newInstance()
     {
       // let the user choose session if possible
       kateSessionManager()->chooseSession ();
-
-      Kate::Document::setOpenErrorDialogsActivated (false);
-
-      KConfig *sc = kateSessionManager()->activeSession().configRead();
-
-      if (sc)
-        m_docManager->restoreDocumentList (sc);
-
-      KateMainWindow *win = newMainWindow(false);
-
-      // window config
-      if (sc)
-        win->readProperties (sc);
-
-      delete sc;
-
-      Kate::Document::setOpenErrorDialogsActivated (true);
-      win->show ();
     }
   }
 

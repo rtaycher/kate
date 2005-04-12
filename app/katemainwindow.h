@@ -107,12 +107,14 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
     void saveProperties(KConfig *config);
     void saveGlobalProperties( KConfig* sessionConfig );
 
+  public:
+    bool queryClose_internal();
+
   private:
     void setupMainWindow();
     void setupActions();
     void setupScripts();
     bool queryClose();
-    bool queryClose_internal();
 
     void readOptions(KConfig *);
     void saveOptions(KConfig *);

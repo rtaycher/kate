@@ -269,6 +269,9 @@ void KateMainWindow::setupActions()
   connect(m_viewManager,SIGNAL(viewChanged()),this,SLOT(slotUpdateOpenWith()));
 
   slotWindowActivated ();
+
+  // session actions
+  a=new KAction(i18n("&New Session"), "filenew", 0, KateSessionManager::self(), SLOT(sessionNew()), actionCollection(), "sessions_new");
 }
 
 void KateMainWindow::slotDocumentCloseAll() {

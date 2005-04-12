@@ -144,8 +144,10 @@ class KateSessionManager : public QObject
      * first, it will look if a session with this name exists in list
      * if yes, it will use this session, else it will create a new session file
      * @param session session to activate
+     * @param closeLast try to close last session or not?
+     * @param saveLast try to save last session or not?
      */
-    void activateSession (const KateSession &session);
+    void activateSession (const KateSession &session, bool closeLast = true, bool saveLast = true);
 
     /**
      * create a new session
@@ -170,6 +172,9 @@ class KateSessionManager : public QObject
      * initial session chooser, on app start
      */
     void chooseSession ();
+
+  public slots:
+    void sessionNew ();
 
   private slots:
     void dirty (const QString &path);
