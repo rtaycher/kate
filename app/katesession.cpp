@@ -31,6 +31,7 @@
 #include <kiconloader.h>
 #include <kmessagebox.h>
 #include <kmdcodec.h>
+#include <kstdguiitem.h>
 
 #include <qdir.h>
 #include <qlabel.h>
@@ -328,6 +329,27 @@ void KateSessionManager::sessionNew ()
   activateSession (createSession (name));
 }
 
+void KateSessionManager::sessionOpen ()
+{
+  KateSessionOpenDialog *chooser = new KateSessionOpenDialog (0);
+
+  int res = chooser->exec ();
+
+  if (res == KateSessionOpenDialog::resultCancel)
+  {
+    delete chooser;
+    return;
+  }
+
+
+  KateSession *s = chooser->selectedSession ();
+
+  if (s)
+    activateSession (*s);
+
+  delete chooser;
+}
+
 //BEGIN CHOOSER DIALOG
 
 class KateSessionChooserItem : public QListViewItem
@@ -350,7 +372,7 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
                   , ""
                   , true
                   , i18n ("Session Chooser")
-                  , KDialogBase::User1 | KDialogBase::User2 |KDialogBase::User3
+                  , KDialogBase::User1 | KDialogBase::User2 | KDialogBase::User3
                   , KDialogBase::User1
                   , true
                   , KGuiItem (i18n ("Open Session"), "fileopen")
@@ -424,6 +446,70 @@ void KateSessionChooser::slotUser2 ()
 void KateSessionChooser::slotUser3 ()
 {
   done (resultNone);
+}
+
+KateSessionOpenDialog::KateSessionOpenDialog (QWidget *parent)
+ : KDialogBase (  parent
+                  , ""
+                  , true
+                  , i18n ("Session Chooser")
+                  , KDialogBase::User1 | KDialogBase::User2
+                  , KDialogBase::User1
+                  , true
+                  , KStdGuiItem::open ()
+                  , KStdGuiItem::cancel ()
+                )
+{
+  QHBox *page = new QHBox (this);
+  page->setMinimumSize (400, 200);
+  setMainWidget(page);
+
+  QHBox *hb = new QHBox (page);
+
+  QLabel *label = new QLabel (hb);
+  label->setPixmap (BarIcon("kate",64));
+  label->setMargin (16);
+
+  QVBox *vb = new QVBox (hb);
+
+  m_sessions = new KListView (vb);
+  m_sessions->addColumn (i18n("Session Name"));
+  m_sessions->addColumn (i18n("Open Documents"));
+  m_sessions->setResizeMode (QListView::AllColumns);
+  m_sessions->setSelectionMode (QListView::Single);
+  m_sessions->setAllColumnsShowFocus (true);
+
+  KateSessionList &slist (KateSessionManager::self()->sessionList());
+  for (unsigned int i=0; i < slist.count(); ++i)
+  {
+    new KateSessionChooserItem (m_sessions, slist[i]);
+  }
+
+  setResult (resultCancel);
+}
+
+KateSessionOpenDialog::~KateSessionOpenDialog ()
+{
+}
+
+KateSession *KateSessionOpenDialog::selectedSession ()
+{
+  KateSessionChooserItem *item = (KateSessionChooserItem *) m_sessions->selectedItem ();
+
+  if (!item)
+    return 0;
+
+  return &item->session;
+}
+
+void KateSessionOpenDialog::slotUser1 ()
+{
+  done (resultOk);
+}
+
+void KateSessionOpenDialog::slotUser2 ()
+{
+  done (resultCancel);
 }
 
 //END CHOOSER DIALOG

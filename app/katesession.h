@@ -174,7 +174,16 @@ class KateSessionManager : public QObject
     void chooseSession ();
 
   public slots:
+    /**
+     * try to start a new session
+     * asks user first for name
+     */
     void sessionNew ();
+
+    /**
+     * try to open a existing session
+     */
+    void sessionOpen ();
 
   private slots:
     void dirty (const QString &path);
@@ -241,6 +250,36 @@ class KateSessionChooser : public KDialogBase
   private:
     KListView *m_sessions;
     QCheckBox *m_useLast;
+};
+
+class KateSessionOpenDialog : public KDialogBase
+{
+  Q_OBJECT
+
+  public:
+    KateSessionOpenDialog (QWidget *parent);
+    ~KateSessionOpenDialog ();
+
+    KateSession *selectedSession ();
+
+    enum {
+      resultOk,
+      resultCancel
+    };
+
+  protected slots:
+    /**
+     * ok pressed
+     */
+    void slotUser1 ();
+
+    /**
+     * cancel pressed
+     */
+    void slotUser2 ();
+
+  private:
+    KListView *m_sessions;
 };
 
 #endif

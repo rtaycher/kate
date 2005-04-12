@@ -62,6 +62,7 @@
 
   <Menu name="sessions"><text>Sess&amp;ions</text>
     <Action name="sessions_new"/>
+    <Action name="sessions_open"/>
     <Separator />
   </Menu>
 
