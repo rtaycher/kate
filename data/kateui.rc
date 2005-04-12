@@ -127,8 +127,6 @@
 
 <Menu name="ktexteditor_popup" noMerge="1">
   <DefineGroup name="popup_operations" />
-  <Action name="go_back"/>
-  <Action name="go_forward"/>
 </Menu>
 
 <Menu name="viewspace_popup" noMerge="1">
