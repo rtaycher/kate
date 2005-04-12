@@ -25,33 +25,3 @@
 KateMainWindowDCOPIface::KateMainWindowDCOPIface (KateMainWindow *w) : DCOPObject ((QString("KateMainWindow#%1").arg(w->mainWindowNumber())).latin1()), m_w (w)
 {
 }
-
-DCOPRef KateMainWindowDCOPIface::activeProject () const
-{
-  Kate::Project *p = m_w->activeProject ();
-
-  if (p)
-    return DCOPRef (p->dcopObject ());
-
-  return DCOPRef ();
-}
-
-DCOPRef KateMainWindowDCOPIface::createProject (QString type, QString name, QString filename)
-{
-  Kate::Project *p = m_w->createProject (type, name, filename);
-
-  if (p)
-    return DCOPRef (p->dcopObject ());
-
-  return DCOPRef ();
-}
-
-DCOPRef KateMainWindowDCOPIface::openProject (QString filename)
-{
-  Kate::Project *p = m_w->openProject (filename);
-
-  if (p)
-    return DCOPRef (p->dcopObject ());
-
-  return DCOPRef ();
-}

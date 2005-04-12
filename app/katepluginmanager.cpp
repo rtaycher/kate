@@ -34,7 +34,7 @@ KatePluginManager::KatePluginManager(QObject *parent) : QObject (parent)
 {
   m_pluginManager = new Kate::PluginManager (this);
   setupPluginList ();
-  
+
   loadConfig ();
   loadAllEnabledPlugins ();
 }
@@ -43,7 +43,7 @@ KatePluginManager::~KatePluginManager()
 {
   // first write config
   writeConfig ();
-  
+
   // than unload the plugins
   unloadAllPlugins ();
   m_pluginList.setAutoDelete(true);
@@ -62,13 +62,13 @@ void KatePluginManager::setupPluginList ()
   for(KTrader::OfferList::Iterator it(traderList.begin()); it != traderList.end(); ++it)
   {
     KService::Ptr ptr = (*it);
-    
+
     QString pVersion = ptr->property("X-Kate-Version").toString();
-    
+
     if ((pVersion >= "2.2") && (pVersion <= KATE_VERSION))
     {
       KatePluginInfo *info = new KatePluginInfo;
-      
+
       info->load = false;
       info->service = ptr;
       info->plugin = 0L;
@@ -107,7 +107,7 @@ void KatePluginManager::loadAllEnabledPlugins ()
     if  (m_pluginList.at(i)->load)
       loadPlugin (m_pluginList.at(i));
     else
-      unloadPlugin (m_pluginList.at(i)); 
+      unloadPlugin (m_pluginList.at(i));
   }
 }
 

@@ -27,7 +27,6 @@
 namespace Kate
 {
 
-class Project;
 class ViewManager;
 
 class KDE_EXPORT MainWindow : public QObject
@@ -49,36 +48,6 @@ class KDE_EXPORT MainWindow : public QObject
   public :
 
     class ToolViewManager *toolViewManager() const;
-
-  public slots: /*these are slots for kjs*/
-    /**
-     * Returns the active project of this main window
-     * @return Project current active project
-     */
-    Kate::Project *activeProject () const;
-
-    /**
-     * Creates a new project file at give url of given type + opens it
-     * @param type projecttype
-     * @param filename name of the new project file
-     * @return Project new created project object
-     */
-    Kate::Project *createProject (const QString &type, const QString &name, const QString &filename);
-
-    /**
-     * @param filename name of the project file
-     * @return Project opened project
-     */
-    Kate::Project *openProject (const QString &filename);
-
-  //invention of public signals, like in kparts/browserextension.h
-  #undef signals
-  #define signals public
-  signals:
-  #undef signals
-  #define signals protected
-
-    void projectChanged ();
 
   private:
     class PrivateMainWindow *d;

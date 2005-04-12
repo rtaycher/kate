@@ -73,20 +73,5 @@ ToolViewManager *MainWindow::toolViewManager () const
   return d->win->toolViewManager ();
 }
 
-Project *MainWindow::activeProject () const
-{
-  return d->win->activeProject ();
-}
-
-Project *MainWindow::createProject (const QString &type, const QString &name, const QString &filename)
-{
-  return d->win->createProject (type, name, filename);
-}
-
-Project *MainWindow::openProject (const QString &filename)
-{
-  return d->win->openProject (filename);
-}
-
 }
 

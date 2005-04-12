@@ -60,7 +60,6 @@ class KateConfigDialog : public KDialogBase
     Kate::View* v;
     bool dataChanged;
 
-    class QCheckBox* cb_reopenProjects;
     class QCheckBox* cb_reopenFiles;
     class QCheckBox* cb_restoreVC;
     class QCheckBox *cb_singleInstance;

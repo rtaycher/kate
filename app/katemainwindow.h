@@ -26,7 +26,6 @@
 #include "../interfaces/toolviewmanager.h"
 
 #include "kateviewmanager.h"
-#include "kateprojectmanager.h"
 
 #include <kate/view.h>
 #include <kate/document.h>
@@ -34,8 +33,6 @@
 #include <kparts/part.h>
 #include <kparts/dockmainwindow.h>
 #include <kmdi/mainwindow.h>
-
-#include <qguardedptr.h>
 
 #include <scriptmanager.h>
 #include <kaction.h>
@@ -47,8 +44,6 @@ class KRecentFilesAction;
 class DCOPObject;
 
 class KateExternalToolsMenuAction;
-class KateProjectList;
-class KateProjectViews;
 
 class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
 {
@@ -87,37 +82,6 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
 
     bool hideToolView(QWidget *);
     bool hideToolView(KMDI::ToolViewAccessor *);
-
-  /**
-   * Project section
-   */
-  public:
-    /**
-     * current active project
-     * @return active project
-     */
-    Kate::Project *activeProject () { return m_project; }
-
-    /**
-     * Creates a new project file at give url of given type + opens it
-     * @param type projecttype
-     * @param name project name
-     * @param filename filename of the new project file
-     * @return new created project object
-     */
-    Kate::Project *createProject (const QString &type, const QString &name, const QString &filename);
-
-    /**
-     * @param filename name of the project file
-     * @return opened project
-     */
-    Kate::Project *openProject (const QString &filename);
-
-    /**
-     * activate given project
-     * @param project project to activate
-     */
-    void activateProject (Kate::Project *project);
 
   /**
    * various methodes to get some little info out of this
@@ -200,18 +164,7 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
     bool eventFilter( QObject*, QEvent * );
     bool event( QEvent * );
 
-  // slots for the project GUI actions: new/open/save/close
-  public slots:
-    void slotProjectNew ();
-    void slotProjectOpen ();
-    void slotProjectSave ();
-    void slotProjectClose ();
-
-    // recent files
-    void openConstURLProject (const KURL&);
-
   private slots:
-    void projectDeleted (uint projectNumber);
     void slotDocumentCloseAll();
 
   private:
@@ -235,16 +188,7 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
     KRecentFilesAction *fileOpenRecent;
 
     KateFileList *filelist;
-    KateProjectList *projectlist;
-    KateProjectViews *projectviews;
     KateFileSelector *fileselector;
-
-    QGuardedPtr<Kate::Project> m_project;
-    uint m_projectNumber;
-
-    KAction *saveProject;
-    KAction *closeProject;
-    KRecentFilesAction *recentProjects;
 
     KActionMenu* documentOpenWith;
 

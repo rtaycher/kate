@@ -102,7 +102,6 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState)
 
   // doc + project man
   m_docManager = new KateDocManager (this);
-  m_projectManager = new KateProjectManager (this);
 
   // init all normal plugins
   m_pluginManager = new KatePluginManager (this);
@@ -136,9 +135,6 @@ KateApp::~KateApp ()
 
   // cu plugin manager
   delete m_pluginManager;
-
-  // cu project man
-  delete m_projectManager;
 
   // delete this now, or we crash
   delete m_docManager;
@@ -202,10 +198,9 @@ int KateApp::newInstance()
     // we restore our great stuff here now ;) super
     if ( restoringSession() )
     {
-      // restore the nice projects & files ;) we need it
+      // restore the nice files ;) we need it
       Kate::Document::setOpenErrorDialogsActivated (false);
 
-      m_projectManager->restoreProjectList (sessionConfig());
       m_docManager->restoreDocumentList (sessionConfig());
 
       Kate::Document::setOpenErrorDialogsActivated (true);
@@ -306,17 +301,11 @@ int KateApp::newInstance()
 
       if (noDir)
       {
-        if (args->url(z).isLocalFile () && args->url(z).path().endsWith(".kateproject")) // open a project file
-          m_mainWindows.first()->openProject ( args->url(z).path() );
+        // open a normal file
+        if (codec)
+          id = m_mainWindows.first()->kateViewManager()->openURL( args->url(z), codec->name(), false );
         else
-        {
-          // open a normal file
-
-          if (codec)
-            id = m_mainWindows.first()->kateViewManager()->openURL( args->url(z), codec->name(), false );
-          else
-            id = m_mainWindows.first()->kateViewManager()->openURL( args->url(z), QString::null, false );
-        }
+          id = m_mainWindows.first()->kateViewManager()->openURL( args->url(z), QString::null, false );
       }
       else
         KMessageBox::sorry( m_mainWindows.first(),

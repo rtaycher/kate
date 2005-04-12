@@ -105,14 +105,6 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   QButtonGroup *bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("Start&up"), frGeneral );
   lo->addWidget( bgStartup );
 
-  // reopen projects
-  cb_reopenProjects = new QCheckBox( bgStartup );
-  cb_reopenProjects->setText(i18n("Reopen &projects at startup"));
-  //config->setGroup("General");
-  cb_reopenProjects->setChecked( config->readBoolEntry("Restore Projects", false) );
-  connect( cb_reopenProjects, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
-
-
   // reopen files
   cb_reopenFiles = new QCheckBox( bgStartup );
   cb_reopenFiles->setText(i18n("R&eopen files at startup"));
@@ -332,7 +324,6 @@ void KateConfigDialog::slotApply()
     config->setGroup("KDE");
     config->writeEntry("MultipleInstances",cb_singleInstance->isChecked());
     config->setGroup("General");
-    config->writeEntry("Restore Projects", cb_reopenProjects->isChecked());
     config->writeEntry("Restore Documents", cb_reopenFiles->isChecked());
     config->writeEntry("Restore Window Configuration", cb_restoreVC->isChecked());
 

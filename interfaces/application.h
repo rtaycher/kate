@@ -25,11 +25,11 @@
 namespace Kate
 {
 
-  class DocumentManager;
-  class PluginManager;
-  class InitPluginManager;
-  class MainWindow;
-  class ProjectManager;
+class DocumentManager;
+class PluginManager;
+class InitPluginManager;
+class MainWindow;
+
 /**
  * Interface to the application, beside some global methodes to access
  * other objects like document/projectmanager, ... no way goes around this
@@ -46,25 +46,23 @@ class KDE_EXPORT Application : public QObject
      * Construtor, should not interest, internal usage
      */
     Application (void *application);
-    
+
     /**
      * Desctructor
      */
     virtual ~Application ();
-    
+
   public:
     /** Returns a pointer to the document manager
     */
     Kate::DocumentManager *documentManager ();
 
-    Kate::ProjectManager *projectManager ();
-    
     Kate::PluginManager *pluginManager ();
-    
+
     Kate::InitPluginManager *initPluginManager ();
-    
+
     Kate::MainWindow *activeMainWindow ();
-    
+
     uint mainWindows ();
     Kate::MainWindow *mainWindow (uint n = 0);
 
@@ -74,9 +72,9 @@ class KDE_EXPORT Application : public QObject
   signals:
   #undef signals
   #define signals protected
-  
-    void onEventLoopEnter();  
-    
+
+    void onEventLoopEnter();
+
   private:
     class PrivateApplication *d;
 };

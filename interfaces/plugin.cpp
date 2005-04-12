@@ -17,7 +17,6 @@
 */
 
  #include "application.h"
- #include "project.h"
 
 #include "plugin.h"
 #include "plugin.moc"
@@ -37,20 +36,6 @@ namespace Kate
     ~PrivatePlugin ()
     {
     }
-  };
-
-  class PrivateProjectPlugin
-  {
-  public:
-    PrivateProjectPlugin ()
-    {
-    }
-
-    ~PrivateProjectPlugin ()
-    {
-    }
-
-    Project *m_project;
   };
 
   class PrivateInitPlugin
@@ -81,7 +66,6 @@ namespace Kate
   };
 
 unsigned int Plugin::globalPluginNumber = 0;
-unsigned int ProjectPlugin::globalProjectPluginNumber = 0;
 unsigned int InitPlugin::globalInitPluginNumber = 0;
 unsigned int PluginViewInterface::globalPluginViewInterfaceNumber = 0;
 
@@ -103,61 +87,6 @@ unsigned int Plugin::pluginNumber () const
 Application *Plugin::application () const
 {
   return Kate::application();
-}
-
-ProjectPlugin::ProjectPlugin( Project *project, const char *name ) : Plugin (Kate::application(), name )
-{
-  globalProjectPluginNumber++;
-  myProjectPluginNumber = globalProjectPluginNumber;
-
-  d = new PrivateProjectPlugin ();
-  d->m_project = project;
-}
-
-ProjectPlugin::~ProjectPlugin()
-{
-  delete d;
-}
-
-unsigned int ProjectPlugin::projectPluginNumber () const
-{
-  return myProjectPluginNumber;
-}
-
- Project *ProjectPlugin::project () const
-{
-  return d->m_project;
-}
-
-bool ProjectPlugin::save ()
-{
-  return true;
-}
-
-bool ProjectPlugin::queryClose ()
-{
-  return true;
-}
-
-bool ProjectPlugin::close ()
-{
-  return true;
-}
-
-void ProjectPlugin::addDirs (const QString &, QStringList &)
-{
-}
-
-void ProjectPlugin::removeDirs (const QString &, QStringList &)
-{
-}
-
-void ProjectPlugin::addFiles (const QString &, QStringList &)
-{
-}
-
-void ProjectPlugin::removeFiles (const QString &, QStringList &)
-{
 }
 
 InitPlugin :: InitPlugin(Application *application, const char *name):Plugin(application,name)
@@ -194,7 +123,6 @@ const KURL InitPlugin::configScript() const
   return d->m_configScript;
 }
 
-
 int InitPlugin::initKate()
 {
 return 0;
@@ -218,11 +146,6 @@ unsigned int PluginViewInterface::pluginViewInterfaceNumber () const
 Plugin *createPlugin ( const char* libname, Application *application, const char *name, const QStringList &args )
 {
   return KParts::ComponentFactory::createInstanceFromLibrary<Plugin>( libname, application, name, args);
-}
-
-ProjectPlugin *createProjectPlugin ( const char* libname, Project *project, const char *name, const QStringList &args )
-{
-  return KParts::ComponentFactory::createInstanceFromLibrary<ProjectPlugin>( libname, project, name, args);
 }
 
 PluginViewInterface *pluginViewInterface (Plugin *plugin)

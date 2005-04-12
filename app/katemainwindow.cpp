@@ -29,8 +29,6 @@
 #include "kateconfigplugindialogpage.h"
 #include "kateviewmanager.h"
 #include "kateapp.h"
-#include "kateprojectlist.h"
-#include "kateprojectviews.h"
 #include "katefileselector.h"
 #include "katefilelist.h"
 #include "kategrepdialog.h"
@@ -97,10 +95,6 @@ KateMainWindow::KateMainWindow () :
   myID = uniqueID;
   uniqueID++;
 
-  // init some vars
-  m_project = 0;
-  m_projectNumber = 0;
-
   m_modignore = false;
 
   console = 0;
@@ -148,8 +142,6 @@ KateMainWindow::KateMainWindow () :
   documentMenu = (QPopupMenu*)factory()->container("documents", this);
   connect(documentMenu, SIGNAL(aboutToShow()), this, SLOT(documentMenuAboutToShow()));
 
-  connect(KateProjectManager::self()->projectManager(),SIGNAL(projectDeleted(uint)),this,SLOT(projectDeleted(uint)));
-
   // caption update
   for (uint i = 0; i < KateDocManager::self()->documents(); i++)
     slotDocumentCreated (KateDocManager::self()->document(i));
@@ -162,12 +154,6 @@ KateMainWindow::KateMainWindow () :
     console->loadConsoleIfNeeded();
 
   setAcceptDrops(true);
-
-  // activate the first restored project, if any
-  if (KateProjectManager::self()->projects() > 0)
-    activateProject(KateProjectManager::self()->project(0));
-  else
-    activateProject(0);
 }
 
 KateMainWindow::~KateMainWindow()
@@ -189,15 +175,6 @@ void KateMainWindow::setupMainWindow ()
   filelist = new KateFileList (this, m_viewManager, this/*filelistDock*/, "filelist");
   filelist->readConfig(kapp->config(), "Filelist");
   addToolView(KDockWidget::DockLeft,filelist,SmallIcon("kmultiple"), i18n("Documents"));
-
-  QVBox *prBox = new QVBox (this,"projects");
-  addToolView(KDockWidget::DockLeft,prBox,SmallIcon("view_tree"), i18n("Projects"));
-  projectlist = new KateProjectList (this, prBox/*filelistDock*/, "projectlist");
-  projectviews = new KateProjectViews (this, prBox/*filelistDock*/, "projectviews");
-  prBox->setStretchFactor(projectviews, 2);
-  prBox->show ();
-  projectlist->show ();
-  projectviews->show ();
 
   fileselector = new KateFileSelector( this, m_viewManager, /*fileselectorDock*/ this, "operator");
   addToolView(KDockWidget::DockLeft,fileselector, SmallIcon("fileopen"), i18n("Filesystem Browser"));
@@ -272,14 +249,6 @@ void KateMainWindow::setupActions()
   a=KStdAction::configureToolbars(this, SLOT(slotEditToolbars()), actionCollection(), "set_configure_toolbars");
   a->setWhatsThis(i18n("Configure which items should appear in the toolbar(s)."));
 
-  // project menu
-  a = new KAction(i18n("&New Project..."), "filenew", 0, this, SLOT(slotProjectNew()), actionCollection(), "project_new");
-  a = new KAction(i18n("&Open Project..."), "fileopen", 0, this, SLOT(slotProjectOpen()), actionCollection(), "project_open");
-  saveProject = new KAction(i18n("&Save Project"), "filesave", 0, this, SLOT(slotProjectSave()), actionCollection(), "project_save");
-  closeProject = new KAction(i18n("&Close Project"), "fileclose", 0, this, SLOT(slotProjectClose()), actionCollection(), "project_close");
-
-  recentProjects = new KRecentFilesAction (i18n("Open &Recent"), KShortcut(), this, SLOT(openConstURLProject (const KURL&)),actionCollection(), "project_open_recent");
-
   settingsConfigure = KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
   settingsConfigure->setWhatsThis(i18n("Configure various aspects of this application and the editing component."));
 
@@ -300,8 +269,6 @@ void KateMainWindow::setupActions()
   connect(m_viewManager,SIGNAL(viewChanged()),this,SLOT(slotUpdateOpenWith()));
 
   slotWindowActivated ();
-
-  projectlist->setupActions();
 }
 
 void KateMainWindow::slotDocumentCloseAll() {
@@ -337,12 +304,11 @@ bool KateMainWindow::queryClose_internal() {
  */
 bool KateMainWindow::queryClose()
 {
-  // session saving, can we close all projects & views ?
+  // session saving, can we close all views ?
   // just test, not close them actually
   if (kapp->sessionSaving())
   {
-    return ( KateProjectManager::self()->queryCloseAll () &&
-             queryClose_internal() );
+    return queryClose_internal ();
   }
 
   // normal closing of window
@@ -350,10 +316,9 @@ bool KateMainWindow::queryClose()
   if ( ((KateApp *)kapp)->mainWindows () > 1 )
     return true;
 
-  // last one: check if we can close all projects/document, try run
+  // last one: check if we can close all documents, try run
   // and save projects/docs if we really close down !
-  if ( KateProjectManager::self()->queryCloseAll () &&
-       queryClose_internal() )
+  if ( queryClose_internal () )
   {
     KConfig *sc = ((KateApp *)kapp)->kateSessionManager()->activeSession().configWrite();
 
@@ -409,8 +374,6 @@ void KateMainWindow::readOptions(KConfig *config)
   fileOpenRecent->loadEntries(config, "Recent Files");
 
   fileselector->readConfig(config, "fileselector");
-
-  recentProjects->loadEntries (config, "Recent Projects");
 }
 
 void KateMainWindow::saveOptions(KConfig *config)
@@ -437,8 +400,6 @@ void KateMainWindow::saveOptions(KConfig *config)
   fileselector->writeConfig(config, "fileselector");
 
   filelist->writeConfig(config, "Filelist");
-
-  recentProjects->saveEntries (config, "Recent Projects");
 }
 
 void KateMainWindow::slotWindowActivated ()
@@ -824,98 +785,6 @@ bool KateMainWindow::showToolView(KMDI::ToolViewAccessor *){return false;}
 bool KateMainWindow::hideToolView(QWidget *){return false;}
 bool KateMainWindow::hideToolView(KMDI::ToolViewAccessor *){return false;}
 
-void KateMainWindow::slotProjectNew ()
-{
-  ProjectInfo *info = KateProjectManager::self()->newProjectDialog (this);
-
-  if (info)
-  {
-    createProject (info->type, info->name, info->fileName);
-    delete info;
-  }
-}
-
-void KateMainWindow::slotProjectOpen ()
-{
-  QString fileName = KFileDialog::getOpenFileName (QString::null, QString ("*.kateproject|") + i18n("Kate Project Files") + QString (" (*.kateproject)"), this, i18n("Open Kate Project"));
-
-  if (!fileName.isEmpty())
-    openProject (fileName);
-}
-
-void KateMainWindow::slotProjectSave ()
-{
-  if (m_project)
-    m_project->save ();
-}
-
-void KateMainWindow::slotProjectClose ()
-{
-  if (m_project)
-  {
-    KateProjectManager::self()->close (m_project);
-  }
-}
-
-void KateMainWindow::activateProject (Kate::Project *project)
-{
-//   kdDebug(13001)<<"activating project "<<project<<endl;
-  if (m_project)
-    KateProjectManager::self()->disableProjectGUI (m_project, this);
-
-  if (project)
-    KateProjectManager::self()->enableProjectGUI (project, this);
-
-  m_project = project;
-
-  if (project)
-  {
-    KateProjectManager::self()->setCurrentProject (project);
-    m_projectNumber = project->projectNumber ();
-  }
-  else
-    m_projectNumber = 0;
-
-  saveProject->setEnabled(project != 0);
-  closeProject->setEnabled(project != 0);
-
-  emit m_mainWindow->projectChanged ();
-}
-
-Kate::Project *KateMainWindow::createProject (const QString &type, const QString &name, const QString &filename)
-{
-  Kate::Project *project = KateProjectManager::self()->create (type, name, filename);
-
-  if (project)
-    activateProject (project);
-
-  return project;
-}
-
-Kate::Project *KateMainWindow::openProject (const QString &filename)
-{
-  Kate::Project *project = KateProjectManager::self()->open (filename);
-
-  if (project)
-  {
-    recentProjects->addURL ( KURL(filename) );
-    activateProject (project);
-  }
-
-  return project;
-}
-
-void KateMainWindow::projectDeleted (uint projectNumber)
-{
-  if (projectNumber == m_projectNumber)
-  {
-    if (KateProjectManager::self()->projects() > 0)
-      activateProject (KateProjectManager::self()->project(KateProjectManager::self()->projects()-1));
-    else
-      activateProject (0);
-  }
-}
-
 void KateMainWindow::slotDocumentCreated (Kate::Document *doc)
 {
   connect(doc,SIGNAL(modStateChanged(Kate::Document *)),this,SLOT(updateCaption(Kate::Document *)));
@@ -947,11 +816,6 @@ void KateMainWindow::updateCaption (Kate::Document *doc)
   }
 
   setCaption( KStringHandler::lsqueeze(c,64), m_viewManager->activeView()->getDoc()->isModified());
-}
-
-void KateMainWindow::openConstURLProject (const KURL&url)
-{
-  openProject (url.path());
 }
 
 void KateMainWindow::saveProperties(KConfig *config) {
@@ -1003,7 +867,6 @@ void KateMainWindow::readProperties(KConfig *config)
 
 void KateMainWindow::saveGlobalProperties( KConfig* sessionConfig )
 {
-  KateProjectManager::self()->saveProjectList (sessionConfig);
   KateDocManager::self()->saveDocumentList (sessionConfig);
 }
 

@@ -34,11 +34,6 @@ class KateMainWindowDCOPIface : public DCOPObject
     KateMainWindowDCOPIface (KateMainWindow *w);
 
   k_dcop:
-    DCOPRef activeProject () const;
-
-    DCOPRef createProject (QString type, QString name, QString filename);
-
-    DCOPRef openProject (QString filename);
 
   private:
     KateMainWindow *m_w;

@@ -1,7 +1,0 @@
-<!DOCTYPE kpartgui>
-<kpartplugin name="katedefaultproject" library="libkatedefaultprojectplugin" version="1">
-<MenuBar>
- <Menu name="project"><Text>&amp;Project</Text>
- </Menu>
-</MenuBar>
-</kpartplugin>

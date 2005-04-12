@@ -23,7 +23,7 @@
 
 #include <config.h>
 
-#define KATE_VERSION "2.4"
+#define KATE_VERSION "2.5"
 
 class QComboBox;
 class QDateTime;

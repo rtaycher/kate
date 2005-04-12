@@ -30,9 +30,7 @@ namespace Kate
 {
 
 class Application;
-class Project;
 class MainWindow;
-
 
 class KDE_EXPORT Plugin : public QObject
 {
@@ -52,40 +50,6 @@ class KDE_EXPORT Plugin : public QObject
     class PrivatePlugin *d;
     static unsigned int globalPluginNumber;
     unsigned int myPluginNumber;
-};
-
-class KDE_EXPORT ProjectPlugin : public Plugin
-{
-  friend class PrivateProjectPlugin;
-
-  Q_OBJECT
-
-  public:
-    ProjectPlugin (Project *project = 0, const char *name = 0 );
-    virtual ~ProjectPlugin ();
-
-    unsigned int projectPluginNumber () const;
-
-    Project *project() const;
-
-    // default implementations returns true of the following bool methodes
-
-    virtual bool save ();
-    virtual bool queryClose ();
-    virtual bool close ();
-
-    // default implementations don't modify the given list at all
-
-    virtual void addDirs (const QString &dir, QStringList &dirs);
-    virtual void removeDirs (const QString &dir, QStringList &dirs);
-
-    virtual void addFiles (const QString &dir, QStringList &files);
-    virtual void removeFiles (const QString &dir, QStringList &files);
-
-  private:
-    class PrivateProjectPlugin *d;
-    static unsigned int globalProjectPluginNumber;
-    unsigned int myProjectPluginNumber;
 };
 
 class KDE_EXPORT InitPlugin : public Plugin
@@ -137,7 +101,6 @@ class KDE_EXPORT InitPlugin : public Plugin
 };
 
 Plugin *createPlugin ( const char* libname, Application *application = 0, const char *name = 0,const QStringList &args = QStringList() );
-ProjectPlugin *createProjectPlugin ( const char* libname, Project *project = 0, const char *name = 0,const QStringList &args = QStringList() );
 
 /*
  * view plugin class
