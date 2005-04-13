@@ -146,14 +146,21 @@ class KateSessionManager : public QObject
      * @param session session to activate
      * @param closeLast try to close last session or not?
      * @param saveLast try to save last session or not?
+     * @param loadNew load new session stuff?
      */
-    void activateSession (const KateSession &session, bool closeLast = true, bool saveLast = true);
+    void activateSession (const KateSession &session, bool closeLast = true, bool saveLast = true, bool loadNew = true);
 
     /**
      * create a new session
      * @param name session name
      */
     KateSession createSession (const QString &name);
+
+    /**
+     * save current session
+     * for sessions without filename: save nothing
+     */
+    bool saveActiveSession ();
 
     /**
      * return the current active session
@@ -184,6 +191,11 @@ class KateSessionManager : public QObject
      * try to open a existing session
      */
     void sessionOpen ();
+
+    /**
+     * try to save current session
+     */
+    void sessionSave ();
 
   private slots:
     void dirty (const QString &path);
@@ -233,19 +245,14 @@ class KateSessionChooser : public KDialogBase
 
   protected slots:
     /**
-     * replace all pressed
+     * open session
      */
     void slotUser1 ();
 
     /**
-     * last pressed
+     * new session
      */
     void slotUser2 ();
-
-    /**
-     * Yes pressed
-     */
-    void slotUser3 ();
 
   private:
     KListView *m_sessions;

@@ -273,7 +273,7 @@ void KateMainWindow::setupActions()
   // session actions
   a=new KAction(i18n("&New"), "filenew", 0, KateSessionManager::self(), SLOT(sessionNew()), actionCollection(), "sessions_new");
   a=new KAction(i18n("&Open"), "fileopen", 0, KateSessionManager::self(), SLOT(sessionOpen()), actionCollection(), "sessions_open");
-
+  a=new KAction(i18n("&Save"), "filesave", 0, KateSessionManager::self(), SLOT(sessionSave()), actionCollection(), "sessions_save");
 }
 
 void KateMainWindow::slotDocumentCloseAll() {
@@ -325,16 +325,7 @@ bool KateMainWindow::queryClose()
   // and save projects/docs if we really close down !
   if ( queryClose_internal () )
   {
-    KConfig *sc = ((KateApp *)kapp)->kateSessionManager()->activeSession().configWrite();
-
-    if (sc)
-    {
-      KateDocManager::self()->saveDocumentList (sc);
-      saveProperties (sc);
-      sc->sync();
-    }
-
-    delete sc;
+    ((KateApp *)kapp)->kateSessionManager()->saveActiveSession();
 
     KConfig *c = kapp->config();
     c->setGroup("General");
