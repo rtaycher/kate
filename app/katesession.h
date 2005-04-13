@@ -180,6 +180,13 @@ class KateSessionManager : public QObject
      */
     void chooseSession ();
 
+    /**
+     * queryClose
+     * try if the current session can be closed without harm
+     * e.g. ask for name if session has none
+     */
+    bool queryClose ();
+
   public slots:
     /**
      * try to start a new session

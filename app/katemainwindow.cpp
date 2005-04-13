@@ -322,8 +322,8 @@ bool KateMainWindow::queryClose()
     return true;
 
   // last one: check if we can close all documents, try run
-  // and save projects/docs if we really close down !
-  if ( queryClose_internal () )
+  // and save sessions/docs if we really close down !
+  if ( queryClose_internal () && KateSessionManager::self()->queryClose () )
   {
     ((KateApp *)kapp)->kateSessionManager()->saveActiveSession();
 

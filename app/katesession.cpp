@@ -303,6 +303,41 @@ void KateSessionManager::chooseSession ()
   delete chooser;
 }
 
+bool KateSessionManager::queryClose ()
+{
+  if (activeSession().isValid())
+    return true;
+
+  int res = KMessageBox::warningYesNoCancel( 0,
+                                i18n ("Kate is running with a new session. To save it, you have to specify a session name. Save the new session?"),
+                                i18n ("Save new Session?"),
+                                KStdGuiItem::yes(),
+                                KStdGuiItem::no(),
+                                "Save Session On Close"
+       );
+
+  if (res == KMessageBox::Cancel)
+    return false;
+
+  if (res == KMessageBox::No)
+    return true;
+
+  bool ok = false;
+  QString name = KInputDialog::getText (i18n("Specify a Name for Current Session"), i18n("Session Name"), "", &ok);
+
+  if (!ok)
+    return false;
+
+  if (name.isEmpty())
+  {
+    KMessageBox::error (0, i18n("To save a new session, you must specify a name!"), i18n ("Missing Session Name"));
+    return false;
+  }
+
+  activateSession(createSession (name), false, false, false);
+  return true;
+}
+
 void KateSessionManager::sessionNew ()
 {
   activateSession (KateSession (this, "", ""));
