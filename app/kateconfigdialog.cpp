@@ -183,7 +183,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
 
   //BEGIN Session page
   path << i18n("Application") << i18n("Sessions");
-  QFrame* frSessions = addPage(path, i18n("Session Management"), BarIcon("gohome", KIcon::SizeSmall));
+  QFrame* frSessions = addPage(path, i18n("Session Management"), BarIcon("history", KIcon::SizeSmall));
 
   lo = new QVBoxLayout( frSessions );
   lo->setSpacing(KDialog::spacingHint());
