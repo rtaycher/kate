@@ -202,9 +202,9 @@ int KateApp::newInstance()
     else
     {
       // user specified session to open
-      if (args->isSet ("s"))
+      if (args->isSet ("start-session"))
       {
-        kateSessionManager()->activateSession (kateSessionManager()->giveSession (args->getOption("s")), false, false);
+        kateSessionManager()->activateSession (kateSessionManager()->giveSession (args->getOption("start-session")), false, false);
       }
       else
       {
