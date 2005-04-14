@@ -220,6 +220,10 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   else
     sessions_start->setButton (2);
 
+  connect(rb1, SIGNAL(toggled(bool)), this, SLOT(slotChanged()));
+  connect(rb2, SIGNAL(toggled(bool)), this, SLOT(slotChanged()));
+  connect(rb3, SIGNAL(toggled(bool)), this, SLOT(slotChanged()));
+
   sessions_exit = new QButtonGroup( 1, Qt::Horizontal, i18n("Behavior on Application Exit or Session Switch"), frSessions );
   lo->add (sessions_exit);
 
