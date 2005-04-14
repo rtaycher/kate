@@ -60,18 +60,6 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState)
   if (isRestored())
   {
     m_sessionConfig = sessionConfig ();
-    m_sessionConfigDelete = false;
-  }
-  else // no restoring, use our own katesessionrc from start on !
-  {
-    QString session ("katesessionrc");
-    if (args->isSet("s"))
-    {
-      session = args->getOption("s");
-    }
-
-    m_sessionConfig = new KSimpleConfig (session, false);
-    m_sessionConfigDelete = true;
   }
 
   // Don't handle DCOP requests yet
@@ -138,10 +126,6 @@ KateApp::~KateApp ()
 
   // delete this now, or we crash
   delete m_docManager;
-
-  // our session config is our own one, cleanup
-  if (m_sessionConfigDelete)
-    delete m_sessionConfig;
 }
 
 void KateApp::callOnEventLoopEnter()
@@ -205,7 +189,9 @@ int KateApp::newInstance()
       // restore the nice files ;) we need it
       Kate::Document::setOpenErrorDialogsActivated (false);
 
-      m_docManager->restoreDocumentList (sessionConfig());
+      // use config given by session manager
+      if (sessionConfig())
+        m_docManager->restoreDocumentList (sessionConfig());
 
       Kate::Document::setOpenErrorDialogsActivated (true);
 
