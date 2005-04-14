@@ -205,6 +205,41 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
 
   path.clear();
 
+  //BEGIN Session page
+  path << i18n("Application") << i18n("Sessions");
+  QFrame* frSessions = addPage(path, i18n("Session Managment"), BarIcon("gohome", KIcon::SizeSmall));
+
+  lo = new QVBoxLayout( frSessions );
+  lo->setSpacing(KDialog::spacingHint());
+
+  QRadioButton *rb1, *rb2, *rb3;
+
+  sessions_start = new QButtonGroup( 1, Qt::Horizontal, i18n("Behavior on Application Startup"), frSessions );
+  lo->add (sessions_start);
+
+  sessions_start->setRadioButtonExclusive( true );
+  sessions_start->insert( rb1=new QRadioButton( i18n("&Start new Session"), sessions_start ), 0 );
+  sessions_start->insert( rb2=new QRadioButton( i18n("&Load last used Session"), sessions_start ), 1 );
+  sessions_start->insert( rb3=new QRadioButton( i18n("&Manually choose a session"), sessions_start ), 2 );
+
+  config->setGroup("General");
+  QString sesStart (config->readEntry ("Startup Session", "manual"));
+  if (sesStart == "new")
+    sessions_start->setButton (0);
+  else if (sesStart == "last")
+    sessions_start->setButton (1);
+  else
+    sessions_start->setButton (2);
+
+  connect(rb1, SIGNAL(toggled(bool)), this, SLOT(slotChanged()));
+  connect(rb2, SIGNAL(toggled(bool)), this, SLOT(slotChanged()));
+  connect(rb3, SIGNAL(toggled(bool)), this, SLOT(slotChanged()));
+
+  lo->addStretch(1); // :-] works correct without autoadd
+  //END Session page
+
+  path.clear();
+
   // file selector page
   path << i18n("Application") << i18n("File Selector");
 
@@ -326,6 +361,15 @@ void KateConfigDialog::slotApply()
     config->setGroup("General");
     config->writeEntry("Restore Documents", cb_reopenFiles->isChecked());
     config->writeEntry("Restore Window Configuration", cb_restoreVC->isChecked());
+
+    int bu = sessions_start->id (sessions_start->selected());
+
+    if (bu == 0)
+      config->writeEntry ("Startup Session", "new");
+    else if (bu == 1)
+      config->writeEntry ("Startup Session", "last");
+    else
+      config->writeEntry ("Startup Session", "manual");
 
     config->writeEntry("Save Meta Infos", cb_saveMetaInfos->isChecked());
     KateDocManager::self()->setSaveMetaInfos(cb_saveMetaInfos->isChecked());

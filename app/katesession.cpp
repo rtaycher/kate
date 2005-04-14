@@ -317,21 +317,29 @@ void KateSessionManager::chooseSession ()
 
   // get last used session, default to default session
   QString lastSession (c->readEntry ("Last Session", "default.katesession"));
-  bool reopenLast (c->readBoolEntry ("Auto Open Last Session", false));
+  QString sesStart (c->readEntry ("Startup Session", "manual"));
 
   // uhh, just open last used session, show no chooser
-  if (reopenLast)
+  if (sesStart == "last")
   {
     activateSession (new KateSession (this, lastSession, ""), false, false);
     return;
   }
 
-  KateSessionChooser *chooser = new KateSessionChooser (0, lastSession, reopenLast);
+  // start with empty new session
+  if (sesStart == "new")
+  {
+    activateSession (new KateSession (this, "", ""), false, false);
+    return;
+  }
+
+  KateSessionChooser *chooser = new KateSessionChooser (0, lastSession);
 
   bool retry = true;
+  int res = 0;
   while (retry)
   {
-    int res = chooser->exec ();
+    res = chooser->exec ();
 
     switch (res)
     {
@@ -358,9 +366,17 @@ void KateSessionManager::chooseSession ()
   }
 
   // write back our nice boolean :)
-  c->setGroup("General");
-  c->writeEntry ("Auto Open Last Session", chooser->reopenLastSession ());
-  c->sync ();
+  if (chooser->reopenLastSession ())
+  {
+    c->setGroup("General");
+
+    if (res == KateSessionChooser::resultOpen)
+      c->writeEntry ("Startup Session", "last");
+    else if (res == KateSessionChooser::resultNew)
+      c->writeEntry ("Startup Session", "new");
+
+    c->sync ();
+  }
 
   delete chooser;
 }
@@ -455,7 +471,7 @@ class KateSessionChooserItem : public QListViewItem
     KateSession::Ptr session;
 };
 
-KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSession, bool reopenLast)
+KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSession)
  : KDialogBase (  parent
                   , ""
                   , true
@@ -496,7 +512,6 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
   }
 
   m_useLast = new QCheckBox (i18n ("&Don't ask again on start, remember the choice."), vb);
-  m_useLast->setChecked (reopenLast);
 
   setResult (resultNone);
 }

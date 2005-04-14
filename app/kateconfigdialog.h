@@ -68,6 +68,7 @@ class KateConfigDialog : public KDialogBase
     class QCheckBox *cb_modNotifications;
     class QCheckBox *cb_saveMetaInfos;
     class QSpinBox *sb_daysMetaInfos;
+    class QButtonGroup *sessions_start;
     Kate::ConfigPage *fileSelConfigPage;
     Kate::ConfigPage *filelistConfigPage;
     Kate::ConfigPage *configExternalToolsPage;
