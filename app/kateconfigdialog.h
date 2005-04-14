@@ -31,6 +31,10 @@
 
 #include <kdialogbase.h>
 
+class QCheckBox;
+class QSpinBox;
+class QButtonGroup;
+
 struct PluginPageListItem
 {
   Kate::Plugin *plugin;
@@ -60,16 +64,15 @@ class KateConfigDialog : public KDialogBase
     Kate::View* v;
     bool dataChanged;
 
-    class QCheckBox* cb_reopenFiles;
-    class QCheckBox* cb_restoreVC;
-    class QCheckBox *cb_singleInstance;
-    class QCheckBox *cb_fullPath;
-    class QCheckBox *cb_syncKonsole;
-    class QCheckBox *cb_modNotifications;
-    class QCheckBox *cb_saveMetaInfos;
-    class QSpinBox *sb_daysMetaInfos;
-    class QButtonGroup *sessions_start;
-    class QButtonGroup *sessions_exit;
+    QCheckBox *cb_singleInstance;
+    QCheckBox *cb_fullPath;
+    QCheckBox *cb_syncKonsole;
+    QCheckBox *cb_modNotifications;
+    QCheckBox *cb_saveMetaInfos;
+    QSpinBox *sb_daysMetaInfos;
+    QCheckBox* cb_restoreVC;
+    QButtonGroup *sessions_start;
+    QButtonGroup *sessions_exit;
     Kate::ConfigPage *fileSelConfigPage;
     Kate::ConfigPage *filelistConfigPage;
     Kate::ConfigPage *configExternalToolsPage;

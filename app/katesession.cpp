@@ -260,7 +260,13 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
 
     // window config
     if (sc)
-      win->readProperties (sc);
+    {
+      KConfig *c = kapp->config();
+      c->setGroup("General");
+
+      if (c->readBoolEntry("Restore Window Configuration", false))
+        win->readProperties (sc);
+    }
 
     Kate::Document::setOpenErrorDialogsActivated (true);
     win->show ();

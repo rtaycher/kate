@@ -101,32 +101,8 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   lo->setSpacing(KDialog::spacingHint());
   config->setGroup("General");
 
-  // GROUP with the one below: "Startup"
-  QButtonGroup *bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("Start&up"), frGeneral );
-  lo->addWidget( bgStartup );
-
-  // reopen files
-  cb_reopenFiles = new QCheckBox( bgStartup );
-  cb_reopenFiles->setText(i18n("R&eopen files at startup"));
-  //config->setGroup("General");
-  cb_reopenFiles->setChecked( config->readBoolEntry("Restore Documents", false) );
-  QWhatsThis::add(cb_reopenFiles, i18n(
-        "If this is enabled Kate will attempt to reopen files that were open when you closed "
-        "last time. Cursor position will be recovered if possible. Non-existent files will "
-        "not be opened."));
-  connect( cb_reopenFiles, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
-
-  //config->setGroup("General");
-  // restore view  config
-  cb_restoreVC = new QCheckBox( bgStartup );
-  cb_restoreVC->setText(i18n("Restore &window configuration"));
-  cb_restoreVC->setChecked( config->readBoolEntry("Restore Window Configuration", false) );
-  QWhatsThis::add(cb_restoreVC, i18n(
-        "Check this if you want all your views and frames restored each time you open Kate"));
-  connect( cb_restoreVC, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
-
   // GROUP with the one below: "Appearance"
-  bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("&Appearance"), frGeneral );
+  QButtonGroup *bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("&Appearance"), frGeneral );
   lo->addWidget( bgStartup );
 
   // show full path in title
@@ -211,6 +187,19 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
 
   lo = new QVBoxLayout( frSessions );
   lo->setSpacing(KDialog::spacingHint());
+
+  // GROUP with the one below: "Startup"
+  bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("Elements of a Session"), frSessions );
+  lo->addWidget( bgStartup );
+
+  // restore view  config
+  cb_restoreVC = new QCheckBox( bgStartup );
+  cb_restoreVC->setText(i18n("Include &window configuration"));
+  config->setGroup("General");
+  cb_restoreVC->setChecked( config->readBoolEntry("Restore Window Configuration", false) );
+  QWhatsThis::add(cb_restoreVC, i18n(
+        "Check this if you want all your views and frames restored each time you open Kate"));
+  connect( cb_restoreVC, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
   QRadioButton *rb1, *rb2, *rb3;
 
@@ -376,7 +365,7 @@ void KateConfigDialog::slotApply()
     config->setGroup("KDE");
     config->writeEntry("MultipleInstances",cb_singleInstance->isChecked());
     config->setGroup("General");
-    config->writeEntry("Restore Documents", cb_reopenFiles->isChecked());
+
     config->writeEntry("Restore Window Configuration", cb_restoreVC->isChecked());
 
     int bu = sessions_start->id (sessions_start->selected());
