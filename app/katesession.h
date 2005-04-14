@@ -157,6 +157,13 @@ class KateSessionManager : public QObject
     KateSession createSession (const QString &name);
 
     /**
+     * return session with given name
+     * if no existing session matches, create new one with this name
+     * @param name session name
+     */
+    KateSession giveSession (const QString &name);
+
+    /**
      * save current session
      * for sessions without filename: save nothing
      */

@@ -193,6 +193,10 @@ KURL KateApp::initScript() const {return m_initURL;}
 
 int KateApp::newInstance()
 {
+  // get our command line arguments ;)
+  KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
+
+  // this will ensure some stuff is only done on real application start
   if (m_firstStart)
   {
     // we restore our great stuff here now ;) super
@@ -213,16 +217,22 @@ int KateApp::newInstance()
     }
     else
     {
-      // let the user choose session if possible
-      kateSessionManager()->chooseSession ();
+      // user specified session to open
+      if (args->isSet ("s"))
+      {
+        kateSessionManager()->activateSession (kateSessionManager()->giveSession (args->getOption("s")), false, false);
+      }
+      else
+      {
+        // let the user choose session if possible
+        kateSessionManager()->chooseSession ();
+      }
     }
   }
 
   // oh, no mainwindow, create one, should not happen, but make sure ;)
   if (mainWindows() == 0)
     newMainWindow ();
-
-  KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 
   // search the right main window
   // or create one if no window on the current desktop

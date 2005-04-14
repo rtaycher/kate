@@ -231,6 +231,20 @@ KateSession KateSessionManager::createSession (const QString &name)
   return KateSession (this, QString (md5.hexDigest()) + ".katesession", name);
 }
 
+KateSession KateSessionManager::giveSession (const QString &name)
+{
+  if (name.isEmpty())
+    return KateSession (this, "", "");
+
+  for (unsigned int i=0; i < m_sessionList.count(); ++i)
+  {
+    if (m_sessionList[i]->sessionName() == name)
+      return *m_sessionList[i];
+  }
+
+  return createSession (name);
+}
+
 bool KateSessionManager::saveActiveSession ()
 {
   KConfig *sc = activeSession().configWrite();
