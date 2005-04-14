@@ -567,10 +567,10 @@ KateSessionOpenDialog::KateSessionOpenDialog (QWidget *parent)
                   , true
                   , i18n ("Open Session")
                   , KDialogBase::User1 | KDialogBase::User2
-                  , KDialogBase::User1
+                  , KDialogBase::User2
                   , false
-                  , KStdGuiItem::open ()
                   , KStdGuiItem::cancel ()
+                  , KStdGuiItem::open ()
                 )
 {
   QHBox *page = new QHBox (this);
@@ -613,12 +613,12 @@ KateSession::Ptr KateSessionOpenDialog::selectedSession ()
 
 void KateSessionOpenDialog::slotUser1 ()
 {
-  done (resultOk);
+  done (resultCancel);
 }
 
 void KateSessionOpenDialog::slotUser2 ()
 {
-  done (resultCancel);
+  done (resultOk);
 }
 
 //END CHOOSER DIALOG
