@@ -76,22 +76,17 @@ class KateSession  : public KShared
     const QString &sessionName () const { return m_sessionName; }
 
     /**
-     * set the session name
-     * only does this if given name non empty
-     */
-    void setSessionName (const QString &name);
-
-    /**
      * is this a valid session? if not, don't use any session if this is
      * the active one
      */
-    bool isValid () const { return !m_sessionFileRel.isEmpty(); }
+    bool isNew () const { return m_sessionName.isEmpty(); }
 
     /**
      * create the session file, if not existing
+     * @param name name for this session
      * @return true if created, false if no creation needed
      */
-    bool create ();
+    bool create (const QString &name);
 
     /**
      * config to read
@@ -197,8 +192,10 @@ class KateSessionManager : public QObject
     /**
      * save current session
      * for sessions without filename: save nothing
+     * @param tryAsk should we ask user if needed?
+     * @return success
      */
-    bool saveActiveSession ();
+    bool saveActiveSession (bool tryAsk = false);
 
     /**
      * return the current active session
@@ -217,13 +214,6 @@ class KateSessionManager : public QObject
      * initial session chooser, on app start
      */
     void chooseSession ();
-
-    /**
-     * queryClose
-     * try if the current session can be closed without harm
-     * e.g. ask for name if session has none
-     */
-    bool queryClose ();
 
   public slots:
     /**

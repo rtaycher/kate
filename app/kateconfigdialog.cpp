@@ -218,8 +218,8 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   lo->add (sessions_start);
 
   sessions_start->setRadioButtonExclusive( true );
-  sessions_start->insert( rb1=new QRadioButton( i18n("&Start new Session"), sessions_start ), 0 );
-  sessions_start->insert( rb2=new QRadioButton( i18n("&Load last used Session"), sessions_start ), 1 );
+  sessions_start->insert( rb1=new QRadioButton( i18n("&Start new session"), sessions_start ), 0 );
+  sessions_start->insert( rb2=new QRadioButton( i18n("&Load last used session"), sessions_start ), 1 );
   sessions_start->insert( rb3=new QRadioButton( i18n("&Manually choose a session"), sessions_start ), 2 );
 
   config->setGroup("General");
@@ -230,6 +230,23 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
     sessions_start->setButton (1);
   else
     sessions_start->setButton (2);
+
+  sessions_exit = new QButtonGroup( 1, Qt::Horizontal, i18n("Behavior on Application Exit or Session Switch"), frSessions );
+  lo->add (sessions_exit);
+
+  sessions_exit->setRadioButtonExclusive( true );
+  sessions_exit->insert( rb1=new QRadioButton( i18n("&Don't save session"), sessions_exit ), 0 );
+  sessions_exit->insert( rb2=new QRadioButton( i18n("&Save session"), sessions_exit ), 1 );
+  sessions_exit->insert( rb3=new QRadioButton( i18n("&Ask user"), sessions_exit ), 2 );
+
+  config->setGroup("General");
+  QString sesExit (config->readEntry ("Session Exit", "ask"));
+  if (sesExit == "discard")
+    sessions_exit->setButton (0);
+  else if (sesExit == "save")
+    sessions_exit->setButton (1);
+  else
+    sessions_exit->setButton (2);
 
   connect(rb1, SIGNAL(toggled(bool)), this, SLOT(slotChanged()));
   connect(rb2, SIGNAL(toggled(bool)), this, SLOT(slotChanged()));
@@ -370,6 +387,15 @@ void KateConfigDialog::slotApply()
       config->writeEntry ("Startup Session", "last");
     else
       config->writeEntry ("Startup Session", "manual");
+
+    bu = sessions_exit->id (sessions_exit->selected());
+
+    if (bu == 0)
+      config->writeEntry ("Session Exit", "discard");
+    else if (bu == 1)
+      config->writeEntry ("Session Exit", "save");
+    else
+      config->writeEntry ("Session Exit", "ask");
 
     config->writeEntry("Save Meta Infos", cb_saveMetaInfos->isChecked());
     KateDocManager::self()->setSaveMetaInfos(cb_saveMetaInfos->isChecked());

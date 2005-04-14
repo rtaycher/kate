@@ -75,18 +75,18 @@ KateSession::KateSession (KateSessionManager *manager, const QString &fileName, 
     return;
   }
 
-  // uhh, no name given
-  if (m_sessionName.isEmpty())
-  {
-    if (fileName == "default.katesession")
-      m_sessionName = i18n("Default Session");
-    else
-      m_sessionName = i18n("Session (%1)").arg(QTime::currentTime().toString(Qt::LocalDate));
-  }
-
   // filename not empty, create the file
   if (!fileName.isEmpty())
   {
+     // uhh, no name given
+    if (m_sessionName.isEmpty())
+    {
+      if (fileName == "default.katesession")
+        m_sessionName = i18n("Default Session");
+      else
+        m_sessionName = i18n("Session (%1)").arg(QTime::currentTime().toString(Qt::LocalDate));
+    }
+
     // create the file, write name to it!
     KSimpleConfig config (sessionFile ());
     config.setGroup ("General");
@@ -106,18 +106,12 @@ QString KateSession::sessionFile () const
   return m_manager->sessionsDir() + "/" + m_sessionFileRel;
 }
 
-void KateSession::setSessionName (const QString &name)
+bool KateSession::create (const QString &name)
 {
-  if (name.isEmpty())
-    return;
+  if (name.isEmpty() || !m_sessionFileRel.isEmpty())
+    return false;
 
   m_sessionName = name;
-}
-
-bool KateSession::create ()
-{
-  if (isValid())
-    return false;
 
   // get a usable filename
   int s = time(0);
@@ -143,7 +137,7 @@ bool KateSession::create ()
 
 KConfig *KateSession::configRead ()
 {
-  if (!isValid())
+  if (m_sessionFileRel.isEmpty())
     return 0;
 
   if (m_readConfig)
@@ -154,7 +148,7 @@ KConfig *KateSession::configRead ()
 
 KConfig *KateSession::configWrite ()
 {
-  if (!isValid())
+  if (m_sessionFileRel.isEmpty())
     return 0;
 
   if (m_writeConfig)
@@ -238,7 +232,7 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
 
   // save last session or not?
   if (saveLast)
-    saveActiveSession ();
+    saveActiveSession (true);
 
   // really close last
   if (closeLast)
@@ -275,8 +269,8 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
 
 KateSession::Ptr KateSessionManager::createSession (const QString &name)
 {
-  KateSession::Ptr s = new KateSession (this, "", name);
-  s->create ();
+  KateSession::Ptr s = new KateSession (this, "", "");
+  s->create (name);
 
   return s;
 }
@@ -295,8 +289,48 @@ KateSession::Ptr KateSessionManager::giveSession (const QString &name)
   return createSession (name);
 }
 
-bool KateSessionManager::saveActiveSession ()
+bool KateSessionManager::saveActiveSession (bool tryAsk)
 {
+  if (tryAsk)
+  {
+    // app config
+    KConfig *c = kapp->config();
+    c->setGroup("General");
+
+    QString sesExit (c->readEntry ("Session Exit", "ask"));
+
+    if (sesExit == "discard")
+      return true;
+
+    if (sesExit == "ask")
+    {
+      KDialogBase *dlg = new KDialogBase (
+                    i18n ("Save Session?")
+                    , KDialogBase::Yes | KDialogBase::No
+                    , KDialogBase::Yes, KDialogBase::No
+                  );
+
+      bool dontAgain = false;
+      int res = KMessageBox::createKMessageBox(dlg, QMessageBox::Question,
+                              i18n("Save current session?"), QStringList(),
+                              i18n("Don't ask again"), &dontAgain, KMessageBox::Notify);
+
+      // remember to not ask again with right setting
+      if (dontAgain)
+      {
+        c->setGroup("General");
+
+        if (res == KDialogBase::No)
+          c->writeEntry ("Session Exit", "discard");
+        else
+          c->writeEntry ("Session Exit", "save");
+      }
+
+      if (res == KDialogBase::No)
+        return true;
+    }
+  }
+
   KConfig *sc = activeSession()->configWrite();
 
   if (!sc)
@@ -381,31 +415,6 @@ void KateSessionManager::chooseSession ()
   delete chooser;
 }
 
-bool KateSessionManager::queryClose ()
-{
-  if (activeSession()->isValid())
-    return true;
-
-  int res = KMessageBox::warningYesNoCancel( 0,
-                                i18n ("Kate is running with a new session. Should Kate autosave this Session for later use?"),
-                                i18n ("Save new Session?"),
-                                KStdGuiItem::yes(),
-                                KStdGuiItem::no(),
-                                "Save Session On Close"
-       );
-
-  if (res == KMessageBox::Cancel)
-    return false;
-
-  if (res == KMessageBox::No)
-    return true;
-
-  // create file for current session on disc
-  activeSession()->create ();
-
-  return true;
-}
-
 void KateSessionManager::sessionNew ()
 {
   activateSession (new KateSession (this, "", ""));
@@ -449,8 +458,7 @@ void KateSessionManager::sessionSave ()
     return;
   }
 
-  activeSession()->setSessionName (name);
-  activeSession()->create ();
+  activeSession()->create (name);
   saveActiveSession ();
 }
 
