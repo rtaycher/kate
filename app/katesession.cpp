@@ -502,12 +502,14 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
   setMainWidget(page);
 
   QHBox *hb = new QHBox (page);
+  hb->setSpacing (KDialog::spacingHint());
 
   QLabel *label = new QLabel (hb);
-  label->setPixmap (BarIcon("kate",64));
-  label->setMargin (16);
+  label->setPixmap (UserIcon("sessionchooser.png"));
+  label->setFrameStyle (QFrame::Panel | QFrame::Sunken);
 
   QVBox *vb = new QVBox (hb);
+  vb->setSpacing (KDialog::spacingHint());
 
   m_sessions = new KListView (vb);
   m_sessions->addColumn (i18n("Session Name"));
