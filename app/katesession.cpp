@@ -565,10 +565,10 @@ KateSessionOpenDialog::KateSessionOpenDialog (QWidget *parent)
  : KDialogBase (  parent
                   , ""
                   , true
-                  , i18n ("Session Chooser")
+                  , i18n ("Open Session")
                   , KDialogBase::User1 | KDialogBase::User2
                   , KDialogBase::User1
-                  , true
+                  , false
                   , KStdGuiItem::open ()
                   , KStdGuiItem::cancel ()
                 )
@@ -578,10 +578,6 @@ KateSessionOpenDialog::KateSessionOpenDialog (QWidget *parent)
   setMainWidget(page);
 
   QHBox *hb = new QHBox (page);
-
-  QLabel *label = new QLabel (hb);
-  label->setPixmap (BarIcon("kate",64));
-  label->setMargin (16);
 
   QVBox *vb = new QVBox (hb);
 
