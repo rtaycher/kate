@@ -112,11 +112,11 @@ void KateViewSpace::addView(Kate::View* v, bool show)
     if ( ! fn.isEmpty() )
     {
       QString vgroup = QString("%1 %2").arg(m_group).arg(fn);
-      if ( KateApp::kateSessionConfig()->hasGroup( vgroup ) )
+      /*if ( KateApp::kateSessionConfig()->hasGroup( vgroup ) )
       {
         KateApp::kateSessionConfig()->setGroup( vgroup );
         v->readSessionConfig( KateApp::kateSessionConfig() );
-      }
+      }*/
 
     }
   }
