@@ -76,10 +76,22 @@ class KateSession  : public KShared
     const QString &sessionName () const { return m_sessionName; }
 
     /**
+     * set the session name
+     * only does this if given name non empty
+     */
+    void setSessionName (const QString &name);
+
+    /**
      * is this a valid session? if not, don't use any session if this is
      * the active one
      */
-    bool isValid () const { return !(m_sessionFileRel.isEmpty() || m_sessionName.isEmpty()); }
+    bool isValid () const { return !m_sessionFileRel.isEmpty(); }
+
+    /**
+     * create the session file, if not existing
+     * @return true if created, false if no creation needed
+     */
+    bool create ();
 
     /**
      * config to read

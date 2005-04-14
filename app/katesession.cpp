@@ -41,7 +41,7 @@
 #include <qcheckbox.h>
 #include <qdatetime.h>
 
-#include <stdlib.h>
+#include <time.h>
 
 KateSession::KateSession (KateSessionManager *manager, const QString &fileName, const QString &name)
   : m_sessionFileRel (fileName)
@@ -51,9 +51,8 @@ KateSession::KateSession (KateSessionManager *manager, const QString &fileName, 
   , m_readConfig (0)
   , m_writeConfig (0)
 {
-  bool ex (!fileName.isEmpty() && KGlobal::dirs()->exists(sessionFile ()));
-
-  if (ex)
+  // given file exists, use it to load some stuff ;)
+  if (!fileName.isEmpty() && KGlobal::dirs()->exists(sessionFile ()))
   {
     KSimpleConfig config (sessionFile (), true);
 
@@ -72,18 +71,23 @@ KateSession::KateSession (KateSessionManager *manager, const QString &fileName, 
     // get the document count
     config.setGroup ("Open Documents");
     m_documents = config.readUnsignedNumEntry("Count", 0);
+
+    return;
   }
-  else if (!fileName.isEmpty())
+
+  // uhh, no name given
+  if (m_sessionName.isEmpty())
+  {
+    if (fileName == "default.katesession")
+      m_sessionName = i18n("Default Session");
+    else
+      m_sessionName = i18n("Session (%1)").arg(QTime::currentTime().toString(Qt::LocalDate));
+  }
+
+  // filename not empty, create the file
+  if (!fileName.isEmpty())
   {
     // create the file, write name to it!
-    if (m_sessionName.isEmpty())
-    {
-      if (fileName == "default.katesession")
-        m_sessionName = i18n("Default Session");
-      else
-        m_sessionName =  i18n ("Unnamed Session");
-    }
-
     KSimpleConfig config (sessionFile ());
     config.setGroup ("General");
     config.writeEntry ("Name", m_sessionName);
@@ -100,6 +104,41 @@ KateSession::~KateSession ()
 QString KateSession::sessionFile () const
 {
   return m_manager->sessionsDir() + "/" + m_sessionFileRel;
+}
+
+void KateSession::setSessionName (const QString &name)
+{
+  if (name.isEmpty())
+    return;
+
+  m_sessionName = name;
+}
+
+bool KateSession::create ()
+{
+  if (isValid())
+    return false;
+
+  // get a usable filename
+  int s = time(0);
+  QCString tname;
+  while (true)
+  {
+    tname.setNum (s++);
+    KMD5 md5 (tname);
+    m_sessionFileRel = md5.hexDigest() + ".katesession";
+
+    if (!KGlobal::dirs()->exists(sessionFile ()))
+      break;
+  }
+
+   // create the file, write name to it!
+  KSimpleConfig config (sessionFile ());
+  config.setGroup ("General");
+  config.writeEntry ("Name", m_sessionName);
+  config.sync ();
+
+  return true;
 }
 
 KConfig *KateSession::configRead ()
@@ -236,12 +275,10 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
 
 KateSession::Ptr KateSessionManager::createSession (const QString &name)
 {
+  KateSession::Ptr s = new KateSession (this, "", name);
+  s->create ();
 
-
-    KMD5 md5 (name.utf8());
-
-
-  return new KateSession (this, QString (md5.hexDigest()) + ".katesession", name);
+  return s;
 }
 
 KateSession::Ptr KateSessionManager::giveSession (const QString &name)
@@ -347,10 +384,9 @@ bool KateSessionManager::queryClose ()
   if (res == KMessageBox::No)
     return true;
 
+  // create file for current session on disc
+  activeSession()->create ();
 
-  QString autoname (i18n("Kate Autosave Session (%1)").arg(QTime::currentTime().toString(Qt::LocalDate)));
-
-  activateSession(createSession (autoname), false, false, false);
   return true;
 }
 
@@ -397,7 +433,8 @@ void KateSessionManager::sessionSave ()
     return;
   }
 
-  activateSession(createSession (name), false, false, false);
+  activeSession()->setSessionName (name);
+  activeSession()->create ();
   saveActiveSession ();
 }
 
