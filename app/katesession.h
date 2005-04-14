@@ -23,6 +23,7 @@
 
 #include <kdialogbase.h>
 #include <ksimpleconfig.h>
+#include <ksharedptr.h>
 
 #include <qobject.h>
 #include <qvaluelist.h>
@@ -34,8 +35,14 @@ class KListView;
 
 class QCheckBox;
 
-class KateSession
+class KateSession  : public KShared
 {
+  public:
+    /**
+     * Define a Shared-Pointer type
+     */
+    typedef KSharedPtr<KateSession> Ptr;
+
   public:
     /**
      * create a session from given file
@@ -76,14 +83,16 @@ class KateSession
 
     /**
      * config to read
-     * YOU MUST DELETE THE POINTER
+     * on first access, will create the config object, delete will be done automagic
+     * return 0 if we have no file to read config from atm
      * @return config to read from
      */
     KConfig *configRead ();
 
     /**
      * config to write
-     * YOU MUST DELETE THE POINTER
+     * on first access, will create the config object, delete will be done automagic
+     * return 0 if we have no file to write config to atm
      * @return config to write from
      */
     KConfig *configWrite ();
@@ -115,9 +124,19 @@ class KateSession
      * KateSessionMananger
      */
     KateSessionManager *m_manager;
+
+    /**
+     * simpleconfig to read from
+     */
+    KSimpleConfig *m_readConfig;
+
+    /**
+     * simpleconfig to write to
+     */
+    KSimpleConfig *m_writeConfig;
 };
 
-typedef QValueList<KateSession *> KateSessionList;
+typedef QValueList<KateSession::Ptr> KateSessionList;
 
 class KateSessionManager : public QObject
 {
@@ -148,20 +167,20 @@ class KateSessionManager : public QObject
      * @param saveLast try to save last session or not?
      * @param loadNew load new session stuff?
      */
-    void activateSession (const KateSession &session, bool closeLast = true, bool saveLast = true, bool loadNew = true);
+    void activateSession (KateSession::Ptr session, bool closeLast = true, bool saveLast = true, bool loadNew = true);
 
     /**
      * create a new session
      * @param name session name
      */
-    KateSession createSession (const QString &name);
+    KateSession::Ptr createSession (const QString &name);
 
     /**
      * return session with given name
      * if no existing session matches, create new one with this name
      * @param name session name
      */
-    KateSession giveSession (const QString &name);
+    KateSession::Ptr giveSession (const QString &name);
 
     /**
      * save current session
@@ -174,7 +193,7 @@ class KateSessionManager : public QObject
      * sessionFile == empty means we have no session around for this instance of kate
      * @return session active atm
      */
-    inline KateSession & activeSession () { return m_activeSession; }
+    inline KateSession::Ptr activeSession () { return m_activeSession; }
 
     /**
      * session dir
@@ -236,7 +255,7 @@ class KateSessionManager : public QObject
     /**
      * current active session
      */
-    KateSession m_activeSession;
+    KateSession::Ptr m_activeSession;
 };
 
 class KateSessionChooser : public KDialogBase
@@ -247,7 +266,7 @@ class KateSessionChooser : public KDialogBase
     KateSessionChooser (QWidget *parent, const QString &lastSession, bool reopenLast);
     ~KateSessionChooser ();
 
-    KateSession *selectedSession ();
+    KateSession::Ptr selectedSession ();
 
     bool reopenLastSession ();
 
@@ -281,7 +300,7 @@ class KateSessionOpenDialog : public KDialogBase
     KateSessionOpenDialog (QWidget *parent);
     ~KateSessionOpenDialog ();
 
-    KateSession *selectedSession ();
+    KateSession::Ptr selectedSession ();
 
     enum {
       resultOk,

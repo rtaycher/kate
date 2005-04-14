@@ -31,9 +31,10 @@
 #include "katemainwindow.h"
 #include "katedocmanager.h"
 #include "katepluginmanager.h"
-#include "katesession.h"
 
 #include <kuniqueapplication.h>
+
+class KateSessionManager;
 
 class KDE_EXPORT KateApp : public KUniqueApplication
 {
@@ -76,8 +77,6 @@ class KDE_EXPORT KateApp : public KUniqueApplication
     virtual Kate::InitPlugin *initPlugin() const;
     virtual KURL initScript() const;
 
-    static KConfig *kateSessionConfig () { return m_sessionConfig; }
-
   signals:
     void onEventLoopEnter();
 
@@ -95,8 +94,7 @@ class KDE_EXPORT KateApp : public KUniqueApplication
     QString m_initLib;
     QString m_oldInitLib;
     class KateAppDCOPIface *m_obj;
-    static KConfig *m_sessionConfig;
-    bool m_sessionConfigDelete;
+    KConfig *m_sessionConfig;
 
   protected slots:
     void performInit();

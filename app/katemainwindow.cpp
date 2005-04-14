@@ -329,7 +329,7 @@ bool KateMainWindow::queryClose()
 
     KConfig *c = kapp->config();
     c->setGroup("General");
-    c->writeEntry ("Last Session", ((KateApp *)kapp)->kateSessionManager()->activeSession().sessionFileRelative());
+    c->writeEntry ("Last Session", ((KateApp *)kapp)->kateSessionManager()->activeSession()->sessionFileRelative());
 
     // detach the dcopClient
     ((KUniqueApplication *)kapp)->dcopClient()->detach();

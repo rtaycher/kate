@@ -43,8 +43,6 @@
 #include <qdir.h>
 #include <qtextcodec.h>
 
-KConfig *KateApp::m_sessionConfig = 0;
-
 KateApp::KateApp (bool forcedNewProcess, bool oldState)
  : KUniqueApplication (true,true,true)
  , m_firstStart (true)
