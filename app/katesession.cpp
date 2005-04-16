@@ -527,7 +527,7 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
       m_sessions->setSelected (item, true);
   }
 
-  m_useLast = new QCheckBox (i18n ("&Don't ask again on start, remember the choice."), vb);
+  m_useLast = new QCheckBox (i18n ("&Always use this choice."), vb);
 
   setResult (resultNone);
 }
