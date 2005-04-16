@@ -866,6 +866,9 @@ void KateMainWindow::readProperties(KConfig *config)
 void KateMainWindow::saveGlobalProperties( KConfig* sessionConfig )
 {
   KateDocManager::self()->saveDocumentList (sessionConfig);
+
+  sessionConfig->setGroup("General");
+  sessionConfig->writeEntry ("Last Session", ((KateApp *)kapp)->kateSessionManager()->activeSession()->sessionFileRelative());
 }
 
 void KateMainWindow::slotPipeToConsole ()

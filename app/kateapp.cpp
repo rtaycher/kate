@@ -189,7 +189,14 @@ int KateApp::newInstance()
 
       // use config given by session manager
       if (sessionConfig())
+      {
+        // activate again correct session!!!
+        sessionConfig()->setGroup("General");
+        QString lastSession (sessionConfig()->readEntry ("Last Session", "default.katesession"));
+        kateSessionManager()->activateSession (new KateSession (kateSessionManager(), lastSession, ""), false, false, false);
+
         m_docManager->restoreDocumentList (sessionConfig());
+      }
 
       Kate::Document::setOpenErrorDialogsActivated (true);
 
