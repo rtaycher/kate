@@ -233,7 +233,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   sessions_exit->insert( rb3=new QRadioButton( i18n("&Ask user"), sessions_exit ), 2 );
 
   config->setGroup("General");
-  QString sesExit (config->readEntry ("Session Exit", "ask"));
+  QString sesExit (config->readEntry ("Session Exit", "save"));
   if (sesExit == "discard")
     sessions_exit->setButton (0);
   else if (sesExit == "save")

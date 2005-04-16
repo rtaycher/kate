@@ -303,7 +303,7 @@ bool KateSessionManager::saveActiveSession (bool tryAsk)
     KConfig *c = kapp->config();
     c->setGroup("General");
 
-    QString sesExit (c->readEntry ("Session Exit", "ask"));
+    QString sesExit (c->readEntry ("Session Exit", "save"));
 
     if (sesExit == "discard")
       return true;
