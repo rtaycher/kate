@@ -115,9 +115,6 @@ KateMainWindow::KateMainWindow () :
     resize (kMin (s.width(), desk.width()), kMin(s.height(), desk.height()));
   }
 
-  // apply settings
-  applyMainWindowSettings(kapp->config(), "Kate Main Window");
-
   m_mainWindow = new Kate::MainWindow (this);
   m_toolViewManager = new Kate::ToolViewManager (this);
 
@@ -154,6 +151,8 @@ KateMainWindow::KateMainWindow () :
     console->loadConsoleIfNeeded();
 
   setAcceptDrops(true);
+
+  setAutoSaveSettings ("Kate Main Window");
 }
 
 KateMainWindow::~KateMainWindow()
@@ -374,8 +373,6 @@ void KateMainWindow::readOptions(KConfig *config)
 
 void KateMainWindow::saveOptions(KConfig *config)
 {
-  saveMainWindowSettings(config, "Kate Main Window");
-
   config->setGroup("General");
 
   if (console)
