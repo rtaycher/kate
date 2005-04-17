@@ -795,3 +795,34 @@ void KateSessionManageDialog::updateSessionList ()
 }
 
 //END MANAGE DIALOG
+
+
+KateSessionsAction::KateSessionsAction(const QString& text, QObject* parent, const char* name )
+  : KActionMenu(text, parent, name)
+{
+  connect(popupMenu(),SIGNAL(aboutToShow()),this,SLOT(slotAboutToShow()));
+}
+
+void KateSessionsAction::slotAboutToShow()
+{
+  popupMenu()->clear ();
+
+  KateSessionList &slist (KateSessionManager::self()->sessionList());
+  for (unsigned int i=0; i < slist.count(); ++i)
+  {
+      popupMenu()->insertItem (
+          slist[i]->sessionName(),
+          this, SLOT (openSession (int)), 0,
+          i );
+  }
+}
+
+void KateSessionsAction::openSession (int i)
+{
+  KateSessionList &slist (KateSessionManager::self()->sessionList());
+
+  if ((uint)i >= slist.count())
+    return;
+
+  KateSessionManager::self()->activateSession(slist[(uint)i]);
+}

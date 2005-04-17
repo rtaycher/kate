@@ -135,7 +135,7 @@ KateMainWindow::KateMainWindow () :
   if ( kapp->authorize("shell_access") )
     Kate::Document::registerCommand(KateExternalToolsCommand::self());
 
-  // connect settings menu aboutToshow
+  // connect documents menu aboutToshow
   documentMenu = (QPopupMenu*)factory()->container("documents", this);
   connect(documentMenu, SIGNAL(aboutToShow()), this, SLOT(documentMenuAboutToShow()));
 
@@ -270,11 +270,14 @@ void KateMainWindow::setupActions()
   slotWindowActivated ();
 
   // session actions
-  a=new KAction(i18n("&New"), "filenew", 0, KateSessionManager::self(), SLOT(sessionNew()), actionCollection(), "sessions_new");
-  a=new KAction(i18n("&Open..."), "fileopen", 0, KateSessionManager::self(), SLOT(sessionOpen()), actionCollection(), "sessions_open");
-  a=new KAction(i18n("&Save"), "filesave", 0, KateSessionManager::self(), SLOT(sessionSave()), actionCollection(), "sessions_save");
-  a=new KAction(i18n("Save &As..."), "filesaveas", 0, KateSessionManager::self(), SLOT(sessionSaveAs()), actionCollection(), "sessions_save_as");
-  a=new KAction(i18n("&Manage..."), "view_choose", 0, KateSessionManager::self(), SLOT(sessionManage()), actionCollection(), "sessions_manage");
+  new KAction(i18n("&New"), "filenew", 0, KateSessionManager::self(), SLOT(sessionNew()), actionCollection(), "sessions_new");
+  new KAction(i18n("&Open..."), "fileopen", 0, KateSessionManager::self(), SLOT(sessionOpen()), actionCollection(), "sessions_open");
+  new KAction(i18n("&Save"), "filesave", 0, KateSessionManager::self(), SLOT(sessionSave()), actionCollection(), "sessions_save");
+  new KAction(i18n("Save &As..."), "filesaveas", 0, KateSessionManager::self(), SLOT(sessionSaveAs()), actionCollection(), "sessions_save_as");
+  new KAction(i18n("&Manage..."), "view_choose", 0, KateSessionManager::self(), SLOT(sessionManage()), actionCollection(), "sessions_manage");
+
+  // quick open menu ;)
+  new KateSessionsAction (i18n("&Quick Open"), actionCollection(), "sessions_list");
 }
 
 void KateMainWindow::slotDocumentCloseAll() {

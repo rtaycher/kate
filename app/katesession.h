@@ -24,6 +24,7 @@
 #include <kdialogbase.h>
 #include <ksimpleconfig.h>
 #include <ksharedptr.h>
+#include <kaction.h>
 
 #include <qobject.h>
 #include <qvaluelist.h>
@@ -390,6 +391,20 @@ class KateSessionManageDialog : public KDialogBase
     KListView *m_sessions;
     KPushButton *m_rename;
     KPushButton *m_del;
+};
+
+class KateSessionsAction : public KActionMenu
+{
+  Q_OBJECT
+
+  public:
+    KateSessionsAction(const QString& text, QObject* parent = 0, const char* name = 0);
+    ~KateSessionsAction (){;};
+
+  public  slots:
+    void slotAboutToShow();
+
+    void openSession (int i);
 };
 
 #endif
