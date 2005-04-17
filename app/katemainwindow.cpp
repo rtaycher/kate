@@ -274,6 +274,7 @@ void KateMainWindow::setupActions()
   a=new KAction(i18n("&Open"), "fileopen", 0, KateSessionManager::self(), SLOT(sessionOpen()), actionCollection(), "sessions_open");
   a=new KAction(i18n("&Save"), "filesave", 0, KateSessionManager::self(), SLOT(sessionSave()), actionCollection(), "sessions_save");
   a=new KAction(i18n("Save &As"), "filesaveas", 0, KateSessionManager::self(), SLOT(sessionSaveAs()), actionCollection(), "sessions_save_as");
+  a=new KAction(i18n("&Manage"), "view_choose", 0, KateSessionManager::self(), SLOT(sessionManage()), actionCollection(), "sessions_manage");
 }
 
 void KateMainWindow::slotDocumentCloseAll() {

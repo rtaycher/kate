@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="kate" version="42">
+<kpartgui name="kate" version="43">
 
 <MenuBar noMerge="1">
   <Menu name="file"><text>&amp;File</text>
@@ -66,6 +66,8 @@
     <Separator />
     <Action name="sessions_save"/>
     <Action name="sessions_save_as"/>
+    <Separator />
+    <Action name="sessions_manage"/>
   </Menu>
 
   <Menu name="settings"><text>&amp;Settings</text>

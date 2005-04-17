@@ -32,6 +32,7 @@ class KateSessionManager;
 
 class KDirWatch;
 class KListView;
+class KPushButton;
 
 class QCheckBox;
 
@@ -88,6 +89,13 @@ class KateSession  : public KShared
      * @return true if created, false if no creation needed
      */
     bool create (const QString &name, bool force = false);
+
+    /**
+     * rename this session
+     * @param name new name
+     * @return success
+     */
+    bool rename (const QString &name);
 
     /**
      * config to read
@@ -238,10 +246,18 @@ class KateSessionManager : public QObject
      */
     void sessionSaveAs ();
 
+    /**
+     * show dialog to manage our sessions
+     */
+    void sessionManage ();
+
   private slots:
     void dirty (const QString &path);
 
-  private:
+  public:
+    /**
+     * trigger update of session list
+     */
     void updateSessionList ();
 
   private:
@@ -322,17 +338,58 @@ class KateSessionOpenDialog : public KDialogBase
 
   protected slots:
     /**
-     * ok pressed
+     * cancel pressed
      */
     void slotUser1 ();
 
     /**
-     * cancel pressed
+     * ok pressed
      */
     void slotUser2 ();
 
   private:
     KListView *m_sessions;
+};
+
+class KateSessionManageDialog : public KDialogBase
+{
+  Q_OBJECT
+
+  public:
+    KateSessionManageDialog (QWidget *parent);
+    ~KateSessionManageDialog ();
+
+  protected slots:
+    /**
+     * close pressed
+     */
+    void slotUser1 ();
+
+    /**
+     * selection has changed
+     */
+    void selectionChanged ();
+
+    /**
+     * try to rename session
+     */
+    void rename ();
+
+    /**
+     * try to delete session
+     */
+    void del ();
+
+  private:
+    /**
+     * update our list
+     */
+    void updateSessionList ();
+
+  private:
+    KListView *m_sessions;
+    KPushButton *m_rename;
+    KPushButton *m_del;
 };
 
 #endif
