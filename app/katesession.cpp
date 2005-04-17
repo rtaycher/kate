@@ -106,9 +106,9 @@ QString KateSession::sessionFile () const
   return m_manager->sessionsDir() + "/" + m_sessionFileRel;
 }
 
-bool KateSession::create (const QString &name)
+bool KateSession::create (const QString &name, bool force)
 {
-  if (name.isEmpty() || !m_sessionFileRel.isEmpty())
+  if (!force && (name.isEmpty() || !m_sessionFileRel.isEmpty()))
     return false;
 
   m_sessionName = name;
@@ -468,6 +468,24 @@ void KateSessionManager::sessionSave ()
   saveActiveSession ();
 }
 
+void KateSessionManager::sessionSaveAs ()
+{
+  bool ok = false;
+  QString name = KInputDialog::getText (i18n("Specify a new name for current session"), i18n("Session Name"), "", &ok);
+
+  if (!ok)
+    return;
+
+  if (name.isEmpty())
+  {
+    KMessageBox::error (0, i18n("To save a session, you must specify a name!"), i18n ("Missing Session Name"));
+    return;
+  }
+
+  activeSession()->create (name);
+  saveActiveSession ();
+}
+
 //BEGIN CHOOSER DIALOG
 
 class KateSessionChooserItem : public QListViewItem
@@ -518,6 +536,8 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
   m_sessions->setSelectionMode (QListView::Single);
   m_sessions->setAllColumnsShowFocus (true);
 
+  connect (m_sessions, SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
+
   KateSessionList &slist (KateSessionManager::self()->sessionList());
   for (unsigned int i=0; i < slist.count(); ++i)
   {
@@ -560,6 +580,15 @@ void KateSessionChooser::slotUser2 ()
 {
   done (resultNew);
 }
+
+void KateSessionChooser::selectionChanged ()
+{
+  enableButton (KDialogBase::User1, m_sessions->selectedItem ());
+}
+
+//END CHOOSER DIALOG
+
+//BEGIN OPEN DIALOG
 
 KateSessionOpenDialog::KateSessionOpenDialog (QWidget *parent)
  : KDialogBase (  parent
@@ -621,4 +650,4 @@ void KateSessionOpenDialog::slotUser2 ()
   done (resultOk);
 }
 
-//END CHOOSER DIALOG
+//END OPEN DIALOG

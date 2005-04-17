@@ -84,9 +84,10 @@ class KateSession  : public KShared
     /**
      * create the session file, if not existing
      * @param name name for this session
+     * @param force force to create new file
      * @return true if created, false if no creation needed
      */
-    bool create (const QString &name);
+    bool create (const QString &name, bool force = false);
 
     /**
      * config to read
@@ -232,6 +233,11 @@ class KateSessionManager : public QObject
      */
     void sessionSave ();
 
+    /**
+     * try to save as current session
+     */
+    void sessionSaveAs ();
+
   private slots:
     void dirty (const QString &path);
 
@@ -288,6 +294,11 @@ class KateSessionChooser : public KDialogBase
      * new session
      */
     void slotUser2 ();
+
+    /**
+     * selection has changed
+     */
+    void selectionChanged ();
 
   private:
     KListView *m_sessions;
