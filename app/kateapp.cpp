@@ -337,10 +337,10 @@ int KateApp::newInstance()
   return 0;
 }
 
-bool KateApp::shutdownKate (KateMainWindow *win)
+void KateApp::shutdownKate (KateMainWindow *win)
 {
   if (!win->queryClose_internal())
-    return false;
+    return;
 
   ((KateApp *)kapp)->kateSessionManager()->saveActiveSession(true, true);
 
@@ -351,7 +351,7 @@ bool KateApp::shutdownKate (KateMainWindow *win)
   while (!m_mainWindows.isEmpty())
     delete m_mainWindows.take (0);
 
-  return true;
+  quit ();
 }
 
 KateMainWindow *KateApp::newMainWindow ()

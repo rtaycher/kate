@@ -51,7 +51,7 @@ class KDE_EXPORT KateApp : public KUniqueApplication
   public:
     int newInstance();
 
-    bool shutdownKate (KateMainWindow *win);
+    void shutdownKate (KateMainWindow *win);
 
     KatePluginManager *katePluginManager() { return m_pluginManager; }
     KateDocManager *kateDocumentManager () { return m_docManager; }
