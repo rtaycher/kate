@@ -277,9 +277,8 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
 
       if (c->readBoolEntry("Restore Window Configuration", false))
       {
-        unsigned int wCount = 0;
-        while (sc->hasGroup(QString ("MainWindow%1-Docking").arg(wCount)))
-          ++wCount;
+        sc->setGroup ("Open MainWindows");
+        unsigned int wCount = sc->readUnsignedNumEntry("Count", 1);
 
         for (unsigned int i=0; i < wCount; ++i)
         {
@@ -379,6 +378,9 @@ bool KateSessionManager::saveActiveSession (bool tryAsk, bool rememberAsLast)
     return false;
 
   KateDocManager::self()->saveDocumentList (sc);
+
+  sc->setGroup ("Open MainWindows");
+  sc->writeEntry ("Count", ((KateApp *)kapp)->mainWindows ());
 
   // save config for all windows around ;)
   for (unsigned int i=0; i < ((KateApp *)kapp)->mainWindows (); ++i )
