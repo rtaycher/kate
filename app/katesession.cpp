@@ -269,11 +269,6 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
     if (sc)
       ((KateApp *)kapp)->kateDocumentManager()->restoreDocumentList (sc);
 
-    KateMainWindow *win = ((KateApp *)kapp)->activeKateMainWindow();
-
-    if (!win)
-      win = ((KateApp *)kapp)->newMainWindow(false);
-
     // window config
     if (sc)
     {
@@ -281,11 +276,36 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
       c->setGroup("General");
 
       if (c->readBoolEntry("Restore Window Configuration", false))
-        win->readProperties (sc);
+      {
+        unsigned int wCount = 0;
+        while (sc->hasGroup(QString ("MainWindow%1-Docking").arg(wCount)))
+          ++wCount;
+
+        for (unsigned int i=0; i < wCount; ++i)
+        {
+          sc->setGroup(QString ("MainWindow%1").arg(i));
+
+          KateMainWindow *win = (i < ((KateApp *)kapp)->mainWindows())
+                     ? ((KateApp *)kapp)->kateMainWindow(i)
+                     : ((KateApp *)kapp)->newMainWindow(false);
+
+          win->readProperties (sc);
+          win->show ();
+        }
+
+        if (wCount > 0)
+        {
+          while (wCount < ((KateApp *)kapp)->mainWindows())
+          {
+            KateMainWindow *w = ((KateApp *)kapp)->kateMainWindow(((KateApp *)kapp)->mainWindows()-1);
+            ((KateApp *)kapp)->removeMainWindow (w);
+            delete w;
+          }
+        }
+      }
     }
 
     Kate::Document::setOpenErrorDialogsActivated (true);
-    win->show ();
   }
 }
 
@@ -311,7 +331,7 @@ KateSession::Ptr KateSessionManager::giveSession (const QString &name)
   return createSession (name);
 }
 
-bool KateSessionManager::saveActiveSession (bool tryAsk)
+bool KateSessionManager::saveActiveSession (bool tryAsk, bool rememberAsLast)
 {
   if (tryAsk)
   {
@@ -359,8 +379,23 @@ bool KateSessionManager::saveActiveSession (bool tryAsk)
     return false;
 
   KateDocManager::self()->saveDocumentList (sc);
-  ((KateApp *)kapp)->activeKateMainWindow()->saveProperties (sc);
+
+  // save config for all windows around ;)
+  for (unsigned int i=0; i < ((KateApp *)kapp)->mainWindows (); ++i )
+  {
+    sc->setGroup(QString ("MainWindow%1").arg(i));
+    ((KateApp *)kapp)->kateMainWindow(i)->saveProperties (sc);
+  }
+
   sc->sync();
+
+  if (rememberAsLast)
+  {
+    KConfig *c = kapp->config();
+    c->setGroup("General");
+    c->writeEntry ("Last Session", ((KateApp *)kapp)->kateSessionManager()->activeSession()->sessionFileRelative());
+    c->sync ();
+  }
 
   return true;
 }

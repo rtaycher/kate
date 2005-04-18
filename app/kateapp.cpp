@@ -337,6 +337,23 @@ int KateApp::newInstance()
   return 0;
 }
 
+bool KateApp::shutdownKate (KateMainWindow *win)
+{
+  if (!win->queryClose_internal())
+    return false;
+
+  ((KateApp *)kapp)->kateSessionManager()->saveActiveSession(true, true);
+
+  // detach the dcopClient
+  ((KUniqueApplication *)kapp)->dcopClient()->detach();
+
+  // cu main windows
+  while (!m_mainWindows.isEmpty())
+    delete m_mainWindows.take (0);
+
+  return true;
+}
+
 KateMainWindow *KateApp::newMainWindow ()
 {
   return newMainWindow (true);

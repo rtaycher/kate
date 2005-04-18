@@ -329,11 +329,7 @@ bool KateMainWindow::queryClose()
   // and save docs if we really close down !
   if ( queryClose_internal () )
   {
-    ((KateApp *)kapp)->kateSessionManager()->saveActiveSession(true);
-
-    KConfig *c = kapp->config();
-    c->setGroup("General");
-    c->writeEntry ("Last Session", ((KateApp *)kapp)->kateSessionManager()->activeSession()->sessionFileRelative());
+    ((KateApp *)kapp)->kateSessionManager()->saveActiveSession(true, true);
 
     // detach the dcopClient
     ((KUniqueApplication *)kapp)->dcopClient()->detach();
@@ -358,7 +354,7 @@ void KateMainWindow::slotEditToolbars()
 
 void KateMainWindow::slotFileQuit()
 {
-  close ();
+  ((KateApp *)kapp)->shutdownKate (this);
 }
 
 void KateMainWindow::readOptions(KConfig *config)
@@ -818,33 +814,18 @@ void KateMainWindow::updateCaption (Kate::Document *doc)
   setCaption( KStringHandler::lsqueeze(c,64), m_viewManager->activeView()->getDoc()->isModified());
 }
 
-void KateMainWindow::saveProperties(KConfig *config) {
-  kdDebug(13000)<<"KateMainWindow::saveProperties(): group: "<<config->group()<<endl;
-  assert(config);
-
-//   kdDebug(13000)<<"preparing session saving"<<endl;
+void KateMainWindow::saveProperties(KConfig *config)
+{
   QString grp=config->group();
   QString dockGrp;
 
-  if (kapp->sessionSaving()) dockGrp=grp+"-Docking";
-	else dockGrp="MainWindow0-Docking";
-/*  if (config->readNumEntry("GUIMode",KMdi::UndefinedMode)!=mdiMode()) {
-        config->writeEntry("GUIMode",mdiMode());
-        config->deleteGroup("MainWindow0-Docking");
-  }*/
+  dockGrp = grp + "-Docking";
+  writeDockConfig(config, dockGrp);
 
-//   kdDebug(13000)<<"Before write dock config"<<endl;
-  writeDockConfig(config,dockGrp);
-//   kdDebug(13000)<<"After write dock config"<<endl;
+  dockGrp= grp + "-View Configuration";
+  m_viewManager->saveViewConfiguration (config, dockGrp);
 
-
-  if (kapp->sessionSaving()) dockGrp=grp+"-View Configuration";
-	else dockGrp="MainWindow0-View Configuration";
-
-  m_viewManager->saveViewConfiguration (config,dockGrp);
-//   kdDebug(13000)<<"After saving view configuration"<<endl;
   config->setGroup(grp);
-
 }
 
 void KateMainWindow::readProperties(KConfig *config)
@@ -852,16 +833,14 @@ void KateMainWindow::readProperties(KConfig *config)
   QString grp=config->group();
   QString dockGrp;
 
-  if (kapp->isRestored()) dockGrp=grp+"-Docking";
-	else dockGrp="MainWindow0-Docking";
-
+  dockGrp = grp + "-Docking";
   if (config->hasGroup(dockGrp))
-        readDockConfig(config,dockGrp);
+    readDockConfig(config, dockGrp);
 
-  if (kapp->isRestored()) dockGrp=grp+"-View Configuration";
-	else dockGrp="MainWindow0-View Configuration";
+  dockGrp= grp + "-View Configuration";
+  if (config->hasGroup(dockGrp))
+    m_viewManager->restoreViewConfiguration (config, dockGrp);
 
-  m_viewManager->restoreViewConfiguration (config,dockGrp);
   config->setGroup(grp);
 }
 
