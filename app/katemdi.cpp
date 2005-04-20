@@ -191,7 +191,7 @@ MainWindow::MainWindow ()
 
   m_vSplitter = new QSplitter (Qt::Vertical, vb);
 
-  m_sidebars[KMultiTabBar::Top]->setSplitter (m_hSplitter);
+  m_sidebars[KMultiTabBar::Top]->setSplitter (m_vSplitter);
 
   m_tabWidget = new KTabWidget (m_vSplitter);
 
@@ -225,6 +225,11 @@ bool MainWindow::addToolView (const QString &identifier, QWidget *widget, KMulti
 
   m_sidebars[pos]->addWidget (icon, text, widget);
 
+  WidgetData d;
+  d.icon = icon;
+  d.text = text;
+  m_widgetToData.insert (widget, d);
+
   return true;
 }
 
@@ -235,11 +240,28 @@ bool MainWindow::deleteToolView (QWidget *widget)
 
   m_idToWidget.remove (m_widgetToId[widget]);
   m_widgetToId.remove (widget);
+  m_widgetToData.remove (widget);
 
   m_sidebars[m_widgetToSide[widget]]->removeWidget (widget);
   m_widgetToSide.remove (widget);
 
   delete widget;
+
+  return true;
+}
+
+bool MainWindow::moveToolView (QWidget *widget, KMultiTabBar::KMultiTabBarPosition pos)
+{
+  if (!m_widgetToId.contains(widget))
+    return false;
+
+  if (m_widgetToSide[widget] == pos)
+    return true;
+
+  m_sidebars[pos]->addWidget (m_widgetToData[widget].icon, m_widgetToData[widget].text, widget);
+  m_sidebars[m_widgetToSide[widget]]->removeWidget (widget);
+
+  m_widgetToSide[widget] = pos;
 
   return true;
 }

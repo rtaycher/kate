@@ -28,6 +28,7 @@
 #include <qintdict.h>
 #include <qmap.h>
 #include <qsplitter.h>
+#include <qpixmap.h>
 
 namespace KateMDI {
 
@@ -77,9 +78,20 @@ class MainWindow : public KParts::MainWindow
     // remove the toolview out of the sidebars + delete it
     bool deleteToolView (QWidget *widget);
 
+    // move a toolview to given new pos
+    bool moveToolView (QWidget *widget, KMultiTabBar::KMultiTabBarPosition pos);
+
   private:
+    class WidgetData
+    {
+      public:
+        QPixmap icon;
+        QString text;
+    };
+
     QDict<QWidget> m_idToWidget;
     QMap<QWidget*, QString> m_widgetToId;
+    QMap<QWidget*, WidgetData> m_widgetToData;
 
     QMap<QWidget*, int> m_widgetToSide;
 

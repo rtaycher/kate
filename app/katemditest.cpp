@@ -109,6 +109,10 @@ KWrite::KWrite (KTextEditor::Document *doc)
   l3 = new QLabel ("KHHHHHHHHHHHHHHHHHHHHHH", this);
   addToolView ("muhdfsfdsdfdfsdfd", l3, KMultiTabBar::Bottom, SmallIcon("fileopen"), "hello2");
 
+  l3 = new QLabel ("KHHHHHHHHHHHHHHHHHHHHHH", this);
+  addToolView ("muhdfsfdsdfdfsdfdfgffg", l3, KMultiTabBar::Bottom, SmallIcon("fileopen"), "hello2");
+
+  moveToolView (l3, KMultiTabBar::Top);
 
   setupActions();
   setupStatusBar();
