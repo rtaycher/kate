@@ -65,6 +65,7 @@ void Sidebar::setSplitter (QSplitter *sp)
 {
   m_splitter = sp;
   m_ownSplit = new QSplitter ((m_pos == KMultiTabBar::Top || m_pos == KMultiTabBar::Bottom) ? Qt::Horizontal : Qt::Vertical, m_splitter);
+  m_splitter->setResizeMode(m_ownSplit, QSplitter::KeepSize);
   m_ownSplit->hide ();
 }
 
