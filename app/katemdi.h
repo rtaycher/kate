@@ -32,12 +32,26 @@
 
 namespace KateMDI {
 
+/**
+  * internal data holder class, used to have some
+  * additional infos to the toolview widgets ;)
+  */
+class WidgetData
+{
+  public:
+    QString id;
+    KMultiTabBar::KMultiTabBarPosition pos;
+    bool visible;
+    QPixmap icon;
+    QString text;
+};
+
 class Sidebar : public KMultiTabBar
 {
   Q_OBJECT
 
   public:
-    Sidebar (KMultiTabBar::KMultiTabBarPosition pos, QWidget *parent);
+    Sidebar (KMultiTabBar::KMultiTabBarPosition pos, QWidget *parent, QMap<QWidget*, WidgetData> &widgetToData);
     ~Sidebar ();
 
     void setSplitter (QSplitter *sp);
@@ -62,19 +76,48 @@ class Sidebar : public KMultiTabBar
 
     QIntDict<QWidget> m_idToWidget;
     QMap<QWidget*, int> m_widgetToId;
+
+    // more widget data
+    QMap<QWidget*, WidgetData> &m_widgetToData;
 };
 
 class MainWindow : public KParts::MainWindow
 {
   Q_OBJECT
 
+  //
+  // Constructor area
+  //
   public:
+    /**
+     * Constructor
+     */
     MainWindow ();
-    ~MainWindow ();
 
-    KTabWidget *tabWidget () { return m_tabWidget; }
+    /**
+     * Destructor
+     */
+    virtual ~MainWindow ();
 
-    // add a given widget to the given sidebar if possible, name is very important
+  //
+  // public interfaces
+  //
+  public:
+    /**
+     * central tabwidget ;)
+     * @return tab widget
+     */
+    KTabWidget *tabWidget ();
+
+    /**
+     * add a given widget to the given sidebar if possible, name is very important
+     * @param identifier unique identifier for this toolview
+     * @param widget widget to insert as toolview
+     * @param pos position for the toolview, if we are in session restore, this is only a preference
+     * @param icon icon to use for the toolview
+     * @param test text to use in addition to icon
+     * @return success
+     */
     bool addToolView (const QString &identifier, QWidget *widget, KMultiTabBar::KMultiTabBarPosition pos, const QPixmap &icon, const QString &text);
 
     // remove the toolview out of the sidebars + delete it
@@ -96,29 +139,58 @@ class MainWindow : public KParts::MainWindow
   // session saving and restore stuff
   //
   public:
+    /**
+     * start the restore
+     * @param config config object to use
+     * @param group config group to use
+     */
     void startRestore (KConfig *config, const QString &group);
+
+    /**
+     * finish the restore
+     */
     void finishRestore ();
 
+    /**
+     * save the current session config to given object and group
+     * @param config config object to use
+     * @param group config group to use
+     */
     void saveSession (KConfig *config, const QString &group);
 
+  //
+  // internal data ;)
+  //
   private:
-    class WidgetData
-    {
-      public:
-        QPixmap icon;
-        QString text;
-    };
-
+    /**
+     * map identifiers to widgets
+     */
     QDict<QWidget> m_idToWidget;
-    QMap<QWidget*, QString> m_widgetToId;
+
+    /**
+     * map widgets to the additional data set ;)
+     */
     QMap<QWidget*, WidgetData> m_widgetToData;
 
-    QMap<QWidget*, int> m_widgetToSide;
-
+    /**
+     * tab widget, which is the central part of the
+     * main window ;)
+     */
     KTabWidget *m_tabWidget;
+
+    /**
+     * horizontal splitter
+     */
     QSplitter *m_hSplitter;
+
+    /**
+     * vertical splitter
+     */
     QSplitter *m_vSplitter;
 
+    /**
+     * sidebars for the four sides
+     */
     Sidebar *m_sidebars[4];
 
     /**

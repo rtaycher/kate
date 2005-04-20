@@ -103,8 +103,6 @@ KWrite::KWrite (KTextEditor::Document *doc)
   QLabel *l2 = new QLabel ("KHHHHHHHHHHHHHHHHHHHHHH", this);
   addToolView ("muhdfsfd", l2, KMultiTabBar::Left, SmallIcon("fileopen"), "hello2");
 
-  deleteToolView (l2);
-
   QLabel *l3 = new QLabel ("KHHHHHHHHHHHHHHHHHHHHHH", this);
   addToolView ("muhdfsfdsdfsdf", l3, KMultiTabBar::Right, SmallIcon("fileopen"), "hello2");
 
@@ -158,6 +156,8 @@ KWrite::KWrite (KTextEditor::Document *doc)
   winList.append (this);
 
   show ();
+
+  finishRestore ();
 }
 
 KWrite::~KWrite()

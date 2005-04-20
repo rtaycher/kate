@@ -45,14 +45,14 @@
 #include <qvbox.h>
 #include <qhbox.h>
 
-
 namespace KateMDI {
 
-Sidebar::Sidebar (KMultiTabBar::KMultiTabBarPosition pos, QWidget *parent)
+Sidebar::Sidebar (KMultiTabBar::KMultiTabBarPosition pos, QWidget *parent, QMap<QWidget*, WidgetData> &widgetToData)
   : KMultiTabBar ((pos == KMultiTabBar::Top || pos == KMultiTabBar::Bottom) ? KMultiTabBar::Horizontal : KMultiTabBar::Vertical, parent)
   , m_pos (pos)
   , m_splitter (0)
   , m_ownSplit (0)
+  , m_widgetToData (widgetToData)
 {
   hide ();
 }
@@ -132,6 +132,8 @@ bool Sidebar::showWidget (QWidget *widget)
   m_ownSplit->show ();
   widget->show ();
 
+  m_widgetToData[widget].visible = true;
+
   return true;
 }
 
@@ -161,6 +163,8 @@ bool Sidebar::hideWidget (QWidget *widget)
   if (!anyVis)
     m_ownSplit->hide ();
 
+  m_widgetToData[widget].visible = false;
+
   return true;
 }
 
@@ -186,7 +190,7 @@ MainWindow::MainWindow ()
   QHBox *hb = new QHBox (this);
   setCentralWidget(hb);
 
-  m_sidebars[KMultiTabBar::Left] = new Sidebar (KMultiTabBar::Left, hb);
+  m_sidebars[KMultiTabBar::Left] = new Sidebar (KMultiTabBar::Left, hb, m_widgetToData);
 
   m_hSplitter = new QSplitter (Qt::Horizontal, hb);
 
@@ -194,7 +198,7 @@ MainWindow::MainWindow ()
 
   QVBox *vb = new QVBox (m_hSplitter);
 
-  m_sidebars[KMultiTabBar::Top] = new Sidebar (KMultiTabBar::Top, vb);
+  m_sidebars[KMultiTabBar::Top] = new Sidebar (KMultiTabBar::Top, vb, m_widgetToData);
 
   m_vSplitter = new QSplitter (Qt::Vertical, vb);
 
@@ -202,10 +206,10 @@ MainWindow::MainWindow ()
 
   m_tabWidget = new KTabWidget (m_vSplitter);
 
-  m_sidebars[KMultiTabBar::Bottom] = new Sidebar (KMultiTabBar::Bottom, vb);
+  m_sidebars[KMultiTabBar::Bottom] = new Sidebar (KMultiTabBar::Bottom, vb, m_widgetToData);
   m_sidebars[KMultiTabBar::Bottom]->setSplitter (m_vSplitter);
 
-  m_sidebars[KMultiTabBar::Right] = new Sidebar (KMultiTabBar::Right, hb);
+  m_sidebars[KMultiTabBar::Right] = new Sidebar (KMultiTabBar::Right, hb, m_widgetToData);
   m_sidebars[KMultiTabBar::Right]->setSplitter (m_hSplitter);
 }
 
@@ -213,72 +217,80 @@ MainWindow::~MainWindow ()
 {
 }
 
+KTabWidget *MainWindow::tabWidget ()
+{
+  return m_tabWidget;
+}
+
 bool MainWindow::addToolView (const QString &identifier, QWidget *widget, KMultiTabBar::KMultiTabBarPosition pos, const QPixmap &icon, const QString &text)
 {
   if (m_idToWidget[identifier])
     return false;
 
-  m_idToWidget.insert (identifier, widget);
-  m_widgetToId.insert (widget, identifier);
-  m_widgetToSide.insert (widget, pos);
+  // try the restore config to figure out real pos
+  if (m_restoreConfig)
+  {
+    m_restoreConfig->setGroup (m_restoreGroup);
+    pos = (KMultiTabBar::KMultiTabBarPosition) m_restoreConfig->readNumEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(identifier), pos);
+  }
 
-  m_sidebars[pos]->addWidget (icon, text, widget);
+  m_idToWidget.insert (identifier, widget);
 
   WidgetData d;
+  d.id = identifier;
+  d.pos = pos;
+  d.visible = false;
   d.icon = icon;
   d.text = text;
   m_widgetToData.insert (widget, d);
 
-  return true;
+  return m_sidebars[pos]->addWidget (icon, text, widget);
 }
 
 bool MainWindow::deleteToolView (QWidget *widget)
 {
-  if (!m_widgetToId.contains(widget))
+  if (!m_widgetToData.contains(widget))
     return false;
 
-  m_idToWidget.remove (m_widgetToId[widget]);
-  m_widgetToId.remove (widget);
-  m_widgetToData.remove (widget);
-
-  m_sidebars[m_widgetToSide[widget]]->removeWidget (widget);
-  m_widgetToSide.remove (widget);
-
+  m_sidebars[m_widgetToData[widget].pos]->removeWidget (widget);
   delete widget;
+
+  m_idToWidget.remove (m_widgetToData[widget].id);
+  m_widgetToData.remove (widget);
 
   return true;
 }
 
 bool MainWindow::moveToolView (QWidget *widget, KMultiTabBar::KMultiTabBarPosition pos)
 {
-  if (!m_widgetToId.contains(widget))
+  if (!m_widgetToData.contains(widget))
     return false;
 
-  if (m_widgetToSide[widget] == pos)
+  if (m_widgetToData[widget].pos == pos)
     return true;
 
   m_sidebars[pos]->addWidget (m_widgetToData[widget].icon, m_widgetToData[widget].text, widget);
-  m_sidebars[m_widgetToSide[widget]]->removeWidget (widget);
+  m_sidebars[m_widgetToData[widget].pos]->removeWidget (widget);
 
-  m_widgetToSide[widget] = pos;
+  m_widgetToData[widget].pos = pos;
 
   return true;
 }
 
 bool MainWindow::showToolView (QWidget *widget)
 {
-  if (!m_widgetToId.contains(widget))
+  if (!m_widgetToData.contains(widget))
     return false;
 
-  return m_sidebars[m_widgetToSide[widget]]->showWidget (widget);
+  return m_sidebars[m_widgetToData[widget].pos]->showWidget (widget);
 }
 
 bool MainWindow::hideToolView (QWidget *widget)
 {
-  if (!m_widgetToId.contains(widget))
+  if (!m_widgetToData.contains(widget))
     return false;
 
-  return m_sidebars[m_widgetToSide[widget]]->hideWidget (widget);
+  return m_sidebars[m_widgetToData[widget].pos]->hideWidget (widget);
 }
 
 void MainWindow::setSidebarResizeMode(KMultiTabBar::KMultiTabBarPosition pos, QSplitter::ResizeMode mode)
@@ -306,7 +318,15 @@ void MainWindow::finishRestore ()
   if (!m_restoreConfig)
     return;
 
-  // here we should restore the actual stuff in the sidebars
+  // restore visible state of the toolview
+  m_restoreConfig->setGroup (m_restoreGroup);
+  for ( QMap<QWidget*, WidgetData>::Iterator it = m_widgetToData.begin(); it != m_widgetToData.end(); ++it )
+  {
+    if (m_restoreConfig->readBoolEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(it.data().id), false))
+      showToolView (it.key());
+    else
+      hideToolView (it.key());
+  }
 
   // clear this stuff, we are done ;)
   m_restoreConfig = 0;
@@ -320,6 +340,13 @@ void MainWindow::saveSession (KConfig *config, const QString &group)
   // save main splitter sizes ;)
   config->writeEntry ("Kate-MDI-H-Splitter", m_hSplitter->sizes());
   config->writeEntry ("Kate-MDI-V-Splitter", m_vSplitter->sizes());
+
+  // now save the state of the toolviews ;)
+  for ( QMap<QWidget*, WidgetData>::Iterator it = m_widgetToData.begin(); it != m_widgetToData.end(); ++it )
+  {
+    config->writeEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(it.data().id), it.data().pos);
+    config->writeEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(it.data().id), it.data().visible);
+  }
 }
 
 //END SESSION RESTORE/SAVE
