@@ -77,6 +77,8 @@ KWrite::KWrite (KTextEditor::Document *doc)
       m_paShowPath(0),
       m_paShowStatusBar(0)
 {
+  startRestore (kapp->config(), "KateMDI Config");
+
   setMinimumSize(200,200);
 
   if ( !doc )
@@ -120,8 +122,8 @@ KWrite::KWrite (KTextEditor::Document *doc)
   setSidebarResizeMode(KMultiTabBar::Left, QSplitter::KeepSize);
   setSidebarResizeMode(KMultiTabBar::Bottom, QSplitter::KeepSize);
   setSidebarResizeMode(KMultiTabBar::Right, QSplitter::KeepSize);
-  
-  
+
+
   showToolView (l3);
   hideToolView (l3);
 
@@ -160,6 +162,8 @@ KWrite::KWrite (KTextEditor::Document *doc)
 
 KWrite::~KWrite()
 {
+  saveSession (kapp->config(), "KateMDI Config");
+
   winList.remove (this);
 
   if (m_view->document()->views().count() == 1)
@@ -583,7 +587,7 @@ int main(int argc, char **argv)
 
   KLocale::setMainCatalogue("kate");         //lukas: set this to have the kwritepart translated using kate message catalog
 
-  KAboutData aboutData ( "kwrite", I18N_NOOP("KWrite"), "4.5",
+  KAboutData aboutData ( "katemditest", I18N_NOOP("KWrite"), "4.5",
                          I18N_NOOP( "KWrite - Text Editor" ), KAboutData::License_LGPL_V2,
                          I18N_NOOP( "(c) 2000-2004 The Kate Authors" ), 0, "http://kate.kde.org" );
 

@@ -92,6 +92,15 @@ class MainWindow : public KParts::MainWindow
     // set the sidebar's resize mode.
     void setSidebarResizeMode(KMultiTabBar::KMultiTabBarPosition pos, QSplitter::ResizeMode mode);
 
+  //
+  // session saving and restore stuff
+  //
+  public:
+    void startRestore (KConfig *config, const QString &group);
+    void finishRestore ();
+
+    void saveSession (KConfig *config, const QString &group);
+
   private:
     class WidgetData
     {
@@ -111,6 +120,17 @@ class MainWindow : public KParts::MainWindow
     QSplitter *m_vSplitter;
 
     Sidebar *m_sidebars[4];
+
+    /**
+     * config object for session restore, only valid between
+     * start and finish restore calls
+     */
+    KConfig *m_restoreConfig;
+
+    /**
+     * restore group
+     */
+    QString m_restoreGroup;
 };
 
 }

@@ -180,6 +180,7 @@ void Sidebar::tabClicked(int i)
 }
 
 MainWindow::MainWindow ()
+ : m_restoreConfig (0)
 {
   // init the internal widgets
   QHBox *hb = new QHBox (this);
@@ -203,7 +204,6 @@ MainWindow::MainWindow ()
 
   m_sidebars[KMultiTabBar::Bottom] = new Sidebar (KMultiTabBar::Bottom, vb);
   m_sidebars[KMultiTabBar::Bottom]->setSplitter (m_vSplitter);
-
 
   m_sidebars[KMultiTabBar::Right] = new Sidebar (KMultiTabBar::Right, hb);
   m_sidebars[KMultiTabBar::Right]->setSplitter (m_hSplitter);
@@ -285,5 +285,43 @@ void MainWindow::setSidebarResizeMode(KMultiTabBar::KMultiTabBarPosition pos, QS
 {
   m_sidebars[pos]->setResizeMode(mode);
 }
+
+//BEGIN SESSION RESTORE/SAVE
+
+void MainWindow::startRestore (KConfig *config, const QString &group)
+{
+  // first save this stuff
+  m_restoreConfig = config;
+  m_restoreGroup = group;
+
+  m_restoreConfig->setGroup (m_restoreGroup);
+
+  // save main splitter sizes ;)
+  m_hSplitter->setSizes(m_restoreConfig->readIntListEntry ("Kate-MDI-H-Splitter"));
+  m_vSplitter->setSizes(m_restoreConfig->readIntListEntry ("Kate-MDI-V-Splitter"));
+}
+
+void MainWindow::finishRestore ()
+{
+  if (!m_restoreConfig)
+    return;
+
+  // here we should restore the actual stuff in the sidebars
+
+  // clear this stuff, we are done ;)
+  m_restoreConfig = 0;
+  m_restoreGroup = "";
+}
+
+void MainWindow::saveSession (KConfig *config, const QString &group)
+{
+  config->setGroup (group);
+
+  // save main splitter sizes ;)
+  config->writeEntry ("Kate-MDI-H-Splitter", m_hSplitter->sizes());
+  config->writeEntry ("Kate-MDI-V-Splitter", m_vSplitter->sizes());
+}
+
+//END SESSION RESTORE/SAVE
 
 } // namespace KateMDI
