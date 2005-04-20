@@ -42,6 +42,8 @@ class Sidebar : public KMultiTabBar
 
     void setSplitter (QSplitter *sp);
 
+    void setResizeMode(QSplitter::ResizeMode mode);
+
   public:
     bool addWidget (const QPixmap &icon, const QString &text, QWidget *widget);
     bool removeWidget (QWidget *widget);
@@ -86,6 +88,9 @@ class MainWindow : public KParts::MainWindow
 
     // hide given toolview
     bool hideToolView (QWidget *widget);
+
+    // set the sidebar's resize mode.
+    void setSidebarResizeMode(KMultiTabBar::KMultiTabBarPosition pos, QSplitter::ResizeMode mode);
 
   private:
     class WidgetData

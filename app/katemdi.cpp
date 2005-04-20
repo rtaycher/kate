@@ -65,9 +65,14 @@ void Sidebar::setSplitter (QSplitter *sp)
 {
   m_splitter = sp;
   m_ownSplit = new QSplitter ((m_pos == KMultiTabBar::Top || m_pos == KMultiTabBar::Bottom) ? Qt::Horizontal : Qt::Vertical, m_splitter);
-  m_splitter->setResizeMode(m_ownSplit, QSplitter::KeepSize);
   m_ownSplit->hide ();
 }
+
+void Sidebar::setResizeMode(QSplitter::ResizeMode mode)
+{
+  m_splitter->setResizeMode(m_ownSplit, mode);
+}
+
 
 bool Sidebar::addWidget (const QPixmap &icon, const QString &text, QWidget *widget)
 {
@@ -276,4 +281,9 @@ bool MainWindow::hideToolView (QWidget *widget)
   return m_sidebars[m_widgetToSide[widget]]->hideWidget (widget);
 }
 
+void MainWindow::setSidebarResizeMode(KMultiTabBar::KMultiTabBarPosition pos, QSplitter::ResizeMode mode)
+{
+  m_sidebars[pos]->setResizeMode(mode);
 }
+
+} // namespace KateMDI

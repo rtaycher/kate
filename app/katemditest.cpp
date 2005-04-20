@@ -114,6 +114,14 @@ KWrite::KWrite (KTextEditor::Document *doc)
 
   moveToolView (l3, KMultiTabBar::Top);
 
+
+  setSidebarResizeMode(KMultiTabBar::Left, QSplitter::KeepSize);
+  setSidebarResizeMode(KMultiTabBar::Left, QSplitter::Stretch);
+  setSidebarResizeMode(KMultiTabBar::Left, QSplitter::KeepSize);
+  setSidebarResizeMode(KMultiTabBar::Bottom, QSplitter::KeepSize);
+  setSidebarResizeMode(KMultiTabBar::Right, QSplitter::KeepSize);
+  
+  
   showToolView (l3);
   hideToolView (l3);
 
