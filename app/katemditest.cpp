@@ -114,6 +114,9 @@ KWrite::KWrite (KTextEditor::Document *doc)
 
   moveToolView (l3, KMultiTabBar::Top);
 
+  showToolView (l3);
+  hideToolView (l3);
+
   setupActions();
   setupStatusBar();
 

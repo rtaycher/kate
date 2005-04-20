@@ -201,13 +201,6 @@ MainWindow::MainWindow ()
 
   m_sidebars[KMultiTabBar::Right] = new Sidebar (KMultiTabBar::Right, hb);
   m_sidebars[KMultiTabBar::Right]->setSplitter (m_hSplitter);
-
-  QValueList<int> hsizes;
-  hsizes.push_back (100);
-  hsizes.push_back (100);
-  hsizes.push_back (100);
-
-  m_hSplitter->setSizes (hsizes);
 }
 
 MainWindow::~MainWindow ()
@@ -264,6 +257,22 @@ bool MainWindow::moveToolView (QWidget *widget, KMultiTabBar::KMultiTabBarPositi
   m_widgetToSide[widget] = pos;
 
   return true;
+}
+
+bool MainWindow::showToolView (QWidget *widget)
+{
+  if (!m_widgetToId.contains(widget))
+    return false;
+
+  return m_sidebars[m_widgetToSide[widget]]->showWidget (widget);
+}
+
+bool MainWindow::hideToolView (QWidget *widget)
+{
+  if (!m_widgetToId.contains(widget))
+    return false;
+
+  return m_sidebars[m_widgetToSide[widget]]->hideWidget (widget);
 }
 
 }

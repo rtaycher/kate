@@ -81,6 +81,12 @@ class MainWindow : public KParts::MainWindow
     // move a toolview to given new pos
     bool moveToolView (QWidget *widget, KMultiTabBar::KMultiTabBarPosition pos);
 
+    // show given toolview
+    bool showToolView (QWidget *widget);
+
+    // hide given toolview
+    bool hideToolView (QWidget *widget);
+
   private:
     class WidgetData
     {
