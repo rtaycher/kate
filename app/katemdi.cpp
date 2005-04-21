@@ -590,6 +590,8 @@ void MainWindow::finishRestore ()
   if (!m_restoreConfig)
     return;
 
+  m_restoreConfig->setGroup (m_restoreGroup);
+
   // reshuffle toolviews only if needed
   for ( unsigned int i=0; i < m_toolviews.size(); ++i )
   {
