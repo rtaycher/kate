@@ -40,20 +40,6 @@ enum TabWidgetVisibility {
     NeverShowTabs          = 2
   };
 
-/**
-  * internal data holder class, used to have some
-  * additional infos to the toolview widgets ;)
-  */
-class WidgetData
-{
-  public:
-    QString id;
-    KMultiTabBar::KMultiTabBarPosition pos;
-    bool visible;
-    QPixmap icon;
-    QString text;
-};
-
 class TabWidget : public KTabWidget
 {
   Q_OBJECT
@@ -91,12 +77,36 @@ class TabWidget : public KTabWidget
     KateMDI::TabWidgetVisibility m_visibility;
 };
 
+class ToolView : public QVBox
+{
+  friend class Sidebar;
+  friend class MainWindow;
+  friend class QDict<ToolView>;
+  friend class QIntDict<ToolView>;
+
+  protected:
+    ToolView (class MainWindow *mainwin, class Sidebar *sidebar, QWidget *parent);
+    virtual ~ToolView ();
+
+    MainWindow *mainWindow () { return m_mainWin; }
+    Sidebar *sidebar () { return m_sidebar; }
+
+  private:
+    MainWindow *m_mainWin;
+    Sidebar *m_sidebar;
+
+    QString id;
+    bool visible;
+    QPixmap icon;
+    QString text;
+};
+
 class Sidebar : public KMultiTabBar
 {
   Q_OBJECT
 
   public:
-    Sidebar (KMultiTabBar::KMultiTabBarPosition pos, QWidget *parent, QMap<QWidget*, WidgetData> &widgetToData);
+    Sidebar (KMultiTabBar::KMultiTabBarPosition pos, class MainWindow *mainwin, QWidget *parent);
     virtual ~Sidebar ();
 
     void setSplitter (QSplitter *sp);
@@ -104,11 +114,13 @@ class Sidebar : public KMultiTabBar
     void setResizeMode(QSplitter::ResizeMode mode);
 
   public:
-    bool addWidget (const QPixmap &icon, const QString &text, QWidget *widget);
-    bool removeWidget (QWidget *widget);
+    ToolView *addWidget (const QPixmap &icon, const QString &text, ToolView *widget);
+    bool removeWidget (ToolView *widget);
 
-    bool showWidget (QWidget *widget);
-    bool hideWidget (QWidget *widget);
+    bool showWidget (ToolView *widget);
+    bool hideWidget (ToolView *widget);
+
+    KMultiTabBar::KMultiTabBarPosition position () const { return m_pos; }
 
     void setLastSize (int s) { m_lastSize = s; }
     int lastSize () { return m_lastSize; }
@@ -119,16 +131,15 @@ class Sidebar : public KMultiTabBar
     void tabClicked(int);
 
   private:
+    MainWindow *m_mainWin;
+
     KMultiTabBar::KMultiTabBarPosition m_pos;
     QSplitter *m_splitter;
     KMultiTabBar *m_tabBar;
     QSplitter *m_ownSplit;
 
-    QIntDict<QWidget> m_idToWidget;
-    QMap<QWidget*, int> m_widgetToId;
-
-    // more widget data
-    QMap<QWidget*, WidgetData> &m_widgetToData;
+    QIntDict<ToolView> m_idToWidget;
+    QMap<ToolView*, int> m_widgetToId;
 
     int m_lastSize;
 };
@@ -136,6 +147,8 @@ class Sidebar : public KMultiTabBar
 class MainWindow : public KParts::MainWindow
 {
   Q_OBJECT
+
+  friend class ToolView;
 
   //
   // Constructor area
@@ -164,25 +177,35 @@ class MainWindow : public KParts::MainWindow
     /**
      * add a given widget to the given sidebar if possible, name is very important
      * @param identifier unique identifier for this toolview
-     * @param widget widget to insert as toolview
      * @param pos position for the toolview, if we are in session restore, this is only a preference
      * @param icon icon to use for the toolview
      * @param test text to use in addition to icon
+     * @return created toolview on success or 0
+     */
+    ToolView *createToolView (const QString &identifier, KMultiTabBar::KMultiTabBarPosition pos, const QPixmap &icon, const QString &text);
+
+    /**
+     * destructs a given toolview
+     * @param widget toolview which should be destroyed
      * @return success
      */
-    bool addToolView (const QString &identifier, QWidget *widget, KMultiTabBar::KMultiTabBarPosition pos, const QPixmap &icon, const QString &text);
+    bool deleteToolView (ToolView *widget);
 
-    // remove the toolview out of the sidebars + delete it
-    bool deleteToolView (QWidget *widget);
+    /**
+     * give you handle to toolview for the given name, 0 if no toolview around
+     * @param identifier toolview name
+     * @return toolview if existing, else 0
+     */
+    ToolView *toolView (const QString &identifier);
 
     // move a toolview to given new pos
-    bool moveToolView (QWidget *widget, KMultiTabBar::KMultiTabBarPosition pos);
+    bool moveToolView (ToolView *widget, KMultiTabBar::KMultiTabBarPosition pos);
 
     // show given toolview
-    bool showToolView (QWidget *widget);
+    bool showToolView (ToolView *widget);
 
     // hide given toolview
-    bool hideToolView (QWidget *widget);
+    bool hideToolView (ToolView *widget);
 
     // set the sidebar's resize mode.
     void setSidebarResizeMode(KMultiTabBar::KMultiTabBarPosition pos, QSplitter::ResizeMode mode);
@@ -217,12 +240,12 @@ class MainWindow : public KParts::MainWindow
     /**
      * map identifiers to widgets
      */
-    QDict<QWidget> m_idToWidget;
+    QDict<ToolView> m_idToWidget;
 
     /**
-     * map widgets to the additional data set ;)
+     * list of all toolviews around
      */
-    QMap<QWidget*, WidgetData> m_widgetToData;
+    QValueList<ToolView*> m_toolviews;
 
     /**
      * tab widget, which is the central part of the

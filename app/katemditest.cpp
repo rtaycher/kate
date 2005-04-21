@@ -97,23 +97,18 @@ KWrite::KWrite (KTextEditor::Document *doc)
   m_view = doc->createView (tabWidget(), 0L);
   tabWidget()->addTab (m_view, "Test");
 
-  QLabel *l = new QLabel ("muhhhhhhh<br>sdfjsdfjklsdjflksdklfjdskljflksdlf", this);
-  addToolView ("muh", l, KMultiTabBar::Left, SmallIcon("fileopen"), "hello");
+  KateMDI::ToolView *l, *l2, *l3;
 
-  QLabel *l2 = new QLabel ("KHHHHHHHHHHHHHHHHHHHHHH", this);
-  addToolView ("muhdfsfd", l2, KMultiTabBar::Left, SmallIcon("fileopen"), "hello2");
+  l = createToolView ("muh", KMultiTabBar::Left, SmallIcon("fileopen"), "hello");
+  new QLabel ("muhhhhhhh<br>sdfjsdfjklsdjflksdklfjdskljflksdlf", l);
 
-  QLabel *l3 = new QLabel ("KHHHHHHHHHHHHHHHHHHHHHH", this);
-  addToolView ("muhdfsfdsdfsdf", l3, KMultiTabBar::Right, SmallIcon("fileopen"), "hello2");
+  l2 = createToolView ("muhsdfdsf", KMultiTabBar::Bottom, SmallIcon("fileopen"), "hellosdfdf");
+  new QLabel ("TEST 2<br> MUHHHHHHH", l2);
 
-  l3 = new QLabel ("KHHHHHHHHHHHHHHHHHHHHHH", this);
-  addToolView ("muhdfsfdsdfdfsdfd", l3, KMultiTabBar::Bottom, SmallIcon("fileopen"), "hello2");
-
-  l3 = new QLabel ("KHHHHHHHHHHHHHHHHHHHHHH", this);
-  addToolView ("muhdfsfdsdfdfsdfdfgffg", l3, KMultiTabBar::Bottom, SmallIcon("fileopen"), "hello2");
+  l3 = createToolView ("muhsdfdsfsdd", KMultiTabBar::Right, SmallIcon("fileopen"), "hellosdfdf");
+  new QLabel ("TEST 2<br> MUHHHHHHHsdfdf", l3);
 
   moveToolView (l3, KMultiTabBar::Top);
-
 
   setSidebarResizeMode(KMultiTabBar::Left, QSplitter::KeepSize);
   setSidebarResizeMode(KMultiTabBar::Left, QSplitter::Stretch);
@@ -121,9 +116,9 @@ KWrite::KWrite (KTextEditor::Document *doc)
   setSidebarResizeMode(KMultiTabBar::Bottom, QSplitter::KeepSize);
   setSidebarResizeMode(KMultiTabBar::Right, QSplitter::KeepSize);
 
-
-  showToolView (l3);
   hideToolView (l3);
+  showToolView (l3);
+
 
   setupActions();
   setupStatusBar();
