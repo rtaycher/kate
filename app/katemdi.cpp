@@ -43,10 +43,12 @@
 #include <kparts/event.h>
 #include <kmenubar.h>
 #include <kiconloader.h>
+#include <kpopupmenu.h>
 
 #include <qvbox.h>
 #include <qhbox.h>
 #include <qtabbar.h>
+#include <qevent.h>
 
 namespace KateMDI {
 
@@ -273,6 +275,7 @@ ToolView *Sidebar::addWidget (const QPixmap &icon, const QString &text, ToolView
   show ();
 
   connect(tab(newId),SIGNAL(clicked(int)),this,SLOT(tabClicked(int)));
+  tab(newId)->installEventFilter(this);
 
   return widget;
 }
@@ -374,6 +377,59 @@ void Sidebar::tabClicked(int i)
     hideWidget (w);
 }
 
+bool Sidebar::eventFilter(QObject *obj, QEvent *ev)
+{
+  if (ev->type()==QEvent::ContextMenu)
+  {
+    QContextMenuEvent *e = (QContextMenuEvent *) ev;
+    KMultiTabBarTab *bt = dynamic_cast<KMultiTabBarTab*>(obj);
+    if (bt)
+    {
+      kdDebug()<<"Request for popup"<<endl;
+
+      m_popupButton = bt->id();
+
+      KPopupMenu *p = new KPopupMenu (this);
+      p->insertTitle(SmallIcon("move"), i18n("Move to..."), 50);
+
+      if (position() != 0)
+        p->insertItem(SmallIconSet("back"), i18n("Left Sidebar"),0);
+
+      if (position() != 1)
+        p->insertItem(SmallIconSet("forward"), i18n("Right Sidebar"),1);
+
+      if (position() != 2)
+        p->insertItem(SmallIconSet("up"), i18n("Top Sidebar"),2);
+
+      if (position() != 3)
+        p->insertItem(SmallIconSet("down"), i18n("Bottom Sidebar"),3);
+
+      connect(p, SIGNAL(activated(int)),
+            this, SLOT(buttonPopupActivate(int)));
+
+      p->exec(e->globalPos());
+      delete p;
+
+      return true;
+    }
+  }
+
+  return false;
+}
+
+void Sidebar::buttonPopupActivate (int id)
+{
+  ToolView *w = m_idToWidget[m_popupButton];
+
+  if (!w)
+    return;
+
+  // move ids
+  if (id < 4)
+  {
+    m_mainWin->moveToolView (w, (KMultiTabBar::KMultiTabBarPosition) id);
+  }
+}
 
 //END SIDEBAR
 

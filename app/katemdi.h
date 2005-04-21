@@ -130,6 +130,12 @@ class Sidebar : public KMultiTabBar
   private slots:
     void tabClicked(int);
 
+  protected:
+    bool eventFilter(QObject *obj, QEvent *ev);
+
+  private slots:
+    void buttonPopupActivate (int id);
+
   private:
     MainWindow *m_mainWin;
 
@@ -142,6 +148,8 @@ class Sidebar : public KMultiTabBar
     QMap<ToolView*, int> m_widgetToId;
 
     int m_lastSize;
+
+    int m_popupButton;
 };
 
 class MainWindow : public KParts::MainWindow
