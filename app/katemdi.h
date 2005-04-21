@@ -81,11 +81,11 @@ class ToolView : public QVBox
 {
   friend class Sidebar;
   friend class MainWindow;
-  friend class QDict<ToolView>;
-  friend class QIntDict<ToolView>;
 
   protected:
     ToolView (class MainWindow *mainwin, class Sidebar *sidebar, QWidget *parent);
+
+  public:
     virtual ~ToolView ();
 
     MainWindow *mainWindow () { return m_mainWin; }
@@ -185,19 +185,20 @@ class MainWindow : public KParts::MainWindow
     ToolView *createToolView (const QString &identifier, KMultiTabBar::KMultiTabBarPosition pos, const QPixmap &icon, const QString &text);
 
     /**
-     * destructs a given toolview
-     * @param widget toolview which should be destroyed
-     * @return success
-     */
-    bool deleteToolView (ToolView *widget);
-
-    /**
      * give you handle to toolview for the given name, 0 if no toolview around
      * @param identifier toolview name
      * @return toolview if existing, else 0
      */
     ToolView *toolView (const QString &identifier);
 
+  protected:
+    /**
+     * called by toolview destructor
+     * @param widget toolview which is destroyed
+     */
+    void toolViewDeleted (ToolView *widget);
+
+  public:
     // move a toolview to given new pos
     bool moveToolView (ToolView *widget, KMultiTabBar::KMultiTabBarPosition pos);
 

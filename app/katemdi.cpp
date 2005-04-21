@@ -200,6 +200,7 @@ ToolView::ToolView (MainWindow *mainwin, Sidebar *sidebar, QWidget *parent)
 
 ToolView::~ToolView ()
 {
+  m_mainWin->toolViewDeleted (this);
 }
 
 //END TOOLVIEW
@@ -414,6 +415,10 @@ MainWindow::MainWindow (QWidget* parentWidget, const char* name)
 
 MainWindow::~MainWindow ()
 {
+  // cu toolviews
+  while (!m_toolviews.isEmpty())
+    delete m_toolviews[0];
+
   // seems like we really should delete this by hand ;)
   delete m_tabWidget;
 
@@ -447,27 +452,23 @@ ToolView *MainWindow::createToolView (const QString &identifier, KMultiTabBar::K
   return v;
 }
 
-bool MainWindow::deleteToolView (ToolView *widget)
+ToolView *MainWindow::toolView (const QString &identifier)
+{
+  return m_idToWidget[identifier];
+}
+
+void MainWindow::toolViewDeleted (ToolView *widget)
 {
   if (!widget)
-    return true;
+    return;
 
   if (widget->mainWindow() != this)
-    return false;
+    return;
 
   widget->sidebar()->removeWidget (widget);
 
   m_idToWidget.remove (widget->id);
   m_toolviews.remove (widget);
-
-  delete widget;
-
-  return true;
-}
-
-ToolView *MainWindow::toolView (const QString &identifier)
-{
-  return m_idToWidget[identifier];
 }
 
 bool MainWindow::moveToolView (ToolView *widget, KMultiTabBar::KMultiTabBarPosition pos)
