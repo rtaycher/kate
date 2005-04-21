@@ -110,6 +110,11 @@ class Sidebar : public KMultiTabBar
     bool showWidget (QWidget *widget);
     bool hideWidget (QWidget *widget);
 
+    void setLastSize (int s) { m_lastSize = s; }
+    int lastSize () { return m_lastSize; }
+
+    bool splitterVisible () { return m_ownSplit->isVisible(); }
+
   private slots:
     void tabClicked(int);
 
@@ -117,13 +122,15 @@ class Sidebar : public KMultiTabBar
     KMultiTabBar::KMultiTabBarPosition m_pos;
     QSplitter *m_splitter;
     KMultiTabBar *m_tabBar;
-    QWidget *m_ownSplit;
+    QSplitter *m_ownSplit;
 
     QIntDict<QWidget> m_idToWidget;
     QMap<QWidget*, int> m_widgetToId;
 
     // more widget data
     QMap<QWidget*, WidgetData> &m_widgetToData;
+
+    int m_lastSize;
 };
 
 class MainWindow : public KParts::MainWindow

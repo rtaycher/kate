@@ -50,6 +50,8 @@
 
 namespace KateMDI {
 
+//BEGIN TABWIDGET
+
 TabWidget::TabWidget(QWidget* parent, const char* name)
  : KTabWidget(parent,name)
  , m_visibility (KateMDI::ShowWhenMoreThanOneTab)
@@ -184,12 +186,18 @@ KateMDI::TabWidgetVisibility TabWidget::tabWidgetVisibility( ) const
   return m_visibility;
 }
 
+//END TABWIDGET
+
+
+//BEGIN SIDEBAR
+
 Sidebar::Sidebar (KMultiTabBar::KMultiTabBarPosition pos, QWidget *parent, QMap<QWidget*, WidgetData> &widgetToData)
   : KMultiTabBar ((pos == KMultiTabBar::Top || pos == KMultiTabBar::Bottom) ? KMultiTabBar::Horizontal : KMultiTabBar::Vertical, parent)
   , m_pos (pos)
   , m_splitter (0)
   , m_ownSplit (0)
   , m_widgetToData (widgetToData)
+  , m_lastSize (0)
 {
   hide ();
 }
@@ -209,7 +217,6 @@ void Sidebar::setResizeMode(QSplitter::ResizeMode mode)
 {
   m_splitter->setResizeMode(m_ownSplit, mode);
 }
-
 
 bool Sidebar::addWidget (const QPixmap &icon, const QString &text, QWidget *widget)
 {
@@ -282,6 +289,16 @@ bool Sidebar::hideWidget (QWidget *widget)
 
   bool anyVis = false;
 
+  QValueList<int> s = m_splitter->sizes ();
+
+  int i = 0;
+  if ((m_pos == KMultiTabBar::Right || m_pos == KMultiTabBar::Bottom))
+    i = 2;
+
+  // little threshold
+  if (s[i] > 2)
+    m_lastSize = s[i];
+
   QIntDictIterator<QWidget> it( m_idToWidget );
   for ( ; it.current(); ++it )
   {
@@ -320,6 +337,12 @@ void Sidebar::tabClicked(int i)
   else
     hideWidget (w);
 }
+
+
+//END SIDEBAR
+
+
+//BEGIN MAIN WINDOW
 
 MainWindow::MainWindow (QWidget* parentWidget, const char* name)
  : KParts::MainWindow( parentWidget, name)
@@ -442,8 +465,6 @@ void MainWindow::setSidebarResizeMode(KMultiTabBar::KMultiTabBarPosition pos, QS
   m_sidebars[pos]->setResizeMode(mode);
 }
 
-//BEGIN SESSION RESTORE/SAVE
-
 void MainWindow::startRestore (KConfig *config, const QString &group)
 {
   // first save this stuff
@@ -455,9 +476,17 @@ void MainWindow::startRestore (KConfig *config, const QString &group)
 
   m_restoreConfig->setGroup (m_restoreGroup);
 
-  // save main splitter sizes ;)
-  m_hSplitter->setSizes(m_restoreConfig->readIntListEntry ("Kate-MDI-H-Splitter"));
-  m_vSplitter->setSizes(m_restoreConfig->readIntListEntry ("Kate-MDI-V-Splitter"));
+  // get main splitter sizes ;)
+  QValueList<int> hs = m_restoreConfig->readIntListEntry ("Kate-MDI-H-Splitter");
+  QValueList<int> vs = m_restoreConfig->readIntListEntry ("Kate-MDI-V-Splitter");
+
+  m_sidebars[0]->setLastSize (hs[0]);
+  m_sidebars[1]->setLastSize (hs[2]);
+  m_sidebars[2]->setLastSize (vs[0]);
+  m_sidebars[3]->setLastSize (vs[2]);
+
+  m_hSplitter->setSizes(hs);
+  m_vSplitter->setSizes(vs);
 }
 
 void MainWindow::finishRestore ()
@@ -502,8 +531,20 @@ void MainWindow::saveSession (KConfig *config, const QString &group)
   config->setGroup (group);
 
   // save main splitter sizes ;)
-  config->writeEntry ("Kate-MDI-H-Splitter", m_hSplitter->sizes());
-  config->writeEntry ("Kate-MDI-V-Splitter", m_vSplitter->sizes());
+  QValueList<int> hs = m_hSplitter->sizes();
+  QValueList<int> vs = m_vSplitter->sizes();
+
+  if (hs[0] <= 2 && !m_sidebars[0]->splitterVisible ())
+    hs[0] = m_sidebars[0]->lastSize();
+  if (hs[2] <= 2 && !m_sidebars[1]->splitterVisible ())
+    hs[2] = m_sidebars[1]->lastSize();
+  if (vs[0] <= 2 && !m_sidebars[2]->splitterVisible ())
+    vs[0] = m_sidebars[2]->lastSize();
+  if (vs[2] <= 2 && !m_sidebars[3]->splitterVisible ())
+    vs[2] = m_sidebars[3]->lastSize();
+
+  config->writeEntry ("Kate-MDI-H-Splitter", hs);
+  config->writeEntry ("Kate-MDI-V-Splitter", vs);
 
   // now save the state of the toolviews ;)
   for ( QMap<QWidget*, WidgetData>::Iterator it = m_widgetToData.begin(); it != m_widgetToData.end(); ++it )
@@ -513,6 +554,6 @@ void MainWindow::saveSession (KConfig *config, const QString &group)
   }
 }
 
-//END SESSION RESTORE/SAVE
+//END MAIN WINDOW
 
 } // namespace KateMDI
