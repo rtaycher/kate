@@ -354,7 +354,7 @@ bool KateSessionManager::saveActiveSession (bool tryAsk, bool rememberAsLast)
       bool dontAgain = false;
       int res = KMessageBox::createKMessageBox(dlg, QMessageBox::Question,
                               i18n("Save current session?"), QStringList(),
-                              i18n("Don't ask again"), &dontAgain, KMessageBox::Notify);
+                              i18n("Do not ask again"), &dontAgain, KMessageBox::Notify);
 
       // remember to not ask again with right setting
       if (dontAgain)
@@ -442,7 +442,7 @@ void KateSessionManager::chooseSession ()
 
         if (!s)
         {
-          KMessageBox::error (chooser, i18n("No Session selected to open!"), i18n ("No Session selected"));
+          KMessageBox::error (chooser, i18n("No session selected to open."), i18n ("No Session Selected"));
           break;
         }
 
@@ -513,7 +513,7 @@ void KateSessionManager::sessionSave ()
 
   if (name.isEmpty())
   {
-    KMessageBox::error (0, i18n("To save a new session, you must specify a name!"), i18n ("Missing Session Name"));
+    KMessageBox::error (0, i18n("To save a new session, you must specify a name."), i18n ("Missing Session Name"));
     return;
   }
 
@@ -531,7 +531,7 @@ void KateSessionManager::sessionSaveAs ()
 
   if (name.isEmpty())
   {
-    KMessageBox::error (0, i18n("To save a session, you must specify a name!"), i18n ("Missing Session Name"));
+    KMessageBox::error (0, i18n("To save a session, you must specify a name."), i18n ("Missing Session Name"));
     return;
   }
 
@@ -800,7 +800,7 @@ void KateSessionManageDialog::rename ()
 
   if (name.isEmpty())
   {
-    KMessageBox::error (0, i18n("To save a session, you must specify a name!"), i18n ("Missing Session Name"));
+    KMessageBox::error (0, i18n("To save a session, you must specify a name."), i18n ("Missing Session Name"));
     return;
   }
 

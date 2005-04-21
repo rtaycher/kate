@@ -208,7 +208,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
 
   sessions_start->setRadioButtonExclusive( true );
   sessions_start->insert( rb1=new QRadioButton( i18n("&Start new session"), sessions_start ), 0 );
-  sessions_start->insert( rb2=new QRadioButton( i18n("&Load last used session"), sessions_start ), 1 );
+  sessions_start->insert( rb2=new QRadioButton( i18n("&Load last-used session"), sessions_start ), 1 );
   sessions_start->insert( rb3=new QRadioButton( i18n("&Manually choose a session"), sessions_start ), 2 );
 
   config->setGroup("General");
@@ -228,7 +228,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   lo->add (sessions_exit);
 
   sessions_exit->setRadioButtonExclusive( true );
-  sessions_exit->insert( rb1=new QRadioButton( i18n("&Don't save session"), sessions_exit ), 0 );
+  sessions_exit->insert( rb1=new QRadioButton( i18n("&Do not save session"), sessions_exit ), 0 );
   sessions_exit->insert( rb2=new QRadioButton( i18n("&Save session"), sessions_exit ), 1 );
   sessions_exit->insert( rb3=new QRadioButton( i18n("&Ask user"), sessions_exit ), 2 );
 
