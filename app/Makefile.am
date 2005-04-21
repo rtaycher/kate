@@ -31,5 +31,5 @@ INCLUDES= -I../interfaces -I$(srcdir)/../lib $(all_includes)
 check_PROGRAMS = katemdi
 
 katemdi_SOURCES = katemdi.cpp katemditest.cpp
-katemdi_LDADD   = -lkutils -lkatepartinterfaces  ../utils/libkateutils.la
-katemdi_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
+katemdi_LDADD = ../utils/libkateutils.la
+katemdi_LDFLAGS = $(all_libraries) $(KDE_RPATH) -lkutils -lkatepartinterfaces
