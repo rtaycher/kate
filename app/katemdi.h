@@ -185,7 +185,7 @@ class MainWindow : public KParts::MainWindow
      * @param identifier unique identifier for this toolview
      * @param pos position for the toolview, if we are in session restore, this is only a preference
      * @param icon icon to use for the toolview
-     * @param test text to use in addition to icon
+     * @param text text to use in addition to icon
      * @return created toolview on success or 0
      */
     ToolView *createToolView (const QString &identifier, KMultiTabBar::KMultiTabBarPosition pos, const QPixmap &icon, const QString &text);

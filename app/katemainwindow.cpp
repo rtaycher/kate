@@ -85,12 +85,12 @@
 
 uint KateMainWindow::uniqueID = 1;
 
-KateMainWindow::KateMainWindow () :
-    KMDI::MainWindow (0,(QString("__KateMainWindow#%1").arg(uniqueID)).latin1())
+KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
+  : KateMDI::MainWindow (0,(QString("__KateMainWindow#%1").arg(uniqueID)).latin1())
 {
-  setToolViewStyle(KMultiTabBar::KDEV3ICON);
+ // setToolViewStyle(KMultiTabBar::KDEV3ICON);
   // make the dockwidgets keep their size if possible
-  manager()->setSplitterKeepSize(true);
+  //manager()->setSplitterKeepSize(true);
   // first the very important id
   myID = uniqueID;
   uniqueID++;
@@ -114,6 +114,9 @@ KateMainWindow::KateMainWindow () :
 
     resize (kMin (s.width(), desk.width()), kMin(s.height(), desk.height()));
   }
+
+  // start session restore if needed
+  startRestore (sconfig, sgroup);
 
   m_mainWindow = new Kate::MainWindow (this);
   m_toolViewManager = new Kate::ToolViewManager (this);
@@ -150,9 +153,14 @@ KateMainWindow::KateMainWindow () :
   if (console)
     console->loadConsoleIfNeeded();
 
-  setAcceptDrops(true);
-
   setAutoSaveSettings ("Kate Main Window");
+
+  finishRestore ();
+
+  if (sconfig)
+    m_viewManager->restoreViewConfiguration (sconfig, sgroup);
+
+  setAcceptDrops(true);
 }
 
 KateMainWindow::~KateMainWindow()
@@ -171,29 +179,27 @@ void KateMainWindow::setupMainWindow ()
 {
   m_viewManager = new KateViewManager (this);
 
-  filelist = new KateFileList (this, m_viewManager, this/*filelistDock*/, "filelist");
+  KateMDI::ToolView *t = createToolView("kate_filelist", KMultiTabBar::Left, SmallIcon("kmultiple"), i18n("Documents"));
+  filelist = new KateFileList (this, m_viewManager, t, "filelist");
   filelist->readConfig(kapp->config(), "Filelist");
-  addToolView(KDockWidget::DockLeft,filelist,SmallIcon("kmultiple"), i18n("Documents"));
 
-  fileselector = new KateFileSelector( this, m_viewManager, /*fileselectorDock*/ this, "operator");
-  addToolView(KDockWidget::DockLeft,fileselector, SmallIcon("fileopen"), i18n("Filesystem Browser"));
+  t = createToolView("kate_fileselector", KMultiTabBar::Left, SmallIcon("fileopen"), i18n("Filesystem Browser"));
+  fileselector = new KateFileSelector( this, m_viewManager, t, "operator");
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileItem*)),this,SLOT(fileSelected(const KFileItem*)));
 
-  // TEST
+  // ONLY ALLOW SHELL ACCESS IF ALLOWED ;)
   if (kapp->authorize("shell_access"))
   {
-    greptool = new GrepTool( this, "greptool" );
+    t = createToolView("kate_greptool", KMultiTabBar::Bottom, SmallIcon("filefind"), i18n("Find in Files") );
+    greptool = new GrepTool( this, t, "greptool" );
     greptool->installEventFilter( this );
     connect(greptool, SIGNAL(itemSelected(const QString &,int)), this, SLOT(slotGrepToolItemSelected(const QString &,int)));
     // WARNING HACK - anders: showing the greptool seems to make the menu accels work
     greptool->show();
-    greptool->hide();
 
-    addToolView( KDockWidget::DockBottom, greptool, SmallIcon("filefind"), i18n("Find in Files") );
-
-    console = new KateConsole (this, "console",viewManager());
+    t = createToolView("kate_console", KMultiTabBar::Bottom, SmallIcon("konsole"), i18n("Terminal"));
+    console = new KateConsole (t, "console",viewManager());
     console->installEventFilter( this );
-    addToolView(KDockWidget::DockBottom,console, SmallIcon("konsole"), i18n("Terminal"));
   }
 }
 
@@ -706,7 +712,7 @@ bool KateMainWindow::eventFilter( QObject *o, QEvent *e )
      return true;
   }
 
-  return KMDI::MainWindow::eventFilter( o, e );
+  return KateMDI::MainWindow::eventFilter( o, e );
 }
 
 bool KateMainWindow::event( QEvent *e )
@@ -717,7 +723,7 @@ bool KateMainWindow::event( QEvent *e )
     if ( m_modignore )
     {
       m_modignore = false;
-      return KMDI::MainWindow::event( e );
+      return KateMDI::MainWindow::event( e );
     }
     showModOnDiskPrompt();
   }
@@ -726,7 +732,7 @@ bool KateMainWindow::event( QEvent *e )
   else if ( (type == QEvent::WindowUnblocked || type == QEvent::WindowBlocked) && modNotification)
     m_modignore = true;
 
-  return KMDI::MainWindow::event( e );
+  return KateMDI::MainWindow::event( e );
 }
 
 bool KateMainWindow::showModOnDiskPrompt()
@@ -754,32 +760,6 @@ bool KateMainWindow::showModOnDiskPrompt()
   }
   return true;
 }
-
-KMDI::ToolViewAccessor *KateMainWindow::addToolView(KDockWidget::DockPosition position, QWidget *widget, const QPixmap &icon, const QString &sname, const QString &tabToolTip, const QString &tabCaption)
-{
-  widget->setIcon(icon);
-  widget->setCaption(sname);
-
-  return addToolWindow(widget, position, getMainDockWidget(), 25, tabToolTip, tabCaption);
-}
-
-bool KateMainWindow::removeToolView(QWidget *w)
-{
-  deleteToolWindow (w);
-  return true;
-}
-
-bool KateMainWindow::removeToolView(KMDI::ToolViewAccessor *accessor)
-{
-  deleteToolWindow (accessor);
-  return true;
-}
-
-bool KateMainWindow::showToolView(QWidget *){return false;}
-bool KateMainWindow::showToolView(KMDI::ToolViewAccessor *){return false;}
-
-bool KateMainWindow::hideToolView(QWidget *){return false;}
-bool KateMainWindow::hideToolView(KMDI::ToolViewAccessor *){return false;}
 
 void KateMainWindow::slotDocumentCreated (Kate::Document *doc)
 {
@@ -817,13 +797,9 @@ void KateMainWindow::updateCaption (Kate::Document *doc)
 void KateMainWindow::saveProperties(KConfig *config)
 {
   QString grp=config->group();
-  QString dockGrp;
 
-  dockGrp = grp + "-Docking";
-  writeDockConfig(config, dockGrp);
-
-  dockGrp= grp + "-View Configuration";
-  m_viewManager->saveViewConfiguration (config, dockGrp);
+  saveSession(config, grp);
+  m_viewManager->saveViewConfiguration (config, grp);
 
   config->setGroup(grp);
 }
@@ -831,15 +807,10 @@ void KateMainWindow::saveProperties(KConfig *config)
 void KateMainWindow::readProperties(KConfig *config)
 {
   QString grp=config->group();
-  QString dockGrp;
 
-  dockGrp = grp + "-Docking";
-  if (config->hasGroup(dockGrp))
-    readDockConfig(config, dockGrp);
-
-  dockGrp= grp + "-View Configuration";
-  if (config->hasGroup(dockGrp))
-    m_viewManager->restoreViewConfiguration (config, dockGrp);
+  startRestore(config, grp);
+  finishRestore ();
+  m_viewManager->restoreViewConfiguration (config, grp);
 
   config->setGroup(grp);
 }

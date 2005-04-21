@@ -86,7 +86,7 @@ KateViewSpace::KateViewSpace( KateViewSpaceContainer *viewManager,
   stack = new QWidgetStack( this );
   setStretchFactor(stack, 1);
   stack->setFocus();
-  sep = new KVSSBSep( this );
+  //sep = new KVSSBSep( this );
   mStatusBar = new KateVSStatusBar(this);
   mIsActiveSpace = false;
   mViewCount = 0;
@@ -213,7 +213,7 @@ void KateViewSpace::setActive( bool active, bool )
 
   mStatusBar->setPalette( pal );
   mStatusBar->update();
-  sep->update();
+  //sep->update();
 }
 
 bool KateViewSpace::event( QEvent *e )

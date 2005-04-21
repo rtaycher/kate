@@ -40,7 +40,7 @@ class GrepTool : public QWidget
     Q_OBJECT
 
 public:
-    GrepTool(class KateMainWindow *parent=0, const char *name=0);
+    GrepTool(class KateMainWindow *parent, QWidget *p, const char *name=0);
     ~GrepTool();
 
     // only updates if the dir you give to it differs from the last one given to it !

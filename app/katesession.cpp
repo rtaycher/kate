@@ -42,6 +42,7 @@
 #include <qcheckbox.h>
 #include <qdatetime.h>
 
+#include <unistd.h>
 #include <time.h>
 
 KateSession::KateSession (KateSessionManager *manager, const QString &fileName, const QString &name)
@@ -282,14 +283,15 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
 
         for (unsigned int i=0; i < wCount; ++i)
         {
-          sc->setGroup(QString ("MainWindow%1").arg(i));
-
-          KateMainWindow *win = (i < ((KateApp *)kapp)->mainWindows())
-                     ? ((KateApp *)kapp)->kateMainWindow(i)
-                     : ((KateApp *)kapp)->newMainWindow(false);
-
-          win->readProperties (sc);
-          win->show ();
+          if (i >= ((KateApp *)kapp)->mainWindows())
+          {
+            ((KateApp *)kapp)->newMainWindow(true, sc, QString ("MainWindow%1").arg(i));
+          }
+          else
+          {
+            sc->setGroup(QString ("MainWindow%1").arg(i));
+            ((KateApp *)kapp)->kateMainWindow(i)->readProperties (sc);
+          }
         }
 
         if (wCount > 0)
@@ -402,8 +404,10 @@ bool KateSessionManager::saveActiveSession (bool tryAsk, bool rememberAsLast)
   return true;
 }
 
-void KateSessionManager::chooseSession ()
+bool KateSessionManager::chooseSession ()
 {
+  bool success = true;
+
   // app config
   KConfig *c = kapp->config();
   c->setGroup("General");
@@ -416,14 +420,14 @@ void KateSessionManager::chooseSession ()
   if (sesStart == "last")
   {
     activateSession (new KateSession (this, lastSession, ""), false, false);
-    return;
+    return success;
   }
 
   // start with empty new session
   if (sesStart == "new")
   {
     activateSession (new KateSession (this, "", ""), false, false);
-    return;
+    return success;
   }
 
   KateSessionChooser *chooser = new KateSessionChooser (0, lastSession);
@@ -451,6 +455,12 @@ void KateSessionManager::chooseSession ()
         break;
       }
 
+      // exit the app lateron
+      case KateSessionChooser::resultQuit:
+        success = false;
+        retry = false;
+        break;
+
       default:
         activateSession (new KateSession (this, "", ""), false, false);
         retry = false;
@@ -459,7 +469,7 @@ void KateSessionManager::chooseSession ()
   }
 
   // write back our nice boolean :)
-  if (chooser->reopenLastSession ())
+  if (success && chooser->reopenLastSession ())
   {
     c->setGroup("General");
 
@@ -472,6 +482,8 @@ void KateSessionManager::chooseSession ()
   }
 
   delete chooser;
+
+  return success;
 }
 
 void KateSessionManager::sessionNew ()
@@ -571,11 +583,12 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
                   , ""
                   , true
                   , i18n ("Session Chooser")
-                  , KDialogBase::User1 | KDialogBase::User2
+                  , KDialogBase::User1 | KDialogBase::User2 | KDialogBase::User3
                   , KDialogBase::User1
                   , true
                   , KGuiItem (i18n ("Open Session"), "fileopen")
                   , KGuiItem (i18n ("New Session"), "filenew")
+                  , KStdGuiItem::quit ()
                 )
 {
   QHBox *page = new QHBox (this);
@@ -645,6 +658,11 @@ void KateSessionChooser::slotUser1 ()
 void KateSessionChooser::slotUser2 ()
 {
   done (resultNew);
+}
+
+void KateSessionChooser::slotUser3 ()
+{
+  done (resultQuit);
 }
 
 void KateSessionChooser::selectionChanged ()

@@ -540,6 +540,13 @@ bool MainWindow::moveToolView (ToolView *widget, KMultiTabBar::KMultiTabBarPosit
   if (!widget || widget->mainWindow() != this)
     return false;
 
+  // try the restore config to figure out real pos
+  if (m_restoreConfig)
+  {
+    m_restoreConfig->setGroup (m_restoreGroup);
+    pos = (KMultiTabBar::KMultiTabBarPosition) m_restoreConfig->readNumEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(widget->id), pos);
+  }
+
   m_sidebars[pos]->addWidget (widget->icon, widget->text, widget);
 
   return true;

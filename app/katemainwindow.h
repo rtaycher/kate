@@ -25,6 +25,7 @@
 #include "../interfaces/mainwindow.h"
 #include "../interfaces/toolviewmanager.h"
 
+#include "katemdi.h"
 #include "kateviewmanager.h"
 
 #include <kate/view.h>
@@ -45,7 +46,7 @@ class DCOPObject;
 
 class KateExternalToolsMenuAction;
 
-class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
+class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBase
 {
   Q_OBJECT
 
@@ -53,7 +54,7 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
   friend class KateViewManager;
 
   public:
-    KateMainWindow ();
+    KateMainWindow (KConfig *sconfig, const QString &sgroup);
     ~KateMainWindow();
 
   /**
@@ -67,21 +68,6 @@ class KateMainWindow : public KMDI::MainWindow, virtual public KParts::PartBase
     KateViewManager *kateViewManager () { return m_viewManager; }
 
     DCOPObject *dcopObject () { return m_dcop; }
-
-  /**
-   * ToolView Managment, used to create/access/delete toolviews
-   */
-  public:
-    KMDI::ToolViewAccessor *addToolView(KDockWidget::DockPosition position, QWidget *widget, const QPixmap &icon, const QString &sname, const QString &tabToolTip = 0, const QString &tabCaption = 0);
-
-    bool removeToolView(QWidget *);
-    bool removeToolView(KMDI::ToolViewAccessor *);
-
-    bool showToolView(QWidget *);
-    bool showToolView(KMDI::ToolViewAccessor *);
-
-    bool hideToolView(QWidget *);
-    bool hideToolView(KMDI::ToolViewAccessor *);
 
   /**
    * various methodes to get some little info out of this

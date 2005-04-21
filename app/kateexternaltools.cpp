@@ -60,7 +60,6 @@
 
 #include <kdebug.h>
 #include <kapplication.h>
-#include <kmdi/mainwindow.h>
 //END Includes
 
 KateExternalToolsCommand *KateExternalToolsCommand::s_self=0;
@@ -192,7 +191,7 @@ bool KateExternalToolsCommand::exec (Kate::View *view, const QString &cmd, QStri
 // 		kdDebug(13001)<<"KateExternalToolsCommand::exec: Could not get view widget"<<endl;
 		return false;
 	}
-  KMDI::MainWindow *dmw=dynamic_cast<KMDI::MainWindow*>(wv->topLevelWidget());
+  KateMDI::MainWindow *dmw=dynamic_cast<KateMDI::MainWindow*>(wv->topLevelWidget());
 	if (!dmw) {
 // 		kdDebug(13001)<<"KateExternalToolsCommand::exec: Could not get main window"<<endl;
 		return false;

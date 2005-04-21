@@ -223,8 +223,9 @@ class KateSessionManager : public QObject
 
     /**
      * initial session chooser, on app start
+     * @return success, if false, app should exit
      */
-    void chooseSession ();
+    bool chooseSession ();
 
   public slots:
     /**
@@ -299,6 +300,7 @@ class KateSessionChooser : public KDialogBase
     enum {
       resultOpen,
       resultNew,
+      resultQuit,
       resultNone
     };
 
@@ -312,6 +314,11 @@ class KateSessionChooser : public KDialogBase
      * new session
      */
     void slotUser2 ();
+
+    /**
+     * quit kate
+     */
+    void slotUser3 ();
 
     /**
      * selection has changed

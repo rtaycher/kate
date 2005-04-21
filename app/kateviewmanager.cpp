@@ -255,7 +255,7 @@ void KateViewManager::activatePrevTab()
 
 bool KateViewManager::eventFilter(QObject *o,QEvent *e) {
   if (e->type()==QEvent::CaptionChange) {
-    m_mainWindow->tabWidget()->updateCaptionInView(static_cast<QWidget*>(o),static_cast<QWidget*>(o)->caption());
+    m_mainWindow->tabWidget()->changeTab(static_cast<QWidget*>(o),static_cast<QWidget*>(o)->caption());
   }
   return false;
 }

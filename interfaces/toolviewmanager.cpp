@@ -53,39 +53,33 @@ ToolViewManager::~ToolViewManager ()
   delete d;
 }
 
-KMDI::ToolViewAccessor *ToolViewManager::addToolView(KDockWidget::DockPosition position, QWidget *widget, const QPixmap &icon, const QString &sname, const QString &tabToolTip, const QString &tabCaption)
+QWidget *ToolViewManager::createToolView (const QString &identifier, ToolViewManager::Position pos, const QPixmap &icon, const QString &text)
 {
-  return d->toolViewMan->addToolView (position, widget, icon, sname, tabToolTip, tabCaption);
+  return d->toolViewMan->createToolView (identifier, (KMultiTabBar::KMultiTabBarPosition)pos, icon, text);
 }
 
-bool ToolViewManager::removeToolView(QWidget *widget)
+bool ToolViewManager::moveToolView (QWidget *widget, ToolViewManager::Position  pos)
 {
-  return d->toolViewMan->removeToolView (widget);
-}
+  if (!widget || !widget->qt_cast("KateMDI::ToolView"))
+    return false;
 
-bool ToolViewManager::removeToolView(KMDI::ToolViewAccessor *accessor)
-{
-  return d->toolViewMan->removeToolView (accessor);
+  return d->toolViewMan->moveToolView (static_cast<KateMDI::ToolView*>(widget), (KMultiTabBar::KMultiTabBarPosition)pos);
 }
 
 bool ToolViewManager::showToolView(QWidget *widget)
 {
-  return d->toolViewMan->showToolView (widget);
-}
+  if (!widget || !widget->qt_cast("KateMDI::ToolView"))
+    return false;
 
-bool ToolViewManager::showToolView(KMDI::ToolViewAccessor *accessor)
-{
-  return d->toolViewMan->showToolView (accessor);
+  return d->toolViewMan->showToolView (static_cast<KateMDI::ToolView*>(widget));
 }
 
 bool ToolViewManager::hideToolView(QWidget *widget)
 {
-  return d->toolViewMan->hideToolView (widget);
-}
+  if (!widget || !widget->qt_cast("KateMDI::ToolView"))
+    return false;
 
-bool ToolViewManager::hideToolView(KMDI::ToolViewAccessor *accessor)
-{
-  return d->toolViewMan->hideToolView (accessor);
+  return d->toolViewMan->hideToolView (static_cast<KateMDI::ToolView*>(widget));
 }
 
 }

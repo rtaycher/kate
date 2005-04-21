@@ -20,12 +20,8 @@
 #ifndef _KATE_TOOLVIEWMANAGER_INCLUDE_
 #define _KATE_TOOLVIEWMANAGER_INCLUDE_
 
-#include <kdockwidget.h>
-
-namespace KMDI
-{
-  class ToolViewAccessor;
-}
+#include <qwidget.h>
+#include <kurl.h>
 
 namespace Kate
 {
@@ -52,58 +48,41 @@ class KDE_EXPORT ToolViewManager : public QObject
 
   public:
     /**
-     * Add a toolview
-     * @param position position where to dock
-     * @param widget widget to add
-     * @param icon icon for the dock button
-     * @param sname unique name (used for example for hide/show)
-     * @param tabToolTip tooltip for the tab
-     * @param tabCaption caption for the tab
-     * @return KMDI::ToolViewAccessor * generated accessor
+     * positions
      */
-    KMDI::ToolViewAccessor *addToolView (KDockWidget::DockPosition position, QWidget *widget, const QPixmap &icon, const QString &sname, const QString &tabToolTip = 0, const QString &tabCaption = 0);
+    enum Position {Left, Right, Top, Bottom};
 
     /**
-     * Remove a toolview
-     * @param toolview widget to remove
-     * @return bool success
+     * add a given widget to the given sidebar if possible, name is very important
+     * @param identifier unique identifier for this toolview
+     * @param pos position for the toolview, if we are in session restore, this is only a preference
+     * @param icon icon to use for the toolview
+     * @param text text to use in addition to icon
+     * @return created toolview on success or 0
      */
-    bool removeToolView (QWidget *widget);
+    QWidget *createToolView (const QString &identifier, ToolViewManager::Position pos, const QPixmap &icon, const QString &text);
 
     /**
-     * Remove a toolview
-     * @param toolview to remove
+     * Move the toolview
+     * @param widget to show, widget given must be widget constructed by createToolView
+     * @param pos position to move widget to
      * @return bool success
      */
-    bool removeToolView (KMDI::ToolViewAccessor *accessor);
+    bool moveToolView (QWidget *widget, ToolViewManager::Position pos);
 
     /**
      * Show the toolview
-     * @param widget to show
+     * @param widget to show, widget given must be widget constructed by createToolView
      * @return bool success
      */
     bool showToolView (QWidget *widget);
 
     /**
-     * Show the toolview
-     * @param toolview to show
-     * @return bool success
-     */
-    bool showToolView (KMDI::ToolViewAccessor *accessor);
-
-    /**
      * Hide the toolview
-     * @param widget to hide
+     * @param widget to hide, widget given must be widget constructed by createToolView
      * @return bool success
      */
     bool hideToolView (QWidget *widget);
-
-    /**
-     * Hide the toolview
-     * @param toolview to hide
-     * @return bool success
-     */
-    bool hideToolView (KMDI::ToolViewAccessor *accessor);
 
   private:
     /**

@@ -10,9 +10,9 @@ libkateinterfaces_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugin
   katemailfilesdialog.cpp kbookmarkhandler.cpp \
   katedocmanageriface.skel kateappIface.cpp kateappIface.skel katedocmanageriface.cpp \
   kateexternaltools.cpp katesavemodifieddialog.cpp kateviewspacecontainer.cpp \
-  katemwmodonhddialog.cpp katesession.cpp
+  katemwmodonhddialog.cpp katesession.cpp katemdi.cpp
 
-libkateinterfaces_la_LIBADD   = ../interfaces/libkateinterfacesprivate.la -lkscript $(LIB_KUTILS) ../utils/libkateutils.la -lkmdi2
+libkateinterfaces_la_LIBADD   = ../interfaces/libkateinterfacesprivate.la -lkscript $(LIB_KUTILS) ../utils/libkateutils.la
 
 libkateinterfaces_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -no-undefined
 

@@ -58,7 +58,7 @@ class KDE_EXPORT KateApp : public KUniqueApplication
     KateSessionManager *kateSessionManager () { return m_sessionManager; }
 
     class KateMainWindow *newMainWindow ();
-    class KateMainWindow *newMainWindow (bool visible);
+    class KateMainWindow *newMainWindow (bool visible, KConfig *sconfig = 0, const QString &sgroup = "");
 
     void removeMainWindow (KateMainWindow *mainWindow);
 

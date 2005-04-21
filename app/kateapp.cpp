@@ -216,7 +216,11 @@ int KateApp::newInstance()
       else
       {
         // let the user choose session if possible
-        kateSessionManager()->chooseSession ();
+        if (!kateSessionManager()->chooseSession ())
+        {
+          quit ();
+          return 0;
+        }
       }
     }
   }
@@ -359,9 +363,9 @@ KateMainWindow *KateApp::newMainWindow ()
   return newMainWindow (true);
 }
 
-KateMainWindow *KateApp::newMainWindow (bool visible)
+KateMainWindow *KateApp::newMainWindow (bool visible, KConfig *sconfig, const QString &sgroup)
 {
-  KateMainWindow *mainWindow = new KateMainWindow ();
+  KateMainWindow *mainWindow = new KateMainWindow (sconfig, sgroup);
   m_mainWindows.append (mainWindow);
 
   if ((mainWindows() > 1) && m_mainWindows.at(m_mainWindows.count()-2)->kateViewManager()->activeView())
