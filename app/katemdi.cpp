@@ -290,11 +290,21 @@ bool Sidebar::removeWidget (ToolView *widget)
   m_idToWidget.remove (m_widgetToId[widget]);
   m_widgetToId.remove (widget);
 
+  bool anyVis = false;
+  QIntDictIterator<ToolView> it( m_idToWidget );
+  for ( ; it.current(); ++it )
+  {
+    if (!anyVis)
+      anyVis =  it.current()->isVisible();
+  }
+
   if (m_idToWidget.isEmpty())
   {
     m_ownSplit->hide ();
     hide ();
   }
+  else if (!anyVis)
+    m_ownSplit->hide ();
 
   return true;
 }
@@ -427,7 +437,9 @@ void Sidebar::buttonPopupActivate (int id)
   // move ids
   if (id < 4)
   {
+    // move + show ;)
     m_mainWin->moveToolView (w, (KMultiTabBar::KMultiTabBarPosition) id);
+    m_mainWin->showToolView (w);
   }
 }
 
