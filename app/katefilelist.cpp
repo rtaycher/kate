@@ -120,7 +120,7 @@ KateFileList::KateFileList (KateMainWindow *main,
 
   // don't Honour KDE single/double click setting, this files are already open,
   // no need for hassle of considering double-click
-  connect(this,SIGNAL(clicked(QListViewItem *)),
+  connect(this,SIGNAL(selectionChanged(QListViewItem *)),
 	  this,SLOT(slotActivateView(QListViewItem *)));
   connect(viewManager,SIGNAL(viewChanged()), this,SLOT(slotViewChanged()));
   connect(this,SIGNAL(contextMenuRequested( QListViewItem *, const QPoint &, int )),
