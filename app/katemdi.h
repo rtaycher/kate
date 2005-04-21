@@ -1,9 +1,11 @@
-/* This file is part of the KDE project
+/* This file is part of the KDE libraries
    Copyright (C) 2005 Christoph Cullmann <cullmann@kde.org>
+   Copyright (C) 2002,2003 Joseph Wenninger <jowenn@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
-   License version 2 as published by the Free Software Foundation.
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,6 +34,12 @@
 
 namespace KateMDI {
 
+enum TabWidgetVisibility {
+    AlwaysShowTabs         = 0,
+    ShowWhenMoreThanOneTab = 1,
+    NeverShowTabs          = 2
+  };
+
 /**
   * internal data holder class, used to have some
   * additional infos to the toolview widgets ;)
@@ -46,13 +54,50 @@ class WidgetData
     QString text;
 };
 
+class TabWidget : public KTabWidget
+{
+  Q_OBJECT
+
+  public:
+    TabWidget(QWidget* parent, const char* name=0);
+    virtual ~TabWidget();
+
+    virtual void addTab ( QWidget * child, const QString & label );
+
+    virtual void addTab ( QWidget * child, const QIconSet & iconset, const QString & label );
+
+    virtual void addTab ( QWidget * child, QTab * tab );
+
+    virtual void insertTab ( QWidget * child, const QString & label, int index = -1 );
+
+    virtual void insertTab ( QWidget * child, const QIconSet & iconset, const QString & label, int index = -1 );
+
+    virtual void insertTab ( QWidget * child, QTab * tab, int index = -1 );
+
+    virtual void removePage ( QWidget * w );
+
+    KateMDI::TabWidgetVisibility tabWidgetVisibility() const;
+
+    void setTabWidgetVisibility( KateMDI::TabWidgetVisibility );
+
+  private slots:
+    void closeTab(QWidget* w);
+
+  private:
+    void maybeShow();
+    void setCornerWidgetVisibility(bool visible);
+
+  private:
+    KateMDI::TabWidgetVisibility m_visibility;
+};
+
 class Sidebar : public KMultiTabBar
 {
   Q_OBJECT
 
   public:
     Sidebar (KMultiTabBar::KMultiTabBarPosition pos, QWidget *parent, QMap<QWidget*, WidgetData> &widgetToData);
-    ~Sidebar ();
+    virtual ~Sidebar ();
 
     void setSplitter (QSplitter *sp);
 
@@ -92,7 +137,7 @@ class MainWindow : public KParts::MainWindow
     /**
      * Constructor
      */
-    MainWindow ();
+    MainWindow (QWidget* parentWidget = 0, const char* name = 0);
 
     /**
      * Destructor
@@ -107,7 +152,7 @@ class MainWindow : public KParts::MainWindow
      * central tabwidget ;)
      * @return tab widget
      */
-    KTabWidget *tabWidget ();
+    TabWidget *tabWidget ();
 
     /**
      * add a given widget to the given sidebar if possible, name is very important
@@ -176,7 +221,7 @@ class MainWindow : public KParts::MainWindow
      * tab widget, which is the central part of the
      * main window ;)
      */
-    KTabWidget *m_tabWidget;
+    TabWidget *m_tabWidget;
 
     /**
      * horizontal splitter

@@ -1,9 +1,11 @@
-/* This file is part of the KDE project
+/* This file is part of the KDE libraries
    Copyright (C) 2005 Christoph Cullmann <cullmann@kde.org>
+   Copyright (C) 2002,2003 Joseph Wenninger <jowenn@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
-   License version 2 as published by the Free Software Foundation.
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -44,8 +46,143 @@
 
 #include <qvbox.h>
 #include <qhbox.h>
+#include <qtabbar.h>
 
 namespace KateMDI {
+
+TabWidget::TabWidget(QWidget* parent, const char* name)
+ : KTabWidget(parent,name)
+ , m_visibility (KateMDI::ShowWhenMoreThanOneTab)
+{
+  tabBar()->hide();
+
+  setHoverCloseButton(true);
+
+  connect(this, SIGNAL(closeRequest(QWidget*)), this, SLOT(closeTab(QWidget*)));
+}
+
+TabWidget::~TabWidget()
+{
+}
+
+void TabWidget::closeTab(QWidget* w)
+{
+  w->close();
+}
+
+void TabWidget::addTab ( QWidget * child, const QString & label )
+{
+  KTabWidget::addTab(child,label);
+  showPage(child);
+  maybeShow();
+}
+
+void TabWidget::addTab ( QWidget * child, const QIconSet & iconset, const QString & label )
+{
+  KTabWidget::addTab(child,iconset,label);
+  showPage(child);
+  maybeShow();
+}
+
+void TabWidget::addTab ( QWidget * child, QTab * tab )
+{
+  KTabWidget::addTab(child,tab);
+  showPage(child);
+  maybeShow();
+}
+
+void TabWidget::insertTab ( QWidget * child, const QString & label, int index)
+{
+  KTabWidget::insertTab(child,label,index);
+  showPage(child);
+  maybeShow();
+  tabBar()->repaint();
+}
+
+void TabWidget::insertTab ( QWidget * child, const QIconSet & iconset, const QString & label, int index )
+{
+  KTabWidget::insertTab(child,iconset,label,index);
+  showPage(child);
+  maybeShow();
+  tabBar()->repaint();
+}
+
+void TabWidget::insertTab ( QWidget * child, QTab * tab, int index)
+{
+  KTabWidget::insertTab(child,tab,index);
+  showPage(child);
+  maybeShow();
+  tabBar()->repaint();
+}
+
+void TabWidget::removePage ( QWidget * w )
+{
+  KTabWidget::removePage(w);
+  maybeShow();
+}
+
+void TabWidget::maybeShow()
+{
+  switch (m_visibility)
+  {
+    case KateMDI::AlwaysShowTabs:
+      tabBar()->show();
+
+      // show/hide corner widgets
+      if (count() == 0)
+        setCornerWidgetVisibility(false);
+      else
+        setCornerWidgetVisibility(true);
+
+      break;
+
+    case KateMDI::ShowWhenMoreThanOneTab:
+      if (count()<2) tabBar()->hide();
+      else tabBar()->show();
+
+      // show/hide corner widgets
+      if (count() < 2)
+        setCornerWidgetVisibility(false);
+      else
+        setCornerWidgetVisibility(true);
+
+      break;
+
+    case KateMDI::NeverShowTabs:
+      tabBar()->hide();
+      break;
+  }
+}
+
+void TabWidget::setCornerWidgetVisibility(bool visible)
+{
+  // there are two corner widgets: on TopLeft and on TopTight!
+
+  if (cornerWidget(Qt::TopLeft) ) {
+    if (visible)
+      cornerWidget(Qt::TopLeft)->show();
+    else
+      cornerWidget(Qt::TopLeft)->hide();
+  }
+
+  if (cornerWidget(Qt::TopRight) ) {
+    if (visible)
+      cornerWidget(Qt::TopRight)->show();
+    else
+      cornerWidget(Qt::TopRight)->hide();
+  }
+}
+
+void TabWidget::setTabWidgetVisibility( KateMDI::TabWidgetVisibility visibility )
+{
+  m_visibility = visibility;
+  maybeShow();
+}
+
+KateMDI::TabWidgetVisibility TabWidget::tabWidgetVisibility( ) const
+{
+  return m_visibility;
+}
 
 Sidebar::Sidebar (KMultiTabBar::KMultiTabBarPosition pos, QWidget *parent, QMap<QWidget*, WidgetData> &widgetToData)
   : KMultiTabBar ((pos == KMultiTabBar::Top || pos == KMultiTabBar::Bottom) ? KMultiTabBar::Horizontal : KMultiTabBar::Vertical, parent)
@@ -125,6 +262,7 @@ bool Sidebar::showWidget (QWidget *widget)
     {
       it.current()->hide();
       setTab (it.currentKey(), false);
+      m_widgetToData[it.current()].visible = false;
     }
 
   setTab (m_widgetToId[widget], true);
@@ -183,8 +321,9 @@ void Sidebar::tabClicked(int i)
     hideWidget (w);
 }
 
-MainWindow::MainWindow ()
- : m_restoreConfig (0)
+MainWindow::MainWindow (QWidget* parentWidget, const char* name)
+ : KParts::MainWindow( parentWidget, name)
+ , m_restoreConfig (0)
 {
   // init the internal widgets
   QHBox *hb = new QHBox (this);
@@ -204,7 +343,7 @@ MainWindow::MainWindow ()
 
   m_sidebars[KMultiTabBar::Top]->setSplitter (m_vSplitter);
 
-  m_tabWidget = new KTabWidget (m_vSplitter);
+  m_tabWidget = new TabWidget (m_vSplitter);
 
   m_sidebars[KMultiTabBar::Bottom] = new Sidebar (KMultiTabBar::Bottom, vb, m_widgetToData);
   m_sidebars[KMultiTabBar::Bottom]->setSplitter (m_vSplitter);
@@ -215,9 +354,14 @@ MainWindow::MainWindow ()
 
 MainWindow::~MainWindow ()
 {
+  // seems like we really should delete this by hand ;)
+  delete m_tabWidget;
+
+  for (unsigned int i=0; i < 4; ++i)
+    delete m_sidebars[i];
 }
 
-KTabWidget *MainWindow::tabWidget ()
+TabWidget *MainWindow::tabWidget ()
 {
   return m_tabWidget;
 }
@@ -306,6 +450,9 @@ void MainWindow::startRestore (KConfig *config, const QString &group)
   m_restoreConfig = config;
   m_restoreGroup = group;
 
+  if (!m_restoreConfig)
+    return;
+
   m_restoreConfig->setGroup (m_restoreGroup);
 
   // save main splitter sizes ;)
@@ -318,14 +465,31 @@ void MainWindow::finishRestore ()
   if (!m_restoreConfig)
     return;
 
-  // restore visible state of the toolview
+  // reshuffle toolviews only if needed
+  for ( QMap<QWidget*, WidgetData>::Iterator it = m_widgetToData.begin(); it != m_widgetToData.end(); ++it )
+  {
+    KMultiTabBar::KMultiTabBarPosition newPos = (KMultiTabBar::KMultiTabBarPosition) m_restoreConfig->readNumEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(it.data().id), it.data().pos);
+
+    if (it.data().pos != newPos)
+    {
+      moveToolView (it.key(), newPos);
+    }
+  }
+
+  // hide toolviews
+  m_restoreConfig->setGroup (m_restoreGroup);
+  for ( QMap<QWidget*, WidgetData>::Iterator it = m_widgetToData.begin(); it != m_widgetToData.end(); ++it )
+  {
+    if (!m_restoreConfig->readBoolEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(it.data().id), false))
+      hideToolView (it.key());
+  }
+
+  // restore visible toolviews
   m_restoreConfig->setGroup (m_restoreGroup);
   for ( QMap<QWidget*, WidgetData>::Iterator it = m_widgetToData.begin(); it != m_widgetToData.end(); ++it )
   {
     if (m_restoreConfig->readBoolEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(it.data().id), false))
       showToolView (it.key());
-    else
-      hideToolView (it.key());
   }
 
   // clear this stuff, we are done ;)
