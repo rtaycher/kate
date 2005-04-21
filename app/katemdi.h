@@ -111,8 +111,6 @@ class Sidebar : public KMultiTabBar
 
     void setSplitter (QSplitter *sp);
 
-    void setResizeMode(QSplitter::ResizeMode mode);
-
   public:
     ToolView *addWidget (const QPixmap &icon, const QString &text, ToolView *widget);
     bool removeWidget (ToolView *widget);

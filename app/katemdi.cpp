@@ -230,12 +230,8 @@ void Sidebar::setSplitter (QSplitter *sp)
   m_splitter = sp;
   m_ownSplit = new QSplitter ((m_pos == KMultiTabBar::Top || m_pos == KMultiTabBar::Bottom) ? Qt::Horizontal : Qt::Vertical, m_splitter);
   m_ownSplit->setOpaqueResize( KGlobalSettings::opaqueResize() );
+  m_splitter->setResizeMode( m_ownSplit, QSplitter::KeepSize );
   m_ownSplit->hide ();
-}
-
-void Sidebar::setResizeMode(QSplitter::ResizeMode mode)
-{
-  m_splitter->setResizeMode(m_ownSplit, mode);
 }
 
 ToolView *Sidebar::addWidget (const QPixmap &icon, const QString &text, ToolView *widget)
@@ -563,11 +559,6 @@ bool MainWindow::hideToolView (ToolView *widget)
     return false;
 
   return widget->sidebar()->hideWidget (widget);
-}
-
-void MainWindow::setSidebarResizeMode(KMultiTabBar::KMultiTabBarPosition pos, QSplitter::ResizeMode mode)
-{
-  m_sidebars[pos]->setResizeMode(mode);
 }
 
 void MainWindow::startRestore (KConfig *config, const QString &group)
