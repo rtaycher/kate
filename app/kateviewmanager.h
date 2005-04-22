@@ -28,7 +28,6 @@
 #include <kate/document.h>
 #include <qguardedptr.h>
 
-class KateSplitter;
 class KateMainWindow;
 class KateViewSpaceContainer;
 

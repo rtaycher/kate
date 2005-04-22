@@ -4,7 +4,7 @@ kdeinit_LTLIBRARIES = kate.la kwrite.la
 
 libkateinterfaces_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugindialogpage.cpp \
   kateconsole.cpp katedocmanager.cpp katefilelist.cpp katefileselector.cpp \
-  katemainwindow.cpp katepluginmanager.cpp katesplitter.cpp \
+  katemainwindow.cpp katepluginmanager.cpp \
   kateviewmanager.cpp kateviewspace.cpp \
   katemainwindowiface.skel katemainwindowiface.cpp kategrepdialog.cpp \
   katemailfilesdialog.cpp kbookmarkhandler.cpp \

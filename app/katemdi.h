@@ -33,6 +33,25 @@
 
 namespace KateMDI {
 
+
+/** This class is needed because QSplitter cant return an index for a widget. */
+class Splitter : public QSplitter
+{
+  Q_OBJECT
+
+  public:
+    Splitter(Orientation o, QWidget* parent=0, const char* name=0);
+    ~Splitter();
+
+    /** Since there is supposed to be only 2 childs of a katesplitter,
+     * any child other than the last is the first.
+     * This method uses QSplitter::idAfter(widget) which
+     * returns 0 if there is no widget after this one.
+     * This results in an error if widget is not a child
+     * in this splitter */
+    bool isLastChild(QWidget* w);
+};
+
 class ToolView : public QVBox
 {
   friend class Sidebar;
@@ -80,6 +99,20 @@ class Sidebar : public KMultiTabBar
     int lastSize () { return m_lastSize; }
 
     bool splitterVisible () { return m_ownSplit->isVisible(); }
+
+    void restoreSession ();
+
+     /**
+     * restore the current session config from given object, use current group
+     * @param config config object to use
+     */
+    void restoreSession (KConfig *config);
+
+     /**
+     * save the current session config to given object, use current group
+     * @param config config object to use
+     */
+    void saveSession (KConfig *config);
 
   private slots:
     void tabClicked(int);
@@ -161,22 +194,35 @@ class MainWindow : public KParts::MainWindow
      */
     void toolViewDeleted (ToolView *widget);
 
+  /**
+   * modifiers for existing toolviews
+   */
   public:
-    // move a toolview to given new pos
+    /**
+     * move a toolview around
+     * @param widget toolview to move
+     * @param pos position to move too, during session restore, only preference
+     * @return success
+     */
     bool moveToolView (ToolView *widget, KMultiTabBar::KMultiTabBarPosition pos);
 
-    // show given toolview
+    /**
+     * show given toolview, discarded while session restore
+     * @param widget toolview to show
+     * @return success
+     */
     bool showToolView (ToolView *widget);
 
-    // hide given toolview
+    /**
+     * hide given toolview, discarded while session restore
+     * @param widget toolview to hide
+     * @return success
+     */
     bool hideToolView (ToolView *widget);
 
-    // set the sidebar's resize mode.
-    void setSidebarResizeMode(KMultiTabBar::KMultiTabBarPosition pos, QSplitter::ResizeMode mode);
-
-  //
-  // session saving and restore stuff
-  //
+  /**
+   * session saving and restore stuff
+   */
   public:
     /**
      * start the restore
@@ -197,9 +243,9 @@ class MainWindow : public KParts::MainWindow
      */
     void saveSession (KConfig *config, const QString &group);
 
-  //
-  // internal data ;)
-  //
+  /**
+   * internal data ;)
+   */
   private:
     /**
      * map identifiers to widgets

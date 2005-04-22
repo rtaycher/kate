@@ -24,7 +24,6 @@
 
 #include "katemainwindow.h"
 #include "katedocmanager.h"
-#include "katesplitter.h"
 #include "kateviewspace.h"
 
 #include <dcopclient.h>
@@ -455,15 +454,15 @@ void KateViewSpaceContainer::splitViewSpace( KateViewSpace* vs,
       psizes = ps->sizes();
 
   Qt::Orientation o = isHoriz ? Qt::Vertical : Qt::Horizontal;
-  KateSplitter* s = new KateSplitter(o, vs->parentWidget());
+  KateMDI::Splitter* s = new KateMDI::Splitter(o, vs->parentWidget());
   s->setOpaqueResize( KGlobalSettings::opaqueResize() );
 
   if (! isFirstTime) {
     // anders: make sure the split' viewspace is always
     // correctly positioned.
     // If viewSpace is the first child, the new splitter must be moveToFirst'd
-    if ( !((KateSplitter*)vs->parentWidget())->isLastChild( vs ) )
-       ((KateSplitter*)s->parentWidget())->moveToFirst( s );
+    if ( !((KateMDI::Splitter*)vs->parentWidget())->isLastChild( vs ) )
+       ((KateMDI::Splitter*)s->parentWidget())->moveToFirst( s );
   }
   vs->reparent( s, 0, QPoint(), true );
   KateViewSpace* vsNew = new KateViewSpace( this, s );
@@ -505,18 +504,18 @@ void KateViewSpaceContainer::removeViewSpace (KateViewSpace *viewspace)
   // abort if this is the last viewspace
   if (m_viewSpaceList.count() < 2) return;
 
-  KateSplitter* p = (KateSplitter*)viewspace->parentWidget();
+  KateMDI::Splitter* p = (KateMDI::Splitter*)viewspace->parentWidget();
 
   // find out if it is the first child for repositioning
   // see below
   bool pIsFirst = false;
 
   // save some size information
-  KateSplitter* pp=0L;
+  KateMDI::Splitter* pp=0L;
   QValueList<int> ppsizes;
   if (m_viewSpaceList.count() > 2 && p->parentWidget() != this)
   {
-    pp = (KateSplitter*)p->parentWidget();
+    pp = (KateMDI::Splitter*)p->parentWidget();
     ppsizes = pp->sizes();
     pIsFirst = !pp->isLastChild( p ); // simple logic, right-
   }
@@ -560,7 +559,7 @@ void KateViewSpaceContainer::removeViewSpace (KateViewSpace *viewspace)
     // We also need to find the right viewspace to become active,
     // and if "other" is the last, we move it into the m_grid.
     if (pIsFirst)
-       ((KateSplitter*)p->parentWidget())->moveToFirst( other );
+       ((KateMDI::Splitter*)p->parentWidget())->moveToFirst( other );
     if ( other->isA("KateViewSpace") ) {
       setActiveSpace( (KateViewSpace*)other );
       if (m_viewSpaceList.count() == 1)
@@ -624,11 +623,11 @@ void KateViewSpaceContainer::saveViewConfiguration(KConfig *config,const QString
   }
 
   // I need the first splitter, the one which has this as parent.
-  KateSplitter* s;
-  QObjectList *l = queryList("KateSplitter", 0, false, false);
+  KateMDI::Splitter* s;
+  QObjectList *l = queryList("KateMDI::Splitter", 0, false, false);
   QObjectListIt it( *l );
 
-  if ( (s = (KateSplitter*)it.current()) != 0 )
+  if ( (s = (KateMDI::Splitter*)it.current()) != 0 )
     saveSplitterConfig( s, 0, config , group);
 
   delete l;
@@ -670,7 +669,7 @@ void KateViewSpaceContainer::restoreViewConfiguration (KConfig *config, const QS
 }
 
 
-void KateViewSpaceContainer::saveSplitterConfig( KateSplitter* s, int idx, KConfig* config, const QString& viewConfGrp )
+void KateViewSpaceContainer::saveSplitterConfig( KateMDI::Splitter* s, int idx, KConfig* config, const QString& viewConfGrp )
 {
   QString grp = QString(viewConfGrp+"-Splitter %1").arg(idx);
   config->setGroup(grp);
@@ -698,9 +697,9 @@ void KateViewSpaceContainer::saveSplitterConfig( KateSplitter* s, int idx, KConf
      }
    }
    // For KateSplitters, recurse
-   else if ( obj->isA("KateSplitter") ) {
+   else if ( obj->isA("KateMDI::Splitter") ) {
      idx++;
-     saveSplitterConfig( (KateSplitter*)obj, idx, config,viewConfGrp);
+     saveSplitterConfig( (KateMDI::Splitter*)obj, idx, config,viewConfGrp);
      n = QString(viewConfGrp+"-Splitter %1").arg( idx );
    }
    // make sure list goes in right place!
@@ -721,7 +720,7 @@ void KateViewSpaceContainer::restoreSplitter( KConfig* config, const QString &gr
 {
   config->setGroup( group );
 
-  KateSplitter* s = new KateSplitter((Qt::Orientation)config->readNumEntry("Orientation"), parent);
+  KateMDI::Splitter* s = new KateMDI::Splitter((Qt::Orientation)config->readNumEntry("Orientation"), parent);
 
   if ( group.compare(viewConfGrp+"-Splitter 0") == 0 )
    m_grid->addWidget(s, 0, 0);

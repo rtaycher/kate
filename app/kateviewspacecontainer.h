@@ -27,7 +27,8 @@
 #include <kate/view.h>
 #include <kate/document.h>
 
-class KateSplitter;
+#include "katemdi.h"
+
 class KConfig;
 class KateMainWindow;
 
@@ -68,7 +69,7 @@ class KateViewSpaceContainer: public QWidget
      * If child splitters are found, it calls it self with those as the argument.
      * If a viewspace child is found, it is asked to save its filelist.
      */
-    void saveSplitterConfig(KateSplitter* s, int idx=0, KConfig* config=0L, const QString& viewConfGrp="");
+    void saveSplitterConfig(KateMDI::Splitter* s, int idx=0, KConfig* config=0L, const QString& viewConfGrp="");
 
     /** Restore a single splitter.
      * This is all the work is done for @see saveSplitterConfig()
@@ -105,7 +106,7 @@ class KateViewSpaceContainer: public QWidget
 
   public slots:
      /* Splits a KateViewSpace into two.
-      * The operation is performed by creating a KateSplitter in the parent of the KateViewSpace to be split,
+      * The operation is performed by creating a KateMDI::Splitter in the parent of the KateViewSpace to be split,
       * which is then moved to that splitter. Then a new KateViewSpace is created and added to the splitter,
       * and a KateView is created to populate the new viewspace. The new KateView is made the active one,
       * because createView() does that.

@@ -51,6 +51,24 @@
 
 namespace KateMDI {
 
+//BEGIN SPLITTER
+
+Splitter::Splitter(Orientation o, QWidget* parent, const char* name)
+  : QSplitter(o, parent, name)
+{
+}
+
+Splitter::~Splitter()
+{
+}
+
+bool Splitter::isLastChild(QWidget* w)
+{
+  return ( idAfter( w ) == 0 );
+}
+
+//END SPLITTER
+
 //BEGIN TOOLVIEW
 
 ToolView::ToolView (MainWindow *mainwin, Sidebar *sidebar, QWidget *parent)
@@ -299,6 +317,38 @@ void Sidebar::buttonPopupActivate (int id)
   }
 }
 
+void Sidebar::restoreSession (KConfig *config)
+{
+  // hide toolviews
+  for ( QIntDictIterator<ToolView> it( m_idToWidget ); it.current(); ++it )
+  {
+    ToolView *tv = it.current();
+
+    if (!config->readBoolEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(tv->id), false))
+      hideWidget (tv);
+  }
+
+  // restore visible toolviews
+  for ( QIntDictIterator<ToolView> it( m_idToWidget ); it.current(); ++it )
+  {
+    ToolView *tv = it.current();
+
+    if (config->readBoolEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(tv->id), false))
+      showWidget (tv);
+  }
+}
+
+void Sidebar::saveSession (KConfig *config)
+{
+  for ( QIntDictIterator<ToolView> it( m_idToWidget ); it.current(); ++it )
+  {
+    ToolView *tv = it.current();
+
+    config->writeEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(tv->id), tv->sidebar()->position());
+    config->writeEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(tv->id), tv->visible);
+  }
+}
+
 //END SIDEBAR
 
 
@@ -465,9 +515,8 @@ void MainWindow::finishRestore ()
   if (!m_restoreConfig)
     return;
 
-  m_restoreConfig->setGroup (m_restoreGroup);
-
   // reshuffle toolviews only if needed
+  m_restoreConfig->setGroup (m_restoreGroup);
   for ( unsigned int i=0; i < m_toolviews.size(); ++i )
   {
     KMultiTabBar::KMultiTabBarPosition newPos = (KMultiTabBar::KMultiTabBarPosition) m_restoreConfig->readNumEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(m_toolviews[i]->id), m_toolviews[i]->sidebar()->position());
@@ -478,21 +527,10 @@ void MainWindow::finishRestore ()
     }
   }
 
-  // hide toolviews
+  // restore the sidebars
   m_restoreConfig->setGroup (m_restoreGroup);
-  for ( unsigned int i=0; i < m_toolviews.size(); ++i )
-  {
-    if (!m_restoreConfig->readBoolEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(m_toolviews[i]->id), false))
-      hideToolView (m_toolviews[i]);
-  }
-
-  // restore visible toolviews
-  m_restoreConfig->setGroup (m_restoreGroup);
-  for ( unsigned int i=0; i < m_toolviews.size(); ++i )
-  {
-    if (m_restoreConfig->readBoolEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(m_toolviews[i]->id), false))
-      showToolView (m_toolviews[i]);
-  }
+  for (unsigned int i=0; i < 4; ++i)
+    m_sidebars[i]->restoreSession (m_restoreConfig);
 
   // clear this stuff, we are done ;)
   m_restoreConfig = 0;
@@ -522,12 +560,9 @@ void MainWindow::saveSession (KConfig *config, const QString &group)
   config->writeEntry ("Kate-MDI-H-Splitter", hs);
   config->writeEntry ("Kate-MDI-V-Splitter", vs);
 
-  // now save the state of the toolviews ;)
-  for ( unsigned int i=0; i < m_toolviews.size(); ++i)
-  {
-    config->writeEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(m_toolviews[i]->id), m_toolviews[i]->sidebar()->position());
-    config->writeEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(m_toolviews[i]->id), m_toolviews[i]->visible);
-  }
+  // save the sidebars
+  for (unsigned int i=0; i < 4; ++i)
+    m_sidebars[i]->saveSession (config);
 }
 
 //END MAIN WINDOW
