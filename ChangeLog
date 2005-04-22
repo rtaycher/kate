@@ -1,3 +1,6 @@
+2004-04-22 Christoph Cullmann <cullmann@kde.org>
+  * kate switched over to katemdi, even smaller replacement for kmdi2 :)
+
 2004-10-06 Christoph Cullmann <cullmann@kde.org>
   * kate switched over to kmdi2, a slim version of old kmdi
     which allows only IDEA mode, but should be much less buggy

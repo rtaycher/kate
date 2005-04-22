@@ -26,7 +26,6 @@
 
 #include <kate/view.h>
 #include <kate/document.h>
-#include <kmdi/tabwidget.h>
 #include <qguardedptr.h>
 
 class KateSplitter;

@@ -417,6 +417,10 @@ bool MainWindow::showToolView (ToolView *widget)
   if (!widget || widget->mainWindow() != this)
     return false;
 
+  // skip this if happens during restoring, or we will just see flicker
+  if (m_restoreConfig)
+    return true;
+
   return widget->sidebar()->showWidget (widget);
 }
 
@@ -424,6 +428,10 @@ bool MainWindow::hideToolView (ToolView *widget)
 {
   if (!widget || widget->mainWindow() != this)
     return false;
+
+  // skip this if happens during restoring, or we will just see flicker
+  if (m_restoreConfig)
+    return true;
 
   return widget->sidebar()->hideWidget (widget);
 }

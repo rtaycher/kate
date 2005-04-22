@@ -40,6 +40,9 @@
 #include <kconfig.h>
 #include <krun.h>
 #include <kicondialog.h>
+#include <kpopupmenu.h>
+#include <kdebug.h>
+#include <kapplication.h>
 
 #include <qbitmap.h>
 #include <qcombobox.h>
@@ -57,9 +60,6 @@
 
 #include <stdlib.h>
 #include <unistd.h>
-
-#include <kdebug.h>
-#include <kapplication.h>
 //END Includes
 
 KateExternalToolsCommand *KateExternalToolsCommand::s_self=0;

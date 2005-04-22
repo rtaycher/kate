@@ -33,7 +33,6 @@
 
 #include <kparts/part.h>
 #include <kparts/dockmainwindow.h>
-#include <kmdi/mainwindow.h>
 
 #include <scriptmanager.h>
 #include <kaction.h>

@@ -40,8 +40,6 @@
 #include "katesession.h"
 #include "katetabwidget.h"
 
-#include <kmdi/tabwidget.h>
-
 #include <dcopclient.h>
 #include <kinstance.h>
 #include <kaboutdata.h>
@@ -182,11 +180,11 @@ void KateMainWindow::setupMainWindow ()
 
   m_viewManager = new KateViewManager (this);
 
-  KateMDI::ToolView *t = createToolView("kate_filelist", KMultiTabBar::Left, SmallIcon("kmultiple"), i18n("Documents"));
-  filelist = new KateFileList (this, m_viewManager, t, "filelist");
+  KateMDI::ToolView *ft = createToolView("kate_filelist", KMultiTabBar::Left, SmallIcon("kmultiple"), i18n("Documents"));
+  filelist = new KateFileList (this, m_viewManager, ft, "filelist");
   filelist->readConfig(kapp->config(), "Filelist");
 
-  t = createToolView("kate_fileselector", KMultiTabBar::Left, SmallIcon("fileopen"), i18n("Filesystem Browser"));
+  KateMDI::ToolView *t = createToolView("kate_fileselector", KMultiTabBar::Left, SmallIcon("fileopen"), i18n("Filesystem Browser"));
   fileselector = new KateFileSelector( this, m_viewManager, t, "operator");
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileItem*)),this,SLOT(fileSelected(const KFileItem*)));
 
@@ -204,6 +202,9 @@ void KateMainWindow::setupMainWindow ()
     console = new KateConsole (t, "console",viewManager());
     console->installEventFilter( this );
   }
+
+  // make per default the filelist visible, if we are in session restore, katemdi will skip this ;)
+  showToolView (ft);
 }
 
 void KateMainWindow::setupActions()
