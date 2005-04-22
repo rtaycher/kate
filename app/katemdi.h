@@ -50,6 +50,8 @@ class Splitter : public QSplitter
      * This results in an error if widget is not a child
      * in this splitter */
     bool isLastChild(QWidget* w);
+
+    int idAfter ( QWidget * w ) const;
 };
 
 class ToolView : public QVBox
@@ -70,8 +72,26 @@ class ToolView : public QVBox
     MainWindow *m_mainWin;
     Sidebar *m_sidebar;
 
+    /**
+     * unique id
+     */
     QString id;
+
+    /**
+     * is visible in sidebar
+     */
     bool visible;
+
+    /**
+     * is this view persistent?
+     */
+    bool persistent;
+
+    /**
+     * position in sidebar
+     */
+    unsigned int position;
+
     QPixmap icon;
     QString text;
 };
@@ -84,7 +104,7 @@ class Sidebar : public KMultiTabBar
     Sidebar (KMultiTabBar::KMultiTabBarPosition pos, class MainWindow *mainwin, QWidget *parent);
     virtual ~Sidebar ();
 
-    void setSplitter (QSplitter *sp);
+    void setSplitter (Splitter *sp);
 
   public:
     ToolView *addWidget (const QPixmap &icon, const QString &text, ToolView *widget);
@@ -127,9 +147,9 @@ class Sidebar : public KMultiTabBar
     MainWindow *m_mainWin;
 
     KMultiTabBar::KMultiTabBarPosition m_pos;
-    QSplitter *m_splitter;
+    Splitter *m_splitter;
     KMultiTabBar *m_tabBar;
-    QSplitter *m_ownSplit;
+    Splitter *m_ownSplit;
 
     QIntDict<ToolView> m_idToWidget;
     QMap<ToolView*, int> m_widgetToId;
@@ -266,12 +286,12 @@ class MainWindow : public KParts::MainWindow
     /**
      * horizontal splitter
      */
-    QSplitter *m_hSplitter;
+    Splitter *m_hSplitter;
 
     /**
      * vertical splitter
      */
-    QSplitter *m_vSplitter;
+    Splitter *m_vSplitter;
 
     /**
      * sidebars for the four sides

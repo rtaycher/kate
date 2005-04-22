@@ -67,6 +67,11 @@ bool Splitter::isLastChild(QWidget* w)
   return ( idAfter( w ) == 0 );
 }
 
+int Splitter::idAfter ( QWidget * w ) const
+{
+  return QSplitter::idAfter (w);
+}
+
 //END SPLITTER
 
 //BEGIN TOOLVIEW
@@ -103,10 +108,10 @@ Sidebar::~Sidebar ()
 {
 }
 
-void Sidebar::setSplitter (QSplitter *sp)
+void Sidebar::setSplitter (Splitter *sp)
 {
   m_splitter = sp;
-  m_ownSplit = new QSplitter ((m_pos == KMultiTabBar::Top || m_pos == KMultiTabBar::Bottom) ? Qt::Horizontal : Qt::Vertical, m_splitter);
+  m_ownSplit = new Splitter ((m_pos == KMultiTabBar::Top || m_pos == KMultiTabBar::Bottom) ? Qt::Horizontal : Qt::Vertical, m_splitter);
   m_ownSplit->setOpaqueResize( KGlobalSettings::opaqueResize() );
   m_splitter->setResizeMode( m_ownSplit, QSplitter::KeepSize );
   m_ownSplit->hide ();
@@ -143,6 +148,10 @@ ToolView *Sidebar::addWidget (const QPixmap &icon, const QString &text, ToolView
     widget->m_sidebar = this;
   }
 
+  // save it's pos ;)
+  widget->position = m_idToWidget.size();
+  widget->persistent = false;
+
   m_idToWidget.insert (newId, widget);
   m_widgetToId.insert (widget, newId);
 
@@ -158,6 +167,8 @@ bool Sidebar::removeWidget (ToolView *widget)
 {
   if (!m_widgetToId.contains(widget))
     return false;
+
+  unsigned int p = widget->position;
 
   removeTab(m_widgetToId[widget]);
 
@@ -180,6 +191,15 @@ bool Sidebar::removeWidget (ToolView *widget)
   else if (!anyVis)
     m_ownSplit->hide ();
 
+  // renumber toolviews if needed
+  for ( QIntDictIterator<ToolView> it( m_idToWidget ); it.current(); ++it )
+  {
+    ToolView *tv = it.current();
+
+    if (tv->position > p)
+      --tv->position;
+  }
+
   return true;
 }
 
@@ -188,9 +208,10 @@ bool Sidebar::showWidget (ToolView *widget)
   if (!m_widgetToId.contains(widget))
     return false;
 
+  // hide other non-persistent views
   QIntDictIterator<ToolView> it( m_idToWidget );
   for ( ; it.current(); ++it )
-    if (it.current() != widget)
+    if ((it.current() != widget) && !it.current()->persistent)
     {
       it.current()->hide();
       setTab (it.currentKey(), false);
@@ -224,8 +245,7 @@ bool Sidebar::hideWidget (ToolView *widget)
   if (s[i] > 2)
     m_lastSize = s[i];
 
-  QIntDictIterator<ToolView> it( m_idToWidget );
-  for ( ; it.current(); ++it )
+  for ( QIntDictIterator<ToolView> it( m_idToWidget ); it.current(); ++it )
   {
     if (it.current() == widget)
     {
@@ -273,28 +293,38 @@ bool Sidebar::eventFilter(QObject *obj, QEvent *ev)
 
       m_popupButton = bt->id();
 
-      KPopupMenu *p = new KPopupMenu (this);
-      p->insertTitle(SmallIcon("move"), i18n("Move to..."), 50);
+      ToolView *w = m_idToWidget[m_popupButton];
 
-      if (position() != 0)
-        p->insertItem(SmallIconSet("back"), i18n("Left Sidebar"),0);
+      if (w)
+      {
+        KPopupMenu *p = new KPopupMenu (this);
 
-      if (position() != 1)
-        p->insertItem(SmallIconSet("forward"), i18n("Right Sidebar"),1);
+        p->insertTitle(SmallIcon("view_remove"), i18n("Behaviour"), 50);
 
-      if (position() != 2)
-        p->insertItem(SmallIconSet("up"), i18n("Top Sidebar"),2);
+        p->insertItem(w->persistent ? SmallIconSet("window_nofullscreen") : SmallIconSet("window_fullscreen"), w->persistent ? i18n("Make non-persistent") : i18n("Make persistent"), 10);
 
-      if (position() != 3)
-        p->insertItem(SmallIconSet("down"), i18n("Bottom Sidebar"),3);
+        p->insertTitle(SmallIcon("move"), i18n("Move to..."), 51);
 
-      connect(p, SIGNAL(activated(int)),
-            this, SLOT(buttonPopupActivate(int)));
+        if (position() != 0)
+          p->insertItem(SmallIconSet("back"), i18n("Left Sidebar"),0);
 
-      p->exec(e->globalPos());
-      delete p;
+        if (position() != 1)
+          p->insertItem(SmallIconSet("forward"), i18n("Right Sidebar"),1);
 
-      return true;
+        if (position() != 2)
+          p->insertItem(SmallIconSet("up"), i18n("Top Sidebar"),2);
+
+        if (position() != 3)
+          p->insertItem(SmallIconSet("down"), i18n("Bottom Sidebar"),3);
+
+        connect(p, SIGNAL(activated(int)),
+              this, SLOT(buttonPopupActivate(int)));
+
+        p->exec(e->globalPos());
+        delete p;
+
+        return true;
+      }
     }
   }
 
@@ -315,10 +345,22 @@ void Sidebar::buttonPopupActivate (int id)
     m_mainWin->moveToolView (w, (KMultiTabBar::KMultiTabBarPosition) id);
     m_mainWin->showToolView (w);
   }
+
+  // toggle persistent
+  if (id == 10)
+    w->persistent = !w->persistent;
 }
 
 void Sidebar::restoreSession (KConfig *config)
 {
+  // get persistent values
+  for ( QIntDictIterator<ToolView> it( m_idToWidget ); it.current(); ++it )
+  {
+    ToolView *tv = it.current();
+
+    tv->persistent = config->readBoolEntry (QString ("Kate-MDI-ToolView-%1-Persistent").arg(tv->id), false);
+  }
+
   // hide toolviews
   for ( QIntDictIterator<ToolView> it( m_idToWidget ); it.current(); ++it )
   {
@@ -346,6 +388,9 @@ void Sidebar::saveSession (KConfig *config)
 
     config->writeEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(tv->id), tv->sidebar()->position());
     config->writeEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(tv->id), tv->visible);
+    config->writeEntry (QString ("Kate-MDI-ToolView-%1-Persistent").arg(tv->id), tv->persistent);
+
+    kdDebug () << "toolview : " << tv->id << " pos: " << tv->position << endl;
   }
 }
 
@@ -364,7 +409,7 @@ MainWindow::MainWindow (QWidget* parentWidget, const char* name)
 
   m_sidebars[KMultiTabBar::Left] = new Sidebar (KMultiTabBar::Left, this, hb);
 
-  m_hSplitter = new QSplitter (Qt::Horizontal, hb);
+  m_hSplitter = new Splitter (Qt::Horizontal, hb);
   m_hSplitter->setOpaqueResize( KGlobalSettings::opaqueResize() );
 
   m_sidebars[KMultiTabBar::Left]->setSplitter (m_hSplitter);
@@ -373,7 +418,7 @@ MainWindow::MainWindow (QWidget* parentWidget, const char* name)
 
   m_sidebars[KMultiTabBar::Top] = new Sidebar (KMultiTabBar::Top, this, vb);
 
-  m_vSplitter = new QSplitter (Qt::Vertical, vb);
+  m_vSplitter = new Splitter (Qt::Vertical, vb);
   m_vSplitter->setOpaqueResize( KGlobalSettings::opaqueResize() );
 
   m_sidebars[KMultiTabBar::Top]->setSplitter (m_vSplitter);
