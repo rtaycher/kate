@@ -24,7 +24,6 @@
 #include <kparts/mainwindow.h>
 
 #include <kmultitabbar.h>
-#include <ktabwidget.h>
 
 #include <qdict.h>
 #include <qintdict.h>
@@ -33,49 +32,6 @@
 #include <qpixmap.h>
 
 namespace KateMDI {
-
-enum TabWidgetVisibility {
-    AlwaysShowTabs         = 0,
-    ShowWhenMoreThanOneTab = 1,
-    NeverShowTabs          = 2
-  };
-
-class TabWidget : public KTabWidget
-{
-  Q_OBJECT
-
-  public:
-    TabWidget(QWidget* parent, const char* name=0);
-    virtual ~TabWidget();
-
-    virtual void addTab ( QWidget * child, const QString & label );
-
-    virtual void addTab ( QWidget * child, const QIconSet & iconset, const QString & label );
-
-    virtual void addTab ( QWidget * child, QTab * tab );
-
-    virtual void insertTab ( QWidget * child, const QString & label, int index = -1 );
-
-    virtual void insertTab ( QWidget * child, const QIconSet & iconset, const QString & label, int index = -1 );
-
-    virtual void insertTab ( QWidget * child, QTab * tab, int index = -1 );
-
-    virtual void removePage ( QWidget * w );
-
-    KateMDI::TabWidgetVisibility tabWidgetVisibility() const;
-
-    void setTabWidgetVisibility( KateMDI::TabWidgetVisibility );
-
-  private slots:
-    void closeTab(QWidget* w);
-
-  private:
-    void maybeShow();
-    void setCornerWidgetVisibility(bool visible);
-
-  private:
-    KateMDI::TabWidgetVisibility m_visibility;
-};
 
 class ToolView : public QVBox
 {
@@ -175,10 +131,11 @@ class MainWindow : public KParts::MainWindow
   //
   public:
     /**
-     * central tabwidget ;)
-     * @return tab widget
+     * central widget ;)
+     * use this as parent for your content
+     * @return central widget
      */
-    TabWidget *tabWidget ();
+    QWidget *centralWidget ();
 
     /**
      * add a given widget to the given sidebar if possible, name is very important
@@ -255,10 +212,10 @@ class MainWindow : public KParts::MainWindow
     QValueList<ToolView*> m_toolviews;
 
     /**
-     * tab widget, which is the central part of the
+     * widget, which is the central part of the
      * main window ;)
      */
-    TabWidget *m_tabWidget;
+    QWidget *m_centralWidget;
 
     /**
      * horizontal splitter

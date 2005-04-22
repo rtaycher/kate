@@ -25,6 +25,7 @@
 #include "katemainwindow.h"
 #include "katedocmanager.h"
 #include "kateviewspacecontainer.h"
+#include "katetabwidget.h"
 
 #include <dcopclient.h>
 #include <kaction.h>

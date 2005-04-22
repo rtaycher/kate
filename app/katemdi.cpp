@@ -47,149 +47,9 @@
 
 #include <qvbox.h>
 #include <qhbox.h>
-#include <qtabbar.h>
 #include <qevent.h>
 
 namespace KateMDI {
-
-//BEGIN TABWIDGET
-
-TabWidget::TabWidget(QWidget* parent, const char* name)
- : KTabWidget(parent,name)
- , m_visibility (KateMDI::ShowWhenMoreThanOneTab)
-{
-  tabBar()->hide();
-
-  setHoverCloseButton(true);
-
-  connect(this, SIGNAL(closeRequest(QWidget*)), this, SLOT(closeTab(QWidget*)));
-}
-
-TabWidget::~TabWidget()
-{
-}
-
-void TabWidget::closeTab(QWidget* w)
-{
-  w->close();
-}
-
-void TabWidget::addTab ( QWidget * child, const QString & label )
-{
-  KTabWidget::addTab(child,label);
-  showPage(child);
-  maybeShow();
-}
-
-void TabWidget::addTab ( QWidget * child, const QIconSet & iconset, const QString & label )
-{
-  KTabWidget::addTab(child,iconset,label);
-  showPage(child);
-  maybeShow();
-}
-
-void TabWidget::addTab ( QWidget * child, QTab * tab )
-{
-  KTabWidget::addTab(child,tab);
-  showPage(child);
-  maybeShow();
-}
-
-void TabWidget::insertTab ( QWidget * child, const QString & label, int index)
-{
-  KTabWidget::insertTab(child,label,index);
-  showPage(child);
-  maybeShow();
-  tabBar()->repaint();
-}
-
-void TabWidget::insertTab ( QWidget * child, const QIconSet & iconset, const QString & label, int index )
-{
-  KTabWidget::insertTab(child,iconset,label,index);
-  showPage(child);
-  maybeShow();
-  tabBar()->repaint();
-}
-
-void TabWidget::insertTab ( QWidget * child, QTab * tab, int index)
-{
-  KTabWidget::insertTab(child,tab,index);
-  showPage(child);
-  maybeShow();
-  tabBar()->repaint();
-}
-
-void TabWidget::removePage ( QWidget * w )
-{
-  KTabWidget::removePage(w);
-  maybeShow();
-}
-
-void TabWidget::maybeShow()
-{
-  switch (m_visibility)
-  {
-    case KateMDI::AlwaysShowTabs:
-      tabBar()->show();
-
-      // show/hide corner widgets
-      if (count() == 0)
-        setCornerWidgetVisibility(false);
-      else
-        setCornerWidgetVisibility(true);
-
-      break;
-
-    case KateMDI::ShowWhenMoreThanOneTab:
-      if (count()<2) tabBar()->hide();
-      else tabBar()->show();
-
-      // show/hide corner widgets
-      if (count() < 2)
-        setCornerWidgetVisibility(false);
-      else
-        setCornerWidgetVisibility(true);
-
-      break;
-
-    case KateMDI::NeverShowTabs:
-      tabBar()->hide();
-      break;
-  }
-}
-
-void TabWidget::setCornerWidgetVisibility(bool visible)
-{
-  // there are two corner widgets: on TopLeft and on TopTight!
-
-  if (cornerWidget(Qt::TopLeft) ) {
-    if (visible)
-      cornerWidget(Qt::TopLeft)->show();
-    else
-      cornerWidget(Qt::TopLeft)->hide();
-  }
-
-  if (cornerWidget(Qt::TopRight) ) {
-    if (visible)
-      cornerWidget(Qt::TopRight)->show();
-    else
-      cornerWidget(Qt::TopRight)->hide();
-  }
-}
-
-void TabWidget::setTabWidgetVisibility( KateMDI::TabWidgetVisibility visibility )
-{
-  m_visibility = visibility;
-  maybeShow();
-}
-
-KateMDI::TabWidgetVisibility TabWidget::tabWidgetVisibility( ) const
-{
-  return m_visibility;
-}
-
-//END TABWIDGET
-
 
 //BEGIN TOOLVIEW
 
@@ -468,7 +328,7 @@ MainWindow::MainWindow (QWidget* parentWidget, const char* name)
 
   m_sidebars[KMultiTabBar::Top]->setSplitter (m_vSplitter);
 
-  m_tabWidget = new TabWidget (m_vSplitter);
+  m_centralWidget = new QVBox (m_vSplitter);
 
   m_sidebars[KMultiTabBar::Bottom] = new Sidebar (KMultiTabBar::Bottom, this, vb);
   m_sidebars[KMultiTabBar::Bottom]->setSplitter (m_vSplitter);
@@ -484,15 +344,15 @@ MainWindow::~MainWindow ()
     delete m_toolviews[0];
 
   // seems like we really should delete this by hand ;)
-  delete m_tabWidget;
+  delete m_centralWidget;
 
   for (unsigned int i=0; i < 4; ++i)
     delete m_sidebars[i];
 }
 
-TabWidget *MainWindow::tabWidget ()
+QWidget *MainWindow::centralWidget ()
 {
-  return m_tabWidget;
+  return m_centralWidget;
 }
 
 ToolView *MainWindow::createToolView (const QString &identifier, KMultiTabBar::KMultiTabBarPosition pos, const QPixmap &icon, const QString &text)

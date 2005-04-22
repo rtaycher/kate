@@ -38,6 +38,7 @@
 #include "katesavemodifieddialog.h"
 #include "katemwmodonhddialog.h"
 #include "katesession.h"
+#include "katetabwidget.h"
 
 #include <kmdi/tabwidget.h>
 
@@ -177,6 +178,8 @@ KateMainWindow::~KateMainWindow()
 
 void KateMainWindow::setupMainWindow ()
 {
+  m_tabWidget = new KateTabWidget (centralWidget());
+
   m_viewManager = new KateViewManager (this);
 
   KateMDI::ToolView *t = createToolView("kate_filelist", KMultiTabBar::Left, SmallIcon("kmultiple"), i18n("Documents"));
@@ -191,7 +194,7 @@ void KateMainWindow::setupMainWindow ()
   if (kapp->authorize("shell_access"))
   {
     t = createToolView("kate_greptool", KMultiTabBar::Bottom, SmallIcon("filefind"), i18n("Find in Files") );
-    greptool = new GrepTool( this, t, "greptool" );
+    greptool = new GrepTool( t, "greptool" );
     greptool->installEventFilter( this );
     connect(greptool, SIGNAL(itemSelected(const QString &,int)), this, SLOT(slotGrepToolItemSelected(const QString &,int)));
     // WARNING HACK - anders: showing the greptool seems to make the menu accels work
@@ -284,6 +287,11 @@ void KateMainWindow::setupActions()
 
   // quick open menu ;)
   new KateSessionsAction (i18n("&Quick Open"), actionCollection(), "sessions_list");
+}
+
+KateTabWidget *KateMainWindow::tabWidget ()
+{
+  return m_tabWidget;
 }
 
 void KateMainWindow::slotDocumentCloseAll() {

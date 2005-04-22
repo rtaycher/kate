@@ -67,8 +67,8 @@ const char *strTemplate[] = {
 };
 
 
-GrepTool::GrepTool(KateMainWindow *parent, QWidget *p, const char *name)
-  : QWidget(p, name/*, false*/), childproc(0)
+GrepTool::GrepTool(QWidget *parent, const char *name)
+  : QWidget(parent, name/*, false*/), childproc(0)
 {
   setCaption(i18n("Find in Files"));
   config = KGlobal::config();

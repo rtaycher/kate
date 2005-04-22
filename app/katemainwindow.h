@@ -38,6 +38,7 @@
 #include <scriptmanager.h>
 #include <kaction.h>
 
+class KateTabWidget;
 class GrepTool;
 
 class KFileItem;
@@ -87,6 +88,12 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
      * handled by the dialog; otherwise (the dialog was canceled) false.
      */
     bool showModOnDiskPrompt();
+
+    /**
+     * central tabwidget ;)
+     * @return tab widget
+     */
+    KateTabWidget *tabWidget ();
 
   public:
     void readProperties(KConfig *config);
@@ -194,6 +201,8 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
     KateExternalToolsMenuAction *externalTools;
     GrepTool * greptool;
     bool m_modignore, m_grrr;
+
+    KateTabWidget *m_tabWidget;
 };
 
 #endif
