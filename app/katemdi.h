@@ -113,8 +113,6 @@ class Sidebar : public KMultiTabBar
     bool showWidget (ToolView *widget);
     bool hideWidget (ToolView *widget);
 
-    KMultiTabBar::KMultiTabBarPosition position () const { return m_pos; }
-
     void setLastSize (int s) { m_lastSize = s; }
     int lastSize () { return m_lastSize; }
 

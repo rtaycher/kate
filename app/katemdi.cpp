@@ -96,11 +96,11 @@ ToolView::~ToolView ()
 Sidebar::Sidebar (KMultiTabBar::KMultiTabBarPosition pos, MainWindow *mainwin, QWidget *parent)
   : KMultiTabBar ((pos == KMultiTabBar::Top || pos == KMultiTabBar::Bottom) ? KMultiTabBar::Horizontal : KMultiTabBar::Vertical, parent)
   , m_mainWin (mainwin)
-  , m_pos (pos)
   , m_splitter (0)
   , m_ownSplit (0)
   , m_lastSize (0)
 {
+  setPosition( pos );
   hide ();
 }
 
@@ -111,7 +111,7 @@ Sidebar::~Sidebar ()
 void Sidebar::setSplitter (Splitter *sp)
 {
   m_splitter = sp;
-  m_ownSplit = new Splitter ((m_pos == KMultiTabBar::Top || m_pos == KMultiTabBar::Bottom) ? Qt::Horizontal : Qt::Vertical, m_splitter);
+  m_ownSplit = new Splitter ((position() == KMultiTabBar::Top || position() == KMultiTabBar::Bottom) ? Qt::Horizontal : Qt::Vertical, m_splitter);
   m_ownSplit->setOpaqueResize( KGlobalSettings::opaqueResize() );
   m_splitter->setResizeMode( m_ownSplit, QSplitter::KeepSize );
   m_ownSplit->hide ();
@@ -238,7 +238,7 @@ bool Sidebar::hideWidget (ToolView *widget)
   QValueList<int> s = m_splitter->sizes ();
 
   int i = 0;
-  if ((m_pos == KMultiTabBar::Right || m_pos == KMultiTabBar::Bottom))
+  if ((position() == KMultiTabBar::Right || position() == KMultiTabBar::Bottom))
     i = 2;
 
   // little threshold
