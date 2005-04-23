@@ -56,6 +56,8 @@ class Splitter : public QSplitter
 
 class ToolView : public QVBox
 {
+  Q_OBJECT
+
   friend class Sidebar;
   friend class MainWindow;
 
@@ -65,8 +67,19 @@ class ToolView : public QVBox
   public:
     virtual ~ToolView ();
 
+  signals:
+    void visibleChanged (bool visible);
+
+  /**
+   * some internal methodes needed by the main window and the sidebars
+   */
+  protected:
     MainWindow *mainWindow () { return m_mainWin; }
+
     Sidebar *sidebar () { return m_sidebar; }
+
+    void setVisible (bool vis);
+    bool visible ();
 
   private:
     MainWindow *m_mainWin;
@@ -80,7 +93,7 @@ class ToolView : public QVBox
     /**
      * is visible in sidebar
      */
-    bool visible;
+    bool m_visible;
 
     /**
      * is this view persistent?

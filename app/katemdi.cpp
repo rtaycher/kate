@@ -80,12 +80,28 @@ ToolView::ToolView (MainWindow *mainwin, Sidebar *sidebar, QWidget *parent)
  : QVBox (parent)
  , m_mainWin (mainwin)
  , m_sidebar (sidebar)
+ , m_visible (false)
+ , persistent (false)
 {
 }
 
 ToolView::~ToolView ()
 {
   m_mainWin->toolViewDeleted (this);
+}
+
+void ToolView::setVisible (bool vis)
+{
+  if (m_visible == vis)
+    return;
+
+  m_visible = vis;
+  emit visibleChanged (m_visible);
+}
+
+bool ToolView::visible ()
+{
+  return m_visible;
 }
 
 //END TOOLVIEW
@@ -138,7 +154,6 @@ ToolView *Sidebar::addWidget (const QPixmap &icon, const QString &text, ToolView
   {
     widget = new ToolView (m_mainWin, this, m_ownSplit);
     widget->hide ();
-    widget->visible = false;
     widget->icon = icon;
     widget->text = text;
   }
@@ -206,7 +221,7 @@ bool Sidebar::showWidget (ToolView *widget)
     {
       it.current()->hide();
       setTab (it.currentKey(), false);
-      it.current()->visible = false;
+      it.current()->setVisible(false);
     }
 
   setTab (m_widgetToId[widget], true);
@@ -214,7 +229,7 @@ bool Sidebar::showWidget (ToolView *widget)
   m_ownSplit->show ();
   widget->show ();
 
-  widget->visible = true;
+  widget->setVisible (true);
 
   return true;
 }
@@ -246,7 +261,7 @@ bool Sidebar::hideWidget (ToolView *widget)
   if (!anyVis)
     m_ownSplit->hide ();
 
-  widget->visible = false;
+  widget->setVisible (false);
 
   return true;
 }
@@ -430,14 +445,14 @@ void Sidebar::restoreSession (KConfig *config)
     ToolView *tv = m_toolviews[i];
 
     tv->persistent = config->readBoolEntry (QString ("Kate-MDI-ToolView-%1-Persistent").arg(tv->id), false);
-    tv->visible = config->readBoolEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(tv->id), false);
+    tv->setVisible (config->readBoolEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(tv->id), false));
 
     if (!anyVis)
-      anyVis = tv->visible;
+      anyVis = tv->visible();
 
-    setTab (m_widgetToId[tv],tv->visible);
+    setTab (m_widgetToId[tv],tv->visible());
 
-    if (tv->visible)
+    if (tv->visible())
       tv->show();
     else
       tv->hide ();
@@ -462,7 +477,7 @@ void Sidebar::saveSession (KConfig *config)
 
     config->writeEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(tv->id), tv->sidebar()->position());
     config->writeEntry (QString ("Kate-MDI-ToolView-%1-Sidebar-Position").arg(tv->id), i);
-    config->writeEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(tv->id), tv->visible);
+    config->writeEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(tv->id), tv->visible());
     config->writeEntry (QString ("Kate-MDI-ToolView-%1-Persistent").arg(tv->id), tv->persistent);
   }
 }
