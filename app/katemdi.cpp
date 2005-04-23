@@ -354,8 +354,6 @@ class TmpToolViewSorter
     unsigned int pos;
 };
 
-inline bool operator<( TmpToolViewSorter t1, TmpToolViewSorter t2 ) { return t1.pos < t1.pos; }
-
 void Sidebar::restoreSession (KConfig *config)
 {
   // get the last correct placed toolview
@@ -379,12 +377,19 @@ void Sidebar::restoreSession (KConfig *config)
     {
       TmpToolViewSorter s;
       s.tv = m_toolviews[i];
-      s.pos = i;
+      s.pos = config->readUnsignedNumEntry (QString ("Kate-MDI-ToolView-%1-Sidebar-Position").arg(m_toolviews[i]->id), i);
       toSort.push_back (s);
     }
 
     // now: sort the stuff we need to reshuffle
-    qBubbleSort (toSort.begin(), toSort.end());
+    for (unsigned int m=0; m < toSort.size(); ++m)
+      for (unsigned int n=m+1; n < toSort.size(); ++n)
+        if (toSort[n].pos < toSort[m].pos)
+        {
+          TmpToolViewSorter tmp = toSort[n];
+          toSort[n] = toSort[m];
+          toSort[m] = tmp;
+        }
 
     // then: remove this items from the button bar
     // do this backwards, to minimize the relayout efforts
