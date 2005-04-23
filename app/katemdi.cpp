@@ -341,6 +341,15 @@ void Sidebar::buttonPopupActivate (int id)
     w->persistent = !w->persistent;
 }
 
+class TmpToolViewSorter
+{
+  public:
+    ToolView *tv;
+    unsigned int pos;
+};
+
+inline bool operator<( TmpToolViewSorter t1, TmpToolViewSorter t2 ) { return t1.pos < t1.pos; }
+
 void Sidebar::restoreSession (KConfig *config)
 {
   // get persistent values
@@ -349,6 +358,59 @@ void Sidebar::restoreSession (KConfig *config)
     ToolView *tv = m_toolviews[i];
 
     tv->persistent = config->readBoolEntry (QString ("Kate-MDI-ToolView-%1-Persistent").arg(tv->id), false);
+  }
+
+  // get the last correct placed toolview
+  unsigned int firstWrong = 0;
+  for ( ; firstWrong < m_toolviews.size(); ++firstWrong )
+  {
+    ToolView *tv = m_toolviews[firstWrong];
+
+    unsigned int pos = config->readUnsignedNumEntry (QString ("Kate-MDI-ToolView-%1-Sidebar-Position").arg(tv->id), firstWrong);
+
+    if (pos != firstWrong)
+      break;
+  }
+
+  // we need to reshuffle, ahhh :(
+  if (firstWrong < m_toolviews.size())
+  {
+    // first: collect the items to reshuffle
+    QValueList<TmpToolViewSorter> toSort;
+    for (unsigned int i=firstWrong; i < m_toolviews.size(); ++i)
+    {
+      TmpToolViewSorter s;
+      s.tv = m_toolviews[i];
+      s.pos = i;
+      toSort.push_back (s);
+    }
+
+    // now: sort the stuff we need to reshuffle
+    qBubbleSort (toSort.begin(), toSort.end());
+
+    // then: remove this items from the button bar
+    // do this backwards, to minimize the relayout efforts
+    for (int i=m_toolviews.size()-1; i >= (int)firstWrong; --i)
+    {
+      removeTab (m_widgetToId[m_toolviews[i]]);
+    }
+
+    // insert the reshuffled things in order :)
+    for (unsigned int i=0; i < toSort.size(); ++i)
+    {
+      ToolView *tv = toSort[i].tv;
+
+      m_toolviews[firstWrong+i] = tv;
+
+      // readd the button
+      int newId = m_widgetToId[tv];
+      appendTab (tv->icon, newId, tv->text);
+      connect(tab(newId),SIGNAL(clicked(int)),this,SLOT(tabClicked(int)));
+      tab(newId)->installEventFilter(this);
+
+      // reshuffle in splitter
+      m_ownSplit->moveToLast (tv);
+    }
   }
 
   // hide toolviews
