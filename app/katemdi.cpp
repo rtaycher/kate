@@ -187,6 +187,8 @@ void GUIClient::unregisterToolView (ToolView *tv)
     return;
 
   m_toolViewActions.remove(a);
+  delete a;
+
   m_toolToAction.remove (tv);
 
   updateActions();
