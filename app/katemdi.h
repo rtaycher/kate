@@ -110,6 +110,7 @@ class Sidebar : public KMultiTabBar
 
     void setLastSize (int s) { m_lastSize = s; }
     int lastSize () { return m_lastSize; }
+    void updateLastSize ();
 
     bool splitterVisible () { return m_ownSplit->isVisible(); }
 

@@ -226,15 +226,7 @@ bool Sidebar::hideWidget (ToolView *widget)
 
   bool anyVis = false;
 
-  QValueList<int> s = m_splitter->sizes ();
-
-  int i = 0;
-  if ((position() == KMultiTabBar::Right || position() == KMultiTabBar::Bottom))
-    i = 2;
-
-  // little threshold
-  if (s[i] > 2)
-    m_lastSize = s[i];
+   updateLastSize ();
 
   for ( QIntDictIterator<ToolView> it( m_idToWidget ); it.current(); ++it )
   {
@@ -342,6 +334,19 @@ void Sidebar::buttonPopupActivate (int id)
     w->persistent = !w->persistent;
 }
 
+void Sidebar::updateLastSize ()
+{
+   QValueList<int> s = m_splitter->sizes ();
+
+  int i = 0;
+  if ((position() == KMultiTabBar::Right || position() == KMultiTabBar::Bottom))
+    i = 2;
+
+  // little threshold
+  if (s[i] > 2)
+    m_lastSize = s[i];
+}
+
 class TmpToolViewSorter
 {
   public:
@@ -353,14 +358,6 @@ inline bool operator<( TmpToolViewSorter t1, TmpToolViewSorter t2 ) { return t1.
 
 void Sidebar::restoreSession (KConfig *config)
 {
-  // get persistent values
-  for ( unsigned int i=0; i < m_toolviews.size(); ++i )
-  {
-    ToolView *tv = m_toolviews[i];
-
-    tv->persistent = config->readBoolEntry (QString ("Kate-MDI-ToolView-%1-Persistent").arg(tv->id), false);
-  }
-
   // get the last correct placed toolview
   unsigned int firstWrong = 0;
   for ( ; firstWrong < m_toolviews.size(); ++firstWrong )
@@ -414,27 +411,37 @@ void Sidebar::restoreSession (KConfig *config)
     }
   }
 
-  // hide toolviews
-  for ( unsigned int i=0; i < m_toolviews.size(); ++i )
-  {
-    ToolView *tv = m_toolviews[i];
-
-    if (!config->readBoolEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(tv->id), false))
-      hideWidget (tv);
-  }
+  // update last size if needed
+  updateLastSize ();
 
   // restore the own splitter sizes
   QValueList<int> s = config->readIntListEntry (QString ("Kate-MDI-Sidebar-%1-Splitter").arg(position()));
   m_ownSplit->setSizes (s);
 
-  // restore visible toolviews
+  // show only correct toolviews, remember persistent values ;)
+  bool anyVis = false;
   for ( unsigned int i=0; i < m_toolviews.size(); ++i )
   {
     ToolView *tv = m_toolviews[i];
 
-    if (config->readBoolEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(tv->id), false))
-      showWidget (tv);
+    tv->persistent = config->readBoolEntry (QString ("Kate-MDI-ToolView-%1-Persistent").arg(tv->id), false);
+    tv->visible = config->readBoolEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(tv->id), false);
+
+    if (!anyVis)
+      anyVis = tv->visible;
+
+    setTab (m_widgetToId[tv],tv->visible);
+
+    if (tv->visible)
+      tv->show();
+    else
+      tv->hide ();
   }
+
+  if (anyVis)
+    m_ownSplit->show();
+  else
+    m_ownSplit->hide();
 }
 
 void Sidebar::saveSession (KConfig *config)
