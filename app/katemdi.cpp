@@ -113,6 +113,7 @@ void Sidebar::setSplitter (Splitter *sp)
   m_splitter = sp;
   m_ownSplit = new Splitter ((position() == KMultiTabBar::Top || position() == KMultiTabBar::Bottom) ? Qt::Horizontal : Qt::Vertical, m_splitter);
   m_ownSplit->setOpaqueResize( KGlobalSettings::opaqueResize() );
+  m_ownSplit->setChildrenCollapsible( false );
   m_splitter->setResizeMode( m_ownSplit, QSplitter::KeepSize );
   m_ownSplit->hide ();
 }
@@ -475,6 +476,7 @@ MainWindow::MainWindow (QWidget* parentWidget, const char* name)
   m_sidebars[KMultiTabBar::Left]->setSplitter (m_hSplitter);
 
   QVBox *vb = new QVBox (m_hSplitter);
+  m_hSplitter->setCollapsible(vb, false);
 
   m_sidebars[KMultiTabBar::Top] = new Sidebar (KMultiTabBar::Top, this, vb);
 
@@ -484,6 +486,7 @@ MainWindow::MainWindow (QWidget* parentWidget, const char* name)
   m_sidebars[KMultiTabBar::Top]->setSplitter (m_vSplitter);
 
   m_centralWidget = new QVBox (m_vSplitter);
+  m_vSplitter->setCollapsible(m_centralWidget, false);
 
   m_sidebars[KMultiTabBar::Bottom] = new Sidebar (KMultiTabBar::Bottom, this, vb);
   m_sidebars[KMultiTabBar::Bottom]->setSplitter (m_vSplitter);
