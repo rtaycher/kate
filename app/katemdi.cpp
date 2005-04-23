@@ -1,6 +1,8 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2005 Christoph Cullmann <cullmann@kde.org>
-   Copyright (C) 2002,2003 Joseph Wenninger <jowenn@kde.org>
+   Copyright (C) 2002, 2003 Joseph Wenninger <jowenn@kde.org>
+
+   GUIClient partly based on ktoolbarhandler.cpp: Copyright (C) 2002 Simon Hausmann <hausmann@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -73,6 +75,144 @@ int Splitter::idAfter ( QWidget * w ) const
 }
 
 //END SPLITTER
+
+
+//BEGIN TOGGLETOOLVIEWACTION
+
+ToggleToolViewAction::ToggleToolViewAction ( const QString& text, const KShortcut& cut, ToolView *tv,
+                                             QObject* parent, const char* name )
+ : KToggleAction(text,cut,parent,name)
+ , m_tv(tv)
+{
+  connect(this,SIGNAL(toggled(bool)),this,SLOT(slotToggled(bool)));
+  connect(m_tv,SIGNAL(visibleChanged(bool)),this,SLOT(visibleChanged(bool)));
+
+  setChecked(m_tv->visible());
+}
+
+ToggleToolViewAction::~ToggleToolViewAction()
+{
+  unplugAll();
+}
+
+void ToggleToolViewAction::visibleChanged(bool)
+{
+  if (isChecked() != m_tv->visible())
+    setChecked (m_tv->visible());
+}
+
+void ToggleToolViewAction::slotToggled(bool t)
+{
+  if (t)
+    m_tv->mainWindow()->showToolView (m_tv);
+  else
+    m_tv->mainWindow()->hideToolView (m_tv);
+}
+
+//END TOGGLETOOLVIEWACTION
+
+
+//BEGIN GUICLIENT
+
+static const char *actionListName = "kate_mdi_window_actions";
+
+static const char *guiDescription = ""
+        "<!DOCTYPE kpartgui><kpartgui name=\"kate_mdi_window_actions\">"
+        "<MenuBar>"
+        "    <Menu name=\"window\">"
+        "        <ActionList name=\"%1\" />"
+        "    </Menu>"
+        "</MenuBar>"
+        "</kpartgui>";
+
+GUIClient::GUIClient ( MainWindow *mw )
+ : QObject ( mw )
+ , KXMLGUIClient ( mw )
+ , m_mw (mw)
+{
+  connect( m_mw->guiFactory(), SIGNAL( clientAdded( KXMLGUIClient * ) ),
+           this, SLOT( clientAdded( KXMLGUIClient * ) ) );
+
+  if ( domDocument().documentElement().isNull() )
+  {
+    QString completeDescription = QString::fromLatin1( guiDescription )
+          .arg( actionListName );
+
+    setXML( completeDescription, false /*merge*/ );
+  }
+
+  if (actionCollection()->kaccel()==0)
+    actionCollection()->setWidget(m_mw);
+
+  m_toolMenu = new KActionMenu(i18n("Tool &Views"),actionCollection(),"kate_mdi_toolview_menu");
+
+  // read shortcuts
+  actionCollection()->readShortcutSettings( "Shortcuts", kapp->config() );
+}
+
+GUIClient::~GUIClient()
+{
+}
+
+void GUIClient::registerToolView (ToolView *tv)
+{
+  QString aname = QString("kate_mdi_toolview_") + tv->id;
+
+  // try to read the action shortcut
+  KShortcut sc;
+  KConfig *cfg = kapp->config();
+  QString _grp = cfg->group();
+  cfg->setGroup("Shortcuts");
+  sc = KShortcut( cfg->readEntry( aname, "" ) );
+  cfg->setGroup( _grp );
+
+  KToggleAction *a = new ToggleToolViewAction(i18n("Show %1").arg(tv->text),
+    sc,tv, actionCollection(), aname.latin1() );
+
+  a->setCheckedState(i18n("Hide %1").arg(tv->text));
+
+  m_toolViewActions.append(a);
+  m_toolMenu->insert(a);
+
+  m_toolToAction.insert (tv, a);
+
+  updateActions();
+}
+
+void GUIClient::unregisterToolView (ToolView *tv)
+{
+  KAction *a = m_toolToAction[tv];
+
+  if (!a)
+    return;
+
+  m_toolViewActions.remove(a);
+  m_toolToAction.remove (tv);
+
+  updateActions();
+}
+
+void GUIClient::clientAdded( KXMLGUIClient *client )
+{
+  if ( client == this )
+    updateActions();
+}
+
+void GUIClient::updateActions()
+{
+  if ( !factory() )
+    return;
+
+  unplugActionList( actionListName );
+
+  QPtrList<KAction> addList;
+  addList.append(m_toolMenu);
+
+  plugActionList( actionListName, addList );
+}
+
+//END GUICLIENT
+
 
 //BEGIN TOOLVIEW
 
@@ -490,6 +630,7 @@ void Sidebar::saveSession (KConfig *config)
 MainWindow::MainWindow (QWidget* parentWidget, const char* name)
  : KParts::MainWindow( parentWidget, name)
  , m_restoreConfig (0)
+ , m_guiClient (new GUIClient (this))
 {
   // init the internal widgets
   QHBox *hb = new QHBox (this);
@@ -558,6 +699,9 @@ ToolView *MainWindow::createToolView (const QString &identifier, KMultiTabBar::K
   m_idToWidget.insert (identifier, v);
   m_toolviews.push_back (v);
 
+  // register for menu stuff
+  m_guiClient->registerToolView (v);
+
   return v;
 }
 
@@ -573,6 +717,9 @@ void MainWindow::toolViewDeleted (ToolView *widget)
 
   if (widget->mainWindow() != this)
     return;
+
+  // unregister from menu stuff
+  m_guiClient->unregisterToolView (widget);
 
   widget->sidebar()->removeWidget (widget);
 

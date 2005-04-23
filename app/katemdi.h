@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2005 Christoph Cullmann <cullmann@kde.org>
-   Copyright (C) 2002,2003 Joseph Wenninger <jowenn@kde.org>
+   Copyright (C) 2002, 2003 Joseph Wenninger <jowenn@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -24,12 +24,15 @@
 #include <kparts/mainwindow.h>
 
 #include <kmultitabbar.h>
+#include <kxmlguiclient.h>
+#include <kaction.h>
 
 #include <qdict.h>
 #include <qintdict.h>
 #include <qmap.h>
 #include <qsplitter.h>
 #include <qpixmap.h>
+#include <qptrlist.h>
 
 namespace KateMDI {
 
@@ -54,12 +57,54 @@ class Splitter : public QSplitter
     int idAfter ( QWidget * w ) const;
 };
 
+class ToggleToolViewAction : public KToggleAction
+{
+  Q_OBJECT
+
+  public:
+    ToggleToolViewAction ( const QString& text, const KShortcut& cut,
+                           class ToolView *tv, QObject* parent = 0, const char* name = 0 );
+
+    virtual ~ToggleToolViewAction();
+
+  protected slots:
+    void slotToggled(bool);
+    void visibleChanged(bool);
+
+  private:
+    ToolView *m_tv;
+};
+
+class GUIClient : public QObject, public KXMLGUIClient
+{
+  Q_OBJECT
+
+  public:
+    GUIClient ( class MainWindow *mw );
+    virtual ~GUIClient();
+
+    void registerToolView (ToolView *tv);
+    void unregisterToolView (ToolView *tv);
+
+  private slots:
+    void clientAdded( KXMLGUIClient *client );
+    void updateActions();
+
+  private:
+    MainWindow *m_mw;
+    QPtrList<KAction> m_toolViewActions;
+    QMap<ToolView*, KAction*> m_toolToAction;
+    KActionMenu *m_toolMenu;
+};
+
 class ToolView : public QVBox
 {
   Q_OBJECT
 
   friend class Sidebar;
   friend class MainWindow;
+  friend class GUIClient;
+  friend class ToggleToolViewAction;
 
   protected:
     ToolView (class MainWindow *mainwin, class Sidebar *sidebar, QWidget *parent);
@@ -79,6 +124,8 @@ class ToolView : public QVBox
     Sidebar *sidebar () { return m_sidebar; }
 
     void setVisible (bool vis);
+
+  public:
     bool visible ();
 
   private:
@@ -320,6 +367,11 @@ class MainWindow : public KParts::MainWindow
      * restore group
      */
     QString m_restoreGroup;
+
+    /**
+     * out guiclient
+     */
+    GUIClient *m_guiClient;
 };
 
 }

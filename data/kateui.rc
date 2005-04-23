@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="kate" version="46">
+<kpartgui name="kate" version="47">
 
 <MenuBar noMerge="1">
   <Menu name="file"><text>&amp;File</text>
@@ -99,7 +99,7 @@
     <Action name="go_next"/>
     <Action name="go_prev"/>
     <Separator/>
-    <Merge name="KMDIViewActions"/>
+    <Merge name="kate_mdi_window_actions"/>
   </Menu>
 
   <Menu name="help"><text>&amp;Help</text>
