@@ -102,16 +102,12 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
   // now the config
   KConfig *config = kapp->config();
 
-  // first init size while we are still invisible, avoid flicker
-  if (!initialGeometrySet())
+  if (!sconfig && !initialGeometrySet())
   {
-    config->setGroup ("Kate Main Window");
     int scnum = QApplication::desktop()->screenNumber(parentWidget());
     QRect desk = QApplication::desktop()->screenGeometry(scnum);
-    QSize s ( config->readNumEntry( QString::fromLatin1("Width %1").arg(desk.width()), 700 ),
-              config->readNumEntry( QString::fromLatin1("Height %1").arg(desk.height()), 480 ) );
 
-    resize (kMin (s.width(), desk.width()), kMin(s.height(), desk.height()));
+    resize (kMin (700, desk.width()), kMin(480, desk.height()));
   }
 
   // start session restore if needed
@@ -151,8 +147,6 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
 
   if (console)
     console->loadConsoleIfNeeded();
-
-  setAutoSaveSettings ("Kate Main Window");
 
   finishRestore ();
 

@@ -615,6 +615,10 @@ void MainWindow::startRestore (KConfig *config, const QString &group)
   if (!m_restoreConfig || !m_restoreConfig->hasGroup (m_restoreGroup))
     return;
 
+  // apply size once, to get sizes ready ;)
+  m_restoreConfig->setGroup (m_restoreGroup);
+  restoreWindowSize (m_restoreConfig);
+
   m_restoreConfig->setGroup (m_restoreGroup);
 
   // get main splitter sizes ;)
@@ -637,6 +641,9 @@ void MainWindow::finishRestore ()
 
   if (m_restoreConfig->hasGroup (m_restoreGroup))
   {
+    // apply all settings, like toolbar pos and more ;)
+    applyMainWindowSettings(m_restoreConfig, m_restoreGroup);
+
     // reshuffle toolviews only if needed
     m_restoreConfig->setGroup (m_restoreGroup);
     for ( unsigned int i=0; i < m_toolviews.size(); ++i )
@@ -664,6 +671,8 @@ void MainWindow::saveSession (KConfig *config, const QString &group)
 {
   if (!config)
     return;
+
+  saveMainWindowSettings (config, group);
 
   config->setGroup (group);
 
