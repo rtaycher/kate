@@ -87,11 +87,6 @@ class ToolView : public QVBox
      */
     bool persistent;
 
-    /**
-     * position in sidebar
-     */
-    unsigned int position;
-
     QPixmap icon;
     QString text;
 };
@@ -151,6 +146,11 @@ class Sidebar : public KMultiTabBar
 
     QIntDict<ToolView> m_idToWidget;
     QMap<ToolView*, int> m_widgetToId;
+
+    /**
+     * list of all toolviews around in this sidebar
+     */
+    QValueList<ToolView*> m_toolviews;
 
     int m_lastSize;
 

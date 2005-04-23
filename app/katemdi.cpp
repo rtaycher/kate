@@ -149,11 +149,11 @@ ToolView *Sidebar::addWidget (const QPixmap &icon, const QString &text, ToolView
   }
 
   // save it's pos ;)
-  widget->position = m_idToWidget.size();
   widget->persistent = false;
 
   m_idToWidget.insert (newId, widget);
   m_widgetToId.insert (widget, newId);
+  m_toolviews.push_back (widget);
 
   show ();
 
@@ -168,12 +168,11 @@ bool Sidebar::removeWidget (ToolView *widget)
   if (!m_widgetToId.contains(widget))
     return false;
 
-  unsigned int p = widget->position;
-
   removeTab(m_widgetToId[widget]);
 
   m_idToWidget.remove (m_widgetToId[widget]);
   m_widgetToId.remove (widget);
+  m_toolviews.remove (widget);
 
   bool anyVis = false;
   QIntDictIterator<ToolView> it( m_idToWidget );
@@ -190,15 +189,6 @@ bool Sidebar::removeWidget (ToolView *widget)
   }
   else if (!anyVis)
     m_ownSplit->hide ();
-
-  // renumber toolviews if needed
-  for ( QIntDictIterator<ToolView> it( m_idToWidget ); it.current(); ++it )
-  {
-    ToolView *tv = it.current();
-
-    if (tv->position > p)
-      --tv->position;
-  }
 
   return true;
 }
@@ -354,26 +344,30 @@ void Sidebar::buttonPopupActivate (int id)
 void Sidebar::restoreSession (KConfig *config)
 {
   // get persistent values
-  for ( QIntDictIterator<ToolView> it( m_idToWidget ); it.current(); ++it )
+  for ( unsigned int i=0; i < m_toolviews.size(); ++i )
   {
-    ToolView *tv = it.current();
+    ToolView *tv = m_toolviews[i];
 
     tv->persistent = config->readBoolEntry (QString ("Kate-MDI-ToolView-%1-Persistent").arg(tv->id), false);
   }
 
   // hide toolviews
-  for ( QIntDictIterator<ToolView> it( m_idToWidget ); it.current(); ++it )
+  for ( unsigned int i=0; i < m_toolviews.size(); ++i )
   {
-    ToolView *tv = it.current();
+    ToolView *tv = m_toolviews[i];
 
     if (!config->readBoolEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(tv->id), false))
       hideWidget (tv);
   }
 
+  // restore the own splitter sizes
+  QValueList<int> s = config->readIntListEntry (QString ("Kate-MDI-Sidebar-%1-Splitter").arg(position()));
+  m_ownSplit->setSizes (s);
+
   // restore visible toolviews
-  for ( QIntDictIterator<ToolView> it( m_idToWidget ); it.current(); ++it )
+  for ( unsigned int i=0; i < m_toolviews.size(); ++i )
   {
-    ToolView *tv = it.current();
+    ToolView *tv = m_toolviews[i];
 
     if (config->readBoolEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(tv->id), false))
       showWidget (tv);
@@ -382,15 +376,19 @@ void Sidebar::restoreSession (KConfig *config)
 
 void Sidebar::saveSession (KConfig *config)
 {
-  for ( QIntDictIterator<ToolView> it( m_idToWidget ); it.current(); ++it )
+  // store the own splitter sizes
+  QValueList<int> s = m_ownSplit->sizes();
+  config->writeEntry (QString ("Kate-MDI-Sidebar-%1-Splitter").arg(position()), s);
+
+  // store the data about all toolviews in this sidebar ;)
+  for ( unsigned int i=0; i < m_toolviews.size(); ++i )
   {
-    ToolView *tv = it.current();
+    ToolView *tv = m_toolviews[i];
 
     config->writeEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(tv->id), tv->sidebar()->position());
+    config->writeEntry (QString ("Kate-MDI-ToolView-%1-Sidebar-Position").arg(tv->id), i);
     config->writeEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(tv->id), tv->visible);
     config->writeEntry (QString ("Kate-MDI-ToolView-%1-Persistent").arg(tv->id), tv->persistent);
-
-    kdDebug () << "toolview : " << tv->id << " pos: " << tv->position << endl;
   }
 }
 
@@ -456,7 +454,7 @@ ToolView *MainWindow::createToolView (const QString &identifier, KMultiTabBar::K
     return 0;
 
   // try the restore config to figure out real pos
-  if (m_restoreConfig)
+  if (m_restoreConfig && m_restoreConfig->hasGroup (m_restoreGroup))
   {
     m_restoreConfig->setGroup (m_restoreGroup);
     pos = (KMultiTabBar::KMultiTabBarPosition) m_restoreConfig->readNumEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(identifier), pos);
@@ -496,7 +494,7 @@ bool MainWindow::moveToolView (ToolView *widget, KMultiTabBar::KMultiTabBarPosit
     return false;
 
   // try the restore config to figure out real pos
-  if (m_restoreConfig)
+  if (m_restoreConfig && m_restoreConfig->hasGroup (m_restoreGroup))
   {
     m_restoreConfig->setGroup (m_restoreGroup);
     pos = (KMultiTabBar::KMultiTabBarPosition) m_restoreConfig->readNumEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(widget->id), pos);
@@ -513,7 +511,7 @@ bool MainWindow::showToolView (ToolView *widget)
     return false;
 
   // skip this if happens during restoring, or we will just see flicker
-  if (m_restoreConfig)
+  if (m_restoreConfig && m_restoreConfig->hasGroup (m_restoreGroup))
     return true;
 
   return widget->sidebar()->showWidget (widget);
@@ -525,7 +523,7 @@ bool MainWindow::hideToolView (ToolView *widget)
     return false;
 
   // skip this if happens during restoring, or we will just see flicker
-  if (m_restoreConfig)
+  if (m_restoreConfig && m_restoreConfig->hasGroup (m_restoreGroup))
     return true;
 
   return widget->sidebar()->hideWidget (widget);
@@ -537,7 +535,7 @@ void MainWindow::startRestore (KConfig *config, const QString &group)
   m_restoreConfig = config;
   m_restoreGroup = group;
 
-  if (!m_restoreConfig)
+  if (!m_restoreConfig || !m_restoreConfig->hasGroup (m_restoreGroup))
     return;
 
   m_restoreConfig->setGroup (m_restoreGroup);
@@ -560,22 +558,25 @@ void MainWindow::finishRestore ()
   if (!m_restoreConfig)
     return;
 
-  // reshuffle toolviews only if needed
-  m_restoreConfig->setGroup (m_restoreGroup);
-  for ( unsigned int i=0; i < m_toolviews.size(); ++i )
+  if (m_restoreConfig->hasGroup (m_restoreGroup))
   {
-    KMultiTabBar::KMultiTabBarPosition newPos = (KMultiTabBar::KMultiTabBarPosition) m_restoreConfig->readNumEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(m_toolviews[i]->id), m_toolviews[i]->sidebar()->position());
-
-    if (m_toolviews[i]->sidebar()->position() != newPos)
+    // reshuffle toolviews only if needed
+    m_restoreConfig->setGroup (m_restoreGroup);
+    for ( unsigned int i=0; i < m_toolviews.size(); ++i )
     {
-      moveToolView (m_toolviews[i], newPos);
-    }
-  }
+      KMultiTabBar::KMultiTabBarPosition newPos = (KMultiTabBar::KMultiTabBarPosition) m_restoreConfig->readNumEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(m_toolviews[i]->id), m_toolviews[i]->sidebar()->position());
 
-  // restore the sidebars
-  m_restoreConfig->setGroup (m_restoreGroup);
-  for (unsigned int i=0; i < 4; ++i)
-    m_sidebars[i]->restoreSession (m_restoreConfig);
+      if (m_toolviews[i]->sidebar()->position() != newPos)
+      {
+        moveToolView (m_toolviews[i], newPos);
+      }
+    }
+
+    // restore the sidebars
+    m_restoreConfig->setGroup (m_restoreGroup);
+    for (unsigned int i=0; i < 4; ++i)
+      m_sidebars[i]->restoreSession (m_restoreConfig);
+  }
 
   // clear this stuff, we are done ;)
   m_restoreConfig = 0;
