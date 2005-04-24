@@ -275,7 +275,7 @@ void KateMainWindow::setupActions()
     externalTools->setWhatsThis( i18n("Launch external helper applications") );
   }
 
-  showFullScreenAction = KStdAction::fullScreen( 0, 0, actionCollection(),this);
+  KToggleAction* showFullScreenAction = KStdAction::fullScreen( 0, 0, actionCollection(),this);
   connect( showFullScreenAction,SIGNAL(toggled(bool)), this,SLOT(slotFullScreen(bool)));
 
   documentOpenWith = new KActionMenu(i18n("Open W&ith"), actionCollection(), "file_open_with");
@@ -289,7 +289,7 @@ void KateMainWindow::setupActions()
   a=KStdAction::configureToolbars(this, SLOT(slotEditToolbars()), actionCollection(), "set_configure_toolbars");
   a->setWhatsThis(i18n("Configure which items should appear in the toolbar(s)."));
 
-  settingsConfigure = KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
+  KAction* settingsConfigure = KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
   settingsConfigure->setWhatsThis(i18n("Configure various aspects of this application and the editing component."));
 
   // pipe to terminal action

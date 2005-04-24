@@ -197,9 +197,6 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
 
     KToggleAction* settingsShowFilelist;
     KToggleAction* settingsShowFileselector;
-    KToggleAction* showFullScreenAction;
-
-    KAction* settingsConfigure;
 
     KActionMenu *scriptMenu;
     KScriptManager* kscript;
@@ -212,6 +209,5 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
 };
 
 #endif
+
 // kate: space-indent on; indent-width 2; replace-tabs on;
-
-
