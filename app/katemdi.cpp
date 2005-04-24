@@ -104,9 +104,15 @@ void ToggleToolViewAction::visibleChanged(bool)
 void ToggleToolViewAction::slotToggled(bool t)
 {
   if (t)
+  {
     m_tv->mainWindow()->showToolView (m_tv);
+    m_tv->setFocus ();
+  }
   else
+  {
     m_tv->mainWindow()->hideToolView (m_tv);
+    m_tv->mainWindow()->centralWidget()->setFocus ();
+  }
 }
 
 //END TOGGLETOOLVIEWACTION
@@ -244,6 +250,15 @@ void ToolView::setVisible (bool vis)
 bool ToolView::visible ()
 {
   return m_visible;
+}
+
+void ToolView::childEvent ( QChildEvent *ev )
+{
+  // set the widget to be focus proxy if possible
+  if (ev->inserted() && ev->child() && ev->child()->qt_cast("QWidget"))
+    setFocusProxy ((QWidget *)(ev->child()->qt_cast("QWidget")));
+
+  QVBox::childEvent (ev);
 }
 
 //END TOOLVIEW
@@ -416,9 +431,15 @@ void Sidebar::tabClicked(int i)
     return;
 
   if (isTabRaised(i))
+  {
     showWidget (w);
+    w->setFocus ();
+  }
   else
+  {
     hideWidget (w);
+    m_mainWin->centralWidget()->setFocus ();
+  }
 }
 
 bool Sidebar::eventFilter(QObject *obj, QEvent *ev)

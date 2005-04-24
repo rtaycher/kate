@@ -440,6 +440,7 @@ void KateMainWindow::slotWindowActivated ()
 
   if (m_viewManager->activeView())
   {
+
     if (console && syncKonsole)
     {
       QString newPath = m_viewManager->activeView()->getDoc()->url().directory();
@@ -453,6 +454,9 @@ void KateMainWindow::slotWindowActivated ()
 
     updateCaption (m_viewManager->activeView()->getDoc());
   }
+
+  // update proxy
+  centralWidget()->setFocusProxy (m_viewManager->activeView());
 }
 
 void KateMainWindow::slotUpdateOpenWith()

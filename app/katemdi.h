@@ -107,12 +107,29 @@ class ToolView : public QVBox
   friend class ToggleToolViewAction;
 
   protected:
+    /**
+     * ToolView
+     * Objects of this clas represent a toolview in the mainwindow
+     * you should only add one widget as child to this toolview, it will
+     * be automatically set to be the focus proxy of the toolview
+     * @param mainwin main window for this toolview
+     * @param sidebar sidebar of this toolview
+     * @param parent parent widget, e.g. the splitter of one of the sidebars
+     */
     ToolView (class MainWindow *mainwin, class Sidebar *sidebar, QWidget *parent);
 
   public:
+    /**
+     * destuct me, this is allowed for all, will care itself that the toolview is removed
+     * from the mainwindow and sidebar
+     */
     virtual ~ToolView ();
 
   signals:
+    /**
+     * toolview hidden or shown
+     * @param bool is this toolview made visible?
+     */
     void visibleChanged (bool visible);
 
   /**
@@ -127,6 +144,9 @@ class ToolView : public QVBox
 
   public:
     bool visible ();
+
+  protected:
+    void childEvent ( QChildEvent *ev );
 
   private:
     MainWindow *m_mainWin;
@@ -245,6 +265,7 @@ class MainWindow : public KParts::MainWindow
     /**
      * central widget ;)
      * use this as parent for your content
+     * this widget will get focus if a toolview is hidden
      * @return central widget
      */
     QWidget *centralWidget ();
