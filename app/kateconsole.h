@@ -26,10 +26,10 @@
 #include "katemainwindow.h"
 #include "../interfaces/viewmanager.h"
 
-#include <qwidget.h>
+#include <qvbox.h>
 #include <kparts/part.h>
 
-class KateConsole : public QWidget
+class KateConsole : public QVBox
 {
   Q_OBJECT
 
@@ -45,16 +45,16 @@ class KateConsole : public QWidget
     void focusInEvent( QFocusEvent * ) { if (part) part->widget()->setFocus(); };
     virtual void showEvent(QShowEvent *);
 
-
   private:
     KParts::ReadOnlyPart *part;
-    QVBoxLayout* lo;
     Kate::ViewManager *m_kvm;
     KateMainWindow *m_mw;
-  KateMDI::ToolView *m_toolView;
+    KateMDI::ToolView *m_toolView;
 
   public slots:
     void loadConsoleIfNeeded();
+
+    void slotPipeToConsole ();
 
   // Only needed for Konsole
   private slots:

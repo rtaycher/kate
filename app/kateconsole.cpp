@@ -33,16 +33,16 @@
 #include <klocale.h>
 #include <kapplication.h>
 #include <kdebug.h>
+#include <kmessagebox.h>
 
 #include <qlayout.h>
 
 KateConsole::KateConsole (KateMainWindow *mw, KateMDI::ToolView* parent, const char* name, Kate::ViewManager *kvm)
- : QWidget (parent, name)
+ : QVBox (parent, name)
  , part (0)
- , lo (new QVBoxLayout(this))
  , m_kvm (kvm)
-, m_mw (mw)
-, m_toolView (parent)
+ , m_mw (mw)
+ , m_toolView (parent)
 {
 }
 
@@ -79,7 +79,6 @@ void KateConsole::loadConsoleIfNeeded()
   KGlobal::locale()->insertCatalogue("konsole");
 
   part->widget()->show();
-  lo->addWidget(part->widget());
 
   connect ( part, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
 
@@ -123,4 +122,24 @@ void KateConsole::slotDestroyed ()
     m_mw->hideToolView (m_toolView);
     m_mw->centralWidget()->setFocus ();
   }
+}
+
+void KateConsole::slotPipeToConsole ()
+{
+  if (KMessageBox::warningYesNo
+      (m_mw
+       , i18n ("Do you really want to pipe the text to the console? This will execute any contained commands with your user rights.")
+       , i18n ("Pipe to Console?")
+       , KStdGuiItem::yes(), KStdGuiItem::no(), "Pipe To Console Warning") != KMessageBox::Yes)
+    return;
+
+  Kate::View *v = m_kvm->activeView();
+
+  if (!v)
+    return;
+
+  if (v->getDoc()->hasSelection ())
+    sendInput (v->getDoc()->selection());
+  else
+    sendInput (v->getDoc()->text());
 }

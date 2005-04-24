@@ -132,8 +132,6 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
 
     void slotOpenWithMenuAction(int idx);
 
-    void slotPipeToConsole ();
-
     void slotGrepToolItemSelected ( const QString &filename, int linenumber );
     void runScript( int menuItemId);
     void slotMail();

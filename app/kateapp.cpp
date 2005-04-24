@@ -202,7 +202,7 @@ int KateApp::newInstance()
 
       // restore all windows ;)
       for (int n=1; KMainWindow::canBeRestored(n); n++)
-        KateMainWindow *win=newMainWindow(true, sessionConfig(), QString ("%1").arg(n));
+        newMainWindow(true, sessionConfig(), QString ("%1").arg(n));
     }
     else
     {

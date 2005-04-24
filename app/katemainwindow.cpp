@@ -110,6 +110,7 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
     // try to load size
     if (sconfig)
     {
+      sconfig->setGroup (sgroup);
       size.setWidth (sconfig->readNumEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ));
       size.setHeight (sconfig->readNumEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ));
     }
@@ -293,7 +294,7 @@ void KateMainWindow::setupActions()
 
   // pipe to terminal action
   if (kapp->authorize("shell_access"))
-    new KAction(i18n("&Pipe to Console"), "pipe", 0, this, SLOT(slotPipeToConsole()), actionCollection(), "tools_pipe_to_terminal");
+    new KAction(i18n("&Pipe to Console"), "pipe", 0, console, SLOT(slotPipeToConsole()), actionCollection(), "tools_pipe_to_terminal");
 
   // tip of the day :-)
   KStdAction::tipOfDay( this, SLOT( tipOfTheDay() ), actionCollection() )->setWhatsThis(i18n("This shows useful tips on the use of this application."));
@@ -447,13 +448,11 @@ void KateMainWindow::saveOptions ()
 
 void KateMainWindow::slotWindowActivated ()
 {
-  static QString path;
-
   if (m_viewManager->activeView())
   {
-
     if (console && syncKonsole)
     {
+      static QString path;
       QString newPath = m_viewManager->activeView()->getDoc()->url().directory();
 
       if ( newPath != path )
@@ -864,26 +863,4 @@ void KateMainWindow::saveGlobalProperties( KConfig* sessionConfig )
   sessionConfig->writeEntry ("Last Session", ((KateApp *)kapp)->kateSessionManager()->activeSession()->sessionFileRelative());
 }
 
-void KateMainWindow::slotPipeToConsole ()
-{
-  if (!console)
-    return;
-
-  if (KMessageBox::warningYesNo
-       (this
-        , i18n ("Do you really want to pipe the text to the console? This will execute any contained commands with your user rights.")
-        , i18n ("Pipe to Console?")
-        , KStdGuiItem::yes(), KStdGuiItem::no(), "Pipe To Console Warning") != KMessageBox::Yes)
-    return;
-
-  Kate::View *v = m_viewManager->activeView();
-
-  if (!v)
-    return;
-
-  if (v->getDoc()->hasSelection ())
-    console->sendInput (v->getDoc()->selection());
-  else
-    console->sendInput (v->getDoc()->text());
-}
 // kate: space-indent on; indent-width 2; replace-tabs on;
