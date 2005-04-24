@@ -23,27 +23,13 @@
 #include "katemdi.h"
 #include "katemdi.moc"
 
-#include <dcopclient.h>
-#include <kurldrag.h>
-#include <kencodingfiledialog.h>
-#include <kdiroperator.h>
-#include <kiconloader.h>
-#include <kaboutdata.h>
-#include <kstatusbar.h>
-#include <kstdaction.h>
 #include <kaction.h>
 #include <kdebug.h>
 #include <kglobal.h>
+#include <kglobalsettings.h>
 #include <kapplication.h>
 #include <klocale.h>
-#include <kurl.h>
 #include <kconfig.h>
-#include <kcmdlineargs.h>
-#include <kmessagebox.h>
-#include <kkeydialog.h>
-#include <kedittoolbar.h>
-#include <kparts/event.h>
-#include <kmenubar.h>
 #include <kiconloader.h>
 #include <kpopupmenu.h>
 
