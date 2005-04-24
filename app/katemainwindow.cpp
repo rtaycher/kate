@@ -117,10 +117,25 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
       size.setHeight (sconfig->readNumEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ));
     }
 
-    // default to some useful values ;)
+    // if thats fails, try to reuse size
     if (size.isEmpty())
     {
-      resize (kMin (700, desk.width()), kMin(480, desk.height()));
+      // first try to reuse size known from current or last created main window ;=)
+      if (KateApp::self()->mainWindows () > 0)
+      {
+        KateMainWindow *win = KateApp::self()->activeKateMainWindow ();
+
+        if (!win)
+          win = KateApp::self()->kateMainWindow (KateApp::self()->mainWindows ()-1);
+
+        size = win->size();
+      }
+      else // now fallback to hard defaults ;)
+      {
+        size = QSize (kMin (700, desk.width()), kMin(480, desk.height()));
+      }
+
+      resize (size);
     }
   }
 
