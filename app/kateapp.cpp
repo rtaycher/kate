@@ -200,11 +200,9 @@ int KateApp::newInstance()
 
       Kate::Document::setOpenErrorDialogsActivated (true);
 
+      // restore all windows ;)
       for (int n=1; KMainWindow::canBeRestored(n); n++)
-      {
-        KateMainWindow *win=newMainWindow(false);
-        win->restore ( n, true );
-      }
+        KateMainWindow *win=newMainWindow(true, sessionConfig(), QString ("%1").arg(n));
     }
     else
     {

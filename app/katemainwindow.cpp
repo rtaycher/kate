@@ -102,12 +102,26 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
   // now the config
   KConfig *config = kapp->config();
 
-  if (!sconfig && !initialGeometrySet())
+  // here we go, set some usable default sizes
+  if (!initialGeometrySet())
   {
     int scnum = QApplication::desktop()->screenNumber(parentWidget());
     QRect desk = QApplication::desktop()->screenGeometry(scnum);
 
-    resize (kMin (700, desk.width()), kMin(480, desk.height()));
+    QSize size;
+
+    // try to load size
+    if (sconfig)
+    {
+      size.setWidth (sconfig->readNumEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ));
+      size.setHeight (sconfig->readNumEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ));
+    }
+
+    // default to some useful values ;)
+    if (size.isEmpty())
+    {
+      resize (kMin (700, desk.width()), kMin(480, desk.height()));
+    }
   }
 
   // start session restore if needed
