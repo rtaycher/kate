@@ -36,16 +36,19 @@
 
 #include <qlayout.h>
 
-KateConsole::KateConsole (QWidget* parent, const char* name, Kate::ViewManager *kvm)
+KateConsole::KateConsole (KateMainWindow *mw, KateMDI::ToolView* parent, const char* name, Kate::ViewManager *kvm)
  : QWidget (parent, name)
  , part (0)
  , lo (new QVBoxLayout(this))
  , m_kvm (kvm)
+, m_mw (mw)
+, m_toolView (parent)
 {
 }
 
 KateConsole::~KateConsole ()
 {
+  disconnect ( part, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
 }
 
 void KateConsole::loadConsoleIfNeeded()
@@ -116,5 +119,8 @@ void KateConsole::slotDestroyed ()
 
   // hide the dockwidget
   if (parentWidget())
-    parentWidget()->hide ();
+  {
+    m_mw->hideToolView (m_toolView);
+    m_mw->centralWidget()->setFocus ();
+  }
 }

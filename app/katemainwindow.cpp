@@ -230,7 +230,7 @@ void KateMainWindow::setupMainWindow ()
     greptool->show();
 
     t = createToolView("kate_console", KMultiTabBar::Bottom, SmallIcon("konsole"), i18n("Terminal"));
-    console = new KateConsole (t, "console",viewManager());
+    console = new KateConsole (this, t, "console", viewManager());
   }
 
   // make per default the filelist visible, if we are in session restore, katemdi will skip this ;)

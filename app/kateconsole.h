@@ -22,6 +22,8 @@
 #define __KATE_CONSOLE_H__
 
 #include "katemain.h"
+#include "katemdi.h"
+#include "katemainwindow.h"
 #include "../interfaces/viewmanager.h"
 
 #include <qwidget.h>
@@ -32,22 +34,24 @@ class KateConsole : public QWidget
   Q_OBJECT
 
   public:
-    KateConsole (QWidget* parent, const char* name, Kate::ViewManager *);
+    KateConsole (KateMainWindow *mw, KateMDI::ToolView* parent, const char* name, Kate::ViewManager *);
     ~KateConsole ();
 
     void cd (KURL url=KURL());
-    
+
     void sendInput( const QString& text );
 
   protected:
     void focusInEvent( QFocusEvent * ) { if (part) part->widget()->setFocus(); };
     virtual void showEvent(QShowEvent *);
-    
+
 
   private:
     KParts::ReadOnlyPart *part;
     QVBoxLayout* lo;
     Kate::ViewManager *m_kvm;
+    KateMainWindow *m_mw;
+  KateMDI::ToolView *m_toolView;
 
   public slots:
     void loadConsoleIfNeeded();
