@@ -224,14 +224,13 @@ void KateMainWindow::setupMainWindow ()
   {
     t = createToolView("kate_greptool", KMultiTabBar::Bottom, SmallIcon("filefind"), i18n("Find in Files") );
     greptool = new GrepTool( t, "greptool" );
-    greptool->installEventFilter( this );
     connect(greptool, SIGNAL(itemSelected(const QString &,int)), this, SLOT(slotGrepToolItemSelected(const QString &,int)));
+    connect(t,SIGNAL(visibleChanged(bool)),this, SLOT(updateGrepDir (bool)));
     // WARNING HACK - anders: showing the greptool seems to make the menu accels work
     greptool->show();
 
     t = createToolView("kate_console", KMultiTabBar::Bottom, SmallIcon("konsole"), i18n("Terminal"));
     console = new KateConsole (t, "console",viewManager());
-    console->installEventFilter( this );
   }
 
   // make per default the filelist visible, if we are in session restore, katemdi will skip this ;)
@@ -742,19 +741,19 @@ void KateMainWindow::slotFullScreen(bool t)
     showNormal();
 }
 
-bool KateMainWindow::eventFilter( QObject *o, QEvent *e )
+void KateMainWindow::updateGrepDir (bool visible)
 {
+  // grepdlg gets hidden
+  if (!visible)
+    return;
 
-  if ( o == greptool && e->type() == QEvent::Show && m_viewManager->activeView() )
+  if ( m_viewManager->activeView() )
   {
     if ( m_viewManager->activeView()->getDoc()->url().isLocalFile() )
     {
       greptool->updateDirName( m_viewManager->activeView()->getDoc()->url().directory() );
-      return true;
     }
   }
-
-  return KateMDI::MainWindow::eventFilter( o, e );
 }
 
 bool KateMainWindow::event( QEvent *e )

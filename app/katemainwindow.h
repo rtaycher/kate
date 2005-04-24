@@ -161,8 +161,10 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
   public:
     void openURL (const QString &name=0L);
 
+  private slots:
+    void updateGrepDir (bool visible);
+
   protected:
-    bool eventFilter( QObject*, QEvent * );
     bool event( QEvent * );
 
   private slots:
