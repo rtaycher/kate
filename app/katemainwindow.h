@@ -108,8 +108,15 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
     void setupScripts();
     bool queryClose();
 
-    void readOptions(KConfig *);
-    void saveOptions(KConfig *);
+    /**
+     * read some global options from katerc
+     */
+    void readOptions();
+
+    /**
+     * save some global options to katerc
+     */
+    void saveOptions();
 
     void dragEnterEvent( QDragEnterEvent * );
     void dropEvent( QDropEvent * );

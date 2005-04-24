@@ -416,7 +416,7 @@ void KateConfigDialog::slotApply()
 
     mainWindow->kateViewManager()->setShowFullPath( cb_fullPath->isChecked() ); // hm, stored 2 places :(
 
-    mainWindow->saveOptions (config);
+    mainWindow->saveOptions ();
 
     // save plugin config !!
     ((KateApp *)kapp)->katePluginManager()->writeConfig ();

@@ -99,9 +99,6 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
   console = 0;
   greptool = 0;
 
-  // now the config
-  KConfig *config = kapp->config();
-
   // here we go, set some usable default sizes
   if (!initialGeometrySet())
   {
@@ -132,7 +129,13 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
       }
       else // now fallback to hard defaults ;)
       {
-        size = QSize (kMin (700, desk.width()), kMin(480, desk.height()));
+        // first try global app config
+        kapp->config()->setGroup ("MainWindow");
+        size.setWidth (kapp->config()->readNumEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ));
+        size.setHeight (kapp->config()->readNumEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ));
+
+        if (size.isEmpty())
+          size = QSize (kMin (700, desk.width()), kMin(480, desk.height()));
       }
 
       resize (size);
@@ -172,7 +175,7 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
 
   connect(KateDocManager::self(),SIGNAL(documentCreated(Kate::Document *)),this,SLOT(slotDocumentCreated(Kate::Document *)));
 
-  readOptions(config);
+  readOptions();
 
   if (console)
     console->loadConsoleIfNeeded();
@@ -187,7 +190,12 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
 
 KateMainWindow::~KateMainWindow()
 {
-  saveOptions(kapp->config());
+  // first, save our fallback window size ;)
+  kapp->config()->setGroup ("MainWindow");
+  saveWindowSize (kapp->config());
+
+  // save other options ;=)
+  saveOptions();
 
   ((KateApp *)kapp)->removeMainWindow (this);
 
@@ -395,8 +403,10 @@ void KateMainWindow::slotFileQuit()
   ((KateApp *)kapp)->shutdownKate (this);
 }
 
-void KateMainWindow::readOptions(KConfig *config)
+void KateMainWindow::readOptions ()
 {
+  KConfig *config = kapp->config ();
+
   config->setGroup("General");
   syncKonsole =  config->readBoolEntry("Sync Konsole", true);
   modNotification = config->readBoolEntry("Modified Notification", false);
@@ -410,8 +420,10 @@ void KateMainWindow::readOptions(KConfig *config)
   fileselector->readConfig(config, "fileselector");
 }
 
-void KateMainWindow::saveOptions(KConfig *config)
+void KateMainWindow::saveOptions ()
 {
+  KConfig *config = kapp->config ();
+
   config->setGroup("General");
 
   if (console)
@@ -740,12 +752,6 @@ bool KateMainWindow::eventFilter( QObject *o, QEvent *e )
       greptool->updateDirName( m_viewManager->activeView()->getDoc()->url().directory() );
       return true;
     }
-  }
-  if ( ( o == greptool || o == console ) &&
-      e->type() == QEvent::Hide && m_viewManager->activeView() )
-  {
-     m_viewManager->activeView()->setFocus();
-     return true;
   }
 
   return KateMDI::MainWindow::eventFilter( o, e );
