@@ -136,6 +136,9 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
 
       DCOPRef kRef (kateApp, "KateApplication");
 
+      if (args->isSet ("start-session"))
+        kRef.call( "activateSession", QString (args->getOption("start-session")) );
+
       QString enc = args->isSet("encoding") ? args->getOption("encoding") : "";
 
       for (int z=0; z<args->count(); z++)

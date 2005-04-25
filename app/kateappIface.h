@@ -59,6 +59,13 @@ class KateAppDCOPIface : public DCOPObject
      */
     bool setCursor (int line, int column);
 
+    /**
+     * activate a given session
+     * @param session session name
+     * @return success
+     */
+    bool activateSession (QString session);
+
   private:
     KateApp *m_app;
 };

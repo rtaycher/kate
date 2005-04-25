@@ -19,6 +19,7 @@
 #include "kateappIface.h"
 
 #include "kateapp.h"
+#include "katesession.h"
 
 #include <kdebug.h>
 
@@ -76,4 +77,11 @@ bool KateAppDCOPIface::openURL (KURL url, QString encoding)
 bool KateAppDCOPIface::setCursor (int line, int column)
 {
   return m_app->setCursor (line, column);
+}
+
+bool KateAppDCOPIface::activateSession (QString session)
+{
+  m_app->kateSessionManager()->activateSession (m_app->kateSessionManager()->giveSession (session));
+
+  return true;
 }
