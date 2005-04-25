@@ -21,6 +21,7 @@
 
 #include <dcopobject.h>
 #include <dcopref.h>
+#include <kurl.h>
 
 class KateApp;
 
@@ -35,11 +36,28 @@ class KateAppDCOPIface : public DCOPObject
     DCOPRef documentManager ();
 
     DCOPRef activeMainWindow ();
-    
+
     uint activeMainWindowNumber ();
 
     uint mainWindows ();
     DCOPRef mainWindow (uint n = 0);
+
+    /**
+     * open a file with given url and encoding
+     * will get view created
+     * @param url url of the file
+     * @param encoding encoding name
+     * @return success
+     */
+    bool openURL (KURL url, QString encoding);
+
+    /**
+     * set cursor of active view in active main window
+     * @param line line for cursor
+     * @param column column for cursor
+     * @return success
+     */
+    bool setCursor (int line, int column);
 
   private:
     KateApp *m_app;

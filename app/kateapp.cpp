@@ -43,8 +43,8 @@
 #include <qdir.h>
 #include <qtextcodec.h>
 
-KateApp::KateApp (bool forcedNewProcess, bool oldState)
- : KUniqueApplication (true,true,true)
+KateApp::KateApp ()
+ : KApplication ()
  , m_firstStart (true)
  , m_initPlugin (0)
  , m_doNotInitialize (0)
@@ -64,15 +64,6 @@ KateApp::KateApp (bool forcedNewProcess, bool oldState)
   kapp->dcopClient()->suspend();
 
   m_mainWindows.setAutoDelete (false);
-
-  // uh, we have forced this session to come up via changing config
-  // change it back now
-  if (forcedNewProcess)
-  {
-    config()->setGroup("KDE");
-    config()->writeEntry("MultipleInstances",oldState);
-    config()->sync();
-  }
 
   // application interface
   m_application = new Kate::Application (this);
@@ -173,16 +164,13 @@ Kate::InitPlugin *KateApp::initPlugin() const
 
 KURL KateApp::initScript() const {return m_initURL;}
 
-int KateApp::newInstance()
+int KateApp::newInstance(KCmdLineArgs* args)
 {
-  // get our command line arguments ;)
-  KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
-
   // this will ensure some stuff is only done on real application start
   if (m_firstStart)
   {
     // we restore our great stuff here now ;) super
-    if ( restoringSession() )
+    if ( isRestored() )
     {
       // restore the nice files ;) we need it
       Kate::Document::setOpenErrorDialogsActivated (false);
@@ -211,13 +199,12 @@ int KateApp::newInstance()
       {
         kateSessionManager()->activateSession (kateSessionManager()->giveSession (args->getOption("start-session")), false, false);
       }
-      else
+      else if (args->count() == 0) // only start session if no files specified
       {
         // let the user choose session if possible
         if (!kateSessionManager()->chooseSession ())
         {
-          quit ();
-          return 0;
+          return false;
         }
       }
     }
@@ -336,7 +323,7 @@ int KateApp::newInstance()
     KTipDialog::showTip(m_mainWindows.first());
   }
 
-  return 0;
+  return true;
 }
 
 void KateApp::shutdownKate (KateMainWindow *win)
@@ -344,16 +331,60 @@ void KateApp::shutdownKate (KateMainWindow *win)
   if (!win->queryClose_internal())
     return;
 
-  ((KateApp *)kapp)->kateSessionManager()->saveActiveSession(true, true);
+  kateSessionManager()->saveActiveSession(true, true);
 
   // detach the dcopClient
-  ((KUniqueApplication *)kapp)->dcopClient()->detach();
+  kapp->dcopClient()->detach();
 
   // cu main windows
   while (!m_mainWindows.isEmpty())
     delete m_mainWindows.take (0);
 
   quit ();
+}
+
+bool KateApp::openURL (const KURL &url, const QString &encoding)
+{
+  KateMainWindow *mainWindow = activeKateMainWindow ();
+
+  if (!mainWindow)
+    return false;
+
+  QTextCodec *codec = encoding.isEmpty() ? 0 : QTextCodec::codecForName(encoding.latin1());
+
+
+  kdDebug () << "OPEN URL "<< encoding << endl;
+
+  // this file is no local dir, open it, else warn
+  bool noDir = !url.isLocalFile() || !QDir (url.path()).exists();
+
+  if (noDir)
+  {
+    // open a normal file
+    if (codec)
+      mainWindow->kateViewManager()->openURL( url, codec->name());
+    else
+      mainWindow->kateViewManager()->openURL( url, QString::null );
+  }
+  else
+    KMessageBox::sorry( mainWindow,
+                        i18n("The file '%1' could not be opened: it is not a normal file, it is a folder.").arg(url.url()) );
+
+  return true;
+}
+
+bool KateApp::setCursor (int line, int column)
+{
+  kdDebug () << "SET CURSOR" << endl;
+
+  KateMainWindow *mainWindow = activeKateMainWindow ();
+
+  if (!mainWindow)
+    return false;
+
+  mainWindow->kateViewManager()->activeView ()->setCursorPosition (line, column);
+
+  return true;
 }
 
 KateMainWindow *KateApp::newMainWindow ()

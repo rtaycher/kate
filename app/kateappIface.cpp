@@ -20,6 +20,8 @@
 
 #include "kateapp.h"
 
+#include <kdebug.h>
+
 KateAppDCOPIface::KateAppDCOPIface (KateApp *app) : DCOPObject ("KateApplication")
      , m_app (app)
 {
@@ -64,4 +66,14 @@ DCOPRef KateAppDCOPIface::mainWindow (uint n)
     return DCOPRef (win->dcopObject ());
 
   return DCOPRef ();
+}
+
+bool KateAppDCOPIface::openURL (KURL url, QString encoding)
+{
+  return m_app->openURL (url, encoding);
+}
+
+bool KateAppDCOPIface::setCursor (int line, int column)
+{
+  return m_app->setCursor (line, column);
 }

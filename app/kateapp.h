@@ -32,16 +32,18 @@
 #include "katedocmanager.h"
 #include "katepluginmanager.h"
 
-#include <kuniqueapplication.h>
+#include <kapplication.h>
 
 class KateSessionManager;
 
-class KDE_EXPORT KateApp : public KUniqueApplication
+class KCmdLineArgs;
+
+class KDE_EXPORT KateApp : public KApplication
 {
   Q_OBJECT
 
   public:
-    KateApp (bool forcedNewProcess, bool oldState);
+    KateApp ();
     ~KateApp ();
 
     inline static KateApp *self () { return (KateApp *) kapp; }
@@ -49,7 +51,7 @@ class KDE_EXPORT KateApp : public KUniqueApplication
     Kate::Application *application () { return m_application; };
 
   public:
-    int newInstance();
+    int newInstance(KCmdLineArgs *args);
 
     void shutdownKate (KateMainWindow *win);
 
@@ -78,6 +80,9 @@ class KDE_EXPORT KateApp : public KUniqueApplication
     virtual void performInit(const QString &, const KURL &);
     virtual Kate::InitPlugin *initPlugin() const;
     virtual KURL initScript() const;
+
+    bool openURL (const KURL &url, const QString &encoding);
+    bool setCursor (int line, int column);
 
   signals:
     void onEventLoopEnter();

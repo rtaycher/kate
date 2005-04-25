@@ -24,20 +24,28 @@
 #include <kglobal.h>
 #include <kconfig.h>
 #include <kinstance.h>
+#include <dcopclient.h>
+#include <dcopref.h>
+#include <kdebug.h>
 
 #include "kateapp.h"
 
 static KCmdLineOptions options[] =
 {
-    { "n", I18N_NOOP("Start a new Kate process (off by default)"), 0 },
-    { "w", I18N_NOOP("Open a new Kate window"), 0 },
     { "s", 0 , 0 },
-    { "start-session <argument>",      I18N_NOOP("Start Kate with a given session, starts new kate process, too. If session exists, it will be loaded, else it will be created."), 0 },
-    { "initplugin <argument>",	I18N_NOOP("Allow Kate to be initialized by a plugin. You most probably have to specify a file too."),0},
-    { "encoding <argument>",      I18N_NOOP("Set encoding for the file to open"), 0 },
-    { "line <argument>",      I18N_NOOP("Navigate to this line"), 0 },
-    { "column <argument>",      I18N_NOOP("Navigate to this column"), 0 },
-    { "+[URL]",          I18N_NOOP("Document to open"), 0 },
+    { "start-session <arg>",      I18N_NOOP("Start Kate with a given session"), 0 },
+    { "u", 0, 0 },
+    { "use", I18N_NOOP("Use a already running kate instance (if possible)"), 0 },
+    { "p", 0, 0 },
+    { "pid <arg>", I18N_NOOP("Only try to reuse kate instance with this pid"), 0 },
+    { "e", 0, 0 },
+    { "encoding <arg>", I18N_NOOP("Set encoding for the file to open"), 0 },
+    { "l", 0, 0 },
+    { "line <arg>", I18N_NOOP("Navigate to this line"), 0 },
+    { "c", 0, 0 },
+    { "column <arg>", I18N_NOOP("Navigate to this column"), 0 },
+    { "initplugin <arg>",	I18N_NOOP("Allow Kate to be initialized by a plugin. You most probably have to specify a file too."),0},
+    { "+[URL]", I18N_NOOP("Document to open"), 0 },
     KCmdLineLastOption
 };
 
@@ -83,29 +91,87 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
 
   aboutData.setTranslator(I18N_NOOP("_: NAME OF TRANSLATORS\nYour names"), I18N_NOOP("_: EMAIL OF TRANSLATORS\nYour emails"));
 
+  // command line args init and co
   KCmdLineArgs::init (argc, argv, &aboutData);
   KCmdLineArgs::addCmdLineOptions (options);
   KateApp::addCmdLineOptions ();
+
+  // get our command line args ;)
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 
-  bool newProcess = false;
-  bool oldState = false;
-
-  // spawn new proccess if session given
-  if (args->isSet ("n") || args->isSet ("start-session"))
-    newProcess = true;
-
-  if (newProcess)
+  // now, first try to contact running kate instance if needed
+  if (args->isSet("use"))
   {
-    KInstance instance (&aboutData);
+    DCOPClient client;
+    client.attach ();
 
-    KConfig *config = instance.config();
-    config->setGroup("KDE");
-    oldState = config->readBoolEntry("MultipleInstances",false);
-    config->writeEntry("MultipleInstances",true);
-    config->sync();
+    // get all attached clients ;)
+    QCStringList allClients = client.registeredApplications();
+
+    // search for a kate app client, use the first found
+    QCString kateApp;
+
+    if (args->isSet("pid"))
+    {
+      QCString tryApp = QCString ("kate-") + args->getOption("pid");
+      if (client.isApplicationRegistered(tryApp))
+        kateApp = tryApp;
+    }
+    else
+    {
+      for (unsigned int i=0; i < allClients.count(); ++i)
+      {
+        if (allClients[i] == "kate" || allClients[i].left(5) == "kate-")
+        {
+          kateApp = allClients[i];
+          break;
+        }
+      }
+    }
+
+    // found a matching kate client ;)
+    if (!kateApp.isEmpty())
+    {
+      kdDebug () << "kate app: " << kateApp << endl;
+
+      DCOPRef kRef (kateApp, "KateApplication");
+
+      QString enc = args->isSet("encoding") ? args->getOption("encoding") : "";
+
+      for (int z=0; z<args->count(); z++)
+        kRef.call( "openURL", args->url(z), enc );
+
+      int line = 0;
+      int column = 0;
+      bool nav = false;
+
+      if (args->isSet ("line"))
+      {
+        line = args->getOption ("line").toInt();
+        nav = true;
+      }
+
+      if (args->isSet ("column"))
+      {
+        column = args->getOption ("column").toInt();
+        nav = true;
+      }
+
+      if (nav)
+         kRef.call( "setCursor", line, column );
+
+      return 0;
+    }
   }
 
-  KateApp app (newProcess, oldState);
+  // construct the real kate app object ;)
+  KateApp app;
+
+  // let us handle our command line args and co ;)
+  // we can exit here if session chooser decides
+  if (!app.newInstance (args))
+    return 0;
+
+  // execute ourself ;)
   return app.exec();
 }
