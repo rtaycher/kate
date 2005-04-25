@@ -64,7 +64,6 @@ class KateConfigDialog : public KDialogBase
     Kate::View* v;
     bool dataChanged;
 
-    QCheckBox *cb_singleInstance;
     QCheckBox *cb_fullPath;
     QCheckBox *cb_syncKonsole;
     QCheckBox *cb_modNotifications;

@@ -117,17 +117,6 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("&Behavior"), frGeneral );
   lo->addWidget( bgStartup );
 
-  // How instances should be handled
-  cb_singleInstance = new QCheckBox(bgStartup);
-  cb_singleInstance->setText(i18n("Allow Kate to use more than one UN&IX process"));
-  config->setGroup("KDE");
-  cb_singleInstance->setChecked(config->readBoolEntry("MultipleInstances",false));
-  QWhatsThis::add( cb_singleInstance, i18n(
-        "If this is unchecked, Kate will only use one UNIX process. If you try running it again, the current "
-        "process will get the focus, and open any files you requested to be opened. If it is checked, each time "
-        "you start Kate, a new UNIX process will be started.") );
-  connect( cb_singleInstance, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
-
   // sync the konsole ?
   cb_syncKonsole = new QCheckBox(bgStartup);
   cb_syncKonsole->setText(i18n("Sync &terminal emulator with active document"));
@@ -366,8 +355,6 @@ void KateConfigDialog::slotApply()
   // if data changed apply the kate app stuff
   if( dataChanged )
   {
-    config->setGroup("KDE");
-    config->writeEntry("MultipleInstances",cb_singleInstance->isChecked());
     config->setGroup("General");
 
     config->writeEntry("Restore Window Configuration", cb_restoreVC->isChecked());
