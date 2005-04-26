@@ -24,6 +24,8 @@
 #include "kateapp.h"
 #include "katemainwindow.h"
 
+#include "../interfaces/application.h"
+
 #include <kconfig.h>
 #include <qstringlist.h>
 #include <kmessagebox.h>

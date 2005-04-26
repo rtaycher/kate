@@ -25,6 +25,9 @@
 #include "kateviewmanager.h"
 #include "kateappIface.h"
 #include "katesession.h"
+#include "katemainwindow.h"
+
+#include "../interfaces/application.h"
 
 #include <kcmdlineargs.h>
 #include <dcopclient.h>
@@ -43,22 +46,21 @@
 #include <qdir.h>
 #include <qtextcodec.h>
 
-KateApp::KateApp ()
+KateApp::KateApp (KCmdLineArgs *args)
  : KApplication ()
+ , m_args (args)
 {
-  // session manager up
-  m_sessionManager = new KateSessionManager (this);
-
-  m_mainWindows.setAutoDelete (false);
-
-  // application interface
-  m_application = new Kate::Application (this);
-
-  // application dcop interface
-  m_obj = new KateAppDCOPIface (this);
+  // Don't handle DCOP requests yet
+  dcopClient()->suspend();
 
   // insert right translations for the katepart
   KGlobal::locale()->insertCatalogue("katepart");
+
+  // some global default
+  Kate::Document::setFileChangedDialogsActivated (true);
+
+  // application interface
+  m_application = new Kate::Application (this);
 
   // doc + project man
   m_docManager = new KateDocManager (this);
@@ -66,8 +68,14 @@ KateApp::KateApp ()
   // init all normal plugins
   m_pluginManager = new KatePluginManager (this);
 
+  // session manager up
+  m_sessionManager = new KateSessionManager (this);
+
+  // application dcop interface
+  m_obj = new KateAppDCOPIface (this);
+
    // notify our self on enter the event loop
-  QTimer::singleShot (10, this, SLOT(callOnEventLoopEnter()));
+  QTimer::singleShot (0, this, SLOT(callOnEventLoopEnter()));
 }
 
 KateApp::~KateApp ()
@@ -82,12 +90,36 @@ KateApp::~KateApp ()
   delete m_docManager;
 }
 
+KateApp *KateApp::self ()
+{
+  return (KateApp *) kapp;
+}
+
+Kate::Application *KateApp::application ()
+{
+  return m_application;
+}
+
 void KateApp::callOnEventLoopEnter()
 {
-  emit onEventLoopEnter();
-  disconnect(this,SIGNAL(onEventLoopEnter()),0,0);
-  emit m_application->onEventLoopEnter();
-  disconnect(m_application,SIGNAL(onEventLoopEnter()),0,0);
+  // handle restore different
+  if (isRestored())
+  {
+    restoreKate ();
+  }
+  else
+  {
+    // let us handle our command line args and co ;)
+    // we can exit here if session chooser decides
+    if (!startupKate ())
+    {
+      quit ();
+      return ;
+    }
+  }
+
+  // Ok. We are ready for DCOP requests.
+  dcopClient()->resume();
 }
 
 void KateApp::restoreKate ()
@@ -116,14 +148,14 @@ void KateApp::restoreKate ()
   KStartupInfo::setNewStartupId( activeMainWindow(), startupId());
 }
 
-bool KateApp::startupKate (KCmdLineArgs* args)
+bool KateApp::startupKate ()
 {
   // user specified session to open
-  if (args->isSet ("start-session"))
+  if (m_args->isSet ("start-session"))
   {
-    sessionManager()->activateSession (sessionManager()->giveSession (args->getOption("start-session")), false, false);
+    sessionManager()->activateSession (sessionManager()->giveSession (m_args->getOption("start-session")), false, false);
   }
-  else if (args->count() == 0) // only start session if no files specified
+  else if (m_args->count() == 0) // only start session if no files specified
   {
     // let the user choose session if possible
     if (!sessionManager()->chooseSession ())
@@ -141,26 +173,26 @@ bool KateApp::startupKate (KCmdLineArgs* args)
   // notify about start
   KStartupInfo::setNewStartupId( activeMainWindow(), startupId());
 
-  QTextCodec *codec = args->isSet("encoding") ? QTextCodec::codecForName(args->getOption("encoding")) : 0;
+  QTextCodec *codec = m_args->isSet("encoding") ? QTextCodec::codecForName(m_args->getOption("encoding")) : 0;
 
   Kate::Document::setOpenErrorDialogsActivated (false);
   uint id = 0;
-  for (int z=0; z<args->count(); z++)
+  for (int z=0; z<m_args->count(); z++)
   {
     // this file is no local dir, open it, else warn
-    bool noDir = !args->url(z).isLocalFile() || !QDir (args->url(z).path()).exists();
+    bool noDir = !m_args->url(z).isLocalFile() || !QDir (m_args->url(z).path()).exists();
 
     if (noDir)
     {
       // open a normal file
       if (codec)
-        id = activeMainWindow()->kateViewManager()->openURL( args->url(z), codec->name(), false );
+        id = activeMainWindow()->kateViewManager()->openURL( m_args->url(z), codec->name(), false );
       else
-        id = activeMainWindow()->kateViewManager()->openURL( args->url(z), QString::null, false );
+        id = activeMainWindow()->kateViewManager()->openURL( m_args->url(z), QString::null, false );
     }
     else
       KMessageBox::sorry( activeMainWindow(),
-                          i18n("The file '%1' could not be opened: it is not a normal file, it is a folder.").arg(args->url(z).url()) );
+                          i18n("The file '%1' could not be opened: it is not a normal file, it is a folder.").arg(m_args->url(z).url()) );
   }
 
   if ( id )
@@ -175,15 +207,15 @@ bool KateApp::startupKate (KCmdLineArgs* args)
   int column = 0;
   bool nav = false;
 
-  if (args->isSet ("line"))
+  if (m_args->isSet ("line"))
   {
-    line = args->getOption ("line").toInt();
+    line = m_args->getOption ("line").toInt();
     nav = true;
   }
 
-  if (args->isSet ("column"))
+  if (m_args->isSet ("column"))
   {
-    column = args->getOption ("column").toInt();
+    column = m_args->getOption ("column").toInt();
     nav = true;
   }
 
@@ -208,9 +240,24 @@ void KateApp::shutdownKate (KateMainWindow *win)
 
   // cu main windows
   while (!m_mainWindows.isEmpty())
-    delete m_mainWindows.take (0);
+    delete m_mainWindows[0];
 
   quit ();
+}
+
+KatePluginManager *KateApp::pluginManager()
+{
+  return m_pluginManager;
+}
+
+KateDocManager *KateApp::documentManager ()
+{
+  return m_docManager;
+}
+
+KateSessionManager *KateApp::sessionManager ()
+{
+  return m_sessionManager;
 }
 
 bool KateApp::openURL (const KURL &url, const QString &encoding)
@@ -260,10 +307,10 @@ bool KateApp::setCursor (int line, int column)
 KateMainWindow *KateApp::newMainWindow (KConfig *sconfig, const QString &sgroup)
 {
   KateMainWindow *mainWindow = new KateMainWindow (sconfig, sgroup);
-  m_mainWindows.append (mainWindow);
+  m_mainWindows.push_back (mainWindow);
 
-  if ((mainWindows() > 1) && m_mainWindows.at(m_mainWindows.count()-2)->kateViewManager()->activeView())
-    mainWindow->kateViewManager()->activateView ( m_mainWindows.at(m_mainWindows.count()-2)->kateViewManager()->activeView()->getDoc()->documentNumber() );
+  if ((mainWindows() > 1) && m_mainWindows[m_mainWindows.count()-2]->kateViewManager()->activeView())
+    mainWindow->kateViewManager()->activateView ( m_mainWindows[m_mainWindows.count()-2]->kateViewManager()->activeView()->getDoc()->documentNumber() );
   else if ((mainWindows() > 1) && (m_docManager->documents() > 0))
     mainWindow->kateViewManager()->activateView ( (m_docManager->document(m_docManager->documents()-1))->documentNumber() );
   else if ((mainWindows() > 1) && (m_docManager->documents() < 1))
@@ -284,12 +331,25 @@ KateMainWindow *KateApp::activeMainWindow ()
   if (m_mainWindows.isEmpty())
     return 0;
 
-  int n = m_mainWindows.find ((KateMainWindow *)activeWindow());
+  int n = m_mainWindows.findIndex ((KateMainWindow *)activeWindow());
 
   if (n < 0)
     n=0;
 
-  return m_mainWindows.at(n);
+  return m_mainWindows[n];
+}
+
+uint KateApp::mainWindows () const
+{
+  return m_mainWindows.size();
+}
+
+KateMainWindow *KateApp::mainWindow (uint n)
+{
+  if (n < m_mainWindows.size())
+    return m_mainWindows[n];
+
+  return 0;
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

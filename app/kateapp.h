@@ -21,20 +21,17 @@
 #define __kate_app_h__
 
 #include "katemain.h"
-#include "../interfaces/application.h"
-#include "../interfaces/mainwindow.h"
-#include "../interfaces/documentmanager.h"
-#include "../interfaces/viewmanager.h"
-#include "../interfaces/plugin.h"
-#include <qptrlist.h>
-
-#include "katemainwindow.h"
-#include "katedocmanager.h"
-#include "katepluginmanager.h"
 
 #include <kapplication.h>
 
+#include <qvaluelist.h>
+
 class KateSessionManager;
+class KateAppDCOPIface;
+
+namespace Kate {
+  class Application;
+}
 
 class KCmdLineArgs;
 
@@ -52,8 +49,9 @@ class KDE_EXPORT KateApp : public KApplication
   public:
     /**
      * application constructor
+     * @param args parsed command line args
      */
-    KateApp ();
+    KateApp (KCmdLineArgs *args);
 
     /**
      * application destructor
@@ -64,16 +62,17 @@ class KDE_EXPORT KateApp : public KApplication
      * static accessor to avoid casting ;)
      * @return app instance
      */
-    static KateApp *self () { return (KateApp *) kapp; }
+    static KateApp *self ();
 
     /**
      * accessor to the Kate::Application plugin interface
      * @return application plugin interface
      */
-    Kate::Application *application () { return m_application; };
+    Kate::Application *application ();
 
   /**
-   * event loop stuff
+   * event loop stuff, make sure real kate init happens after
+   * event loop has taken off ;)
    */
   private slots:
     /**
@@ -81,12 +80,6 @@ class KDE_EXPORT KateApp : public KApplication
      * get start of event processing
      */
     void callOnEventLoopEnter();
-
-  signals:
-    /**
-     * emited as soon as kate's event loop has started
-     */
-    void onEventLoopEnter();
 
   /**
    * restore/start/shutdown
@@ -98,11 +91,10 @@ class KDE_EXPORT KateApp : public KApplication
     void restoreKate ();
 
     /**
-     * try to start kate with given args
-     * @param args command line args
+     * try to start kate
      * @return success, if false, kate should exit
      */
-    bool startupKate (KCmdLineArgs *args);
+    bool startupKate ();
 
     /**
      * shutdown kate application
@@ -118,19 +110,19 @@ class KDE_EXPORT KateApp : public KApplication
      * accessor to plugin manager
      * @return plugin manager instance
      */
-    KatePluginManager *pluginManager() { return m_pluginManager; }
+    KatePluginManager *pluginManager();
 
     /**
      * accessor to document manager
      * @return document manager instance
      */
-    KateDocManager *documentManager () { return m_docManager; }
+    KateDocManager *documentManager ();
 
     /**
      * accessor to session manager
      * @return session manager instance
      */
-    KateSessionManager *sessionManager () { return m_sessionManager; }
+    KateSessionManager *sessionManager ();
 
   /**
    * window management
@@ -161,14 +153,14 @@ class KDE_EXPORT KateApp : public KApplication
      * give back number of existing main windows
      * @return number of main windows
      */
-    uint mainWindows () { return m_mainWindows.count(); };
+    uint mainWindows () const;
 
     /**
      * give back the window you want
      * @param n window index
      * @return requested main window
      */
-    KateMainWindow *mainWindow (uint n) { return m_mainWindows.at(n); }
+    KateMainWindow *mainWindow (uint n);
 
   /**
    * some stuff for the dcop API
@@ -192,12 +184,40 @@ class KDE_EXPORT KateApp : public KApplication
     bool setCursor (int line, int column);
 
   private:
+    /**
+     * kate's command line args
+     */
+    KCmdLineArgs *m_args;
+
+    /**
+     * plugin interface
+     */
     Kate::Application *m_application;
+
+    /**
+     * document manager
+     */
     KateDocManager *m_docManager;
+
+    /**
+     * plugin manager
+     */
     KatePluginManager *m_pluginManager;
+
+    /**
+     * session manager
+     */
     KateSessionManager *m_sessionManager;
-    QPtrList<KateMainWindow> m_mainWindows;
-    class KateAppDCOPIface *m_obj;
+
+    /**
+     * known main windows
+     */
+    QValueList<KateMainWindow*> m_mainWindows;
+
+    /**
+     * dcop interface
+     */
+    KateAppDCOPIface *m_obj;
 };
 
 #endif

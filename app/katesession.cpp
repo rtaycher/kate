@@ -21,6 +21,7 @@
 
 #include "kateapp.h"
 #include "katemainwindow.h"
+#include "katedocmanager.h"
 
 #include <kstandarddirs.h>
 #include <klocale.h>

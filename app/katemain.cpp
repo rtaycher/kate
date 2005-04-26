@@ -50,8 +50,6 @@ static KCmdLineOptions options[] =
 
 extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
 {
-  Kate::Document::setFileChangedDialogsActivated (true);
-
   KAboutData aboutData ("kate", I18N_NOOP("Kate"), KATE_VERSION,
                         I18N_NOOP( "Kate - Advanced Text Editor" ), KAboutData::License_LGPL_V2,
                         I18N_NOOP( "(c) 2000-2004 The Kate Authors" ), 0, "http://kate.kde.org");
@@ -167,26 +165,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
   }
 
   // construct the real kate app object ;)
-  KateApp app;
-
-  // Don't handle DCOP requests yet
-  app.dcopClient()->suspend();
-
-  // handle restore different
-  if (app.isRestored())
-  {
-    app.restoreKate ();
-  }
-  else
-  {
-    // let us handle our command line args and co ;)
-    // we can exit here if session chooser decides
-    if (!app.startupKate (args))
-      return 0;
-  }
-
-  // Ok. We are ready for DCOP requests.
-  app.dcopClient()->resume();
+  KateApp app (args);
 
   // execute ourself ;)
   return app.exec();

@@ -53,15 +53,7 @@ KateConsole::~KateConsole ()
 
 void KateConsole::loadConsoleIfNeeded()
 {
-//   kdDebug(13001)<<"================================ loadConsoleIfNeeded()"<<endl;
-
   if (part) return;
-
-  if (!kapp->loopLevel())
-  {
-    connect(kapp,SIGNAL(onEventLoopEnter()),this,SLOT(loadConsoleIfNeeded()));
-    return;
-  }
 
   if (!topLevelWidget() || !parentWidget()) return;
   if (!topLevelWidget() || !isVisibleTo(topLevelWidget())) return;

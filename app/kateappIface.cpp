@@ -20,6 +20,8 @@
 
 #include "kateapp.h"
 #include "katesession.h"
+#include "katedocmanager.h"
+#include "katemainwindow.h"
 
 #include <kdebug.h>
 
