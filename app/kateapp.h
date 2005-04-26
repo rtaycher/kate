@@ -17,8 +17,8 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef __kate_app_h__
-#define __kate_app_h__
+#ifndef __KATE_APP_H__
+#define __KATE_APP_H__
 
 #include "katemain.h"
 

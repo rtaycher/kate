@@ -21,6 +21,8 @@
 #ifndef __KATE_CONSOLE_H__
 #define __KATE_CONSOLE_H__
 
+#include "katemain.h"
+
 #include <kurl.h>
 
 #include <qvbox.h>
