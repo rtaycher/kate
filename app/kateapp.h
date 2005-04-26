@@ -50,6 +50,19 @@ class KDE_EXPORT KateApp : public KApplication
 
     Kate::Application *application () { return m_application; };
 
+  private slots:
+    /**
+     * HACK: this slot is connected to a singleshot timer, to
+     * get start of event processing
+     */
+    void callOnEventLoopEnter();
+
+  signals:
+    /**
+     * emited as soon as kate's event loop has started
+     */
+    void onEventLoopEnter();
+
   public:
     /**
      * restore a old kate session
@@ -79,7 +92,6 @@ class KDE_EXPORT KateApp : public KApplication
 
     Kate::DocumentManager *documentManager () { return m_docManager->documentManager(); };
     Kate::PluginManager *pluginManager () { return m_pluginManager->pluginManager(); };
-    Kate::InitPluginManager *initPluginManager () { return m_initPluginManager; };
     Kate::MainWindow *activeMainWindow ();
     KateMainWindow *activeKateMainWindow ();
 
@@ -88,33 +100,16 @@ class KDE_EXPORT KateApp : public KApplication
 
     KateMainWindow *kateMainWindow (uint n) { return m_mainWindows.at(n); }
 
-    virtual void performInit(const QString &, const KURL &);
-    virtual Kate::InitPlugin *initPlugin() const;
-    virtual KURL initScript() const;
-
     bool openURL (const KURL &url, const QString &encoding);
     bool setCursor (int line, int column);
 
-  signals:
-    void onEventLoopEnter();
-
   private:
     Kate::Application *m_application;
-    Kate::InitPluginManager *m_initPluginManager;
     KateDocManager *m_docManager;
     KatePluginManager *m_pluginManager;
     KateSessionManager *m_sessionManager;
     QPtrList<KateMainWindow> m_mainWindows;
-    Kate::InitPlugin *m_initPlugin;
-    int m_doNotInitialize;
-    KURL m_initURL;
-    QString m_initLib;
-    QString m_oldInitLib;
     class KateAppDCOPIface *m_obj;
-
-  protected slots:
-    void performInit();
-    void callOnEventLoopEnter();
 };
 
 #endif

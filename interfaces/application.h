@@ -59,8 +59,6 @@ class KDE_EXPORT Application : public QObject
 
     Kate::PluginManager *pluginManager ();
 
-    Kate::InitPluginManager *initPluginManager ();
-
     Kate::MainWindow *activeMainWindow ();
 
     uint mainWindows ();

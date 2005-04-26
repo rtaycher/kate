@@ -45,24 +45,14 @@
 
 KateApp::KateApp ()
  : KApplication ()
- , m_initPlugin (0)
- , m_doNotInitialize (0)
 {
   // session manager up
   m_sessionManager = new KateSessionManager (this);
-
-  KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
-
-  // Don't handle DCOP requests yet
-  kapp->dcopClient()->suspend();
 
   m_mainWindows.setAutoDelete (false);
 
   // application interface
   m_application = new Kate::Application (this);
-
-  // init plugin manager
-  m_initPluginManager = new Kate::InitPluginManager (this);
 
   // application dcop interface
   m_obj = new KateAppDCOPIface (this);
@@ -76,26 +66,8 @@ KateApp::KateApp ()
   // init all normal plugins
   m_pluginManager = new KatePluginManager (this);
 
-  if (args->isSet("initplugin"))
-  {
-    QString pluginName=args->getOption("initplugin");
-
-    m_initURL=args->url(0);
-
-    m_initPlugin= static_cast<Kate::InitPlugin*>(Kate::createPlugin (QFile::encodeName(pluginName), (Kate::Application *)kapp)->qt_cast("Kate::InitPlugin"));
-
-    m_initPlugin->activate(args->url(0));
-
-    m_doNotInitialize=m_initPlugin->actionsKateShouldNotPerformOnRealStartup();
-
-//      kdDebug(13001)<<"********************loading init plugin in app constructor"<<endl;
-  }
-
-  // Ok. We are ready for DCOP requests.
-  kapp->dcopClient()->resume();
-
-  // notify our self on enter the event loop
-  QTimer::singleShot(10,this,SLOT(callOnEventLoopEnter()));
+   // notify our self on enter the event loop
+  QTimer::singleShot (10, this, SLOT(callOnEventLoopEnter()));
 }
 
 KateApp::~KateApp ()
@@ -116,46 +88,7 @@ void KateApp::callOnEventLoopEnter()
   disconnect(this,SIGNAL(onEventLoopEnter()),0,0);
   emit m_application->onEventLoopEnter();
   disconnect(m_application,SIGNAL(onEventLoopEnter()),0,0);
-
-//   kdDebug(13001)<<"callOnEventLoopEnter(): "<<kapp->loopLevel()<<"*****************************"<<endl;
 }
-
-void KateApp::performInit(const QString &libname, const KURL &url)
-{
-  if (m_initPlugin)
-    m_oldInitLib=m_initLib;
-  else
-    m_oldInitLib=QString::null;
-
-  m_initURL=url;
-  m_initLib=libname;
-
-  QTimer::singleShot(0,this,SLOT(performInit()));
-}
-
-void KateApp::performInit()
-{
-  if (( m_oldInitLib.isNull()) || (m_oldInitLib!=m_initLib))
-  {
-    delete m_initPlugin;
-    m_initPlugin=0;
-
-    if (!m_oldInitLib.isNull())
-      KLibLoader::self()->unloadLibrary(m_oldInitLib.latin1());
-
-    m_initPlugin = static_cast<Kate::InitPlugin*>(Kate::createPlugin (QFile::encodeName(m_initLib), (Kate::Application *)kapp)->qt_cast("Kate::InitPlugin"));
-  }
-
-  m_initPlugin->activate(m_initURL);
-  m_initPlugin->initKate();
-}
-
-Kate::InitPlugin *KateApp::initPlugin() const
-{
-  return m_initPlugin;
-}
-
-KURL KateApp::initScript() const {return m_initURL;}
 
 void KateApp::restoreKate ()
 {
@@ -208,65 +141,54 @@ bool KateApp::startupKate (KCmdLineArgs* args)
   // notify about start
   KStartupInfo::setNewStartupId( activeKateMainWindow(), kapp->startupId());
 
-  if (m_initPlugin)
-  {
-    m_initPlugin->initKate();
-  }
-  else if (args->isSet("initplugin"))
-  {
-    performInit(args->getOption("initplugin"),args->url(0));
-  }
-  else
-  {
-    QTextCodec *codec = args->isSet("encoding") ? QTextCodec::codecForName(args->getOption("encoding")) : 0;
+  QTextCodec *codec = args->isSet("encoding") ? QTextCodec::codecForName(args->getOption("encoding")) : 0;
 
-    Kate::Document::setOpenErrorDialogsActivated (false);
-    uint id = 0;
-    for (int z=0; z<args->count(); z++)
+  Kate::Document::setOpenErrorDialogsActivated (false);
+  uint id = 0;
+  for (int z=0; z<args->count(); z++)
+  {
+    // this file is no local dir, open it, else warn
+    bool noDir = !args->url(z).isLocalFile() || !QDir (args->url(z).path()).exists();
+
+    if (noDir)
     {
-      // this file is no local dir, open it, else warn
-      bool noDir = !args->url(z).isLocalFile() || !QDir (args->url(z).path()).exists();
-
-      if (noDir)
-      {
-        // open a normal file
-        if (codec)
-          id = activeKateMainWindow()->kateViewManager()->openURL( args->url(z), codec->name(), false );
-        else
-          id = activeKateMainWindow()->kateViewManager()->openURL( args->url(z), QString::null, false );
-      }
+      // open a normal file
+      if (codec)
+        id = activeKateMainWindow()->kateViewManager()->openURL( args->url(z), codec->name(), false );
       else
-        KMessageBox::sorry( activeKateMainWindow(),
-                            i18n("The file '%1' could not be opened: it is not a normal file, it is a folder.").arg(args->url(z).url()) );
+        id = activeKateMainWindow()->kateViewManager()->openURL( args->url(z), QString::null, false );
     }
-
-    if ( id )
-      activeKateMainWindow()->kateViewManager()->activateView( id );
-
-    Kate::Document::setOpenErrorDialogsActivated (true);
-
-    if ( activeKateMainWindow()->kateViewManager()->viewCount () == 0 )
-      activeKateMainWindow()->kateViewManager()->activateView(m_docManager->firstDocument()->documentNumber());
-
-    int line = 0;
-    int column = 0;
-    bool nav = false;
-
-    if (args->isSet ("line"))
-    {
-      line = args->getOption ("line").toInt();
-      nav = true;
-    }
-
-    if (args->isSet ("column"))
-    {
-      column = args->getOption ("column").toInt();
-      nav = true;
-    }
-
-    if (nav)
-      activeKateMainWindow()->kateViewManager()->activeView ()->setCursorPosition (line, column);
+    else
+      KMessageBox::sorry( activeKateMainWindow(),
+                          i18n("The file '%1' could not be opened: it is not a normal file, it is a folder.").arg(args->url(z).url()) );
   }
+
+  if ( id )
+    activeKateMainWindow()->kateViewManager()->activateView( id );
+
+  Kate::Document::setOpenErrorDialogsActivated (true);
+
+  if ( activeKateMainWindow()->kateViewManager()->viewCount () == 0 )
+    activeKateMainWindow()->kateViewManager()->activateView(m_docManager->firstDocument()->documentNumber());
+
+  int line = 0;
+  int column = 0;
+  bool nav = false;
+
+  if (args->isSet ("line"))
+  {
+    line = args->getOption ("line").toInt();
+    nav = true;
+  }
+
+  if (args->isSet ("column"))
+  {
+    column = args->getOption ("column").toInt();
+    nav = true;
+  }
+
+  if (nav)
+    activeKateMainWindow()->kateViewManager()->activeView ()->setCursorPosition (line, column);
 
   // show the nice tips
   KTipDialog::showTip(activeKateMainWindow());

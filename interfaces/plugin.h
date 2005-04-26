@@ -52,54 +52,6 @@ class KDE_EXPORT Plugin : public QObject
     unsigned int myPluginNumber;
 };
 
-class KDE_EXPORT InitPlugin : public Plugin
-{
-  friend class PrivateInitPlugin;
-
-  Q_OBJECT
-
-  public:
-
-    /**
-     * Please never instanciate this class yourself from a plugin. Use the Applications performInit(pluginname,configscript) method instead
-     * You must neither  assume that theol init  object still exist after control returned to the main event loop after a call to performInit nor that the init library is still loaded
-     */
-    InitPlugin(Application *application=0, const char *name = 0);
-    virtual ~InitPlugin();
-
-    unsigned int initPluginNumber () const;
-
-    /* This is called whenever a new config script should be opened */
-    virtual void activate( const KURL &configScript=KURL());
-
-    /**
-     * I don't create an enum, because I want this to be freely extensible
-     * Please return the or'ed values from the list, you don't need initialized by kate.
-     * That speeds up appliaction startup. Be aware though, that you have to unload plugins
-     * or clear view/document lists yourself anyway. This is needed, because There could be
-     * a reinitialisation during the application runtime. (eg if another config script is opened)
-     *
-     * 0x1: restoreDocuments
-     * 0x2: restoreViews;
-     * 0x4: loadPlugins
-     */
-    virtual int actionsKateShouldNotPerformOnRealStartup();
-
-    /**
-     *This should initiate the real kate initialisation. Please always return "0". The return value
-     *is for later extenstion
-     *
-     */
-    virtual int initKate();
-
-    const KURL configScript() const;
-
-  private:
-    class PrivateInitPlugin *d;
-    static unsigned int globalInitPluginNumber;
-    unsigned int myInitPluginNumber;
-};
-
 Plugin *createPlugin ( const char* libname, Application *application = 0, const char *name = 0,const QStringList &args = QStringList() );
 
 /*

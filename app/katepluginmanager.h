@@ -47,14 +47,14 @@ class KatePluginManager : public QObject
   public:
     KatePluginManager(QObject *parent);
     ~KatePluginManager();
-    
+
     static KatePluginManager *self();
 
     Kate::PluginManager *pluginManager () const { return m_pluginManager; };
 
     void loadAllEnabledPlugins ();
     void unloadAllPlugins ();
-    
+
     void enableAllPluginsGUI (KateMainWindow *win);
     void disableAllPluginsGUI (KateMainWindow *win);
 
@@ -63,10 +63,10 @@ class KatePluginManager : public QObject
 
     void loadPlugin (KatePluginInfo *item);
     void unloadPlugin (KatePluginInfo *item);
-    
+
     void enablePluginGUI (KatePluginInfo *item, KateMainWindow *win);
     void enablePluginGUI (KatePluginInfo *item);
-    
+
     void disablePluginGUI (KatePluginInfo *item, KateMainWindow *win);
     void disablePluginGUI (KatePluginInfo *item);
 
@@ -74,7 +74,7 @@ class KatePluginManager : public QObject
 
     virtual Kate::Plugin *plugin(const QString &name);
     virtual bool pluginAvailable(const QString &name);
-    virtual class Kate::Plugin *loadPlugin(const QString &name,bool permanent=true);
+    virtual Kate::Plugin *loadPlugin(const QString &name,bool permanent=true);
     virtual void unloadPlugin(const QString &name,bool permanent=true);
 
   private:

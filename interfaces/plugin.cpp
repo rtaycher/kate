@@ -38,20 +38,6 @@ namespace Kate
     }
   };
 
-  class PrivateInitPlugin
-  {
-  public:
-    PrivateInitPlugin ()
-    {
-    }
-
-    ~PrivateInitPlugin ()
-    {
-    }
-
-    KURL m_configScript;
-  };
-
   class PrivatePluginViewInterface
   {
   public:
@@ -66,7 +52,6 @@ namespace Kate
   };
 
 unsigned int Plugin::globalPluginNumber = 0;
-unsigned int InitPlugin::globalInitPluginNumber = 0;
 unsigned int PluginViewInterface::globalPluginViewInterfaceNumber = 0;
 
 Plugin::Plugin( Application *application, const char *name ) : QObject (application, name )
@@ -87,45 +72,6 @@ unsigned int Plugin::pluginNumber () const
 Application *Plugin::application () const
 {
   return Kate::application();
-}
-
-InitPlugin :: InitPlugin(Application *application, const char *name):Plugin(application,name)
-{
-  globalInitPluginNumber++;
-  myInitPluginNumber = globalInitPluginNumber;
-
-  d = new PrivateInitPlugin ();
-  d->m_configScript = KURL();
-}
-
-InitPlugin::~InitPlugin()
-{
-  delete d;
-}
-
-unsigned int InitPlugin::initPluginNumber () const
-{
-  return myInitPluginNumber;
-}
-
-void InitPlugin::activate(const KURL &initScript)
-{
-  d->m_configScript=initScript;
-}
-
-int InitPlugin::actionsKateShouldNotPerformOnRealStartup()
-{
-  return 0;
-}
-
-const KURL InitPlugin::configScript() const
-{
-  return d->m_configScript;
-}
-
-int InitPlugin::initKate()
-{
-return 0;
 }
 
 PluginViewInterface::PluginViewInterface()

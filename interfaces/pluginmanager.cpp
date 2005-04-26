@@ -74,45 +74,5 @@ void PluginManager::unloadPlugin(const QString &name,bool permanent)
   d->pluginMan->unloadPlugin (name, permanent);
 }
 
-class PrivateInitPluginManager
-  {
-  public:
-    PrivateInitPluginManager ()
-    {
-    }
-
-    ~PrivateInitPluginManager ()
-    {
-    }
-
-    KateApp *initPluginMan;
-  };
-
-InitPluginManager::InitPluginManager (void *initPluginManager) : QObject ((KateApp*) initPluginManager)
-{
-  d = new PrivateInitPluginManager ();
-  d->initPluginMan = (KateApp*) initPluginManager;
-}
-
-InitPluginManager::~InitPluginManager ()
-{
-  delete d;
-}
-
-void InitPluginManager::performInit(const QString &libname, const KURL &initScript)
-{
-  d->initPluginMan->performInit (libname, initScript);
-}
-
-InitPlugin *InitPluginManager::initPlugin() const
-{
-  return d->initPluginMan->initPlugin();
-}
-
-KURL InitPluginManager::initScript() const
-{
-  return d->initPluginMan->initScript();
-}
-
 }
 

@@ -170,6 +170,9 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
   // construct the real kate app object ;)
   KateApp app;
 
+  // Don't handle DCOP requests yet
+  app.dcopClient()->suspend();
+
   // handle restore different
   if (app.isRestored())
   {
@@ -182,6 +185,9 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
     if (!app.startupKate (args))
       return 0;
   }
+
+  // Ok. We are ready for DCOP requests.
+  app.dcopClient()->resume();
 
   // execute ourself ;)
   return app.exec();

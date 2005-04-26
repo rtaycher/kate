@@ -31,8 +31,8 @@ class KDE_EXPORT PluginManager : public QObject
 {
   friend class PrivatePluginManager;
 
-  Q_OBJECT   
-  
+  Q_OBJECT
+
   public:
     PluginManager ( void *pluginManager  );
     virtual ~PluginManager ();
@@ -42,47 +42,27 @@ class KDE_EXPORT PluginManager : public QObject
     class Plugin *plugin(const QString &name);
 
     /** return true, if plugin is known to kate (either loaded or not loaded)
-     * 
+     *
      * This method is not used yet
      */
     bool pluginAvailable(const QString &name);
 
     /** tries loading the specified plugin and returns a pointer to the new plugin or 0
      *  if permanent is true (default value) the plugin will be loaded at the next kate startup
-     * 
+     *
      * This method is not used yet
      */
     class Plugin *loadPlugin(const QString &name,bool permanent=true);
-	
+
     /** unload the specified plugin. If the value permanent is true (default value), the plugin will not be
      * loaded on kate's next startup. Even if it had been loaded with permanent=true.
-     * 
+     *
      * This method is not used yet
      */
     void unloadPlugin(const QString &name,bool permanent=true);
-   
+
   private:
     class PrivatePluginManager *d;
-};
-
-class KDE_EXPORT InitPluginManager : public QObject
-{
-  friend class PrivateInitPluginManager;
-
-  Q_OBJECT   
-  
-  public:
-    InitPluginManager ( void *initPluginManager );
-    virtual ~InitPluginManager ();
-    
-  public:
-    void performInit(const QString &libname, const KURL &initScript);
-    
-    class InitPlugin *initPlugin() const;
-    KURL initScript() const;
-    
-  private:
-    class PrivateInitPluginManager *d;
 };
 
 }

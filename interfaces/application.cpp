@@ -66,11 +66,6 @@ PluginManager *Application::pluginManager ()
   return d->app->pluginManager ();
 }
 
-InitPluginManager *Application::initPluginManager ()
-{
-  return d->app->initPluginManager ();
-}
-
 MainWindow *Application::activeMainWindow ()
 {
   return d->app->activeMainWindow ();
