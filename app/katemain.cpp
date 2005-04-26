@@ -170,10 +170,18 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
   // construct the real kate app object ;)
   KateApp app;
 
-  // let us handle our command line args and co ;)
-  // we can exit here if session chooser decides
-  if (!app.newInstance (args))
-    return 0;
+  // handle restore different
+  if (app.isRestored())
+  {
+    app.restoreKate ();
+  }
+  else
+  {
+    // let us handle our command line args and co ;)
+    // we can exit here if session chooser decides
+    if (!app.startupKate (args))
+      return 0;
+  }
 
   // execute ourself ;)
   return app.exec();

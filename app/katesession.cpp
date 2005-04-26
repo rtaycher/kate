@@ -286,7 +286,7 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
         {
           if (i >= ((KateApp *)kapp)->mainWindows())
           {
-            ((KateApp *)kapp)->newMainWindow(true, sc, QString ("MainWindow%1").arg(i));
+            ((KateApp *)kapp)->newMainWindow(sc, QString ("MainWindow%1").arg(i));
           }
           else
           {

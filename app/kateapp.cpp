@@ -45,7 +45,6 @@
 
 KateApp::KateApp ()
  : KApplication ()
- , m_firstStart (true)
  , m_initPlugin (0)
  , m_doNotInitialize (0)
 {
@@ -53,12 +52,6 @@ KateApp::KateApp ()
   m_sessionManager = new KateSessionManager (this);
 
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
-
-  // we need to call that now, don't ask me, in the first newInstance run it is wrong !
-  if (isRestored())
-  {
-    m_sessionConfig = sessionConfig ();
-  }
 
   // Don't handle DCOP requests yet
   kapp->dcopClient()->suspend();
@@ -164,49 +157,47 @@ Kate::InitPlugin *KateApp::initPlugin() const
 
 KURL KateApp::initScript() const {return m_initURL;}
 
-int KateApp::newInstance(KCmdLineArgs* args)
+void KateApp::restoreKate ()
 {
-  // this will ensure some stuff is only done on real application start
-  if (m_firstStart)
+  // restore the nice files ;) we need it
+  Kate::Document::setOpenErrorDialogsActivated (false);
+
+  // activate again correct session!!!
+  sessionConfig()->setGroup("General");
+  QString lastSession (sessionConfig()->readEntry ("Last Session", "default.katesession"));
+  kateSessionManager()->activateSession (new KateSession (kateSessionManager(), lastSession, ""), false, false, false);
+
+  m_docManager->restoreDocumentList (sessionConfig());
+
+  Kate::Document::setOpenErrorDialogsActivated (true);
+
+  // restore all windows ;)
+  for (int n=1; KMainWindow::canBeRestored(n); n++)
+    newMainWindow(sessionConfig(), QString ("%1").arg(n));
+
+  // oh, no mainwindow, create one, should not happen, but make sure ;)
+  if (mainWindows() == 0)
+    newMainWindow ();
+
+  // notify about start
+  KStartupInfo::setNewStartupId( activeKateMainWindow(), kapp->startupId());
+}
+
+bool KateApp::startupKate (KCmdLineArgs* args)
+{
+  // user specified session to open
+  if (args->isSet ("start-session"))
   {
-    // we restore our great stuff here now ;) super
-    if ( isRestored() )
+    kateSessionManager()->activateSession (kateSessionManager()->giveSession (args->getOption("start-session")), false, false);
+  }
+  else if (args->count() == 0) // only start session if no files specified
+  {
+    // let the user choose session if possible
+    if (!kateSessionManager()->chooseSession ())
     {
-      // restore the nice files ;) we need it
-      Kate::Document::setOpenErrorDialogsActivated (false);
-
-      // use config given by session manager
-      if (sessionConfig())
-      {
-        // activate again correct session!!!
-        sessionConfig()->setGroup("General");
-        QString lastSession (sessionConfig()->readEntry ("Last Session", "default.katesession"));
-        kateSessionManager()->activateSession (new KateSession (kateSessionManager(), lastSession, ""), false, false, false);
-
-        m_docManager->restoreDocumentList (sessionConfig());
-      }
-
-      Kate::Document::setOpenErrorDialogsActivated (true);
-
-      // restore all windows ;)
-      for (int n=1; KMainWindow::canBeRestored(n); n++)
-        newMainWindow(true, sessionConfig(), QString ("%1").arg(n));
-    }
-    else
-    {
-      // user specified session to open
-      if (args->isSet ("start-session"))
-      {
-        kateSessionManager()->activateSession (kateSessionManager()->giveSession (args->getOption("start-session")), false, false);
-      }
-      else if (args->count() == 0) // only start session if no files specified
-      {
-        // let the user choose session if possible
-        if (!kateSessionManager()->chooseSession ())
-        {
-          return false;
-        }
-      }
+      // we will exit kate now, notify the rest of the world we are done
+      KStartupInfo::appStarted (kapp->startupId());
+      return false;
     }
   }
 
@@ -214,45 +205,10 @@ int KateApp::newInstance(KCmdLineArgs* args)
   if (mainWindows() == 0)
     newMainWindow ();
 
-  // search the right main window
-  // or create one if no window on the current desktop
-  KateMainWindow *win = 0;
+  // notify about start
+  KStartupInfo::setNewStartupId( activeKateMainWindow(), kapp->startupId());
 
-  if (!m_firstStart && args->isSet ("w"))
-  {
-    win = newMainWindow ();
-  }
-  else
-  {
-    if (activeKateMainWindow() && KWin::windowInfo (activeKateMainWindow()->winId()).isOnCurrentDesktop())
-    {
-      win = activeKateMainWindow();
-    }
-    else
-    {
-      for (uint i=0; i < m_mainWindows.count(); i++)
-      {
-        if (KWin::windowInfo (m_mainWindows.at(i)->winId()).isOnCurrentDesktop())
-        {
-          win = m_mainWindows.at(i);
-          break;
-        }
-      }
-    }
-
-    // create window on current desktop
-    if (!win)
-      win = newMainWindow ();
-  }
-
-  // raise the window if not first start
-  if (!m_firstStart)
-  {
-    win->raise();
-    KWin::activateWindow (win->winId());
-  }
-
-  if (m_firstStart && m_initPlugin)
+  if (m_initPlugin)
   {
     m_initPlugin->initKate();
   }
@@ -275,22 +231,22 @@ int KateApp::newInstance(KCmdLineArgs* args)
       {
         // open a normal file
         if (codec)
-          id = m_mainWindows.first()->kateViewManager()->openURL( args->url(z), codec->name(), false );
+          id = activeKateMainWindow()->kateViewManager()->openURL( args->url(z), codec->name(), false );
         else
-          id = m_mainWindows.first()->kateViewManager()->openURL( args->url(z), QString::null, false );
+          id = activeKateMainWindow()->kateViewManager()->openURL( args->url(z), QString::null, false );
       }
       else
-        KMessageBox::sorry( m_mainWindows.first(),
+        KMessageBox::sorry( activeKateMainWindow(),
                             i18n("The file '%1' could not be opened: it is not a normal file, it is a folder.").arg(args->url(z).url()) );
     }
 
     if ( id )
-      m_mainWindows.first()->kateViewManager()->activateView( id );
+      activeKateMainWindow()->kateViewManager()->activateView( id );
 
     Kate::Document::setOpenErrorDialogsActivated (true);
 
-    if ( m_mainWindows.first()->kateViewManager()->viewCount () == 0 )
-      m_mainWindows.first()->kateViewManager()->activateView(m_docManager->firstDocument()->documentNumber());
+    if ( activeKateMainWindow()->kateViewManager()->viewCount () == 0 )
+      activeKateMainWindow()->kateViewManager()->activateView(m_docManager->firstDocument()->documentNumber());
 
     int line = 0;
     int column = 0;
@@ -309,19 +265,11 @@ int KateApp::newInstance(KCmdLineArgs* args)
     }
 
     if (nav)
-      m_mainWindows.first()->kateViewManager()->activeView ()->setCursorPosition (line, column);
+      activeKateMainWindow()->kateViewManager()->activeView ()->setCursorPosition (line, column);
   }
 
-  KStartupInfo::setNewStartupId( m_mainWindows.first(), kapp->startupId());
-
-  if (m_firstStart)
-  {
-    // very important :)
-    m_firstStart = false;
-
-    // show the nice tips
-    KTipDialog::showTip(m_mainWindows.first());
-  }
+  // show the nice tips
+  KTipDialog::showTip(activeKateMainWindow());
 
   return true;
 }
@@ -387,12 +335,7 @@ bool KateApp::setCursor (int line, int column)
   return true;
 }
 
-KateMainWindow *KateApp::newMainWindow ()
-{
-  return newMainWindow (true);
-}
-
-KateMainWindow *KateApp::newMainWindow (bool visible, KConfig *sconfig, const QString &sgroup)
+KateMainWindow *KateApp::newMainWindow (KConfig *sconfig, const QString &sgroup)
 {
   KateMainWindow *mainWindow = new KateMainWindow (sconfig, sgroup);
   m_mainWindows.append (mainWindow);
@@ -404,15 +347,7 @@ KateMainWindow *KateApp::newMainWindow (bool visible, KConfig *sconfig, const QS
   else if ((mainWindows() > 1) && (m_docManager->documents() < 1))
     mainWindow->kateViewManager()->openURL ( KURL() );
 
-  if (visible)
-    mainWindow->show ();
-
-
-  if (!m_firstStart)
-  {
-    mainWindow->raise();
-    KWin::activateWindow (mainWindow->winId());
-  }
+  mainWindow->show ();
 
   return mainWindow;
 }
@@ -420,22 +355,6 @@ KateMainWindow *KateApp::newMainWindow (bool visible, KConfig *sconfig, const QS
 void KateApp::removeMainWindow (KateMainWindow *mainWindow)
 {
   m_mainWindows.remove (mainWindow);
-}
-
-void KateApp::openURL (const QString &name)
-{
-  int n = m_mainWindows.find ((KateMainWindow *)activeWindow());
-
-  if (n < 0)
-    n=0;
-
-  m_mainWindows.at(n)->kateViewManager()->openURL (KURL(name));
-
-  if ( ! m_firstStart )
-  {
-    m_mainWindows.at(n)->raise();
-    KWin::activateWindow (m_mainWindows.at(n)->winId());
-  }
 }
 
 KateMainWindow *KateApp::activeKateMainWindow ()

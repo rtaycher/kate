@@ -51,16 +51,29 @@ class KDE_EXPORT KateApp : public KApplication
     Kate::Application *application () { return m_application; };
 
   public:
-    int newInstance(KCmdLineArgs *args);
+    /**
+     * restore a old kate session
+     */
+    void restoreKate ();
 
+    /**
+     * try to start kate with given args
+     * @param args command line args
+     * @return success, if false, kate should exit
+     */
+    bool startupKate (KCmdLineArgs *args);
+
+    /**
+     * shutdown kate application
+     * @param win mainwindow which is used for dialogs
+     */
     void shutdownKate (KateMainWindow *win);
 
     KatePluginManager *katePluginManager() { return m_pluginManager; }
     KateDocManager *kateDocumentManager () { return m_docManager; }
     KateSessionManager *kateSessionManager () { return m_sessionManager; }
 
-    class KateMainWindow *newMainWindow ();
-    class KateMainWindow *newMainWindow (bool visible, KConfig *sconfig = 0, const QString &sgroup = "");
+    KateMainWindow *newMainWindow (KConfig *sconfig = 0, const QString &sgroup = "");
 
     void removeMainWindow (KateMainWindow *mainWindow);
 
@@ -74,8 +87,6 @@ class KDE_EXPORT KateApp : public KApplication
     Kate::MainWindow *mainWindow (uint n) { if (m_mainWindows.at(n)) return m_mainWindows.at(n)->mainWindow(); else return 0; }
 
     KateMainWindow *kateMainWindow (uint n) { return m_mainWindows.at(n); }
-
-    void openURL (const QString &name=0L);
 
     virtual void performInit(const QString &, const KURL &);
     virtual Kate::InitPlugin *initPlugin() const;
@@ -93,15 +104,13 @@ class KDE_EXPORT KateApp : public KApplication
     KateDocManager *m_docManager;
     KatePluginManager *m_pluginManager;
     KateSessionManager *m_sessionManager;
-    QPtrList<class KateMainWindow> m_mainWindows;
-    bool m_firstStart;
+    QPtrList<KateMainWindow> m_mainWindows;
     Kate::InitPlugin *m_initPlugin;
     int m_doNotInitialize;
     KURL m_initURL;
     QString m_initLib;
     QString m_oldInitLib;
     class KateAppDCOPIface *m_obj;
-    KConfig *m_sessionConfig;
 
   protected slots:
     void performInit();
