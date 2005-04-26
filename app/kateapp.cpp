@@ -75,7 +75,8 @@ KateApp::KateApp (KCmdLineArgs *args)
   m_obj = new KateAppDCOPIface (this);
 
    // notify our self on enter the event loop
-  QTimer::singleShot (0, this, SLOT(callOnEventLoopEnter()));
+  //QTimer::singleShot (0, this, SLOT(callOnEventLoopEnter()));
+  callOnEventLoopEnter();
 }
 
 KateApp::~KateApp ()
