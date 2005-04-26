@@ -121,10 +121,10 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
       // first try to reuse size known from current or last created main window ;=)
       if (KateApp::self()->mainWindows () > 0)
       {
-        KateMainWindow *win = KateApp::self()->activeKateMainWindow ();
+        KateMainWindow *win = KateApp::self()->activeMainWindow ();
 
         if (!win)
-          win = KateApp::self()->kateMainWindow (KateApp::self()->mainWindows ()-1);
+          win = KateApp::self()->mainWindow (KateApp::self()->mainWindows ()-1);
 
         size = win->size();
       }
@@ -132,8 +132,8 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
       {
         // first try global app config
         kapp->config()->setGroup ("MainWindow");
-        size.setWidth (kapp->config()->readNumEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ));
-        size.setHeight (kapp->config()->readNumEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ));
+        size.setWidth (KateApp::self()->config()->readNumEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ));
+        size.setHeight (KateApp::self()->config()->readNumEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ));
 
         if (size.isEmpty())
           size = QSize (kMin (700, desk.width()), kMin(480, desk.height()));
@@ -163,7 +163,7 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
 
   KatePluginManager::self()->enableAllPluginsGUI (this);
 
-  if ( kapp->authorize("shell_access") )
+  if ( KateApp::self()->authorize("shell_access") )
     Kate::Document::registerCommand(KateExternalToolsCommand::self());
 
   // connect documents menu aboutToshow
@@ -192,13 +192,13 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
 KateMainWindow::~KateMainWindow()
 {
   // first, save our fallback window size ;)
-  kapp->config()->setGroup ("MainWindow");
-  saveWindowSize (kapp->config());
+  KateApp::self()->config()->setGroup ("MainWindow");
+  saveWindowSize (KateApp::self()->config());
 
   // save other options ;=)
   saveOptions();
 
-  ((KateApp *)kapp)->removeMainWindow (this);
+  KateApp::self()->removeMainWindow (this);
 
   KatePluginManager::self()->disableAllPluginsGUI (this);
 
@@ -214,14 +214,14 @@ void KateMainWindow::setupMainWindow ()
 
   KateMDI::ToolView *ft = createToolView("kate_filelist", KMultiTabBar::Left, SmallIcon("kmultiple"), i18n("Documents"));
   filelist = new KateFileList (this, m_viewManager, ft, "filelist");
-  filelist->readConfig(kapp->config(), "Filelist");
+  filelist->readConfig(KateApp::self()->config(), "Filelist");
 
   KateMDI::ToolView *t = createToolView("kate_fileselector", KMultiTabBar::Left, SmallIcon("fileopen"), i18n("Filesystem Browser"));
   fileselector = new KateFileSelector( this, m_viewManager, t, "operator");
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileItem*)),this,SLOT(fileSelected(const KFileItem*)));
 
   // ONLY ALLOW SHELL ACCESS IF ALLOWED ;)
-  if (kapp->authorize("shell_access"))
+  if (KateApp::self()->authorize("shell_access"))
   {
     t = createToolView("kate_greptool", KMultiTabBar::Bottom, SmallIcon("filefind"), i18n("Find in Files") );
     greptool = new GrepTool( t, "greptool" );
@@ -269,7 +269,7 @@ void KateMainWindow::setupActions()
   a=new KAction(i18n("&New Window"), "window_new", 0, this, SLOT(newWindow()), actionCollection(), "view_new_view");
   a->setWhatsThis(i18n("Create a new Kate view (a new window with the same document list)."));
 
-  if ( kapp->authorize("shell_access") )
+  if ( KateApp::self()->authorize("shell_access") )
   {
     externalTools = new KateExternalToolsMenuAction( i18n("External Tools"), actionCollection(), "tools_external", this );
     externalTools->setWhatsThis( i18n("Launch external helper applications") );
@@ -293,7 +293,7 @@ void KateMainWindow::setupActions()
   settingsConfigure->setWhatsThis(i18n("Configure various aspects of this application and the editing component."));
 
   // pipe to terminal action
-  if (kapp->authorize("shell_access"))
+  if (KateApp::self()->authorize("shell_access"))
     new KAction(i18n("&Pipe to Console"), "pipe", 0, console, SLOT(slotPipeToConsole()), actionCollection(), "tools_pipe_to_terminal");
 
   // tip of the day :-)
@@ -361,24 +361,24 @@ bool KateMainWindow::queryClose()
 {
   // session saving, can we close all views ?
   // just test, not close them actually
-  if (kapp->sessionSaving())
+  if (KateApp::self()->sessionSaving())
   {
     return queryClose_internal ();
   }
 
   // normal closing of window
   // allow to close all windows until the last without restrictions
-  if ( ((KateApp *)kapp)->mainWindows () > 1 )
+  if ( KateApp::self()->mainWindows () > 1 )
     return true;
 
   // last one: check if we can close all documents, try run
   // and save docs if we really close down !
   if ( queryClose_internal () )
   {
-    ((KateApp *)kapp)->kateSessionManager()->saveActiveSession(true, true);
+    KateApp::self()->sessionManager()->saveActiveSession(true, true);
 
     // detach the dcopClient
-    ((KUniqueApplication *)kapp)->dcopClient()->detach();
+    KateApp::self()->dcopClient()->detach();
 
     return true;
   }
@@ -388,7 +388,7 @@ bool KateMainWindow::queryClose()
 
 void KateMainWindow::newWindow ()
 {
-  ((KateApp *)kapp)->newMainWindow ();
+  KateApp::self()->newMainWindow ();
 }
 
 void KateMainWindow::slotEditToolbars()
@@ -400,12 +400,12 @@ void KateMainWindow::slotEditToolbars()
 
 void KateMainWindow::slotFileQuit()
 {
-  ((KateApp *)kapp)->shutdownKate (this);
+  KateApp::self()->shutdownKate (this);
 }
 
 void KateMainWindow::readOptions ()
 {
-  KConfig *config = kapp->config ();
+  KConfig *config = KateApp::self()->config ();
 
   config->setGroup("General");
   syncKonsole =  config->readBoolEntry("Sync Konsole", true);
@@ -422,7 +422,7 @@ void KateMainWindow::readOptions ()
 
 void KateMainWindow::saveOptions ()
 {
-  KConfig *config = kapp->config ();
+  KConfig *config = KateApp::self()->config ();
 
   config->setGroup("General");
 
@@ -633,14 +633,14 @@ void KateMainWindow::slotOpenWithMenuAction(int idx)
 
 void KateMainWindow::pluginHelp()
 {
-  kapp->invokeHelp (QString::null, "kate-plugins");
+  KateApp::self()->invokeHelp (QString::null, "kate-plugins");
 }
 
 void KateMainWindow::setupScripts()
 {
   // locate all scripts, local as well as global.
   // The script manager will do the nessecary sanity checking
-  QStringList scripts = KGlobal::dirs()->findAllResources("data", QString(kapp->name())+"/scripts/*.desktop", false, true );
+  QStringList scripts = KGlobal::dirs()->findAllResources("data", QString(KateApp::self()->name())+"/scripts/*.desktop", false, true );
   for (QStringList::Iterator it = scripts.begin(); it != scripts.end(); ++it )
     kscript->addScript( *it );
   QStringList l ( kscript->scripts() );
@@ -718,7 +718,7 @@ void KateMainWindow::slotMail()
   } // check selected docs done
   if ( ! urls.count() )
     return;
-  kapp->invokeMailer( QString::null, // to
+  KateApp::self()->invokeMailer( QString::null, // to
                       QString::null, // cc
                       QString::null, // bcc
                       QString::null, // subject
@@ -860,7 +860,7 @@ void KateMainWindow::saveGlobalProperties( KConfig* sessionConfig )
   KateDocManager::self()->saveDocumentList (sessionConfig);
 
   sessionConfig->setGroup("General");
-  sessionConfig->writeEntry ("Last Session", ((KateApp *)kapp)->kateSessionManager()->activeSession()->sessionFileRelative());
+  sessionConfig->writeEntry ("Last Session", KateApp::self()->sessionManager()->activeSession()->sessionFileRelative());
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

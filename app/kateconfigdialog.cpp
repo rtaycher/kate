@@ -68,9 +68,9 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
                  parent,
                  "configdialog" )
 {
-  KConfig *config = kapp->config();
+  KConfig *config = KateApp::self()->config();
 
-  KWin::setIcons( winId(), kapp->icon(), kapp->miniIcon() );
+  KWin::setIcons( winId(), KateApp::self()->icon(), KateApp::self()->miniIcon() );
 
   actionButton( KDialogBase::Apply)->setEnabled( false );
 
@@ -350,7 +350,7 @@ void KateConfigDialog::slotOk()
 
 void KateConfigDialog::slotApply()
 {
-  KConfig *config = kapp->config();
+  KConfig *config = KateApp::self()->config();
 
   // if data changed apply the kate app stuff
   if( dataChanged )
@@ -393,9 +393,9 @@ void KateConfigDialog::slotApply()
     filelistConfigPage->apply();
 
     configExternalToolsPage->apply();
-    for (uint i=0; i < ((KateApp *)kapp)->mainWindows(); i++)
+    for (uint i=0; i < KateApp::self()->mainWindows(); i++)
     {
-      KateMainWindow *win = ((KateApp *)kapp)->kateMainWindow (i);
+      KateMainWindow *win = KateApp::self()->mainWindow (i);
       win->externalTools->reload();
     }
     KateExternalToolsCommand::self()->reload();
@@ -406,7 +406,7 @@ void KateConfigDialog::slotApply()
     mainWindow->saveOptions ();
 
     // save plugin config !!
-    ((KateApp *)kapp)->katePluginManager()->writeConfig ();
+    KateApp::self()->pluginManager()->writeConfig ();
   }
 
   //

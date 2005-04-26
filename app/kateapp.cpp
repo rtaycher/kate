@@ -98,7 +98,7 @@ void KateApp::restoreKate ()
   // activate again correct session!!!
   sessionConfig()->setGroup("General");
   QString lastSession (sessionConfig()->readEntry ("Last Session", "default.katesession"));
-  kateSessionManager()->activateSession (new KateSession (kateSessionManager(), lastSession, ""), false, false, false);
+  sessionManager()->activateSession (new KateSession (sessionManager(), lastSession, ""), false, false, false);
 
   m_docManager->restoreDocumentList (sessionConfig());
 
@@ -113,7 +113,7 @@ void KateApp::restoreKate ()
     newMainWindow ();
 
   // notify about start
-  KStartupInfo::setNewStartupId( activeKateMainWindow(), kapp->startupId());
+  KStartupInfo::setNewStartupId( activeMainWindow(), startupId());
 }
 
 bool KateApp::startupKate (KCmdLineArgs* args)
@@ -121,15 +121,15 @@ bool KateApp::startupKate (KCmdLineArgs* args)
   // user specified session to open
   if (args->isSet ("start-session"))
   {
-    kateSessionManager()->activateSession (kateSessionManager()->giveSession (args->getOption("start-session")), false, false);
+    sessionManager()->activateSession (sessionManager()->giveSession (args->getOption("start-session")), false, false);
   }
   else if (args->count() == 0) // only start session if no files specified
   {
     // let the user choose session if possible
-    if (!kateSessionManager()->chooseSession ())
+    if (!sessionManager()->chooseSession ())
     {
       // we will exit kate now, notify the rest of the world we are done
-      KStartupInfo::appStarted (kapp->startupId());
+      KStartupInfo::appStarted (startupId());
       return false;
     }
   }
@@ -139,7 +139,7 @@ bool KateApp::startupKate (KCmdLineArgs* args)
     newMainWindow ();
 
   // notify about start
-  KStartupInfo::setNewStartupId( activeKateMainWindow(), kapp->startupId());
+  KStartupInfo::setNewStartupId( activeMainWindow(), startupId());
 
   QTextCodec *codec = args->isSet("encoding") ? QTextCodec::codecForName(args->getOption("encoding")) : 0;
 
@@ -154,22 +154,22 @@ bool KateApp::startupKate (KCmdLineArgs* args)
     {
       // open a normal file
       if (codec)
-        id = activeKateMainWindow()->kateViewManager()->openURL( args->url(z), codec->name(), false );
+        id = activeMainWindow()->kateViewManager()->openURL( args->url(z), codec->name(), false );
       else
-        id = activeKateMainWindow()->kateViewManager()->openURL( args->url(z), QString::null, false );
+        id = activeMainWindow()->kateViewManager()->openURL( args->url(z), QString::null, false );
     }
     else
-      KMessageBox::sorry( activeKateMainWindow(),
+      KMessageBox::sorry( activeMainWindow(),
                           i18n("The file '%1' could not be opened: it is not a normal file, it is a folder.").arg(args->url(z).url()) );
   }
 
   if ( id )
-    activeKateMainWindow()->kateViewManager()->activateView( id );
+    activeMainWindow()->kateViewManager()->activateView( id );
 
   Kate::Document::setOpenErrorDialogsActivated (true);
 
-  if ( activeKateMainWindow()->kateViewManager()->viewCount () == 0 )
-    activeKateMainWindow()->kateViewManager()->activateView(m_docManager->firstDocument()->documentNumber());
+  if ( activeMainWindow()->kateViewManager()->viewCount () == 0 )
+    activeMainWindow()->kateViewManager()->activateView(m_docManager->firstDocument()->documentNumber());
 
   int line = 0;
   int column = 0;
@@ -188,10 +188,10 @@ bool KateApp::startupKate (KCmdLineArgs* args)
   }
 
   if (nav)
-    activeKateMainWindow()->kateViewManager()->activeView ()->setCursorPosition (line, column);
+    activeMainWindow()->kateViewManager()->activeView ()->setCursorPosition (line, column);
 
   // show the nice tips
-  KTipDialog::showTip(activeKateMainWindow());
+  KTipDialog::showTip(activeMainWindow());
 
   return true;
 }
@@ -201,10 +201,10 @@ void KateApp::shutdownKate (KateMainWindow *win)
   if (!win->queryClose_internal())
     return;
 
-  kateSessionManager()->saveActiveSession(true, true);
+  sessionManager()->saveActiveSession(true, true);
 
   // detach the dcopClient
-  kapp->dcopClient()->detach();
+  dcopClient()->detach();
 
   // cu main windows
   while (!m_mainWindows.isEmpty())
@@ -215,7 +215,7 @@ void KateApp::shutdownKate (KateMainWindow *win)
 
 bool KateApp::openURL (const KURL &url, const QString &encoding)
 {
-  KateMainWindow *mainWindow = activeKateMainWindow ();
+  KateMainWindow *mainWindow = activeMainWindow ();
 
   if (!mainWindow)
     return false;
@@ -247,7 +247,7 @@ bool KateApp::setCursor (int line, int column)
 {
   kdDebug () << "SET CURSOR" << endl;
 
-  KateMainWindow *mainWindow = activeKateMainWindow ();
+  KateMainWindow *mainWindow = activeMainWindow ();
 
   if (!mainWindow)
     return false;
@@ -279,7 +279,7 @@ void KateApp::removeMainWindow (KateMainWindow *mainWindow)
   m_mainWindows.remove (mainWindow);
 }
 
-KateMainWindow *KateApp::activeKateMainWindow ()
+KateMainWindow *KateApp::activeMainWindow ()
 {
   if (m_mainWindows.isEmpty())
     return 0;
@@ -290,14 +290,6 @@ KateMainWindow *KateApp::activeKateMainWindow ()
     n=0;
 
   return m_mainWindows.at(n);
-}
-
-Kate::MainWindow *KateApp::activeMainWindow ()
-{
-  if (!activeKateMainWindow())
-    return 0;
-
-  return activeKateMainWindow()->mainWindow();
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

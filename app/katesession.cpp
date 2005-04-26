@@ -204,7 +204,7 @@ KateSessionManager::~KateSessionManager()
 
 KateSessionManager *KateSessionManager::self()
 {
-  return KateApp::self()->kateSessionManager ();
+  return KateApp::self()->sessionManager ();
 }
 
 void KateSessionManager::dirty (const QString &)
@@ -241,9 +241,9 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
   // try to close last session
   if (closeLast)
   {
-    if (((KateApp *)kapp)->activeKateMainWindow())
+    if (KateApp::self()->activeMainWindow())
     {
-      if (!((KateApp *)kapp)->activeKateMainWindow()->queryClose_internal())
+      if (!KateApp::self()->activeMainWindow()->queryClose_internal())
         return;
     }
   }
@@ -269,12 +269,12 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
     KConfig *sc = activeSession()->configRead();
 
     if (sc)
-      ((KateApp *)kapp)->kateDocumentManager()->restoreDocumentList (sc);
+      KateApp::self()->documentManager()->restoreDocumentList (sc);
 
     // window config
     if (sc)
     {
-      KConfig *c = kapp->config();
+      KConfig *c = KateApp::self()->config();
       c->setGroup("General");
 
       if (c->readBoolEntry("Restore Window Configuration", false))
@@ -284,23 +284,23 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
 
         for (unsigned int i=0; i < wCount; ++i)
         {
-          if (i >= ((KateApp *)kapp)->mainWindows())
+          if (i >= KateApp::self()->mainWindows())
           {
-            ((KateApp *)kapp)->newMainWindow(sc, QString ("MainWindow%1").arg(i));
+            KateApp::self()->newMainWindow(sc, QString ("MainWindow%1").arg(i));
           }
           else
           {
             sc->setGroup(QString ("MainWindow%1").arg(i));
-            ((KateApp *)kapp)->kateMainWindow(i)->readProperties (sc);
+            KateApp::self()->mainWindow(i)->readProperties (sc);
           }
         }
 
         if (wCount > 0)
         {
-          while (wCount < ((KateApp *)kapp)->mainWindows())
+          while (wCount < KateApp::self()->mainWindows())
           {
-            KateMainWindow *w = ((KateApp *)kapp)->kateMainWindow(((KateApp *)kapp)->mainWindows()-1);
-            ((KateApp *)kapp)->removeMainWindow (w);
+            KateMainWindow *w = KateApp::self()->mainWindow(KateApp::self()->mainWindows()-1);
+            KateApp::self()->removeMainWindow (w);
             delete w;
           }
         }
@@ -338,7 +338,7 @@ bool KateSessionManager::saveActiveSession (bool tryAsk, bool rememberAsLast)
   if (tryAsk)
   {
     // app config
-    KConfig *c = kapp->config();
+    KConfig *c = KateApp::self()->config();
     c->setGroup("General");
 
     QString sesExit (c->readEntry ("Session Exit", "save"));
@@ -383,22 +383,22 @@ bool KateSessionManager::saveActiveSession (bool tryAsk, bool rememberAsLast)
   KateDocManager::self()->saveDocumentList (sc);
 
   sc->setGroup ("Open MainWindows");
-  sc->writeEntry ("Count", ((KateApp *)kapp)->mainWindows ());
+  sc->writeEntry ("Count", KateApp::self()->mainWindows ());
 
   // save config for all windows around ;)
-  for (unsigned int i=0; i < ((KateApp *)kapp)->mainWindows (); ++i )
+  for (unsigned int i=0; i < KateApp::self()->mainWindows (); ++i )
   {
     sc->setGroup(QString ("MainWindow%1").arg(i));
-    ((KateApp *)kapp)->kateMainWindow(i)->saveProperties (sc);
+    KateApp::self()->mainWindow(i)->saveProperties (sc);
   }
 
   sc->sync();
 
   if (rememberAsLast)
   {
-    KConfig *c = kapp->config();
+    KConfig *c = KateApp::self()->config();
     c->setGroup("General");
-    c->writeEntry ("Last Session", ((KateApp *)kapp)->kateSessionManager()->activeSession()->sessionFileRelative());
+    c->writeEntry ("Last Session", activeSession()->sessionFileRelative());
     c->sync ();
   }
 
@@ -410,7 +410,7 @@ bool KateSessionManager::chooseSession ()
   bool success = true;
 
   // app config
-  KConfig *c = kapp->config();
+  KConfig *c = KateApp::self()->config();
   c->setGroup("General");
 
   // get last used session, default to default session

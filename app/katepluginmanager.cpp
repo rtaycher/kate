@@ -52,7 +52,7 @@ KatePluginManager::~KatePluginManager()
 
 KatePluginManager *KatePluginManager::self()
 {
-  return KateApp::self()->katePluginManager ();
+  return KateApp::self()->pluginManager ();
 }
 
 void KatePluginManager::setupPluginList ()
@@ -80,23 +80,23 @@ void KatePluginManager::setupPluginList ()
 
 void KatePluginManager::loadConfig ()
 {
-  kapp->config()->setGroup("Kate Plugins");
+  KateApp::self()->config()->setGroup("Kate Plugins");
 
   for (uint i=0; i<m_pluginList.count(); i++)
-    m_pluginList.at(i)->load =  kapp->config()->readBoolEntry(m_pluginList.at(i)->service->library(), false) ||
-	kapp->config()->readBoolEntry(m_pluginList.at(i)->service->property("X-Kate-PluginName").toString(),false);
+    m_pluginList.at(i)->load =  KateApp::self()->config()->readBoolEntry(m_pluginList.at(i)->service->library(), false) ||
+	KateApp::self()->config()->readBoolEntry(m_pluginList.at(i)->service->property("X-Kate-PluginName").toString(),false);
 }
 
 void KatePluginManager::writeConfig ()
 {
-  kapp->config()->setGroup("Kate Plugins");
+  KateApp::self()->config()->setGroup("Kate Plugins");
 
   for (uint i=0; i<m_pluginList.count(); i++) {
 	KatePluginInfo *info=m_pluginList.at(i);
 	QString saveName=info->service->property("X-Kate-PluginName").toString();
 	if (saveName.isEmpty())
 		saveName=info->service->library();
-    	kapp->config()->writeEntry(saveName, m_pluginList.at(i)->load);
+    	KateApp::self()->config()->writeEntry(saveName, m_pluginList.at(i)->load);
   }
 }
 
@@ -143,7 +143,7 @@ void KatePluginManager::loadPlugin (KatePluginInfo *item)
   QString pluginName=item->service->property("X-Kate-PluginName").toString();
   if (pluginName.isEmpty())
        pluginName=item->service->library();
-  item->load = (item->plugin = Kate::createPlugin (QFile::encodeName(item->service->library()), Kate::application(),0,pluginName));
+  item->load = (item->plugin = Kate::createPlugin (QFile::encodeName(item->service->library()), Kate::application(), 0, pluginName));
 }
 
 void KatePluginManager::unloadPlugin (KatePluginInfo *item)
@@ -167,9 +167,9 @@ void KatePluginManager::enablePluginGUI (KatePluginInfo *item)
   if (!item->plugin) return;
   if (!Kate::pluginViewInterface(item->plugin)) return;
 
-  for (uint i=0; i< ((KateApp*)parent())->mainWindows(); i++)
+  for (uint i=0; i< KateApp::self()->mainWindows(); i++)
   {
-    Kate::pluginViewInterface(item->plugin)->addView(((KateApp*)parent())->mainWindow(i));
+    Kate::pluginViewInterface(item->plugin)->addView(KateApp::self()->mainWindow(i)->mainWindow());
   }
 }
 
@@ -186,9 +186,9 @@ void KatePluginManager::disablePluginGUI (KatePluginInfo *item)
   if (!item->plugin) return;
   if (!Kate::pluginViewInterface(item->plugin)) return;
 
-  for (uint i=0; i< ((KateApp*)parent())->mainWindows(); i++)
+  for (uint i=0; i< KateApp::self()->mainWindows(); i++)
   {
-    Kate::pluginViewInterface(item->plugin)->removeView(((KateApp*)parent())->mainWindow(i));
+    Kate::pluginViewInterface(item->plugin)->removeView(KateApp::self()->mainWindow(i)->mainWindow());
   }
 }
 

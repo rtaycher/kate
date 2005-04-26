@@ -58,17 +58,20 @@ Application::~Application ()
 
 DocumentManager *Application::documentManager ()
 {
-  return d->app->documentManager ();
+  return d->app->documentManager ()->documentManager ();
 }
 
 PluginManager *Application::pluginManager ()
 {
-  return d->app->pluginManager ();
+  return d->app->pluginManager ()->pluginManager ();
 }
 
 MainWindow *Application::activeMainWindow ()
 {
-  return d->app->activeMainWindow ();
+  if (!d->app->activeMainWindow())
+    return 0;
+
+  return d->app->activeMainWindow()->mainWindow();
 }
 
 uint Application::mainWindows ()
@@ -78,7 +81,10 @@ uint Application::mainWindows ()
 
 MainWindow *Application::mainWindow (uint n)
 {
-  return d->app->mainWindow (n);
+  if (n < mainWindows ())
+    return d->app->mainWindow (n)->mainWindow();
+
+  return 0;
 }
 
 Application *application ()

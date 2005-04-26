@@ -94,7 +94,7 @@ KateDocManager::~KateDocManager ()
 
 KateDocManager *KateDocManager::self ()
 {
-  return KateApp::self()->kateDocumentManager ();
+  return KateApp::self()->documentManager ();
 }
 
 Kate::Document *KateDocManager::createDoc ()
@@ -106,7 +106,7 @@ Kate::Document *KateDocManager::createDoc ()
   m_docInfos.insert (doc, new KateDocumentInfo ());
 
   if (m_docList.count() < 2)
-    ((Kate::Document *)doc)->readConfig(kapp->config());
+    ((Kate::Document *)doc)->readConfig(KateApp::self()->config());
 
   emit documentCreated ((Kate::Document *)doc);
   emit m_documentManager->documentCreated ((Kate::Document *)doc);
@@ -123,7 +123,7 @@ void KateDocManager::deleteDoc (Kate::Document *doc)
     activeId = m_currentDoc->documentNumber ();
 
   if (m_docList.count() < 2)
-    doc->writeConfig(kapp->config());
+    doc->writeConfig(KateApp::self()->config());
 
   m_docInfos.remove (doc);
   m_docDict.remove (id);
@@ -276,9 +276,9 @@ bool KateDocManager::closeDocument(class Kate::Document *doc,bool closeURL)
   QPtrList<Kate::View> closeList;
   uint documentNumber = doc->documentNumber();
 
-  for (uint i=0; i < ((KateApp *)kapp)->mainWindows (); i++ )
+  for (uint i=0; i < KateApp::self()->mainWindows (); i++ )
   {
-     ((KateApp *)kapp)->kateMainWindow(i)->kateViewManager()->closeViews(documentNumber);
+    KateApp::self()->mainWindow(i)->kateViewManager()->closeViews(documentNumber);
   }
 
   deleteDoc (doc);
@@ -306,9 +306,9 @@ bool KateDocManager::closeAllDocuments(bool closeURL)
 
   QPtrList<Kate::Document> docs = m_docList;
 
-  for (uint i=0; i < ((KateApp *)kapp)->mainWindows (); i++ )
+  for (uint i=0; i < KateApp::self()->mainWindows (); i++ )
   {
-    ((KateApp *)kapp)->kateMainWindow(i)->kateViewManager()->setViewActivationBlocked(true);
+    KateApp::self()->mainWindow(i)->kateViewManager()->setViewActivationBlocked(true);
   }
 
   while (!docs.isEmpty() && res)
@@ -317,12 +317,12 @@ bool KateDocManager::closeAllDocuments(bool closeURL)
     else
       docs.remove ((uint)0);
 
-  for (uint i=0; i < ((KateApp *)kapp)->mainWindows (); i++ )
+  for (uint i=0; i < KateApp::self()->mainWindows (); i++ )
   {
-    ((KateApp *)kapp)->kateMainWindow(i)->kateViewManager()->setViewActivationBlocked(false);
+    KateApp::self()->mainWindow(i)->kateViewManager()->setViewActivationBlocked(false);
 
-    for (uint s=0; s < ((KateApp *)kapp)->kateMainWindow(i)->kateViewManager()->containers()->count(); s++)
-      ((KateApp *)kapp)->kateMainWindow(i)->kateViewManager()->containers()->at(s)->activateView (m_docList.at(0)->documentNumber());
+    for (uint s=0; s < KateApp::self()->mainWindow(i)->kateViewManager()->containers()->count(); s++)
+      KateApp::self()->mainWindow(i)->kateViewManager()->containers()->at(s)->activateView (m_docList.at(0)->documentNumber());
   }
 
   return res;
@@ -444,7 +444,7 @@ void KateDocManager::restoreDocumentList (KConfig* config)
         0,
         "openprog");
 
-  pd->setCaption (kapp->makeStdCaption(i18n("Starting up")));
+  pd->setCaption (KateApp::self()->makeStdCaption(i18n("Starting up")));
 
   bool first = true;
   for (unsigned int i=0; i < count; i++)
@@ -464,7 +464,7 @@ void KateDocManager::restoreDocumentList (KConfig* config)
     config->setGroup (grp);
 
     pd->setProgress(pd->progress()+1);
-    kapp->processEvents();
+    KateApp::self()->processEvents();
   }
 
   delete pd;
@@ -564,4 +564,5 @@ bool KateDocManager::computeUrlMD5(const KURL &url, QCString &result)
 
   return true;
 }
+
 // kate: space-indent on; indent-width 2; replace-tabs on;

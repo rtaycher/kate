@@ -30,12 +30,12 @@ KateAppDCOPIface::KateAppDCOPIface (KateApp *app) : DCOPObject ("KateApplication
 
 DCOPRef KateAppDCOPIface::documentManager ()
 {
-  return DCOPRef (m_app->kateDocumentManager()->dcopObject ());
+  return DCOPRef (m_app->documentManager()->dcopObject ());
 }
 
 DCOPRef KateAppDCOPIface::activeMainWindow ()
 {
-  KateMainWindow *win = m_app->activeKateMainWindow();
+  KateMainWindow *win = m_app->activeMainWindow();
 
   if (win)
     return DCOPRef (win->dcopObject ());
@@ -45,7 +45,7 @@ DCOPRef KateAppDCOPIface::activeMainWindow ()
 
 uint KateAppDCOPIface::activeMainWindowNumber ()
 {
-  KateMainWindow *win = m_app->activeKateMainWindow();
+  KateMainWindow *win = m_app->activeMainWindow();
 
   if (win)
     return win->mainWindowNumber ();
@@ -61,7 +61,7 @@ uint KateAppDCOPIface::mainWindows ()
 
 DCOPRef KateAppDCOPIface::mainWindow (uint n)
 {
-  KateMainWindow *win = m_app->kateMainWindow(n);
+  KateMainWindow *win = m_app->mainWindow(n);
 
   if (win)
     return DCOPRef (win->dcopObject ());
@@ -81,7 +81,7 @@ bool KateAppDCOPIface::setCursor (int line, int column)
 
 bool KateAppDCOPIface::activateSession (QString session)
 {
-  m_app->kateSessionManager()->activateSession (m_app->kateSessionManager()->giveSession (session));
+  m_app->sessionManager()->activateSession (m_app->sessionManager()->giveSession (session));
 
   return true;
 }

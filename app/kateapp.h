@@ -38,18 +38,43 @@ class KateSessionManager;
 
 class KCmdLineArgs;
 
+/**
+ * Kate Application
+ * This class represents the core kate application object
+ */
 class KDE_EXPORT KateApp : public KApplication
 {
   Q_OBJECT
 
+  /**
+   * constructors & accessor to app object + plugin interface for it
+   */
   public:
+    /**
+     * application constructor
+     */
     KateApp ();
+
+    /**
+     * application destructor
+     */
     ~KateApp ();
 
-    inline static KateApp *self () { return (KateApp *) kapp; }
+    /**
+     * static accessor to avoid casting ;)
+     * @return app instance
+     */
+    static KateApp *self () { return (KateApp *) kapp; }
 
+    /**
+     * accessor to the Kate::Application plugin interface
+     * @return application plugin interface
+     */
     Kate::Application *application () { return m_application; };
 
+  /**
+   * event loop stuff
+   */
   private slots:
     /**
      * HACK: this slot is connected to a singleshot timer, to
@@ -63,6 +88,9 @@ class KDE_EXPORT KateApp : public KApplication
      */
     void onEventLoopEnter();
 
+  /**
+   * restore/start/shutdown
+   */
   public:
     /**
      * restore a old kate session
@@ -82,25 +110,85 @@ class KDE_EXPORT KateApp : public KApplication
      */
     void shutdownKate (KateMainWindow *win);
 
-    KatePluginManager *katePluginManager() { return m_pluginManager; }
-    KateDocManager *kateDocumentManager () { return m_docManager; }
-    KateSessionManager *kateSessionManager () { return m_sessionManager; }
+  /**
+   * other accessors for global unique instances
+   */
+  public:
+    /**
+     * accessor to plugin manager
+     * @return plugin manager instance
+     */
+    KatePluginManager *pluginManager() { return m_pluginManager; }
 
+    /**
+     * accessor to document manager
+     * @return document manager instance
+     */
+    KateDocManager *documentManager () { return m_docManager; }
+
+    /**
+     * accessor to session manager
+     * @return session manager instance
+     */
+    KateSessionManager *sessionManager () { return m_sessionManager; }
+
+  /**
+   * window management
+   */
+  public:
+    /**
+     * create a new main window, use given config if any for restore
+     * @param sconfig session config object
+     * @param sgroup session group for this window
+     * @return new constructed main window
+     */
     KateMainWindow *newMainWindow (KConfig *sconfig = 0, const QString &sgroup = "");
 
+    /**
+     * removes the mainwindow given, DOES NOT DELETE IT
+     * @param mainWindow window to remove
+     */
     void removeMainWindow (KateMainWindow *mainWindow);
 
-    Kate::DocumentManager *documentManager () { return m_docManager->documentManager(); };
-    Kate::PluginManager *pluginManager () { return m_pluginManager->pluginManager(); };
-    Kate::MainWindow *activeMainWindow ();
-    KateMainWindow *activeKateMainWindow ();
+    /**
+     * give back current active main window
+     * can only be 0 at app start or exit
+     * @return current active main window
+     */
+    KateMainWindow *activeMainWindow ();
 
+    /**
+     * give back number of existing main windows
+     * @return number of main windows
+     */
     uint mainWindows () { return m_mainWindows.count(); };
-    Kate::MainWindow *mainWindow (uint n) { if (m_mainWindows.at(n)) return m_mainWindows.at(n)->mainWindow(); else return 0; }
 
-    KateMainWindow *kateMainWindow (uint n) { return m_mainWindows.at(n); }
+    /**
+     * give back the window you want
+     * @param n window index
+     * @return requested main window
+     */
+    KateMainWindow *mainWindow (uint n) { return m_mainWindows.at(n); }
 
+  /**
+   * some stuff for the dcop API
+   */
+  public:
+    /**
+     * open url with given encoding
+     * used by kate if --use given
+     * @param url filename
+     * @param encoding encoding name
+     * @return success
+     */
     bool openURL (const KURL &url, const QString &encoding);
+
+    /**
+     * position cursor in current active view
+     * @param line line to set
+     * @param column column to set
+     * @return success
+     */
     bool setCursor (int line, int column);
 
   private:
