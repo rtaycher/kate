@@ -44,7 +44,6 @@ static KCmdLineOptions options[] =
     { "line <arg>", I18N_NOOP("Navigate to this line"), 0 },
     { "c", 0, 0 },
     { "column <arg>", I18N_NOOP("Navigate to this column"), 0 },
-    { "initplugin <arg>",	I18N_NOOP("Allow Kate to be initialized by a plugin. You most probably have to specify a file too."),0},
     { "+[URL]", I18N_NOOP("Document to open"), 0 },
     KCmdLineLastOption
 };
