@@ -21,12 +21,18 @@
 #include "kateconsole.h"
 #include "kateconsole.moc"
 
+
+#include "katemain.h"
+#include "katemdi.h"
 #include "katemainwindow.h"
+#include "kateviewmanager.h"
 
 #include <kate/view.h>
 #include <kate/document.h>
 
 #include <kde_terminal_interface.h>
+
+#include <kparts/part.h>
 
 #include <kurl.h>
 #include <klibloader.h>
@@ -35,12 +41,9 @@
 #include <kdebug.h>
 #include <kmessagebox.h>
 
-#include <qlayout.h>
-
-KateConsole::KateConsole (KateMainWindow *mw, KateMDI::ToolView* parent, const char* name, Kate::ViewManager *kvm)
- : QVBox (parent, name)
- , part (0)
- , m_kvm (kvm)
+KateConsole::KateConsole (KateMainWindow *mw, KateMDI::ToolView* parent)
+ : QVBox (parent)
+ , m_part (0)
  , m_mw (mw)
  , m_toolView (parent)
 {
@@ -48,65 +51,38 @@ KateConsole::KateConsole (KateMainWindow *mw, KateMDI::ToolView* parent, const c
 
 KateConsole::~KateConsole ()
 {
-  disconnect ( part, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
+  disconnect ( m_part, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
 }
 
 void KateConsole::loadConsoleIfNeeded()
 {
-  if (part) return;
+  if (m_part) return;
 
   if (!topLevelWidget() || !parentWidget()) return;
   if (!topLevelWidget() || !isVisibleTo(topLevelWidget())) return;
-
-//   kdDebug(13001)<<"CREATING A CONSOLE PART"<<endl;
 
   KLibFactory *factory = KLibLoader::self()->factory("libkonsolepart");
 
   if (!factory) return;
 
-  part = static_cast<KParts::ReadOnlyPart *>(factory->create(this,"libkonsolepart", "KParts::ReadOnlyPart"));
+  m_part = static_cast<KParts::ReadOnlyPart *>(factory->create(this,"libkonsolepart", "KParts::ReadOnlyPart"));
 
-  if (!part) return;
+  if (!m_part) return;
 
   KGlobal::locale()->insertCatalogue("konsole");
 
-  part->widget()->show();
+  m_part->widget()->show();
 
-  connect ( part, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
+  connect ( m_part, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
 
-  if (m_kvm->activeView())
-    if (m_kvm->activeView()->getDoc()->url().isValid())
-      cd(KURL( m_kvm->activeView()->getDoc()->url().path() ));
-}
-
-void KateConsole::showEvent(QShowEvent *)
-{
-  if (part) return;
-
-  loadConsoleIfNeeded();
-}
-
-void KateConsole::cd (KURL url)
-{
-  if (!part) return;
-
-  part->openURL (url);
-}
-
-void KateConsole::sendInput( const QString& text )
-{
-  if (!part) return;
-
-  TerminalInterface *t = static_cast<TerminalInterface*>( part->qt_cast( "TerminalInterface" ) );
-
-  if (!t) return;
-
-  t->sendInput (text);
+  if (m_mw->kateViewManager()->activeView())
+    if (m_mw->kateViewManager()->activeView()->getDoc()->url().isValid())
+      cd(KURL( m_mw->kateViewManager()->activeView()->getDoc()->url().path() ));
 }
 
 void KateConsole::slotDestroyed ()
 {
-  part=0;
+  m_part = 0;
 
   // hide the dockwidget
   if (parentWidget())
@@ -114,6 +90,35 @@ void KateConsole::slotDestroyed ()
     m_mw->hideToolView (m_toolView);
     m_mw->centralWidget()->setFocus ();
   }
+}
+
+void KateConsole::showEvent(QShowEvent *)
+{
+  if (m_part) return;
+
+  loadConsoleIfNeeded();
+}
+
+void KateConsole::cd (const KURL &url)
+{
+  loadConsoleIfNeeded();
+
+  if (!m_part) return;
+
+  m_part->openURL (url);
+}
+
+void KateConsole::sendInput( const QString& text )
+{
+  loadConsoleIfNeeded();
+
+  if (!m_part) return;
+
+  TerminalInterface *t = static_cast<TerminalInterface*>( m_part->qt_cast( "TerminalInterface" ) );
+
+  if (!t) return;
+
+  t->sendInput (text);
 }
 
 void KateConsole::slotPipeToConsole ()
@@ -125,7 +130,7 @@ void KateConsole::slotPipeToConsole ()
        , KStdGuiItem::yes(), KStdGuiItem::no(), "Pipe To Console Warning") != KMessageBox::Yes)
     return;
 
-  Kate::View *v = m_kvm->activeView();
+  Kate::View *v = m_mw->kateViewManager()->activeView();
 
   if (!v)
     return;

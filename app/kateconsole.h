@@ -21,48 +21,94 @@
 #ifndef __KATE_CONSOLE_H__
 #define __KATE_CONSOLE_H__
 
-#include "katemain.h"
-#include "katemdi.h"
-#include "katemainwindow.h"
-#include "../interfaces/viewmanager.h"
+#include <kurl.h>
 
 #include <qvbox.h>
-#include <kparts/part.h>
 
+namespace KParts {
+  class ReadOnlyPart;
+}
+
+namespace KateMDI {
+  class ToolView;
+}
+
+class KateMainWindow;
+
+/**
+ * KateConsole
+ * This class is used for the internal terminal emulator
+ * It uses internally the konsole part, thx to konsole devs :)
+ */
 class KateConsole : public QVBox
 {
   Q_OBJECT
 
   public:
-    KateConsole (KateMainWindow *mw, KateMDI::ToolView* parent, const char* name, Kate::ViewManager *);
+    /**
+     * construct us
+     * @param mw main window
+     * @param parent toolview
+     */
+    KateConsole (KateMainWindow *mw, KateMDI::ToolView* parent);
+
+    /**
+     * destruct us
+     */
     ~KateConsole ();
 
-    void cd (KURL url=KURL());
+    /**
+     * cd to dir
+     * @param url given dir
+     */
+    void cd (const KURL &url);
 
+    /**
+     * send given text to console
+     * @param text commands for console
+     */
     void sendInput( const QString& text );
 
-  protected:
-    void focusInEvent( QFocusEvent * ) { if (part) part->widget()->setFocus(); };
-    virtual void showEvent(QShowEvent *);
-
-  private:
-    KParts::ReadOnlyPart *part;
-    Kate::ViewManager *m_kvm;
-    KateMainWindow *m_mw;
-    KateMDI::ToolView *m_toolView;
-
   public slots:
-    void loadConsoleIfNeeded();
-
+    /**
+     * pipe current document to console
+     */
     void slotPipeToConsole ();
 
-  // Only needed for Konsole
   private slots:
-    void notifySize (int,int) {};
-    void changeColumns (int) {};
-    void changeTitle(int,const QString&) {};
-
+    /**
+     * the konsole exited ;)
+     * handle that, hide the dock
+     */
     void slotDestroyed ();
+
+    /**
+     * construct console if needed
+     */
+    void loadConsoleIfNeeded();
+
+  protected:
+    /**
+     * the konsole get shown
+     * @param ev show event
+     */
+    void showEvent(QShowEvent *ev);
+
+  private:
+    /**
+     * console part
+     */
+    KParts::ReadOnlyPart *m_part;
+
+    /**
+     * main window of this console
+     */
+    KateMainWindow *m_mw;
+
+    /**
+     * toolview for this console
+     */
+    KateMDI::ToolView *m_toolView;
 };
 
 #endif

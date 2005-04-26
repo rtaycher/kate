@@ -178,9 +178,6 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
 
   readOptions();
 
-  if (console)
-    console->loadConsoleIfNeeded();
-
   finishRestore ();
 
   if (sconfig)
@@ -231,7 +228,7 @@ void KateMainWindow::setupMainWindow ()
     greptool->show();
 
     t = createToolView("kate_console", KMultiTabBar::Bottom, SmallIcon("konsole"), i18n("Terminal"));
-    console = new KateConsole (this, t, "console", viewManager());
+    console = new KateConsole (this, t);
   }
 
   // make per default the filelist visible, if we are in session restore, katemdi will skip this ;)
