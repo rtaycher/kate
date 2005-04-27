@@ -28,22 +28,21 @@
 
 #include <kate/view.h>
 
+#include <ktexteditor/encodinginterface.h>
+
 #include <kparts/factory.h>
 
 #include <klocale.h>
 #include <kdebug.h>
 #include <kconfig.h>
-#include <kapplication.h>
 #include <klibloader.h>
 #include <kmdcodec.h>
+#include <kmessagebox.h>
+#include <kencodingfiledialog.h>
 
 #include <qdatetime.h>
 #include <qtextcodec.h>
 #include <qprogressdialog.h>
-#include <kmessagebox.h>
-#include <kencodingfiledialog.h>
-#include <ktexteditor/encodinginterface.h>
-
 
 KateDocManager::KateDocManager (QObject *parent)
  : QObject (parent)

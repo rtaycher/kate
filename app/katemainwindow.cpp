@@ -47,7 +47,6 @@
 #include <kinstance.h>
 #include <kaboutdata.h>
 #include <kaction.h>
-#include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <kdialogbase.h>
@@ -134,7 +133,7 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
       else // now fallback to hard defaults ;)
       {
         // first try global app config
-        kapp->config()->setGroup ("MainWindow");
+        KateApp::self()->config()->setGroup ("MainWindow");
         size.setWidth (KateApp::self()->config()->readNumEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ));
         size.setHeight (KateApp::self()->config()->readNumEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ));
 

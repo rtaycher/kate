@@ -21,7 +21,6 @@
 #include "kateconsole.h"
 #include "kateconsole.moc"
 
-
 #include "katemain.h"
 #include "katemdi.h"
 #include "katemainwindow.h"
@@ -37,7 +36,6 @@
 #include <kurl.h>
 #include <klibloader.h>
 #include <klocale.h>
-#include <kapplication.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
 
