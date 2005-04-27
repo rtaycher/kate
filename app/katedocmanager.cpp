@@ -278,7 +278,7 @@ bool KateDocManager::closeDocument(class Kate::Document *doc,bool closeURL)
 
   for (uint i=0; i < KateApp::self()->mainWindows (); i++ )
   {
-    KateApp::self()->mainWindow(i)->kateViewManager()->closeViews(documentNumber);
+    KateApp::self()->mainWindow(i)->viewManager()->closeViews(documentNumber);
   }
 
   deleteDoc (doc);
@@ -308,7 +308,7 @@ bool KateDocManager::closeAllDocuments(bool closeURL)
 
   for (uint i=0; i < KateApp::self()->mainWindows (); i++ )
   {
-    KateApp::self()->mainWindow(i)->kateViewManager()->setViewActivationBlocked(true);
+    KateApp::self()->mainWindow(i)->viewManager()->setViewActivationBlocked(true);
   }
 
   while (!docs.isEmpty() && res)
@@ -319,10 +319,10 @@ bool KateDocManager::closeAllDocuments(bool closeURL)
 
   for (uint i=0; i < KateApp::self()->mainWindows (); i++ )
   {
-    KateApp::self()->mainWindow(i)->kateViewManager()->setViewActivationBlocked(false);
+    KateApp::self()->mainWindow(i)->viewManager()->setViewActivationBlocked(false);
 
-    for (uint s=0; s < KateApp::self()->mainWindow(i)->kateViewManager()->containers()->count(); s++)
-      KateApp::self()->mainWindow(i)->kateViewManager()->containers()->at(s)->activateView (m_docList.at(0)->documentNumber());
+    for (uint s=0; s < KateApp::self()->mainWindow(i)->viewManager()->containers()->count(); s++)
+      KateApp::self()->mainWindow(i)->viewManager()->containers()->at(s)->activateView (m_docList.at(0)->documentNumber());
   }
 
   return res;

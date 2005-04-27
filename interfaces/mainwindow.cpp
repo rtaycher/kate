@@ -26,8 +26,7 @@
 #include "pluginmanager.h"
 
 #include "../app/katemainwindow.h"
-
-#include <kapplication.h>
+#include "../app/kateviewmanager.h"
 
 namespace Kate
 {
@@ -65,7 +64,7 @@ KXMLGUIFactory *MainWindow::guiFactory() const
 
 ViewManager *MainWindow::viewManager () const
 {
-  return d->win->viewManager ();
+  return d->win->viewManager ()->viewManager ();
 }
 
 ToolViewManager *MainWindow::toolViewManager () const

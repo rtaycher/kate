@@ -108,7 +108,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   // show full path in title
   config->setGroup("General");
   cb_fullPath = new QCheckBox( i18n("&Show full path in title"), bgStartup);
-  cb_fullPath->setChecked( mainWindow->kateViewManager()->getShowFullPath() );
+  cb_fullPath->setChecked( mainWindow->viewManager()->getShowFullPath() );
   QWhatsThis::add(cb_fullPath,i18n("If this option is checked, the full document path will be shown in the window caption."));
   connect( cb_fullPath, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
@@ -401,7 +401,7 @@ void KateConfigDialog::slotApply()
     KateExternalToolsCommand::self()->reload();
     //mainWindow->externalTools->reload();
 
-    mainWindow->kateViewManager()->setShowFullPath( cb_fullPath->isChecked() ); // hm, stored 2 places :(
+    mainWindow->viewManager()->setShowFullPath( cb_fullPath->isChecked() ); // hm, stored 2 places :(
 
     mainWindow->saveOptions ();
 

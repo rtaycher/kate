@@ -28,8 +28,6 @@
 #include "../app/katepluginmanager.h"
 #include "../app/katemainwindow.h"
 
-#include <kapplication.h>
-
 namespace Kate
 {
 

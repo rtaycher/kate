@@ -187,9 +187,9 @@ bool KateApp::startupKate ()
     {
       // open a normal file
       if (codec)
-        id = activeMainWindow()->kateViewManager()->openURL( m_args->url(z), codec->name(), false );
+        id = activeMainWindow()->viewManager()->openURL( m_args->url(z), codec->name(), false );
       else
-        id = activeMainWindow()->kateViewManager()->openURL( m_args->url(z), QString::null, false );
+        id = activeMainWindow()->viewManager()->openURL( m_args->url(z), QString::null, false );
     }
     else
       KMessageBox::sorry( activeMainWindow(),
@@ -197,12 +197,12 @@ bool KateApp::startupKate ()
   }
 
   if ( id )
-    activeMainWindow()->kateViewManager()->activateView( id );
+    activeMainWindow()->viewManager()->activateView( id );
 
   Kate::Document::setOpenErrorDialogsActivated (true);
 
-  if ( activeMainWindow()->kateViewManager()->viewCount () == 0 )
-    activeMainWindow()->kateViewManager()->activateView(m_docManager->firstDocument()->documentNumber());
+  if ( activeMainWindow()->viewManager()->viewCount () == 0 )
+    activeMainWindow()->viewManager()->activateView(m_docManager->firstDocument()->documentNumber());
 
   int line = 0;
   int column = 0;
@@ -221,7 +221,7 @@ bool KateApp::startupKate ()
   }
 
   if (nav)
-    activeMainWindow()->kateViewManager()->activeView ()->setCursorPosition (line, column);
+    activeMainWindow()->viewManager()->activeView ()->setCursorPosition (line, column);
 
   // show the nice tips
   KTipDialog::showTip(activeMainWindow());
@@ -280,9 +280,9 @@ bool KateApp::openURL (const KURL &url, const QString &encoding)
   {
     // open a normal file
     if (codec)
-      mainWindow->kateViewManager()->openURL( url, codec->name());
+      mainWindow->viewManager()->openURL( url, codec->name());
     else
-      mainWindow->kateViewManager()->openURL( url, QString::null );
+      mainWindow->viewManager()->openURL( url, QString::null );
   }
   else
     KMessageBox::sorry( mainWindow,
@@ -300,7 +300,7 @@ bool KateApp::setCursor (int line, int column)
   if (!mainWindow)
     return false;
 
-  mainWindow->kateViewManager()->activeView ()->setCursorPosition (line, column);
+  mainWindow->viewManager()->activeView ()->setCursorPosition (line, column);
 
   return true;
 }
@@ -310,12 +310,12 @@ KateMainWindow *KateApp::newMainWindow (KConfig *sconfig, const QString &sgroup)
   KateMainWindow *mainWindow = new KateMainWindow (sconfig, sgroup);
   m_mainWindows.push_back (mainWindow);
 
-  if ((mainWindows() > 1) && m_mainWindows[m_mainWindows.count()-2]->kateViewManager()->activeView())
-    mainWindow->kateViewManager()->activateView ( m_mainWindows[m_mainWindows.count()-2]->kateViewManager()->activeView()->getDoc()->documentNumber() );
+  if ((mainWindows() > 1) && m_mainWindows[m_mainWindows.count()-2]->viewManager()->activeView())
+    mainWindow->viewManager()->activateView ( m_mainWindows[m_mainWindows.count()-2]->viewManager()->activeView()->getDoc()->documentNumber() );
   else if ((mainWindows() > 1) && (m_docManager->documents() > 0))
-    mainWindow->kateViewManager()->activateView ( (m_docManager->document(m_docManager->documents()-1))->documentNumber() );
+    mainWindow->viewManager()->activateView ( (m_docManager->document(m_docManager->documents()-1))->documentNumber() );
   else if ((mainWindows() > 1) && (m_docManager->documents() < 1))
-    mainWindow->kateViewManager()->openURL ( KURL() );
+    mainWindow->viewManager()->openURL ( KURL() );
 
   mainWindow->show ();
 

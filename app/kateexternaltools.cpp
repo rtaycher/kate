@@ -25,6 +25,7 @@
 #include "kateexternaltools.h"
 #include "kateexternaltools.moc"
 #include "katedocmanager.h"
+#include "kateviewmanager.h"
 #include "kateapp.h"
 
 #include "katemainwindow.h"
@@ -42,7 +43,6 @@
 #include <kicondialog.h>
 #include <kpopupmenu.h>
 #include <kdebug.h>
-#include <kapplication.h>
 
 #include <qbitmap.h>
 #include <qcombobox.h>

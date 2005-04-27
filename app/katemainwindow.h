@@ -22,23 +22,23 @@
 #define __KATE_MAINWINDOW_H__
 
 #include "katemain.h"
-#include "../interfaces/mainwindow.h"
-#include "../interfaces/toolviewmanager.h"
-
 #include "katemdi.h"
-#include "kateviewmanager.h"
 
 #include <kate/view.h>
 #include <kate/document.h>
 
 #include <kparts/part.h>
-#include <kparts/dockmainwindow.h>
 
 #include <scriptmanager.h>
 #include <kaction.h>
 
 class KateTabWidget;
 class GrepTool;
+
+namespace Kate {
+  class MainWindow;
+  class ToolViewManager;
+}
 
 class KFileItem;
 class KRecentFilesAction;
@@ -62,10 +62,9 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
    */
   public:
     Kate::MainWindow *mainWindow () { return m_mainWindow; }
-    Kate::ViewManager *viewManager () {return m_viewManager->viewManager(); }
     Kate::ToolViewManager *toolViewManager () { return m_toolViewManager; }
 
-    KateViewManager *kateViewManager () { return m_viewManager; }
+    KateViewManager *viewManager () { return m_viewManager; }
 
     DCOPObject *dcopObject () { return m_dcop; }
 

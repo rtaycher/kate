@@ -40,6 +40,9 @@
 #include "katesession.h"
 #include "katetabwidget.h"
 
+#include "../interfaces/mainwindow.h"
+#include "../interfaces/toolviewmanager.h"
+
 #include <dcopclient.h>
 #include <kinstance.h>
 #include <kaboutdata.h>

@@ -75,9 +75,9 @@ void KateConsole::loadConsoleIfNeeded()
 
   connect ( m_part, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
 
-  if (m_mw->kateViewManager()->activeView())
-    if (m_mw->kateViewManager()->activeView()->getDoc()->url().isValid())
-      cd(KURL( m_mw->kateViewManager()->activeView()->getDoc()->url().path() ));
+  if (m_mw->viewManager()->activeView())
+    if (m_mw->viewManager()->activeView()->getDoc()->url().isValid())
+      cd(KURL( m_mw->viewManager()->activeView()->getDoc()->url().path() ));
 }
 
 void KateConsole::slotDestroyed ()
@@ -130,7 +130,7 @@ void KateConsole::slotPipeToConsole ()
        , KStdGuiItem::yes(), KStdGuiItem::no(), "Pipe To Console Warning") != KMessageBox::Yes)
     return;
 
-  Kate::View *v = m_mw->kateViewManager()->activeView();
+  Kate::View *v = m_mw->viewManager()->activeView();
 
   if (!v)
     return;

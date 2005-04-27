@@ -60,7 +60,7 @@ KateMailDialog::KateMailDialog( QWidget *parent, KateMainWindow  *mainwin )
   list = new KListView( mw );
   list->addColumn( i18n("Name") );
   list->addColumn( i18n("URL") );
-  Kate::Document *currentDoc = mainWindow->kateViewManager()->activeView()->getDoc();
+  Kate::Document *currentDoc = mainWindow->viewManager()->activeView()->getDoc();
   uint n = KateDocManager::self()->documents();
   uint i = 0;
   QCheckListItem *item;
