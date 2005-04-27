@@ -188,17 +188,22 @@ void KateViewManager::tabChanged(QWidget* widget) {
 void KateViewManager::slotNewTab()
 {
   uint documentNumber=0;
-  if (m_currentContainer) {
-    if (m_currentContainer->activeView()) documentNumber=m_currentContainer->activeView()->getDoc()->documentNumber();
+
+  if (m_currentContainer)
+  {
+    if (m_currentContainer->activeView())
+      documentNumber = m_currentContainer->activeView()->getDoc()->documentNumber();
   }
+
   KateViewSpaceContainer *container=new KateViewSpaceContainer (m_mainWindow->tabWidget(), this);
   m_viewSpaceContainerList.append(container);
   m_mainWindow->tabWidget()->addTab (container, "");
-  Q_ASSERT (m_currentContainer==container);
-  container->installEventFilter(this);
+
   connect(container,SIGNAL(viewChanged()),this,SIGNAL(viewChanged()));
   connect(container,SIGNAL(viewChanged()),m_viewManager,SIGNAL(viewChanged()));
-  if (!m_init) {
+
+  if (!m_init)
+  {
     container->activateView(documentNumber);
     container->setShowFullPath(showFullPath);
     m_mainWindow->slotWindowActivated ();
@@ -254,13 +259,6 @@ void KateViewManager::activatePrevTab()
   m_mainWindow->tabWidget()->setCurrentPage( iTab );
 }
 
-bool KateViewManager::eventFilter(QObject *o,QEvent *e) {
-  if (e->type()==QEvent::CaptionChange) {
-    m_mainWindow->tabWidget()->changeTab(static_cast<QWidget*>(o),static_cast<QWidget*>(o)->caption());
-  }
-  return false;
-}
-
 void KateViewManager::activateSpace (Kate::View* v)
 {
   if (m_currentContainer) {
@@ -273,7 +271,6 @@ void KateViewManager::activateView ( Kate::View *view ) {
     m_currentContainer->activateView(view);
   }
 }
-
 
 KateViewSpace* KateViewManager::activeViewSpace ()
 {

@@ -22,6 +22,7 @@
 #include "kateviewspacecontainer.h"
 #include "kateviewspacecontainer.moc"
 
+#include "katetabwidget.h"
 #include "katemainwindow.h"
 #include "katedocmanager.h"
 #include "kateviewmanager.h"
@@ -433,7 +434,7 @@ void KateViewSpaceContainer::statusMsg ()
     c = v->getDoc()->url().prettyURL();
   }
 
-  setCaption(KStringHandler::lsqueeze(c,32));
+  m_viewManager->mainWindow()->tabWidget()->changeTab (this, KStringHandler::lsqueeze(c,32));
   emit statusChanged (v, v->cursorLine(), v->cursorColumn(), ovr,block, mod, KStringHandler::lsqueeze(c,64));
   emit statChanged ();
 }

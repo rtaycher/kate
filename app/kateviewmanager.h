@@ -127,8 +127,6 @@ class KateViewManager : public QObject
   protected:
     friend class KateViewSpaceContainer;
 
-    bool eventFilter(QObject *o,QEvent *e);
-
     QGuardedPtr<Kate::View> guiMergedView;
 
   signals:
