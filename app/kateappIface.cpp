@@ -23,8 +23,6 @@
 #include "katedocmanager.h"
 #include "katemainwindow.h"
 
-#include <kdebug.h>
-
 KateAppDCOPIface::KateAppDCOPIface (KateApp *app) : DCOPObject ("KateApplication")
      , m_app (app)
 {
@@ -92,3 +90,5 @@ bool KateAppDCOPIface::activateSession (QString session)
 
   return true;
 }
+
+// kate: space-indent on; indent-width 2; replace-tabs on;

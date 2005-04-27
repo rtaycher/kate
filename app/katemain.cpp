@@ -35,19 +35,19 @@
 static KCmdLineOptions options[] =
 {
     { "s", 0 , 0 },
-    { "start-session <arg>",      I18N_NOOP("Start Kate with a given session"), 0 },
+    { "start <name>", I18N_NOOP("Start Kate with a given session"), 0 },
     { "u", 0, 0 },
     { "use", I18N_NOOP("Use a already running kate instance (if possible)"), 0 },
     { "p", 0, 0 },
-    { "pid <arg>", I18N_NOOP("Only try to reuse kate instance with this pid"), 0 },
+    { "pid <pid>", I18N_NOOP("Only try to reuse kate instance with this pid"), 0 },
     { "e", 0, 0 },
-    { "encoding <arg>", I18N_NOOP("Set encoding for the file to open"), 0 },
+    { "encoding <name>", I18N_NOOP("Set encoding for the file to open"), 0 },
     { "l", 0, 0 },
-    { "line <arg>", I18N_NOOP("Navigate to this line"), 0 },
+    { "line <line>", I18N_NOOP("Navigate to this line"), 0 },
     { "c", 0, 0 },
-    { "column <arg>", I18N_NOOP("Navigate to this column"), 0 },
+    { "column <column>", I18N_NOOP("Navigate to this column"), 0 },
     { "i", 0, 0 },
-    { "stdin",    I18N_NOOP("Read the contents of stdin"), 0 },
+    { "stdin", I18N_NOOP("Read the contents of stdin"), 0 },
     { "+[URL]", I18N_NOOP("Document to open"), 0 },
     KCmdLineLastOption
 };
@@ -137,8 +137,8 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
 
       DCOPRef kRef (kateApp, "KateApplication");
 
-      if (args->isSet ("start-session"))
-        kRef.call( "activateSession", QString (args->getOption("start-session")) );
+      if (args->isSet ("start"))
+        kRef.call( "activateSession", QString (args->getOption("start")) );
 
       QString enc = args->isSet("encoding") ? args->getOption("encoding") : "";
 

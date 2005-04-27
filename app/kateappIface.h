@@ -77,4 +77,5 @@ class KateAppDCOPIface : public DCOPObject
   private:
     KateApp *m_app;
 };
+
 #endif

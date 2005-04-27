@@ -151,9 +151,9 @@ void KateApp::restoreKate ()
 bool KateApp::startupKate ()
 {
   // user specified session to open
-  if (m_args->isSet ("start-session"))
+  if (m_args->isSet ("start"))
   {
-    sessionManager()->activateSession (sessionManager()->giveSession (m_args->getOption("start-session")), false, false);
+    sessionManager()->activateSession (sessionManager()->giveSession (m_args->getOption("start")), false, false);
   }
   else if (!m_args->isSet( "stdin" ) && (m_args->count() == 0)) // only start session if no files specified
   {
@@ -311,8 +311,6 @@ bool KateApp::openURL (const KURL &url, const QString &encoding)
 
 bool KateApp::setCursor (int line, int column)
 {
-  kdDebug () << "SET CURSOR" << endl;
-
   KateMainWindow *mainWindow = activeMainWindow ();
 
   if (!mainWindow)
