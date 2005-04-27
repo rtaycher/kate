@@ -74,9 +74,8 @@ KateApp::KateApp (KCmdLineArgs *args)
   // application dcop interface
   m_obj = new KateAppDCOPIface (this);
 
-   // notify our self on enter the event loop
-  //QTimer::singleShot (0, this, SLOT(callOnEventLoopEnter()));
-  callOnEventLoopEnter();
+  // real init
+  initKate ();
 }
 
 KateApp::~KateApp ()
@@ -101,7 +100,7 @@ Kate::Application *KateApp::application ()
   return m_application;
 }
 
-void KateApp::callOnEventLoopEnter()
+void KateApp::initKate ()
 {
   // handle restore different
   if (isRestored())
@@ -156,7 +155,7 @@ bool KateApp::startupKate ()
   {
     sessionManager()->activateSession (sessionManager()->giveSession (m_args->getOption("start-session")), false, false);
   }
-  else if (m_args->count() == 0) // only start session if no files specified
+  else if (!m_args->isSet( "stdin" ) && (m_args->count() == 0)) // only start session if no files specified
   {
     // let the user choose session if possible
     if (!sessionManager()->chooseSession ())
@@ -196,10 +195,30 @@ bool KateApp::startupKate ()
                           i18n("The file '%1' could not be opened: it is not a normal file, it is a folder.").arg(m_args->url(z).url()) );
   }
 
-  if ( id )
-    activeMainWindow()->viewManager()->activateView( id );
-
   Kate::Document::setOpenErrorDialogsActivated (true);
+
+  // handle stdin input
+  if( m_args->isSet( "stdin" ) )
+  {
+    QTextIStream input(stdin);
+
+    // set chosen codec
+    if (codec)
+      input.setCodec (codec);
+
+    QString line;
+    QString text;
+
+    do
+    {
+      line = input.readLine();
+      text.append( line + "\n" );
+    } while( !line.isNull() );
+
+    openInput (text);
+  }
+  else if ( id )
+    activeMainWindow()->viewManager()->activateView( id );
 
   if ( activeMainWindow()->viewManager()->viewCount () == 0 )
     activeMainWindow()->viewManager()->activateView(m_docManager->firstDocument()->documentNumber());
@@ -270,7 +289,6 @@ bool KateApp::openURL (const KURL &url, const QString &encoding)
 
   QTextCodec *codec = encoding.isEmpty() ? 0 : QTextCodec::codecForName(encoding.latin1());
 
-
   kdDebug () << "OPEN URL "<< encoding << endl;
 
   // this file is no local dir, open it, else warn
@@ -301,6 +319,18 @@ bool KateApp::setCursor (int line, int column)
     return false;
 
   mainWindow->viewManager()->activeView ()->setCursorPosition (line, column);
+
+  return true;
+}
+
+bool KateApp::openInput (const QString &text)
+{
+  activeMainWindow()->viewManager()->openURL( "", "", true );
+
+  if (!activeMainWindow()->viewManager()->activeView ())
+    return false;
+
+  activeMainWindow()->viewManager()->activeView ()->getDoc()->setText (text);
 
   return true;
 }

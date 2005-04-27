@@ -81,6 +81,11 @@ bool KateAppDCOPIface::setCursor (int line, int column)
   return m_app->setCursor (line, column);
 }
 
+bool KateAppDCOPIface::openInput (QString text)
+{
+  return m_app->openInput (text);
+}
+
 bool KateAppDCOPIface::activateSession (QString session)
 {
   m_app->sessionManager()->activateSession (m_app->sessionManager()->giveSession (session));

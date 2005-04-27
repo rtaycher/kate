@@ -71,20 +71,14 @@ class KDE_EXPORT KateApp : public KApplication
     Kate::Application *application ();
 
   /**
-   * event loop stuff, make sure real kate init happens after
-   * event loop has taken off ;)
+   * kate init
    */
-  private slots:
+  private:
     /**
-     * HACK: this slot is connected to a singleshot timer, to
-     * get start of event processing
+     * get kate inited
      */
-    void callOnEventLoopEnter();
+    void initKate ();
 
-  /**
-   * restore/start/shutdown
-   */
-  public:
     /**
      * restore a old kate session
      */
@@ -96,6 +90,10 @@ class KDE_EXPORT KateApp : public KApplication
      */
     bool startupKate ();
 
+  /**
+   * kate shutdown
+   */
+  public:
     /**
      * shutdown kate application
      * @param win mainwindow which is used for dialogs
@@ -182,6 +180,14 @@ class KDE_EXPORT KateApp : public KApplication
      * @return success
      */
     bool setCursor (int line, int column);
+
+    /**
+     * helper to handle stdin input
+     * open a new document/view, fill it with the text given
+     * @param text text to fill in the new doc/view
+     * @return success
+     */
+    bool openInput (const QString &text);
 
   private:
     /**

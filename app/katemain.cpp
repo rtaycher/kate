@@ -17,6 +17,8 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include "kateapp.h"
+
 #include <kstandarddirs.h>
 #include <klocale.h>
 #include <kcmdlineargs.h>
@@ -28,7 +30,7 @@
 #include <dcopref.h>
 #include <kdebug.h>
 
-#include "kateapp.h"
+#include <qtextcodec.h>
 
 static KCmdLineOptions options[] =
 {
@@ -44,6 +46,8 @@ static KCmdLineOptions options[] =
     { "line <arg>", I18N_NOOP("Navigate to this line"), 0 },
     { "c", 0, 0 },
     { "column <arg>", I18N_NOOP("Navigate to this column"), 0 },
+    { "i", 0, 0 },
+    { "stdin",    I18N_NOOP("Read the contents of stdin"), 0 },
     { "+[URL]", I18N_NOOP("Document to open"), 0 },
     KCmdLineLastOption
 };
@@ -140,6 +144,28 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
 
       for (int z=0; z<args->count(); z++)
         kRef.call( "openURL", args->url(z), enc );
+
+      if( args->isSet( "stdin" ) )
+      {
+        QTextIStream input(stdin);
+
+        // set chosen codec
+        QTextCodec *codec = args->isSet("encoding") ? QTextCodec::codecForName(args->getOption("encoding")) : 0;
+
+        if (codec)
+          input.setCodec (codec);
+
+        QString line;
+        QString text;
+
+        do
+        {
+          line = input.readLine();
+          text.append( line + "\n" );
+        } while( !line.isNull() );
+
+        kRef.call( "openInput", text );
+      }
 
       int line = 0;
       int column = 0;

@@ -60,6 +60,14 @@ class KateAppDCOPIface : public DCOPObject
     bool setCursor (int line, int column);
 
     /**
+     * helper to handle stdin input
+     * open a new document/view, fill it with the text given
+     * @param text text to fill in the new doc/view
+     * @return success
+     */
+    bool openInput (QString text);
+
+    /**
      * activate a given session
      * @param session session name
      * @return success
