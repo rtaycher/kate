@@ -84,11 +84,12 @@ KateConfigPluginPage::KateConfigPluginPage(QWidget *parent, KateConfigDialog *di
 
   connect(listView, SIGNAL(stateChange(KatePluginListItem *, bool)), this, SLOT(stateChange(KatePluginListItem *, bool)));
 
-  for (uint i=0; i<KatePluginManager::self()->pluginList().count(); i++)
+  KatePluginList &pluginList (KatePluginManager::self()->pluginList());
+  for (unsigned int i=0; i < pluginList.size(); ++i)
   {
-    KatePluginListItem *item = new KatePluginListItem(KatePluginManager::self()->pluginList().at(i)->load, KatePluginManager::self()->pluginList().at(i), listView);
-    item->setText(0, KatePluginManager::self()->pluginList().at(i)->service->name());
-    item->setText(1, KatePluginManager::self()->pluginList().at(i)->service->comment());
+    KatePluginListItem *item = new KatePluginListItem(pluginList[i].load, &pluginList[i], listView);
+    item->setText(0, pluginList[i].service->name());
+    item->setText(1, pluginList[i].service->comment());
   }
 }
 

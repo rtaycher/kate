@@ -288,11 +288,12 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
     editorPages.append (cPage);
   }
 
-  for (uint i=0; i<KatePluginManager::self()->pluginList().count(); i++)
+  KatePluginList &pluginList (KatePluginManager::self()->pluginList());
+  for (unsigned int i=0; i < pluginList.size(); ++i)
   {
-    if  ( KatePluginManager::self()->pluginList().at(i)->load
-          && Kate::pluginConfigInterfaceExtension(KatePluginManager::self()->pluginList().at(i)->plugin) )
-      addPluginPage (KatePluginManager::self()->pluginList().at(i)->plugin);
+    if  ( pluginList[i].load
+          && Kate::pluginConfigInterfaceExtension(pluginList[i].plugin) )
+      addPluginPage (pluginList[i].plugin);
   }
 
   enableButtonSeparator(true);

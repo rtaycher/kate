@@ -22,13 +22,14 @@
 #define __KATE_PLUGINMANAGER_H__
 
 #include "katemain.h"
+
 #include "../interfaces/plugin.h"
 #include "../interfaces/pluginmanager.h"
 
+#include <ktrader.h>
+
 #include <qobject.h>
 #include <qvaluelist.h>
-#include <qptrlist.h>
-#include <ktrader.h>
 
 class KatePluginInfo
 {
@@ -38,7 +39,7 @@ class KatePluginInfo
     Kate::Plugin *plugin;
 };
 
-typedef QPtrList<KatePluginInfo> KatePluginList;
+typedef QValueList<KatePluginInfo> KatePluginList;
 
 class KatePluginManager : public QObject
 {
@@ -72,10 +73,11 @@ class KatePluginManager : public QObject
 
     inline KatePluginList & pluginList () { return m_pluginList; };
 
-    virtual Kate::Plugin *plugin(const QString &name);
-    virtual bool pluginAvailable(const QString &name);
-    virtual Kate::Plugin *loadPlugin(const QString &name,bool permanent=true);
-    virtual void unloadPlugin(const QString &name,bool permanent=true);
+    Kate::Plugin *plugin (const QString &name);
+    bool pluginAvailable (const QString &name);
+
+    Kate::Plugin *loadPlugin (const QString &name, bool permanent=true);
+    void unloadPlugin (const QString &name, bool permanent=true);
 
   private:
     Kate::PluginManager *m_pluginManager;
