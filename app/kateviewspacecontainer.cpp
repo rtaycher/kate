@@ -58,9 +58,8 @@
 //END Includes
 
 KateViewSpaceContainer::KateViewSpaceContainer (QWidget *parent, KateViewManager *viewManager)
- : QWidget  (parent)
+ : QVBox  (parent)
  , m_viewManager(viewManager)
- , m_grid (new QGridLayout( this, 1, 1 ))
  , m_blockViewCreationAndActivation (false)
  , m_activeViewRunning (false)
  , m_pendingViewCreation(false)
@@ -72,7 +71,6 @@ KateViewSpaceContainer::KateViewSpaceContainer (QWidget *parent, KateViewManager
   KateViewSpace* vs = new KateViewSpace( this, this );
   connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, const QString&)), vs, SLOT(slotStatusChanged(Kate::View *, int, int, int, bool, int, const QString&)));
   vs->setActive( true );
-  m_grid->addWidget( vs, 0, 0);
   m_viewSpaceList.append(vs);
   connect( this, SIGNAL(viewChanged()), this, SLOT(slotViewChanged()) );
   connect(KateDocManager::self(), SIGNAL(initialDocumentReplaced()), this, SIGNAL(viewChanged()));
@@ -472,10 +470,9 @@ void KateViewSpaceContainer::splitViewSpace( KateViewSpace* vs,
   if (atTop)
     s->moveToFirst( vsNew );
 
-  if (isFirstTime)
-    m_grid->addWidget(s, 0, 0);
-  else if ( QSplitter *ps = static_cast<QSplitter*>(s->parentWidget()->qt_cast("QSplitter")) )
-    ps->setSizes( psizes );
+  if (!isFirstTime)
+    if (QSplitter *ps = static_cast<QSplitter*>(s->parentWidget()->qt_cast("QSplitter")) )
+      ps->setSizes( psizes );
 
   s->show();
 
@@ -558,14 +555,11 @@ void KateViewSpaceContainer::removeViewSpace (KateViewSpace *viewspace)
     QWidget* other = ((QWidget *)(( QPtrList<QObject>*)p->children())->first());
 
     other->reparent( p->parentWidget(), 0, QPoint(), true );
-    // We also need to find the right viewspace to become active,
-    // and if "other" is the last, we move it into the m_grid.
+    // We also need to find the right viewspace to become active
     if (pIsFirst)
        ((KateMDI::Splitter*)p->parentWidget())->moveToFirst( other );
     if ( other->isA("KateViewSpace") ) {
       setActiveSpace( (KateViewSpace*)other );
-      if (m_viewSpaceList.count() == 1)
-        m_grid->addWidget( other, 0, 0);
     }
     else {
       QObjectList* l = other->queryList( "KateViewSpace" );
@@ -723,9 +717,6 @@ void KateViewSpaceContainer::restoreSplitter( KConfig* config, const QString &gr
   config->setGroup( group );
 
   KateMDI::Splitter* s = new KateMDI::Splitter((Qt::Orientation)config->readNumEntry("Orientation"), parent);
-
-  if ( group.compare(viewConfGrp+"-Splitter 0") == 0 )
-   m_grid->addWidget(s, 0, 0);
 
   QStringList children = config->readListEntry( "Children" );
   for (QStringList::Iterator it=children.begin(); it!=children.end(); ++it)

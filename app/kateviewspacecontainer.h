@@ -32,7 +32,7 @@
 class KConfig;
 class KateMainWindow;
 
-class KateViewSpaceContainer: public QWidget
+class KateViewSpaceContainer: public QVBox
 {
   Q_OBJECT
 
@@ -150,7 +150,6 @@ class KateViewSpaceContainer: public QWidget
     QPtrList<KateViewSpace> m_viewSpaceList;
     QPtrList<Kate::View> m_viewList;
 
-    QGridLayout *m_grid;
     bool m_blockViewCreationAndActivation;
 
     bool m_activeViewRunning;
