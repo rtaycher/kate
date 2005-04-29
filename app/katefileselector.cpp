@@ -107,20 +107,17 @@ void KateFileSelectorToolBarParent::resizeEvent ( QResizeEvent * )
 KateFileSelector::KateFileSelector( KateMainWindow *mainWindow,
                                     KateViewManager *viewManager,
                                     QWidget * parent, const char * name )
-    : QWidget(parent, name),
+    : QVBox (parent, name),
       mainwin(mainWindow),
       viewmanager(viewManager)
 {
   mActionCollection = new KActionCollection( this );
-
-  QVBoxLayout* lo = new QVBoxLayout(this);
 
   QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar );
 
   KateFileSelectorToolBarParent *tbp=new KateFileSelectorToolBarParent(this);
   toolbar = new KateFileSelectorToolBar(tbp);
   tbp->setToolBar(toolbar);
-  lo->addWidget(tbp);
   toolbar->setMovingEnabled(false);
   toolbar->setFlat(true);
   qInstallMsgHandler( oldHandler );
@@ -130,12 +127,12 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow,
   KURLCompletion* cmpl = new KURLCompletion(KURLCompletion::DirCompletion);
   cmbPath->setCompletionObject( cmpl );
   cmbPath->setAutoDeleteCompletionObject( true );
-  lo->addWidget(cmbPath);
   cmbPath->listBox()->installEventFilter( this );
 
   dir = new KDirOperator(KURL(), this, "operator");
   dir->setView(KFile::/* Simple */Detail);
   dir->view()->setSelectionMode(KFile::Multi);
+  setStretchFactor(dir, 2);
 
   KActionCollection *coll = dir->actionCollection();
   // some shortcuts of diroperator that clashes with Kate
@@ -146,9 +143,6 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow,
   // some consistency - reset up for dir too
   coll->action( "up" )->setShortcut( KShortcut( ALT + SHIFT + Key_Up ) );
   coll->action( "home" )->setShortcut( KShortcut( CTRL + ALT + Key_Home ) );
-
-  lo->addWidget(dir);
-  lo->setStretchFactor(dir, 2);
 
   // bookmarks action!
   KActionMenu *acmBookmarks = new KActionMenu( i18n("Bookmarks"), "bookmark",
@@ -164,7 +158,6 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow,
   filter->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
   filterBox->setStretchFactor(filter, 2);
   connect( btnFilter, SIGNAL( clicked() ), this, SLOT( btnFilterClick() ) );
-  lo->addWidget(filterBox);
 
   connect( filter, SIGNAL( activated(const QString&) ),
                    SLOT( slotFilterChange(const QString&) ) );

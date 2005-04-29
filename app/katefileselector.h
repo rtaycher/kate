@@ -25,7 +25,7 @@
 #include "katedocmanager.h"
 #include <kate/document.h>
 
-#include <qwidget.h>
+#include <qvbox.h>
 #include <kfile.h>
 #include <kurl.h>
 #include <ktoolbar.h>
@@ -68,7 +68,7 @@ protected:
 	virtual void resizeEvent ( QResizeEvent * );
 };
 
-class KateFileSelector : public QWidget
+class KateFileSelector : public QVBox
 {
   Q_OBJECT
 
