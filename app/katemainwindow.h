@@ -54,7 +54,16 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
   friend class KateViewManager;
 
   public:
+    /**
+     * Construct the window and restore it's state from given config if any
+     * @param sconfig session config for this window, 0 if none
+     * @param sgroup session config group to use
+     */
     KateMainWindow (KConfig *sconfig, const QString &sgroup);
+
+    /**
+     * Destruct the nice window
+     */
     ~KateMainWindow();
 
   /**
