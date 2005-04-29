@@ -92,7 +92,7 @@ KateFileList::KateFileList (KateMainWindow *main,
   // default colors
   m_viewShade = QColor( 51, 204, 255 );
   m_editShade = QColor( 255, 102, 153 );
-  m_enableBgShading = true;
+  m_enableBgShading = false;
 
   setFocusPolicy ( QWidget::NoFocus  );
 
