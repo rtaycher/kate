@@ -1,9 +1,5 @@
 servicetypedir = $(kde_servicetypesdir)
-servicetype_DATA = kateplugin.desktop kateprojectplugin.desktop kateinitplugin.desktop
-
-katescriptsdir = $(kde_datadir)/kate/scripts
-katescripts_DATA = sample.desktop
-katescripts_SCRIPTS = sample.sh
+servicetype_DATA = kateplugin.desktop
 
 xdg_apps_DATA = kate.desktop kwrite.desktop
 
@@ -20,4 +16,3 @@ updatedir = $(kde_datadir)/kconf_update
 update_DATA = kate-2.4.upd
 
 kde_conf_DATA = katerc
-
