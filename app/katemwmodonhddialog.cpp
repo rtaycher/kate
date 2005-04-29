@@ -31,12 +31,14 @@
 #include <kprocio.h>
 #include <krun.h>
 #include <ktempfile.h>
+#include <kpushbutton.h>
 
 #include <qlabel.h>
 #include <qlistview.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qwhatsthis.h>
+#include <qvbox.h>
 
 class KateDocItem : public QCheckListItem
 {
@@ -57,8 +59,10 @@ class KateDocItem : public QCheckListItem
 
 KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const char *name )
   : KDialogBase( parent, name, true, i18n("Documents Modified on Disk"),
-                 User1|User2|User3|Cancel, User3, false,
-                 i18n("&Ignore"), i18n("&Overwrite"), i18n("&Reload") )
+                 User1|User2|User3, User3, false,
+                 KGuiItem (i18n("&Ignore"), "fileclose"),
+                 KGuiItem (i18n("&Overwrite"), "filesave"),
+                 KGuiItem (i18n("&Reload"), "reload") )
 {
   setButtonWhatsThis( User1, i18n(
       "Removes the modified flag from the selected documents and closes the "
@@ -69,25 +73,19 @@ KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const
   setButtonWhatsThis( User3, i18n(
       "Reloads the selected documents from disk and closes the dialog if there "
       "are no more unhandled documents.") );
-  setButtonWhatsThis( Cancel, i18n("Do not handle the changes now. You will be "
-      "prompted when individual documents are focused.") );
 
-  QFrame *w = makeMainWidget();
-  QVBoxLayout *lo = new QVBoxLayout( w );
-  lo->setSpacing( KDialog::spacingHint() );
+  QVBox *w = makeVBoxMainWidget();
+  w->setSpacing( KDialog::spacingHint() );
 
-  QHBoxLayout *lo1 = new QHBoxLayout( lo );
+  QHBox *lo1 = new QHBox( w );
 
   // dialog text
-  QLabel *icon = new QLabel( w );
+  QLabel *icon = new QLabel( lo1 );
   icon->setPixmap( DesktopIcon("messagebox_warning") );
-  lo1->addWidget( icon );
-
 
   QLabel *t = new QLabel( i18n(
       "<qt>The documents listed below has changed on disk.<p>Select one "
-      "or more at the time and press an action button until the list is empty.</qt>"), w );
-  lo1->addWidget( t );
+      "or more at the time and press an action button until the list is empty.</qt>"), lo1 );
   lo1->setStretchFactor( t, 1000 );
 
   // document list
@@ -100,14 +98,15 @@ KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const
   l << "" << i18n("Modified") << i18n("Created") << i18n("Deleted");
   for ( uint i=0; i < docs.size(); i++ )
     new KateDocItem( docs[i], l[ (uint)KateDocManager::self()->documentInfo( docs[i] )->modifiedOnDiscReason ], lvDocuments );
-  lo->addWidget( lvDocuments );
+
   connect( lvDocuments, SIGNAL(selectionChanged()), this, SLOT(slotSelectionChanged()) );
 
   // diff button
-  QHBoxLayout *lo2 = new QHBoxLayout( lo );
-  lo2->addStretch(10);
-  btnDiff = new QPushButton( i18n("&View Difference"), w );
-  lo2->addWidget( btnDiff );
+  QHBox *lo2 = new QHBox ( w );
+  QWidget *d = new QWidget (lo2);
+  lo2->setStretchFactor (d, 2);
+  btnDiff = new KPushButton( KGuiItem (i18n("&View Difference"), "edit"), lo2 );
+
   QWhatsThis::add( btnDiff, i18n(
       "Calculates the difference between the the editor contents and the disk "
       "file for the selected document, and shows the difference with the "
@@ -116,6 +115,10 @@ KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const
 
   slotSelectionChanged();
   m_tmpfile = 0;
+}
+
+KateMwModOnHdDialog::~KateMwModOnHdDialog()
+{
 }
 
 void KateMwModOnHdDialog::slotUser1()

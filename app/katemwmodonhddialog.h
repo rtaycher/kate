@@ -36,7 +36,7 @@ class KateMwModOnHdDialog : public KDialogBase
   Q_OBJECT
   public:
     KateMwModOnHdDialog( DocVector docs, QWidget *parent=0, const char *name=0 );
-    ~KateMwModOnHdDialog() {};
+    ~KateMwModOnHdDialog();
 
   protected slots:
     void slotUser1();
