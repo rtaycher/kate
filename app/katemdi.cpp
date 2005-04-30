@@ -50,7 +50,7 @@ Splitter::~Splitter()
 {
 }
 
-bool Splitter::isLastChild(QWidget* w)
+bool Splitter::isLastChild(QWidget* w) const
 {
   return ( idAfter( w ) == 0 );
 }
@@ -233,7 +233,7 @@ void ToolView::setVisible (bool vis)
   emit visibleChanged (m_visible);
 }
 
-bool ToolView::visible ()
+bool ToolView::visible () const
 {
   return m_visible;
 }
@@ -685,7 +685,7 @@ MainWindow::~MainWindow ()
     delete m_sidebars[i];
 }
 
-QWidget *MainWindow::centralWidget ()
+QWidget *MainWindow::centralWidget () const
 {
   return m_centralWidget;
 }
@@ -714,7 +714,7 @@ ToolView *MainWindow::createToolView (const QString &identifier, KMultiTabBar::K
   return v;
 }
 
-ToolView *MainWindow::toolView (const QString &identifier)
+ToolView *MainWindow::toolView (const QString &identifier) const
 {
   return m_idToWidget[identifier];
 }
@@ -744,7 +744,7 @@ void MainWindow::setToolViewStyle (KMultiTabBar::KMultiTabBarStyle style)
   m_sidebars[3]->setStyle(style);
 }
 
-KMultiTabBar::KMultiTabBarStyle MainWindow::toolViewStyle ()
+KMultiTabBar::KMultiTabBarStyle MainWindow::toolViewStyle () const
 {
   // all sidebars have the same style, so just take Top
   return m_sidebars[KMultiTabBar::Top]->tabStyle();

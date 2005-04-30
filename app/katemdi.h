@@ -52,7 +52,7 @@ class Splitter : public QSplitter
      * returns 0 if there is no widget after this one.
      * This results in an error if widget is not a child
      * in this splitter */
-    bool isLastChild(QWidget* w);
+    bool isLastChild(QWidget* w) const;
 
     int idAfter ( QWidget * w ) const;
 };
@@ -143,7 +143,7 @@ class ToolView : public QVBox
     void setVisible (bool vis);
 
   public:
-    bool visible ();
+    bool visible () const;
 
   protected:
     void childEvent ( QChildEvent *ev );
@@ -189,10 +189,10 @@ class Sidebar : public KMultiTabBar
     bool hideWidget (ToolView *widget);
 
     void setLastSize (int s) { m_lastSize = s; }
-    int lastSize () { return m_lastSize; }
+    int lastSize () const { return m_lastSize; }
     void updateLastSize ();
 
-    bool splitterVisible () { return m_ownSplit->isVisible(); }
+    bool splitterVisible () const { return m_ownSplit->isVisible(); }
 
     void restoreSession ();
 
@@ -268,7 +268,7 @@ class MainWindow : public KParts::MainWindow
      * this widget will get focus if a toolview is hidden
      * @return central widget
      */
-    QWidget *centralWidget ();
+    QWidget *centralWidget () const;
 
     /**
      * add a given widget to the given sidebar if possible, name is very important
@@ -285,7 +285,7 @@ class MainWindow : public KParts::MainWindow
      * @param identifier toolview name
      * @return toolview if existing, else 0
      */
-    ToolView *toolView (const QString &identifier);
+    ToolView *toolView (const QString &identifier) const;
 
     /**
      * set the toolview's tabbar style.
@@ -294,10 +294,11 @@ class MainWindow : public KParts::MainWindow
     void setToolViewStyle (KMultiTabBar::KMultiTabBarStyle style);
 
     /**
-     * get the toolview's tabbar style.
+     * get the toolview's tabbar style. Call this before @p startRestore(),
+     * otherwise you overwrite the usersettings.
      * @return toolview's tabbar style
      */
-    KMultiTabBar::KMultiTabBarStyle toolViewStyle ();
+    KMultiTabBar::KMultiTabBarStyle toolViewStyle () const;
     
   protected:
     /**
