@@ -89,9 +89,6 @@ uint KateMainWindow::uniqueID = 1;
 KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
   : KateMDI::MainWindow (0,(QString("__KateMainWindow#%1").arg(uniqueID)).latin1())
 {
- // setToolViewStyle(KMultiTabBar::KDEV3ICON);
-  // make the dockwidgets keep their size if possible
-  //manager()->setSplitterKeepSize(true);
   // first the very important id
   myID = uniqueID;
   uniqueID++;
@@ -207,6 +204,8 @@ KateMainWindow::~KateMainWindow()
 
 void KateMainWindow::setupMainWindow ()
 {
+  setToolViewStyle( KMultiTabBar::KDEV3ICON );
+
   m_tabWidget = new KateTabWidget (centralWidget());
 
   m_viewManager = new KateViewManager (this);

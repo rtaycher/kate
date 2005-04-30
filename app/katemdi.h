@@ -287,6 +287,18 @@ class MainWindow : public KParts::MainWindow
      */
     ToolView *toolView (const QString &identifier);
 
+    /**
+     * set the toolview's tabbar style.
+     * @param style the tabbar style.
+     */
+    void setToolViewStyle (KMultiTabBar::KMultiTabBarStyle style);
+
+    /**
+     * get the toolview's tabbar style.
+     * @return toolview's tabbar style
+     */
+    KMultiTabBar::KMultiTabBarStyle toolViewStyle ();
+    
   protected:
     /**
      * called by toolview destructor

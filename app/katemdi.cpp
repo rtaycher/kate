@@ -736,6 +736,20 @@ void MainWindow::toolViewDeleted (ToolView *widget)
   m_toolviews.remove (widget);
 }
 
+void MainWindow::setToolViewStyle (KMultiTabBar::KMultiTabBarStyle style)
+{
+  m_sidebars[0]->setStyle(style);
+  m_sidebars[1]->setStyle(style);
+  m_sidebars[2]->setStyle(style);
+  m_sidebars[3]->setStyle(style);
+}
+
+KMultiTabBar::KMultiTabBarStyle MainWindow::toolViewStyle ()
+{
+  // all sidebars have the same style, so just take Top
+  return m_sidebars[KMultiTabBar::Top]->tabStyle();
+}
+
 bool MainWindow::moveToolView (ToolView *widget, KMultiTabBar::KMultiTabBarPosition pos)
 {
   if (!widget || widget->mainWindow() != this)
@@ -803,6 +817,8 @@ void MainWindow::startRestore (KConfig *config, const QString &group)
 
   m_hSplitter->setSizes(hs);
   m_vSplitter->setSizes(vs);
+
+  setToolViewStyle( (KMultiTabBar::KMultiTabBarStyle)m_restoreConfig->readNumEntry ("Kate-MDI-Sidebar-Style", (int)toolViewStyle()) );
 }
 
 void MainWindow::finishRestore ()
@@ -862,6 +878,9 @@ void MainWindow::saveSession (KConfig *config, const QString &group)
 
   config->writeEntry ("Kate-MDI-H-Splitter", hs);
   config->writeEntry ("Kate-MDI-V-Splitter", vs);
+
+  // save sidebar style
+  config->writeEntry ("Kate-MDI-Sidebar-Style", (int)toolViewStyle());
 
   // save the sidebars
   for (unsigned int i=0; i < 4; ++i)
