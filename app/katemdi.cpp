@@ -446,7 +446,7 @@ bool Sidebar::eventFilter(QObject *obj, QEvent *ev)
       {
         KPopupMenu *p = new KPopupMenu (this);
 
-        p->insertTitle(SmallIcon("view_remove"), i18n("Behaviour"), 50);
+        p->insertTitle(SmallIcon("view_remove"), i18n("Behavior"), 50);
 
         p->insertItem(w->persistent ? SmallIconSet("window_nofullscreen") : SmallIconSet("window_fullscreen"), w->persistent ? i18n("Make non-persistent") : i18n("Make persistent"), 10);
 
