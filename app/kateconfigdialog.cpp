@@ -178,7 +178,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   lo->setSpacing(KDialog::spacingHint());
 
   // GROUP with the one below: "Startup"
-  bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("Elements of a Session"), frSessions );
+  bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("Elements of Sessions"), frSessions );
   lo->addWidget( bgStartup );
 
   // restore view  config

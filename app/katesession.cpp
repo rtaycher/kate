@@ -520,7 +520,7 @@ void KateSessionManager::sessionSave ()
     return;
 
   bool ok = false;
-  QString name = KInputDialog::getText (i18n("Specify a Name for Current Session"), i18n("Session Name"), "", &ok);
+  QString name = KInputDialog::getText (i18n("Specify Name for Current Session"), i18n("Session name:"), "", &ok);
 
   if (!ok)
     return;
@@ -538,7 +538,7 @@ void KateSessionManager::sessionSave ()
 void KateSessionManager::sessionSaveAs ()
 {
   bool ok = false;
-  QString name = KInputDialog::getText (i18n("Specify a new name for current session"), i18n("Session Name"), "", &ok);
+  QString name = KInputDialog::getText (i18n("Specify New Name for Current Session"), i18n("Session name:"), "", &ok);
 
   if (!ok)
     return;
@@ -601,7 +601,7 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
   hb->setSpacing (KDialog::spacingHint());
 
   QLabel *label = new QLabel (hb);
-  label->setPixmap (UserIcon("sessionchooser.png"));
+  label->setPixmap (UserIcon("sessionchooser"));
   label->setFrameStyle (QFrame::Panel | QFrame::Sunken);
 
   QVBox *vb = new QVBox (hb);
@@ -685,7 +685,7 @@ KateSessionOpenDialog::KateSessionOpenDialog (QWidget *parent)
                   , KDialogBase::User2
                   , false
                   , KStdGuiItem::cancel ()
-                  , KStdGuiItem::open ()
+                  , KGuiItem( i18n("&Open"), "fileopen")
                 )
 {
   QHBox *page = new QHBox (this);
@@ -773,7 +773,7 @@ KateSessionManageDialog::KateSessionManageDialog (QWidget *parent)
   QVBoxLayout *vbl = new QVBoxLayout (vb);
   vbl->setSpacing (KDialog::spacingHint());
 
-  m_rename = new KPushButton (BarIconSet ("fileclose"), i18n("&Rename"), vb);
+  m_rename = new KPushButton (i18n("&Rename..."), vb);
   connect (m_rename, SIGNAL(clicked()), this, SLOT(rename()));
   vbl->addWidget (m_rename);
 
@@ -813,7 +813,7 @@ void KateSessionManageDialog::rename ()
     return;
 
   bool ok = false;
-  QString name = KInputDialog::getText (i18n("Specify a new name for the session"), i18n("Session Name"), item->session->sessionName(), &ok);
+  QString name = KInputDialog::getText (i18n("Specify New Name for Session"), i18n("Session name:"), item->session->sessionName(), &ok);
 
   if (!ok)
     return;
