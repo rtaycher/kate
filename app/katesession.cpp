@@ -588,9 +588,9 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
                   , KDialogBase::User1 | KDialogBase::User2 | KDialogBase::User3
                   , KDialogBase::User1
                   , true
+                  , KStdGuiItem::quit ()
                   , KGuiItem (i18n ("Open Session"), "fileopen")
                   , KGuiItem (i18n ("New Session"), "filenew")
-                  , KStdGuiItem::quit ()
                 )
 {
   QHBox *page = new QHBox (this);
@@ -652,17 +652,17 @@ bool KateSessionChooser::reopenLastSession ()
   return m_useLast->isChecked ();
 }
 
-void KateSessionChooser::slotUser1 ()
+void KateSessionChooser::slotUser2 ()
 {
   done (resultOpen);
 }
 
-void KateSessionChooser::slotUser2 ()
+void KateSessionChooser::slotUser3 ()
 {
   done (resultNew);
 }
 
-void KateSessionChooser::slotUser3 ()
+void KateSessionChooser::slotUser1 ()
 {
   done (resultQuit);
 }
