@@ -140,7 +140,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
       if (args->isSet ("start"))
         kRef.call( "activateSession", QString (args->getOption("start")) );
 
-      QString enc = args->isSet("encoding") ? args->getOption("encoding") : "";
+      QString enc = args->isSet("encoding") ? args->getOption("encoding") : QCString("");
 
       for (int z=0; z<args->count(); z++)
         kRef.call( "openURL", args->url(z), enc );
