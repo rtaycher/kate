@@ -586,7 +586,7 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
                   , true
                   , i18n ("Session Chooser")
                   , KDialogBase::User1 | KDialogBase::User2 | KDialogBase::User3
-                  , KDialogBase::User1
+                  , KDialogBase::User2
                   , true
                   , KStdGuiItem::quit ()
                   , KGuiItem (i18n ("Open Session"), "fileopen")
