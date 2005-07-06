@@ -21,6 +21,13 @@
 
 #include <qvbox.h>
 
+/** 
+* Namespace collecting as much of the internal Kate classes as we 
+* can manage.
+*/
+namespace Kate
+{
+
 /**
     Base class for dockwidget views
     This class creates a widget meant to be set as the main widget
@@ -42,8 +49,6 @@
     @author Anders Lund <anders@alweb.dk>
 */
 
-namespace Kate
-{
 
 class DockViewBase : public QVBox {
   Q_OBJECT
