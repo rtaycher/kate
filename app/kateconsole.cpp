@@ -121,11 +121,11 @@ void KateConsole::sendInput( const QString& text )
 
 void KateConsole::slotPipeToConsole ()
 {
-  if (KMessageBox::warningYesNo
+  if (KMessageBox::warningContinueCancel
       (m_mw
        , i18n ("Do you really want to pipe the text to the console? This will execute any contained commands with your user rights.")
        , i18n ("Pipe to Console?")
-       , KStdGuiItem::yes(), KStdGuiItem::no(), "Pipe To Console Warning") != KMessageBox::Yes)
+       , i18n("Pipe to Console"), "Pipe To Console Warning") != KMessageBox::Continue)
     return;
 
   Kate::View *v = m_mw->viewManager()->activeView();
