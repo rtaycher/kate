@@ -61,8 +61,8 @@ unsigned int PluginConfigInterfaceExtension::pluginConfigInterfaceExtensionNumbe
                       
 PluginConfigInterfaceExtension *Kate::pluginConfigInterfaceExtension (Plugin *plugin)
 {                       
-  if (!plugin)
+  if (!plugin || !plugin->inherits("Kate::PluginConfigInterfaceExtension"))
     return 0;
 
-  return static_cast<PluginConfigInterfaceExtension*>(plugin->qt_cast("Kate::PluginConfigInterfaceExtension"));
+  return (PluginConfigInterfaceExtension*)(plugin);
 }

@@ -22,10 +22,10 @@
 #include <qobject.h>
 #include <kurl.h>
 
+namespace KTextEditor { class View; }
+
 namespace Kate
 {
-
-class View;
 
 /**
  * Interface to the viewmanager
@@ -52,7 +52,7 @@ class KDE_EXPORT ViewManager : public QObject
      * Returns a pointer to the currently active view
      * @return View active view
      */
-    Kate::View *activeView ();
+    KTextEditor::View *activeView ();
 
     /**
      * Activates the view with the corresponding documentNumber
@@ -65,12 +65,16 @@ class KDE_EXPORT ViewManager : public QObject
      * @param url url to the file
      */
     void openURL (const KURL &url);     
- 
+
+#ifndef Q_MOC_RUN 
   #undef signals
   #define signals public
+#endif
   signals:
+#ifndef Q_MOC_RUN
   #undef signals
   #define signals protected   
+#endif
 
     /**
      * Active view has changed

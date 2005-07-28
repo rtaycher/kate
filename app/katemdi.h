@@ -27,35 +27,20 @@
 #include <kxmlguiclient.h>
 #include <kaction.h>
 
-#include <qdict.h>
-#include <qintdict.h>
+#include <q3dict.h>
+#include <q3intdict.h>
 #include <qmap.h>
 #include <qsplitter.h>
 #include <qpixmap.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
+//Added by qt3to4:
+#include <Q3ValueList>
+#include <QEvent>
+#include <QChildEvent>
 
 namespace KateMDI {
 
-
-/** This class is needed because QSplitter cant return an index for a widget. */
-class Splitter : public QSplitter
-{
-  Q_OBJECT
-
-  public:
-    Splitter(Orientation o, QWidget* parent=0, const char* name=0);
-    ~Splitter();
-
-    /** Since there is supposed to be only 2 childs of a katesplitter,
-     * any child other than the last is the first.
-     * This method uses QSplitter::idAfter(widget) which
-     * returns 0 if there is no widget after this one.
-     * This results in an error if widget is not a child
-     * in this splitter */
-    bool isLastChild(QWidget* w) const;
-
-    int idAfter ( QWidget * w ) const;
-};
+class ToolView;
 
 class ToggleToolViewAction : public KToggleAction
 {
@@ -69,7 +54,7 @@ class ToggleToolViewAction : public KToggleAction
 
   protected slots:
     void slotToggled(bool);
-    void visibleChanged(bool);
+    void toolVisibleChanged(bool);
 
   private:
     ToolView *m_tv;
@@ -92,12 +77,12 @@ class GUIClient : public QObject, public KXMLGUIClient
 
   private:
     MainWindow *m_mw;
-    QPtrList<KAction> m_toolViewActions;
+    Q3PtrList<KAction> m_toolViewActions;
     QMap<ToolView*, KAction*> m_toolToAction;
     KActionMenu *m_toolMenu;
 };
 
-class ToolView : public QVBox
+class ToolView : public Q3VBox
 {
   Q_OBJECT
 
@@ -130,7 +115,7 @@ class ToolView : public QVBox
      * toolview hidden or shown
      * @param bool is this toolview made visible?
      */
-    void visibleChanged (bool visible);
+    void toolVisibleChanged (bool visible);
 
   /**
    * some internal methodes needed by the main window and the sidebars
@@ -140,10 +125,10 @@ class ToolView : public QVBox
 
     Sidebar *sidebar () { return m_sidebar; }
 
-    void setVisible (bool vis);
+    void setToolVisible (bool vis);
 
   public:
-    bool visible () const;
+    bool toolVisible () const;
 
   protected:
     void childEvent ( QChildEvent *ev );
@@ -160,7 +145,7 @@ class ToolView : public QVBox
     /**
      * is visible in sidebar
      */
-    bool m_visible;
+    bool m_toolVisible;
 
     /**
      * is this view persistent?
@@ -179,7 +164,7 @@ class Sidebar : public KMultiTabBar
     Sidebar (KMultiTabBar::KMultiTabBarPosition pos, class MainWindow *mainwin, QWidget *parent);
     virtual ~Sidebar ();
 
-    void setSplitter (Splitter *sp);
+    void setSplitter (QSplitter *sp);
 
   public:
     ToolView *addWidget (const QPixmap &icon, const QString &text, ToolView *widget);
@@ -221,17 +206,17 @@ class Sidebar : public KMultiTabBar
     MainWindow *m_mainWin;
 
     KMultiTabBar::KMultiTabBarPosition m_pos;
-    Splitter *m_splitter;
+    QSplitter *m_splitter;
     KMultiTabBar *m_tabBar;
-    Splitter *m_ownSplit;
+    QSplitter *m_ownSplit;
 
-    QIntDict<ToolView> m_idToWidget;
+    Q3IntDict<ToolView> m_idToWidget;
     QMap<ToolView*, int> m_widgetToId;
 
     /**
      * list of all toolviews around in this sidebar
      */
-    QValueList<ToolView*> m_toolviews;
+    Q3ValueList<ToolView*> m_toolviews;
 
     int m_lastSize;
 
@@ -363,12 +348,12 @@ class MainWindow : public KParts::MainWindow
     /**
      * map identifiers to widgets
      */
-    QDict<ToolView> m_idToWidget;
+    Q3Dict<ToolView> m_idToWidget;
 
     /**
      * list of all toolviews around
      */
-    QValueList<ToolView*> m_toolviews;
+    Q3ValueList<ToolView*> m_toolviews;
 
     /**
      * widget, which is the central part of the
@@ -379,12 +364,12 @@ class MainWindow : public KParts::MainWindow
     /**
      * horizontal splitter
      */
-    Splitter *m_hSplitter;
+    QSplitter *m_hSplitter;
 
     /**
      * vertical splitter
      */
-    Splitter *m_vSplitter;
+    QSplitter *m_vSplitter;
 
     /**
      * sidebars for the four sides

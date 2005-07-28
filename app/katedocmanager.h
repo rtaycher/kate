@@ -23,13 +23,15 @@
 #include "katemain.h"
 #include "../interfaces/documentmanager.h"
 
-#include <kate/document.h>
+#include <ktexteditor/document.h>
+#include <ktexteditor/editor.h>
+#include <ktexteditor/modificationinterface.h>
 
-#include <qguardedptr.h>
-#include <qptrlist.h>
-#include <qobject.h>
-#include <qptrdict.h>
-#include <qintdict.h>
+#include <QPointer>
+#include <QList>
+#include <QObject>
+#include <QByteArray>
+#include <QHash>
 
 namespace KParts { class Factory; }
 
@@ -41,12 +43,12 @@ class KateDocumentInfo
   public:
     KateDocumentInfo ()
      : modifiedOnDisc (false),
-       modifiedOnDiscReason (0)
+       modifiedOnDiscReason (KTextEditor::ModificationInterface::OnDiskUnmodified)
     {
     }
 
     bool modifiedOnDisc;
-    unsigned char modifiedOnDiscReason;
+    KTextEditor::ModificationInterface::ModifiedOnDiskReason modifiedOnDiscReason;
 };
 
 class KateDocManager : public QObject
@@ -60,43 +62,41 @@ class KateDocManager : public QObject
     static KateDocManager *self ();
 
     Kate::DocumentManager *documentManager () { return m_documentManager; };
+    KTextEditor::Editor *editor() {return m_editor;}
 
-    Kate::Document *createDoc ();
-    void deleteDoc (Kate::Document *doc);
+    KTextEditor::Document *createDoc ();
+    void deleteDoc (KTextEditor::Document *doc);
 
-    Kate::Document *document (uint n);
+    KTextEditor::Document *document (uint n);
 
-    Kate::Document *activeDocument ();
-    void setActiveDocument (Kate::Document *doc);
-
-    Kate::Document *firstDocument ();
-    Kate::Document *nextDocument ();
+    KTextEditor::Document *activeDocument ();
+    void setActiveDocument (KTextEditor::Document *doc);
 
     // search document with right documentNumber()
-    Kate::Document *documentWithID (uint id);
+    KTextEditor::Document *documentWithID (uint id);
 
-    const KateDocumentInfo *documentInfo (Kate::Document *doc);
+    const KateDocumentInfo *documentInfo (KTextEditor::Document *doc);
 
-    int findDocument (Kate::Document *doc);
+    int findDocument (KTextEditor::Document *doc);
     /** Returns the documentNumber of the doc with url URL or -1 if no such doc is found */
     int findDocument (KURL url);
     // Anders: The above is not currently stable ?
-    Kate::Document *findDocumentByUrl( KURL url );
+    KTextEditor::Document *findDocumentByUrl( KURL url );
 
     bool isOpen(KURL url);
 
     uint documents ();
 
-    QPtrList<Kate::Document> &documentList () { return m_docList; };
+    QList<KTextEditor::Document*> &documentList () { return m_docList; };
 
-    Kate::Document *openURL(const KURL&,const QString &encoding=QString::null,uint *id =0);
+    KTextEditor::Document *openURL(const KURL&,const QString &encoding=QString::null,uint *id =0);
 
-    bool closeDocument(class Kate::Document *,bool closeURL=true);
+    bool closeDocument(class KTextEditor::Document *,bool closeURL=true);
     bool closeDocument(uint);
     bool closeDocumentWithID(uint);
     bool closeAllDocuments(bool closeURL=true);
 
-    QPtrList<Kate::Document> modifiedDocumentList();
+    QList<KTextEditor::Document*> modifiedDocumentList();
     bool queryCloseDocuments(KateMainWindow *w);
 
     void saveDocumentList (class KConfig *config);
@@ -118,32 +118,34 @@ class KateDocManager : public QObject
     void saveAll();
 
   signals:
-    void documentCreated (Kate::Document *doc);
+    void documentCreated (KTextEditor::Document *doc);
     void documentDeleted (uint documentNumber);
     void documentChanged ();
     void initialDocumentReplaced ();
 
   private slots:
-    void slotModifiedOnDisc (Kate::Document *doc, bool b, unsigned char reason);
-    void slotModChanged(Kate::Document *doc);
+    void slotModifiedOnDisc (KTextEditor::Document *doc, bool b, KTextEditor::ModificationInterface::ModifiedOnDiskReason reason);
+    void slotModChanged(KTextEditor::Document *doc);
 
   private:
-    bool loadMetaInfos(Kate::Document *doc, const KURL &url);
-    void saveMetaInfos(Kate::Document *doc);
-    bool computeUrlMD5(const KURL &url, QCString &result);
+    bool loadMetaInfos(KTextEditor::Document *doc, const KURL &url);
+    void saveMetaInfos(KTextEditor::Document *doc);
+    bool computeUrlMD5(const KURL &url, QByteArray &result);
 
     Kate::DocumentManager *m_documentManager;
-    QPtrList<Kate::Document> m_docList;
-    QIntDict<Kate::Document> m_docDict;
-    QPtrDict<KateDocumentInfo> m_docInfos;
-    QGuardedPtr<Kate::Document> m_currentDoc;
+    QList<KTextEditor::Document*> m_docList;
+    QHash<int,KTextEditor::Document*> m_docDict;
+    QHash<KTextEditor::Document*,KateDocumentInfo*> m_docInfos;
+
+    QPointer<KTextEditor::Document> m_currentDoc;
     KConfig *m_metaInfos;
     bool m_saveMetaInfos;
     int m_daysMetaInfos;
 
     DCOPObject *m_dcop;
 
-    KParts::Factory *m_factory;
+    //KParts::Factory *m_factory;
+    KTextEditor::Editor *m_editor;
 
 };
 

@@ -25,7 +25,9 @@
 
 #include <kurl.h>
 
-#include <qvbox.h>
+#include <q3vbox.h>
+//Added by qt3to4:
+#include <QShowEvent>
 
 namespace KParts {
   class ReadOnlyPart;
@@ -42,7 +44,7 @@ class KateMainWindow;
  * This class is used for the internal terminal emulator
  * It uses internally the konsole part, thx to konsole devs :)
  */
-class KateConsole : public QVBox
+class KateConsole : public Q3VBox
 {
   Q_OBJECT
 

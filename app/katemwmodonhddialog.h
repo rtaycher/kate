@@ -20,11 +20,13 @@
 #ifndef _KATE_MW_MODONHD_DIALOG_H_
 #define _KATE_MW_MODONHD_DIALOG_H_
 
-#include <kdialogbase.h>
-#include <qptrvector.h>
-#include <kate/document.h>
+#include <ktexteditor/document.h>
 
-typedef  QPtrVector<Kate::Document> DocVector;
+#include <kdialogbase.h>
+
+#include <q3ptrvector.h>
+
+typedef  Q3PtrVector<KTextEditor::Document> DocVector;
 class KProcIO;
 class KProcess;
 /**

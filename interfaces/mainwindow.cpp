@@ -67,10 +67,22 @@ ViewManager *MainWindow::viewManager () const
   return d->win->viewManager ()->viewManager ();
 }
 
+
+QWidget *MainWindow::window() const
+{
+  return d->win;
+}
+
+QWidget *MainWindow::centralWidget() const
+{
+  return d->win->centralWidget();
+}
+
 ToolViewManager *MainWindow::toolViewManager () const
 {
   return d->win->toolViewManager ();
 }
+
 
 }
 

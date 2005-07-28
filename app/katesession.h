@@ -27,7 +27,7 @@
 #include <kaction.h>
 
 #include <qobject.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 class KateSessionManager;
 
@@ -153,7 +153,7 @@ class KateSession  : public KShared
     KSimpleConfig *m_writeConfig;
 };
 
-typedef QValueList<KateSession::Ptr> KateSessionList;
+typedef Q3ValueList<KateSession::Ptr> KateSessionList;
 
 class KateSessionManager : public QObject
 {

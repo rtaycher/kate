@@ -57,7 +57,8 @@ KateApp::KateApp (KCmdLineArgs *args)
   KGlobal::locale()->insertCatalogue("katepart");
 
   // some global default
-  Kate::Document::setFileChangedDialogsActivated (true);
+#warning fixme later
+//  KTextEditor::Document::setFileChangedDialogsActivated (true);
 
   // application interface
   m_application = new Kate::Application (this);
@@ -125,7 +126,8 @@ void KateApp::initKate ()
 void KateApp::restoreKate ()
 {
   // restore the nice files ;) we need it
-  Kate::Document::setOpenErrorDialogsActivated (false);
+  #warning fixme later
+  //KTextEditor::Document::setOpenErrorDialogsActivated (false);
 
   // activate again correct session!!!
   sessionConfig()->setGroup("General");
@@ -134,7 +136,8 @@ void KateApp::restoreKate ()
 
   m_docManager->restoreDocumentList (sessionConfig());
 
-  Kate::Document::setOpenErrorDialogsActivated (true);
+#warning fixme later
+  //KTextEditor::Document::setOpenErrorDialogsActivated (true);
 
   // restore all windows ;)
   for (int n=1; KMainWindow::canBeRestored(n); n++)
@@ -175,7 +178,9 @@ bool KateApp::startupKate ()
 
   QTextCodec *codec = m_args->isSet("encoding") ? QTextCodec::codecForName(m_args->getOption("encoding")) : 0;
 
-  Kate::Document::setOpenErrorDialogsActivated (false);
+#warning fixme later
+  //KTextEditor::Document::setOpenErrorDialogsActivated (false);
+
   uint id = 0;
   for (int z=0; z<m_args->count(); z++)
   {
@@ -195,7 +200,8 @@ bool KateApp::startupKate ()
                           i18n("The file '%1' could not be opened: it is not a normal file, it is a folder.").arg(m_args->url(z).url()) );
   }
 
-  Kate::Document::setOpenErrorDialogsActivated (true);
+#warning fixme later
+  //KTextEditor::Document::setOpenErrorDialogsActivated (true);
 
   // handle stdin input
   if( m_args->isSet( "stdin" ) )
@@ -221,7 +227,7 @@ bool KateApp::startupKate ()
     activeMainWindow()->viewManager()->activateView( id );
 
   if ( activeMainWindow()->viewManager()->viewCount () == 0 )
-    activeMainWindow()->viewManager()->activateView(m_docManager->firstDocument()->documentNumber());
+    activeMainWindow()->viewManager()->activateView(m_docManager->documentList().first()->documentNumber());
 
   int line = 0;
   int column = 0;
@@ -239,8 +245,8 @@ bool KateApp::startupKate ()
     nav = true;
   }
 
-  if (nav)
-    activeMainWindow()->viewManager()->activeView ()->setCursorPosition (line, column);
+  if (nav && activeMainWindow()->viewManager()->activeView ())
+    activeMainWindow()->viewManager()->activeView ()->setCursorPosition (KTextEditor::Cursor (line, column));
 
   // show the nice tips
   KTipDialog::showTip(activeMainWindow());
@@ -316,7 +322,8 @@ bool KateApp::setCursor (int line, int column)
   if (!mainWindow)
     return false;
 
-  mainWindow->viewManager()->activeView ()->setCursorPosition (line, column);
+  if (mainWindow->viewManager()->activeView ())
+    mainWindow->viewManager()->activeView ()->setCursorPosition (KTextEditor::Cursor (line, column));
 
   return true;
 }
@@ -328,9 +335,12 @@ bool KateApp::openInput (const QString &text)
   if (!activeMainWindow()->viewManager()->activeView ())
     return false;
 
-  activeMainWindow()->viewManager()->activeView ()->getDoc()->setText (text);
+  KTextEditor::Document *doc = activeMainWindow()->viewManager()->activeView ()->document();
 
-  return true;
+  if (!doc)
+    return false;
+
+  return doc->setText (text);
 }
 
 KateMainWindow *KateApp::newMainWindow (KConfig *sconfig, const QString &sgroup)
@@ -339,7 +349,7 @@ KateMainWindow *KateApp::newMainWindow (KConfig *sconfig, const QString &sgroup)
   m_mainWindows.push_back (mainWindow);
 
   if ((mainWindows() > 1) && m_mainWindows[m_mainWindows.count()-2]->viewManager()->activeView())
-    mainWindow->viewManager()->activateView ( m_mainWindows[m_mainWindows.count()-2]->viewManager()->activeView()->getDoc()->documentNumber() );
+    mainWindow->viewManager()->activateView ( m_mainWindows[m_mainWindows.count()-2]->viewManager()->activeView()->document()->documentNumber() );
   else if ((mainWindows() > 1) && (m_docManager->documents() > 0))
     mainWindow->viewManager()->activateView ( (m_docManager->document(m_docManager->documents()-1))->documentNumber() );
   else if ((mainWindows() > 1) && (m_docManager->documents() < 1))
@@ -368,12 +378,12 @@ KateMainWindow *KateApp::activeMainWindow ()
   return m_mainWindows[n];
 }
 
-uint KateApp::mainWindows () const
+int KateApp::mainWindows () const
 {
   return m_mainWindows.size();
 }
 
-KateMainWindow *KateApp::mainWindow (uint n)
+KateMainWindow *KateApp::mainWindow (int n)
 {
   if (n < m_mainWindows.size())
     return m_mainWindows[n];

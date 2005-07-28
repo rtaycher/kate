@@ -30,37 +30,27 @@ KateDocManagerDCOPIface::KateDocManagerDCOPIface (KateDocManager *dm) : DCOPObje
 // bit more error save than the forcing c cast ;()
 DCOPRef KateDocManagerDCOPIface::document (uint n)
 {
-  Kate::Document *doc = m_dm->document(n);
+  KTextEditor::Document *doc = m_dm->document(n);
 
-  if (!doc)
+  if (!doc || !doc->inherits ("DCOPObject"))
     return DCOPRef ();
 
-  DCOPObject *obj = static_cast<DCOPObject*>(doc->qt_cast("DCOPObject"));
-
-  if (!obj)
-    return DCOPRef ();
-
-  return DCOPRef (obj);
+  return DCOPRef ((DCOPObject *) doc);
 }
 
 DCOPRef KateDocManagerDCOPIface::activeDocument ()
 {
-  Kate::Document *doc = m_dm->activeDocument();
+  KTextEditor::Document *doc = m_dm->activeDocument();
 
-  if (!doc)
+  if (!doc || !doc->inherits ("DCOPObject"))
     return DCOPRef ();
 
-  DCOPObject *obj = static_cast<DCOPObject*>(doc->qt_cast("DCOPObject"));
-
-  if (!obj)
-    return DCOPRef ();
-
-  return DCOPRef (obj);
+  return DCOPRef ((DCOPObject *) doc);
 }
 
 uint KateDocManagerDCOPIface::activeDocumentNumber ()
 {
-  Kate::Document *doc = m_dm->activeDocument();
+  KTextEditor::Document *doc = m_dm->activeDocument();
 
   if (doc)
     return doc->documentNumber ();
@@ -70,32 +60,22 @@ uint KateDocManagerDCOPIface::activeDocumentNumber ()
 
 DCOPRef KateDocManagerDCOPIface::documentWithID (uint id)
 {
-  Kate::Document *doc = m_dm->documentWithID (id);
+  KTextEditor::Document *doc = m_dm->documentWithID (id);
 
-  if (!doc)
+  if (!doc || !doc->inherits ("DCOPObject"))
     return DCOPRef ();
 
-  DCOPObject *obj = static_cast<DCOPObject*>(doc->qt_cast("DCOPObject"));
-
-  if (!obj)
-    return DCOPRef ();
-
-  return DCOPRef (obj);
+  return DCOPRef ((DCOPObject *) doc);
 }
 
 DCOPRef KateDocManagerDCOPIface::openURL (KURL url, QString encoding)
 {
-  Kate::Document *doc = m_dm->openURL (url, encoding);
+  KTextEditor::Document *doc = m_dm->openURL (url, encoding);
 
-  if (!doc)
+  if (!doc || !doc->inherits ("DCOPObject"))
     return DCOPRef ();
 
-  DCOPObject *obj = static_cast<DCOPObject*>(doc->qt_cast("DCOPObject"));
-
-  if (!obj)
-    return DCOPRef ();
-
-  return DCOPRef (obj);
+  return DCOPRef ((DCOPObject *) doc);
 }
 
 bool KateDocManagerDCOPIface::closeDocument(uint n)

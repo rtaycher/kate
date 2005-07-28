@@ -26,14 +26,16 @@
 #include "../interfaces/pluginconfiginterface.h"
 #include "../interfaces/pluginconfiginterfaceextension.h"
 
-#include <kate/document.h>
-#include <ktexteditor/configinterfaceextension.h>
+#include <ktexteditor/document.h>
+#include <ktexteditor/editorchooser.h>
 
 #include <kdialogbase.h>
+//Added by qt3to4:
+#include <Q3PtrList>
 
 class QCheckBox;
 class QSpinBox;
-class QButtonGroup;
+class Q3ButtonGroup;
 
 struct PluginPageListItem
 {
@@ -46,7 +48,7 @@ class KateConfigDialog : public KDialogBase
   Q_OBJECT
 
   public:
-    KateConfigDialog (KateMainWindow *parent, Kate::View *view);
+    KateConfigDialog (KateMainWindow *parent, KTextEditor::View *view);
     ~KateConfigDialog ();
 
   public:
@@ -61,7 +63,7 @@ class KateConfigDialog : public KDialogBase
   private:
     KateMainWindow *mainWindow;
 
-    Kate::View* v;
+    KTextEditor::View* v;
     bool dataChanged;
 
     QCheckBox *cb_fullPath;
@@ -70,13 +72,14 @@ class KateConfigDialog : public KDialogBase
     QCheckBox *cb_saveMetaInfos;
     QSpinBox *sb_daysMetaInfos;
     QCheckBox* cb_restoreVC;
-    QButtonGroup *sessions_start;
-    QButtonGroup *sessions_exit;
-    Kate::ConfigPage *fileSelConfigPage;
-    Kate::ConfigPage *filelistConfigPage;
-    Kate::ConfigPage *configExternalToolsPage;
-    QPtrList<PluginPageListItem> pluginPages;
-    QPtrList<KTextEditor::ConfigPage> editorPages;
+    Q3ButtonGroup *sessions_start;
+    Q3ButtonGroup *sessions_exit;
+    KTextEditor::ConfigPage *fileSelConfigPage;
+    KTextEditor::ConfigPage *filelistConfigPage;
+    KTextEditor::ConfigPage *configExternalToolsPage;
+    Q3PtrList<PluginPageListItem> pluginPages;
+    Q3PtrList<KTextEditor::ConfigPage> editorPages;
+    KTextEditor::EditorChooser *m_editorChooser;
 };
 
 #endif

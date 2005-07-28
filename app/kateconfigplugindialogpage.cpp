@@ -25,18 +25,17 @@
 #include <klistbox.h>
 #include "kateapp.h"
 #include <qstringlist.h>
-#include <qhbox.h>
+#include <q3hbox.h>
 #include <qlabel.h>
 #include <klocale.h>
 #include <qpushbutton.h>
 #include <qtooltip.h>
 #include <kiconloader.h>
-#include <qwhatsthis.h>
 
-class KatePluginListItem : public QCheckListItem
+class KatePluginListItem : public Q3CheckListItem
 {
   public:
-    KatePluginListItem(bool checked, KatePluginInfo *info, QListView *parent);
+    KatePluginListItem(bool checked, KatePluginInfo *info, Q3ListView *parent);
     KatePluginInfo *info() const { return mInfo; }
 
   protected:
@@ -47,8 +46,8 @@ class KatePluginListItem : public QCheckListItem
     bool silentStateChange;
 };
 
-KatePluginListItem::KatePluginListItem(bool checked, KatePluginInfo *info, QListView *parent)
-  : QCheckListItem(parent, info->service->name(), CheckBox)
+KatePluginListItem::KatePluginListItem(bool checked, KatePluginInfo *info, Q3ListView *parent)
+  : Q3CheckListItem(parent, info->service->name(), CheckBox)
   , mInfo(info)
   , silentStateChange(false)
 {
@@ -73,23 +72,24 @@ void KatePluginListView::stateChanged(KatePluginListItem *item, bool b)
   emit stateChange(item, b);
 }
 
-KateConfigPluginPage::KateConfigPluginPage(QWidget *parent, KateConfigDialog *dialog):QVBox(parent)
+KateConfigPluginPage::KateConfigPluginPage(QWidget *parent, KateConfigDialog *dialog):Q3VBox(parent)
 {
   myDialog=dialog;
 
   KatePluginListView* listView = new KatePluginListView(this);
   listView->addColumn(i18n("Name"));
   listView->addColumn(i18n("Comment"));
-  QWhatsThis::add(listView,i18n("Here you can see all available Kate plugins. Those with a check mark are loaded, and will be loaded again the next time Kate is started."));
+  listView->setWhatsThis(i18n("Here you can see all available Kate plugins. Those with a check mark are loaded, and will be loaded again the next time Kate is started."));
 
   connect(listView, SIGNAL(stateChange(KatePluginListItem *, bool)), this, SLOT(stateChange(KatePluginListItem *, bool)));
 
   KatePluginList &pluginList (KatePluginManager::self()->pluginList());
-  for (unsigned int i=0; i < pluginList.size(); ++i)
+#warning try to fix me
+  for (KatePluginList::iterator it=pluginList.begin();it!=pluginList.end(); ++it)
   {
-    KatePluginListItem *item = new KatePluginListItem(pluginList[i].load, &pluginList[i], listView);
-    item->setText(0, pluginList[i].service->name());
-    item->setText(1, pluginList[i].service->comment());
+    KatePluginListItem *item = new KatePluginListItem(it->load, &(*it), listView);
+    item->setText(0, it->service->name());
+    item->setText(1, it->service->comment());
   }
 }
 

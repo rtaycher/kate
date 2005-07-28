@@ -54,7 +54,7 @@ ViewManager::~ViewManager ()
   delete d;
 }
 
-View *ViewManager::activeView()
+KTextEditor::View *ViewManager::activeView()
 {
   return d->viewMan->activeView();
 }

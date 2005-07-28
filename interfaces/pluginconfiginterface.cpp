@@ -56,8 +56,8 @@ unsigned int PluginConfigInterface::pluginConfigInterfaceNumber () const
 
 PluginConfigInterface *Kate::pluginConfigInterface (Plugin *plugin)
 {                       
-  if (!plugin)
+  if (!plugin || !plugin->inherits("Kate::PluginConfigInterface"))
     return 0;
 
-  return static_cast<PluginConfigInterface*>(plugin->qt_cast("Kate::PluginConfigInterface"));
+  return (PluginConfigInterface*) (plugin);
 }

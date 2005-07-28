@@ -30,22 +30,29 @@
 
 #include <qlayout.h>
 #include <qtoolbutton.h>
-#include <qhbox.h>
-#include <qvbox.h>
+#include <q3hbox.h>
+#include <q3vbox.h>
 #include <qlabel.h>
-#include <qstrlist.h>
+#include <q3strlist.h>
 #include <qtooltip.h>
-#include <qwhatsthis.h>
 #include <qapplication.h>
-#include <qlistbox.h>
+#include <q3listbox.h>
 #include <qscrollbar.h>
 #include <qspinbox.h>
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qcheckbox.h>
 #include <qregexp.h>
-#include <qdockarea.h>
+#include <q3dockarea.h>
 #include <qtimer.h>
 #include <qdir.h>
+//Added by qt3to4:
+#include <QPixmap>
+#include <QFocusEvent>
+#include <QEvent>
+#include <Q3Frame>
+#include <QShowEvent>
+#include <QResizeEvent>
+#include <QVBoxLayout>
 
 #include <kapplication.h>
 #include <kiconloader.h>
@@ -59,7 +66,7 @@
 #include <kaction.h>
 #include <kmessagebox.h>
 #include <ktoolbarbutton.h>
-#include <qtoolbar.h>
+#include <q3toolbar.h>
 #include <kpopupmenu.h>
 #include <kdialog.h>
 #include <kdebug.h>
@@ -85,7 +92,7 @@ void KateFileSelectorToolBar::setMovingEnabled( bool)
 
 
 KateFileSelectorToolBarParent::KateFileSelectorToolBarParent(QWidget *parent)
-	:QFrame(parent),m_tb(0){}
+	:Q3Frame(parent),m_tb(0){}
 KateFileSelectorToolBarParent::~KateFileSelectorToolBarParent(){}
 void KateFileSelectorToolBarParent::setToolBar(KateFileSelectorToolBar *tb)
 {
@@ -107,7 +114,7 @@ void KateFileSelectorToolBarParent::resizeEvent ( QResizeEvent * )
 KateFileSelector::KateFileSelector( KateMainWindow *mainWindow,
                                     KateViewManager *viewManager,
                                     QWidget * parent, const char * name )
-    : QVBox (parent, name),
+    : Q3VBox (parent, name),
       mainwin(mainWindow),
       viewmanager(viewManager)
 {
@@ -127,29 +134,32 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow,
   KURLCompletion* cmpl = new KURLCompletion(KURLCompletion::DirCompletion);
   cmbPath->setCompletionObject( cmpl );
   cmbPath->setAutoDeleteCompletionObject( true );
-  cmbPath->listBox()->installEventFilter( this );
+
+// FIXME
+//  cmbPath->listBox()->installEventFilter( this );
 
   dir = new KDirOperator(KURL(), this, "operator");
   dir->setView(KFile::/* Simple */Detail);
   dir->view()->setSelectionMode(KFile::Multi);
   setStretchFactor(dir, 2);
+  dir->setSizePolicy (QSizePolicy (QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding));
 
   KActionCollection *coll = dir->actionCollection();
   // some shortcuts of diroperator that clashes with Kate
-  coll->action( "delete" )->setShortcut( KShortcut( ALT + Key_Delete ) );
-  coll->action( "reload" )->setShortcut( KShortcut( ALT + Key_F5 ) );
-  coll->action( "back" )->setShortcut( KShortcut( ALT + SHIFT + Key_Left ) );
-  coll->action( "forward" )->setShortcut( KShortcut( ALT + SHIFT + Key_Right ) );
+  coll->action( "delete" )->setShortcut( KShortcut( Qt::ALT + Qt::Key_Delete ) );
+  coll->action( "reload" )->setShortcut( KShortcut( Qt::ALT + Qt::Key_F5 ) );
+  coll->action( "back" )->setShortcut( KShortcut( Qt::ALT + Qt::SHIFT + Qt::Key_Left ) );
+  coll->action( "forward" )->setShortcut( KShortcut( Qt::ALT + Qt::SHIFT + Qt::Key_Right ) );
   // some consistency - reset up for dir too
-  coll->action( "up" )->setShortcut( KShortcut( ALT + SHIFT + Key_Up ) );
-  coll->action( "home" )->setShortcut( KShortcut( CTRL + ALT + Key_Home ) );
+  coll->action( "up" )->setShortcut( KShortcut( Qt::ALT + Qt::SHIFT + Qt::Key_Up ) );
+  coll->action( "home" )->setShortcut( KShortcut( Qt::CTRL + Qt::ALT + Qt::Key_Home ) );
 
   // bookmarks action!
   KActionMenu *acmBookmarks = new KActionMenu( i18n("Bookmarks"), "bookmark",
         mActionCollection, "bookmarks" );
   acmBookmarks->setDelayed( false );
   bookmarkHandler = new KBookmarkHandler( this, acmBookmarks->popupMenu() );
-  QHBox* filterBox = new QHBox(this);
+  Q3HBox* filterBox = new Q3HBox(this);
 
   btnFilter = new QToolButton( filterBox );
   btnFilter->setIconSet( SmallIconSet("filter" ) );
@@ -192,17 +202,14 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow,
   waitingUrl = QString::null;
 
   // whatsthis help
-  QWhatsThis::add( cmbPath,
-       i18n("<p>Here you can enter a path for a folder to display."
+  cmbPath->setWhatsThis(       i18n("<p>Here you can enter a path for a folder to display."
             "<p>To go to a folder previously entered, press the arrow on "
             "the right and choose one. <p>The entry has folder "
             "completion. Right-click to choose how completion should behave.") );
-  QWhatsThis::add( filter,
-        i18n("<p>Here you can enter a name filter to limit which files are displayed."
+  filter->setWhatsThis(        i18n("<p>Here you can enter a name filter to limit which files are displayed."
              "<p>To clear the filter, toggle off the filter button to the left."
              "<p>To reapply the last filter used, toggle on the filter button." ) );
-  QWhatsThis::add( btnFilter,
-        i18n("<p>This button clears the name filter when toggled off, or "
+  btnFilter->setWhatsThis(        i18n("<p>This button clears the name filter when toggled off, or "
              "reapplies the last filter used when toggled on.") );
 
 }
@@ -478,7 +485,7 @@ bool KateFileSelector::eventFilter( QObject* o, QEvent *e )
       satisfying result, something is wrong with the handling of the sizehint.
       And the popup is rather useless, if the paths are only partly visible.
   */
-  QListBox *lb = cmbPath->listBox();
+/* FIXME Q3ListBox *lb = cmbPath->listBox();
   if ( o == lb && e->type() == QEvent::Show ) {
     int add = lb->height() < lb->contentsHeight() ? lb->verticalScrollBar()->width() : 0;
     int w = QMIN( mainwin->width(), lb->contentsWidth() + add );
@@ -487,7 +494,7 @@ bool KateFileSelector::eventFilter( QObject* o, QEvent *e )
     // TODO - decide if it is worth caching the size while untill the contents
     //        are changed.
   }
-  // TODO - same thing for the completion popup?
+  */// TODO - same thing for the completion popup?
   return QWidget::eventFilter( o, e );
 }
 
@@ -498,13 +505,13 @@ bool KateFileSelector::eventFilter( QObject* o, QEvent *e )
    QListboxItem that can store and return a string,
    used for the toolbar action selector.
 */
-class ActionLBItem : public QListBoxPixmap {
+class ActionLBItem : public Q3ListBoxPixmap {
   public:
-  ActionLBItem( QListBox *lb=0,
+  ActionLBItem( Q3ListBox *lb=0,
                 const QPixmap &pm = QPixmap(),
                 const QString &text=QString::null,
                 const QString &str=QString::null ) :
-    QListBoxPixmap( lb, pm, text ),
+    Q3ListBoxPixmap( lb, pm, text ),
     _str(str) {};
   QString idstring() { return _str; };
   private:
@@ -516,8 +523,8 @@ class ActionLBItem : public QListBoxPixmap {
 ////////////////////////////////////////////////////////////////////////////////
 // KFSConfigPage implementation
 ////////////////////////////////////////////////////////////////////////////////
-KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelector *kfs )
-  : Kate::ConfigPage( parent, name ),
+KFSConfigPage::KFSConfigPage( QWidget *parent, const char *, KateFileSelector *kfs )
+  : KTextEditor::ConfigPage( parent ),
     fileSelector( kfs ),
     m_changed( false )
 {
@@ -526,18 +533,18 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
   lo->setSpacing( spacing );
 
   // Toolbar - a lot for a little...
-  QGroupBox *gbToolbar = new QGroupBox( 1, Qt::Vertical, i18n("Toolbar"), this );
+  Q3GroupBox *gbToolbar = new Q3GroupBox( 1, Qt::Vertical, i18n("Toolbar"), this );
   acSel = new KActionSelector( gbToolbar );
   acSel->setAvailableLabel( i18n("A&vailable actions:") );
   acSel->setSelectedLabel( i18n("S&elected actions:") );
   lo->addWidget( gbToolbar );
-  connect( acSel, SIGNAL( added( QListBoxItem * ) ), this, SLOT( slotMyChanged() ) );
-  connect( acSel, SIGNAL( removed( QListBoxItem * ) ), this, SLOT( slotMyChanged() ) );
-  connect( acSel, SIGNAL( movedUp( QListBoxItem * ) ), this, SLOT( slotMyChanged() ) );
-  connect( acSel, SIGNAL( movedDown( QListBoxItem * ) ), this, SLOT( slotMyChanged() ) );
+  connect( acSel, SIGNAL( added( Q3ListBoxItem * ) ), this, SLOT( slotMyChanged() ) );
+  connect( acSel, SIGNAL( removed( Q3ListBoxItem * ) ), this, SLOT( slotMyChanged() ) );
+  connect( acSel, SIGNAL( movedUp( Q3ListBoxItem * ) ), this, SLOT( slotMyChanged() ) );
+  connect( acSel, SIGNAL( movedDown( Q3ListBoxItem * ) ), this, SLOT( slotMyChanged() ) );
 
   // Sync
-  QGroupBox *gbSync = new QGroupBox( 1, Qt::Horizontal, i18n("Auto Synchronization"), this );
+  Q3GroupBox *gbSync = new Q3GroupBox( 1, Qt::Horizontal, i18n("Auto Synchronization"), this );
   cbSyncActive = new QCheckBox( i18n("When a docu&ment becomes active"), gbSync );
   cbSyncShow = new QCheckBox( i18n("When the file selector becomes visible"), gbSync );
   lo->addWidget( gbSync );
@@ -545,14 +552,14 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
   connect( cbSyncShow, SIGNAL( toggled( bool ) ), this, SLOT( slotMyChanged() ) );
 
   // Histories
-  QHBox *hbPathHist = new QHBox ( this );
+  Q3HBox *hbPathHist = new Q3HBox ( this );
   QLabel *lbPathHist = new QLabel( i18n("Remember &locations:"), hbPathHist );
   sbPathHistLength = new QSpinBox( hbPathHist );
   lbPathHist->setBuddy( sbPathHistLength );
   lo->addWidget( hbPathHist );
   connect( sbPathHistLength, SIGNAL( valueChanged ( int ) ), this, SLOT( slotMyChanged() ) );
 
-  QHBox *hbFilterHist = new QHBox ( this );
+  Q3HBox *hbFilterHist = new Q3HBox ( this );
   QLabel *lbFilterHist = new QLabel( i18n("Remember &filters:"), hbFilterHist );
   sbFilterHistLength = new QSpinBox( hbFilterHist );
   lbFilterHist->setBuddy( sbFilterHistLength );
@@ -560,7 +567,7 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
   connect( sbFilterHistLength, SIGNAL( valueChanged ( int ) ), this, SLOT( slotMyChanged() ) );
 
   // Session
-  QGroupBox *gbSession = new QGroupBox( 1, Qt::Horizontal, i18n("Session"), this );
+  Q3GroupBox *gbSession = new Q3GroupBox( 1, Qt::Horizontal, i18n("Session"), this );
   cbSesLocation = new QCheckBox( i18n("Restore loca&tion"), gbSession );
   cbSesFilter = new QCheckBox( i18n("Restore last f&ilter"), gbSession );
   lo->addWidget( gbSession );
@@ -584,13 +591,13 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
   QString lhwt( i18n(
         "<p>Decides how many locations to keep in the history of the location "
         "combo box.") );
-  QWhatsThis::add( lbPathHist, lhwt );
-  QWhatsThis::add( sbPathHistLength, lhwt );
+  lbPathHist->setWhatsThis(lhwt );
+  sbPathHistLength->setWhatsThis(lhwt );
   QString fhwt( i18n(
         "<p>Decides how many filters to keep in the history of the filter "
         "combo box.") );
-  QWhatsThis::add( lbFilterHist, fhwt );
-  QWhatsThis::add( sbFilterHistLength, fhwt );
+  lbFilterHist->setWhatsThis(fhwt );
+  sbFilterHistLength->setWhatsThis(fhwt );
   QString synwt( i18n(
         "<p>These options allow you to have the File Selector automatically "
         "change location to the folder of the active document on certain "
@@ -599,12 +606,12 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *name, KateFileSelecto
         "effect until the file selector is visible."
         "<p>None of these are enabled by default, but you can always sync the "
         "location by pressing the sync button in the toolbar.") );
-  QWhatsThis::add( gbSync, synwt );
-  QWhatsThis::add( cbSesLocation, i18n(
+  gbSync->setWhatsThis(synwt );
+  cbSesLocation->setWhatsThis(i18n(
         "<p>If this option is enabled (default), the location will be restored "
         "when you start Kate.<p><strong>Note</strong> that if the session is "
         "handled by the KDE session manager, the location is always restored.") );
-  QWhatsThis::add( cbSesFilter, i18n(
+  cbSesFilter->setWhatsThis(i18n(
         "<p>If this option is enabled (default), the current filter will be "
         "restored when you start Kate.<p><strong>Note</strong> that if the "
         "session is handled by the KDE session manager, the filter is always "
@@ -627,7 +634,7 @@ void KFSConfigPage::apply()
   config->setGroup( "fileselector" );
   // toolbar
   QStringList l;
-  QListBoxItem *item = acSel->selectedListBox()->firstItem();
+  Q3ListBoxItem *item = acSel->selectedListBox()->firstItem();
   ActionLBItem *aItem;
   while ( item )
   {
@@ -657,7 +664,7 @@ void KFSConfigPage::apply()
   config->writeEntry( "restore last filter", cbSesFilter->isChecked() );
 }
 
-void KFSConfigPage::reload()
+void KFSConfigPage::reset()
 {
   // hmm, what is this supposed to do, actually??
   init();
@@ -683,7 +690,7 @@ void KFSConfigPage::init()
                 "bookmarks" << "sync_dir";
   QRegExp re("&(?=[^&])");
   KAction *ac;
-  QListBox *lb;
+  Q3ListBox *lb;
   for ( QStringList::Iterator it=allActions.begin(); it != allActions.end(); ++it ) {
     lb = l.contains( *it ) ? acSel->selectedListBox() : acSel->availableListBox();
     if ( *it == "bookmarks" || *it == "sync_dir" )
@@ -709,7 +716,7 @@ void KFSConfigPage::init()
 void KFSConfigPage::slotMyChanged()
 {
   m_changed = true;
-  slotChanged();
+  emit changed();
 }
 //END KFSConfigPage
 // kate: space-indent on; indent-width 2; replace-tabs on;

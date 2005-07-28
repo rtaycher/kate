@@ -23,12 +23,17 @@
 
 #include "katemain.h"
 
-#include <kate/view.h>
-#include <kate/document.h>
+#include <ktexteditor/view.h>
+#include <ktexteditor/document.h>
+#include <ktexteditor/modificationinterface.h>
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qwidget.h>
-#include <qvbox.h>
+#include <q3vbox.h>
+//Added by qt3to4:
+#include <QPixmap>
+#include <QLabel>
+#include <QEvent>
 #include <kstatusbar.h>
 
 class KVSSBSep;
@@ -36,6 +41,8 @@ class KVSSBSep;
 class KConfig;
 class KSqueezedTextLabel;
 class KateViewSpaceContainer;
+
+class QStackedWidget;
 
 class KateVSStatusBar : public KStatusBar
 {
@@ -45,14 +52,23 @@ class KateVSStatusBar : public KStatusBar
       KateVSStatusBar ( KateViewSpace *parent = 0L, const char *name = 0L );
       virtual ~KateVSStatusBar ();
 
-   public slots:
-      void setStatus( int r, int c, int ovr, bool block, int mod, const QString &msg );
-      void updateMod( bool );
-      /**
-       * changed the modified icon according to document state.
-       * @since Kate 2.4
-       */
-      void modifiedChanged();
+   /**
+    * stuff to update the statusbar on view changes
+    */
+  public slots:
+    void updateStatus ();
+
+    void viewModeChanged ( KTextEditor::View *view );
+
+    void cursorPositionChanged ( KTextEditor::View *view );
+
+    void selectionChanged (KTextEditor::View *view);
+
+    void modifiedChanged();
+
+    void documentNameChanged ();
+
+    void informationMessage (KTextEditor::View *view, const QString &message);
 
    protected:
       virtual bool eventFilter (QObject*,QEvent *);
@@ -68,7 +84,7 @@ class KateVSStatusBar : public KStatusBar
       class KateViewSpace *m_viewSpace;
 };
 
-class KateViewSpace : public QVBox
+class KateViewSpace : public Q3VBox
 {
   friend class KateViewSpaceContainer;
   friend class KateVSStatusBar;
@@ -80,12 +96,14 @@ class KateViewSpace : public QVBox
     ~KateViewSpace();
     bool isActiveSpace();
     void setActive(bool b, bool showled=false);
-    QWidgetStack* stack;
-    void addView(Kate::View* v, bool show=true);
-    void removeView(Kate::View* v);
-    bool showView(Kate::View* v);
-    bool showView(uint docID);
-    Kate::View* currentView();
+    QStackedWidget* stack;
+    void addView(KTextEditor::View* v, bool show=true);
+    void removeView(KTextEditor::View* v);
+
+    bool showView(KTextEditor::View *view) { return showView(view->document()); }
+    bool showView(KTextEditor::Document *document);
+
+    KTextEditor::View* currentView();
     int viewCount() const { return mViewList.count(); }
 
     void saveConfig (KConfig* config, int myIndex,const QString& viewConfGrp);
@@ -103,18 +121,14 @@ class KateViewSpace : public QVBox
     QLabel* l;
     QPixmap i_active;
     QPixmap i_empty;
-    QPtrList<Kate::View> mViewList;
+    Q3PtrList<KTextEditor::View> mViewList;
     int mViewCount;
     KVSSBSep *sep;
     KateViewSpaceContainer *m_viewManager;
     QString m_group;
 
-  private slots:
-    void slotStatusChanged (Kate::View *view, int r, int c, int ovr, bool block, int mod, const QString &msg);
-
   public slots:
     void polish();
-    void modifiedOnDisc(Kate::Document *, bool, unsigned char);
 };
 
 #endif

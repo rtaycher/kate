@@ -19,11 +19,13 @@
 #ifndef _KATE_MAILFILES_DIALOG_H_
 #define _KATE_MAILFILES_DIALOG_H_
 
-#include <kate/document.h>
+#include <ktexteditor/document.h>
 
 #include <kdialogbase.h>
 #include <kurl.h>
-#include <qptrlist.h>
+
+#include <q3ptrlist.h>
+#include <QLabel>
 
 class QString;
 class QStringList;
@@ -45,14 +47,14 @@ class KateMailDialog : public KDialogBase {
     /**
         @return a list of the selected docs.
     */
-    QPtrList<Kate::Document> selectedDocs();
+    Q3PtrList<KTextEditor::Document> selectedDocs();
   private slots:
     void slotShowButton();
   private:
     class KListView *list;
     class QLabel *lInfo;
     KateMainWindow *mainWindow;
-    class QVBox *mw;
+    class Q3VBox *mw;
 
 };
 

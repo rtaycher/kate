@@ -27,18 +27,26 @@
 #include "kateapp.h"
 #include "katesession.h"
 
+#include <ktexteditor/sessionconfiginterface.h>
+
 #include <kiconloader.h>
 #include <klocale.h>
 #include <ksqueezedtextlabel.h>
 #include <kconfig.h>
 #include <kdebug.h>
+#include <kstringhandler.h>
 
-#include <qwidgetstack.h>
+#include <QStackedWidget>
 #include <qpainter.h>
 #include <qlabel.h>
 #include <qcursor.h>
-#include <qpopupmenu.h>
+#include <QMenu>
 #include <qpixmap.h>
+#include <qtimer.h>
+//Added by qt3to4:
+#include <QPaintEvent>
+#include <QEvent>
+#include <QMouseEvent>
 
 //BEGIN KVSSBSep
 /*
@@ -78,14 +86,15 @@ protected:
 //BEGIN KateViewSpace
 KateViewSpace::KateViewSpace( KateViewSpaceContainer *viewManager,
                               QWidget* parent, const char* name )
-  : QVBox(parent, name),
+  : Q3VBox(parent, name),
     m_viewManager( viewManager )
 {
   mViewList.setAutoDelete(false);
 
-  stack = new QWidgetStack( this );
-  setStretchFactor(stack, 1);
+  stack = new QStackedWidget( this );
   stack->setFocus();
+  stack->setSizePolicy (QSizePolicy (QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding));
+
   //sep = new KVSSBSep( this );
   mStatusBar = new KateVSStatusBar(this);
   mIsActiveSpace = false;
@@ -104,12 +113,12 @@ void KateViewSpace::polish()
   mStatusBar->show();
 }
 
-void KateViewSpace::addView(Kate::View* v, bool show)
+void KateViewSpace::addView(KTextEditor::View* v, bool show)
 {
   // restore the config of this view if possible
   if ( !m_group.isEmpty() )
   {
-    QString fn = v->getDoc()->url().prettyURL();
+    QString fn = v->document()->url().prettyURL();
     if ( ! fn.isEmpty() )
     {
       QString vgroup = QString("%1 %2").arg(m_group).arg(fn);
@@ -118,29 +127,36 @@ void KateViewSpace::addView(Kate::View* v, bool show)
       if ( as->configRead() && as->configRead()->hasGroup( vgroup ) )
       {
         as->configRead()->setGroup( vgroup );
-        v->readSessionConfig ( as->configRead() );
+
+        if (KTextEditor::SessionConfigInterface *iface = qobject_cast<KTextEditor::SessionConfigInterface *>(v))
+          iface->readSessionConfig ( as->configRead() );
       }
     }
   }
 
-  uint id = mViewList.count();
-  stack->addWidget(v, id);
+  stack->addWidget(v);
   if (show) {
     mViewList.append(v);
     showView( v );
   }
   else {
-    Kate::View* c = mViewList.current();
+    KTextEditor::View* c = mViewList.current();
     mViewList.prepend( v );
     showView( c );
   }
+
+  // signals for the statusbar
+  connect(v, SIGNAL(cursorPositionChanged(KTextEditor::View *)), mStatusBar, SLOT(cursorPositionChanged(KTextEditor::View *)));
+  connect(v, SIGNAL(viewModeChanged(KTextEditor::View *)), mStatusBar, SLOT(viewModeChanged(KTextEditor::View *)));
+  connect(v, SIGNAL(selectionChanged (KTextEditor::View *)), mStatusBar, SLOT(selectionChanged (KTextEditor::View *)));
+  connect(v, SIGNAL(informationMessage (KTextEditor::View *, const QString &)), mStatusBar, SLOT(informationMessage (KTextEditor::View *, const QString &)));
+  connect(v->document(), SIGNAL(modifiedChanged()), mStatusBar, SLOT(modifiedChanged()));
+  connect(v->document(), SIGNAL(modifiedOnDisk(Document *, bool, ModifiedOnDiskReason)), mStatusBar, SLOT(modifiedChanged()) );
+  connect(v->document(), SIGNAL(documentNameChanged(KTextEditor::Document *)), mStatusBar, SLOT(documentNameChanged()));
 }
 
-void KateViewSpace::removeView(Kate::View* v)
+void KateViewSpace::removeView(KTextEditor::View* v)
 {
-  disconnect( v->getDoc(), SIGNAL(modifiedChanged()),
-              mStatusBar, SLOT(modifiedChanged()) );
-
   bool active = ( v == currentView() );
 
   mViewList.remove (v);
@@ -155,30 +171,23 @@ void KateViewSpace::removeView(Kate::View* v)
     showView(mViewList.last());
 }
 
-bool KateViewSpace::showView(Kate::View* v)
+bool KateViewSpace::showView(KTextEditor::Document *document)
 {
-  return showView( v->getDoc()->documentNumber() );
-}
-
-bool KateViewSpace::showView(uint documentNumber)
-{
-  QPtrListIterator<Kate::View> it (mViewList);
+  Q3PtrListIterator<KTextEditor::View> it (mViewList);
   it.toLast();
-  for( ; it.current(); --it ) {
-    if (((Kate::Document*)it.current()->getDoc())->documentNumber() == documentNumber) {
-      if ( currentView() )
-        disconnect( currentView()->getDoc(), SIGNAL(modifiedChanged()),
-                    mStatusBar, SLOT(modifiedChanged()) );
-
-      Kate::View* kv = it.current();
-      connect( kv->getDoc(), SIGNAL(modifiedChanged()),
-               mStatusBar, SLOT(modifiedChanged()) );
+  for( ; it.current(); --it )
+  {
+    if (it.current()->document() == document)
+    {
+      KTextEditor::View* kv = it.current();
 
       mViewList.removeRef( kv );
       mViewList.append( kv );
-      stack->raiseWidget( kv );
+      stack->setCurrentWidget( kv );
       kv->show();
-      mStatusBar->modifiedChanged();
+
+      mStatusBar->updateStatus ();
+
       return true;
     }
   }
@@ -186,10 +195,10 @@ bool KateViewSpace::showView(uint documentNumber)
 }
 
 
-Kate::View* KateViewSpace::currentView()
+KTextEditor::View* KateViewSpace::currentView()
 {
   if (mViewList.count() > 0)
-    return (Kate::View*)stack->visibleWidget();
+    return (KTextEditor::View*)stack->currentWidget();
 
   return 0L;
 }
@@ -223,14 +232,7 @@ bool KateViewSpace::event( QEvent *e )
     setActive( mIsActiveSpace );
     return true;
   }
-  return QVBox::event( e );
-}
-
-void KateViewSpace::slotStatusChanged (Kate::View *view, int r, int c, int ovr, bool block, int mod, const QString &msg)
-{
-  if ((QWidgetStack *)view->parentWidget() != stack)
-    return;
-  mStatusBar->setStatus( r, c, ovr, block, mod, msg );
+  return Q3VBox::event( e );
 }
 
 void KateViewSpace::saveConfig ( KConfig* config, int myIndex ,const QString& viewConfGrp)
@@ -242,33 +244,29 @@ void KateViewSpace::saveConfig ( KConfig* config, int myIndex ,const QString& vi
   config->writeEntry ("Count", mViewList.count());
 
   if (currentView())
-    config->writeEntry( "Active View", currentView()->getDoc()->url().prettyURL() );
+    config->writeEntry( "Active View", currentView()->document()->url().prettyURL() );
 
   // Save file list, includeing cursor position in this instance.
-  QPtrListIterator<Kate::View> it(mViewList);
+  Q3PtrListIterator<KTextEditor::View> it(mViewList);
 
   int idx = 0;
   for (; it.current(); ++it)
   {
-    if ( !it.current()->getDoc()->url().isEmpty() )
+    if ( !it.current()->document()->url().isEmpty() )
     {
       config->setGroup( group );
-      config->writeEntry( QString("View %1").arg( idx ), it.current()->getDoc()->url().prettyURL() );
+      config->writeEntry( QString("View %1").arg( idx ), it.current()->document()->url().prettyURL() );
 
       // view config, group: "ViewSpace <n> url"
-      QString vgroup = QString("%1 %2").arg(group).arg(it.current()->getDoc()->url().prettyURL());
+      QString vgroup = QString("%1 %2").arg(group).arg(it.current()->document()->url().prettyURL());
       config->setGroup( vgroup );
-      it.current()->writeSessionConfig( config );
+
+      if (KTextEditor::SessionConfigInterface *iface = qobject_cast<KTextEditor::SessionConfigInterface *>(it.current()))
+          iface->writeSessionConfig( config );
     }
 
     idx++;
   }
-}
-
-void KateViewSpace::modifiedOnDisc(Kate::Document *, bool, unsigned char)
-{
-  if ( currentView() )
-    mStatusBar->updateMod( currentView()->getDoc()->isModified() );
 }
 
 void KateViewSpace::restoreConfig ( KateViewSpaceContainer *viewMan, KConfig* config, const QString &group )
@@ -278,7 +276,7 @@ void KateViewSpace::restoreConfig ( KateViewSpaceContainer *viewMan, KConfig* co
 
   if ( !fn.isEmpty() )
   {
-    Kate::Document *doc = KateDocManager::self()->findDocumentByUrl (KURL(fn));
+    KTextEditor::Document *doc = KateDocManager::self()->findDocumentByUrl (KURL(fn));
 
     if (doc)
     {
@@ -288,10 +286,10 @@ void KateViewSpace::restoreConfig ( KateViewSpaceContainer *viewMan, KConfig* co
 
       viewMan->createView (doc);
 
-      Kate::View *v = viewMan->activeView ();
+      KTextEditor::View *v = viewMan->activeView ();
 
-      if (v)
-        v->readSessionConfig( config );
+      if (KTextEditor::SessionConfigInterface *iface = qobject_cast<KTextEditor::SessionConfigInterface *>(v))
+        iface->readSessionConfig( config );
     }
   }
 
@@ -345,33 +343,92 @@ KateVSStatusBar::~KateVSStatusBar ()
 {
 }
 
-void KateVSStatusBar::setStatus( int r, int c, int ovr, bool block, int, const QString &msg )
+void KateVSStatusBar::showMenu()
 {
-  m_lineColLabel->setText(
-    i18n(" Line: %1 Col: %2 ").arg(KGlobal::locale()->formatNumber(r+1, 0))
-                              .arg(KGlobal::locale()->formatNumber(c+1, 0)) );
+   KMainWindow* mainWindow = static_cast<KMainWindow*>( window() );
+   QMenu* menu = static_cast<QMenu*>( mainWindow->factory()->container("viewspace_popup", mainWindow ) );
 
-  if (ovr == 0)
-    m_insertModeLabel->setText( i18n(" R/O ") );
-  else if (ovr == 1)
-    m_insertModeLabel->setText( i18n(" OVR ") );
-  else if (ovr == 2)
-    m_insertModeLabel->setText( i18n(" INS ") );
-
-//   updateMod( mod );
-
-  m_selectModeLabel->setText( block ? i18n(" BLK ") : i18n(" NORM ") );
-
-  m_fileNameLabel->setText( msg );
+   if (menu)
+     menu->exec(QCursor::pos());
 }
 
-void KateVSStatusBar::updateMod( bool mod )
+bool KateVSStatusBar::eventFilter(QObject*,QEvent *e)
 {
-  Kate::View *v = m_viewSpace->currentView();
+  if (e->type()==QEvent::MouseButtonPress)
+  {
+    if ( m_viewSpace->currentView() )
+      m_viewSpace->currentView()->setFocus();
+
+    if ( ((QMouseEvent*)e)->button()==Qt::RightButton)
+      showMenu();
+
+    return true;
+  }
+
+  return false;
+}
+
+void KateVSStatusBar::updateStatus ()
+{
+  if (!m_viewSpace->currentView())
+    return;
+
+  viewModeChanged (m_viewSpace->currentView());
+  cursorPositionChanged (m_viewSpace->currentView());
+  selectionChanged (m_viewSpace->currentView());
+  modifiedChanged ();
+  documentNameChanged ();
+}
+
+void KateVSStatusBar::viewModeChanged ( KTextEditor::View *view )
+{
+  if (view != m_viewSpace->currentView())
+    return;
+
+  m_insertModeLabel->setText( view->viewMode() );
+}
+
+void KateVSStatusBar::cursorPositionChanged ( KTextEditor::View *view )
+{
+  if (view != m_viewSpace->currentView())
+    return;
+
+  KTextEditor::Cursor position (view->cursorPositionVirtual());
+
+  m_lineColLabel->setText(
+    i18n(" Line: %1 Col: %2 ").arg(KGlobal::locale()->formatNumber(position.line()+1, 0))
+                              .arg(KGlobal::locale()->formatNumber(position.column()+1, 0)) );
+}
+
+void KateVSStatusBar::selectionChanged (KTextEditor::View *view)
+{
+  if (view != m_viewSpace->currentView())
+    return;
+
+  m_selectModeLabel->setText( view->blockSelection() ? i18n(" BLK ") : i18n(" NORM ") );
+}
+
+void KateVSStatusBar::informationMessage (KTextEditor::View *view, const QString &message)
+{
+  if (view != m_viewSpace->currentView())
+    return;
+
+  m_fileNameLabel->setText( message );
+
+  // timer to reset this after 4 seconds
+  QTimer::singleShot(4000, this, SLOT(documentNameChanged()));
+}
+
+void KateVSStatusBar::modifiedChanged()
+{
+  KTextEditor::View *v = m_viewSpace->currentView();
+
   if ( v )
   {
+    bool mod = v->document()->isModified();
+
     const KateDocumentInfo *info
-      = KateDocManager::self()->documentInfo ( v->getDoc() );
+      = KateDocManager::self()->documentInfo ( v->document() );
 
     bool modOnHD = info && info->modifiedOnDisc;
 
@@ -387,36 +444,14 @@ void KateVSStatusBar::updateMod( bool mod )
   }
 }
 
-void KateVSStatusBar::modifiedChanged()
+void KateVSStatusBar::documentNameChanged ()
 {
-  Kate::View *v = m_viewSpace->currentView();
+  KTextEditor::View *v = m_viewSpace->currentView();
+
   if ( v )
-    updateMod( v->getDoc()->isModified() );
+    m_fileNameLabel->setText( KStringHandler::lsqueeze(v->document()->documentName (), 64) );
 }
 
-void KateVSStatusBar::showMenu()
-{
-   KMainWindow* mainWindow = static_cast<KMainWindow*>( topLevelWidget() );
-   QPopupMenu* menu = static_cast<QPopupMenu*>( mainWindow->factory()->container("viewspace_popup", mainWindow ) );
-
-   if (menu)
-     menu->exec(QCursor::pos());
-}
-
-bool KateVSStatusBar::eventFilter(QObject*,QEvent *e)
-{
-  if (e->type()==QEvent::MouseButtonPress)
-  {
-    if ( m_viewSpace->currentView() )
-      m_viewSpace->currentView()->setFocus();
-
-    if ( ((QMouseEvent*)e)->button()==RightButton)
-      showMenu();
-
-    return true;
-  }
-
-  return false;
-}
 //END KateVSStatusBar
+
 // kate: space-indent on; indent-width 2; replace-tabs on;

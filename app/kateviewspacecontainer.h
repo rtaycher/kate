@@ -24,15 +24,18 @@
 #include "katemain.h"
 #include "../interfaces/viewmanager.h"
 
-#include <kate/view.h>
-#include <kate/document.h>
+#include <ktexteditor/view.h>
+#include <ktexteditor/document.h>
 
 #include "katemdi.h"
+
+#include <Q3PtrList>
+#include <QHash>
 
 class KConfig;
 class KateMainWindow;
 
-class KateViewSpaceContainer: public QVBox
+class KateViewSpaceContainer: public QSplitter
 {
   Q_OBJECT
 
@@ -44,7 +47,7 @@ class KateViewSpaceContainer: public QVBox
 
     ~KateViewSpaceContainer ();
 
-    inline QPtrList<Kate::View> &viewList () { return m_viewList; };
+    inline Q3PtrList<KTextEditor::View> &viewList () { return m_viewList; };
 
   public:
     /* This will save the splitter configuration */
@@ -58,18 +61,18 @@ class KateViewSpaceContainer: public QVBox
      * create and activate a new view for doc, if doc == 0, then
      * create a new document
      */
-    bool createView ( Kate::Document *doc =0L );
+    bool createView ( KTextEditor::Document *doc =0L );
 
-    bool deleteView ( Kate::View *view, bool delViewSpace = true);
+    bool deleteView ( KTextEditor::View *view, bool delViewSpace = true);
 
-    void moveViewtoSplit (Kate::View *view);
-    void moveViewtoStack (Kate::View *view);
+    void moveViewtoSplit (KTextEditor::View *view);
+    void moveViewtoStack (KTextEditor::View *view);
 
     /* Save the configuration of a single splitter.
      * If child splitters are found, it calls it self with those as the argument.
      * If a viewspace child is found, it is asked to save its filelist.
      */
-    void saveSplitterConfig(KateMDI::Splitter* s, int idx=0, KConfig* config=0L, const QString& viewConfGrp="");
+    void saveSplitterConfig(QSplitter* s, int idx=0, KConfig* config=0L, const QString& viewConfGrp="");
 
     /** Restore a single splitter.
      * This is all the work is done for @see saveSplitterConfig()
@@ -81,7 +84,7 @@ class KateViewSpaceContainer: public QVBox
     bool showFullPath;
 
   public:
-    Kate::View* activeView ();
+    KTextEditor::View* activeView ();
     KateViewSpace* activeViewSpace ();
 
     uint viewCount ();
@@ -95,13 +98,13 @@ class KateViewSpaceContainer: public QVBox
   friend class KateViewManager;
 
   private slots:
-    void activateView ( Kate::View *view );
-    void activateSpace ( Kate::View* v );
+    void activateView ( KTextEditor::View *view );
+    void activateSpace ( KTextEditor::View* v );
     void slotViewChanged();
     void reactivateActiveView();
     void slotPendingDocumentNameChanged();
 
-    void documentCreated (Kate::Document *doc);
+    void documentCreated (KTextEditor::Document *doc);
     void documentDeleted (uint docNumber);
 
   public slots:
@@ -130,10 +133,8 @@ class KateViewSpaceContainer: public QVBox
 
     void slotCloseCurrentViewSpace();
 
-    void statusMsg ();
-
     void setActiveSpace ( KateViewSpace* vs );
-    void setActiveView ( Kate::View* view );
+    void setActiveView ( KTextEditor::View* view );
 
     void setShowFullPath(bool enable);
 
@@ -141,21 +142,20 @@ class KateViewSpaceContainer: public QVBox
     void activatePrevView();
 
   signals:
-    void statusChanged (Kate::View *, int, int, int, bool, int, const QString &);
-    void statChanged ();
     void viewChanged ();
 
   private:
     KateViewManager *m_viewManager;
-    QPtrList<KateViewSpace> m_viewSpaceList;
-    QPtrList<Kate::View> m_viewList;
+    Q3PtrList<KateViewSpace> m_viewSpaceList;
+    Q3PtrList<KTextEditor::View> m_viewList;
+    QHash<KTextEditor::View*, bool> m_activeStates;
 
     bool m_blockViewCreationAndActivation;
 
     bool m_activeViewRunning;
 
     bool m_pendingViewCreation;
-    QGuardedPtr<Kate::Document> m_pendingDocument;
+    QPointer<KTextEditor::Document> m_pendingDocument;
 };
 
 #endif

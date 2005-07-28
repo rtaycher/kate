@@ -22,7 +22,7 @@
 
 #include "katedocmanager.h"
 
-#include <kate/document.h>
+#include <ktexteditor/document.h>
 
 #include <kiconloader.h>
 #include <klistview.h>
@@ -34,17 +34,17 @@
 #include <kpushbutton.h>
 
 #include <qlabel.h>
-#include <qlistview.h>
+#include <q3listview.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
-#include <qwhatsthis.h>
-#include <qvbox.h>
+#include <q3vbox.h>
+#include <QTextStream>
 
-class KateDocItem : public QCheckListItem
+class KateDocItem : public Q3CheckListItem
 {
   public:
-    KateDocItem( Kate::Document *doc, const QString &status, KListView *lv )
-  : QCheckListItem( lv, doc->url().prettyURL(), CheckBox ),
+    KateDocItem( KTextEditor::Document *doc, const QString &status, KListView *lv )
+  : Q3CheckListItem( lv, doc->url().prettyURL(), CheckBox ),
         document( doc )
     {
       setText( 1, status );
@@ -53,7 +53,7 @@ class KateDocItem : public QCheckListItem
     }
     ~KateDocItem() {};
 
-    Kate::Document *document;
+    KTextEditor::Document *document;
 };
 
 
@@ -74,10 +74,10 @@ KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const
       "Reloads the selected documents from disk and closes the dialog if there "
       "are no more unhandled documents.") );
 
-  QVBox *w = makeVBoxMainWidget();
+  Q3VBox *w = makeVBoxMainWidget();
   w->setSpacing( KDialog::spacingHint() );
 
-  QHBox *lo1 = new QHBox( w );
+  Q3HBox *lo1 = new Q3HBox( w );
 
   // dialog text
   QLabel *icon = new QLabel( lo1 );
@@ -92,7 +92,7 @@ KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const
   lvDocuments = new KListView( w );
   lvDocuments->addColumn( i18n("Filename") );
   lvDocuments->addColumn( i18n("Status on Disk") );
-  lvDocuments->setSelectionMode( QListView::Single );
+  lvDocuments->setSelectionMode( Q3ListView::Single );
 
   QStringList l;
   l << "" << i18n("Modified") << i18n("Created") << i18n("Deleted");
@@ -102,12 +102,12 @@ KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const
   connect( lvDocuments, SIGNAL(selectionChanged()), this, SLOT(slotSelectionChanged()) );
 
   // diff button
-  QHBox *lo2 = new QHBox ( w );
+  Q3HBox *lo2 = new Q3HBox ( w );
   QWidget *d = new QWidget (lo2);
   lo2->setStretchFactor (d, 2);
   btnDiff = new KPushButton( KGuiItem (i18n("&View Difference"), "edit"), lo2 );
 
-  QWhatsThis::add( btnDiff, i18n(
+  btnDiff->setWhatsThis(i18n(
       "Calculates the difference between the the editor contents and the disk "
       "file for the selected document, and shows the difference with the "
       "default application. Requires diff(1).") );
@@ -138,18 +138,18 @@ void KateMwModOnHdDialog::slotUser3()
 
 void KateMwModOnHdDialog::handleSelected( int action )
 {
-  QListViewItemIterator it ( lvDocuments );
+  Q3ListViewItemIterator it ( lvDocuments );
   while ( it.current() )
   {
     KateDocItem *item = (KateDocItem*)it.current();
     if ( item->isOn() )
     {
-      int reason = (int)KateDocManager::self()->documentInfo( item->document )->modifiedOnDiscReason;
+      KTextEditor::ModificationInterface::ModifiedOnDiskReason reason = KateDocManager::self()->documentInfo( item->document )->modifiedOnDiscReason;
       bool succes = true;
-      Kate::DocumentExt *dext = documentExt( item->document );
-      if ( ! dext ) return;
 
-      dext->setModifiedOnDisk( 0 );
+      if (KTextEditor::ModificationInterface *iface = qobject_cast<KTextEditor::ModificationInterface *>(item->document))
+        iface->setModifiedOnDisk( KTextEditor::ModificationInterface::OnDiskUnmodified );
+
       switch ( action )
       {
         case Overwrite:
@@ -162,7 +162,7 @@ void KateMwModOnHdDialog::handleSelected( int action )
           }
           break;
         case Reload:
-          item->document->reloadFile();
+          item->document->documentReload();
           break;
         default:
           break;
@@ -174,7 +174,10 @@ void KateMwModOnHdDialog::handleSelected( int action )
         delete item;
       }
       else
-        dext->setModifiedOnDisk( reason );
+      {
+        if (KTextEditor::ModificationInterface *iface = qobject_cast<KTextEditor::ModificationInterface *>(item->document))
+          iface->setModifiedOnDisk( reason );
+      }
     }
   }
 
@@ -199,7 +202,7 @@ void KateMwModOnHdDialog::slotDiff()
   if ( ! lvDocuments->currentItem() )
     return;
 
-  Kate::Document *doc = ((KateDocItem*)lvDocuments->currentItem())->document;
+  KTextEditor::Document *doc = ((KateDocItem*)lvDocuments->currentItem())->document;
 
   // don't try o diff a deleted file
   if ( KateDocManager::self()->documentInfo( doc )->modifiedOnDiscReason == 3 )
@@ -212,13 +215,13 @@ void KateMwModOnHdDialog::slotDiff()
   connect( p, SIGNAL(processExited(KProcess*)), this, SLOT(slotPDone(KProcess*)) );
   connect( p, SIGNAL(readReady(KProcIO*)), this, SLOT(slotPRead(KProcIO*)) );
 
-  setCursor( WaitCursor );
+  setCursor( Qt::WaitCursor );
 
   p->start( KProcess::NotifyOnExit, true );
 
-  uint lastln =  doc->numLines();
+  uint lastln =  doc->lines();
   for ( uint l = 0; l <  lastln; l++ )
-    p->writeStdin(  doc->textLine( l ), l < lastln );
+    p->writeStdin(  doc->line( l ), l < lastln );
 
   p->closeWhenDone();
 }
@@ -238,7 +241,7 @@ void KateMwModOnHdDialog::slotPRead( KProcIO *p)
 
 void KateMwModOnHdDialog::slotPDone( KProcess *p )
 {
-  setCursor( ArrowCursor );
+  setCursor( Qt::ArrowCursor );
   m_tmpfile->close();
 
   if ( ! p->normalExit() /*|| p->exitStatus()*/ )

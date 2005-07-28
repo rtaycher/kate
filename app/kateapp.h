@@ -24,7 +24,7 @@
 
 #include <kapplication.h>
 
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 class KateSessionManager;
 class KateAppDCOPIface;
@@ -151,14 +151,14 @@ class KDE_EXPORT KateApp : public KApplication
      * give back number of existing main windows
      * @return number of main windows
      */
-    uint mainWindows () const;
+    int mainWindows () const;
 
     /**
      * give back the window you want
      * @param n window index
      * @return requested main window
      */
-    KateMainWindow *mainWindow (uint n);
+    KateMainWindow *mainWindow (int n);
 
   /**
    * some stuff for the dcop API
@@ -218,7 +218,7 @@ class KDE_EXPORT KateApp : public KApplication
     /**
      * known main windows
      */
-    QValueList<KateMainWindow*> m_mainWindows;
+    Q3ValueList<KateMainWindow*> m_mainWindows;
 
     /**
      * dcop interface

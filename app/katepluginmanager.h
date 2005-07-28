@@ -29,17 +29,17 @@
 #include <ktrader.h>
 
 #include <qobject.h>
-#include <qvaluelist.h>
+#include <QLinkedList>
 
 class KatePluginInfo
 {
   public:
-    bool load;
+    mutable bool load;
     KService::Ptr service;
     Kate::Plugin *plugin;
 };
 
-typedef QValueList<KatePluginInfo> KatePluginList;
+typedef QLinkedList<KatePluginInfo> KatePluginList;
 
 class KatePluginManager : public QObject
 {

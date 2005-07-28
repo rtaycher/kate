@@ -28,17 +28,11 @@
 #include "kateviewmanager.h"
 #include "kateviewspace.h"
 
-#include <dcopclient.h>
 #include <kaction.h>
-#include <kcmdlineargs.h>
 #include <kdebug.h>
-#include <kdiroperator.h>
-#include <kdockwidget.h>
-#include <kencodingfiledialog.h>
 #include <kiconloader.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <ktoolbar.h>
 #include <kmessagebox.h>
 #include <ksimpleconfig.h>
 #include <kstdaction.h>
@@ -46,19 +40,22 @@
 #include <kglobalsettings.h>
 #include <kstringhandler.h>
 
-#include <ktexteditor/encodinginterface.h>
-
 #include <qlayout.h>
-#include <qobjectlist.h>
+#include <qobject.h>
 #include <qstringlist.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 #include <qtimer.h>
 #include <qfileinfo.h>
+//Added by qt3to4:
+#include <Q3ValueList>
+#include <QDropEvent>
+#include <Q3PtrList>
+#include <Q3PopupMenu>
 
 //END Includes
 
 KateViewSpaceContainer::KateViewSpaceContainer (QWidget *parent, KateViewManager *viewManager)
- : QVBox  (parent)
+ : QSplitter  (parent)
  , m_viewManager(viewManager)
  , m_blockViewCreationAndActivation (false)
  , m_activeViewRunning (false)
@@ -68,14 +65,19 @@ KateViewSpaceContainer::KateViewSpaceContainer (QWidget *parent, KateViewManager
   m_viewList.setAutoDelete(true);
   m_viewSpaceList.setAutoDelete(true);
 
-  KateViewSpace* vs = new KateViewSpace( this, this );
-  connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, const QString&)), vs, SLOT(slotStatusChanged(Kate::View *, int, int, int, bool, int, const QString&)));
+  // resize mode
+  setOpaqueResize( KGlobalSettings::opaqueResize() );
+
+  KateViewSpace* vs = new KateViewSpace( this, 0 );
+  addWidget (vs);
+
+  connect(this, SIGNAL(statusChanged(KTextEditor::View *, int, int, int, bool, int, const QString&)), vs, SLOT(slotStatusChanged(KTextEditor::View *, int, int, int, bool, int, const QString&)));
   vs->setActive( true );
   m_viewSpaceList.append(vs);
   connect( this, SIGNAL(viewChanged()), this, SLOT(slotViewChanged()) );
   connect(KateDocManager::self(), SIGNAL(initialDocumentReplaced()), this, SIGNAL(viewChanged()));
 
-  connect(KateDocManager::self(),SIGNAL(documentCreated(Kate::Document *)),this,SLOT(documentCreated(Kate::Document *)));
+  connect(KateDocManager::self(),SIGNAL(documentCreated(KTextEditor::Document *)),this,SLOT(documentCreated(KTextEditor::Document *)));
   connect(KateDocManager::self(),SIGNAL(documentDeleted(uint)),this,SLOT(documentDeleted(uint)));
 }
 
@@ -85,7 +87,7 @@ KateViewSpaceContainer::~KateViewSpaceContainer ()
   m_viewSpaceList.setAutoDelete(false);
 }
 
-void KateViewSpaceContainer::documentCreated (Kate::Document *doc)
+void KateViewSpaceContainer::documentCreated (KTextEditor::Document *doc)
 {
   if (m_blockViewCreationAndActivation) return;
 
@@ -103,7 +105,7 @@ void KateViewSpaceContainer::documentDeleted (uint)
     createView (KateDocManager::self()->document(KateDocManager::self()->documents()-1));
 }
 
-bool KateViewSpaceContainer::createView ( Kate::Document *doc )
+bool KateViewSpaceContainer::createView ( KTextEditor::Document *doc )
 {
   if (m_blockViewCreationAndActivation) return false;
 
@@ -112,32 +114,30 @@ bool KateViewSpaceContainer::createView ( Kate::Document *doc )
     doc = KateDocManager::self()->createDoc ();
 
   // create view
-  Kate::View *view = (Kate::View *) doc->createView (this, 0L);
+  KTextEditor::View *view = (KTextEditor::View *) doc->createView (this);
 
   m_viewList.append (view);
+  m_activeStates[view] = false;
 
   // disable settings dialog action
   view->actionCollection()->remove (view->actionCollection()->action( "set_confdlg" ));
+  view->actionCollection()->remove (view->actionCollection()->action( "editor_options" ));
 
   // popup menu
-  view->installPopup ((QPopupMenu*)(mainWindow()->factory()->container("ktexteditor_popup", mainWindow())) );
+  QMenu *menu = qobject_cast<QMenu*> (mainWindow()->factory()->container("ktexteditor_popup", mainWindow()));
+  if (menu)
+    view->setContextMenu (menu);
 
-  connect(view->getDoc(),SIGNAL(nameChanged(Kate::Document *)),this,SLOT(statusMsg()));
-  connect(view,SIGNAL(cursorPositionChanged()),this,SLOT(statusMsg()));
-  connect(view,SIGNAL(newStatus()),this,SLOT(statusMsg()));
-  connect(view->getDoc(), SIGNAL(undoChanged()), this, SLOT(statusMsg()));
   connect(view,SIGNAL(dropEventPass(QDropEvent *)), mainWindow(),SLOT(slotDropEvent(QDropEvent *)));
-  connect(view,SIGNAL(gotFocus(Kate::View *)),this,SLOT(activateSpace(Kate::View *)));
+  connect(view,SIGNAL(focusIn(KTextEditor::View *)),this,SLOT(activateSpace(KTextEditor::View *)));
 
   activeViewSpace()->addView( view );
   activateView( view );
-  connect( doc, SIGNAL(modifiedOnDisc(Kate::Document *, bool, unsigned char)),
-      activeViewSpace(), SLOT(modifiedOnDisc(Kate::Document *, bool, unsigned char)) );
 
   return true;
 }
 
-bool KateViewSpaceContainer::deleteView (Kate::View *view, bool delViewSpace)
+bool KateViewSpaceContainer::deleteView (KTextEditor::View *view, bool delViewSpace)
 {
   if (!view) return true;
 
@@ -149,6 +149,7 @@ bool KateViewSpaceContainer::deleteView (Kate::View *view, bool delViewSpace)
 
   // remove view from list and memory !!
   m_viewList.remove (view);
+  m_activeStates.remove (view);
 
   if (delViewSpace)
     if ( viewspace->viewCount() == 0 )
@@ -159,7 +160,7 @@ bool KateViewSpaceContainer::deleteView (Kate::View *view, bool delViewSpace)
 
 KateViewSpace* KateViewSpaceContainer::activeViewSpace ()
 {
-  QPtrListIterator<KateViewSpace> it(m_viewSpaceList);
+  Q3PtrListIterator<KateViewSpace> it(m_viewSpaceList);
 
   for (; it.current(); ++it)
   {
@@ -176,16 +177,16 @@ KateViewSpace* KateViewSpaceContainer::activeViewSpace ()
   return 0L;
 }
 
-Kate::View* KateViewSpaceContainer::activeView ()
+KTextEditor::View* KateViewSpaceContainer::activeView ()
 {
   if (m_activeViewRunning)
     return 0L;
 
   m_activeViewRunning = true;
 
-  for (QPtrListIterator<Kate::View> it(m_viewList); it.current(); ++it)
+  for (Q3PtrListIterator<KTextEditor::View> it(m_viewList); it.current(); ++it)
   {
-    if ( it.current()->isActive() )
+    if ( m_activeStates[it.current()] )
     {
       m_activeViewRunning = false;
       return it.current();
@@ -229,15 +230,15 @@ void KateViewSpaceContainer::setActiveSpace ( KateViewSpace* vs )
    vs->setActive( true, viewSpaceCount() > 1 );
 }
 
-void KateViewSpaceContainer::setActiveView ( Kate::View* view )
+void KateViewSpaceContainer::setActiveView ( KTextEditor::View* view )
 {
   if (activeView())
-    activeView()->setActive( false );
+    m_activeStates[activeView()] = false;
 
-  view->setActive( true );
+  m_activeStates[view] = true;
 }
 
-void KateViewSpaceContainer::activateSpace (Kate::View* v)
+void KateViewSpaceContainer::activateSpace (KTextEditor::View* v)
 {
   if (!v) return;
 
@@ -250,27 +251,27 @@ void KateViewSpaceContainer::activateSpace (Kate::View* v)
 }
 
 void KateViewSpaceContainer::reactivateActiveView() {
-  Kate::View *view=activeView();
+  KTextEditor::View *view=activeView();
   if (view) {
-    view->setActive(false);
+    m_activeStates[view] = false;
     activateView(view);
   } else if (m_pendingViewCreation) {
     m_pendingViewCreation=false;
-    disconnect(m_pendingDocument,SIGNAL(nameChanged(Kate::Document *)),this,SLOT(slotPendingDocumentNameChanged()));
+    disconnect(m_pendingDocument,SIGNAL(documentNameChanged(Document *)),this,SLOT(slotPendingDocumentNameChanged()));
     createView(m_pendingDocument);
   }
 }
 
-void KateViewSpaceContainer::activateView ( Kate::View *view )
+void KateViewSpaceContainer::activateView ( KTextEditor::View *view )
 {
   if (!view) return;
 
-  if (!view->isActive())
+  if (!m_activeStates[view])
   {
     if ( !activeViewSpace()->showView (view) )
     {
       // since it wasn't found, give'em a new one
-      createView ( view->getDoc() );
+      createView ( (KTextEditor::Document *)view->document() );
       return;
     }
 
@@ -289,34 +290,29 @@ void KateViewSpaceContainer::activateView ( Kate::View *view )
 
     mainWindow()->toolBar ()->setUpdatesEnabled (true);
 
-    statusMsg();
-
     emit viewChanged ();
   }
 
-  KateDocManager::self()->setActiveDocument(view->getDoc());
+  KateDocManager::self()->setActiveDocument((KTextEditor::Document *)view->document());
 }
 
 void KateViewSpaceContainer::activateView( uint documentNumber )
 {
-  if ( activeViewSpace()->showView(documentNumber) ) {
-    activateView( activeViewSpace()->currentView() );
-  }
-  else
-  {
-    QPtrListIterator<Kate::View> it(m_viewList);
-    for ( ;it.current(); ++it)
-    {
-      if ( it.current()->getDoc()->documentNumber() == documentNumber  )
-      {
-        createView( it.current()->getDoc() );
-        return;
-      }
-    }
+  KTextEditor::Document *d = KateDocManager::self()->documentWithID(documentNumber);
 
-    Kate::Document *d = (Kate::Document *)KateDocManager::self()->documentWithID(documentNumber);
-    createView (d);
+  // no doc with this id found
+  if (!d)
+    return;
+
+  // activate existing view if possible
+  if ( activeViewSpace()->showView(d) )
+  {
+    activateView( activeViewSpace()->currentView() );
+    return;
   }
+
+  // create new view otherwise
+  createView (d);
 }
 
 uint KateViewSpaceContainer::viewCount ()
@@ -359,12 +355,12 @@ void KateViewSpaceContainer::activatePrevView()
 
 void KateViewSpaceContainer::closeViews(uint documentNumber)
 {
-    QPtrList<Kate::View> closeList;
+    Q3PtrList<KTextEditor::View> closeList;
 
-    for (uint z=0 ; z < m_viewList.count(); z++)
+    for (int z=0 ; z < m_viewList.count(); ++z)
     {
-      Kate::View* current = m_viewList.at(z);
-      if ( current->getDoc()->documentNumber() == documentNumber )
+      KTextEditor::View* current = m_viewList.at(z);
+      if ( current->document()->documentNumber() == documentNumber )
       {
         closeList.append (current);
       }
@@ -372,7 +368,7 @@ void KateViewSpaceContainer::closeViews(uint documentNumber)
 
     while ( !closeList.isEmpty() )
     {
-      Kate::View *view = closeList.first();
+      KTextEditor::View *view = closeList.first();
       deleteView (view, true);
       closeList.removeFirst();
     }
@@ -386,7 +382,7 @@ void KateViewSpaceContainer::slotPendingDocumentNameChanged() {
           QString c;
           if (m_pendingDocument->url().isEmpty() || (!showFullPath))
           {
-            c = m_pendingDocument->docName();
+            c = m_pendingDocument->documentName();
           }
           else
           {
@@ -395,104 +391,72 @@ void KateViewSpaceContainer::slotPendingDocumentNameChanged() {
           setCaption(KStringHandler::lsqueeze(c,32));
 }
 
-void KateViewSpaceContainer::statusMsg ()
-{
-  if (!activeView()) return;
-
-  Kate::View* v = activeView();
-
-  bool readOnly =  !v->getDoc()->isReadWrite();
-  uint config =  v->getDoc()->configFlags();
-
-  int ovr = 0;
-  if (readOnly)
-    ovr = 0;
-  else
-  {
-    if (config & Kate::Document::cfOvr)
-    {
-      ovr=1;
-    }
-    else
-    {
-      ovr=2;
-    }
-  }
-
-  int mod = (int)v->getDoc()->isModified();
-  bool block=v->getDoc()->blockSelectionMode();
-
-  QString c;
-  if (v->getDoc()->url().isEmpty() || (!showFullPath))
-  {
-    c = v->getDoc()->docName();
-  }
-  else
-  {
-    c = v->getDoc()->url().prettyURL();
-  }
-
-  m_viewManager->mainWindow()->tabWidget()->changeTab (this, KStringHandler::lsqueeze(c,32));
-  emit statusChanged (v, v->cursorLine(), v->cursorColumn(), ovr,block, mod, KStringHandler::lsqueeze(c,64));
-  emit statChanged ();
-}
-
 void KateViewSpaceContainer::splitViewSpace( KateViewSpace* vs,
                                       bool isHoriz,
                                       bool atTop)
 {
-//   kdDebug(13001)<<"splitViewSpace()"<<endl;
+  // fallback to activeViewSpace
+  if (!vs)
+    vs = activeViewSpace();
 
-  if (!activeView()) return;
-  if (!vs) vs = activeViewSpace();
+  // found no viewspace, bah
+  if (!vs)
+    return;
 
-  bool isFirstTime = vs->parentWidget() == this;
+  // get current splitter
+  QSplitter *currentSplitter = qobject_cast<QSplitter*>(vs->parentWidget());
 
-  QValueList<int> psizes;
-  if ( ! isFirstTime )
-    if ( QSplitter *ps = static_cast<QSplitter*>(vs->parentWidget()->qt_cast("QSplitter")) )
-      psizes = ps->sizes();
+  // no splitter found, bah
+  if (!currentSplitter)
+    return;
 
-  Qt::Orientation o = isHoriz ? Qt::Vertical : Qt::Horizontal;
-  KateMDI::Splitter* s = new KateMDI::Splitter(o, vs->parentWidget());
-  s->setOpaqueResize( KGlobalSettings::opaqueResize() );
+  // which orientation we want?
+  Qt::Orientation orientation = isHoriz ? Qt::Vertical : Qt::Horizontal;
 
-  if (! isFirstTime) {
-    // anders: make sure the split' viewspace is always
-    // correctly positioned.
-    // If viewSpace is the first child, the new splitter must be moveToFirst'd
-    if ( !((KateMDI::Splitter*)vs->parentWidget())->isLastChild( vs ) )
-       ((KateMDI::Splitter*)s->parentWidget())->moveToFirst( s );
+  // index where to insert new splitter/viewspace
+  int index = currentSplitter->indexOf (vs);
+
+  // if we are not atTop, inc this
+  if (!atTop)
+    ++index;
+
+  // create new viewspace
+  KateViewSpace* vsNew = new KateViewSpace( this, 0);
+
+  // first try if we not can fix the orientation issue
+  if (currentSplitter->orientation() != orientation && currentSplitter->count() == 1)
+    currentSplitter->setOrientation (orientation);
+
+  // now we have 2 cases, currentSplitter has right orientation or not ;)
+  // only if not, we need new splitter and move current vs over to it ;)
+  if (currentSplitter->orientation() != orientation)
+  {
+    QSplitter *oldSplitter = currentSplitter;
+
+    currentSplitter = new QSplitter (orientation);
+    oldSplitter->insertWidget (index,currentSplitter);
+
+    currentSplitter->setOpaqueResize( KGlobalSettings::opaqueResize() );
+    currentSplitter->addWidget (vs);
+    currentSplitter->show ();
+
+    currentSplitter->addWidget (vsNew);
   }
-  vs->reparent( s, 0, QPoint(), true );
-  KateViewSpace* vsNew = new KateViewSpace( this, s );
+  else
+  {
+    currentSplitter->insertWidget (index, vsNew);
+  }
 
-  if (atTop)
-    s->moveToFirst( vsNew );
-
-  if (!isFirstTime)
-    if (QSplitter *ps = static_cast<QSplitter*>(s->parentWidget()->qt_cast("QSplitter")) )
-      ps->setSizes( psizes );
-
-  s->show();
-
-  QValueList<int> sizes;
-  int space = 50;//isHoriz ? s->parentWidget()->height()/2 : s->parentWidget()->width()/2;
-  sizes << space << space;
-  s->setSizes( sizes );
-
-  connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, const QString &)), vsNew, SLOT(slotStatusChanged(Kate::View *, int, int,int, bool, int, const QString &)));
+  connect(this, SIGNAL(statusChanged(KTextEditor::View *, int, int, int, bool, int, const QString &)), vsNew, SLOT(slotStatusChanged(KTextEditor::View *, int, int,int, bool, int, const QString &)));
   m_viewSpaceList.append( vsNew );
   activeViewSpace()->setActive( false );
   vsNew->setActive( true, true );
   vsNew->show();
 
-  createView (activeView()->getDoc());
+  createView ((KTextEditor::Document*)activeView()->document());
 
   if (this == m_viewManager->activeContainer())
     m_viewManager->updateViewSpaceActions ();
-
-//   kdDebug(13001)<<"splitViewSpace() - DONE!"<<endl;
 }
 
 void KateViewSpaceContainer::removeViewSpace (KateViewSpace *viewspace)
@@ -503,80 +467,41 @@ void KateViewSpaceContainer::removeViewSpace (KateViewSpace *viewspace)
   // abort if this is the last viewspace
   if (m_viewSpaceList.count() < 2) return;
 
-  KateMDI::Splitter* p = (KateMDI::Splitter*)viewspace->parentWidget();
+  // get current splitter
+  QSplitter *currentSplitter = qobject_cast<QSplitter*>(viewspace->parentWidget());
 
-  // find out if it is the first child for repositioning
-  // see below
-  bool pIsFirst = false;
+  // no splitter found, bah
+  if (!currentSplitter)
+    return;
 
-  // save some size information
-  KateMDI::Splitter* pp=0L;
-  QValueList<int> ppsizes;
-  if (m_viewSpaceList.count() > 2 && p->parentWidget() != this)
+  // delete views of the viewspace
+  while (viewspace->viewCount() > 0 && viewspace->currentView())
   {
-    pp = (KateMDI::Splitter*)p->parentWidget();
-    ppsizes = pp->sizes();
-    pIsFirst = !pp->isLastChild( p ); // simple logic, right-
+    deleteView( viewspace->currentView(), false );
   }
 
-  // Figure out where to put views that are still needed
-  KateViewSpace* next;
-  if (m_viewSpaceList.find(viewspace) == 0)
-    next = m_viewSpaceList.next();
-  else
-    next = m_viewSpaceList.prev();
-
-  // Reparent views in viewspace that are last views, delete the rest.
-  int vsvc = viewspace->viewCount();
-  while (vsvc > 0)
-  {
-    if (viewspace->currentView())
-    {
-      Kate::View* v = viewspace->currentView();
-
-      if (v->isLastView())
-      {
-        viewspace->removeView(v);
-        next->addView( v, false );
-      }
-      else
-      {
-        deleteView( v, false );
-      }
-    }
-    vsvc = viewspace->viewCount();
-  }
-
+  // cu viewspace
   m_viewSpaceList.remove( viewspace );
 
-  // reparent the other sibling of the parent.
-  while (p->children ())
+  // only do magic with the splitter if it's not the basic one ;)
+  // and it has now only one child
+  if ((currentSplitter != this) && (currentSplitter->count() == 1))
   {
-    QWidget* other = ((QWidget *)(( QPtrList<QObject>*)p->children())->first());
+    // get parent splitter
+    QSplitter *parentSplitter = qobject_cast<QSplitter*>(currentSplitter->parentWidget());
 
-    other->reparent( p->parentWidget(), 0, QPoint(), true );
-    // We also need to find the right viewspace to become active
-    if (pIsFirst)
-       ((KateMDI::Splitter*)p->parentWidget())->moveToFirst( other );
-    if ( other->isA("KateViewSpace") ) {
-      setActiveSpace( (KateViewSpace*)other );
-    }
-    else {
-      QObjectList* l = other->queryList( "KateViewSpace" );
-      if ( l->first() != 0 ) { // I REALLY hope so!
-        setActiveSpace( (KateViewSpace*)l->first() );
-      }
-      delete l;
+    // only do magic if found ;)
+    if (parentSplitter)
+    {
+      int index = parentSplitter->indexOf (currentSplitter);
+
+      parentSplitter->insertWidget (index, currentSplitter->widget (0));
+      delete currentSplitter;
     }
   }
 
-  delete p;
-
-  if (!ppsizes.isEmpty())
-    pp->setSizes( ppsizes );
-
   // find the view that is now active.
-  Kate::View* v = activeViewSpace()->currentView();
+  KTextEditor::View* v = activeViewSpace()->currentView();
   if ( v )
     activateView( v );
 
@@ -594,8 +519,6 @@ void KateViewSpaceContainer::slotCloseCurrentViewSpace()
 void KateViewSpaceContainer::setShowFullPath( bool enable )
 {
   showFullPath = enable;
-  statusMsg ();
-  //m_mainWindow->slotWindowActivated ();
 }
 
 /**
@@ -619,14 +542,17 @@ void KateViewSpaceContainer::saveViewConfiguration(KConfig *config,const QString
   }
 
   // I need the first splitter, the one which has this as parent.
-  KateMDI::Splitter* s;
-  QObjectList *l = queryList("KateMDI::Splitter", 0, false, false);
-  QObjectListIt it( *l );
+  const QList<QObject*> &l = children();
+  for (QList<QObject*>::const_iterator it( l.begin() ); it != l.end(); ++it)
+  {
+   QObject *obj = *it;
 
-  if ( (s = (KateMDI::Splitter*)it.current()) != 0 )
-    saveSplitterConfig( s, 0, config , group);
-
-  delete l;
+   if (qobject_cast<QSplitter*>(obj))
+   {
+     saveSplitterConfig( qobject_cast<QSplitter*>(obj), 0, config , group);
+     break;
+   }
+  }
 }
 
 void KateViewSpaceContainer::restoreViewConfiguration (KConfig *config, const QString& group)
@@ -665,7 +591,7 @@ void KateViewSpaceContainer::restoreViewConfiguration (KConfig *config, const QS
 }
 
 
-void KateViewSpaceContainer::saveSplitterConfig( KateMDI::Splitter* s, int idx, KConfig* config, const QString& viewConfGrp )
+void KateViewSpaceContainer::saveSplitterConfig( QSplitter* s, int idx, KConfig* config, const QString& viewConfGrp )
 {
   QString grp = QString(viewConfGrp+"-Splitter %1").arg(idx);
   config->setGroup(grp);
@@ -676,11 +602,11 @@ void KateViewSpaceContainer::saveSplitterConfig( KateMDI::Splitter* s, int idx, 
 
   QStringList childList;
   // a katesplitter has two children, of which one may be a KateSplitter.
-  const QObjectList* l = s->children();
-  QObjectListIt it( *l );
-  QObject* obj;
-  for (; it.current(); ++it) {
-   obj = it.current();
+  const QList<QObject*> &l = s->children();
+  for (QList<QObject*>::const_iterator it( l.begin() ); it != l.end(); ++it)
+  {
+   QObject *obj = *it;
+
    QString n;  // name for child list, see below
    // For KateViewSpaces, ask them to save the file list.
    if ( obj->isA("KateViewSpace") ) {
@@ -693,14 +619,14 @@ void KateViewSpaceContainer::saveSplitterConfig( KateMDI::Splitter* s, int idx, 
      }
    }
    // For KateSplitters, recurse
-   else if ( obj->isA("KateMDI::Splitter") ) {
+   else if ( obj->isA("QSplitter") ) {
      idx++;
-     saveSplitterConfig( (KateMDI::Splitter*)obj, idx, config,viewConfGrp);
+     saveSplitterConfig( (QSplitter*)obj, idx, config,viewConfGrp);
      n = QString(viewConfGrp+"-Splitter %1").arg( idx );
    }
    // make sure list goes in right place!
    if (!n.isEmpty()) {
-     if ( childList.count() > 0 && ! s->isLastChild( (QWidget*)obj ) )
+     if ( childList.count() > 0 && ! (s->indexOf( (QWidget*)obj ) > 1) )
        childList.prepend( n );
      else
        childList.append( n );
@@ -716,7 +642,7 @@ void KateViewSpaceContainer::restoreSplitter( KConfig* config, const QString &gr
 {
   config->setGroup( group );
 
-  KateMDI::Splitter* s = new KateMDI::Splitter((Qt::Orientation)config->readNumEntry("Orientation"), parent);
+  QSplitter* s = new QSplitter((Qt::Orientation)config->readNumEntry("Orientation"), parent);
 
   QStringList children = config->readListEntry( "Children" );
   for (QStringList::Iterator it=children.begin(); it!=children.end(); ++it)
@@ -726,7 +652,7 @@ void KateViewSpaceContainer::restoreSplitter( KConfig* config, const QString &gr
     {
      KateViewSpace* vs = new KateViewSpace( this, s );
 
-     connect(this, SIGNAL(statusChanged(Kate::View *, int, int, int, bool, int, const QString &)), vs, SLOT(slotStatusChanged(Kate::View *, int, int, int, bool, int, const QString &)));
+     connect(this, SIGNAL(statusChanged(KTextEditor::View *, int, int, int, bool, int, const QString &)), vs, SLOT(slotStatusChanged(KTextEditor::View *, int, int, int, bool, int, const QString &)));
 
      if (m_viewSpaceList.isEmpty())
        vs->setActive (true);

@@ -28,6 +28,8 @@
 
 #include <kconfig.h>
 #include <qstringlist.h>
+//Added by qt3to4:
+#include <Q3ValueList>
 #include <kmessagebox.h>
 #include <kdebug.h>
 #include <qfile.h>
@@ -57,7 +59,7 @@ KatePluginManager *KatePluginManager::self()
 
 void KatePluginManager::setupPluginList ()
 {
-  QValueList<KService::Ptr> traderList= KTrader::self()->query("Kate/Plugin", "(not ('Kate/ProjectPlugin' in ServiceTypes)) and (not ('Kate/InitPlugin' in ServiceTypes))");
+  Q3ValueList<KService::Ptr> traderList= KTrader::self()->query("Kate/Plugin", "(not ('Kate/ProjectPlugin' in ServiceTypes)) and (not ('Kate/InitPlugin' in ServiceTypes))");
 
   for(KTrader::OfferList::Iterator it(traderList.begin()); it != traderList.end(); ++it)
   {
@@ -82,61 +84,61 @@ void KatePluginManager::loadConfig ()
 {
   KateApp::self()->config()->setGroup("Kate Plugins");
 
-  for (unsigned int i=0; i < m_pluginList.size(); ++i)
-    m_pluginList[i].load =  KateApp::self()->config()->readBoolEntry (m_pluginList[i].service->library(), false) ||
-                            KateApp::self()->config()->readBoolEntry (m_pluginList[i].service->property("X-Kate-PluginName").toString(),false);
+  foreach (const KatePluginInfo &plugin,m_pluginList)
+    plugin.load =  KateApp::self()->config()->readBoolEntry (plugin.service->library(), false) ||
+                            KateApp::self()->config()->readBoolEntry (plugin.service->property("X-Kate-PluginName").toString(),false);
 }
 
 void KatePluginManager::writeConfig ()
 {
   KateApp::self()->config()->setGroup("Kate Plugins");
 
-  for (unsigned int i=0; i < m_pluginList.size(); ++i)
+  foreach(const KatePluginInfo &plugin,m_pluginList)
   {
-    QString saveName=m_pluginList[i].service->property("X-Kate-PluginName").toString();
+    QString saveName=plugin.service->property("X-Kate-PluginName").toString();
 
     if (saveName.isEmpty())
-      saveName = m_pluginList[i].service->library();
+      saveName = plugin.service->library();
 
-    KateApp::self()->config()->writeEntry (saveName, m_pluginList[i].load);
+    KateApp::self()->config()->writeEntry (saveName, plugin.load);
   }
 }
 
 void KatePluginManager::loadAllEnabledPlugins ()
 {
-  for (unsigned int i=0; i < m_pluginList.size(); ++i)
+  for (KatePluginList::iterator it=m_pluginList.begin();it!=m_pluginList.end(); ++it)
   {
-    if  (m_pluginList[i].load)
-      loadPlugin (&m_pluginList[i]);
+    if (it->load)
+      loadPlugin(&(*it));
     else
-      unloadPlugin (&m_pluginList[i]);
+      unloadPlugin(&(*it));
   }
 }
 
 void KatePluginManager::unloadAllPlugins ()
 {
-  for (unsigned int i=0; i < m_pluginList.size(); ++i)
+  for (KatePluginList::iterator it=m_pluginList.begin();it!=m_pluginList.end(); ++it)
   {
-    if  (m_pluginList[i].plugin)
-      unloadPlugin (&m_pluginList[i]);
+    if (it->plugin)
+      unloadPlugin(&(*it));
   }
 }
 
 void KatePluginManager::enableAllPluginsGUI (KateMainWindow *win)
 {
-  for (unsigned int i=0; i < m_pluginList.size(); ++i)
+  for (KatePluginList::iterator it=m_pluginList.begin();it!=m_pluginList.end(); ++it)
   {
-    if  (m_pluginList[i].load)
-      enablePluginGUI (&m_pluginList[i], win);
+    if (it->load)
+      enablePluginGUI(&(*it),win);
   }
 }
 
 void KatePluginManager::disableAllPluginsGUI (KateMainWindow *win)
 {
-  for (unsigned int i=0; i < m_pluginList.size(); ++i)
+  for (KatePluginList::iterator it=m_pluginList.begin();it!=m_pluginList.end(); ++it)
   {
-    if  (m_pluginList[i].load)
-      disablePluginGUI (&m_pluginList[i], win);
+    if (it->load)
+      disablePluginGUI(&(*it),win);
   }
 }
 
@@ -147,7 +149,7 @@ void KatePluginManager::loadPlugin (KatePluginInfo *item)
   if (pluginName.isEmpty())
     pluginName=item->service->library();
 
-  item->load = (item->plugin = Kate::createPlugin (QFile::encodeName(item->service->library()), Kate::application(), 0, pluginName));
+  item->load = (item->plugin = Kate::createPlugin (QFile::encodeName(item->service->library()), Kate::application(), 0, QStringList(pluginName)));
 }
 
 void KatePluginManager::unloadPlugin (KatePluginInfo *item)
@@ -160,18 +162,40 @@ void KatePluginManager::unloadPlugin (KatePluginInfo *item)
 
 void KatePluginManager::enablePluginGUI (KatePluginInfo *item, KateMainWindow *win)
 {
+  kdDebug(13000)<<"Checking if the GUI of a plugin should be enabled"<<endl;
   if (!item->plugin) return;
   if (!Kate::pluginViewInterface(item->plugin)) return;
+  //BEGIN DEBUG
+  QString pluginName=item->service->property("X-Kate-PluginName").toString();
 
+  if (pluginName.isEmpty())
+    pluginName=item->service->library();
+
+  kdDebug(13000)<<"Enabling GUI for plugin: "<<pluginName<<endl;
+  kdDebug()<<item->plugin<<"--"<<Kate::pluginViewInterface(item->plugin)<<endl;
+  //END DEBUG
   Kate::pluginViewInterface(item->plugin)->addView(win->mainWindow());
 }
 
 void KatePluginManager::enablePluginGUI (KatePluginInfo *item)
 {
+  kdDebug(13000)<<"Checking if the GUI of a plugin should be enabled"<<endl;
+
   if (!item->plugin) return;
   if (!Kate::pluginViewInterface(item->plugin)) return;
 
-  for (uint i=0; i< KateApp::self()->mainWindows(); i++)
+  //BEGIN DEBUG
+  QString pluginName=item->service->property("X-Kate-PluginName").toString();
+
+  if (pluginName.isEmpty())
+    pluginName=item->service->library();
+
+  kdDebug(13000)<<"Enabling GUI for plugin: "<<pluginName<<endl;
+  kdDebug()<<item->plugin<<"--"<<Kate::pluginViewInterface(item->plugin)<<endl;
+
+  //END DEBUG
+
+  for (int i=0; i< KateApp::self()->mainWindows(); i++)
   {
     Kate::pluginViewInterface(item->plugin)->addView(KateApp::self()->mainWindow(i)->mainWindow());
   }
@@ -190,7 +214,7 @@ void KatePluginManager::disablePluginGUI (KatePluginInfo *item)
   if (!item->plugin) return;
   if (!Kate::pluginViewInterface(item->plugin)) return;
 
-  for (uint i=0; i< KateApp::self()->mainWindows(); i++)
+  for (int i=0; i< KateApp::self()->mainWindows(); i++)
   {
     Kate::pluginViewInterface(item->plugin)->removeView(KateApp::self()->mainWindow(i)->mainWindow());
   }
@@ -198,16 +222,15 @@ void KatePluginManager::disablePluginGUI (KatePluginInfo *item)
 
 Kate::Plugin *KatePluginManager::plugin(const QString &name)
 {
-  for (unsigned int i=0; i < m_pluginList.size(); ++i)
+  foreach(const KatePluginInfo &info,m_pluginList)
   {
-    KatePluginInfo *info = &m_pluginList[i];
-    QString pluginName=info->service->property("X-Kate-PluginName").toString();
+    QString pluginName=info.service->property("X-Kate-PluginName").toString();
     if (pluginName.isEmpty())
-       pluginName=info->service->library();
+       pluginName=info.service->library();
     if  (pluginName==name)
     {
-      if (info->plugin)
-        return info->plugin;
+      if (info.plugin)
+        return info.plugin;
       else
         break;
     }

@@ -51,16 +51,9 @@ void KateTabWidget::addTab ( QWidget * child, const QString & label )
   maybeShow();
 }
 
-void KateTabWidget::addTab ( QWidget * child, const QIconSet & iconset, const QString & label )
+void KateTabWidget::addTab ( QWidget * child, const QIcon & iconset, const QString & label )
 {
   KTabWidget::addTab(child,iconset,label);
-  showPage(child);
-  maybeShow();
-}
-
-void KateTabWidget::addTab ( QWidget * child, QTab * tab )
-{
-  KTabWidget::addTab(child,tab);
   showPage(child);
   maybeShow();
 }
@@ -73,17 +66,9 @@ void KateTabWidget::insertTab ( QWidget * child, const QString & label, int inde
   tabBar()->repaint();
 }
 
-void KateTabWidget::insertTab ( QWidget * child, const QIconSet & iconset, const QString & label, int index )
+void KateTabWidget::insertTab ( QWidget * child, const QIcon & iconset, const QString & label, int index )
 {
   KTabWidget::insertTab(child,iconset,label,index);
-  showPage(child);
-  maybeShow();
-  tabBar()->repaint();
-}
-
-void KateTabWidget::insertTab ( QWidget * child, QTab * tab, int index)
-{
-  KTabWidget::insertTab(child,tab,index);
   showPage(child);
   maybeShow();
   tabBar()->repaint();

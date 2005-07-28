@@ -28,16 +28,18 @@
 #include <qevent.h>
 #include <qlabel.h>
 #include <qstringlist.h>
-#include <qvbox.h>
+#include <q3vbox.h>
+//Added by qt3to4:
+#include <Q3PtrList>
 
-/* a private check list item, that can store a Kate::Document*.  */
-class KateDocCheckItem : public QCheckListItem {
+/* a private check list item, that can store a KTextEditor::Document*.  */
+class KateDocCheckItem : public Q3CheckListItem {
   public:
-    KateDocCheckItem( QListView *parent, const QString& text, Kate::Document *d )
-      : QCheckListItem( parent, text, QCheckListItem::CheckBox ), mdoc(d) {};
-    Kate::Document *doc() { return mdoc; };
+    KateDocCheckItem( Q3ListView *parent, const QString& text, KTextEditor::Document *d )
+      : Q3CheckListItem( parent, text, Q3CheckListItem::CheckBox ), mdoc(d) {};
+    KTextEditor::Document *doc() { return mdoc; };
   private:
-    Kate::Document *mdoc;
+    KTextEditor::Document *mdoc;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -60,14 +62,14 @@ KateMailDialog::KateMailDialog( QWidget *parent, KateMainWindow  *mainwin )
   list = new KListView( mw );
   list->addColumn( i18n("Name") );
   list->addColumn( i18n("URL") );
-  Kate::Document *currentDoc = mainWindow->viewManager()->activeView()->getDoc();
+  KTextEditor::Document *currentDoc = mainWindow->viewManager()->activeView()->document();
   uint n = KateDocManager::self()->documents();
   uint i = 0;
-  QCheckListItem *item;
+  Q3CheckListItem *item;
   while ( i < n ) {
-    Kate::Document *doc = KateDocManager::self()->document( i );
+    KTextEditor::Document *doc = KateDocManager::self()->document( i );
     if ( doc ) {
-      item = new KateDocCheckItem( list, doc->docName(), doc );
+      item = new KateDocCheckItem( list, doc->documentName(), doc );
       item->setText( 1, doc->url().prettyURL() );
       if ( doc == currentDoc ) {
         item->setOn( true );
@@ -81,10 +83,10 @@ KateMailDialog::KateMailDialog( QWidget *parent, KateMainWindow  *mainwin )
   mw->setMinimumSize( lInfo->sizeHint() );
 }
 
-QPtrList<Kate::Document> KateMailDialog::selectedDocs()
+Q3PtrList<KTextEditor::Document> KateMailDialog::selectedDocs()
 {
-  QPtrList<Kate::Document> l;
-  QListViewItem *item = list->firstChild();
+  Q3PtrList<KTextEditor::Document> l;
+  Q3ListViewItem *item = list->firstChild();
   while ( item ) {
     if ( ((KateDocCheckItem*)item)->isOn() )
       l.append( ((KateDocCheckItem*)item)->doc() );

@@ -24,9 +24,11 @@
 #include "katemain.h"
 #include "../interfaces/viewmanager.h"
 
-#include <kate/view.h>
-#include <kate/document.h>
-#include <qguardedptr.h>
+#include <ktexteditor/view.h>
+#include <ktexteditor/document.h>
+
+#include <qpointer.h>
+#include <Q3PtrList>
 
 class KateMainWindow;
 class KateViewSpaceContainer;
@@ -48,7 +50,7 @@ class KateViewManager : public QObject
 
     KateViewSpaceContainer *activeContainer () { return m_currentContainer; }
 
-    QPtrList<KateViewSpaceContainer> *containers() { return &m_viewSpaceContainerList; }
+    Q3PtrList<KateViewSpaceContainer> *containers() { return &m_viewSpaceContainerList; }
 
     void updateViewSpaceActions ();
 
@@ -76,7 +78,7 @@ class KateViewManager : public QObject
     bool showFullPath;
 
   public:
-    Kate::View* activeView ();
+    KTextEditor::View* activeView ();
     KateViewSpace* activeViewSpace ();
 
     uint viewCount ();
@@ -89,8 +91,8 @@ class KateViewManager : public QObject
     KateMainWindow *mainWindow();
 
   private slots:
-    void activateView ( Kate::View *view );
-    void activateSpace ( Kate::View* v );
+    void activateView ( KTextEditor::View *view );
+    void activateSpace ( KTextEditor::View* v );
 
     void tabChanged(QWidget*);
 
@@ -117,7 +119,7 @@ class KateViewManager : public QObject
     void slotCloseCurrentViewSpace();
 
     void setActiveSpace ( KateViewSpace* vs );
-    void setActiveView ( Kate::View* view );
+    void setActiveView ( KTextEditor::View* view );
 
     void setShowFullPath(bool enable);
 
@@ -127,16 +129,16 @@ class KateViewManager : public QObject
   protected:
     friend class KateViewSpaceContainer;
 
-    QGuardedPtr<Kate::View> guiMergedView;
+    QPointer<KTextEditor::View> guiMergedView;
 
   signals:
-    void statusChanged (Kate::View *, int, int, int, bool, int, const QString &);
+    void statusChanged (KTextEditor::View *, int, int, int, bool, int, const QString &);
     void statChanged ();
     void viewChanged ();
 
   private:
     Kate::ViewManager *m_viewManager;
-    QPtrList<KateViewSpaceContainer> m_viewSpaceContainerList;
+    Q3PtrList<KateViewSpaceContainer> m_viewSpaceContainerList;
     KateViewSpaceContainer *m_currentContainer;
 
     KateMainWindow *m_mainWindow;

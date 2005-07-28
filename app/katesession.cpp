@@ -39,10 +39,10 @@
 #include <qdir.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qvbox.h>
-#include <qhbox.h>
 #include <qcheckbox.h>
 #include <qdatetime.h>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 
 #include <unistd.h>
 #include <time.h>
@@ -119,7 +119,7 @@ bool KateSession::create (const QString &name, bool force)
 
   // get a usable filename
   int s = time(0);
-  QCString tname;
+  QByteArray tname;
   while (true)
   {
     tname.setNum (s++);
@@ -265,7 +265,8 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
   if (loadNew)
   {
     // open the new session
-    Kate::Document::setOpenErrorDialogsActivated (false);
+#warning fixme later
+    //KTextEditor::Document::setOpenErrorDialogsActivated (false);
 
     KConfig *sc = activeSession()->configRead();
 
@@ -281,9 +282,9 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
       if (c->readBoolEntry("Restore Window Configuration", false))
       {
         sc->setGroup ("Open MainWindows");
-        unsigned int wCount = sc->readUnsignedNumEntry("Count", 1);
+        int wCount = sc->readUnsignedNumEntry("Count", 1);
 
-        for (unsigned int i=0; i < wCount; ++i)
+        for (int i=0; i < wCount; ++i)
         {
           if (i >= KateApp::self()->mainWindows())
           {
@@ -308,7 +309,8 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
       }
     }
 
-    Kate::Document::setOpenErrorDialogsActivated (true);
+#warning fixme later
+    //KTextEditor::Document::setOpenErrorDialogsActivated (true);
   }
 }
 
@@ -325,7 +327,7 @@ KateSession::Ptr KateSessionManager::giveSession (const QString &name)
   if (name.isEmpty())
     return new KateSession (this, "", "");
 
-  for (unsigned int i=0; i < m_sessionList.count(); ++i)
+  for (int i=0; i < m_sessionList.count(); ++i)
   {
     if (m_sessionList[i]->sessionName() == name)
       return m_sessionList[i];
@@ -387,7 +389,7 @@ bool KateSessionManager::saveActiveSession (bool tryAsk, bool rememberAsLast)
   sc->writeEntry ("Count", KateApp::self()->mainWindows ());
 
   // save config for all windows around ;)
-  for (unsigned int i=0; i < KateApp::self()->mainWindows (); ++i )
+  for (int i=0; i < KateApp::self()->mainWindows (); ++i )
   {
     sc->setGroup(QString ("MainWindow%1").arg(i));
     KateApp::self()->mainWindow(i)->saveProperties (sc);
@@ -565,11 +567,11 @@ void KateSessionManager::sessionManage ()
 
 //BEGIN CHOOSER DIALOG
 
-class KateSessionChooserItem : public QListViewItem
+class KateSessionChooserItem : public Q3ListViewItem
 {
   public:
     KateSessionChooserItem (KListView *lv, KateSession::Ptr s)
-     : QListViewItem (lv, s->sessionName())
+     : Q3ListViewItem (lv, s->sessionName())
      , session (s)
     {
       QString docs;
@@ -593,31 +595,36 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
                   , KGuiItem (i18n ("New Session"), "filenew")
                 )
 {
-  QHBox *page = new QHBox (this);
+  QFrame *page = new QFrame (this);
+  QHBoxLayout *tll=new QHBoxLayout(page);
   page->setMinimumSize (400, 200);
   setMainWidget(page);
 
-  QHBox *hb = new QHBox (page);
+  QHBoxLayout *hb = new QHBoxLayout ();
   hb->setSpacing (KDialog::spacingHint());
+  tll->addItem(hb);
 
-  QLabel *label = new QLabel (hb);
+  QLabel *label = new QLabel (page);
+  hb->addWidget(label);
   label->setPixmap (UserIcon("sessionchooser"));
   label->setFrameStyle (QFrame::Panel | QFrame::Sunken);
-
-  QVBox *vb = new QVBox (hb);
+  label->setAlignment(Qt::AlignTop);
+  QVBoxLayout *vb = new QVBoxLayout ();
   vb->setSpacing (KDialog::spacingHint());
-
-  m_sessions = new KListView (vb);
+  tll->addItem(vb);
+  
+  m_sessions = new KListView (page);
+  vb->addWidget(m_sessions);
   m_sessions->addColumn (i18n("Session Name"));
   m_sessions->addColumn (i18n("Open Documents"));
-  m_sessions->setResizeMode (QListView::AllColumns);
-  m_sessions->setSelectionMode (QListView::Single);
+  m_sessions->setResizeMode (Q3ListView::AllColumns);
+  m_sessions->setSelectionMode (Q3ListView::Single);
   m_sessions->setAllColumnsShowFocus (true);
 
   connect (m_sessions, SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
 
   KateSessionList &slist (KateSessionManager::self()->sessionList());
-  for (unsigned int i=0; i < slist.count(); ++i)
+  for (int i=0; i < slist.count(); ++i)
   {
     KateSessionChooserItem *item = new KateSessionChooserItem (m_sessions, slist[i]);
 
@@ -625,7 +632,8 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
       m_sessions->setSelected (item, true);
   }
 
-  m_useLast = new QCheckBox (i18n ("&Always use this choice"), vb);
+  m_useLast = new QCheckBox (i18n ("&Always use this choice"), page);
+  vb->addWidget(m_useLast);
 
   setResult (resultNone);
 
@@ -688,23 +696,24 @@ KateSessionOpenDialog::KateSessionOpenDialog (QWidget *parent)
                   , KGuiItem( i18n("&Open"), "fileopen")
                 )
 {
-  QHBox *page = new QHBox (this);
+  QFrame *page = new QFrame (this);
   page->setMinimumSize (400, 200);
   setMainWidget(page);
 
-  QHBox *hb = new QHBox (page);
-
-  QVBox *vb = new QVBox (hb);
-
-  m_sessions = new KListView (vb);
+  QHBoxLayout *hb = new QHBoxLayout (page);
+  
+  QVBoxLayout *vb = new QVBoxLayout ();
+  hb->addItem(vb);
+  m_sessions = new KListView (this);
+  vb->addWidget(m_sessions);
   m_sessions->addColumn (i18n("Session Name"));
   m_sessions->addColumn (i18n("Open Documents"));
-  m_sessions->setResizeMode (QListView::AllColumns);
-  m_sessions->setSelectionMode (QListView::Single);
+  m_sessions->setResizeMode (Q3ListView::AllColumns);
+  m_sessions->setSelectionMode (Q3ListView::Single);
   m_sessions->setAllColumnsShowFocus (true);
 
   KateSessionList &slist (KateSessionManager::self()->sessionList());
-  for (unsigned int i=0; i < slist.count(); ++i)
+  for (int i=0; i < slist.count(); ++i)
   {
     new KateSessionChooserItem (m_sessions, slist[i]);
   }
@@ -751,37 +760,38 @@ KateSessionManageDialog::KateSessionManageDialog (QWidget *parent)
                   , KStdGuiItem::close ()
                 )
 {
-  QHBox *page = new QHBox (this);
+  QFrame *page = new QFrame (this);
   page->setMinimumSize (400, 200);
   setMainWidget(page);
 
-  QHBox *hb = new QHBox (page);
+  QHBoxLayout *hb = new QHBoxLayout (page);
   hb->setSpacing (KDialog::spacingHint());
 
-  m_sessions = new KListView (hb);
+  m_sessions = new KListView (page);
+  hb->addWidget(m_sessions);
   m_sessions->addColumn (i18n("Session Name"));
   m_sessions->addColumn (i18n("Open Documents"));
-  m_sessions->setResizeMode (QListView::AllColumns);
-  m_sessions->setSelectionMode (QListView::Single);
+  m_sessions->setResizeMode (Q3ListView::AllColumns);
+  m_sessions->setSelectionMode (Q3ListView::Single);
   m_sessions->setAllColumnsShowFocus (true);
 
   connect (m_sessions, SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
 
   updateSessionList ();
 
-  QWidget *vb = new QWidget (hb);
-  QVBoxLayout *vbl = new QVBoxLayout (vb);
-  vbl->setSpacing (KDialog::spacingHint());
+  QVBoxLayout *vb = new QVBoxLayout ();
+  hb->addItem(vb);
+  vb->setSpacing (KDialog::spacingHint());
 
-  m_rename = new KPushButton (i18n("&Rename..."), vb);
+  m_rename = new KPushButton (i18n("&Rename..."), page);
   connect (m_rename, SIGNAL(clicked()), this, SLOT(rename()));
-  vbl->addWidget (m_rename);
+  vb->addWidget (m_rename);
 
-  m_del = new KPushButton (KStdGuiItem::del (), vb);
+  m_del = new KPushButton (KStdGuiItem::del (), page);
   connect (m_del, SIGNAL(clicked()), this, SLOT(del()));
-  vbl->addWidget (m_del);
+  vb->addWidget (m_del);
 
-  vbl->addStretch ();
+  vb->addStretch ();
 
   // trigger action update
   selectionChanged ();
@@ -845,7 +855,7 @@ void KateSessionManageDialog::updateSessionList ()
   m_sessions->clear ();
 
   KateSessionList &slist (KateSessionManager::self()->sessionList());
-  for (unsigned int i=0; i < slist.count(); ++i)
+  for (int i=0; i < slist.count(); ++i)
   {
     new KateSessionChooserItem (m_sessions, slist[i]);
   }
@@ -865,7 +875,7 @@ void KateSessionsAction::slotAboutToShow()
   popupMenu()->clear ();
 
   KateSessionList &slist (KateSessionManager::self()->sessionList());
-  for (unsigned int i=0; i < slist.count(); ++i)
+  for (int i=0; i < slist.count(); ++i)
   {
       popupMenu()->insertItem (
           slist[i]->sessionName(),
@@ -878,7 +888,7 @@ void KateSessionsAction::openSession (int i)
 {
   KateSessionList &slist (KateSessionManager::self()->sessionList());
 
-  if ((uint)i >= slist.count())
+  if ((int)i >= slist.count())
     return;
 
   KateSessionManager::self()->activateSession(slist[(uint)i]);

@@ -26,9 +26,9 @@
 #include "kateexternaltools.h"
 #include "kateviewspacecontainer.h"
 
-#include <kate/view.h>
-
-#include <ktexteditor/encodinginterface.h>
+#include <ktexteditor/view.h>
+#include <ktexteditor/sessionconfiginterface.h>
+#include <ktexteditor/editorchooser.h>
 
 #include <kparts/factory.h>
 
@@ -42,19 +42,25 @@
 
 #include <qdatetime.h>
 #include <qtextcodec.h>
-#include <qprogressdialog.h>
+#include <q3progressdialog.h>
+#include <QByteArray>
+#include <QHash>
 
 KateDocManager::KateDocManager (QObject *parent)
  : QObject (parent)
  , m_saveMetaInfos(true)
  , m_daysMetaInfos(0)
 {
-  m_factory = (KParts::Factory *) KLibLoader::self()->factory ("libkatepart");
+  // Constructed the beloved editor ;)
+  m_editor = KTextEditor::EditorChooser::editor();
+
+  // read in editor config
+  m_editor->readConfig(KateApp::self()->config());
 
   m_documentManager = new Kate::DocumentManager (this);
-  m_docList.setAutoDelete(true);
+  /*m_docList.setAutoDelete(true);
   m_docDict.setAutoDelete(false);
-  m_docInfos.setAutoDelete(true);
+  m_docInfos.setAutoDelete(true); */
 
   m_dcop = new KateDocManagerDCOPIface (this);
 
@@ -65,10 +71,14 @@ KateDocManager::KateDocManager (QObject *parent)
 
 KateDocManager::~KateDocManager ()
 {
+  // write editor config
+  m_editor->writeConfig(KateApp::self()->config());
+
+  // write metainfos?
   if (m_saveMetaInfos)
   {
     // saving meta-infos when file is saved is not enough, we need to do it once more at the end
-    for (Kate::Document *doc = m_docList.first(); doc; doc = m_docList.next())
+    foreach (KTextEditor::Document *doc,m_docList)
       saveMetaInfos(doc);
 
     // purge saved filesessions
@@ -96,37 +106,33 @@ KateDocManager *KateDocManager::self ()
   return KateApp::self()->documentManager ();
 }
 
-Kate::Document *KateDocManager::createDoc ()
+KTextEditor::Document *KateDocManager::createDoc ()
 {
-  KTextEditor::Document *doc = (KTextEditor::Document *) m_factory->createPart (0, "", this, "", "KTextEditor::Document");
+  KTextEditor::Document *doc = (KTextEditor::Document *) m_editor->createDocument(this);
 
-  m_docList.append((Kate::Document *)doc);
-  m_docDict.insert (doc->documentNumber(), (Kate::Document *)doc);
+  m_docList.append((KTextEditor::Document *)doc);
+  m_docDict.insert (doc->documentNumber(), (KTextEditor::Document *)doc);
   m_docInfos.insert (doc, new KateDocumentInfo ());
 
-  if (m_docList.count() < 2)
-    ((Kate::Document *)doc)->readConfig(KateApp::self()->config());
+  emit documentCreated ((KTextEditor::Document *)doc);
+  emit m_documentManager->documentCreated ((KTextEditor::Document *)doc);
 
-  emit documentCreated ((Kate::Document *)doc);
-  emit m_documentManager->documentCreated ((Kate::Document *)doc);
-
-  connect(doc,SIGNAL(modifiedOnDisc(Kate::Document *, bool, unsigned char)),this,SLOT(slotModifiedOnDisc(Kate::Document *, bool, unsigned char)));
-  return (Kate::Document *)doc;
+  connect(doc,SIGNAL(modifiedOnDisk(KTextEditor::Document *, bool, KTextEditor::ModificationInterface::ModifiedOnDiskReason)),
+   this,SLOT(slotModifiedOnDisc(KTextEditor::Document *, bool, KTextEditor::ModificationInterface::ModifiedOnDiskReason)));
+  return (KTextEditor::Document *)doc;
 }
 
-void KateDocManager::deleteDoc (Kate::Document *doc)
+void KateDocManager::deleteDoc (KTextEditor::Document *doc)
 {
   uint id = doc->documentNumber();
   uint activeId = 0;
+
   if (m_currentDoc)
     activeId = m_currentDoc->documentNumber ();
 
-  if (m_docList.count() < 2)
-    doc->writeConfig(KateApp::self()->config());
-
-  m_docInfos.remove (doc);
-  m_docDict.remove (id);
-  m_docList.remove (doc);
+  delete m_docInfos.take (doc);
+  m_docDict.remove (id); //no delete, is down by the next line
+  delete m_docList.takeAt (m_docList.indexOf(doc));
 
   emit documentDeleted (id);
   emit m_documentManager->documentDeleted (id);
@@ -142,17 +148,17 @@ void KateDocManager::deleteDoc (Kate::Document *doc)
   }
 }
 
-Kate::Document *KateDocManager::document (uint n)
+KTextEditor::Document *KateDocManager::document (uint n)
 {
   return m_docList.at(n);
 }
 
-Kate::Document *KateDocManager::activeDocument ()
+KTextEditor::Document *KateDocManager::activeDocument ()
 {
   return m_currentDoc;
 }
 
-void KateDocManager::setActiveDocument (Kate::Document *doc)
+void KateDocManager::setActiveDocument (KTextEditor::Document *doc)
 {
   if (!doc)
     return;
@@ -166,29 +172,19 @@ void KateDocManager::setActiveDocument (Kate::Document *doc)
   emit m_documentManager->documentChanged ();
 }
 
-Kate::Document *KateDocManager::firstDocument ()
-{
-  return m_docList.first();
-}
-
-Kate::Document *KateDocManager::nextDocument ()
-{
-  return m_docList.next();
-}
-
-Kate::Document *KateDocManager::documentWithID (uint id)
+KTextEditor::Document *KateDocManager::documentWithID (uint id)
 {
   return m_docDict[id];
 }
 
-const KateDocumentInfo *KateDocManager::documentInfo (Kate::Document *doc)
+const KateDocumentInfo *KateDocManager::documentInfo (KTextEditor::Document *doc)
 {
   return m_docInfos[doc];
 }
 
-int KateDocManager::findDocument (Kate::Document *doc)
+int KateDocManager::findDocument (KTextEditor::Document *doc)
 {
-  return m_docList.find (doc);
+  return m_docList.indexOf (doc);
 }
 
 uint KateDocManager::documents ()
@@ -198,22 +194,20 @@ uint KateDocManager::documents ()
 
 int KateDocManager::findDocument ( KURL url )
 {
-  QPtrListIterator<Kate::Document> it(m_docList);
-
-  for (; it.current(); ++it)
+  foreach (KTextEditor::Document* it,m_docList)
   {
-    if ( it.current()->url() == url)
-      return it.current()->documentNumber();
+    if ( it->url() == url)
+      return it->documentNumber();
   }
   return -1;
 }
 
-Kate::Document *KateDocManager::findDocumentByUrl( KURL url )
+KTextEditor::Document *KateDocManager::findDocumentByUrl( KURL url )
 {
-  for (QPtrListIterator<Kate::Document> it(m_docList); it.current(); ++it)
+  foreach (KTextEditor::Document* it,m_docList)
   {
-    if ( it.current()->url() == url)
-      return it.current();
+    if ( it->url() == url)
+      return it;
   }
 
   return 0L;
@@ -225,12 +219,12 @@ bool KateDocManager::isOpen(KURL url)
   return findDocumentByUrl (url) != 0;
 }
 
-Kate::Document *KateDocManager::openURL (const KURL& url,const QString &encoding, uint *id)
+KTextEditor::Document *KateDocManager::openURL (const KURL& url,const QString &encoding, uint *id)
 {
   // special handling if still only the first initial doc is there
   if (!documentList().isEmpty() && (documentList().count() == 1) && (!documentList().at(0)->isModified() && documentList().at(0)->url().isEmpty()))
   {
-    Kate::Document* doc = documentList().getFirst();
+    KTextEditor::Document* doc = documentList().first();
 
     doc->setEncoding(encoding);
 
@@ -240,19 +234,19 @@ Kate::Document *KateDocManager::openURL (const KURL& url,const QString &encoding
     if (id)
       *id=doc->documentNumber();
 
-    connect(doc, SIGNAL(modStateChanged(Kate::Document *)), this, SLOT(slotModChanged(Kate::Document *)));
+    connect(doc, SIGNAL(modStateChanged(KTextEditor::Document *)), this, SLOT(slotModChanged(KTextEditor::Document *)));
 
     emit initialDocumentReplaced();
 
     return doc;
  }
 
-  Kate::Document *doc = findDocumentByUrl (url);
+  KTextEditor::Document *doc = findDocumentByUrl (url);
   if ( !doc )
   {
-    doc = (Kate::Document *)createDoc ();
+    doc = (KTextEditor::Document *)createDoc ();
 
-    doc->setEncoding(encoding.isNull() ? Kate::Document::defaultEncoding() : encoding);
+    doc->setEncoding(encoding);
 
     if (!loadMetaInfos(doc, url))
       doc->openURL (url);
@@ -264,7 +258,7 @@ Kate::Document *KateDocManager::openURL (const KURL& url,const QString &encoding
   return doc;
 }
 
-bool KateDocManager::closeDocument(class Kate::Document *doc,bool closeURL)
+bool KateDocManager::closeDocument(class KTextEditor::Document *doc,bool closeURL)
 {
   if (!doc) return false;
 
@@ -272,10 +266,9 @@ bool KateDocManager::closeDocument(class Kate::Document *doc,bool closeURL)
   if (closeURL)
   if (!doc->closeURL()) return false;
 
-  QPtrList<Kate::View> closeList;
   uint documentNumber = doc->documentNumber();
 
-  for (uint i=0; i < KateApp::self()->mainWindows (); i++ )
+  for (int i=0; i < KateApp::self()->mainWindows (); i++ )
   {
     KateApp::self()->mainWindow(i)->viewManager()->closeViews(documentNumber);
   }
@@ -303,9 +296,9 @@ bool KateDocManager::closeAllDocuments(bool closeURL)
 {
   bool res = true;
 
-  QPtrList<Kate::Document> docs = m_docList;
+  QList<KTextEditor::Document*> docs = m_docList;
 
-  for (uint i=0; i < KateApp::self()->mainWindows (); i++ )
+  for (int i=0; i < KateApp::self()->mainWindows (); i++ )
   {
     KateApp::self()->mainWindow(i)->viewManager()->setViewActivationBlocked(true);
   }
@@ -314,9 +307,9 @@ bool KateDocManager::closeAllDocuments(bool closeURL)
     if (! closeDocument(docs.at(0),closeURL) )
       res = false;
     else
-      docs.remove ((uint)0);
+      docs.removeFirst();
 
-  for (uint i=0; i < KateApp::self()->mainWindows (); i++ )
+  for (int i=0; i < KateApp::self()->mainWindows (); i++ )
   {
     KateApp::self()->mainWindow(i)->viewManager()->setViewActivationBlocked(false);
 
@@ -327,10 +320,9 @@ bool KateDocManager::closeAllDocuments(bool closeURL)
   return res;
 }
 
-QPtrList<Kate::Document> KateDocManager::modifiedDocumentList() {
-  QPtrList<Kate::Document> modified;
-  for (QPtrListIterator<Kate::Document> it(m_docList); it.current(); ++it) {
-    Kate::Document *doc = it.current();
+QList<KTextEditor::Document*> KateDocManager::modifiedDocumentList() {
+  QList<KTextEditor::Document*> modified;
+  foreach (KTextEditor::Document* doc,m_docList) {
     if (doc->isModified()) {
       modified.append(doc);
     }
@@ -341,16 +333,14 @@ QPtrList<Kate::Document> KateDocManager::modifiedDocumentList() {
 
 bool KateDocManager::queryCloseDocuments(KateMainWindow *w)
 {
-  uint docCount = m_docList.count();
-  for (QPtrListIterator<Kate::Document> it(m_docList); it.current(); ++it)
+  int docCount = m_docList.count();
+  foreach (KTextEditor::Document *doc,m_docList)
   {
-    Kate::Document *doc = it.current();
-
     if (doc->url().isEmpty() && doc->isModified())
     {
       int msgres=KMessageBox::warningYesNoCancel( w,
                   i18n("<p>The document '%1' has been modified, but not saved."
-                       "<p>Do you want to save your changes or discard them?").arg( doc->docName() ),
+                       "<p>Do you want to save your changes or discard them?").arg( doc->documentName() ),
                     i18n("Close Document"), KStdGuiItem::save(), KStdGuiItem::discard() );
 
       if (msgres==KMessageBox::Cancel)
@@ -358,8 +348,7 @@ bool KateDocManager::queryCloseDocuments(KateMainWindow *w)
 
       if (msgres==KMessageBox::Yes)
       {
-        KEncodingFileDialog::Result r=KEncodingFileDialog::getSaveURLAndEncoding(
-              KTextEditor::encodingInterface(doc)->encoding(),QString::null,QString::null,w,i18n("Save As"));
+        KEncodingFileDialog::Result r=KEncodingFileDialog::getSaveURLAndEncoding( doc->encoding(),QString::null,QString::null,w,i18n("Save As"));
 
         doc->setEncoding( r.encoding );
 
@@ -396,9 +385,9 @@ bool KateDocManager::queryCloseDocuments(KateMainWindow *w)
 
 void KateDocManager::saveAll()
 {
-  for (QPtrListIterator<Kate::Document> it(m_docList); it.current(); ++it)
-    if ( it.current()->isModified() && it.current()->views().count() )
-      ((Kate::View*)it.current()->views().first())->save();
+  foreach ( KTextEditor::Document *doc, m_docList )
+    if ( doc->isModified() )
+      doc->documentSave();
 }
 
 void KateDocManager::saveDocumentList (KConfig* config)
@@ -410,10 +399,12 @@ void KateDocManager::saveDocumentList (KConfig* config)
   config->writeEntry ("Count", m_docList.count());
 
   int i=0;
-  for ( Kate::Document *doc = m_docList.first(); doc; doc = m_docList.next() )
+  foreach ( KTextEditor::Document *doc,m_docList)
   {
     config->setGroup(QString("Document %1").arg(i));
-    doc->writeSessionConfig(config);
+
+    if (KTextEditor::SessionConfigInterface *iface = qobject_cast<KTextEditor::SessionConfigInterface *>(doc))
+      iface->writeSessionConfig(config);
     config->setGroup(grp);
 
     i++;
@@ -436,7 +427,7 @@ void KateDocManager::restoreDocumentList (KConfig* config)
     return;
   }
 
-  QProgressDialog *pd=new QProgressDialog(
+  Q3ProgressDialog *pd=new Q3ProgressDialog(
         i18n("Reopening files from the last session..."),
         QString::null,
         count,
@@ -449,7 +440,7 @@ void KateDocManager::restoreDocumentList (KConfig* config)
   for (unsigned int i=0; i < count; i++)
   {
     config->setGroup(QString("Document %1").arg(i));
-    Kate::Document *doc = 0;
+    KTextEditor::Document *doc = 0;
 
     if (first)
     {
@@ -459,7 +450,8 @@ void KateDocManager::restoreDocumentList (KConfig* config)
     else
       doc = createDoc ();
 
-    doc->readSessionConfig(config);
+    if (KTextEditor::SessionConfigInterface *iface = qobject_cast<KTextEditor::SessionConfigInterface *>(doc))
+      iface->readSessionConfig(config);
     config->setGroup (grp);
 
     pd->setProgress(pd->progress()+1);
@@ -471,16 +463,16 @@ void KateDocManager::restoreDocumentList (KConfig* config)
   config->setGroup(prevGrp);
 }
 
-void KateDocManager::slotModifiedOnDisc (Kate::Document *doc, bool b, unsigned char reason)
+void KateDocManager::slotModifiedOnDisc (KTextEditor::Document *doc, bool b, KTextEditor::ModificationInterface::ModifiedOnDiskReason reason)
 {
-  if (m_docInfos[doc])
+  if (m_docInfos[qobject_cast<KTextEditor::Document*>(doc)])
   {
-    m_docInfos[doc]->modifiedOnDisc = b;
-    m_docInfos[doc]->modifiedOnDiscReason = reason;
+    m_docInfos[qobject_cast<KTextEditor::Document*>(doc)]->modifiedOnDisc = b;
+    m_docInfos[qobject_cast<KTextEditor::Document*>(doc)]->modifiedOnDiscReason = reason;
   }
 }
 
-void KateDocManager::slotModChanged(Kate::Document *doc)
+void KateDocManager::slotModChanged(KTextEditor::Document *doc)
 {
   saveMetaInfos(doc);
 }
@@ -488,7 +480,7 @@ void KateDocManager::slotModChanged(Kate::Document *doc)
 /**
  * Load file and file' meta-informations iif the MD5 didn't change since last time.
  */
-bool KateDocManager::loadMetaInfos(Kate::Document *doc, const KURL &url)
+bool KateDocManager::loadMetaInfos(KTextEditor::Document *doc, const KURL &url)
 {
   if (!m_saveMetaInfos)
     return false;
@@ -496,7 +488,7 @@ bool KateDocManager::loadMetaInfos(Kate::Document *doc, const KURL &url)
   if (!m_metaInfos->hasGroup(url.prettyURL()))
     return false;
 
-  QCString md5;
+  QByteArray md5;
   bool ok = true;
 
   if (computeUrlMD5(url, md5))
@@ -505,7 +497,10 @@ bool KateDocManager::loadMetaInfos(Kate::Document *doc, const KURL &url)
     QString old_md5 = m_metaInfos->readEntry("MD5");
 
     if ((const char *)md5 == old_md5)
-      doc->readSessionConfig(m_metaInfos);
+    {
+      if (KTextEditor::SessionConfigInterface *iface = qobject_cast<KTextEditor::SessionConfigInterface *>(doc))
+        iface->readSessionConfig(m_metaInfos);
+    }
     else
     {
       m_metaInfos->deleteGroup(url.prettyURL());
@@ -521,9 +516,9 @@ bool KateDocManager::loadMetaInfos(Kate::Document *doc, const KURL &url)
 /**
  * Save file' meta-informations iif doc is in 'unmodified' state
  */
-void KateDocManager::saveMetaInfos(Kate::Document *doc)
+void KateDocManager::saveMetaInfos(KTextEditor::Document *doc)
 {
-  QCString md5;
+  QByteArray md5;
 
   if (!m_saveMetaInfos)
     return;
@@ -537,18 +532,21 @@ void KateDocManager::saveMetaInfos(Kate::Document *doc)
   if (computeUrlMD5(doc->url(), md5))
   {
     m_metaInfos->setGroup(doc->url().prettyURL());
-    doc->writeSessionConfig(m_metaInfos);
+
+    if (KTextEditor::SessionConfigInterface *iface = qobject_cast<KTextEditor::SessionConfigInterface *>(doc))
+      iface->writeSessionConfig(m_metaInfos);
+
     m_metaInfos->writeEntry("MD5", (const char *)md5);
     m_metaInfos->writeEntry("Time", QDateTime::currentDateTime());
     m_metaInfos->sync();
   }
 }
 
-bool KateDocManager::computeUrlMD5(const KURL &url, QCString &result)
+bool KateDocManager::computeUrlMD5(const KURL &url, QByteArray &result)
 {
   QFile f(url.path());
 
-  if (f.open(IO_ReadOnly))
+  if (f.open(QIODevice::ReadOnly))
   {
     KMD5 md5;
 

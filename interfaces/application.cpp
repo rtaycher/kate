@@ -27,6 +27,7 @@
 #include "../app/katedocmanager.h"
 #include "../app/katepluginmanager.h"
 #include "../app/katemainwindow.h"
+#include <ktexteditor/editor.h>
 
 namespace Kate
 {
@@ -92,6 +93,12 @@ Application *application ()
 {
   return KateApp::self()->application ();
 }
+
+KTextEditor::Editor *Application::editor ()
+{
+  return d->app->documentManager ()->editor();
+}
+
 
 }
 

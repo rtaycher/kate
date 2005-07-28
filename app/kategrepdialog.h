@@ -23,11 +23,14 @@
 
 #include <kdialog.h>
 #include <qstringlist.h>
+//Added by qt3to4:
+#include <QLabel>
+#include <QEvent>
 
 class QLineEdit;
 class QComboBox;
 class QCheckBox;
-class QListBox;
+class Q3ListBox;
 class KPushButton;
 class QLabel;
 class KProcess;
@@ -77,7 +80,7 @@ private:
     KURLRequester *cmbDir;
     QCheckBox *cbRecursive;
     QCheckBox *cbCasesensitive, *cbRegex;
-    QListBox *lbResult;
+    Q3ListBox *lbResult;
     KPushButton *btnSearch, *btnClear;
     KProcess *childproc;
     QString buf;

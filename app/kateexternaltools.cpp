@@ -24,14 +24,15 @@
 //BEGIN Includes
 #include "kateexternaltools.h"
 #include "kateexternaltools.moc"
+
 #include "katedocmanager.h"
 #include "kateviewmanager.h"
 #include "kateapp.h"
 
 #include "katemainwindow.h"
 
-#include <kate/view.h>
-#include <kate/document.h>
+#include <ktexteditor/view.h>
+#include <ktexteditor/document.h>
 
 #include <klistbox.h>
 #include <klocale.h>
@@ -51,12 +52,14 @@
 #include <qlineedit.h>
 #include <qlayout.h>
 #include <qlabel.h>
-#include <qlistbox.h>
+#include <q3listbox.h>
 #include <qmap.h>
 #include <qregexp.h>
-#include <qtextedit.h>
+#include <q3textedit.h>
 #include <qtoolbutton.h>
-#include <qwhatsthis.h>
+//Added by qt3to4:
+#include <QPixmap>
+#include <QGridLayout>
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -132,12 +135,12 @@ bool KateExternalTool::valid( const QString &mt ) const
 //END KateExternalTool
 
 //BEGIN KateExternalToolsCommand
-KateExternalToolsCommand::KateExternalToolsCommand() : Kate::Command() {
+KateExternalToolsCommand::KateExternalToolsCommand() : KTextEditor::Command() {
 	m_inited=false;
 	reload();
 }
 
-QStringList KateExternalToolsCommand::cmds () {
+const QStringList &KateExternalToolsCommand::cmds () {
 	return m_list;
 }
 
@@ -150,6 +153,11 @@ KateExternalToolsCommand *KateExternalToolsCommand::self () {
 void KateExternalToolsCommand::reload () {
   m_list.clear();
   m_map.clear();
+
+#warning "Hmm, this leads to crash, not sure why, atm :("
+
+ return;
+
 
   KConfig config("externaltools", false, false, "appdata");
   config.setGroup("Global");
@@ -179,19 +187,21 @@ void KateExternalToolsCommand::reload () {
 	}
   }
   if (m_inited) {
-	  Kate::Document::unregisterCommand(this);
-	  Kate::Document::registerCommand(this);
+
+#warning fixme later
+  //  KTextEditor::Document::unregisterCommand(this);
+	//  KTextEditor::Document::registerCommand(this);
    }
   else m_inited=true;
 }
 
-bool KateExternalToolsCommand::exec (Kate::View *view, const QString &cmd, QString &) {
+bool KateExternalToolsCommand::exec (KTextEditor::View *view, const QString &cmd, QString &) {
 	QWidget *wv=dynamic_cast<QWidget*>(view);
 	if (!wv) {
 // 		kdDebug(13001)<<"KateExternalToolsCommand::exec: Could not get view widget"<<endl;
 		return false;
 	}
-  KateMDI::MainWindow *dmw=dynamic_cast<KateMDI::MainWindow*>(wv->topLevelWidget());
+  KateMDI::MainWindow *dmw=dynamic_cast<KateMDI::MainWindow*>(wv->window());
 	if (!dmw) {
 // 		kdDebug(13001)<<"KateExternalToolsCommand::exec: Could not get main window"<<endl;
 		return false;
@@ -204,14 +214,14 @@ bool KateExternalToolsCommand::exec (Kate::View *view, const QString &cmd, QStri
 		dynamic_cast<KateExternalToolsMenuAction*>(dmw->action("tools_external"));
 	if (!a) return false;
 // 	kdDebug(13001)<<"trying to find action"<<endl;
-	KAction *a1=a->actionCollection()->action(actionName.utf8());
+	KAction *a1=a->actionCollection()->action(actionName.utf8().constData ());
 	if (!a1) return false;
 // 	kdDebug(13001)<<"activating action"<<endl;
 	a1->activate();
 	return true;
 }
 
-bool KateExternalToolsCommand::help (Kate::View *, const QString &, QString &) {
+bool KateExternalToolsCommand::help (KTextEditor::View *, const QString &, QString &) {
 	return false;
 }
 //END KateExternalToolsCommand
@@ -233,9 +243,8 @@ bool KateExternalToolAction::expandMacro( const QString &str, QStringList &ret )
 {
   KateMainWindow *mw = (KateMainWindow*)parent()->parent();
 
-  Kate::View *view = mw->viewManager()->activeView();
+  KTextEditor::View *view = mw->viewManager()->activeView();
   if ( ! view ) return false;
-
 
   if ( str == "URL" )
     ret += mw->activeDocumentUrl().url();
@@ -244,15 +253,15 @@ bool KateExternalToolAction::expandMacro( const QString &str, QStringList &ret )
   else if ( str == "filename" )
     ret += mw->activeDocumentUrl().fileName();
   else if ( str == "line" ) // cursor line of current doc
-    ret += QString::number( view->cursorLine() );
+    ret += QString::number( view->cursorPosition().line() );
   else if ( str == "col" ) // cursor col of current doc
-    ret += QString::number( view->cursorColumn() );
+    ret += QString::number( view->cursorPosition().column() );
   else if ( str == "selection" ) // selection of current doc if any
-    ret += view->getDoc()->selection();
+    ret += view->selectionText();
   else if ( str == "text" ) // text of current doc
-    ret += view->getDoc()->text();
+    ret += view->document()->text();
   else if ( str == "URLs" ) {
-    for( Kate::Document *doc = KateDocManager::self()->firstDocument(); doc; doc = KateDocManager::self()->nextDocument() )
+    foreach( KTextEditor::Document *doc, KateDocManager::self()->documentList())
       if ( ! doc->url().isEmpty() )
         ret += doc->url().url();
   } else
@@ -301,7 +310,9 @@ KateExternalToolsMenuAction::KateExternalToolsMenuAction( const QString &text,
 
   m_actionCollection = new KActionCollection( mainwindow );
 
-  connect(KateDocManager::self(),SIGNAL(documentChanged()),this,SLOT(slotDocumentChanged()));
+
+#warning "Hmm, this leads to crash, not sure why, atm :("
+ //connect(KateDocManager::self(),SIGNAL(documentChanged()),this,SLOT(slotDocumentChanged()));
 
   reload();
 }
@@ -381,7 +392,7 @@ void KateExternalToolsMenuAction::reload()
 void KateExternalToolsMenuAction::slotDocumentChanged()
 {
   // try to enable/disable to match current mime type
-  Kate::DocumentExt *de = documentExt( KateDocManager::self()->activeDocument() );
+  KTextEditor::Document *de = KateDocManager::self()->activeDocument();
   if ( de )
   {
     QString mt = de->mimeType();
@@ -408,11 +419,11 @@ void KateExternalToolsMenuAction::slotDocumentChanged()
  * This is a QListBoxItem, that has a KateExternalTool. The text is the Name
  * of the tool.
  */
-class ToolItem : public QListBoxPixmap
+class ToolItem : public Q3ListBoxPixmap
 {
   public:
-    ToolItem( QListBox *lb, const QPixmap &icon, KateExternalTool *tool )
-        : QListBoxPixmap( lb, icon, tool->name ),
+    ToolItem( Q3ListBox *lb, const QPixmap &icon, KateExternalTool *tool )
+        : Q3ListBoxPixmap( lb, icon, tool->name ),
           tool ( tool )
     {;}
 
@@ -443,7 +454,7 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
   l->setAlignment( l->alignment()|Qt::AlignRight );
   lo->addWidget( l, 1, 1 );
   if ( tool ) leName->setText( tool->name );
-  QWhatsThis::add( leName, i18n(
+  leName->setWhatsThis(i18n(
       "The name will be displayed in the 'Tools->External' menu") );
 
   btnIcon = new KIconButton( w );
@@ -452,13 +463,13 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
   if ( tool && !tool->icon.isEmpty() )
     btnIcon->setIcon( tool->icon );
 
-  teCommand = new QTextEdit( w );
+  teCommand = new Q3TextEdit( w );
   lo->addMultiCellWidget( teCommand, 2, 2, 2, 3 );
   l = new QLabel( teCommand, i18n("S&cript:"), w );
   l->setAlignment( Qt::AlignTop|Qt::AlignRight );
   lo->addWidget( l, 2, 1 );
   if ( tool ) teCommand->setText( tool->command );
-  QWhatsThis::add( teCommand, i18n(
+  teCommand->setWhatsThis(i18n(
       "<p>The script to execute to invoke the tool. The script is passed "
       "to /bin/sh for execution. The following macros "
       "will be expanded:</p>"
@@ -481,7 +492,7 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
   l->setAlignment( l->alignment()|Qt::AlignRight );
   lo->addWidget( l, 3, 1 );
   if ( tool ) leExecutable->setText( tool->tryexec );
-  QWhatsThis::add( leExecutable, i18n(
+  leExecutable->setWhatsThis(i18n(
       "The executable used by the command. This is used to check if a tool "
       "should be displayed; if not set, the first word of <em>command</em> "
       "will be used.") );
@@ -492,16 +503,16 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
   l->setAlignment( l->alignment()|Qt::AlignRight );
   lo->addWidget( l, 4, 1 );
   if ( tool ) leMimetypes->setText( tool->mimetypes.join("; ") );
-  QWhatsThis::add( leMimetypes, i18n(
+  leMimetypes->setWhatsThis(i18n(
       "A semicolon-separated list of mime types for which this tool should "
       "be available; if this is left empty, the tool is always available. "
       "To choose from known mimetypes, press the button on the right.") );
 
   QToolButton *btnMTW = new QToolButton(w);
   lo->addWidget( btnMTW, 4, 3 );
-  btnMTW->setIconSet(QIconSet(SmallIcon("wizard")));
+  btnMTW->setIconSet(QIcon(SmallIcon("wizard")));
   connect(btnMTW, SIGNAL(clicked()), this, SLOT(showMTDlg()));
-  QWhatsThis::add( btnMTW, i18n(
+  btnMTW->setWhatsThis(i18n(
       "Click for a dialog that can help you creating a list of mimetypes.") );
 
   cmbSave = new QComboBox(w);
@@ -513,7 +524,7 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
   sl << i18n("None") << i18n("Current Document") << i18n("All Documents");
   cmbSave->insertStringList( sl );
   if ( tool ) cmbSave->setCurrentItem( tool->save );
-  QWhatsThis::add( cmbSave, i18n(
+  cmbSave->setWhatsThis(i18n(
       "You can elect to save the current or all [modified] documents prior to "
       "running the command. This is helpful if you want to pass URLs to "
       "an application like, for example, an FTP client.") );
@@ -525,7 +536,7 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
   l->setAlignment( l->alignment()|Qt::AlignRight );
   lo->addWidget( l, 6, 1 );
   if ( tool ) leCmdLine->setText( tool->cmdname );
-  QWhatsThis::add( leCmdLine, i18n(
+  leCmdLine->setWhatsThis(i18n(
       "If you specify a name here, you can invoke the command from the view "
       "command lines with exttool-the_name_you_specified_here. "
       "Please do not use spaces or tabs in the name."));
@@ -556,8 +567,8 @@ void KateExternalToolServiceEditor::showMTDlg()
 //END KateExternalToolServiceEditor
 
 //BEGIN KateExternalToolsConfigWidget
-KateExternalToolsConfigWidget::KateExternalToolsConfigWidget( QWidget *parent, const char* name )
-  : Kate::ConfigPage( parent, name ),
+KateExternalToolsConfigWidget::KateExternalToolsConfigWidget( QWidget *parent, const char* )
+  : KTextEditor::ConfigPage( parent ),
     m_changed( false )
 {
   QGridLayout *lo = new QGridLayout( this, 5, 5, 0, KDialog::spacingHint() );
@@ -590,7 +601,7 @@ KateExternalToolsConfigWidget::KateExternalToolsConfigWidget( QWidget *parent, c
   lo->addWidget( btnMoveDwn, 3, 4 );
   connect( btnMoveDwn, SIGNAL(clicked()), this, SLOT(slotMoveDown()) );
 
-  connect( lbTools, SIGNAL( doubleClicked ( QListBoxItem * ) ), this,  SLOT( slotEdit() ) );
+  connect( lbTools, SIGNAL( doubleClicked ( Q3ListBoxItem * ) ), this,  SLOT( slotEdit() ) );
 
   lo->setRowStretch( 1, 1 );
   lo->setRowStretch( 4, 1 );
@@ -599,11 +610,11 @@ KateExternalToolsConfigWidget::KateExternalToolsConfigWidget( QWidget *parent, c
   lo->setColStretch( 2, 1 );
 
 
-  QWhatsThis::add( lbTools, i18n(
+  lbTools->setWhatsThis(i18n(
       "This list shows all the configured tools, represented by their menu text.") );
 
   config = new KConfig("externaltools", false, false, "appdata");
-  reload();
+  reset();
   slotSelectionChanged();
 }
 
@@ -612,7 +623,7 @@ KateExternalToolsConfigWidget::~KateExternalToolsConfigWidget()
   delete config;
 }
 
-void KateExternalToolsConfigWidget::reload()
+void KateExternalToolsConfigWidget::reset()
 {
   //m_tools.clear();
   lbTools->clear();
@@ -625,7 +636,7 @@ void KateExternalToolsConfigWidget::reload()
   {
     if ( *it == "---" )
     {
-      new QListBoxText( lbTools, "---" );
+      new Q3ListBoxText( lbTools, "---" );
     }
     else
     {
@@ -747,7 +758,7 @@ void KateExternalToolsConfigWidget::slotNew()
 
     new ToolItem ( lbTools, t->icon.isEmpty() ? blankIcon() : SmallIcon( t->icon ), t );
 
-    slotChanged();
+    emit changed();
     m_changed = true;
   }
 }
@@ -762,7 +773,7 @@ void KateExternalToolsConfigWidget::slotRemove()
       m_removed << i->tool->acname;
 
     lbTools->removeItem( lbTools->currentItem() );
-    slotChanged();
+    emit changed();
     m_changed = true;
   }
 }
@@ -795,7 +806,7 @@ void KateExternalToolsConfigWidget::slotEdit()
       lbTools->insertItem( new ToolItem( 0, t->icon.isEmpty() ? blankIcon() : SmallIcon( t->icon ), t ), idx );
     }
 
-    slotChanged();
+    emit changed();
     m_changed = true;
   }
 
@@ -807,14 +818,14 @@ void KateExternalToolsConfigWidget::slotEdit()
 void KateExternalToolsConfigWidget::slotInsertSeparator()
 {
   lbTools->insertItem( "---", lbTools->currentItem()+1 );
-  slotChanged();
+  emit changed();
   m_changed = true;
 }
 
 void KateExternalToolsConfigWidget::slotMoveUp()
 {
   // move the current item in the listbox upwards if possible
-  QListBoxItem *item = lbTools->selectedItem();
+  Q3ListBoxItem *item = lbTools->selectedItem();
   if ( ! item ) return;
 
   int idx = lbTools->index( item );
@@ -830,19 +841,19 @@ void KateExternalToolsConfigWidget::slotMoveUp()
   else // a separator!
   {
     lbTools->removeItem( idx );
-    lbTools->insertItem( new QListBoxText( 0, "---" ), idx-1 );
+    lbTools->insertItem( new Q3ListBoxText( 0, "---" ), idx-1 );
   }
 
   lbTools->setCurrentItem( idx - 1 );
   slotSelectionChanged();
-  slotChanged();
+  emit changed();
   m_changed = true;
 }
 
 void KateExternalToolsConfigWidget::slotMoveDown()
 {
   // move the current item in the listbox downwards if possible
-  QListBoxItem *item = lbTools->selectedItem();
+  Q3ListBoxItem *item = lbTools->selectedItem();
   if ( ! item ) return;
 
   uint idx = lbTools->index( item );
@@ -858,12 +869,12 @@ void KateExternalToolsConfigWidget::slotMoveDown()
   else // a separator!
   {
     lbTools->removeItem( idx );
-    lbTools->insertItem( new QListBoxText( 0, "---" ), idx+1 );
+    lbTools->insertItem( new Q3ListBoxText( 0, "---" ), idx+1 );
   }
 
   lbTools->setCurrentItem( idx+1 );
   slotSelectionChanged();
-  slotChanged();
+  emit changed();
   m_changed = true;
 }
 //END KateExternalToolsConfigWidget

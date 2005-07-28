@@ -19,30 +19,32 @@
 #ifndef _KATE_SAVE_MODIFIED_DIALOG_
 #define _KATE_SAVE_MODIFIED_DIALOG_
 
-#include <kdialogbase.h>
-#include <kate/document.h>
+#include <ktexteditor/document.h>
 
-class QListViewItem;
-class KListView;
+#include <kdialogbase.h>
+#include <QList>
+
+class QTreeWidget;
+class QTreeWidgetItem;
 
 class KateSaveModifiedDialog: public KDialogBase {
 	Q_OBJECT
 public:
-	KateSaveModifiedDialog(QWidget *parent, QPtrList<Kate::Document> documents);
+	KateSaveModifiedDialog(QWidget *parent, QList<KTextEditor::Document*> documents);
 	virtual ~KateSaveModifiedDialog();
-	static bool queryClose(QWidget *parent,QPtrList<Kate::Document> documents);
+	static bool queryClose(QWidget *parent,QList<KTextEditor::Document*> documents);
 protected:
 	virtual void slotUser2();
 	virtual void slotUser1();
-	bool doSave(QListViewItem *root);
+	bool doSave(QTreeWidgetItem *root);
 protected slots:
 	void slotSelectAll();
-	void slotItemSelected();
+	void slotItemActivated(QTreeWidgetItem*,int);
 	
 private:
-	QListViewItem *m_projectRoot;
-	QListViewItem *m_documentRoot;
-	KListView *m_list;
+	QTreeWidgetItem *m_projectRoot;
+	QTreeWidgetItem *m_documentRoot;
+	QTreeWidget *m_list;
 };
 
 #endif

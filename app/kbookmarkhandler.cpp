@@ -23,6 +23,8 @@
 #include <stdlib.h>
 
 #include <qtextstream.h>
+//Added by qt3to4:
+#include <Q3CString>
 
 #include <kbookmarkimporter.h>
 #include <kpopupmenu.h>
@@ -68,7 +70,7 @@ QString KBookmarkHandler::currentURL() const
 
 
 void KBookmarkHandler::slotNewBookmark( const QString& /*text*/,
-                                            const QCString& url,
+                                            const Q3CString& url,
                                             const QString& additionalInfo )
 {
     *m_importStream << "<bookmark icon=\"" << KMimeType::iconForURL( KURL( url ) );

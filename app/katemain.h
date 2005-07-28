@@ -22,6 +22,12 @@
 #define __KATE_MAIN_H__
 
 #include <config.h>
+//Added by qt3to4:
+#include <QPixmap>
+#include <QLabel>
+#include <QVBoxLayout>
+#include <QGridLayout>
+#include <QEvent>
 
 #define KATE_VERSION "2.5"
 
@@ -31,12 +37,12 @@ class QEvent;
 class QFileInfo;
 class QGridLayout;
 class QLabel;
-class QListBox;
+class Q3ListBox;
 class QObject;
 class QPixmap;
 class QVBoxLayout;
 class QString;
-class QWidgetStack;
+class Q3WidgetStack;
 
 class KAction;
 class KActionMenu;

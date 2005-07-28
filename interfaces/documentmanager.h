@@ -22,6 +22,8 @@
 #include <qobject.h>
 #include <kurl.h>
 
+namespace KTextEditor { class Document; }
+
 namespace Kate
 {
 /** This interface provides access to the Kate Document Manager.
@@ -39,13 +41,13 @@ class KDE_EXPORT DocumentManager : public QObject
   public:
     /** Returns a pointer to the document indexed by n in the managers internal list.
     */
-    class Document *document (uint n = 0);
+    class KTextEditor::Document *document (uint n = 0);
     /** Returns a pointer to the currently active document or NULL if no document is open.
     */
-    class Document *activeDocument ();
+    class KTextEditor::Document *activeDocument ();
     /** Returns a pointer to the document with the given ID or NULL if no such document exists.
     */
-    class Document *documentWithID (uint id);
+    class KTextEditor::Document *documentWithID (uint id);
 
     /** Returns the ID of the document located at url if such a document is known by the manager.
      */
@@ -61,10 +63,10 @@ class KDE_EXPORT DocumentManager : public QObject
     /** open a document and return a pointer to the document, if you specify a pointer != 0 to the id parameter
      * you will get the document id returned too
      */
-    class Document *openURL(const KURL&url,const QString &encoding=QString::null,uint *id =0);
+    KTextEditor::Document *openURL(const KURL&url,const QString &encoding=QString::null,uint *id =0);
     /** close a document by pointer
      */
-    bool closeDocument(class Document *document);
+    bool closeDocument(KTextEditor::Document *document);
     /** close a document identified by the index
      */
     bool closeDocument(uint n = 0);
@@ -75,11 +77,15 @@ class KDE_EXPORT DocumentManager : public QObject
      */
     bool closeAllDocuments();
 
+#ifndef Q_MOC_RUN
   #undef signals
   #define signals public
+#endif
   signals:
+#ifndef Q_MOC_RUN
   #undef signals
   #define signals protected
+#endif
 
     /**
      * emitted if the current doc changes (there need not to be a active document)
@@ -89,7 +95,7 @@ class KDE_EXPORT DocumentManager : public QObject
     /**
      * this document has now been created
      */
-    void documentCreated (Kate::Document *document);
+    void documentCreated (KTextEditor::Document *document);
     
     /**
      * the document with this number was deleted

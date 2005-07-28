@@ -28,10 +28,15 @@
 #include <qcombobox.h>
 #include <qcheckbox.h>
 #include <qevent.h>
-#include <qlistbox.h>
+#include <q3listbox.h>
 #include <qregexp.h>
-#include <qwhatsthis.h>
 #include <qcursor.h>
+//Added by qt3to4:
+#include <Q3CString>
+#include <QGridLayout>
+#include <QKeyEvent>
+#include <QHBoxLayout>
+#include <QBoxLayout>
 
 #include <kapplication.h>
 #include <kaccelmanager.h>
@@ -93,7 +98,7 @@ GrepTool::GrepTool(QWidget *parent, const char *name)
 
   QLabel *lPattern = new QLabel(i18n("Pattern:"), this);
   lPattern->setFixedSize(lPattern->sizeHint());
-  loInput->addWidget(lPattern, 0, 0, AlignRight | AlignVCenter);
+  loInput->addWidget(lPattern, 0, 0, Qt::AlignRight | Qt::AlignVCenter);
 
   QBoxLayout *loPattern = new QHBoxLayout( 4 );
   loInput->addLayout( loPattern, 0, 1 );
@@ -120,7 +125,7 @@ GrepTool::GrepTool(QWidget *parent, const char *name)
 
   QLabel *lTemplate = new QLabel(i18n("Template:"), this);
   lTemplate->setFixedSize(lTemplate->sizeHint());
-  loInput->addWidget(lTemplate, 1, 0, AlignRight | AlignVCenter);
+  loInput->addWidget(lTemplate, 1, 0, Qt::AlignRight | Qt::AlignVCenter);
 
   QBoxLayout *loTemplate = new QHBoxLayout(4);
   loInput->addLayout(loTemplate, 1, 1);
@@ -132,14 +137,17 @@ GrepTool::GrepTool(QWidget *parent, const char *name)
   loTemplate->addWidget(leTemplate);
 
   QComboBox *cmbTemplate = new QComboBox(false, this);
-  cmbTemplate->insertStrList(template_desc);
+  
+  // FIXME
+  //cmbTemplate->insertStrList(template_desc);
+  
   cmbTemplate->adjustSize();
   cmbTemplate->setFixedSize(cmbTemplate->size());
   loTemplate->addWidget(cmbTemplate);
 
   QLabel *lFiles = new QLabel(i18n("Files:"), this);
   lFiles->setFixedSize(lFiles->sizeHint());
-  loInput->addWidget(lFiles, 2, 0, AlignRight | AlignVCenter);
+  loInput->addWidget(lFiles, 2, 0, Qt::AlignRight | Qt::AlignVCenter);
 
   cmbFiles = new QComboBox(true, this);
   lFiles->setBuddy(cmbFiles->focusProxy());
@@ -154,7 +162,7 @@ GrepTool::GrepTool(QWidget *parent, const char *name)
 
   QLabel *lDir = new QLabel(i18n("Folder:"), this);
   lDir->setFixedSize(lDir->sizeHint());
-  loInput->addWidget(lDir, 3, 0, AlignRight | AlignVCenter);
+  loInput->addWidget(lDir, 3, 0, Qt::AlignRight | Qt::AlignVCenter);
 
   QBoxLayout *loDir = new QHBoxLayout(3);
   loInput->addLayout(loDir, 3, 1);
@@ -183,7 +191,7 @@ GrepTool::GrepTool(QWidget *parent, const char *name)
   actionbox->addStretch();
   actionbox->layout();
 
-  lbResult = new QListBox(this);
+  lbResult = new Q3ListBox(this);
   QFontMetrics rb_fm(lbResult->fontMetrics());
   layout->addMultiCellWidget(lbResult, 2, 2, 0, 2);
 
@@ -191,8 +199,7 @@ GrepTool::GrepTool(QWidget *parent, const char *name)
 
   KAcceleratorManager::manage( this );
 
-  QWhatsThis::add(lPattern,
-    i18n("<p>Enter the expression you want to search for here."
+  lPattern->setWhatsThis(    i18n("<p>Enter the expression you want to search for here."
      "<p>If 'regular expression' is unchecked, any non-space letters in your "
      "expression will be escaped with a backslash character."
      "<p>Possible meta characters are:<br>"
@@ -214,27 +221,21 @@ GrepTool::GrepTool(QWidget *parent, const char *name)
      "via the notation <code>\\#</code>."
      "<p>See the grep(1) documentation for the full documentation."
      ));
-  QWhatsThis::add(lFiles,
-    i18n("Enter the file name pattern of the files to search here.\n"
+  lFiles->setWhatsThis(    i18n("Enter the file name pattern of the files to search here.\n"
      "You may give several patterns separated by commas."));
-  QWhatsThis::add(lTemplate,
-    i18n("You can choose a template for the pattern from the combo box\n"
+  lTemplate->setWhatsThis(    i18n("You can choose a template for the pattern from the combo box\n"
      "and edit it here. The string %s in the template is replaced\n"
      "by the pattern input field, resulting in the regular expression\n"
      "to search for."));
-  QWhatsThis::add(lDir,
-    i18n("Enter the folder which contains the files in which you want to search."));
-  QWhatsThis::add(cbRecursive,
-    i18n("Check this box to search in all subfolders."));
-  QWhatsThis::add(cbCasesensitive,
-    i18n("If this option is enabled (the default), the search will be case sensitive."));
-  QWhatsThis::add( cbRegex, i18n(
+  lDir->setWhatsThis(    i18n("Enter the folder which contains the files in which you want to search."));
+  cbRecursive->setWhatsThis(    i18n("Check this box to search in all subfolders."));
+  cbCasesensitive->setWhatsThis(    i18n("If this option is enabled (the default), the search will be case sensitive."));
+  cbRegex->setWhatsThis(i18n(
       "<p>If this is enabled, your pattern will be passed unmodified to "
       "<em>grep(1)</em>. Otherwise, all characters that are not letters will be "
       "escaped using a backslash character to prevent grep from interpreting "
       "them as part of the expression.") );
-  QWhatsThis::add(lbResult,
-    i18n("The results of the grep run are listed here. Select a\n"
+  lbResult->setWhatsThis(    i18n("The results of the grep run are listed here. Select a\n"
      "filename/line number combination and press Enter or doubleclick\n"
      "on the item to show the respective line in the editor."));
 
@@ -466,13 +467,13 @@ void GrepTool::childExited()
 
 void GrepTool::receivedOutput(KProcess */*proc*/, char *buffer, int buflen)
 {
-  buf += QCString(buffer, buflen+1);
+  buf += Q3CString(buffer, buflen+1);
   processOutput();
 }
 
 void GrepTool::receivedErrOutput(KProcess */*proc*/, char *buffer, int buflen)
 {
-  errbuf += QCString( buffer, buflen + 1 );
+  errbuf += Q3CString( buffer, buflen + 1 );
 }
 
 void GrepTool::slotClear()

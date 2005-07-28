@@ -24,10 +24,14 @@
 #ifndef _KATE_EXTERNAL_TOOLS_H_
 #define _KATE_EXTERNAL_TOOLS_H_
 
+#include <ktexteditor/document.h>
+#include <ktexteditor/configpage.h>
+#include <ktexteditor/commandinterface.h>
+
 #include <kaction.h>
 #include <kdialogbase.h>
-#include <kate/document.h>
 #include <kmacroexpander.h>
+
 #include <qpixmap.h>
 
 /**
@@ -140,7 +144,7 @@ class KateExternalTool
  * The config widget allows the user to view a list of services of the type
  * "Kate/ExternalTool" and add, remove or edit them.
  */
-class KateExternalToolsConfigWidget : public Kate::ConfigPage
+class KateExternalToolsConfigWidget : public KTextEditor::ConfigPage
 {
   Q_OBJECT
   public:
@@ -148,9 +152,8 @@ class KateExternalToolsConfigWidget : public Kate::ConfigPage
     virtual ~KateExternalToolsConfigWidget();
 
     virtual void apply();
-    virtual void reload();
-    virtual void reset() { reload(); } // sigh
-    virtual void defaults() { reload(); } // double sigh
+    virtual void reset();
+    virtual void defaults() { reset(); } // double sigh
 
   private slots:
     void slotNew();
@@ -179,16 +182,16 @@ class KateExternalToolsConfigWidget : public Kate::ConfigPage
 /**
  * A Singleton class for invoking external tools with the view command line
  */
- class KateExternalToolsCommand : public Kate::Command {
+ class KateExternalToolsCommand : public KTextEditor::Command {
  public:
     KateExternalToolsCommand ();
     virtual ~KateExternalToolsCommand () {};
     static KateExternalToolsCommand *self();
     void reload();
   public:
-    virtual QStringList cmds ();
-    virtual bool exec (Kate::View *view, const QString &cmd, QString &msg);
-    virtual bool help (Kate::View *view, const QString &cmd, QString &msg);
+    virtual const QStringList &cmds ();
+    virtual bool exec (KTextEditor::View *view, const QString &cmd, QString &msg);
+    virtual bool help (KTextEditor::View *view, const QString &cmd, QString &msg);
   private:
     static KateExternalToolsCommand *s_self;
     QStringList m_list;
@@ -209,7 +212,7 @@ class KateExternalToolServiceEditor : public KDialogBase
     				   QWidget *parent=0, const char *name=0 );
 
     class QLineEdit *leName, *leExecutable, *leMimetypes,*leCmdLine;
-    class QTextEdit *teCommand;
+    class Q3TextEdit *teCommand;
     class KIconButton *btnIcon;
     class QComboBox *cmbSave;
 

@@ -31,6 +31,9 @@
 #include <kdebug.h>
 
 #include <qtextcodec.h>
+#include <QTextIStream>
+//Added by qt3to4:
+#include <Q3CString>
 
 static KCmdLineOptions options[] =
 {
@@ -107,20 +110,20 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
     client.attach ();
 
     // get all attached clients ;)
-    QCStringList allClients = client.registeredApplications();
+    DCOPCStringList allClients = client.registeredApplications();
 
     // search for a kate app client, use the first found
-    QCString kateApp;
+    DCOPCString kateApp;
 
     if (args->isSet("pid"))
     {
-      QCString tryApp = QCString ("kate-") + args->getOption("pid");
+      DCOPCString tryApp = Q3CString ("kate-") + args->getOption("pid");
       if (client.isApplicationRegistered(tryApp))
         kateApp = tryApp;
     }
     else
     {
-      for (unsigned int i=0; i < allClients.count(); ++i)
+      for (int i=0; i < allClients.count(); ++i)
       {
         if (allClients[i] == "kate" || allClients[i].left(5) == "kate-")
         {
@@ -140,7 +143,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
       if (args->isSet ("start"))
         kRef.call( "activateSession", QString (args->getOption("start")) );
 
-      QString enc = args->isSet("encoding") ? args->getOption("encoding") : QCString("");
+      QString enc = args->isSet("encoding") ? args->getOption("encoding") : Q3CString("");
 
       for (int z=0; z<args->count(); z++)
         kRef.call( "openURL", args->url(z), enc );

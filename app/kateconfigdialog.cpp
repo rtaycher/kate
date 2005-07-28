@@ -32,17 +32,7 @@
 #include "katefilelist.h"
 #include "kateexternaltools.h"
 
-#include <qbuttongroup.h>
-#include <qcheckbox.h>
-#include <qhbox.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qpushbutton.h>
-#include <qradiobutton.h>
-#include <qspinbox.h>
-#include <qvbox.h>
-#include <qwhatsthis.h>
-#include <qcombobox.h>
+#include <ktexteditor/configpage.h>
 
 #include <kinstance.h>
 #include <kdebug.h>
@@ -60,7 +50,22 @@
 #include <kwin.h>
 #include <kseparator.h>
 
-KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
+#include <q3buttongroup.h>
+#include <qcheckbox.h>
+#include <q3hbox.h>
+#include <qlabel.h>
+#include <qlayout.h>
+#include <qpushbutton.h>
+#include <qradiobutton.h>
+#include <qspinbox.h>
+#include <q3vbox.h>
+#include <qcombobox.h>
+//Added by qt3to4:
+#include <QVBoxLayout>
+#include <QFrame>
+#include <ktexteditor/editorchooser.h>
+
+KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *view )
  : KDialogBase ( KDialogBase::TreeList,
                  i18n("Configure"),
                  KDialogBase::Ok | KDialogBase::Apply|KDialogBase::Cancel | KDialogBase::Help,
@@ -102,26 +107,26 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   config->setGroup("General");
 
   // GROUP with the one below: "Appearance"
-  QButtonGroup *bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("&Appearance"), frGeneral );
+  Q3ButtonGroup *bgStartup = new Q3ButtonGroup( 1, Qt::Horizontal, i18n("&Appearance"), frGeneral );
   lo->addWidget( bgStartup );
 
   // show full path in title
   config->setGroup("General");
   cb_fullPath = new QCheckBox( i18n("&Show full path in title"), bgStartup);
   cb_fullPath->setChecked( mainWindow->viewManager()->getShowFullPath() );
-  QWhatsThis::add(cb_fullPath,i18n("If this option is checked, the full document path will be shown in the window caption."));
+  cb_fullPath->setWhatsThis(i18n("If this option is checked, the full document path will be shown in the window caption."));
   connect( cb_fullPath, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
 
   // GROUP with the one below: "Behavior"
-  bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("&Behavior"), frGeneral );
+  bgStartup = new Q3ButtonGroup( 1, Qt::Horizontal, i18n("&Behavior"), frGeneral );
   lo->addWidget( bgStartup );
 
   // sync the konsole ?
   cb_syncKonsole = new QCheckBox(bgStartup);
   cb_syncKonsole->setText(i18n("Sync &terminal emulator with active document"));
   cb_syncKonsole->setChecked(parent->syncKonsole);
-  QWhatsThis::add( cb_syncKonsole, i18n(
+  cb_syncKonsole->setWhatsThis( i18n(
         "If this is checked, the built in Konsole will <code>cd</code> to the directory "
         "of the active document when started and whenever the active document changes, "
         "if the document is a local file.") );
@@ -131,7 +136,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   cb_modNotifications = new QCheckBox(
       i18n("Wa&rn about files modified by foreign processes"), bgStartup );
   cb_modNotifications->setChecked( parent->modNotification );
-  QWhatsThis::add( cb_modNotifications, i18n(
+  cb_modNotifications->setWhatsThis( i18n(
       "If enabled, when Kate receives focus you will be asked what to do with "
       "files that have been modified on the hard disk. If not enabled, you will "
       "be asked what to do with a file that has been modified on the hard disk only "
@@ -140,21 +145,21 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
            this, SLOT( slotChanged() ) );
 
   // GROUP with the one below: "Meta-informations"
-  bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("Meta-Information"), frGeneral );
+  bgStartup = new Q3ButtonGroup( 1, Qt::Horizontal, i18n("Meta-Information"), frGeneral );
   lo->addWidget( bgStartup );
 
   // save meta infos
   cb_saveMetaInfos = new QCheckBox( bgStartup );
   cb_saveMetaInfos->setText(i18n("Keep &meta-information past sessions"));
   cb_saveMetaInfos->setChecked(KateDocManager::self()->getSaveMetaInfos());
-  QWhatsThis::add(cb_saveMetaInfos, i18n(
+  cb_saveMetaInfos->setWhatsThis( i18n(
         "Check this if you want document configuration like for example "
         "bookmarks to be saved past editor sessions. The configuration will be "
         "restored if the document has not changed when reopened."));
   connect( cb_saveMetaInfos, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
   // meta infos days
-  QHBox *hbDmf = new QHBox( bgStartup );
+  Q3HBox *hbDmf = new Q3HBox( bgStartup );
   hbDmf->setEnabled(KateDocManager::self()->getSaveMetaInfos());
   QLabel *lDmf = new QLabel( i18n("&Delete unused meta-information after:"), hbDmf );
   sb_daysMetaInfos = new QSpinBox( 0, 180, 1, hbDmf );
@@ -165,7 +170,14 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   connect( cb_saveMetaInfos, SIGNAL( toggled( bool ) ), hbDmf, SLOT( setEnabled( bool ) ) );
   connect( sb_daysMetaInfos, SIGNAL( valueChanged ( int ) ), this, SLOT( slotChanged() ) );
 
+
+  // editor component
+  m_editorChooser=new KTextEditor::EditorChooser(frGeneral,"Editor Chooser");
+  m_editorChooser->readAppSetting();
+  connect(m_editorChooser,SIGNAL(changed()),this,SLOT(slotChanged()));
+  lo->addWidget(m_editorChooser);
   lo->addStretch(1); // :-] works correct without autoadd
+
   //END General page
 
   path.clear();
@@ -178,7 +190,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   lo->setSpacing(KDialog::spacingHint());
 
   // GROUP with the one below: "Startup"
-  bgStartup = new QButtonGroup( 1, Qt::Horizontal, i18n("Elements of Sessions"), frSessions );
+  bgStartup = new Q3ButtonGroup( 1, Qt::Horizontal, i18n("Elements of Sessions"), frSessions );
   lo->addWidget( bgStartup );
 
   // restore view  config
@@ -186,13 +198,13 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   cb_restoreVC->setText(i18n("Include &window configuration"));
   config->setGroup("General");
   cb_restoreVC->setChecked( config->readBoolEntry("Restore Window Configuration", false) );
-  QWhatsThis::add(cb_restoreVC, i18n(
+  cb_restoreVC->setWhatsThis( i18n(
         "Check this if you want all your views and frames restored each time you open Kate"));
   connect( cb_restoreVC, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
   QRadioButton *rb1, *rb2, *rb3;
 
-  sessions_start = new QButtonGroup( 1, Qt::Horizontal, i18n("Behavior on Application Startup"), frSessions );
+  sessions_start = new Q3ButtonGroup( 1, Qt::Horizontal, i18n("Behavior on Application Startup"), frSessions );
   lo->add (sessions_start);
 
   sessions_start->setRadioButtonExclusive( true );
@@ -213,7 +225,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   connect(rb2, SIGNAL(toggled(bool)), this, SLOT(slotChanged()));
   connect(rb3, SIGNAL(toggled(bool)), this, SLOT(slotChanged()));
 
-  sessions_exit = new QButtonGroup( 1, Qt::Horizontal, i18n("Behavior on Application Exit or Session Switch"), frSessions );
+  sessions_exit = new Q3ButtonGroup( 1, Qt::Horizontal, i18n("Behavior on Application Exit or Session Switch"), frSessions );
   lo->add (sessions_exit);
 
   sessions_exit->setRadioButtonExclusive( true );
@@ -242,7 +254,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   // file selector page
   path << i18n("Application") << i18n("File Selector");
 
-  QVBox *page = addVBoxPage( path, i18n("File Selector Settings"),
+  Q3VBox *page = addVBoxPage( path, i18n("File Selector Settings"),
                               BarIcon("fileopen", KIcon::SizeSmall) );
   fileSelConfigPage = new KFSConfigPage( page, "file selector config page",
                                          mainWindow->fileselector );
@@ -276,24 +288,24 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, Kate::View *view )
   path << i18n("Editor");
   setFolderIcon (path, SmallIcon("edit", KIcon::SizeSmall));
 
-  for (uint i = 0; i < KTextEditor::configInterfaceExtension (v->document())->configPages (); i++)
+  for (int i = 0; i < KateDocManager::self()->editor()->configPages (); ++i)
   {
     path.clear();
-    path << i18n("Editor") << KTextEditor::configInterfaceExtension (v->document())->configPageName (i);
-    /*QVBox **/page = addVBoxPage(path, KTextEditor::configInterfaceExtension (v->document())->configPageFullName (i),
-                              KTextEditor::configInterfaceExtension (v->document())->configPagePixmap(i, KIcon::SizeSmall) );
+    path << i18n("Editor") << KateDocManager::self()->editor()->configPageName (i);
+    /*QVBox **/page = addVBoxPage(path, KateDocManager::self()->editor()->configPageFullName (i),
+                              KateDocManager::self()->editor()->configPagePixmap(i, KIcon::SizeSmall) );
 
-    KTextEditor::ConfigPage *cPage = KTextEditor::configInterfaceExtension (v->document())->configPage(i, page);
+    KTextEditor::ConfigPage *cPage = KateDocManager::self()->editor()->configPage(i, page);
     connect( cPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
     editorPages.append (cPage);
   }
 
   KatePluginList &pluginList (KatePluginManager::self()->pluginList());
-  for (unsigned int i=0; i < pluginList.size(); ++i)
+  foreach (const KatePluginInfo &plugin,pluginList)
   {
-    if  ( pluginList[i].load
-          && Kate::pluginConfigInterfaceExtension(pluginList[i].plugin) )
-      addPluginPage (pluginList[i].plugin);
+    if  ( plugin.load
+          && Kate::pluginConfigInterface(plugin.plugin) )
+      addPluginPage (plugin.plugin);
   }
 
   enableButtonSeparator(true);
@@ -307,7 +319,7 @@ KateConfigDialog::~KateConfigDialog()
 
 void KateConfigDialog::addPluginPage (Kate::Plugin *plugin)
 {
-  if (!Kate::pluginConfigInterfaceExtension(plugin))
+  if (!Kate::pluginConfigInterface(plugin))
     return;
 
   for (uint i=0; i<Kate::pluginConfigInterfaceExtension(plugin)->configPages(); i++)
@@ -315,7 +327,7 @@ void KateConfigDialog::addPluginPage (Kate::Plugin *plugin)
     QStringList path;
     path.clear();
     path << i18n("Application")<<i18n("Plugins") << Kate::pluginConfigInterfaceExtension(plugin)->configPageName(i);
-    QVBox *page=addVBoxPage(path, Kate::pluginConfigInterfaceExtension(plugin)->configPageFullName(i), Kate::pluginConfigInterfaceExtension(plugin)->configPagePixmap(i, KIcon::SizeSmall));
+    Q3VBox *page=addVBoxPage(path, Kate::pluginConfigInterfaceExtension(plugin)->configPageFullName(i), Kate::pluginConfigInterfaceExtension(plugin)->configPagePixmap(i, KIcon::SizeSmall));
 
     PluginPageListItem *info=new PluginPageListItem;
     info->plugin = plugin;
@@ -378,6 +390,9 @@ void KateConfigDialog::slotApply()
     else
       config->writeEntry ("Session Exit", "ask");
 
+
+    m_editorChooser->writeAppSetting();
+
     config->writeEntry("Save Meta Infos", cb_saveMetaInfos->isChecked());
     KateDocManager::self()->setSaveMetaInfos(cb_saveMetaInfos->isChecked());
 
@@ -394,7 +409,7 @@ void KateConfigDialog::slotApply()
     filelistConfigPage->apply();
 
     configExternalToolsPage->apply();
-    for (uint i=0; i < KateApp::self()->mainWindows(); i++)
+    for (int i=0; i < KateApp::self()->mainWindows(); i++)
     {
       KateMainWindow *win = KateApp::self()->mainWindow (i);
       win->externalTools->reload();
@@ -418,7 +433,8 @@ void KateConfigDialog::slotApply()
     editorPages.at(i)->apply();
   }
 
-  v->getDoc()->writeConfig(config);
+  // write back the editor config
+  KateDocManager::self()->editor()->writeConfig(config);
 
   //
   // plugins config ! (the apply() methode SHOULD check the changed state internally)

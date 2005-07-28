@@ -23,13 +23,20 @@
 
 #include "katemain.h"
 #include "katedocmanager.h"
-#include <kate/document.h>
 
-#include <qvbox.h>
+#include <ktexteditor/document.h>
+#include <ktexteditor/configpage.h>
+
+#include <q3vbox.h>
+//Added by qt3to4:
+#include <QShowEvent>
+#include <QFocusEvent>
+#include <QResizeEvent>
+#include <QEvent>
 #include <kfile.h>
 #include <kurl.h>
 #include <ktoolbar.h>
-#include <qframe.h>
+#include <q3frame.h>
 
 class KateMainWindow;
 class KateViewManager;
@@ -55,7 +62,7 @@ public:
 	 virtual void setMovingEnabled( bool b );
 };
 
-class KateFileSelectorToolBarParent: public QFrame
+class KateFileSelectorToolBarParent: public Q3Frame
 {
 	Q_OBJECT
 public:
@@ -68,7 +75,7 @@ protected:
 	virtual void resizeEvent ( QResizeEvent * );
 };
 
-class KateFileSelector : public QVBox
+class KateFileSelector : public Q3VBox
 {
   Q_OBJECT
 
@@ -141,14 +148,15 @@ class KateFileSelector : public QVBox
     of the path and file filter combos, and how to handle
     user closed session.
 */
-class KFSConfigPage : public Kate::ConfigPage {
+class KFSConfigPage : public KTextEditor::ConfigPage {
   Q_OBJECT
   public:
     KFSConfigPage( QWidget* parent=0, const char *name=0, KateFileSelector *kfs=0);
     virtual ~KFSConfigPage() {};
 
     virtual void apply();
-    virtual void reload();
+    virtual void reset();
+    virtual void defaults() {}
 
   private slots:
     void slotMyChanged();

@@ -56,17 +56,17 @@ DocumentManager::~DocumentManager ()
   delete d;
 }
 
-Document *DocumentManager::document (uint n)
+KTextEditor::Document *DocumentManager::document (uint n)
 {
   return d->docMan->document (n);
 }
 
-Document *DocumentManager::activeDocument ()
+KTextEditor::Document *DocumentManager::activeDocument ()
 {
   return d->docMan->activeDocument ();
 }
 
-Document *DocumentManager::documentWithID (uint id)
+KTextEditor::Document *DocumentManager::documentWithID (uint id)
 {
   return d->docMan->documentWithID (id);
 }
@@ -86,12 +86,12 @@ uint DocumentManager::documents ()
   return d->docMan->documents ();
 }
 
-Document *DocumentManager::openURL(const KURL&url,const QString &encoding,uint *id)
+KTextEditor::Document *DocumentManager::openURL(const KURL&url,const QString &encoding,uint *id)
 {
   return d->docMan->openURL (url, encoding, id);
 }
 
-bool DocumentManager::closeDocument(Document *document)
+bool DocumentManager::closeDocument(KTextEditor::Document *document)
 {
   return d->docMan->closeDocument (document);
 }

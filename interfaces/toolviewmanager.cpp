@@ -24,6 +24,8 @@
 #include "pluginmanager.h"
 
 #include "../app/katemainwindow.h"
+//Added by qt3to4:
+#include <QPixmap>
 
 namespace Kate
 {
@@ -60,26 +62,26 @@ QWidget *ToolViewManager::createToolView (const QString &identifier, ToolViewMan
 
 bool ToolViewManager::moveToolView (QWidget *widget, ToolViewManager::Position  pos)
 {
-  if (!widget || !widget->qt_cast("KateMDI::ToolView"))
+  if (!widget || !qobject_cast<KateMDI::ToolView*>(widget))
     return false;
 
-  return d->toolViewMan->moveToolView (static_cast<KateMDI::ToolView*>(widget), (KMultiTabBar::KMultiTabBarPosition)pos);
+  return d->toolViewMan->moveToolView (qobject_cast<KateMDI::ToolView*>(widget), (KMultiTabBar::KMultiTabBarPosition)pos);
 }
 
 bool ToolViewManager::showToolView(QWidget *widget)
 {
-  if (!widget || !widget->qt_cast("KateMDI::ToolView"))
+  if (!widget || !qobject_cast<KateMDI::ToolView*>(widget))
     return false;
 
-  return d->toolViewMan->showToolView (static_cast<KateMDI::ToolView*>(widget));
+  return d->toolViewMan->showToolView (qobject_cast<KateMDI::ToolView*>(widget));
 }
 
 bool ToolViewManager::hideToolView(QWidget *widget)
 {
-  if (!widget || !widget->qt_cast("KateMDI::ToolView"))
+  if (!widget || !qobject_cast<KateMDI::ToolView*>(widget))
     return false;
 
-  return d->toolViewMan->hideToolView (static_cast<KateMDI::ToolView*>(widget));
+  return d->toolViewMan->hideToolView (qobject_cast<KateMDI::ToolView*>(widget));
 }
 
 }

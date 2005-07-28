@@ -23,13 +23,21 @@
 
 #include "katemain.h"
 
-#include <kate/document.h>
+#include <ktexteditor/document.h>
+#include <ktexteditor/configpage.h>
+#include <ktexteditor/modificationinterface.h>
 
 #include <klistview.h>
 
 #include <qtooltip.h>
 #include <qcolor.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
+//Added by qt3to4:
+#include <QPixmap>
+#include <QMouseEvent>
+#include <QLabel>
+#include <QKeyEvent>
+#include <QResizeEvent>
 
 #define RTTI_KateFileListItem 1001
 
@@ -37,15 +45,15 @@ class KateMainWindow;
 
 class KAction;
 
-class KateFileListItem : public QListViewItem
+class KateFileListItem : public Q3ListViewItem
 {
   public:
-    KateFileListItem( QListView *lv,
-		      Kate::Document *doc );
+    KateFileListItem( Q3ListView *lv,
+		      KTextEditor::Document *doc );
     ~KateFileListItem();
 
     inline uint documentNumber () { return m_docNumber; }
-    inline Kate::Document * document() { return doc; }
+    inline KTextEditor::Document * document() { return doc; }
 
     int rtti() const { return RTTI_KateFileListItem; }
 
@@ -64,10 +72,10 @@ class KateFileListItem : public QListViewItem
     /**
      * Reimplemented so we can sort by a number of different document properties.
      */
-    int compare ( QListViewItem * i, int col, bool ascending ) const;
+    int compare ( Q3ListViewItem * i, int col, bool ascending ) const;
 
   private:
-    Kate::Document *doc;
+    KTextEditor::Document *doc;
     int m_viewhistpos; ///< this gets set by the list as needed
     int m_edithistpos; ///< this gets set by the list as needed
     uint m_docNumber;
@@ -92,7 +100,7 @@ class KateFileList : public KListView
       sortByURL = 2
     };
 
-    QString tooltip( QListViewItem *item, int );
+    QString tooltip( Q3ListViewItem *item, int );
 
     uint histCount() const { return m_viewHistory.count(); }
     uint editHistCount() const { return m_editHistory.count(); }
@@ -106,7 +114,7 @@ class KateFileList : public KListView
     /**
      * reimplemented to remove the item from the history stacks
      */
-    void takeItem( QListViewItem * );
+    void takeItem( Q3ListViewItem * );
 
   public slots:
     void setSortType (int s);
@@ -114,14 +122,14 @@ class KateFileList : public KListView
     void slotPrevDocument();
 
   private slots:
-    void slotDocumentCreated (Kate::Document *doc);
+    void slotDocumentCreated (KTextEditor::Document *doc);
     void slotDocumentDeleted (uint documentNumber);
-    void slotActivateView( QListViewItem *item );
-    void slotModChanged (Kate::Document *doc);
-    void slotModifiedOnDisc (Kate::Document *doc, bool b, unsigned char reason);
-    void slotNameChanged (Kate::Document *doc);
+    void slotActivateView( Q3ListViewItem *item );
+    void slotModChanged (KTextEditor::Document *doc);
+    void slotModifiedOnDisc (KTextEditor::Document *doc, bool b, KTextEditor::ModificationInterface::ModifiedOnDiskReason reason);
+    void slotNameChanged (KTextEditor::Document *doc);
     void slotViewChanged ();
-    void slotMenu ( QListViewItem *item, const QPoint &p, int col );
+    void slotMenu ( Q3ListViewItem *item, const QPoint &p, int col );
 
   protected:
     virtual void keyPressEvent( QKeyEvent *e );
@@ -150,23 +158,22 @@ class KateFileList : public KListView
     KAction* windowNext;
     KAction* windowPrev;
 
-    QPtrList<KateFileListItem> m_viewHistory;
-    QPtrList<KateFileListItem> m_editHistory;
+    Q3PtrList<KateFileListItem> m_viewHistory;
+    Q3PtrList<KateFileListItem> m_editHistory;
 
     QColor m_viewShade, m_editShade;
     bool m_enableBgShading;
-
-    class ToolTip *m_tooltip;
 };
 
-class KFLConfigPage : public Kate::ConfigPage {
+class KFLConfigPage : public KTextEditor::ConfigPage {
   Q_OBJECT
   public:
     KFLConfigPage( QWidget* parent=0, const char *name=0, KateFileList *fl=0 );
     virtual ~KFLConfigPage() {};
 
     virtual void apply();
-    virtual void reload();
+    virtual void reset();
+    virtual void defaults() {}
 
   public slots:
     void slotEnableChanged();

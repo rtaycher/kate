@@ -26,8 +26,8 @@
 #include "katemainwindow.h"
 #include "kateviewmanager.h"
 
-#include <kate/view.h>
-#include <kate/document.h>
+#include <ktexteditor/document.h>
+#include <ktexteditor/view.h>
 
 #include <kde_terminal_interface.h>
 
@@ -38,9 +38,11 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
+//Added by qt3to4:
+#include <QShowEvent>
 
 KateConsole::KateConsole (KateMainWindow *mw, KateMDI::ToolView* parent)
- : QVBox (parent)
+ : Q3VBox (parent)
  , m_part (0)
  , m_mw (mw)
  , m_toolView (parent)
@@ -56,8 +58,8 @@ void KateConsole::loadConsoleIfNeeded()
 {
   if (m_part) return;
 
-  if (!topLevelWidget() || !parentWidget()) return;
-  if (!topLevelWidget() || !isVisibleTo(topLevelWidget())) return;
+  if (!window() || !parentWidget()) return;
+  if (!window() || !isVisibleTo(window())) return;
 
   KLibFactory *factory = KLibLoader::self()->factory("libkonsolepart");
 
@@ -74,8 +76,8 @@ void KateConsole::loadConsoleIfNeeded()
   connect ( m_part, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
 
   if (m_mw->viewManager()->activeView())
-    if (m_mw->viewManager()->activeView()->getDoc()->url().isValid())
-      cd(KURL( m_mw->viewManager()->activeView()->getDoc()->url().path() ));
+    if (m_mw->viewManager()->activeView()->document()->url().isValid())
+      cd(KURL( m_mw->viewManager()->activeView()->document()->url().path() ));
 }
 
 void KateConsole::slotDestroyed ()
@@ -112,7 +114,10 @@ void KateConsole::sendInput( const QString& text )
 
   if (!m_part) return;
 
-  TerminalInterface *t = static_cast<TerminalInterface*>( m_part->qt_cast( "TerminalInterface" ) );
+  if (!m_part->inherits ("TerminalInterface"))
+    return;
+
+  TerminalInterface *t = (TerminalInterface*) ( m_part );
 
   if (!t) return;
 
@@ -128,13 +133,13 @@ void KateConsole::slotPipeToConsole ()
        , i18n("Pipe to Console"), "Pipe To Console Warning") != KMessageBox::Continue)
     return;
 
-  Kate::View *v = m_mw->viewManager()->activeView();
+  KTextEditor::View *v = m_mw->viewManager()->activeView();
 
   if (!v)
     return;
 
-  if (v->getDoc()->hasSelection ())
-    sendInput (v->getDoc()->selection());
+  if (v->selection ())
+    sendInput (v->selectionText());
   else
-    sendInput (v->getDoc()->text());
+    sendInput (v->document()->text());
 }

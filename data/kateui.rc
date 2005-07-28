@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="kate" version="47">
+<kpartgui name="kate" version="48">
 
 <MenuBar noMerge="1">
   <Menu name="file"><text>&amp;File</text>
@@ -111,6 +111,7 @@
     <Action name="help_report_bug"/>
     <Separator/>
     <Action name="help_about_app"/>
+    <Action name="help_about_editor"/>
     <Action name="help_about_kde"/>
   </Menu>
 </MenuBar>

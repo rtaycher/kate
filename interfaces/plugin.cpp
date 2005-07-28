@@ -96,10 +96,9 @@ Plugin *createPlugin ( const char* libname, Application *application, const char
 
 PluginViewInterface *pluginViewInterface (Plugin *plugin)
 {
-  if (!plugin)
-    return 0;
-
-  return static_cast<PluginViewInterface*>(plugin->qt_cast("Kate::PluginViewInterface"));
+// doesn't work with abstract methods:  return qobject_cast<Kate::PluginViewInterface>(plugin);
+   
+  return (PluginViewInterface*)(plugin->qt_metacast("Kate::PluginViewInterface"));
 }
 
 }

@@ -22,6 +22,12 @@
 #include <qobject.h>
 #include <kurl.h>
 
+
+namespace KTextEditor
+{
+  class Editor;
+}
+
 namespace Kate
 {
 
@@ -63,6 +69,8 @@ class KDE_EXPORT Application : public QObject
 
     uint mainWindows ();
     Kate::MainWindow *mainWindow (uint n = 0);
+
+    KTextEditor::Editor *editor();
 
   private:
     class PrivateApplication *d;

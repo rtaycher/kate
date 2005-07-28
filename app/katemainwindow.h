@@ -24,13 +24,17 @@
 #include "katemain.h"
 #include "katemdi.h"
 
-#include <kate/view.h>
-#include <kate/document.h>
+#include <ktexteditor/view.h>
+#include <ktexteditor/document.h>
 
 #include <kparts/part.h>
 
-#include <scriptmanager.h>
 #include <kaction.h>
+//Added by qt3to4:
+#include <QDragEnterEvent>
+#include <QEvent>
+#include <QDropEvent>
+#include <QVBoxLayout>
 
 class KateTabWidget;
 class GrepTool;
@@ -113,7 +117,6 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
   private:
     void setupMainWindow();
     void setupActions();
-    void setupScripts();
     bool queryClose();
 
     /**
@@ -141,7 +144,7 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
     void slotOpenWithMenuAction(int idx);
 
     void slotGrepToolItemSelected ( const QString &filename, int linenumber );
-    void runScript( int menuItemId);
+    
     void slotMail();
 
     void slotFileQuit();
@@ -158,10 +161,11 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
     void tipOfTheDay();
 
     /* to update the caption */
-    void slotDocumentCreated (Kate::Document *doc);
-    void updateCaption (Kate::Document *doc);
+    void slotDocumentCreated (KTextEditor::Document *doc);
+    void updateCaption (KTextEditor::Document *doc);
 
     void pluginHelp ();
+    void aboutEditor();
     void slotFullScreen(bool);
 
   public:
@@ -201,13 +205,10 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
 
     KActionMenu* documentOpenWith;
 
-    QPopupMenu *documentMenu;
+    Q3PopupMenu *documentMenu;
 
     KToggleAction* settingsShowFilelist;
     KToggleAction* settingsShowFileselector;
-
-    KActionMenu *scriptMenu;
-    KScriptManager* kscript;
 
     KateExternalToolsMenuAction *externalTools;
     GrepTool * greptool;

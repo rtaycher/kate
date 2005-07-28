@@ -45,9 +45,8 @@
 #include <kglobalsettings.h>
 #include <kstdaccel.h>
 
-#include <ktexteditor/encodinginterface.h>
-
-#include <qobjectlist.h>
+#include <QApplication>
+#include <qobject.h>
 #include <qstringlist.h>
 #include <qfileinfo.h>
 #include <qtoolbutton.h>
@@ -113,28 +112,28 @@ void KateViewManager::setupActions ()
   /**
    * view splitting
    */
-  a=new KAction ( i18n("Split Ve&rtical"), "view_right", CTRL+SHIFT+Key_L, this, SLOT(
+  a=new KAction ( i18n("Split Ve&rtical"), "view_right", Qt::CTRL+Qt::SHIFT+Qt::Key_L, this, SLOT(
                   slotSplitViewSpaceVert() ), m_mainWindow->actionCollection(), "view_split_vert");
 
   a->setWhatsThis(i18n("Split the currently active view vertically into two views."));
 
-  a=new KAction ( i18n("Split &Horizontal"), "view_bottom", CTRL+SHIFT+Key_T, this, SLOT(
+  a=new KAction ( i18n("Split &Horizontal"), "view_bottom", Qt::CTRL+Qt::SHIFT+Qt::Key_T, this, SLOT(
                   slotSplitViewSpaceHoriz() ), m_mainWindow->actionCollection(), "view_split_horiz");
 
   a->setWhatsThis(i18n("Split the currently active view horizontally into two views."));
 
-  m_closeView = new KAction ( i18n("Cl&ose Current View"), "view_remove", CTRL+SHIFT+Key_R, this,
+  m_closeView = new KAction ( i18n("Cl&ose Current View"), "view_remove", Qt::CTRL+Qt::SHIFT+Qt::Key_R, this,
                     SLOT( slotCloseCurrentViewSpace() ), m_mainWindow->actionCollection(),
                     "view_close_current_space" );
 
   m_closeView->setWhatsThis(i18n("Close the currently active splitted view"));
 
-  goNext=new KAction(i18n("Next View"),Key_F8,this,
+  goNext=new KAction(i18n("Next View"),Qt::Key_F8,this,
                      SLOT(activateNextView()),m_mainWindow->actionCollection(),"go_next");
 
   goNext->setWhatsThis(i18n("Make the next split view the active one."));
 
-  goPrev=new KAction(i18n("Previous View"),SHIFT+Key_F8, this, SLOT(activatePrevView()),m_mainWindow->actionCollection(),"go_prev");
+  goPrev=new KAction(i18n("Previous View"),Qt::SHIFT+Qt::Key_F8, this, SLOT(activatePrevView()),m_mainWindow->actionCollection(),"go_prev");
 
   goPrev->setWhatsThis(i18n("Make the previous split view the active one."));
 
@@ -147,7 +146,7 @@ void KateViewManager::setupActions ()
   b->setIconSet( SmallIcon( "tab_new" ) );
   b->adjustSize();
   QToolTip::add(b, i18n("Open a new tab"));
-  m_mainWindow->tabWidget()->setCornerWidget( b, TopLeft );
+  m_mainWindow->tabWidget()->setCornerWidget( b, Qt::TopLeft );
 
   b = m_closeTabButton = new QToolButton( m_mainWindow->tabWidget() );
   connect( b, SIGNAL( clicked() ),
@@ -155,7 +154,7 @@ void KateViewManager::setupActions ()
   b->setIconSet( SmallIcon( "tab_remove" ) );
   b->adjustSize();
   QToolTip::add(b, i18n("Close the current tab"));
-  m_mainWindow->tabWidget()->setCornerWidget( b, TopRight );
+  m_mainWindow->tabWidget()->setCornerWidget( b, Qt::TopRight );
 }
 
 void KateViewManager::updateViewSpaceActions ()
@@ -168,7 +167,7 @@ void KateViewManager::updateViewSpaceActions ()
 }
 
 void KateViewManager::tabChanged(QWidget* widget) {
-  KateViewSpaceContainer *container=static_cast<KateViewSpaceContainer*>(widget->qt_cast("KateViewSpaceContainer"));
+  KateViewSpaceContainer *container=qobject_cast<KateViewSpaceContainer*>(widget);
   Q_ASSERT(container);
   m_currentContainer=container;
 
@@ -192,7 +191,7 @@ void KateViewManager::slotNewTab()
   if (m_currentContainer)
   {
     if (m_currentContainer->activeView())
-      documentNumber = m_currentContainer->activeView()->getDoc()->documentNumber();
+      documentNumber = m_currentContainer->activeView()->document()->documentNumber();
   }
 
   KateViewSpaceContainer *container=new KateViewSpaceContainer (m_mainWindow->tabWidget(), this);
@@ -259,14 +258,14 @@ void KateViewManager::activatePrevTab()
   m_mainWindow->tabWidget()->setCurrentPage( iTab );
 }
 
-void KateViewManager::activateSpace (Kate::View* v)
+void KateViewManager::activateSpace (KTextEditor::View* v)
 {
   if (m_currentContainer) {
     m_currentContainer->activateSpace(v);
   }
 }
 
-void KateViewManager::activateView ( Kate::View *view ) {
+void KateViewManager::activateView ( KTextEditor::View *view ) {
   if (m_currentContainer) {
     m_currentContainer->activateView(view);
   }
@@ -280,7 +279,7 @@ KateViewSpace* KateViewManager::activeViewSpace ()
   return 0L;
 }
 
-Kate::View* KateViewManager::activeView ()
+KTextEditor::View* KateViewManager::activeView ()
 {
   if (m_currentContainer) {
     return m_currentContainer->activeView();
@@ -296,7 +295,7 @@ void KateViewManager::setActiveSpace ( KateViewSpace* vs )
 
 }
 
-void KateViewManager::setActiveView ( Kate::View* view )
+void KateViewManager::setActiveView ( KTextEditor::View* view )
 {
   if (m_currentContainer) {
     m_currentContainer->setActiveView(view);
@@ -366,12 +365,13 @@ void KateViewManager::slotDocumentNew ()
 
 void KateViewManager::slotDocumentOpen ()
 {
-  Kate::View *cv = activeView();
+  KTextEditor::View *cv = activeView();
 
-  if (cv) {
+  if (cv)
+  {
     KEncodingFileDialog::Result r=KEncodingFileDialog::getOpenURLsAndEncoding(
-      (cv ? KTextEditor::encodingInterface(cv->document())->encoding() : Kate::Document::defaultEncoding()),
-       (cv ? cv->document()->url().url() : QString::null),
+      cv->document()->encoding(),
+      cv->document()->url().url(),
        QString::null,m_mainWindow,i18n("Open File"));
 
     uint lastID = 0;
@@ -391,22 +391,22 @@ void KateViewManager::slotDocumentClose ()
   // prevent close document if only one view alive and the document of
   // it is not modified and empty !!!
   if ( (KateDocManager::self()->documents() == 1)
-       && !activeView()->getDoc()->isModified()
-       && activeView()->getDoc()->url().isEmpty()
-       && (activeView()->getDoc()->length() == 0) )
+       && !activeView()->document()->isModified()
+       && activeView()->document()->url().isEmpty()
+       && (activeView()->document()->length() == 0) )
   {
-    activeView()->getDoc()->closeURL();
+    activeView()->document()->closeURL();
     return;
   }
 
   // close document
-  KateDocManager::self()->closeDocument (activeView()->getDoc());
+  KateDocManager::self()->closeDocument ((KTextEditor::Document*)activeView()->document());
 }
 
 uint KateViewManager::openURL (const KURL &url, const QString& encoding, bool activate)
 {
   uint id = 0;
-  Kate::Document *doc = KateDocManager::self()->openURL (url, encoding, &id);
+  KTextEditor::Document *doc = KateDocManager::self()->openURL (url, encoding, &id);
 
   if (!doc->url().isEmpty())
     m_mainWindow->fileOpenRecent->addURL( doc->url() );

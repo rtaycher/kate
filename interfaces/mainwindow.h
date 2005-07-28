@@ -43,10 +43,26 @@ class KDE_EXPORT MainWindow : public QObject
     KXMLGUIFactory *guiFactory() const;
 
   public slots:
-    Kate::ViewManager *viewManager () const;
+    ViewManager *viewManager () const;
 
   public :
-
+    /**
+     * @return the kate main window.
+     */
+    class QWidget *window() const;
+    /**
+     * Access the widget (in the middle of the four sidebars) in which the
+     * editor component and the KateTabBar are embedded. This widget is a KVBox,
+     * so other child widgets can be embedded under the editor widget.
+     *
+     * @return the central widget
+     */
+    class QWidget *centralWidget() const;
+    /**
+     * Access the toolview manager. The toolview manager manages the four
+     * sidebars and provides an interface to create/remove new sidebar entries.
+     * @return the toolview manager
+     */
     class ToolViewManager *toolViewManager() const;
 
   private:
