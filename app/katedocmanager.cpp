@@ -434,7 +434,7 @@ void KateDocManager::restoreDocumentList (KConfig* config)
         0,
         "openprog");
 
-  pd->setCaption (KateApp::self()->makeStdCaption(i18n("Starting up")));
+  pd->setCaption (KateApp::self()->makeStdCaption(i18n("Starting Up")));
 
   bool first = true;
   for (unsigned int i=0; i < count; i++)
