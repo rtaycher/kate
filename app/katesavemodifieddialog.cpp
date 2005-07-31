@@ -134,14 +134,13 @@ private:
 KateSaveModifiedDialog::KateSaveModifiedDialog(QWidget *parent, QList<KTextEditor::Document*> documents):
 	KDialogBase( parent, "KateSaveModifiedDialog", true, i18n("Save Documents"), Yes | No | Cancel) {
 
-	KGuiItem yesItem=KStdGuiItem::yes();
-	yesItem.setText(i18n("&Save Selected"));
-	setButtonGuiItem(KDialogBase::Yes,yesItem);
+	KGuiItem saveItem=KStdGuiItem::save();
+	saveItem.setText(i18n("&Save Selected"));
+	setButtonGuiItem(KDialogBase::Yes,saveItem);
 
-	KGuiItem noItem=KStdGuiItem::dontSave();
-	setButtonGuiItem(KDialogBase::No,noItem);
+	setButtonGuiItem(KDialogBase::No,KStdGuiItem::dontSave());
 
-	KGuiItem cancelItem=KStdGuiItem::close();
+	KGuiItem cancelItem=KStdGuiItem::cancel();
 	cancelItem.setText(i18n("&Abort Closing"));
 	setButtonGuiItem(KDialogBase::Cancel,cancelItem);
 
