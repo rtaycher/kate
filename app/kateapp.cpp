@@ -29,6 +29,7 @@
 
 #include "../interfaces/application.h"
 
+#include <kdeversion.h>
 #include <kcmdlineargs.h>
 #include <dcopclient.h>
 #include <kconfig.h>
@@ -99,6 +100,16 @@ KateApp *KateApp::self ()
 Kate::Application *KateApp::application ()
 {
   return m_application;
+}
+
+/**
+ * Has always been the Kate Versioning Scheme:
+ * KDE X.Y.Z contains Kate X-1.Y.Z
+ */
+QString KateApp::kateVersion (bool fullVersion)
+{
+  return fullVersion ? QString ("%1.%2.%3").arg(KDE::versionMajor() - 1).arg(KDE::versionMinor()).arg(KDE::versionRelease())
+           : QString ("%1.%2").arg(KDE::versionMajor() - 1).arg(KDE::versionMinor());
 }
 
 void KateApp::initKate ()

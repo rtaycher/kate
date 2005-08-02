@@ -70,6 +70,13 @@ class KDE_EXPORT KateApp : public KApplication
      */
     Kate::Application *application ();
 
+    /**
+     * Returns the current Kate version (X.Y) or (X.Y.Z)
+     * @param fullVersion should full version be returned?
+     * @return Kate version
+     */
+    static QString kateVersion (bool fullVersion = true);
+
   /**
    * kate init
    */
