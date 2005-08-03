@@ -150,7 +150,7 @@ void KateViewSpace::addView(KTextEditor::View* v, bool show)
   connect(v, SIGNAL(viewModeChanged(KTextEditor::View *)), mStatusBar, SLOT(viewModeChanged(KTextEditor::View *)));
   connect(v, SIGNAL(selectionChanged (KTextEditor::View *)), mStatusBar, SLOT(selectionChanged (KTextEditor::View *)));
   connect(v, SIGNAL(informationMessage (KTextEditor::View *, const QString &)), mStatusBar, SLOT(informationMessage (KTextEditor::View *, const QString &)));
-  connect(v->document(), SIGNAL(modifiedChanged()), mStatusBar, SLOT(modifiedChanged()));
+  connect(v->document(), SIGNAL(modifiedChanged(KTextEditor::Document *)), mStatusBar, SLOT(modifiedChanged()));
   connect(v->document(), SIGNAL(modifiedOnDisk(Document *, bool, ModifiedOnDiskReason)), mStatusBar, SLOT(modifiedChanged()) );
   connect(v->document(), SIGNAL(documentNameChanged(KTextEditor::Document *)), mStatusBar, SLOT(documentNameChanged()));
 }

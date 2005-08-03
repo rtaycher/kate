@@ -793,7 +793,7 @@ bool KateMainWindow::showModOnDiskPrompt()
 
 void KateMainWindow::slotDocumentCreated (KTextEditor::Document *doc)
 {
-  connect(doc,SIGNAL(modStateChanged(KTextEditor::Document *)),this,SLOT(updateCaption(KTextEditor::Document *)));
+  connect(doc,SIGNAL(modifiedChanged(KTextEditor::Document *)),this,SLOT(updateCaption(KTextEditor::Document *)));
   connect(doc,SIGNAL(documentNameChanged(Document *)),this,SLOT(updateCaption(Document *)));
   connect(doc,SIGNAL(documentNameChanged(Document *)),this,SLOT(slotUpdateOpenWith()));
 

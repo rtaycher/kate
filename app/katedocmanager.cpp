@@ -234,7 +234,7 @@ KTextEditor::Document *KateDocManager::openURL (const KURL& url,const QString &e
     if (id)
       *id=doc->documentNumber();
 
-    connect(doc, SIGNAL(modStateChanged(KTextEditor::Document *)), this, SLOT(slotModChanged(KTextEditor::Document *)));
+    connect(doc, SIGNAL(modifiedChanged(KTextEditor::Document *)), this, SLOT(slotModChanged(KTextEditor::Document *)));
 
     emit initialDocumentReplaced();
 
