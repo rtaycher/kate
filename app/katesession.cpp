@@ -31,7 +31,7 @@
 #include <kinputdialog.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
-#include <kmdcodec.h>
+#include <kcodecs.h>
 #include <kstdguiitem.h>
 #include <kpushbutton.h>
 #include <kpopupmenu.h>

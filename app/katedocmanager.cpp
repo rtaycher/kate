@@ -36,7 +36,7 @@
 #include <kdebug.h>
 #include <kconfig.h>
 #include <klibloader.h>
-#include <kmdcodec.h>
+#include <kcodecs.h>
 #include <kmessagebox.h>
 #include <kencodingfiledialog.h>
 
