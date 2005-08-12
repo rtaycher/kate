@@ -549,7 +549,7 @@ void KateMainWindow::editKeys()
   for (int i=0;i<l.count();i++) {
 //     kdDebug(13001)<<"reloading Keysettings for document "<<i<<endl;
     l.at(i)->reloadXML();
-    QList<KTextEditor::View *> l1=l.at(i)->views ();//KTextEditor::Document
+    QList<KDocument::View *> l1=l.at(i)->views ();//KTextEditor::Document
     for (int i1=0;i1<l1.count();i1++) {
       l1.at(i1)->reloadXML();
 //       kdDebug(13001)<<"reloading Keysettings for view "<<i<<"/"<<i1<<endl;
