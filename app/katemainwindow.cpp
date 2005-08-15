@@ -620,7 +620,8 @@ void KateMainWindow::slotOpenWithMenuAction(int idx)
   KURL::List list;
   list.append( m_viewManager->activeView()->document()->url() );
   QString* appname = new QString( documentOpenWith->popupMenu()->text(idx) );
-  if ( appname->compare(i18n("&Other...")) == 0 ) {
+  *appname = appname->remove('&'); //Remove a possible accelerator ... otherwise the application might not get found.
+  if ( appname->compare(i18n("Other...")) == 0 ) {
     // display "open with" dialog
     KOpenWithDlg* dlg = new KOpenWithDlg(list);
     if (dlg->exec())
@@ -630,9 +631,13 @@ void KateMainWindow::slotOpenWithMenuAction(int idx)
   QString qry = QString("((Type == 'Application') and (Name == '%1'))").arg( appname->latin1() );
   KMimeType::Ptr mime = KMimeType::findByURL( m_viewManager->activeView()->document()->url() );
   KTrader::OfferList offers = KTrader::self()->query(mime->name(), qry);
-  KService::Ptr app = offers.first();
-  // some checking here: pop a wacko message it the app wasn't found.
-  KRun::run(*app, list);
+
+  if (!offers.isEmpty()) {
+    KService::Ptr app = offers.first();
+    KRun::run(*app, list);
+  } 
+  else 
+    KMessageBox::error(this, i18n("Application '%1' not found!").arg(appname->latin1()), i18n("Application not found!"));
 }
 
 void KateMainWindow::pluginHelp()
