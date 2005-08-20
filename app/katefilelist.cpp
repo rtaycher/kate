@@ -143,12 +143,12 @@ void KateFileList::setupActions ()
 {
   windowNext = KStdAction::back(this, SLOT(slotPrevDocument()), m_main->actionCollection());
   windowPrev = KStdAction::forward(this, SLOT(slotNextDocument()), m_main->actionCollection());
-  KSelectAction *a = new KSelectAction( i18n("Sort &By"), 0,
+  sortAction = new KSelectAction( i18n("Sort &By"), 0,
       m_main->actionCollection(), "filelist_sortby"  );
   QStringList l;
   l << i18n("Opening Order") << i18n("Document Name") << i18n("URL");
-  a->setItems( l );
-  connect( a, SIGNAL(activated(int)), this, SLOT(setSortType(int)) );
+  sortAction->setItems( l );
+  connect( sortAction, SIGNAL(activated(int)), this, SLOT(setSortType(int)) );
 }
 
 void KateFileList::updateActions ()
@@ -409,6 +409,8 @@ void KateFileList::readConfig( KConfig *config, const QString &group )
   m_viewShade = config->readColorEntry( "View Shade", &m_viewShade );
   m_editShade = config->readColorEntry( "Edit Shade", &m_editShade );
   m_enableBgShading = config->readBoolEntry( "Shading Enabled", &m_enableBgShading );
+
+  sortAction->setCurrentItem( sortType() );
 
   config->setGroup( oldgroup );
 }

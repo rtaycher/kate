@@ -44,6 +44,7 @@
 class KateMainWindow;
 
 class KAction;
+class KSelectAction;
 
 class KateFileListItem : public Q3ListViewItem
 {
@@ -157,6 +158,7 @@ class KateFileList : public KListView
 
     KAction* windowNext;
     KAction* windowPrev;
+    KSelectAction* sortAction;
 
     Q3PtrList<KateFileListItem> m_viewHistory;
     Q3PtrList<KateFileListItem> m_editHistory;
