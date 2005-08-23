@@ -70,6 +70,7 @@ class GUIClient : public QObject, public KXMLGUIClient
 
     void registerToolView (ToolView *tv);
     void unregisterToolView (ToolView *tv);
+    void updateSidebarsVisibleAction();
 
   private slots:
     void clientAdded( KXMLGUIClient *client );
@@ -77,6 +78,7 @@ class GUIClient : public QObject, public KXMLGUIClient
 
   private:
     MainWindow *m_mw;
+    KToggleAction *m_showSidebarsAction;
     Q3PtrList<KAction> m_toolViewActions;
     QMap<ToolView*, KAction*> m_toolToAction;
     KActionMenu *m_toolMenu;
@@ -193,6 +195,9 @@ class Sidebar : public KMultiTabBar
      */
     void saveSession (KConfig *config);
 
+  public slots:
+    // reimplemented, to block a show() call if all sidebars are forced hidden
+    virtual void setVisible(bool visible);
   private slots:
     void tabClicked(int);
 
@@ -284,7 +289,22 @@ class MainWindow : public KParts::MainWindow
      * @return toolview's tabbar style
      */
     KMultiTabBar::KMultiTabBarStyle toolViewStyle () const;
-    
+
+    /**
+     * get the sidebars' visibility.
+     * @return false, if the sidebars' visibility is forced hidden, otherwise true
+     */
+    bool sidebarsVisible() const;
+
+  public slots:
+    /**
+     * set the sidebars' visibility to @p visible. If false, the sidebars
+     * are @e always hidden. Usually you do not have to call this because
+     * the user can set this in the menu.
+     * @param visible sidebars visibility
+     */
+    void setSidebarsVisible( bool visible );
+
   protected:
     /**
      * called by toolview destructor
@@ -377,6 +397,11 @@ class MainWindow : public KParts::MainWindow
     Sidebar *m_sidebars[4];
 
     /**
+     * sidebars state.
+     */
+    bool m_sidebarsVisible;
+
+    /**
      * config object for session restore, only valid between
      * start and finish restore calls
      */
@@ -396,3 +421,5 @@ class MainWindow : public KParts::MainWindow
 }
 
 #endif
+
+// kate: space-indent on; indent-width 2;

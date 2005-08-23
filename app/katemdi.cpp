@@ -33,6 +33,7 @@
 #include <kiconloader.h>
 #include <kpopupmenu.h>
 #include <kvbox.h>
+#include <kmessagebox.h>
 
 #include <QVBoxLayout>
 #include <q3vbox.h>
@@ -121,6 +122,15 @@ GUIClient::GUIClient ( MainWindow *mw )
     actionCollection()->setWidget(m_mw);
 
   m_toolMenu = new KActionMenu(i18n("Tool &Views"),actionCollection(),"kate_mdi_toolview_menu");
+  m_showSidebarsAction = new KToggleAction( i18n("Show Side&bars"),
+                                            Qt::CTRL|Qt::ALT|Qt::SHIFT|Qt::Key_F, actionCollection() );
+  m_showSidebarsAction->setCheckedState(i18n("Hide Side&bars"));
+  m_showSidebarsAction->setChecked( m_mw->sidebarsVisible() );
+  connect( m_showSidebarsAction, SIGNAL( toggled( bool ) ),
+           m_mw, SLOT( setSidebarsVisible( bool ) ) );
+
+  m_toolMenu->insert( m_showSidebarsAction );
+  m_toolMenu->insert( new KActionSeparator( m_toolMenu ) );
 
   // read shortcuts
   actionCollection()->readShortcutSettings( "Shortcuts", kapp->config() );
@@ -128,6 +138,11 @@ GUIClient::GUIClient ( MainWindow *mw )
 
 GUIClient::~GUIClient()
 {
+}
+
+void GUIClient::updateSidebarsVisibleAction()
+{
+  m_showSidebarsAction->setChecked( m_mw->sidebarsVisible() );
 }
 
 void GUIClient::registerToolView (ToolView *tv)
@@ -464,6 +479,15 @@ bool Sidebar::eventFilter(QObject *obj, QEvent *ev)
   return false;
 }
 
+void Sidebar::setVisible(bool visible)
+{
+  // visible==true means show-request
+  if( visible && ( m_idToWidget.isEmpty() || !m_mainWin->sidebarsVisible() ) )
+    return;
+
+  KMultiTabBar::setVisible(visible);
+}
+
 void Sidebar::buttonPopupActivate (int id)
 {
   ToolView *w = m_idToWidget[m_popupButton];
@@ -624,6 +648,7 @@ void Sidebar::saveSession (KConfig *config)
 
 MainWindow::MainWindow (QWidget* parentWidget, const char* name)
  : KParts::MainWindow( parentWidget, name)
+ , m_sidebarsVisible(true)
  , m_restoreConfig (0)
  , m_guiClient (new GUIClient (this))
 {
@@ -724,6 +749,37 @@ void MainWindow::toolViewDeleted (ToolView *widget)
   m_toolviews.remove (widget);
 }
 
+void MainWindow::setSidebarsVisible( bool visible )
+{
+  m_sidebarsVisible = visible;
+
+  m_sidebars[0]->setVisible(visible);
+  m_sidebars[1]->setVisible(visible);
+  m_sidebars[2]->setVisible(visible);
+  m_sidebars[3]->setVisible(visible);
+
+  m_guiClient->updateSidebarsVisibleAction();
+
+  // show information message box, if the users hides the sidebars
+  if( !m_sidebarsVisible )
+  {
+    KMessageBox::information( this,
+                              i18n("<qt>You are about to hide the sidebars. With "
+                                   "hidden sidebars it is not possible to directly "
+                                   "access the tool views with the mouse anymore, "
+                                   "so if you need to access the sidebars again "
+                                   "invoke <b>Window &gt; Tool Views &gt; Show Sidebars</b> "
+                                   "in the menu. It is still possible to show/hide "
+                                   "the tool views with the assigned shortcuts.</qt>"),
+                              QString::null, "Kate hide sidebars notification message" );
+  }
+}
+
+bool MainWindow::sidebarsVisible() const
+{
+  return m_sidebarsVisible;
+}
+
 void MainWindow::setToolViewStyle (KMultiTabBar::KMultiTabBarStyle style)
 {
   m_sidebars[0]->setStyle(style);
@@ -807,6 +863,9 @@ void MainWindow::startRestore (KConfig *config, const QString &group)
   m_vSplitter->setSizes(vs);
 
   setToolViewStyle( (KMultiTabBar::KMultiTabBarStyle)m_restoreConfig->readNumEntry ("Kate-MDI-Sidebar-Style", (int)toolViewStyle()) );
+  // after reading m_sidebarsVisible, update the GUI toggle action
+  m_sidebarsVisible = m_restoreConfig->readBoolEntry ("Kate-MDI-Sidebar-Visible", true );
+  m_guiClient->updateSidebarsVisibleAction();
 }
 
 void MainWindow::finishRestore ()
@@ -869,6 +928,7 @@ void MainWindow::saveSession (KConfig *config, const QString &group)
 
   // save sidebar style
   config->writeEntry ("Kate-MDI-Sidebar-Style", (int)toolViewStyle());
+  config->writeEntry ("Kate-MDI-Sidebar-Visible", m_sidebarsVisible );
 
   // save the sidebars
   for (unsigned int i=0; i < 4; ++i)
@@ -878,3 +938,5 @@ void MainWindow::saveSession (KConfig *config, const QString &group)
 //END MAIN WINDOW
 
 } // namespace KateMDI
+
+// kate: space-indent on; indent-width 2;
