@@ -1,3 +1,4 @@
+
 /* This file is part of the KDE project
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2002 Joseph Wenninger <jowenn@kde.org>
@@ -56,7 +57,7 @@ KateApp::KateApp (KCmdLineArgs *args)
 
   // insert right translations for the katepart
   KGlobal::locale()->insertCatalogue("katepart");
-
+  setQuitOnLastWindowClosed (false);
   // some global default
 #warning fixme later
 //  KTextEditor::Document::setFileChangedDialogsActivated (true);
@@ -125,6 +126,7 @@ void KateApp::initKate ()
     // we can exit here if session chooser decides
     if (!startupKate ())
     {
+      kdDebug()<<"startupKate returned false"<<endl;
       quit ();
       return ;
     }
@@ -172,12 +174,18 @@ bool KateApp::startupKate ()
   else if (!m_args->isSet( "stdin" ) && (m_args->count() == 0)) // only start session if no files specified
   {
     // let the user choose session if possible
+#if 1
     if (!sessionManager()->chooseSession ())
     {
+      kdDebug()<<"chooseSession returned false, exiting"<<endl;
       // we will exit kate now, notify the rest of the world we are done
       KStartupInfo::appStarted (startupId());
       return false;
     }
+#else
+  QMessageBox::information ( 0, "TEST", "TEST");
+#endif
+
   }
 
   // oh, no mainwindow, create one, should not happen, but make sure ;)
@@ -262,6 +270,7 @@ bool KateApp::startupKate ()
   // show the nice tips
   KTipDialog::showTip(activeMainWindow());
 
+  kdDebug()<<"KateApplication::init finished successfull"<<endl;
   return true;
 }
 

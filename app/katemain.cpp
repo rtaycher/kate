@@ -200,5 +200,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
   KateApp app (args);
 
   // execute ourself ;)
-  return app.exec();
+  int res=app.exec();
+  kdDebug()<<"primary event loop has been left"<<endl;
+  return res;
 }
