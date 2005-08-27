@@ -55,6 +55,11 @@ class KateSession  : public KShared
     KateSession (KateSessionManager *manager, const QString &fileName, const QString &name);
 
     /**
+     * init the session object, after construction or create
+     */
+    void init ();
+
+    /**
      * destruct me
      */
     ~KateSession ();
@@ -173,7 +178,7 @@ class KateSessionManager : public QObject
      * allow access to the session list
      * kept up to date by watching the dir
      */
-    inline KateSessionList & sessionList () { return m_sessionList; }
+    inline KateSessionList & sessionList () { updateSessionList (); return m_sessionList; }
 
     /**
      * activate a session
@@ -268,11 +273,6 @@ class KateSessionManager : public QObject
      * absolute path to dir in home dir where to store the sessions
      */
     QString m_sessionsDir;
-
-    /**
-     * dirwatch object to keep track of this dir
-     */
-    KDirWatch *m_dirWatch;
 
     /**
      * list of current available sessions

@@ -55,15 +55,20 @@ KateSession::KateSession (KateSessionManager *manager, const QString &fileName, 
   , m_readConfig (0)
   , m_writeConfig (0)
 {
+  init ();
+}
+
+void KateSession::init ()
+{
   // given file exists, use it to load some stuff ;)
-  if (!fileName.isEmpty() && KGlobal::dirs()->exists(sessionFile ()))
+  if (!m_sessionFileRel.isEmpty() && KGlobal::dirs()->exists(sessionFile ()))
   {
     KSimpleConfig config (sessionFile (), true);
 
     if (m_sessionName.isEmpty())
     {
       // get the name out of the file
-      if (fileName == "default.katesession")
+      if (m_sessionFileRel == "default.katesession")
         m_sessionName = i18n("Default Session");
       else
       {
@@ -80,12 +85,12 @@ KateSession::KateSession (KateSessionManager *manager, const QString &fileName, 
   }
 
   // filename not empty, create the file
-  if (!fileName.isEmpty())
+  if (!m_sessionFileRel.isEmpty())
   {
      // uhh, no name given
     if (m_sessionName.isEmpty())
     {
-      if (fileName == "default.katesession")
+      if (m_sessionFileRel == "default.katesession")
         m_sessionName = i18n("Default Session");
       else
         m_sessionName = i18n("Session (%1)").arg(QTime::currentTime().toString(Qt::LocalDate));
@@ -115,6 +120,12 @@ bool KateSession::create (const QString &name, bool force)
   if (!force && (name.isEmpty() || !m_sessionFileRel.isEmpty()))
     return false;
 
+  delete m_writeConfig;
+  m_writeConfig = 0;
+
+  delete m_readConfig;
+  m_readConfig = 0;
+
   m_sessionName = name;
 
   // get a usable filename
@@ -124,7 +135,7 @@ bool KateSession::create (const QString &name, bool force)
   {
     tname.setNum (s++);
     KMD5 md5 (tname);
-    m_sessionFileRel = md5.hexDigest() + ".katesession";
+    m_sessionFileRel = QString ("%1.katesession").arg (md5.hexDigest().data());
 
     if (!KGlobal::dirs()->exists(sessionFile ()))
       break;
@@ -135,6 +146,9 @@ bool KateSession::create (const QString &name, bool force)
   config.setGroup ("General");
   config.writeEntry ("Name", m_sessionName);
   config.sync ();
+
+  // reinit ourselfs ;)
+  init ();
 
   return true;
 }
@@ -183,20 +197,12 @@ KConfig *KateSession::configWrite ()
 KateSessionManager::KateSessionManager (QObject *parent)
  : QObject (parent)
  , m_sessionsDir (locateLocal( "data", "kate/sessions"))
- , m_dirWatch (new KDirWatch (this))
  , m_activeSession (new KateSession (this, "", ""))
 {
   kdDebug() << "LOCAL SESSION DIR: " << m_sessionsDir << endl;
 
   // create dir if needed
   KGlobal::dirs()->makeDir (m_sessionsDir);
-
-  // add this dir to the watch
-  connect (m_dirWatch, SIGNAL(dirty (const QString &)), this, SLOT(dirty (const QString &)));
-  m_dirWatch->addDir (m_sessionsDir);
-
-  // initial setup of the sessions list
-  updateSessionList ();
 }
 
 KateSessionManager::~KateSessionManager()
@@ -551,7 +557,7 @@ void KateSessionManager::sessionSaveAs ()
     return;
   }
 
-  activeSession()->create (name);
+  activeSession()->create (name, true);
   saveActiveSession ();
 }
 
@@ -888,7 +894,7 @@ void KateSessionsAction::openSession (int i)
 {
   KateSessionList &slist (KateSessionManager::self()->sessionList());
 
-  if ((int)i >= slist.count())
+  if (i >= slist.count())
     return;
 
   KateSessionManager::self()->activateSession(slist[(uint)i]);
