@@ -20,7 +20,6 @@
 
 #include "plugin.h"
 #include "documentmanager.h"
-#include "toolviewmanager.h"
 #include "pluginmanager.h"
 
 #include "../app/katepluginmanager.h"

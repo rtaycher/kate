@@ -20,8 +20,6 @@
 #include "documentmanager.moc"
 
 #include "plugin.h"
-#include "viewmanager.h"
-#include "toolviewmanager.h"
 #include "pluginmanager.h"
 
 #include "application.h"
