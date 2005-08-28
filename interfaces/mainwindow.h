@@ -20,9 +20,12 @@
 #define _KATE_MAINWINDOW_INCLUDE_
 
 #include <qobject.h>
+#include <qpixmap.h>
 
 #include <kxmlguifactory.h>
 #include <kurl.h>
+
+class QWidget;
 
 namespace Kate
 {
@@ -58,12 +61,48 @@ class KDE_EXPORT MainWindow : public QObject
      * @return the central widget
      */
     class QWidget *centralWidget() const;
+
+  /**
+   * ToolView stuff, here all stuff belong which allows to
+   * add/remove and manipulate the toolview of this main windows
+   */
+  public:
     /**
-     * Access the toolview manager. The toolview manager manages the four
-     * sidebars and provides an interface to create/remove new sidebar entries.
-     * @return the toolview manager
+     * positions
      */
-    class ToolViewManager *toolViewManager() const;
+    enum Position { Left = 0, Right = 1, Top = 2, Bottom = 3 };
+
+    /**
+     * add a given widget to the given sidebar if possible, name is very important
+     * @param identifier unique identifier for this toolview
+     * @param pos position for the toolview, if we are in session restore, this is only a preference
+     * @param icon icon to use for the toolview
+     * @param text text to use in addition to icon
+     * @return created toolview on success or 0
+     */
+    QWidget *createToolView (const QString &identifier, MainWindow::Position pos, const QPixmap &icon, const QString &text);
+
+    /**
+     * Move the toolview
+     * @param widget to show, widget given must be widget constructed by createToolView
+     * @param pos position to move widget to
+     * @return bool success
+     */
+    bool moveToolView (QWidget *widget, MainWindow::Position pos);
+
+    /**
+     * Show the toolview
+     * @param widget to show, widget given must be widget constructed by createToolView
+     * @return bool success
+     */
+    bool showToolView (QWidget *widget);
+
+    /**
+     * Hide the toolview
+     * @param widget to hide, widget given must be widget constructed by createToolView
+     * @return bool success
+     */
+    bool hideToolView (QWidget *widget);
 
   private:
     class PrivateMainWindow *d;

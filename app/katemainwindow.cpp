@@ -41,7 +41,6 @@
 #include "katetabwidget.h"
 
 #include "../interfaces/mainwindow.h"
-#include "../interfaces/toolviewmanager.h"
 
 #include <kaboutapplication.h>
 #include <dcopclient.h>
@@ -153,7 +152,6 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
   startRestore (sconfig, sgroup);
 
   m_mainWindow = new Kate::MainWindow (this);
-  m_toolViewManager = new Kate::ToolViewManager (this);
 
   m_dcop = new KateMainWindowDCOPIface (this);
 

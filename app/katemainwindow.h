@@ -41,7 +41,6 @@ class GrepTool;
 
 namespace Kate {
   class MainWindow;
-  class ToolViewManager;
 }
 
 class KFileItem;
@@ -75,7 +74,6 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
    */
   public:
     Kate::MainWindow *mainWindow () { return m_mainWindow; }
-    Kate::ToolViewManager *toolViewManager () { return m_toolViewManager; }
 
     KateViewManager *viewManager () { return m_viewManager; }
 
@@ -185,7 +183,6 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
     uint myID;
 
     Kate::MainWindow *m_mainWindow;
-    Kate::ToolViewManager *m_toolViewManager;
 
     bool syncKonsole;
     bool modNotification;

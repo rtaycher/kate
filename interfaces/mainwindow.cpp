@@ -22,7 +22,6 @@
 #include "documentmanager.h"
 #include "plugin.h"
 #include "viewmanager.h"
-#include "toolviewmanager.h"
 #include "pluginmanager.h"
 
 #include "../app/katemainwindow.h"
@@ -78,9 +77,33 @@ QWidget *MainWindow::centralWidget() const
   return d->win->centralWidget();
 }
 
-ToolViewManager *MainWindow::toolViewManager () const
+QWidget *MainWindow::createToolView (const QString &identifier, MainWindow::Position pos, const QPixmap &icon, const QString &text)
 {
-  return d->win->toolViewManager ();
+  return d->win->createToolView (identifier, (KMultiTabBar::KMultiTabBarPosition)pos, icon, text);
+}
+
+bool MainWindow::moveToolView (QWidget *widget, MainWindow::Position  pos)
+{
+  if (!widget || !qobject_cast<KateMDI::ToolView*>(widget))
+    return false;
+
+  return d->win->moveToolView (qobject_cast<KateMDI::ToolView*>(widget), (KMultiTabBar::KMultiTabBarPosition)pos);
+}
+
+bool MainWindow::showToolView(QWidget *widget)
+{
+  if (!widget || !qobject_cast<KateMDI::ToolView*>(widget))
+    return false;
+
+  return d->win->showToolView (qobject_cast<KateMDI::ToolView*>(widget));
+}
+
+bool MainWindow::hideToolView(QWidget *widget)
+{
+  if (!widget || !qobject_cast<KateMDI::ToolView*>(widget))
+    return false;
+
+  return d->win->hideToolView (qobject_cast<KateMDI::ToolView*>(widget));
 }
 
 
