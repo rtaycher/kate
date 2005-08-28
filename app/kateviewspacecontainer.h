@@ -22,7 +22,6 @@
 #define __KATE_VIEWSPACE_CONTAINER_H__
 
 #include "katemain.h"
-#include "../interfaces/viewmanager.h"
 
 #include <ktexteditor/view.h>
 #include <ktexteditor/document.h>

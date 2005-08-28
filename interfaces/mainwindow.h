@@ -27,10 +27,10 @@
 
 class QWidget;
 
+namespace KTextEditor { class View; }
+
 namespace Kate
 {
-
-class ViewManager;
 
 class KDE_EXPORT MainWindow : public QObject
 {
@@ -45,9 +45,6 @@ class KDE_EXPORT MainWindow : public QObject
   public: /*these are slots for kjs*/
     KXMLGUIFactory *guiFactory() const;
 
-  public slots:
-    ViewManager *viewManager () const;
-
   public :
     /**
      * @return the kate main window.
@@ -61,6 +58,44 @@ class KDE_EXPORT MainWindow : public QObject
      * @return the central widget
      */
     class QWidget *centralWidget() const;
+
+  /**
+   * View stuff, here all stuff belong which allows to
+   * access and manipulate the KTextEditor::View's we have in this windows
+   */
+ public slots: /*these are slots for kjs*/
+    /**
+     * Returns a pointer to the currently active view
+     * @return View active view
+     */
+    KTextEditor::View *activeView ();
+
+    /**
+     * Activates the view with the corresponding documentNumber
+     * @param documentNumber the document's number
+     */
+    void activateView ( uint documentNumber );
+
+    /**
+     * Opens the file pointed to by URL
+     * @param url url to the file
+     */
+    void openURL (const KURL &url);     
+
+#ifndef Q_MOC_RUN 
+  #undef signals
+  #define signals public
+#endif
+  signals:
+#ifndef Q_MOC_RUN
+  #undef signals
+  #define signals protected   
+#endif
+
+    /**
+     * Active view has changed
+     */
+    void viewChanged ();
 
   /**
    * ToolView stuff, here all stuff belong which allows to

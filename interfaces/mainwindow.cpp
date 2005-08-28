@@ -21,7 +21,6 @@
 
 #include "documentmanager.h"
 #include "plugin.h"
-#include "viewmanager.h"
 #include "pluginmanager.h"
 
 #include "../app/katemainwindow.h"
@@ -61,12 +60,6 @@ KXMLGUIFactory *MainWindow::guiFactory() const
   return d->win->guiFactory();
 }
 
-ViewManager *MainWindow::viewManager () const
-{
-  return d->win->viewManager ()->viewManager ();
-}
-
-
 QWidget *MainWindow::window() const
 {
   return d->win;
@@ -75,6 +68,21 @@ QWidget *MainWindow::window() const
 QWidget *MainWindow::centralWidget() const
 {
   return d->win->centralWidget();
+}
+
+KTextEditor::View *MainWindow::activeView()
+{
+  return d->win->viewManager()->activeView();
+}
+
+void MainWindow::activateView ( uint documentNumber )
+{
+  d->win->viewManager()->activateView( documentNumber );
+}
+
+void MainWindow::openURL (const KURL &url)
+{
+  d->win->viewManager()->openURL (url, QString::null, true);
 }
 
 QWidget *MainWindow::createToolView (const QString &identifier, MainWindow::Position pos, const QPixmap &icon, const QString &text)

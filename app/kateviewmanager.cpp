@@ -27,6 +27,8 @@
 #include "kateviewspacecontainer.h"
 #include "katetabwidget.h"
 
+#include "../interfaces/mainwindow.h"
+
 #include <dcopclient.h>
 #include <kaction.h>
 #include <kcmdlineargs.h>
@@ -68,7 +70,6 @@ KateViewManager::KateViewManager (KateMainWindow *parent)
 
   guiMergedView=0;
 
-  m_viewManager = new Kate::ViewManager (this);
   m_currentContainer=0;
  connect(m_mainWindow->tabWidget(),SIGNAL(currentChanged(QWidget*)),this,SLOT(tabChanged(QWidget*)));
  slotNewTab();
@@ -199,7 +200,7 @@ void KateViewManager::slotNewTab()
   m_mainWindow->tabWidget()->addTab (container, "");
 
   connect(container,SIGNAL(viewChanged()),this,SIGNAL(viewChanged()));
-  connect(container,SIGNAL(viewChanged()),m_viewManager,SIGNAL(viewChanged()));
+  connect(container,SIGNAL(viewChanged()),m_mainWindow->mainWindow(),SIGNAL(viewChanged()));
 
   if (!m_init)
   {

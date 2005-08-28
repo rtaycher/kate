@@ -22,7 +22,6 @@
 #define __KATE_VIEWMANAGER_H__
 
 #include "katemain.h"
-#include "../interfaces/viewmanager.h"
 
 #include <ktexteditor/view.h>
 #include <ktexteditor/document.h>
@@ -45,8 +44,6 @@ class KateViewManager : public QObject
   public:
     KateViewManager (KateMainWindow *parent);
     ~KateViewManager ();
-
-    Kate::ViewManager *viewManager () const { return m_viewManager; };
 
     KateViewSpaceContainer *activeContainer () { return m_currentContainer; }
 
@@ -137,7 +134,6 @@ class KateViewManager : public QObject
     void viewChanged ();
 
   private:
-    Kate::ViewManager *m_viewManager;
     Q3PtrList<KateViewSpaceContainer> m_viewSpaceContainerList;
     KateViewSpaceContainer *m_currentContainer;
 
