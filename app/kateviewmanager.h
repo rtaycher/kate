@@ -64,7 +64,7 @@ class KateViewManager : public QObject
     /* restore it */
     void restoreViewConfiguration (KConfig *config,const QString& group);
 
-    uint openURL (const KURL &url, const QString& encoding, bool activate = true);
+    KTextEditor::Document *openURL (const KURL &url, const QString& encoding, bool activate = true);
 
   public slots:
     void openURL (const KURL &url);
@@ -96,8 +96,7 @@ class KateViewManager : public QObject
   public slots:
     bool getShowFullPath() const { return showFullPath; }
 
-    void activateView ( uint documentNumber );
-    void activateView ( int documentNumber ) { activateView((uint) documentNumber); };
+    void activateView ( KTextEditor::Document *doc );
 
     void slotDocumentNew ();
     void slotDocumentOpen ();

@@ -27,7 +27,7 @@
 
 class QWidget;
 
-namespace KTextEditor { class View; }
+namespace KTextEditor { class View; class Document; }
 
 namespace Kate
 {
@@ -71,10 +71,10 @@ class KDE_EXPORT MainWindow : public QObject
     KTextEditor::View *activeView ();
 
     /**
-     * Activates the view with the corresponding documentNumber
-     * @param documentNumber the document's number
+     * Activates the view with the corresponding document
+     * @param doc the document
      */
-    void activateView ( uint documentNumber );
+    void activateView ( KTextEditor::Document *doc );
 
     /**
      * Opens the file pointed to by URL

@@ -187,12 +187,12 @@ void KateViewManager::tabChanged(QWidget* widget) {
 
 void KateViewManager::slotNewTab()
 {
-  uint documentNumber=0;
+  KTextEditor::Document *doc = 0;
 
   if (m_currentContainer)
   {
     if (m_currentContainer->activeView())
-      documentNumber = m_currentContainer->activeView()->document()->documentNumber();
+      doc = m_currentContainer->activeView()->document();
   }
 
   KateViewSpaceContainer *container=new KateViewSpaceContainer (m_mainWindow->tabWidget(), this);
@@ -204,7 +204,7 @@ void KateViewManager::slotNewTab()
 
   if (!m_init)
   {
-    container->activateView(documentNumber);
+    container->activateView(doc);
     container->setShowFullPath(showFullPath);
     m_mainWindow->slotWindowActivated ();
   }
@@ -305,10 +305,10 @@ void KateViewManager::setActiveView ( KTextEditor::View* view )
 }
 
 
-void KateViewManager::activateView( uint documentNumber )
+void KateViewManager::activateView( KTextEditor::Document *doc )
 {
   if (m_currentContainer) {
-     m_currentContainer->activateView(documentNumber);
+     m_currentContainer->activateView(doc);
   }
 }
 
@@ -375,7 +375,7 @@ void KateViewManager::slotDocumentOpen ()
       cv->document()->url().url(),
        QString::null,m_mainWindow,i18n("Open File"));
 
-    uint lastID = 0;
+    KTextEditor::Document *lastID = 0;
     for (KURL::List::Iterator i=r.URLs.begin(); i != r.URLs.end(); ++i)
       lastID = openURL( *i, r.encoding, false );
 
@@ -404,18 +404,17 @@ void KateViewManager::slotDocumentClose ()
   KateDocManager::self()->closeDocument ((KTextEditor::Document*)activeView()->document());
 }
 
-uint KateViewManager::openURL (const KURL &url, const QString& encoding, bool activate)
+KTextEditor::Document *KateViewManager::openURL (const KURL &url, const QString& encoding, bool activate)
 {
-  uint id = 0;
-  KTextEditor::Document *doc = KateDocManager::self()->openURL (url, encoding, &id);
+  KTextEditor::Document *doc = KateDocManager::self()->openURL (url, encoding);
 
   if (!doc->url().isEmpty())
     m_mainWindow->fileOpenRecent->addURL( doc->url() );
 
   if (activate)
-    activateView( id );
+    activateView( doc );
 
-  return id;
+  return doc;
 }
 
 void KateViewManager::openURL (const KURL &url)

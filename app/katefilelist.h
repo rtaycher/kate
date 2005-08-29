@@ -53,7 +53,6 @@ class KateFileListItem : public Q3ListViewItem
 		      KTextEditor::Document *doc );
     ~KateFileListItem();
 
-    inline uint documentNumber () { return m_docNumber; }
     inline KTextEditor::Document * document() { return doc; }
 
     int rtti() const { return RTTI_KateFileListItem; }
@@ -79,7 +78,6 @@ class KateFileListItem : public Q3ListViewItem
     KTextEditor::Document *doc;
     int m_viewhistpos; ///< this gets set by the list as needed
     int m_edithistpos; ///< this gets set by the list as needed
-    uint m_docNumber;
 };
 
 class KateFileList : public KListView
@@ -124,7 +122,7 @@ class KateFileList : public KListView
 
   private slots:
     void slotDocumentCreated (KTextEditor::Document *doc);
-    void slotDocumentDeleted (uint documentNumber);
+    void slotDocumentDeleted (KTextEditor::Document *doc);
     void slotActivateView( Q3ListViewItem *item );
     void slotModChanged (KTextEditor::Document *doc);
     void slotModifiedOnDisc (KTextEditor::Document *doc, bool b, KTextEditor::ModificationInterface::ModifiedOnDiskReason reason);

@@ -122,8 +122,8 @@ KateFileList::KateFileList (KateMainWindow *main,
 
   connect(KateDocManager::self(),SIGNAL(documentCreated(KTextEditor::Document *)),
 	  this,SLOT(slotDocumentCreated(KTextEditor::Document *)));
-  connect(KateDocManager::self(),SIGNAL(documentDeleted(uint)),
-	  this,SLOT(slotDocumentDeleted(uint)));
+  connect(KateDocManager::self(),SIGNAL(documentDeleted(KTextEditor::Document *)),
+	  this,SLOT(slotDocumentDeleted(KTextEditor::Document *)));
 
   // don't Honour KDE single/double click setting, this files are already open,
   // no need for hassle of considering double-click
@@ -203,9 +203,9 @@ void KateFileList::slotNextDocument()
   // ### more checking once more item types are added
 
   if ( currentItem()->nextSibling() )
-    viewManager->activateView( ((KateFileListItem*)currentItem()->nextSibling())->documentNumber() );
+    viewManager->activateView( ((KateFileListItem*)currentItem()->nextSibling())->document() );
   else
-    viewManager->activateView( ((KateFileListItem *)firstChild())->documentNumber() );
+    viewManager->activateView( ((KateFileListItem *)firstChild())->document() );
 }
 
 void KateFileList::slotPrevDocument()
@@ -216,9 +216,9 @@ void KateFileList::slotPrevDocument()
   // ### more checking once more item types are added
 
   if ( currentItem()->itemAbove() )
-    viewManager->activateView( ((KateFileListItem*)currentItem()->itemAbove())->documentNumber() );
+    viewManager->activateView( ((KateFileListItem*)currentItem()->itemAbove())->document() );
   else
-    viewManager->activateView( ((KateFileListItem *)lastItem())->documentNumber() );
+    viewManager->activateView( ((KateFileListItem *)lastItem())->document() );
 }
 
 void KateFileList::slotDocumentCreated (KTextEditor::Document *doc)
@@ -232,15 +232,12 @@ void KateFileList::slotDocumentCreated (KTextEditor::Document *doc)
   updateActions ();
 }
 
-void KateFileList::slotDocumentDeleted (uint documentNumber)
+void KateFileList::slotDocumentDeleted (KTextEditor::Document *doc)
 {
   Q3ListViewItem * item = firstChild();
   while( item ) {
-    if ( ((KateFileListItem *)item)->documentNumber() == documentNumber )
+    if ( ((KateFileListItem *)item)->document() == doc )
     {
-//       m_viewHistory.removeRef( (KateFileListItem *)item );
-//       m_editHistory.removeRef( (KateFileListItem *)item );
-
       removeItem( item );
 
       break;
@@ -256,7 +253,7 @@ void KateFileList::slotActivateView( Q3ListViewItem *item )
   if ( ! item || item->rtti() != RTTI_KateFileListItem )
     return;
 
-  viewManager->activateView( ((KateFileListItem *)item)->documentNumber() );
+  viewManager->activateView( ((KateFileListItem *)item)->document() );
 }
 
 void KateFileList::slotModChanged (KTextEditor::Document *doc)
@@ -266,7 +263,7 @@ void KateFileList::slotModChanged (KTextEditor::Document *doc)
   Q3ListViewItem * item = firstChild();
   while( item )
   {
-    if ( ((KateFileListItem *)item)->documentNumber() == doc->documentNumber() )
+    if ( ((KateFileListItem *)item)->document() == doc )
       break;
 
     item = item->nextSibling();
@@ -316,11 +313,11 @@ void KateFileList::slotViewChanged ()
   if (!viewManager->activeView()) return;
 
   KTextEditor::View *view = viewManager->activeView();
-  uint dn = view->document()->documentNumber();
+  KTextEditor::Document *dn = view->document();
 
   Q3ListViewItem * i = firstChild();
   while( i ) {
-    if ( ((KateFileListItem *)i)->documentNumber() == dn )
+    if ( ((KateFileListItem *)i)->document() == dn )
     {
       break;
     }
@@ -445,8 +442,7 @@ KateFileListItem::KateFileListItem( Q3ListView* lv,
   : Q3ListViewItem( lv, _doc->documentName() ),
     doc( _doc ),
     m_viewhistpos( 0 ),
-    m_edithistpos( 0 ),
-    m_docNumber( _doc->documentNumber() )
+    m_edithistpos( 0 )
 {
 }
 
@@ -531,8 +527,7 @@ int KateFileListItem::compare ( Q3ListViewItem * i, int col, bool ascending ) co
     {
       case KateFileList::sortByID:
       {
-
-        int d = (int)doc->documentNumber() - ((KateFileListItem*)i)->documentNumber();
+        int d = (int)doc->documentNumber() - ((KateFileListItem*)i)->document()->documentNumber();
         return ascending ? d : -d;
         break;
       }

@@ -75,9 +75,9 @@ KTextEditor::View *MainWindow::activeView()
   return d->win->viewManager()->activeView();
 }
 
-void MainWindow::activateView ( uint documentNumber )
+void MainWindow::activateView ( KTextEditor::Document *doc )
 {
-  d->win->viewManager()->activateView( documentNumber );
+  d->win->viewManager()->activateView( doc );
 }
 
 void MainWindow::openURL (const KURL &url)

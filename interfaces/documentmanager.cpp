@@ -84,9 +84,9 @@ uint DocumentManager::documents ()
   return d->docMan->documents ();
 }
 
-KTextEditor::Document *DocumentManager::openURL(const KURL&url,const QString &encoding,uint *id)
+KTextEditor::Document *DocumentManager::openURL(const KURL&url,const QString &encoding)
 {
-  return d->docMan->openURL (url, encoding, id);
+  return d->docMan->openURL (url, encoding);
 }
 
 bool DocumentManager::closeDocument(KTextEditor::Document *document)

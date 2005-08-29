@@ -204,7 +204,7 @@ bool KateApp::startupKate ()
 #warning fixme later
   //KTextEditor::Document::setOpenErrorDialogsActivated (false);
 
-  uint id = 0;
+  KTextEditor::Document *doc = 0;
   for (int z=0; z<m_args->count(); z++)
   {
     // this file is no local dir, open it, else warn
@@ -214,9 +214,9 @@ bool KateApp::startupKate ()
     {
       // open a normal file
       if (codec)
-        id = activeMainWindow()->viewManager()->openURL( m_args->url(z), codec->name(), false );
+        doc = activeMainWindow()->viewManager()->openURL( m_args->url(z), codec->name(), false );
       else
-        id = activeMainWindow()->viewManager()->openURL( m_args->url(z), QString::null, false );
+        doc = activeMainWindow()->viewManager()->openURL( m_args->url(z), QString::null, false );
     }
     else
       KMessageBox::sorry( activeMainWindow(),
@@ -246,11 +246,11 @@ bool KateApp::startupKate ()
 
     openInput (text);
   }
-  else if ( id )
-    activeMainWindow()->viewManager()->activateView( id );
+  else if ( doc )
+    activeMainWindow()->viewManager()->activateView( doc );
 
   if ( activeMainWindow()->viewManager()->viewCount () == 0 )
-    activeMainWindow()->viewManager()->activateView(m_docManager->documentList().first()->documentNumber());
+    activeMainWindow()->viewManager()->activateView(m_docManager->document (0));
 
   int line = 0;
   int column = 0;
@@ -378,9 +378,9 @@ KateMainWindow *KateApp::newMainWindow (KConfig *sconfig, const QString &sgroup)
   m_mainWindows.push_back (mainWindow);
 
   if ((mainWindows() > 1) && m_mainWindows[m_mainWindows.count()-2]->viewManager()->activeView())
-    mainWindow->viewManager()->activateView ( m_mainWindows[m_mainWindows.count()-2]->viewManager()->activeView()->document()->documentNumber() );
+    mainWindow->viewManager()->activateView ( m_mainWindows[m_mainWindows.count()-2]->viewManager()->activeView()->document() );
   else if ((mainWindows() > 1) && (m_docManager->documents() > 0))
-    mainWindow->viewManager()->activateView ( (m_docManager->document(m_docManager->documents()-1))->documentNumber() );
+    mainWindow->viewManager()->activateView ( (m_docManager->document(m_docManager->documents()-1)) );
   else if ((mainWindows() > 1) && (m_docManager->documents() < 1))
     mainWindow->viewManager()->openURL ( KURL() );
 

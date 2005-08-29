@@ -89,7 +89,7 @@ class KateDocManager : public QObject
 
     QList<KTextEditor::Document*> &documentList () { return m_docList; };
 
-    KTextEditor::Document *openURL(const KURL&,const QString &encoding=QString::null,uint *id =0);
+    KTextEditor::Document *openURL(const KURL&,const QString &encoding=QString::null);
 
     bool closeDocument(class KTextEditor::Document *,bool closeURL=true);
     bool closeDocument(uint);
@@ -119,7 +119,7 @@ class KateDocManager : public QObject
 
   signals:
     void documentCreated (KTextEditor::Document *doc);
-    void documentDeleted (uint documentNumber);
+    void documentDeleted (KTextEditor::Document *doc);
     void documentChanged ();
     void initialDocumentReplaced ();
 

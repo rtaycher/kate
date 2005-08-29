@@ -134,8 +134,8 @@ void KateDocManager::deleteDoc (KTextEditor::Document *doc)
   m_docDict.remove (id); //no delete, is down by the next line
   delete m_docList.takeAt (m_docList.indexOf(doc));
 
-  emit documentDeleted (id);
-  emit m_documentManager->documentDeleted (id);
+  emit documentDeleted (doc);
+  emit m_documentManager->documentDeleted (doc);
 
   // ohh, current doc was deleted
   if (activeId == id)
@@ -219,7 +219,7 @@ bool KateDocManager::isOpen(KURL url)
   return findDocumentByUrl (url) != 0;
 }
 
-KTextEditor::Document *KateDocManager::openURL (const KURL& url,const QString &encoding, uint *id)
+KTextEditor::Document *KateDocManager::openURL (const KURL& url,const QString &encoding)
 {
   // special handling if still only the first initial doc is there
   if (!documentList().isEmpty() && (documentList().count() == 1) && (!documentList().at(0)->isModified() && documentList().at(0)->url().isEmpty()))
@@ -230,9 +230,6 @@ KTextEditor::Document *KateDocManager::openURL (const KURL& url,const QString &e
 
     if (!loadMetaInfos(doc, url))
       doc->openURL (url);
-
-    if (id)
-      *id=doc->documentNumber();
 
     connect(doc, SIGNAL(modifiedChanged(KTextEditor::Document *)), this, SLOT(slotModChanged(KTextEditor::Document *)));
 
@@ -251,9 +248,6 @@ KTextEditor::Document *KateDocManager::openURL (const KURL& url,const QString &e
     if (!loadMetaInfos(doc, url))
       doc->openURL (url);
   }
-
-  if (id)
-    *id=doc->documentNumber();
 
   return doc;
 }
@@ -314,7 +308,7 @@ bool KateDocManager::closeAllDocuments(bool closeURL)
     KateApp::self()->mainWindow(i)->viewManager()->setViewActivationBlocked(false);
 
     for (uint s=0; s < KateApp::self()->mainWindow(i)->viewManager()->containers()->count(); s++)
-      KateApp::self()->mainWindow(i)->viewManager()->containers()->at(s)->activateView (m_docList.at(0)->documentNumber());
+      KateApp::self()->mainWindow(i)->viewManager()->containers()->at(s)->activateView (m_docList.at(0));
   }
 
   return res;

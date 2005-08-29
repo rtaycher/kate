@@ -92,7 +92,7 @@ void KateViewSpaceContainer::documentCreated (KTextEditor::Document *doc)
   if (m_blockViewCreationAndActivation) return;
 
   if (!activeView())
-    activateView (doc->documentNumber());
+    activateView (doc);
 }
 
 void KateViewSpaceContainer::documentDeleted (uint)
@@ -296,10 +296,8 @@ void KateViewSpaceContainer::activateView ( KTextEditor::View *view )
   KateDocManager::self()->setActiveDocument((KTextEditor::Document *)view->document());
 }
 
-void KateViewSpaceContainer::activateView( uint documentNumber )
+void KateViewSpaceContainer::activateView( KTextEditor::Document *d )
 {
-  KTextEditor::Document *d = KateDocManager::self()->documentWithID(documentNumber);
-
   // no doc with this id found
   if (!d)
     return;

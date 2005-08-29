@@ -63,7 +63,7 @@ class KDE_EXPORT DocumentManager : public QObject
     /** open a document and return a pointer to the document, if you specify a pointer != 0 to the id parameter
      * you will get the document id returned too
      */
-    KTextEditor::Document *openURL(const KURL&url,const QString &encoding=QString::null,uint *id =0);
+    KTextEditor::Document *openURL(const KURL&url,const QString &encoding=QString::null);
     /** close a document by pointer
      */
     bool closeDocument(KTextEditor::Document *document);
@@ -100,7 +100,7 @@ class KDE_EXPORT DocumentManager : public QObject
     /**
      * the document with this number was deleted
      */
-    void documentDeleted (uint documentNumber);
+    void documentDeleted (KTextEditor::Document *document);
 
   private:
     class PrivateDocumentManager *d;

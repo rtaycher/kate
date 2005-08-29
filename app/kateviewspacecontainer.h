@@ -122,8 +122,11 @@ class KateViewSpaceContainer: public QSplitter
 
     bool getShowFullPath() const { return showFullPath; }
 
-    void activateView ( uint documentNumber );
-    void activateView ( int documentNumber ) { activateView((uint) documentNumber); };
+    /**
+     * activate view for given document
+     * @param doc document to activate view for
+     */
+    void activateView ( KTextEditor::Document *doc );
 
     /** Splits the active viewspace horizontally */
     void slotSplitViewSpaceHoriz () { splitViewSpace(); }
