@@ -30,17 +30,31 @@
 #include <klibloader.h>
 
 KatePartProxy::KatePartProxy (QWidget *parent)
- : QWidget (parent)
+ : QWidget (parent), m_part (0)
 {
 }
 
 KatePartProxy::~KatePartProxy ()
 {
+  delete m_part;
 }
 
 void KatePartProxy::setPart (KParts::Part *part)
 {
   m_part = part;
+
+  // plug in the part gui
+  insertChildClient (part);
+}
+
+KParts::Part *KatePartProxy::part ()
+{
+  return m_part;
+}
+
+bool KatePartProxy::isReadWrite ()
+{
+  return qobject_cast<KParts::ReadWritePart *>(m_part);
 }
 
 KatePartManager::KatePartManager (QObject *parent)
@@ -67,8 +81,11 @@ KatePartProxy *KatePartManager::createPart (const char *libname, QWidget *parent
   KParts::Factory *factory = (KParts::Factory *) KLibLoader::self()->factory( libname );
 
   KParts::Part *p = (KParts::Part *)factory->createPart(part, "", this, "", classname);
+  part->setPart (p);
      
   m_partList.append (part);
+
+  return part;
 }
 
 int KatePartManager::parts ()
@@ -82,6 +99,11 @@ KatePartProxy *KatePartManager::part (int index)
     return 0;
 
   return m_partList[index];
+}
+
+void KatePartManager::moveToStore (KatePartProxy *part)
+{
+  part->setParent (m_coolStore);
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

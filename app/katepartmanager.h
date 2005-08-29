@@ -21,6 +21,8 @@
 
 #include "katemain.h"
 
+#include <kxmlguiclient.h>
+
 #include <kparts/part.h>
 
 #include <QPointer>
@@ -29,7 +31,7 @@
 #include <QByteArray>
 #include <QHash>
 
-class KatePartProxy : public QWidget
+class KatePartProxy : public QWidget, KXMLGUIClient
 {
   Q_OBJECT
 
@@ -38,6 +40,10 @@ class KatePartProxy : public QWidget
     ~KatePartProxy ();
 
     void setPart (KParts::Part *part);
+
+    KParts::Part *part ();
+
+    bool isReadWrite ();
 
   private:
     KParts::Part *m_part;
@@ -79,6 +85,12 @@ class KatePartManager : public QObject
      */
     KatePartProxy *part (int index);
 
+    /**
+     * move the part's widget over to the cool store
+     * @parent part proxy part
+     */
+    void moveToStore (KatePartProxy *part);
+
   private:
     /**
      * hack, dummy parent widget for the parts ;)
@@ -86,7 +98,7 @@ class KatePartManager : public QObject
     QWidget *m_coolStore;
     
     /**
-     *
+     * list of all alive parts
      */
     QList<KatePartProxy*> m_partList;
 };
