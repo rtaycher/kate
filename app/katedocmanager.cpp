@@ -172,11 +172,6 @@ void KateDocManager::setActiveDocument (KTextEditor::Document *doc)
   emit m_documentManager->documentChanged ();
 }
 
-KTextEditor::Document *KateDocManager::documentWithID (uint id)
-{
-  return m_docDict[id];
-}
-
 const KateDocumentInfo *KateDocManager::documentInfo (KTextEditor::Document *doc)
 {
   return m_docInfos[doc];
@@ -192,17 +187,7 @@ uint KateDocManager::documents ()
   return m_docList.count ();
 }
 
-int KateDocManager::findDocument ( KURL url )
-{
-  foreach (KTextEditor::Document* it,m_docList)
-  {
-    if ( it->url() == url)
-      return it->documentNumber();
-  }
-  return -1;
-}
-
-KTextEditor::Document *KateDocManager::findDocumentByUrl( KURL url )
+KTextEditor::Document *KateDocManager::findDocument (KURL url )
 {
   foreach (KTextEditor::Document* it,m_docList)
   {
@@ -210,13 +195,13 @@ KTextEditor::Document *KateDocManager::findDocumentByUrl( KURL url )
       return it;
   }
 
-  return 0L;
+  return 0;
 }
 
 bool KateDocManager::isOpen(KURL url)
 {
   // return just if we found some document with this url
-  return findDocumentByUrl (url) != 0;
+  return findDocument (url) != 0;
 }
 
 KTextEditor::Document *KateDocManager::openURL (const KURL& url,const QString &encoding)
@@ -238,7 +223,7 @@ KTextEditor::Document *KateDocManager::openURL (const KURL& url,const QString &e
     return doc;
  }
 
-  KTextEditor::Document *doc = findDocumentByUrl (url);
+  KTextEditor::Document *doc = findDocument (url);
   if ( !doc )
   {
     doc = (KTextEditor::Document *)createDoc ();
@@ -279,11 +264,6 @@ bool KateDocManager::closeDocument(class KTextEditor::Document *doc,bool closeUR
 bool KateDocManager::closeDocument(uint n)
 {
   return closeDocument(document(n));
-}
-
-bool KateDocManager::closeDocumentWithID(uint id)
-{
-  return closeDocument(documentWithID(id));
 }
 
 bool KateDocManager::closeAllDocuments(bool closeURL)

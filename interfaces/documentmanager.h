@@ -45,13 +45,10 @@ class KDE_EXPORT DocumentManager : public QObject
     /** Returns a pointer to the currently active document or NULL if no document is open.
     */
     class KTextEditor::Document *activeDocument ();
-    /** Returns a pointer to the document with the given ID or NULL if no such document exists.
-    */
-    class KTextEditor::Document *documentWithID (uint id);
 
     /** Returns the ID of the document located at url if such a document is known by the manager.
      */
-    int findDocument (const KURL &url);
+    KTextEditor::Document *findDocument (const KURL &url);
     /** Returns true if the document located at url is open, otherwise false.
      */
     bool isOpen (const KURL &url);
@@ -70,9 +67,7 @@ class KDE_EXPORT DocumentManager : public QObject
     /** close a document identified by the index
      */
     bool closeDocument(uint n = 0);
-    /** close a document identified by the ID
-     */
-    bool closeDocumentWithID(uint id);
+
     /** close all documents
      */
     bool closeAllDocuments();

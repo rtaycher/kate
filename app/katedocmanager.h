@@ -72,16 +72,11 @@ class KateDocManager : public QObject
     KTextEditor::Document *activeDocument ();
     void setActiveDocument (KTextEditor::Document *doc);
 
-    // search document with right documentNumber()
-    KTextEditor::Document *documentWithID (uint id);
-
     const KateDocumentInfo *documentInfo (KTextEditor::Document *doc);
 
     int findDocument (KTextEditor::Document *doc);
     /** Returns the documentNumber of the doc with url URL or -1 if no such doc is found */
-    int findDocument (KURL url);
-    // Anders: The above is not currently stable ?
-    KTextEditor::Document *findDocumentByUrl( KURL url );
+    KTextEditor::Document *findDocument (KURL url);
 
     bool isOpen(KURL url);
 
@@ -93,7 +88,6 @@ class KateDocManager : public QObject
 
     bool closeDocument(class KTextEditor::Document *,bool closeURL=true);
     bool closeDocument(uint);
-    bool closeDocumentWithID(uint);
     bool closeAllDocuments(bool closeURL=true);
 
     QList<KTextEditor::Document*> modifiedDocumentList();

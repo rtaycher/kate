@@ -58,16 +58,6 @@ uint KateDocManagerDCOPIface::activeDocumentNumber ()
   return 0;
 }
 
-DCOPRef KateDocManagerDCOPIface::documentWithID (uint id)
-{
-  KTextEditor::Document *doc = m_dm->documentWithID (id);
-
-  if (!doc || !doc->inherits ("DCOPObject"))
-    return DCOPRef ();
-
-  return DCOPRef ((DCOPObject *) doc);
-}
-
 DCOPRef KateDocManagerDCOPIface::openURL (KURL url, QString encoding)
 {
   KTextEditor::Document *doc = m_dm->openURL (url, encoding);
@@ -83,11 +73,6 @@ bool KateDocManagerDCOPIface::closeDocument(uint n)
   return m_dm->closeDocument(n);
 }
 
-bool KateDocManagerDCOPIface::closeDocumentWithID(uint id)
-{
-  return m_dm->closeDocumentWithID (id);
-}
-
 bool KateDocManagerDCOPIface::closeAllDocuments()
 {
   return m_dm->closeAllDocuments();
@@ -101,11 +86,6 @@ bool KateDocManagerDCOPIface::isOpen(KURL url)
 uint KateDocManagerDCOPIface::documents ()
 {
   return m_dm->documents();
-}
-
-int KateDocManagerDCOPIface::findDocument (KURL url)
-{
-  return m_dm->findDocument (url);
 }
 
 

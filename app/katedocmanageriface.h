@@ -40,10 +40,6 @@ class KateDocManagerDCOPIface : public DCOPObject
     
     uint activeDocumentNumber ();
 
-    DCOPRef documentWithID (uint id);
-
-    int findDocument (KURL url);
-
     bool isOpen (KURL url);
 
     uint documents ();
@@ -51,8 +47,6 @@ class KateDocManagerDCOPIface : public DCOPObject
     DCOPRef openURL (KURL url, QString encoding);
 
     bool closeDocument (uint n);
-
-    bool closeDocumentWithID (uint id);
 
     bool closeAllDocuments ();
 

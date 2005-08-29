@@ -64,12 +64,7 @@ KTextEditor::Document *DocumentManager::activeDocument ()
   return d->docMan->activeDocument ();
 }
 
-KTextEditor::Document *DocumentManager::documentWithID (uint id)
-{
-  return d->docMan->documentWithID (id);
-}
-
-int DocumentManager::findDocument (const KURL &url)
+KTextEditor::Document *DocumentManager::findDocument (const KURL &url)
 {
   return d->docMan->findDocument (url);
 }
@@ -97,11 +92,6 @@ bool DocumentManager::closeDocument(KTextEditor::Document *document)
 bool DocumentManager::closeDocument(uint n)
 {
   return d->docMan->closeDocument (n);
-}
-
-bool DocumentManager::closeDocumentWithID(uint id)
-{
-  return d->docMan->closeDocument (id);
 }
 
 bool DocumentManager::closeAllDocuments()
