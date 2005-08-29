@@ -59,7 +59,7 @@ KatePartManager *KatePartManager::self ()
   return KateApp::self()->partManager ();
 }
 
-KatePartProxy *KatePartManager::createPart (const char *libname, const char *classname, QWidget *parent)
+KatePartProxy *KatePartManager::createPart (const char *libname, QWidget *parent, const char *classname)
 {
   // create the wrapper :)
   KatePartProxy *part = new KatePartProxy (parent ? parent : m_coolStore);
@@ -69,6 +69,19 @@ KatePartProxy *KatePartManager::createPart (const char *libname, const char *cla
   KParts::Part *p = (KParts::Part *)factory->createPart(part, "", this, "", classname);
      
   m_partList.append (part);
+}
+
+int KatePartManager::parts ()
+{
+  return m_partList.size ();
+}
+
+KatePartProxy *KatePartManager::part (int index)
+{
+  if (index < 0 || index >= m_partList.size())
+    return 0;
+
+  return m_partList[index];
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

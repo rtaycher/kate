@@ -51,9 +51,33 @@ class KatePartManager : public QObject
     KatePartManager (QObject *parent);
     ~KatePartManager ();
 
+    /**
+     * singleton accessor to the part manager
+     * @return instance of the part manager
+     */
     static KatePartManager *self ();
 
-    KatePartProxy *createPart (const char *libname, const char *classname = "KParts::Part", QWidget *parent = 0);
+    /**
+     * create a new part object (or better a proxy containing it)
+     * @param libname library to open
+     * @param widget widget to use as parent
+     * @param classname classname of the part
+     * @return proxy to access the part
+     */
+    KatePartProxy *createPart (const char *libname, QWidget *parent = 0, const char *classname = "KParts::Part");
+
+    /** 
+     * Number of parts
+     * @return number of open parts
+     */
+    int parts ();
+
+    /** 
+     * return part with given index
+     * @param index part index
+     * @return part proxy
+     */
+    KatePartProxy *part (int index);
 
   private:
     /**
