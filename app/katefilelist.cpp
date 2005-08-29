@@ -527,7 +527,8 @@ int KateFileListItem::compare ( Q3ListViewItem * i, int col, bool ascending ) co
     {
       case KateFileList::sortByID:
       {
-        int d = (int)doc->documentNumber() - ((KateFileListItem*)i)->document()->documentNumber();
+        int d = KateDocManager::self()->findDocument (doc)
+             - KateDocManager::self()->findDocument (((KateFileListItem*)i)->document());
         return ascending ? d : -d;
         break;
       }

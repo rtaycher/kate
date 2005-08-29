@@ -478,22 +478,29 @@ void KateMainWindow::slotUpdateOpenWith()
 
 void KateMainWindow::documentMenuAboutToShow()
 {
-#warning fixme later
-//   // remove documents
-//   while (documentMenu->count() > 3)
-//     documentMenu->removeItemAt (3);
-// 
-//   Q3ListViewItem * item = filelist->firstChild();
-//   while( item ) {
-//     documentMenu->insertItem (
-//           KStringHandler::rsqueeze( ((KateFileListItem *)item)->document()->documentName(), 150 ), // would it be saner to use the screen width as a limit that some random number??
-//           m_viewManager, SLOT (activateView (int)), 0,
-//           ((KateFileListItem *)item)->documentNumber () );
-// 
-//     item = item->nextSibling();
-//   }
-//   if (m_viewManager->activeView())
-//     documentMenu->setItemChecked ( m_viewManager->activeView()->document()->documentNumber(), true);
+  // remove documents
+  while (documentMenu->count() > 3)
+    documentMenu->removeItemAt (3);
+
+  Q3ListViewItem * item = filelist->firstChild();
+  while( item ) {
+    documentMenu->insertItem (
+          KStringHandler::rsqueeze( ((KateFileListItem *)item)->document()->documentName(), 150 ), // would it be saner to use the screen width as a limit that some random number??
+          this, SLOT (activateDocumentFromDocMenu (int)), 0,
+          KateDocManager::self()->findDocument(((KateFileListItem *)item)->document()) );
+
+    item = item->nextSibling();
+  }
+  if (m_viewManager->activeView())
+    documentMenu->setItemChecked ( m_viewManager->activeView()->document()->documentNumber(), true);
+}
+
+void KateMainWindow::activateDocumentFromDocMenu (int index)
+{
+  KTextEditor::Document *doc = KateDocManager::self()->document(index);
+
+  if (doc)
+    m_viewManager->activateView (doc);
 }
 
 void KateMainWindow::slotGrepToolItemSelected(const QString &filename,int linenumber)
