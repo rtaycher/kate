@@ -22,6 +22,7 @@
 #include "kateapp.moc"
 
 #include "katedocmanager.h"
+#include "katepartmanager.h"
 #include "katepluginmanager.h"
 #include "kateviewmanager.h"
 #include "kateappIface.h"
@@ -65,8 +66,11 @@ KateApp::KateApp (KCmdLineArgs *args)
   // application interface
   m_application = new Kate::Application (this);
 
-  // doc + project man
+  // doc man
   m_docManager = new KateDocManager (this);
+
+  // part man
+  m_partManager = new KatePartManager (this);
 
   // init all normal plugins
   m_pluginManager = new KatePluginManager (this);
@@ -299,6 +303,11 @@ KatePluginManager *KateApp::pluginManager()
 KateDocManager *KateApp::documentManager ()
 {
   return m_docManager;
+}
+
+KatePartManager *KateApp::partManager ()
+{
+  return m_partManager;
 }
 
 KateSessionManager *KateApp::sessionManager ()

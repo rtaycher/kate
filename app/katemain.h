@@ -74,5 +74,6 @@ class KatePluginManager;
 class KateSidebar;
 class KateViewManager;
 class KateViewSpace;
+class KatePartManager;
 
 #endif

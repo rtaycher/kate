@@ -146,7 +146,6 @@ class KateDocManager : public QObject
 
     //KParts::Factory *m_factory;
     KTextEditor::Editor *m_editor;
-
 };
 
 #endif
