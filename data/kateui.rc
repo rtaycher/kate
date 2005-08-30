@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="kate" version="48">
+<kpartgui name="kate" version="49">
 
 <MenuBar noMerge="1">
   <Menu name="file"><text>&amp;File</text>
@@ -53,7 +53,6 @@
   <Merge/>
 
   <Menu name="tools"><text>&amp;Tools</text>
-    <Action name="tools_pipe_to_terminal"/>
     <Action name="tools_external" />
     <Separator />
     <DefineGroup name="tools_operations" />

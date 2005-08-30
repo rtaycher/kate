@@ -157,7 +157,7 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
     void editKeys();
     void mSlotFixOpenWithMenu();
 
-    void fileSelected(const KFileItem *file);
+    //void fileSelected(const KFileItem *file);
 
     void tipOfTheDay();
 

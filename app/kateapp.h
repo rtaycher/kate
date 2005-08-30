@@ -173,6 +173,8 @@ class KDE_EXPORT KateApp : public KApplication
      */
     KateMainWindow *mainWindow (int n);
 
+    int mainWindowID(KateMainWindow *window); 
+    
   /**
    * some stuff for the dcop API
    */

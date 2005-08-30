@@ -285,12 +285,14 @@ class KateSessionManager : public QObject
     KateSession::Ptr m_activeSession;
 };
 
+class KateSessionChooserTemplate;
+
 class KateSessionChooser : public KDialogBase
 {
   Q_OBJECT
 
   public:
-    KateSessionChooser (QWidget *parent, const QString &lastSession);
+    KateSessionChooser (QWidget *parent, const QString &lastSession,const QValueList<KateSessionChooserTemplate& templates);
     ~KateSessionChooser ();
 
     KateSession::Ptr selectedSession ();
@@ -325,7 +327,9 @@ class KateSessionChooser : public KDialogBase
      */
     void selectionChanged ();
 
+    void slotProfilePopup();
   private:
+    QTimer *m_delayTimer;
     KListView *m_sessions;
     QCheckBox *m_useLast;
 };

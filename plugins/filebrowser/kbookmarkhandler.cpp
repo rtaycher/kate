@@ -33,11 +33,14 @@
 #include <kdiroperator.h>
 #include <kaction.h>
 
+#include "katefileselector.h"
+
 #include "kbookmarkhandler.h"
 #include "kbookmarkhandler.moc"
 
+using Kate::Private::Plugin;
 
-KBookmarkHandler::KBookmarkHandler( KateFileSelector *parent, KPopupMenu* kpopupmenu )
+Kate::Private::Plugin::KBookmarkHandler::KBookmarkHandler( KateFileSelector *parent, KPopupMenu* kpopupmenu )
     : QObject( parent, "KBookmarkHandler" ),
       KBookmarkOwner(),
       mParent( parent ),
@@ -58,18 +61,18 @@ KBookmarkHandler::KBookmarkHandler( KateFileSelector *parent, KPopupMenu* kpopup
     m_bookmarkMenu = new KBookmarkMenu( manager, this, m_menu, 0, true );
 }
 
-KBookmarkHandler::~KBookmarkHandler()
+Kate::Private::Plugin::KBookmarkHandler::~KBookmarkHandler()
 {
     //     delete m_bookmarkMenu; ###
 }
 
-QString KBookmarkHandler::currentURL() const
+QString Kate::Private::Plugin::KBookmarkHandler::currentURL() const
 {
     return mParent->dirOperator()->url().url();
 }
 
 
-void KBookmarkHandler::slotNewBookmark( const QString& /*text*/,
+void Kate::Private::Plugin::KBookmarkHandler::slotNewBookmark( const QString& /*text*/,
                                             const Q3CString& url,
                                             const QString& additionalInfo )
 {
@@ -78,23 +81,23 @@ void KBookmarkHandler::slotNewBookmark( const QString& /*text*/,
     *m_importStream << "<title>" << (additionalInfo.isEmpty() ? QString::fromUtf8(url) : additionalInfo) << "</title>\n</bookmark>\n";
 }
 
-void KBookmarkHandler::slotNewFolder( const QString& text, bool /*open*/,
+void Kate::Private::Plugin::KBookmarkHandler::slotNewFolder( const QString& text, bool /*open*/,
                                           const QString& /*additionalInfo*/ )
 {
     *m_importStream << "<folder icon=\"bookmark_folder\">\n<title=\"";
     *m_importStream << text << "\">\n";
 }
 
-void KBookmarkHandler::newSeparator()
+void Kate::Private::Plugin::KBookmarkHandler::newSeparator()
 {
     *m_importStream << "<separator/>\n";
 }
 
-void KBookmarkHandler::endFolder()
+void Kate::Private::Plugin::KBookmarkHandler::endFolder()
 {
     *m_importStream << "</folder>\n";
 }
 
-void KBookmarkHandler::virtual_hook( int id, void* data )
+void Kate::Private::Plugin::KBookmarkHandler::virtual_hook( int id, void* data )
 { KBookmarkOwner::virtual_hook( id, data ); }
 

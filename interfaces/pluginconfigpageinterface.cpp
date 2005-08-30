@@ -16,19 +16,19 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "pluginconfiginterfaceextension.h"
-#include "pluginconfiginterfaceextension.moc"
+#include "pluginconfigpageinterface.h"
+#include "pluginconfigpageinterface.moc"
 
 #include "plugin.h"
 
 namespace Kate
 {
 
-class PrivatePluginConfigInterfaceExtension
+class PrivatePluginConfigPageInterface
 {
   public:
-    PrivatePluginConfigInterfaceExtension() {}
-     ~PrivatePluginConfigInterfaceExtension() {}
+    PrivatePluginConfigPageInterface() {}
+     ~PrivatePluginConfigPageInterface() {}
 };
 
 }
@@ -39,30 +39,30 @@ PluginConfigPage::PluginConfigPage ( QWidget *parent, const char *name ) : QWidg
  
 PluginConfigPage::~PluginConfigPage () { }
 
-unsigned int PluginConfigInterfaceExtension::globalPluginConfigInterfaceExtensionNumber = 0;
+unsigned int PluginConfigPageInterface::globalPluginConfigPageInterfaceNumber = 0;
 
-PluginConfigInterfaceExtension::PluginConfigInterfaceExtension()
+PluginConfigPageInterface::PluginConfigPageInterface()
 {
-  globalPluginConfigInterfaceExtensionNumber++;
-  myPluginConfigInterfaceExtensionNumber = globalPluginConfigInterfaceExtensionNumber++;
+  globalPluginConfigPageInterfaceNumber++;
+  myPluginConfigPageInterfaceNumber = globalPluginConfigPageInterfaceNumber++;
 
-  d = new PrivatePluginConfigInterfaceExtension();
+  d = new PrivatePluginConfigPageInterface();
 }
 
-PluginConfigInterfaceExtension::~PluginConfigInterfaceExtension()
+PluginConfigPageInterface::~PluginConfigPageInterface()
 {
   delete d;
 }
 
-unsigned int PluginConfigInterfaceExtension::pluginConfigInterfaceExtensionNumber () const
+unsigned int PluginConfigPageInterface::pluginConfigPageInterfaceNumber () const
 {
-  return myPluginConfigInterfaceExtensionNumber;
+  return myPluginConfigPageInterfaceNumber;
 }
                       
-PluginConfigInterfaceExtension *Kate::pluginConfigInterfaceExtension (Plugin *plugin)
+PluginConfigPageInterface *Kate::pluginConfigPageInterface (Plugin *plugin)
 {                       
-  if (!plugin || !plugin->inherits("Kate::PluginConfigInterfaceExtension"))
+  if (!plugin)
     return 0;
 
-  return (PluginConfigInterfaceExtension*)(plugin);
+  return qobject_cast<Kate::PluginConfigPageInterface*>(plugin);
 }

@@ -22,13 +22,12 @@
 
 #include "katemainwindow.h"
 
-#include "kateconsole.h"
 #include "katedocmanager.h"
 #include "katepluginmanager.h"
 #include "kateconfigplugindialogpage.h"
 #include "kateviewmanager.h"
 #include "kateapp.h"
-#include "katefileselector.h"
+//#include "katefileselector.h"
 #include "katefilelist.h"
 #include "kateexternaltools.h"
 
@@ -55,7 +54,7 @@
 #include <q3hbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qpushbutton.h>
+#include <kpushbutton.h>
 #include <qradiobutton.h>
 #include <qspinbox.h>
 #include <q3vbox.h>
@@ -252,6 +251,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   path.clear();
 
   // file selector page
+#if 0
   path << i18n("Application") << i18n("File Selector");
 
   Q3VBox *page = addVBoxPage( path, i18n("File Selector Settings"),
@@ -260,7 +260,8 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
                                          mainWindow->fileselector );
   connect( fileSelConfigPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
   path.clear();
-
+#endif
+  Q3VBox *page;
   path << i18n("Application") << i18n("Document List");
   page = addVBoxPage( path, i18n("Document List Settings"),
   BarIcon("view_text", KIcon::SizeSmall) );
@@ -304,7 +305,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   foreach (const KatePluginInfo &plugin,pluginList)
   {
     if  ( plugin.load
-          && Kate::pluginConfigInterface(plugin.plugin) )
+          && Kate::pluginConfigPageInterface(plugin.plugin) )
       addPluginPage (plugin.plugin);
   }
 
@@ -319,19 +320,19 @@ KateConfigDialog::~KateConfigDialog()
 
 void KateConfigDialog::addPluginPage (Kate::Plugin *plugin)
 {
-  if (!Kate::pluginConfigInterface(plugin))
+  if (!Kate::pluginConfigPageInterface(plugin))
     return;
 
-  for (uint i=0; i<Kate::pluginConfigInterfaceExtension(plugin)->configPages(); i++)
+  for (uint i=0; i<Kate::pluginConfigPageInterface(plugin)->configPages(); i++)
   {
     QStringList path;
     path.clear();
-    path << i18n("Application")<<i18n("Plugins") << Kate::pluginConfigInterfaceExtension(plugin)->configPageName(i);
-    Q3VBox *page=addVBoxPage(path, Kate::pluginConfigInterfaceExtension(plugin)->configPageFullName(i), Kate::pluginConfigInterfaceExtension(plugin)->configPagePixmap(i, KIcon::SizeSmall));
+    path << i18n("Application")<<i18n("Plugins") << Kate::pluginConfigPageInterface(plugin)->configPageName(i);
+    Q3VBox *page=addVBoxPage(path, Kate::pluginConfigPageInterface(plugin)->configPageFullName(i), Kate::pluginConfigPageInterface(plugin)->configPagePixmap(i, KIcon::SizeSmall));
 
     PluginPageListItem *info=new PluginPageListItem;
     info->plugin = plugin;
-    info->page = Kate::pluginConfigInterfaceExtension(plugin)->configPage (i, page);
+    info->page = Kate::pluginConfigPageInterface(plugin)->configPage (i, page);
     connect( info->page, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
     pluginPages.append(info);
   }
@@ -339,7 +340,7 @@ void KateConfigDialog::addPluginPage (Kate::Plugin *plugin)
 
 void KateConfigDialog::removePluginPage (Kate::Plugin *plugin)
 {
-   if (!Kate::pluginConfigInterfaceExtension(plugin))
+   if (!Kate::pluginConfigPageInterface(plugin))
     return;
 
   for (uint i=0; i<pluginPages.count(); i++)
@@ -404,7 +405,7 @@ void KateConfigDialog::slotApply()
 
     mainWindow->syncKonsole = cb_syncKonsole->isChecked();
 
-    fileSelConfigPage->apply();
+    //fileSelConfigPage->apply();
 
     filelistConfigPage->apply();
 
@@ -422,7 +423,7 @@ void KateConfigDialog::slotApply()
     mainWindow->saveOptions ();
 
     // save plugin config !!
-    KateApp::self()->pluginManager()->writeConfig ();
+    KateApp::self()->pluginManager()->storeGeneralConfig (KateApp::self()->config());
   }
 
   //

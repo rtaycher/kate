@@ -23,13 +23,12 @@
 #include "katemainwindow.moc"
 
 #include "kateconfigdialog.h"
-#include "kateconsole.h"
 #include "katedocmanager.h"
 #include "katepluginmanager.h"
 #include "kateconfigplugindialogpage.h"
 #include "kateviewmanager.h"
 #include "kateapp.h"
-#include "katefileselector.h"
+//#include "katefileselector.h"
 #include "katefilelist.h"
 #include "kategrepdialog.h"
 #include "katemailfilesdialog.h"
@@ -165,7 +164,8 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
   setXMLFile( "kateui.rc" );
   createShellGUI ( true );
 
-  KatePluginManager::self()->enableAllPluginsGUI (this);
+  kdDebug()<<"****************************************************************************"<<sconfig<<endl;
+  KatePluginManager::self()->enableAllPluginsGUI (this,sconfig);
 
 #warning fixme later
  /* if ( KateApp::self()->authorize("shell_access") )
@@ -217,12 +217,14 @@ void KateMainWindow::setupMainWindow ()
 
   KateMDI::ToolView *ft = createToolView("kate_filelist", KMultiTabBar::Left, SmallIcon("kmultiple"), i18n("Documents"));
   filelist = new KateFileList (this, m_viewManager, ft, "filelist");
-  filelist->readConfig(KateApp::self()->config(), "Filelist");
+  //filelist->readConfig(KateApp::self()->config(), "Filelist");
 
+#if 0    
   KateMDI::ToolView *t = createToolView("kate_fileselector", KMultiTabBar::Left, SmallIcon("fileopen"), i18n("Filesystem Browser"));
   fileselector = new KateFileSelector( this, m_viewManager, t, "operator");
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileItem*)),this,SLOT(fileSelected(const KFileItem*)));
-
+#endif
+#if 0
   // ONLY ALLOW SHELL ACCESS IF ALLOWED ;)
   if (KateApp::self()->authorize("shell_access"))
   {
@@ -236,7 +238,7 @@ void KateMainWindow::setupMainWindow ()
     t = createToolView("kate_console", KMultiTabBar::Bottom, SmallIcon("konsole"), i18n("Terminal"));
     console = new KateConsole (this, t);
   }
-
+#endif
   // make per default the filelist visible, if we are in session restore, katemdi will skip this ;)
   showToolView (ft);
 }
@@ -289,9 +291,11 @@ void KateMainWindow::setupActions()
   KAction* settingsConfigure = KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
   settingsConfigure->setWhatsThis(i18n("Configure various aspects of this application and the editing component."));
 
+#if 0
   // pipe to terminal action
   if (KateApp::self()->authorize("shell_access"))
     new KAction(i18n("&Pipe to Console"), "pipe", 0, console, SLOT(slotPipeToConsole()), actionCollection(), "tools_pipe_to_terminal");
+#endif
 
   // tip of the day :-)
   KStdAction::tipOfDay( this, SLOT( tipOfTheDay() ), actionCollection() )->setWhatsThis(i18n("This shows useful tips on the use of this application."));
@@ -416,7 +420,7 @@ void KateMainWindow::readOptions ()
 
   fileOpenRecent->loadEntries(config, "Recent Files");
 
-  fileselector->readConfig(config, "fileselector");
+  //fileselector->readConfig(config, "fileselector");
 }
 
 void KateMainWindow::saveOptions ()
@@ -425,10 +429,12 @@ void KateMainWindow::saveOptions ()
 
   config->setGroup("General");
 
+#if 0
   if (console)
     config->writeEntry("Show Console", console->isVisible());
   else
     config->writeEntry("Show Console", false);
+#endif
 
   config->writeEntry("Save Meta Infos", KateDocManager::self()->getSaveMetaInfos());
 
@@ -440,7 +446,7 @@ void KateMainWindow::saveOptions ()
 
   fileOpenRecent->saveEntries(config, "Recent Files");
 
-  fileselector->writeConfig(config, "fileselector");
+  //fileselector->writeConfig(config, "fileselector");
 
   filelist->writeConfig(config, "Filelist");
 }
@@ -449,6 +455,7 @@ void KateMainWindow::slotWindowActivated ()
 {
   if (m_viewManager->activeView())
   {
+#if 0
     if (console && syncKonsole)
     {
       static QString path;
@@ -460,7 +467,7 @@ void KateMainWindow::slotWindowActivated ()
         console->cd (KURL( path ));
       }
     }
-
+#endif
     updateCaption ((KTextEditor::Document *)m_viewManager->activeView()->document());
   }
 
@@ -592,6 +599,7 @@ KURL KateMainWindow::activeDocumentUrl()
   return KURL();
 }
 
+#if 0
 void KateMainWindow::fileSelected(const KFileItem * /*file*/)
 {
   const KFileItemList *list=fileselector->dirOperator()->selectedItems();
@@ -602,6 +610,7 @@ void KateMainWindow::fileSelected(const KFileItem * /*file*/)
     fileselector->dirOperator()->view()->setSelected(tmp,false);
   }
 }
+#endif
 
 // TODO make this work
 void KateMainWindow::mSlotFixOpenWithMenu()

@@ -22,6 +22,7 @@
 #include "kateapp.h"
 #include "katemainwindow.h"
 #include "katedocmanager.h"
+#include "katepluginmanager.h"
 
 #include <kstandarddirs.h>
 #include <klocale.h>
@@ -43,9 +44,18 @@
 #include <qdatetime.h>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QStringList>
 
 #include <unistd.h>
 #include <time.h>
+
+class KateSessionChooserTemplate {
+	KateSessionChooserTemplate(const QString &displayname_, const QString &desktopname_, const QString tooltip_); 
+	QString displayname;
+	QString desktopname;
+	QString tooltip;
+}
+
 
 KateSession::KateSession (KateSessionManager *manager, const QString &fileName, const QString &name)
   : m_sessionFileRel (fileName)
@@ -394,11 +404,14 @@ bool KateSessionManager::saveActiveSession (bool tryAsk, bool rememberAsLast)
   sc->setGroup ("Open MainWindows");
   sc->writeEntry ("Count", KateApp::self()->mainWindows ());
 
+  KatePluginManager::self()->storeGeneralConfig(sc);
+
   // save config for all windows around ;)
   for (int i=0; i < KateApp::self()->mainWindows (); ++i )
   {
     sc->setGroup(QString ("MainWindow%1").arg(i));
     KateApp::self()->mainWindow(i)->saveProperties (sc);
+    KatePluginManager::self()->storeViewConfig(sc,i);
   }
 
   sc->sync();
@@ -417,7 +430,7 @@ bool KateSessionManager::saveActiveSession (bool tryAsk, bool rememberAsLast)
 bool KateSessionManager::chooseSession ()
 {
   bool success = true;
-
+  
   // app config
   KConfig *c = KateApp::self()->config();
   c->setGroup("General");
@@ -440,7 +453,9 @@ bool KateSessionManager::chooseSession ()
     return success;
   }
 
-  KateSessionChooser *chooser = new KateSessionChooser (0, lastSession);
+  QStringList templates;
+  templates << QString("Profile 1 (default)")<<templates << QString("Profile 2")<<templates << QString("Profile 3")<<templates << QString("Profile 4");
+  KateSessionChooser *chooser = new KateSessionChooser (0, lastSession,templates);
 
   bool retry = true;
   int res = 0;
@@ -588,7 +603,7 @@ class KateSessionChooserItem : public Q3ListViewItem
     KateSession::Ptr session;
 };
 
-KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSession)
+KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSession,const QStringList &templates)
  : KDialogBase (  parent
                   , ""
                   , true
@@ -598,9 +613,13 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
                   , true
                   , KStdGuiItem::quit ()
                   , KGuiItem (i18n ("Open Session"), "fileopen")
-                  , KGuiItem (i18n ("New Session"), "filenew")
+                  , KGuiItem ((templates.count()>1)?i18n ("New Session (hold down for template)"):i18n ("New Session"), "filenew")
                 )
 {
+  m_delayTimer=new QTimer(this);
+  m_delayTimer->setSingleShot(true);
+  int delay=style()->styleHint(QStyle::SH_ToolButton_PopupDelay, 0, this);
+  m_delayTimer->setInterval((delay<=0) ? 150:delay);
   QFrame *page = new QFrame (this);
   QHBoxLayout *tll=new QHBoxLayout(page);
   page->setMinimumSize (400, 200);
@@ -626,7 +645,7 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
   m_sessions->setResizeMode (Q3ListView::AllColumns);
   m_sessions->setSelectionMode (Q3ListView::Single);
   m_sessions->setAllColumnsShowFocus (true);
-
+  
   connect (m_sessions, SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
 
   KateSessionList &slist (KateSessionManager::self()->sessionList());
@@ -643,6 +662,8 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
 
   setResult (resultNone);
 
+  connect(actionButton(KDialogBase::User3),SIGNAL(pressed()),m_delayTimer,SLOT(start()));
+  connect(m_delayTimer,SIGNAL(timeout()),this,SLOT(slotProfilePopup()));
   // trigger action update
   selectionChanged ();
 }
@@ -650,6 +671,16 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
 KateSessionChooser::~KateSessionChooser ()
 {
 }
+
+void KateSessionChooser::slotProfilePopup() {
+ QMenu popup;
+ popup.addAction("Profile 1");
+ popup.addAction("Profile 2");
+ actionButton(KDialogBase::User3)->setMenu(&popup);
+ actionButton(KDialogBase::User3)->showMenu();
+ actionButton(KDialogBase::User3)->setMenu(0);
+}
+
 
 KateSession::Ptr KateSessionChooser::selectedSession ()
 {
@@ -673,6 +704,7 @@ void KateSessionChooser::slotUser2 ()
 
 void KateSessionChooser::slotUser3 ()
 {
+  m_delayTimer->stop();
   done (resultNew);
 }
 

@@ -46,6 +46,9 @@ class KDE_EXPORT Plugin : public QObject
 
     Application *application() const;
 
+    virtual void storeGeneralConfig(KConfig*,const QString& groupPrefix)=0;
+    virtual void loadGeneralConfig(KConfig*,const QString& groupPrefix)=0;
+
   private:
     class PrivatePlugin *d;
     static unsigned int globalPluginNumber;
@@ -56,7 +59,7 @@ Plugin *createPlugin ( const char* libname, Application *application = 0, const 
 
 /*
  * view plugin class
- * this plugin will be bound to a ktexteditor::view
+ * this plugin will be bound to a MainWindow
  */
 class KDE_EXPORT PluginViewInterface
 {
@@ -73,6 +76,8 @@ class KDE_EXPORT PluginViewInterface
      */
     virtual void addView (MainWindow *) = 0;
     virtual void removeView (MainWindow *) = 0;
+    virtual void storeViewConfig(KConfig*, MainWindow* view, const QString& groupPrefix)=0;
+    virtual void loadViewConfig(KConfig*, MainWindow* view, const QString& groupPrefix)=0;
 
   private:
     class PrivatePluginViewInterface *d;
@@ -83,5 +88,7 @@ class KDE_EXPORT PluginViewInterface
 PluginViewInterface *pluginViewInterface (Plugin *plugin);
 
 }
+
+Q_DECLARE_INTERFACE(Kate::PluginViewInterface,"org.kde.Kate.PluginViewInterface");
 
 #endif

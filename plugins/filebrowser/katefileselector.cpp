@@ -22,8 +22,6 @@
 #include "katefileselector.h"
 #include "katefileselector.moc"
 
-#include "katemainwindow.h"
-#include "kateviewmanager.h"
 #include "kbookmarkhandler.h"
 
 #include "kactionselector.h"
@@ -70,7 +68,70 @@
 #include <kpopupmenu.h>
 #include <kdialog.h>
 #include <kdebug.h>
+#include <kgenericfactory.h>
+#include <kate/interfaces/mainwindow.h>
+#include <ktexteditor/view.h>
+#include <kiconloader.h>
 //END Includes
+
+
+K_EXPORT_COMPONENT_FACTORY( katefilebrowserplugin, KGenericFactory<Kate::Private::Plugin::KateFileSelectorPlugin>( "katefilebrowserplugin" ) )
+
+using namespace Kate::Private::Plugin;
+
+KateFileSelectorPlugin::KateFileSelectorPlugin( QObject* parent, const char* name, const QStringList&):
+  Kate::Plugin ( (Kate::Application*)parent, name ) {
+}
+
+void KateFileSelectorPlugin::addView(Kate::MainWindow *win) {
+    QWidget *toolview=win->createToolView ("kate_private_plugin_katefileselectorplugin", MainWindow::Left, SmallIcon("fileopen"), i18n("Filesystem Browser"));
+    m_views.append(new KateFileSelector(win,toolview));
+}
+
+void KateFileSelectorPlugin::removeView(Kate::MainWindow *win) {
+  for(QLinkedList<KateFileSelector*>::iterator it=m_views.begin();it!=m_views.end();++it) {
+    if ((*it)->mainWindow()==win) {
+      QWidget *pw=(*it)->parentWidget();
+      delete *it;
+      delete pw;
+      m_views.erase(it);
+      break;
+    }
+  }
+}
+
+void KateFileSelectorPlugin::loadViewConfig(KConfig* config,Kate::MainWindow *win,const QString& group) {
+  for(QLinkedList<KateFileSelector*>::iterator it=m_views.begin();it!=m_views.end();++it) {
+    if ((*it)->mainWindow()==win) {
+      (*it)->readConfig(config,group);
+      break;
+    }
+  }  
+}
+
+
+uint KateFileSelectorPlugin::configPages() const {return 1;}
+Kate::PluginConfigPage *KateFileSelectorPlugin::configPage (uint number, QWidget *parent, const char *name) {
+  #warning "fixme"
+  if (number!=0) return 0;
+  return new KFSConfigPage(parent,name,*(m_views.begin()));
+}
+
+QString KateFileSelectorPlugin::configPageName (uint number) const {
+  if (number!=0) return QString();
+  kdDebug()<<"Returning a config page name"<<endl;
+  return i18n("File Selector");
+}
+
+QString KateFileSelectorPlugin::configPageFullName (uint number) const {
+  if (number!=0) return QString();  
+  return i18n("File Selector Settings");
+}
+
+QPixmap KateFileSelectorPlugin::configPagePixmap (uint number, int size) const {
+  if (number!=0) return QPixmap();
+  return BarIcon("fileopen", size);
+}
 
 //BEGIN Toolbar
  // from kfiledialog.cpp - avoid qt warning in STDERR (~/.xsessionerrors)
@@ -111,12 +172,10 @@ void KateFileSelectorToolBarParent::resizeEvent ( QResizeEvent * )
 
 //BEGIN Constructor/destructor
 
-KateFileSelector::KateFileSelector( KateMainWindow *mainWindow,
-                                    KateViewManager *viewManager,
+Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mainWindow,
                                     QWidget * parent, const char * name )
     : Q3VBox (parent, name),
-      mainwin(mainWindow),
-      viewmanager(viewManager)
+      mainwin(mainWindow)
 {
   mActionCollection = new KActionCollection( this );
 
@@ -192,7 +251,7 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow,
              this, SLOT(dirFinishedLoading()) );
 
   // enable dir sync button if current doc has a valid URL
-  connect ( viewmanager, SIGNAL( viewChanged() ),
+  connect ( mainwin, SIGNAL( viewChanged() ),
               this, SLOT( kateViewChanged() ) );
 
   // Connect the bookmark handler
@@ -212,17 +271,19 @@ KateFileSelector::KateFileSelector( KateMainWindow *mainWindow,
   btnFilter->setWhatsThis(        i18n("<p>This button clears the name filter when toggled off, or "
              "reapplies the last filter used when toggled on.") );
 
+  connect(dir,SIGNAL(fileSelected(const KFileItem*)),this,SLOT(fileSelected(const KFileItem*)));
 }
 
-KateFileSelector::~KateFileSelector()
+Kate::Private::Plugin::KateFileSelector::~KateFileSelector()
 {
 }
 //END Constroctor/Destrctor
 
 //BEGIN Public Methods
 
-void KateFileSelector::readConfig(KConfig *config, const QString & name)
+void Kate::Private::Plugin::KateFileSelector::readConfig(KConfig *config, const QString & name)
 {
+  kdDebug()<<"===================================================================Kate::Private::Plugin::KateFileSelector::readConfig"<<endl;
   dir->setViewConfig( config, name + ":view" );
   dir->readConfig(config, name + ":dir");
   dir->setView( KFile::Default );
@@ -258,12 +319,12 @@ void KateFileSelector::readConfig(KConfig *config, const QString & name)
   autoSyncEvents = config->readNumEntry( "AutoSyncEvents", 0 );
 }
 
-void KateFileSelector::initialDirChangeHack()
+void Kate::Private::Plugin::KateFileSelector::initialDirChangeHack()
 {
   setDir( waitingDir );
 }
 
-void KateFileSelector::setupToolbar( KConfig *config )
+void Kate::Private::Plugin::KateFileSelector::setupToolbar( KConfig *config )
 {
   toolbar->clear();
   QStringList tbactions = config->readListEntry( "toolbar actions", ',' );
@@ -284,7 +345,7 @@ void KateFileSelector::setupToolbar( KConfig *config )
   }
 }
 
-void KateFileSelector::writeConfig(KConfig *config, const QString & name)
+void Kate::Private::Plugin::KateFileSelector::writeConfig(KConfig *config, const QString & name)
 {
   dir->writeConfig(config,name + ":dir");
 
@@ -304,7 +365,7 @@ void KateFileSelector::writeConfig(KConfig *config, const QString & name)
   config->writeEntry( "AutoSyncEvents", autoSyncEvents );
 }
 
-void KateFileSelector::setView(KFile::FileView view)
+void Kate::Private::Plugin::KateFileSelector::setView(KFile::FileView view)
 {
   dir->setView(view);
   dir->view()->setSelectionMode(KFile::Multi);
@@ -314,7 +375,7 @@ void KateFileSelector::setView(KFile::FileView view)
 
 //BEGIN Public Slots
 
-void KateFileSelector::slotFilterChange( const QString & nf )
+void Kate::Private::Plugin::KateFileSelector::slotFilterChange( const QString & nf )
 {
   QString f = nf.stripWhiteSpace();
   bool empty = f.isEmpty() || f == "*";
@@ -346,7 +407,7 @@ bool kateFileSelectorIsReadable ( const KURL& url )
   return dir.exists ();
 }
 
-void KateFileSelector::setDir( KURL u )
+void Kate::Private::Plugin::KateFileSelector::setDir( KURL u )
 {
   KURL newurl;
 
@@ -371,12 +432,26 @@ void KateFileSelector::setDir( KURL u )
 
 //BEGIN Private Slots
 
-void KateFileSelector::cmbPathActivated( const KURL& u )
+void Kate::Private::Plugin::KateFileSelector::fileSelected(const KFileItem * /*file*/)
+{
+  const KFileItemList *list=dir->selectedItems();
+  KFileItem *tmp;
+  for (KFileItemListIterator it(*list); (tmp = it.current()); ++it)
+  {
+    mainwin->openURL(tmp->url());
+    dir->view()->setSelected(tmp,false);
+  }
+}
+
+
+
+
+void Kate::Private::Plugin::KateFileSelector::cmbPathActivated( const KURL& u )
 {
    cmbPathReturnPressed( u.url() );
 }
 
-void KateFileSelector::cmbPathReturnPressed( const QString& u )
+void Kate::Private::Plugin::KateFileSelector::cmbPathReturnPressed( const QString& u )
 {
   KURL typedURL( u );
   if ( typedURL.hasPass() )
@@ -390,12 +465,12 @@ void KateFileSelector::cmbPathReturnPressed( const QString& u )
   dir->setURL( KURL(u), true );
 }
 
-void KateFileSelector::dirUrlEntered( const KURL& u )
+void Kate::Private::Plugin::KateFileSelector::dirUrlEntered( const KURL& u )
 {
   cmbPath->setURL( u );
 }
 
-void KateFileSelector::dirFinishedLoading()
+void Kate::Private::Plugin::KateFileSelector::dirFinishedLoading()
 {
 }
 
@@ -407,7 +482,7 @@ void KateFileSelector::dirFinishedLoading()
    If on:
    Set last filter.
 */
-void KateFileSelector::btnFilterClick()
+void Kate::Private::Plugin::KateFileSelector::btnFilterClick()
 {
   if ( !btnFilter->isOn() ) {
     slotFilterChange( QString::null );
@@ -419,17 +494,17 @@ void KateFileSelector::btnFilterClick()
 }
 
 //FIXME crash on shutdown
-void KateFileSelector::setActiveDocumentDir()
+void Kate::Private::Plugin::KateFileSelector::setActiveDocumentDir()
 {
 //   kdDebug(13001)<<"KateFileSelector::setActiveDocumentDir()"<<endl;
-  KURL u = mainwin->activeDocumentUrl();
+  KURL u = activeDocumentUrl();
 //   kdDebug(13001)<<"URL: "<<u.prettyURL()<<endl;
   if (!u.isEmpty())
     setDir( u.upURL() );
 //   kdDebug(13001)<<"... setActiveDocumentDir() DONE!"<<endl;
 }
 
-void KateFileSelector::kateViewChanged()
+void Kate::Private::Plugin::KateFileSelector::kateViewChanged()
 {
   if ( autoSyncEvents & DocumentChanged )
   {
@@ -441,7 +516,7 @@ void KateFileSelector::kateViewChanged()
     }
     // else set waiting url
     else {
-      KURL u = mainwin->activeDocumentUrl();
+      KURL u = activeDocumentUrl();
       if (!u.isEmpty())
         waitingUrl = u.directory();
     }
@@ -449,19 +524,26 @@ void KateFileSelector::kateViewChanged()
 
   // TODO: make sure the button is disabled if the directory is unreadable, eg
   //       the document URL has protocol http
-  acSyncDir->setEnabled( ! mainwin->activeDocumentUrl().directory().isEmpty() );
+  acSyncDir->setEnabled( ! activeDocumentUrl().directory().isEmpty() );
 }
 
 //END Private Slots
 
 //BEGIN Protected
 
-void KateFileSelector::focusInEvent( QFocusEvent * )
+KURL Kate::Private::Plugin::KateFileSelector::activeDocumentUrl() {
+  KTextEditor::View *v = mainwin->activeView();
+  if ( v )
+    return v->document()->url();
+  return KURL();
+}
+
+void Kate::Private::Plugin::KateFileSelector::focusInEvent( QFocusEvent * )
 {
    dir->setFocus();
 }
 
-void KateFileSelector::showEvent( QShowEvent * )
+void Kate::Private::Plugin::KateFileSelector::showEvent( QShowEvent * )
 {
     // sync if we should
     if ( autoSyncEvents & GotVisible ) {
@@ -476,7 +558,7 @@ void KateFileSelector::showEvent( QShowEvent * )
    }
 }
 
-bool KateFileSelector::eventFilter( QObject* o, QEvent *e )
+bool Kate::Private::Plugin::KateFileSelector::eventFilter( QObject* o, QEvent *e )
 {
   /*
       This is rather unfortunate, but:
@@ -524,7 +606,7 @@ class ActionLBItem : public Q3ListBoxPixmap {
 // KFSConfigPage implementation
 ////////////////////////////////////////////////////////////////////////////////
 KFSConfigPage::KFSConfigPage( QWidget *parent, const char *, KateFileSelector *kfs )
-  : KTextEditor::ConfigPage( parent ),
+  : Kate::PluginConfigPage( parent ),
     fileSelector( kfs ),
     m_changed( false )
 {

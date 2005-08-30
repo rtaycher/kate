@@ -33,6 +33,10 @@ class KActionMenu;
 class QTextStream;
 class KPopupMenu;
 
+namespace Kate {
+namespace Private {
+namespace Plugin {
+
 class KBookmarkHandler : public QObject, public KBookmarkOwner
 {
     Q_OBJECT
@@ -71,5 +75,8 @@ private:
     //class KBookmarkHandlerPrivate *d;
 };
 
+}
+}
+}
 
 #endif // _KBOOKMARKHANDLER_H_

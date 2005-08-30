@@ -3,11 +3,11 @@ bin_PROGRAMS =
 kdeinit_LTLIBRARIES = kate.la kwrite.la
 
 libkateinterfaces_la_SOURCES = kateapp.cpp kateconfigdialog.cpp kateconfigplugindialogpage.cpp \
-  kateconsole.cpp katedocmanager.cpp katefilelist.cpp katefileselector.cpp \
+  katedocmanager.cpp katefilelist.cpp \
   katemainwindow.cpp katepluginmanager.cpp \
   kateviewmanager.cpp kateviewspace.cpp \
   katemainwindowiface.skel katemainwindowiface.cpp kategrepdialog.cpp \
-  katemailfilesdialog.cpp kbookmarkhandler.cpp \
+  katemailfilesdialog.cpp \
   katedocmanageriface.skel kateappIface.cpp kateappIface.skel katedocmanageriface.cpp \
   kateexternaltools.cpp katesavemodifieddialog.cpp kateviewspacecontainer.cpp \
   katemwmodonhddialog.cpp katesession.cpp katemdi.cpp katetabwidget.cpp katepartmanager.cpp

@@ -21,9 +21,10 @@
 #ifndef __KATE_CONSOLE_H__
 #define __KATE_CONSOLE_H__
 
-#include "katemain.h"
-
+#include <kate/interfaces/plugin.h>
+#include <kate/interfaces/mainwindow.h>
 #include <kurl.h>
+#include <kxmlguiclient.h>
 
 #include <q3vbox.h>
 //Added by qt3to4:
@@ -37,14 +38,35 @@ namespace KateMDI {
   class ToolView;
 }
 
-class KateMainWindow;
+
+namespace Kate {
+namespace Private {
+namespace Plugin {
+class KateConsole;
+
+class KateKonsolePlugin:public Kate::Plugin,public Kate::PluginViewInterface {
+    Q_OBJECT
+    Q_INTERFACES(Kate::PluginViewInterface)
+  public:
+    KateKonsolePlugin( QObject* parent = 0, const char* name = 0, const QStringList& = QStringList() );
+    virtual ~KateKonsolePlugin(){}
+    void addView (Kate::MainWindow *win);
+    void removeView (Kate::MainWindow *win);
+
+    void storeViewConfig(KConfig*,Kate::MainWindow *,const QString&) {}
+    void loadViewConfig(KConfig*,Kate::MainWindow *,const QString&) {}
+    void storeGeneralConfig(KConfig*,const QString&) {}
+    void loadGeneralConfig(KConfig*,const QString&) {}
+  private:
+    QLinkedList<KateConsole*> m_views;	
+};
 
 /**
  * KateConsole
  * This class is used for the internal terminal emulator
  * It uses internally the konsole part, thx to konsole devs :)
  */
-class KateConsole : public Q3VBox
+class KateConsole : public Q3VBox,public KXMLGUIClient
 {
   Q_OBJECT
 
@@ -54,7 +76,7 @@ class KateConsole : public Q3VBox
      * @param mw main window
      * @param parent toolview
      */
-    KateConsole (KateMainWindow *mw, KateMDI::ToolView* parent);
+    KateConsole (Kate::MainWindow *mw, QWidget* parent);
 
     /**
      * destruct us
@@ -72,6 +94,8 @@ class KateConsole : public Q3VBox
      * @param text commands for console
      */
     void sendInput( const QString& text );
+
+    Kate::MainWindow *mainWindow() {return m_mw;}
 
   public slots:
     /**
@@ -107,12 +131,15 @@ class KateConsole : public Q3VBox
     /**
      * main window of this console
      */
-    KateMainWindow *m_mw;
+    Kate::MainWindow *m_mw;
 
     /**
      * toolview for this console
      */
-    KateMDI::ToolView *m_toolView;
+    QWidget *m_toolView;
 };
 
+}
+}
+}
 #endif

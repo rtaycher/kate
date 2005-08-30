@@ -16,10 +16,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kate_pluginconfiginterfaceextension_h__
-#define __kate_pluginconfiginterfaceextension_h__
+#ifndef __kate_pluginconfigpageinterface_h__
+#define __kate_pluginconfigpageinterface_h__
 
-#include <qwidget.h>
+#include <QWidget>
 #include <qpixmap.h>
 #include <kicontheme.h>
 
@@ -60,15 +60,15 @@ class KDE_EXPORT PluginConfigPage : public QWidget
 /*
 *  This is an interface for the KTextEditor::Document/Plugin/ViewPlugin classes !!!
 */
-class KDE_EXPORT PluginConfigInterfaceExtension
+class KDE_EXPORT PluginConfigPageInterface
 {
-  friend class PrivatePluginConfigInterfaceExtension;
+  friend class PrivatePluginConfigPageInterface;
 
   public:
-    PluginConfigInterfaceExtension();
-    virtual ~PluginConfigInterfaceExtension();
+    PluginConfigPageInterface();
+    virtual ~PluginConfigPageInterface();
 
-    unsigned int pluginConfigInterfaceExtensionNumber () const;
+    unsigned int pluginConfigPageInterfaceNumber () const;
 
   //
   // slots !!!
@@ -91,14 +91,15 @@ class KDE_EXPORT PluginConfigInterfaceExtension
     virtual QPixmap configPagePixmap (uint number = 0, int size = KIcon::SizeSmall) const = 0;    
     
   private:
-    class PrivatePluginConfigInterfaceExtension *d;
-    static unsigned int globalPluginConfigInterfaceExtensionNumber;
-    unsigned int myPluginConfigInterfaceExtensionNumber;
+    class PrivatePluginConfigPageInterface *d;
+    static unsigned int globalPluginConfigPageInterfaceNumber;
+    unsigned int myPluginConfigPageInterfaceNumber;
 };
 
 class Plugin;
-PluginConfigInterfaceExtension *pluginConfigInterfaceExtension (Plugin *plugin);
+PluginConfigPageInterface *pluginConfigPageInterface (Plugin *plugin);
 
 }
 
+Q_DECLARE_INTERFACE(Kate::PluginConfigPageInterface,"org.kde.Kate.PluginConfigPage");
 #endif

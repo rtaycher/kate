@@ -409,6 +409,12 @@ int KateApp::mainWindows () const
   return m_mainWindows.size();
 }
 
+int KateApp::mainWindowID(KateMainWindow *window) {
+  for (int i=0;i<m_mainWindows.size();i++)
+    if (window==m_mainWindows[i]) return i;
+  return -1;
+}
+
 KateMainWindow *KateApp::mainWindow (int n)
 {
   if (n < m_mainWindows.size())

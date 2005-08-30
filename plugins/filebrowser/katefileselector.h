@@ -21,11 +21,13 @@
 #ifndef __KATE_FILESELECTOR_H__
 #define __KATE_FILESELECTOR_H__
 
-#include "katemain.h"
-#include "katedocmanager.h"
 
 #include <ktexteditor/document.h>
 #include <ktexteditor/configpage.h>
+#include <kate/interfaces/plugin.h>
+#include <kate/interfaces/pluginconfigpageinterface.h>
+#include <kdiroperator.h>
+#include <kurlcombobox.h>
 
 #include <q3vbox.h>
 //Added by qt3to4:
@@ -38,10 +40,44 @@
 #include <ktoolbar.h>
 #include <q3frame.h>
 
-class KateMainWindow;
-class KateViewManager;
+
 class KActionCollection;
 class KActionSelector;
+class QToolButton;
+class QCheckBox;
+class QSpinBox;
+
+namespace Kate {
+class MainWindow;
+namespace Private {
+namespace Plugin {
+class KateFileSelector;
+
+class KateFileSelectorPlugin:public Kate::Plugin,public Kate::PluginViewInterface,public Kate::PluginConfigPageInterface {
+    Q_OBJECT
+    Q_INTERFACES(Kate::PluginViewInterface)
+    Q_INTERFACES(Kate::PluginConfigPageInterface)
+  public:
+    KateFileSelectorPlugin( QObject* parent = 0, const char* name = 0, const QStringList& = QStringList() );
+    virtual ~KateFileSelectorPlugin(){}
+    void addView (Kate::MainWindow *win);
+    void removeView (Kate::MainWindow *win);
+
+    void storeViewConfig(KConfig*,Kate::MainWindow *,const QString&) {}
+    void loadViewConfig(KConfig*,Kate::MainWindow *,const QString&);
+    void storeGeneralConfig(KConfig*,const QString&) {}
+    void loadGeneralConfig(KConfig*,const QString&) {}
+    
+    uint configPages() const;
+    PluginConfigPage *configPage (uint number = 0, QWidget *parent = 0, const char *name=0);
+    QString configPageName (uint number = 0) const;
+    QString configPageFullName (uint number = 0) const;
+    QPixmap configPagePixmap (uint number = 0, int size = KIcon::SizeSmall) const;    
+    
+  private:
+    QLinkedList<KateFileSelector*> m_views;  
+};
+
 
 /*
     The kate file selector presents a directory view, in which the default action is
@@ -85,7 +121,7 @@ class KateFileSelector : public Q3VBox
     /* When to sync to current document directory */
     enum AutoSyncEvent { DocumentChanged=1, GotVisible=2 };
 
-    KateFileSelector( KateMainWindow *mainWindow=0, KateViewManager *viewManager=0,
+    KateFileSelector( Kate::MainWindow *mainWindow=0,
                       QWidget * parent = 0, const char * name = 0 );
     ~KateFileSelector();
 
@@ -103,6 +139,7 @@ class KateFileSelector : public Q3VBox
     void kateViewChanged();
 
   private slots:
+    void fileSelected(const KFileItem * /*file*/);
     void cmbPathActivated( const KURL& u );
     void cmbPathReturnPressed( const QString& u );
     void dirUrlEntered( const KURL& u );
@@ -111,11 +148,14 @@ class KateFileSelector : public Q3VBox
     void btnFilterClick();
 
   protected:
+    KURL activeDocumentUrl();
     void focusInEvent( QFocusEvent * );
     void showEvent( QShowEvent * );
     bool eventFilter( QObject *, QEvent * );
     void initialDirChangeHack();
 
+  public:
+    Kate::MainWindow* mainWindow() {return mainwin;}
   private:
     class KateFileSelectorToolBar *toolbar;
     KActionCollection *mActionCollection;
@@ -124,10 +164,9 @@ class KateFileSelector : public Q3VBox
     KDirOperator * dir;
     class KAction *acSyncDir;
     KHistoryCombo * filter;
-    class QToolButton *btnFilter;
+    QToolButton *btnFilter;
 
-    KateMainWindow *mainwin;
-    KateViewManager *viewmanager;
+    Kate::MainWindow *mainwin;
 
     QString lastFilter;
     int autoSyncEvents; // enabled autosync events
@@ -148,7 +187,7 @@ class KateFileSelector : public Q3VBox
     of the path and file filter combos, and how to handle
     user closed session.
 */
-class KFSConfigPage : public KTextEditor::ConfigPage {
+class KFSConfigPage : public Kate::PluginConfigPage {
   Q_OBJECT
   public:
     KFSConfigPage( QWidget* parent=0, const char *name=0, KateFileSelector *kfs=0);
@@ -166,13 +205,16 @@ class KFSConfigPage : public KTextEditor::ConfigPage {
 
     KateFileSelector *fileSelector;
     KActionSelector *acSel;
-    class QSpinBox *sbPathHistLength, *sbFilterHistLength;
-    class QCheckBox *cbSyncActive, *cbSyncShow;
-    class QCheckBox *cbSesLocation, *cbSesFilter;
+    QSpinBox *sbPathHistLength, *sbFilterHistLength;
+    QCheckBox *cbSyncActive, *cbSyncShow;
+    QCheckBox *cbSesLocation, *cbSesFilter;
 
     bool m_changed;
 };
 
+}
+}
+}
 
 #endif //__KATE_FILESELECTOR_H__
 // kate: space-indent on; indent-width 2; replace-tabs on;

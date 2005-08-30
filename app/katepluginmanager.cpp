@@ -34,19 +34,27 @@
 #include <kdebug.h>
 #include <qfile.h>
 
+QString KatePluginInfo::saveName() const {
+    QString saveName=service->property("X-Kate-PluginName").toString();
+
+    if (saveName.isEmpty())
+      saveName = service->library();
+    return saveName;
+}
+
 KatePluginManager::KatePluginManager(QObject *parent) : QObject (parent)
 {
   m_pluginManager = new Kate::PluginManager (this);
   setupPluginList ();
 
-  loadConfig ();
+  loadConfig (KateApp::self()->config());
   loadAllEnabledPlugins ();
 }
 
 KatePluginManager::~KatePluginManager()
 {
   // first write config
-  writeConfig ();
+  storeGeneralConfig (KateApp::self()->config());
 
   // than unload the plugins
   unloadAllPlugins ();
@@ -81,29 +89,45 @@ void KatePluginManager::setupPluginList ()
   }
 }
 
-void KatePluginManager::loadConfig ()
+void KatePluginManager::loadConfig (KConfig* config)
 {
-  KateApp::self()->config()->setGroup("Kate Plugins");
+  config->setGroup("Kate Plugins");
 
   foreach (const KatePluginInfo &plugin,m_pluginList)
-    plugin.load =  KateApp::self()->config()->readBoolEntry (plugin.service->library(), false) ||
-                            KateApp::self()->config()->readBoolEntry (plugin.service->property("X-Kate-PluginName").toString(),false);
+    plugin.load =  config->readBoolEntry (plugin.service->library(), false) ||
+                            config->readBoolEntry (plugin.service->property("X-Kate-PluginName").toString(),false);
 }
 
-void KatePluginManager::writeConfig ()
-{
-  KateApp::self()->config()->setGroup("Kate Plugins");
+void KatePluginManager::storeGeneralConfig(KConfig* config) {
 
   foreach(const KatePluginInfo &plugin,m_pluginList)
   {
-    QString saveName=plugin.service->property("X-Kate-PluginName").toString();
+    config->setGroup("Kate Plugins");
+    QString saveName=plugin.saveName();
 
-    if (saveName.isEmpty())
-      saveName = plugin.service->library();
+    config->writeEntry (saveName, plugin.load);
 
-    KateApp::self()->config()->writeEntry (saveName, plugin.load);
+    if (plugin.load) {
+      plugin.plugin->storeGeneralConfig(config,QString("Plugin:%1:").arg(saveName));
+    }
   }
 }
+
+void KatePluginManager::storeViewConfig(KConfig* config,uint id) {
+  Kate::MainWindow *mw=KateApp::self()->mainWindow(id)->mainWindow();
+  foreach(const KatePluginInfo &plugin,m_pluginList) {
+	if (!plugin.load) continue;
+	Kate::PluginViewInterface *vi=qobject_cast<Kate::PluginViewInterface*>(plugin.plugin);
+	if (vi) {
+		vi->storeViewConfig(config,mw,QString("Plugin:%1:MainWindow:%2").arg(plugin.saveName()).arg(id));
+	}
+  }
+
+}
+
+
+
+
 
 void KatePluginManager::loadAllEnabledPlugins ()
 {
@@ -125,12 +149,12 @@ void KatePluginManager::unloadAllPlugins ()
   }
 }
 
-void KatePluginManager::enableAllPluginsGUI (KateMainWindow *win)
+void KatePluginManager::enableAllPluginsGUI (KateMainWindow *win,KConfig *config)
 {
   for (KatePluginList::iterator it=m_pluginList.begin();it!=m_pluginList.end(); ++it)
   {
     if (it->load)
-      enablePluginGUI(&(*it),win);
+      enablePluginGUI(&(*it),win,config);
   }
 }
 
@@ -161,7 +185,7 @@ void KatePluginManager::unloadPlugin (KatePluginInfo *item)
   item->load = false;
 }
 
-void KatePluginManager::enablePluginGUI (KatePluginInfo *item, KateMainWindow *win)
+void KatePluginManager::enablePluginGUI (KatePluginInfo *item, KateMainWindow *win, KConfig *config)
 {
   kdDebug(13000)<<"Checking if the GUI of a plugin should be enabled"<<endl;
   if (!item->plugin) return;
@@ -176,6 +200,8 @@ void KatePluginManager::enablePluginGUI (KatePluginInfo *item, KateMainWindow *w
   kdDebug()<<item->plugin<<"--"<<Kate::pluginViewInterface(item->plugin)<<endl;
   //END DEBUG
   Kate::pluginViewInterface(item->plugin)->addView(win->mainWindow());
+  if (config)
+  	Kate::pluginViewInterface(item->plugin)->loadViewConfig(config,win->mainWindow(),QString("Plugin:%1:MainWindow:%2").arg(item->saveName()).arg(KateApp::self()->mainWindowID(win)));
 }
 
 void KatePluginManager::enablePluginGUI (KatePluginInfo *item)

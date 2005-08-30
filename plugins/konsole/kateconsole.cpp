@@ -21,36 +21,75 @@
 #include "kateconsole.h"
 #include "kateconsole.moc"
 
-#include "katemain.h"
-#include "katemdi.h"
-#include "katemainwindow.h"
-#include "kateviewmanager.h"
-
+#include <kiconloader.h>
 #include <ktexteditor/document.h>
 #include <ktexteditor/view.h>
 
 #include <kde_terminal_interface.h>
 
 #include <kparts/part.h>
+#include <kaction.h>
 
 #include <kurl.h>
 #include <klibloader.h>
 #include <klocale.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
+#include <kapplication.h>
 //Added by qt3to4:
 #include <QShowEvent>
 
-KateConsole::KateConsole (KateMainWindow *mw, KateMDI::ToolView* parent)
- : Q3VBox (parent)
+#include <kgenericfactory.h>
+
+K_EXPORT_COMPONENT_FACTORY( katekonsoleplugin, KGenericFactory<Kate::Private::Plugin::KateKonsolePlugin>( "katekonsoleplugin" ) )
+
+using namespace Kate::Private::Plugin;
+
+KateKonsolePlugin::KateKonsolePlugin( QObject* parent, const char* name, const QStringList&):
+  Kate::Plugin ( (Kate::Application*)parent, name ) {
+  if (!kapp->authorize("shell_access")) {
+    KMessageBox::sorry(0, i18n ("You don't have enough karma to access a shell or terminal emulation"));
+  }
+}
+
+void KateKonsolePlugin::addView(Kate::MainWindow *win) {
+  kdDebug()<<"KateKonsolePlugin::createView"<<endl;
+  // ONLY ALLOW SHELL ACCESS IF ALLOWED ;)
+  if (kapp->authorize("shell_access")) {
+    kdDebug()<<"After auth check"<<endl;
+    QWidget *toolview=win->createToolView ("kate_private_plugin_katekonsoleplugin", MainWindow::Bottom, SmallIcon("konsole"), i18n("Terminal"));
+    m_views.append(new KateConsole(win,toolview));
+  }
+}
+
+void KateKonsolePlugin::removeView(Kate::MainWindow *win) {
+  for(QLinkedList<KateConsole*>::iterator it=m_views.begin();it!=m_views.end();++it) {
+    if ((*it)->mainWindow()==win) {
+      QWidget *pw=(*it)->parentWidget();
+      delete *it;
+      delete pw;
+      m_views.erase(it);
+      break;
+    }
+  }
+}
+
+KateConsole::KateConsole (Kate::MainWindow *mw, QWidget *parent)
+ : Q3VBox (parent), KXMLGUIClient()
  , m_part (0)
  , m_mw (mw)
  , m_toolView (parent)
 {
+    new KAction(i18n("&Pipe to Console"), "pipe", 0, this, SLOT(slotPipeToConsole()), actionCollection(), "katekonsole_tools_pipe_to_terminal");
+    setInstance (new KInstance("kate"));
+    setXMLFile("plugins/katekonsole/ui.rc");
+    m_mw->guiFactory()->addClient (this);
+
 }
 
 KateConsole::~KateConsole ()
 {
+  m_mw->guiFactory()->removeClient (this);
   disconnect ( m_part, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
 }
 
@@ -75,9 +114,9 @@ void KateConsole::loadConsoleIfNeeded()
 
   connect ( m_part, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
 
-  if (m_mw->viewManager()->activeView())
-    if (m_mw->viewManager()->activeView()->document()->url().isValid())
-      cd(KURL( m_mw->viewManager()->activeView()->document()->url().path() ));
+  if (m_mw->activeView())
+    if (m_mw->activeView()->document()->url().isValid())
+      cd(KURL( m_mw->activeView()->document()->url().path() ));
 }
 
 void KateConsole::slotDestroyed ()
@@ -127,13 +166,13 @@ void KateConsole::sendInput( const QString& text )
 void KateConsole::slotPipeToConsole ()
 {
   if (KMessageBox::warningContinueCancel
-      (m_mw
+      (m_mw->window()
        , i18n ("Do you really want to pipe the text to the console? This will execute any contained commands with your user rights.")
        , i18n ("Pipe to Console?")
        , i18n("Pipe to Console"), "Pipe To Console Warning") != KMessageBox::Continue)
     return;
 
-  KTextEditor::View *v = m_mw->viewManager()->activeView();
+  KTextEditor::View *v = m_mw->activeView();
 
   if (!v)
     return;

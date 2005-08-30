@@ -23,8 +23,7 @@
 #include "katemain.h"
 
 #include "../interfaces/plugin.h"
-#include "../interfaces/pluginconfiginterface.h"
-#include "../interfaces/pluginconfiginterfaceextension.h"
+#include "../interfaces/pluginconfigpageinterface.h"
 
 #include <ktexteditor/document.h>
 #include <ktexteditor/editorchooser.h>
@@ -74,7 +73,7 @@ class KateConfigDialog : public KDialogBase
     QCheckBox* cb_restoreVC;
     Q3ButtonGroup *sessions_start;
     Q3ButtonGroup *sessions_exit;
-    KTextEditor::ConfigPage *fileSelConfigPage;
+    //KTextEditor::ConfigPage *fileSelConfigPage;
     KTextEditor::ConfigPage *filelistConfigPage;
     KTextEditor::ConfigPage *configExternalToolsPage;
     Q3PtrList<PluginPageListItem> pluginPages;

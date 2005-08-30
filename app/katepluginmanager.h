@@ -37,6 +37,7 @@ class KatePluginInfo
     mutable bool load;
     KService::Ptr service;
     Kate::Plugin *plugin;
+    QString saveName() const;
 };
 
 typedef QLinkedList<KatePluginInfo> KatePluginList;
@@ -56,16 +57,19 @@ class KatePluginManager : public QObject
     void loadAllEnabledPlugins ();
     void unloadAllPlugins ();
 
-    void enableAllPluginsGUI (KateMainWindow *win);
+    void enableAllPluginsGUI (KateMainWindow *win,KConfig *config=0);
     void disableAllPluginsGUI (KateMainWindow *win);
 
-    void loadConfig ();
-    void writeConfig ();
+    void loadConfig (KConfig*);
+    void writeConfig (KConfig*);
+
+    void storeGeneralConfig(KConfig*);
+    void storeViewConfig(KConfig*,uint id);
 
     void loadPlugin (KatePluginInfo *item);
     void unloadPlugin (KatePluginInfo *item);
 
-    void enablePluginGUI (KatePluginInfo *item, KateMainWindow *win);
+    void enablePluginGUI (KatePluginInfo *item, KateMainWindow *win,KConfig *config=0);
     void enablePluginGUI (KatePluginInfo *item);
 
     void disablePluginGUI (KatePluginInfo *item, KateMainWindow *win);
