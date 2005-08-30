@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=Kate/Plugin
+X-KDE-Library=katefilebrowserplugin
+X-Kate-Version=2.9
+Name=File system browser
+Comment=File system browser tool view
+X-Kate-MajorProfiles=Kate
+X-Kate-MinorProfiles=*

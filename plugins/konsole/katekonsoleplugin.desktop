@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=Kate/Plugin
+X-KDE-Library=katekonsoleplugin
+X-Kate-Version=2.9
+Name=Konsole tool view
+Comment=Toolview embedding a console widget
+X-Kate-MajorProfiles=Kate
+X-Kate-MinorProfiles=*
