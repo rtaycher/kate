@@ -31,10 +31,6 @@ class PrivatePluginConfigPageInterface
      ~PrivatePluginConfigPageInterface() {}
 };
 
-}
-
-using namespace Kate;
-
 PluginConfigPage::PluginConfigPage ( QWidget *parent, const char *name ) : QWidget (parent, name) { }
  
 PluginConfigPage::~PluginConfigPage () { }
@@ -59,10 +55,12 @@ unsigned int PluginConfigPageInterface::pluginConfigPageInterfaceNumber () const
   return myPluginConfigPageInterfaceNumber;
 }
                       
-PluginConfigPageInterface *Kate::pluginConfigPageInterface (Plugin *plugin)
+PluginConfigPageInterface *pluginConfigPageInterface (Plugin *plugin)
 {                       
   if (!plugin)
     return 0;
 
-  return qobject_cast<Kate::PluginConfigPageInterface*>(plugin);
+  return qobject_cast<PluginConfigPageInterface*>(plugin);
+}
+
 }
