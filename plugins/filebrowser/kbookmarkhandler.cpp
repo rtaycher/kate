@@ -38,8 +38,6 @@
 #include "kbookmarkhandler.h"
 #include "kbookmarkhandler.moc"
 
-using Kate::Private::Plugin;
-
 Kate::Private::Plugin::KBookmarkHandler::KBookmarkHandler( KateFileSelector *parent, KPopupMenu* kpopupmenu )
     : QObject( parent, "KBookmarkHandler" ),
       KBookmarkOwner(),

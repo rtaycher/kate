@@ -176,8 +176,8 @@ void KateConsole::slotPipeToConsole ()
 
   if (!v)
     return;
-
-  if (v->selection ())
+    
+  if (v->hasSelection())
     sendInput (v->selectionText());
   else
     sendInput (v->document()->text());
