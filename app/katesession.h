@@ -292,7 +292,7 @@ class KateSessionChooser : public KDialogBase
   Q_OBJECT
 
   public:
-    KateSessionChooser (QWidget *parent, const QString &lastSession,const QValueList<KateSessionChooserTemplate& templates);
+    KateSessionChooser (QWidget *parent, const QString &lastSession,const QStringList& templates);
     ~KateSessionChooser ();
 
     KateSession::Ptr selectedSession ();

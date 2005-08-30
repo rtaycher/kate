@@ -50,11 +50,13 @@
 #include <time.h>
 
 class KateSessionChooserTemplate {
-	KateSessionChooserTemplate(const QString &displayname_, const QString &desktopname_, const QString tooltip_); 
+	public:
+	KateSessionChooserTemplate(const QString &displayname_, const QString &desktopname_, const QString tooltip_) {
+	}
 	QString displayname;
 	QString desktopname;
 	QString tooltip;
-}
+};
 
 
 KateSession::KateSession (KateSessionManager *manager, const QString &fileName, const QString &name)
