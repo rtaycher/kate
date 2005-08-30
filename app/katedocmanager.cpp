@@ -58,9 +58,6 @@ KateDocManager::KateDocManager (QObject *parent)
   m_editor->readConfig(KateApp::self()->config());
 
   m_documentManager = new Kate::DocumentManager (this);
-  /*m_docList.setAutoDelete(true);
-  m_docDict.setAutoDelete(false);
-  m_docInfos.setAutoDelete(true); */
 
   m_dcop = new KateDocManagerDCOPIface (this);
 
@@ -110,8 +107,10 @@ KTextEditor::Document *KateDocManager::createDoc ()
 {
   KTextEditor::Document *doc = (KTextEditor::Document *) m_editor->createDocument(this);
 
+  if (qobject_cast<KTextEditor::ModificationInterface *>(doc))
+    qobject_cast<KTextEditor::ModificationInterface *>(doc)->setModifiedOnDiskWarning (true);
+
   m_docList.append((KTextEditor::Document *)doc);
-  m_docDict.insert (doc->documentNumber(), (KTextEditor::Document *)doc);
   m_docInfos.insert (doc, new KateDocumentInfo ());
 
   emit documentCreated ((KTextEditor::Document *)doc);
@@ -124,21 +123,16 @@ KTextEditor::Document *KateDocManager::createDoc ()
 
 void KateDocManager::deleteDoc (KTextEditor::Document *doc)
 {
-  uint id = doc->documentNumber();
-  uint activeId = 0;
-
-  if (m_currentDoc)
-    activeId = m_currentDoc->documentNumber ();
+  KTextEditor::Document *activeId = m_currentDoc;
 
   delete m_docInfos.take (doc);
-  m_docDict.remove (id); //no delete, is down by the next line
   delete m_docList.takeAt (m_docList.indexOf(doc));
 
   emit documentDeleted (doc);
   emit m_documentManager->documentDeleted (doc);
 
   // ohh, current doc was deleted
-  if (activeId == id)
+  if (activeId == doc)
   {
     // special case of documentChanged, no longer any doc here !
     m_currentDoc = 0;
@@ -160,10 +154,7 @@ KTextEditor::Document *KateDocManager::activeDocument ()
 
 void KateDocManager::setActiveDocument (KTextEditor::Document *doc)
 {
-  if (!doc)
-    return;
-
-  if (m_currentDoc && (m_currentDoc->documentNumber() == doc->documentNumber()))
+  if (!doc || (m_currentDoc == doc))
     return;
 
   m_currentDoc = doc;
@@ -245,12 +236,8 @@ bool KateDocManager::closeDocument(class KTextEditor::Document *doc,bool closeUR
   if (closeURL)
   if (!doc->closeURL()) return false;
 
-  uint documentNumber = doc->documentNumber();
-
   for (int i=0; i < KateApp::self()->mainWindows (); i++ )
-  {
-    KateApp::self()->mainWindow(i)->viewManager()->closeViews(documentNumber);
-  }
+    KateApp::self()->mainWindow(i)->viewManager()->closeViews(doc);
 
   deleteDoc (doc);
 

@@ -59,9 +59,6 @@ KateApp::KateApp (KCmdLineArgs *args)
   // insert right translations for the katepart
   KGlobal::locale()->insertCatalogue("katepart");
   setQuitOnLastWindowClosed (false);
-  // some global default
-#warning fixme later
-//  KTextEditor::Document::setFileChangedDialogsActivated (true);
 
   // application interface
   m_application = new Kate::Application (this);

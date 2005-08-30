@@ -351,10 +351,10 @@ void KateViewManager::activatePrevView()
   }
 }
 
-void KateViewManager::closeViews(uint documentNumber)
+void KateViewManager::closeViews(KTextEditor::Document *doc)
 {
   for (uint i=0;i<m_viewSpaceContainerList.count();i++) {
-    m_viewSpaceContainerList.at(i)->closeViews(documentNumber);
+    m_viewSpaceContainerList.at(i)->closeViews(doc);
   }
   tabChanged(m_currentContainer);
 }

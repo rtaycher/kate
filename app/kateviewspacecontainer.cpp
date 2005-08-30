@@ -351,14 +351,14 @@ void KateViewSpaceContainer::activatePrevView()
   activateView(m_viewSpaceList.at(i)->currentView());
 }
 
-void KateViewSpaceContainer::closeViews(uint documentNumber)
+void KateViewSpaceContainer::closeViews(KTextEditor::Document *doc)
 {
     Q3PtrList<KTextEditor::View> closeList;
 
     for (int z=0 ; z < m_viewList.count(); ++z)
     {
       KTextEditor::View* current = m_viewList.at(z);
-      if ( current->document()->documentNumber() == documentNumber )
+      if ( current->document() == doc )
       {
         closeList.append (current);
       }

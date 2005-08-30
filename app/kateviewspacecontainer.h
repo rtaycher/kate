@@ -92,7 +92,7 @@ class KateViewSpaceContainer: public QSplitter
     bool isViewActivationBlocked(){return m_blockViewCreationAndActivation;};
 
   public:
-    void closeViews(uint documentNumber);
+    void closeViews(KTextEditor::Document *doc);
     KateMainWindow *mainWindow();
   friend class KateViewManager;
 

@@ -48,16 +48,6 @@ DCOPRef KateDocManagerDCOPIface::activeDocument ()
   return DCOPRef ((DCOPObject *) doc);
 }
 
-uint KateDocManagerDCOPIface::activeDocumentNumber ()
-{
-  KTextEditor::Document *doc = m_dm->activeDocument();
-
-  if (doc)
-    return doc->documentNumber ();
-  
-  return 0;
-}
-
 DCOPRef KateDocManagerDCOPIface::openURL (KURL url, QString encoding)
 {
   KTextEditor::Document *doc = m_dm->openURL (url, encoding);

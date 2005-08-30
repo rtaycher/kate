@@ -84,7 +84,7 @@ class KateViewManager : public QObject
     void setViewActivationBlocked (bool block);
 
   public:
-    void closeViews(uint documentNumber);
+    void closeViews(KTextEditor::Document *doc);
     KateMainWindow *mainWindow();
 
   private slots:

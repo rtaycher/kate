@@ -128,7 +128,6 @@ class KateDocManager : public QObject
 
     Kate::DocumentManager *m_documentManager;
     QList<KTextEditor::Document*> m_docList;
-    QHash<int,KTextEditor::Document*> m_docDict;
     QHash<KTextEditor::Document*,KateDocumentInfo*> m_docInfos;
 
     QPointer<KTextEditor::Document> m_currentDoc;

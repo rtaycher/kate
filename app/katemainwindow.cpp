@@ -491,8 +491,9 @@ void KateMainWindow::documentMenuAboutToShow()
 
     item = item->nextSibling();
   }
+
   if (m_viewManager->activeView())
-    documentMenu->setItemChecked ( m_viewManager->activeView()->document()->documentNumber(), true);
+    documentMenu->setItemChecked ( KateDocManager::self()->findDocument(m_viewManager->activeView()->document()), true);
 }
 
 void KateMainWindow::activateDocumentFromDocMenu (int index)
