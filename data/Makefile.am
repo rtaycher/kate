@@ -1,13 +1,10 @@
 servicetypedir = $(kde_servicetypesdir)
 servicetype_DATA = kateplugin.desktop
 
-xdg_apps_DATA = kate.desktop kwrite.desktop
+xdg_apps_DATA = kate.desktop
 
 rckatedir = $(kde_datadir)/kate
 rckate_DATA = kateui.rc externaltools
-
-rckwritedir = $(kde_datadir)/kwrite
-rckwrite_DATA = kwriteui.rc
 
 tipdir = $(kde_datadir)/kate
 tip_DATA = tips

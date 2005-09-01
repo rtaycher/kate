@@ -24,6 +24,9 @@
 #include "katedocmanager.h"
 #include "katepluginmanager.h"
 
+#include "katetooltipmenu.h"
+
+
 #include <kstandarddirs.h>
 #include <klocale.h>
 #include <kdebug.h>
@@ -48,15 +51,6 @@
 
 #include <unistd.h>
 #include <time.h>
-
-class KateSessionChooserTemplate {
-	public:
-	KateSessionChooserTemplate(const QString &displayname_, const QString &desktopname_, const QString tooltip_) {
-	}
-	QString displayname;
-	QString desktopname;
-	QString tooltip;
-};
 
 
 KateSession::KateSession (KateSessionManager *manager, const QString &fileName, const QString &name)
@@ -455,8 +449,10 @@ bool KateSessionManager::chooseSession ()
     return success;
   }
 
-  QStringList templates;
-  templates << QString("Profile 1 (default)")<<templates << QString("Profile 2")<<templates << QString("Profile 3")<<templates << QString("Profile 4");
+  QList<KateSessionChooserTemplate> templates;
+  templates.append(KateSessionChooserTemplate("Profile 1 (default)","blah.desktop","<img source=\"/home/jowenn/development/kde/binary/share/icons/hicolor/32x32/actions/show_side_panel.png\"><b>Test 1</b> adfafsdfdsf<br>asdfasdfsdfsdf adsfad adf asdf df<br> adfasdf jasdlfjö"));
+  templates.append(KateSessionChooserTemplate("Profile 2","blah.desktop"," Test 2"));
+  templates.append(KateSessionChooserTemplate("Profile 3","blah.desktop"," Test 3"));
   KateSessionChooser *chooser = new KateSessionChooser (0, lastSession,templates);
 
   bool retry = true;
@@ -605,7 +601,7 @@ class KateSessionChooserItem : public Q3ListViewItem
     KateSession::Ptr session;
 };
 
-KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSession,const QStringList &templates)
+KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSession,const QList<KateSessionChooserTemplate> &templates)
  : KDialogBase (  parent
                   , ""
                   , true
@@ -616,7 +612,7 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
                   , KStdGuiItem::quit ()
                   , KGuiItem (i18n ("Open Session"), "fileopen")
                   , KGuiItem ((templates.count()>1)?i18n ("New Session (hold down for template)"):i18n ("New Session"), "filenew")
-                )
+                ),m_templates(templates)
 {
   m_delayTimer=new QTimer(this);
   m_delayTimer->setSingleShot(true);
@@ -675,9 +671,16 @@ KateSessionChooser::~KateSessionChooser ()
 }
 
 void KateSessionChooser::slotProfilePopup() {
- QMenu popup;
- popup.addAction("Profile 1");
- popup.addAction("Profile 2");
+ KateToolTipMenu popup;
+ bool defaultA=true;
+ foreach(const KateSessionChooserTemplate &t,m_templates) {
+   QAction *a=popup.addAction(t.displayName);
+   if (defaultA) popup.setDefaultAction(a);
+   defaultA=false;
+   a->setToolTip(t.toolTip);
+   a->setData(t.configFileName);
+ }
+ connect(&popup,SIGNAL(triggered(QAction *)),this,SLOT(slotTemplateAction(QAction*)));
  actionButton(KDialogBase::User3)->setMenu(&popup);
  actionButton(KDialogBase::User3)->showMenu();
  actionButton(KDialogBase::User3)->setMenu(0);
@@ -707,6 +710,12 @@ void KateSessionChooser::slotUser2 ()
 void KateSessionChooser::slotUser3 ()
 {
   m_delayTimer->stop();
+  if (m_templates.count()>0) m_selectedTemplate=m_templates[0].configFileName;
+  done (resultNew);
+}
+void KateSessionChooser::slotTemplateAction(QAction* a)
+{
+  m_selectedTemplate=a->data().toString();
   done (resultNew);
 }
 
@@ -717,7 +726,7 @@ void KateSessionChooser::slotUser1 ()
 
 void KateSessionChooser::selectionChanged ()
 {
-  enableButton (KDialogBase::User1, m_sessions->selectedItem ());
+  enableButton (KDialogBase::User2, m_sessions->selectedItem ());
 }
 
 //END CHOOSER DIALOG

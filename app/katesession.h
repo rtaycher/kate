@@ -28,7 +28,7 @@
 
 #include <qobject.h>
 #include <q3valuelist.h>
-
+#include <QList>
 class KateSessionManager;
 
 class KDirWatch;
@@ -285,18 +285,25 @@ class KateSessionManager : public QObject
     KateSession::Ptr m_activeSession;
 };
 
-class KateSessionChooserTemplate;
+class KateSessionChooserTemplate {
+	public:
+	KateSessionChooserTemplate(const QString &displayname_, const QString &configfilename_, const QString tooltip_):
+		displayName(displayname_),configFileName(configfilename_),toolTip(tooltip_){}
+	QString displayName;
+	QString configFileName;
+	QString toolTip;
+};
 
 class KateSessionChooser : public KDialogBase
 {
   Q_OBJECT
 
   public:
-    KateSessionChooser (QWidget *parent, const QString &lastSession,const QStringList& templates);
+    KateSessionChooser (QWidget *parent, const QString &lastSession,const QList<KateSessionChooserTemplate>& templates);
     ~KateSessionChooser ();
 
     KateSession::Ptr selectedSession ();
-
+    QString selectedTemplate() { return m_selectedTemplate;}
     bool reopenLastSession ();
 
     enum {
@@ -306,6 +313,8 @@ class KateSessionChooser : public KDialogBase
       resultNone
     };
 
+  private:
+    QString m_selectedTemplate;
   protected slots:
     /**
      * open session
@@ -322,6 +331,8 @@ class KateSessionChooser : public KDialogBase
      */
     void slotUser3 ();
 
+    void slotTemplateAction(QAction* a);
+    
     /**
      * selection has changed
      */
@@ -332,6 +343,7 @@ class KateSessionChooser : public KDialogBase
     QTimer *m_delayTimer;
     KListView *m_sessions;
     QCheckBox *m_useLast;
+    QList<KateSessionChooserTemplate> m_templates;
 };
 
 class KateSessionOpenDialog : public KDialogBase
