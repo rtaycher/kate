@@ -34,7 +34,6 @@
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <kdiroperator.h>
-#include <kdockwidget.h>
 #include <kencodingfiledialog.h>
 #include <kiconloader.h>
 #include <kglobal.h>

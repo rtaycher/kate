@@ -50,7 +50,6 @@
 #include <kdebug.h>
 #include <kdialogbase.h>
 #include <kdiroperator.h>
-#include <kdockwidget.h>
 #include <kedittoolbar.h>
 #include <kfiledialog.h>
 #include <kglobalaccel.h>
