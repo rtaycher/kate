@@ -301,8 +301,8 @@ void KateViewSpace::restoreConfig ( KateViewSpaceContainer *viewMan, KConfig* co
 //END KateViewSpace
 
 //BEGIN KateVSStatusBar
-KateVSStatusBar::KateVSStatusBar ( KateViewSpace *parent, const char * /* name */ )
-  : KStatusBar( parent ),
+KateVSStatusBar::KateVSStatusBar ( KateViewSpace *parent, const char *name )
+  : KStatusBar( parent, name ),
     m_viewSpace( parent )
 {
   m_lineColLabel = new QLabel( this );

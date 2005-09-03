@@ -46,7 +46,7 @@ Kate::Private::Plugin::KBookmarkHandler::KBookmarkHandler( KateFileSelector *par
       m_importStream( 0L )
 {
     if (!m_menu)
-      m_menu = new KPopupMenu( parent ); /* KDE4 obsolete?, "bookmark menu" ); */
+      m_menu = new KPopupMenu( parent, "bookmark menu" );
 
     QString file = locate( "data", "kate/fsbookmarks.xml" );
     if ( file.isEmpty() )

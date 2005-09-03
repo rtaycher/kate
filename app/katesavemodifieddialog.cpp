@@ -31,7 +31,6 @@
 #include <q3vbox.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
-#include <kinstance.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
 #include <kdebug.h>

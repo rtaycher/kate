@@ -89,8 +89,8 @@ class ToolTip : public QToolTip
 //BEGIN KateFileList
 KateFileList::KateFileList (KateMainWindow *main,
                             KateViewManager *_viewManager,
-                            QWidget * parent, const char * /* name */)
-    :  KListView (parent)
+                            QWidget * parent, const char * name )
+    :  KListView (parent, name)
     , m_sort( KateFileList::sortByID )
 {
   m_main = main;

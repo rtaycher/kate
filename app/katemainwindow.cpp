@@ -41,7 +41,6 @@
 
 #include "../interfaces/mainwindow.h"
 
-#include <kauthorized.h>
 #include <kaboutapplication.h>
 #include <dcopclient.h>
 #include <kinstance.h>
@@ -268,7 +267,7 @@ void KateMainWindow::setupActions()
   a=new KAction(i18n("&New Window"), "window_new", 0, this, SLOT(newWindow()), actionCollection(), "view_new_view");
   a->setWhatsThis(i18n("Create a new Kate view (a new window with the same document list)."));
 
-  if ( KAuthorized::self()->authorize("shell_access") )
+  if ( KateApp::self()->authorize("shell_access") )
   {
     externalTools = new KateExternalToolsMenuAction( i18n("External Tools"), actionCollection(), "tools_external", this );
     externalTools->setWhatsThis( i18n("Launch external helper applications") );

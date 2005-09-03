@@ -62,8 +62,8 @@ void KatePluginListItem::stateChange(bool b)
     static_cast<KatePluginListView *>(listView())->stateChanged(this, b);
 }
 
-KatePluginListView::KatePluginListView(QWidget *parent, const char * /* name */)
-  : KListView(parent)
+KatePluginListView::KatePluginListView(QWidget *parent, const char *name)
+  : KListView(parent, name)
 {
 }
 
