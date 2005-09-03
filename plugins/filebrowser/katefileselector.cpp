@@ -197,7 +197,7 @@ Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mai
 // FIXME
 //  cmbPath->listBox()->installEventFilter( this );
 
-  dir = new KDirOperator(KURL(), this, "operator");
+  dir = new KDirOperator(KURL(), this); /* KDE4 obsolete? , "operator"); */
   dir->setView(KFile::/* Simple */Detail);
   dir->view()->setSelectionMode(KFile::Multi);
   setStretchFactor(dir, 2);
