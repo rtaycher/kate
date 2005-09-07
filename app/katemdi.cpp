@@ -123,7 +123,7 @@ GUIClient::GUIClient ( MainWindow *mw )
 
   m_toolMenu = new KActionMenu(i18n("Tool &Views"),actionCollection(),"kate_mdi_toolview_menu");
   m_showSidebarsAction = new KToggleAction( i18n("Show Side&bars"),
-                                            Qt::CTRL|Qt::ALT|Qt::SHIFT|Qt::Key_F, actionCollection() );
+    Qt::CTRL|Qt::ALT|Qt::SHIFT|Qt::Key_F, actionCollection(), "kate_mdi_sidebar_visibility" );
   m_showSidebarsAction->setCheckedState(i18n("Hide Side&bars"));
   m_showSidebarsAction->setChecked( m_mw->sidebarsVisible() );
   connect( m_showSidebarsAction, SIGNAL( toggled( bool ) ),
