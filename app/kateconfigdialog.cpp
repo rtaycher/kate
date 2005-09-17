@@ -196,7 +196,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   cb_restoreVC = new QCheckBox( bgStartup );
   cb_restoreVC->setText(i18n("Include &window configuration"));
   config->setGroup("General");
-  cb_restoreVC->setChecked( config->readBoolEntry("Restore Window Configuration", false) );
+  cb_restoreVC->setChecked( config->readBoolEntry("Restore Window Configuration", true) );
   cb_restoreVC->setWhatsThis( i18n(
         "Check this if you want all your views and frames restored each time you open Kate"));
   connect( cb_restoreVC, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
