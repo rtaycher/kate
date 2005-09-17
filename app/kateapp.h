@@ -25,6 +25,7 @@
 #include <kapplication.h>
 
 #include <q3valuelist.h>
+#include <QList>
 
 class KateSessionManager;
 class KateAppDCOPIface;
@@ -238,7 +239,7 @@ class KDE_EXPORT KateApp : public KApplication
     /**
      * known main windows
      */
-    Q3ValueList<KateMainWindow*> m_mainWindows;
+    QList<KateMainWindow*> m_mainWindows;
 
     /**
      * dcop interface

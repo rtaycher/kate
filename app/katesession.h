@@ -158,7 +158,7 @@ class KateSession  : public KShared
     KSimpleConfig *m_writeConfig;
 };
 
-typedef Q3ValueList<KateSession::Ptr> KateSessionList;
+typedef QList<KateSession::Ptr> KateSessionList;
 
 class KateSessionManager : public QObject
 {
