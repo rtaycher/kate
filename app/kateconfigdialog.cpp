@@ -171,7 +171,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
 
 
   // editor component
-  m_editorChooser=new KTextEditor::EditorChooser(frGeneral,"Editor Chooser");
+  m_editorChooser=new KTextEditor::EditorChooser(frGeneral/*,"Editor Chooser"*/);
   m_editorChooser->readAppSetting();
   connect(m_editorChooser,SIGNAL(changed()),this,SLOT(slotChanged()));
   lo->addWidget(m_editorChooser);
