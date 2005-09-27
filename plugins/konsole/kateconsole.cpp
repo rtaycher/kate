@@ -176,9 +176,11 @@ void KateConsole::slotPipeToConsole ()
 
   if (!v)
     return;
-    
+#warning "KDE4 it's not into kdelibs-snapshot for the moment";    
+#if 0
   if (v->hasSelection())
     sendInput (v->selectionText());
   else
     sendInput (v->document()->text());
+#endif
 }
