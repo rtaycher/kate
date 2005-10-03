@@ -39,7 +39,7 @@
 #include <QBoxLayout>
 
 #include <kapplication.h>
-#include <kaccelmanager.h>
+#include <kacceleratormanager.h>
 #include <kbuttonbox.h>
 #include <kfiledialog.h>
 #include <kprocess.h>

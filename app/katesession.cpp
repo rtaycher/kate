@@ -38,7 +38,7 @@
 #include <kcodecs.h>
 #include <kstdguiitem.h>
 #include <kpushbutton.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 
 #include <qdir.h>
 #include <qlabel.h>

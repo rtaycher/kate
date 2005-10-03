@@ -42,7 +42,7 @@
 #include <kconfig.h>
 #include <krun.h>
 #include <kicondialog.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include <kdebug.h>
 
 #include <qbitmap.h>

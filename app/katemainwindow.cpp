@@ -61,7 +61,7 @@
 #include <kmessagebox.h>
 #include <kmimetype.h>
 #include <kopenwith.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include <ksimpleconfig.h>
 #include <kstatusbar.h>
 #include <kstdaction.h>

@@ -40,6 +40,7 @@
 #include <QShowEvent>
 
 #include <kgenericfactory.h>
+#include <kauthorized.h>
 
 K_EXPORT_COMPONENT_FACTORY( katekonsoleplugin, KGenericFactory<Kate::Private::Plugin::KateKonsolePlugin>( "katekonsoleplugin" ) )
 
@@ -47,7 +48,7 @@ using namespace Kate::Private::Plugin;
 
 KateKonsolePlugin::KateKonsolePlugin( QObject* parent, const char* name, const QStringList&):
   Kate::Plugin ( (Kate::Application*)parent, name ) {
-  if (!kapp->authorize("shell_access")) {
+  if (!KAuthorized::authorizeKAction("shell_access")) {
     KMessageBox::sorry(0, i18n ("You don't have enough karma to access a shell or terminal emulation"));
   }
 }
@@ -55,7 +56,7 @@ KateKonsolePlugin::KateKonsolePlugin( QObject* parent, const char* name, const Q
 void KateKonsolePlugin::addView(Kate::MainWindow *win) {
   kdDebug()<<"KateKonsolePlugin::createView"<<endl;
   // ONLY ALLOW SHELL ACCESS IF ALLOWED ;)
-  if (kapp->authorize("shell_access")) {
+  if (KAuthorized::authorizeKAction("shell_access")) {
     kdDebug()<<"After auth check"<<endl;
     QWidget *toolview=win->createToolView ("kate_private_plugin_katekonsoleplugin", MainWindow::Bottom, SmallIcon("konsole"), i18n("Terminal"));
     m_views.append(new KateConsole(win,toolview));
@@ -108,7 +109,7 @@ void KateConsole::loadConsoleIfNeeded()
 
   if (!m_part) return;
 
-  KGlobal::locale()->insertCatalogue("konsole");
+  KGlobal::locale()->insertCatalog("konsole");
 
   m_part->widget()->show();
 

@@ -65,7 +65,7 @@
 #include <kmessagebox.h>
 #include <ktoolbarbutton.h>
 #include <q3toolbar.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include <kdialog.h>
 #include <kdebug.h>
 #include <kgenericfactory.h>
@@ -296,7 +296,7 @@ void Kate::Private::Plugin::KateFileSelector::readConfig(KConfig *config, const 
   cmbPath->setMaxItems( config->readNumEntry( "pathcombo history len", 9 ) );
   cmbPath->setURLs( config->readPathListEntry( "dir history" ) );
   // if we restore history
-  if ( config->readBoolEntry( "restore location", true ) || kapp->isRestored() ) {
+  if ( config->readBoolEntry( "restore location", true ) || QApplication::isSessionRestored() ) {
     QString loc( config->readPathEntry( "location" ) );
     if ( ! loc.isEmpty() ) {
 //       waitingDir = loc;
@@ -311,7 +311,7 @@ void Kate::Private::Plugin::KateFileSelector::readConfig(KConfig *config, const 
   filter->setHistoryItems( config->readListEntry("filter history"), true );
   lastFilter = config->readEntry( "last filter" );
   QString flt("");
-  if ( config->readBoolEntry( "restore last filter", true ) || kapp->isRestored() )
+  if ( config->readBoolEntry( "restore last filter", true ) || QApplication::isSessionRestored() )
     flt = config->readEntry("current filter");
   filter->lineEdit()->setText( flt );
   slotFilterChange( flt );

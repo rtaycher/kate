@@ -31,7 +31,7 @@ class KateFileSelector;
 class KActionMenu;
 
 class QTextStream;
-class KPopupMenu;
+class KMenu;
 
 namespace Kate {
 namespace Private {
@@ -42,14 +42,14 @@ class KBookmarkHandler : public QObject, public KBookmarkOwner
     Q_OBJECT
 
 public:
-    KBookmarkHandler( KateFileSelector *parent, KPopupMenu *kpopupmenu=0 );
+    KBookmarkHandler( KateFileSelector *parent, KMenu *kpopupmenu=0 );
     ~KBookmarkHandler();
 
     // KBookmarkOwner interface:
     virtual void openBookmarkURL( const QString& url ) { emit openURL( url ); }
     virtual QString currentURL() const;
 
-    KPopupMenu *menu() const { return m_menu; }
+    KMenu *menu() const { return m_menu; }
 
 signals:
     void openURL( const QString& url );
@@ -67,7 +67,7 @@ protected:
 
 private:
     KateFileSelector *mParent;
-    KPopupMenu *m_menu;
+    KMenu *m_menu;
     KBookmarkMenu *m_bookmarkMenu;
 
     QTextStream *m_importStream;

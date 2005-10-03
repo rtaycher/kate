@@ -27,7 +27,7 @@
 #include <Q3CString>
 
 #include <kbookmarkimporter.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include <ksavefile.h>
 #include <kstandarddirs.h>
 #include <kdiroperator.h>
@@ -38,7 +38,7 @@
 #include "kbookmarkhandler.h"
 #include "kbookmarkhandler.moc"
 
-Kate::Private::Plugin::KBookmarkHandler::KBookmarkHandler( KateFileSelector *parent, KPopupMenu* kpopupmenu )
+Kate::Private::Plugin::KBookmarkHandler::KBookmarkHandler( KateFileSelector *parent, KMenu* kpopupmenu )
     : QObject( parent, "KBookmarkHandler" ),
       KBookmarkOwner(),
       mParent( parent ),
@@ -46,7 +46,7 @@ Kate::Private::Plugin::KBookmarkHandler::KBookmarkHandler( KateFileSelector *par
       m_importStream( 0L )
 {
     if (!m_menu)
-      m_menu = new KPopupMenu( parent, "bookmark menu" );
+      m_menu = new KMenu( parent, "bookmark menu" );
 
     QString file = locate( "data", "kate/fsbookmarks.xml" );
     if ( file.isEmpty() )

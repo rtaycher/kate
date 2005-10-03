@@ -31,7 +31,7 @@
 #include <klocale.h>
 #include <kconfig.h>
 #include <kiconloader.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include <kvbox.h>
 #include <kmessagebox.h>
 
@@ -445,7 +445,7 @@ bool Sidebar::eventFilter(QObject *obj, QEvent *ev)
 
       if (w)
       {
-        KPopupMenu *p = new KPopupMenu (this);
+        KMenu *p = new KMenu (this);
 
         p->insertTitle(SmallIcon("view_remove"), i18n("Behavior"), 50);
 
