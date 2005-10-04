@@ -90,11 +90,10 @@ class ToolTip : public QToolTip
 //BEGIN KateFileList
 KateFileList::KateFileList (KateMainWindow *main,
                             KateViewManager *_viewManager,
-                            QWidget * parent, const char * name )
+                            QWidget * parent)
     :  KListView (parent)
     , m_sort( KateFileList::sortByID )
 {
-	setObjectName(name);
   m_main = main;
   //m_tooltip = new ToolTip( viewport(), this );
 
@@ -546,7 +545,7 @@ int KateFileListItem::compare ( Q3ListViewItem * i, int col, bool ascending ) co
 //END KateFileListItem
 
 //BEGIN KFLConfigPage
-KFLConfigPage::KFLConfigPage( QWidget* parent, const char *, KateFileList *fl )
+KFLConfigPage::KFLConfigPage( QWidget* parent, KateFileList *fl )
   :  KTextEditor::ConfigPage( parent ),
     m_filelist( fl ),
     m_changed( false )

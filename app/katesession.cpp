@@ -26,7 +26,6 @@
 
 #include "katetooltipmenu.h"
 
-
 #include <kstandarddirs.h>
 #include <klocale.h>
 #include <kdebug.h>
@@ -39,6 +38,7 @@
 #include <kstdguiitem.h>
 #include <kpushbutton.h>
 #include <kmenu.h>
+#include <kactioncollection.h>
 
 #include <qdir.h>
 #include <qlabel.h>
@@ -913,7 +913,7 @@ void KateSessionManageDialog::updateSessionList ()
 //END MANAGE DIALOG
 
 
-KateSessionsAction::KateSessionsAction(const QString& text, QObject* parent, const char* name )
+KateSessionsAction::KateSessionsAction(const QString& text, KActionCollection* parent, const char* name )
   : KActionMenu(text, parent, name)
 {
   connect(popupMenu(),SIGNAL(aboutToShow()),this,SLOT(slotAboutToShow()));

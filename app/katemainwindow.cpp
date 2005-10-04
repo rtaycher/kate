@@ -68,7 +68,6 @@
 #include <kstandarddirs.h>
 #include <ktrader.h>
 #include <kuniqueapplication.h>
-#include <kurldrag.h>
 #include <kdesktopfile.h>
 #include <khelpmenu.h>
 #include <kmultitabbar.h>
@@ -86,6 +85,9 @@
 
 #include <assert.h>
 #include <unistd.h>
+#include <ktoolinvocation.h>
+#include <kmenu.h>
+#include <kauthorized.h>
 //END
 
 uint KateMainWindow::uniqueID = 1;
@@ -171,7 +173,7 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
     KTextEditor::Document::registerCommand(KateExternalToolsCommand::self());
 */
   // connect documents menu aboutToshow
-  documentMenu = (Q3PopupMenu*)factory()->container("documents", this);
+  documentMenu = (QMenu*)factory()->container("documents", this);
   connect(documentMenu, SIGNAL(aboutToShow()), this, SLOT(documentMenuAboutToShow()));
 
   // caption update
@@ -215,7 +217,7 @@ void KateMainWindow::setupMainWindow ()
   m_viewManager = new KateViewManager (this);
 
   KateMDI::ToolView *ft = createToolView("kate_filelist", KMultiTabBar::Left, SmallIcon("kmultiple"), i18n("Documents"));
-  filelist = new KateFileList (this, m_viewManager, ft, "filelist");
+  filelist = new KateFileList (this, m_viewManager, ft);
   //filelist->readConfig(KateApp::self()->config(), "Filelist");
 
 #if 0    
@@ -267,7 +269,7 @@ void KateMainWindow::setupActions()
   a=new KAction(i18n("&New Window"), "window_new", 0, this, SLOT(newWindow()), actionCollection(), "view_new_view");
   a->setWhatsThis(i18n("Create a new Kate view (a new window with the same document list)."));
 
-  if ( KateApp::self()->authorize("shell_access") )
+  if ( KAuthorized::authorize("shell_access") )
   {
     externalTools = new KateExternalToolsMenuAction( i18n("External Tools"), actionCollection(), "tools_external", this );
     externalTools->setWhatsThis( i18n("Launch external helper applications") );
@@ -526,7 +528,8 @@ void KateMainWindow::slotGrepToolItemSelected(const QString &filename,int linenu
 
 void KateMainWindow::dragEnterEvent( QDragEnterEvent *event )
 {
-  event->accept(KURLDrag::canDecode(event));
+  if (!event->mimeData()) return;
+  event->accept(KURL::List::canDecode(event->mimeData()));
 }
 
 void KateMainWindow::dropEvent( QDropEvent *event )
@@ -536,8 +539,8 @@ void KateMainWindow::dropEvent( QDropEvent *event )
 
 void KateMainWindow::slotDropEvent( QDropEvent * event )
 {
-  KURL::List textlist;
-  if (!KURLDrag::decode(event, textlist)) return;
+  if (event->mimeData()==0) return;
+  KURL::List textlist=KURL::List::fromMimeData(event->mimeData());
 
   for (KURL::List::Iterator i=textlist.begin(); i != textlist.end(); ++i)
   {
@@ -657,7 +660,7 @@ void KateMainWindow::slotOpenWithMenuAction(int idx)
 
 void KateMainWindow::pluginHelp()
 {
-  KateApp::self()->invokeHelp (QString::null, "kate-plugins");
+  KToolInvocation::invokeHelp (QString::null, "kate-plugins");
 }
 
 void KateMainWindow::aboutEditor()
@@ -728,7 +731,7 @@ void KateMainWindow::slotMail()
   } // check selected docs done
   if ( ! urls.count() )
     return;
-  KateApp::self()->invokeMailer( QString::null, // to
+  KToolInvocation::invokeMailer( QString::null, // to
                       QString::null, // cc
                       QString::null, // bcc
                       QString::null, // subject

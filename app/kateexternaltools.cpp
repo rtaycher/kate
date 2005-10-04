@@ -60,7 +60,7 @@
 //Added by qt3to4:
 #include <QPixmap>
 #include <QGridLayout>
-
+#include <kmenu.h>
 #include <stdlib.h>
 #include <unistd.h>
 //END Includes
@@ -227,16 +227,16 @@ bool KateExternalToolsCommand::help (KTextEditor::View *, const QString &, QStri
 //END KateExternalToolsCommand
 
 //BEGIN KateExternalToolAction
-KateExternalToolAction::KateExternalToolAction( QObject *parent,
+KateExternalToolAction::KateExternalToolAction( KActionCollection *parent,
              const char *name, KateExternalTool *t)
-  : KAction( parent, name ),
+  : KAction( t->name,(t->icon.isEmpty() ? ((const QIcon&)0):SmallIconSet(t->icon)),0,this,SLOT(slotRun()),parent, name ),
     tool ( t )
 {
-  setText( t->name );
-  if ( ! t->icon.isEmpty() )
-    setIconSet( SmallIconSet( t->icon ) );
+  //setText( t->name );
+  //if ( ! t->icon.isEmpty() )
+  //  setIconSet( SmallIconSet( t->icon ) );
 
-  connect( this ,SIGNAL(activated()), this, SLOT(slotRun()) );
+  //connect( this ,SIGNAL(activated()), this, SLOT(slotRun()) );
 }
 
 bool KateExternalToolAction::expandMacro( const QString &str, QStringList &ret )
@@ -301,7 +301,7 @@ void KateExternalToolAction::slotRun()
 
 //BEGIN KateExternalToolsMenuAction
 KateExternalToolsMenuAction::KateExternalToolsMenuAction( const QString &text,
-                                               QObject *parent,
+                                               KActionCollection *parent,
                                                const char* name,
                                                KateMainWindow *mw )
     : KActionMenu( text, parent, name ),

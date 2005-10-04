@@ -28,7 +28,7 @@
 #include <qevent.h>
 #include <qlabel.h>
 #include <qstringlist.h>
-#include <q3vbox.h>
+#include <kvbox.h>
 //Added by qt3to4:
 #include <Q3PtrList>
 

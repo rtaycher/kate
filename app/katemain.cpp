@@ -101,7 +101,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
   // command line args init and co
   KCmdLineArgs::init (argc, argv, &aboutData);
   KCmdLineArgs::addCmdLineOptions (options);
-  KateApp::addCmdLineOptions ();
+  //KateApp::addCmdLineOptions ();
 
   // get our command line args ;)
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();

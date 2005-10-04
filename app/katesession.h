@@ -30,7 +30,7 @@
 #include <q3valuelist.h>
 #include <QList>
 class KateSessionManager;
-
+class KActionCollection;
 class KDirWatch;
 class KListView;
 class KPushButton;
@@ -422,7 +422,7 @@ class KateSessionsAction : public KActionMenu
   Q_OBJECT
 
   public:
-    KateSessionsAction(const QString& text, QObject* parent = 0, const char* name = 0);
+    KateSessionsAction(const QString& text, KActionCollection* parent = 0, const char* name = 0);
     ~KateSessionsAction (){;};
 
   public  slots:

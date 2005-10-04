@@ -35,6 +35,7 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kstringhandler.h>
+#include <kxmlguifactory.h>
 
 #include <QStackedWidget>
 #include <qpainter.h>
@@ -301,8 +302,8 @@ void KateViewSpace::restoreConfig ( KateViewSpaceContainer *viewMan, KConfig* co
 //END KateViewSpace
 
 //BEGIN KateVSStatusBar
-KateVSStatusBar::KateVSStatusBar ( KateViewSpace *parent, const char *name )
-  : KStatusBar( parent, name ),
+KateVSStatusBar::KateVSStatusBar ( KateViewSpace *parent)
+  : KStatusBar( parent),
     m_viewSpace( parent )
 {
   m_lineColLabel = new QLabel( this );

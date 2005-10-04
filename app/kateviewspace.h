@@ -49,7 +49,7 @@ class KateVSStatusBar : public KStatusBar
   Q_OBJECT
 
    public:
-      KateVSStatusBar ( KateViewSpace *parent = 0L, const char *name = 0L );
+      KateVSStatusBar ( KateViewSpace *parent = 0L);
       virtual ~KateVSStatusBar ();
 
    /**

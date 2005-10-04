@@ -36,6 +36,9 @@
 #include <QDropEvent>
 #include <QVBoxLayout>
 
+class QMenu;
+
+
 class KateTabWidget;
 class GrepTool;
 
@@ -205,7 +208,7 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
 
     KActionMenu* documentOpenWith;
 
-    Q3PopupMenu *documentMenu;
+    QMenu *documentMenu;
 
     KToggleAction* settingsShowFilelist;
     KToggleAction* settingsShowFileselector;

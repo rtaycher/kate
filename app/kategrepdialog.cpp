@@ -170,7 +170,7 @@ GrepTool::GrepTool(QWidget *parent, const char *name)
   KComboBox* cmbUrl = new KComboBox(true, this);
   cmbUrl->setMinimumWidth(80); // make sure that 800x600 res works
   cmbUrl->setDuplicatesEnabled(false);
-  cmbDir = new KURLRequester( cmbUrl, this, "dir combo" );
+  cmbDir = new KURLRequester( cmbUrl, this);
   cmbDir->completionObject()->setMode(KURLCompletion::DirCompletion);
   cmbDir->comboBox()->insertStringList(lastSearchPaths);
   cmbDir->setMode( KFile::Directory|KFile::LocalOnly );

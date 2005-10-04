@@ -188,7 +188,7 @@ Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mai
   toolbar->setFlat(true);
   qInstallMsgHandler( oldHandler );
 
-  cmbPath = new KURLComboBox( KURLComboBox::Directories, true, this, "path combo" );
+  cmbPath = new KURLComboBox( KURLComboBox::Directories, true, this);
   cmbPath->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
   KURLCompletion* cmpl = new KURLCompletion(KURLCompletion::DirCompletion);
   cmbPath->setCompletionObject( cmpl );
@@ -197,7 +197,7 @@ Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mai
 // FIXME
 //  cmbPath->listBox()->installEventFilter( this );
 
-  dir = new KDirOperator(KURL(), this, "operator");
+  dir = new KDirOperator(KURL(), this);
   dir->setView(KFile::/* Simple */Detail);
   dir->view()->setSelectionMode(KFile::Multi);
   setStretchFactor(dir, 2);
@@ -223,7 +223,7 @@ Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mai
   btnFilter = new QToolButton( filterBox );
   btnFilter->setIconSet( SmallIconSet("filter" ) );
   btnFilter->setToggleButton( true );
-  filter = new KHistoryCombo( true, filterBox, "filter");
+  filter = new KHistoryCombo( true, filterBox);
   filter->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
   filterBox->setStretchFactor(filter, 2);
   connect( btnFilter, SIGNAL( clicked() ), this, SLOT( btnFilterClick() ) );
@@ -296,7 +296,7 @@ void Kate::Private::Plugin::KateFileSelector::readConfig(KConfig *config, const 
   cmbPath->setMaxItems( config->readNumEntry( "pathcombo history len", 9 ) );
   cmbPath->setURLs( config->readPathListEntry( "dir history" ) );
   // if we restore history
-  if ( config->readBoolEntry( "restore location", true ) || QApplication::isSessionRestored() ) {
+  if ( config->readBoolEntry( "restore location", true ) || qApp->isSessionRestored() ) {
     QString loc( config->readPathEntry( "location" ) );
     if ( ! loc.isEmpty() ) {
 //       waitingDir = loc;
@@ -311,7 +311,7 @@ void Kate::Private::Plugin::KateFileSelector::readConfig(KConfig *config, const 
   filter->setHistoryItems( config->readListEntry("filter history"), true );
   lastFilter = config->readEntry( "last filter" );
   QString flt("");
-  if ( config->readBoolEntry( "restore last filter", true ) || QApplication::isSessionRestored() )
+  if ( config->readBoolEntry( "restore last filter", true ) || qApp->isSessionRestored() )
     flt = config->readEntry("current filter");
   filter->lineEdit()->setText( flt );
   slotFilterChange( flt );

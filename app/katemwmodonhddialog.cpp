@@ -37,7 +37,7 @@
 #include <q3listview.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
-#include <q3vbox.h>
+#include <kvbox.h>
 #include <QTextStream>
 
 class KateDocItem : public Q3CheckListItem
@@ -77,7 +77,7 @@ KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const
   KVBox *w = makeVBoxMainWidget();
   w->setSpacing( KDialog::spacingHint() );
 
-  Q3HBox *lo1 = new Q3HBox( w );
+  KHBox *lo1 = new KHBox( w );
 
   // dialog text
   QLabel *icon = new QLabel( lo1 );
@@ -102,7 +102,7 @@ KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const
   connect( lvDocuments, SIGNAL(selectionChanged()), this, SLOT(slotSelectionChanged()) );
 
   // diff button
-  Q3HBox *lo2 = new Q3HBox ( w );
+  KHBox *lo2 = new KHBox ( w );
   QWidget *d = new QWidget (lo2);
   lo2->setStretchFactor (d, 2);
   btnDiff = new KPushButton( KGuiItem (i18n("&View Difference"), "edit"), lo2 );

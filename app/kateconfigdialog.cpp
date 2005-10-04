@@ -57,7 +57,7 @@
 #include <kpushbutton.h>
 #include <qradiobutton.h>
 #include <qspinbox.h>
-#include <q3vbox.h>
+#include <kvbox.h>
 #include <qcombobox.h>
 //Added by qt3to4:
 #include <QVBoxLayout>
@@ -171,7 +171,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
 
 
   // editor component
-  m_editorChooser=new KTextEditor::EditorChooser(frGeneral/*,"Editor Chooser"*/);
+  m_editorChooser=new KTextEditor::EditorChooser(frGeneral);
   m_editorChooser->readAppSetting();
   connect(m_editorChooser,SIGNAL(changed()),this,SLOT(slotChanged()));
   lo->addWidget(m_editorChooser);
@@ -265,7 +265,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   path << i18n("Application") << i18n("Document List");
   page = addVBoxPage( path, i18n("Document List Settings"),
   BarIcon("view_text", KIcon::SizeSmall) );
-  filelistConfigPage = new KFLConfigPage( page, "file list config page",
+  filelistConfigPage = new KFLConfigPage( page,
 					  mainWindow->filelist );
   connect( filelistConfigPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
   path.clear();

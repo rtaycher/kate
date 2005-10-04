@@ -34,6 +34,8 @@
 #include <kmenu.h>
 #include <kvbox.h>
 #include <kmessagebox.h>
+#include <kactioncollection.h>
+#include <kxmlguifactory.h>
 
 #include <QVBoxLayout>
 #include <q3vbox.h>
@@ -51,7 +53,7 @@ namespace KateMDI {
 //BEGIN TOGGLETOOLVIEWACTION
 
 ToggleToolViewAction::ToggleToolViewAction ( const QString& text, const KShortcut& cut, ToolView *tv,
-                                             QObject* parent, const char* name )
+                                             KActionCollection* parent, const char* name )
  : KToggleAction(text,cut,parent,name)
  , m_tv(tv)
 {
@@ -130,7 +132,7 @@ GUIClient::GUIClient ( MainWindow *mw )
            m_mw, SLOT( setSidebarsVisible( bool ) ) );
 
   m_toolMenu->insert( m_showSidebarsAction );
-  m_toolMenu->insert( new KActionSeparator( m_toolMenu ) );
+  m_toolMenu->insert( new KActionSeparator( actionCollection() ) );
 
   // read shortcuts
   actionCollection()->readShortcutSettings( "Shortcuts", kapp->config() );
@@ -447,26 +449,27 @@ bool Sidebar::eventFilter(QObject *obj, QEvent *ev)
       {
         KMenu *p = new KMenu (this);
 
-        p->insertTitle(SmallIcon("view_remove"), i18n("Behavior"), 50);
+        p->addTitle(SmallIcon("view_remove"), i18n("Behavior"));
 
-        p->insertItem(w->persistent ? SmallIconSet("window_nofullscreen") : SmallIconSet("window_fullscreen"), w->persistent ? i18n("Make Non-Persistent") : i18n("Make Persistent"), 10);
+        p->addAction(w->persistent ? SmallIconSet("window_nofullscreen") : SmallIconSet("window_fullscreen"),
+		w->persistent ? i18n("Make Non-Persistent") : i18n("Make Persistent") ) -> setData(10);
 
-        p->insertTitle(SmallIcon("move"), i18n("Move To"), 51);
+        p->addTitle(SmallIcon("move"), i18n("Move To"));
 
         if (position() != 0)
-          p->insertItem(SmallIconSet("back"), i18n("Left Sidebar"),0);
+          p->addAction(SmallIconSet("back"), i18n("Left Sidebar"))->setData(0);
 
         if (position() != 1)
-          p->insertItem(SmallIconSet("forward"), i18n("Right Sidebar"),1);
+          p->addAction(SmallIconSet("forward"), i18n("Right Sidebar"))->setData(1);
 
         if (position() != 2)
-          p->insertItem(SmallIconSet("up"), i18n("Top Sidebar"),2);
+          p->addAction(SmallIconSet("up"), i18n("Top Sidebar"))->setData(2);
 
         if (position() != 3)
-          p->insertItem(SmallIconSet("down"), i18n("Bottom Sidebar"),3);
+          p->addAction(SmallIconSet("down"), i18n("Bottom Sidebar"))->setData(3);
 
-        connect(p, SIGNAL(activated(int)),
-              this, SLOT(buttonPopupActivate(int)));
+        connect(p, SIGNAL(triggered(QAction *)),
+              this, SLOT(buttonPopupActivate(QAction *)));
 
         p->exec(e->globalPos());
         delete p;
@@ -488,8 +491,9 @@ void Sidebar::setVisible(bool visible)
   KMultiTabBar::setVisible(visible);
 }
 
-void Sidebar::buttonPopupActivate (int id)
+void Sidebar::buttonPopupActivate (QAction *a)
 {
+  int id=a->data().toInt();
   ToolView *w = m_idToWidget[m_popupButton];
 
   if (!w)

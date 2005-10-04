@@ -22,6 +22,7 @@
 #include "plugin.moc"
 
 #include <kparts/componentfactory.h>
+#include <klibloader.h>
 
 namespace Kate
 {

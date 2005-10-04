@@ -38,6 +38,9 @@
 #include <QEvent>
 #include <QChildEvent>
 
+class KActionCollection;
+class QAction;
+
 namespace KateMDI {
 
 class ToolView;
@@ -48,7 +51,7 @@ class ToggleToolViewAction : public KToggleAction
 
   public:
     ToggleToolViewAction ( const QString& text, const KShortcut& cut,
-                           class ToolView *tv, QObject* parent = 0, const char* name = 0 );
+                           class ToolView *tv, KActionCollection* parent = 0, const char* name = 0 );
 
     virtual ~ToggleToolViewAction();
 
@@ -205,7 +208,7 @@ class Sidebar : public KMultiTabBar
     bool eventFilter(QObject *obj, QEvent *ev);
 
   private slots:
-    void buttonPopupActivate (int id);
+    void buttonPopupActivate (QAction *);
 
   private:
     MainWindow *m_mainWin;

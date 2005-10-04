@@ -87,7 +87,7 @@ class KateFileList : public KListView
   friend class KFLConfigPage;
 
   public:
-    KateFileList (KateMainWindow *main, KateViewManager *_viewManager, QWidget * parent = 0, const char * name = 0 );
+    KateFileList (KateMainWindow *main, KateViewManager *_viewManager, QWidget * parent = 0);
     ~KateFileList ();
 
     int sortType () const { return m_sort; };
@@ -168,7 +168,7 @@ class KateFileList : public KListView
 class KFLConfigPage : public KTextEditor::ConfigPage {
   Q_OBJECT
   public:
-    KFLConfigPage( QWidget* parent=0, const char *name=0, KateFileList *fl=0 );
+    KFLConfigPage( QWidget* parent=0, KateFileList *fl=0 );
     virtual ~KFLConfigPage() {};
 
     virtual void apply();

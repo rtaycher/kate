@@ -28,12 +28,13 @@
 #include <kguiitem.h>
 #include <kactivelabel.h>
 #include <kstdguiitem.h>
-#include <q3vbox.h>
+#include <kvbox.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
 #include <kdebug.h>
+#include <kinstance.h>
 #include <kencodingfiledialog.h>
 
 class AbstractKateSaveModifiedDialogCheckListItem:public QTreeWidgetItem {

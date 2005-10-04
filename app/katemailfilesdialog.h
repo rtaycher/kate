@@ -54,7 +54,7 @@ class KateMailDialog : public KDialogBase {
     class KListView *list;
     class QLabel *lInfo;
     KateMainWindow *mainWindow;
-    class Q3VBox *mw;
+    class KVBox *mw;
 
 };
 
