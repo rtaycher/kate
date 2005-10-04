@@ -91,7 +91,7 @@ unsigned int PluginViewInterface::pluginViewInterfaceNumber () const
 
 Plugin *createPlugin ( const char* libname, Application *application, const char *name, const QStringList &args )
 {
-  return KParts::ComponentFactory::createInstanceFromLibrary<Plugin>( libname, application, name, args);
+  return KLibLoader::createInstance<Plugin>( libname, application, name, args);
 }
 
 PluginViewInterface *pluginViewInterface (Plugin *plugin)
