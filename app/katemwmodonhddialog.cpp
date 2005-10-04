@@ -74,7 +74,7 @@ KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const
       "Reloads the selected documents from disk and closes the dialog if there "
       "are no more unhandled documents.") );
 
-  Q3VBox *w = makeVBoxMainWidget();
+  KVBox *w = makeVBoxMainWidget();
   w->setSpacing( KDialog::spacingHint() );
 
   Q3HBox *lo1 = new Q3HBox( w );

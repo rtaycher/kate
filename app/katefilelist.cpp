@@ -54,6 +54,7 @@
 #include <kstringhandler.h>
 #include <kcolorbutton.h>
 #include <kdialog.h>
+#include <kxmlguifactory.h>
 //END Includes
 
 //BEGIN ToolTip
@@ -90,9 +91,10 @@ class ToolTip : public QToolTip
 KateFileList::KateFileList (KateMainWindow *main,
                             KateViewManager *_viewManager,
                             QWidget * parent, const char * name )
-    :  KListView (parent, name)
+    :  KListView (parent)
     , m_sort( KateFileList::sortByID )
 {
+	setObjectName(name);
   m_main = main;
   //m_tooltip = new ToolTip( viewport(), this );
 

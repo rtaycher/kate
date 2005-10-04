@@ -144,7 +144,7 @@ KateSaveModifiedDialog::KateSaveModifiedDialog(QWidget *parent, QList<KTextEdito
 	cancelItem.setText(i18n("&Abort Closing"));
 	setButtonGuiItem(KDialogBase::Cancel,cancelItem);
 
-	Q3VBox *box=makeVBoxMainWidget();
+	KVBox *box=makeVBoxMainWidget();
 	new KActiveLabel(i18n("<qt>The following documents have been modified. Do you want to save them before closing?</qt>"),box);
 	m_list=new QTreeWidget(box);
 	/*m_list->addColumn(i18n("Title"));

@@ -30,7 +30,7 @@
 //#include "katefileselector.h"
 #include "katefilelist.h"
 #include "kateexternaltools.h"
-
+#include <kvbox.h>
 #include <ktexteditor/configpage.h>
 
 #include <kinstance.h>
@@ -254,14 +254,14 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
 #if 0
   path << i18n("Application") << i18n("File Selector");
 
-  Q3VBox *page = addVBoxPage( path, i18n("File Selector Settings"),
+  KVBox *page = addVBoxPage( path, i18n("File Selector Settings"),
                               BarIcon("fileopen", KIcon::SizeSmall) );
   fileSelConfigPage = new KFSConfigPage( page, "file selector config page",
                                          mainWindow->fileselector );
   connect( fileSelConfigPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
   path.clear();
 #endif
-  Q3VBox *page;
+  KVBox *page;
   path << i18n("Application") << i18n("Document List");
   page = addVBoxPage( path, i18n("Document List Settings"),
   BarIcon("view_text", KIcon::SizeSmall) );
@@ -328,7 +328,7 @@ void KateConfigDialog::addPluginPage (Kate::Plugin *plugin)
     QStringList path;
     path.clear();
     path << i18n("Application")<<i18n("Plugins") << Kate::pluginConfigPageInterface(plugin)->configPageName(i);
-    Q3VBox *page=addVBoxPage(path, Kate::pluginConfigPageInterface(plugin)->configPageFullName(i), Kate::pluginConfigPageInterface(plugin)->configPagePixmap(i, KIcon::SizeSmall));
+    KVBox *page=addVBoxPage(path, Kate::pluginConfigPageInterface(plugin)->configPageFullName(i), Kate::pluginConfigPageInterface(plugin)->configPagePixmap(i, KIcon::SizeSmall));
 
     PluginPageListItem *info=new PluginPageListItem;
     info->plugin = plugin;

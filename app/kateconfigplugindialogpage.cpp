@@ -63,8 +63,9 @@ void KatePluginListItem::stateChange(bool b)
 }
 
 KatePluginListView::KatePluginListView(QWidget *parent, const char *name)
-  : KListView(parent, name)
+  : KListView(parent)
 {
+		setObjectName(name);
 }
 
 void KatePluginListView::stateChanged(KatePluginListItem *item, bool b)
