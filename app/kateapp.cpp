@@ -117,7 +117,7 @@ QString KateApp::kateVersion (bool fullVersion)
 void KateApp::initKate ()
 {
   // handle restore different
-  if (isRestored())
+  if (isSessionRestored())
   {
     restoreKate ();
   }

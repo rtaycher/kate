@@ -229,7 +229,7 @@ bool KateExternalToolsCommand::help (KTextEditor::View *, const QString &, QStri
 //BEGIN KateExternalToolAction
 KateExternalToolAction::KateExternalToolAction( KActionCollection *parent,
              const char *name, KateExternalTool *t)
-  : KAction( t->name,(t->icon.isEmpty() ? ((const QIcon&)0):SmallIconSet(t->icon)),0,this,SLOT(slotRun()),parent, name ),
+  : KAction( t->name,(t->icon.isEmpty() ? QIcon() : SmallIconSet(t->icon)),0,this,SLOT(slotRun()),parent, name ),
     tool ( t )
 {
   //setText( t->name );
