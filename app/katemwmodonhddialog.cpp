@@ -138,14 +138,15 @@ void KateMwModOnHdDialog::slotUser3()
 
 void KateMwModOnHdDialog::handleSelected( int action )
 {
-  Q3ListViewItemIterator it ( lvDocuments );
-  while ( it.current() )
+  // collect all items we can remove
+  Q3ValueList<Q3ListViewItem *> itemsToDelete;
+  for ( Q3ListViewItemIterator it ( lvDocuments ); it.current(); ++it )
   {
-    KateDocItem *item = (KateDocItem*)it.current();
+    KateDocItem *item = static_cast<KateDocItem *>(it.current());
     if ( item->isOn() )
     {
       KTextEditor::ModificationInterface::ModifiedOnDiskReason reason = KateDocManager::self()->documentInfo( item->document )->modifiedOnDiscReason;
-      bool succes = true;
+      bool success = true;
 
       if (KTextEditor::ModificationInterface *iface = qobject_cast<KTextEditor::ModificationInterface *>(item->document))
         iface->setModifiedOnDisk( KTextEditor::ModificationInterface::OnDiskUnmodified );
@@ -153,26 +154,25 @@ void KateMwModOnHdDialog::handleSelected( int action )
       switch ( action )
       {
         case Overwrite:
-          succes = item->document->save();
-          if ( ! succes )
+          success = item->document->save();
+          if ( ! success )
           {
             KMessageBox::sorry( this,
                                 i18n("Could not save the document \n'%1'").
                                     arg( item->document->url().prettyURL() ) );
           }
           break;
+
         case Reload:
           item->document->documentReload();
           break;
+
         default:
           break;
       }
 
-      if ( succes )
-      {
-        lvDocuments->takeItem( item );
-        delete item;
-      }
+      if ( success )
+        itemsToDelete.append( item );
       else
       {
         if (KTextEditor::ModificationInterface *iface = qobject_cast<KTextEditor::ModificationInterface *>(item->document))
@@ -181,6 +181,11 @@ void KateMwModOnHdDialog::handleSelected( int action )
     }
   }
 
+  // remove the marked items
+  for (unsigned int i=0; i < itemsToDelete.count(); ++i)
+    delete itemsToDelete[i];
+
+// any documents left unhandled?
   if ( ! lvDocuments->childCount() )
     done( Ok );
 }
