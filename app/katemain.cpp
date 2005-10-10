@@ -29,6 +29,7 @@
 #include <dcopclient.h>
 #include <dcopref.h>
 #include <kdebug.h>
+#include <kurl.h>
 
 #include <qtextcodec.h>
 #include <QTextIStream>

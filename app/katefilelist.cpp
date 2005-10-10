@@ -227,7 +227,7 @@ void KateFileList::slotDocumentCreated (KTextEditor::Document *doc)
   new KateFileListItem( this, doc/*, doc->documentNumber()*/ );
   connect(doc,SIGNAL(modifiedChanged(KTextEditor::Document *)),this,SLOT(slotModChanged(KTextEditor::Document *)));
   connect(doc,SIGNAL(documentNameChanged(KTextEditor::Document *)),this,SLOT(slotNameChanged(KTextEditor::Document *)));
-  connect(doc,SIGNAL(modifiedOnDisk(KTextEditor::Document *, bool, ModifiedOnDiskReason)),this,SLOT(slotModifiedOnDisc(KTextEditor::Document *, bool, ModifiedOnDiskReason)));
+  connect(doc,SIGNAL(modifiedOnDisk(KTextEditor::Document *, bool, KTextEditor::ModificationInterface::ModifiedOnDiskReason)),this,SLOT(slotModifiedOnDisc(KTextEditor::Document *, bool, KTextEditor::ModificationInterface::ModifiedOnDiskReason)));
 
   sort();
   updateActions ();
