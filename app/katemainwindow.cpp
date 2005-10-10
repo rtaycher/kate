@@ -227,7 +227,7 @@ void KateMainWindow::setupMainWindow ()
 #endif
 #if 0
   // ONLY ALLOW SHELL ACCESS IF ALLOWED ;)
-  if (KateApp::self()->authorize("shell_access"))
+  if (KAuthorized::authorize("shell_access"))
   {
     t = createToolView("kate_greptool", KMultiTabBar::Bottom, SmallIcon("filefind"), i18n("Find in Files") );
     greptool = new GrepTool( t, "greptool" );

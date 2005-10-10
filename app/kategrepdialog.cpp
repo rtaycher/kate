@@ -82,6 +82,16 @@ GrepTool::GrepTool(QWidget *parent, const char *name)
   lastSearchPaths = config->readListEntry("LastSearchPaths");
   lastSearchFiles = config->readListEntry("LastSearchFiles");
 
+  if( lastSearchFiles.isEmpty() )
+  {
+    // if there are no entries, most probably the first Kate start.
+    // Initialize with default values.
+    lastSearchFiles << "*.h,*.hxx,*.cpp,*.cc,*.C,*.cxx,*.idl,*.c"
+                    << "*.cpp,*.cc,*.C,*.cxx,*.c"
+                    << "*.h,*.hxx,*.idl"
+                    << "*";
+  }
+
   QGridLayout *layout = new QGridLayout(this, 6, 3, 4, 4);
   layout->setColStretch(0, 10);
   layout->addColSpacing(1, 10);
@@ -102,11 +112,12 @@ GrepTool::GrepTool(QWidget *parent, const char *name)
 
   QBoxLayout *loPattern = new QHBoxLayout( 4 );
   loInput->addLayout( loPattern, 0, 1 );
-  cmbPattern = new QComboBox(true, this);
+  cmbPattern = new QComboBox(this);
+  cmbPattern->setEditable(true);
   cmbPattern->setDuplicatesEnabled(false);
-  cmbPattern->insertStringList(lastSearchItems);
+  cmbPattern->insertItems(0, lastSearchItems);
   cmbPattern->setEditText(QString::null);
-  cmbPattern->setInsertionPolicy(QComboBox::NoInsertion);
+  cmbPattern->setInsertPolicy(QComboBox::NoInsert);
   lPattern->setBuddy(cmbPattern);
   cmbPattern->setFocus();
   cmbPattern->setMinimumSize(cmbPattern->sizeHint());
@@ -149,15 +160,13 @@ GrepTool::GrepTool(QWidget *parent, const char *name)
   lFiles->setFixedSize(lFiles->sizeHint());
   loInput->addWidget(lFiles, 2, 0, Qt::AlignRight | Qt::AlignVCenter);
 
-  cmbFiles = new QComboBox(true, this);
+  cmbFiles = new QComboBox(this);
+  cmbFiles->setEditable(true);
   lFiles->setBuddy(cmbFiles->focusProxy());
   cmbFiles->setMinimumSize(cmbFiles->sizeHint());
+  cmbFiles->setInsertPolicy(QComboBox::NoInsert);
   cmbFiles->setDuplicatesEnabled(false);
-  cmbFiles->insertStringList(lastSearchFiles);
-  cmbFiles->insertItem("*.h,*.hxx,*.cpp,*.cc,*.C,*.cxx,*.idl,*.c");
-  cmbFiles->insertItem("*.cpp,*.cc,*.C,*.cxx,*.c");
-  cmbFiles->insertItem("*.h,*.hxx,*.idl");
-  cmbFiles->insertItem("*");
+  cmbFiles->insertItems(0, lastSearchFiles);
   loInput->addWidget(cmbFiles, 2, 1);
 
   QLabel *lDir = new QLabel(i18n("Folder:"), this);
@@ -172,7 +181,7 @@ GrepTool::GrepTool(QWidget *parent, const char *name)
   cmbUrl->setDuplicatesEnabled(false);
   cmbDir = new KURLRequester( cmbUrl, this);
   cmbDir->completionObject()->setMode(KURLCompletion::DirCompletion);
-  cmbDir->comboBox()->insertStringList(lastSearchPaths);
+  cmbDir->comboBox()->insertItems(0, lastSearchPaths);
   cmbDir->setMode( KFile::Directory|KFile::LocalOnly );
   loDir->addWidget(cmbDir, 1);
   lDir->setBuddy(cmbDir);
@@ -405,43 +414,58 @@ void GrepTool::finish()
 
   config->setGroup("GrepTool");
 
-  if (lastSearchItems.contains(cmbPattern->currentText()) == 0)
+  QString cmbText = cmbPattern->currentText();
+  bool itemsRemoved = lastSearchItems.removeAll(cmbText) > 0;
+  lastSearchItems.prepend(cmbText);
+  if (itemsRemoved)
   {
-    cmbPattern->insertItem(cmbPattern->currentText(), 0);
-    lastSearchItems.prepend(cmbPattern->currentText());
-    if (lastSearchItems.count() > 10) {
-      lastSearchItems.remove(lastSearchItems.fromLast());
-      cmbPattern->removeItem(cmbPattern->count() - 1);
-    }
-    config->writeEntry("LastSearchItems", lastSearchItems);
+    cmbPattern->removeItem(cmbPattern->findText(cmbText));
   }
+  cmbPattern->insertItem(0, cmbText);
+  cmbPattern->setCurrentIndex(0);
+  if (lastSearchItems.count() > 10) {
+    lastSearchItems.pop_back();
+    cmbPattern->removeItem(cmbPattern->count() - 1);
+  }
+  config->writeEntry("LastSearchItems", lastSearchItems);
 
-  if (lastSearchPaths.contains(cmbDir->url()) == 0)
-  {
-    cmbDir->comboBox()->insertItem(cmbDir->url(), 0);
-    lastSearchPaths.prepend(cmbDir->url());
-    if (lastSearchPaths.count() > 10)
-    {
-      lastSearchPaths.remove(lastSearchPaths.fromLast());
-      cmbDir->comboBox()->removeItem(cmbDir->comboBox()->count() - 1);
-    }
-    config->writeEntry("LastSearchPaths", lastSearchPaths);
-  }
 
-  if (lastSearchFiles.contains(cmbFiles->currentText()) == 0)
+  cmbText = cmbDir->url();
+  itemsRemoved = lastSearchPaths.removeAll(cmbText) > 0;
+  lastSearchPaths.prepend(cmbText);
+  if (itemsRemoved)
   {
-    cmbFiles->insertItem(cmbFiles->currentText(), 0);
-    lastSearchFiles.prepend(cmbFiles->currentText());
-    if (lastSearchItems.count() > 10) {
-      lastSearchFiles.remove(lastSearchFiles.fromLast());
-      cmbFiles->removeItem(cmbFiles->count() - 1);
-    }
-    config->writeEntry("LastSearchFiles", lastSearchFiles);
+    cmbDir->comboBox()->removeItem(cmbDir->comboBox()->findText(cmbText));
   }
+  cmbDir->comboBox()->insertItem(0, cmbText);
+  cmbDir->comboBox()->setCurrentIndex(0);
+  if (lastSearchPaths.count() > 10)
+  {
+    lastSearchPaths.pop_back();
+    cmbDir->comboBox()->removeItem(cmbDir->comboBox()->count() - 1);
+  }
+  config->writeEntry("LastSearchPaths", lastSearchPaths);
+
+
+  cmbText = cmbFiles->currentText();
+  // remove and prepend, so that the mose recently used item is on top
+  itemsRemoved = lastSearchFiles.remove(cmbText) > 0;
+  lastSearchFiles.prepend(cmbText);
+  if (itemsRemoved) // combo box already contained item -> remove it first
+  {
+    cmbFiles->removeItem(cmbFiles->findText(cmbText));
+  }
+  cmbFiles->insertItem(0, cmbText);
+  cmbFiles->setCurrentIndex(0);
+  if (lastSearchFiles.count() > 10) {
+    lastSearchFiles.pop_back();
+    cmbFiles->removeItem(cmbFiles->count() - 1);
+  }
+  config->writeEntry("LastSearchFiles", lastSearchFiles);
 
   config->writeEntry("Recursive", cbRecursive->isChecked());
   config->writeEntry("CaseSensitive", cbCasesensitive->isChecked());
-  config->writeEntry( "Regex", cbRegex->isChecked() );
+  config->writeEntry("Regex", cbRegex->isChecked());
 }
 
 void GrepTool::slotCancel()
