@@ -170,7 +170,7 @@ KateSaveModifiedDialog::KateSaveModifiedDialog(QWidget *parent, QList<KTextEdito
 	//FIXME - Is this the best way?
 	connect(m_list, SIGNAL(itemActivated(QTreeWidgetItem *,int)), SLOT(slotItemActivated(QTreeWidgetItem *,int)));
 	connect(m_list, SIGNAL(itemClicked(QTreeWidgetItem *,int)), SLOT(slotItemActivated(QTreeWidgetItem *,int)));
-	connect(m_list, SIGNAL(itemDoubleCliced(QTreeWidgetItem *,int)), SLOT(slotItemActivated(QTreeWidgetItem *,int)));
+	connect(m_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem *,int)), SLOT(slotItemActivated(QTreeWidgetItem *,int)));
 	if(documents.count()>3) { //For 3 or less, it would be quicker just to tick or untick them yourself, so don't clutter the gui.
 		connect(new QPushButton(i18n("Se&lect All"),box),SIGNAL(clicked()),this,SLOT(slotSelectAll()));
 	}
