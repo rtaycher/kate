@@ -74,8 +74,6 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
 {
   KConfig *config = KateApp::self()->config();
 
-  KWin::setIcons( winId(), KateApp::self()->icon(), KateApp::self()->miniIcon() );
-
   actionButton( KDialogBase::Apply)->setEnabled( false );
 
   mainWindow = parent;
