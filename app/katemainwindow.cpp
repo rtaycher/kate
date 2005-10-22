@@ -141,7 +141,7 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
         size.setHeight (KateApp::self()->config()->readNumEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ));
 
         if (size.isEmpty())
-          size = QSize (qMin (700, desk.width()), kMin(480, desk.height()));
+          size = QSize (qMin (700, desk.width()), qMin(480, desk.height()));
       }
 
       resize (size);
