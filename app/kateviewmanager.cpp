@@ -393,7 +393,7 @@ void KateViewManager::slotDocumentClose ()
   if ( (KateDocManager::self()->documents() == 1)
        && !activeView()->document()->isModified()
        && activeView()->document()->url().isEmpty()
-       && (activeView()->document()->totalCharacters() == 0) )
+       && activeView()->document()->documentEnd() == KTextEditor::Cursor::start() )
   {
     activeView()->document()->closeURL();
     return;
