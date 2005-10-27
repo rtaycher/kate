@@ -383,13 +383,13 @@ void Kate::Private::Plugin::KateFileSelector::slotFilterChange( const QString & 
   if ( empty ) {
     dir->clearFilter();
     filter->lineEdit()->setText( QString::null );
-    QToolTip::add( btnFilter,
+    btnFilter->setToolTip(
         QString( i18n("Apply last filter (\"%1\")") ).arg( lastFilter ) );
   }
   else {
     dir->setNameFilter( f );
     lastFilter = f;
-    QToolTip::add( btnFilter, i18n("Clear filter") );
+    btnFilter->setToolTip( i18n("Clear filter") );
   }
   btnFilter->setOn( !empty );
   dir->updateDir();
