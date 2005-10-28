@@ -230,7 +230,8 @@ void KateMainWindow::setupMainWindow ()
   if (KAuthorized::authorize("shell_access"))
   {
     t = createToolView("kate_greptool", KMultiTabBar::Bottom, SmallIcon("filefind"), i18n("Find in Files") );
-    greptool = new GrepTool( t, "greptool" );
+    greptool = new GrepTool( t );
+    greptool->setObjectName( "greptool" );
     connect(greptool, SIGNAL(itemSelected(const QString &,int)), this, SLOT(slotGrepToolItemSelected(const QString &,int)));
     connect(t,SIGNAL(toolVisibleChanged(bool)),this, SLOT(updateGrepDir (bool)));
     // WARNING HACK - anders: showing the greptool seems to make the menu accels work

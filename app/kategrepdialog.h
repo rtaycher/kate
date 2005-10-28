@@ -30,7 +30,8 @@
 class QLineEdit;
 class QComboBox;
 class QCheckBox;
-class Q3ListBox;
+class QTreeWidget;
+class QTreeWidgetItem;
 class KPushButton;
 class QLabel;
 class KProcess;
@@ -43,7 +44,7 @@ class GrepTool : public QWidget
     Q_OBJECT
 
 public:
-    GrepTool(QWidget *parent, const char *name=0);
+    GrepTool(QWidget *parent);
     ~GrepTool();
 
     // only updates if the dir you give to it differs from the last one given to it !
@@ -66,11 +67,12 @@ private slots:
     void childExited();
     void receivedOutput(KProcess *proc, char *buffer, int buflen);
     void receivedErrOutput(KProcess *proc, char *buffer, int buflen);
-    void itemSelected(const QString&);
+    void itemSelected(QTreeWidgetItem *item, int column);
     void slotSearch();
     void slotCancel();
     void slotClear();
     void patternTextChanged( const QString &);
+
 private:
     void processOutput();
     void finish();
@@ -80,7 +82,7 @@ private:
     KURLRequester *cmbDir;
     QCheckBox *cbRecursive;
     QCheckBox *cbCasesensitive, *cbRegex;
-    Q3ListBox *lbResult;
+    QTreeWidget *lbResult;
     KPushButton *btnSearch, *btnClear;
     KProcess *childproc;
     QString buf;
@@ -95,3 +97,5 @@ private:
 
 
 #endif
+
+// kate: space-indent on; indent-width 2; replace-tabs on;
