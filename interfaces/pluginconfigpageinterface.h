@@ -101,5 +101,5 @@ PluginConfigPageInterface *pluginConfigPageInterface (Plugin *plugin);
 
 }
 
-Q_DECLARE_INTERFACE(Kate::PluginConfigPageInterface,"org.kde.Kate.PluginConfigPage");
+Q_DECLARE_INTERFACE(Kate::PluginConfigPageInterface,"org.kde.Kate.PluginConfigPage")
 #endif
