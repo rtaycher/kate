@@ -28,6 +28,12 @@ namespace KTextEditor
   class Editor;
 }
 
+/**
+ * \brief Namespace for Kate application interfaces.
+ *
+ * This namespace contains interfaces for plugin developers for the Kate
+ * application.
+ */
 namespace Kate
 {
 
@@ -37,9 +43,19 @@ class InitPluginManager;
 class MainWindow;
 
 /**
- * Interface to the application, beside some global methodes to access
- * other objects like document/projectmanager, ... no way goes around this
- * central interface
+ * \brief Central interface to the application.
+ *
+ * The class Application is central as it provides access to the core
+ * application, which includes the
+ * - document manager, access it with documentManager()
+ * - plugin manager, access it with pluginManager()
+ * - main windows, access a main window with mainWindow() or activeMainWindow()
+ * - used editor component, access it with editor().
+ *
+ * To access the application use the global accessor function application().
+ * You should never have to create an instance of this class yourself.
+ *
+ * \author Christoph Cullmann \<cullmann@kde.org\>
  */
 class KDE_EXPORT Application : public QObject
 {
@@ -49,27 +65,60 @@ class KDE_EXPORT Application : public QObject
 
   public:
     /**
-     * Construtor, should not interest, internal usage
+     * Construtor.
+     *
+     * The constructor is internally used by the Kate application, so it is
+     * of no interest for plugin developers. Plugin developers should use the
+     * global accessor application() instead.
+     *
+     * \internal
      */
     Application (void *application);
 
     /**
-     * Desctructor
+     * Virtual desctructor.
      */
     virtual ~Application ();
 
   public:
-    /** Returns a pointer to the document manager
-    */
+    /**
+     * Accessor to the document manager.
+     * \return a pointer to the document manager
+     */
     Kate::DocumentManager *documentManager ();
 
+    /**
+     * Accessor to the plugin manager.
+     * \return a pointer to the plugin manager
+     */
     Kate::PluginManager *pluginManager ();
 
+    /**
+     * Accessor to the active mainwindow.
+     * Usually there always is an active mainwindow, so it is not necessary
+     * to test the returned value for NULL.
+     * \return a pointer to the active mainwindow
+     */
     Kate::MainWindow *activeMainWindow ();
 
+    /**
+     * Get the amount of mainwindows.
+     * \return amount of mainwindows
+     * \see activeMainWindow(), mainWindow()
+     */
     uint mainWindows ();
+
+    /**
+     * Accessor to the mainwindow with index @p n.
+     * \return mainwindow with index @p n
+     * \see mainWindows()
+     */
     Kate::MainWindow *mainWindow (uint n = 0);
 
+    /**
+     * Accessor to the global editor part.
+     * \return KTextEditor component
+     */
     KTextEditor::Editor *editor();
 
   private:
@@ -77,8 +126,8 @@ class KDE_EXPORT Application : public QObject
 };
 
 /**
- * Returns the application object
- * @return Application application object
+ * Global accessor to the application object.
+ * \return application object
  */
 Application *application ();
 

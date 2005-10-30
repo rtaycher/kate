@@ -26,8 +26,26 @@ namespace KTextEditor { class Document; }
 
 namespace Kate
 {
-/** This interface provides access to the Kate Document Manager.
-*/
+/**
+ * \brief Interface for the document manager.
+ *
+ * This interface provides access to Kate's document manager. The document
+ * manager manages all documents. Use document() get a given document,
+ * activeDocument() to retrieve the active document. Check with isOpen()
+ * whether an URL is opened and use findDocument() to get it. To get the
+ * number of managed documents use documents().
+ *
+ * Open new documents with openURL() and close a document with closeDocument()
+ * or closeAllDocuments(). Several signals are provided, documentChanged() is
+ * emitted whenever the document's content changed, documentCreated() when a
+ * new document was created and documentDeleted() when a document was closed.
+ * 
+ * To access the document manager use the global accessor function
+ * documentManager() or Application::documentManager(). You should never have
+ * to create an instance of this class yourself.
+ *
+ * \author Christoph Cullmann \<cullmann@kde.org\>
+ */
 class KDE_EXPORT DocumentManager : public QObject
 {
   friend class PrivateDocumentManager;
@@ -35,43 +53,94 @@ class KDE_EXPORT DocumentManager : public QObject
   Q_OBJECT
 
   public:
+    /**
+     * Construtor.
+     *
+     * The constructor is internally used by the Kate application, so it is
+     * of no interest for plugin developers. Plugin developers should use the
+     * global accessor pluginManager() instead.
+     *
+     * \param documentManager internal usage
+     *
+     * \internal
+     */
     DocumentManager ( void *documentManager  );
+    /**
+     * Virtual destructor.
+     */
     virtual ~DocumentManager ();
 
   public:
-    /** Returns a pointer to the document indexed by n in the managers internal list.
-    */
+    /**
+     * Get the document with the index @p n.
+     * \param n document index
+     * \return a pointer to the document indexed by @p n in the managers
+     *         internal list
+     * \see activeDocument(), documents()
+     */
     class KTextEditor::Document *document (uint n = 0);
-    /** Returns a pointer to the currently active document or NULL if no document is open.
-    */
+
+    /**
+     * Get the currently active document.
+     * \return a pointer to the currently active document or NULL if no
+     *         document is opened.
+     */
     class KTextEditor::Document *activeDocument ();
 
-    /** Returns the ID of the document located at url if such a document is known by the manager.
+    /**
+     * Get the document with the URL \p url.
+     * \param url the document's URL
+     * \return the document with the given \p url or NULL, if no such document
+     *         is in the document manager's internal list.
      */
     KTextEditor::Document *findDocument (const KURL &url);
-    /** Returns true if the document located at url is open, otherwise false.
+
+    /**
+     * Check whether a document with given \p url is opened.
+     * \param url the document's url
+     * \return \e true if the document \p url is opened, otherwise \e false
      */
     bool isOpen (const KURL &url);
 
-    /** returns the number of documents managed by this manager.
-    */
+    /**
+     * Get the number of documents the document manager manages.
+     * \return the number of documents managed by this manager
+     */
     uint documents ();
 
-    /** open a document and return a pointer to the document, if you specify a pointer != 0 to the id parameter
-     * you will get the document id returned too
+    /**
+     * Open the document \p url with the given \p encoding.
+     * \param url the document's url
+     * \param encoding the preferred encoding. If encoding is QString() the
+     *        encoding will be guessed or the default encoding will be used.
+     * \return a pointer to the created document
      */
-    KTextEditor::Document *openURL(const KURL&url,const QString &encoding=QString::null);
-    /** close a document by pointer
+    KTextEditor::Document *openURL(const KURL&url,const QString &encoding=QString());
+
+    /**
+     * Close the given \p document.
+     * \param document the document to be closed
+     * \return \e true on success, otherwise \e false
      */
     bool closeDocument(KTextEditor::Document *document);
-    /** close a document identified by the index
+
+    /**
+     * Close the document identified by index \p n.
+     * \param n the document's index
+     * \return \e true on success, otherwise \e false
      */
     bool closeDocument(uint n = 0);
 
-    /** close all documents
+    /**
+     * Close all documents.
+     * \return \e true on success, otherwise \e false
      */
     bool closeAllDocuments();
 
+
+  //
+  // SIGNALS !!!
+  //
 #ifndef Q_MOC_RUN
   #undef signals
   #define signals public
@@ -83,17 +152,18 @@ class KDE_EXPORT DocumentManager : public QObject
 #endif
 
     /**
-     * emitted if the current doc changes (there need not to be a active document)
+     * This signal is emitted whenever the current document's content was changed.
+     * Note, there does not need to be an active document.
      */
     void documentChanged ();
     
     /**
-     * this document has now been created
+     * This signal is emitted when the \p document was created.
      */
     void documentCreated (KTextEditor::Document *document);
     
     /**
-     * the document with this number was deleted
+     * This signal is emitted when the \p document was closed.
      */
     void documentDeleted (KTextEditor::Document *document);
 
@@ -102,8 +172,8 @@ class KDE_EXPORT DocumentManager : public QObject
 };
 
 /**
- * Returns the document manager object
- * @return DocumentManager document manager object
+ * Global accessor to the document manager object.
+ * \return document manager object
  */
 DocumentManager *documentManager ();
 

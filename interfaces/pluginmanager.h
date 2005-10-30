@@ -25,8 +25,20 @@
 
 namespace Kate
 {
-/** This interface provides access to the Kate Plugin Manager.
-*/
+/**
+ * \brief Interface to the plugin manager.
+ *
+ * This interface provides access to Kate's plugin manager. To load a plugin
+ * class loadPlugin(), to unload a plugin calls unloadPlugin(). To check,
+ * whether a plugin is loaded use plugin(), and to check a plugin's
+ * availibility use pluginAvailable().
+ * 
+ * To access the plugin manager use Application::pluginManager().
+ * You should never have to create an instance of this class yourself.
+ *
+ * \author Christoph Cullmann \<cullmann@kde.org\>
+ * \see Plugin
+ */
 class KDE_EXPORT PluginManager : public QObject
 {
   friend class PrivatePluginManager;
@@ -34,30 +46,60 @@ class KDE_EXPORT PluginManager : public QObject
   Q_OBJECT
 
   public:
+    /**
+     * Constructor.
+     *
+     * Create a new plugin manager. You as a plugin developer should never
+     * have to create a plugin manager yourself. Get the plugin manager
+     * with the Application instance.
+     * \param pluginManager internal usage
+     */
     PluginManager ( void *pluginManager  );
+    /**
+     * Virtual destructor.
+     */
     virtual ~PluginManager ();
 
   public:
-    /** if the plugin with the library name "name" is loaded, a pointer to that plugin is returned */
+    /**
+     * Get a plugin with identifier \p name.
+     * \param name the plugin's name
+     * \return pointer to the plugin if a plugin with \p name is loaded,
+     *         otherwise NULL
+     */
     class Plugin *plugin(const QString &name);
 
-    /** return true, if plugin is known to kate (either loaded or not loaded)
+    /**
+     * Check, whether a plugin with \p name exists.
      *
-     * This method is not used yet
+     * \return \e true if the plugin exists, otherwise \e false
+     * \todo This method is not used yet, i.e. returns allways \e false.
      */
     bool pluginAvailable(const QString &name);
 
-    /** tries loading the specified plugin and returns a pointer to the new plugin or 0
-     *  if permanent is true (default value) the plugin will be loaded at the next kate startup
+    /**
+     * Load the plugin \p name.
      *
-     * This method is not used yet
+     * If the plugin does not exist the return value is NULL.
+     * \param name the plugin name
+     * \param permanent if \e true the plugin will be loaded at the next Kate
+     *        startup, otherwise it will only be loaded temporarily during the
+     *        current session.
+     * \return pointer to the plugin on success, otherwise NULL
+     * \see unloadPlugin()
+     * \todo This method is not used yet, i.e. returns allways NULL.
      */
     class Plugin *loadPlugin(const QString &name,bool permanent=true);
 
-    /** unload the specified plugin. If the value permanent is true (default value), the plugin will not be
-     * loaded on kate's next startup. Even if it had been loaded with permanent=true.
+    /**
+     * Unload the plugin \p name.
      *
-     * This method is not used yet
+     * \param name the plugin name
+     * \param permanent if \e true the plugin will \e not be loaded on the
+     *        next Kate startup, \e even if it was loaded with permanent set
+     *        to \e true.
+     * \see loadPlugin()
+     * \todo This method is not used yet, i.e. does nothing.
      */
     void unloadPlugin(const QString &name,bool permanent=true);
 
