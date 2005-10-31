@@ -408,12 +408,12 @@ void KateConfigDialog::slotApply()
     filelistConfigPage->apply();
 
     configExternalToolsPage->apply();
+    KateExternalToolsCommand::self()->reload();
     for (int i=0; i < KateApp::self()->mainWindows(); i++)
     {
       KateMainWindow *win = KateApp::self()->mainWindow (i);
       win->externalTools->reload();
     }
-    KateExternalToolsCommand::self()->reload();
     //mainWindow->externalTools->reload();
 
     mainWindow->viewManager()->setShowFullPath( cb_fullPath->isChecked() ); // hm, stored 2 places :(
