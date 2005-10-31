@@ -319,10 +319,13 @@ KateExternalToolsMenuAction::KateExternalToolsMenuAction( const QString &text,
 
 void KateExternalToolsMenuAction::reload()
 {
+  int i = 0;
+  while ( i < m_actionCollection->count() )
+  {
+    m_actionCollection->action( i++ )->setShortcut(KShortcut());
+  }
   m_actionCollection->clear ();
-
-  popupMenu()->clear();
-
+  
   // load all the tools, and create a action for each of them
   KConfig *config = new KConfig( "externaltools", false, false, "appdata" );
   config->setGroup( "Global" );
