@@ -338,6 +338,8 @@ KateSession::Ptr KateSessionManager::giveSession (const QString &name)
 {
   if (name.isEmpty())
     return new KateSession (this, "", "");
+    
+  updateSessionList();
 
   for (int i=0; i < m_sessionList.count(); ++i)
   {
