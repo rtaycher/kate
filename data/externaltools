@@ -17,7 +17,7 @@ name=CVS Log for Current Document
 save=0
 
 [externaltool_CervisiaDirectoryofCurrentDocument]
-acname=externaltool_Cervisiadirectoryofcurrentdocument
+acname=externaltool_CervisiaDirectoryofCurrentDocument
 cmdname=cvs-directory
 command=if [ -d %directory/CVS ] ; then\n  cervisia %directory\nelse\n  kdialog --title Error --msgbox "The directory '%directory' does not appear to be a CVS sandbox."\nfi
 executable=cervisia
@@ -67,7 +67,7 @@ name=Run Script
 save=1
 
 [externaltool_CompareDirectoryofCurrentDocumenttoCVS]
-acname=externaltool_comparedirectoryofcurrentdocumenttoCVS
+acname=externaltool_CompareDirectoryofCurrentDocumenttoCVS
 cmdname=
 command=cd %directory\nif [ -d CVS ] ; then\n  cvs diff -ub |kompare -o -\nelse\n  kdialog --title Error --msgbox "The directory '%directory' does not appear to be a cvs sandbox."\nfi
 executable=kompare
