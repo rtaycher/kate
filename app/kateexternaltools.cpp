@@ -336,7 +336,7 @@ void KateExternalToolsMenuAction::reload()
   config->setReadDefaults( false );
 
   int ver = config->readNumEntry( "version" );
-  if ( ver < gver )
+  if ( ver <= gver )
   {
     QStringList removed = config->readListEntry( "removed" );
     bool sepadded = false;
