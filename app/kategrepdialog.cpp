@@ -97,7 +97,7 @@ GrepTool::GrepTool(QWidget *parent)
   // fill pattern layout
   QLabel *lPattern = new QLabel(i18n("Pattern:"), this);
 
-  cmbPattern = new QComboBox(this);
+  cmbPattern = new KComboBox(this);
   cmbPattern->setEditable(true);
   cmbPattern->setDuplicatesEnabled(false);
   cmbPattern->insertItems(0, lastSearchItems);
@@ -125,7 +125,7 @@ GrepTool::GrepTool(QWidget *parent)
   QLabel *lTemplate = new QLabel(i18n("Template:"), this);
   lTemplate->setFixedSize(lTemplate->sizeHint());
 
-  leTemplate = new QLineEdit(this);
+  leTemplate = new KLineEdit(this);
   lTemplate->setBuddy(leTemplate);
   leTemplate->setText(strTemplate[0]);
   leTemplate->setMinimumSize(leTemplate->sizeHint());
@@ -137,7 +137,7 @@ GrepTool::GrepTool(QWidget *parent)
                 << "class::MEMBER("
                 << "OBJECT->member(";
 
-  QComboBox *cmbTemplate = new QComboBox(false, this);
+  KComboBox *cmbTemplate = new KComboBox(false, this);
   cmbTemplate->insertItems(0, template_desc);
   cmbTemplate->adjustSize();
   cmbTemplate->setFixedSize(cmbTemplate->size());
@@ -150,7 +150,7 @@ GrepTool::GrepTool(QWidget *parent)
   // files row
   QLabel *lFiles = new QLabel(i18n("Files:"), this);
 
-  cmbFiles = new QComboBox(this);
+  cmbFiles = new KComboBox(this);
   cmbFiles->setEditable(true);
   lFiles->setBuddy(cmbFiles->focusProxy());
   cmbFiles->setMinimumSize(cmbFiles->sizeHint());

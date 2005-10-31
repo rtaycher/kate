@@ -28,7 +28,7 @@
 #include <QEvent>
 
 class QLineEdit;
-class QComboBox;
+class KComboBox;
 class QCheckBox;
 class QTreeWidget;
 class QTreeWidgetItem;
@@ -78,7 +78,7 @@ private:
     void finish();
 
     QLineEdit *leTemplate;
-    QComboBox *cmbFiles, *cmbPattern;
+    KComboBox *cmbFiles, *cmbPattern;
     KURLRequester *cmbDir;
     QCheckBox *cbRecursive;
     QCheckBox *cbCasesensitive, *cbRegex;
