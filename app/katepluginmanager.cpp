@@ -47,14 +47,14 @@ KatePluginManager::KatePluginManager(QObject *parent) : QObject (parent)
   m_pluginManager = new Kate::PluginManager (this);
   setupPluginList ();
 
-  loadConfig (KateApp::self()->config());
+  loadConfig (KGlobal::config());
   loadAllEnabledPlugins ();
 }
 
 KatePluginManager::~KatePluginManager()
 {
   // first write config
-  storeGeneralConfig (KateApp::self()->config());
+  storeGeneralConfig (KGlobal::config());
 
   // than unload the plugins
   unloadAllPlugins ();
@@ -67,12 +67,10 @@ KatePluginManager *KatePluginManager::self()
 
 void KatePluginManager::setupPluginList ()
 {
-  Q3ValueList<KService::Ptr> traderList= KTrader::self()->query("Kate/Plugin", "(not ('Kate/ProjectPlugin' in ServiceTypes)) and (not ('Kate/InitPlugin' in ServiceTypes))");
+  KService::List traderList= KTrader::self()->query("Kate/Plugin", "(not ('Kate/ProjectPlugin' in ServiceTypes)) and (not ('Kate/InitPlugin' in ServiceTypes))");
 
-  for(KTrader::OfferList::Iterator it(traderList.begin()); it != traderList.end(); ++it)
+  foreach(const KService::Ptr &ptr, traderList)
   {
-    KService::Ptr ptr = (*it);
-
     QString pVersion = ptr->property("X-Kate-Version").toString();
 
     // don't use plugins out of 3.x release series
