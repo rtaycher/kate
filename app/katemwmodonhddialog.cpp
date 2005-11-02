@@ -139,7 +139,7 @@ void KateMwModOnHdDialog::slotUser3()
 void KateMwModOnHdDialog::handleSelected( int action )
 {
   // collect all items we can remove
-  Q3ValueList<Q3ListViewItem *> itemsToDelete;
+  QList<Q3ListViewItem *> itemsToDelete;
   for ( Q3ListViewItemIterator it ( lvDocuments ); it.current(); ++it )
   {
     KateDocItem *item = static_cast<KateDocItem *>(it.current());
