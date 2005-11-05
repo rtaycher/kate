@@ -112,7 +112,7 @@ class KDE_EXPORT PluginConfigPage : public QWidget
  *     Q_OBJECT
  *     Q_INTERFACES(Kate::PluginConfigPageInterface)
  *
- *   public:
+ * public:
  *     // other methods etc...
  * };
  * \endcode
