@@ -89,6 +89,6 @@ PluginViewInterface *pluginViewInterface (Plugin *plugin);
 
 }
 
-Q_DECLARE_INTERFACE(Kate::PluginViewInterface,"org.kde.Kate.PluginViewInterface");
+Q_DECLARE_INTERFACE(Kate::PluginViewInterface,"org.kde.Kate.PluginViewInterface")
 
 #endif
