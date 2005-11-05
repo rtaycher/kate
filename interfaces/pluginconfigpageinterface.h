@@ -16,8 +16,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kate_pluginconfigpageinterface_h__
-#define __kate_pluginconfigpageinterface_h__
+#ifndef kate_pluginconfigpageinterface_h
+#define kate_pluginconfigpageinterface_h
 
 #include <QWidget>
 #include <qpixmap.h>
@@ -26,48 +26,122 @@
 namespace Kate
 {
 
+/**
+ * \brief Plugin config page widget.
+ *
+ * The class PluginConfigPage is a base class for config pages for plugins.
+ * If you want to add support for a config page to your Kate plugin you have
+ * to derive a class from PluginConfigPage and overwrite apply(), reset()
+ * and default() as <b>plublic slots</b>.
+ *
+ * Whenever settings were changed in your config page emit the signal
+ * changed().
+ *
+ * \see Plugin, PluginConfigPageInterface
+ * \author Christoph Cullmann \<cullmann@kde.org\>
+ */
 class KDE_EXPORT PluginConfigPage : public QWidget
 {
   Q_OBJECT
 
   public:
+    /**
+     * Constructor.
+     * \param parent parent widget.
+     * \param name identifier
+     */
     PluginConfigPage ( QWidget *parent=0, const char *name=0 );
+    /**
+     * Virtual destructor.
+     */
     virtual ~PluginConfigPage ();
 
   //
-  // slots !!!
+  // reimplement as public slots !!!
   //
   public:
     /**
-      Applies the changes to the document
-    */
+     * This slot is called when the \e Apply button was clicked.
+     * Reimplement this function as a public slot and apply the changed
+     * settings.
+     */
     virtual void apply () = 0;
     
     /**
-      Reset the changes
-    */
+     * This slot is called when the \e Reset button was clicked.
+     * Reimplement this function as a public slot and reset the settings
+     * to the current ones.
+     */
     virtual void reset () = 0;
     
     /**
-      Sets default options
-    */
+     * This slot is called when the \e Defaults button was clicked.
+     * Reimplement this function as a public slot and set every option to its
+     * default value.
+     */
     virtual void defaults () = 0;
 
+  //
+  // SIGNALS !!!
+  //
   signals:
-	void changed();
+    /**
+     * Emit this signal whenever a option changed.
+     * When the \e Apply button was clicked the public slot apply() will be
+     * called \e only \e if you emitted this signal beforehand.
+     * \see apply()
+     */
+    void changed();
 };
 
-/*
-*  This is an interface for the KTextEditor::Document/Plugin/ViewPlugin classes !!!
-*/
+/**
+ * \brief Plugin config page extension interface.
+ *
+ * The class PluginConfigPageInterface is an extension intefface for plugins.
+ * If you want to add config pages to a plugin you have to make sure you
+ *  -# derive your plugin from this interface (multiple inheritance) and
+ *     overwrite the abstract methods
+ *  -# return the number of config pages your plugin supports in configPages()
+ *  -# return an instance the requested config pages in configPage()
+ *
+ * Your plugin header then looks like this:
+ * \code
+ * class MyPlugin : public Kate::Plugin,
+ *                  public Kate::PluginConfigPageInterface
+ * {
+ *     Q_OBJECT
+ *     Q_INTERFACES(Kate::PluginConfigPageInterface)
+ *
+ *   public:
+ *     // other methods etc...
+ * };
+ * \endcode
+ * The line \p Q_INTERFACES... is important, otherwise the cast from Plugin to
+ * PluginConfigPageInterface will fail, so that your config page interface
+ * will not be recognized.
+ *
+ * \see Plugin, PluginConfigPage
+ * \author Christoph Cullmann \<cullmann@kde.org\>
+ */
 class KDE_EXPORT PluginConfigPageInterface
 {
   friend class PrivatePluginConfigPageInterface;
 
   public:
+    /**
+     * Constructor.
+     */
     PluginConfigPageInterface();
+    /**
+     * Virtual destructor.
+     */
     virtual ~PluginConfigPageInterface();
 
+    /**
+     * For internal reason every config page interface has a unique global
+     * number.
+     * \return unique identifier
+     */
     unsigned int pluginConfigPageInterfaceNumber () const;
 
   //
@@ -75,19 +149,48 @@ class KDE_EXPORT PluginConfigPageInterface
   //
   public:    
     /**
-      Number of available config pages
-    */
+     * Reimplement this function and return the number of config pages your
+     * plugin supports.
+     * \return number of config pages
+     * \see configPage()
+     */
     virtual uint configPages () const = 0;
     
     /**
-      returns config page with the given number,
-      config pages from 0 to configPages()-1 are available
-      if configPages() > 0
-    */ 
+     * Return the config page with the given \p number and \p parent.
+     * Assume you return \c N in configPages(), then you have to return
+     * config pages for the numbers 0 to \p N-1.
+     *
+     * \note This function will only be called if configPages() > 0.
+     *
+     * \param number the config page for the given \p number
+     * \param parent use this widget as parent widget for the config page
+     * \param name config page identifier
+     * \return a config page
+     * \see configPages()
+     */ 
     virtual PluginConfigPage *configPage (uint number = 0, QWidget *parent = 0, const char *name=0 ) = 0;
   
+    /**
+     * Return a short name for the config page with the given \p number, for
+     * example 'Autobookmarker'.
+     * \param number the config page for the given \p number
+     * \return a short name
+     */
     virtual QString configPageName (uint number = 0) const = 0;
+    /**
+     * Return the full name for the config page with the given \p number, for
+     * example 'Configure Autobookmarker'.
+     * \param number the config page for the given \p number
+     * \return a more descriptive name
+     */
     virtual QString configPageFullName (uint number = 0) const = 0;
+    /**
+     * Return a pixmap for for the config page with the given \p number.
+     * \param number the config page for the given \p number
+     * \param size the icon size
+     * \return the pixmap for the config page
+     */
     virtual QPixmap configPagePixmap (uint number = 0, int size = KIcon::SizeSmall) const = 0;    
     
   private:
@@ -97,9 +200,17 @@ class KDE_EXPORT PluginConfigPageInterface
 };
 
 class Plugin;
+/**
+ * Helper function that returns the PluginConfigPageInterface of the \p plugin
+ * or NULL if the \p plugin does not support the interface.
+ * \param plugin the plugin for which the plugin config page interface should
+ *        be returned
+ * \return the plugin config page interface or NULL if the plugin does not
+ *        support the interface
+ */
 PluginConfigPageInterface *pluginConfigPageInterface (Plugin *plugin);
 
 }
 
-Q_DECLARE_INTERFACE(Kate::PluginConfigPageInterface,"org.kde.Kate.PluginConfigPage")
+Q_DECLARE_INTERFACE(Kate::PluginConfigPageInterface,"org.kde.Kate.PluginConfigPageInterface")
 #endif
