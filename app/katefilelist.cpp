@@ -55,6 +55,7 @@
 #include <kcolorbutton.h>
 #include <kdialog.h>
 #include <kxmlguifactory.h>
+#include <kglobal.h>
 //END Includes
 
 //BEGIN ToolTip
@@ -627,7 +628,7 @@ void KFLConfigPage::apply()
 void KFLConfigPage::reset()
 {
   // read in from config file
-  KConfig *config = kapp->config();
+  KConfig *config = KGlobal::config();
   config->setGroup( "Filelist" );
   cbEnableShading->setChecked( config->readBoolEntry("Shading Enabled", &m_filelist->m_enableBgShading ) );
   kcbViewShade->setColor( config->readColorEntry("View Shade", &m_filelist->m_viewShade ) );

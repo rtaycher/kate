@@ -72,6 +72,7 @@
 #include <kate/interfaces/mainwindow.h>
 #include <ktexteditor/view.h>
 #include <kiconloader.h>
+#include <kglobal.h>
 //END Includes
 
 
@@ -377,7 +378,7 @@ void Kate::Private::Plugin::KateFileSelector::setView(KFile::FileView view)
 
 void Kate::Private::Plugin::KateFileSelector::slotFilterChange( const QString & nf )
 {
-  QString f = nf.stripWhiteSpace();
+  QString f = nf.trimmed();
   bool empty = f.isEmpty() || f == "*";
   QToolTip::remove( btnFilter );
   if ( empty ) {
@@ -412,7 +413,7 @@ void Kate::Private::Plugin::KateFileSelector::setDir( KURL u )
   KURL newurl;
 
   if ( !u.isValid() )
-    newurl.setPath( QDir::homeDirPath() );
+    newurl.setPath( QDir::homePath() );
   else
     newurl = u;
 
@@ -423,7 +424,7 @@ void Kate::Private::Plugin::KateFileSelector::setDir( KURL u )
     newurl.cd(QString::fromLatin1(".."));
 
   if ( !kateFileSelectorIsReadable (newurl) )
-     newurl.setPath( QDir::homeDirPath() );
+     newurl.setPath( QDir::homePath() );
 
   dir->setURL(newurl, true);
 }
@@ -712,7 +713,7 @@ void KFSConfigPage::apply()
 
   m_changed = false;
 
-  KConfig *config = kapp->config();
+  KConfig *config = KGlobal::config();
   config->setGroup( "fileselector" );
   // toolbar
   QStringList l;
@@ -754,7 +755,7 @@ void KFSConfigPage::reset()
 }
 void KFSConfigPage::init()
 {
-  KConfig *config = kapp->config();
+  KConfig *config = KGlobal::config();
   config->setGroup( "fileselector" );
   // toolbar
   QStringList l = config->readListEntry( "toolbar actions", ',' );

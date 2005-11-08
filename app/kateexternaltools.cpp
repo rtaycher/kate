@@ -206,8 +206,8 @@ bool KateExternalToolsCommand::exec (KTextEditor::View *view, const QString &cmd
 // 		kdDebug(13001)<<"KateExternalToolsCommand::exec: Could not get main window"<<endl;
 		return false;
 	}
-// 	kdDebug(13001)<<"cmd="<<cmd.stripWhiteSpace()<<endl;
-	QString actionName=m_map[cmd.stripWhiteSpace()];
+// 	kdDebug(13001)<<"cmd="<<cmd.trimmed()<<endl;
+	QString actionName=m_map[cmd.trimmed()];
 	if (actionName.isEmpty()) return false;
 // 	kdDebug(13001)<<"actionName is not empty:"<<actionName<<endl;
 	KateExternalToolsMenuAction *a=

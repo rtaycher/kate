@@ -135,7 +135,7 @@ GUIClient::GUIClient ( MainWindow *mw )
   m_toolMenu->insert( new KActionSeparator( actionCollection() ) );
 
   // read shortcuts
-  actionCollection()->readShortcutSettings( "Shortcuts", kapp->config() );
+  actionCollection()->readShortcutSettings( "Shortcuts", KGlobal::config() );
 }
 
 GUIClient::~GUIClient()
@@ -153,7 +153,7 @@ void GUIClient::registerToolView (ToolView *tv)
 
   // try to read the action shortcut
   KShortcut sc;
-  KConfig *cfg = kapp->config();
+  KConfig *cfg = KGlobal::config();
   QString _grp = cfg->group();
   cfg->setGroup("Shortcuts");
   sc = KShortcut( cfg->readEntry( aname, "" ) );
