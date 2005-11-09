@@ -27,8 +27,9 @@
 #include <kxmlguiclient.h>
 
 #include <q3vbox.h>
-//Added by qt3to4:
-#include <QShowEvent>
+#include <QLinkedList>
+
+class QShowEvent;
 
 namespace KParts {
   class ReadOnlyPart;
