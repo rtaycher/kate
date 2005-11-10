@@ -101,12 +101,12 @@ void KateViewManager::setupActions ()
 
   m_activateNextTab
       = new KAction( i18n( "Activate Next Tab" ),
-                     QApplication::reverseLayout() ? KStdAccel::tabPrev() : KStdAccel::tabNext(),
+                     QApplication::isRightToLeft() ? KStdAccel::tabPrev() : KStdAccel::tabNext(),
                      this, SLOT( activateNextTab() ), m_mainWindow->actionCollection(), "view_next_tab" );
 
   m_activatePrevTab
       = new KAction( i18n( "Activate Previous Tab" ),
-                     QApplication::reverseLayout() ? KStdAccel::tabNext() : KStdAccel::tabPrev(),
+                     QApplication::isRightToLeft() ? KStdAccel::tabNext() : KStdAccel::tabPrev(),
                      this, SLOT( activatePrevTab() ), m_mainWindow->actionCollection(), "view_prev_tab" );
 
   /**
