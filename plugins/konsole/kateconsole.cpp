@@ -76,7 +76,7 @@ void KateKonsolePlugin::removeView(Kate::MainWindow *win) {
 }
 
 KateConsole::KateConsole (Kate::MainWindow *mw, QWidget *parent)
- : Q3VBox (parent), KXMLGUIClient()
+ : KVBox (parent), KXMLGUIClient()
  , m_part (0)
  , m_mw (mw)
  , m_toolView (parent)

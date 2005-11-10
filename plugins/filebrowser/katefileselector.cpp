@@ -28,8 +28,8 @@
 
 #include <qlayout.h>
 #include <qtoolbutton.h>
-#include <q3hbox.h>
-#include <q3vbox.h>
+#include <khbox.h>
+#include <kvbox.h>
 #include <qlabel.h>
 #include <q3strlist.h>
 #include <qtooltip.h>
@@ -175,9 +175,10 @@ void KateFileSelectorToolBarParent::resizeEvent ( QResizeEvent * )
 
 Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mainWindow,
                                     QWidget * parent, const char * name )
-    : Q3VBox (parent, name),
+    : KVBox (parent),
       mainwin(mainWindow)
 {
+  setObjectName(name);
   mActionCollection = new KActionCollection( this );
 
   QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar );
@@ -219,7 +220,7 @@ Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mai
         mActionCollection, "bookmarks" );
   acmBookmarks->setDelayed( false );
   bookmarkHandler = new KBookmarkHandler( this, acmBookmarks->popupMenu() );
-  Q3HBox* filterBox = new Q3HBox(this);
+  KHBox* filterBox = new KHBox(this);
 
   btnFilter = new QToolButton( filterBox );
   btnFilter->setIconSet( SmallIconSet("filter" ) );
@@ -635,14 +636,14 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *, KateFileSelector *k
   connect( cbSyncShow, SIGNAL( toggled( bool ) ), this, SLOT( slotMyChanged() ) );
 
   // Histories
-  Q3HBox *hbPathHist = new Q3HBox ( this );
+  KHBox *hbPathHist = new KHBox ( this );
   QLabel *lbPathHist = new QLabel( i18n("Remember &locations:"), hbPathHist );
   sbPathHistLength = new QSpinBox( hbPathHist );
   lbPathHist->setBuddy( sbPathHistLength );
   lo->addWidget( hbPathHist );
   connect( sbPathHistLength, SIGNAL( valueChanged ( int ) ), this, SLOT( slotMyChanged() ) );
 
-  Q3HBox *hbFilterHist = new Q3HBox ( this );
+  KHBox *hbFilterHist = new KHBox ( this );
   QLabel *lbFilterHist = new QLabel( i18n("Remember &filters:"), hbFilterHist );
   sbFilterHistLength = new QSpinBox( hbFilterHist );
   lbFilterHist->setBuddy( sbFilterHistLength );

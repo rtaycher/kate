@@ -26,7 +26,7 @@
 #include <kurl.h>
 #include <kxmlguiclient.h>
 
-#include <q3vbox.h>
+#include <kvbox.h>
 #include <QLinkedList>
 
 class QShowEvent;
@@ -67,7 +67,7 @@ class KateKonsolePlugin:public Kate::Plugin,public Kate::PluginViewInterface {
  * This class is used for the internal terminal emulator
  * It uses internally the konsole part, thx to konsole devs :)
  */
-class KateConsole : public Q3VBox,public KXMLGUIClient
+class KateConsole : public KVBox,public KXMLGUIClient
 {
   Q_OBJECT
 

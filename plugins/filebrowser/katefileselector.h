@@ -29,7 +29,7 @@
 #include <kdiroperator.h>
 #include <kurlcombobox.h>
 
-#include <q3vbox.h>
+#include <kvbox.h>
 //Added by qt3to4:
 #include <QShowEvent>
 #include <QFocusEvent>
@@ -111,7 +111,7 @@ protected:
 	virtual void resizeEvent ( QResizeEvent * );
 };
 
-class KateFileSelector : public Q3VBox
+class KateFileSelector : public KVBox
 {
   Q_OBJECT
 
