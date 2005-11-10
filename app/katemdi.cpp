@@ -657,7 +657,7 @@ MainWindow::MainWindow (QWidget* parentWidget, const char* name)
  , m_guiClient (new GUIClient (this))
 {
   // init the internal widgets
-  Q3HBox *hb = new Q3HBox (this);
+  KHBox *hb = new KHBox (this);
   setCentralWidget(hb);
 
   m_sidebars[KMultiTabBar::Left] = new Sidebar (KMultiTabBar::Left, this, hb);

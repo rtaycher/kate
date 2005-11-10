@@ -156,7 +156,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   connect( cb_saveMetaInfos, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
   // meta infos days
-  Q3HBox *hbDmf = new Q3HBox( bgStartup );
+  KHBox *hbDmf = new KHBox( bgStartup );
   hbDmf->setEnabled(KateDocManager::self()->getSaveMetaInfos());
   QLabel *lDmf = new QLabel( i18n("&Delete unused meta-information after:"), hbDmf );
   sb_daysMetaInfos = new QSpinBox( 0, 180, 1, hbDmf );

@@ -575,7 +575,7 @@ KFLConfigPage::KFLConfigPage( QWidget* parent, KateFileList *fl )
   lo->addWidget( kcbEditShade, 3, 1 );
 
   // sorting
-  Q3HBox *hbSorting = new Q3HBox( this );
+  KHBox *hbSorting = new KHBox( this );
   lo1->addWidget( hbSorting );
   lSort = new QLabel( i18n("&Sort by:"), hbSorting );
   cmbSort = new QComboBox( hbSorting );
