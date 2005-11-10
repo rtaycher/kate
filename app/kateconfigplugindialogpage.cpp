@@ -25,7 +25,6 @@
 #include <klistbox.h>
 #include "kateapp.h"
 #include <qstringlist.h>
-#include <q3hbox.h>
 #include <qlabel.h>
 #include <klocale.h>
 #include <qpushbutton.h>
@@ -72,7 +71,7 @@ void KatePluginListView::stateChanged(KatePluginListItem *item, bool b)
   emit stateChange(item, b);
 }
 
-KateConfigPluginPage::KateConfigPluginPage(QWidget *parent, KateConfigDialog *dialog):Q3VBox(parent)
+KateConfigPluginPage::KateConfigPluginPage(QWidget *parent, KateConfigDialog *dialog):KVBox(parent)
 {
   myDialog=dialog;
 

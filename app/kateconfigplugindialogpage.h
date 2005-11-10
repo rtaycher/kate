@@ -25,7 +25,7 @@
 
 #include <klistview.h>
 
-#include <q3vbox.h>
+#include <kvbox.h>
 
 class KatePluginListItem;
 
@@ -45,7 +45,7 @@ class KatePluginListView : public KListView
     void stateChanged(KatePluginListItem *, bool);
 };
 
-class KateConfigPluginPage: public Q3VBox
+class KateConfigPluginPage: public KVBox
 {
   Q_OBJECT
 
