@@ -117,18 +117,18 @@ void KateTabWidget::setCornerWidgetVisibility(bool visible)
 {
   // there are two corner widgets: on TopLeft and on TopTight!
 
-  if (cornerWidget(Qt::TopLeft) ) {
+  if (cornerWidget(Qt::TopLeftCorner) ) {
     if (visible)
-      cornerWidget(Qt::TopLeft)->show();
+      cornerWidget(Qt::TopLeftCorner)->show();
     else
-      cornerWidget(Qt::TopLeft)->hide();
+      cornerWidget(Qt::TopLeftCorner)->hide();
   }
 
-  if (cornerWidget(Qt::TopRight) ) {
+  if (cornerWidget(Qt::TopRightCorner) ) {
     if (visible)
-      cornerWidget(Qt::TopRight)->show();
+      cornerWidget(Qt::TopRightCorner)->show();
     else
-      cornerWidget(Qt::TopRight)->hide();
+      cornerWidget(Qt::TopRightCorner)->hide();
   }
 }
 
