@@ -182,7 +182,7 @@ void KateMwModOnHdDialog::handleSelected( int action )
   }
 
   // remove the marked items
-  for (unsigned int i=0; i < itemsToDelete.count(); ++i)
+  for (int i=0; i < itemsToDelete.count(); ++i)
     delete itemsToDelete[i];
 
 // any documents left unhandled?

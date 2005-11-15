@@ -42,7 +42,6 @@ class QObject;
 class QPixmap;
 class QVBoxLayout;
 class QString;
-class Q3WidgetStack;
 
 class KAction;
 class KActionMenu;
