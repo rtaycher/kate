@@ -44,7 +44,7 @@
 //Added by qt3to4:
 #include <QContextMenuEvent>
 #include <QPixmap>
-#include <Q3ValueList>
+#include <QList>
 #include <Q3PtrList>
 #include <QChildEvent>
 
@@ -514,7 +514,7 @@ void Sidebar::buttonPopupActivate (QAction *a)
 
 void Sidebar::updateLastSize ()
 {
-   Q3ValueList<int> s = m_splitter->sizes ();
+   QList<int> s = m_splitter->sizes ();
 
   int i = 0;
   if ((position() == KMultiTabBar::Right || position() == KMultiTabBar::Bottom))
@@ -550,7 +550,7 @@ void Sidebar::restoreSession (KConfig *config)
   if (firstWrong < m_toolviews.size())
   {
     // first: collect the items to reshuffle
-    Q3ValueList<TmpToolViewSorter> toSort;
+    QList<TmpToolViewSorter> toSort;
     for (int i=firstWrong; i < m_toolviews.size(); ++i)
     {
       TmpToolViewSorter s;
@@ -598,7 +598,7 @@ void Sidebar::restoreSession (KConfig *config)
   updateLastSize ();
 
   // restore the own splitter sizes
-  Q3ValueList<int> s = config->readIntListEntry (QString ("Kate-MDI-Sidebar-%1-Splitter").arg(position()));
+  QList<int> s = config->readIntListEntry (QString ("Kate-MDI-Sidebar-%1-Splitter").arg(position()));
   m_ownSplit->setSizes (s);
 
   // show only correct toolviews, remember persistent values ;)
@@ -630,7 +630,7 @@ void Sidebar::restoreSession (KConfig *config)
 void Sidebar::saveSession (KConfig *config)
 {
   // store the own splitter sizes
-  Q3ValueList<int> s = m_ownSplit->sizes();
+  QList<int> s = m_ownSplit->sizes();
   config->writeEntry (QString ("Kate-MDI-Sidebar-%1-Splitter").arg(position()), s);
 
   // store the data about all toolviews in this sidebar ;)
@@ -855,8 +855,8 @@ void MainWindow::startRestore (KConfig *config, const QString &group)
   m_restoreConfig->setGroup (m_restoreGroup);
 
   // get main splitter sizes ;)
-  Q3ValueList<int> hs = m_restoreConfig->readIntListEntry ("Kate-MDI-H-Splitter");
-  Q3ValueList<int> vs = m_restoreConfig->readIntListEntry ("Kate-MDI-V-Splitter");
+  QList<int> hs = m_restoreConfig->readIntListEntry ("Kate-MDI-H-Splitter");
+  QList<int> vs = m_restoreConfig->readIntListEntry ("Kate-MDI-V-Splitter");
 
   m_sidebars[0]->setLastSize (hs[0]);
   m_sidebars[1]->setLastSize (hs[2]);
@@ -915,8 +915,8 @@ void MainWindow::saveSession (KConfig *config, const QString &group)
   config->setGroup (group);
 
   // save main splitter sizes ;)
-  Q3ValueList<int> hs = m_hSplitter->sizes();
-  Q3ValueList<int> vs = m_vSplitter->sizes();
+  QList<int> hs = m_hSplitter->sizes();
+  QList<int> vs = m_vSplitter->sizes();
 
   if (hs[0] <= 2 && !m_sidebars[0]->splitterVisible ())
     hs[0] = m_sidebars[0]->lastSize();

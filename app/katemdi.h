@@ -34,7 +34,7 @@
 #include <qpixmap.h>
 #include <q3ptrlist.h>
 //Added by qt3to4:
-#include <Q3ValueList>
+#include <QList>
 #include <QEvent>
 #include <QChildEvent>
 
@@ -224,7 +224,7 @@ class Sidebar : public KMultiTabBar
     /**
      * list of all toolviews around in this sidebar
      */
-    Q3ValueList<ToolView*> m_toolviews;
+    QList<ToolView*> m_toolviews;
 
     int m_lastSize;
 
@@ -376,7 +376,7 @@ class MainWindow : public KParts::MainWindow
     /**
      * list of all toolviews around
      */
-    Q3ValueList<ToolView*> m_toolviews;
+    QList<ToolView*> m_toolviews;
 
     /**
      * widget, which is the central part of the
