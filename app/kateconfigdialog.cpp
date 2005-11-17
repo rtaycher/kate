@@ -72,7 +72,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
                  parent,
                  "configdialog" )
 {
-  KConfig *config = KateApp::self()->config();
+  KConfig *config = KateApp::self()->sessionConfig();
 
   actionButton( KDialogBase::Apply)->setEnabled( false );
 
@@ -362,7 +362,7 @@ void KateConfigDialog::slotOk()
 
 void KateConfigDialog::slotApply()
 {
-  KConfig *config = KateApp::self()->config();
+  KConfig *config = KateApp::self()->sessionConfig();
 
   // if data changed apply the kate app stuff
   if( dataChanged )
@@ -421,7 +421,7 @@ void KateConfigDialog::slotApply()
     mainWindow->saveOptions ();
 
     // save plugin config !!
-    KateApp::self()->pluginManager()->storeGeneralConfig (KateApp::self()->config());
+    KateApp::self()->pluginManager()->storeGeneralConfig (KateApp::self()->sessionConfig());
   }
 
   //

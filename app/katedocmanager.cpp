@@ -55,7 +55,7 @@ KateDocManager::KateDocManager (QObject *parent)
   m_editor = KTextEditor::EditorChooser::editor();
 
   // read in editor config
-  m_editor->readConfig(KateApp::self()->config());
+  m_editor->readConfig(KateApp::self()->sessionConfig());
 
   m_documentManager = new Kate::DocumentManager (this);
 
@@ -69,7 +69,7 @@ KateDocManager::KateDocManager (QObject *parent)
 KateDocManager::~KateDocManager ()
 {
   // write editor config
-  m_editor->writeConfig(KateApp::self()->config());
+  m_editor->writeConfig(KateApp::self()->sessionConfig());
 
   // write metainfos?
   if (m_saveMetaInfos)

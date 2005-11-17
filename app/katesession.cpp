@@ -288,7 +288,7 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
     // window config
     if (sc)
     {
-      KConfig *c = KateApp::self()->config();
+      KConfig *c = KateApp::self()->sessionConfig();
       c->setGroup("General");
 
       if (c->readBoolEntry("Restore Window Configuration", true))
@@ -355,7 +355,7 @@ bool KateSessionManager::saveActiveSession (bool tryAsk, bool rememberAsLast)
   if (tryAsk)
   {
     // app config
-    KConfig *c = KateApp::self()->config();
+    KConfig *c = KateApp::self()->sessionConfig();
     c->setGroup("General");
 
     QString sesExit (c->readEntry ("Session Exit", "save"));
@@ -416,7 +416,7 @@ bool KateSessionManager::saveActiveSession (bool tryAsk, bool rememberAsLast)
 
   if (rememberAsLast)
   {
-    KConfig *c = KateApp::self()->config();
+    KConfig *c = KateApp::self()->sessionConfig();
     c->setGroup("General");
     c->writeEntry ("Last Session", activeSession()->sessionFileRelative());
     c->sync ();
@@ -430,7 +430,7 @@ bool KateSessionManager::chooseSession ()
   bool success = true;
   
   // app config
-  KConfig *c = KateApp::self()->config();
+  KConfig *c = KateApp::self()->sessionConfig();
   c->setGroup("General");
 
   // get last used session, default to default session

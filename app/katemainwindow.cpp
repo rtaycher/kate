@@ -136,9 +136,9 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
       else // now fallback to hard defaults ;)
       {
         // first try global app config
-        KateApp::self()->config()->setGroup ("MainWindow");
-        size.setWidth (KateApp::self()->config()->readNumEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ));
-        size.setHeight (KateApp::self()->config()->readNumEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ));
+        KateApp::self()->sessionConfig()->setGroup ("MainWindow");
+        size.setWidth (KateApp::self()->sessionConfig()->readNumEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ));
+        size.setHeight (KateApp::self()->sessionConfig()->readNumEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ));
 
         if (size.isEmpty())
           size = QSize (qMin (700, desk.width()), qMin(480, desk.height()));
@@ -195,8 +195,8 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
 KateMainWindow::~KateMainWindow()
 {
   // first, save our fallback window size ;)
-  KateApp::self()->config()->setGroup ("MainWindow");
-  saveWindowSize (KateApp::self()->config());
+  KateApp::self()->sessionConfig()->setGroup ("MainWindow");
+  saveWindowSize (KateApp::self()->sessionConfig());
 
   // save other options ;=)
   saveOptions();
@@ -410,7 +410,7 @@ void KateMainWindow::slotFileQuit()
 
 void KateMainWindow::readOptions ()
 {
-  KConfig *config = KateApp::self()->config ();
+  KConfig *config = KateApp::self()->sessionConfig ();
 
   config->setGroup("General");
   syncKonsole =  config->readBoolEntry("Sync Konsole", true);
@@ -427,7 +427,7 @@ void KateMainWindow::readOptions ()
 
 void KateMainWindow::saveOptions ()
 {
-  KConfig *config = KateApp::self()->config ();
+  KConfig *config = KateApp::self()->sessionConfig ();
 
   config->setGroup("General");
 
@@ -553,10 +553,10 @@ void KateMainWindow::editKeys()
 {
   KKeyDialog dlg ( false, this );
 
-  Q3PtrList<KXMLGUIClient> clients = guiFactory()->clients();
+  QList<KXMLGUIClient*> clients = guiFactory()->clients();
 
-  for( Q3PtrListIterator<KXMLGUIClient> it( clients ); it.current(); ++it )
-    dlg.insert ( (*it)->actionCollection(), (*it)->instance()->aboutData()->programName() );
+  for (int i = 0; i < clients.size(); ++i)
+    dlg.insert ( (clients.at(i))->actionCollection(), (clients.at(i))->instance()->aboutData()->programName() );
 
   dlg.insert( externalTools->actionCollection(), i18n("External Tools") );
 
