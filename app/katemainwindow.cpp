@@ -136,9 +136,9 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
       else // now fallback to hard defaults ;)
       {
         // first try global app config
-        KateApp::self()->sessionConfig()->setGroup ("MainWindow");
-        size.setWidth (KateApp::self()->sessionConfig()->readNumEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ));
-        size.setHeight (KateApp::self()->sessionConfig()->readNumEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ));
+		KGlobal::config()->setGroup ("MainWindow");
+        size.setWidth (KGlobal::config()->readNumEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ));
+        size.setHeight (KGlobal::config()->readNumEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ));
 
         if (size.isEmpty())
           size = QSize (qMin (700, desk.width()), qMin(480, desk.height()));
@@ -195,8 +195,8 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
 KateMainWindow::~KateMainWindow()
 {
   // first, save our fallback window size ;)
-  KateApp::self()->sessionConfig()->setGroup ("MainWindow");
-  saveWindowSize (KateApp::self()->sessionConfig());
+		KGlobal::config()->setGroup ("MainWindow");
+  saveWindowSize (KGlobal::config());
 
   // save other options ;=)
   saveOptions();
@@ -410,7 +410,7 @@ void KateMainWindow::slotFileQuit()
 
 void KateMainWindow::readOptions ()
 {
-  KConfig *config = KateApp::self()->sessionConfig ();
+  KConfig *config = KGlobal::config();
 
   config->setGroup("General");
   syncKonsole =  config->readBoolEntry("Sync Konsole", true);
@@ -427,7 +427,7 @@ void KateMainWindow::readOptions ()
 
 void KateMainWindow::saveOptions ()
 {
-  KConfig *config = KateApp::self()->sessionConfig ();
+  KConfig *config = KGlobal::config();
 
   config->setGroup("General");
 

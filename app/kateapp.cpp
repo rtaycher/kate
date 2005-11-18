@@ -144,18 +144,18 @@ void KateApp::restoreKate ()
   //KTextEditor::Document::setOpenErrorDialogsActivated (false);
 
   // activate again correct session!!!
-  sessionConfig()->setGroup("General");
-  QString lastSession (sessionConfig()->readEntry ("Last Session", "default.katesession"));
+  KGlobal::config()->setGroup("General");
+  QString lastSession (KGlobal::config()->readEntry ("Last Session", "default.katesession"));
   sessionManager()->activateSession (new KateSession (sessionManager(), lastSession, ""), false, false, false);
 
-  m_docManager->restoreDocumentList (sessionConfig());
+  m_docManager->restoreDocumentList (KGlobal::config());
 
 #warning fixme later
   //KTextEditor::Document::setOpenErrorDialogsActivated (true);
 
   // restore all windows ;)
   for (int n=1; KMainWindow::canBeRestored(n); n++)
-    newMainWindow(sessionConfig(), QString ("%1").arg(n));
+    newMainWindow(KGlobal::config(), QString ("%1").arg(n));
 
   // oh, no mainwindow, create one, should not happen, but make sure ;)
   if (mainWindows() == 0)
