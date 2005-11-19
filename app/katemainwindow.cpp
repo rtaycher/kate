@@ -554,9 +554,9 @@ void KateMainWindow::editKeys()
   KKeyDialog dlg ( false, this );
 
   QList<KXMLGUIClient*> clients = guiFactory()->clients();
-
-  for (int i = 0; i < clients.size(); ++i)
-    dlg.insert ( (clients.at(i))->actionCollection(), (clients.at(i))->instance()->aboutData()->programName() );
+  
+  foreach(KXMLGUIClient *client, clients)
+    dlg.insert ( client->actionCollection(), client->instance()->aboutData()->programName() );
 
   dlg.insert( externalTools->actionCollection(), i18n("External Tools") );
 
