@@ -51,8 +51,7 @@
 #include <QList>
 #include <QDropEvent>
 #include <Q3PtrList>
-#include <Q3PopupMenu>
-
+#include <QMenu>
 //END Includes
 
 KateViewSpaceContainer::KateViewSpaceContainer (QWidget *parent, KateViewManager *viewManager)
