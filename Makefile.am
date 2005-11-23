@@ -8,5 +8,8 @@ messages:
 	$(XGETTEXT) `find . -name "*.cpp"` -o $(podir)/kate.pot
 	rm -f tips.cpp
 
+DOXYGEN_REFERENCES = kdecore kdeui
+DOXYGEN_EXCLUDE = app data pics plugins
+DOXYGEN_SET_RECURSIVE = YES
 include ../admin/Doxyfile.am
 
