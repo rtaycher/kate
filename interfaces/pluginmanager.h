@@ -29,12 +29,16 @@ namespace Kate
  * \brief Interface to the plugin manager.
  *
  * This interface provides access to Kate's plugin manager. To load a plugin
- * class loadPlugin(), to unload a plugin calls unloadPlugin(). To check,
+ * call loadPlugin(), to unload a plugin call unloadPlugin(). To check,
  * whether a plugin is loaded use plugin(), and to check a plugin's
  * availibility use pluginAvailable().
  * 
  * To access the plugin manager use Application::pluginManager().
  * You should never have to create an instance of this class yourself.
+ *
+ * \note Usually the Kate application itself loads/unloads the plugins, so
+ *       plugins actually never have to call loadPlugin() or unloadPlugin().
+ * 
  *
  * \author Christoph Cullmann \<cullmann@kde.org\>
  * \see Plugin
