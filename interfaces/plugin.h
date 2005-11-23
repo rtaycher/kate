@@ -49,10 +49,10 @@ class MainWindow;
  *
  * \section config Configuration Management
  *
- * When Kate loads a plugin it calls loadGeneralConfig(), so if you have
+ * When Kate loads a session it calls loadGeneralConfig(), so if you have
  * config settings use this function to load them. To save config settings
- * fill storeGeneralConfig(), as it will be called right before the plugin
- * is unloaded.
+ * for a session use storeGeneralConfig(), as it will be called whenever a
+ * session is saved/closed.
  *
  * \section views Plugin Views
  *
@@ -129,8 +129,8 @@ class KDE_EXPORT Plugin : public QObject
     Application *application() const;
 
     /**
-     * Store general config settings here.
-     * This function is called right before a plugin is unloaded. You should
+     * Store general session settings here.
+     * This function is called whenever a session is saved. You should
      * use the given \p config and prefix \p groupPrefix to store the data.
      * The group prefix exist so that the group does not clash with other
      * applications that use the same config file.
@@ -140,8 +140,8 @@ class KDE_EXPORT Plugin : public QObject
      */
     virtual void storeGeneralConfig(KConfig* config,const QString& groupPrefix)=0;
     /**
-     * Load general config settings here.
-     * This function is called right after a plugin was loaded. You should
+     * Load general session settings here.
+     * This function is called whenever a session was opened. You should
      * use the given \p config and prefix \p groupPrefix to store the data.
      * The group prefix exist so that the group does not clash with other
      * applications that use the same config file.
@@ -170,11 +170,58 @@ Plugin *createPlugin ( const char* libname, Application *application = 0, const 
 /**
  * \brief Plugin view extension interface.
  *
+ * Topics:
+ *  - \ref intro
+ *  - \ref views
+ *  - \ref example
+ *
  * \section intro Introduction
  *
- * @todo description
- * view plugin class
- * this plugin will be bound to a MainWindow
+ * The class PluginViewInterface extends the Plugin to support GUIs. So
+ * if a plugin has to appear in the GUI you \e have to additionally derive
+ * your plugin from PluginViewInterface, read the Plugin documentation for
+ * detailed information about how to to this.
+ *
+ * \section views Plugin Views
+ *
+ * The Kate application supports multiple mainwindows (Window > New Window).
+ * For every Kate MainWindow addView() is called, i.e. overwrite addView()
+ * and hook your view into the given mainwindow's KXMLGUIFactory. That means
+ * you have to create an own KXMLGUIClient derived \e PluginView class and
+ * create an own instance for \e every mainwindow. One PluginView then is
+ * bound to this specific MainWindow.
+ *
+ * removeView() is called for every MainWindow whenever a plugin view client
+ * is to be removed.
+ *
+ * As already mentioned above, loadViewConfig() and storeViewConfig() is
+ * called to load and save session data.
+ *
+ * \section example Basic PluginView Example
+ *
+ * A PluginView is bound to a single MainWindow. To add GUI elements KDE's
+ * GUI XML frameworks is used, i.e. the MainWindow provides a KXMLGUIFactory
+ * into which the KXMLGUIClient is to be hooked. So the plugin view must
+ * inherit from KXMLGUIClient, the following example shows the basic skeleton
+ * of the PluginView.
+ * \code
+ *   class PluginView : public QObject, public KXMLGUIClient
+ *   {
+ *       Q_OBJECT
+ *   public:
+ *       // Constructor and other methods
+ *       PluginView( Kate::MainWindow* mainwindow )
+ *         : QObject( mainwindow ), KXMLGUIClient( mainwindow ),
+ *           m_mainwindow(mainwindow)
+ *       { ... }
+ *       // ...
+ *   private:
+ *       Kate::MainWindow* m_mainwindow;
+ *   };
+ * \endcode
+ *
+ * \see Plugin, KXMLGUIClient, MainWindow
+ * \author Christoph Cullmann \<cullmann@kde.org\>
  */
 class KDE_EXPORT PluginViewInterface
 {
@@ -209,11 +256,11 @@ class KDE_EXPORT PluginViewInterface
      */
     virtual void removeView (MainWindow *mainwindow) = 0;
     /**
-     * Store \p mainwindow specific config settings here.
-     * This function is called right before a plugin is unloaded. You should
-     * use the given \p config and prefix \p groupPrefix to store the data.
-     * The group prefix exist so that the group does not clash with other
-     * applications that use the same config file.
+     * Store \p mainwindow specific session settings here.
+     * This function is called whenever a Kate session is saved. You
+     * should use the given \p config and prefix \p groupPrefix to store the
+     * data. The group prefix exists so that the group does not clash with
+     * other applications that use the same config file.
      * \param config the KConfig object which is to be used
      * \param mainwindow the MainWindow
      * \param groupPrefix the group prefix which is to be used
@@ -221,15 +268,15 @@ class KDE_EXPORT PluginViewInterface
      */
     virtual void storeViewConfig(KConfig* config, MainWindow* mainwindow, const QString& groupPrefix)=0;
     /**
-     * Load \p mainwindow specific config settings here.
-     * This function is called right after a plugin was loaded. You should
-     * use the given \p config and prefix \p groupPrefix to store the data.
-     * The group prefix exist so that the group does not clash with other
-     * applications that use the same config file.
+     * Load \p mainwindow specific session settings here.
+     * This function is called whenever a Kate session is loaded. You
+     * should use the given \p config and prefix \p groupPrefix to store the
+     * data. The group prefix exist so that the group does not clash with
+     * other applications that use the same config file.
      * \param config the KConfig object which is to be used
      * \param mainwindow the MainWindow
      * \param groupPrefix the group prefix which is to be used
-     * \see loadViewConfig()
+     * \see storeViewConfig()
      */
     virtual void loadViewConfig(KConfig* config, MainWindow* mainwindow, const QString& groupPrefix)=0;
 
