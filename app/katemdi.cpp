@@ -33,19 +33,17 @@
 #include <kiconloader.h>
 #include <kmenu.h>
 #include <kvbox.h>
+#include <khbox.h>
 #include <kmessagebox.h>
 #include <kactioncollection.h>
 #include <kxmlguifactory.h>
 
 #include <QVBoxLayout>
-#include <q3vbox.h>
-#include <q3hbox.h>
 #include <qevent.h>
 //Added by qt3to4:
 #include <QContextMenuEvent>
 #include <QPixmap>
 #include <QList>
-#include <Q3PtrList>
 #include <QChildEvent>
 
 namespace KateMDI {
@@ -212,7 +210,7 @@ void GUIClient::updateActions()
 //BEGIN TOOLVIEW
 
 ToolView::ToolView (MainWindow *mainwin, Sidebar *sidebar, QWidget *parent)
- : Q3VBox (parent)
+ : KVBox (parent)
  , m_mainWin (mainwin)
  , m_sidebar (sidebar)
  , m_toolVisible (false)
@@ -247,7 +245,7 @@ void ToolView::childEvent ( QChildEvent *ev )
   if (ev->inserted() && ev->child() && qobject_cast<QWidget *>(ev->child()))
     setFocusProxy (qobject_cast<QWidget *>(ev->child()));
 
-  Q3VBox::childEvent (ev);
+  KVBox::childEvent (ev);
 }
 
 //END TOOLVIEW
@@ -667,7 +665,7 @@ MainWindow::MainWindow (QWidget* parentWidget, const char* name)
 
   m_sidebars[KMultiTabBar::Left]->setSplitter (m_hSplitter);
 
-  Q3VBox *vb = new Q3VBox (m_hSplitter);
+  KVBox *vb = new KVBox (m_hSplitter);
   m_hSplitter->setCollapsible(vb, false);
 
   m_sidebars[KMultiTabBar::Top] = new Sidebar (KMultiTabBar::Top, this, vb);

@@ -27,8 +27,8 @@
 #include <kaction.h>
 
 #include <qobject.h>
-#include <q3valuelist.h>
 #include <QList>
+
 class KateSessionManager;
 class KActionCollection;
 class KDirWatch;

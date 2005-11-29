@@ -30,7 +30,7 @@
 #include <qregexp.h>
 #include <qcursor.h>
 //Added by qt3to4:
-#include <Q3CString>
+#include <QByteArray>
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QKeyEvent>
@@ -489,13 +489,13 @@ void GrepTool::childExited()
 
 void GrepTool::receivedOutput(KProcess */*proc*/, char *buffer, int buflen)
 {
-  buf += Q3CString(buffer, buflen+1);
+  buf += QByteArray(buffer, buflen+1);
   processOutput();
 }
 
 void GrepTool::receivedErrOutput(KProcess */*proc*/, char *buffer, int buflen)
 {
-  errbuf += Q3CString( buffer, buflen + 1 );
+  errbuf += QByteArray( buffer, buflen + 1 );
 }
 
 void GrepTool::slotClear()

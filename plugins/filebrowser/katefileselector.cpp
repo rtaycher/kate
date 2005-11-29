@@ -40,14 +40,13 @@
 #include <q3groupbox.h>
 #include <qcheckbox.h>
 #include <qregexp.h>
-#include <q3dockarea.h>
 #include <qtimer.h>
 #include <qdir.h>
 //Added by qt3to4:
 #include <QPixmap>
 #include <QFocusEvent>
 #include <QEvent>
-#include <Q3Frame>
+#include <QFrame>
 #include <QShowEvent>
 #include <QResizeEvent>
 #include <QVBoxLayout>
@@ -64,7 +63,6 @@
 #include <kaction.h>
 #include <kmessagebox.h>
 #include <ktoolbarbutton.h>
-#include <q3toolbar.h>
 #include <kmenu.h>
 #include <kdialog.h>
 #include <kdebug.h>
@@ -154,7 +152,7 @@ void KateFileSelectorToolBar::setMovingEnabled( bool)
 
 
 KateFileSelectorToolBarParent::KateFileSelectorToolBarParent(QWidget *parent)
-	:Q3Frame(parent),m_tb(0){}
+	:QFrame(parent),m_tb(0){}
 KateFileSelectorToolBarParent::~KateFileSelectorToolBarParent(){}
 void KateFileSelectorToolBarParent::setToolBar(KateFileSelectorToolBar *tb)
 {

@@ -75,7 +75,6 @@
 #include <kmenubar.h>
 #include <kstringhandler.h>
 #include <qlayout.h>
-#include <q3ptrvector.h>
 //Added by qt3to4:
 #include <QDragEnterEvent>
 #include <QEvent>

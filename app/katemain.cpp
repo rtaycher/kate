@@ -34,7 +34,7 @@
 #include <qtextcodec.h>
 #include <QTextIStream>
 //Added by qt3to4:
-#include <Q3CString>
+#include <QByteArray>
 
 static KCmdLineOptions options[] =
 {
@@ -121,7 +121,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
 
     if (args->isSet("pid"))
     {
-      DCOPCString tryApp = Q3CString ("kate-") + args->getOption("pid");
+      DCOPCString tryApp = QByteArray ("kate-") + args->getOption("pid");
       if (client.isApplicationRegistered(tryApp))
         kateApp = tryApp;
     }
@@ -147,7 +147,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
       if (args->isSet ("start"))
         kRef.call( "activateSession", QString (args->getOption("start")) );
 
-      QString enc = args->isSet("encoding") ? args->getOption("encoding") : Q3CString("");
+      QString enc = args->isSet("encoding") ? args->getOption("encoding") : QByteArray("");
 
       for (int z=0; z<args->count(); z++)
         kRef.call( "openURL", args->url(z), enc );

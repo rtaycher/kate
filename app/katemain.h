@@ -37,7 +37,6 @@ class QEvent;
 class QFileInfo;
 class QGridLayout;
 class QLabel;
-class Q3ListBox;
 class QObject;
 class QPixmap;
 class QVBoxLayout;

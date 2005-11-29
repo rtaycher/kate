@@ -36,6 +36,7 @@
 #include <kdebug.h>
 #include <kstringhandler.h>
 #include <kxmlguifactory.h>
+#include <kvbox.h>
 
 #include <QStackedWidget>
 #include <qpainter.h>
@@ -87,9 +88,11 @@ protected:
 //BEGIN KateViewSpace
 KateViewSpace::KateViewSpace( KateViewSpaceContainer *viewManager,
                               QWidget* parent, const char* name )
-  : Q3VBox(parent, name),
+  : KVBox(parent),
     m_viewManager( viewManager )
 {
+  setObjectName(name);
+
   mViewList.setAutoDelete(false);
 
   stack = new QStackedWidget( this );
@@ -233,7 +236,7 @@ bool KateViewSpace::event( QEvent *e )
     setActive( mIsActiveSpace );
     return true;
   }
-  return Q3VBox::event( e );
+  return KVBox::event( e );
 }
 
 void KateViewSpace::saveConfig ( KConfig* config, int myIndex ,const QString& viewConfGrp)

@@ -29,12 +29,12 @@
 
 #include <q3ptrlist.h>
 #include <qwidget.h>
-#include <q3vbox.h>
 //Added by qt3to4:
 #include <QPixmap>
 #include <QLabel>
 #include <QEvent>
 #include <kstatusbar.h>
+#include <kvbox.h>
 
 class KVSSBSep;
 
@@ -84,7 +84,7 @@ class KateVSStatusBar : public KStatusBar
       class KateViewSpace *m_viewSpace;
 };
 
-class KateViewSpace : public Q3VBox
+class KateViewSpace : public KVBox
 {
   friend class KateViewSpaceContainer;
   friend class KateVSStatusBar;

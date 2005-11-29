@@ -44,7 +44,6 @@
 #include <qlayout.h>
 #include <qobject.h>
 #include <qstringlist.h>
-#include <q3vbox.h>
 #include <qtimer.h>
 #include <qfileinfo.h>
 //Added by qt3to4:

@@ -32,7 +32,6 @@
 #include <q3header.h>
 #include <qcolor.h>
 #include <qcheckbox.h>
-#include <q3hbox.h>
 #include <qlayout.h>
 #include <q3groupbox.h>
 #include <qlabel.h>

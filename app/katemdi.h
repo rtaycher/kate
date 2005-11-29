@@ -26,6 +26,7 @@
 #include <kmultitabbar.h>
 #include <kxmlguiclient.h>
 #include <kaction.h>
+#include <kvbox.h>
 
 #include <q3dict.h>
 #include <q3intdict.h>
@@ -87,7 +88,7 @@ class GUIClient : public QObject, public KXMLGUIClient
     KActionMenu *m_toolMenu;
 };
 
-class ToolView : public Q3VBox
+class ToolView : public KVBox
 {
   Q_OBJECT
 

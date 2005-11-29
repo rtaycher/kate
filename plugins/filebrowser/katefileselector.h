@@ -38,7 +38,6 @@
 #include <kfile.h>
 #include <kurl.h>
 #include <ktoolbar.h>
-#include <q3frame.h>
 
 
 class KActionCollection;
@@ -98,7 +97,7 @@ public:
 	 virtual void setMovingEnabled( bool b );
 };
 
-class KateFileSelectorToolBarParent: public Q3Frame
+class KateFileSelectorToolBarParent: public QFrame
 {
 	Q_OBJECT
 public:

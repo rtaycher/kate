@@ -24,7 +24,7 @@
 
 #include <qtextstream.h>
 //Added by qt3to4:
-#include <Q3CString>
+#include <QByteArray>
 
 #include <kbookmarkimporter.h>
 #include <kmenu.h>
@@ -71,7 +71,7 @@ QString Kate::Private::Plugin::KBookmarkHandler::currentURL() const
 
 
 void Kate::Private::Plugin::KBookmarkHandler::slotNewBookmark( const QString& /*text*/,
-                                            const Q3CString& url,
+                                            const QByteArray& url,
                                             const QString& additionalInfo )
 {
     *m_importStream << "<bookmark icon=\"" << KMimeType::iconNameForURL( KURL( url ) );

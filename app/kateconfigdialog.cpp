@@ -51,7 +51,6 @@
 
 #include <q3buttongroup.h>
 #include <qcheckbox.h>
-#include <q3hbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <kpushbutton.h>
