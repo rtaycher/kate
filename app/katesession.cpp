@@ -452,7 +452,7 @@ bool KateSessionManager::chooseSession ()
   }
 
   QList<KateSessionChooserTemplate> templates;
-  templates.append(KateSessionChooserTemplate("Profile 1 (default)","blah.desktop","<img source=\"/home/jowenn/development/kde/binary/share/icons/hicolor/32x32/actions/show_side_panel.png\"><b>Test 1</b> adfafsdfdsf<br>asdfasdfsdfsdf adsfad adf asdf df<br> adfasdf jasdlfjö"));
+  templates.append(KateSessionChooserTemplate("Profile 1 (default)","blah.desktop","<img source=\"/home/jowenn/development/kde/binary/share/icons/hicolor/32x32/actions/show_side_panel.png\"><b>Test 1</b> adfafsdfdsf<br>asdfasdfsdfsdf adsfad adf asdf df<br> adfasdf jasdlfjÃ¶"));
   templates.append(KateSessionChooserTemplate("Profile 2","blah.desktop"," Test 2"));
   templates.append(KateSessionChooserTemplate("Profile 3","blah.desktop"," Test 3"));
   KateSessionChooser *chooser = new KateSessionChooser (0, lastSession,templates);
