@@ -42,7 +42,7 @@
 
 #include <qdatetime.h>
 #include <qtextcodec.h>
-#include <q3progressdialog.h>
+#include <qprogressdialog.h>
 #include <QByteArray>
 #include <QHash>
 
@@ -388,12 +388,11 @@ void KateDocManager::restoreDocumentList (KConfig* config)
     return;
   }
 
-  Q3ProgressDialog *pd=new Q3ProgressDialog(
+  QProgressDialog *pd=new QProgressDialog(
         i18n("Reopening files from the last session..."),
         QString::null,
-        count,
         0,
-        "openprog");
+        count);
 
   pd->setCaption (KateApp::self()->makeStdCaption(i18n("Starting Up")));
 
@@ -415,7 +414,7 @@ void KateDocManager::restoreDocumentList (KConfig* config)
       iface->readSessionConfig(config);
     config->setGroup (grp);
 
-    pd->setProgress(pd->progress()+1);
+    pd->setValue(pd->value()+1);
     KateApp::self()->processEvents();
   }
 
