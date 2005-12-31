@@ -154,7 +154,7 @@ void GUIClient::registerToolView (ToolView *tv)
   KConfig *cfg = KGlobal::config();
   QString _grp = cfg->group();
   cfg->setGroup("Shortcuts");
-  sc = KShortcut( cfg->readEntry( aname, "" ) );
+  sc = KShortcut( cfg->readEntry( aname, QString() ) );
   cfg->setGroup( _grp );
 
   KToggleAction *a = new ToggleToolViewAction(i18n("Show %1").arg(tv->text),
