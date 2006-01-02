@@ -101,7 +101,7 @@ GrepTool::GrepTool(QWidget *parent)
   cmbPattern->setEditable(true);
   cmbPattern->setDuplicatesEnabled(false);
   cmbPattern->insertItems(0, lastSearchItems);
-  cmbPattern->setEditText(QString::null);
+  cmbPattern->setEditText(QString());
   cmbPattern->setInsertPolicy(QComboBox::NoInsert);
   lPattern->setBuddy(cmbPattern);
   cmbPattern->setFocus();

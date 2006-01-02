@@ -309,7 +309,7 @@ bool KateDocManager::queryCloseDocuments(KateMainWindow *w)
 
       if (msgres==KMessageBox::Yes)
       {
-        KEncodingFileDialog::Result r=KEncodingFileDialog::getSaveURLAndEncoding( doc->encoding(),QString::null,QString::null,w,i18n("Save As"));
+        KEncodingFileDialog::Result r=KEncodingFileDialog::getSaveURLAndEncoding( doc->encoding(),QString(),QString(),w,i18n("Save As"));
 
         doc->setEncoding( r.encoding );
 
@@ -390,7 +390,7 @@ void KateDocManager::restoreDocumentList (KConfig* config)
 
   QProgressDialog *pd=new QProgressDialog(
         i18n("Reopening files from the last session..."),
-        QString::null,
+        QString(),
         0,
         count);
 

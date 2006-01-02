@@ -773,7 +773,7 @@ void MainWindow::setSidebarsVisible( bool visible )
                                    "invoke <b>Window &gt; Tool Views &gt; Show Sidebars</b> "
                                    "in the menu. It is still possible to show/hide "
                                    "the tool views with the assigned shortcuts.</qt>"),
-                              QString::null, "Kate hide sidebars notification message" );
+                              QString(), "Kate hide sidebars notification message" );
   }
 }
 

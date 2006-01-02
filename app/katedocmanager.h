@@ -84,7 +84,7 @@ class KateDocManager : public QObject
 
     QList<KTextEditor::Document*> &documentList () { return m_docList; };
 
-    KTextEditor::Document *openURL(const KURL&,const QString &encoding=QString::null);
+    KTextEditor::Document *openURL(const KURL&,const QString &encoding=QString());
 
     bool closeDocument(class KTextEditor::Document *,bool closeURL=true);
     bool closeDocument(uint);

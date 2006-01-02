@@ -82,7 +82,7 @@ void MainWindow::activateView ( KTextEditor::Document *doc )
 
 void MainWindow::openURL (const KURL &url)
 {
-  d->win->viewManager()->openURL (url, QString::null, true);
+  d->win->viewManager()->openURL (url, QString(), true);
 }
 
 QWidget *MainWindow::createToolView (const QString &identifier, MainWindow::Position pos, const QPixmap &icon, const QString &text)

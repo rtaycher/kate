@@ -258,7 +258,7 @@ Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mai
   connect( bookmarkHandler, SIGNAL( openURL( const QString& )),
            this, SLOT( setDir( const QString& ) ) );
 
-  waitingUrl = QString::null;
+  waitingUrl.clear();
 
   // whatsthis help
   cmbPath->setWhatsThis(       i18n("<p>Here you can enter a path for a folder to display."
@@ -382,7 +382,7 @@ void Kate::Private::Plugin::KateFileSelector::slotFilterChange( const QString & 
   QToolTip::remove( btnFilter );
   if ( empty ) {
     dir->clearFilter();
-    filter->lineEdit()->setText( QString::null );
+    filter->lineEdit()->setText( QString() );
     btnFilter->setToolTip(
         QString( i18n("Apply last filter (\"%1\")") ).arg( lastFilter ) );
   }
@@ -455,7 +455,7 @@ void Kate::Private::Plugin::KateFileSelector::cmbPathReturnPressed( const QStrin
 {
   KURL typedURL( u );
   if ( typedURL.hasPass() )
-    typedURL.setPass( QString::null );
+    typedURL.setPass( QString() );
 
   QStringList urls = cmbPath->urls();
   urls.remove( typedURL.url() );
@@ -485,7 +485,7 @@ void Kate::Private::Plugin::KateFileSelector::dirFinishedLoading()
 void Kate::Private::Plugin::KateFileSelector::btnFilterClick()
 {
   if ( !btnFilter->isOn() ) {
-    slotFilterChange( QString::null );
+    slotFilterChange( QString() );
   }
   else {
     filter->lineEdit()->setText( lastFilter );
@@ -512,7 +512,7 @@ void Kate::Private::Plugin::KateFileSelector::kateViewChanged()
     // if visible, sync
     if ( isVisible() ) {
       setActiveDocumentDir();
-      waitingUrl = QString::null;
+      waitingUrl.clear();
     }
     // else set waiting url
     else {
@@ -549,12 +549,12 @@ void Kate::Private::Plugin::KateFileSelector::showEvent( QShowEvent * )
     if ( autoSyncEvents & GotVisible ) {
 //     kdDebug(13001)<<"syncing fs on show"<<endl;
       setActiveDocumentDir();
-      waitingUrl = QString::null;
+      waitingUrl.clear();
     }
     // else, if we have a waiting URL set it
     else if ( ! waitingUrl.isEmpty() ) {
       setDir( waitingUrl );
-      waitingUrl = QString::null;
+      waitingUrl.clear();
    }
 }
 
@@ -591,8 +591,8 @@ class ActionLBItem : public Q3ListBoxPixmap {
   public:
   ActionLBItem( Q3ListBox *lb=0,
                 const QPixmap &pm = QPixmap(),
-                const QString &text=QString::null,
-                const QString &str=QString::null ) :
+                const QString &text=QString(),
+                const QString &str=QString() ) :
     Q3ListBoxPixmap( lb, pm, text ),
     _str(str) {};
   QString idstring() { return _str; };

@@ -660,7 +660,7 @@ void KateMainWindow::slotOpenWithMenuAction(int idx)
 
 void KateMainWindow::pluginHelp()
 {
-  KToolInvocation::invokeHelp (QString::null, "kate-plugins");
+  KToolInvocation::invokeHelp (QString(), "kate-plugins");
 }
 
 void KateMainWindow::aboutEditor()
@@ -731,18 +731,18 @@ void KateMainWindow::slotMail()
   } // check selected docs done
   if ( ! urls.count() )
     return;
-  KToolInvocation::invokeMailer( QString::null, // to
-                      QString::null, // cc
-                      QString::null, // bcc
-                      QString::null, // subject
-                      QString::null, // body
-                      QString::null, // msgfile
+  KToolInvocation::invokeMailer( QString(), // to
+                      QString(), // cc
+                      QString(), // bcc
+                      QString(), // subject
+                      QString(), // body
+                      QString(), // msgfile
                       urls           // urls to atthatch
                       );
 }
 void KateMainWindow::tipOfTheDay()
 {
-  KTipDialog::showTip( /*0*/this, QString::null, true );
+  KTipDialog::showTip( /*0*/this, QString(), true );
 }
 
 void KateMainWindow::slotFullScreen(bool t)

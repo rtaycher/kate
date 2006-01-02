@@ -213,7 +213,7 @@ bool KateApp::startupKate ()
       if (codec)
         doc = activeMainWindow()->viewManager()->openURL( m_args->url(z), codec->name(), false );
       else
-        doc = activeMainWindow()->viewManager()->openURL( m_args->url(z), QString::null, false );
+        doc = activeMainWindow()->viewManager()->openURL( m_args->url(z), QString(), false );
     }
     else
       KMessageBox::sorry( activeMainWindow(),
@@ -332,7 +332,7 @@ bool KateApp::openURL (const KURL &url, const QString &encoding)
     if (codec)
       mainWindow->viewManager()->openURL( url, codec->name());
     else
-      mainWindow->viewManager()->openURL( url, QString::null );
+      mainWindow->viewManager()->openURL( url, QString() );
   }
   else
     KMessageBox::sorry( mainWindow,

@@ -367,7 +367,7 @@ void KateFileList::slotMenu ( Q3ListViewItem *item, const QPoint &p, int /*col*/
 QString KateFileList::tooltip( Q3ListViewItem *item, int )
 {
   KateFileListItem *i = ((KateFileListItem*)item);
-  if ( ! i ) return QString::null;
+  if ( ! i ) return QString();
 
   QString str;
   const KateDocumentInfo *info = KateDocManager::self()->documentInfo(i->document());

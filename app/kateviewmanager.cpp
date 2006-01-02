@@ -372,7 +372,7 @@ void KateViewManager::slotDocumentOpen ()
     KEncodingFileDialog::Result r=KEncodingFileDialog::getOpenURLsAndEncoding(
       cv->document()->encoding(),
       cv->document()->url().url(),
-       QString::null,m_mainWindow,i18n("Open File"));
+       QString(),m_mainWindow,i18n("Open File"));
 
     KTextEditor::Document *lastID = 0;
     for (KURL::List::Iterator i=r.URLs.begin(); i != r.URLs.end(); ++i)
@@ -418,7 +418,7 @@ KTextEditor::Document *KateViewManager::openURL (const KURL &url, const QString&
 
 void KateViewManager::openURL (const KURL &url)
 {
-  openURL (url, QString::null);
+  openURL (url, QString());
 }
 
 void KateViewManager::removeViewSpace (KateViewSpace *viewspace)

@@ -61,7 +61,7 @@ class KateExternalToolsMenuAction : public KActionMenu
 
   Q_OBJECT
   public:
-    KateExternalToolsMenuAction( const QString &text=QString::null, KActionCollection *parent=0, const char* name=0, class KateMainWindow *mw=0 );
+    KateExternalToolsMenuAction( const QString &text=QString(), KActionCollection *parent=0, const char* name=0, class KateMainWindow *mw=0 );
     ~KateExternalToolsMenuAction() {};
 
     /**
@@ -104,13 +104,13 @@ class KateExternalToolAction : public KAction, public KWordMacroExpander
 class KateExternalTool
 {
   public:
-    KateExternalTool( const QString &name=QString::null,
-                      const QString &command=QString::null,
-                      const QString &icon=QString::null,
-                      const QString &tryexec=QString::null,
+    KateExternalTool( const QString &name=QString(),
+                      const QString &command=QString(),
+                      const QString &icon=QString(),
+                      const QString &tryexec=QString(),
                       const QStringList &mimetypes=QStringList(),
-                      const QString &acname=QString::null,
-                      const QString &cmdname=QString::null,
+                      const QString &acname=QString(),
+                      const QString &cmdname=QString(),
                       int save=0 );
     ~KateExternalTool() {};
 

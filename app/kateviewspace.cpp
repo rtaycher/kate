@@ -105,7 +105,7 @@ KateViewSpace::KateViewSpace( KateViewSpaceContainer *viewManager,
   mViewCount = 0;
 
   setMinimumWidth (mStatusBar->minimumWidth());
-  m_group = QString::null;
+  m_group.clear();
 }
 
 KateViewSpace::~KateViewSpace()
