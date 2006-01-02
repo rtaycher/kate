@@ -161,8 +161,10 @@ void KateApp::restoreKate ()
   if (mainWindows() == 0)
     newMainWindow ();
 
+#ifndef Q_WS_WIN
   // notify about start
   KStartupInfo::setNewStartupId( activeMainWindow(), startupId());
+#endif
 }
 
 bool KateApp::startupKate ()
@@ -180,7 +182,9 @@ bool KateApp::startupKate ()
     {
       kdDebug()<<"chooseSession returned false, exiting"<<endl;
       // we will exit kate now, notify the rest of the world we are done
+#ifndef Q_WS_WIN
       KStartupInfo::appStarted (startupId());
+#endif
       return false;
     }
 #else
@@ -194,8 +198,9 @@ bool KateApp::startupKate ()
     newMainWindow ();
 
   // notify about start
+#ifndef Q_WS_WIN
   KStartupInfo::setNewStartupId( activeMainWindow(), startupId());
-
+#endif
   QTextCodec *codec = m_args->isSet("encoding") ? QTextCodec::codecForName(m_args->getOption("encoding")) : 0;
 
 #warning fixme later
