@@ -558,7 +558,7 @@ void KateViewSpaceContainer::restoreViewConfiguration (KConfig *config, const QS
   //config->setGroup ("View Configuration");
 
   // no splitters around, ohhh :()
-  if (!config->readBoolEntry ("Splitters"))
+  if (!config->readEntry ("Splitters", QVariant(false)).toBool())
   {
     // only add the new views needed, let the old stay, won't hurt if one around
     m_viewSpaceList.first ()->restoreConfig (this, config, QString(group+"-ViewSpace 0"));

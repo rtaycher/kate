@@ -291,7 +291,7 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
       KConfig *c = KGlobal::config();
       c->setGroup("General");
 
-      if (c->readBoolEntry("Restore Window Configuration", true))
+      if (c->readEntry("Restore Window Configuration", QVariant(true)).toBool())
       {
         sc->setGroup ("Open MainWindows");
         int wCount = sc->readUnsignedNumEntry("Count", 1);

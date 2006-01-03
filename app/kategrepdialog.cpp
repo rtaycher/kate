@@ -109,11 +109,11 @@ GrepTool::GrepTool(QWidget *parent)
 
   cbCasesensitive = new QCheckBox(i18n("Case sensitive"), this);
   cbCasesensitive->setMinimumWidth(cbCasesensitive->sizeHint().width());
-  cbCasesensitive->setChecked(config->readBoolEntry("CaseSensitive", true));
+  cbCasesensitive->setChecked(config->readEntry("CaseSensitive", QVariant(true)).toBool());
 
   cbRegex = new QCheckBox( i18n("Regular expression"), this );
   cbRegex->setMinimumWidth( cbRegex->sizeHint().width() );
-  cbRegex->setChecked( config->readBoolEntry( "Regex", true ) );
+  cbRegex->setChecked( config->readEntry( "Regex", QVariant(true )).toBool() );
 
   loInput->addWidget(lPattern, 0, 0, Qt::AlignRight | Qt::AlignVCenter);
   loPattern->addWidget(cmbPattern);
@@ -175,7 +175,7 @@ GrepTool::GrepTool(QWidget *parent)
 
   cbRecursive = new QCheckBox(i18n("Recursive"), this);
   cbRecursive->setMinimumWidth(cbRecursive->sizeHint().width());
-  cbRecursive->setChecked(config->readBoolEntry("Recursive", true));
+  cbRecursive->setChecked(config->readEntry("Recursive", QVariant(true)).toBool());
 
   loInput->addWidget(lDir, 3, 0, Qt::AlignRight | Qt::AlignVCenter);
   loDir->addWidget(cmbDir, 1);

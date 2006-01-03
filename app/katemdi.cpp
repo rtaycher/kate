@@ -605,8 +605,8 @@ void Sidebar::restoreSession (KConfig *config)
   {
     ToolView *tv = m_toolviews[i];
 
-    tv->persistent = config->readBoolEntry (QString ("Kate-MDI-ToolView-%1-Persistent").arg(tv->id), false);
-    tv->setToolVisible (config->readBoolEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(tv->id), false));
+    tv->persistent = config->readEntry (QString ("Kate-MDI-ToolView-%1-Persistent").arg(tv->id), QVariant(false)).toBool();
+    tv->setToolVisible (config->readEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(tv->id), QVariant(false)).toBool());
 
     if (!anyVis)
       anyVis = tv->toolVisible();
@@ -866,7 +866,7 @@ void MainWindow::startRestore (KConfig *config, const QString &group)
 
   setToolViewStyle( (KMultiTabBar::KMultiTabBarStyle)m_restoreConfig->readNumEntry ("Kate-MDI-Sidebar-Style", (int)toolViewStyle()) );
   // after reading m_sidebarsVisible, update the GUI toggle action
-  m_sidebarsVisible = m_restoreConfig->readBoolEntry ("Kate-MDI-Sidebar-Visible", true );
+  m_sidebarsVisible = m_restoreConfig->readEntry ("Kate-MDI-Sidebar-Visible", QVariant(true) ).toBool();
   m_guiClient->updateSidebarsVisibleAction();
 }
 

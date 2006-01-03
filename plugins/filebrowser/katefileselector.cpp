@@ -297,7 +297,7 @@ void Kate::Private::Plugin::KateFileSelector::readConfig(KConfig *config, const 
   cmbPath->setMaxItems( config->readNumEntry( "pathcombo history len", 9 ) );
   cmbPath->setURLs( config->readPathListEntry( "dir history" ) );
   // if we restore history
-  if ( config->readBoolEntry( "restore location", true ) || qApp->isSessionRestored() ) {
+  if ( config->readEntry( "restore location", QVariant(true )).toBool() || qApp->isSessionRestored() ) {
     QString loc( config->readPathEntry( "location" ) );
     if ( ! loc.isEmpty() ) {
 //       waitingDir = loc;
@@ -312,7 +312,7 @@ void Kate::Private::Plugin::KateFileSelector::readConfig(KConfig *config, const 
   filter->setHistoryItems( config->readListEntry("filter history"), true );
   lastFilter = config->readEntry( "last filter" );
   QString flt("");
-  if ( config->readBoolEntry( "restore last filter", true ) || qApp->isSessionRestored() )
+  if ( config->readEntry( "restore last filter", QVariant(true )).toBool() || qApp->isSessionRestored() )
     flt = config->readEntry("current filter");
   filter->lineEdit()->setText( flt );
   slotFilterChange( flt );
@@ -791,8 +791,8 @@ void KFSConfigPage::init()
   sbPathHistLength->setValue( fileSelector->cmbPath->maxItems() );
   sbFilterHistLength->setValue( fileSelector->filter->maxCount() );
   // session
-  cbSesLocation->setChecked( config->readBoolEntry( "restore location", true ) );
-  cbSesFilter->setChecked( config->readBoolEntry( "restore last filter", true ) );
+  cbSesLocation->setChecked( config->readEntry( "restore location", QVariant(true )).toBool() );
+  cbSesFilter->setChecked( config->readEntry( "restore last filter", QVariant(true )).toBool() );
 }
 
 void KFSConfigPage::slotMyChanged()

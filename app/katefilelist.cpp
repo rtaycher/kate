@@ -406,7 +406,7 @@ void KateFileList::readConfig( KConfig *config, const QString &group )
   setSortType( config->readNumEntry( "Sort Type", sortByID ) );
   m_viewShade = config->readColorEntry( "View Shade", &m_viewShade );
   m_editShade = config->readColorEntry( "Edit Shade", &m_editShade );
-  m_enableBgShading = config->readBoolEntry( "Shading Enabled", &m_enableBgShading );
+  m_enableBgShading = config->readEntry( "Shading Enabled", QVariant(&m_enableBgShading )).toBool();
 
   sortAction->setCurrentItem( sortType() );
 
@@ -629,7 +629,7 @@ void KFLConfigPage::reset()
   // read in from config file
   KConfig *config = KGlobal::config();
   config->setGroup( "Filelist" );
-  cbEnableShading->setChecked( config->readBoolEntry("Shading Enabled", &m_filelist->m_enableBgShading ) );
+  cbEnableShading->setChecked( config->readEntry("Shading Enabled", QVariant(&m_filelist->m_enableBgShading )).toBool() );
   kcbViewShade->setColor( config->readColorEntry("View Shade", &m_filelist->m_viewShade ) );
   kcbEditShade->setColor( config->readColorEntry("Edit Shade", &m_filelist->m_editShade ) );
   cmbSort->setCurrentItem( m_filelist->sortType() );

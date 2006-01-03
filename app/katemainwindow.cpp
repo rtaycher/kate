@@ -412,12 +412,12 @@ void KateMainWindow::readOptions ()
   KConfig *config = KGlobal::config();
 
   config->setGroup("General");
-  syncKonsole =  config->readBoolEntry("Sync Konsole", true);
-  modNotification = config->readBoolEntry("Modified Notification", false);
-  KateDocManager::self()->setSaveMetaInfos(config->readBoolEntry("Save Meta Infos", true));
+  syncKonsole =  config->readEntry("Sync Konsole", QVariant(true)).toBool();
+  modNotification = config->readEntry("Modified Notification", QVariant(false)).toBool();
+  KateDocManager::self()->setSaveMetaInfos(config->readEntry("Save Meta Infos", QVariant(true)).toBool());
   KateDocManager::self()->setDaysMetaInfos(config->readNumEntry("Days Meta Infos", 30));
 
-  m_viewManager->setShowFullPath(config->readBoolEntry("Show Full Path in Title", false));
+  m_viewManager->setShowFullPath(config->readEntry("Show Full Path in Title", QVariant(false)).toBool());
 
   fileOpenRecent->loadEntries(config, "Recent Files");
 
