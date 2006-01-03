@@ -47,6 +47,7 @@
 #include <QFocusEvent>
 #include <QEvent>
 #include <QFrame>
+#include <QListWidget>
 #include <QShowEvent>
 #include <QResizeEvent>
 #include <QVBoxLayout>
@@ -716,16 +717,15 @@ void KFSConfigPage::apply()
   config->setGroup( "fileselector" );
   // toolbar
   QStringList l;
-  Q3ListBoxItem *item = acSel->selectedListBox()->firstItem();
   ActionLBItem *aItem;
-  while ( item )
+  QList<QListWidgetItem *> list = acSel->selectedListWidget()->findItems(QString("*"), Qt::MatchRegExp);
+  foreach(QListWidgetItem *item, list)
   {
     aItem = (ActionLBItem*)item;
     if ( aItem )
     {
       l << aItem->idstring();
     }
-    item = item->next();
   }
   config->writeEntry( "toolbar actions", l );
   fileSelector->setupToolbar( config );
@@ -772,9 +772,9 @@ void KFSConfigPage::init()
                 "bookmarks" << "sync_dir";
   QRegExp re("&(?=[^&])");
   KAction *ac;
-  Q3ListBox *lb;
+  QListWidget *lb;
   for ( QStringList::Iterator it=allActions.begin(); it != allActions.end(); ++it ) {
-    lb = l.contains( *it ) ? acSel->selectedListBox() : acSel->availableListBox();
+    lb = l.contains( *it ) ? acSel->selectedListWidget() : acSel->availableListWidget();
     if ( *it == "bookmarks" || *it == "sync_dir" )
       ac = fileSelector->actionCollection()->action( (*it).latin1() );
     else
