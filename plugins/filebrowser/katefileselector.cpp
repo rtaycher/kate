@@ -588,13 +588,13 @@ bool Kate::Private::Plugin::KateFileSelector::eventFilter( QObject* o, QEvent *e
    QListboxItem that can store and return a string,
    used for the toolbar action selector.
 */
-class ActionLBItem : public Q3ListBoxPixmap {
+class ActionLBItem : public QListWidgetItem {
   public:
-  ActionLBItem( Q3ListBox *lb=0,
+  ActionLBItem( QListWidget *lb=0,
                 const QPixmap &pm = QPixmap(),
                 const QString &text=QString(),
                 const QString &str=QString() ) :
-    Q3ListBoxPixmap( lb, pm, text ),
+    QListWidgetItem( QIcon(pm), text, lb, 0 ),
     _str(str) {};
   QString idstring() { return _str; };
   private:
