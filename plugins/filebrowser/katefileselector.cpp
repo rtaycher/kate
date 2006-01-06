@@ -385,7 +385,7 @@ void Kate::Private::Plugin::KateFileSelector::slotFilterChange( const QString & 
     dir->clearFilter();
     filter->lineEdit()->setText( QString() );
     btnFilter->setToolTip(
-        QString( i18n("Apply last filter (\"%1\")") ).arg( lastFilter ) );
+        i18n("Apply last filter (\"%1\")").arg( lastFilter )) ;
   }
   else {
     dir->setNameFilter( f );
