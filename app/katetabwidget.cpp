@@ -24,8 +24,8 @@
 
 //BEGIN KateTabWidget
 
-KateTabWidget::KateTabWidget(QWidget* parent, const char* name)
- : KTabWidget(parent,name)
+KateTabWidget::KateTabWidget(QWidget* parent)
+ : KTabWidget(parent)
  , m_visibility (ShowWhenMoreThanOneTab)
 {
   tabBar()->hide();

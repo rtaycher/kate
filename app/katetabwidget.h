@@ -34,7 +34,7 @@ class KateTabWidget : public KTabWidget
     };
 
   public:
-    KateTabWidget(QWidget* parent, const char* name=0);
+    KateTabWidget(QWidget* parent);
     virtual ~KateTabWidget();
 
     virtual void addTab ( QWidget * child, const QString & label );

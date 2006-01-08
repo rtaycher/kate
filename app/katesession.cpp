@@ -666,6 +666,9 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
   connect(m_delayTimer,SIGNAL(timeout()),this,SLOT(slotProfilePopup()));
   // trigger action update
   selectionChanged ();
+  connect(this,SIGNAL(user1Clicked()),this,SLOT(slotUser1()));
+  connect(this,SIGNAL(user2Clicked()),this,SLOT(slotUser2()));
+  connect(this,SIGNAL(user3Clicked()),this,SLOT(slotUser3()));
 }
 
 KateSessionChooser::~KateSessionChooser ()

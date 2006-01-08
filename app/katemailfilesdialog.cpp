@@ -107,8 +107,11 @@ void KateMailDialog::slotShowButton()
     lInfo->setText( i18n("Press <strong>Mail...</strong> to send selected documents") );
 
   }
+#warning portme
+#if 0
   mw->setMinimumSize( QSize( lInfo->sizeHint().width(), mw->sizeHint().height()) );
   setMinimumSize( calculateSize( mw->minimumSize().width(), mw->sizeHint().height() ) );
   resize( width(), minimumHeight() );
+#endif
 }
 #include "katemailfilesdialog.moc"
