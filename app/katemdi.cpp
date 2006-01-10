@@ -636,7 +636,7 @@ void Sidebar::saveSession (KConfig *config)
   {
     ToolView *tv = m_toolviews[i];
 
-    config->writeEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(tv->id), tv->sidebar()->position());
+    config->writeEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(tv->id), int(tv->sidebar()->position()));
     config->writeEntry (QString ("Kate-MDI-ToolView-%1-Sidebar-Position").arg(tv->id), i);
     config->writeEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(tv->id), tv->toolVisible());
     config->writeEntry (QString ("Kate-MDI-ToolView-%1-Persistent").arg(tv->id), tv->persistent);

@@ -595,7 +595,7 @@ void KateViewSpaceContainer::saveSplitterConfig( QSplitter* s, int idx, KConfig*
 
   // Save sizes, orient, children for this splitter
   config->writeEntry( "Sizes", s->sizes() );
-  config->writeEntry( "Orientation", s->orientation() );
+  config->writeEntry( "Orientation", int(s->orientation()) );
 
   QStringList childList;
   // a katesplitter has two children, of which one may be a KateSplitter.

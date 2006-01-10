@@ -437,9 +437,12 @@ void Kate::Private::Plugin::KateFileSelector::fileSelected(const KFileItem * /*f
 {
   const KFileItemList *list=dir->selectedItems();
   KFileItem *tmp;
-  for (KFileItemListIterator it(*list); (tmp = it.current()); ++it)
+  KFileItemList::const_iterator it = list->begin();
+  const KFileItemList::const_iterator end = list->end();
+  for ( ; it != end; ++it ) 
   {
-    mainwin->openURL(tmp->url());
+    tmp = (*it);
+	mainwin->openURL(tmp->url());
     dir->view()->setSelected(tmp,false);
   }
 }
