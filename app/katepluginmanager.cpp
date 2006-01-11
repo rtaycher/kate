@@ -92,8 +92,8 @@ void KatePluginManager::loadConfig (KConfig* config)
   config->setGroup("Kate Plugins");
 
   foreach (const KatePluginInfo &plugin,m_pluginList)
-    plugin.load =  config->readBoolEntry (plugin.service->library(), false) ||
-                            config->readBoolEntry (plugin.service->property("X-Kate-PluginName").toString(),false);
+    plugin.load =  config->readEntry (plugin.service->library(), false) ||
+                            config->readEntry (plugin.service->property("X-Kate-PluginName").toString(),false);
 }
 
 void KatePluginManager::storeGeneralConfig(KConfig* config) {
