@@ -294,7 +294,7 @@ void Kate::Private::Plugin::KateFileSelector::readConfig(KConfig *config, const 
   // set up the toolbar
   setupToolbar( config );
 
-  cmbPath->setMaxItems( config->readNumEntry( "pathcombo history len", 9 ) );
+  cmbPath->setMaxItems( config->readEntry( "pathcombo history len", 9 ) );
   cmbPath->setURLs( config->readPathListEntry( "dir history" ) );
   // if we restore history
   if ( config->readEntry( "restore location", QVariant(true )).toBool() || qApp->isSessionRestored() ) {
@@ -308,7 +308,7 @@ void Kate::Private::Plugin::KateFileSelector::readConfig(KConfig *config, const 
 
   // else is automatic, as cmpPath->setURL is called when a location is entered.
 
-  filter->setMaxCount( config->readNumEntry( "filter history len", 9 ) );
+  filter->setMaxCount( config->readEntry( "filter history len", 9 ) );
   filter->setHistoryItems( config->readListEntry("filter history"), true );
   lastFilter = config->readEntry( "last filter" );
   QString flt("");
@@ -317,7 +317,7 @@ void Kate::Private::Plugin::KateFileSelector::readConfig(KConfig *config, const 
   filter->lineEdit()->setText( flt );
   slotFilterChange( flt );
 
-  autoSyncEvents = config->readNumEntry( "AutoSyncEvents", 0 );
+  autoSyncEvents = config->readEntry( "AutoSyncEvents", 0 );
 }
 
 void Kate::Private::Plugin::KateFileSelector::initialDirChangeHack()

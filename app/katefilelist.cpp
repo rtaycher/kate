@@ -403,7 +403,7 @@ void KateFileList::readConfig( KConfig *config, const QString &group )
   QString oldgroup = config->group();
   config->setGroup( group );
 
-  setSortType( config->readNumEntry( "Sort Type", sortByID ) );
+  setSortType( config->readEntry( "Sort Type", int(sortByID) ) );
   m_viewShade = config->readColorEntry( "View Shade", &m_viewShade );
   m_editShade = config->readColorEntry( "Edit Shade", &m_editShade );
   m_enableBgShading = config->readEntry( "Shading Enabled", QVariant(&m_enableBgShading )).toBool();

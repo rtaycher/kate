@@ -335,10 +335,10 @@ void KateExternalToolsMenuAction::reload()
   // add them to the end of the list
   config->setReadDefaults( true );
   QStringList dtools = config->readListEntry( "tools" );
-  int gver = config->readNumEntry( "version", 1 );
+  int gver = config->readEntry( "version", 1 );
   config->setReadDefaults( false );
 
-  int ver = config->readNumEntry( "version" );
+  int ver = config->readEntry( "version",0 );
   if ( ver <= gver )
   {
     QStringList removed = config->readListEntry( "removed" );
@@ -381,7 +381,7 @@ void KateExternalToolsMenuAction::reload()
         config->readListEntry( "mimetypes" ),
         config->readEntry( "acname", "" ),
         config->readEntry( "cmdname", "" ),
-        config->readNumEntry( "save", 0 ) );
+        config->readEntry( "save", 0 ) );
 
     if ( t->hasexec )
       insert( new KateExternalToolAction( m_actionCollection, t->acname.ascii(), t ) );
@@ -653,7 +653,7 @@ void KateExternalToolsConfigWidget::reset()
           config->readListEntry( "mimetypes" ),
           config->readEntry( "acname" ),
 	  config->readEntry( "cmdname"),
-          config->readNumEntry( "save", 0 ) );
+          config->readEntry( "save", 0 ) );
 
       if ( t->hasexec ) // we only show tools that are also in the menu.
         new ToolItem( lbTools, t->icon.isEmpty() ? blankIcon() : SmallIcon( t->icon ), t );

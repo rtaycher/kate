@@ -475,8 +475,8 @@ void KateViewManager::saveViewConfiguration(KConfig *config,const QString& group
 void KateViewManager::restoreViewConfiguration (KConfig *config, const QString& group)
 {
   config->setGroup(group);
-  uint tabCount=config->readNumEntry("ViewSpaceContainers",0);
-  int activeOne=config->readNumEntry("Active ViewSpaceContainer",0);
+  uint tabCount=config->readEntry("ViewSpaceContainers",0);
+  int activeOne=config->readEntry("Active ViewSpaceContainer",0);
   if (tabCount==0) return;
   m_viewSpaceContainerList.at(0)->restoreViewConfiguration(config,group+QString(":ViewSpaceContainer-0:"));
   for (uint i=1;i<tabCount;i++) {

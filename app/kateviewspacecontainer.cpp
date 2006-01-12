@@ -581,7 +581,7 @@ void KateViewSpaceContainer::restoreViewConfiguration (KConfig *config, const QS
   // finally, make the correct view active.
   config->setGroup (group);
 /*
-  KateViewSpace *vs = m_viewSpaceList.at( config->readNumEntry("Active ViewSpace") );
+  KateViewSpace *vs = m_viewSpaceList.at( config->readEntry("Active ViewSpace") );
   if ( vs )
     activateSpace( vs->currentView() );
   */
@@ -639,7 +639,7 @@ void KateViewSpaceContainer::restoreSplitter( KConfig* config, const QString &gr
 {
   config->setGroup( group );
 
-  QSplitter* s = new QSplitter((Qt::Orientation)config->readNumEntry("Orientation"), parent);
+  QSplitter* s = new QSplitter((Qt::Orientation)config->readEntry("Orientation",0), parent);
 
   QStringList children = config->readListEntry( "Children" );
   for (QStringList::Iterator it=children.begin(); it!=children.end(); ++it)

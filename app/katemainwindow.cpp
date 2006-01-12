@@ -115,8 +115,8 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
     if (sconfig)
     {
       sconfig->setGroup (sgroup);
-      size.setWidth (sconfig->readNumEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ));
-      size.setHeight (sconfig->readNumEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ));
+      size.setWidth (sconfig->readEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ));
+      size.setHeight (sconfig->readEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ));
     }
 
     // if thats fails, try to reuse size
@@ -136,8 +136,8 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
       {
         // first try global app config
 		KGlobal::config()->setGroup ("MainWindow");
-        size.setWidth (KGlobal::config()->readNumEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ));
-        size.setHeight (KGlobal::config()->readNumEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ));
+        size.setWidth (KGlobal::config()->readEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ));
+        size.setHeight (KGlobal::config()->readEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ));
 
         if (size.isEmpty())
           size = QSize (qMin (700, desk.width()), qMin(480, desk.height()));
@@ -415,7 +415,7 @@ void KateMainWindow::readOptions ()
   syncKonsole =  config->readEntry("Sync Konsole", QVariant(true)).toBool();
   modNotification = config->readEntry("Modified Notification", QVariant(false)).toBool();
   KateDocManager::self()->setSaveMetaInfos(config->readEntry("Save Meta Infos", QVariant(true)).toBool());
-  KateDocManager::self()->setDaysMetaInfos(config->readNumEntry("Days Meta Infos", 30));
+  KateDocManager::self()->setDaysMetaInfos(config->readEntry("Days Meta Infos", 30));
 
   m_viewManager->setShowFullPath(config->readEntry("Show Full Path in Title", QVariant(false)).toBool());
 

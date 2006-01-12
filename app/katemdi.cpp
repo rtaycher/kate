@@ -714,7 +714,7 @@ ToolView *MainWindow::createToolView (const QString &identifier, KMultiTabBar::K
   if (m_restoreConfig && m_restoreConfig->hasGroup (m_restoreGroup))
   {
     m_restoreConfig->setGroup (m_restoreGroup);
-    pos = (KMultiTabBar::KMultiTabBarPosition) m_restoreConfig->readNumEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(identifier), pos);
+    pos = (KMultiTabBar::KMultiTabBarPosition) m_restoreConfig->readEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(identifier), int(pos));
   }
 
   ToolView *v  = m_sidebars[pos]->addWidget (icon, text, 0);
@@ -805,7 +805,7 @@ bool MainWindow::moveToolView (ToolView *widget, KMultiTabBar::KMultiTabBarPosit
   if (m_restoreConfig && m_restoreConfig->hasGroup (m_restoreGroup))
   {
     m_restoreConfig->setGroup (m_restoreGroup);
-    pos = (KMultiTabBar::KMultiTabBarPosition) m_restoreConfig->readNumEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(widget->id), pos);
+    pos = (KMultiTabBar::KMultiTabBarPosition) m_restoreConfig->readEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(widget->id), int(pos));
   }
 
   m_sidebars[pos]->addWidget (widget->icon, widget->text, widget);
@@ -864,7 +864,7 @@ void MainWindow::startRestore (KConfig *config, const QString &group)
   m_hSplitter->setSizes(hs);
   m_vSplitter->setSizes(vs);
 
-  setToolViewStyle( (KMultiTabBar::KMultiTabBarStyle)m_restoreConfig->readNumEntry ("Kate-MDI-Sidebar-Style", (int)toolViewStyle()) );
+  setToolViewStyle( (KMultiTabBar::KMultiTabBarStyle)m_restoreConfig->readEntry ("Kate-MDI-Sidebar-Style", (int)toolViewStyle()) );
   // after reading m_sidebarsVisible, update the GUI toggle action
   m_sidebarsVisible = m_restoreConfig->readEntry ("Kate-MDI-Sidebar-Visible", QVariant(true) ).toBool();
   m_guiClient->updateSidebarsVisibleAction();
@@ -884,7 +884,7 @@ void MainWindow::finishRestore ()
     m_restoreConfig->setGroup (m_restoreGroup);
     for ( int i=0; i < m_toolviews.size(); ++i )
     {
-      KMultiTabBar::KMultiTabBarPosition newPos = (KMultiTabBar::KMultiTabBarPosition) m_restoreConfig->readNumEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(m_toolviews[i]->id), m_toolviews[i]->sidebar()->position());
+      KMultiTabBar::KMultiTabBarPosition newPos = (KMultiTabBar::KMultiTabBarPosition) m_restoreConfig->readEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(m_toolviews[i]->id), int(m_toolviews[i]->sidebar()->position()));
 
       if (m_toolviews[i]->sidebar()->position() != newPos)
       {
