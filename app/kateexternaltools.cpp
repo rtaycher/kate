@@ -787,7 +787,7 @@ void KateExternalToolsConfigWidget::slotEdit()
   KateExternalTool *t = ((ToolItem*)lbTools->selectedItem())->tool;
   KateExternalToolServiceEditor editor( t, this);
   config->setGroup( "Editor" );
-  editor.resize( config->readSizeEntry( "Size" ) );
+  editor.resize( config->readEntry( "Size", QSize() ) );
   if ( editor.exec() /*== KDialogBase::Ok*/ )
   {
 

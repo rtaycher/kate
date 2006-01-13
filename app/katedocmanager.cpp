@@ -380,7 +380,7 @@ void KateDocManager::restoreDocumentList (KConfig* config)
   config->setGroup ("Open Documents");
   QString grp = config->group();
 
-  unsigned int count = config->readUnsignedNumEntry("Count", 0);
+  unsigned int count = config->readEntry("Count", 0);
 
   if (count == 0)
   {

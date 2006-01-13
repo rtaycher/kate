@@ -85,7 +85,7 @@ void KateSession::init ()
 
     // get the document count
     config.setGroup ("Open Documents");
-    m_documents = config.readUnsignedNumEntry("Count", 0);
+    m_documents = config.readEntry("Count", 0);
 
     return;
   }
@@ -294,7 +294,7 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
       if (c->readEntry("Restore Window Configuration", QVariant(true)).toBool())
       {
         sc->setGroup ("Open MainWindows");
-        int wCount = sc->readUnsignedNumEntry("Count", 1);
+        int wCount = sc->readEntry("Count", 1);
 
         for (int i=0; i < wCount; ++i)
         {

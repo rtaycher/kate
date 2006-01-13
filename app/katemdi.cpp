@@ -538,7 +538,7 @@ void Sidebar::restoreSession (KConfig *config)
   {
     ToolView *tv = m_toolviews[firstWrong];
 
-    int pos = config->readUnsignedNumEntry (QString ("Kate-MDI-ToolView-%1-Sidebar-Position").arg(tv->id), firstWrong);
+    int pos = config->readEntry (QString ("Kate-MDI-ToolView-%1-Sidebar-Position").arg(tv->id), firstWrong);
 
     if (pos != firstWrong)
       break;
@@ -553,7 +553,7 @@ void Sidebar::restoreSession (KConfig *config)
     {
       TmpToolViewSorter s;
       s.tv = m_toolviews[i];
-      s.pos = config->readUnsignedNumEntry (QString ("Kate-MDI-ToolView-%1-Sidebar-Position").arg(m_toolviews[i]->id), i);
+      s.pos = config->readEntry (QString ("Kate-MDI-ToolView-%1-Sidebar-Position").arg(m_toolviews[i]->id), i);
       toSort.push_back (s);
     }
 
