@@ -51,7 +51,7 @@ class KateTabWidget : public KTabWidget
 
     void setTabWidgetVisibility( TabWidgetVisibility );
 
-  private slots:
+  private Q_SLOTS:
     void closeTab(QWidget* w);
 
   private:

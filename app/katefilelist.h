@@ -115,12 +115,12 @@ class KateFileList : public KListView
      */
     void takeItem( Q3ListViewItem * );
 
-  public slots:
+  public Q_SLOTS:
     void setSortType (int s);
     void slotNextDocument();
     void slotPrevDocument();
 
-  private slots:
+  private Q_SLOTS:
     void slotDocumentCreated (KTextEditor::Document *doc);
     void slotDocumentDeleted (KTextEditor::Document *doc);
     void slotActivateView( Q3ListViewItem *item );
@@ -175,10 +175,10 @@ class KFLConfigPage : public KTextEditor::ConfigPage {
     virtual void reset();
     virtual void defaults() {}
 
-  public slots:
+  public Q_SLOTS:
     void slotEnableChanged();
 
-  private slots:
+  private Q_SLOTS:
     void slotMyChanged();
 
   private:

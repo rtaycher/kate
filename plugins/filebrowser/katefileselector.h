@@ -132,13 +132,13 @@ class KateFileSelector : public KVBox
     KDirOperator *dirOperator(){ return dir; }
     KActionCollection *actionCollection() { return mActionCollection; };
 
-  public slots:
+  public Q_SLOTS:
     void slotFilterChange(const QString&);
     void setDir(KURL);
     void setDir( const QString& url ) { setDir( KURL( url ) ); };
     void kateViewChanged();
 
-  private slots:
+  private Q_SLOTS:
     void fileSelected(const KFileItem * /*file*/);
     void cmbPathActivated( const KURL& u );
     void cmbPathReturnPressed( const QString& u );
@@ -197,7 +197,7 @@ class KFSConfigPage : public Kate::PluginConfigPage {
     virtual void reset();
     virtual void defaults() {}
 
-  private slots:
+  private Q_SLOTS:
     void slotMyChanged();
 
   private:

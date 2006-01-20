@@ -14,7 +14,7 @@ class KateToolTipMenu: public QMenu {
 	private:
 		QAction *m_currentAction;
 		QLabel *m_toolTip;
-	private slots:
+	private Q_SLOTS:
 		void slotHovered(QAction*);
 };
 

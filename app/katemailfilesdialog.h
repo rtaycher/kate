@@ -48,7 +48,7 @@ class KateMailDialog : public KDialogBase {
         @return a list of the selected docs.
     */
     Q3PtrList<KTextEditor::Document> selectedDocs();
-  private slots:
+  private Q_SLOTS:
     void slotShowButton();
   private:
     class KListView *list;

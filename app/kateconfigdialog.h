@@ -54,7 +54,7 @@ class KateConfigDialog : public KDialogBase
     void addPluginPage (Kate::Plugin *plugin);
     void removePluginPage (Kate::Plugin *plugin);
 
-  protected slots:
+  protected Q_SLOTS:
     void slotOk();
     void slotApply();
     void slotChanged();

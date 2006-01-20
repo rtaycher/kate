@@ -71,7 +71,7 @@ class KateExternalToolsMenuAction : public KActionMenu
 
     class KActionCollection *actionCollection() { return m_actionCollection; }
 
-  private slots:
+  private Q_SLOTS:
     void slotDocumentChanged();
 
   private:
@@ -91,7 +91,7 @@ class KateExternalToolAction : public KAction, public KWordMacroExpander
   protected:
     virtual bool expandMacro( const QString &str, QStringList &ret );
 
-  private slots:
+  private Q_SLOTS:
     void slotRun();
 
   public:
@@ -155,7 +155,7 @@ class KateExternalToolsConfigWidget : public KTextEditor::ConfigPage
     virtual void reset();
     virtual void defaults() { reset(); } // double sigh
 
-  private slots:
+  private Q_SLOTS:
     void slotNew();
     void slotEdit();
     void slotRemove();
@@ -216,7 +216,7 @@ class KateExternalToolServiceEditor : public KDialogBase
     class KIconButton *btnIcon;
     class QComboBox *cmbSave;
 
-  private slots:
+  private Q_SLOTS:
     /**
      * Run when the OK button is clicked, to ensure critical values are provided
      */

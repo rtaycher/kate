@@ -66,7 +66,7 @@ class KateViewManager : public QObject
 
     KTextEditor::Document *openURL (const KURL &url, const QString& encoding, bool activate = true);
 
-  public slots:
+  public Q_SLOTS:
     void openURL (const KURL &url);
 
   private:
@@ -87,13 +87,13 @@ class KateViewManager : public QObject
     void closeViews(KTextEditor::Document *doc);
     KateMainWindow *mainWindow();
 
-  private slots:
+  private Q_SLOTS:
     void activateView ( KTextEditor::View *view );
     void activateSpace ( KTextEditor::View* v );
 
     void tabChanged(QWidget*);
 
-  public slots:
+  public Q_SLOTS:
     bool getShowFullPath() const { return showFullPath; }
 
     void activateView ( KTextEditor::Document *doc );
@@ -127,7 +127,7 @@ class KateViewManager : public QObject
 
     QPointer<KTextEditor::View> guiMergedView;
 
-  signals:
+  Q_SIGNALS:
     void statusChanged (KTextEditor::View *, int, int, int, bool, int, const QString &);
     void statChanged ();
     void viewChanged ();

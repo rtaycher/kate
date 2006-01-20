@@ -40,12 +40,12 @@ class KateMwModOnHdDialog : public KDialogBase
     KateMwModOnHdDialog( DocVector docs, QWidget *parent=0, const char *name=0 );
     ~KateMwModOnHdDialog();
 
-  protected slots:
+  protected Q_SLOTS:
     void slotUser1();
     void slotUser2();
     void slotUser3();
 
-  private slots:
+  private Q_SLOTS:
     void slotDiff();
     void slotSelectionChanged();
     void slotPRead(KProcIO*);

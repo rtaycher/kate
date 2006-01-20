@@ -106,7 +106,7 @@ class KDE_EXPORT MainWindow : public QObject
    * View stuff, here all stuff belong which allows to
    * access and manipulate the KTextEditor::View's we have in this windows
    */
- public slots: /*these are slots for kjs*/
+ public Q_SLOTS: /*these are slots for kjs*/
     /**
      * Access the active view.
      * \return active view
@@ -132,7 +132,7 @@ class KDE_EXPORT MainWindow : public QObject
   #undef signals
   #define signals public
 #endif
-  signals:
+  Q_SIGNALS:
 #ifndef Q_MOC_RUN
   #undef signals
   #define signals protected   

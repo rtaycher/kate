@@ -37,7 +37,7 @@ protected:
 	virtual void slotUser2();
 	virtual void slotUser1();
 	bool doSave(QTreeWidgetItem *root);
-protected slots:
+protected Q_SLOTS:
 	void slotSelectAll();
 	void slotItemActivated(QTreeWidgetItem*,int);
 	

@@ -232,7 +232,7 @@ class KateSessionManager : public QObject
      */
     bool chooseSession ();
 
-  public slots:
+  public Q_SLOTS:
     /**
      * try to start a new session
      * asks user first for name
@@ -259,7 +259,7 @@ class KateSessionManager : public QObject
      */
     void sessionManage ();
 
-  private slots:
+  private Q_SLOTS:
     void dirty (const QString &path);
 
   public:
@@ -315,7 +315,7 @@ class KateSessionChooser : public KDialogBase
 
   private:
     QString m_selectedTemplate;
-  protected slots:
+  protected Q_SLOTS:
     /**
      * open session
      */
@@ -361,7 +361,7 @@ class KateSessionOpenDialog : public KDialogBase
       resultCancel
     };
 
-  protected slots:
+  protected Q_SLOTS:
     /**
      * cancel pressed
      */
@@ -384,7 +384,7 @@ class KateSessionManageDialog : public KDialogBase
     KateSessionManageDialog (QWidget *parent);
     ~KateSessionManageDialog ();
 
-  protected slots:
+  protected Q_SLOTS:
     /**
      * close pressed
      */
@@ -425,7 +425,7 @@ class KateSessionsAction : public KActionMenu
     KateSessionsAction(const QString& text, KActionCollection* parent = 0, const char* name = 0);
     ~KateSessionsAction (){;};
 
-  public  slots:
+  public  Q_SLOTS:
     void slotAboutToShow();
 
     void openSession (int i);

@@ -53,16 +53,16 @@ public:
     void setDirName(const QString &);
 
 
-signals:
+Q_SIGNALS:
     void itemSelected(const QString &abs_filename, int line);
 
-public slots:
+public Q_SLOTS:
     void slotSearchFor(const QString &pattern);
 
 protected:
     bool eventFilter( QObject *, QEvent * );
 
-private slots:
+private Q_SLOTS:
     void templateActivated(int index);
     void childExited();
     void receivedOutput(KProcess *proc, char *buffer, int buflen);

@@ -38,7 +38,7 @@ class KatePluginListView : public KListView
   public:
     KatePluginListView (QWidget *parent = 0);
 
-  signals:
+  Q_SIGNALS:
     void stateChange(KatePluginListItem *, bool);
 
   private:
@@ -56,10 +56,10 @@ class KateConfigPluginPage: public KVBox
   private:
     class KateConfigDialog *myDialog;
 
-  signals:
+  Q_SIGNALS:
     void changed();
 
-  private slots:
+  private Q_SLOTS:
     void stateChange(KatePluginListItem *, bool);
 
     void loadPlugin (KatePluginListItem *);

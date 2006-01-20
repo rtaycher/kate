@@ -56,7 +56,7 @@ class ToggleToolViewAction : public KToggleAction
 
     virtual ~ToggleToolViewAction();
 
-  protected slots:
+  protected Q_SLOTS:
     void slotToggled(bool);
     void toolVisibleChanged(bool);
 
@@ -76,7 +76,7 @@ class GUIClient : public QObject, public KXMLGUIClient
     void unregisterToolView (ToolView *tv);
     void updateSidebarsVisibleAction();
 
-  private slots:
+  private Q_SLOTS:
     void clientAdded( KXMLGUIClient *client );
     void updateActions();
 
@@ -116,7 +116,7 @@ class ToolView : public KVBox
      */
     virtual ~ToolView ();
 
-  signals:
+  Q_SIGNALS:
     /**
      * toolview hidden or shown
      * @param bool is this toolview made visible?
@@ -199,16 +199,16 @@ class Sidebar : public KMultiTabBar
      */
     void saveSession (KConfig *config);
 
-  public slots:
+  public Q_SLOTS:
     // reimplemented, to block a show() call if all sidebars are forced hidden
     virtual void setVisible(bool visible);
-  private slots:
+  private Q_SLOTS:
     void tabClicked(int);
 
   protected:
     bool eventFilter(QObject *obj, QEvent *ev);
 
-  private slots:
+  private Q_SLOTS:
     void buttonPopupActivate (QAction *);
 
   private:
@@ -300,7 +300,7 @@ class MainWindow : public KParts::MainWindow
      */
     bool sidebarsVisible() const;
 
-  public slots:
+  public Q_SLOTS:
     /**
      * set the sidebars' visibility to @p visible. If false, the sidebars
      * are @e always hidden. Usually you do not have to call this because

@@ -98,13 +98,13 @@ class KateConsole : public KVBox,public KXMLGUIClient
 
     Kate::MainWindow *mainWindow() {return m_mw;}
 
-  public slots:
+  public Q_SLOTS:
     /**
      * pipe current document to console
      */
     void slotPipeToConsole ();
 
-  private slots:
+  private Q_SLOTS:
     /**
      * the konsole exited ;)
      * handle that, hide the dock

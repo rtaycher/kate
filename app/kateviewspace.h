@@ -55,7 +55,7 @@ class KateVSStatusBar : public KStatusBar
    /**
     * stuff to update the statusbar on view changes
     */
-  public slots:
+  public Q_SLOTS:
     void updateStatus ();
 
     void viewModeChanged ( KTextEditor::View *view );
@@ -127,7 +127,7 @@ class KateViewSpace : public KVBox
     KateViewSpaceContainer *m_viewManager;
     QString m_group;
 
-  public slots:
+  public Q_SLOTS:
     void polish();
 };
 

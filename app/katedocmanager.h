@@ -104,20 +104,20 @@ class KateDocManager : public QObject
     inline int getDaysMetaInfos() { return m_daysMetaInfos; };
     inline void setDaysMetaInfos(int i) { m_daysMetaInfos = i; };
 
-  public slots:
+  public Q_SLOTS:
     /**
      * saves all documents that has at least one view.
      * documents with no views are ignored :P
      */
     void saveAll();
 
-  signals:
+  Q_SIGNALS:
     void documentCreated (KTextEditor::Document *doc);
     void documentDeleted (KTextEditor::Document *doc);
     void documentChanged ();
     void initialDocumentReplaced ();
 
-  private slots:
+  private Q_SLOTS:
     void slotModifiedOnDisc (KTextEditor::Document *doc, bool b, KTextEditor::ModificationInterface::ModifiedOnDiskReason reason);
     void slotModChanged(KTextEditor::Document *doc);
 

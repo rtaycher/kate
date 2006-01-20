@@ -137,7 +137,7 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
    * slots used for actions in the menus/toolbars
    * or internal signal connections
    */
-  private slots:
+  private Q_SLOTS:
     void newWindow ();
 
     void slotConfigure();
@@ -175,13 +175,13 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
   public:
     void openURL (const QString &name=0L);
 
-  private slots:
+  private Q_SLOTS:
     void updateGrepDir (bool visible);
 
   protected:
     bool event( QEvent * );
 
-  private slots:
+  private Q_SLOTS:
     void slotDocumentCloseAll();
 
   private:

@@ -96,7 +96,7 @@ class KateViewSpaceContainer: public QSplitter
     KateMainWindow *mainWindow();
   friend class KateViewManager;
 
-  private slots:
+  private Q_SLOTS:
     void activateView ( KTextEditor::View *view );
     void activateSpace ( KTextEditor::View* v );
     void slotViewChanged();
@@ -106,7 +106,7 @@ class KateViewSpaceContainer: public QSplitter
     void documentCreated (KTextEditor::Document *doc);
     void documentDeleted (uint docNumber);
 
-  public slots:
+  public Q_SLOTS:
      /* Splits a KateViewSpace into two.
       * The operation is performed by creating a KateMDI::Splitter in the parent of the KateViewSpace to be split,
       * which is then moved to that splitter. Then a new KateViewSpace is created and added to the splitter,
@@ -143,7 +143,7 @@ class KateViewSpaceContainer: public QSplitter
     void activateNextView();
     void activatePrevView();
 
-  signals:
+  Q_SIGNALS:
     void viewChanged ();
 
   private:

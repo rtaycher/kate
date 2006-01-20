@@ -51,10 +51,10 @@ public:
 
     KMenu *menu() const { return m_menu; }
 
-signals:
+Q_SIGNALS:
     void openURL( const QString& url );
 
-private slots:
+private Q_SLOTS:
     void slotNewBookmark( const QString& text, const QByteArray& url,
                           const QString& additionalInfo );
     void slotNewFolder( const QString& text, bool open,

@@ -84,7 +84,7 @@ class KDE_EXPORT PluginConfigPage : public QWidget
   //
   // SIGNALS !!!
   //
-  signals:
+  Q_SIGNALS:
     /**
      * Emit this signal whenever a option changed.
      * When the \e Apply button was clicked the public slot apply() will be
