@@ -670,7 +670,7 @@ void KateViewSpaceContainer::restoreSplitter( KConfig* config, const QString &gr
 
   // set sizes
   config->setGroup( group );
-  s->setSizes( config->readIntListEntry("Sizes") );
+  s->setSizes( config->readEntry("Sizes",QList<int>()) );
   s->show();
 }
 

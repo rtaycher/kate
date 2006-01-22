@@ -596,7 +596,7 @@ void Sidebar::restoreSession (KConfig *config)
   updateLastSize ();
 
   // restore the own splitter sizes
-  QList<int> s = config->readIntListEntry (QString ("Kate-MDI-Sidebar-%1-Splitter").arg(position()));
+  QList<int> s = config->readEntry (QString ("Kate-MDI-Sidebar-%1-Splitter").arg(position()),QList<int>());
   m_ownSplit->setSizes (s);
 
   // show only correct toolviews, remember persistent values ;)
@@ -853,8 +853,8 @@ void MainWindow::startRestore (KConfig *config, const QString &group)
   m_restoreConfig->setGroup (m_restoreGroup);
 
   // get main splitter sizes ;)
-  QList<int> hs = m_restoreConfig->readIntListEntry ("Kate-MDI-H-Splitter");
-  QList<int> vs = m_restoreConfig->readIntListEntry ("Kate-MDI-V-Splitter");
+  QList<int> hs = m_restoreConfig->readEntry ("Kate-MDI-H-Splitter",QList<int>());
+  QList<int> vs = m_restoreConfig->readEntry ("Kate-MDI-V-Splitter",QList<int>());
 
   m_sidebars[0]->setLastSize (hs[0]);
   m_sidebars[1]->setLastSize (hs[2]);
