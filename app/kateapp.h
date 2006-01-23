@@ -186,7 +186,7 @@ class KDE_EXPORT KateApp : public KApplication
      * @param encoding encoding name
      * @return success
      */
-    bool openURL (const KURL &url, const QString &encoding);
+    bool openURL (const KUrl &url, const QString &encoding);
 
     /**
      * position cursor in current active view
