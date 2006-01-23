@@ -36,7 +36,7 @@ class KPushButton;
 class QLabel;
 class KProcess;
 class KConfig;
-class KURLRequester;
+class KUrlRequester;
 class QEvent;
 
 class GrepTool : public QWidget
@@ -79,7 +79,7 @@ private:
 
     QLineEdit *leTemplate;
     KComboBox *cmbFiles, *cmbPattern;
-    KURLRequester *cmbDir;
+    KUrlRequester *cmbDir;
     QCheckBox *cbRecursive;
     QCheckBox *cbCasesensitive, *cbRegex;
     QTreeWidget *lbResult;

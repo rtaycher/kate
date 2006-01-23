@@ -189,9 +189,9 @@ Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mai
   toolbar->setFlat(true);
   qInstallMsgHandler( oldHandler );
 
-  cmbPath = new KURLComboBox( KURLComboBox::Directories, true, this);
+  cmbPath = new KUrlComboBox( KUrlComboBox::Directories, true, this);
   cmbPath->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
-  KURLCompletion* cmpl = new KURLCompletion(KURLCompletion::DirCompletion);
+  KUrlCompletion* cmpl = new KUrlCompletion(KUrlCompletion::DirCompletion);
   cmbPath->setCompletionObject( cmpl );
   cmbPath->setAutoDeleteCompletionObject( true );
 
@@ -464,7 +464,7 @@ void Kate::Private::Plugin::KateFileSelector::cmbPathReturnPressed( const QStrin
   QStringList urls = cmbPath->urls();
   urls.remove( typedURL.url() );
   urls.prepend( typedURL.url() );
-  cmbPath->setURLs( urls, KURLComboBox::RemoveBottom );
+  cmbPath->setURLs( urls, KUrlComboBox::RemoveBottom );
   dir->setFocus();
   dir->setURL( KURL(u), true );
 }

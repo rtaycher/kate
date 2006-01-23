@@ -57,8 +57,8 @@ class KRecentFilesAction;
 class KSelectAction;
 class KStatusBar;
 class KToggleAction;
-class KURL;
-class KURLComboBox;
+class KUrl;
+class KUrlComboBox;
 
 class KateApp;
 class KateConfigDlg;

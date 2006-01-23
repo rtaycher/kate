@@ -160,7 +160,7 @@ class KateFileSelector : public KVBox
     class KateFileSelectorToolBar *toolbar;
     KActionCollection *mActionCollection;
     class KBookmarkHandler *bookmarkHandler;
-    KURLComboBox *cmbPath;
+    KUrlComboBox *cmbPath;
     KDirOperator * dir;
     class KAction *acSyncDir;
     KHistoryCombo * filter;

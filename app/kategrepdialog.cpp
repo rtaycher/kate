@@ -167,8 +167,8 @@ GrepTool::GrepTool(QWidget *parent)
   KComboBox* cmbUrl = new KComboBox(true, this);
   cmbUrl->setMinimumWidth(80); // make sure that 800x600 resolution works
   cmbUrl->setDuplicatesEnabled(false);
-  cmbDir = new KURLRequester( cmbUrl, this);
-  cmbDir->completionObject()->setMode(KURLCompletion::DirCompletion);
+  cmbDir = new KUrlRequester( cmbUrl, this);
+  cmbDir->completionObject()->setMode(KUrlCompletion::DirCompletion);
   cmbDir->comboBox()->insertItems(0, lastSearchPaths);
   cmbDir->setMode( KFile::Directory|KFile::LocalOnly );
   lDir->setBuddy(cmbDir);
