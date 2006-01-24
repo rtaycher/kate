@@ -178,7 +178,7 @@ uint KateDocManager::documents ()
   return m_docList.count ();
 }
 
-KTextEditor::Document *KateDocManager::findDocument (KURL url )
+KTextEditor::Document *KateDocManager::findDocument (KUrl url )
 {
   foreach (KTextEditor::Document* it,m_docList)
   {
@@ -189,13 +189,13 @@ KTextEditor::Document *KateDocManager::findDocument (KURL url )
   return 0;
 }
 
-bool KateDocManager::isOpen(KURL url)
+bool KateDocManager::isOpen(KUrl url)
 {
   // return just if we found some document with this url
   return findDocument (url) != 0;
 }
 
-KTextEditor::Document *KateDocManager::openURL (const KURL& url,const QString &encoding)
+KTextEditor::Document *KateDocManager::openURL (const KUrl& url,const QString &encoding)
 {
   // special handling if still only the first initial doc is there
   if (!documentList().isEmpty() && (documentList().count() == 1) && (!documentList().at(0)->isModified() && documentList().at(0)->url().isEmpty()))
@@ -315,7 +315,7 @@ bool KateDocManager::queryCloseDocuments(KateMainWindow *w)
 
         if (!r.URLs.isEmpty())
         {
-          KURL tmp = r.URLs.first();
+          KUrl tmp = r.URLs.first();
 
           if ( !doc->saveAs( tmp ) )
             return false;
@@ -440,7 +440,7 @@ void KateDocManager::slotModChanged(KTextEditor::Document *doc)
 /**
  * Load file and file' meta-informations iif the MD5 didn't change since last time.
  */
-bool KateDocManager::loadMetaInfos(KTextEditor::Document *doc, const KURL &url)
+bool KateDocManager::loadMetaInfos(KTextEditor::Document *doc, const KUrl &url)
 {
   if (!m_saveMetaInfos)
     return false;
@@ -502,7 +502,7 @@ void KateDocManager::saveMetaInfos(KTextEditor::Document *doc)
   }
 }
 
-bool KateDocManager::computeUrlMD5(const KURL &url, QByteArray &result)
+bool KateDocManager::computeUrlMD5(const KUrl &url, QByteArray &result)
 {
   QFile f(url.path());
 

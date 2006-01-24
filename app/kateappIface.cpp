@@ -69,7 +69,7 @@ DCOPRef KateAppDCOPIface::mainWindow (uint n)
   return DCOPRef ();
 }
 
-bool KateAppDCOPIface::openURL (KURL url, QString encoding)
+bool KateAppDCOPIface::openURL (KUrl url, QString encoding)
 {
   return m_app->openURL (url, encoding);
 }

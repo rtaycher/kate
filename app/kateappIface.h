@@ -49,7 +49,7 @@ class KateAppDCOPIface : public DCOPObject
      * @param encoding encoding name
      * @return success
      */
-    bool openURL (KURL url, QString encoding);
+    bool openURL (KUrl url, QString encoding);
 
     /**
      * set cursor of active view in active main window

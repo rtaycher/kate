@@ -48,7 +48,7 @@ DCOPRef KateDocManagerDCOPIface::activeDocument ()
   return DCOPRef ((DCOPObject *) doc);
 }
 
-DCOPRef KateDocManagerDCOPIface::openURL (KURL url, QString encoding)
+DCOPRef KateDocManagerDCOPIface::openURL (KUrl url, QString encoding)
 {
   KTextEditor::Document *doc = m_dm->openURL (url, encoding);
 
@@ -68,7 +68,7 @@ bool KateDocManagerDCOPIface::closeAllDocuments()
   return m_dm->closeAllDocuments();
 }
 
-bool KateDocManagerDCOPIface::isOpen(KURL url)
+bool KateDocManagerDCOPIface::isOpen(KUrl url)
 {
   return m_dm->isOpen (url);
 }

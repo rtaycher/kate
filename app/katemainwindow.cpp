@@ -251,7 +251,7 @@ void KateMainWindow::setupActions()
   KStdAction::openNew( m_viewManager, SLOT( slotDocumentNew() ), actionCollection(), "file_new" )->setWhatsThis(i18n("Create a new document"));
   KStdAction::open( m_viewManager, SLOT( slotDocumentOpen() ), actionCollection(), "file_open" )->setWhatsThis(i18n("Open an existing document for editing"));
 
-  fileOpenRecent = KStdAction::openRecent (m_viewManager, SLOT(openURL (const KURL&)), actionCollection());
+  fileOpenRecent = KStdAction::openRecent (m_viewManager, SLOT(openURL (const KUrl&)), actionCollection());
   fileOpenRecent->setWhatsThis(i18n("This lists files which you have opened recently, and allows you to easily open them again."));
 
   a=new KAction( i18n("Save A&ll"),"save_all", Qt::CTRL+Qt::Key_L, KateDocManager::self(), SLOT( saveAll() ), actionCollection(), "file_save_all" );
@@ -514,7 +514,7 @@ void KateMainWindow::activateDocumentFromDocMenu (int index)
 
 void KateMainWindow::slotGrepToolItemSelected(const QString &filename,int linenumber)
 {
-  KURL fileURL;
+  KUrl fileURL;
   fileURL.setPath( filename );
   m_viewManager->openURL( fileURL );
   if ( m_viewManager->activeView() == 0 ) return;
@@ -529,7 +529,7 @@ void KateMainWindow::slotGrepToolItemSelected(const QString &filename,int linenu
 void KateMainWindow::dragEnterEvent( QDragEnterEvent *event )
 {
   if (!event->mimeData()) return;
-  event->accept(KURL::List::canDecode(event->mimeData()));
+  event->accept(KUrl::List::canDecode(event->mimeData()));
 }
 
 void KateMainWindow::dropEvent( QDropEvent *event )
@@ -540,9 +540,9 @@ void KateMainWindow::dropEvent( QDropEvent *event )
 void KateMainWindow::slotDropEvent( QDropEvent * event )
 {
   if (event->mimeData()==0) return;
-  KURL::List textlist=KURL::List::fromMimeData(event->mimeData());
+  KUrl::List textlist=KUrl::List::fromMimeData(event->mimeData());
 
-  for (KURL::List::Iterator i=textlist.begin(); i != textlist.end(); ++i)
+  for (KUrl::List::Iterator i=textlist.begin(); i != textlist.end(); ++i)
   {
     m_viewManager->openURL (*i);
   }
@@ -591,7 +591,7 @@ void KateMainWindow::slotConfigure()
   delete dlg;
 }
 
-KURL KateMainWindow::activeDocumentUrl()
+KUrl KateMainWindow::activeDocumentUrl()
 {
   // anders: i make this one safe, as it may be called during
   // startup (by the file selector)
@@ -635,7 +635,7 @@ void KateMainWindow::mSlotFixOpenWithMenu()
 
 void KateMainWindow::slotOpenWithMenuAction(int idx)
 {
-  KURL::List list;
+  KUrl::List list;
   list.append( m_viewManager->activeView()->document()->url() );
   QString* appname = new QString( documentOpenWith->popupMenu()->text(idx) );
   *appname = appname->remove('&'); //Remove a possible accelerator ... otherwise the application might not get found.

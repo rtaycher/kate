@@ -241,12 +241,12 @@ Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mai
   toolbar->setIconSize( 16 );
   toolbar->setEnableContextMenu( false );
 
-  connect( cmbPath, SIGNAL( urlActivated( const KURL&  )),
-             this,  SLOT( cmbPathActivated( const KURL& ) ));
+  connect( cmbPath, SIGNAL( urlActivated( const KUrl&  )),
+             this,  SLOT( cmbPathActivated( const KUrl& ) ));
   connect( cmbPath, SIGNAL( returnPressed( const QString&  )),
              this,  SLOT( cmbPathReturnPressed( const QString& ) ));
-  connect(dir, SIGNAL(urlEntered(const KURL&)),
-             this, SLOT(dirUrlEntered(const KURL&)) );
+  connect(dir, SIGNAL(urlEntered(const KUrl&)),
+             this, SLOT(dirUrlEntered(const KUrl&)) );
 
   connect(dir, SIGNAL(finishedLoading()),
              this, SLOT(dirFinishedLoading()) );
@@ -399,7 +399,7 @@ void Kate::Private::Plugin::KateFileSelector::slotFilterChange( const QString & 
 
 }
 
-bool kateFileSelectorIsReadable ( const KURL& url )
+bool kateFileSelectorIsReadable ( const KUrl& url )
 {
   if ( !url.isLocalFile() )
     return true; // what else can we say?
@@ -408,9 +408,9 @@ bool kateFileSelectorIsReadable ( const KURL& url )
   return dir.exists ();
 }
 
-void Kate::Private::Plugin::KateFileSelector::setDir( KURL u )
+void Kate::Private::Plugin::KateFileSelector::setDir( KUrl u )
 {
-  KURL newurl;
+  KUrl newurl;
 
   if ( !u.isValid() )
     newurl.setPath( QDir::homePath() );
@@ -450,14 +450,14 @@ void Kate::Private::Plugin::KateFileSelector::fileSelected(const KFileItem * /*f
 
 
 
-void Kate::Private::Plugin::KateFileSelector::cmbPathActivated( const KURL& u )
+void Kate::Private::Plugin::KateFileSelector::cmbPathActivated( const KUrl& u )
 {
    cmbPathReturnPressed( u.url() );
 }
 
 void Kate::Private::Plugin::KateFileSelector::cmbPathReturnPressed( const QString& u )
 {
-  KURL typedURL( u );
+  KUrl typedURL( u );
   if ( typedURL.hasPass() )
     typedURL.setPass( QString() );
 
@@ -469,7 +469,7 @@ void Kate::Private::Plugin::KateFileSelector::cmbPathReturnPressed( const QStrin
   dir->setURL( KURL(u), true );
 }
 
-void Kate::Private::Plugin::KateFileSelector::dirUrlEntered( const KURL& u )
+void Kate::Private::Plugin::KateFileSelector::dirUrlEntered( const KUrl& u )
 {
   cmbPath->setURL( u );
 }
@@ -501,7 +501,7 @@ void Kate::Private::Plugin::KateFileSelector::btnFilterClick()
 void Kate::Private::Plugin::KateFileSelector::setActiveDocumentDir()
 {
 //   kdDebug(13001)<<"KateFileSelector::setActiveDocumentDir()"<<endl;
-  KURL u = activeDocumentUrl();
+  KUrl u = activeDocumentUrl();
 //   kdDebug(13001)<<"URL: "<<u.prettyURL()<<endl;
   if (!u.isEmpty())
     setDir( u.upURL() );
@@ -520,7 +520,7 @@ void Kate::Private::Plugin::KateFileSelector::kateViewChanged()
     }
     // else set waiting url
     else {
-      KURL u = activeDocumentUrl();
+      KUrl u = activeDocumentUrl();
       if (!u.isEmpty())
         waitingUrl = u.directory();
     }
@@ -535,7 +535,7 @@ void Kate::Private::Plugin::KateFileSelector::kateViewChanged()
 
 //BEGIN Protected
 
-KURL Kate::Private::Plugin::KateFileSelector::activeDocumentUrl() {
+KUrl Kate::Private::Plugin::KateFileSelector::activeDocumentUrl() {
   KTextEditor::View *v = mainwin->activeView();
   if ( v )
     return v->document()->url();

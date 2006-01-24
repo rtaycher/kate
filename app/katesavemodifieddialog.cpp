@@ -86,7 +86,7 @@ public:
       m_document->setEncoding( r.encoding );
 
 			if (!r.URLs.isEmpty()) {
-				KURL tmp = r.URLs.first();
+				KUrl tmp = r.URLs.first();
         	  		if ( !m_document->saveAs( tmp ) ) {
 					setState(SaveFailedState);
 					setText(1,m_document->url().prettyURL());

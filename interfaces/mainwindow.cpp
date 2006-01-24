@@ -80,7 +80,7 @@ void MainWindow::activateView ( KTextEditor::Document *doc )
   d->win->viewManager()->activateView( doc );
 }
 
-void MainWindow::openURL (const KURL &url)
+void MainWindow::openURL (const KUrl &url)
 {
   d->win->viewManager()->openURL (url, QString(), true);
 }

@@ -76,15 +76,15 @@ class KateDocManager : public QObject
 
     int findDocument (KTextEditor::Document *doc);
     /** Returns the documentNumber of the doc with url URL or -1 if no such doc is found */
-    KTextEditor::Document *findDocument (KURL url);
+    KTextEditor::Document *findDocument (KUrl url);
 
-    bool isOpen(KURL url);
+    bool isOpen(KUrl url);
 
     uint documents ();
 
     QList<KTextEditor::Document*> &documentList () { return m_docList; };
 
-    KTextEditor::Document *openURL(const KURL&,const QString &encoding=QString());
+    KTextEditor::Document *openURL(const KUrl&,const QString &encoding=QString());
 
     bool closeDocument(class KTextEditor::Document *,bool closeURL=true);
     bool closeDocument(uint);
@@ -122,9 +122,9 @@ class KateDocManager : public QObject
     void slotModChanged(KTextEditor::Document *doc);
 
   private:
-    bool loadMetaInfos(KTextEditor::Document *doc, const KURL &url);
+    bool loadMetaInfos(KTextEditor::Document *doc, const KUrl &url);
     void saveMetaInfos(KTextEditor::Document *doc);
-    bool computeUrlMD5(const KURL &url, QByteArray &result);
+    bool computeUrlMD5(const KUrl &url, QByteArray &result);
 
     Kate::DocumentManager *m_documentManager;
     QList<KTextEditor::Document*> m_docList;

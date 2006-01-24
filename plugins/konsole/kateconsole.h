@@ -88,7 +88,7 @@ class KateConsole : public KVBox,public KXMLGUIClient
      * cd to dir
      * @param url given dir
      */
-    void cd (const KURL &url);
+    void cd (const KUrl &url);
 
     /**
      * send given text to console

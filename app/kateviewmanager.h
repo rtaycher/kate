@@ -64,10 +64,10 @@ class KateViewManager : public QObject
     /* restore it */
     void restoreViewConfiguration (KConfig *config,const QString& group);
 
-    KTextEditor::Document *openURL (const KURL &url, const QString& encoding, bool activate = true);
+    KTextEditor::Document *openURL (const KUrl &url, const QString& encoding, bool activate = true);
 
   public Q_SLOTS:
-    void openURL (const KURL &url);
+    void openURL (const KUrl &url);
 
   private:
     void removeViewSpace (KateViewSpace *viewspace);

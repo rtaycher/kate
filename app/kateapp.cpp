@@ -317,7 +317,7 @@ KateSessionManager *KateApp::sessionManager ()
   return m_sessionManager;
 }
 
-bool KateApp::openURL (const KURL &url, const QString &encoding)
+bool KateApp::openURL (const KUrl &url, const QString &encoding)
 {
   KateMainWindow *mainWindow = activeMainWindow ();
 

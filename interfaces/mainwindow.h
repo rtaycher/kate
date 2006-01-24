@@ -123,7 +123,7 @@ class KDE_EXPORT MainWindow : public QObject
      * Open the file located at \p url.
      * \param url the document's url
      */
-    void openURL (const KURL &url);     
+    void openURL (const KUrl &url);     
 
   //
   // SIGNALS !!!

@@ -64,12 +64,12 @@ KTextEditor::Document *DocumentManager::activeDocument ()
   return d->docMan->activeDocument ();
 }
 
-KTextEditor::Document *DocumentManager::findDocument (const KURL &url)
+KTextEditor::Document *DocumentManager::findDocument (const KUrl &url)
 {
   return d->docMan->findDocument (url);
 }
 
-bool DocumentManager::isOpen (const KURL &url)
+bool DocumentManager::isOpen (const KUrl &url)
 {
   return d->docMan->isOpen (url);
 }
@@ -79,7 +79,7 @@ uint DocumentManager::documents ()
   return d->docMan->documents ();
 }
 
-KTextEditor::Document *DocumentManager::openURL(const KURL&url,const QString &encoding)
+KTextEditor::Document *DocumentManager::openURL(const KUrl&url,const QString &encoding)
 {
   return d->docMan->openURL (url, encoding);
 }

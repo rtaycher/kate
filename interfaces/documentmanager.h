@@ -93,14 +93,14 @@ class KDE_EXPORT DocumentManager : public QObject
      * \return the document with the given \p url or NULL, if no such document
      *         is in the document manager's internal list.
      */
-    KTextEditor::Document *findDocument (const KURL &url);
+    KTextEditor::Document *findDocument (const KUrl &url);
 
     /**
      * Check whether a document with given \p url is opened.
      * \param url the document's url
      * \return \e true if the document \p url is opened, otherwise \e false
      */
-    bool isOpen (const KURL &url);
+    bool isOpen (const KUrl &url);
 
     /**
      * Get the number of documents the document manager manages.
@@ -115,7 +115,7 @@ class KDE_EXPORT DocumentManager : public QObject
      *        encoding will be guessed or the default encoding will be used.
      * \return a pointer to the created document
      */
-    KTextEditor::Document *openURL(const KURL&url,const QString &encoding=QString());
+    KTextEditor::Document *openURL(const KUrl&url,const QString &encoding=QString());
 
     /**
      * Close the given \p document.

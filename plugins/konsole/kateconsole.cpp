@@ -139,7 +139,7 @@ void KateConsole::showEvent(QShowEvent *)
   loadConsoleIfNeeded();
 }
 
-void KateConsole::cd (const KURL &url)
+void KateConsole::cd (const KUrl &url)
 {
   loadConsoleIfNeeded();
 

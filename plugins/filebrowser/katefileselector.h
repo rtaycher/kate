@@ -140,15 +140,15 @@ class KateFileSelector : public KVBox
 
   private Q_SLOTS:
     void fileSelected(const KFileItem * /*file*/);
-    void cmbPathActivated( const KURL& u );
+    void cmbPathActivated( const KUrl& u );
     void cmbPathReturnPressed( const QString& u );
-    void dirUrlEntered( const KURL& u );
+    void dirUrlEntered( const KUrl& u );
     void dirFinishedLoading();
     void setActiveDocumentDir();
     void btnFilterClick();
 
   protected:
-    KURL activeDocumentUrl();
+    KUrl activeDocumentUrl();
     void focusInEvent( QFocusEvent * );
     void showEvent( QShowEvent * );
     bool eventFilter( QObject *, QEvent * );

@@ -88,7 +88,7 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
   public:
     /** Returns the URL of the current document.
      * anders: I add this for use from the file selector. */
-    KURL activeDocumentUrl();
+    KUrl activeDocumentUrl();
 
     uint mainWindowNumber () const { return myID; }
 
