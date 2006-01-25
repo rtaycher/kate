@@ -641,7 +641,7 @@ void KateViewSpaceContainer::restoreSplitter( KConfig* config, const QString &gr
 
   QSplitter* s = new QSplitter((Qt::Orientation)config->readEntry("Orientation",0), parent);
 
-  QStringList children = config->readListEntry( "Children" );
+  QStringList children = config->readEntry( "Children",QStringList() );
   for (QStringList::Iterator it=children.begin(); it!=children.end(); ++it)
   {
     // for a viewspace, create it and open all documents therein.

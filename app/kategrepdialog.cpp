@@ -68,9 +68,9 @@ GrepTool::GrepTool(QWidget *parent)
   setWindowTitle(i18n("Find in Files"));
   config = KGlobal::config();
   config->setGroup("GrepTool");
-  lastSearchItems = config->readListEntry("LastSearchItems");
-  lastSearchPaths = config->readListEntry("LastSearchPaths");
-  lastSearchFiles = config->readListEntry("LastSearchFiles");
+  lastSearchItems = config->readEntry("LastSearchItems",QStringList());
+  lastSearchPaths = config->readEntry("LastSearchPaths",QStringList());
+  lastSearchFiles = config->readEntry("LastSearchFiles",QStringList());
 
   if( lastSearchFiles.isEmpty() )
   {
