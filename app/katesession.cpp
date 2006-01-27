@@ -328,7 +328,7 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
 
 KateSession::Ptr KateSessionManager::createSession (const QString &name)
 {
-  KateSession::Ptr s = new KateSession (this, "", "");
+  KateSession::Ptr s(new KateSession (this, "", ""));
   s->create (name);
 
   return s;
@@ -697,7 +697,7 @@ KateSession::Ptr KateSessionChooser::selectedSession ()
   KateSessionChooserItem *item = (KateSessionChooserItem *) m_sessions->selectedItem ();
 
   if (!item)
-    return 0;
+    return KateSession::Ptr();
 
   return item->session;
 }
@@ -784,7 +784,7 @@ KateSession::Ptr KateSessionOpenDialog::selectedSession ()
   KateSessionChooserItem *item = (KateSessionChooserItem *) m_sessions->selectedItem ();
 
   if (!item)
-    return 0;
+    return KateSession::Ptr();
 
   return item->session;
 }
