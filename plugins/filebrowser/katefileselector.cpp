@@ -34,7 +34,7 @@
 #include <q3strlist.h>
 #include <qtooltip.h>
 #include <qapplication.h>
-#include <q3listbox.h>
+#include <QListWidget>
 #include <qscrollbar.h>
 #include <qspinbox.h>
 #include <q3groupbox.h>
@@ -72,6 +72,7 @@
 #include <ktexteditor/view.h>
 #include <kiconloader.h>
 #include <kglobal.h>
+#include <kfileitem.h>
 //END Includes
 
 
@@ -436,6 +437,7 @@ void Kate::Private::Plugin::KateFileSelector::setDir( KUrl u )
 void Kate::Private::Plugin::KateFileSelector::fileSelected(const KFileItem * /*file*/)
 {
   const KFileItemList *list=dir->selectedItems();
+
   KFileItem *tmp;
   KFileItemList::const_iterator it = list->begin();
   const KFileItemList::const_iterator end = list->end();
@@ -594,10 +596,10 @@ bool Kate::Private::Plugin::KateFileSelector::eventFilter( QObject* o, QEvent *e
 class ActionLBItem : public QListWidgetItem {
   public:
   ActionLBItem( QListWidget *lb=0,
-                const QPixmap &pm = QPixmap(),
-                const QString &text=QString(),
-                const QString &str=QString() ) :
-    QListWidgetItem( QIcon(pm), text, lb, 0 ),
+                const QIcon &pm = QIcon(),
+                const QString &text=QString::null,
+                const QString &str=QString::null ) :
+    QListWidgetItem(pm, text,lb,0 ),
     _str(str) {};
   QString idstring() { return _str; };
   private:
@@ -624,10 +626,10 @@ KFSConfigPage::KFSConfigPage( QWidget *parent, const char *, KateFileSelector *k
   acSel->setAvailableLabel( i18n("A&vailable actions:") );
   acSel->setSelectedLabel( i18n("S&elected actions:") );
   lo->addWidget( gbToolbar );
-  connect( acSel, SIGNAL( added( Q3ListBoxItem * ) ), this, SLOT( slotMyChanged() ) );
-  connect( acSel, SIGNAL( removed( Q3ListBoxItem * ) ), this, SLOT( slotMyChanged() ) );
-  connect( acSel, SIGNAL( movedUp( Q3ListBoxItem * ) ), this, SLOT( slotMyChanged() ) );
-  connect( acSel, SIGNAL( movedDown( Q3ListBoxItem * ) ), this, SLOT( slotMyChanged() ) );
+  connect( acSel, SIGNAL( added( QListWidgetItem * ) ), this, SLOT( slotMyChanged() ) );
+  connect( acSel, SIGNAL( removed( QListWidgetItem * ) ), this, SLOT( slotMyChanged() ) );
+  connect( acSel, SIGNAL( movedUp( QListWidgetItem * ) ), this, SLOT( slotMyChanged() ) );
+  connect( acSel, SIGNAL( movedDown( QListWidgetItem * ) ), this, SLOT( slotMyChanged() ) );
 
   // Sync
   Q3GroupBox *gbSync = new Q3GroupBox( 1, Qt::Horizontal, i18n("Auto Synchronization"), this );
@@ -725,10 +727,7 @@ void KFSConfigPage::apply()
   foreach(QListWidgetItem *item, list)
   {
     aItem = (ActionLBItem*)item;
-    if ( aItem )
-    {
       l << aItem->idstring();
-    }
   }
   config->writeEntry( "toolbar actions", l );
   fileSelector->setupToolbar( config );

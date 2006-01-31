@@ -146,7 +146,7 @@ void KateApp::restoreKate ()
   // activate again correct session!!!
   sessionConfig()->setGroup("General");
   QString lastSession (sessionConfig()->readEntry ("Last Session", "default.katesession"));
-  sessionManager()->activateSession (new KateSession (sessionManager(), lastSession, ""), false, false, false);
+  sessionManager()->activateSession (KSharedPtr<KateSession>(new KateSession (sessionManager(), lastSession, "")), false, false, false);
 
   m_docManager->restoreDocumentList (sessionConfig());
 

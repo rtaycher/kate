@@ -236,7 +236,7 @@ void KateSessionManager::updateSessionList ()
   for (unsigned int i=0; i < dir.count(); ++i)
   {
     KateSession *session = new KateSession (this, dir[i], "");
-    m_sessionList.append (session);
+    m_sessionList.append (KateSession::Ptr(session));
 
     kdDebug () << "FOUND SESSION: " << session->sessionName() << " FILE: " << session->sessionFile() << endl;
 
@@ -246,7 +246,7 @@ void KateSessionManager::updateSessionList ()
 
   // add default session, if not there
   if (!foundDefault)
-    m_sessionList.append (new KateSession (this, "default.katesession", i18n("Default Session")));
+    m_sessionList.append (KSharedPtr<KateSession>(new KateSession (this, "default.katesession", i18n("Default Session"))));
 }
 
 void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLast, bool saveLast, bool loadNew)
@@ -337,7 +337,7 @@ KateSession::Ptr KateSessionManager::createSession (const QString &name)
 KateSession::Ptr KateSessionManager::giveSession (const QString &name)
 {
   if (name.isEmpty())
-    return new KateSession (this, "", "");
+    return KateSession::Ptr(new KateSession (this, "", ""));
     
   updateSessionList();
 
@@ -440,14 +440,14 @@ bool KateSessionManager::chooseSession ()
   // uhh, just open last used session, show no chooser
   if (sesStart == "last")
   {
-    activateSession (new KateSession (this, lastSession, ""), false, false);
+    activateSession (KateSession::Ptr(new KateSession (this, lastSession, "")), false, false);
     return success;
   }
 
   // start with empty new session
   if (sesStart == "new")
   {
-    activateSession (new KateSession (this, "", ""), false, false);
+    activateSession (KateSession::Ptr(new KateSession (this, "", "")), false, false);
     return success;
   }
 
@@ -487,7 +487,7 @@ bool KateSessionManager::chooseSession ()
         break;
 
       default:
-        activateSession (new KateSession (this, "", ""), false, false);
+        activateSession (KateSession::Ptr(new KateSession (this, "", "")), false, false);
         retry = false;
         break;
     }
@@ -513,7 +513,7 @@ bool KateSessionManager::chooseSession ()
 
 void KateSessionManager::sessionNew ()
 {
-  activateSession (new KateSession (this, "", ""));
+  activateSession (KateSession::Ptr(new KateSession (this, "", "")));
 }
 
 void KateSessionManager::sessionOpen ()
