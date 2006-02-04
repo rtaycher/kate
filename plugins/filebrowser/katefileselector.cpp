@@ -310,10 +310,10 @@ void Kate::Private::Plugin::KateFileSelector::readConfig(KConfig *config, const 
   // else is automatic, as cmpPath->setURL is called when a location is entered.
 
   filter->setMaxCount( config->readEntry( "filter history len", 9 ) );
-  filter->setHistoryItems( config->readListEntry("filter history"), true );
+  filter->setHistoryItems( config->readEntry("filter history",QStringList()), true );
   lastFilter = config->readEntry( "last filter" );
   QString flt("");
-  if ( config->readEntry( "restore last filter", QVariant(true )).toBool() || qApp->isSessionRestored() )
+  if ( config->readEntry( "restore last filter", true ) || qApp->isSessionRestored() )
     flt = config->readEntry("current filter");
   filter->lineEdit()->setText( flt );
   slotFilterChange( flt );
