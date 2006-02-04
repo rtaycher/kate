@@ -161,7 +161,7 @@ void KateExternalToolsCommand::reload () {
 
   KConfig config("externaltools", false, false, "appdata");
   config.setGroup("Global");
-  QStringList tools = config.readListEntry("tools");
+  QStringList tools = config.readEntry("tools",QStringList());
 
 
   for( QStringList::Iterator it = tools.begin(); it != tools.end(); ++it )
@@ -177,7 +177,7 @@ void KateExternalToolsCommand::reload () {
         config.readEntry( "command", ""),
         config.readEntry( "icon", ""),
         config.readEntry( "executable", ""),
-        config.readListEntry( "mimetypes" ),
+        config.readEntry( "mimetypes",QStringList() ),
         config.readEntry( "acname", "" ),
         config.readEntry( "cmdname", "" ) );
     // FIXME test for a command name first!
@@ -329,19 +329,19 @@ void KateExternalToolsMenuAction::reload()
   // load all the tools, and create a action for each of them
   KConfig *config = new KConfig( "externaltools", false, false, "appdata" );
   config->setGroup( "Global" );
-  QStringList tools = config->readListEntry( "tools" );
+  QStringList tools = config->readEntry( "tools",QStringList() );
 
   // if there are tools that are present but not explicitly removed,
   // add them to the end of the list
   config->setReadDefaults( true );
-  QStringList dtools = config->readListEntry( "tools" );
+  QStringList dtools = config->readEntry( "tools",QStringList() );
   int gver = config->readEntry( "version", 1 );
   config->setReadDefaults( false );
 
   int ver = config->readEntry( "version",0 );
   if ( ver <= gver )
   {
-    QStringList removed = config->readListEntry( "removed" );
+    QStringList removed = config->readEntry( "removed", QStringList() );
     bool sepadded = false;
     for (QStringList::iterator itg = dtools.begin(); itg != dtools.end(); ++itg )
     {
@@ -378,7 +378,7 @@ void KateExternalToolsMenuAction::reload()
         config->readEntry( "command", ""),
         config->readEntry( "icon", ""),
         config->readEntry( "executable", ""),
-        config->readListEntry( "mimetypes" ),
+        config->readEntry( "mimetypes",QStringList() ),
         config->readEntry( "acname", "" ),
         config->readEntry( "cmdname", "" ),
         config->readEntry( "save", 0 ) );
@@ -633,7 +633,7 @@ void KateExternalToolsConfigWidget::reset()
 
   // load the files from a KConfig
   config->setGroup( "Global" );
-  QStringList tools = config->readListEntry("tools");
+  QStringList tools = config->readEntry("tools",QStringList());
 
   for( QStringList::Iterator it = tools.begin(); it != tools.end(); ++it )
   {
@@ -650,7 +650,7 @@ void KateExternalToolsConfigWidget::reset()
           config->readEntry( "command", ""),
           config->readEntry( "icon", ""),
           config->readEntry( "executable", ""),
-          config->readListEntry( "mimetypes" ),
+          config->readEntry( "mimetypes",QStringList() ),
           config->readEntry( "acname" ),
 	  config->readEntry( "cmdname"),
           config->readEntry( "save", 0 ) );
@@ -713,7 +713,7 @@ void KateExternalToolsConfigWidget::apply()
       if ( config->hasGroup( *it ) )
         config->deleteGroup( *it  );
     }
-    QStringList removed = config->readListEntry( "removed" );
+    QStringList removed = config->readEntry( "removed",QStringList() );
     removed += m_removed;
 
     // clean up the list of removed items, so that it does not contain
