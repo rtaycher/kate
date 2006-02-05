@@ -329,7 +329,7 @@ void Kate::Private::Plugin::KateFileSelector::initialDirChangeHack()
 void Kate::Private::Plugin::KateFileSelector::setupToolbar( KConfig *config )
 {
   toolbar->clear();
-  QStringList tbactions = config->readListEntry( "toolbar actions", ',' );
+  QStringList tbactions = config->readEntry( "toolbar actions", QStringList(),',' );
   if ( tbactions.isEmpty() ) {
     // reasonable collection for default toolbar
     tbactions << "up" << "back" << "forward" << "home" <<
@@ -759,7 +759,7 @@ void KFSConfigPage::init()
   KConfig *config = KGlobal::config();
   config->setGroup( "fileselector" );
   // toolbar
-  QStringList l = config->readListEntry( "toolbar actions", ',' );
+  QStringList l = config->readEntry( "toolbar actions", QStringList(),',' );
   if ( l.isEmpty() ) // default toolbar
     l << "up" << "back" << "forward" << "home" <<
                 "short view" << "detailed view" <<
