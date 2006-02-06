@@ -127,7 +127,7 @@ void KateApp::initKate ()
     // we can exit here if session chooser decides
     if (!startupKate ())
     {
-      kdDebug()<<"startupKate returned false"<<endl;
+      kDebug()<<"startupKate returned false"<<endl;
       quit ();
       return ;
     }
@@ -180,7 +180,7 @@ bool KateApp::startupKate ()
 #if 1
     if (!sessionManager()->chooseSession ())
     {
-      kdDebug()<<"chooseSession returned false, exiting"<<endl;
+      kDebug()<<"chooseSession returned false, exiting"<<endl;
       // we will exit kate now, notify the rest of the world we are done
 #ifndef Q_WS_WIN
       KStartupInfo::appStarted (startupId());
@@ -276,7 +276,7 @@ bool KateApp::startupKate ()
   // show the nice tips
   KTipDialog::showTip(activeMainWindow());
 
-  kdDebug()<<"KateApplication::init finished successfull"<<endl;
+  kDebug()<<"KateApplication::init finished successfull"<<endl;
   return true;
 }
 
@@ -326,7 +326,7 @@ bool KateApp::openURL (const KUrl &url, const QString &encoding)
 
   QTextCodec *codec = encoding.isEmpty() ? 0 : QTextCodec::codecForName(encoding.latin1());
 
-  kdDebug () << "OPEN URL "<< encoding << endl;
+  kDebug () << "OPEN URL "<< encoding << endl;
 
   // this file is no local dir, open it, else warn
   bool noDir = !url.isLocalFile() || !QDir (url.path()).exists();

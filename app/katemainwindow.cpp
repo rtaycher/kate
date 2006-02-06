@@ -164,7 +164,7 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
   setXMLFile( "kateui.rc" );
   createShellGUI ( true );
 
-  kdDebug()<<"****************************************************************************"<<sconfig<<endl;
+  kDebug()<<"****************************************************************************"<<sconfig<<endl;
   KatePluginManager::self()->enableAllPluginsGUI (this,sconfig);
 
 #warning fixme later
@@ -563,12 +563,12 @@ void KateMainWindow::editKeys()
 
   QList<KTextEditor::Document*>  l=KateDocManager::self()->documentList();
   for (int i=0;i<l.count();i++) {
-//     kdDebug(13001)<<"reloading Keysettings for document "<<i<<endl;
+//     kDebug(13001)<<"reloading Keysettings for document "<<i<<endl;
     l.at(i)->reloadXML();
     QList<KDocument::View *> l1=l.at(i)->views ();//KTextEditor::Document
     for (int i1=0;i1<l1.count();i1++) {
       l1.at(i1)->reloadXML();
-//       kdDebug(13001)<<"reloading Keysettings for view "<<i<<"/"<<i1<<endl;
+//       kDebug(13001)<<"reloading Keysettings for view "<<i<<"/"<<i1<<endl;
     }
   }
 
@@ -617,11 +617,11 @@ void KateMainWindow::fileSelected(const KFileItem * /*file*/)
 // TODO make this work
 void KateMainWindow::mSlotFixOpenWithMenu()
 {
-  //kdDebug(13001)<<"13000"<<"fixing open with menu"<<endl;
+  //kDebug(13001)<<"13000"<<"fixing open with menu"<<endl;
   documentOpenWith->popupMenu()->clear();
   // get a list of appropriate services.
   KMimeType::Ptr mime = KMimeType::findByURL( m_viewManager->activeView()->document()->url() );
-  //kdDebug(13001)<<"13000"<<"url: "<<m_viewManager->activeView()->document()->url().prettyURL()<<"mime type: "<<mime->name()<<endl;
+  //kDebug(13001)<<"13000"<<"url: "<<m_viewManager->activeView()->document()->url().prettyURL()<<"mime type: "<<mime->name()<<endl;
   // some checking goes here...
   KTrader::OfferList offers = KTrader::self()->query(mime->name(), "Type == 'Application'");
   // for each one, insert a menu item...

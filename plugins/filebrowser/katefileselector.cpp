@@ -120,7 +120,7 @@ Kate::PluginConfigPage *KateFileSelectorPlugin::configPage (uint number, QWidget
 
 QString KateFileSelectorPlugin::configPageName (uint number) const {
   if (number!=0) return QString();
-  kdDebug()<<"Returning a config page name"<<endl;
+  kDebug()<<"Returning a config page name"<<endl;
   return i18n("File Selector");
 }
 
@@ -285,7 +285,7 @@ Kate::Private::Plugin::KateFileSelector::~KateFileSelector()
 
 void Kate::Private::Plugin::KateFileSelector::readConfig(KConfig *config, const QString & name)
 {
-  kdDebug()<<"===================================================================Kate::Private::Plugin::KateFileSelector::readConfig"<<endl;
+  kDebug()<<"===================================================================Kate::Private::Plugin::KateFileSelector::readConfig"<<endl;
   dir->setViewConfig( config, name + ":view" );
   dir->readConfig(config, name + ":dir");
   dir->setView( KFile::Default );
@@ -502,19 +502,19 @@ void Kate::Private::Plugin::KateFileSelector::btnFilterClick()
 //FIXME crash on shutdown
 void Kate::Private::Plugin::KateFileSelector::setActiveDocumentDir()
 {
-//   kdDebug(13001)<<"KateFileSelector::setActiveDocumentDir()"<<endl;
+//   kDebug(13001)<<"KateFileSelector::setActiveDocumentDir()"<<endl;
   KUrl u = activeDocumentUrl();
-//   kdDebug(13001)<<"URL: "<<u.prettyURL()<<endl;
+//   kDebug(13001)<<"URL: "<<u.prettyURL()<<endl;
   if (!u.isEmpty())
     setDir( u.upURL() );
-//   kdDebug(13001)<<"... setActiveDocumentDir() DONE!"<<endl;
+//   kDebug(13001)<<"... setActiveDocumentDir() DONE!"<<endl;
 }
 
 void Kate::Private::Plugin::KateFileSelector::kateViewChanged()
 {
   if ( autoSyncEvents & DocumentChanged )
   {
-//     kdDebug(13001)<<"KateFileSelector::do a sync ()"<<endl;
+//     kDebug(13001)<<"KateFileSelector::do a sync ()"<<endl;
     // if visible, sync
     if ( isVisible() ) {
       setActiveDocumentDir();
@@ -553,7 +553,7 @@ void Kate::Private::Plugin::KateFileSelector::showEvent( QShowEvent * )
 {
     // sync if we should
     if ( autoSyncEvents & GotVisible ) {
-//     kdDebug(13001)<<"syncing fs on show"<<endl;
+//     kDebug(13001)<<"syncing fs on show"<<endl;
       setActiveDocumentDir();
       waitingUrl.clear();
     }

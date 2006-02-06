@@ -54,10 +54,10 @@ KateKonsolePlugin::KateKonsolePlugin( QObject* parent, const char* name, const Q
 }
 
 void KateKonsolePlugin::addView(Kate::MainWindow *win) {
-  kdDebug()<<"KateKonsolePlugin::createView"<<endl;
+  kDebug()<<"KateKonsolePlugin::createView"<<endl;
   // ONLY ALLOW SHELL ACCESS IF ALLOWED ;)
   if (KAuthorized::authorizeKAction("shell_access")) {
-    kdDebug()<<"After auth check"<<endl;
+    kDebug()<<"After auth check"<<endl;
     QWidget *toolview=win->createToolView ("kate_private_plugin_katekonsoleplugin", MainWindow::Bottom, SmallIcon("konsole"), i18n("Terminal"));
     m_views.append(new KateConsole(win,toolview));
   }

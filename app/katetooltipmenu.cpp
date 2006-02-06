@@ -38,9 +38,9 @@ void KateToolTipMenu::slotHovered(QAction* a) {
 	m_toolTip->ensurePolished();
 	m_toolTip->resize(m_toolTip->sizeHint());
 	m_toolTip->setPalette(QToolTip::palette());
-	kdDebug()<<"fg.left"<<fg.left()<<endl;
-	kdDebug()<<"m_tooltip->width()"<<m_toolTip->width()<<endl;
-	kdDebug()<<"xpos"<<fg.left()-m_toolTip->width()<<endl;
+	kDebug()<<"fg.left"<<fg.left()<<endl;
+	kDebug()<<"m_tooltip->width()"<<m_toolTip->width()<<endl;
+	kDebug()<<"xpos"<<fg.left()-m_toolTip->width()<<endl;
 	QRect fgl=m_toolTip->frameGeometry();
 	QRect dr=QApplication::desktop()->availableGeometry(this);
 	int posx;

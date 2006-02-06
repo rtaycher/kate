@@ -140,7 +140,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
     // found a matching kate client ;)
     if (!kateApp.isEmpty())
     {
-      kdDebug () << "kate app: " << kateApp << endl;
+      kDebug () << "kate app: " << kateApp << endl;
 
       DCOPRef kRef (kateApp, "KateApplication");
 
@@ -202,6 +202,6 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
 
   // execute ourself ;)
   int res=app.exec();
-  kdDebug()<<"primary event loop has been left"<<endl;
+  kDebug()<<"primary event loop has been left"<<endl;
   return res;
 }

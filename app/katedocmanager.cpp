@@ -484,7 +484,7 @@ void KateDocManager::saveMetaInfos(KTextEditor::Document *doc)
 
   if (doc->isModified())
   {
-//     kdDebug (13020) << "DOC MODIFIED: no meta data saved" << endl;
+//     kDebug (13020) << "DOC MODIFIED: no meta data saved" << endl;
     return;
   }
 

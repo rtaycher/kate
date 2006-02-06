@@ -437,7 +437,7 @@ bool Sidebar::eventFilter(QObject *obj, QEvent *ev)
     KMultiTabBarTab *bt = dynamic_cast<KMultiTabBarTab*>(obj);
     if (bt)
     {
-      kdDebug()<<"Request for popup"<<endl;
+      kDebug()<<"Request for popup"<<endl;
 
       m_popupButton = bt->id();
 

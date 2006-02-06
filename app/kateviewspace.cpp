@@ -241,7 +241,7 @@ bool KateViewSpace::event( QEvent *e )
 
 void KateViewSpace::saveConfig ( KConfig* config, int myIndex ,const QString& viewConfGrp)
 {
-//   kdDebug()<<"KateViewSpace::saveConfig("<<myIndex<<", "<<viewConfGrp<<") - currentView: "<<currentView()<<")"<<endl;
+//   kDebug()<<"KateViewSpace::saveConfig("<<myIndex<<", "<<viewConfGrp<<") - currentView: "<<currentView()<<")"<<endl;
   QString group = QString(viewConfGrp+"-ViewSpace %1").arg( myIndex );
 
   config->setGroup (group);

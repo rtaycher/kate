@@ -180,7 +180,7 @@ KateSaveModifiedDialog::~KateSaveModifiedDialog() {
 }
 
 void KateSaveModifiedDialog::slotItemActivated(QTreeWidgetItem*,int) {
-	kdDebug(13001) << "slotItemSelected()" << endl;
+	kDebug(13001) << "slotItemSelected()" << endl;
 	for(int cc=0;cc<m_documentRoot->childCount();cc++) {
 		if (m_documentRoot->child(cc)->checkState(0)==Qt::Checked) {
 			enableButton(KDialogBase::Yes, true);
@@ -204,7 +204,7 @@ void KateSaveModifiedDialog::slotSelectAll() {
 
 
 void KateSaveModifiedDialog::slotUser2() {
-	kdDebug(13001)<<"KateSaveModifiedDialog::slotYes()"<<endl;
+	kDebug(13001)<<"KateSaveModifiedDialog::slotYes()"<<endl;
 	if (doSave(m_documentRoot)) done(QDialog::Accepted);
 }
 

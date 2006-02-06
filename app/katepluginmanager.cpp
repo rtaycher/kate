@@ -185,7 +185,7 @@ void KatePluginManager::unloadPlugin (KatePluginInfo *item)
 
 void KatePluginManager::enablePluginGUI (KatePluginInfo *item, KateMainWindow *win, KConfig *config)
 {
-  kdDebug(13000)<<"Checking if the GUI of a plugin should be enabled"<<endl;
+  kDebug(13000)<<"Checking if the GUI of a plugin should be enabled"<<endl;
   if (!item->plugin) return;
   if (!Kate::pluginViewInterface(item->plugin)) return;
   //BEGIN DEBUG
@@ -194,8 +194,8 @@ void KatePluginManager::enablePluginGUI (KatePluginInfo *item, KateMainWindow *w
   if (pluginName.isEmpty())
     pluginName=item->service->library();
 
-  kdDebug(13000)<<"Enabling GUI for plugin: "<<pluginName<<endl;
-  kdDebug()<<item->plugin<<"--"<<Kate::pluginViewInterface(item->plugin)<<endl;
+  kDebug(13000)<<"Enabling GUI for plugin: "<<pluginName<<endl;
+  kDebug()<<item->plugin<<"--"<<Kate::pluginViewInterface(item->plugin)<<endl;
   //END DEBUG
   Kate::pluginViewInterface(item->plugin)->addView(win->mainWindow());
   if (config)
@@ -204,7 +204,7 @@ void KatePluginManager::enablePluginGUI (KatePluginInfo *item, KateMainWindow *w
 
 void KatePluginManager::enablePluginGUI (KatePluginInfo *item)
 {
-  kdDebug(13000)<<"Checking if the GUI of a plugin should be enabled"<<endl;
+  kDebug(13000)<<"Checking if the GUI of a plugin should be enabled"<<endl;
 
   if (!item->plugin) return;
   if (!Kate::pluginViewInterface(item->plugin)) return;
@@ -215,8 +215,8 @@ void KatePluginManager::enablePluginGUI (KatePluginInfo *item)
   if (pluginName.isEmpty())
     pluginName=item->service->library();
 
-  kdDebug(13000)<<"Enabling GUI for plugin: "<<pluginName<<endl;
-  kdDebug()<<item->plugin<<"--"<<Kate::pluginViewInterface(item->plugin)<<endl;
+  kDebug(13000)<<"Enabling GUI for plugin: "<<pluginName<<endl;
+  kDebug()<<item->plugin<<"--"<<Kate::pluginViewInterface(item->plugin)<<endl;
 
   //END DEBUG
 

@@ -198,25 +198,25 @@ void KateExternalToolsCommand::reload () {
 bool KateExternalToolsCommand::exec (KTextEditor::View *view, const QString &cmd, QString &) {
 	QWidget *wv=dynamic_cast<QWidget*>(view);
 	if (!wv) {
-// 		kdDebug(13001)<<"KateExternalToolsCommand::exec: Could not get view widget"<<endl;
+// 		kDebug(13001)<<"KateExternalToolsCommand::exec: Could not get view widget"<<endl;
 		return false;
 	}
   KateMDI::MainWindow *dmw=dynamic_cast<KateMDI::MainWindow*>(wv->window());
 	if (!dmw) {
-// 		kdDebug(13001)<<"KateExternalToolsCommand::exec: Could not get main window"<<endl;
+// 		kDebug(13001)<<"KateExternalToolsCommand::exec: Could not get main window"<<endl;
 		return false;
 	}
-// 	kdDebug(13001)<<"cmd="<<cmd.trimmed()<<endl;
+// 	kDebug(13001)<<"cmd="<<cmd.trimmed()<<endl;
 	QString actionName=m_map[cmd.trimmed()];
 	if (actionName.isEmpty()) return false;
-// 	kdDebug(13001)<<"actionName is not empty:"<<actionName<<endl;
+// 	kDebug(13001)<<"actionName is not empty:"<<actionName<<endl;
 	KateExternalToolsMenuAction *a=
 		dynamic_cast<KateExternalToolsMenuAction*>(dmw->action("tools_external"));
 	if (!a) return false;
-// 	kdDebug(13001)<<"trying to find action"<<endl;
+// 	kDebug(13001)<<"trying to find action"<<endl;
 	KAction *a1=a->actionCollection()->action(actionName.utf8().constData ());
 	if (!a1) return false;
-// 	kdDebug(13001)<<"activating action"<<endl;
+// 	kDebug(13001)<<"activating action"<<endl;
 	a1->activate();
 	return true;
 }
@@ -286,7 +286,7 @@ void KateExternalToolAction::slotRun()
                          i18n( "Kate External Tools") );
     return;
   }
-  kdDebug(13001)<<"externaltools: Running command: "<<cmd<<endl;
+  kDebug(13001)<<"externaltools: Running command: "<<cmd<<endl;
 
   // save documents if requested
   KateMainWindow *mw = (KateMainWindow*)parent()->parent();
@@ -687,7 +687,7 @@ void KateExternalToolsConfigWidget::apply()
       continue;
     }
     KateExternalTool *t = ((ToolItem*)lbTools->item( i ))->tool;
-//     kdDebug(13001)<<"adding tool: "<<t->name<<endl;
+//     kDebug(13001)<<"adding tool: "<<t->name<<endl;
     tools << t->acname;
 
     config->setGroup( t->acname );

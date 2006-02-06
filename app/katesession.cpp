@@ -205,7 +205,7 @@ KateSessionManager::KateSessionManager (QObject *parent)
  , m_sessionsDir (locateLocal( "data", "kate/sessions"))
  , m_activeSession (new KateSession (this, "", ""))
 {
-  kdDebug() << "LOCAL SESSION DIR: " << m_sessionsDir << endl;
+  kDebug() << "LOCAL SESSION DIR: " << m_sessionsDir << endl;
 
   // create dir if needed
   KGlobal::dirs()->makeDir (m_sessionsDir);
@@ -238,7 +238,7 @@ void KateSessionManager::updateSessionList ()
     KateSession *session = new KateSession (this, dir[i], "");
     m_sessionList.append (KateSession::Ptr(session));
 
-    kdDebug () << "FOUND SESSION: " << session->sessionName() << " FILE: " << session->sessionFile() << endl;
+    kDebug () << "FOUND SESSION: " << session->sessionName() << " FILE: " << session->sessionFile() << endl;
 
     if (!foundDefault && (dir[i] == "default.katesession"))
       foundDefault = true;
