@@ -102,13 +102,14 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
   // command line args init and co
   KCmdLineArgs::init (argc, argv, &aboutData);
   KCmdLineArgs::addCmdLineOptions (options);
+  KCmdLineArgs::addTempFileOption();
   //KateApp::addCmdLineOptions ();
 
   // get our command line args ;)
   KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 
   // now, first try to contact running kate instance if needed
-  if (args->isSet("use"))
+  if ( (args->isSet("use")) || (::getenv("KATE_PID")!=0))
   {
     DCOPClient client;
     client.attach ();
@@ -119,9 +120,12 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
     // search for a kate app client, use the first found
     DCOPCString kateApp;
 
-    if (args->isSet("pid"))
+    if ( (args->isSet("pid")) || (::getenv("KATE_PID")!=0))
     {
-      DCOPCString tryApp = QByteArray ("kate-") + args->getOption("pid");
+      QByteArray usePid;
+      if (args->isSet("pid")) usePid=args->getOption("pid");
+      else usePid=QByteArray(::getenv("KATE_PID"));
+      DCOPCString tryApp = QByteArray ("kate-") + usePid;//args->getOption("pid");
       if (client.isApplicationRegistered(tryApp))
         kateApp = tryApp;
     }
@@ -149,8 +153,10 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
 
       QString enc = args->isSet("encoding") ? args->getOption("encoding") : QByteArray("");
 
+      bool tempfileSet = KCmdLineArgs::isTempFileSet();
+
       for (int z=0; z<args->count(); z++)
-        kRef.call( "openURL", args->url(z), enc );
+        kRef.call( "openURL", args->url(z), enc, tempfileSet);
 
       if( args->isSet( "stdin" ) )
       {

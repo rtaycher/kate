@@ -71,7 +71,12 @@ DCOPRef KateAppDCOPIface::mainWindow (uint n)
 
 bool KateAppDCOPIface::openURL (KUrl url, QString encoding)
 {
-  return m_app->openURL (url, encoding);
+  return m_app->openURL (url, encoding,false);
+}
+
+bool KateAppDCOPIface::openURL (KURL url, QString encoding, bool isTempFile)
+{
+  return m_app->openURL (url, encoding, isTempFile);
 }
 
 bool KateAppDCOPIface::setCursor (int line, int column)

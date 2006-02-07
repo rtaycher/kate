@@ -49,6 +49,10 @@
 #include <qdir.h>
 #include <qtextcodec.h>
 
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 KateApp::KateApp (KCmdLineArgs *args)
  : KApplication ()
  , m_args (args)
@@ -116,6 +120,10 @@ QString KateApp::kateVersion (bool fullVersion)
 
 void KateApp::initKate ()
 {
+ 
+  kDebug()<<"Setting KATE_PID: '"<<getpid()<<"'"<<endl;
+  ::setenv( "KATE_PID", QString("%1").arg(getpid()).latin1(), 1 );
+
   // handle restore different
   if (isSessionRestored())
   {
@@ -203,6 +211,8 @@ bool KateApp::startupKate ()
 #endif
   QTextCodec *codec = m_args->isSet("encoding") ? QTextCodec::codecForName(m_args->getOption("encoding")) : 0;
 
+  bool tempfileSet = KCmdLineArgs::isTempFileSet();
+
 #warning fixme later
   //KTextEditor::Document::setOpenErrorDialogsActivated (false);
 
@@ -216,9 +226,9 @@ bool KateApp::startupKate ()
     {
       // open a normal file
       if (codec)
-        doc = activeMainWindow()->viewManager()->openURL( m_args->url(z), codec->name(), false );
+        doc = activeMainWindow()->viewManager()->openURL( m_args->url(z), codec->name(), false,tempfileSet);
       else
-        doc = activeMainWindow()->viewManager()->openURL( m_args->url(z), QString(), false );
+        doc = activeMainWindow()->viewManager()->openURL( m_args->url(z), QString(), false,tempfileSet);
     }
     else
       KMessageBox::sorry( activeMainWindow(),
@@ -317,7 +327,7 @@ KateSessionManager *KateApp::sessionManager ()
   return m_sessionManager;
 }
 
-bool KateApp::openURL (const KUrl &url, const QString &encoding)
+bool KateApp::openURL (const KUrl &url, const QString &encoding, bool isTempFile)
 {
   KateMainWindow *mainWindow = activeMainWindow ();
 
@@ -335,9 +345,9 @@ bool KateApp::openURL (const KUrl &url, const QString &encoding)
   {
     // open a normal file
     if (codec)
-      mainWindow->viewManager()->openURL( url, codec->name());
+      mainWindow->viewManager()->openURL( url, codec->name(),true, isTempFile);
     else
-      mainWindow->viewManager()->openURL( url, QString() );
+      mainWindow->viewManager()->openURL( url, QString(),true,isTempFile );
   }
   else
     KMessageBox::sorry( mainWindow,

@@ -39,6 +39,7 @@
 #include <kcodecs.h>
 #include <kmessagebox.h>
 #include <kencodingfiledialog.h>
+#include <kio/job.h>
 
 #include <qdatetime.h>
 #include <qtextcodec.h>
@@ -194,7 +195,7 @@ bool KateDocManager::isOpen(KUrl url)
   return findDocument (url) != 0;
 }
 
-KTextEditor::Document *KateDocManager::openURL (const KUrl& url,const QString &encoding)
+KTextEditor::Document *KateDocManager::openURL (const KUrl& url,const QString &encoding,bool isTempFile)
 {
   // special handling if still only the first initial doc is there
   if (!documentList().isEmpty() && (documentList().count() == 1) && (!documentList().at(0)->isModified() && documentList().at(0)->url().isEmpty()))
@@ -205,6 +206,16 @@ KTextEditor::Document *KateDocManager::openURL (const KUrl& url,const QString &e
 
     if (!loadMetaInfos(doc, url))
       doc->openURL (url);
+
+    if ( isTempFile && !url.isEmpty() && url.isLocalFile() )
+    {
+      QFileInfo fi( url.path() );
+      if ( fi.exists() )
+      {
+        m_tempFiles[ doc] = qMakePair(url, fi.lastModified());
+        kDebug(13001)<<"temporary file will be deleted after use unless modified: "<<url.prettyURL()<<endl;
+       }
+     }
 
     connect(doc, SIGNAL(modifiedChanged(KTextEditor::Document *)), this, SLOT(slotModChanged(KTextEditor::Document *)));
 
@@ -237,6 +248,25 @@ bool KateDocManager::closeDocument(class KTextEditor::Document *doc,bool closeUR
 
   for (int i=0; i < KateApp::self()->mainWindows (); i++ )
     KateApp::self()->mainWindow(i)->viewManager()->closeViews(doc);
+
+  if ( closeURL && m_tempFiles.contains( doc ) )
+  {
+    QFileInfo fi( m_tempFiles[ doc ].first.path() );
+    if ( fi.lastModified() <= m_tempFiles[ doc ].second ||
+         KMessageBox::questionYesNo( KateApp::self()->activeMainWindow(),
+            i18n("The supposedly temporary file %1 has been modified. "
+                "Do you want to delete it anyway?").arg(m_tempFiles[ doc ].first.prettyURL()),
+            i18n("Delete File?") ) == KMessageBox::Yes )
+     {
+       KIO::del( m_tempFiles[ doc ].first, false, false );
+       kDebug(13001)<<"Deleted temporary file "<<m_tempFiles[ doc ].first<<endl;
+       m_tempFiles.remove( doc );
+     }
+     else {
+       m_tempFiles.remove(doc);
+       kDebug(13001)<<"The supposedly temporary file "<<m_tempFiles[ doc ].first.prettyURL()<<" have been modified since loaded, and has not been deleted."<<endl;
+     }
+  }
 
   deleteDoc (doc);
 

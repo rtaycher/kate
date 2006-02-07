@@ -32,6 +32,9 @@
 #include <QObject>
 #include <QByteArray>
 #include <QHash>
+#include <QMap>
+#include <QPair>
+#include <QDateTime>
 
 namespace KParts { class Factory; }
 
@@ -84,7 +87,7 @@ class KateDocManager : public QObject
 
     QList<KTextEditor::Document*> &documentList () { return m_docList; };
 
-    KTextEditor::Document *openURL(const KUrl&,const QString &encoding=QString());
+    KTextEditor::Document *openURL(const KUrl&,const QString &encoding=QString(),bool isTempFile=false);
 
     bool closeDocument(class KTextEditor::Document *,bool closeURL=true);
     bool closeDocument(uint);
@@ -139,6 +142,9 @@ class KateDocManager : public QObject
 
     //KParts::Factory *m_factory;
     KTextEditor::Editor *m_editor;
+
+    typedef QPair<KURL,QDateTime> TPair;
+    QMap<KTextEditor::Document *,TPair> m_tempFiles;   
 };
 
 #endif

@@ -403,9 +403,9 @@ void KateViewManager::slotDocumentClose ()
   KateDocManager::self()->closeDocument ((KTextEditor::Document*)activeView()->document());
 }
 
-KTextEditor::Document *KateViewManager::openURL (const KUrl &url, const QString& encoding, bool activate)
+KTextEditor::Document *KateViewManager::openURL (const KUrl &url, const QString& encoding, bool activate, bool isTempFile)
 {
-  KTextEditor::Document *doc = KateDocManager::self()->openURL (url, encoding);
+  KTextEditor::Document *doc = KateDocManager::self()->openURL (url, encoding, isTempFile);
 
   if (!doc->url().isEmpty())
     m_mainWindow->fileOpenRecent->addURL( doc->url() );

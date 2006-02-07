@@ -64,7 +64,7 @@ class KateViewManager : public QObject
     /* restore it */
     void restoreViewConfiguration (KConfig *config,const QString& group);
 
-    KTextEditor::Document *openURL (const KUrl &url, const QString& encoding, bool activate = true);
+    KTextEditor::Document *openURL (const KUrl &url, const QString& encoding, bool activate = true, bool isTempFile=false);
 
   public Q_SLOTS:
     void openURL (const KUrl &url);
