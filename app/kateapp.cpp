@@ -56,6 +56,7 @@
 KateApp::KateApp (KCmdLineArgs *args)
  : KApplication ()
  , m_args (args)
+ , m_shouldExit(false)
 {
   // Don't handle DCOP requests yet
   dcopClient()->suspend();
@@ -136,7 +137,7 @@ void KateApp::initKate ()
     if (!startupKate ())
     {
       kDebug()<<"startupKate returned false"<<endl;
-      quit ();
+      m_shouldExit=true;
       return ;
     }
   }

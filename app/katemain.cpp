@@ -205,6 +205,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
 
   // construct the real kate app object ;)
   KateApp app (args);
+  if (app.shouldExit()) return 0;
 
   // execute ourself ;)
   int res=app.exec();

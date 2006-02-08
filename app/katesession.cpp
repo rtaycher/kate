@@ -615,6 +615,7 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
                 ),m_templates(templates)
 {
   setDefaultButton(KDialog::User2);
+  setEscapeButton(KDialog::User1);
   enableButtonSeparator(true);
   m_delayTimer=new QTimer(this);
   m_delayTimer->setSingleShot(true);
@@ -772,6 +773,9 @@ KateSessionOpenDialog::KateSessionOpenDialog (QWidget *parent)
   }
 
   setResult (resultCancel);
+  connect(this,SIGNAL(user1Clicked()),this,SLOT(slotUser1()));
+  connect(this,SIGNAL(user2Clicked()),this,SLOT(slotUser2()));
+
 }
 
 KateSessionOpenDialog::~KateSessionOpenDialog ()
@@ -846,6 +850,8 @@ KateSessionManageDialog::KateSessionManageDialog (QWidget *parent)
 
   // trigger action update
   selectionChanged ();
+  connect(this,SIGNAL(user1Clicked()),this,SLOT(slotUser1()));
+
 }
 
 KateSessionManageDialog::~KateSessionManageDialog ()

@@ -204,7 +204,9 @@ class KDE_EXPORT KateApp : public KApplication
      */
     bool openInput (const QString &text);
 
+    bool shouldExit() const {return m_shouldExit;}
   private:
+    bool m_shouldExit;
     /**
      * kate's command line args
      */
