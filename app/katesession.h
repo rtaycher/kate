@@ -21,7 +21,7 @@
 
 #include "katemain.h"
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <ksimpleconfig.h>
 #include <ksharedptr.h>
 #include <kaction.h>
@@ -294,7 +294,7 @@ class KateSessionChooserTemplate {
 	QString toolTip;
 };
 
-class KateSessionChooser : public KDialogBase
+class KateSessionChooser : public KDialog
 {
   Q_OBJECT
 
@@ -346,7 +346,7 @@ class KateSessionChooser : public KDialogBase
     QList<KateSessionChooserTemplate> m_templates;
 };
 
-class KateSessionOpenDialog : public KDialogBase
+class KateSessionOpenDialog : public KDialog
 {
   Q_OBJECT
 
@@ -376,7 +376,7 @@ class KateSessionOpenDialog : public KDialogBase
     KListView *m_sessions;
 };
 
-class KateSessionManageDialog : public KDialogBase
+class KateSessionManageDialog : public KDialog
 {
   Q_OBJECT
 

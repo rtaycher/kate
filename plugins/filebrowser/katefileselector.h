@@ -134,8 +134,8 @@ class KateFileSelector : public KVBox
 
   public Q_SLOTS:
     void slotFilterChange(const QString&);
-    void setDir(KURL);
-    void setDir( const QString& url ) { setDir( KURL( url ) ); };
+    void setDir(KUrl);
+    void setDir( const QString& url ) { setDir( KUrl( url ) ); };
     void kateViewChanged();
 
   private Q_SLOTS:

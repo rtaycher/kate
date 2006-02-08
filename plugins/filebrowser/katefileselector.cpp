@@ -199,7 +199,7 @@ Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mai
 // FIXME
 //  cmbPath->listBox()->installEventFilter( this );
 
-  dir = new KDirOperator(KURL(), this);
+  dir = new KDirOperator(KUrl(), this);
   dir->setView(KFile::/* Simple */Detail);
   dir->view()->setSelectionMode(KFile::Multi);
   setStretchFactor(dir, 2);
@@ -468,7 +468,7 @@ void Kate::Private::Plugin::KateFileSelector::cmbPathReturnPressed( const QStrin
   urls.prepend( typedURL.url() );
   cmbPath->setURLs( urls, KUrlComboBox::RemoveBottom );
   dir->setFocus();
-  dir->setURL( KURL(u), true );
+  dir->setURL( KUrl(u), true );
 }
 
 void Kate::Private::Plugin::KateFileSelector::dirUrlEntered( const KUrl& u )
@@ -541,7 +541,7 @@ KUrl Kate::Private::Plugin::KateFileSelector::activeDocumentUrl() {
   KTextEditor::View *v = mainwin->activeView();
   if ( v )
     return v->document()->url();
-  return KURL();
+  return KUrl();
 }
 
 void Kate::Private::Plugin::KateFileSelector::focusInEvent( QFocusEvent * )

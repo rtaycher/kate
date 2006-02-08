@@ -57,7 +57,7 @@ class KateAppDCOPIface : public DCOPObject
       * @p isTempFile should be set to true with the --tempfile option set ONLY,
       * files opened with this set to true will be deleted when closed.
       */
-     bool openURL(KURL url, QString encoding, bool isTempFile);
+     bool openURL(KUrl url, QString encoding, bool isTempFile);
  
     /**
      * set cursor of active view in active main window

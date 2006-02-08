@@ -185,7 +185,7 @@ class KFLConfigPage : public KTextEditor::ConfigPage {
     class QCheckBox *cbEnableShading;
     class KColorButton *kcbViewShade, *kcbEditShade;
     class QLabel *lEditShade, *lViewShade, *lSort;
-    class QComboBox *cmbSort;
+    class KComboBox *cmbSort;
     KateFileList *m_filelist;
 
     bool m_changed;

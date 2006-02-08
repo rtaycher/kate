@@ -117,7 +117,7 @@ void KateConsole::loadConsoleIfNeeded()
 
   if (m_mw->activeView())
     if (m_mw->activeView()->document()->url().isValid())
-      cd(KURL( m_mw->activeView()->document()->url().path() ));
+      cd(KUrl( m_mw->activeView()->document()->url().path() ));
 }
 
 void KateConsole::slotDestroyed ()

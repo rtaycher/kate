@@ -40,6 +40,7 @@
 #include <kglobalsettings.h>
 #include <kstringhandler.h>
 #include <kxmlguifactory.h>
+#include <ktoolbar.h>
 
 #include <qlayout.h>
 #include <qobject.h>

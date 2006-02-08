@@ -143,7 +143,7 @@ class KateDocManager : public QObject
     //KParts::Factory *m_factory;
     KTextEditor::Editor *m_editor;
 
-    typedef QPair<KURL,QDateTime> TPair;
+    typedef QPair<KUrl,QDateTime> TPair;
     QMap<KTextEditor::Document *,TPair> m_tempFiles;   
 };
 

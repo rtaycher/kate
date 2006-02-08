@@ -55,6 +55,7 @@
 #include <kdialog.h>
 #include <kxmlguifactory.h>
 #include <kglobal.h>
+#include <kcombobox.h>
 //END Includes
 
 //BEGIN ToolTip
@@ -577,7 +578,7 @@ KFLConfigPage::KFLConfigPage( QWidget* parent, KateFileList *fl )
   KHBox *hbSorting = new KHBox( this );
   lo1->addWidget( hbSorting );
   lSort = new QLabel( i18n("&Sort by:"), hbSorting );
-  cmbSort = new QComboBox( hbSorting );
+  cmbSort = new KComboBox( hbSorting );
   lSort->setBuddy( cmbSort );
   QStringList l;
   l << i18n("Opening Order") << i18n("Document Name") << i18n("URL");

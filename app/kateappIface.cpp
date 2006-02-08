@@ -74,7 +74,7 @@ bool KateAppDCOPIface::openURL (KUrl url, QString encoding)
   return m_app->openURL (url, encoding,false);
 }
 
-bool KateAppDCOPIface::openURL (KURL url, QString encoding, bool isTempFile)
+bool KateAppDCOPIface::openURL (KUrl url, QString encoding, bool isTempFile)
 {
   return m_app->openURL (url, encoding, isTempFile);
 }

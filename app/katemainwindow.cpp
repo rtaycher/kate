@@ -465,7 +465,7 @@ void KateMainWindow::slotWindowActivated ()
       if ( newPath != path )
       {
         path = newPath;
-        console->cd (KURL( path ));
+        console->cd (KUrl( path ));
       }
     }
 #endif
@@ -577,7 +577,7 @@ void KateMainWindow::editKeys()
 
 void KateMainWindow::openURL (const QString &name)
 {
-  m_viewManager->openURL (KURL(name));
+  m_viewManager->openURL (KUrl(name));
 }
 
 void KateMainWindow::slotConfigure()
@@ -598,7 +598,7 @@ KUrl KateMainWindow::activeDocumentUrl()
   KTextEditor::View *v = m_viewManager->activeView();
   if ( v )
     return v->document()->url();
-  return KURL();
+  return KUrl();
 }
 
 #if 0

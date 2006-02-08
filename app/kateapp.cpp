@@ -371,7 +371,7 @@ bool KateApp::setCursor (int line, int column)
 
 bool KateApp::openInput (const QString &text)
 {
-  activeMainWindow()->viewManager()->openURL( "", "", true );
+  activeMainWindow()->viewManager()->openURL( KUrl(), "", true );
 
   if (!activeMainWindow()->viewManager()->activeView ())
     return false;
@@ -394,7 +394,7 @@ KateMainWindow *KateApp::newMainWindow (KConfig *sconfig, const QString &sgroup)
   else if ((mainWindows() > 1) && (m_docManager->documents() > 0))
     mainWindow->viewManager()->activateView ( (m_docManager->document(m_docManager->documents()-1)) );
   else if ((mainWindows() > 1) && (m_docManager->documents() < 1))
-    mainWindow->viewManager()->openURL ( KURL() );
+    mainWindow->viewManager()->openURL ( KUrl() );
 
   mainWindow->show ();
 

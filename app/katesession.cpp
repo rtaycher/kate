@@ -48,6 +48,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QStringList>
+#include <QStyle>
 
 #include <unistd.h>
 #include <time.h>
@@ -604,18 +605,17 @@ class KateSessionChooserItem : public Q3ListViewItem
 };
 
 KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSession,const QList<KateSessionChooserTemplate> &templates)
- : KDialogBase (  parent
-                  , ""
-                  , true
+ : KDialog (  parent
                   , i18n ("Session Chooser")
-                  , KDialogBase::User1 | KDialogBase::User2 | KDialogBase::User3
-                  , KDialogBase::User2
-                  , true
+                  , KDialog::User1 | KDialog::User2 | KDialog::User3
+		  , 0
                   , KStdGuiItem::quit ()
                   , KGuiItem (i18n ("Open Session"), "fileopen")
                   , KGuiItem ((templates.count()>1)?i18n ("New Session (hold down for template)"):i18n ("New Session"), "filenew")
                 ),m_templates(templates)
 {
+  setDefaultButton(KDialog::User2);
+  enableButtonSeparator(true);
   m_delayTimer=new QTimer(this);
   m_delayTimer->setSingleShot(true);
   int delay=style()->styleHint(QStyle::SH_ToolButton_PopupDelay, 0, this);
@@ -662,7 +662,7 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
 
   setResult (resultNone);
 
-  connect(actionButton(KDialogBase::User3),SIGNAL(pressed()),m_delayTimer,SLOT(start()));
+  connect(actionButton(KDialog::User3),SIGNAL(pressed()),m_delayTimer,SLOT(start()));
   connect(m_delayTimer,SIGNAL(timeout()),this,SLOT(slotProfilePopup()));
   // trigger action update
   selectionChanged ();
@@ -686,9 +686,9 @@ void KateSessionChooser::slotProfilePopup() {
    a->setData(t.configFileName);
  }
  connect(&popup,SIGNAL(triggered(QAction *)),this,SLOT(slotTemplateAction(QAction*)));
- actionButton(KDialogBase::User3)->setMenu(&popup);
- actionButton(KDialogBase::User3)->showMenu();
- actionButton(KDialogBase::User3)->setMenu(0);
+ actionButton(KDialog::User3)->setMenu(&popup);
+ actionButton(KDialog::User3)->showMenu();
+ actionButton(KDialog::User3)->setMenu(0);
 }
 
 
@@ -731,7 +731,7 @@ void KateSessionChooser::slotUser1 ()
 
 void KateSessionChooser::selectionChanged ()
 {
-  enableButton (KDialogBase::User2, m_sessions->selectedItem ());
+  enableButton (KDialog::User2, m_sessions->selectedItem ());
 }
 
 //END CHOOSER DIALOG
@@ -739,17 +739,16 @@ void KateSessionChooser::selectionChanged ()
 //BEGIN OPEN DIALOG
 
 KateSessionOpenDialog::KateSessionOpenDialog (QWidget *parent)
- : KDialogBase (  parent
-                  , ""
-                  , true
+ : KDialog (  parent
                   , i18n ("Open Session")
-                  , KDialogBase::User1 | KDialogBase::User2
-                  , KDialogBase::User2
-                  , false
+                  , KDialog::User1 | KDialog::User2
+		  , 0
                   , KStdGuiItem::cancel ()
                   , KGuiItem( i18n("&Open"), "fileopen")
                 )
 {
+  setDefaultButton(KDialog::User2);
+  enableButtonSeparator(false);
   QFrame *page = new QFrame (this);
   page->setMinimumSize (400, 200);
   setMainWidget(page);
@@ -804,16 +803,14 @@ void KateSessionOpenDialog::slotUser2 ()
 //BEGIN MANAGE DIALOG
 
 KateSessionManageDialog::KateSessionManageDialog (QWidget *parent)
- : KDialogBase (  parent
-                  , ""
-                  , true
+ : KDialog (  parent
                   , i18n ("Manage Sessions")
-                  , KDialogBase::User1
-                  , KDialogBase::User1
-                  , false
+                  , KDialog::User1
+		  , 0
                   , KStdGuiItem::close ()
                 )
 {
+  setDefaultButton(KDialog::User1);
   QFrame *page = new QFrame (this);
   page->setMinimumSize (400, 200);
   setMainWidget(page);
