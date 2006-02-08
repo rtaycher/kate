@@ -308,7 +308,7 @@ KateExternalToolsMenuAction::KateExternalToolsMenuAction( const QString &text,
       mainwindow( mw )
 {
 
-  m_actionCollection = new KActionCollection( mainwindow );
+  m_actionCollection = new KActionCollection( (QWidget*) mainwindow );
 
 
 #warning "Hmm, this leads to crash, not sure why, atm :("
