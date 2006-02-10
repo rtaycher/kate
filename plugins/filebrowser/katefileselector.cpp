@@ -381,7 +381,6 @@ void Kate::Private::Plugin::KateFileSelector::slotFilterChange( const QString & 
 {
   QString f = nf.trimmed();
   bool empty = f.isEmpty() || f == "*";
-  QToolTip::remove( btnFilter );
   if ( empty ) {
     dir->clearFilter();
     filter->lineEdit()->setText( QString() );
