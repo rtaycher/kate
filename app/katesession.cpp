@@ -39,6 +39,7 @@
 #include <kpushbutton.h>
 #include <kmenu.h>
 #include <kactioncollection.h>
+#include <kio/netaccess.h>
 
 #include <qdir.h>
 #include <qlabel.h>
@@ -54,14 +55,15 @@
 #include <time.h>
 
 
-KateSession::KateSession (KateSessionManager *manager, const QString &fileName, const QString &name)
+KateSession::KateSession (KateSessionManager *manager, const QString &fileName)
   : m_sessionFileRel (fileName)
-  , m_sessionName (name)
   , m_documents (0)
   , m_manager (manager)
   , m_readConfig (0)
   , m_writeConfig (0)
 {
+  m_sessionName=KUrl::fromPercentEncoding(fileName.toLatin1());
+  m_sessionName.chop(12);//.katesession==12
   init ();
 }
 
@@ -72,18 +74,6 @@ void KateSession::init ()
   {
     KSimpleConfig config (sessionFile (), true);
 
-    if (m_sessionName.isEmpty())
-    {
-      // get the name out of the file
-      if (m_sessionFileRel == "default.katesession")
-        m_sessionName = i18n("Default Session");
-      else
-      {
-        config.setGroup ("General");
-        m_sessionName = config.readEntry ("Name", i18n ("Unnamed Session"));
-      }
-    }
-
     // get the document count
     config.setGroup ("Open Documents");
     m_documents = config.readEntry("Count", 0);
@@ -91,24 +81,7 @@ void KateSession::init ()
     return;
   }
 
-  // filename not empty, create the file
-  if (!m_sessionFileRel.isEmpty())
-  {
-     // uhh, no name given
-    if (m_sessionName.isEmpty())
-    {
-      if (m_sessionFileRel == "default.katesession")
-        m_sessionName = i18n("Default Session");
-      else
-        m_sessionName = i18n("Session (%1)").arg(QTime::currentTime().toString(Qt::LocalDate));
-    }
-
-    // create the file, write name to it!
-    KSimpleConfig config (sessionFile ());
-    config.setGroup ("General");
-    config.writeEntry ("Name", m_sessionName);
-    config.sync ();
-  }
+  Q_ASSERT(m_sessionFileRel.isEmpty());
 }
 
 KateSession::~KateSession ()
@@ -134,19 +107,31 @@ bool KateSession::create (const QString &name, bool force)
   m_readConfig = 0;
 
   m_sessionName = name;
-
+  QString oldSessionFileRel=m_sessionFileRel;
+#if 0
   // get a usable filename
   int s = time(0);
   QByteArray tname;
+  //USE QUrl::toPercentEncoding("{a fishy string?}", "", "."); instead
   while (true)
   {
     tname.setNum (s++);
-    KMD5 md5 (tname);
+    KMD5 md5 (tname); 
     m_sessionFileRel = QString ("%1.katesession").arg (md5.hexDigest().data());
 
     if (!KGlobal::dirs()->exists(sessionFile ()))
       break;
   }
+#else
+  m_sessionFileRel=QUrl::toPercentEncoding(name, "", ".")+QString(".katesession");
+  if (KGlobal::dirs()->exists(sessionFile ())) {
+  	m_sessionFileRel=oldSessionFileRel;
+	//Q_ASSERT(!KGlobal::dirs()->exists(sessionFile ()));
+	return false;
+  }
+#endif
+  
+
 
   // create the file, write name to it!
   KSimpleConfig config (sessionFile ());
@@ -162,16 +147,23 @@ bool KateSession::create (const QString &name, bool force)
 
 bool KateSession::rename (const QString &name)
 {
-  if (name.isEmpty () || m_sessionFileRel.isEmpty() || m_sessionFileRel == "default.katesession")
+  if (name.isEmpty () || m_sessionFileRel.isEmpty() || m_sessionFileRel == m_manager->defaultSessionFileName())
     return false;
 
+  if (name==m_sessionName) return true;
+  QString oldRel=m_sessionFileRel;
+  QString oldSessionFile=sessionFile();
+  m_sessionFileRel=QUrl::toPercentEncoding(name,"",".")+QString(".katesession");
+  if (KGlobal::dirs()->exists(sessionFile ())) {
+    m_sessionFileRel=oldRel;
+    return false;
+  }
+  if (!KIO::NetAccess::file_move(KUrl(QString("file://")+oldSessionFile),KUrl(QString("file://")+sessionFile())) ) {
+  	m_sessionFileRel=oldRel;
+  	return false;
+  }
   m_sessionName = name;
-
-  KConfig config (sessionFile (), false, false);
-  config.setGroup ("General");
-  config.writeEntry ("Name", m_sessionName);
-  config.sync ();
-
+  
   return true;
 }
 
@@ -204,7 +196,8 @@ KConfig *KateSession::configWrite ()
 KateSessionManager::KateSessionManager (QObject *parent)
  : QObject (parent)
  , m_sessionsDir (locateLocal( "data", "kate/sessions"))
- , m_activeSession (new KateSession (this, "", ""))
+ , m_activeSession (new KateSession (this, ""))
+ , m_defaultSessionFileName(QUrl::toPercentEncoding(i18n("Default Session"),"",".")+QString(".katesession"))
 {
   kDebug() << "LOCAL SESSION DIR: " << m_sessionsDir << endl;
 
@@ -234,20 +227,23 @@ void KateSessionManager::updateSessionList ()
   QDir dir (m_sessionsDir, "*.katesession");
 
   bool foundDefault = false;
+  kDebug()<<"default session file name:"<<m_defaultSessionFileName<<endl;
   for (unsigned int i=0; i < dir.count(); ++i)
   {
-    KateSession *session = new KateSession (this, dir[i], "");
+    KateSession *session = new KateSession (this, dir[i]);
     m_sessionList.append (KateSession::Ptr(session));
 
-    kDebug () << "FOUND SESSION: " << session->sessionName() << " FILE: " << session->sessionFile() << endl;
-
-    if (!foundDefault && (dir[i] == "default.katesession"))
+    kDebug () << "FOUND SESSION: " << session->sessionName() << " FILE: " << session->sessionFile() << " dir[i];"<<dir[i]<<endl;
+    if (!foundDefault && (dir[i] == m_defaultSessionFileName))
       foundDefault = true;
   }
 
   // add default session, if not there
-  if (!foundDefault)
-    m_sessionList.append (KSharedPtr<KateSession>(new KateSession (this, "default.katesession", i18n("Default Session"))));
+  if (!foundDefault) {
+    KSharedPtr<KateSession> s(new KateSession (this, ""));
+    s->create(i18n("Default Session"));
+    m_sessionList.append (s);
+  }
 }
 
 void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLast, bool saveLast, bool loadNew)
@@ -327,18 +323,10 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
   }
 }
 
-KateSession::Ptr KateSessionManager::createSession (const QString &name)
-{
-  KateSession::Ptr s(new KateSession (this, "", ""));
-  s->create (name);
-
-  return s;
-}
-
 KateSession::Ptr KateSessionManager::giveSession (const QString &name)
 {
   if (name.isEmpty())
-    return KateSession::Ptr(new KateSession (this, "", ""));
+    return KateSession::Ptr(new KateSession (this, ""));
     
   updateSessionList();
 
@@ -348,7 +336,9 @@ KateSession::Ptr KateSessionManager::giveSession (const QString &name)
       return m_sessionList[i];
   }
 
-  return createSession (name);
+  KateSession::Ptr s(new KateSession (this, ""));
+  s->create (name);
+  return s;
 }
 
 bool KateSessionManager::saveActiveSession (bool tryAsk, bool rememberAsLast)
@@ -435,20 +425,20 @@ bool KateSessionManager::chooseSession ()
   c->setGroup("General");
 
   // get last used session, default to default session
-  QString lastSession (c->readEntry ("Last Session", "default.katesession"));
+  QString lastSession (c->readEntry ("Last Session", m_defaultSessionFileName));
   QString sesStart (c->readEntry ("Startup Session", "manual"));
 
   // uhh, just open last used session, show no chooser
   if (sesStart == "last")
   {
-    activateSession (KateSession::Ptr(new KateSession (this, lastSession, "")), false, false);
+    activateSession (KateSession::Ptr(new KateSession (this, lastSession)), false, false);
     return success;
   }
 
   // start with empty new session
   if (sesStart == "new")
   {
-    activateSession (KateSession::Ptr(new KateSession (this, "", "")), false, false);
+    activateSession (KateSession::Ptr(new KateSession (this, "")), false, false);
     return success;
   }
 
@@ -488,7 +478,7 @@ bool KateSessionManager::chooseSession ()
         break;
 
       default:
-        activateSession (KateSession::Ptr(new KateSession (this, "", "")), false, false);
+        activateSession (KateSession::Ptr(new KateSession (this, "")), false, false)	;
         retry = false;
         break;
     }
@@ -514,7 +504,7 @@ bool KateSessionManager::chooseSession ()
 
 void KateSessionManager::sessionNew ()
 {
-  activateSession (KateSession::Ptr(new KateSession (this, "", "")));
+  activateSession (KateSession::Ptr(new KateSession (this, "")));
 }
 
 void KateSessionManager::sessionOpen ()
@@ -543,37 +533,31 @@ void KateSessionManager::sessionSave ()
   if (saveActiveSession ())
     return;
 
-  bool ok = false;
-  QString name = KInputDialog::getText (i18n("Specify Name for Current Session"), i18n("Session name:"), "", &ok);
-
-  if (!ok)
-    return;
-
-  if (name.isEmpty())
-  {
-    KMessageBox::error (0, i18n("To save a new session, you must specify a name."), i18n ("Missing Session Name"));
-    return;
-  }
-
-  activeSession()->create (name);
-  saveActiveSession ();
+  sessionSaveAs();
 }
 
 void KateSessionManager::sessionSaveAs ()
 {
-  bool ok = false;
-  QString name = KInputDialog::getText (i18n("Specify New Name for Current Session"), i18n("Session name:"), "", &ok);
-
-  if (!ok)
-    return;
-
-  if (name.isEmpty())
+  bool loop=false;
+  QString name;
+  do
   {
-    KMessageBox::error (0, i18n("To save a session, you must specify a name."), i18n ("Missing Session Name"));
-    return;
-  }
+    bool ok = false;
+    name = KInputDialog::getText (
+	i18n("Specify New Name for Current Session"),
+	loop?i18n("There is already an existing session with your chosen name.\nPlease choose a different one\nSession name:"):i18n("Session name:")
+	, name, &ok);
 
-  activeSession()->create (name, true);
+    if (!ok)
+      return;
+
+    if (name.isEmpty())
+    {
+      KMessageBox::sorry (0, i18n("To save a session, you must specify a name."), i18n ("Missing Session Name"));
+      return;
+    }
+    loop=true;
+  } while (!activeSession()->create (name, true));
   saveActiveSession ();
 }
 
@@ -749,17 +733,19 @@ KateSessionOpenDialog::KateSessionOpenDialog (QWidget *parent)
                 )
 {
   setDefaultButton(KDialog::User2);
-  enableButtonSeparator(false);
-  QFrame *page = new QFrame (this);
+  enableButtonSeparator(true);
+  /*QFrame *page = new QFrame (this);
   page->setMinimumSize (400, 200);
   setMainWidget(page);
 
   QHBoxLayout *hb = new QHBoxLayout (page);
   
   QVBoxLayout *vb = new QVBoxLayout ();
-  hb->addItem(vb);
+  hb->addItem(vb);*/
   m_sessions = new KListView (this);
-  vb->addWidget(m_sessions);
+  m_sessions->setMinimumSize(400,200);
+  setMainWidget(m_sessions);
+  //vb->addWidget(m_sessions);
   m_sessions->addColumn (i18n("Session Name"));
   m_sessions->addColumn (i18n("Open Documents"));
   m_sessions->setResizeMode (Q3ListView::AllColumns);
@@ -867,16 +853,16 @@ void KateSessionManageDialog::slotUser1 ()
 void KateSessionManageDialog::selectionChanged ()
 {
   KateSessionChooserItem *item = (KateSessionChooserItem *) m_sessions->selectedItem ();
-
-  m_rename->setEnabled (item && item->session->sessionFileRelative() != "default.katesession");
-  m_del->setEnabled (item && item->session->sessionFileRelative() != "default.katesession");
+  QString defFileName=KateSessionManager::self()->defaultSessionFileName();
+  m_rename->setEnabled (item && item->session->sessionFileRelative() != defFileName);
+  m_del->setEnabled (item && item->session->sessionFileRelative() != defFileName);
 }
 
 void KateSessionManageDialog::rename ()
 {
   KateSessionChooserItem *item = (KateSessionChooserItem *) m_sessions->selectedItem ();
 
-  if (!item || item->session->sessionFileRelative() == "default.katesession")
+  if (!item || item->session->sessionFileRelative() == KateSessionManager::self()->defaultSessionFileName())
     return;
 
   bool ok = false;
@@ -887,19 +873,22 @@ void KateSessionManageDialog::rename ()
 
   if (name.isEmpty())
   {
-    KMessageBox::error (0, i18n("To save a session, you must specify a name."), i18n ("Missing Session Name"));
+    KMessageBox::sorry (this, i18n("To save a session, you must specify a name."), i18n ("Missing Session Name"));
     return;
   }
 
-  item->session->rename (name);
-  updateSessionList ();
+  if (item->session->rename (name))
+    updateSessionList ();
+  else
+    KMessageBox::sorry(this,i18n("The session could not be renamed to \"%1\", there already exists another session with the same name").arg(name),i18n("Session Renaming"));
+  
 }
 
 void KateSessionManageDialog::del ()
 {
   KateSessionChooserItem *item = (KateSessionChooserItem *) m_sessions->selectedItem ();
 
-  if (!item || item->session->sessionFileRelative() == "default.katesession")
+  if (!item || item->session->sessionFileRelative() == KateSessionManager::self()->defaultSessionFileName())
     return;
 
   QFile::remove (item->session->sessionFile());

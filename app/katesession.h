@@ -49,10 +49,9 @@ class KateSession  : public KShared
     /**
      * create a session from given file
      * @param fileName session filename, relative
-     * @param name session name
      * @param manager pointer to the manager
      */
-    KateSession (KateSessionManager *manager, const QString &fileName, const QString &name);
+    KateSession (KateSessionManager *manager, const QString &fileName);
 
     /**
      * init the session object, after construction or create
@@ -192,12 +191,6 @@ class KateSessionManager : public QObject
     void activateSession (KateSession::Ptr session, bool closeLast = true, bool saveLast = true, bool loadNew = true);
 
     /**
-     * create a new session
-     * @param name session name
-     */
-    KateSession::Ptr createSession (const QString &name);
-
-    /**
      * return session with given name
      * if no existing session matches, create new one with this name
      * @param name session name
@@ -261,13 +254,15 @@ class KateSessionManager : public QObject
 
   private Q_SLOTS:
     void dirty (const QString &path);
-
+ 
   public:
     /**
      * trigger update of session list
      */
     void updateSessionList ();
 
+  public:
+     QString defaultSessionFileName(){return m_defaultSessionFileName;}
   private:
     /**
      * absolute path to dir in home dir where to store the sessions
@@ -283,6 +278,8 @@ class KateSessionManager : public QObject
      * current active session
      */
     KateSession::Ptr m_activeSession;
+    
+    QString m_defaultSessionFileName;
 };
 
 class KateSessionChooserTemplate {
