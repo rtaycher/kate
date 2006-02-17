@@ -496,7 +496,7 @@ void KateFileListItem::paintCell( QPainter *painter, const QColorGroup & cg, int
         int v = hc-m_viewhistpos;
         int e = ec-m_edithistpos+1;
         e = e*e;
-        int n = QMAX(v + e, 1);
+        int n = qMax(v + e, 1);
         shade.setRgb(
             ((shade.red()*v) + (eshade.red()*e))/n,
             ((shade.green()*v) + (eshade.green()*e))/n,

@@ -575,7 +575,7 @@ bool Kate::Private::Plugin::KateFileSelector::eventFilter( QObject* o, QEvent *e
 /* FIXME Q3ListBox *lb = cmbPath->listBox();
   if ( o == lb && e->type() == QEvent::Show ) {
     int add = lb->height() < lb->contentsHeight() ? lb->verticalScrollBar()->width() : 0;
-    int w = QMIN( mainwin->width(), lb->contentsWidth() + add );
+    int w = qMin( mainwin->width(), lb->contentsWidth() + add );
     lb->resize( w, lb->height() );
     // TODO - move the listbox to a suitable place if nessecary
     // TODO - decide if it is worth caching the size while untill the contents
