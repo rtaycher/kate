@@ -361,7 +361,7 @@ void GrepTool::slotSearch()
     *childproc << "-maxdepth" << "1";
   if (!cmbFiles->currentText().isEmpty() )
   {
-    QStringList files = QStringList::split ( ",", cmbFiles->currentText(), FALSE );
+    QStringList files = QStringList::split ( ",", cmbFiles->currentText(), false );
     *childproc << "(";
     bool first = true;
     for ( QStringList::Iterator it = files.begin(); it != files.end(); ++it )
