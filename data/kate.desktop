@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 GenericName=Advanced Text Editor
+GenericName[fr]=Éditeur de texte avancé
 GenericName[x-test]=xxAdvanced Text Editorxx
 Name=Kate
 Name[x-test]=xxKatexx
