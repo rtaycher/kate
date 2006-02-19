@@ -9,7 +9,7 @@ externaltool_RunScript=Ctrl+Shift+X
 [externaltool_CVSLogforCurrentDocument]
 acname=externaltool_CVSLogforCurrentDocument
 cmdname=cvs-log
-command=if grep %filename %directory/CVS/Entries 2>&1>/dev/null ; then\n  cd %directory && cervisia -log %filename\nelse\n  kdialog --title Error --msgbox "The file '%filename' is not in CVS."\nfi
+command=if grep %filename %directory/CVS/Entries 2>&1 >/dev/null ; then\n  cd %directory && cervisia -log %filename\nelse\n  kdialog --title Error --msgbox "The file '%filename' is not in CVS."\nfi
 executable=cervisia
 icon=cervisia
 mimetypes=
