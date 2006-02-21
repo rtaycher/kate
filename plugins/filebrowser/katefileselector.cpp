@@ -286,6 +286,9 @@ Kate::Private::Plugin::KateFileSelector::~KateFileSelector()
 void Kate::Private::Plugin::KateFileSelector::readConfig(KConfig *config, const QString & name)
 {
   kDebug()<<"===================================================================Kate::Private::Plugin::KateFileSelector::readConfig"<<endl;
+#ifdef __GNUC__
+#warning THIS WILL CRASH - setViewConfig keeps the pointer to the KConfigGroup! That API needs to be revised.
+#endif
   KConfigGroup confGroup(config, name + ":view");
   dir->setViewConfig(&confGroup );
   KConfigGroup confDirGroup(config, name + ":dir");
