@@ -286,8 +286,10 @@ Kate::Private::Plugin::KateFileSelector::~KateFileSelector()
 void Kate::Private::Plugin::KateFileSelector::readConfig(KConfig *config, const QString & name)
 {
   kDebug()<<"===================================================================Kate::Private::Plugin::KateFileSelector::readConfig"<<endl;
-  dir->setViewConfig( config, name + ":view" );
-  dir->readConfig(config, name + ":dir");
+  KConfigGroup confGroup(config, name + ":view");
+  dir->setViewConfig(&confGroup );
+  KConfigGroup confDirGroup(config, name + ":dir");
+  dir->readConfig(&confDirGroup);
   dir->setView( KFile::Default );
   dir->view()->setSelectionMode(KFile::Multi);
   config->setGroup( name );
@@ -349,7 +351,8 @@ void Kate::Private::Plugin::KateFileSelector::setupToolbar( KConfig *config )
 
 void Kate::Private::Plugin::KateFileSelector::writeConfig(KConfig *config, const QString & name)
 {
-  dir->writeConfig(config,name + ":dir");
+  KConfigGroup confGroup(config,name + ":dir");
+  dir->writeConfig(&confGroup);
 
   config->setGroup( name );
   config->writeEntry( "pathcombo history len", cmbPath->maxItems() );
