@@ -495,7 +495,7 @@ void Kate::Private::Plugin::KateFileSelector::dirFinishedLoading()
 */
 void Kate::Private::Plugin::KateFileSelector::btnFilterClick()
 {
-  if ( !btnFilter->isOn() ) {
+  if ( !btnFilter->isChecked() ) {
     slotFilterChange( QString() );
   }
   else {
