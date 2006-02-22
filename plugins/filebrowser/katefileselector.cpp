@@ -398,7 +398,7 @@ void Kate::Private::Plugin::KateFileSelector::slotFilterChange( const QString & 
     lastFilter = f;
     btnFilter->setToolTip( i18n("Clear filter") );
   }
-  btnFilter->setOn( !empty );
+  btnFilter->setChecked( !empty );
   dir->updateDir();
   // this will be never true after the filter has been used;)
   btnFilter->setEnabled( !( empty && lastFilter.isEmpty() ) );
