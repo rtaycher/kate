@@ -386,7 +386,7 @@ void KateViewSpaceContainer::slotPendingDocumentNameChanged() {
           {
             c = m_pendingDocument->url().prettyURL();
           }
-          setCaption(KStringHandler::lsqueeze(c,32));
+          setWindowTitle(KStringHandler::lsqueeze(c,32));
 }
 
 void KateViewSpaceContainer::splitViewSpace( KateViewSpace* vs,

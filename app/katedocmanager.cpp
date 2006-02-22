@@ -423,7 +423,7 @@ void KateDocManager::restoreDocumentList (KConfig* config)
         0,
         count);
 
-  pd->setCaption (KateApp::self()->makeStdCaption(i18n("Starting Up")));
+  pd->setWindowTitle (KateApp::self()->makeStdCaption(i18n("Starting Up")));
 
   bool first = true;
   for (unsigned int i=0; i < count; i++)
