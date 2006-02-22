@@ -234,7 +234,7 @@ void KateViewManager::activateNextTab()
 {
   if( m_mainWindow->tabWidget()->count() <= 1 ) return;
 
-  int iTab = m_mainWindow->tabWidget()->currentPageIndex();
+  int iTab = m_mainWindow->tabWidget()->currentIndex();
 
   iTab++;
 
@@ -248,7 +248,7 @@ void KateViewManager::activatePrevTab()
 {
   if( m_mainWindow->tabWidget()->count() <= 1 ) return;
 
-  int iTab = m_mainWindow->tabWidget()->currentPageIndex();
+  int iTab = m_mainWindow->tabWidget()->currentIndex();
 
   iTab--;
 
@@ -466,7 +466,7 @@ void KateViewManager::saveViewConfiguration(KConfig *config,const QString& group
 {
   config->setGroup(group);
   config->writeEntry("ViewSpaceContainers",m_viewSpaceContainerList.count());
-  config->writeEntry("Active ViewSpaceContainer", m_mainWindow->tabWidget()->currentPageIndex());
+  config->writeEntry("Active ViewSpaceContainer", m_mainWindow->tabWidget()->currentIndex());
   for (uint i=0;i<m_viewSpaceContainerList.count();i++) {
     m_viewSpaceContainerList.at(i)->saveViewConfiguration(config,group+QString(":ViewSpaceContainer-%1:").arg(i));
   }
@@ -484,7 +484,7 @@ void KateViewManager::restoreViewConfiguration (KConfig *config, const QString& 
     m_viewSpaceContainerList.at(i)->restoreViewConfiguration(config,group+QString(":ViewSpaceContainer-%1:").arg(i));
   }
 
-  if (activeOne != m_mainWindow->tabWidget()->currentPageIndex())
+  if (activeOne != m_mainWindow->tabWidget()->currentIndex())
     m_mainWindow->tabWidget()->setCurrentPage (activeOne);
 
   updateViewSpaceActions();
