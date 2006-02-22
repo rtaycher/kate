@@ -72,7 +72,7 @@ KateViewManager::KateViewManager (KateMainWindow *parent)
   m_currentContainer=0;
  connect(m_mainWindow->tabWidget(),SIGNAL(currentChanged(QWidget*)),this,SLOT(tabChanged(QWidget*)));
  slotNewTab();
- tabChanged(m_mainWindow->tabWidget()->currentPage());
+ tabChanged(m_mainWindow->tabWidget()->currentWidget());
 
   // no memleaks
   m_viewSpaceContainerList.setAutoDelete(true);
