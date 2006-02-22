@@ -234,7 +234,7 @@ KateExternalToolAction::KateExternalToolAction( KActionCollection *parent,
 {
   //setText( t->name );
   //if ( ! t->icon.isEmpty() )
-  //  setIconSet( SmallIconSet( t->icon ) );
+  //  setIcon( SmallIconSet( t->icon ) );
 
   //connect( this ,SIGNAL(activated()), this, SLOT(slotRun()) );
 }
@@ -513,7 +513,7 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
 
   QToolButton *btnMTW = new QToolButton(w);
   lo->addWidget( btnMTW, 4, 3 );
-  btnMTW->setIconSet(QIcon(SmallIcon("wizard")));
+  btnMTW->setIcon(QIcon(SmallIcon("wizard")));
   connect(btnMTW, SIGNAL(clicked()), this, SLOT(showMTDlg()));
   btnMTW->setWhatsThis(i18n(
       "Click for a dialog that can help you creating a list of mimetypes.") );
