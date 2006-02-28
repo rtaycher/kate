@@ -5,7 +5,7 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 ########### next target ###############
 
-set(katefilebrowserplugin_PART_SRCS katefileselector.cpp kbookmarkhandler.cpp )
+set(katefilebrowserplugin_PART_SRCS katefileselector.cpp kbookmarkhandler.cpp ${kateinterfacesprivate_STAT_SRCS})
 
 kde4_automoc(${katefilebrowserplugin_PART_SRCS})
 
@@ -13,7 +13,7 @@ kde4_add_plugin(katefilebrowserplugin ${katefilebrowserplugin_PART_SRCS})
 
 kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} katefilebrowserplugin )
 
-target_link_libraries(katefilebrowserplugin  ${QT_AND_KDECORE_LIBS} kateinterfaces )
+target_link_libraries(katefilebrowserplugin  ${QT_AND_KDECORE_LIBS} kio kdeui )
 
 install_targets(${LIB_INSTALL_DIR}/kde4 katefilebrowserplugin )
 
