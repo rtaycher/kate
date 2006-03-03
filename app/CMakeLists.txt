@@ -5,7 +5,7 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 ########### next target ###############
 
-set(kateinterfaces_LIB_SRCS 
+set(kateinterfaces_LIB_SRCS  ${kateinterfacesprivate_STAT_SRCS}
    kateapp.cpp 
    kateconfigdialog.cpp 
    kateconfigplugindialogpage.cpp 
@@ -36,7 +36,7 @@ kde4_add_dcop_skels(kateinterfaces_LIB_SRCS katemainwindowiface.h katedocmanager
 
 kde4_add_library(kateinterfaces SHARED ${kateinterfaces_LIB_SRCS})
 
-target_link_libraries(kateinterfaces  ${QT_AND_KDECORE_LIBS} kateinterfacesprivate kutils )
+target_link_libraries(kateinterfaces  ${LIB_KDE3SUPPORT} DCOP ${QT_QTXML_LIBRARY} ktexteditor  )
 
 set_target_properties(kateinterfaces PROPERTIES VERSION 1.0.0 SOVERSION 1 )
 install_targets(${LIB_INSTALL_DIR} kateinterfaces )
