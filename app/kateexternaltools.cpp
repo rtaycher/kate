@@ -722,7 +722,7 @@ void KateExternalToolsConfigWidget::apply()
     for ( QStringList::iterator it1 = removed.begin(); it1 != removed.end(); ++it1 )
     {
       if ( ! config->hasGroup( *it1 ) )
-        removed.remove( *it1 );
+        removed.removeAll( *it1 );
     }
     config->writeEntry( "removed", removed );
   }

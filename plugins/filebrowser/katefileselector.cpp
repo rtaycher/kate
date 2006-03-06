@@ -469,7 +469,7 @@ void Kate::Private::Plugin::KateFileSelector::cmbPathReturnPressed( const QStrin
     typedURL.setPass( QString() );
 
   QStringList urls = cmbPath->urls();
-  urls.remove( typedURL.url() );
+  urls.removeAll( typedURL.url() );
   urls.prepend( typedURL.url() );
   cmbPath->setURLs( urls, KUrlComboBox::RemoveBottom );
   dir->setFocus();

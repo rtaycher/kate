@@ -447,7 +447,7 @@ void GrepTool::finish()
 
   cmbText = cmbFiles->currentText();
   // remove and prepend, so that the mose recently used item is on top
-  itemsRemoved = lastSearchFiles.remove(cmbText) > 0;
+  itemsRemoved = lastSearchFiles.removeAll(cmbText) > 0;
   lastSearchFiles.prepend(cmbText);
   if (itemsRemoved) // combo box already contained item -> remove it first
   {
