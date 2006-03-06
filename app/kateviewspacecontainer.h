@@ -26,9 +26,9 @@
 #include <ktexteditor/view.h>
 #include <ktexteditor/document.h>
 
-#include "katemdi.h"
+#include <QSplitter>
 
-#include <Q3PtrList>
+#include <QList>
 #include <QHash>
 
 class KConfig;
@@ -46,7 +46,7 @@ class KateViewSpaceContainer: public QSplitter
 
     ~KateViewSpaceContainer ();
 
-    inline Q3PtrList<KTextEditor::View> &viewList () { return m_viewList; };
+    inline QList<KTextEditor::View*> &viewList () { return m_viewList; };
 
   public:
     /* This will save the splitter configuration */
@@ -86,8 +86,8 @@ class KateViewSpaceContainer: public QSplitter
     KTextEditor::View* activeView ();
     KateViewSpace* activeViewSpace ();
 
-    uint viewCount ();
-    uint viewSpaceCount ();
+    int viewCount () const;
+    int viewSpaceCount () const;
 
     bool isViewActivationBlocked(){return m_blockViewCreationAndActivation;};
 
@@ -104,11 +104,11 @@ class KateViewSpaceContainer: public QSplitter
     void slotPendingDocumentNameChanged();
 
     void documentCreated (KTextEditor::Document *doc);
-    void documentDeleted (uint docNumber);
+    void documentDeleted (KTextEditor::Document *doc);
 
   public Q_SLOTS:
      /* Splits a KateViewSpace into two.
-      * The operation is performed by creating a KateMDI::Splitter in the parent of the KateViewSpace to be split,
+      * The operation is performed by creating a QSplitter in the parent of the KateViewSpace to be split,
       * which is then moved to that splitter. Then a new KateViewSpace is created and added to the splitter,
       * and a KateView is created to populate the new viewspace. The new KateView is made the active one,
       * because createView() does that.
@@ -144,12 +144,13 @@ class KateViewSpaceContainer: public QSplitter
     void activatePrevView();
 
   Q_SIGNALS:
+    void statusChanged(KTextEditor::View *, int, int, int, bool, int, const QString&);
     void viewChanged ();
 
   private:
     KateViewManager *m_viewManager;
-    Q3PtrList<KateViewSpace> m_viewSpaceList;
-    Q3PtrList<KTextEditor::View> m_viewList;
+    QList<KateViewSpace*> m_viewSpaceList;
+    QList<KTextEditor::View*> m_viewList;
     QHash<KTextEditor::View*, bool> m_activeStates;
 
     bool m_blockViewCreationAndActivation;
