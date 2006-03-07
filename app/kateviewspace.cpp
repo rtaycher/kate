@@ -109,7 +109,7 @@ void KateViewSpace::addView(KTextEditor::View* v, bool show)
   }
 
   // signals for the statusbar
-  connect(v, SIGNAL(cursorPositionChanged(KTextEditor::View *)), mStatusBar, SLOT(cursorPositionChanged(KTextEditor::View *)));
+  connect(v, SIGNAL(cursorPositionChanged(KTextEditor::View *, const KTextEditor::Cursor&)), mStatusBar, SLOT(cursorPositionChanged(KTextEditor::View *)));
   connect(v, SIGNAL(viewModeChanged(KTextEditor::View *)), mStatusBar, SLOT(viewModeChanged(KTextEditor::View *)));
   connect(v, SIGNAL(selectionChanged (KTextEditor::View *)), mStatusBar, SLOT(selectionChanged (KTextEditor::View *)));
   connect(v, SIGNAL(informationMessage (KTextEditor::View *, const QString &)), mStatusBar, SLOT(informationMessage (KTextEditor::View *, const QString &)));
@@ -333,9 +333,10 @@ void KateVSStatusBar::updateStatus ()
   if (!m_viewSpace->currentView())
     return;
 
-  viewModeChanged (m_viewSpace->currentView());
-  cursorPositionChanged (m_viewSpace->currentView());
-  selectionChanged (m_viewSpace->currentView());
+  KTextEditor::View* view = m_viewSpace->currentView();
+  viewModeChanged (view);
+  cursorPositionChanged (view);
+  selectionChanged (view);
   modifiedChanged ();
   documentNameChanged ();
 }
