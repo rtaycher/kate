@@ -36,8 +36,6 @@
 #include <kstatusbar.h>
 #include <kvbox.h>
 
-class KVSSBSep;
-
 class KConfig;
 class KSqueezedTextLabel;
 class KateViewSpaceContainer;
@@ -127,7 +125,6 @@ class KateViewSpace : public KVBox
     /// mViewList.count() == stack.count() is always true!
     QList<KTextEditor::View*> mViewList;
     int mViewCount;
-    KVSSBSep *sep;
     KateViewSpaceContainer *m_viewManager;
     QString m_group;
 
