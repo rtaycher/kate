@@ -50,41 +50,6 @@
 #include <QEvent>
 #include <QMouseEvent>
 
-//BEGIN KVSSBSep
-/*
-   "KateViewSpaceStatusBarSeparator"
-   A 2 px line to separate the statusbar from the view.
-   It is here to compensate for the lack of a frame in the view,
-   I think Kate looks very nice this way, as QScrollView with frame
-   looks slightly clumsy...
-   Slight 3D effect. I looked for suitable QStyle props or methods,
-   but found none, though maybe it should use QStyle::PM_DefaultFrameWidth
-   for height (TRY!).
-   It does look a bit funny with flat styles (Light, .Net) as is,
-   but there are on methods to paint panel lines separately. And,
-   those styles tends to look funny on their own, as a light line
-   in a 3D frame next to a light contents widget is not functional.
-   Also, QStatusBar is up to now completely ignorant to style.
-   -anders
-*/
-class KVSSBSep : public QWidget {
-public:
-  KVSSBSep( KateViewSpace *parent=0) : QWidget(parent)
-  {
-    setFixedHeight( 2 );
-  }
-protected:
-  void paintEvent( QPaintEvent *e )
-  {
-    QPainter p( this );
-    p.setPen( colorGroup().shadow() );
-    p.drawLine( e->rect().left(), 0, e->rect().right(), 0 );
-    p.setPen( ((KateViewSpace*)parentWidget())->isActiveSpace() ? colorGroup().light() : colorGroup().midlight() );
-    p.drawLine( e->rect().left(), 1, e->rect().right(), 1 );
-  }
-};
-//END KVSSBSep
-
 //BEGIN KateViewSpace
 KateViewSpace::KateViewSpace( KateViewSpaceContainer *viewManager,
                               QWidget* parent, const char* name )
@@ -93,13 +58,10 @@ KateViewSpace::KateViewSpace( KateViewSpaceContainer *viewManager,
 {
   setObjectName(name);
 
-  mViewList.setAutoDelete(false);
-
   stack = new QStackedWidget( this );
   stack->setFocus();
   stack->setSizePolicy (QSizePolicy (QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding));
 
-  //sep = new KVSSBSep( this );
   mStatusBar = new KateVSStatusBar(this);
   mIsActiveSpace = false;
   mViewCount = 0;
@@ -144,7 +106,7 @@ void KateViewSpace::addView(KTextEditor::View* v, bool show)
     showView( v );
   }
   else {
-    KTextEditor::View* c = mViewList.current();
+    KTextEditor::View* c = (KTextEditor::View*)stack->currentWidget();
     mViewList.prepend( v );
     showView( c );
   }
@@ -163,29 +125,29 @@ void KateViewSpace::removeView(KTextEditor::View* v)
 {
   bool active = ( v == currentView() );
 
-  mViewList.remove (v);
+  mViewList.removeAt ( mViewList.indexOf ( v ) );
   stack->removeWidget (v);
 
   if ( ! active )
     return;
 
-  if (currentView() != 0L)
-    showView(mViewList.current());
-  else if (mViewList.count() > 0)
+  // the last recently used viewspace is always at the end of the list
+  if (!mViewList.isEmpty())
     showView(mViewList.last());
 }
 
 bool KateViewSpace::showView(KTextEditor::Document *document)
 {
-  Q3PtrListIterator<KTextEditor::View> it (mViewList);
-  it.toLast();
-  for( ; it.current(); --it )
+  QList<KTextEditor::View*>::const_iterator it = mViewList.constEnd();
+  while( it != mViewList.constBegin() )
   {
-    if (it.current()->document() == document)
+    --it;
+    if ((*it)->document() == document)
     {
-      KTextEditor::View* kv = it.current();
+      KTextEditor::View* kv = *it;
 
-      mViewList.removeRef( kv );
+      // move viewspace to end of list
+      mViewList.removeAt( mViewList.indexOf(kv) );
       mViewList.append( kv );
       stack->setCurrentWidget( kv );
       kv->show();
@@ -195,16 +157,15 @@ bool KateViewSpace::showView(KTextEditor::Document *document)
       return true;
     }
   }
-   return false;
+  return false;
 }
 
 
 KTextEditor::View* KateViewSpace::currentView()
 {
-  if (mViewList.count() > 0)
-    return (KTextEditor::View*)stack->currentWidget();
-
-  return 0L;
+  // stack->currentWidget() returns NULL, if stack.count() == 0,
+  // i.e. if mViewList.isEmpty()
+  return (KTextEditor::View*)stack->currentWidget();
 }
 
 bool KateViewSpace::isActiveSpace()
@@ -220,13 +181,12 @@ void KateViewSpace::setActive( bool active, bool )
   QPalette pal( palette() );
   if ( ! active )
   {
-    pal.setColor( QColorGroup::Background, pal.active().mid() );
-    pal.setColor( QColorGroup::Light, pal.active().midlight() );
+    pal.setColor( QColorGroup::Window, pal.color(QPalette::Window).dark() );
+    pal.setColor( QColorGroup::Light, pal.color(QPalette::Light).light() );
   }
 
   mStatusBar->setPalette( pal );
   mStatusBar->update();
-  //sep->update();
 }
 
 bool KateViewSpace::event( QEvent *e )
@@ -250,26 +210,25 @@ void KateViewSpace::saveConfig ( KConfig* config, int myIndex ,const QString& vi
   if (currentView())
     config->writeEntry( "Active View", currentView()->document()->url().prettyURL() );
 
-  // Save file list, includeing cursor position in this instance.
-  Q3PtrListIterator<KTextEditor::View> it(mViewList);
-
+  // Save file list, including cursor position in this instance.
   int idx = 0;
-  for (; it.current(); ++it)
+  for (QList<KTextEditor::View*>::iterator it = mViewList.begin();
+       it != mViewList.end(); ++it)
   {
-    if ( !it.current()->document()->url().isEmpty() )
+    if ( !(*it)->document()->url().isEmpty() )
     {
       config->setGroup( group );
-      config->writeEntry( QString("View %1").arg( idx ), it.current()->document()->url().prettyURL() );
+      config->writeEntry( QString("View %1").arg( idx ), (*it)->document()->url().prettyURL() );
 
       // view config, group: "ViewSpace <n> url"
-      QString vgroup = QString("%1 %2").arg(group).arg(it.current()->document()->url().prettyURL());
+      QString vgroup = QString("%1 %2").arg(group).arg((*it)->document()->url().prettyURL());
       config->setGroup( vgroup );
 
-      if (KTextEditor::SessionConfigInterface *iface = qobject_cast<KTextEditor::SessionConfigInterface *>(it.current()))
+      if (KTextEditor::SessionConfigInterface *iface = qobject_cast<KTextEditor::SessionConfigInterface *>(*it))
           iface->writeSessionConfig( config );
     }
 
-    idx++;
+    ++idx;
   }
 }
 
@@ -310,27 +269,27 @@ KateVSStatusBar::KateVSStatusBar ( KateViewSpace *parent)
     m_viewSpace( parent )
 {
   m_lineColLabel = new QLabel( this );
-  addWidget( m_lineColLabel, 0, false );
+  addWidget( m_lineColLabel, 0 );
   m_lineColLabel->setAlignment( Qt::AlignCenter );
   m_lineColLabel->installEventFilter( this );
 
   m_modifiedLabel = new QLabel( QString("   "), this );
-  addWidget( m_modifiedLabel, 0, false );
+  addWidget( m_modifiedLabel, 0 );
   m_modifiedLabel->setAlignment( Qt::AlignCenter );
   m_modifiedLabel->installEventFilter( this );
 
   m_insertModeLabel = new QLabel( i18n(" INS "), this );
-  addWidget( m_insertModeLabel, 0, false );
+  addWidget( m_insertModeLabel, 0 );
   m_insertModeLabel->setAlignment( Qt::AlignCenter );
   m_insertModeLabel->installEventFilter( this );
 
   m_selectModeLabel = new QLabel( i18n(" NORM "), this );
-  addWidget( m_selectModeLabel, 0, false );
+  addWidget( m_selectModeLabel, 0 );
   m_selectModeLabel->setAlignment( Qt::AlignCenter );
   m_selectModeLabel->installEventFilter( this );
 
   m_fileNameLabel=new KSqueezedTextLabel( this );
-  addWidget( m_fileNameLabel, 1, true );
+  addPermanentWidget( m_fileNameLabel, 1 );
   m_fileNameLabel->setMinimumSize( 0, 0 );
   m_fileNameLabel->setSizePolicy(QSizePolicy( QSizePolicy::Ignored, QSizePolicy::Fixed ));
   m_fileNameLabel->setAlignment( /*Qt::AlignRight*/Qt::AlignLeft );

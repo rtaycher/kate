@@ -27,8 +27,8 @@
 #include <ktexteditor/document.h>
 #include <ktexteditor/modificationinterface.h>
 
-#include <q3ptrlist.h>
-#include <qwidget.h>
+#include <QWidget>
+#include <QList>
 //Added by qt3to4:
 #include <QPixmap>
 #include <QLabel>
@@ -121,7 +121,11 @@ class KateViewSpace : public KVBox
     QLabel* l;
     QPixmap i_active;
     QPixmap i_empty;
-    Q3PtrList<KTextEditor::View> mViewList;
+    /// This list is necessary to only save the order of the accessed views.
+    /// The order is important. The least recently viewed view is always the
+    /// last entry in the list, i.e. mViewList.last()
+    /// mViewList.count() == stack.count() is always true!
+    QList<KTextEditor::View*> mViewList;
     int mViewCount;
     KVSSBSep *sep;
     KateViewSpaceContainer *m_viewManager;
