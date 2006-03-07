@@ -33,7 +33,6 @@
 #include <qmap.h>
 #include <qsplitter.h>
 #include <qpixmap.h>
-#include <q3ptrlist.h>
 //Added by qt3to4:
 #include <QList>
 #include <QEvent>
@@ -83,7 +82,7 @@ class GUIClient : public QObject, public KXMLGUIClient
   private:
     MainWindow *m_mw;
     KToggleAction *m_showSidebarsAction;
-    Q3PtrList<KAction> m_toolViewActions;
+    QList<KAction*> m_toolViewActions;
     QMap<ToolView*, KAction*> m_toolToAction;
     KActionMenu *m_toolMenu;
 };

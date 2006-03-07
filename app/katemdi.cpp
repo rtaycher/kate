@@ -43,7 +43,6 @@
 //Added by qt3to4:
 #include <QContextMenuEvent>
 #include <QPixmap>
-#include <QList>
 #include <QChildEvent>
 
 namespace KateMDI {
@@ -158,7 +157,7 @@ void GUIClient::registerToolView (ToolView *tv)
   cfg->setGroup( _grp );
 
   KToggleAction *a = new ToggleToolViewAction(i18n("Show %1").arg(tv->text),
-    sc,tv, actionCollection(), aname.latin1() );
+    sc,tv, actionCollection(), aname.toLatin1() );
 
   a->setCheckedState(i18n("Hide %1").arg(tv->text));
 
@@ -177,7 +176,7 @@ void GUIClient::unregisterToolView (ToolView *tv)
   if (!a)
     return;
 
-  m_toolViewActions.remove(a);
+  m_toolViewActions.removeAt( m_toolViewActions.indexOf(a) );
   delete a;
 
   m_toolToAction.remove (tv);
@@ -242,7 +241,7 @@ bool ToolView::toolVisible () const
 void ToolView::childEvent ( QChildEvent *ev )
 {
   // set the widget to be focus proxy if possible
-  if (ev->inserted() && ev->child() && qobject_cast<QWidget *>(ev->child()))
+  if ((ev->type()==QEvent::ChildAdded) && qobject_cast<QWidget *>(ev->child()))
     setFocusProxy (qobject_cast<QWidget *>(ev->child()));
 
   KVBox::childEvent (ev);
@@ -304,7 +303,7 @@ ToolView *Sidebar::addWidget (const QPixmap &icon, const QString &text, ToolView
   else
   {
     widget->hide ();
-    widget->reparent (m_ownSplit, 0, QPoint());
+    widget->setParent (m_ownSplit);
     widget->m_sidebar = this;
   }
 
@@ -332,7 +331,7 @@ bool Sidebar::removeWidget (ToolView *widget)
 
   m_idToWidget.remove (m_widgetToId[widget]);
   m_widgetToId.remove (widget);
-  m_toolviews.remove (widget);
+  m_toolviews.removeAt (m_toolviews.indexOf (widget));
 
   bool anyVis = false;
   Q3IntDictIterator<ToolView> it( m_idToWidget );
@@ -587,8 +586,8 @@ void Sidebar::restoreSession (KConfig *config)
       connect(tab(newId),SIGNAL(clicked(int)),this,SLOT(tabClicked(int)));
       tab(newId)->installEventFilter(this);
 
-      // reshuffle in splitter
-      m_ownSplit->moveToLast (tv);
+      // reshuffle in splitter: move to last
+      m_ownSplit->addWidget(tv);
     }
   }
 
@@ -666,7 +665,7 @@ MainWindow::MainWindow (QWidget* parentWidget, const char* name)
   m_sidebars[KMultiTabBar::Left]->setSplitter (m_hSplitter);
 
   KVBox *vb = new KVBox (m_hSplitter);
-  m_hSplitter->setCollapsible(vb, false);
+  m_hSplitter->setCollapsible( m_hSplitter->indexOf(vb), false);
 
   m_sidebars[KMultiTabBar::Top] = new Sidebar (KMultiTabBar::Top, this, vb);
 
@@ -678,7 +677,7 @@ MainWindow::MainWindow (QWidget* parentWidget, const char* name)
   m_centralWidget = new KVBox (m_vSplitter);
   m_centralWidget->layout()->setSpacing( 0 );
   m_centralWidget->layout()->setMargin( 0 );
-  m_vSplitter->setCollapsible(m_centralWidget, false);
+  m_vSplitter->setCollapsible( m_vSplitter->indexOf(m_centralWidget), false);
 
   m_sidebars[KMultiTabBar::Bottom] = new Sidebar (KMultiTabBar::Bottom, this, vb);
   m_sidebars[KMultiTabBar::Bottom]->setSplitter (m_vSplitter);
@@ -748,7 +747,7 @@ void MainWindow::toolViewDeleted (ToolView *widget)
   widget->sidebar()->removeWidget (widget);
 
   m_idToWidget.remove (widget->id);
-  m_toolviews.remove (widget);
+  m_toolviews.removeAt ( m_toolviews.indexOf(widget) );
 }
 
 void MainWindow::setSidebarsVisible( bool visible )
