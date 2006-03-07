@@ -105,15 +105,15 @@ bool KateViewSpaceContainer::createView ( KTextEditor::Document *doc )
   if (!doc)
     doc = KateDocManager::self()->createDoc ();
 
-  // create view
+  // create view, registers its XML gui itself
   KTextEditor::View *view = (KTextEditor::View *) doc->createView (this);
 
   m_viewList.append (view);
   m_activeStates[view] = false;
 
   // disable settings dialog action
-  view->actionCollection()->remove (view->actionCollection()->action( "set_confdlg" ));
-  view->actionCollection()->remove (view->actionCollection()->action( "editor_options" ));
+  delete view->actionCollection()->action( "set_confdlg" );
+  delete view->actionCollection()->action( "editor_options" );
 
   // popup menu
   QMenu *menu = qobject_cast<QMenu*> (mainWindow()->factory()->container("ktexteditor_popup", mainWindow()));
