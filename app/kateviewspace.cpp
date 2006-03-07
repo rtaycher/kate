@@ -40,10 +40,8 @@
 
 #include <QStackedWidget>
 #include <qpainter.h>
-#include <qlabel.h>
 #include <qcursor.h>
 #include <QMenu>
-#include <qpixmap.h>
 #include <qtimer.h>
 //Added by qt3to4:
 #include <QPaintEvent>
@@ -64,7 +62,6 @@ KateViewSpace::KateViewSpace( KateViewSpaceContainer *viewManager,
 
   mStatusBar = new KateVSStatusBar(this);
   mIsActiveSpace = false;
-  mViewCount = 0;
 
   setMinimumWidth (mStatusBar->minimumWidth());
   m_group.clear();

@@ -116,15 +116,11 @@ class KateViewSpace : public KVBox
   private:
     bool mIsActiveSpace;
     KateVSStatusBar* mStatusBar;
-    QLabel* l;
-    QPixmap i_active;
-    QPixmap i_empty;
     /// This list is necessary to only save the order of the accessed views.
     /// The order is important. The least recently viewed view is always the
     /// last entry in the list, i.e. mViewList.last()
     /// mViewList.count() == stack.count() is always true!
     QList<KTextEditor::View*> mViewList;
-    int mViewCount;
     KateViewSpaceContainer *m_viewManager;
     QString m_group;
 
