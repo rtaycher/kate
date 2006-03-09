@@ -44,7 +44,7 @@ install_targets(${LIB_INSTALL_DIR} kateinterfaces )
 
 ########### next target ###############
 
-set(kate_KDEINIT_SRCS katemain.cpp )
+set(kate_KDEINIT_SRCS katemain.cpp ${kateinterfaces_LIB_SRCS})
 
 kde4_automoc(${kate_KDEINIT_SRCS})
 

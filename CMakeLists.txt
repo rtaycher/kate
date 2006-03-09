@@ -1,14 +1,6 @@
 kde4_header()
 
-add_subdirectory( interfaces ) 
-add_subdirectory( app ) 
-add_subdirectory( plugins ) 
-add_subdirectory( data ) 
-add_subdirectory( pics ) 
-
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
-
-set( kateinterfacesprivate_STAT_SRCS 
+set( kateinterfacesprivate_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/kate/interfaces/application.cpp
   ${CMAKE_SOURCE_DIR}/kate/interfaces/mainwindow.cpp
   ${CMAKE_SOURCE_DIR}/kate/interfaces/documentmanager.cpp
@@ -16,6 +8,15 @@ set( kateinterfacesprivate_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/kate/interfaces/plugin.cpp
   ${CMAKE_SOURCE_DIR}/kate/interfaces/pluginconfigpageinterface.cpp
 )
+include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+
+
+add_subdirectory( interfaces ) 
+add_subdirectory( app ) 
+add_subdirectory( plugins ) 
+add_subdirectory( data ) 
+add_subdirectory( pics ) 
+
 
 ########### install files ###############
 
