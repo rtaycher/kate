@@ -62,7 +62,7 @@ void KatePluginListItem::stateChange(bool b)
 }
 
 KatePluginListView::KatePluginListView(QWidget *parent)
-  : KListView(parent)
+  : K3ListView(parent)
 {
 }
 

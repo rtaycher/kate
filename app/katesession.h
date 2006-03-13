@@ -32,7 +32,7 @@
 class KateSessionManager;
 class KActionCollection;
 class KDirWatch;
-class KListView;
+class K3ListView;
 class KPushButton;
 
 class QCheckBox;
@@ -338,7 +338,7 @@ class KateSessionChooser : public KDialog
     void slotProfilePopup();
   private:
     QTimer *m_delayTimer;
-    KListView *m_sessions;
+    K3ListView *m_sessions;
     QCheckBox *m_useLast;
     QList<KateSessionChooserTemplate> m_templates;
 };
@@ -370,7 +370,7 @@ class KateSessionOpenDialog : public KDialog
     void slotUser2 ();
 
   private:
-    KListView *m_sessions;
+    K3ListView *m_sessions;
 };
 
 class KateSessionManageDialog : public KDialog
@@ -409,7 +409,7 @@ class KateSessionManageDialog : public KDialog
     void updateSessionList ();
 
   private:
-    KListView *m_sessions;
+    K3ListView *m_sessions;
     KPushButton *m_rename;
     KPushButton *m_del;
 };

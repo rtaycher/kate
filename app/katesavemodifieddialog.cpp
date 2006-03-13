@@ -23,7 +23,7 @@
 //Added by qt3to4:
 #include <QPixmap>
 #include <QList>
-// perhaps later again #include <klistview.h>
+// perhaps later again #include <k3listview.h>
 #include <qtreewidget.h>
 #include <kguiitem.h>
 #include <kactivelabel.h>

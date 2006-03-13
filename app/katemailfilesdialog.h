@@ -51,7 +51,7 @@ class KateMailDialog : public KDialogBase {
   private Q_SLOTS:
     void slotShowButton();
   private:
-    class KListView *list;
+    class K3ListView *list;
     class QLabel *lInfo;
     KateMainWindow *mainWindow;
     class KVBox *mw;

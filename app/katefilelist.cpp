@@ -92,7 +92,7 @@ class ToolTip : public QToolTip
 KateFileList::KateFileList (KateMainWindow *main,
                             KateViewManager *_viewManager,
                             QWidget * parent)
-    :  KListView (parent)
+    :  K3ListView (parent)
     , m_sort( KateFileList::sortByID )
 {
   m_main = main;
@@ -167,7 +167,7 @@ void KateFileList::keyPressEvent(QKeyEvent *e) {
   }
   else
   {
-    KListView::keyPressEvent(e);
+    K3ListView::keyPressEvent(e);
   }
 }
 
@@ -180,12 +180,12 @@ void KateFileList::contentsMousePressEvent( QMouseEvent *e )
   if ( ! itemAt( contentsToViewport( e->pos() ) ) )
   return;
 
-  KListView::contentsMousePressEvent( e );
+  K3ListView::contentsMousePressEvent( e );
 }
 
 void KateFileList::resizeEvent( QResizeEvent *e )
 {
-  KListView::resizeEvent( e );
+  K3ListView::resizeEvent( e );
 
   // ### We may want to actually calculate the widest field,
   // since it's not automatically scrinked. If I add support for

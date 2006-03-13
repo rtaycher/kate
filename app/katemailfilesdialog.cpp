@@ -21,7 +21,7 @@
 #include "kateviewmanager.h"
 #include "katedocmanager.h"
 
-#include <klistview.h>
+#include <k3listview.h>
 #include <klocale.h>
 #include <kurl.h>
 
@@ -59,7 +59,7 @@ KateMailDialog::KateMailDialog( QWidget *parent, KateMainWindow  *mainwin )
         "<p>Press <strong>Mail...</strong> to email the current document."
         "<p>To select more documents to send, press <strong>Show All Documents&nbsp;&gt;&gt;</strong>."), mw );
   // TODO avoid untill needed - later
-  list = new KListView( mw );
+  list = new K3ListView( mw );
   list->addColumn( i18n("Name") );
   list->addColumn( i18n("URL") );
   KTextEditor::Document *currentDoc = mainWindow->viewManager()->activeView()->document();

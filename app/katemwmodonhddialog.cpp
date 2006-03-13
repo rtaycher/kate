@@ -25,7 +25,7 @@
 #include <ktexteditor/document.h>
 
 #include <kiconloader.h>
-#include <klistview.h>
+#include <k3listview.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kprocio.h>
@@ -43,7 +43,7 @@
 class KateDocItem : public Q3CheckListItem
 {
   public:
-    KateDocItem( KTextEditor::Document *doc, const QString &status, KListView *lv )
+    KateDocItem( KTextEditor::Document *doc, const QString &status, K3ListView *lv )
   : Q3CheckListItem( lv, doc->url().prettyURL(), CheckBox ),
         document( doc )
     {
@@ -89,7 +89,7 @@ KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const
   lo1->setStretchFactor( t, 1000 );
 
   // document list
-  lvDocuments = new KListView( w );
+  lvDocuments = new K3ListView( w );
   lvDocuments->addColumn( i18n("Filename") );
   lvDocuments->addColumn( i18n("Status on Disk") );
   lvDocuments->setSelectionMode( Q3ListView::Single );

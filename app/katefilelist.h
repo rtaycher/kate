@@ -27,7 +27,7 @@
 #include <ktexteditor/configpage.h>
 #include <ktexteditor/modificationinterface.h>
 
-#include <klistview.h>
+#include <k3listview.h>
 
 #include <qtooltip.h>
 #include <qcolor.h>
@@ -80,7 +80,7 @@ class KateFileListItem : public Q3ListViewItem
     int m_edithistpos; ///< this gets set by the list as needed
 };
 
-class KateFileList : public KListView
+class KateFileList : public K3ListView
 {
   Q_OBJECT
 

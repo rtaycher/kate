@@ -30,7 +30,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
-#include <klistview.h>
+#include <k3listview.h>
 #include <kinputdialog.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
@@ -576,7 +576,7 @@ void KateSessionManager::sessionManage ()
 class KateSessionChooserItem : public Q3ListViewItem
 {
   public:
-    KateSessionChooserItem (KListView *lv, KateSession::Ptr s)
+    KateSessionChooserItem (K3ListView *lv, KateSession::Ptr s)
      : Q3ListViewItem (lv, s->sessionName())
      , session (s)
     {
@@ -623,7 +623,7 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
   vb->setSpacing (KDialog::spacingHint());
   tll->addItem(vb);
   
-  m_sessions = new KListView (page);
+  m_sessions = new K3ListView (page);
   vb->addWidget(m_sessions);
   m_sessions->addColumn (i18n("Session Name"));
   m_sessions->addColumn (i18n("Open Documents"));
@@ -742,7 +742,7 @@ KateSessionOpenDialog::KateSessionOpenDialog (QWidget *parent)
   
   QVBoxLayout *vb = new QVBoxLayout ();
   hb->addItem(vb);*/
-  m_sessions = new KListView (this);
+  m_sessions = new K3ListView (this);
   m_sessions->setMinimumSize(400,200);
   setMainWidget(m_sessions);
   //vb->addWidget(m_sessions);
@@ -808,7 +808,7 @@ KateSessionManageDialog::KateSessionManageDialog (QWidget *parent)
   QHBoxLayout *hb = new QHBoxLayout (page);
   hb->setSpacing (KDialog::spacingHint());
 
-  m_sessions = new KListView (page);
+  m_sessions = new K3ListView (page);
   hb->addWidget(m_sessions);
   m_sessions->addColumn (i18n("Session Name"));
   m_sessions->addColumn (i18n("Open Documents"));

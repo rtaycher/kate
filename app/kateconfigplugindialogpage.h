@@ -23,13 +23,13 @@
 #include "katemain.h"
 #include "katepluginmanager.h"
 
-#include <klistview.h>
+#include <k3listview.h>
 
 #include <kvbox.h>
 
 class KatePluginListItem;
 
-class KatePluginListView : public KListView
+class KatePluginListView : public K3ListView
 {
   Q_OBJECT
 
