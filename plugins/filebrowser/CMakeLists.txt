@@ -5,7 +5,7 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 ########### next target ###############
 
-set(katefilebrowserplugin_PART_SRCS katefileselector.cpp kbookmarkhandler.cpp ${kateinterfacesprivate_STAT_SRCS})
+set(katefilebrowserplugin_PART_SRCS katefileselector.cpp kbookmarkhandler.cpp )
 
 kde4_automoc(${katefilebrowserplugin_PART_SRCS})
 

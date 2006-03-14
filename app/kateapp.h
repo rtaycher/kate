@@ -20,6 +20,7 @@
 #ifndef __KATE_APP_H__
 #define __KATE_APP_H__
 
+#include <kdebase_export.h>
 #include "katemain.h"
 
 #include <kapplication.h>
@@ -39,7 +40,7 @@ class KCmdLineArgs;
  * Kate Application
  * This class represents the core kate application object
  */
-class KDE_EXPORT KateApp : public KApplication
+class KATEINTERFACES_EXPORT KateApp : public KApplication
 {
   Q_OBJECT
 

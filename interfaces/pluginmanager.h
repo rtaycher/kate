@@ -20,6 +20,8 @@
 #ifndef _KATE_PLUGINMANAGER_INCLUDE_
 #define _KATE_PLUGINMANAGER_INCLUDE_
 
+#include <kdebase_export.h>
+
 #include <qobject.h>
 #include <kurl.h>
 
@@ -43,7 +45,7 @@ namespace Kate
  * \author Christoph Cullmann \<cullmann@kde.org\>
  * \see Plugin
  */
-class KDE_EXPORT PluginManager : public QObject
+class KATEINTERFACES_EXPORT PluginManager : public QObject
 {
   friend class PrivatePluginManager;
 

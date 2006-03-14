@@ -20,6 +20,8 @@
 #ifndef _KATE_PLUGIN_INCLUDE_
 #define _KATE_PLUGIN_INCLUDE_
 
+#include <kdebase_export.h>
+
 #include <qwidget.h>
 #include <qpixmap.h>
 #include <kicontheme.h>
@@ -98,7 +100,7 @@ class MainWindow;
  * \see PluginViewInterface, PluginConfigPageInterface
  * \author Christoph Cullmann \<cullmann@kde.org\>
  */
-class KDE_EXPORT Plugin : public QObject
+class KATEINTERFACES_EXPORT Plugin : public QObject
 {
   friend class PrivatePlugin;
 
@@ -223,7 +225,7 @@ Plugin *createPlugin ( const char* libname, Application *application = 0, const 
  * \see Plugin, KXMLGUIClient, MainWindow
  * \author Christoph Cullmann \<cullmann@kde.org\>
  */
-class KDE_EXPORT PluginViewInterface
+class KATEINTERFACES_EXPORT PluginViewInterface
 {
   friend class PrivatePluginViewInterface;
 

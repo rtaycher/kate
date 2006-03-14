@@ -22,11 +22,8 @@
 
 #include <kbookmarkmanager.h>
 #include <kbookmarkmenu.h>
-//Added by qt3to4:
 #include <QTextStream>
 #include <QByteArray>
-
-class KateFileSelector;
 
 class KActionMenu;
 
@@ -36,6 +33,7 @@ class KMenu;
 namespace Kate {
 namespace Private {
 namespace Plugin {
+class KateFileSelector;
 
 class KBookmarkHandler : public QObject, public KBookmarkOwner
 {

@@ -19,6 +19,8 @@
 #ifndef _KATE_APPLICATION_INCLUDE_
 #define _KATE_APPLICATION_INCLUDE_
 
+#include <kdebase_export.h>
+
 #include <qobject.h>
 #include <kurl.h>
 
@@ -57,7 +59,7 @@ class MainWindow;
  *
  * \author Christoph Cullmann \<cullmann@kde.org\>
  */
-class KDE_EXPORT Application : public QObject
+class KATEINTERFACES_EXPORT Application : public QObject
 {
   friend class PrivateApplication;
 

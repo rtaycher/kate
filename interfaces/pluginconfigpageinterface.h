@@ -19,6 +19,7 @@
 #ifndef kate_pluginconfigpageinterface_h
 #define kate_pluginconfigpageinterface_h
 
+#include <kdebase_export.h>
 #include <QWidget>
 #include <qpixmap.h>
 #include <kicontheme.h>
@@ -40,7 +41,7 @@ namespace Kate
  * \see Plugin, PluginConfigPageInterface
  * \author Christoph Cullmann \<cullmann@kde.org\>
  */
-class KDE_EXPORT PluginConfigPage : public QWidget
+class KATEINTERFACES_EXPORT PluginConfigPage : public QWidget
 {
   Q_OBJECT
 
@@ -123,7 +124,7 @@ class KDE_EXPORT PluginConfigPage : public QWidget
  * \see Plugin, PluginConfigPage
  * \author Christoph Cullmann \<cullmann@kde.org\>
  */
-class KDE_EXPORT PluginConfigPageInterface
+class KATEINTERFACES_EXPORT PluginConfigPageInterface
 {
   friend class PrivatePluginConfigPageInterface;
 

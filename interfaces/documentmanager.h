@@ -19,6 +19,8 @@
 #ifndef _KATE_DOCMANAGER_INCLUDE_
 #define _KATE_DOCMANAGER_INCLUDE_
 
+#include <kdebase_export.h>
+
 #include <qobject.h>
 #include <kurl.h>
 
@@ -46,7 +48,7 @@ namespace Kate
  *
  * \author Christoph Cullmann \<cullmann@kde.org\>
  */
-class KDE_EXPORT DocumentManager : public QObject
+class KATEINTERFACES_EXPORT DocumentManager : public QObject
 {
   friend class PrivateDocumentManager;
 

@@ -5,7 +5,13 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 ########### next target ###############
 
-set(kateinterfaces_LIB_SRCS  ${kateinterfacesprivate_STAT_SRCS}
+set(kateinterfaces_LIB_SRCS 
+   ../interfaces/application.cpp
+   ../interfaces/mainwindow.cpp
+   ../interfaces/documentmanager.cpp
+   ../interfaces/pluginmanager.cpp
+   ../interfaces/plugin.cpp
+   ../interfaces/pluginconfigpageinterface.cpp
    kateapp.cpp 
    kateconfigdialog.cpp 
    kateconfigplugindialogpage.cpp 
@@ -44,7 +50,7 @@ install_targets(${LIB_INSTALL_DIR} kateinterfaces )
 
 ########### next target ###############
 
-set(kate_KDEINIT_SRCS katemain.cpp ${kateinterfaces_LIB_SRCS})
+set(kate_KDEINIT_SRCS katemain.cpp)
 
 kde4_automoc(${kate_KDEINIT_SRCS})
 

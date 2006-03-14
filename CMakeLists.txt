@@ -1,13 +1,5 @@
 kde4_header()
 
-set( kateinterfacesprivate_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/kate/interfaces/application.cpp
-  ${CMAKE_SOURCE_DIR}/kate/interfaces/mainwindow.cpp
-  ${CMAKE_SOURCE_DIR}/kate/interfaces/documentmanager.cpp
-  ${CMAKE_SOURCE_DIR}/kate/interfaces/pluginmanager.cpp
-  ${CMAKE_SOURCE_DIR}/kate/interfaces/plugin.cpp
-  ${CMAKE_SOURCE_DIR}/kate/interfaces/pluginconfigpageinterface.cpp
-)
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 

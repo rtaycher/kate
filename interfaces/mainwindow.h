@@ -19,6 +19,8 @@
 #ifndef _KATE_MAINWINDOW_INCLUDE_
 #define _KATE_MAINWINDOW_INCLUDE_
 
+#include <kdebase_export.h>
+
 #include <qobject.h>
 #include <qpixmap.h>
 
@@ -56,7 +58,7 @@ namespace Kate
  * \author Christoph Cullmann \<cullmann@kde.org\>
  * \see KXMLGUIFactory
  */
-class KDE_EXPORT MainWindow : public QObject
+class KATEINTERFACES_EXPORT MainWindow : public QObject
 {
   friend class PrivateMainWindow;
 
