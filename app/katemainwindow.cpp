@@ -167,8 +167,10 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
   kDebug()<<"****************************************************************************"<<sconfig<<endl;
   KatePluginManager::self()->enableAllPluginsGUI (this,sconfig);
 
+#ifdef _GNUC__
 #warning fixme later
- /* if ( KateApp::self()->authorize("shell_access") )
+#endif
+  /* if ( KateApp::self()->authorize("shell_access") )
     KTextEditor::Document::registerCommand(KateExternalToolsCommand::self());
 */
   // connect documents menu aboutToshow
@@ -523,7 +525,7 @@ void KateMainWindow::slotGrepToolItemSelected(const QString &filename,int linenu
     m_viewManager->activeView()->setCursorPosition( KTextEditor::Cursor (linenumber, 0) );
 
   raise();
-  setActiveWindow();
+  activateWindow();
 }
 
 void KateMainWindow::dragEnterEvent( QDragEnterEvent *event )

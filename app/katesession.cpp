@@ -274,8 +274,10 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
   if (loadNew)
   {
     // open the new session
+#ifdef __GNUC__
 #warning fixme later
-    //KTextEditor::Document::setOpenErrorDialogsActivated (false);
+#endif
+	  //KTextEditor::Document::setOpenErrorDialogsActivated (false);
 
     KConfig *sc = activeSession()->configRead();
 
@@ -318,8 +320,10 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
       }
     }
 
+#ifdef __GNUC__
 #warning fixme later
-    //KTextEditor::Document::setOpenErrorDialogsActivated (true);
+#endif
+	//KTextEditor::Document::setOpenErrorDialogsActivated (true);
   }
 }
 

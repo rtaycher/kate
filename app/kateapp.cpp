@@ -149,7 +149,9 @@ void KateApp::initKate ()
 void KateApp::restoreKate ()
 {
   // restore the nice files ;) we need it
+#ifdef __GNUC__
   #warning fixme later
+#endif
   //KTextEditor::Document::setOpenErrorDialogsActivated (false);
 
   // activate again correct session!!!
@@ -159,7 +161,9 @@ void KateApp::restoreKate ()
 
   m_docManager->restoreDocumentList (sessionConfig());
 
+#ifdef __GNUC__
 #warning fixme later
+#endif
   //KTextEditor::Document::setOpenErrorDialogsActivated (true);
 
   // restore all windows ;)
@@ -214,7 +218,9 @@ bool KateApp::startupKate ()
 
   bool tempfileSet = KCmdLineArgs::isTempFileSet();
 
+#ifdef __GNUC__
 #warning fixme later
+#endif
   //KTextEditor::Document::setOpenErrorDialogsActivated (false);
 
   KTextEditor::Document *doc = 0;
@@ -235,8 +241,9 @@ bool KateApp::startupKate ()
       KMessageBox::sorry( activeMainWindow(),
                           i18n("The file '%1' could not be opened: it is not a normal file, it is a folder.").arg(m_args->url(z).url()) );
   }
-
+#ifdef __GNUC__
 #warning fixme later
+#endif
   //KTextEditor::Document::setOpenErrorDialogsActivated (true);
 
   // handle stdin input
@@ -335,7 +342,7 @@ bool KateApp::openURL (const KUrl &url, const QString &encoding, bool isTempFile
   if (!mainWindow)
     return false;
 
-  QTextCodec *codec = encoding.isEmpty() ? 0 : QTextCodec::codecForName(encoding.latin1());
+  QTextCodec *codec = encoding.isEmpty() ? 0 : QTextCodec::codecForName(encoding.toLatin1());
 
   kDebug () << "OPEN URL "<< encoding << endl;
 

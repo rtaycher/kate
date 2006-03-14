@@ -290,15 +290,15 @@ void GrepTool::itemSelected(QTreeWidgetItem *item, int column)
 void GrepTool::processOutput()
 {
   int pos;
-  while ( (pos = buf.find('\n')) != -1)
+  while ( (pos = buf.indexOf('\n')) != -1)
   {
     QString line = buf.left(pos);
     int doubledot;
-    if ((doubledot = line.find(':')) != -1)
+    if ((doubledot = line.indexOf(':')) != -1)
     {
       const QString filename = line.left(doubledot);
       line = line.mid(doubledot+1);
-      if ((doubledot = line.find(':')) != -1)
+      if ((doubledot = line.indexOf(':')) != -1)
       {
         const QString linenumber = line.left(doubledot);
         line = line.mid(doubledot+1);

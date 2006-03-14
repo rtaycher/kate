@@ -19,6 +19,7 @@
 
 #include "kateapp.h"
 
+#include <kdebase_export.h>
 #include <kstandarddirs.h>
 #include <klocale.h>
 #include <kcmdlineargs.h>
@@ -33,7 +34,6 @@
 
 #include <qtextcodec.h>
 #include <QTextIStream>
-//Added by qt3to4:
 #include <QByteArray>
 
 static KCmdLineOptions options[] =
@@ -61,7 +61,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
   // here we go, construct the Kate version
   QString kateVersion = KateApp::kateVersion();
 
-  KAboutData aboutData ("kate", I18N_NOOP("Kate"), kateVersion.latin1(),
+  KAboutData aboutData ("kate", I18N_NOOP("Kate"), kateVersion.toLatin1().constData(),
                         I18N_NOOP( "Kate - Advanced Text Editor" ), KAboutData::License_LGPL_V2,
                         I18N_NOOP( "(c) 2000-2005 The Kate Authors" ), 0, "http://kate.kde.org");
 

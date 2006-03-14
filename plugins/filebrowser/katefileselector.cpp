@@ -113,7 +113,9 @@ void KateFileSelectorPlugin::loadViewConfig(KConfig* config,Kate::MainWindow *wi
 
 uint KateFileSelectorPlugin::configPages() const {return 1;}
 Kate::PluginConfigPage *KateFileSelectorPlugin::configPage (uint number, QWidget *parent, const char *name) {
-  #warning "fixme"
+#ifdef __GNUC__
+#warning "fixme"
+#endif
   if (number!=0) return 0;
   return new KFSConfigPage(parent,name,*(m_views.begin()));
 }
@@ -344,9 +346,9 @@ void Kate::Private::Plugin::KateFileSelector::setupToolbar( KConfig *config )
   KAction *ac;
   for ( QStringList::Iterator it=tbactions.begin(); it != tbactions.end(); ++it ) {
     if ( *it == "bookmarks" || *it == "sync_dir" )
-      ac = mActionCollection->action( (*it).latin1() );
+      ac = mActionCollection->action( (*it).toLatin1().constData() );
     else
-      ac = dir->actionCollection()->action( (*it).latin1() );
+      ac = dir->actionCollection()->action( (*it).toLatin1().constData() );
     if ( ac )
       ac->plug( toolbar );
   }
@@ -361,7 +363,7 @@ void Kate::Private::Plugin::KateFileSelector::writeConfig(KConfig *config, const
   config->writeEntry( "pathcombo history len", cmbPath->maxItems() );
   QStringList l;
   for (int i = 0; i < cmbPath->count(); i++) {
-    l.append( cmbPath->text( i ) );
+    l.append( cmbPath->itemText( i ) );
   }
   config->writePathEntry( "dir history", l );
   config->writePathEntry( "location", cmbPath->currentText() );
@@ -783,9 +785,9 @@ void KFSConfigPage::init()
   for ( QStringList::Iterator it=allActions.begin(); it != allActions.end(); ++it ) {
     lb = l.contains( *it ) ? acSel->selectedListWidget() : acSel->availableListWidget();
     if ( *it == "bookmarks" || *it == "sync_dir" )
-      ac = fileSelector->actionCollection()->action( (*it).latin1() );
+      ac = fileSelector->actionCollection()->action( (*it).toLatin1().constData() );
     else
-      ac = fileSelector->dirOperator()->actionCollection()->action( (*it).latin1() );
+      ac = fileSelector->dirOperator()->actionCollection()->action( (*it).toLatin1().constData() );
     if ( ac )
       new ActionLBItem( lb, SmallIcon( ac->icon() ), ac->text().replace( re, "" ), *it );
   }

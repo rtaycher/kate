@@ -241,7 +241,7 @@ void KateViewManager::activateNextTab()
   if( iTab == m_mainWindow->tabWidget()->count() )
     iTab = 0;
 
-  m_mainWindow->tabWidget()->setCurrentPage( iTab );
+  m_mainWindow->tabWidget()->setCurrentIndex( iTab );
 }
 
 void KateViewManager::activatePrevTab()
@@ -255,7 +255,7 @@ void KateViewManager::activatePrevTab()
   if( iTab == -1 )
     iTab = m_mainWindow->tabWidget()->count() - 1;
 
-  m_mainWindow->tabWidget()->setCurrentPage( iTab );
+  m_mainWindow->tabWidget()->setCurrentIndex( iTab );
 }
 
 void KateViewManager::activateSpace (KTextEditor::View* v)
@@ -485,7 +485,7 @@ void KateViewManager::restoreViewConfiguration (KConfig *config, const QString& 
   }
 
   if (activeOne != m_mainWindow->tabWidget()->currentIndex())
-    m_mainWindow->tabWidget()->setCurrentPage (activeOne);
+    m_mainWindow->tabWidget()->setCurrentIndex (activeOne);
 
   updateViewSpaceActions();
 }

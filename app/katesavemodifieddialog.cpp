@@ -213,7 +213,9 @@ void KateSaveModifiedDialog::slotUser1() {
 }
 
 bool KateSaveModifiedDialog::doSave(QTreeWidgetItem */*root*/) {
+#ifdef __GNUC__
 #warning implement me
+#endif
 #if 0
 	if (root) {
 		for (Q3ListViewItem *it=root->firstChild();it;it=it->nextSibling()) {

@@ -47,29 +47,29 @@ void KateTabWidget::closeTab(QWidget* w)
 void KateTabWidget::addTab ( QWidget * child, const QString & label )
 {
   KTabWidget::addTab(child,label);
-  showPage(child);
+  setCurrentIndex(indexOf(child));
   maybeShow();
 }
 
 void KateTabWidget::addTab ( QWidget * child, const QIcon & iconset, const QString & label )
 {
   KTabWidget::addTab(child,iconset,label);
-  showPage(child);
+  setCurrentIndex(indexOf(child));
   maybeShow();
 }
 
 void KateTabWidget::insertTab ( QWidget * child, const QString & label, int index)
 {
-  KTabWidget::insertTab(child,label,index);
-  showPage(child);
+  KTabWidget::insertTab(index,child,label);
+  setCurrentIndex(indexOf(child));
   maybeShow();
   tabBar()->repaint();
 }
 
 void KateTabWidget::insertTab ( QWidget * child, const QIcon & iconset, const QString & label, int index )
 {
-  KTabWidget::insertTab(child,iconset,label,index);
-  showPage(child);
+  KTabWidget::insertTab(index,child,iconset,label);
+  setCurrentIndex(indexOf(child));
   maybeShow();
   tabBar()->repaint();
 }

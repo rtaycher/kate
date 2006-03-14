@@ -153,9 +153,9 @@ KateExternalToolsCommand *KateExternalToolsCommand::self () {
 void KateExternalToolsCommand::reload () {
   m_list.clear();
   m_map.clear();
-
+#ifdef __GNUC__
 #warning "Hmm, this leads to crash, not sure why, atm :("
-
+#endif
  return;
 
 
@@ -188,8 +188,10 @@ void KateExternalToolsCommand::reload () {
   }
   if (m_inited) {
 
+#ifdef __GNUC__
 #warning fixme later
-  //  KTextEditor::Document::unregisterCommand(this);
+#endif
+	//  KTextEditor::Document::unregisterCommand(this);
 	//  KTextEditor::Document::registerCommand(this);
    }
   else m_inited=true;
@@ -214,7 +216,7 @@ bool KateExternalToolsCommand::exec (KTextEditor::View *view, const QString &cmd
 		dynamic_cast<KateExternalToolsMenuAction*>(dmw->action("tools_external"));
 	if (!a) return false;
 // 	kDebug(13001)<<"trying to find action"<<endl;
-	KAction *a1=a->actionCollection()->action(actionName.utf8().constData ());
+	KAction *a1=a->actionCollection()->action(actionName.toUtf8().constData ());
 	if (!a1) return false;
 // 	kDebug(13001)<<"activating action"<<endl;
 	a1->activate();
@@ -311,8 +313,10 @@ KateExternalToolsMenuAction::KateExternalToolsMenuAction( const QString &text,
   m_actionCollection = new KActionCollection( (QWidget*) mainwindow );
 
 
+#ifdef __GNUC__
 #warning "Hmm, this leads to crash, not sure why, atm :("
- //connect(KateDocManager::self(),SIGNAL(documentChanged()),this,SLOT(slotDocumentChanged()));
+#endif
+  //connect(KateDocManager::self(),SIGNAL(documentChanged()),this,SLOT(slotDocumentChanged()));
 
   reload();
 }
@@ -525,7 +529,7 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
   lo->addWidget( l, 5, 1 );
   QStringList sl;
   sl << i18n("None") << i18n("Current Document") << i18n("All Documents");
-  cmbSave->insertStringList( sl );
+  cmbSave->addItems( sl );
   if ( tool ) cmbSave->setCurrentItem( tool->save );
   cmbSave->setWhatsThis(i18n(
       "You can elect to save the current or all [modified] documents prior to "
@@ -799,7 +803,7 @@ void KateExternalToolsConfigWidget::slotEdit()
     t->icon = editor.btnIcon->icon();
     t->tryexec = editor.leExecutable->text();
     t->mimetypes = QStringList::split( QRegExp("\\s*;\\s*"), editor.leMimetypes->text() );
-    t->save = editor.cmbSave->currentItem();
+    t->save = editor.cmbSave->currentIndex();
 
     //if the icon has changed or name changed, I have to renew the listbox item :S
     if ( elementChanged )

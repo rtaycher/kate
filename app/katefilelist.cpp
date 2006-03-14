@@ -582,7 +582,7 @@ KFLConfigPage::KFLConfigPage( QWidget* parent, KateFileList *fl )
   lSort->setBuddy( cmbSort );
   QStringList l;
   l << i18n("Opening Order") << i18n("Document Name") << i18n("URL");
-  cmbSort->insertStringList( l );
+  cmbSort->addItems( l );
 
   lo1->insertStretch( -1, 10 );
 
@@ -620,7 +620,7 @@ void KFLConfigPage::apply()
   m_filelist->m_viewShade = kcbViewShade->color();
   m_filelist->m_editShade = kcbEditShade->color();
   m_filelist->m_enableBgShading = cbEnableShading->isChecked();
-  m_filelist->setSortType( cmbSort->currentItem() );
+  m_filelist->setSortType( cmbSort->currentIndex() );
   // repaint the affected items
   m_filelist->triggerUpdate();
 }
@@ -633,7 +633,7 @@ void KFLConfigPage::reset()
   cbEnableShading->setChecked( config->readEntry("Shading Enabled", QVariant(&m_filelist->m_enableBgShading )).toBool() );
   kcbViewShade->setColor( config->readEntry("View Shade", m_filelist->m_viewShade ) );
   kcbEditShade->setColor( config->readEntry("Edit Shade", m_filelist->m_editShade ) );
-  cmbSort->setCurrentItem( m_filelist->sortType() );
+  cmbSort->setCurrentIndex( m_filelist->sortType() );
   m_changed = false;
 }
 

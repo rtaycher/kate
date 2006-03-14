@@ -17,13 +17,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "katefileselector.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 
 #include <qtextstream.h>
-//Added by qt3to4:
 #include <QByteArray>
 
 #include <kbookmarkimporter.h>
@@ -39,13 +36,14 @@
 #include "kbookmarkhandler.moc"
 
 Kate::Private::Plugin::KBookmarkHandler::KBookmarkHandler( KateFileSelector *parent, KMenu* kpopupmenu )
-    : QObject( parent, "KBookmarkHandler" ),
+    : QObject( parent ),
       KBookmarkOwner(),
       mParent( parent ),
       m_menu( kpopupmenu ),
       m_importStream( 0L )
 {
-    if (!m_menu)
+    setObjectName( "KBookmarkHandler" );
+	if (!m_menu)
       m_menu = new KMenu( parent);
 
     QString file = locate( "data", "kate/fsbookmarks.xml" );

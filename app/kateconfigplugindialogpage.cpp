@@ -83,7 +83,9 @@ KateConfigPluginPage::KateConfigPluginPage(QWidget *parent, KateConfigDialog *di
   connect(listView, SIGNAL(stateChange(KatePluginListItem *, bool)), this, SLOT(stateChange(KatePluginListItem *, bool)));
 
   KatePluginList &pluginList (KatePluginManager::self()->pluginList());
+#ifdef __GNUC__
 #warning try to fix me
+#endif
   for (KatePluginList::iterator it=pluginList.begin();it!=pluginList.end(); ++it)
   {
     KatePluginListItem *item = new KatePluginListItem(it->load, &(*it), listView);
