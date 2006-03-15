@@ -11,4 +11,4 @@ libkateinterfacesprivate_la_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 kateinclude_HEADERS = application.h documentmanager.h mainwindow.h plugin.h pluginconfigpageinterface.h pluginmanager.h
 kateincludedir = $(includedir)/kate
 
-INCLUDES= $(all_includes)
+INCLUDES = -I$(top_srcdir) $(all_includes)

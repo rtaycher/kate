@@ -22,4 +22,4 @@ kate_la_LDFLAGS = $(all_libraries) $(KDE_RPATH) -module -avoid-version
 
 METASOURCES = AUTO
 
-INCLUDES= -I../interfaces -I$(srcdir)/../lib $(all_includes)
+INCLUDES= -I../interfaces -I$(srcdir)/../lib -I$(top_srcdir) $(all_includes)
