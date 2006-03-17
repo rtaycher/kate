@@ -411,7 +411,7 @@ KateMainWindow *KateApp::newMainWindow (KConfig *sconfig, const QString &sgroup)
 
 void KateApp::removeMainWindow (KateMainWindow *mainWindow)
 {
-  m_mainWindows.remove (mainWindow);
+  m_mainWindows.removeAll(mainWindow);
 }
 
 KateMainWindow *KateApp::activeMainWindow ()

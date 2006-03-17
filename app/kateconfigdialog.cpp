@@ -158,7 +158,8 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   KHBox *hbDmf = new KHBox( bgStartup );
   hbDmf->setEnabled(KateDocManager::self()->getSaveMetaInfos());
   QLabel *lDmf = new QLabel( i18n("&Delete unused meta-information after:"), hbDmf );
-  sb_daysMetaInfos = new QSpinBox( 0, 180, 1, hbDmf );
+  sb_daysMetaInfos = new QSpinBox( hbDmf );
+  sb_daysMetaInfos->setMaximum( 180 );
   sb_daysMetaInfos->setSpecialValueText(i18n("(never)"));
   sb_daysMetaInfos->setSuffix(i18n(" day(s)"));
   sb_daysMetaInfos->setValue( KateDocManager::self()->getDaysMetaInfos() );
@@ -201,7 +202,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   QRadioButton *rb1, *rb2, *rb3;
 
   sessions_start = new Q3ButtonGroup( 1, Qt::Horizontal, i18n("Behavior on Application Startup"), frSessions );
-  lo->add (sessions_start);
+  lo->addWidget(sessions_start);
 
   sessions_start->setRadioButtonExclusive( true );
   sessions_start->insert( rb1=new QRadioButton( i18n("&Start new session"), sessions_start ), 0 );
@@ -222,7 +223,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   connect(rb3, SIGNAL(toggled(bool)), this, SLOT(slotChanged()));
 
   sessions_exit = new Q3ButtonGroup( 1, Qt::Horizontal, i18n("Behavior on Application Exit or Session Switch"), frSessions );
-  lo->add (sessions_exit);
+  lo->addWidget(sessions_exit);
 
   sessions_exit->setRadioButtonExclusive( true );
   sessions_exit->insert( rb1=new QRadioButton( i18n("&Do not save session"), sessions_exit ), 0 );

@@ -565,12 +565,16 @@ KFLConfigPage::KFLConfigPage( QWidget* parent, KateFileList *fl )
   lo->addMultiCellWidget( cbEnableShading, 1, 1, 0, 1 );
 
   kcbViewShade = new KColorButton( g );
-  lViewShade = new QLabel( kcbViewShade, i18n("&Viewed documents' shade:"), g );
+  lViewShade = new QLabel( g );
+  lViewShade->setBuddy( kcbViewShade );
+  lViewShade->setText( i18n("&Viewed documents' shade:") );
   lo->addWidget( lViewShade, 2, 0 );
   lo->addWidget( kcbViewShade, 2, 1 );
 
   kcbEditShade = new KColorButton( g );
-  lEditShade = new QLabel( kcbEditShade, i18n("&Modified documents' shade:"), g );
+  lEditShade = new QLabel( g );
+  lEditShade->setBuddy( kcbEditShade );
+  lEditShade->setText( i18n("&Modified documents' shade:") );
   lo->addWidget( lEditShade, 3, 0 );
   lo->addWidget( kcbEditShade, 3, 1 );
 

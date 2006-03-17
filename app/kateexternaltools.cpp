@@ -457,7 +457,9 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
 
   leName = new QLineEdit( w );
   lo->addWidget( leName, 1, 2 );
-  l = new QLabel( leName, i18n("&Label:"), w );
+  l = new QLabel( w );
+  l->setBuddy( leName );
+  l->setText( i18n("&Label:") );
   l->setAlignment( l->alignment()|Qt::AlignRight );
   lo->addWidget( l, 1, 1 );
   if ( tool ) leName->setText( tool->name );
@@ -471,8 +473,10 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
     btnIcon->setIcon( tool->icon );
 
   teCommand = new Q3TextEdit( w );
-  lo->addMultiCellWidget( teCommand, 2, 2, 2, 3 );
-  l = new QLabel( teCommand, i18n("S&cript:"), w );
+  lo->addWidget( teCommand, 2, 2, 1, 2 );
+  l = new QLabel( w );
+  l->setBuddy( teCommand );
+  l->setText( i18n("S&cript:") );
   l->setAlignment( Qt::AlignTop|Qt::AlignRight );
   lo->addWidget( l, 2, 1 );
   if ( tool ) teCommand->setText( tool->command );
@@ -494,8 +498,10 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
 
 
   leExecutable = new QLineEdit( w );
-  lo->addMultiCellWidget( leExecutable, 3, 3, 2, 3 );
-  l = new QLabel( leExecutable, i18n("&Executable:"), w );
+  lo->addWidget( leExecutable, 3, 2, 1, 2 );
+  l = new QLabel( w );
+  l->setBuddy( leExecutable );
+  l->setText( i18n("&Executable:") );
   l->setAlignment( l->alignment()|Qt::AlignRight );
   lo->addWidget( l, 3, 1 );
   if ( tool ) leExecutable->setText( tool->tryexec );
@@ -506,7 +512,9 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
 
   leMimetypes = new QLineEdit( w );
   lo->addWidget( leMimetypes, 4, 2 );
-  l = new QLabel( leMimetypes, i18n("&Mime types:"), w );
+  l = new QLabel( w );
+  l->setBuddy( leMimetypes );
+  l->setText( i18n("&Mime types:") );
   l->setAlignment( l->alignment()|Qt::AlignRight );
   lo->addWidget( l, 4, 1 );
   if ( tool ) leMimetypes->setText( tool->mimetypes.join("; ") );
@@ -523,14 +531,16 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
       "Click for a dialog that can help you creating a list of mimetypes.") );
 
   cmbSave = new QComboBox(w);
-  lo->addMultiCellWidget( cmbSave, 5, 5, 2, 3 );
-  l = new QLabel( cmbSave, i18n("&Save:"), w );
+  lo->addWidget( cmbSave, 5, 2, 1, 2 );
+  l = new QLabel( w );
+  l->setBuddy( cmbSave );
+  l->setText( i18n("&Save:") );
   l->setAlignment( l->alignment()|Qt::AlignRight );
   lo->addWidget( l, 5, 1 );
   QStringList sl;
   sl << i18n("None") << i18n("Current Document") << i18n("All Documents");
   cmbSave->addItems( sl );
-  if ( tool ) cmbSave->setCurrentItem( tool->save );
+  if ( tool ) cmbSave->setCurrentIndex( tool->save );
   cmbSave->setWhatsThis(i18n(
       "You can elect to save the current or all [modified] documents prior to "
       "running the command. This is helpful if you want to pass URLs to "
@@ -538,7 +548,7 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
 
 
   leCmdLine = new QLineEdit( w );
-  lo->addMultiCellWidget( leCmdLine, 6, 6, 2, 3 );
+  lo->addWidget( leCmdLine, 6, 2, 1, 2 );
   l = new QLabel( leCmdLine, i18n("&Command line name:"), w );
   l->setAlignment( l->alignment()|Qt::AlignRight );
   lo->addWidget( l, 6, 1 );
@@ -565,7 +575,7 @@ void KateExternalToolServiceEditor::slotOk()
 void KateExternalToolServiceEditor::showMTDlg()
 {
   QString text = i18n("Select the MimeTypes for which to enable this tool.");
-  QStringList list = QStringList::split( QRegExp("\\s*;\\s*"), leMimetypes->text() );
+  QStringList list = leMimetypes->text().split( QRegExp("\\s*;\\s*"), QString::SkipEmptyParts );
   KMimeTypeChooserDialog *d = new KMimeTypeChooserDialog( i18n("Select Mime Types"), text, list, "text", this );
   if ( d->exec() == KDialogBase::Accepted ) {
     leMimetypes->setText( d->chooser()->mimeTypes().join(";") );
@@ -578,10 +588,12 @@ KateExternalToolsConfigWidget::KateExternalToolsConfigWidget( QWidget *parent, c
   : KTextEditor::ConfigPage( parent ),
     m_changed( false )
 {
-  QGridLayout *lo = new QGridLayout( this, 5, 5, 0, KDialog::spacingHint() );
+  QGridLayout *lo = new QGridLayout( this );
+  lo->setMargin( 0 );
+  lo->setSpacing( KDialog::spacingHint() );
 
   lbTools = new KListBox( this );
-  lo->addMultiCellWidget( lbTools, 1, 4, 0, 3 );
+  lo->addWidget( lbTools, 1, 0, 4, 4 );
   connect( lbTools, SIGNAL(selectionChanged()), this, SLOT(slotSelectionChanged()) );
 
   btnNew = new QPushButton( i18n("&New..."), this );
@@ -612,9 +624,9 @@ KateExternalToolsConfigWidget::KateExternalToolsConfigWidget( QWidget *parent, c
 
   lo->setRowStretch( 1, 1 );
   lo->setRowStretch( 4, 1 );
-  lo->setColStretch( 0, 1 );
-  lo->setColStretch( 1, 1 );
-  lo->setColStretch( 2, 1 );
+  lo->setColumnStretch( 0, 1 );
+  lo->setColumnStretch( 1, 1 );
+  lo->setColumnStretch( 2, 1 );
 
 
   lbTools->setWhatsThis(i18n(
@@ -757,7 +769,7 @@ void KateExternalToolsConfigWidget::slotNew()
       editor.teCommand->text(),
       editor.btnIcon->icon(),
       editor.leExecutable->text(),
-      QStringList::split( QRegExp("\\s*;\\s*"), editor.leMimetypes->text() ) );
+      editor.leMimetypes->text().split( QRegExp("\\s*;\\s*"), QString::SkipEmptyParts ) );
 
     // This is sticky, it does not change again, so that shortcuts sticks
     // TODO check for dups
@@ -802,7 +814,7 @@ void KateExternalToolsConfigWidget::slotEdit()
     t->command = editor.teCommand->text();
     t->icon = editor.btnIcon->icon();
     t->tryexec = editor.leExecutable->text();
-    t->mimetypes = QStringList::split( QRegExp("\\s*;\\s*"), editor.leMimetypes->text() );
+    t->mimetypes = editor.leMimetypes->text().split( QRegExp("\\s*;\\s*"), QString::SkipEmptyParts );
     t->save = editor.cmbSave->currentIndex();
 
     //if the icon has changed or name changed, I have to renew the listbox item :S
