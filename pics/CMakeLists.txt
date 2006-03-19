@@ -9,7 +9,7 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 install_files( ${DATA_INSTALL_DIR}/kate/pics FILES sessionchooser.png )
 
-kde4_install_icons( ${ICON_INSTALL_DIR} crystalsvg )
+kde4_install_icons( ${ICON_INSTALL_DIR} hicolor )
 
 kde4_footer()
 
