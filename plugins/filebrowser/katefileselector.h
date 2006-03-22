@@ -72,7 +72,7 @@ class KateFileSelectorPlugin:public Kate::Plugin,public Kate::PluginViewInterfac
     PluginConfigPage *configPage (uint number = 0, QWidget *parent = 0, const char *name=0);
     QString configPageName (uint number = 0) const;
     QString configPageFullName (uint number = 0) const;
-    QPixmap configPagePixmap (uint number = 0, int size = KIcon::SizeSmall) const;    
+    QPixmap configPagePixmap (uint number = 0, int size = K3Icon::SizeSmall) const;    
     
   private:
     QLinkedList<KateFileSelector*> m_views;  
@@ -94,8 +94,6 @@ class KateFileSelectorToolBar: public KToolBar
 public:
 	KateFileSelectorToolBar(QWidget *parent);
 	virtual ~KateFileSelectorToolBar();
-
-	 virtual void setMovingEnabled( bool b );
 };
 
 class KateFileSelectorToolBarParent: public QFrame

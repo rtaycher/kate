@@ -117,8 +117,8 @@ GUIClient::GUIClient ( MainWindow *mw )
     setXML( completeDescription, false /*merge*/ );
   }
 
-  if (actionCollection()->kaccel()==0)
-    actionCollection()->setWidget(m_mw);
+  if (!actionCollection()->associatedWidgets().contains(m_mw))
+    actionCollection()->setAssociatedWidget(m_mw);
 
   m_toolMenu = new KActionMenu(i18n("Tool &Views"),actionCollection(),"kate_mdi_toolview_menu");
   m_showSidebarsAction = new KToggleAction( i18n("Show Side&bars"),
@@ -132,7 +132,8 @@ GUIClient::GUIClient ( MainWindow *mw )
   m_toolMenu->insert( new KActionSeparator( actionCollection() ) );
 
   // read shortcuts
-  actionCollection()->readShortcutSettings( "Shortcuts", KGlobal::config() );
+  actionCollection()->setConfigGroup( "Shortcuts" );
+  actionCollection()->readSettings( KGlobal::config() );
 }
 
 GUIClient::~GUIClient()

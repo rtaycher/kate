@@ -90,13 +90,13 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
 
   path.clear();
   path << i18n("Application");
-  setFolderIcon (path, SmallIcon("kate", KIcon::SizeSmall));
+  setFolderIcon (path, SmallIcon("kate", K3Icon::SizeSmall));
 
   path.clear();
 
   //BEGIN General page
   path << i18n("Application") << i18n("General");
-  QFrame* frGeneral = addPage(path, i18n("General Options"), BarIcon("gohome", KIcon::SizeSmall));
+  QFrame* frGeneral = addPage(path, i18n("General Options"), BarIcon("gohome", K3Icon::SizeSmall));
 
   QVBoxLayout *lo = new QVBoxLayout( frGeneral );
   lo->setSpacing(KDialog::spacingHint());
@@ -181,7 +181,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
 
   //BEGIN Session page
   path << i18n("Application") << i18n("Sessions");
-  QFrame* frSessions = addPage(path, i18n("Session Management"), BarIcon("history", KIcon::SizeSmall));
+  QFrame* frSessions = addPage(path, i18n("Session Management"), BarIcon("history", K3Icon::SizeSmall));
 
   lo = new QVBoxLayout( frSessions );
   lo->setSpacing(KDialog::spacingHint());
@@ -253,7 +253,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   path << i18n("Application") << i18n("File Selector");
 
   KVBox *page = addVBoxPage( path, i18n("File Selector Settings"),
-                              BarIcon("fileopen", KIcon::SizeSmall) );
+                              BarIcon("fileopen", K3Icon::SizeSmall) );
   fileSelConfigPage = new KFSConfigPage( page, "file selector config page",
                                          mainWindow->fileselector );
   connect( fileSelConfigPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
@@ -262,7 +262,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   KVBox *page;
   path << i18n("Application") << i18n("Document List");
   page = addVBoxPage( path, i18n("Document List Settings"),
-  BarIcon("view_text", KIcon::SizeSmall) );
+  BarIcon("view_text", K3Icon::SizeSmall) );
   filelistConfigPage = new KFLConfigPage( page,
 					  mainWindow->filelist );
   connect( filelistConfigPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
@@ -270,7 +270,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
 
   path << i18n("Application") << i18n("Plugins");
   /*QVBox **/page=addVBoxPage(path,i18n("Plugin Manager"),
-                          BarIcon("connect_established",KIcon::SizeSmall));
+                          BarIcon("connect_established",K3Icon::SizeSmall));
   KateConfigPluginPage *configPluginPage = new KateConfigPluginPage(page, this);
   connect( configPluginPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
 
@@ -278,21 +278,21 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   path.clear();
   path << i18n("Application") << i18n("External Tools");
   page = addVBoxPage( path, i18n("External Tools"),
-      BarIcon("configure", KIcon::SizeSmall) );
+      BarIcon("configure", K3Icon::SizeSmall) );
   configExternalToolsPage = new KateExternalToolsConfigWidget(page, "external tools config page");
   connect( configExternalToolsPage, SIGNAL(changed()), this, SLOT(slotChanged()) );
 
   // editor widgets from kwrite/kwdialog
   path.clear();
   path << i18n("Editor");
-  setFolderIcon (path, SmallIcon("edit", KIcon::SizeSmall));
+  setFolderIcon (path, SmallIcon("edit", K3Icon::SizeSmall));
 
   for (int i = 0; i < KateDocManager::self()->editor()->configPages (); ++i)
   {
     path.clear();
     path << i18n("Editor") << KateDocManager::self()->editor()->configPageName (i);
     /*QVBox **/page = addVBoxPage(path, KateDocManager::self()->editor()->configPageFullName (i),
-                              KateDocManager::self()->editor()->configPagePixmap(i, KIcon::SizeSmall) );
+                              KateDocManager::self()->editor()->configPagePixmap(i, K3Icon::SizeSmall) );
 
     KTextEditor::ConfigPage *cPage = KateDocManager::self()->editor()->configPage(i, page);
     connect( cPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
@@ -326,7 +326,7 @@ void KateConfigDialog::addPluginPage (Kate::Plugin *plugin)
     QStringList path;
     path.clear();
     path << i18n("Application")<<i18n("Plugins") << Kate::pluginConfigPageInterface(plugin)->configPageName(i);
-    KVBox *page=addVBoxPage(path, Kate::pluginConfigPageInterface(plugin)->configPageFullName(i), Kate::pluginConfigPageInterface(plugin)->configPagePixmap(i, KIcon::SizeSmall));
+    KVBox *page=addVBoxPage(path, Kate::pluginConfigPageInterface(plugin)->configPageFullName(i), Kate::pluginConfigPageInterface(plugin)->configPagePixmap(i, K3Icon::SizeSmall));
 
     PluginPageListItem *info=new PluginPageListItem;
     info->plugin = plugin;

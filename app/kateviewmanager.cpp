@@ -194,7 +194,7 @@ void KateViewManager::slotNewTab()
       doc = m_currentContainer->activeView()->document();
   }
 
-  KateViewSpaceContainer *container=new KateViewSpaceContainer (m_mainWindow->tabWidget(), this);
+  KateViewSpaceContainer *container=new KateViewSpaceContainer(this);
   m_viewSpaceContainerList.append(container);
   m_mainWindow->tabWidget()->addTab (container, "");
 
@@ -408,7 +408,7 @@ KTextEditor::Document *KateViewManager::openURL (const KUrl &url, const QString&
   KTextEditor::Document *doc = KateDocManager::self()->openURL (url, encoding, isTempFile);
 
   if (!doc->url().isEmpty())
-    m_mainWindow->fileOpenRecent->addURL( doc->url() );
+    m_mainWindow->fileOpenRecent->addUrl( doc->url() );
 
   if (activate)
     activateView( doc );

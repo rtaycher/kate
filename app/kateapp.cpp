@@ -48,6 +48,7 @@
 #include <qtimer.h>
 #include <qdir.h>
 #include <qtextcodec.h>
+#include <QTextIStream>
 
 #include <stdlib.h>
 #include <sys/types.h>
@@ -121,7 +122,7 @@ QString KateApp::kateVersion (bool fullVersion)
 
 void KateApp::initKate ()
 {
- 
+
   kDebug()<<"Setting KATE_PID: '"<<getpid()<<"'"<<endl;
   ::setenv( "KATE_PID", QString("%1").arg(getpid()).latin1(), 1 );
 

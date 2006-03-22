@@ -44,6 +44,7 @@
 #include <kicondialog.h>
 #include <kmenu.h>
 #include <kdebug.h>
+#include <kicon.h>
 
 #include <qbitmap.h>
 #include <qcombobox.h>
@@ -219,7 +220,7 @@ bool KateExternalToolsCommand::exec (KTextEditor::View *view, const QString &cmd
 	KAction *a1=a->actionCollection()->action(actionName.toUtf8().constData ());
 	if (!a1) return false;
 // 	kDebug(13001)<<"activating action"<<endl;
-	a1->activate();
+	a1->trigger();
 	return true;
 }
 
@@ -231,14 +232,14 @@ bool KateExternalToolsCommand::help (KTextEditor::View *, const QString &, QStri
 //BEGIN KateExternalToolAction
 KateExternalToolAction::KateExternalToolAction( KActionCollection *parent,
              const char *name, KateExternalTool *t)
-  : KAction( t->name,(t->icon.isEmpty() ? QIcon() : SmallIconSet(t->icon)),0,this,SLOT(slotRun()),parent, name ),
+  : KAction( KIcon(t->icon), t->name, parent, name ),
     tool ( t )
 {
   //setText( t->name );
   //if ( ! t->icon.isEmpty() )
   //  setIcon( SmallIconSet( t->icon ) );
 
-  //connect( this ,SIGNAL(activated()), this, SLOT(slotRun()) );
+  connect( this, SIGNAL(triggered(bool)), SLOT(slotRun()) );
 }
 
 bool KateExternalToolAction::expandMacro( const QString &str, QStringList &ret )
@@ -295,7 +296,7 @@ void KateExternalToolAction::slotRun()
   if ( tool->save == 1 )
     mw->viewManager()->activeView()->document()->save();
   else if ( tool->save == 2 )
-    mw->actionCollection()->action("file_save_all")->activate();
+    mw->actionCollection()->action("file_save_all")->trigger();
 
   KRun::runCommand( cmd, tool->tryexec, tool->icon );
 }
@@ -329,7 +330,7 @@ void KateExternalToolsMenuAction::reload()
     m_actionCollection->action( i++ )->setShortcut(KShortcut());
   }
   m_actionCollection->clear ();
-  
+
   // load all the tools, and create a action for each of them
   KConfig *config = new KConfig( "externaltools", false, false, "appdata" );
   config->setGroup( "Global" );
@@ -391,7 +392,8 @@ void KateExternalToolsMenuAction::reload()
       insert( new KateExternalToolAction( m_actionCollection, t->acname.ascii(), t ) );
   }
 
-  m_actionCollection->readShortcutSettings( "Shortcuts", config );
+  m_actionCollection->setConfigGroup( "Shortcuts" );
+  m_actionCollection->readSettings( config );
   slotDocumentChanged();
   delete config;
 }
@@ -406,10 +408,9 @@ void KateExternalToolsMenuAction::slotDocumentChanged()
     QStringList l;
     bool b;
 
-    KActionPtrList actions = m_actionCollection->actions();
-    for (KActionPtrList::iterator it = actions.begin(); it != actions.end(); ++it )
+    foreach (KAction* kaction, m_actionCollection->actions())
     {
-      KateExternalToolAction *action = dynamic_cast<KateExternalToolAction*>(*it);
+      KateExternalToolAction *action = dynamic_cast<KateExternalToolAction*>(kaction);
       if ( action )
       {
         l = action->tool->mimetypes;
@@ -467,7 +468,7 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
       "The name will be displayed in the 'Tools->External' menu") );
 
   btnIcon = new KIconButton( w );
-  btnIcon->setIconSize( KIcon::SizeSmall );
+  btnIcon->setIconSize( K3Icon::SizeSmall );
   lo->addWidget( btnIcon, 1, 3 );
   if ( tool && !tool->icon.isEmpty() )
     btnIcon->setIcon( tool->icon );
@@ -680,7 +681,7 @@ void KateExternalToolsConfigWidget::reset()
 
 QPixmap KateExternalToolsConfigWidget::blankIcon()
 {
-  QPixmap pm( KIcon::SizeSmall, KIcon::SizeSmall );
+  QPixmap pm( K3Icon::SizeSmall, K3Icon::SizeSmall );
   pm.fill();
   pm.setMask( pm.createHeuristicMask() );
   return pm;

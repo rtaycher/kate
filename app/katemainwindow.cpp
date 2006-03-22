@@ -221,7 +221,7 @@ void KateMainWindow::setupMainWindow ()
   filelist = new KateFileList (this, m_viewManager, ft);
   //filelist->readConfig(KateApp::self()->config(), "Filelist");
 
-#if 0    
+#if 0
   KateMDI::ToolView *t = createToolView("kate_fileselector", KMultiTabBar::Left, SmallIcon("fileopen"), i18n("Filesystem Browser"));
   fileselector = new KateFileSelector( this, m_viewManager, t, "operator");
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileItem*)),this,SLOT(fileSelected(const KFileItem*)));
@@ -555,7 +555,7 @@ void KateMainWindow::editKeys()
   KKeyDialog dlg ( false, this );
 
   QList<KXMLGUIClient*> clients = guiFactory()->clients();
-  
+
   foreach(KXMLGUIClient *client, clients)
     dlg.insert ( client->actionCollection(), client->instance()->aboutData()->programName() );
 
@@ -574,7 +574,7 @@ void KateMainWindow::editKeys()
     }
   }
 
-  externalTools->actionCollection()->writeShortcutSettings( "Shortcuts", new KConfig("externaltools", false, false, "appdata") );
+  externalTools->actionCollection()->writeSettings( new KConfig("externaltools", false, false, "appdata") );
 }
 
 void KateMainWindow::openURL (const QString &name)
@@ -655,8 +655,8 @@ void KateMainWindow::slotOpenWithMenuAction(int idx)
   if (!offers.isEmpty()) {
     KService::Ptr app = offers.first();
     KRun::run(*app, list);
-  } 
-  else 
+  }
+  else
     KMessageBox::error(this, i18n("Application '%1' not found!").arg(appname->latin1()), i18n("Application not found!"));
 }
 

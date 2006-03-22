@@ -63,7 +63,6 @@
 #include <kcombobox.h>
 #include <kaction.h>
 #include <kmessagebox.h>
-#include <ktoolbarbutton.h>
 #include <kmenu.h>
 #include <kdialog.h>
 #include <kdebug.h>
@@ -107,7 +106,7 @@ void KateFileSelectorPlugin::loadViewConfig(KConfig* config,Kate::MainWindow *wi
       (*it)->readConfig(config,group);
       break;
     }
-  }  
+  }
 }
 
 
@@ -127,7 +126,7 @@ QString KateFileSelectorPlugin::configPageName (uint number) const {
 }
 
 QString KateFileSelectorPlugin::configPageFullName (uint number) const {
-  if (number!=0) return QString();  
+  if (number!=0) return QString();
   return i18n("File Selector Settings");
 }
 
@@ -148,12 +147,6 @@ KateFileSelectorToolBar::KateFileSelectorToolBar(QWidget *parent)
 }
 
 KateFileSelectorToolBar::~KateFileSelectorToolBar(){}
-
-void KateFileSelectorToolBar::setMovingEnabled( bool)
-{
-	KToolBar::setMovingEnabled(false);
-}
-
 
 KateFileSelectorToolBarParent::KateFileSelectorToolBarParent(QWidget *parent)
 	:QFrame(parent),m_tb(0){}
@@ -188,8 +181,7 @@ Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mai
   KateFileSelectorToolBarParent *tbp=new KateFileSelectorToolBarParent(this);
   toolbar = new KateFileSelectorToolBar(tbp);
   tbp->setToolBar(toolbar);
-  toolbar->setMovingEnabled(false);
-  toolbar->setFlat(true);
+  toolbar->setMovable(false);
   qInstallMsgHandler( oldHandler );
 
   cmbPath = new KUrlComboBox( KUrlComboBox::Directories, true, this);
@@ -218,7 +210,7 @@ Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mai
   coll->action( "home" )->setShortcut( KShortcut( Qt::CTRL + Qt::ALT + Qt::Key_Home ) );
 
   // bookmarks action!
-  KActionMenu *acmBookmarks = new KActionMenu( i18n("Bookmarks"), "bookmark",
+  KActionMenu *acmBookmarks = new KActionMenu( KIcon("bookmark"), i18n("Bookmarks"),
         mActionCollection, "bookmarks" );
   acmBookmarks->setDelayed( false );
   bookmarkHandler = new KBookmarkHandler( this, acmBookmarks->popupMenu() );
@@ -240,8 +232,8 @@ Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mai
   // kaction for the dir sync method
   acSyncDir = new KAction( i18n("Current Document Folder"), "curfiledir", 0,
         this, SLOT( setActiveDocumentDir() ), mActionCollection, "sync_dir" );
-  toolbar->setIconText( KToolBar::IconOnly );
-  toolbar->setIconSize( 16 );
+  toolbar->setToolButtonStyle( Qt::ToolButtonIconOnly );
+  toolbar->setIconDimensions( 16 );
   toolbar->setEnableContextMenu( false );
 
   connect( cmbPath, SIGNAL( urlActivated( const KUrl&  )),
@@ -448,7 +440,7 @@ void Kate::Private::Plugin::KateFileSelector::fileSelected(const KFileItem * /*f
   KFileItem *tmp;
   KFileItemList::const_iterator it = list->begin();
   const KFileItemList::const_iterator end = list->end();
-  for ( ; it != end; ++it ) 
+  for ( ; it != end; ++it )
   {
     tmp = (*it);
 	mainwin->openURL(tmp->url());
@@ -789,7 +781,7 @@ void KFSConfigPage::init()
     else
       ac = fileSelector->dirOperator()->actionCollection()->action( (*it).toLatin1().constData() );
     if ( ac )
-      new ActionLBItem( lb, SmallIcon( ac->icon() ), ac->text().replace( re, "" ), *it );
+      new ActionLBItem( lb, ac->icon(), ac->text().replace( re, "" ), *it );
   }
 
   // sync

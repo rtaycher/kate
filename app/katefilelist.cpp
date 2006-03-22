@@ -145,8 +145,7 @@ void KateFileList::setupActions ()
 {
   windowNext = KStdAction::back(this, SLOT(slotPrevDocument()), m_main->actionCollection());
   windowPrev = KStdAction::forward(this, SLOT(slotNextDocument()), m_main->actionCollection());
-  sortAction = new KSelectAction( i18n("Sort &By"), 0,
-      m_main->actionCollection(), "filelist_sortby"  );
+  sortAction = new KSelectAction( i18n("Sort &By"), m_main->actionCollection(), "filelist_sortby"  );
   QStringList l;
   l << i18n("Opening Order") << i18n("Document Name") << i18n("URL");
   sortAction->setItems( l );

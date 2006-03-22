@@ -47,12 +47,12 @@
 #include <qstringlist.h>
 #include <qtimer.h>
 #include <qfileinfo.h>
-//Added by qt3to4:
 #include <QDropEvent>
 #include <QMenu>
+#include <QStackedWidget>
 //END Includes
 
-KateViewSpaceContainer::KateViewSpaceContainer (QWidget *parent, KateViewManager *viewManager)
+KateViewSpaceContainer::KateViewSpaceContainer (KateViewManager *viewManager, QWidget *parent)
  : QSplitter  (parent)
  , m_viewManager(viewManager)
  , m_blockViewCreationAndActivation (false)
@@ -65,7 +65,6 @@ KateViewSpaceContainer::KateViewSpaceContainer (QWidget *parent, KateViewManager
   KateViewSpace* vs = new KateViewSpace( this, 0 );
   addWidget (vs);
 
-  connect(this, SIGNAL(statusChanged(KTextEditor::View *, int, int, int, bool, int, const QString&)), vs, SLOT(slotStatusChanged(KTextEditor::View *, int, int, int, bool, int, const QString&)));
   vs->setActive( true );
   m_viewSpaceList.append(vs);
   connect( this, SIGNAL(viewChanged()), this, SLOT(slotViewChanged()) );
@@ -106,7 +105,7 @@ bool KateViewSpaceContainer::createView ( KTextEditor::Document *doc )
     doc = KateDocManager::self()->createDoc ();
 
   // create view, registers its XML gui itself
-  KTextEditor::View *view = (KTextEditor::View *) doc->createView (this);
+  KTextEditor::View *view = (KTextEditor::View *) doc->createView (activeViewSpace()->stack);
 
   m_viewList.append (view);
   m_activeStates[view] = false;
@@ -429,7 +428,6 @@ void KateViewSpaceContainer::splitViewSpace( KateViewSpace* vs,
     currentSplitter->insertWidget (index, vsNew);
   }
 
-  connect(this, SIGNAL(statusChanged(KTextEditor::View *, int, int, int, bool, int, const QString &)), vsNew, SLOT(slotStatusChanged(KTextEditor::View *, int, int,int, bool, int, const QString &)));
   m_viewSpaceList.append( vsNew );
   activeViewSpace()->setActive( false );
   vsNew->setActive( true, true );
@@ -642,8 +640,6 @@ void KateViewSpaceContainer::restoreSplitter( KConfig* config, const QString &gr
     if ( (*it).startsWith(viewConfGrp+"-ViewSpace") )
     {
      KateViewSpace* vs = new KateViewSpace( this, s );
-
-     connect(this, SIGNAL(statusChanged(KTextEditor::View *, int, int, int, bool, int, const QString &)), vs, SLOT(slotStatusChanged(KTextEditor::View *, int, int, int, bool, int, const QString &)));
 
      if (m_viewSpaceList.isEmpty())
        vs->setActive (true);

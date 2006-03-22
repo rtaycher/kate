@@ -128,7 +128,6 @@ class KateViewManager : public QObject
     QPointer<KTextEditor::View> guiMergedView;
 
   Q_SIGNALS:
-    void statusChanged (KTextEditor::View *, int, int, int, bool, int, const QString &);
     void statChanged ();
     void viewChanged ();
 

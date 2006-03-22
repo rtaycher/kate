@@ -192,7 +192,7 @@ class KATEINTERFACES_EXPORT PluginConfigPageInterface
      * \param size the icon size
      * \return the pixmap for the config page
      */
-    virtual QPixmap configPagePixmap (uint number = 0, int size = KIcon::SizeSmall) const = 0;    
+    virtual QPixmap configPagePixmap (uint number = 0, int size = K3Icon::SizeSmall) const = 0;    
     
   private:
     class PrivatePluginConfigPageInterface *d;

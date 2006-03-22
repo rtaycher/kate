@@ -42,7 +42,7 @@ class KateViewSpaceContainer: public QSplitter
   friend class KateVSStatusBar;
 
   public:
-    KateViewSpaceContainer (QWidget *parent, KateViewManager *viewManager);
+    KateViewSpaceContainer (KateViewManager *viewManager, QWidget *parent = 0L);
 
     ~KateViewSpaceContainer ();
 
@@ -144,7 +144,6 @@ class KateViewSpaceContainer: public QSplitter
     void activatePrevView();
 
   Q_SIGNALS:
-    void statusChanged(KTextEditor::View *, int, int, int, bool, int, const QString&);
     void viewChanged ();
 
   private:
