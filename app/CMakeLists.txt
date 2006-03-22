@@ -56,7 +56,7 @@ kde4_automoc(${kate_KDEINIT_SRCS})
 
 kde4_add_kdeinit_executable( kate ${kate_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_kate  ${QT_AND_KDECORE_LIBS} kateinterfaces )
+target_link_libraries(kdeinit_kate  ${KDE4_KDECORE_LIBS} kateinterfaces )
 
 install_targets(${LIB_INSTALL_DIR} kdeinit_kate )
 
