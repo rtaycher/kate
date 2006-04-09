@@ -124,7 +124,7 @@ void KateApp::initKate ()
 {
 
   kDebug()<<"Setting KATE_PID: '"<<getpid()<<"'"<<endl;
-  ::setenv( "KATE_PID", QString("%1").arg(getpid()).latin1(), 1 );
+  ::setenv( "KATE_PID", QString("%1").arg(getpid()).toLatin1(), 1 );
 
   // handle restore different
   if (isSessionRestored())

@@ -287,6 +287,8 @@ void KateFileList::slotModChanged (KTextEditor::Document *doc)
 
 void KateFileList::slotModifiedOnDisc (KTextEditor::Document *doc, bool, KTextEditor::ModificationInterface::ModifiedOnDiskReason reason)
 {
+  Q_UNUSED(reason)
+
   slotModChanged( doc );
 }
 
@@ -482,7 +484,7 @@ void KateFileListItem::paintCell( QPainter *painter, const QColorGroup & cg, int
     // replace the base color with a different shading if necessary...
     if ( fl->shadingEnabled() && m_viewhistpos > 1 )
     {
-      QColor b( cg.base() );
+      QColor b = cg.color(QPalette::Base);
 
       QColor shade = fl->viewShade();
       QColor eshade = fl->editShade();
@@ -558,10 +560,10 @@ KFLConfigPage::KFLConfigPage( QWidget* parent, KateFileList *fl )
   lo1->addWidget( gb );
 
   QWidget *g = new QWidget( gb );
-  QGridLayout *lo = new QGridLayout( g, 2, 2 );
+  QGridLayout *lo = new QGridLayout( g );
   lo->setSpacing( KDialog::spacingHint() );
   cbEnableShading = new QCheckBox( i18n("&Enable background shading"), g );
-  lo->addMultiCellWidget( cbEnableShading, 1, 1, 0, 1 );
+  lo->addWidget( cbEnableShading, 1, 1, 0, 1 );
 
   kcbViewShade = new KColorButton( g );
   lViewShade = new QLabel( g );
