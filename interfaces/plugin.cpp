@@ -55,8 +55,9 @@ namespace Kate
 unsigned int Plugin::globalPluginNumber = 0;
 unsigned int PluginViewInterface::globalPluginViewInterfaceNumber = 0;
 
-Plugin::Plugin( Application *application, const char *name ) : QObject (application, name )
+Plugin::Plugin( Application *application, const char *name ) : QObject (application )
 {
+  setObjectName( name );
   globalPluginNumber++;
   myPluginNumber = globalPluginNumber;
 }

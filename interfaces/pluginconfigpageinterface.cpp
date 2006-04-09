@@ -31,7 +31,10 @@ class PrivatePluginConfigPageInterface
      ~PrivatePluginConfigPageInterface() {}
 };
 
-PluginConfigPage::PluginConfigPage ( QWidget *parent, const char *name ) : QWidget (parent, name) { }
+PluginConfigPage::PluginConfigPage ( QWidget *parent, const char *name ) : QWidget (parent) 
+{
+  setObjectName( name );
+}
  
 PluginConfigPage::~PluginConfigPage () { }
 
