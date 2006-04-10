@@ -255,7 +255,7 @@ bool KateDocManager::closeDocument(class KTextEditor::Document *doc,bool closeUR
     if ( fi.lastModified() <= m_tempFiles[ doc ].second ||
          KMessageBox::questionYesNo( KateApp::self()->activeMainWindow(),
             i18n("The supposedly temporary file %1 has been modified. "
-                "Do you want to delete it anyway?").arg(m_tempFiles[ doc ].first.prettyURL()),
+                "Do you want to delete it anyway?", m_tempFiles[ doc ].first.prettyURL()),
             i18n("Delete File?") ) == KMessageBox::Yes )
      {
        KIO::del( m_tempFiles[ doc ].first, false, false );
@@ -330,7 +330,7 @@ bool KateDocManager::queryCloseDocuments(KateMainWindow *w)
     {
       int msgres=KMessageBox::warningYesNoCancel( w,
                   i18n("<p>The document '%1' has been modified, but not saved."
-                       "<p>Do you want to save your changes or discard them?").arg( doc->documentName() ),
+                       "<p>Do you want to save your changes or discard them?", doc->documentName() ),
                     i18n("Close Document"), KStdGuiItem::save(), KStdGuiItem::discard() );
 
       if (msgres==KMessageBox::Cancel)

@@ -310,6 +310,7 @@ void KateMainWindow::setupActions()
   }
 
   a=new KAction(i18n("&About Editor Component"),0,this,SLOT(aboutEditor()),actionCollection(),"help_about_editor");
+  a->setGlobalShortcutAllowed(true);
 
   connect(m_viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
   connect(m_viewManager,SIGNAL(viewChanged()),this,SLOT(slotUpdateOpenWith()));
@@ -317,7 +318,7 @@ void KateMainWindow::setupActions()
   slotWindowActivated ();
 
   // session actions
-  new KAction(i18n("Menu entry Session->New", "&New"), "filenew", 0, KateSessionManager::self(), SLOT(sessionNew()), actionCollection(), "sessions_new");
+  new KAction(i18nc("Menu entry Session->New", "&New"), "filenew", 0, KateSessionManager::self(), SLOT(sessionNew()), actionCollection(), "sessions_new");
   new KAction(i18n("&Open..."), "fileopen", 0, KateSessionManager::self(), SLOT(sessionOpen()), actionCollection(), "sessions_open");
   new KAction(i18n("&Save"), "filesave", 0, KateSessionManager::self(), SLOT(sessionSave()), actionCollection(), "sessions_save");
   new KAction(i18n("Save &As..."), "filesaveas", 0, KateSessionManager::self(), SLOT(sessionSaveAs()), actionCollection(), "sessions_save_as");
@@ -552,7 +553,7 @@ void KateMainWindow::slotDropEvent( QDropEvent * event )
 
 void KateMainWindow::editKeys()
 {
-  KKeyDialog dlg ( false, this );
+  KKeyDialog dlg ( KKeyChooser::AllActions, KKeyChooser::LetterShortcutsDisallowed, this );
 
   QList<KXMLGUIClient*> clients = guiFactory()->clients();
 
@@ -657,7 +658,7 @@ void KateMainWindow::slotOpenWithMenuAction(int idx)
     KRun::run(*app, list);
   }
   else
-    KMessageBox::error(this, i18n("Application '%1' not found!").arg(appname->latin1()), i18n("Application not found!"));
+    KMessageBox::error(this, i18n("Application '%1' not found!", appname->latin1()), i18n("Application not found!"));
 }
 
 void KateMainWindow::pluginHelp()
@@ -711,7 +712,7 @@ void KateMainWindow::slotMail()
       int r = KMessageBox::warningYesNoCancel( this,
                 i18n("<p>The current file:<br><strong>%1</strong><br>has been "
                 "modified. Modifications will not be available in the attachment."
-                "<p>Do you want to save it before sending it?").arg(doc->url().prettyURL()),
+                "<p>Do you want to save it before sending it?", doc->url().prettyURL()),
                 i18n("Save Before Sending?"), KStdGuiItem::save(), i18n("Do Not Save") );
       switch ( r ) {
         case KMessageBox::Cancel:

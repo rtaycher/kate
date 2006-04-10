@@ -884,7 +884,7 @@ void KateSessionManageDialog::rename ()
   if (item->session->rename (name))
     updateSessionList ();
   else
-    KMessageBox::sorry(this,i18n("The session could not be renamed to \"%1\", there already exists another session with the same name").arg(name),i18n("Session Renaming"));
+    KMessageBox::sorry(this,i18n("The session could not be renamed to \"%1\", there already exists another session with the same name", name),i18n("Session Renaming"));
   
 }
 

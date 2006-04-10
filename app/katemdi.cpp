@@ -157,10 +157,10 @@ void GUIClient::registerToolView (ToolView *tv)
   sc = KShortcut( cfg->readEntry( aname, QString() ) );
   cfg->setGroup( _grp );
 
-  KToggleAction *a = new ToggleToolViewAction(i18n("Show %1").arg(tv->text),
+  KToggleAction *a = new ToggleToolViewAction(i18n("Show %1", tv->text),
     sc,tv, actionCollection(), aname.toLatin1() );
 
-  a->setCheckedState(i18n("Hide %1").arg(tv->text));
+  a->setCheckedState(i18n("Hide %1", tv->text));
 
   m_toolViewActions.append(a);
   m_toolMenu->insert(a);

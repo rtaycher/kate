@@ -175,7 +175,7 @@ void KateApp::restoreKate ()
   if (mainWindows() == 0)
     newMainWindow ();
 
-#ifndef Q_WS_WIN
+#ifdef Q_WS_X11
   // notify about start
   KStartupInfo::setNewStartupId( activeMainWindow(), startupId());
 #endif
@@ -196,7 +196,7 @@ bool KateApp::startupKate ()
     {
       kDebug()<<"chooseSession returned false, exiting"<<endl;
       // we will exit kate now, notify the rest of the world we are done
-#ifndef Q_WS_WIN
+#ifdef Q_WS_X11
       KStartupInfo::appStarted (startupId());
 #endif
       return false;
@@ -212,7 +212,7 @@ bool KateApp::startupKate ()
     newMainWindow ();
 
   // notify about start
-#ifndef Q_WS_WIN
+#ifdef Q_WS_X11
   KStartupInfo::setNewStartupId( activeMainWindow(), startupId());
 #endif
   QTextCodec *codec = m_args->isSet("encoding") ? QTextCodec::codecForName(m_args->getOption("encoding")) : 0;
@@ -240,7 +240,7 @@ bool KateApp::startupKate ()
     }
     else
       KMessageBox::sorry( activeMainWindow(),
-                          i18n("The file '%1' could not be opened: it is not a normal file, it is a folder.").arg(m_args->url(z).url()) );
+                          i18n("The file '%1' could not be opened: it is not a normal file, it is a folder.", m_args->url(z).url()) );
   }
 #ifdef __GNUC__
 #warning fixme later
@@ -360,7 +360,7 @@ bool KateApp::openURL (const KUrl &url, const QString &encoding, bool isTempFile
   }
   else
     KMessageBox::sorry( mainWindow,
-                        i18n("The file '%1' could not be opened: it is not a normal file, it is a folder.").arg(url.url()) );
+                        i18n("The file '%1' could not be opened: it is not a normal file, it is a folder.", url.url()) );
 
   return true;
 }

@@ -81,7 +81,7 @@ public:
 	virtual bool synchronousSave(QWidget *dialogParent) {
 		if (m_document->url().isEmpty() ) {
 		        KEncodingFileDialog::Result r=KEncodingFileDialog::getSaveURLAndEncoding(
-        	      	m_document->encoding(),QString(),QString(),dialogParent,i18n("Save As (%1)").arg(m_document->documentName()));
+        	      	m_document->encoding(),QString(),QString(),dialogParent,i18n("Save As (%1)", m_document->documentName()));
 
       m_document->setEncoding( r.encoding );
 

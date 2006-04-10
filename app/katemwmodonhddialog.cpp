@@ -158,8 +158,8 @@ void KateMwModOnHdDialog::handleSelected( int action )
           if ( ! success )
           {
             KMessageBox::sorry( this,
-                                i18n("Could not save the document \n'%1'").
-                                    arg( item->document->url().prettyURL() ) );
+                                i18n("Could not save the document \n'%1'", 
+                                     item->document->url().prettyURL() ) );
           }
           break;
 

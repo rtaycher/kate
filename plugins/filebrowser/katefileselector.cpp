@@ -237,9 +237,9 @@ Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mai
   toolbar->setEnableContextMenu( false );
 
   connect( cmbPath, SIGNAL( urlActivated( const KUrl&  )),
-             this,  SLOT( cmbPathActivated( const KUrl& ) ));
+             this, SLOT( cmbPathActivated( const KUrl& ) ));
   connect( cmbPath, SIGNAL( returnPressed( const QString&  )),
-             this,  SLOT( cmbPathReturnPressed( const QString& ) ));
+             this, SLOT( cmbPathReturnPressed( const QString& ) ));
   connect(dir, SIGNAL(urlEntered(const KUrl&)),
              this, SLOT(dirUrlEntered(const KUrl&)) );
 
@@ -385,7 +385,7 @@ void Kate::Private::Plugin::KateFileSelector::slotFilterChange( const QString & 
     dir->clearFilter();
     filter->lineEdit()->setText( QString() );
     btnFilter->setToolTip(
-        i18n("Apply last filter (\"%1\")").arg( lastFilter )) ;
+        i18n("Apply last filter (\"%1\")", lastFilter )) ;
   }
   else {
     dir->setNameFilter( f );

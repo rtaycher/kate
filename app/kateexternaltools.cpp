@@ -285,7 +285,7 @@ void KateExternalToolAction::slotRun()
   if ( ! expandMacrosShellQuote( cmd ) )
   {
     KMessageBox::sorry( (KateMainWindow*)parent()->parent(),
-                         i18n("Failed to expand the command '%1'.").arg( cmd ),
+                         i18n("Failed to expand the command '%1'.", cmd ),
                          i18n( "Kate External Tools") );
     return;
   }
@@ -621,7 +621,7 @@ KateExternalToolsConfigWidget::KateExternalToolsConfigWidget( QWidget *parent, c
   lo->addWidget( btnMoveDwn, 3, 4 );
   connect( btnMoveDwn, SIGNAL(clicked()), this, SLOT(slotMoveDown()) );
 
-  connect( lbTools, SIGNAL( doubleClicked ( Q3ListBoxItem * ) ), this,  SLOT( slotEdit() ) );
+  connect( lbTools, SIGNAL( doubleClicked ( Q3ListBoxItem * ) ), this, SLOT( slotEdit() ) );
 
   lo->setRowStretch( 1, 1 );
   lo->setRowStretch( 4, 1 );
