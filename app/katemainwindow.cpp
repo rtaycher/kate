@@ -532,7 +532,7 @@ void KateMainWindow::slotGrepToolItemSelected(const QString &filename,int linenu
 void KateMainWindow::dragEnterEvent( QDragEnterEvent *event )
 {
   if (!event->mimeData()) return;
-  event->accept(KUrl::List::canDecode(event->mimeData()));
+  event->setAccepted(KUrl::List::canDecode(event->mimeData()));
 }
 
 void KateMainWindow::dropEvent( QDropEvent *event )
