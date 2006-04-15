@@ -44,6 +44,7 @@
 #include <QContextMenuEvent>
 #include <QPixmap>
 #include <QChildEvent>
+#include <QSizePolicy>
 
 namespace KateMDI {
 
@@ -51,9 +52,10 @@ namespace KateMDI {
 
 ToggleToolViewAction::ToggleToolViewAction ( const QString& text, const KShortcut& cut, ToolView *tv,
                                              KActionCollection* parent, const char* name )
- : KToggleAction(text,cut,parent,name)
+ : KToggleAction(text,parent,name)
  , m_tv(tv)
 {
+  setShortcut(cut);
   connect(this,SIGNAL(toggled(bool)),this,SLOT(slotToggled(bool)));
   connect(m_tv,SIGNAL(toolVisibleChanged(bool)),this,SLOT(toolVisibleChanged(bool)));
 
@@ -121,8 +123,8 @@ GUIClient::GUIClient ( MainWindow *mw )
     actionCollection()->setAssociatedWidget(m_mw);
 
   m_toolMenu = new KActionMenu(i18n("Tool &Views"),actionCollection(),"kate_mdi_toolview_menu");
-  m_showSidebarsAction = new KToggleAction( i18n("Show Side&bars"),
-    Qt::CTRL|Qt::ALT|Qt::SHIFT|Qt::Key_F, actionCollection(), "kate_mdi_sidebar_visibility" );
+  m_showSidebarsAction = new KToggleAction( i18n("Show Side&bars"), actionCollection(), "kate_mdi_sidebar_visibility" );
+  m_showSidebarsAction->setShortcut(  Qt::CTRL|Qt::ALT|Qt::SHIFT|Qt::Key_F );
   m_showSidebarsAction->setCheckedState(i18n("Hide Side&bars"));
   m_showSidebarsAction->setChecked( m_mw->sidebarsVisible() );
   connect( m_showSidebarsAction, SIGNAL( toggled( bool ) ),
@@ -274,7 +276,10 @@ void Sidebar::setSplitter (QSplitter *sp)
   m_ownSplit = new QSplitter ((position() == KMultiTabBar::Top || position() == KMultiTabBar::Bottom) ? Qt::Horizontal : Qt::Vertical, m_splitter);
   m_ownSplit->setOpaqueResize( KGlobalSettings::opaqueResize() );
   m_ownSplit->setChildrenCollapsible( false );
-  m_splitter->setResizeMode( m_ownSplit, QSplitter::KeepSize );
+  QSizePolicy policy = m_ownSplit->sizePolicy();
+  policy.setHorizontalPolicy(QSizePolicy::Fixed);
+  policy.setVerticalPolicy(QSizePolicy::Fixed);
+  m_ownSplit->setSizePolicy(policy);
   m_ownSplit->hide ();
 }
 
