@@ -81,7 +81,8 @@ KateConsole::KateConsole (Kate::MainWindow *mw, QWidget *parent)
  , m_mw (mw)
  , m_toolView (parent)
 {
-    new KAction(i18n("&Pipe to Console"), "pipe", 0, this, SLOT(slotPipeToConsole()), actionCollection(), "katekonsole_tools_pipe_to_terminal");
+    KAction* a = new KAction(KIcon("pipe"), i18n("&Pipe to Console"), actionCollection(), "katekonsole_tools_pipe_to_terminal");
+    connect(a, SIGNAL(triggered()), this, SLOT(slotPipeToConsole()));
     setInstance (new KInstance("kate"));
     setXMLFile("plugins/katekonsole/ui.rc");
     m_mw->guiFactory()->addClient (this);
