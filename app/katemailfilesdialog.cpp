@@ -46,13 +46,16 @@ class KateDocCheckItem : public Q3CheckListItem {
 // KateMailDialog implementation
 ///////////////////////////////////////////////////////////////////////////
 KateMailDialog::KateMailDialog( QWidget *parent, KateMainWindow  *mainwin )
-  : KDialogBase( parent, "kate mail dialog", true, i18n("Email Files"),
-                Ok|Cancel|User1, Ok, false,
-                KGuiItem( i18n("&Show All Documents >>") ) ),
+  : KDialog( parent, i18n("Email Files"), KDialog::Ok|KDialog::Cancel|KDialog::User1, 0, KGuiItem( i18n("&Show All Documents >>") ) ),
     mainWindow( mainwin )
 {
-  setButtonGuiItem( KDialogBase::Ok, KGuiItem( i18n("&Mail..."), "mail_send") );
-  mw = makeVBoxMainWidget();
+  setObjectName( "kate mail dialog" );
+  setModal( true );
+
+  setButtonGuiItem( KDialog::Ok, KGuiItem( i18n("&Mail..."), "mail_send") );
+
+  mw = new KVBox(this);
+  setMainWidget(mw);
   mw->installEventFilter( this );
 
   lInfo = new QLabel( i18n(

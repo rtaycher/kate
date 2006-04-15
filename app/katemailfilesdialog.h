@@ -21,7 +21,7 @@
 
 #include <ktexteditor/document.h>
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <kurl.h>
 
 #include <q3ptrlist.h>
@@ -37,7 +37,7 @@ class KateMainWindow;
     to display all the files if required.
     
 */
-class KateMailDialog : public KDialogBase {
+class KateMailDialog : public KDialog {
   Q_OBJECT
   public:
     KateMailDialog( QWidget *parent=0,
