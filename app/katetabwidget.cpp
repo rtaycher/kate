@@ -76,7 +76,7 @@ void KateTabWidget::insertTab ( QWidget * child, const QIcon & iconset, const QS
 
 void KateTabWidget::removePage ( QWidget * w )
 {
-  KTabWidget::removePage(w);
+  KTabWidget::removeTab(indexOf(w));
   maybeShow();
 }
 
