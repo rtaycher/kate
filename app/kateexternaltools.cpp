@@ -107,7 +107,8 @@ bool KateExternalTool::checkExec()
       // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
       // Environment PATH may contain filenames in 8bit locale cpecified
       // encoding (Like a filenames).
-      QStringList dirs = QStringList::split(':', QFile::decodeName(::getenv("PATH")));
+      QString path = QFile::decodeName(::getenv("PATH"));
+      QStringList dirs = path.split(':', QString::SkipEmptyParts);
       QStringList::Iterator it(dirs.begin());
       bool match = false;
       for (; it != dirs.end(); ++it)
@@ -371,7 +372,7 @@ void KateExternalToolsMenuAction::reload()
   {
     if ( *it == "---" )
     {
-      popupMenu()->insertSeparator();
+      popupMenu()->addSeparator();
       // a separator
       continue;
     }
@@ -389,7 +390,7 @@ void KateExternalToolsMenuAction::reload()
         config->readEntry( "save", 0 ) );
 
     if ( t->hasexec )
-      insert( new KateExternalToolAction( m_actionCollection, t->acname.ascii(), t ) );
+      insert( new KateExternalToolAction( m_actionCollection, t->acname.toAscii(), t ) );
   }
 
   m_actionCollection->setConfigGroup( "Shortcuts" );
@@ -444,15 +445,18 @@ class ToolItem : public Q3ListBoxPixmap
 //BEGIN KateExternalToolServiceEditor
 KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *tool,
                                 QWidget *parent, const char *name )
-    : KDialogBase( parent, name, true, i18n("Edit External Tool"), KDialogBase::Ok|KDialogBase::Cancel ),
+    : KDialog( parent, i18n("Edit External Tool"), KDialog::Ok|KDialog::Cancel ),
       tool( tool )
 {
+  setObjectName( name );
+  setModal( true );
+
     // create a entry for each property
     // fill in the values from the service if available
   QWidget *w = new QWidget( this );
   setMainWidget( w );
   QGridLayout *lo = new QGridLayout( w );
-  lo->setSpacing( KDialogBase::spacingHint() );
+  lo->setSpacing( KDialog::spacingHint() );
 
   QLabel *l;
 
@@ -550,7 +554,8 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
 
   leCmdLine = new QLineEdit( w );
   lo->addWidget( leCmdLine, 6, 2, 1, 2 );
-  l = new QLabel( leCmdLine, i18n("&Command line name:"), w );
+  l = new QLabel( i18n("&Command line name:"), w );
+  l->setBuddy( leCmdLine );
   l->setAlignment( l->alignment()|Qt::AlignRight );
   lo->addWidget( l, 6, 1 );
   if ( tool ) leCmdLine->setText( tool->cmdname );
@@ -570,7 +575,7 @@ void KateExternalToolServiceEditor::slotOk()
     return;
   }
 
-  KDialogBase::slotOk();
+  KDialog::accept();
 }
 
 void KateExternalToolServiceEditor::showMTDlg()

@@ -29,7 +29,7 @@
 #include <ktexteditor/commandinterface.h>
 
 #include <kaction.h>
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <kmacroexpander.h>
 
 #include <qpixmap.h>
@@ -202,7 +202,7 @@ class KateExternalToolsConfigWidget : public KTextEditor::ConfigPage
 /**
  * A Dialog to edit a single KateExternalTool object
  */
-class KateExternalToolServiceEditor : public KDialogBase
+class KateExternalToolServiceEditor : public KDialog
 {
   Q_OBJECT
 
