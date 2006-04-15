@@ -360,11 +360,9 @@ bool KateSessionManager::saveActiveSession (bool tryAsk, bool rememberAsLast)
 
     if (sesExit == "ask")
     {
-      KDialogBase *dlg = new KDialogBase (
-                    i18n ("Save Session?")
-                    , KDialogBase::Yes | KDialogBase::No
-                    , KDialogBase::Yes, KDialogBase::No
-                  );
+      KDialog *dlg = new KDialog ( 0, i18n ("Save Session?"), KDialog::Yes | KDialog::No );
+      dlg->setDefaultButton( KDialog::Yes );
+      dlg->setEscapeButton( KDialog::No );
 
       bool dontAgain = false;
       int res = KMessageBox::createKMessageBox(dlg, QMessageBox::Question,
