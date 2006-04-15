@@ -58,12 +58,16 @@ class KateDocItem : public Q3CheckListItem
 
 
 KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const char *name )
-  : KDialogBase( parent, name, true, i18n("Documents Modified on Disk"),
-                 User1|User2|User3, User3, false,
+  : KDialog( parent, i18n("Documents Modified on Disk"),
+                 KDialog::User1|KDialog::User2|KDialog::User3, 0,
                  KGuiItem (i18n("&Ignore"), "fileclose"),
                  KGuiItem (i18n("&Overwrite"), "filesave"),
                  KGuiItem (i18n("&Reload"), "reload") )
 {
+  setObjectName( name );
+  setModal( true );
+  setDefaultButton( KDialog::User3 );
+
   setButtonWhatsThis( User1, i18n(
       "Removes the modified flag from the selected documents and closes the "
       "dialog if there are no more unhandled documents.") );
@@ -74,7 +78,8 @@ KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const
       "Reloads the selected documents from disk and closes the dialog if there "
       "are no more unhandled documents.") );
 
-  KVBox *w = makeVBoxMainWidget();
+  KVBox *w = new KVBox( this );
+  setMainWidget( w );
   w->setSpacing( KDialog::spacingHint() );
 
   KHBox *lo1 = new KHBox( w );

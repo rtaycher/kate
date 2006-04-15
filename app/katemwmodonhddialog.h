@@ -22,7 +22,7 @@
 
 #include <ktexteditor/document.h>
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 #include <q3ptrvector.h>
 
@@ -33,7 +33,7 @@ class KProcess;
  * A dialog for handling multiple documents modified on disk
  * from within KateMainWindow
  */
-class KateMwModOnHdDialog : public KDialogBase
+class KateMwModOnHdDialog : public KDialog
 {
   Q_OBJECT
   public:
