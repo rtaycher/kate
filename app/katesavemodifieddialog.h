@@ -21,13 +21,13 @@
 
 #include <ktexteditor/document.h>
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <QList>
 
 class QTreeWidget;
 class QTreeWidgetItem;
 
-class KateSaveModifiedDialog: public KDialogBase {
+class KateSaveModifiedDialog: public KDialog {
 	Q_OBJECT
 public:
 	KateSaveModifiedDialog(QWidget *parent, QList<KTextEditor::Document*> documents);

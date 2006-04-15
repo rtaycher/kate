@@ -133,19 +133,23 @@ private:
 };
 
 KateSaveModifiedDialog::KateSaveModifiedDialog(QWidget *parent, QList<KTextEditor::Document*> documents):
-	KDialogBase( parent, "KateSaveModifiedDialog", true, i18n("Save Documents"), Yes | No | Cancel) {
+	KDialog( parent, i18n("Save Documents"), KDialog::Yes | KDialog::No | KDialog::Cancel) {
+
+	setObjectName( "KateSaveModifiedDialog" );
+	setModal( true );
 
 	KGuiItem saveItem=KStdGuiItem::save();
 	saveItem.setText(i18n("&Save Selected"));
-	setButtonGuiItem(KDialogBase::Yes,saveItem);
+	setButtonGuiItem(KDialog::Yes, saveItem);
 
-	setButtonGuiItem(KDialogBase::No,KStdGuiItem::dontSave());
+	setButtonGuiItem(KDialog::No, KStdGuiItem::dontSave());
 
 	KGuiItem cancelItem=KStdGuiItem::cancel();
 	cancelItem.setText(i18n("&Abort Closing"));
-	setButtonGuiItem(KDialogBase::Cancel,cancelItem);
+	setButtonGuiItem(KDialog::Cancel, cancelItem);
 
-	KVBox *box=makeVBoxMainWidget();
+	KVBox *box = new KVBox(this);
+	setMainWidget(box);
 	new KActiveLabel(i18n("<qt>The following documents have been modified. Do you want to save them before closing?</qt>"),box);
 	m_list=new QTreeWidget(box);
 	/*m_list->addColumn(i18n("Title"));
@@ -183,11 +187,11 @@ void KateSaveModifiedDialog::slotItemActivated(QTreeWidgetItem*,int) {
 	kDebug(13001) << "slotItemSelected()" << endl;
 	for(int cc=0;cc<m_documentRoot->childCount();cc++) {
 		if (m_documentRoot->child(cc)->checkState(0)==Qt::Checked) {
-			enableButton(KDialogBase::Yes, true);
+			enableButton(KDialog::Yes, true);
 			return;
 		}
 	}
-	enableButton(KDialogBase::Yes, false);
+	enableButton(KDialog::Yes, false);
 }
 
 static void selectItems(QTreeWidgetItem *root) {
