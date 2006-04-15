@@ -92,7 +92,7 @@
 uint KateMainWindow::uniqueID = 1;
 
 KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
-  : KateMDI::MainWindow (0,(QString("__KateMainWindow#%1").arg(uniqueID)).latin1())
+  : KateMDI::MainWindow (0,(QString("__KateMainWindow#%1").arg(uniqueID)).toLatin1())
 {
   // first the very important id
   myID = uniqueID;
@@ -256,19 +256,23 @@ void KateMainWindow::setupActions()
   fileOpenRecent = KStdAction::openRecent (m_viewManager, SLOT(openURL (const KUrl&)), actionCollection());
   fileOpenRecent->setWhatsThis(i18n("This lists files which you have opened recently, and allows you to easily open them again."));
 
-  a=new KAction( i18n("Save A&ll"),"save_all", Qt::CTRL+Qt::Key_L, KateDocManager::self(), SLOT( saveAll() ), actionCollection(), "file_save_all" );
+  a=new KAction( KIcon("save_all"), i18n("Save A&ll"), actionCollection(), "file_save_all" );
+  a->setShortcut( Qt::CTRL+Qt::Key_L );
+  connect( a, SIGNAL( triggered() ), KateDocManager::self(), SLOT( saveAll() ) );
   a->setWhatsThis(i18n("Save all open, modified documents to disk."));
 
   KStdAction::close( m_viewManager, SLOT( slotDocumentClose() ), actionCollection(), "file_close" )->setWhatsThis(i18n("Close the current document."));
 
-  a=new KAction( i18n( "Clos&e All" ), 0, this, SLOT( slotDocumentCloseAll() ), actionCollection(), "file_close_all" );
+  a=new KAction( i18n( "Clos&e All" ), actionCollection(), "file_close_all" );
+  connect( a, SIGNAL( triggered() ), this, SLOT( slotDocumentCloseAll() ) );
   a->setWhatsThis(i18n("Close all open documents."));
 
   KStdAction::mail( this, SLOT(slotMail()), actionCollection() )->setWhatsThis(i18n("Send one or more of the open documents as email attachments."));
 
   KStdAction::quit( this, SLOT( slotFileQuit() ), actionCollection(), "file_quit" )->setWhatsThis(i18n("Close this window"));
 
-  a=new KAction(i18n("&New Window"), "window_new", 0, this, SLOT(newWindow()), actionCollection(), "view_new_view");
+  a=new KAction( KIcon("window_new"), i18n("&New Window"), actionCollection(), "view_new_view" );
+  connect( a, SIGNAL( triggered() ), this, SLOT( newWindow() ) );
   a->setWhatsThis(i18n("Create a new Kate view (a new window with the same document list)."));
 
   if ( KAuthorized::authorize("shell_access") )
@@ -305,11 +309,13 @@ void KateMainWindow::setupActions()
 
   if (KatePluginManager::self()->pluginList().count() > 0)
   {
-    a=new KAction(i18n("&Plugins Handbook"), 0, this, SLOT(pluginHelp()), actionCollection(), "help_plugins_contents");
+    a=new KAction( i18n("&Plugins Handbook"), actionCollection(), "help_plugins_contents" );
+    connect( a, SIGNAL( triggered() ), this, SLOT( pluginHelp() ) );
     a->setWhatsThis(i18n("This shows help files for various available plugins."));
   }
 
-  a=new KAction(i18n("&About Editor Component"),0,this,SLOT(aboutEditor()),actionCollection(),"help_about_editor");
+  a=new KAction( i18n("&About Editor Component"), actionCollection(), "help_about_editor" );
+  connect( a, SIGNAL( triggered() ), this, SLOT( aboutEditor() ) );
   a->setGlobalShortcutAllowed(true);
 
   connect(m_viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
@@ -318,11 +324,16 @@ void KateMainWindow::setupActions()
   slotWindowActivated ();
 
   // session actions
-  new KAction(i18nc("Menu entry Session->New", "&New"), "filenew", 0, KateSessionManager::self(), SLOT(sessionNew()), actionCollection(), "sessions_new");
-  new KAction(i18n("&Open..."), "fileopen", 0, KateSessionManager::self(), SLOT(sessionOpen()), actionCollection(), "sessions_open");
-  new KAction(i18n("&Save"), "filesave", 0, KateSessionManager::self(), SLOT(sessionSave()), actionCollection(), "sessions_save");
-  new KAction(i18n("Save &As..."), "filesaveas", 0, KateSessionManager::self(), SLOT(sessionSaveAs()), actionCollection(), "sessions_save_as");
-  new KAction(i18n("&Manage..."), "view_choose", 0, KateSessionManager::self(), SLOT(sessionManage()), actionCollection(), "sessions_manage");
+  a = new KAction( KIcon("filenew"), i18nc("Menu entry Session->New", "&New"), actionCollection(), "sessions_new" );
+  connect( a, SIGNAL( triggered() ), KateSessionManager::self(), SLOT( sessionNew() ) );
+  a = new KAction( KIcon("fileopen"), i18n("&Open..."), actionCollection(), "sessions_open" );
+  connect( a, SIGNAL( triggered() ), KateSessionManager::self(), SLOT( sessionOpen() ) );
+  a = new KAction( KIcon("filesave"), i18n("&Save"), actionCollection(), "sessions_save" );
+  connect( a, SIGNAL( triggered() ), KateSessionManager::self(), SLOT( sessionSave() ) );
+  a = new KAction( KIcon("filesaveas"), i18n("Save &As..."), actionCollection(), "sessions_save_as" );
+  connect( a, SIGNAL( triggered() ), KateSessionManager::self(), SLOT( sessionSaveAs() ) );
+  a = new KAction( KIcon("view_choose"), i18n("&Manage..."), actionCollection(), "sessions_manage" );
+  connect( a, SIGNAL( triggered() ), KateSessionManager::self(), SLOT( sessionManage() ) );
 
   // quick open menu ;)
   new KateSessionsAction (i18n("&Quick Open"), actionCollection(), "sessions_list");
@@ -649,7 +660,7 @@ void KateMainWindow::slotOpenWithMenuAction(int idx)
       KRun::run(*dlg->service(), list);
     return;
   }
-  QString qry = QString("((Type == 'Application') and (Name == '%1'))").arg( appname->latin1() );
+  QString qry = QString("((Type == 'Application') and (Name == '%1'))").arg( appname->toLatin1().data() );
   KMimeType::Ptr mime = KMimeType::findByURL( m_viewManager->activeView()->document()->url() );
   KTrader::OfferList offers = KTrader::self()->query(mime->name(), qry);
 
@@ -658,7 +669,7 @@ void KateMainWindow::slotOpenWithMenuAction(int idx)
     KRun::run(*app, list);
   }
   else
-    KMessageBox::error(this, i18n("Application '%1' not found!", appname->latin1()), i18n("Application not found!"));
+    KMessageBox::error(this, i18n("Application '%1' not found!", appname->toLatin1().data()), i18n("Application not found!"));
 }
 
 void KateMainWindow::pluginHelp()
