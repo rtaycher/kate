@@ -230,8 +230,8 @@ Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mai
            filter, SLOT( addToHistory(const QString&) ) );
 
   // kaction for the dir sync method
-  acSyncDir = new KAction( i18n("Current Document Folder"), "curfiledir", 0,
-        this, SLOT( setActiveDocumentDir() ), mActionCollection, "sync_dir" );
+  acSyncDir = new KAction( KIcon("curfiledir"), i18n("Current Document Folder"), mActionCollection, "sync_dir" );
+  connect( acSyncDir, SIGNAL( triggered() ), this, SLOT( setActiveDocumentDir() ) );
   toolbar->setToolButtonStyle( Qt::ToolButtonIconOnly );
   toolbar->setIconDimensions( 16 );
   toolbar->setEnableContextMenu( false );
