@@ -39,6 +39,7 @@
 #include "katesession.h"
 #include "katetabwidget.h"
 
+
 #include "../interfaces/mainwindow.h"
 
 #include <kaboutapplication.h>
@@ -176,6 +177,10 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
   // connect documents menu aboutToshow
   documentMenu = (QMenu*)factory()->container("documents", this);
   connect(documentMenu, SIGNAL(aboutToShow()), this, SLOT(documentMenuAboutToShow()));
+
+  documentsGroup = new QActionGroup(documentMenu);
+  documentsGroup->setExclusive(true);
+  connect(documentsGroup, SIGNAL(triggered(QAction *)), this, SLOT(activateDocumentFromDocMenu(QAction *)));
 
   // caption update
   for (uint i = 0; i < KateDocManager::self()->documents(); i++)
@@ -500,28 +505,30 @@ void KateMainWindow::slotUpdateOpenWith()
 
 void KateMainWindow::documentMenuAboutToShow()
 {
-  // remove documents
-  while (documentMenu->count() > 3)
-    documentMenu->removeItemAt (3);
+  // removes all actions from documentMenu and documentsGroup
+  qDeleteAll( documentsGroup->actions() );
 
   Q3ListViewItem * item = filelist->firstChild();
   while( item ) {
-    documentMenu->insertItem (
-          KStringHandler::rsqueeze( ((KateFileListItem *)item)->document()->documentName(), 150 ), // would it be saner to use the screen width as a limit that some random number??
-          this, SLOT (activateDocumentFromDocMenu (int)), 0,
-          KateDocManager::self()->findDocument(((KateFileListItem *)item)->document()) );
+    KTextEditor::Document *doc = ((KateFileListItem *)item)->document();
+    // would it be saner to use the screen width as a limit that some random number??
+    QAction *action = new QAction(
+                                  KStringHandler::rsqueeze(doc->documentName(), 150),
+                                  documentsGroup );
+    action->setCheckable(true);
+    if(m_viewManager->activeView() && doc == m_viewManager->activeView()->document())
+      action->setChecked(true);
+    action->setData(QVariant::fromValue((void *)doc));
+    documentMenu->addAction(action);
 
     item = item->nextSibling();
   }
 
-  if (m_viewManager->activeView())
-    documentMenu->setItemChecked ( KateDocManager::self()->findDocument(m_viewManager->activeView()->document()), true);
 }
 
-void KateMainWindow::activateDocumentFromDocMenu (int index)
+void KateMainWindow::activateDocumentFromDocMenu (QAction *action)
 {
-  KTextEditor::Document *doc = KateDocManager::self()->document(index);
-
+  KTextEditor::Document *doc = (KTextEditor::Document *)action->data().value<void *>();
   if (doc)
     m_viewManager->activateView (doc);
 }
@@ -641,10 +648,10 @@ void KateMainWindow::mSlotFixOpenWithMenu()
   // for each one, insert a menu item...
   for(KTrader::OfferList::Iterator it = offers.begin(); it != offers.end(); ++it) {
     if ((*it)->name() == "Kate") continue;
-    documentOpenWith->popupMenu()->insertItem( QIcon(SmallIcon( (*it)->icon() )), (*it)->name() );
+    documentOpenWith->popupMenu()->addAction( KIcon((*it)->icon()), (*it)->name() );
   }
   // append "Other..." to call the KDE "open with" dialog.
-  documentOpenWith->popupMenu()->insertItem(i18n("&Other..."));
+  documentOpenWith->popupMenu()->addAction(i18n("&Other..."));
 }
 
 void KateMainWindow::slotOpenWithMenuAction(int idx)

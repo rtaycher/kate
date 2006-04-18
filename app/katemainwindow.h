@@ -35,6 +35,7 @@
 #include <QEvent>
 #include <QDropEvent>
 #include <QVBoxLayout>
+#include <QActionGroup>
 
 class QMenu;
 
@@ -154,7 +155,7 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
     void slotUpdateOpenWith();
 
     void documentMenuAboutToShow();
-    void activateDocumentFromDocMenu (int index);
+    void activateDocumentFromDocMenu (QAction *action);
 
     void slotDropEvent(QDropEvent *);
     void editKeys();
@@ -209,6 +210,7 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
     KActionMenu* documentOpenWith;
 
     QMenu *documentMenu;
+    QActionGroup *documentsGroup;
 
     KToggleAction* settingsShowFilelist;
     KToggleAction* settingsShowFileselector;
