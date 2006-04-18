@@ -366,7 +366,7 @@ void KateFileList::slotMenu ( Q3ListViewItem *item, const QPoint &p, int /*col*/
     menu->exec(p);
 }
 
-QString KateFileList::tooltip( Q3ListViewItem *item, int )
+QString KateFileList::tooltip( Q3ListViewItem *item, int ) const
 {
   KateFileListItem *i = ((KateFileListItem*)item);
   if ( ! i ) return QString();

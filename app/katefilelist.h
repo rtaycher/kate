@@ -99,7 +99,7 @@ class KateFileList : public K3ListView
       sortByURL = 2
     };
 
-    QString tooltip( Q3ListViewItem *item, int );
+    QString tooltip( Q3ListViewItem *item, int ) const;
 
     uint histCount() const { return m_viewHistory.count(); }
     uint editHistCount() const { return m_editHistory.count(); }
