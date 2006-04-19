@@ -259,9 +259,10 @@ void KateFileList::slotActivateView( Q3ListViewItem *item )
 
 void KateFileList::slotModChanged (KTextEditor::Document *doc)
 {
-  if (!doc) return;
-
   Q3ListViewItem * item = firstChild();
+
+  if (!doc || !item) return;
+
   while( item )
   {
     if ( ((KateFileListItem *)item)->document() == doc )
