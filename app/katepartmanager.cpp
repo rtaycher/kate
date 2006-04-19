@@ -79,11 +79,14 @@ KatePartProxy *KatePartManager::createPart (const char *libname, QWidget *parent
   KatePartProxy *part = new KatePartProxy (parent ? parent : m_coolStore);
 
   KParts::Factory *factory = (KParts::Factory *) KLibLoader::self()->factory( libname );
-
-  KParts::Part *p = (KParts::Part *)factory->createPart(part, "", this, "", classname);
-  part->setPart (p);
+  if (factory)
+  {
+    KParts::Part *p = (KParts::Part *)factory->createPart(part, "", this, "", classname);
+    part->setPart (p);
      
-  m_partList.append (part);
+    m_partList.append (part);
+  } else
+    return 0;
 
   return part;
 }
