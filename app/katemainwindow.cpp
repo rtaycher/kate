@@ -677,7 +677,7 @@ void KateMainWindow::slotOpenWithMenuAction(int idx)
     KRun::run(*app, list);
   }
   else
-    KMessageBox::error(this, i18n("Application '%1' not found!").arg(appname), i18n("Application not found!"));
+    KMessageBox::error(this, i18n("Application '%1' not found!", appname), i18n("Application not found!"));
 }
 
 void KateMainWindow::pluginHelp()
