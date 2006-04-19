@@ -916,28 +916,33 @@ KateSessionsAction::KateSessionsAction(const QString& text, KActionCollection* p
   : KActionMenu(text, parent, name)
 {
   connect(popupMenu(),SIGNAL(aboutToShow()),this,SLOT(slotAboutToShow()));
+  
+  sessionsGroup = new QActionGroup( popupMenu() );
+  connect(sessionsGroup, SIGNAL( triggered(QAction *) ), this, SLOT( openSession(QAction *)));
 }
 
 void KateSessionsAction::slotAboutToShow()
 {
-  popupMenu()->clear ();
+  qDeleteAll( sessionsGroup->actions() );
 
   KateSessionList &slist (KateSessionManager::self()->sessionList());
   for (int i=0; i < slist.count(); ++i)
   {
-      popupMenu()->insertItem (
-          slist[i]->sessionName(),
-          this, SLOT (openSession (int)), 0,
-          i );
+  	QAction *action = new QAction( slist[i]->sessionName(), sessionsGroup );
+  	action->setData(QVariant(i));
+		popupMenu()->addAction (action);
   }
 }
 
-void KateSessionsAction::openSession (int i)
+void KateSessionsAction::openSession (QAction *action)
 {
   KateSessionList &slist (KateSessionManager::self()->sessionList());
 
+	int i = action->data().toInt();
   if (i >= slist.count())
     return;
 
-  KateSessionManager::self()->activateSession(slist[(uint)i]);
+  KateSessionManager::self()->activateSession(slist[i]);
 }
+
+// kate: space-indent on; indent-width 2; replace-tabs on;

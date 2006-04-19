@@ -28,6 +28,7 @@
 
 #include <qobject.h>
 #include <QList>
+#include <QActionGroup>
 
 class KateSessionManager;
 class KActionCollection;
@@ -425,7 +426,12 @@ class KateSessionsAction : public KActionMenu
   public  Q_SLOTS:
     void slotAboutToShow();
 
-    void openSession (int i);
+    void openSession (QAction *action);
+	
+	private:
+		QActionGroup *sessionsGroup;
 };
 
 #endif
+
+// kate: space-indent on; indent-width 2; replace-tabs on;

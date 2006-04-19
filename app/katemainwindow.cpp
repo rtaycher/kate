@@ -658,7 +658,8 @@ void KateMainWindow::slotOpenWithMenuAction(int idx)
 {
   KUrl::List list;
   list.append( m_viewManager->activeView()->document()->url() );
-  QString appname =documentOpenWith->popupMenu()->text(idx);
+
+  QString appname = documentOpenWith->popupMenu()->actions().at(idx)->text();
   appname = appname.remove('&'); //Remove a possible accelerator ... otherwise the application might not get found.
   if ( appname.compare(i18n("Other...")) == 0 ) {
     // display "open with" dialog
