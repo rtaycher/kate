@@ -198,8 +198,9 @@ void KatePluginManager::enablePluginGUI (KatePluginInfo *item, KateMainWindow *w
   kDebug()<<item->plugin<<"--"<<Kate::pluginViewInterface(item->plugin)<<endl;
   //END DEBUG
   Kate::pluginViewInterface(item->plugin)->addView(win->mainWindow());
-  if (config)
-  	Kate::pluginViewInterface(item->plugin)->loadViewConfig(config,win->mainWindow(),QString("Plugin:%1:MainWindow:%2").arg(item->saveName()).arg(KateApp::self()->mainWindowID(win)));
+  int winID = KateApp::self()->mainWindowID(win);
+  if (config && winID >= 0)
+  	Kate::pluginViewInterface(item->plugin)->loadViewConfig(config,win->mainWindow(),QString("Plugin:%1:MainWindow:%2").arg(item->saveName()).arg(winID));
 }
 
 void KatePluginManager::enablePluginGUI (KatePluginInfo *item)
