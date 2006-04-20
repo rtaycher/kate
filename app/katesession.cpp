@@ -30,7 +30,6 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
-#include <k3listview.h>
 #include <kinputdialog.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
