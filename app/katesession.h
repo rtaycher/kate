@@ -29,6 +29,8 @@
 #include <qobject.h>
 #include <QList>
 #include <QActionGroup>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
 
 class KateSessionManager;
 class KActionCollection;
@@ -334,12 +336,12 @@ class KateSessionChooser : public KDialog
     /**
      * selection has changed
      */
-    void selectionChanged ();
+    void selectionChanged (QTreeWidgetItem *current, QTreeWidgetItem *previous);
 
     void slotProfilePopup();
   private:
     QTimer *m_delayTimer;
-    K3ListView *m_sessions;
+    QTreeWidget *m_sessions;
     QCheckBox *m_useLast;
     QList<KateSessionChooserTemplate> m_templates;
 };
@@ -371,7 +373,7 @@ class KateSessionOpenDialog : public KDialog
     void slotUser2 ();
 
   private:
-    K3ListView *m_sessions;
+    QTreeWidget *m_sessions;
 };
 
 class KateSessionManageDialog : public KDialog
@@ -391,7 +393,7 @@ class KateSessionManageDialog : public KDialog
     /**
      * selection has changed
      */
-    void selectionChanged ();
+    void selectionChanged (QTreeWidgetItem *current, QTreeWidgetItem *previous);
 
     /**
      * try to rename session
@@ -410,7 +412,7 @@ class KateSessionManageDialog : public KDialog
     void updateSessionList ();
 
   private:
-    K3ListView *m_sessions;
+    QTreeWidget *m_sessions;
     KPushButton *m_rename;
     KPushButton *m_del;
 };

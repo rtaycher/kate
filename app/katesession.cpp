@@ -575,11 +575,11 @@ void KateSessionManager::sessionManage ()
 
 //BEGIN CHOOSER DIALOG
 
-class KateSessionChooserItem : public Q3ListViewItem
+class KateSessionChooserItem : public QTreeWidgetItem
 {
   public:
-    KateSessionChooserItem (K3ListView *lv, KateSession::Ptr s)
-     : Q3ListViewItem (lv, s->sessionName())
+    KateSessionChooserItem (QTreeWidget *tw, KateSession::Ptr s)
+     : QTreeWidgetItem (tw, QStringList(s->sessionName()))
      , session (s)
     {
       QString docs;
@@ -625,15 +625,16 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
   vb->setSpacing (KDialog::spacingHint());
   tll->addItem(vb);
   
-  m_sessions = new K3ListView (page);
+  m_sessions = new QTreeWidget (page);
   vb->addWidget(m_sessions);
-  m_sessions->addColumn (i18n("Session Name"));
-  m_sessions->addColumn (i18n("Open Documents"));
-  m_sessions->setResizeMode (Q3ListView::AllColumns);
-  m_sessions->setSelectionMode (Q3ListView::Single);
-  m_sessions->setAllColumnsShowFocus (true);
+  QStringList header;
+  header << i18n("Session Name");
+  header << i18nc("The number of open documents", "Open Documents");
+  m_sessions->setHeaderLabels(header);
+  m_sessions->setSelectionBehavior(QAbstractItemView::SelectItems);
+  m_sessions->setSelectionMode (QAbstractItemView::SingleSelection);
   
-  connect (m_sessions, SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
+  connect (m_sessions, SIGNAL(selectionChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(selectionChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 
   KateSessionList &slist (KateSessionManager::self()->sessionList());
   for (int i=0; i < slist.count(); ++i)
@@ -641,7 +642,7 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
     KateSessionChooserItem *item = new KateSessionChooserItem (m_sessions, slist[i]);
 
     if (slist[i]->sessionFileRelative() == lastSession)
-      m_sessions->setSelected (item, true);
+      m_sessions->setCurrentItem (item);
   }
 
   m_useLast = new QCheckBox (i18n ("&Always use this choice"), page);
@@ -652,7 +653,7 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
   connect(actionButton(KDialog::User3),SIGNAL(pressed()),m_delayTimer,SLOT(start()));
   connect(m_delayTimer,SIGNAL(timeout()),this,SLOT(slotProfilePopup()));
   // trigger action update
-  selectionChanged ();
+  selectionChanged (NULL, NULL);
   connect(this,SIGNAL(user1Clicked()),this,SLOT(slotUser1()));
   connect(this,SIGNAL(user2Clicked()),this,SLOT(slotUser2()));
   connect(this,SIGNAL(user3Clicked()),this,SLOT(slotUser3()));
@@ -681,7 +682,7 @@ void KateSessionChooser::slotProfilePopup() {
 
 KateSession::Ptr KateSessionChooser::selectedSession ()
 {
-  KateSessionChooserItem *item = (KateSessionChooserItem *) m_sessions->selectedItem ();
+  KateSessionChooserItem *item = (KateSessionChooserItem *) m_sessions->currentItem ();
 
   if (!item)
     return KateSession::Ptr();
@@ -716,9 +717,9 @@ void KateSessionChooser::slotUser1 ()
   done (resultQuit);
 }
 
-void KateSessionChooser::selectionChanged ()
+void KateSessionChooser::selectionChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
-  enableButton (KDialog::User2, m_sessions->selectedItem ());
+  enableButton (KDialog::User2, current);
 }
 
 //END CHOOSER DIALOG
@@ -744,15 +745,16 @@ KateSessionOpenDialog::KateSessionOpenDialog (QWidget *parent)
   
   QVBoxLayout *vb = new QVBoxLayout ();
   hb->addItem(vb);*/
-  m_sessions = new K3ListView (this);
+  m_sessions = new QTreeWidget (this);
   m_sessions->setMinimumSize(400,200);
   setMainWidget(m_sessions);
   //vb->addWidget(m_sessions);
-  m_sessions->addColumn (i18n("Session Name"));
-  m_sessions->addColumn (i18n("Open Documents"));
-  m_sessions->setResizeMode (Q3ListView::AllColumns);
-  m_sessions->setSelectionMode (Q3ListView::Single);
-  m_sessions->setAllColumnsShowFocus (true);
+  QStringList header;
+  header << i18n("Session Name");
+  header << i18nc("The number of open documents", "Open Documents");
+  m_sessions->setHeaderLabels(header);
+  m_sessions->setSelectionBehavior(QAbstractItemView::SelectItems);
+  m_sessions->setSelectionMode (QAbstractItemView::SingleSelection);
 
   KateSessionList &slist (KateSessionManager::self()->sessionList());
   for (int i=0; i < slist.count(); ++i)
@@ -772,7 +774,7 @@ KateSessionOpenDialog::~KateSessionOpenDialog ()
 
 KateSession::Ptr KateSessionOpenDialog::selectedSession ()
 {
-  KateSessionChooserItem *item = (KateSessionChooserItem *) m_sessions->selectedItem ();
+  KateSessionChooserItem *item = (KateSessionChooserItem *) m_sessions->currentItem ();
 
   if (!item)
     return KateSession::Ptr();
@@ -810,15 +812,17 @@ KateSessionManageDialog::KateSessionManageDialog (QWidget *parent)
   QHBoxLayout *hb = new QHBoxLayout (page);
   hb->setSpacing (KDialog::spacingHint());
 
-  m_sessions = new K3ListView (page);
+  m_sessions = new QTreeWidget (page);
   hb->addWidget(m_sessions);
-  m_sessions->addColumn (i18n("Session Name"));
-  m_sessions->addColumn (i18n("Open Documents"));
-  m_sessions->setResizeMode (Q3ListView::AllColumns);
-  m_sessions->setSelectionMode (Q3ListView::Single);
-  m_sessions->setAllColumnsShowFocus (true);
+  m_sessions->setColumnCount(2);
+  QStringList header;
+  header << i18n("Session Name");
+  header << i18nc("The number of open documents", "Open Documents");
+  m_sessions->setHeaderLabels(header);
+  m_sessions->setSelectionBehavior(QAbstractItemView::SelectRows);
+  m_sessions->setSelectionMode (QAbstractItemView::SingleSelection);
 
-  connect (m_sessions, SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
+  connect (m_sessions, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(selectionChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 
   updateSessionList ();
 
@@ -837,7 +841,7 @@ KateSessionManageDialog::KateSessionManageDialog (QWidget *parent)
   vb->addStretch ();
 
   // trigger action update
-  selectionChanged ();
+  selectionChanged (NULL, NULL);
   connect(this,SIGNAL(user1Clicked()),this,SLOT(slotUser1()));
 
 }
@@ -851,10 +855,10 @@ void KateSessionManageDialog::slotUser1 ()
   done (0);
 }
 
-
-void KateSessionManageDialog::selectionChanged ()
+void KateSessionManageDialog::selectionChanged (QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
-  KateSessionChooserItem *item = (KateSessionChooserItem *) m_sessions->selectedItem ();
+  KateSessionChooserItem *item = (KateSessionChooserItem *) current;
+
   QString defFileName=KateSessionManager::self()->defaultSessionFileName();
   m_rename->setEnabled (item && item->session->sessionFileRelative() != defFileName);
   m_del->setEnabled (item && item->session->sessionFileRelative() != defFileName);
@@ -862,7 +866,7 @@ void KateSessionManageDialog::selectionChanged ()
 
 void KateSessionManageDialog::rename ()
 {
-  KateSessionChooserItem *item = (KateSessionChooserItem *) m_sessions->selectedItem ();
+  KateSessionChooserItem *item = (KateSessionChooserItem *) m_sessions->currentItem ();
 
   if (!item || item->session->sessionFileRelative() == KateSessionManager::self()->defaultSessionFileName())
     return;
@@ -888,7 +892,7 @@ void KateSessionManageDialog::rename ()
 
 void KateSessionManageDialog::del ()
 {
-  KateSessionChooserItem *item = (KateSessionChooserItem *) m_sessions->selectedItem ();
+  KateSessionChooserItem *item = (KateSessionChooserItem *) m_sessions->currentItem ();
 
   if (!item || item->session->sessionFileRelative() == KateSessionManager::self()->defaultSessionFileName())
     return;
