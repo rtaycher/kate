@@ -741,7 +741,7 @@ void KFSConfigPage::apply()
   // histories
   fileSelector->cmbPath->setMaxItems( sbPathHistLength->value() );
   fileSelector->filter->setMaxCount( sbFilterHistLength->value() );
-  // session - theese are read/written directly to the app config,
+  // session - these are read/written directly to the app config,
   //           as they are not needed during operation.
   config->writeEntry( "restore location", cbSesLocation->isChecked() );
   config->writeEntry( "restore last filter", cbSesFilter->isChecked() );
