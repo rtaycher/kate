@@ -35,7 +35,6 @@
 class KateSessionManager;
 class KActionCollection;
 class KDirWatch;
-class K3ListView;
 class KPushButton;
 
 class QCheckBox;
