@@ -21,7 +21,6 @@
 #include "kateviewmanager.h"
 #include "katedocmanager.h"
 
-#include <k3listview.h>
 #include <klocale.h>
 #include <kurl.h>
 
@@ -33,10 +32,15 @@
 #include <Q3PtrList>
 
 /* a private check list item, that can store a KTextEditor::Document*.  */
-class KateDocCheckItem : public Q3CheckListItem {
+class KateMailDocItem : public QTreeWidgetItem {
   public:
-    KateDocCheckItem( Q3ListView *parent, const QString& text, KTextEditor::Document *d )
-      : Q3CheckListItem( parent, text, Q3CheckListItem::CheckBox ), mdoc(d) {};
+    KateMailDocItem( QTreeWidget *parent, KTextEditor::Document *doc )
+      : QTreeWidgetItem( parent ), mdoc(doc)
+    {
+      setText(0, doc->documentName());
+      setText(1, doc->url().prettyURL());
+      setCheckState(0, Qt::Unchecked);
+    };
     KTextEditor::Document *doc() { return mdoc; };
   private:
     KTextEditor::Document *mdoc;
@@ -62,21 +66,23 @@ KateMailDialog::KateMailDialog( QWidget *parent, KateMainWindow  *mainwin )
         "<p>Press <strong>Mail...</strong> to email the current document."
         "<p>To select more documents to send, press <strong>Show All Documents&nbsp;&gt;&gt;</strong>."), mw );
   // TODO avoid untill needed - later
-  list = new K3ListView( mw );
-  list->addColumn( i18n("Name") );
-  list->addColumn( i18n("URL") );
+  list = new QTreeWidget( mw );
+  QStringList header;
+  header << i18n("Name");
+  header << i18n("URL");
+  list->setHeaderLabels(header);
+  
   KTextEditor::Document *currentDoc = mainWindow->viewManager()->activeView()->document();
   uint n = KateDocManager::self()->documents();
   uint i = 0;
-  Q3CheckListItem *item;
+  QTreeWidgetItem *item;
   while ( i < n ) {
     KTextEditor::Document *doc = KateDocManager::self()->document( i );
     if ( doc ) {
-      item = new KateDocCheckItem( list, doc->documentName(), doc );
-      item->setText( 1, doc->url().prettyURL() );
+      item = new KateMailDocItem( list, doc );
       if ( doc == currentDoc ) {
-        item->setOn( true );
-        item->setSelected( true );
+        list->setCurrentItem(item);
+        item->setCheckState(0, Qt::Checked);
       }
     }
     i++;
@@ -89,11 +95,12 @@ KateMailDialog::KateMailDialog( QWidget *parent, KateMainWindow  *mainwin )
 Q3PtrList<KTextEditor::Document> KateMailDialog::selectedDocs()
 {
   Q3PtrList<KTextEditor::Document> l;
-  Q3ListViewItem *item = list->firstChild();
-  while ( item ) {
-    if ( ((KateDocCheckItem*)item)->isOn() )
-      l.append( ((KateDocCheckItem*)item)->doc() );
-    item = item->nextSibling();
+  KateMailDocItem *item = NULL;
+  for(int i = 0; i < list->topLevelItemCount(); i++)
+  {
+    item = (KateMailDocItem *)list->topLevelItem(i);
+    if ( item->checkState(0) == Qt::Checked )
+      l.append( item->doc() );
   }
   return l;
 }
@@ -120,3 +127,5 @@ void KateMailDialog::slotShowButton()
 #endif
 }
 #include "katemailfilesdialog.moc"
+
+// kate: space-indent on; indent-width 2; replace-tabs on;

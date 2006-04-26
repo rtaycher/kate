@@ -26,6 +26,8 @@
 
 #include <q3ptrlist.h>
 #include <QLabel>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
 
 class QString;
 class QStringList;
@@ -51,7 +53,7 @@ class KateMailDialog : public KDialog {
   private Q_SLOTS:
     void slotShowButton();
   private:
-    class K3ListView *list;
+    class QTreeWidget *list;
     class QLabel *lInfo;
     KateMainWindow *mainWindow;
     class KVBox *mw;
