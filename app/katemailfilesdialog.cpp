@@ -110,21 +110,18 @@ void KateMailDialog::slotShowButton()
   if ( list->isVisible() ) {
     setButtonText( User1, i18n("&Show All Documents >>") );
     list->hide();
+    mw->setMinimumSize( QSize( lInfo->sizeHint().width(), lInfo->sizeHint().height()) );
+    setMinimumSize( mw->width(), sizeHint().height() - list->sizeHint().height());
   }
   else {
     list->show();
     setButtonText( User1, i18n("&Hide Document List <<") );
     lInfo->setText( i18n("Press <strong>Mail...</strong> to send selected documents") );
-
+    mw->setMinimumSize( QSize( lInfo->sizeHint().width(), list->sizeHint().height() + lInfo->sizeHint().height()) );
+    setMinimumSize( mw->width(), sizeHint().height());
   }
-#ifdef __GNUC__
-#warning portme
-#endif
-#if 0
-  mw->setMinimumSize( QSize( lInfo->sizeHint().width(), mw->sizeHint().height()) );
-  setMinimumSize( calculateSize( mw->minimumSize().width(), mw->sizeHint().height() ) );
+
   resize( width(), minimumHeight() );
-#endif
 }
 #include "katemailfilesdialog.moc"
 
