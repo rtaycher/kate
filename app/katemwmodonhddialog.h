@@ -26,6 +26,9 @@
 
 #include <q3ptrvector.h>
 
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
+
 typedef  Q3PtrVector<KTextEditor::Document> DocVector;
 class KProcIO;
 class KProcess;
@@ -47,14 +50,14 @@ class KateMwModOnHdDialog : public KDialog
 
   private Q_SLOTS:
     void slotDiff();
-    void slotSelectionChanged();
+    void slotSelectionChanged(QTreeWidget *current, QTreeWidget *);
     void slotPRead(KProcIO*);
     void slotPDone(KProcess*);
 
   private:
     enum Action { Ignore, Overwrite, Reload };
     void handleSelected( int action );
-    class K3ListView *lvDocuments;
+    class QTreeWidget *twDocuments;
     class QPushButton *btnDiff;
     class KTempFile *m_tmpfile;
 };

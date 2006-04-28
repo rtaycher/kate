@@ -25,7 +25,6 @@
 #include <ktexteditor/document.h>
 
 #include <kiconloader.h>
-#include <k3listview.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kprocio.h>
@@ -34,22 +33,24 @@
 #include <kpushbutton.h>
 
 #include <qlabel.h>
-#include <q3listview.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <kvbox.h>
 #include <QTextStream>
 
-class KateDocItem : public Q3CheckListItem
+class KateDocItem : public QTreeWidgetItem
 {
   public:
-    KateDocItem( KTextEditor::Document *doc, const QString &status, K3ListView *lv )
-  : Q3CheckListItem( lv, doc->url().prettyURL(), CheckBox ),
+    KateDocItem( KTextEditor::Document *doc, const QString &status, QTreeWidget *tw )
+  : QTreeWidgetItem( tw ),
         document( doc )
     {
+      setText( 0, doc->url().prettyURL() );
       setText( 1, status );
       if ( ! doc->isModified() )
-        setOn( On );
+        setCheckState( 0, Qt::Checked );
+      else
+        setCheckState( 0, Qt::Unchecked );
     }
     ~KateDocItem() {};
 
@@ -94,17 +95,21 @@ KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const
   lo1->setStretchFactor( t, 1000 );
 
   // document list
-  lvDocuments = new K3ListView( w );
-  lvDocuments->addColumn( i18n("Filename") );
-  lvDocuments->addColumn( i18n("Status on Disk") );
-  lvDocuments->setSelectionMode( Q3ListView::Single );
+  twDocuments = new QTreeWidget( w );
+  QStringList header;
+  header << i18n("Filename") << i18n("Status on Disk");
+  twDocuments->setHeaderLabels(header);
+  twDocuments->setSelectionMode( QAbstractItemView::SingleSelection );
 
   QStringList l;
   l << "" << i18n("Modified") << i18n("Created") << i18n("Deleted");
   for ( uint i=0; i < docs.size(); i++ )
-    new KateDocItem( docs[i], l[ (uint)KateDocManager::self()->documentInfo( docs[i] )->modifiedOnDiscReason ], lvDocuments );
+  {
+    kDebug() << "Sono qua" << endl;
+    new KateDocItem( docs[i], l[ (uint)KateDocManager::self()->documentInfo( docs[i] )->modifiedOnDiscReason ], twDocuments );
+  }
 
-  connect( lvDocuments, SIGNAL(selectionChanged()), this, SLOT(slotSelectionChanged()) );
+  connect( twDocuments, SIGNAL(currentItemChanged(QTreeWidget *, QTreeWidget *)), this, SLOT(slotSelectionChanged(QTreeWidget *, QTreeWidget *)) );
 
   // diff button
   KHBox *lo2 = new KHBox ( w );
@@ -117,8 +122,11 @@ KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const
       "file for the selected document, and shows the difference with the "
       "default application. Requires diff(1).") );
   connect( btnDiff, SIGNAL(clicked()), this, SLOT(slotDiff()) );
+  connect( this, SIGNAL(user1Clicked()), this, SLOT(slotUser1()) );
+  connect( this, SIGNAL(user2Clicked()), this, SLOT(slotUser2()) );
+  connect( this, SIGNAL(user3Clicked()), this, SLOT(slotUser3()) );
 
-  slotSelectionChanged();
+  slotSelectionChanged(NULL, NULL);
   m_tmpfile = 0;
 }
 
@@ -144,11 +152,11 @@ void KateMwModOnHdDialog::slotUser3()
 void KateMwModOnHdDialog::handleSelected( int action )
 {
   // collect all items we can remove
-  QList<Q3ListViewItem *> itemsToDelete;
-  for ( Q3ListViewItemIterator it ( lvDocuments ); it.current(); ++it )
+  QList<QTreeWidgetItem *> itemsToDelete;
+  for ( QTreeWidgetItemIterator it ( twDocuments ); *it; ++it )
   {
-    KateDocItem *item = static_cast<KateDocItem *>(it.current());
-    if ( item->isOn() )
+    KateDocItem *item = (KateDocItem *)*it;
+    if ( item->checkState(0) == Qt::Checked )
     {
       KTextEditor::ModificationInterface::ModifiedOnDiskReason reason = KateDocManager::self()->documentInfo( item->document )->modifiedOnDiscReason;
       bool success = true;
@@ -191,15 +199,15 @@ void KateMwModOnHdDialog::handleSelected( int action )
     delete itemsToDelete[i];
 
 // any documents left unhandled?
-  if ( ! lvDocuments->childCount() )
+  if ( ! twDocuments->topLevelItemCount() )
     done( Ok );
 }
 
-void KateMwModOnHdDialog::slotSelectionChanged()
+void KateMwModOnHdDialog::slotSelectionChanged(QTreeWidget *current, QTreeWidget *)
 {
   // set the diff button enabled
-  btnDiff->setEnabled( lvDocuments->currentItem() &&
-      KateDocManager::self()->documentInfo( ((KateDocItem*)lvDocuments->currentItem())->document )->modifiedOnDiscReason != 3 );
+  btnDiff->setEnabled( current &&
+      KateDocManager::self()->documentInfo( ((KateDocItem*)current)->document )->modifiedOnDiscReason != 3 );
 }
 
 // ### the code below is slightly modified from kdelibs/kate/part/katedialogs,
@@ -209,10 +217,10 @@ void KateMwModOnHdDialog::slotDiff()
   if ( m_tmpfile ) // we are allready somewhere in this process.
     return;
 
-  if ( ! lvDocuments->currentItem() )
+  if ( ! twDocuments->currentItem() )
     return;
 
-  KTextEditor::Document *doc = ((KateDocItem*)lvDocuments->currentItem())->document;
+  KTextEditor::Document *doc = ((KateDocItem*)twDocuments->currentItem())->document;
 
   // don't try o diff a deleted file
   if ( KateDocManager::self()->documentInfo( doc )->modifiedOnDiscReason == 3 )

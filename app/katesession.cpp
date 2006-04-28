@@ -716,7 +716,7 @@ void KateSessionChooser::slotUser1 ()
   done (resultQuit);
 }
 
-void KateSessionChooser::selectionChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
+void KateSessionChooser::selectionChanged(QTreeWidgetItem *current, QTreeWidgetItem *)
 {
   enableButton (KDialog::User2, current);
 }
@@ -854,7 +854,7 @@ void KateSessionManageDialog::slotUser1 ()
   done (0);
 }
 
-void KateSessionManageDialog::selectionChanged (QTreeWidgetItem *current, QTreeWidgetItem *previous)
+void KateSessionManageDialog::selectionChanged (QTreeWidgetItem *current, QTreeWidgetItem *)
 {
   KateSessionChooserItem *item = (KateSessionChooserItem *) current;
 
