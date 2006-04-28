@@ -105,7 +105,6 @@ KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const
   l << "" << i18n("Modified") << i18n("Created") << i18n("Deleted");
   for ( uint i=0; i < docs.size(); i++ )
   {
-    kDebug() << "Sono qua" << endl;
     new KateDocItem( docs[i], l[ (uint)KateDocManager::self()->documentInfo( docs[i] )->modifiedOnDiscReason ], twDocuments );
   }
 
