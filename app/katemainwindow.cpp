@@ -860,6 +860,7 @@ void KateMainWindow::updateCaption (KTextEditor::Document *doc)
     return;
   }
 
+  // block signals from inactive docs
   if (!((KTextEditor::Document*)m_viewManager->activeView()->document() == doc))
     return;
 
@@ -873,7 +874,12 @@ void KateMainWindow::updateCaption (KTextEditor::Document *doc)
     c = m_viewManager->activeView()->document()->url().prettyURL();
   }
 
-  setCaption( KStringHandler::lsqueeze(c,64), m_viewManager->activeView()->document()->isModified());
+  QString sessName = KateApp::self()->sessionManager()->activeSession()->sessionName();
+  if ( !sessName.isEmpty() )
+    sessName = QString("%1: ").arg( sessName );
+
+  setCaption( sessName + KStringHandler::lsqueeze(c,64),
+              m_viewManager->activeView()->document()->isModified());
 }
 
 void KateMainWindow::saveProperties(KConfig *config)
