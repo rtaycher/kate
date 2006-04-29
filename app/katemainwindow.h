@@ -151,6 +151,7 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
 
     void slotFileQuit();
     void slotEditToolbars();
+    void slotNewToolbarConfig();
     void slotWindowActivated ();
     void slotUpdateOpenWith();
 
