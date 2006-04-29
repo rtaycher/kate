@@ -350,7 +350,7 @@ void GrepTool::slotSearch()
 
   QString s = cmbPattern->currentText();
   if ( ! cbRegex->isChecked() )
-    s.replace( QRegExp( "([^\\w'])" ), "\\\\1" );
+    s.replace( QRegExp( "([^\\w'()<>])" ), "\\\\1" );
   QString pattern = leTemplate->text();
   pattern.replace( "%s", s );
 
