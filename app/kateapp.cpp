@@ -250,7 +250,7 @@ bool KateApp::startupKate ()
   // handle stdin input
   if( m_args->isSet( "stdin" ) )
   {
-    QTextIStream input(stdin);
+    QTextStream input(stdin, QIODevice::ReadOnly);
 
     // set chosen codec
     if (codec)
