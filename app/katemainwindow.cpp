@@ -190,10 +190,10 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
 
   readOptions();
 
-  finishRestore ();
-
   if (sconfig)
     m_viewManager->restoreViewConfiguration (sconfig, sgroup);
+
+  finishRestore ();
 
   setAcceptDrops(true);
 }
