@@ -283,42 +283,44 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
     if (sc)
       KateApp::self()->documentManager()->restoreDocumentList (sc);
 
+    // if we have no session config object, try to load the default
+    // (anonymous/unnamed sessions)
+    if ( ! sc )
+      sc = new KSimpleConfig( sessionsDir() + "/default.katesession" );
+
     // window config
-    if (sc)
+    KConfig *c = KGlobal::config();
+    c->setGroup("General");
+
+    if (c->readEntry("Restore Window Configuration", QVariant(true)).toBool())
     {
-      KConfig *c = KGlobal::config();
-      c->setGroup("General");
+      // a new, named session, read settings of the default session.
+      if ( ! sc->hasGroup("Open Mainwindows") )
+        sc = new KSimpleConfig( sessionsDir() + "/default.katesession" );
 
-      if (c->readEntry("Restore Window Configuration", QVariant(true)).toBool())
+      sc->setGroup ("Open MainWindows");
+      int wCount = sc->readEntry("Count", 1);
+
+      for (int i=0; i < wCount; ++i)
       {
-        // a new, named session, read settings of the default session.
-        if ( ! sc->hasGroup("Open Mainwindows") )
-          sc = new KSimpleConfig( sessionsDir() + "/default.katesession" );
-
-        sc->setGroup ("Open MainWindows");
-        int wCount = sc->readEntry("Count", 1);
-
-        for (int i=0; i < wCount; ++i)
+        if (i >= KateApp::self()->mainWindows())
         {
-          if (i >= KateApp::self()->mainWindows())
-          {
-            KateApp::self()->newMainWindow(sc, QString ("MainWindow%1").arg(i));
-          }
-          else
-          {
-            sc->setGroup(QString ("MainWindow%1").arg(i));
-            KateApp::self()->mainWindow(i)->readProperties (sc);
-          }
+          KateApp::self()->newMainWindow(sc, QString ("MainWindow%1").arg(i));
         }
-
-        if (wCount > 0)
+        else
         {
-          while (wCount < KateApp::self()->mainWindows())
-          {
-            KateMainWindow *w = KateApp::self()->mainWindow(KateApp::self()->mainWindows()-1);
-            KateApp::self()->removeMainWindow (w);
-            delete w;
-          }
+          sc->setGroup(QString ("MainWindow%1").arg(i));
+          KateApp::self()->mainWindow(i)->readProperties (sc);
+        }
+      }
+
+      if (wCount > 0)
+      {
+        while (wCount < KateApp::self()->mainWindows())
+        {
+          KateMainWindow *w = KateApp::self()->mainWindow(KateApp::self()->mainWindows()-1);
+          KateApp::self()->removeMainWindow (w);
+          delete w;
         }
       }
     }
