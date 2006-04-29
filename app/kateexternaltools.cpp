@@ -331,6 +331,7 @@ void KateExternalToolsMenuAction::reload()
     m_actionCollection->action( i++ )->setShortcut(KShortcut());
   }
   m_actionCollection->clear ();
+  popupMenu()->clear();
 
   // load all the tools, and create a action for each of them
   KConfig *config = new KConfig( "externaltools", false, false, "appdata" );
