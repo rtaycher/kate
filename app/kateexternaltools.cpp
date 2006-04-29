@@ -325,11 +325,6 @@ KateExternalToolsMenuAction::KateExternalToolsMenuAction( const QString &text,
 
 void KateExternalToolsMenuAction::reload()
 {
-  int i = 0;
-  while ( i < m_actionCollection->count() )
-  {
-    m_actionCollection->action( i++ )->setShortcut(KShortcut());
-  }
   m_actionCollection->clear ();
   popupMenu()->clear();
 
