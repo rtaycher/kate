@@ -24,7 +24,7 @@
 #include <kdialog.h>
 #include <kurl.h>
 
-#include <q3ptrlist.h>
+#include <QList>
 #include <QLabel>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
@@ -49,7 +49,7 @@ class KateMailDialog : public KDialog {
     /**
         @return a list of the selected docs.
     */
-    Q3PtrList<KTextEditor::Document> selectedDocs();
+    QList<KTextEditor::Document *> selectedDocs();
   private Q_SLOTS:
     void slotShowButton();
   private:

@@ -31,7 +31,7 @@
 
 #include <qtooltip.h>
 #include <qcolor.h>
-#include <q3ptrlist.h>
+#include <QList>
 //Added by qt3to4:
 #include <QPixmap>
 #include <QMouseEvent>
@@ -158,8 +158,8 @@ class KateFileList : public K3ListView
     KAction* windowPrev;
     KSelectAction* sortAction;
 
-    Q3PtrList<KateFileListItem> m_viewHistory;
-    Q3PtrList<KateFileListItem> m_editHistory;
+    QList<KateFileListItem *> m_viewHistory;
+    QList<KateFileListItem *> m_editHistory;
 
     QColor m_viewShade, m_editShade;
     bool m_enableBgShading;

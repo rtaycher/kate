@@ -81,9 +81,6 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
 
   v = view;
 
-  pluginPages.setAutoDelete (false);
-  editorPages.setAutoDelete (false);
-
   QStringList path;
 
   setShowIconsInTreeList(true);
@@ -341,14 +338,14 @@ void KateConfigDialog::removePluginPage (Kate::Plugin *plugin)
    if (!Kate::pluginConfigPageInterface(plugin))
     return;
 
-  for (uint i=0; i<pluginPages.count(); i++)
+  for (int i=0; i<pluginPages.count(); i++)
   {
-    if  ( pluginPages.at(i)->plugin == plugin )
+    if  ( pluginPages[i]->plugin == plugin )
     {
-      QWidget *w = pluginPages.at(i)->page->parentWidget();
-      delete pluginPages.at(i)->page;
+      QWidget *w = pluginPages[i]->page->parentWidget();
+      delete pluginPages[i]->page;
       delete w;
-      pluginPages.remove(pluginPages.at(i));
+      pluginPages.removeAt(i);
       i--;
     }
   }
@@ -427,7 +424,7 @@ void KateConfigDialog::slotApply()
   //
   // editor config ! (the apply() methode will check the changed state internally)
   //
-  for (uint i=0; i<editorPages.count(); i++)
+  for (int i=0; i<editorPages.count(); i++)
   {
     editorPages.at(i)->apply();
   }
@@ -438,9 +435,9 @@ void KateConfigDialog::slotApply()
   //
   // plugins config ! (the apply() methode SHOULD check the changed state internally)
   //
-  for (uint i=0; i<pluginPages.count(); i++)
+  for (int i=0; i<pluginPages.count(); i++)
   {
-    pluginPages.at(i)->page->apply();
+    pluginPages[i]->page->apply();
   }
 
   config->sync();

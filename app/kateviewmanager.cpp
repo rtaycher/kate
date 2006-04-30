@@ -74,16 +74,13 @@ KateViewManager::KateViewManager (KateMainWindow *parent)
  slotNewTab();
  tabChanged(m_mainWindow->tabWidget()->currentWidget());
 
-  // no memleaks
-  m_viewSpaceContainerList.setAutoDelete(true);
-
   // init done
   m_init=false;
 }
 
 KateViewManager::~KateViewManager ()
 {
-  m_viewSpaceContainerList.setAutoDelete(false);
+
 }
 
 void KateViewManager::setupActions ()
@@ -217,7 +214,7 @@ void KateViewManager::slotCloseTab()
   if (m_viewSpaceContainerList.count() <= 1) return;
   if (!m_currentContainer) return;
 
-  int pos = m_viewSpaceContainerList.find (m_currentContainer);
+  int pos = m_viewSpaceContainerList.indexOf (m_currentContainer);
 
   if (pos == -1)
     return;
@@ -225,12 +222,12 @@ void KateViewManager::slotCloseTab()
   if (guiMergedView)
     m_mainWindow->guiFactory()->removeClient (guiMergedView );
 
-  m_viewSpaceContainerList.remove (pos);
+  delete m_viewSpaceContainerList.takeAt (pos);
 
-  if ((uint)pos >= m_viewSpaceContainerList.count())
+  if (pos >= m_viewSpaceContainerList.count())
     pos = m_viewSpaceContainerList.count()-1;
 
-  tabChanged(m_viewSpaceContainerList.at (pos));
+  tabChanged(m_viewSpaceContainerList[pos]);
 }
 
 void KateViewManager::activateNextTab()
@@ -317,8 +314,8 @@ void KateViewManager::activateView( KTextEditor::Document *doc )
 uint KateViewManager::viewCount ()
 {
   uint viewCount=0;
-  for (uint i=0;i<m_viewSpaceContainerList.count();i++) {
-    viewCount+=m_viewSpaceContainerList.at(i)->viewCount();
+  for (int i=0;i<m_viewSpaceContainerList.count();i++) {
+    viewCount+=m_viewSpaceContainerList[i]->viewCount();
   }
   return viewCount;
 
@@ -327,16 +324,16 @@ uint KateViewManager::viewCount ()
 uint KateViewManager::viewSpaceCount ()
 {
   uint viewSpaceCount=0;
-  for (uint i=0;i<m_viewSpaceContainerList.count();i++) {
-    viewSpaceCount+=m_viewSpaceContainerList.at(i)->viewSpaceCount();
+  for (int i=0;i<m_viewSpaceContainerList.count();i++) {
+    viewSpaceCount+=m_viewSpaceContainerList[i]->viewSpaceCount();
   }
   return viewSpaceCount;
 }
 
 void KateViewManager::setViewActivationBlocked (bool block)
 {
-  for (uint i=0;i<m_viewSpaceContainerList.count();i++)
-    m_viewSpaceContainerList.at(i)->m_blockViewCreationAndActivation=block;
+  for (int i=0;i<m_viewSpaceContainerList.count();i++)
+    m_viewSpaceContainerList[i]->m_blockViewCreationAndActivation=block;
 }
 
 void KateViewManager::activateNextView()
@@ -355,8 +352,8 @@ void KateViewManager::activatePrevView()
 
 void KateViewManager::closeViews(KTextEditor::Document *doc)
 {
-  for (uint i=0;i<m_viewSpaceContainerList.count();i++) {
-    m_viewSpaceContainerList.at(i)->closeViews(doc);
+  for (int i=0;i<m_viewSpaceContainerList.count();i++) {
+    m_viewSpaceContainerList[i]->closeViews(doc);
   }
   tabChanged(m_currentContainer);
 }
@@ -455,8 +452,8 @@ void KateViewManager::slotSplitViewSpaceHoriz()
 void KateViewManager::setShowFullPath( bool enable )
 {
   showFullPath=enable;
-  for (uint i=0;i<m_viewSpaceContainerList.count();i++) {
-    m_viewSpaceContainerList.at(i)->setShowFullPath(enable);
+  for (int i=0;i<m_viewSpaceContainerList.count();i++) {
+    m_viewSpaceContainerList[i]->setShowFullPath(enable);
   }
   m_mainWindow->slotWindowActivated ();
  }
@@ -470,8 +467,8 @@ void KateViewManager::saveViewConfiguration(KConfig *config,const QString& group
   config->setGroup(group);
   config->writeEntry("ViewSpaceContainers",m_viewSpaceContainerList.count());
   config->writeEntry("Active ViewSpaceContainer", m_mainWindow->tabWidget()->currentIndex());
-  for (uint i=0;i<m_viewSpaceContainerList.count();i++) {
-    m_viewSpaceContainerList.at(i)->saveViewConfiguration(config,group+QString(":ViewSpaceContainer-%1:").arg(i));
+  for (int i = 0; i < m_viewSpaceContainerList.count(); i++) {
+    m_viewSpaceContainerList[i]->saveViewConfiguration(config,group+QString(":ViewSpaceContainer-%1:").arg(i));
   }
 }
 
@@ -481,10 +478,10 @@ void KateViewManager::restoreViewConfiguration (KConfig *config, const QString& 
   uint tabCount=config->readEntry("ViewSpaceContainers",0);
   int activeOne=config->readEntry("Active ViewSpaceContainer",0);
   if (tabCount==0) return;
-  m_viewSpaceContainerList.at(0)->restoreViewConfiguration(config,group+QString(":ViewSpaceContainer-0:"));
+  m_viewSpaceContainerList[0]->restoreViewConfiguration(config,group+QString(":ViewSpaceContainer-0:"));
   for (uint i=1;i<tabCount;i++) {
     slotNewTab();
-    m_viewSpaceContainerList.at(i)->restoreViewConfiguration(config,group+QString(":ViewSpaceContainer-%1:").arg(i));
+    m_viewSpaceContainerList[i]->restoreViewConfiguration(config,group+QString(":ViewSpaceContainer-%1:").arg(i));
   }
 
   if (activeOne != m_mainWindow->tabWidget()->currentIndex())

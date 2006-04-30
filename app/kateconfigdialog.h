@@ -30,7 +30,7 @@
 
 #include <kdialogbase.h>
 //Added by qt3to4:
-#include <Q3PtrList>
+#include <QList>
 
 class QCheckBox;
 class QSpinBox;
@@ -76,8 +76,8 @@ class KateConfigDialog : public KDialogBase
     //KTextEditor::ConfigPage *fileSelConfigPage;
     KTextEditor::ConfigPage *filelistConfigPage;
     KTextEditor::ConfigPage *configExternalToolsPage;
-    Q3PtrList<PluginPageListItem> pluginPages;
-    Q3PtrList<KTextEditor::ConfigPage> editorPages;
+    QList<PluginPageListItem *> pluginPages;
+    QList<KTextEditor::ConfigPage *> editorPages;
     KTextEditor::EditorChooser *m_editorChooser;
 };
 

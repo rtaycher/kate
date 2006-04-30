@@ -27,7 +27,7 @@
 #include <ktexteditor/document.h>
 
 #include <qpointer.h>
-#include <Q3PtrList>
+#include <QList>
 
 class KateMainWindow;
 class KateViewSpaceContainer;
@@ -47,7 +47,7 @@ class KateViewManager : public QObject
 
     KateViewSpaceContainer *activeContainer () { return m_currentContainer; }
 
-    Q3PtrList<KateViewSpaceContainer> *containers() { return &m_viewSpaceContainerList; }
+    QList<KateViewSpaceContainer *> *containers() { return &m_viewSpaceContainerList; }
 
     void updateViewSpaceActions ();
 
@@ -132,7 +132,7 @@ class KateViewManager : public QObject
     void viewChanged ();
 
   private:
-    Q3PtrList<KateViewSpaceContainer> m_viewSpaceContainerList;
+    QList<KateViewSpaceContainer *> m_viewSpaceContainerList;
     KateViewSpaceContainer *m_currentContainer;
 
     KateMainWindow *m_mainWindow;

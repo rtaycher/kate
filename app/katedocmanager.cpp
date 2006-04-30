@@ -303,7 +303,7 @@ bool KateDocManager::closeAllDocuments(bool closeURL)
   {
     KateApp::self()->mainWindow(i)->viewManager()->setViewActivationBlocked(false);
 
-    for (uint s=0; s < KateApp::self()->mainWindow(i)->viewManager()->containers()->count(); s++)
+    for (int s=0; s < KateApp::self()->mainWindow(i)->viewManager()->containers()->count(); s++)
       KateApp::self()->mainWindow(i)->viewManager()->containers()->at(s)->activateView (m_docList.at(0));
   }
 

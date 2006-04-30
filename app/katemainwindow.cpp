@@ -80,7 +80,7 @@
 #include <QDragEnterEvent>
 #include <QEvent>
 #include <QDropEvent>
-#include <Q3PtrList>
+#include <QList>
 #include <QDesktopWidget>
 
 #include <assert.h>
@@ -703,14 +703,14 @@ void KateMainWindow::slotMail()
   KateMailDialog *d = new KateMailDialog(this, this);
   if ( ! d->exec() )
     return;
-  Q3PtrList<KTextEditor::Document> attDocs = d->selectedDocs();
+  QList<KTextEditor::Document *> attDocs = d->selectedDocs();
   delete d;
   // Check that all selected files are saved (or shouldn't be)
   QStringList urls; // to atthatch
   KTextEditor::Document *doc;
-  Q3PtrListIterator<KTextEditor::Document> it(attDocs);
-  for ( ; it.current(); ++it ) {
-    doc = it.current();
+  QList<KTextEditor::Document *>::iterator it = attDocs.begin();
+  for ( ; *it; ++it ) {
+    doc = *it;
     if (!doc) continue;
     if ( doc->url().isEmpty() ) {
       // unsaved document. back out unless it gets saved

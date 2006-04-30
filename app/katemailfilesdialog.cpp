@@ -29,7 +29,7 @@
 #include <qstringlist.h>
 #include <kvbox.h>
 //Added by qt3to4:
-#include <Q3PtrList>
+#include <QList>
 
 /* a private check list item, that can store a KTextEditor::Document*.  */
 class KateMailDocItem : public QTreeWidgetItem {
@@ -92,9 +92,9 @@ KateMailDialog::KateMailDialog( QWidget *parent, KateMainWindow  *mainwin )
   mw->setMinimumSize( lInfo->sizeHint() );
 }
 
-Q3PtrList<KTextEditor::Document> KateMailDialog::selectedDocs()
+QList<KTextEditor::Document *> KateMailDialog::selectedDocs()
 {
-  Q3PtrList<KTextEditor::Document> l;
+  QList<KTextEditor::Document *> l;
   KateMailDocItem *item = NULL;
   for(int i = 0; i < list->topLevelItemCount(); i++)
   {

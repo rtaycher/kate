@@ -273,10 +273,10 @@ void KateFileList::slotModChanged (KTextEditor::Document *doc)
 
   if ( ((KateFileListItem *)item)->document()->isModified() )
   {
-    m_editHistory.removeRef( (KateFileListItem *)item );
+    m_editHistory.removeAll( (KateFileListItem *)item );
     m_editHistory.prepend( (KateFileListItem *)item );
 
-    for ( uint i=0; i <  m_editHistory.count(); i++ )
+    for ( int i=0; i <  m_editHistory.count(); i++ )
     {
       m_editHistory.at( i )->setEditHistPos( i+1 );
       repaintItem(  m_editHistory.at( i ) );
@@ -345,10 +345,10 @@ void KateFileList::slotViewChanged ()
 //     int p =  m_viewHistory.findRef( item ); // only repaint items that needs it
 //   }
 
-  m_viewHistory.removeRef( item );
+  m_viewHistory.removeAll( item );
   m_viewHistory.prepend( item );
 
-  for ( uint i=0; i <  m_viewHistory.count(); i++ )
+  for ( int i=0; i <  m_viewHistory.count(); i++ )
   {
     m_viewHistory.at( i )->setViewHistPos( i+1 );
     repaintItem(  m_viewHistory.at( i ) );
@@ -433,8 +433,8 @@ void KateFileList::takeItem( Q3ListViewItem *item )
 {
   if ( item->rtti() == RTTI_KateFileListItem )
   {
-    m_editHistory.removeRef( (KateFileListItem*)item );
-    m_viewHistory.removeRef( (KateFileListItem*)item );
+    m_editHistory.removeAll( (KateFileListItem*)item );
+    m_viewHistory.removeAll( (KateFileListItem*)item );
   }
   Q3ListView::takeItem( item );
 }
