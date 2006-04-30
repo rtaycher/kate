@@ -514,7 +514,7 @@ void KateFileListItem::paintCell( QPainter *painter, const QColorGroup & cg, int
           (int)((b.blue()*(1-t)) + (shade.blue()*t))
               );
 
-      cgNew.setColor(QColorGroup::Base, b);
+      cgNew.setColor(QPalette::Base, b);
     }
 
     Q3ListViewItem::paintCell( painter, cgNew, column, width, align );

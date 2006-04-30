@@ -178,8 +178,8 @@ void KateViewSpace::setActive( bool active, bool )
   QPalette pal( palette() );
   if ( ! active )
   {
-    pal.setColor( QColorGroup::Window, pal.color(QPalette::Window).dark() );
-    pal.setColor( QColorGroup::Light, pal.color(QPalette::Light).light() );
+    pal.setColor( QPalette::Window, pal.color(QPalette::Window).dark() );
+    pal.setColor( QPalette::Light, pal.color(QPalette::Light).light() );
   }
 
   mStatusBar->setPalette( pal );
