@@ -702,14 +702,17 @@ void KateMainWindow::slotMail()
 {
   KateMailDialog *d = new KateMailDialog(this, this);
   if ( ! d->exec() )
+  {
+    delete d;
     return;
+  }
   QList<KTextEditor::Document *> attDocs = d->selectedDocs();
   delete d;
   // Check that all selected files are saved (or shouldn't be)
   QStringList urls; // to atthatch
   KTextEditor::Document *doc;
-  QList<KTextEditor::Document *>::iterator it = attDocs.begin();
-  for ( ; *it; ++it ) {
+  for ( QList<KTextEditor::Document *>::iterator it = attDocs.begin();
+        it != attDocs.end(); ++it ) {
     doc = *it;
     if (!doc) continue;
     if ( doc->url().isEmpty() ) {
