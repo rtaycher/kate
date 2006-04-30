@@ -160,7 +160,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
 
       if( args->isSet( "stdin" ) )
       {
-        QTextIStream input(stdin);
+        QTextStream input(stdin, QIODevice::ReadOnly);
 
         // set chosen codec
         QTextCodec *codec = args->isSet("encoding") ? QTextCodec::codecForName(args->getOption("encoding")) : 0;
