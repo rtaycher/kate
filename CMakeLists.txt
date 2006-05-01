@@ -14,8 +14,6 @@ add_subdirectory( pics )
 ########### install files ###############
 
 
-kde4_create_doxygen_docs( RECURSIVE REFERENCES kdecore kdeui EXCLUDE app data pics plugins  )
-
 kde4_footer()
 
 
