@@ -342,7 +342,7 @@ void Kate::Private::Plugin::KateFileSelector::setupToolbar( KConfig *config )
     else
       ac = dir->actionCollection()->action( (*it).toLatin1().constData() );
     if ( ac )
-      ac->plug( toolbar );
+      toolbar->addAction( ac );
   }
 }
 
