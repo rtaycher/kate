@@ -62,7 +62,7 @@ KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const
   : KDialog( parent, i18n("Documents Modified on Disk"),
                  KDialog::User1|KDialog::User2|KDialog::User3, 0,
                  KGuiItem (i18n("&Ignore"), "fileclose"),
-                 KGuiItem (i18n("&Overwrite"), "filesave"),
+                 KStdGuiItem::overwrite(),
                  KGuiItem (i18n("&Reload"), "reload") )
 {
   setObjectName( name );

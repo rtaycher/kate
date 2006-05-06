@@ -187,7 +187,7 @@ GrepTool::GrepTool(QWidget *parent)
   KButtonBox *actionbox = new KButtonBox(this, Qt::Vertical);
   layout->addWidget(actionbox, 0, 1);
   actionbox->addStretch();
-  btnSearch = static_cast<KPushButton*>(actionbox->addButton(KGuiItem(i18n("Find"),"find")));
+  btnSearch = static_cast<KPushButton*>(actionbox->addButton(KStdGuiItem::find()));
   btnSearch->setDefault(true);
   btnClear = static_cast<KPushButton*>(actionbox->addButton( KStdGuiItem::clear() ));
   actionbox->addStretch();
@@ -390,7 +390,7 @@ void GrepTool::slotSearch()
   // actually it should be checked whether the process was started successfully
   lbResult->setCursor( QCursor(Qt::WaitCursor) );
   btnClear->setEnabled( false );
-  btnSearch->setGuiItem( KGuiItem(i18n("Cancel"), "button_cancel"));
+  btnSearch->setGuiItem( KStdGuiItem::cancel() );
   childproc->start(KProcess::NotifyOnExit, KProcess::AllOutput);
 }
 
@@ -476,7 +476,7 @@ void GrepTool::childExited()
 //   int status = childproc->exitStatus();
   lbResult->unsetCursor();
   btnClear->setEnabled( true );
-  btnSearch->setGuiItem( KGuiItem(i18n("Find"), "find") );
+  btnSearch->setGuiItem( KStdGuiItem::find() );
 
   if ( ! errbuf.isEmpty() )
   {

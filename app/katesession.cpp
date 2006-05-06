@@ -737,7 +737,7 @@ KateSessionOpenDialog::KateSessionOpenDialog (QWidget *parent)
                   , KDialog::User1 | KDialog::User2
 		  , 0
                   , KStdGuiItem::cancel ()
-                  , KGuiItem( i18n("&Open"), "fileopen")
+                  , KStdGuiItem::open()
                 )
 {
   setDefaultButton(KDialog::User2);
