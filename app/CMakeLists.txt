@@ -60,7 +60,7 @@ target_link_libraries(kdeinit_kate  ${KDE4_KDECORE_LIBS} kateinterfaces )
 install_targets(${LIB_INSTALL_DIR} kdeinit_kate )
 
 target_link_libraries( kate kdeinit_kate )
-install_targets(/bin kate )
+install(TARGETS kate DESTINATION bin)
 
 ########### install files ###############
 
