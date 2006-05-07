@@ -113,7 +113,7 @@ bool KateExternalTool::checkExec()
       bool match = false;
       for (; it != dirs.end(); ++it)
       {
-	QString fName = *it + "/" + tryexec;
+	QString fName = *it + '/' + tryexec;
 	if (::access(QFile::encodeName(fName), R_OK | X_OK) == 0)
 	{
 	  match = true;

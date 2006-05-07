@@ -91,7 +91,7 @@ KateSession::~KateSession ()
 
 QString KateSession::sessionFile () const
 {
-  return m_manager->sessionsDir() + "/" + m_sessionFileRel;
+  return m_manager->sessionsDir() + '/' + m_sessionFileRel;
 }
 
 bool KateSession::create (const QString &name, bool force)
