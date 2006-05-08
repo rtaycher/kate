@@ -97,7 +97,7 @@ Plugin *createPlugin ( const char* libname, Application *application, const char
 
   if (plugin && name)
   {
-    plugin->setName( name );
+    plugin->setObjectName( name );
   }
 
   return plugin;
