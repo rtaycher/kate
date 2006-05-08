@@ -24,7 +24,7 @@
 #include <kdialog.h>
 #include <ksimpleconfig.h>
 #include <ksharedptr.h>
-#include <kaction.h>
+#include <kactionmenu.h>
 
 #include <qobject.h>
 #include <QList>

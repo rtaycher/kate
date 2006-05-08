@@ -34,6 +34,7 @@
 #include <ktexteditor/view.h>
 #include <ktexteditor/document.h>
 
+#include <kactioncollection.h>
 #include <klistbox.h>
 #include <klocale.h>
 #include <kiconloader.h>

@@ -23,19 +23,20 @@
 #include "katemdi.h"
 #include "katemdi.moc"
 
-#include <kaction.h>
+#include <kactioncollection.h>
+#include <kactionmenu.h>
+#include <kapplication.h>
+#include <kconfig.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
-#include <kapplication.h>
-#include <klocale.h>
-#include <kconfig.h>
-#include <kiconloader.h>
-#include <kmenu.h>
-#include <kvbox.h>
 #include <khbox.h>
+#include <kiconloader.h>
+#include <klocale.h>
+#include <kmenu.h>
 #include <kmessagebox.h>
-#include <kactioncollection.h>
+#include <kseparatoraction.h>
+#include <kvbox.h>
 #include <kxmlguifactory.h>
 
 #include <QVBoxLayout>

@@ -49,7 +49,7 @@ class KateKonsolePlugin:public Kate::Plugin,public Kate::PluginViewInterface {
     Q_OBJECT
     Q_INTERFACES(Kate::PluginViewInterface)
   public:
-    KateKonsolePlugin( QObject* parent = 0, const char* name = 0, const QStringList& = QStringList() );
+    KateKonsolePlugin( QObject* parent = 0, const QStringList& = QStringList() );
     virtual ~KateKonsolePlugin(){}
     void addView (Kate::MainWindow *win);
     void removeView (Kate::MainWindow *win);

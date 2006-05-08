@@ -29,6 +29,7 @@
 #include "kateviewspace.h"
 
 #include <kaction.h>
+#include <kactioncollection.h>
 #include <kdebug.h>
 #include <kiconloader.h>
 #include <kglobal.h>

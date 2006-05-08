@@ -40,6 +40,7 @@
 #include <klocale.h>
 #include <ktoolbar.h>
 #include <kmessagebox.h>
+#include <krecentfilesaction.h>
 #include <ksimpleconfig.h>
 #include <kstdaction.h>
 #include <kstandarddirs.h>

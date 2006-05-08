@@ -25,7 +25,7 @@
 
 #include <kmultitabbar.h>
 #include <kxmlguiclient.h>
-#include <kaction.h>
+#include <ktoggleaction.h>
 #include <kvbox.h>
 
 #include <q3dict.h>
@@ -39,6 +39,7 @@
 #include <QChildEvent>
 
 class KActionCollection;
+class KActionMenu;
 class QAction;
 
 namespace KateMDI {

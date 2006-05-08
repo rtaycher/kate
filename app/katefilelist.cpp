@@ -56,6 +56,8 @@
 #include <kxmlguifactory.h>
 #include <kglobal.h>
 #include <kcombobox.h>
+#include <kselectaction.h>
+#include <kstdaction.h>
 //END Includes
 
 //BEGIN ToolTip

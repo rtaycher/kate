@@ -47,6 +47,7 @@
 #include <kinstance.h>
 #include <kaboutdata.h>
 #include <kaction.h>
+#include <kactioncollection.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <kdialogbase.h>
@@ -63,10 +64,12 @@
 #include <kmimetype.h>
 #include <kopenwith.h>
 #include <kmenu.h>
+#include <krecentfilesaction.h>
 #include <ksimpleconfig.h>
 #include <kstatusbar.h>
 #include <kstdaction.h>
 #include <kstandarddirs.h>
+#include <ktogglefullscreenaction.h>
 #include <ktrader.h>
 #include <kuniqueapplication.h>
 #include <kdesktopfile.h>

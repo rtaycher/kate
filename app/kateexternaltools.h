@@ -28,7 +28,7 @@
 #include <ktexteditor/configpage.h>
 #include <ktexteditor/commandinterface.h>
 
-#include <kaction.h>
+#include <kactionmenu.h>
 #include <kdialog.h>
 #include <kmacroexpander.h>
 

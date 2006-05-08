@@ -93,7 +93,14 @@ unsigned int PluginViewInterface::pluginViewInterfaceNumber () const
 
 Plugin *createPlugin ( const char* libname, Application *application, const char *name, const QStringList &args )
 {
-  return KLibLoader::createInstance<Plugin>( libname, application, name, args);
+  Plugin* plugin = KLibLoader::createInstance<Plugin>( libname, application, args );
+
+  if (name)
+  {
+    plugin->setName( name );
+  }
+
+  return plugin;
 }
 
 PluginViewInterface *pluginViewInterface (Plugin *plugin)

@@ -46,8 +46,8 @@ K_EXPORT_COMPONENT_FACTORY( katekonsoleplugin, KGenericFactory<Kate::Private::Pl
 
 using namespace Kate::Private::Plugin;
 
-KateKonsolePlugin::KateKonsolePlugin( QObject* parent, const char* name, const QStringList&):
-  Kate::Plugin ( (Kate::Application*)parent, name ) {
+KateKonsolePlugin::KateKonsolePlugin( QObject* parent, const QStringList& ):
+  Kate::Plugin ( (Kate::Application*)parent ) {
   if (!KAuthorized::authorizeKAction("shell_access")) {
     KMessageBox::sorry(0, i18n ("You don't have enough karma to access a shell or terminal emulation"));
   }
@@ -106,7 +106,7 @@ void KateConsole::loadConsoleIfNeeded()
 
   if (!factory) return;
 
-  m_part = static_cast<KParts::ReadOnlyPart *>(factory->create(this,"libkonsolepart", "KParts::ReadOnlyPart"));
+  m_part = static_cast<KParts::ReadOnlyPart *>(factory->create(this, "KParts::ReadOnlyPart"));
 
   if (!m_part) return;
 

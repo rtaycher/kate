@@ -22,10 +22,6 @@
 #include "katefileselector.h"
 #include "katefileselector.moc"
 
-#include "kbookmarkhandler.h"
-
-#include "kactionselector.h"
-
 #include <qlayout.h>
 #include <qtoolbutton.h>
 #include <khbox.h>
@@ -53,25 +49,27 @@
 #include <QVBoxLayout>
 
 #include <kapplication.h>
+#include <kactioncollection.h>
+#include <kactionmenu.h>
+#include <kactionselector.h>
+#include <kbookmarkhandler.h>
+#include <kconfig.h>
+#include <kcombobox.h>
+#include <kdebug.h>
+#include <kdialog.h>
+#include <kdiroperator.h>
+#include <kfileitem.h>
+#include <kgenericfactory.h>
+#include <kglobal.h>
 #include <kiconloader.h>
+#include <klocale.h>
+#include <kmenu.h>
+#include <kmessagebox.h>
+#include <kprotocolinfo.h>
 #include <kurlcombobox.h>
 #include <kurlcompletion.h>
-#include <kprotocolinfo.h>
-#include <kdiroperator.h>
-#include <kconfig.h>
-#include <klocale.h>
-#include <kcombobox.h>
-#include <kaction.h>
-#include <kmessagebox.h>
-#include <kmenu.h>
-#include <kdialog.h>
-#include <kdebug.h>
-#include <kgenericfactory.h>
 #include <kate/interfaces/mainwindow.h>
 #include <ktexteditor/view.h>
-#include <kiconloader.h>
-#include <kglobal.h>
-#include <kfileitem.h>
 //END Includes
 
 
@@ -79,8 +77,8 @@ K_EXPORT_COMPONENT_FACTORY( katefilebrowserplugin, KGenericFactory<Kate::Private
 
 using namespace Kate::Private::Plugin;
 
-KateFileSelectorPlugin::KateFileSelectorPlugin( QObject* parent, const char* name, const QStringList&):
-  Kate::Plugin ( (Kate::Application*)parent, name ) {
+KateFileSelectorPlugin::KateFileSelectorPlugin( QObject* parent, const QStringList&):
+  Kate::Plugin ( (Kate::Application*)parent ) {
 }
 
 void KateFileSelectorPlugin::addView(Kate::MainWindow *win) {
@@ -417,7 +415,7 @@ void Kate::Private::Plugin::KateFileSelector::setDir( KUrl u )
   else
     newurl = u;
 
-  QString pathstr = newurl.path(+1);
+  QString pathstr = newurl.path( KUrl::AddTrailingSlash );
   newurl.setPath(pathstr);
 
   if ( !kateFileSelectorIsReadable ( newurl ) )

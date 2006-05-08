@@ -58,7 +58,7 @@ class KateFileSelectorPlugin:public Kate::Plugin,public Kate::PluginViewInterfac
     Q_INTERFACES(Kate::PluginViewInterface)
     Q_INTERFACES(Kate::PluginConfigPageInterface)
   public:
-    KateFileSelectorPlugin( QObject* parent = 0, const char* name = 0, const QStringList& = QStringList() );
+    KateFileSelectorPlugin( QObject* parent = 0, const QStringList& = QStringList() );
     virtual ~KateFileSelectorPlugin(){}
     void addView (Kate::MainWindow *win);
     void removeView (Kate::MainWindow *win);
