@@ -95,7 +95,7 @@ Plugin *createPlugin ( const char* libname, Application *application, const char
 {
   Plugin* plugin = KLibLoader::createInstance<Plugin>( libname, application, args );
 
-  if (name)
+  if (plugin && name)
   {
     plugin->setName( name );
   }
