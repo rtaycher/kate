@@ -131,7 +131,7 @@ GUIClient::GUIClient ( MainWindow *mw )
            m_mw, SLOT( setSidebarsVisible( bool ) ) );
 
   m_toolMenu->insert( m_showSidebarsAction );
-  m_toolMenu->insert( new KActionSeparator( actionCollection() ) );
+  m_toolMenu->insert( new KSeparatorAction( actionCollection() ) );
 
   // read shortcuts
   actionCollection()->setConfigGroup( "Shortcuts" );
