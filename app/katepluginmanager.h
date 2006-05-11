@@ -28,7 +28,7 @@
 
 #include <ktrader.h>
 
-#include <qobject.h>
+#include <QObject>
 #include <QLinkedList>
 
 class KatePluginInfo

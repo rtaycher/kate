@@ -32,9 +32,9 @@
 #include <ktempfile.h>
 #include <kpushbutton.h>
 
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qpushbutton.h>
+#include <QLabel>
+#include <QLayout>
+#include <QPushButton>
 #include <kvbox.h>
 #include <QTextStream>
 

@@ -30,7 +30,7 @@
 
 #include <q3dict.h>
 #include <q3intdict.h>
-#include <qmap.h>
+#include <QMap>
 #include <qsplitter.h>
 #include <qpixmap.h>
 //Added by qt3to4:

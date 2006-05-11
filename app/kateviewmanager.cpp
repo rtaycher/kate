@@ -48,11 +48,11 @@
 #include <kstdaccel.h>
 
 #include <QApplication>
-#include <qobject.h>
+#include <QObject>
 #include <qstringlist.h>
 #include <qfileinfo.h>
 #include <qtoolbutton.h>
-#include <qtooltip.h>
+#include <QToolTip>
 //END Includes
 
 KateViewManager::KateViewManager (KateMainWindow *parent)

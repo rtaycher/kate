@@ -48,15 +48,15 @@
 #include <kicon.h>
 
 #include <qbitmap.h>
-#include <qcombobox.h>
-#include <qfile.h>
-#include <qpushbutton.h>
-#include <qlineedit.h>
-#include <qlayout.h>
-#include <qlabel.h>
+#include <QComboBox>
+#include <QFile>
+#include <QPushButton>
+#include <QLineEdit>
+#include <QLayout>
+#include <QLabel>
 #include <q3listbox.h>
-#include <qmap.h>
-#include <qregexp.h>
+#include <QMap>
+#include <QRegExp>
 #include <q3textedit.h>
 #include <qtoolbutton.h>
 //Added by qt3to4:

@@ -50,14 +50,14 @@
 #include <kseparator.h>
 
 #include <q3buttongroup.h>
-#include <qcheckbox.h>
-#include <qlabel.h>
-#include <qlayout.h>
+#include <QCheckBox>
+#include <QLabel>
+#include <QLayout>
 #include <kpushbutton.h>
 #include <qradiobutton.h>
-#include <qspinbox.h>
+#include <QSpinBox>
 #include <kvbox.h>
-#include <qcombobox.h>
+#include <QComboBox>
 //Added by qt3to4:
 #include <QVBoxLayout>
 #include <QFrame>

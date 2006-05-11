@@ -29,8 +29,8 @@
 #include <kactivelabel.h>
 #include <kstdguiitem.h>
 #include <kvbox.h>
-#include <qlabel.h>
-#include <qpushbutton.h>
+#include <QLabel>
+#include <QPushButton>
 #include <kiconloader.h>
 #include <kmessagebox.h>
 #include <kdebug.h>

@@ -41,7 +41,7 @@
 #include <kencodingfiledialog.h>
 #include <kio/job.h>
 
-#include <qdatetime.h>
+#include <QDateTime>
 #include <qtextcodec.h>
 #include <qprogressdialog.h>
 #include <QByteArray>

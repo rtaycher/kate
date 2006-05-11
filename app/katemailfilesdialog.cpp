@@ -25,7 +25,7 @@
 #include <kurl.h>
 
 #include <qevent.h>
-#include <qlabel.h>
+#include <QLabel>
 #include <qstringlist.h>
 #include <kvbox.h>
 //Added by qt3to4:

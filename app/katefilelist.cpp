@@ -30,11 +30,11 @@
 #include <qpainter.h>
 #include <QMenu>
 #include <q3header.h>
-#include <qcolor.h>
-#include <qcheckbox.h>
-#include <qlayout.h>
+#include <QColor>
+#include <QCheckBox>
+#include <QLayout>
 #include <q3groupbox.h>
-#include <qlabel.h>
+#include <QLabel>
 //Added by qt3to4:
 #include <QPixmap>
 #include <QGridLayout>

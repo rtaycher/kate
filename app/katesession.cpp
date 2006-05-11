@@ -40,11 +40,11 @@
 #include <kactioncollection.h>
 #include <kio/netaccess.h>
 
-#include <qdir.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qcheckbox.h>
-#include <qdatetime.h>
+#include <QDir>
+#include <QLabel>
+#include <QLayout>
+#include <QCheckBox>
+#include <QDateTime>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QStringList>

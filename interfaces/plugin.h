@@ -22,7 +22,7 @@
 
 #include <kdebase_export.h>
 
-#include <qwidget.h>
+#include <QWidget>
 #include <qpixmap.h>
 #include <kicontheme.h>
 

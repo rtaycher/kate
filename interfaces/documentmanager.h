@@ -21,7 +21,7 @@
 
 #include <kdebase_export.h>
 
-#include <qobject.h>
+#include <QObject>
 #include <kurl.h>
 
 namespace KTextEditor { class Document; }

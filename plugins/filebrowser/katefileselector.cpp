@@ -22,22 +22,22 @@
 #include "katefileselector.h"
 #include "katefileselector.moc"
 
-#include <qlayout.h>
+#include <QLayout>
 #include <qtoolbutton.h>
 #include <khbox.h>
 #include <kvbox.h>
-#include <qlabel.h>
+#include <QLabel>
 #include <q3strlist.h>
-#include <qtooltip.h>
+#include <QToolTip>
 #include <qapplication.h>
 #include <QListWidget>
 #include <qscrollbar.h>
-#include <qspinbox.h>
+#include <QSpinBox>
 #include <q3groupbox.h>
-#include <qcheckbox.h>
-#include <qregexp.h>
-#include <qtimer.h>
-#include <qdir.h>
+#include <QCheckBox>
+#include <QRegExp>
+#include <QTimer>
+#include <QDir>
 //Added by qt3to4:
 #include <QPixmap>
 #include <QFocusEvent>

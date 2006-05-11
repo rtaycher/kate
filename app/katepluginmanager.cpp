@@ -32,7 +32,7 @@
 #include <QList>
 #include <kmessagebox.h>
 #include <kdebug.h>
-#include <qfile.h>
+#include <QFile>
 
 QString KatePluginInfo::saveName() const {
     QString saveName=service->property("X-Kate-PluginName").toString();

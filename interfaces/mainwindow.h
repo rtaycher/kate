@@ -21,7 +21,7 @@
 
 #include <kdebase_export.h>
 
-#include <qobject.h>
+#include <QObject>
 #include <qpixmap.h>
 
 #include <kxmlguifactory.h>

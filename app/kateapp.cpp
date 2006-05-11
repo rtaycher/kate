@@ -44,9 +44,9 @@
 #include <ksimpleconfig.h>
 #include <kstartupinfo.h>
 
-#include <qfile.h>
-#include <qtimer.h>
-#include <qdir.h>
+#include <QFile>
+#include <QTimer>
+#include <QDir>
 #include <qtextcodec.h>
 #include <QTextIStream>
 

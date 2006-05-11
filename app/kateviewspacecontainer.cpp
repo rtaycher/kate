@@ -43,10 +43,10 @@
 #include <kxmlguifactory.h>
 #include <ktoolbar.h>
 
-#include <qlayout.h>
-#include <qobject.h>
+#include <QLayout>
+#include <QObject>
 #include <qstringlist.h>
-#include <qtimer.h>
+#include <QTimer>
 #include <qfileinfo.h>
 #include <QDropEvent>
 #include <QMenu>

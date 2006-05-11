@@ -42,7 +42,7 @@
 #include <qpainter.h>
 #include <qcursor.h>
 #include <QMenu>
-#include <qtimer.h>
+#include <QTimer>
 //Added by qt3to4:
 #include <QPaintEvent>
 #include <QEvent>

@@ -25,10 +25,10 @@
 #include <klistbox.h>
 #include "kateapp.h"
 #include <qstringlist.h>
-#include <qlabel.h>
+#include <QLabel>
 #include <klocale.h>
-#include <qpushbutton.h>
-#include <qtooltip.h>
+#include <QPushButton>
+#include <QToolTip>
 #include <kiconloader.h>
 
 class KatePluginListItem : public Q3CheckListItem

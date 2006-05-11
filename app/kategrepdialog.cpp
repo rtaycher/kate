@@ -21,13 +21,13 @@
 #include "kategrepdialog.h"
 #include "katemainwindow.h"
 
-#include <qobject.h>
-#include <qlineedit.h>
-#include <qlabel.h>
-#include <qcombobox.h>
-#include <qcheckbox.h>
+#include <QObject>
+#include <QLineEdit>
+#include <QLabel>
+#include <QComboBox>
+#include <QCheckBox>
 #include <qevent.h>
-#include <qregexp.h>
+#include <QRegExp>
 #include <qcursor.h>
 //Added by qt3to4:
 #include <QByteArray>

@@ -29,8 +29,8 @@
 
 #include <k3listview.h>
 
-#include <qtooltip.h>
-#include <qcolor.h>
+#include <QToolTip>
+#include <QColor>
 #include <QList>
 //Added by qt3to4:
 #include <QPixmap>

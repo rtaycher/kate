@@ -26,7 +26,7 @@
 #include <ksharedptr.h>
 #include <kactionmenu.h>
 
-#include <qobject.h>
+#include <QObject>
 #include <QList>
 #include <QActionGroup>
 #include <QTreeWidget>
