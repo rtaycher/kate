@@ -1,4 +1,3 @@
-kde4_header()
 
 
 
@@ -65,7 +64,6 @@ install(TARGETS kate DESTINATION bin)
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

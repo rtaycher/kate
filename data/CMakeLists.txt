@@ -1,4 +1,3 @@
-kde4_header()
 
 
 
@@ -11,7 +10,6 @@ install_files( ${DATA_INSTALL_DIR}/kate FILES kateui.rc externaltools )
 install_files( ${SERVICETYPES_INSTALL_DIR} FILES kateplugin.desktop )
 install_files( ${KCONF_UPDATE_INSTALL_DIR} FILES kate-2.4.upd )
 
-kde4_footer()
 
 
 

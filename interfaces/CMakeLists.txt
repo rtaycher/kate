@@ -1,4 +1,3 @@
-kde4_header()
 
 
 
@@ -9,7 +8,6 @@ kde4_header()
 
 install_files( /include/kate FILES application.h documentmanager.h mainwindow.h plugin.h pluginconfigpageinterface.h pluginmanager.h )
 
-kde4_footer()
 
 
 

@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kate)
 
@@ -14,7 +13,6 @@ add_subdirectory( pics )
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

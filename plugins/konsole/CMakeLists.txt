@@ -1,4 +1,3 @@
-kde4_header()
 
 
 
@@ -22,7 +21,6 @@ install_targets(${PLUGIN_INSTALL_DIR} katekonsoleplugin )
 install_files( ${DATA_INSTALL_DIR}/kate/plugins/katekonsole FILES ui.rc )
 install_files( ${SERVICES_INSTALL_DIR} FILES katekonsoleplugin.desktop )
 
-kde4_footer()
 
 
 

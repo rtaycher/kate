@@ -1,4 +1,3 @@
-kde4_header()
 
 add_subdirectory( actions ) 
 
@@ -10,7 +9,6 @@ install_files( ${DATA_INSTALL_DIR}/kate/pics FILES sessionchooser.png )
 
 kde4_install_icons( ${ICON_INSTALL_DIR} hicolor )
 
-kde4_footer()
 
 
 
