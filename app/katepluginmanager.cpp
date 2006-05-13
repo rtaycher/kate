@@ -27,7 +27,7 @@
 #include "../interfaces/application.h"
 
 #include <kconfig.h>
-#include <qstringlist.h>
+#include <QStringList>
 //Added by qt3to4:
 #include <QList>
 #include <kmessagebox.h>

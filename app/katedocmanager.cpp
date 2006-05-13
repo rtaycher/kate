@@ -42,7 +42,7 @@
 #include <kio/job.h>
 
 #include <QDateTime>
-#include <qtextcodec.h>
+#include <QTextCodec>
 #include <qprogressdialog.h>
 #include <QByteArray>
 #include <QHash>

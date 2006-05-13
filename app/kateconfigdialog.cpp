@@ -54,7 +54,7 @@
 #include <QLabel>
 #include <QLayout>
 #include <kpushbutton.h>
-#include <qradiobutton.h>
+#include <QRadioButton>
 #include <QSpinBox>
 #include <kvbox.h>
 #include <QComboBox>

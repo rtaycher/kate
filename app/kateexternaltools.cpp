@@ -47,7 +47,7 @@
 #include <kdebug.h>
 #include <kicon.h>
 
-#include <qbitmap.h>
+#include <QBitmap>
 #include <QComboBox>
 #include <QFile>
 #include <QPushButton>
@@ -58,7 +58,7 @@
 #include <QMap>
 #include <QRegExp>
 #include <q3textedit.h>
-#include <qtoolbutton.h>
+#include <QToolButton>
 //Added by qt3to4:
 #include <QPixmap>
 #include <QGridLayout>

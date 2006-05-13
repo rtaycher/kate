@@ -23,13 +23,13 @@
 #include "katefileselector.moc"
 
 #include <QLayout>
-#include <qtoolbutton.h>
+#include <QToolButton>
 #include <khbox.h>
 #include <kvbox.h>
 #include <QLabel>
 #include <q3strlist.h>
 #include <QToolTip>
-#include <qapplication.h>
+#include <QApplication>
 #include <QListWidget>
 #include <qscrollbar.h>
 #include <QSpinBox>

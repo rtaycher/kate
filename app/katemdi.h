@@ -31,8 +31,8 @@
 #include <q3dict.h>
 #include <q3intdict.h>
 #include <QMap>
-#include <qsplitter.h>
-#include <qpixmap.h>
+#include <QSplitter>
+#include <QPixmap>
 //Added by qt3to4:
 #include <QList>
 #include <QEvent>

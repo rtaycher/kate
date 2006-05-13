@@ -32,7 +32,7 @@
 #include <kdebug.h>
 #include <kurl.h>
 
-#include <qtextcodec.h>
+#include <QTextCodec>
 #include <QTextIStream>
 #include <QByteArray>
 

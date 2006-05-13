@@ -47,7 +47,7 @@
 #include <QFile>
 #include <QTimer>
 #include <QDir>
-#include <qtextcodec.h>
+#include <QTextCodec>
 #include <QTextIStream>
 
 #include <stdlib.h>

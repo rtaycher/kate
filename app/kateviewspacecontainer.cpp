@@ -45,9 +45,9 @@
 
 #include <QLayout>
 #include <QObject>
-#include <qstringlist.h>
+#include <QStringList>
 #include <QTimer>
-#include <qfileinfo.h>
+#include <QFileInfo>
 #include <QDropEvent>
 #include <QMenu>
 #include <QStackedWidget>

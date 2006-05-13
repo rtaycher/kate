@@ -24,7 +24,7 @@
 #include "kateconfigdialog.h"
 #include <klistbox.h>
 #include "kateapp.h"
-#include <qstringlist.h>
+#include <QStringList>
 #include <QLabel>
 #include <klocale.h>
 #include <QPushButton>

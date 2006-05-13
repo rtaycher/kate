@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <qtextstream.h>
+#include <QTextStream>
 #include <QByteArray>
 
 #include <kbookmarkimporter.h>

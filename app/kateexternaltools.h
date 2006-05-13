@@ -32,7 +32,7 @@
 #include <kdialog.h>
 #include <kmacroexpander.h>
 
-#include <qpixmap.h>
+#include <QPixmap>
 
 /**
  * The external tools action

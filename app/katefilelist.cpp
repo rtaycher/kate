@@ -26,8 +26,8 @@
 #include "kateviewmanager.h"
 #include "katemainwindow.h"
 
-#include <qapplication.h>
-#include <qpainter.h>
+#include <QApplication>
+#include <QPainter>
 #include <QMenu>
 #include <q3header.h>
 #include <QColor>

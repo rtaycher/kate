@@ -24,9 +24,9 @@
 #include <klocale.h>
 #include <kurl.h>
 
-#include <qevent.h>
+#include <QEvent>
 #include <QLabel>
-#include <qstringlist.h>
+#include <QStringList>
 #include <kvbox.h>
 //Added by qt3to4:
 #include <QList>

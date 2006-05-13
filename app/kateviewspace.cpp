@@ -39,8 +39,8 @@
 #include <kvbox.h>
 
 #include <QStackedWidget>
-#include <qpainter.h>
-#include <qcursor.h>
+#include <QPainter>
+#include <QCursor>
 #include <QMenu>
 #include <QTimer>
 //Added by qt3to4:

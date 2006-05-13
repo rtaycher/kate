@@ -49,9 +49,9 @@
 
 #include <QApplication>
 #include <QObject>
-#include <qstringlist.h>
-#include <qfileinfo.h>
-#include <qtoolbutton.h>
+#include <QStringList>
+#include <QFileInfo>
+#include <QToolButton>
 #include <QToolTip>
 //END Includes
 

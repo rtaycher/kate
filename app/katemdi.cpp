@@ -40,7 +40,7 @@
 #include <kxmlguifactory.h>
 
 #include <QVBoxLayout>
-#include <qevent.h>
+#include <QEvent>
 //Added by qt3to4:
 #include <QContextMenuEvent>
 #include <QPixmap>

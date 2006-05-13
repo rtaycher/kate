@@ -21,7 +21,7 @@
 
 #include <kdebase_export.h>
 #include <QWidget>
-#include <qpixmap.h>
+#include <QPixmap>
 #include <kicontheme.h>
 
 namespace Kate

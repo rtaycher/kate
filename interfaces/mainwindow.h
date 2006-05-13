@@ -22,7 +22,7 @@
 #include <kdebase_export.h>
 
 #include <QObject>
-#include <qpixmap.h>
+#include <QPixmap>
 
 #include <kxmlguifactory.h>
 #include <kurl.h>

@@ -26,7 +26,7 @@
 #include <ktexteditor/view.h>
 #include <ktexteditor/document.h>
 
-#include <qpointer.h>
+#include <QPointer>
 #include <QList>
 
 class KateMainWindow;
