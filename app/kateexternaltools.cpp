@@ -678,6 +678,8 @@ void KateExternalToolsConfigWidget::reset()
 
       if ( t->hasexec ) // we only show tools that are also in the menu.
         new ToolItem( lbTools, t->icon.isEmpty() ? blankIcon() : SmallIcon( t->icon ), t );
+      else
+	delete t;
     }
   }
   m_changed = false;
