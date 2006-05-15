@@ -388,6 +388,8 @@ void KateExternalToolsMenuAction::reload()
 
     if ( t->hasexec )
       insert( new KateExternalToolAction( m_actionCollection, t->acname.toAscii(), t ) );
+    else
+      delete t;
   }
 
   m_actionCollection->setConfigGroup( "Shortcuts" );
