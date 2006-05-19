@@ -806,6 +806,7 @@ void KateExternalToolsConfigWidget::slotRemove()
 
 void KateExternalToolsConfigWidget::slotEdit()
 {
+  if( !dynamic_cast<ToolItem*>(lbTools->selectedItem()) ) return;
   // show the item in an editor
   KateExternalTool *t = ((ToolItem*)lbTools->selectedItem())->tool;
   KateExternalToolServiceEditor editor( t, this);
