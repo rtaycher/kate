@@ -163,11 +163,11 @@ class KATEINTERFACES_EXPORT Plugin : public QObject
  * Helper function for the Kate application to create new plugins.
  * \param libname the plugin/library name
  * \param application the application
- * \param name identifier
  * \param args arguments
  * \return the plugin on success, otherwise NULL 
  */
-Plugin *createPlugin ( const char* libname, Application *application = 0, const char *name = 0,const QStringList &args = QStringList() );
+Plugin *createPlugin ( const char* libname, Application *application = 0,
+                       const QStringList &args = QStringList() );
 
 /**
  * \brief Plugin view extension interface.
