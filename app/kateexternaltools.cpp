@@ -757,7 +757,7 @@ void KateExternalToolsConfigWidget::slotSelectionChanged()
 {
   // update button state
   bool hs =  lbTools->selectedItem() != 0;
-  btnEdit->setEnabled( hs && static_cast<ToolItem*>(lbTools->selectedItem()) );
+  btnEdit->setEnabled( hs && dynamic_cast<ToolItem*>(lbTools->selectedItem()) );
   btnRemove->setEnabled( hs );
   btnMoveUp->setEnabled( ( lbTools->currentItem() > 0 ) && hs );
   btnMoveDwn->setEnabled( ( lbTools->currentItem() < (int)lbTools->count()-1 )&&hs );
