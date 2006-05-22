@@ -70,7 +70,7 @@
 #include <kstdaction.h>
 #include <kstandarddirs.h>
 #include <ktogglefullscreenaction.h>
-#include <ktrader.h>
+#include <kmimetypetrader.h>
 #include <kuniqueapplication.h>
 #include <kdesktopfile.h>
 #include <khelpmenu.h>
@@ -654,9 +654,9 @@ void KateMainWindow::mSlotFixOpenWithMenu()
   KMimeType::Ptr mime = KMimeType::findByURL( m_viewManager->activeView()->document()->url() );
   //kDebug(13001)<<"13000"<<"url: "<<m_viewManager->activeView()->document()->url().prettyUrl()<<"mime type: "<<mime->name()<<endl;
   // some checking goes here...
-  KTrader::OfferList offers = KTrader::self()->query(mime->name(), "Type == 'Application'");
+  KService::List offers = KMimeTypeTrader::self()->query(mime->name(), "Type == 'Application'");
   // for each one, insert a menu item...
-  for(KTrader::OfferList::Iterator it = offers.begin(); it != offers.end(); ++it) {
+  for(KService::List::Iterator it = offers.begin(); it != offers.end(); ++it) {
     if ((*it)->name() == "Kate") continue;
     documentOpenWith->popupMenu()->addAction( KIcon((*it)->icon()), (*it)->name() );
   }
@@ -675,16 +675,16 @@ void KateMainWindow::slotOpenWithMenuAction(int idx)
     // display "open with" dialog
     KOpenWithDlg* dlg = new KOpenWithDlg(list);
     if (dlg->exec())
-      KRun::run(*dlg->service(), list);
+      KRun::run(*dlg->service(), list, this);
     return;
   }
   QString qry = QString("((Type == 'Application') and (Name == '%1'))").arg( appname );
   KMimeType::Ptr mime = KMimeType::findByURL( m_viewManager->activeView()->document()->url() );
-  KTrader::OfferList offers = KTrader::self()->query(mime->name(), qry);
+  KService::List offers = KMimeTypeTrader::self()->query(mime->name(), qry);
 
   if (!offers.isEmpty()) {
     KService::Ptr app = offers.first();
-    KRun::run(*app, list);
+    KRun::run(*app, list, this);
   }
   else
     KMessageBox::error(this, i18n("Application '%1' not found!", appname), i18n("Application not found!"));

@@ -514,7 +514,7 @@ void GrepTool::updateDirName(const QString &dir)
 }
 
 void GrepTool::setDirName(const QString &dir){
-  cmbDir->setURL(dir);
+  cmbDir->setUrl(dir);
 }
 
 bool GrepTool::eventFilter( QObject *o, QEvent *e )

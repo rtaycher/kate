@@ -272,7 +272,7 @@ void KateMwModOnHdDialog::slotPDone( KProcess *p )
     return;
   }
 
-  KRun::runURL( m_tmpfile->name(), "text/x-diff", true );
+  KRun::runUrl( m_tmpfile->name(), "text/x-diff", this, true );
   delete m_tmpfile;
   m_tmpfile = 0;
 }

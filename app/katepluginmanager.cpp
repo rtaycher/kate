@@ -31,6 +31,7 @@
 //Added by qt3to4:
 #include <QList>
 #include <kmessagebox.h>
+#include <kservicetypetrader.h>
 #include <kdebug.h>
 #include <QFile>
 
@@ -67,7 +68,7 @@ KatePluginManager *KatePluginManager::self()
 
 void KatePluginManager::setupPluginList ()
 {
-  KService::List traderList= KTrader::self()->query("Kate/Plugin", "(not ('Kate/ProjectPlugin' in ServiceTypes)) and (not ('Kate/InitPlugin' in ServiceTypes))");
+  KService::List traderList= KServiceTypeTrader::self()->query("Kate/Plugin", "(not ('Kate/ProjectPlugin' in ServiceTypes)) and (not ('Kate/InitPlugin' in ServiceTypes))");
 
   foreach(const KService::Ptr &ptr, traderList)
   {

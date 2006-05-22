@@ -229,6 +229,22 @@ bool KateExternalToolsCommand::exec (KTextEditor::View *view, const QString &cmd
 bool KateExternalToolsCommand::help (KTextEditor::View *, const QString &, QString &) {
 	return false;
 }
+
+QString KateExternalToolsCommand::name (const QString& cmd) const
+{
+    return i18n("External Tools");
+}
+
+QString KateExternalToolsCommand::description (const QString& cmd) const
+{
+    return i18n("Used to invokie external tools with the view command line");
+}
+
+QString KateExternalToolsCommand::category (const QString& cmd) const
+{
+    return i18n("Tools");
+}
+
 //END KateExternalToolsCommand
 
 //BEGIN KateExternalToolAction
