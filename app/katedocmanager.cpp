@@ -213,7 +213,7 @@ KTextEditor::Document *KateDocManager::openURL (const KUrl& url,const QString &e
       if ( fi.exists() )
       {
         m_tempFiles[ doc] = qMakePair(url, fi.lastModified());
-        kDebug(13001)<<"temporary file will be deleted after use unless modified: "<<url.prettyURL()<<endl;
+        kDebug(13001)<<"temporary file will be deleted after use unless modified: "<<url.prettyUrl()<<endl;
        }
      }
 
@@ -255,7 +255,7 @@ bool KateDocManager::closeDocument(class KTextEditor::Document *doc,bool closeUR
     if ( fi.lastModified() <= m_tempFiles[ doc ].second ||
          KMessageBox::questionYesNo( KateApp::self()->activeMainWindow(),
             i18n("The supposedly temporary file %1 has been modified. "
-                "Do you want to delete it anyway?", m_tempFiles[ doc ].first.prettyURL()),
+                "Do you want to delete it anyway?", m_tempFiles[ doc ].first.prettyUrl()),
             i18n("Delete File?") ) == KMessageBox::Yes )
      {
        KIO::del( m_tempFiles[ doc ].first, false, false );
@@ -264,7 +264,7 @@ bool KateDocManager::closeDocument(class KTextEditor::Document *doc,bool closeUR
      }
      else {
        m_tempFiles.remove(doc);
-       kDebug(13001)<<"The supposedly temporary file "<<m_tempFiles[ doc ].first.prettyURL()<<" have been modified since loaded, and has not been deleted."<<endl;
+       kDebug(13001)<<"The supposedly temporary file "<<m_tempFiles[ doc ].first.prettyUrl()<<" have been modified since loaded, and has not been deleted."<<endl;
      }
   }
 
@@ -474,7 +474,7 @@ bool KateDocManager::loadMetaInfos(KTextEditor::Document *doc, const KUrl &url)
   if (!m_saveMetaInfos)
     return false;
 
-  if (!m_metaInfos->hasGroup(url.prettyURL()))
+  if (!m_metaInfos->hasGroup(url.prettyUrl()))
     return false;
 
   QByteArray md5;
@@ -482,7 +482,7 @@ bool KateDocManager::loadMetaInfos(KTextEditor::Document *doc, const KUrl &url)
 
   if (computeUrlMD5(url, md5))
   {
-    m_metaInfos->setGroup(url.prettyURL());
+    m_metaInfos->setGroup(url.prettyUrl());
     QString old_md5 = m_metaInfos->readEntry("MD5");
 
     if ((const char *)md5 == old_md5)
@@ -492,7 +492,7 @@ bool KateDocManager::loadMetaInfos(KTextEditor::Document *doc, const KUrl &url)
     }
     else
     {
-      m_metaInfos->deleteGroup(url.prettyURL());
+      m_metaInfos->deleteGroup(url.prettyUrl());
       ok = false;
     }
 
@@ -520,7 +520,7 @@ void KateDocManager::saveMetaInfos(KTextEditor::Document *doc)
 
   if (computeUrlMD5(doc->url(), md5))
   {
-    m_metaInfos->setGroup(doc->url().prettyURL());
+    m_metaInfos->setGroup(doc->url().prettyUrl());
 
     if (KTextEditor::SessionConfigInterface *iface = qobject_cast<KTextEditor::SessionConfigInterface *>(doc))
       iface->writeSessionConfig(m_metaInfos);

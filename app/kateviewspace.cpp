@@ -81,7 +81,7 @@ void KateViewSpace::addView(KTextEditor::View* v, bool show)
   // restore the config of this view if possible
   if ( !m_group.isEmpty() )
   {
-    QString fn = v->document()->url().prettyURL();
+    QString fn = v->document()->url().prettyUrl();
     if ( ! fn.isEmpty() )
     {
       QString vgroup = QString("%1 %2").arg(m_group).arg(fn);
@@ -205,7 +205,7 @@ void KateViewSpace::saveConfig ( KConfig* config, int myIndex ,const QString& vi
   config->writeEntry ("Count", mViewList.count());
 
   if (currentView())
-    config->writeEntry( "Active View", currentView()->document()->url().prettyURL() );
+    config->writeEntry( "Active View", currentView()->document()->url().prettyUrl() );
 
   // Save file list, including cursor position in this instance.
   int idx = 0;
@@ -215,10 +215,10 @@ void KateViewSpace::saveConfig ( KConfig* config, int myIndex ,const QString& vi
     if ( !(*it)->document()->url().isEmpty() )
     {
       config->setGroup( group );
-      config->writeEntry( QString("View %1").arg( idx ), (*it)->document()->url().prettyURL() );
+      config->writeEntry( QString("View %1").arg( idx ), (*it)->document()->url().prettyUrl() );
 
       // view config, group: "ViewSpace <n> url"
-      QString vgroup = QString("%1 %2").arg(group).arg((*it)->document()->url().prettyURL());
+      QString vgroup = QString("%1 %2").arg(group).arg((*it)->document()->url().prettyUrl());
       config->setGroup( vgroup );
 
       if (KTextEditor::SessionConfigInterface *iface = qobject_cast<KTextEditor::SessionConfigInterface *>(*it))

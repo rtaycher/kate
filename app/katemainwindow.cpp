@@ -652,7 +652,7 @@ void KateMainWindow::mSlotFixOpenWithMenu()
   documentOpenWith->popupMenu()->clear();
   // get a list of appropriate services.
   KMimeType::Ptr mime = KMimeType::findByURL( m_viewManager->activeView()->document()->url() );
-  //kDebug(13001)<<"13000"<<"url: "<<m_viewManager->activeView()->document()->url().prettyURL()<<"mime type: "<<mime->name()<<endl;
+  //kDebug(13001)<<"13000"<<"url: "<<m_viewManager->activeView()->document()->url().prettyUrl()<<"mime type: "<<mime->name()<<endl;
   // some checking goes here...
   KTrader::OfferList offers = KTrader::self()->query(mime->name(), "Type == 'Application'");
   // for each one, insert a menu item...
@@ -744,7 +744,7 @@ void KateMainWindow::slotMail()
       int r = KMessageBox::warningYesNoCancel( this,
                 i18n("<p>The current file:<br><strong>%1</strong><br>has been "
                 "modified. Modifications will not be available in the attachment."
-                "<p>Do you want to save it before sending it?", doc->url().prettyURL()),
+                "<p>Do you want to save it before sending it?", doc->url().prettyUrl()),
                 i18n("Save Before Sending?"), KStdGuiItem::save(), i18n("Do Not Save") );
       switch ( r ) {
         case KMessageBox::Cancel:
@@ -877,7 +877,7 @@ void KateMainWindow::updateCaption (KTextEditor::Document *doc)
   }
   else
   {
-    c = m_viewManager->activeView()->document()->url().prettyURL();
+    c = m_viewManager->activeView()->document()->url().prettyUrl();
   }
 
   QString sessName = KateApp::self()->sessionManager()->activeSession()->sessionName();

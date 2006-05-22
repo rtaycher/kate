@@ -73,7 +73,7 @@ private:
 class KateSaveModifiedDocumentCheckListItem:public AbstractKateSaveModifiedDialogCheckListItem {
 public:
 	KateSaveModifiedDocumentCheckListItem(QTreeWidgetItem *parent,KTextEditor::Document *document)
-		:AbstractKateSaveModifiedDialogCheckListItem(parent,document->documentName(),document->url().prettyURL()){
+		:AbstractKateSaveModifiedDialogCheckListItem(parent,document->documentName(),document->url().prettyUrl()){
 		m_document=document;
 	}
 	virtual ~KateSaveModifiedDocumentCheckListItem() {
@@ -89,11 +89,11 @@ public:
 				KUrl tmp = r.URLs.first();
         	  		if ( !m_document->saveAs( tmp ) ) {
 					setState(SaveFailedState);
-					setText(1,m_document->url().prettyURL());
+					setText(1,m_document->url().prettyUrl());
 					return false;
 				} else {
 					bool sc=m_document->waitSaveComplete();
-					setText(1,m_document->url().prettyURL());
+					setText(1,m_document->url().prettyUrl());
 					if (!sc) {
 						setState(SaveFailedState);
 						return false;
@@ -109,11 +109,11 @@ public:
 		} else { //document has an exising location
           		if ( !m_document->save() ) {
 				setState(SaveFailedState);
-				setText(1,m_document->url().prettyURL());
+				setText(1,m_document->url().prettyUrl());
 				return false;
 			} else {
 				bool sc=m_document->waitSaveComplete();
-				setText(1,m_document->url().prettyURL());
+				setText(1,m_document->url().prettyUrl());
 				if (!sc) {
 					setState(SaveFailedState);
 					return false;

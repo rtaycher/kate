@@ -369,7 +369,7 @@ void KateViewSpaceContainer::slotPendingDocumentNameChanged() {
           }
           else
           {
-            c = m_pendingDocument->url().prettyURL();
+            c = m_pendingDocument->url().prettyUrl();
           }
           setWindowTitle(KStringHandler::lsqueeze(c,32));
 }

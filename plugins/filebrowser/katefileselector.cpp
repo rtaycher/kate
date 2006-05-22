@@ -501,9 +501,9 @@ void Kate::Private::Plugin::KateFileSelector::setActiveDocumentDir()
 {
 //   kDebug(13001)<<"KateFileSelector::setActiveDocumentDir()"<<endl;
   KUrl u = activeDocumentUrl();
-//   kDebug(13001)<<"URL: "<<u.prettyURL()<<endl;
+//   kDebug(13001)<<"URL: "<<u.prettyUrl()<<endl;
   if (!u.isEmpty())
-    setDir( u.upURL() );
+    setDir( u.upUrl() );
 //   kDebug(13001)<<"... setActiveDocumentDir() DONE!"<<endl;
 }
 

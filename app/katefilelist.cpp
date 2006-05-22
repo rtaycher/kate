@@ -387,7 +387,7 @@ QString KateFileList::tooltip( Q3ListViewItem *item, int ) const
       str += i18n("<b>This file was changed (deleted) on disk by another program.</b><br />");
   }
 
-  str += i->document()->url().prettyURL();
+  str += i->document()->url().prettyUrl();
   return str;
 }
 
@@ -539,7 +539,7 @@ int KateFileListItem::compare ( Q3ListViewItem * i, int col, bool ascending ) co
         break;
       }
       case KateFileList::sortByURL:
-        return doc->url().prettyURL().compare( ((KateFileListItem*)i)->document()->url().prettyURL() );
+        return doc->url().prettyUrl().compare( ((KateFileListItem*)i)->document()->url().prettyUrl() );
         break;
       default:
         return Q3ListViewItem::compare( i, col, ascending );
