@@ -758,10 +758,13 @@ void KateExternalToolsConfigWidget::apply()
     // clean up the list of removed items, so that it does not contain
     // non-existing groups (we can't remove groups from a non-owned global file).
     config->sync();
-    for ( QStringList::iterator it1 = removed.begin(); it1 != removed.end(); ++it1 )
+    QStringList::iterator it1 = removed.begin();
+    while ( it1 != removed.end() )
     {
       if ( ! config->hasGroup( *it1 ) )
-        removed.removeAll( *it1 );
+        it1 = removed.erase( it1 );
+      else
+        ++it1;
     }
     config->writeEntry( "removed", removed );
   }
