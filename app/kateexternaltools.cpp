@@ -329,11 +329,7 @@ KateExternalToolsMenuAction::KateExternalToolsMenuAction( const QString &text,
 
   m_actionCollection = new KActionCollection( (QWidget*) mainwindow );
 
-
-#ifdef __GNUC__
-#warning "Hmm, this leads to crash, not sure why, atm :("
-#endif
-  //connect(KateDocManager::self(),SIGNAL(documentChanged()),this,SLOT(slotDocumentChanged()));
+  connect(KateDocManager::self(), SIGNAL(documentChanged()), this, SLOT(slotDocumentChanged()));
 
   reload();
 }
