@@ -156,11 +156,6 @@ KateExternalToolsCommand *KateExternalToolsCommand::self () {
 void KateExternalToolsCommand::reload () {
   m_list.clear();
   m_map.clear();
-#ifdef __GNUC__
-#warning "Hmm, this leads to crash, not sure why, atm :("
-#endif
- return;
-
 
   KConfig config("externaltools", false, false, "appdata");
   config.setGroup("Global");
@@ -189,14 +184,17 @@ void KateExternalToolsCommand::reload () {
 		m_map.insert("exttool-"+t.cmdname,t.acname);
 	}
   }
-  if (m_inited) {
-
-#ifdef __GNUC__
-#warning fixme later
-#endif
-	//  KTextEditor::Document::unregisterCommand(this);
-	//  KTextEditor::Document::registerCommand(this);
-   }
+  if (m_inited)
+  {
+    KTextEditor::CommandInterface* cmdIface =
+      qobject_cast<KTextEditor::CommandInterface*>( KateDocManager::self()->editor() );
+    if( cmdIface )
+    {
+      // reregister commands, in case of something has changed
+      cmdIface->unregisterCommand( this );
+      cmdIface->registerCommand( this );
+    }
+  }
   else m_inited=true;
 }
 

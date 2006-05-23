@@ -171,12 +171,14 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
   kDebug()<<"****************************************************************************"<<sconfig<<endl;
   KatePluginManager::self()->enableAllPluginsGUI (this,sconfig);
 
-#ifdef _GNUC__
-#warning fixme later
-#endif
-  /* if ( KateApp::self()->authorize("shell_access") )
-    KTextEditor::Document::registerCommand(KateExternalToolsCommand::self());
-*/
+  if ( KAuthorized::authorize("shell_access") )
+  {
+    KTextEditor::CommandInterface* cmdIface =
+        qobject_cast<KTextEditor::CommandInterface*>( KateDocManager::self()->editor() );
+    if( cmdIface )
+      cmdIface->registerCommand( KateExternalToolsCommand::self() );
+  }
+
   // connect documents menu aboutToshow
   documentMenu = (QMenu*)factory()->container("documents", this);
   connect(documentMenu, SIGNAL(aboutToShow()), this, SLOT(documentMenuAboutToShow()));
