@@ -24,7 +24,6 @@
 #ifndef _KATE_EXTERNAL_TOOLS_H_
 #define _KATE_EXTERNAL_TOOLS_H_
 
-#include <ktexteditor/document.h>
 #include <ktexteditor/configpage.h>
 #include <ktexteditor/commandinterface.h>
 
@@ -33,6 +32,7 @@
 #include <kmacroexpander.h>
 
 #include <QPixmap>
+#include <QHash>
 
 /**
  * The external tools action
@@ -198,7 +198,8 @@ class KateExternalToolsConfigWidget : public KTextEditor::ConfigPage
   private:
     static KateExternalToolsCommand *s_self;
     QStringList m_list;
-    QMap<QString,QString> m_map;
+    QHash<QString,QString> m_map;
+    QHash<QString,QString> m_name;
     bool m_inited;
  };
 

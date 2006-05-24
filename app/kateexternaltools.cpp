@@ -45,25 +45,18 @@
 #include <kicondialog.h>
 #include <kmenu.h>
 #include <kdebug.h>
-#include <kicon.h>
 
-#include <QBitmap>
 #include <QComboBox>
 #include <QFile>
-#include <QPushButton>
-#include <QLineEdit>
-#include <QLayout>
 #include <QLabel>
-#include <q3listbox.h>
-#include <QMap>
+#include <QLineEdit>
+#include <QPushButton>
 #include <QRegExp>
-#include <q3textedit.h>
 #include <QToolButton>
-//Added by qt3to4:
-#include <QPixmap>
-#include <QGridLayout>
-#include <kmenu.h>
-#include <stdlib.h>
+
+#include <q3listbox.h>
+#include <q3textedit.h>
+
 #include <unistd.h>
 //END Includes
 
@@ -156,6 +149,7 @@ KateExternalToolsCommand *KateExternalToolsCommand::self () {
 void KateExternalToolsCommand::reload () {
   m_list.clear();
   m_map.clear();
+  m_name.clear();
 
   KConfig config("externaltools", false, false, "appdata");
   config.setGroup("Global");
@@ -182,6 +176,7 @@ void KateExternalToolsCommand::reload () {
 	if ( t.hasexec && (!t.cmdname.isEmpty())) {
 		m_list.append("exttool-"+t.cmdname);
 		m_map.insert("exttool-"+t.cmdname,t.acname);
+        m_name.insert("exttool-"+t.cmdname,t.name);
 	}
   }
   if (m_inited)
@@ -230,17 +225,18 @@ bool KateExternalToolsCommand::help (KTextEditor::View *, const QString &, QStri
 
 QString KateExternalToolsCommand::name (const QString& cmd) const
 {
-    return i18n("External Tools");
+  return m_name.contains(cmd) ? m_name[cmd] : i18n("Unnamed");
 }
 
 QString KateExternalToolsCommand::description (const QString& cmd) const
 {
-    return i18n("Used to invokie external tools with the view command line");
+  return i18n( "Execute external tool \"%1\".", cmd );
 }
 
 QString KateExternalToolsCommand::category (const QString& cmd) const
 {
-    return i18n("Tools");
+  Q_UNUSED( cmd );
+  return i18n("External Tools");
 }
 
 //END KateExternalToolsCommand
@@ -337,7 +333,7 @@ KateExternalToolsMenuAction::KateExternalToolsMenuAction( const QString &text,
 void KateExternalToolsMenuAction::reload()
 {
   m_actionCollection->clear ();
-  popupMenu()->clear();
+  kMenu()->clear();
 
   // load all the tools, and create a action for each of them
   KConfig *config = new KConfig( "externaltools", false, false, "appdata" );
@@ -379,7 +375,7 @@ void KateExternalToolsMenuAction::reload()
   {
     if ( *it == "---" )
     {
-      popupMenu()->addSeparator();
+      kMenu()->addSeparator();
       // a separator
       continue;
     }
@@ -397,7 +393,7 @@ void KateExternalToolsMenuAction::reload()
         config->readEntry( "save", 0 ) );
 
     if ( t->hasexec )
-      insert( new KateExternalToolAction( m_actionCollection, t->acname.toAscii(), t ) );
+      addAction( new KateExternalToolAction( m_actionCollection, t->acname.toAscii(), t ) );
     else
       delete t;
   }
