@@ -36,7 +36,6 @@ set(kateinterfaces_LIB_SRCS
 
 kde4_automoc(${kateinterfaces_LIB_SRCS})
 
-kde4_add_dcop_skels(kateinterfaces_LIB_SRCS katemainwindowiface.h katedocmanageriface.h kateappIface.h )
 
 kde4_add_library(kateinterfaces SHARED ${kateinterfaces_LIB_SRCS})
 
