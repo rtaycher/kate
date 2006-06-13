@@ -50,7 +50,6 @@
 #include <kactioncollection.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
-#include <kdialogbase.h>
 #include <kdiroperator.h>
 #include <kedittoolbar.h>
 #include <kfiledialog.h>

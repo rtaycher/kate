@@ -35,7 +35,6 @@
 
 #include <kinstance.h>
 #include <kdebug.h>
-#include <kdialogbase.h>
 #include <kglobalaccel.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
