@@ -28,8 +28,7 @@
 #include <ktexteditor/document.h>
 #include <ktexteditor/editorchooser.h>
 
-#include <kdialogbase.h>
-//Added by qt3to4:
+#include <kpagedialog.h>
 #include <QList>
 
 class QCheckBox;
@@ -42,7 +41,7 @@ struct PluginPageListItem
   Kate::PluginConfigPage *page;
 };
 
-class KateConfigDialog : public KDialogBase
+class KateConfigDialog : public KPageDialog
 {
   Q_OBJECT
 
@@ -51,7 +50,7 @@ class KateConfigDialog : public KDialogBase
     ~KateConfigDialog ();
 
   public:
-    void addPluginPage (Kate::Plugin *plugin);
+    void addPluginPage (Kate::Plugin *plugin, KPageWidgetItem *parent = 0);
     void removePluginPage (Kate::Plugin *plugin);
 
   protected Q_SLOTS:

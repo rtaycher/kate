@@ -365,7 +365,9 @@ bool KateSessionManager::saveActiveSession (bool tryAsk, bool rememberAsLast)
 
     if (sesExit == "ask")
     {
-      KDialog *dlg = new KDialog ( 0, i18n ("Save Session?"), KDialog::Yes | KDialog::No );
+      KDialog *dlg = new KDialog ( 0 );
+      dlg->setCaption( i18n ("Save Session?") );
+      dlg->setButtons( KDialog::Yes | KDialog::No );
       dlg->setDefaultButton( KDialog::Yes );
       dlg->setEscapeButton( KDialog::No );
 
@@ -379,13 +381,13 @@ bool KateSessionManager::saveActiveSession (bool tryAsk, bool rememberAsLast)
       {
         c->setGroup("General");
 
-        if (res == KDialogBase::No)
+        if (res == KDialog::No)
           c->writeEntry ("Session Exit", "discard");
         else
           c->writeEntry ("Session Exit", "save");
       }
 
-      if (res == KDialogBase::No)
+      if (res == KDialog::No)
         return true;
     }
   }
@@ -596,15 +598,15 @@ class KateSessionChooserItem : public QTreeWidgetItem
 };
 
 KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSession,const QList<KateSessionChooserTemplate> &templates)
- : KDialog (  parent
-                  , i18n ("Session Chooser")
-                  , KDialog::User1 | KDialog::User2 | KDialog::User3
-		  , 0
-                  , KStdGuiItem::quit ()
-                  , KGuiItem (i18n ("Open Session"), "fileopen")
-                  , KGuiItem ((templates.count()>1)?i18n ("New Session (hold down for template)"):i18n ("New Session"), "filenew")
-                ),m_templates(templates)
+ : KDialog (  parent )
+   ,m_templates(templates)
 {
+  setCaption( i18n ("Session Chooser") );
+  setButtons( User1 | User2 | User3 );
+  setButtonGuiItem( User1, KStdGuiItem::quit() );
+  setButtonGuiItem( User2, KGuiItem (i18n ("Open Session"), "fileopen") );
+  setButtonGuiItem( User3, KGuiItem ((templates.count()>1)?i18n ("New Session (hold down for template)"):i18n ("New Session"), "filenew") );
+
   setDefaultButton(KDialog::User2);
   setEscapeButton(KDialog::User1);
   enableButtonSeparator(true);
@@ -655,7 +657,7 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
 
   setResult (resultNone);
 
-  connect(actionButton(KDialog::User3),SIGNAL(pressed()),m_delayTimer,SLOT(start()));
+  connect(this,SIGNAL(user3Clicked()),m_delayTimer,SLOT(start()));
   connect(m_delayTimer,SIGNAL(timeout()),this,SLOT(slotProfilePopup()));
   // trigger action update
   selectionChanged (NULL, NULL);
@@ -732,14 +734,13 @@ void KateSessionChooser::selectionChanged(QTreeWidgetItem *current, QTreeWidgetI
 //BEGIN OPEN DIALOG
 
 KateSessionOpenDialog::KateSessionOpenDialog (QWidget *parent)
- : KDialog (  parent
-                  , i18n ("Open Session")
-                  , KDialog::User1 | KDialog::User2
-		  , 0
-                  , KStdGuiItem::cancel ()
-                  , KStdGuiItem::open()
-                )
+ : KDialog (  parent )
+
 {
+  setCaption( i18n ("Open Session") );
+  setButtons( User1 | User2 );
+  setButtonGuiItem( User1, KStdGuiItem::cancel() );
+  setButtonGuiItem( User2, KStdGuiItem::open() );
   setDefaultButton(KDialog::User2);
   enableButtonSeparator(true);
   /*QFrame *page = new QFrame (this);
@@ -802,13 +803,12 @@ void KateSessionOpenDialog::slotUser2 ()
 //BEGIN MANAGE DIALOG
 
 KateSessionManageDialog::KateSessionManageDialog (QWidget *parent)
- : KDialog (  parent
-                  , i18n ("Manage Sessions")
-                  , KDialog::User1
-		  , 0
-                  , KStdGuiItem::close ()
-                )
+ : KDialog ( parent )
 {
+  setCaption( i18n ("Manage Sessions") );
+  setButtons( User1 );
+  setButtonGuiItem( User1, KStdGuiItem::close() );
+
   setDefaultButton(KDialog::User1);
   QFrame *page = new QFrame (this);
   page->setMinimumSize (400, 200);

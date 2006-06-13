@@ -133,8 +133,10 @@ private:
 };
 
 KateSaveModifiedDialog::KateSaveModifiedDialog(QWidget *parent, QList<KTextEditor::Document*> documents):
-	KDialog( parent, i18n("Save Documents"), KDialog::Yes | KDialog::No | KDialog::Cancel) {
+	KDialog( parent) {
 
+  setCaption( i18n("Save Documents") );
+  setButtons( Yes | No | Cancel );
 	setObjectName( "KateSaveModifiedDialog" );
 	setModal( true );
 

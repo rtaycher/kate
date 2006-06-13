@@ -450,9 +450,11 @@ class ToolItem : public Q3ListBoxPixmap
 //BEGIN KateExternalToolServiceEditor
 KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *tool,
                                 QWidget *parent, const char *name )
-    : KDialog( parent, i18n("Edit External Tool"), KDialog::Ok|KDialog::Cancel ),
+    : KDialog( parent ),
       tool( tool )
 {
+  setCaption( i18n("Edit External Tool") );
+  setButtons( Ok | Cancel );
   setObjectName( name );
   setModal( true );
 
@@ -588,7 +590,7 @@ void KateExternalToolServiceEditor::showMTDlg()
   QString text = i18n("Select the MimeTypes for which to enable this tool.");
   QStringList list = leMimetypes->text().split( QRegExp("\\s*;\\s*"), QString::SkipEmptyParts );
   KMimeTypeChooserDialog *d = new KMimeTypeChooserDialog( i18n("Select Mime Types"), text, list, "text", this );
-  if ( d->exec() == KDialogBase::Accepted ) {
+  if ( d->exec() == KDialog::Accepted ) {
     leMimetypes->setText( d->chooser()->mimeTypes().join(";") );
   }
 }
@@ -821,7 +823,7 @@ void KateExternalToolsConfigWidget::slotEdit()
   KateExternalToolServiceEditor editor( t, this);
   config->setGroup( "Editor" );
   editor.resize( config->readEntry( "Size", QSize() ) );
-  if ( editor.exec() /*== KDialogBase::Ok*/ )
+  if ( editor.exec() /*== KDialog::Ok*/ )
   {
 
       bool elementChanged = ( ( editor.btnIcon->icon() != t->icon ) || (editor.leName->text() != t->name ) ) ;

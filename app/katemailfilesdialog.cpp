@@ -50,9 +50,12 @@ class KateMailDocItem : public QTreeWidgetItem {
 // KateMailDialog implementation
 ///////////////////////////////////////////////////////////////////////////
 KateMailDialog::KateMailDialog( QWidget *parent, KateMainWindow  *mainwin )
-  : KDialog( parent, i18n("Email Files"), KDialog::Ok|KDialog::Cancel|KDialog::User1, 0, KGuiItem( i18n("&Show All Documents >>") ) ),
+  : KDialog( parent ),
     mainWindow( mainwin )
 {
+  setCaption( i18n("Email Files") );
+  setButtons( Ok | Cancel| User1 );
+  setButtonGuiItem( User1, KGuiItem( i18n("&Show All Documents >>") ) );
   setObjectName( "kate mail dialog" );
   setModal( true );
 
