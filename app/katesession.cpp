@@ -80,7 +80,8 @@ void KateSession::init ()
     return;
   }
 
-  Q_ASSERT(m_sessionFileRel.isEmpty());
+  if (!m_sessionFileRel.isEmpty() && !KGlobal::dirs()->exists(sessionFile ()))
+    kDebug() << "Warning, session file not found: " << m_sessionFileRel << endl;
 }
 
 KateSession::~KateSession ()
