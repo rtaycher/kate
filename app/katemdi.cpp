@@ -131,8 +131,8 @@ GUIClient::GUIClient ( MainWindow *mw )
   connect( m_showSidebarsAction, SIGNAL( toggled( bool ) ),
            m_mw, SLOT( setSidebarsVisible( bool ) ) );
 
-  m_toolMenu->insert( m_showSidebarsAction );
-  m_toolMenu->insert( new KSeparatorAction( actionCollection() ) );
+  m_toolMenu->addAction( m_showSidebarsAction );
+  m_toolMenu->addAction( new KSeparatorAction( actionCollection() ) );
 
   // read shortcuts
   actionCollection()->setConfigGroup( "Shortcuts" );
@@ -166,7 +166,7 @@ void GUIClient::registerToolView (ToolView *tv)
   a->setCheckedState(i18n("Hide %1", tv->text));
 
   m_toolViewActions.append(a);
-  m_toolMenu->insert(a);
+  m_toolMenu->addAction(a);
 
   m_toolToAction.insert (tv, a);
 

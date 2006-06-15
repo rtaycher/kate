@@ -323,7 +323,7 @@ void GrepTool::slotSearch()
     return;
   }
 
-  if ( cmbDir->url().isEmpty() || ! QDir(cmbDir->url()).exists() )
+  if ( cmbDir->url().isEmpty() || ! QDir(cmbDir->url().url()).exists() )
   {
     cmbDir->setFocus();
     KMessageBox::information( this, i18n(
@@ -346,7 +346,7 @@ void GrepTool::slotSearch()
 
   slotClear ();
 
-  m_workingDir = cmbDir->url();
+  m_workingDir = cmbDir->url().url();
 
   QString s = cmbPattern->currentText();
   if ( ! cbRegex->isChecked() )
@@ -428,7 +428,7 @@ void GrepTool::finish()
   config->writeEntry("LastSearchItems", lastSearchItems);
 
 
-  cmbText = cmbDir->url();
+  cmbText = cmbDir->url().url();
   itemsRemoved = lastSearchPaths.removeAll(cmbText) > 0;
   lastSearchPaths.prepend(cmbText);
   if (itemsRemoved)

@@ -682,9 +682,11 @@ void KateSessionChooser::slotProfilePopup() {
    a->setData(t.configFileName);
  }
  connect(&popup,SIGNAL(triggered(QAction *)),this,SLOT(slotTemplateAction(QAction*)));
+/* port me later (tokoe)
  actionButton(KDialog::User3)->setMenu(&popup);
  actionButton(KDialog::User3)->showMenu();
  actionButton(KDialog::User3)->setMenu(0);
+*/
 }
 
 
@@ -925,9 +927,9 @@ void KateSessionManageDialog::updateSessionList ()
 KateSessionsAction::KateSessionsAction(const QString& text, KActionCollection* parent, const char* name )
   : KActionMenu(text, parent, name)
 {
-  connect(popupMenu(),SIGNAL(aboutToShow()),this,SLOT(slotAboutToShow()));
+  connect(kMenu(),SIGNAL(aboutToShow()),this,SLOT(slotAboutToShow()));
   
-  sessionsGroup = new QActionGroup( popupMenu() );
+  sessionsGroup = new QActionGroup( kMenu() );
   connect(sessionsGroup, SIGNAL( triggered(QAction *) ), this, SLOT( openSession(QAction *)));
 }
 
@@ -940,7 +942,7 @@ void KateSessionsAction::slotAboutToShow()
   {
   	QAction *action = new QAction( slist[i]->sessionName(), sessionsGroup );
   	action->setData(QVariant(i));
-		popupMenu()->addAction (action);
+		kMenu()->addAction (action);
   }
 }
 

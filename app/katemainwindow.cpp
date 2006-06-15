@@ -295,8 +295,8 @@ void KateMainWindow::setupActions()
 
   documentOpenWith = new KActionMenu(i18n("Open W&ith"), actionCollection(), "file_open_with");
   documentOpenWith->setWhatsThis(i18n("Open the current document using another application registered for its file type, or an application of your choice."));
-  connect(documentOpenWith->popupMenu(), SIGNAL(aboutToShow()), this, SLOT(mSlotFixOpenWithMenu()));
-  connect(documentOpenWith->popupMenu(), SIGNAL(activated(int)), this, SLOT(slotOpenWithMenuAction(int)));
+  connect(documentOpenWith->kMenu(), SIGNAL(aboutToShow()), this, SLOT(mSlotFixOpenWithMenu()));
+  connect(documentOpenWith->kMenu(), SIGNAL(activated(int)), this, SLOT(slotOpenWithMenuAction(int)));
 
   a=KStdAction::keyBindings(this, SLOT(editKeys()), actionCollection());
   a->setWhatsThis(i18n("Configure the application's keyboard shortcut assignments."));
@@ -650,7 +650,7 @@ void KateMainWindow::fileSelected(const KFileItem * /*file*/)
 void KateMainWindow::mSlotFixOpenWithMenu()
 {
   //kDebug(13001)<<"13000"<<"fixing open with menu"<<endl;
-  documentOpenWith->popupMenu()->clear();
+  documentOpenWith->kMenu()->clear();
   // get a list of appropriate services.
   KMimeType::Ptr mime = KMimeType::findByURL( m_viewManager->activeView()->document()->url() );
   //kDebug(13001)<<"13000"<<"url: "<<m_viewManager->activeView()->document()->url().prettyUrl()<<"mime type: "<<mime->name()<<endl;
@@ -659,10 +659,10 @@ void KateMainWindow::mSlotFixOpenWithMenu()
   // for each one, insert a menu item...
   for(KService::List::Iterator it = offers.begin(); it != offers.end(); ++it) {
     if ((*it)->name() == "Kate") continue;
-    documentOpenWith->popupMenu()->addAction( KIcon((*it)->icon()), (*it)->name() );
+    documentOpenWith->kMenu()->addAction( KIcon((*it)->icon()), (*it)->name() );
   }
   // append "Other..." to call the KDE "open with" dialog.
-  documentOpenWith->popupMenu()->addAction(i18n("&Other..."));
+  documentOpenWith->kMenu()->addAction(i18n("&Other..."));
 }
 
 void KateMainWindow::slotOpenWithMenuAction(int idx)
@@ -670,7 +670,7 @@ void KateMainWindow::slotOpenWithMenuAction(int idx)
   KUrl::List list;
   list.append( m_viewManager->activeView()->document()->url() );
 
-  QString appname = documentOpenWith->popupMenu()->actions().at(idx)->text();
+  QString appname = documentOpenWith->kMenu()->actions().at(idx)->text();
   appname = appname.remove('&'); //Remove a possible accelerator ... otherwise the application might not get found.
   if ( appname.compare(i18n("Other...")) == 0 ) {
     // display "open with" dialog
