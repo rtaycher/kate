@@ -188,6 +188,7 @@ class KATEINTERFACES_EXPORT MainWindow : public QObject
      * \param widget the toolview to show, where the widget was constructed
      *        by createToolView().
      * \return \e true on success, otherwise \e false
+     * \todo add focus parameter: bool showToolView (QWidget *widget, bool giveFocus );
      */
     bool showToolView (QWidget *widget);
 
