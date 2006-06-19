@@ -467,7 +467,7 @@ void KateDocManager::slotModChanged(KTextEditor::Document *doc)
 }
 
 /**
- * Load file and file' meta-informations iif the MD5 didn't change since last time.
+ * Load file and file's meta-information if the MD5 didn't change since last time.
  */
 bool KateDocManager::loadMetaInfos(KTextEditor::Document *doc, const KUrl &url)
 {
@@ -503,7 +503,7 @@ bool KateDocManager::loadMetaInfos(KTextEditor::Document *doc, const KUrl &url)
 }
 
 /**
- * Save file' meta-informations iif doc is in 'unmodified' state
+ * Save file's meta-information if doc is in 'unmodified' state
  */
 void KateDocManager::saveMetaInfos(KTextEditor::Document *doc)
 {

@@ -33,7 +33,7 @@ namespace Kate
  * This interface provides access to Kate's plugin manager. To load a plugin
  * call loadPlugin(), to unload a plugin call unloadPlugin(). To check,
  * whether a plugin is loaded use plugin(), and to check a plugin's
- * availibility use pluginAvailable().
+ * availability use pluginAvailable().
  * 
  * To access the plugin manager use Application::pluginManager().
  * You should never have to create an instance of this class yourself.
@@ -79,7 +79,7 @@ class KATEINTERFACES_EXPORT PluginManager : public QObject
      * Check, whether a plugin with \p name exists.
      *
      * \return \e true if the plugin exists, otherwise \e false
-     * \todo This method is not used yet, i.e. returns allways \e false.
+     * \todo This method is not used yet, i.e. returns always \e false.
      */
     bool pluginAvailable(const QString &name);
 
@@ -93,7 +93,7 @@ class KATEINTERFACES_EXPORT PluginManager : public QObject
      *        current session.
      * \return pointer to the plugin on success, otherwise NULL
      * \see unloadPlugin()
-     * \todo This method is not used yet, i.e. returns allways NULL.
+     * \todo This method is not used yet, i.e. returns always NULL.
      */
     class Plugin *loadPlugin(const QString &name,bool permanent=true);
 

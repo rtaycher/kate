@@ -132,7 +132,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   connect( cb_modNotifications, SIGNAL( toggled( bool ) ),
            this, SLOT( slotChanged() ) );
 
-  // GROUP with the one below: "Meta-informations"
+  // GROUP with the one below: "Meta-information"
   bgStartup = new Q3ButtonGroup( 1, Qt::Horizontal, i18n("Meta-Information"), frGeneral );
   lo->addWidget( bgStartup );
 

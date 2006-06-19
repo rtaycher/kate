@@ -295,7 +295,7 @@ bool KateApp::startupKate ()
   // show the nice tips
   KTipDialog::showTip(activeMainWindow());
 
-  kDebug()<<"KateApplication::init finished successfull"<<endl;
+  kDebug()<<"KateApplication::init finished successful"<<endl;
   return true;
 }
 

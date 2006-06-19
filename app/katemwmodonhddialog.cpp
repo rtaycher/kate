@@ -215,7 +215,7 @@ void KateMwModOnHdDialog::slotSelectionChanged(QTreeWidget *current, QTreeWidget
 // class KateModOnHdPrompt.
 void KateMwModOnHdDialog::slotDiff()
 {
-  if ( m_tmpfile ) // we are allready somewhere in this process.
+  if ( m_tmpfile ) // we are already somewhere in this process.
     return;
 
   if ( ! twDocuments->currentItem() )
@@ -247,7 +247,7 @@ void KateMwModOnHdDialog::slotDiff()
 
 void KateMwModOnHdDialog::slotPRead( KProcIO *p)
 {
-  // create a file for the diff if we haven't one allready
+  // create a file for the diff if we haven't one already
   if ( ! m_tmpfile )
     m_tmpfile = new KTempFile();
   // put all the data we have in it
