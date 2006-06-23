@@ -16,39 +16,21 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _katedocmanager_Iface_h_
-#define _katedocmanager_Iface_h_
+#ifndef _katemainwindow_adaptor_h_
+#define _katemainwindow_adaptor_h_
+#include <dbus/qdbus.h>
 
-#include <dcopobject.h>
-#include <dcopref.h>
+class KateMainWindow;
 
-#include <kurl.h>
-
-class KateDocManager;
-
-class KateDocManagerDCOPIface : public DCOPObject
+class KateMainWindowAdaptor : public QDBusAbstractAdaptor
 {
-  K_DCOP
+  Q_OBJECT
+  Q_CLASSINFO("D-Bus Interface", "org.kde.kate.MainWindow")
 
   public:
-    KateDocManagerDCOPIface (KateDocManager *dm);
-
-  k_dcop:
-    DCOPRef document (uint n);
-
-    DCOPRef activeDocument ();
-
-    bool isOpen (KUrl url);
-
-    uint documents ();
-
-    DCOPRef openURL (KUrl url, QString encoding);
-
-    bool closeDocument (uint n);
-
-    bool closeAllDocuments ();
+    KateMainWindowAdaptor (KateMainWindow *w);
 
   private:
-    KateDocManager *m_dm;
+    KateMainWindow *m_w;
 };
 #endif

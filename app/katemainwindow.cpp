@@ -32,18 +32,16 @@
 #include "katefilelist.h"
 #include "kategrepdialog.h"
 #include "katemailfilesdialog.h"
-#include "katemainwindowiface.h"
 #include "kateexternaltools.h"
 #include "katesavemodifieddialog.h"
 #include "katemwmodonhddialog.h"
 #include "katesession.h"
 #include "katetabwidget.h"
-
+#include "katemainwindowadaptor.h"
 
 #include "../interfaces/mainwindow.h"
 
 #include <kaboutapplication.h>
-#include <dcopclient.h>
 #include <kinstance.h>
 #include <kaboutdata.h>
 #include <kaction.h>
@@ -101,6 +99,10 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
   myID = uniqueID;
   uniqueID++;
 
+  new KateMainWindowAdaptor( this );
+  m_dbusObjectPath = '/' + "KateMainWindow#" + QString::number( myID );
+  QDBus::sessionBus().registerObject( m_dbusObjectPath, this );
+
   m_modignore = false;
 
   console = 0;
@@ -154,8 +156,6 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
   startRestore (sconfig, sgroup);
 
   m_mainWindow = new Kate::MainWindow (this);
-
-  m_dcop = new KateMainWindowDCOPIface (this);
 
   // setup the most important widgets
   setupMainWindow();
@@ -215,7 +215,6 @@ KateMainWindow::~KateMainWindow()
 
   KatePluginManager::self()->disableAllPluginsGUI (this);
 
-  delete m_dcop;
 }
 
 void KateMainWindow::setupMainWindow ()
@@ -403,10 +402,11 @@ bool KateMainWindow::queryClose()
   if ( queryClose_internal () )
   {
     KateApp::self()->sessionManager()->saveActiveSession(true, true);
-
+#warning "kde4: dbus port"
+#if 0
     // detach the dcopClient
     KateApp::self()->dcopClient()->detach();
-
+#endif
     return true;
   }
 

@@ -39,7 +39,6 @@
 namespace KParts { class Factory; }
 
 class KConfig;
-class DCOPObject;
 
 class KateDocumentInfo
 {
@@ -82,7 +81,8 @@ class KateDocManager : public QObject
     KTextEditor::Document *findDocument (KUrl url);
 
     bool isOpen(KUrl url);
-
+    
+    QString dbusObjectPath() { return m_dbusObjectPath;}
     uint documents ();
 
     QList<KTextEditor::Document*> &documentList () { return m_docList; };
@@ -99,7 +99,6 @@ class KateDocManager : public QObject
     void saveDocumentList (class KConfig *config);
     void restoreDocumentList (class KConfig *config);
 
-    DCOPObject *dcopObject () { return m_dcop; };
 
     inline bool getSaveMetaInfos() { return m_saveMetaInfos; };
     inline void setSaveMetaInfos(bool b) { m_saveMetaInfos = b; };
@@ -138,13 +137,13 @@ class KateDocManager : public QObject
     bool m_saveMetaInfos;
     int m_daysMetaInfos;
 
-    DCOPObject *m_dcop;
 
     //KParts::Factory *m_factory;
     KTextEditor::Editor *m_editor;
 
     typedef QPair<KUrl,QDateTime> TPair;
     QMap<KTextEditor::Document *,TPair> m_tempFiles;   
+    QString m_dbusObjectPath;
 };
 
 #endif

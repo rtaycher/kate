@@ -22,7 +22,6 @@
 #include "kateapp.h"
 #include "katemainwindow.h"
 #include "kateviewmanager.h"
-#include "katedocmanageriface.h"
 #include "kateexternaltools.h"
 #include "kateviewspacecontainer.h"
 
@@ -46,7 +45,7 @@
 #include <qprogressdialog.h>
 #include <QByteArray>
 #include <QHash>
-
+#include <katedocmanageradaptor.h>
 KateDocManager::KateDocManager (QObject *parent)
  : QObject (parent)
  , m_saveMetaInfos(true)
@@ -60,7 +59,9 @@ KateDocManager::KateDocManager (QObject *parent)
 
   m_documentManager = new Kate::DocumentManager (this);
 
-  m_dcop = new KateDocManagerDCOPIface (this);
+  ( void ) new KateDocManagerAdaptor( this );
+  m_dbusObjectPath = "/KateDocumentManager";
+  QDBus::sessionBus().registerObject( m_dbusObjectPath, this );
 
   m_metaInfos = new KConfig("metainfos", false, false, "appdata");
 
@@ -94,7 +95,6 @@ KateDocManager::~KateDocManager ()
     }
   }
 
-  delete m_dcop;
   delete m_metaInfos;
 }
 

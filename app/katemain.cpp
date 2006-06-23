@@ -27,8 +27,6 @@
 #include <kglobal.h>
 #include <kconfig.h>
 #include <kinstance.h>
-#include <dcopclient.h>
-#include <dcopref.h>
 #include <kdebug.h>
 #include <kurl.h>
 
@@ -111,6 +109,8 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
   // now, first try to contact running kate instance if needed
   if ( (args->isSet("use")) || (::getenv("KATE_PID")!=0))
   {
+#warning "kde4: port to dbus"
+#if 0
     DCOPClient client;
     client.attach ();
 
@@ -201,6 +201,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
 
       return 0;
     }
+#endif
   }
 
   // construct the real kate app object ;)

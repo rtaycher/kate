@@ -16,34 +16,36 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kateappIface.h"
+#include "kateappadaptor.h"
 
 #include "kateapp.h"
 #include "katesession.h"
 #include "katedocmanager.h"
 #include "katemainwindow.h"
+#include "kateappadaptor.moc"
 
-KateAppDCOPIface::KateAppDCOPIface (KateApp *app) : DCOPObject ("KateApplication")
+KateAppAdaptor::KateAppAdaptor (KateApp *app)
+    : QDBusAbstractAdaptor( app )
      , m_app (app)
 {
 }
 
-DCOPRef KateAppDCOPIface::documentManager ()
+QDBusObjectPath KateAppAdaptor::documentManager ()
 {
-  return DCOPRef (m_app->documentManager()->dcopObject ());
+  return QDBusObjectPath (m_app->documentManager()->dbusObjectPath ());
 }
 
-DCOPRef KateAppDCOPIface::activeMainWindow ()
+QDBusObjectPath KateAppAdaptor::activeMainWindow ()
 {
   KateMainWindow *win = m_app->activeMainWindow();
 
   if (win)
-    return DCOPRef (win->dcopObject ());
+    return QDBusObjectPath (win->dbusObjectPath());
 
-  return DCOPRef ();
+  return QDBusObjectPath ();
 }
 
-uint KateAppDCOPIface::activeMainWindowNumber ()
+uint KateAppAdaptor::activeMainWindowNumber ()
 {
   KateMainWindow *win = m_app->activeMainWindow();
 
@@ -54,42 +56,42 @@ uint KateAppDCOPIface::activeMainWindowNumber ()
 }
 
 
-uint KateAppDCOPIface::mainWindows ()
+uint KateAppAdaptor::mainWindows ()
 {
   return m_app->mainWindows ();
 }
 
-DCOPRef KateAppDCOPIface::mainWindow (uint n)
+QDBusObjectPath KateAppAdaptor::mainWindow (uint n)
 {
   KateMainWindow *win = m_app->mainWindow(n);
 
   if (win)
-    return DCOPRef (win->dcopObject ());
+    return QDBusObjectPath (win->dbusObjectPath ());
 
-  return DCOPRef ();
+  return QDBusObjectPath ();
 }
 
-bool KateAppDCOPIface::openURL (KUrl url, QString encoding)
+bool KateAppAdaptor::openURL (QString url, QString encoding)
 {
   return m_app->openURL (url, encoding,false);
 }
 
-bool KateAppDCOPIface::openURL (KUrl url, QString encoding, bool isTempFile)
+bool KateAppAdaptor::openURL (QString url, QString encoding, bool isTempFile)
 {
   return m_app->openURL (url, encoding, isTempFile);
 }
 
-bool KateAppDCOPIface::setCursor (int line, int column)
+bool KateAppAdaptor::setCursor (int line, int column)
 {
   return m_app->setCursor (line, column);
 }
 
-bool KateAppDCOPIface::openInput (QString text)
+bool KateAppAdaptor::openInput (QString text)
 {
   return m_app->openInput (text);
 }
 
-bool KateAppDCOPIface::activateSession (QString session)
+bool KateAppAdaptor::activateSession (QString session)
 {
   m_app->sessionManager()->activateSession (m_app->sessionManager()->giveSession (session));
 

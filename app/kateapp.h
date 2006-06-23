@@ -28,7 +28,6 @@
 #include <QList>
 
 class KateSessionManager;
-class KateAppDCOPIface;
 
 namespace Kate {
   class Application;
@@ -243,10 +242,6 @@ class KATEINTERFACES_EXPORT KateApp : public KApplication
      */
     QList<KateMainWindow*> m_mainWindows;
 
-    /**
-     * dcop interface
-     */
-    KateAppDCOPIface *m_obj;
 };
 
 #endif

@@ -16,64 +16,68 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "katedocmanageriface.h"
+#include "katedocmanageradaptor.h"
+#include "katedocmanageradaptor.moc"
 
 #include "katedocmanager.h"
 
 #include <kdebug.h>
 
-KateDocManagerDCOPIface::KateDocManagerDCOPIface (KateDocManager *dm) : DCOPObject ("KateDocumentManager"), m_dm (dm)
+KateDocManagerAdaptor::KateDocManagerAdaptor (KateDocManager *dm)
+    : QDBusAbstractAdaptor(dm ), m_dm (dm)
 {
 
 }
-
+#warning "kde4: need to port kate lib to dbus"
+#if 0
 // bit more error save than the forcing c cast ;()
-DCOPRef KateDocManagerDCOPIface::document (uint n)
+QDBusObjectPath KateDocManagerAdaptor::document (uint n)
 {
   KTextEditor::Document *doc = m_dm->document(n);
 
-  if (!doc || !doc->inherits ("DCOPObject"))
-    return DCOPRef ();
+  if (!doc)
+    return QDBusObjectPath ();
 
-  return DCOPRef ((DCOPObject *) doc);
+  return QDBusObjectPath(doc);
 }
 
-DCOPRef KateDocManagerDCOPIface::activeDocument ()
+QDBusObjectPath KateDocManagerAdaptor::activeDocument ()
 {
   KTextEditor::Document *doc = m_dm->activeDocument();
 
-  if (!doc || !doc->inherits ("DCOPObject"))
-    return DCOPRef ();
+  if (!doc )
+    return QDBusObjectPath ();
 
-  return DCOPRef ((DCOPObject *) doc);
+  return QDBusObjectPath (doc);
 }
 
-DCOPRef KateDocManagerDCOPIface::openURL (KUrl url, QString encoding)
+QDBusObjectPath KateDocManagerAdaptor::openURL (QString url, QString encoding)
 {
   KTextEditor::Document *doc = m_dm->openURL (url, encoding);
 
-  if (!doc || !doc->inherits ("DCOPObject"))
-    return DCOPRef ();
+  if (!doc )
+    return QDBusObjectPath ();
 
-  return DCOPRef ((DCOPObject *) doc);
+  return QDBusObjectPath (doc);
 }
+#endif
 
-bool KateDocManagerDCOPIface::closeDocument(uint n)
+bool KateDocManagerAdaptor::closeDocument(uint n)
 {
   return m_dm->closeDocument(n);
 }
 
-bool KateDocManagerDCOPIface::closeAllDocuments()
+bool KateDocManagerAdaptor::closeAllDocuments()
 {
   return m_dm->closeAllDocuments();
 }
 
-bool KateDocManagerDCOPIface::isOpen(KUrl url)
+bool KateDocManagerAdaptor::isOpen(QString url)
 {
   return m_dm->isOpen (url);
 }
 
-uint KateDocManagerDCOPIface::documents ()
+uint KateDocManagerAdaptor::documents ()
 {
   return m_dm->documents();
 }

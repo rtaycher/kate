@@ -3,7 +3,7 @@
 
 ########### next target ###############
 
-set(kateinterfaces_LIB_SRCS 
+set(kateinterfaces_LIB_SRCS kateappadaptor.cpp katemainwindowadaptor.cpp  
    ../interfaces/application.cpp
    ../interfaces/mainwindow.cpp
    ../interfaces/documentmanager.cpp
@@ -19,12 +19,9 @@ set(kateinterfaces_LIB_SRCS
    katepluginmanager.cpp 
    kateviewmanager.cpp 
    kateviewspace.cpp 
-   katemainwindowiface.cpp 
    kategrepdialog.cpp 
    katemailfilesdialog.cpp 
    katetooltipmenu.cpp 
-   kateappIface.cpp 
-   katedocmanageriface.cpp 
    kateexternaltools.cpp 
    katesavemodifieddialog.cpp 
    kateviewspacecontainer.cpp 
@@ -32,7 +29,7 @@ set(kateinterfaces_LIB_SRCS
    katesession.cpp 
    katemdi.cpp 
    katetabwidget.cpp 
-   katepartmanager.cpp )
+   katepartmanager.cpp katedocmanageradaptor.cpp )
 
 kde4_automoc(${kateinterfaces_LIB_SRCS})
 

@@ -25,7 +25,6 @@
 #include "katepartmanager.h"
 #include "katepluginmanager.h"
 #include "kateviewmanager.h"
-#include "kateappIface.h"
 #include "katesession.h"
 #include "katemainwindow.h"
 
@@ -33,7 +32,6 @@
 
 #include <kdeversion.h>
 #include <kcmdlineargs.h>
-#include <dcopclient.h>
 #include <kconfig.h>
 #include <kwin.h>
 #include <ktip.h>
@@ -53,15 +51,18 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include "kateappadaptor.h"
 
 KateApp::KateApp (KCmdLineArgs *args)
  : KApplication ()
  , m_shouldExit(false)
  , m_args (args)
 {
-  // Don't handle DCOP requests yet
+#warning "kde4 dbus: port it"
+#if 0
+    // Don't handle DCOP requests yet
   dcopClient()->suspend();
-
+#endif
   // insert right translations for the katepart
   KGlobal::locale()->insertCatalog("katepart");
   setQuitOnLastWindowClosed (false);
@@ -82,16 +83,15 @@ KateApp::KateApp (KCmdLineArgs *args)
   m_sessionManager = new KateSessionManager (this);
 
   // application dcop interface
-  m_obj = new KateAppDCOPIface (this);
 
+  ( void ) new KateAppAdaptor( this );
+  QDBus::sessionBus().registerObject( "/KateApplication", this );
   // real init
   initKate ();
 }
 
 KateApp::~KateApp ()
 {
-  // cu dcop interface
-  delete m_obj;
 
   // cu plugin manager
   delete m_pluginManager;
@@ -142,9 +142,11 @@ void KateApp::initKate ()
       return ;
     }
   }
-
+#warning "kde4 dbus port it ?"
+#if 0
   // Ok. We are ready for DCOP requests.
   dcopClient()->resume();
+#endif
 }
 
 void KateApp::restoreKate ()
@@ -305,10 +307,11 @@ void KateApp::shutdownKate (KateMainWindow *win)
     return;
 
   sessionManager()->saveActiveSession(true, true);
-
+#warning "kde4: dbus port it"
+#if 0
   // detach the dcopClient
   dcopClient()->detach();
-
+#endif
   // cu main windows
   while (!m_mainWindows.isEmpty())
     delete m_mainWindows[0];

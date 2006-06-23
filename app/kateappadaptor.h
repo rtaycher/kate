@@ -16,31 +16,29 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _kateapp_Iface_h_
-#define _kateapp_Iface_h_
-
-#include <dcopobject.h>
-#include <dcopref.h>
-#include <kurl.h>
+#ifndef _kateapp_adaptor_h_
+#define _kateapp_adaptor_h_
+#include <dbus/qdbus.h>
 
 class KateApp;
 
-class KateAppDCOPIface : public DCOPObject
+class KateAppAdaptor : public QDBusAbstractAdaptor
 {
-  K_DCOP
+  Q_OBJECT
+  Q_CLASSINFO("D-Bus Interface", "org.kde.kate.App")
 
   public:
-    KateAppDCOPIface (KateApp *app);
+    KateAppAdaptor (KateApp *app);
 
-  k_dcop:
-    DCOPRef documentManager ();
+public slots:
+    QDBusObjectPath documentManager ();
 
-    DCOPRef activeMainWindow ();
+    QDBusObjectPath activeMainWindow ();
 
     uint activeMainWindowNumber ();
 
     uint mainWindows ();
-    DCOPRef mainWindow (uint n = 0);
+    QDBusObjectPath mainWindow (uint n = 0);
 
     /**
      * open a file with given url and encoding
@@ -49,7 +47,7 @@ class KateAppDCOPIface : public DCOPObject
      * @param encoding encoding name
      * @return success
      */
-    bool openURL (KUrl url, QString encoding);
+    bool openURL (QString url, QString encoding);
 
      /**
       * Like the above, but adds an option to let the documentManager know
@@ -57,7 +55,7 @@ class KateAppDCOPIface : public DCOPObject
       * @p isTempFile should be set to true with the --tempfile option set ONLY,
       * files opened with this set to true will be deleted when closed.
       */
-     bool openURL(KUrl url, QString encoding, bool isTempFile);
+     bool openURL(QString url, QString encoding, bool isTempFile);
  
     /**
      * set cursor of active view in active main window

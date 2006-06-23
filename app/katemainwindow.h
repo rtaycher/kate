@@ -49,7 +49,6 @@ namespace Kate {
 
 class KFileItem;
 class KRecentFilesAction;
-class DCOPObject;
 
 class KateExternalToolsMenuAction;
 
@@ -81,8 +80,7 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
 
     KateViewManager *viewManager () { return m_viewManager; }
 
-    DCOPObject *dcopObject () { return m_dcop; }
-
+    QString dbusObjectPath() const { return m_dbusObjectPath;}
   /**
    * various methodes to get some little info out of this
    */
@@ -195,7 +193,6 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
     bool syncKonsole;
     bool modNotification;
 
-    DCOPObject *m_dcop;
 
     // console
     KateConsole *console;
@@ -221,6 +218,7 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
     bool m_modignore, m_grrr;
 
     KateTabWidget *m_tabWidget;
+    QString m_dbusObjectPath;
 };
 
 #endif

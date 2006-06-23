@@ -29,7 +29,6 @@
 
 #include "../interfaces/mainwindow.h"
 
-#include <dcopclient.h>
 #include <kaction.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>

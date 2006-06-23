@@ -16,12 +16,12 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "katemainwindowiface.h"
-
+#include "katemainwindowadaptor.h"
+#include "katemainwindowadaptor.moc"
 #include "katemainwindow.h"
 
-#include <kdebug.h>
-
-KateMainWindowDCOPIface::KateMainWindowDCOPIface (KateMainWindow *w) : DCOPObject ((QString("KateMainWindow#%1").arg(w->mainWindowNumber())).toLatin1()), m_w (w)
+KateMainWindowAdaptor::KateMainWindowAdaptor (KateMainWindow *w)
+    : QDBusAbstractAdaptor( w ), m_w( w )
+//((QString("KateMainWindow#%1").arg(w->mainWindowNumber())).toLatin1()), m_w (w)
 {
 }
