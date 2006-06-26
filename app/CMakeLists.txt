@@ -36,7 +36,7 @@ kde4_automoc(${kateinterfaces_LIB_SRCS})
 
 kde4_add_library(kateinterfaces SHARED ${kateinterfaces_LIB_SRCS})
 
-target_link_libraries(kateinterfaces  ${KDE4_KDE3SUPPORT_LIBS} DCOP ${QT_QTXML_LIBRARY} ktexteditor  )
+target_link_libraries(kateinterfaces  ${KDE4_KDE3SUPPORT_LIBS} ${QT_QTXML_LIBRARY} ktexteditor )
 
 set_target_properties(kateinterfaces PROPERTIES VERSION 0.0.0 SOVERSION 0 )
 install_targets(${LIB_INSTALL_DIR} kateinterfaces )
