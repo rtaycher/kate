@@ -85,7 +85,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   applicationItem->setIcon( KIcon( "kate" ) );
 
   //BEGIN General page
-  QFrame* frGeneral = new QFrame( this );
+  QFrame* frGeneral = new QFrame();
   KPageWidgetItem *item = addSubPage( applicationItem, frGeneral, i18n("General") );
   item->setHeader( i18n("General Options") );
   item->setIcon( KIcon( "gohome" ) );
@@ -171,7 +171,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
 
 
   //BEGIN Session page
-  QFrame* frSessions = new QFrame( this );
+  QFrame* frSessions = new QFrame();
   item = addSubPage( applicationItem, frSessions, i18n("Sessions") );
   item->setHeader( i18n("Session Management") );
   item->setIcon( KIcon( "history" ) );
@@ -250,7 +250,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   connect( fileSelConfigPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
   path.clear();
 #endif
-  KVBox *page = new KVBox( this );
+  KVBox *page = new KVBox();
   filelistConfigPage = new KFLConfigPage( page, mainWindow->filelist );
   connect( filelistConfigPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
 
@@ -258,7 +258,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   item->setHeader( i18n("Document List Settings") );
   item->setIcon( KIcon( "view_text" ) );
 
-  page = new KVBox( this );
+  page = new KVBox();
   KateConfigPluginPage *configPluginPage = new KateConfigPluginPage(page, this);
   connect( configPluginPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
 
@@ -268,7 +268,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
 
 
   // Tools->External Tools menu
-  page = new KVBox( this );
+  page = new KVBox();
   configExternalToolsPage = new KateExternalToolsConfigWidget(page, "external tools config page");
   connect( configExternalToolsPage, SIGNAL(changed()), this, SLOT(slotChanged()) );
 
@@ -282,7 +282,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
 
   for (int i = 0; i < KateDocManager::self()->editor()->configPages (); ++i)
   {
-    page = new KVBox( this );
+    page = new KVBox();
     KTextEditor::ConfigPage *cPage = KateDocManager::self()->editor()->configPage(i, page);
     connect( cPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
     editorPages.append (cPage);
@@ -315,7 +315,7 @@ void KateConfigDialog::addPluginPage (Kate::Plugin *plugin, KPageWidgetItem *par
 
   for (uint i=0; i<Kate::pluginConfigPageInterface(plugin)->configPages(); i++)
   {
-    KVBox *page = new KVBox( this );
+    KVBox *page = new KVBox();
 
     KPageWidgetItem *item = addSubPage( parentItem, page, Kate::pluginConfigPageInterface(plugin)->configPageName(i) );
     item->setHeader( Kate::pluginConfigPageInterface(plugin)->configPageFullName(i) );
