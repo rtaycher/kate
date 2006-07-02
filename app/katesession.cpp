@@ -116,7 +116,7 @@ bool KateSession::create (const QString &name, bool force)
   while (true)
   {
     tname.setNum (s++);
-    KMD5 md5 (tname); 
+    KMD5 md5 (tname);
     m_sessionFileRel = QString ("%1.katesession").arg (md5.hexDigest().data());
 
     if (!KGlobal::dirs()->exists(sessionFile ()))
@@ -130,7 +130,7 @@ bool KateSession::create (const QString &name, bool force)
 	return false;
   }
 #endif
-  
+
 
 
   // create the file, write name to it!
@@ -163,7 +163,7 @@ bool KateSession::rename (const QString &name)
   	return false;
   }
   m_sessionName = name;
-  
+
   return true;
 }
 
@@ -337,7 +337,7 @@ KateSession::Ptr KateSessionManager::giveSession (const QString &name)
 {
   if (name.isEmpty())
     return KateSession::Ptr(new KateSession (this, ""));
-    
+
   updateSessionList();
 
   for (int i=0; i < m_sessionList.count(); ++i)
@@ -429,7 +429,7 @@ bool KateSessionManager::saveActiveSession (bool tryAsk, bool rememberAsLast)
 bool KateSessionManager::chooseSession ()
 {
   bool success = true;
-  
+
   // app config
   KConfig *c = KGlobal::config();
   c->setGroup("General");
@@ -610,7 +610,7 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
 
   setDefaultButton(KDialog::User2);
   setEscapeButton(KDialog::User1);
-  enableButtonSeparator(true);
+  //showButtonSeparator(true);
   m_delayTimer=new QTimer(this);
   m_delayTimer->setSingleShot(true);
   int delay=style()->styleHint(QStyle::SH_ToolButton_PopupDelay, 0, this);
@@ -632,7 +632,7 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
   QVBoxLayout *vb = new QVBoxLayout ();
   vb->setSpacing (KDialog::spacingHint());
   tll->addItem(vb);
-  
+
   m_sessions = new QTreeWidget (page);
   vb->addWidget(m_sessions);
   QStringList header;
@@ -641,7 +641,7 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
   m_sessions->setHeaderLabels(header);
   m_sessions->setSelectionBehavior(QAbstractItemView::SelectItems);
   m_sessions->setSelectionMode (QAbstractItemView::SingleSelection);
-  
+
   connect (m_sessions, SIGNAL(selectionChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(selectionChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 
   KateSessionList &slist (KateSessionManager::self()->sessionList());
@@ -745,13 +745,13 @@ KateSessionOpenDialog::KateSessionOpenDialog (QWidget *parent)
   setButtonGuiItem( User1, KStdGuiItem::cancel() );
   setButtonGuiItem( User2, KStdGuiItem::open() );
   setDefaultButton(KDialog::User2);
-  enableButtonSeparator(true);
+  //showButtonSeparator(true);
   /*QFrame *page = new QFrame (this);
   page->setMinimumSize (400, 200);
   setMainWidget(page);
 
   QHBoxLayout *hb = new QHBoxLayout (page);
-  
+
   QVBoxLayout *vb = new QVBoxLayout ();
   hb->addItem(vb);*/
   m_sessions = new QTreeWidget (this);
@@ -895,7 +895,7 @@ void KateSessionManageDialog::rename ()
     updateSessionList ();
   else
     KMessageBox::sorry(this,i18n("The session could not be renamed to \"%1\", there already exists another session with the same name", name),i18n("Session Renaming"));
-  
+
 }
 
 void KateSessionManageDialog::del ()
@@ -928,7 +928,7 @@ KateSessionsAction::KateSessionsAction(const QString& text, KActionCollection* p
   : KActionMenu(text, parent, name)
 {
   connect(kMenu(),SIGNAL(aboutToShow()),this,SLOT(slotAboutToShow()));
-  
+
   sessionsGroup = new QActionGroup( kMenu() );
   connect(sessionsGroup, SIGNAL( triggered(QAction *) ), this, SLOT( openSession(QAction *)));
 }

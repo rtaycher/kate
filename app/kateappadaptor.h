@@ -18,7 +18,7 @@
 
 #ifndef _kateapp_adaptor_h_
 #define _kateapp_adaptor_h_
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 class KateApp;
 

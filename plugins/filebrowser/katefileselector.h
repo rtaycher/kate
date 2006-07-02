@@ -67,15 +67,15 @@ class KateFileSelectorPlugin:public Kate::Plugin,public Kate::PluginViewInterfac
     void loadViewConfig(KConfig*,Kate::MainWindow *,const QString&);
     void storeGeneralConfig(KConfig*,const QString&) {}
     void loadGeneralConfig(KConfig*,const QString&) {}
-    
+
     uint configPages() const;
     PluginConfigPage *configPage (uint number = 0, QWidget *parent = 0, const char *name=0);
     QString configPageName (uint number = 0) const;
     QString configPageFullName (uint number = 0) const;
-    QPixmap configPagePixmap (uint number = 0, int size = K3Icon::SizeSmall) const;    
-    
+    KIcon configPageIcon (uint number = 0) const;
+
   private:
-    QLinkedList<KateFileSelector*> m_views;  
+    QLinkedList<KateFileSelector*> m_views;
 };
 
 

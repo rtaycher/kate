@@ -19,7 +19,7 @@
 #ifndef _katedocmanager_adaptor_h_
 #define _katedocmanager_adaptor_h_
 
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 class KateDocManager;
 

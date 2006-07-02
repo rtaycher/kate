@@ -18,7 +18,7 @@
 
 #ifndef _katemainwindow_adaptor_h_
 #define _katemainwindow_adaptor_h_
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 class KateMainWindow;
 

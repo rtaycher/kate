@@ -47,6 +47,7 @@
 #include <kstandarddirs.h>
 #include <kwin.h>
 #include <kseparator.h>
+#include <kpagewidgetmodel.h>
 
 #include <q3buttongroup.h>
 #include <QCheckBox>
@@ -289,7 +290,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
 
     item = addSubPage( editorItem, page, KateDocManager::self()->editor()->configPageName(i) );
     item->setHeader( KateDocManager::self()->editor()->configPageFullName(i) );
-    item->setIcon( KateDocManager::self()->editor()->configPagePixmap(i, K3Icon::SizeSmall) );
+    item->setIcon( KateDocManager::self()->editor()->configPageIcon(i) );
   }
 
   KatePluginList &pluginList (KatePluginManager::self()->pluginList());
@@ -300,7 +301,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
       addPluginPage (plugin.plugin, pluginItem);
   }
 
-  enableButtonSeparator(true);
+  //showButtonSeparator(true);
   dataChanged = false;
 }
 
@@ -319,7 +320,7 @@ void KateConfigDialog::addPluginPage (Kate::Plugin *plugin, KPageWidgetItem *par
 
     KPageWidgetItem *item = addSubPage( parentItem, page, Kate::pluginConfigPageInterface(plugin)->configPageName(i) );
     item->setHeader( Kate::pluginConfigPageInterface(plugin)->configPageFullName(i) );
-    item->setIcon( Kate::pluginConfigPageInterface(plugin)->configPagePixmap(i, K3Icon::SizeSmall));
+    item->setIcon( Kate::pluginConfigPageInterface(plugin)->configPageIcon(i));
 
     PluginPageListItem *info=new PluginPageListItem;
     info->plugin = plugin;

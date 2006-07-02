@@ -22,7 +22,7 @@
 #include <kdebase_export.h>
 #include <QWidget>
 #include <QPixmap>
-#include <kicontheme.h>
+#include <kicon.h>
 
 namespace Kate
 {
@@ -67,14 +67,14 @@ class KATEINTERFACES_EXPORT PluginConfigPage : public QWidget
      * settings.
      */
     virtual void apply () = 0;
-    
+
     /**
      * This slot is called when the \e Reset button was clicked.
      * Reimplement this function as a public slot and reset the settings
      * to the current ones.
      */
     virtual void reset () = 0;
-    
+
     /**
      * This slot is called when the \e Defaults button was clicked.
      * Reimplement this function as a public slot and set every option to its
@@ -148,7 +148,7 @@ class KATEINTERFACES_EXPORT PluginConfigPageInterface
   //
   // slots !!!
   //
-  public:    
+  public:
     /**
      * Reimplement this function and return the number of config pages your
      * plugin supports.
@@ -156,7 +156,7 @@ class KATEINTERFACES_EXPORT PluginConfigPageInterface
      * \see configPage()
      */
     virtual uint configPages () const = 0;
-    
+
     /**
      * Return the config page with the given \p number and \p parent.
      * Assume you return \c N in configPages(), then you have to return
@@ -169,9 +169,9 @@ class KATEINTERFACES_EXPORT PluginConfigPageInterface
      * \param name config page identifier
      * \return a config page
      * \see configPages()
-     */ 
+     */
     virtual PluginConfigPage *configPage (uint number = 0, QWidget *parent = 0, const char *name=0 ) = 0;
-  
+
     /**
      * Return a short name for the config page with the given \p number, for
      * example 'Autobookmarker'.
@@ -192,8 +192,8 @@ class KATEINTERFACES_EXPORT PluginConfigPageInterface
      * \param size the icon size
      * \return the pixmap for the config page
      */
-    virtual QPixmap configPagePixmap (uint number = 0, int size = K3Icon::SizeSmall) const = 0;    
-    
+    virtual KIcon configPageIcon (uint number = 0) const = 0;
+
   private:
     class PrivatePluginConfigPageInterface *d;
     static unsigned int globalPluginConfigPageInterfaceNumber;

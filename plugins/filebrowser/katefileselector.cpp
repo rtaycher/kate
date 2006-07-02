@@ -47,6 +47,7 @@
 #include <QShowEvent>
 #include <QResizeEvent>
 #include <QVBoxLayout>
+#include <QLineEdit>
 
 #include <kapplication.h>
 #include <kactioncollection.h>
@@ -128,9 +129,9 @@ QString KateFileSelectorPlugin::configPageFullName (uint number) const {
   return i18n("File Selector Settings");
 }
 
-QPixmap KateFileSelectorPlugin::configPagePixmap (uint number, int size) const {
-  if (number!=0) return QPixmap();
-  return BarIcon("fileopen", size);
+KIcon KateFileSelectorPlugin::configPageIcon (uint number) const {
+  if (number!=0) return KIcon();
+  return KIcon("fileopen");
 }
 
 //BEGIN Toolbar
@@ -232,7 +233,7 @@ Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mai
   connect( acSyncDir, SIGNAL( triggered() ), this, SLOT( setActiveDocumentDir() ) );
   toolbar->setToolButtonStyle( Qt::ToolButtonIconOnly );
   toolbar->setIconDimensions( 16 );
-  toolbar->setEnableContextMenu( false );
+  toolbar->setContextMenuEnabled( false );
 
   connect( cmbPath, SIGNAL( urlActivated( const KUrl&  )),
              this, SLOT( cmbPathActivated( const KUrl& ) ));
