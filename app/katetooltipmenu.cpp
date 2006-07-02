@@ -45,7 +45,7 @@ void KateToolTipMenu::slotHovered(QAction* a) {
 	QRect dr=QApplication::desktop()->availableGeometry(this);
 	int posx;
 	if ( (fg.right()+fgl.width()+1)>dr.right())
-		posx=fg.left()-m_toolTip->width(),fg.top()-1;
+		posx=fg.left()-m_toolTip->width();
 	else
 		posx=fg.right()+1;
 	int posy;
