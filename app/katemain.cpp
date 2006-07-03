@@ -118,15 +118,15 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
     DCOPCStringList allClients = client.registeredApplications();
 
     // search for a kate app client, use the first found
-    DCOPCString kateApp;
+    QString kateApp;
 
     if ( (args->isSet("pid")) || (::getenv("KATE_PID")!=0))
     {
       QByteArray usePid;
       if (args->isSet("pid")) usePid=args->getOption("pid");
       else usePid=QByteArray(::getenv("KATE_PID"));
-      DCOPCString tryApp = QByteArray ("kate-") + usePid;//args->getOption("pid");
-      if (client.isApplicationRegistered(tryApp))
+      QString tryApp = QByteArray ("kate-") + usePid;//args->getOption("pid");
+      if (QDBus::sessionBus().busService()->nameHasOwner(tryApp))
         kateApp = tryApp;
     }
     else
