@@ -195,7 +195,7 @@ KConfig *KateSession::configWrite ()
 
 KateSessionManager::KateSessionManager (QObject *parent)
  : QObject (parent)
- , m_sessionsDir (locateLocal( "data", "kate/sessions"))
+ , m_sessionsDir (KStandardDirs::locateLocal( "data", "kate/sessions"))
  , m_activeSession (new KateSession (this, ""))
  , m_defaultSessionFileName(QUrl::toPercentEncoding(i18n("Default Session"),"",".")+QString(".katesession"))
 {
