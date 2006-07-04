@@ -5,7 +5,7 @@ add_subdirectory( actions )
 
 ########### install files ###############
 
-install_files( ${DATA_INSTALL_DIR}/kate/pics FILES sessionchooser.png )
+install( FILES sessionchooser.png  DESTINATION  ${DATA_INSTALL_DIR}/kate/pics )
 
 kde4_install_icons( ${ICON_INSTALL_DIR} hicolor )
 

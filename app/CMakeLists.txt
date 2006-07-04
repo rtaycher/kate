@@ -39,7 +39,7 @@ kde4_add_library(kateinterfaces SHARED ${kateinterfaces_LIB_SRCS})
 target_link_libraries(kateinterfaces  ${KDE4_KDE3SUPPORT_LIBS} ${QT_QTXML_LIBRARY} ktexteditor )
 
 set_target_properties(kateinterfaces PROPERTIES VERSION 0.0.0 SOVERSION 0 )
-install_targets(${LIB_INSTALL_DIR} kateinterfaces )
+install(TARGETS kateinterfaces  DESTINATION ${LIB_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -52,7 +52,7 @@ kde4_add_kdeinit_executable( kate ${kate_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kate  ${KDE4_KDECORE_LIBS} kateinterfaces )
 
-install_targets(${LIB_INSTALL_DIR} kdeinit_kate )
+install(TARGETS kdeinit_kate  DESTINATION ${LIB_INSTALL_DIR} )
 
 target_link_libraries( kate kdeinit_kate )
 install(TARGETS kate DESTINATION bin)

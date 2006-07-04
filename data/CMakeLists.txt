@@ -3,12 +3,12 @@
 
 ########### install files ###############
 
-install_files( ${XDG_APPS_DIR} FILES kate.desktop )
-install_files( ${CONFIG_INSTALL_DIR} FILES katerc )
-install_files( ${DATA_INSTALL_DIR}/kate FILES tips )
-install_files( ${DATA_INSTALL_DIR}/kate FILES kateui.rc externaltools )
-install_files( ${SERVICETYPES_INSTALL_DIR} FILES kateplugin.desktop )
-install_files( ${KCONF_UPDATE_INSTALL_DIR} FILES kate-2.4.upd )
+install( FILES kate.desktop  DESTINATION  ${XDG_APPS_DIR} )
+install( FILES katerc  DESTINATION  ${CONFIG_INSTALL_DIR} )
+install( FILES tips  DESTINATION  ${DATA_INSTALL_DIR}/kate )
+install( FILES kateui.rc externaltools  DESTINATION  ${DATA_INSTALL_DIR}/kate )
+install( FILES kateplugin.desktop  DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
+install( FILES kate-2.4.upd  DESTINATION  ${KCONF_UPDATE_INSTALL_DIR} )
 
 
 

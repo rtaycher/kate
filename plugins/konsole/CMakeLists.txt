@@ -13,13 +13,13 @@ kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} katekonsoleplugin )
 
 target_link_libraries(katekonsoleplugin  ${KDE4_KDECORE_LIBS} kateinterfaces )
 
-install_targets(${PLUGIN_INSTALL_DIR} katekonsoleplugin )
+install(TARGETS katekonsoleplugin  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### install files ###############
 
-install_files( ${DATA_INSTALL_DIR}/kate/plugins/katekonsole FILES ui.rc )
-install_files( ${SERVICES_INSTALL_DIR} FILES katekonsoleplugin.desktop )
+install( FILES ui.rc  DESTINATION  ${DATA_INSTALL_DIR}/kate/plugins/katekonsole )
+install( FILES katekonsoleplugin.desktop  DESTINATION  ${SERVICES_INSTALL_DIR} )
 
 
 

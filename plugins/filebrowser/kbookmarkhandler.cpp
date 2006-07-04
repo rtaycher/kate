@@ -46,9 +46,9 @@ Kate::Private::Plugin::KBookmarkHandler::KBookmarkHandler( KateFileSelector *par
 	if (!m_menu)
       m_menu = new KMenu( parent);
 
-    QString file = locate( "data", "kate/fsbookmarks.xml" );
+    QString file = KStandardDirs::locate( "data", "kate/fsbookmarks.xml" );
     if ( file.isEmpty() )
-        file = locateLocal( "data", "kate/fsbookmarks.xml" );
+        file = KStandardDirs::locateLocal( "data", "kate/fsbookmarks.xml" );
 
     KBookmarkManager *manager = KBookmarkManager::managerForFile( file, false);
     manager->setUpdate( true );

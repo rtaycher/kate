@@ -13,12 +13,12 @@ kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} katefilebrowserplugin )
 
 target_link_libraries(katefilebrowserplugin  ${KDE4_KDE3SUPPORT_LIBS} kateinterfaces )
 
-install_targets(${PLUGIN_INSTALL_DIR} katefilebrowserplugin )
+install(TARGETS katefilebrowserplugin  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### install files ###############
 
-install_files( ${SERVICES_INSTALL_DIR} FILES katefilebrowserplugin.desktop )
+install( FILES katefilebrowserplugin.desktop  DESTINATION  ${SERVICES_INSTALL_DIR} )
 
 
 
