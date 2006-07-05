@@ -642,7 +642,7 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
   m_sessions->setSelectionBehavior(QAbstractItemView::SelectItems);
   m_sessions->setSelectionMode (QAbstractItemView::SingleSelection);
 
-  connect (m_sessions, SIGNAL(selectionChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(selectionChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+  connect (m_sessions, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(selectionChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 
   KateSessionList &slist (KateSessionManager::self()->sessionList());
   for (int i=0; i < slist.count(); ++i)
