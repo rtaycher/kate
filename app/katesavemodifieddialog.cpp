@@ -26,7 +26,7 @@
 // perhaps later again #include <k3listview.h>
 #include <qtreewidget.h>
 #include <kguiitem.h>
-#include <kactivelabel.h>
+#include <qlabel.h>
 #include <kstdguiitem.h>
 #include <kvbox.h>
 #include <QLabel>
@@ -152,7 +152,7 @@ KateSaveModifiedDialog::KateSaveModifiedDialog(QWidget *parent, QList<KTextEdito
 
 	KVBox *box = new KVBox(this);
 	setMainWidget(box);
-	new KActiveLabel(i18n("<qt>The following documents have been modified. Do you want to save them before closing?</qt>"),box);
+	new QLabel(i18n("<qt>The following documents have been modified. Do you want to save them before closing?</qt>"),box);
 	m_list=new QTreeWidget(box);
 	/*m_list->addColumn(i18n("Title"));
 	m_list->addColumn(i18n("Location"));*/
