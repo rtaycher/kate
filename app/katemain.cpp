@@ -174,7 +174,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
         do
         {
           line = input.readLine();
-          text.append( line + "\n" );
+          text.append( line + '\n' );
         } while( !line.isNull() );
 
         kRef.call( "openInput", text );

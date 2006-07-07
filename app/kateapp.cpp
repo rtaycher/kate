@@ -264,7 +264,7 @@ bool KateApp::startupKate ()
     do
     {
       line = input.readLine();
-      text.append( line + "\n" );
+      text.append( line + '\n' );
     } while( !line.isNull() );
 
     openInput (text);
