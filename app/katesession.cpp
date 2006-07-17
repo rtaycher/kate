@@ -927,9 +927,9 @@ void KateSessionManageDialog::updateSessionList ()
 KateSessionsAction::KateSessionsAction(const QString& text, KActionCollection* parent, const char* name )
   : KActionMenu(text, parent, name)
 {
-  connect(kMenu(),SIGNAL(aboutToShow()),this,SLOT(slotAboutToShow()));
+  connect(menu(),SIGNAL(aboutToShow()),this,SLOT(slotAboutToShow()));
 
-  sessionsGroup = new QActionGroup( kMenu() );
+  sessionsGroup = new QActionGroup( menu() );
   connect(sessionsGroup, SIGNAL( triggered(QAction *) ), this, SLOT( openSession(QAction *)));
 }
 
@@ -940,9 +940,9 @@ void KateSessionsAction::slotAboutToShow()
   KateSessionList &slist (KateSessionManager::self()->sessionList());
   for (int i=0; i < slist.count(); ++i)
   {
-  	QAction *action = new QAction( slist[i]->sessionName(), sessionsGroup );
-  	action->setData(QVariant(i));
-		kMenu()->addAction (action);
+      QAction *action = new QAction( slist[i]->sessionName(), sessionsGroup );
+      action->setData(QVariant(i));
+      menu()->addAction (action);
   }
 }
 

@@ -333,7 +333,7 @@ KateExternalToolsMenuAction::KateExternalToolsMenuAction( const QString &text,
 void KateExternalToolsMenuAction::reload()
 {
   m_actionCollection->clear ();
-  kMenu()->clear();
+  menu()->clear();
 
   // load all the tools, and create a action for each of them
   KConfig *config = new KConfig( "externaltools", false, false, "appdata" );
@@ -375,7 +375,7 @@ void KateExternalToolsMenuAction::reload()
   {
     if ( *it == "---" )
     {
-      kMenu()->addSeparator();
+      menu()->addSeparator();
       // a separator
       continue;
     }
