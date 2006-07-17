@@ -39,7 +39,7 @@
 
 #include <kapplication.h>
 #include <kacceleratormanager.h>
-#include <kbuttonbox.h>
+#include <kdialogbuttonbox.h>
 #include <kfiledialog.h>
 #include <kprocess.h>
 #include <kapplication.h>
@@ -184,13 +184,11 @@ GrepTool::GrepTool(QWidget *parent)
 
 
   // buttons find and clear
-  KButtonBox *actionbox = new KButtonBox(this, Qt::Vertical);
+  KDialogButtonBox *actionbox = new KDialogButtonBox(this, Qt::Vertical);
   layout->addWidget(actionbox, 0, 1);
-  actionbox->addStretch();
-  btnSearch = static_cast<KPushButton*>(actionbox->addButton(KStdGuiItem::find()));
+  btnSearch = actionbox->addButton(KStdGuiItem::find(), QDialogButtonBox::ActionRole );
   btnSearch->setDefault(true);
-  btnClear = static_cast<KPushButton*>(actionbox->addButton( KStdGuiItem::clear() ));
-  actionbox->addStretch();
+  btnClear = actionbox->addButton( KStdGuiItem::clear() , QDialogButtonBox::ActionRole );
 
   lbResult = new QTreeWidget(this);
   QStringList headers;
