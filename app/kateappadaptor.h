@@ -30,7 +30,7 @@ class KateAppAdaptor : public QDBusAbstractAdaptor
   public:
     KateAppAdaptor (KateApp *app);
 
-public slots:
+public Q_SLOTS:
     QDBusObjectPath documentManager ();
 
     QDBusObjectPath activeMainWindow ();

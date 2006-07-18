@@ -31,7 +31,7 @@ class KateDocManagerAdaptor : public QDBusAbstractAdaptor
   public:
     KateDocManagerAdaptor (KateDocManager *dm);
 
-public slots:
+  public Q_SLOTS:
 
     //QDBusObjectPath document (uint n);
 
