@@ -110,20 +110,20 @@ KTextEditor::Document *KateDocManager::createDoc ()
   if (qobject_cast<KTextEditor::ModificationInterface *>(doc))
     qobject_cast<KTextEditor::ModificationInterface *>(doc)->setModifiedOnDiskWarning (true);
 
-  m_docList.append((KTextEditor::Document *)doc);
+  m_docList.append(doc);
   m_docInfos.insert (doc, new KateDocumentInfo ());
 
-  emit documentCreated ((KTextEditor::Document *)doc);
-  emit m_documentManager->documentCreated ((KTextEditor::Document *)doc);
+  emit documentCreated (doc);
+  emit m_documentManager->documentCreated (doc);
 
   connect(doc,SIGNAL(modifiedOnDisk(KTextEditor::Document *, bool, KTextEditor::ModificationInterface::ModifiedOnDiskReason)),
    this,SLOT(slotModifiedOnDisc(KTextEditor::Document *, bool, KTextEditor::ModificationInterface::ModifiedOnDiskReason)));
-  return (KTextEditor::Document *)doc;
+  return doc;
 }
 
 void KateDocManager::deleteDoc (KTextEditor::Document *doc)
 {
-  KTextEditor::Document *activeId = m_currentDoc;
+  const bool deletedCurrentDoc = (m_currentDoc == doc);
 
   delete m_docInfos.take (doc);
   delete m_docList.takeAt (m_docList.indexOf(doc));
@@ -132,7 +132,7 @@ void KateDocManager::deleteDoc (KTextEditor::Document *doc)
   emit m_documentManager->documentDeleted (doc);
 
   // ohh, current doc was deleted
-  if (activeId == doc)
+  if (deletedCurrentDoc)
   {
     // special case of documentChanged, no longer any doc here !
     m_currentDoc = 0;
@@ -243,8 +243,7 @@ bool KateDocManager::closeDocument(class KTextEditor::Document *doc,bool closeUR
   if (!doc) return false;
 
   saveMetaInfos(doc);
-  if (closeURL)
-  if (!doc->closeURL()) return false;
+  if (closeURL && !doc->closeURL()) return false;
 
   for (int i=0; i < KateApp::self()->mainWindows (); i++ )
     KateApp::self()->mainWindow(i)->viewManager()->closeViews(doc);
@@ -454,10 +453,10 @@ void KateDocManager::restoreDocumentList (KConfig* config)
 
 void KateDocManager::slotModifiedOnDisc (KTextEditor::Document *doc, bool b, KTextEditor::ModificationInterface::ModifiedOnDiskReason reason)
 {
-  if (m_docInfos[qobject_cast<KTextEditor::Document*>(doc)])
+  if (m_docInfos.contains(doc))
   {
-    m_docInfos[qobject_cast<KTextEditor::Document*>(doc)]->modifiedOnDisc = b;
-    m_docInfos[qobject_cast<KTextEditor::Document*>(doc)]->modifiedOnDiscReason = reason;
+    m_docInfos[doc]->modifiedOnDisc = b;
+    m_docInfos[doc]->modifiedOnDiscReason = reason;
   }
 }
 
