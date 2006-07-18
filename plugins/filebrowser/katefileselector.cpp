@@ -109,11 +109,13 @@ void KateFileSelectorPlugin::loadViewConfig(KConfig* config,Kate::MainWindow *wi
 }
 
 
-uint KateFileSelectorPlugin::configPages() const {return 1;}
-Kate::PluginConfigPage *KateFileSelectorPlugin::configPage (uint number, QWidget *parent, const char *name) {
-#ifdef __GNUC__
-#warning "fixme"
-#endif
+uint KateFileSelectorPlugin::configPages() const
+{
+  return 1;
+}
+
+Kate::PluginConfigPage *KateFileSelectorPlugin::configPage (uint number, QWidget *parent, const char *name)
+{
   if (number!=0) return 0;
   return new KFSConfigPage(parent,name,*(m_views.begin()));
 }
@@ -170,7 +172,8 @@ void KateFileSelectorToolBarParent::resizeEvent ( QResizeEvent * )
 Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mainWindow,
                                     QWidget * parent, const char * name )
     : KVBox (parent),
-      mainwin(mainWindow)
+      mainwin(mainWindow),
+      autoSyncEvents(0)
 {
   setObjectName(name);
   mActionCollection = new KActionCollection( this );
@@ -212,7 +215,7 @@ Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mai
   KActionMenu *acmBookmarks = new KActionMenu( KIcon("bookmark"), i18n("Bookmarks"),
         mActionCollection, "bookmarks" );
   acmBookmarks->setDelayed( false );
-  bookmarkHandler = new KBookmarkHandler( this, acmBookmarks->popupMenu() );
+  bookmarkHandler = new KBookmarkHandler( this, acmBookmarks->menu() );
   KHBox* filterBox = new KHBox(this);
 
   btnFilter = new QToolButton( filterBox );
