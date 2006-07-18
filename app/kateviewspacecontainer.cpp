@@ -374,59 +374,54 @@ void KateViewSpaceContainer::slotPendingDocumentNameChanged() {
           setWindowTitle(KStringHandler::lsqueeze(c,32));
 }
 
-void KateViewSpaceContainer::splitViewSpace( KateViewSpace* vs,
-                                      bool isHoriz,
-                                      bool atTop)
+void KateViewSpaceContainer::splitViewSpace( KateViewSpace* vs, // = 0
+                                             Qt::Orientation o )// = Qt::Horizontal
 {
-  // fallback to activeViewSpace
-  if (!vs)
-    vs = activeViewSpace();
+  // emergency: fallback to activeViewSpace, and if still invalid, abort
+  if (!vs) vs = activeViewSpace();
+  if (!vs) return;
 
-  // found no viewspace, bah
-  if (!vs)
-    return;
-
-  // get current splitter
+  // get current splitter, and abort if null
   QSplitter *currentSplitter = qobject_cast<QSplitter*>(vs->parentWidget());
-
-  // no splitter found, bah
-  if (!currentSplitter)
-    return;
-
-  // which orientation we want?
-  Qt::Orientation orientation = isHoriz ? Qt::Vertical : Qt::Horizontal;
+  if (!currentSplitter) return;
 
   // index where to insert new splitter/viewspace
-  int index = currentSplitter->indexOf (vs);
-
-  // if we are not atTop, inc this
-  if (!atTop)
-    ++index;
+  const int index = currentSplitter->indexOf( vs );
 
   // create new viewspace
-  KateViewSpace* vsNew = new KateViewSpace( this, 0);
+  KateViewSpace* vsNew = new KateViewSpace( this );
 
-  // first try if we not can fix the orientation issue
-  if (currentSplitter->orientation() != orientation && currentSplitter->count() == 1)
-    currentSplitter->setOrientation (orientation);
-
-  // now we have 2 cases, currentSplitter has right orientation or not ;)
-  // only if not, we need new splitter and move current vs over to it ;)
-  if (currentSplitter->orientation() != orientation)
+  // only 1 children -> we are the root container. So simply set the orientation
+  // and add the new view space, then correct the sizes to 50%:50%
+  if (currentSplitter->count() == 1)
   {
-    QSplitter *oldSplitter = currentSplitter;
-
-    currentSplitter = new QSplitter (orientation);
-    oldSplitter->insertWidget (index,currentSplitter);
-    
-    currentSplitter->setOpaqueResize( KGlobalSettings::opaqueResize() );
-    currentSplitter->addWidget (vs);
-    currentSplitter->addWidget (vsNew);
-    currentSplitter->show ();
+    if( currentSplitter->orientation() != o )
+      currentSplitter->setOrientation( o );
+    QList<int> sizes = currentSplitter->sizes();
+    sizes << (sizes.first() - currentSplitter->handleWidth() ) / 2;
+    sizes[0] = sizes[1];
+    currentSplitter->insertWidget( index, vsNew );
+    currentSplitter->setSizes( sizes );
   }
   else
   {
-    currentSplitter->insertWidget (index, vsNew);
+    // create a new QSplitter and replace vs with the splitter. vs and newVS are
+    // the new children of the new QSplitter
+    QSplitter* newContainer = new QSplitter( o );
+    newContainer->setOpaqueResize( KGlobalSettings::opaqueResize() );
+    QList<int> currentSizes = currentSplitter->sizes();
+
+    newContainer->addWidget( vs );
+    newContainer->addWidget( vsNew );
+    currentSplitter->insertWidget( index, newContainer );
+    newContainer->show();
+
+    // fix sizes of children of old and new splitter
+    currentSplitter->setSizes( currentSizes );
+    QList<int> newSizes = newContainer->sizes();
+    newSizes[0] = (newSizes[0] + newSizes[1] - newContainer->handleWidth()) / 2;
+    newSizes[1] = newSizes[0];
+    newContainer->setSizes( newSizes );
   }
 
   m_viewSpaceList.append( vsNew );
@@ -668,5 +663,6 @@ void KateViewSpaceContainer::restoreSplitter( KConfig* config, const QString &gr
 KateMainWindow *KateViewSpaceContainer::mainWindow() {
   return m_viewManager->mainWindow();
 }
+
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

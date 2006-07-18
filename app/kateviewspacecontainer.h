@@ -107,18 +107,18 @@ class KateViewSpaceContainer: public QSplitter
     void documentDeleted (KTextEditor::Document *doc);
 
   public Q_SLOTS:
-     /* Splits a KateViewSpace into two.
-      * The operation is performed by creating a QSplitter in the parent of the KateViewSpace to be split,
-      * which is then moved to that splitter. Then a new KateViewSpace is created and added to the splitter,
-      * and a KateView is created to populate the new viewspace. The new KateView is made the active one,
-      * because createView() does that.
+     /**
+      * Splits a KateViewSpace into two in the following steps:
+      * 1. create a QSplitter in the parent of the KateViewSpace to be split
+      * 2. move the to-be-splitted KateViewSpace to the new splitter
+      * 3. create new KateViewSpace and added to the new splitter
+      * 4. create KateView to populate the new viewspace.
+      * 5. The new KateView is made the active one, because createView() does that.
       * If no viewspace is provided, the result of activeViewSpace() is used.
-      * The isHoriz, true pr default, decides the orientation of the splitting action.
-      * If atTop is true, the new viewspace will be moved to the first position in the new splitter.
-      * If a newViewUrl is provided, the new view will show the document in that URL if any, otherwise
-      * the document of the current view in the viewspace to be split is used.
+      * The orientation of the new splitter is determined by the value of o.
+      * Note: horizontal splitter means vertically aligned views.
       */
-    void splitViewSpace( KateViewSpace* vs=0L, bool isHoriz=true, bool atTop=false );
+    void splitViewSpace( KateViewSpace* vs=0L, Qt::Orientation o = Qt::Horizontal );
 
     bool getShowFullPath() const { return showFullPath; }
 
@@ -129,9 +129,9 @@ class KateViewSpaceContainer: public QSplitter
     void activateView ( KTextEditor::Document *doc );
 
     /** Splits the active viewspace horizontally */
-    void slotSplitViewSpaceHoriz () { splitViewSpace(); }
+    void slotSplitViewSpaceHoriz () { splitViewSpace(0L, Qt::Vertical); }
     /** Splits the active viewspace vertically */
-    void slotSplitViewSpaceVert () { splitViewSpace( 0L, false ); }
+    void slotSplitViewSpaceVert () { splitViewSpace(); }
 
     void slotCloseCurrentViewSpace();
 
