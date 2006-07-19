@@ -2,6 +2,7 @@
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2001 Anders Lund <anders.lund@lund.tdcadsl.dk>
+   Copyright (C) 2006 Dominik Haumann <dhdev@gmx.de>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -521,71 +522,54 @@ void KateViewSpaceContainer::setShowFullPath( bool enable )
 
 void KateViewSpaceContainer::saveViewConfiguration(KConfig *config,const QString& group)
 {
-  bool weHaveSplittersAlive (viewSpaceCount() > 1);
+  config->setGroup (group);
+  // set Active ViewSpace to 0, just in case there is none active (would be
+  // strange) and config somehow has previous value set
+  config->writeEntry("Active ViewSpace", 0);
 
-  config->setGroup (group); //"View Configuration");
-  config->writeEntry ("Splitters", weHaveSplittersAlive);
-
-  // no splitters around
-  if (!weHaveSplittersAlive)
-  {
-    config->writeEntry("Active Viewspace", 0);
-    m_viewSpaceList.first()->saveConfig ( config, 0,group );
-
-    return;
-  }
-
-  saveSplitterConfig( qobject_cast<QSplitter*>(this), 0, config , group);
+  m_splitterIndex = 0;
+  saveSplitterConfig( this, config , group);
 }
 
 void KateViewSpaceContainer::restoreViewConfiguration (KConfig *config, const QString& group)
 {
   config->setGroup(group);
-  //config->setGroup ("View Configuration");
 
-  // no splitters around, ohhh :()
-  if (!config->readEntry ("Splitters", QVariant(false)).toBool())
-  {
-    // only add the new views needed, let the old stay, won't hurt if one around
-    m_viewSpaceList.first ()->restoreConfig (this, config, QString(group+"-ViewSpace 0"));
-  }
-  else
-  {
-    // send all views + their gui to **** ;)
-    for (int i=0; i < m_viewList.count(); i++)
-      mainWindow()->guiFactory ()->removeClient (m_viewList.at(i));
+  // remove all views and viewspaces + remove their xml gui clients
+  for (int i=0; i < m_viewList.count(); ++i)
+    mainWindow()->guiFactory ()->removeClient (m_viewList.at(i));
 
-    // kill views and viewspaces
-    qDeleteAll( m_viewList );
-    m_viewList.clear();
-    qDeleteAll( m_viewSpaceList );
-    m_viewSpaceList.clear();
+  qDeleteAll( m_viewList );
+  m_viewList.clear();
+  qDeleteAll( m_viewSpaceList );
+  m_viewSpaceList.clear();
+  m_activeStates.clear();
 
-    // call restoreSplitter for Splitter 0
-    restoreSplitter( config, QString(group+"-Splitter 0"), this,group );
-  }
+  // start recursion for the root splitter (Splitter 0)
+  restoreSplitter( config, group+"-Splitter 0", this, group );
 
-  // finally, make the correct view active.
+  // finally, make the correct view from the last session active
   config->setGroup (group);
-/*
-  KateViewSpace *vs = m_viewSpaceList.at( config->readEntry("Active ViewSpace") );
-  if ( vs )
-    activateSpace( vs->currentView() );
-  */
+  int lastViewSpace = config->readEntry("Active ViewSpace", 0);
+  if( lastViewSpace > m_viewSpaceList.size() ) lastViewSpace = 0;
+  if( lastViewSpace >= 0 && lastViewSpace < m_viewSpaceList.size())
+  {
+    setActiveSpace( m_viewSpaceList.at( lastViewSpace ) );
+  }
 }
 
-
-void KateViewSpaceContainer::saveSplitterConfig( QSplitter* s, int idx, KConfig* config, const QString& viewConfGrp )
+void KateViewSpaceContainer::saveSplitterConfig( QSplitter* s, KConfig* config, const QString& viewConfGrp )
 {
-  QString grp = QString(viewConfGrp+"-Splitter %1").arg(idx);
+  QString grp = QString(viewConfGrp+"-Splitter %1").arg(m_splitterIndex);
   config->setGroup(grp);
 
   // Save sizes, orient, children for this splitter
   config->writeEntry( "Sizes", s->sizes() );
   config->writeEntry( "Orientation", int(s->orientation()) );
-  
+
   QStringList childList;
   // a QSplitter has two children, either QSplitters and/or KateViewSpaces
+  // special case: root splitter might have only one child (just for info)
   for (int it = 0; it < s->count(); ++it)
   {
     QWidget *obj = s->widget(it);
@@ -599,14 +583,14 @@ void KateViewSpaceContainer::saveSplitterConfig( QSplitter* s, int idx, KConfig*
       // save active viewspace
       if ( kvs->isActiveSpace() ) {
         config->setGroup(viewConfGrp);
-        config->writeEntry("Active Viewspace", m_viewSpaceList.indexOf(kvs) );
+        config->writeEntry("Active ViewSpace", m_viewSpaceList.indexOf(kvs) );
       }
     }
     // for QSplitters, recurse
     else if ( QSplitter* splitter = qobject_cast<QSplitter*>(obj) ) {
-      idx++;
-      saveSplitterConfig( splitter, idx, config, viewConfGrp);
-      n = QString(viewConfGrp+"-Splitter %1").arg( idx );
+      ++m_splitterIndex;
+      n = QString(viewConfGrp+"-Splitter %1").arg( m_splitterIndex );
+      saveSplitterConfig( splitter, config, viewConfGrp);
     }
 
     childList.append( n );
@@ -630,24 +614,18 @@ void KateViewSpaceContainer::restoreSplitter( KConfig* config, const QString &gr
     // for a viewspace, create it and open all documents therein.
     if ( (*it).startsWith(viewConfGrp+"-ViewSpace") )
     {
-      KateViewSpace* vs = new KateViewSpace( this, parent );
-
-      if (m_viewSpaceList.isEmpty())
-        vs->setActive (true);
-
+      KateViewSpace* vs = new KateViewSpace( this, 0 );
       m_viewSpaceList.append( vs );
-
-      vs->show();
       setActiveSpace( vs );
 
       vs->restoreConfig (this, config, *it);
+      parent->addWidget( vs );
+      vs->show();
     }
     else
     {
       // for a splitter, recurse.
-      config->setGroup(*it);
-      QSplitter* s = new QSplitter((Qt::Orientation)config->readEntry("Orientation", int(Qt::Horizontal)), parent);
-      restoreSplitter( config, *it, s, viewConfGrp );
+      restoreSplitter( config, *it, new QSplitter( parent ), viewConfGrp );
     }
   }
 

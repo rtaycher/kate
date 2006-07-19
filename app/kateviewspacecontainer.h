@@ -2,6 +2,7 @@
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2001 Anders Lund <anders.lund@lund.tdcadsl.dk>
+   Copyright (C) 2006 Dominik Haumann <dhdev@gmx.de>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -71,7 +72,7 @@ class KateViewSpaceContainer: public QSplitter
      * If child splitters are found, it calls it self with those as the argument.
      * If a viewspace child is found, it is asked to save its filelist.
      */
-    void saveSplitterConfig(QSplitter* s, int idx=0, KConfig* config=0L, const QString& viewConfGrp="");
+    void saveSplitterConfig(QSplitter* s, KConfig* config=0L, const QString& viewConfGrp="");
 
     /** Restore a single splitter.
      * This is all the work is done for @see saveSplitterConfig()
@@ -158,6 +159,8 @@ class KateViewSpaceContainer: public QSplitter
 
     bool m_pendingViewCreation;
     QPointer<KTextEditor::Document> m_pendingDocument;
+
+    int m_splitterIndex; // used during saving splitter config.
 };
 
 #endif
