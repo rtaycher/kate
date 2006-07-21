@@ -93,8 +93,9 @@
 uint KateMainWindow::uniqueID = 1;
 
 KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
-  : KateMDI::MainWindow (0,(QString("__KateMainWindow#%1").arg(uniqueID)).toLatin1())
+  : KateMDI::MainWindow (0)
 {
+  setObjectName((QString("__KateMainWindow#%1").arg(uniqueID)).toLatin1());
   // first the very important id
   myID = uniqueID;
   uniqueID++;
