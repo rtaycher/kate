@@ -58,7 +58,9 @@ KateApp::KateApp (KCmdLineArgs *args)
  , m_shouldExit(false)
  , m_args (args)
 {
+#ifdef __GNUC__
 #warning "kde4 dbus: port it"
+#endif
 #if 0
     // Don't handle DCOP requests yet
   dcopClient()->suspend();
@@ -142,7 +144,9 @@ void KateApp::initKate ()
       return ;
     }
   }
+#ifdef __GNUC__
 #warning "kde4 dbus port it ?"
+#endif
 #if 0
   // Ok. We are ready for DCOP requests.
   dcopClient()->resume();
@@ -307,7 +311,9 @@ void KateApp::shutdownKate (KateMainWindow *win)
     return;
 
   sessionManager()->saveActiveSession(true, true);
+#ifdef __GNUC__
 #warning "kde4: dbus port it"
+#endif
 #if 0
   // detach the dcopClient
   dcopClient()->detach();

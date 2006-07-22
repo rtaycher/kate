@@ -28,7 +28,9 @@ KateDocManagerAdaptor::KateDocManagerAdaptor (KateDocManager *dm)
 {
 
 }
+#ifdef __GNUC__
 #warning "kde4: need to port kate lib to dbus"
+#endif
 #if 0
 // bit more error save than the forcing c cast ;()
 QDBusObjectPath KateDocManagerAdaptor::document (uint n)

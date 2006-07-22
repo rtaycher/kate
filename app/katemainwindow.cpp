@@ -403,7 +403,9 @@ bool KateMainWindow::queryClose()
   if ( queryClose_internal () )
   {
     KateApp::self()->sessionManager()->saveActiveSession(true, true);
+#ifdef __GNUC__
 #warning "kde4: dbus port"
+#endif
 #if 0
     // detach the dcopClient
     KateApp::self()->dcopClient()->detach();

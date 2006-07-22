@@ -109,7 +109,9 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
   // now, first try to contact running kate instance if needed
   if ( (args->isSet("use")) || (::getenv("KATE_PID")!=0))
   {
+#ifdef __GNUC__
 #warning "kde4: port to dbus"
+#endif
 #if 0
     DCOPClient client;
     client.attach ();
