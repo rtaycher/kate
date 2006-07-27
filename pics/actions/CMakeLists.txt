@@ -1,14 +1,2 @@
-
-
-
-########### install files ###############
-
-install( FILES   DESTINATION  ${DATA_INSTALL_DIR}/kate/icons )
-
-
-
-
-#original Makefile.am contents follow:
-
-#kateiconsdir = $(kde_datadir)/kate/icons
-#kateicons_ICON = AUTO
+kde4_install_icons( ${DATA_INSTALL_DIR}/kate/icons crystalsvg )
+kde4_install_icons( ${DATA_INSTALL_DIR}/kate/icons locolor )
