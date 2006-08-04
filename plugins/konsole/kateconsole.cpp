@@ -21,6 +21,7 @@
 #include "kateconsole.h"
 #include "kateconsole.moc"
 
+#include <kicon.h>
 #include <kiconloader.h>
 #include <ktexteditor/document.h>
 #include <ktexteditor/view.h>
