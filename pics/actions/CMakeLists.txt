@@ -1,2 +1,2 @@
-kde4_install_icons( ${DATA_INSTALL_DIR}/kate/icons crystalsvg )
-kde4_install_icons( ${DATA_INSTALL_DIR}/kate/icons locolor )
+kde4_install_icons( ${DATA_INSTALL_DIR}/kate/icons  )
+kde4_install_icons( ${DATA_INSTALL_DIR}/kate/icons  )
