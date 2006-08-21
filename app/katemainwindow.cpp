@@ -102,7 +102,7 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
 
   new KateMainWindowAdaptor( this );
   m_dbusObjectPath = "/KateMainWindow_" + QString::number( myID );
-  QDBus::sessionBus().registerObject( m_dbusObjectPath, this );
+  QDBusConnection::sessionBus().registerObject( m_dbusObjectPath, this );
 
   m_modignore = false;
 
