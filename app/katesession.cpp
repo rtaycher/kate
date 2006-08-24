@@ -42,17 +42,21 @@
 
 #include <QDir>
 #include <QLabel>
-#include <QLayout>
 #include <QCheckBox>
-#include <QDateTime>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QStringList>
 #include <QStyle>
+#include <QtAlgorithms>
 
 #include <unistd.h>
 #include <time.h>
 
+// used to sort the session list (qSort)
+bool caseInsensitiveLessThan(const KateSession::Ptr& a, const KateSession::Ptr& b)
+{
+  return a->sessionName().toLower() < b->sessionName().toLower();
+}
 
 KateSession::KateSession (KateSessionManager *manager, const QString &fileName)
   : m_sessionFileRel (fileName)
@@ -244,6 +248,8 @@ void KateSessionManager::updateSessionList ()
     s->create(i18n("Default Session"));
     m_sessionList.append (s);
   }
+
+  qSort(m_sessionList.begin(), m_sessionList.end(), caseInsensitiveLessThan);
 }
 
 void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLast, bool saveLast, bool loadNew)
@@ -940,9 +946,9 @@ void KateSessionsAction::slotAboutToShow()
   KateSessionList &slist (KateSessionManager::self()->sessionList());
   for (int i=0; i < slist.count(); ++i)
   {
-      QAction *action = new QAction( slist[i]->sessionName(), sessionsGroup );
-      action->setData(QVariant(i));
-      menu()->addAction (action);
+    QAction *action = new QAction( slist[i]->sessionName(), sessionsGroup );
+    action->setData(QVariant(i));
+    menu()->addAction (action);
   }
 }
 
@@ -950,7 +956,7 @@ void KateSessionsAction::openSession (QAction *action)
 {
   KateSessionList &slist (KateSessionManager::self()->sessionList());
 
-	int i = action->data().toInt();
+  int i = action->data().toInt();
   if (i >= slist.count())
     return;
 
