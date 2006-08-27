@@ -57,9 +57,9 @@ static KCmdLineOptions options[] =
 extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
 {
   // here we go, construct the Kate version
-  QString kateVersion = KateApp::kateVersion();
+  QByteArray kateVersion = KateApp::kateVersion().toLatin1();
 
-  KAboutData aboutData ("kate", I18N_NOOP("Kate"), kateVersion.toLatin1().constData(),
+  KAboutData aboutData ("kate", I18N_NOOP("Kate"), kateVersion,
                         I18N_NOOP( "Kate - Advanced Text Editor" ), KAboutData::License_LGPL_V2,
                         I18N_NOOP( "(c) 2000-2005 The Kate Authors" ), 0, "http://kate.kde.org");
 
