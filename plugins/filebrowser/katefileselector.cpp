@@ -297,7 +297,7 @@ void Kate::Private::Plugin::KateFileSelector::readConfig(KConfig *config, const 
   setupToolbar( config );
 
   cmbPath->setMaxItems( config->readEntry( "pathcombo history len", 9 ) );
-  cmbPath->setURLs( config->readPathListEntry( "dir history" ) );
+  cmbPath->setUrls( config->readPathListEntry( "dir history" ) );
   // if we restore history
   if ( config->readEntry( "restore location", QVariant(true )).toBool() || qApp->isSessionRestored() ) {
     QString loc( config->readPathEntry( "location" ) );
@@ -428,7 +428,7 @@ void Kate::Private::Plugin::KateFileSelector::setDir( KUrl u )
   if ( !kateFileSelectorIsReadable (newurl) )
      newurl.setPath( QDir::homePath() );
 
-  dir->setURL(newurl, true);
+  dir->setUrl(newurl, true);
 }
 
 //END Public Slots
@@ -467,14 +467,14 @@ void Kate::Private::Plugin::KateFileSelector::cmbPathReturnPressed( const QStrin
   QStringList urls = cmbPath->urls();
   urls.removeAll( typedURL.url() );
   urls.prepend( typedURL.url() );
-  cmbPath->setURLs( urls, KUrlComboBox::RemoveBottom );
+  cmbPath->setUrls( urls, KUrlComboBox::RemoveBottom );
   dir->setFocus();
-  dir->setURL( KUrl(u), true );
+  dir->setUrl( KUrl(u), true );
 }
 
 void Kate::Private::Plugin::KateFileSelector::dirUrlEntered( const KUrl& u )
 {
-  cmbPath->setURL( u );
+  cmbPath->setUrl( u );
 }
 
 void Kate::Private::Plugin::KateFileSelector::dirFinishedLoading()

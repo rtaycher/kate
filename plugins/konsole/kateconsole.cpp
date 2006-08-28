@@ -147,7 +147,7 @@ void KateConsole::cd (const KUrl &url)
 
   if (!m_part) return;
 
-  m_part->openURL (url);
+  m_part->openUrl (url);
 }
 
 void KateConsole::sendInput( const QString& text )

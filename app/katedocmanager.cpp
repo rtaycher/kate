@@ -205,7 +205,7 @@ KTextEditor::Document *KateDocManager::openURL (const KUrl& url,const QString &e
     doc->setEncoding(encoding);
 
     if (!loadMetaInfos(doc, url))
-      doc->openURL (url);
+      doc->openUrl (url);
 
     if ( isTempFile && !url.isEmpty() && url.isLocalFile() )
     {
@@ -232,7 +232,7 @@ KTextEditor::Document *KateDocManager::openURL (const KUrl& url,const QString &e
     doc->setEncoding(encoding);
 
     if (!loadMetaInfos(doc, url))
-      doc->openURL (url);
+      doc->openUrl (url);
   }
 
   return doc;
@@ -243,7 +243,7 @@ bool KateDocManager::closeDocument(class KTextEditor::Document *doc,bool closeUR
   if (!doc) return false;
 
   saveMetaInfos(doc);
-  if (closeURL && !doc->closeURL()) return false;
+  if (closeURL && !doc->closeUrl()) return false;
 
   for (int i=0; i < KateApp::self()->mainWindows (); i++ )
     KateApp::self()->mainWindow(i)->viewManager()->closeViews(doc);
@@ -337,7 +337,7 @@ bool KateDocManager::queryCloseDocuments(KateMainWindow *w)
 
       if (msgres==KMessageBox::Yes)
       {
-        KEncodingFileDialog::Result r=KEncodingFileDialog::getSaveURLAndEncoding( doc->encoding(),QString(),QString(),w,i18n("Save As"));
+        KEncodingFileDialog::Result r=KEncodingFileDialog::getSaveUrlAndEncoding( doc->encoding(),QString(),QString(),w,i18n("Save As"));
 
         doc->setEncoding( r.encoding );
 

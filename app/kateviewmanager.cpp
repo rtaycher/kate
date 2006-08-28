@@ -369,7 +369,7 @@ void KateViewManager::slotDocumentOpen ()
 
   if (cv)
   {
-    KEncodingFileDialog::Result r=KEncodingFileDialog::getOpenURLsAndEncoding(
+    KEncodingFileDialog::Result r=KEncodingFileDialog::getOpenUrlsAndEncoding(
       cv->document()->encoding(),
       cv->document()->url().url(),
        QString(),m_mainWindow,i18n("Open File"));
@@ -395,7 +395,7 @@ void KateViewManager::slotDocumentClose ()
        && activeView()->document()->url().isEmpty()
        && activeView()->document()->documentEnd() == KTextEditor::Cursor::start() )
   {
-    activeView()->document()->closeURL();
+    activeView()->document()->closeUrl();
     return;
   }
 

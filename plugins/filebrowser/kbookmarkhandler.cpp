@@ -72,7 +72,7 @@ void Kate::Private::Plugin::KBookmarkHandler::slotNewBookmark( const QString& /*
                                             const QByteArray& url,
                                             const QString& additionalInfo )
 {
-    *m_importStream << "<bookmark icon=\"" << KMimeType::iconNameForURL( KUrl( url ) );
+    *m_importStream << "<bookmark icon=\"" << KMimeType::iconNameForUrl( KUrl( url ) );
     *m_importStream << "\" href=\"" << QString::fromUtf8(url) << "\">\n";
     *m_importStream << "<title>" << (additionalInfo.isEmpty() ? QString::fromUtf8(url) : additionalInfo) << "</title>\n</bookmark>\n";
 }
