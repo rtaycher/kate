@@ -526,9 +526,10 @@ void KateMainWindow::documentMenuAboutToShow()
   while( item ) {
     KTextEditor::Document *doc = ((KateFileListItem *)item)->document();
     // would it be saner to use the screen width as a limit that some random number??
-    QAction *action = new QAction(
-                                  KStringHandler::rsqueeze(doc->documentName(), 150),
-                                  documentsGroup );
+    const QString name = KStringHandler::rsqueeze(doc->documentName(), 150);
+    QAction *action = new QAction(doc->isModified() ?
+        i18nc("'document name [*]', [*] means modified", "%1 [*]", name) : name,
+        documentsGroup );
     action->setCheckable(true);
     if(m_viewManager->activeView() && doc == m_viewManager->activeView()->document())
       action->setChecked(true);
