@@ -113,6 +113,7 @@ void KateConsole::loadConsoleIfNeeded()
 
   KGlobal::locale()->insertCatalog("konsole");
 
+  setFocusProxy(m_part->widget());
   m_part->widget()->show();
 
   connect ( m_part, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
