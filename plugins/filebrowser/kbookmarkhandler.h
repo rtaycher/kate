@@ -44,13 +44,13 @@ public:
     ~KBookmarkHandler();
 
     // KBookmarkOwner interface:
-    virtual void openBookmarkURL( const QString& url ) { emit openURL( url ); }
+    virtual void openBookmarkURL( const QString& url ) { emit openUrl( url ); }
     virtual QString currentURL() const;
 
     KMenu *menu() const { return m_menu; }
 
 Q_SIGNALS:
-    void openURL( const QString& url );
+    void openUrl( const QString& url );
 
 private Q_SLOTS:
     void slotNewBookmark( const QString& text, const QByteArray& url,

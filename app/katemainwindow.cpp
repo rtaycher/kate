@@ -262,7 +262,7 @@ void KateMainWindow::setupActions()
   KStdAction::openNew( m_viewManager, SLOT( slotDocumentNew() ), actionCollection(), "file_new" )->setWhatsThis(i18n("Create a new document"));
   KStdAction::open( m_viewManager, SLOT( slotDocumentOpen() ), actionCollection(), "file_open" )->setWhatsThis(i18n("Open an existing document for editing"));
 
-  fileOpenRecent = KStdAction::openRecent (m_viewManager, SLOT(openURL (const KUrl&)), actionCollection());
+  fileOpenRecent = KStdAction::openRecent (m_viewManager, SLOT(openUrl (const KUrl&)), actionCollection());
   fileOpenRecent->setWhatsThis(i18n("This lists files which you have opened recently, and allows you to easily open them again."));
 
   a=new KAction( KIcon("save_all"), i18n("Save A&ll"), actionCollection(), "file_save_all" );
@@ -552,7 +552,7 @@ void KateMainWindow::slotGrepToolItemSelected(const QString &filename,int linenu
 {
   KUrl fileURL;
   fileURL.setPath( filename );
-  m_viewManager->openURL( fileURL );
+  m_viewManager->openUrl( fileURL );
   if ( m_viewManager->activeView() == 0 ) return;
 
   if (m_viewManager->activeView())
@@ -580,7 +580,7 @@ void KateMainWindow::slotDropEvent( QDropEvent * event )
 
   for (KUrl::List::Iterator i=textlist.begin(); i != textlist.end(); ++i)
   {
-    m_viewManager->openURL (*i);
+    m_viewManager->openUrl (*i);
   }
 }
 
@@ -611,9 +611,9 @@ void KateMainWindow::editKeys()
   externalTools->actionCollection()->writeSettings( new KConfig("externaltools", false, false, "appdata") );
 }
 
-void KateMainWindow::openURL (const QString &name)
+void KateMainWindow::openUrl (const QString &name)
 {
-  m_viewManager->openURL (KUrl(name));
+  m_viewManager->openUrl (KUrl(name));
 }
 
 void KateMainWindow::slotConfigure()
@@ -644,7 +644,7 @@ void KateMainWindow::fileSelected(const KFileItem * /*file*/)
   KFileItem *tmp;
   for (KFileItemListIterator it(*list); (tmp = it.current()); ++it)
   {
-    m_viewManager->openURL(tmp->url());
+    m_viewManager->openUrl(tmp->url());
     fileselector->dirOperator()->view()->setSelected(tmp,false);
   }
 }

@@ -37,7 +37,7 @@ namespace Kate
  * whether an URL is opened and use findDocument() to get it. To get the
  * number of managed documents use documents().
  *
- * Open new documents with openURL() and close a document with closeDocument()
+ * Open new documents with openUrl() and close a document with closeDocument()
  * or closeAllDocuments(). Several signals are provided, documentChanged() is
  * emitted whenever the document's content changed, documentCreated() when a
  * new document was created and documentDeleted() when a document was closed.
@@ -117,7 +117,7 @@ class KATEINTERFACES_EXPORT DocumentManager : public QObject
      *        encoding will be guessed or the default encoding will be used.
      * \return a pointer to the created document
      */
-    KTextEditor::Document *openURL(const KUrl&url,const QString &encoding=QString());
+    KTextEditor::Document *openUrl(const KUrl&url,const QString &encoding=QString());
 
     /**
      * Close the given \p document.

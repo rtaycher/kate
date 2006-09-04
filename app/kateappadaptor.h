@@ -47,7 +47,7 @@ public Q_SLOTS:
      * @param encoding encoding name
      * @return success
      */
-    bool openURL (QString url, QString encoding);
+    bool openUrl (QString url, QString encoding);
 
      /**
       * Like the above, but adds an option to let the documentManager know
@@ -55,7 +55,7 @@ public Q_SLOTS:
       * @p isTempFile should be set to true with the --tempfile option set ONLY,
       * files opened with this set to true will be deleted when closed.
       */
-     bool openURL(QString url, QString encoding, bool isTempFile);
+     bool openUrl(QString url, QString encoding, bool isTempFile);
  
     /**
      * set cursor of active view in active main window

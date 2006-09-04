@@ -125,7 +125,7 @@ class KATEINTERFACES_EXPORT MainWindow : public QObject
      * Open the file located at \p url.
      * \param url the document's url
      */
-    void openURL (const KUrl &url);     
+    void openUrl (const KUrl &url);     
 
   //
   // SIGNALS !!!

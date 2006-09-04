@@ -41,7 +41,7 @@ class KateDocManagerAdaptor : public QDBusAbstractAdaptor
 
     uint documents ();
 
-    //QDBusObjectPath openURL (QString url, QString encoding);
+    //QDBusObjectPath openUrl (QString url, QString encoding);
 
     bool closeDocument (uint n);
 

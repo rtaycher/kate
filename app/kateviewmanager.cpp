@@ -376,7 +376,7 @@ void KateViewManager::slotDocumentOpen ()
 
     KTextEditor::Document *lastID = 0;
     for (KUrl::List::Iterator i=r.URLs.begin(); i != r.URLs.end(); ++i)
-      lastID = openURL( *i, r.encoding, false );
+      lastID = openUrl( *i, r.encoding, false );
 
     if (lastID > 0)
       activateView (lastID);
@@ -403,9 +403,9 @@ void KateViewManager::slotDocumentClose ()
   KateDocManager::self()->closeDocument ((KTextEditor::Document*)activeView()->document());
 }
 
-KTextEditor::Document *KateViewManager::openURL (const KUrl &url, const QString& encoding, bool activate, bool isTempFile)
+KTextEditor::Document *KateViewManager::openUrl (const KUrl &url, const QString& encoding, bool activate, bool isTempFile)
 {
-  KTextEditor::Document *doc = KateDocManager::self()->openURL (url, encoding, isTempFile);
+  KTextEditor::Document *doc = KateDocManager::self()->openUrl (url, encoding, isTempFile);
 
   if (!doc->url().isEmpty())
     m_mainWindow->fileOpenRecent->addUrl( doc->url() );
@@ -416,9 +416,9 @@ KTextEditor::Document *KateViewManager::openURL (const KUrl &url, const QString&
   return doc;
 }
 
-void KateViewManager::openURL (const KUrl &url)
+void KateViewManager::openUrl (const KUrl &url)
 {
-  openURL (url, QString());
+  openUrl (url, QString());
 }
 
 void KateViewManager::removeViewSpace (KateViewSpace *viewspace)

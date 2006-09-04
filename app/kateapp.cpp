@@ -240,9 +240,9 @@ bool KateApp::startupKate ()
     {
       // open a normal file
       if (codec)
-        doc = activeMainWindow()->viewManager()->openURL( m_args->url(z), codec->name(), false,tempfileSet);
+        doc = activeMainWindow()->viewManager()->openUrl( m_args->url(z), codec->name(), false,tempfileSet);
       else
-        doc = activeMainWindow()->viewManager()->openURL( m_args->url(z), QString(), false,tempfileSet);
+        doc = activeMainWindow()->viewManager()->openUrl( m_args->url(z), QString(), false,tempfileSet);
     }
     else
       KMessageBox::sorry( activeMainWindow(),
@@ -345,7 +345,7 @@ KateSessionManager *KateApp::sessionManager ()
   return m_sessionManager;
 }
 
-bool KateApp::openURL (const KUrl &url, const QString &encoding, bool isTempFile)
+bool KateApp::openUrl (const KUrl &url, const QString &encoding, bool isTempFile)
 {
   KateMainWindow *mainWindow = activeMainWindow ();
 
@@ -363,9 +363,9 @@ bool KateApp::openURL (const KUrl &url, const QString &encoding, bool isTempFile
   {
     // open a normal file
     if (codec)
-      mainWindow->viewManager()->openURL( url, codec->name(),true, isTempFile);
+      mainWindow->viewManager()->openUrl( url, codec->name(),true, isTempFile);
     else
-      mainWindow->viewManager()->openURL( url, QString(),true,isTempFile );
+      mainWindow->viewManager()->openUrl( url, QString(),true,isTempFile );
   }
   else
     KMessageBox::sorry( mainWindow,
@@ -389,7 +389,7 @@ bool KateApp::setCursor (int line, int column)
 
 bool KateApp::openInput (const QString &text)
 {
-  activeMainWindow()->viewManager()->openURL( KUrl(), "", true );
+  activeMainWindow()->viewManager()->openUrl( KUrl(), "", true );
 
   if (!activeMainWindow()->viewManager()->activeView ())
     return false;
@@ -412,7 +412,7 @@ KateMainWindow *KateApp::newMainWindow (KConfig *sconfig, const QString &sgroup)
   else if ((mainWindows() > 1) && (m_docManager->documents() > 0))
     mainWindow->viewManager()->activateView ( (m_docManager->document(m_docManager->documents()-1)) );
   else if ((mainWindows() > 1) && (m_docManager->documents() < 1))
-    mainWindow->viewManager()->openURL ( KUrl() );
+    mainWindow->viewManager()->openUrl ( KUrl() );
 
   mainWindow->show ();
 

@@ -53,9 +53,9 @@ QDBusObjectPath KateDocManagerAdaptor::activeDocument ()
   return QDBusObjectPath (doc);
 }
 
-QDBusObjectPath KateDocManagerAdaptor::openURL (QString url, QString encoding)
+QDBusObjectPath KateDocManagerAdaptor::openUrl (QString url, QString encoding)
 {
-  KTextEditor::Document *doc = m_dm->openURL (url, encoding);
+  KTextEditor::Document *doc = m_dm->openUrl (url, encoding);
 
   if (!doc )
     return QDBusObjectPath ();

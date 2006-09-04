@@ -186,7 +186,7 @@ class KATEINTERFACES_EXPORT KateApp : public KApplication
      * @param encoding encoding name
      * @return success
      */
-    bool openURL (const KUrl &url, const QString &encoding, bool isTempFile);
+    bool openUrl (const KUrl &url, const QString &encoding, bool isTempFile);
 
     /**
      * position cursor in current active view

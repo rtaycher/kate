@@ -71,14 +71,14 @@ QDBusObjectPath KateAppAdaptor::mainWindow (uint n)
   return QDBusObjectPath ();
 }
 
-bool KateAppAdaptor::openURL (QString url, QString encoding)
+bool KateAppAdaptor::openUrl (QString url, QString encoding)
 {
-  return m_app->openURL (url, encoding,false);
+  return m_app->openUrl (url, encoding,false);
 }
 
-bool KateAppAdaptor::openURL (QString url, QString encoding, bool isTempFile)
+bool KateAppAdaptor::openUrl (QString url, QString encoding, bool isTempFile)
 {
-  return m_app->openURL (url, encoding, isTempFile);
+  return m_app->openUrl (url, encoding, isTempFile);
 }
 
 bool KateAppAdaptor::setCursor (int line, int column)

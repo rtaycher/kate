@@ -173,7 +173,7 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
     void slotFullScreen(bool);
 
   public:
-    void openURL (const QString &name=0L);
+    void openUrl (const QString &name=0L);
 
   private Q_SLOTS:
     void updateGrepDir (bool visible);

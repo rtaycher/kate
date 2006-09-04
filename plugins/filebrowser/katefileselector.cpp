@@ -253,7 +253,7 @@ Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mai
               this, SLOT( kateViewChanged() ) );
 
   // Connect the bookmark handler
-  connect( bookmarkHandler, SIGNAL( openURL( const QString& )),
+  connect( bookmarkHandler, SIGNAL( openUrl( const QString& )),
            this, SLOT( setDir( const QString& ) ) );
 
   waitingUrl.clear();
@@ -445,7 +445,7 @@ void Kate::Private::Plugin::KateFileSelector::fileSelected(const KFileItem * /*f
   for ( ; it != end; ++it )
   {
     tmp = (*it);
-	mainwin->openURL(tmp->url());
+	mainwin->openUrl(tmp->url());
     dir->view()->setSelected(tmp,false);
   }
 }

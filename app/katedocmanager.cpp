@@ -195,7 +195,7 @@ bool KateDocManager::isOpen(KUrl url)
   return findDocument (url) != 0;
 }
 
-KTextEditor::Document *KateDocManager::openURL (const KUrl& url,const QString &encoding,bool isTempFile)
+KTextEditor::Document *KateDocManager::openUrl (const KUrl& url,const QString &encoding,bool isTempFile)
 {
   // special handling if still only the first initial doc is there
   if (!documentList().isEmpty() && (documentList().count() == 1) && (!documentList().at(0)->isModified() && documentList().at(0)->url().isEmpty()))
