@@ -89,9 +89,9 @@ class KateDocManager : public QObject
 
     KTextEditor::Document *openUrl(const KUrl&,const QString &encoding=QString(),bool isTempFile=false);
 
-    bool closeDocument(class KTextEditor::Document *,bool closeURL=true);
+    bool closeDocument(class KTextEditor::Document *,bool closeUrl=true);
     bool closeDocument(uint);
-    bool closeAllDocuments(bool closeURL=true);
+    bool closeAllDocuments(bool closeUrl=true);
 
     QList<KTextEditor::Document*> modifiedDocumentList();
     bool queryCloseDocuments(KateMainWindow *w);

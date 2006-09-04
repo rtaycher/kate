@@ -238,17 +238,17 @@ KTextEditor::Document *KateDocManager::openUrl (const KUrl& url,const QString &e
   return doc;
 }
 
-bool KateDocManager::closeDocument(class KTextEditor::Document *doc,bool closeURL)
+bool KateDocManager::closeDocument(class KTextEditor::Document *doc,bool closeUrl)
 {
   if (!doc) return false;
 
   saveMetaInfos(doc);
-  if (closeURL && !doc->closeUrl()) return false;
+  if (closeUrl && !doc->closeUrl()) return false;
 
   for (int i=0; i < KateApp::self()->mainWindows (); i++ )
     KateApp::self()->mainWindow(i)->viewManager()->closeViews(doc);
 
-  if ( closeURL && m_tempFiles.contains( doc ) )
+  if ( closeUrl && m_tempFiles.contains( doc ) )
   {
     QFileInfo fi( m_tempFiles[ doc ].first.path() );
     if ( fi.lastModified() <= m_tempFiles[ doc ].second ||
@@ -281,7 +281,7 @@ bool KateDocManager::closeDocument(uint n)
   return closeDocument(document(n));
 }
 
-bool KateDocManager::closeAllDocuments(bool closeURL)
+bool KateDocManager::closeAllDocuments(bool closeUrl)
 {
   bool res = true;
 
@@ -293,7 +293,7 @@ bool KateDocManager::closeAllDocuments(bool closeURL)
   }
 
   while (!docs.isEmpty() && res)
-    if (! closeDocument(docs.at(0),closeURL) )
+    if (! closeDocument(docs.at(0),closeUrl) )
       res = false;
     else
       docs.removeFirst();
