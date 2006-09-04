@@ -44,8 +44,7 @@ public:
     ~KBookmarkHandler();
 
     // KBookmarkOwner interface:
-    virtual void openBookmarkURL( const QString& url ) { emit openUrl( url ); }
-    virtual QString currentURL() const;
+    virtual QString currentUrl() const;
 
     KMenu *menu() const { return m_menu; }
 
@@ -53,15 +52,13 @@ Q_SIGNALS:
     void openUrl( const QString& url );
 
 private Q_SLOTS:
+    void openBookmark( KBookmark, Qt::MouseButtons, Qt::KeyboardModifiers );
     void slotNewBookmark( const QString& text, const QByteArray& url,
                           const QString& additionalInfo );
     void slotNewFolder( const QString& text, bool open,
                         const QString& additionalInfo );
     void newSeparator();
     void endFolder();
-
-protected:
-    virtual void virtual_hook( int id, void* data );
 
 private:
     KateFileSelector *mParent;

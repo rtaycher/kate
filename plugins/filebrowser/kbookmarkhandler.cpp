@@ -54,7 +54,9 @@ Kate::Private::Plugin::KBookmarkHandler::KBookmarkHandler( KateFileSelector *par
     manager->setUpdate( true );
     manager->setShowNSBookmarks( false );
 
-    m_bookmarkMenu = new KBookmarkMenu( manager, this, m_menu, 0, true );
+    m_bookmarkMenu = new KBookmarkMenu( manager, this, m_menu, 0 );
+    connect( m_bookmarkMenu, SIGNAL( void openBookmark( KBookmark, Qt::MouseButtons, Qt::KeyboardModifiers ) ),
+             this, SLOT( void openBookmark( KBookmark, Qt::MouseButtons, Qt::KeyboardModifiers )) );
 }
 
 Kate::Private::Plugin::KBookmarkHandler::~KBookmarkHandler()
@@ -62,9 +64,14 @@ Kate::Private::Plugin::KBookmarkHandler::~KBookmarkHandler()
     //     delete m_bookmarkMenu; ###
 }
 
-QString Kate::Private::Plugin::KBookmarkHandler::currentURL() const
+QString Kate::Private::Plugin::KBookmarkHandler::currentUrl() const
 {
     return mParent->dirOperator()->url().url();
+}
+
+void Kate::Private::Plugin::KBookmarkHandler::openBookmark( KBookmark bm, Qt::MouseButtons, Qt::KeyboardModifiers )
+{
+    emit openUrl(bm.url().url());
 }
 
 
@@ -93,7 +100,4 @@ void Kate::Private::Plugin::KBookmarkHandler::endFolder()
 {
     *m_importStream << "</folder>\n";
 }
-
-void Kate::Private::Plugin::KBookmarkHandler::virtual_hook( int id, void* data )
-{ KBookmarkOwner::virtual_hook( id, data ); }
 
