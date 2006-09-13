@@ -678,9 +678,9 @@ void KateMainWindow::slotOpenWithMenuAction(int idx)
   appname = appname.remove('&'); //Remove a possible accelerator ... otherwise the application might not get found.
   if ( appname.compare(i18n("Other...")) == 0 ) {
     // display "open with" dialog
-    KOpenWithDlg* dlg = new KOpenWithDlg(list);
-    if (dlg->exec())
-      KRun::run(*dlg->service(), list, this);
+    KOpenWithDlg dlg(list);
+    if (dlg.exec())
+      KRun::run(*dlg.service(), list, this);
     return;
   }
   QString qry = QString("((Type == 'Application') and (Name == '%1'))").arg( appname );
