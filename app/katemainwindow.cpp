@@ -650,26 +650,26 @@ void KateMainWindow::fileSelected(const KFileItem * /*file*/)
 }
 #endif
 
-// TODO make this work
 void KateMainWindow::mSlotFixOpenWithMenu()
 {
-  //kDebug(13001)<<"13000"<<"fixing open with menu"<<endl;
-  documentOpenWith->menu()->clear();
+  KMenu *menu = documentOpenWith->menu();
+  menu->clear();
   // get a list of appropriate services.
-  KMimeType::Ptr mime = KMimeType::findByUrl( m_viewManager->activeView()->document()->url() );
-  //kDebug(13001)<<"13000"<<"url: "<<m_viewManager->activeView()->document()->url().prettyUrl()<<"mime type: "<<mime->name()<<endl;
-  // some checking goes here...
+  KMimeType::Ptr mime = KMimeType::mimeType(m_viewManager->activeView()->document()->mimeType());
+  //kDebug(13001) << "mime type: " << mime->name() << endl;
+
   QAction *a = 0;
   KService::List offers = KMimeTypeTrader::self()->query(mime->name(), "Application");
   // for each one, insert a menu item...
   for(KService::List::Iterator it = offers.begin(); it != offers.end(); ++it) {
-    if ((*it)->name() == "Kate") continue;
-    a = documentOpenWith->menu()->addAction( KIcon((*it)->icon()), (*it)->name() );
-    a->setData(QVariant::fromValue(false));
+    KService::Ptr service = *it;
+    if (service->name() == "Kate") continue;
+    a = menu->addAction(KIcon(service->icon()), service->name());
+    a->setData(service->name());
   }
   // append "Other..." to call the KDE "open with" dialog.
   a = documentOpenWith->menu()->addAction(i18n("&Other..."));
-  a->setData(QVariant::fromValue(true)); // true means "Other..."
+  a->setData(QString());
 }
 
 void KateMainWindow::slotOpenWithMenuAction(QAction* a)
@@ -677,7 +677,8 @@ void KateMainWindow::slotOpenWithMenuAction(QAction* a)
   KUrl::List list;
   list.append( m_viewManager->activeView()->document()->url() );
 
-  if (a->data().toBool()) {
+  const QString openWith = a->data().toString();
+  if (openWith.isEmpty()) {
     // display "open with" dialog
     KOpenWithDlg dlg(list);
     if (dlg.exec())
@@ -685,14 +686,12 @@ void KateMainWindow::slotOpenWithMenuAction(QAction* a)
     return;
   }
 
-  // Remove a possible accelerator, otherwise the application might not get found.
-  QString appname = a->text().remove('&');
-  KService::Ptr app = KService::serviceByName( appname );
-  if ( app ) {
+  KService::Ptr app = KService::serviceByName(openWith);
+  if (app) {
     KRun::run(*app, list, this);
+  } else {
+    KMessageBox::error(this, i18n("Application '%1' not found!", openWith), i18n("Application not found!"));
   }
-  else
-    KMessageBox::error(this, i18n("Application '%1' not found!", appname), i18n("Application not found!"));
 }
 
 void KateMainWindow::pluginHelp()
