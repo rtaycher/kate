@@ -750,7 +750,7 @@ void KateMainWindow::slotMail()
                 i18n("<p>The current file:<br><strong>%1</strong><br>has been "
                 "modified. Modifications will not be available in the attachment."
                 "<p>Do you want to save it before sending it?", doc->url().prettyUrl()),
-                i18n("Save Before Sending?"), KStdGuiItem::save(), i18n("Do Not Save") );
+                i18n("Save Before Sending?"), KStdGuiItem::save(), KGuiItem(i18n("Do Not Save")) );
       switch ( r ) {
         case KMessageBox::Cancel:
           continue;
