@@ -665,7 +665,7 @@ void KateMainWindow::mSlotFixOpenWithMenu()
     KService::Ptr service = *it;
     if (service->name() == "Kate") continue;
     a = menu->addAction(KIcon(service->icon()), service->name());
-    a->setData(service->name());
+    a->setData(service->desktopEntryPath());
   }
   // append "Other..." to call the KDE "open with" dialog.
   a = documentOpenWith->menu()->addAction(i18n("&Other..."));
@@ -686,7 +686,7 @@ void KateMainWindow::slotOpenWithMenuAction(QAction* a)
     return;
   }
 
-  KService::Ptr app = KService::serviceByName(openWith);
+  KService::Ptr app = KService::serviceByDesktopPath(openWith);
   if (app) {
     KRun::run(*app, list, this);
   } else {
@@ -701,8 +701,8 @@ void KateMainWindow::pluginHelp()
 
 void KateMainWindow::aboutEditor()
 {
-	KAboutApplication ad(KateDocManager::self()->editor()->aboutData(),this);
-	ad.exec();
+  KAboutApplication ad(KateDocManager::self()->editor()->aboutData(),this);
+  ad.exec();
 }
 
 void KateMainWindow::slotMail()
