@@ -659,7 +659,7 @@ void KateMainWindow::mSlotFixOpenWithMenu()
   KMimeType::Ptr mime = KMimeType::findByUrl( m_viewManager->activeView()->document()->url() );
   //kDebug(13001)<<"13000"<<"url: "<<m_viewManager->activeView()->document()->url().prettyUrl()<<"mime type: "<<mime->name()<<endl;
   // some checking goes here...
-  KService::List offers = KMimeTypeTrader::self()->query(mime->name(), "Type == 'Application'");
+  KService::List offers = KMimeTypeTrader::self()->query(mime->name(), "Application");
   // for each one, insert a menu item...
   for(KService::List::Iterator it = offers.begin(); it != offers.end(); ++it) {
     if ((*it)->name() == "Kate") continue;
@@ -683,12 +683,8 @@ void KateMainWindow::slotOpenWithMenuAction(int idx)
       KRun::run(*dlg.service(), list, this);
     return;
   }
-  QString qry = QString("((Type == 'Application') and (Name == '%1'))").arg( appname );
-  KMimeType::Ptr mime = KMimeType::findByUrl( m_viewManager->activeView()->document()->url() );
-  KService::List offers = KMimeTypeTrader::self()->query(mime->name(), qry);
-
-  if (!offers.isEmpty()) {
-    KService::Ptr app = offers.first();
+  KService::Ptr app = KService::serviceByName( appname );
+  if ( app ) {
     KRun::run(*app, list, this);
   }
   else
