@@ -296,7 +296,7 @@ void KateMainWindow::setupActions()
   documentOpenWith = new KActionMenu(i18n("Open W&ith"), actionCollection(), "file_open_with");
   documentOpenWith->setWhatsThis(i18n("Open the current document using another application registered for its file type, or an application of your choice."));
   connect(documentOpenWith->menu(), SIGNAL(aboutToShow()), this, SLOT(mSlotFixOpenWithMenu()));
-  connect(documentOpenWith->menu(), SIGNAL(activated(int)), this, SLOT(slotOpenWithMenuAction(int)));
+  connect(documentOpenWith->menu(), SIGNAL(triggered(QAction*)), this, SLOT(slotOpenWithMenuAction(QAction*)));
 
   a=KStdAction::keyBindings(this, SLOT(editKeys()), actionCollection());
   a->setWhatsThis(i18n("Configure the application's keyboard shortcut assignments."));
@@ -659,30 +659,34 @@ void KateMainWindow::mSlotFixOpenWithMenu()
   KMimeType::Ptr mime = KMimeType::findByUrl( m_viewManager->activeView()->document()->url() );
   //kDebug(13001)<<"13000"<<"url: "<<m_viewManager->activeView()->document()->url().prettyUrl()<<"mime type: "<<mime->name()<<endl;
   // some checking goes here...
+  QAction *a = 0;
   KService::List offers = KMimeTypeTrader::self()->query(mime->name(), "Application");
   // for each one, insert a menu item...
   for(KService::List::Iterator it = offers.begin(); it != offers.end(); ++it) {
     if ((*it)->name() == "Kate") continue;
-    documentOpenWith->menu()->addAction( KIcon((*it)->icon()), (*it)->name() );
+    a = documentOpenWith->menu()->addAction( KIcon((*it)->icon()), (*it)->name() );
+    a->setData(QVariant::fromValue(false));
   }
   // append "Other..." to call the KDE "open with" dialog.
-  documentOpenWith->menu()->addAction(i18n("&Other..."));
+  a = documentOpenWith->menu()->addAction(i18n("&Other..."));
+  a->setData(QVariant::fromValue(true)); // true means "Other..."
 }
 
-void KateMainWindow::slotOpenWithMenuAction(int idx)
+void KateMainWindow::slotOpenWithMenuAction(QAction* a)
 {
   KUrl::List list;
   list.append( m_viewManager->activeView()->document()->url() );
 
-  QString appname = documentOpenWith->menu()->actions().at(idx)->text();
-  appname = appname.remove('&'); //Remove a possible accelerator ... otherwise the application might not get found.
-  if ( appname.compare(i18n("Other...")) == 0 ) {
+  if (a->data().toBool()) {
     // display "open with" dialog
     KOpenWithDlg dlg(list);
     if (dlg.exec())
       KRun::run(*dlg.service(), list, this);
     return;
   }
+
+  // Remove a possible accelerator, otherwise the application might not get found.
+  QString appname = a->text().remove('&');
   KService::Ptr app = KService::serviceByName( appname );
   if ( app ) {
     KRun::run(*app, list, this);
