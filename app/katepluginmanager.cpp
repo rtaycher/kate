@@ -75,7 +75,7 @@ void KatePluginManager::setupPluginList ()
     QString pVersion = ptr->property("X-Kate-Version").toString();
 
     // don't use plugins out of 3.x release series
-    if ((pVersion >= "2.9") && (pVersion <= KateApp::kateVersion(false)))
+    if ((pVersion >= "2.8") && (pVersion <= KateApp::kateVersion(false)))
     {
       KatePluginInfo info;
 

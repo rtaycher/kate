@@ -84,6 +84,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
 
   KPageWidgetItem *applicationItem = addPage( new QWidget, i18n("Application") );
   applicationItem->setIcon( KIcon( "kate" ) );
+  applicationItem->setHeader( i18n("Application Options") );
 
   //BEGIN General page
   QFrame* frGeneral = new QFrame();
@@ -280,6 +281,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   // editor widgets from kwrite/kwdialog
   KPageWidgetItem *editorItem = addPage( new QWidget, i18n("Editor") );
   editorItem->setIcon( KIcon( "edit" ) );
+  editorItem->setHeader( i18n("Editor Options") );
 
   for (int i = 0; i < KateDocManager::self()->editor()->configPages (); ++i)
   {
