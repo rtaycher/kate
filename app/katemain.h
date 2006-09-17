@@ -21,15 +21,18 @@
 #ifndef __KATE_MAIN_H__
 #define __KATE_MAIN_H__
 
+/**
+ * This header has some global forward declarations for the whole application
+ * and includes the config.h
+ */
+
 #include <config.h>
-//Added by qt3to4:
+
 #include <QPixmap>
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QGridLayout>
 #include <QEvent>
-
-#define KATE_VERSION "2.5"
 
 class QComboBox;
 class QDateTime;
