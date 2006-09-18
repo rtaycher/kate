@@ -36,6 +36,7 @@ class KateSessionManager;
 class KActionCollection;
 class KDirWatch;
 class KPushButton;
+class KateToolTipMenu;
 
 class QCheckBox;
 
@@ -157,6 +158,7 @@ class KateSession  : public KShared
      * simpleconfig to write to
      */
     KSimpleConfig *m_writeConfig;
+ 
 };
 
 typedef QList<KateSession::Ptr> KateSessionList;
@@ -339,10 +341,14 @@ class KateSessionChooser : public KDialog
 
     void slotProfilePopup();
   private:
-    QTimer *m_delayTimer;
     QTreeWidget *m_sessions;
     QCheckBox *m_useLast;
     QList<KateSessionChooserTemplate> m_templates;
+    /**
+     * new session menu
+     */
+    KateToolTipMenu *m_popup;
+
 };
 
 class KateSessionOpenDialog : public KDialog

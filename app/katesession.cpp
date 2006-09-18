@@ -617,10 +617,6 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
   setDefaultButton(KDialog::User2);
   setEscapeButton(KDialog::User1);
   //showButtonSeparator(true);
-  m_delayTimer=new QTimer(this);
-  m_delayTimer->setSingleShot(true);
-  int delay=style()->styleHint(QStyle::SH_ToolButton_PopupDelay, 0, this);
-  m_delayTimer->setInterval((delay<=0) ? 150:delay);
   QFrame *page = new QFrame (this);
   QHBoxLayout *tll=new QHBoxLayout(page);
   page->setMinimumSize (400, 200);
@@ -664,13 +660,16 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
 
   setResult (resultNone);
 
-  connect(this,SIGNAL(user3Clicked()),m_delayTimer,SLOT(start()));
-  connect(m_delayTimer,SIGNAL(timeout()),this,SLOT(slotProfilePopup()));
   // trigger action update
   selectionChanged (NULL, NULL);
   connect(this,SIGNAL(user1Clicked()),this,SLOT(slotUser1()));
   connect(this,SIGNAL(user2Clicked()),this,SLOT(slotUser2()));
   connect(this,SIGNAL(user3Clicked()),this,SLOT(slotUser3()));
+  enableButton (KDialog::User2, true);
+  m_popup=new KateToolTipMenu(this);
+  connect(m_popup,SIGNAL(aboutToShow()),this,SLOT(slotProfilePopup()));
+  connect(m_popup,SIGNAL(triggered(QAction *)),this,SLOT(slotTemplateAction(QAction*)));
+  setButtonMenu(KDialog::User3,m_popup,KDialog::DelayedPopup);
 }
 
 KateSessionChooser::~KateSessionChooser ()
@@ -678,21 +677,15 @@ KateSessionChooser::~KateSessionChooser ()
 }
 
 void KateSessionChooser::slotProfilePopup() {
- KateToolTipMenu popup;
+ m_popup->clear();
  bool defaultA=true;
  foreach(const KateSessionChooserTemplate &t,m_templates) {
-   QAction *a=popup.addAction(t.displayName);
-   if (defaultA) popup.setDefaultAction(a);
+   QAction *a=m_popup->addAction(t.displayName);
+   if (defaultA) m_popup->setDefaultAction(a);
    defaultA=false;
    a->setToolTip(t.toolTip);
    a->setData(t.configFileName);
  }
- connect(&popup,SIGNAL(triggered(QAction *)),this,SLOT(slotTemplateAction(QAction*)));
-/* port me later (tokoe)
- actionButton(KDialog::User3)->setMenu(&popup);
- actionButton(KDialog::User3)->showMenu();
- actionButton(KDialog::User3)->setMenu(0);
-*/
 }
 
 
@@ -718,7 +711,6 @@ void KateSessionChooser::slotUser2 ()
 
 void KateSessionChooser::slotUser3 ()
 {
-  m_delayTimer->stop();
   if (m_templates.count()>0) m_selectedTemplate=m_templates[0].configFileName;
   done (resultNew);
 }
