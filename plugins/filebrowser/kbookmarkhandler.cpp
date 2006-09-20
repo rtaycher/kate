@@ -55,8 +55,8 @@ Kate::Private::Plugin::KBookmarkHandler::KBookmarkHandler( KateFileSelector *par
     manager->setShowNSBookmarks( false );
 
     m_bookmarkMenu = new KBookmarkMenu( manager, this, m_menu, 0 );
-    connect( m_bookmarkMenu, SIGNAL( void openBookmark( KBookmark, Qt::MouseButtons, Qt::KeyboardModifiers ) ),
-             this, SLOT( void openBookmark( KBookmark, Qt::MouseButtons, Qt::KeyboardModifiers )) );
+    connect( m_bookmarkMenu, SIGNAL( openBookmark( KBookmark, Qt::MouseButtons, Qt::KeyboardModifiers ) ),
+             this, SLOT( openBookmark( KBookmark, Qt::MouseButtons, Qt::KeyboardModifiers )) );
 }
 
 Kate::Private::Plugin::KBookmarkHandler::~KBookmarkHandler()
