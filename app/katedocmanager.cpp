@@ -45,9 +45,11 @@
 #include <qprogressdialog.h>
 #include <QByteArray>
 #include <QHash>
+#include <QListView>
+#include <QStandardItem>
 #include <katedocmanageradaptor.h>
 KateDocManager::KateDocManager (QObject *parent)
- : QObject (parent)
+ : QStandardItemModel (parent)
  , m_saveMetaInfos(true)
  , m_daysMetaInfos(0)
 {
@@ -113,6 +115,11 @@ KTextEditor::Document *KateDocManager::createDoc ()
   m_docList.append(doc);
   m_docInfos.insert (doc, new KateDocumentInfo ());
 
+  QStandardItem *modelitem=new QStandardItem(doc->documentName());
+  modelitem->setData(QVariant::fromValue(doc),DocumentRole);
+  modelitem->setEditable(false);
+  appendRow(modelitem);
+  connect(doc,SIGNAL(documentNameChanged ( KTextEditor::Document * )),SLOT(slotDocumentNameChanged(KTextEditor::Document *)));
   emit documentCreated (doc);
   emit m_documentManager->documentCreated (doc);
 
@@ -121,12 +128,33 @@ KTextEditor::Document *KateDocManager::createDoc ()
   return doc;
 }
 
+void KateDocManager::slotDocumentNameChanged(KTextEditor::Document* doc) {
+  int rows=rowCount();
+  for (int i=0;i<rows;i++) {
+    QStandardItem *it=item(i);
+    if (it->data(KateDocManager::DocumentRole).value<KTextEditor::Document*>()==doc) {
+      it->setText(doc->documentName());
+      break;
+    }
+  }
+}
+
 void KateDocManager::deleteDoc (KTextEditor::Document *doc)
 {
   const bool deletedCurrentDoc = (m_currentDoc == doc);
 
+  int rows=rowCount();
+  for (int i=0;i<rows;i++) {
+    QStandardItem *it=item(i);
+    if (it->data(KateDocManager::DocumentRole).value<KTextEditor::Document*>()==doc) {
+      removeRow(i);
+      break;
+    }
+  }
+
   delete m_docInfos.take (doc);
   delete m_docList.takeAt (m_docList.indexOf(doc));
+
 
   emit documentDeleted (doc);
   emit m_documentManager->documentDeleted (doc);

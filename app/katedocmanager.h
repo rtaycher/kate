@@ -35,6 +35,7 @@
 #include <QMap>
 #include <QPair>
 #include <QDateTime>
+#include <QStandardItemModel>
 
 namespace KParts { class Factory; }
 
@@ -53,13 +54,15 @@ class KateDocumentInfo
     KTextEditor::ModificationInterface::ModifiedOnDiskReason modifiedOnDiscReason;
 };
 
-class KateDocManager : public QObject
+class KateDocManager : public QStandardItemModel
 {
   Q_OBJECT
 
   public:
     KateDocManager (QObject *parent);
     ~KateDocManager ();
+
+    enum CustomRoles {DocumentRole=Qt::UserRole+1};
 
     static KateDocManager *self ();
 
@@ -122,7 +125,7 @@ class KateDocManager : public QObject
   private Q_SLOTS:
     void slotModifiedOnDisc (KTextEditor::Document *doc, bool b, KTextEditor::ModificationInterface::ModifiedOnDiskReason reason);
     void slotModChanged(KTextEditor::Document *doc);
-
+    void slotDocumentNameChanged(KTextEditor::Document *document);
   private:
     bool loadMetaInfos(KTextEditor::Document *doc, const KUrl &url);
     void saveMetaInfos(KTextEditor::Document *doc);

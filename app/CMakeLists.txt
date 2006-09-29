@@ -29,7 +29,10 @@ set(kateinterfaces_LIB_SRCS kateappadaptor.cpp katemainwindowadaptor.cpp
    katesession.cpp 
    katemdi.cpp 
    katetabwidget.cpp 
-   katepartmanager.cpp katedocmanageradaptor.cpp )
+   katepartmanager.cpp
+   katedocmanageradaptor.cpp
+   kateviewdocumentproxymodel.cpp
+   )
 
 kde4_automoc(${kateinterfaces_LIB_SRCS})
 

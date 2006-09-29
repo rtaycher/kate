@@ -72,10 +72,10 @@ void KatePluginManager::setupPluginList ()
 
   foreach(const KService::Ptr &ptr, traderList)
   {
-    QString pVersion = ptr->property("X-Kate-Version").toString();
+    double pVersion = ptr->property("X-Kate-Version").toDouble();
 
     // don't use plugins out of 3.x release series
-    if ((pVersion >= "2.8") && (pVersion <= KateApp::kateVersion(false)))
+    if ((pVersion >= 2.8) && (pVersion <= KateApp::kateVersion(false).toDouble()))
     {
       KatePluginInfo info;
 

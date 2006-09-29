@@ -253,9 +253,11 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   path.clear();
 #endif
   KVBox *page = new KVBox();
+#warning portme
+#if 0
   filelistConfigPage = new KFLConfigPage( page, mainWindow->filelist );
   connect( filelistConfigPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
-
+#endif
   item = addSubPage( applicationItem, page, i18n("Document List") );
   item->setHeader( i18n("Document List Settings") );
   item->setIcon( KIcon( "view_text" ) );
@@ -400,9 +402,10 @@ void KateConfigDialog::slotApply()
     mainWindow->syncKonsole = cb_syncKonsole->isChecked();
 
     //fileSelConfigPage->apply();
-
+#warning portme
+#if 0
     filelistConfigPage->apply();
-
+#endif
     configExternalToolsPage->apply();
     KateExternalToolsCommand::self()->reload();
     for (int i=0; i < KateApp::self()->mainWindows(); i++)

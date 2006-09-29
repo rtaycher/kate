@@ -73,7 +73,7 @@ class KateConfigDialog : public KPageDialog
     Q3ButtonGroup *sessions_start;
     Q3ButtonGroup *sessions_exit;
     //KTextEditor::ConfigPage *fileSelConfigPage;
-    KTextEditor::ConfigPage *filelistConfigPage;
+    //KTextEditor::ConfigPage *filelistConfigPage;
     KTextEditor::ConfigPage *configExternalToolsPage;
     QList<PluginPageListItem *> pluginPages;
     QList<KTextEditor::ConfigPage *> editorPages;

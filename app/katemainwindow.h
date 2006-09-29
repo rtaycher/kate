@@ -39,6 +39,8 @@
 
 class QMenu;
 
+class QListView;
+
 
 class KateTabWidget;
 class GrepTool;
@@ -202,7 +204,8 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
 
     KRecentFilesAction *fileOpenRecent;
 
-    KateFileList *filelist;
+    QListView *m_fileList;
+    //KateFileList *filelist;
     KateFileSelector *fileselector;
 
     KActionMenu* documentOpenWith;

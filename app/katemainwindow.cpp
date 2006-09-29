@@ -29,7 +29,7 @@
 #include "kateviewmanager.h"
 #include "kateapp.h"
 //#include "katefileselector.h"
-#include "katefilelist.h"
+//#include "katefilelist.h"
 #include "kategrepdialog.h"
 #include "katemailfilesdialog.h"
 #include "kateexternaltools.h"
@@ -38,6 +38,7 @@
 #include "katesession.h"
 #include "katetabwidget.h"
 #include "katemainwindowadaptor.h"
+#include "kateviewdocumentproxymodel.h"
 
 #include "../interfaces/mainwindow.h"
 
@@ -82,6 +83,7 @@
 #include <QDropEvent>
 #include <QList>
 #include <QDesktopWidget>
+#include <QListView>
 
 #include <assert.h>
 #include <unistd.h>
@@ -227,7 +229,19 @@ void KateMainWindow::setupMainWindow ()
   m_viewManager = new KateViewManager (this);
 
   KateMDI::ToolView *ft = createToolView("kate_filelist", KMultiTabBar::Left, SmallIcon("kmultiple"), i18n("Documents"));
-  filelist = new KateFileList (this, m_viewManager, ft);
+  m_fileList=new QListView(ft);
+  KateViewDocumentProxyModel *pM=new KateViewDocumentProxyModel(this);
+  pM->setSourceModel(KateDocManager::self());
+  m_fileList->setModel(pM);
+  m_fileList->setSelectionModel(pM->selection());
+#warning I don't like it, it looks like a hack, search for a better way, but for now it should work. (Even on windows most lisviews, except exploder are single click) (jowenn)
+  if (!style()->styleHint(QStyle::SH_ItemView_ActivateItemOnSingleClick, 0, m_fileList)) {
+    kDebug()<<"HACK:***********************CONNECTING CLICKED***************************"<<endl;
+    connect(m_fileList,SIGNAL(clicked(const QModelIndex&)),pM,SLOT(opened(const QModelIndex&)));
+  }
+  connect(m_fileList,SIGNAL(activated(const QModelIndex&)),pM,SLOT(opened(const QModelIndex&)));
+
+  //filelist = new KateFileList (this, m_viewManager, ft);
   //filelist->readConfig(KateApp::self()->config(), "Filelist");
 
 #if 0
@@ -482,7 +496,8 @@ void KateMainWindow::saveOptions ()
 
   //fileselector->writeConfig(config, "fileselector");
 
-  filelist->writeConfig(config, "Filelist");
+  #warning PORTME
+  //filelist->writeConfig(config, "Filelist");
 }
 
 void KateMainWindow::slotWindowActivated ()
@@ -519,6 +534,8 @@ void KateMainWindow::slotUpdateOpenWith()
 
 void KateMainWindow::documentMenuAboutToShow()
 {
+#warning PORTME
+#if 0
   // removes all actions from documentMenu and documentsGroup
   qDeleteAll( documentsGroup->actions() );
 
@@ -538,7 +555,7 @@ void KateMainWindow::documentMenuAboutToShow()
 
     item = item->nextSibling();
   }
-
+#endif
 }
 
 void KateMainWindow::activateDocumentFromDocMenu (QAction *action)
