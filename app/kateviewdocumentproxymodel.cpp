@@ -263,7 +263,7 @@ void KateViewDocumentProxyModel::slotRowsAboutToBeInserted ( const QModelIndex &
     }
     if (m_current.isValid()) {
         if (m_current.row()>start) {
-            m_current=createIndex(m_current.row()+insertedRange,idx.column());
+            m_current=createIndex(m_current.row()+insertedRange,m_current.column());
         }
     }
     m_editHistory=tmpEdit;
@@ -289,7 +289,7 @@ void KateViewDocumentProxyModel::slotRowsAboutToBeRemoved ( const QModelIndex & 
     }
     if (m_current.isValid()) {
         if (m_current.row()>start) {
-            if (m_current.row()>end) m_current=createIndex(m_current.row()-removedRange,idx.column());
+            if (m_current.row()>end) m_current=createIndex(m_current.row()-removedRange,m_current.column());
             else m_current=QModelIndex();
         }
     }
@@ -305,7 +305,7 @@ void KateViewDocumentProxyModel::slotRowsInserted ( const QModelIndex & parent, 
 void KateViewDocumentProxyModel::slotRowsRemoved ( const QModelIndex & parent, int start, int end ) {
     endRemoveRows();
     foreach(const QModelIndex & key,m_brushes.keys()) {
-        oldBrushes.remove(key);
-        if (emitSignals) dataChanged(key,key);
+        m_brushes.remove(key);
+        dataChanged(key,key);
     }
 }
