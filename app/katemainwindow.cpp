@@ -234,7 +234,7 @@ void KateMainWindow::setupMainWindow ()
   pM->setSourceModel(KateDocManager::self());
   m_fileList->setModel(pM);
   m_fileList->setSelectionModel(pM->selection());
-#warning I don't like it, it looks like a hack, search for a better way, but for now it should work. (Even on windows most lisviews, except exploder are single click) (jowenn)
+#warning I do not like it, it looks like a hack, search for a better way, but for now it should work. (Even on windows most lisviews, except exploder are single click) (jowenn)
   if (!style()->styleHint(QStyle::SH_ItemView_ActivateItemOnSingleClick, 0, m_fileList)) {
     kDebug()<<"HACK:***********************CONNECTING CLICKED***************************"<<endl;
     connect(m_fileList,SIGNAL(clicked(const QModelIndex&)),pM,SLOT(opened(const QModelIndex&)));
