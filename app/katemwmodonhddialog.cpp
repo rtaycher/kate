@@ -29,7 +29,7 @@
 #include <kmessagebox.h>
 #include <kprocio.h>
 #include <krun.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 #include <kpushbutton.h>
 
 #include <QLabel>
@@ -248,18 +248,24 @@ void KateMwModOnHdDialog::slotDiff()
 void KateMwModOnHdDialog::slotPRead( KProcIO *p)
 {
   // create a file for the diff if we haven't one already
-  if ( ! m_tmpfile )
-    m_tmpfile = new KTempFile();
+  if ( ! m_tmpfile ) {
+    m_tmpfile = new KTemporaryFile();
+    m_tmpfile->setAutoRemove(false);
+    m_tmpfile->open();
+  }
+  
   // put all the data we have in it
   QString stmp;
   bool readData = false;
+  QTextStream textStream ( m_tmpfile );
   while ( p->readln( stmp, false ) > -1 ) {
-    *m_tmpfile->textStream() << stmp << endl;
+    textStream << stmp << endl;
     readData = true;
   }
+  textStream.flush();
 
   // dominik: only ackRead(), when we *really* read data, otherwise, this slot
-  // is called initity times, which leads to a crash (#123887)
+  // is called infinity times, which leads to a crash (#123887)
   if (readData)
     p->ackRead();
 }
@@ -290,7 +296,7 @@ void KateMwModOnHdDialog::slotPDone( KProcess *p )
     return;
   }
 
-  KRun::runUrl( m_tmpfile->name(), "text/x-diff", this, true );
+  KRun::runUrl( m_tmpfile->fileName(), "text/x-diff", this, true );
   delete m_tmpfile;
   m_tmpfile = 0;
 }

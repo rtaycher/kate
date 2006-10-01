@@ -59,7 +59,7 @@ class KateMwModOnHdDialog : public KDialog
     void handleSelected( int action );
     class QTreeWidget *twDocuments;
     class QPushButton *btnDiff;
-    class KTempFile *m_tmpfile;
+    class KTemporaryFile *m_tmpfile;
 };
 
 #endif // _KATE_MW_MODONHD_DIALOG_H_
