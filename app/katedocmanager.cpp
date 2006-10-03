@@ -39,6 +39,7 @@
 #include <kmessagebox.h>
 #include <kencodingfiledialog.h>
 #include <kio/job.h>
+#include <kiconloader.h>
 
 #include <QDateTime>
 #include <QTextCodec>
@@ -118,7 +119,12 @@ KTextEditor::Document *KateDocManager::createDoc ()
   QStandardItem *modelitem=new QStandardItem(doc->documentName());
   modelitem->setData(QVariant::fromValue(doc),DocumentRole);
   modelitem->setEditable(false);
+  modelitem->setIcon(SmallIconSet("null"));
+  modelitem->setToolTip(doc->url().prettyUrl());
   appendRow(modelitem);
+  m_documentItemMapping.insert(doc,modelitem);
+  connect(doc,SIGNAL(documentUrlChanged ( KTextEditor::Document *)),this,SLOT(slotDocumentUrlChanged(KTextEditor::Document *)));
+  connect(doc, SIGNAL(modifiedChanged(KTextEditor::Document *)), this, SLOT(slotModChanged1(KTextEditor::Document *)));
   connect(doc,SIGNAL(documentNameChanged ( KTextEditor::Document * )),SLOT(slotDocumentNameChanged(KTextEditor::Document *)));
   emit documentCreated (doc);
   emit m_documentManager->documentCreated (doc);
@@ -144,6 +150,7 @@ void KateDocManager::deleteDoc (KTextEditor::Document *doc)
   const bool deletedCurrentDoc = (m_currentDoc == doc);
 
   int rows=rowCount();
+  m_documentItemMapping.remove(doc);
   for (int i=0;i<rows;i++) {
     QStandardItem *it=item(i);
     if (it->data(KateDocManager::DocumentRole).value<KTextEditor::Document*>()==doc) {
@@ -485,12 +492,8 @@ void KateDocManager::slotModifiedOnDisc (KTextEditor::Document *doc, bool b, KTe
   {
     m_docInfos[doc]->modifiedOnDisc = b;
     m_docInfos[doc]->modifiedOnDiscReason = reason;
+    slotModChanged1(doc);
   }
-}
-
-void KateDocManager::slotModChanged(KTextEditor::Document *doc)
-{
-  saveMetaInfos(doc);
 }
 
 /**
@@ -578,4 +581,50 @@ bool KateDocManager::computeUrlMD5(const KUrl &url, QByteArray &result)
   return true;
 }
 
+void KateDocManager::slotModChanged(KTextEditor::Document * doc) {
+   saveMetaInfos(doc);
+}
+
+
+void KateDocManager::slotDocumentUrlChanged(KTextEditor::Document *doc) {
+    if (!m_documentItemMapping.contains(doc)) return;
+    m_documentItemMapping[doc]->setToolTip(doc->url().prettyUrl());
+}
+
+void KateDocManager::slotModChanged1(KTextEditor::Document * doc) {
+    kDebug()<<"KateDocManager::slotModChanged (1)"<<endl;
+    if (!m_documentItemMapping.contains(doc)) return;
+    kDebug()<<"KateDocManager::slotModChanged (2)"<<endl;
+    QStandardItem *item=m_documentItemMapping[doc];
+    const KateDocumentInfo *info=KateDocManager::self()->documentInfo(doc);item->setIcon(QIcon());
+    if (info && info->modifiedOnDisc)
+      if (doc->isModified()) item->setIcon(SmallIconSet("modmod")); else item->setIcon(SmallIconSet("modonhd"));
+    else
+      if (doc->isModified()) item->setIcon(SmallIconSet("modified")); else item->setIcon(SmallIconSet("null"));
+/*  if ( column == 0) {
+    static QPixmap noPm = SmallIcon ("null");
+    static QPixmap modPm = SmallIcon("modified");
+    static QPixmap discPm = SmallIcon("modonhd");
+    static QPixmap modmodPm = SmallIcon("modmod");
+
+    const KateDocumentInfo *info = KateDocManager::self()->documentInfo(doc);
+
+    if (info && info->modifiedOnDisc)
+      return doc->isModified() ? &modmodPm : &discPm;
+    else
+      return doc->isModified() ? &modPm : &noPm;
+  }
+
+  return 0; */
+}
+
+
+QModelIndex KateDocManager::indexForDocument(KTextEditor::Document *document) {
+  int row=m_docList.indexOf(document);
+  if (row==-1) return index(-1,-1);
+  else return index(row,0);
+}
+
 // kate: space-indent on; indent-width 2; replace-tabs on;
+
+

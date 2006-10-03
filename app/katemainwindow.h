@@ -36,6 +36,7 @@
 #include <QDropEvent>
 #include <QVBoxLayout>
 #include <QActionGroup>
+#include <QModelIndex>
 
 class QMenu;
 
@@ -53,6 +54,7 @@ class KFileItem;
 class KRecentFilesAction;
 
 class KateExternalToolsMenuAction;
+class KateViewDocumentProxyModel;
 
 class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBase
 {
@@ -176,16 +178,16 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
 
   public:
     void openUrl (const QString &name=0L);
-
+    QModelIndex modelIndexForDocument(KTextEditor::Document *document);
   private Q_SLOTS:
     void updateGrepDir (bool visible);
-
+    void showFileListPopup(const QPoint& pos);
   protected:
     bool event( QEvent * );
 
   private Q_SLOTS:
     void slotDocumentCloseAll();
-
+    void slotDocModified(KTextEditor::Document *document);
   private:
     static uint uniqueID;
     uint myID;
@@ -222,6 +224,7 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
 
     KateTabWidget *m_tabWidget;
     QString m_dbusObjectPath;
+    KateViewDocumentProxyModel *m_pM;
 };
 
 #endif

@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
-   Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
+   Copyright (C) 2001,2006 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2001 Anders Lund <anders.lund@lund.tdcadsl.dk>
 
    This library is free software; you can redistribute it and/or
@@ -21,6 +21,24 @@
 #ifndef __KATE_FILELIST_H__
 #define __KATE_FILELIST_H__
 
+#include <kaction.h>
+#include <QListView>
+
+class KateFileList: public QListView {
+    Q_OBJECT
+  public:
+    KateFileList(QWidget * parent, KActionCollection *actionCollection);
+    virtual ~KateFileList();
+  private:
+      KAction* m_windowNext;
+      KAction* m_windowPrev;
+  public Q_SLOTS:
+    void slotNextDocument();
+    void slotPrevDocument();
+
+};
+
+#if 0
 #include "katemain.h"
 
 #include <ktexteditor/document.h>
@@ -191,6 +209,7 @@ class KFLConfigPage : public KTextEditor::ConfigPage {
     bool m_changed;
 };
 
+#endif
 
 #endif
 // kate: space-indent on; indent-width 2; replace-tabs on;

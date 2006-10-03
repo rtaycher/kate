@@ -22,6 +22,9 @@
 #include "katefilelist.h"
 #include "katefilelist.moc"
 
+#include <kstdaction.h>
+
+#if 0
 #include "katedocmanager.h"
 #include "kateviewmanager.h"
 #include "katemainwindow.h"
@@ -32,6 +35,7 @@
 #include <q3header.h>
 #include <QColor>
 #include <QCheckBox>
+
 #include <QLayout>
 #include <q3groupbox.h>
 #include <QLabel>
@@ -58,8 +62,54 @@
 #include <kcombobox.h>
 #include <kselectaction.h>
 #include <kstdaction.h>
+#endif
 //END Includes
 
+
+//BEGIN KateFileList
+
+KateFileList::KateFileList(QWidget *parent,KActionCollection *actionCollection):QListView(parent) {
+  m_windowNext = KStdAction::back(this, SLOT(slotPrevDocument()), actionCollection);
+  m_windowPrev = KStdAction::forward(this, SLOT(slotNextDocument()), actionCollection);
+}
+
+KateFileList::~KateFileList() {}
+
+void KateFileList::slotNextDocument() {
+  QModelIndex idx=selectionModel()->currentIndex();
+  if (idx.isValid()) {
+    QModelIndex newIdx=model()->index(idx.row()+1,idx.column(),idx.parent());
+    if (!newIdx.isValid())
+      newIdx=model()->index(0,idx.column(),idx.parent());
+    if (newIdx.isValid()) {
+//      selectionModel()->select(newIdx,QItemSelectionModel::SelectCurrent);
+//      selectionModel()->setCurrentIndex(newIdx,QItemSelectionModel::SelectCurrent);
+      emit activated(newIdx);
+    } 
+  }
+}
+
+void KateFileList::slotPrevDocument() {
+  QModelIndex idx=selectionModel()->currentIndex();
+  if (idx.isValid()) {
+    int row=idx.row()-1;
+    if (row<0) row=model()->rowCount(idx.parent())-1;
+    QModelIndex newIdx=model()->index(row,idx.column(),idx.parent());
+    if (newIdx.isValid()) {
+//      selectionModel()->select(newIdx,QItemSelectionModel::SelectCurrent);
+//      selectionModel()->setCurrentIndex(newIdx,QItemSelectionModel::SelectCurrent);
+      emit activated(newIdx);
+    } 
+  }
+}
+
+
+
+
+//END KateFileList
+
+
+#if 0
 //BEGIN ToolTip
 /*
 class ToolTip : public QToolTip
@@ -549,6 +599,7 @@ int KateFileListItem::compare ( Q3ListViewItem * i, int col, bool ascending ) co
 }
 //END KateFileListItem
 
+
 //BEGIN KFLConfigPage
 KFLConfigPage::KFLConfigPage( QWidget* parent, KateFileList *fl )
   :  KTextEditor::ConfigPage( parent ),
@@ -660,6 +711,6 @@ void KFLConfigPage::slotMyChanged()
 }
 
 //END KFLConfigPage
-
+#endif
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

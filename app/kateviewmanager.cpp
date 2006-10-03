@@ -83,6 +83,12 @@ KateViewManager::~KateViewManager ()
 
 }
 
+void KateViewManager::activateDocument(const QModelIndex &index) {
+    QVariant v=index.data(KateDocManager::DocumentRole);
+    if (!v.isValid()) return;
+    activateView(v.value<KTextEditor::Document*>());
+}
+
 void KateViewManager::setupActions ()
 {
   KAction *a;

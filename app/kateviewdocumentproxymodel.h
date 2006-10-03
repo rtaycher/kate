@@ -24,6 +24,8 @@
 #include <QItemSelection>
 #include <QItemSelectionModel>
 #include <QList>
+#include <QMimeData>
+#include <Qt>
 
 class KateViewDocumentProxyModel: public QAbstractProxyModel {
     Q_OBJECT
@@ -42,6 +44,12 @@ class KateViewDocumentProxyModel: public QAbstractProxyModel {
         virtual int rowCount ( const QModelIndex & parent = QModelIndex() ) const;
         virtual void setSourceModel ( QAbstractItemModel * sourceModel );
 
+        virtual Qt::ItemFlags flags ( const QModelIndex & index ) const;
+        virtual QStringList mimeTypes() const;
+        virtual QMimeData *mimeData(const QModelIndexList &indexes) const;
+        virtual bool dropMimeData(const QMimeData *data,
+            Qt::DropAction action, int row, int column, const QModelIndex &parent);
+        virtual Qt::DropActions supportedDropActions () const;
         QItemSelectionModel *selection(){return m_selection;}
     private:
         QItemSelectionModel *m_selection;
@@ -49,6 +57,10 @@ class KateViewDocumentProxyModel: public QAbstractProxyModel {
         QList<QModelIndex> m_editHistory;
         QMap<QModelIndex,QBrush> m_brushes;
         QModelIndex m_current;
+        QList<int> m_mapToSource;
+        QList<int> m_mapFromSource;
+        int m_rowCountOffset;
+        void removeItemFromColoring(int line);
     private Q_SLOTS:
         void slotColumnsAboutToBeInserted ( const QModelIndex & parent, int start, int end ); 
         void slotColumnsAboutToBeRemoved ( const QModelIndex & parent, int start, int end ) ;

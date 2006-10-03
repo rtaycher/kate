@@ -109,6 +109,8 @@ class KateDocManager : public QStandardItemModel
     inline int getDaysMetaInfos() { return m_daysMetaInfos; };
     inline void setDaysMetaInfos(int i) { m_daysMetaInfos = i; };
 
+    QModelIndex indexForDocument(KTextEditor::Document *document);
+
   public Q_SLOTS:
     /**
      * saves all documents that has at least one view.
@@ -125,7 +127,9 @@ class KateDocManager : public QStandardItemModel
   private Q_SLOTS:
     void slotModifiedOnDisc (KTextEditor::Document *doc, bool b, KTextEditor::ModificationInterface::ModifiedOnDiskReason reason);
     void slotModChanged(KTextEditor::Document *doc);
+    void slotModChanged1(KTextEditor::Document *doc);
     void slotDocumentNameChanged(KTextEditor::Document *document);
+    void slotDocumentUrlChanged(KTextEditor::Document *doc);
   private:
     bool loadMetaInfos(KTextEditor::Document *doc, const KUrl &url);
     void saveMetaInfos(KTextEditor::Document *doc);
@@ -147,6 +151,7 @@ class KateDocManager : public QStandardItemModel
     typedef QPair<KUrl,QDateTime> TPair;
     QMap<KTextEditor::Document *,TPair> m_tempFiles;   
     QString m_dbusObjectPath;
+    QMap<KTextEditor::Document*,QStandardItem*> m_documentItemMapping;
 };
 
 #endif

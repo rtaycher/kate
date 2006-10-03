@@ -28,6 +28,7 @@
 
 #include <QPointer>
 #include <QList>
+#include <QModelIndex>
 
 class KateMainWindow;
 class KateViewSpaceContainer;
@@ -94,6 +95,7 @@ class KateViewManager : public QObject
     void tabChanged(QWidget*);
 
   public Q_SLOTS:
+    void activateDocument(const QModelIndex &index);
     bool getShowFullPath() const { return showFullPath; }
 
     void activateView ( KTextEditor::Document *doc );
@@ -130,7 +132,6 @@ class KateViewManager : public QObject
   Q_SIGNALS:
     void statChanged ();
     void viewChanged ();
-
   private:
     QList<KateViewSpaceContainer *> m_viewSpaceContainerList;
     KateViewSpaceContainer *m_currentContainer;
