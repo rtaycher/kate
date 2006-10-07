@@ -304,6 +304,9 @@ void KateViewDocumentProxyModel::setSourceModel ( QAbstractItemModel * sourceMod
     }
     m_mapToSource.clear();
     m_mapFromSource.clear();
+    if (!sm)
+        return;
+
     int cnt=sm->rowCount();
     for (int i=0;i<cnt;i++) {
         m_mapToSource.append(i);
