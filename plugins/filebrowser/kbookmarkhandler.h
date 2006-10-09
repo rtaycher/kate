@@ -47,12 +47,12 @@ public:
     virtual QString currentUrl() const;
 
     KMenu *menu() const { return m_menu; }
+    virtual void openBookmark( KBookmark, Qt::MouseButtons, Qt::KeyboardModifiers );
 
 Q_SIGNALS:
     void openUrl( const QString& url );
 
 private Q_SLOTS:
-    void openBookmark( KBookmark, Qt::MouseButtons, Qt::KeyboardModifiers );
     void slotNewBookmark( const QString& text, const QByteArray& url,
                           const QString& additionalInfo );
     void slotNewFolder( const QString& text, bool open,

@@ -29,6 +29,7 @@
 #include <kstandarddirs.h>
 #include <kdiroperator.h>
 #include <kaction.h>
+#include <kdebug.h>
 
 #include "katefileselector.h"
 
@@ -43,7 +44,7 @@ Kate::Private::Plugin::KBookmarkHandler::KBookmarkHandler( KateFileSelector *par
       m_importStream( 0L )
 {
     setObjectName( "KBookmarkHandler" );
-	if (!m_menu)
+    if (!m_menu)
       m_menu = new KMenu( parent);
 
     QString file = KStandardDirs::locate( "data", "kate/fsbookmarks.xml" );
@@ -52,16 +53,13 @@ Kate::Private::Plugin::KBookmarkHandler::KBookmarkHandler( KateFileSelector *par
 
     KBookmarkManager *manager = KBookmarkManager::managerForFile( file, false);
     manager->setUpdate( true );
-    manager->setShowNSBookmarks( false );
 
     m_bookmarkMenu = new KBookmarkMenu( manager, this, m_menu, 0 );
-    connect( m_bookmarkMenu, SIGNAL( openBookmark( KBookmark, Qt::MouseButtons, Qt::KeyboardModifiers ) ),
-             this, SLOT( openBookmark( KBookmark, Qt::MouseButtons, Qt::KeyboardModifiers )) );
 }
 
 Kate::Private::Plugin::KBookmarkHandler::~KBookmarkHandler()
 {
-    //     delete m_bookmarkMenu; ###
+  delete m_bookmarkMenu;
 }
 
 QString Kate::Private::Plugin::KBookmarkHandler::currentUrl() const
