@@ -222,23 +222,6 @@ bool KateExternalToolsCommand::exec (KTextEditor::View *view, const QString &cmd
 bool KateExternalToolsCommand::help (KTextEditor::View *, const QString &, QString &) {
 	return false;
 }
-
-QString KateExternalToolsCommand::name (const QString& cmd) const
-{
-  return m_name.contains(cmd) ? m_name[cmd] : i18n("Unnamed");
-}
-
-QString KateExternalToolsCommand::description (const QString& cmd) const
-{
-  return i18n( "Execute external tool \"%1\".", cmd );
-}
-
-QString KateExternalToolsCommand::category (const QString& cmd) const
-{
-  Q_UNUSED( cmd );
-  return i18n("External Tools");
-}
-
 //END KateExternalToolsCommand
 
 //BEGIN KateExternalToolAction

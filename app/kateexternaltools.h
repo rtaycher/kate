@@ -192,9 +192,6 @@ class KateExternalToolsConfigWidget : public KTextEditor::ConfigPage
     virtual const QStringList &cmds ();
     virtual bool exec (KTextEditor::View *view, const QString &cmd, QString &msg);
     virtual bool help (KTextEditor::View *view, const QString &cmd, QString &msg);
-    virtual QString name (const QString& cmd) const;
-    virtual QString description (const QString& cmd) const;
-    virtual QString category (const QString& cmd) const;
   private:
     static KateExternalToolsCommand *s_self;
     QStringList m_list;
