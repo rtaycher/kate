@@ -460,6 +460,10 @@ void KateDocManager::restoreDocumentList (KConfig* config)
   pd->setWindowTitle (KateApp::self()->makeStdCaption(i18n("Starting Up")));
 
   bool first = true;
+  const int countM1=count-1;
+  m_restoringDocumentList=true;
+  m_documentsBeingRestored.clear();
+  m_openingErrors.clear();
   for (unsigned int i=0; i < count; i++)
   {
     config->setGroup(QString("Document %1").arg(i));
@@ -472,7 +476,11 @@ void KateDocManager::restoreDocumentList (KConfig* config)
     }
     else
       doc = createDoc ();
-
+    doc->setSuppressOpeningErrorDialogs(true);
+    m_documentsBeingRestored.insert(doc,true);
+    connect(doc,SIGNAL(completed()),this,SLOT(documentOpened()));
+    connect(doc,SIGNAL(canceled(const QString&)),this,SLOT(documentOpened()));
+    if (i==countM1) m_restoringDocumentList=false;
     if (KTextEditor::SessionConfigInterface *iface = qobject_cast<KTextEditor::SessionConfigInterface *>(doc))
       iface->readSessionConfig(config);
     config->setGroup (grp);
@@ -480,7 +488,7 @@ void KateDocManager::restoreDocumentList (KConfig* config)
     pd->setValue(pd->value()+1);
     KateApp::self()->processEvents();
   }
-
+  m_restoringDocumentList=false;
   delete pd;
 
   config->setGroup(prevGrp);
@@ -623,6 +631,22 @@ QModelIndex KateDocManager::indexForDocument(KTextEditor::Document *document) {
   int row=m_docList.indexOf(document);
   if (row==-1) return index(-1,-1);
   else return index(row,0);
+}
+
+void KateDocManager::documentOpened() {
+    KTextEditor::Document *doc=qobject_cast<KTextEditor::Document*>(sender());
+    if (!doc) return; // should never happen, but who knows
+    doc->setSuppressOpeningErrorDialogs(false);
+    disconnect(doc,SIGNAL(completed()),this,SLOT(documentOpened()));
+    disconnect(doc,SIGNAL(canceled(const QString&)),this,SLOT(documentOpened()));
+    if (doc->openingError())
+      m_openingErrors+='\n'+doc->openingErrorMessage();
+    m_documentsBeingRestored.take(doc);
+    if ((m_restoringDocumentList==false) && (m_documentsBeingRestored.count()==0)) {
+      KMessageBox::information (0,
+        m_openingErrors,
+        i18n ("Errors/Warnings while opening documents"));
+    }
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

@@ -26,6 +26,7 @@
 #include <QList>
 #include <QMimeData>
 #include <Qt>
+#include <QTimer>
 
 class KateViewDocumentProxyModel: public QAbstractProxyModel {
     Q_OBJECT
@@ -59,6 +60,7 @@ class KateViewDocumentProxyModel: public QAbstractProxyModel {
         QModelIndex m_current;
         QList<int> m_mapToSource;
         QList<int> m_mapFromSource;
+        QTimer *m_markOpenedTimer;
         int m_rowCountOffset;
         void removeItemFromColoring(int line);
     private Q_SLOTS:
@@ -76,6 +78,8 @@ class KateViewDocumentProxyModel: public QAbstractProxyModel {
         void slotRowsAboutToBeRemoved ( const QModelIndex & parent, int start, int end ) ;
         void slotRowsInserted ( const QModelIndex & parent, int start, int end ) ;
         void slotRowsRemoved ( const QModelIndex & parent, int start, int end );
+        
+        void slotMarkOpenedTimer();
         //void slotSelectionChanged ( const QItemSelection & selected, const QItemSelection & deselected );
     public Q_SLOTS:
         void opened(const QModelIndex &index);

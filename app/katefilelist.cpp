@@ -21,8 +21,10 @@
 //BEGIN Includes
 #include "katefilelist.h"
 #include "katefilelist.moc"
+#include "kateviewdocumentproxymodel.h"
 
 #include <kstdaction.h>
+#include <klocale.h>
 
 #if 0
 #include "katedocmanager.h"
@@ -71,9 +73,19 @@
 KateFileList::KateFileList(QWidget *parent,KActionCollection *actionCollection):QListView(parent) {
   m_windowNext = KStdAction::back(this, SLOT(slotPrevDocument()), actionCollection);
   m_windowPrev = KStdAction::forward(this, SLOT(slotNextDocument()), actionCollection);
+  m_sortAction = new KSelectAction( i18n("Sort &By"), actionCollection, "filelist_sortby"  );
+  QStringList l;
+  l << i18n("Opening Order") << i18n("Document Name") << i18n("URL")<<i18n("Custom");
+  m_sortAction->setItems( l );
+  connect( m_sortAction, SIGNAL(triggered(int)), this, SLOT(setSortType(int)) );
+  m_sortType=SortOpening;
 }
 
 KateFileList::~KateFileList() {}
+
+void KateFileList::setSortType(int sortType) {
+  m_sortType=sortType;
+}
 
 void KateFileList::slotNextDocument() {
   QModelIndex idx=selectionModel()->currentIndex();

@@ -22,6 +22,7 @@
 #define __KATE_FILELIST_H__
 
 #include <kaction.h>
+#include <kselectaction.h>
 #include <QListView>
 
 class KateFileList: public QListView {
@@ -32,9 +33,13 @@ class KateFileList: public QListView {
   private:
       KAction* m_windowNext;
       KAction* m_windowPrev;
+      KSelectAction* m_sortAction;
+      enum SortType {SortOpening=0,SortName=1,SortUrl=2,SortCustom=3};
+      int m_sortType;
   public Q_SLOTS:
     void slotNextDocument();
     void slotPrevDocument();
+    void setSortType(int sortType);
 
 };
 

@@ -32,7 +32,9 @@ Code taken from katefilelist.cpp:
 
 #include <kdebug.h>
 
-KateViewDocumentProxyModel::KateViewDocumentProxyModel(QObject *parent):QAbstractProxyModel(parent),m_selection(new QItemSelectionModel(this,this)),m_rowCountOffset(0) {
+KateViewDocumentProxyModel::KateViewDocumentProxyModel(QObject *parent):QAbstractProxyModel(parent),m_selection(new QItemSelectionModel(this,this)),m_rowCountOffset(0),m_markOpenedTimer(new QTimer(this)) {
+    m_markOpenedTimer->setSingleShot(true);
+    connect(m_markOpenedTimer,SIGNAL(timeout()),this,SLOT(slotMarkOpenedTimer()));
 /*    connect(m_selection,SIGNAL(selectionChanged ( const QItemSelection &, const QItemSelection &)),this,SLOT(slotSelectionChanged ( const QItemSelection &, const QItemSelection &)));*/
 }
 
@@ -150,12 +152,22 @@ void KateViewDocumentProxyModel::opened(const QModelIndex &index) {
     //m_selection->select(index,QItemSelectionModel::Select);
     kDebug()<<"KateViewDocumentProxyModel::opened-1"<<endl;;
     m_current=index;
-    m_viewHistory.removeAll(index);
-    m_viewHistory.prepend(index);
+    m_markOpenedTimer->stop();
+    m_markOpenedTimer->start(1000);
+
+
+}
+
+void KateViewDocumentProxyModel::slotMarkOpenedTimer() {
+    if (!m_current.isValid()) return;
+
+    m_viewHistory.removeAll(m_current);
+    m_viewHistory.prepend(m_current);
 
     while (m_viewHistory.count()>10) m_viewHistory.removeLast();
 
     updateBackgrounds();
+
 }
 
 void KateViewDocumentProxyModel::modified(const QModelIndex &index) {

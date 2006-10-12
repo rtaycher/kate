@@ -152,6 +152,11 @@ class KateDocManager : public QStandardItemModel
     QMap<KTextEditor::Document *,TPair> m_tempFiles;   
     QString m_dbusObjectPath;
     QMap<KTextEditor::Document*,QStandardItem*> m_documentItemMapping;
+    bool m_restoringDocumentList;
+    QMap<KTextEditor::Document*,bool> m_documentsBeingRestored;
+    QString m_openingErrors;
+  private Q_SLOTS:
+    void documentOpened();
 };
 
 #endif
