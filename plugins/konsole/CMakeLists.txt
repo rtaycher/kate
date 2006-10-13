@@ -5,7 +5,7 @@
 
 set(katekonsoleplugin_PART_SRCS kateconsole.cpp )
 
-kde4_automoc(${katekonsoleplugin_PART_SRCS})
+kde4_automoc(katekonsoleplugin ${katekonsoleplugin_PART_SRCS})
 
 kde4_add_plugin(katekonsoleplugin ${katekonsoleplugin_PART_SRCS})
 
