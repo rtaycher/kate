@@ -47,7 +47,7 @@ public:
     virtual QString currentUrl() const;
 
     KMenu *menu() const { return m_menu; }
-    virtual void openBookmark( KBookmark, Qt::MouseButtons, Qt::KeyboardModifiers );
+    virtual void openBookmark( const KBookmark &, Qt::MouseButtons, Qt::KeyboardModifiers );
 
 Q_SIGNALS:
     void openUrl( const QString& url );

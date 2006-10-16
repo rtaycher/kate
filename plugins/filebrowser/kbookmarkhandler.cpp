@@ -51,7 +51,7 @@ Kate::Private::Plugin::KBookmarkHandler::KBookmarkHandler( KateFileSelector *par
     if ( file.isEmpty() )
         file = KStandardDirs::locateLocal( "data", "kate/fsbookmarks.xml" );
 
-    KBookmarkManager *manager = KBookmarkManager::managerForFile( file, false);
+    KBookmarkManager *manager = KBookmarkManager::managerForFile( file, "kate", false);
     manager->setUpdate( true );
 
     m_bookmarkMenu = new KBookmarkMenu( manager, this, m_menu, 0 );
@@ -67,7 +67,7 @@ QString Kate::Private::Plugin::KBookmarkHandler::currentUrl() const
     return mParent->dirOperator()->url().url();
 }
 
-void Kate::Private::Plugin::KBookmarkHandler::openBookmark( KBookmark bm, Qt::MouseButtons, Qt::KeyboardModifiers )
+void Kate::Private::Plugin::KBookmarkHandler::openBookmark( const KBookmark & bm, Qt::MouseButtons, Qt::KeyboardModifiers )
 {
     emit openUrl(bm.url().url());
 }
