@@ -572,9 +572,9 @@ void KateExternalToolServiceEditor::showMTDlg()
 {
   QString text = i18n("Select the MimeTypes for which to enable this tool.");
   QStringList list = leMimetypes->text().split( QRegExp("\\s*;\\s*"), QString::SkipEmptyParts );
-  KMimeTypeChooserDialog *d = new KMimeTypeChooserDialog( i18n("Select Mime Types"), text, list, "text", this );
-  if ( d->exec() == KDialog::Accepted ) {
-    leMimetypes->setText( d->chooser()->mimeTypes().join(";") );
+  KMimeTypeChooserDialog d( i18n("Select Mime Types"), text, list, "text", this );
+  if ( d.exec() == KDialog::Accepted ) {
+    leMimetypes->setText( d.chooser()->mimeTypes().join(";") );
   }
 }
 //END KateExternalToolServiceEditor
