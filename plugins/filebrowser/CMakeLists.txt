@@ -5,7 +5,7 @@
 
 set(katefilebrowserplugin_PART_SRCS katefileselector.cpp kbookmarkhandler.cpp )
 
-kde4_automoc(katefilebrowserplugin ${katefilebrowserplugin_PART_SRCS})
+kde4_automoc(${katefilebrowserplugin_PART_SRCS})
 
 kde4_add_plugin(katefilebrowserplugin ${katefilebrowserplugin_PART_SRCS})
 

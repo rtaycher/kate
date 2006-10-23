@@ -4,12 +4,12 @@
 ########### next target ###############
 
 set(kateinterfaces_LIB_SRCS kateappadaptor.cpp katemainwindowadaptor.cpp  
-   ../interfaces/application.cpp
-   ../interfaces/mainwindow.cpp
-   ../interfaces/documentmanager.cpp
-   ../interfaces/pluginmanager.cpp
-   ../interfaces/plugin.cpp
-   ../interfaces/pluginconfigpageinterface.cpp
+   ${CMAKE_SOURCE_DIR}/kate/interfaces/application.cpp
+   ${CMAKE_SOURCE_DIR}/kate/interfaces/mainwindow.cpp
+   ${CMAKE_SOURCE_DIR}/kate/interfaces/documentmanager.cpp
+   ${CMAKE_SOURCE_DIR}/kate/interfaces/pluginmanager.cpp
+   ${CMAKE_SOURCE_DIR}/kate/interfaces/plugin.cpp
+   ${CMAKE_SOURCE_DIR}/kate/interfaces/pluginconfigpageinterface.cpp
    kateapp.cpp 
    kateconfigdialog.cpp 
    kateconfigplugindialogpage.cpp 
@@ -34,7 +34,7 @@ set(kateinterfaces_LIB_SRCS kateappadaptor.cpp katemainwindowadaptor.cpp
    kateviewdocumentproxymodel.cpp
    )
 
-kde4_automoc(kateinterfaces ${kateinterfaces_LIB_SRCS})
+kde4_automoc(${kateinterfaces_LIB_SRCS})
 
 
 kde4_add_library(kateinterfaces SHARED ${kateinterfaces_LIB_SRCS})
@@ -49,7 +49,7 @@ install(TARGETS kateinterfaces  DESTINATION ${LIB_INSTALL_DIR} )
 
 set(kate_KDEINIT_SRCS katemain.cpp)
 
-kde4_automoc(kate ${kate_KDEINIT_SRCS})
+kde4_automoc(${kate_KDEINIT_SRCS})
 
 kde4_add_kdeinit_executable( kate ${kate_KDEINIT_SRCS})
 
