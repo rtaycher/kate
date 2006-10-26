@@ -177,7 +177,7 @@ class KATEINTERFACES_EXPORT DocumentManager : public QObject
  * Global accessor to the document manager object.
  * \return document manager object
  */
-DocumentManager *documentManager ();
+KATEINTERFACES_EXPORT DocumentManager *documentManager ();
 
 }
 

@@ -131,7 +131,7 @@ class KATEINTERFACES_EXPORT Application : public QObject
  * Global accessor to the application object.
  * \return application object
  */
-Application *application ();
+KATEINTERFACES_EXPORT Application *application ();
 
 }
 

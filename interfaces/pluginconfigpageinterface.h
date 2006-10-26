@@ -209,7 +209,7 @@ class Plugin;
  * \return the plugin config page interface or NULL if the plugin does not
  *        support the interface
  */
-PluginConfigPageInterface *pluginConfigPageInterface (Plugin *plugin);
+KATEINTERFACES_EXPORT PluginConfigPageInterface *pluginConfigPageInterface (Plugin *plugin);
 
 }
 

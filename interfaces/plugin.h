@@ -166,8 +166,8 @@ class KATEINTERFACES_EXPORT Plugin : public QObject
  * \param args arguments
  * \return the plugin on success, otherwise NULL 
  */
-Plugin *createPlugin ( const char* libname, Application *application = 0,
-                       const QStringList &args = QStringList() );
+KATEINTERFACES_EXPORT Plugin *createPlugin ( const char* libname, Application *application = 0,
+                                             const QStringList &args = QStringList() );
 
 /**
  * \brief Plugin view extension interface.
@@ -295,7 +295,7 @@ class KATEINTERFACES_EXPORT PluginViewInterface
  * \return the view interface or NULL if the plugin does not
  *         support the interface
  */
-PluginViewInterface *pluginViewInterface (Plugin *plugin);
+KATEINTERFACES_EXPORT PluginViewInterface *pluginViewInterface (Plugin *plugin);
 
 }
 
