@@ -664,6 +664,7 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
   selectionChanged (NULL, NULL);
   connect(this,SIGNAL(user1Clicked()),this,SLOT(slotUser1()));
   connect(this,SIGNAL(user2Clicked()),this,SLOT(slotUser2()));
+  connect(m_sessions,SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),this,SLOT(slotUser2()));
   connect(this,SIGNAL(user3Clicked()),this,SLOT(slotUser3()));
   enableButton (KDialog::User2, true);
   m_popup=new KateToolTipMenu(this);
@@ -772,6 +773,7 @@ KateSessionOpenDialog::KateSessionOpenDialog (QWidget *parent)
   setResult (resultCancel);
   connect(this,SIGNAL(user1Clicked()),this,SLOT(slotUser1()));
   connect(this,SIGNAL(user2Clicked()),this,SLOT(slotUser2()));
+  connect(m_sessions,SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),this,SLOT(slotUser2()));
 
 }
 
