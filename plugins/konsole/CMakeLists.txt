@@ -9,7 +9,6 @@ kde4_automoc(${katekonsoleplugin_PART_SRCS})
 
 kde4_add_plugin(katekonsoleplugin ${katekonsoleplugin_PART_SRCS})
 
-kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} katekonsoleplugin )
 
 target_link_libraries(katekonsoleplugin  ${KDE4_KDECORE_LIBS} kateinterfaces )
 
