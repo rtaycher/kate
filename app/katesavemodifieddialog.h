@@ -19,9 +19,9 @@
 #ifndef _KATE_SAVE_MODIFIED_DIALOG_
 #define _KATE_SAVE_MODIFIED_DIALOG_
 
-#include <ktexteditor/document.h>
+#include <KTextEditor/Document>
 
-#include <kdialog.h>
+#include <KDialog>
 #include <QList>
 
 class QTreeWidget;
@@ -40,7 +40,7 @@ protected:
 protected Q_SLOTS:
 	void slotSelectAll();
 	void slotItemActivated(QTreeWidgetItem*,int);
-	
+
 private:
 	QTreeWidgetItem *m_projectRoot;
 	QTreeWidgetItem *m_documentRoot;

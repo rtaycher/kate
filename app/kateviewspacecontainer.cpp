@@ -29,20 +29,20 @@
 #include "kateviewmanager.h"
 #include "kateviewspace.h"
 
-#include <kaction.h>
-#include <kactioncollection.h>
+#include <KAction>
+#include <KActionCollection>
 #include <kdebug.h>
-#include <kiconloader.h>
-#include <kglobal.h>
-#include <klocale.h>
-#include <kmessagebox.h>
-#include <ksimpleconfig.h>
+#include <KIconLoader>
+#include <KGlobal>
+#include <KLocale>
+#include <KMessageBox>
+#include <KSimpleConfig>
 #include <kstdaction.h>
-#include <kstandarddirs.h>
-#include <kglobalsettings.h>
-#include <kstringhandler.h>
-#include <kxmlguifactory.h>
-#include <ktoolbar.h>
+#include <KStandardDirs>
+#include <KGlobalSettings>
+#include <KStringHandler>
+#include <KXMLGUIFactory>
+#include <KToolBar>
 
 #include <QLayout>
 #include <QObject>

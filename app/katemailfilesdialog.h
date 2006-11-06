@@ -19,10 +19,10 @@
 #ifndef _KATE_MAILFILES_DIALOG_H_
 #define _KATE_MAILFILES_DIALOG_H_
 
-#include <ktexteditor/document.h>
+#include <KTextEditor/Document>
 
-#include <kdialog.h>
-#include <kurl.h>
+#include <KDialog>
+#include <KUrl>
 
 #include <QList>
 #include <QLabel>
@@ -37,7 +37,7 @@ class KateMainWindow;
     This is a dialog for choosing which of the open files to mail.
     The current file is selected by default, the dialog can be expanded
     to display all the files if required.
-    
+
 */
 class KateMailDialog : public KDialog {
   Q_OBJECT

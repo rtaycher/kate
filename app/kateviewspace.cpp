@@ -27,23 +27,22 @@
 #include "kateapp.h"
 #include "katesession.h"
 
-#include <ktexteditor/sessionconfiginterface.h>
+#include <KTextEditor/SessionConfigInterface>
 
-#include <kiconloader.h>
-#include <klocale.h>
-#include <ksqueezedtextlabel.h>
-#include <kconfig.h>
+#include <KIconLoader>
+#include <KLocale>
+#include <KSqueezedTextLabel>
+#include <KConfig>
 #include <kdebug.h>
-#include <kstringhandler.h>
-#include <kxmlguifactory.h>
-#include <kvbox.h>
+#include <KStringHandler>
+#include <KXMLGUIFactory>
+#include <KVBox>
 
 #include <QStackedWidget>
 #include <QPainter>
 #include <QCursor>
 #include <QMenu>
 #include <QTimer>
-//Added by qt3to4:
 #include <QPaintEvent>
 #include <QEvent>
 #include <QMouseEvent>

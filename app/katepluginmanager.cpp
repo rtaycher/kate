@@ -26,12 +26,12 @@
 
 #include "../interfaces/application.h"
 
-#include <kconfig.h>
+#include <KConfig>
 #include <QStringList>
 //Added by qt3to4:
 #include <QList>
-#include <kmessagebox.h>
-#include <kservicetypetrader.h>
+#include <KMessageBox>
+#include <KServiceTypeTrader>
 #include <kdebug.h>
 #include <QFile>
 

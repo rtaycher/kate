@@ -42,42 +42,44 @@
 
 #include "../interfaces/mainwindow.h"
 
-#include <kaboutapplication.h>
-#include <kinstance.h>
-#include <kaboutdata.h>
-#include <kaction.h>
-#include <kactioncollection.h>
-#include <kcmdlineargs.h>
+#include <KAboutApplication>
+#include <KInstance>
+#include <KAboutData>
+#include <KAction>
+#include <KActionCollection>
+#include <KCmdLineArgs>
 #include <kdebug.h>
-#include <kdiroperator.h>
-#include <kedittoolbar.h>
-#include <kfiledialog.h>
-#include <kglobalaccel.h>
-#include <kglobal.h>
-#include <kglobalsettings.h>
-#include <kiconloader.h>
-#include <kkeydialog.h>
-#include <klocale.h>
-#include <kmessagebox.h>
-#include <kmimetype.h>
-#include <kopenwith.h>
-#include <kmenu.h>
-#include <krecentfilesaction.h>
-#include <ksimpleconfig.h>
-#include <kstatusbar.h>
+#include <KDirOperator>
+#include <KEditToolbar>
+#include <KFileDialog>
+#include <KGlobalAccel>
+#include <KGlobal>
+#include <KGlobalSettings>
+#include <KIconLoader>
+#include <KKeyDialog>
+#include <KLocale>
+#include <KMessageBox>
+#include <KMimeType>
+#include <KOpenWithDlg>
+#include <KMenu>
+#include <KRecentFilesAction>
+#include <KSimpleConfig>
+#include <KStatusBar>
 #include <kstdaction.h>
-#include <kstandarddirs.h>
-#include <ktogglefullscreenaction.h>
-#include <kmimetypetrader.h>
-#include <kuniqueapplication.h>
-#include <kdesktopfile.h>
-#include <khelpmenu.h>
-#include <kmultitabbar.h>
-#include <ktip.h>
-#include <kmenubar.h>
-#include <kstringhandler.h>
+#include <KStandardDirs>
+#include <KToggleFullScreenAction>
+#include <KMimeTypeTrader>
+#include <KUniqueApplication>
+#include <KDesktopFile>
+#include <KHelpMenu>
+#include <KMultiTabBar>
+#include <KTipDialog>
+#include <KMenuBar>
+#include <KStringHandler>
+#include <KToolInvocation>
+#include <KAuthorized>
+
 #include <QLayout>
-//Added by qt3to4:
 #include <QDragEnterEvent>
 #include <QEvent>
 #include <QDropEvent>
@@ -87,9 +89,6 @@
 
 #include <assert.h>
 #include <unistd.h>
-#include <ktoolinvocation.h>
-#include <kmenu.h>
-#include <kauthorized.h>
 //END
 
 uint KateMainWindow::uniqueID = 1;

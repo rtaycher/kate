@@ -21,8 +21,7 @@
 #ifndef __KATE_FILELIST_H__
 #define __KATE_FILELIST_H__
 
-#include <kaction.h>
-#include <kselectaction.h>
+#include <KSelectAction>
 #include <QListView>
 
 class KateFileList: public QListView {

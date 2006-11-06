@@ -23,7 +23,7 @@
 #include <kdebase_export.h>
 #include "katemain.h"
 
-#include <kapplication.h>
+#include <KApplication>
 
 #include <QList>
 
@@ -173,8 +173,8 @@ class KATEINTERFACES_EXPORT KateApp : public KApplication
      */
     KateMainWindow *mainWindow (int n);
 
-    int mainWindowID(KateMainWindow *window); 
-    
+    int mainWindowID(KateMainWindow *window);
+
   /**
    * some stuff for the dcop API
    */

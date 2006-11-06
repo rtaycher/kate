@@ -21,10 +21,10 @@
 
 #include "katemain.h"
 
-#include <kdialog.h>
-#include <ksimpleconfig.h>
-#include <ksharedptr.h>
-#include <kactionmenu.h>
+#include <KDialog>
+#include <KSimpleConfig>
+#include <KSharedPtr>
+#include <KActionMenu>
 
 #include <QObject>
 #include <QList>
@@ -158,7 +158,7 @@ class KateSession  : public KShared
      * simpleconfig to write to
      */
     KSimpleConfig *m_writeConfig;
- 
+
 };
 
 typedef QList<KateSession::Ptr> KateSessionList;
@@ -258,7 +258,7 @@ class KateSessionManager : public QObject
 
   private Q_SLOTS:
     void dirty (const QString &path);
- 
+
   public:
     /**
      * trigger update of session list
@@ -282,7 +282,7 @@ class KateSessionManager : public QObject
      * current active session
      */
     KateSession::Ptr m_activeSession;
-    
+
     QString m_defaultSessionFileName;
 };
 
@@ -333,7 +333,7 @@ class KateSessionChooser : public KDialog
     void slotUser3 ();
 
     void slotTemplateAction(QAction* a);
-    
+
     /**
      * selection has changed
      */
@@ -434,7 +434,7 @@ class KateSessionsAction : public KActionMenu
     void slotAboutToShow();
 
     void openSession (QAction *action);
-	
+
 	private:
 		QActionGroup *sessionsGroup;
 };

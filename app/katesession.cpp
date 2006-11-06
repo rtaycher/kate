@@ -26,19 +26,19 @@
 
 #include "katetooltipmenu.h"
 
-#include <kstandarddirs.h>
-#include <klocale.h>
+#include <KStandardDirs>
+#include <KLocale>
 #include <kdebug.h>
-#include <kdirwatch.h>
-#include <kinputdialog.h>
-#include <kiconloader.h>
-#include <kmessagebox.h>
-#include <kcodecs.h>
-#include <kstdguiitem.h>
-#include <kpushbutton.h>
-#include <kmenu.h>
-#include <kactioncollection.h>
-#include <kio/netaccess.h>
+#include <KDirWatch>
+#include <KInputDialog>
+#include <KIconLoader>
+#include <KMessageBox>
+#include <KCodecs>
+#include <KStdGuiItem>
+#include <KPushButton>
+#include <KMenu>
+#include <KActionCollection>
+#include <KIO/NetAccess>
 
 #include <QDir>
 #include <QLabel>

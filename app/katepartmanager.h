@@ -21,9 +21,9 @@
 
 #include "katemain.h"
 
-#include <kxmlguiclient.h>
+#include <KXMLGUIClient>
 
-#include <kparts/part.h>
+#include <KParts/Part>
 
 #include <QPointer>
 #include <QList>
@@ -72,13 +72,13 @@ class KatePartManager : public QObject
      */
     KatePartProxy *createPart (const char *libname, QWidget *parent = 0, const char *classname = "KParts::Part");
 
-    /** 
+    /**
      * Number of parts
      * @return number of open parts
      */
     int parts ();
 
-    /** 
+    /**
      * return part with given index
      * @param index part index
      * @return part proxy
@@ -96,7 +96,7 @@ class KatePartManager : public QObject
      * hack, dummy parent widget for the parts ;)
      */
     QWidget *m_coolStore;
-    
+
     /**
      * list of all alive parts
      */

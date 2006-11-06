@@ -22,20 +22,20 @@
 
 #include "katedocmanager.h"
 
-#include <ktexteditor/document.h>
+#include <KTextEditor/Document>
 
-#include <kiconloader.h>
-#include <klocale.h>
-#include <kmessagebox.h>
-#include <kprocio.h>
-#include <krun.h>
-#include <ktemporaryfile.h>
-#include <kpushbutton.h>
+#include <KIconLoader>
+#include <KLocale>
+#include <KMessageBox>
+#include <KProcIO>
+#include <KRun>
+#include <KTemporaryFile>
+#include <KPushButton>
+#include <KVBox>
 
 #include <QLabel>
 #include <QLayout>
 #include <QPushButton>
-#include <kvbox.h>
 #include <QTextStream>
 
 class KateDocItem : public QTreeWidgetItem
@@ -172,7 +172,7 @@ void KateMwModOnHdDialog::handleSelected( int action )
           if ( ! success )
           {
             KMessageBox::sorry( this,
-                                i18n("Could not save the document \n'%1'", 
+                                i18n("Could not save the document \n'%1'",
                                      item->document->url().prettyUrl() ) );
           }
           break;
@@ -253,7 +253,7 @@ void KateMwModOnHdDialog::slotPRead( KProcIO *p)
     m_tmpfile->setAutoRemove(false);
     m_tmpfile->open();
   }
-  
+
   // put all the data we have in it
   QString stmp;
   bool readData = false;

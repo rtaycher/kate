@@ -24,31 +24,32 @@
 #include "kateviewmanager.h"
 #include "kateexternaltools.h"
 #include "kateviewspacecontainer.h"
+#include "katedocmanageradaptor.h"
 
-#include <ktexteditor/view.h>
-#include <ktexteditor/sessionconfiginterface.h>
-#include <ktexteditor/editorchooser.h>
+#include <KTextEditor/View>
+#include <KTextEditor/SessionConfigInterface>
+#include <KTextEditor/EditorChooser>
 
-#include <kparts/factory.h>
+#include <KParts/Factory>
 
-#include <klocale.h>
+#include <KLocale>
 #include <kdebug.h>
-#include <kconfig.h>
-#include <klibloader.h>
-#include <kcodecs.h>
-#include <kmessagebox.h>
-#include <kencodingfiledialog.h>
-#include <kio/job.h>
-#include <kiconloader.h>
+#include <KConfig>
+#include <KLibLoader>
+#include <KCodecs>
+#include <KMessageBox>
+#include <KEncodingFileDialog>
+#include <KIO/Job>
+#include <KIconLoader>
 
 #include <QDateTime>
 #include <QTextCodec>
-#include <qprogressdialog.h>
+#include <QProgressDialog>
 #include <QByteArray>
 #include <QHash>
 #include <QListView>
 #include <QStandardItem>
-#include <katedocmanageradaptor.h>
+
 KateDocManager::KateDocManager (QObject *parent)
  : QStandardItemModel (parent)
  , m_saveMetaInfos(true)

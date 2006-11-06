@@ -31,19 +31,19 @@
 
 #include "katemainwindow.h"
 
-#include <ktexteditor/view.h>
-#include <ktexteditor/document.h>
+#include <KTextEditor/View>
+#include <KTextEditor/Document>
 
-#include <kactioncollection.h>
-#include <klistbox.h>
-#include <klocale.h>
-#include <kiconloader.h>
-#include <kmessagebox.h>
-#include <kmimetypechooser.h>
-#include <kconfig.h>
-#include <krun.h>
-#include <kicondialog.h>
-#include <kmenu.h>
+#include <KActionCollection>
+#include <KListBox>
+#include <KLocale>
+#include <KIconLoader>
+#include <KMessageBox>
+#include <KMimeTypeChooser>
+#include <KConfig>
+#include <KRun>
+#include <KIconDialog>
+#include <KMenu>
 #include <kdebug.h>
 
 #include <QComboBox>

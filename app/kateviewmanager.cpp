@@ -29,21 +29,21 @@
 
 #include "../interfaces/mainwindow.h"
 
-#include <kaction.h>
-#include <kcmdlineargs.h>
+#include <KAction>
+#include <KCmdLineArgs>
 #include <kdebug.h>
-#include <kdiroperator.h>
-#include <kencodingfiledialog.h>
-#include <kiconloader.h>
-#include <kglobal.h>
-#include <klocale.h>
-#include <ktoolbar.h>
-#include <kmessagebox.h>
-#include <krecentfilesaction.h>
-#include <ksimpleconfig.h>
+#include <KDirOperator>
+#include <KEncodingFileDialog>
+#include <KIconLoader>
+#include <KGlobal>
+#include <KLocale>
+#include <KToolBar>
+#include <KMessageBox>
+#include <KRecentFilesAction>
+#include <KSimpleConfig>
 #include <kstdaction.h>
-#include <kstandarddirs.h>
-#include <kglobalsettings.h>
+#include <KStandardDirs>
+#include <KGlobalSettings>
 #include <kstdaccel.h>
 
 #include <QApplication>

@@ -25,10 +25,10 @@
 #include "../interfaces/plugin.h"
 #include "../interfaces/pluginconfigpageinterface.h"
 
-#include <ktexteditor/document.h>
-#include <ktexteditor/editorchooser.h>
+#include <KTextEditor/Document>
+#include <KTextEditor/EditorChooser>
 
-#include <kpagedialog.h>
+#include <KPageDialog>
 #include <QList>
 
 class QCheckBox;

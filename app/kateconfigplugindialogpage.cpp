@@ -22,14 +22,16 @@
 
 #include "katepluginmanager.h"
 #include "kateconfigdialog.h"
-#include <klistbox.h>
 #include "kateapp.h"
+
+#include <KListBox>
+#include <KLocale>
+#include <KIconLoader>
+
 #include <QStringList>
 #include <QLabel>
-#include <klocale.h>
 #include <QPushButton>
 #include <QToolTip>
-#include <kiconloader.h>
 
 class KatePluginListItem : public Q3CheckListItem
 {

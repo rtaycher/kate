@@ -27,9 +27,9 @@
 #include <ktexteditor/configpage.h>
 #include <ktexteditor/commandinterface.h>
 
-#include <kactionmenu.h>
-#include <kdialog.h>
-#include <kmacroexpander.h>
+#include <KActionMenu>
+#include <KDialog>
+#include <KWordMacroExpander>
 
 #include <QPixmap>
 #include <QHash>

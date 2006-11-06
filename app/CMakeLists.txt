@@ -1,34 +1,32 @@
 
-
-
 ########### next target ###############
 
-set(kateinterfaces_LIB_SRCS kateappadaptor.cpp katemainwindowadaptor.cpp  
+set(kateinterfaces_LIB_SRCS kateappadaptor.cpp katemainwindowadaptor.cpp
    ${CMAKE_SOURCE_DIR}/kate/interfaces/application.cpp
    ${CMAKE_SOURCE_DIR}/kate/interfaces/mainwindow.cpp
    ${CMAKE_SOURCE_DIR}/kate/interfaces/documentmanager.cpp
    ${CMAKE_SOURCE_DIR}/kate/interfaces/pluginmanager.cpp
    ${CMAKE_SOURCE_DIR}/kate/interfaces/plugin.cpp
    ${CMAKE_SOURCE_DIR}/kate/interfaces/pluginconfigpageinterface.cpp
-   kateapp.cpp 
-   kateconfigdialog.cpp 
-   kateconfigplugindialogpage.cpp 
-   katedocmanager.cpp 
-   katefilelist.cpp 
-   katemainwindow.cpp 
-   katepluginmanager.cpp 
-   kateviewmanager.cpp 
-   kateviewspace.cpp 
-   kategrepdialog.cpp 
-   katemailfilesdialog.cpp 
-   katetooltipmenu.cpp 
-   kateexternaltools.cpp 
-   katesavemodifieddialog.cpp 
-   kateviewspacecontainer.cpp 
-   katemwmodonhddialog.cpp 
-   katesession.cpp 
-   katemdi.cpp 
-   katetabwidget.cpp 
+   kateapp.cpp
+   kateconfigdialog.cpp
+   kateconfigplugindialogpage.cpp
+   katedocmanager.cpp
+   katefilelist.cpp
+   katemainwindow.cpp
+   katepluginmanager.cpp
+   kateviewmanager.cpp
+   kateviewspace.cpp
+   kategrepdialog.cpp
+   katemailfilesdialog.cpp
+   katetooltipmenu.cpp
+   kateexternaltools.cpp
+   katesavemodifieddialog.cpp
+   kateviewspacecontainer.cpp
+   katemwmodonhddialog.cpp
+   katesession.cpp
+   katemdi.cpp
+   katetabwidget.cpp
    katepartmanager.cpp
    katedocmanageradaptor.cpp
    kateviewdocumentproxymodel.cpp

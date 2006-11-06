@@ -24,13 +24,13 @@
 #include "katemain.h"
 #include "katemdi.h"
 
-#include <ktexteditor/view.h>
-#include <ktexteditor/document.h>
+#include <KTextEditor/View>
+#include <KTextEditor/Document>
 
-#include <kparts/part.h>
+#include <KParts/Part>
 
-#include <kaction.h>
-//Added by qt3to4:
+#include <KAction>
+
 #include <QDragEnterEvent>
 #include <QEvent>
 #include <QDropEvent>
@@ -148,7 +148,7 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
     void slotOpenWithMenuAction(QAction* a);
 
     void slotGrepToolItemSelected ( const QString &filename, int linenumber );
-    
+
     void slotMail();
 
     void slotFileQuit();

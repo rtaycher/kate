@@ -23,10 +23,10 @@
 
 #include <kparts/mainwindow.h>
 
-#include <kmultitabbar.h>
-#include <kxmlguiclient.h>
-#include <ktoggleaction.h>
-#include <kvbox.h>
+#include <KMultiTabBar>
+#include <KXMLGUIClient>
+#include <KToggleAction>
+#include <KVBox>
 
 #include <q3dict.h>
 #include <q3intdict.h>

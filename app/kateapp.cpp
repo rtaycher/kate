@@ -31,16 +31,16 @@
 #include "../interfaces/application.h"
 
 #include <kdeversion.h>
-#include <kcmdlineargs.h>
-#include <kconfig.h>
-#include <kwin.h>
-#include <ktip.h>
+#include <KCmdLineArgs>
+#include <KConfig>
+#include <KWin>
+#include <KTipDialog>
 #include <kdebug.h>
-#include <klibloader.h>
-#include <kmessagebox.h>
-#include <klocale.h>
-#include <ksimpleconfig.h>
-#include <kstartupinfo.h>
+#include <KLibLoader>
+#include <KMessageBox>
+#include <KLocale>
+#include <KSimpleConfig>
+#include <KStartupInfo>
 
 #include <QFile>
 #include <QTimer>

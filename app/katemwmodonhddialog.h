@@ -20,11 +20,11 @@
 #ifndef _KATE_MW_MODONHD_DIALOG_H_
 #define _KATE_MW_MODONHD_DIALOG_H_
 
-#include <ktexteditor/document.h>
+#include <KTextEditor/Document>
 
-#include <kdialog.h>
+#include <KDialog>
 
-#include <q3ptrvector.h>
+#include <Q3PtrVector>
 
 #include <QTreeWidget>
 #include <QTreeWidgetItem>

@@ -20,7 +20,7 @@
 #include "katetabwidget.h"
 #include "katetabwidget.moc"
 
-#include <qtabbar.h>
+#include <QTabBar>
 
 //BEGIN KateTabWidget
 

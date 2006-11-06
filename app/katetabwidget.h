@@ -20,7 +20,7 @@
 #ifndef __KATE_TABWIDGET_H__
 #define __KATE_TABWIDGET_H__
 
-#include <ktabwidget.h>
+#include <KTabWidget>
 
 class KateTabWidget : public KTabWidget
 {

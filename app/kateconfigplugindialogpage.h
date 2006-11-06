@@ -23,9 +23,9 @@
 #include "katemain.h"
 #include "katepluginmanager.h"
 
-#include <k3listview.h>
+#include <K3ListView>
 
-#include <kvbox.h>
+#include <KVBox>
 
 class KatePluginListItem;
 

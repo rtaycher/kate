@@ -26,7 +26,7 @@
 #include "../interfaces/plugin.h"
 #include "../interfaces/pluginmanager.h"
 
-#include <kservice.h>
+#include <KService>
 
 #include <QObject>
 #include <QLinkedList>

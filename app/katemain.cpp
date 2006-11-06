@@ -20,15 +20,15 @@
 #include "kateapp.h"
 
 #include <kdebase_export.h>
-#include <kstandarddirs.h>
-#include <klocale.h>
-#include <kcmdlineargs.h>
-#include <kaboutdata.h>
-#include <kglobal.h>
-#include <kconfig.h>
-#include <kinstance.h>
+#include <KStandardDirs>
+#include <KLocale>
+#include <KCmdLineArgs>
+#include <KAboutData>
+#include <KGlobal>
+#include <KConfig>
+#include <KInstance>
 #include <kdebug.h>
-#include <kurl.h>
+#include <KUrl>
 
 #include <QTextCodec>
 #include <QTextIStream>

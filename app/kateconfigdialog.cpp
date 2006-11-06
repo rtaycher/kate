@@ -30,24 +30,25 @@
 //#include "katefileselector.h"
 #include "katefilelist.h"
 #include "kateexternaltools.h"
-#include <kvbox.h>
-#include <ktexteditor/configpage.h>
 
-#include <kinstance.h>
+#include <KTextEditor/ConfigPage>
+#include <KTextEditor/EditorChooser>
+
+#include <KInstance>
 #include <kdebug.h>
-#include <kglobalaccel.h>
-#include <kglobal.h>
-#include <kglobalsettings.h>
-#include <kiconloader.h>
-#include <kkeydialog.h>
-#include <klistbox.h>
-#include <klocale.h>
-#include <ksimpleconfig.h>
+#include <KGlobal>
+#include <KGlobalSettings>
+#include <KIconLoader>
+#include <KKeyDialog>
+#include <KListBox>
+#include <KLocale>
+#include <KSimpleConfig>
 #include <kstdaction.h>
-#include <kstandarddirs.h>
-#include <kwin.h>
-#include <kseparator.h>
-#include <kpagewidgetmodel.h>
+#include <KStandardDirs>
+#include <KWin>
+#include <KSeparator>
+#include <KPageWidgetModel>
+#include <KVBox>
 
 #include <q3buttongroup.h>
 #include <QCheckBox>
@@ -56,12 +57,9 @@
 #include <kpushbutton.h>
 #include <QRadioButton>
 #include <QSpinBox>
-#include <kvbox.h>
 #include <QComboBox>
-//Added by qt3to4:
 #include <QVBoxLayout>
 #include <QFrame>
-#include <ktexteditor/editorchooser.h>
 
 KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *view )
  : KPageDialog( parent )

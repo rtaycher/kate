@@ -23,9 +23,9 @@
 #include "katemain.h"
 #include "../interfaces/documentmanager.h"
 
-#include <ktexteditor/document.h>
-#include <ktexteditor/editor.h>
-#include <ktexteditor/modificationinterface.h>
+#include <KTextEditor/Document>
+#include <KTextEditor/Editor>
+#include <KTextEditor/ModificationInterface>
 
 #include <QPointer>
 #include <QList>
@@ -84,7 +84,7 @@ class KateDocManager : public QStandardItemModel
     KTextEditor::Document *findDocument (KUrl url);
 
     bool isOpen(KUrl url);
-    
+
     QString dbusObjectPath() { return m_dbusObjectPath;}
     uint documents ();
 
@@ -149,7 +149,7 @@ class KateDocManager : public QStandardItemModel
     KTextEditor::Editor *m_editor;
 
     typedef QPair<KUrl,QDateTime> TPair;
-    QMap<KTextEditor::Document *,TPair> m_tempFiles;   
+    QMap<KTextEditor::Document *,TPair> m_tempFiles;
     QString m_dbusObjectPath;
     QMap<KTextEditor::Document*,QStandardItem*> m_documentItemMapping;
     bool m_restoringDocumentList;

@@ -24,7 +24,7 @@
 #include "kateviewdocumentproxymodel.h"
 
 #include <kstdaction.h>
-#include <klocale.h>
+#include <KLocale>
 
 #if 0
 #include "katedocmanager.h"
@@ -97,7 +97,7 @@ void KateFileList::slotNextDocument() {
 //      selectionModel()->select(newIdx,QItemSelectionModel::SelectCurrent);
 //      selectionModel()->setCurrentIndex(newIdx,QItemSelectionModel::SelectCurrent);
       emit activated(newIdx);
-    } 
+    }
   }
 }
 
@@ -111,7 +111,7 @@ void KateFileList::slotPrevDocument() {
 //      selectionModel()->select(newIdx,QItemSelectionModel::SelectCurrent);
 //      selectionModel()->setCurrentIndex(newIdx,QItemSelectionModel::SelectCurrent);
       emit activated(newIdx);
-    } 
+    }
   }
 }
 

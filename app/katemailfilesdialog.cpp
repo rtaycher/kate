@@ -21,14 +21,13 @@
 #include "kateviewmanager.h"
 #include "katedocmanager.h"
 
-#include <klocale.h>
-#include <kurl.h>
+#include <KLocale>
+#include <KUrl>
+#include <KVBox>
 
 #include <QEvent>
 #include <QLabel>
 #include <QStringList>
-#include <kvbox.h>
-//Added by qt3to4:
 #include <QList>
 
 /* a private check list item, that can store a KTextEditor::Document*.  */
@@ -74,7 +73,7 @@ KateMailDialog::KateMailDialog( QWidget *parent, KateMainWindow  *mainwin )
   header << i18n("Name");
   header << i18n("URL");
   list->setHeaderLabels(header);
-  
+
   KTextEditor::Document *currentDoc = mainWindow->viewManager()->activeView()->document();
   uint n = KateDocManager::self()->documents();
   uint i = 0;

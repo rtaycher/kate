@@ -23,11 +23,11 @@
 #include "katemainwindow.h"
 #include "kateviewmanager.h"
 
-#include <kparts/factory.h>
+#include <KParts/Factory>
 
 #include <kdebug.h>
-#include <kconfig.h>
-#include <klibloader.h>
+#include <KConfig>
+#include <KLibLoader>
 
 KatePartProxy::KatePartProxy (QWidget *parent)
  : QWidget (parent), m_part (0)
@@ -83,7 +83,7 @@ KatePartProxy *KatePartManager::createPart (const char *libname, QWidget *parent
   {
     KParts::Part *p = (KParts::Part *)factory->createPart(part, this, classname);
     part->setPart (p);
-     
+
     m_partList.append (part);
   } else
     return 0;

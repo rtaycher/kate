@@ -19,23 +19,21 @@
 #include "katesavemodifieddialog.h"
 #include "katesavemodifieddialog.moc"
 
-#include <klocale.h>
-//Added by qt3to4:
 #include <QPixmap>
 #include <QList>
-// perhaps later again #include <k3listview.h>
-#include <qtreewidget.h>
-#include <kguiitem.h>
-#include <qlabel.h>
-#include <kstdguiitem.h>
-#include <kvbox.h>
+#include <QTreeWidget>
 #include <QLabel>
 #include <QPushButton>
-#include <kiconloader.h>
-#include <kmessagebox.h>
+
+#include <KLocale>
+#include <KGuiItem>
+#include <KStdGuiItem>
+#include <KVBox>
+#include <KIconLoader>
+#include <KMessageBox>
 #include <kdebug.h>
-#include <kinstance.h>
-#include <kencodingfiledialog.h>
+#include <KInstance>
+#include <KEncodingFileDialog>
 
 class AbstractKateSaveModifiedDialogCheckListItem:public QTreeWidgetItem {
 public:

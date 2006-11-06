@@ -23,18 +23,17 @@
 
 #include "katemain.h"
 
-#include <ktexteditor/view.h>
-#include <ktexteditor/document.h>
-#include <ktexteditor/modificationinterface.h>
+#include <KTextEditor/View>
+#include <KTextEditor/Document>
+#include <KTextEditor/ModificationInterface>
 
 #include <QWidget>
 #include <QList>
-//Added by qt3to4:
 #include <QPixmap>
 #include <QLabel>
 #include <QEvent>
-#include <kstatusbar.h>
-#include <kvbox.h>
+#include <KStatusBar>
+#include <KVBox>
 
 class KConfig;
 class KSqueezedTextLabel;

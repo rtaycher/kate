@@ -21,9 +21,8 @@
 #ifndef _GREPDIALOG_H_
 #define _GREPDIALOG_H_
 
-#include <kdialog.h>
+#include <KDialog>
 #include <QStringList>
-//Added by qt3to4:
 #include <QLabel>
 #include <QEvent>
 

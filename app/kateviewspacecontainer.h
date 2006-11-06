@@ -24,8 +24,8 @@
 
 #include "katemain.h"
 
-#include <ktexteditor/view.h>
-#include <ktexteditor/document.h>
+#include <KTextEditor/View>
+#include <KTextEditor/Document>
 
 #include <QSplitter>
 
