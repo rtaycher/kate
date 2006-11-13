@@ -236,7 +236,9 @@ void KateMainWindow::setupMainWindow ()
   m_fileList->setDragEnabled(true);
   m_fileList->setDragDropMode(QAbstractItemView::InternalMove);
   m_fileList->setDropIndicatorShown(true);
+#ifdef __GNUC__
 #warning I do not like it, it looks like a hack, search for a better way, but for now it should work. (Even on windows most lisviews, except exploder are single click) (jowenn)
+#endif  
   if (!style()->styleHint(QStyle::SH_ItemView_ActivateItemOnSingleClick, 0, m_fileList)) {
     kDebug()<<"HACK:***********************CONNECTING CLICKED***************************"<<endl;
     connect(m_fileList,SIGNAL(clicked(const QModelIndex&)),m_pM,SLOT(opened(const QModelIndex&)));
@@ -500,8 +502,9 @@ void KateMainWindow::saveOptions ()
   fileOpenRecent->saveEntries(config, "Recent Files");
 
   //fileselector->writeConfig(config, "fileselector");
-
+#ifdef __GNUC__
   #warning PORTME
+#endif  
   //filelist->writeConfig(config, "Filelist");
 }
 

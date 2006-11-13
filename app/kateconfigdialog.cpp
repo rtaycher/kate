@@ -251,7 +251,9 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   path.clear();
 #endif
   KVBox *page = new KVBox();
+#ifdef __GNUC__
 #warning portme
+#endif
 #if 0
   filelistConfigPage = new KFLConfigPage( page, mainWindow->filelist );
   connect( filelistConfigPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
@@ -400,7 +402,9 @@ void KateConfigDialog::slotApply()
     mainWindow->syncKonsole = cb_syncKonsole->isChecked();
 
     //fileSelConfigPage->apply();
+#ifdef __GNUC__
 #warning portme
+#endif    
 #if 0
     filelistConfigPage->apply();
 #endif

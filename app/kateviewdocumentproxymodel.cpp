@@ -77,7 +77,9 @@ QMimeData *KateViewDocumentProxyModel::mimeData(const QModelIndexList &indexes) 
 
      QByteArray encodedData = data->data("application/x-kateviewdocumentproxymodel");
      QDataStream stream(&encodedData, QIODevice::ReadOnly);
+#ifdef __GNUC__
 #warning handle single item moves only for now;
+#endif     
      int sourcerow;
      int sourcecolumn;
     stream >> sourcerow;
@@ -118,7 +120,9 @@ QMimeData *KateViewDocumentProxyModel::mimeData(const QModelIndexList &indexes) 
 }
 
 Qt::DropActions KateViewDocumentProxyModel::supportedDropActions () const {
+#ifdef __GNUC__
 #warning Qt needs Qt::CopyAction, otherwise nothing works
+#endif	
     return Qt::MoveAction | Qt::CopyAction;
 }
 
