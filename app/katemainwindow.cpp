@@ -60,7 +60,7 @@
 #include <KLocale>
 #include <KMessageBox>
 #include <KMimeType>
-#include <KOpenWithDlg>
+#include <KOpenWithDialog>
 #include <KMenu>
 #include <KRecentFilesAction>
 #include <KSimpleConfig>
@@ -724,7 +724,7 @@ void KateMainWindow::slotOpenWithMenuAction(QAction* a)
   const QString openWith = a->data().toString();
   if (openWith.isEmpty()) {
     // display "open with" dialog
-    KOpenWithDlg dlg(list);
+    KOpenWithDialog dlg(list);
     if (dlg.exec())
       KRun::run(*dlg.service(), list, this);
     return;
