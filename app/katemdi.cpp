@@ -201,7 +201,7 @@ void GUIClient::updateActions()
 
   unplugActionList( actionListName );
 
-  QList<KAction*> addList;
+  QList<QAction*> addList;
   addList.append(m_toolMenu);
 
   plugActionList( actionListName, addList );

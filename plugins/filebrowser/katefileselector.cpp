@@ -203,13 +203,13 @@ Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mai
 
   KActionCollection *coll = dir->actionCollection();
   // some shortcuts of diroperator that clashes with Kate
-  coll->action( "delete" )->setShortcut( KShortcut( Qt::ALT + Qt::Key_Delete ) );
-  coll->action( "reload" )->setShortcut( KShortcut( Qt::ALT + Qt::Key_F5 ) );
-  coll->action( "back" )->setShortcut( KShortcut( Qt::ALT + Qt::SHIFT + Qt::Key_Left ) );
-  coll->action( "forward" )->setShortcut( KShortcut( Qt::ALT + Qt::SHIFT + Qt::Key_Right ) );
+  coll->action( "delete" )->setShortcut( Qt::ALT + Qt::Key_Delete );
+  coll->action( "reload" )->setShortcut( Qt::ALT + Qt::Key_F5 );
+  coll->action( "back" )->setShortcut( Qt::ALT + Qt::SHIFT + Qt::Key_Left );
+  coll->action( "forward" )->setShortcut( Qt::ALT + Qt::SHIFT + Qt::Key_Right );
   // some consistency - reset up for dir too
-  coll->action( "up" )->setShortcut( KShortcut( Qt::ALT + Qt::SHIFT + Qt::Key_Up ) );
-  coll->action( "home" )->setShortcut( KShortcut( Qt::CTRL + Qt::ALT + Qt::Key_Home ) );
+  coll->action( "up" )->setShortcut( Qt::ALT + Qt::SHIFT + Qt::Key_Up );
+  coll->action( "home" )->setShortcut( Qt::CTRL + Qt::ALT + Qt::Key_Home );
 
   // bookmarks action!
   KActionMenu *acmBookmarks = new KActionMenu( KIcon("bookmark"), i18n("Bookmarks"),
@@ -337,7 +337,7 @@ void Kate::Private::Plugin::KateFileSelector::setupToolbar( KConfig *config )
                 "short view" << "detailed view" <<
                 "bookmarks" << "sync_dir";
   }
-  KAction *ac;
+  QAction *ac;
   for ( QStringList::Iterator it=tbactions.begin(); it != tbactions.end(); ++it ) {
     if ( *it == "bookmarks" || *it == "sync_dir" )
       ac = mActionCollection->action( (*it).toLatin1().constData() );
@@ -774,7 +774,7 @@ void KFSConfigPage::init()
                 "show hidden" << "properties"*/ <<
                 "bookmarks" << "sync_dir";
   QRegExp re("&(?=[^&])");
-  KAction *ac;
+  QAction *ac;
   QListWidget *lb;
   for ( QStringList::Iterator it=allActions.begin(); it != allActions.end(); ++it ) {
     lb = l.contains( *it ) ? acSel->selectedListWidget() : acSel->availableListWidget();

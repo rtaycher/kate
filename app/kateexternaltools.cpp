@@ -212,7 +212,7 @@ bool KateExternalToolsCommand::exec (KTextEditor::View *view, const QString &cmd
 		dynamic_cast<KateExternalToolsMenuAction*>(dmw->action("tools_external"));
 	if (!a) return false;
 // 	kDebug(13001)<<"trying to find action"<<endl;
-	KAction *a1=a->actionCollection()->action(actionName.toUtf8().constData ());
+	QAction *a1=a->actionCollection()->action(actionName.toUtf8().constData ());
 	if (!a1) return false;
 // 	kDebug(13001)<<"activating action"<<endl;
 	a1->trigger();
@@ -397,7 +397,7 @@ void KateExternalToolsMenuAction::slotDocumentChanged()
     QStringList l;
     bool b;
 
-    foreach (KAction* kaction, m_actionCollection->actions())
+    foreach (QAction* kaction, m_actionCollection->actions())
     {
       KateExternalToolAction *action = dynamic_cast<KateExternalToolAction*>(kaction);
       if ( action )
