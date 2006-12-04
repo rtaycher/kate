@@ -458,7 +458,7 @@ void KateDocManager::restoreDocumentList (KConfig* config)
         0,
         count);
 
-  pd->setWindowTitle (KateApp::self()->makeStdCaption(i18n("Starting Up")));
+  pd->setWindowTitle (KInstance::makeStandardCaption(i18n("Starting Up"), pd));
 
   bool first = true;
   const int countM1=count-1;
