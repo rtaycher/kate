@@ -384,7 +384,7 @@ void KateViewManager::slotDocumentOpen ()
     for (KUrl::List::Iterator i=r.URLs.begin(); i != r.URLs.end(); ++i)
       lastID = openUrl( *i, r.encoding, false );
 
-    if (lastID > 0)
+    if (lastID)
       activateView (lastID);
   }
 }
