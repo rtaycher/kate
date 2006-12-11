@@ -41,10 +41,10 @@
 #include <KEncodingFileDialog>
 #include <KIO/Job>
 #include <KIconLoader>
+#include <KProgressDialog>
 
 #include <QDateTime>
 #include <QTextCodec>
-#include <QProgressDialog>
 #include <QByteArray>
 #include <QHash>
 #include <QListView>
@@ -452,13 +452,11 @@ void KateDocManager::restoreDocumentList (KConfig* config)
     return;
   }
 
-  QProgressDialog *pd=new QProgressDialog(
-        i18n("Reopening files from the last session..."),
-        QString(),
-        0,
-        count);
-
-  pd->setWindowTitle (KInstance::makeStandardCaption(i18n("Starting Up"), pd));
+  KProgressDialog *pd = new KProgressDialog(0,
+        i18n("Starting Up"),
+        i18n("Reopening files from the last session..."), true);
+  pd->setAllowCancel(false);
+  pd->progressBar()->setRange(0, count);
 
   bool first = true;
   const int countM1=count-1;
@@ -486,7 +484,7 @@ void KateDocManager::restoreDocumentList (KConfig* config)
       iface->readSessionConfig(config);
     config->setGroup (grp);
 
-    pd->setValue(pd->value()+1);
+    pd->progressBar()->setValue(pd->progressBar()->value()+1);
     KateApp::self()->processEvents();
   }
   m_restoringDocumentList=false;
