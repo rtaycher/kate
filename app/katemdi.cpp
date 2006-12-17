@@ -65,7 +65,6 @@ ToggleToolViewAction::ToggleToolViewAction ( const QString& text, const KShortcu
 
 ToggleToolViewAction::~ToggleToolViewAction()
 {
-  unplugAll();
 }
 
 void ToggleToolViewAction::toolVisibleChanged(bool)
