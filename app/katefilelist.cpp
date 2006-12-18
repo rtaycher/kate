@@ -23,7 +23,7 @@
 #include "katefilelist.moc"
 #include "kateviewdocumentproxymodel.h"
 
-#include <kstdaction.h>
+#include <kstandardaction.h>
 #include <KLocale>
 
 #if 0
@@ -63,7 +63,7 @@
 #include <kglobal.h>
 #include <kcombobox.h>
 #include <kselectaction.h>
-#include <kstdaction.h>
+#include <kstandardaction.h>
 #endif
 //END Includes
 
@@ -71,8 +71,8 @@
 //BEGIN KateFileList
 
 KateFileList::KateFileList(QWidget *parent,KActionCollection *actionCollection):QListView(parent) {
-  m_windowNext = KStdAction::back(this, SLOT(slotPrevDocument()), actionCollection);
-  m_windowPrev = KStdAction::forward(this, SLOT(slotNextDocument()), actionCollection);
+  m_windowNext = KStandardAction::back(this, SLOT(slotPrevDocument()), actionCollection);
+  m_windowPrev = KStandardAction::forward(this, SLOT(slotNextDocument()), actionCollection);
   m_sortAction = new KSelectAction( i18n("Sort &By"), actionCollection, "filelist_sortby"  );
   QStringList l;
   l << i18n("Opening Order") << i18n("Document Name") << i18n("URL")<<i18n("Custom");
@@ -207,8 +207,8 @@ KateFileList::~KateFileList ()
 
 void KateFileList::setupActions ()
 {
-  windowNext = KStdAction::back(this, SLOT(slotPrevDocument()), m_main->actionCollection());
-  windowPrev = KStdAction::forward(this, SLOT(slotNextDocument()), m_main->actionCollection());
+  windowNext = KStandardAction::back(this, SLOT(slotPrevDocument()), m_main->actionCollection());
+  windowPrev = KStandardAction::forward(this, SLOT(slotNextDocument()), m_main->actionCollection());
   sortAction = new KSelectAction( i18n("Sort &By"), m_main->actionCollection(), "filelist_sortby"  );
   QStringList l;
   l << i18n("Opening Order") << i18n("Document Name") << i18n("URL");

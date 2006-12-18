@@ -41,7 +41,7 @@
 #include <KMessageBox>
 #include <KRecentFilesAction>
 #include <KSimpleConfig>
-#include <kstdaction.h>
+#include <kstandardaction.h>
 #include <KStandardDirs>
 #include <KGlobalSettings>
 #include <kstdaccel.h>

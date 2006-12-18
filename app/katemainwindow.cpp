@@ -65,7 +65,7 @@
 #include <KRecentFilesAction>
 #include <KSimpleConfig>
 #include <KStatusBar>
-#include <kstdaction.h>
+#include <kstandardaction.h>
 #include <KStandardDirs>
 #include <KToggleFullScreenAction>
 #include <KMimeTypeTrader>
@@ -280,10 +280,10 @@ void KateMainWindow::setupActions()
 {
   KAction *a;
 
-  KStdAction::openNew( m_viewManager, SLOT( slotDocumentNew() ), actionCollection(), "file_new" )->setWhatsThis(i18n("Create a new document"));
-  KStdAction::open( m_viewManager, SLOT( slotDocumentOpen() ), actionCollection(), "file_open" )->setWhatsThis(i18n("Open an existing document for editing"));
+  KStandardAction::openNew( m_viewManager, SLOT( slotDocumentNew() ), actionCollection(), "file_new" )->setWhatsThis(i18n("Create a new document"));
+  KStandardAction::open( m_viewManager, SLOT( slotDocumentOpen() ), actionCollection(), "file_open" )->setWhatsThis(i18n("Open an existing document for editing"));
 
-  fileOpenRecent = KStdAction::openRecent (m_viewManager, SLOT(openUrl (const KUrl&)), actionCollection());
+  fileOpenRecent = KStandardAction::openRecent (m_viewManager, SLOT(openUrl (const KUrl&)), actionCollection());
   fileOpenRecent->setWhatsThis(i18n("This lists files which you have opened recently, and allows you to easily open them again."));
 
   a=new KAction( KIcon("save_all"), i18n("Save A&ll"), actionCollection(), "file_save_all" );
@@ -291,15 +291,15 @@ void KateMainWindow::setupActions()
   connect( a, SIGNAL( triggered() ), KateDocManager::self(), SLOT( saveAll() ) );
   a->setWhatsThis(i18n("Save all open, modified documents to disk."));
 
-  KStdAction::close( m_viewManager, SLOT( slotDocumentClose() ), actionCollection(), "file_close" )->setWhatsThis(i18n("Close the current document."));
+  KStandardAction::close( m_viewManager, SLOT( slotDocumentClose() ), actionCollection(), "file_close" )->setWhatsThis(i18n("Close the current document."));
 
   a=new KAction( i18n( "Clos&e All" ), actionCollection(), "file_close_all" );
   connect( a, SIGNAL( triggered() ), this, SLOT( slotDocumentCloseAll() ) );
   a->setWhatsThis(i18n("Close all open documents."));
 
-  KStdAction::mail( this, SLOT(slotMail()), actionCollection() )->setWhatsThis(i18n("Send one or more of the open documents as email attachments."));
+  KStandardAction::mail( this, SLOT(slotMail()), actionCollection() )->setWhatsThis(i18n("Send one or more of the open documents as email attachments."));
 
-  KStdAction::quit( this, SLOT( slotFileQuit() ), actionCollection(), "file_quit" )->setWhatsThis(i18n("Close this window"));
+  KStandardAction::quit( this, SLOT( slotFileQuit() ), actionCollection(), "file_quit" )->setWhatsThis(i18n("Close this window"));
 
   a=new KAction( KIcon("window_new"), i18n("&New Window"), actionCollection(), "view_new_view" );
   connect( a, SIGNAL( triggered() ), this, SLOT( newWindow() ) );
@@ -311,7 +311,7 @@ void KateMainWindow::setupActions()
     externalTools->setWhatsThis( i18n("Launch external helper applications") );
   }
 
-  KToggleAction* showFullScreenAction = KStdAction::fullScreen( 0, 0, actionCollection(),this);
+  KToggleAction* showFullScreenAction = KStandardAction::fullScreen( 0, 0, actionCollection(),this);
   connect( showFullScreenAction,SIGNAL(toggled(bool)), this,SLOT(slotFullScreen(bool)));
 
   documentOpenWith = new KActionMenu(i18n("Open W&ith"), actionCollection(), "file_open_with");
@@ -319,13 +319,13 @@ void KateMainWindow::setupActions()
   connect(documentOpenWith->menu(), SIGNAL(aboutToShow()), this, SLOT(mSlotFixOpenWithMenu()));
   connect(documentOpenWith->menu(), SIGNAL(triggered(QAction*)), this, SLOT(slotOpenWithMenuAction(QAction*)));
 
-  a=KStdAction::keyBindings(this, SLOT(editKeys()), actionCollection());
+  a=KStandardAction::keyBindings(this, SLOT(editKeys()), actionCollection());
   a->setWhatsThis(i18n("Configure the application's keyboard shortcut assignments."));
 
-  a=KStdAction::configureToolbars(this, SLOT(slotEditToolbars()), actionCollection(), "set_configure_toolbars");
+  a=KStandardAction::configureToolbars(this, SLOT(slotEditToolbars()), actionCollection(), "set_configure_toolbars");
   a->setWhatsThis(i18n("Configure which items should appear in the toolbar(s)."));
 
-  KAction* settingsConfigure = KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
+  KAction* settingsConfigure = KStandardAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
   settingsConfigure->setWhatsThis(i18n("Configure various aspects of this application and the editing component."));
 
 #if 0
@@ -335,7 +335,7 @@ void KateMainWindow::setupActions()
 #endif
 
   // tip of the day :-)
-  KStdAction::tipOfDay( this, SLOT( tipOfTheDay() ), actionCollection() )->setWhatsThis(i18n("This shows useful tips on the use of this application."));
+  KStandardAction::tipOfDay( this, SLOT( tipOfTheDay() ), actionCollection() )->setWhatsThis(i18n("This shows useful tips on the use of this application."));
 
   if (KatePluginManager::self()->pluginList().count() > 0)
   {

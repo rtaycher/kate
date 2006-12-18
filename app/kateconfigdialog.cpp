@@ -43,7 +43,7 @@
 #include <KListBox>
 #include <KLocale>
 #include <KSimpleConfig>
-#include <kstdaction.h>
+#include <kstandardaction.h>
 #include <KStandardDirs>
 #include <KWin>
 #include <KSeparator>

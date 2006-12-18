@@ -37,7 +37,7 @@
 #include <KLocale>
 #include <KMessageBox>
 #include <KSimpleConfig>
-#include <kstdaction.h>
+#include <kstandardaction.h>
 #include <KStandardDirs>
 #include <KGlobalSettings>
 #include <KStringHandler>
