@@ -87,7 +87,7 @@ class KatePartManager : public QObject
 
     /**
      * move the part's widget over to the cool store
-     * @parent part proxy part
+     * @param part proxy part
      */
     void moveToStore (KatePartProxy *part);
 
