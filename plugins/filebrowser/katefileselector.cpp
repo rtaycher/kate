@@ -219,7 +219,7 @@ Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mai
   KHBox* filterBox = new KHBox(this);
 
   btnFilter = new QToolButton( filterBox );
-  btnFilter->setIcon( SmallIconSet("filter" ) );
+  btnFilter->setIcon( KIcon("filter" ) );
   btnFilter->setCheckable( true );
   filter = new KHistoryCombo( true, filterBox);
   filter->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));

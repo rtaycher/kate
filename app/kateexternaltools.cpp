@@ -232,7 +232,7 @@ KateExternalToolAction::KateExternalToolAction( KActionCollection *parent,
 {
   //setText( t->name );
   //if ( ! t->icon.isEmpty() )
-  //  setIcon( SmallIconSet( t->icon ) );
+  //  setIcon( KIcon( t->icon ) );
 
   connect( this, SIGNAL(triggered(bool)), SLOT(slotRun()) );
 }
@@ -608,11 +608,11 @@ KateExternalToolsConfigWidget::KateExternalToolsConfigWidget( QWidget *parent, c
   lo->addWidget( b, 5, 3 );
   connect( b, SIGNAL(clicked()), this, SLOT(slotInsertSeparator()) );
 
-  btnMoveUp = new QPushButton( SmallIconSet("up"), "", this );
+  btnMoveUp = new QPushButton( KIcon("up"), "", this );
   lo->addWidget( btnMoveUp, 2, 4 );
   connect( btnMoveUp, SIGNAL(clicked()), this, SLOT(slotMoveUp()) );
 
-  btnMoveDwn = new QPushButton( SmallIconSet("down"), "", this );
+  btnMoveDwn = new QPushButton( KIcon("down"), "", this );
   lo->addWidget( btnMoveDwn, 3, 4 );
   connect( btnMoveDwn, SIGNAL(clicked()), this, SLOT(slotMoveDown()) );
 

@@ -120,7 +120,7 @@ KTextEditor::Document *KateDocManager::createDoc ()
   QStandardItem *modelitem=new QStandardItem(doc->documentName());
   modelitem->setData(QVariant::fromValue(doc),DocumentRole);
   modelitem->setEditable(false);
-  modelitem->setIcon(SmallIconSet("null"));
+  modelitem->setIcon(KIcon("null"));
   modelitem->setToolTip(doc->url().prettyUrl());
   appendRow(modelitem);
   m_documentItemMapping.insert(doc,modelitem);
@@ -605,9 +605,9 @@ void KateDocManager::slotModChanged1(KTextEditor::Document * doc) {
     QStandardItem *item=m_documentItemMapping[doc];
     const KateDocumentInfo *info=KateDocManager::self()->documentInfo(doc);item->setIcon(QIcon());
     if (info && info->modifiedOnDisc)
-      if (doc->isModified()) item->setIcon(SmallIconSet("modmod")); else item->setIcon(SmallIconSet("modonhd"));
+      if (doc->isModified()) item->setIcon(KIcon("modmod")); else item->setIcon(KIcon("modonhd"));
     else
-      if (doc->isModified()) item->setIcon(SmallIconSet("modified")); else item->setIcon(SmallIconSet("null"));
+      if (doc->isModified()) item->setIcon(KIcon("modified")); else item->setIcon(KIcon("null"));
 /*  if ( column == 0) {
     static QPixmap noPm = SmallIcon ("null");
     static QPixmap modPm = SmallIcon("modified");
