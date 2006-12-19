@@ -641,8 +641,8 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
   header << i18n("Session Name");
   header << i18nc("The number of open documents", "Open Documents");
   m_sessions->setHeaderLabels(header);
-  m_sessions->setRootIsDecorated(FALSE);
-  m_sessions->setItemsExpandable(FALSE);
+  m_sessions->setRootIsDecorated( false );
+  m_sessions->setItemsExpandable( false );
   m_sessions->setSelectionBehavior(QAbstractItemView::SelectItems);
   m_sessions->setSelectionMode (QAbstractItemView::SingleSelection);
 
@@ -763,8 +763,8 @@ KateSessionOpenDialog::KateSessionOpenDialog (QWidget *parent)
   header << i18n("Session Name");
   header << i18nc("The number of open documents", "Open Documents");
   m_sessions->setHeaderLabels(header);
-  m_sessions->setRootIsDecorated(FALSE);
-  m_sessions->setItemsExpandable(FALSE);
+  m_sessions->setRootIsDecorated( false );
+  m_sessions->setItemsExpandable( false );
   m_sessions->setSelectionBehavior(QAbstractItemView::SelectItems);
   m_sessions->setSelectionMode (QAbstractItemView::SingleSelection);
 
@@ -831,7 +831,7 @@ KateSessionManageDialog::KateSessionManageDialog (QWidget *parent)
   header << i18n("Session Name");
   header << i18nc("The number of open documents", "Open Documents");
   m_sessions->setHeaderLabels(header);
-  m_sessions->setRootIsDecorated(FALSE);
+  m_sessions->setRootIsDecorated( false );
   m_sessions->setSelectionBehavior(QAbstractItemView::SelectRows);
   m_sessions->setSelectionMode (QAbstractItemView::SingleSelection);
 
