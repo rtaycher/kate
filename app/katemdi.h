@@ -119,7 +119,7 @@ class ToolView : public KVBox
   Q_SIGNALS:
     /**
      * toolview hidden or shown
-     * @param bool is this toolview made visible?
+     * @param visible is this toolview made visible?
      */
     void toolVisibleChanged (bool visible);
 

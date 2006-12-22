@@ -66,9 +66,8 @@ class KatePartManager : public QObject
     /**
      * create a new part object (or better a proxy containing it)
      * @param libname library to open
-     * @param widget widget to use as parent
+     * @param parent widget to use as parent
      * @param classname classname of the part
-     * @return proxy to access the part
      */
     KatePartProxy *createPart (const char *libname, QWidget *parent = 0, const char *classname = "KParts::Part");
 

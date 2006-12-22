@@ -187,10 +187,9 @@ class KATEINTERFACES_EXPORT PluginConfigPageInterface
      */
     virtual QString configPageFullName (uint number = 0) const = 0;
     /**
-     * Return a pixmap for for the config page with the given \p number.
+     * Return an icon for for the config page with the given \p number.
      * \param number the config page for the given \p number
-     * \param size the icon size
-     * \return the pixmap for the config page
+     * \return the icon for the config page
      */
     virtual KIcon configPageIcon (uint number = 0) const = 0;
 
