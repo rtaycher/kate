@@ -64,7 +64,7 @@ KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const
   setCaption( i18n("Documents Modified on Disk") );
   setButtons( User1 | User2 | User3 );
   setButtonGuiItem( User1, KGuiItem (i18n("&Ignore"), "fileclose") );
-  setButtonGuiItem( User2, KStdGuiItem::overwrite() );
+  setButtonGuiItem( User2, KStandardGuiItem::overwrite() );
   setButtonGuiItem( User3, KGuiItem (i18n("&Reload"), "reload") );
 
   setObjectName( name );

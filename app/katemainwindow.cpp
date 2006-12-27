@@ -772,7 +772,7 @@ void KateMainWindow::slotMail()
               i18n("<p>The current document has not been saved, and "
               "cannot be attached to an email message."
               "<p>Do you want to save it and proceed?"),
-              i18n("Cannot Send Unsaved File"),KStdGuiItem::saveAs(),KStdGuiItem::cancel() );
+              i18n("Cannot Send Unsaved File"),KStandardGuiItem::saveAs(),KStandardGuiItem::cancel() );
       if ( r == KMessageBox::Yes ) {
         bool sr = doc->documentSaveAs();
        /* if ( sr == KTextEditor::View::SAVE_OK ) { ;
@@ -793,7 +793,7 @@ void KateMainWindow::slotMail()
                 i18n("<p>The current file:<br><strong>%1</strong><br>has been "
                 "modified. Modifications will not be available in the attachment."
                 "<p>Do you want to save it before sending it?", doc->url().prettyUrl()),
-                i18n("Save Before Sending?"), KStdGuiItem::save(), KGuiItem(i18n("Do Not Save")) );
+                i18n("Save Before Sending?"), KStandardGuiItem::save(), KGuiItem(i18n("Do Not Save")) );
       switch ( r ) {
         case KMessageBox::Cancel:
           continue;

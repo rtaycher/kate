@@ -34,7 +34,7 @@
 #include <KIconLoader>
 #include <KMessageBox>
 #include <KCodecs>
-#include <KStdGuiItem>
+#include <KStandardGuiItem>
 #include <KPushButton>
 #include <KMenu>
 #include <KActionCollection>
@@ -610,7 +610,7 @@ KateSessionChooser::KateSessionChooser (QWidget *parent, const QString &lastSess
 {
   setCaption( i18n ("Session Chooser") );
   setButtons( User1 | User2 | User3 );
-  setButtonGuiItem( User1, KStdGuiItem::quit() );
+  setButtonGuiItem( User1, KStandardGuiItem::quit() );
   setButtonGuiItem( User2, KGuiItem (i18n ("Open Session"), "fileopen") );
   setButtonGuiItem( User3, KGuiItem ((templates.count()>1)?i18n ("New Session (hold down for template)"):i18n ("New Session"), "filenew") );
 
@@ -743,8 +743,8 @@ KateSessionOpenDialog::KateSessionOpenDialog (QWidget *parent)
 {
   setCaption( i18n ("Open Session") );
   setButtons( User1 | User2 );
-  setButtonGuiItem( User1, KStdGuiItem::cancel() );
-  setButtonGuiItem( User2, KStdGuiItem::open() );
+  setButtonGuiItem( User1, KStandardGuiItem::cancel() );
+  setButtonGuiItem( User2, KStandardGuiItem::open() );
   setDefaultButton(KDialog::User2);
   //showButtonSeparator(true);
   /*QFrame *page = new QFrame (this);
@@ -814,7 +814,7 @@ KateSessionManageDialog::KateSessionManageDialog (QWidget *parent)
 {
   setCaption( i18n ("Manage Sessions") );
   setButtons( User1 );
-  setButtonGuiItem( User1, KStdGuiItem::close() );
+  setButtonGuiItem( User1, KStandardGuiItem::close() );
 
   setDefaultButton(KDialog::User1);
   QFrame *page = new QFrame (this);
@@ -847,7 +847,7 @@ KateSessionManageDialog::KateSessionManageDialog (QWidget *parent)
   connect (m_rename, SIGNAL(clicked()), this, SLOT(rename()));
   vb->addWidget (m_rename);
 
-  m_del = new KPushButton (KStdGuiItem::del (), page);
+  m_del = new KPushButton (KStandardGuiItem::del (), page);
   connect (m_del, SIGNAL(clicked()), this, SLOT(del()));
   vb->addWidget (m_del);
 

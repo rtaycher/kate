@@ -27,7 +27,7 @@
 
 #include <KLocale>
 #include <KGuiItem>
-#include <KStdGuiItem>
+#include <KStandardGuiItem>
 #include <KVBox>
 #include <KIconLoader>
 #include <KMessageBox>
@@ -138,13 +138,13 @@ KateSaveModifiedDialog::KateSaveModifiedDialog(QWidget *parent, QList<KTextEdito
 	setObjectName( "KateSaveModifiedDialog" );
 	setModal( true );
 
-	KGuiItem saveItem=KStdGuiItem::save();
+	KGuiItem saveItem=KStandardGuiItem::save();
 	saveItem.setText(i18n("&Save Selected"));
 	setButtonGuiItem(KDialog::Yes, saveItem);
 
-	setButtonGuiItem(KDialog::No, KStdGuiItem::dontSave());
+	setButtonGuiItem(KDialog::No, KStandardGuiItem::dontSave());
 
-	KGuiItem cancelItem=KStdGuiItem::cancel();
+	KGuiItem cancelItem=KStandardGuiItem::cancel();
 	cancelItem.setText(i18n("&Abort Closing"));
 	setButtonGuiItem(KDialog::Cancel, cancelItem);
 

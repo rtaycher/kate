@@ -186,9 +186,9 @@ GrepTool::GrepTool(QWidget *parent)
   // buttons find and clear
   KDialogButtonBox *actionbox = new KDialogButtonBox(this, Qt::Vertical);
   layout->addWidget(actionbox, 0, 1);
-  btnSearch = actionbox->addButton(KStdGuiItem::find(), QDialogButtonBox::ActionRole );
+  btnSearch = actionbox->addButton(KStandardGuiItem::find(), QDialogButtonBox::ActionRole );
   btnSearch->setDefault(true);
-  btnClear = actionbox->addButton( KStdGuiItem::clear() , QDialogButtonBox::ActionRole );
+  btnClear = actionbox->addButton( KStandardGuiItem::clear() , QDialogButtonBox::ActionRole );
 
   lbResult = new QTreeWidget(this);
   QStringList headers;
@@ -388,7 +388,7 @@ void GrepTool::slotSearch()
   // actually it should be checked whether the process was started successfully
   lbResult->setCursor( QCursor(Qt::WaitCursor) );
   btnClear->setEnabled( false );
-  btnSearch->setGuiItem( KStdGuiItem::cancel() );
+  btnSearch->setGuiItem( KStandardGuiItem::cancel() );
   childproc->start(KProcess::NotifyOnExit, KProcess::AllOutput);
 }
 
@@ -474,7 +474,7 @@ void GrepTool::childExited()
 //   int status = childproc->exitStatus();
   lbResult->unsetCursor();
   btnClear->setEnabled( true );
-  btnSearch->setGuiItem( KStdGuiItem::find() );
+  btnSearch->setGuiItem( KStandardGuiItem::find() );
 
   if ( ! errbuf.isEmpty() )
   {

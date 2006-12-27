@@ -44,7 +44,7 @@
 #include <kstandardaction.h>
 #include <KStandardDirs>
 #include <KGlobalSettings>
-#include <kstdaccel.h>
+#include <kstandardshortcut.h>
 
 #include <QApplication>
 #include <QObject>
@@ -103,11 +103,11 @@ void KateViewManager::setupActions ()
   connect(m_closeTab, SIGNAL(triggered()), this, SLOT(slotCloseTab()));
 
   m_activateNextTab = new KAction( i18n( "Activate Next Tab" ),  m_mainWindow->actionCollection(), "view_next_tab" );
-  m_activateNextTab->setShortcut( QApplication::isRightToLeft() ? KStdAccel::tabPrev() : KStdAccel::tabNext() );
+  m_activateNextTab->setShortcut( QApplication::isRightToLeft() ? KStandardShortcut::tabPrev() : KStandardShortcut::tabNext() );
   connect(m_activateNextTab, SIGNAL(triggered()), this, SLOT(activateNextTab()));
 
   m_activatePrevTab = new KAction( i18n( "Activate Previous Tab" ), m_mainWindow->actionCollection(), "view_prev_tab" );
-  m_activatePrevTab->setShortcut( QApplication::isRightToLeft() ? KStdAccel::tabNext() : KStdAccel::tabPrev() );
+  m_activatePrevTab->setShortcut( QApplication::isRightToLeft() ? KStandardShortcut::tabNext() : KStandardShortcut::tabPrev() );
   connect(m_activatePrevTab, SIGNAL(triggered()), this, SLOT(activatePrevTab()));
 
   /**
