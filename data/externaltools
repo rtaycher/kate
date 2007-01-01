@@ -39,7 +39,7 @@ save=1
 [externaltool_EmailCVSDiffforCurrentDocument]
 acname=externaltool_EmailCVSDiffforCurrentDocument
 cmdname=
-command=cd %directory\nif [ -d CVS ] && grep %filename CVS/Entries > /dev/null ; then\n  cvs diff -ubB %filename > $(kde-config --path tmp)%filename.diff \n  kmail --composer --attach  $(kde-config --path tmp)%filename.diff\nelse\n  kdialog --title Error -msgbox "The file '%filename' is not in CVS"\nfi
+command=cd %directory\nif [ -d CVS ] && grep %filename CVS/Entries > /dev/null ; then\n  cvs diff -ubB %filename > $(kde4-config --path tmp)%filename.diff \n  kmail --composer --attach  $(kde4-config --path tmp)%filename.diff\nelse\n  kdialog --title Error -msgbox "The file '%filename' is not in CVS"\nfi
 executable=kmail
 icon=kmail
 mimetypes=
