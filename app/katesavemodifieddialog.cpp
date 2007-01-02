@@ -25,6 +25,7 @@
 #include <QLabel>
 #include <QPushButton>
 
+#include <KApplication>
 #include <KLocale>
 #include <KGuiItem>
 #include <KStandardGuiItem>
@@ -51,7 +52,7 @@ public:
 	STATE state() const { return m_state;}
 	void setState(enum STATE state) {
 		m_state=state;
-		KIconLoader *loader = KGlobal::instance()->iconLoader();
+		KIconLoader *loader = kapp->iconLoader();
 		switch (state) {
 			case InitialState:
 				setIcon(0,QIcon());
