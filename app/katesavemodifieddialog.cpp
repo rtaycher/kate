@@ -52,7 +52,7 @@ public:
 	STATE state() const { return m_state;}
 	void setState(enum STATE state) {
 		m_state=state;
-		KIconLoader *loader = kapp->iconLoader();
+		KIconLoader *loader = KIconLoader::global();
 		switch (state) {
 			case InitialState:
 				setIcon(0,QIcon());
