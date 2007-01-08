@@ -34,7 +34,7 @@ class KateMainWindow;
 class KateViewSpaceContainer;
 
 class KConfig;
-class KAction;
+class QAction;
 
 class QToolButton;
 
@@ -140,12 +140,12 @@ class KateViewManager : public QObject
     bool m_init;
 
     QToolButton *m_closeTabButton;
-    KAction *m_closeView;
-    KAction *m_closeTab;
-    KAction *m_activateNextTab;
-    KAction *m_activatePrevTab;
-    KAction *goNext;
-    KAction *goPrev;
+    QAction *m_closeView;
+    QAction *m_closeTab;
+    QAction *m_activateNextTab;
+    QAction *m_activatePrevTab;
+    QAction *goNext;
+    QAction *goPrev;
 };
 
 #endif

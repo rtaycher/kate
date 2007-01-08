@@ -22,6 +22,7 @@
 #define __KATE_FILELIST_H__
 
 #include <KSelectAction>
+#include <KActionCollection>
 #include <QListView>
 
 class KateFileList: public QListView {
@@ -30,8 +31,8 @@ class KateFileList: public QListView {
     KateFileList(QWidget * parent, KActionCollection *actionCollection);
     virtual ~KateFileList();
   private:
-      KAction* m_windowNext;
-      KAction* m_windowPrev;
+      QAction* m_windowNext;
+      QAction* m_windowPrev;
       KSelectAction* m_sortAction;
       enum SortType {SortOpening=0,SortName=1,SortUrl=2,SortCustom=3};
       int m_sortType;
@@ -65,7 +66,6 @@ class KateFileList: public QListView {
 
 class KateMainWindow;
 
-class KAction;
 class KSelectAction;
 
 class KateFileListItem : public Q3ListViewItem
@@ -176,8 +176,8 @@ class KateFileList : public K3ListView
     int m_sort;
     bool notify;
 
-    KAction* windowNext;
-    KAction* windowPrev;
+    QAction* windowNext;
+    QAction* windowPrev;
     KSelectAction* sortAction;
 
     QList<KateFileListItem *> m_viewHistory;

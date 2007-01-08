@@ -30,6 +30,7 @@
 
 #include <kparts/part.h>
 #include <kaction.h>
+#include <kactioncollection.h>
 
 #include <kurl.h>
 #include <klibloader.h>
@@ -82,7 +83,9 @@ KateConsole::KateConsole (Kate::MainWindow *mw, QWidget *parent)
  , m_mw (mw)
  , m_toolView (parent)
 {
-    KAction* a = new KAction(KIcon("pipe"), i18n("&Pipe to Console"), actionCollection(), "katekonsole_tools_pipe_to_terminal");
+    QAction* a = actionCollection()->addAction("katekonsole_tools_pipe_to_terminal");
+    a->setIcon(KIcon("pipe"));
+    a->setText(i18n("&Pipe to Console"));
     connect(a, SIGNAL(triggered()), this, SLOT(slotPipeToConsole()));
     setInstance (new KInstance("kate"));
     setXMLFile("plugins/katekonsole/ui.rc");

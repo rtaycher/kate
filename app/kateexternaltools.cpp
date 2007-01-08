@@ -225,9 +225,8 @@ bool KateExternalToolsCommand::help (KTextEditor::View *, const QString &, QStri
 //END KateExternalToolsCommand
 
 //BEGIN KateExternalToolAction
-KateExternalToolAction::KateExternalToolAction( KActionCollection *parent,
-             const char *name, KateExternalTool *t)
-  : KAction( KIcon(t->icon), t->name, parent, name ),
+KateExternalToolAction::KateExternalToolAction( QObject *parent, KateExternalTool *t)
+  : KAction( KIcon(t->icon), t->name, parent ),
     tool ( t )
 {
   //setText( t->name );
@@ -299,10 +298,9 @@ void KateExternalToolAction::slotRun()
 
 //BEGIN KateExternalToolsMenuAction
 KateExternalToolsMenuAction::KateExternalToolsMenuAction( const QString &text,
-                                               KActionCollection *parent,
-                                               const char* name,
+                                               QObject *parent,
                                                KateMainWindow *mw )
-    : KActionMenu( text, parent, name ),
+    : KActionMenu( text, parent ),
       mainwindow( mw )
 {
 
@@ -376,7 +374,11 @@ void KateExternalToolsMenuAction::reload()
         config->readEntry( "save", 0 ) );
 
     if ( t->hasexec )
-      addAction( new KateExternalToolAction( m_actionCollection, t->acname.toAscii(), t ) );
+    {
+      KAction *a = new KateExternalToolAction( this, t );
+      m_actionCollection->addAction( t->acname.toAscii(), a );
+      addAction( a );
+    }
     else
       delete t;
   }

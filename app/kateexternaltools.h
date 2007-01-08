@@ -61,7 +61,7 @@ class KateExternalToolsMenuAction : public KActionMenu
 
   Q_OBJECT
   public:
-    KateExternalToolsMenuAction( const QString &text=QString(), KActionCollection *parent=0, const char* name=0, class KateMainWindow *mw=0 );
+    KateExternalToolsMenuAction( const QString &text, QObject *parent, class KateMainWindow *mw=0 );
     ~KateExternalToolsMenuAction() {};
 
     /**
@@ -86,7 +86,7 @@ class KateExternalToolAction : public KAction, public KWordMacroExpander
 {
   Q_OBJECT
   public:
-    KateExternalToolAction( KActionCollection *parent, const char *name, class KateExternalTool *t );
+    KateExternalToolAction( QObject *parent, class KateExternalTool *t );
     ~KateExternalToolAction();
   protected:
     virtual bool expandMacro( const QString &str, QStringList &ret );

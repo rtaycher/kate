@@ -30,6 +30,7 @@
 #include "../interfaces/mainwindow.h"
 
 #include <KAction>
+#include <KActionCollection>
 #include <KCmdLineArgs>
 #include <kdebug.h>
 #include <KDirOperator>
@@ -91,53 +92,67 @@ void KateViewManager::activateDocument(const QModelIndex &index) {
 
 void KateViewManager::setupActions ()
 {
-  KAction *a;
+  QAction *a;
 
   /**
    * tabbing
    */
-  a=new KAction ( KIcon("tab_new"), i18n("New Tab"), m_mainWindow->actionCollection(), "view_new_tab" );
+  a=m_mainWindow->actionCollection()->addAction( "view_new_tab" );
+  a->setIcon( KIcon("tab_new") );
+  a->setText( i18n("New Tab") );
   connect(a, SIGNAL(triggered()), this, SLOT(slotNewTab()));
 
-  m_closeTab = new KAction ( KIcon("tab_remove"), i18n("Close Current Tab"), m_mainWindow->actionCollection(),"view_close_tab" );
+  m_closeTab = m_mainWindow->actionCollection()->addAction("view_close_tab");
+  m_closeTab->setIcon( KIcon("tab_remove") );
+  m_closeTab->setText( i18n("Close Current Tab") );
   connect(m_closeTab, SIGNAL(triggered()), this, SLOT(slotCloseTab()));
 
-  m_activateNextTab = new KAction( i18n( "Activate Next Tab" ),  m_mainWindow->actionCollection(), "view_next_tab" );
-  m_activateNextTab->setShortcut( QApplication::isRightToLeft() ? KStandardShortcut::tabPrev() : KStandardShortcut::tabNext() );
+  m_activateNextTab = m_mainWindow->actionCollection()->addAction("view_next_tab");
+  m_activateNextTab->setText( i18n( "Activate Next Tab" ) );
+  m_activateNextTab->setShortcuts( QApplication::isRightToLeft() ? KStandardShortcut::tabPrev() : KStandardShortcut::tabNext() );
   connect(m_activateNextTab, SIGNAL(triggered()), this, SLOT(activateNextTab()));
 
-  m_activatePrevTab = new KAction( i18n( "Activate Previous Tab" ), m_mainWindow->actionCollection(), "view_prev_tab" );
-  m_activatePrevTab->setShortcut( QApplication::isRightToLeft() ? KStandardShortcut::tabNext() : KStandardShortcut::tabPrev() );
+  m_activatePrevTab = m_mainWindow->actionCollection()->addAction("view_prev_tab");
+  m_activatePrevTab->setText( i18n( "Activate Previous Tab" ) );
+  m_activatePrevTab->setShortcuts( QApplication::isRightToLeft() ? KStandardShortcut::tabNext() : KStandardShortcut::tabPrev() );
   connect(m_activatePrevTab, SIGNAL(triggered()), this, SLOT(activatePrevTab()));
 
   /**
    * view splitting
    */
-  a=new KAction ( KIcon("view_right"), i18n("Split Ve&rtical"), m_mainWindow->actionCollection(), "view_split_vert" );
+  a=m_mainWindow->actionCollection()->addAction("view_split_vert");
+  a->setIcon( KIcon("view_right") );
+  a->setText( i18n("Split Ve&rtical") );
   a->setShortcut( Qt::CTRL+Qt::SHIFT+Qt::Key_L );
   connect(a, SIGNAL(triggered()), this, SLOT(slotSplitViewSpaceVert()));
 
   a->setWhatsThis(i18n("Split the currently active view vertically into two views."));
 
-  a=new KAction ( KIcon("view_bottom"), i18n("Split &Horizontal"), m_mainWindow->actionCollection(), "view_split_horiz" );
+  a=m_mainWindow->actionCollection()->addAction("view_split_horiz");
+  a->setIcon( KIcon("view_bottom") );
+  a->setText( i18n("Split &Horizontal") );
   a->setShortcut( Qt::CTRL+Qt::SHIFT+Qt::Key_T );
   connect(a, SIGNAL(triggered()), this, SLOT(slotSplitViewSpaceHoriz()));
 
   a->setWhatsThis(i18n("Split the currently active view horizontally into two views."));
 
-  m_closeView = new KAction ( KIcon("view_remove"), i18n("Cl&ose Current View"), m_mainWindow->actionCollection(), "view_close_current_space" );
+  m_closeView = m_mainWindow->actionCollection()->addAction("view_close_current_space");
+  m_closeView->setIcon( KIcon("view_remove") );
+  m_closeView->setText( i18n("Cl&ose Current View") );
   m_closeView->setShortcut( Qt::CTRL+Qt::SHIFT+Qt::Key_R );
   connect(m_closeView, SIGNAL(triggered()), this, SLOT(slotCloseCurrentViewSpace()));
 
   m_closeView->setWhatsThis(i18n("Close the currently active splitted view"));
 
-  goNext=new KAction( i18n("Next View"), m_mainWindow->actionCollection(), "go_next" );
+  goNext=m_mainWindow->actionCollection()->addAction( "go_next" );
+  goNext->setText( i18n("Next View") );
   goNext->setShortcut( Qt::Key_F8 );
   connect(goNext, SIGNAL(triggered()), this, SLOT(activateNextView()));
 
   goNext->setWhatsThis(i18n("Make the next split view the active one."));
 
-  goPrev=new KAction( i18n("Previous View"), m_mainWindow->actionCollection(),"go_prev" );
+  goPrev=m_mainWindow->actionCollection()->addAction( "go_prev" );
+  goPrev->setText( i18n("Previous View") );
   goPrev->setShortcut( Qt::SHIFT+Qt::Key_F8 );
   connect(goPrev, SIGNAL(triggered()), this, SLOT(activatePrevView()));
 

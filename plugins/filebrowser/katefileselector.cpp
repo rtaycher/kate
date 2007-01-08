@@ -212,8 +212,8 @@ Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mai
   coll->action( "home" )->setShortcut( Qt::CTRL + Qt::ALT + Qt::Key_Home );
 
   // bookmarks action!
-  KActionMenu *acmBookmarks = new KActionMenu( KIcon("bookmark"), i18n("Bookmarks"),
-        mActionCollection, "bookmarks" );
+  KActionMenu *acmBookmarks = new KActionMenu( KIcon("bookmark"), i18n("Bookmarks"), this );
+  mActionCollection->addAction( "bookmarks", acmBookmarks );
   acmBookmarks->setDelayed( false );
   bookmarkHandler = new KBookmarkHandler( this, acmBookmarks->menu() );
   KHBox* filterBox = new KHBox(this);
@@ -232,7 +232,9 @@ Kate::Private::Plugin::KateFileSelector::KateFileSelector( Kate::MainWindow *mai
            filter, SLOT( addToHistory(const QString&) ) );
 
   // kaction for the dir sync method
-  acSyncDir = new KAction( KIcon("curfiledir"), i18n("Current Document Folder"), mActionCollection, "sync_dir" );
+  acSyncDir = mActionCollection->addAction( "sync_dir" );
+  acSyncDir->setIcon( KIcon("curfiledir") );
+  acSyncDir->setText( i18n("Current Document Folder") );
   connect( acSyncDir, SIGNAL( triggered() ), this, SLOT( setActiveDocumentDir() ) );
   toolbar->setToolButtonStyle( Qt::ToolButtonIconOnly );
   toolbar->setIconDimensions( 16 );

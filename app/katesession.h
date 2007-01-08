@@ -427,7 +427,7 @@ class KateSessionsAction : public KActionMenu
   Q_OBJECT
 
   public:
-    KateSessionsAction(const QString& text, KActionCollection* parent = 0, const char* name = 0);
+    KateSessionsAction(const QString& text, QObject *parent);
     ~KateSessionsAction (){;};
 
   public  Q_SLOTS:

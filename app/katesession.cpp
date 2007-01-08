@@ -929,8 +929,8 @@ void KateSessionManageDialog::updateSessionList ()
 //END MANAGE DIALOG
 
 
-KateSessionsAction::KateSessionsAction(const QString& text, KActionCollection* parent, const char* name )
-  : KActionMenu(text, parent, name)
+KateSessionsAction::KateSessionsAction(const QString& text, QObject* parent)
+  : KActionMenu(text, parent)
 {
   connect(menu(),SIGNAL(aboutToShow()),this,SLOT(slotAboutToShow()));
 

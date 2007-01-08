@@ -160,7 +160,7 @@ class KateFileSelector : public KVBox
     class KBookmarkHandler *bookmarkHandler;
     KUrlComboBox *cmbPath;
     KDirOperator * dir;
-    class KAction *acSyncDir;
+    class QAction *acSyncDir;
     KHistoryCombo * filter;
     QToolButton *btnFilter;
 

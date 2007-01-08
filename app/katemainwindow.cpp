@@ -238,7 +238,7 @@ void KateMainWindow::setupMainWindow ()
   m_fileList->setDropIndicatorShown(true);
 #ifdef __GNUC__
 #warning I do not like it, it looks like a hack, search for a better way, but for now it should work. (Even on windows most lisviews, except exploder are single click) (jowenn)
-#endif  
+#endif
   if (!style()->styleHint(QStyle::SH_ItemView_ActivateItemOnSingleClick, 0, m_fileList)) {
     kDebug()<<"HACK:***********************CONNECTING CLICKED***************************"<<endl;
     connect(m_fileList,SIGNAL(clicked(const QModelIndex&)),m_pM,SLOT(opened(const QModelIndex&)));
@@ -278,75 +278,98 @@ void KateMainWindow::setupMainWindow ()
 
 void KateMainWindow::setupActions()
 {
-  KAction *a;
+  QAction *a;
 
-  KStandardAction::openNew( m_viewManager, SLOT( slotDocumentNew() ), actionCollection(), "file_new" )->setWhatsThis(i18n("Create a new document"));
-  KStandardAction::open( m_viewManager, SLOT( slotDocumentOpen() ), actionCollection(), "file_open" )->setWhatsThis(i18n("Open an existing document for editing"));
+  actionCollection()->addAction( KStandardAction::New, "file_new", m_viewManager, SLOT( slotDocumentNew() ) )
+    ->setWhatsThis(i18n("Create a new document"));
+  actionCollection()->addAction( KStandardAction::Open, "file_open", m_viewManager, SLOT( slotDocumentOpen() ) )
+    ->setWhatsThis(i18n("Open an existing document for editing"));
 
-  fileOpenRecent = KStandardAction::openRecent (m_viewManager, SLOT(openUrl (const KUrl&)), actionCollection());
+  fileOpenRecent = KStandardAction::openRecent (m_viewManager, SLOT(openUrl (const KUrl&)), this);
+  actionCollection()->addAction(fileOpenRecent->objectName(), fileOpenRecent);
   fileOpenRecent->setWhatsThis(i18n("This lists files which you have opened recently, and allows you to easily open them again."));
 
-  a=new KAction( KIcon("save_all"), i18n("Save A&ll"), actionCollection(), "file_save_all" );
+  a=actionCollection()->addAction( "file_save_all" );
+  a->setIcon( KIcon("save_all") );
+  a->setText( i18n("Save A&ll") );
   a->setShortcut( QKeySequence(Qt::CTRL+Qt::Key_L) );
   connect( a, SIGNAL( triggered() ), KateDocManager::self(), SLOT( saveAll() ) );
   a->setWhatsThis(i18n("Save all open, modified documents to disk."));
 
-  KStandardAction::close( m_viewManager, SLOT( slotDocumentClose() ), actionCollection(), "file_close" )->setWhatsThis(i18n("Close the current document."));
+  actionCollection()->addAction( KStandardAction::Close, "file_close", m_viewManager, SLOT( slotDocumentClose() ) )
+      ->setWhatsThis(i18n("Close the current document."));
 
-  a=new KAction( i18n( "Clos&e All" ), actionCollection(), "file_close_all" );
+  a=actionCollection()->addAction( "file_close_all" );
+  a->setText( i18n( "Clos&e All" ) );
   connect( a, SIGNAL( triggered() ), this, SLOT( slotDocumentCloseAll() ) );
   a->setWhatsThis(i18n("Close all open documents."));
 
-  KStandardAction::mail( this, SLOT(slotMail()), actionCollection() )->setWhatsThis(i18n("Send one or more of the open documents as email attachments."));
+  actionCollection()->addAction( KStandardAction::Mail, this, SLOT(slotMail()) )
+      ->setWhatsThis(i18n("Send one or more of the open documents as email attachments."));
 
-  KStandardAction::quit( this, SLOT( slotFileQuit() ), actionCollection(), "file_quit" )->setWhatsThis(i18n("Close this window"));
+  actionCollection()->addAction( KStandardAction::Quit, "file_quit", this, SLOT( slotFileQuit() ) )
+      ->setWhatsThis(i18n("Close this window"));
 
-  a=new KAction( KIcon("window_new"), i18n("&New Window"), actionCollection(), "view_new_view" );
+  a=actionCollection()->addAction( "view_new_view" );
+  a->setIcon( KIcon("window_new") );
+  a->setText( i18n("&New Window") );
   connect( a, SIGNAL( triggered() ), this, SLOT( newWindow() ) );
   a->setWhatsThis(i18n("Create a new Kate view (a new window with the same document list)."));
 
   if ( KAuthorized::authorize("shell_access") )
   {
-    externalTools = new KateExternalToolsMenuAction( i18n("External Tools"), actionCollection(), "tools_external", this );
+    externalTools = new KateExternalToolsMenuAction( i18n("External Tools"), this, this );
+    actionCollection()->addAction( "tools_external", externalTools );
     externalTools->setWhatsThis( i18n("Launch external helper applications") );
   }
 
-  KToggleAction* showFullScreenAction = KStandardAction::fullScreen( 0, 0, actionCollection(),this);
+  KToggleAction* showFullScreenAction = KStandardAction::fullScreen( 0, 0, this, this);
+  actionCollection()->addAction( showFullScreenAction->objectName(), showFullScreenAction );
   connect( showFullScreenAction,SIGNAL(toggled(bool)), this,SLOT(slotFullScreen(bool)));
 
-  documentOpenWith = new KActionMenu(i18n("Open W&ith"), actionCollection(), "file_open_with");
+  documentOpenWith = new KActionMenu(i18n("Open W&ith"), this);
+  actionCollection()->addAction("file_open_with", documentOpenWith);
   documentOpenWith->setWhatsThis(i18n("Open the current document using another application registered for its file type, or an application of your choice."));
   connect(documentOpenWith->menu(), SIGNAL(aboutToShow()), this, SLOT(mSlotFixOpenWithMenu()));
   connect(documentOpenWith->menu(), SIGNAL(triggered(QAction*)), this, SLOT(slotOpenWithMenuAction(QAction*)));
 
-  a=KStandardAction::keyBindings(this, SLOT(editKeys()), actionCollection());
+  a=actionCollection()->addAction(KStandardAction::KeyBindings, this, SLOT(editKeys()));
   a->setWhatsThis(i18n("Configure the application's keyboard shortcut assignments."));
 
-  a=KStandardAction::configureToolbars(this, SLOT(slotEditToolbars()), actionCollection(), "set_configure_toolbars");
+  a=actionCollection()->addAction(KStandardAction::ConfigureToolbars, "set_configure_toolbars",
+                                  this, SLOT(slotEditToolbars()));
   a->setWhatsThis(i18n("Configure which items should appear in the toolbar(s)."));
 
-  KAction* settingsConfigure = KStandardAction::preferences(this, SLOT(slotConfigure()), actionCollection(), "settings_configure");
+  QAction* settingsConfigure = actionCollection()->addAction(KStandardAction::Preferences, "settings_configure",
+                                                             this, SLOT(slotConfigure()));
   settingsConfigure->setWhatsThis(i18n("Configure various aspects of this application and the editing component."));
 
 #if 0
   // pipe to terminal action
-  if (KateApp::self()->authorize("shell_access"))
-    new KAction(i18n("&Pipe to Console"), "pipe", 0, console, SLOT(slotPipeToConsole()), actionCollection(), "tools_pipe_to_terminal");
+  if (KateApp::self()->authorize("shell_access")) {
+      a=actionCollection()->addAction("tools_pipe_to_terminal");
+      a->setIcon(KIcon("pipe"));
+      a->setText(i18n("&Pipe to Console"));
+      connect(a, SIGNAL(triggered(QAction*)), console, SLOT(slotPipeToConsole()));
+  }
 #endif
 
   // tip of the day :-)
-  KStandardAction::tipOfDay( this, SLOT( tipOfTheDay() ), actionCollection() )->setWhatsThis(i18n("This shows useful tips on the use of this application."));
+  actionCollection()->addAction( KStandardAction::TipofDay, this, SLOT( tipOfTheDay() ) )
+      ->setWhatsThis(i18n("This shows useful tips on the use of this application."));
 
   if (KatePluginManager::self()->pluginList().count() > 0)
   {
-    a=new KAction( i18n("&Plugins Handbook"), actionCollection(), "help_plugins_contents" );
+    a=actionCollection()->addAction( "help_plugins_contents" );
+    a->setText( i18n("&Plugins Handbook") );
     connect( a, SIGNAL( triggered() ), this, SLOT( pluginHelp() ) );
     a->setWhatsThis(i18n("This shows help files for various available plugins."));
   }
 
-  a=new KAction( i18n("&About Editor Component"), actionCollection(), "help_about_editor" );
+  a=actionCollection()->addAction( "help_about_editor" );
+  a->setText( i18n("&About Editor Component") );
   connect( a, SIGNAL( triggered() ), this, SLOT( aboutEditor() ) );
-  a->setGlobalShortcutAllowed(true);
+  qobject_cast<KAction*>( a )->setGlobalShortcutAllowed(true);
 
   connect(m_viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
   connect(m_viewManager,SIGNAL(viewChanged()),this,SLOT(slotUpdateOpenWith()));
@@ -354,19 +377,30 @@ void KateMainWindow::setupActions()
   slotWindowActivated ();
 
   // session actions
-  a = new KAction( KIcon("filenew"), i18nc("Menu entry Session->New", "&New"), actionCollection(), "sessions_new" );
+  a = actionCollection()->addAction( "sessions_new" );
+  a->setIcon( KIcon("filenew") );
+  a->setText( i18nc("Menu entry Session->New", "&New") );
   connect( a, SIGNAL( triggered() ), KateSessionManager::self(), SLOT( sessionNew() ) );
-  a = new KAction( KIcon("fileopen"), i18n("&Open..."), actionCollection(), "sessions_open" );
+  a = actionCollection()->addAction( "sessions_open" );
+  a->setIcon( KIcon("fileopen") );
+  a->setText( i18n("&Open...") );
   connect( a, SIGNAL( triggered() ), KateSessionManager::self(), SLOT( sessionOpen() ) );
-  a = new KAction( KIcon("filesave"), i18n("&Save"), actionCollection(), "sessions_save" );
+  a = actionCollection()->addAction( "sessions_save" );
+  a->setIcon( KIcon("filesave") );
+  a->setText( i18n("&Save") );
   connect( a, SIGNAL( triggered() ), KateSessionManager::self(), SLOT( sessionSave() ) );
-  a = new KAction( KIcon("filesaveas"), i18n("Save &As..."), actionCollection(), "sessions_save_as" );
+  a = actionCollection()->addAction( "sessions_save_as" );
+  a->setIcon( KIcon("filesaveas") );
+  a->setText( i18n("Save &As...") );
   connect( a, SIGNAL( triggered() ), KateSessionManager::self(), SLOT( sessionSaveAs() ) );
-  a = new KAction( KIcon("view_choose"), i18n("&Manage..."), actionCollection(), "sessions_manage" );
+  a = actionCollection()->addAction( "sessions_manage" );
+  a->setIcon( KIcon("view_choose") );
+  a->setText( i18n("&Manage...") );
   connect( a, SIGNAL( triggered() ), KateSessionManager::self(), SLOT( sessionManage() ) );
 
   // quick open menu ;)
-  new KateSessionsAction (i18n("&Quick Open"), actionCollection(), "sessions_list");
+  a = new KateSessionsAction (i18n("&Quick Open"), this);
+  actionCollection()->addAction("sessions_list", a);
 }
 
 KateTabWidget *KateMainWindow::tabWidget ()
@@ -504,7 +538,7 @@ void KateMainWindow::saveOptions ()
   //fileselector->writeConfig(config, "fileselector");
 #ifdef __GNUC__
   #warning PORTME
-#endif  
+#endif
   //filelist->writeConfig(config, "Filelist");
 }
 

@@ -52,7 +52,7 @@ class ToggleToolViewAction : public KToggleAction
 
   public:
     ToggleToolViewAction ( const QString& text, const KShortcut& cut,
-                           class ToolView *tv, KActionCollection* parent = 0, const char* name = 0 );
+                           class ToolView *tv, QObject *parent );
 
     virtual ~ToggleToolViewAction();
 

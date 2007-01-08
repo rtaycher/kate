@@ -71,9 +71,10 @@
 //BEGIN KateFileList
 
 KateFileList::KateFileList(QWidget *parent,KActionCollection *actionCollection):QListView(parent) {
-  m_windowNext = KStandardAction::back(this, SLOT(slotPrevDocument()), actionCollection);
-  m_windowPrev = KStandardAction::forward(this, SLOT(slotNextDocument()), actionCollection);
-  m_sortAction = new KSelectAction( i18n("Sort &By"), actionCollection, "filelist_sortby"  );
+  m_windowNext = actionCollection->addAction(KStandardAction::Back, this, SLOT(slotPrevDocument()));
+  m_windowPrev = actionCollection->addAction(KStandardAction::Forward, this, SLOT(slotNextDocument()));
+  m_sortAction = new KSelectAction( i18n("Sort &By"), this );
+  actionCollection->addAction( "filelist_sortby", m_sortAction );
   QStringList l;
   l << i18n("Opening Order") << i18n("Document Name") << i18n("URL")<<i18n("Custom");
   m_sortAction->setItems( l );

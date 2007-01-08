@@ -35,7 +35,6 @@
 #include <klocale.h>
 #include <kmenu.h>
 #include <kmessagebox.h>
-#include <kseparatoraction.h>
 #include <kvbox.h>
 #include <kxmlguifactory.h>
 
@@ -52,8 +51,8 @@ namespace KateMDI {
 //BEGIN TOGGLETOOLVIEWACTION
 
 ToggleToolViewAction::ToggleToolViewAction ( const QString& text, const KShortcut& cut, ToolView *tv,
-                                             KActionCollection* parent, const char* name )
- : KToggleAction(text,parent,name)
+                                             QObject* parent )
+ : KToggleAction(text,parent)
  , m_tv(tv)
 {
   setShortcut(cut);
@@ -122,8 +121,10 @@ GUIClient::GUIClient ( MainWindow *mw )
   if (!actionCollection()->associatedWidgets().contains(m_mw))
     actionCollection()->setAssociatedWidget(m_mw);
 
-  m_toolMenu = new KActionMenu(i18n("Tool &Views"),actionCollection(),"kate_mdi_toolview_menu");
-  m_showSidebarsAction = new KToggleAction( i18n("Show Side&bars"), actionCollection(), "kate_mdi_sidebar_visibility" );
+  m_toolMenu = new KActionMenu(i18n("Tool &Views"), this);
+  actionCollection()->addAction("kate_mdi_toolview_menu", m_toolMenu);
+  m_showSidebarsAction = new KToggleAction( i18n("Show Side&bars"), this );
+  actionCollection()->addAction( "kate_mdi_sidebar_visibility", m_showSidebarsAction );
   m_showSidebarsAction->setShortcut(  Qt::CTRL|Qt::ALT|Qt::SHIFT|Qt::Key_F );
   m_showSidebarsAction->setCheckedState(KGuiItem(i18n("Hide Side&bars")));
   m_showSidebarsAction->setChecked( m_mw->sidebarsVisible() );
@@ -131,7 +132,9 @@ GUIClient::GUIClient ( MainWindow *mw )
            m_mw, SLOT( setSidebarsVisible( bool ) ) );
 
   m_toolMenu->addAction( m_showSidebarsAction );
-  m_toolMenu->addAction( new KSeparatorAction( actionCollection() ) );
+  QAction *sep_act = new QAction( this );
+  sep_act->setSeparator( true );
+  m_toolMenu->addAction( sep_act );
 
   // read shortcuts
   actionCollection()->setConfigGroup( "Shortcuts" );
@@ -160,7 +163,8 @@ void GUIClient::registerToolView (ToolView *tv)
   cfg->setGroup( _grp );
 
   KToggleAction *a = new ToggleToolViewAction(i18n("Show %1", tv->text),
-    sc,tv, actionCollection(), aname.toLatin1() );
+                                              sc,tv, this );
+  actionCollection()->addAction( aname.toLatin1(), a );
 
   a->setCheckedState(KGuiItem(i18n("Hide %1", tv->text)));
 
