@@ -555,7 +555,7 @@ KateExternalToolServiceEditor::KateExternalToolServiceEditor( KateExternalTool *
       "If you specify a name here, you can invoke the command from the view "
       "command lines with exttool-the_name_you_specified_here. "
       "Please do not use spaces or tabs in the name."));
-
+  connect(this,SIGNAL(okClicked()),this,SLOT(slotOk()));
 }
 
 void KateExternalToolServiceEditor::slotOk()

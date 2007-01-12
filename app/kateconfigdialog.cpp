@@ -304,7 +304,8 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
           && Kate::pluginConfigPageInterface(plugin.plugin) )
       addPluginPage (plugin.plugin, pluginItem);
   }
-
+  connect(this,SIGNAL(okClicked()),this,SLOT(slotOk()));
+  connect(this,SIGNAL(applyClicked()),this,SLOT(slotApply()));
   //showButtonSeparator(true);
   dataChanged = false;
 }
