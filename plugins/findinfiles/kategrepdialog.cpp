@@ -320,7 +320,7 @@ void KateGrepDialog::slotSearch()
     return;
   }
 
-  if ( cmbDir->url().isEmpty() || ! QDir(cmbDir->url().url()).exists() )
+  if ( cmbDir->url().isEmpty() || ! QDir(cmbDir->url().toLocalFile ()).exists() )
   {
     cmbDir->setFocus();
     KMessageBox::information( this, i18n(
@@ -343,7 +343,7 @@ void KateGrepDialog::slotSearch()
 
   slotClear ();
 
-  m_workingDir = cmbDir->url().url();
+  m_workingDir = cmbDir->url().toLocalFile();
 
   QString s = cmbPattern->currentText();
   if ( ! cbRegex->isChecked() )
