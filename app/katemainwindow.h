@@ -42,9 +42,7 @@ class QMenu;
 
 class QListView;
 
-
 class KateTabWidget;
-class GrepTool;
 
 namespace Kate {
   class MainWindow;
@@ -147,8 +145,6 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
 
     void slotOpenWithMenuAction(QAction* a);
 
-    void slotGrepToolItemSelected ( const QString &filename, int linenumber );
-
     void slotMail();
 
     void slotFileQuit();
@@ -180,7 +176,6 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
     void openUrl (const QString &name=0L);
     QModelIndex modelIndexForDocument(KTextEditor::Document *document);
   private Q_SLOTS:
-    void updateGrepDir (bool visible);
     void showFileListPopup(const QPoint& pos);
   protected:
     bool event( QEvent * );
@@ -219,7 +214,6 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
     KToggleAction* settingsShowFileselector;
 
     KateExternalToolsMenuAction *externalTools;
-    GrepTool * greptool;
     bool m_modignore, m_grrr;
 
     KateTabWidget *m_tabWidget;

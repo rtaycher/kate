@@ -30,7 +30,6 @@
 #include "kateapp.h"
 //#include "katefileselector.h"
 #include "katefilelist.h"
-#include "kategrepdialog.h"
 #include "katemailfilesdialog.h"
 #include "kateexternaltools.h"
 #include "katesavemodifieddialog.h"
@@ -108,7 +107,6 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
   m_modignore = false;
 
   console = 0;
-  greptool = 0;
 
   // here we go, set some usable default sizes
   if (!initialGeometrySet())
@@ -256,22 +254,7 @@ void KateMainWindow::setupMainWindow ()
   fileselector = new KateFileSelector( this, m_viewManager, t, "operator");
   connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileItem*)),this,SLOT(fileSelected(const KFileItem*)));
 #endif
-#if 0
-  // ONLY ALLOW SHELL ACCESS IF ALLOWED ;)
-  if (KAuthorized::authorize("shell_access"))
-  {
-    t = createToolView("kate_greptool", KMultiTabBar::Bottom, SmallIcon("filefind"), i18n("Find in Files") );
-    greptool = new GrepTool( t );
-    greptool->setObjectName( "greptool" );
-    connect(greptool, SIGNAL(itemSelected(const QString &,int)), this, SLOT(slotGrepToolItemSelected(const QString &,int)));
-    connect(t,SIGNAL(toolVisibleChanged(bool)),this, SLOT(updateGrepDir (bool)));
-    // WARNING HACK - anders: showing the greptool seems to make the menu accels work
-    greptool->show();
 
-    t = createToolView("kate_console", KMultiTabBar::Bottom, SmallIcon("konsole"), i18n("Terminal"));
-    console = new KateConsole (this, t);
-  }
-#endif
   // make per default the filelist visible, if we are in session restore, katemdi will skip this ;)
   showToolView (ft);
 }
@@ -626,19 +609,6 @@ void KateMainWindow::activateDocumentFromDocMenu (QAction *action)
   }
 }
 
-void KateMainWindow::slotGrepToolItemSelected(const QString &filename,int linenumber)
-{
-  KUrl fileURL;
-  fileURL.setPath( filename );
-  m_viewManager->openUrl( fileURL );
-  if ( m_viewManager->activeView() == 0 ) return;
-
-  if (m_viewManager->activeView())
-    m_viewManager->activeView()->setCursorPosition( KTextEditor::Cursor (linenumber, 0) );
-
-  raise();
-  activateWindow();
-}
 
 void KateMainWindow::dragEnterEvent( QDragEnterEvent *event )
 {
@@ -868,21 +838,6 @@ void KateMainWindow::slotFullScreen(bool t)
     showFullScreen();
   else
     showNormal();
-}
-
-void KateMainWindow::updateGrepDir (bool visible)
-{
-  // grepdlg gets hidden
-  if (!visible)
-    return;
-
-  if ( m_viewManager->activeView() )
-  {
-    if ( m_viewManager->activeView()->document()->url().isLocalFile() )
-    {
-      greptool->updateDirName( m_viewManager->activeView()->document()->url().directory() );
-    }
-  }
 }
 
 bool KateMainWindow::event( QEvent *e )

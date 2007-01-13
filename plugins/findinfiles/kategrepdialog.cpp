@@ -19,7 +19,6 @@
 */
 
 #include "kategrepdialog.h"
-#include "katemainwindow.h"
 
 #include <QObject>
 #include <QLineEdit>
@@ -527,6 +526,23 @@ bool GrepTool::eventFilter( QObject *o, QEvent *e )
 
   return QWidget::eventFilter( o, e );
 }
+
+#if 0
+
+void KateMainWindow::slotGrepToolItemSelected(const QString &filename,int linenumber)
+{
+  KUrl fileURL;
+  fileURL.setPath( filename );
+  m_viewManager->openUrl( fileURL );
+  if ( m_viewManager->activeView() == 0 ) return;
+
+  if (m_viewManager->activeView())
+    m_viewManager->activeView()->setCursorPosition( KTextEditor::Cursor (linenumber, 0) );
+
+  raise();
+  activateWindow();
+}
+#endif
 
 #include "kategrepdialog.moc"
 

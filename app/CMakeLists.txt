@@ -17,7 +17,6 @@ set(kateinterfaces_LIB_SRCS kateappadaptor.cpp katemainwindowadaptor.cpp
    katepluginmanager.cpp
    kateviewmanager.cpp
    kateviewspace.cpp
-   kategrepdialog.cpp
    katemailfilesdialog.cpp
    katetooltipmenu.cpp
    kateexternaltools.cpp
