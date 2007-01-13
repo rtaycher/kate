@@ -20,6 +20,8 @@
 
 #include "kategrepdialog.h"
 
+#include <ktexteditor/view.h>
+
 #include <QObject>
 #include <QLineEdit>
 #include <QLabel>
@@ -51,8 +53,8 @@
 #include <kcombobox.h>
 #include <klineedit.h>
 
-KateGrepDialog::KateGrepDialog(QWidget *parent)
-  : QWidget(parent), m_grepThread (0)
+KateGrepDialog::KateGrepDialog(QWidget *parent, Kate::MainWindow *mw)
+  : QWidget(parent), m_mw (mw), m_grepThread (0)
 {
   setWindowTitle(i18n("Find in Files"));
   config = KGlobal::config();
@@ -79,7 +81,6 @@ KateGrepDialog::KateGrepDialog(QWidget *parent)
   QHBoxLayout *loPattern = new QHBoxLayout();
   QHBoxLayout *loDir = new QHBoxLayout();
 
-  layout->setMargin(0);
   layout->addLayout(loInput);
   loInput->addLayout(loPattern, 0, 1);
   loInput->addLayout(loDir, 3, 1);
@@ -112,7 +113,6 @@ KateGrepDialog::KateGrepDialog(QWidget *parent)
   cmbFiles = new KComboBox(this);
   cmbFiles->setEditable(true);
   lFiles->setBuddy(cmbFiles->focusProxy());
-  cmbFiles->setMinimumSize(cmbFiles->sizeHint());
   cmbFiles->setInsertPolicy(QComboBox::NoInsert);
   cmbFiles->setDuplicatesEnabled(false);
   cmbFiles->insertItems(0, lastSearchFiles);
@@ -124,7 +124,6 @@ KateGrepDialog::KateGrepDialog(QWidget *parent)
   QLabel *lDir = new QLabel(i18n("Folder:"), this);
 
   KComboBox* cmbUrl = new KComboBox(true, this);
-  cmbUrl->setMinimumWidth(80); // make sure that 800x600 resolution works
   cmbUrl->setDuplicatesEnabled(false);
   cmbDir = new KUrlRequester( cmbUrl, this);
   cmbDir->completionObject()->setMode(KUrlCompletion::DirCompletion);
@@ -133,7 +132,6 @@ KateGrepDialog::KateGrepDialog(QWidget *parent)
   lDir->setBuddy(cmbDir);
 
   cbRecursive = new QCheckBox(i18n("Recursive"), this);
-  cbRecursive->setMinimumWidth(cbRecursive->sizeHint().width());
   cbRecursive->setChecked(config->readEntry("Recursive", QVariant(true)).toBool());
 
   loInput->addWidget(lDir, 3, 0, Qt::AlignRight | Qt::AlignVCenter);
@@ -141,21 +139,22 @@ KateGrepDialog::KateGrepDialog(QWidget *parent)
   loDir->addWidget(cbRecursive);
   loDir->setStretchFactor(cmbDir, 1);
 
-
   // buttons find and clear
   KDialogButtonBox *actionbox = new KDialogButtonBox(this, Qt::Vertical);
-  layout->addWidget(actionbox);
   btnSearch = actionbox->addButton(KStandardGuiItem::find(), QDialogButtonBox::ActionRole );
   btnSearch->setDefault(true);
   btnClear = actionbox->addButton( KStandardGuiItem::clear() , QDialogButtonBox::ActionRole );
+  layout->addWidget(actionbox);
 
+  // result view, list all matches....
   lbResult = new QTreeWidget(this);
   QStringList headers;
   headers << i18n("File") << i18n("Line") << i18n("Text");
   lbResult->setHeaderLabels(headers);
   lbResult->setIndentation(0);
-  topLayout->addWidget(lbResult);
+  topLayout->addWidget(lbResult, 10);
 
+  // auto-accels
   KAcceleratorManager::manage( this );
 
   lPattern->setWhatsThis(    i18n("<p>Enter the expression you want to search for here."
@@ -229,13 +228,23 @@ void KateGrepDialog::patternTextChanged( const QString & _text)
   btnSearch->setEnabled( !_text.isEmpty() );
 }
 
-void KateGrepDialog::itemSelected(QTreeWidgetItem *item, int column)
+void KateGrepDialog::itemSelected(QTreeWidgetItem *item, int)
 {
-  Q_UNUSED(column);
+  // get stuff
   const QString filename = item->data(0, Qt::UserRole).toString();
   const int linenumber = item->data(1, Qt::UserRole).toInt();
 
-  emit itemSelected(filename, linenumber);
+  // open file (if needed, otherwise, this will activate only the right view...)
+  KUrl fileURL;
+  fileURL.setPath( filename );
+  m_mw->openUrl( fileURL );
+
+  // any view active?
+  if ( !m_mw->activeView() )
+    return;
+
+  // do it ;)
+  m_mw->activeView()->setCursorPosition( KTextEditor::Cursor (linenumber, 0) );
 }
 
 void KateGrepDialog::slotSearch()
@@ -348,18 +357,9 @@ bool KateGrepDialog::eventFilter( QObject *o, QEvent *e )
 
 #if 0
 
-void KateMainWindow::slotKateGrepDialogItemSelected(const QString &filename,int linenumber)
+void KateMainWindow::slotKateGrepDialogItemSelected(const QString &filename, int linenumber)
 {
-  KUrl fileURL;
-  fileURL.setPath( filename );
-  m_viewManager->openUrl( fileURL );
-  if ( m_viewManager->activeView() == 0 ) return;
 
-  if (m_viewManager->activeView())
-    m_viewManager->activeView()->setCursorPosition( KTextEditor::Cursor (linenumber, 0) );
-
-  raise();
-  activateWindow();
 }
 #endif
 

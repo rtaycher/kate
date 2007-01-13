@@ -21,6 +21,8 @@
 #ifndef _GREPDIALOG_H_
 #define _GREPDIALOG_H_
 
+#include <kate/interfaces/mainwindow.h>
+
 #include "kategrepthread.h"
 
 #include <KDialog>
@@ -45,7 +47,7 @@ class KateGrepDialog : public QWidget
     Q_OBJECT
 
 public:
-    KateGrepDialog(QWidget *parent);
+    KateGrepDialog(QWidget *parent, Kate::MainWindow *mw);
     ~KateGrepDialog();
 
     // only updates if the dir you give to it differs from the last one given to it !
@@ -74,6 +76,7 @@ private Q_SLOTS:
 private:
     void killThread ();
 
+    Kate::MainWindow *m_mw;
     KComboBox *cmbFiles, *cmbPattern;
     KUrlRequester *cmbDir;
     QCheckBox *cbRecursive;

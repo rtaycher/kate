@@ -80,7 +80,7 @@ void KateFindInFilesPlugin::removeView(Kate::MainWindow *win) {
 KateFindInFilesView::KateFindInFilesView (Kate::MainWindow *mw)
  : m_mw (mw)
  , m_toolView (m_mw->createToolView ("kate_private_plugin_katefindinfilesplugin", MainWindow::Bottom, SmallIcon("konsole"), i18n("Find in Files")))
- , m_grepDialog (new KateGrepDialog (m_toolView))
+ , m_grepDialog (new KateGrepDialog (m_toolView, m_mw))
 {
 }
 
