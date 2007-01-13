@@ -102,7 +102,6 @@ class KateDocManager : public QStandardItemModel
     void saveDocumentList (class KConfig *config);
     void restoreDocumentList (class KConfig *config);
 
-
     inline bool getSaveMetaInfos() { return m_saveMetaInfos; };
     inline void setSaveMetaInfos(bool b) { m_saveMetaInfos = b; };
 
@@ -130,6 +129,8 @@ class KateDocManager : public QStandardItemModel
     void slotModChanged1(KTextEditor::Document *doc);
     void slotDocumentNameChanged(KTextEditor::Document *document);
     void slotDocumentUrlChanged(KTextEditor::Document *doc);
+
+    void showRestoreErrors ();
   private:
     bool loadMetaInfos(KTextEditor::Document *doc, const KUrl &url);
     void saveMetaInfos(KTextEditor::Document *doc);
@@ -153,8 +154,8 @@ class KateDocManager : public QStandardItemModel
     QString m_dbusObjectPath;
     QMap<KTextEditor::Document*,QStandardItem*> m_documentItemMapping;
     bool m_restoringDocumentList;
-    QMap<KTextEditor::Document*,bool> m_documentsBeingRestored;
     QString m_openingErrors;
+    int m_documentStillToRestore;
   private Q_SLOTS:
     void documentOpened();
 };

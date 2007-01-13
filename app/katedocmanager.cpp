@@ -49,11 +49,13 @@
 #include <QHash>
 #include <QListView>
 #include <QStandardItem>
+#include <QTimer>
 
 KateDocManager::KateDocManager (QObject *parent)
  : QStandardItemModel (parent)
  , m_saveMetaInfos(true)
  , m_daysMetaInfos(0)
+ , m_documentStillToRestore (0)
 {
   // Constructed the beloved editor ;)
   m_editor = KTextEditor::EditorChooser::editor();
@@ -460,8 +462,8 @@ void KateDocManager::restoreDocumentList (KConfig* config)
 
   bool first = true;
   const int countM1=count-1;
+  m_documentStillToRestore = count;
   m_restoringDocumentList=true;
-  m_documentsBeingRestored.clear();
   m_openingErrors.clear();
   for (unsigned int i=0; i < count; i++)
   {
@@ -476,16 +478,13 @@ void KateDocManager::restoreDocumentList (KConfig* config)
     else
       doc = createDoc ();
     doc->setSuppressOpeningErrorDialogs(true);
-    m_documentsBeingRestored.insert(doc,true);
     connect(doc,SIGNAL(completed()),this,SLOT(documentOpened()));
     connect(doc,SIGNAL(canceled(const QString&)),this,SLOT(documentOpened()));
-    if (i==countM1) m_restoringDocumentList=false;
     if (KTextEditor::SessionConfigInterface *iface = qobject_cast<KTextEditor::SessionConfigInterface *>(doc))
       iface->readSessionConfig(config);
     config->setGroup (grp);
 
     pd->progressBar()->setValue(pd->progressBar()->value()+1);
-    KateApp::self()->processEvents();
   }
   m_restoringDocumentList=false;
   delete pd;
@@ -640,11 +639,21 @@ void KateDocManager::documentOpened() {
     disconnect(doc,SIGNAL(canceled(const QString&)),this,SLOT(documentOpened()));
     if (doc->openingError())
       m_openingErrors+='\n'+doc->openingErrorMessage();
-    m_documentsBeingRestored.take(doc);
-    if ((m_restoringDocumentList==false) && (m_documentsBeingRestored.count()==0)) {
+    --m_documentStillToRestore;
+
+    if (m_documentStillToRestore == 0)
+      QTimer::singleShot(0, this, SLOT(showRestoreErrors()));
+}
+
+void KateDocManager::showRestoreErrors ()
+{
+  if (!m_openingErrors.isEmpty()) {
       KMessageBox::information (0,
         m_openingErrors,
         i18n ("Errors/Warnings while opening documents"));
+
+      // clear errors
+      m_openingErrors.clear ();
     }
 }
 

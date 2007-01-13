@@ -155,23 +155,13 @@ void KateApp::initKate ()
 
 void KateApp::restoreKate ()
 {
-  // restore the nice files ;) we need it
-#ifdef __GNUC__
-  #warning fixme later
-#endif
-  //KTextEditor::Document::setOpenErrorDialogsActivated (false);
-
   // activate again correct session!!!
   sessionConfig()->setGroup("General");
   QString lastSession (sessionConfig()->readEntry ("Last Session", "default.katesession"));
   sessionManager()->activateSession (KSharedPtr<KateSession>(new KateSession (sessionManager(), lastSession)), false, false, false);
 
+  // restore the files we need
   m_docManager->restoreDocumentList (sessionConfig());
-
-#ifdef __GNUC__
-#warning fixme later
-#endif
-  //KTextEditor::Document::setOpenErrorDialogsActivated (true);
 
   // restore all windows ;)
   for (int n=1; KMainWindow::canBeRestored(n); n++)
