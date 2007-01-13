@@ -38,13 +38,13 @@ class KConfig;
 class KUrlRequester;
 class QEvent;
 
-class GrepTool : public QWidget
+class KateGrepDialog : public QWidget
 {
     Q_OBJECT
 
 public:
-    GrepTool(QWidget *parent);
-    ~GrepTool();
+    KateGrepDialog(QWidget *parent);
+    ~KateGrepDialog();
 
     // only updates if the dir you give to it differs from the last one given to it !
     void updateDirName(const QString &);

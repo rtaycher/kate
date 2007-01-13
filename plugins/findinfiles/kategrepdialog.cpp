@@ -61,12 +61,12 @@ const char *strTemplate[] = {
 };
 
 
-GrepTool::GrepTool(QWidget *parent)
+KateGrepDialog::KateGrepDialog(QWidget *parent)
   : QWidget(parent), childproc(0)
 {
   setWindowTitle(i18n("Find in Files"));
   config = KGlobal::config();
-  config->setGroup("GrepTool");
+  config->setGroup("KateGrepDialog");
   lastSearchItems = config->readEntry("LastSearchItems",QStringList());
   lastSearchPaths = config->readEntry("LastSearchPaths",QStringList());
   lastSearchFiles = config->readEntry("LastSearchFiles",QStringList());
@@ -260,22 +260,22 @@ GrepTool::GrepTool(QWidget *parent)
 }
 
 
-GrepTool::~GrepTool()
+KateGrepDialog::~KateGrepDialog()
 {
   delete childproc;
 }
 
-void GrepTool::patternTextChanged( const QString & _text)
+void KateGrepDialog::patternTextChanged( const QString & _text)
 {
   btnSearch->setEnabled( !_text.isEmpty() );
 }
 
-void GrepTool::templateActivated(int index)
+void KateGrepDialog::templateActivated(int index)
 {
   leTemplate->setText(strTemplate[index]);
 }
 
-void GrepTool::itemSelected(QTreeWidgetItem *item, int column)
+void KateGrepDialog::itemSelected(QTreeWidgetItem *item, int column)
 {
   Q_UNUSED(column);
   const QString filename = item->data(0, Qt::UserRole).toString();
@@ -284,7 +284,7 @@ void GrepTool::itemSelected(QTreeWidgetItem *item, int column)
   emit itemSelected(filename, linenumber);
 }
 
-void GrepTool::processOutput()
+void KateGrepDialog::processOutput()
 {
   int pos;
   while ( (pos = buf.indexOf('\n')) != -1)
@@ -312,7 +312,7 @@ void GrepTool::processOutput()
   kapp->processEvents();
 }
 
-void GrepTool::slotSearch()
+void KateGrepDialog::slotSearch()
 {
   if ( cmbPattern->currentText().isEmpty() )
   {
@@ -391,14 +391,14 @@ void GrepTool::slotSearch()
   childproc->start(KProcess::NotifyOnExit, KProcess::AllOutput);
 }
 
-void GrepTool::slotSearchFor(const QString &pattern)
+void KateGrepDialog::slotSearchFor(const QString &pattern)
 {
   slotClear();
   cmbPattern->setEditText(pattern);
   slotSearch();
 }
 
-void GrepTool::finish()
+void KateGrepDialog::finish()
 {
   btnSearch->setEnabled( !cmbPattern->lineEdit()->text().isEmpty() );
 
@@ -407,7 +407,7 @@ void GrepTool::finish()
   delete childproc;
   childproc = 0;
 
-  config->setGroup("GrepTool");
+  config->setGroup("KateGrepDialog");
 
   QString cmbText = cmbPattern->currentText();
   bool itemsRemoved = lastSearchItems.removeAll(cmbText) > 0;
@@ -463,12 +463,12 @@ void GrepTool::finish()
   config->writeEntry("Regex", cbRegex->isChecked());
 }
 
-void GrepTool::slotCancel()
+void KateGrepDialog::slotCancel()
 {
   finish();
 }
 
-void GrepTool::childExited()
+void KateGrepDialog::childExited()
 {
 //   int status = childproc->exitStatus();
   lbResult->unsetCursor();
@@ -484,24 +484,24 @@ void GrepTool::childExited()
     finish();
 }
 
-void GrepTool::receivedOutput(KProcess */*proc*/, char *buffer, int buflen)
+void KateGrepDialog::receivedOutput(KProcess */*proc*/, char *buffer, int buflen)
 {
   buf += QByteArray(buffer, buflen+1);
   processOutput();
 }
 
-void GrepTool::receivedErrOutput(KProcess */*proc*/, char *buffer, int buflen)
+void KateGrepDialog::receivedErrOutput(KProcess */*proc*/, char *buffer, int buflen)
 {
   errbuf += QByteArray( buffer, buflen + 1 );
 }
 
-void GrepTool::slotClear()
+void KateGrepDialog::slotClear()
 {
   finish();
   lbResult->clear();
 }
 
-void GrepTool::updateDirName(const QString &dir)
+void KateGrepDialog::updateDirName(const QString &dir)
 {
   if (m_lastUpdatedDir != dir)
   {
@@ -510,11 +510,11 @@ void GrepTool::updateDirName(const QString &dir)
   }
 }
 
-void GrepTool::setDirName(const QString &dir){
+void KateGrepDialog::setDirName(const QString &dir){
   cmbDir->setUrl(dir);
 }
 
-bool GrepTool::eventFilter( QObject *o, QEvent *e )
+bool KateGrepDialog::eventFilter( QObject *o, QEvent *e )
 {
   if ( e->type() == QEvent::KeyPress && (
        ((QKeyEvent*)e)->key() == Qt::Key_Return ||
@@ -529,7 +529,7 @@ bool GrepTool::eventFilter( QObject *o, QEvent *e )
 
 #if 0
 
-void KateMainWindow::slotGrepToolItemSelected(const QString &filename,int linenumber)
+void KateMainWindow::slotKateGrepDialogItemSelected(const QString &filename,int linenumber)
 {
   KUrl fileURL;
   fileURL.setPath( filename );

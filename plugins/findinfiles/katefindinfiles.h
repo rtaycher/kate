@@ -29,6 +29,8 @@
 #include <kvbox.h>
 #include <QLinkedList>
 
+#include <kategrepdialog.h>
+
 class QShowEvent;
 
 namespace KParts {
@@ -38,7 +40,6 @@ namespace KParts {
 namespace KateMDI {
   class ToolView;
 }
-
 
 namespace Kate {
 namespace Private {
@@ -77,7 +78,7 @@ class KateFindInFilesView : QObject
      * @param mw main window
      * @param parent toolview
      */
-    KateFindInFilesView (Kate::MainWindow *mw, QWidget* parent);
+    KateFindInFilesView (Kate::MainWindow *mw);
 
     /**
      * destruct us
@@ -96,6 +97,11 @@ class KateFindInFilesView : QObject
      * toolview for this console
      */
     QWidget *m_toolView;
+
+    /**
+     * Grepdialog
+     */
+    KateGrepDialog *m_grepDialog;
 };
 
 }
