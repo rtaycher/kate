@@ -64,28 +64,22 @@ protected:
     bool eventFilter( QObject *, QEvent * );
 
 private Q_SLOTS:
-    void templateActivated(int index);
-    void childExited();
-    void receivedOutput(KProcess *proc, char *buffer, int buflen);
-    void receivedErrOutput(KProcess *proc, char *buffer, int buflen);
     void itemSelected(QTreeWidgetItem *item, int column);
     void slotSearch();
-    void slotCancel();
     void slotClear();
     void patternTextChanged( const QString &);
+    void searchFinished ();
+    void searchMatchFound(const QString &filename, int line, const QString &basename, const QString &lineContent);
 
 private:
-    void processOutput();
-    void finish();
+    void killThread ();
 
-    QLineEdit *leTemplate;
     KComboBox *cmbFiles, *cmbPattern;
     KUrlRequester *cmbDir;
     QCheckBox *cbRecursive;
-    QCheckBox *cbCasesensitive, *cbRegex;
+    QCheckBox *cbCasesensitive;
     QTreeWidget *lbResult;
     KPushButton *btnSearch, *btnClear;
-    KProcess *childproc;
     QString buf;
     QString errbuf;
     KConfig* config;

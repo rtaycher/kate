@@ -51,18 +51,8 @@
 #include <kcombobox.h>
 #include <klineedit.h>
 
-const char *strTemplate[] = {
-  "%s",
-  "\\<%s\\>[\t ]*=[^=]",
-  "\\->[\\t ]*\\<%s\\>[\\t ]*(",
-  "[a-z0-9_$]\\+[\\t ]*::[\\t ]*\\<%s\\>[\\t ]*(",
-  "\\<%s\\>[\\t ]*\\->[\\t ]*[a-z0-9_$]\\+[\\t ]*(",
-  0
-};
-
-
 KateGrepDialog::KateGrepDialog(QWidget *parent)
-  : QWidget(parent), childproc(0), m_grepThread (0)
+  : QWidget(parent), m_grepThread (0)
 {
   setWindowTitle(i18n("Find in Files"));
   config = KGlobal::config();
@@ -81,16 +71,17 @@ KateGrepDialog::KateGrepDialog(QWidget *parent)
                     << "*";
   }
 
-  QGridLayout *layout = new QGridLayout(this);
+  QVBoxLayout *topLayout = new QVBoxLayout(this);
+  QHBoxLayout *layout = new QHBoxLayout();
+  topLayout->addLayout (layout);
+
   QGridLayout *loInput = new QGridLayout();
   QHBoxLayout *loPattern = new QHBoxLayout();
-  QHBoxLayout *loTemplate = new QHBoxLayout();
   QHBoxLayout *loDir = new QHBoxLayout();
 
   layout->setMargin(0);
-  layout->addLayout(loInput, 0, 0);
+  layout->addLayout(loInput);
   loInput->addLayout(loPattern, 0, 1);
-  loInput->addLayout(loTemplate, 1, 1);
   loInput->addLayout(loDir, 3, 1);
 
   // fill pattern layout
@@ -110,41 +101,10 @@ KateGrepDialog::KateGrepDialog(QWidget *parent)
   cbCasesensitive->setMinimumWidth(cbCasesensitive->sizeHint().width());
   cbCasesensitive->setChecked(config->readEntry("CaseSensitive", QVariant(true)).toBool());
 
-  cbRegex = new QCheckBox( i18n("Regular expression"), this );
-  cbRegex->setMinimumWidth( cbRegex->sizeHint().width() );
-  cbRegex->setChecked( config->readEntry( "Regex", QVariant(true )).toBool() );
-
   loInput->addWidget(lPattern, 0, 0, Qt::AlignRight | Qt::AlignVCenter);
   loPattern->addWidget(cmbPattern);
   loPattern->addWidget(cbCasesensitive);
-  loPattern->addWidget(cbRegex);
   loPattern->setStretchFactor(cmbPattern, 1);
-
-  // fill template layout
-  QLabel *lTemplate = new QLabel(i18n("Template:"), this);
-  lTemplate->setFixedSize(lTemplate->sizeHint());
-
-  leTemplate = new KLineEdit(this);
-  lTemplate->setBuddy(leTemplate);
-  leTemplate->setText(strTemplate[0]);
-  leTemplate->setMinimumSize(leTemplate->sizeHint());
-
-  QStringList template_desc;
-  template_desc << "normal"
-                << "assignment"
-                << "->MEMBER("
-                << "class::MEMBER("
-                << "OBJECT->member(";
-
-  KComboBox *cmbTemplate = new KComboBox(false, this);
-  cmbTemplate->insertItems(0, template_desc);
-  cmbTemplate->adjustSize();
-  cmbTemplate->setFixedSize(cmbTemplate->size());
-
-  loInput->addWidget(lTemplate, 1, 0, Qt::AlignRight | Qt::AlignVCenter);
-  loTemplate->addWidget(leTemplate);
-  loTemplate->addWidget(cmbTemplate);
-  loTemplate->setStretchFactor(cmbTemplate, 1);
 
   // files row
   QLabel *lFiles = new QLabel(i18n("Files:"), this);
@@ -184,7 +144,7 @@ KateGrepDialog::KateGrepDialog(QWidget *parent)
 
   // buttons find and clear
   KDialogButtonBox *actionbox = new KDialogButtonBox(this, Qt::Vertical);
-  layout->addWidget(actionbox, 0, 1);
+  layout->addWidget(actionbox);
   btnSearch = actionbox->addButton(KStandardGuiItem::find(), QDialogButtonBox::ActionRole );
   btnSearch->setDefault(true);
   btnClear = actionbox->addButton( KStandardGuiItem::clear() , QDialogButtonBox::ActionRole );
@@ -194,7 +154,7 @@ KateGrepDialog::KateGrepDialog(QWidget *parent)
   headers << i18n("File") << i18n("Line") << i18n("Text");
   lbResult->setHeaderLabels(headers);
   lbResult->setIndentation(0);
-  layout->addWidget(lbResult, 1, 0, 1, 2);
+  topLayout->addWidget(lbResult);
 
   KAcceleratorManager::manage( this );
 
@@ -222,31 +182,19 @@ KateGrepDialog::KateGrepDialog(QWidget *parent)
      ));
   lFiles->setWhatsThis(    i18n("Enter the file name pattern of the files to search here.\n"
      "You may give several patterns separated by commas."));
-  lTemplate->setWhatsThis(    i18n("You can choose a template for the pattern from the combo box\n"
-     "and edit it here. The string %s in the template is replaced\n"
-     "by the pattern input field, resulting in the regular expression\n"
-     "to search for."));
   lDir->setWhatsThis(    i18n("Enter the folder which contains the files in which you want to search."));
   cbRecursive->setWhatsThis(    i18n("Check this box to search in all subfolders."));
   cbCasesensitive->setWhatsThis(    i18n("If this option is enabled (the default), the search will be case sensitive."));
-  cbRegex->setWhatsThis(i18n(
-      "<p>If this is enabled, your pattern will be passed unmodified to "
-      "<em>grep(1)</em>. Otherwise, all characters that are not letters will be "
-      "escaped using a backslash character to prevent grep from interpreting "
-      "them as part of the expression.") );
   lbResult->setWhatsThis(    i18n("The results of the grep run are listed here. Select a\n"
      "filename/line number combination and press Enter or doubleclick\n"
      "on the item to show the respective line in the editor."));
 
   // event filter, do something relevant for RETURN
   cmbPattern->installEventFilter( this );
-  leTemplate->installEventFilter( this );
   cmbPattern->installEventFilter( this );
   cmbFiles->installEventFilter( this );
   cmbDir->comboBox()->installEventFilter( this );
 
-  connect( cmbTemplate, SIGNAL(activated(int)),
-           SLOT(templateActivated(int)) );
   connect( lbResult, SIGNAL(itemActivated(QTreeWidgetItem *, int)),
            SLOT(itemSelected(QTreeWidgetItem *, int)) );
   connect( btnSearch, SIGNAL(clicked()),
@@ -262,24 +210,23 @@ KateGrepDialog::KateGrepDialog(QWidget *parent)
 
 KateGrepDialog::~KateGrepDialog()
 {
-  delete childproc;
-  if (m_grepThread)
+  killThread ();
+}
+
+void KateGrepDialog::killThread ()
+{
+    if (m_grepThread)
     {
-      m_grepThread->cancel();
-      m_grepThread->wait ();
-      delete m_grepThread;
-      m_grepThread = 0;
+        m_grepThread->cancel();
+        m_grepThread->wait ();
+        delete m_grepThread;
+        m_grepThread = 0;
     }
 }
 
 void KateGrepDialog::patternTextChanged( const QString & _text)
 {
   btnSearch->setEnabled( !_text.isEmpty() );
-}
-
-void KateGrepDialog::templateActivated(int index)
-{
-  leTemplate->setText(strTemplate[index]);
 }
 
 void KateGrepDialog::itemSelected(QTreeWidgetItem *item, int column)
@@ -291,42 +238,23 @@ void KateGrepDialog::itemSelected(QTreeWidgetItem *item, int column)
   emit itemSelected(filename, linenumber);
 }
 
-void KateGrepDialog::processOutput()
-{
-  int pos;
-  while ( (pos = buf.indexOf('\n')) != -1)
-  {
-    QString line = buf.left(pos);
-    int doubledot;
-    if ((doubledot = line.indexOf(':')) != -1)
-    {
-      const QString filename = line.left(doubledot);
-      line = line.mid(doubledot+1);
-      if ((doubledot = line.indexOf(':')) != -1)
-      {
-        const QString linenumber = line.left(doubledot);
-        line = line.mid(doubledot+1);
-        QTreeWidgetItem* item = new QTreeWidgetItem(lbResult);
-        item->setText(0, filename);
-        item->setText(1, linenumber);
-        item->setText(2, line.trimmed());
-        item->setData(0, Qt::UserRole, m_workingDir + QDir::separator() + filename);
-        item->setData(1, Qt::UserRole, linenumber.toInt() - 1);
-      }
-    }
-    buf = buf.mid(pos+1);
-  }
-  kapp->processEvents();
-}
-
 void KateGrepDialog::slotSearch()
 {
+  // already running, cancel...
+  if (m_grepThread)
+  {
+    killThread ();
+    return;
+  }
+
+  // no pattern set...
   if ( cmbPattern->currentText().isEmpty() )
   {
     cmbPattern->setFocus();
     return;
   }
 
+  // dir does not exist...
   if ( cmbDir->url().isEmpty() || ! QDir(cmbDir->url().toLocalFile ()).exists() )
   {
     cmbDir->setFocus();
@@ -336,82 +264,48 @@ void KateGrepDialog::slotSearch()
     return;
   }
 
-
-  if ( ! leTemplate->text().contains("%s") )
-  {
-    leTemplate->setFocus();
-    return;
-  }
-
-  if ( childproc && childproc->isRunning() )
-  {
-    childproc->kill();
-    if (m_grepThread)
-    {
-      m_grepThread->cancel();
-      m_grepThread->wait ();
-      delete m_grepThread;
-      m_grepThread = 0;
-    }
-    return;
-  }
-
-
- /* QStringList dummy;
-  QList<QRegExp> liste;
-  dummy << "*";
-  liste << QRegExp ("Kate");
-  m_grepThread = new KateGrepThread (this, cmbDir->url().toLocalFile (), true, dummy, liste);
-  m_grepThread->start();
-*/
-  slotClear ();
-
-  m_workingDir = cmbDir->url().toLocalFile();
-
-  QString s = cmbPattern->currentText();
-  if ( ! cbRegex->isChecked() )
-    s.replace( QRegExp( "([^\\w'()<>])" ), "\\\\1" );
-  QString pattern = leTemplate->text();
-  pattern.replace( "%s", s );
-
-  childproc = new KProcess();
-  childproc->setWorkingDirectory( m_workingDir );
-  *childproc << "find" << ".";
-  if (!cbRecursive->isChecked())
-    *childproc << "-maxdepth" << "1";
-  if (!cmbFiles->currentText().isEmpty() )
-  {
-    QStringList files = cmbFiles->currentText().split( ",", QString::SkipEmptyParts );
-    *childproc << "(";
-    bool first = true;
-    for ( QStringList::Iterator it = files.begin(); it != files.end(); ++it )
-    {
-      if (!first)
-        *childproc << "-o";
-      *childproc << "-name" << (*it);
-      first = false;
-    }
-    *childproc << ")";
-  }
-  *childproc << "-exec" << "grep";
-  if (!cbCasesensitive->isChecked())
-    *childproc << "-i";
-  *childproc << "-n" << "-e" << pattern << "{}";
-  *childproc << "/dev/null"; //trick to have grep always display the filename
-  *childproc << ";";
-
-  connect( childproc, SIGNAL(processExited(KProcess *)),
-           SLOT(childExited()) );
-  connect( childproc, SIGNAL(receivedStdout(KProcess *, char *, int)),
-           SLOT(receivedOutput(KProcess *, char *, int)) );
-  connect( childproc, SIGNAL(receivedStderr(KProcess *, char *, int)),
-           SLOT(receivedErrOutput(KProcess *, char *, int)) );
-
-  // actually it should be checked whether the process was started successfully
+  // switch the button + cursor...
   lbResult->setCursor( QCursor(Qt::WaitCursor) );
   btnClear->setEnabled( false );
   btnSearch->setGuiItem( KStandardGuiItem::cancel() );
-  childproc->start(KProcess::NotifyOnExit, KProcess::AllOutput);
+
+  // clear the listview
+  slotClear ();
+
+  //
+  // init the grep thread
+  //
+
+  // wildcards
+  QStringList wildcards = cmbFiles->currentText().split(QRegExp("[,;]"), QString::SkipEmptyParts);
+
+  // regexps
+  QRegExp reg (cmbPattern->currentText(), cbCasesensitive->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive);
+  QList<QRegExp> liste;
+  liste << reg;
+
+  m_grepThread = new KateGrepThread (this, cmbDir->url().toLocalFile (), cbRecursive->isChecked(), wildcards, liste);
+  m_grepThread->start();
+  connect (m_grepThread, SIGNAL(finished()), this, SLOT(searchFinished()));
+  connect (m_grepThread, SIGNAL(foundMatch (const QString &, int, const QString &, const QString &)),
+           this, SLOT(searchMatchFound(const QString &, int, const QString &, const QString &)));
+}
+
+void KateGrepDialog::searchFinished ()
+{
+  lbResult->unsetCursor();
+  btnClear->setEnabled( true );
+  btnSearch->setGuiItem( KStandardGuiItem::find() );
+}
+
+void KateGrepDialog::searchMatchFound(const QString &filename, int line, const QString &basename, const QString &lineContent)
+{
+  QTreeWidgetItem* item = new QTreeWidgetItem(lbResult);
+  item->setText(0, basename);
+  item->setText(1, QString::number (line+1));
+  item->setText(2, lineContent.trimmed());
+  item->setData(0, Qt::UserRole, filename);
+  item->setData(1, Qt::UserRole, line);
 }
 
 void KateGrepDialog::slotSearchFor(const QString &pattern)
@@ -421,106 +315,8 @@ void KateGrepDialog::slotSearchFor(const QString &pattern)
   slotSearch();
 }
 
-void KateGrepDialog::finish()
-{
-  btnSearch->setEnabled( !cmbPattern->lineEdit()->text().isEmpty() );
-
-  buf += '\n';
-  processOutput();
-  delete childproc;
-  childproc = 0;
-
-  config->setGroup("KateGrepDialog");
-
-  QString cmbText = cmbPattern->currentText();
-  bool itemsRemoved = lastSearchItems.removeAll(cmbText) > 0;
-  lastSearchItems.prepend(cmbText);
-  if (itemsRemoved)
-  {
-    cmbPattern->removeItem(cmbPattern->findText(cmbText));
-  }
-  cmbPattern->insertItem(0, cmbText);
-  cmbPattern->setCurrentIndex(0);
-  if (lastSearchItems.count() > 10) {
-    lastSearchItems.pop_back();
-    cmbPattern->removeItem(cmbPattern->count() - 1);
-  }
-  config->writeEntry("LastSearchItems", lastSearchItems);
-
-
-  cmbText = cmbDir->url().url();
-  itemsRemoved = lastSearchPaths.removeAll(cmbText) > 0;
-  lastSearchPaths.prepend(cmbText);
-  if (itemsRemoved)
-  {
-    cmbDir->comboBox()->removeItem(cmbDir->comboBox()->findText(cmbText));
-  }
-  cmbDir->comboBox()->insertItem(0, cmbText);
-  cmbDir->comboBox()->setCurrentIndex(0);
-  if (lastSearchPaths.count() > 10)
-  {
-    lastSearchPaths.pop_back();
-    cmbDir->comboBox()->removeItem(cmbDir->comboBox()->count() - 1);
-  }
-  config->writeEntry("LastSearchPaths", lastSearchPaths);
-
-
-  cmbText = cmbFiles->currentText();
-  // remove and prepend, so that the mose recently used item is on top
-  itemsRemoved = lastSearchFiles.removeAll(cmbText) > 0;
-  lastSearchFiles.prepend(cmbText);
-  if (itemsRemoved) // combo box already contained item -> remove it first
-  {
-    cmbFiles->removeItem(cmbFiles->findText(cmbText));
-  }
-  cmbFiles->insertItem(0, cmbText);
-  cmbFiles->setCurrentIndex(0);
-  if (lastSearchFiles.count() > 10) {
-    lastSearchFiles.pop_back();
-    cmbFiles->removeItem(cmbFiles->count() - 1);
-  }
-  config->writeEntry("LastSearchFiles", lastSearchFiles);
-
-  config->writeEntry("Recursive", cbRecursive->isChecked());
-  config->writeEntry("CaseSensitive", cbCasesensitive->isChecked());
-  config->writeEntry("Regex", cbRegex->isChecked());
-}
-
-void KateGrepDialog::slotCancel()
-{
-  finish();
-}
-
-void KateGrepDialog::childExited()
-{
-//   int status = childproc->exitStatus();
-  lbResult->unsetCursor();
-  btnClear->setEnabled( true );
-  btnSearch->setGuiItem( KStandardGuiItem::find() );
-
-  if ( ! errbuf.isEmpty() )
-  {
-    KMessageBox::information( parentWidget(), i18n("<strong>Error:</strong><p>") + errbuf, i18n("Grep Tool Error") );
-    errbuf.truncate(0);
-  }
-  else
-    finish();
-}
-
-void KateGrepDialog::receivedOutput(KProcess */*proc*/, char *buffer, int buflen)
-{
-  buf += QByteArray(buffer, buflen+1);
-  processOutput();
-}
-
-void KateGrepDialog::receivedErrOutput(KProcess */*proc*/, char *buffer, int buflen)
-{
-  errbuf += QByteArray( buffer, buflen + 1 );
-}
-
 void KateGrepDialog::slotClear()
 {
-  finish();
   lbResult->clear();
 }
 

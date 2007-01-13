@@ -40,10 +40,11 @@ public:
      void cancel () { m_cancel = true; }
 
  private:
-     void grepInFile (const QString &fileName);
+     void grepInFile (const QString &fileName, const QString &baseName);
 
   Q_SIGNALS:
-     void foundMatch (const QString &filename, int line);
+     void foundMatch (const QString &filename, int line, const QString &basename, const QString &lineContent);
+     void finished ();
 
 private:
     bool m_cancel;

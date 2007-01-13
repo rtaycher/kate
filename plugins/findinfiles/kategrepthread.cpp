@@ -63,15 +63,20 @@ void KateGrepThread::run ()
 
     // iterate over all files
     for (int i = 0; i < currentFiles.size(); ++i)
-      grepInFile (currentFiles.at(i).absoluteFilePath ());
+      grepInFile (currentFiles.at(i).absoluteFilePath (), currentFiles.at(i).fileName());
   }
+
+  emit finished ();
 }
 
-void KateGrepThread::grepInFile (const QString &fileName)
+void KateGrepThread::grepInFile (const QString &fileName, const QString &baseName)
 {
   // execution should halt
   if (m_cancel)
+  {
+    emit finished ();
     QThread::exit (0);
+  }
 
   QFile file (fileName);
 
@@ -88,7 +93,10 @@ void KateGrepThread::grepInFile (const QString &fileName)
   {
     // execution should halt
     if (m_cancel)
+    {
+      emit finished ();
       QThread::exit (0);
+    }
 
     // enough lines gathered, try to match them...
     if (lines.size() == m_searchPattern.size())
@@ -107,7 +115,7 @@ void KateGrepThread::grepInFile (const QString &fileName)
       if (found)
       {
         kDebug () << "found match: " << fileName << " : " << lineNumber << endl;
-        emit foundMatch (fileName, lineNumber);
+        emit foundMatch (fileName, lineNumber, baseName, lines.at (0));
       }
 
       // remove first line...
