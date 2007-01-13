@@ -50,18 +50,6 @@ public:
     KateGrepDialog(QWidget *parent, Kate::MainWindow *mw);
     ~KateGrepDialog();
 
-    // only updates if the dir you give to it differs from the last one given to it !
-    void updateDirName(const QString &);
-
-    void setDirName(const QString &);
-
-
-Q_SIGNALS:
-    void itemSelected(const QString &abs_filename, int line);
-
-public Q_SLOTS:
-    void slotSearchFor(const QString &pattern);
-
 protected:
     bool eventFilter( QObject *, QEvent * );
 
@@ -75,6 +63,7 @@ private Q_SLOTS:
 
 private:
     void killThread ();
+    void setDirName(const QString &);
 
     Kate::MainWindow *m_mw;
     KComboBox *cmbFiles, *cmbPattern;

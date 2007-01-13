@@ -67,23 +67,23 @@ KateGrepDialog::KateGrepDialog(QWidget *parent, Kate::MainWindow *mw)
   {
     // if there are no entries, most probably the first Kate start.
     // Initialize with default values.
-    lastSearchFiles << "*.h,*.hxx,*.cpp,*.cc,*.C,*.cxx,*.idl,*.c"
+    lastSearchFiles << "*"
+                    << "*.h,*.hxx,*.cpp,*.cc,*.C,*.cxx,*.idl,*.c"
                     << "*.cpp,*.cc,*.C,*.cxx,*.c"
-                    << "*.h,*.hxx,*.idl"
-                    << "*";
+                    << "*.h,*.hxx,*.idl";
   }
 
+  // toplevel, vbox
   QVBoxLayout *topLayout = new QVBoxLayout(this);
+
+  // hbox inside, inputfields + buttons
   QHBoxLayout *layout = new QHBoxLayout();
   topLayout->addLayout (layout);
 
+  // inputfields
   QGridLayout *loInput = new QGridLayout();
-  QHBoxLayout *loPattern = new QHBoxLayout();
-  QHBoxLayout *loDir = new QHBoxLayout();
-
   layout->addLayout(loInput);
-  loInput->addLayout(loPattern, 0, 1);
-  loInput->addLayout(loDir, 3, 1);
+  loInput->setColumnStretch (1, 100);
 
   // fill pattern layout
   QLabel *lPattern = new QLabel(i18n("Pattern:"), this);
@@ -103,25 +103,12 @@ KateGrepDialog::KateGrepDialog(QWidget *parent, Kate::MainWindow *mw)
   cbCasesensitive->setChecked(config->readEntry("CaseSensitive", QVariant(true)).toBool());
 
   loInput->addWidget(lPattern, 0, 0, Qt::AlignRight | Qt::AlignVCenter);
-  loPattern->addWidget(cmbPattern);
-  loPattern->addWidget(cbCasesensitive);
-  loPattern->setStretchFactor(cmbPattern, 1);
-
-  // files row
-  QLabel *lFiles = new QLabel(i18n("Files:"), this);
-
-  cmbFiles = new KComboBox(this);
-  cmbFiles->setEditable(true);
-  lFiles->setBuddy(cmbFiles->focusProxy());
-  cmbFiles->setInsertPolicy(QComboBox::NoInsert);
-  cmbFiles->setDuplicatesEnabled(false);
-  cmbFiles->insertItems(0, lastSearchFiles);
-
-  loInput->addWidget(lFiles, 2, 0, Qt::AlignRight | Qt::AlignVCenter);
-  loInput->addWidget(cmbFiles, 2, 1);
+  loInput->addWidget(cmbPattern, 0, 1);
+  loInput->addWidget(cbCasesensitive, 0, 2);
 
   // fill dir layout
   QLabel *lDir = new QLabel(i18n("Folder:"), this);
+  loInput->addWidget(lDir, 1, 0, Qt::AlignRight | Qt::AlignVCenter);
 
   KComboBox* cmbUrl = new KComboBox(true, this);
   cmbUrl->setDuplicatesEnabled(false);
@@ -134,10 +121,20 @@ KateGrepDialog::KateGrepDialog(QWidget *parent, Kate::MainWindow *mw)
   cbRecursive = new QCheckBox(i18n("Recursive"), this);
   cbRecursive->setChecked(config->readEntry("Recursive", QVariant(true)).toBool());
 
-  loInput->addWidget(lDir, 3, 0, Qt::AlignRight | Qt::AlignVCenter);
-  loDir->addWidget(cmbDir, 1);
-  loDir->addWidget(cbRecursive);
-  loDir->setStretchFactor(cmbDir, 1);
+  loInput->addWidget(cmbDir, 1, 1);
+  loInput->addWidget(cbRecursive, 1, 2);
+
+  // files row
+  QLabel *lFiles = new QLabel(i18n("Files:"), this);
+  loInput->addWidget(lFiles, 2, 0, Qt::AlignRight | Qt::AlignVCenter);
+
+  cmbFiles = new KComboBox(this);
+  loInput->addWidget(cmbFiles, 2, 1);
+  cmbFiles->setEditable(true);
+  lFiles->setBuddy(cmbFiles->focusProxy());
+  cmbFiles->setInsertPolicy(QComboBox::NoInsert);
+  cmbFiles->setDuplicatesEnabled(false);
+  cmbFiles->insertItems(0, lastSearchFiles);
 
   // buttons find and clear
   KDialogButtonBox *actionbox = new KDialogButtonBox(this, Qt::Vertical);
@@ -317,25 +314,9 @@ void KateGrepDialog::searchMatchFound(const QString &filename, int line, const Q
   item->setData(1, Qt::UserRole, line);
 }
 
-void KateGrepDialog::slotSearchFor(const QString &pattern)
-{
-  slotClear();
-  cmbPattern->setEditText(pattern);
-  slotSearch();
-}
-
 void KateGrepDialog::slotClear()
 {
   lbResult->clear();
-}
-
-void KateGrepDialog::updateDirName(const QString &dir)
-{
-  if (m_lastUpdatedDir != dir)
-  {
-    setDirName (dir);
-    m_lastUpdatedDir = dir;
-  }
 }
 
 void KateGrepDialog::setDirName(const QString &dir){
