@@ -62,7 +62,7 @@ const char *strTemplate[] = {
 
 
 KateGrepDialog::KateGrepDialog(QWidget *parent)
-  : QWidget(parent), childproc(0)
+  : QWidget(parent), childproc(0), m_grepThread (0)
 {
   setWindowTitle(i18n("Find in Files"));
   config = KGlobal::config();
@@ -263,6 +263,13 @@ KateGrepDialog::KateGrepDialog(QWidget *parent)
 KateGrepDialog::~KateGrepDialog()
 {
   delete childproc;
+  if (m_grepThread)
+    {
+      m_grepThread->cancel();
+      m_grepThread->wait ();
+      delete m_grepThread;
+      m_grepThread = 0;
+    }
 }
 
 void KateGrepDialog::patternTextChanged( const QString & _text)
@@ -329,6 +336,7 @@ void KateGrepDialog::slotSearch()
     return;
   }
 
+
   if ( ! leTemplate->text().contains("%s") )
   {
     leTemplate->setFocus();
@@ -338,9 +346,24 @@ void KateGrepDialog::slotSearch()
   if ( childproc && childproc->isRunning() )
   {
     childproc->kill();
+    if (m_grepThread)
+    {
+      m_grepThread->cancel();
+      m_grepThread->wait ();
+      delete m_grepThread;
+      m_grepThread = 0;
+    }
     return;
   }
 
+
+ /* QStringList dummy;
+  QList<QRegExp> liste;
+  dummy << "*";
+  liste << QRegExp ("Kate");
+  m_grepThread = new KateGrepThread (this, cmbDir->url().toLocalFile (), true, dummy, liste);
+  m_grepThread->start();
+*/
   slotClear ();
 
   m_workingDir = cmbDir->url().toLocalFile();

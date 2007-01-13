@@ -1,9 +1,6 @@
-
-
-
 ########### next target ###############
 
-set(katefindinfilesplugin_PART_SRCS katefindinfiles.cpp kategrepdialog.cpp)
+set(katefindinfilesplugin_PART_SRCS katefindinfiles.cpp kategrepdialog.cpp kategrepthread.cpp)
 
 kde4_automoc(${katefindinfilesplugin_PART_SRCS})
 

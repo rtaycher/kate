@@ -21,6 +21,8 @@
 #ifndef _GREPDIALOG_H_
 #define _GREPDIALOG_H_
 
+#include "kategrepthread.h"
+
 #include <KDialog>
 #include <QStringList>
 #include <QLabel>
@@ -92,6 +94,8 @@ private:
     QStringList lastSearchFiles;
     QString m_lastUpdatedDir;
     QString m_workingDir;
+
+    KateGrepThread *m_grepThread;
 };
 
 
