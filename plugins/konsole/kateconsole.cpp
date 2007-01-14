@@ -44,9 +44,7 @@
 #include <kgenericfactory.h>
 #include <kauthorized.h>
 
-K_EXPORT_COMPONENT_FACTORY( katekonsoleplugin, KGenericFactory<Kate::Private::Plugin::KateKonsolePlugin>( "katekonsoleplugin" ) )
-
-using namespace Kate::Private::Plugin;
+K_EXPORT_COMPONENT_FACTORY( katekonsoleplugin, KGenericFactory<KateKonsolePlugin>( "katekonsoleplugin" ) )
 
 KateKonsolePlugin::KateKonsolePlugin( QObject* parent, const QStringList& ):
   Kate::Plugin ( (Kate::Application*)parent ) {
@@ -55,26 +53,25 @@ KateKonsolePlugin::KateKonsolePlugin( QObject* parent, const QStringList& ):
   }
 }
 
-void KateKonsolePlugin::addView(Kate::MainWindow *win) {
-  kDebug()<<"KateKonsolePlugin::createView"<<endl;
-  // ONLY ALLOW SHELL ACCESS IF ALLOWED ;)
-  if (KAuthorized::authorizeKAction("shell_access")) {
-    kDebug()<<"After auth check"<<endl;
-    QWidget *toolview=win->createToolView ("kate_private_plugin_katekonsoleplugin", MainWindow::Bottom, SmallIcon("konsole"), i18n("Terminal"));
-    m_views.append(new KateConsole(win,toolview));
-  }
+Kate::PluginView *KateKonsolePlugin::createView (Kate::MainWindow *mainWindow)
+{
+  return new KateKonsolePluginView (mainWindow);
 }
 
-void KateKonsolePlugin::removeView(Kate::MainWindow *win) {
-  for(QLinkedList<KateConsole*>::iterator it=m_views.begin();it!=m_views.end();++it) {
-    if ((*it)->mainWindow()==win) {
-      QWidget *pw=(*it)->parentWidget();
-      delete *it;
-      delete pw;
-      m_views.erase(it);
-      break;
-    }
-  }
+KateKonsolePluginView::KateKonsolePluginView (Kate::MainWindow *mainWindow)
+ : Kate::PluginView (mainWindow)
+{
+  // init console
+  QWidget *toolview=mainWindow->createToolView ("kate_private_plugin_katekonsoleplugin", Kate::MainWindow::Bottom, SmallIcon("konsole"), i18n("Terminal"));
+  m_console = new KateConsole(mainWindow,toolview);
+}
+
+KateKonsolePluginView::~KateKonsolePluginView ()
+{
+  // cleanup, kill toolview + console
+  QWidget *toolview = m_console->parentWidget();
+  delete m_console;
+  delete toolview;
 }
 
 KateConsole::KateConsole (Kate::MainWindow *mw, QWidget *parent)

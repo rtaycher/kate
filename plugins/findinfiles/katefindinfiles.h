@@ -41,26 +41,15 @@ namespace KateMDI {
   class ToolView;
 }
 
-namespace Kate {
-namespace Private {
-namespace Plugin {
 class KateFindInFilesView;
 
-class KateFindInFilesPlugin:public Kate::Plugin,public Kate::PluginViewInterface {
+class KateFindInFilesPlugin:public Kate::Plugin {
     Q_OBJECT
-    Q_INTERFACES(Kate::PluginViewInterface)
   public:
     KateFindInFilesPlugin( QObject* parent = 0, const QStringList& = QStringList() );
     virtual ~KateFindInFilesPlugin(){}
-    void addView (Kate::MainWindow *win);
-    void removeView (Kate::MainWindow *win);
 
-    void storeViewConfig(KConfig*,Kate::MainWindow *,const QString&) {}
-    void loadViewConfig(KConfig*,Kate::MainWindow *,const QString&) {}
-    void storeGeneralConfig(KConfig*,const QString&) {}
-    void loadGeneralConfig(KConfig*,const QString&) {}
-  private:
-    QLinkedList<KateFindInFilesView*> m_views;
+    Kate::PluginView *createView (Kate::MainWindow *mainWindow);
 };
 
 /**
@@ -68,7 +57,7 @@ class KateFindInFilesPlugin:public Kate::Plugin,public Kate::PluginViewInterface
  * This class is used for the internal terminal emulator
  * It uses internally the konsole part, thx to konsole devs :)
  */
-class KateFindInFilesView : QObject
+class KateFindInFilesView : public Kate::PluginView
 {
   Q_OBJECT
 
@@ -85,13 +74,7 @@ class KateFindInFilesView : QObject
      */
     ~KateFindInFilesView ();
 
-    Kate::MainWindow *mainWindow() {return m_mw;}
-
   private:
-    /**
-     * main window of this console
-     */
-    Kate::MainWindow *m_mw;
 
     /**
      * toolview for this console
@@ -104,7 +87,4 @@ class KateFindInFilesView : QObject
     KateGrepDialog *m_grepDialog;
 };
 
-}
-}
-}
 #endif

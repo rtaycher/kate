@@ -33,6 +33,7 @@ namespace Kate
 
 class Application;
 class MainWindow;
+class PluginView;
 
 /**
  * \brief Kate plugin interface.
@@ -96,7 +97,7 @@ class MainWindow;
  * Now there are several new methods which you have to reimplement, for
  * example to tell Kate how many config pages the plugin supports. Read the
  * documentation about the PluginConfigPageInterface for further details.
- * 
+ *
  * \see PluginViewInterface, PluginConfigPageInterface
  * \author Christoph Cullmann \<cullmann@kde.org\>
  */
@@ -119,44 +120,50 @@ class KATEINTERFACES_EXPORT Plugin : public QObject
     virtual ~Plugin ();
 
     /**
-     * For internal reason every plugin has a unique global number.
-     * \return unique identifier
-     */
-    unsigned int pluginNumber () const;
-
-    /**
      * Accessor to the Kate application.
      * \return the application object
      */
     Application *application() const;
 
     /**
-     * Store general session settings here.
-     * This function is called whenever a session is saved. You should
-     * use the given \p config and prefix \p groupPrefix to store the data.
-     * The group prefix exist so that the group does not clash with other
-     * applications that use the same config file.
-     * \param config the KConfig object which is to be used
-     * \param groupPrefix the group prefix which is to be used
-     * \see loadGeneralConfig()
+     * Create a new View for this plugin for the given Kate MainWindow
+     * This may be called arbitary often by the application to create as much
+     * views as mainwindows are around, the application will take care to delete
+     * this views if mainwindows close, you don't need to handle this yourself in
+     * the plugin.
+     * The default implementation just doesn't create any view and returns a NULL
+     * pointer
+     * \param mainWindow the MainWindow for which a view should be created
+     * \return the new created view or NULL
      */
-    virtual void storeGeneralConfig(KConfig* config,const QString& groupPrefix)=0;
+    virtual PluginView *createView (MainWindow *mainWindow);
+
     /**
-     * Load general session settings here.
-     * This function is called whenever a session was opened. You should
-     * use the given \p config and prefix \p groupPrefix to store the data.
-     * The group prefix exist so that the group does not clash with other
-     * applications that use the same config file.
+     * Load session specific settings here.
+     * This function is called whenever a Kate session is loaded. You
+     * should use the given \p config and prefix \p groupPrefix to store the
+     * data. The group prefix exist so that the group does not clash with
+     * other applications that use the same config file.
      * \param config the KConfig object which is to be used
      * \param groupPrefix the group prefix which is to be used
-     * \see storeGeneralConfig()
+     * \see writeSessionConfig()
      */
-    virtual void loadGeneralConfig(KConfig* config,const QString& groupPrefix)=0;
+    virtual void readSessionConfig (KConfig* config, const QString& groupPrefix);
+
+    /**
+     * Store session specific settings here.
+     * This function is called whenever a Kate session is saved. You
+     * should use the given \p config and prefix \p groupPrefix to store the
+     * data. The group prefix exists so that the group does not clash with
+     * other applications that use the same config file.
+     * \param config the KConfig object which is to be used
+     * \param groupPrefix the group prefix which is to be used
+     * \see readSessionConfig()
+     */
+    virtual void writeSessionConfig (KConfig* config, const QString& groupPrefix);
 
   private:
     class PrivatePlugin *d;
-    static unsigned int globalPluginNumber;
-    unsigned int myPluginNumber;
 };
 
 /**
@@ -164,13 +171,13 @@ class KATEINTERFACES_EXPORT Plugin : public QObject
  * \param libname the plugin/library name
  * \param application the application
  * \param args arguments
- * \return the plugin on success, otherwise NULL 
+ * \return the plugin on success, otherwise NULL
  */
 KATEINTERFACES_EXPORT Plugin *createPlugin ( const char* libname, Application *application = 0,
                                              const QStringList &args = QStringList() );
 
 /**
- * \brief Plugin view extension interface.
+ * \brief PluginView interface.
  *
  * Topics:
  *  - \ref intro
@@ -179,15 +186,12 @@ KATEINTERFACES_EXPORT Plugin *createPlugin ( const char* libname, Application *a
  *
  * \section intro Introduction
  *
- * The class PluginViewInterface extends the Plugin to support GUIs. So
- * if a plugin has to appear in the GUI you \e have to additionally derive
- * your plugin from PluginViewInterface, read the Plugin documentation for
- * detailed information about how to to this.
+ * The class PluginView is a interface for the view of a plugin.
  *
  * \section views Plugin Views
  *
  * The Kate application supports multiple mainwindows (Window > New Window).
- * For every Kate MainWindow addView() is called, i.e. overwrite addView()
+ * For every Kate MainWindow createView() of the plugin is called, i.e. overwrite addView()
  * and hook your view into the given mainwindow's KXMLGUIFactory. That means
  * you have to create an own KXMLGUIClient derived \e PluginView class and
  * create an own instance for \e every mainwindow. One PluginView then is
@@ -225,80 +229,57 @@ KATEINTERFACES_EXPORT Plugin *createPlugin ( const char* libname, Application *a
  * \see Plugin, KXMLGUIClient, MainWindow
  * \author Christoph Cullmann \<cullmann@kde.org\>
  */
-class KATEINTERFACES_EXPORT PluginViewInterface
+class KATEINTERFACES_EXPORT PluginView : public QObject
 {
-  friend class PrivatePluginViewInterface;
+  friend class PrivatePluginView;
+
+  Q_OBJECT
 
   public:
     /**
      * Constructor.
      */
-    PluginViewInterface ();
+    PluginView (MainWindow *mainWindow);
+
     /**
      * Virtual destructor.
      */
-    virtual ~PluginViewInterface ();
+    virtual ~PluginView ();
 
     /**
-     * For internal reason every plugin view has a unique global number.
-     * \return unique identifier
+     * Accessor to the Kate mainwindow of this view.
+     * \return the mainwindow object
      */
-    unsigned int pluginViewInterfaceNumber () const;
+    MainWindow *mainWindow() const;
 
     /**
-     * This function is called from Kate for every MainWindow, so that a plugin
-     * can register its own GUI in the given \p mainwindow.
-     * \see removeView()
-     */
-    virtual void addView (MainWindow *mainwindow) = 0;
-    /**
-     * This function is called from Kate for every MainWindow, so that a plugin
-     * can cleanly unregister its own GUI from the given \p mainwindow.
-     * \see addView()
-     */
-    virtual void removeView (MainWindow *mainwindow) = 0;
-    /**
-     * Store \p mainwindow specific session settings here.
-     * This function is called whenever a Kate session is saved. You
-     * should use the given \p config and prefix \p groupPrefix to store the
-     * data. The group prefix exists so that the group does not clash with
-     * other applications that use the same config file.
-     * \param config the KConfig object which is to be used
-     * \param mainwindow the MainWindow
-     * \param groupPrefix the group prefix which is to be used
-     * \see loadViewConfig()
-     */
-    virtual void storeViewConfig(KConfig* config, MainWindow* mainwindow, const QString& groupPrefix)=0;
-    /**
-     * Load \p mainwindow specific session settings here.
+     * Load session specific settings here.
      * This function is called whenever a Kate session is loaded. You
      * should use the given \p config and prefix \p groupPrefix to store the
      * data. The group prefix exist so that the group does not clash with
      * other applications that use the same config file.
      * \param config the KConfig object which is to be used
-     * \param mainwindow the MainWindow
      * \param groupPrefix the group prefix which is to be used
-     * \see storeViewConfig()
+     * \see writeSessionConfig()
      */
-    virtual void loadViewConfig(KConfig* config, MainWindow* mainwindow, const QString& groupPrefix)=0;
+    virtual void readSessionConfig (KConfig* config, const QString& groupPrefix);
+
+    /**
+     * Store session specific settings here.
+     * This function is called whenever a Kate session is saved. You
+     * should use the given \p config and prefix \p groupPrefix to store the
+     * data. The group prefix exists so that the group does not clash with
+     * other applications that use the same config file.
+     * \param config the KConfig object which is to be used
+     * \param groupPrefix the group prefix which is to be used
+     * \see readSessionConfig()
+     */
+    virtual void writeSessionConfig (KConfig* config, const QString& groupPrefix);
 
   private:
-    class PrivatePluginViewInterface *d;
-    static unsigned int globalPluginViewInterfaceNumber;
-    unsigned int myPluginViewInterfaceNumber;
+    class PrivatePluginView *d;
 };
 
-/**
- * Helper function that returns the PluginViewInterface of the \p plugin
- * or NULL if the \p plugin does not support the interface.
- * \param plugin the plugin for which the view interface be returned
- * \return the view interface or NULL if the plugin does not
- *         support the interface
- */
-KATEINTERFACES_EXPORT PluginViewInterface *pluginViewInterface (Plugin *plugin);
-
 }
-
-Q_DECLARE_INTERFACE(Kate::PluginViewInterface,"org.kde.Kate.PluginViewInterface")
 
 #endif

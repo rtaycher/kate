@@ -44,9 +44,7 @@
 #include <kgenericfactory.h>
 #include <kauthorized.h>
 
-K_EXPORT_COMPONENT_FACTORY( katefindinfilesplugin, KGenericFactory<Kate::Private::Plugin::KateFindInFilesPlugin>( "KateFindInFilesPlugin" ) )
-
-using namespace Kate::Private::Plugin;
+K_EXPORT_COMPONENT_FACTORY( katefindinfilesplugin, KGenericFactory<KateFindInFilesPlugin>( "KateFindInFilesPlugin" ) )
 
 KateFindInFilesPlugin::KateFindInFilesPlugin( QObject* parent, const QStringList& ):
   Kate::Plugin ( (Kate::Application*)parent ) {
@@ -55,32 +53,18 @@ KateFindInFilesPlugin::KateFindInFilesPlugin( QObject* parent, const QStringList
   }
 }
 
-void KateFindInFilesPlugin::addView(Kate::MainWindow *win) {
-  kDebug()<<"KateFindInFilesPlugin::createView"<<endl;
-  // ONLY ALLOW SHELL ACCESS IF ALLOWED ;)
-  if (KAuthorized::authorizeKAction("shell_access")) {
-    kDebug()<<"After auth check"<<endl;
-    m_views.append(new KateFindInFilesView(win));
-  }
-}
-
-void KateFindInFilesPlugin::removeView(Kate::MainWindow *win) {
-  for(QLinkedList<KateFindInFilesView*>::iterator it=m_views.begin();it!=m_views.end();++it) {
-    if ((*it)->mainWindow()==win) {
-      delete *it;
-      m_views.erase(it);
-      break;
-    }
-  }
+Kate::PluginView *KateFindInFilesPlugin::createView (Kate::MainWindow *mainWindow)
+{
+  return new KateFindInFilesView (mainWindow);
 }
 
 /*
  * Construct the view, toolview + grepdialog
  */
 KateFindInFilesView::KateFindInFilesView (Kate::MainWindow *mw)
- : m_mw (mw)
- , m_toolView (m_mw->createToolView ("kate_private_plugin_katefindinfilesplugin", MainWindow::Bottom, SmallIcon("konsole"), i18n("Find in Files")))
- , m_grepDialog (new KateGrepDialog (m_toolView, m_mw))
+ : Kate::PluginView (mw)
+ , m_toolView (mw->createToolView ("kate_private_plugin_katefindinfilesplugin", Kate::MainWindow::Bottom, SmallIcon("konsole"), i18n("Find in Files")))
+ , m_grepDialog (new KateGrepDialog (m_toolView, mw))
 {
 }
 

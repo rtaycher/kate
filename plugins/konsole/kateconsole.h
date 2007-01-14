@@ -27,7 +27,6 @@
 #include <kxmlguiclient.h>
 
 #include <kvbox.h>
-#include <QLinkedList>
 
 class QShowEvent;
 
@@ -39,27 +38,34 @@ namespace KateMDI {
   class ToolView;
 }
 
-
-namespace Kate {
-namespace Private {
-namespace Plugin {
 class KateConsole;
 
-class KateKonsolePlugin:public Kate::Plugin,public Kate::PluginViewInterface {
+class KateKonsolePlugin:public Kate::Plugin {
     Q_OBJECT
-    Q_INTERFACES(Kate::PluginViewInterface)
+
   public:
     KateKonsolePlugin( QObject* parent = 0, const QStringList& = QStringList() );
     virtual ~KateKonsolePlugin(){}
-    void addView (Kate::MainWindow *win);
-    void removeView (Kate::MainWindow *win);
 
-    void storeViewConfig(KConfig*,Kate::MainWindow *,const QString&) {}
-    void loadViewConfig(KConfig*,Kate::MainWindow *,const QString&) {}
-    void storeGeneralConfig(KConfig*,const QString&) {}
-    void loadGeneralConfig(KConfig*,const QString&) {}
+    Kate::PluginView *createView (Kate::MainWindow *mainWindow);
+};
+
+class KateKonsolePluginView : public Kate::PluginView {
+  Q_OBJECT
+
+  public:
+   /**
+     * Constructor.
+     */
+    KateKonsolePluginView (Kate::MainWindow *mainWindow);
+
+    /**
+     * Virtual destructor.
+     */
+    ~KateKonsolePluginView ();
+
   private:
-    QLinkedList<KateConsole*> m_views;	
+    KateConsole *m_console;
 };
 
 /**
@@ -140,7 +146,4 @@ class KateConsole : public KVBox,public KXMLGUIClient
     QWidget *m_toolView;
 };
 
-}
-}
-}
 #endif

@@ -16,7 +16,8 @@
    Boston, MA 02110-1301, USA.
 */
 
- #include "application.h"
+#include "application.h"
+#include "mainwindow.h"
 
 #include "plugin.h"
 #include "plugin.moc"
@@ -39,56 +40,27 @@ namespace Kate
     }
   };
 
-  class PrivatePluginViewInterface
+  class PrivatePluginView
   {
   public:
-    PrivatePluginViewInterface ()
+    PrivatePluginView ()
     {
     }
 
-    ~PrivatePluginViewInterface ()
+    ~PrivatePluginView ()
     {
     }
 
+    MainWindow *mainWindow;
   };
-
-unsigned int Plugin::globalPluginNumber = 0;
-unsigned int PluginViewInterface::globalPluginViewInterfaceNumber = 0;
 
 Plugin::Plugin( Application *application, const char *name ) : QObject (application )
 {
   setObjectName( name );
-  globalPluginNumber++;
-  myPluginNumber = globalPluginNumber;
 }
 
 Plugin::~Plugin()
 {
-}
-
-unsigned int Plugin::pluginNumber () const
-{
-  return myPluginNumber;
-}
-
-Application *Plugin::application () const
-{
-  return Kate::application();
-}
-
-PluginViewInterface::PluginViewInterface()
-{
-  globalPluginViewInterfaceNumber++;
-  myPluginViewInterfaceNumber = globalPluginViewInterfaceNumber;
-}
-
-PluginViewInterface::~PluginViewInterface()
-{
-}
-
-unsigned int PluginViewInterface::pluginViewInterfaceNumber () const
-{
-  return myPluginViewInterfaceNumber;
 }
 
 Plugin *createPlugin ( const char* libname, Application *application,
@@ -97,11 +69,47 @@ Plugin *createPlugin ( const char* libname, Application *application,
   return KLibLoader::createInstance<Plugin>( libname, application, args );
 }
 
-PluginViewInterface *pluginViewInterface (Plugin *plugin)
+Application *Plugin::application () const
 {
-// doesn't work with abstract methods:  return qobject_cast<Kate::PluginViewInterface>(plugin);
-   
-  return (PluginViewInterface*)(plugin->qt_metacast("Kate::PluginViewInterface"));
+  return Kate::application();
+}
+
+PluginView *Plugin::createView (MainWindow *)
+{
+  return 0;
+}
+
+void Plugin::readSessionConfig (KConfig*, const QString&)
+{
+}
+
+void Plugin::writeSessionConfig (KConfig*, const QString&)
+{
+}
+
+PluginView::PluginView (MainWindow *mainWindow)
+  : QObject (mainWindow), d (new PrivatePluginView ())
+{
+  // remember mainWindow of this view...
+  d->mainWindow = mainWindow;
+}
+
+PluginView::~PluginView ()
+{
+  delete d;
+}
+
+MainWindow *PluginView::mainWindow() const
+{
+  return d->mainWindow;
+}
+
+void PluginView::readSessionConfig (KConfig*, const QString&)
+{
+}
+
+void PluginView::writeSessionConfig (KConfig*, const QString&)
+{
 }
 
 }

@@ -168,7 +168,7 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
   createShellGUI ( true );
 
   kDebug()<<"****************************************************************************"<<sconfig<<endl;
-  KatePluginManager::self()->enableAllPluginsGUI (this,sconfig);
+  KatePluginManager::self()->enableAllPluginsGUI (this, sconfig);
 
   if ( KAuthorized::authorize("shell_access") )
   {
@@ -205,7 +205,7 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
 KateMainWindow::~KateMainWindow()
 {
   // first, save our fallback window size ;)
-		KGlobal::config()->setGroup ("MainWindow");
+  KGlobal::config()->setGroup ("MainWindow");
   saveWindowSize (KGlobal::config());
 
   // save other options ;=)
@@ -213,8 +213,8 @@ KateMainWindow::~KateMainWindow()
 
   KateApp::self()->removeMainWindow (this);
 
+  // disable all plugin guis, delete all pluginViews
   KatePluginManager::self()->disableAllPluginsGUI (this);
-
 }
 
 void KateMainWindow::setupMainWindow ()

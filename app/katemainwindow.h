@@ -37,6 +37,7 @@
 #include <QVBoxLayout>
 #include <QActionGroup>
 #include <QModelIndex>
+#include <QHash>
 
 class QMenu;
 
@@ -46,6 +47,8 @@ class KateTabWidget;
 
 namespace Kate {
   class MainWindow;
+  class Plugin;
+  class PluginView;
 }
 
 class KFileItem;
@@ -175,6 +178,9 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
   public:
     void openUrl (const QString &name=0L);
     QModelIndex modelIndexForDocument(KTextEditor::Document *document);
+
+    QHash<Kate::Plugin*, Kate::PluginView*> &pluginViews () { return m_pluginViews; }
+
   private Q_SLOTS:
     void showFileListPopup(const QPoint& pos);
   protected:
@@ -219,6 +225,9 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
     KateTabWidget *m_tabWidget;
     QString m_dbusObjectPath;
     KateViewDocumentProxyModel *m_pM;
+
+    // all plugin views for this mainwindow, used by the pluginmanager
+    QHash<Kate::Plugin*, Kate::PluginView*> m_pluginViews;
 };
 
 #endif

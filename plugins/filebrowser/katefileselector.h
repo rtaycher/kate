@@ -25,6 +25,7 @@
 #include <ktexteditor/document.h>
 #include <ktexteditor/configpage.h>
 #include <kate/interfaces/plugin.h>
+#include <kate/interfaces/mainwindow.h>
 #include <kate/interfaces/pluginconfigpageinterface.h>
 #include <kdiroperator.h>
 #include <kurlcombobox.h>
@@ -47,35 +48,42 @@ class QToolButton;
 class QCheckBox;
 class QSpinBox;
 
-namespace Kate {
-class MainWindow;
-namespace Private {
-namespace Plugin {
 class KateFileSelector;
 
-class KateFileSelectorPlugin:public Kate::Plugin,public Kate::PluginViewInterface,public Kate::PluginConfigPageInterface {
+class KateFileSelectorPlugin:public Kate::Plugin, public Kate::PluginConfigPageInterface {
     Q_OBJECT
-    Q_INTERFACES(Kate::PluginViewInterface)
     Q_INTERFACES(Kate::PluginConfigPageInterface)
   public:
     KateFileSelectorPlugin( QObject* parent = 0, const QStringList& = QStringList() );
     virtual ~KateFileSelectorPlugin(){}
-    void addView (Kate::MainWindow *win);
-    void removeView (Kate::MainWindow *win);
 
-    void storeViewConfig(KConfig*,Kate::MainWindow *,const QString&) {}
-    void loadViewConfig(KConfig*,Kate::MainWindow *,const QString&);
-    void storeGeneralConfig(KConfig*,const QString&) {}
-    void loadGeneralConfig(KConfig*,const QString&) {}
+    Kate::PluginView *createView (Kate::MainWindow *mainWindow);
 
     uint configPages() const;
-    PluginConfigPage *configPage (uint number = 0, QWidget *parent = 0, const char *name=0);
+    Kate::PluginConfigPage *configPage (uint number = 0, QWidget *parent = 0, const char *name=0);
     QString configPageName (uint number = 0) const;
     QString configPageFullName (uint number = 0) const;
     KIcon configPageIcon (uint number = 0) const;
+};
+
+class KateFileSelectorPluginView : public Kate::PluginView {
+  Q_OBJECT
+
+  public:
+   /**
+     * Constructor.
+     */
+    KateFileSelectorPluginView (Kate::MainWindow *mainWindow);
+
+    /**
+     * Virtual destructor.
+     */
+    ~KateFileSelectorPluginView ();
+
+    void readSessionConfig (KConfig* config, const QString& groupPrefix);
 
   private:
-    QLinkedList<KateFileSelector*> m_views;
+    KateFileSelector *m_fileSelector;
 };
 
 
@@ -210,9 +218,6 @@ class KFSConfigPage : public Kate::PluginConfigPage {
     bool m_changed;
 };
 
-}
-}
-}
-
 #endif //__KATE_FILESELECTOR_H__
+
 // kate: space-indent on; indent-width 2; replace-tabs on;

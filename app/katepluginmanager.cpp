@@ -107,26 +107,28 @@ void KatePluginManager::storeGeneralConfig(KConfig* config) {
     config->writeEntry (saveName, plugin.load);
 
     if (plugin.load) {
-      plugin.plugin->storeGeneralConfig(config,QString("Plugin:%1:").arg(saveName));
+      plugin.plugin->writeSessionConfig(config,QString("Plugin:%1:").arg(saveName));
     }
   }
 }
 
-void KatePluginManager::storeViewConfig(KConfig* config,uint id) {
-  Kate::MainWindow *mw=KateApp::self()->mainWindow(id)->mainWindow();
-  foreach(const KatePluginInfo &plugin,m_pluginList) {
-	if (!plugin.load) continue;
-	Kate::PluginViewInterface *vi=qobject_cast<Kate::PluginViewInterface*>(plugin.plugin);
-	if (vi) {
-		vi->storeViewConfig(config,mw,QString("Plugin:%1:MainWindow:%2").arg(plugin.saveName()).arg(id));
-	}
+void KatePluginManager::storeViewConfig(KConfig* config,uint id)
+{
+  KateMainWindow *mw=KateApp::self()->mainWindow(id);
+
+  foreach(const KatePluginInfo &item, m_pluginList)
+  {
+    // plugin not loaded...
+    if (!item.plugin)
+          continue;
+
+    // no view for this mainwindow
+    if (!mw->pluginViews().contains(item.plugin))
+      continue;
+
+    mw->pluginViews().value(item.plugin)->writeSessionConfig (config, QString("Plugin:%1:MainWindow:%2").arg(item.saveName()).arg(id));
   }
-
 }
-
-
-
-
 
 void KatePluginManager::loadAllEnabledPlugins ()
 {
@@ -152,7 +154,7 @@ void KatePluginManager::enableAllPluginsGUI (KateMainWindow *win,KConfig *config
 {
   for (KatePluginList::iterator it=m_pluginList.begin();it!=m_pluginList.end(); ++it)
   {
-    if (it->load)
+    if (it->plugin)
       enablePluginGUI(&(*it),win,config);
   }
 }
@@ -161,7 +163,7 @@ void KatePluginManager::disableAllPluginsGUI (KateMainWindow *win)
 {
   for (KatePluginList::iterator it=m_pluginList.begin();it!=m_pluginList.end(); ++it)
   {
-    if (it->load)
+    if (it->plugin)
       disablePluginGUI(&(*it),win);
   }
 }
@@ -186,65 +188,61 @@ void KatePluginManager::unloadPlugin (KatePluginInfo *item)
 
 void KatePluginManager::enablePluginGUI (KatePluginInfo *item, KateMainWindow *win, KConfig *config)
 {
-  kDebug(13000)<<"Checking if the GUI of a plugin should be enabled"<<endl;
-  if (!item->plugin) return;
-  if (!Kate::pluginViewInterface(item->plugin)) return;
-  //BEGIN DEBUG
-  QString pluginName=item->service->property("X-Kate-PluginName").toString();
+  // plugin around at all?
+  if (!item->plugin)
+    return;
 
-  if (pluginName.isEmpty())
-    pluginName=item->service->library();
+  // lookup if there is already a view for it..
+  if (win->pluginViews().contains(item->plugin))
+    return;
 
-  kDebug(13000)<<"Enabling GUI for plugin: "<<pluginName<<endl;
-  kDebug()<<item->plugin<<"--"<<Kate::pluginViewInterface(item->plugin)<<endl;
-  //END DEBUG
-  Kate::pluginViewInterface(item->plugin)->addView(win->mainWindow());
-  int winID = KateApp::self()->mainWindowID(win);
-  if (config && winID >= 0)
-  	Kate::pluginViewInterface(item->plugin)->loadViewConfig(config,win->mainWindow(),QString("Plugin:%1:MainWindow:%2").arg(item->saveName()).arg(winID));
+  // create the view
+  Kate::PluginView *view = item->plugin->createView(win->mainWindow());
+  win->pluginViews().insert (item->plugin, view);
+
+  // load session config if needed
+  if (config)
+  {
+    int winID = KateApp::self()->mainWindowID(win);
+    view->readSessionConfig(config, QString("Plugin:%1:MainWindow:%2").arg(item->saveName()).arg(winID));
+  }
 }
 
 void KatePluginManager::enablePluginGUI (KatePluginInfo *item)
 {
-  kDebug(13000)<<"Checking if the GUI of a plugin should be enabled"<<endl;
+  // plugin around at all?
+  if (!item->plugin)
+    return;
 
-  if (!item->plugin) return;
-  if (!Kate::pluginViewInterface(item->plugin)) return;
-
-  //BEGIN DEBUG
-  QString pluginName=item->service->property("X-Kate-PluginName").toString();
-
-  if (pluginName.isEmpty())
-    pluginName=item->service->library();
-
-  kDebug(13000)<<"Enabling GUI for plugin: "<<pluginName<<endl;
-  kDebug()<<item->plugin<<"--"<<Kate::pluginViewInterface(item->plugin)<<endl;
-
-  //END DEBUG
-
+  // enable the gui for all mainwindows...
   for (int i=0; i< KateApp::self()->mainWindows(); i++)
-  {
-    Kate::pluginViewInterface(item->plugin)->addView(KateApp::self()->mainWindow(i)->mainWindow());
-  }
+    enablePluginGUI (item, KateApp::self()->mainWindow(i), 0);
 }
 
 void KatePluginManager::disablePluginGUI (KatePluginInfo *item, KateMainWindow *win)
 {
-  if (!item->plugin) return;
-  if (!Kate::pluginViewInterface(item->plugin)) return;
+  // plugin around at all?
+  if (!item->plugin)
+    return;
 
-  Kate::pluginViewInterface(item->plugin)->removeView(win->mainWindow());
+  // lookup if there is a view for it..
+  if (!win->pluginViews().contains(item->plugin))
+    return;
+
+  // really delete the view of this plugin
+  delete win->pluginViews().value(item->plugin);
+  win->pluginViews().remove (item->plugin);
 }
 
 void KatePluginManager::disablePluginGUI (KatePluginInfo *item)
 {
-  if (!item->plugin) return;
-  if (!Kate::pluginViewInterface(item->plugin)) return;
+  // plugin around at all?
+  if (!item->plugin)
+    return;
 
+  // disable the gui for all mainwindows...
   for (int i=0; i< KateApp::self()->mainWindows(); i++)
-  {
-    Kate::pluginViewInterface(item->plugin)->removeView(KateApp::self()->mainWindow(i)->mainWindow());
-  }
+    disablePluginGUI (item, KateApp::self()->mainWindow(i));
 }
 
 Kate::Plugin *KatePluginManager::plugin(const QString &name)
