@@ -59,7 +59,7 @@ private Q_SLOTS:
     void slotClear();
     void patternTextChanged( const QString &);
     void searchFinished ();
-    void searchMatchFound(const QString &filename, int line, const QString &basename, const QString &lineContent);
+    void searchMatchFound(const QString &filename, int line, int column, const QString &basename, const QString &lineContent);
 
 private:
     void killThread ();

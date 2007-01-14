@@ -230,6 +230,7 @@ void KateGrepDialog::itemSelected(QTreeWidgetItem *item, int)
   // get stuff
   const QString filename = item->data(0, Qt::UserRole).toString();
   const int linenumber = item->data(1, Qt::UserRole).toInt();
+  const int column = item->data(2, Qt::UserRole).toInt();
 
   // open file (if needed, otherwise, this will activate only the right view...)
   KUrl fileURL;
@@ -241,7 +242,7 @@ void KateGrepDialog::itemSelected(QTreeWidgetItem *item, int)
     return;
 
   // do it ;)
-  m_mw->activeView()->setCursorPosition( KTextEditor::Cursor (linenumber, 0) );
+  m_mw->activeView()->setCursorPosition( KTextEditor::Cursor (linenumber, column) );
 }
 
 void KateGrepDialog::slotSearch()
@@ -293,8 +294,8 @@ void KateGrepDialog::slotSearch()
   m_grepThread = new KateGrepThread (this, cmbDir->url().toLocalFile (), cbRecursive->isChecked(), wildcards, liste);
   m_grepThread->start();
   connect (m_grepThread, SIGNAL(finished()), this, SLOT(searchFinished()));
-  connect (m_grepThread, SIGNAL(foundMatch (const QString &, int, const QString &, const QString &)),
-           this, SLOT(searchMatchFound(const QString &, int, const QString &, const QString &)));
+  connect (m_grepThread, SIGNAL(foundMatch (const QString &, int, int, const QString &, const QString &)),
+           this, SLOT(searchMatchFound(const QString &, int, int, const QString &, const QString &)));
 }
 
 void KateGrepDialog::searchFinished ()
@@ -304,7 +305,7 @@ void KateGrepDialog::searchFinished ()
   btnSearch->setGuiItem( KStandardGuiItem::find() );
 }
 
-void KateGrepDialog::searchMatchFound(const QString &filename, int line, const QString &basename, const QString &lineContent)
+void KateGrepDialog::searchMatchFound(const QString &filename, int line, int column, const QString &basename, const QString &lineContent)
 {
   QTreeWidgetItem* item = new QTreeWidgetItem(lbResult);
   item->setText(0, basename);
@@ -312,6 +313,7 @@ void KateGrepDialog::searchMatchFound(const QString &filename, int line, const Q
   item->setText(2, lineContent.trimmed());
   item->setData(0, Qt::UserRole, filename);
   item->setData(1, Qt::UserRole, line);
+  item->setData(2, Qt::UserRole, column);
 }
 
 void KateGrepDialog::slotClear()

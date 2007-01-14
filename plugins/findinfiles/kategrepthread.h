@@ -43,7 +43,7 @@ public:
      void grepInFile (const QString &fileName, const QString &baseName);
 
   Q_SIGNALS:
-     void foundMatch (const QString &filename, int line, const QString &basename, const QString &lineContent);
+     void foundMatch (const QString &filename, int line, int column, const QString &basename, const QString &lineContent);
      void finished ();
 
 private:

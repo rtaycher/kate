@@ -101,21 +101,24 @@ void KateGrepThread::grepInFile (const QString &fileName, const QString &baseNam
     // enough lines gathered, try to match them...
     if (lines.size() == m_searchPattern.size())
     {
-      bool found = true;
+      int firstColumn = -1;
       for (int i = 0; i < m_searchPattern.size(); ++i)
       {
-        if (m_searchPattern.at(i).indexIn (lines.at(i)) == -1)
+        int column = m_searchPattern.at(i).indexIn (lines.at(i));
+        if (column == -1)
         {
-          found = false;
+          firstColumn = -1; // reset firstColumn
           break;
         }
+        else if (i == 0) // remember first column
+          firstColumn = column;
       }
 
       // found match...
-      if (found)
+      if (firstColumn != -1)
       {
         kDebug () << "found match: " << fileName << " : " << lineNumber << endl;
-        emit foundMatch (fileName, lineNumber, baseName, lines.at (0));
+        emit foundMatch (fileName, lineNumber, firstColumn, baseName, lines.at (0));
       }
 
       // remove first line...
