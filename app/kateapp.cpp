@@ -1,4 +1,3 @@
-
 /* This file is part of the KDE project
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2002 Joseph Wenninger <jowenn@kde.org>
@@ -308,9 +307,13 @@ void KateApp::shutdownKate (KateMainWindow *win)
   // detach the dcopClient
   dcopClient()->detach();
 #endif
+
   // cu main windows
   while (!m_mainWindows.isEmpty())
+  {
     delete m_mainWindows[0];
+    m_mainWindowsInterfaces.pop_front();
+  }
 
   quit ();
 }
@@ -396,6 +399,7 @@ KateMainWindow *KateApp::newMainWindow (KConfig *sconfig, const QString &sgroup)
 {
   KateMainWindow *mainWindow = new KateMainWindow (sconfig, sgroup);
   m_mainWindows.push_back (mainWindow);
+  m_mainWindowsInterfaces.push_back (mainWindow->mainWindow());
 
   if ((mainWindows() > 1) && m_mainWindows[m_mainWindows.count()-2]->viewManager()->activeView())
     mainWindow->viewManager()->activateView ( m_mainWindows[m_mainWindows.count()-2]->viewManager()->activeView()->document() );
@@ -411,6 +415,7 @@ KateMainWindow *KateApp::newMainWindow (KConfig *sconfig, const QString &sgroup)
 
 void KateApp::removeMainWindow (KateMainWindow *mainWindow)
 {
+  m_mainWindowsInterfaces.removeAll(mainWindow->mainWindow());
   m_mainWindows.removeAll(mainWindow);
 }
 

@@ -21,7 +21,9 @@
 #define __KATE_APP_H__
 
 #include <kdebase_export.h>
+
 #include "katemain.h"
+#include "../interfaces/mainwindow.h"
 
 #include <KApplication>
 
@@ -205,6 +207,14 @@ class KATEINTERFACES_EXPORT KateApp : public KApplication
     bool openInput (const QString &text);
 
     bool shouldExit() const {return m_shouldExit;}
+
+    /**
+     * Get a list of all mainwindows interfaces for the plugins.
+     * @return all mainwindows
+     * @see activeMainWindow()
+     */
+    const QList<Kate::MainWindow*> &mainWindowsInterfaces () const { return m_mainWindowsInterfaces; }
+
   private:
     bool m_shouldExit;
     /**
@@ -241,6 +251,7 @@ class KATEINTERFACES_EXPORT KateApp : public KApplication
      * known main windows
      */
     QList<KateMainWindow*> m_mainWindows;
+    QList<Kate::MainWindow*> m_mainWindowsInterfaces;
 
 };
 

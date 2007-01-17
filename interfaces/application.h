@@ -96,6 +96,12 @@ class KATEINTERFACES_EXPORT Application : public QObject
     Kate::PluginManager *pluginManager ();
 
     /**
+     * Accessor to the global editor part.
+     * \return KTextEditor component
+     */
+    KTextEditor::Editor *editor();
+
+    /**
      * Accessor to the active mainwindow.
      * Usually there always is an active mainwindow, so it is not necessary
      * to test the returned value for NULL.
@@ -104,24 +110,11 @@ class KATEINTERFACES_EXPORT Application : public QObject
     Kate::MainWindow *activeMainWindow ();
 
     /**
-     * Get the amount of mainwindows.
-     * \return amount of mainwindows
-     * \see activeMainWindow(), mainWindow()
+     * Get a list of all mainwindows.
+     * @return all mainwindows
+     * @see activeMainWindow()
      */
-    uint mainWindows ();
-
-    /**
-     * Accessor to the mainwindow with index @p n.
-     * \return mainwindow with index @p n
-     * \see mainWindows()
-     */
-    Kate::MainWindow *mainWindow (uint n = 0);
-
-    /**
-     * Accessor to the global editor part.
-     * \return KTextEditor component
-     */
-    KTextEditor::Editor *editor();
+    const QList<Kate::MainWindow*> &mainWindows () const;
 
   private:
     class PrivateApplication *d;

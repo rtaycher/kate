@@ -76,17 +76,9 @@ MainWindow *Application::activeMainWindow ()
   return d->app->activeMainWindow()->mainWindow();
 }
 
-uint Application::mainWindows ()
+const QList<MainWindow*> &Application::mainWindows () const
 {
-  return d->app->mainWindows ();
-}
-
-MainWindow *Application::mainWindow (uint n)
-{
-  if (n < mainWindows ())
-    return d->app->mainWindow (n)->mainWindow();
-
-  return 0;
+  return d->app->mainWindowsInterfaces ();
 }
 
 Application *application ()
