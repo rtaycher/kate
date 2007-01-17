@@ -44,7 +44,7 @@ namespace Kate
  * activateView().
  *
  * \section toolviews Toolviews
- * 
+ *
  * It is possible to embedd new toolviews into a mainwindow. To create a
  * toolview use createToolView(), then you can move, hide or show the toolview
  * by using moveToolView(), hideToolView() or showToolView().
@@ -87,7 +87,6 @@ class KATEINTERFACES_EXPORT MainWindow : public QObject
      */
     KXMLGUIFactory *guiFactory() const;
 
-  public :
     /**
      * Get the toplevel widget.
      * \return the kate main window.
@@ -125,19 +124,19 @@ class KATEINTERFACES_EXPORT MainWindow : public QObject
      * Open the file located at \p url.
      * \param url the document's url
      */
-    void openUrl (const KUrl &url);     
+    void openUrl (const KUrl &url);
 
   //
   // SIGNALS !!!
   //
-#ifndef Q_MOC_RUN 
+#ifndef Q_MOC_RUN
   #undef signals
   #define signals public
 #endif
   Q_SIGNALS:
 #ifndef Q_MOC_RUN
   #undef signals
-  #define signals protected   
+  #define signals protected
 #endif
 
     /**

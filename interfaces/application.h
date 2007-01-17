@@ -85,32 +85,38 @@ class KATEINTERFACES_EXPORT Application : public QObject
   public:
     /**
      * Accessor to the document manager.
+     * There is always an document manager, so it is not necessary
+     * to test the returned value for NULL.
      * \return a pointer to the document manager
      */
     Kate::DocumentManager *documentManager ();
 
     /**
      * Accessor to the plugin manager.
+     * There is always an plugin manager, so it is not necessary
+     * to test the returned value for NULL.
      * \return a pointer to the plugin manager
      */
     Kate::PluginManager *pluginManager ();
 
     /**
      * Accessor to the global editor part.
+     * There is always an editor part, so it is not necessary
+     * to test the returned value for NULL.
      * \return KTextEditor component
      */
     KTextEditor::Editor *editor();
 
     /**
      * Accessor to the active mainwindow.
-     * Usually there always is an active mainwindow, so it is not necessary
+     * There is always an active mainwindow, so it is not necessary
      * to test the returned value for NULL.
      * \return a pointer to the active mainwindow
      */
     Kate::MainWindow *activeMainWindow ();
 
     /**
-     * Get a list of all mainwindows.
+     * Get a list of all mainwindows. At least one entry, always.
      * @return all mainwindows
      * @see activeMainWindow()
      */
@@ -121,7 +127,8 @@ class KATEINTERFACES_EXPORT Application : public QObject
 };
 
 /**
- * Global accessor to the application object.
+ * Global accessor to the application object. Always existing during
+ * lifetime of a plugin.
  * \return application object
  */
 KATEINTERFACES_EXPORT Application *application ();
