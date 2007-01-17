@@ -306,7 +306,8 @@ KateExternalToolsMenuAction::KateExternalToolsMenuAction( const QString &text,
 
   m_actionCollection = new KActionCollection( (QWidget*) mainwindow );
 
-  connect(KateDocManager::self(), SIGNAL(documentChanged()), this, SLOT(slotDocumentChanged()));
+  // connect to view changed...
+  connect(mw->mainWindow(), SIGNAL(viewChanged()), this, SLOT(slotDocumentChanged()));
 
   reload();
 }

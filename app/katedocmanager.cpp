@@ -126,14 +126,19 @@ KTextEditor::Document *KateDocManager::createDoc ()
   modelitem->setToolTip(doc->url().prettyUrl());
   appendRow(modelitem);
   m_documentItemMapping.insert(doc,modelitem);
+
+  // connect internal signals...
   connect(doc,SIGNAL(documentUrlChanged ( KTextEditor::Document *)),this,SLOT(slotDocumentUrlChanged(KTextEditor::Document *)));
   connect(doc, SIGNAL(modifiedChanged(KTextEditor::Document *)), this, SLOT(slotModChanged1(KTextEditor::Document *)));
   connect(doc,SIGNAL(documentNameChanged ( KTextEditor::Document * )),SLOT(slotDocumentNameChanged(KTextEditor::Document *)));
+  connect(doc,SIGNAL(modifiedOnDisk(KTextEditor::Document *, bool, KTextEditor::ModificationInterface::ModifiedOnDiskReason)),
+          this,SLOT(slotModifiedOnDisc(KTextEditor::Document *, bool, KTextEditor::ModificationInterface::ModifiedOnDiskReason)));
+
+  // we have a new document, show it the world
   emit documentCreated (doc);
   emit m_documentManager->documentCreated (doc);
 
-  connect(doc,SIGNAL(modifiedOnDisk(KTextEditor::Document *, bool, KTextEditor::ModificationInterface::ModifiedOnDiskReason)),
-   this,SLOT(slotModifiedOnDisc(KTextEditor::Document *, bool, KTextEditor::ModificationInterface::ModifiedOnDiskReason)));
+  // return our new document
   return doc;
 }
 
@@ -162,9 +167,11 @@ void KateDocManager::deleteDoc (KTextEditor::Document *doc)
     }
   }
 
+  emit documentWillBeDeleted (doc);
+  emit m_documentManager->documentWillBeDeleted (doc);
+
   delete m_docInfos.take (doc);
   delete m_docList.takeAt (m_docList.indexOf(doc));
-
 
   emit documentDeleted (doc);
   emit m_documentManager->documentDeleted (doc);
@@ -174,9 +181,6 @@ void KateDocManager::deleteDoc (KTextEditor::Document *doc)
   {
     // special case of documentChanged, no longer any doc here !
     m_currentDoc = 0;
-
-    emit documentChanged ();
-    emit m_documentManager->documentChanged ();
   }
 }
 
@@ -196,9 +200,6 @@ void KateDocManager::setActiveDocument (KTextEditor::Document *doc)
     return;
 
   m_currentDoc = doc;
-
-  emit documentChanged ();
-  emit m_documentManager->documentChanged ();
 }
 
 const KateDocumentInfo *KateDocManager::documentInfo (KTextEditor::Document *doc)

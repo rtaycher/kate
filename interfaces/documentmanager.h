@@ -41,7 +41,7 @@ namespace Kate
  * or closeAllDocuments(). Several signals are provided, documentChanged() is
  * emitted whenever the document's content changed, documentCreated() when a
  * new document was created and documentDeleted() when a document was closed.
- * 
+ *
  * To access the document manager use the global accessor function
  * documentManager() or Application::documentManager(). You should never have
  * to create an instance of this class yourself.
@@ -154,18 +154,19 @@ class KATEINTERFACES_EXPORT DocumentManager : public QObject
 #endif
 
     /**
-     * This signal is emitted whenever the current document's content was changed.
-     * Note, there does not need to be an active document.
-     */
-    void documentChanged ();
-    
-    /**
      * This signal is emitted when the \p document was created.
      */
     void documentCreated (KTextEditor::Document *document);
-    
+
     /**
-     * This signal is emitted when the \p document was closed.
+     * This signal is emitted before a \p document which should be closed is deleted
+     * The document is still accessible and usable, but it will be deleted
+     * after this signal was send.
+     */
+    void documentWillBeDeleted (KTextEditor::Document *document);
+
+    /**
+     * This signal is emitted when the \p document was deleted.
      */
     void documentDeleted (KTextEditor::Document *document);
 

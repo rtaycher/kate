@@ -118,9 +118,24 @@ class KateDocManager : public QStandardItemModel
     void saveAll();
 
   Q_SIGNALS:
-    void documentCreated (KTextEditor::Document *doc);
-    void documentDeleted (KTextEditor::Document *doc);
-    void documentChanged ();
+
+    /**
+     * This signal is emitted when the \p document was created.
+     */
+    void documentCreated (KTextEditor::Document *document);
+
+    /**
+     * This signal is emitted before a \p document which should be closed is deleted
+     * The document is still accessible and usable, but it will be deleted
+     * after this signal was send.
+     */
+    void documentWillBeDeleted (KTextEditor::Document *document);
+
+    /**
+     * This signal is emitted when the \p document was deleted.
+     */
+    void documentDeleted (KTextEditor::Document *document);
+
     void initialDocumentReplaced ();
 
   private Q_SLOTS:
