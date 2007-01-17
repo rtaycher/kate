@@ -83,13 +83,6 @@ class KATEINTERFACES_EXPORT DocumentManager : public QObject
     class KTextEditor::Document *document (uint n = 0);
 
     /**
-     * Get the currently active document.
-     * \return a pointer to the currently active document or NULL if no
-     *         document is opened.
-     */
-    class KTextEditor::Document *activeDocument ();
-
-    /**
      * Get the document with the URL \p url.
      * \param url the document's URL
      * \return the document with the given \p url or NULL, if no such document

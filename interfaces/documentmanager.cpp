@@ -59,11 +59,6 @@ KTextEditor::Document *DocumentManager::document (uint n)
   return d->docMan->document (n);
 }
 
-KTextEditor::Document *DocumentManager::activeDocument ()
-{
-  return d->docMan->activeDocument ();
-}
-
 KTextEditor::Document *DocumentManager::findDocument (const KUrl &url)
 {
   return d->docMan->findDocument (url);

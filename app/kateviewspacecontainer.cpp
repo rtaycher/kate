@@ -284,8 +284,6 @@ void KateViewSpaceContainer::activateView ( KTextEditor::View *view )
 
     emit viewChanged ();
   }
-
-  KateDocManager::self()->setActiveDocument((KTextEditor::Document *)view->document());
 }
 
 void KateViewSpaceContainer::activateView( KTextEditor::Document *d )

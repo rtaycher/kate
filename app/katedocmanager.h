@@ -74,9 +74,6 @@ class KateDocManager : public QStandardItemModel
 
     KTextEditor::Document *document (uint n);
 
-    KTextEditor::Document *activeDocument ();
-    void setActiveDocument (KTextEditor::Document *doc);
-
     const KateDocumentInfo *documentInfo (KTextEditor::Document *doc);
 
     int findDocument (KTextEditor::Document *doc);
@@ -155,7 +152,6 @@ class KateDocManager : public QStandardItemModel
     QList<KTextEditor::Document*> m_docList;
     QHash<KTextEditor::Document*,KateDocumentInfo*> m_docInfos;
 
-    QPointer<KTextEditor::Document> m_currentDoc;
     KConfig *m_metaInfos;
     bool m_saveMetaInfos;
     int m_daysMetaInfos;

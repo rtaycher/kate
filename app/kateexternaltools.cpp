@@ -393,7 +393,13 @@ void KateExternalToolsMenuAction::reload()
 void KateExternalToolsMenuAction::slotDocumentChanged()
 {
   // try to enable/disable to match current mime type
-  KTextEditor::Document *de = KateDocManager::self()->activeDocument();
+  KTextEditor::View *v = mainwindow->viewManager()->activeView();
+
+  // no active view, oh oh
+  if (!v)
+    return;
+
+  KTextEditor::Document *de = v->document();
   if ( de )
   {
     QString mt = de->mimeType();

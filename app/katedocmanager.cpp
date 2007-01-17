@@ -155,8 +155,6 @@ void KateDocManager::slotDocumentNameChanged(KTextEditor::Document* doc) {
 
 void KateDocManager::deleteDoc (KTextEditor::Document *doc)
 {
-  const bool deletedCurrentDoc = (m_currentDoc == doc);
-
   int rows=rowCount();
   m_documentItemMapping.remove(doc);
   for (int i=0;i<rows;i++) {
@@ -167,39 +165,22 @@ void KateDocManager::deleteDoc (KTextEditor::Document *doc)
     }
   }
 
+  // document will be deleted, soon
   emit documentWillBeDeleted (doc);
   emit m_documentManager->documentWillBeDeleted (doc);
 
+  // really delete the document and it's infos
   delete m_docInfos.take (doc);
   delete m_docList.takeAt (m_docList.indexOf(doc));
 
+  // document is gone, emit our signals
   emit documentDeleted (doc);
   emit m_documentManager->documentDeleted (doc);
-
-  // ohh, current doc was deleted
-  if (deletedCurrentDoc)
-  {
-    // special case of documentChanged, no longer any doc here !
-    m_currentDoc = 0;
-  }
 }
 
 KTextEditor::Document *KateDocManager::document (uint n)
 {
   return m_docList.at(n);
-}
-
-KTextEditor::Document *KateDocManager::activeDocument ()
-{
-  return m_currentDoc;
-}
-
-void KateDocManager::setActiveDocument (KTextEditor::Document *doc)
-{
-  if (!doc || (m_currentDoc == doc))
-    return;
-
-  m_currentDoc = doc;
 }
 
 const KateDocumentInfo *KateDocManager::documentInfo (KTextEditor::Document *doc)
