@@ -80,9 +80,9 @@ void MainWindow::activateView ( KTextEditor::Document *doc )
   d->win->viewManager()->activateView( doc );
 }
 
-void MainWindow::openUrl (const KUrl &url)
+KTextEditor::View *MainWindow::openUrl (const KUrl &url, const QString &encoding)
 {
-  d->win->viewManager()->openUrl (url, QString(), true);
+  return d->win->viewManager()->openUrlWithView (url, encoding);
 }
 
 QWidget *MainWindow::createToolView (const QString &identifier, MainWindow::Position pos, const QPixmap &icon, const QString &text)

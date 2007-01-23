@@ -437,6 +437,21 @@ KTextEditor::Document *KateViewManager::openUrl (const KUrl &url, const QString&
   return doc;
 }
 
+KTextEditor::View *KateViewManager::openUrlWithView (const KUrl &url, const QString& encoding)
+{
+  KTextEditor::Document *doc = KateDocManager::self()->openUrl (url, encoding);
+
+  if (!doc)
+    return 0;
+
+  if (!doc->url().isEmpty())
+    m_mainWindow->fileOpenRecent->addUrl( doc->url() );
+
+  activateView( doc );
+
+  return activeView ();
+}
+
 void KateViewManager::openUrl (const KUrl &url)
 {
   openUrl (url, QString());

@@ -107,7 +107,7 @@ class KATEINTERFACES_EXPORT MainWindow : public QObject
    * View stuff, here all stuff belong which allows to
    * access and manipulate the KTextEditor::View's we have in this windows
    */
- public Q_SLOTS: /*these are slots for kjs*/
+ public:
     /**
      * Access the active view.
      * \return active view
@@ -116,15 +116,20 @@ class KATEINTERFACES_EXPORT MainWindow : public QObject
 
     /**
      * Activate the view with the corresponding \p document.
+     * If none exist for this document, create one
      * \param document the document
      */
     void activateView ( KTextEditor::Document *document );
 
     /**
-     * Open the file located at \p url.
+     * Open the document \p url with the given \p encoding.
      * \param url the document's url
+     * \param encoding the preferred encoding. If encoding is QString() the
+     *        encoding will be guessed or the default encoding will be used.
+     * \return a pointer to the created view for the new document, if a document
+     *         with this url is already existing, it's view will be activated
      */
-    void openUrl (const KUrl &url);
+    KTextEditor::View *openUrl (const KUrl &url, const QString &encoding = QString());
 
   //
   // SIGNALS !!!
