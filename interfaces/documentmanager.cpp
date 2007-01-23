@@ -54,24 +54,14 @@ DocumentManager::~DocumentManager ()
   delete d;
 }
 
-KTextEditor::Document *DocumentManager::document (uint n)
+const QList<KTextEditor::Document*> &DocumentManager::documents () const
 {
-  return d->docMan->document (n);
+  return d->docMan->documentList ();
 }
 
-KTextEditor::Document *DocumentManager::findDocument (const KUrl &url)
+KTextEditor::Document *DocumentManager::findUrl (const KUrl &url) const
 {
   return d->docMan->findDocument (url);
-}
-
-bool DocumentManager::isOpen (const KUrl &url)
-{
-  return d->docMan->isOpen (url);
-}
-
-uint DocumentManager::documents ()
-{
-  return d->docMan->documents ();
 }
 
 KTextEditor::Document *DocumentManager::openUrl(const KUrl&url,const QString &encoding)
@@ -82,16 +72,6 @@ KTextEditor::Document *DocumentManager::openUrl(const KUrl&url,const QString &en
 bool DocumentManager::closeDocument(KTextEditor::Document *document)
 {
   return d->docMan->closeDocument (document);
-}
-
-bool DocumentManager::closeDocument(uint n)
-{
-  return d->docMan->closeDocument (n);
-}
-
-bool DocumentManager::closeAllDocuments()
-{
-  return d->docMan->closeAllDocuments ();
 }
 
 DocumentManager *documentManager ()

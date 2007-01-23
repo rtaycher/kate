@@ -74,13 +74,10 @@ class KATEINTERFACES_EXPORT DocumentManager : public QObject
 
   public:
     /**
-     * Get the document with the index @p n.
-     * \param n document index
-     * \return a pointer to the document indexed by @p n in the managers
-     *         internal list
-     * \see activeDocument(), documents()
+     * Get a list of all documents.
+     * @return all documents
      */
-    class KTextEditor::Document *document (uint n = 0);
+    const QList<KTextEditor::Document*> &documents () const;
 
     /**
      * Get the document with the URL \p url.
@@ -88,20 +85,7 @@ class KATEINTERFACES_EXPORT DocumentManager : public QObject
      * \return the document with the given \p url or NULL, if no such document
      *         is in the document manager's internal list.
      */
-    KTextEditor::Document *findDocument (const KUrl &url);
-
-    /**
-     * Check whether a document with given \p url is opened.
-     * \param url the document's url
-     * \return \e true if the document \p url is opened, otherwise \e false
-     */
-    bool isOpen (const KUrl &url);
-
-    /**
-     * Get the number of documents the document manager manages.
-     * \return the number of documents managed by this manager
-     */
-    uint documents ();
+    KTextEditor::Document *findUrl (const KUrl &url) const;
 
     /**
      * Open the document \p url with the given \p encoding.
@@ -110,7 +94,7 @@ class KATEINTERFACES_EXPORT DocumentManager : public QObject
      *        encoding will be guessed or the default encoding will be used.
      * \return a pointer to the created document
      */
-    KTextEditor::Document *openUrl(const KUrl&url,const QString &encoding=QString());
+    KTextEditor::Document *openUrl (const KUrl &url, const QString &encoding = QString());
 
     /**
      * Close the given \p document.
@@ -118,20 +102,6 @@ class KATEINTERFACES_EXPORT DocumentManager : public QObject
      * \return \e true on success, otherwise \e false
      */
     bool closeDocument(KTextEditor::Document *document);
-
-    /**
-     * Close the document identified by index \p n.
-     * \param n the document's index
-     * \return \e true on success, otherwise \e false
-     */
-    bool closeDocument(uint n = 0);
-
-    /**
-     * Close all documents.
-     * \return \e true on success, otherwise \e false
-     */
-    bool closeAllDocuments();
-
 
   //
   // SIGNALS !!!

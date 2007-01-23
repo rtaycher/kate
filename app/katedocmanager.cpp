@@ -198,7 +198,7 @@ uint KateDocManager::documents ()
   return m_docList.count ();
 }
 
-KTextEditor::Document *KateDocManager::findDocument (KUrl url )
+KTextEditor::Document *KateDocManager::findDocument (const KUrl &url) const
 {
   foreach (KTextEditor::Document* it,m_docList)
   {

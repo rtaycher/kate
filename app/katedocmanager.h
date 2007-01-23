@@ -78,14 +78,14 @@ class KateDocManager : public QStandardItemModel
 
     int findDocument (KTextEditor::Document *doc);
     /** Returns the documentNumber of the doc with url URL or -1 if no such doc is found */
-    KTextEditor::Document *findDocument (KUrl url);
+    KTextEditor::Document *findDocument (const KUrl &url) const;
 
     bool isOpen(KUrl url);
 
     QString dbusObjectPath() { return m_dbusObjectPath;}
     uint documents ();
 
-    QList<KTextEditor::Document*> &documentList () { return m_docList; };
+    const QList<KTextEditor::Document*> &documentList () const { return m_docList; };
 
     KTextEditor::Document *openUrl(const KUrl&,const QString &encoding=QString(),bool isTempFile=false);
 
