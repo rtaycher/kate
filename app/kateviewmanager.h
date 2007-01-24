@@ -90,6 +90,8 @@ class KateViewManager : public QObject
     void closeViews(KTextEditor::Document *doc);
     KateMainWindow *mainWindow();
 
+    KTextEditor::View *activateView ( KTextEditor::Document *doc );
+
   private Q_SLOTS:
     void activateView ( KTextEditor::View *view );
     void activateSpace ( KTextEditor::View* v );
@@ -99,8 +101,6 @@ class KateViewManager : public QObject
   public Q_SLOTS:
     void activateDocument(const QModelIndex &index);
     bool getShowFullPath() const { return showFullPath; }
-
-    void activateView ( KTextEditor::Document *doc );
 
     void slotDocumentNew ();
     void slotDocumentOpen ();

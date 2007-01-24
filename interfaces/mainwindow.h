@@ -118,8 +118,9 @@ class KATEINTERFACES_EXPORT MainWindow : public QObject
      * Activate the view with the corresponding \p document.
      * If none exist for this document, create one
      * \param document the document
+     * \return activated view of this document
      */
-    void activateView ( KTextEditor::Document *document );
+    KTextEditor::View *activateView ( KTextEditor::Document *document );
 
     /**
      * Open the document \p url with the given \p encoding.

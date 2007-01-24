@@ -325,11 +325,14 @@ void KateViewManager::setActiveView ( KTextEditor::View* view )
 }
 
 
-void KateViewManager::activateView( KTextEditor::Document *doc )
+KTextEditor::View *KateViewManager::activateView( KTextEditor::Document *doc )
 {
   if (m_currentContainer) {
      m_currentContainer->activateView(doc);
   }
+
+  // return the current activeView
+  return activeView ();
 }
 
 uint KateViewManager::viewCount ()
