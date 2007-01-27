@@ -186,7 +186,6 @@ bool KateApp::startupKate ()
   else if (!m_args->isSet( "stdin" ) && (m_args->count() == 0)) // only start session if no files specified
   {
     // let the user choose session if possible
-#if 1
     if (!sessionManager()->chooseSession ())
     {
       kDebug()<<"chooseSession returned false, exiting"<<endl;
@@ -196,10 +195,6 @@ bool KateApp::startupKate ()
 #endif
       return false;
     }
-#else
-  QMessageBox::information ( 0, "TEST", "TEST");
-#endif
-
   }
 
   // oh, no mainwindow, create one, should not happen, but make sure ;)
@@ -214,11 +209,6 @@ bool KateApp::startupKate ()
 
   bool tempfileSet = KCmdLineArgs::isTempFileSet();
 
-#ifdef __GNUC__
-#warning fixme later
-#endif
-  //KTextEditor::Document::setOpenErrorDialogsActivated (false);
-
   KTextEditor::Document *doc = 0;
   for (int z=0; z<m_args->count(); z++)
   {
@@ -229,18 +219,14 @@ bool KateApp::startupKate ()
     {
       // open a normal file
       if (codec)
-        doc = activeMainWindow()->viewManager()->openUrl( m_args->url(z), codec->name(), false,tempfileSet);
+        doc = activeMainWindow()->viewManager()->openUrl( m_args->url(z), codec->name(), false, tempfileSet);
       else
-        doc = activeMainWindow()->viewManager()->openUrl( m_args->url(z), QString(), false,tempfileSet);
+        doc = activeMainWindow()->viewManager()->openUrl( m_args->url(z), QString(), false, tempfileSet);
     }
     else
       KMessageBox::sorry( activeMainWindow(),
                           i18n("The file '%1' could not be opened: it is not a normal file, it is a folder.", m_args->url(z).url()) );
   }
-#ifdef __GNUC__
-#warning fixme later
-#endif
-  //KTextEditor::Document::setOpenErrorDialogsActivated (true);
 
   // handle stdin input
   if( m_args->isSet( "stdin" ) )
