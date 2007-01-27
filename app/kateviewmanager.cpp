@@ -56,8 +56,8 @@
 //END Includes
 
 KateViewManager::KateViewManager (KateMainWindow *parent)
- : QObject  (parent),
-  showFullPath(false), m_mainWindow(parent)
+ : QObject  (parent)
+ , m_mainWindow(parent)
 {
   // while init
   m_init=true;
@@ -225,7 +225,6 @@ void KateViewManager::slotNewTab()
   if (!m_init)
   {
     container->activateView(doc);
-    container->setShowFullPath(showFullPath);
     m_mainWindow->slotWindowActivated ();
   }
 }
@@ -487,15 +486,6 @@ void KateViewManager::slotSplitViewSpaceHoriz()
     m_currentContainer->slotSplitViewSpaceHoriz();
   }
 }
-
-void KateViewManager::setShowFullPath( bool enable )
-{
-  showFullPath=enable;
-  for (int i=0;i<m_viewSpaceContainerList.count();i++) {
-    m_viewSpaceContainerList[i]->setShowFullPath(enable);
-  }
-  m_mainWindow->slotWindowActivated ();
- }
 
 /**
  * session config functions

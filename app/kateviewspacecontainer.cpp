@@ -361,15 +361,7 @@ void KateViewSpaceContainer::closeViews(KTextEditor::Document *doc)
 }
 
 void KateViewSpaceContainer::slotPendingDocumentNameChanged() {
-          QString c;
-          if (m_pendingDocument->url().isEmpty() || (!showFullPath))
-          {
-            c = m_pendingDocument->documentName();
-          }
-          else
-          {
-            c = m_pendingDocument->url().prettyUrl();
-          }
+          QString c = m_pendingDocument->documentName();
           setWindowTitle(KStringHandler::lsqueeze(c,32));
 }
 
@@ -507,11 +499,6 @@ void KateViewSpaceContainer::removeViewSpace (KateViewSpace *viewspace)
 void KateViewSpaceContainer::slotCloseCurrentViewSpace()
 {
   removeViewSpace(activeViewSpace());
-}
-
-void KateViewSpaceContainer::setShowFullPath( bool enable )
-{
-  showFullPath = enable;
 }
 
 /**

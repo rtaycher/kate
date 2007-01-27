@@ -327,16 +327,6 @@ void KateMainWindow::setupActions()
                                                              this, SLOT(slotConfigure()));
   settingsConfigure->setWhatsThis(i18n("Configure various aspects of this application and the editing component."));
 
-#if 0
-  // pipe to terminal action
-  if (KateApp::self()->authorize("shell_access")) {
-      a=actionCollection()->addAction("tools_pipe_to_terminal");
-      a->setIcon(KIcon("pipe"));
-      a->setText(i18n("&Pipe to Console"));
-      connect(a, SIGNAL(triggered(QAction*)), console, SLOT(slotPipeToConsole()));
-  }
-#endif
-
   // tip of the day :-)
   actionCollection()->addAction( KStandardAction::TipofDay, this, SLOT( tipOfTheDay() ) )
       ->setWhatsThis(i18n("This shows useful tips on the use of this application."));
@@ -384,6 +374,13 @@ void KateMainWindow::setupActions()
   // quick open menu ;)
   a = new KateSessionsAction (i18n("&Quick Open"), this);
   actionCollection()->addAction("sessions_list", a);
+
+  // settings
+  m_paShowPath = new KToggleAction( i18n("Sho&w Path"), this );
+  actionCollection()->addAction( "settings_show_full_path", m_paShowPath );
+  connect( m_paShowPath, SIGNAL(toggled(bool)), this, SLOT(setShowFullPath(bool)) );
+  m_paShowPath->setCheckedState(KGuiItem(i18n("Hide Path")));
+  m_paShowPath->setWhatsThis(i18n("Show the complete document path in the window caption"));
 }
 
 KateTabWidget *KateMainWindow::tabWidget ()
@@ -488,7 +485,8 @@ void KateMainWindow::readOptions ()
   KateDocManager::self()->setSaveMetaInfos(config->readEntry("Save Meta Infos", QVariant(true)).toBool());
   KateDocManager::self()->setDaysMetaInfos(config->readEntry("Days Meta Infos", 30));
 
-  m_viewManager->setShowFullPath(config->readEntry("Show Full Path in Title", QVariant(false)).toBool());
+  m_paShowPath->setChecked (config->readEntry("Show Full Path in Title", QVariant(false)).toBool());
+ // setShowStatusBar (config->readEntry("Show Status Bar", QVariant(true)).toBool());
 
   fileOpenRecent->loadEntries(config, "Recent Files");
 
@@ -512,7 +510,8 @@ void KateMainWindow::saveOptions ()
 
   config->writeEntry("Days Meta Infos", KateDocManager::self()->getDaysMetaInfos());
 
-  config->writeEntry("Show Full Path in Title", m_viewManager->getShowFullPath());
+  config->writeEntry("Show Full Path in Title", m_paShowPath->isChecked());
+  //config->writeEntry("Show Status Bar", m_showStatusBar);
 
   config->writeEntry("Sync Konsole", syncKonsole);
 
@@ -525,25 +524,23 @@ void KateMainWindow::saveOptions ()
   //filelist->writeConfig(config, "Filelist");
 }
 
+void KateMainWindow::setShowStatusBar (bool show)
+{
+}
+
+void KateMainWindow::setShowFullPath (bool show)
+{
+  // update caption
+  if (m_viewManager->activeView())
+    updateCaption (m_viewManager->activeView()->document());
+}
+
 void KateMainWindow::slotWindowActivated ()
 {
   if (m_viewManager->activeView())
   {
     m_pM->opened(modelIndexForDocument(m_viewManager->activeView()->document()));
-#if 0
-    if (console && syncKonsole)
-    {
-      static QString path;
-      QString newPath = m_viewManager->activeView()->document()->url().directory();
-
-      if ( newPath != path )
-      {
-        path = newPath;
-        console->cd (KUrl( path ));
-      }
-    }
-#endif
-    updateCaption ((KTextEditor::Document *)m_viewManager->activeView()->document());
+    updateCaption (m_viewManager->activeView()->document());
   }
 
   // update proxy
@@ -909,7 +906,7 @@ void KateMainWindow::updateCaption (KTextEditor::Document *doc)
     return;
 
   QString c;
-  if (m_viewManager->activeView()->document()->url().isEmpty() || (!m_viewManager->getShowFullPath()))
+  if (m_viewManager->activeView()->document()->url().isEmpty() || (!m_paShowPath || !m_paShowPath->isChecked()))
   {
     c = ((KTextEditor::Document*)m_viewManager->activeView()->document())->documentName();
   }

@@ -75,7 +75,7 @@
     <DefineGroup name="show_merge" />
     <DefineGroup name="configure_merge" />
     <Separator />
-    <Action name="fullscreen" />
+    <Action name="settings_show_full_path"/>
     <Separator />
     <Action name="options_configure_keybinding"/>
     <Action name="set_configure_toolbars"/>
@@ -99,6 +99,8 @@
     <Action name="go_prev"/>
     <Separator/>
     <Merge name="kate_mdi_window_actions"/>
+    <Separator />
+    <Action name="fullscreen" />
   </Menu>
 
   <Menu name="help"><text>&amp;Help</text>

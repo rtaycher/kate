@@ -94,20 +94,8 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   lo->setSpacing(KDialog::spacingHint());
   config->setGroup("General");
 
-  // GROUP with the one below: "Appearance"
-  Q3ButtonGroup *bgStartup = new Q3ButtonGroup( 1, Qt::Horizontal, i18n("&Appearance"), frGeneral );
-  lo->addWidget( bgStartup );
-
-  // show full path in title
-  config->setGroup("General");
-  cb_fullPath = new QCheckBox( i18n("&Show full path in title"), bgStartup);
-  cb_fullPath->setChecked( mainWindow->viewManager()->getShowFullPath() );
-  cb_fullPath->setWhatsThis(i18n("If this option is checked, the full document path will be shown in the window caption."));
-  connect( cb_fullPath, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
-
-
   // GROUP with the one below: "Behavior"
-  bgStartup = new Q3ButtonGroup( 1, Qt::Horizontal, i18n("&Behavior"), frGeneral );
+  Q3ButtonGroup *bgStartup = new Q3ButtonGroup( 1, Qt::Horizontal, i18n("&Behavior"), frGeneral );
   lo->addWidget( bgStartup );
 
   // sync the konsole ?
@@ -405,7 +393,7 @@ void KateConfigDialog::slotApply()
     //fileSelConfigPage->apply();
 #ifdef __GNUC__
 #warning portme
-#endif    
+#endif
 #if 0
     filelistConfigPage->apply();
 #endif
@@ -417,8 +405,6 @@ void KateConfigDialog::slotApply()
       win->externalTools->reload();
     }
     //mainWindow->externalTools->reload();
-
-    mainWindow->viewManager()->setShowFullPath( cb_fullPath->isChecked() ); // hm, stored 2 places :(
 
     mainWindow->saveOptions ();
 

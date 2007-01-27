@@ -75,8 +75,6 @@ class KateViewManager : public QObject
   private:
     void removeViewSpace (KateViewSpace *viewspace);
 
-    bool showFullPath;
-
   public:
     KTextEditor::View* activeView ();
     KateViewSpace* activeViewSpace ();
@@ -100,7 +98,6 @@ class KateViewManager : public QObject
 
   public Q_SLOTS:
     void activateDocument(const QModelIndex &index);
-    bool getShowFullPath() const { return showFullPath; }
 
     void slotDocumentNew ();
     void slotDocumentOpen ();
@@ -120,8 +117,6 @@ class KateViewManager : public QObject
 
     void setActiveSpace ( KateViewSpace* vs );
     void setActiveView ( KTextEditor::View* view );
-
-    void setShowFullPath(bool enable);
 
     void activateNextView();
     void activatePrevView();

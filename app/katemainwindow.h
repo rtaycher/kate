@@ -175,6 +175,10 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
     void aboutEditor();
     void slotFullScreen(bool);
 
+  private Q_SLOTS:
+    void setShowStatusBar (bool show);
+    void setShowFullPath (bool show);
+
   public:
     void openUrl (const QString &name=0L);
     QModelIndex modelIndexForDocument(KTextEditor::Document *document);
@@ -228,6 +232,10 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
 
     // all plugin views for this mainwindow, used by the pluginmanager
     QHash<Kate::Plugin*, Kate::PluginView*> m_pluginViews;
+
+    // options: show statusbar + show path
+    KToggleAction *m_paShowPath;
+    KToggleAction *m_paShowStatusBar;
 };
 
 #endif

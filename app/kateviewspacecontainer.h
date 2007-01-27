@@ -81,8 +81,6 @@ class KateViewSpaceContainer: public QSplitter
 
     void removeViewSpace (KateViewSpace *viewspace);
 
-    bool showFullPath;
-
   public:
     KTextEditor::View* activeView ();
     KateViewSpace* activeViewSpace ();
@@ -121,8 +119,6 @@ class KateViewSpaceContainer: public QSplitter
       */
     void splitViewSpace( KateViewSpace* vs=0L, Qt::Orientation o = Qt::Horizontal );
 
-    bool getShowFullPath() const { return showFullPath; }
-
     /**
      * activate view for given document
      * @param doc document to activate view for
@@ -138,8 +134,6 @@ class KateViewSpaceContainer: public QSplitter
 
     void setActiveSpace ( KateViewSpace* vs );
     void setActiveView ( KTextEditor::View* view );
-
-    void setShowFullPath(bool enable);
 
     void activateNextView();
     void activatePrevView();
