@@ -64,8 +64,6 @@ class KateConfigDialog : public KPageDialog
     KTextEditor::View* v;
     bool dataChanged;
 
-    QCheckBox *cb_fullPath;
-    QCheckBox *cb_syncKonsole;
     QCheckBox *cb_modNotifications;
     QCheckBox *cb_saveMetaInfos;
     QSpinBox *sb_daysMetaInfos;

@@ -98,16 +98,6 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   Q3ButtonGroup *bgStartup = new Q3ButtonGroup( 1, Qt::Horizontal, i18n("&Behavior"), frGeneral );
   lo->addWidget( bgStartup );
 
-  // sync the konsole ?
-  cb_syncKonsole = new QCheckBox(bgStartup);
-  cb_syncKonsole->setText(i18n("Sync &terminal emulator with active document"));
-  cb_syncKonsole->setChecked(parent->syncKonsole);
-  cb_syncKonsole->setWhatsThis( i18n(
-        "If this is checked, the built in Konsole will <code>cd</code> to the directory "
-        "of the active document when started and whenever the active document changes, "
-        "if the document is a local file.") );
-  connect( cb_syncKonsole, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
-
   // modified files notification
   cb_modNotifications = new QCheckBox(
       i18n("Wa&rn about files modified by foreign processes"), bgStartup );
@@ -387,8 +377,6 @@ void KateConfigDialog::slotApply()
 
     config->writeEntry("Modified Notification", cb_modNotifications->isChecked());
     mainWindow->modNotification = cb_modNotifications->isChecked();
-
-    mainWindow->syncKonsole = cb_syncKonsole->isChecked();
 
     //fileSelConfigPage->apply();
 #ifdef __GNUC__

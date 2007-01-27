@@ -199,12 +199,7 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
 
     Kate::MainWindow *m_mainWindow;
 
-    bool syncKonsole;
     bool modNotification;
-
-
-    // console
-    KateConsole *console;
 
     // management items
     KateViewManager *m_viewManager;
