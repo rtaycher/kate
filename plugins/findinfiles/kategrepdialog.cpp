@@ -291,11 +291,16 @@ void KateGrepDialog::slotSearch()
   QList<QRegExp> liste;
   liste << reg;
 
+  // create the thread object
   m_grepThread = new KateGrepThread (this, cmbDir->url().toLocalFile (), cbRecursive->isChecked(), wildcards, liste);
-  m_grepThread->start();
+
+  // connect feedback signals
   connect (m_grepThread, SIGNAL(finished()), this, SLOT(searchFinished()));
   connect (m_grepThread, SIGNAL(foundMatch (const QString &, int, int, const QString &, const QString &)),
            this, SLOT(searchMatchFound(const QString &, int, int, const QString &, const QString &)));
+
+  // grep
+  m_grepThread->start();
 }
 
 void KateGrepDialog::searchFinished ()
