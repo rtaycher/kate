@@ -74,10 +74,18 @@ KateViewSpaceContainer::KateViewSpaceContainer (KateViewManager *viewManager, QW
 
   connect(KateDocManager::self(),SIGNAL(documentCreated(KTextEditor::Document *)),this,SLOT(documentCreated(KTextEditor::Document *)));
   connect(KateDocManager::self(),SIGNAL(documentDeleted(KTextEditor::Document *)),this,SLOT(documentDeleted(KTextEditor::Document *)));
+
+  // title change
+  connect(this, SIGNAL(viewChanged()), this, SLOT(titleMayChange()));
 }
 
 KateViewSpaceContainer::~KateViewSpaceContainer ()
 {
+}
+
+void KateViewSpaceContainer::titleMayChange ()
+{
+  emit changeMyTitle (this);
 }
 
 void KateViewSpaceContainer::documentCreated (KTextEditor::Document *doc)
@@ -123,6 +131,11 @@ bool KateViewSpaceContainer::createView ( KTextEditor::Document *doc )
 
   connect(view,SIGNAL(dropEventPass(QDropEvent *)), mainWindow(),SLOT(slotDropEvent(QDropEvent *)));
   connect(view,SIGNAL(focusIn(KTextEditor::View *)),this,SLOT(activateSpace(KTextEditor::View *)));
+
+  // title change
+  connect(view->document(),SIGNAL(documentUrlChanged ( KTextEditor::Document *)),this,SLOT(titleMayChange()));
+  connect(view->document(), SIGNAL(modifiedChanged(KTextEditor::Document *)), this, SLOT(titleMayChange()));
+  connect(view->document(),SIGNAL(documentNameChanged ( KTextEditor::Document * )),SLOT(titleMayChange()));
 
   activeViewSpace()->addView( view );
   activateView( view );

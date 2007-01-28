@@ -220,6 +220,9 @@ void KateViewManager::slotNewTab()
   connect(container,SIGNAL(viewChanged()),this,SIGNAL(viewChanged()));
   connect(container,SIGNAL(viewChanged()),m_mainWindow->mainWindow(),SIGNAL(viewChanged()));
 
+  // update title...
+  connect(container, SIGNAL(changeMyTitle (QWidget *)), this, SLOT(changeMyTitle (QWidget *)));
+
   if (!m_init)
   {
     container->activateView(doc);
@@ -246,6 +249,22 @@ void KateViewManager::slotCloseTab()
     pos = m_viewSpaceContainerList.count()-1;
 
   tabChanged(m_viewSpaceContainerList[pos]);
+}
+
+void KateViewManager::changeMyTitle (QWidget *page)
+{
+  // get container
+  KateViewSpaceContainer *container=qobject_cast<KateViewSpaceContainer*>(page);
+
+  // should be always valid
+  Q_ASSERT(container);
+
+  // update title if possible
+  if (container->activeView())
+  {
+    m_mainWindow->tabWidget()->setTabText (m_mainWindow->tabWidget()->indexOf (page)
+      , container->activeView()->document()->documentName());
+  }
 }
 
 void KateViewManager::activateNextTab()

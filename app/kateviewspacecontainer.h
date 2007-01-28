@@ -138,8 +138,12 @@ class KateViewSpaceContainer: public QSplitter
     void activateNextView();
     void activatePrevView();
 
+  private Q_SLOTS:
+    void titleMayChange ();
+
   Q_SIGNALS:
     void viewChanged ();
+    void changeMyTitle (QWidget *page);
 
   private:
     KateViewManager *m_viewManager;

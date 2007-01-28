@@ -126,9 +126,13 @@ class KateViewManager : public QObject
 
     QPointer<KTextEditor::View> guiMergedView;
 
+  protected Q_SLOTS:
+    void changeMyTitle (QWidget *page);
+
   Q_SIGNALS:
     void statChanged ();
     void viewChanged ();
+
   private:
     QList<KateViewSpaceContainer *> m_viewSpaceContainerList;
     KateViewSpaceContainer *m_currentContainer;
