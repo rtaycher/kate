@@ -62,7 +62,7 @@ void KateGrepThread::run ()
     QFileInfoList currentFiles = currentDir.entryInfoList (m_fileWildcards, QDir::Files | QDir::NoSymLinks | QDir::NoDotAndDotDot | QDir::Readable);
 
     // iterate over all files
-    for (int i = 0; i < currentFiles.size(); ++i)
+    for (int i = 0; !m_cancel && i < currentFiles.size(); ++i)
       grepInFile (currentFiles.at(i).absoluteFilePath (), currentFiles.at(i).fileName());
   }
 
@@ -71,13 +71,6 @@ void KateGrepThread::run ()
 
 void KateGrepThread::grepInFile (const QString &fileName, const QString &baseName)
 {
-  // execution should halt
-  if (m_cancel)
-  {
-    emit finished ();
-    QThread::exit (0);
-  }
-
   QFile file (fileName);
 
   // can't read file, return
@@ -89,15 +82,8 @@ void KateGrepThread::grepInFile (const QString &fileName, const QString &baseNam
 
   QStringList lines;
   int lineNumber = 0;
-  while (!stream.atEnd ())
+  while (!m_cancel && !stream.atEnd ())
   {
-    // execution should halt
-    if (m_cancel)
-    {
-      emit finished ();
-      QThread::exit (0);
-    }
-
     // enough lines gathered, try to match them...
     if (lines.size() == m_searchPattern.size())
     {

@@ -345,6 +345,11 @@ void KateGrepDialog::showEvent(QShowEvent* event)
   if (event->spontaneous())
     return;
 
+  // thread is running -> the toolview was closed and opened again
+  // in this case, do not change the url
+  if (m_grepThread)
+    return;
+
   // sync url with active view
   KUrl url = m_mw->activeView()->document()->url();
   if (url.isLocalFile())
