@@ -346,12 +346,10 @@ void KateGrepDialog::showEvent(QShowEvent* event)
   if (event->spontaneous())
     return;
 
-  kDebug() << "show event" << endl;
   // sync url with active view
   KUrl url = m_mw->activeView()->document()->url();
-  if (url.isLocalFile()) {
+  if (url.isLocalFile())
     cmbDir->setUrl(url.directory());
-  }
 }
 
 
