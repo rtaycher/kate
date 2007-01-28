@@ -113,8 +113,9 @@ KTextEditor::Document *KateDocManager::createDoc ()
 {
   KTextEditor::Document *doc = (KTextEditor::Document *) m_editor->createDocument(this);
 
+  // turn of the editorpart's own modification dialog, we have our own one, too!
   if (qobject_cast<KTextEditor::ModificationInterface *>(doc))
-    qobject_cast<KTextEditor::ModificationInterface *>(doc)->setModifiedOnDiskWarning (true);
+    qobject_cast<KTextEditor::ModificationInterface *>(doc)->setModifiedOnDiskWarning (false);
 
   m_docList.append(doc);
   m_docInfos.insert (doc, new KateDocumentInfo ());
