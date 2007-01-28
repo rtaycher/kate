@@ -336,7 +336,7 @@ void KateViewDocumentProxyModel::slotColumnsAboutToBeInserted ( const QModelInde
     beginInsertColumns(QModelIndex(),start,end);
 }
  
-void KateViewDocumentProxyModel::KateViewDocumentProxyModel::slotColumnsAboutToBeRemoved ( const QModelIndex & parent, int start, int end ) {
+void KateViewDocumentProxyModel::slotColumnsAboutToBeRemoved ( const QModelIndex & parent, int start, int end ) {
     beginRemoveColumns(mapFromSource(parent),start,end);
 }
 
