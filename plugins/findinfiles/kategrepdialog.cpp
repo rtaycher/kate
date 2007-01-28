@@ -188,7 +188,6 @@ KateGrepDialog::KateGrepDialog(QWidget *parent, Kate::MainWindow *mw)
 
   // event filter, do something relevant for RETURN
   cmbPattern->installEventFilter( this );
-  cmbPattern->installEventFilter( this );
   cmbFiles->installEventFilter( this );
   cmbDir->comboBox()->installEventFilter( this );
 
