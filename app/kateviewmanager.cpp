@@ -57,6 +57,7 @@
 
 KateViewManager::KateViewManager (KateMainWindow *parent)
  : QObject  (parent)
+ , m_currentContainer (0)
  , m_mainWindow(parent)
 {
   // while init
@@ -70,10 +71,9 @@ KateViewManager::KateViewManager (KateMainWindow *parent)
 
   guiMergedView=0;
 
-  m_currentContainer=0;
- connect(m_mainWindow->tabWidget(),SIGNAL(currentChanged(QWidget*)),this,SLOT(tabChanged(QWidget*)));
- slotNewTab();
- tabChanged(m_mainWindow->tabWidget()->currentWidget());
+  connect(m_mainWindow->tabWidget(),SIGNAL(currentChanged(QWidget*)),this,SLOT(tabChanged(QWidget*)));
+  slotNewTab();
+  tabChanged(m_mainWindow->tabWidget()->currentWidget());
 
   // init done
   m_init=false;
@@ -180,23 +180,21 @@ void KateViewManager::setupActions ()
 
 void KateViewManager::updateViewSpaceActions ()
 {
-  if (!m_currentContainer) return;
-
   m_closeView->setEnabled (m_currentContainer->viewSpaceCount() > 1);
   goNext->setEnabled (m_currentContainer->viewSpaceCount() > 1);
   goPrev->setEnabled (m_currentContainer->viewSpaceCount() > 1);
 }
 
 void KateViewManager::tabChanged(QWidget* widget) {
+  // get container
   KateViewSpaceContainer *container=qobject_cast<KateViewSpaceContainer*>(widget);
+
+  // should be always valid
   Q_ASSERT(container);
+
+  // switch current container
   m_currentContainer=container;
-
-  if (container) {
-    container->reactivateActiveView();
-
-  }
-
+  m_currentContainer->reactivateActiveView();
   m_closeTab->setEnabled(m_mainWindow->tabWidget()->count() > 1);
   m_activateNextTab->setEnabled(m_mainWindow->tabWidget()->count() > 1);
   m_activatePrevTab->setEnabled(m_mainWindow->tabWidget()->count() > 1);
@@ -231,8 +229,8 @@ void KateViewManager::slotNewTab()
 
 void KateViewManager::slotCloseTab()
 {
+  // never close last container!
   if (m_viewSpaceContainerList.count() <= 1) return;
-  if (!m_currentContainer) return;
 
   int pos = m_viewSpaceContainerList.indexOf (m_currentContainer);
 
@@ -280,55 +278,38 @@ void KateViewManager::activatePrevTab()
 
 void KateViewManager::activateSpace (KTextEditor::View* v)
 {
-  if (m_currentContainer) {
-    m_currentContainer->activateSpace(v);
-  }
+  m_currentContainer->activateSpace(v);
 }
 
-void KateViewManager::activateView ( KTextEditor::View *view ) {
-  if (m_currentContainer) {
-    m_currentContainer->activateView(view);
-  }
+void KateViewManager::activateView ( KTextEditor::View *view )
+{
+  m_currentContainer->activateView(view);
 }
 
 KateViewSpace* KateViewManager::activeViewSpace ()
 {
-  if (m_currentContainer) {
-    return m_currentContainer->activeViewSpace();
-  }
-  return 0L;
+  return m_currentContainer->activeViewSpace();
 }
 
 KTextEditor::View* KateViewManager::activeView ()
 {
-  if (m_currentContainer) {
-    return m_currentContainer->activeView();
-  }
-  return 0L;
+  return m_currentContainer->activeView();
 }
 
 void KateViewManager::setActiveSpace ( KateViewSpace* vs )
 {
-  if (m_currentContainer) {
-    m_currentContainer->setActiveSpace(vs);
-  }
-
+  m_currentContainer->setActiveSpace(vs);
 }
 
 void KateViewManager::setActiveView ( KTextEditor::View* view )
 {
-  if (m_currentContainer) {
-    m_currentContainer->setActiveView(view);
-  }
-
+  m_currentContainer->setActiveView(view);
 }
-
 
 KTextEditor::View *KateViewManager::activateView( KTextEditor::Document *doc )
 {
-  if (m_currentContainer) {
-     m_currentContainer->activateView(doc);
-  }
+  // activate view
+  m_currentContainer->activateView(doc);
 
   // return the current activeView
   return activeView ();
@@ -361,16 +342,12 @@ void KateViewManager::setViewActivationBlocked (bool block)
 
 void KateViewManager::activateNextView()
 {
-  if (m_currentContainer) {
-    m_currentContainer->activateNextView();
-  }
+  m_currentContainer->activateNextView();
 }
 
 void KateViewManager::activatePrevView()
 {
-  if (m_currentContainer) {
-    m_currentContainer->activatePrevView();
-  }
+  m_currentContainer->activatePrevView();
 }
 
 void KateViewManager::closeViews(KTextEditor::Document *doc)
@@ -383,7 +360,7 @@ void KateViewManager::closeViews(KTextEditor::Document *doc)
 
 void KateViewManager::slotDocumentNew ()
 {
-  if (m_currentContainer) m_currentContainer->createView ();
+  m_currentContainer->createView ();
 }
 
 void KateViewManager::slotDocumentOpen ()
@@ -461,30 +438,22 @@ void KateViewManager::openUrl (const KUrl &url)
 
 void KateViewManager::removeViewSpace (KateViewSpace *viewspace)
 {
-  if (m_currentContainer) {
-    m_currentContainer->removeViewSpace(viewspace);
-  }
+  m_currentContainer->removeViewSpace(viewspace);
 }
 
 void KateViewManager::slotCloseCurrentViewSpace()
 {
-  if (m_currentContainer) {
-    m_currentContainer->slotCloseCurrentViewSpace();
-  }
+  m_currentContainer->slotCloseCurrentViewSpace();
 }
 
 void KateViewManager::slotSplitViewSpaceVert()
 {
-  if (m_currentContainer) {
-    m_currentContainer->slotSplitViewSpaceVert();
-  }
+  m_currentContainer->slotSplitViewSpaceVert();
 }
 
 void KateViewManager::slotSplitViewSpaceHoriz()
 {
-  if (m_currentContainer) {
-    m_currentContainer->slotSplitViewSpaceHoriz();
-  }
+  m_currentContainer->slotSplitViewSpaceHoriz();
 }
 
 /**
