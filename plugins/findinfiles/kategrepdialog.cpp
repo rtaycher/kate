@@ -20,6 +20,7 @@
 
 #include "kategrepdialog.h"
 
+#include <ktexteditor/document.h>
 #include <ktexteditor/view.h>
 
 #include <QObject>
@@ -326,10 +327,6 @@ void KateGrepDialog::slotClear()
   lbResult->clear();
 }
 
-void KateGrepDialog::setDirName(const QString &dir){
-  cmbDir->setUrl(dir);
-}
-
 bool KateGrepDialog::eventFilter( QObject *o, QEvent *e )
 {
   if ( e->type() == QEvent::KeyPress && (
@@ -342,6 +339,21 @@ bool KateGrepDialog::eventFilter( QObject *o, QEvent *e )
 
   return QWidget::eventFilter( o, e );
 }
+
+
+void KateGrepDialog::showEvent(QShowEvent* event)
+{
+  if (event->spontaneous())
+    return;
+
+  kDebug() << "show event" << endl;
+  // sync url with active view
+  KUrl url = m_mw->activeView()->document()->url();
+  if (url.isLocalFile()) {
+    cmbDir->setUrl(url.directory());
+  }
+}
+
 
 #if 0
 

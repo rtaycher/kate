@@ -52,6 +52,7 @@ public:
 
 protected:
     bool eventFilter( QObject *, QEvent * );
+    void showEvent(QShowEvent* event);
 
 private Q_SLOTS:
     void itemSelected(QTreeWidgetItem *item, int column);
@@ -63,7 +64,6 @@ private Q_SLOTS:
 
 private:
     void killThread ();
-    void setDirName(const QString &);
 
     Kate::MainWindow *m_mw;
     KComboBox *cmbFiles, *cmbPattern;
