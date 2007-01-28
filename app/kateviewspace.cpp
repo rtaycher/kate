@@ -64,15 +64,25 @@ KateViewSpace::KateViewSpace( KateViewSpaceContainer *viewManager,
 
   setMinimumWidth (mStatusBar->minimumWidth());
   m_group.clear();
+
+  // connect signal to hide/show statusbar
+  connect (m_viewManager->mainWindow(), SIGNAL(statusBarToggled ()), this, SLOT(statusBarToggled ()));
+
+  // init the statusbar...
+  statusBarToggled ();
 }
 
 KateViewSpace::~KateViewSpace()
 {
 }
 
-void KateViewSpace::polish()
+void KateViewSpace::statusBarToggled ()
 {
-  mStatusBar->show();
+  // show or hide the bar?
+  if (m_viewManager->mainWindow()->showStatusBar())
+    mStatusBar->show ();
+  else
+    mStatusBar->hide ();
 }
 
 void KateViewSpace::addView(KTextEditor::View* v, bool show)

@@ -106,6 +106,8 @@ class KateViewSpace : public KVBox
     void saveConfig (KConfig* config, int myIndex,const QString& viewConfGrp);
     void restoreConfig ( class KateViewSpaceContainer *viewMan, KConfig* config, const QString &group );
 
+  private Q_SLOTS:
+    void statusBarToggled ();
 
   protected:
     /** reimplemented to catch QEvent::PaletteChange,
@@ -122,9 +124,6 @@ class KateViewSpace : public KVBox
     QList<KTextEditor::View*> mViewList;
     KateViewSpaceContainer *m_viewManager;
     QString m_group;
-
-  public Q_SLOTS:
-    void polish();
 };
 
 #endif

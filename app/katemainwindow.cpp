@@ -155,6 +155,9 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
 
   m_mainWindow = new Kate::MainWindow (this);
 
+  // setup most important actions first, needed by setupMainWindow
+  setupImportantActions ();
+
   // setup the most important widgets
   setupMainWindow();
 
@@ -213,6 +216,20 @@ KateMainWindow::~KateMainWindow()
 
   // disable all plugin guis, delete all pluginViews
   KatePluginManager::self()->disableAllPluginsGUI (this);
+}
+
+void KateMainWindow::setupImportantActions ()
+{
+  // settings
+  m_paShowStatusBar = KStandardAction::showStatusbar(this, SLOT(toggleShowStatusBar()), this);
+  actionCollection()->addAction( "settings_show_statusbar", m_paShowStatusBar);
+  m_paShowStatusBar->setWhatsThis(i18n("Use this command to show or hide the view's statusbar"));
+
+  m_paShowPath = new KToggleAction( i18n("Sho&w Path"), this );
+  actionCollection()->addAction( "settings_show_full_path", m_paShowPath );
+  connect( m_paShowPath, SIGNAL(toggled(bool)), this, SLOT(toggleShowFullPath()) );
+  m_paShowPath->setCheckedState(KGuiItem(i18n("Hide Path")));
+  m_paShowPath->setWhatsThis(i18n("Show the complete document path in the window caption"));
 }
 
 void KateMainWindow::setupMainWindow ()
@@ -372,13 +389,6 @@ void KateMainWindow::setupActions()
   // quick open menu ;)
   a = new KateSessionsAction (i18n("&Quick Open"), this);
   actionCollection()->addAction("sessions_list", a);
-
-  // settings
-  m_paShowPath = new KToggleAction( i18n("Sho&w Path"), this );
-  actionCollection()->addAction( "settings_show_full_path", m_paShowPath );
-  connect( m_paShowPath, SIGNAL(toggled(bool)), this, SLOT(setShowFullPath(bool)) );
-  m_paShowPath->setCheckedState(KGuiItem(i18n("Hide Path")));
-  m_paShowPath->setWhatsThis(i18n("Show the complete document path in the window caption"));
 }
 
 KateTabWidget *KateMainWindow::tabWidget ()
@@ -483,11 +493,9 @@ void KateMainWindow::readOptions ()
   KateDocManager::self()->setDaysMetaInfos(config->readEntry("Days Meta Infos", 30));
 
   m_paShowPath->setChecked (config->readEntry("Show Full Path in Title", QVariant(false)).toBool());
- // setShowStatusBar (config->readEntry("Show Status Bar", QVariant(true)).toBool());
+  m_paShowStatusBar->setChecked (config->readEntry("Show Status Bar", QVariant(true)).toBool());
 
   fileOpenRecent->loadEntries(config, "Recent Files");
-
-  //fileselector->readConfig(config, "fileselector");
 }
 
 void KateMainWindow::saveOptions ()
@@ -501,26 +509,30 @@ void KateMainWindow::saveOptions ()
   config->writeEntry("Days Meta Infos", KateDocManager::self()->getDaysMetaInfos());
 
   config->writeEntry("Show Full Path in Title", m_paShowPath->isChecked());
-  //config->writeEntry("Show Status Bar", m_showStatusBar);
+  config->writeEntry("Show Status Bar", m_paShowStatusBar->isChecked());
 
   fileOpenRecent->saveEntries(config, "Recent Files");
-
-  //fileselector->writeConfig(config, "fileselector");
 #ifdef __GNUC__
   #warning PORTME
 #endif
   //filelist->writeConfig(config, "Filelist");
 }
 
-void KateMainWindow::setShowStatusBar (bool show)
+void KateMainWindow::toggleShowStatusBar ()
 {
+  emit statusBarToggled ();
 }
 
-void KateMainWindow::setShowFullPath (bool show)
+void KateMainWindow::toggleShowFullPath ()
 {
   // update caption
   if (m_viewManager->activeView())
     updateCaption (m_viewManager->activeView()->document());
+}
+
+bool KateMainWindow::showStatusBar ()
+{
+  return m_paShowStatusBar->isChecked ();
 }
 
 void KateMainWindow::slotWindowActivated ()

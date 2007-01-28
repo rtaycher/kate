@@ -120,6 +120,11 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
     bool queryClose_internal();
 
   private:
+    /**
+     * Setup actions which pointers are needed already in setupMainWindow
+     */
+    void setupImportantActions ();
+
     void setupMainWindow();
     void setupActions();
     bool queryClose();
@@ -176,8 +181,14 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
     void slotFullScreen(bool);
 
   private Q_SLOTS:
-    void setShowStatusBar (bool show);
-    void setShowFullPath (bool show);
+    void toggleShowStatusBar ();
+    void toggleShowFullPath ();
+
+  public:
+    bool showStatusBar ();
+
+  Q_SIGNALS:
+    void statusBarToggled ();
 
   public:
     void openUrl (const QString &name=0L);
