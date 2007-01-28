@@ -496,6 +496,9 @@ void KateMainWindow::readOptions ()
   m_paShowStatusBar->setChecked (config->readEntry("Show Status Bar", QVariant(true)).toBool());
 
   fileOpenRecent->loadEntries(config, "Recent Files");
+
+  // emit signal to hide/show statusbars
+  toggleShowStatusBar ();
 }
 
 void KateMainWindow::saveOptions ()
