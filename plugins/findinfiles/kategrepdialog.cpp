@@ -59,47 +59,23 @@ KateGrepDialog::KateGrepDialog(QWidget *parent, Kate::MainWindow *mw)
 {
   setupUi(this);
   setWindowTitle(i18n("Find in Files"));
-  config = KGlobal::config();
-  config->setGroup("KateGrepDialog");
-  lastSearchItems = config->readEntry("LastSearchItems",QStringList());
-  lastSearchPaths = config->readEntry("LastSearchPaths",QStringList());
-  lastSearchFiles = config->readEntry("LastSearchFiles",QStringList());
-
-  if( lastSearchFiles.isEmpty() )
-  {
-    // if there are no entries, most probably the first Kate start.
-    // Initialize with default values.
-    lastSearchFiles << "*"
-                    << "*.h,*.hxx,*.cpp,*.cc,*.C,*.cxx,*.idl,*.c"
-                    << "*.cpp,*.cc,*.C,*.cxx,*.c"
-                    << "*.h,*.hxx,*.idl";
-  }
 
   cmbPattern->setDuplicatesEnabled(false);
-  cmbPattern->insertItems(0, lastSearchItems);
-  cmbPattern->setEditText(QString());
   cmbPattern->setInsertPolicy(QComboBox::NoInsert);
   cmbPattern->setFocus();
-
-  cbCasesensitive->setChecked(config->readEntry("CaseSensitive", true));
 
   // set sync icon
   btnSync->setIcon(QIcon(SmallIcon("reload")));
 
   // get url-requester's combo box and sanely initialize
   KComboBox* cmbUrl = cmbDir->comboBox();
-  cmbUrl->insertItems(0, lastSearchPaths);
   cmbUrl->setDuplicatesEnabled(false);
   cmbUrl->setEditable(true);
   cmbDir->completionObject()->setMode(KUrlCompletion::DirCompletion);
   cmbDir->setMode( KFile::Directory|KFile::LocalOnly );
 
-  cbRecursive->setChecked(config->readEntry("Recursive", true));
-
-//  lblFiles->setBuddy(cmbFiles->focusProxy());
   cmbFiles->setInsertPolicy(QComboBox::NoInsert);
   cmbFiles->setDuplicatesEnabled(false);
-  cmbFiles->insertItems(0, lastSearchFiles);
 
   // buttons find and clear
   btnSearch->setGuiItem(KStandardGuiItem::find());
@@ -168,6 +144,48 @@ KateGrepDialog::KateGrepDialog(QWidget *parent, Kate::MainWindow *mw)
 KateGrepDialog::~KateGrepDialog()
 {
   killThread ();
+}
+
+void KateGrepDialog::readSessionConfig (KConfig* config)
+{
+  // first clear everything (could be session switch)
+  cmbPattern->clear();
+  cmbDir->comboBox()->clear();
+  cmbFiles->clear();
+
+  // now restore new session settings
+  lastSearchItems = config->readEntry("LastSearchItems", QStringList());
+  lastSearchPaths = config->readEntry("LastSearchPaths", QStringList());
+  lastSearchFiles = config->readEntry("LastSearchFiles", QStringList());
+
+  if( lastSearchFiles.isEmpty() )
+  {
+    // if there are no entries, most probably the first Kate start.
+    // Initialize with default values.
+    lastSearchFiles << "*"
+                    << "*.h,*.hxx,*.cpp,*.cc,*.C,*.cxx,*.idl,*.c"
+                    << "*.cpp,*.cc,*.C,*.cxx,*.c"
+                    << "*.h,*.hxx,*.idl";
+  }
+
+  cmbPattern->insertItems(0, lastSearchItems);
+  cmbPattern->setEditText(QString());
+
+  cbCasesensitive->setChecked(config->readEntry("CaseSensitive", true));
+  cbRecursive->setChecked(config->readEntry("Recursive", true));
+
+  cmbDir->comboBox()->insertItems(0, lastSearchPaths);
+  cmbFiles->insertItems(0, lastSearchFiles);
+}
+
+void KateGrepDialog::writeSessionConfig (KConfig* config)
+{
+  config->writeEntry("LastSearchItems", lastSearchItems);
+  config->writeEntry("LastSearchPaths", lastSearchPaths);
+  config->writeEntry("LastSearchFiles", lastSearchFiles);
+
+  config->writeEntry("Recursive", cbRecursive->isChecked());
+  config->writeEntry("CaseSensitive", cbCasesensitive->isChecked());
 }
 
 void KateGrepDialog::killThread ()
@@ -269,6 +287,58 @@ void KateGrepDialog::searchFinished ()
   lbResult->unsetCursor();
   btnClear->setEnabled( true );
   btnSearch->setGuiItem( KStandardGuiItem::find() );
+
+  addItems();
+}
+
+void KateGrepDialog::addItems()
+{
+  // update last pattern
+  QString cmbText = cmbPattern->currentText();
+  bool itemsRemoved = lastSearchItems.removeAll(cmbText) > 0;
+  lastSearchItems.prepend(cmbText);
+  if (itemsRemoved)
+    cmbPattern->removeItem(cmbPattern->findText(cmbText));
+  cmbPattern->insertItem(0, cmbText);
+  cmbPattern->setCurrentIndex(0);
+  if (lastSearchItems.count() > 10) {
+    lastSearchItems.pop_back();
+    cmbPattern->removeItem(cmbPattern->count() - 1);
+  }
+
+
+  // update last search path
+  cmbText = cmbDir->url().url();
+  itemsRemoved = lastSearchPaths.removeAll(cmbText) > 0;
+  lastSearchPaths.prepend(cmbText);
+  if (itemsRemoved)
+  {
+    cmbDir->comboBox()->removeItem(cmbDir->comboBox()->findText(cmbText));
+  }
+  cmbDir->comboBox()->insertItem(0, cmbText);
+  cmbDir->comboBox()->setCurrentIndex(0);
+  if (lastSearchPaths.count() > 10)
+  {
+    lastSearchPaths.pop_back();
+    cmbDir->comboBox()->removeItem(cmbDir->comboBox()->count() - 1);
+  }
+
+
+  // update last filter
+  cmbText = cmbFiles->currentText();
+  // remove and prepend, so that the mose recently used item is on top
+  itemsRemoved = lastSearchFiles.removeAll(cmbText) > 0;
+  lastSearchFiles.prepend(cmbText);
+  if (itemsRemoved) // combo box already contained item -> remove it first
+  {
+    cmbFiles->removeItem(cmbFiles->findText(cmbText));
+  }
+  cmbFiles->insertItem(0, cmbText);
+  cmbFiles->setCurrentIndex(0);
+  if (lastSearchFiles.count() > 10) {
+    lastSearchFiles.pop_back();
+    cmbFiles->removeItem(cmbFiles->count() - 1);
+  }
 }
 
 void KateGrepDialog::searchMatchFound(const QString &filename, int line, int column, const QString &basename, const QString &lineContent)
@@ -315,7 +385,7 @@ void KateGrepDialog::showEvent(QShowEvent* event)
 
   // thread is running -> the toolview was closed and opened again
   // in this case, do not change the url
-  if (!cmbDir->url().url().isEmpty() || m_grepThread)
+  if (!cmbDir->url().isEmpty() || m_grepThread)
     return;
 
   syncDir();

@@ -51,9 +51,15 @@ public:
     KateGrepDialog(QWidget *parent, Kate::MainWindow *mw);
     ~KateGrepDialog();
 
+    // read and write session config
+    void readSessionConfig (KConfig* config);
+    void writeSessionConfig (KConfig* config);
+
 protected:
     bool eventFilter( QObject *, QEvent * );
     void showEvent(QShowEvent* event);
+
+    void addItems();
 
 private Q_SLOTS:
     void itemSelected(QTreeWidgetItem *item, int column);
@@ -68,14 +74,9 @@ private:
     void killThread ();
 
     Kate::MainWindow *m_mw;
-    QString buf;
-    QString errbuf;
-    KConfig* config;
     QStringList lastSearchItems;
     QStringList lastSearchPaths;
     QStringList lastSearchFiles;
-    QString m_lastUpdatedDir;
-    QString m_workingDir;
 
     KateGrepThread *m_grepThread;
 };
