@@ -2,6 +2,7 @@
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2001 Anders Lund <anders.lund@lund.tdcadsl.dk>
+   Copyright (C) 2007 Dominik Haumann <dhaumann@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -26,23 +27,11 @@
 #include "kategrepthread.h"
 #include "ui_findwidget.h"
 
-#include <KDialog>
-#include <KConfig>
 #include <QStringList>
-#include <QLabel>
 #include <QEvent>
 
-class QLineEdit;
-class KComboBox;
-class QCheckBox;
-class QTreeWidget;
-class QTreeWidgetItem;
-class KPushButton;
-class QLabel;
-class KProcess;
+class QShowEvent;
 class KConfig;
-class KUrlRequester;
-class QEvent;
 
 class KateGrepDialog : public QWidget, private Ui::FindWidget
 {
@@ -52,9 +41,15 @@ public:
     KateGrepDialog(QWidget *parent, Kate::MainWindow *mw);
     ~KateGrepDialog();
 
+    // read and write session config
+    void readSessionConfig (KConfig* config);
+    void writeSessionConfig (KConfig* config);
+
 protected:
     bool eventFilter( QObject *, QEvent * );
     void showEvent(QShowEvent* event);
+
+    void addItems();
 
 private Q_SLOTS:
     void itemSelected(QTreeWidgetItem *item, int column);
@@ -69,18 +64,12 @@ private:
     void killThread ();
 
     Kate::MainWindow *m_mw;
-    QString buf;
-    QString errbuf;
-    KSharedConfigPtr config;
     QStringList lastSearchItems;
     QStringList lastSearchPaths;
     QStringList lastSearchFiles;
-    QString m_lastUpdatedDir;
-    QString m_workingDir;
 
     KateGrepThread *m_grepThread;
 };
-
 
 #endif
 

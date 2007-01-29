@@ -2,6 +2,7 @@
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2002 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2002 Anders Lund <anders.lund@lund.tdcadsl.dk>
+   Copyright (C) 2007 Dominik Haumann <dhaumann@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -32,17 +33,14 @@
 #include <kaction.h>
 #include <kactioncollection.h>
 
-#include <kurl.h>
+#include <kapplication.h>
+#include <kauthorized.h>
+#include <kconfig.h>
+#include <kdebug.h>
+#include <kgenericfactory.h>
 #include <klibloader.h>
 #include <klocale.h>
-#include <kdebug.h>
 #include <kmessagebox.h>
-#include <kapplication.h>
-//Added by qt3to4:
-#include <QShowEvent>
-
-#include <kgenericfactory.h>
-#include <kauthorized.h>
 
 K_EXPORT_COMPONENT_FACTORY( katefindinfilesplugin, KGenericFactory<KateFindInFilesPlugin>( "KateFindInFilesPlugin" ) )
 
@@ -75,3 +73,17 @@ KateFindInFilesView::~KateFindInFilesView ()
 {
   delete m_toolView;
 }
+
+void KateFindInFilesView::readSessionConfig (KConfig* config, const QString& groupPrefix)
+{
+  config->setGroup(groupPrefix + ":find-in-files");
+  m_grepDialog->readSessionConfig(config);
+}
+
+void KateFindInFilesView::writeSessionConfig (KConfig* config, const QString& groupPrefix)
+{
+  config->setGroup(groupPrefix + ":find-in-files");
+  m_grepDialog->writeSessionConfig(config);
+}
+
+// kate: space-indent on; indent-width 2; replace-tabs on;

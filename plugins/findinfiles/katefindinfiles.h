@@ -2,6 +2,7 @@
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2002 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2002 Anders Lund <anders.lund@lund.tdcadsl.dk>
+   Copyright (C) 2007 Dominik Haumann <dhaumann@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -74,8 +75,11 @@ class KateFindInFilesView : public Kate::PluginView
      */
     ~KateFindInFilesView ();
 
-  private:
+    // overwritten: fread and write session config
+    void readSessionConfig (KConfig* config, const QString& groupPrefix);
+    void writeSessionConfig (KConfig* config, const QString& groupPrefix);
 
+  private:
     /**
      * toolview for this console
      */
@@ -88,3 +92,5 @@ class KateFindInFilesView : public Kate::PluginView
 };
 
 #endif
+
+// kate: space-indent on; indent-width 2; replace-tabs on;
