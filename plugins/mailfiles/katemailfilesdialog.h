@@ -20,6 +20,10 @@
 #define _KATE_MAILFILES_DIALOG_H_
 
 #include <KTextEditor/Document>
+#include <KTextEditor/View>
+
+#include <kate/interfaces/mainwindow.h>
+#include <kate/interfaces/documentmanager.h>
 
 #include <KDialog>
 #include <KUrl>
@@ -43,7 +47,7 @@ class KateMailDialog : public KDialog {
   Q_OBJECT
   public:
     KateMailDialog( QWidget *parent=0,
-                          KateMainWindow *mainwin=0 );
+                          Kate::MainWindow *mainwin=0 );
     ~KateMailDialog() {};
 
     /**
@@ -55,7 +59,7 @@ class KateMailDialog : public KDialog {
   private:
     class QTreeWidget *list;
     class QLabel *lInfo;
-    KateMainWindow *mainWindow;
+    Kate::MainWindow *mainWindow;
     class KVBox *mw;
 
 };

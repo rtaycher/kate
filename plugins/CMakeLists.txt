@@ -4,5 +4,6 @@ endif(NOT WIN32)
 
 add_subdirectory( filebrowser )
 add_subdirectory( findinfiles )
+add_subdirectory( mailfiles )
 
 

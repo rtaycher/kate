@@ -17,9 +17,6 @@
 */
 
 #include "katemailfilesdialog.h"
-#include "katemainwindow.h"
-#include "kateviewmanager.h"
-#include "katedocmanager.h"
 
 #include <KLocale>
 #include <KUrl>
@@ -48,7 +45,7 @@ class KateMailDocItem : public QTreeWidgetItem {
 ///////////////////////////////////////////////////////////////////////////
 // KateMailDialog implementation
 ///////////////////////////////////////////////////////////////////////////
-KateMailDialog::KateMailDialog( QWidget *parent, KateMainWindow  *mainwin )
+KateMailDialog::KateMailDialog( QWidget *parent, Kate::MainWindow  *mainwin )
   : KDialog( parent ),
     mainWindow( mainwin )
 {
@@ -74,12 +71,12 @@ KateMailDialog::KateMailDialog( QWidget *parent, KateMainWindow  *mainwin )
   header << i18n("URL");
   list->setHeaderLabels(header);
 
-  KTextEditor::Document *currentDoc = mainWindow->viewManager()->activeView()->document();
-  uint n = KateDocManager::self()->documents();
+  KTextEditor::Document *currentDoc = mainWindow->activeView()->document();
+  uint n = Kate::documentManager()->documents().size();
   uint i = 0;
   QTreeWidgetItem *item;
   while ( i < n ) {
-    KTextEditor::Document *doc = KateDocManager::self()->document( i );
+    KTextEditor::Document *doc = Kate::documentManager()->documents().at( i );
     if ( doc ) {
       item = new KateMailDocItem( list, doc );
       if ( doc == currentDoc ) {
