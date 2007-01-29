@@ -39,7 +39,7 @@
 #include "../interfaces/mainwindow.h"
 
 #include <KAboutApplication>
-#include <KInstance>
+#include <KComponentData>
 #include <KAboutData>
 #include <KAction>
 #include <KActionCollection>
@@ -198,7 +198,7 @@ KateMainWindow::~KateMainWindow()
 {
   // first, save our fallback window size ;)
   KGlobal::config()->setGroup ("MainWindow");
-  saveWindowSize (KGlobal::config());
+  saveWindowSize (KGlobal::config().data());
 
   // save other options ;=)
   saveOptions();
@@ -447,7 +447,7 @@ void KateMainWindow::newWindow ()
 
 void KateMainWindow::slotEditToolbars()
 {
-  saveMainWindowSettings( KGlobal::config(), "MainWindow" );
+  saveMainWindowSettings(KGlobal::config().data(), "MainWindow");
   KEditToolbar dlg( factory() );
 
   connect( &dlg, SIGNAL(newToolbarConfig()), this, SLOT(slotNewToolbarConfig()) );
@@ -456,7 +456,7 @@ void KateMainWindow::slotEditToolbars()
 
 void KateMainWindow::slotNewToolbarConfig()
 {
-  applyMainWindowSettings( KGlobal::config(), "MainWindow" );
+  applyMainWindowSettings(KGlobal::config().data(), "MainWindow");
 }
 
 void KateMainWindow::slotFileQuit()
@@ -466,7 +466,7 @@ void KateMainWindow::slotFileQuit()
 
 void KateMainWindow::readOptions ()
 {
-  KConfig *config = KGlobal::config();
+  KSharedConfig::Ptr config = KGlobal::config();
 
   config->setGroup("General");
   modNotification = config->readEntry("Modified Notification", QVariant(false)).toBool();
@@ -476,7 +476,7 @@ void KateMainWindow::readOptions ()
   m_paShowPath->setChecked (config->readEntry("Show Full Path in Title", QVariant(false)).toBool());
   m_paShowStatusBar->setChecked (config->readEntry("Show Status Bar", QVariant(true)).toBool());
 
-  fileOpenRecent->loadEntries(config, "Recent Files");
+  fileOpenRecent->loadEntries(config.data(), "Recent Files");
 
   // emit signal to hide/show statusbars
   toggleShowStatusBar ();
@@ -484,7 +484,7 @@ void KateMainWindow::readOptions ()
 
 void KateMainWindow::saveOptions ()
 {
-  KConfig *config = KGlobal::config();
+  KSharedConfig::Ptr config = KGlobal::config();
 
   config->setGroup("General");
 
@@ -495,11 +495,11 @@ void KateMainWindow::saveOptions ()
   config->writeEntry("Show Full Path in Title", m_paShowPath->isChecked());
   config->writeEntry("Show Status Bar", m_paShowStatusBar->isChecked());
 
-  fileOpenRecent->saveEntries(config, "Recent Files");
+  fileOpenRecent->saveEntries(config.data(), "Recent Files");
 #ifdef __GNUC__
   #warning PORTME
 #endif
-  //filelist->writeConfig(config, "Filelist");
+  //filelist->writeConfig(config.data(), "Filelist");
 }
 
 void KateMainWindow::toggleShowStatusBar ()
@@ -620,7 +620,7 @@ void KateMainWindow::editKeys()
   QList<KXMLGUIClient*> clients = guiFactory()->clients();
 
   foreach(KXMLGUIClient *client, clients)
-    dlg.insert ( client->actionCollection(), client->instance()->aboutData()->programName() );
+    dlg.insert ( client->actionCollection(), client->componentData().aboutData()->programName() );
 /*
   dlg.insert( externalTools->actionCollection(), i18n("External Tools") );
 */

@@ -38,7 +38,6 @@
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <kapplication.h>
-#include <kconfig.h>
 //Added by qt3to4:
 #include <QShowEvent>
 
@@ -76,17 +75,3 @@ KateFindInFilesView::~KateFindInFilesView ()
 {
   delete m_toolView;
 }
-
-void KateFindInFilesView::readSessionConfig (KConfig* config, const QString& groupPrefix)
-{
-  config->setGroup(groupPrefix + "::find-in-files");
-  m_grepDialog->readSessionConfig(config);
-}
-
-void KateFindInFilesView::writeSessionConfig (KConfig* config, const QString& groupPrefix)
-{
-  config->setGroup(groupPrefix + "::find-in-files");
-  m_grepDialog->writeSessionConfig(config);
-}
-
-// kate: space-indent on; indent-width 2; replace-tabs on;

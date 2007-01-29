@@ -71,6 +71,7 @@
 #include <kurlcompletion.h>
 #include <kate/interfaces/mainwindow.h>
 #include <ktexteditor/view.h>
+#include <kconfiggroup.h>
 //END Includes
 
 
@@ -718,7 +719,7 @@ void KFSConfigPage::apply()
 
   m_changed = false;
 
-  KConfig *config = KGlobal::config();
+  KSharedConfig::Ptr config = KGlobal::config();
   config->setGroup( "fileselector" );
   // toolbar
   QStringList l;
@@ -730,7 +731,7 @@ void KFSConfigPage::apply()
       l << aItem->idstring();
   }
   config->writeEntry( "toolbar actions", l );
-  fileSelector->setupToolbar( config );
+  fileSelector->setupToolbar(config.data());
   // sync
   int s = 0;
   if ( cbSyncActive->isChecked() )
@@ -756,7 +757,7 @@ void KFSConfigPage::reset()
 }
 void KFSConfigPage::init()
 {
-  KConfig *config = KGlobal::config();
+  KSharedConfig::Ptr config = KGlobal::config();
   config->setGroup( "fileselector" );
   // toolbar
   QStringList l = config->readEntry( "toolbar actions", QStringList(),',' );

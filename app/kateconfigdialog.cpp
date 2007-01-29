@@ -32,7 +32,7 @@
 #include <KTextEditor/ConfigPage>
 #include <KTextEditor/EditorChooser>
 
-#include <KInstance>
+#include <KComponentData>
 #include <kdebug.h>
 #include <KGlobal>
 #include <KGlobalSettings>
@@ -68,7 +68,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   setDefaultButton( Ok );
   setObjectName( "configdialog" );
 
-  KConfig *config = KGlobal::config();
+  KSharedConfig::Ptr config = KGlobal::config();
 
   enableButton( Apply, false );
 
@@ -327,7 +327,7 @@ void KateConfigDialog::slotOk()
 
 void KateConfigDialog::slotApply()
 {
-  KConfig *config = KGlobal::config();
+  KSharedConfig::Ptr config = KGlobal::config();
 
   // if data changed apply the kate app stuff
   if( dataChanged )
@@ -384,7 +384,7 @@ void KateConfigDialog::slotApply()
     mainWindow->saveOptions ();
 
     // save plugin config !!
-    KateApp::self()->pluginManager()->storeGeneralConfig (KGlobal::config());
+    KateApp::self()->pluginManager()->storeGeneralConfig (KGlobal::config().data());
   }
 
   //
@@ -396,7 +396,7 @@ void KateConfigDialog::slotApply()
   }
 
   // write back the editor config
-  KateDocManager::self()->editor()->writeConfig(config);
+  KateDocManager::self()->editor()->writeConfig(config.data());
 
   //
   // plugins config ! (the apply() methode SHOULD check the changed state internally)

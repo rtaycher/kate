@@ -700,7 +700,7 @@ void KFLConfigPage::apply()
 void KFLConfigPage::reset()
 {
   // read in from config file
-  KConfig *config = KGlobal::config();
+  KSharedConfig::Ptr config = KGlobal::config();
   config->setGroup( "Filelist" );
   cbEnableShading->setChecked( config->readEntry("Shading Enabled", QVariant(&m_filelist->m_enableBgShading )).toBool() );
   kcbViewShade->setColor( config->readEntry("View Shade", m_filelist->m_viewShade ) );

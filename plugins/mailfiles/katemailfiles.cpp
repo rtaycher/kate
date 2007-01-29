@@ -59,7 +59,7 @@ KateMailFilesPluginView::KateMailFilesPluginView (Kate::MainWindow *mainWindow)
 {
     actionCollection()->addAction( KStandardAction::Mail, this, SLOT(slotMail()) )
       ->setWhatsThis(i18n("Send one or more of the open documents as email attachments."));
-    setInstance (new KInstance("kate"));
+    setComponentData (KComponentData("kate"));
     setXMLFile("plugins/katemailfiles/ui.rc");
     mainWindow->guiFactory()->addClient (this);
 }

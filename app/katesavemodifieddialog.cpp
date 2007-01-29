@@ -33,7 +33,7 @@
 #include <KIconLoader>
 #include <KMessageBox>
 #include <kdebug.h>
-#include <KInstance>
+#include <KComponentData>
 #include <KEncodingFileDialog>
 
 class AbstractKateSaveModifiedDialogCheckListItem:public QTreeWidgetItem {

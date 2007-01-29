@@ -138,7 +138,7 @@ GUIClient::GUIClient ( MainWindow *mw )
 
   // read shortcuts
   actionCollection()->setConfigGroup( "Shortcuts" );
-  actionCollection()->readSettings( KGlobal::config() );
+  actionCollection()->readSettings( KGlobal::config().data() );
 }
 
 GUIClient::~GUIClient()
@@ -156,7 +156,7 @@ void GUIClient::registerToolView (ToolView *tv)
 
   // try to read the action shortcut
   KShortcut sc;
-  KConfig *cfg = KGlobal::config();
+  KSharedConfig::Ptr cfg = KGlobal::config();
   QString _grp = cfg->group();
   cfg->setGroup("Shortcuts");
   sc = KShortcut( cfg->readEntry( aname, QString() ) );

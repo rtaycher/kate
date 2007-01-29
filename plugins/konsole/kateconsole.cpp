@@ -84,7 +84,7 @@ KateConsole::KateConsole (Kate::MainWindow *mw, QWidget *parent)
     a->setIcon(KIcon("pipe"));
     a->setText(i18n("&Pipe to Console"));
     connect(a, SIGNAL(triggered()), this, SLOT(slotPipeToConsole()));
-    setInstance (new KInstance("kate"));
+    setComponentData (KComponentData("kate"));
     setXMLFile("plugins/katekonsole/ui.rc");
     m_mw->guiFactory()->addClient (this);
 

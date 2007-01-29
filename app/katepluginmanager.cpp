@@ -48,14 +48,14 @@ KatePluginManager::KatePluginManager(QObject *parent) : QObject (parent)
   m_pluginManager = new Kate::PluginManager (this);
   setupPluginList ();
 
-  loadConfig (KGlobal::config());
+  loadConfig (KGlobal::config().data());
   loadAllEnabledPlugins ();
 }
 
 KatePluginManager::~KatePluginManager()
 {
   // first write config
-  storeGeneralConfig (KGlobal::config());
+  storeGeneralConfig (KGlobal::config().data());
 
   // than unload the plugins
   unloadAllPlugins ();

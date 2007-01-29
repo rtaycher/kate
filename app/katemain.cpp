@@ -26,7 +26,7 @@
 #include <KAboutData>
 #include <KGlobal>
 #include <KConfig>
-#include <KInstance>
+#include <KComponentData>
 #include <kdebug.h>
 #include <KUrl>
 
