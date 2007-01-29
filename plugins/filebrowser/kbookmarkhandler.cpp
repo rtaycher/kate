@@ -54,7 +54,7 @@ KBookmarkHandler::KBookmarkHandler( KateFileSelector *parent, KMenu* kpopupmenu 
     KBookmarkManager *manager = KBookmarkManager::managerForFile( file, "kate", false);
     manager->setUpdate( true );
 
-    m_bookmarkMenu = new KBookmarkMenu( manager, this, m_menu, 0 );
+    m_bookmarkMenu = new KBookmarkMenu( manager, this, m_menu, parent->actionCollection() );
 }
 
 KBookmarkHandler::~KBookmarkHandler()
