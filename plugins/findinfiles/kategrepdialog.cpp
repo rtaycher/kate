@@ -57,6 +57,7 @@
 KateGrepDialog::KateGrepDialog(QWidget *parent, Kate::MainWindow *mw)
   : QWidget(parent), m_mw (mw), m_grepThread (0)
 {
+  setupUi(this);
   setWindowTitle(i18n("Find in Files"));
   config = KGlobal::config();
   config->setGroup("KateGrepDialog");
@@ -74,88 +75,46 @@ KateGrepDialog::KateGrepDialog(QWidget *parent, Kate::MainWindow *mw)
                     << "*.h,*.hxx,*.idl";
   }
 
-  // toplevel, vbox
-  QVBoxLayout *topLayout = new QVBoxLayout(this);
-
-  // hbox inside, inputfields + buttons
-  QHBoxLayout *layout = new QHBoxLayout();
-  topLayout->addLayout (layout);
-
-  // inputfields
-  QGridLayout *loInput = new QGridLayout();
-  layout->addLayout(loInput);
-  loInput->setColumnStretch (1, 100);
-
-  // fill pattern layout
-  QLabel *lPattern = new QLabel(i18n("Pattern:"), this);
-
-  cmbPattern = new KComboBox(this);
-  cmbPattern->setEditable(true);
   cmbPattern->setDuplicatesEnabled(false);
   cmbPattern->insertItems(0, lastSearchItems);
   cmbPattern->setEditText(QString());
   cmbPattern->setInsertPolicy(QComboBox::NoInsert);
-  lPattern->setBuddy(cmbPattern);
   cmbPattern->setFocus();
-  cmbPattern->setMinimumSize(cmbPattern->sizeHint());
 
-  cbCasesensitive = new QCheckBox(i18n("Case sensitive"), this);
-  cbCasesensitive->setMinimumWidth(cbCasesensitive->sizeHint().width());
-  cbCasesensitive->setChecked(config->readEntry("CaseSensitive", QVariant(true)).toBool());
+  cbCasesensitive->setChecked(config->readEntry("CaseSensitive", true));
 
-  loInput->addWidget(lPattern, 0, 0, Qt::AlignRight | Qt::AlignVCenter);
-  loInput->addWidget(cmbPattern, 0, 1);
-  loInput->addWidget(cbCasesensitive, 0, 2);
+  // set sync icon
+  btnSync->setIcon(QIcon(SmallIcon("reload")));
 
-  // fill dir layout
-  QLabel *lDir = new QLabel(i18n("Folder:"), this);
-  loInput->addWidget(lDir, 1, 0, Qt::AlignRight | Qt::AlignVCenter);
-
-  KComboBox* cmbUrl = new KComboBox(true, this);
+  // get url-requester's combo box and sanely initialize
+  KComboBox* cmbUrl = cmbDir->comboBox();
+  cmbUrl->insertItems(0, lastSearchPaths);
   cmbUrl->setDuplicatesEnabled(false);
-  cmbDir = new KUrlRequester( cmbUrl, this);
+  cmbUrl->setEditable(true);
   cmbDir->completionObject()->setMode(KUrlCompletion::DirCompletion);
-  cmbDir->comboBox()->insertItems(0, lastSearchPaths);
   cmbDir->setMode( KFile::Directory|KFile::LocalOnly );
-  lDir->setBuddy(cmbDir);
 
-  cbRecursive = new QCheckBox(i18n("Recursive"), this);
-  cbRecursive->setChecked(config->readEntry("Recursive", QVariant(true)).toBool());
+  cbRecursive->setChecked(config->readEntry("Recursive", true));
 
-  loInput->addWidget(cmbDir, 1, 1);
-  loInput->addWidget(cbRecursive, 1, 2);
-
-  // files row
-  QLabel *lFiles = new QLabel(i18n("Files:"), this);
-  loInput->addWidget(lFiles, 2, 0, Qt::AlignRight | Qt::AlignVCenter);
-
-  cmbFiles = new KComboBox(this);
-  loInput->addWidget(cmbFiles, 2, 1);
-  cmbFiles->setEditable(true);
-  lFiles->setBuddy(cmbFiles->focusProxy());
+//  lblFiles->setBuddy(cmbFiles->focusProxy());
   cmbFiles->setInsertPolicy(QComboBox::NoInsert);
   cmbFiles->setDuplicatesEnabled(false);
   cmbFiles->insertItems(0, lastSearchFiles);
 
   // buttons find and clear
-  KDialogButtonBox *actionbox = new KDialogButtonBox(this, Qt::Vertical);
-  btnSearch = actionbox->addButton(KStandardGuiItem::find(), QDialogButtonBox::ActionRole );
-  btnSearch->setDefault(true);
-  btnClear = actionbox->addButton( KStandardGuiItem::clear() , QDialogButtonBox::ActionRole );
-  layout->addWidget(actionbox);
+  btnSearch->setGuiItem(KStandardGuiItem::find());
+  btnClear->setGuiItem(KStandardGuiItem::clear());
 
   // result view, list all matches....
-  lbResult = new QTreeWidget(this);
   QStringList headers;
   headers << i18n("File") << i18n("Line") << i18n("Text");
   lbResult->setHeaderLabels(headers);
   lbResult->setIndentation(0);
-  topLayout->addWidget(lbResult, 10);
 
   // auto-accels
   KAcceleratorManager::manage( this );
 
-  lPattern->setWhatsThis(    i18n("<p>Enter the expression you want to search for here."
+  lblPattern->setWhatsThis( i18n("<p>Enter the expression you want to search for here."
      "<p>If 'regular expression' is unchecked, any non-space letters in your "
      "expression will be escaped with a backslash character."
      "<p>Possible meta characters are:<br>"
@@ -177,9 +136,9 @@ KateGrepDialog::KateGrepDialog(QWidget *parent, Kate::MainWindow *mw)
      "via the notation <code>\\#</code>."
      "<p>See the grep(1) documentation for the full documentation."
      ));
-  lFiles->setWhatsThis(    i18n("Enter the file name pattern of the files to search here.\n"
+  lblFiles->setWhatsThis(    i18n("Enter the file name pattern of the files to search here.\n"
      "You may give several patterns separated by commas."));
-  lDir->setWhatsThis(    i18n("Enter the folder which contains the files in which you want to search."));
+  lblFolder->setWhatsThis(    i18n("Enter the folder which contains the files in which you want to search."));
   cbRecursive->setWhatsThis(    i18n("Check this box to search in all subfolders."));
   cbCasesensitive->setWhatsThis(    i18n("If this option is enabled (the default), the search will be case sensitive."));
   lbResult->setWhatsThis(    i18n("The results of the grep run are listed here. Select a\n"
@@ -199,6 +158,8 @@ KateGrepDialog::KateGrepDialog(QWidget *parent, Kate::MainWindow *mw)
            SLOT(slotClear()) );
   connect( cmbPattern->lineEdit(), SIGNAL(textChanged ( const QString & )),
            SLOT( patternTextChanged( const QString & )));
+  connect( btnSync, SIGNAL(clicked()), this, SLOT(syncDir()));
+
 
   patternTextChanged( cmbPattern->lineEdit()->text());
 }
@@ -339,6 +300,13 @@ bool KateGrepDialog::eventFilter( QObject *o, QEvent *e )
   return QWidget::eventFilter( o, e );
 }
 
+void KateGrepDialog::syncDir()
+{
+  // sync url-requester with active view's path
+  KUrl url = m_mw->activeView()->document()->url();
+  if (url.isLocalFile())
+    cmbDir->setUrl(url.directory());
+}
 
 void KateGrepDialog::showEvent(QShowEvent* event)
 {
@@ -347,13 +315,10 @@ void KateGrepDialog::showEvent(QShowEvent* event)
 
   // thread is running -> the toolview was closed and opened again
   // in this case, do not change the url
-  if (m_grepThread)
+  if (!cmbDir->url().url().isEmpty() || m_grepThread)
     return;
 
-  // sync url with active view
-  KUrl url = m_mw->activeView()->document()->url();
-  if (url.isLocalFile())
-    cmbDir->setUrl(url.directory());
+  syncDir();
 }
 
 

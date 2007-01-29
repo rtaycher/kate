@@ -24,6 +24,7 @@
 #include <kate/interfaces/mainwindow.h>
 
 #include "kategrepthread.h"
+#include "ui_findwidget.h"
 
 #include <KDialog>
 #include <QStringList>
@@ -42,7 +43,7 @@ class KConfig;
 class KUrlRequester;
 class QEvent;
 
-class KateGrepDialog : public QWidget
+class KateGrepDialog : public QWidget, private Ui::FindWidget
 {
     Q_OBJECT
 
@@ -61,17 +62,12 @@ private Q_SLOTS:
     void patternTextChanged( const QString &);
     void searchFinished ();
     void searchMatchFound(const QString &filename, int line, int column, const QString &basename, const QString &lineContent);
+    void syncDir();
 
 private:
     void killThread ();
 
     Kate::MainWindow *m_mw;
-    KComboBox *cmbFiles, *cmbPattern;
-    KUrlRequester *cmbDir;
-    QCheckBox *cbRecursive;
-    QCheckBox *cbCasesensitive;
-    QTreeWidget *lbResult;
-    KPushButton *btnSearch, *btnClear;
     QString buf;
     QString errbuf;
     KConfig* config;

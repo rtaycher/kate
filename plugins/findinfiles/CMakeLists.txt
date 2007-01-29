@@ -4,8 +4,13 @@ set(katefindinfilesplugin_PART_SRCS katefindinfiles.cpp kategrepdialog.cpp kateg
 
 kde4_automoc(${katefindinfilesplugin_PART_SRCS})
 
-kde4_add_plugin(katefindinfilesplugin ${katefindinfilesplugin_PART_SRCS})
+set( katefindinfilesplugin_PART_UI
+findwidget.ui
+)
 
+kde4_add_ui_files(katefindinfilesplugin_PART_SRCS ${katefindinfilesplugin_PART_UI} )
+
+kde4_add_plugin(katefindinfilesplugin ${katefindinfilesplugin_PART_SRCS})
 
 target_link_libraries(katefindinfilesplugin  ${KDE4_KDECORE_LIBS} kateinterfaces )
 
