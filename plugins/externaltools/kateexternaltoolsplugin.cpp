@@ -65,3 +65,20 @@ KateExternalToolsPluginView::KateExternalToolsPluginView (Kate::MainWindow *main
 KateExternalToolsPluginView::~KateExternalToolsPluginView ()
 {
 }
+
+/*
+  if ( KAuthorized::authorize("shell_access") )
+  {
+    KTextEditor::CommandInterface* cmdIface =
+        qobject_cast<KTextEditor::CommandInterface*>( KateDocManager::self()->editor() );
+    if( cmdIface )
+      cmdIface->registerCommand( KateExternalToolsCommand::self() );
+  }
+
+    if ( KAuthorized::authorize("shell_access") )
+  {
+    externalTools = new KateExternalToolsMenuAction( i18n("External Tools"), this, this );
+    actionCollection()->addAction( "tools_external", externalTools );
+    externalTools->setWhatsThis( i18n("Launch external helper applications") );
+  }
+  */

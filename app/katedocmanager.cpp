@@ -22,7 +22,6 @@
 #include "kateapp.h"
 #include "katemainwindow.h"
 #include "kateviewmanager.h"
-#include "kateexternaltools.h"
 #include "kateviewspacecontainer.h"
 #include "katedocmanageradaptor.h"
 

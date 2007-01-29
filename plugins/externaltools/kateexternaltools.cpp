@@ -25,21 +25,13 @@
 #include "kateexternaltools.h"
 #include "kateexternaltools.moc"
 
-#include "katedocmanager.h"
-#include "kateviewmanager.h"
-#include "kateapp.h"
-
-#include "katemainwindow.h"
-
-#include <KTextEditor/View>
-#include <KTextEditor/Document>
-
 #include <KActionCollection>
 #include <KListBox>
 #include <KLocale>
 #include <KIconLoader>
 #include <KMessageBox>
 #include <KMimeTypeChooser>
+#include <KMainWindow>
 #include <KConfig>
 #include <KRun>
 #include <KIconDialog>
@@ -53,6 +45,7 @@
 #include <QPushButton>
 #include <QRegExp>
 #include <QToolButton>
+#include <QGridLayout>
 
 #include <q3listbox.h>
 #include <q3textedit.h>
@@ -182,7 +175,7 @@ void KateExternalToolsCommand::reload () {
   if (m_inited)
   {
     KTextEditor::CommandInterface* cmdIface =
-      qobject_cast<KTextEditor::CommandInterface*>( KateDocManager::self()->editor() );
+      qobject_cast<KTextEditor::CommandInterface*>( Kate::application()->editor() );
     if( cmdIface )
     {
       // reregister commands, in case of something has changed
@@ -199,7 +192,7 @@ bool KateExternalToolsCommand::exec (KTextEditor::View *view, const QString &cmd
 // 		kDebug(13001)<<"KateExternalToolsCommand::exec: Could not get view widget"<<endl;
 		return false;
 	}
-  KateMDI::MainWindow *dmw=dynamic_cast<KateMDI::MainWindow*>(wv->window());
+        KMainWindow *dmw=dynamic_cast<KMainWindow*>(wv->window());
 	if (!dmw) {
 // 		kDebug(13001)<<"KateExternalToolsCommand::exec: Could not get main window"<<endl;
 		return false;
@@ -238,6 +231,7 @@ KateExternalToolAction::KateExternalToolAction( QObject *parent, KateExternalToo
 
 bool KateExternalToolAction::expandMacro( const QString &str, QStringList &ret )
 {
+#if 0
   KateMainWindow *mw = (KateMainWindow*)parent()->parent();
 
   KTextEditor::View *view = mw->viewManager()->activeView();
@@ -263,6 +257,8 @@ bool KateExternalToolAction::expandMacro( const QString &str, QStringList &ret )
         ret += doc->url().url();
   } else
     return false;
+
+#endif
   return true;
 }
 
@@ -272,6 +268,7 @@ KateExternalToolAction::~KateExternalToolAction() {
 
 void KateExternalToolAction::slotRun()
 {
+#if 0
   // expand the macros in command if any,
   // and construct a command with an absolute path
   QString cmd = tool->command;
@@ -293,13 +290,14 @@ void KateExternalToolAction::slotRun()
     mw->actionCollection()->action("file_save_all")->trigger();
 
   KRun::runCommand( cmd, tool->tryexec, tool->icon );
+#endif
 }
 //END KateExternalToolAction
 
 //BEGIN KateExternalToolsMenuAction
 KateExternalToolsMenuAction::KateExternalToolsMenuAction( const QString &text,
                                                QObject *parent,
-                                               KateMainWindow *mw )
+                                               Kate::MainWindow *mw )
     : KActionMenu( text, parent ),
       mainwindow( mw )
 {
@@ -307,7 +305,7 @@ KateExternalToolsMenuAction::KateExternalToolsMenuAction( const QString &text,
   m_actionCollection = new KActionCollection( (QWidget*) mainwindow );
 
   // connect to view changed...
-  connect(mw->mainWindow(), SIGNAL(viewChanged()), this, SLOT(slotDocumentChanged()));
+  connect(mw, SIGNAL(viewChanged()), this, SLOT(slotDocumentChanged()));
 
   reload();
 }
@@ -393,7 +391,7 @@ void KateExternalToolsMenuAction::reload()
 void KateExternalToolsMenuAction::slotDocumentChanged()
 {
   // try to enable/disable to match current mime type
-  KTextEditor::View *v = mainwindow->viewManager()->activeView();
+  KTextEditor::View *v = mainwindow->activeView();
 
   // no active view, oh oh
   if (!v)

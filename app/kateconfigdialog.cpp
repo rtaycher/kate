@@ -27,9 +27,7 @@
 #include "kateconfigplugindialogpage.h"
 #include "kateviewmanager.h"
 #include "kateapp.h"
-//#include "katefileselector.h"
 #include "katefilelist.h"
-#include "kateexternaltools.h"
 
 #include <KTextEditor/ConfigPage>
 #include <KTextEditor/EditorChooser>
@@ -248,16 +246,6 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   pluginItem->setHeader( i18n("Plugin Manager") );
   pluginItem->setIcon( KIcon( "connect_established" ) );
 
-
-  // Tools->External Tools menu
-  page = new KVBox();
-  configExternalToolsPage = new KateExternalToolsConfigWidget(page, "external tools config page");
-  connect( configExternalToolsPage, SIGNAL(changed()), this, SLOT(slotChanged()) );
-
-  item = addSubPage( applicationItem, page, i18n("External Tools") );
-  item->setHeader( i18n("External Tools") );
-  item->setIcon( KIcon( "configure" ) );
-
   // editor widgets from kwrite/kwdialog
   KPageWidgetItem *editorItem = addPage( new QWidget, i18n("Editor Component") );
   editorItem->setIcon( KIcon( "edit" ) );
@@ -378,20 +366,19 @@ void KateConfigDialog::slotApply()
     config->writeEntry("Modified Notification", cb_modNotifications->isChecked());
     mainWindow->modNotification = cb_modNotifications->isChecked();
 
-    //fileSelConfigPage->apply();
 #ifdef __GNUC__
 #warning portme
 #endif
 #if 0
     filelistConfigPage->apply();
 #endif
-    configExternalToolsPage->apply();
+/*
     KateExternalToolsCommand::self()->reload();
     for (int i=0; i < KateApp::self()->mainWindows(); i++)
     {
       KateMainWindow *win = KateApp::self()->mainWindow (i);
       win->externalTools->reload();
-    }
+    }*/
     //mainWindow->externalTools->reload();
 
     mainWindow->saveOptions ();

@@ -29,7 +29,6 @@
 #include "kateviewmanager.h"
 #include "kateapp.h"
 #include "katefilelist.h"
-#include "kateexternaltools.h"
 #include "katesavemodifieddialog.h"
 #include "katemwmodonhddialog.h"
 #include "katesession.h"
@@ -166,16 +165,10 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
   setXMLFile( "kateui.rc" );
   createShellGUI ( true );
 
-  kDebug()<<"****************************************************************************"<<sconfig<<endl;
-  KatePluginManager::self()->enableAllPluginsGUI (this, sconfig);
+  kDebug() << "****************************************************************************" << sconfig << endl;
 
-  if ( KAuthorized::authorize("shell_access") )
-  {
-    KTextEditor::CommandInterface* cmdIface =
-        qobject_cast<KTextEditor::CommandInterface*>( KateDocManager::self()->editor() );
-    if( cmdIface )
-      cmdIface->registerCommand( KateExternalToolsCommand::self() );
-  }
+  // enable plugin guis
+  KatePluginManager::self()->enableAllPluginsGUI (this, sconfig);
 
   // connect documents menu aboutToshow
   documentMenu = (QMenu*)factory()->container("documents", this);
@@ -308,13 +301,6 @@ void KateMainWindow::setupActions()
   a->setText( i18n("&New Window") );
   connect( a, SIGNAL( triggered() ), this, SLOT( newWindow() ) );
   a->setWhatsThis(i18n("Create a new Kate view (a new window with the same document list)."));
-
-  if ( KAuthorized::authorize("shell_access") )
-  {
-    externalTools = new KateExternalToolsMenuAction( i18n("External Tools"), this, this );
-    actionCollection()->addAction( "tools_external", externalTools );
-    externalTools->setWhatsThis( i18n("Launch external helper applications") );
-  }
 
   KToggleAction* showFullScreenAction = KStandardAction::fullScreen( 0, 0, this, this);
   actionCollection()->addAction( showFullScreenAction->objectName(), showFullScreenAction );
@@ -635,9 +621,9 @@ void KateMainWindow::editKeys()
 
   foreach(KXMLGUIClient *client, clients)
     dlg.insert ( client->actionCollection(), client->instance()->aboutData()->programName() );
-
+/*
   dlg.insert( externalTools->actionCollection(), i18n("External Tools") );
-
+*/
   dlg.configure();
 
   QList<KTextEditor::Document*>  l=KateDocManager::self()->documentList();
@@ -651,7 +637,7 @@ void KateMainWindow::editKeys()
     }
   }
 
-  externalTools->actionCollection()->writeSettings( new KConfig("externaltools", false, false, "appdata") );
+  //externalTools->actionCollection()->writeSettings( new KConfig("externaltools", false, false, "appdata") );
 }
 
 void KateMainWindow::openUrl (const QString &name)

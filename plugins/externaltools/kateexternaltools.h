@@ -26,8 +26,17 @@
 
 #include <ktexteditor/configpage.h>
 #include <ktexteditor/commandinterface.h>
+#include <KTextEditor/View>
+#include <KTextEditor/Document>
+#include <KTextEditor/Editor>
+
+#include <kate/interfaces/plugin.h>
+#include <kate/interfaces/mainwindow.h>
+#include <kate/interfaces/documentmanager.h>
+#include <kate/interfaces/application.h>
 
 #include <KActionMenu>
+#include <KMainWindow>
 #include <KDialog>
 #include <KWordMacroExpander>
 
@@ -61,7 +70,7 @@ class KateExternalToolsMenuAction : public KActionMenu
 
   Q_OBJECT
   public:
-    KateExternalToolsMenuAction( const QString &text, QObject *parent, class KateMainWindow *mw=0 );
+    KateExternalToolsMenuAction( const QString &text, QObject *parent, class Kate::MainWindow *mw=0 );
     ~KateExternalToolsMenuAction() {};
 
     /**
@@ -76,7 +85,7 @@ class KateExternalToolsMenuAction : public KActionMenu
 
   private:
     class KActionCollection *m_actionCollection;
-    class KateMainWindow *mainwindow; // for the actions to access view/doc managers
+    Kate::MainWindow *mainwindow; // for the actions to access view/doc managers
 };
 
 /**
