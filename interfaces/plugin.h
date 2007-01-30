@@ -94,7 +94,8 @@ namespace Kate
    *     }
    * };
    * \endcode
-   * Further information can be found in the class documentation of PluginView.
+   * The Kate application takes care and deletes all plugin views. Further
+   * information can be found in the class documentation of PluginView.
    *
    * \section configpages Config Pages
    *
