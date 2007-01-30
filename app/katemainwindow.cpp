@@ -852,7 +852,12 @@ void KateMainWindow::readProperties(KConfig *config)
   QString grp=config->group();
 
   startRestore(config, grp);
+
+  KatePluginManager::self()->disableAllPluginsGUI (this);
+  KatePluginManager::self()->enableAllPluginsGUI (this, config);
+
   finishRestore ();
+
   m_viewManager->restoreViewConfiguration (config, grp);
 
   config->setGroup(grp);

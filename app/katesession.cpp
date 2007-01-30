@@ -270,9 +270,7 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
 
   // really close last
   if (closeLast)
-  {
     KateDocManager::self()->closeAllDocuments ();
-  }
 
   // set the new session
   m_activeSession = session;
@@ -280,12 +278,14 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
   if (loadNew)
   {
     // open the new session
-#ifdef __GNUC__
-#warning fixme later
-#endif
-	  //KTextEditor::Document::setOpenErrorDialogsActivated (false);
-
     KConfig *sc = activeSession()->configRead();
+
+    // load plugin config
+    if (sc)
+      KatePluginManager::self()->loadConfig (sc);
+
+    // load all needed plugins....
+    KatePluginManager::self()->loadAllEnabledPlugins ();
 
     if (sc)
       KateApp::self()->documentManager()->restoreDocumentList (sc);
@@ -321,21 +321,13 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
         }
       }
 
+      // remove mainwindows we need no longer...
       if (wCount > 0)
       {
         while (wCount < KateApp::self()->mainWindows())
-        {
-          KateMainWindow *w = KateApp::self()->mainWindow(KateApp::self()->mainWindows()-1);
-          KateApp::self()->removeMainWindow (w);
-          delete w;
-        }
+          delete KateApp::self()->mainWindow(KateApp::self()->mainWindows()-1);
       }
     }
-
-#ifdef __GNUC__
-#warning fixme later
-#endif
-	//KTextEditor::Document::setOpenErrorDialogsActivated (true);
   }
 }
 

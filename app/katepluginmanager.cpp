@@ -28,6 +28,7 @@
 
 #include <KConfig>
 #include <QStringList>
+
 //Added by qt3to4:
 #include <QList>
 #include <KMessageBox>
@@ -47,16 +48,10 @@ KatePluginManager::KatePluginManager(QObject *parent) : QObject (parent)
 {
   m_pluginManager = new Kate::PluginManager (this);
   setupPluginList ();
-
-  loadConfig (KGlobal::config().data());
-  loadAllEnabledPlugins ();
 }
 
 KatePluginManager::~KatePluginManager()
 {
-  // first write config
-  storeGeneralConfig (KGlobal::config().data());
-
   // than unload the plugins
   unloadAllPlugins ();
 }
