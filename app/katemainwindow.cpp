@@ -167,6 +167,9 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
 
   kDebug() << "****************************************************************************" << sconfig << endl;
 
+  // register mainwindow in app
+  KateApp::self()->addMainWindow (this);
+
   // enable plugin guis
   KatePluginManager::self()->enableAllPluginsGUI (this, sconfig);
 
@@ -203,6 +206,7 @@ KateMainWindow::~KateMainWindow()
   // save other options ;=)
   saveOptions();
 
+  // unregister mainwindow in app
   KateApp::self()->removeMainWindow (this);
 
   // disable all plugin guis, delete all pluginViews

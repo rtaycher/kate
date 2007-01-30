@@ -150,7 +150,15 @@ class KATEINTERFACES_EXPORT KateApp : public KApplication
     KateMainWindow *newMainWindow (KConfig *sconfig = 0, const QString &sgroup = "");
 
     /**
+     * add the mainwindow given
+     * should be called in mainwindow constructor
+     * @param mainWindow window to remove
+     */
+    void addMainWindow (KateMainWindow *mainWindow);
+
+    /**
      * removes the mainwindow given, DOES NOT DELETE IT
+     * should be called in mainwindow destructor
      * @param mainWindow window to remove
      */
     void removeMainWindow (KateMainWindow *mainWindow);

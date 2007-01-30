@@ -384,8 +384,6 @@ bool KateApp::openInput (const QString &text)
 KateMainWindow *KateApp::newMainWindow (KConfig *sconfig, const QString &sgroup)
 {
   KateMainWindow *mainWindow = new KateMainWindow (sconfig, sgroup);
-  m_mainWindows.push_back (mainWindow);
-  m_mainWindowsInterfaces.push_back (mainWindow->mainWindow());
 
   if ((mainWindows() > 1) && m_mainWindows[m_mainWindows.count()-2]->viewManager()->activeView())
     mainWindow->viewManager()->activateView ( m_mainWindows[m_mainWindows.count()-2]->viewManager()->activeView()->document() );
@@ -397,6 +395,12 @@ KateMainWindow *KateApp::newMainWindow (KConfig *sconfig, const QString &sgroup)
   mainWindow->show ();
 
   return mainWindow;
+}
+
+void KateApp::addMainWindow (KateMainWindow *mainWindow)
+{
+  m_mainWindows.push_back (mainWindow);
+  m_mainWindowsInterfaces.push_back (mainWindow->mainWindow());
 }
 
 void KateApp::removeMainWindow (KateMainWindow *mainWindow)
