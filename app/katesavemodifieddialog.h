@@ -1,15 +1,15 @@
 /* This file is part of the KDE project
    Copyright (C) 2004 Joseph Wenninger <jowenn@kde.org>
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -27,24 +27,25 @@
 class QTreeWidget;
 class QTreeWidgetItem;
 
-class KateSaveModifiedDialog: public KDialog {
-	Q_OBJECT
-public:
-	KateSaveModifiedDialog(QWidget *parent, QList<KTextEditor::Document*> documents);
-	virtual ~KateSaveModifiedDialog();
-	static bool queryClose(QWidget *parent,QList<KTextEditor::Document*> documents);
-protected:
-	virtual void slotUser2();
-	virtual void slotUser1();
-	bool doSave(QTreeWidgetItem *root);
-protected Q_SLOTS:
-	void slotSelectAll();
-	void slotItemActivated(QTreeWidgetItem*,int);
+class KateSaveModifiedDialog: public KDialog
+{
+    Q_OBJECT
+  public:
+    KateSaveModifiedDialog(QWidget *parent, QList<KTextEditor::Document*> documents);
+    virtual ~KateSaveModifiedDialog();
+    static bool queryClose(QWidget *parent, QList<KTextEditor::Document*> documents);
+  protected:
+    virtual void slotUser2();
+    virtual void slotUser1();
+    bool doSave(QTreeWidgetItem *root);
+  protected Q_SLOTS:
+    void slotSelectAll();
+    void slotItemActivated(QTreeWidgetItem*, int);
 
-private:
-	QTreeWidgetItem *m_projectRoot;
-	QTreeWidgetItem *m_documentRoot;
-	QTreeWidget *m_list;
+  private:
+    QTreeWidgetItem *m_projectRoot;
+    QTreeWidgetItem *m_documentRoot;
+    QTreeWidget *m_list;
 };
 
 #endif

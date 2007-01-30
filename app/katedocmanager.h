@@ -1,16 +1,16 @@
 /* This file is part of the KDE project
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2002 Joseph Wenninger <jowenn@kde.org>
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -37,7 +37,10 @@
 #include <QDateTime>
 #include <QStandardItemModel>
 
-namespace KParts { class Factory; }
+namespace KParts
+{
+  class Factory;
+}
 
 class KConfig;
 
@@ -45,10 +48,9 @@ class KateDocumentInfo
 {
   public:
     KateDocumentInfo ()
-     : modifiedOnDisc (false),
-       modifiedOnDiscReason (KTextEditor::ModificationInterface::OnDiskUnmodified)
-    {
-    }
+        : modifiedOnDisc (false),
+        modifiedOnDiscReason (KTextEditor::ModificationInterface::OnDiskUnmodified)
+    {}
 
     bool modifiedOnDisc;
     KTextEditor::ModificationInterface::ModifiedOnDiskReason modifiedOnDiscReason;
@@ -56,18 +58,24 @@ class KateDocumentInfo
 
 class KateDocManager : public QStandardItemModel
 {
-  Q_OBJECT
+    Q_OBJECT
 
   public:
     KateDocManager (QObject *parent);
     ~KateDocManager ();
 
-    enum CustomRoles {DocumentRole=Qt::UserRole+1};
+    enum CustomRoles {DocumentRole = Qt::UserRole + 1};
 
     static KateDocManager *self ();
 
-    Kate::DocumentManager *documentManager () { return m_documentManager; };
-    KTextEditor::Editor *editor() {return m_editor;}
+    Kate::DocumentManager *documentManager ()
+    {
+      return m_documentManager;
+    };
+    KTextEditor::Editor *editor()
+    {
+      return m_editor;
+    }
 
     KTextEditor::Document *createDoc ();
     void deleteDoc (KTextEditor::Document *doc);
@@ -82,16 +90,22 @@ class KateDocManager : public QStandardItemModel
 
     bool isOpen(KUrl url);
 
-    QString dbusObjectPath() { return m_dbusObjectPath;}
+    QString dbusObjectPath()
+    {
+      return m_dbusObjectPath;
+    }
     uint documents ();
 
-    const QList<KTextEditor::Document*> &documentList () const { return m_docList; };
+    const QList<KTextEditor::Document*> &documentList () const
+    {
+      return m_docList;
+    };
 
-    KTextEditor::Document *openUrl(const KUrl&,const QString &encoding=QString(),bool isTempFile=false);
+    KTextEditor::Document *openUrl(const KUrl&, const QString &encoding = QString(), bool isTempFile = false);
 
-    bool closeDocument(class KTextEditor::Document *,bool closeUrl=true);
+    bool closeDocument(class KTextEditor::Document *, bool closeUrl = true);
     bool closeDocument(uint);
-    bool closeAllDocuments(bool closeUrl=true);
+    bool closeAllDocuments(bool closeUrl = true);
 
     QList<KTextEditor::Document*> modifiedDocumentList();
     bool queryCloseDocuments(KateMainWindow *w);
@@ -99,11 +113,23 @@ class KateDocManager : public QStandardItemModel
     void saveDocumentList (class KConfig *config);
     void restoreDocumentList (class KConfig *config);
 
-    inline bool getSaveMetaInfos() { return m_saveMetaInfos; };
-    inline void setSaveMetaInfos(bool b) { m_saveMetaInfos = b; };
+    inline bool getSaveMetaInfos()
+    {
+      return m_saveMetaInfos;
+    };
+    inline void setSaveMetaInfos(bool b)
+    {
+      m_saveMetaInfos = b;
+    };
 
-    inline int getDaysMetaInfos() { return m_daysMetaInfos; };
-    inline void setDaysMetaInfos(int i) { m_daysMetaInfos = i; };
+    inline int getDaysMetaInfos()
+    {
+      return m_daysMetaInfos;
+    };
+    inline void setDaysMetaInfos(int i)
+    {
+      m_daysMetaInfos = i;
+    };
 
     QModelIndex indexForDocument(KTextEditor::Document *document);
 
@@ -150,7 +176,7 @@ class KateDocManager : public QStandardItemModel
 
     Kate::DocumentManager *m_documentManager;
     QList<KTextEditor::Document*> m_docList;
-    QHash<KTextEditor::Document*,KateDocumentInfo*> m_docInfos;
+    QHash<KTextEditor::Document*, KateDocumentInfo*> m_docInfos;
 
     KConfig *m_metaInfos;
     bool m_saveMetaInfos;
@@ -160,10 +186,10 @@ class KateDocManager : public QStandardItemModel
     //KParts::Factory *m_factory;
     KTextEditor::Editor *m_editor;
 
-    typedef QPair<KUrl,QDateTime> TPair;
-    QMap<KTextEditor::Document *,TPair> m_tempFiles;
+    typedef QPair<KUrl, QDateTime> TPair;
+    QMap<KTextEditor::Document *, TPair> m_tempFiles;
     QString m_dbusObjectPath;
-    QMap<KTextEditor::Document*,QStandardItem*> m_documentItemMapping;
+    QMap<KTextEditor::Document*, QStandardItem*> m_documentItemMapping;
     bool m_restoringDocumentList;
     QString m_openingErrors;
     int m_documentStillToRestore;

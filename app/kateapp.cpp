@@ -1,16 +1,16 @@
 /* This file is part of the KDE project
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2002 Joseph Wenninger <jowenn@kde.org>
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -52,15 +52,15 @@
 #include "kateappadaptor.h"
 
 KateApp::KateApp (KCmdLineArgs *args)
- : KApplication ()
- , m_shouldExit(false)
- , m_args (args)
+    : KApplication ()
+    , m_shouldExit(false)
+    , m_args (args)
 {
 #ifdef __GNUC__
 #warning "kde4 dbus: port it"
 #endif
 #if 0
-    // Don't handle DCOP requests yet
+  // Don't handle DCOP requests yet
   dcopClient()->suspend();
 #endif
   // insert right translations for the katepart
@@ -113,13 +113,13 @@ Kate::Application *KateApp::application ()
 QString KateApp::kateVersion (bool fullVersion)
 {
   return fullVersion ? QString ("%1.%2.%3").arg(KDE::versionMajor() - 1).arg(KDE::versionMinor()).arg(KDE::versionRelease())
-           : QString ("%1.%2").arg(KDE::versionMajor() - 1).arg(KDE::versionMinor());
+         : QString ("%1.%2").arg(KDE::versionMajor() - 1).arg(KDE::versionMinor());
 }
 
 void KateApp::initKate ()
 {
 
-  kDebug()<<"Setting KATE_PID: '"<<getpid()<<"'"<<endl;
+  kDebug() << "Setting KATE_PID: '" << getpid() << "'" << endl;
   ::setenv( "KATE_PID", QString("%1").arg(getpid()).toLatin1(), 1 );
 
   // handle restore different
@@ -133,8 +133,8 @@ void KateApp::initKate ()
     // we can exit here if session chooser decides
     if (!startupKate ())
     {
-      kDebug()<<"startupKate returned false"<<endl;
-      m_shouldExit=true;
+      kDebug() << "startupKate returned false" << endl;
+      m_shouldExit = true;
       return ;
     }
   }
@@ -158,7 +158,7 @@ void KateApp::restoreKate ()
   m_docManager->restoreDocumentList (sessionConfig());
 
   // restore all windows ;)
-  for (int n=1; KMainWindow::canBeRestored(n); n++)
+  for (int n = 1; KMainWindow::canBeRestored(n); n++)
     newMainWindow(sessionConfig(), QString ("%1").arg(n));
 
   // oh, no mainwindow, create one, should not happen, but make sure ;)
@@ -183,7 +183,7 @@ bool KateApp::startupKate ()
     // let the user choose session if possible
     if (!sessionManager()->chooseSession ())
     {
-      kDebug()<<"chooseSession returned false, exiting"<<endl;
+      kDebug() << "chooseSession returned false, exiting" << endl;
       // we will exit kate now, notify the rest of the world we are done
 #ifdef Q_WS_X11
       KStartupInfo::appStarted (startupId());
@@ -205,7 +205,7 @@ bool KateApp::startupKate ()
   bool tempfileSet = KCmdLineArgs::isTempFileSet();
 
   KTextEditor::Document *doc = 0;
-  for (int z=0; z<m_args->count(); z++)
+  for (int z = 0; z < m_args->count(); z++)
   {
     // this file is no local dir, open it, else warn
     bool noDir = !m_args->url(z).isLocalFile() || !QDir (m_args->url(z).path()).exists();
@@ -239,7 +239,8 @@ bool KateApp::startupKate ()
     {
       line = input.readLine();
       text.append( line + '\n' );
-    } while( !line.isNull() );
+    }
+    while( !line.isNull() );
 
     openInput (text);
   }
@@ -271,7 +272,7 @@ bool KateApp::startupKate ()
   // show the nice tips
   KTipDialog::showTip(activeMainWindow());
 
-  kDebug()<<"KateApplication::init finished successful"<<endl;
+  kDebug() << "KateApplication::init finished successful" << endl;
   return true;
 }
 
@@ -323,7 +324,7 @@ bool KateApp::openUrl (const KUrl &url, const QString &encoding, bool isTempFile
 
   QTextCodec *codec = encoding.isEmpty() ? 0 : QTextCodec::codecForName(encoding.toLatin1());
 
-  kDebug () << "OPEN URL "<< encoding << endl;
+  kDebug () << "OPEN URL " << encoding << endl;
 
   // this file is no local dir, open it, else warn
   bool noDir = !url.isLocalFile() || !QDir (url.path()).exists();
@@ -332,9 +333,9 @@ bool KateApp::openUrl (const KUrl &url, const QString &encoding, bool isTempFile
   {
     // open a normal file
     if (codec)
-      mainWindow->viewManager()->openUrl( url, codec->name(),true, isTempFile);
+      mainWindow->viewManager()->openUrl( url, codec->name(), true, isTempFile);
     else
-      mainWindow->viewManager()->openUrl( url, QString(),true,isTempFile );
+      mainWindow->viewManager()->openUrl( url, QString(), true, isTempFile );
   }
   else
     KMessageBox::sorry( mainWindow,
@@ -378,7 +379,7 @@ KateMainWindow *KateApp::newMainWindow (KConfig *sconfig, const QString &sgroup)
   if ((mainWindows() > 1) && m_mainWindows[m_mainWindows.count()-2]->viewManager()->activeView())
     mainWindow->viewManager()->activateView ( m_mainWindows[m_mainWindows.count()-2]->viewManager()->activeView()->document() );
   else if ((mainWindows() > 1) && (m_docManager->documents() > 0))
-    mainWindow->viewManager()->activateView ( (m_docManager->document(m_docManager->documents()-1)) );
+    mainWindow->viewManager()->activateView ( (m_docManager->document(m_docManager->documents() - 1)) );
   else if ((mainWindows() > 1) && (m_docManager->documents() < 1))
     mainWindow->viewManager()->openUrl ( KUrl() );
 
@@ -407,7 +408,7 @@ KateMainWindow *KateApp::activeMainWindow ()
   int n = m_mainWindows.indexOf ((KateMainWindow *)activeWindow());
 
   if (n < 0)
-    n=0;
+    n = 0;
 
   return m_mainWindows[n];
 }
@@ -417,9 +418,10 @@ int KateApp::mainWindows () const
   return m_mainWindows.size();
 }
 
-int KateApp::mainWindowID(KateMainWindow *window) {
-  for (int i=0;i<m_mainWindows.size();i++)
-    if (window==m_mainWindows[i]) return i;
+int KateApp::mainWindowID(KateMainWindow *window)
+{
+  for (int i = 0;i < m_mainWindows.size();i++)
+    if (window == m_mainWindows[i]) return i;
   return -1;
 }
 

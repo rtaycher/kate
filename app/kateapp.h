@@ -1,16 +1,16 @@
 /* This file is part of the KDE project
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2002 Joseph Wenninger <jowenn@kde.org>
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -31,7 +31,8 @@
 
 class KateSessionManager;
 
-namespace Kate {
+namespace Kate
+{
   class Application;
 }
 
@@ -43,11 +44,11 @@ class KCmdLineArgs;
  */
 class KATEINTERFACES_EXPORT KateApp : public KApplication
 {
-  Q_OBJECT
+    Q_OBJECT
 
-  /**
-   * constructors & accessor to app object + plugin interface for it
-   */
+    /**
+     * constructors & accessor to app object + plugin interface for it
+     */
   public:
     /**
      * application constructor
@@ -79,9 +80,9 @@ class KATEINTERFACES_EXPORT KateApp : public KApplication
      */
     static QString kateVersion (bool fullVersion = true);
 
-  /**
-   * kate init
-   */
+    /**
+     * kate init
+     */
   private:
     /**
      * get kate inited
@@ -99,9 +100,9 @@ class KATEINTERFACES_EXPORT KateApp : public KApplication
      */
     bool startupKate ();
 
-  /**
-   * kate shutdown
-   */
+    /**
+     * kate shutdown
+     */
   public:
     /**
      * shutdown kate application
@@ -109,9 +110,9 @@ class KATEINTERFACES_EXPORT KateApp : public KApplication
      */
     void shutdownKate (KateMainWindow *win);
 
-  /**
-   * other accessors for global unique instances
-   */
+    /**
+     * other accessors for global unique instances
+     */
   public:
     /**
      * accessor to plugin manager
@@ -131,9 +132,9 @@ class KATEINTERFACES_EXPORT KateApp : public KApplication
      */
     KateSessionManager *sessionManager ();
 
-  /**
-   * window management
-   */
+    /**
+     * window management
+     */
   public:
     /**
      * create a new main window, use given config if any for restore
@@ -179,9 +180,9 @@ class KATEINTERFACES_EXPORT KateApp : public KApplication
 
     int mainWindowID(KateMainWindow *window);
 
-  /**
-   * some stuff for the dcop API
-   */
+    /**
+     * some stuff for the dcop API
+     */
   public:
     /**
      * open url with given encoding
@@ -208,14 +209,20 @@ class KATEINTERFACES_EXPORT KateApp : public KApplication
      */
     bool openInput (const QString &text);
 
-    bool shouldExit() const {return m_shouldExit;}
+    bool shouldExit() const
+    {
+      return m_shouldExit;
+    }
 
     /**
      * Get a list of all mainwindows interfaces for the plugins.
      * @return all mainwindows
      * @see activeMainWindow()
      */
-    const QList<Kate::MainWindow*> &mainWindowsInterfaces () const { return m_mainWindowsInterfaces; }
+    const QList<Kate::MainWindow*> &mainWindowsInterfaces () const
+    {
+      return m_mainWindowsInterfaces;
+    }
 
   private:
     bool m_shouldExit;

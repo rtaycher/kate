@@ -2,16 +2,16 @@
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2001 Anders Lund <anders.lund@lund.tdcadsl.dk>
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -44,7 +44,7 @@ typedef QLinkedList<KatePluginInfo> KatePluginList;
 
 class KatePluginManager : public QObject
 {
-  Q_OBJECT
+    Q_OBJECT
 
   public:
     KatePluginManager(QObject *parent);
@@ -52,36 +52,42 @@ class KatePluginManager : public QObject
 
     static KatePluginManager *self();
 
-    Kate::PluginManager *pluginManager () const { return m_pluginManager; };
+    Kate::PluginManager *pluginManager () const
+    {
+      return m_pluginManager;
+    };
 
     void loadAllEnabledPlugins ();
     void unloadAllPlugins ();
 
-    void enableAllPluginsGUI (KateMainWindow *win,KConfig *config=0);
+    void enableAllPluginsGUI (KateMainWindow *win, KConfig *config = 0);
     void disableAllPluginsGUI (KateMainWindow *win);
 
     void loadConfig (KConfig*);
     void writeConfig (KConfig*);
 
     void storeGeneralConfig(KConfig*);
-    void storeViewConfig(KConfig*,uint id);
+    void storeViewConfig(KConfig*, uint id);
 
     void loadPlugin (KatePluginInfo *item);
     void unloadPlugin (KatePluginInfo *item);
 
-    void enablePluginGUI (KatePluginInfo *item, KateMainWindow *win,KConfig *config=0);
+    void enablePluginGUI (KatePluginInfo *item, KateMainWindow *win, KConfig *config = 0);
     void enablePluginGUI (KatePluginInfo *item);
 
     void disablePluginGUI (KatePluginInfo *item, KateMainWindow *win);
     void disablePluginGUI (KatePluginInfo *item);
 
-    inline KatePluginList & pluginList () { return m_pluginList; };
+    inline KatePluginList & pluginList ()
+    {
+      return m_pluginList;
+    };
 
     Kate::Plugin *plugin (const QString &name);
     bool pluginAvailable (const QString &name);
 
-    Kate::Plugin *loadPlugin (const QString &name, bool permanent=true);
-    void unloadPlugin (const QString &name, bool permanent=true);
+    Kate::Plugin *loadPlugin (const QString &name, bool permanent = true);
+    void unloadPlugin (const QString &name, bool permanent = true);
 
   private:
     Kate::PluginManager *m_pluginManager;

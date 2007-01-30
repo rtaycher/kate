@@ -1,16 +1,16 @@
 /* This file is part of the KDE project
    Copyright (C) 2005 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2002,2003 Joseph Wenninger <jowenn@kde.org>
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -25,8 +25,8 @@
 //BEGIN KateTabWidget
 
 KateTabWidget::KateTabWidget(QWidget* parent)
- : KTabWidget(parent)
- , m_visibility (ShowWhenMoreThanOneTab)
+    : KTabWidget(parent)
+    , m_visibility (ShowWhenMoreThanOneTab)
 {
   tabBar()->hide();
 
@@ -36,8 +36,7 @@ KateTabWidget::KateTabWidget(QWidget* parent)
 }
 
 KateTabWidget::~KateTabWidget()
-{
-}
+{}
 
 void KateTabWidget::closeTab(QWidget* w)
 {
@@ -46,21 +45,21 @@ void KateTabWidget::closeTab(QWidget* w)
 
 void KateTabWidget::addTab ( QWidget * child, const QString & label )
 {
-  KTabWidget::addTab(child,label);
+  KTabWidget::addTab(child, label);
   setCurrentIndex(indexOf(child));
   maybeShow();
 }
 
 void KateTabWidget::addTab ( QWidget * child, const QIcon & iconset, const QString & label )
 {
-  KTabWidget::addTab(child,iconset,label);
+  KTabWidget::addTab(child, iconset, label);
   setCurrentIndex(indexOf(child));
   maybeShow();
 }
 
 void KateTabWidget::insertTab ( QWidget * child, const QString & label, int index)
 {
-  KTabWidget::insertTab(index,child,label);
+  KTabWidget::insertTab(index, child, label);
   setCurrentIndex(indexOf(child));
   maybeShow();
   tabBar()->repaint();
@@ -68,7 +67,7 @@ void KateTabWidget::insertTab ( QWidget * child, const QString & label, int inde
 
 void KateTabWidget::insertTab ( QWidget * child, const QIcon & iconset, const QString & label, int index )
 {
-  KTabWidget::insertTab(index,child,iconset,label);
+  KTabWidget::insertTab(index, child, iconset, label);
   setCurrentIndex(indexOf(child));
   maybeShow();
   tabBar()->repaint();
@@ -96,7 +95,7 @@ void KateTabWidget::maybeShow()
       break;
 
     case ShowWhenMoreThanOneTab:
-      if (count()<2) tabBar()->hide();
+      if (count() < 2) tabBar()->hide();
       else tabBar()->show();
 
       // show/hide corner widgets
@@ -117,14 +116,16 @@ void KateTabWidget::setCornerWidgetVisibility(bool visible)
 {
   // there are two corner widgets: on TopLeft and on TopTight!
 
-  if (cornerWidget(Qt::TopLeftCorner) ) {
+  if (cornerWidget(Qt::TopLeftCorner) )
+  {
     if (visible)
       cornerWidget(Qt::TopLeftCorner)->show();
     else
       cornerWidget(Qt::TopLeftCorner)->hide();
   }
 
-  if (cornerWidget(Qt::TopRightCorner) ) {
+  if (cornerWidget(Qt::TopRightCorner) )
+  {
     if (visible)
       cornerWidget(Qt::TopRightCorner)->show();
     else

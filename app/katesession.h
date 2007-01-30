@@ -1,15 +1,15 @@
 /* This file is part of the KDE project
    Copyright (C) 2005 Christoph Cullmann <cullmann@kde.org>
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -76,19 +76,28 @@ class KateSession  : public KShared
      * relative session filename
      * @return relative filename for this session
      */
-    const QString &sessionFileRelative () const { return m_sessionFileRel; }
+    const QString &sessionFileRelative () const
+    {
+      return m_sessionFileRel;
+    }
 
     /**
      * session name
      * @return name for this session
      */
-    const QString &sessionName () const { return m_sessionName; }
+    const QString &sessionName () const
+    {
+      return m_sessionName;
+    }
 
     /**
      * is this a valid session? if not, don't use any session if this is
      * the active one
      */
-    bool isNew () const { return m_sessionName.isEmpty(); }
+    bool isNew () const
+    {
+      return m_sessionName.isEmpty();
+    }
 
     /**
      * create the session file, if not existing
@@ -125,7 +134,10 @@ class KateSession  : public KShared
      * count of documents in this session
      * @return documents count
      */
-    unsigned int documents () const { return m_documents; }
+    unsigned int documents () const
+    {
+      return m_documents;
+    }
 
   private:
     /**
@@ -165,7 +177,7 @@ typedef QList<KateSession::Ptr> KateSessionList;
 
 class KateSessionManager : public QObject
 {
-  Q_OBJECT
+    Q_OBJECT
 
   public:
     KateSessionManager(QObject *parent);
@@ -181,7 +193,11 @@ class KateSessionManager : public QObject
      * allow access to the session list
      * kept up to date by watching the dir
      */
-    inline KateSessionList & sessionList () { updateSessionList (); return m_sessionList; }
+    inline KateSessionList & sessionList ()
+    {
+      updateSessionList ();
+      return m_sessionList;
+    }
 
     /**
      * activate a session
@@ -215,13 +231,19 @@ class KateSessionManager : public QObject
      * sessionFile == empty means we have no session around for this instance of kate
      * @return session active atm
      */
-    inline KateSession::Ptr activeSession () { return m_activeSession; }
+    inline KateSession::Ptr activeSession ()
+    {
+      return m_activeSession;
+    }
 
     /**
      * session dir
      * @return global session dir
      */
-    inline const QString &sessionsDir () const { return m_sessionsDir; }
+    inline const QString &sessionsDir () const
+    {
+      return m_sessionsDir;
+    }
 
     /**
      * initial session chooser, on app start
@@ -266,7 +288,10 @@ class KateSessionManager : public QObject
     void updateSessionList ();
 
   public:
-     QString defaultSessionFileName(){return m_defaultSessionFileName;}
+    QString defaultSessionFileName()
+    {
+      return m_defaultSessionFileName;
+    }
   private:
     /**
      * absolute path to dir in home dir where to store the sessions
@@ -286,25 +311,30 @@ class KateSessionManager : public QObject
     QString m_defaultSessionFileName;
 };
 
-class KateSessionChooserTemplate {
-	public:
-	KateSessionChooserTemplate(const QString &displayname_, const QString &configfilename_, const QString tooltip_):
-		displayName(displayname_),configFileName(configfilename_),toolTip(tooltip_){}
-	QString displayName;
-	QString configFileName;
-	QString toolTip;
+class KateSessionChooserTemplate
+{
+  public:
+    KateSessionChooserTemplate(const QString &displayname_, const QString &configfilename_, const QString tooltip_):
+        displayName(displayname_), configFileName(configfilename_), toolTip(tooltip_)
+    {}
+    QString displayName;
+    QString configFileName;
+    QString toolTip;
 };
 
 class KateSessionChooser : public KDialog
 {
-  Q_OBJECT
+    Q_OBJECT
 
   public:
-    KateSessionChooser (QWidget *parent, const QString &lastSession,const QList<KateSessionChooserTemplate>& templates);
+    KateSessionChooser (QWidget *parent, const QString &lastSession, const QList<KateSessionChooserTemplate>& templates);
     ~KateSessionChooser ();
 
     KateSession::Ptr selectedSession ();
-    QString selectedTemplate() { return m_selectedTemplate;}
+    QString selectedTemplate()
+    {
+      return m_selectedTemplate;
+    }
     bool reopenLastSession ();
 
     enum {
@@ -312,7 +342,7 @@ class KateSessionChooser : public KDialog
       resultNew,
       resultQuit,
       resultNone
-    };
+  };
 
   private:
     QString m_selectedTemplate;
@@ -353,7 +383,7 @@ class KateSessionChooser : public KDialog
 
 class KateSessionOpenDialog : public KDialog
 {
-  Q_OBJECT
+    Q_OBJECT
 
   public:
     KateSessionOpenDialog (QWidget *parent);
@@ -364,7 +394,7 @@ class KateSessionOpenDialog : public KDialog
     enum {
       resultOk,
       resultCancel
-    };
+  };
 
   protected Q_SLOTS:
     /**
@@ -383,7 +413,7 @@ class KateSessionOpenDialog : public KDialog
 
 class KateSessionManageDialog : public KDialog
 {
-  Q_OBJECT
+    Q_OBJECT
 
   public:
     KateSessionManageDialog (QWidget *parent);
@@ -424,19 +454,22 @@ class KateSessionManageDialog : public KDialog
 
 class KateSessionsAction : public KActionMenu
 {
-  Q_OBJECT
+    Q_OBJECT
 
   public:
     KateSessionsAction(const QString& text, QObject *parent);
-    ~KateSessionsAction (){;};
+    ~KateSessionsAction ()
+    {
+      ;
+    };
 
   public  Q_SLOTS:
     void slotAboutToShow();
 
     void openSession (QAction *action);
 
-	private:
-		QActionGroup *sessionsGroup;
+  private:
+    QActionGroup *sessionsGroup;
 };
 
 #endif

@@ -1,15 +1,15 @@
 /* This file is part of the KDE project
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -32,64 +32,62 @@
 namespace Kate
 {
 
-class PrivateApplication
+  class PrivateApplication
   {
-  public:
-    PrivateApplication ()
-    {
-    }
+    public:
+      PrivateApplication ()
+      {}
 
-    ~PrivateApplication ()
-    {
+      ~PrivateApplication ()
+      {
+      }
 
-    }
-
-    KateApp *app;
+      KateApp *app;
   };
 
-Application::Application (void *application) : QObject ((KateApp *) application)
-{
-  d = new PrivateApplication;
-  d->app = (KateApp *) application;
-}
+  Application::Application (void *application) : QObject ((KateApp *) application)
+  {
+    d = new PrivateApplication;
+    d->app = (KateApp *) application;
+  }
 
-Application::~Application ()
-{
-  delete d;
-}
+  Application::~Application ()
+  {
+    delete d;
+  }
 
-DocumentManager *Application::documentManager ()
-{
-  return d->app->documentManager ()->documentManager ();
-}
+  DocumentManager *Application::documentManager ()
+  {
+    return d->app->documentManager ()->documentManager ();
+  }
 
-PluginManager *Application::pluginManager ()
-{
-  return d->app->pluginManager ()->pluginManager ();
-}
+  PluginManager *Application::pluginManager ()
+  {
+    return d->app->pluginManager ()->pluginManager ();
+  }
 
-MainWindow *Application::activeMainWindow ()
-{
-  if (!d->app->activeMainWindow())
-    return 0;
+  MainWindow *Application::activeMainWindow ()
+  {
+    if (!d->app->activeMainWindow())
+      return 0;
 
-  return d->app->activeMainWindow()->mainWindow();
-}
+    return d->app->activeMainWindow()->mainWindow();
+  }
 
-const QList<MainWindow*> &Application::mainWindows () const
-{
-  return d->app->mainWindowsInterfaces ();
-}
+  const QList<MainWindow*> &Application::mainWindows () const
+  {
+    return d->app->mainWindowsInterfaces ();
+  }
 
-Application *application ()
-{
-  return KateApp::self()->application ();
-}
+  Application *application ()
+  {
+    return KateApp::self()->application ();
+  }
 
-KTextEditor::Editor *Application::editor ()
-{
-  return d->app->documentManager ()->editor();
-}
+  KTextEditor::Editor *Application::editor ()
+  {
+    return d->app->documentManager ()->editor();
+  }
 
 
 }

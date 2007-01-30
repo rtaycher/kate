@@ -2,16 +2,16 @@
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2001 Anders Lund <anders.lund@lund.tdcadsl.dk>
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -90,7 +90,7 @@
 uint KateMainWindow::uniqueID = 1;
 
 KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
-  : KateMDI::MainWindow (0)
+    : KateMDI::MainWindow (0)
 {
   setObjectName((QString("__KateMainWindow#%1").arg(uniqueID)).toLatin1());
   // first the very important id
@@ -128,14 +128,14 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
         KateMainWindow *win = KateApp::self()->activeMainWindow ();
 
         if (!win)
-          win = KateApp::self()->mainWindow (KateApp::self()->mainWindows ()-1);
+          win = KateApp::self()->mainWindow (KateApp::self()->mainWindows () - 1);
 
         size = win->size();
       }
       else // now fallback to hard defaults ;)
       {
         // first try global app config
-		KGlobal::config()->setGroup ("MainWindow");
+        KGlobal::config()->setGroup ("MainWindow");
         size.setWidth (KGlobal::config()->readEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ));
         size.setHeight (KGlobal::config()->readEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ));
 
@@ -185,7 +185,7 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
   for (uint i = 0; i < KateDocManager::self()->documents(); i++)
     slotDocumentCreated (KateDocManager::self()->document(i));
 
-  connect(KateDocManager::self(),SIGNAL(documentCreated(KTextEditor::Document *)),this,SLOT(slotDocumentCreated(KTextEditor::Document *)));
+  connect(KateDocManager::self(), SIGNAL(documentCreated(KTextEditor::Document *)), this, SLOT(slotDocumentCreated(KTextEditor::Document *)));
 
   readOptions();
 
@@ -236,8 +236,8 @@ void KateMainWindow::setupMainWindow ()
   m_viewManager = new KateViewManager (this);
 
   KateMDI::ToolView *ft = createToolView("kate_filelist", KMultiTabBar::Left, SmallIcon("kmultiple"), i18n("Documents"));
-  m_fileList=new KateFileList(ft,actionCollection());
-  m_pM=new KateViewDocumentProxyModel(this);
+  m_fileList = new KateFileList(ft, actionCollection());
+  m_pM = new KateViewDocumentProxyModel(this);
   m_pM->setSourceModel(KateDocManager::self());
   m_fileList->setModel(m_pM);
   m_fileList->setSelectionModel(m_pM->selection());
@@ -247,14 +247,15 @@ void KateMainWindow::setupMainWindow ()
 #ifdef __GNUC__
 #warning I do not like it, it looks like a hack, search for a better way, but for now it should work. (Even on windows most lisviews, except exploder are single click) (jowenn)
 #endif
-  if (!style()->styleHint(QStyle::SH_ItemView_ActivateItemOnSingleClick, 0, m_fileList)) {
-    kDebug()<<"HACK:***********************CONNECTING CLICKED***************************"<<endl;
-    connect(m_fileList,SIGNAL(clicked(const QModelIndex&)),m_pM,SLOT(opened(const QModelIndex&)));
-    connect(m_fileList,SIGNAL(clicked(const QModelIndex&)),m_viewManager,SLOT(activateDocument(const QModelIndex &)));
+  if (!style()->styleHint(QStyle::SH_ItemView_ActivateItemOnSingleClick, 0, m_fileList))
+  {
+    kDebug() << "HACK:***********************CONNECTING CLICKED***************************" << endl;
+    connect(m_fileList, SIGNAL(clicked(const QModelIndex&)), m_pM, SLOT(opened(const QModelIndex&)));
+    connect(m_fileList, SIGNAL(clicked(const QModelIndex&)), m_viewManager, SLOT(activateDocument(const QModelIndex &)));
   }
-  connect(m_fileList,SIGNAL(activated(const QModelIndex&)),m_pM,SLOT(opened(const QModelIndex&)));
-  connect(m_fileList,SIGNAL(activated(const QModelIndex&)),m_viewManager,SLOT(activateDocument(const QModelIndex &)));
-  connect(m_fileList,SIGNAL(customContextMenuRequested(const QPoint &)),this,SLOT(showFileListPopup(const QPoint&)));
+  connect(m_fileList, SIGNAL(activated(const QModelIndex&)), m_pM, SLOT(opened(const QModelIndex&)));
+  connect(m_fileList, SIGNAL(activated(const QModelIndex&)), m_viewManager, SLOT(activateDocument(const QModelIndex &)));
+  connect(m_fileList, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showFileListPopup(const QPoint&)));
   m_fileList->setContextMenuPolicy(Qt::CustomContextMenu);
   //filelist = new KateFileList (this, m_viewManager, ft);
   //filelist->readConfig(KateApp::self()->config(), "Filelist");
@@ -262,7 +263,7 @@ void KateMainWindow::setupMainWindow ()
 #if 0
   KateMDI::ToolView *t = createToolView("kate_fileselector", KMultiTabBar::Left, SmallIcon("fileopen"), i18n("Filesystem Browser"));
   fileselector = new KateFileSelector( this, m_viewManager, t, "operator");
-  connect(fileselector->dirOperator(),SIGNAL(fileSelected(const KFileItem*)),this,SLOT(fileSelected(const KFileItem*)));
+  connect(fileselector->dirOperator(), SIGNAL(fileSelected(const KFileItem*)), this, SLOT(fileSelected(const KFileItem*)));
 #endif
 
   // make per default the filelist visible, if we are in session restore, katemdi will skip this ;)
@@ -274,33 +275,33 @@ void KateMainWindow::setupActions()
   QAction *a;
 
   actionCollection()->addAction( KStandardAction::New, "file_new", m_viewManager, SLOT( slotDocumentNew() ) )
-    ->setWhatsThis(i18n("Create a new document"));
+  ->setWhatsThis(i18n("Create a new document"));
   actionCollection()->addAction( KStandardAction::Open, "file_open", m_viewManager, SLOT( slotDocumentOpen() ) )
-    ->setWhatsThis(i18n("Open an existing document for editing"));
+  ->setWhatsThis(i18n("Open an existing document for editing"));
 
   fileOpenRecent = KStandardAction::openRecent (m_viewManager, SLOT(openUrl (const KUrl&)), this);
   actionCollection()->addAction(fileOpenRecent->objectName(), fileOpenRecent);
   fileOpenRecent->setWhatsThis(i18n("This lists files which you have opened recently, and allows you to easily open them again."));
 
-  a=actionCollection()->addAction( "file_save_all" );
+  a = actionCollection()->addAction( "file_save_all" );
   a->setIcon( KIcon("save_all") );
   a->setText( i18n("Save A&ll") );
-  a->setShortcut( QKeySequence(Qt::CTRL+Qt::Key_L) );
+  a->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_L) );
   connect( a, SIGNAL( triggered() ), KateDocManager::self(), SLOT( saveAll() ) );
   a->setWhatsThis(i18n("Save all open, modified documents to disk."));
 
   actionCollection()->addAction( KStandardAction::Close, "file_close", m_viewManager, SLOT( slotDocumentClose() ) )
-      ->setWhatsThis(i18n("Close the current document."));
+  ->setWhatsThis(i18n("Close the current document."));
 
-  a=actionCollection()->addAction( "file_close_all" );
+  a = actionCollection()->addAction( "file_close_all" );
   a->setText( i18n( "Clos&e All" ) );
   connect( a, SIGNAL( triggered() ), this, SLOT( slotDocumentCloseAll() ) );
   a->setWhatsThis(i18n("Close all open documents."));
 
   actionCollection()->addAction( KStandardAction::Quit, "file_quit", this, SLOT( slotFileQuit() ) )
-      ->setWhatsThis(i18n("Close this window"));
+  ->setWhatsThis(i18n("Close this window"));
 
-  a=actionCollection()->addAction( "view_new_view" );
+  a = actionCollection()->addAction( "view_new_view" );
   a->setIcon( KIcon("window_new") );
   a->setText( i18n("&New Window") );
   connect( a, SIGNAL( triggered() ), this, SLOT( newWindow() ) );
@@ -308,7 +309,7 @@ void KateMainWindow::setupActions()
 
   KToggleAction* showFullScreenAction = KStandardAction::fullScreen( 0, 0, this, this);
   actionCollection()->addAction( showFullScreenAction->objectName(), showFullScreenAction );
-  connect( showFullScreenAction,SIGNAL(toggled(bool)), this,SLOT(slotFullScreen(bool)));
+  connect( showFullScreenAction, SIGNAL(toggled(bool)), this, SLOT(slotFullScreen(bool)));
 
   documentOpenWith = new KActionMenu(i18n("Open W&ith"), this);
   actionCollection()->addAction("file_open_with", documentOpenWith);
@@ -316,36 +317,36 @@ void KateMainWindow::setupActions()
   connect(documentOpenWith->menu(), SIGNAL(aboutToShow()), this, SLOT(mSlotFixOpenWithMenu()));
   connect(documentOpenWith->menu(), SIGNAL(triggered(QAction*)), this, SLOT(slotOpenWithMenuAction(QAction*)));
 
-  a=actionCollection()->addAction(KStandardAction::KeyBindings, this, SLOT(editKeys()));
+  a = actionCollection()->addAction(KStandardAction::KeyBindings, this, SLOT(editKeys()));
   a->setWhatsThis(i18n("Configure the application's keyboard shortcut assignments."));
 
-  a=actionCollection()->addAction(KStandardAction::ConfigureToolbars, "set_configure_toolbars",
-                                  this, SLOT(slotEditToolbars()));
+  a = actionCollection()->addAction(KStandardAction::ConfigureToolbars, "set_configure_toolbars",
+                                    this, SLOT(slotEditToolbars()));
   a->setWhatsThis(i18n("Configure which items should appear in the toolbar(s)."));
 
   QAction* settingsConfigure = actionCollection()->addAction(KStandardAction::Preferences, "settings_configure",
-                                                             this, SLOT(slotConfigure()));
+                               this, SLOT(slotConfigure()));
   settingsConfigure->setWhatsThis(i18n("Configure various aspects of this application and the editing component."));
 
   // tip of the day :-)
   actionCollection()->addAction( KStandardAction::TipofDay, this, SLOT( tipOfTheDay() ) )
-      ->setWhatsThis(i18n("This shows useful tips on the use of this application."));
+  ->setWhatsThis(i18n("This shows useful tips on the use of this application."));
 
   if (KatePluginManager::self()->pluginList().count() > 0)
   {
-    a=actionCollection()->addAction( "help_plugins_contents" );
+    a = actionCollection()->addAction( "help_plugins_contents" );
     a->setText( i18n("&Plugins Handbook") );
     connect( a, SIGNAL( triggered() ), this, SLOT( pluginHelp() ) );
     a->setWhatsThis(i18n("This shows help files for various available plugins."));
   }
 
-  a=actionCollection()->addAction( "help_about_editor" );
+  a = actionCollection()->addAction( "help_about_editor" );
   a->setText( i18n("&About Editor Component") );
   connect( a, SIGNAL( triggered() ), this, SLOT( aboutEditor() ) );
   qobject_cast<KAction*>( a )->setGlobalShortcutAllowed(true);
 
-  connect(m_viewManager,SIGNAL(viewChanged()),this,SLOT(slotWindowActivated()));
-  connect(m_viewManager,SIGNAL(viewChanged()),this,SLOT(slotUpdateOpenWith()));
+  connect(m_viewManager, SIGNAL(viewChanged()), this, SLOT(slotWindowActivated()));
+  connect(m_viewManager, SIGNAL(viewChanged()), this, SLOT(slotUpdateOpenWith()));
 
   slotWindowActivated ();
 
@@ -381,29 +382,33 @@ KateTabWidget *KateMainWindow::tabWidget ()
   return m_tabWidget;
 }
 
-void KateMainWindow::slotDocumentCloseAll() {
+void KateMainWindow::slotDocumentCloseAll()
+{
   if (queryClose_internal())
     KateDocManager::self()->closeAllDocuments(false);
 }
 
-bool KateMainWindow::queryClose_internal() {
-   uint documentCount=KateDocManager::self()->documents();
+bool KateMainWindow::queryClose_internal()
+{
+  uint documentCount = KateDocManager::self()->documents();
 
   if ( ! showModOnDiskPrompt() )
     return false;
 
-  QList<KTextEditor::Document*> modifiedDocuments=KateDocManager::self()->modifiedDocumentList();
-  bool shutdown=(modifiedDocuments.count()==0);
+  QList<KTextEditor::Document*> modifiedDocuments = KateDocManager::self()->modifiedDocumentList();
+  bool shutdown = (modifiedDocuments.count() == 0);
 
-  if (!shutdown) {
-    shutdown=KateSaveModifiedDialog::queryClose(this,modifiedDocuments);
+  if (!shutdown)
+  {
+    shutdown = KateSaveModifiedDialog::queryClose(this, modifiedDocuments);
   }
 
-  if ( KateDocManager::self()->documents() > documentCount ) {
+  if ( KateDocManager::self()->documents() > documentCount )
+  {
     KMessageBox::information (this,
                               i18n ("New file opened while trying to close Kate, closing aborted."),
                               i18n ("Closing Aborted"));
-    shutdown=false;
+    shutdown = false;
   }
 
   return shutdown;
@@ -501,7 +506,7 @@ void KateMainWindow::saveOptions ()
 
   fileOpenRecent->saveEntries(config.data(), "Recent Files");
 #ifdef __GNUC__
-  #warning PORTME
+#warning PORTME
 #endif
   //filelist->writeConfig(config.data(), "Filelist");
 }
@@ -543,14 +548,27 @@ void KateMainWindow::slotUpdateOpenWith()
     documentOpenWith->setEnabled(false);
 }
 
-class KateRowColumn {
+class KateRowColumn
+{
   public:
-    KateRowColumn():m_row(-1),m_column(-1){}
-    KateRowColumn(int row,int column):m_row(row),m_column(column){}
-    ~KateRowColumn() {}
-    int column() {return m_column;}
-    int row() {return m_row;}
-    bool isValid() {return ( (m_row>=0) && (m_column>=0));}
+    KateRowColumn(): m_row(-1), m_column(-1)
+    {}
+    KateRowColumn(int row, int column): m_row(row), m_column(column)
+    {}
+    ~KateRowColumn()
+    {}
+    int column()
+    {
+      return m_column;
+    }
+    int row()
+    {
+      return m_row;
+    }
+    bool isValid()
+    {
+      return ( (m_row >= 0) && (m_column >= 0));
+    }
   private:
     int m_row;
     int m_column;
@@ -563,30 +581,32 @@ void KateMainWindow::documentMenuAboutToShow()
 {
   qRegisterMetaType<KTextEditor::Document*>("KTextEditor::Document*");
   qDeleteAll( documentsGroup->actions() );
-  int rows=m_fileList->model()->rowCount(QModelIndex());
-  QAbstractItemModel *model=m_fileList->model();
-  for (int row=0;row<rows;row++) {
-    QModelIndex index=model->index(row,0,QModelIndex());
+  int rows = m_fileList->model()->rowCount(QModelIndex());
+  QAbstractItemModel *model = m_fileList->model();
+  for (int row = 0;row < rows;row++)
+  {
+    QModelIndex index = model->index(row, 0, QModelIndex());
     Q_ASSERT(index.isValid());
-    KTextEditor::Document *doc=index.data(KateDocManager::DocumentRole).value<KTextEditor::Document*>();
+    KTextEditor::Document *doc = index.data(KateDocManager::DocumentRole).value<KTextEditor::Document*>();
     const QString name = KStringHandler::rsqueeze(doc->documentName(), 150);
     QAction *action = new QAction(doc->isModified() ?
-        i18nc("'document name [*]', [*] means modified", "%1 [*]", name) : name,
-        documentsGroup );
+                                  i18nc("'document name [*]', [*] means modified", "%1 [*]", name) : name,
+                                  documentsGroup );
     action->setCheckable(true);
     if(m_viewManager->activeView() && doc == m_viewManager->activeView()->document())
       action->setChecked(true);
-    action->setData(QVariant::fromValue(KateRowColumn(index.row(),index.column())));
+    action->setData(QVariant::fromValue(KateRowColumn(index.row(), index.column())));
     documentMenu->addAction(action);
   }
 }
 
 void KateMainWindow::activateDocumentFromDocMenu (QAction *action)
 {
-  KateRowColumn rowCol=action->data().value<KateRowColumn>();
+  KateRowColumn rowCol = action->data().value<KateRowColumn>();
   if (!rowCol.isValid()) return;
-  QModelIndex index=m_pM->index(rowCol.row(),rowCol.column());
-  if (index.isValid()) {
+  QModelIndex index = m_pM->index(rowCol.row(), rowCol.column());
+  if (index.isValid())
+  {
     KTextEditor::Document *doc = index.data(KateDocManager::DocumentRole).value<KTextEditor::Document*>();
     if (doc)
       m_viewManager->activateView (doc);
@@ -608,10 +628,10 @@ void KateMainWindow::dropEvent( QDropEvent *event )
 
 void KateMainWindow::slotDropEvent( QDropEvent * event )
 {
-  if (event->mimeData()==0) return;
-  KUrl::List textlist=KUrl::List::fromMimeData(event->mimeData());
+  if (event->mimeData() == 0) return;
+  KUrl::List textlist = KUrl::List::fromMimeData(event->mimeData());
 
-  for (KUrl::List::Iterator i=textlist.begin(); i != textlist.end(); ++i)
+  for (KUrl::List::Iterator i = textlist.begin(); i != textlist.end(); ++i)
   {
     m_viewManager->openUrl (*i);
   }
@@ -624,18 +644,20 @@ void KateMainWindow::editKeys()
   QList<KXMLGUIClient*> clients = guiFactory()->clients();
 
   foreach(KXMLGUIClient *client, clients)
-    dlg.insert ( client->actionCollection(), client->componentData().aboutData()->programName() );
-/*
-  dlg.insert( externalTools->actionCollection(), i18n("External Tools") );
-*/
+  dlg.insert ( client->actionCollection(), client->componentData().aboutData()->programName() );
+  /*
+    dlg.insert( externalTools->actionCollection(), i18n("External Tools") );
+  */
   dlg.configure();
 
-  QList<KTextEditor::Document*>  l=KateDocManager::self()->documentList();
-  for (int i=0;i<l.count();i++) {
+  QList<KTextEditor::Document*>  l = KateDocManager::self()->documentList();
+  for (int i = 0;i < l.count();i++)
+  {
 //     kDebug(13001)<<"reloading Keysettings for document "<<i<<endl;
     l.at(i)->reloadXML();
-    QList<KDocument::View *> l1=l.at(i)->views ();//KTextEditor::Document
-    for (int i1=0;i1<l1.count();i1++) {
+    QList<KDocument::View *> l1 = l.at(i)->views ();//KTextEditor::Document
+    for (int i1 = 0;i1 < l1.count();i1++)
+    {
       l1.at(i1)->reloadXML();
 //       kDebug(13001)<<"reloading Keysettings for view "<<i<<"/"<<i1<<endl;
     }
@@ -673,12 +695,12 @@ KUrl KateMainWindow::activeDocumentUrl()
 #if 0
 void KateMainWindow::fileSelected(const KFileItem * /*file*/)
 {
-  const KFileItemList *list=fileselector->dirOperator()->selectedItems();
+  const KFileItemList *list = fileselector->dirOperator()->selectedItems();
   KFileItem *tmp;
   for (KFileItemListIterator it(*list); (tmp = it.current()); ++it)
   {
     m_viewManager->openUrl(tmp->url());
-    fileselector->dirOperator()->view()->setSelected(tmp,false);
+    fileselector->dirOperator()->view()->setSelected(tmp, false);
   }
 }
 #endif
@@ -694,7 +716,8 @@ void KateMainWindow::mSlotFixOpenWithMenu()
   QAction *a = 0;
   KService::List offers = KMimeTypeTrader::self()->query(mime->name(), "Application");
   // for each one, insert a menu item...
-  for(KService::List::Iterator it = offers.begin(); it != offers.end(); ++it) {
+  for(KService::List::Iterator it = offers.begin(); it != offers.end(); ++it)
+  {
     KService::Ptr service = *it;
     if (service->name() == "Kate") continue;
     a = menu->addAction(KIcon(service->icon()), service->name());
@@ -711,7 +734,8 @@ void KateMainWindow::slotOpenWithMenuAction(QAction* a)
   list.append( m_viewManager->activeView()->document()->url() );
 
   const QString openWith = a->data().toString();
-  if (openWith.isEmpty()) {
+  if (openWith.isEmpty())
+  {
     // display "open with" dialog
     KOpenWithDialog dlg(list);
     if (dlg.exec())
@@ -720,9 +744,12 @@ void KateMainWindow::slotOpenWithMenuAction(QAction* a)
   }
 
   KService::Ptr app = KService::serviceByDesktopPath(openWith);
-  if (app) {
+  if (app)
+  {
     KRun::run(*app, list, this);
-  } else {
+  }
+  else
+  {
     KMessageBox::error(this, i18n("Application '%1' not found!", openWith), i18n("Application not found!"));
   }
 }
@@ -734,7 +761,7 @@ void KateMainWindow::pluginHelp()
 
 void KateMainWindow::aboutEditor()
 {
-  KAboutApplication ad(KateDocManager::self()->editor()->aboutData(),this);
+  KAboutApplication ad(KateDocManager::self()->editor()->aboutData(), this);
   ad.exec();
 }
 
@@ -777,7 +804,7 @@ bool KateMainWindow::showModOnDiskPrompt()
 
   DocVector list( KateDocManager::self()->documents() );
   uint cnt = 0;
-  foreach( doc,KateDocManager::self()->documentList())
+  foreach( doc, KateDocManager::self()->documentList())
   {
     if ( KateDocManager::self()->documentInfo( doc )->modifiedOnDisc )
     {
@@ -799,10 +826,10 @@ bool KateMainWindow::showModOnDiskPrompt()
 
 void KateMainWindow::slotDocumentCreated (KTextEditor::Document *doc)
 {
-  connect(doc,SIGNAL(modifiedChanged(KTextEditor::Document *)),this,SLOT(slotDocModified(KTextEditor::Document *)));
-  connect(doc,SIGNAL(modifiedChanged(KTextEditor::Document *)),this,SLOT(updateCaption(KTextEditor::Document *)));
-  connect(doc,SIGNAL(documentNameChanged(KTextEditor::Document *)),this,SLOT(updateCaption(KTextEditor::Document *)));
-  connect(doc,SIGNAL(documentNameChanged(KTextEditor::Document *)),this,SLOT(slotUpdateOpenWith()));
+  connect(doc, SIGNAL(modifiedChanged(KTextEditor::Document *)), this, SLOT(slotDocModified(KTextEditor::Document *)));
+  connect(doc, SIGNAL(modifiedChanged(KTextEditor::Document *)), this, SLOT(updateCaption(KTextEditor::Document *)));
+  connect(doc, SIGNAL(documentNameChanged(KTextEditor::Document *)), this, SLOT(updateCaption(KTextEditor::Document *)));
+  connect(doc, SIGNAL(documentNameChanged(KTextEditor::Document *)), this, SLOT(slotUpdateOpenWith()));
 
   updateCaption (doc);
 }
@@ -833,13 +860,13 @@ void KateMainWindow::updateCaption (KTextEditor::Document *doc)
   if ( !sessName.isEmpty() )
     sessName = QString("%1: ").arg( sessName );
 
-  setCaption( sessName + KStringHandler::lsqueeze(c,64),
+  setCaption( sessName + KStringHandler::lsqueeze(c, 64),
               m_viewManager->activeView()->document()->isModified());
 }
 
 void KateMainWindow::saveProperties(KConfig *config)
 {
-  QString grp=config->group();
+  QString grp = config->group();
 
   saveSession(config, grp);
   m_viewManager->saveViewConfiguration (config, grp);
@@ -849,7 +876,7 @@ void KateMainWindow::saveProperties(KConfig *config)
 
 void KateMainWindow::readProperties(KConfig *config)
 {
-  QString grp=config->group();
+  QString grp = config->group();
 
   startRestore(config, grp);
 
@@ -871,26 +898,31 @@ void KateMainWindow::saveGlobalProperties( KConfig* sessionConfig )
   sessionConfig->writeEntry ("Last Session", KateApp::self()->sessionManager()->activeSession()->sessionFileRelative());
 }
 
-void KateMainWindow::showFileListPopup(const QPoint& pos) {
-  if (m_fileList->selectionModel()->selection().count()==0) return;
+void KateMainWindow::showFileListPopup(const QPoint& pos)
+{
+  if (m_fileList->selectionModel()->selection().count() == 0) return;
   QMenu *menu = (QMenu*) (factory()->container("filelist_popup", m_viewManager->mainWindow()));
   if (menu) menu->exec(m_fileList->viewport()->mapToGlobal(pos));
 }
 
 
-static QModelIndex modelIndexForDocumentRec(const QModelIndex &index, QAbstractItemModel *model) {
-    QAbstractProxyModel *m=qobject_cast<QAbstractProxyModel*>(model);
-    if (m==0) return index;
-    return m->mapFromSource(modelIndexForDocumentRec(index,m->sourceModel()));
+static QModelIndex modelIndexForDocumentRec(const QModelIndex &index, QAbstractItemModel *model)
+{
+  QAbstractProxyModel *m = qobject_cast<QAbstractProxyModel*>(model);
+  if (m == 0) return index;
+  return m->mapFromSource(modelIndexForDocumentRec(index, m->sourceModel()));
 }
 
-QModelIndex KateMainWindow::modelIndexForDocument(KTextEditor::Document *document) {
-  KTextEditor::Document *tmp=m_pM->selection()->currentIndex().data(KateDocManager::DocumentRole).value<KTextEditor::Document*>();
-  if (tmp==document) return m_pM->selection()->currentIndex(); else return modelIndexForDocumentRec(KateDocManager::self()->indexForDocument(document),m_pM);
+QModelIndex KateMainWindow::modelIndexForDocument(KTextEditor::Document *document)
+{
+  KTextEditor::Document *tmp = m_pM->selection()->currentIndex().data(KateDocManager::DocumentRole).value<KTextEditor::Document*>();
+  if (tmp == document) return m_pM->selection()->currentIndex();
+  else return modelIndexForDocumentRec(KateDocManager::self()->indexForDocument(document), m_pM);
 }
 
 
-void KateMainWindow::slotDocModified(KTextEditor::Document *document) {
+void KateMainWindow::slotDocModified(KTextEditor::Document *document)
+{
   if (document->isModified()) m_pM->modified(modelIndexForDocument(document));
 }
 

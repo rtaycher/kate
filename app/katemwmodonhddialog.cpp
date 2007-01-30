@@ -2,17 +2,17 @@
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License version 2 as published by the Free Software Foundation.
-
+ 
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
-
+ 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
-
+ 
     ---
     Copyright (C) 2004, Anders Lund <anders@alweb.dk>
 */
@@ -42,7 +42,7 @@ class KateDocItem : public QTreeWidgetItem
 {
   public:
     KateDocItem( KTextEditor::Document *doc, const QString &status, QTreeWidget *tw )
-  : QTreeWidgetItem( tw ),
+        : QTreeWidgetItem( tw ),
         document( doc )
     {
       setText( 0, doc->url().prettyUrl() );
@@ -52,14 +52,15 @@ class KateDocItem : public QTreeWidgetItem
       else
         setCheckState( 0, Qt::Unchecked );
     }
-    ~KateDocItem() {};
+    ~KateDocItem()
+  {};
 
     KTextEditor::Document *document;
 };
 
 
 KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const char *name )
-  : KDialog( parent )
+    : KDialog( parent )
 {
   setCaption( i18n("Documents Modified on Disk") );
   setButtons( User1 | User2 | User3 );
@@ -72,14 +73,14 @@ KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const
   setDefaultButton( KDialog::User3 );
 
   setButtonWhatsThis( User1, i18n(
-      "Removes the modified flag from the selected documents and closes the "
-      "dialog if there are no more unhandled documents.") );
+                        "Removes the modified flag from the selected documents and closes the "
+                        "dialog if there are no more unhandled documents.") );
   setButtonWhatsThis( User2, i18n(
-      "Overwrite selected documents, discarding the disk changes and closes the "
-      "dialog if there are no more unhandled documents.") );
+                        "Overwrite selected documents, discarding the disk changes and closes the "
+                        "dialog if there are no more unhandled documents.") );
   setButtonWhatsThis( User3, i18n(
-      "Reloads the selected documents from disk and closes the dialog if there "
-      "are no more unhandled documents.") );
+                        "Reloads the selected documents from disk and closes the dialog if there "
+                        "are no more unhandled documents.") );
 
   KVBox *w = new KVBox( this );
   setMainWidget( w );
@@ -92,8 +93,8 @@ KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const
   icon->setPixmap( DesktopIcon("messagebox_warning") );
 
   QLabel *t = new QLabel( i18n(
-      "<qt>The documents listed below has changed on disk.<p>Select one "
-      "or more at the time and press an action button until the list is empty.</qt>"), lo1 );
+                            "<qt>The documents listed below has changed on disk.<p>Select one "
+                            "or more at the time and press an action button until the list is empty.</qt>"), lo1 );
   lo1->setStretchFactor( t, 1000 );
 
   // document list
@@ -105,7 +106,7 @@ KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const
 
   QStringList l;
   l << "" << i18n("Modified") << i18n("Created") << i18n("Deleted");
-  for ( uint i=0; i < docs.size(); i++ )
+  for ( uint i = 0; i < docs.size(); i++ )
   {
     new KateDocItem( docs[i], l[ (uint)KateDocManager::self()->documentInfo( docs[i] )->modifiedOnDiscReason ], twDocuments );
   }
@@ -119,9 +120,9 @@ KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const
   btnDiff = new KPushButton( KGuiItem (i18n("&View Difference"), "edit"), lo2 );
 
   btnDiff->setWhatsThis(i18n(
-      "Calculates the difference between the the editor contents and the disk "
-      "file for the selected document, and shows the difference with the "
-      "default application. Requires diff(1).") );
+                          "Calculates the difference between the the editor contents and the disk "
+                          "file for the selected document, and shows the difference with the "
+                          "default application. Requires diff(1).") );
   connect( btnDiff, SIGNAL(clicked()), this, SLOT(slotDiff()) );
   connect( this, SIGNAL(user1Clicked()), this, SLOT(slotUser1()) );
   connect( this, SIGNAL(user2Clicked()), this, SLOT(slotUser2()) );
@@ -132,8 +133,7 @@ KateMwModOnHdDialog::KateMwModOnHdDialog( DocVector docs, QWidget *parent, const
 }
 
 KateMwModOnHdDialog::~KateMwModOnHdDialog()
-{
-}
+{}
 
 void KateMwModOnHdDialog::slotUser1()
 {
@@ -156,7 +156,7 @@ void KateMwModOnHdDialog::handleSelected( int action )
   QList<QTreeWidgetItem *> itemsToDelete;
   for ( QTreeWidgetItemIterator it ( twDocuments ); *it; ++it )
   {
-    KateDocItem *item = (KateDocItem *)*it;
+    KateDocItem *item = (KateDocItem *) * it;
     if ( item->checkState(0) == Qt::Checked )
     {
       KTextEditor::ModificationInterface::ModifiedOnDiskReason reason = KateDocManager::self()->documentInfo( item->document )->modifiedOnDiscReason;
@@ -196,7 +196,7 @@ void KateMwModOnHdDialog::handleSelected( int action )
   }
 
   // remove the marked items
-  for (int i=0; i < itemsToDelete.count(); ++i)
+  for (int i = 0; i < itemsToDelete.count(); ++i)
     delete itemsToDelete[i];
 
 // any documents left unhandled?
@@ -208,7 +208,7 @@ void KateMwModOnHdDialog::slotSelectionChanged(QTreeWidget *current, QTreeWidget
 {
   // set the diff button enabled
   btnDiff->setEnabled( current &&
-      KateDocManager::self()->documentInfo( ((KateDocItem*)current)->document )->modifiedOnDiscReason != 3 );
+                       KateDocManager::self()->documentInfo( ((KateDocItem*)current)->document )->modifiedOnDiscReason != 3 );
 }
 
 // ### the code below is slightly modified from kdelibs/kate/part/katedialogs,
@@ -248,7 +248,8 @@ void KateMwModOnHdDialog::slotDiff()
 void KateMwModOnHdDialog::slotPRead( KProcIO *p)
 {
   // create a file for the diff if we haven't one already
-  if ( ! m_tmpfile ) {
+  if ( ! m_tmpfile )
+  {
     m_tmpfile = new KTemporaryFile();
     m_tmpfile->setAutoRemove(false);
     m_tmpfile->open();
@@ -258,7 +259,8 @@ void KateMwModOnHdDialog::slotPRead( KProcIO *p)
   QString stmp;
   bool readData = false;
   QTextStream textStream ( m_tmpfile );
-  while ( p->readln( stmp, false ) > -1 ) {
+  while ( p->readln( stmp, false ) > -1 )
+  {
     textStream << stmp << endl;
     readData = true;
   }
@@ -279,7 +281,8 @@ void KateMwModOnHdDialog::slotPDone( KProcess *p )
   if( m_tmpfile )
     m_tmpfile->close();
 
-  if ( ! p->normalExit() /*|| p->exitStatus()*/ ) {
+  if ( ! p->normalExit() /*|| p->exitStatus()*/ )
+  {
     KMessageBox::sorry( this,
                         i18n("The diff command failed. Please make sure that "
                              "diff(1) is installed and in your PATH."),
@@ -289,7 +292,8 @@ void KateMwModOnHdDialog::slotPDone( KProcess *p )
     return;
   }
 
-  if ( ! m_tmpfile ) {
+  if ( ! m_tmpfile )
+  {
     KMessageBox::information( this,
                               i18n("Besides white space changes, the files are identical."),
                               i18n("Diff Output") );

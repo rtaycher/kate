@@ -2,16 +2,16 @@
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2001 Anders Lund <anders.lund@lund.tdcadsl.dk>
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -56,12 +56,12 @@
 //END Includes
 
 KateViewManager::KateViewManager (KateMainWindow *parent)
- : QObject  (parent)
- , m_currentContainer (0)
- , m_mainWindow(parent)
+    : QObject  (parent)
+    , m_currentContainer (0)
+    , m_mainWindow(parent)
 {
   // while init
-  m_init=true;
+  m_init = true;
 
   // some stuff for the tabwidget
   m_mainWindow->tabWidget()->setTabReorderingEnabled( true );
@@ -69,25 +69,25 @@ KateViewManager::KateViewManager (KateMainWindow *parent)
   // important, set them up, as we use them in other methodes
   setupActions ();
 
-  guiMergedView=0;
+  guiMergedView = 0;
 
-  connect(m_mainWindow->tabWidget(),SIGNAL(currentChanged(QWidget*)),this,SLOT(tabChanged(QWidget*)));
+  connect(m_mainWindow->tabWidget(), SIGNAL(currentChanged(QWidget*)), this, SLOT(tabChanged(QWidget*)));
   slotNewTab();
   tabChanged(m_mainWindow->tabWidget()->currentWidget());
 
   // init done
-  m_init=false;
+  m_init = false;
 }
 
 KateViewManager::~KateViewManager ()
 {
-
 }
 
-void KateViewManager::activateDocument(const QModelIndex &index) {
-    QVariant v=index.data(KateDocManager::DocumentRole);
-    if (!v.isValid()) return;
-    activateView(v.value<KTextEditor::Document*>());
+void KateViewManager::activateDocument(const QModelIndex &index)
+{
+  QVariant v = index.data(KateDocManager::DocumentRole);
+  if (!v.isValid()) return;
+  activateView(v.value<KTextEditor::Document*>());
 }
 
 void KateViewManager::setupActions ()
@@ -97,7 +97,7 @@ void KateViewManager::setupActions ()
   /**
    * tabbing
    */
-  a=m_mainWindow->actionCollection()->addAction( "view_new_tab" );
+  a = m_mainWindow->actionCollection()->addAction( "view_new_tab" );
   a->setIcon( KIcon("tab_new") );
   a->setText( i18n("New Tab") );
   connect(a, SIGNAL(triggered()), this, SLOT(slotNewTab()));
@@ -120,18 +120,18 @@ void KateViewManager::setupActions ()
   /**
    * view splitting
    */
-  a=m_mainWindow->actionCollection()->addAction("view_split_vert");
+  a = m_mainWindow->actionCollection()->addAction("view_split_vert");
   a->setIcon( KIcon("view_right") );
   a->setText( i18n("Split Ve&rtical") );
-  a->setShortcut( Qt::CTRL+Qt::SHIFT+Qt::Key_L );
+  a->setShortcut( Qt::CTRL + Qt::SHIFT + Qt::Key_L );
   connect(a, SIGNAL(triggered()), this, SLOT(slotSplitViewSpaceVert()));
 
   a->setWhatsThis(i18n("Split the currently active view vertically into two views."));
 
-  a=m_mainWindow->actionCollection()->addAction("view_split_horiz");
+  a = m_mainWindow->actionCollection()->addAction("view_split_horiz");
   a->setIcon( KIcon("view_bottom") );
   a->setText( i18n("Split &Horizontal") );
-  a->setShortcut( Qt::CTRL+Qt::SHIFT+Qt::Key_T );
+  a->setShortcut( Qt::CTRL + Qt::SHIFT + Qt::Key_T );
   connect(a, SIGNAL(triggered()), this, SLOT(slotSplitViewSpaceHoriz()));
 
   a->setWhatsThis(i18n("Split the currently active view horizontally into two views."));
@@ -139,21 +139,21 @@ void KateViewManager::setupActions ()
   m_closeView = m_mainWindow->actionCollection()->addAction("view_close_current_space");
   m_closeView->setIcon( KIcon("view_remove") );
   m_closeView->setText( i18n("Cl&ose Current View") );
-  m_closeView->setShortcut( Qt::CTRL+Qt::SHIFT+Qt::Key_R );
+  m_closeView->setShortcut( Qt::CTRL + Qt::SHIFT + Qt::Key_R );
   connect(m_closeView, SIGNAL(triggered()), this, SLOT(slotCloseCurrentViewSpace()));
 
   m_closeView->setWhatsThis(i18n("Close the currently active splitted view"));
 
-  goNext=m_mainWindow->actionCollection()->addAction( "go_next" );
+  goNext = m_mainWindow->actionCollection()->addAction( "go_next" );
   goNext->setText( i18n("Next View") );
   goNext->setShortcut( Qt::Key_F8 );
   connect(goNext, SIGNAL(triggered()), this, SLOT(activateNextView()));
 
   goNext->setWhatsThis(i18n("Make the next split view the active one."));
 
-  goPrev=m_mainWindow->actionCollection()->addAction( "go_prev" );
+  goPrev = m_mainWindow->actionCollection()->addAction( "go_prev" );
   goPrev->setText( i18n("Previous View") );
-  goPrev->setShortcut( Qt::SHIFT+Qt::Key_F8 );
+  goPrev->setShortcut( Qt::SHIFT + Qt::Key_F8 );
   connect(goPrev, SIGNAL(triggered()), this, SLOT(activatePrevView()));
 
   goPrev->setWhatsThis(i18n("Make the previous split view the active one."));
@@ -163,7 +163,7 @@ void KateViewManager::setupActions ()
    */
   QToolButton *b = new QToolButton( m_mainWindow->tabWidget() );
   connect( b, SIGNAL( clicked() ),
-             this, SLOT( slotNewTab() ) );
+           this, SLOT( slotNewTab() ) );
   b->setIcon( SmallIcon( "tab_new" ) );
   b->adjustSize();
   b->setToolTip( i18n("Open a new tab"));
@@ -171,7 +171,7 @@ void KateViewManager::setupActions ()
 
   b = m_closeTabButton = new QToolButton( m_mainWindow->tabWidget() );
   connect( b, SIGNAL( clicked() ),
-            this, SLOT( slotCloseTab() ) );
+           this, SLOT( slotCloseTab() ) );
   b->setIcon( SmallIcon( "tab_remove" ) );
   b->adjustSize();
   b->setToolTip( i18n("Close the current tab"));
@@ -185,15 +185,16 @@ void KateViewManager::updateViewSpaceActions ()
   goPrev->setEnabled (m_currentContainer->viewSpaceCount() > 1);
 }
 
-void KateViewManager::tabChanged(QWidget* widget) {
+void KateViewManager::tabChanged(QWidget* widget)
+{
   // get container
-  KateViewSpaceContainer *container=qobject_cast<KateViewSpaceContainer*>(widget);
+  KateViewSpaceContainer *container = qobject_cast<KateViewSpaceContainer*>(widget);
 
   // should be always valid
   Q_ASSERT(container);
 
   // switch current container
-  m_currentContainer=container;
+  m_currentContainer = container;
   m_currentContainer->reactivateActiveView();
   m_closeTab->setEnabled(m_mainWindow->tabWidget()->count() > 1);
   m_activateNextTab->setEnabled(m_mainWindow->tabWidget()->count() > 1);
@@ -213,12 +214,12 @@ void KateViewManager::slotNewTab()
       doc = m_currentContainer->activeView()->document();
   }
 
-  KateViewSpaceContainer *container=new KateViewSpaceContainer(this);
+  KateViewSpaceContainer *container = new KateViewSpaceContainer(this);
   m_viewSpaceContainerList.append(container);
   m_mainWindow->tabWidget()->addTab (container, "");
 
-  connect(container,SIGNAL(viewChanged()),this,SIGNAL(viewChanged()));
-  connect(container,SIGNAL(viewChanged()),m_mainWindow->mainWindow(),SIGNAL(viewChanged()));
+  connect(container, SIGNAL(viewChanged()), this, SIGNAL(viewChanged()));
+  connect(container, SIGNAL(viewChanged()), m_mainWindow->mainWindow(), SIGNAL(viewChanged()));
 
   // update title...
   connect(container, SIGNAL(changeMyTitle (QWidget *)), this, SLOT(changeMyTitle (QWidget *)));
@@ -246,7 +247,7 @@ void KateViewManager::slotCloseTab()
   delete m_viewSpaceContainerList.takeAt (pos);
 
   if (pos >= m_viewSpaceContainerList.count())
-    pos = m_viewSpaceContainerList.count()-1;
+    pos = m_viewSpaceContainerList.count() - 1;
 
   tabChanged(m_viewSpaceContainerList[pos]);
 }
@@ -254,7 +255,7 @@ void KateViewManager::slotCloseTab()
 void KateViewManager::changeMyTitle (QWidget *page)
 {
   // get container
-  KateViewSpaceContainer *container=qobject_cast<KateViewSpaceContainer*>(page);
+  KateViewSpaceContainer *container = qobject_cast<KateViewSpaceContainer*>(page);
 
   // should be always valid
   Q_ASSERT(container);
@@ -263,7 +264,7 @@ void KateViewManager::changeMyTitle (QWidget *page)
   if (container->activeView())
   {
     m_mainWindow->tabWidget()->setTabText (m_mainWindow->tabWidget()->indexOf (page)
-      , container->activeView()->document()->documentName());
+                                           , container->activeView()->document()->documentName());
   }
 }
 
@@ -336,9 +337,10 @@ KTextEditor::View *KateViewManager::activateView( KTextEditor::Document *doc )
 
 uint KateViewManager::viewCount ()
 {
-  uint viewCount=0;
-  for (int i=0;i<m_viewSpaceContainerList.count();i++) {
-    viewCount+=m_viewSpaceContainerList[i]->viewCount();
+  uint viewCount = 0;
+  for (int i = 0;i < m_viewSpaceContainerList.count();i++)
+  {
+    viewCount += m_viewSpaceContainerList[i]->viewCount();
   }
   return viewCount;
 
@@ -346,17 +348,18 @@ uint KateViewManager::viewCount ()
 
 uint KateViewManager::viewSpaceCount ()
 {
-  uint viewSpaceCount=0;
-  for (int i=0;i<m_viewSpaceContainerList.count();i++) {
-    viewSpaceCount+=m_viewSpaceContainerList[i]->viewSpaceCount();
+  uint viewSpaceCount = 0;
+  for (int i = 0;i < m_viewSpaceContainerList.count();i++)
+  {
+    viewSpaceCount += m_viewSpaceContainerList[i]->viewSpaceCount();
   }
   return viewSpaceCount;
 }
 
 void KateViewManager::setViewActivationBlocked (bool block)
 {
-  for (int i=0;i<m_viewSpaceContainerList.count();i++)
-    m_viewSpaceContainerList[i]->m_blockViewCreationAndActivation=block;
+  for (int i = 0;i < m_viewSpaceContainerList.count();i++)
+    m_viewSpaceContainerList[i]->m_blockViewCreationAndActivation = block;
 }
 
 void KateViewManager::activateNextView()
@@ -371,7 +374,8 @@ void KateViewManager::activatePrevView()
 
 void KateViewManager::closeViews(KTextEditor::Document *doc)
 {
-  for (int i=0;i<m_viewSpaceContainerList.count();i++) {
+  for (int i = 0;i < m_viewSpaceContainerList.count();i++)
+  {
     m_viewSpaceContainerList[i]->closeViews(doc);
   }
   tabChanged(m_currentContainer);
@@ -388,13 +392,13 @@ void KateViewManager::slotDocumentOpen ()
 
   if (cv)
   {
-    KEncodingFileDialog::Result r=KEncodingFileDialog::getOpenUrlsAndEncoding(
-      cv->document()->encoding(),
-      cv->document()->url().url(),
-       QString(),m_mainWindow,i18n("Open File"));
+    KEncodingFileDialog::Result r = KEncodingFileDialog::getOpenUrlsAndEncoding(
+                                      cv->document()->encoding(),
+                                      cv->document()->url().url(),
+                                      QString(), m_mainWindow, i18n("Open File"));
 
     KTextEditor::Document *lastID = 0;
-    for (KUrl::List::Iterator i=r.URLs.begin(); i != r.URLs.end(); ++i)
+    for (KUrl::List::Iterator i = r.URLs.begin(); i != r.URLs.end(); ++i)
       lastID = openUrl( *i, r.encoding, false );
 
     if (lastID)
@@ -479,26 +483,28 @@ void KateViewManager::slotSplitViewSpaceHoriz()
  * session config functions
  */
 
-void KateViewManager::saveViewConfiguration(KConfig *config,const QString& group)
+void KateViewManager::saveViewConfiguration(KConfig *config, const QString& group)
 {
   config->setGroup(group);
-  config->writeEntry("ViewSpaceContainers",m_viewSpaceContainerList.count());
+  config->writeEntry("ViewSpaceContainers", m_viewSpaceContainerList.count());
   config->writeEntry("Active ViewSpaceContainer", m_mainWindow->tabWidget()->currentIndex());
-  for (int i = 0; i < m_viewSpaceContainerList.count(); i++) {
-    m_viewSpaceContainerList[i]->saveViewConfiguration(config,group+QString(":ViewSpaceContainer-%1:").arg(i));
+  for (int i = 0; i < m_viewSpaceContainerList.count(); i++)
+  {
+    m_viewSpaceContainerList[i]->saveViewConfiguration(config, group + QString(":ViewSpaceContainer-%1:").arg(i));
   }
 }
 
 void KateViewManager::restoreViewConfiguration (KConfig *config, const QString& group)
 {
   config->setGroup(group);
-  uint tabCount=config->readEntry("ViewSpaceContainers",0);
-  int activeOne=config->readEntry("Active ViewSpaceContainer",0);
-  if (tabCount==0) return;
-  m_viewSpaceContainerList[0]->restoreViewConfiguration(config,group+QString(":ViewSpaceContainer-0:"));
-  for (uint i=1;i<tabCount;i++) {
+  uint tabCount = config->readEntry("ViewSpaceContainers", 0);
+  int activeOne = config->readEntry("Active ViewSpaceContainer", 0);
+  if (tabCount == 0) return;
+  m_viewSpaceContainerList[0]->restoreViewConfiguration(config, group + QString(":ViewSpaceContainer-0:"));
+  for (uint i = 1;i < tabCount;i++)
+  {
     slotNewTab();
-    m_viewSpaceContainerList[i]->restoreViewConfiguration(config,group+QString(":ViewSpaceContainer-%1:").arg(i));
+    m_viewSpaceContainerList[i]->restoreViewConfiguration(config, group + QString(":ViewSpaceContainer-%1:").arg(i));
   }
 
   if (activeOne != m_mainWindow->tabWidget()->currentIndex())
@@ -507,8 +513,9 @@ void KateViewManager::restoreViewConfiguration (KConfig *config, const QString& 
   updateViewSpaceActions();
 }
 
-KateMainWindow *KateViewManager::mainWindow() {
-        return m_mainWindow;
+KateMainWindow *KateViewManager::mainWindow()
+{
+  return m_mainWindow;
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

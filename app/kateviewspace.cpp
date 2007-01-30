@@ -2,16 +2,16 @@
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2001, 2005 Anders Lund <anders.lund@lund.tdcadsl.dk>
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -50,7 +50,7 @@
 //BEGIN KateViewSpace
 KateViewSpace::KateViewSpace( KateViewSpaceContainer *viewManager,
                               QWidget* parent, const char* name )
-  : KVBox(parent),
+    : KVBox(parent),
     m_viewManager( viewManager )
 {
   setObjectName(name);
@@ -73,8 +73,7 @@ KateViewSpace::KateViewSpace( KateViewSpaceContainer *viewManager,
 }
 
 KateViewSpace::~KateViewSpace()
-{
-}
+{}
 
 void KateViewSpace::statusBarToggled ()
 {
@@ -107,11 +106,13 @@ void KateViewSpace::addView(KTextEditor::View* v, bool show)
   }
 
   stack->addWidget(v);
-  if (show) {
+  if (show)
+  {
     mViewList.append(v);
     showView( v );
   }
-  else {
+  else
+  {
     KTextEditor::View* c = (KTextEditor::View*)stack->currentWidget();
     mViewList.prepend( v );
     showView( c );
@@ -205,10 +206,10 @@ bool KateViewSpace::event( QEvent *e )
   return KVBox::event( e );
 }
 
-void KateViewSpace::saveConfig ( KConfig* config, int myIndex ,const QString& viewConfGrp)
+void KateViewSpace::saveConfig ( KConfig* config, int myIndex , const QString& viewConfGrp)
 {
 //   kDebug()<<"KateViewSpace::saveConfig("<<myIndex<<", "<<viewConfGrp<<") - currentView: "<<currentView()<<")"<<endl;
-  QString group = QString(viewConfGrp+"-ViewSpace %1").arg( myIndex );
+  QString group = QString(viewConfGrp + "-ViewSpace %1").arg( myIndex );
 
   config->setGroup (group);
   config->writeEntry ("Count", mViewList.count());
@@ -231,7 +232,7 @@ void KateViewSpace::saveConfig ( KConfig* config, int myIndex ,const QString& vi
       config->setGroup( vgroup );
 
       if (KTextEditor::SessionConfigInterface *iface = qobject_cast<KTextEditor::SessionConfigInterface *>(*it))
-          iface->writeSessionConfig( config );
+        iface->writeSessionConfig( config );
     }
 
     ++idx;
@@ -271,7 +272,7 @@ void KateViewSpace::restoreConfig ( KateViewSpaceContainer *viewMan, KConfig* co
 
 //BEGIN KateVSStatusBar
 KateVSStatusBar::KateVSStatusBar ( KateViewSpace *parent)
-  : KStatusBar( parent),
+    : KStatusBar( parent),
     m_viewSpace( parent )
 {
   m_lineColLabel = new QLabel( this );
@@ -294,7 +295,7 @@ KateVSStatusBar::KateVSStatusBar ( KateViewSpace *parent)
   m_selectModeLabel->setAlignment( Qt::AlignCenter );
   m_selectModeLabel->installEventFilter( this );
 
-  m_fileNameLabel=new KSqueezedTextLabel( this );
+  m_fileNameLabel = new KSqueezedTextLabel( this );
   addPermanentWidget( m_fileNameLabel, 1 );
   m_fileNameLabel->setMinimumSize( 0, 0 );
   m_fileNameLabel->setSizePolicy(QSizePolicy( QSizePolicy::Ignored, QSizePolicy::Fixed ));
@@ -309,26 +310,25 @@ KateVSStatusBar::KateVSStatusBar ( KateViewSpace *parent)
 }
 
 KateVSStatusBar::~KateVSStatusBar ()
-{
-}
+{}
 
 void KateVSStatusBar::showMenu()
 {
-   KMainWindow* mainWindow = static_cast<KMainWindow*>( window() );
-   QMenu* menu = static_cast<QMenu*>( mainWindow->factory()->container("viewspace_popup", mainWindow ) );
+  KMainWindow* mainWindow = static_cast<KMainWindow*>( window() );
+  QMenu* menu = static_cast<QMenu*>( mainWindow->factory()->container("viewspace_popup", mainWindow ) );
 
-   if (menu)
-     menu->exec(QCursor::pos());
+  if (menu)
+    menu->exec(QCursor::pos());
 }
 
-bool KateVSStatusBar::eventFilter(QObject*,QEvent *e)
+bool KateVSStatusBar::eventFilter(QObject*, QEvent *e)
 {
-  if (e->type()==QEvent::MouseButtonPress)
+  if (e->type() == QEvent::MouseButtonPress)
   {
     if ( m_viewSpace->currentView() )
       m_viewSpace->currentView()->setFocus();
 
-    if ( ((QMouseEvent*)e)->button()==Qt::RightButton)
+    if ( ((QMouseEvent*)e)->button() == Qt::RightButton)
       showMenu();
 
     return true;
@@ -366,8 +366,8 @@ void KateVSStatusBar::cursorPositionChanged ( KTextEditor::View *view )
   KTextEditor::Cursor position (view->cursorPositionVirtual());
 
   m_lineColLabel->setText(
-    i18n(" Line: %1 Col: %2 ", KGlobal::locale()->formatNumber(position.line()+1, 0),
-                               KGlobal::locale()->formatNumber(position.column()+1, 0)) );
+    i18n(" Line: %1 Col: %2 ", KGlobal::locale()->formatNumber(position.line() + 1, 0),
+         KGlobal::locale()->formatNumber(position.column() + 1, 0)) );
 }
 
 void KateVSStatusBar::selectionChanged (KTextEditor::View *view)
@@ -398,19 +398,19 @@ void KateVSStatusBar::modifiedChanged()
     bool mod = v->document()->isModified();
 
     const KateDocumentInfo *info
-      = KateDocManager::self()->documentInfo ( v->document() );
+    = KateDocManager::self()->documentInfo ( v->document() );
 
     bool modOnHD = info && info->modifiedOnDisc;
 
     m_modifiedLabel->setPixmap(
-        mod ?
-          info && modOnHD ?
-            m_modmodPm :
-            m_modPm :
-          info && modOnHD ?
-            m_modDiscPm :
-        m_noPm
-        );
+      mod ?
+      info && modOnHD ?
+      m_modmodPm :
+  m_modPm :
+      info && modOnHD ?
+      m_modDiscPm :
+      m_noPm
+    );
   }
 }
 

@@ -2,16 +2,16 @@
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2001 Anders Lund <anders.lund@lund.tdcadsl.dk>
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -70,31 +70,37 @@
 
 //BEGIN KateFileList
 
-KateFileList::KateFileList(QWidget *parent,KActionCollection *actionCollection):QListView(parent) {
+KateFileList::KateFileList(QWidget *parent, KActionCollection *actionCollection): QListView(parent)
+{
   m_windowNext = actionCollection->addAction(KStandardAction::Back, this, SLOT(slotPrevDocument()));
   m_windowPrev = actionCollection->addAction(KStandardAction::Forward, this, SLOT(slotNextDocument()));
   m_sortAction = new KSelectAction( i18n("Sort &By"), this );
   actionCollection->addAction( "filelist_sortby", m_sortAction );
   QStringList l;
-  l << i18n("Opening Order") << i18n("Document Name") << i18n("URL")<<i18n("Custom");
+  l << i18n("Opening Order") << i18n("Document Name") << i18n("URL") << i18n("Custom");
   m_sortAction->setItems( l );
   connect( m_sortAction, SIGNAL(triggered(int)), this, SLOT(setSortType(int)) );
-  m_sortType=SortOpening;
+  m_sortType = SortOpening;
 }
 
-KateFileList::~KateFileList() {}
+KateFileList::~KateFileList()
+{}
 
-void KateFileList::setSortType(int sortType) {
-  m_sortType=sortType;
+void KateFileList::setSortType(int sortType)
+{
+  m_sortType = sortType;
 }
 
-void KateFileList::slotNextDocument() {
-  QModelIndex idx=selectionModel()->currentIndex();
-  if (idx.isValid()) {
-    QModelIndex newIdx=model()->index(idx.row()+1,idx.column(),idx.parent());
+void KateFileList::slotNextDocument()
+{
+  QModelIndex idx = selectionModel()->currentIndex();
+  if (idx.isValid())
+  {
+    QModelIndex newIdx = model()->index(idx.row() + 1, idx.column(), idx.parent());
     if (!newIdx.isValid())
-      newIdx=model()->index(0,idx.column(),idx.parent());
-    if (newIdx.isValid()) {
+      newIdx = model()->index(0, idx.column(), idx.parent());
+    if (newIdx.isValid())
+    {
 //      selectionModel()->select(newIdx,QItemSelectionModel::SelectCurrent);
 //      selectionModel()->setCurrentIndex(newIdx,QItemSelectionModel::SelectCurrent);
       emit activated(newIdx);
@@ -102,13 +108,16 @@ void KateFileList::slotNextDocument() {
   }
 }
 
-void KateFileList::slotPrevDocument() {
-  QModelIndex idx=selectionModel()->currentIndex();
-  if (idx.isValid()) {
-    int row=idx.row()-1;
-    if (row<0) row=model()->rowCount(idx.parent())-1;
-    QModelIndex newIdx=model()->index(row,idx.column(),idx.parent());
-    if (newIdx.isValid()) {
+void KateFileList::slotPrevDocument()
+{
+  QModelIndex idx = selectionModel()->currentIndex();
+  if (idx.isValid())
+  {
+    int row = idx.row() - 1;
+    if (row < 0) row = model()->rowCount(idx.parent()) - 1;
+    QModelIndex newIdx = model()->index(row, idx.column(), idx.parent());
+    if (newIdx.isValid())
+    {
 //      selectionModel()->select(newIdx,QItemSelectionModel::SelectCurrent);
 //      selectionModel()->setCurrentIndex(newIdx,QItemSelectionModel::SelectCurrent);
       emit activated(newIdx);
@@ -134,19 +143,19 @@ class ToolTip : public QToolTip
     {
     }
     virtual ~ToolTip() {};
-
+ 
     void maybeTip( const QPoint &pos )
     {
       Q3ListViewItem *i = m_listView->itemAt( pos );
       if ( ! i ) return;
-
+ 
       KateFileListItem *item = ((KateFileListItem*)i);
       if ( ! item ) return;
-
+ 
       tip( m_listView->itemRect( i ), m_listView->tooltip( item, 0 ) );
-
+ 
     }
-
+ 
   private:
     KateFileList *m_listView;
 };*/
@@ -187,18 +196,18 @@ KateFileList::KateFileList (KateMainWindow *main,
     slotModChanged (KateDocManager::self()->document(i));
   }
 
-  connect(KateDocManager::self(),SIGNAL(documentCreated(KTextEditor::Document *)),
-	  this,SLOT(slotDocumentCreated(KTextEditor::Document *)));
-  connect(KateDocManager::self(),SIGNAL(documentDeleted(KTextEditor::Document *)),
-	  this,SLOT(slotDocumentDeleted(KTextEditor::Document *)));
+  connect(KateDocManager::self(), SIGNAL(documentCreated(KTextEditor::Document *)),
+          this, SLOT(slotDocumentCreated(KTextEditor::Document *)));
+  connect(KateDocManager::self(), SIGNAL(documentDeleted(KTextEditor::Document *)),
+          this, SLOT(slotDocumentDeleted(KTextEditor::Document *)));
 
   // don't Honour KDE single/double click setting, this files are already open,
   // no need for hassle of considering double-click
-  connect(this,SIGNAL(selectionChanged(Q3ListViewItem *)),
-	  this,SLOT(slotActivateView(Q3ListViewItem *)));
-  connect(viewManager,SIGNAL(viewChanged()), this,SLOT(slotViewChanged()));
-  connect(this,SIGNAL(contextMenuRequested( Q3ListViewItem *, const QPoint &, int )),
-	  this,SLOT(slotMenu ( Q3ListViewItem *, const QPoint &, int )));
+  connect(this, SIGNAL(selectionChanged(Q3ListViewItem *)),
+          this, SLOT(slotActivateView(Q3ListViewItem *)));
+  connect(viewManager, SIGNAL(viewChanged()), this, SLOT(slotViewChanged()));
+  connect(this, SIGNAL(contextMenuRequested( Q3ListViewItem *, const QPoint &, int )),
+          this, SLOT(slotMenu ( Q3ListViewItem *, const QPoint &, int )));
 }
 
 KateFileList::~KateFileList ()
@@ -223,7 +232,8 @@ void KateFileList::updateActions ()
   windowPrev->setEnabled(KateDocManager::self()->documents()  > 1);
 }
 
-void KateFileList::keyPressEvent(QKeyEvent *e) {
+void KateFileList::keyPressEvent(QKeyEvent *e)
+{
   if ( ( e->key() == Qt::Key_Return ) || ( e->key() == Qt::Key_Enter ) )
   {
     e->accept();
@@ -242,7 +252,7 @@ void KateFileList::keyPressEvent(QKeyEvent *e) {
 void KateFileList::contentsMousePressEvent( QMouseEvent *e )
 {
   if ( ! itemAt( contentsToViewport( e->pos() ) ) )
-  return;
+    return;
 
   K3ListView::contentsMousePressEvent( e );
 }
@@ -290,9 +300,9 @@ void KateFileList::slotPrevDocument()
 void KateFileList::slotDocumentCreated (KTextEditor::Document *doc)
 {
   new KateFileListItem( this, doc/*, doc->documentNumber()*/ );
-  connect(doc,SIGNAL(modifiedChanged(KTextEditor::Document *)),this,SLOT(slotModChanged(KTextEditor::Document *)));
-  connect(doc,SIGNAL(documentNameChanged(KTextEditor::Document *)),this,SLOT(slotNameChanged(KTextEditor::Document *)));
-  connect(doc,SIGNAL(modifiedOnDisk(KTextEditor::Document *, bool, KTextEditor::ModificationInterface::ModifiedOnDiskReason)),this,SLOT(slotModifiedOnDisc(KTextEditor::Document *, bool, KTextEditor::ModificationInterface::ModifiedOnDiskReason)));
+  connect(doc, SIGNAL(modifiedChanged(KTextEditor::Document *)), this, SLOT(slotModChanged(KTextEditor::Document *)));
+  connect(doc, SIGNAL(documentNameChanged(KTextEditor::Document *)), this, SLOT(slotNameChanged(KTextEditor::Document *)));
+  connect(doc, SIGNAL(modifiedOnDisk(KTextEditor::Document *, bool, KTextEditor::ModificationInterface::ModifiedOnDiskReason)), this, SLOT(slotModifiedOnDisc(KTextEditor::Document *, bool, KTextEditor::ModificationInterface::ModifiedOnDiskReason)));
 
   sort();
   updateActions ();
@@ -301,7 +311,8 @@ void KateFileList::slotDocumentCreated (KTextEditor::Document *doc)
 void KateFileList::slotDocumentDeleted (KTextEditor::Document *doc)
 {
   Q3ListViewItem * item = firstChild();
-  while( item ) {
+  while( item )
+  {
     if ( ((KateFileListItem *)item)->document() == doc )
     {
       removeItem( item );
@@ -341,9 +352,9 @@ void KateFileList::slotModChanged (KTextEditor::Document *doc)
     m_editHistory.removeAll( (KateFileListItem *)item );
     m_editHistory.prepend( (KateFileListItem *)item );
 
-    for ( int i=0; i <  m_editHistory.count(); i++ )
+    for ( int i = 0; i <  m_editHistory.count(); i++ )
     {
-      m_editHistory.at( i )->setEditHistPos( i+1 );
+      m_editHistory.at( i )->setEditHistPos( i + 1 );
       repaintItem(  m_editHistory.at( i ) );
     }
   }
@@ -365,7 +376,8 @@ void KateFileList::slotNameChanged (KTextEditor::Document *doc)
   // ### using nextSibling to *only* look at toplevel items.
   // child items could be marks for example
   Q3ListViewItem * item = firstChild();
-  while( item ) {
+  while( item )
+  {
     if ( ((KateFileListItem*)item)->document() == doc )
     {
       item->setText( 0, doc->documentName() );
@@ -385,7 +397,8 @@ void KateFileList::slotViewChanged ()
   KTextEditor::Document *dn = view->document();
 
   Q3ListViewItem * i = firstChild();
-  while( i ) {
+  while( i )
+  {
     if ( ((KateFileListItem *)i)->document() == dn )
     {
       break;
@@ -413,9 +426,9 @@ void KateFileList::slotViewChanged ()
   m_viewHistory.removeAll( item );
   m_viewHistory.prepend( item );
 
-  for ( int i=0; i <  m_viewHistory.count(); i++ )
+  for ( int i = 0; i <  m_viewHistory.count(); i++ )
   {
-    m_viewHistory.at( i )->setViewHistPos( i+1 );
+    m_viewHistory.at( i )->setViewHistPos( i + 1 );
     repaintItem(  m_viewHistory.at( i ) );
   }
 
@@ -507,21 +520,20 @@ void KateFileList::takeItem( Q3ListViewItem *item )
 
 //BEGIN KateFileListItem
 KateFileListItem::KateFileListItem( Q3ListView* lv,
-				    KTextEditor::Document *_doc )
-  : Q3ListViewItem( lv, _doc->documentName() ),
+                                    KTextEditor::Document *_doc )
+    : Q3ListViewItem( lv, _doc->documentName() ),
     doc( _doc ),
     m_viewhistpos( 0 ),
     m_edithistpos( 0 )
-{
-}
+{}
 
 KateFileListItem::~KateFileListItem()
-{
-}
+{}
 
 const QPixmap *KateFileListItem::pixmap ( int column ) const
 {
-  if ( column == 0) {
+  if ( column == 0)
+  {
     static QPixmap noPm = SmallIcon ("null");
     static QPixmap modPm = SmallIcon("modified");
     static QPixmap discPm = SmallIcon("modonhd");
@@ -560,24 +572,24 @@ void KateFileListItem::paintCell( QPainter *painter, const QColorGroup & cg, int
       if ( fl->shadingEnabled() && m_edithistpos > 0 )
       {
         int ec = fl->editHistCount();
-        int v = hc-m_viewhistpos;
-        int e = ec-m_edithistpos+1;
-        e = e*e;
+        int v = hc - m_viewhistpos;
+        int e = ec - m_edithistpos + 1;
+        e = e * e;
         int n = qMax(v + e, 1);
         shade.setRgb(
-            ((shade.red()*v) + (eshade.red()*e))/n,
-            ((shade.green()*v) + (eshade.green()*e))/n,
-            ((shade.blue()*v) + (eshade.blue()*e))/n
-                    );
+          ((shade.red()*v) + (eshade.red()*e)) / n,
+          ((shade.green()*v) + (eshade.green()*e)) / n,
+          ((shade.blue()*v) + (eshade.blue()*e)) / n
+        );
       }
       // blend in the shade color.
       // max transperancy < .5, latest is most colored.
-      float t = (0.5/hc)*(hc-m_viewhistpos+1);
+      float t = (0.5 / hc) * (hc - m_viewhistpos + 1);
       b.setRgb(
-          (int)((b.red()*(1-t)) + (shade.red()*t)),
-          (int)((b.green()*(1-t)) + (shade.green()*t)),
-          (int)((b.blue()*(1-t)) + (shade.blue()*t))
-              );
+        (int)((b.red()*(1 - t)) + (shade.red()*t)),
+        (int)((b.green()*(1 - t)) + (shade.green()*t)),
+        (int)((b.blue()*(1 - t)) + (shade.blue()*t))
+      );
 
       cgNew.setColor(QPalette::Base, b);
     }
@@ -595,12 +607,12 @@ int KateFileListItem::compare ( Q3ListViewItem * i, int col, bool ascending ) co
     switch( ((KateFileList*)listView())->sortType() )
     {
       case KateFileList::sortByID:
-      {
-        int d = KateDocManager::self()->findDocument (doc)
-             - KateDocManager::self()->findDocument (((KateFileListItem*)i)->document());
-        return ascending ? d : -d;
-        break;
-      }
+        {
+          int d = KateDocManager::self()->findDocument (doc)
+                  - KateDocManager::self()->findDocument (((KateFileListItem*)i)->document());
+          return ascending ? d : -d;
+          break;
+        }
       case KateFileList::sortByURL:
         return doc->url().prettyUrl().compare( ((KateFileListItem*)i)->document()->url().prettyUrl() );
         break;
@@ -615,7 +627,7 @@ int KateFileListItem::compare ( Q3ListViewItem * i, int col, bool ascending ) co
 
 //BEGIN KFLConfigPage
 KFLConfigPage::KFLConfigPage( QWidget* parent, KateFileList *fl )
-  :  KTextEditor::ConfigPage( parent ),
+    :  KTextEditor::ConfigPage( parent ),
     m_filelist( fl ),
     m_changed( false )
 {
@@ -659,18 +671,18 @@ KFLConfigPage::KFLConfigPage( QWidget* parent, KateFileList *fl )
   lo1->insertStretch( -1, 10 );
 
   cbEnableShading->setWhatsThis(i18n(
-      "When background shading is enabled, documents that have been viewed "
-      "or edited within the current session will have a shaded background. "
-      "The most recent documents have the strongest shade.") );
+                                  "When background shading is enabled, documents that have been viewed "
+                                  "or edited within the current session will have a shaded background. "
+                                  "The most recent documents have the strongest shade.") );
   kcbViewShade->setWhatsThis(i18n(
-      "Set the color for shading viewed documents.") );
+                               "Set the color for shading viewed documents.") );
   kcbEditShade->setWhatsThis(i18n(
-      "Set the color for modified documents. This color is blended into "
-      "the color for viewed files. The most recently edited documents get "
-      "most of this color.") );
+                               "Set the color for modified documents. This color is blended into "
+                               "the color for viewed files. The most recently edited documents get "
+                               "most of this color.") );
 
   cmbSort->setWhatsThis(i18n(
-      "Set the sorting method for the documents.") );
+                          "Set the sorting method for the documents.") );
 
   reset();
 

@@ -1,15 +1,15 @@
 /* This file is part of the KDE project
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -30,87 +30,78 @@ namespace Kate
 
   class PrivatePlugin
   {
-  public:
-    PrivatePlugin ()
-    {
-    }
+    public:
+      PrivatePlugin ()
+      {}
 
-    ~PrivatePlugin ()
-    {
-    }
+      ~PrivatePlugin ()
+      {}
   };
 
   class PrivatePluginView
   {
-  public:
-    PrivatePluginView ()
-    {
-    }
+    public:
+      PrivatePluginView ()
+      {}
 
-    ~PrivatePluginView ()
-    {
-    }
+      ~PrivatePluginView ()
+      {}
 
-    MainWindow *mainWindow;
+      MainWindow *mainWindow;
   };
 
-Plugin::Plugin( Application *application, const char *name ) : QObject (application )
-{
-  setObjectName( name );
-}
+  Plugin::Plugin( Application *application, const char *name ) : QObject (application )
+  {
+    setObjectName( name );
+  }
 
-Plugin::~Plugin()
-{
-}
+  Plugin::~Plugin()
+  {}
 
-Plugin *createPlugin ( const char* libname, Application *application,
-                       const QStringList &args )
-{
-  return KLibLoader::createInstance<Plugin>( libname, application, args );
-}
+  Plugin *createPlugin ( const char* libname, Application *application,
+                         const QStringList &args )
+  {
+    return KLibLoader::createInstance<Plugin>( libname, application, args );
+  }
 
-Application *Plugin::application () const
-{
-  return Kate::application();
-}
+  Application *Plugin::application () const
+  {
+    return Kate::application();
+  }
 
-PluginView *Plugin::createView (MainWindow *)
-{
-  return 0;
-}
+  PluginView *Plugin::createView (MainWindow *)
+  {
+    return 0;
+  }
 
-void Plugin::readSessionConfig (KConfig*, const QString&)
-{
-}
+  void Plugin::readSessionConfig (KConfig*, const QString&)
+  {}
 
-void Plugin::writeSessionConfig (KConfig*, const QString&)
-{
-}
+  void Plugin::writeSessionConfig (KConfig*, const QString&)
+  {}
 
-PluginView::PluginView (MainWindow *mainWindow)
-  : QObject (mainWindow), d (new PrivatePluginView ())
-{
-  // remember mainWindow of this view...
-  d->mainWindow = mainWindow;
-}
+  PluginView::PluginView (MainWindow *mainWindow)
+      : QObject (mainWindow), d (new PrivatePluginView ())
+  {
+    // remember mainWindow of this view...
+    d->mainWindow = mainWindow;
+  }
 
-PluginView::~PluginView ()
-{
-  delete d;
-}
+  PluginView::~PluginView ()
+  {
+    delete d;
+  }
 
-MainWindow *PluginView::mainWindow() const
-{
-  return d->mainWindow;
-}
+  MainWindow *PluginView::mainWindow() const
+  {
+    return d->mainWindow;
+  }
 
-void PluginView::readSessionConfig (KConfig*, const QString&)
-{
-}
+  void PluginView::readSessionConfig (KConfig*, const QString&)
+  {}
 
-void PluginView::writeSessionConfig (KConfig*, const QString&)
-{
-}
+  void PluginView::writeSessionConfig (KConfig*, const QString&)
+  {}
 
 }
 

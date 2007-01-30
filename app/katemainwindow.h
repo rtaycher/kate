@@ -2,16 +2,16 @@
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2001 Anders Lund <anders.lund@lund.tdcadsl.dk>
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -45,7 +45,8 @@ class QListView;
 
 class KateTabWidget;
 
-namespace Kate {
+namespace Kate
+{
   class MainWindow;
   class Plugin;
   class PluginView;
@@ -59,10 +60,10 @@ class KateViewDocumentProxyModel;
 
 class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBase
 {
-  Q_OBJECT
+    Q_OBJECT
 
-  friend class KateConfigDialog;
-  friend class KateViewManager;
+    friend class KateConfigDialog;
+    friend class KateViewManager;
 
   public:
     /**
@@ -77,24 +78,36 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
      */
     ~KateMainWindow();
 
-  /**
-   * Accessor methodes for interface and child objects
-   */
+    /**
+     * Accessor methodes for interface and child objects
+     */
   public:
-    Kate::MainWindow *mainWindow () { return m_mainWindow; }
+    Kate::MainWindow *mainWindow ()
+    {
+      return m_mainWindow;
+    }
 
-    KateViewManager *viewManager () { return m_viewManager; }
+    KateViewManager *viewManager ()
+    {
+      return m_viewManager;
+    }
 
-    QString dbusObjectPath() const { return m_dbusObjectPath;}
-  /**
-   * various methodes to get some little info out of this
-   */
+    QString dbusObjectPath() const
+    {
+      return m_dbusObjectPath;
+    }
+    /**
+     * various methodes to get some little info out of this
+     */
   public:
     /** Returns the URL of the current document.
      * anders: I add this for use from the file selector. */
     KUrl activeDocumentUrl();
 
-    uint mainWindowNumber () const { return myID; }
+    uint mainWindowNumber () const
+    {
+      return myID;
+    }
 
     /**
      * Prompts the user for what to do with files that are modified on disk if any.
@@ -142,10 +155,10 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
     void dragEnterEvent( QDragEnterEvent * );
     void dropEvent( QDropEvent * );
 
-  /**
-   * slots used for actions in the menus/toolbars
-   * or internal signal connections
-   */
+    /**
+     * slots used for actions in the menus/toolbars
+     * or internal signal connections
+     */
   private Q_SLOTS:
     void newWindow ();
 
@@ -189,10 +202,13 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
     void statusBarToggled ();
 
   public:
-    void openUrl (const QString &name=0L);
+    void openUrl (const QString &name = 0L);
     QModelIndex modelIndexForDocument(KTextEditor::Document *document);
 
-    QHash<Kate::Plugin*, Kate::PluginView*> &pluginViews () { return m_pluginViews; }
+    QHash<Kate::Plugin*, Kate::PluginView*> &pluginViews ()
+    {
+      return m_pluginViews;
+    }
 
   private Q_SLOTS:
     void showFileListPopup(const QPoint& pos);

@@ -1,16 +1,16 @@
 /* This file is part of the KDE project
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2002 Joseph Wenninger <jowenn@kde.org>
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -60,7 +60,7 @@
 #include <QFrame>
 
 KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *view )
- : KPageDialog( parent )
+    : KPageDialog( parent )
 {
   setFaceType( Tree );
   setCaption( i18n("Configure") );
@@ -74,7 +74,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
 
   mainWindow = parent;
 
-  setMinimumSize(600,400);
+  setMinimumSize(600, 400);
 
   v = view;
 
@@ -98,13 +98,13 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
 
   // modified files notification
   cb_modNotifications = new QCheckBox(
-      i18n("Wa&rn about files modified by foreign processes"), bgStartup );
+                          i18n("Wa&rn about files modified by foreign processes"), bgStartup );
   cb_modNotifications->setChecked( parent->modNotification );
   cb_modNotifications->setWhatsThis( i18n(
-      "If enabled, when Kate receives focus you will be asked what to do with "
-      "files that have been modified on the hard disk. If not enabled, you will "
-      "be asked what to do with a file that has been modified on the hard disk only "
-      "when that file gains focus inside Kate.") );
+                                       "If enabled, when Kate receives focus you will be asked what to do with "
+                                       "files that have been modified on the hard disk. If not enabled, you will "
+                                       "be asked what to do with a file that has been modified on the hard disk only "
+                                       "when that file gains focus inside Kate.") );
   connect( cb_modNotifications, SIGNAL( toggled( bool ) ),
            this, SLOT( slotChanged() ) );
 
@@ -117,9 +117,9 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   cb_saveMetaInfos->setText(i18n("Keep &meta-information past sessions"));
   cb_saveMetaInfos->setChecked(KateDocManager::self()->getSaveMetaInfos());
   cb_saveMetaInfos->setWhatsThis( i18n(
-        "Check this if you want document configuration like for example "
-        "bookmarks to be saved past editor sessions. The configuration will be "
-        "restored if the document has not changed when reopened."));
+                                    "Check this if you want document configuration like for example "
+                                    "bookmarks to be saved past editor sessions. The configuration will be "
+                                    "restored if the document has not changed when reopened."));
   connect( cb_saveMetaInfos, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
   // meta infos days
@@ -137,9 +137,9 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
 
 
   // editor component
-  m_editorChooser=new KTextEditor::EditorChooser(frGeneral);
+  m_editorChooser = new KTextEditor::EditorChooser(frGeneral);
   m_editorChooser->readAppSetting();
-  connect(m_editorChooser,SIGNAL(changed()),this,SLOT(slotChanged()));
+  connect(m_editorChooser, SIGNAL(changed()), this, SLOT(slotChanged()));
   lo->addWidget(m_editorChooser);
   lo->addStretch(1); // :-] works correct without autoadd
 
@@ -165,7 +165,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   config->setGroup("General");
   cb_restoreVC->setChecked( config->readEntry("Restore Window Configuration", QVariant(true)).toBool() );
   cb_restoreVC->setWhatsThis( i18n(
-        "Check this if you want all your views and frames restored each time you open Kate"));
+                                "Check this if you want all your views and frames restored each time you open Kate"));
   connect( cb_restoreVC, SIGNAL( toggled( bool ) ), this, SLOT( slotChanged() ) );
 
   QRadioButton *rb1, *rb2, *rb3;
@@ -174,9 +174,9 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   lo->addWidget(sessions_start);
 
   sessions_start->setRadioButtonExclusive( true );
-  sessions_start->insert( rb1=new QRadioButton( i18n("&Start new session"), sessions_start ), 0 );
-  sessions_start->insert( rb2=new QRadioButton( i18n("&Load last-used session"), sessions_start ), 1 );
-  sessions_start->insert( rb3=new QRadioButton( i18n("&Manually choose a session"), sessions_start ), 2 );
+  sessions_start->insert( rb1 = new QRadioButton( i18n("&Start new session"), sessions_start ), 0 );
+  sessions_start->insert( rb2 = new QRadioButton( i18n("&Load last-used session"), sessions_start ), 1 );
+  sessions_start->insert( rb3 = new QRadioButton( i18n("&Manually choose a session"), sessions_start ), 2 );
 
   config->setGroup("General");
   QString sesStart (config->readEntry ("Startup Session", "manual"));
@@ -195,9 +195,9 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   lo->addWidget(sessions_exit);
 
   sessions_exit->setRadioButtonExclusive( true );
-  sessions_exit->insert( rb1=new QRadioButton( i18n("&Do not save session"), sessions_exit ), 0 );
-  sessions_exit->insert( rb2=new QRadioButton( i18n("&Save session"), sessions_exit ), 1 );
-  sessions_exit->insert( rb3=new QRadioButton( i18n("&Ask user"), sessions_exit ), 2 );
+  sessions_exit->insert( rb1 = new QRadioButton( i18n("&Do not save session"), sessions_exit ), 0 );
+  sessions_exit->insert( rb2 = new QRadioButton( i18n("&Save session"), sessions_exit ), 1 );
+  sessions_exit->insert( rb3 = new QRadioButton( i18n("&Ask user"), sessions_exit ), 2 );
 
   config->setGroup("General");
   QString sesExit (config->readEntry ("Session Exit", "save"));
@@ -220,7 +220,7 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   path << i18n("Application") << i18n("File Selector");
 
   KVBox *page = addVBoxPage( path, i18n("File Selector Settings"),
-                              BarIcon("fileopen", K3Icon::SizeSmall) );
+                             BarIcon("fileopen", K3Icon::SizeSmall) );
   fileSelConfigPage = new KFSConfigPage( page, "file selector config page",
                                          mainWindow->fileselector );
   connect( fileSelConfigPage, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
@@ -264,28 +264,27 @@ KateConfigDialog::KateConfigDialog ( KateMainWindow *parent, KTextEditor::View *
   }
 
   KatePluginList &pluginList (KatePluginManager::self()->pluginList());
-  foreach (const KatePluginInfo &plugin,pluginList)
+  foreach (const KatePluginInfo &plugin, pluginList)
   {
     if  ( plugin.load
           && Kate::pluginConfigPageInterface(plugin.plugin) )
       addPluginPage (plugin.plugin, pluginItem);
   }
-  connect(this,SIGNAL(okClicked()),this,SLOT(slotOk()));
-  connect(this,SIGNAL(applyClicked()),this,SLOT(slotApply()));
+  connect(this, SIGNAL(okClicked()), this, SLOT(slotOk()));
+  connect(this, SIGNAL(applyClicked()), this, SLOT(slotApply()));
   //showButtonSeparator(true);
   dataChanged = false;
 }
 
 KateConfigDialog::~KateConfigDialog()
-{
-}
+{}
 
 void KateConfigDialog::addPluginPage (Kate::Plugin *plugin, KPageWidgetItem *parentItem)
 {
   if (!Kate::pluginConfigPageInterface(plugin))
     return;
 
-  for (uint i=0; i<Kate::pluginConfigPageInterface(plugin)->configPages(); i++)
+  for (uint i = 0; i < Kate::pluginConfigPageInterface(plugin)->configPages(); i++)
   {
     KVBox *page = new KVBox();
 
@@ -293,7 +292,7 @@ void KateConfigDialog::addPluginPage (Kate::Plugin *plugin, KPageWidgetItem *par
     item->setHeader( Kate::pluginConfigPageInterface(plugin)->configPageFullName(i) );
     item->setIcon( Kate::pluginConfigPageInterface(plugin)->configPageIcon(i));
 
-    PluginPageListItem *info=new PluginPageListItem;
+    PluginPageListItem *info = new PluginPageListItem;
     info->plugin = plugin;
     info->page = Kate::pluginConfigPageInterface(plugin)->configPage (i, page);
     connect( info->page, SIGNAL( changed() ), this, SLOT( slotChanged() ) );
@@ -303,10 +302,10 @@ void KateConfigDialog::addPluginPage (Kate::Plugin *plugin, KPageWidgetItem *par
 
 void KateConfigDialog::removePluginPage (Kate::Plugin *plugin)
 {
-   if (!Kate::pluginConfigPageInterface(plugin))
+  if (!Kate::pluginConfigPageInterface(plugin))
     return;
 
-  for (int i=0; i<pluginPages.count(); i++)
+  for (int i = 0; i < pluginPages.count(); i++)
   {
     if  ( pluginPages[i]->plugin == plugin )
     {
@@ -372,13 +371,13 @@ void KateConfigDialog::slotApply()
 #if 0
     filelistConfigPage->apply();
 #endif
-/*
-    KateExternalToolsCommand::self()->reload();
-    for (int i=0; i < KateApp::self()->mainWindows(); i++)
-    {
-      KateMainWindow *win = KateApp::self()->mainWindow (i);
-      win->externalTools->reload();
-    }*/
+    /*
+        KateExternalToolsCommand::self()->reload();
+        for (int i=0; i < KateApp::self()->mainWindows(); i++)
+        {
+          KateMainWindow *win = KateApp::self()->mainWindow (i);
+          win->externalTools->reload();
+        }*/
     //mainWindow->externalTools->reload();
 
     mainWindow->saveOptions ();
@@ -390,7 +389,7 @@ void KateConfigDialog::slotApply()
   //
   // editor config ! (the apply() methode will check the changed state internally)
   //
-  for (int i=0; i<editorPages.count(); i++)
+  for (int i = 0; i < editorPages.count(); i++)
   {
     editorPages.at(i)->apply();
   }
@@ -401,7 +400,7 @@ void KateConfigDialog::slotApply()
   //
   // plugins config ! (the apply() methode SHOULD check the changed state internally)
   //
-  for (int i=0; i<pluginPages.count(); i++)
+  for (int i = 0; i < pluginPages.count(); i++)
   {
     pluginPages[i]->page->apply();
   }

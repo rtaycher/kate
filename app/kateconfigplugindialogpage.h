@@ -1,16 +1,16 @@
 /* This file is part of the KDE project
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2002 Joseph Wenninger <jowenn@kde.org>
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -31,9 +31,9 @@ class KatePluginListItem;
 
 class KatePluginListView : public K3ListView
 {
-  Q_OBJECT
+    Q_OBJECT
 
-  friend class KatePluginListItem;
+    friend class KatePluginListItem;
 
   public:
     KatePluginListView (QWidget *parent = 0);
@@ -47,11 +47,14 @@ class KatePluginListView : public K3ListView
 
 class KateConfigPluginPage: public KVBox
 {
-  Q_OBJECT
+    Q_OBJECT
 
   public:
     KateConfigPluginPage(QWidget *parent, class KateConfigDialog *dialog);
-    ~KateConfigPluginPage(){;};
+    ~KateConfigPluginPage()
+    {
+      ;
+    };
 
   private:
     class KateConfigDialog *myDialog;

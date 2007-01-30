@@ -4,18 +4,19 @@
 
 class QLabel;
 
-class KateToolTipMenu: public QMenu {
-	Q_OBJECT
-	public:
-		KateToolTipMenu(QWidget *parent=0);
-		virtual ~KateToolTipMenu();
-	protected:
-		virtual bool event(QEvent*);
-	private:
-		QAction *m_currentAction;
-		QLabel *m_toolTip;
-	private Q_SLOTS:
-		void slotHovered(QAction*);
+class KateToolTipMenu: public QMenu
+{
+    Q_OBJECT
+  public:
+    KateToolTipMenu(QWidget *parent = 0);
+    virtual ~KateToolTipMenu();
+  protected:
+    virtual bool event(QEvent*);
+  private:
+    QAction *m_currentAction;
+    QLabel *m_toolTip;
+  private Q_SLOTS:
+    void slotHovered(QAction*);
 };
 
 

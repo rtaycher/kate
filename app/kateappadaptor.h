@@ -1,15 +1,15 @@
 /* This file is part of the KDE project
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -24,13 +24,13 @@ class KateApp;
 
 class KateAppAdaptor : public QDBusAbstractAdaptor
 {
-  Q_OBJECT
-  Q_CLASSINFO("D-Bus Interface", "org.kde.kate.App")
+    Q_OBJECT
+    Q_CLASSINFO("D-Bus Interface", "org.kde.kate.App")
 
   public:
     KateAppAdaptor (KateApp *app);
 
-public Q_SLOTS:
+  public Q_SLOTS:
     QDBusObjectPath documentManager ();
 
     QDBusObjectPath activeMainWindow ();
@@ -49,14 +49,14 @@ public Q_SLOTS:
      */
     bool openUrl (QString url, QString encoding);
 
-     /**
-      * Like the above, but adds an option to let the documentManager know
-      * if the file should be deleted when closed.
-      * @p isTempFile should be set to true with the --tempfile option set ONLY,
-      * files opened with this set to true will be deleted when closed.
-      */
-     bool openUrl(QString url, QString encoding, bool isTempFile);
- 
+    /**
+     * Like the above, but adds an option to let the documentManager know
+     * if the file should be deleted when closed.
+     * @p isTempFile should be set to true with the --tempfile option set ONLY,
+     * files opened with this set to true will be deleted when closed.
+     */
+    bool openUrl(QString url, QString encoding, bool isTempFile);
+
     /**
      * set cursor of active view in active main window
      * @param line line for cursor

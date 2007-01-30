@@ -1,15 +1,15 @@
 /* This file is part of the KDE project
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -28,50 +28,48 @@
 namespace Kate
 {
 
-class PrivatePluginManager
+  class PrivatePluginManager
   {
-  public:
-    PrivatePluginManager ()
-    {
-    }
+    public:
+      PrivatePluginManager ()
+      {}
 
-    ~PrivatePluginManager ()
-    {
-    }
+      ~PrivatePluginManager ()
+      {}
 
-    KatePluginManager *pluginMan;
+      KatePluginManager *pluginMan;
   };
 
-PluginManager::PluginManager (void *pluginManager) : QObject ((KatePluginManager*) pluginManager)
-{
-  d = new PrivatePluginManager ();
-  d->pluginMan = (KatePluginManager*) pluginManager;
-}
+  PluginManager::PluginManager (void *pluginManager) : QObject ((KatePluginManager*) pluginManager)
+  {
+    d = new PrivatePluginManager ();
+    d->pluginMan = (KatePluginManager*) pluginManager;
+  }
 
-PluginManager::~PluginManager ()
-{
-  delete d;
-}
+  PluginManager::~PluginManager ()
+  {
+    delete d;
+  }
 
-Plugin *PluginManager::plugin(const QString &name)
-{
-	return d->pluginMan->plugin(name);
-}
+  Plugin *PluginManager::plugin(const QString &name)
+  {
+    return d->pluginMan->plugin(name);
+  }
 
-bool PluginManager::pluginAvailable(const QString &name)
-{
-  return d->pluginMan->pluginAvailable (name);
-}
+  bool PluginManager::pluginAvailable(const QString &name)
+  {
+    return d->pluginMan->pluginAvailable (name);
+  }
 
-Plugin *PluginManager::loadPlugin(const QString &name,bool permanent)
-{
-  return d->pluginMan->loadPlugin (name, permanent);
-}
+  Plugin *PluginManager::loadPlugin(const QString &name, bool permanent)
+  {
+    return d->pluginMan->loadPlugin (name, permanent);
+  }
 
-void PluginManager::unloadPlugin(const QString &name,bool permanent)
-{
-  d->pluginMan->unloadPlugin (name, permanent);
-}
+  void PluginManager::unloadPlugin(const QString &name, bool permanent)
+  {
+    d->pluginMan->unloadPlugin (name, permanent);
+  }
 
 }
 

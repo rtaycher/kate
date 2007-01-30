@@ -2,16 +2,16 @@
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2001,2006 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2001 Anders Lund <anders.lund@lund.tdcadsl.dk>
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -25,17 +25,18 @@
 #include <KActionCollection>
 #include <QListView>
 
-class KateFileList: public QListView {
+class KateFileList: public QListView
+{
     Q_OBJECT
   public:
     KateFileList(QWidget * parent, KActionCollection *actionCollection);
     virtual ~KateFileList();
   private:
-      QAction* m_windowNext;
-      QAction* m_windowPrev;
-      KSelectAction* m_sortAction;
-      enum SortType {SortOpening=0,SortName=1,SortUrl=2,SortCustom=3};
-      int m_sortType;
+    QAction* m_windowNext;
+    QAction* m_windowPrev;
+    KSelectAction* m_sortAction;
+    enum SortType {SortOpening = 0, SortName = 1, SortUrl = 2, SortCustom = 3};
+    int m_sortType;
   public Q_SLOTS:
     void slotNextDocument();
     void slotPrevDocument();
@@ -72,21 +73,33 @@ class KateFileListItem : public Q3ListViewItem
 {
   public:
     KateFileListItem( Q3ListView *lv,
-		      KTextEditor::Document *doc );
+                      KTextEditor::Document *doc );
     ~KateFileListItem();
 
-    inline KTextEditor::Document * document() { return doc; }
+    inline KTextEditor::Document * document()
+    {
+      return doc;
+    }
 
-    int rtti() const { return RTTI_KateFileListItem; }
+    int rtti() const
+    {
+      return RTTI_KateFileListItem;
+    }
 
     /**
      * Sets the view history position.
      */
-    void setViewHistPos( int p ) {  m_viewhistpos = p; }
+    void setViewHistPos( int p )
+    {
+      m_viewhistpos = p;
+    }
     /**
      * Sets the edit history position.
      */
-    void setEditHistPos( int p ) { m_edithistpos = p; }
+    void setEditHistPos( int p )
+    {
+      m_edithistpos = p;
+    }
 
   protected:
     virtual const QPixmap *pixmap ( int column ) const;
@@ -104,30 +117,48 @@ class KateFileListItem : public Q3ListViewItem
 
 class KateFileList : public K3ListView
 {
-  Q_OBJECT
+    Q_OBJECT
 
-  friend class KFLConfigPage;
+    friend class KFLConfigPage;
 
   public:
     KateFileList (KateMainWindow *main, KateViewManager *_viewManager, QWidget * parent = 0);
     ~KateFileList ();
 
-    int sortType () const { return m_sort; };
+    int sortType () const
+    {
+      return m_sort;
+    };
     void updateSort ();
 
     enum sorting {
       sortByID = 0,
       sortByName = 1,
       sortByURL = 2
-    };
+  };
 
     QString tooltip( Q3ListViewItem *item, int ) const;
 
-    uint histCount() const { return m_viewHistory.count(); }
-    uint editHistCount() const { return m_editHistory.count(); }
-    QColor editShade() const { return m_editShade; }
-    QColor viewShade() const { return m_viewShade; }
-    bool shadingEnabled() { return m_enableBgShading; }
+    uint histCount() const
+    {
+      return m_viewHistory.count();
+    }
+    uint editHistCount() const
+    {
+      return m_editHistory.count();
+    }
+    QColor editShade() const
+    {
+      return m_editShade;
+    }
+    QColor viewShade() const
+    {
+      return m_viewShade;
+    }
+    bool shadingEnabled()
+    {
+      return m_enableBgShading;
+    }
 
     void readConfig( class KConfig *config, const QString &group );
     void writeConfig( class KConfig *config, const QString &group );
@@ -187,15 +218,18 @@ class KateFileList : public K3ListView
     bool m_enableBgShading;
 };
 
-class KFLConfigPage : public KTextEditor::ConfigPage {
-  Q_OBJECT
+class KFLConfigPage : public KTextEditor::ConfigPage
+{
+    Q_OBJECT
   public:
-    KFLConfigPage( QWidget* parent=0, KateFileList *fl=0 );
-    virtual ~KFLConfigPage() {};
+    KFLConfigPage( QWidget* parent = 0, KateFileList *fl = 0 );
+    virtual ~KFLConfigPage()
+    {};
 
     virtual void apply();
     virtual void reset();
-    virtual void defaults() {}
+    virtual void defaults()
+    {}
 
   public Q_SLOTS:
     void slotEnableChanged();

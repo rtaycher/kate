@@ -1,15 +1,15 @@
 /* This file is part of the KDE project
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -24,46 +24,49 @@
 namespace Kate
 {
 
-class PrivatePluginConfigPageInterface
-{
-  public:
-    PrivatePluginConfigPageInterface() {}
-     ~PrivatePluginConfigPageInterface() {}
-};
+  class PrivatePluginConfigPageInterface
+  {
+    public:
+      PrivatePluginConfigPageInterface()
+      {}
+      ~PrivatePluginConfigPageInterface()
+      {}
+  };
 
-PluginConfigPage::PluginConfigPage ( QWidget *parent, const char *name ) : QWidget (parent) 
-{
-  setObjectName( name );
-}
- 
-PluginConfigPage::~PluginConfigPage () { }
+  PluginConfigPage::PluginConfigPage ( QWidget *parent, const char *name ) : QWidget (parent)
+  {
+    setObjectName( name );
+  }
 
-unsigned int PluginConfigPageInterface::globalPluginConfigPageInterfaceNumber = 0;
+  PluginConfigPage::~PluginConfigPage ()
+  { }
 
-PluginConfigPageInterface::PluginConfigPageInterface()
-{
-  globalPluginConfigPageInterfaceNumber++;
-  myPluginConfigPageInterfaceNumber = globalPluginConfigPageInterfaceNumber++;
+  unsigned int PluginConfigPageInterface::globalPluginConfigPageInterfaceNumber = 0;
 
-  d = new PrivatePluginConfigPageInterface();
-}
+  PluginConfigPageInterface::PluginConfigPageInterface()
+  {
+    globalPluginConfigPageInterfaceNumber++;
+    myPluginConfigPageInterfaceNumber = globalPluginConfigPageInterfaceNumber++;
 
-PluginConfigPageInterface::~PluginConfigPageInterface()
-{
-  delete d;
-}
+    d = new PrivatePluginConfigPageInterface();
+  }
 
-unsigned int PluginConfigPageInterface::pluginConfigPageInterfaceNumber () const
-{
-  return myPluginConfigPageInterfaceNumber;
-}
-                      
-PluginConfigPageInterface *pluginConfigPageInterface (Plugin *plugin)
-{                       
-  if (!plugin)
-    return 0;
+  PluginConfigPageInterface::~PluginConfigPageInterface()
+  {
+    delete d;
+  }
 
-  return qobject_cast<PluginConfigPageInterface*>(plugin);
-}
+  unsigned int PluginConfigPageInterface::pluginConfigPageInterfaceNumber () const
+  {
+    return myPluginConfigPageInterfaceNumber;
+  }
+
+  PluginConfigPageInterface *pluginConfigPageInterface (Plugin *plugin)
+  {
+    if (!plugin)
+      return 0;
+
+    return qobject_cast<PluginConfigPageInterface*>(plugin);
+  }
 
 }
