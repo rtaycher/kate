@@ -2,21 +2,21 @@
    This file is part of the Kate text editor of the KDE project.
    It describes a "external tools" action for kate and provides a dialog
    page to configure that.
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
-
+ 
    ---
    Copyright (C) 2004, Anders Lund <anders@alweb.dk>
 */
@@ -66,19 +66,23 @@
  */
 class KateExternalToolsMenuAction : public KActionMenu
 {
-  friend class KateExternalToolAction;
+    friend class KateExternalToolAction;
 
-  Q_OBJECT
+    Q_OBJECT
   public:
-    KateExternalToolsMenuAction( const QString &text, QObject *parent, class Kate::MainWindow *mw=0 );
-    ~KateExternalToolsMenuAction() {};
+    KateExternalToolsMenuAction( const QString &text, QObject *parent, class Kate::MainWindow *mw = 0 );
+    ~KateExternalToolsMenuAction()
+    {};
 
     /**
      * This will load all the confiured services.
      */
     void reload();
 
-    class KActionCollection *actionCollection() { return m_actionCollection; }
+    class KActionCollection *actionCollection()
+    {
+        return m_actionCollection;
+    }
 
   private Q_SLOTS:
     void slotDocumentChanged();
@@ -93,7 +97,7 @@ class KateExternalToolsMenuAction : public KActionMenu
  */
 class KateExternalToolAction : public KAction, public KWordMacroExpander
 {
-  Q_OBJECT
+    Q_OBJECT
   public:
     KateExternalToolAction( QObject *parent, class KateExternalTool *t );
     ~KateExternalToolAction();
@@ -113,15 +117,16 @@ class KateExternalToolAction : public KAction, public KWordMacroExpander
 class KateExternalTool
 {
   public:
-    KateExternalTool( const QString &name=QString(),
-                      const QString &command=QString(),
-                      const QString &icon=QString(),
-                      const QString &tryexec=QString(),
-                      const QStringList &mimetypes=QStringList(),
-                      const QString &acname=QString(),
-                      const QString &cmdname=QString(),
-                      int save=0 );
-    ~KateExternalTool() {};
+    KateExternalTool( const QString &name = QString(),
+                      const QString &command = QString(),
+                      const QString &icon = QString(),
+                      const QString &tryexec = QString(),
+                      const QStringList &mimetypes = QStringList(),
+                      const QString &acname = QString(),
+                      const QString &cmdname = QString(),
+                      int save = 0 );
+    ~KateExternalTool()
+    {};
 
     QString name; ///< The name used in the menu.
     QString command; ///< The command to execute.
@@ -155,14 +160,17 @@ class KateExternalTool
  */
 class KateExternalToolsConfigWidget : public KTextEditor::ConfigPage
 {
-  Q_OBJECT
+    Q_OBJECT
   public:
     KateExternalToolsConfigWidget( QWidget *parent, const char* name);
     virtual ~KateExternalToolsConfigWidget();
 
     virtual void apply();
     virtual void reset();
-    virtual void defaults() { reset(); } // double sigh
+    virtual void defaults()
+    {
+      reset();
+    } // double sigh
 
   private Q_SLOTS:
     void slotNew();
@@ -191,10 +199,12 @@ class KateExternalToolsConfigWidget : public KTextEditor::ConfigPage
 /**
  * A Singleton class for invoking external tools with the view command line
  */
- class KateExternalToolsCommand : public KTextEditor::Command {
- public:
+class KateExternalToolsCommand : public KTextEditor::Command
+{
+  public:
     KateExternalToolsCommand ();
-    virtual ~KateExternalToolsCommand () {};
+    virtual ~KateExternalToolsCommand ()
+    {};
     static KateExternalToolsCommand *self();
     void reload();
   public:
@@ -204,24 +214,24 @@ class KateExternalToolsConfigWidget : public KTextEditor::ConfigPage
   private:
     static KateExternalToolsCommand *s_self;
     QStringList m_list;
-    QHash<QString,QString> m_map;
-    QHash<QString,QString> m_name;
+    QHash<QString, QString> m_map;
+    QHash<QString, QString> m_name;
     bool m_inited;
- };
+};
 
 /**
  * A Dialog to edit a single KateExternalTool object
  */
 class KateExternalToolServiceEditor : public KDialog
 {
-  Q_OBJECT
+    Q_OBJECT
 
   public:
 
-    KateExternalToolServiceEditor( KateExternalTool *tool=0,
-    				   QWidget *parent=0, const char *name=0 );
+    KateExternalToolServiceEditor( KateExternalTool *tool = 0,
+                                   QWidget *parent = 0, const char *name = 0 );
 
-    class QLineEdit *leName, *leExecutable, *leMimetypes,*leCmdLine;
+    class QLineEdit *leName, *leExecutable, *leMimetypes, *leCmdLine;
     class Q3TextEdit *teCommand;
     class KIconButton *btnIcon;
     class QComboBox *cmbSave;

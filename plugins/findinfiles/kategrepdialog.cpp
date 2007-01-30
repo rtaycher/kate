@@ -3,16 +3,16 @@
    Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2001, 2004 Anders Lund <anders.lund@lund.tdcadsl.dk>
    Copyright (C) 2007 Dominik Haumann <dhaumann@kde.org>
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -39,7 +39,7 @@
 #include <kurlcompletion.h>
 
 KateGrepDialog::KateGrepDialog(QWidget *parent, Kate::MainWindow *mw)
-  : QWidget(parent), m_mw (mw), m_grepThread (0)
+    : QWidget(parent), m_mw (mw), m_grepThread (0)
 {
   setupUi(this);
   setWindowTitle(i18n("Find in Files"));
@@ -56,7 +56,7 @@ KateGrepDialog::KateGrepDialog(QWidget *parent, Kate::MainWindow *mw)
   cmbUrl->setDuplicatesEnabled(false);
   cmbUrl->setEditable(true);
   cmbDir->completionObject()->setMode(KUrlCompletion::DirCompletion);
-  cmbDir->setMode( KFile::Directory|KFile::LocalOnly );
+  cmbDir->setMode( KFile::Directory | KFile::LocalOnly );
 
   cmbFiles->setInsertPolicy(QComboBox::NoInsert);
   cmbFiles->setDuplicatesEnabled(false);
@@ -75,35 +75,35 @@ KateGrepDialog::KateGrepDialog(QWidget *parent, Kate::MainWindow *mw)
   KAcceleratorManager::manage( this );
 
   lblPattern->setWhatsThis( i18n("<p>Enter the expression you want to search for here."
-     "<p>If 'regular expression' is unchecked, any non-space letters in your "
-     "expression will be escaped with a backslash character."
-     "<p>Possible meta characters are:<br>"
-     "<b>.</b> - Matches any character<br>"
-     "<b>^</b> - Matches the beginning of a line<br>"
-     "<b>$</b> - Matches the end of a line<br>"
-     "<b>\\&lt;</b> - Matches the beginning of a word<br>"
-     "<b>\\&gt;</b> - Matches the end of a word"
-     "<p>The following repetition operators exist:<br>"
-     "<b>?</b> - The preceding item is matched at most once<br>"
-     "<b>*</b> - The preceding item is matched zero or more times<br>"
-     "<b>+</b> - The preceding item is matched one or more times<br>"
-     "<b>{<i>n</i>}</b> - The preceding item is matched exactly <i>n</i> times<br>"
-     "<b>{<i>n</i>,}</b> - The preceding item is matched <i>n</i> or more times<br>"
-     "<b>{,<i>n</i>}</b> - The preceding item is matched at most <i>n</i> times<br>"
-     "<b>{<i>n</i>,<i>m</i>}</b> - The preceding item is matched at least <i>n</i>, "
-     "but at most <i>m</i> times."
-     "<p>Furthermore, backreferences to bracketed subexpressions are available "
-     "via the notation <code>\\#</code>."
-     "<p>See the grep(1) documentation for the full documentation."
-     ));
+                                 "<p>If 'regular expression' is unchecked, any non-space letters in your "
+                                 "expression will be escaped with a backslash character."
+                                 "<p>Possible meta characters are:<br>"
+                                 "<b>.</b> - Matches any character<br>"
+                                 "<b>^</b> - Matches the beginning of a line<br>"
+                                 "<b>$</b> - Matches the end of a line<br>"
+                                 "<b>\\&lt;</b> - Matches the beginning of a word<br>"
+                                 "<b>\\&gt;</b> - Matches the end of a word"
+                                 "<p>The following repetition operators exist:<br>"
+                                 "<b>?</b> - The preceding item is matched at most once<br>"
+                                 "<b>*</b> - The preceding item is matched zero or more times<br>"
+                                 "<b>+</b> - The preceding item is matched one or more times<br>"
+                                 "<b>{<i>n</i>}</b> - The preceding item is matched exactly <i>n</i> times<br>"
+                                 "<b>{<i>n</i>,}</b> - The preceding item is matched <i>n</i> or more times<br>"
+                                 "<b>{,<i>n</i>}</b> - The preceding item is matched at most <i>n</i> times<br>"
+                                 "<b>{<i>n</i>,<i>m</i>}</b> - The preceding item is matched at least <i>n</i>, "
+                                 "but at most <i>m</i> times."
+                                 "<p>Furthermore, backreferences to bracketed subexpressions are available "
+                                 "via the notation <code>\\#</code>."
+                                 "<p>See the grep(1) documentation for the full documentation."
+                                ));
   lblFiles->setWhatsThis(    i18n("Enter the file name pattern of the files to search here.\n"
-     "You may give several patterns separated by commas."));
+                                  "You may give several patterns separated by commas."));
   lblFolder->setWhatsThis(    i18n("Enter the folder which contains the files in which you want to search."));
   cbRecursive->setWhatsThis(    i18n("Check this box to search in all subfolders."));
   cbCasesensitive->setWhatsThis(    i18n("If this option is enabled (the default), the search will be case sensitive."));
   lbResult->setWhatsThis(    i18n("The results of the grep run are listed here. Select a\n"
-     "filename/line number combination and press Enter or doubleclick\n"
-     "on the item to show the respective line in the editor."));
+                                  "filename/line number combination and press Enter or doubleclick\n"
+                                  "on the item to show the respective line in the editor."));
 
   // event filter, do something relevant for RETURN
   cmbPattern->installEventFilter( this );
@@ -147,9 +147,9 @@ void KateGrepDialog::readSessionConfig (KConfig* config)
     // if there are no entries, most probably the first Kate start.
     // Initialize with default values.
     lastSearchFiles << "*"
-                    << "*.h,*.hxx,*.cpp,*.cc,*.C,*.cxx,*.idl,*.c"
-                    << "*.cpp,*.cc,*.C,*.cxx,*.c"
-                    << "*.h,*.hxx,*.idl";
+    << "*.h,*.hxx,*.cpp,*.cc,*.C,*.cxx,*.idl,*.c"
+    << "*.cpp,*.cc,*.C,*.cxx,*.c"
+    << "*.h,*.hxx,*.idl";
   }
 
   cmbPattern->insertItems(0, lastSearchItems);
@@ -174,13 +174,13 @@ void KateGrepDialog::writeSessionConfig (KConfig* config)
 
 void KateGrepDialog::killThread ()
 {
-    if (m_grepThread)
-    {
-        m_grepThread->cancel();
-        m_grepThread->wait ();
-        delete m_grepThread;
-        m_grepThread = 0;
-    }
+  if (m_grepThread)
+  {
+    m_grepThread->cancel();
+    m_grepThread->wait ();
+    delete m_grepThread;
+    m_grepThread = 0;
+  }
 }
 
 void KateGrepDialog::patternTextChanged( const QString & _text)
@@ -229,8 +229,8 @@ void KateGrepDialog::slotSearch()
   {
     cmbDir->setFocus();
     KMessageBox::information( this, i18n(
-        "You must enter an existing local folder in the 'Folder' entry."),
-        i18n("Invalid Folder"), "Kate grep tool: invalid folder" );
+                                "You must enter an existing local folder in the 'Folder' entry."),
+                              i18n("Invalid Folder"), "Kate grep tool: invalid folder" );
     return;
   }
 
@@ -285,7 +285,8 @@ void KateGrepDialog::addItems()
     cmbPattern->removeItem(cmbPattern->findText(cmbText));
   cmbPattern->insertItem(0, cmbText);
   cmbPattern->setCurrentIndex(0);
-  if (lastSearchItems.count() > 10) {
+  if (lastSearchItems.count() > 10)
+  {
     lastSearchItems.pop_back();
     cmbPattern->removeItem(cmbPattern->count() - 1);
   }
@@ -319,7 +320,8 @@ void KateGrepDialog::addItems()
   }
   cmbFiles->insertItem(0, cmbText);
   cmbFiles->setCurrentIndex(0);
-  if (lastSearchFiles.count() > 10) {
+  if (lastSearchFiles.count() > 10)
+  {
     lastSearchFiles.pop_back();
     cmbFiles->removeItem(cmbFiles->count() - 1);
   }
@@ -329,7 +331,7 @@ void KateGrepDialog::searchMatchFound(const QString &filename, int line, int col
 {
   QTreeWidgetItem* item = new QTreeWidgetItem(lbResult);
   item->setText(0, basename);
-  item->setText(1, QString::number (line+1));
+  item->setText(1, QString::number (line + 1));
   item->setText(2, lineContent.trimmed());
   item->setData(0, Qt::UserRole, filename);
   item->setData(1, Qt::UserRole, line);
@@ -344,8 +346,8 @@ void KateGrepDialog::slotClear()
 bool KateGrepDialog::eventFilter( QObject *o, QEvent *e )
 {
   if ( e->type() == QEvent::KeyPress && (
-       ((QKeyEvent*)e)->key() == Qt::Key_Return ||
-       ((QKeyEvent*)e)->key() == Qt::Key_Enter ) )
+         ((QKeyEvent*)e)->key() == Qt::Key_Return ||
+         ((QKeyEvent*)e)->key() == Qt::Key_Enter ) )
   {
     slotSearch();
     return true;
@@ -380,7 +382,6 @@ void KateGrepDialog::showEvent(QShowEvent* event)
 
 void KateMainWindow::slotKateGrepDialogItemSelected(const QString &filename, int linenumber)
 {
-
 }
 #endif
 

@@ -2,16 +2,16 @@
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2002 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2002 Anders Lund <anders.lund@lund.tdcadsl.dk>
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -47,8 +47,10 @@
 K_EXPORT_COMPONENT_FACTORY( katekonsoleplugin, KGenericFactory<KateKonsolePlugin>( "katekonsoleplugin" ) )
 
 KateKonsolePlugin::KateKonsolePlugin( QObject* parent, const QStringList& ):
-  Kate::Plugin ( (Kate::Application*)parent ) {
-  if (!KAuthorized::authorizeKAction("shell_access")) {
+    Kate::Plugin ( (Kate::Application*)parent )
+{
+  if (!KAuthorized::authorizeKAction("shell_access"))
+  {
     KMessageBox::sorry(0, i18n ("You do not have enough karma to access a shell or terminal emulation"));
   }
 }
@@ -59,11 +61,11 @@ Kate::PluginView *KateKonsolePlugin::createView (Kate::MainWindow *mainWindow)
 }
 
 KateKonsolePluginView::KateKonsolePluginView (Kate::MainWindow *mainWindow)
- : Kate::PluginView (mainWindow)
+    : Kate::PluginView (mainWindow)
 {
   // init console
-  QWidget *toolview=mainWindow->createToolView ("kate_private_plugin_katekonsoleplugin", Kate::MainWindow::Bottom, SmallIcon("konsole"), i18n("Terminal"));
-  m_console = new KateConsole(mainWindow,toolview);
+  QWidget *toolview = mainWindow->createToolView ("kate_private_plugin_katekonsoleplugin", Kate::MainWindow::Bottom, SmallIcon("konsole"), i18n("Terminal"));
+  m_console = new KateConsole(mainWindow, toolview);
 }
 
 KateKonsolePluginView::~KateKonsolePluginView ()
@@ -75,18 +77,18 @@ KateKonsolePluginView::~KateKonsolePluginView ()
 }
 
 KateConsole::KateConsole (Kate::MainWindow *mw, QWidget *parent)
- : KVBox (parent), KXMLGUIClient()
- , m_part (0)
- , m_mw (mw)
- , m_toolView (parent)
+    : KVBox (parent), KXMLGUIClient()
+    , m_part (0)
+    , m_mw (mw)
+    , m_toolView (parent)
 {
-    QAction* a = actionCollection()->addAction("katekonsole_tools_pipe_to_terminal");
-    a->setIcon(KIcon("pipe"));
-    a->setText(i18n("&Pipe to Console"));
-    connect(a, SIGNAL(triggered()), this, SLOT(slotPipeToConsole()));
-    setComponentData (KComponentData("kate"));
-    setXMLFile("plugins/katekonsole/ui.rc");
-    m_mw->guiFactory()->addClient (this);
+  QAction* a = actionCollection()->addAction("katekonsole_tools_pipe_to_terminal");
+  a->setIcon(KIcon("pipe"));
+  a->setText(i18n("&Pipe to Console"));
+  connect(a, SIGNAL(triggered()), this, SLOT(slotPipeToConsole()));
+  setComponentData (KComponentData("kate"));
+  setXMLFile("plugins/katekonsole/ui.rc");
+  m_mw->guiFactory()->addClient (this);
 
 }
 

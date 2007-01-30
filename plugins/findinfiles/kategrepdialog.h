@@ -3,16 +3,16 @@
    Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2001 Anders Lund <anders.lund@lund.tdcadsl.dk>
    Copyright (C) 2007 Dominik Haumann <dhaumann@kde.org>
-
+ 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-
+ 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+ 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -37,7 +37,7 @@ class KateGrepDialog : public QWidget, private Ui::FindWidget
 {
     Q_OBJECT
 
-public:
+  public:
     KateGrepDialog(QWidget *parent, Kate::MainWindow *mw);
     ~KateGrepDialog();
 
@@ -45,13 +45,13 @@ public:
     void readSessionConfig (KConfig* config);
     void writeSessionConfig (KConfig* config);
 
-protected:
+  protected:
     bool eventFilter( QObject *, QEvent * );
     void showEvent(QShowEvent* event);
 
     void addItems();
 
-private Q_SLOTS:
+  private Q_SLOTS:
     void itemSelected(QTreeWidgetItem *item, int column);
     void slotSearch();
     void slotClear();
@@ -60,7 +60,7 @@ private Q_SLOTS:
     void searchMatchFound(const QString &filename, int line, int column, const QString &basename, const QString &lineContent);
     void syncDir();
 
-private:
+  private:
     void killThread ();
 
     Kate::MainWindow *m_mw;
