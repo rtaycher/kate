@@ -98,7 +98,7 @@ namespace Kate
   /**
    * \brief Plugin config page extension interface.
    *
-   * The class PluginConfigPageInterface is an extension intefface for plugins.
+   * The class PluginConfigPageInterface is an extension interface for plugins.
    * If you want to add config pages to a plugin you have to make sure you
    *  -# derive your plugin from this interface (multiple inheritance) and
    *     overwrite the abstract methods
@@ -117,8 +117,8 @@ namespace Kate
    *     // other methods etc...
    * };
    * \endcode
-   * The line \p Q_INTERFACES... is important, otherwise the cast from Plugin to
-   * PluginConfigPageInterface will fail, so that your config page interface
+   * The line \p Q_INTERFACES... is important, otherwise the qobject_cast from
+   * Plugin to PluginConfigPageInterface fails so that your config page interface
    * will not be recognized.
    *
    * \see Plugin, PluginConfigPage

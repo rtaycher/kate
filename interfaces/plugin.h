@@ -46,9 +46,10 @@ namespace Kate
    *
    * \section intro Introduction
    *
-   * The Plugin class is the central part of a Kate plugin. If you want your
-   * plugin to be present in the GUI as well you have to also derive it from
-   * the class PluginViewInterface.
+   * The Plugin class is the central part of a Kate plugin. It is possible to
+   * represent your plugin in the GUI with a subclass of PluginView. Furthermore
+   * if the plugin is configurable (and thus has config pages) you have to
+   * additionally derive your plugin from PluginConfigPageInterface.
    *
    * \section config Configuration Management
    *
@@ -57,48 +58,53 @@ namespace Kate
    * for a session use writeSessionConfig(), as it will be called whenever a
    * session is saved/closed.
    *
+   * If you want to save config settings which are not bound to a session but
+   * valid for all plugin instances you have to create your own KConfig like
+   * this:
+   * \code
+   * KConfig* myConfig = new KConfig("katemypluginrc");
+   * \endcode
+   *
    * \section views Plugin Views
    *
    * If your plugin needs to be present in the GUI (e.g. menu or toolbar
-   * entries) you have to additionally derive your plugin from the class
-   * PluginViewInterface, like this:
+   * entries) you have to subclass PluginView and return a new instance of your
+   * plugin view, like this:
    * \code
-   * class MyPlugin : public Kate::Plugin,
-   *                  public Kate::PluginViewInterface
+   * class MyPluginView : public Kate::PluginView
    * {
    *     Q_OBJECT
-   *     Q_INTERFACES(Kate::PluginViewInterface) // important for qobject_cast!
+   * public:
+   *     MyPluginView(MainWindow *mainWindow);
+   *
+   *     // possibilities of gui:
+   *     // - hook into the menus with KXMLGUIClient
+   *     // - create a toolView and put a widget into it with MainWindow::createToolView()
+   * };
+   *
+   * class MyPlugin : public Kate::Plugin
+   * {
+   *     Q_OBJECT
    *
    * public:
    *     // other methods etc...
+   *     PluginView *createView(MainWindow *mainWindow)
+   *     {
+   *         return new MyPluginView(mainWindow);
+   *     }
    * };
    * \endcode
-   * Now there are several other methods like addView() and removeView() which
-   * are to be used to attach new elements into the GUI. Read the documentation
-   * about the PluginViewInterface for further details.
+   * Further information can be found in the class documentation of PluginView.
    *
    * \section configpages Config Pages
    *
    * If your plugin is configurable it makes sense to have config pages which
-   * appear in Kate's settings dialog. To tell the plugin that loader your
+   * appear in Kate's settings dialog. To tell the plugin loader that your
    * plugin supports config pages you have to additionally derive your plugin
-   * from the class PluginConfigPageInterface, like this:
-   * \code
-   * class MyPlugin : public Kate::Plugin,
-   *                  public Kate::PluginConfigPageInterface
-   * {
-   *     Q_OBJECT
-   *     Q_INTERFACES(Kate::PluginConfigPageInterface) // important for qobject_cast!
+   * from the class PluginConfigPageInterface. Read the class documentation for
+   * PluginConfigPageInterface to see how to do this right.
    *
-   * public:
-   *     // other methods etc...
-   * };
-   * \endcode
-   * Now there are several new methods which you have to reimplement, for
-   * example to tell Kate how many config pages the plugin supports. Read the
-   * documentation about the PluginConfigPageInterface for further details.
-   *
-   * \see PluginViewInterface, PluginConfigPageInterface
+   * \see PluginView, PluginConfigPageInterface
    * \author Christoph Cullmann \<cullmann@kde.org\>
    */
   class KATEINTERFACES_EXPORT Plugin : public QObject
@@ -191,17 +197,15 @@ namespace Kate
    * \section views Plugin Views
    *
    * The Kate application supports multiple mainwindows (Window > New Window).
-   * For every Kate MainWindow createView() of the plugin is called, i.e. overwrite addView()
-   * and hook your view into the given mainwindow's KXMLGUIFactory. That means
+   * For every Kate MainWindow Plugin::createView() is called, i.e. overwrite
+   * createView() in your Plugin derived class and hook your view into the given
+   * mainwindow's KXMLGUIFactory. That means
    * you have to create an own KXMLGUIClient derived \e PluginView class and
    * create an own instance for \e every mainwindow. One PluginView then is
    * bound to this specific MainWindow.
    *
-   * removeView() is called for every MainWindow whenever a plugin view client
-   * is to be removed.
-   *
-   * As already mentioned above, loadViewConfig() and storeViewConfig() is
-   * called to load and save session data.
+   * As already mentioned in the Plugin class documentation, readSessionConfig()
+   * and writeSessionConfig() are called to load and save session related data.
    *
    * \section example Basic PluginView Example
    *
@@ -225,6 +229,8 @@ namespace Kate
    *       Kate::MainWindow* m_mainwindow;
    *   };
    * \endcode
+   * To embedd a plugin view as a tool view you have to call
+   * MainWindow::createToolView() and hook your gui into the returned widget.
    *
    * \see Plugin, KXMLGUIClient, MainWindow
    * \author Christoph Cullmann \<cullmann@kde.org\>
