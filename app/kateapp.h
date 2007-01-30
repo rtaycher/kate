@@ -126,12 +126,6 @@ class KATEINTERFACES_EXPORT KateApp : public KApplication
     KateDocManager *documentManager ();
 
     /**
-     * accessor to part manager
-     * @return part manager instance
-     */
-    KatePartManager *partManager ();
-
-    /**
      * accessor to session manager
      * @return session manager instance
      */
@@ -239,11 +233,6 @@ class KATEINTERFACES_EXPORT KateApp : public KApplication
      * document manager
      */
     KateDocManager *m_docManager;
-
-    /**
-     * part manager
-     */
-    KatePartManager *m_partManager;
 
     /**
      * plugin manager

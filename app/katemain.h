@@ -65,16 +65,11 @@ class KUrlComboBox;
 
 class KateApp;
 class KateConfigDlg;
-class KateConsole;
 class KateDocManager;
 class KateFileList;
-class KateFileSelector;
 class KateMainWindow;
-class KatePluginIface;
 class KatePluginManager;
-class KateSidebar;
 class KateViewManager;
 class KateViewSpace;
-class KatePartManager;
 
 #endif

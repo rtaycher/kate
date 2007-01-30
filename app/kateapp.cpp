@@ -21,7 +21,6 @@
 #include "kateapp.moc"
 
 #include "katedocmanager.h"
-#include "katepartmanager.h"
 #include "katepluginmanager.h"
 #include "kateviewmanager.h"
 #include "katesession.h"
@@ -74,9 +73,6 @@ KateApp::KateApp (KCmdLineArgs *args)
   // doc man
   m_docManager = new KateDocManager (this);
 
-  // part man
-  m_partManager = new KatePartManager (this);
-
   // init all normal plugins
   m_pluginManager = new KatePluginManager (this);
 
@@ -93,7 +89,6 @@ KateApp::KateApp (KCmdLineArgs *args)
 
 KateApp::~KateApp ()
 {
-
   // cu plugin manager
   delete m_pluginManager;
 
@@ -312,11 +307,6 @@ KatePluginManager *KateApp::pluginManager()
 KateDocManager *KateApp::documentManager ()
 {
   return m_docManager;
-}
-
-KatePartManager *KateApp::partManager ()
-{
-  return m_partManager;
 }
 
 KateSessionManager *KateApp::sessionManager ()

@@ -216,8 +216,6 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
     KRecentFilesAction *fileOpenRecent;
 
     QListView *m_fileList;
-    //KateFileList *filelist;
-    KateFileSelector *fileselector;
 
     KActionMenu* documentOpenWith;
 
