@@ -52,9 +52,9 @@ namespace Kate
    *
    * \section config Configuration Management
    *
-   * When Kate loads a session it calls loadGeneralConfig(), so if you have
+   * When Kate loads a session it calls readSessionConfig(), so if you have
    * config settings use this function to load them. To save config settings
-   * for a session use storeGeneralConfig(), as it will be called whenever a
+   * for a session use writeSessionConfig(), as it will be called whenever a
    * session is saved/closed.
    *
    * \section views Plugin Views
