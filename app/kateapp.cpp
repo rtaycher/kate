@@ -293,8 +293,8 @@ void KateApp::shutdownKate (KateMainWindow *win)
   // cu main windows
   while (!m_mainWindows.isEmpty())
   {
+    // mainwindow itself calls KateApp::removeMainWindow(this)
     delete m_mainWindows[0];
-    m_mainWindowsInterfaces.pop_front();
   }
 
   quit ();
