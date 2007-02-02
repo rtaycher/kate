@@ -1,16 +1,16 @@
 /* This file is part of the KDE project
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2002 Joseph Wenninger <jowenn@kde.org>
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -153,6 +153,9 @@ void KateApp::restoreKate ()
   sessionConfig()->setGroup("General");
   QString lastSession (sessionConfig()->readEntry ("Last Session", "default.katesession"));
   sessionManager()->activateSession (KSharedPtr<KateSession>(new KateSession (sessionManager(), lastSession)), false, false, false);
+
+  // plugins
+  KatePluginManager::self ()->loadConfig (sessionConfig());
 
   // restore the files we need
   m_docManager->restoreDocumentList (sessionConfig());

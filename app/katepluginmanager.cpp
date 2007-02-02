@@ -2,16 +2,16 @@
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2001 Anders Lund <anders.lund@lund.tdcadsl.dk>
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -86,16 +86,33 @@ void KatePluginManager::setupPluginList ()
 
 void KatePluginManager::loadConfig (KConfig* config)
 {
-  config->setGroup("Kate Plugins");
+  // first: unload the plugins
+  unloadAllPlugins ();
 
+  if (config)
+    config->setGroup("Kate Plugins");
+
+  // disable all plugin if no config...
   foreach (const KatePluginInfo &plugin, m_pluginList)
-  plugin.load =  config->readEntry (plugin.service->library(), false) ||
-                 config->readEntry (plugin.service->property("X-Kate-PluginName").toString(), false);
+    plugin.load =  config ? (config->readEntry (plugin.service->library(), false) ||
+                 config->readEntry (plugin.service->property("X-Kate-PluginName").toString(), false))
+                  : false;
+
+  for (KatePluginList::iterator it = m_pluginList.begin();it != m_pluginList.end(); ++it)
+  {
+    if (it->load)
+    {
+      loadPlugin(&(*it));
+
+      // restore config
+      if (it->plugin)
+        it->plugin->readSessionConfig(config, QString("Plugin:%1:").arg(it->saveName()));
+    }
+  }
 }
 
-void KatePluginManager::storeGeneralConfig(KConfig* config)
+void KatePluginManager::writeConfig(KConfig* config)
 {
-
   foreach(const KatePluginInfo &plugin, m_pluginList)
   {
     config->setGroup("Kate Plugins");
@@ -103,39 +120,8 @@ void KatePluginManager::storeGeneralConfig(KConfig* config)
 
     config->writeEntry (saveName, plugin.load);
 
-    if (plugin.load)
-    {
+    if (plugin.plugin)
       plugin.plugin->writeSessionConfig(config, QString("Plugin:%1:").arg(saveName));
-    }
-  }
-}
-
-void KatePluginManager::storeViewConfig(KConfig* config, uint id)
-{
-  KateMainWindow *mw = KateApp::self()->mainWindow(id);
-
-  foreach(const KatePluginInfo &item, m_pluginList)
-  {
-    // plugin not loaded...
-    if (!item.plugin)
-      continue;
-
-    // no view for this mainwindow
-    if (!mw->pluginViews().contains(item.plugin))
-      continue;
-
-    mw->pluginViews().value(item.plugin)->writeSessionConfig (config, QString("Plugin:%1:MainWindow:%2").arg(item.saveName()).arg(id));
-  }
-}
-
-void KatePluginManager::loadAllEnabledPlugins ()
-{
-  for (KatePluginList::iterator it = m_pluginList.begin();it != m_pluginList.end(); ++it)
-  {
-    if (it->load)
-      loadPlugin(&(*it));
-    else
-      unloadPlugin(&(*it));
   }
 }
 
@@ -173,7 +159,7 @@ void KatePluginManager::loadPlugin (KatePluginInfo *item)
   if (pluginName.isEmpty())
     pluginName = item->service->library();
 
-  item->load = (item->plugin = Kate::createPlugin (QFile::encodeName(item->service->library()), Kate::application(), QStringList(pluginName)));
+  item->plugin = Kate::createPlugin (QFile::encodeName(item->service->library()), Kate::application(), QStringList(pluginName));
 }
 
 void KatePluginManager::unloadPlugin (KatePluginInfo *item)
@@ -181,7 +167,6 @@ void KatePluginManager::unloadPlugin (KatePluginInfo *item)
   disablePluginGUI (item);
   if (item->plugin) delete item->plugin;
   item->plugin = 0L;
-  item->load = false;
 }
 
 void KatePluginManager::enablePluginGUI (KatePluginInfo *item, KateMainWindow *win, KConfig *config)
@@ -191,18 +176,18 @@ void KatePluginManager::enablePluginGUI (KatePluginInfo *item, KateMainWindow *w
     return;
 
   // lookup if there is already a view for it..
-  if (win->pluginViews().contains(item->plugin))
-    return;
-
-  // create the view
-  Kate::PluginView *view = item->plugin->createView(win->mainWindow());
-  win->pluginViews().insert (item->plugin, view);
+  if (!win->pluginViews().contains(item->plugin))
+  {
+    // create the view
+    Kate::PluginView *view = item->plugin->createView(win->mainWindow());
+    win->pluginViews().insert (item->plugin, view);
+  }
 
   // load session config if needed
-  if (config)
+  if (config && win->pluginViews().contains(item->plugin))
   {
     int winID = KateApp::self()->mainWindowID(win);
-    view->readSessionConfig(config, QString("Plugin:%1:MainWindow:%2").arg(item->saveName()).arg(winID));
+    win->pluginViews().value(item->plugin)->readSessionConfig(config, QString("Plugin:%1:MainWindow:%2").arg(item->saveName()).arg(winID));
   }
 }
 

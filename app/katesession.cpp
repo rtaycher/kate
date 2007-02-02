@@ -1,15 +1,15 @@
 /* This file is part of the KDE project
    Copyright (C) 2005 Christoph Cullmann <cullmann@kde.org>
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -283,12 +283,8 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
     // open the new session
     KConfig *sc = activeSession()->configRead();
 
-    // load plugin config
-    if (sc)
-      KatePluginManager::self()->loadConfig (sc);
-
-    // load all needed plugins....
-    KatePluginManager::self()->loadAllEnabledPlugins ();
+    // load plugin config + plugins
+    KatePluginManager::self()->loadConfig (sc);
 
     if (sc)
       KateApp::self()->documentManager()->restoreDocumentList (sc);
@@ -399,19 +395,20 @@ bool KateSessionManager::saveActiveSession (bool tryAsk, bool rememberAsLast)
   if (!sc)
     return false;
 
+  // save plugin configs and which plugins to load
+  KatePluginManager::self()->writeConfig(sc);
+
+  // save document configs + which documents to load
   KateDocManager::self()->saveDocumentList (sc);
 
   sc->setGroup ("Open MainWindows");
   sc->writeEntry ("Count", KateApp::self()->mainWindows ());
-
-  KatePluginManager::self()->storeGeneralConfig(sc);
 
   // save config for all windows around ;)
   for (int i = 0; i < KateApp::self()->mainWindows (); ++i )
   {
     sc->setGroup(QString ("MainWindow%1").arg(i));
     KateApp::self()->mainWindow(i)->saveProperties (sc);
-    KatePluginManager::self()->storeViewConfig(sc, i);
   }
 
   sc->sync();
