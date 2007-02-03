@@ -38,7 +38,7 @@
 
 #include "../interfaces/mainwindow.h"
 
-#include <KAboutApplication>
+#include <KAboutApplicationDialog>
 #include <KComponentData>
 #include <KAboutData>
 #include <KAction>
@@ -761,7 +761,7 @@ void KateMainWindow::pluginHelp()
 
 void KateMainWindow::aboutEditor()
 {
-  KAboutApplication ad(KateDocManager::self()->editor()->aboutData(), this);
+  KAboutApplicationDialog ad(KateDocManager::self()->editor()->aboutData(),this);
   ad.exec();
 }
 
