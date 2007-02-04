@@ -1,12 +1,10 @@
 /* This file is part of the KDE project
    Copyright (C) 2006 Joseph Wenninger <jowenn@kde.org>
 
-****************
-Code taken from katefilelist.cpp:
+   Code taken from katefilelist.cpp:
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2001 Anders Lund <anders.lund@lund.tdcadsl.dk>
-******
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -160,7 +158,7 @@ class EditViewCount
 void KateViewDocumentProxyModel::opened(const QModelIndex &index)
 {
   kDebug() << "KateViewDocumentProxyModel::opened" << endl;
-  ;
+
   if (m_current == index) return;
   m_selection->select(index, QItemSelectionModel::Clear);
   m_selection->setCurrentIndex(index, QItemSelectionModel::Clear);
@@ -168,7 +166,7 @@ void KateViewDocumentProxyModel::opened(const QModelIndex &index)
   m_selection->setCurrentIndex(index, QItemSelectionModel::SelectCurrent);
   //m_selection->select(index,QItemSelectionModel::Select);
   kDebug() << "KateViewDocumentProxyModel::opened-1" << endl;
-  ;
+
   m_current = index;
   m_markOpenedTimer->stop();
   m_markOpenedTimer->start(1000);
@@ -192,7 +190,7 @@ void KateViewDocumentProxyModel::slotMarkOpenedTimer()
 void KateViewDocumentProxyModel::modified(const QModelIndex &index)
 {
   kDebug() << "KateViewDocumentProxyModel::modified" << endl;
-  ;
+
   m_editHistory.removeAll(index);
   m_editHistory.prepend(index);
 

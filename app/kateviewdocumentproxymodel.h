@@ -56,6 +56,7 @@ class KateViewDocumentProxyModel: public QAbstractProxyModel
     {
       return m_selection;
     }
+
   private:
     QItemSelectionModel *m_selection;
     QList<QModelIndex> m_viewHistory;
@@ -67,6 +68,7 @@ class KateViewDocumentProxyModel: public QAbstractProxyModel
     QTimer *m_markOpenedTimer;
     int m_rowCountOffset;
     void removeItemFromColoring(int line);
+
   private Q_SLOTS:
     void slotColumnsAboutToBeInserted ( const QModelIndex & parent, int start, int end );
     void slotColumnsAboutToBeRemoved ( const QModelIndex & parent, int start, int end ) ;
@@ -85,9 +87,11 @@ class KateViewDocumentProxyModel: public QAbstractProxyModel
 
     void slotMarkOpenedTimer();
     //void slotSelectionChanged ( const QItemSelection & selected, const QItemSelection & deselected );
+
   public Q_SLOTS:
     void opened(const QModelIndex &index);
     void modified(const QModelIndex &index);
+
   private:
     void updateBackgrounds(bool emitSignals = true);
 };
