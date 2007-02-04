@@ -214,3 +214,5 @@ namespace Kate
 
 Q_DECLARE_INTERFACE(Kate::PluginConfigPageInterface, "org.kde.Kate.PluginConfigPageInterface")
 #endif
+// kate: space-indent on; indent-width 2; replace-tabs on;
+

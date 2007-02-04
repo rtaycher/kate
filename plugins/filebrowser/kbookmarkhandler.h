@@ -71,3 +71,5 @@ class KBookmarkHandler : public QObject, public KBookmarkOwner
 };
 
 #endif // _KBOOKMARKHANDLER_H_
+// kate: space-indent on; indent-width 2; replace-tabs on;
+

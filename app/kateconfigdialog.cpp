@@ -416,3 +416,5 @@ void KateConfigDialog::slotChanged()
   dataChanged = true;
   enableButton( Apply, true );
 }
+// kate: space-indent on; indent-width 2; replace-tabs on;
+

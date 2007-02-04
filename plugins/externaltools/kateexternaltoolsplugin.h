@@ -62,3 +62,5 @@ class KateExternalToolsPluginView : public Kate::PluginView, public KXMLGUIClien
 };
 
 #endif
+// kate: space-indent on; indent-width 2; replace-tabs on;
+

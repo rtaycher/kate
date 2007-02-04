@@ -25,3 +25,5 @@ KateMainWindowAdaptor::KateMainWindowAdaptor (KateMainWindow *w)
 //((QString("KateMainWindow#%1").arg(w->mainWindowNumber())).toLatin1()), m_w (w)
 {
 }
+// kate: space-indent on; indent-width 2; replace-tabs on;
+

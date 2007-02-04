@@ -258,3 +258,5 @@ void KatePluginManager::unloadPlugin(const QString &, bool)
 {
   ;
 }
+// kate: space-indent on; indent-width 2; replace-tabs on;
+

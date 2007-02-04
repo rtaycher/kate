@@ -73,3 +73,5 @@ class KateViewManager;
 class KateViewSpace;
 
 #endif
+// kate: space-indent on; indent-width 2; replace-tabs on;
+

@@ -81,3 +81,5 @@ KateExternalToolsPluginView::~KateExternalToolsPluginView ()
     externalTools->setWhatsThis( i18n("Launch external helper applications") );
   }
   */
+// kate: space-indent on; indent-width 2; replace-tabs on;
+

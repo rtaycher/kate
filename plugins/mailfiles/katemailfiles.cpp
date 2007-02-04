@@ -147,3 +147,5 @@ void KateMailFilesPluginView::slotMail()
                                  urls           // urls to atthatch
                                );
 }
+// kate: space-indent on; indent-width 2; replace-tabs on;
+

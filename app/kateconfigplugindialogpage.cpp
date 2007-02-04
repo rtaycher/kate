@@ -124,3 +124,5 @@ void KateConfigPluginPage::unloadPlugin (KatePluginListItem *item)
 
   item->setOn(false);
 }
+// kate: space-indent on; indent-width 2; replace-tabs on;
+

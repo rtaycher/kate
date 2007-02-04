@@ -51,3 +51,5 @@ class KateDocManagerAdaptor : public QDBusAbstractAdaptor
     KateDocManager *m_dm;
 };
 #endif
+// kate: space-indent on; indent-width 2; replace-tabs on;
+

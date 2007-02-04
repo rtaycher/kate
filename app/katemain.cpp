@@ -216,3 +216,5 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
   kDebug() << "primary event loop has been left" << endl;
   return res;
 }
+// kate: space-indent on; indent-width 2; replace-tabs on;
+

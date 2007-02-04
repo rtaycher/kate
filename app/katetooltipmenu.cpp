@@ -69,3 +69,5 @@ void KateToolTipMenu::slotHovered(QAction* a)
   m_toolTip->show();
 
 }
+// kate: space-indent on; indent-width 2; replace-tabs on;
+

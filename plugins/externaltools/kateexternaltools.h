@@ -250,3 +250,5 @@ class KateExternalToolServiceEditor : public KDialog
     KateExternalTool *tool;
 };
 #endif //_KATE_EXTERNAL_TOOLS_H_
+// kate: space-indent on; indent-width 2; replace-tabs on;
+

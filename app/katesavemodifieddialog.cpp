@@ -296,3 +296,5 @@ bool KateSaveModifiedDialog::queryClose(QWidget *parent, QList<KTextEditor::Docu
   KateSaveModifiedDialog d(parent, documents);
   return (d.exec() != QDialog::Rejected);
 }
+// kate: space-indent on; indent-width 2; replace-tabs on;
+

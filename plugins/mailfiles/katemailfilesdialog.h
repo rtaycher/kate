@@ -67,3 +67,5 @@ class KateMailDialog : public KDialog
 };
 
 #endif // _KATE_MAILFILES_DIALOG_H_
+// kate: space-indent on; indent-width 2; replace-tabs on;
+
