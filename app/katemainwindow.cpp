@@ -237,10 +237,10 @@ void KateMainWindow::setupMainWindow ()
 
   KateMDI::ToolView *ft = createToolView("kate_filelist", KMultiTabBar::Left, SmallIcon("kmultiple"), i18n("Documents"));
   m_fileList = new KateFileList(ft, actionCollection());
-  m_pM = new KateViewDocumentProxyModel(this);
-  m_pM->setSourceModel(KateDocManager::self());
-  m_fileList->setModel(m_pM);
-  m_fileList->setSelectionModel(m_pM->selection());
+  m_documentModel = new KateViewDocumentProxyModel(this);
+  m_documentModel->setSourceModel(KateDocManager::self());
+  m_fileList->setModel(m_documentModel);
+  m_fileList->setSelectionModel(m_documentModel->selection());
   m_fileList->setDragEnabled(true);
   m_fileList->setDragDropMode(QAbstractItemView::InternalMove);
   m_fileList->setDropIndicatorShown(true);
@@ -250,10 +250,10 @@ void KateMainWindow::setupMainWindow ()
   if (!style()->styleHint(QStyle::SH_ItemView_ActivateItemOnSingleClick, 0, m_fileList))
   {
     kDebug() << "HACK:***********************CONNECTING CLICKED***************************" << endl;
-    connect(m_fileList, SIGNAL(clicked(const QModelIndex&)), m_pM, SLOT(opened(const QModelIndex&)));
+    connect(m_fileList, SIGNAL(clicked(const QModelIndex&)), m_documentModel, SLOT(opened(const QModelIndex&)));
     connect(m_fileList, SIGNAL(clicked(const QModelIndex&)), m_viewManager, SLOT(activateDocument(const QModelIndex &)));
   }
-  connect(m_fileList, SIGNAL(activated(const QModelIndex&)), m_pM, SLOT(opened(const QModelIndex&)));
+  connect(m_fileList, SIGNAL(activated(const QModelIndex&)), m_documentModel, SLOT(opened(const QModelIndex&)));
   connect(m_fileList, SIGNAL(activated(const QModelIndex&)), m_viewManager, SLOT(activateDocument(const QModelIndex &)));
   connect(m_fileList, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showFileListPopup(const QPoint&)));
   m_fileList->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -532,7 +532,7 @@ void KateMainWindow::slotWindowActivated ()
 {
   if (m_viewManager->activeView())
   {
-    m_pM->opened(modelIndexForDocument(m_viewManager->activeView()->document()));
+    m_documentModel->opened(modelIndexForDocument(m_viewManager->activeView()->document()));
     updateCaption (m_viewManager->activeView()->document());
   }
 
@@ -604,13 +604,13 @@ void KateMainWindow::activateDocumentFromDocMenu (QAction *action)
 {
   KateRowColumn rowCol = action->data().value<KateRowColumn>();
   if (!rowCol.isValid()) return;
-  QModelIndex index = m_pM->index(rowCol.row(), rowCol.column());
+  QModelIndex index = m_documentModel->index(rowCol.row(), rowCol.column());
   if (index.isValid())
   {
     KTextEditor::Document *doc = index.data(KateDocManager::DocumentRole).value<KTextEditor::Document*>();
     if (doc)
       m_viewManager->activateView (doc);
-    m_pM->opened(index);
+    m_documentModel->opened(index);
   }
 }
 
@@ -925,15 +925,15 @@ static QModelIndex modelIndexForDocumentRec(const QModelIndex &index, QAbstractI
 
 QModelIndex KateMainWindow::modelIndexForDocument(KTextEditor::Document *document)
 {
-  KTextEditor::Document *tmp = m_pM->selection()->currentIndex().data(KateDocManager::DocumentRole).value<KTextEditor::Document*>();
-  if (tmp == document) return m_pM->selection()->currentIndex();
-  else return modelIndexForDocumentRec(KateDocManager::self()->indexForDocument(document), m_pM);
+  KTextEditor::Document *tmp = m_documentModel->selection()->currentIndex().data(KateDocManager::DocumentRole).value<KTextEditor::Document*>();
+  if (tmp == document) return m_documentModel->selection()->currentIndex();
+  else return modelIndexForDocumentRec(KateDocManager::self()->indexForDocument(document), m_documentModel);
 }
 
 
 void KateMainWindow::slotDocModified(KTextEditor::Document *document)
 {
-  if (document->isModified()) m_pM->modified(modelIndexForDocument(document));
+  if (document->isModified()) m_documentModel->modified(modelIndexForDocument(document));
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;
