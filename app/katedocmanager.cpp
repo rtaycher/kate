@@ -38,7 +38,7 @@
 #include <KCodecs>
 #include <KMessageBox>
 #include <KEncodingFileDialog>
-#include <KIO/Job>
+#include <KIO/DeleteJob>
 #include <KIconLoader>
 #include <KProgressDialog>
 
