@@ -179,7 +179,7 @@ bool KateApp::startupKate ()
   // user specified session to open
   if (m_args->isSet ("start"))
   {
-    sessionManager()->activateSession (sessionManager()->giveSession (m_args->getOption("start")), false, false);
+    sessionManager()->activateSession (sessionManager()->giveSession (QString::fromLocal8Bit(m_args->getOption("start"))), false, false);
   }
   else if (!m_args->isSet( "stdin" ) && (m_args->count() == 0)) // only start session if no files specified
   {
