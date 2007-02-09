@@ -151,7 +151,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char **argv )
       DCOPRef kRef (kateApp, "KateApplication");
 
       if (args->isSet ("start"))
-        kRef.call( "activateSession", QString (args->getOption("start")) );
+        kRef.call( "activateSession", QString::fromLocal8Bit (args->getOption("start")) );
 
       QString enc = args->isSet("encoding") ? args->getOption("encoding") : QByteArray("");
 
