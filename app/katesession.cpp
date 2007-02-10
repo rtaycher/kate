@@ -298,7 +298,7 @@ void KateSessionManager::activateSession (KateSession::Ptr session, bool closeLa
     KSharedConfig::Ptr c = KGlobal::config();
     c->setGroup("General");
 
-    if (c->readEntry("Restore Window Configuration", QVariant(true)).toBool())
+    if (c->readEntry("Restore Window Configuration", true))
     {
       // a new, named session, read settings of the default session.
       if ( ! sc->hasGroup("Open MainWindows") )

@@ -478,12 +478,12 @@ void KateMainWindow::readOptions ()
   KSharedConfig::Ptr config = KGlobal::config();
 
   config->setGroup("General");
-  modNotification = config->readEntry("Modified Notification", QVariant(false)).toBool();
-  KateDocManager::self()->setSaveMetaInfos(config->readEntry("Save Meta Infos", QVariant(true)).toBool());
+  modNotification = config->readEntry("Modified Notification", false);
+  KateDocManager::self()->setSaveMetaInfos(config->readEntry("Save Meta Infos", true));
   KateDocManager::self()->setDaysMetaInfos(config->readEntry("Days Meta Infos", 30));
 
-  m_paShowPath->setChecked (config->readEntry("Show Full Path in Title", QVariant(false)).toBool());
-  m_paShowStatusBar->setChecked (config->readEntry("Show Status Bar", QVariant(true)).toBool());
+  m_paShowPath->setChecked (config->readEntry("Show Full Path in Title", false));
+  m_paShowStatusBar->setChecked (config->readEntry("Show Status Bar", true));
 
   fileOpenRecent->loadEntries(config.data(), "Recent Files");
 

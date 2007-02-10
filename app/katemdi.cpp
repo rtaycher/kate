@@ -886,7 +886,7 @@ namespace KateMDI
 
     setToolViewStyle( (KMultiTabBar::KMultiTabBarStyle)m_restoreConfig->readEntry ("Kate-MDI-Sidebar-Style", (int)toolViewStyle()) );
     // after reading m_sidebarsVisible, update the GUI toggle action
-    m_sidebarsVisible = m_restoreConfig->readEntry ("Kate-MDI-Sidebar-Visible", QVariant(true) ).toBool();
+    m_sidebarsVisible = m_restoreConfig->readEntry ("Kate-MDI-Sidebar-Visible", true );
     m_guiClient->updateSidebarsVisibleAction();
   }
 

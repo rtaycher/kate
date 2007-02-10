@@ -306,7 +306,7 @@ void ::KateFileSelector::readConfig(KConfig *config, const QString & name)
   cmbPath->setMaxItems( config->readEntry( "pathcombo history len", 9 ) );
   cmbPath->setUrls( config->readPathListEntry( "dir history" ) );
   // if we restore history
-  if ( config->readEntry( "restore location", QVariant(true )).toBool() || qApp->isSessionRestored() )
+  if ( config->readEntry( "restore location", true) || qApp->isSessionRestored() )
   {
     QString loc( config->readPathEntry( "location" ) );
     if ( ! loc.isEmpty() )
@@ -820,8 +820,8 @@ void KFSConfigPage::init()
   sbPathHistLength->setValue( fileSelector->cmbPath->maxItems() );
   sbFilterHistLength->setValue( fileSelector->filter->maxCount() );
   // session
-  cbSesLocation->setChecked( config->readEntry( "restore location", QVariant(true )).toBool() );
-  cbSesFilter->setChecked( config->readEntry( "restore last filter", QVariant(true )).toBool() );
+  cbSesLocation->setChecked( config->readEntry( "restore location", true) );
+  cbSesFilter->setChecked( config->readEntry( "restore last filter", true) );
 }
 
 void KFSConfigPage::slotMyChanged()
