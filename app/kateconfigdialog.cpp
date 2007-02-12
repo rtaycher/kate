@@ -38,7 +38,7 @@
 #include <KGlobalSettings>
 #include <KIconLoader>
 #include <KKeyDialog>
-#include <KListBox>
+#include <KListWidget>
 #include <KLocale>
 #include <KSimpleConfig>
 #include <kstandardaction.h>

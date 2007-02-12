@@ -594,7 +594,7 @@ bool KateFileSelector::eventFilter( QObject* o, QEvent *e )
       satisfying result, something is wrong with the handling of the sizehint.
       And the popup is rather useless, if the paths are only partly visible.
   */
-  /* FIXME Q3ListBox *lb = cmbPath->listBox();
+  /* FIXME QListWidget *lb = cmbPath->listBox();
     if ( o == lb && e->type() == QEvent::Show ) {
       int add = lb->height() < lb->contentsHeight() ? lb->verticalScrollBar()->width() : 0;
       int w = qMin( mainwin->width(), lb->contentsWidth() + add );

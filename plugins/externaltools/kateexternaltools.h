@@ -188,7 +188,7 @@ class KateExternalToolsConfigWidget : public KTextEditor::ConfigPage
 
     QStringList m_removed;
 
-    class KListBox *lbTools;
+    class KListWidget *lbTools;
     class QPushButton *btnNew, *btnRemove, *btnEdit, *btnMoveUp, *btnMoveDwn;
 
     class KConfig *config;

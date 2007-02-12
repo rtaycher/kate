@@ -53,7 +53,7 @@ class KEditToolbar;
 class KFileViewItem;
 class KHistoryCombo;
 class KLineEdit;
-class KListBox;
+class KListWidget;
 class KProcess;
 class KPushButton;
 class KRecentFilesAction;

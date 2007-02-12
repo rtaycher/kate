@@ -24,7 +24,7 @@
 #include "kateconfigdialog.h"
 #include "kateapp.h"
 
-#include <KListBox>
+#include <KListWidget>
 #include <KLocale>
 #include <KIconLoader>
 

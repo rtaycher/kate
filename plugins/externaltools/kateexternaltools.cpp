@@ -26,7 +26,7 @@
 #include "kateexternaltools.moc"
 
 #include <KActionCollection>
-#include <KListBox>
+#include <KListWidget>
 #include <KLocale>
 #include <KIconLoader>
 #include <KMessageBox>
@@ -439,14 +439,13 @@ void KateExternalToolsMenuAction::slotDocumentChanged()
  * This is a QListBoxItem, that has a KateExternalTool. The text is the Name
  * of the tool.
  */
-class ToolItem : public Q3ListBoxPixmap
+class ToolItem : public QListWidgetItem
 {
   public:
-    ToolItem( Q3ListBox *lb, const QPixmap &icon, KateExternalTool *tool )
-        : Q3ListBoxPixmap( lb, icon, tool->name ),
+    ToolItem( QListWidget *lb, const QPixmap &icon, KateExternalTool *tool )
+        : QListWidgetItem( icon , tool->name , lb ),
         tool ( tool )
     {
-      ;
     }
 
     ~ToolItem()
@@ -615,7 +614,7 @@ KateExternalToolsConfigWidget::KateExternalToolsConfigWidget( QWidget *parent, c
   lo->setMargin( 0 );
   lo->setSpacing( KDialog::spacingHint() );
 
-  lbTools = new KListBox( this );
+  lbTools = new KListWidget( this );
   lo->addWidget( lbTools, 1, 0, 4, 4 );
   connect( lbTools, SIGNAL(selectionChanged()), this, SLOT(slotSelectionChanged()) );
 
@@ -643,7 +642,7 @@ KateExternalToolsConfigWidget::KateExternalToolsConfigWidget( QWidget *parent, c
   lo->addWidget( btnMoveDwn, 3, 4 );
   connect( btnMoveDwn, SIGNAL(clicked()), this, SLOT(slotMoveDown()) );
 
-  connect( lbTools, SIGNAL( doubleClicked ( Q3ListBoxItem * ) ), this, SLOT( slotEdit() ) );
+  connect( lbTools, SIGNAL( doubleClicked ( QListWidgetItem * ) ), this, SLOT( slotEdit() ) );
 
   lo->setRowStretch( 1, 1 );
   lo->setRowStretch( 4, 1 );
@@ -678,7 +677,7 @@ void KateExternalToolsConfigWidget::reset()
   {
     if ( *it == "---" )
     {
-      new Q3ListBoxText( lbTools, "---" );
+      new QListWidgetItem( "---" , lbTools);
     }
     else
     {
@@ -720,9 +719,9 @@ void KateExternalToolsConfigWidget::apply()
   // save a new list
   // save each item
   QStringList tools;
-  for ( uint i = 0; i < lbTools->count(); i++ )
+  for ( int i = 0; i < lbTools->count(); i++ )
   {
-    if ( lbTools->text( i ) == "---" )
+    if ( lbTools->item(i)->text() == "---" )
     {
       tools << "---";
       continue;
@@ -777,11 +776,11 @@ void KateExternalToolsConfigWidget::apply()
 void KateExternalToolsConfigWidget::slotSelectionChanged()
 {
   // update button state
-  bool hs =  lbTools->selectedItem() != 0;
-  btnEdit->setEnabled( hs && dynamic_cast<ToolItem*>(lbTools->selectedItem()) );
+  bool hs =  lbTools->currentItem() != 0;
+  btnEdit->setEnabled( hs && dynamic_cast<ToolItem*>(lbTools->currentItem()) );
   btnRemove->setEnabled( hs );
-  btnMoveUp->setEnabled( ( lbTools->currentItem() > 0 ) && hs );
-  btnMoveDwn->setEnabled( ( lbTools->currentItem() < (int)lbTools->count() - 1 ) && hs );
+  btnMoveUp->setEnabled( ( lbTools->currentRow() > 0 ) && hs );
+  btnMoveDwn->setEnabled( ( lbTools->currentRow() < (int)lbTools->count() - 1 ) && hs );
 }
 
 void KateExternalToolsConfigWidget::slotNew()
@@ -814,13 +813,13 @@ void KateExternalToolsConfigWidget::slotRemove()
 {
   // add the tool action name to a list of removed items,
   // remove the current listbox item
-  if ( lbTools->currentItem() > -1 )
+  if ( lbTools->currentRow() > -1 )
   {
-    ToolItem *i = dynamic_cast<ToolItem*>(lbTools->selectedItem());
+    ToolItem *i = dynamic_cast<ToolItem*>(lbTools->currentItem());
     if ( i )
       m_removed << i->tool->acname;
 
-    lbTools->removeItem( lbTools->currentItem() );
+    delete lbTools->takeItem( lbTools->currentRow() );
     emit changed();
     m_changed = true;
   }
@@ -828,9 +827,9 @@ void KateExternalToolsConfigWidget::slotRemove()
 
 void KateExternalToolsConfigWidget::slotEdit()
 {
-  if( !dynamic_cast<ToolItem*>(lbTools->selectedItem()) ) return;
+  if( !dynamic_cast<ToolItem*>(lbTools->currentItem()) ) return;
   // show the item in an editor
-  KateExternalTool *t = ((ToolItem*)lbTools->selectedItem())->tool;
+  KateExternalTool *t = ((ToolItem*)lbTools->currentItem())->tool;
   KateExternalToolServiceEditor editor( t, this);
   config->setGroup( "Editor" );
   editor.resize( config->readEntry( "Size", QSize() ) );
@@ -850,9 +849,9 @@ void KateExternalToolsConfigWidget::slotEdit()
     //if the icon has changed or name changed, I have to renew the listbox item :S
     if ( elementChanged )
     {
-      int idx = lbTools->index( lbTools->selectedItem() );
-      lbTools->removeItem( idx );
-      lbTools->insertItem( new ToolItem( 0, t->icon.isEmpty() ? blankIcon() : SmallIcon( t->icon ), t ), idx );
+      int idx = lbTools->row( lbTools->currentItem() );
+      delete lbTools->takeItem( idx );
+      lbTools->insertItem( idx , new ToolItem( 0, t->icon.isEmpty() ? blankIcon() : SmallIcon( t->icon ), t ));
     }
 
     emit changed();
@@ -866,7 +865,7 @@ void KateExternalToolsConfigWidget::slotEdit()
 
 void KateExternalToolsConfigWidget::slotInsertSeparator()
 {
-  lbTools->insertItem( "---", lbTools->currentItem() + 1 );
+  lbTools->insertItem( lbTools->currentRow() + 1 , "---" );
   emit changed();
   m_changed = true;
 }
@@ -874,26 +873,26 @@ void KateExternalToolsConfigWidget::slotInsertSeparator()
 void KateExternalToolsConfigWidget::slotMoveUp()
 {
   // move the current item in the listbox upwards if possible
-  Q3ListBoxItem *item = lbTools->selectedItem();
+  QListWidgetItem *item = lbTools->currentItem();
   if ( ! item ) return;
 
-  int idx = lbTools->index( item );
+  int idx = lbTools->row( item );
 
   if ( idx < 1 ) return;
 
   if ( dynamic_cast<ToolItem*>(item) )
   {
     KateExternalTool *tool = ((ToolItem*)item)->tool;
-    lbTools->removeItem( idx );
-    lbTools->insertItem( new ToolItem( 0, tool->icon.isEmpty() ? blankIcon() : SmallIcon( tool->icon ), tool ), idx - 1 );
+    delete lbTools->takeItem( idx );
+    lbTools->insertItem( idx - 1 , new ToolItem( 0, tool->icon.isEmpty() ? blankIcon() : SmallIcon( tool->icon ), tool ) );
   }
   else // a separator!
   {
-    lbTools->removeItem( idx );
-    lbTools->insertItem( new Q3ListBoxText( 0, "---" ), idx - 1 );
+    delete lbTools->takeItem( idx );
+    lbTools->insertItem( idx - 1 , new QListWidgetItem( "---"  ));
   }
 
-  lbTools->setCurrentItem( idx - 1 );
+  lbTools->setCurrentRow( idx - 1 );
   slotSelectionChanged();
   emit changed();
   m_changed = true;
@@ -902,26 +901,26 @@ void KateExternalToolsConfigWidget::slotMoveUp()
 void KateExternalToolsConfigWidget::slotMoveDown()
 {
   // move the current item in the listbox downwards if possible
-  Q3ListBoxItem *item = lbTools->selectedItem();
+  QListWidgetItem *item = lbTools->currentItem();
   if ( ! item ) return;
 
-  uint idx = lbTools->index( item );
+  int idx = lbTools->row( item );
 
   if ( idx > lbTools->count() - 1 ) return;
 
   if ( dynamic_cast<ToolItem*>(item) )
   {
     KateExternalTool *tool = ((ToolItem*)item)->tool;
-    lbTools->removeItem( idx );
-    lbTools->insertItem( new ToolItem( 0, tool->icon.isEmpty() ? blankIcon() : SmallIcon( tool->icon ), tool ), idx + 1 );
+    delete lbTools->takeItem( idx );
+    lbTools->insertItem( idx + 1 , new ToolItem( 0, tool->icon.isEmpty() ? blankIcon() : SmallIcon( tool->icon ), tool ) );
   }
   else // a separator!
   {
-    lbTools->removeItem( idx );
-    lbTools->insertItem( new Q3ListBoxText( 0, "---" ), idx + 1 );
+    delete lbTools->takeItem( idx );
+    lbTools->insertItem( idx + 1 , new QListWidgetItem( "---" ) );
   }
 
-  lbTools->setCurrentItem( idx + 1 );
+  lbTools->setCurrentRow( idx + 1 );
   slotSelectionChanged();
   emit changed();
   m_changed = true;
