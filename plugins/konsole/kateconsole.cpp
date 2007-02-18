@@ -95,7 +95,8 @@ KateConsole::KateConsole (Kate::MainWindow *mw, QWidget *parent)
 KateConsole::~KateConsole ()
 {
   m_mw->guiFactory()->removeClient (this);
-  disconnect ( m_part, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
+  if (m_part)
+    disconnect ( m_part, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
 }
 
 void KateConsole::loadConsoleIfNeeded()
