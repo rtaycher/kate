@@ -41,13 +41,13 @@ namespace Kate
   /**
    * \brief Interface to a mainwindow.
    *
-   * \section intro Introduction
+   * \section mainwindow_intro Introduction
    * The class MainWindow represents a toplevel window, with menu bar,
    * statusbar etc, get it with window(). A mainwindow usually has an active
    * View, access it with activeView(). To set another active view use
    * activateView().
    *
-   * \section toolviews Toolviews
+   * \section mainwindow_toolviews Toolviews
    *
    * It is possible to embedd new toolviews into a mainwindow. To create a
    * toolview use createToolView(), then you can move, hide or show the toolview
