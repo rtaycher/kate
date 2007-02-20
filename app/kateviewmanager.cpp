@@ -2,16 +2,16 @@
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2001 Anders Lund <anders.lund@lund.tdcadsl.dk>
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -41,7 +41,7 @@
 #include <KToolBar>
 #include <KMessageBox>
 #include <KRecentFilesAction>
-#include <KSimpleConfig>
+#include <KConfig>
 #include <kstandardaction.h>
 #include <KStandardDirs>
 #include <KGlobalSettings>
@@ -483,28 +483,31 @@ void KateViewManager::slotSplitViewSpaceHoriz()
  * session config functions
  */
 
-void KateViewManager::saveViewConfiguration(KConfig *config, const QString& group)
+void KateViewManager::saveViewConfiguration(KConfigGroup& config)
 {
-  config->setGroup(group);
-  config->writeEntry("ViewSpaceContainers", m_viewSpaceContainerList.count());
-  config->writeEntry("Active ViewSpaceContainer", m_mainWindow->tabWidget()->currentIndex());
+  config.writeEntry("ViewSpaceContainers", m_viewSpaceContainerList.count());
+  config.writeEntry("Active ViewSpaceContainer", m_mainWindow->tabWidget()->currentIndex());
   for (int i = 0; i < m_viewSpaceContainerList.count(); i++)
   {
-    m_viewSpaceContainerList[i]->saveViewConfiguration(config, group + QString(":ViewSpaceContainer-%1:").arg(i));
+    KConfigGroup cg = config;
+    cg.changeGroup( cg.group() + QString(":ViewSpaceContainer-%1:").arg(i) );
+    m_viewSpaceContainerList[i]->saveViewConfiguration(cg);
   }
 }
 
-void KateViewManager::restoreViewConfiguration (KConfig *config, const QString& group)
+void KateViewManager::restoreViewConfiguration (const KConfigGroup &config)
 {
-  config->setGroup(group);
-  uint tabCount = config->readEntry("ViewSpaceContainers", 0);
-  int activeOne = config->readEntry("Active ViewSpaceContainer", 0);
+  uint tabCount = config.readEntry("ViewSpaceContainers", 0);
+  int activeOne = config.readEntry("Active ViewSpaceContainer", 0);
   if (tabCount == 0) return;
-  m_viewSpaceContainerList[0]->restoreViewConfiguration(config, group + QString(":ViewSpaceContainer-0:"));
+  KConfigGroup cg = config;
+  cg.changeGroup( cg.group() + QString(":ViewSpaceContainer-0:") );
+  m_viewSpaceContainerList[0]->restoreViewConfiguration(cg);
   for (uint i = 1;i < tabCount;i++)
   {
     slotNewTab();
-    m_viewSpaceContainerList[i]->restoreViewConfiguration(config, group + QString(":ViewSpaceContainer-%1:").arg(i));
+    cg.changeGroup( cg.group() + QString(":ViewSpaceContainer-%1:").arg(i) );
+    m_viewSpaceContainerList[i]->restoreViewConfiguration(cg);
   }
 
   if (activeOne != m_mainWindow->tabWidget()->currentIndex())

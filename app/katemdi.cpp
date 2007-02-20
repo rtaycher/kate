@@ -1,19 +1,19 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2005 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2002, 2003 Joseph Wenninger <jowenn@kde.org>
- 
+
    GUIClient partly based on ktoolbarhandler.cpp: Copyright (C) 2002 Simon Hausmann <hausmann@kde.org>
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -138,7 +138,7 @@ namespace KateMDI
 
     // read shortcuts
     actionCollection()->setConfigGroup( "Shortcuts" );
-    actionCollection()->readSettings( KGlobal::config().data() );
+    actionCollection()->readSettings();
   }
 
   GUIClient::~GUIClient()
@@ -156,10 +156,7 @@ namespace KateMDI
     // try to read the action shortcut
     KShortcut sc;
     KSharedConfig::Ptr cfg = KGlobal::config();
-    QString _grp = cfg->group();
-    cfg->setGroup("Shortcuts");
-    sc = KShortcut( cfg->readEntry( aname, QString() ) );
-    cfg->setGroup( _grp );
+    sc = KShortcut( cfg->group("Shortcuts").readEntry( aname, QString() ) );
 
     KToggleAction *a = new ToggleToolViewAction(i18n("Show %1", tv->text),
                        sc, tv, this );
@@ -533,7 +530,7 @@ namespace KateMDI
       unsigned int pos;
   };
 
-  void Sidebar::restoreSession (KConfig *config)
+  void Sidebar::restoreSession (KConfigGroup& config)
   {
     // get the last correct placed toolview
     int firstWrong = 0;
@@ -541,7 +538,7 @@ namespace KateMDI
     {
       ToolView *tv = m_toolviews[firstWrong];
 
-      int pos = config->readEntry (QString ("Kate-MDI-ToolView-%1-Sidebar-Position").arg(tv->id), firstWrong);
+      int pos = config.readEntry (QString ("Kate-MDI-ToolView-%1-Sidebar-Position").arg(tv->id), firstWrong);
 
       if (pos != firstWrong)
         break;
@@ -556,7 +553,7 @@ namespace KateMDI
       {
         TmpToolViewSorter s;
         s.tv = m_toolviews[i];
-        s.pos = config->readEntry (QString ("Kate-MDI-ToolView-%1-Sidebar-Position").arg(m_toolviews[i]->id), i);
+        s.pos = config.readEntry (QString ("Kate-MDI-ToolView-%1-Sidebar-Position").arg(m_toolviews[i]->id), i);
         toSort.push_back (s);
       }
 
@@ -599,7 +596,7 @@ namespace KateMDI
     updateLastSize ();
 
     // restore the own splitter sizes
-    QList<int> s = config->readEntry (QString ("Kate-MDI-Sidebar-%1-Splitter").arg(position()), QList<int>());
+    QList<int> s = config.readEntry (QString ("Kate-MDI-Sidebar-%1-Splitter").arg(position()), QList<int>());
     m_ownSplit->setSizes (s);
 
     // show only correct toolviews, remember persistent values ;)
@@ -608,8 +605,8 @@ namespace KateMDI
     {
       ToolView *tv = m_toolviews[i];
 
-      tv->persistent = config->readEntry (QString ("Kate-MDI-ToolView-%1-Persistent").arg(tv->id), QVariant(false)).toBool();
-      tv->setToolVisible (config->readEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(tv->id), QVariant(false)).toBool());
+      tv->persistent = config.readEntry (QString ("Kate-MDI-ToolView-%1-Persistent").arg(tv->id), QVariant(false)).toBool();
+      tv->setToolVisible (config.readEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(tv->id), QVariant(false)).toBool());
 
       if (!anyVis)
         anyVis = tv->toolVisible();
@@ -628,21 +625,21 @@ namespace KateMDI
       m_ownSplit->hide();
   }
 
-  void Sidebar::saveSession (KConfig *config)
+  void Sidebar::saveSession (KConfigGroup& config)
   {
     // store the own splitter sizes
     QList<int> s = m_ownSplit->sizes();
-    config->writeEntry (QString ("Kate-MDI-Sidebar-%1-Splitter").arg(position()), s);
+    config.writeEntry (QString ("Kate-MDI-Sidebar-%1-Splitter").arg(position()), s);
 
     // store the data about all toolviews in this sidebar ;)
     for ( int i = 0; i < m_toolviews.size(); ++i )
     {
       ToolView *tv = m_toolviews[i];
 
-      config->writeEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(tv->id), int(tv->sidebar()->position()));
-      config->writeEntry (QString ("Kate-MDI-ToolView-%1-Sidebar-Position").arg(tv->id), i);
-      config->writeEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(tv->id), tv->toolVisible());
-      config->writeEntry (QString ("Kate-MDI-ToolView-%1-Persistent").arg(tv->id), tv->persistent);
+      config.writeEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(tv->id), int(tv->sidebar()->position()));
+      config.writeEntry (QString ("Kate-MDI-ToolView-%1-Sidebar-Position").arg(tv->id), i);
+      config.writeEntry (QString ("Kate-MDI-ToolView-%1-Visible").arg(tv->id), tv->toolVisible());
+      config.writeEntry (QString ("Kate-MDI-ToolView-%1-Persistent").arg(tv->id), tv->persistent);
     }
   }
 
@@ -718,8 +715,8 @@ namespace KateMDI
     // try the restore config to figure out real pos
     if (m_restoreConfig && m_restoreConfig->hasGroup (m_restoreGroup))
     {
-      m_restoreConfig->setGroup (m_restoreGroup);
-      pos = (KMultiTabBar::KMultiTabBarPosition) m_restoreConfig->readEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(identifier), int(pos));
+      KConfigGroup cg(m_restoreConfig, m_restoreGroup);
+      pos = (KMultiTabBar::KMultiTabBarPosition) cg.readEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(identifier), int(pos));
     }
 
     ToolView *v  = m_sidebars[pos]->addWidget (icon, text, 0);
@@ -809,8 +806,8 @@ namespace KateMDI
     // try the restore config to figure out real pos
     if (m_restoreConfig && m_restoreConfig->hasGroup (m_restoreGroup))
     {
-      m_restoreConfig->setGroup (m_restoreGroup);
-      pos = (KMultiTabBar::KMultiTabBarPosition) m_restoreConfig->readEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(widget->id), int(pos));
+      KConfigGroup cg(m_restoreConfig, m_restoreGroup);
+      pos = (KMultiTabBar::KMultiTabBarPosition) cg.readEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(widget->id), int(pos));
     }
 
     m_sidebars[pos]->addWidget (widget->icon, widget->text, widget);
@@ -842,7 +839,7 @@ namespace KateMDI
     return widget->sidebar()->hideWidget (widget);
   }
 
-  void MainWindow::startRestore (KConfig *config, const QString &group)
+  void MainWindow::startRestore (KConfigBase *config, const QString &group)
   {
     // first save this stuff
     m_restoreConfig = config;
@@ -867,14 +864,12 @@ namespace KateMDI
     }
 
     // apply size once, to get sizes ready ;)
-    m_restoreConfig->setGroup (m_restoreGroup);
-    restoreWindowSize (m_restoreConfig);
-
-    m_restoreConfig->setGroup (m_restoreGroup);
+    KConfigGroup cg(m_restoreConfig, m_restoreGroup);
+    restoreWindowSize (cg);
 
     // get main splitter sizes ;)
-    QList<int> hs = m_restoreConfig->readEntry ("Kate-MDI-H-Splitter", QList<int>());
-    QList<int> vs = m_restoreConfig->readEntry ("Kate-MDI-V-Splitter", QList<int>());
+    QList<int> hs = cg.readEntry ("Kate-MDI-H-Splitter", QList<int>());
+    QList<int> vs = cg.readEntry ("Kate-MDI-V-Splitter", QList<int>());
 
     m_sidebars[0]->setLastSize (hs[0]);
     m_sidebars[1]->setLastSize (hs[2]);
@@ -884,9 +879,9 @@ namespace KateMDI
     m_hSplitter->setSizes(hs);
     m_vSplitter->setSizes(vs);
 
-    setToolViewStyle( (KMultiTabBar::KMultiTabBarStyle)m_restoreConfig->readEntry ("Kate-MDI-Sidebar-Style", (int)toolViewStyle()) );
+    setToolViewStyle( (KMultiTabBar::KMultiTabBarStyle)cg.readEntry ("Kate-MDI-Sidebar-Style", (int)toolViewStyle()) );
     // after reading m_sidebarsVisible, update the GUI toggle action
-    m_sidebarsVisible = m_restoreConfig->readEntry ("Kate-MDI-Sidebar-Visible", true );
+    m_sidebarsVisible = cg.readEntry ("Kate-MDI-Sidebar-Visible", true );
     m_guiClient->updateSidebarsVisibleAction();
   }
 
@@ -898,13 +893,13 @@ namespace KateMDI
     if (m_restoreConfig->hasGroup (m_restoreGroup))
     {
       // apply all settings, like toolbar pos and more ;)
-      applyMainWindowSettings(m_restoreConfig, m_restoreGroup);
+      KConfigGroup cg(m_restoreConfig, m_restoreGroup);
+      applyMainWindowSettings(cg);
 
       // reshuffle toolviews only if needed
-      m_restoreConfig->setGroup (m_restoreGroup);
       for ( int i = 0; i < m_toolviews.size(); ++i )
       {
-        KMultiTabBar::KMultiTabBarPosition newPos = (KMultiTabBar::KMultiTabBarPosition) m_restoreConfig->readEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(m_toolviews[i]->id), int(m_toolviews[i]->sidebar()->position()));
+        KMultiTabBar::KMultiTabBarPosition newPos = (KMultiTabBar::KMultiTabBarPosition) cg.readEntry (QString ("Kate-MDI-ToolView-%1-Position").arg(m_toolviews[i]->id), int(m_toolviews[i]->sidebar()->position()));
 
         if (m_toolviews[i]->sidebar()->position() != newPos)
         {
@@ -913,24 +908,18 @@ namespace KateMDI
       }
 
       // restore the sidebars
-      m_restoreConfig->setGroup (m_restoreGroup);
       for (unsigned int i = 0; i < 4; ++i)
-        m_sidebars[i]->restoreSession (m_restoreConfig);
+        m_sidebars[i]->restoreSession (cg);
     }
 
     // clear this stuff, we are done ;)
     m_restoreConfig = 0;
-    m_restoreGroup = "";
+    m_restoreGroup.clear();
   }
 
-  void MainWindow::saveSession (KConfig *config, const QString &group)
+  void MainWindow::saveSession (KConfigGroup& config)
   {
-    if (!config)
-      return;
-
-    saveMainWindowSettings (config, group);
-
-    config->setGroup (group);
+    saveMainWindowSettings (config);
 
     // save main splitter sizes ;)
     QList<int> hs = m_hSplitter->sizes();
@@ -945,12 +934,12 @@ namespace KateMDI
     if (vs[2] <= 2 && !m_sidebars[3]->splitterVisible ())
       vs[2] = m_sidebars[3]->lastSize();
 
-    config->writeEntry ("Kate-MDI-H-Splitter", hs);
-    config->writeEntry ("Kate-MDI-V-Splitter", vs);
+    config.writeEntry ("Kate-MDI-H-Splitter", hs);
+    config.writeEntry ("Kate-MDI-V-Splitter", vs);
 
     // save sidebar style
-    config->writeEntry ("Kate-MDI-Sidebar-Style", (int)toolViewStyle());
-    config->writeEntry ("Kate-MDI-Sidebar-Visible", m_sidebarsVisible );
+    config.writeEntry ("Kate-MDI-Sidebar-Style", (int)toolViewStyle());
+    config.writeEntry ("Kate-MDI-Sidebar-Visible", m_sidebarsVisible );
 
     // save the sidebars
     for (unsigned int i = 0; i < 4; ++i)

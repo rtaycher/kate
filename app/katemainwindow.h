@@ -125,9 +125,9 @@ class KateMainWindow : public KateMDI::MainWindow, virtual public KParts::PartBa
     KateTabWidget *tabWidget ();
 
   public:
-    void readProperties(KConfig *config);
-    void saveProperties(KConfig *config);
-    void saveGlobalProperties( KConfig* sessionConfig );
+    /*reimp*/ void readProperties(const KConfigGroup& config);
+    /*reimp*/ void saveProperties(KConfigGroup& config);
+    /*reimp*/ void saveGlobalProperties( KConfig* sessionConfig );
 
   public:
     bool queryClose_internal();

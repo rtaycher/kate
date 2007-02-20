@@ -3,16 +3,16 @@
    Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2001 Anders Lund <anders.lund@lund.tdcadsl.dk>
    Copyright (C) 2006 Dominik Haumann <dhdev@gmx.de>
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -36,7 +36,7 @@
 #include <KGlobal>
 #include <KLocale>
 #include <KMessageBox>
-#include <KSimpleConfig>
+#include <KConfig>
 #include <kstandardaction.h>
 #include <KStandardDirs>
 #include <KGlobalSettings>
@@ -523,21 +523,18 @@ void KateViewSpaceContainer::slotCloseCurrentViewSpace()
  * session config functions
  */
 
-void KateViewSpaceContainer::saveViewConfiguration(KConfig *config, const QString& group)
+void KateViewSpaceContainer::saveViewConfiguration(KConfigGroup& config)
 {
-  config->setGroup (group);
   // set Active ViewSpace to 0, just in case there is none active (would be
   // strange) and config somehow has previous value set
-  config->writeEntry("Active ViewSpace", 0);
+  config.writeEntry("Active ViewSpace", 0);
 
   m_splitterIndex = 0;
-  saveSplitterConfig( this, config , group);
+  saveSplitterConfig(this, config.config(), config.group());
 }
 
-void KateViewSpaceContainer::restoreViewConfiguration (KConfig *config, const QString& group)
+void KateViewSpaceContainer::restoreViewConfiguration (KConfigGroup& config)
 {
-  config->setGroup(group);
-
   // remove all views and viewspaces + remove their xml gui clients
   for (int i = 0; i < m_viewList.count(); ++i)
     mainWindow()->guiFactory ()->removeClient (m_viewList.at(i));
@@ -549,11 +546,10 @@ void KateViewSpaceContainer::restoreViewConfiguration (KConfig *config, const QS
   m_activeStates.clear();
 
   // start recursion for the root splitter (Splitter 0)
-  restoreSplitter( config, group + "-Splitter 0", this, group );
+  restoreSplitter( config.config(), config.group() + "-Splitter 0", this, config.group() );
 
   // finally, make the correct view from the last session active
-  config->setGroup (group);
-  int lastViewSpace = config->readEntry("Active ViewSpace", 0);
+  int lastViewSpace = config.readEntry("Active ViewSpace", 0);
   if( lastViewSpace > m_viewSpaceList.size() ) lastViewSpace = 0;
   if( lastViewSpace >= 0 && lastViewSpace < m_viewSpaceList.size())
   {
@@ -561,14 +557,14 @@ void KateViewSpaceContainer::restoreViewConfiguration (KConfig *config, const QS
   }
 }
 
-void KateViewSpaceContainer::saveSplitterConfig( QSplitter* s, KConfig* config, const QString& viewConfGrp )
+void KateViewSpaceContainer::saveSplitterConfig( QSplitter* s, KConfigBase* configBase, const QString& viewConfGrp )
 {
   QString grp = QString(viewConfGrp + "-Splitter %1").arg(m_splitterIndex);
-  config->setGroup(grp);
+  KConfigGroup config( configBase, grp );
 
   // Save sizes, orient, children for this splitter
-  config->writeEntry( "Sizes", s->sizes() );
-  config->writeEntry( "Orientation", int(s->orientation()) );
+  config.writeEntry( "Sizes", s->sizes() );
+  config.writeEntry( "Orientation", int(s->orientation()) );
 
   QStringList childList;
   // a QSplitter has two children, either QSplitters and/or KateViewSpaces
@@ -583,12 +579,12 @@ void KateViewSpaceContainer::saveSplitterConfig( QSplitter* s, KConfig* config, 
     if ( kvs )
     {
       n = QString(viewConfGrp + "-ViewSpace %1").arg( m_viewSpaceList.indexOf(kvs) );
-      kvs->saveConfig ( config, m_viewSpaceList.indexOf(kvs), viewConfGrp);
+      kvs->saveConfig ( configBase, m_viewSpaceList.indexOf(kvs), viewConfGrp);
       // save active viewspace
       if ( kvs->isActiveSpace() )
       {
-        config->setGroup(viewConfGrp);
-        config->writeEntry("Active ViewSpace", m_viewSpaceList.indexOf(kvs) );
+        KConfigGroup viewConfGroup(configBase, viewConfGrp);
+        viewConfGroup.writeEntry("Active ViewSpace", m_viewSpaceList.indexOf(kvs) );
       }
     }
     // for QSplitters, recurse
@@ -596,25 +592,23 @@ void KateViewSpaceContainer::saveSplitterConfig( QSplitter* s, KConfig* config, 
     {
       ++m_splitterIndex;
       n = QString(viewConfGrp + "-Splitter %1").arg( m_splitterIndex );
-      saveSplitterConfig( splitter, config, viewConfGrp);
+      saveSplitterConfig( splitter, configBase, viewConfGrp);
     }
 
     childList.append( n );
   }
 
-  // reset config group.
-  config->setGroup(grp);
-  config->writeEntry("Children", childList);
+  config.writeEntry("Children", childList);
 }
 
-void KateViewSpaceContainer::restoreSplitter( KConfig* config, const QString &group,
+void KateViewSpaceContainer::restoreSplitter( KConfigBase* configBase, const QString &group,
     QSplitter* parent, const QString& viewConfGrp)
 {
-  config->setGroup( group );
+  KConfigGroup config( configBase, group );
 
-  parent->setOrientation((Qt::Orientation)config->readEntry("Orientation", int(Qt::Horizontal)));
+  parent->setOrientation((Qt::Orientation)config.readEntry("Orientation", int(Qt::Horizontal)));
 
-  QStringList children = config->readEntry( "Children", QStringList() );
+  QStringList children = config.readEntry( "Children", QStringList() );
   for (QStringList::Iterator it = children.begin(); it != children.end(); ++it)
   {
     // for a viewspace, create it and open all documents therein.
@@ -624,20 +618,19 @@ void KateViewSpaceContainer::restoreSplitter( KConfig* config, const QString &gr
       m_viewSpaceList.append( vs );
       setActiveSpace( vs );
 
-      vs->restoreConfig (this, config, *it);
+      vs->restoreConfig (this, configBase, *it);
       parent->addWidget( vs );
       vs->show();
     }
     else
     {
       // for a splitter, recurse.
-      restoreSplitter( config, *it, new QSplitter( parent ), viewConfGrp );
+      restoreSplitter( configBase, *it, new QSplitter( parent ), viewConfGrp );
     }
   }
 
   // set sizes
-  config->setGroup( group );
-  parent->setSizes( config->readEntry("Sizes", QList<int>()) );
+  parent->setSizes( config.readEntry("Sizes", QList<int>()) );
   parent->show();
 }
 

@@ -40,7 +40,7 @@
 #include <KKeyDialog>
 #include <KListWidget>
 #include <KLocale>
-#include <KSimpleConfig>
+#include <KConfig>
 #include <kstandardaction.h>
 #include <KStandardDirs>
 #include <KWin>

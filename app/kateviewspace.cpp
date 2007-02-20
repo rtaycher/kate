@@ -2,16 +2,16 @@
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2001, 2005 Anders Lund <anders.lund@lund.tdcadsl.dk>
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -97,10 +97,10 @@ void KateViewSpace::addView(KTextEditor::View* v, bool show)
       KateSession::Ptr as = KateSessionManager::self()->activeSession ();
       if ( as->configRead() && as->configRead()->hasGroup( vgroup ) )
       {
-        as->configRead()->setGroup( vgroup );
+        KConfigGroup cg( as->configRead(), vgroup );
 
         if (KTextEditor::SessionConfigInterface *iface = qobject_cast<KTextEditor::SessionConfigInterface *>(v))
-          iface->readSessionConfig ( as->configRead() );
+          iface->readSessionConfig ( cg );
       }
     }
   }
@@ -206,7 +206,7 @@ bool KateViewSpace::event( QEvent *e )
   return KVBox::event( e );
 }
 
-void KateViewSpace::saveConfig ( KConfig* config, int myIndex , const QString& viewConfGrp)
+void KateViewSpace::saveConfig ( KConfigBase* config, int myIndex , const QString& viewConfGrp)
 {
 //   kDebug()<<"KateViewSpace::saveConfig("<<myIndex<<", "<<viewConfGrp<<") - currentView: "<<currentView()<<")"<<endl;
   QString group = QString(viewConfGrp + "-ViewSpace %1").arg( myIndex );
@@ -229,17 +229,17 @@ void KateViewSpace::saveConfig ( KConfig* config, int myIndex , const QString& v
 
       // view config, group: "ViewSpace <n> url"
       QString vgroup = QString("%1 %2").arg(group).arg((*it)->document()->url().prettyUrl());
-      config->setGroup( vgroup );
+      KConfigGroup configGroup( config, vgroup );
 
       if (KTextEditor::SessionConfigInterface *iface = qobject_cast<KTextEditor::SessionConfigInterface *>(*it))
-        iface->writeSessionConfig( config );
+        iface->writeSessionConfig( configGroup );
     }
 
     ++idx;
   }
 }
 
-void KateViewSpace::restoreConfig ( KateViewSpaceContainer *viewMan, KConfig* config, const QString &group )
+void KateViewSpace::restoreConfig ( KateViewSpaceContainer *viewMan, KConfigBase* config, const QString &group )
 {
   config->setGroup (group);
   QString fn = config->readEntry( "Active View" );
@@ -252,14 +252,14 @@ void KateViewSpace::restoreConfig ( KateViewSpaceContainer *viewMan, KConfig* co
     {
       // view config, group: "ViewSpace <n> url"
       QString vgroup = QString("%1 %2").arg(group).arg(fn);
-      config->setGroup( vgroup );
+      KConfigGroup configGroup( config, vgroup );
 
       viewMan->createView (doc);
 
       KTextEditor::View *v = viewMan->activeView ();
 
       if (KTextEditor::SessionConfigInterface *iface = qobject_cast<KTextEditor::SessionConfigInterface *>(v))
-        iface->readSessionConfig( config );
+        iface->readSessionConfig( configGroup );
     }
   }
 

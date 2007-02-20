@@ -59,7 +59,7 @@ class KatePluginManager : public QObject
 
     void unloadAllPlugins ();
 
-    void enableAllPluginsGUI (KateMainWindow *win, KConfig *config = 0);
+    void enableAllPluginsGUI (KateMainWindow *win, KConfigBase *config = 0);
     void disableAllPluginsGUI (KateMainWindow *win);
 
     void loadConfig (KConfig*);
@@ -68,7 +68,7 @@ class KatePluginManager : public QObject
     void loadPlugin (KatePluginInfo *item);
     void unloadPlugin (KatePluginInfo *item);
 
-    void enablePluginGUI (KatePluginInfo *item, KateMainWindow *win, KConfig *config = 0);
+    void enablePluginGUI (KatePluginInfo *item, KateMainWindow *win, KConfigBase *config = 0);
     void enablePluginGUI (KatePluginInfo *item);
 
     void disablePluginGUI (KatePluginInfo *item, KateMainWindow *win);

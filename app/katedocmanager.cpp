@@ -1,16 +1,16 @@
 /* This file is part of the KDE project
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2002 Joseph Wenninger <jowenn@kde.org>
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -68,7 +68,7 @@ KateDocManager::KateDocManager (QObject *parent)
   m_dbusObjectPath = "/KateDocumentManager";
   QDBusConnection::sessionBus().registerObject( m_dbusObjectPath, this );
 
-  m_metaInfos = new KConfig("metainfos", false, false, "appdata");
+  m_metaInfos = new KConfig("appdata", "metainfos", KConfig::NoGlobals );
 
   createDoc ();
 }
@@ -88,9 +88,9 @@ KateDocManager::~KateDocManager ()
     // purge saved filesessions
     if (m_daysMetaInfos > 0)
     {
-      QStringList groups = m_metaInfos->groupList();
+      const QStringList groups = m_metaInfos->groupList();
       QDateTime def(QDate(1970, 1, 1));
-      for (QStringList::Iterator it = groups.begin(); it != groups.end(); ++it)
+      for (QStringList::const_iterator it = groups.begin(); it != groups.end(); ++it)
       {
         m_metaInfos->setGroup(*it);
         QDateTime last = m_metaInfos->readEntry("Time", def);
@@ -410,38 +410,29 @@ void KateDocManager::saveAll()
 
 void KateDocManager::saveDocumentList (KConfig* config)
 {
-  QString prevGrp = config->group();
-  config->setGroup ("Open Documents");
-  QString grp = config->group();
+  KConfigGroup openDocGroup(config, "Open Documents");
 
-  config->writeEntry ("Count", m_docList.count());
+  openDocGroup.writeEntry ("Count", m_docList.count());
 
   int i = 0;
   foreach ( KTextEditor::Document *doc, m_docList)
   {
-    config->setGroup(QString("Document %1").arg(i));
+    KConfigGroup cg( config, QString("Document %1").arg(i) );
 
     if (KTextEditor::SessionConfigInterface *iface = qobject_cast<KTextEditor::SessionConfigInterface *>(doc))
-      iface->writeSessionConfig(config);
-    config->setGroup(grp);
+      iface->writeSessionConfig(cg);
 
     i++;
   }
-
-  config->setGroup(prevGrp);
 }
 
 void KateDocManager::restoreDocumentList (KConfig* config)
 {
-  QString prevGrp = config->group();
-  config->setGroup ("Open Documents");
-  QString grp = config->group();
-
-  unsigned int count = config->readEntry("Count", 0);
+  KConfigGroup openDocGroup(config, "Open Documents");
+  unsigned int count = openDocGroup.readEntry("Count", 0);
 
   if (count == 0)
   {
-    config->setGroup(prevGrp);
     return;
   }
 
@@ -458,7 +449,7 @@ void KateDocManager::restoreDocumentList (KConfig* config)
   m_openingErrors.clear();
   for (unsigned int i = 0; i < count; i++)
   {
-    config->setGroup(QString("Document %1").arg(i));
+    KConfigGroup cg( config, QString("Document %1").arg(i));
     KTextEditor::Document *doc = 0;
 
     if (first)
@@ -472,15 +463,12 @@ void KateDocManager::restoreDocumentList (KConfig* config)
     connect(doc, SIGNAL(completed()), this, SLOT(documentOpened()));
     connect(doc, SIGNAL(canceled(const QString&)), this, SLOT(documentOpened()));
     if (KTextEditor::SessionConfigInterface *iface = qobject_cast<KTextEditor::SessionConfigInterface *>(doc))
-      iface->readSessionConfig(config);
-    config->setGroup (grp);
+      iface->readSessionConfig(cg);
 
     pd->progressBar()->setValue(pd->progressBar()->value() + 1);
   }
   m_restoringDocumentList = false;
   delete pd;
-
-  config->setGroup(prevGrp);
 }
 
 void KateDocManager::slotModifiedOnDisc (KTextEditor::Document *doc, bool b, KTextEditor::ModificationInterface::ModifiedOnDiskReason reason)
@@ -509,17 +497,17 @@ bool KateDocManager::loadMetaInfos(KTextEditor::Document *doc, const KUrl &url)
 
   if (computeUrlMD5(url, md5))
   {
-    m_metaInfos->setGroup(url.prettyUrl());
-    QString old_md5 = m_metaInfos->readEntry("MD5");
+    KConfigGroup urlGroup( m_metaInfos, url.prettyUrl() );
+    const QString old_md5 = urlGroup.readEntry("MD5");
 
     if ((const char *)md5 == old_md5)
     {
       if (KTextEditor::SessionConfigInterface *iface = qobject_cast<KTextEditor::SessionConfigInterface *>(doc))
-        iface->readSessionConfig(m_metaInfos);
+        iface->readSessionConfig(urlGroup);
     }
     else
     {
-      m_metaInfos->deleteGroup(url.prettyUrl());
+      urlGroup.deleteGroup();
       ok = false;
     }
 
@@ -547,13 +535,13 @@ void KateDocManager::saveMetaInfos(KTextEditor::Document *doc)
 
   if (computeUrlMD5(doc->url(), md5))
   {
-    m_metaInfos->setGroup(doc->url().prettyUrl());
+    KConfigGroup urlGroup( m_metaInfos, doc->url().prettyUrl() );
 
     if (KTextEditor::SessionConfigInterface *iface = qobject_cast<KTextEditor::SessionConfigInterface *>(doc))
-      iface->writeSessionConfig(m_metaInfos);
+      iface->writeSessionConfig(urlGroup);
 
-    m_metaInfos->writeEntry("MD5", (const char *)md5);
-    m_metaInfos->writeEntry("Time", QDateTime::currentDateTime());
+    urlGroup.writeEntry("MD5", (const char *)md5);
+    urlGroup.writeEntry("Time", QDateTime::currentDateTime());
     m_metaInfos->sync();
   }
 }
@@ -609,15 +597,15 @@ void KateDocManager::slotModChanged1(KTextEditor::Document * doc)
       static QPixmap modPm = SmallIcon("modified");
       static QPixmap discPm = SmallIcon("modonhd");
       static QPixmap modmodPm = SmallIcon("modmod");
-   
+
       const KateDocumentInfo *info = KateDocManager::self()->documentInfo(doc);
-   
+
       if (info && info->modifiedOnDisc)
         return doc->isModified() ? &modmodPm : &discPm;
       else
         return doc->isModified() ? &modPm : &noPm;
     }
-   
+
     return 0; */
 }
 

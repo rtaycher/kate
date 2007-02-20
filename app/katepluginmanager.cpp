@@ -134,7 +134,7 @@ void KatePluginManager::unloadAllPlugins ()
   }
 }
 
-void KatePluginManager::enableAllPluginsGUI (KateMainWindow *win, KConfig *config)
+void KatePluginManager::enableAllPluginsGUI (KateMainWindow *win, KConfigBase *config)
 {
   for (KatePluginList::iterator it = m_pluginList.begin();it != m_pluginList.end(); ++it)
   {
@@ -169,7 +169,7 @@ void KatePluginManager::unloadPlugin (KatePluginInfo *item)
   item->plugin = 0L;
 }
 
-void KatePluginManager::enablePluginGUI (KatePluginInfo *item, KateMainWindow *win, KConfig *config)
+void KatePluginManager::enablePluginGUI (KatePluginInfo *item, KateMainWindow *win, KConfigBase *config)
 {
   // plugin around at all?
   if (!item->plugin)

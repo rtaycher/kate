@@ -744,8 +744,7 @@ void KFSConfigPage::apply()
 
   m_changed = false;
 
-  KSharedConfig::Ptr config = KGlobal::config();
-  config->setGroup( "fileselector" );
+  KConfigGroup config(KGlobal::config(), "fileselector");
   // toolbar
   QStringList l;
   ActionLBItem *aItem;
@@ -755,8 +754,8 @@ void KFSConfigPage::apply()
     aItem = (ActionLBItem*)item;
     l << aItem->idstring();
   }
-  config->writeEntry( "toolbar actions", l );
-  fileSelector->setupToolbar(config.data());
+  config.writeEntry( "toolbar actions", l );
+  fileSelector->setupToolbar(KGlobal::config().data());
   // sync
   int s = 0;
   if ( cbSyncActive->isChecked() )
@@ -770,8 +769,8 @@ void KFSConfigPage::apply()
   fileSelector->filter->setMaxCount( sbFilterHistLength->value() );
   // session - these are read/written directly to the app config,
   //           as they are not needed during operation.
-  config->writeEntry( "restore location", cbSesLocation->isChecked() );
-  config->writeEntry( "restore last filter", cbSesFilter->isChecked() );
+  config.writeEntry( "restore location", cbSesLocation->isChecked() );
+  config.writeEntry( "restore last filter", cbSesFilter->isChecked() );
 }
 
 void KFSConfigPage::reset()
@@ -782,10 +781,9 @@ void KFSConfigPage::reset()
 }
 void KFSConfigPage::init()
 {
-  KSharedConfig::Ptr config = KGlobal::config();
-  config->setGroup( "fileselector" );
+  KConfigGroup config(KGlobal::config(), "fileselector");
   // toolbar
-  QStringList l = config->readEntry( "toolbar actions", QStringList(), ',' );
+  QStringList l = config.readEntry( "toolbar actions", QStringList(), ',' );
   if ( l.isEmpty() ) // default toolbar
     l << "up" << "back" << "forward" << "home" <<
     "short view" << "detailed view" <<
@@ -820,8 +818,8 @@ void KFSConfigPage::init()
   sbPathHistLength->setValue( fileSelector->cmbPath->maxItems() );
   sbFilterHistLength->setValue( fileSelector->filter->maxCount() );
   // session
-  cbSesLocation->setChecked( config->readEntry( "restore location", true) );
-  cbSesFilter->setChecked( config->readEntry( "restore last filter", true) );
+  cbSesLocation->setChecked( config.readEntry( "restore location", true) );
+  cbSesFilter->setChecked( config.readEntry( "restore last filter", true) );
 }
 
 void KFSConfigPage::slotMyChanged()

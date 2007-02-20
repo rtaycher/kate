@@ -1,15 +1,15 @@
 /* This file is part of the KDE project
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -74,10 +74,10 @@ namespace Kate
     return 0;
   }
 
-  void Plugin::readSessionConfig (KConfig*, const QString&)
+  void Plugin::readSessionConfig (KConfigBase*, const QString&)
   {}
 
-  void Plugin::writeSessionConfig (KConfig*, const QString&)
+  void Plugin::writeSessionConfig (KConfigBase*, const QString&)
   {}
 
   PluginView::PluginView (MainWindow *mainWindow)
@@ -97,10 +97,10 @@ namespace Kate
     return d->mainWindow;
   }
 
-  void PluginView::readSessionConfig (KConfig*, const QString&)
+  void PluginView::readSessionConfig (KConfigBase*, const QString&)
   {}
 
-  void PluginView::writeSessionConfig (KConfig*, const QString&)
+  void PluginView::writeSessionConfig (KConfigBase*, const QString&)
   {}
 
 }

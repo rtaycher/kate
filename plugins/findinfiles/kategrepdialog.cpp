@@ -3,16 +3,16 @@
    Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2001, 2004 Anders Lund <anders.lund@lund.tdcadsl.dk>
    Copyright (C) 2007 Dominik Haumann <dhaumann@kde.org>
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -130,7 +130,7 @@ KateGrepDialog::~KateGrepDialog()
   killThread ();
 }
 
-void KateGrepDialog::readSessionConfig (KConfig* config)
+void KateGrepDialog::readSessionConfig (const KConfigGroup& config)
 {
   // first clear everything (could be session switch)
   cmbPattern->clear();
@@ -138,9 +138,9 @@ void KateGrepDialog::readSessionConfig (KConfig* config)
   cmbFiles->clear();
 
   // now restore new session settings
-  lastSearchItems = config->readEntry("LastSearchItems", QStringList());
-  lastSearchPaths = config->readEntry("LastSearchPaths", QStringList());
-  lastSearchFiles = config->readEntry("LastSearchFiles", QStringList());
+  lastSearchItems = config.readEntry("LastSearchItems", QStringList());
+  lastSearchPaths = config.readEntry("LastSearchPaths", QStringList());
+  lastSearchFiles = config.readEntry("LastSearchFiles", QStringList());
 
   if( lastSearchFiles.isEmpty() )
   {
@@ -155,21 +155,21 @@ void KateGrepDialog::readSessionConfig (KConfig* config)
   cmbPattern->insertItems(0, lastSearchItems);
   cmbPattern->setEditText(QString());
 
-  cbCasesensitive->setChecked(config->readEntry("CaseSensitive", true));
-  cbRecursive->setChecked(config->readEntry("Recursive", true));
+  cbCasesensitive->setChecked(config.readEntry("CaseSensitive", true));
+  cbRecursive->setChecked(config.readEntry("Recursive", true));
 
   cmbDir->comboBox()->insertItems(0, lastSearchPaths);
   cmbFiles->insertItems(0, lastSearchFiles);
 }
 
-void KateGrepDialog::writeSessionConfig (KConfig* config)
+void KateGrepDialog::writeSessionConfig (KConfigGroup& config)
 {
-  config->writeEntry("LastSearchItems", lastSearchItems);
-  config->writeEntry("LastSearchPaths", lastSearchPaths);
-  config->writeEntry("LastSearchFiles", lastSearchFiles);
+  config.writeEntry("LastSearchItems", lastSearchItems);
+  config.writeEntry("LastSearchPaths", lastSearchPaths);
+  config.writeEntry("LastSearchFiles", lastSearchFiles);
 
-  config->writeEntry("Recursive", cbRecursive->isChecked());
-  config->writeEntry("CaseSensitive", cbCasesensitive->isChecked());
+  config.writeEntry("Recursive", cbRecursive->isChecked());
+  config.writeEntry("CaseSensitive", cbCasesensitive->isChecked());
 }
 
 void KateGrepDialog::killThread ()

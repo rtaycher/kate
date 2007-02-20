@@ -22,7 +22,7 @@
 #include "katemain.h"
 
 #include <KDialog>
-#include <KSimpleConfig>
+#include <KConfig>
 #include <KSharedPtr>
 #include <KActionMenu>
 
@@ -164,12 +164,12 @@ class KateSession  : public KShared
     /**
      * simpleconfig to read from
      */
-    KSimpleConfig *m_readConfig;
+    KConfig *m_readConfig;
 
     /**
      * simpleconfig to write to
      */
-    KSimpleConfig *m_writeConfig;
+    KConfig *m_writeConfig;
 
 };
 

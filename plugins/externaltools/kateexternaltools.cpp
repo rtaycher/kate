@@ -1,20 +1,20 @@
 /*
    This file is part of the Kate text editor of the KDE project.
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
- 
+
    ---
    Copyright (C) 2004, Anders Lund <anders@alweb.dk>
 */
@@ -36,6 +36,7 @@
 #include <KRun>
 #include <KIconDialog>
 #include <KMenu>
+#include <KSharedConfig>
 #include <kdebug.h>
 
 #include <QComboBox>
@@ -152,8 +153,8 @@ void KateExternalToolsCommand::reload ()
   m_map.clear();
   m_name.clear();
 
-  KConfig config("externaltools", false, false, "appdata");
-  config.setGroup("Global");
+  KConfig _config( "appdata", "externaltools", KConfig::NoGlobals  );
+  KConfigGroup config(&_config, "Global");
   QStringList tools = config.readEntry("tools", QStringList());
 
 
@@ -163,7 +164,7 @@ void KateExternalToolsCommand::reload ()
       continue;
 
 
-    config.setGroup( *it );
+    config.changeGroup( *it );
 
     KateExternalTool t = KateExternalTool(
                            config.readEntry( "name", "" ),
@@ -332,21 +333,21 @@ void KateExternalToolsMenuAction::reload()
   menu()->clear();
 
   // load all the tools, and create a action for each of them
-  KConfig *config = new KConfig( "externaltools", false, false, "appdata" );
-  config->setGroup( "Global" );
-  QStringList tools = config->readEntry( "tools", QStringList() );
+  KSharedConfig::Ptr pConfig = KSharedConfig::openConfig( "externaltools", KConfig::NoGlobals, "appdata" );
+  KConfigGroup config(pConfig, "Global" );
+  QStringList tools = config.readEntry( "tools", QStringList() );
 
   // if there are tools that are present but not explicitly removed,
   // add them to the end of the list
-  config->setReadDefaults( true );
-  QStringList dtools = config->readEntry( "tools", QStringList() );
-  int gver = config->readEntry( "version", 1 );
-  config->setReadDefaults( false );
+  pConfig->setReadDefaults( true );
+  QStringList dtools = config.readEntry( "tools", QStringList() );
+  int gver = config.readEntry( "version", 1 );
+  pConfig->setReadDefaults( false );
 
-  int ver = config->readEntry( "version", 0 );
+  int ver = config.readEntry( "version", 0 );
   if ( ver <= gver )
   {
-    QStringList removed = config->readEntry( "removed", QStringList() );
+    QStringList removed = config.readEntry( "removed", QStringList() );
     bool sepadded = false;
     for (QStringList::iterator itg = dtools.begin(); itg != dtools.end(); ++itg )
     {
@@ -362,9 +363,9 @@ void KateExternalToolsMenuAction::reload()
       }
     }
 
-    config->writeEntry( "tools", tools );
-    config->sync();
-    config->writeEntry( "version", gver );
+    config.writeEntry( "tools", tools );
+    config.sync();
+    config.writeEntry( "version", gver );
   }
 
   for( QStringList::Iterator it = tools.begin(); it != tools.end(); ++it )
@@ -376,17 +377,17 @@ void KateExternalToolsMenuAction::reload()
       continue;
     }
 
-    config->setGroup( *it );
+    config.changeGroup( *it );
 
     KateExternalTool *t = new KateExternalTool(
-                            config->readEntry( "name", "" ),
-                            config->readEntry( "command", ""),
-                            config->readEntry( "icon", ""),
-                            config->readEntry( "executable", ""),
-                            config->readEntry( "mimetypes", QStringList() ),
-                            config->readEntry( "acname", "" ),
-                            config->readEntry( "cmdname", "" ),
-                            config->readEntry( "save", 0 ) );
+                            config.readEntry( "name", "" ),
+                            config.readEntry( "command", ""),
+                            config.readEntry( "icon", ""),
+                            config.readEntry( "executable", ""),
+                            config.readEntry( "mimetypes", QStringList() ),
+                            config.readEntry( "acname", "" ),
+                            config.readEntry( "cmdname", "" ),
+                            config.readEntry( "save", 0 ) );
 
     if ( t->hasexec )
     {
@@ -398,10 +399,9 @@ void KateExternalToolsMenuAction::reload()
       delete t;
   }
 
-  m_actionCollection->setConfigGroup( "Shortcuts" );
-  m_actionCollection->readSettings( config );
+  config.changeGroup( "Shortcuts");
+  m_actionCollection->readSettings( &config );
   slotDocumentChanged();
-  delete config;
 }
 
 void KateExternalToolsMenuAction::slotDocumentChanged()
@@ -654,7 +654,7 @@ KateExternalToolsConfigWidget::KateExternalToolsConfigWidget( QWidget *parent, c
   lbTools->setWhatsThis(i18n(
                           "This list shows all the configured tools, represented by their menu text.") );
 
-  config = new KConfig("externaltools", false, false, "appdata");
+  config = new KConfig("appdata", "externaltools", KConfig::NoGlobals );
   reset();
   slotSelectionChanged();
 }

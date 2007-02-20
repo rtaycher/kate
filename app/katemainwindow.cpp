@@ -59,7 +59,7 @@
 #include <KOpenWithDialog>
 #include <KMenu>
 #include <KRecentFilesAction>
-#include <KSimpleConfig>
+#include <KConfig>
 #include <KStatusBar>
 #include <kstandardaction.h>
 #include <KStandardDirs>
@@ -190,7 +190,7 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
   readOptions();
 
   if (sconfig)
-    m_viewManager->restoreViewConfiguration (sconfig, sgroup);
+    m_viewManager->restoreViewConfiguration (KConfigGroup(sconfig, sgroup) );
 
   finishRestore ();
 
@@ -200,8 +200,7 @@ KateMainWindow::KateMainWindow (KConfig *sconfig, const QString &sgroup)
 KateMainWindow::~KateMainWindow()
 {
   // first, save our fallback window size ;)
-  KGlobal::config()->setGroup ("MainWindow");
-  saveWindowSize (KGlobal::config().data());
+  saveWindowSize (KConfigGroup(KGlobal::config(), "MainWindow"));
 
   // save other options ;=)
   saveOptions();
@@ -456,7 +455,7 @@ void KateMainWindow::newWindow ()
 
 void KateMainWindow::slotEditToolbars()
 {
-  saveMainWindowSettings(KGlobal::config().data(), "MainWindow");
+  saveMainWindowSettings(KConfigGroup(KGlobal::config(), "MainWindow"));
   KEditToolbar dlg( factory() );
 
   connect( &dlg, SIGNAL(newToolbarConfig()), this, SLOT(slotNewToolbarConfig()) );
@@ -465,7 +464,7 @@ void KateMainWindow::slotEditToolbars()
 
 void KateMainWindow::slotNewToolbarConfig()
 {
-  applyMainWindowSettings(KGlobal::config().data(), "MainWindow");
+  applyMainWindowSettings(KConfigGroup(KGlobal::config(), "MainWindow"));
 }
 
 void KateMainWindow::slotFileQuit()
@@ -477,15 +476,15 @@ void KateMainWindow::readOptions ()
 {
   KSharedConfig::Ptr config = KGlobal::config();
 
-  config->setGroup("General");
-  modNotification = config->readEntry("Modified Notification", false);
-  KateDocManager::self()->setSaveMetaInfos(config->readEntry("Save Meta Infos", true));
-  KateDocManager::self()->setDaysMetaInfos(config->readEntry("Days Meta Infos", 30));
+  const KConfigGroup generalGroup(config, "General");
+  modNotification = generalGroup.readEntry("Modified Notification", false);
+  KateDocManager::self()->setSaveMetaInfos(generalGroup.readEntry("Save Meta Infos", true));
+  KateDocManager::self()->setDaysMetaInfos(generalGroup.readEntry("Days Meta Infos", 30));
 
-  m_paShowPath->setChecked (config->readEntry("Show Full Path in Title", false));
-  m_paShowStatusBar->setChecked (config->readEntry("Show Status Bar", true));
+  m_paShowPath->setChecked (generalGroup.readEntry("Show Full Path in Title", false));
+  m_paShowStatusBar->setChecked (generalGroup.readEntry("Show Status Bar", true));
 
-  fileOpenRecent->loadEntries(config.data(), "Recent Files");
+  fileOpenRecent->loadEntries(KConfigGroup(config, "Recent Files"));
 
   // emit signal to hide/show statusbars
   toggleShowStatusBar ();
@@ -495,16 +494,16 @@ void KateMainWindow::saveOptions ()
 {
   KSharedConfig::Ptr config = KGlobal::config();
 
-  config->setGroup("General");
+  KConfigGroup generalGroup(config, "General");
 
-  config->writeEntry("Save Meta Infos", KateDocManager::self()->getSaveMetaInfos());
+  generalGroup.writeEntry("Save Meta Infos", KateDocManager::self()->getSaveMetaInfos());
 
-  config->writeEntry("Days Meta Infos", KateDocManager::self()->getDaysMetaInfos());
+  generalGroup.writeEntry("Days Meta Infos", KateDocManager::self()->getDaysMetaInfos());
 
-  config->writeEntry("Show Full Path in Title", m_paShowPath->isChecked());
-  config->writeEntry("Show Status Bar", m_paShowStatusBar->isChecked());
+  generalGroup.writeEntry("Show Full Path in Title", m_paShowPath->isChecked());
+  generalGroup.writeEntry("Show Status Bar", m_paShowStatusBar->isChecked());
 
-  fileOpenRecent->saveEntries(config.data(), "Recent Files");
+  fileOpenRecent->saveEntries(KConfigGroup(config, "Recent Files"));
 #ifdef __GNUC__
 #warning PORTME
 #endif
@@ -864,40 +863,33 @@ void KateMainWindow::updateCaption (KTextEditor::Document *doc)
               m_viewManager->activeView()->document()->isModified());
 }
 
-void KateMainWindow::saveProperties(KConfig *config)
+void KateMainWindow::saveProperties(KConfigGroup& config)
 {
-  QString grp = config->group();
-
-  saveSession(config, grp);
+  saveSession(config);
 
   // store all plugin view states
   int id = KateApp::self()->mainWindowID (this);
   foreach(const KatePluginInfo &item, KatePluginManager::self()->pluginList())
   {
-    if (item.plugin && pluginViews().value(item.plugin))
-      pluginViews().value(item.plugin)->writeSessionConfig (config,
-        QString("Plugin:%1:MainWindow:%2").arg(item.saveName()).arg(id));
+      if (item.plugin && pluginViews().value(item.plugin)) {
+          pluginViews().value(item.plugin)->writeSessionConfig (config.config(),
+              QString("Plugin:%1:MainWindow:%2").arg(item.saveName()).arg(id) );
+      }
   }
 
-  m_viewManager->saveViewConfiguration (config, grp);
-
-  config->setGroup(grp);
+  m_viewManager->saveViewConfiguration (config);
 }
 
-void KateMainWindow::readProperties(KConfig *config)
+void KateMainWindow::readProperties(const KConfigGroup& config)
 {
-  QString grp = config->group();
-
-  startRestore(config, grp);
+  startRestore(config.config(), config.group());
 
   // perhaps enable plugin guis
-  KatePluginManager::self()->enableAllPluginsGUI (this, config);
+  KatePluginManager::self()->enableAllPluginsGUI (this, config.config());
 
   finishRestore ();
 
-  m_viewManager->restoreViewConfiguration (config, grp);
-
-  config->setGroup(grp);
+  m_viewManager->restoreViewConfiguration (config);
 }
 
 void KateMainWindow::saveGlobalProperties( KConfig* sessionConfig )
