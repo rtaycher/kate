@@ -1,3 +1,6 @@
+#ifndef ARTISTICCOMMENT_H
+#define ARTISTICCOMMENT_H
+
 #include <QString>
 
 struct ArtisticComment
@@ -9,6 +12,16 @@ struct ArtisticComment
     size_t minfill;
     size_t realWidth;
     bool truncate;
-    enum { LeftNoFill, Left, Center, Right } type;
+    enum type_t { LeftNoFill, Left, Center, Right } type;
+    ArtisticComment() {}
+    ArtisticComment(QString begin, QString end,
+                    QString lineBegin, QString lineEnd,
+                    QString textBegin, QString textEnd,
+                    QChar lfill, QChar rfill,
+                    size_t minfill, size_t realWidth,
+                    bool truncate, type_t);
     QString apply(const QString& text);
 };
+
+#endif
+

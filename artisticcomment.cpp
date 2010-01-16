@@ -43,6 +43,22 @@ static QList<QString> explode(QString str, size_t max)
     return ret;
 }
 
+ArtisticComment::ArtisticComment(
+                    QString begin, QString end,
+                    QString lineBegin, QString lineEnd,
+                    QString textBegin, QString textEnd,
+                    QChar lfill, QChar rfill,
+                    size_t minfill, size_t realWidth,
+                    bool truncate, type_t type)
+    : begin(begin), end(end),
+      lineBegin(lineBegin), lineEnd(lineEnd),
+      textBegin(textBegin), textEnd(textEnd),
+      lfill(lfill), rfill(rfill),
+      minfill(minfill), realWidth(realWidth),
+      truncate(truncate), type(type)
+{
+}
+
 QString ArtisticComment::apply(const QString& text)
 {
     size_t textWidth = realWidth - lineBegin.size() - lineEnd.size() - textBegin.size() - textEnd.size() - minfill;
