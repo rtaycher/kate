@@ -22,4 +22,6 @@ install(FILES acommentui.rc DESTINATION ${DATA_INSTALL_DIR}/ktexteditor_acomment
 
 install(FILES ktexteditor_acomment.desktop DESTINATION ${SERVICES_INSTALL_DIR})
 
+install(FILES ktexteditor_acommentrc DESTINATION ${CONFIG_INSTALL_DIR})
+
 install(FILES artisticcomment.h DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)

@@ -5,34 +5,37 @@
 
 namespace KTextEditor
 {
-	class View;
+class View;
 }
 
 #include "artisticcomment.h"
 
 #include <QMap>
 
+#include <KSharedConfig>
+
 class ACommentView;
 
 class ACommentPlugin
-  : public KTextEditor::Plugin
+            : public KTextEditor::Plugin
 {
-  public:
+public:
     // Constructor
     explicit ACommentPlugin(QObject *parent = 0, const QVariantList &args = QVariantList());
     // Destructor
     virtual ~ACommentPlugin();
 
-    void addView (KTextEditor::View *view);
-    void removeView (KTextEditor::View *view);
- 
+    void addView(KTextEditor::View *view);
+    void removeView(KTextEditor::View *view);
+
     void readConfig();
     void writeConfig();
- 
+
 //     void readConfig (KConfig *);
 //     void writeConfig (KConfig *);
- 
-  private:
+
+private:
+    KSharedConfigPtr m_config;
     QMap<QString, ArtisticComment> m_styles;
     QList<class ACommentView*> m_views;
     static ACommentPlugin *instance;

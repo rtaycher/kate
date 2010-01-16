@@ -4,6 +4,8 @@
 #include <QObject>
 #include <KXMLGUIClient>
 
+class QAction;
+
 class ACommentView : public QObject, public KXMLGUIClient
 {
 	Q_OBJECT
@@ -11,7 +13,7 @@ class ACommentView : public QObject, public KXMLGUIClient
 		explicit ACommentView(KTextEditor::View *view = 0);
 		~ACommentView();
 	private slots:
-		void insertAComment();
+		void insertAComment(QAction *action);
 	private:
 		KTextEditor::View *m_view;
 };
