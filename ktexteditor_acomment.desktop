@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type=Service
-Comment=AComment
-Name=AComment
-GenericName=AComment
+Comment=Format long source-code comments like license-headers or descriptions using different styles
+Name=Artistic Comment
+GenericName=Format comments in an "artistic" way
 Icon=kate
 ServiceTypes=KTextEditor/Plugin
 X-KDE-ServiceTypes=KTextEditor/Plugin
