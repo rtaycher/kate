@@ -28,7 +28,7 @@ struct ArtisticComment
     size_t minfill;
     size_t realWidth;
     bool truncate;
-    enum type_t { LeftNoFill, Left, Center, Right } type;
+    enum type_t { Left, Center, Right, LeftNoFill } type;
     ArtisticComment() {}
     ArtisticComment(QString begin, QString end,
                     QString lineBegin, QString lineEnd,

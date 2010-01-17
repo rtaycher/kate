@@ -4,6 +4,7 @@
  <Menu name="tools"><Text>&amp;Tools</Text>
     <separator group="tools_operations" />
     <Action name="tools_acomment" group="tools_operations"/>
+    <Action name="tools_acomment_config" group="tools_operations"/>
  </Menu>
 </MenuBar>
 </kpartplugin>

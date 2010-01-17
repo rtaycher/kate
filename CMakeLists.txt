@@ -7,6 +7,7 @@ include_directories(${KDE4_INCLUDES})
 
 set(acomment_SRCS artisticcomment.cpp)
 set(ktexteditor_acomment_SRCS acommentplugin.cpp)
+kde4_add_ui_files(ktexteditor_acomment_SRCS styledialog.ui)
 
 add_library(acomment STATIC ${acomment_SRCS})
 kde4_add_plugin(ktexteditor_acomment ${ktexteditor_acomment_SRCS})

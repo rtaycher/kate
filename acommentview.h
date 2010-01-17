@@ -21,17 +21,27 @@
 #include <KXMLGUIClient>
 
 class QAction;
+class KMenu;
+class KDialog;
+
+#include "ui_styledialog.h"
 
 class ACommentView : public QObject, public KXMLGUIClient
 {
-	Q_OBJECT
-	public:
-		explicit ACommentView(KTextEditor::View *view = 0);
-		~ACommentView();
-	private slots:
-		void insertAComment(QAction *action);
-	private:
-		KTextEditor::View *m_view;
+    Q_OBJECT
+public:
+    explicit ACommentView(KTextEditor::View *view = 0);
+    ~ACommentView();
+private slots:
+    void insertAComment(QAction *action);
+    void disableOptions(int type);
+    void loadStyle(QString name);
+    void changeEntry();
+private:
+    KTextEditor::View *m_view;
+    KMenu *m_menu;
+    KDialog *m_dialog;
+    Ui::StyleDialog m_ui;
 };
 
 #endif

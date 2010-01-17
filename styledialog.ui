@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>StyleDialog</class>
+ <widget class="QWidget" name="StyleDialog">
+  <property name="modal" stdset="0">
+   <bool>false</bool>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>279</width>
+    <height>318</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Artistic Comment</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_3">
+   <item>
+    <widget class="KComboBox" name="name">
+     <property name="editable">
+      <bool>true</bool>
+     </property>
+     <property name="autoCompletion">
+      <bool>false</bool>
+     </property>
+     <property name="trapReturnKey">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="KComboBox" name="type">
+     <item>
+      <property name="text">
+       <string>Left-aligned</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Centered</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Right-aligned</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>No filling</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item>
+    <widget class="KLineEdit" name="begin">
+     <property name="urlDropsEnabled">
+      <bool>false</bool>
+     </property>
+     <property name="clickMessage">
+      <string>Begin</string>
+     </property>
+     <property name="showClearButton" stdset="0">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="KLineEdit" name="end">
+     <property name="urlDropsEnabled">
+      <bool>false</bool>
+     </property>
+     <property name="clickMessage">
+      <string>End</string>
+     </property>
+     <property name="showClearButton" stdset="0">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="KLineEdit" name="lineBegin">
+       <property name="urlDropsEnabled">
+        <bool>false</bool>
+       </property>
+       <property name="clickMessage">
+        <string>Line Begin</string>
+       </property>
+       <property name="showClearButton" stdset="0">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="KLineEdit" name="lineEnd">
+       <property name="urlDropsEnabled">
+        <bool>false</bool>
+       </property>
+       <property name="clickMessage">
+        <string>Line End</string>
+       </property>
+       <property name="showClearButton" stdset="0">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="KLineEdit" name="textBegin">
+       <property name="urlDropsEnabled">
+        <bool>false</bool>
+       </property>
+       <property name="clickMessage">
+        <string>Text Begin</string>
+       </property>
+       <property name="showClearButton" stdset="0">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="KLineEdit" name="textEnd">
+       <property name="urlDropsEnabled">
+        <bool>false</bool>
+       </property>
+       <property name="clickMessage">
+        <string>Text End</string>
+       </property>
+       <property name="showClearButton" stdset="0">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Left filler</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Right filler</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Line length</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Minimal number of fillers</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="KLineEdit" name="lfill">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="maxLength">
+          <number>1</number>
+         </property>
+         <property name="urlDropsEnabled">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="KLineEdit" name="rfill">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="maxLength">
+          <number>1</number>
+         </property>
+         <property name="urlDropsEnabled">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="KIntSpinBox" name="realWidth">
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>500</number>
+         </property>
+         <property name="value">
+          <number>60</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="KIntSpinBox" name="minfill">
+         <property name="maximum">
+          <number>500</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KIntSpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>knuminput.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>klineedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KComboBox</class>
+   <extends>QComboBox</extends>
+   <header>kcombobox.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
