@@ -189,7 +189,10 @@ ACommentView::~ACommentView()
 void ACommentView::insertAComment(QAction *action)
 {
     /// @TODO Insert a shortcut here?
-    m_view->document()->replaceText(m_view->selectionRange(), ACommentPlugin::instance->m_styles[action->iconText()].apply(m_view->selectionText()));
+    if(m_view->selection())
+        m_view->document()->replaceText(m_view->selectionRange(), ACommentPlugin::instance->m_styles[action->iconText()].apply(m_view->selectionText()), true);
+    else
+        m_view->document()->insertText(m_view->cursorPosition(), ACommentPlugin::instance->m_styles[action->iconText()].apply(""), true);
 }
 
 void ACommentView::loadStyle(QString style)
