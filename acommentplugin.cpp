@@ -76,7 +76,7 @@ ACommentView::ACommentView(KTextEditor::View *view)
 {
     setComponentData(ACommentPluginFactory::componentData());
 
-    KActionMenu *action = new KActionMenu(i18n("Insert \"Artistic Comment\""), this);
+    KActionMenu *action = new KActionMenu(i18n("Insert Artistic Comment"), this);
     m_menu = action->menu();
     QStringList groups = ArtisticComment::styles();
     foreach(QString entry, groups)
@@ -85,7 +85,7 @@ ACommentView::ACommentView(KTextEditor::View *view)
     
     connect(m_menu, SIGNAL(triggered(QAction*)), this, SLOT(insertAComment(QAction*)));
     
-    KAction *action2 = new KAction(i18n("Configure \"Artistic Comment\"-styles"), this);
+    KAction *action2 = new KAction(i18n("Configure Artistic Comment styles"), this);
     actionCollection()->addAction("tools_acomment_config", action2);
     
     connect(action2, SIGNAL(triggered()), m_dialog, SLOT(open()));
