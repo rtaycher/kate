@@ -1,8 +1,20 @@
 [Desktop Entry]
 Type=Service
 Comment=Format long source-code comments like license-headers or descriptions using different styles
+Comment[en_GB]=Format long source-code comments like licence-headers or descriptions using different styles
+Comment[es]=Formatear largos comentarios de código fuente, como cabeceras de licencias o descripciones, usando diferentes estilos
+Comment[pt_BR]=Formata comentários longos no código-fonte como cabeçalhos de licença ou descrições usando diferentes estilos
+Comment[uk]=Форматувати довгі коментарі у коді, зокрема заголовки з умовами ліцензування та описами, за допомогою інших стилів
 Name=Artistic Comment
+Name[en_GB]=Artistic Comment
+Name[es]=Comentario artístico
+Name[pt_BR]=Comentário artístico
+Name[uk]=Художній коментар
 GenericName=Format comments in an "artistic" way
+GenericName[en_GB]=Format comments in an "artistic" way
+GenericName[es]=Formatear comentarios de un modo «artístico»
+GenericName[pt_BR]=Formata comentários de uma maneira "artística"
+GenericName[uk]=Форматувати коментарі у «художньому» стилі
 Icon=kate
 ServiceTypes=KTextEditor/Plugin
 X-KDE-ServiceTypes=KTextEditor/Plugin
