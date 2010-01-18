@@ -171,10 +171,16 @@ ACommentView::ACommentView(KTextEditor::View *view)
     setXMLFile("acommentui.rc");
     
     m_ui.setupUi(m_dialog->mainWidget());
+    m_dialog->setWindowTitle(i18n("Artistic Comment - Styles"));
     m_dialog->setButtons(KDialog::Ok | KDialog::Apply | KDialog::Cancel);
+    m_dialog->setToolTip(i18n("Manage styles for Artistic Comment"));
     m_ui.name->addItems(ACommentPlugin::instance->m_styles.keys());
     m_ui.name->setEditText("");
     static_cast<KLineEdit*>(m_ui.name->lineEdit())->setClickMessage(i18n("Name of my fantastic style"));
+    
+    // Default-Alignment: Left
+    m_ui.textBegin->setEnabled(false);
+    m_ui.lfill->setEnabled(false);
     
     connect(m_ui.name, SIGNAL(currentIndexChanged(QString)), this, SLOT(loadStyle(QString)));
     connect(m_ui.type, SIGNAL(activated(int)), this, SLOT(disableOptions(int)));

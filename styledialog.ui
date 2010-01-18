@@ -10,15 +10,21 @@
     <x>0</x>
     <y>0</y>
     <width>279</width>
-    <height>318</height>
+    <height>342</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Artistic Comment</string>
+   <string/>
+  </property>
+  <property name="toolTip">
+   <string/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <widget class="KComboBox" name="name">
+     <property name="toolTip">
+      <string>The name of the style</string>
+     </property>
      <property name="editable">
       <bool>true</bool>
      </property>
@@ -32,6 +38,9 @@
    </item>
    <item>
     <widget class="KComboBox" name="type">
+     <property name="toolTip">
+      <string>Alignment</string>
+     </property>
      <item>
       <property name="text">
        <string>Left-aligned</string>
@@ -56,6 +65,9 @@
    </item>
    <item>
     <widget class="KLineEdit" name="begin">
+     <property name="toolTip">
+      <string>The first line of the comment</string>
+     </property>
      <property name="urlDropsEnabled">
       <bool>false</bool>
      </property>
@@ -69,6 +81,9 @@
    </item>
    <item>
     <widget class="KLineEdit" name="end">
+     <property name="toolTip">
+      <string>The last line of the comment</string>
+     </property>
      <property name="urlDropsEnabled">
       <bool>false</bool>
      </property>
@@ -84,6 +99,9 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="KLineEdit" name="lineBegin">
+       <property name="toolTip">
+        <string>Inserted at the beginning of each line</string>
+       </property>
        <property name="urlDropsEnabled">
         <bool>false</bool>
        </property>
@@ -97,6 +115,9 @@
      </item>
      <item>
       <widget class="KLineEdit" name="lineEnd">
+       <property name="toolTip">
+        <string>Inserted at the end of each line</string>
+       </property>
        <property name="urlDropsEnabled">
         <bool>false</bool>
        </property>
@@ -114,6 +135,9 @@
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
       <widget class="KLineEdit" name="textBegin">
+       <property name="toolTip">
+        <string>Inserted immediately before the text in each line</string>
+       </property>
        <property name="urlDropsEnabled">
         <bool>false</bool>
        </property>
@@ -127,6 +151,9 @@
      </item>
      <item>
       <widget class="KLineEdit" name="textEnd">
+       <property name="toolTip">
+        <string>Inserted immediately after the text in each line</string>
+       </property>
        <property name="urlDropsEnabled">
         <bool>false</bool>
        </property>
@@ -178,6 +205,9 @@
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <widget class="KLineEdit" name="lfill">
+         <property name="toolTip">
+          <string>A filling symbol to be used before the text</string>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -191,6 +221,9 @@
        </item>
        <item>
         <widget class="KLineEdit" name="rfill">
+         <property name="toolTip">
+          <string>A filling symbol to be used after the text</string>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -204,6 +237,9 @@
        </item>
        <item>
         <widget class="KIntSpinBox" name="realWidth">
+         <property name="toolTip">
+          <string>The length of each line including all decorations</string>
+         </property>
          <property name="minimum">
           <number>1</number>
          </property>
@@ -217,6 +253,9 @@
        </item>
        <item>
         <widget class="KIntSpinBox" name="minfill">
+         <property name="toolTip">
+          <string>The minimal number of fillers to be used</string>
+         </property>
          <property name="maximum">
           <number>500</number>
          </property>
