@@ -16,8 +16,12 @@
 
 #include "artisticcomment.h"
 #include <QList>
+#include <QMap>
+#include <KSharedConfig>
+#include <KConfigGroup>
+#include <KComponentData>
 
-static QList<QString> explode(QString str, size_t max)
+static QList<QString> explode(const QString& str, size_t max)
 {
     QList<QString> ret;
     QString curr;
@@ -72,9 +76,9 @@ static QList<QString> explode(QString str, size_t max)
 }
 
 ArtisticComment::ArtisticComment(
-                    QString begin, QString end,
-                    QString lineBegin, QString lineEnd,
-                    QString textBegin, QString textEnd,
+                    const QString& begin, const QString& end,
+                    const QString& lineBegin, const QString& lineEnd,
+                    const QString& textBegin, const QString& textEnd,
                     QChar lfill, QChar rfill,
                     size_t minfill, size_t realWidth,
                     bool truncate, type_t type)
@@ -146,4 +150,98 @@ QString ArtisticComment::apply(const QString& text)
         }
     }
     return ret + end;
+}
+
+static KSharedConfigPtr m_config(KSharedConfig::openConfig(KComponentData("artisticcomment", "", KComponentData::SkipMainComponentRegistration), "", KConfig::CascadeConfig));
+static QMap<QString, ArtisticComment> m_styles;
+
+inline static ArtisticComment::type_t toTypeEnum(const QString& str)
+{
+    switch (str.size())
+    {
+    case 10:
+        return ArtisticComment::LeftNoFill;
+    case 6:
+        return ArtisticComment::Center;
+    case 5:
+        return ArtisticComment::Right;
+    default:
+        return ArtisticComment::Left;
+    }
+}
+
+void ArtisticComment::readConfig()
+{
+    m_styles.clear();
+    QStringList groups = m_config->groupList();
+    #define ED(str, def) sub.readEntry(str, def)
+    foreach(QString str, groups)
+    {
+        KConfigGroup sub = m_config->group(str);
+        m_styles[str] = ArtisticComment(ED("begin", ""), ED("end", ""),
+                                        ED("lineBegin", ""), ED("lineEnd", ""),
+                                        ED("textBegin", ""), ED("textEnd", ""),
+                                        ED("lfill", " ")[0], ED("rfill", " ")[0],
+                                        ED("minfill", (size_t)0), ED("realWidth", (size_t)60), ED("truncate", true), toTypeEnum(ED("type", "Left")));
+    }
+    #undef ED
+}
+
+void ArtisticComment::writeConfig()
+{
+    QStringList groups = m_styles.keys();
+    #define E(str) sub->writeEntry(#str, ac.str);
+    foreach(QString str, groups)
+    {
+        KConfigGroup *sub = new KConfigGroup(&*m_config, str);
+        ArtisticComment& ac(m_styles[str]);
+        E(begin)
+        E(end)
+        E(lineBegin)
+        E(lineEnd)
+        E(textBegin)
+        E(textEnd)
+        sub->writeEntry("lfill", QString(ac.lfill));
+        sub->writeEntry("rfill", QString(ac.rfill));
+        E(minfill)
+        E(realWidth)
+        E(truncate)
+        switch (ac.type)
+        {
+        case ArtisticComment::LeftNoFill:
+            sub->writeEntry("type", "LeftNoFill");
+            break;
+        case ArtisticComment::Left:
+            sub->writeEntry("type", "Left");
+            break;
+        case ArtisticComment::Center:
+            sub->writeEntry("type", "Center");
+            break;
+        case ArtisticComment::Right:
+            sub->writeEntry("type", "Right");
+            break;
+        }
+    }
+    #undef E
+}
+
+QStringList ArtisticComment::styles()
+{
+    return m_styles.keys();
+}
+
+ArtisticComment& ArtisticComment::style(const QString& name)
+{
+    return m_styles[name];
+}
+
+
+void ArtisticComment::setStyle(const QString& name, const ArtisticComment& style)
+{
+    m_styles[name] = style;
+}
+
+QString ArtisticComment::decorate(const QString& name, const QString& text)
+{
+    return m_styles[name].apply(text);
 }

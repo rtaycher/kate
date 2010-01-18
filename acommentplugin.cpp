@@ -38,16 +38,15 @@ K_PLUGIN_FACTORY(ACommentPluginFactory, registerPlugin<ACommentPlugin>("ktextedi
 K_EXPORT_PLUGIN(ACommentPluginFactory("ktexteditor_acomment", "ktexteditor_plugins"))
 
 ACommentPlugin::ACommentPlugin(QObject *parent, const QVariantList &args)
-        : KTextEditor::Plugin(parent), m_config(KSharedConfig::openConfig(KComponentData("ktexteditor_acomment", "", KComponentData::SkipMainComponentRegistration), "", KConfig::CascadeConfig))
+        : KTextEditor::Plugin(parent)
 {
     Q_UNUSED(args);
-    readConfig();
-    instance = this;
+    ArtisticComment::readConfig();
 }
 
 ACommentPlugin::~ACommentPlugin()
 {
-    writeConfig();
+    ArtisticComment::writeConfig();
 }
 
 void ACommentPlugin::addView(KTextEditor::View *view)
@@ -69,83 +68,6 @@ void ACommentPlugin::removeView(KTextEditor::View *view)
     }
 }
 
-static ArtisticComment::type_t toTypeEnum(const QString& str)
-{
-    switch (str.size())
-    {
-    case 10:
-        return ArtisticComment::LeftNoFill;
-    case 6:
-        return ArtisticComment::Center;
-    case 5:
-        return ArtisticComment::Right;
-    default:
-        return ArtisticComment::Left;
-    }
-}
-
-void ACommentPlugin::readConfig()
-{
-    m_styles.clear();
-    QStringList groups = m_config->groupList();
-#define ED(str, def) sub.readEntry(str, def)
-    foreach(QString str, groups)
-    {
-        KConfigGroup sub = m_config->group(str);
-        m_styles[str] = ArtisticComment(ED("begin", ""), ED("end", ""),
-                                        ED("lineBegin", ""), ED("lineEnd", ""),
-                                        ED("textBegin", ""), ED("textEnd", ""),
-                                        ED("lfill", " ")[0], ED("rfill", " ")[0],
-                                        ED("minfill", (size_t)0), ED("realWidth", (size_t)60), ED("truncate", true), toTypeEnum(ED("type", "Left")));
-//         kDebug() << str << m_styles[str].begin << m_styles[str].realWidth << m_styles[str].lfill;
-    }
-//     m_styles["Nice C++ License"] = ArtisticComment("/***********************************************************", " ***********************************************************/", " ** ", "", "", " ", ' ', '*', 1, 60, false, ArtisticComment::Left);
-//     m_styles["Doxygen/Javadoc"] = ArtisticComment("/**", " */", " * ", "", "", "", '\0', '\0', 0, 60, true, ArtisticComment::LeftNoFill);
-#undef ED
-}
-
-ACommentPlugin *ACommentPlugin::instance = 0;
-
-void ACommentPlugin::writeConfig()
-{
-    kDebug() << "acomment";
-    QStringList groups = m_styles.keys();
-    #define E(str) sub->writeEntry(#str, ac.str);
-    foreach(QString str, groups)
-    {
-        kDebug() << str;
-        KConfigGroup *sub = new KConfigGroup(&*m_config, str);
-        ArtisticComment& ac(m_styles[str]);
-        E(begin)
-        E(end)
-        E(lineBegin)
-        E(lineEnd)
-        E(textBegin)
-        E(textEnd)
-        sub->writeEntry("lfill", QString(ac.lfill));
-        sub->writeEntry("rfill", QString(ac.rfill));
-        E(minfill)
-        E(realWidth)
-        E(truncate)
-        switch (ac.type)
-        {
-        case ArtisticComment::LeftNoFill:
-            sub->writeEntry("type", "LeftNoFill");
-            break;
-        case ArtisticComment::Left:
-            sub->writeEntry("type", "Left");
-            break;
-        case ArtisticComment::Center:
-            sub->writeEntry("type", "Center");
-            break;
-        case ArtisticComment::Right:
-            sub->writeEntry("type", "Right");
-            break;
-        }
-    }
-#undef E
-}
-
 ACommentView::ACommentView(KTextEditor::View *view)
         : QObject(view)
         , KXMLGUIClient(view)
@@ -156,7 +78,7 @@ ACommentView::ACommentView(KTextEditor::View *view)
 
     KActionMenu *action = new KActionMenu(i18n("Insert \"Artistic Comment\""), this);
     m_menu = action->menu();
-    QStringList groups = ACommentPlugin::instance->m_styles.keys();
+    QStringList groups = ArtisticComment::styles();
     foreach(QString entry, groups)
         m_menu->addAction(entry);
     actionCollection()->addAction("tools_acomment", action);
@@ -174,7 +96,7 @@ ACommentView::ACommentView(KTextEditor::View *view)
     m_dialog->setWindowTitle(i18n("Artistic Comment - Styles"));
     m_dialog->setButtons(KDialog::Ok | KDialog::Apply | KDialog::Cancel);
     m_dialog->setToolTip(i18n("Manage styles for Artistic Comment"));
-    m_ui.name->addItems(ACommentPlugin::instance->m_styles.keys());
+    m_ui.name->addItems(ArtisticComment::styles());
     m_ui.name->setEditText("");
     static_cast<KLineEdit*>(m_ui.name->lineEdit())->setClickMessage(i18n("Name of my fantastic style"));
     
@@ -196,14 +118,14 @@ void ACommentView::insertAComment(QAction *action)
 {
     /// @TODO Insert a shortcut here?
     if(m_view->selection())
-        m_view->document()->replaceText(m_view->selectionRange(), ACommentPlugin::instance->m_styles[action->iconText()].apply(m_view->selectionText()), true);
+        m_view->document()->replaceText(m_view->selectionRange(), ArtisticComment::decorate(action->iconText(), m_view->selectionText()), true);
     else
-        m_view->document()->insertText(m_view->cursorPosition(), ACommentPlugin::instance->m_styles[action->iconText()].apply(""), true);
+        m_view->document()->insertText(m_view->cursorPosition(), ArtisticComment::decorate(action->iconText(), ""), true);
 }
 
 void ACommentView::loadStyle(QString style)
 {
-    ArtisticComment& ac(ACommentPlugin::instance->m_styles[style]);
+    ArtisticComment& ac(ArtisticComment::style(style));
     m_ui.begin->setText(ac.begin);
     m_ui.end->setText(ac.end);
     m_ui.lineBegin->setText(ac.lineBegin);
@@ -264,7 +186,7 @@ void ACommentView::changeEntry()
         m_ui.name->addItem(style);
         m_menu->addAction(style);
     }
-    ArtisticComment& ac(ACommentPlugin::instance->m_styles[style]);
+    ArtisticComment& ac(ArtisticComment::style(style));
     ac.begin = m_ui.begin->text();
     ac.end = m_ui.end->text();
     ac.textBegin = m_ui.textBegin->text();
