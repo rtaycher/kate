@@ -19,6 +19,8 @@
 
 #include <QString>
 #include <QStringList>
+#include <cstddef>
+using std::size_t;
 
 /**
  * Class to add artistic decorations to comments/license headers.

@@ -118,9 +118,9 @@ void ACommentView::insertAComment(QAction *action)
 {
     /// @TODO Insert a shortcut here?
     if(m_view->selection())
-        m_view->document()->replaceText(m_view->selectionRange(), ArtisticComment::decorate(action->iconText(), m_view->selectionText()), true);
+        m_view->document()->replaceText(m_view->selectionRange(), ArtisticComment::decorate(action->iconText(), m_view->selectionText()), false);
     else
-        m_view->document()->insertText(m_view->cursorPosition(), ArtisticComment::decorate(action->iconText(), ""), true);
+        m_view->document()->insertText(m_view->cursorPosition(), ArtisticComment::decorate(action->iconText(), ""), false);
 }
 
 void ACommentView::loadStyle(QString style)
