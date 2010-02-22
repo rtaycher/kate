@@ -12,3 +12,6 @@ include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES})
 
 # testing area, just for experimenting with new stuff
 macro_optional_add_subdirectory (testing)
+
+# global unit tests
+macro_optional_add_subdirectory (tests)
