@@ -2,7 +2,6 @@
  *
  *  Copyright (C) 2010 Christoph Cullmann <cullmann@kde.org>
  *  Copyright (C) 2010 Dominik Haumann <dhaumann kde org>
- *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License as published by the Free Software Foundation; either
@@ -19,32 +18,22 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include "katetextbuffertest.h"
-#include "katetextbuffer.h"
+#ifndef KATEBUFFERTEST_H
+#define KATEBUFFERTEST_H
 
-QTEST_MAIN(KateTextBufferTest)
+#include <QtTest/QtTest>
+#include <QtCore/QObject>
 
-KateTextBufferTest::KateTextBufferTest()
-  : QObject()
+class KateTextBufferTest : public QObject
 {
-}
+  Q_OBJECT
 
-KateTextBufferTest::~KateTextBufferTest()
-{
-}
+  public:
+    KateTextBufferTest();
+    virtual ~KateTextBufferTest();
 
-void KateTextBufferTest::basicBufferTest()
-{
-  // construct an empty text buffer
-  Kate::TextBuffer buffer;
+  private Q_SLOTS:
+    void basicBufferTest();
+};
 
-  // one line per default
-  QCOMPARE(buffer.lines(), 1);
-
-  //FIXME: use QTestLib macros for checking the correct state
-  // start editing
-  buffer.startEditing ();
-
-  // end editing
-  buffer.finishEditing ();
-}
+#endif // KATEBUFFERTEST_H
