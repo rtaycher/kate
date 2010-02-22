@@ -23,8 +23,8 @@
 
 namespace Kate {
 
-TextBlock::TextBlock (TextBuffer &parent)
-  : m_parent (parent)
+TextBlock::TextBlock (TextBuffer *buffer)
+  : m_buffer (buffer)
 {
 }
 

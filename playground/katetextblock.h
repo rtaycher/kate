@@ -35,9 +35,9 @@ class TextBlock {
   public:
     /**
      * Construct an empty text block.
-     * @param parent parent text buffer
+     * @param buffer parent text buffer
      */
-    TextBlock (TextBuffer &parent);
+    TextBlock (TextBuffer *buffer);
 
     /**
      * Destruct the text block
@@ -47,9 +47,8 @@ class TextBlock {
   private:
     /**
      * parent text buffer
-     * is a reference, and no pointer, as this must always exist and can't change
      */
-    TextBuffer &m_parent;
+    TextBuffer *m_buffer;
 };
 
 }

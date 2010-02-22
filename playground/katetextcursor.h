@@ -25,7 +25,7 @@
 
 namespace Kate {
 
-class TextBuffer;
+class TextBlock;
 class TextRange;
 
 /**
@@ -35,10 +35,10 @@ class TextCursor : public KTextEditor::Cursor {
   public:
     /**
      * Construct a text cursor.
-     * @param parent parent text buffer
-     * @param range range this cursor should belong to, if any
+     * @param block text block this cursor belongs to
+     * @param range range this cursor belongs to
      */
-    TextCursor (TextBuffer &parent, TextRange *range);
+    TextCursor (TextBlock *block, TextRange *range);
 
     /**
      * Destruct the text block
@@ -47,10 +47,9 @@ class TextCursor : public KTextEditor::Cursor {
 
   private:
     /**
-     * parent text buffer
-     * is a reference, and no pointer, as this must always exist and can't change
+     * parent text block, valid cursors always belong to a block, else they are invalid.
      */
-    TextBuffer &m_parent;
+    TextBlock *m_block;
 
     /**
      * range this cursor belongs to

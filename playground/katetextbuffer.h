@@ -48,6 +48,12 @@ class TextBuffer : public QObject {
     ~TextBuffer ();
 
     /**
+     * Lines currently stored in this buffer.
+     * This is never 0.
+     */
+    int lines () const { return m_lines; }
+
+    /**
      * Clears the buffer, reverts to initial empty state.
      * Empty means one empty line in one block.
      */
@@ -74,13 +80,18 @@ class TextBuffer : public QObject {
      * or when the user of the buffer has called clear() itself.
      * @param buffer buffer which got cleared
      */
-    void cleared (TextBuffer &buffer);
+    void cleared (TextBuffer *buffer);
 
   private:
     /**
      * List of blocks which contain the lines of this buffer
      */
     QList<TextBlock> m_blocks;
+
+    /**
+     * Number of lines in buffer
+     */
+    int m_lines;
 };
 
 }

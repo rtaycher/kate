@@ -24,6 +24,7 @@ namespace Kate {
 
 TextBuffer::TextBuffer (QObject *parent)
   : QObject (parent)
+  , m_lines (0)
 {
   // create initial state
   clear ();
@@ -35,8 +36,18 @@ TextBuffer::~TextBuffer ()
 
 void TextBuffer::clear ()
 {
+  // kill all buffer blocks
+  m_blocks.clear ();
+
+  // create one block with one empty line
+  m_blocks.append (TextBlock (this));
+  TextBlock &block = m_blocks.first ();
+
+  // reset lines
+  m_lines = 1;
+
   // we got cleared
-  emit cleared (*this);
+  emit cleared (this);
 }
 
 }

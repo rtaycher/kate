@@ -23,8 +23,8 @@
 
 namespace Kate {
 
-TextCursor::TextCursor (TextBuffer &parent, TextRange *range)
-  : m_parent (parent)
+TextCursor::TextCursor (TextBlock *block, TextRange *range)
+  : m_block (block)
   , m_range (range)
 {
 }
