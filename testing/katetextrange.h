@@ -18,28 +18,29 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include <QtCore/QObject>
+#include <ktexteditor/range.h>
+
+#include "katetextcursor.h"
 
 namespace Kate {
 
 class TextBuffer;
 
 /**
- * Class representing a text block.
- * This is used to build up a Kate::TextBuffer.
+ * Class representing a text range.
  */
-class TextBlock {
+class TextRange : public KTextEditor::Range {
   public:
     /**
-     * Construct an empty text block.
+     * Construct a text cursor.
      * @param parent parent text buffer
      */
-    TextBlock (TextBuffer &parent);
+    TextRange (TextBuffer &parent);
 
     /**
      * Destruct the text block
      */
-    ~TextBlock ();
+    ~TextRange ();
 
   private:
     /**

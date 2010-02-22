@@ -18,35 +18,18 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include <QtCore/QObject>
+#include "katetextrange.h"
+#include "katetextbuffer.h"
 
 namespace Kate {
 
-class TextBuffer;
+TextRange::TextRange (TextBuffer &parent)
+  : m_parent (parent)
+{
+}
 
-/**
- * Class representing a text block.
- * This is used to build up a Kate::TextBuffer.
- */
-class TextBlock {
-  public:
-    /**
-     * Construct an empty text block.
-     * @param parent parent text buffer
-     */
-    TextBlock (TextBuffer &parent);
-
-    /**
-     * Destruct the text block
-     */
-    ~TextBlock ();
-
-  private:
-    /**
-     * parent text buffer
-     * is a reference, and no pointer, as this must always exist and can't change
-     */
-    TextBuffer &m_parent;
-};
+TextRange::~TextRange ()
+{
+}
 
 }
