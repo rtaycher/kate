@@ -1,11 +1,11 @@
 # testing project inside kate, just for experiments
-project (katetesting)
+project (kateplayground)
 
 # includes
 include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
 # our sources
-set (katepart_testing_srcs
+set (kateplayground_srcs
   katetextbuffer.cpp
   katetextblock.cpp
   katetextcursor.cpp
@@ -13,4 +13,4 @@ set (katepart_testing_srcs
 )
 
 # testing library
-kde4_add_library (kateparttesting ${katepart_testing_srcs})
+kde4_add_library (kateplayground ${kateplayground_srcs})

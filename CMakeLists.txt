@@ -11,7 +11,7 @@ add_definitions (${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
 include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES})
 
 # testing area, just for experimenting with new stuff
-macro_optional_add_subdirectory (testing)
+macro_optional_add_subdirectory (playground)
 
 # global unit tests
 macro_optional_add_subdirectory (tests)
