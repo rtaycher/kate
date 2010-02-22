@@ -82,10 +82,10 @@ class TextBuffer : public QObject {
     void wrapLine (const KTextEditor::Cursor &position);
 
     /**
-     * Unwrap line at given cursor position.
-     * @param position line as cursor where to wrap, the column of the cursor must be 0.
+     * Unwrap given line.
+     * @param line line to unwrap
      */
-    void unwrapLine (const KTextEditor::Cursor &position);
+    void unwrapLine (int line);
 
     /**
      * Insert text at given cursor position.

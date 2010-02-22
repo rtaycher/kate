@@ -23,6 +23,8 @@
 
 #include <QtCore/QList>
 
+#include "katetextrange.h"
+#include "katetextcursor.h"
 #include "katetextline.h"
 
 namespace Kate {
@@ -45,6 +47,33 @@ class TextBlock {
      * Destruct the text block
      */
     ~TextBlock ();
+
+    /**
+     * Wrap line at given cursor position.
+     * @param position line/column as cursor where to wrap
+     * @param nextBlock next block, if any
+     */
+    void wrapLine (const KTextEditor::Cursor &position, TextBlock nextBlock);
+
+    /**
+     * Unwrap given line.
+     * @param line line to unwrap
+     * @param previousBlock previous block, if any
+     */
+    void unwrapLine (int line, TextBlock *previousBlock);
+
+    /**
+     * Insert text at given cursor position.
+     * @param position position where to insert text
+     * @param text text to insert
+     */
+    void insertText (const KTextEditor::Cursor &position, const QString &text);
+
+    /**
+     * Remove text at given range.
+     * @param range range of text to remove, must be on one line only.
+     */
+    void removeText (const KTextEditor::Range &range);
 
   private:
     /**
