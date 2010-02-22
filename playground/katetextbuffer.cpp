@@ -61,7 +61,7 @@ void TextBuffer::startEditing ()
     return;
 }
 
-void TextBuffer::endEditing ()
+void TextBuffer::finishEditing ()
 {
   // only allowed if still transactions running
   Q_ASSERT (m_editingTransactions > 0);

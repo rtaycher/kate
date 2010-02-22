@@ -71,9 +71,9 @@ class TextBuffer : public QObject {
     void startEditing ();
 
     /**
-     * End an editing transaction. Only allowed to be called if editing transaction is started.
+     * Finish an editing transaction. Only allowed to be called if editing transaction is started.
      */
-    void endEditing ();
+    void finishEditing ();
 
     /**
      * Wrap line at given cursor position.

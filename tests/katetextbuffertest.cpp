@@ -36,7 +36,7 @@ int main (int argc, char *argv[])
   buffer.startEditing ();
 
   // end editing
-  buffer.endEditing ();
+  buffer.finishEditing ();
 
   return 0;
 }

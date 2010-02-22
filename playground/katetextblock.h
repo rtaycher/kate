@@ -53,12 +53,12 @@ class TextBlock {
      * @param position line/column as cursor where to wrap
      * @param nextBlock next block, if any
      */
-    void wrapLine (const KTextEditor::Cursor &position, TextBlock nextBlock);
+    void wrapLine (const KTextEditor::Cursor &position);
 
     /**
      * Unwrap given line.
      * @param line line to unwrap
-     * @param previousBlock previous block, if any
+     * @param previousBlock previous block, if any, if we unwrap first line in block, we need to have this
      */
     void unwrapLine (int line, TextBlock *previousBlock);
 
