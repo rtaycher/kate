@@ -18,6 +18,9 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#ifndef KATE_TEXTBLOCK_H
+#define KATE_TEXTBLOCK_H
+
 #include <QtCore/QObject>
 
 namespace Kate {
@@ -50,3 +53,5 @@ class TextBlock {
 };
 
 }
+
+#endif

@@ -25,10 +25,18 @@ namespace Kate {
 TextBuffer::TextBuffer (QObject *parent)
   : QObject (parent)
 {
+  // create initial state
+  clear ();
 }
 
 TextBuffer::~TextBuffer ()
 {
+}
+
+void TextBuffer::clear ()
+{
+  // we got cleared
+  emit cleared (*this);
 }
 
 }

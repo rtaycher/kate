@@ -18,7 +18,14 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#ifndef KATE_TEXTBUFFER_H
+#define KATE_TEXTBUFFER_H
+
 #include <QtCore/QObject>
+#include <QtCore/QString>
+#include <QtCore/QList>
+
+#include "katetextblock.h"
 
 namespace Kate {
 
@@ -30,6 +37,7 @@ class TextBuffer : public QObject {
   public:
     /**
      * Construct an empty text buffer.
+     * Empty means one empty line in one block.
      * @param parent parent qobject
      */
     TextBuffer (QObject *parent = 0);
@@ -38,6 +46,43 @@ class TextBuffer : public QObject {
      * Destruct the text buffer
      */
     ~TextBuffer ();
+
+    /**
+     * Clears the buffer, reverts to initial empty state.
+     * Empty means one empty line in one block.
+     */
+    void clear ();
+
+    /**
+     * Load the given file. This will first clear the buffer and then load the file.
+     * Even on error during loading the buffer will still be cleared.
+     * @param filename file to open
+     * @return success
+     */
+    bool load (const QString &filename);
+
+    /**
+     * Save the current buffer content to the given file.
+     * @param filename file to save
+     * @return success
+     */
+    bool save (const QString &filename);
+
+  Q_SIGNALS:
+    /**
+     * Buffer got cleared. This is emited when constructor or load have called clear() internally,
+     * or when the user of the buffer has called clear() itself.
+     * @param buffer buffer which got cleared
+     */
+    void cleared (TextBuffer &buffer);
+
+  private:
+    /**
+     * List of blocks which contain the lines of this buffer
+     */
+    QList<TextBlock> m_blocks;
 };
 
 }
+
+#endif

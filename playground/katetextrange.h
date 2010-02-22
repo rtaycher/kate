@@ -18,6 +18,9 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#ifndef KATE_TEXTRANGE_H
+#define KATE_TEXTRANGE_H
+
 #include <ktexteditor/range.h>
 
 #include "katetextcursor.h"
@@ -51,3 +54,5 @@ class TextRange : public KTextEditor::Range {
 };
 
 }
+
+#endif

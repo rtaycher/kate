@@ -18,6 +18,9 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#ifndef KATE_TEXTCURSOR_H
+#define KATE_TEXTCURSOR_H
+
 #include <ktexteditor/cursor.h>
 
 namespace Kate {
@@ -57,3 +60,5 @@ class TextCursor : public KTextEditor::Cursor {
 };
 
 }
+
+#endif
