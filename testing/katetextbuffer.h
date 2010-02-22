@@ -18,17 +18,26 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include "katetextbuffer.h"
+#include <QtCore/QObject>
 
 namespace Kate {
 
-TextBuffer::TextBuffer (QObject *parent)
-  : QObject (parent)
-{
-}
+/**
+ * Class representing a text buffer.
+ * The interface is line based, internally the text will be stored in blocks of text lines.
+ */
+class TextBuffer : public QObject {
+  public:
+    /**
+     * Construct an empty text buffer.
+     * @param parent parent qobject
+     */
+    TextBuffer (QObject *parent);
 
-TextBuffer::~TextBuffer ()
-{
-}
+    /**
+     * Destruct the text buffer
+     */
+    ~TextBuffer ();
+};
 
 }

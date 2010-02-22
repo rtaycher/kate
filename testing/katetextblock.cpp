@@ -18,16 +18,17 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#include "katetextblock.h"
 #include "katetextbuffer.h"
 
 namespace Kate {
 
-TextBuffer::TextBuffer (QObject *parent)
-  : QObject (parent)
+TextBlock::TextBlock (TextBuffer &parent)
+  : m_parent (parent)
 {
 }
 
-TextBuffer::~TextBuffer ()
+TextBlock::~TextBlock ()
 {
 }
 
