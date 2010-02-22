@@ -22,5 +22,12 @@
 
 int main (int argc, char *argv[])
 {
+  // no warnings
+  Q_UNUSED (argc);
+  Q_UNUSED (argv);
+
+  // construct an empty text buffer
+  Kate::TextBuffer buffer ();
+
   return 0;
 }

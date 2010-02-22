@@ -32,7 +32,7 @@ class TextBuffer : public QObject {
      * Construct an empty text buffer.
      * @param parent parent qobject
      */
-    TextBuffer (QObject *parent);
+    TextBuffer (QObject *parent = 0);
 
     /**
      * Destruct the text buffer
