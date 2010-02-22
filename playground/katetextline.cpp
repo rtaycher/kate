@@ -18,46 +18,16 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#ifndef KATE_TEXTBLOCK_H
-#define KATE_TEXTBLOCK_H
-
-#include <QtCore/QList>
-
 #include "katetextline.h"
 
 namespace Kate {
 
-class TextBuffer;
-
-/**
- * Class representing a text block.
- * This is used to build up a Kate::TextBuffer.
- */
-class TextBlock {
-  public:
-    /**
-     * Construct an empty text block.
-     * @param buffer parent text buffer
-     */
-    TextBlock (TextBuffer *buffer);
-
-    /**
-     * Destruct the text block
-     */
-    ~TextBlock ();
-
-  private:
-    /**
-     * parent text buffer
-     */
-    TextBuffer *m_buffer;
-
-    /**
-     * Lines contained in this buffer. These are shard pointers.
-     */
-    QList<Kate::TextLine> m_lines;
-};
-
+TextLineData::TextLineData ()
+{
 }
 
-#endif
+TextLineData::~TextLineData ()
+{
+}
+
+}

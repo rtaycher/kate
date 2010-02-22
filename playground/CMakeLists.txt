@@ -10,6 +10,7 @@ set (kateplayground_srcs
   katetextblock.cpp
   katetextcursor.cpp
   katetextrange.cpp
+  katetextline.cpp
 )
 
 # testing library
