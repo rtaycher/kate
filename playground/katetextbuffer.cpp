@@ -25,6 +25,7 @@ namespace Kate {
 TextBuffer::TextBuffer (QObject *parent)
   : QObject (parent)
   , m_lines (0)
+  , m_editingTransactions (0)
 {
   // create initial state
   clear ();
@@ -48,6 +49,29 @@ void TextBuffer::clear ()
 
   // we got cleared
   emit cleared (this);
+}
+
+void TextBuffer::startEditing ()
+{
+  // increment transaction counter
+  ++m_editingTransactions;
+
+  // if not first running transaction, do nothing
+  if (m_editingTransactions > 1)
+    return;
+}
+
+void TextBuffer::endEditing ()
+{
+  // only allowed if still transactions running
+  Q_ASSERT (m_editingTransactions > 0);
+
+  // decrement counter
+  --m_editingTransactions;
+
+  // if not last running transaction, do nothing
+  if (m_editingTransactions > 0)
+    return;
 }
 
 }

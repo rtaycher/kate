@@ -32,5 +32,11 @@ int main (int argc, char *argv[])
   // one line per default
   Q_ASSERT (buffer.lines() == 1);
 
+  // start editing
+  buffer.startEditing ();
+
+  // end editing
+  buffer.endEditing ();
+
   return 0;
 }

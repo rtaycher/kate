@@ -26,6 +26,8 @@
 #include <QtCore/QList>
 
 #include "katetextblock.h"
+#include "katetextcursor.h"
+#include "katetextrange.h"
 
 namespace Kate {
 
@@ -50,16 +52,53 @@ class TextBuffer : public QObject {
     ~TextBuffer ();
 
     /**
-     * Lines currently stored in this buffer.
-     * This is never 0.
-     */
-    int lines () const { return m_lines; }
-
-    /**
      * Clears the buffer, reverts to initial empty state.
      * Empty means one empty line in one block.
      */
     void clear ();
+
+    /**
+     * Lines currently stored in this buffer.
+     * This is never 0, even clear will let one empty line remain.
+     */
+    int lines () const { Q_ASSERT (m_lines > 0); return m_lines; }
+
+    /**
+     * Start an editing transaction, the wrapLine/unwrapLine/insertText and removeText functions
+     * are only to be allowed to be called inside a editing transaction.
+     * Editing transactions can stack. The number startEdit and endEdit calls must match.
+     */
+    void startEditing ();
+
+    /**
+     * End an editing transaction. Only allowed to be called if editing transaction is started.
+     */
+    void endEditing ();
+
+    /**
+     * Wrap line at given cursor position.
+     * @param position line/column as cursor where to wrap
+     */
+    void wrapLine (const KTextEditor::Cursor &position);
+
+    /**
+     * Unwrap line at given cursor position.
+     * @param position line as cursor where to wrap, the column of the cursor must be 0.
+     */
+    void unwrapLine (const KTextEditor::Cursor &position);
+
+    /**
+     * Insert text at given cursor position.
+     * @param position position where to insert text
+     * @param text text to insert
+     */
+    void insertText (const KTextEditor::Cursor &position, const QString &text);
+
+    /**
+     * Remove text at given range.
+     * @param range range of text to remove, must be on one line only.
+     */
+    void removeText (const KTextEditor::Range &range);
 
     /**
      * Load the given file. This will first clear the buffer and then load the file.
@@ -94,6 +133,11 @@ class TextBuffer : public QObject {
      * Number of lines in buffer
      */
     int m_lines;
+
+    /**
+     * Current number of running edit transactions
+     */
+    int m_editingTransactions;
 };
 
 }
