@@ -34,6 +34,8 @@ namespace Kate {
  * The interface is line based, internally the text will be stored in blocks of text lines.
  */
 class TextBuffer : public QObject {
+  Q_OBJECT
+
   public:
     /**
      * Construct an empty text buffer.

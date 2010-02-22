@@ -27,7 +27,10 @@ int main (int argc, char *argv[])
   Q_UNUSED (argv);
 
   // construct an empty text buffer
-  Kate::TextBuffer buffer ();
+  Kate::TextBuffer buffer;
+
+  // one line per default
+  Q_ASSERT (buffer.lines() == 1);
 
   return 0;
 }
