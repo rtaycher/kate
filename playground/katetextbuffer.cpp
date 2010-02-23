@@ -37,6 +37,9 @@ TextBuffer::~TextBuffer ()
 
 void TextBuffer::clear ()
 {
+  // not allowed during editing
+  Q_ASSERT (m_editingTransactions == 0);
+
   // kill all buffer blocks
   m_blocks.clear ();
 
@@ -74,19 +77,61 @@ void TextBuffer::finishEditing ()
     return;
 }
 
+void TextBuffer::wrapLine (const KTextEditor::Cursor &position)
+{
+  // only allowed if editing transaction running
+  Q_ASSERT (m_editingTransactions > 0);
+
+  // get block, this will assert on invalid line
+  int blockIndex = blockForLine (position.line());
+}
+
+void TextBuffer::unwrapLine (int line)
+{
+  // only allowed if editing transaction running
+  Q_ASSERT (m_editingTransactions > 0);
+
+  // line 0 can't be unwrapped
+  Q_ASSERT (line > 0);
+
+  // get block, this will assert on invalid line
+  int blockIndex = blockForLine (line);
+}
+
+void TextBuffer::insertText (const KTextEditor::Cursor &position, const QString &text)
+{
+  // only allowed if editing transaction running
+  Q_ASSERT (m_editingTransactions > 0);
+
+  // get block, this will assert on invalid line
+  int blockIndex = blockForLine (position.line());
+}
+
+void TextBuffer::removeText (const KTextEditor::Range &range)
+{
+  // only allowed if editing transaction running
+  Q_ASSERT (m_editingTransactions > 0);
+
+  // only ranges on one line are supported
+  Q_ASSERT (range.start().line() == range.end().line());
+
+  // get block, this will assert on invalid line
+  int blockIndex = blockForLine (range.start().line());
+}
+
 int TextBuffer::blockForLine (int line) const
 {
   // only allow valid lines
   Q_ASSERT (line >= 0);
   Q_ASSERT (line < lines());
-  
+
   // search block
   for (int index = 0; index < m_blocks.size(); ++index) {
       if (line >= m_blocks[index].startLine()
 	&& line < m_blocks[index].startLine() + m_blocks[index].lines ())
 	return index;
   }
-  
+
   // we should always find a block
   Q_ASSERT (false);
   return -1;
@@ -97,19 +142,18 @@ void TextBuffer::fixStartLine (int startBlock)
   // only allow valid start block
   Q_ASSERT (startBlock >= 0);
   Q_ASSERT (startBlock < m_blocks.size());
-  
+
   // new start line for next block
   int newStartLine = m_blocks[startBlock].startLine () + m_blocks[startBlock].lines ();
-  
+
   // fixup block
   for (int index = startBlock + 1; index < m_blocks.size(); ++index) {
     // set new start line
     m_blocks[index].setStartLine (newStartLine);
-    
+
     // calculate next start line
     newStartLine += m_blocks[index].lines ();
   }
 }
-
 
 }

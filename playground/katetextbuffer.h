@@ -58,6 +58,21 @@ class TextBuffer : public QObject {
     void clear ();
 
     /**
+     * Load the given file. This will first clear the buffer and then load the file.
+     * Even on error during loading the buffer will still be cleared.
+     * @param filename file to open
+     * @return success
+     */
+    bool load (const QString &filename);
+
+    /**
+     * Save the current buffer content to the given file.
+     * @param filename file to save
+     * @return success
+     */
+    bool save (const QString &filename);
+
+    /**
      * Lines currently stored in this buffer.
      * This is never 0, even clear will let one empty line remain.
      */
@@ -99,21 +114,6 @@ class TextBuffer : public QObject {
      * @param range range of text to remove, must be on one line only.
      */
     void removeText (const KTextEditor::Range &range);
-
-    /**
-     * Load the given file. This will first clear the buffer and then load the file.
-     * Even on error during loading the buffer will still be cleared.
-     * @param filename file to open
-     * @return success
-     */
-    bool load (const QString &filename);
-
-    /**
-     * Save the current buffer content to the given file.
-     * @param filename file to save
-     * @return success
-     */
-    bool save (const QString &filename);
 
   Q_SIGNALS:
     /**

@@ -38,9 +38,24 @@ void TextBlock::setStartLine (int startLine)
   // allow only valid lines
   Q_ASSERT (startLine >= 0);
   Q_ASSERT (startLine < m_buffer->lines ());
-  
+
   m_startLine = startLine;
 }
 
+void TextBlock::wrapLine (const KTextEditor::Cursor &position)
+{
+}
+
+void TextBlock::unwrapLine (int line, TextBlock *previousBlock)
+{
+}
+
+void TextBlock::insertText (const KTextEditor::Cursor &position, const QString &text)
+{
+}
+
+void TextBlock::removeText (const KTextEditor::Range &range)
+{
+}
 
 }
