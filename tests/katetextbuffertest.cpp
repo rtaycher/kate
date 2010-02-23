@@ -38,5 +38,8 @@ int main (int argc, char *argv[])
   // end editing
   buffer.finishEditing ();
 
+  // print debug
+  buffer.debugPrint ("Empty Buffer");
+
   return 0;
 }

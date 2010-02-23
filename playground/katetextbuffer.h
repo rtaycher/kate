@@ -124,6 +124,18 @@ class TextBuffer : public QObject {
     void cleared (TextBuffer *buffer);
 
     /**
+     * Editing transaction has started.
+     * @param buffer buffer for transaction
+     */
+    void editingStarted (TextBuffer *buffer);
+
+    /**
+     * Editing transaction has finished.
+     * @param buffer buffer for transaction
+     */
+    void editingFinished (TextBuffer *buffer);
+
+    /**
      * A line got wrapped.
      * @param buffer buffer which contains the line
      * @param position position where the wrap occured
@@ -166,6 +178,13 @@ class TextBuffer : public QObject {
      * @param startBlock index of block from which we start to fix
      */
     void fixStartLines (int startBlock);
+
+  public:
+    /**
+     * Debug output, print whole buffer content with line numbers and line length
+     * @param title title for this output
+     */
+    void debugPrint (const QString &title) const;
 
   private:
     /**

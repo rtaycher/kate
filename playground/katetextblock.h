@@ -101,6 +101,12 @@ class TextBlock {
      */
     void removeText (const KTextEditor::Range &range, QString &removedText);
 
+  public:
+    /**
+     * Debug output, print whole block content with line numbers and line length
+     */
+    void debugPrint () const;
+
   private:
     /**
      * parent text buffer

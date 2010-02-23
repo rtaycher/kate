@@ -58,4 +58,13 @@ void TextBlock::removeText (const KTextEditor::Range &range, QString &removedTex
 {
 }
 
+void TextBlock::debugPrint () const
+{
+  // print all blocks
+  for (int i = 0; i < m_lines.size(); ++i)
+    printf ("%4d : %4d : '%s'\n", startLine() + i
+      , m_lines[i]->text().size(), qPrintable (m_lines[i]->text()));
+}
+
+
 }

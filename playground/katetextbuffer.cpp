@@ -66,6 +66,9 @@ void TextBuffer::startEditing ()
   // if not first running transaction, do nothing
   if (m_editingTransactions > 1)
     return;
+
+  // transaction has started
+  emit editingStarted (this);
 }
 
 void TextBuffer::finishEditing ()
@@ -79,6 +82,9 @@ void TextBuffer::finishEditing ()
   // if not last running transaction, do nothing
   if (m_editingTransactions > 0)
     return;
+
+  // transaction has finished
+  emit editingFinished (this);
 }
 
 void TextBuffer::wrapLine (const KTextEditor::Cursor &position)
@@ -90,6 +96,8 @@ void TextBuffer::wrapLine (const KTextEditor::Cursor &position)
   int blockIndex = blockForLine (position.line());
 
   // let the block handle the wrapLine
+  // this can only lead to one more line in this block
+  // no other blocks will change
   m_blocks[blockIndex]->wrapLine (position);
 
   // fixup all following blocks
@@ -111,7 +119,21 @@ void TextBuffer::unwrapLine (int line)
   int blockIndex = blockForLine (line);
 
   // let the block handle the unwrapLine
+  // this can either lead to one line less in this block or the previous one
+  // the previous one could even end up with zero lines
   m_blocks[blockIndex]->unwrapLine (line, (blockIndex > 0) ? m_blocks[blockIndex-1] : 0);
+
+  // handle the case that previous block gets empty
+  if ((blockIndex > 0) && (m_blocks[blockIndex-1]->lines () == 0)) {
+      // decrement index for later fixup
+      --blockIndex;
+
+      // delete empty block
+      delete m_blocks[blockIndex];
+
+      // and remove it
+      m_blocks.erase (m_blocks.begin() + blockIndex);
+  }
 
   // fixup all following blocks
   fixStartLines (blockIndex);
@@ -189,6 +211,16 @@ void TextBuffer::fixStartLines (int startBlock)
     // calculate next start line
     newStartLine += m_blocks[index]->lines ();
   }
+}
+
+void TextBuffer::debugPrint (const QString &title) const
+{
+  // print header with title
+  printf ("%s\n", qPrintable (title));
+
+  // print all blocks
+  for (int i = 0; i < m_blocks.size(); ++i)
+    m_blocks[i]->debugPrint ();
 }
 
 }
