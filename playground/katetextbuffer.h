@@ -123,6 +123,36 @@ class TextBuffer : public QObject {
      */
     void cleared (TextBuffer *buffer);
 
+    /**
+     * A line got wrapped.
+     * @param buffer buffer which contains the line
+     * @param position position where the wrap occured
+     */
+    void lineWrapped (TextBuffer *buffer, const KTextEditor::Cursor &position);
+
+    /**
+     * A line got unwrapped.
+     * @param buffer buffer which contains the line
+     * @param line line where the unwrap occured
+     */
+    void lineUnwrapped (TextBuffer *buffer, int line);
+
+    /**
+     * Text got inserted.
+     * @param buffer buffer which contains the line
+     * @param position position where the insertion occured
+     * @param text inserted text
+     */
+    void textInserted (TextBuffer *buffer, const KTextEditor::Cursor &position, const QString &text);
+
+    /**
+     * Text got removed.
+     * @param buffer buffer which contains the line
+     * @param range range where the removal occured
+     * @param text removed text
+     */
+    void textRemoved (TextBuffer *buffer, const KTextEditor::Range &range, const QString &text);
+
   private:
     /**
      * Find block containing given line.
@@ -130,18 +160,18 @@ class TextBuffer : public QObject {
      * @return index of found block
      */
     int blockForLine (int line) const;
-    
+
     /**
-     * Fix start line of all blocks after the given one
+     * Fix start lines of all blocks after the given one
      * @param startBlock index of block from which we start to fix
      */
-    void fixStartLine (int startBlock);
-    
+    void fixStartLines (int startBlock);
+
   private:
     /**
      * List of blocks which contain the lines of this buffer
      */
-    QList<TextBlock> m_blocks;
+    QList<TextBlock *> m_blocks;
 
     /**
      * Number of lines in buffer

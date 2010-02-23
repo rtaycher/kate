@@ -54,7 +54,7 @@ void TextBlock::insertText (const KTextEditor::Cursor &position, const QString &
 {
 }
 
-void TextBlock::removeText (const KTextEditor::Range &range)
+void TextBlock::removeText (const KTextEditor::Range &range, QString &removedText)
 {
 }
 

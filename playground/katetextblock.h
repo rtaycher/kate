@@ -54,19 +54,25 @@ class TextBlock {
      * @return start line of this block
      */
     int startLine () const { return m_startLine; }
-    
+
     /**
      * Set start line of this block.
      * @param startLine new start line of this block
      */
     void setStartLine (int startLine);
-    
+
+    /**
+     * Append a new line.
+     * @param line line to append
+     */
+    void appendLine (TextLine line) { m_lines.append (line); }
+
     /**
      * Number of lines in this block.
      * @return number of lines
      */
     int lines () const { return m_lines.size(); }
-    
+
     /**
      * Wrap line at given cursor position.
      * @param position line/column as cursor where to wrap
@@ -91,8 +97,9 @@ class TextBlock {
     /**
      * Remove text at given range.
      * @param range range of text to remove, must be on one line only.
+     * @param removedText will be filled with removed text
      */
-    void removeText (const KTextEditor::Range &range);
+    void removeText (const KTextEditor::Range &range, QString &removedText);
 
   private:
     /**
@@ -104,7 +111,7 @@ class TextBlock {
      * Lines contained in this buffer. These are shard pointers.
      */
     QList<Kate::TextLine> m_lines;
-    
+
     /**
      * Startline of this block
      */

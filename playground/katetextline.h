@@ -33,8 +33,9 @@ namespace Kate {
  */
 class TextLineData {
   /**
-   * TextBlock is a friend class, only one allowed to touch the text content.
+   * TextBuffer/Block are friend classes, only ones allowed to touch the text content.
    */
+  friend class TextBuffer;
   friend class TextBlock;
 
   public:
