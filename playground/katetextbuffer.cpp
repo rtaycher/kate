@@ -61,6 +61,15 @@ void TextBuffer::clear ()
   emit cleared (this);
 }
 
+TextLine TextBuffer::line (int line) const
+{
+  // get block, this will assert on invalid line
+  int blockIndex = blockForLine (line);
+
+  // get line
+  return m_blocks[blockIndex]->line (line);
+}
+
 QString TextBuffer::text () const
 {
   QString text;

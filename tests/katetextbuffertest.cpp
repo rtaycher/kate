@@ -50,12 +50,19 @@ int main (int argc, char *argv[])
   buffer.debugPrint ("Two empty lines");
   Q_ASSERT (buffer.text () == "\n");
 
+  // remember second line
+  Kate::TextLine second = buffer.line (1);
+
   // unwrap second line
   buffer.startEditing ();
   buffer.unwrapLine (1);
   buffer.finishEditing ();
   buffer.debugPrint ("One empty line");
   Q_ASSERT (buffer.text () == "");
+
+  // second text line should be still there
+  //const QString &secondText = second->text ();
+  //Q_ASSERT (secondText == "")
 
   // insert text
   buffer.startEditing ();

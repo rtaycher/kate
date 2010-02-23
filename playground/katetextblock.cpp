@@ -42,6 +42,15 @@ void TextBlock::setStartLine (int startLine)
   m_startLine = startLine;
 }
 
+TextLine TextBlock::line (int line) const
+{
+  // calc internal line
+  line = line - startLine ();
+
+  // get text line
+  return m_lines[line];
+}
+
 void TextBlock::text (QString &text) const
 {
   // combine all lines

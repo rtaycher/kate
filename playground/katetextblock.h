@@ -62,6 +62,13 @@ class TextBlock {
     void setStartLine (int startLine);
 
     /**
+     * Retrieve a text line.
+     * @param line wanted line number
+     * @return text line
+     */
+    TextLine line (int line) const;
+
+    /**
      * Append a new line.
      * @param line line to append
      */

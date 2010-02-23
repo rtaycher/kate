@@ -79,6 +79,13 @@ class TextBuffer : public QObject {
     int lines () const { Q_ASSERT (m_lines > 0); return m_lines; }
 
     /**
+     * Retrieve a text line.
+     * @param line wanted line number
+     * @return text line
+     */
+    TextLine line (int line) const;
+
+    /**
      * Retrieve text of complete buffer.
      * @return text for this buffer, lines separated by '\n'
      */
