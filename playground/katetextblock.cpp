@@ -42,6 +42,18 @@ void TextBlock::setStartLine (int startLine)
   m_startLine = startLine;
 }
 
+void TextBlock::text (QString &text) const
+{
+  // combine all lines
+  for (int i = 0; i < m_lines.size(); ++i) {
+      // not first line, insert \n
+      if (i > 0 || startLine() > 0)
+        text.append ('\n');
+
+      text.append (m_lines[i]->text ());
+  }
+}
+
 void TextBlock::wrapLine (const KTextEditor::Cursor &position)
 {
   // calc internal line

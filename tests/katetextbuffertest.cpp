@@ -46,7 +46,7 @@ int main (int argc, char *argv[])
   buffer.wrapLine (KTextEditor::Cursor (0, 0));
   buffer.finishEditing ();
   buffer.debugPrint ("Two empty lines");
-
+  Q_ASSERT (buffer.text () == "\n");
 
   return 0;
 }

@@ -74,6 +74,12 @@ class TextBlock {
     int lines () const { return m_lines.size(); }
 
     /**
+     * Retrieve text of block.
+     * @param text for this block, lines separated by '\n'
+     */
+    void text (QString &text) const;
+
+    /**
      * Wrap line at given cursor position.
      * @param position line/column as cursor where to wrap
      * @param nextBlock next block, if any

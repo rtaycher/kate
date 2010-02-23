@@ -61,6 +61,18 @@ void TextBuffer::clear ()
   emit cleared (this);
 }
 
+QString TextBuffer::text () const
+{
+  QString text;
+
+  // combine all blocks
+  for (int i = 0; i < m_blocks.size(); ++i)
+    m_blocks[i]->text (text);
+
+  // return generated string
+  return text;
+}
+
 void TextBuffer::startEditing ()
 {
   // increment transaction counter

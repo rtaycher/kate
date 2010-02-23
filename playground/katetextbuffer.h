@@ -79,6 +79,12 @@ class TextBuffer : public QObject {
     int lines () const { Q_ASSERT (m_lines > 0); return m_lines; }
 
     /**
+     * Retrieve text of complete buffer.
+     * @return text for this buffer, lines separated by '\n'
+     */
+    QString text () const;
+
+    /**
      * Start an editing transaction, the wrapLine/unwrapLine/insertText and removeText functions
      * are only to be allowed to be called inside a editing transaction.
      * Editing transactions can stack. The number startEdit and endEdit calls must match.
