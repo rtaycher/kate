@@ -33,6 +33,9 @@ TextBuffer::TextBuffer (QObject *parent)
 
 TextBuffer::~TextBuffer ()
 {
+  // not allowed during editing
+  Q_ASSERT (m_editingTransactions == 0);
+
   // delete all blocks
   qDeleteAll (m_blocks);
 }

@@ -41,5 +41,12 @@ int main (int argc, char *argv[])
   // print debug
   buffer.debugPrint ("Empty Buffer");
 
+  // wrap first line
+  buffer.startEditing ();
+  buffer.wrapLine (KTextEditor::Cursor (0, 0));
+  buffer.finishEditing ();
+  buffer.debugPrint ("Two empty lines");
+
+
   return 0;
 }

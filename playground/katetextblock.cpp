@@ -44,6 +44,27 @@ void TextBlock::setStartLine (int startLine)
 
 void TextBlock::wrapLine (const KTextEditor::Cursor &position)
 {
+  // calc internal line
+  int line = position.line () - startLine ();
+
+  // get text
+  QString &text = m_lines[line]->text ();
+
+  // check if valid column
+  Q_ASSERT (position.column() >= 0);
+  Q_ASSERT (position.column() <= text.size());
+
+  // create new line and insert it
+  m_lines.insert (m_lines.begin() + line + 1, TextLine (new TextLineData()));
+
+  // perhaps remove some text from previous line and append it
+  if (position.column() < text.size ()) {
+    // append text from old line first to new one
+    m_lines[line+1]->text().append (text.right (text.size() - position.column()));
+
+    // now remove it
+    text.truncate (text.size() - position.column());
+  }
 }
 
 void TextBlock::unwrapLine (int line, TextBlock *previousBlock)
