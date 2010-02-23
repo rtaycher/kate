@@ -114,6 +114,7 @@ void TextBuffer::wrapLine (const KTextEditor::Cursor &position)
   // this can only lead to one more line in this block
   // no other blocks will change
   m_blocks[blockIndex]->wrapLine (position);
+  ++m_lines;
 
   // fixup all following blocks
   fixStartLines (blockIndex);
@@ -137,6 +138,7 @@ void TextBuffer::unwrapLine (int line)
   // this can either lead to one line less in this block or the previous one
   // the previous one could even end up with zero lines
   m_blocks[blockIndex]->unwrapLine (line, (blockIndex > 0) ? m_blocks[blockIndex-1] : 0);
+  --m_lines;
 
   // handle the case that previous block gets empty
   if ((blockIndex > 0) && (m_blocks[blockIndex-1]->lines () == 0)) {

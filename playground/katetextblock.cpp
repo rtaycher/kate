@@ -81,6 +81,26 @@ void TextBlock::wrapLine (const KTextEditor::Cursor &position)
 
 void TextBlock::unwrapLine (int line, TextBlock *previousBlock)
 {
+  // calc internal line
+  line = line - startLine ();
+
+  // two possiblities: either first line of this block or later line
+  if (line == 0) {
+      // we need previous block with at least one line
+      Q_ASSERT (previousBlock);
+      Q_ASSERT (previousBlock->lines () > 0);
+
+      // move last line of previous block to this one, might result in empty block
+      m_lines.first()->text().prepend (previousBlock->m_lines.last()->text());
+      previousBlock->m_lines.erase (previousBlock->m_lines.begin() + (previousBlock->lines () - 1));
+
+      // patch startLine of this block
+      --m_startLine;
+  } else {
+      // easy: just move text to previous line and remove current one
+      m_lines[line-1]->text().append (m_lines[line]->text());
+      m_lines.erase (m_lines.begin () + line);
+  }
 }
 
 void TextBlock::insertText (const KTextEditor::Cursor &position, const QString &text)
@@ -98,6 +118,5 @@ void TextBlock::debugPrint () const
     printf ("%4d : %4d : '%s'\n", startLine() + i
       , m_lines[i]->text().size(), qPrintable (m_lines[i]->text()));
 }
-
 
 }

@@ -31,6 +31,7 @@ int main (int argc, char *argv[])
 
   // one line per default
   Q_ASSERT (buffer.lines() == 1);
+  Q_ASSERT (buffer.text () == "");
 
   // start editing
   buffer.startEditing ();
@@ -40,6 +41,7 @@ int main (int argc, char *argv[])
 
   // print debug
   buffer.debugPrint ("Empty Buffer");
+  Q_ASSERT (buffer.text () == "");
 
   // wrap first line
   buffer.startEditing ();
@@ -47,6 +49,13 @@ int main (int argc, char *argv[])
   buffer.finishEditing ();
   buffer.debugPrint ("Two empty lines");
   Q_ASSERT (buffer.text () == "\n");
+
+  // unwrap second line
+  buffer.startEditing ();
+  buffer.unwrapLine (1);
+  buffer.finishEditing ();
+  buffer.debugPrint ("One empty line");
+  Q_ASSERT (buffer.text () == "");
 
   return 0;
 }
