@@ -74,4 +74,52 @@ void TextBuffer::finishEditing ()
     return;
 }
 
+//BEGIN text manipulation functions
+void TextBuffer::wrapLine (const KTextEditor::Cursor &position)
+{
+  // disallow invalid cursor position (line or column -1)
+  Q_ASSERT(position.isValid());
+  // make sure cursor is in document range
+  Q_ASSERT(position.line() < m_lines());
+
+  // TODO: implement
+}
+
+void TextBuffer::unwrapLine (int line)
+{
+  // only accept valid line to unwrap
+  Q_ASSERT(line >= 0 && line < m_lines());
+
+  // TODO: implement
+}
+
+void TextBuffer::insertText (const KTextEditor::Cursor &position, const QString &text)
+{
+  // disallow invalid cursor position (line or column -1)
+  Q_ASSERT(position.isValid());
+  // make sure cursor is in document range
+  Q_ASSERT(position.line() < m_lines());
+
+  // TODO: implement
+}
+
+void TextBuffer::removeText (const KTextEditor::Range &range)
+{
+  // disallow invalid cursor position (line or column -1)
+  Q_ASSERT(range.isValid());
+  // make sure cursor is in document range
+  Q_ASSERT(position.line() < m_lines());
+
+  // TODO: implement
+}
+//END text manipulation functions
+
+TextLine TextBuffer::textLine(int line)
+{
+  // only accept valid as request
+  Q_ASSERT(line >= 0 && line < m_lines);
+
+  return TextLine();
+}
+
 }

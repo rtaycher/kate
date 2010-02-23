@@ -34,6 +34,8 @@ class KateTextBufferTest : public QObject
 
   private Q_SLOTS:
     void basicBufferTest();
+    void wrapLineTest();
+    void insertRemoveTextTest();
 };
 
 #endif // KATEBUFFERTEST_H

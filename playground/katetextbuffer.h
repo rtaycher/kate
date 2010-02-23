@@ -115,6 +115,13 @@ class TextBuffer : public QObject {
      */
     bool save (const QString &filename);
 
+    /**
+     * Get given text line.
+     * @param line line
+     * @return text line
+     */
+    TextLine textLine(int line);
+
   Q_SIGNALS:
     /**
      * Buffer got cleared. This is emited when constructor or load have called clear() internally,

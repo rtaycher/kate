@@ -48,3 +48,30 @@ void KateTextBufferTest::basicBufferTest()
   // end editing
   buffer.finishEditing ();
 }
+
+void KateTextBufferTest::wrapLineTest()
+{
+  // construct an empty text buffer
+  Kate::TextBuffer buffer;
+
+  // wrap first empty line -> we should have two empty lines
+  buffer.wrapLine(KTextEditor::Cursor(0, 0));
+
+  QCOMPARE(buffer.lines(), 2);
+  const QString& textLine0(buffer.textLine(0)->text());
+  const QString& textLine1(buffer.textLine(1)->text());
+  QVERIFY(textLine0.isEmpty());
+  QVERIFY(textLine1.isEmpty());
+
+  // unwrap again -> only one empty line
+  buffer.unwrapLine(0);
+
+  QCOMPARE(buffer.lines(), 1);
+  const QString& textLine(buffer.textLine(0)->text());
+  QVERIFY(textLine.isEmpty());
+}
+
+void KateTextBufferTest::insertRemoveTextTest()
+{
+  // TODO implement
+}

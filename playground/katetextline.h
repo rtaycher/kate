@@ -60,7 +60,7 @@ class TextLineData {
      * This accessor is private, only the friend class text buffer is allowed to access the text read/write.
      * @return text of this line
      */
-    QString &text () { return m_text; }
+//     QString &text () { return m_text; } // FIXME: atm const, otherwise test case tries to use non-const function?!?
 
   private:
     /**
