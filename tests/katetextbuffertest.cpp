@@ -57,5 +57,20 @@ int main (int argc, char *argv[])
   buffer.debugPrint ("One empty line");
   Q_ASSERT (buffer.text () == "");
 
+  // insert text
+  buffer.startEditing ();
+  buffer.insertText (KTextEditor::Cursor (0, 0), "testremovetext");
+  buffer.finishEditing ();
+  buffer.debugPrint ("One line");
+  Q_ASSERT (buffer.text () == "testremovetext");
+
+  // remove text
+  buffer.startEditing ();
+  buffer.removeText (KTextEditor::Range (KTextEditor::Cursor (0, 4), KTextEditor::Cursor (0, 10)));
+  buffer.finishEditing ();
+  buffer.debugPrint ("One line");
+  Q_ASSERT (buffer.text () == "testtext");
+
+
   return 0;
 }

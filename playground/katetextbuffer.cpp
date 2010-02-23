@@ -182,6 +182,10 @@ void TextBuffer::removeText (const KTextEditor::Range &range)
   // only ranges on one line are supported
   Q_ASSERT (range.start().line() == range.end().line());
 
+  // start colum <= end column and >= 0
+  Q_ASSERT (range.start().column() <= range.end().column());
+  Q_ASSERT (range.start().column() >= 0);
+
   // get block, this will assert on invalid line
   int blockIndex = blockForLine (range.start().line());
 

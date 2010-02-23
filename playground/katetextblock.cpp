@@ -105,10 +105,39 @@ void TextBlock::unwrapLine (int line, TextBlock *previousBlock)
 
 void TextBlock::insertText (const KTextEditor::Cursor &position, const QString &text)
 {
+  // calc internal line
+  int line = position.line () - startLine ();
+
+  // get text
+  QString &textOfLine = m_lines[line]->text ();
+
+  // check if valid column
+  Q_ASSERT (position.column() >= 0);
+  Q_ASSERT (position.column() <= textOfLine.size());
+
+  // insert text
+  textOfLine.insert (position.column(), text);
 }
 
 void TextBlock::removeText (const KTextEditor::Range &range, QString &removedText)
 {
+  // calc internal line
+  int line = range.start().line () - startLine ();
+
+  // get text
+  QString &textOfLine = m_lines[line]->text ();
+
+  // check if valid column
+  Q_ASSERT (range.start().column() >= 0);
+  Q_ASSERT (range.start().column() <= textOfLine.size());
+  Q_ASSERT (range.end().column() >= 0);
+  Q_ASSERT (range.end().column() <= textOfLine.size());
+
+  // get text which will be removed
+  removedText = textOfLine.mid (range.start().column(), range.end().column() - range.start().column());
+
+  // remove text
+  textOfLine.remove (range.start().column(), range.end().column() - range.start().column());
 }
 
 void TextBlock::debugPrint () const
