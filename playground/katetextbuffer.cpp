@@ -41,7 +41,7 @@ void TextBuffer::clear ()
   m_blocks.clear ();
 
   // create one block with one empty line
-  m_blocks.append (TextBlock (this));
+  m_blocks.append (TextBlock (this, 0));
   TextBlock &block = m_blocks.first ();
 
   // reset lines
@@ -73,5 +73,43 @@ void TextBuffer::finishEditing ()
   if (m_editingTransactions > 0)
     return;
 }
+
+int TextBuffer::blockForLine (int line) const
+{
+  // only allow valid lines
+  Q_ASSERT (line >= 0);
+  Q_ASSERT (line < lines());
+  
+  // search block
+  for (int index = 0; index < m_blocks.size(); ++index) {
+      if (line >= m_blocks[index].startLine()
+	&& line < m_blocks[index].startLine() + m_blocks[index].lines ())
+	return index;
+  }
+  
+  // we should always find a block
+  Q_ASSERT (false);
+  return -1;
+}
+
+void TextBuffer::fixStartLine (int startBlock)
+{
+  // only allow valid start block
+  Q_ASSERT (startBlock >= 0);
+  Q_ASSERT (startBlock < m_blocks.size());
+  
+  // new start line for next block
+  int newStartLine = m_blocks[startBlock].startLine () + m_blocks[startBlock].lines ();
+  
+  // fixup block
+  for (int index = startBlock + 1; index < m_blocks.size(); ++index) {
+    // set new start line
+    m_blocks[index].setStartLine (newStartLine);
+    
+    // calculate next start line
+    newStartLine += m_blocks[index].lines ();
+  }
+}
+
 
 }

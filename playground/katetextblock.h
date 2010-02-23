@@ -40,14 +40,33 @@ class TextBlock {
     /**
      * Construct an empty text block.
      * @param buffer parent text buffer
+     * @param startLine start line of this block
      */
-    TextBlock (TextBuffer *buffer);
+    TextBlock (TextBuffer *buffer, int startLine);
 
     /**
      * Destruct the text block
      */
     ~TextBlock ();
 
+    /**
+     * Start line of this block.
+     * @return start line of this block
+     */
+    int startLine () const { return m_startLine; }
+    
+    /**
+     * Set start line of this block.
+     * @param startLine new start line of this block
+     */
+    void setStartLine (int startLine);
+    
+    /**
+     * Number of lines in this block.
+     * @return number of lines
+     */
+    int lines () const { return m_lines.size(); }
+    
     /**
      * Wrap line at given cursor position.
      * @param position line/column as cursor where to wrap
@@ -85,6 +104,11 @@ class TextBlock {
      * Lines contained in this buffer. These are shard pointers.
      */
     QList<Kate::TextLine> m_lines;
+    
+    /**
+     * Startline of this block
+     */
+    int m_startLine;
 };
 
 }

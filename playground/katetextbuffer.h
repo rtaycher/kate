@@ -125,6 +125,20 @@ class TextBuffer : public QObject {
 
   private:
     /**
+     * Find block containing given line.
+     * @param line we want to find block for this line
+     * @return index of found block
+     */
+    int blockForLine (int line) const;
+    
+    /**
+     * Fix start line of all blocks after the given one
+     * @param startBlock index of block from which we start to fix
+     */
+    void fixStartLine (int startBlock);
+    
+  private:
+    /**
      * List of blocks which contain the lines of this buffer
      */
     QList<TextBlock> m_blocks;

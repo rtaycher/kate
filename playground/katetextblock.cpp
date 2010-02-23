@@ -23,13 +23,24 @@
 
 namespace Kate {
 
-TextBlock::TextBlock (TextBuffer *buffer)
+TextBlock::TextBlock (TextBuffer *buffer, int startLine)
   : m_buffer (buffer)
+  , m_startLine (startLine)
 {
 }
 
 TextBlock::~TextBlock ()
 {
 }
+
+void TextBlock::setStartLine (int startLine)
+{
+  // allow only valid lines
+  Q_ASSERT (startLine >= 0);
+  Q_ASSERT (startLine < m_buffer->lines ());
+  
+  m_startLine = startLine;
+}
+
 
 }
