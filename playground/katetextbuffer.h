@@ -37,6 +37,9 @@ namespace Kate {
  * The interface is line based, internally the text will be stored in blocks of text lines.
  */
 class TextBuffer : public QObject {
+  friend class TextCursor;
+  friend class TextRange;
+
   Q_OBJECT
 
   public:
@@ -192,6 +195,13 @@ class TextBuffer : public QObject {
      * @param startBlock index of block from which we start to fix
      */
     void fixStartLines (int startBlock);
+
+    /**
+     * Block for given index in block list.
+     * @param index block index
+     * @return block matching this index
+     */
+    TextBlock *blockForIndex (int index) { return m_blocks[index]; }
 
   public:
     /**

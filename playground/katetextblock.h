@@ -37,6 +37,9 @@ class TextBuffer;
  * This is used to build up a Kate::TextBuffer.
  */
 class TextBlock {
+  friend class TextCursor;
+  friend class TextRange;
+
   public:
     /**
      * Construct an empty text block.
@@ -128,7 +131,7 @@ class TextBlock {
     TextBuffer *m_buffer;
 
     /**
-     * Lines contained in this buffer. These are shard pointers.
+     * Lines contained in this buffer. These are shared pointers.
      */
     QList<Kate::TextLine> m_lines;
 

@@ -69,7 +69,7 @@ void TextBlock::wrapLine (const KTextEditor::Cursor &position)
   int line = position.line () - startLine ();
 
   // get text
-  QString &text = m_lines[line]->text ();
+  QString &text = m_lines[line]->textReadWrite ();
 
   // check if valid column
   Q_ASSERT (position.column() >= 0);
@@ -81,7 +81,7 @@ void TextBlock::wrapLine (const KTextEditor::Cursor &position)
   // perhaps remove some text from previous line and append it
   if (position.column() < text.size ()) {
     // text from old line moved first to new one
-    m_lines[line+1]->text() = text.right (text.size() - position.column());
+    m_lines[line+1]->textReadWrite() = text.right (text.size() - position.column());
 
     // now remove wrapped text from old line
     text.chop (text.size() - position.column());
@@ -100,14 +100,14 @@ void TextBlock::unwrapLine (int line, TextBlock *previousBlock)
       Q_ASSERT (previousBlock->lines () > 0);
 
       // move last line of previous block to this one, might result in empty block
-      m_lines.first()->text().prepend (previousBlock->m_lines.last()->text());
+      m_lines.first()->textReadWrite().prepend (previousBlock->m_lines.last()->text());
       previousBlock->m_lines.erase (previousBlock->m_lines.begin() + (previousBlock->lines () - 1));
 
       // patch startLine of this block
       --m_startLine;
   } else {
       // easy: just move text to previous line and remove current one
-      m_lines[line-1]->text().append (m_lines[line]->text());
+      m_lines[line-1]->textReadWrite().append (m_lines[line]->text());
       m_lines.erase (m_lines.begin () + line);
   }
 }
@@ -118,7 +118,7 @@ void TextBlock::insertText (const KTextEditor::Cursor &position, const QString &
   int line = position.line () - startLine ();
 
   // get text
-  QString &textOfLine = m_lines[line]->text ();
+  QString &textOfLine = m_lines[line]->textReadWrite ();
 
   // check if valid column
   Q_ASSERT (position.column() >= 0);
@@ -134,7 +134,7 @@ void TextBlock::removeText (const KTextEditor::Range &range, QString &removedTex
   int line = range.start().line () - startLine ();
 
   // get text
-  QString &textOfLine = m_lines[line]->text ();
+  QString &textOfLine = m_lines[line]->textReadWrite ();
 
   // check if valid column
   Q_ASSERT (range.start().column() >= 0);

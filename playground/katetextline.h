@@ -61,7 +61,7 @@ class TextLineData {
      * This accessor is private, only the friend class text buffer is allowed to access the text read/write.
      * @return text of this line
      */
-    QString &text () { return m_text; }
+    QString &textReadWrite () { return m_text; }
 
   private:
     /**

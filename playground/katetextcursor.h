@@ -2,6 +2,9 @@
  *
  *  Copyright (C) 2010 Christoph Cullmann <cullmann@kde.org>
  *
+ *  Based on code of the SmartCursor/Range by:
+ *  Copyright (C) 2003-2005 Hamish Rodda <rodda@kde.org>
+ *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License as published by the Free Software Foundation; either
@@ -25,6 +28,7 @@
 
 namespace Kate {
 
+class TextBuffer;
 class TextBlock;
 class TextRange;
 
@@ -34,18 +38,81 @@ class TextRange;
 class TextCursor : public KTextEditor::Cursor {
   public:
     /**
-     * Construct a text cursor.
-     * @param block text block this cursor belongs to
-     * @param range range this cursor belongs to
+     * \}
+     *
+     * \name Behavior
+     *
+     * The following functions relate to the behavior of this SmartCursor.
+     * \{
      */
-    TextCursor (TextBlock *block, TextRange *range);
+    enum InsertBehavior {
+      StayOnInsert = 0,
+      MoveOnInsert
+    };
+
+    /**
+     * Construct a text cursor.
+     * @param buffer text buffer this cursor belongs to
+     * @param position wanted cursor position, if not valid for given buffer, will lead to invalid cursor
+     * @param insertBehavior behavior of this cursor on insert
+     */
+    TextCursor (TextBuffer *buffer, const KTextEditor::Cursor &position, InsertBehavior insertBehavior);
 
     /**
      * Destruct the text block
      */
     ~TextCursor ();
 
+    /**
+     * Set the current cursor position to \e position.
+     *
+     * \param position new cursor position
+     */
+    virtual void setPosition(const Cursor& position);
+
+    /**
+     * \overload
+     *
+     * Set the cursor position to \e line and \e column.
+     *
+     * \param line new cursor line
+     * \param column new cursor column
+     */
+    void setPosition(int line, int column);
+
+    /**
+     * Retrieve the line on which this cursor is situated.
+     * \return line number, where 0 is the first line.
+     */
+    virtual int line() const;
+
+    /**
+     * Set the cursor line to \e line.
+     * \param line new cursor line
+     */
+    virtual void setLine(int line);
+
+    /**
+     * Set the cursor column to \e column.
+     * \param column new cursor column
+     */
+    virtual void setColumn(int column);
+
   private:
+    /**
+     * Set the current cursor position to \e position.
+     *
+     * @param position new cursor position
+     * @param init is this the initial setup of the position in the constructor?
+     */
+    void setPosition(const Cursor& position, bool init);
+
+  private:
+    /**
+     * parent text buffer
+     */
+    TextBuffer *m_buffer;
+
     /**
      * parent text block, valid cursors always belong to a block, else they are invalid.
      */
@@ -56,6 +123,11 @@ class TextCursor : public KTextEditor::Cursor {
      * may be null, then no range owns this cursor
      */
     TextRange *m_range;
+
+    /**
+     * should this cursor move on insert
+     */
+    bool m_moveOnInsert;
 };
 
 }
