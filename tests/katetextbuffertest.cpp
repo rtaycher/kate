@@ -118,4 +118,11 @@ void KateTextBufferTest::insertRemoveTextTest()
   buffer.finishEditing ();
   buffer.debugPrint ("Two line");
   Q_ASSERT (buffer.text () == "te\nsttext");
+
+  // unwrap text
+  buffer.startEditing ();
+  buffer.unwrapLine (1);
+  buffer.finishEditing ();
+  buffer.debugPrint ("One line");
+  Q_ASSERT (buffer.text () == "testtext");
 }
