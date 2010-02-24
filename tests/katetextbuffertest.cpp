@@ -21,6 +21,7 @@
 
 #include "katetextbuffertest.h"
 #include "katetextbuffer.h"
+#include "katetextcursor.h"
 
 QTEST_MAIN(KateTextBufferTest)
 
@@ -125,4 +126,32 @@ void KateTextBufferTest::insertRemoveTextTest()
   buffer.finishEditing ();
   buffer.debugPrint ("One line");
   Q_ASSERT (buffer.text () == "testtext");
+}
+
+void KateTextBufferTest::cursorTest()
+{
+  // construct an empty text buffer
+  Kate::TextBuffer buffer;
+
+  // wrap first line
+  buffer.startEditing ();
+  buffer.insertText (KTextEditor::Cursor (0, 0), "sfdfjdsklfjlsdfjlsdkfjskldfjklsdfjklsdjkfl");
+  buffer.wrapLine (KTextEditor::Cursor (0, 8));
+  buffer.wrapLine (KTextEditor::Cursor (1, 8));
+  buffer.wrapLine (KTextEditor::Cursor (2, 8));
+  buffer.finishEditing ();
+  buffer.debugPrint ("Cursor buffer");
+
+  // construct cursor
+  Kate::TextCursor *cursor = new Kate::TextCursor (&buffer, KTextEditor::Cursor (0, 0), Kate::TextCursor::MoveOnInsert);
+  printf ("cursor %d, %d\n", cursor->line(), cursor->column());
+
+  cursor = new Kate::TextCursor (&buffer, KTextEditor::Cursor (1, 8), Kate::TextCursor::MoveOnInsert);
+  printf ("cursor %d, %d\n", cursor->line(), cursor->column());
+
+  cursor = new Kate::TextCursor (&buffer, KTextEditor::Cursor (0, 123), Kate::TextCursor::MoveOnInsert);
+  printf ("cursor %d, %d\n", cursor->line(), cursor->column());
+
+  cursor = new Kate::TextCursor (&buffer, KTextEditor::Cursor (1323, 1), Kate::TextCursor::MoveOnInsert);
+  printf ("cursor %d, %d\n", cursor->line(), cursor->column());
 }
