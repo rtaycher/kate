@@ -33,22 +33,53 @@ TextBuffer::TextBuffer (QObject *parent)
 
 TextBuffer::~TextBuffer ()
 {
+  // not allowed during editing
+  Q_ASSERT (m_editingTransactions == 0);
+
+  // delete all blocks
+  qDeleteAll (m_blocks);
 }
 
 void TextBuffer::clear ()
 {
+  // not allowed during editing
+  Q_ASSERT (m_editingTransactions == 0);
+
   // kill all buffer blocks
+  qDeleteAll (m_blocks);
   m_blocks.clear ();
 
   // create one block with one empty line
-  m_blocks.append (TextBlock (this));
-  TextBlock &block = m_blocks.first ();
+  m_blocks.append (new TextBlock (this, 0));
+  TextBlock *block = m_blocks.first ();
+  block->appendLine (TextLine (new TextLineData()));
 
   // reset lines
   m_lines = 1;
 
   // we got cleared
   emit cleared (this);
+}
+
+TextLine TextBuffer::line (int line) const
+{
+  // get block, this will assert on invalid line
+  int blockIndex = blockForLine (line);
+
+  // get line
+  return m_blocks[blockIndex]->line (line);
+}
+
+QString TextBuffer::text () const
+{
+  QString text;
+
+  // combine all blocks
+  for (int i = 0; i < m_blocks.size(); ++i)
+    m_blocks[i]->text (text);
+
+  // return generated string
+  return text;
 }
 
 void TextBuffer::startEditing ()
@@ -59,6 +90,9 @@ void TextBuffer::startEditing ()
   // if not first running transaction, do nothing
   if (m_editingTransactions > 1)
     return;
+
+  // transaction has started
+  emit editingStarted (this);
 }
 
 void TextBuffer::finishEditing ()
@@ -72,54 +106,151 @@ void TextBuffer::finishEditing ()
   // if not last running transaction, do nothing
   if (m_editingTransactions > 0)
     return;
+
+  // transaction has finished
+  emit editingFinished (this);
 }
 
-//BEGIN text manipulation functions
 void TextBuffer::wrapLine (const KTextEditor::Cursor &position)
 {
-  // disallow invalid cursor position (line or column -1)
-  Q_ASSERT(position.isValid());
-  // make sure cursor is in document range
-  Q_ASSERT(position.line() < m_lines());
+  // only allowed if editing transaction running
+  Q_ASSERT (m_editingTransactions > 0);
 
-  // TODO: implement
+  // get block, this will assert on invalid line
+  int blockIndex = blockForLine (position.line());
+
+  // let the block handle the wrapLine
+  // this can only lead to one more line in this block
+  // no other blocks will change
+  m_blocks[blockIndex]->wrapLine (position);
+  ++m_lines;
+
+  // fixup all following blocks
+  fixStartLines (blockIndex);
+
+  // emit signal about done change
+  emit lineWrapped (this, position);
 }
 
 void TextBuffer::unwrapLine (int line)
 {
-  // only accept valid line to unwrap
-  Q_ASSERT(line >= 0 && line < m_lines());
+  // only allowed if editing transaction running
+  Q_ASSERT (m_editingTransactions > 0);
 
-  // TODO: implement
+  // line 0 can't be unwrapped
+  Q_ASSERT (line > 0);
+
+  // get block, this will assert on invalid line
+  int blockIndex = blockForLine (line);
+
+  // let the block handle the unwrapLine
+  // this can either lead to one line less in this block or the previous one
+  // the previous one could even end up with zero lines
+  m_blocks[blockIndex]->unwrapLine (line, (blockIndex > 0) ? m_blocks[blockIndex-1] : 0);
+  --m_lines;
+
+  // handle the case that previous block gets empty
+  if ((blockIndex > 0) && (m_blocks[blockIndex-1]->lines () == 0)) {
+      // decrement index for later fixup
+      --blockIndex;
+
+      // delete empty block
+      delete m_blocks[blockIndex];
+
+      // and remove it
+      m_blocks.erase (m_blocks.begin() + blockIndex);
+  }
+
+  // fixup all following blocks
+  fixStartLines (blockIndex);
+
+  // emit signal about done change
+  emit lineUnwrapped (this, line);
 }
 
 void TextBuffer::insertText (const KTextEditor::Cursor &position, const QString &text)
 {
-  // disallow invalid cursor position (line or column -1)
-  Q_ASSERT(position.isValid());
-  // make sure cursor is in document range
-  Q_ASSERT(position.line() < m_lines());
+  // only allowed if editing transaction running
+  Q_ASSERT (m_editingTransactions > 0);
 
-  // TODO: implement
+  // get block, this will assert on invalid line
+  int blockIndex = blockForLine (position.line());
+
+  // let the block handle the insertText
+  m_blocks[blockIndex]->insertText (position, text);
+
+  // emit signal about done change
+  emit textInserted (this, position, text);
 }
 
 void TextBuffer::removeText (const KTextEditor::Range &range)
 {
-  // disallow invalid cursor position (line or column -1)
-  Q_ASSERT(range.isValid());
-  // make sure cursor is in document range
-  Q_ASSERT(position.line() < m_lines());
+  // only allowed if editing transaction running
+  Q_ASSERT (m_editingTransactions > 0);
 
-  // TODO: implement
+  // only ranges on one line are supported
+  Q_ASSERT (range.start().line() == range.end().line());
+
+  // start colum <= end column and >= 0
+  Q_ASSERT (range.start().column() <= range.end().column());
+  Q_ASSERT (range.start().column() >= 0);
+
+  // get block, this will assert on invalid line
+  int blockIndex = blockForLine (range.start().line());
+
+  // let the block handle the removeText, retrieve removed text
+  QString text;
+  m_blocks[blockIndex]->removeText (range, text);
+
+  // emit signal about done change
+  emit textRemoved (this, range, text);
 }
-//END text manipulation functions
 
-TextLine TextBuffer::textLine(int line)
+int TextBuffer::blockForLine (int line) const
 {
-  // only accept valid as request
-  Q_ASSERT(line >= 0 && line < m_lines);
+  // only allow valid lines
+  Q_ASSERT (line >= 0);
+  Q_ASSERT (line < lines());
 
-  return TextLine();
+  // search block
+  for (int index = 0; index < m_blocks.size(); ++index) {
+      if (line >= m_blocks[index]->startLine()
+	&& line < m_blocks[index]->startLine() + m_blocks[index]->lines ())
+	return index;
+  }
+
+  // we should always find a block
+  Q_ASSERT (false);
+  return -1;
+}
+
+void TextBuffer::fixStartLines (int startBlock)
+{
+  // only allow valid start block
+  Q_ASSERT (startBlock >= 0);
+  Q_ASSERT (startBlock < m_blocks.size());
+
+  // new start line for next block
+  int newStartLine = m_blocks[startBlock]->startLine () + m_blocks[startBlock]->lines ();
+
+  // fixup block
+  for (int index = startBlock + 1; index < m_blocks.size(); ++index) {
+    // set new start line
+    m_blocks[index]->setStartLine (newStartLine);
+
+    // calculate next start line
+    newStartLine += m_blocks[index]->lines ();
+  }
+}
+
+void TextBuffer::debugPrint (const QString &title) const
+{
+  // print header with title
+  printf ("%s\n", qPrintable (title));
+
+  // print all blocks
+  for (int i = 0; i < m_blocks.size(); ++i)
+    m_blocks[i]->debugPrint ();
 }
 
 }

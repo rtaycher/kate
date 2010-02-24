@@ -33,8 +33,9 @@ namespace Kate {
  */
 class TextLineData {
   /**
-   * TextBlock is a friend class, only one allowed to touch the text content.
+   * TextBuffer/Block are friend classes, only ones allowed to touch the text content.
    */
+  friend class TextBuffer;
   friend class TextBlock;
 
   public:
@@ -60,7 +61,7 @@ class TextLineData {
      * This accessor is private, only the friend class text buffer is allowed to access the text read/write.
      * @return text of this line
      */
-//     QString &text () { return m_text; } // FIXME: atm const, otherwise test case tries to use non-const function?!?
+    QString &text () { return m_text; }
 
   private:
     /**

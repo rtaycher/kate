@@ -39,7 +39,8 @@ void KateTextBufferTest::basicBufferTest()
   Kate::TextBuffer buffer;
 
   // one line per default
-  QCOMPARE(buffer.lines(), 1);
+  Q_ASSERT (buffer.lines() == 1);
+  Q_ASSERT (buffer.text () == "");
 
   //FIXME: use QTestLib macros for checking the correct state
   // start editing
@@ -55,23 +56,66 @@ void KateTextBufferTest::wrapLineTest()
   Kate::TextBuffer buffer;
 
   // wrap first empty line -> we should have two empty lines
+  buffer.startEditing ();
   buffer.wrapLine(KTextEditor::Cursor(0, 0));
-
-  QCOMPARE(buffer.lines(), 2);
-  const QString& textLine0(buffer.textLine(0)->text());
-  const QString& textLine1(buffer.textLine(1)->text());
-  QVERIFY(textLine0.isEmpty());
-  QVERIFY(textLine1.isEmpty());
+  buffer.finishEditing ();
+  buffer.debugPrint ("Two empty lines");
+  Q_ASSERT (buffer.text () == "\n");
 
   // unwrap again -> only one empty line
-  buffer.unwrapLine(0);
+  buffer.startEditing ();
+  buffer.unwrapLine(1);
+  buffer.finishEditing ();
 
-  QCOMPARE(buffer.lines(), 1);
-  const QString& textLine(buffer.textLine(0)->text());
-  QVERIFY(textLine.isEmpty());
+  // print debug
+  buffer.debugPrint ("Empty Buffer");
+  Q_ASSERT (buffer.text () == "");
 }
 
 void KateTextBufferTest::insertRemoveTextTest()
 {
-  // TODO implement
+  // construct an empty text buffer
+  Kate::TextBuffer buffer;
+
+  // wrap first line
+  buffer.startEditing ();
+  buffer.wrapLine (KTextEditor::Cursor (0, 0));
+  buffer.finishEditing ();
+  buffer.debugPrint ("Two empty lines");
+  Q_ASSERT (buffer.text () == "\n");
+
+  // remember second line
+  Kate::TextLine second = buffer.line (1);
+
+  // unwrap second line
+  buffer.startEditing ();
+  buffer.unwrapLine (1);
+  buffer.finishEditing ();
+  buffer.debugPrint ("One empty line");
+  Q_ASSERT (buffer.text () == "");
+
+  // second text line should be still there
+  //const QString &secondText = second->text ();
+  //Q_ASSERT (secondText == "")
+
+  // insert text
+  buffer.startEditing ();
+  buffer.insertText (KTextEditor::Cursor (0, 0), "testremovetext");
+  buffer.finishEditing ();
+  buffer.debugPrint ("One line");
+  Q_ASSERT (buffer.text () == "testremovetext");
+
+  // remove text
+  buffer.startEditing ();
+  buffer.removeText (KTextEditor::Range (KTextEditor::Cursor (0, 4), KTextEditor::Cursor (0, 10)));
+  buffer.finishEditing ();
+  buffer.debugPrint ("One line");
+  Q_ASSERT (buffer.text () == "testtext");
+
+  // wrap text
+  buffer.startEditing ();
+  buffer.wrapLine (KTextEditor::Cursor (0, 2));
+  buffer.finishEditing ();
+  buffer.debugPrint ("Two line");
+  Q_ASSERT (buffer.text () == "te\nsttext");
 }

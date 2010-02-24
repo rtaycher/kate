@@ -40,13 +40,51 @@ class TextBlock {
     /**
      * Construct an empty text block.
      * @param buffer parent text buffer
+     * @param startLine start line of this block
      */
-    TextBlock (TextBuffer *buffer);
+    TextBlock (TextBuffer *buffer, int startLine);
 
     /**
      * Destruct the text block
      */
     ~TextBlock ();
+
+    /**
+     * Start line of this block.
+     * @return start line of this block
+     */
+    int startLine () const { return m_startLine; }
+
+    /**
+     * Set start line of this block.
+     * @param startLine new start line of this block
+     */
+    void setStartLine (int startLine);
+
+    /**
+     * Retrieve a text line.
+     * @param line wanted line number
+     * @return text line
+     */
+    TextLine line (int line) const;
+
+    /**
+     * Append a new line.
+     * @param line line to append
+     */
+    void appendLine (TextLine line) { m_lines.append (line); }
+
+    /**
+     * Number of lines in this block.
+     * @return number of lines
+     */
+    int lines () const { return m_lines.size(); }
+
+    /**
+     * Retrieve text of block.
+     * @param text for this block, lines separated by '\n'
+     */
+    void text (QString &text) const;
 
     /**
      * Wrap line at given cursor position.
@@ -72,8 +110,15 @@ class TextBlock {
     /**
      * Remove text at given range.
      * @param range range of text to remove, must be on one line only.
+     * @param removedText will be filled with removed text
      */
-    void removeText (const KTextEditor::Range &range);
+    void removeText (const KTextEditor::Range &range, QString &removedText);
+
+  public:
+    /**
+     * Debug output, print whole block content with line numbers and line length
+     */
+    void debugPrint () const;
 
   private:
     /**
@@ -85,6 +130,11 @@ class TextBlock {
      * Lines contained in this buffer. These are shard pointers.
      */
     QList<Kate::TextLine> m_lines;
+
+    /**
+     * Startline of this block
+     */
+    int m_startLine;
 };
 
 }
