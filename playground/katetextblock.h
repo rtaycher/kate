@@ -22,6 +22,7 @@
 #define KATE_TEXTBLOCK_H
 
 #include <QtCore/QList>
+#include <QtCore/QSet>
 
 #include "katetextrange.h"
 #include "katetextcursor.h"
@@ -135,6 +136,11 @@ class TextBlock {
      * Startline of this block
      */
     int m_startLine;
+
+    /**
+     * Set of cursors for this block.
+     */
+    QSet<TextCursor *> m_cursors;
 };
 
 }

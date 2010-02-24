@@ -24,6 +24,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtCore/QList>
+#include <QtCore/QSet>
 
 #include "katetextblock.h"
 #include "katetextcursor.h"
@@ -214,6 +215,17 @@ class TextBuffer : public QObject {
      * Current number of running edit transactions
      */
     int m_editingTransactions;
+
+    /**
+     * Set of invalid cursors for this whole buffer.
+     * Valid cursors are inside the block the belong to.
+     */
+    QSet<TextCursor *> m_invalidCursors;
+
+    /**
+     * Set of ranges of this whole buffer.
+     */
+    QSet<TextRange *> m_ranges;
 };
 
 }
