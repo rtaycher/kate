@@ -27,10 +27,11 @@
 namespace Kate {
 
 TextCursor::TextCursor (TextBuffer *buffer, const KTextEditor::Cursor &position, InsertBehavior insertBehavior)
-  : KTextEditor::Cursor (-1, -1)
-  , m_buffer (buffer)
+  : m_buffer (buffer)
   , m_block (0)
   , m_range (0)
+  , m_line (-1)
+  , m_column (-1)
   , m_moveOnInsert (insertBehavior == MoveOnInsert)
 {
   // we must belong to buffer
@@ -44,7 +45,7 @@ TextCursor::~TextCursor ()
 {
 }
 
-void TextCursor::setPosition(const Cursor& position, bool init)
+void TextCursor::setPosition(const KTextEditor::Cursor& position, bool init)
 {
   // any change or init? else do nothing
   if (!init && position.line() == line() && position.column() == m_column)
@@ -85,14 +86,14 @@ void TextCursor::setPosition(const Cursor& position, bool init)
   m_block->m_cursors.insert (this);
 }
 
-void TextCursor::setPosition(const Cursor& position)
+void TextCursor::setPosition(const KTextEditor::Cursor& position)
 {
     setPosition(position, false);
 }
 
 void TextCursor::setPosition(int line, int column)
 {
-    setPosition(Cursor(line, column), false);
+    setPosition(KTextEditor::Cursor(line, column), false);
 }
 
 int TextCursor::line() const
