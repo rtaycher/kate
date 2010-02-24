@@ -78,6 +78,13 @@ int main (int argc, char *argv[])
   buffer.debugPrint ("One line");
   Q_ASSERT (buffer.text () == "testtext");
 
+  // wrap text
+  buffer.startEditing ();
+  buffer.wrapLine (KTextEditor::Cursor (0, 2));
+  buffer.finishEditing ();
+  buffer.debugPrint ("Two line");
+  Q_ASSERT (buffer.text () == "te\nsttext");
+
 
   return 0;
 }

@@ -80,11 +80,11 @@ void TextBlock::wrapLine (const KTextEditor::Cursor &position)
 
   // perhaps remove some text from previous line and append it
   if (position.column() < text.size ()) {
-    // append text from old line first to new one
-    m_lines[line+1]->text().append (text.right (text.size() - position.column()));
+    // text from old line moved first to new one
+    m_lines[line+1]->text() = text.right (text.size() - position.column());
 
-    // now remove it
-    text.truncate (text.size() - position.column());
+    // now remove wrapped text from old line
+    text.chop (text.size() - position.column());
   }
 }
 
