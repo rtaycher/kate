@@ -33,22 +33,18 @@ class TextBlock;
 class TextRange;
 
 /**
- * Class representing a text cursor.
+ * Class representing a 'clever' text cursor.
  * It will automagically move if the text inside the buffer it belongs to is modified.
  * By intention no subclass of KTextEditor::Cursor, must be converted manually.
  */
 class TextCursor {
   public:
     /**
-     * \}
-     *
-     * \name Behavior
-     *
-     * The following functions relate to the behavior of this SmartCursor.
-     * \{
+     * Insert behavior of this cursor, should it stay if text is insert at it's position
+     * or should it move.
      */
     enum InsertBehavior {
-      StayOnInsert = 0,
+      StayOnInsert,
       MoveOnInsert
     };
 
@@ -61,18 +57,18 @@ class TextCursor {
     TextCursor (TextBuffer *buffer, const KTextEditor::Cursor &position, InsertBehavior insertBehavior);
 
     /**
-     * Destruct the text block
+     * Destruct the text cursor
      */
     ~TextCursor ();
 
   private:
     /**
-     * no copy constructor
+     * no copy constructor, don't allow this to be copied
      */
     TextCursor (const TextCursor &);
 
     /**
-     * no assignment operator
+     * no assignment operator, no copying around clever cursors
      */
     TextCursor &operator= (const TextCursor &);
 
@@ -82,7 +78,7 @@ class TextCursor {
      *
      * \param position new cursor position
      */
-    void setPosition(const KTextEditor::Cursor& position);
+    void setPosition (const KTextEditor::Cursor& position);
 
     /**
      * \overload
@@ -92,7 +88,7 @@ class TextCursor {
      * \param line new cursor line
      * \param column new cursor column
      */
-    void setPosition(int line, int column);
+    void setPosition (int line, int column);
 
     /**
      * Retrieve the line on which this cursor is situated.
@@ -123,11 +119,13 @@ class TextCursor {
      * Even if this cursor belongs to a range, the created one not.
      * @return normal cursor
      */
-    KTextEditor::Cursor cursor () const { return KTextEditor::Cursor (line(), column()); }
+    KTextEditor::Cursor toCursor () const { return KTextEditor::Cursor (line(), column()); }
 
   private:
     /**
      * Set the current cursor position to \e position.
+     * Internal helper to allow the same code be used for constructor and
+     * setPosition.
      *
      * @param position new cursor position
      * @param init is this the initial setup of the position in the constructor?
