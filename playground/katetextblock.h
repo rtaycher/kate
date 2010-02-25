@@ -121,8 +121,9 @@ class TextBlock {
   public:
     /**
      * Debug output, print whole block content with line numbers and line length
+     * @param blockIndex index of this block in buffer
      */
-    void debugPrint () const;
+    void debugPrint (int blockIndex) const;
 
   private:
     /**

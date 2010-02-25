@@ -149,11 +149,11 @@ void TextBlock::removeText (const KTextEditor::Range &range, QString &removedTex
   textOfLine.remove (range.start().column(), range.end().column() - range.start().column());
 }
 
-void TextBlock::debugPrint () const
+void TextBlock::debugPrint (int blockIndex) const
 {
   // print all blocks
   for (int i = 0; i < m_lines.size(); ++i)
-    printf ("%4d : %4d : '%s'\n", startLine() + i
+    printf ("%4d - %4d : %4d : '%s'\n", blockIndex, startLine() + i
       , m_lines[i]->text().size(), qPrintable (m_lines[i]->text()));
 }
 

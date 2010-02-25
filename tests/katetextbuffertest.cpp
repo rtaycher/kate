@@ -76,7 +76,7 @@ void KateTextBufferTest::wrapLineTest()
 void KateTextBufferTest::insertRemoveTextTest()
 {
   // construct an empty text buffer
-  Kate::TextBuffer buffer;
+  Kate::TextBuffer buffer (0, 1);
 
   // wrap first line
   buffer.startEditing ();

@@ -47,8 +47,9 @@ class TextBuffer : public QObject {
      * Construct an empty text buffer.
      * Empty means one empty line in one block.
      * @param parent parent qobject
+     * @param blockSize block size in lines the buffer should try to hold, default 256 lines
      */
-    TextBuffer (QObject *parent = 0);
+    TextBuffer (QObject *parent = 0, int blockSize = 256);
 
     /**
      * Destruct the text buffer
@@ -197,6 +198,12 @@ class TextBuffer : public QObject {
     void fixStartLines (int startBlock);
 
     /**
+     * Balance the given block. Look if it is too small or too large.
+     * @param index block to balance
+     */
+    void balanceBlock (int index);
+
+    /**
      * Block for given index in block list.
      * @param index block index
      * @return block matching this index
@@ -211,6 +218,11 @@ class TextBuffer : public QObject {
     void debugPrint (const QString &title) const;
 
   private:
+    /**
+     * block size in lines the buffer will try to hold
+     */
+    const int m_blockSize;
+
     /**
      * List of blocks which contain the lines of this buffer
      */

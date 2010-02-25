@@ -22,8 +22,9 @@
 
 namespace Kate {
 
-TextBuffer::TextBuffer (QObject *parent)
+TextBuffer::TextBuffer (QObject *parent, int blockSize)
   : QObject (parent)
+  , m_blockSize (blockSize)
   , m_lines (0)
   , m_editingTransactions (0)
 {
@@ -128,6 +129,9 @@ void TextBuffer::wrapLine (const KTextEditor::Cursor &position)
   // fixup all following blocks
   fixStartLines (blockIndex);
 
+  // balance the changed block if needed
+  balanceBlock (blockIndex);
+
   // emit signal about done change
   emit lineWrapped (this, position);
 }
@@ -143,26 +147,24 @@ void TextBuffer::unwrapLine (int line)
   // get block, this will assert on invalid line
   int blockIndex = blockForLine (line);
 
+  // is this the first line in the block?
+  bool firstLineInBlock = (line == m_blocks[blockIndex]->startLine());
+
   // let the block handle the unwrapLine
   // this can either lead to one line less in this block or the previous one
   // the previous one could even end up with zero lines
   m_blocks[blockIndex]->unwrapLine (line, (blockIndex > 0) ? m_blocks[blockIndex-1] : 0);
   --m_lines;
 
-  // handle the case that previous block gets empty
-  if ((blockIndex > 0) && (m_blocks[blockIndex-1]->lines () == 0)) {
-      // decrement index for later fixup
-      --blockIndex;
-
-      // delete empty block
-      delete m_blocks[blockIndex];
-
-      // and remove it
-      m_blocks.erase (m_blocks.begin() + blockIndex);
-  }
+  // decrement index for later fixup, if we modified the block in front of the found one
+  if (firstLineInBlock)
+    --blockIndex;
 
   // fixup all following blocks
   fixStartLines (blockIndex);
+
+  // balance the changed block if needed
+  balanceBlock (blockIndex);
 
   // emit signal about done change
   emit lineUnwrapped (this, line);
@@ -215,8 +217,8 @@ int TextBuffer::blockForLine (int line) const
   // search block
   for (int index = 0; index < m_blocks.size(); ++index) {
       if (line >= m_blocks[index]->startLine()
-	&& line < m_blocks[index]->startLine() + m_blocks[index]->lines ())
-	return index;
+          && line < m_blocks[index]->startLine() + m_blocks[index]->lines ())
+        return index;
   }
 
   // we should always find a block
@@ -243,6 +245,10 @@ void TextBuffer::fixStartLines (int startBlock)
   }
 }
 
+void TextBuffer::balanceBlock (int index)
+{
+}
+
 void TextBuffer::debugPrint (const QString &title) const
 {
   // print header with title
@@ -250,7 +256,7 @@ void TextBuffer::debugPrint (const QString &title) const
 
   // print all blocks
   for (int i = 0; i < m_blocks.size(); ++i)
-    m_blocks[i]->debugPrint ();
+    m_blocks[i]->debugPrint (i);
 }
 
 }
