@@ -2,6 +2,9 @@
  *
  *  Copyright (C) 2010 Christoph Cullmann <cullmann@kde.org>
  *
+ *  Based on code of the SmartCursor/Range by:
+ *  Copyright (C) 2003-2005 Hamish Rodda <rodda@kde.org>
+ *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License as published by the Free Software Foundation; either
@@ -23,9 +26,13 @@
 
 namespace Kate {
 
-TextRange::TextRange (TextBuffer &parent)
-  : m_parent (parent)
+TextRange::TextRange (TextBuffer &buffer, const KTextEditor::Range &range, InsertBehaviors insertBehavior)
+  : m_buffer (buffer)
+  , m_start (buffer, range.start(), (insertBehavior & ExpandLeft) ? Kate::TextCursor::StayOnInsert : Kate::TextCursor::MoveOnInsert)
+  , m_end (buffer, range.end(), (insertBehavior & ExpandRight) ? Kate::TextCursor::MoveOnInsert : Kate::TextCursor::StayOnInsert)
 {
+  // remember this range in buffer
+  m_buffer.m_ranges.insert (this);
 }
 
 TextRange::~TextRange ()

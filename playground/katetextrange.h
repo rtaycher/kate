@@ -2,6 +2,9 @@
  *
  *  Copyright (C) 2010 Christoph Cullmann <cullmann@kde.org>
  *
+ *  Based on code of the SmartCursor/Range by:
+ *  Copyright (C) 2003-2005 Hamish Rodda <rodda@kde.org>
+ *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License as published by the Free Software Foundation; either
@@ -36,23 +39,57 @@ class TextBuffer;
  */
 class TextRange {
   public:
+     /// Determine how the range reacts to characters inserted immediately outside the range.
+    enum InsertBehavior {
+      /// Don't expand to encapsulate new characters in either direction. This is the default.
+      DoNotExpand = 0x0,
+      /// Expand to encapsulate new characters to the left of the range.
+      ExpandLeft = 0x1,
+      /// Expand to encapsulate new characters to the right of the range.
+      ExpandRight = 0x2
+    };
+    Q_DECLARE_FLAGS(InsertBehaviors, InsertBehavior)
+
     /**
      * Construct a text cursor.
-     * @param parent parent text buffer
+     * @param buffer parent text buffer
+     * @param range The initial text range assumed by the new range.
+     * @param insertBehavior Define whether the range should expand when text is inserted adjacent to the range.
      */
-    TextRange (TextBuffer &parent);
+    TextRange (TextBuffer &buffer, const KTextEditor::Range &range, InsertBehaviors insertBehavior);
 
     /**
      * Destruct the text block
      */
-    ~TextRange ();
+    virtual ~TextRange ();
+
+  private:
+    /**
+     * no copy constructor, don't allow this to be copied
+     */
+    TextRange (const TextRange &);
+
+    /**
+     * no assignment operator, no copying around clever range
+     */
+    TextRange &operator= (const TextRange &);
 
   private:
     /**
      * parent text buffer
      * is a reference, and no pointer, as this must always exist and can't change
      */
-    TextBuffer &m_parent;
+    TextBuffer &m_buffer;
+
+    /**
+     * Start cursor for this range, is a clever cursor
+     */
+    TextCursor m_start;
+
+    /**
+     * End cursor for this range, is a clever cursor
+     */
+    TextCursor m_end;
 };
 
 }

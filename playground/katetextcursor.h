@@ -44,22 +44,22 @@ class TextCursor {
      * or should it move.
      */
     enum InsertBehavior {
-      StayOnInsert,
-      MoveOnInsert
+      StayOnInsert = 0x0,
+      MoveOnInsert = 0x1
     };
 
     /**
      * Construct a text cursor.
      * @param buffer text buffer this cursor belongs to
      * @param position wanted cursor position, if not valid for given buffer, will lead to invalid cursor
-     * @param insertBehavior behavior of this cursor on insert
+     * @param insertBehavior behavior of this cursor on insert of text at it's position
      */
     TextCursor (TextBuffer &buffer, const KTextEditor::Cursor &position, InsertBehavior insertBehavior);
 
     /**
      * Destruct the text cursor
      */
-    ~TextCursor ();
+    virtual ~TextCursor ();
 
   private:
     /**
@@ -135,6 +135,7 @@ class TextCursor {
   private:
     /**
      * parent text buffer
+     * is a reference, and no pointer, as this must always exist and can't change
      */
     TextBuffer &m_buffer;
 
