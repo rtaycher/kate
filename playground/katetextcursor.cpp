@@ -26,7 +26,7 @@
 
 namespace Kate {
 
-TextCursor::TextCursor (TextBuffer *buffer, const KTextEditor::Cursor &position, InsertBehavior insertBehavior)
+TextCursor::TextCursor (TextBuffer &buffer, const KTextEditor::Cursor &position, InsertBehavior insertBehavior)
   : m_buffer (buffer)
   , m_block (0)
   , m_range (0)
@@ -34,9 +34,6 @@ TextCursor::TextCursor (TextBuffer *buffer, const KTextEditor::Cursor &position,
   , m_column (-1)
   , m_moveOnInsert (insertBehavior == MoveOnInsert)
 {
-  // we must belong to buffer
-  Q_ASSERT (m_buffer);
-
   // init position
   setPosition (position, true);
 }
@@ -52,18 +49,18 @@ void TextCursor::setPosition(const KTextEditor::Cursor& position, bool init)
     return;
 
   // first: validate the line and column, else invalid
-  if (position.column() < 0 || position.line () < 0 || position.line () >= m_buffer->lines ()) {
+  if (position.column() < 0 || position.line () < 0 || position.line () >= m_buffer.lines ()) {
     if (m_block)
       m_block->m_cursors.remove (this);
 
-    m_buffer->m_invalidCursors.insert (this);
+    m_buffer.m_invalidCursors.insert (this);
     m_block = 0;
     m_line = m_column = -1;
     return;
   }
 
   // else, find block
-  TextBlock *block = m_buffer->blockForIndex (m_buffer->blockForLine (position.line()));
+  TextBlock *block = m_buffer.blockForIndex (m_buffer.blockForLine (position.line()));
 
   // get line
   TextLine textLine = block->line (position.line());
@@ -73,7 +70,7 @@ void TextCursor::setPosition(const KTextEditor::Cursor& position, bool init)
     if (m_block)
       m_block->m_cursors.remove (this);
 
-    m_buffer->m_invalidCursors.insert (this);
+    m_buffer.m_invalidCursors.insert (this);
     m_block = 0;
     m_line = m_column = -1;
     return;

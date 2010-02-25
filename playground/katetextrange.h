@@ -30,9 +30,11 @@ namespace Kate {
 class TextBuffer;
 
 /**
- * Class representing a text range.
+ * Class representing a 'clever' text range.
+ * It will automagically move if the text inside the buffer it belongs to is modified.
+ * By intention no subclass of KTextEditor::Range, must be converted manually.
  */
-class TextRange : public KTextEditor::Range {
+class TextRange {
   public:
     /**
      * Construct a text cursor.

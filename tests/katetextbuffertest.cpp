@@ -143,15 +143,15 @@ void KateTextBufferTest::cursorTest()
   buffer.debugPrint ("Cursor buffer");
 
   // construct cursor
-  Kate::TextCursor *cursor = new Kate::TextCursor (&buffer, KTextEditor::Cursor (0, 0), Kate::TextCursor::MoveOnInsert);
+  Kate::TextCursor *cursor = new Kate::TextCursor (buffer, KTextEditor::Cursor (0, 0), Kate::TextCursor::MoveOnInsert);
   printf ("cursor %d, %d\n", cursor->line(), cursor->column());
 
-  cursor = new Kate::TextCursor (&buffer, KTextEditor::Cursor (1, 8), Kate::TextCursor::MoveOnInsert);
+  cursor = new Kate::TextCursor (buffer, KTextEditor::Cursor (1, 8), Kate::TextCursor::MoveOnInsert);
   printf ("cursor %d, %d\n", cursor->line(), cursor->column());
 
-  cursor = new Kate::TextCursor (&buffer, KTextEditor::Cursor (0, 123), Kate::TextCursor::MoveOnInsert);
+  cursor = new Kate::TextCursor (buffer, KTextEditor::Cursor (0, 123), Kate::TextCursor::MoveOnInsert);
   printf ("cursor %d, %d\n", cursor->line(), cursor->column());
 
-  cursor = new Kate::TextCursor (&buffer, KTextEditor::Cursor (1323, 1), Kate::TextCursor::MoveOnInsert);
+  cursor = new Kate::TextCursor (buffer, KTextEditor::Cursor (1323, 1), Kate::TextCursor::MoveOnInsert);
   printf ("cursor %d, %d\n", cursor->line(), cursor->column());
 }

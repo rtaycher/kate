@@ -54,7 +54,7 @@ class TextCursor {
      * @param position wanted cursor position, if not valid for given buffer, will lead to invalid cursor
      * @param insertBehavior behavior of this cursor on insert
      */
-    TextCursor (TextBuffer *buffer, const KTextEditor::Cursor &position, InsertBehavior insertBehavior);
+    TextCursor (TextBuffer &buffer, const KTextEditor::Cursor &position, InsertBehavior insertBehavior);
 
     /**
      * Destruct the text cursor
@@ -136,7 +136,7 @@ class TextCursor {
     /**
      * parent text buffer
      */
-    TextBuffer *m_buffer;
+    TextBuffer &m_buffer;
 
     /**
      * parent text block, valid cursors always belong to a block, else they are invalid.
