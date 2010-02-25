@@ -39,4 +39,24 @@ TextRange::~TextRange ()
 {
 }
 
+void TextRange::setRange (const KTextEditor::Range &range)
+{
+  // change start and end cursor
+  m_start.setPosition (range.start ());
+  m_end.setPosition (range.end ());
+
+  // check if range now invalid
+  checkValidity ();
+}
+
+void TextRange::setRange (const KTextEditor::Cursor &start, const KTextEditor::Cursor &end)
+{
+  // just use other function, KTextEditor::Range will handle some normalization
+  setRange (KTextEditor::Range (start, end));
+}
+
+void TextRange::checkValidity ()
+{
+}
+
 }

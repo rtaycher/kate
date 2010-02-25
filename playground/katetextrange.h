@@ -74,6 +74,47 @@ class TextRange {
      */
     TextRange &operator= (const TextRange &);
 
+  public:
+    /**
+     * Set the range of this range
+     * @param range new range for this clever range
+     */
+    void setRange (const KTextEditor::Range &range);
+
+    /**
+     * \overload
+     * Set the range of this range
+     * @param start new start for this clever range
+     * @param end new end for this clever range
+     */
+    void setRange (const KTextEditor::Cursor &start, const KTextEditor::Cursor &end);
+
+    /**
+     * Retrieve start cursor of this range, read-only.
+     * @return start cursor
+     */
+    const TextCursor &start () const { return m_start; }
+
+    /**
+     * Retrieve end cursor of this range, read-only.
+     * @return end cursor
+     */
+    const TextCursor &end () const { return m_end; }
+
+    /**
+     * Convert this clever range into a dumb one.
+     * @return normal range
+     */
+    KTextEditor::Range toRange () const { return KTextEditor::Range (start().toCursor(), end().toCursor()); }
+
+  private:
+    /**
+     * Check if range is valid, used by constructor and setRange.
+     * If at least one cursor is invalid, both will set to invalid.
+     * Same if range itself is invalid (start >= end).
+     */
+    void checkValidity ();
+
   private:
     /**
      * parent text buffer
