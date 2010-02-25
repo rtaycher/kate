@@ -36,6 +36,8 @@ class TextBuffer;
  * Class representing a 'clever' text range.
  * It will automagically move if the text inside the buffer it belongs to is modified.
  * By intention no subclass of KTextEditor::Range, must be converted manually.
+ * A TextRange is not allowed to be empty, as soon as start == end position, it will become
+ * automatically invalid!
  */
 class TextRange {
   public:
@@ -51,7 +53,9 @@ class TextRange {
     Q_DECLARE_FLAGS(InsertBehaviors, InsertBehavior)
 
     /**
-     * Construct a text cursor.
+     * Construct a text range.
+     * A TextRange is not allowed to be empty, as soon as start == end position, it will become
+     * automatically invalid!
      * @param buffer parent text buffer
      * @param range The initial text range assumed by the new range.
      * @param insertBehavior Define whether the range should expand when text is inserted adjacent to the range.
@@ -76,7 +80,9 @@ class TextRange {
 
   public:
     /**
-     * Set the range of this range
+     * Set the range of this range.
+     * A TextRange is not allowed to be empty, as soon as start == end position, it will become
+     * automatically invalid!
      * @param range new range for this clever range
      */
     void setRange (const KTextEditor::Range &range);
@@ -84,6 +90,8 @@ class TextRange {
     /**
      * \overload
      * Set the range of this range
+     * A TextRange is not allowed to be empty, as soon as start == end position, it will become
+     * automatically invalid!
      * @param start new start for this clever range
      * @param end new end for this clever range
      */
