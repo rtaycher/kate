@@ -38,6 +38,8 @@ class TextRange;
  * By intention no subclass of KTextEditor::Cursor, must be converted manually.
  */
 class TextCursor {
+  friend class TextRange;
+
   public:
     /**
      * Insert behavior of this cursor, should it stay if text is insert at it's position
@@ -56,6 +58,17 @@ class TextCursor {
      */
     TextCursor (TextBuffer &buffer, const KTextEditor::Cursor &position, InsertBehavior insertBehavior);
 
+  private:
+    /**
+     * Construct a text cursor with given range as parent, private, used by TextRange constructor only.
+     * @param buffer text buffer this cursor belongs to
+     * @param range text range this cursor is part of
+     * @param position wanted cursor position, if not valid for given buffer, will lead to invalid cursor
+     * @param insertBehavior behavior of this cursor on insert of text at it's position
+     */
+    TextCursor (TextBuffer &buffer, TextRange *range, const KTextEditor::Cursor &position, InsertBehavior insertBehavior);
+
+  public:
     /**
      * Destruct the text cursor
      */
@@ -121,6 +134,12 @@ class TextCursor {
      */
     KTextEditor::Cursor toCursor () const { return KTextEditor::Cursor (line(), column()); }
 
+    /**
+     * Get range this cursor belongs to, if any
+     * @return range this pointer is part of, else 0
+     */
+    TextRange *range () { return m_range; }
+
   private:
     /**
      * Set the current cursor position to \e position.
@@ -140,15 +159,16 @@ class TextCursor {
     TextBuffer &m_buffer;
 
     /**
+     * range this cursor belongs to
+     * may be null, then no range owns this cursor
+     * can not change after initial assignment
+     */
+    TextRange * const m_range;
+
+    /**
      * parent text block, valid cursors always belong to a block, else they are invalid.
      */
     TextBlock *m_block;
-
-    /**
-     * range this cursor belongs to
-     * may be null, then no range owns this cursor
-     */
-    TextRange *m_range;
 
     /**
      * line, offset in block, or -1

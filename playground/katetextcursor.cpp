@@ -28,8 +28,20 @@ namespace Kate {
 
 TextCursor::TextCursor (TextBuffer &buffer, const KTextEditor::Cursor &position, InsertBehavior insertBehavior)
   : m_buffer (buffer)
-  , m_block (0)
   , m_range (0)
+  , m_block (0)
+  , m_line (-1)
+  , m_column (-1)
+  , m_moveOnInsert (insertBehavior == MoveOnInsert)
+{
+  // init position
+  setPosition (position, true);
+}
+
+TextCursor::TextCursor (TextBuffer &buffer, TextRange *range, const KTextEditor::Cursor &position, InsertBehavior insertBehavior)
+  : m_buffer (buffer)
+  , m_range (range)
+  , m_block (0)
   , m_line (-1)
   , m_column (-1)
   , m_moveOnInsert (insertBehavior == MoveOnInsert)
