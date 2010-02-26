@@ -196,6 +196,7 @@ void TextBlock::mergeBlock (TextBlock *targetBlock)
     cursor->m_block = targetBlock;
     targetBlock->m_cursors.insert (cursor);
   }
+  m_cursors.clear ();
 
   // move lines
   targetBlock->m_lines.reserve (targetBlock->lines() + lines ());
