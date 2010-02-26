@@ -56,7 +56,7 @@ TextCursor::~TextCursor ()
   if (m_block)
     m_block->m_cursors.remove (this);
   else
-    m_buffer.m_invalidCursors.insert (this);
+    m_buffer.m_invalidCursors.remove (this);
 }
 
 void TextCursor::setPosition(const KTextEditor::Cursor& position, bool init)

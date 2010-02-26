@@ -37,6 +37,8 @@ TextRange::TextRange (TextBuffer &buffer, const KTextEditor::Range &range, Inser
 
 TextRange::~TextRange ()
 {
+  // remember this range in buffer
+  m_buffer.m_ranges.remove (this);
 }
 
 void TextRange::setRange (const KTextEditor::Range &range)

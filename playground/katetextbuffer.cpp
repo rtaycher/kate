@@ -45,8 +45,9 @@ TextBuffer::~TextBuffer ()
     m_blocks[i]->deleteBlockContent ();
 
   // kill all ranges
-  qDeleteAll (m_ranges);
-  m_ranges.clear ();
+  QSet<TextRange *> copyRanges = m_ranges;
+  qDeleteAll (copyRanges);
+  Q_ASSERT (m_ranges.empty());
 
   // delete all blocks, now that all cursors are really deleted
   // else asserts in destructor of blocks will fail!
@@ -54,8 +55,9 @@ TextBuffer::~TextBuffer ()
   m_blocks.clear ();
 
   // kill all invalid cursors, do this after block deletion, to uncover if they might be still linked in blocks
-  qDeleteAll (m_invalidCursors);
-  m_invalidCursors.clear ();
+  QSet<TextCursor *> copyCursors = m_invalidCursors;
+  qDeleteAll (copyCursors);
+  Q_ASSERT (m_invalidCursors.empty());
 }
 
 void TextBuffer::clear ()

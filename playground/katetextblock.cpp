@@ -228,6 +228,8 @@ void TextBlock::clearBlockContent (TextBlock *targetBlock)
       cursor->m_column = 0;
       cursor->m_line = 0;
       cursor->m_block = targetBlock;
+      targetBlock->m_cursors.insert (cursor);
+      m_cursors.remove (cursor);
     }
     else { // handle ranges FIXME
     }
