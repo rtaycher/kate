@@ -147,7 +147,7 @@ class TextBlock {
     void deleteBlockContent ();
 
     /**
-     * Clear the block content, delete all lines, move all cursors not bound to range to given block at 0,0, invalidate ranges.
+     * Clear the block content, delete all lines, move all cursors not bound to range to given block at 0,0.
      * This is used by clear() of TextBuffer.
      * @param targetBlock empty target block for cursors
      */

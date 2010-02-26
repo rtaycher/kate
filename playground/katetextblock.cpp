@@ -221,17 +221,15 @@ void TextBlock::deleteBlockContent ()
 
 void TextBlock::clearBlockContent (TextBlock *targetBlock)
 {
+  // move cursors, if not belonging to a range
   QSet<TextCursor *> copy = m_cursors;
   foreach (TextCursor *cursor, copy) {
-    // move cursors, if not belonging to a range
     if (!cursor->range()) {
       cursor->m_column = 0;
       cursor->m_line = 0;
       cursor->m_block = targetBlock;
       targetBlock->m_cursors.insert (cursor);
       m_cursors.remove (cursor);
-    }
-    else { // handle ranges FIXME
     }
   }
 

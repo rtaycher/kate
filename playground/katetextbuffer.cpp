@@ -73,6 +73,10 @@ void TextBuffer::clear ()
   for (int i = 0; i < m_blocks.size(); ++i)
     m_blocks[i]->clearBlockContent (newBlock);
 
+  // invalidate all ranges!
+  foreach (TextRange *range, m_ranges)
+    range->setRange (KTextEditor::Cursor::invalid(), KTextEditor::Cursor::invalid());
+
   // kill all buffer blocks
   qDeleteAll (m_blocks);
   m_blocks.clear ();
