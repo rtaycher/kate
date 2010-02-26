@@ -52,6 +52,11 @@ TextCursor::TextCursor (TextBuffer &buffer, TextRange *range, const KTextEditor:
 
 TextCursor::~TextCursor ()
 {
+  // remove cursor from block or buffer
+  if (m_block)
+    m_block->m_cursors.remove (this);
+  else
+    m_buffer.m_invalidCursors.insert (this);
 }
 
 void TextCursor::setPosition(const KTextEditor::Cursor& position, bool init)
@@ -60,11 +65,12 @@ void TextCursor::setPosition(const KTextEditor::Cursor& position, bool init)
   if (!init && position.line() == line() && position.column() == m_column)
     return;
 
+  // remove cursor from old block in any case
+  if (m_block)
+    m_block->m_cursors.remove (this);
+
   // first: validate the line and column, else invalid
   if (position.column() < 0 || position.line () < 0 || position.line () >= m_buffer.lines ()) {
-    if (m_block)
-      m_block->m_cursors.remove (this);
-
     m_buffer.m_invalidCursors.insert (this);
     m_block = 0;
     m_line = m_column = -1;
@@ -79,9 +85,6 @@ void TextCursor::setPosition(const KTextEditor::Cursor& position, bool init)
 
   // now, validate column, else stay invalid
   if (position.column() > textLine->text().size()) {
-    if (m_block)
-      m_block->m_cursors.remove (this);
-
     m_buffer.m_invalidCursors.insert (this);
     m_block = 0;
     m_line = m_column = -1;

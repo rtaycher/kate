@@ -31,6 +31,9 @@ TextBlock::TextBlock (TextBuffer *buffer, int startLine)
 
 TextBlock::~TextBlock ()
 {
+  // blocks should be empty before they are deleted!
+  Q_ASSERT (m_lines.empty());
+  Q_ASSERT (m_cursors.empty());
 }
 
 void TextBlock::setStartLine (int startLine)
@@ -202,6 +205,36 @@ void TextBlock::mergeBlock (TextBlock *targetBlock)
   targetBlock->m_lines.reserve (targetBlock->lines() + lines ());
   for (int i = 0; i < m_lines.size(); ++i)
     targetBlock->m_lines.append (m_lines[i]);
+}
+
+void TextBlock::deleteBlockContent ()
+{
+  // kill cursors, if not belonging to a range
+  QSet<TextCursor *> copy = m_cursors;
+  foreach (TextCursor *cursor, copy)
+    if (!cursor->range())
+      delete cursor;
+
+  // kill lines
+  m_lines.clear ();
+}
+
+void TextBlock::clearBlockContent (TextBlock *targetBlock)
+{
+  QSet<TextCursor *> copy = m_cursors;
+  foreach (TextCursor *cursor, copy) {
+    // move cursors, if not belonging to a range
+    if (!cursor->range()) {
+      cursor->m_column = 0;
+      cursor->m_line = 0;
+      cursor->m_block = targetBlock;
+    }
+    else { // handle ranges FIXME
+    }
+  }
+
+  // kill lines
+  m_lines.clear ();
 }
 
 }

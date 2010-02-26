@@ -40,8 +40,13 @@ TextBuffer::~TextBuffer ()
   // not allowed during editing
   Q_ASSERT (m_editingTransactions == 0);
 
+  // clean out all cursors and lines, only cursors belonging to range will survive
+  for (int i = 0; i < m_blocks.size(); ++i)
+    m_blocks[i]->deleteBlockContent ();
+
   // delete all blocks
   qDeleteAll (m_blocks);
+  m_blocks.clear ();
 }
 
 void TextBuffer::clear ()
@@ -49,14 +54,20 @@ void TextBuffer::clear ()
   // not allowed during editing
   Q_ASSERT (m_editingTransactions == 0);
 
+  // new block for empty buffer
+  TextBlock *newBlock = new TextBlock (this, 0);
+  newBlock->appendLine (TextLine (new TextLineData()));
+
+  // clean out all cursors and lines, either move them to newBlock or invalidate them, if belonging to a range
+  for (int i = 0; i < m_blocks.size(); ++i)
+    m_blocks[i]->clearBlockContent (newBlock);
+
   // kill all buffer blocks
   qDeleteAll (m_blocks);
   m_blocks.clear ();
 
-  // create one block with one empty line
-  m_blocks.append (new TextBlock (this, 0));
-  TextBlock *block = m_blocks.first ();
-  block->appendLine (TextLine (new TextLineData()));
+  // insert one block with one empty line
+  m_blocks.append (newBlock);
 
   // reset lines
   m_lines = 1;
