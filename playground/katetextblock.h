@@ -21,7 +21,7 @@
 #ifndef KATE_TEXTBLOCK_H
 #define KATE_TEXTBLOCK_H
 
-#include <QtCore/QList>
+#include <QtCore/QVector>
 #include <QtCore/QSet>
 
 #include "katetextrange.h"
@@ -39,6 +39,7 @@ class TextBuffer;
 class TextBlock {
   friend class TextCursor;
   friend class TextRange;
+  friend class TextBuffer;
 
   public:
     /**
@@ -134,7 +135,7 @@ class TextBlock {
     /**
      * Lines contained in this buffer. These are shared pointers.
      */
-    QList<Kate::TextLine> m_lines;
+    QVector<Kate::TextLine> m_lines;
 
     /**
      * Startline of this block

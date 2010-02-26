@@ -37,7 +37,7 @@ KateTextBufferTest::~KateTextBufferTest()
 void KateTextBufferTest::basicBufferTest()
 {
   // construct an empty text buffer
-  Kate::TextBuffer buffer;
+  Kate::TextBuffer buffer (0, 1);
 
   // one line per default
   Q_ASSERT (buffer.lines() == 1);
@@ -54,7 +54,7 @@ void KateTextBufferTest::basicBufferTest()
 void KateTextBufferTest::wrapLineTest()
 {
   // construct an empty text buffer
-  Kate::TextBuffer buffer;
+  Kate::TextBuffer buffer (0, 1);
 
   // wrap first empty line -> we should have two empty lines
   buffer.startEditing ();
@@ -131,7 +131,7 @@ void KateTextBufferTest::insertRemoveTextTest()
 void KateTextBufferTest::cursorTest()
 {
   // construct an empty text buffer
-  Kate::TextBuffer buffer;
+  Kate::TextBuffer buffer (0, 1);
 
   // wrap first line
   buffer.startEditing ();

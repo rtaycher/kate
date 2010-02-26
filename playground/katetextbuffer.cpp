@@ -28,6 +28,9 @@ TextBuffer::TextBuffer (QObject *parent, int blockSize)
   , m_lines (0)
   , m_editingTransactions (0)
 {
+  // minimal block size must be > 0
+  Q_ASSERT (m_blockSize > 0);
+
   // create initial state
   clear ();
 }
@@ -247,6 +250,54 @@ void TextBuffer::fixStartLines (int startBlock)
 
 void TextBuffer::balanceBlock (int index)
 {
+  /**
+   * two cases, too big or too small block
+   */
+  TextBlock *blockToBalance = m_blocks[index];
+
+  // first case, too big one, split it
+  if (blockToBalance->lines () >= 2 * m_blockSize) {
+    // half the block
+    int halfSize = blockToBalance->lines () / 2;
+    int linesOfNewBlock = blockToBalance->lines () - halfSize;
+
+    // create and insert new block behind current one, already set right start line
+    TextBlock *newBlock = new TextBlock (this, blockToBalance->startLine() + halfSize);
+    m_blocks.insert (m_blocks.begin() + index + 1, newBlock);
+
+    // move lines
+    newBlock->m_lines.reserve (linesOfNewBlock);
+    for (int i = halfSize; i < blockToBalance->m_lines.size(); ++i)
+      newBlock->m_lines.append (blockToBalance->m_lines[i]);
+    blockToBalance->m_lines.resize (halfSize);
+
+    // move cursors
+    QSet<TextCursor*> oldBlockSet;
+    foreach (TextCursor *cursor, blockToBalance->m_cursors) {
+        if (cursor->lineInBlock() >= halfSize)
+          newBlock->m_cursors.insert (cursor);
+        else
+          oldBlockSet.insert (cursor);
+    }
+    blockToBalance->m_cursors = oldBlockSet;
+
+    // block splitted, be done!
+    return;
+  }
+
+  // second case: possibly too small block
+
+  // if only one block, no chance to unite
+  // same if this is first block, we always append to previous one
+  if (index == 0)
+    return;
+
+  // block still large enough, do nothing
+  if (2 * blockToBalance->lines () > m_blockSize)
+    return;
+
+  // unite small block with predecessor
+
 }
 
 void TextBuffer::debugPrint (const QString &title) const

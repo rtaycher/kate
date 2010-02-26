@@ -140,6 +140,18 @@ class TextCursor {
      */
     TextRange *range () { return m_range; }
 
+    /**
+     * Get block this cursor belongs to, if any
+     * @return block this pointer is part of, else 0
+     */
+    TextBlock *block () { return m_block; }
+
+    /**
+     * Get offset into block this cursor belongs to, if any
+     * @return offset into block this pointer is part of, else -1
+     */
+    int lineInBlock () const { if (m_block) return m_line; return -1; }
+
   private:
     /**
      * Set the current cursor position to \e position.
