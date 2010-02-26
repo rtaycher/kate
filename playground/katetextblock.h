@@ -119,12 +119,25 @@ class TextBlock {
      */
     void removeText (const KTextEditor::Range &range, QString &removedText);
 
-  public:
     /**
      * Debug output, print whole block content with line numbers and line length
      * @param blockIndex index of this block in buffer
      */
     void debugPrint (int blockIndex) const;
+
+    /**
+     * Split given block. A new block will be created and all lines starting from the given index will
+     * be moved to it, together with the cursors belonging to it.
+     * @param fromLine line from which to split
+     * @return new block containing the lines + cursors removed from this one
+     */
+    TextBlock *splitBlock (int fromLine);
+
+    /**
+     * Merge this block with given one, the given one must be a direct predecessor.
+     * @param targetBlock block to merge with
+     */
+    void mergeBlock (TextBlock *targetBlock);
 
   private:
     /**

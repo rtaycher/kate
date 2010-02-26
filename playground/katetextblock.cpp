@@ -157,4 +157,50 @@ void TextBlock::debugPrint (int blockIndex) const
       , m_lines[i]->text().size(), qPrintable (m_lines[i]->text()));
 }
 
+TextBlock *TextBlock::splitBlock (int fromLine)
+{
+  // half the block
+  int linesOfNewBlock = lines () - fromLine;
+
+  // create and insert new block
+  TextBlock *newBlock = new TextBlock (m_buffer, startLine() + fromLine);
+
+  // move lines
+  newBlock->m_lines.reserve (linesOfNewBlock);
+  for (int i = fromLine; i < m_lines.size(); ++i)
+    newBlock->m_lines.append (m_lines[i]);
+  m_lines.resize (fromLine);
+
+  // move cursors
+  QSet<TextCursor*> oldBlockSet;
+  foreach (TextCursor *cursor, m_cursors) {
+      if (cursor->lineInBlock() >= fromLine) {
+        cursor->m_line = cursor->lineInBlock() - fromLine;
+        cursor->m_block = newBlock;
+        newBlock->m_cursors.insert (cursor);
+      }
+      else
+        oldBlockSet.insert (cursor);
+  }
+  m_cursors = oldBlockSet;
+
+  // return the new generated block
+  return newBlock;
+}
+
+void TextBlock::mergeBlock (TextBlock *targetBlock)
+{
+   // move cursors, do this first, now still lines() count is correct for target
+  foreach (TextCursor *cursor, m_cursors) {
+    cursor->m_line = cursor->lineInBlock() + targetBlock->lines ();
+    cursor->m_block = targetBlock;
+    targetBlock->m_cursors.insert (cursor);
+  }
+
+  // move lines
+  targetBlock->m_lines.reserve (targetBlock->lines() + lines ());
+  for (int i = 0; i < m_lines.size(); ++i)
+    targetBlock->m_lines.append (m_lines[i]);
+}
+
 }

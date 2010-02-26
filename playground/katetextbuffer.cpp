@@ -259,32 +259,13 @@ void TextBuffer::balanceBlock (int index)
   if (blockToBalance->lines () >= 2 * m_blockSize) {
     // half the block
     int halfSize = blockToBalance->lines () / 2;
-    int linesOfNewBlock = blockToBalance->lines () - halfSize;
 
     // create and insert new block behind current one, already set right start line
-    TextBlock *newBlock = new TextBlock (this, blockToBalance->startLine() + halfSize);
+    TextBlock *newBlock = blockToBalance->splitBlock (halfSize);
+    Q_ASSERT (newBlock);
     m_blocks.insert (m_blocks.begin() + index + 1, newBlock);
 
-    // move lines
-    newBlock->m_lines.reserve (linesOfNewBlock);
-    for (int i = halfSize; i < blockToBalance->m_lines.size(); ++i)
-      newBlock->m_lines.append (blockToBalance->m_lines[i]);
-    blockToBalance->m_lines.resize (halfSize);
-
-    // move cursors
-    QSet<TextCursor*> oldBlockSet;
-    foreach (TextCursor *cursor, blockToBalance->m_cursors) {
-        if (cursor->lineInBlock() >= halfSize) {
-          cursor->m_line = cursor->lineInBlock() - halfSize;
-          cursor->m_block = newBlock;
-          newBlock->m_cursors.insert (cursor);
-        }
-        else
-          oldBlockSet.insert (cursor);
-    }
-    blockToBalance->m_cursors = oldBlockSet;
-
-    // block splitted, be done!
+    // split is done
     return;
   }
 
@@ -302,17 +283,8 @@ void TextBuffer::balanceBlock (int index)
   // unite small block with predecessor
   TextBlock *targetBlock = m_blocks[index-1];
 
-  // move cursors, do this first, now still lines() count is correct for target
-  foreach (TextCursor *cursor, blockToBalance->m_cursors) {
-    cursor->m_line = cursor->lineInBlock() + targetBlock->lines ();
-    cursor->m_block = targetBlock;
-    targetBlock->m_cursors.insert (cursor);
-  }
-
-  // move lines
-  targetBlock->m_lines.reserve (targetBlock->lines() + blockToBalance->lines ());
-  for (int i = 0; i < blockToBalance->m_lines.size(); ++i)
-    targetBlock->m_lines.append (blockToBalance->m_lines[i]);
+  // merge block
+  blockToBalance->mergeBlock (targetBlock);
 
   // delete old block
   delete blockToBalance;

@@ -38,8 +38,11 @@ class TextRange;
  * By intention no subclass of KTextEditor::Cursor, must be converted manually.
  */
 class TextCursor {
+  // range wants direct access to some internals
   friend class TextRange;
-  friend class TextBuffer;
+
+  // this is a friend, because this is needed to efficiently transfer cursors from on to an other block
+  friend class TextBlock;
 
   public:
     /**
