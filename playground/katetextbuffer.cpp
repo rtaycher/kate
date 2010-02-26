@@ -44,9 +44,18 @@ TextBuffer::~TextBuffer ()
   for (int i = 0; i < m_blocks.size(); ++i)
     m_blocks[i]->deleteBlockContent ();
 
-  // delete all blocks
+  // kill all ranges
+  qDeleteAll (m_ranges);
+  m_ranges.clear ();
+
+  // delete all blocks, now that all cursors are really deleted
+  // else asserts in destructor of blocks will fail!
   qDeleteAll (m_blocks);
   m_blocks.clear ();
+
+  // kill all invalid cursors, do this after block deletion, to uncover if they might be still linked in blocks
+  qDeleteAll (m_invalidCursors);
+  m_invalidCursors.clear ();
 }
 
 void TextBuffer::clear ()
