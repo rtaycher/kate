@@ -274,8 +274,11 @@ void TextBuffer::balanceBlock (int index)
     // move cursors
     QSet<TextCursor*> oldBlockSet;
     foreach (TextCursor *cursor, blockToBalance->m_cursors) {
-        if (cursor->lineInBlock() >= halfSize)
+        if (cursor->lineInBlock() >= halfSize) {
+          cursor->m_line = cursor->lineInBlock() - halfSize;
+          cursor->m_block = newBlock;
           newBlock->m_cursors.insert (cursor);
+        }
         else
           oldBlockSet.insert (cursor);
     }
@@ -297,7 +300,23 @@ void TextBuffer::balanceBlock (int index)
     return;
 
   // unite small block with predecessor
+  TextBlock *targetBlock = m_blocks[index-1];
 
+  // move cursors, do this first, now still lines() count is correct for target
+  foreach (TextCursor *cursor, blockToBalance->m_cursors) {
+    cursor->m_line = cursor->lineInBlock() + targetBlock->lines ();
+    cursor->m_block = targetBlock;
+    targetBlock->m_cursors.insert (cursor);
+  }
+
+  // move lines
+  targetBlock->m_lines.reserve (targetBlock->lines() + blockToBalance->lines ());
+  for (int i = 0; i < blockToBalance->m_lines.size(); ++i)
+    targetBlock->m_lines.append (blockToBalance->m_lines[i]);
+
+  // delete old block
+  delete blockToBalance;
+  m_blocks.erase (m_blocks.begin() + index);
 }
 
 void TextBuffer::debugPrint (const QString &title) const

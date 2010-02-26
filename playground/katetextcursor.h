@@ -39,6 +39,7 @@ class TextRange;
  */
 class TextCursor {
   friend class TextRange;
+  friend class TextBuffer;
 
   public:
     /**
