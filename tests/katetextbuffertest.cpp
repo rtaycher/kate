@@ -143,15 +143,31 @@ void KateTextBufferTest::cursorTest()
   buffer.debugPrint ("Cursor buffer");
 
   // construct cursor
-  Kate::TextCursor *cursor = new Kate::TextCursor (buffer, KTextEditor::Cursor (0, 0), Kate::TextCursor::MoveOnInsert);
-  printf ("cursor %d, %d\n", cursor->line(), cursor->column());
+  Kate::TextCursor *cursor1 = new Kate::TextCursor (buffer, KTextEditor::Cursor (0, 0), Kate::TextCursor::MoveOnInsert);
+  printf ("cursor %d, %d\n", cursor1->line(), cursor1->column());
 
-  cursor = new Kate::TextCursor (buffer, KTextEditor::Cursor (1, 8), Kate::TextCursor::MoveOnInsert);
-  printf ("cursor %d, %d\n", cursor->line(), cursor->column());
+  Kate::TextCursor *cursor2 = new Kate::TextCursor (buffer, KTextEditor::Cursor (1, 8), Kate::TextCursor::MoveOnInsert);
+  printf ("cursor %d, %d\n", cursor2->line(), cursor2->column());
 
-  cursor = new Kate::TextCursor (buffer, KTextEditor::Cursor (0, 123), Kate::TextCursor::MoveOnInsert);
-  printf ("cursor %d, %d\n", cursor->line(), cursor->column());
+  Kate::TextCursor *cursor3 = new Kate::TextCursor (buffer, KTextEditor::Cursor (0, 123), Kate::TextCursor::MoveOnInsert);
+  printf ("cursor %d, %d\n", cursor3->line(), cursor3->column());
 
-  cursor = new Kate::TextCursor (buffer, KTextEditor::Cursor (1323, 1), Kate::TextCursor::MoveOnInsert);
-  printf ("cursor %d, %d\n", cursor->line(), cursor->column());
+  Kate::TextCursor *cursor4 = new Kate::TextCursor (buffer, KTextEditor::Cursor (1323, 1), Kate::TextCursor::MoveOnInsert);
+  printf ("cursor %d, %d\n", cursor4->line(), cursor4->column());
+
+  // insert text
+  buffer.startEditing ();
+  buffer.insertText (KTextEditor::Cursor (0, 0), "hallo");
+  buffer.finishEditing ();
+  buffer.debugPrint ("Cursor buffer");
+
+  printf ("cursor %d, %d\n", cursor1->line(), cursor1->column());
+
+  // insert text
+  buffer.startEditing ();
+  buffer.removeText (KTextEditor::Range (KTextEditor::Cursor (0, 4), KTextEditor::Cursor (0, 10)));
+  buffer.finishEditing ();
+  buffer.debugPrint ("Cursor buffer");
+
+  printf ("cursor %d, %d\n", cursor1->line(), cursor1->column());
 }

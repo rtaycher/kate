@@ -40,6 +40,9 @@ class TextBuffer;
  * automatically invalid!
  */
 class TextRange {
+  // this is a friend, block changes might invalidate ranges...
+  friend class TextBlock;
+
   public:
      /// Determine how the range reacts to characters inserted immediately outside the range.
     enum InsertBehavior {
