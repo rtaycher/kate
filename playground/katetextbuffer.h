@@ -109,6 +109,12 @@ class TextBuffer : public QObject {
     void finishEditing ();
 
     /**
+     * Query information from the last editing transaction: was the content of the buffer changed?
+     * @return content of buffer was changed in last transaction?
+     */
+    bool editingChangedBuffer () const { return m_editingChangedBuffer; }
+
+    /**
      * Wrap line at given cursor position.
      * @param position line/column as cursor where to wrap
      */
@@ -237,6 +243,11 @@ class TextBuffer : public QObject {
      * Current number of running edit transactions
      */
     int m_editingTransactions;
+
+    /**
+     * Did the last running transaction change the buffer?
+     */
+    bool m_editingChangedBuffer;
 
     /**
      * Set of invalid cursors for this whole buffer.

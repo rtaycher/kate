@@ -27,6 +27,7 @@ TextBuffer::TextBuffer (QObject *parent, int blockSize)
   , m_blockSize (blockSize)
   , m_lines (0)
   , m_editingTransactions (0)
+  , m_editingChangedBuffer (false)
 {
   // minimal block size must be > 0
   Q_ASSERT (m_blockSize > 0);
@@ -121,6 +122,9 @@ void TextBuffer::startEditing ()
   if (m_editingTransactions > 1)
     return;
 
+  // reset informations about edit...
+  m_editingChangedBuffer = false;
+
   // transaction has started
   emit editingStarted (this);
 }
@@ -154,6 +158,9 @@ void TextBuffer::wrapLine (const KTextEditor::Cursor &position)
   // no other blocks will change
   m_blocks[blockIndex]->wrapLine (position);
   ++m_lines;
+
+  // remember changes
+  m_editingChangedBuffer = true;
 
   // fixup all following blocks
   fixStartLines (blockIndex);
@@ -189,6 +196,9 @@ void TextBuffer::unwrapLine (int line)
   if (firstLineInBlock)
     --blockIndex;
 
+  // remember changes
+  m_editingChangedBuffer = true;
+
   // fixup all following blocks
   fixStartLines (blockIndex);
 
@@ -209,6 +219,9 @@ void TextBuffer::insertText (const KTextEditor::Cursor &position, const QString 
 
   // let the block handle the insertText
   m_blocks[blockIndex]->insertText (position, text);
+
+  // remember changes
+  m_editingChangedBuffer = true;
 
   // emit signal about done change
   emit textInserted (this, position, text);
@@ -232,6 +245,9 @@ void TextBuffer::removeText (const KTextEditor::Range &range)
   // let the block handle the removeText, retrieve removed text
   QString text;
   m_blocks[blockIndex]->removeText (range, text);
+
+  // remember changes
+  m_editingChangedBuffer = true;
 
   // emit signal about done change
   emit textRemoved (this, range, text);
