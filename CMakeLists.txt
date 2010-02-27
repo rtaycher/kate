@@ -19,6 +19,9 @@ include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES})
 # ktexteditor interfaces, copy from kdelibs/interfaces/ktexteditor
 macro_optional_add_subdirectory (ktexteditor)
 
+# kate, copy from kdesdk/kate
+macro_optional_add_subdirectory (kate)
+
 # kwrite, copy from kdebase/apps/kwrite
 macro_optional_add_subdirectory (kwrite)
 
