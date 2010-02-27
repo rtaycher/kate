@@ -54,7 +54,7 @@ class TextBuffer : public QObject {
     /**
      * Destruct the text buffer
      */
-    ~TextBuffer ();
+    virtual ~TextBuffer ();
 
     /**
      * Clears the buffer, reverts to initial empty state.
@@ -107,13 +107,15 @@ class TextBuffer : public QObject {
      * Start an editing transaction, the wrapLine/unwrapLine/insertText and removeText functions
      * are only to be allowed to be called inside a editing transaction.
      * Editing transactions can stack. The number startEdit and endEdit calls must match.
+     * @return returns true, if no transaction was already running
      */
-    void startEditing ();
+    bool startEditing ();
 
     /**
      * Finish an editing transaction. Only allowed to be called if editing transaction is started.
+     * @return returns true, if this finished last running transaction
      */
-    void finishEditing ();
+    bool finishEditing ();
 
     /**
      * Query the number of editing transactions running atm.

@@ -117,23 +117,26 @@ QString TextBuffer::text () const
   return text;
 }
 
-void TextBuffer::startEditing ()
+bool TextBuffer::startEditing ()
 {
   // increment transaction counter
   ++m_editingTransactions;
 
   // if not first running transaction, do nothing
   if (m_editingTransactions > 1)
-    return;
+    return false;
 
   // reset informations about edit...
   m_editingChangedBuffer = false;
 
   // transaction has started
   emit editingStarted (this);
+
+  // first transaction started
+  return true;
 }
 
-void TextBuffer::finishEditing ()
+bool TextBuffer::finishEditing ()
 {
   // only allowed if still transactions running
   Q_ASSERT (m_editingTransactions > 0);
@@ -143,10 +146,13 @@ void TextBuffer::finishEditing ()
 
   // if not last running transaction, do nothing
   if (m_editingTransactions > 0)
-    return;
+    return false;
 
   // transaction has finished
   emit editingFinished (this);
+
+  // last transaction finished
+  return true;
 }
 
 void TextBuffer::wrapLine (const KTextEditor::Cursor &position)
