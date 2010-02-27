@@ -228,14 +228,14 @@ void TextBlock::unwrapLine (int line, TextBlock *previousBlock)
       if (cursor->lineInBlock() < line)
         continue;
 
-      // patch line of cursor
-      cursor->m_line--;
-
       // this is the unwrapped line
       if (cursor->lineInBlock() == line) {
         // patch column
         cursor->m_column += oldSizeOfPreviousLine;
       }
+
+      // patch line of cursor
+      cursor->m_line--;
 
       // remember range, if any
       if (cursor->range())
