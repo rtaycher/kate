@@ -130,65 +130,68 @@ void KateTextBufferTest::insertRemoveTextTest()
 
 void KateTextBufferTest::cursorTest()
 {
-  // construct an empty text buffer
-  Kate::TextBuffer buffer (0, 1);
+  // test with different block sizes
+  for (int i = 1; i <= 4; ++i) {
+    // construct an empty text buffer
+    Kate::TextBuffer buffer (0, i);
 
-  // wrap first line
-  buffer.startEditing ();
-  buffer.insertText (KTextEditor::Cursor (0, 0), "sfdfjdsklfjlsdfjlsdkfjskldfjklsdfjklsdjkfl");
-  buffer.wrapLine (KTextEditor::Cursor (0, 8));
-  buffer.wrapLine (KTextEditor::Cursor (1, 8));
-  buffer.wrapLine (KTextEditor::Cursor (2, 8));
-  buffer.finishEditing ();
-  buffer.debugPrint ("Cursor buffer");
+    // wrap first line
+    buffer.startEditing ();
+    buffer.insertText (KTextEditor::Cursor (0, 0), "sfdfjdsklfjlsdfjlsdkfjskldfjklsdfjklsdjkfl");
+    buffer.wrapLine (KTextEditor::Cursor (0, 8));
+    buffer.wrapLine (KTextEditor::Cursor (1, 8));
+    buffer.wrapLine (KTextEditor::Cursor (2, 8));
+    buffer.finishEditing ();
+    buffer.debugPrint ("Cursor buffer");
 
-  // construct cursor
-  Kate::TextCursor *cursor1 = new Kate::TextCursor (buffer, KTextEditor::Cursor (0, 0), Kate::TextCursor::MoveOnInsert);
-  QVERIFY (cursor1->toCursor () == KTextEditor::Cursor (0, 0));
-  printf ("cursor %d, %d\n", cursor1->line(), cursor1->column());
+    // construct cursor
+    Kate::TextCursor *cursor1 = new Kate::TextCursor (buffer, KTextEditor::Cursor (0, 0), Kate::TextCursor::MoveOnInsert);
+    QVERIFY (cursor1->toCursor () == KTextEditor::Cursor (0, 0));
+    printf ("cursor %d, %d\n", cursor1->line(), cursor1->column());
 
-  Kate::TextCursor *cursor2 = new Kate::TextCursor (buffer, KTextEditor::Cursor (1, 8), Kate::TextCursor::MoveOnInsert);
-  printf ("cursor %d, %d\n", cursor2->line(), cursor2->column());
+    Kate::TextCursor *cursor2 = new Kate::TextCursor (buffer, KTextEditor::Cursor (1, 8), Kate::TextCursor::MoveOnInsert);
+    printf ("cursor %d, %d\n", cursor2->line(), cursor2->column());
 
-  Kate::TextCursor *cursor3 = new Kate::TextCursor (buffer, KTextEditor::Cursor (0, 123), Kate::TextCursor::MoveOnInsert);
-  printf ("cursor %d, %d\n", cursor3->line(), cursor3->column());
+    Kate::TextCursor *cursor3 = new Kate::TextCursor (buffer, KTextEditor::Cursor (0, 123), Kate::TextCursor::MoveOnInsert);
+    printf ("cursor %d, %d\n", cursor3->line(), cursor3->column());
 
-  Kate::TextCursor *cursor4 = new Kate::TextCursor (buffer, KTextEditor::Cursor (1323, 1), Kate::TextCursor::MoveOnInsert);
-  printf ("cursor %d, %d\n", cursor4->line(), cursor4->column());
+    Kate::TextCursor *cursor4 = new Kate::TextCursor (buffer, KTextEditor::Cursor (1323, 1), Kate::TextCursor::MoveOnInsert);
+    printf ("cursor %d, %d\n", cursor4->line(), cursor4->column());
 
-  // insert text
-  buffer.startEditing ();
-  buffer.insertText (KTextEditor::Cursor (0, 0), "hallo");
-  buffer.finishEditing ();
-  buffer.debugPrint ("Cursor buffer");
+    // insert text
+    buffer.startEditing ();
+    buffer.insertText (KTextEditor::Cursor (0, 0), "hallo");
+    buffer.finishEditing ();
+    buffer.debugPrint ("Cursor buffer");
 
-  QVERIFY (cursor1->toCursor () == KTextEditor::Cursor (0, 5));
-  printf ("cursor %d, %d\n", cursor1->line(), cursor1->column());
+    printf ("cursor %d, %d\n", cursor1->line(), cursor1->column());
+    QVERIFY (cursor1->toCursor () == KTextEditor::Cursor (0, 5));
 
-  // remove text
-  buffer.startEditing ();
-  buffer.removeText (KTextEditor::Range (KTextEditor::Cursor (0, 4), KTextEditor::Cursor (0, 10)));
-  buffer.finishEditing ();
-  buffer.debugPrint ("Cursor buffer");
+    // remove text
+    buffer.startEditing ();
+    buffer.removeText (KTextEditor::Range (KTextEditor::Cursor (0, 4), KTextEditor::Cursor (0, 10)));
+    buffer.finishEditing ();
+    buffer.debugPrint ("Cursor buffer");
 
-  QVERIFY (cursor1->toCursor () == KTextEditor::Cursor (0, 4));
-  printf ("cursor %d, %d\n", cursor1->line(), cursor1->column());
+    printf ("cursor %d, %d\n", cursor1->line(), cursor1->column());
+    QVERIFY (cursor1->toCursor () == KTextEditor::Cursor (0, 4));
 
-  // wrap line
-  buffer.startEditing ();
-  buffer.wrapLine (KTextEditor::Cursor (0, 3));
-  buffer.finishEditing ();
-  buffer.debugPrint ("Cursor buffer");
+    // wrap line
+    buffer.startEditing ();
+    buffer.wrapLine (KTextEditor::Cursor (0, 3));
+    buffer.finishEditing ();
+    buffer.debugPrint ("Cursor buffer");
 
-  QVERIFY (cursor1->toCursor () == KTextEditor::Cursor (1, 1));
-  printf ("cursor %d, %d\n", cursor1->line(), cursor1->column());
+    printf ("cursor %d, %d\n", cursor1->line(), cursor1->column());
+    QVERIFY (cursor1->toCursor () == KTextEditor::Cursor (1, 1));
 
-  // unwrap line
-  buffer.startEditing ();
-  buffer.unwrapLine (1);
-  buffer.finishEditing ();
-  buffer.debugPrint ("Cursor buffer");
+    // unwrap line
+    buffer.startEditing ();
+    buffer.unwrapLine (1);
+    buffer.finishEditing ();
+    buffer.debugPrint ("Cursor buffer");
 
-  QVERIFY (cursor1->toCursor () == KTextEditor::Cursor (0, 4));
-  printf ("cursor %d, %d\n", cursor1->line(), cursor1->column());
+    printf ("cursor %d, %d\n", cursor1->line(), cursor1->column());
+    QVERIFY (cursor1->toCursor () == KTextEditor::Cursor (0, 4));
+  }
 }
