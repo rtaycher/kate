@@ -144,6 +144,7 @@ void KateTextBufferTest::cursorTest()
 
   // construct cursor
   Kate::TextCursor *cursor1 = new Kate::TextCursor (buffer, KTextEditor::Cursor (0, 0), Kate::TextCursor::MoveOnInsert);
+  QVERIFY (cursor1->toCursor () == KTextEditor::Cursor (0, 0));
   printf ("cursor %d, %d\n", cursor1->line(), cursor1->column());
 
   Kate::TextCursor *cursor2 = new Kate::TextCursor (buffer, KTextEditor::Cursor (1, 8), Kate::TextCursor::MoveOnInsert);
@@ -161,6 +162,7 @@ void KateTextBufferTest::cursorTest()
   buffer.finishEditing ();
   buffer.debugPrint ("Cursor buffer");
 
+  QVERIFY (cursor1->toCursor () == KTextEditor::Cursor (0, 5));
   printf ("cursor %d, %d\n", cursor1->line(), cursor1->column());
 
   // remove text
@@ -169,6 +171,7 @@ void KateTextBufferTest::cursorTest()
   buffer.finishEditing ();
   buffer.debugPrint ("Cursor buffer");
 
+  QVERIFY (cursor1->toCursor () == KTextEditor::Cursor (0, 4));
   printf ("cursor %d, %d\n", cursor1->line(), cursor1->column());
 
   // wrap line
@@ -177,5 +180,6 @@ void KateTextBufferTest::cursorTest()
   buffer.finishEditing ();
   buffer.debugPrint ("Cursor buffer");
 
+  QVERIFY (cursor1->toCursor () == KTextEditor::Cursor (1, 1));
   printf ("cursor %d, %d\n", cursor1->line(), cursor1->column());
 }
