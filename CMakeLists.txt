@@ -13,6 +13,9 @@ set (KDE4_BUILD_TESTS "ON" CACHE "BOOL" "Enable building of tests" FORCE)
 add_definitions (${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
 include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES})
 
+# ktexteditor interfaces, copy from kdelibs/interfaces/ktexteditor
+macro_optional_add_subdirectory (ktexteditor)
+
 # testing area, just for experimenting with new stuff
 macro_optional_add_subdirectory (playground)
 
