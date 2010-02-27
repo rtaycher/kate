@@ -15,3 +15,5 @@ set (kateplayground_srcs
 
 # testing library
 kde4_add_library (kateplayground ${kateplayground_srcs})
+
+macro_optional_add_subdirectory(kte_acomment)

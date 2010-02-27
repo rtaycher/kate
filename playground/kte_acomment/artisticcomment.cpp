@@ -21,18 +21,18 @@
 #include <KConfigGroup>
 #include <KComponentData>
 
-static QList<QString> explode(const QString& str, size_t max)
+static QList<QString> explode(QString str, size_t max)
 {
     QList<QString> ret;
     QString curr;
     QString currWord;
     if(str[str.size() - 1] != '\n')
         str += '\n';
-    for(size_t i = 0; i != str.size(); ++i)
+    for(int i = 0; i != str.size(); ++i)
     {
         if(str[i] == '\n')
         {
-            if(currWord.size() + (curr.size() == 0 ? 0 : curr.size() + 1) > max)
+            if((size_t)currWord.size() + (size_t)(curr.size() == 0 ? 0 : curr.size() + 1) > max)
             {
                 ret.push_back(curr);
                 curr = currWord;
@@ -46,7 +46,7 @@ static QList<QString> explode(const QString& str, size_t max)
         }
         else if(str[i] == ' ')
         {
-            if(currWord.size() + (curr.size() == 0 ? 0 : curr.size() + 1) > max)
+            if((size_t)currWord.size() + (size_t)(curr.size() == 0 ? 0 : curr.size() + 1) > max)
             {
                 ret.push_back(curr);
                 curr = currWord;
@@ -62,7 +62,7 @@ static QList<QString> explode(const QString& str, size_t max)
     }
     if(currWord != "")
     {
-        if(currWord.size() + (curr.size() == 0 ? 0 : curr.size() + 1) > max)
+        if((size_t)currWord.size() + (size_t)(curr.size() == 0 ? 0 : curr.size() + 1) > max)
         {
             ret.push_back(curr);
             ret.push_back(currWord);
@@ -100,17 +100,17 @@ QString ArtisticComment::apply(const QString& text)
     {
         case LeftNoFill:
         {
-            for(size_t i = 0; i != expl.size(); ++i)
+            for(int i = 0; i != expl.size(); ++i)
                 ret += lineBegin + textBegin + expl[i] + textEnd + lineEnd + '\n';
             break;
         }
         case Left:
         {
-            for(size_t i = 0; i != expl.size(); ++i)
+            for(int i = 0; i != expl.size(); ++i)
             {
                 QString line = lineBegin + textBegin + expl[i] + textEnd;
-                size_t max = realWidth - lineEnd.size();
-                while(line.size() < max)
+                size_t max = realWidth - (size_t)lineEnd.size();
+                while((size_t)line.size() < max)
                     line += rfill;
                 line += lineEnd + '\n';
                 ret += line;
@@ -119,16 +119,16 @@ QString ArtisticComment::apply(const QString& text)
         }
         case Center:
         {
-            for(size_t i = 0; i != expl.size(); ++i)
+            for(int i = 0; i != expl.size(); ++i)
             {
-                size_t numChars = realWidth - lineBegin.size() - lineEnd.size() - textBegin.size() - textEnd.size() - expl[i].size();
+                size_t numChars = realWidth - (size_t)lineBegin.size() - (size_t)lineEnd.size() - (size_t)textBegin.size() - (size_t)textEnd.size() - (size_t)expl[i].size();
                 size_t num = (numChars + !truncate) / 2;
                 QString line = lineBegin;
-                for(size_t i = 0; i != num; ++i)
+                for(size_t j = 0; j != num; ++j)
                     line += lfill;
                 line += textBegin + expl[i] + textEnd;
                 num = numChars - num;
-                for(size_t i = 0; i != num; ++i)
+                for(size_t j = 0; j != num; ++j)
                     line += rfill;
                 line += lineEnd + '\n';
                 ret += line;
@@ -137,11 +137,11 @@ QString ArtisticComment::apply(const QString& text)
         }
         case Right:
         {
-            for(size_t i = 0; i != expl.size(); ++i)
+            for(int i = 0; i != expl.size(); ++i)
             {
                 size_t num = realWidth - lineBegin.size() - lineEnd.size() - textBegin.size() - textEnd.size() - expl[i].size();
                 QString line = lineBegin;
-                for(size_t i = 0; i != num; ++i)
+                for(size_t j = 0; j != num; ++j)
                     line += lfill;
                 line += textBegin + expl[i] + textEnd + lineEnd;
                 ret += line;
