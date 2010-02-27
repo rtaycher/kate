@@ -6,6 +6,9 @@ find_package(KDE4 REQUIRED)
 include (KDE4Defaults)
 include (MacroLibrary)
 
+# use our own copies of some stuff
+set (KDE4_KTEXTEDITOR_LIBS "ktexteditor")
+
 # enforce build of tests
 set (KDE4_BUILD_TESTS "ON" CACHE "BOOL" "Enable building of tests" FORCE)
 
@@ -15,6 +18,9 @@ include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES})
 
 # ktexteditor interfaces, copy from kdelibs/interfaces/ktexteditor
 macro_optional_add_subdirectory (ktexteditor)
+
+# kwrite, copy from kdebase/apps/kwrite
+macro_optional_add_subdirectory (kwrite)
 
 # testing area, just for experimenting with new stuff
 macro_optional_add_subdirectory (playground)

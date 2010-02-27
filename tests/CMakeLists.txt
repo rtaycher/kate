@@ -8,7 +8,7 @@ include_directories (${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/playground)
 MACRO(KATE_UNIT_TESTS)
   FOREACH(_testname ${ARGN})
     kde4_add_unit_test(${_testname} NOGUI ${_testname}.cpp)
-    target_link_libraries(${_testname} kateplayground ktexteditor ${QT_QTTEST_LIBRARY} ${KDE4_KIO_LIBS} ${KDE4_KPARTS_LIBS})
+    target_link_libraries(${_testname} kateplayground ${KDE4_KTEXTEDITOR_LIBS} ${QT_QTTEST_LIBRARY} ${KDE4_KIO_LIBS} ${KDE4_KPARTS_LIBS})
   ENDFOREACH(_testname)
 ENDMACRO(KATE_UNIT_TESTS)
 
