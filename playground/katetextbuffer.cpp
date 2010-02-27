@@ -26,6 +26,7 @@ TextBuffer::TextBuffer (QObject *parent, int blockSize)
   : QObject (parent)
   , m_blockSize (blockSize)
   , m_lines (0)
+  , m_revision (0)
   , m_editingTransactions (0)
   , m_editingChangedBuffer (false)
 {
@@ -87,6 +88,9 @@ void TextBuffer::clear ()
 
   // reset lines
   m_lines = 1;
+
+  // reset revision
+  m_revision = 0;
 
   // we got cleared
   emit cleared (this);
@@ -160,6 +164,7 @@ void TextBuffer::wrapLine (const KTextEditor::Cursor &position)
   ++m_lines;
 
   // remember changes
+  ++m_revision;
   m_editingChangedBuffer = true;
 
   // fixup all following blocks
@@ -197,6 +202,7 @@ void TextBuffer::unwrapLine (int line)
     --blockIndex;
 
   // remember changes
+  ++m_revision;
   m_editingChangedBuffer = true;
 
   // fixup all following blocks
@@ -225,6 +231,7 @@ void TextBuffer::insertText (const KTextEditor::Cursor &position, const QString 
   m_blocks[blockIndex]->insertText (position, text);
 
   // remember changes
+  ++m_revision;
   m_editingChangedBuffer = true;
 
   // emit signal about done change
@@ -255,6 +262,7 @@ void TextBuffer::removeText (const KTextEditor::Range &range)
   m_blocks[blockIndex]->removeText (range, text);
 
   // remember changes
+  ++m_revision;
   m_editingChangedBuffer = true;
 
   // emit signal about done change

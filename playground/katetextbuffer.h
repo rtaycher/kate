@@ -84,6 +84,13 @@ class TextBuffer : public QObject {
     int lines () const { Q_ASSERT (m_lines > 0); return m_lines; }
 
     /**
+     * Revision of this buffer. Is set to 0 on construction, clear(), load and successfull save.
+     * Is incremented on each change to the buffer.
+     * @return current revision
+     */
+    qint64 revision () const { return m_revision; }
+
+    /**
      * Retrieve a text line.
      * @param line wanted line number
      * @return text line
@@ -107,6 +114,12 @@ class TextBuffer : public QObject {
      * Finish an editing transaction. Only allowed to be called if editing transaction is started.
      */
     void finishEditing ();
+
+    /**
+     * Query the number of editing transactions running atm.
+     * @return number of running transactions
+     */
+    int editingTransactions () const { return m_editingTransactions; }
 
     /**
      * Query information from the last editing transaction: was the content of the buffer changed?
@@ -238,6 +251,11 @@ class TextBuffer : public QObject {
      * Number of lines in buffer
      */
     int m_lines;
+
+    /**
+     * Revision of the buffer.
+     */
+    qint64 m_revision;
 
     /**
      * Current number of running edit transactions
