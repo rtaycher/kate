@@ -127,14 +127,14 @@ class TextBuffer : public QObject {
     void unwrapLine (int line);
 
     /**
-     * Insert text at given cursor position.
+     * Insert text at given cursor position. Does nothing if text is empty, beside some consistency checks.
      * @param position position where to insert text
      * @param text text to insert
      */
     void insertText (const KTextEditor::Cursor &position, const QString &text);
 
     /**
-     * Remove text at given range.
+     * Remove text at given range. Does nothing if range is empty, beside some consistency checks.
      * @param range range of text to remove, must be on one line only.
      */
     void removeText (const KTextEditor::Range &range);

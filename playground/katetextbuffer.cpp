@@ -214,6 +214,10 @@ void TextBuffer::insertText (const KTextEditor::Cursor &position, const QString 
   // only allowed if editing transaction running
   Q_ASSERT (m_editingTransactions > 0);
 
+  // skip work, if no text to insert
+  if (text.isEmpty())
+    return;
+
   // get block, this will assert on invalid line
   int blockIndex = blockForLine (position.line());
 
@@ -238,6 +242,10 @@ void TextBuffer::removeText (const KTextEditor::Range &range)
   // start colum <= end column and >= 0
   Q_ASSERT (range.start().column() <= range.end().column());
   Q_ASSERT (range.start().column() >= 0);
+
+  // skip work, if no text to remove
+  if (range.isEmpty())
+    return;
 
   // get block, this will assert on invalid line
   int blockIndex = blockForLine (range.start().line());
