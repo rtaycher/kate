@@ -80,7 +80,7 @@ ArtisticComment::ArtisticComment(
                     const QString& lineBegin, const QString& lineEnd,
                     const QString& textBegin, const QString& textEnd,
                     QChar lfill, QChar rfill,
-                    size_t minfill, size_t realWidth,
+                    int minfill, int realWidth,
                     bool truncate, type_t type)
     : begin(begin), end(end),
       lineBegin(lineBegin), lineEnd(lineEnd),
@@ -182,7 +182,7 @@ void ArtisticComment::readConfig()
                                         ED("lineBegin", ""), ED("lineEnd", ""),
                                         ED("textBegin", ""), ED("textEnd", ""),
                                         ED("lfill", " ")[0], ED("rfill", " ")[0],
-                                        ED("minfill", (size_t)0), ED("realWidth", (size_t)60), ED("truncate", true), toTypeEnum(ED("type", "Left")));
+                                        ED("minfill", 0), ED("realWidth", 60), ED("truncate", true), toTypeEnum(ED("type", "Left")));
     }
     #undef ED
 }

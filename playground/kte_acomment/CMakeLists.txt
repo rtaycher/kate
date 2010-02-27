@@ -10,10 +10,10 @@ set(ktexteditor_acomment_SRCS acommentplugin.cpp)
 kde4_add_ui_files(ktexteditor_acomment_SRCS styledialog.ui)
 
 add_library(acomment STATIC ${acomment_SRCS})
-kde4_add_plugin(ktexteditor_acomment ${ktexteditor_acomment_SRCS})
-
 target_link_libraries(acomment QtCore)
-target_link_libraries(ktexteditor_acomment ${KDE4_KDEUI_LIBS} ktexteditor acomment)
+
+kde4_add_plugin(ktexteditor_acomment ${ktexteditor_acomment_SRCS} ${acomment_SRCS})
+target_link_libraries(ktexteditor_acomment ${KDE4_KDEUI_LIBS} ktexteditor)
 
 install(TARGETS acomment ${INSTALL_TARGETS_DEFAULT_ARGS})
 

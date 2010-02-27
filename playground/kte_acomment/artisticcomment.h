@@ -33,8 +33,8 @@ struct ArtisticComment
     QString lineBegin, lineEnd;
     QString textBegin, textEnd;
     QChar lfill, rfill;
-    size_t minfill;
-    size_t realWidth;
+    int minfill;
+    int realWidth;
     bool truncate;
     /**
      * The alignment enum.
@@ -67,13 +67,13 @@ struct ArtisticComment
                     const QString& lineBegin, const QString& lineEnd,
                     const QString& textBegin, const QString& textEnd,
                     QChar lfill, QChar rfill,
-                    size_t minfill, size_t realWidth,
+                    int minfill, int realWidth,
                     bool truncate, type_t type);
     /**
      * Get a decorated string.
      */
     QString apply(const QString& text);
-    
+
     /**
      * Read the styles from disk.
      */
