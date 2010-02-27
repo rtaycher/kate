@@ -358,7 +358,7 @@ void TextBuffer::balanceBlock (int index)
 void TextBuffer::debugPrint (const QString &title) const
 {
   // print header with title
-  printf ("%s\n", qPrintable (title));
+  printf ("%s (lines: %d bs: %d)\n", qPrintable (title), m_lines, m_blockSize);
 
   // print all blocks
   for (int i = 0; i < m_blocks.size(); ++i)

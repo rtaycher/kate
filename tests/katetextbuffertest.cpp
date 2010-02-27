@@ -130,6 +130,9 @@ void KateTextBufferTest::insertRemoveTextTest()
 
 void KateTextBufferTest::cursorTest()
 {
+  // last buffer content, for consistence checks
+  QString lastBufferContent;
+
   // test with different block sizes
   for (int i = 1; i <= 4; ++i) {
     // construct an empty text buffer
@@ -193,5 +196,12 @@ void KateTextBufferTest::cursorTest()
 
     printf ("cursor %d, %d\n", cursor1->line(), cursor1->column());
     QVERIFY (cursor1->toCursor () == KTextEditor::Cursor (0, 4));
+
+    // verify content
+    if (i > 1)
+      QVERIFY (lastBufferContent == buffer.text ());
+
+    // remember content
+    lastBufferContent = buffer.text ();
   }
 }
