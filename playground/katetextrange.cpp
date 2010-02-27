@@ -33,6 +33,9 @@ TextRange::TextRange (TextBuffer &buffer, const KTextEditor::Range &range, Inser
 {
   // remember this range in buffer
   m_buffer.m_ranges.insert (this);
+
+  // check if range now invalid
+  checkValidity ();
 }
 
 TextRange::~TextRange ()
@@ -59,6 +62,12 @@ void TextRange::setRange (const KTextEditor::Cursor &start, const KTextEditor::C
 
 void TextRange::checkValidity ()
 {
+  // check if any cursor is invalid or the range is zero size
+  // if yes, invalidate this range
+  if (!m_start.toCursor().isValid() || !m_end.toCursor().isValid() || m_end.toCursor() <= m_start.toCursor()) {
+    m_start.setPosition (-1, -1);
+    m_end.setPosition (-1, -1);
+  }
 }
 
 }
