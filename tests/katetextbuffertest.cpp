@@ -182,4 +182,13 @@ void KateTextBufferTest::cursorTest()
 
   QVERIFY (cursor1->toCursor () == KTextEditor::Cursor (1, 1));
   printf ("cursor %d, %d\n", cursor1->line(), cursor1->column());
+
+  // unwrap line
+  buffer.startEditing ();
+  buffer.unwrapLine (1);
+  buffer.finishEditing ();
+  buffer.debugPrint ("Cursor buffer");
+
+  QVERIFY (cursor1->toCursor () == KTextEditor::Cursor (0, 4));
+  printf ("cursor %d, %d\n", cursor1->line(), cursor1->column());
 }

@@ -146,21 +146,105 @@ void TextBlock::unwrapLine (int line, TextBlock *previousBlock)
 
   // two possiblities: either first line of this block or later line
   if (line == 0) {
-      // we need previous block with at least one line
-      Q_ASSERT (previousBlock);
-      Q_ASSERT (previousBlock->lines () > 0);
+    // we need previous block with at least one line
+    Q_ASSERT (previousBlock);
+    Q_ASSERT (previousBlock->lines () > 0);
 
-      // move last line of previous block to this one, might result in empty block
-      m_lines.first()->textReadWrite().prepend (previousBlock->m_lines.last()->text());
-      previousBlock->m_lines.erase (previousBlock->m_lines.begin() + (previousBlock->lines () - 1));
+    // move last line of previous block to this one, might result in empty block
+    TextLine oldFirst = m_lines[0];
+    int lastLineOfPreviousBlock = previousBlock->lines ()-1;
+    m_lines[0] = previousBlock->m_lines.last();
+    previousBlock->m_lines.erase (previousBlock->m_lines.begin() + (previousBlock->lines () - 1));
 
-      // patch startLine of this block
-      --m_startLine;
-  } else {
-      // easy: just move text to previous line and remove current one
-      m_lines[line-1]->textReadWrite().append (m_lines[line]->text());
-      m_lines.erase (m_lines.begin () + line);
+    // append text
+    int oldSizeOfPreviousLine = m_lines[0]->text().size();
+    m_lines[0]->textReadWrite().append (oldFirst->text());
+
+    // patch startLine of this block
+    --m_startLine;
+
+    /**
+    * cursor and range handling below
+    */
+
+    // no cursors in this and previous block, no work to do..
+    if (previousBlock->m_cursors.empty() && m_cursors.empty())
+      return;
+
+    // move all cursors because of the unwrapped line
+    // remember all ranges modified
+    QSet<TextRange *> changedRanges;
+    foreach (TextCursor *cursor, m_cursors) {
+        // this is the unwrapped line
+        if (cursor->lineInBlock() == 0) {
+          // patch column
+          cursor->m_column += oldSizeOfPreviousLine;
+        }
+
+        // remember range, if any
+        if (cursor->range())
+          changedRanges.insert (cursor->range());
+    }
+
+    // move cursors of the moved line from previous block to this block now
+    QSet<TextCursor *> newPreviousCursors;
+    foreach (TextCursor *cursor, previousBlock->m_cursors) {
+      if (cursor->lineInBlock() == lastLineOfPreviousBlock) {
+        cursor->m_line = 0;
+        cursor->m_block = this;
+        m_cursors.insert (cursor);
+      }
+      else
+        newPreviousCursors.insert (cursor);
+    }
+    previousBlock->m_cursors = newPreviousCursors;
+
+    // check validity of all ranges, might invalidate them...
+    foreach (TextRange *range, changedRanges)
+      range->checkValidity ();
+
+    // be done
+    return;
   }
+
+  // easy: just move text to previous line and remove current one
+  int oldSizeOfPreviousLine = m_lines[line-1]->text().size();
+  m_lines[line-1]->textReadWrite().append (m_lines[line]->text());
+  m_lines.erase (m_lines.begin () + line);
+
+  /**
+   * cursor and range handling below
+   */
+
+  // no cursors in this block, no work to do..
+  if (m_cursors.empty())
+    return;
+
+  // move all cursors because of the unwrapped line
+  // remember all ranges modified
+  QSet<TextRange *> changedRanges;
+  foreach (TextCursor *cursor, m_cursors) {
+      // skip cursors in lines in front of removed one
+      if (cursor->lineInBlock() < line)
+        continue;
+
+      // patch line of cursor
+      cursor->m_line--;
+
+      // this is the unwrapped line
+      if (cursor->lineInBlock() == line) {
+        // patch column
+        cursor->m_column += oldSizeOfPreviousLine;
+      }
+
+      // remember range, if any
+      if (cursor->range())
+        changedRanges.insert (cursor->range());
+  }
+
+  // check validity of all ranges, might invalidate them...
+  foreach (TextRange *range, changedRanges)
+    range->checkValidity ();
 }
 
 void TextBlock::insertText (const KTextEditor::Cursor &position, const QString &text)
