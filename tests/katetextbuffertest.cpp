@@ -163,9 +163,17 @@ void KateTextBufferTest::cursorTest()
 
   printf ("cursor %d, %d\n", cursor1->line(), cursor1->column());
 
-  // insert text
+  // remove text
   buffer.startEditing ();
   buffer.removeText (KTextEditor::Range (KTextEditor::Cursor (0, 4), KTextEditor::Cursor (0, 10)));
+  buffer.finishEditing ();
+  buffer.debugPrint ("Cursor buffer");
+
+  printf ("cursor %d, %d\n", cursor1->line(), cursor1->column());
+
+  // wrap line
+  buffer.startEditing ();
+  buffer.wrapLine (KTextEditor::Cursor (0, 3));
   buffer.finishEditing ();
   buffer.debugPrint ("Cursor buffer");
 

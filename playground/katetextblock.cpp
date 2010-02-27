@@ -89,6 +89,54 @@ void TextBlock::wrapLine (const KTextEditor::Cursor &position)
     // now remove wrapped text from old line
     text.chop (text.size() - position.column());
   }
+
+  /**
+   * cursor and range handling below
+   */
+
+  // no cursors in this block, no work to do..
+  if (m_cursors.empty())
+    return;
+
+  // move all cursors on the line which has the text inserted
+  // remember all ranges modified
+  QSet<TextRange *> changedRanges;
+  foreach (TextCursor *cursor, m_cursors) {
+      // skip cursors on lines in front of the wrapped one!
+      if (cursor->lineInBlock() < line)
+        continue;
+
+      // either this is simple, line behind the wrapped one
+      if (cursor->lineInBlock() > line) {
+        // patch line of cursor
+        cursor->m_line++;
+      }
+
+      // this is the wrapped line
+      else {
+        // skip cursors with too small column
+        if (cursor->column() <= position.column()) {
+          if (cursor->column() < position.column() || !cursor->m_moveOnInsert)
+            continue;
+        }
+
+        // move cursor
+
+        // patch line of cursor
+        cursor->m_line++;
+
+        // patch column
+        cursor->m_column -= position.column();
+      }
+
+      // remember range, if any
+      if (cursor->range())
+        changedRanges.insert (cursor->range());
+  }
+
+  // check validity of all ranges, might invalidate them...
+  foreach (TextRange *range, changedRanges)
+    range->checkValidity ();
 }
 
 void TextBlock::unwrapLine (int line, TextBlock *previousBlock)
@@ -129,6 +177,10 @@ void TextBlock::insertText (const KTextEditor::Cursor &position, const QString &
 
   // insert text
   textOfLine.insert (position.column(), text);
+
+  /**
+   * cursor and range handling below
+   */
 
   // no cursors in this block, no work to do..
   if (m_cursors.empty())
@@ -180,6 +232,10 @@ void TextBlock::removeText (const KTextEditor::Range &range, QString &removedTex
 
   // remove text
   textOfLine.remove (range.start().column(), range.end().column() - range.start().column());
+
+  /**
+   * cursor and range handling below
+   */
 
   // no cursors in this block, no work to do..
   if (m_cursors.empty())
