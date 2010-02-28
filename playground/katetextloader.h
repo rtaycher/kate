@@ -22,7 +22,6 @@
 #define KATE_TEXTLOADER_H
 
 #include <QtCore/QString>
-#include <QtCore/QTextCodec>
 #include <QtCore/QFile>
 
 // on the fly compression
@@ -101,6 +100,7 @@ class FileLoader
       m_position = 0;
       m_lastLineStart = 0;
       m_eol = eolUnknown;
+      m_text.clear ();
 
       // if already opened, close the file...
       if (m_file->isOpen())

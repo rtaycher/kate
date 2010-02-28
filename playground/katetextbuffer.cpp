@@ -32,6 +32,7 @@ TextBuffer::TextBuffer (QObject *parent, int blockSize)
   , m_revision (0)
   , m_editingTransactions (0)
   , m_editingChangedBuffer (false)
+  , m_textCodec (0)
 {
   // minimal block size must be > 0
   Q_ASSERT (m_blockSize > 0);
@@ -370,6 +371,9 @@ void TextBuffer::debugPrint (const QString &title) const
 
 bool TextBuffer::load (const QString &filename)
 {
+  // codec must be set!
+  Q_ASSERT (m_textCodec);
+
   /**
    * first: clear buffer in any case!
    */
@@ -388,60 +392,83 @@ bool TextBuffer::load (const QString &filename)
   Kate::FileLoader file (filename);
 
   /**
-   * not able to open, exit
+   * triple play, maximal three loading rounds
+   * 0) use the given encoding, be done, if no encoding errors happen
+   * 1) use fallback encoding, be done, if no encoding errors happen
+   * 2) use again given encoding, be done in any case
    */
-  if (!file.open (0))
-    return false;
-
-#if 0
-  m_doc->config()->setEncoding(file.actualEncoding());
-
-  // set eol mode, if a eol char was found in the first 256kb block and we allow this at all!
-  if (m_doc->config()->allowEolDetection() && (file.eol() != -1))
-    m_doc->config()->setEol (file.eol());
-
-  if (file.bom()!=KateFileLoader::BomUnknown)
-  {
-    m_doc->config()->setBom(file.bom()==KateFileLoader::BomSet);
-  }
-#endif
-
-
-  // remove line in first block
-  m_blocks.last()->m_lines.clear ();
-  m_lines = 0;
-
-  // read in all lines...
-  while ( !file.eof() )
-  {
-    int offset = 0, length = 0;
-    file.readLine (offset, length);
-    const QChar *unicodeData = file.unicode () + offset;
-
-#if 0
-    // strip spaces at end of line
-    if ( file.removeTrailingSpaces() )
-    {
-      while (length > 0)
-      {
-        if (unicodeData[length-1].isSpace())
-          --length;
-        else
-          break;
-      }
+  for (int i = 0; i < 3;  ++i) {
+    /**
+     * kill all blocks beside first one
+     */
+    for (int b = 1; b < m_blocks.size(); ++b) {
+      m_blocks[b]->m_lines.clear ();
+      delete m_blocks[b];
     }
-#endif
+    m_blocks.resize (1);
 
-    // construct text line with content
-    TextLine textLine = TextLine (new TextLineData());
-    textLine->textReadWrite() = QString (unicodeData, length);
+    /**
+     * remove lines in first block
+     */
+    m_blocks.last()->m_lines.clear ();
+    m_lines = 0;
 
-    // ensure blocks aren't too large
-    if (m_blocks.last()->lines() >= m_blockSize)
-      m_blocks.append (new TextBlock (this, m_blocks.last()->startLine() + m_blocks.last()->lines()));
+    /**
+     * try to open file, with given encoding
+     * in round 0 + 2 use the given encoding from user
+     */
+    if (!file.open ((i % 2 == 0) ? 0 : 0)) {
+      // create one dummy textline, in any case
+      m_blocks.last()->appendLine (TextLine (new TextLineData()));
+      m_lines++;
+      return false;
+    }
 
-    m_blocks.last()->appendLine (textLine);
-    m_lines++;
+  #if 0
+    m_doc->config()->setEncoding(file.actualEncoding());
+
+    // set eol mode, if a eol char was found in the first 256kb block and we allow this at all!
+    if (m_doc->config()->allowEolDetection() && (file.eol() != -1))
+      m_doc->config()->setEol (file.eol());
+
+    if (file.bom()!=KateFileLoader::BomUnknown)
+    {
+      m_doc->config()->setBom(file.bom()==KateFileLoader::BomSet);
+    }
+  #endif
+
+    // read in all lines...
+    while ( !file.eof() )
+    {
+      int offset = 0, length = 0;
+      file.readLine (offset, length);
+      const QChar *unicodeData = file.unicode () + offset;
+
+  #if 0
+      // strip spaces at end of line
+      if ( file.removeTrailingSpaces() )
+      {
+        while (length > 0)
+        {
+          if (unicodeData[length-1].isSpace())
+            --length;
+          else
+            break;
+        }
+      }
+  #endif
+
+      // construct text line with content
+      TextLine textLine = TextLine (new TextLineData());
+      textLine->textReadWrite() = QString (unicodeData, length);
+
+      // ensure blocks aren't too large
+      if (m_blocks.last()->lines() >= m_blockSize)
+        m_blocks.append (new TextBlock (this, m_blocks.last()->startLine() + m_blocks.last()->lines()));
+
+      m_blocks.last()->appendLine (textLine);
+      m_lines++;
+    }
   }
 
   // assert that one line is there!

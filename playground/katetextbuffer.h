@@ -23,8 +23,9 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
-#include <QtCore/QList>
+#include <QtCore/QVector>
 #include <QtCore/QSet>
+#include <QtCore/QTextCodec>
 
 #include "katetextblock.h"
 #include "katetextcursor.h"
@@ -63,8 +64,22 @@ class TextBuffer : public QObject {
     void clear ();
 
     /**
+     * Set codec for this buffer to use for load/save.
+     * Loading might overwrite this, if it encounters problems and finds a better codec.
+     * @param codec QTextCodec to use for encoding
+     */
+    void setTextCodec (QTextCodec *codec) { m_textCodec = codec; }
+
+    /**
+     * Get codec for this buffer
+     * @return currently in use codec of this buffer
+     */
+    QTextCodec *textCodec () const { return m_textCodec; }
+
+    /**
      * Load the given file. This will first clear the buffer and then load the file.
      * Even on error during loading the buffer will still be cleared.
+     * Before calling this, setTextCodec must have been used to set codec!
      * @param filename file to open
      * @return success
      */
@@ -72,6 +87,7 @@ class TextBuffer : public QObject {
 
     /**
      * Save the current buffer content to the given file.
+     * Before calling this, setTextCodec must have been used to set codec!
      * @param filename file to save
      * @return success
      */
@@ -247,7 +263,7 @@ class TextBuffer : public QObject {
     /**
      * List of blocks which contain the lines of this buffer
      */
-    QList<TextBlock *> m_blocks;
+    QVector<TextBlock *> m_blocks;
 
     /**
      * Number of lines in buffer
@@ -279,6 +295,11 @@ class TextBuffer : public QObject {
      * Set of ranges of this whole buffer.
      */
     QSet<TextRange *> m_ranges;
+
+    /**
+     * Text codec to use
+     */
+    QTextCodec *m_textCodec;
 };
 
 }
