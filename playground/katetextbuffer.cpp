@@ -19,6 +19,7 @@
  */
 
 #include "katetextbuffer.h"
+#include "katetextloader.h"
 
 namespace Kate {
 
