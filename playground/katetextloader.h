@@ -55,12 +55,11 @@ class FileLoader
     };
 
     /**
-     * Construct file loader for given file and codec.
+     * Construct file loader for given file.
      * @param filename file to open
-     * @param codec codec to use
      */
-    FileLoader (const QString &filename, QTextCodec *codec)
-      : m_codec(codec)
+    FileLoader (const QString &filename)
+      : m_codec (0)
       , m_eof (false) // default to not eof
       , m_lastWasEndOfLine (true) // at start of file, we had a virtual newline
       , m_lastWasR (false) // we have not found a \r as last char
@@ -89,11 +88,24 @@ class FileLoader
     }
 
     /**
-     * open file
+     * open file with given codec
+     * @param codec codec to use, if 0, will do some auto-dectect or fallback
      * @return success
      */
-    bool open ()
+    bool open (QTextCodec *codec)
     {
+      m_codec = codec;
+      m_eof = false;
+      m_lastWasEndOfLine = true;
+      m_lastWasR = false;
+      m_position = 0;
+      m_lastLineStart = 0;
+      m_eol = eolUnknown;
+
+      // if already opened, close the file...
+      if (m_file->isOpen())
+        m_file->close ();
+
       return m_file->open (QIODevice::ReadOnly);
     }
 
@@ -137,7 +149,7 @@ class FileLoader
 
       while (m_position <= m_text.length())
       {
-          if (m_position == m_text.length())
+        if (m_position == m_text.length())
         {
           // try to load more text if something is around
           if (!m_eof)
@@ -150,6 +162,12 @@ class FileLoader
             // if any text is there, append it....
             if (c > 0)
             {
+              // if codec not set, detect it...
+              if (!m_codec) {
+                // fallback to iso
+                m_codec = QTextCodec::codecForName("ISO 8859-15");
+              }
+
               QString unicode = m_codec->toUnicode (m_buffer.constData(), c);
               m_text.append (unicode);
             }

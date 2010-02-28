@@ -21,6 +21,8 @@
 #include "katetextbuffer.h"
 #include "katetextloader.h"
 
+#include <kde_file.h>
+
 namespace Kate {
 
 TextBuffer::TextBuffer (QObject *parent, int blockSize)
@@ -364,6 +366,106 @@ void TextBuffer::debugPrint (const QString &title) const
   // print all blocks
   for (int i = 0; i < m_blocks.size(); ++i)
     m_blocks[i]->debugPrint (i);
+}
+
+bool TextBuffer::load (const QString &filename)
+{
+  /**
+   * first: clear buffer in any case!
+   */
+  clear ();
+
+  /**
+   * check if this is a normal file or not, else exit
+   */
+  KDE_struct_stat sbuf;
+  if (KDE::stat(filename, &sbuf) != 0 || !S_ISREG(sbuf.st_mode))
+    return false;
+
+  /**
+   * construct the file loader for the given file
+   */
+  Kate::FileLoader file (filename);
+
+  /**
+   * not able to open, exit
+   */
+  if (!file.open (0))
+    return false;
+
+#if 0
+  m_doc->config()->setEncoding(file.actualEncoding());
+
+  // set eol mode, if a eol char was found in the first 256kb block and we allow this at all!
+  if (m_doc->config()->allowEolDetection() && (file.eol() != -1))
+    m_doc->config()->setEol (file.eol());
+
+  if (file.bom()!=KateFileLoader::BomUnknown)
+  {
+    m_doc->config()->setBom(file.bom()==KateFileLoader::BomSet);
+  }
+#endif
+
+
+  // remove line in first block
+  m_blocks.last()->m_lines.clear ();
+  m_lines = 0;
+
+  // read in all lines...
+  while ( !file.eof() )
+  {
+    int offset = 0, length = 0;
+    file.readLine (offset, length);
+    const QChar *unicodeData = file.unicode () + offset;
+
+#if 0
+    // strip spaces at end of line
+    if ( file.removeTrailingSpaces() )
+    {
+      while (length > 0)
+      {
+        if (unicodeData[length-1].isSpace())
+          --length;
+        else
+          break;
+      }
+    }
+#endif
+
+    // construct text line with content
+    TextLine textLine = TextLine (new TextLineData());
+    textLine->textReadWrite() = QString (unicodeData, length);
+
+    // ensure blocks aren't too large
+    if (m_blocks.last()->lines() >= m_blockSize)
+      m_blocks.append (new TextBlock (this, m_blocks.last()->startLine() + m_blocks.last()->lines()));
+
+    m_blocks.last()->appendLine (textLine);
+    m_lines++;
+  }
+
+  // assert that one line is there!
+  Q_ASSERT (m_lines > 0);
+
+#if 0
+  // fix region tree
+  m_regionTree.fixRoot (m_lines);
+
+  // binary?
+  m_binary = file.binary ();
+
+  // broken utf-8?
+  m_brokenUTF8 = file.brokenUTF8();
+
+  // remember mime type for filter device
+  m_mimeTypeForFilterDev = file.mimeTypeForFilterDev ();
+
+  kDebug (13020) << "Broken UTF-8: " << m_brokenUTF8;
+
+  kDebug (13020) << "LOADING DONE " << t.elapsed();
+#endif
+
+  return true;
 }
 
 }
