@@ -581,6 +581,10 @@ bool TextBuffer::save (const QString &filename)
   if (ok)
     m_revision = 0;
 
+  // report CODEC + ERRORS
+  kDebug (13020) << "Saved file " << filename << "with codec" << m_textCodec->name()
+    << (ok ? "without" : "with") << "errors";
+
   // emit signal on success
   if (ok)
     emit saved (this, filename);
