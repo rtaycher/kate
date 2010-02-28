@@ -21,3 +21,9 @@ KATE_ENCODING_TEST ("utf-8" "utf32.txt")
 
 # this file is utf16, little endian, but fallback should work!
 KATE_ENCODING_TEST ("utf-8" "utf16.txt")
+
+# this file is utf32, big endian, but fallback should work!
+KATE_ENCODING_TEST ("utf-8" "utf32be.txt")
+
+# this file is utf16, big endian, but fallback should work!
+KATE_ENCODING_TEST ("utf-8" "utf16be.txt")
