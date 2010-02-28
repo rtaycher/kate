@@ -505,6 +505,9 @@ bool TextBuffer::load (const QString &filename)
   // report filter device mime-type
   kDebug (13020) << "used filter device for mime-type" << m_mimeTypeForFilterDev;
 
+  // emit success
+  emit loaded (this, filename);
+
   // file loading worked, modulo encoding problems
   return true;
 }
@@ -572,7 +575,19 @@ bool TextBuffer::save (const QString &filename)
   file->close ();
   delete file;
 
-  return stream.status() == QTextStream::Ok;
+  // did save work?
+  bool ok = stream.status() == QTextStream::Ok;
+
+  // reset revision, on successfull save
+  if (ok)
+    m_revision = 0;
+
+  // emit signal on success
+  if (ok)
+    emit saved (this, filename);
+
+  // return success or not
+  return ok;
 }
 
 }

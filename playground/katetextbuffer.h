@@ -239,6 +239,20 @@ class TextBuffer : public QObject {
     void cleared (TextBuffer *buffer);
 
     /**
+     * Buffer loaded successfully a file
+     * @param buffer buffer which loaded the file
+     * @param filename file which was loaded
+     */
+    void loaded (TextBuffer *buffer, const QString &filename);
+
+    /**
+     * Buffer saved successfully a file
+     * @param buffer buffer which saved the file
+     * @param filename file which was saved
+     */
+    void saved (TextBuffer *buffer, const QString &filename);
+
+    /**
      * Editing transaction has started.
      * @param buffer buffer for transaction
      */
