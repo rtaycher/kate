@@ -36,6 +36,7 @@ TextBuffer::TextBuffer (QObject *parent, int blockSize)
   , m_textCodec (0)
   , m_generateByteOrderMark (false)
   , m_endOfLineMode (eolUnix)
+  , m_removeTrailingSpaces (false)
 {
   // minimal block size must be > 0
   Q_ASSERT (m_blockSize > 0);
@@ -434,19 +435,6 @@ bool TextBuffer::load (const QString &filename)
       return false;
     }
 
-  #if 0
-    m_doc->config()->setEncoding(file.actualEncoding());
-
-    // set eol mode, if a eol char was found in the first 256kb block and we allow this at all!
-    if (m_doc->config()->allowEolDetection() && (file.eol() != -1))
-      m_doc->config()->setEol (file.eol());
-
-    if (file.bom()!=KateFileLoader::BomUnknown)
-    {
-      m_doc->config()->setBom(file.bom()==KateFileLoader::BomSet);
-    }
-  #endif
-
     // read in all lines...
     encodingError = false;
     while ( !file.eof() )
@@ -463,21 +451,17 @@ bool TextBuffer::load (const QString &filename)
       // get unicode data for this line
       const QChar *unicodeData = file.unicode () + offset;
 
-  #if 0
-      // strip spaces at end of line
-      if ( file.removeTrailingSpaces() )
-      {
-        while (length > 0)
-        {
+      // strip trailing spaces
+      if (m_removeTrailingSpaces) {
+        while (length > 0) {
           if (unicodeData[length-1].isSpace())
             --length;
           else
             break;
         }
       }
-  #endif
 
-      // construct text line with content
+      // construct new text line with content from file
       TextLine textLine = TextLine (new TextLineData());
       textLine->textReadWrite() = QString (unicodeData, length);
 
@@ -505,6 +489,9 @@ bool TextBuffer::load (const QString &filename)
   if (file.eol() != eolUnknown)
     setEndOfLineMode (file.eol());
 
+  // remember mime type for filter device
+  m_mimeTypeForFilterDev = file.mimeTypeForFilterDev ();
+
   // assert that one line is there!
   Q_ASSERT (m_lines > 0);
 
@@ -515,24 +502,10 @@ bool TextBuffer::load (const QString &filename)
   // report BOM
   kDebug (13020) << (file.byteOrderMarkFound () ? "Found" : "Didn't find") << "byte order mark";
 
-#if 0
-  // fix region tree
-  m_regionTree.fixRoot (m_lines);
+  // report filter device mime-type
+  kDebug (13020) << "used filter device for mime-type" << m_mimeTypeForFilterDev;
 
-  // binary?
-  m_binary = file.binary ();
-
-  // broken utf-8?
-  m_brokenUTF8 = file.brokenUTF8();
-
-  // remember mime type for filter device
-  m_mimeTypeForFilterDev = file.mimeTypeForFilterDev ();
-
-  kDebug (13020) << "Broken UTF-8: " << m_brokenUTF8;
-
-  kDebug (13020) << "LOADING DONE " << t.elapsed();
-#endif
-
+  // file loading worked, modulo encoding problems
   return true;
 }
 
@@ -569,31 +542,23 @@ bool TextBuffer::save (const QString &filename)
   else if (endOfLineMode() == eolMac)
     eol = QString ("\r");
 
-  // should we strip spaces?
-  //bool removeTrailingSpaces = m_doc->config()->configFlags() & KateDocumentConfig::cfRemoveSpaces;
-
   // just dump the lines out ;)
   for (int i = 0; i < m_lines; ++i)
   {
+    // get line to save
     Kate::TextLine textline = line (i);
 
-#if 0
-    // strip spaces
-    if (removeTrailingSpaces)
+    // strip trailing spaces
+    if (m_removeTrailingSpaces)
     {
       int lastChar = textline->lastChar();
-
       if (lastChar > -1)
       {
-        stream << textline->string().left(lastChar+1);
+        stream << textline->text().left (lastChar+1);
       }
     }
     else // simple, dump the line
-      stream << textline->string();
-
-#endif
-
-    stream << textline->text();
+      stream << textline->text();
 
     // append correct end of line string
     if ((i+1) < m_lines)

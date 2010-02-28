@@ -30,4 +30,39 @@ TextLineData::~TextLineData ()
 {
 }
 
+int TextLineData::firstChar() const
+{
+  return nextNonSpaceChar(0);
+}
+
+int TextLineData::lastChar() const
+{
+  return previousNonSpaceChar(m_text.length() - 1);
+}
+
+int TextLineData::nextNonSpaceChar (int pos) const
+{
+  Q_ASSERT (pos >= 0);
+
+  for(int i = pos; i < m_text.length(); i++)
+    if (!m_text[i].isSpace())
+      return i;
+
+  return -1;
+}
+
+int TextLineData::previousNonSpaceChar (int pos) const
+{
+  Q_ASSERT (pos >= 0);
+
+  if (pos >= m_text.length())
+    pos = m_text.length() - 1;
+
+  for(int i = pos; i >= 0; i--)
+    if (!m_text[i].isSpace())
+      return i;
+
+  return -1;
+}
+
 }

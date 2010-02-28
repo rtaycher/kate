@@ -125,6 +125,18 @@ class TextBuffer : public QObject {
     EndOfLineMode endOfLineMode () const { return m_endOfLineMode; }
 
     /**
+     * Specify if the buffer should remove trailing spaces while loading/saving files.
+     * @param removeTrailingSpaces should trailing spaces be removed on load/save?
+     */
+    void setRemoveTrailingSpaces (bool removeTrailingSpaces) { m_removeTrailingSpaces = removeTrailingSpaces; }
+
+    /**
+     * Should trailing spaces be removed on load/save.
+     * @return should trailing spaces be removed on load/save?
+     */
+    bool removeTrailingSpaces () const { return m_removeTrailingSpaces; }
+
+    /**
      * Load the given file. This will first clear the buffer and then load the file.
      * Even on error during loading the buffer will still be cleared.
      * Before calling this, setTextCodec must have been used to set codec!
@@ -369,6 +381,11 @@ class TextBuffer : public QObject {
      * End of line mode, default is Unix
      */
     EndOfLineMode m_endOfLineMode;
+
+    /**
+     * Should trailing spaces be removed on load/save.
+     */
+    bool m_removeTrailingSpaces;
 };
 
 }
