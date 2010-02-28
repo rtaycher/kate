@@ -66,6 +66,7 @@ class FileLoader
       , m_lastLineStart (0)
       , m_eol (eolUnknown) // no eol type detected atm
       , m_buffer (KATE_FILE_LOADER_BS, 0)
+      , m_converterState (0)
     {
       // try to get mimetype for on the fly decompression, don't rely on filename!
       QFile testMime (filename);
@@ -84,6 +85,7 @@ class FileLoader
     ~FileLoader ()
     {
       delete m_file;
+      delete m_converterState;
     }
 
     /**
@@ -101,6 +103,8 @@ class FileLoader
       m_lastLineStart = 0;
       m_eol = eolUnknown;
       m_text.clear ();
+      delete m_converterState;
+      m_converterState = new QTextCodec::ConverterState (QTextCodec::IgnoreHeader | QTextCodec::ConvertInvalidToNull);
 
       // if already opened, close the file...
       if (m_file->isOpen())
@@ -135,14 +139,22 @@ class FileLoader
     const QChar *unicode () const { return m_text.unicode(); }
 
     /**
+     * Get codec for this loader
+     * @return currently in use codec of this loader
+     */
+    QTextCodec *textCodec () const { return m_codec; }
+
+    /**
      * read a line, return length + offset in unicode data
      * @param offset offset into internal unicode data for read line
      * @param length lenght of read line
+     * @return true if no encoding errors occured
      */
-    void readLine (int &offset, int &length)
+    bool readLine (int &offset, int &length)
     {
       length = 0;
       offset = 0;
+      bool encodingError = false;
 
       static const QLatin1Char cr(QLatin1Char('\r'));
       static const QLatin1Char lf(QLatin1Char('\n'));
@@ -168,7 +180,17 @@ class FileLoader
                 m_codec = QTextCodec::codecForName("ISO 8859-15");
               }
 
-              QString unicode = m_codec->toUnicode (m_buffer.constData(), c);
+              Q_ASSERT (m_codec);
+              QString unicode = m_codec->toUnicode (m_buffer.constData(), c, m_converterState);
+
+              // detect broken encoding
+              for (int i = 0; i < unicode.size(); ++i) {
+                  if (unicode[i] == 0) {
+                    encodingError = true;
+                    break;
+                  }
+              }
+
               m_text.append (unicode);
             }
 
@@ -191,7 +213,7 @@ class FileLoader
 
             m_lastLineStart = m_position;
 
-            return;
+            return !encodingError;
           }
         }
 
@@ -218,7 +240,7 @@ class FileLoader
             if (m_eol != eolDos)
               m_eol = eolUnix;
 
-            return;
+            return !encodingError;
           }
         }
         else if (m_text.at(m_position) == cr)
@@ -237,7 +259,7 @@ class FileLoader
           if (m_eol == eolUnknown)
             m_eol = eolMac;
 
-          return;
+          return !encodingError;
         }
         else
         {
@@ -247,6 +269,8 @@ class FileLoader
 
         m_position++;
       }
+
+      return !encodingError;
     }
 
   private:
@@ -261,6 +285,7 @@ class FileLoader
     QIODevice *m_file;
     QByteArray m_buffer;
     QString m_text;
+    QTextCodec::ConverterState *m_converterState;
 };
 
 }

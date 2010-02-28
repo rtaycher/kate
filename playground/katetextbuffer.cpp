@@ -441,10 +441,19 @@ bool TextBuffer::load (const QString &filename)
   #endif
 
     // read in all lines...
+    bool encodingError = false;
     while ( !file.eof() )
     {
+      // read line
       int offset = 0, length = 0;
-      file.readLine (offset, length);
+      bool currentError = !file.readLine (offset, length);
+      encodingError = encodingError || currentError;
+
+      // bail out on encoding error, if not last round!
+      if (encodingError && i < 2)
+        break;
+
+      // get unicode data for this line
       const QChar *unicodeData = file.unicode () + offset;
 
   #if 0
@@ -471,6 +480,13 @@ bool TextBuffer::load (const QString &filename)
 
       m_blocks.last()->appendLine (textLine);
       m_lines++;
+    }
+
+    // if no encoding error, break out of reading loop
+    if (!encodingError) {
+      // remember used codec
+      m_textCodec = file.textCodec ();
+      break;
     }
   }
 

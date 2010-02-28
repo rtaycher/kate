@@ -9,5 +9,9 @@ MACRO(KATE_ENCODING_TEST _encoding _testname)
 ENDMACRO(KATE_ENCODING_TEST)
 
 # add tests
+
+# this file is utf-8, simple
 KATE_ENCODING_TEST ("utf-8" "utf8.txt")
-KATE_ENCODING_TEST ("ISO 8859-15" "latin15.txt")
+
+# this file is latin15, but fallback should work!
+KATE_ENCODING_TEST ("utf-8" "latin15.txt")
