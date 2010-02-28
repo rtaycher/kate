@@ -32,12 +32,16 @@ TextBuffer::TextBuffer (QObject *parent, int blockSize)
   , m_revision (0)
   , m_editingTransactions (0)
   , m_editingChangedBuffer (false)
+  , m_fallbackTextCodec (QTextCodec::codecForName("ISO 8859-15"))
   , m_textCodec (0)
   , m_generateByteOrderMark (false)
   , m_endOfLineMode (eolUnix)
 {
   // minimal block size must be > 0
   Q_ASSERT (m_blockSize > 0);
+
+  // fallback codec must exist
+  Q_ASSERT (m_fallbackTextCodec);
 
   // create initial state
   clear ();
@@ -392,9 +396,9 @@ bool TextBuffer::load (const QString &filename)
     return false;
 
   /**
-   * construct the file loader for the given file
+   * construct the file loader for the given file, with correct fallback codec
    */
-  Kate::FileLoader file (filename);
+  Kate::FileLoader file (filename, m_fallbackTextCodec);
 
   /**
    * triple play, maximal three loading rounds

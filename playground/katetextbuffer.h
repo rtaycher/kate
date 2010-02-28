@@ -74,6 +74,18 @@ class TextBuffer : public QObject {
     void clear ();
 
     /**
+     * Set fallback codec for this buffer to use for load.
+     * @param codec fallback QTextCodec to use for encoding
+     */
+    void setFallbackTextCodec (QTextCodec *codec) { m_fallbackTextCodec = codec; }
+
+    /**
+     * Get fallback codec for this buffer
+     * @return currently in use fallback codec of this buffer
+     */
+    QTextCodec *fallbackTextCodec () const { return m_fallbackTextCodec; }
+
+    /**
      * Set codec for this buffer to use for load/save.
      * Loading might overwrite this, if it encounters problems and finds a better codec.
      * @param codec QTextCodec to use for encoding
@@ -331,6 +343,11 @@ class TextBuffer : public QObject {
      * Set of ranges of this whole buffer.
      */
     QSet<TextRange *> m_ranges;
+
+    /**
+     * Fallback text codec to use
+     */
+    QTextCodec *m_fallbackTextCodec;
 
     /**
      * Text codec to use

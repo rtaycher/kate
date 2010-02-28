@@ -46,8 +46,9 @@ class FileLoader
     /**
      * Construct file loader for given file.
      * @param filename file to open
+     * @param fallbackTextCodec fallback text codec
      */
-    FileLoader (const QString &filename)
+    FileLoader (const QString &filename, QTextCodec *fallbackTextCodec)
       : m_codec (0)
       , m_eof (false) // default to not eof
       , m_lastWasEndOfLine (true) // at start of file, we had a virtual newline
@@ -59,6 +60,7 @@ class FileLoader
       , m_converterState (0)
       , m_bomFound (false)
       , m_firstRead (true)
+      , m_fallbackTextCodec (fallbackTextCodec)
     {
       // try to get mimetype for on the fly decompression, don't rely on filename!
       QFile testMime (filename);
@@ -200,7 +202,7 @@ class FileLoader
                   if (codecForByteOrderMark)
                     m_codec = codecForByteOrderMark;
                   else // fallback to iso
-                    m_codec = QTextCodec::codecForName("ISO 8859-15");
+                    m_codec = m_fallbackTextCodec;
                 }
 
                 m_firstRead = false;
@@ -314,6 +316,7 @@ class FileLoader
     QTextCodec::ConverterState *m_converterState;
     bool m_bomFound;
     bool m_firstRead;
+    QTextCodec *m_fallbackTextCodec;
 };
 
 }
