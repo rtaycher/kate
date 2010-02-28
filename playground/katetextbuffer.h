@@ -45,6 +45,16 @@ class TextBuffer : public QObject {
 
   public:
     /**
+     * End of line mode
+     */
+    enum EndOfLineMode {
+        eolUnknown
+      , eolUnix
+      , eolDos
+      , eolMac
+    };
+
+    /**
      * Construct an empty text buffer.
      * Empty means one empty line in one block.
      * @param parent parent qobject
@@ -88,6 +98,19 @@ class TextBuffer : public QObject {
      * @return should BOM be generated?
      */
     bool generateByteOrderMark () const { return m_generateByteOrderMark; }
+
+    /**
+     * Set end of line mode for this buffer, not allowed to be set to unknown.
+     * Loading might overwrite this setting, if there is a eol found inside the file.
+     * @param endOfLineMode new eol mode
+     */
+    void setEndOfLineMode (EndOfLineMode endOfLineMode) { Q_ASSERT (endOfLineMode != eolUnknown); m_endOfLineMode = endOfLineMode; }
+
+    /**
+     * Get end of line mode
+     * @return end of line mode
+     */
+    EndOfLineMode endOfLineMode () const { return m_endOfLineMode; }
 
     /**
      * Load the given file. This will first clear the buffer and then load the file.
@@ -324,6 +347,11 @@ class TextBuffer : public QObject {
      * Should byte order mark be created?
      */
     bool m_generateByteOrderMark;
+
+    /**
+     * End of line mode, default is Unix
+     */
+    EndOfLineMode m_endOfLineMode;
 };
 
 }

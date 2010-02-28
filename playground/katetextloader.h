@@ -44,16 +44,6 @@ class FileLoader
 {
   public:
     /**
-     * End of line marker types
-     */
-    enum EndOfLineType {
-        eolUnknown
-      , eolUnix
-      , eolDos
-      , eolMac
-    };
-
-    /**
      * Construct file loader for given file.
      * @param filename file to open
      */
@@ -64,7 +54,7 @@ class FileLoader
       , m_lastWasR (false) // we have not found a \r as last char
       , m_position (0)
       , m_lastLineStart (0)
-      , m_eol (eolUnknown) // no eol type detected atm
+      , m_eol (TextBuffer::eolUnknown) // no eol type detected atm
       , m_buffer (KATE_FILE_LOADER_BS, 0)
       , m_converterState (0)
       , m_bomFound (false)
@@ -103,7 +93,7 @@ class FileLoader
       m_lastWasR = false;
       m_position = 0;
       m_lastLineStart = 0;
-      m_eol = eolUnknown;
+      m_eol = TextBuffer::eolUnknown;
       m_text.clear ();
       delete m_converterState;
       m_converterState = new QTextCodec::ConverterState (QTextCodec::ConvertInvalidToNull);
@@ -128,7 +118,7 @@ class FileLoader
      * Detected during reading, is valid after complete file is read.
      * @return eol mode of this file
      */
-    EndOfLineType eol () const { return m_eol; }
+    TextBuffer::EndOfLineMode eol () const { return m_eol; }
 
     /**
      * BOM found?
@@ -261,7 +251,7 @@ class FileLoader
           {
             m_lastLineStart++;
             m_lastWasR = false;
-            m_eol = eolDos;
+            m_eol = TextBuffer::eolDos;
           }
           else
           {
@@ -273,8 +263,8 @@ class FileLoader
             m_position++;
 
             // only win, if not dos!
-            if (m_eol != eolDos)
-              m_eol = eolUnix;
+            if (m_eol != TextBuffer::eolDos)
+              m_eol = TextBuffer::eolUnix;
 
             return !encodingError;
           }
@@ -292,8 +282,8 @@ class FileLoader
           m_position++;
 
           // should only win of first time!
-          if (m_eol == eolUnknown)
-            m_eol = eolMac;
+          if (m_eol == TextBuffer::eolUnknown)
+            m_eol = TextBuffer::eolMac;
 
           return !encodingError;
         }
@@ -316,7 +306,7 @@ class FileLoader
     bool m_lastWasR;
     int m_position;
     int m_lastLineStart;
-    EndOfLineType m_eol;
+    TextBuffer::EndOfLineMode m_eol;
     QString m_mimeType;
     QIODevice *m_file;
     QByteArray m_buffer;

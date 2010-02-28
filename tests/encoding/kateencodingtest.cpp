@@ -39,6 +39,9 @@ int main (int argc, char *argv[])
   // set codec
   buffer.setTextCodec (QTextCodec::codecForName (encoding.toLatin1()));
 
+  // switch to Mac EOL, this will test eol detection, as files are normal unix or dos
+  buffer.setEndOfLineMode (Kate::TextBuffer::eolMac);
+
   // load file
   if (!buffer.load (inFile))
     return 1;

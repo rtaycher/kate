@@ -34,6 +34,7 @@ TextBuffer::TextBuffer (QObject *parent, int blockSize)
   , m_editingChangedBuffer (false)
   , m_textCodec (0)
   , m_generateByteOrderMark (false)
+  , m_endOfLineMode (eolUnix)
 {
   // minimal block size must be > 0
   Q_ASSERT (m_blockSize > 0);
@@ -496,6 +497,10 @@ bool TextBuffer::load (const QString &filename)
   if (file.byteOrderMarkFound ())
     setGenerateByteOrderMark (true);
 
+  // remember eol mode, if any found in file
+  if (file.eol() != eolUnknown)
+    setEndOfLineMode (file.eol());
+
   // assert that one line is there!
   Q_ASSERT (m_lines > 0);
 
@@ -555,6 +560,10 @@ bool TextBuffer::save (const QString &filename)
 
   // our loved eol string ;)
   QString eol = "\n"; //m_doc->config()->eolString ();
+  if (endOfLineMode() == eolDos)
+    eol = QString ("\r\n");
+  else if (endOfLineMode() == eolMac)
+    eol = QString ("\r");
 
   // should we strip spaces?
   //bool removeTrailingSpaces = m_doc->config()->configFlags() & KateDocumentConfig::cfRemoveSpaces;
@@ -582,6 +591,7 @@ bool TextBuffer::save (const QString &filename)
 
     stream << textline->text();
 
+    // append correct end of line string
     if ((i+1) < m_lines)
       stream << eol;
   }
