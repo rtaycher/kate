@@ -43,8 +43,9 @@ int main (int argc, char *argv[])
   if (!buffer.load (inFile))
     return 1;
 
-  // print buffer
-  buffer.debugPrint ("Buffer content");
+  // save file
+  if (!buffer.save (outFile))
+    return 1;
 
   return 0;
 }

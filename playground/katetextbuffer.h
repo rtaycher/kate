@@ -300,6 +300,12 @@ class TextBuffer : public QObject {
      * Text codec to use
      */
     QTextCodec *m_textCodec;
+
+    /**
+     * Mime-Type used for transparent compression/decompression support
+     * Set by load(), reset by clear()
+     */
+    QString m_mimeTypeForFilterDev;
 };
 
 }

@@ -96,6 +96,9 @@ void TextBuffer::clear ()
   // reset revision
   m_revision = 0;
 
+  // reset the filter device
+  m_mimeTypeForFilterDev = "text/plain";
+
   // we got cleared
   emit cleared (this);
 }
@@ -417,7 +420,7 @@ bool TextBuffer::load (const QString &filename)
      * try to open file, with given encoding
      * in round 0 + 2 use the given encoding from user
      */
-    if (!file.open ((i % 2 == 0) ? 0 : 0)) {
+    if (!file.open ((i % 2 == 0) ? m_textCodec : 0)) {
       // create one dummy textline, in any case
       m_blocks.last()->appendLine (TextLine (new TextLineData()));
       m_lines++;
@@ -493,6 +496,79 @@ bool TextBuffer::load (const QString &filename)
 #endif
 
   return true;
+}
+
+bool TextBuffer::save (const QString &filename)
+{
+  // codec must be set!
+  Q_ASSERT (m_textCodec);
+
+  /**
+   * construct correct filter device and try to open
+   */
+  QIODevice *file = KFilterDev::deviceForFile (filename, m_mimeTypeForFilterDev, false);
+  if (!file->open (QIODevice::WriteOnly)) {
+    delete file;
+    return false;
+  }
+
+  /**
+   * disable Unicode headers
+   */
+  QTextStream stream (file);
+  stream.setCodec (QTextCodec::codecForName("UTF-16"));
+
+  // this line sets the mapper to the correct codec
+  stream.setCodec(m_textCodec);
+
+#if 0
+  int mib=codec->mibEnum();
+  if  ((mib==KateFileLoader::MibUtf8) || (mib==KateFileLoader::MibUtf16) ||
+        (mib==KateFileLoader::MibUtf16BE) || (mib==KateFileLoader::MibUtf16LE) )
+    stream.setGenerateByteOrderMark(m_doc->config()->bom());
+#endif
+
+  // our loved eol string ;)
+  QString eol = "\n"; //m_doc->config()->eolString ();
+
+  // should we strip spaces?
+  //bool removeTrailingSpaces = m_doc->config()->configFlags() & KateDocumentConfig::cfRemoveSpaces;
+
+  // just dump the lines out ;)
+  for (int i = 0; i < m_lines; ++i)
+  {
+    Kate::TextLine textline = line (i);
+
+#if 0
+    // strip spaces
+    if (removeTrailingSpaces)
+    {
+      int lastChar = textline->lastChar();
+
+      if (lastChar > -1)
+      {
+        stream << textline->string().left(lastChar+1);
+      }
+    }
+    else // simple, dump the line
+      stream << textline->string();
+
+#endif
+
+    stream << textline->text();
+
+    if ((i+1) < m_lines)
+      stream << eol;
+  }
+
+  // flush stream
+  stream.flush ();
+
+  // close and delete file
+  file->close ();
+  delete file;
+
+  return stream.status() == QTextStream::Ok;
 }
 
 }
