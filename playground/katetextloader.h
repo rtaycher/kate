@@ -40,7 +40,7 @@ static const qint64 KATE_FILE_LOADER_BS  = 256 * 1024;
 /**
  * File Loader, will handle reading of files + detecting encoding
  */
-class FileLoader
+class TextLoader
 {
   public:
     /**
@@ -48,7 +48,7 @@ class FileLoader
      * @param filename file to open
      * @param fallbackTextCodec fallback text codec
      */
-    FileLoader (const QString &filename, QTextCodec *fallbackTextCodec)
+    TextLoader (const QString &filename, QTextCodec *fallbackTextCodec)
       : m_codec (0)
       , m_eof (false) // default to not eof
       , m_lastWasEndOfLine (true) // at start of file, we had a virtual newline
@@ -76,7 +76,7 @@ class FileLoader
     /**
      * Destructor
      */
-    ~FileLoader ()
+    ~TextLoader ()
     {
       delete m_file;
       delete m_converterState;

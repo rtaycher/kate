@@ -399,7 +399,7 @@ bool TextBuffer::load (const QString &filename, bool &encodingErrors)
   /**
    * construct the file loader for the given file, with correct fallback codec
    */
-  Kate::FileLoader file (filename, m_fallbackTextCodec);
+  Kate::TextLoader file (filename, m_fallbackTextCodec);
 
   /**
    * triple play, maximal three loading rounds
