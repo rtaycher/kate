@@ -141,9 +141,10 @@ class TextBuffer : public QObject {
      * Even on error during loading the buffer will still be cleared.
      * Before calling this, setTextCodec must have been used to set codec!
      * @param filename file to open
-     * @return success
+     * @param encodingErrors were there problems occured while decoding the file?
+     * @return success, the file got loaded, perhaps with encoding errors
      */
-    bool load (const QString &filename);
+    bool load (const QString &filename, bool &encodingErrors);
 
     /**
      * Save the current buffer content to the given file.
@@ -242,8 +243,9 @@ class TextBuffer : public QObject {
      * Buffer loaded successfully a file
      * @param buffer buffer which loaded the file
      * @param filename file which was loaded
+     * @param encodingErrors were there problems occured while decoding the file?
      */
-    void loaded (TextBuffer *buffer, const QString &filename);
+    void loaded (TextBuffer *buffer, const QString &filename, bool encodingErrors);
 
     /**
      * Buffer saved successfully a file

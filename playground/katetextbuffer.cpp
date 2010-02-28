@@ -379,7 +379,7 @@ void TextBuffer::debugPrint (const QString &title) const
     m_blocks[i]->debugPrint (i);
 }
 
-bool TextBuffer::load (const QString &filename)
+bool TextBuffer::load (const QString &filename, bool &encodingErrors)
 {
   // codec must be set!
   Q_ASSERT (m_textCodec);
@@ -407,7 +407,6 @@ bool TextBuffer::load (const QString &filename)
    * 1) use fallback encoding, be done, if no encoding errors happen
    * 2) use again given encoding, be done in any case
    */
-  bool encodingError = false;
   for (int i = 0; i < 3;  ++i) {
     /**
      * kill all blocks beside first one
@@ -436,16 +435,16 @@ bool TextBuffer::load (const QString &filename)
     }
 
     // read in all lines...
-    encodingError = false;
+    encodingErrors = false;
     while ( !file.eof() )
     {
       // read line
       int offset = 0, length = 0;
       bool currentError = !file.readLine (offset, length);
-      encodingError = encodingError || currentError;
+      encodingErrors = encodingErrors || currentError;
 
       // bail out on encoding error, if not last round!
-      if (encodingError && i < 2)
+      if (encodingErrors && i < 2)
         break;
 
       // get unicode data for this line
@@ -474,7 +473,7 @@ bool TextBuffer::load (const QString &filename)
     }
 
     // if no encoding error, break out of reading loop
-    if (!encodingError) {
+    if (!encodingErrors) {
       // remember used codec
       m_textCodec = file.textCodec ();
       break;
@@ -497,7 +496,7 @@ bool TextBuffer::load (const QString &filename)
 
   // report CODEC + ERRORS
   kDebug (13020) << "Loaded file " << filename << "with codec" << m_textCodec->name()
-    << (encodingError ? "with" : "without") << "encoding errors";
+    << (encodingErrors ? "with" : "without") << "encoding errors";
 
   // report BOM
   kDebug (13020) << (file.byteOrderMarkFound () ? "Found" : "Didn't find") << "byte order mark";
@@ -506,7 +505,7 @@ bool TextBuffer::load (const QString &filename)
   kDebug (13020) << "used filter device for mime-type" << m_mimeTypeForFilterDev;
 
   // emit success
-  emit loaded (this, filename);
+  emit loaded (this, filename, encodingErrors);
 
   // file loading worked, modulo encoding problems
   return true;
