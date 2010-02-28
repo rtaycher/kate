@@ -55,6 +55,61 @@ class TextLineData {
      */
     const QString &text () const { return m_text; }
 
+    /**
+     * Returns the position of the first non-whitespace character
+     * @return position of first non-whitespace char or -1 if there is none
+     */
+    int firstChar() const;
+
+    /**
+     * Returns the position of the last non-whitespace character
+     * @return position of last non-whitespace char or -1 if there is none
+     */
+    int lastChar() const;
+
+    /**
+     * Find the position of the next char that is not a space.
+     * @param pos Column of the character which is examined first.
+     * @return True if the specified or a following character is not a space
+     *          Otherwise false.
+     */
+    int nextNonSpaceChar(int pos) const;
+
+    /**
+     * Find the position of the previous char that is not a space.
+     * @param pos Column of the character which is examined first.
+     * @return The position of the first non-whitespace character preceding pos,
+     *   or -1 if none is found.
+     */
+    int previousNonSpaceChar(int pos) const;
+
+    /**
+     * Returns the character at the given \e column. If \e column is out of
+     * range, the return value is QChar().
+     * @param column column you want char for
+     * @return char at given column or QChar()
+     */
+    inline QChar at (int column) const
+    {
+      if (column >= 0 && column < m_text.length())
+        return m_text[column];
+
+      return QChar();
+    }
+
+    /**
+     * Same as at().
+     * @param column column you want char for
+     * @return char at given column or QChar()
+     */
+    inline QChar operator[](int column) const
+    {
+      if (column >= 0 && column < m_text.length())
+        return m_text[column];
+
+      return QChar();
+    }
+
   private:
     /**
      * Accessor to the text contained in this line.

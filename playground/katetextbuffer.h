@@ -74,6 +74,18 @@ class TextBuffer : public QObject {
     void clear ();
 
     /**
+     * Set fallback codec for this buffer to use for load.
+     * @param codec fallback QTextCodec to use for encoding
+     */
+    void setFallbackTextCodec (QTextCodec *codec) { m_fallbackTextCodec = codec; }
+
+    /**
+     * Get fallback codec for this buffer
+     * @return currently in use fallback codec of this buffer
+     */
+    QTextCodec *fallbackTextCodec () const { return m_fallbackTextCodec; }
+
+    /**
      * Set codec for this buffer to use for load/save.
      * Loading might overwrite this, if it encounters problems and finds a better codec.
      * @param codec QTextCodec to use for encoding
@@ -113,13 +125,26 @@ class TextBuffer : public QObject {
     EndOfLineMode endOfLineMode () const { return m_endOfLineMode; }
 
     /**
+     * Specify if the buffer should remove trailing spaces while loading/saving files.
+     * @param removeTrailingSpaces should trailing spaces be removed on load/save?
+     */
+    void setRemoveTrailingSpaces (bool removeTrailingSpaces) { m_removeTrailingSpaces = removeTrailingSpaces; }
+
+    /**
+     * Should trailing spaces be removed on load/save.
+     * @return should trailing spaces be removed on load/save?
+     */
+    bool removeTrailingSpaces () const { return m_removeTrailingSpaces; }
+
+    /**
      * Load the given file. This will first clear the buffer and then load the file.
      * Even on error during loading the buffer will still be cleared.
      * Before calling this, setTextCodec must have been used to set codec!
      * @param filename file to open
-     * @return success
+     * @param encodingErrors were there problems occured while decoding the file?
+     * @return success, the file got loaded, perhaps with encoding errors
      */
-    bool load (const QString &filename);
+    bool load (const QString &filename, bool &encodingErrors);
 
     /**
      * Save the current buffer content to the given file.
@@ -213,6 +238,21 @@ class TextBuffer : public QObject {
      * @param buffer buffer which got cleared
      */
     void cleared (TextBuffer *buffer);
+
+    /**
+     * Buffer loaded successfully a file
+     * @param buffer buffer which loaded the file
+     * @param filename file which was loaded
+     * @param encodingErrors were there problems occured while decoding the file?
+     */
+    void loaded (TextBuffer *buffer, const QString &filename, bool encodingErrors);
+
+    /**
+     * Buffer saved successfully a file
+     * @param buffer buffer which saved the file
+     * @param filename file which was saved
+     */
+    void saved (TextBuffer *buffer, const QString &filename);
 
     /**
      * Editing transaction has started.
@@ -333,6 +373,11 @@ class TextBuffer : public QObject {
     QSet<TextRange *> m_ranges;
 
     /**
+     * Fallback text codec to use
+     */
+    QTextCodec *m_fallbackTextCodec;
+
+    /**
      * Text codec to use
      */
     QTextCodec *m_textCodec;
@@ -352,6 +397,11 @@ class TextBuffer : public QObject {
      * End of line mode, default is Unix
      */
     EndOfLineMode m_endOfLineMode;
+
+    /**
+     * Should trailing spaces be removed on load/save.
+     */
+    bool m_removeTrailingSpaces;
 };
 
 }

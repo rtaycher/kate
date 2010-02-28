@@ -32,12 +32,17 @@ TextBuffer::TextBuffer (QObject *parent, int blockSize)
   , m_revision (0)
   , m_editingTransactions (0)
   , m_editingChangedBuffer (false)
+  , m_fallbackTextCodec (QTextCodec::codecForName("ISO 8859-15"))
   , m_textCodec (0)
   , m_generateByteOrderMark (false)
   , m_endOfLineMode (eolUnix)
+  , m_removeTrailingSpaces (false)
 {
   // minimal block size must be > 0
   Q_ASSERT (m_blockSize > 0);
+
+  // fallback codec must exist
+  Q_ASSERT (m_fallbackTextCodec);
 
   // create initial state
   clear ();
@@ -374,7 +379,7 @@ void TextBuffer::debugPrint (const QString &title) const
     m_blocks[i]->debugPrint (i);
 }
 
-bool TextBuffer::load (const QString &filename)
+bool TextBuffer::load (const QString &filename, bool &encodingErrors)
 {
   // codec must be set!
   Q_ASSERT (m_textCodec);
@@ -392,9 +397,9 @@ bool TextBuffer::load (const QString &filename)
     return false;
 
   /**
-   * construct the file loader for the given file
+   * construct the file loader for the given file, with correct fallback codec
    */
-  Kate::FileLoader file (filename);
+  Kate::FileLoader file (filename, m_fallbackTextCodec);
 
   /**
    * triple play, maximal three loading rounds
@@ -402,7 +407,6 @@ bool TextBuffer::load (const QString &filename)
    * 1) use fallback encoding, be done, if no encoding errors happen
    * 2) use again given encoding, be done in any case
    */
-  bool encodingError = false;
   for (int i = 0; i < 3;  ++i) {
     /**
      * kill all blocks beside first one
@@ -430,50 +434,33 @@ bool TextBuffer::load (const QString &filename)
       return false;
     }
 
-  #if 0
-    m_doc->config()->setEncoding(file.actualEncoding());
-
-    // set eol mode, if a eol char was found in the first 256kb block and we allow this at all!
-    if (m_doc->config()->allowEolDetection() && (file.eol() != -1))
-      m_doc->config()->setEol (file.eol());
-
-    if (file.bom()!=KateFileLoader::BomUnknown)
-    {
-      m_doc->config()->setBom(file.bom()==KateFileLoader::BomSet);
-    }
-  #endif
-
     // read in all lines...
-    encodingError = false;
+    encodingErrors = false;
     while ( !file.eof() )
     {
       // read line
       int offset = 0, length = 0;
       bool currentError = !file.readLine (offset, length);
-      encodingError = encodingError || currentError;
+      encodingErrors = encodingErrors || currentError;
 
       // bail out on encoding error, if not last round!
-      if (encodingError && i < 2)
+      if (encodingErrors && i < 2)
         break;
 
       // get unicode data for this line
       const QChar *unicodeData = file.unicode () + offset;
 
-  #if 0
-      // strip spaces at end of line
-      if ( file.removeTrailingSpaces() )
-      {
-        while (length > 0)
-        {
+      // strip trailing spaces
+      if (m_removeTrailingSpaces) {
+        while (length > 0) {
           if (unicodeData[length-1].isSpace())
             --length;
           else
             break;
         }
       }
-  #endif
 
-      // construct text line with content
+      // construct new text line with content from file
       TextLine textLine = TextLine (new TextLineData());
       textLine->textReadWrite() = QString (unicodeData, length);
 
@@ -486,7 +473,7 @@ bool TextBuffer::load (const QString &filename)
     }
 
     // if no encoding error, break out of reading loop
-    if (!encodingError) {
+    if (!encodingErrors) {
       // remember used codec
       m_textCodec = file.textCodec ();
       break;
@@ -501,34 +488,26 @@ bool TextBuffer::load (const QString &filename)
   if (file.eol() != eolUnknown)
     setEndOfLineMode (file.eol());
 
+  // remember mime type for filter device
+  m_mimeTypeForFilterDev = file.mimeTypeForFilterDev ();
+
   // assert that one line is there!
   Q_ASSERT (m_lines > 0);
 
   // report CODEC + ERRORS
   kDebug (13020) << "Loaded file " << filename << "with codec" << m_textCodec->name()
-    << (encodingError ? "with" : "without") << "encoding errors";
+    << (encodingErrors ? "with" : "without") << "encoding errors";
 
   // report BOM
   kDebug (13020) << (file.byteOrderMarkFound () ? "Found" : "Didn't find") << "byte order mark";
 
-#if 0
-  // fix region tree
-  m_regionTree.fixRoot (m_lines);
+  // report filter device mime-type
+  kDebug (13020) << "used filter device for mime-type" << m_mimeTypeForFilterDev;
 
-  // binary?
-  m_binary = file.binary ();
+  // emit success
+  emit loaded (this, filename, encodingErrors);
 
-  // broken utf-8?
-  m_brokenUTF8 = file.brokenUTF8();
-
-  // remember mime type for filter device
-  m_mimeTypeForFilterDev = file.mimeTypeForFilterDev ();
-
-  kDebug (13020) << "Broken UTF-8: " << m_brokenUTF8;
-
-  kDebug (13020) << "LOADING DONE " << t.elapsed();
-#endif
-
+  // file loading worked, modulo encoding problems
   return true;
 }
 
@@ -565,31 +544,23 @@ bool TextBuffer::save (const QString &filename)
   else if (endOfLineMode() == eolMac)
     eol = QString ("\r");
 
-  // should we strip spaces?
-  //bool removeTrailingSpaces = m_doc->config()->configFlags() & KateDocumentConfig::cfRemoveSpaces;
-
   // just dump the lines out ;)
   for (int i = 0; i < m_lines; ++i)
   {
+    // get line to save
     Kate::TextLine textline = line (i);
 
-#if 0
-    // strip spaces
-    if (removeTrailingSpaces)
+    // strip trailing spaces
+    if (m_removeTrailingSpaces)
     {
       int lastChar = textline->lastChar();
-
       if (lastChar > -1)
       {
-        stream << textline->string().left(lastChar+1);
+        stream << textline->text().left (lastChar+1);
       }
     }
     else // simple, dump the line
-      stream << textline->string();
-
-#endif
-
-    stream << textline->text();
+      stream << textline->text();
 
     // append correct end of line string
     if ((i+1) < m_lines)
@@ -603,7 +574,23 @@ bool TextBuffer::save (const QString &filename)
   file->close ();
   delete file;
 
-  return stream.status() == QTextStream::Ok;
+  // did save work?
+  bool ok = stream.status() == QTextStream::Ok;
+
+  // reset revision, on successfull save
+  if (ok)
+    m_revision = 0;
+
+  // report CODEC + ERRORS
+  kDebug (13020) << "Saved file " << filename << "with codec" << m_textCodec->name()
+    << (ok ? "without" : "with") << "errors";
+
+  // emit signal on success
+  if (ok)
+    emit saved (this, filename);
+
+  // return success or not
+  return ok;
 }
 
 }

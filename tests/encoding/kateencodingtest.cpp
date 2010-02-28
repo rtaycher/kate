@@ -43,7 +43,8 @@ int main (int argc, char *argv[])
   buffer.setEndOfLineMode (Kate::TextBuffer::eolMac);
 
   // load file
-  if (!buffer.load (inFile))
+  bool encodingErrors = false;
+  if (!buffer.load (inFile, encodingErrors) || encodingErrors)
     return 1;
 
   // save file
