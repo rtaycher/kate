@@ -33,6 +33,7 @@ TextBuffer::TextBuffer (QObject *parent, int blockSize)
   , m_editingTransactions (0)
   , m_editingChangedBuffer (false)
   , m_textCodec (0)
+  , m_generateByteOrderMark (false)
 {
   // minimal block size must be > 0
   Q_ASSERT (m_blockSize > 0);
@@ -400,6 +401,7 @@ bool TextBuffer::load (const QString &filename)
    * 1) use fallback encoding, be done, if no encoding errors happen
    * 2) use again given encoding, be done in any case
    */
+  bool encodingError = false;
   for (int i = 0; i < 3;  ++i) {
     /**
      * kill all blocks beside first one
@@ -441,7 +443,7 @@ bool TextBuffer::load (const QString &filename)
   #endif
 
     // read in all lines...
-    bool encodingError = false;
+    encodingError = false;
     while ( !file.eof() )
     {
       // read line
@@ -490,8 +492,19 @@ bool TextBuffer::load (const QString &filename)
     }
   }
 
+  // remember if BOM was found
+  if (file.byteOrderMarkFound ())
+    setGenerateByteOrderMark (true);
+
   // assert that one line is there!
   Q_ASSERT (m_lines > 0);
+
+  // report CODEC + ERRORS
+  kDebug (13020) << "Loaded file " << filename << "with codec" << m_textCodec->name()
+    << (encodingError ? "with" : "without") << "encoding errors";
+
+  // report BOM
+  kDebug (13020) << (file.byteOrderMarkFound () ? "Found" : "Didn't find") << "byte order mark";
 
 #if 0
   // fix region tree
@@ -529,20 +542,16 @@ bool TextBuffer::save (const QString &filename)
   }
 
   /**
-   * disable Unicode headers
+   * construct stream + disable Unicode headers
    */
   QTextStream stream (file);
   stream.setCodec (QTextCodec::codecForName("UTF-16"));
 
-  // this line sets the mapper to the correct codec
-  stream.setCodec(m_textCodec);
+  // set the correct codec
+  stream.setCodec (m_textCodec);
 
-#if 0
-  int mib=codec->mibEnum();
-  if  ((mib==KateFileLoader::MibUtf8) || (mib==KateFileLoader::MibUtf16) ||
-        (mib==KateFileLoader::MibUtf16BE) || (mib==KateFileLoader::MibUtf16LE) )
-    stream.setGenerateByteOrderMark(m_doc->config()->bom());
-#endif
+  // generate byte order mark?
+  stream.setGenerateByteOrderMark (generateByteOrderMark());
 
   // our loved eol string ;)
   QString eol = "\n"; //m_doc->config()->eolString ();

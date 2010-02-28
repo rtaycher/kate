@@ -77,6 +77,19 @@ class TextBuffer : public QObject {
     QTextCodec *textCodec () const { return m_textCodec; }
 
     /**
+     * Generate byte order mark on save.
+     * Loading might overwrite this setting, if there is a BOM found inside the file.
+     * @param generateByteOrderMark should BOM be generated?
+     */
+    void setGenerateByteOrderMark (bool generateByteOrderMark) { m_generateByteOrderMark = generateByteOrderMark; }
+
+    /**
+     * Generate byte order mark on save?
+     * @return should BOM be generated?
+     */
+    bool generateByteOrderMark () const { return m_generateByteOrderMark; }
+
+    /**
      * Load the given file. This will first clear the buffer and then load the file.
      * Even on error during loading the buffer will still be cleared.
      * Before calling this, setTextCodec must have been used to set codec!
@@ -306,6 +319,11 @@ class TextBuffer : public QObject {
      * Set by load(), reset by clear()
      */
     QString m_mimeTypeForFilterDev;
+
+    /**
+     * Should byte order mark be created?
+     */
+    bool m_generateByteOrderMark;
 };
 
 }

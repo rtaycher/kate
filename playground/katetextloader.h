@@ -67,6 +67,8 @@ class FileLoader
       , m_eol (eolUnknown) // no eol type detected atm
       , m_buffer (KATE_FILE_LOADER_BS, 0)
       , m_converterState (0)
+      , m_bomFound (false)
+      , m_firstRead (true)
     {
       // try to get mimetype for on the fly decompression, don't rely on filename!
       QFile testMime (filename);
@@ -104,7 +106,9 @@ class FileLoader
       m_eol = eolUnknown;
       m_text.clear ();
       delete m_converterState;
-      m_converterState = new QTextCodec::ConverterState (QTextCodec::IgnoreHeader | QTextCodec::ConvertInvalidToNull);
+      m_converterState = new QTextCodec::ConverterState (QTextCodec::ConvertInvalidToNull);
+      m_bomFound = false;
+      m_firstRead = true;
 
       // if already opened, close the file...
       if (m_file->isOpen())
@@ -125,6 +129,12 @@ class FileLoader
      * @return eol mode of this file
      */
     EndOfLineType eol () const { return m_eol; }
+
+    /**
+     * BOM found?
+     * @return byte order mark found?
+     */
+    bool byteOrderMarkFound () const { return m_bomFound; }
 
     /**
      * mime type used to create filter dev
@@ -174,14 +184,40 @@ class FileLoader
             // if any text is there, append it....
             if (c > 0)
             {
-              // if codec not set, detect it...
-              if (!m_codec) {
-                // fallback to iso
-                m_codec = QTextCodec::codecForName("ISO 8859-15");
+              // detect byte order marks & codec for byte order markers on first read
+              int bomBytes = 0;
+              if (m_firstRead) {
+                // use first 16 bytes max to allow BOM detection of codec
+                QByteArray bom (m_buffer.data(), qMin (16, c));
+                QTextCodec *codecForByteOrderMark = QTextCodec::codecForUtfText (bom, 0);
+
+                // if codec != null, we found a BOM!
+                if (codecForByteOrderMark) {
+                  m_bomFound = true;
+
+                  // eat away the different boms!
+                  int mib = codecForByteOrderMark->mibEnum ();
+                  if (mib == 106) // utf8
+                    bomBytes = 3;
+                  if (mib == 1013 || mib == 1014) // utf16
+                    bomBytes = 2;
+                  if (mib == 1018 || mib == 1019) // utf32
+                    bomBytes = 4;
+                }
+
+                if (!m_codec) {
+                  // byte order said something about encoding?
+                  if (codecForByteOrderMark)
+                    m_codec = codecForByteOrderMark;
+                  else // fallback to iso
+                    m_codec = QTextCodec::codecForName("ISO 8859-15");
+                }
+
+                m_firstRead = false;
               }
 
               Q_ASSERT (m_codec);
-              QString unicode = m_codec->toUnicode (m_buffer.constData(), c, m_converterState);
+              QString unicode = m_codec->toUnicode (m_buffer.constData() + bomBytes, c - bomBytes, m_converterState);
 
               // detect broken encoding
               for (int i = 0; i < unicode.size(); ++i) {
@@ -286,6 +322,8 @@ class FileLoader
     QByteArray m_buffer;
     QString m_text;
     QTextCodec::ConverterState *m_converterState;
+    bool m_bomFound;
+    bool m_firstRead;
 };
 
 }

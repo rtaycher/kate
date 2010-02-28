@@ -15,3 +15,6 @@ KATE_ENCODING_TEST ("utf-8" "utf8.txt")
 
 # this file is latin15, but fallback should work!
 KATE_ENCODING_TEST ("utf-8" "latin15.txt")
+
+# this file is utf32, but fallback should work!
+KATE_ENCODING_TEST ("utf-8" "utf32.txt")
