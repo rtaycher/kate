@@ -15,6 +15,5 @@ ENDMACRO(KATE_UNIT_TESTS)
 # unit tests
 kate_unit_tests (katetextbuffertest)
 
-# test executable for encoding
-kde4_add_executable(kateencodingtest NOGUI kateencodingtest.cpp)
-target_link_libraries(kateencodingtest kateplayground ${KDE4_KTEXTEDITOR_LIBS} ${QT_QTTEST_LIBRARY} ${KDE4_KIO_LIBS} ${KDE4_KPARTS_LIBS} )
+# encoding tets
+add_subdirectory (encoding)
