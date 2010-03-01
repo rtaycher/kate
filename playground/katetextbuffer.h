@@ -207,6 +207,18 @@ class TextBuffer : public QObject {
     bool editingChangedBuffer () const { return m_editingChangedBuffer; }
 
     /**
+     * Get minimal line number changed by last editing transaction
+     * @return maximal line number changed by last editing transaction, or -1, if none changed
+     */
+    int editingMinimalLineChanged () const { return m_editingMinimalLineChanged; }
+
+    /**
+     * Get maximal line number changed by last editing transaction
+     * @return maximal line number changed by last editing transaction, or -1, if none changed
+     */
+    int editingMaximalLineChanged () const { return m_editingMaximalLineChanged; }
+
+    /**
      * Wrap line at given cursor position.
      * @param position line/column as cursor where to wrap
      */
@@ -360,6 +372,16 @@ class TextBuffer : public QObject {
      * Did the last running transaction change the buffer?
      */
     bool m_editingChangedBuffer;
+
+    /**
+     * minimal line number changed by last editing transaction
+     */
+    int m_editingMinimalLineChanged;
+
+    /**
+     * maximal line number changed by last editing transaction
+     */
+    int m_editingMaximalLineChanged;
 
     /**
      * Set of invalid cursors for this whole buffer.

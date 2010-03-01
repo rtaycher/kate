@@ -32,6 +32,8 @@ TextBuffer::TextBuffer (QObject *parent, int blockSize)
   , m_revision (0)
   , m_editingTransactions (0)
   , m_editingChangedBuffer (false)
+  , m_editingMinimalLineChanged (-1)
+  , m_editingMaximalLineChanged (-1)
   , m_fallbackTextCodec (QTextCodec::codecForName("ISO 8859-15"))
   , m_textCodec (0)
   , m_generateByteOrderMark (false)
@@ -142,6 +144,8 @@ bool TextBuffer::startEditing ()
 
   // reset informations about edit...
   m_editingChangedBuffer = false;
+  m_editingMinimalLineChanged = -1;
+  m_editingMaximalLineChanged = -1;
 
   // transaction has started
   emit editingStarted (this);
@@ -161,6 +165,12 @@ bool TextBuffer::finishEditing ()
   // if not last running transaction, do nothing
   if (m_editingTransactions > 0)
     return false;
+
+  // assert that if buffer changed, the line ranges are set and valid!
+  Q_ASSERT (!m_editingChangedBuffer || (m_editingMinimalLineChanged != -1 && m_editingMaximalLineChanged != -1));
+  Q_ASSERT (!m_editingChangedBuffer || (m_editingMinimalLineChanged <= m_editingMaximalLineChanged));
+  Q_ASSERT (!m_editingChangedBuffer || (m_editingMinimalLineChanged >= 0 && m_editingMinimalLineChanged < m_lines));
+  Q_ASSERT (!m_editingChangedBuffer || (m_editingMaximalLineChanged >= 0 && m_editingMaximalLineChanged < m_lines));
 
   // transaction has finished
   emit editingFinished (this);
@@ -186,6 +196,15 @@ void TextBuffer::wrapLine (const KTextEditor::Cursor &position)
   // remember changes
   ++m_revision;
   m_editingChangedBuffer = true;
+
+  // update changed line interval
+  if (position.line() < m_editingMinimalLineChanged || m_editingMinimalLineChanged == -1)
+    m_editingMinimalLineChanged = position.line();
+
+  if (position.line() <= m_editingMaximalLineChanged)
+    ++m_editingMaximalLineChanged;
+  else
+    m_editingMaximalLineChanged = position.line() + 1;
 
   // fixup all following blocks
   fixStartLines (blockIndex);
@@ -225,6 +244,15 @@ void TextBuffer::unwrapLine (int line)
   ++m_revision;
   m_editingChangedBuffer = true;
 
+  // update changed line interval
+   if ((line - 1) < m_editingMinimalLineChanged || m_editingMinimalLineChanged == -1)
+    m_editingMinimalLineChanged = line - 1;
+
+  if (line <= m_editingMaximalLineChanged)
+    --m_editingMaximalLineChanged;
+  else
+    m_editingMaximalLineChanged = line -1;
+
   // fixup all following blocks
   fixStartLines (blockIndex);
 
@@ -253,6 +281,13 @@ void TextBuffer::insertText (const KTextEditor::Cursor &position, const QString 
   // remember changes
   ++m_revision;
   m_editingChangedBuffer = true;
+
+  // update changed line interval
+  if (position.line () < m_editingMinimalLineChanged || m_editingMinimalLineChanged == -1)
+    m_editingMinimalLineChanged = position.line ();
+
+  if (position.line () > m_editingMaximalLineChanged)
+    m_editingMaximalLineChanged = position.line ();
 
   // emit signal about done change
   emit textInserted (this, position, text);
@@ -284,6 +319,13 @@ void TextBuffer::removeText (const KTextEditor::Range &range)
   // remember changes
   ++m_revision;
   m_editingChangedBuffer = true;
+
+  // update changed line interval
+  if (range.start().line() < m_editingMinimalLineChanged || m_editingMinimalLineChanged == -1)
+    m_editingMinimalLineChanged = range.start().line();
+
+  if (range.start().line() > m_editingMaximalLineChanged)
+    m_editingMaximalLineChanged = range.start().line();
 
   // emit signal about done change
   emit textRemoved (this, range, text);
