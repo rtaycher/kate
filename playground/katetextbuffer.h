@@ -204,7 +204,13 @@ class TextBuffer : public QObject {
      * Query the revsion of this buffer before the ongoing editing transactions.
      * @return revision of buffer before current editing transaction altered it
      */
-    int editingLastRevision () const { return m_editingLastRevision; }
+    qint64 editingLastRevision () const { return m_editingLastRevision; }
+
+    /**
+     * Query the number of lines of this buffer before the ongoing editing transactions.
+     * @return number of lines of buffer before current editing transaction altered it
+     */
+    int editingLastLines () const { return m_editingLastLines; }
 
     /**
      * Query information from the last editing transaction: was the content of the buffer changed?
@@ -212,6 +218,13 @@ class TextBuffer : public QObject {
      * @return content of buffer was changed in last transaction?
      */
     bool editingChangedBuffer () const { return editingLastRevision() != revision(); }
+
+    /**
+     * Query information from the last editing transaction: was the number of lines of the buffer changed?
+     * This is checked by comparing the editingLastLines() with the current lines().
+     * @return content of buffer was changed in last transaction?
+     */
+    bool editingChangedNumberOfLines () const { return editingLastLines() != lines(); }
 
     /**
      * Get minimal line number changed by last editing transaction
@@ -379,6 +392,11 @@ class TextBuffer : public QObject {
      * Revision remembered at start of current editing transaction
      */
     qint64 m_editingLastRevision;
+
+    /**
+     * Number of lines remembered at start of current editing transaction
+     */
+    int m_editingLastLines;
 
     /**
      * minimal line number changed by last editing transaction

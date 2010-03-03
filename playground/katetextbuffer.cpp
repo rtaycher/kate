@@ -32,6 +32,7 @@ TextBuffer::TextBuffer (QObject *parent, int blockSize)
   , m_revision (0)
   , m_editingTransactions (0)
   , m_editingLastRevision (0)
+  , m_editingLastLines (0)
   , m_editingMinimalLineChanged (-1)
   , m_editingMaximalLineChanged (-1)
   , m_fallbackTextCodec (QTextCodec::codecForName("ISO 8859-15"))
@@ -144,6 +145,7 @@ bool TextBuffer::startEditing ()
 
   // reset informations about edit...
   m_editingLastRevision = m_revision;
+  m_editingLastLines = m_lines;
   m_editingMinimalLineChanged = -1;
   m_editingMaximalLineChanged = -1;
 
