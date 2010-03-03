@@ -29,6 +29,7 @@ TextBuffer::TextBuffer (QObject *parent, int blockSize)
   : QObject (parent)
   , m_blockSize (blockSize)
   , m_lines (0)
+  , m_lastUsedBlock (0)
   , m_revision (0)
   , m_editingTransactions (0)
   , m_editingLastRevision (0)
@@ -100,8 +101,9 @@ void TextBuffer::clear ()
   // insert one block with one empty line
   m_blocks.append (newBlock);
 
-  // reset lines
+  // reset lines and last used block
   m_lines = 1;
+  m_lastUsedBlock = 0;
 
   // reset revision
   m_revision = 0;
@@ -335,11 +337,22 @@ int TextBuffer::blockForLine (int line) const
   Q_ASSERT (line >= 0);
   Q_ASSERT (line < lines());
 
-  // search block
-  for (int index = 0; index < m_blocks.size(); ++index) {
-      if (line >= m_blocks[index]->startLine()
-          && line < m_blocks[index]->startLine() + m_blocks[index]->lines ())
-        return index;
+  // reset invalid last blocks
+  if (m_lastUsedBlock < 0 || m_lastUsedBlock >= m_blocks.size())
+    m_lastUsedBlock = 0;
+
+  // search for right block
+  forever {
+    int start = m_blocks[m_lastUsedBlock]->startLine();
+    int lines = m_blocks[m_lastUsedBlock]->lines ();
+
+    if (start <= line && line < (start + lines))
+      return m_lastUsedBlock;
+
+    if (line < start)
+      m_lastUsedBlock--;
+    else
+      m_lastUsedBlock++;
   }
 
   // we should always find a block
