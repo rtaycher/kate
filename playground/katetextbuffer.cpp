@@ -31,7 +31,7 @@ TextBuffer::TextBuffer (QObject *parent, int blockSize)
   , m_lines (0)
   , m_revision (0)
   , m_editingTransactions (0)
-  , m_editingChangedBuffer (false)
+  , m_editingLastRevision (0)
   , m_editingMinimalLineChanged (-1)
   , m_editingMaximalLineChanged (-1)
   , m_fallbackTextCodec (QTextCodec::codecForName("ISO 8859-15"))
@@ -143,7 +143,7 @@ bool TextBuffer::startEditing ()
     return false;
 
   // reset informations about edit...
-  m_editingChangedBuffer = false;
+  m_editingLastRevision = m_revision;
   m_editingMinimalLineChanged = -1;
   m_editingMaximalLineChanged = -1;
 
@@ -167,10 +167,10 @@ bool TextBuffer::finishEditing ()
     return false;
 
   // assert that if buffer changed, the line ranges are set and valid!
-  Q_ASSERT (!m_editingChangedBuffer || (m_editingMinimalLineChanged != -1 && m_editingMaximalLineChanged != -1));
-  Q_ASSERT (!m_editingChangedBuffer || (m_editingMinimalLineChanged <= m_editingMaximalLineChanged));
-  Q_ASSERT (!m_editingChangedBuffer || (m_editingMinimalLineChanged >= 0 && m_editingMinimalLineChanged < m_lines));
-  Q_ASSERT (!m_editingChangedBuffer || (m_editingMaximalLineChanged >= 0 && m_editingMaximalLineChanged < m_lines));
+  Q_ASSERT (!editingChangedBuffer() || (m_editingMinimalLineChanged != -1 && m_editingMaximalLineChanged != -1));
+  Q_ASSERT (!editingChangedBuffer() || (m_editingMinimalLineChanged <= m_editingMaximalLineChanged));
+  Q_ASSERT (!editingChangedBuffer() || (m_editingMinimalLineChanged >= 0 && m_editingMinimalLineChanged < m_lines));
+  Q_ASSERT (!editingChangedBuffer() || (m_editingMaximalLineChanged >= 0 && m_editingMaximalLineChanged < m_lines));
 
   // transaction has finished
   emit editingFinished (this);
@@ -195,7 +195,6 @@ void TextBuffer::wrapLine (const KTextEditor::Cursor &position)
 
   // remember changes
   ++m_revision;
-  m_editingChangedBuffer = true;
 
   // update changed line interval
   if (position.line() < m_editingMinimalLineChanged || m_editingMinimalLineChanged == -1)
@@ -242,7 +241,6 @@ void TextBuffer::unwrapLine (int line)
 
   // remember changes
   ++m_revision;
-  m_editingChangedBuffer = true;
 
   // update changed line interval
    if ((line - 1) < m_editingMinimalLineChanged || m_editingMinimalLineChanged == -1)
@@ -280,7 +278,6 @@ void TextBuffer::insertText (const KTextEditor::Cursor &position, const QString 
 
   // remember changes
   ++m_revision;
-  m_editingChangedBuffer = true;
 
   // update changed line interval
   if (position.line () < m_editingMinimalLineChanged || m_editingMinimalLineChanged == -1)
@@ -318,7 +315,6 @@ void TextBuffer::removeText (const KTextEditor::Range &range)
 
   // remember changes
   ++m_revision;
-  m_editingChangedBuffer = true;
 
   // update changed line interval
   if (range.start().line() < m_editingMinimalLineChanged || m_editingMinimalLineChanged == -1)
