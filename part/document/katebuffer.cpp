@@ -154,6 +154,9 @@ bool KateBuffer::openFile (const QString &m_file)
   // first: setup encoding
   setTextCodec (m_doc->config()->codec ());
 
+  // remove trailing spaces?
+  setRemoveTrailingSpaces (m_doc->config()->configFlags() & KateDocumentConfig::cfRemoveSpaces);
+
   // then, load the file
   m_brokenUTF8 = false;
   bool success = load (m_file, m_brokenUTF8);
@@ -171,7 +174,7 @@ bool KateBuffer::openFile (const QString &m_file)
    QTime t;
    t.start();
 
-  KateFileLoader file (m_file, m_doc->config()->codec(), m_doc->config()->configFlags() & KateDocumentConfig::cfRemoveSpaces, m_doc->proberTypeForEncodingAutoDetection());
+  KateFileLoader file (m_file, m_doc->config()->codec(), , m_doc->proberTypeForEncodingAutoDetection());
 
   bool ok = false;
   KDE_struct_stat sbuf;
@@ -289,6 +292,9 @@ bool KateBuffer::saveFile (const QString &m_file)
   // first: setup encoding
   setTextCodec (m_doc->config()->codec ());
 
+  // remove trailing spaces?
+  setRemoveTrailingSpaces (m_doc->config()->configFlags() & KateDocumentConfig::cfRemoveSpaces);
+
 #if 0
   // construct correct filter device
   QIODevice *file = KFilterDev::deviceForFile (m_file, m_mimeTypeForFilterDev, false);
@@ -376,111 +382,33 @@ void KateBuffer::ensureHighlighted (int line)
     m_lineHighlightedMax = m_lineHighlighted;
 }
 
-void KateBuffer::changeLine(int i)
+void KateBuffer::wrapLine (const KTextEditor::Cursor &position)
 {
-#if 0
-  if (i < 0 || i >= m_lines)
-    return;
+  // call original
+  Kate::TextBuffer::wrapLine (position);
 
-  // mark buffer changed
-  editChangesDone = true;
-
-  // tag this line as changed
-  if (i < editTagLineStart)
-    editTagLineStart = i;
-
-  if (i > editTagLineEnd)
-    editTagLineEnd = i;
-#endif
-}
-
-void KateBuffer::insertLine(int i, Kate::TextLine line)
-{
-#if 0
-  if (i < 0 || i > m_lines)
-    return;
-
-  // get block
-  int block = findBlock (i);
-  if (block == -1)
-    block = m_blocks.size() - 1;
-
-  // insert line
-  m_blocks[block]->lines.insert (i - m_blocks[block]->start, line);
-  m_lines++;
-  fixBlocksFrom (block);
-
-  if (m_lineHighlightedMax > i)
+  if (m_lineHighlightedMax > position.line()+1)
     m_lineHighlightedMax++;
 
-  if (m_lineHighlighted > i)
+  if (m_lineHighlighted > position.line()+1)
     m_lineHighlighted++;
 
-  // mark buffer changed
-  editChangesDone = true;
+  m_regionTree.lineHasBeenInserted (position.line()+1);
 
-  // tag this line as inserted
-  if (i < editTagLineStart)
-    editTagLineStart = i;
-
-  if (i <= editTagLineEnd)
-    editTagLineEnd++;
-
-  if (i > editTagLineEnd)
-    editTagLineEnd = i;
-
-  // line inserted
-  editTagLineFrom = true;
-
-  m_regionTree.lineHasBeenInserted (i);
-#endif
 }
 
-void KateBuffer::removeLine(int i)
+void KateBuffer::unwrapLine (int line)
 {
-#if 0
-  int block = findBlock (i);
+  // call original
+  Kate::TextBuffer::unwrapLine (line);
 
-  if (block == -1)
-    return;
-
-  // remove line
-  m_blocks[block]->lines.remove (i - m_blocks[block]->start);
-  m_lines--;
-  fixBlocksFrom (block);
-
-  if (m_lineHighlightedMax > i)
+  if (m_lineHighlightedMax > line)
     m_lineHighlightedMax--;
 
-  if (m_lineHighlighted > i)
+  if (m_lineHighlighted > line)
     m_lineHighlighted--;
 
-  // mark buffer changed
-  editChangesDone = true;
-
-  // tag this line as removed
-   if (i < editTagLineStart)
-    editTagLineStart = i;
-
-  if (i < editTagLineEnd)
-    editTagLineEnd--;
-
-  if (i > editTagLineEnd)
-    editTagLineEnd = i;
-
-  // make sure tags do not reach past the last line
-  // see https://bugs.kde.org/show_bug.cgi?id=152497
-  if (editTagLineEnd >= m_lines)
-    editTagLineEnd = m_lines - 1;
-
-  if (editTagLineStart > editTagLineEnd)
-    editTagLineStart = editTagLineEnd;
-
-  // line removed
-  editTagLineFrom = true;
-
-  m_regionTree.lineHasBeenRemoved (i);
-#endif
+  m_regionTree.lineHasBeenRemoved (line);
 }
 
 void KateBuffer::setTabWidth (int w)

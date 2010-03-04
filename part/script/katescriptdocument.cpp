@@ -435,12 +435,12 @@ bool KateScriptDocument::clear()
 
 bool KateScriptDocument::truncate(int line, int column)
 {
-#if 0 // fix me!!!
   Kate::TextLine textLine = m_document->plainKateTextLine(line);
-  if(textLine) textLine->truncate(column);
-  return static_cast<bool>(textLine);
-#endif
-  return false;
+  if (!textLine || textLine->text().size() < column)
+    return false;
+
+  KTextEditor::Cursor from (line, column), to (line, textLine->text().size() - column);
+  return removeText(KTextEditor::Range(from, to));
 }
 
 bool KateScriptDocument::truncate(const KTextEditor::Cursor& cursor)

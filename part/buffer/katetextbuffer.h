@@ -71,7 +71,7 @@ class TextBuffer : public QObject {
     /**
      * Clears the buffer, reverts to initial empty state.
      * Empty means one empty line in one block.
-     * Virtual, can be overwritten, but then this clear() should be called there.
+     * Virtual, can be overwritten.
      */
     virtual void clear ();
 
@@ -145,16 +145,18 @@ class TextBuffer : public QObject {
      * @param filename file to open
      * @param encodingErrors were there problems occured while decoding the file?
      * @return success, the file got loaded, perhaps with encoding errors
+     * Virtual, can be overwritten.
      */
-    bool load (const QString &filename, bool &encodingErrors);
+    virtual bool load (const QString &filename, bool &encodingErrors);
 
     /**
      * Save the current buffer content to the given file.
      * Before calling this, setTextCodec must have been used to set codec!
      * @param filename file to save
      * @return success
+     * Virtual, can be overwritten.
      */
-    bool save (const QString &filename);
+    virtual bool save (const QString &filename);
 
     /**
      * Lines currently stored in this buffer.
@@ -187,14 +189,16 @@ class TextBuffer : public QObject {
      * are only to be allowed to be called inside a editing transaction.
      * Editing transactions can stack. The number startEdit and endEdit calls must match.
      * @return returns true, if no transaction was already running
+     * Virtual, can be overwritten.
      */
-    bool startEditing ();
+    virtual bool startEditing ();
 
     /**
      * Finish an editing transaction. Only allowed to be called if editing transaction is started.
      * @return returns true, if this finished last running transaction
+     * Virtual, can be overwritten.
      */
-    bool finishEditing ();
+    virtual bool finishEditing ();
 
     /**
      * Query the number of editing transactions running atm.
@@ -243,27 +247,31 @@ class TextBuffer : public QObject {
     /**
      * Wrap line at given cursor position.
      * @param position line/column as cursor where to wrap
+     * Virtual, can be overwritten.
      */
-    void wrapLine (const KTextEditor::Cursor &position);
+    virtual void wrapLine (const KTextEditor::Cursor &position);
 
     /**
      * Unwrap given line.
      * @param line line to unwrap
+     * Virtual, can be overwritten.
      */
-    void unwrapLine (int line);
+    virtual void unwrapLine (int line);
 
     /**
      * Insert text at given cursor position. Does nothing if text is empty, beside some consistency checks.
      * @param position position where to insert text
      * @param text text to insert
+     * Virtual, can be overwritten.
      */
-    void insertText (const KTextEditor::Cursor &position, const QString &text);
+    virtual void insertText (const KTextEditor::Cursor &position, const QString &text);
 
     /**
      * Remove text at given range. Does nothing if range is empty, beside some consistency checks.
      * @param range range of text to remove, must be on one line only.
+     * Virtual, can be overwritten.
      */
-    void removeText (const KTextEditor::Range &range);
+    virtual void removeText (const KTextEditor::Range &range);
 
   Q_SIGNALS:
     /**

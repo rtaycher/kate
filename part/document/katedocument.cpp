@@ -1168,10 +1168,8 @@ bool KateDocument::editInsertText ( int line, int col, const QString &s, Kate::E
 
   m_undoManager->slotTextInserted(line, col2, s2);
 
-  // FIXME KATETEXTBUFFER
-  // l->insertText (col2, s2);
-
-  m_buffer->changeLine(line);
+  // insert text into line
+  m_buffer->insertText (KTextEditor::Cursor (line, col2), s2);
 
   history()->doEdit( new KateEditInfo(m_editSources.top(), KTextEditor::Range(line, col2, line, col),
               QStringList(), KTextEditor::Range(line, col2, line, col2 + s2.length()), QStringList(s2)) );
@@ -1203,11 +1201,10 @@ bool KateDocument::editRemoveText ( int line, int col, int len, Kate::EditSource
 
   m_undoManager->slotTextRemoved(line, col, l->string().mid(col, len));
 
-  // FIXME KATETEXTBUFFER
-  // l->removeText (col, len);
-  removeTrailingSpace( line );
+  // remove text from line
+  m_buffer->removeText (KTextEditor::Range (KTextEditor::Cursor (line, col), KTextEditor::Cursor (line, col+len)));
 
-  m_buffer->changeLine(line);
+  removeTrailingSpace( line );
 
   history()->doEdit( new KateEditInfo(m_editSources.top(), KTextEditor::Range(line, col, line, col + len), QStringList(l->string().mid(col, len)), KTextEditor::Range(line, col, line, col), QStringList()) );
   emit KTextEditor::Document::textRemoved(this, KTextEditor::Range(line, col, line, col + len));
@@ -1235,8 +1232,6 @@ bool KateDocument::editMarkLineAutoWrapped ( int line, bool autowrapped )
   m_undoManager->slotMarkLineAutoWrapped(line, autowrapped);
 
   l->setAutoWrapped (autowrapped);
-
-  m_buffer->changeLine(line);
 
   editEnd ();
 
@@ -1267,17 +1262,9 @@ bool KateDocument::editWrapLine ( int line, int col, bool newLine, bool *newLine
 
   m_undoManager->slotLineWrapped(line, col, pos, (!nextLine || newLine));
 
-  // FIXME KATETEXTBUFFER
-#if 0
   if (!nextLine || newLine)
   {
-    Kate::TextLine textLine(new KateTextLine());
-
-    textLine->insertText (0, l->string().mid(col, pos));
-    l->truncate(col);
-
-    m_buffer->insertLine (line+1, textLine);
-    m_buffer->changeLine(line);
+    m_buffer->wrapLine (KTextEditor::Cursor (line, col));
 
     QList<KTextEditor::Mark*> list;
     for (QHash<int, KTextEditor::Mark*>::const_iterator i = m_marks.constBegin(); i != m_marks.constEnd(); ++i)
@@ -1309,11 +1296,8 @@ bool KateDocument::editWrapLine ( int line, int col, bool newLine, bool *newLine
   }
   else
   {
-    nextLine->insertText (0, l->string().mid(col, pos));
-    l->truncate(col);
-
-    m_buffer->changeLine(line);
-    m_buffer->changeLine(line+1);
+    m_buffer->insertText (KTextEditor::Cursor (line + 1, 0), l->text().mid(col, pos));
+    m_buffer->removeText (KTextEditor::Range (KTextEditor::Cursor (line, col), KTextEditor::Cursor (line, l->text().size()-col)));
 
     // no, no new line added !
     if (newLineAdded)
@@ -1321,7 +1305,6 @@ bool KateDocument::editWrapLine ( int line, int col, bool newLine, bool *newLine
 
     history()->doEdit( new KateEditInfo(m_editSources.top(), KTextEditor::Range(line, col, line+1, 0), QStringList(), KTextEditor::Range(line, col, line+1, pos), QStringList()) );
   }
-#endif
 
   emit KTextEditor::Document::textInserted(this, KTextEditor::Range(line, col, line+1, pos));
 
@@ -1350,24 +1333,15 @@ bool KateDocument::editUnWrapLine ( int line, bool removeLine, int length )
 
   m_undoManager->slotLineUnWrapped(line, col, length, removeLine);
 
-  // FIXME KATETEXTBUFFER
-#if 0
   if (removeLine)
   {
-    l->insertText (col, nextLine->string());
-
-    m_buffer->changeLine(line);
-    m_buffer->removeLine(line+1);
+    m_buffer->unwrapLine (line+1);
   }
   else
   {
-    l->insertText (col, nextLine->string().left((nextLine->length() < length) ? nextLine->length() : length));
-    nextLine->removeText (0, (nextLine->length() < length) ? nextLine->length() : length);
-
-    m_buffer->changeLine(line);
-    m_buffer->changeLine(line+1);
+    m_buffer->insertText (KTextEditor::Cursor (line, col), nextLine->string().left((nextLine->length() < length) ? nextLine->length() : length));
+    m_buffer->removeText (KTextEditor::Range (KTextEditor::Cursor (line + 1, 0), KTextEditor::Cursor (line + 1, (nextLine->length() < length) ? nextLine->length() : length)));
   }
-#endif
 
   QList<KTextEditor::Mark*> list;
   for (QHash<int, KTextEditor::Mark*>::const_iterator i = m_marks.constBegin(); i != m_marks.constEnd(); ++i)
@@ -1423,15 +1397,17 @@ bool KateDocument::editInsertLine ( int line, const QString &s, Kate::EditSource
 
   removeTrailingSpace( line ); // old line
 
-  // FIXME KATETEXTBUFFER
-#if 0
-  Kate::TextLine tl(new KateTextLine());
-  tl->insertText (0, s);
-  m_buffer->insertLine(line, tl);
-  m_buffer->changeLine(line);
+  // wrap line
+  if (line > 0) {
+    Kate::TextLine previousLine = m_buffer->line (line-1);
+    m_buffer->wrapLine (KTextEditor::Cursor (line-1, previousLine->text().size()));
+  } else {
+    m_buffer->wrapLine (KTextEditor::Cursor (0, 0));
+  }
 
   removeTrailingSpace( line ); // new line
-#endif
+
+  Kate::TextLine tl = m_buffer->line (line);
 
   QList<KTextEditor::Mark*> list;
   for (QHash<int, KTextEditor::Mark*>::const_iterator i = m_marks.constBegin(); i != m_marks.constEnd(); ++i)
@@ -1452,8 +1428,6 @@ bool KateDocument::editInsertLine ( int line, const QString &s, Kate::EditSource
   if( !list.isEmpty() )
     emit marksChanged( this );
 
-  // FIXME KATETEXTBUFFER
-#if 0
   KTextEditor::Range rangeInserted(line, 0, line, tl->length());
 
   if (line) {
@@ -1465,7 +1439,6 @@ bool KateDocument::editInsertLine ( int line, const QString &s, Kate::EditSource
 
   history()->doEdit( new KateEditInfo(m_editSources.top(), KTextEditor::Range(rangeInserted.start(), rangeInserted.start()), QStringList(), rangeInserted, QStringList(s)) );
   emit KTextEditor::Document::textInserted(this, rangeInserted);
-#endif
 
   editEnd ();
 
@@ -1499,10 +1472,12 @@ bool KateDocument::editRemoveLines ( int from, int to, Kate::EditSource editSour
   }
 
   for (int line = to; line >= from; line--) {
+    Kate::TextLine tl = m_buffer->line (line);
     oldText << this->line(line);
     m_undoManager->slotLineRemoved(line, this->line(line));
 
-    m_buffer->removeLine(line);
+    m_buffer->removeText (KTextEditor::Range (KTextEditor::Cursor (line, 0), KTextEditor::Cursor (line, tl->text().size())));
+    m_buffer->unwrapLine (line);
   }
 
   QList<int> rmark;

@@ -136,6 +136,9 @@ class KateBuffer : public Kate::TextBuffer
      */
     inline Kate::TextLine plainLine (int lineno)
     {
+        if (lineno >= lines())
+          return Kate::TextLine ();
+
         return line (lineno);
     }
 
@@ -150,19 +153,16 @@ class KateBuffer : public Kate::TextBuffer
     inline int count() const { return lines(); }
 
     /**
-     * Mark line @p i as changed !
+     * Wrap line at given cursor position.
+     * @param position line/column as cursor where to wrap
      */
-    void changeLine(int i);
+    void wrapLine (const KTextEditor::Cursor &position);
 
     /**
-     * Insert @p line in front of line @p i
+     * Unwrap given line.
+     * @param line line to unwrap
      */
-    void insertLine(int i, Kate::TextLine line);
-
-    /**
-     * Remove line @p i
-     */
-    void removeLine(int i);
+    void unwrapLine (int line);
 
   private:
      inline void addIndentBasedFoldingInformation(QVector<int> &foldingList,int linelength,bool addindent,int deindent);
