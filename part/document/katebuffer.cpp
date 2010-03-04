@@ -51,13 +51,6 @@
 #include <limits.h>
 
 /**
- * loader block size, load 256 kb at once per default
- * if file size is smaller, fall back to file size
- * must be a multiple of 2
- */
-static const qint64 KATE_FILE_LOADER_BS  = 256 * 1024;
-
-/**
  * hl will look at the next KATE_HL_LOOKAHEAD lines
  * or until the current block ends if a line is requested
  * will avoid to run doHighlight too often
@@ -68,408 +61,6 @@ static const int KATE_HL_LOOKAHEAD = 64;
  * Initial value for m_maxDynamicContexts
  */
 static const int KATE_MAX_DYNAMIC_CONTEXTS = 512;
-
-/**
- * allowed lines per buffer block on loading
- */
-static const int KATE_AVERAGE_LINES_PER_BLOCK = 4 * 1024;
-
-class KateFileLoader
-{
-
-  public:
-    enum MIB
-    {
-      MibLatin1  = 4,
-      Mib8859_8  = 85,
-      MibUtf8    = 106,
-      MibUcs2    = 1000,
-      MibUtf16   = 1015,
-      MibUtf16BE = 1013,
-      MibUtf16LE = 1014
-    };
-    enum BOM {
-    BomUnknown=0,
-    BomNotSet=1,
-    BomSet=2
-    };
-    KateFileLoader (const QString &filename, QTextCodec *codec, bool removeTrailingSpaces, KEncodingProber::ProberType proberType)
-      : m_codec(codec)
-      , m_prober(new KEncodingProber(proberType))
-      , m_multiByte(0)
-      , m_eof (false) // default to not eof
-      , m_lastWasEndOfLine (true) // at start of file, we had a virtual newline
-      , m_lastWasR (false) // we have not found a \r as last char
-      , m_binary (false)
-      , m_removeTrailingSpaces (removeTrailingSpaces)
-      , m_utf8Borked (false)
-      , m_position (0)
-      , m_lastLineStart (0)
-      , m_eol (-1) // no eol type detected atm
-      , m_buffer (KATE_FILE_LOADER_BS, 0)
-      , m_decoder(m_codec->makeDecoder())
-      , m_bom (BomUnknown)
-    {
-      // try to get mimetype for on the fly decompression, don't rely on filename!
-      QFile testMime (filename);
-      if (testMime.open (QIODevice::ReadOnly))
-        m_mimeType = KMimeType::findByContent (&testMime)->name ();
-      else
-        m_mimeType = KMimeType::findByPath (filename, 0, false)->name ();
-
-      m_file = KFilterDev::deviceForFile (filename, m_mimeType, false);
-    }
-
-    ~KateFileLoader ()
-    {
-      delete m_prober;
-      delete m_decoder;
-      delete m_file;
-    }
-
-    /**
-     * open file, read first chunk of data, detect eol (and possibly charset)
-     */
-    bool open ()
-    {
-      if (m_file->open (QIODevice::ReadOnly))
-      {
-        int c = m_file->read (m_buffer.data(), m_buffer.size());
-
-        if (c > 0)
-        {
-          // fixes utf16 LE
-          //may change codec if autodetection was set or BOM was found
-          kDebug (13020) << "PROBER TYPE: " << KEncodingProber::nameForProberType(m_prober->proberType());
-          m_prober->feed(m_buffer.constData(), c);
-          if (m_prober->confidence() > 0.5 && QTextCodec::codecForName(m_prober->encoding()))
-            m_codec = QTextCodec::codecForName(m_prober->encoding());
-          m_utf8Borked=errorsIfUtf8(m_buffer.constData(), c);
-          m_binary=processNull(m_buffer.data(), c);
-          m_text = decoder()->toUnicode(m_buffer.constData(), c);
-          kDebug (13020) << "OPEN USES ENCODING: " << m_codec->name();
-        }
-
-        m_eof = (c == -1) || (c == 0);
-
-
-        switch (m_codec->mibEnum())
-        {
-          case MibUtf8:
-            if (c>=3) {
-              if ( (((uchar)m_buffer[0])==0xef) && (((uchar)m_buffer[1])==0xbb) && (((uchar)m_buffer[2])==0xbf))
-                m_bom=BomSet;
-              else
-                m_bom=BomNotSet;
-            }
-            break;
-          case MibUtf16:
-            if (c>=2) {
-              if ((((uchar)m_buffer[0])==0xfe) && (((uchar)m_buffer[1])==0xff))
-                m_bom=BomSet;
-              else if ((((uchar)m_buffer[0])==0xff) && (((uchar)m_buffer[1])==0xfe))
-                m_bom=BomSet;
-              else
-                m_bom=BomNotSet;
-            }
-            break;
-          case MibUtf16BE:
-
-            if (c>=2) {
-              if ((((uchar)m_buffer[0])==0xfe) && (((uchar)m_buffer[1])==0xff))
-                m_bom=BomSet;
-              else
-                m_bom=BomNotSet;
-            }
-            break;
-          case MibUtf16LE:
-            if (c>=2) {
-              if ((((uchar)m_buffer[0])==0xff) && (((uchar)m_buffer[1])==0xfe))
-                m_bom=BomSet;
-              else
-                m_bom=BomNotSet;
-            }
-            break;
-          default:
-            break;
-        }
-
-        static const QLatin1Char cr(QLatin1Char('\r'));
-        static const QLatin1Char lf(QLatin1Char('\n'));
-        for (int i=0; i < m_text.length(); i++)
-        {
-          const QChar c = m_text.at(i);
-          if (c == lf)
-          {
-            m_eol = KateDocumentConfig::eolUnix;
-            break;
-          }
-          else if (c == cr)
-          {
-            if (((i+1) < m_text.length()) && (m_text.at(i+1) == lf))
-            {
-              m_eol = KateDocumentConfig::eolDos;
-              break;
-            }
-            else
-            {
-              m_eol = KateDocumentConfig::eolMac;
-              break;
-            }
-          }
-        }
-
-        return true;
-      }
-
-      return false;
-    }
-
-    inline QByteArray actualEncoding () const { return m_codec->name(); }
-
-    // no new lines around ?
-    inline bool eof () const { return m_eof && !m_lastWasEndOfLine && (m_lastLineStart == m_text.length()); }
-
-    // return if the state of the bom has been determined
-    inline BOM bom () const {return m_bom;}
-
-    // eol mode ? autodetected on open(), -1 for no eol found in the first block!
-    inline int eol () const { return m_eol; }
-
-    // binary ?
-    inline bool binary () const { return m_binary; }
-
-    // broken utf8?
-    inline bool brokenUTF8 () const { return m_utf8Borked; }
-
-    inline QTextDecoder* decoder() const { return m_decoder; }
-
-    // mime type used to create filter dev
-    const QString &mimeTypeForFilterDev () const { return m_mimeType; }
-
-    bool errorsIfUtf8 (const char* data, int length)
-    {
-        if (m_codec->mibEnum()!=MibUtf8)
-            return false; //means no errors
-        // #define highest1Bits (unsigned char)0x80
-        // #define highest2Bits (unsigned char)0xC0
-        // #define highest3Bits (unsigned char)0xE0
-        // #define highest4Bits (unsigned char)0xF0
-        // #define highest5Bits (unsigned char)0xF8
-        static const unsigned char highest1Bits = 0x80;
-        static const unsigned char highest2Bits = 0xC0;
-        static const unsigned char highest3Bits = 0xE0;
-        static const unsigned char highest4Bits = 0xF0;
-        static const unsigned char highest5Bits = 0xF8;
-
-        for (int i=0; i<length; ++i)
-        {
-            unsigned char c = data[i];
-
-            if (m_multiByte>0)
-            {
-                if ((c & highest2Bits) == 0x80)
-                {
-                    --(m_multiByte);
-                    continue;
-                }
-                return true;
-            }
-
-            // most significant bit zero, single char
-            if ((c & highest1Bits) == 0x00)
-                continue;
-
-            // 110xxxxx => init 1 following bytes
-            if ((c & highest3Bits) == 0xC0)
-            {
-                m_multiByte = 1;
-                continue;
-            }
-
-            // 1110xxxx => init 2 following bytes
-            if ((c & highest4Bits) == 0xE0)
-            {
-                m_multiByte = 2;
-                continue;
-            }
-
-            // 11110xxx => init 3 following bytes
-            if ((c & highest5Bits) == 0xF0)
-            {
-                m_multiByte = 3;
-                continue;
-            }
-            return true;
-        }
-        return false;
-    }
-
-    bool processNull(char *data, int len)
-    {
-      bool bin=false;
-      if(is16Bit(m_codec))
-      {
-        for (int i=1; i < len; i+=2)
-        {
-          if ((data[i]=='\0') && (data[i-1]=='\0'))
-          {
-            bin=true;
-            data[i]=' ';
-          }
-        }
-        return bin;
-      }
-      // replace '\0' by spaces, for buggy pages
-      int i = len-1;
-      while(--i>=0)
-      {
-        if(data[i]==0)
-        {
-          bin=true;
-          data[i]=' ';
-        }
-      }
-      return bin;
-    }
-
-    // should spaces be ignored at end of line?
-    inline bool removeTrailingSpaces () const { return m_removeTrailingSpaces; }
-
-    // internal unicode data array
-    inline const QChar *unicode () const { return m_text.unicode(); }
-
-    // read a line, return length + offset in unicode data
-    void readLine (int &offset, int &length)
-    {
-      length = 0;
-      offset = 0;
-
-      static const QLatin1Char cr(QLatin1Char('\r'));
-      static const QLatin1Char lf(QLatin1Char('\n'));
-
-      while (m_position <= m_text.length())
-      {
-          if (m_position == m_text.length())
-        {
-          // try to load more text if something is around
-          if (!m_eof)
-          {
-            int c = m_file->read (m_buffer.data(), m_buffer.size());
-
-            // kill the old lines...
-            m_text.remove (0, m_lastLineStart);
-
-            // if any text is there, append it....
-            if (c > 0)
-            {
-              m_binary=processNull(m_buffer.data(), c)||m_binary;
-              m_utf8Borked=m_utf8Borked||errorsIfUtf8(m_buffer.constData(), c);
-              m_text.append (decoder()->toUnicode (m_buffer.constData(), c));
-            }
-
-            // is file completely read ?
-            m_eof = (c == -1) || (c == 0);
-
-            // recalc current pos and last pos
-            m_position -= m_lastLineStart;
-            m_lastLineStart = 0;
-          }
-
-          // oh oh, end of file, escape !
-          if (m_eof && (m_position == m_text.length()))
-          {
-            m_lastWasEndOfLine = false;
-
-            // line data
-            offset = m_lastLineStart;
-            length = m_position-m_lastLineStart;
-
-            m_lastLineStart = m_position;
-
-            return;
-          }
-        }
-
-        if (m_text.at(m_position) == lf)
-        {
-          m_lastWasEndOfLine = true;
-
-          if (m_lastWasR)
-          {
-            m_lastLineStart++;
-            m_lastWasR = false;
-          }
-          else
-          {
-            // line data
-            offset = m_lastLineStart;
-            length = m_position-m_lastLineStart;
-
-            m_lastLineStart = m_position+1;
-            m_position++;
-
-            return;
-          }
-        }
-        else if (m_text.at(m_position) == cr)
-        {
-          m_lastWasEndOfLine = true;
-          m_lastWasR = true;
-
-          // line data
-          offset = m_lastLineStart;
-          length = m_position-m_lastLineStart;
-
-          m_lastLineStart = m_position+1;
-          m_position++;
-
-          return;
-        }
-        else
-        {
-          m_lastWasEndOfLine = false;
-          m_lastWasR = false;
-        }
-
-        m_position++;
-      }
-    }
-
-  bool is16Bit(QTextCodec* codec)
-  {
-    switch (codec->mibEnum())
-    {
-      case MibUtf16:
-      case MibUtf16BE:
-      case MibUtf16LE:
-      case MibUcs2:
-        return true;
-      default:
-        return false;
-    }
-  }
-
-  private:
-    QTextCodec *m_codec;
-    KEncodingProber *m_prober;
-    int m_multiByte;
-    bool m_eof;
-    bool m_lastWasEndOfLine;
-    bool m_lastWasR;
-    bool m_binary;
-    bool m_removeTrailingSpaces;
-    bool m_utf8Borked;
-    int m_position;
-    int m_lastLineStart;
-    int m_eol;
-    QString m_mimeType;
-    QIODevice *m_file;
-    QByteArray m_buffer;
-    QString m_text;
-    QTextDecoder *m_decoder;
-    BOM m_bom;
-};
 
 /**
  * Create an empty buffer. (with one block with one empty line)
@@ -560,6 +151,21 @@ void KateBuffer::clear()
 
 bool KateBuffer::openFile (const QString &m_file)
 {
+  // first: setup encoding
+  setTextCodec (m_doc->config()->codec ());
+
+  // then, load the file
+  m_brokenUTF8 = false;
+  bool success = load (m_file, m_brokenUTF8);
+
+  // save back encoding
+  m_doc->config()->setEncoding (textCodec()->name());
+
+  // fix region tree
+  m_regionTree.fixRoot (lines ());
+
+  return success;
+
 #if 0
 
    QTime t;
@@ -652,12 +258,10 @@ bool KateBuffer::openFile (const QString &m_file)
   kDebug (13020) << "LOADING DONE " << t.elapsed();
 
 #endif
-  return true;
 }
 
 bool KateBuffer::canEncode ()
 {
-#if 0
   QTextCodec *codec = m_doc->config()->codec();
 
   kDebug(13020) << "ENC NAME: " << codec->name();
@@ -666,23 +270,25 @@ bool KateBuffer::canEncode ()
   if ((QString(codec->name()) == "UTF-8") || (QString(codec->name()) == "ISO-10646-UCS-2"))
     return true;
 
-  for (int i=0; i < m_lines; i++)
+  for (int i=0; i < lines(); i++)
   {
-    if (!codec->canEncode (plainLine(i)->string()))
+    if (!codec->canEncode (line(i)->string()))
     {
-      kDebug(13020) << "STRING LINE: " << plainLine(i)->string();
+      kDebug(13020) << "STRING LINE: " << line(i)->string();
       kDebug(13020) << "ENC WORKING: FALSE";
 
       return false;
     }
   }
-#endif
 
   return true;
 }
 
 bool KateBuffer::saveFile (const QString &m_file)
 {
+  // first: setup encoding
+  setTextCodec (m_doc->config()->codec ());
+
 #if 0
   // construct correct filter device
   QIODevice *file = KFilterDev::deviceForFile (m_file, m_mimeTypeForFilterDev, false);
@@ -745,14 +351,13 @@ bool KateBuffer::saveFile (const QString &m_file)
   return stream.status() == QTextStream::Ok;
 
 #endif
-  return true;
+  return save (m_file);
 }
 
 void KateBuffer::ensureHighlighted (int line)
 {
-#if 0
   // valid line at all?
-  if (line < 0 || line >= m_lines)
+  if (line < 0 || line >= lines ())
     return;
 
   // already hl up-to-date for this line?
@@ -760,7 +365,7 @@ void KateBuffer::ensureHighlighted (int line)
     return;
 
   // update hl until this line + max KATE_HL_LOOKAHEAD
-  int end = qMin(line + KATE_HL_LOOKAHEAD, m_lines-1);
+  int end = qMin(line + KATE_HL_LOOKAHEAD, lines ()-1);
 
   doHighlight ( m_lineHighlighted, end, false );
 
@@ -769,7 +374,6 @@ void KateBuffer::ensureHighlighted (int line)
   // update hl max
   if (m_lineHighlighted > m_lineHighlightedMax)
     m_lineHighlightedMax = m_lineHighlighted;
-#endif
 }
 
 void KateBuffer::changeLine(int i)
