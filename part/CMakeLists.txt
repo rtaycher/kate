@@ -38,6 +38,13 @@ include_directories(
 # our sources
 set(katepart_PART_SRCS
 
+# text buffer
+buffer/katetextbuffer.cpp
+buffer/katetextblock.cpp
+buffer/katetextline.cpp
+buffer/katetextcursor.cpp
+buffer/katetextrange.cpp
+
 # completion (widget, model, delegate, ...)
 completion/katecompletionwidget.cpp
 completion/katecompletionmodel.cpp
