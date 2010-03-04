@@ -60,8 +60,6 @@ int TextLineData::nextNonSpaceChar (int pos) const
 
 int TextLineData::previousNonSpaceChar (int pos) const
 {
-  Q_ASSERT (pos >= 0);
-
   if (pos >= m_text.length())
     pos = m_text.length() - 1;
 
