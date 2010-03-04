@@ -116,7 +116,7 @@ class KateFileLoader
         m_mimeType = KMimeType::findByContent (&testMime)->name ();
       else
         m_mimeType = KMimeType::findByPath (filename, 0, false)->name ();
-        
+
       m_file = KFilterDev::deviceForFile (filename, m_mimeType, false);
     }
 
@@ -174,7 +174,7 @@ class KateFileLoader
             }
             break;
           case MibUtf16BE:
-            
+
             if (c>=2) {
               if ((((uchar)m_buffer[0])==0xfe) && (((uchar)m_buffer[1])==0xff))
                 m_bom=BomSet;
@@ -193,7 +193,7 @@ class KateFileLoader
           default:
             break;
         }
-        
+
         static const QLatin1Char cr(QLatin1Char('\r'));
         static const QLatin1Char lf(QLatin1Char('\n'));
         for (int i=0; i < m_text.length(); i++)
@@ -241,9 +241,9 @@ class KateFileLoader
 
     // broken utf8?
     inline bool brokenUTF8 () const { return m_utf8Borked; }
-    
+
     inline QTextDecoder* decoder() const { return m_decoder; }
-    
+
     // mime type used to create filter dev
     const QString &mimeTypeForFilterDev () const { return m_mimeType; }
 
@@ -304,7 +304,7 @@ class KateFileLoader
         }
         return false;
     }
-    
+
     bool processNull(char *data, int len)
     {
       bool bin=false;
@@ -475,16 +475,8 @@ class KateFileLoader
  * Create an empty buffer. (with one block with one empty line)
  */
 KateBuffer::KateBuffer(KateDocument *doc)
- : QObject (doc),
-   editSessionNumber (0),
-   editIsRunning (false),
-   editTagLineStart (INT_MAX),
-   editTagLineEnd (0),
-   editTagLineFrom (false),
-   editChangesDone (false),
+ : Kate::TextBuffer (doc),
    m_doc (doc),
-   m_lastUsedBlock (0),
-   m_lines (0),
    m_binary (false),
    m_brokenUTF8 (false),
    m_mimeTypeForFilterDev ("text/plain"),
@@ -506,44 +498,27 @@ KateBuffer::~KateBuffer()
   // release HL
   if (m_highlight)
     m_highlight->release();
-
-  // kill all lines
-  qDeleteAll (m_blocks);
 }
 
 void KateBuffer::editStart ()
 {
-  editSessionNumber++;
-
-  if (editSessionNumber > 1)
+  if (!startEditing ())
     return;
-
-  editIsRunning = true;
-
-  editTagLineStart = INT_MAX;
-  editTagLineEnd = 0;
-  editTagLineFrom = false;
-
-  editChangesDone = false;
 }
 
 void KateBuffer::editEnd ()
 {
-  if (editSessionNumber == 0)
+  if (!finishEditing())
     return;
 
-  editSessionNumber--;
-
-  if (editSessionNumber > 0)
-    return;
-
-  if (editChangesDone)
+  if (editingChangedBuffer ())
   {
     // hl update !!!
-    if (m_highlight && editTagLineStart <= editTagLineEnd && editTagLineEnd <= m_lineHighlighted)
+    if (m_highlight && editingMinimalLineChanged () <= editingMaximalLineChanged () && editingMaximalLineChanged () <= m_lineHighlighted)
     {
       // look one line too far, needed for linecontinue stuff
-      ++editTagLineEnd;
+      int editTagLineEnd = editingMaximalLineChanged () + 1;
+      int editTagLineStart = editingMinimalLineChanged ();
 
       // look one line before, needed nearly 100% only for indentation based folding !
       if (editTagLineStart > 0)
@@ -562,29 +537,17 @@ void KateBuffer::editEnd ()
       if (editTagLineStart > m_lineHighlightedMax)
         m_lineHighlightedMax = editTagLineStart;
     }
-    else if (editTagLineStart < m_lineHighlightedMax)
-      m_lineHighlightedMax = editTagLineStart;
+    else if (editingMinimalLineChanged () < m_lineHighlightedMax)
+      m_lineHighlightedMax = editingMinimalLineChanged ();
   }
-
-  editIsRunning = false;
 }
 
 void KateBuffer::clear()
 {
+  // call original clear function
+  Kate::TextBuffer::clear ();
+
   m_regionTree.clear();
-
-  // kill all blocks
-  qDeleteAll (m_blocks);
-  m_lastUsedBlock = 0;
-  m_blocks.clear ();
-  
-  // one block
-  m_blocks.append (new KateBufferBlock(0));
-
-  // one line
-  KateTextLine::Ptr textLine (new KateTextLine ());
-  m_blocks[0]->lines.append (textLine);
-  m_lines = 1;
 
   // reset the state
   m_binary = false;
@@ -597,6 +560,8 @@ void KateBuffer::clear()
 
 bool KateBuffer::openFile (const QString &m_file)
 {
+#if 0
+
    QTime t;
    t.start();
 
@@ -626,7 +591,7 @@ bool KateBuffer::openFile (const QString &m_file)
   {
     m_doc->config()->setBom(file.bom()==KateFileLoader::BomSet);
   }
-  
+
   // flush current content, one line stays, therefor, remove that
   clear ();
 
@@ -653,19 +618,19 @@ bool KateBuffer::openFile (const QString &m_file)
       }
     }
 
-    KateTextLine::Ptr textLine (new KateTextLine (unicodeData, length));
-    
+    Kate::TextLine textLine (new KateTextLine (unicodeData, length));
+
     if (m_blocks.last()->lines.size() >= KATE_AVERAGE_LINES_PER_BLOCK)
       m_blocks.append (new KateBufferBlock (m_lines));
 
-    m_blocks.last()->lines.append (textLine);    
+    m_blocks.last()->lines.append (textLine);
     m_lines++;
   }
 
   // file was really empty, but we need ONE LINE!!!
   if (m_lines == 0)
   {
-    KateTextLine::Ptr textLine (new KateTextLine ());
+    Kate::TextLine textLine (new KateTextLine ());
     m_blocks[0]->lines.append (textLine);
     m_lines = 1;
   }
@@ -678,19 +643,21 @@ bool KateBuffer::openFile (const QString &m_file)
 
   // broken utf-8?
   m_brokenUTF8 = file.brokenUTF8();
-  
+
   // remember mime type for filter device
   m_mimeTypeForFilterDev = file.mimeTypeForFilterDev ();
-  
+
   kDebug (13020) << "Broken UTF-8: " << m_brokenUTF8;
 
   kDebug (13020) << "LOADING DONE " << t.elapsed();
 
+#endif
   return true;
 }
 
 bool KateBuffer::canEncode ()
 {
+#if 0
   QTextCodec *codec = m_doc->config()->codec();
 
   kDebug(13020) << "ENC NAME: " << codec->name();
@@ -709,15 +676,17 @@ bool KateBuffer::canEncode ()
       return false;
     }
   }
+#endif
 
   return true;
 }
 
 bool KateBuffer::saveFile (const QString &m_file)
 {
+#if 0
   // construct correct filter device
   QIODevice *file = KFilterDev::deviceForFile (m_file, m_mimeTypeForFilterDev, false);
-  
+
   if ( !file->open( QIODevice::WriteOnly ) )
   {
     delete file;
@@ -732,12 +701,12 @@ bool KateBuffer::saveFile (const QString &m_file)
 
   // this line sets the mapper to the correct codec
   stream.setCodec(codec);
-  
+
   int mib=codec->mibEnum();
   if  ((mib==KateFileLoader::MibUtf8) || (mib==KateFileLoader::MibUtf16) ||
         (mib==KateFileLoader::MibUtf16BE) || (mib==KateFileLoader::MibUtf16LE) )
     stream.setGenerateByteOrderMark(m_doc->config()->bom());
-  
+
   // our loved eol string ;)
   QString eol = m_doc->config()->eolString ();
 
@@ -747,7 +716,7 @@ bool KateBuffer::saveFile (const QString &m_file)
   // just dump the lines out ;)
   for (int i=0; i < m_lines; i++)
   {
-    KateTextLine::Ptr textline = plainLine(i);
+    Kate::TextLine textline = plainLine(i);
 
     // strip spaces
     if (removeTrailingSpaces)
@@ -765,102 +734,23 @@ bool KateBuffer::saveFile (const QString &m_file)
     if ((i+1) < m_lines)
       stream << eol;
   }
-  
+
   // flush stream
   stream.flush ();
-  
+
   // close and delete file
   file->close ();
   delete file;
-  
+
   return stream.status() == QTextStream::Ok;
-}
 
-int KateBuffer::findBlock (int line)
-{
-  // invalid line!
-  if (line < 0 || line >= m_lines)
-    return -1;
-
-  // reset invalid last blocks
-  if (m_lastUsedBlock < 0 || m_lastUsedBlock >= m_blocks.size())
-    m_lastUsedBlock = 0;
-
-  forever
-  {
-    int start = m_blocks[m_lastUsedBlock]->start;
-    int lines = m_blocks[m_lastUsedBlock]->lines.size ();
-
-    if (start <= line && line < (start + lines))
-      return m_lastUsedBlock;
-
-    if (line < start)
-      m_lastUsedBlock--;
-    else
-      m_lastUsedBlock++;
-  }
-
-  return -1;
-}
-
-void KateBuffer::fixBlocksFrom (int lastValidBlock)
-{
-  /**
-   * fix the start line of all blocks following the block modified :)
-   */
-
-  // last block with valid start
-  KateBufferBlock *block = m_blocks[lastValidBlock];
-
-  // lines in block
-  int blockLines = block->lines.size();
-
-  // remember last correct lastline
-  int lastLine = block->start + blockLines;
- 
-  // kill empty blocks
-  if (blockLines == 0 && m_blocks.size() > 0)
-  {
-    delete block;
-    m_blocks.remove (lastValidBlock);
-
-    // set new last valid block, it's even ok to have here -1!
-    lastValidBlock--;
-
-    // adjust last used block in all cases
-    m_lastUsedBlock--;
-  }
-  else if (blockLines > (2*KATE_AVERAGE_LINES_PER_BLOCK)) // try to balance blocks
-  {
-    int linesToStay = blockLines - KATE_AVERAGE_LINES_PER_BLOCK;
-
-    // construct new block
-    KateBufferBlock *newBlock = new KateBufferBlock (lastLine - KATE_AVERAGE_LINES_PER_BLOCK);
-    m_blocks.insert (lastValidBlock+1, newBlock);
-
-    // move lines
-    newBlock->lines.resize (KATE_AVERAGE_LINES_PER_BLOCK);
-    for (int i = 0; i < KATE_AVERAGE_LINES_PER_BLOCK; ++i)
-      newBlock->lines[i] = block->lines[linesToStay + i];
-
-    // resize old block
-    block->lines.resize (linesToStay);
-
-    // new block is current
-    block = newBlock;
-    lastValidBlock++;
-  }
-  
-  // loop over all blocks behind last correct to fix start line
-  for (int i = lastValidBlock + 1; i < m_blocks.size(); ++i)
-  {
-    m_blocks[i]->start = lastLine;
-    lastLine += m_blocks[i]->lines.size();
-  }
+#endif
+  return true;
 }
 
 void KateBuffer::ensureHighlighted (int line)
 {
+#if 0
   // valid line at all?
   if (line < 0 || line >= m_lines)
     return;
@@ -879,10 +769,12 @@ void KateBuffer::ensureHighlighted (int line)
   // update hl max
   if (m_lineHighlighted > m_lineHighlightedMax)
     m_lineHighlightedMax = m_lineHighlighted;
+#endif
 }
 
 void KateBuffer::changeLine(int i)
 {
+#if 0
   if (i < 0 || i >= m_lines)
     return;
 
@@ -895,10 +787,12 @@ void KateBuffer::changeLine(int i)
 
   if (i > editTagLineEnd)
     editTagLineEnd = i;
+#endif
 }
 
-void KateBuffer::insertLine(int i, KateTextLine::Ptr line)
+void KateBuffer::insertLine(int i, Kate::TextLine line)
 {
+#if 0
   if (i < 0 || i > m_lines)
     return;
 
@@ -935,10 +829,12 @@ void KateBuffer::insertLine(int i, KateTextLine::Ptr line)
   editTagLineFrom = true;
 
   m_regionTree.lineHasBeenInserted (i);
+#endif
 }
 
 void KateBuffer::removeLine(int i)
 {
+#if 0
   int block = findBlock (i);
 
   if (block == -1)
@@ -980,6 +876,7 @@ void KateBuffer::removeLine(int i)
   editTagLineFrom = true;
 
   m_regionTree.lineHasBeenRemoved (i);
+#endif
 }
 
 void KateBuffer::setTabWidth (int w)
@@ -1012,7 +909,7 @@ void KateBuffer::setHighlight(int hlMode)
 
     // Clear code folding tree (see bug #124102)
     m_regionTree.clear();
-    m_regionTree.fixRoot(m_lines);
+    m_regionTree.fixRoot(lines());
 
     m_highlight = h;
 
@@ -1022,7 +919,7 @@ void KateBuffer::setHighlight(int hlMode)
     // inform the document that the hl was really changed
     // needed to update attributes and more ;)
     m_doc->bufferHlChanged ();
- 
+
     // try to set indentation
     if (!h->indentation().isEmpty())
       m_doc->config()->setIndentationMode (h->indentation());
@@ -1038,7 +935,7 @@ void KateBuffer::invalidateHighlighting()
 
 void KateBuffer::updatePreviousNotEmptyLine(int current_line,bool addindent,int deindent)
 {
-  KateTextLine::Ptr textLine;
+  Kate::TextLine textLine;
   do {
     if (current_line == 0) return;
 
@@ -1089,7 +986,7 @@ void KateBuffer::addIndentBasedFoldingInformation(QVector<int> &foldingList,int 
 }
 
 
-bool KateBuffer::isEmptyLine(KateTextLine::Ptr textline)
+bool KateBuffer::isEmptyLine(Kate::TextLine textline)
 {
   QLinkedList<QRegExp> l;
   l=m_highlight->emptyLines(textline->attribute(0));
@@ -1146,7 +1043,7 @@ bool KateBuffer::doHighlight (int startLine, int endLine, bool invalidate)
       else
       {
         m_maxDynamicContexts *= 2;
-        
+
 #ifdef BUFFER_DEBUGGING
         kDebug (13020) << "New dynamic contexts limit: " << m_maxDynamicContexts;
 #endif
@@ -1155,12 +1052,12 @@ bool KateBuffer::doHighlight (int startLine, int endLine, bool invalidate)
   }
 
   // get previous line, if any
-  KateTextLine::Ptr prevLine;
+  Kate::TextLine prevLine;
 
   if (startLine >= 1)
     prevLine = plainLine (startLine-1);
   else
-    prevLine = new KateTextLine ();
+    prevLine = Kate::TextLine (new Kate::TextLineData ());
 
   // does we need to emit a signal for the folding changes ?
   bool codeFoldingUpdate = false;
@@ -1175,10 +1072,10 @@ bool KateBuffer::doHighlight (int startLine, int endLine, bool invalidate)
   bool indentContinueNextWhitespace=false;
   // loop over the lines of the block, from startline to endline or end of block
   // if stillcontinue forces us to do so
-  while ( (current_line < m_lines) && (stillcontinue || (current_line <= endLine)) )
+  while ( (current_line < lines()) && (stillcontinue || (current_line <= endLine)) )
   {
     // current line
-    KateTextLine::Ptr textLine = plainLine (current_line);
+    Kate::TextLine textLine = plainLine (current_line);
 
     QVector<int> foldingList;
     bool ctxChanged = false;
@@ -1189,7 +1086,7 @@ bool KateBuffer::doHighlight (int startLine, int endLine, bool invalidate)
     // debug stuff
     kDebug( 13020 ) << "current line to hl: " << current_line + buf->startLine();
     kDebug( 13020 ) << "text length: " << textLine->length() << " attribute list size: " << textLine->attributesList().size();
-    
+
     const QVector<int> &ml (textLine->attributesList());
     for (int i=2; i < ml.size(); i+=3)
     {
@@ -1216,9 +1113,9 @@ bool KateBuffer::doHighlight (int startLine, int endLine, bool invalidate)
       }
 
       textLine->setNoIndentBasedFoldingAtStart(prevLine->noIndentBasedFolding());
-      
+
       // this line is empty, beside spaces, or has indentaion based folding disabled, use indentation depth of the previous line !
-      
+
 #ifdef BUFFER_DEBUGGING
       kDebug(13020)<<"current_line:"<<current_line<<" textLine->noIndentBasedFoldingAtStart"<<textLine->noIndentBasedFoldingAtStart();
 #endif
@@ -1237,7 +1134,7 @@ bool KateBuffer::doHighlight (int startLine, int endLine, bool invalidate)
         else
         {
           iDepth = prevLine->indentDepth(m_tabWidth);
-          
+
 #ifdef BUFFER_DEBUGGING
           kDebug(13020)<<"creating indentdepth for previous line";
 #endif
@@ -1253,7 +1150,7 @@ bool KateBuffer::doHighlight (int startLine, int endLine, bool invalidate)
       int nextLineIndentation = 0;
       bool nextLineIndentationValid=true;
       indentContinueNextWhitespace=false;
-      if ((current_line+1) < m_lines)
+      if ((current_line+1) < lines())
       {
         if ( (plainLine (current_line+1)->firstChar() == -1) || isEmptyLine(plainLine (current_line+1)) )
         {
@@ -1314,8 +1211,8 @@ bool KateBuffer::doHighlight (int startLine, int endLine, bool invalidate)
 #ifdef BUFFER_DEBUGGING
             if (!indentDepth.isEmpty())
               kDebug(13020)<<"indentDepth[indentDepth.size()-1]:"<<indentDepth[indentDepth.size()-1];
-#endif            
-            
+#endif
+
             if ((nextLineIndentation>0) && ( indentDepth.isEmpty() || (indentDepth[indentDepth.size()-1]<nextLineIndentation)))
             {
 #ifdef BUFFER_DEBUGGING
@@ -1417,9 +1314,9 @@ bool KateBuffer::doHighlight (int startLine, int endLine, bool invalidate)
   // tag the changed lines !
   if (invalidate) {
     emit tagLines (startLine, current_line);
-    if(start_spellchecking >= 0 && m_lines > 0) {
+    if(start_spellchecking >= 0 && lines() > 0) {
       emit respellCheckBlock(start_spellchecking,
-                             qMin(m_lines-1, (last_line_spellchecking==-1)?current_line:last_line_spellchecking));
+                             qMin(lines()-1, (last_line_spellchecking==-1)?current_line:last_line_spellchecking));
     }
   }
   // emit that we have changed the folding
@@ -1439,7 +1336,7 @@ bool KateBuffer::doHighlight (int startLine, int endLine, bool invalidate)
 }
 
 void KateBuffer::codeFoldingColumnUpdate(int lineNr) {
-  KateTextLine::Ptr line=plainLine(lineNr);
+  Kate::TextLine line=plainLine(lineNr);
   if (!line) return;
   if (line->foldingColumnsOutdated()) {
     line->setFoldingColumnsOutdated(false);

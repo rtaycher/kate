@@ -514,8 +514,7 @@ bool TextBuffer::load (const QString &filename, bool &encodingErrors)
       }
 
       // construct new text line with content from file
-      TextLine textLine = TextLine (new TextLineData());
-      textLine->textReadWrite() = QString (unicodeData, length);
+      TextLine textLine = TextLine (new TextLineData(QString (unicodeData, length)));
 
       // ensure blocks aren't too large
       if (m_blocks.last()->lines() >= m_blockSize)

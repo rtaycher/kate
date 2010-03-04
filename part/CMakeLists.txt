@@ -18,6 +18,7 @@ add_subdirectory( tests )
 # includes
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/buffer
   ${CMAKE_CURRENT_SOURCE_DIR}/completion
   ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
   ${CMAKE_CURRENT_SOURCE_DIR}/document
@@ -67,7 +68,6 @@ dialogs/katedialogs.cpp
 document/katedocument.cpp
 document/katedocumenthelpers.cpp
 document/katebuffer.cpp
-document/katetextline.cpp
 document/katecursor.cpp
 document/kateedit.cpp
 

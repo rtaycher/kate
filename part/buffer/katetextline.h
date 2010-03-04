@@ -58,6 +58,12 @@ class TextLineData {
     TextLineData ();
 
     /**
+     * Construct an text line with given text.
+     * @param text text to use for this line
+     */
+    TextLineData (const QString &text);
+
+    /**
      * Destruct the text line
      */
     ~TextLineData ();

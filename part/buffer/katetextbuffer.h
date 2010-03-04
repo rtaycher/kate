@@ -64,14 +64,16 @@ class TextBuffer : public QObject {
 
     /**
      * Destruct the text buffer
+     * Virtual, we allow inheritance
      */
     virtual ~TextBuffer ();
 
     /**
      * Clears the buffer, reverts to initial empty state.
      * Empty means one empty line in one block.
+     * Virtual, can be overwritten, but then this clear() should be called there.
      */
-    void clear ();
+    virtual void clear ();
 
     /**
      * Set fallback codec for this buffer to use for load.

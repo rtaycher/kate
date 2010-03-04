@@ -27,6 +27,12 @@ TextLineData::TextLineData ()
 {
 }
 
+TextLineData::TextLineData (const QString &text)
+  : m_text (text)
+  , m_flags (0)
+{
+}
+
 TextLineData::~TextLineData ()
 {
 }
