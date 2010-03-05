@@ -1477,7 +1477,10 @@ bool KateDocument::editRemoveLines ( int from, int to, Kate::EditSource editSour
     m_undoManager->slotLineRemoved(line, this->line(line));
 
     m_buffer->removeText (KTextEditor::Range (KTextEditor::Cursor (line, 0), KTextEditor::Cursor (line, tl->text().size())));
-    m_buffer->unwrapLine (line);
+    if (line + 1 <= lastLine())
+      m_buffer->unwrapLine (line+1);
+    else if (line != 0)
+      m_buffer->unwrapLine (line);
   }
 
   QList<int> rmark;
