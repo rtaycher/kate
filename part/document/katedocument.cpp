@@ -2171,25 +2171,9 @@ bool KateDocument::openFile()
     setOpeningErrorMessage(i18n ("The file %1 could not be loaded, as it was not possible to read from it.\n\nCheck if you have read access to this file.",this->url().pathOrUrl()));
   }
 
-  // warn -> opened binary file!!!!!!!
-  if (m_buffer->binary())
-  {
-    // this file can't be saved again without killing it
-    setReadWrite( false );
-
-    if(!suppressOpeningErrorDialogs())
-      KMessageBox::information (parentWidget
-        , i18n ("The file %1 is a binary, saving it will result in a corrupt file.", this->url().pathOrUrl())
-        , i18n ("Binary File Opened")
-        , "Binary File Opened Warning");
-
-    setOpeningError(true);
-    setOpeningErrorMessage(i18n ("The file %1 is a binary, saving it will result in a corrupt file.", this->url().pathOrUrl()));
-  }
-
   // warn: opened broken utf-8 file...
   // only warn if not already a binary file!
-  else if (m_buffer->brokenUTF8())
+  if (m_buffer->brokenUTF8())
   {
     // this file can't be saved again without killing it
     setReadWrite( false );
@@ -2220,12 +2204,14 @@ bool KateDocument::saveFile()
   //
   // warn -> try to save binary file!!!!!!!
   //
+#if 0
   if (m_buffer->binary() && (KMessageBox::warningContinueCancel (parentWidget
         , i18n ("The file %1 is a binary, saving it will result in a corrupt file.", url().pathOrUrl())
         , i18n ("Trying to Save Binary File")
         , KGuiItem(i18n("Save Nevertheless"))
         , KStandardGuiItem::cancel(), "Binary File Save Warning") != KMessageBox::Continue))
     return false;
+#endif
 
   // some warnings, if file was changed by the outside!
   if ( !url().isEmpty() )

@@ -101,12 +101,6 @@ class KateBuffer : public Kate::TextBuffer
     bool openFile (const QString &m_file);
 
     /**
-     * is this file a binary?
-     * @return binary file?
-     */
-    bool binary () const { return m_binary; }
-
-    /**
      * is this file a broken utf-8?
      * this means: was it opened as utf-8 but contained invalid chars?
      * @return binary file?
@@ -236,18 +230,7 @@ class KateBuffer : public Kate::TextBuffer
     /**
      * binary file loaded ?
      */
-    bool m_binary;
-
-    /**
-     * binary file loaded ?
-     */
     bool m_brokenUTF8;
-
-    /**
-     * mime-type to chose filter dev for saving
-     * default: text/plain == no compression
-     */
-    QString m_mimeTypeForFilterDev;
 
   /**
    * highlighting & folding relevant stuff
