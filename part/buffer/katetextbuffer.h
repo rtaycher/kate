@@ -48,10 +48,10 @@ class TextBuffer : public QObject {
      * End of line mode
      */
     enum EndOfLineMode {
-        eolUnknown
-      , eolUnix
-      , eolDos
-      , eolMac
+        eolUnknown = -1
+      , eolUnix = 0
+      , eolDos = 1
+      , eolMac = 2
     };
 
     /**

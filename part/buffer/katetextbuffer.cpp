@@ -108,6 +108,9 @@ void TextBuffer::clear ()
   // reset revision
   m_revision = 0;
 
+  // reset bom detection
+  m_generateByteOrderMark = false;
+
   // reset the filter device
   m_mimeTypeForFilterDev = "text/plain";
 
@@ -586,8 +589,9 @@ bool TextBuffer::save (const QString &filename)
   // set the correct codec
   stream.setCodec (m_textCodec);
 
-  // generate byte order mark?
-  stream.setGenerateByteOrderMark (generateByteOrderMark());
+  // generate byte order mark? for utf8 utf16 utf32
+  int mib = m_textCodec->mibEnum ();
+  stream.setGenerateByteOrderMark (generateByteOrderMark() && (mib == 106 || mib == 1013 || mib == 1014 || mib == 1018 || mib == 1019));
 
   // our loved eol string ;)
   QString eol = "\n"; //m_doc->config()->eolString ();

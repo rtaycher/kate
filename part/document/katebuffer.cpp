@@ -154,113 +154,33 @@ bool KateBuffer::openFile (const QString &m_file)
   // first: setup encoding
   setTextCodec (m_doc->config()->codec ());
 
+  // setup eol
+  setEndOfLineMode ((EndOfLineMode) m_doc->config()->eol());
+
   // remove trailing spaces?
   setRemoveTrailingSpaces (m_doc->config()->configFlags() & KateDocumentConfig::cfRemoveSpaces);
 
-  // then, load the file
+  // then, try to load the file
   m_brokenUTF8 = false;
-  bool success = load (m_file, m_brokenUTF8);
+  if (!load (m_file, m_brokenUTF8))
+    return false;
 
   // save back encoding
   m_doc->config()->setEncoding (textCodec()->name());
 
+  // set eol mode, if a eol char was found
+  if (m_doc->config()->allowEolDetection())
+    m_doc->config()->setEol (endOfLineMode ());
+
+  // generate a bom?
+  if (generateByteOrderMark())
+    m_doc->config()->setBom (true);
+
   // fix region tree
   m_regionTree.fixRoot (lines ());
 
-  return success;
-
-#if 0
-
-   QTime t;
-   t.start();
-
-  KateFileLoader file (m_file, m_doc->config()->codec(), , m_doc->proberTypeForEncodingAutoDetection());
-
-  bool ok = false;
-  KDE_struct_stat sbuf;
-  if (KDE::stat(m_file, &sbuf) == 0)
-  {
-    if (S_ISREG(sbuf.st_mode) && file.open())
-      ok = true;
-  }
-
-  if (!ok)
-  {
-    clear();
-    return false; // Error
-  }
-
-  m_doc->config()->setEncoding(file.actualEncoding());
-
-  // set eol mode, if a eol char was found in the first 256kb block and we allow this at all!
-  if (m_doc->config()->allowEolDetection() && (file.eol() != -1))
-    m_doc->config()->setEol (file.eol());
-
-  if (file.bom()!=KateFileLoader::BomUnknown)
-  {
-    m_doc->config()->setBom(file.bom()==KateFileLoader::BomSet);
-  }
-
-  // flush current content, one line stays, therefor, remove that
-  clear ();
-
-  // clear first block
-  m_blocks[0]->lines.clear ();
-  m_lines = 0;
-
-  // read in all lines...
-  while ( !file.eof() )
-  {
-    int offset = 0, length = 0;
-    file.readLine(offset, length);
-    const QChar *unicodeData = file.unicode () + offset;
-
-    // strip spaces at end of line
-    if ( file.removeTrailingSpaces() )
-    {
-      while (length > 0)
-      {
-        if (unicodeData[length-1].isSpace())
-          --length;
-        else
-          break;
-      }
-    }
-
-    Kate::TextLine textLine (new KateTextLine (unicodeData, length));
-
-    if (m_blocks.last()->lines.size() >= KATE_AVERAGE_LINES_PER_BLOCK)
-      m_blocks.append (new KateBufferBlock (m_lines));
-
-    m_blocks.last()->lines.append (textLine);
-    m_lines++;
-  }
-
-  // file was really empty, but we need ONE LINE!!!
-  if (m_lines == 0)
-  {
-    Kate::TextLine textLine (new KateTextLine ());
-    m_blocks[0]->lines.append (textLine);
-    m_lines = 1;
-  }
-
-  // fix region tree
-  m_regionTree.fixRoot (m_lines);
-
-  // binary?
-  m_binary = file.binary ();
-
-  // broken utf-8?
-  m_brokenUTF8 = file.brokenUTF8();
-
-  // remember mime type for filter device
-  m_mimeTypeForFilterDev = file.mimeTypeForFilterDev ();
-
-  kDebug (13020) << "Broken UTF-8: " << m_brokenUTF8;
-
-  kDebug (13020) << "LOADING DONE " << t.elapsed();
-
-#endif
+  // okay, loading did work
+  return true;
 }
 
 bool KateBuffer::canEncode ()
@@ -292,71 +212,16 @@ bool KateBuffer::saveFile (const QString &m_file)
   // first: setup encoding
   setTextCodec (m_doc->config()->codec ());
 
+  // setup eol
+  setEndOfLineMode ((EndOfLineMode) m_doc->config()->eol());
+
+  // generate bom?
+  setGenerateByteOrderMark (m_doc->config()->bom());
+
   // remove trailing spaces?
   setRemoveTrailingSpaces (m_doc->config()->configFlags() & KateDocumentConfig::cfRemoveSpaces);
 
-#if 0
-  // construct correct filter device
-  QIODevice *file = KFilterDev::deviceForFile (m_file, m_mimeTypeForFilterDev, false);
-
-  if ( !file->open( QIODevice::WriteOnly ) )
-  {
-    delete file;
-    return false; // Error
-  }
-
-  QTextCodec *codec = m_doc->config()->codec();
-
-  // disable Unicode headers
-  QTextStream stream (file);
-  stream.setCodec(QTextCodec::codecForName("UTF-16"));
-
-  // this line sets the mapper to the correct codec
-  stream.setCodec(codec);
-
-  int mib=codec->mibEnum();
-  if  ((mib==KateFileLoader::MibUtf8) || (mib==KateFileLoader::MibUtf16) ||
-        (mib==KateFileLoader::MibUtf16BE) || (mib==KateFileLoader::MibUtf16LE) )
-    stream.setGenerateByteOrderMark(m_doc->config()->bom());
-
-  // our loved eol string ;)
-  QString eol = m_doc->config()->eolString ();
-
-  // should we strip spaces?
-  bool removeTrailingSpaces = m_doc->config()->configFlags() & KateDocumentConfig::cfRemoveSpaces;
-
-  // just dump the lines out ;)
-  for (int i=0; i < m_lines; i++)
-  {
-    Kate::TextLine textline = plainLine(i);
-
-    // strip spaces
-    if (removeTrailingSpaces)
-    {
-      int lastChar = textline->lastChar();
-
-      if (lastChar > -1)
-      {
-        stream << textline->string().left(lastChar+1);
-      }
-    }
-    else // simple, dump the line
-      stream << textline->string();
-
-    if ((i+1) < m_lines)
-      stream << eol;
-  }
-
-  // flush stream
-  stream.flush ();
-
-  // close and delete file
-  file->close ();
-  delete file;
-
-  return stream.status() == QTextStream::Ok;
-
-#endif
+  // save + return success
   return save (m_file);
 }
 
