@@ -2171,24 +2171,24 @@ bool KateDocument::openFile()
     setOpeningErrorMessage(i18n ("The file %1 could not be loaded, as it was not possible to read from it.\n\nCheck if you have read access to this file.",this->url().pathOrUrl()));
   }
 
-  // warn: opened broken utf-8 file...
-  // only warn if not already a binary file!
-  if (m_buffer->brokenUTF8())
+  // warn: broken encoding
+  if (m_buffer->brokenEncoding())
   {
     // this file can't be saved again without killing it
     setReadWrite( false );
 
     if (!suppressOpeningErrorDialogs())
       KMessageBox::information (parentWidget
-        , i18n ("The file %1 was opened with UTF-8 encoding but contained invalid characters."
+        , i18n ("The file %1 was opened with %2 encoding but contained invalid characters."
                 " It is set to read-only mode, as saving might destroy its content."
-                " Either reopen the file with the correct encoding chosen or enable the read-write mode again in the menu to be able to edit it.", this->url().pathOrUrl())
-        , i18n ("Broken UTF-8 File Opened")
-        , "Broken UTF-8 File Opened Warning");
+                " Either reopen the file with the correct encoding chosen or enable the read-write mode again in the menu to be able to edit it.", this->url().pathOrUrl(),
+                QString (m_buffer->textCodec()->name ()))
+        , i18n ("Broken Encoding")
+        , "Broken Encoding Warning");
     setOpeningError(true);
-    setOpeningErrorMessage(i18n ("The file %1 was opened with UTF-8 encoding but contained invalid characters."
+    setOpeningErrorMessage(i18n ("The file %1 was opened with 2 encoding but contained invalid characters."
               " It is set to read-only mode, as saving might destroy its content."
-              " Either reopen the file with the correct encoding chosen or enable the read-write mode again in the menu to be able to edit it.", this->url().pathOrUrl()));
+              " Either reopen the file with the correct encoding chosen or enable the read-write mode again in the menu to be able to edit it.", this->url().pathOrUrl(), QString (m_buffer->textCodec()->name ())));
   }
 
   //

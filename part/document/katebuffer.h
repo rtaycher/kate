@@ -101,11 +101,10 @@ class KateBuffer : public Kate::TextBuffer
     bool openFile (const QString &m_file);
 
     /**
-     * is this file a broken utf-8?
-     * this means: was it opened as utf-8 but contained invalid chars?
-     * @return binary file?
+     * Did encoding errors occured on load?
+     * @return encoding errors occured on load?
      */
-    bool brokenUTF8 () const { return m_brokenUTF8; }
+    bool brokenEncoding () const { return m_brokenEncoding; }
 
     /**
      * Can the current codec handle all chars
@@ -228,9 +227,9 @@ class KateBuffer : public Kate::TextBuffer
     KateDocument *m_doc;
 
     /**
-     * binary file loaded ?
+     * file loaded with encoding problems?
      */
-    bool m_brokenUTF8;
+    bool m_brokenEncoding;
 
   /**
    * highlighting & folding relevant stuff

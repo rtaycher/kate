@@ -68,7 +68,7 @@ static const int KATE_MAX_DYNAMIC_CONTEXTS = 512;
 KateBuffer::KateBuffer(KateDocument *doc)
  : Kate::TextBuffer (doc),
    m_doc (doc),
-   m_brokenUTF8 (false),
+   m_brokenEncoding (false),
    m_highlight (0),
    m_regionTree (this),
    m_tabWidth (8),
@@ -139,7 +139,7 @@ void KateBuffer::clear()
   m_regionTree.clear();
 
   // reset the state
-  m_brokenUTF8 = false;
+  m_brokenEncoding = false;
 
   m_lineHighlightedMax = 0;
   m_lineHighlighted = 0;
@@ -157,8 +157,8 @@ bool KateBuffer::openFile (const QString &m_file)
   setRemoveTrailingSpaces (m_doc->config()->configFlags() & KateDocumentConfig::cfRemoveSpaces);
 
   // then, try to load the file
-  m_brokenUTF8 = false;
-  if (!load (m_file, m_brokenUTF8))
+  m_brokenEncoding = false;
+  if (!load (m_file, m_brokenEncoding))
     return false;
 
   // save back encoding
@@ -217,8 +217,15 @@ bool KateBuffer::saveFile (const QString &m_file)
   // remove trailing spaces?
   setRemoveTrailingSpaces (m_doc->config()->configFlags() & KateDocumentConfig::cfRemoveSpaces);
 
-  // save + return success
-  return save (m_file);
+  // try to save
+  if (!save (m_file))
+    return false;
+
+  // no longer broken encoding, or we don't care
+  m_brokenEncoding = false;
+
+  // okay
+  return true;
 }
 
 void KateBuffer::ensureHighlighted (int line)
