@@ -406,6 +406,7 @@ void TextBlock::mergeBlock (TextBlock *targetBlock)
   targetBlock->m_lines.reserve (targetBlock->lines() + lines ());
   for (int i = 0; i < m_lines.size(); ++i)
     targetBlock->m_lines.append (m_lines[i]);
+  m_lines.clear ();
 }
 
 void TextBlock::deleteBlockContent ()
