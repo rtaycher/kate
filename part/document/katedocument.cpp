@@ -1409,6 +1409,9 @@ bool KateDocument::editInsertLine ( int line, const QString &s, Kate::EditSource
     m_buffer->wrapLine (KTextEditor::Cursor (0, 0));
   }
 
+  // insert text
+  m_buffer->insertText (KTextEditor::Cursor (line, 0), s);
+
   removeTrailingSpace( line ); // new line
 
   Kate::TextLine tl = m_buffer->line (line);
