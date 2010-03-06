@@ -1197,6 +1197,10 @@ bool KateDocument::editRemoveText ( int line, int col, int len, Kate::EditSource
   if (len == 0)
     return true;
 
+  // wrong column
+  if (col >= l->text().size())
+    return false;
+
   editStart (editSource);
 
   m_undoManager->slotTextRemoved(line, col, l->string().mid(col, len));

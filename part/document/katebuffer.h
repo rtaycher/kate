@@ -129,7 +129,7 @@ class KateBuffer : public Kate::TextBuffer
      */
     inline Kate::TextLine plainLine (int lineno)
     {
-        if (lineno >= lines())
+        if (lineno < 0 || lineno >= lines())
           return Kate::TextLine ();
 
         return line (lineno);
