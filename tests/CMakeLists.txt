@@ -14,6 +14,3 @@ ENDMACRO(KATE_UNIT_TESTS)
 
 # unit tests
 kate_unit_tests (katetextbuffertest)
-
-# encoding tets
-add_subdirectory (encoding)
