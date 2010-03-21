@@ -182,7 +182,8 @@ class KateViewInternal : public QWidget, private KTextEditor::SmartRangeWatcher
     void top_home(bool sel=false);
     void bottom_end(bool sel=false);
 
-    KTextEditor::Cursor getCursor() const;
+    KTextEditor::Cursor getCursor() const { return m_cursor; }
+
     QPoint cursorToCoordinate(const KTextEditor::Cursor& cursor, bool realCursor = true, bool includeBorder = true) const;
     //Always works on coordinates of the whole widget, eg. offsetted by the border
     KTextEditor::Cursor coordinatesToCursor(const QPoint& coord) const;

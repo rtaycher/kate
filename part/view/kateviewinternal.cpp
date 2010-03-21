@@ -750,12 +750,6 @@ int KateViewInternal::linesDisplayed() const
   return qMax (1, (h - (h % fh)) / fh);
 }
 
-KTextEditor::Cursor KateViewInternal::getCursor() const
-{
-  QMutexLocker l(doc()->smartMutex());
-  return m_cursor;
-}
-
 QPoint KateViewInternal::cursorToCoordinate( const KTextEditor::Cursor & cursor, bool realCursor, bool includeBorder ) const
 {
   QMutexLocker l(doc()->smartMutex());
