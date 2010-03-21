@@ -126,7 +126,7 @@ class KateViewInternal : public QWidget, private KTextEditor::SmartRangeWatcher
 
   public:
     // Start Position is a virtual cursor
-    KTextEditor::Cursor startPos() const { return m_startPos.toCursor(); }
+    KTextEditor::Cursor startPos() const { return m_startPos; }
     int startLine () const { return m_startPos.line(); }
     int startX () const { return m_startX; }
 
@@ -266,7 +266,7 @@ class KateViewInternal : public QWidget, private KTextEditor::SmartRangeWatcher
 
     Qt::CursorShape m_mouseCursor;
 
-    KateSmartCursor m_cursor;
+    Kate::TextCursor m_cursor;
     KTextEditor::Cursor m_mouse;
     KTextEditor::Cursor m_displayCursor;
 
