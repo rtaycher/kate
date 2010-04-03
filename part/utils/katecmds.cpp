@@ -37,8 +37,12 @@
 #include <klocale.h>
 #include <kurl.h>
 #include <kshellcompletion.h>
+#include <kstandarddirs.h>
 
 #include <QtCore/QRegExp>
+#include <QtGui/QLabel>
+#include <QtGui/QDialog>
+#include <QtGui/QBoxLayout>
 
 //BEGIN CoreCommands
 // syncs a config flag in the document with a boolean value
@@ -779,5 +783,22 @@ bool KateCommands::Date::exec (KTextEditor::View *view, const QString &cmd, QStr
 }
 
 //END Date
+
+//BEGIN Butterfly
+bool KateCommands::Butterfly::exec (KTextEditor::View *view, const QString &, QString &)
+{
+  QDialog dialog( view );
+  dialog.setModal( true );
+  dialog.setWindowTitle( "Butterfly Temporarily Unavailable! - Real Programmers - http://xkcd.com/378" );
+  QLabel label( &dialog );
+  label.setPixmap( QPixmap( KGlobal::dirs()->findResource( "data", "kate_real_programmers.png" ) ) );
+  label.setToolTip( QString::fromUtf8("I love butterflies, I love *nixkcd, I love KDE, I love Free Software, I love Schrödinger's cat, I love your sister, I love programming!\nScrew EMacs, real programmers use Bleeding-Edge-KatePart!\nBoom de Yada, Boom de Yada!") );
+  QHBoxLayout layout( &dialog );
+  layout.addWidget( &label );
+  dialog.setLayout( &layout );
+  dialog.exec();
+  return true;
+}
+//END Butterfly
 
 // kate: space-indent on; indent-width 2; replace-tabs on;
