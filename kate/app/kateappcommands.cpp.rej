@@ -1,0 +1,47 @@
+--- kate/app/kateappcommands.cpp
++++ kate/app/kateappcommands.cpp
+@@ -80,21 +80,36 @@
+         }
+     }
+     else if (re_quit.exactMatch(command)) {
+-        if (!re_quit.cap(1).isEmpty()) { // [w]rite
+-            view->document()->documentSave();
+-        }
+         if (!re_quit.cap(2).isEmpty()) { // a[ll]
+-            KateDocManager::self()->saveAll();
++            if (!re_quit.cap(1).isEmpty()) { // [w]rite
++                KateDocManager::self()->saveAll();
++            }
++            QTimer::singleShot(0, mainWin, SLOT(slotFileQuit()));
++        } else {
++            if (!re_quit.cap(1).isEmpty() && view->document()->isModified()) { // [w]rite
++                view->document()->documentSave();
++            }
++
++            if (KateDocManager::self()->documents() > 1)
++                QTimer::singleShot(0, mainWin, SLOT(slotFileClose()));
++            else
++                QTimer::singleShot(0, mainWin, SLOT(slotFileQuit()));
+         }
+-        mainWin->slotFileQuit();
+     }
+     else if (re_exit.exactMatch(command)) {
+         if (!re_exit.cap(1).isEmpty()) { // a[ll]
+             KateDocManager::self()->saveAll();
+-        } else if (view->document()->isModified()) {
+-            view->document()->documentSave();
++            QTimer::singleShot(0, mainWin, SLOT(slotFileQuit()));
++        } else {
++            if (view->document()->isModified()) {
++                view->document()->documentSave();
++            }
++
++            if (KateDocManager::self()->documents() > 1)
++                QTimer::singleShot(0, mainWin, SLOT(slotFileClose()));
++            else
++                QTimer::singleShot(0, mainWin, SLOT(slotFileQuit()));
+         }
+-        mainWin->slotFileQuit();
+     }
+     else if (re_changeBuffer.exactMatch(command)) {
+         if (re_changeBuffer.cap(1) == "n") { // next document
