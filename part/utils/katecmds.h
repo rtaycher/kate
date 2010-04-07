@@ -258,27 +258,6 @@ class Date : public KTextEditor::Command
     const QStringList &cmds () { static QStringList test("date"); return test; }
 };
 
-class Butterfly : public KTextEditor::Command
-{
-  public:
-    /**
-     * execute command
-     * @param view view to use for execution
-     * @param cmd cmd string
-     * @param errorMsg error to return if no success
-     * @return success
-     */
-    bool exec (class KTextEditor::View *view, const QString &cmd, QString &errorMsg);
-
-    /** This command does not have help. @see KTextEditor::Command::help */
-    bool help (class KTextEditor::View *, const QString &, QString &) { return false; }
-
-    /**
-     * supported commands as prefixes
-     * @return prefix list
-     */
-    const QStringList &cmds () { static QStringList test("butterfly"); return test; }
-};
 
 } // namespace KateCommands
 #endif

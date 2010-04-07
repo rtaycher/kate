@@ -217,9 +217,6 @@ endif(KDE4_ENABLE_FINAL)
 # install kate part interfaces
 install (TARGETS katepartinterfaces EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
-# install files
-install (FILES utils/kate_real_programmers.png DESTINATION ${DATA_INSTALL_DIR}) 
-
 # kate part itself just is interfaces + the factory
 kde4_add_plugin (katepart utils/katefactory.cpp)
 

@@ -194,6 +194,7 @@ bool KateViInsertMode::handleKeypress( const QKeyEvent *e )
     case Qt::Key_Escape:
       startNormalMode();
       return true;
+      break;
     case Qt::Key_Left:
       m_view->cursorLeft();
       return true;

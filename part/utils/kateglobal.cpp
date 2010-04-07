@@ -171,12 +171,11 @@ KateGlobal::KateGlobal ()
   //
   // init the cmds
   //
-  m_cmds.push_back (new KateCommands::CoreCommands ());
-  m_cmds.push_back (new KateCommands::ViCommands ());
+  m_cmds.push_back (new KateCommands::CoreCommands());
+  m_cmds.push_back (new KateCommands::ViCommands());
   m_cmds.push_back (new KateCommands::SedReplace ());
   m_cmds.push_back (new KateCommands::Character ());
   m_cmds.push_back (new KateCommands::Date ());
-  m_cmds.push_back (new KateCommands::Butterfly ());
 
   for ( QList<KTextEditor::Command *>::iterator it = m_cmds.begin(); it != m_cmds.end(); ++it )
     m_cmdManager->registerCommand (*it);
