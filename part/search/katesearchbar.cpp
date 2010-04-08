@@ -363,12 +363,28 @@ void KateSearchBar::buildReplacement(QString & output, QList<ReplacementPart> & 
                         // Copy as uppercase
                         output.append(content.toUpper());
                         break;
-
+                        
+                    case ReplacementPart::UpperCaseFirst:
+                        if (content.length()>0) {
+                            output.append(content.at(0).toUpper());
+                            output.append(content.mid(1));
+                            caseConversion=ReplacementPart::KeepCase;
+                        }
+                        break;
+                        
                     case ReplacementPart::LowerCase:
                         // Copy as lowercase
                         output.append(content.toLower());
                         break;
 
+                    case ReplacementPart::LowerCaseFirst:
+                        if (content.length()>0) {
+                            output.append(content.at(0).toLower());
+                            output.append(content.mid(1));
+                            caseConversion=ReplacementPart::KeepCase;
+                        }
+                        break;
+                        
                     case ReplacementPart::KeepCase: // FALLTHROUGH
                     default:
                         // Copy unmodified
@@ -381,7 +397,9 @@ void KateSearchBar::buildReplacement(QString & output, QList<ReplacementPart> & 
             break;
 
         case ReplacementPart::UpperCase: // FALLTHROUGH
+        case ReplacementPart::UpperCaseFirst: // FALLTHROUGH    
         case ReplacementPart::LowerCase: // FALLTHROUGH
+        case ReplacementPart::LowerCaseFirst: // FALLTHROUGH
         case ReplacementPart::KeepCase:
             caseConversion = curPart.type;
             break;
@@ -402,11 +420,28 @@ void KateSearchBar::buildReplacement(QString & output, QList<ReplacementPart> & 
                 // Copy as uppercase
                 output.append(curPart.text.toUpper());
                 break;
+                
+            case ReplacementPart::UpperCaseFirst:
+                if (curPart.text.length()>0) {
+                    output.append(curPart.text.at(0).toUpper());
+                    output.append(curPart.text.mid(1));
+                    caseConversion=ReplacementPart::KeepCase;
+                }
+                break;
 
             case ReplacementPart::LowerCase:
                 // Copy as lowercase
                 output.append(curPart.text.toLower());
                 break;
+                
+           case ReplacementPart::LowerCaseFirst:
+                if (curPart.text.length()>0) {
+                    output.append(curPart.text.at(0).toUpper());
+                    output.append(curPart.text.mid(1));
+                    caseConversion=ReplacementPart::KeepCase;
+                }
+                break;
+
 
             case ReplacementPart::KeepCase: // FALLTHROUGH
             default:
@@ -1129,7 +1164,7 @@ void KateSearchBar::showExtendedContextMenu(bool forPattern, const QPoint& pos) 
         break;
     }
 
-    AddMenuManager addMenuManager(contextMenu, 35);
+    AddMenuManager addMenuManager(contextMenu, 37);
     if (!extendMenu) {
         addMenuManager.enableMenu(extendMenu);
     } else {
@@ -1203,6 +1238,8 @@ void KateSearchBar::showExtendedContextMenu(bool forPattern, const QPoint& pos) 
             addMenuManager.addEntry("\\L", "", i18n("Begin lowercase conversion"));
             addMenuManager.addEntry("\\U", "", i18n("Begin uppercase conversion"));
             addMenuManager.addEntry("\\E", "", i18n("End case conversion"));
+            addMenuManager.addEntry("\\l", "", i18n("Lowercase first character conversion"));
+            addMenuManager.addEntry("\\u", "", i18n("Uppercase first character conversion"));
             addMenuManager.addEntry("\\#[#..]", "", i18n("Replacement counter (for Replace All)"), "\\#");
         }
     }
