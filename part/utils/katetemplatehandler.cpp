@@ -20,7 +20,6 @@
  */
 
 #include "katetemplatehandler.h"
-#include "kateescapedtextsearch.h"
 #include "katedocument.h"
 #include "katesmartcursor.h"
 #include "kateview.h"
@@ -28,6 +27,7 @@
 #include "katerenderer.h"
 #include "kateundomanager.h"
 #include "katesearchbar.h"
+#include "katematch.h"
 
 #include <ktexteditor/cursor.h>
 #include <ktexteditor/smartcursor.h>
@@ -424,7 +424,7 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
               searchValid=true;
               break;
             }
-          }         
+          }
           //replace part
           if (searchValid) {
             replace=searchReplace.left(searchReplace.lastIndexOf("/"));
@@ -434,7 +434,7 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
             behaviour=MirrorBehaviour(search,replace);
         }
         const QString initialVal=behaviour.getMirrorString(initialValues[key]);
-        
+
         // whether the variable starts with % or $
         QChar c = templateString[startPos];
         // replace variable with initial value
@@ -443,7 +443,7 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
         i -= 3 + key.length() - initialVal.length();
         // correct column to point at end of range, taking replacement width diff into account
         // 2 == % + {
-          
+
         column -= 2 + keyLength - initialVal.length();
         // always add ${...} to the editable ranges
         // only add %{...} to the editable ranges when it's value equals the key
@@ -459,7 +459,7 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
                               )
                         );
           mirrorBehaviourBuildHelper.insert(tmp,behaviour);
-          
+
           ifDebug(kDebug() << "range is:" << Range( line, column - initialVal.length(),
                                 line, column
                               );)
@@ -680,16 +680,14 @@ void KateTemplateHandler::syncMirroredRanges(SmartRange* range)
 //BEGIN MIRROR BEHAVIOUR
   KateTemplateHandler::MirrorBehaviour::MirrorBehaviour():
     m_behaviour(Clone){}
-  
+
   KateTemplateHandler::MirrorBehaviour::MirrorBehaviour(const QString &regexp, const QString &replacement):
     m_behaviour(Regexp),m_search(regexp),m_replace(replacement) {
       m_expr=QRegExp(regexp,Qt::CaseSensitive,QRegExp::RegExp2);
-      const bool REPLACEMENT_GOODIES = true;
-      KateEscapedTextSearch::escapePlaintext(replacement, &m_replacementParts, REPLACEMENT_GOODIES);
   }
-  
+
   KateTemplateHandler::MirrorBehaviour::~MirrorBehaviour(){}
-  
+
   QString KateTemplateHandler::MirrorBehaviour::getMirrorString(QString source) {
     QString output;
     int pos;
@@ -697,12 +695,14 @@ void KateTemplateHandler::syncMirroredRanges(SmartRange* range)
       case Clone:
         return source;
         break;
-      case Regexp:
-        if ((pos=m_expr.indexIn(source))==-1) return source;        
-        KateSearchBar::buildReplacement(output, m_replacementParts,
-        QVector<Range>(), 1,0 /*KateView*/ ,m_expr.capturedTexts());
+      case Regexp: {
+        if ((pos=m_expr.indexIn(source))==-1) return source;
+        KateMatch match (0, KTextEditor::Search::Default);
+        QStringList results = m_expr.capturedTexts();
+        output = match.buildReplacement (m_replace, false, 1, &results);
         return source.left(pos)+output+source.mid(pos+m_expr.matchedLength());
         break;
+      }
       case Scripted:
       default:
         return QString();
