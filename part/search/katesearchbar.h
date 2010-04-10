@@ -141,8 +141,10 @@ private:
     void indicateMatch(MatchResult matchResult);
     static void selectRange(KateView * view, const KTextEditor::Range & range);
     void selectRange2(const KTextEditor::Range & range);
-    void buildReplacement(QString & output, QList<ReplacementPart> & parts,
-            const QVector<KTextEditor::Range> & details, int replacementCounter);
+public:
+    static void buildReplacement(QString & output, QList<ReplacementPart> & parts,
+            const QVector<KTextEditor::Range> & details, int replacementCounter, KateView *view, const QStringList& detailsStr=QStringList());
+private:
     void replaceMatch(const QVector<KTextEditor::Range> & match, const QString & replacement,
             int replacementCounter = 1);
 

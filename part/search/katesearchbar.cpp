@@ -339,10 +339,10 @@ void KateSearchBar::selectRange2(const KTextEditor::Range & range) {
 
 
 void KateSearchBar::buildReplacement(QString & output, QList<ReplacementPart> & parts,
-        const QVector<Range> & details, int replacementCounter) {
+        const QVector<Range> & details, int replacementCounter, KateView *view, const QStringList& detailsStr) {
     const int MIN_REF_INDEX = 0;
-    const int MAX_REF_INDEX = details.count() - 1;
-
+    const int MAX_REF_INDEX = detailsStr.isEmpty()?details.count() - 1: detailsStr.count()-1;
+    const bool use_ranges=detailsStr.isEmpty();
     output.clear();
     ReplacementPart::Type caseConversion = ReplacementPart::KeepCase;
     for (QList<ReplacementPart>::iterator iter = parts.begin(); iter != parts.end(); iter++) {
@@ -353,11 +353,22 @@ void KateSearchBar::buildReplacement(QString & output, QList<ReplacementPart> & 
                 // Insert just the number to be consistent with QRegExp ("\c" becomes "c")
                 output.append(QString::number(curPart.index));
             } else {
-                const Range & captureRange = details[curPart.index];
-                if (captureRange.isValid()) {
-                    // Copy capture content
-                    const bool blockMode = m_view->blockSelection();
-                    const QString content = m_view->document()->text(captureRange, blockMode);
+                QString content;
+                bool doref=false;
+                if (use_ranges) {
+                    const Range & captureRange = details[curPart.index];
+                    if (captureRange.isValid()) {
+                        // Copy capture content
+                        const bool blockMode = view->blockSelection();
+                        content = view->document()->text(captureRange, blockMode);
+                        doref=true;
+                    }
+                } else {
+                    content=detailsStr[curPart.index];
+                    doref=true;
+                }
+                
+                if (doref) {
                     switch (caseConversion) {
                     case ReplacementPart::UpperCase:
                         // Copy as uppercase
@@ -471,7 +482,7 @@ void KateSearchBar::replaceMatch(const QVector<Range> & match, const QString & r
         QList<ReplacementPart> parts;
         const bool REPLACEMENT_GOODIES = true;
         KateEscapedTextSearch::escapePlaintext(replacement, &parts, REPLACEMENT_GOODIES);
-        buildReplacement(finalReplacement, parts, match, replacementCounter);
+        buildReplacement(finalReplacement, parts, match, replacementCounter,m_view);
     } else {
         // Plain text replacement
         finalReplacement = replacement;
