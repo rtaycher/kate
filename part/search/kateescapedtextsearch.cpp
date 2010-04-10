@@ -223,9 +223,7 @@ KTextEditor::Range KateEscapedTextSearch::search (const QString & text,
 
       case L'E': // FALLTHROUGH
       case L'L': // FALLTHROUGH
-      case L'l': // FALLTHROUGH  
-      case L'U': // FALLTHROUGH
-      case L'u':
+      case L'U':
         if ((parts == NULL) || !replacementGoodies) {
           // strip backslash ("\?" -> "?")
           output.append(text[input + 1]);
@@ -248,17 +246,9 @@ KTextEditor::Range KateEscapedTextSearch::search (const QString & text,
           case L'L':
             curPart.type = ReplacementPart::LowerCase;
             break;
-            
-          case L'l':
-            curPart.type = ReplacementPart::LowerCaseFirst;
-            break;
 
           case L'U':
             curPart.type = ReplacementPart::UpperCase;
-            break;
-
-          case L'u':      
-            curPart.type = ReplacementPart::UpperCaseFirst;
             break;
 
           case L'E': // FALLTHROUGH

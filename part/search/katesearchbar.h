@@ -33,7 +33,6 @@ namespace KTextEditor {
 class KateView;
 class KateViewConfig;
 class QVBoxLayout;
-class QCheckBox;
 class QComboBox;
 
 namespace Ui {
@@ -125,9 +124,6 @@ private:
     bool find(SearchDirection searchDirection = SearchForward, const QString * replacement = 0);
     int findAll(KTextEditor::Range inputRange, const QString * replacement);
 
-    bool isChecked(QCheckBox * checkbox);
-    void setChecked(QCheckBox * checkbox, bool checked);
-
     QString searchPattern() const;
     bool isPatternValid() const;
 
@@ -141,10 +137,8 @@ private:
     void indicateMatch(MatchResult matchResult);
     static void selectRange(KateView * view, const KTextEditor::Range & range);
     void selectRange2(const KTextEditor::Range & range);
-public:
-    static void buildReplacement(QString & output, QList<ReplacementPart> & parts,
-            const QVector<KTextEditor::Range> & details, int replacementCounter, KateView *view, const QStringList& detailsStr=QStringList());
-private:
+    void buildReplacement(QString & output, QList<ReplacementPart> & parts,
+            const QVector<KTextEditor::Range> & details, int replacementCounter);
     void replaceMatch(const QVector<KTextEditor::Range> & match, const QString & replacement,
             int replacementCounter = 1);
 

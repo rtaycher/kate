@@ -339,10 +339,10 @@ void KateSearchBar::selectRange2(const KTextEditor::Range & range) {
 
 
 void KateSearchBar::buildReplacement(QString & output, QList<ReplacementPart> & parts,
-        const QVector<Range> & details, int replacementCounter, KateView *view, const QStringList& detailsStr) {
+        const QVector<Range> & details, int replacementCounter) {
     const int MIN_REF_INDEX = 0;
-    const int MAX_REF_INDEX = detailsStr.isEmpty()?details.count() - 1: detailsStr.count()-1;
-    const bool use_ranges=detailsStr.isEmpty();
+    const int MAX_REF_INDEX = details.count() - 1;
+
     output.clear();
     ReplacementPart::Type caseConversion = ReplacementPart::KeepCase;
     for (QList<ReplacementPart>::iterator iter = parts.begin(); iter != parts.end(); iter++) {
@@ -353,49 +353,22 @@ void KateSearchBar::buildReplacement(QString & output, QList<ReplacementPart> & 
                 // Insert just the number to be consistent with QRegExp ("\c" becomes "c")
                 output.append(QString::number(curPart.index));
             } else {
-                QString content;
-                bool doref=false;
-                if (use_ranges) {
-                    const Range & captureRange = details[curPart.index];
-                    if (captureRange.isValid()) {
-                        // Copy capture content
-                        const bool blockMode = view->blockSelection();
-                        content = view->document()->text(captureRange, blockMode);
-                        doref=true;
-                    }
-                } else {
-                    content=detailsStr[curPart.index];
-                    doref=true;
-                }
-                
-                if (doref) {
+                const Range & captureRange = details[curPart.index];
+                if (captureRange.isValid()) {
+                    // Copy capture content
+                    const bool blockMode = m_view->blockSelection();
+                    const QString content = m_view->document()->text(captureRange, blockMode);
                     switch (caseConversion) {
                     case ReplacementPart::UpperCase:
                         // Copy as uppercase
                         output.append(content.toUpper());
                         break;
-                        
-                    case ReplacementPart::UpperCaseFirst:
-                        if (content.length()>0) {
-                            output.append(content.at(0).toUpper());
-                            output.append(content.mid(1));
-                            caseConversion=ReplacementPart::KeepCase;
-                        }
-                        break;
-                        
+
                     case ReplacementPart::LowerCase:
                         // Copy as lowercase
                         output.append(content.toLower());
                         break;
 
-                    case ReplacementPart::LowerCaseFirst:
-                        if (content.length()>0) {
-                            output.append(content.at(0).toLower());
-                            output.append(content.mid(1));
-                            caseConversion=ReplacementPart::KeepCase;
-                        }
-                        break;
-                        
                     case ReplacementPart::KeepCase: // FALLTHROUGH
                     default:
                         // Copy unmodified
@@ -408,9 +381,7 @@ void KateSearchBar::buildReplacement(QString & output, QList<ReplacementPart> & 
             break;
 
         case ReplacementPart::UpperCase: // FALLTHROUGH
-        case ReplacementPart::UpperCaseFirst: // FALLTHROUGH    
         case ReplacementPart::LowerCase: // FALLTHROUGH
-        case ReplacementPart::LowerCaseFirst: // FALLTHROUGH
         case ReplacementPart::KeepCase:
             caseConversion = curPart.type;
             break;
@@ -431,28 +402,11 @@ void KateSearchBar::buildReplacement(QString & output, QList<ReplacementPart> & 
                 // Copy as uppercase
                 output.append(curPart.text.toUpper());
                 break;
-                
-            case ReplacementPart::UpperCaseFirst:
-                if (curPart.text.length()>0) {
-                    output.append(curPart.text.at(0).toUpper());
-                    output.append(curPart.text.mid(1));
-                    caseConversion=ReplacementPart::KeepCase;
-                }
-                break;
 
             case ReplacementPart::LowerCase:
                 // Copy as lowercase
                 output.append(curPart.text.toLower());
                 break;
-                
-           case ReplacementPart::LowerCaseFirst:
-                if (curPart.text.length()>0) {
-                    output.append(curPart.text.at(0).toUpper());
-                    output.append(curPart.text.mid(1));
-                    caseConversion=ReplacementPart::KeepCase;
-                }
-                break;
-
 
             case ReplacementPart::KeepCase: // FALLTHROUGH
             default:
@@ -482,7 +436,7 @@ void KateSearchBar::replaceMatch(const QVector<Range> & match, const QString & r
         QList<ReplacementPart> parts;
         const bool REPLACEMENT_GOODIES = true;
         KateEscapedTextSearch::escapePlaintext(replacement, &parts, REPLACEMENT_GOODIES);
-        buildReplacement(finalReplacement, parts, match, replacementCounter,m_view);
+        buildReplacement(finalReplacement, parts, match, replacementCounter);
     } else {
         // Plain text replacement
         finalReplacement = replacement;
@@ -818,7 +772,7 @@ void KateSearchBar::addCurrentTextToHistory(QComboBox * combo) {
 
 void KateSearchBar::backupConfig(bool ofPower) {
     if (ofPower) {
-        m_powerMatchCase = isChecked(m_powerUi->matchCase);
+        m_powerMatchCase = m_powerUi->matchCase->isChecked();
         m_powerMode = m_powerUi->searchMode->currentIndex();
     } else {
         m_incMatchCase = m_incUi->matchCase->isChecked();
@@ -1175,7 +1129,7 @@ void KateSearchBar::showExtendedContextMenu(bool forPattern, const QPoint& pos) 
         break;
     }
 
-    AddMenuManager addMenuManager(contextMenu, 37);
+    AddMenuManager addMenuManager(contextMenu, 35);
     if (!extendMenu) {
         addMenuManager.enableMenu(extendMenu);
     } else {
@@ -1249,8 +1203,6 @@ void KateSearchBar::showExtendedContextMenu(bool forPattern, const QPoint& pos) 
             addMenuManager.addEntry("\\L", "", i18n("Begin lowercase conversion"));
             addMenuManager.addEntry("\\U", "", i18n("Begin uppercase conversion"));
             addMenuManager.addEntry("\\E", "", i18n("End case conversion"));
-            addMenuManager.addEntry("\\l", "", i18n("Lowercase first character conversion"));
-            addMenuManager.addEntry("\\u", "", i18n("Uppercase first character conversion"));
             addMenuManager.addEntry("\\#[#..]", "", i18n("Replacement counter (for Replace All)"), "\\#");
         }
     }
@@ -1412,7 +1364,7 @@ void KateSearchBar::enterPowerMode() {
 
     // Restore previous settings
     if (create) {
-        setChecked(m_powerUi->matchCase, m_powerMatchCase);
+        m_powerUi->matchCase->setChecked(m_powerMatchCase);
         m_powerUi->searchMode->setCurrentIndex(m_powerMode);
     }
 
@@ -1577,20 +1529,6 @@ void KateSearchBar::enterIncrementalMode() {
     if (m_widget->isVisible()) {
         m_incUi->pattern->setFocus(Qt::MouseFocusReason);
     }
-}
-
-
-
-bool KateSearchBar::isChecked(QCheckBox * checkbox) {
-    Q_ASSERT(checkbox != NULL);
-    return checkbox->checkState() == Qt::Checked;
-}
-
-
-
-void KateSearchBar::setChecked(QCheckBox * checkbox, bool checked) {
-    Q_ASSERT(checkbox != NULL);
-    checkbox->setCheckState(checked ? Qt::Checked : Qt::Unchecked);
 }
 
 
