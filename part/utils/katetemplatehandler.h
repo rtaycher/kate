@@ -154,15 +154,17 @@ public:
     public:
 
       MirrorBehaviour(); //clone
-      MirrorBehaviour(const QString &regexp, const QString &replacement); //regexp
+      MirrorBehaviour(const QString &regexp, const QString &replacement,const QString &flags); //regexp
       ~MirrorBehaviour();
-      QString getMirrorString(QString source);
+      QString getMirrorString(const QString &source);
     private:
       enum Behaviour {Clone=0, Regexp=1, Scripted=2};
       enum Behaviour m_behaviour;
       QString m_search;
       QString m_replace;
       QRegExp m_expr;
+      bool m_global;
+      QList<ReplacementPart> m_replacementParts;
     };
 private:
 

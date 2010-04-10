@@ -27,5 +27,31 @@ This ${field} should be mirrored into ${field}</fillin>
 This ${field} should be mirrored into
 ${field/./\u\0/} with the first character being uppercase</fillin>
  </item>
-
+ <item>
+  <displayprefix></displayprefix>
+  <match>mirrorunderline</match>
+  <displaypostfix></displaypostfix>
+  <displayarguments></displayarguments>
+  <fillin>The field should be underlined
+${field}
+${field/(.)/=/g}</fillin>
+ </item>
+ <item>
+  <displayprefix></displayprefix>
+  <match>mirrorsensitive</match>
+  <displaypostfix></displaypostfix>
+  <displayarguments></displayarguments>
+  <fillin>All As are replaced by X:
+${field}
+${field/A/X/g}</fillin>
+ </item>
+ <item>
+  <displayprefix></displayprefix>
+  <match>mirrorinsensitive</match>
+  <displaypostfix></displaypostfix>
+  <displayarguments></displayarguments>
+  <fillin>All As and as are replaced by X:
+${field}
+${field/A/X/gi}</fillin>
+ </item>
 </snippets>

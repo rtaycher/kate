@@ -409,6 +409,7 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
           bool searchValid=false;
           QString replace;
           bool replaceValid=false;
+          QString flags;
           //search part;
           while (!searchReplace.isEmpty()) {
             int regescapes=0;
@@ -422,16 +423,21 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
               search=searchReplace.left(pos);
               searchReplace=searchReplace.mid(pos+1);
               searchValid=true;
+              
               break;
             }
           }
           //replace part
           if (searchValid) {
-            replace=searchReplace.left(searchReplace.lastIndexOf("/"));
-            replaceValid=true;
+            uint last_slash=searchReplace.lastIndexOf("/");
+            if (last_slash!=-1) {
+              replace=searchReplace.left(last_slash);
+              replaceValid=true;
+              flags=searchReplace.mid(last_slash+1);
+            }
           }
           if (searchValid && replaceValid)
-            behaviour=MirrorBehaviour(search,replace);
+            behaviour=MirrorBehaviour(search,replace,flags);
         }
         const QString initialVal=behaviour.getMirrorString(initialValues[key]);
 
@@ -680,29 +686,45 @@ void KateTemplateHandler::syncMirroredRanges(SmartRange* range)
 //BEGIN MIRROR BEHAVIOUR
   KateTemplateHandler::MirrorBehaviour::MirrorBehaviour():
     m_behaviour(Clone){}
-
-  KateTemplateHandler::MirrorBehaviour::MirrorBehaviour(const QString &regexp, const QString &replacement):
+  
+  KateTemplateHandler::MirrorBehaviour::MirrorBehaviour(const QString &regexp, const QString &replacement,const QString& flags):
     m_behaviour(Regexp),m_search(regexp),m_replace(replacement) {
-      m_expr=QRegExp(regexp,Qt::CaseSensitive,QRegExp::RegExp2);
+      m_global=flags.contains("g");
+      m_expr=QRegExp(regexp,flags.contains("i")?Qt::CaseInsensitive:Qt::CaseSensitive,QRegExp::RegExp2);
+      const bool REPLACEMENT_GOODIES = true;
+      KateEscapedTextSearch::escapePlaintext(replacement, &m_replacementParts, REPLACEMENT_GOODIES);
   }
 
   KateTemplateHandler::MirrorBehaviour::~MirrorBehaviour(){}
 
-  QString KateTemplateHandler::MirrorBehaviour::getMirrorString(QString source) {
+  
+  QString KateTemplateHandler::MirrorBehaviour::getMirrorString(const QString &source) {
+    QString ahead;
     QString output;
+    QString finalOutput;
     int pos;
     switch (m_behaviour) {
       case Clone:
         return source;
         break;
-      case Regexp: {
-        if ((pos=m_expr.indexIn(source))==-1) return source;
-        KateMatch match (0, KTextEditor::Search::Default);
-        QStringList results = m_expr.capturedTexts();
-        output = match.buildReplacement (m_replace, false, 1, &results);
-        return source.left(pos)+output+source.mid(pos+m_expr.matchedLength());
-        break;
-      }
+      case Regexp:
+        if (m_global) {
+          ahead=source;
+          while (ahead.length()>0) {
+            if ((pos=m_expr.indexIn(ahead))==-1) return finalOutput+ahead;
+            KateSearchBar::buildReplacement(output, m_replacementParts,
+            QVector<Range>(), 1,0 /*KateView*/ ,m_expr.capturedTexts());
+            finalOutput=finalOutput+ahead.left(pos)+output;
+            ahead=ahead.mid(pos+m_expr.matchedLength());
+          }
+          return finalOutput;
+        } else {
+          if ((pos=m_expr.indexIn(source))==-1) return source;
+          KateSearchBar::buildReplacement(output, m_replacementParts,
+          QVector<Range>(), 1,0 /*KateView*/ ,m_expr.capturedTexts());
+          return source.left(pos)+output+source.mid(pos+m_expr.matchedLength());
+          break;
+        }
       case Scripted:
       default:
         return QString();
