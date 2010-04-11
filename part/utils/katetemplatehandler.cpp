@@ -380,6 +380,35 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
       // skip '{'
       ++i;
       column += 2;
+    } else if ( (startPos!=-1) && (templateString[i] == '/') ) { // skip regexp
+      i++;
+      column++;
+      int backslash_count=0;
+      int slashcount=1;
+      for (;i<templateString.size();i++,column++) {
+        if ( templateString[i] == '\n' ) {
+          ++line;
+          column = 0;
+          if ( startPos != -1 ) {
+            // don't allow variables to span multiple lines
+            startPos = -1;
+          }
+          break;
+        }
+        if (templateString[i]=='/') {
+          if ((backslash_count % 2) ==0)
+            slashcount++;
+          backslash_count=0;
+        } else if (templateString[i]=='\\') {
+          backslash_count++;
+        } else { // any character teminates a backslash sequence
+          backslash_count=0; 
+        }
+        if (slashcount==3) {
+          column++;
+          break;
+        }
+      }      
     } else if ( templateString[i] == '}' && startPos != -1 ) {
       // get key, i.e. contents between ${..}
       QString key = templateString.mid( startPos + 2, i - (startPos + 2) );
