@@ -100,4 +100,16 @@ ${field/a/b}</fillin>
 ${field}
 ${field/a}</fillin>
  </item>
+
+ <item>
+  <displayprefix></displayprefix>
+  <match>mirrorbracedollar</match>
+  <displaypostfix></displaypostfix>
+  <displayarguments></displayarguments>
+  <fillin>This snippet replaces 1 by }\${blah}
+${field}
+${field/1/}${blah}/}
+</fillin>
+ </item>
+
 </snippets>
