@@ -349,6 +349,7 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
   // VAR must be set as key in initialValues
   // expression must not be escaped
   for ( int i = 0; i < templateString.size(); ++i ) {
+    ifDebug(kDebug()<<"checking character:"<<templateString[i];);
     if ( templateString[i] == '\n' ) {
       ++line;
       column = 0;
@@ -424,12 +425,12 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
       if ( !initialValues.contains(key) ) {
         kWarning() << "unknown variable key:" << key;
       } else if ( key == "cursor" ) {
-        finalCursorPosition = Cursor(line, column - key.length() - 2);
+        finalCursorPosition = Cursor(line, column - keyLength - 2);
         // don't insert anything, just remove the placeholder
         templateString.remove(startPos, i - startPos + 1);
         // correct iterator pos, 3 == $ + { + }
-        i -= 3 + key.length();
-        column -= 2 + key.length();
+        i -= 3 + keyLength;
+        column -= 2 + keyLength;
         startPos = -1;
       } else {
         MirrorBehaviour behaviour;
@@ -479,7 +480,7 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
         // replace variable with initial value
         templateString.replace( startPos, i - startPos + 1, initialVal );
         // correct iterator pos, 3 == % + { + }
-        i -= 3 + key.length() - initialVal.length();
+        i -= 3 + keyLength - initialVal.length();
         // correct column to point at end of range, taking replacement width diff into account
         // 2 == % + {
 
@@ -505,6 +506,7 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
         }
       }
       startPos = -1;
+      ifDebug(kDebug()<<"i="<<i<<" template size="<<templateString.size(););
     } else {
       ++column;
     }
