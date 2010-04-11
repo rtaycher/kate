@@ -22,7 +22,6 @@
 #ifndef _KATE_TEMPLATE_HANDLER_H_
 #define _KATE_TEMPLATE_HANDLER_H_
 
-#include <kateregexpsearch.h>
 
 #include "katesmartrange.h"
 #include <QtCore/QPointer>
@@ -152,7 +151,7 @@ class KateTemplateHandler: public QObject
 public:
     class MirrorBehaviour {
     public:
-
+      
       MirrorBehaviour(); //clone
       MirrorBehaviour(const QString &regexp, const QString &replacement,const QString &flags); //regexp
       ~MirrorBehaviour();
@@ -164,13 +163,12 @@ public:
       QString m_replace;
       QRegExp m_expr;
       bool m_global;
-      QList<ReplacementPart> m_replacementParts;
     };
 private:
-
+    
     QHash<KTextEditor::SmartRange*,MirrorBehaviour> m_mirrorBehaviour;
-
-
+    
+    
     /**
      * Jumps to the final cursor position. This is either \p m_finalCursorPosition, or
      * if that is not set, the end of \p m_templateRange.

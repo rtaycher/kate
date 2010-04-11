@@ -26,7 +26,6 @@
 #include "kateconfig.h"
 #include "katerenderer.h"
 #include "kateundomanager.h"
-#include "katesearchbar.h"
 #include "katematch.h"
 
 #include <ktexteditor/cursor.h>
@@ -726,8 +725,6 @@ void KateTemplateHandler::syncMirroredRanges(SmartRange* range)
     m_behaviour(Regexp),m_search(regexp),m_replace(replacement) {
       m_global=flags.contains("g");
       m_expr=QRegExp(regexp,flags.contains("i")?Qt::CaseInsensitive:Qt::CaseSensitive,QRegExp::RegExp2);
-      const bool REPLACEMENT_GOODIES = true;
-      KateEscapedTextSearch::escapePlaintext(replacement, &m_replacementParts, REPLACEMENT_GOODIES);
   }
 
   KateTemplateHandler::MirrorBehaviour::~MirrorBehaviour(){}
@@ -743,25 +740,29 @@ void KateTemplateHandler::syncMirroredRanges(SmartRange* range)
       case Clone:
         return source;
         break;
-      case Regexp:
+      case Regexp: {
         ifDebug(kDebug() << "regexp "<< m_search << " replacement " << m_replace;)
         if (m_global) {
           ahead=source;
           while (ahead.length()>0) {
             if ((pos=m_expr.indexIn(ahead))==-1) return finalOutput+ahead;
-            KateSearchBar::buildReplacement(output, m_replacementParts,
-            QVector<Range>(), ++matchCounter,0 /*KateView*/ ,m_expr.capturedTexts());
+            KateMatch match (0, KTextEditor::Search::Default);
+            QStringList results = m_expr.capturedTexts();
+            output = match.buildReplacement (m_replace, false, ++matchCounter, &results);
             finalOutput=finalOutput+ahead.left(pos)+output;
             ahead=ahead.mid(pos+m_expr.matchedLength());
           }
           return finalOutput;
         } else {
-          if ((pos=m_expr.indexIn(source))==-1) return source;
-          KateSearchBar::buildReplacement(output, m_replacementParts,
-          QVector<Range>(), 1,0 /*KateView*/ ,m_expr.capturedTexts());
-          return source.left(pos)+output+source.mid(pos+m_expr.matchedLength());
-          break;
+         if ((pos=m_expr.indexIn(source))==-1) return source;
+         KateMatch match (0, KTextEditor::Search::Default);
+         QStringList results = m_expr.capturedTexts();
+         output = match.buildReplacement (m_replace, false, 1, &results);
+         return source.left(pos)+output+source.mid(pos+m_expr.matchedLength());
+         break;
         }
+        break;
+      }
       case Scripted:
       default:
         return QString();
