@@ -42,7 +42,7 @@
 
 using namespace KTextEditor;
 
-#define ifDebug(x)
+#define ifDebug(x) x;
 
 /// just like Range::contains() but returns true when the cursor is at the end of the range
 bool customContains(SmartRange* range, const Cursor& cursor)
@@ -412,18 +412,22 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
           QString flags;
           //search part;
           while (!searchReplace.isEmpty()) {
+            ifDebug(kDebug()<<"searchReplace="<<searchReplace;)
             int regescapes=0;
             int pos=searchReplace.indexOf("/");
-            for (int epos=pos-1;(i>0) && (searchReplace.at(epos)=='\\');epos--)
+            for (int epos=pos-1;(epos>=0) && (searchReplace.at(epos)=='\\');epos--)
               regescapes++;
+            ifDebug(kDebug()<<"regescapes="<<regescapes;)
             if ((regescapes%2)==1) {
               search+=searchReplace.left(pos+1);
               searchReplace=searchReplace.mid(pos+1);
+              ifDebug(kDebug()<<"intermediate search string is="<<search;)
             } else {
-              search=searchReplace.left(pos);
+              search+=searchReplace.left(pos);
               searchReplace=searchReplace.mid(pos+1);
               searchValid=true;
-              
+              ifDebug(kDebug()<<"final search string ist="<<search;)
+              ifDebug(kDebug()<<"remaining characters in searchReplace"<<searchReplace;)
               break;
             }
           }
@@ -703,17 +707,19 @@ void KateTemplateHandler::syncMirroredRanges(SmartRange* range)
     QString output;
     QString finalOutput;
     int pos;
+    int matchCounter=0;
     switch (m_behaviour) {
       case Clone:
         return source;
         break;
       case Regexp:
+        ifDebug(kDebug() << "regexp "<< m_search << " replacement " << m_replace;)
         if (m_global) {
           ahead=source;
           while (ahead.length()>0) {
             if ((pos=m_expr.indexIn(ahead))==-1) return finalOutput+ahead;
             KateSearchBar::buildReplacement(output, m_replacementParts,
-            QVector<Range>(), 1,0 /*KateView*/ ,m_expr.capturedTexts());
+            QVector<Range>(), ++matchCounter,0 /*KateView*/ ,m_expr.capturedTexts());
             finalOutput=finalOutput+ahead.left(pos)+output;
             ahead=ahead.mid(pos+m_expr.matchedLength());
           }
