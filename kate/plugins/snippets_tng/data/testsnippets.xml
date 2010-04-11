@@ -73,4 +73,31 @@ ${field}
 ${field/\//|/g}</fillin>
  </item>
 
+<item>
+  <displayprefix></displayprefix>
+  <match>mirrorreplaceend</match>
+  <displaypostfix></displaypostfix>
+  <displayarguments></displayarguments>
+  <fillin>This adds an X to the end of the field
+${field}
+${field/$/X/}</fillin>
+ </item>
+ <item>
+  <displayprefix></displayprefix>
+  <match>mirrorbroken1</match>
+  <displaypostfix></displaypostfix>
+  <displayarguments></displayarguments>
+  <fillin>This is broken, the regexp is not closed
+${field}
+${field/a/b}</fillin>
+ </item>
+ <item>
+  <displayprefix></displayprefix>
+  <match>mirrorbroken2</match>
+  <displaypostfix></displaypostfix>
+  <displayarguments></displayarguments>
+  <fillin>This is broken, the regexp is not closed
+${field}
+${field/a}</fillin>
+ </item>
 </snippets>
