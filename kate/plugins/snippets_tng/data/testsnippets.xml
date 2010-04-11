@@ -54,4 +54,23 @@ ${field/A/X/g}</fillin>
 ${field}
 ${field/A/X/gi}</fillin>
  </item>
+ <item>
+  <displayprefix></displayprefix>
+  <match>mirrorreplacebackslash</match>
+  <displaypostfix></displaypostfix>
+  <displayarguments></displayarguments>
+  <fillin>replace all \ by |
+${field}
+${field/\\/|/g}</fillin>
+ </item>
+ <item>
+  <displayprefix></displayprefix>
+  <match>mirrorreplaceslash</match>
+  <displaypostfix></displaypostfix>
+  <displayarguments></displayarguments>
+  <fillin>replace all / by |
+${field}
+${field/\//|/g}</fillin>
+ </item>
+
 </snippets>
