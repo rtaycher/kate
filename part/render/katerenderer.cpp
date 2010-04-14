@@ -28,6 +28,7 @@
 #include "kateview.h"
 #include "katerenderrange.h"
 #include "katetextlayout.h"
+#include "katebuffer.h"
 
 #include "katevivisualmode.h"
 
@@ -296,7 +297,9 @@ QList<QTextLayout::FormatRange> KateRenderer::decorationsForLine( const Kate::Te
   QList<QTextLayout::FormatRange> newHighlight;
 
   // Don't compute the highlighting if there isn't going to be any highlighting
-  if (selectionsOnly || textLine->attributesList().count() || m_view->externalHighlights().count() || m_view->internalHighlights().count() || m_doc->documentHighlights().count()) {
+  QList<Kate::TextRange *> rangesWithAttributes = m_doc->buffer().rangesForLine (line, m_view, true);
+  if (selectionsOnly || textLine->attributesList().count() || m_view->externalHighlights().count() || m_view->internalHighlights().count() || m_doc->documentHighlights().count()
+    || rangesWithAttributes.count()) {
     RenderRangeList renderRanges;
 
     // Add the inbuilt highlighting to the list
@@ -312,6 +315,13 @@ QList<QTextLayout::FormatRange> KateRenderer::decorationsForLine( const Kate::Te
       renderRanges.appendRanges(m_view->internalHighlights(), selectionsOnly, view());
       renderRanges.appendRanges(m_view->externalHighlights(), selectionsOnly, view());
 
+      // add ranges with attributes to the list
+      if (!rangesWithAttributes.empty()) {
+        NormalRenderRange *additionaHl = new NormalRenderRange();
+        for (int i = 0; i < rangesWithAttributes.size(); ++i)
+          additionaHl->addRange(new KTextEditor::Range (*rangesWithAttributes[i]), rangesWithAttributes[i]->attribute());
+        renderRanges.append(additionaHl);
+      }
     } else {
       // Add the code completion arbitrary highlight to the list
       renderRanges.append(completionHighlight);
@@ -373,7 +383,7 @@ QList<QTextLayout::FormatRange> KateRenderer::decorationsForLine( const Kate::Te
       if(m_view->blockSelection()) {
         KTextEditor::Range subRange = m_doc->rangeOnLine(m_view->selectionRange(), line);
         currentPosition = subRange.start();
-        endPosition = subRange.end(); 
+        endPosition = subRange.end();
       } else {
         KTextEditor::Range rangeNeeded = m_view->selectionRange().encompass(m_dynamicRegion.boundingRange());
         rangeNeeded &= KTextEditor::Range(line, 0, line + 1, 0);
@@ -951,7 +961,7 @@ int KateRenderer::cursorToX(const KateTextLayout& range, const KTextEditor::Curs
 {
   int x = cursorToX(range, pos);
   int over = pos.column() - range.endCol();
- 
+
   if (returnPastLine && over > 0)
     x += over * spaceWidth();
 

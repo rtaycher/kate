@@ -80,6 +80,10 @@ void TextBuffer::clear ()
   // not allowed during editing
   Q_ASSERT (m_editingTransactions == 0);
 
+  // invalidate all ranges!
+  foreach (TextRange *range, m_ranges)
+    range->setRange (KTextEditor::Cursor::invalid(), KTextEditor::Cursor::invalid());
+
   // new block for empty buffer
   TextBlock *newBlock = new TextBlock (this, 0);
   newBlock->appendLine (TextLine (new TextLineData()));
@@ -87,10 +91,6 @@ void TextBuffer::clear ()
   // clean out all cursors and lines, either move them to newBlock or invalidate them, if belonging to a range
   for (int i = 0; i < m_blocks.size(); ++i)
     m_blocks[i]->clearBlockContent (newBlock);
-
-  // invalidate all ranges!
-  foreach (TextRange *range, m_ranges)
-    range->setRange (KTextEditor::Cursor::invalid(), KTextEditor::Cursor::invalid());
 
   // kill all buffer blocks
   qDeleteAll (m_blocks);
@@ -579,6 +579,19 @@ bool TextBuffer::load (const QString &filename, bool &encodingErrors)
   // emit success
   emit loaded (filename, encodingErrors);
 
+#if 0
+  // fake ranges for debugging
+
+  Kate::TextRange *range = new Kate::TextRange (*this, KTextEditor::Range (KTextEditor::Cursor (0, 0), KTextEditor::Cursor (10, 10)), Kate::TextRange::ExpandRight);
+
+  KTextEditor::Attribute *attribute = new KTextEditor::Attribute();
+  attribute->setUnderlineStyle(QTextCharFormat::SpellCheckUnderline);
+  QColor lineColor(Qt::red);
+  attribute->setUnderlineColor(lineColor);
+  range->setAttribute(KTextEditor::Attribute::Ptr(attribute));
+
+#endif
+
   // file loading worked, modulo encoding problems
   return true;
 }
@@ -663,6 +676,39 @@ bool TextBuffer::save (const QString &filename)
 
   // return success or not
   return ok;
+}
+
+void TextBuffer::triggerRangeAttributeChanged (KTextEditor::View *view, int startLine, int endLine)
+{
+  /**
+   * ignore invalid calls, might happen if invalid ranges get an attribute
+   */
+  if (startLine == -1 || endLine == -1)
+    return;
+
+  /**
+   * emit the holy signal
+   */
+  emit rangeAttributeChanged (view, startLine, endLine);
+}
+
+QList<TextRange *> TextBuffer::rangesForLine (int line, KTextEditor::View *view, bool rangesWithAttributeOnly) const
+{
+  // get block, this will assert on invalid line
+  const int blockIndex = blockForLine (line);
+
+  // get the ranges
+  const QSet<TextRange *> ranges = m_blocks[blockIndex]->m_ranges;
+
+  // collect the right ones
+  QList<TextRange *> rightRanges;
+  foreach (TextRange * const range, ranges) {
+      if ((!rangesWithAttributeOnly || range->attribute()) && range->start().line() <= line && line <= range->end().line())
+        rightRanges.append (range);
+  }
+
+  // return right ranges
+  return rightRanges;
 }
 
 }

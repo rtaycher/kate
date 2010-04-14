@@ -216,6 +216,7 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
   connect(m_buffer, SIGNAL(tagLines(int,int)), this, SLOT(tagLines(int,int)));
   connect(m_buffer, SIGNAL(respellCheckBlock(int, int)), this , SLOT(respellCheckBlock(int, int)));
   connect(m_buffer, SIGNAL(codeFoldingUpdated()),this,SIGNAL(codeFoldingUpdated()));
+  connect(m_buffer, SIGNAL(rangeAttributeChanged (KTextEditor::View *, int, int)), this, SLOT(textRangeAttributeChanged (KTextEditor::View *, int, int)));
 
   // if the user changes the highlight with the dialog, notify the doc
   connect(KateHlManager::self(),SIGNAL(changed()),SLOT(internalHlChanged()));
@@ -782,9 +783,13 @@ bool KateDocument::removeText ( const KTextEditor::Range &_range, bool block )
   else
   {
     int startLine = qMax(0, range.start().line());
+    int vc1 = toVirtualColumn(range.start());
+    int vc2 = toVirtualColumn(range.end());
     for (int line = qMin(range.end().line(), lastLine()); line >= startLine; --line) {
-      KTextEditor::Range subRange = rangeOnLine(range, line);
-      editRemoveText(line, subRange.start().column(), subRange.end().column() - subRange.start().column());
+      Kate::TextLine tl = const_cast<KateDocument*>(this)->kateTextLine(line);
+      int col1 = tl->fromVirtualColumn(vc1, config()->tabWidth());
+      int col2 = tl->fromVirtualColumn(vc2, config()->tabWidth());
+      editRemoveText(line, qMin(col1, col2), qAbs(col2 - col1));
     }
   }
 
@@ -5555,6 +5560,16 @@ QString KateDocument::highlightingModeAt(const KTextEditor::Cursor& position)
 
   return KateHlManager::self()->nameForIdentifier(highlight()->hlKeyForAttrib(attr));
 
+}
+
+void KateDocument::textRangeAttributeChanged (KTextEditor::View *view, int startLine, int endLine)
+{
+  Q_ASSERT (startLine >= 0);
+  Q_ASSERT (endLine >= 0);
+
+  // dummy implementation, just update all views!!!
+  foreach (KateView * view, m_views)
+    view->updateView (true);
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;
