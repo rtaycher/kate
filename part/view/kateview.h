@@ -724,8 +724,9 @@ public:
      * Attribute of a range changed or range with attribute changed in given line range.
      * @param startLine start line of change
      * @param endLine end line of change
+     * @param rangeWithAttribute attribute changed or is active, this will perhaps lead to repaints
      */
-    void textRangeAttributeChanged (int startLine, int endLine);
+    void notifyAboutRangeChange (int startLine, int endLine, bool rangeWithAttribute);
 
   private Q_SLOTS:
     /**
