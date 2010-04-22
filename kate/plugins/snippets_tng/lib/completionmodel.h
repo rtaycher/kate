@@ -71,18 +71,9 @@ namespace KTextEditor {
   #endif
 
       private:
-        QList<SnippetCompletionEntry> m_entries;
-        QList<const SnippetCompletionEntry*> m_matches;
-        void loadEntries(const QString& filename);
-        QString m_fileType;
-        QStringList mergedFiles;
-        QStringList m_scripts;
-        TemplateScriptRegistrar *m_scriptRegistrar;
-        SnippetCompletionModelPrivate *d;
-        bool m_automatic;
+        SnippetCompletionModelPrivate  * const d;
 
   #ifdef SNIPPET_EDITOR
-          QString m_script;
       public:
           QString script();
           void setScript(const QString& script);
