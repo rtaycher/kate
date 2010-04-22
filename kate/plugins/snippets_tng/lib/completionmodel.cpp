@@ -33,6 +33,8 @@
 #include <QDomDocument>
 #include <QFile>
 
+#define COMPLETION_THRESHOLD 3
+
 namespace KTextEditor {
   namespace CodesnippetsCore {
 #ifdef SNIPPET_EDITOR
@@ -54,7 +56,7 @@ namespace KTextEditor {
 //BEGIN: CompletionModel
 
     SnippetCompletionModel::SnippetCompletionModel(const QString &fileType, QStringList &snippetFiles,TemplateScriptRegistrar *scriptRegistrar):
-      KTextEditor::CodeCompletionModel2((QObject*)0),m_fileType(fileType),mergedFiles(snippetFiles),m_scriptRegistrar(scriptRegistrar) {        
+      KTextEditor::CodeCompletionModel2((QObject*)0),m_fileType(fileType),mergedFiles(snippetFiles),m_scriptRegistrar(scriptRegistrar),m_automatic(false) {        
         kDebug()<<"About to load files "<<snippetFiles<<" for file type "<<fileType;
         foreach(const QString& str, snippetFiles) {
           loadEntries(str);
@@ -214,11 +216,13 @@ namespace KTextEditor {
           kDebug()<<"me: "<<m_fileType<<" current hl in file: "<<hli->highlightingModeAt(range.end());
           if (hli->highlightingModeAt(range.end())!=m_fileType) my_mode=false;
         }
+        m_automatic=false;
         if (my_mode) {
           if (invocationType==AutomaticInvocation) {
+            m_automatic=true;
             //KateView *v = qobject_cast<KateView*> (view);
             
-            if (range.columnWidth() >= 3) {
+            if (range.columnWidth() >= COMPLETION_THRESHOLD) {
               m_matches.clear();
               foreach(const SnippetCompletionEntry& entry,m_entries) {
                 m_matches.append(&entry);
@@ -324,15 +328,6 @@ namespace KTextEditor {
     }  
 
 
-  bool SnippetCompletionModel::shouldAbortCompletion(View* view, const Range &range, const QString &currentCompletion) {
-      if(view->cursorPosition() < range.start() || view->cursorPosition() > range.end())
-        return true; //Always abort when the completion-range has been left
-      //Do not abort completions when the text has been empty already before and a newline has been entered
-
-      static const QRegExp allowedText("^([\\w:_]*)");
-  //    kDebug()<<!allowedText.exactMatch(currentCompletion);
-      return !allowedText.exactMatch(currentCompletion);
-  }
 
 
   Range SnippetCompletionModel::completionRange(View* view, const Cursor &position)
@@ -363,6 +358,51 @@ namespace KTextEditor {
 //      kDebug()<<Range(start,end);
       return Range(start, end);
   }
+
+bool SnippetCompletionModel::shouldStartCompletion(KTextEditor::View* view, const QString &insertedText, bool userInsertion, const KTextEditor::Cursor &position)
+{
+    if (!userInsertion) return false;
+    if(insertedText.isEmpty())
+        return false;
+    
+    bool my_mode=true;
+    KTextEditor::HighlightInterface *hli=qobject_cast<KTextEditor::HighlightInterface*>(view->document());
+    if (hli)
+    {          
+      kDebug()<<"me: "<<m_fileType<<" current hl in file: "<<hli->highlightingModeAt(position);
+      if (hli->highlightingModeAt(position)!=m_fileType) my_mode=false;
+    }
+
+    if (!my_mode) return false;
+
+    
+    QString text = view->document()->line(position.line()).left(position.column());
+    int start=text.length();
+    int end=text.length()-COMPLETION_THRESHOLD;
+    if (end<0) return false;
+    for (int i=start-1;i>=end;i--) {
+      QChar c=text.at(i);
+      if (! (c.isLetter() || (c.isNumber()) || c=='_' || c==':') ) return false;
+    }
+   
+    return true;
+}
+
+bool SnippetCompletionModel::shouldAbortCompletion(KTextEditor::View* view, const KTextEditor::Range &range, const QString &currentCompletion) {
+
+    if (m_automatic) {
+      if (currentCompletion.length()<COMPLETION_THRESHOLD) return true;
+    }
+  
+    if(view->cursorPosition() < range.start() || view->cursorPosition() > range.end())
+        return true; //Always abort when the completion-range has been left
+      //Do not abort completions when the text has been empty already before and a newline has been entered
+
+      static const QRegExp allowedText("^([\\w:_]*)");
+  //    kDebug()<<!allowedText.exactMatch(currentCompletion);
+      return !allowedText.exactMatch(currentCompletion);
+}
+
 
   #ifdef SNIPPET_EDITOR
     static void addAndCreateElement(QDomDocument& doc, QDomElement& item, const QString& name, const QString &content)
