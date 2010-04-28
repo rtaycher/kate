@@ -265,33 +265,18 @@ class KATEPART_TESTS_EXPORT KateView : public KTextEditor::View,
     const QList<KTextEditor::SmartRange*>& externalHighlights() const;
     void clearExternalHighlights();
 
-    void addInternalHighlight(KTextEditor::SmartRange* topRange);
-    void removeInternalHighlight(KTextEditor::SmartRange* topRange);
-    const QList<KTextEditor::SmartRange*>& internalHighlights() const;
-
     // Action association extension
-    void addActions(KTextEditor::SmartRange* topRange);
-    const QList<KTextEditor::SmartRange*>& actions() const;
-    void clearActions();
     void deactivateEditActions();
     void activateEditActions();
 
-  Q_SIGNALS:
-    void dynamicHighlightAdded(KateSmartRange* range);
-    void dynamicHighlightRemoved(KateSmartRange* range);
-
   public Q_SLOTS:
     void removeExternalHighlight(KTextEditor::SmartRange* topRange);
-    void removeActions(KTextEditor::SmartRange* topRange);
 
   private:
     // Smart range watcher overrides
     virtual void rangeDeleted(KTextEditor::SmartRange* range);
 
     QList<KTextEditor::SmartRange*> m_externalHighlights;
-    QList<KTextEditor::SmartRange*> m_externalHighlightsDynamic;
-    QList<KTextEditor::SmartRange*> m_internalHighlights;
-    QList<KTextEditor::SmartRange*> m_actions;
 
   //
   // internal helper stuff, for katerenderer and so on

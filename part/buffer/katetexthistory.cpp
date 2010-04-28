@@ -349,8 +349,17 @@ void TextHistory::transformCursor (KTextEditor::Cursor &cursor, KTextEditor::Mov
   }
 }
 
-void TextHistory::transformRange (KTextEditor::Range &range, KTextEditor::MovingRange::InsertBehaviors insertBehaviors, qint64 fromRevision, qint64 toRevision)
+void TextHistory::transformRange (KTextEditor::Range &range, KTextEditor::MovingRange::InsertBehaviors insertBehaviors, KTextEditor::MovingRange::EmptyBehavior emptyBehavior, qint64 fromRevision, qint64 toRevision)
 {
+  /**
+   * invalidate on empty?
+   */
+  bool invalidateIfEmpty = emptyBehavior == KTextEditor::MovingRange::InvalidateIfEmpty;
+  if (invalidateIfEmpty && range.end() <= range.start()) {
+    range = KTextEditor::Range::invalid();
+    return;
+  }
+
   /**
    * -1 special meaning for toRevision
    */
@@ -376,15 +385,31 @@ void TextHistory::transformRange (KTextEditor::Range &range, KTextEditor::Moving
   /**
    * transform cursors
    */
-  KTextEditor::Cursor &start = range.start ();
-  KTextEditor::Cursor &end = range.end ();
+
+  // first: copy cursors, without range association
+  KTextEditor::Cursor start = range.start ();
+  KTextEditor::Cursor end = range.end ();
+
   bool moveOnInsertStart = !(insertBehaviors & KTextEditor::MovingRange::ExpandLeft);
   bool moveOnInsertEnd = (insertBehaviors & KTextEditor::MovingRange::ExpandRight);
   for (int rev = fromRevision - m_firstHistoryEntryRevision + 1; rev <= (toRevision - m_firstHistoryEntryRevision); ++rev) {
     const Entry &entry = m_historyEntries[rev];
     entry.transformCursor (start, moveOnInsertStart);
     entry.transformCursor (end, moveOnInsertEnd);
+
+    // got empty?
+    if (invalidateIfEmpty && range.end() <= range.start()) {
+      range = KTextEditor::Range::invalid();
+      return;
+    }
+
+    // else normalize them
+    if (end < start)
+      end = start;
   }
+
+  // now, copy cursors back
+  range.setRange (start, end);
 }
 
 }

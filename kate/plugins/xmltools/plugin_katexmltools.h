@@ -25,14 +25,7 @@
 
 #include "pseudo_dtd.h"
 
-#include <q3dict.h>
 #include <qstring.h>
-#include <q3listbox.h>
-#include <q3progressdialog.h>
-#include <q3intdict.h>
-//Added by qt3to4:
-#include <Q3ValueList>
-#include <Q3PtrList>
 
 #include <kate/plugin.h>
 #include <kate/application.h>
@@ -43,6 +36,7 @@
 #include <ktexteditor/view.h>
 #include <ktexteditor/codecompletioninterface.h>
 #include <ktexteditor/codecompletionmodel.h>
+#include <ktexteditor/codecompletionmodelcontrollerinterface.h>
 
 #include <kcombobox.h>
 #include <kdialog.h>
@@ -58,16 +52,19 @@ class PluginKateXMLTools : public Kate::Plugin
     Kate::PluginView *createView(Kate::MainWindow *mainWindow);
 };
 
-class PluginKateXMLToolsCompletionModel : public KTextEditor::CodeCompletionModel
+class PluginKateXMLToolsCompletionModel : public KTextEditor::CodeCompletionModel2, public KTextEditor::CodeCompletionModelControllerInterface3
 {
   Q_OBJECT
+  Q_INTERFACES(KTextEditor::CodeCompletionModelControllerInterface3)
 
   public:
     PluginKateXMLToolsCompletionModel( QObject *parent );
     virtual ~PluginKateXMLToolsCompletionModel();
 
     virtual QVariant data(const QModelIndex &idx, int role) const;
+    virtual void executeCompletionItem2( KTextEditor::Document *document, const KTextEditor::Range &word, const QModelIndex &index ) const;
 
+    virtual bool shouldStartCompletion( KTextEditor::View *view, const QString &insertedText, bool userInsertion, const KTextEditor::Cursor &position );
 
   public slots:
 
@@ -94,10 +91,10 @@ class PluginKateXMLToolsCompletionModel : public KTextEditor::CodeCompletionMode
     QString insideTag( KTextEditor::View &kv );
     QString insideAttribute( KTextEditor::View &kv );
 
-    bool isOpeningTag( QString tag );
-    bool isClosingTag( QString tag );
-    bool isEmptyTag( QString tag );
-    bool isQuote( QString ch );
+    static bool isOpeningTag( QString tag );
+    static bool isClosingTag( QString tag );
+    static bool isEmptyTag( QString tag );
+    static bool isQuote( QString ch );
 
     QString getParentElement( KTextEditor::View &view, bool ignoreSingleBracket );
 
@@ -124,11 +121,11 @@ class PluginKateXMLToolsCompletionModel : public KTextEditor::CodeCompletionMode
     // code completion stuff:
     KTextEditor::CodeCompletionInterface* m_codeInterface;
 
-    /// maps KTE::Document::documentName -> DTD
-    Q3Dict<PseudoDTD> m_docDtds;
+    /// maps KTE::Document -> DTD
+    QHash<KTextEditor::Document *, PseudoDTD *> m_docDtds;
 
     /// maps DTD filename -> DTD
-    Q3Dict<PseudoDTD> m_dtds;
+    QHash<QString, PseudoDTD *> m_dtds;
 };
 
 class PluginKateXMLToolsView : public Kate::PluginView, public Kate::XMLGUIClient

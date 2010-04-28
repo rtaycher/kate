@@ -34,7 +34,9 @@ KateUndoManager::KateUndoManager (KateDocument *doc)
   , docWasSavedWhenUndoWasEmpty(true)
   , docWasSavedWhenRedoWasEmpty(true)
 {
-  connect(this, SIGNAL(undoChanged()), m_document, SIGNAL(undoChanged()));
+  connect(this, SIGNAL(undoEnd(KTextEditor::Document*)), this, SIGNAL(undoChanged()));
+  connect(this, SIGNAL(redoEnd(KTextEditor::Document*)), this, SIGNAL(undoChanged()));
+
   connect(doc, SIGNAL(viewCreated(KTextEditor::Document*, KTextEditor::View*)), SLOT(viewCreated(KTextEditor::Document*, KTextEditor::View*)));
 }
 
@@ -124,13 +126,13 @@ void KateUndoManager::inputMethodEnd()
   setActive(true);
 }
 
-void KateUndoManager::undoStart()
+void KateUndoManager::startUndo()
 {
   setActive(false);
   m_document->editStart();
 }
 
-void KateUndoManager::undoEnd()
+void KateUndoManager::endUndo()
 {
   m_document->editEnd();
   setActive(true);
@@ -233,14 +235,14 @@ void KateUndoManager::undo()
 
   if (undoItems.count() > 0)
   {
-    emit aboutToUndo();
+    emit undoStart(document());
 
     undoItems.last()->undo(activeView());
     redoItems.append (undoItems.last());
     undoItems.removeLast ();
     updateModified();
 
-    emit undoChanged ();
+    emit undoEnd(document());
   }
 }
 
@@ -250,14 +252,14 @@ void KateUndoManager::redo()
 
   if (redoItems.count() > 0)
   {
-    emit aboutToRedo();
+    emit redoStart(document());
 
     redoItems.last()->redo(activeView());
     undoItems.append (redoItems.last());
     redoItems.removeLast ();
     updateModified();
 
-    emit undoChanged ();
+    emit redoEnd(document());
   }
 }
 

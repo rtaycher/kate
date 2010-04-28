@@ -127,8 +127,8 @@ class KateUndoManager : public QObject
      */
     void editEnd();
 
-    void undoStart();
-    void undoEnd();
+    void startUndo();
+    void endUndo();
 
     void inputMethodStart();
     void inputMethodEnd();
@@ -170,8 +170,10 @@ class KateUndoManager : public QObject
 
   Q_SIGNALS:
     void undoChanged ();
-    void aboutToUndo ();
-    void aboutToRedo ();
+    void undoStart (KTextEditor::Document*);
+    void undoEnd (KTextEditor::Document*);
+    void redoStart (KTextEditor::Document*);
+    void redoEnd (KTextEditor::Document*);
     void isActiveChanged(bool enabled);
 
   private Q_SLOTS:

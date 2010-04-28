@@ -58,7 +58,6 @@ KateRenderer::KateRenderer(KateDocument* doc, KateView *view)
     , m_showSpaces(true)
     , m_printerFriendly(false)
     , m_config(new KateRendererConfig(this))
-    , m_dynamicRegion(doc)
 {
   updateAttributes ();
 }
@@ -297,11 +296,11 @@ static bool rangeLessThanForRenderer (const Kate::TextRange *a, const Kate::Text
   // end of a > end of b?
   if (a->end().toCursor() > b->end().toCursor())
     return true;
-  
+
   // if ends are equal, start of a < start of b?
   if (a->end().toCursor() == b->end().toCursor())
     return a->start().toCursor() < b->start().toCursor();
-  
+
   return false;
 }
 
@@ -311,7 +310,7 @@ QList<QTextLayout::FormatRange> KateRenderer::decorationsForLine( const Kate::Te
 
   // Don't compute the highlighting if there isn't going to be any highlighting
   QList<Kate::TextRange *> rangesWithAttributes = m_doc->buffer().rangesForLine (line, m_view, true);
-  if (selectionsOnly || textLine->attributesList().count() || m_view->externalHighlights().count() || m_view->internalHighlights().count() || m_doc->documentHighlights().count()
+  if (selectionsOnly || textLine->attributesList().count() || m_view->externalHighlights().count() || m_doc->documentHighlights().count()
     || rangesWithAttributes.count()) {
     RenderRangeList renderRanges;
 
@@ -328,10 +327,10 @@ QList<QTextLayout::FormatRange> KateRenderer::decorationsForLine( const Kate::Te
       const QSet<Kate::TextRange *> *rangesMouseIn = m_view ? m_view->rangesMouseIn () : 0;
       const QSet<Kate::TextRange *> *rangesCaretIn = m_view ? m_view->rangesCaretIn () : 0;
       bool anyDynamicHlsActive = m_view && (!rangesMouseIn->empty() || !rangesCaretIn->empty());
-      
+
       // sort all ranges, we want that the most specific ranges win during rendering, multiple equal ranges are kind of random, still better than old smart rangs behavior ;)
       qSort (rangesWithAttributes.begin(), rangesWithAttributes.end(), rangeLessThanForRenderer);
-      
+
       // loop over all ranges
       for (int i = 0; i < rangesWithAttributes.size(); ++i) {
         // real range
@@ -360,8 +359,7 @@ QList<QTextLayout::FormatRange> KateRenderer::decorationsForLine( const Kate::Te
       }
 
       // Add arbitrary highlighting ranges to the list
-      renderRanges.appendRanges(m_view->internalHighlights(), selectionsOnly, view());
-      renderRanges.appendRanges(m_view->externalHighlights(), selectionsOnly, view());
+      renderRanges.appendRanges(m_view->externalHighlights(), view());
     } else {
       // Add the code completion arbitrary highlight to the list
       renderRanges.append(completionHighlight);
@@ -425,8 +423,7 @@ QList<QTextLayout::FormatRange> KateRenderer::decorationsForLine( const Kate::Te
         currentPosition = subRange.start();
         endPosition = subRange.end();
       } else {
-        KTextEditor::Range rangeNeeded = m_view->selectionRange().encompass(m_dynamicRegion.boundingRange());
-        rangeNeeded &= KTextEditor::Range(line, 0, line + 1, 0);
+        KTextEditor::Range rangeNeeded = m_view->selectionRange() & KTextEditor::Range(line, 0, line + 1, 0);
 
         currentPosition = qMax(KTextEditor::Cursor(line, 0), rangeNeeded.start());
         endPosition = qMin(KTextEditor::Cursor(line + 1, 0), rangeNeeded.end());
@@ -538,7 +535,7 @@ void KateRenderer::paintTextLine(QPainter& paint, KateLineLayoutPtr range, int x
       // set the pen color
       paint.setPen(attribute(KTextEditor::HighlightInterface::dsNormal)->foreground().color());
       // Draw the text :)
-      if (m_dynamicRegion.boundingRange().isValid() || (m_view->selection() && showSelections() && m_view->selectionRange().overlapsLine(range->line()))) {
+      if (m_view->selection() && showSelections() && m_view->selectionRange().overlapsLine(range->line())) {
         // FIXME toVector() may be a performance issue
         additionalFormats = decorationsForLine(range->textLine(), range->line(), true).toVector();
         range->layout()->draw(&paint, QPoint(-xStart,0), additionalFormats);

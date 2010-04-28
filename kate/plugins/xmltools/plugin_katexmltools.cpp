@@ -82,16 +82,12 @@ TODO:
 #include <qdom.h>
 #include <qfile.h>
 #include <qlayout.h>
-#include <q3listbox.h>
-#include <q3progressdialog.h>
 #include <qpushbutton.h>
 #include <qregexp.h>
 #include <qstring.h>
 #include <qtimer.h>
-//Added by qt3to4:
 #include <QLabel>
 #include <QVBoxLayout>
-#include <Q3ValueList>
 
 #include <kaction.h>
 #include <kactioncollection.h>
@@ -103,6 +99,7 @@ TODO:
 #include <khistorycombobox.h>
 #include <kcomponentdata.h>
 #include <kio/job.h>
+#include <kio/jobuidelegate.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kstandarddirs.h>
@@ -152,13 +149,9 @@ PluginKateXMLToolsView::PluginKateXMLToolsView(Kate::MainWindow *win)
   setXMLFile( "plugins/katexmltools/ui.rc" );
   win->guiFactory()->addClient( this );
 
-  //m_documentManager = ((Kate::Application*)parent)->documentManager();
-
-//   connect( m_documentManager, SIGNAL(documentCreated()),
-//             this, SLOT(slotDocumentCreated()) );
- /* connect( application()->documentManager(), SIGNAL(documentDeleted(KTextEditor::Document *)),
+  connect( application()->documentManager(), SIGNAL(documentDeleted(KTextEditor::Document *)),
             &m_model, SLOT(slotDocumentDeleted(KTextEditor::Document *)) );
-*/
+
 }
 
 PluginKateXMLToolsView::~PluginKateXMLToolsView()
@@ -167,7 +160,7 @@ PluginKateXMLToolsView::~PluginKateXMLToolsView()
   //TODO: unregister the model
 }
 
-PluginKateXMLToolsCompletionModel::PluginKateXMLToolsCompletionModel( QObject *parent ) : CodeCompletionModel (parent)
+PluginKateXMLToolsCompletionModel::PluginKateXMLToolsCompletionModel( QObject *parent ) : CodeCompletionModel2 (parent)
 {
   m_dtdString.clear();
   m_urlString.clear();
@@ -181,37 +174,34 @@ PluginKateXMLToolsCompletionModel::PluginKateXMLToolsCompletionModel( QObject *p
   m_allowed = QStringList();
   m_popupOpenCol = -1;
 
-  m_dtds.setAutoDelete( true );
+  setHasGroups( false );
 }
 
 PluginKateXMLToolsCompletionModel::~PluginKateXMLToolsCompletionModel()
 {
-
+  qDeleteAll( m_dtds );
+  m_dtds.clear();
 }
 
 void PluginKateXMLToolsCompletionModel::slotDocumentDeleted( KTextEditor::Document *doc )
 {
   // Remove the document from m_DTDs, and also delete the PseudoDTD
   // if it becomes unused.
-  QString name = doc->documentName();
-  if ( m_docDtds[ name ] )
+  if ( m_docDtds[ doc ] )
   {
     kDebug()<<"XMLTools:slotDocumentDeleted: documents: "<<m_docDtds.count()<<", DTDs: "<<m_dtds.count();
-    PseudoDTD *dtd = m_docDtds.take( name );
+    PseudoDTD *dtd = m_docDtds.take( doc );
 
-    Q3DictIterator<PseudoDTD> it ( m_docDtds );
-    for ( ; it.current(); ++it )
-    {
-      if ( it.current() == dtd )
-        return;
-    }
+    if ( m_docDtds.key( dtd ) )
+      return;
 
-    Q3DictIterator<PseudoDTD> it1( m_dtds );
-    for ( ; it1.current() ; ++it1 )
+    QHash<QString, PseudoDTD *>::iterator it;
+    for ( it = m_dtds.begin() ; it != m_dtds.end() ; ++it )
     {
-      if ( it1.current() == dtd )
+      if ( it.value() == dtd )
       {
-        m_dtds.remove( it1.currentKey() );
+        m_dtds.erase(it);
+        delete dtd;
         return;
       }
     }
@@ -259,8 +249,8 @@ void PluginKateXMLToolsCompletionModel::completionInvoked( KTextEditor::View *kv
   kDebug() << "xml tools completionInvoked";
   //kDebug() << "xml tools keyEvent: '" << s;
 
-  QString docName = kv->document()->documentName();
-  if( ! m_docDtds[ docName ] )
+  KTextEditor::Document *doc = kv->document();
+  if( ! m_docDtds[ doc ] )
     // no meta DTD assigned yet
     return;
 
@@ -281,7 +271,7 @@ void PluginKateXMLToolsCompletionModel::completionInvoked( KTextEditor::View *kv
   if( leftCh == "&" )
   {
     kDebug() << "Getting entities";
-    m_allowed = m_docDtds[docName]->entities("" );
+    m_allowed = m_docDtds[doc]->entities("" );
     m_mode = entities;
   }
   else if( leftCh == "<" )
@@ -289,7 +279,7 @@ void PluginKateXMLToolsCompletionModel::completionInvoked( KTextEditor::View *kv
     kDebug() << "*outside tag -> get elements";
     QString parentElement = getParentElement( *kv, true );
     kDebug() << "parent: " << parentElement;
-    m_allowed = m_docDtds[docName]->allowedElements(parentElement );
+    m_allowed = m_docDtds[doc]->allowedElements(parentElement );
     m_mode = elements;
   }
   // TODO: optionally close parent tag if not left=="/>"
@@ -308,7 +298,7 @@ void PluginKateXMLToolsCompletionModel::completionInvoked( KTextEditor::View *kv
     if( ! currentElement.isEmpty() && ! currentAttribute.isEmpty() )
     {
       kDebug() << "*inside attribute -> get attribute values";
-      m_allowed = m_docDtds[docName]->attributeValues(currentElement, currentAttribute );
+      m_allowed = m_docDtds[doc]->attributeValues(currentElement, currentAttribute );
       if( m_allowed.count() == 1 &&
           (m_allowed[0] == "CDATA" || m_allowed[0] == "ID" || m_allowed[0] == "IDREF" ||
           m_allowed[0] == "IDREFS" || m_allowed[0] == "ENTITY" || m_allowed[0] == "ENTITIES" ||
@@ -325,7 +315,7 @@ void PluginKateXMLToolsCompletionModel::completionInvoked( KTextEditor::View *kv
     else if( ! currentElement.isEmpty() )
     {
       kDebug() << "*inside tag -> get attributes";
-      m_allowed = m_docDtds[docName]->allowedAttributes(currentElement );
+      m_allowed = m_docDtds[doc]->allowedAttributes(currentElement );
       m_mode = attributes;
     }
   }
@@ -351,6 +341,20 @@ QVariant PluginKateXMLToolsCompletionModel::data(const QModelIndex &idx, int rol
     return m_allowed.at( idx.row() );
   else
     return QVariant();
+}
+
+
+bool PluginKateXMLToolsCompletionModel::shouldStartCompletion( KTextEditor::View *view,
+                                                               const QString &insertedText,
+                                                               bool userInsertion,
+                                                               const KTextEditor::Cursor &position )
+{
+  Q_UNUSED( view )
+  Q_UNUSED( userInsertion )
+  Q_UNUSED( position )
+  const QString triggerChars = "&< '\""; // these are subsequently handled by completionInvoked()
+
+  return triggerChars.contains( insertedText.right(1) );
 }
 
 
@@ -472,7 +476,7 @@ void PluginKateXMLToolsCompletionModel::slotFinished( KJob *job )
   if( job->error() )
   {
     //kDebug() << "XML Plugin error: DTD in XML format (" << filename << " ) could not be loaded";
-    static_cast<KIO::Job*>(job)->showErrorDialog( 0 );
+    static_cast<KIO::Job*>(job)->ui()->showErrorMessage();
   }
   else if ( static_cast<KIO::TransferJob *>(job)->isErrorPage() )
   {
@@ -503,7 +507,7 @@ void PluginKateXMLToolsCompletionModel::slotData( KIO::Job *, const QByteArray &
 
 void PluginKateXMLToolsCompletionModel::assignDTD( PseudoDTD *dtd, KTextEditor::Document *doc )
 {
-  m_docDtds.replace( doc->documentName(), dtd );
+  m_docDtds.insert( doc, dtd );
 
   KTextEditor::CodeCompletionInterface *cci = qobject_cast<KTextEditor::CodeCompletionInterface *>(doc->activeView()); //TODO:perhaps foreach views()?
 
@@ -534,7 +538,7 @@ void PluginKateXMLToolsCompletionModel::slotInsertElement()
     return;
   }
 
-  PseudoDTD *dtd = m_docDtds[kv->document()->documentName()];
+  PseudoDTD *dtd = m_docDtds[kv->document()];
   QString parentElement = getParentElement( *kv, false );
   QStringList allowed;
 
@@ -604,48 +608,50 @@ void PluginKateXMLToolsCompletionModel::slotCloseElement()
     kv->insertText( closeTag );
 }
 
-#if 0 // not ported yet
+
 // modify the completion string before it gets inserted
-void PluginKateXMLToolsCompletionModel::filterInsertString( KTextEditor::CompletionItem *ce, QString *text )
+void PluginKateXMLToolsCompletionModel::executeCompletionItem2( KTextEditor::Document *document,
+                                                                const KTextEditor::Range &word,
+                                                                const QModelIndex &index ) const
 {
-  kDebug() << "filterInsertString str: " << *text;
-  kDebug() << "filterInsertString text: " << ce.text();
+  KTextEditor::Range toReplace = word;
 
-  if ( !application()->activeMainWindow() )
-    return;
+  QString text = data( index.sibling( index.row(), Name ), Qt::DisplayRole ).toString();
 
-  KTextEditor::View *kv = application()->activeMainWindow()->activeView();
+  kDebug() << "executeCompletionItem text: " << text;
+
+  KTextEditor::View *kv = document->activeView();
   if( ! kv )
   {
     kDebug() << "Warning (filterInsertString() ): no KTextEditor::View";
     return;
   }
 
-  uint line, col;
-  kv->cursorPositionReal( &line, &col );
-  QString lineStr = kv->getDoc()->textLine(line );
+  int line, col;
+  kv->cursorPosition().position( line, col );
+  QString lineStr = document->line( line );
   QString leftCh = lineStr.mid( col-1, 1 );
   QString rightCh = lineStr.mid( col, 1 );
 
-  m_correctPos = 0;	// where to move the cursor after completion ( >0 = move right )
+  int posCorrection = 0;	// where to move the cursor after completion ( >0 = move right )
   if( m_mode == entities )
   {
     // This is a bit ugly, but entities are case-sensitive
     // and we want the correct completion even if the user started typing
     // e.g. in lower case but the entity is in upper case
-    kv->getDoc()->removeText( line, col - (ce->text.length() - text->length()), line, col );
-    *text = ce->text + ';';
+    // document->removeText( line, col - (ce->text.length() - text->length()), line, col );
+    text = text + ';';
   }
 
   else if( m_mode == attributes )
   {
-    *text = *text + "=\"\"";
-    m_correctPos = -1;
+    text = text + "=\"\"";
+    posCorrection = -1;
     if( !rightCh.isEmpty() && rightCh != ">" && rightCh != "/" && rightCh != " " )
     {	// TODO: other whitespaces
       // add space in front of the next attribute
-      *text = *text + ' ';
-      m_correctPos--;
+      text = text + ' ';
+      posCorrection--;
     }
   }
 
@@ -664,64 +670,46 @@ void PluginKateXMLToolsCompletionModel::filterInsertString( KTextEditor::Complet
     }
 
     // find right quote:
-    for( endAttValue = col; endAttValue <= lineStr.length(); endAttValue++ )
+    for( endAttValue = col; endAttValue <= (uint) lineStr.length(); endAttValue++ )
     {
       QString ch = lineStr.mid( endAttValue-1, 1 );
       if( isQuote(ch) )
         break;
     }
 
-    // maybe the user has already typed something to trigger completion,
-    // don't overwrite that:
-    startAttValue += ce->text.length() - text->length();
-		// delete the current contents of the attribute:
+    // replace the current contents of the attribute
     if( startAttValue < endAttValue )
-    {
-      kv->getDoc()->removeText( line, startAttValue, line, endAttValue-1 );
-      // FIXME: this makes the scrollbar jump
-      // but without it, inserting sometimes goes crazy :-(
-      kv->setCursorPositionReal( line, startAttValue );
-    }
+      toReplace = KTextEditor::Range( line, startAttValue, line, endAttValue-1 );
   }
 
   else if( m_mode == elements )
   {
     // anders: if the tag is marked EMPTY, insert in form <tagname/>
     QString str;
-    QString docName = kv->document()->documentName();
-    bool isEmptyTag =m_docDtds[docName]->allowedElements(ce->text).contains( "__EMPTY" );
+    bool isEmptyTag =m_docDtds[document]->allowedElements(text).contains( "__EMPTY" );
     if ( isEmptyTag )
-      str = "/>";
+      str = text + "/>";
     else
-      str = "></" + ce->text + '>';
-    *text = *text + str;
+      str = text + "></" + text + '>';
 
     // Place the cursor where it is most likely wanted:
     // always inside the tag if the tag is empty AND the DTD indicates that there are attribs)
     // outside for open tags, UNLESS there are mandatory attributes
-    if ( m_docDtds[docName]->requiredAttributes(ce->text).count()
-         || ( isEmptyTag && m_docDtds[docName]->allowedAttributes( ce->text).count() ) )
-      m_correctPos = - str.length();
+    if ( m_docDtds[document]->requiredAttributes(text).count()
+         || ( isEmptyTag && m_docDtds[document]->allowedAttributes(text).count() ) )
+      posCorrection = text.length() - str.length();
     else if ( ! isEmptyTag )
-      m_correctPos = -str.length() + 1;
-  }
-}
-#endif
+      posCorrection = text.length() - str.length() + 1;
 
-static void correctPos( KTextEditor::View *kv, int count )
-{
-  /*TODO:port to cursor arithmetics
-  if( count > 0 )
-  {
-    for( int i = 0; i < count; i++ )
-      kv->cursorRight();
+    text = str;
   }
-  else if( count < 0 )
-  {
-    for( int i = 0; i < -count; i++ )
-      kv->cursorLeft();
-  }
-  */
+
+  document->replaceText( toReplace, text );
+
+  // move the cursor to desired position
+  KTextEditor::Cursor curPos = kv->cursorPosition();
+  curPos.setColumn( curPos.column() + posCorrection );
+  kv->setCursorPosition( curPos );
 }
 
 
