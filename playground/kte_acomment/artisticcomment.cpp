@@ -244,6 +244,7 @@ ArtisticComment& ArtisticComment::style(const QString& name)
 void ArtisticComment::setStyle(const QString& name, const ArtisticComment& style)
 {
     m_styles[name] = style;
+    writeConfig();
 }
 
 QString ArtisticComment::decorate(const QString& name, const QString& text)

@@ -51,7 +51,6 @@ ACommentPlugin::ACommentPlugin(QObject *parent, const QVariantList &args)
 
 ACommentPlugin::~ACommentPlugin()
 {
-    ArtisticComment::writeConfig();
 }
 
 void ACommentPlugin::addView(KTextEditor::View *view)
@@ -214,6 +213,7 @@ void ACommentView::changeEntry()
     ac.type = (ArtisticComment::type_t)m_ui.type->currentIndex();
     ac.minfill = m_ui.minfill->value();
     ac.realWidth = m_ui.realWidth->value();
+    ArtisticComment::writeConfig();
 }
 
 #include "acommentview.moc"
