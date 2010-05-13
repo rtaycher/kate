@@ -16,6 +16,9 @@ set (KDE4_BUILD_TESTS "ON" CACHE "BOOL" "Enable building of tests" FORCE)
 add_definitions (${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
 include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/includes ${KDE4_INCLUDES})
 
+# some stuff to have it compile for KDE 4.4
+set (KDE_4_4_LIBS_NEEDED ${KDE4_KUTILS_LIBS})
+
 # ktexteditor interfaces, copy from kdelibs/interfaces/ktexteditor
 macro_optional_add_subdirectory (ktexteditor)
 
