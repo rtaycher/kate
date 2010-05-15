@@ -88,27 +88,6 @@ const QString srcPath(KDESRCDIR);
 
 #define FAILURE( test, comment ) qMakePair<const char*, const char*>( (test), (comment) )
 
-static QStringList readListFile( const QString &filename )
-{
-  Q_ASSERT( QFile::exists( filename ) );
-  QFile file(filename);
-  if (!file.open(QFile::ReadOnly)) {
-    Q_ASSERT(false);
-  }
-  QTextStream stream(&file);
-  QString line;
-  QStringList list;
-  while (!(line = stream.readLine()).isNull()) {
-    line = line.trimmed();
-    if ( line.startsWith('#') || line.isEmpty() ) {
-      continue;
-    }
-    list.append(line);
-  }
-  file.close();
-  return list;
-}
-
 void IndentTest::initTestCase()
 {
   m_toplevel = new KMainWindow();
@@ -139,7 +118,6 @@ void IndentTest::getTestData(const QString& indenter)
     }
     QTest::newRow( info.baseName().toLocal8Bit() ) << info.absoluteFilePath();
   }
-  m_commands = readListFile( testDir + "kte-commands" );
 }
 
 void IndentTest::runTest(const ExpectedFailures& failures)
@@ -153,15 +131,6 @@ void IndentTest::runTest(const ExpectedFailures& failures)
   url.setProtocol("file");
   url.setPath(testcase + "/origin");
   m_document->openUrl(url);
-
-  // inject commands
-  foreach ( const QString& command, m_commands ) {
-    KTextEditor::Command *cmd = KateCmd::self()->queryCommand(command);
-    if ( cmd ) {
-      QString msg;
-      QVERIFY2( cmd->exec(m_view, command, msg), QString("ERROR executing command '%1': %2").arg(command).arg(msg).toUtf8().constData() );
-    }
-  }
 
   // evaluate test-script
   QFile sourceFile(testcase + "/input.js");

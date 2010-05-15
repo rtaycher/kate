@@ -1,6 +1,0 @@
-set-highlight C++
-set-indent-mode cstyle
-set-replace-tabs true
-set-indent-width 2
-set-word-wrap off
-
