@@ -19,6 +19,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
+#include <QtCore/QPair>
 
 class TestScriptEnv;
 class KateDocument;
@@ -35,7 +36,19 @@ private slots:
   void cstyle_data();
   void cstyle();
 
+  void ruby_data();
+  void ruby();
+
+  void normal_data();
+  void normal();
+
 private:
+  void getTestData(const QString& indenter);
+
+  typedef QPair<const char*, const char*> Failure;
+  typedef QList< Failure > ExpectedFailures;
+  void runTest(const ExpectedFailures& failures);
+
   TestScriptEnv* m_env;
   KateDocument* m_document;
   KMainWindow* m_toplevel;

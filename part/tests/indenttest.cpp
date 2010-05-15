@@ -86,6 +86,7 @@ QTEST_KDEMAIN(IndentTest, GUI)
 /// somepath/part/tests/
 const QString srcPath(KDESRCDIR);
 
+#define FAILURE( test, comment ) qMakePair<const char*, const char*>( (test), (comment) )
 
 static QStringList readListFile( const QString &filename )
 {
@@ -120,13 +121,13 @@ void IndentTest::cleanupTestCase()
 {
 }
 
-void IndentTest::cstyle_data()
+void IndentTest::getTestData(const QString& indenter)
 {
   QTest::addColumn<QString>("testcase");
 
-  const QString cstyleTests( srcPath + "/../../testdata/indent/cstyle/" );
-  Q_ASSERT( QFile::exists(cstyleTests) );
-  QDirIterator contents( cstyleTests );
+  const QString testDir( srcPath + "/../../testdata/indent/" + indenter + '/' );
+  Q_ASSERT( QFile::exists(testDir) );
+  QDirIterator contents( testDir );
   while ( contents.hasNext() ) {
     QString entry = contents.next();
     if ( entry.endsWith('.') ) {
@@ -138,20 +139,19 @@ void IndentTest::cstyle_data()
     }
     QTest::newRow( info.baseName().toLocal8Bit() ) << info.absoluteFilePath();
   }
-  m_commands = readListFile( cstyleTests + "kte-commands" );
+  m_commands = readListFile( testDir + "kte-commands" );
 }
 
-void IndentTest::cstyle()
+void IndentTest::runTest(const ExpectedFailures& failures)
 {
   QFETCH(QString, testcase);
 
-  qDebug() << testcase;
   m_toplevel->resize( 800, 600); // restore size
 
   // load page
   KUrl url;
   url.setProtocol("file");
-  url.setPath(testcase + "/origin.cpp");
+  url.setPath(testcase + "/origin");
   m_document->openUrl(url);
 
   // inject commands
@@ -176,25 +176,57 @@ void IndentTest::cstyle()
   QScriptValue result = m_env->engine()->evaluate(code, testcase + "/input.js", 1);
   QVERIFY2( !result.isError(), result.toString().toUtf8().constData() );
 
-  url.setPath(testcase + "/actual.cpp");
+  url.setPath(testcase + "/actual");
   m_document->saveAs(url);
 
   // diff actual and expected
   QProcess diff;
   QStringList args;
-  args << "-u" << (testcase + "/expected.cpp") << (testcase + "/actual.cpp");
+  args << "-u" << (testcase + "/expected") << (testcase + "/actual");
   diff.start("diff", args);
   diff.waitForFinished();
   QByteArray out = diff.readAllStandardOutput();
   QByteArray err = diff.readAllStandardError();
-  if (!out.isEmpty()) {
-    qDebug() << out;
-  }
   if ( !err.isEmpty() ) {
     qWarning() << err;
+  }
+  foreach( const Failure& failure, failures ) {
+    QEXPECT_FAIL(failure.first, failure.second, Abort);
   }
   QCOMPARE(QString::fromLocal8Bit(out), QString());
   QCOMPARE(diff.exitCode(), EXIT_SUCCESS);
 
   m_document->closeUrl();
+}
+
+void IndentTest::cstyle_data()
+{
+  getTestData( "cstyle" );
+}
+
+void IndentTest::cstyle()
+{
+  runTest( ExpectedFailures() );
+}
+
+void IndentTest::ruby_data()
+{
+  getTestData( "ruby" );
+}
+
+void IndentTest::ruby()
+{
+  runTest( ExpectedFailures() << FAILURE( "block01", "Multiline blocks using {} is not supported" )
+                              << FAILURE( "block02", "Multiline blocks using {} is not supported" )
+  );
+}
+
+void IndentTest::normal_data()
+{
+  getTestData( "normal" );
+}
+
+void IndentTest::normal()
+{
+  runTest( ExpectedFailures() );
 }

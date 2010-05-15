@@ -1,0 +1,5 @@
+set-remove-trailing-space on
+set-highlight ruby
+set-replace-tabs on
+set-indent-width 2
+set-indent-mode ruby
