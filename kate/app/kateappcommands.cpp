@@ -181,7 +181,7 @@ bool KateAppCommands::help(KTextEditor::View *view, const QString &cmd, QString 
         return true;
     }
     else if (re_changeBuffer.exactMatch(cmd)) {
-        msg = i18n("<p><b>bp/bn &mdash; switch no previous/next document</b></p>"
+        msg = i18n("<p><b>bp/bn &mdash; switch to previous/next document</b></p>"
               "<p>Usage: <tt><b>bp/bn</b></tt></p>"
               "<p>Goes to <b>p</b>revious or <b>n</b>ext document (\"<b>b</b>uffer\"). The two"
               " commands are:<br />"
@@ -189,7 +189,7 @@ bool KateAppCommands::help(KTextEditor::View *view, const QString &cmd, QString 
               " list.<br />"
               " <tt>bn</tt> &mdash; goes to the document after the current one in the document"
               " list.<br />"
-              "<p>Both commands wrap around, i.e., if you go past the last document you and up"
+              "<p>Both commands wrap around, i.e., if you go past the last document you end up"
               " at the first and vice versa.</p>");
         return true;
     }
