@@ -293,6 +293,13 @@ void KateRenderer::paintIndentMarker(QPainter &paint, uint x, uint row)
 
 static bool rangeLessThanForRenderer (const Kate::TextRange *a, const Kate::TextRange *b)
 {
+  // compare Z-Depth first
+  if (a->zDepth() < b->zDepth())
+    return true;
+  
+  if (a->zDepth() > b->zDepth())
+    return false;
+  
   // end of a > end of b?
   if (a->end().toCursor() > b->end().toCursor())
     return true;

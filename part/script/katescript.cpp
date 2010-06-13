@@ -1,6 +1,6 @@
 // This file is part of the KDE libraries
 // Copyright (C) 2008 Paul Giannaros <paul@giannaros.org>
-// Copyright (C) 2009 Dominik Haumann <dhaumann kde org>
+// Copyright (C) 2009, 2010 Dominik Haumann <dhaumann kde org>
 // Copyright (C) 2010 Joseph Wenninger <jowenn@kde.org>
 //
 // This library is free software; you can redistribute it and/or
@@ -21,6 +21,7 @@
 #include "katescript.h"
 #include "katescriptdocument.h"
 #include "katescriptview.h"
+#include "katescripthelpers.h"
 #include "kateview.h"
 #include "katedocument.h"
 
@@ -36,6 +37,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
+#include <klocalizedstring.h>
 
 //BEGIN conversion functions for Cursors and Ranges
 /** Converstion function from KTextEditor::Cursor to QtScript cursor */
@@ -75,24 +77,6 @@ static void rangeFromScriptValue(const QScriptValue &obj, KTextEditor::Range &ra
 
 
 
-namespace Kate {
-  namespace Script {
-
-    QScriptValue debug(QScriptContext *context, QScriptEngine *engine) {
-      QStringList message;
-      for(int i = 0; i < context->argumentCount(); ++i) {
-        message << context->argument(i).toString();
-      }
-      // debug in blue to distance from other debug output if necessary
-      std::cerr << "\033[34m" << qPrintable(message.join(" ")) << "\033[0m\n";
-      return engine->nullValue();
-    }
-
-  }
-}
-
-
-
 bool KateScript::s_scriptingApiLoaded = false;
 
 void KateScript::reloadScriptingApi()
@@ -121,12 +105,12 @@ bool KateScript::readFile(const QString& sourceUrl, QString& sourceCode)
 KateScript::KateScript(const QString &urlOrScript, enum InputType inputType)
   : m_loaded(false)
   , m_loadSuccessful(false)
-  , m_url(inputType==InputURL?urlOrScript:QString())
+  , m_url(inputType == InputURL ? urlOrScript : QString())
   , m_engine(0)
   , m_document(0)
   , m_view(0)
   , m_inputType(inputType)
-  , m_script(inputType==InputSCRIPT?urlOrScript:QString())
+  , m_script(inputType == InputSCRIPT ? urlOrScript : QString())
 {
 }
 
@@ -182,38 +166,38 @@ bool KateScript::initApi ()
   static QStringList apiFileBaseNames;
   static QHash<QString, QString> apiBaseName2FileName;
   static QHash<QString, QString> apiBaseName2Content;
-  
+
   // read katepart javascript api
   if (!s_scriptingApiLoaded) {
     s_scriptingApiLoaded = true;
     apiFileBaseNames.clear ();
     apiBaseName2FileName.clear ();
     apiBaseName2Content.clear ();
-    
+
     // get all api files
     const QStringList list = KGlobal::dirs()->findAllResources("data","katepart/api/*.js", KStandardDirs::NoDuplicates);
-    
+
     for ( QStringList::ConstIterator it = list.begin(); it != list.end(); ++it )
     {
       // get abs filename....
       QFileInfo fi(*it);
       const QString absPath = fi.absoluteFilePath();
       const QString baseName = fi.baseName ();
-      
+
       // remember filenames
       apiFileBaseNames.append (baseName);
       apiBaseName2FileName[baseName] = absPath;
-      
+
       // read the file
       QString content;
       readFile(absPath, content);
       apiBaseName2Content[baseName] = content;
     }
-    
+
     // sort...
     apiFileBaseNames.sort ();
   }
-  
+
   // register all script apis found
   for ( QStringList::ConstIterator it = apiFileBaseNames.constBegin(); it != apiFileBaseNames.constEnd(); ++it )
   {
@@ -223,7 +207,7 @@ bool KateScript::initApi ()
       return false;
     }
   }
-  
+
   // success ;)
   return true;
 }
@@ -238,11 +222,11 @@ bool KateScript::load()
 
   // read the script file into memory
   QString source;
-  if (m_inputType==InputURL) {
+  if (m_inputType == InputURL) {
     if (!readFile(m_url, source)) {
       return false;
     }
-  } else source=m_script;
+  } else source = m_script;
 
   // create script engine, register meta types
   m_engine = new QScriptEngine();
@@ -252,7 +236,7 @@ bool KateScript::load()
   // init API
   if (!initApi ())
     return false;
-  
+
   // register scripts itself
   QScriptValue result = m_engine->evaluate(source, m_url);
   if (hasException(result, m_url)) {
@@ -279,12 +263,20 @@ bool KateScript::hasException(const QScriptValue& object, const QString& file)
 }
 
 
-void KateScript::initEngine() {
+void KateScript::initEngine()
+{
   // set the view/document objects as necessary
   m_engine->globalObject().setProperty("document", m_engine->newQObject(m_document = new KateScriptDocument()));
   m_engine->globalObject().setProperty("view", m_engine->newQObject(m_view = new KateScriptView()));
 
+  // export debug function
   m_engine->globalObject().setProperty("debug", m_engine->newFunction(Kate::Script::debug));
+
+  // export translation functions
+  m_engine->globalObject().setProperty("i18n", m_engine->newFunction(Kate::Script::i18n));
+  m_engine->globalObject().setProperty("i18nc", m_engine->newFunction(Kate::Script::i18nc));
+  m_engine->globalObject().setProperty("i18ncp", m_engine->newFunction(Kate::Script::i18ncp));
+  m_engine->globalObject().setProperty("i18np", m_engine->newFunction(Kate::Script::i18np));
 }
 
 bool KateScript::setView(KateView *view)

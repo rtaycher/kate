@@ -46,12 +46,6 @@ namespace Kate {
     /** Don't know what kind of script this is */
     UnknownScript
   };
-
-
-  /** Top-level script functions */
-  namespace Script {
-    QScriptValue debug(QScriptContext *context, QScriptEngine *engine);
-  }
 }
 
 //BEGIN KateScriptHeader
@@ -106,16 +100,16 @@ class KateScriptHeader
 class KateScript {
   public:
 
-  enum InputType {
-    InputURL,
-    InputSCRIPT
-  };
-    
+    enum InputType {
+      InputURL,
+      InputSCRIPT
+    };
+
     /**
      * Create a new script representation, passing a file @p url to it.
      * Loading of the script will happen lazily
      */
-    KateScript(const QString &urlOrScript, enum InputType inputType=InputURL);
+    KateScript(const QString &urlOrScript, enum InputType inputType = InputURL);
     virtual ~KateScript();
 
     /** The script's URL */
@@ -195,7 +189,7 @@ class KateScript {
   private:
     /** True, if the katepartapi.js file is already loaded, otherwise false */
     static bool s_scriptingApiLoaded;
-    
+
     /** if input is script or url**/
     enum InputType m_inputType;
     QString m_script;

@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2010 Bernhard Beschow <bbeschow@cs.tu-berlin.de>
+   Copyright (C) 2010 Dominik Haumann <dhaumann kde org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -17,42 +17,22 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KATE_REGEXPSEARCH_TEST_H
-#define KATE_REGEXPSEARCH_TEST_H
+#ifndef KATE_BUG_213964_TEST_H
+#define KATE_BUG_213964_TEST_H
 
 #include <QtCore/QObject>
 
-class RegExpSearchTest : public QObject
+class BugTest : public QObject
 {
   Q_OBJECT
 
-  public:
-    RegExpSearchTest();
-    virtual ~RegExpSearchTest();
+public:
+  BugTest();
+  ~BugTest();
 
-  private Q_SLOTS:
-    void testReplaceEscapeSequences_data();
-    void testReplaceEscapeSequences();
+private Q_SLOTS:
+  void reproduceCrash();
 
-    void testReplacementReferences_data();
-    void testReplacementReferences();
-
-    void testReplacementCaseConversion_data();
-    void testReplacementCaseConversion();
-
-    void testReplacementCounter_data();
-    void testReplacementCounter();
-
-    void testAnchoredRegexp_data();
-    void testAnchoredRegexp();
-
-    void testSearchForward();
-
-    void testSearchBackwardInSelection();
-
-    void test();
 };
 
 #endif
-
-// kate: space-indent on; indent-width 2; replace-tabs on;

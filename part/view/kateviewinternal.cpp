@@ -147,6 +147,7 @@ KateViewInternal::KateViewInternal(KateView *view)
   connect(m_lineScroll, SIGNAL(actionTriggered(int)), SLOT(scrollAction(int)));
   connect(m_lineScroll, SIGNAL(sliderMoved(int)), SLOT(scrollLines(int)));
   connect(m_lineScroll, SIGNAL(sliderMMBMoved(int)), SLOT(scrollLines(int)));
+  connect(m_lineScroll, SIGNAL(valueChanged(int)), SLOT(scrollLines(int)));
 
   // catch wheel events, completing the hijack
   //m_lineScroll->installEventFilter(this);
@@ -813,7 +814,7 @@ void KateViewInternal::doSmartNewline()
   int col = qMin(m_cursor.column(), line->firstChar());
   if (col != -1) {
     while (line->length() > col &&
-            !line->at(col).isLetterOrNumber() &&
+            !(line->at(col).isLetterOrNumber() || line->at(col) == QLatin1Char('_')) &&
             col < m_cursor.column()) ++col;
   } else {
     col = line->length(); // stay indented
@@ -1873,6 +1874,7 @@ void KateViewInternal::updateCursor( const KTextEditor::Cursor& newCursor, bool 
 {
   if ( !force && (m_cursor.toCursor() == newCursor) )
   {
+    m_displayCursor = toVirtualCursor(newCursor);
     if ( !m_madeVisible && m_view == doc()->activeView() )
     {
       // unfold if required
@@ -2450,7 +2452,7 @@ void KateViewInternal::keyReleaseEvent( QKeyEvent* e )
     m_view->completionWidget()->toggleExpanded(false, true);
   }
 
-  if (e->key() == Qt::SHIFT)
+  if ((e->modifiers() & Qt::SHIFT) == Qt::SHIFT)
   {
     m_shiftKeyPressed = true;
   }

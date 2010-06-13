@@ -255,6 +255,13 @@ bool KateViNormalMode::handleKeypress( const QKeyEvent *e )
             // the motion says it should go to
             KateViRange r = m_motions.at( i )->execute();
 
+            // jump over folding regions since we are just moving the cursor
+            int currLine = m_view->cursorPosition().line();
+            int delta = r.endLine - currLine;
+            int vline = doc()->foldingTree()->getVirtualLine( currLine );
+            r.endLine = doc()->foldingTree()->getRealLine( vline+delta );
+            if ( r.endLine >= doc()->lines() ) r.endLine = doc()->lines()-1;
+
             // make sure the position is valid before moving the cursor there
             if ( r.valid
                 && r.endLine >= 0
@@ -593,7 +600,7 @@ bool KateViNormalMode::commandDeleteToEOL()
   Cursor c( m_view->cursorPosition() );
 
   m_commandRange.endLine = c.line()+getCount()-1;
-  m_commandRange.endColumn = doc()->lineLength( m_commandRange.endLine );
+  m_commandRange.endColumn = doc()->lineLength( m_commandRange.endLine )-1;
 
   if ( m_viInputModeManager->getCurrentViMode() == NormalMode ) {
     m_commandRange.startLine = c.line();
@@ -961,7 +968,7 @@ bool KateViNormalMode::commandYankToEOL()
   QString yankedText;
 
   m_commandRange.endLine = c.line()+getCount()-1;
-  m_commandRange.endColumn = doc()->lineLength( m_commandRange.endLine );
+  m_commandRange.endColumn = doc()->lineLength( m_commandRange.endLine )-1;
 
   bool linewise = ( m_viInputModeManager->getCurrentViMode() == VisualMode
       || m_viInputModeManager->getCurrentViMode() == VisualLineMode );

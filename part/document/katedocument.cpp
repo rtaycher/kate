@@ -247,10 +247,10 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
   }
 
   connect(m_undoManager, SIGNAL(undoChanged()), this, SIGNAL(undoChanged()));
-  connect(m_undoManager, SIGNAL(undoStart(KTextEditor::Document*)),   this, SIGNAL(internalEditStart(KTextEditor::Document*)));
-  connect(m_undoManager, SIGNAL(undoEnd(KTextEditor::Document*)),     this, SIGNAL(internalEditEnd(KTextEditor::Document*)));
-  connect(m_undoManager, SIGNAL(redoStart(KTextEditor::Document*)),   this, SIGNAL(internalEditStart(KTextEditor::Document*)));
-  connect(m_undoManager, SIGNAL(redoEnd(KTextEditor::Document*)),     this, SIGNAL(internalEditEnd(KTextEditor::Document*)));
+  connect(m_undoManager, SIGNAL(undoStart(KTextEditor::Document*)),   this, SIGNAL(exclusiveEditStart(KTextEditor::Document*)));
+  connect(m_undoManager, SIGNAL(undoEnd(KTextEditor::Document*)),     this, SIGNAL(exclusiveEditEnd(KTextEditor::Document*)));
+  connect(m_undoManager, SIGNAL(redoStart(KTextEditor::Document*)),   this, SIGNAL(exclusiveEditStart(KTextEditor::Document*)));
+  connect(m_undoManager, SIGNAL(redoEnd(KTextEditor::Document*)),     this, SIGNAL(exclusiveEditEnd(KTextEditor::Document*)));
 
   connect(this,SIGNAL(sigQueryClose(bool *, bool*)),this,SLOT(slotQueryClose_save(bool *, bool*)));
 
@@ -5037,9 +5037,17 @@ void KateDocument::unlockRevision (qint64 revision)
   m_buffer->history().unlockRevision (revision);
 }
 
+void KateDocument::transformCursor(int& line, int& column, KTextEditor::MovingCursor::InsertBehavior insertBehavior, qint64 fromRevision, qint64 toRevision)
+{
+  m_buffer->history().transformCursor (line, column, insertBehavior, fromRevision, toRevision);
+}
+
 void KateDocument::transformCursor (KTextEditor::Cursor &cursor, KTextEditor::MovingCursor::InsertBehavior insertBehavior, qint64 fromRevision, qint64 toRevision)
 {
-  m_buffer->history().transformCursor (cursor, insertBehavior, fromRevision, toRevision);
+  int line = cursor.line(), column = cursor.column();
+  m_buffer->history().transformCursor (line, column, insertBehavior, fromRevision, toRevision);
+  cursor.setLine(line);
+  cursor.setColumn(column);
 }
 
 void KateDocument::transformRange (KTextEditor::Range &range, KTextEditor::MovingRange::InsertBehaviors insertBehaviors, KTextEditor::MovingRange::EmptyBehavior emptyBehavior, qint64 fromRevision, qint64 toRevision)
