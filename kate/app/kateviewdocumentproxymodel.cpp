@@ -490,7 +490,7 @@ void KateViewDocumentProxyModel::slotRowsAboutToBeInserted ( const QModelIndex &
   {
     if (m_current.row() > start)
     {
-//       m_current = createIndex(m_current.row() + insertedRange, 0);
+      m_current = createIndex(m_current.row() + insertedRange, 0);
     }
   }
   updateBackgrounds(false);
