@@ -207,6 +207,9 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
   // normal hl
   m_buffer->setHighlight (0);
 
+  // swap file
+  Kate::SwapFile *swp = new Kate::SwapFile(this);
+    
   new KateBrowserExtension( this ); // deleted by QObject memory management
 
   // important, fill in the config into the indenter we use...

@@ -49,6 +49,7 @@
 #include "kateedit.h"
 #include "katetextcursor.h"
 #include "katetextrange.h"
+#include "kateswapfile.h"
 
 namespace KTextEditor { class Plugin; class Attribute; }
 

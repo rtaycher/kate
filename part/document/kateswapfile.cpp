@@ -39,12 +39,23 @@ SwapFile::SwapFile(KateDocument *document)
   : QObject(document)
   , m_document(document)
   , m_trackingEnabled(false)
+  , swapfile(NULL)
 {
-	setTrackingEnabled(true);
+	m_stream = new QDataStream();
+	connect(&m_document->buffer(), SIGNAL(saved(const QString &)), this, SLOT(fileSaved(const QString&)));
+	connect(&m_document->buffer(), SIGNAL(loaded(const QString &, bool)), this, SLOT(fileLoaded(const QString&)));
+	kDebug( 13020 ) << "Swap file initializer";
+}
+
+SwapFile::~SwapFile()
+{
+  if (swapfile)
+    swapfile->remove();
 }
 
 void SwapFile::setTrackingEnabled(bool enable)
 {
+	kDebug( 13020 ) << "Enabling tracking";
   if (m_trackingEnabled == enable) {
       return;
   }
@@ -52,28 +63,30 @@ void SwapFile::setTrackingEnabled(bool enable)
   m_trackingEnabled = enable;
 
   //KateBuffer *buffer = m_document->buffer();
+  TextBuffer &buffer = m_document->buffer();
+ 
   if (m_trackingEnabled) {
-    connect(m_document, SIGNAL(saved(const QString &)), this, SLOT(fileSaved(const QString&)));
-    connect(m_document, SIGNAL(loaded(const QString &, bool)), this, SLOT(fileLoaded(const QString&)));
+    //connect(&buffer, SIGNAL(saved(const QString &)), this, SLOT(fileSaved(const QString&)));
+    //connect(&buffer, SIGNAL(loaded(const QString &, bool)), this, SLOT(fileLoaded(const QString&)));
 
-    connect(m_document, SIGNAL(editingStarted()), this, SLOT(startEditing()));
-    connect(m_document, SIGNAL(editingFinished()), this, SLOT(finishEditing()));
+    connect(&buffer, SIGNAL(editingStarted()), this, SLOT(startEditing()));
+    connect(&buffer, SIGNAL(editingFinished()), this, SLOT(finishEditing()));
 
-    connect(m_document, SIGNAL(lineWrapped(const KTextEditor::Cursor&)), this, SLOT(wrapLine(const KTextEditor::Cursor&)));
-    connect(m_document, SIGNAL(lineUnwrapped(int)), this, SLOT(unwrapLine(int)));
-    connect(m_document, SIGNAL(textInserted(const KTextEditor::Cursor &, const QString &)), this, SLOT(insertText(const KTextEditor::Cursor &, const QString &)));
-    connect(m_document, SIGNAL(textRemoved(const KTextEditor::Range &, const QString &)), this, SLOT(removeText(const KTextEditor::Range &)));
+    connect(&buffer, SIGNAL(lineWrapped(const KTextEditor::Cursor&)), this, SLOT(wrapLine(const KTextEditor::Cursor&)));
+    connect(&buffer, SIGNAL(lineUnwrapped(int)), this, SLOT(unwrapLine(int)));
+    connect(&buffer, SIGNAL(textInserted(const KTextEditor::Cursor &, const QString &)), this, SLOT(insertText(const KTextEditor::Cursor &, const QString &)));
+    connect(&buffer, SIGNAL(textRemoved(const KTextEditor::Range &, const QString &)), this, SLOT(removeText(const KTextEditor::Range &)));
   } else {
-    disconnect(m_document, SIGNAL(saved(const QString &)), this, SLOT(fileSaved(const QString&)));
-    disconnect(m_document, SIGNAL(loaded(const QString &, bool)), this, SLOT(fileLoaded(const QString&)));
+    disconnect(&buffer, SIGNAL(saved(const QString &)), this, SLOT(fileSaved(const QString&)));
+    disconnect(&buffer, SIGNAL(loaded(const QString &, bool)), this, SLOT(fileLoaded(const QString&)));
 
-    disconnect(m_document, SIGNAL(editingStarted()), this, SLOT(startEditing()));
-    disconnect(m_document, SIGNAL(editingFinished()), this, SLOT(finishEditing()));
+    disconnect(&buffer, SIGNAL(editingStarted()), this, SLOT(startEditing()));
+    disconnect(&buffer, SIGNAL(editingFinished()), this, SLOT(finishEditing()));
 
-    disconnect(m_document, SIGNAL(lineWrapped(const KTextEditor::Cursor&)), this, SLOT(wrapLine(const KTextEditor::Cursor&)));
-    disconnect(m_document, SIGNAL(lineUnwrapped(int)), this, SLOT(unwrapLine(int)));
-    disconnect(m_document, SIGNAL(textInserted(const KTextEditor::Cursor &, const QString &)), this, SLOT(insertText(const KTextEditor::Cursor &, const QString &)));
-    disconnect(m_document, SIGNAL(textRemoved(const KTextEditor::Range &, const QString &)), this, SLOT(removeText(const KTextEditor::Range &)));
+    disconnect(&buffer, SIGNAL(lineWrapped(const KTextEditor::Cursor&)), this, SLOT(wrapLine(const KTextEditor::Cursor&)));
+    disconnect(&buffer, SIGNAL(lineUnwrapped(int)), this, SLOT(unwrapLine(int)));
+    disconnect(&buffer, SIGNAL(textInserted(const KTextEditor::Cursor &, const QString &)), this, SLOT(insertText(const KTextEditor::Cursor &, const QString &)));
+    disconnect(&buffer, SIGNAL(textRemoved(const KTextEditor::Range &, const QString &)), this, SLOT(removeText(const KTextEditor::Range &)));
   }
 }
 
@@ -84,50 +97,71 @@ bool SwapFile::isTrackingEnabled() const
 
 // vim's sucking implementation is in function ml_recover in the file
 // https://vim.svn.sourceforge.net/svnroot/vim/branches/vim7.2/src/memline.c
-void SwapFile::fileLoaded(const QString& filename)
-{
+void SwapFile::fileLoaded(const QString&)
+{  
   // 1. look for swap file
-  // TODO: implement
-  QFile *swapf = new QFile (".swp." + filename);
+  if (!swapfile)
+  {
+    KUrl url = m_document->url();
+    if (!url.isLocalFile())
+      return;
+    
+    setTrackingEnabled(true);
+      
+    QString path = url.toLocalFile();
+    int poz = path.lastIndexOf('/');
+    path.insert(poz+1, ".swp.");
+
+    swapfile = new QFile(path);
+  }
+  
   bool exists;
 
-  if (!swapf->exists())
+  if (!swapfile->exists())
+  {
+    kDebug (13020) << "No swap file";
     return;
+  }
 	
-  if (!swapf->open(QIODevice::ReadOnly))
+  if (!swapfile->open(QIODevice::ReadOnly))
   {
     kWarning() << "Can't open swap file";
     return;
   }
-  m_stream->setDevice(swapf);
+  
+  m_stream->setDevice(swapfile);
 	
 
   // 2. if exists, ask user whether to recover data
   // TODO: implement
   // NOTE: modified date of swap file should be newer than original file
   MyWidget recover(m_document->activeView());
-  
+/*  
   do
  {
   }
   while (recover.getOption() == NOTDEF);
   
   exists = recover.getOption() == RECOVER ? true : false;
+*/
 
   // 3. if requested, replay swap file
   // FIXME: make sure start/finishEditing is blanced!
+
+  exists = true;
+  while(1) {};
   if (exists) { // replay
     KateBuffer &buffer = m_document->buffer();
     while (!m_stream->atEnd()) {
-      char *type;
+      qint8 type;
       *m_stream >> type;
-      switch (*type) {
+      switch (type) {
         case EA_StartEditing: {
-          buffer.startEditing();
+          buffer.editStart();
           break;
         }
         case EA_FinishEditing: {
-          buffer.startEditing();
+          buffer.editEnd();
           break;
         }
         case EA_WrapLine: {
@@ -163,21 +197,34 @@ void SwapFile::fileLoaded(const QString& filename)
   }
 }
 
-void SwapFile::fileSaved(const QString &filename)
+void SwapFile::fileSaved(const QString&)
 {
   // TODO:
   // 1. purge existing/old swap file
   // 2. remember file name and create a swap file on the first editing action
-  	
-  setTrackingEnabled(true);
+
+  // !! nu merge sa scriu in m_stream
   
-  QFile *swapf = new QFile(".swp." + filename);
+  if (!swapfile)
+  {
+    KUrl url = m_document->url();
+    if (!url.isLocalFile())
+      return;
+    
+    setTrackingEnabled(true);
+      
+    QString path = url.toLocalFile();
+    int poz = path.lastIndexOf('/');
+    path.insert(poz+1, ".swp.");
+
+    swapfile = new QFile(path);
+  }
   
-  if (swapf->exists())
-    swapf->remove();
+  if (swapfile->exists())
+    swapfile->remove();
   
-  swapf->open(QIODevice::WriteOnly);
-  m_stream->setDevice(swapf);
+  swapfile->open(QIODevice::WriteOnly);
+  m_stream->setDevice(swapfile);
 }
 
 void SwapFile::startEditing ()
@@ -190,6 +237,7 @@ void SwapFile::finishEditing ()
 {
   // format: char
   *m_stream << EA_FinishEditing;
+  swapfile->flush();
 }
 
 void SwapFile::wrapLine (const KTextEditor::Cursor &position)
@@ -217,5 +265,4 @@ void SwapFile::removeText (const KTextEditor::Range &range)
             << range.start().line() << range.start().column()
             << range.end().line() << range.end().column();
 }
-
 }

@@ -22,6 +22,7 @@
 #define KATE_SWAPFILE_H
 
 #include <QtCore/QObject>
+#include <QFile>
 
 #include "katepartprivate_export.h"
 #include "katetextbuffer.h"
@@ -43,6 +44,7 @@ class KATEPART_TESTS_EXPORT SwapFile : public QObject
 
   public:
     explicit SwapFile(KateDocument* document);
+    ~SwapFile();
 
     void setTrackingEnabled(bool enabled);
     bool isTrackingEnabled() const;
@@ -64,6 +66,7 @@ class KATEPART_TESTS_EXPORT SwapFile : public QObject
 
   private:
     QDataStream *m_stream;
+    QFile *swapfile;
 };
 
 }

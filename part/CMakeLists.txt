@@ -70,6 +70,8 @@ document/katedocument.cpp
 document/katedocumenthelpers.cpp
 document/katebuffer.cpp
 document/kateedit.cpp
+document/katerecover.cpp
+document/kateswapfile.cpp
 
 # undo
 undo/kateundo.cpp

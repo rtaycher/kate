@@ -7,9 +7,9 @@
 #include <QLayout>
 #include <QLabel>
 
-#define RECOVER 0
-#define CANCEL 1
-#define NOTDEF 2
+static char recover = 0;
+static char cancel = 1;
+static char notdef = 2;
 
 class MyWidget : public QWidget
 {

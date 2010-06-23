@@ -2,7 +2,7 @@
 
 MyWidget::MyWidget(QWidget *parent)
 	: QWidget(parent)
-	, option(NOTDEF)
+	, option(notdef)
 {
 	
 	QPushButton *recover = new QPushButton("Recover");
@@ -18,11 +18,14 @@ MyWidget::MyWidget(QWidget *parent)
 
 	glayout->addLayout(hlayout, 0, 0, Qt::AlignLeft);
 	glayout->addLayout(vlayout, 0, 1, Qt::AlignRight);
-	this->setLayout(glayout);
+	if (parent)
+	  parent->setLayout(glayout);
+	else
+  	this->setLayout(glayout);
 
 	//add signals connections
-	connect(recover, SIGNAL(clicked()), this, SLOT(setOption(RECOVER)));
-	connect(cancel, SIGNAL(clicked()), this, SLOT(setOption(CANCEL)));
+	connect(recover, SIGNAL(clicked()), this, SLOT(setOption(recover)));
+	connect(cancel, SIGNAL(clicked()), this, SLOT(setOption(cancel)));
 	
 }
 
