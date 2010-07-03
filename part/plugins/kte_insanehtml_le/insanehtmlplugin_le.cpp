@@ -33,7 +33,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <kstandarddirs.h>
 #include <kconfiggroup.h>
 
-#define IHP_DEBUG
+#undef IHP_DEBUG
 
 K_PLUGIN_FACTORY_DECLARATION(InsaneHTMLPluginLEFactory)
 K_PLUGIN_FACTORY_DEFINITION(InsaneHTMLPluginLEFactory,
@@ -250,14 +250,14 @@ QStringList InsaneHTMLPluginLEView::parse(const QString& input, int offset,int *
       break;
     } else if (c==QChar('(')) {
       offset++;
-//#ifdef IHP_DEBUG
-  KPassivePopup::message(i18n("offset1 %1",offset),m_view);
-//#endif
+#ifdef IHP_DEBUG
+      KPassivePopup::message(i18n("offset1 %1",offset),m_view);
+#endif
       compoundSub=parse(input,offset,&offset);
       compound=true;
-//#ifdef IHP_DEBUG
-  KPassivePopup::message(i18n("offset2 %1",offset),m_view);
-//#endif
+#ifdef IHP_DEBUG
+      KPassivePopup::message(i18n("offset2 %1",offset),m_view);
+#endif
       
     } else if (c==QChar('.')) {
       offset++;
