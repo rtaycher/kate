@@ -21,17 +21,17 @@
 #include "kateswapfile.h"
 #include "katerecover.h"
 
-#include <QtCore/QDataStream>
-#include <QFile>
+#include <QFileInfo>
+#include <QDir>
 
 namespace Kate {
 
-const static char EA_StartEditing  = 0x02; // 0000 0010
-const static char EA_FinishEditing = 0x03; // 0000 0011
-const static char EA_WrapLine      = 0x04; // 0000 0100
-const static char EA_UnwrapLine    = 0x05; // 0000 0101
-const static char EA_InsertText    = 0x08; // 0000 1000
-const static char EA_RemoveText    = 0x09; // 0000 1001
+const static qint8 EA_StartEditing  = 0x02; // 0000 0010
+const static qint8 EA_FinishEditing = 0x03; // 0000 0011
+const static qint8 EA_WrapLine      = 0x04; // 0000 0100
+const static qint8 EA_UnwrapLine    = 0x05; // 0000 0101
+const static qint8 EA_InsertText    = 0x08; // 0000 1000
+const static qint8 EA_RemoveText    = 0x09; // 0000 1001
 
 
 
@@ -39,23 +39,21 @@ SwapFile::SwapFile(KateDocument *document)
   : QObject(document)
   , m_document(document)
   , m_trackingEnabled(false)
-  , swapfile(NULL)
 {
-	m_stream = new QDataStream();
-	connect(&m_document->buffer(), SIGNAL(saved(const QString &)), this, SLOT(fileSaved(const QString&)));
-	connect(&m_document->buffer(), SIGNAL(loaded(const QString &, bool)), this, SLOT(fileLoaded(const QString&)));
-	kDebug( 13020 ) << "Swap file initializer";
+  connect(&m_document->buffer(), SIGNAL(saved(const QString &)), this, SLOT(fileSaved(const QString&)));
+  connect(&m_document->buffer(), SIGNAL(loaded(const QString &, bool)), this, SLOT(fileLoaded(const QString&)));
+  
+  setTrackingEnabled(true);
 }
 
 SwapFile::~SwapFile()
 {
-  if (swapfile)
-    swapfile->remove();
+  m_stream.setDevice(0);
+  if (m_swapfile.exists())
+    m_swapfile.remove();
 }
-
 void SwapFile::setTrackingEnabled(bool enable)
 {
-	kDebug( 13020 ) << "Enabling tracking";
   if (m_trackingEnabled == enable) {
       return;
   }
@@ -66,9 +64,6 @@ void SwapFile::setTrackingEnabled(bool enable)
   TextBuffer &buffer = m_document->buffer();
  
   if (m_trackingEnabled) {
-    //connect(&buffer, SIGNAL(saved(const QString &)), this, SLOT(fileSaved(const QString&)));
-    //connect(&buffer, SIGNAL(loaded(const QString &, bool)), this, SLOT(fileLoaded(const QString&)));
-
     connect(&buffer, SIGNAL(editingStarted()), this, SLOT(startEditing()));
     connect(&buffer, SIGNAL(editingFinished()), this, SLOT(finishEditing()));
 
@@ -77,9 +72,6 @@ void SwapFile::setTrackingEnabled(bool enable)
     connect(&buffer, SIGNAL(textInserted(const KTextEditor::Cursor &, const QString &)), this, SLOT(insertText(const KTextEditor::Cursor &, const QString &)));
     connect(&buffer, SIGNAL(textRemoved(const KTextEditor::Range &, const QString &)), this, SLOT(removeText(const KTextEditor::Range &)));
   } else {
-    disconnect(&buffer, SIGNAL(saved(const QString &)), this, SLOT(fileSaved(const QString&)));
-    disconnect(&buffer, SIGNAL(loaded(const QString &, bool)), this, SLOT(fileLoaded(const QString&)));
-
     disconnect(&buffer, SIGNAL(editingStarted()), this, SLOT(startEditing()));
     disconnect(&buffer, SIGNAL(editingFinished()), this, SLOT(finishEditing()));
 
@@ -90,179 +82,153 @@ void SwapFile::setTrackingEnabled(bool enable)
   }
 }
 
-bool SwapFile::isTrackingEnabled() const
-{
-  return m_trackingEnabled;
-}
-
-// vim's sucking implementation is in function ml_recover in the file
-// https://vim.svn.sourceforge.net/svnroot/vim/branches/vim7.2/src/memline.c
 void SwapFile::fileLoaded(const QString&)
-{  
-  // 1. look for swap file
-  if (!swapfile)
-  {
-    KUrl url = m_document->url();
-    if (!url.isLocalFile())
-      return;
-    
-    setTrackingEnabled(true);
-      
-    QString path = url.toLocalFile();
-    int poz = path.lastIndexOf('/');
-    path.insert(poz+1, ".swp.");
-
-    swapfile = new QFile(path);
-  }
+{
+  // TODO FIXME: remove old swap file if there exists one
   
-  bool exists;
+  // look for swap file
+  KUrl url = m_document->url();
+  if (!url.isLocalFile())
+    return;
+      
+  QString path = url.toLocalFile();
+  int poz = path.lastIndexOf(QDir::separator());
+  path.insert(poz+1, ".swp.");
 
-  if (!swapfile->exists())
+  m_swapfile.setFileName(path);
+
+  if (!m_swapfile.exists())
   {
     kDebug (13020) << "No swap file";
     return;
   }
-	
-  if (!swapfile->open(QIODevice::ReadOnly))
+
+  if (!QFileInfo(m_swapfile).isReadable())
   {
-    kWarning() << "Can't open swap file";
+    kWarning() << "Can't open swap file (missing permissions)";
     return;
   }
   
-  m_stream->setDevice(swapfile);
-	
+  emit swapFileFound();
+  // TODO set file as read-only
+}
 
-  // 2. if exists, ask user whether to recover data
-  // TODO: implement
-  // NOTE: modified date of swap file should be newer than original file
-  MyWidget recover(m_document->activeView());
-/*  
-  do
- {
-  }
-  while (recover.getOption() == NOTDEF);
-  
-  exists = recover.getOption() == RECOVER ? true : false;
-*/
+void SwapFile::recover()
+{
+  setTrackingEnabled(false);
 
-  // 3. if requested, replay swap file
-  // FIXME: make sure start/finishEditing is blanced!
-
-  exists = true;
-  while(1) {};
-  if (exists) { // replay
-    KateBuffer &buffer = m_document->buffer();
-    while (!m_stream->atEnd()) {
-      qint8 type;
-      *m_stream >> type;
-      switch (type) {
-        case EA_StartEditing: {
-          buffer.editStart();
-          break;
-        }
-        case EA_FinishEditing: {
-          buffer.editEnd();
-          break;
-        }
-        case EA_WrapLine: {
-          int line, column;
-          *m_stream >> line >> column;
-          buffer.wrapLine(KTextEditor::Cursor(line, column));
-          break;
-        }
-        case EA_UnwrapLine: {
-          int line;
-          *m_stream >> line;
-          buffer.unwrapLine(line);
-          break;
-        }
-        case EA_InsertText: {
-          int line, column;
-          QString text;
-          *m_stream >> line >> column >> text;
-          buffer.insertText(KTextEditor::Cursor(line, column), text);
-          break;
-        }
-        case EA_RemoveText: {
-          int startLine, startColumn, endLine, endColumn;
-          *m_stream >> startLine >> startColumn >> endLine >> endColumn;
-          buffer.removeText(KTextEditor::Range(KTextEditor::Cursor(startLine, startColumn),
-                                                KTextEditor::Cursor(endLine, endColumn)));
-        }
-        default: {
-          kWarning() << "Unknown type:" << type;
-        }
+  m_swapfile.open(QIODevice::ReadOnly);
+  m_stream.setDevice(&m_swapfile);
+  KateBuffer &buffer = m_document->buffer();
+  while (!m_stream.atEnd()) {
+    qint8 type;
+    m_stream >> type;
+    switch (type) {
+      case EA_StartEditing: {
+        buffer.editStart();
+        break;
+      }
+      case EA_FinishEditing: {
+        buffer.editEnd();
+        break;
+      }
+      case EA_WrapLine: {
+        int line, column;
+        m_stream >> line >> column;
+        buffer.wrapLine(KTextEditor::Cursor(line, column));
+        break;
+      }
+      case EA_UnwrapLine: {
+        int line;
+        m_stream >> line;
+        buffer.unwrapLine(line);
+        break;
+      }
+      case EA_InsertText: {
+        int line, column;
+        QString text;
+        m_stream >> line >> column >> text;
+        buffer.insertText(KTextEditor::Cursor(line, column), text);
+        break;
+      }
+      case EA_RemoveText: {
+        int startLine, startColumn, endLine, endColumn;
+        m_stream >> startLine >> startColumn >> endLine >> endColumn;
+        buffer.removeText(KTextEditor::Range(KTextEditor::Cursor(startLine, startColumn),
+                                              KTextEditor::Cursor(endLine, endColumn)));
+      }
+      default: {
+        kWarning() << "Unknown type:" << type;
       }
     }
   }
+  
+  setTrackingEnabled(true);
 }
 
 void SwapFile::fileSaved(const QString&)
 {
-  // TODO:
-  // 1. purge existing/old swap file
-  // 2. remember file name and create a swap file on the first editing action
-
-  // !! nu merge sa scriu in m_stream
-  
-  if (!swapfile)
-  {
-    KUrl url = m_document->url();
-    if (!url.isLocalFile())
-      return;
-    
-    setTrackingEnabled(true);
-      
-    QString path = url.toLocalFile();
-    int poz = path.lastIndexOf('/');
-    path.insert(poz+1, ".swp.");
-
-    swapfile = new QFile(path);
+  // remove old swap file (e.g. if a file A was "saved as" B)
+  if (m_swapfile.exists()) {
+    m_stream.setDevice(0);
+    m_swapfile.close();
+    m_swapfile.remove();
   }
   
-  if (swapfile->exists())
-    swapfile->remove();
-  
-  swapfile->open(QIODevice::WriteOnly);
-  m_stream->setDevice(swapfile);
+  KUrl url = m_document->url();
+  if (!url.isLocalFile())
+    return;
+
+  QString path = url.toLocalFile();
+  int poz = path.lastIndexOf(QDir::separator());
+  path.insert(poz+1, ".swp.");
+
+  m_swapfile.setFileName(path);
 }
 
 void SwapFile::startEditing ()
 {
+  if (!m_swapfile.exists()) {
+    m_swapfile.open(QIODevice::WriteOnly);
+    m_stream.setDevice(&m_swapfile);
+  }
+  
   // format: char  
-  *m_stream << EA_StartEditing;
+  m_stream << EA_StartEditing;
 }
 
 void SwapFile::finishEditing ()
 {
   // format: char
-  *m_stream << EA_FinishEditing;
-  swapfile->flush();
+  m_stream << EA_FinishEditing;
+  m_swapfile.flush();
 }
 
 void SwapFile::wrapLine (const KTextEditor::Cursor &position)
 {
   // format: char, int, int
-  *m_stream << EA_WrapLine << position.line() << position.column();
+  m_stream << EA_WrapLine << position.line() << position.column();
 }
 
 void SwapFile::unwrapLine (int line)
 {
   // format: char, int
-  *m_stream << EA_UnwrapLine << line;
+  m_stream << EA_UnwrapLine << line;
 }
 
 void SwapFile::insertText (const KTextEditor::Cursor &position, const QString &text)
 {
   // format: char, int, int, string
-  *m_stream << EA_InsertText << position.line() << position.column() << text;
+  m_stream << EA_InsertText << position.line() << position.column() << text;
 }
 
 void SwapFile::removeText (const KTextEditor::Range &range)
 {
   // format: char, int, int, int, int
-  *m_stream << EA_RemoveText
+  m_stream << EA_RemoveText
             << range.start().line() << range.start().column()
             << range.end().line() << range.end().column();
 }
 }
+
+// kate: space-indent on; indent-width 2; replace-tabs on;

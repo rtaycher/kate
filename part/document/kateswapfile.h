@@ -22,14 +22,13 @@
 #define KATE_SWAPFILE_H
 
 #include <QtCore/QObject>
+#include <QtCore/QDataStream>
 #include <QFile>
 
 #include "katepartprivate_export.h"
 #include "katetextbuffer.h"
 #include "katebuffer.h"
 #include "katedocument.h"
-
-class QDataStream;
 
 namespace Kate {
 
@@ -45,9 +44,11 @@ class KATEPART_TESTS_EXPORT SwapFile : public QObject
   public:
     explicit SwapFile(KateDocument* document);
     ~SwapFile();
+    void recover();
+    
+  private:
+    void setTrackingEnabled(bool trackingEnabled);
 
-    void setTrackingEnabled(bool enabled);
-    bool isTrackingEnabled() const;
   private:
     KateDocument *m_document;
     bool m_trackingEnabled;
@@ -63,12 +64,17 @@ class KATEPART_TESTS_EXPORT SwapFile : public QObject
     void unwrapLine (int line);
     void insertText (const KTextEditor::Cursor &position, const QString &text);
     void removeText (const KTextEditor::Range &range);
-
+    
+  Q_SIGNALS:
+    void swapFileFound();
+    
   private:
-    QDataStream *m_stream;
-    QFile *swapfile;
+    QDataStream m_stream;
+    QFile m_swapfile;
 };
 
 }
 
 #endif // KATE_SWAPFILE_H
+
+// kate: space-indent on; indent-width 2; replace-tabs on;
