@@ -515,6 +515,8 @@ bool SnippetCompletionModel::shouldAbortCompletion(KTextEditor::View* view, cons
         addAndCreateElement(doc,item,"match",entry.match);
         addAndCreateElement(doc,item,"displaypostfix",entry.postfix);
         addAndCreateElement(doc,item,"displayarguments",entry.arguments);
+        if (!entry.shortcut.isEmpty())
+          addAndCreateElement(doc,item,"shortcut",entry.shortcut);
         addAndCreateElement(doc,item,"fillin",entry.fillin);
         root.appendChild(item);
       }
@@ -669,6 +671,9 @@ bool SnippetCompletionModel::shouldAbortCompletion(KTextEditor::View* view, cons
           case ArgumentsRole:
             return m_cmodel->d->entries[index.row()].arguments;
             break;
+          case ShortcutRole:
+            return m_cmodel->d->entries[index.row()].shortcut;
+            break;
   #endif
           default:
             break;
@@ -703,6 +708,9 @@ bool SnippetCompletionModel::shouldAbortCompletion(KTextEditor::View* view, cons
             break;
           case ArgumentsRole:
             m_cmodel->d->entries[index.row()].arguments=value.toString();
+            break;
+          case ShortcutRole:
+            m_cmodel->d->entries[index.row()].shortcut=value.toString();
             break;
         default:
           return QAbstractItemModel::setData(index,value,role);

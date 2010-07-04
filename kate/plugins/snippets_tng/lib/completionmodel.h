@@ -130,7 +130,7 @@ namespace KTextEditor {
         virtual bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
         virtual bool removeRows ( int row, int count, const QModelIndex & parent = QModelIndex() );
         QModelIndex newItem();
-        enum {FillInRole=Qt::UserRole+1,ScriptTokenRole,MergedFilesRole,PrefixRole,MatchRole,PostfixRole,ArgumentsRole,ForExtension=Qt::UserRole+100};
+        enum {FillInRole=Qt::UserRole+1,ScriptTokenRole,MergedFilesRole,PrefixRole,MatchRole,PostfixRole,ArgumentsRole,ShortcutRole,ForExtension=Qt::UserRole+100};
         //#warning SNIPPET_EDITOR IS SET
   #else
         enum {FillInRole=Qt::UserRole+1,ScriptTokenRole,MergedFilesRole,ForExtension=Qt::UserRole+100};
