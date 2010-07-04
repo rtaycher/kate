@@ -105,7 +105,7 @@ void SwapFile::fileLoaded(const QString&)
 
   if (!QFileInfo(m_swapfile).isReadable())
   {
-    kWarning() << "Can't open swap file (missing permissions)";
+    kWarning( 13020 ) << "Can't open swap file (missing permissions)";
     return;
   }
   
@@ -120,16 +120,19 @@ void SwapFile::recover()
   m_swapfile.open(QIODevice::ReadOnly);
   m_stream.setDevice(&m_swapfile);
   KateBuffer &buffer = m_document->buffer();
+  bool editStarted = false;
   while (!m_stream.atEnd()) {
     qint8 type;
     m_stream >> type;
     switch (type) {
       case EA_StartEditing: {
         buffer.editStart();
+        editStarted = true;
         break;
       }
       case EA_FinishEditing: {
         buffer.editEnd();
+        editStarted = false;
         break;
       }
       case EA_WrapLine: {
@@ -158,11 +161,19 @@ void SwapFile::recover()
                                               KTextEditor::Cursor(endLine, endColumn)));
       }
       default: {
-        kWarning() << "Unknown type:" << type;
+        kWarning( 13020 ) << "Unknown type:" << type;
       }
     }
   }
   
+  if (editStarted) {
+    kWarning ( 13020 ) << "Some data might be lost";
+    buffer.editEnd();
+  }
+  
+  m_stream.setDevice(0);
+  m_swapfile.close();
+
   setTrackingEnabled(true);
 }
 
@@ -190,6 +201,9 @@ void SwapFile::startEditing ()
 {
   if (!m_swapfile.exists()) {
     m_swapfile.open(QIODevice::WriteOnly);
+    m_stream.setDevice(&m_swapfile);
+  } else if (m_stream.device() == 0) {
+    m_swapfile.open(QIODevice::Append);
     m_stream.setDevice(&m_swapfile);
   }
   
