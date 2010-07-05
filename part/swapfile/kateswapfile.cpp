@@ -41,6 +41,7 @@ SwapFile::SwapFile(KateDocument *document)
   , m_document(document)
   , m_trackingEnabled(false)
 {
+  // connecting the signals
   connect(&m_document->buffer(), SIGNAL(saved(const QString &)), this, SLOT(fileSaved(const QString&)));
   connect(&m_document->buffer(), SIGNAL(loaded(const QString &, bool)), this, SLOT(fileLoaded(const QString&)));
   
@@ -61,7 +62,6 @@ void SwapFile::setTrackingEnabled(bool enable)
 
   m_trackingEnabled = enable;
 
-  //KateBuffer *buffer = m_document->buffer();
   TextBuffer &buffer = m_document->buffer();
  
   if (m_trackingEnabled) {
@@ -88,15 +88,8 @@ void SwapFile::fileLoaded(const QString&)
   // TODO FIXME: remove old swap file if there exists one
   
   // look for swap file
-  KUrl url = m_document->url();
-  if (!url.isLocalFile())
+  if (!updateFileName())
     return;
-      
-  QString path = url.toLocalFile();
-  int poz = path.lastIndexOf(QDir::separator());
-  path.insert(poz+1, ".swp.");
-
-  m_swapfile.setFileName(path);
 
   if (!m_swapfile.exists())
   {
@@ -109,15 +102,19 @@ void SwapFile::fileLoaded(const QString&)
     kWarning( 13020 ) << "Can't open swap file (missing permissions)";
     return;
   }
-  
+
+  // emit signal in case the document has more views
   emit swapFileFound();
+  
   // TODO set file as read-only
 }
 
 void SwapFile::recover()
 {
+  // disconnect current signals
   setTrackingEnabled(false);
 
+  // replay the swap file
   m_swapfile.open(QIODevice::ReadOnly);
   m_stream.setDevice(&m_swapfile);
   bool editStarted = false;
@@ -165,43 +162,40 @@ void SwapFile::recover()
       }
     }
   }
-  
+
+  // balance editStart and editEnd
   if (editStarted) {
     kWarning ( 13020 ) << "Some data might be lost";
     m_document->editEnd();
   }
   
+  // close swap file
   m_stream.setDevice(0);
   m_swapfile.close();
 
+  // reconnect the signals
   setTrackingEnabled(true);
 
+  // emit signal in case the document has more views
   emit swapFileHandled();
 }
 
 void SwapFile::fileSaved(const QString&)
 {
   // remove old swap file (e.g. if a file A was "saved as" B)
-  if (m_swapfile.exists()) {
-    m_stream.setDevice(0);
-    m_swapfile.close();
-    m_swapfile.remove();
-  }
+  removeSwapFile();
   
-  KUrl url = m_document->url();
-  if (!url.isLocalFile())
+  // set the name for the new swap file
+  if (!updateFileName())
     return;
-
-  QString path = url.toLocalFile();
-  int poz = path.lastIndexOf(QDir::separator());
-  path.insert(poz+1, ".swp.");
-
-  m_swapfile.setFileName(path);
 }
 
 void SwapFile::startEditing ()
 {
-  if (!m_swapfile.exists()) {
+  //  if swap file doesn't exists, open it in WriteOnly mode
+  // if it does, append the data to the existing swap file,
+  // in case you recover and start edititng again
+  if (!m_swapfile.exists()) { 
     m_swapfile.open(QIODevice::WriteOnly);
     m_stream.setDevice(&m_swapfile);
   } else if (m_stream.device() == 0) {
@@ -209,38 +203,38 @@ void SwapFile::startEditing ()
     m_stream.setDevice(&m_swapfile);
   }
   
-  // format: char  
+  // format: qint8  
   m_stream << EA_StartEditing;
 }
 
 void SwapFile::finishEditing ()
 {
-  // format: char
+  // format: qint8
   m_stream << EA_FinishEditing;
   m_swapfile.flush();
 }
 
 void SwapFile::wrapLine (const KTextEditor::Cursor &position)
 {
-  // format: char, int, int
+  // format: qint8, int, int
   m_stream << EA_WrapLine << position.line() << position.column();
 }
 
 void SwapFile::unwrapLine (int line)
 {
-  // format: char, int
+  // format: qint8, int
   m_stream << EA_UnwrapLine << line;
 }
 
 void SwapFile::insertText (const KTextEditor::Cursor &position, const QString &text)
 {
-  // format: char, int, int, string
+  // format: qint8, int, int, string
   m_stream << EA_InsertText << position.line() << position.column() << text;
 }
 
 void SwapFile::removeText (const KTextEditor::Range &range)
 {
-  // format: char, int, int, int, int
+  // format: qint8, int, int, int, int
   m_stream << EA_RemoveText
             << range.start().line() << range.start().column()
             << range.end().line() << range.end().column();
@@ -253,14 +247,34 @@ bool SwapFile::shouldRecover() const
 
 void SwapFile::discard()
 {
+  removeSwapFile();
+  emit swapFileHandled();
+}
+
+void SwapFile::removeSwapFile()
+{
   if (m_swapfile.exists()) {
     m_stream.setDevice(0);
     m_swapfile.close();
     m_swapfile.remove();
   }
-  
-  emit swapFileHandled();
+}
+
+bool SwapFile::updateFileName()
+{
+  KUrl url = m_document->url();
+  if (!url.isLocalFile())
+    return false;
+
+  QString path = url.toLocalFile();
+  int poz = path.lastIndexOf(QDir::separator());
+  path.insert(poz+1, ".swp.");
+
+  m_swapfile.setFileName(path);
+
+  return true;
 }
 
 }
+
 // kate: space-indent on; indent-width 2; replace-tabs on;

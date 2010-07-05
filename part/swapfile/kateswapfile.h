@@ -51,6 +51,8 @@ class KATEPART_TESTS_EXPORT SwapFile : public QObject
     
   private:
     void setTrackingEnabled(bool trackingEnabled);
+    void removeSwapFile();
+    bool updateFileName();
 
   private:
     KateDocument *m_document;
