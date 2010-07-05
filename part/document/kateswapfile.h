@@ -30,6 +30,8 @@
 #include "katebuffer.h"
 #include "katedocument.h"
 
+class KateView;
+
 namespace Kate {
 
 /**
@@ -44,7 +46,7 @@ class KATEPART_TESTS_EXPORT SwapFile : public QObject
   public:
     explicit SwapFile(KateDocument* document);
     ~SwapFile();
-    void recover();
+    bool shouldRecover() const;
     
   private:
     void setTrackingEnabled(bool trackingEnabled);
@@ -67,7 +69,12 @@ class KATEPART_TESTS_EXPORT SwapFile : public QObject
     
   Q_SIGNALS:
     void swapFileFound();
-    
+    void swapFileHandled();
+  
+  public Q_SLOTS:
+    void discard();
+    void recover();
+
   private:
     QDataStream m_stream;
     QFile m_swapfile;

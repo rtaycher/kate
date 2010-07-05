@@ -32,6 +32,7 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/utils
   ${CMAKE_CURRENT_SOURCE_DIR}/vimode
   ${CMAKE_CURRENT_SOURCE_DIR}/view
+  ${CMAKE_CURRENT_SOURCE_DIR}/swapfile
   ${CMAKE_SOURCE_DIR}/kutils
   ${KDE4_KIO_INCLUDES}
 )
@@ -167,6 +168,9 @@ utils/katecmd.cpp
 utils/katestyletreewidget.cpp
 utils/katepartpluginmanager.cpp
 
+# swapfile
+swapfile/katerecoverbar.cpp
+
 )
 
 set( katepart_PART_UI
@@ -187,6 +191,7 @@ search/searchbarincremental.ui
 search/searchbarpower.ui
 dialogs/viinputmodeconfigwidget.ui
 dialogs/spellcheckconfigwidget.ui
+swapfile/recoverwidget.ui
 )
 
 add_definitions ( -DKDE_DEFAULT_DEBUG_AREA=13000 )

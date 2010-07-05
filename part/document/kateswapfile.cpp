@@ -20,6 +20,7 @@
 
 #include "kateswapfile.h"
 #include "katerecover.h"
+#include "kateview.h"
 
 #include <QFileInfo>
 #include <QDir>
@@ -119,45 +120,44 @@ void SwapFile::recover()
 
   m_swapfile.open(QIODevice::ReadOnly);
   m_stream.setDevice(&m_swapfile);
-  KateBuffer &buffer = m_document->buffer();
   bool editStarted = false;
   while (!m_stream.atEnd()) {
     qint8 type;
     m_stream >> type;
     switch (type) {
       case EA_StartEditing: {
-        buffer.editStart();
+        m_document->editStart();
         editStarted = true;
         break;
       }
       case EA_FinishEditing: {
-        buffer.editEnd();
+        m_document->editEnd();
         editStarted = false;
         break;
       }
       case EA_WrapLine: {
         int line, column;
         m_stream >> line >> column;
-        buffer.wrapLine(KTextEditor::Cursor(line, column));
+        m_document->editWrapLine(line, column);
         break;
       }
       case EA_UnwrapLine: {
         int line;
         m_stream >> line;
-        buffer.unwrapLine(line);
+        m_document->editUnWrapLine(line);
         break;
       }
       case EA_InsertText: {
         int line, column;
         QString text;
         m_stream >> line >> column >> text;
-        buffer.insertText(KTextEditor::Cursor(line, column), text);
+        m_document->insertText(KTextEditor::Cursor(line, column), text);
         break;
       }
       case EA_RemoveText: {
         int startLine, startColumn, endLine, endColumn;
         m_stream >> startLine >> startColumn >> endLine >> endColumn;
-        buffer.removeText(KTextEditor::Range(KTextEditor::Cursor(startLine, startColumn),
+        m_document->removeText(KTextEditor::Range(KTextEditor::Cursor(startLine, startColumn),
                                               KTextEditor::Cursor(endLine, endColumn)));
       }
       default: {
@@ -168,13 +168,15 @@ void SwapFile::recover()
   
   if (editStarted) {
     kWarning ( 13020 ) << "Some data might be lost";
-    buffer.editEnd();
+    m_document->editEnd();
   }
   
   m_stream.setDevice(0);
   m_swapfile.close();
 
   setTrackingEnabled(true);
+
+  emit swapFileHandled();
 }
 
 void SwapFile::fileSaved(const QString&)
@@ -243,6 +245,22 @@ void SwapFile::removeText (const KTextEditor::Range &range)
             << range.start().line() << range.start().column()
             << range.end().line() << range.end().column();
 }
+
+bool SwapFile::shouldRecover() const
+{
+  return m_swapfile.exists() && m_stream.device() == 0;
 }
 
+void SwapFile::discard()
+{
+  if (m_swapfile.exists()) {
+    m_stream.setDevice(0);
+    m_swapfile.close();
+    m_swapfile.remove();
+  }
+  
+  emit swapFileHandled();
+}
+
+}
 // kate: space-indent on; indent-width 2; replace-tabs on;

@@ -49,11 +49,12 @@
 #include "kateedit.h"
 #include "katetextcursor.h"
 #include "katetextrange.h"
-#include "kateswapfile.h"
 
 namespace KTextEditor { class Plugin; class Attribute; }
 
 namespace KIO { class TransferJob; }
+
+namespace Kate { class SwapFile; }
 
 class KateCodeFoldingTree;
 class KateBuffer;
@@ -1191,6 +1192,11 @@ class KATEPART_TESTS_EXPORT KateDocument : public KTextEditor::Document,
       void rangeEmpty(KTextEditor::MovingRange *movingRange);
 
       void deleteDictionaryRange(KTextEditor::MovingRange *movingRange);
+  
+  private:
+    Kate::SwapFile *m_swapfile;
+  public:
+    Kate::SwapFile* swapFile();
 };
 
 #endif

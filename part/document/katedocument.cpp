@@ -51,6 +51,7 @@
 #include "spellcheck/prefixstore.h"
 #include "spellcheck/ontheflycheck.h"
 #include "spellcheck/spellcheck.h"
+#include "kateswapfile.h"
 
 #include <ktexteditor/attribute.h>
 #include <ktexteditor/plugin.h>
@@ -208,7 +209,7 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
   m_buffer->setHighlight (0);
 
   // swap file
-  Kate::SwapFile *swp = new Kate::SwapFile(this);
+  m_swapfile = new Kate::SwapFile(this);
     
   new KateBrowserExtension( this ); // deleted by QObject memory management
 
@@ -5560,4 +5561,10 @@ QString KateDocument::highlightingModeAt(const KTextEditor::Cursor& position)
   return KateHlManager::self()->nameForIdentifier(highlight()->hlKeyForAttrib(attr));
 
 }
+
+Kate::SwapFile* KateDocument::swapFile()
+{
+    return m_swapfile;
+}
+
 // kate: space-indent on; indent-width 2; replace-tabs on;
