@@ -176,9 +176,9 @@ void SwapFile::recover()
       }
       case EA_InsertText: {
         int line, column;
-        QString text;
+        QByteArray text;
         m_stream >> line >> column >> text;
-        m_document->insertText(KTextEditor::Cursor(line, column), text);
+        m_document->insertText(KTextEditor::Cursor(line, column), QString::fromUtf8 (text.data (), text.size()));
         break;
       }
       case EA_RemoveText: {
@@ -265,8 +265,8 @@ void SwapFile::unwrapLine (int line)
 
 void SwapFile::insertText (const KTextEditor::Cursor &position, const QString &text)
 {
-  // format: qint8, int, int, string
-  m_stream << EA_InsertText << position.line() << position.column() << text;
+  // format: qint8, int, int, bytearray
+  m_stream << EA_InsertText << position.line() << position.column() << text.toUtf8 ();
 }
 
 void SwapFile::removeText (const KTextEditor::Range &range)
