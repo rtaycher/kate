@@ -92,7 +92,6 @@ KateTemplateHandler::KateTemplateHandler(KateView *view,
 
   ifDebug(kDebug() << initial_Values;)
 
-
   connect(doc(), SIGNAL(aboutToReload(KTextEditor::Document*)),
           this, SLOT(cleanupAndExit()));
 
@@ -586,21 +585,19 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
         // do nothing
       } else if ((pos_slash != -1) && (pos_colon == -1)) {
         check_slash = true;
-
       } else if ((pos_slash == -1) && (pos_colon != -1)) {
         check_colon = true;
-
       } else {
         if (pos_colon < pos_slash) {
           check_colon = true;
-
         } else {
           check_slash = true;
         }
       }
 
-      if ((!check_slash) && (!check_colon) && (pos_backtick >= 0))
+      if (!check_slash && !check_colon && pos_backtick >= 0) {
         check_backtick = true;
+      }
 
       QString functionName;
 
@@ -608,11 +605,9 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
         searchReplace = key.mid(pos_slash + 1);
         key = key.left(pos_slash);
         ifDebug(kDebug() << "search_replace" << searchReplace;)
-
       } else if (check_colon) {
         key = key.left(pos_colon);
         ifDebug(kDebug() << "real key found:" << key;)
-
       } else if (check_backtick) {
         functionName = key.mid(pos_backtick + 1);
         functionName = functionName.left(functionName.indexOf("`"));
@@ -629,7 +624,6 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
 
       if (!initialValues.contains(key)) {
         kWarning() << "unknown variable key:" << key;
-
       } else if (key == "cursor") {
         finalCursorPosition = Cursor(line, column - keyLength - 2);
         // don't insert anything, just remove the placeholder
@@ -638,7 +632,6 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
         i -= 3 + keyLength;
         column -= 2 + keyLength;
         startPos = -1;
-
       } else {
         MirrorBehaviour behaviour;
 
@@ -655,15 +648,15 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
             int regescapes = 0;
             int pos = searchReplace.indexOf("/");
 
-            for (int epos = pos - 1;(epos >= 0) && (searchReplace.at(epos) == '\\');epos--)
+            for (int epos = pos - 1; epos >= 0 && searchReplace.at(epos) == '\\'; epos--) {
               regescapes++;
+            }
 
             ifDebug(kDebug() << "regescapes=" << regescapes;)
             if ((regescapes % 2) == 1) {
               search += searchReplace.left(pos + 1);
               searchReplace = searchReplace.mid(pos + 1);
               ifDebug(kDebug() << "intermediate search string is=" << search;)
-
             } else {
               search += searchReplace.left(pos);
               searchReplace = searchReplace.mid(pos + 1);
@@ -686,8 +679,9 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
             }
           }
 
-          if (searchValid && replaceValid)
+          if (searchValid && replaceValid) {
             behaviour = MirrorBehaviour(search, replace, flags);
+          }
 
         } else if (!functionName.isEmpty()) {
           behaviour = MirrorBehaviour(m_templateScript, functionName, this);
@@ -717,18 +711,16 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
             keyQueue.append(key);
           }
 
-          Range tmp = Range(line, column - initialVal.length(),
-
-                            line, column
-                           );
+          Range tmp = Range(line, column - initialVal.length(), line, column );
 
           if (force_first) {
             QList<Range> range_list = ranges.values(key);
             range_list.append(tmp);
             ranges.remove(key);
 
-            while (!range_list.isEmpty())
+            while (!range_list.isEmpty()) {
               ranges.insert(key, range_list.takeLast());
+            }
 
           } else {
             ranges.insert(key, tmp);
@@ -736,9 +728,7 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
 
           mirrorBehaviourBuildHelper.insert(tmp, behaviour);
 
-          ifDebug(kDebug() << "range is:" << Range(line, column - initialVal.length(),
-                  line, column
-                                                  );)
+          ifDebug(kDebug() << "range is:" << Range(line, column - initialVal.length(), line, column );)
         }
       }
 
@@ -772,7 +762,6 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
 
   if (finalCursorPosition.isValid()) {
     m_finalCursorPosition = doc()->newMovingCursor(finalCursorPosition);
-
   } else {
     m_finalCursorPosition = doc()->newMovingCursor(Cursor(line, column));
   }
@@ -817,7 +806,6 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
           range->setAttribute(editableAttribute);
           m_uneditedRanges.append(range);
           m_masterRanges.append(range);
-
         } else {
           range->setAttribute(mirroredAttribute);
           m_mirrorBehaviour.insert(range, mirrorBehaviourBuildHelper[values[i]]);
@@ -918,7 +906,6 @@ void KateTemplateHandler::slotTextChanged(Document* document, const Range& range
       if (m_templateRangesChildren[parent].isEmpty()) {
         // simple, not-mirrored range got changed
         m_uneditedRanges.removeOne(parent);
-
       } else {
         // handle mirrored ranges
         if (baseRange) {
@@ -935,7 +922,6 @@ void KateTemplateHandler::slotTextChanged(Document* document, const Range& range
 
           // adjacent mirror handled, we can finish
           break;
-
         } else {
           // find mirrored range that got edited
           foreach(MovingRange* child, m_templateRangesChildren[parent]) {
@@ -948,7 +934,6 @@ void KateTemplateHandler::slotTextChanged(Document* document, const Range& range
           if (baseRange && baseRange->end() != range.end()) {
             // finish, don't look for adjacent mirror as we are not at the end of this range
             break;
-
           } else if (baseRange && (baseRange->isEmpty() || range == *baseRange)) {
             // always add to empty ranges first. else ${foo}${bar} will make foo unusable when
             // it gets selected and an edit takes place.
@@ -1067,29 +1052,26 @@ QString KateTemplateHandler::MirrorBehaviour::getMirrorString(const QString &sou
         ahead = source;
 
         while (ahead.length() > 0) {
-          if ((pos = m_expr.indexIn(ahead)) == -1) return finalOutput + ahead;
+          if ((pos = m_expr.indexIn(ahead)) == -1) {
+            return finalOutput + ahead;
+          }
 
           QStringList results = m_expr.capturedTexts();
-
           output = KateRegExpSearch::buildReplacement(m_replace, results, ++matchCounter);
 
           finalOutput = finalOutput + ahead.left(pos) + output;
-
           ahead = ahead.mid(pos + m_expr.matchedLength());
         }
 
         return finalOutput;
-
       } else {
-        if ((pos = m_expr.indexIn(source)) == -1) return source;
+        if ((pos = m_expr.indexIn(source)) == -1) {
+          return source;
+        }
 
         QStringList results = m_expr.capturedTexts();
-
         output = KateRegExpSearch::buildReplacement(m_replace, results, 1);
-
         return source.left(pos) + output + source.mid(pos + m_expr.matchedLength());
-
-        break;
       }
 
       break;
