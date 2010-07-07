@@ -700,7 +700,6 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
 
         // correct column to point at end of range, taking replacement width diff into account
         // 2 == % + {
-
         column -= 2 + keyLength - initialVal.length();
 
         // always add ${...} to the editable ranges
@@ -721,7 +720,6 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
             while (!range_list.isEmpty()) {
               ranges.insert(key, range_list.takeLast());
             }
-
           } else {
             ranges.insert(key, tmp);
           }
@@ -735,7 +733,6 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
       startPos = -1;
 
       ifDebug(kDebug() << "i=" << i << " template size=" << templateString.size();)
-
     } else {
       ++column;
       lastWasBrace = false;
@@ -801,7 +798,6 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
         m_templateRangesChildToParent[range] = parent;
 
         // the last item will be our real first range (see multimap docs)
-
         if (i == values.size() - 1) {
           range->setAttribute(editableAttribute);
           m_uneditedRanges.append(range);
@@ -811,7 +807,6 @@ void KateTemplateHandler::handleTemplateString(const QMap< QString, QString >& i
           m_mirrorBehaviour.insert(range, mirrorBehaviourBuildHelper[values[i]]);
         }
       }
-
     } else {
       // just a single range
       parent->setAttribute(editableAttribute);
@@ -864,7 +859,7 @@ void KateTemplateHandler::slotTextChanged(Document* document, const Range& range
 
   if (!m_initialRemodify) {
     if ((!m_editWithUndo && doc()->isEditRunning()) || range.isEmpty()) {
-      ifDebug(kDebug(13020) << "slotTextChanged returning prematurely";)
+      ifDebug(kDebug() << "slotTextChanged returning prematurely";)
       return;
     }
   }
@@ -1089,8 +1084,6 @@ QString KateTemplateHandler::MirrorBehaviour::getMirrorString(const QString &sou
       }
 
       return source;
-
-      break;
     }
 
     default:
