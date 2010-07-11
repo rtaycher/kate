@@ -5,7 +5,7 @@ version=1
 [externaltool_CompareCurrentDocumenttoRCS]
 acname=externaltool_CompareCurrentDocumenttoRCS
 cmdname=document-diff
-command=cd %directory\nif [ -d .svn ] && grep %filename .svn/entries 2>&1 >/dev/null ; then\n  svn diff %filename|kompare -o -\nelif [ -d CVS ] && grep %filename CVS/Entries 2>&1 >/dev/null ; then\n  cvs diff -ub %filename|kompare -o -\nelse\n  kdialog --title Error --msgbox "The file '%filename' is not under revision control."\nfi\n
+command=if [ -z %directory ] then kdialog --title Error --msgbox "The document has never been saved and thus cannot be compared to RCS."; fi\ncd %directory\nif [ -d .svn ] && grep %filename .svn/entries 2>&1 >/dev/null ; then\n  svn diff %filename|kompare -o -\nelif [ -d CVS ] && grep %filename CVS/Entries 2>&1 >/dev/null ; then\n  cvs diff -ub %filename|kompare -o -\nelse\n  kdialog --title Error --msgbox "The file \'%filename\' is not under revision control."\nfi\n
 executable=kompare
 icon=kompare
 mimetypes=
