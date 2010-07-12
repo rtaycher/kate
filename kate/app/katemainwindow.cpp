@@ -285,6 +285,7 @@ void KateMainWindow::setupMainWindow ()
                       this, SLOT(slotDocumentCloseSelected(QList<KTextEditor::Document*>)));
   connect(m_fileList, SIGNAL(saveSelectedDocument(QList<KTextEditor::Document*>)),
                       KateDocManager::self(), SLOT(saveSelected(QList<KTextEditor::Document*>)));
+  connect(m_fileList, SIGNAL(openDocument(KUrl)), this, SLOT(slotOpenDocument(KUrl)));
   //filelist = new KateFileList (this, m_viewManager, ft);
 //   m_fileList->readConfig(KConfigGroup(KGlobal::config(), "FileList"));
 
@@ -541,6 +542,14 @@ void KateMainWindow::slotFileQuit()
 void KateMainWindow::slotFileClose()
 {
   m_viewManager->slotDocumentClose();
+}
+
+void KateMainWindow::slotOpenDocument(KUrl url)
+{
+  m_viewManager->openUrl(url,
+                        QString(),
+                        true,
+                        false);
 }
 
 void KateMainWindow::readOptions ()
