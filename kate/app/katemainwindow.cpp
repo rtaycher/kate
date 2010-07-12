@@ -428,7 +428,10 @@ void KateMainWindow::slotDocumentCloseAll()
 {
   if ( KateDocManager::self()->documents() > 1 && KMessageBox::warningContinueCancel(this,
                                        i18n ("This will close all open documents. Are you sure you want to continue?"),
-                                       i18n ("Close all documents")) != KMessageBox::Cancel)
+                                       i18n ("Close all documents"),
+                                       KStandardGuiItem::cont(),
+                                       KStandardGuiItem::cancel(),
+                                       QString("closeAll")) != KMessageBox::Cancel)
   {
     if (queryClose_internal())
       KateDocManager::self()->closeAllDocuments(false);
