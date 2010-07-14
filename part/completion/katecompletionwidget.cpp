@@ -68,7 +68,7 @@ const bool shellLikeTabCompletion = false;
   KTextEditor::CodeCompletionModelControllerInterface* ret =\
     qobject_cast<KTextEditor::CodeCompletionModelControllerInterface*>(model);\
   if (ret) {\
-        kWarning()<<"You are using a deprecated API, this will break in KDE 4.6, please port your module to the new KTextEditor::CodeCompletionModelControllerInterface3";\
+        kDebug()<<"You are using a deprecated API, this will break in KDE 4.6, please port your module to the new KTextEditor::CodeCompletionModelControllerInterface3";\
     WHAT ret->FUNC;\
     WHATELSE;\
   }\
@@ -894,7 +894,12 @@ KateSmartRange * KateCompletionWidget::completionRange(KTextEditor::CodeCompleti
   if (!model) {
     if (m_completionRanges.isEmpty()) return 0;
 
-    return m_completionRanges.begin()->range;
+    KateSmartRange* ret = m_completionRanges.begin()->range;
+    
+    foreach(CompletionRange range, m_completionRanges)
+      if(range.range->start() > ret->start())
+        ret = range.range;
+    return ret;
   }
   if(m_completionRanges.contains(model))
     return m_completionRanges[model].range;
