@@ -184,7 +184,7 @@ PluginViewKateQuickDocumentSwitcherDialog::PluginViewKateQuickDocumentSwitcherDi
     connect(m_model,SIGNAL(rowsInserted(const QModelIndex &,int,int)),this,SLOT(reselectFirst()));
     connect(m_model,SIGNAL(rowsRemoved(const QModelIndex &,int,int)),this,SLOT(reselectFirst()));
 
-    connect(m_listView,SIGNAL(doubleClicked(const QModelIndex &)),this,SLOT(accept()));
+    connect(m_listView,SIGNAL(activated(const QModelIndex &)),this,SLOT(accept()));
 
     m_listView->setModel(m_model);
     m_model->setSourceModel(base_model);
