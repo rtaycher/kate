@@ -48,7 +48,7 @@
 	<itemData name="Bold" defStyleNum="dsNormal" color="#445675" bold="1" />
 	<itemData name="Italic" defStyleNum="dsNormal" color="#653A39" italic="1" />
 	<itemData name="Underline" defStyleNum="dsNormal" color="#386742" underline="1" />
-	<itemData name="Strikeout" defStyleNum="dsNormal" color="#644A9B" /> <!-- TODO: strikeout="1"-->
+	<itemData name="Strikeout" defStyleNum="dsNormal" color="#644A9B" strikeOut="1" />
 	<itemData name="Monospaced" defStyleNum="dsNormal" color="#006600" />
 	<itemData name="Verbatim Line" defStyleNum="dsNormal" color="#006600" />
 	<itemData name="Verbatim Area" defStyleNum="dsNormal" color="#006600" />
