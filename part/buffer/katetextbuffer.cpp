@@ -539,21 +539,13 @@ bool TextBuffer::load (const QString &filename, bool &encodingErrors)
       encodingErrors = encodingErrors || currentError;
 
       // bail out on encoding error, if not last round!
-      if (encodingErrors && i < 3)
+      if (encodingErrors && i < 3) {
+        kDebug (13020) << "Failed try to load file" << filename << "with codec" << file.textCodec ()->name();
         break;
+      }
 
       // get unicode data for this line
       const QChar *unicodeData = file.unicode () + offset;
-
-      // strip trailing spaces
-      if (m_removeTrailingSpaces) {
-        while (length > 0) {
-          if (unicodeData[length-1].isSpace())
-            --length;
-          else
-            break;
-        }
-      }
 
       // construct new text line with content from file
       TextLine textLine = TextLine (new TextLineData(QString (unicodeData, length)));
