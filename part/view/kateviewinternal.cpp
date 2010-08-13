@@ -3121,18 +3121,18 @@ void KateViewInternal::dropEvent( QDropEvent* event )
     // use one transaction
     doc()->editStart ();
 
-#if 0 // FIXME
     // on move: remove selected text; on copy: duplicate text
     doc()->insertText(targetCursor, text, m_view->blockSelection());
 
-    KateSmartCursor startCursor(targetCursor,doc());
+    Kate::TextCursor startCursor(doc()->buffer(), targetCursor, KTextEditor::MovingCursor::MoveOnInsert);
 
     if ( event->dropAction() != Qt::CopyAction )
       m_view->removeSelectedText();
 
-    KateSmartCursor endCursor1(startCursor,doc());
+    Kate::TextCursor endCursor1(doc()->buffer(), startCursor, KTextEditor::MovingCursor::MoveOnInsert);
+    
     if ( !m_view->blockSelection() ) {
-      endCursor1.advance(text.length(),KTextEditor::SmartCursor::ByCharacter);
+      endCursor1.move(text.length());
     } else {
       endCursor1.setColumn(startCursor.column()+selectionWidth);
       endCursor1.setLine(startCursor.line()+selectionHeight);
@@ -3142,8 +3142,6 @@ void KateViewInternal::dropEvent( QDropEvent* event )
     kDebug( 13030 )<<startCursor<<"---("<<text.length()<<")---"<<endCursor;
     setSelection(KTextEditor::Range(startCursor,endCursor));
     editSetCursor(endCursor);
-
-#endif
     
     doc()->editEnd ();
 
