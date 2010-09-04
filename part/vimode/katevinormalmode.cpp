@@ -659,7 +659,7 @@ bool KateViNormalMode::commandMakeLowercaseLine()
   m_commandRange.startLine = c.line();
   m_commandRange.endLine = c.line();
   m_commandRange.startColumn = 0;
-  m_commandRange.endColumn = doc()->lineLength( c.line() );
+  m_commandRange.endColumn = doc()->lineLength( c.line() )-1;
 
   return commandMakeLowercase();
 }
@@ -688,7 +688,7 @@ bool KateViNormalMode::commandMakeUppercaseLine()
   m_commandRange.startLine = c.line();
   m_commandRange.endLine = c.line();
   m_commandRange.startColumn = 0;
-  m_commandRange.endColumn = doc()->lineLength( c.line() );
+  m_commandRange.endColumn = doc()->lineLength( c.line() )-1;
 
   return commandMakeUppercase();
 }
