@@ -77,6 +77,7 @@ class ProxyItem {
     QString m_display;
     KIcon m_icon;
     KTextEditor::Document *m_doc;
+  protected:
     void initDisplay();
 };
 
@@ -99,7 +100,7 @@ QDebug operator<<(QDebug dbg, ProxyItem *item)
 class ProxyItemDir : public ProxyItem
 {
   public:
-    ProxyItemDir(QString n, ProxyItemDir *p = 0) : ProxyItem(n, p) { setFlag(ProxyItem::Dir); }
+    ProxyItemDir(QString n, ProxyItemDir *p = 0) : ProxyItem(n, p) { setFlag(ProxyItem::Dir); initDisplay();}
 };
 
 QDebug operator<<(QDebug dbg, ProxyItemDir *item)
@@ -139,8 +140,13 @@ ProxyItem::~ProxyItem()
 
 void ProxyItem::initDisplay()
 {
-  QRegExp sep("[/\\\\]");
-  m_display = m_path.section(sep, -1, -1);
+  if (flag(ProxyItem::Dir) && (!m_parent)) {
+    m_display=m_path;
+  } else {
+    QRegExp sep("[/\\\\]");
+    m_display = m_path.section(sep, -1, -1);
+  }
+    
 }
 
 int ProxyItem::addChild(ProxyItem *item)
