@@ -140,7 +140,7 @@ ProxyItem::~ProxyItem()
 
 void ProxyItem::initDisplay()
 {
-  if (flag(ProxyItem::Dir) && (!m_parent)) {
+  if (flag(ProxyItem::Dir) && ( (!m_parent) || (!m_parent->m_parent)) ) {
     m_display=m_path;
   } else {
     QRegExp sep("[/\\\\]");
@@ -155,6 +155,7 @@ int ProxyItem::addChild(ProxyItem *item)
   item->m_row = item_row;
   m_children.append(item);
   item->m_parent = (ProxyItemDir*)this;
+  item->initDisplay();
   kDebug(debugArea()) << "added" << item << "to" << item->m_parent;
   return item_row;
 }
@@ -170,6 +171,7 @@ void ProxyItem::remChild(ProxyItem *item)
   }
 
   item->m_parent = 0;
+  item->initDisplay();
 }
 
 ProxyItemDir *ProxyItem::parent()
