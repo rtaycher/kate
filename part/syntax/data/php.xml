@@ -2027,8 +2027,6 @@ Changes:
       <item> cal_to_jd </item>
       <item> call_user_func </item>
       <item> call_user_func_array </item>
-      <item> call_user_method </item>
-      <item> call_user_method_array </item>
       <item> ccvs_add </item>
       <item> ccvs_auth </item>
       <item> ccvs_command </item>
@@ -3273,7 +3271,6 @@ Changes:
       <item> mcrypt_cfb </item>
       <item> mcrypt_create_iv </item>
       <item> mcrypt_decrypt </item>
-      <item> mcrypt_ecb </item>
       <item> mcrypt_enc_get_algorithms_name </item>
       <item> mcrypt_enc_get_block_size </item>
       <item> mcrypt_enc_get_iv_size </item>
@@ -3558,16 +3555,11 @@ Changes:
       <item> mysqli_real_query </item>
       <item> mysqli_report </item>
       <item> mysqli_rollback </item>
-      <item> mysqli_rpl_parse_enabled </item>
-      <item> mysqli_rpl_probe </item>
-      <item> mysqli_rpl_query_type </item>
       <item> mysqli_select_db </item>
       <item> mysqli_send_long_data </item>
-      <item> mysqli_send_query </item>
       <item> mysqli_set_local_infile_default </item>
       <item> mysqli_set_local_infile_handler </item>
       <item> mysqli_set_opt </item>
-      <item> mysqli_slave_query </item>
       <item> mysqli_sqlstate </item>
       <item> mysqli_ssl_set </item>
       <item> mysqli_stat </item>
@@ -3861,7 +3853,6 @@ Changes:
       <item> ocierror </item>
       <item> ociexecute </item>
       <item> ocifetch </item>
-      <item> ocifetchinto </item>
       <item> ocifetchstatement </item>
       <item> ocifreecollection </item>
       <item> ocifreecursor </item>
@@ -3968,29 +3959,6 @@ Changes:
       <item> openssl_x509_free </item>
       <item> openssl_x509_parse </item>
       <item> openssl_x509_read </item>
-      <item> ora_bind </item>
-      <item> ora_close </item>
-      <item> ora_columnname </item>
-      <item> ora_columnsize </item>
-      <item> ora_columntype </item>
-      <item> ora_commit </item>
-      <item> ora_commitoff </item>
-      <item> ora_commiton </item>
-      <item> ora_do </item>
-      <item> ora_error </item>
-      <item> ora_errorcode </item>
-      <item> ora_exec </item>
-      <item> ora_fetch </item>
-      <item> ora_fetch_into </item>
-      <item> ora_getcolumn </item>
-      <item> ora_logoff </item>
-      <item> ora_logon </item>
-      <item> ora_numcols </item>
-      <item> ora_numrows </item>
-      <item> ora_open </item>
-      <item> ora_parse </item>
-      <item> ora_plogon </item>
-      <item> ora_rollback </item>
       <item> ord </item>
       <item> output_add_rewrite_var </item>
       <item> output_reset_rewrite_vars </item>
@@ -5045,6 +5013,70 @@ Changes:
       <item> zip_read </item>
       <item> zlib_get_coding_type </item>
     </list>
+    
+    <list name="deprecated">
+      <!-- Variables -->
+      <item> $HTTP_SERVER_VARS </item>
+      <item> $HTTP_SESSION_VARS </item>
+      <item> $HTTP_ENV_VARS </item>
+      <item> $HTTP_POST_FILES </item>
+      <item> $HTTP_COOKIE_VARS </item>
+      <item> $HTTP_POST_VARS </item>
+      <item> $HTTP_GET_VARS </item>
+      <item> $DOCUMENT_ROOT </item>
+
+      <!-- Functions -->
+      <item> call_user_method </item>
+      <item> call_user_method_array </item>
+      <item> mcrypt_ecb </item>
+      <item> mime_content_type </item>
+      <item> mysqli_disable_reads_from_master </item>
+      <item> mysqli_disable_rpl_parse </item>
+      <item> mysqli_enable_reads_from_master </item>
+      <item> mysqli_enable_rpl_parse </item>
+      <item> mysqli_master_query </item>
+      <item> mysqli_rpl_parse_enabled </item>
+      <item> mysqli_rpl_probe </item>
+      <item> mysqli_rpl_query_type </item>
+      <item> mysqli_send_query </item>
+      <item> mysqli_slave_query </item>
+      <item> ocifetchinto </item>
+      <item> ora_bind </item>
+      <item> ora_close </item>
+      <item> ora_columnname </item>
+      <item> ora_columnsize </item>
+      <item> ora_columntype </item>
+      <item> ora_commit </item>
+      <item> ora_commitoff </item>
+      <item> ora_commiton </item>
+      <item> ora_do </item>
+      <item> ora_error </item>
+      <item> ora_errorcode </item>
+      <item> ora_exec </item>
+      <item> ora_fetch </item>
+      <item> ora_fetch_into </item>
+      <item> ora_getcolumn </item>
+      <item> ora_logoff </item>
+      <item> ora_logon </item>
+      <item> ora_numcols </item>
+      <item> ora_numrows </item>
+      <item> ora_open </item>
+      <item> ora_parse </item>
+      <item> ora_plogon </item>
+      <item> ora_rollback </item>
+
+      <!-- Keywords -->
+      <item> var </item>
+     
+      <!-- Constants -->
+      <item>OCI_DEFAULT</item>
+      <item>OCI_D_FILE</item>
+      <item>OCI_D_LOB</item>
+      <item>OCI_D_ROWID</item>
+      <item>OCI_EXACT_FETCH</item>
+      <item>OCI_SYSDATE</item>
+    </list>
+
     <contexts>
       <context name="start" lineEndContext="#stay" attribute="Normal Text">
         <RegExpr context="phpsource" attribute="Keyword" String="&lt;\?(?:=|php)?" insensitive="true" />
@@ -5081,6 +5113,7 @@ Changes:
         <IncludeRules context="##Doxygen" />
         <Detect2Chars attribute="Comment" context="onelinecomment" char="/" char1="/" />
         <Detect2Chars attribute="Comment" context="twolinecomment" char="/" char1="*" beginRegion="Comment" />
+        <keyword attribute="Error" context="#stay" String="deprecated"/>
         <keyword attribute="Control Structures" context="#stay" String="control structures" />
         <keyword attribute="Keyword" context="#stay" String="keywords" />
         <DetectChar attribute="Function" context="#stay" char="@" />
@@ -5207,6 +5240,7 @@ Changes:
       <itemData name="HTML Comment" defStyleNum="dsComment" />
       <itemData name="Identifier" defStyleNum="dsOthers" spellChecking="false" />
       <itemData name="Types" defStyleNum="dsDataType" spellChecking="false" />
+      <itemData name="Error" defStyleNum="dsError" spellChecking="false" />
     </itemDatas>
   </highlighting>
   <general>
