@@ -57,7 +57,10 @@ Changes:
 - Added alternative syntax control structures, and named logical operators ("and", "or", and "xor") (by Nicola Gigante).
 
 -->
-<!DOCTYPE language SYSTEM "language.dtd">
+<!DOCTYPE language SYSTEM "language.dtd" [
+  <!ENTITY types "int|integer|bool|boolean|float|double|real|string|array|object">
+]>
+
 <language name="PHP/PHP" indenter="cstyle" version="1.42" kateversion="2.4" section="Scripts" extensions="" priority="5" mimetype="" hidden="true">
   <highlighting>
     <list name="control structures">
@@ -4883,6 +4886,10 @@ Changes:
         <DetectChar attribute="Function" context="#stay" char="@" />
         <keyword attribute="Function" context="#stay" String="functions" />
         <keyword attribute="Special method" context="#stay" String="special_methods" />
+        
+        <!-- Type casts -->
+        <RegExpr attribute="Types" context="#stay" String="\(\s*(&types;)\s*\)"/>
+        
         <DetectIdentifier />
         <DetectChar attribute="String" context="doublequotestring" char="&quot;" />
         <DetectChar attribute="String" context="backquotestring" char="`" />
