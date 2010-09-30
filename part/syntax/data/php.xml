@@ -5274,7 +5274,7 @@ Changes:
         <keyword attribute="Control Structures" context="#stay" String="control structures" />
         <keyword attribute="Keyword" context="#stay" String="keywords" />
         <keyword attribute="Classes" context="#stay" String="predefined-classes"/>
-        <DetectChar attribute="Function" context="#stay" char="@" />
+        <DetectChar attribute="Error" context="#stay" char="@" />
         <keyword attribute="Function" context="#stay" String="functions" />
         <keyword attribute="Special method" context="#stay" String="special_methods" />
         
