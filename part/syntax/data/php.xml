@@ -5013,7 +5013,19 @@ Changes:
       <item> zip_read </item>
       <item> zlib_get_coding_type </item>
     </list>
-    
+    <list name="special-variables">
+        <item> $GLOBALS </item>
+        <item> $_COOKIE </item>
+        <item> $_ENV </item>
+        <item> $_FILES </item>
+        <item> $_GET </item>
+        <item> $_POST </item>
+        <item> $_REQUEST </item>
+        <item> $_SERVER </item>
+        <item> $_SESSION </item>
+        <item> $php_errormsg </item>
+        <item> $this </item>
+    </list>
     <list name="deprecated">
       <!-- Variables -->
       <item> $HTTP_SERVER_VARS </item>
@@ -5132,6 +5144,7 @@ Changes:
         <RegExpr attribute="Backslash Code" context="javascriptheredoc" String="&lt;&lt;&lt;((EO)?JAVASCRIPT)\b" beginRegion="Heredoc" />
         <RegExpr attribute="Backslash Code" context="mysqlheredoc" String="&lt;&lt;&lt;((EO)?MYSQL)\b" beginRegion="Heredoc" />
         <RegExpr attribute="Backslash Code" context="heredoc" String="&lt;&lt;&lt;([A-Za-z_][A-Za-z0-9_]*)" beginRegion="Heredoc" />
+        <keyword attribute="Special Variable" context="#stay" String="special-variables"/>
         <RegExpr attribute="Variable" context="#stay" String="\$+[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*" />
         <RegExpr attribute="String" context="#stay" String="[0123456789]*\.\.\.[0123456789]*" />
         <HlCOct attribute="Octal" context="#stay" />
@@ -5231,6 +5244,7 @@ Changes:
       <itemData name="Float" defStyleNum="dsFloat" spellChecking="false" />
       <itemData name="String" defStyleNum="dsString" />
       <itemData name="Comment" defStyleNum="dsComment" />
+      <itemData name="Special Variable" defStyleNum="dsKeyword" color="#5555FF" selColor="#ffffff" bold="1" italic="0" spellChecking="false" />
       <itemData name="Variable" defStyleNum="dsKeyword" color="#5555FF" selColor="#ffffff" bold="0" italic="0" spellChecking="false" />
       <itemData name="Control Structures" defStyleNum="dsKeyword" color="#A1A100" selColor="#ffffff" bold="0" italic="0" spellChecking="false" />
       <itemData name="Backslash Code" defStyleNum="dsKeyword" color="#0F0F8F" selColor="#ffffff" bold="1" italic="0" spellChecking="false" />
