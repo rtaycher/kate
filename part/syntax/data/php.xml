@@ -5026,6 +5026,151 @@ Changes:
         <item> $php_errormsg </item>
         <item> $this </item>
     </list>
+    <list name="predefined-classes">
+        <item> APCIterator </item>
+        <item> AppendIterator </item>
+        <item> ArrayAccess </item>
+        <item> ArrayIterator </item>
+        <item> ArrayObject </item>
+        <item> BadFunctionCallException </item>
+        <item> BadMethodCallException </item>
+        <item> CachingIterator </item>
+        <item> Closure </item>
+        <item> Countable </item>
+        <item> DOMAttr </item>
+        <item> DOMCDATASection </item>
+        <item> DOMCharacterData </item>
+        <item> DOMComment </item>
+        <item> DOMConfiguration </item>
+        <item> DOMDocument </item>
+        <item> DOMDocumentFragment </item>
+        <item> DOMDocumentType </item>
+        <item> DOMDomError </item>
+        <item> DOMElement </item>
+        <item> DOMEntity </item>
+        <item> DOMEntityReference </item>
+        <item> DOMErrorHandler </item>
+        <item> DOMException </item>
+        <item> DOMImplementation </item>
+        <item> DOMImplementationList </item>
+        <item> DOMImplementationSource </item>
+        <item> DOMLocator </item>
+        <item> DOMNameList </item>
+        <item> DOMNameSpaceNode </item>
+        <item> DOMNamedNodeMap </item>
+        <item> DOMNode </item>
+        <item> DOMNodeList </item>
+        <item> DOMNotation </item>
+        <item> DOMProcessingInstruction </item>
+        <item> DOMStringExtend </item>
+        <item> DOMStringList </item>
+        <item> DOMText </item>
+        <item> DOMTypeinfo </item>
+        <item> DOMUserDataHandler </item>
+        <item> DOMXPath </item>
+        <item> DateInterval </item>
+        <item> DatePeriod </item>
+        <item> DateTime </item>
+        <item> DateTimeZone </item>
+        <item> Directory </item>
+        <item> DirectoryIterator </item>
+        <item> DomainException </item>
+        <item> EmptyIterator </item>
+        <item> ErrorException </item>
+        <item> Exception </item>
+        <item> FilesystemIterator </item>
+        <item> FilterIterator </item>
+        <item> GlobIterator </item>
+        <item> InfiniteIterator </item>
+        <item> InvalidArgumentException </item>
+        <item> Iterator </item>
+        <item> IteratorAggregate </item>
+        <item> IteratorIterator </item>
+        <item> LengthException </item>
+        <item> LibXMLError </item>
+        <item> LimitIterator </item>
+        <item> LogicException </item>
+        <item> MultipleIterator </item>
+        <item> MySQLi </item>
+        <item> MySQLi_Driver </item>
+        <item> MySQLi_SQL_Exception </item>
+        <item> MySQLi_Result </item>
+        <item> MySQLi_STMT </item>
+        <item> MySQLi_Warning </item>
+        <item> NoRewindIterator </item>
+        <item> OCI-Collection </item>
+        <item> OCI-LOB </item>
+        <item> OutOfBoundsException </item>
+        <item> OutOfRangeException </item>
+        <item> OuterIterator </item>
+        <item> OverflowException </item>
+        <item> PDO </item>
+        <item> PDOException </item>
+        <item> PDORow </item>
+        <item> PDOStatement </item>
+        <item> ParentIterator </item>
+        <item> Phar </item>
+        <item> PharData </item>
+        <item> PharException </item>
+        <item> PharFileInfo </item>
+        <item> RangeException </item>
+        <item> RecursiveArrayIterator </item>
+        <item> RecursiveCachingIterator </item>
+        <item> RecursiveDirectoryIterator </item>
+        <item> RecursiveFilterIterator </item>
+        <item> RecursiveIterator </item>
+        <item> RecursiveIteratorIterator </item>
+        <item> RecursiveRegexIterator </item>
+        <item> RecursiveTreeIterator </item>
+        <item> Reflection </item>
+        <item> ReflectionClass </item>
+        <item> ReflectionException </item>
+        <item> ReflectionExtension </item>
+        <item> ReflectionFunction </item>
+        <item> ReflectionFunctionAbstract </item>
+        <item> ReflectionMethod </item>
+        <item> ReflectionObject </item>
+        <item> ReflectionParameter </item>
+        <item> ReflectionProperty </item>
+        <item> Reflector </item>
+        <item> RegexIterator </item>
+        <item> RuntimeException </item>
+        <item> SQLite3 </item>
+        <item> SQLite3Result </item>
+        <item> SQLite3Stmt </item>
+        <item> SQLiteDatabase </item>
+        <item> SQLiteException </item>
+        <item> SQLiteResult </item>
+        <item> SQLiteUnbuffered </item>
+        <item> SeekableIterator </item>
+        <item> Serializable </item>
+        <item> SimpleXMLElement </item>
+        <item> SimpleXMLIterator </item>
+        <item> SplDoublyLinkedList </item>
+        <item> SplFileInfo </item>
+        <item> SplFileObject </item>
+        <item> SplFixedArray </item>
+        <item> SplHeap </item>
+        <item> SplMaxHeap </item>
+        <item> SplMinHeap </item>
+        <item> SplObjectStorage </item>
+        <item> SplObserver </item>
+        <item> SplPriorityQueue </item>
+        <item> SplQueue </item>
+        <item> SplStack </item>
+        <item> SplSubject </item>
+        <item> SplTempFileObject </item>
+        <item> Traversable </item>
+        <item> UnderflowException </item>
+        <item> UnexpectedValueException </item>
+        <item> XMLReader </item>
+        <item> XMLWriter </item>
+        <item> XSLTProcessor </item>
+        <item> ZipArchive </item>
+        <item> __PHP_Incomplete_Class </item>
+        <item> php_user_filter </item>
+        <item> stdClass </item>
+    </list>
     <list name="deprecated">
       <!-- Variables -->
       <item> $HTTP_SERVER_VARS </item>
@@ -5128,6 +5273,7 @@ Changes:
         <keyword attribute="Error" context="#stay" String="deprecated"/>
         <keyword attribute="Control Structures" context="#stay" String="control structures" />
         <keyword attribute="Keyword" context="#stay" String="keywords" />
+        <keyword attribute="Classes" context="#stay" String="predefined-classes"/>
         <DetectChar attribute="Function" context="#stay" char="@" />
         <keyword attribute="Function" context="#stay" String="functions" />
         <keyword attribute="Special method" context="#stay" String="special_methods" />
@@ -5236,6 +5382,7 @@ Changes:
       <itemData name="Normal Text" defStyleNum="dsNormal" spellChecking="false" />
       <itemData name="PHP Text" defStyleNum="dsNormal" spellChecking="false" />
       <itemData name="Keyword" defStyleNum="dsKeyword" spellChecking="false" />
+      <itemData name="Classes" defStyleNum="dsKeyword" spellChecking="false" />
       <itemData name="Function" defStyleNum="dsFunction" spellChecking="false" />
       <itemData name="Special method" defStyleNum="dsFunction" spellChecking="false" />
       <itemData name="Decimal" defStyleNum="dsDecVal" spellChecking="false" />
