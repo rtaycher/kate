@@ -5315,9 +5315,11 @@ Changes:
 
       <context name="onelinecomment" attribute="Comment" lineEndContext="#pop">
         <StringDetect attribute="Keyword" context="#pop" lookAhead="true" String="?&gt;" />
+        <IncludeRules context="##Alerts" />
       </context>
       <context name="twolinecomment" attribute="Comment" lineEndContext="#stay">
         <Detect2Chars attribute="Comment" context="#pop" char="*" char1="/" endRegion="Comment" />
+        <IncludeRules context="##Alerts" />
       </context>
       <context name="doublebackquotestringcommon" attribute="String" lineEndContext="#stay">
         <!-- Common rules for double quoted strings and backticks (execution operator) URL:
