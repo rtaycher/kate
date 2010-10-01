@@ -117,7 +117,9 @@ Changes:
       <item> var </item>
       <item> namespace </item>
       <item> use </item>
+    </list>
       <!-- magic constants, see http://php.net/manual/en/language.constants.predefined.php -->
+    <list name="constants">
       <item> __LINE__ </item>
       <item> __FILE__ </item>
       <item> __DIR__ </item>
@@ -5277,10 +5279,12 @@ Changes:
         <DetectChar attribute="Error" context="#stay" char="@" />
         <keyword attribute="Function" context="#stay" String="functions" />
         <keyword attribute="Special method" context="#stay" String="special_methods" />
-        
+        <keyword attribute="Library Constant" context="#stay" String="constants"/>
+        <RegExpr attribute="Constant" context="#stay" String="\b[A-Z_][A-Z_0-9]*\b"/>
+
         <!-- Type casts -->
         <RegExpr attribute="Types" context="#stay" String="\(\s*(&types;)\s*\)"/>
-        
+
         <DetectIdentifier />
         <DetectChar attribute="String" context="doublequotestring" char="&quot;" />
         <DetectChar attribute="String" context="backquotestring" char="`" />
@@ -5397,6 +5401,8 @@ Changes:
       <itemData name="Comment" defStyleNum="dsComment" />
       <itemData name="Special Variable" defStyleNum="dsKeyword" color="#5555FF" selColor="#ffffff" bold="1" italic="0" spellChecking="false" />
       <itemData name="Variable" defStyleNum="dsKeyword" color="#5555FF" selColor="#ffffff" bold="0" italic="0" spellChecking="false" />
+      <itemData name="Library Constant" defStyleNum="dsKeyword" bold="1" spellChecking="false" />
+      <itemData name="Constant" defStyleNum="dsKeyword" bold="0" spellChecking="false" />
       <itemData name="Control Structures" defStyleNum="dsKeyword" color="#A1A100" selColor="#ffffff" bold="0" italic="0" spellChecking="false" />
       <itemData name="Backslash Code" defStyleNum="dsKeyword" color="#0F0F8F" selColor="#ffffff" bold="1" italic="0" spellChecking="false" />
       <itemData name="Other" defStyleNum="dsOthers" spellChecking="false" />
