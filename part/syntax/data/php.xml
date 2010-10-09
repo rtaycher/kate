@@ -1964,6 +1964,8 @@ Changes:
       <item> array_push </item>
       <item> array_rand </item>
       <item> array_reduce </item>
+      <item> array_replace </item>
+      <item> array_replace_recursive </item>
       <item> array_reverse </item>
       <item> array_search </item>
       <item> array_shift </item>
@@ -2210,10 +2212,31 @@ Changes:
       <item> cyrus_query </item>
       <item> cyrus_unbind </item>
       <item> date </item>
+      <item> date_add </item>
+      <item> date_create </item>
+      <item> date_create_from_format </item>
+      <item> date_date_set </item>
       <item> date_default_timezone_get </item>
       <item> date_default_timezone_set </item>
+      <item> date_diff </item>
+      <item> date_format </item>
+      <item> date_get_last_errors </item>
+      <item> date_interval_create_from_date_string </item>
+      <item> date_interval_format </item>
+      <item> date_isodate_set </item>
+      <item> date_modify </item>
+      <item> date_offset_get </item>
+      <item> date_parse </item>
+      <item> date_parse_from_format </item>
+      <item> date_sub </item>
+      <item> date_sun_info </item>
       <item> date_sunrise </item>
       <item> date_sunset </item>
+      <item> date_time_ set </item>
+      <item> date_timestamp_get </item>
+      <item> date_timestamp_set </item>
+      <item> date_timezone_get </item>
+      <item> date_timezone_set </item>
       <item> dba_close </item>
       <item> dba_delete </item>
       <item> dba_exists </item>
@@ -2311,8 +2334,6 @@ Changes:
       <item> debug_backtrace </item>
       <item> debug_print_backtrace </item>
       <item> debug_zval_dump </item>
-      <item> debugger_off </item>
-      <item> debugger_on </item>
       <item> decbin </item>
       <item> dechex </item>
       <item> decoct </item>
@@ -2355,7 +2376,6 @@ Changes:
       <item> domxml_root </item>
       <item> domxml_set_attribute </item>
       <item> domxml_version </item>
-      <item> dotnet_load </item>
       <item> doubleval </item>
       <item> each </item>
       <item> easter_date </item>
@@ -2364,10 +2384,7 @@ Changes:
       <item> echo </item>
       <item> empty </item>
       <item> end </item>
-      <item> ereg </item>
-      <item> ereg_replace </item>
-      <item> eregi </item>
-      <item> eregi_replace </item>
+      <item> error_get_last </item>
       <item> error_log </item>
       <item> error_reporting </item>
       <item> escapeshellarg </item>
@@ -2474,7 +2491,6 @@ Changes:
       <item> fgetcsv </item>
       <item> fgets </item>
       <item> fgetss </item>
-      <item> fgetwrapperdata </item>
       <item> file </item>
       <item> file_exists </item>
       <item> file_get_contents </item>
@@ -2495,6 +2511,13 @@ Changes:
       <item> filepro_rowcount </item>
       <item> filesize </item>
       <item> filetype </item>
+      <item> filter_has_var </item>
+      <item> filter_id </item>
+      <item> filter_input </item>
+      <item> filter_input_array </item>
+      <item> filter_list </item>
+      <item> filter_var </item>
+      <item> filter_var_array </item>
       <item> floatval </item>
       <item> flock </item>
       <item> floor </item>
@@ -2502,8 +2525,11 @@ Changes:
       <item> fmod </item>
       <item> fnmatch </item>
       <item> fopen </item>
+      <item> forward_static_call </item>
+      <item> forward_static_call_array </item>
       <item> fpassthru </item>
       <item> fprintf </item>
+      <item> fputcsv </item>
       <item> fputs </item>
       <item> fread </item>
       <item> frenchtojd </item>
@@ -2554,6 +2580,10 @@ Changes:
       <item> func_num_args </item>
       <item> function_exists </item>
       <item> fwrite </item>
+      <item> gc_collect_cycles </item>
+      <item> gc_disable </item>
+      <item> gc_enable </item>
+      <item> gc_enabled </item>
       <item> gd_info </item>
       <item> get_browser </item>
       <item> get_cfg_var </item>
@@ -4520,10 +4550,7 @@ Changes:
       <item> soundex </item>
       <item> spl_autoload_register </item>
       <item> spl_classes </item>
-      <item> split </item>
-      <item> spliti </item>
       <item> sprintf </item>
-      <item> sql_regcase </item>
       <item> sqlite_array_query </item>
       <item> sqlite_busy_timeout </item>
       <item> sqlite_changes </item>
@@ -5187,6 +5214,10 @@ Changes:
       <!-- Functions -->
       <item> call_user_method </item>
       <item> call_user_method_array </item>
+      <item> ereg </item>
+      <item> ereg_replace </item>
+      <item> eregi </item>
+      <item> eregi_replace </item>
       <item> mcrypt_ecb </item>
       <item> mime_content_type </item>
       <item> mysqli_disable_reads_from_master </item>
@@ -5223,6 +5254,9 @@ Changes:
       <item> ora_parse </item>
       <item> ora_plogon </item>
       <item> ora_rollback </item>
+      <item> split </item>
+      <item> spliti </item>
+      <item> sql_regcase </item>
 
       <!-- Keywords -->
       <item> var </item>
