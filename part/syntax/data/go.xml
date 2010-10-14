@@ -59,21 +59,28 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     <list name="types">
       <item>bool</item>
       <item>byte</item>
+      <item>complex64</item>
+      <item>complex128</item>
       <item>float</item>
+      <item>float32</item>
       <item>float64</item>
       <item>int</item>
       <item>int8</item>
+      <item>int16</item>
       <item>int32</item>
+      <item>int64</item>
       <item>string</item>
       <item>uint</item>
       <item>uint8</item>
+      <item>uint16</item>
       <item>uint32</item>
+      <item>uint64</item>
     </list>
     <list name="builtin">
-      <item>len</item>
-      <item>new</item>
-      <item>make</item>
       <item>cap</item>
+      <item>len</item>
+      <item>make</item>
+      <item>new</item>
       <item>panic</item>
       <item>recover</item>
     </list>
