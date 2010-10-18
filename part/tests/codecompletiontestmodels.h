@@ -103,12 +103,13 @@ public:
         : CodeCompletionTestModel(parent, startText)
     {}
 
-    void updateCompletionRange(View* view, Range& range)
+    Range updateCompletionRange(View* view, const Range& range)
     {
         Q_UNUSED(view);
         if (view->document()->text(range) == QString("ab")) {
-            range.setRange(Range(Cursor(range.start().line(), 0), range.end()));
+            return Range(Cursor(range.start().line(), 0), range.end());
         }
+        return range;
     }
     bool shouldAbortCompletion(View* view, const Range &range, const QString &currentCompletion)
     {
