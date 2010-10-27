@@ -111,8 +111,8 @@ KateBuildView::KateBuildView(Kate::MainWindow *mw)
     quick->setShortcut(QKeySequence(Qt::ALT+Qt::Key_C) );
     connect( quick, SIGNAL( triggered(bool) ), this, SLOT( slotQuickCompile() ) );
 
-    KAction *stop = actionCollection()->addAction("break");
-    stop->setText(i18n("Break"));
+    KAction *stop = actionCollection()->addAction("stop");
+    stop->setText(i18n("Stop"));
     stop->setShortcut(QKeySequence(Qt::ALT+Qt::Key_X) );
     connect( stop, SIGNAL( triggered(bool) ), this, SLOT( slotStop() ) );
 
