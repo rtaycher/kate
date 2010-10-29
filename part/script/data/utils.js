@@ -4,7 +4,7 @@
  * revision: 3
  * kate-version: 3.4
  * type: commands
- * functions: sort, moveLinesDown, moveLinesUp, natsort, uniq, rtrim, ltrim, trim, join, rmblank, unwrap, each, filter, map, duplicateLine
+ * functions: sort, moveLinesDown, moveLinesUp, natsort, uniq, rtrim, ltrim, trim, join, rmblank, unwrap, each, filter, map, duplicateLine, duplicateLinesUp, duplicateLinesDown
  */
 
 function sort()
@@ -137,7 +137,6 @@ function moveLinesDown()
         toLine = view.cursorPosition().line;
         fromLine = toLine + 1;
     }
-
     if (fromLine != -1 && toLine != -1) {
         var text = document.line(fromLine);
 
@@ -179,6 +178,57 @@ function duplicateLine()
     document.insertLine(cursor.line, line);
 }
 
+function duplicateLinesUp()
+{
+    var fromLine = -1;
+    var toLine = -1;
+
+    var selectionRange = view.selection();
+    if (selectionRange.isValid() && selectionRange.start.line > 0) {
+        fromLine = selectionRange.start.line;
+        toLine = selectionRange.end.line;
+    } else if (view.cursorPosition().line > 0) {
+        toLine = view.cursorPosition().line;
+        fromLine = toLine;
+    }
+
+    var text = [];
+    for (var i=fromLine; i<=toLine; ++i) {
+        text.push(document.line(i));
+    }
+    document.editBegin();
+    for (var i=text.length-1; i>=0; --i) {
+        document.insertLine(fromLine, text[i]);
+    }
+    document.editEnd();
+}
+
+function duplicateLinesDown()
+{
+    var fromLine = -1;
+    var toLine = -1;
+
+    var selectionRange = view.selection();
+    if (selectionRange.isValid() && selectionRange.start.line > 0) {
+        fromLine = selectionRange.start.line;
+        toLine = selectionRange.end.line;
+    } else if (view.cursorPosition().line > 0) {
+        toLine = view.cursorPosition().line;
+        fromLine = toLine;
+    }
+
+    var text = [];
+    for (var i=fromLine; i<=toLine; ++i) {
+        text.push(document.line(i));
+    }
+    document.editBegin();
+    for (var i=text.length-1; i>=0; --i) {
+        document.insertLine(toLine+1, text[i]);
+    }
+    document.editEnd();
+}
+
+
 function action(cmd)
 {
     var a = new Object();
@@ -206,6 +256,18 @@ function action(cmd)
         a.category = "";
         a.interactive = false;
         a.shortcut = "";
+    } else if (cmd == "duplicateLinesUp") {
+        a.text = i18n("Duplicate Selected Lines Up");
+        a.icon = "";
+        a.category = "";
+        a.interactive = false;
+        a.shortcut = "Ctrl+Alt+Up";
+    } else if (cmd == "duplicateLinesDown") {
+        a.text = i18n("Duplicate Selected Lines Down");
+        a.icon = "";
+        a.category = "";
+        a.interactive = false;
+        a.shortcut = "Ctrl+Alt+Down";
     }
 
     return a;
@@ -262,6 +324,10 @@ function help(cmd)
                     "<code>map 'line.replace(/^\s+/, \"\")'</code>");
     } else if (cmd == "duplicateLine") {
         return i18n("Duplicates the line the cursor is currently at.");
+    } else if (cmd == "duplicateLinesUp") {
+        return i18n("Duplicates the selected lines up.");
+    } else if (cmd == "duplicateLinesDown") {
+        return i18n("Duplicates the selected lines down.");
     }
 }
 
