@@ -4,7 +4,7 @@
  * revision: 3
  * kate-version: 3.4
  * type: commands
- * functions: sort, moveLinesDown, moveLinesUp, natsort, uniq, rtrim, ltrim, trim, join, rmblank, unwrap, each, filter, map, duplicateLine, duplicateLinesUp, duplicateLinesDown
+ * functions: sort, moveLinesDown, moveLinesUp, natsort, uniq, rtrim, ltrim, trim, join, rmblank, unwrap, each, filter, map, duplicateLinesUp, duplicateLinesDown
  */
 
 function sort()
@@ -171,13 +171,6 @@ function moveLinesUp()
     }
 }
 
-function duplicateLine()
-{
-    var cursor = view.cursorPosition();
-    var line = document.line(cursor.line);
-    document.insertLine(cursor.line, line);
-}
-
 function duplicateLinesUp()
 {
     var fromLine = -1;
@@ -250,12 +243,6 @@ function action(cmd)
         a.category = "";
         a.interactive = false;
         a.shortcut = "";
-    } else if (cmd == "duplicateLine") {
-        a.text = i18n("Duplicate Current Line");
-        a.icon = "";
-        a.category = "";
-        a.interactive = false;
-        a.shortcut = "";
     } else if (cmd == "duplicateLinesUp") {
         a.text = i18n("Duplicate Selected Lines Up");
         a.icon = "";
@@ -322,8 +309,6 @@ function help(cmd)
                     "<code>map 'function(line){return line.replace(/^\s+/, \"\");}'</code><br>" +
                     "To save you some typing, you can also do this to achieve the same:<br>" +
                     "<code>map 'line.replace(/^\s+/, \"\")'</code>");
-    } else if (cmd == "duplicateLine") {
-        return i18n("Duplicates the line the cursor is currently at.");
     } else if (cmd == "duplicateLinesUp") {
         return i18n("Duplicates the selected lines up.");
     } else if (cmd == "duplicateLinesDown") {
