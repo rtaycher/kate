@@ -181,6 +181,7 @@ function _selectedLines()
     if (selectionRange.isValid() && selectionRange.start.line > 0) {
         fromLine = selectionRange.start.line;
         toLine = selectionRange.end.line;
+        if (selectionRange.end.column==0) toLine--; //if selection ends at beginning of line, skip that line
     } else if (view.cursorPosition().line > 0) {
         toLine = view.cursorPosition().line;
         fromLine = toLine;
