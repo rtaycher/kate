@@ -171,7 +171,8 @@ function moveLinesUp()
     }
 }
 
-function duplicateLinesUp()
+//private
+function _selectedLines()
 {
     var fromLine = -1;
     var toLine = -1;
@@ -185,11 +186,25 @@ function duplicateLinesUp()
         fromLine = toLine;
     }
 
+    return { from: fromLine, to: toLine };
+}
+
+//private
+function _selectedLinesText()
+{
+    var sel = _selectedLines();
     var text = [];
-    for (var i=fromLine; i<=toLine; ++i) {
+    for (var i=sel.from; i<=sel.to; ++i) {
         text.push(document.line(i));
     }
+    return text;
+}
+
+function duplicateLinesUp()
+{
     document.editBegin();
+    var text = _selectedLinesText();
+    var fromLine = _selectedLines().from;
     for (var i=text.length-1; i>=0; --i) {
         document.insertLine(fromLine, text[i]);
     }
@@ -198,23 +213,9 @@ function duplicateLinesUp()
 
 function duplicateLinesDown()
 {
-    var fromLine = -1;
-    var toLine = -1;
-
-    var selectionRange = view.selection();
-    if (selectionRange.isValid() && selectionRange.start.line > 0) {
-        fromLine = selectionRange.start.line;
-        toLine = selectionRange.end.line;
-    } else if (view.cursorPosition().line > 0) {
-        toLine = view.cursorPosition().line;
-        fromLine = toLine;
-    }
-
-    var text = [];
-    for (var i=fromLine; i<=toLine; ++i) {
-        text.push(document.line(i));
-    }
     document.editBegin();
+    var text = _selectedLinesText();
+    var toLine = _selectedLines().to;
     for (var i=text.length-1; i>=0; --i) {
         document.insertLine(toLine+1, text[i]);
     }
