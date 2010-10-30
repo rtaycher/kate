@@ -204,22 +204,28 @@ function duplicateLinesUp()
 {
     document.editBegin();
     var text = _selectedLinesText();
-    var fromLine = _selectedLines().from;
+    var selLines = _selectedLines();
     for (var i=text.length-1; i>=0; --i) {
-        document.insertLine(fromLine, text[i]);
+        document.insertLine(selLines.from, text[i]);
     }
     document.editEnd();
+
+    view.setSelection(new Range(new Cursor(selLines.from, 0), new Cursor(selLines.to+1, 0)));
+    view.setCursorPosition(new Cursor(selLines.from, 0));
 }
 
 function duplicateLinesDown()
 {
     document.editBegin();
     var text = _selectedLinesText();
-    var toLine = _selectedLines().to;
+    var selLines = _selectedLines();
     for (var i=text.length-1; i>=0; --i) {
-        document.insertLine(toLine+1, text[i]);
+        document.insertLine(selLines.to+1, text[i]);
     }
     document.editEnd();
+
+    view.setSelection(new Range(new Cursor(selLines.to+1, 0), new Cursor(selLines.to+text.length+1, 0)));
+    view.setCursorPosition(new Cursor(selLines.to+1, 0));
 }
 
 
