@@ -235,13 +235,13 @@ function action(cmd)
         a.icon = "";
         a.category = "";
         a.interactive = false;
-        a.shortcut = "";
+        a.shortcut = "Ctrl+Shift+Down";
     } else if (cmd == "moveLinesUp") {
         a.text = i18n("Move Lines Up");
         a.icon = "";
         a.category = "";
         a.interactive = false;
-        a.shortcut = "";
+        a.shortcut = "Ctrl+Shift+Up";
     } else if (cmd == "duplicateLinesUp") {
         a.text = i18n("Duplicate Selected Lines Up");
         a.icon = "";
