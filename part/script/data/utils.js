@@ -172,7 +172,7 @@ function moveLinesUp()
 }
 
 //private
-function _selectedLines()
+function _duplicateLines(up)
 {
     var fromLine = -1;
     var toLine = -1;
@@ -187,48 +187,39 @@ function _selectedLines()
         fromLine = toLine;
     }
 
-    return { from: fromLine, to: toLine };
-}
-
-//private
-function _selectedLinesText()
-{
-    var sel = _selectedLines();
     var text = [];
-    for (var i=sel.from; i<=sel.to; ++i) {
+    for (var i=fromLine; i<=toLine; ++i) {
         text.push(document.line(i));
     }
-    return text;
+
+    document.editBegin();
+    for (var i=text.length-1; i>=0; --i) {
+        if (up) {
+            document.insertLine(fromLine, text[i]);
+        } else {
+            document.insertLine(toLine+1, text[i]);
+        }
+    }
+    document.editEnd();
+
+    if (up) {
+        view.setSelection(new Range(new Cursor(fromLine, 0), new Cursor(toLine+1, 0)));
+        view.setCursorPosition(new Cursor(fromLine, 0));
+    } else {
+        view.setSelection(new Range(new Cursor(toLine+1, 0), new Cursor(toLine+text.length+1, 0)));
+        view.setCursorPosition(new Cursor(toLine+1, 0));
+    }
 }
 
 function duplicateLinesUp()
 {
-    document.editBegin();
-    var text = _selectedLinesText();
-    var selLines = _selectedLines();
-    for (var i=text.length-1; i>=0; --i) {
-        document.insertLine(selLines.from, text[i]);
-    }
-    document.editEnd();
-
-    view.setSelection(new Range(new Cursor(selLines.from, 0), new Cursor(selLines.to+1, 0)));
-    view.setCursorPosition(new Cursor(selLines.from, 0));
+    _duplicateLines(true);
 }
 
 function duplicateLinesDown()
 {
-    document.editBegin();
-    var text = _selectedLinesText();
-    var selLines = _selectedLines();
-    for (var i=text.length-1; i>=0; --i) {
-        document.insertLine(selLines.to+1, text[i]);
-    }
-    document.editEnd();
-
-    view.setSelection(new Range(new Cursor(selLines.to+1, 0), new Cursor(selLines.to+text.length+1, 0)));
-    view.setCursorPosition(new Cursor(selLines.to+1, 0));
+    _duplicateLines(false);
 }
-
 
 function action(cmd)
 {
