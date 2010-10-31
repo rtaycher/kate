@@ -58,11 +58,6 @@
 
 K_EXPORT_COMPONENT_FACTORY( katebuildplugin, KGenericFactory<KateBuildPlugin>( "katebuild-plugin" ) )
 
-#define COL_FILE    (0)
-#define COL_LINE    (1)
-#define COL_MSG     (2)
-#define COL_URL     (3)
-
 #define DEF_QUICK_COMP_CMD "gcc -Wall -g %f"
 
 
