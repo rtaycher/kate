@@ -356,8 +356,6 @@ class KateViewBar : public QWidget
 
 class KateCommandLineBar : public KateViewBarWidget
 {
-  Q_OBJECT
-
   public:
     explicit KateCommandLineBar(KateView *view, QWidget *parent = 0);
     ~KateCommandLineBar();

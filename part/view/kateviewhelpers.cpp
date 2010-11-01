@@ -69,7 +69,6 @@
 #include <QtGui/QToolTip>
 #include <QtGui/QAction>
 #include <QtGui/QWhatsThis>
-#include <QtGui/QPushButton>
 
 #include <math.h>
 
