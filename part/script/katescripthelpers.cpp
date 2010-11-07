@@ -119,7 +119,7 @@ QScriptValue i18nc( QScriptContext *context, QScriptEngine *engine )
   return substituteArguments( ls, args ).toString();
 }
 
-/// i18n("singular", "plural", number, arguments [optional])
+/// i18np("singular", "plural", number, arguments [optional])
 QScriptValue i18np( QScriptContext *context, QScriptEngine *engine )
 {
   Q_UNUSED(engine)
@@ -153,7 +153,7 @@ QScriptValue i18np( QScriptContext *context, QScriptEngine *engine )
   return substituteArguments( ls, args, 98 ).toString();
 }
 
-/// i18n("context", "singular", "plural", number, arguments [optional])
+/// i18ncp("context", "singular", "plural", number, arguments [optional])
 QScriptValue i18ncp( QScriptContext *context, QScriptEngine *engine )
 {
   Q_UNUSED(engine)
