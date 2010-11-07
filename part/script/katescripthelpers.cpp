@@ -87,8 +87,6 @@ QScriptValue i18n( QScriptContext *context, QScriptEngine *engine )
   }
 
   KLocalizedString ls = ki18n(text.toUtf8());
-  kDebug() << "simple i18n      :" << ::i18n(text.toLocal8Bit());
-  kDebug() << "TRANSLATED STRING:" << substituteArguments( ls, args ).toString();
   return substituteArguments( ls, args ).toString();
 }
 
