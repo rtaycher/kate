@@ -552,7 +552,9 @@ bool KateDocument::clear()
 
   clearMarks ();
 
-  return removeText (KTextEditor::Range(KTextEditor::Cursor(), KTextEditor::Cursor(lastLine()+1, 0)));
+  emit aboutToInvalidateMovingInterfaceContent(this);
+
+  return editRemoveLines(0, lastLine());
 }
 
 bool KateDocument::insertText( const KTextEditor::Cursor& position, const QString& text, bool block )
