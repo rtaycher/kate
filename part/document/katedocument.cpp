@@ -553,6 +553,8 @@ bool KateDocument::clear()
   clearMarks ();
 
   emit aboutToInvalidateMovingInterfaceContent(this);
+  m_buffer->invalidateRanges();
+
   emit aboutToRemoveText(documentRange());
 
   return editRemoveLines(0, lastLine());

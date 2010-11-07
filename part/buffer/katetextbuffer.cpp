@@ -86,15 +86,20 @@ TextBuffer::~TextBuffer ()
   Q_ASSERT (m_invalidCursors.empty());
 }
 
+void TextBuffer::invalidateRanges()
+{
+  // invalidate all ranges, work on copy, they might delete themself...
+  QSet<TextRange *> copyRanges = m_ranges;
+  foreach (TextRange *range, copyRanges)
+    range->setRange (KTextEditor::Cursor::invalid(), KTextEditor::Cursor::invalid());
+}
+
 void TextBuffer::clear ()
 {
   // not allowed during editing
   Q_ASSERT (m_editingTransactions == 0);
 
-  // invalidate all ranges, work on copy, they might delete themself...
-  QSet<TextRange *> copyRanges = m_ranges;
-  foreach (TextRange *range, copyRanges)
-    range->setRange (KTextEditor::Cursor::invalid(), KTextEditor::Cursor::invalid());
+  invalidateRanges();
 
   // new block for empty buffer
   TextBlock *newBlock = new TextBlock (this, 0);
