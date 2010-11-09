@@ -147,12 +147,12 @@ void MovingRangeTest::testFeedbackEmptyRange()
   QVERIFY(!rf.caretEnteredRangeCalled());
   QVERIFY(!rf.caretExitedRangeCalled());
 
-  // clear document, should call rangeEmpty again
+  // clear document, should call rangeInvalid again
   rf.reset();
   rf.verifyReset();
   doc.clear();
-  QVERIFY(rf.rangeEmptyCalled());
-  QVERIFY(!rf.rangeInvalidCalled());
+  QVERIFY(rf.rangeInvalidCalled());
+  QVERIFY(!rf.rangeEmptyCalled());
   QVERIFY(!rf.mouseEnteredRangeCalled());
   QVERIFY(!rf.mouseExitedRangeCalled());
   QVERIFY(!rf.caretEnteredRangeCalled());
