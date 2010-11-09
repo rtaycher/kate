@@ -129,7 +129,6 @@ void HighlightSelectionPluginView::selectionChanged()
 
 void HighlightSelectionPluginView::createHighlights()
 {
-  kDebug() << "RECREATE";
   m_currentText = m_view->selectionText();
 
   KTextEditor::SearchInterface* siface =
