@@ -21,13 +21,10 @@
 #define KATE_SCRIPT_CONSOLE_H
 
 
-#include "kateview.h"
-#include "katescriptmanager.h"
 #include "kateviewhelpers.h"
 
 class QTextEdit;
 class QPushButton;
-class QSize;
 class QLabel;
 class QVBoxLayout;
 class QHBoxLayout;
@@ -53,37 +50,23 @@ class KateScriptConsoleEngine
     const QString & execute(const QString & text);
 
   private:
-    /** Directory where auxiliar files are stored */
-    QString scriptDir;
-
-    /** A list of all functions ready to be used */
-    QStringList m_definedFunctions;
-
-    /** Name of the function we want to execute */
-    QString executable;
-
-    /** Name and code of functions that the user wants to define */
-    QHash<QString, QString> m_functions;
+    /** Url of utils.js file */
+    QString m_utilsUrl;
 
     /** Just a Kate view :) */
     KateView * m_view;
 
   private:
-    /** Returns the Url of given .js file */
-    QString fileUrl(const QString & name) const;
-
     /**
-     * Parses the text as a Javascript. Returns -1 if there're errors,
-     * 0 if this is a command and 1 if this a set of function definitions.
+     * Get the name of the first defined function
+     * @param text text containing a command or a set of functions.
+     * @param msg an error string
+     * @return the name of the first function defined or a void QString if
+     * there's no functions.
      */
-    int parseScript(const QString & text, QString & msg);
-
-    /** Get function name and code */
-    bool getFunctionInfo(const QString & text, int & index);
-
-    /** Define functions in auxiliar files and execute one of them */
-    void execFunctions(QString & msg);
+    const QString getFirstFunctionName(const QString & text, QString & msg);
 };
+
 
 class KateScriptConsole : public KateViewBarWidget
 {
