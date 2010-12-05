@@ -28,6 +28,7 @@
 #include <ktexteditor/view.h>
 
 #include <kde_terminal_interface.h>
+#include <kde_terminal_interface_v2.h>
 #include <kshell.h>
 #include <kparts/part.h>
 #include <kaction.h>
@@ -214,10 +215,28 @@ void KateConsole::showEvent(QShowEvent *)
   loadConsoleIfNeeded();
 }
 
-void KateConsole::cd (const KUrl &url)
+void KateConsole::cd(const KUrl &url)
 {
-  sendInput("cd " + KShell::quoteArg(url.path()) + '\n');
+  sendInput(wrapCdStringForRepls(url) );
 }
+
+QString KateConsole::wrapCdStringForRepls(const KUrl &url)
+{
+  TerminalInterfaceV2 *t2 = qobject_cast<TerminalInterfaceV2 *>(m_part);
+
+  if (!t2) return QString("cd " + KShell::quoteArg(url.path()) + "\n");
+
+  // ghci doesn't allow \space dir names, does allow spaces in dir names
+  // irb can take spaces or \space but doesn't allow " 'path' "
+  if ( t2->foregroundProcessName() == QString("irb") ) {
+    return QString("Dir.chdir(\"" + url.path() + "\") \n" );
+  } else if(t2->foregroundProcessName() == QString("ghc")) {
+	return QString(":cd " + url.path() + '\n');
+  } else {
+	return QString("cd " + KShell::quoteArg(url.path()) + '\n');
+  }
+}
+
 
 void KateConsole::sendInput( const QString& text )
 {

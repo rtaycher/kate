@@ -124,7 +124,12 @@ class KateConsole : public KVBox, public Kate::XMLGUIClient
      * @param url given dir
      */
     void cd (const KUrl &url);
-
+    
+	/**
+	 * return cd string as needed for certain repls(irb,ghci)
+	 * @param url given dir
+	 */
+    QString wrapCdStringForRepls(const KUrl &url);
     /**
      * send given text to console
      * @param text commands for console
